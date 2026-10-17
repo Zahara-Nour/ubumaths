@@ -11,6 +11,11 @@ import type { RequestHandler } from './$types';
 import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
 import { classIdParamSchema } from '$lib/server/validation/teacher-analytics';
 import { flagIdParamSchema, markResolvedBodySchema } from '$lib/server/validation/anti-fraud';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/teacher/classes/[classId]/anti-fraud/flags/[flagId]/+server'
+);
 
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	const classCheck = classIdParamSchema.safeParse({ classId: params.classId });
@@ -63,8 +68,8 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (membershipError) {
-		console.error('Contrôle d’accès impossible :', membershipError);
-		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
+		logger.error('Contrôle d’accès impossible :', membershipError);
+		return json({ error: 'Impossible de vérifier l’accès' }, { status: 500 });
 	}
 
 	if (!membership) {

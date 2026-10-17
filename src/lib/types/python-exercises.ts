@@ -51,10 +51,7 @@ export interface CustomComparison {
 }
 
 export type OutputComparison =
-	| ExactComparison
-	| TextComparison
-	| NumericComparison
-	| CustomComparison;
+	ExactComparison | TextComparison | NumericComparison | CustomComparison;
 
 export interface OutputTestCase {
 	input: string;

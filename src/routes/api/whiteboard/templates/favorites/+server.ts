@@ -19,6 +19,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { templateFavoriteSchema } from '$lib/server/validation/whiteboard-templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/templates/favorites/+server');
 
 /**
  * List user's favorite template IDs
@@ -36,8 +39,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('created_at', { ascending: false });
 
 		if (dbError) {
-			console.error('[Template Favorites] Query error:', dbError);
-			throw error(500, 'Erreur lors de la recuperation des favoris');
+			logger.error('[Template Favorites] Query error:', dbError);
+			throw error(500, 'Impossible de charger les favoris');
 		}
 
 		const favorites = (data ?? []).map((f) => ({
@@ -50,8 +53,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[Template Favorites] Error:', err);
-		throw error(500, 'Une erreur interne est survenue');
+		logger.error('[Template Favorites] Error:', err);
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -69,7 +72,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = templateFavoriteSchema.safeParse(body);
@@ -89,7 +92,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (templateError || !template) {
-			throw error(404, 'Template non trouve');
+			throw error(404, 'Modèle introuvable');
 		}
 
 		// Insert favorite (upsert to handle duplicates gracefully)
@@ -106,8 +109,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 
 		if (insertError) {
-			console.error('[Template Favorites] Insert error:', insertError);
-			throw error(500, "Erreur lors de l'ajout aux favoris");
+			logger.error('[Template Favorites] Insert error:', insertError);
+			throw error(500, 'Impossible d’ajouter le modèle aux favoris');
 		}
 
 		return json({ success: true, templateId });
@@ -115,8 +118,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[Template Favorites] Error:', err);
-		throw error(500, 'Une erreur interne est survenue');
+		logger.error('[Template Favorites] Error:', err);
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -130,7 +133,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 
 	const templateId = url.searchParams.get('template_id');
 	if (!templateId) {
-		throw error(400, 'template_id requis');
+		throw error(400, 'Identifiant de modèle requis');
 	}
 
 	// Validate UUID format
@@ -147,8 +150,8 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 			.eq('template_id', templateId);
 
 		if (deleteError) {
-			console.error('[Template Favorites] Delete error:', deleteError);
-			throw error(500, 'Erreur lors de la suppression du favori');
+			logger.error('[Template Favorites] Delete error:', deleteError);
+			throw error(500, 'Impossible de retirer le modèle des favoris');
 		}
 
 		return json({ success: true, templateId });
@@ -156,7 +159,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[Template Favorites] Error:', err);
-		throw error(500, 'Une erreur interne est survenue');
+		logger.error('[Template Favorites] Error:', err);
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

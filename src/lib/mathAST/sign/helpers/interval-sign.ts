@@ -457,39 +457,3 @@ function getEndpointValue(value: MathNode): number | null {
 
 	return tryGetNumericValue(value);
 }
-
-// =============================================================================
-// Polynomial Analysis
-// =============================================================================
-
-/**
- * Analyze if expression is a simple polynomial (for future use).
- * Currently returns basic info about polynomial structure.
- */
-export function analyzePolynomial(
-	expr: MathNode,
-	variable: string
-): { isPolynomial: boolean; degree?: number } {
-	// Simple implementation - just check structure
-	const structure = analyzeExpressionStructure(expr, variable);
-
-	if (structure.type === 'constant') {
-		return { isPolynomial: true, degree: 0 };
-	}
-
-	if (structure.type === 'variable') {
-		return { isPolynomial: true, degree: 1 };
-	}
-
-	if (structure.type === 'power') {
-		const baseStructure = analyzeExpressionStructure(structure.components?.[0] ?? expr, variable);
-		if (baseStructure.type === 'variable' && structure.exponent !== undefined) {
-			if (Number.isInteger(structure.exponent) && structure.exponent >= 0) {
-				return { isPolynomial: true, degree: structure.exponent };
-			}
-		}
-	}
-
-	// More complex structures would need deeper analysis
-	return { isPolynomial: false };
-}

@@ -104,8 +104,7 @@ export {
 	BaseTypstGenerator,
 	// Worksheet generator
 	WorksheetGenerator,
-	generateWorksheetTypst,
-	generateBatchTypst
+	generateWorksheetTypst
 } from './generators';
 
 export type { WorksheetGeneratorInput, GenerateTypstParams } from './generators';
@@ -156,6 +155,7 @@ export {
 	MAGAZINE_TEMPLATE,
 	SCIENTIFIC_TEMPLATE,
 	STUDENT_STYLE_TEMPLATE,
+	STUDENT_LANDSCAPE_STYLE_TEMPLATE,
 	// Template collections
 	DEFAULT_TEMPLATES,
 	DEFAULT_TEMPLATE_IDS,

@@ -225,6 +225,20 @@ describe('« Dériver » et `.dériver f`', () => {
 		expect(last?.steps?.length ?? 0).toBeGreaterThan(0);
 	});
 
+	// Q4 (David, 2026-10-14), par le vrai chemin du bouton
+	it('à paramètre : le bouton crée f′ et écrit f′(x) = a', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' }, 'text');
+		const desk = new CalcDesk(atelier);
+
+		desk.runFromPanel('derive', 'f');
+
+		expect(atelier.get("f'")?.missing).toEqual([{ name: 'a', as: 'value' }]);
+		const last = desk.entries.at(-1);
+		expect(last?.failed).toBe(false);
+		expect(last?.latex?.replace(/\s/g, '')).toBe("f'(x)=a");
+	});
+
 	// D3
 	it('`.dériver f` crée la même carte', () => {
 		const atelier = withF();
@@ -279,9 +293,11 @@ describe('« Dériver » et `.dériver f`', () => {
 // Cas repris de l'ancien `keep-derivative.svelte.test.ts` (« Garder la
 // dérivée » est remplacé par « Dériver », phase 0 Q1 / G6)
 describe('cas repris de « Garder la dérivée »', () => {
+	// En attente d'une FONCTION : `a*x` est une fonction à paramètre, qui se
+	// dérive depuis la décision Q4 (David, 2026-10-14)
 	it('sur une fonction en attente : la ligne dit l’attente, sans carte ni message faux', () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' }, 'text');
+		atelier.create({ kind: 'function', name: 'f', definition: 'h(x) + 1' }, 'text');
 		const desk = new CalcDesk(atelier);
 
 		desk.runFromPanel('derive', 'f');

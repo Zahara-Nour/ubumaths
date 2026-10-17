@@ -20,6 +20,7 @@
 
 import type { ResolvedMarkdown } from '$lib/ubumark';
 import { unitKeysFor } from '$lib/questions/units/keyboard-units';
+import type { CapitalPairs } from '$lib/mathAST/parser/types';
 import {
 	getQuestionType,
 	type ConstraintMode,
@@ -57,6 +58,8 @@ export interface PublicQuestion {
 	spaces?: ConstraintMode;
 	/** Fonctions déclarées par le modèle (`P`, `C`) : notation de l'énoncé, aucune réponse */
 	genericFunctions?: string[];
+	/** Sens de `AB` (longueur ou produit) : lecture de la saisie, aucune réponse */
+	capitalPairs?: CapitalPairs;
 	/** Niveaux de la carte (clavier : onglet « n! » en Terminale) : aucune réponse, aucun indice */
 	grades?: GradeLevel[];
 }
@@ -97,6 +100,7 @@ export function toPublicQuestion(
 	const spaces = instance.options?.constraints?.spaces;
 	if (spaces) question.spaces = spaces;
 	if (instance.genericFunctions?.length) question.genericFunctions = [...instance.genericFunctions];
+	if (instance.capitalPairs) question.capitalPairs = instance.capitalPairs;
 	if (instance.grades?.length) question.grades = [...instance.grades];
 
 	if (type === 'multiple_choice') {
@@ -135,7 +139,8 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		generatedAt: '',
 		...(question.exerciseInstruction && { exerciseInstruction: question.exerciseInstruction }),
 		...(question.spaces && { options: { constraints: { spaces: question.spaces } } }),
-		...(question.genericFunctions?.length && { genericFunctions: question.genericFunctions })
+		...(question.genericFunctions?.length && { genericFunctions: question.genericFunctions }),
+		...(question.capitalPairs && { capitalPairs: question.capitalPairs })
 	};
 
 	if (question.type === 'multiple_choice') {

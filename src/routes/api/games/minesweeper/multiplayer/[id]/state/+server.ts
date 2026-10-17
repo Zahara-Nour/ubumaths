@@ -12,6 +12,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { realtimeStateUpdateSchema } from '$lib/server/validation/minesweeper-multiplayer';
 import { sanitizeRPCError } from '$lib/server/utils/error-handler';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/games/minesweeper/multiplayer/[id]/state/+server');
 
 /**
  * GET /api/games/minesweeper/multiplayer/[id]/state
@@ -65,7 +68,7 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 	const validation = realtimeStateUpdateSchema.safeParse(body);
 
 	if (!validation.success) {
-		console.error('Validation error:', validation.error.issues);
+		logger.error('Validation error:', validation.error.issues);
 		throw error(400, validation.error.issues[0].message);
 	}
 

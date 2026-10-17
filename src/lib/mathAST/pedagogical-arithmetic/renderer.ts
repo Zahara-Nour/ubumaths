@@ -39,9 +39,10 @@ import type { PedagogicalArithmeticRule, PedagogicalArithmeticStep } from './typ
 // Renderer
 // =============================================================================
 
-export class PedagogicalArithmeticRenderer
-	implements StepRenderer<PedagogicalArithmeticStep, PedagogicalRenderOptions>
-{
+export class PedagogicalArithmeticRenderer implements StepRenderer<
+	PedagogicalArithmeticStep,
+	PedagogicalRenderOptions
+> {
 	render(step: PedagogicalArithmeticStep, options: PedagogicalRenderOptions): RenderedStep {
 		const rule = ALL_RULES_BY_NAME.get(step.rule);
 		const title = this.titleFor(rule, step, options);
@@ -108,7 +109,9 @@ export class PedagogicalArithmeticRenderer
 		const fragments = step.highlightSubTrees ?? [step.before];
 
 		const colored = colorFragmentsInExpression(globalBefore, fragments);
-		const afterLatex = toLatex(globalAfter);
+		// Même écriture que la ligne d'avant : un facteur négatif garde ses
+		// parenthèses des deux côtés du `=` (`(-3) \times (-3)`)
+		const afterLatex = renderWithHighlights(globalAfter, []).latex;
 
 		return `\\begin{aligned}\n  & ${colored} \\\\\n  & = ${afterLatex}\n\\end{aligned}`;
 	}
@@ -132,13 +135,14 @@ function isDetailedEnough(verbosity: Verbosity): boolean {
  * located (defensive).
  */
 function colorFragmentsInExpression(global: MathNode, fragments: readonly MathNode[]): string {
-	if (fragments.length === 0) return toLatex(global);
+	const plain = renderWithHighlights(global, []).latex;
+	if (fragments.length === 0) return plain;
 	if (fragments.length === 1 && nodesEqual(global, fragments[0])) {
-		return `\\textcolor{blue}{${toLatex(global)}}`;
+		return `\\textcolor{blue}{${plain}}`;
 	}
 	const found = renderWithHighlights(global, fragments);
 	if (found.matched) return found.latex;
-	return `\\textcolor{blue}{${toLatex(global)}}`;
+	return `\\textcolor{blue}{${plain}}`;
 }
 
 interface HighlightResult {
@@ -156,7 +160,7 @@ interface HighlightResult {
  */
 function renderWithHighlights(node: MathNode, fragments: readonly MathNode[]): HighlightResult {
 	if (fragments.some((f) => nodesEqual(node, f))) {
-		return { latex: `\\textcolor{blue}{${toLatex(node)}}`, matched: true };
+		return { latex: `\\textcolor{blue}{${renderWithHighlights(node, []).latex}}`, matched: true };
 	}
 
 	switch (node.type) {
@@ -164,7 +168,7 @@ function renderWithHighlights(node: MathNode, fragments: readonly MathNode[]): H
 			const l = renderWithHighlights(node.left, fragments);
 			const r = renderWithHighlights(node.right, fragments);
 			return {
-				latex: `${l.latex} + ${r.latex}`,
+				latex: `${l.latex} + ${wrapIf(r.latex, isSignedOrSum(node.right))}`,
 				matched: l.matched || r.matched
 			};
 		}
@@ -172,16 +176,20 @@ function renderWithHighlights(node: MathNode, fragments: readonly MathNode[]): H
 			const l = renderWithHighlights(node.left, fragments);
 			const r = renderWithHighlights(node.right, fragments);
 			return {
-				latex: `${l.latex} - ${r.latex}`,
+				latex: `${l.latex} - ${wrapIf(r.latex, isSignedOrSum(node.right))}`,
 				matched: l.matched || r.matched
 			};
 		}
 		case 'multiplication': {
 			const l = renderWithHighlights(node.left, fragments);
 			const r = renderWithHighlights(node.right, fragments);
-			const op = multiplicationOp(node.displayStyle);
+			// Un facteur négatif ou une somme se met entre parenthèses, à gauche
+			// comme à droite : `(-3) \times (-3)`, jamais `-3 \times -3`
+			const left = wrapIf(l.latex, isSignedOrSum(node.left));
+			const wrapRight = isSignedOrSum(node.right);
+			const right = wrapIf(r.latex, wrapRight);
 			return {
-				latex: `${l.latex}${op}${r.latex}`,
+				latex: `${left}${multiplicationOp(productStyle(node, wrapRight))}${right}`,
 				matched: l.matched || r.matched
 			};
 		}
@@ -194,14 +202,25 @@ function renderWithHighlights(node: MathNode, fragments: readonly MathNode[]): H
 					matched: num.matched || den.matched
 				};
 			}
+			const op = node.displayStyle === 'ratio' ? ':' : '\\div';
+			// Comme pour un facteur : `12 : (-3)`, `(-6) : (-2)`, jamais `12 : -3`.
+			// Un diviseur produit ou quotient se parenthèse aussi : `a : (b \times c)`
+			const numerator = wrapIf(num.latex, isSignedOrSum(node.numerator));
+			const wrapDen =
+				isSignedOrSum(node.denominator) ||
+				node.denominator.type === 'multiplication' ||
+				(node.denominator.type === 'division' && node.denominator.displayStyle !== 'fraction');
 			return {
-				latex: `${num.latex} \\div ${den.latex}`,
+				latex: `${numerator} ${op} ${wrapIf(den.latex, wrapDen)}`,
 				matched: num.matched || den.matched
 			};
 		}
 		case 'opposite': {
 			const inner = renderWithHighlights(node.operand, fragments);
-			return { latex: `-${inner.latex}`, matched: inner.matched };
+			return {
+				latex: `-${wrapIf(inner.latex, isSignedOrSum(node.operand))}`,
+				matched: inner.matched
+			};
 		}
 		case 'positive': {
 			const inner = renderWithHighlights(node.operand, fragments);
@@ -209,24 +228,54 @@ function renderWithHighlights(node: MathNode, fragments: readonly MathNode[]): H
 		}
 		case 'delimiter': {
 			const inner = renderWithHighlights(node.content, fragments);
-			return { latex: `\\left(${inner.latex}\\right)`, matched: inner.matched };
+			return { latex: `\\left( ${inner.latex} \\right)`, matched: inner.matched };
 		}
 		case 'superscript': {
 			const base = renderWithHighlights(node.base, fragments);
 			const sup = renderWithHighlights(node.superscript, fragments);
 			// Même garde-fou que latex-generator : `(-2)^3` sans délimiteur s'écrirait
 			// `-2^{3}`, relu −(2³) (voir common/sign-parentheses.ts)
-			const wrappedBase = needsParenthesesAsPowerBase(node.base)
-				? `\\left(${base.latex}\\right)`
-				: base.latex;
+			const wrappedBase = wrapIf(base.latex, needsParenthesesAsPowerBase(node.base));
+			// Exposant d'un seul caractère sans accolades, comme `toLatex` (`10^6`)
+			const exponent = sup.latex.length === 1 ? sup.latex : `{${sup.latex}}`;
 			return {
-				latex: `${wrappedBase}^{${sup.latex}}`,
+				latex: `${wrappedBase}^${exponent}`,
 				matched: base.matched || sup.matched
 			};
 		}
 		default:
 			return { latex: toLatex(node), matched: false };
 	}
+}
+
+/** `\left( latex \right)` quand `wrap`, `latex` sinon. */
+function wrapIf(latex: string, wrap: boolean): string {
+	return wrap ? `\\left( ${latex} \\right)` : latex;
+}
+
+/** Un opposé ou une somme : à parenthéser comme facteur ou terme retranché. */
+function isSignedOrSum(node: MathNode): boolean {
+	return node.type === 'opposite' || node.type === 'addition' || node.type === 'subtraction';
+}
+
+/**
+ * Signe du produit à l'écran. La juxtaposition (`2(-1)`) ne tient que devant
+ * une parenthèse ou une puissance parenthésée ; devant un nombre ou un autre
+ * produit, elle se lirait `2 1` : on écrit `\times`. L'étoile (`*`) devient
+ * aussi `\times`.
+ */
+function productStyle(
+	node: Extract<MathNode, { type: 'multiplication' }>,
+	rightWrapped: boolean
+): string {
+	if (node.displayStyle !== 'implicit') return node.displayStyle;
+	if (rightWrapped) return 'implicit';
+	const right = node.right;
+	if (right.type === 'delimiter') return 'implicit';
+	if (right.type === 'superscript' && needsParenthesesAsPowerBase(right.base)) return 'implicit';
+	if (right.type === 'superscript' && right.base.type === 'delimiter') return 'implicit';
+	if (right.type === 'number' || right.type === 'multiplication') return 'cross';
+	return 'implicit';
 }
 
 function multiplicationOp(style: string): string {

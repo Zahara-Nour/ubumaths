@@ -110,12 +110,12 @@
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || "Erreur lors de la suppression de l'eleve");
+				throw new Error(errorData.message || 'Erreur lors de la suppression de l’élève');
 			}
 
 			// Remove from local state
 			assignedStudents = assignedStudents.filter((s) => s.student_id !== studentId);
-			toaster.success("Eleve retire de l'assignation");
+			toaster.success('Élève retiré de l’affectation');
 		} catch (err) {
 			console.error('Error removing student:', err);
 			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la suppression');
@@ -130,7 +130,7 @@
 	function getStudentName(student: AssignedStudent): string {
 		const first = student.first_name ?? '';
 		const last = student.last_name ?? '';
-		return last ? `${first} ${last}` : first || 'Eleve inconnu';
+		return last ? `${first} ${last}` : first || 'Élève inconnu';
 	}
 
 	/**

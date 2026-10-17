@@ -7,10 +7,10 @@
  * absent en ne cherchant que des lignes `CONSTRAINT`, alors qu'il est déclaré
  * par un `CREATE UNIQUE INDEX`. **Ce test ne corrige donc rien : il garde.**
  *
- * Ce qu'il protège : quatre lectures en `.single()` sur `chapter_id`
- * (`chapter-templates.ts`, `template-updates/+server.ts`) en dépendent. Le jour
- * où l'index disparaîtrait, un doublon les transformerait en 500 sous un
- * message — « modèle introuvable » — qui ne désigne pas la cause.
+ * Ce qu'il protège : les lectures en `.single()` / `.maybeSingle()` sur
+ * `chapter_id` de `chapter-templates.ts` en dépendent. Le jour où l'index
+ * disparaîtrait, un doublon les transformerait en 500 sous un message —
+ * « modèle introuvable » — qui ne désigne pas la cause.
  *
  * @vitest-environment node
  */
@@ -87,9 +87,7 @@ describe('chapter_template_instantiations — un rattachement par chapitre', () 
 	it('accepte le premier rattachement', async () => {
 		const { error } = await service.from('chapter_template_instantiations').insert({
 			chapter_id: chapitre,
-			template_id: modeleA,
-			template_version: 1,
-			current_template_version: 1
+			template_id: modeleA
 		});
 
 		expect(error).toBeNull();
@@ -98,9 +96,7 @@ describe('chapter_template_instantiations — un rattachement par chapitre', () 
 	it('refuse un second rattachement du même chapitre', async () => {
 		const { error } = await service.from('chapter_template_instantiations').insert({
 			chapter_id: chapitre,
-			template_id: modeleB,
-			template_version: 1,
-			current_template_version: 1
+			template_id: modeleB
 		});
 
 		expect(error, 'un chapitre ne doit suivre qu’un modèle').not.toBeNull();

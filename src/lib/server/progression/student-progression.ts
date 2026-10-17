@@ -31,6 +31,9 @@ import {
 	type MathCompetenceLevel,
 	type ObjectiveLevel
 } from '$lib/types/skills';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/progression/student-progression');
 
 type SB = SupabaseClient<Database>;
 
@@ -241,7 +244,7 @@ export async function getObjectivesProgression(
 	// élèves de 6ᵉ, et personne ne le saurait.
 	if (themesData.length === 0) {
 		if (COVERED_GRADES.has(grade)) {
-			console.warn(
+			logger.warn(
 				`[progression] aucun thème pour le niveau "${grade}", pourtant censé être couvert — RLS ou code de niveau décalé ?`
 			);
 		}

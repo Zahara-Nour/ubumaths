@@ -405,6 +405,8 @@ export function findUCandidates(expr: MathNode, variable: string): MathNode[] {
 			case 'greek':
 			case 'hole':
 			case 'constant':
+			case 'segmentLength':
+			case 'figureName':
 				break;
 
 			// Complex nodes have real and imaginary parts
@@ -900,6 +902,8 @@ function containsSubexpression(expr: MathNode, target: MathNode): boolean {
 			case 'constant':
 			case 'signed-zero':
 			case 'boolean':
+			case 'segmentLength':
+			case 'figureName':
 				return false;
 
 			// Limit nodes

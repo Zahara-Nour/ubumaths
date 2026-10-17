@@ -71,7 +71,7 @@
 
 <SeoHead
 	title="Jeux Mathématiques | Chiphre"
-	description="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Trio, Mathémo, 2048 et Navadra."
+	description="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Trio, Mathémo, Démineur et 2048."
 />
 
 <div class="mx-auto max-w-6xl p-4 md:p-6">

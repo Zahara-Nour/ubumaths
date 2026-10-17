@@ -69,7 +69,7 @@ Trois protections rendent l'automatisation défendable plutôt que trompeuse, et
 
 **Le minimum de tâches.** Un niveau ne se valide pas sur une observation isolée : on alerte en dessous de deux tâches, et une « très bonne maîtrise » établie sur moins de trois tâches demande confirmation.
 
-**La neutralité du ∅.** Un observable hors périmètre ne pénalise jamais l'élève. Et si toute une sous-dimension reste en **∅**, c'est un signal sur la _tâche_, pas sur l'élève — l'occasion d'observer cette facette n'existait pas.
+**La neutralité du ∅.** Un observable hors périmètre ne pénalise jamais l'élève. Et si toute une composante reste en **∅**, c'est un signal sur la _tâche_, pas sur l'élève — l'occasion d'observer cette facette n'existait pas.
 
 **La transparence.** Le dispositif ne rend pas un verdict : il propose un niveau _en explicitant son raisonnement_ — ce qui valide ce niveau, ce qui manque pour le niveau supérieur. C'est ce qui le rend **formatif** (il désigne l'objectif de travail suivant) et ce qui répond au problème de fiabilité des descripteurs vagues : la règle rend le jugement explicite et défendable au lieu de le remplacer. Le positionnement final reste celui de l'enseignant.
 
@@ -156,7 +156,7 @@ _Chevauchement avec « Modéliser »._ Ce tri recoupe « J'identifie les grandeu
 
 C'est la phase heuristique : l'élève se met en mouvement et produit de la matière. Cinq observables, car l'exploration prend des formes variées et l'on veut pouvoir en saisir au moins une selon les tâches.
 
-**Produire un premier essai sans aide** est l'observable d'autonomie. Formulé en termes de production (« un essai ») et non d'état (« je me lance »), parce qu'un essai se voit. Le « sans aide » est le cœur du critère : l'autonomie initiale est une composante de la compétence, pas un bonus.
+**Produire un premier essai sans aide** est l'observable d'autonomie. Formulé en termes de production (« un essai ») et non d'état (« je me lance »), parce qu'un essai se voit. Le « sans aide » est le cœur du critère : l'autonomie initiale fait partie de la compétence, pas un bonus.
 
 **Essayer sur des cas simples** capte une stratégie fondamentale : réduire la complexité pour comprendre la structure. Distinct de l'expérimentation, car ici on _simplifie_ pour comprendre, là on _produit des données_ pour analyser.
 
@@ -168,7 +168,7 @@ C'est la phase heuristique : l'élève se met en mouvement et produit de la mati
 
 #### C — Conduire et réorienter
 
-C'est la sous-dimension la plus identitaire de « Chercher » : ce qui distingue un chercheur d'un exécutant, c'est qu'il ne s'enferme pas dans la première idée. D'où son poids dans la validation du niveau le plus élevé.
+C'est la composante la plus identitaire de « Chercher » : ce qui distingue un chercheur d'un exécutant, c'est qu'il ne s'enferme pas dans la première idée. D'où son poids dans la validation du niveau le plus élevé.
 
 **Organiser sa démarche** : la tête de phrase porte l'idée générale — structurer plutôt qu'accumuler des essais en vrac — et l'exemple (découper en étapes ou sous-problèmes) ancre cette abstraction dans sa manifestation la plus concrète. On a préféré cette forme à un libellé purement abstrait (« je structure », trop vague) ou purement concret (« je décompose », trop étroit) : toute organisation compte, pas seulement la décomposition.
 
@@ -222,7 +222,7 @@ Quatre niveaux, alignés sur le socle. Les descripteurs portent sur l'**autonomi
 
 #### Pourquoi cette structure
 
-Les niveaux ne s'obtiennent pas en comptant des points. Aucune accumulation sur une sous-dimension ne compense l'absence d'un critère définissant : un élève très solide sur l'appropriation et l'engagement, mais qui n'explore jamais plusieurs pistes, plafonne à « satisfaisante ». C'est juste, car la réorientation _est_ le cœur de « Chercher » — on ne peut pas l'acheter avec autre chose.
+Les niveaux ne s'obtiennent pas en comptant des points. Aucune accumulation sur une composante ne compense l'absence d'un critère définissant : un élève très solide sur l'appropriation et l'engagement, mais qui n'explore jamais plusieurs pistes, plafonne à « satisfaisante ». C'est juste, car la réorientation _est_ le cœur de « Chercher » — on ne peut pas l'acheter avec autre chose.
 
 ### Note d'arbitrage
 
@@ -323,7 +323,7 @@ C'est la fluence procédurale : mener le calcul à son terme, de façon fiable, 
 
 #### C — Calculer avec des lettres
 
-Le calcul littéral est un **registre distinct** : passer des nombres aux lettres change la nature du calcul. La sous-dimension le saisit en trois gestes de difficulté croissante.
+Le calcul littéral est un **registre distinct** : passer des nombres aux lettres change la nature du calcul. La composante le saisit en trois gestes de difficulté croissante.
 
 **Substituer des valeurs aux lettres** : le premier pas vers l'algèbre — comprendre qu'une lettre tient lieu de nombre, et calculer l'expression une fois les valeurs remplacées.
 
@@ -331,7 +331,7 @@ Le calcul littéral est un **registre distinct** : passer des nombres aux lettre
 
 **Calculer pour établir une expression générale** : le niveau le plus abstrait, où le calcul littéral produit une formule valable pour tous les cas. On le garde centré sur le calcul lui-même, pour ne pas empiéter sur la compétence « Raisonner ».
 
-Cette sous-dimension relève pleinement du **collège**, où le calcul littéral est introduit et devient central. C'est pourquoi elle conditionne la maîtrise la plus haute (voir la règle de validation). En amont du collège, ses observables sont simplement hors champ (codés ∅) ; le cadre étant centré sur le collège, ce cas est marginal.
+Cette composante relève pleinement du **collège**, où le calcul littéral est introduit et devient central. C'est pourquoi elle conditionne la maîtrise la plus haute (voir la règle de validation). En amont du collège, ses observables sont simplement hors champ (codés ∅) ; le cadre étant centré sur le collège, ce cas est marginal.
 
 #### D — Contrôler le résultat
 
@@ -377,13 +377,13 @@ Quatre niveaux, alignés sur le socle. Les descripteurs tissent les trois dimens
 
 **Insuffisante** — niveau résiduel : aucune des conditions ci-dessus. L'élève ne mène pas un calcul à terme par lui-même, même partiellement.
 
-#### Le cas de la sous-dimension C
+#### Le cas de la composante C
 
 Le cadre cible le **collège**, où le calcul littéral est un attendu central. La règle **verrouille** donc sur C : la « très bonne maîtrise » exige au moins un observable de C acquis (C1, C2 ou C3). Ce choix pose qu'au collège, on ne peut pas être un calculateur expert sans entrer effectivement dans le registre littéral — par parallélisme avec « Raisonner », où un outil logique conditionne de même l'excellence. On exige _un_ observable de C, et non le plus difficile : il s'agit d'attester l'entrée dans l'algèbre (substituer, transformer ou généraliser), pas la maîtrise de son sommet.
 
 L'implication entre observables de C est sans effet ici : C3 (établir une expression générale) tend à entraîner C1 (substituer), mais comme la condition est un simple plancher « au moins un de C » — ni seuil « N parmi M », ni conjonction nommée —, cette implication ne peut ni vider ni gonfler la barre. Le verrou est sain tel quel.
 
-Conséquence assumée : une tâche numérique qui ne sollicite aucun calcul littéral laisse C en ∅, et l'excellence reste alors hors d'atteinte sur cette tâche — d'où l'importance d'inclure des tâches à composante algébrique dans le périmètre dès qu'on vise à positionner un élève en « très bonne maîtrise ».
+Conséquence assumée : une tâche numérique qui ne sollicite aucun calcul littéral laisse C en ∅, et l'excellence reste alors hors d'atteinte sur cette tâche — d'où l'importance d'inclure des tâches à volet algébrique dans le périmètre dès qu'on vise à positionner un élève en « très bonne maîtrise ».
 
 #### Pourquoi cette structure
 
@@ -391,15 +391,15 @@ Les niveaux ne s'obtiennent pas en comptant des points. Aucune accumulation ne c
 
 ### Note d'arbitrage
 
-La sous-dimension D ne compte que deux observables, fruit d'une fusion. « Estimer un ordre de grandeur » et « vérifier la vraisemblance (signe, unité) » désignaient deux techniques d'un même geste — apprécier si le résultat est plausible —, au point qu'un contrôle par ordre de grandeur se serait codé deux fois. Réunies dans **D1**, elles laissent face à elles un **D2** réellement distinct : le contrôle par un moyen indépendant (opération inverse, second calcul), qui ne relève pas de l'appréciation mais de la vérification active. La « très bonne maîtrise » exige donc **D1 et D2** — apprécier la plausibilité _et_ vérifier indépendamment —, une conjonction de deux gestes sans implication entre eux. Cette fusion supprime à la racine le recouvrement qui minait l'ancien seuil « 2 des 3 dont D2 » : on n'a plus besoin de prémunir la règle contre une implication, puisque les deux techniques qui se chevauchaient ne forment plus qu'un observable.
+La composante D ne compte que deux observables, fruit d'une fusion. « Estimer un ordre de grandeur » et « vérifier la vraisemblance (signe, unité) » désignaient deux techniques d'un même geste — apprécier si le résultat est plausible —, au point qu'un contrôle par ordre de grandeur se serait codé deux fois. Réunies dans **D1**, elles laissent face à elles un **D2** réellement distinct : le contrôle par un moyen indépendant (opération inverse, second calcul), qui ne relève pas de l'appréciation mais de la vérification active. La « très bonne maîtrise » exige donc **D1 et D2** — apprécier la plausibilité _et_ vérifier indépendamment —, une conjonction de deux gestes sans implication entre eux. Cette fusion supprime à la racine le recouvrement qui minait l'ancien seuil « 2 des 3 dont D2 » : on n'a plus besoin de prémunir la règle contre une implication, puisque les deux techniques qui se chevauchaient ne forment plus qu'un observable.
 
-Un mot enfin sur l'unité, qui apparaît à deux endroits sans faire doublon : **B5** code sa gestion _pendant_ le calcul (convertir, suivre la cohérence dimensionnelle), **D1** la retient comme l'un des indices de plausibilité _après_ coup. Geste actif d'un côté, vérification de l'autre — deux observables distincts, dans deux sous-dimensions distinctes.
+Un mot enfin sur l'unité, qui apparaît à deux endroits sans faire doublon : **B5** code sa gestion _pendant_ le calcul (convertir, suivre la cohérence dimensionnelle), **D1** la retient comme l'un des indices de plausibilité _après_ coup. Geste actif d'un côté, vérification de l'autre — deux observables distincts, dans deux composantes distinctes.
 
 ---
 
 ### Observer cette compétence
 
-Concevez des tâches qui **laissent le choix du mode ouvert**, mettent des grandeurs en jeu (pour les unités) et rendent le contrôle utile. Comme le calcul littéral (C) verrouille la très bonne maîtrise, prévoyez une composante algébrique au périmètre dès qu'il s'agit de positionner un élève au plus haut niveau.
+Concevez des tâches qui **laissent le choix du mode ouvert**, mettent des grandeurs en jeu (pour les unités) et rendent le contrôle utile. Comme le calcul littéral (C) verrouille la très bonne maîtrise, prévoyez une volet algébrique au périmètre dès qu'il s'agit de positionner un élève au plus haut niveau.
 
 ---
 
@@ -476,7 +476,7 @@ Raisonner suppose un outillage logique propre. Trois observables, du plus access
 
 **Réciproque et sens de l'implication** (C3) : distinguer « si A alors B » de sa réciproque « si B alors A », qui n'en découle pas. C'est l'une des confusions les plus tenaces chez les élèves — croire qu'avoir prouvé une implication prouve sa réciproque. L'observable est délibérément séparé de C2 : C2 valide qu'on _sait se servir_ d'un mode de raisonnement (dont la contraposée, qui, elle, _est_ équivalente à l'implication) ; C3 valide qu'on _ne confond pas_ implication et réciproque. Un outil qu'on mobilise d'un côté, une erreur qu'on évite de l'autre. Au codage : tout ce qui touche à retourner une implication pour la _critiquer_ va en C3 ; l'emploi correct d'un mode de raisonnement va en C2.
 
-Cette sous-dimension est la plus **dépendante du niveau** : le contre-exemple est accessible tôt, mais la contraposée, le raisonnement par l'absurde (C2) et la réciproque (C3) relèvent du collège. Avant, ces observables seront hors champ (codés ∅).
+Cette composante est la plus **dépendante du niveau** : le contre-exemple est accessible tôt, mais la contraposée, le raisonnement par l'absurde (C2) et la réciproque (C3) relèvent du collège. Avant, ces observables seront hors champ (codés ∅).
 
 #### D — Valider et critiquer
 
@@ -600,7 +600,7 @@ C'est la face émettrice, à sens unique : rendre sa démarche intelligible à a
 
 **Expliquer par écrit** : la formulation « compréhensible sans commentaire oral » (version enseignant) est le critère — un écrit qui n'a de sens que si l'élève l'accompagne de la voix n'est pas une explication écrite réussie.
 
-**Expliquer à l'oral** : canal distinct, à observer en situation (présentation, exposé, explication à un pair), car il ne laisse pas de trace écrite. On garde les deux canaux séparés pour deux raisons : ce sont des compétences réellement différentes, et l'oral est indispensable pour pouvoir observer aussi la sous-dimension dialogique (C).
+**Expliquer à l'oral** : canal distinct, à observer en situation (présentation, exposé, explication à un pair), car il ne laisse pas de trace écrite. On garde les deux canaux séparés pour deux raisons : ce sont des compétences réellement différentes, et l'oral est indispensable pour pouvoir observer aussi la composante dialogique (C).
 
 #### C — Comprendre et échanger
 
@@ -659,19 +659,19 @@ Les niveaux ne s'obtiennent pas en comptant des points. Aucune accumulation ne c
 
 ### Note d'arbitrage
 
-Pour l'échange (C), la sous-dimension a été ramenée à **deux** observables. « Comprendre l'explication d'un autre » a été retiré : comprendre est un état mental sans manifestation propre, et ses seules traces observables — reformuler, questionner, répondre à une objection — sont déjà les deux autres observables. Le garder, c'était garder une case qu'on n'aurait jamais cochée autrement qu'en cochant l'une des deux autres. La « très bonne maîtrise » exige donc **C1 et C2** (reformuler ou questionner _et_ argumenter dans l'échange) : deux gestes réellement observables et distincts — clarifier activement n'est pas argumenter —, la compréhension d'autrui restant attestée à travers eux.
+Pour l'échange (C), la composante a été ramenée à **deux** observables. « Comprendre l'explication d'un autre » a été retiré : comprendre est un état mental sans manifestation propre, et ses seules traces observables — reformuler, questionner, répondre à une objection — sont déjà les deux autres observables. Le garder, c'était garder une case qu'on n'aurait jamais cochée autrement qu'en cochant l'une des deux autres. La « très bonne maîtrise » exige donc **C1 et C2** (reformuler ou questionner _et_ argumenter dans l'échange) : deux gestes réellement observables et distincts — clarifier activement n'est pas argumenter —, la compréhension d'autrui restant attestée à travers eux.
 
 Pour le langage (A), un troisième observable a été **retiré** : « traduire entre langage courant et langage mathématique ». Il était redondant — une traduction correcte en écriture mathématique _est_ une production de notations correctes (A2) —, et son contenu propre, le lien entre les deux langues, relève davantage de la conversion entre registres (du côté de « Représenter ») que de la correction du langage de communication. A se resserre donc sur ses deux piliers indépendants, **A1** (vocabulaire) et **A2** (notation), tous deux requis pour le langage rigoureux de la très bonne maîtrise.
 
-Pour l'expression (B), les trois observables ont été ramenés à **deux**. L'ancien B3 (« j'organise mon propos pour qu'un autre puisse le suivre ») recoupait le « de façon structurée » déjà contenu dans l'écrit et l'oral : une explication structurée _est_ organisée pour être suivie, si bien que B3 n'était pas indépendant et qu'un seuil « 2 des 3 » devenait mou. L'organisation est désormais intégrée à chaque canal (« clair et structuré »), et la condition de « satisfaisante » est ramenée à **au moins un observable de B** — expliquer clairement dans le canal que la tâche met en jeu suffit, exiger les deux buterait sur le ∅ d'un canal non sollicité. L'oral redevient incontournable plus haut, via la sous-dimension dialogique (C) qui verrouille la très bonne maîtrise.
+Pour l'expression (B), les trois observables ont été ramenés à **deux**. L'ancien B3 (« j'organise mon propos pour qu'un autre puisse le suivre ») recoupait le « de façon structurée » déjà contenu dans l'écrit et l'oral : une explication structurée _est_ organisée pour être suivie, si bien que B3 n'était pas indépendant et qu'un seuil « 2 des 3 » devenait mou. L'organisation est désormais intégrée à chaque canal (« clair et structuré »), et la condition de « satisfaisante » est ramenée à **au moins un observable de B** — expliquer clairement dans le canal que la tâche met en jeu suffit, exiger les deux buterait sur le ∅ d'un canal non sollicité. L'oral redevient incontournable plus haut, via la composante dialogique (C) qui verrouille la très bonne maîtrise.
 
-Enfin, la sous-dimension D (« adapter ma communication ») a été **entièrement retirée**. Elle comptait au départ deux observables : « communiquer avec concision et sans ambiguïté », redondant avec la clarté déjà exigée par B (une explication claire est non ambiguë) ; et « adapter au destinataire, à l'intention et au support ». Ce dernier était une dimension réelle, mais trop peu observable pour le rôle qu'on lui faisait jouer — il ne se manifeste que dans les tâches à destinataires ou supports variés, rares en pratique, si bien qu'il restait le plus souvent en ∅. Or, placé comme condition de la « très bonne maîtrise », un observable rarement observable crée un goulot : l'élève plafonnerait faute d'occasion, non de compétence. On a donc préféré le retirer plutôt que de bloquer l'excellence sur une facette périphérique. « Communiquer » se ramène ainsi à trois faces — langage (A), expression (B), échange (C) —, l'excellence reposant sur l'échange dialogique et le langage rigoureux.
+Enfin, la composante D (« adapter ma communication ») a été **entièrement retirée**. Elle comptait au départ deux observables : « communiquer avec concision et sans ambiguïté », redondant avec la clarté déjà exigée par B (une explication claire est non ambiguë) ; et « adapter au destinataire, à l'intention et au support ». Ce dernier était une dimension réelle, mais trop peu observable pour le rôle qu'on lui faisait jouer — il ne se manifeste que dans les tâches à destinataires ou supports variés, rares en pratique, si bien qu'il restait le plus souvent en ∅. Or, placé comme condition de la « très bonne maîtrise », un observable rarement observable crée un goulot : l'élève plafonnerait faute d'occasion, non de compétence. On a donc préféré le retirer plutôt que de bloquer l'excellence sur une facette périphérique. « Communiquer » se ramène ainsi à trois faces — langage (A), expression (B), échange (C) —, l'excellence reposant sur l'échange dialogique et le langage rigoureux.
 
 ---
 
 ### Observer cette compétence
 
-La sous-dimension dialogique (C) ne s'observe que dans des **situations d'oral et d'échange**. Sans elles, C reste en ∅ et la très bonne maîtrise est inatteignable : prévoir exposés, débats ou explications entre pairs est la condition pour évaluer le cœur de la compétence.
+La composante dialogique (C) ne s'observe que dans des **situations d'oral et d'échange**. Sans elles, C reste en ∅ et la très bonne maîtrise est inatteignable : prévoir exposés, débats ou explications entre pairs est la condition pour évaluer le cœur de la compétence.
 
 ---
 
@@ -826,7 +826,7 @@ La condition de mathématisation de « satisfaisante » exige le couple **A2 et 
 
 ### Observer cette compétence
 
-« Modéliser » suppose de **vraies situations réelles** à mathématiser puis à valider — pas des énoncés déjà mis en équation. Sans confrontation au réel, la sous-dimension critique (C), qui porte l'excellence, reste en ∅.
+« Modéliser » suppose de **vraies situations réelles** à mathématiser puis à valider — pas des énoncés déjà mis en équation. Sans confrontation au réel, la composante critique (C), qui porte l'excellence, reste en ∅.
 
 ---
 
@@ -870,7 +870,7 @@ Mêmes observables, reformulés de façon opérationnelle pour fiabiliser le cod
 | A2   | Dégage la signification de la représentation — ce qu'elle décrit, sa tendance, sa structure — au-delà de la valeur lue.                                                 |
 | B1   | Produit une représentation correcte sur la forme : codages sur figure, en-têtes et unités d'un tableau, axes / échelle / légende d'un graphique, règles de perspective. |
 | B2   | Produit une représentation fidèle à l'objet ou aux données : ce qui est représenté correspond à ce qui devait l'être.                                                   |
-| C1   | Convertit une représentation en une autre du même objet, sans en altérer le sens (formule ↔ courbe, tableau ↔ graphique, figure ↔ coordonnées...).                   |
+| C1   | Convertit une représentation en une autre du même objet, sans en altérer le sens (formule ↔ courbe, tableau ↔ graphique, figure ↔ coordonnées...).                      |
 | C2   | Fait correspondre plusieurs représentations du même objet et vérifie leur cohérence mutuelle.                                                                           |
 | D1   | Choisit la représentation qui rend le problème le plus traitable, le cas échéant après en avoir comparé plusieurs.                                                      |
 | D2   | Mobilise une représentation comme appui pour progresser (orienter une recherche, conduire un calcul).                                                                   |
@@ -900,7 +900,7 @@ Autre exemple : produire l'histogramme d'une série de données et le mettre en 
 
 ### Pourquoi ces observables
 
-Un fil traverse toutes les formulations : chaque libellé porte sur la **représentation d'un objet mathématique et le passage entre ses formes**, jamais sur le rapport à une situation réelle (qui relève de « Modéliser »). Les sous-dimensions suivent une montée en exigence : lire, produire, convertir, choisir.
+Un fil traverse toutes les formulations : chaque libellé porte sur la **représentation d'un objet mathématique et le passage entre ses formes**, jamais sur le rapport à une situation réelle (qui relève de « Modéliser »). Les composantes suivent une montée en exigence : lire, produire, convertir, choisir.
 
 #### A — Lire et interpréter
 

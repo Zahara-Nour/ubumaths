@@ -8,8 +8,9 @@
  * AUTH: Teacher (assignment creator) or Admin only
  *
  * QUERY PARAMS:
- * - studentId (optional): UUID of a student to simulate their view
- *   If not provided, uses a fixed seed for "teacher preview" mode
+ * - studentId (optional): UUID of a student to simulate their view —
+ *   EXACTEMENT sa copie, la même que celle de l'API élève (ADR 0023).
+ *   Absent : la copie de la classe (sans élève), au niveau de l'affectation.
  *
  * RESPONSE:
  * Same format as /api/student/worksheets/[assignmentId]:
@@ -36,6 +37,7 @@
  * - If studentId provided, must be a valid student in the assignment
  */
 
+import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
@@ -44,147 +46,66 @@ import {
 	fetchAssignmentClasses,
 	formatClassNames
 } from '$lib/server/worksheets/assignment-classes';
-import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
-import type { Exercise, ExerciseResource, ExerciseHint } from '$lib/exercises/types';
-import { getExerciseContentSafe } from '$lib/exercises/types';
+import type { ExerciseResource } from '$lib/exercises/types';
+import {
+	assignmentCopyScope,
+	copyExerciseOrder,
+	hasPerStudentCopies,
+	resolveWorksheetExerciseCopy,
+	type ExerciseContentRow,
+	type WorksheetForCopy
+} from '$lib/worksheets/worksheet-copy';
 import {
 	localizedText,
 	asRowTranslations,
 	worksheetLocale,
 	asWorksheetConfig,
+	viewTypeOptions,
 	type RowTranslations
 } from '$lib/types/worksheets';
-import type { ContentLocale } from '$lib/types/locale';
-import type { Variable } from '$lib/ubumark';
-import type { ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
 import type {
 	StudentExerciseView,
 	StudentSectionView,
 	StudentWorksheetView,
 	WorksheetType
 } from '$lib/types/worksheets';
+import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
+import { loadAuthorStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
+import { worksheetHeader } from '$lib/worksheets/worksheet-header';
+import { estimateAnswerFrames } from '$lib/worksheets/document/answer-frames';
+import {
+	resolveAnswerFrames,
+	toAnswerFrameLines
+} from '$lib/worksheets/document/answer-frame-lines';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/preview/+server');
 
 // ============================================================================
 // VALIDATION
 // ============================================================================
 
 const previewQuerySchema = z.object({
-	studentId: z.string().uuid('Invalid student ID format').optional()
+	studentId: z.string().uuid('Identifiant d’élève invalide').optional(),
+	/**
+	 * Vue prof d'une affectation dont chaque élève a sa version (D6) : l'élève
+	 * dont la copie sert de référence (corrections toutes visibles, nom non servi)
+	 */
+	copyOf: z.string().uuid('Identifiant d’élève invalide').optional()
 });
 
 const assignmentParamSchema = z.object({
-	assignmentId: z.string().uuid("ID d'assignation invalide")
+	assignmentId: z.string().uuid('Identifiant d’affectation invalide')
 });
-
-// ============================================================================
-// SEED GENERATION (same as student API)
-// ============================================================================
-
-/**
- * Generates a deterministic seed based on worksheet ID and student ID.
- * Ensures each student gets consistent exercise variations.
- */
-function generateSeed(worksheetId: string, studentId: string): number {
-	const baseString = `${worksheetId}-${studentId}`;
-	let hash = 0;
-	for (let i = 0; i < baseString.length; i++) {
-		const char = baseString.charCodeAt(i);
-		hash = (hash << 5) - hash + char;
-		hash = hash & hash; // Convert to 32-bit integer
-	}
-	return Math.abs(hash);
-}
 
 // ============================================================================
 // TYPES (same as student API)
 // ============================================================================
 
-interface ExerciseData {
-	id: string;
+interface ExerciseData extends ExerciseContentRow {
 	title: string | null;
-	statement_md: string;
-	solution_md: string | null;
-	variables: Variable[] | null;
-	shared: SharedExerciseDefaults | null;
-	variations: ExerciseVariation[] | null;
 	resources: ExerciseResource[] | null;
 	generic_functions: string[] | null;
-	tags: string[] | null;
-}
-
-interface WorksheetExerciseData {
-	id: string;
-	position: number;
-	points: number | null;
-	custom_instructions: string | null;
-	correction_visible: boolean;
-	variation_index: number | null;
-	exercise: ExerciseData;
-}
-
-interface ResolvedExerciseResult {
-	statement: string;
-	correction: string | null;
-	hints?: ExerciseHint[];
-}
-
-// ============================================================================
-// EXERCISE RESOLUTION (same as student API)
-// ============================================================================
-
-function resolveExercise(
-	worksheetExercise: WorksheetExerciseData,
-	seed: number,
-	locale: ContentLocale
-): ResolvedExerciseResult {
-	const exercise = worksheetExercise.exercise;
-
-	const template: Exercise = {
-		id: exercise.id,
-		title: exercise.title ?? undefined,
-		shared: exercise.shared ?? undefined,
-		variations: exercise.variations ?? undefined,
-		distribution_mode: 'on_demand',
-		category: 'application',
-		tags: [],
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString(),
-		created_by: 'system'
-	};
-
-	const result = generateExerciseInstance(template, {
-		seed: seed + worksheetExercise.position,
-		parseAST: false,
-		variationIndex: worksheetExercise.variation_index ?? undefined,
-		locale
-	});
-
-	if (!result.success) {
-		const errorMessage = result.errors?.join(', ') ?? 'Unknown error';
-		console.error(`[Preview API] Failed to resolve exercise ${exercise.id}: ${errorMessage}`);
-		// Fallback: use content from variations (single source of truth)
-		const content = getExerciseContentSafe(template, 0, locale);
-		return {
-			statement: content.statement_md,
-			correction: content.solution_md
-		};
-	}
-
-	const instance = result.instance;
-	if (!instance) {
-		// Fallback: use content from variations (single source of truth)
-		const content = getExerciseContentSafe(template, 0, locale);
-		return {
-			statement: content.statement_md,
-			correction: content.solution_md
-		};
-	}
-
-	return {
-		statement: instance.statement_md,
-		correction: instance.solution_md || null,
-		hints: instance.resolvedHints
-	};
 }
 
 // ============================================================================
@@ -204,7 +125,7 @@ async function verifyTeacherAccess(
 		.single();
 
 	if (fetchError || !assignment) {
-		throw error(404, 'Assignation non trouvee');
+		throw error(404, 'Affectation introuvable');
 	}
 
 	// Check permissions
@@ -217,15 +138,15 @@ async function verifyTeacherAccess(
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
-		throw error(500, 'Impossible de vérifier vos droits');
+		logger.error('Rôle illisible :', profileError);
+		throw error(500, 'Impossible de vérifier les droits d’accès');
 	}
 
 	const isCreator = assignment.created_by === userId;
 	const isAdmin = profile?.role === 'admin';
 
 	if (!isCreator && !isAdmin) {
-		throw error(403, 'Acces non autorise');
+		throw error(403, 'Accès refusé');
 	}
 
 	return { assignment };
@@ -239,7 +160,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Auth check
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Validate assignment ID parameter
@@ -256,14 +177,15 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Validate query params
 	const studentIdParam = url.searchParams.get('studentId');
 	const queryValidation = previewQuerySchema.safeParse({
-		studentId: studentIdParam || undefined
+		studentId: studentIdParam || undefined,
+		copyOf: url.searchParams.get('copyOf') || undefined
 	});
 
 	if (!queryValidation.success) {
 		throw error(400, queryValidation.error.issues[0].message);
 	}
 
-	const { studentId } = queryValidation.data;
+	const { studentId, copyOf } = queryValidation.data;
 
 	try {
 		// Verify teacher access
@@ -276,63 +198,11 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// If studentId provided, verify they have access to this assignment
 		let previewStudentName: string | null = null;
 		if (studentId) {
-			// Check individual assignment first (simple query)
-			const { data: individualAccess, error: individualAccessError } = await locals.supabase
-				.from('worksheet_assignment_students')
-				.select('id')
-				.eq('assignment_id', assignmentId)
-				.eq('student_id', studentId)
-				.maybeSingle();
+			// Nommément désigné, ou membre actif d'une classe visée
+			const isRecipient = await isStudentOfAssignment(locals.supabase, assignmentId, studentId);
 
-			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
-			// panne doit se distinguer d'un refus mérité.
-			if (individualAccessError) {
-				console.error('Contrôle d’accès impossible :', individualAccessError);
-				throw error(500, 'Impossible de vérifier votre accès');
-			}
-
-			// If not individually assigned, check class membership
-			let hasClassAccess = false;
-			if (!individualAccess) {
-				// Get assigned class IDs
-				const { data: assignedClasses, error: assignedClassesError } = await locals.supabase
-					.from('worksheet_assignment_classes')
-					.select('class_id')
-					.eq('assignment_id', assignmentId);
-
-				// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
-				// panne doit se distinguer d'un refus mérité.
-				if (assignedClassesError) {
-					console.error('Contrôle d’accès impossible :', assignedClassesError);
-					throw error(500, 'Impossible de vérifier votre accès');
-				}
-
-				if (assignedClasses && assignedClasses.length > 0) {
-					const classIds = assignedClasses.map((ac) => ac.class_id);
-
-					// Check if student is member of any assigned class
-					const { data: membership, error: membershipError } = await locals.supabase
-						.from('class_members')
-						.select('id')
-						.eq('student_id', studentId)
-						.eq('status', 'active')
-						.in('class_id', classIds)
-						.limit(1)
-						.maybeSingle();
-
-					// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
-					// panne doit se distinguer d'un refus mérité.
-					if (membershipError) {
-						console.error('Contrôle d’accès impossible :', membershipError);
-						throw error(500, 'Impossible de vérifier votre accès');
-					}
-
-					hasClassAccess = !!membership;
-				}
-			}
-
-			if (!individualAccess && !hasClassAccess) {
-				throw error(400, "Cet eleve n'a pas acces a cette assignation");
+			if (!isRecipient) {
+				throw error(400, 'Cet élève n’a pas accès à cette affectation');
 			}
 
 			// Get student name for display
@@ -344,7 +214,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 			// Le nom n'est qu'un ornement d'affichage : le repli existe déjà.
 			if (studentProfileError && studentProfileError.code !== 'PGRST116') {
-				console.error('Nom illisible :', studentProfileError);
+				logger.error('Nom illisible :', studentProfileError);
 			}
 
 			if (studentProfile) {
@@ -361,6 +231,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				`
 				id,
 				worksheet_id,
+				guidance_level,
+				individualized,
 				instructions,
 				available_from,
 				closes_at,
@@ -371,7 +243,12 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					description,
 					type,
 					config,
-					translations
+					translations,
+					style_id,
+					template_id,
+					created_by,
+					total_points,
+					estimated_duration_minutes
 				)
 			`
 			)
@@ -379,8 +256,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.single();
 
 		if (assignmentError || !fullAssignment) {
-			console.error('[Preview API] Error fetching assignment:', assignmentError);
-			throw error(404, 'Devoir non trouve');
+			logger.error('[Preview API] Error fetching assignment:', assignmentError);
+			throw error(404, 'Affectation introuvable');
 		}
 
 		const getFirstOrSelf = <T>(val: T | T[]): T => (Array.isArray(val) ? val[0] : val);
@@ -393,6 +270,11 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				type: string;
 				config: Record<string, unknown>;
 				translations: RowTranslations | null;
+				style_id: string | null;
+				template_id: string | null;
+				created_by: string;
+				total_points: number | null;
+				estimated_duration_minutes: number | null;
 			}
 		);
 		// Les classes visées, lues dans la jonction. Cet endpoint est réservé au
@@ -414,6 +296,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				variation_index,
 				section_id,
 				is_essential,
+				answer_frame_lines,
 				exercise:exercises (
 					id,
 					title,
@@ -422,7 +305,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					variations,
 					resources,
 					generic_functions,
-					tags
+					topic
 				)
 			`
 			)
@@ -430,8 +313,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.order('position', { ascending: true });
 
 		if (exercisesError) {
-			console.error('[Preview API] Error fetching exercises:', exercisesError);
-			throw error(500, 'Erreur lors de la recuperation des exercices');
+			logger.error('[Preview API] Error fetching exercises:', exercisesError);
+			throw error(500, 'Impossible de charger les exercices');
 		}
 
 		// Fetch worksheet sections
@@ -442,17 +325,40 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.order('position', { ascending: true });
 
 		if (sectionsError) {
-			console.error('[Preview API] Error fetching sections:', sectionsError);
+			logger.error('[Preview API] Error fetching sections:', sectionsError);
 			// Non-blocking: sections are optional
 		}
 
-		// Determine preview mode and seed
 		const isTeacherMode = !studentId;
-		const seedId = studentId || 'teacher-preview';
-		const seed = generateSeed(worksheet.id, seedId);
 
 		// Language of the whole sheet: exercise content and PDF chrome alike.
 		const locale = worksheetLocale(asWorksheetConfig(worksheet.config));
+
+		// Chaque élève a-t-il sa version (valeurs ou ordre) ? La vue prof
+		// s'appuie alors sur la copie d'un élève choisi (`copyOf`, D6), comme le
+		// corrigé de classe ; sans choix, la copie de la classe et la réponse le
+		// dit (l'écran choisit alors le premier élève de la liste).
+		const perStudentCopies = hasPerStudentCopies(
+			{
+				...worksheet,
+				worksheet_exercises: worksheetExercises ?? []
+			} as unknown as WorksheetForCopy,
+			assignmentCopyScope(fullAssignment)
+		);
+		const referenceStudentId = isTeacherMode && perStudentCopies ? copyOf : undefined;
+		if (
+			referenceStudentId &&
+			!(await isStudentOfAssignment(locals.supabase, assignmentId, referenceStudentId))
+		) {
+			throw error(400, 'Cet élève n’a pas accès à cette affectation');
+		}
+
+		// La copie de l'élève choisi (ou de l'élève de référence), sinon celle de
+		// la classe : le même calcul que l'API élève (ADR 0023)
+		const copyScope = assignmentCopyScope(fullAssignment, {
+			studentId: studentId ?? referenceStudentId,
+			locale
+		});
 
 		// Get correction visibility map (for student mode)
 		const exerciseIds = (worksheetExercises ?? []).map((we) => we.id);
@@ -463,23 +369,51 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Build exercises array
 		const exercises: StudentExerciseView[] = [];
 
-		for (const we of worksheetExercises ?? []) {
+		// Option « mélanger les exercices » : l'ordre de CETTE copie, tiré comme
+		// celui du PDF du prof (même fonction, même graine), sur les MÊMES lignes
+		// que lui — avant d'écarter les exercices orphelins, sinon la permutation
+		// de toute la section changerait. `null` : pas de mélange, l'ordre des
+		// positions comme avant.
+		const shuffledRows = copyExerciseOrder(
+			worksheetExercises ?? [],
+			sections ?? [],
+			copyScope,
+			worksheet.config
+		);
+		// Sections illisibles : tout tomberait hors section, avec une autre graine.
+		// Mieux vaut une erreur qu'un ordre faux ; sans mélange, elles restent facultatives.
+		if (sectionsError && shuffledRows) {
+			throw error(500, 'Impossible de charger les exercices');
+		}
+
+		// Réponses sur le sujet (ADR 0030, lots 3 et 4) : les cadres sont résolus
+		// ici — réglage du prof, sinon estimation d'après le corrigé de la copie —
+		// pour que l'élève dont la correction est masquée ait les mêmes cadres que
+		// le prof. N'en partent que les lignes que le PDF imprime (audit S1)
+		const typeOptions = viewTypeOptions(worksheet.config);
+		const answersOnSheet = worksheetHeader(
+			worksheet.type as WorksheetType,
+			typeOptions
+		).answersOnSheet;
+		const answerFrameMode = typeOptions.answer_frames ?? 'question';
+
+		for (const we of shuffledRows ?? worksheetExercises ?? []) {
 			const exerciseData = getFirstOrSelf(we.exercise as unknown as ExerciseData | null);
 
 			if (!exerciseData) {
 				continue;
 			}
 
-			const resolved = resolveExercise(
-				{
-					...we,
-					// `correction_visible` est nullable : masquée par défaut.
-					correction_visible: we.correction_visible ?? false,
-					exercise: exerciseData
-				},
-				seed,
-				locale
+			const copy = resolveWorksheetExerciseCopy(
+				{ id: we.id, variation_index: we.variation_index, exercise: exerciseData },
+				copyScope
 			);
+			const resolved = {
+				statement: copy.statement,
+				correction: copy.solution || null,
+				answers: copy.answers || null,
+				hints: copy.hints
+			};
 
 			// In teacher mode, always show corrections
 			// In student simulation mode, respect visibility settings
@@ -500,16 +434,29 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				statement: resolved.statement,
 				correction: correctionVisible ? resolved.correction : null,
 				correction_visible: correctionVisible,
+				// Réponses seules : EXACTEMENT sous la condition de la correction
+				answers: correctionVisible ? resolved.answers : null,
 				section_id: we.section_id ?? null,
 				is_essential: we.is_essential ?? false
 			};
 
-			// Fonctions déclarées : lues sur l'exercice (frais), pas sur l'instance
-			// stockée — les instances antérieures n'ont pas ce champ. Sans elles, le
-			// PDF imprime `C'(x)` en erreur.
+			if (answersOnSheet) {
+				exerciseView.printed_frame_lines = resolveAnswerFrames(
+					estimateAnswerFrames(resolved.statement, resolved.correction),
+					toAnswerFrameLines(we.answer_frame_lines),
+					answerFrameMode
+				);
+			}
+
+			// Fonctions déclarées, lues sur l'exercice : sans elles, le PDF imprime
+			// `C'(x)` en erreur.
 			if (exerciseData.generic_functions) {
 				exerciseView.generic_functions = exerciseData.generic_functions;
 			}
+
+			// Sens de `AB` (longueur ou produit) résolu ici depuis le thème (Q-J) :
+			// la vue reçoit le sens, pas le thème.
+			exerciseView.capital_pairs = exerciseCapitalPairs(exerciseData.topic);
 
 			if (resolved.hints && resolved.hints.length > 0) {
 				exerciseView.hints = resolved.hints;
@@ -517,10 +464,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 			if (exerciseData.resources && exerciseData.resources.length > 0) {
 				exerciseView.resources = exerciseData.resources;
-			}
-
-			if (exerciseData.tags && exerciseData.tags.length > 0) {
-				exerciseView.tags = exerciseData.tags;
 			}
 
 			exercises.push(exerciseView);
@@ -544,6 +487,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			preview_mode: 'teacher' | 'student';
 			preview_student_id: string | null;
 			preview_student_name: string | null;
+			per_student_copies: boolean;
 		} = {
 			assignment_id: fullAssignment.id,
 			worksheet_id: worksheet.id,
@@ -556,8 +500,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				) ?? worksheet.title,
 			// Drives both the exercise content and the chrome of the student PDF.
 			language: locale,
-			// Le PDF de l'aperçu imprime le corrigé comme celui de l'élève (D11)
-			correction_detail: asWorksheetConfig(worksheet.config).correction_detail,
+			// Options du type de la fiche (ADR 0030) : l'en-tête et les points du PDF
+			// suivent la même règle que pour le prof
+			...viewTypeOptions(worksheet.config),
 			description: worksheet.description,
 			type: worksheet.type as WorksheetType,
 			instructions: fullAssignment.instructions,
@@ -568,12 +513,23 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			// L'aperçu est le geste du professeur : il n'est jamais en
 			// consultation seule, ce mode ne concerne que l'élève archivé.
 			read_only: false,
+			...(shuffledRows ? { shuffled: true } : {}),
 			exercises,
 			sections: sectionViews,
+			// Le style et la mise en page exactement comme l'élève les reçoit (D11) ;
+			// l'accès du prof à l'affectation est vérifié plus haut
+			style_id: worksheet.style_id,
+			template_id: worksheet.template_id,
+			template: await loadAuthorStyleTemplate(worksheet),
+			// Cartouche du gabarit, comme le PDF du prof
+			total_points: worksheet.total_points,
+			estimated_duration_minutes: worksheet.estimated_duration_minutes,
 			// Preview metadata
 			preview_mode: isTeacherMode ? 'teacher' : 'student',
 			preview_student_id: studentId ?? null,
-			preview_student_name: previewStudentName
+			preview_student_name: previewStudentName,
+			// Chaque élève a sa version : la vue prof est la copie d'un élève (D6)
+			per_student_copies: perStudentCopies
 		};
 
 		return json(response);
@@ -582,7 +538,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			throw err;
 		}
 
-		console.error('[Preview API] Unexpected error:', err);
-		throw error(500, 'Une erreur inattendue est survenue');
+		logger.error('[Preview API] Unexpected error:', err);
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

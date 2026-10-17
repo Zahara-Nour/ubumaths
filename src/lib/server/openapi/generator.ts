@@ -21,7 +21,7 @@ Educational mathematics platform API with comprehensive Zod validation.
 
 ## Features
 
-- **Assessments**: séries et évaluations
+- **Assessments**: séries et contrôles
 - **Exercises**: Mathematical exercises with solutions
 - **SRS (Spaced Repetition)**: Flashcard system with FSRS algorithm
 - **Messages**: Internal messaging system
@@ -80,7 +80,7 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 		tags: [
 			{
 				name: 'Assessments',
-				description: 'Séries et évaluations'
+				description: 'Séries et contrôles'
 			},
 			{
 				name: 'Exercises',
@@ -191,20 +191,20 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 			'/api/evaluations/assignments/{id}/start': {
 				post: {
 					tags: ['Assessments'],
-					summary: 'Démarrer ou reprendre une évaluation assignée',
+					summary: 'Démarrer ou reprendre un contrôle assigné',
 					description:
 						'Destinataire : le serveur crée (ou reprend) la tentative, tire les questions et rend leur version publique (ni réponse, ni correction, ni graine). Propriétaire ou admin : aperçu (catégories).',
 					responses: {
 						'200': { description: 'Tentative (questions publiques) ou aperçu' },
 						'403': { description: 'Date limite passée ou tentatives épuisées' },
-						'404': { description: 'Évaluation introuvable, non assignée ou brouillon' }
+						'404': { description: 'Contrôle introuvable, non assigné ou brouillon' }
 					}
 				}
 			},
 			'/api/evaluations/attempts/{id}/submit': {
 				post: {
 					tags: ['Assessments'],
-					summary: 'Envoyer une tentative d’évaluation',
+					summary: 'Envoyer une tentative de contrôle',
 					description:
 						'Le serveur régénère les questions, corrige, applique le barème (1, ½ ou 0 point), enregistre réponses et note sur 20, et rend la correction complète.',
 					responses: {

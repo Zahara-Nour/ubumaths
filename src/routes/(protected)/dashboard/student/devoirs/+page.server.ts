@@ -3,6 +3,9 @@ import { redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { listStudentSharedCourseworkSchema } from '$lib/server/validation/google';
 import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/devoirs/+page.server');
 
 export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 	// Google Classroom access is disabled: keep students out of the shared
@@ -39,7 +42,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 
 	if (!courseworkResponse.ok) {
 		const errorText = await courseworkResponse.text();
-		console.error(
+		logger.error(
 			'[Student Coursework Page] API call failed:',
 			courseworkResponse.status,
 			errorText
@@ -67,15 +70,14 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 		.order('classes(name)');
 
 	if (classesError) {
-		console.error('[Student Coursework Page] Error fetching classes:', classesError);
+		logger.error('[Student Coursework Page] Error fetching classes:', classesError);
 	}
 
 	// Transform classes data
 	const classes = (studentClasses || []).map((item) => {
 		// Handle Supabase JOIN types
 		const classData = item.classes as unknown as
-			| { id: string; name: string }
-			| { id: string; name: string }[];
+			{ id: string; name: string } | { id: string; name: string }[];
 		const classInfo = Array.isArray(classData) ? classData[0] : classData;
 
 		return {
@@ -94,7 +96,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 			.order('name');
 
 		if (categoriesError) {
-			console.error('[Student Coursework Page] Error fetching categories:', categoriesError);
+			logger.error('[Student Coursework Page] Error fetching categories:', categoriesError);
 		} else {
 			categories = categoriesData || [];
 		}

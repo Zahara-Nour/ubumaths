@@ -20,6 +20,9 @@ import {
 } from '$lib/server/validation/srs';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/srs/decks/+server');
 
 /**
  * GET /api/srs/decks
@@ -74,8 +77,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		});
 
 		if (decksError) {
-			console.error('Error fetching decks:', decksError);
-			return json({ error: 'Failed to fetch decks' }, { status: 500 });
+			logger.error('Error fetching decks:', decksError);
+			return json({ error: 'Impossible de charger les decks' }, { status: 500 });
 		}
 
 		if (!deckStats) {
@@ -111,8 +114,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		return json(validated);
 	} catch (error) {
-		console.error('Unexpected error in GET /api/srs/decks:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		logger.error('Unexpected error in GET /api/srs/decks:', error);
+		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
 
@@ -168,8 +171,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (createError) {
-			console.error('Error creating deck:', createError);
-			return json({ error: 'Failed to create deck' }, { status: 500 });
+			logger.error('Error creating deck:', createError);
+			return json({ error: 'Impossible de créer le deck' }, { status: 500 });
 		}
 
 		// Validate response
@@ -181,7 +184,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return json(validated, { status: 201 });
 	} catch (error) {
-		console.error('Unexpected error in POST /api/srs/decks:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		logger.error('Unexpected error in POST /api/srs/decks:', error);
+		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

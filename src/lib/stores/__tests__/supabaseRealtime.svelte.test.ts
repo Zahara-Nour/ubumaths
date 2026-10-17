@@ -172,14 +172,14 @@ describe('Channel Lifecycle', () => {
 
 		expect(() => {
 			supabaseRealtimeManager.createChannel('test-channel');
-		}).toThrow('Realtime manager not initialized');
+		}).toThrow('Gestionnaire temps réel non initialisé');
 	});
 
 	it('should throw error if subscribing to non-existent channel', async () => {
 		supabaseRealtimeManager.init(supabase, userId);
 
 		await expect(supabaseRealtimeManager.subscribeChannel('non-existent')).rejects.toThrow(
-			'Channel "non-existent" not found'
+			'Canal "non-existent" introuvable'
 		);
 	});
 });
@@ -216,11 +216,11 @@ describe('Channel Reuse', () => {
 		supabaseRealtimeManager.createChannel('public-channel');
 		expect(() =>
 			supabaseRealtimeManager.createChannel('public-channel', { private: true })
-		).toThrow(/already exists as public/);
+		).toThrow(/existe déjà en public/);
 
 		supabaseRealtimeManager.createChannel('private-channel', { private: true });
 		expect(() => supabaseRealtimeManager.createChannel('private-channel')).toThrow(
-			/already exists as private/
+			/existe déjà en privé/
 		);
 		// Même nature : le cache sert toujours
 		expect(supabaseRealtimeManager.createChannel('private-channel', { private: true })).toBe(
@@ -457,7 +457,7 @@ describe('Edge Cases & Error Handling', () => {
 
 		expect(() => {
 			supabaseRealtimeManager.createChannel('test-channel');
-		}).toThrow('Cannot create channel on server');
+		}).toThrow('Impossible de créer un canal côté serveur');
 	});
 
 	it.skip('should not subscribe if not in browser', async () => {

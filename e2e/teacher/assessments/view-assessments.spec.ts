@@ -32,7 +32,7 @@ const ASSESSMENTS_URL = '/dashboard/teacher/assessments';
  */
 async function navigateToAssessments(page: Page): Promise<void> {
 	await page.goto(ASSESSMENTS_URL);
-	await page.waitForSelector('h1:has-text("Mes Évaluations")', { state: 'visible' });
+	await page.waitForSelector('h1:has-text("Mes contrôles")', { state: 'visible' });
 }
 
 /**
@@ -181,13 +181,13 @@ test.describe('Teacher Assessment List View', () => {
 		await navigateToAssessments(page);
 
 		// Verify page header
-		await expect(page.locator('h1:has-text("Mes Évaluations")')).toBeVisible();
+		await expect(page.locator('h1:has-text("Mes contrôles")')).toBeVisible();
 
 		// Verify subtitle/description
-		await expect(page.locator('text=/Créez et gérez vos évaluations/i')).toBeVisible();
+		await expect(page.locator('text=/Créez et gérez vos contrôles/i')).toBeVisible();
 
 		// Verify "Nouvelle évaluation" button exists
-		await expect(page.locator('button:has-text("Nouvelle évaluation")')).toBeVisible();
+		await expect(page.locator('button:has-text("Nouveau contrôle")')).toBeVisible();
 
 		// Verify tabs exist
 		await expect(page.locator('button:has-text("Brouillons")')).toBeVisible();
@@ -207,7 +207,7 @@ test.describe('Teacher Assessment List View', () => {
 		await expect(publishedTab).toHaveAttribute('data-state', 'active');
 
 		// Check if assessments are displayed or empty state shown
-		const emptyState = page.locator('text=/Aucune évaluation publiée/i');
+		const emptyState = page.locator('text=/Aucun contrôle publié/i');
 		const assessmentCards = page.locator('[data-testid="assessment-card"]');
 
 		const hasAssessments = (await assessmentCards.count()) > 0;
@@ -243,7 +243,7 @@ test.describe('Teacher Assessment List View', () => {
 		const archivedTab = page.locator('button:has-text("Archivées")');
 		await expect(archivedTab).toHaveAttribute('data-state', 'active');
 
-		const archivedContent = page.locator('text=/Aucune évaluation archivée|archived/i');
+		const archivedContent = page.locator('text=/Aucun contrôle archivé|archived/i');
 		await expect(archivedContent.first()).toBeVisible({ timeout: 3000 });
 	});
 
@@ -293,11 +293,11 @@ test.describe('Teacher Assessment List View', () => {
 
 		if (count === 0) {
 			// Should show empty state
-			await expect(page.locator('text=/Aucune évaluation publiée/i')).toBeVisible();
-			await expect(page.locator('text=/Créez une évaluation pour commencer/i')).toBeVisible();
+			await expect(page.locator('text=/Aucun contrôle publié/i')).toBeVisible();
+			await expect(page.locator('text=/Créez un contrôle pour commencer/i')).toBeVisible();
 
 			// Should show "Créer une évaluation" button
-			const createButton = page.locator('button:has-text("Créer une évaluation")');
+			const createButton = page.locator('button:has-text("Créer un contrôle")');
 			await expect(createButton).toBeVisible();
 		}
 	});
@@ -317,7 +317,7 @@ test.describe('Teacher Assessment List View', () => {
 			// Should show empty state
 			await expect(page.locator('text=/Aucun brouillon/i')).toBeVisible();
 			await expect(
-				page.locator('text=/Les évaluations non publiées apparaîtront ici/i')
+				page.locator('text=/Les contrôles non publiés apparaîtront ici/i')
 			).toBeVisible();
 		}
 	});
@@ -335,7 +335,7 @@ test.describe('Teacher Assessment List View', () => {
 
 		if (count === 0) {
 			// Should show empty state
-			await expect(page.locator('text=/Aucune évaluation archivée/i')).toBeVisible();
+			await expect(page.locator('text=/Aucun contrôle archivé/i')).toBeVisible();
 		}
 	});
 
@@ -473,13 +473,13 @@ test.describe('Teacher Assessment List View', () => {
 	test('should navigate to create page from "Nouvelle évaluation" button', async ({ page }) => {
 		await navigateToAssessments(page);
 
-		const createButton = page.locator('button:has-text("Nouvelle évaluation")');
+		const createButton = page.locator('button:has-text("Nouveau contrôle")');
 		await expect(createButton).toBeVisible();
 		await createButton.click();
 
 		// Should navigate to new assessment page
 		await expect(page).toHaveURL(/\/dashboard\/teacher\/assessments\/new/);
-		await expect(page.locator('h1:has-text("Nouvelle Évaluation")')).toBeVisible();
+		await expect(page.locator('h1:has-text("Nouveau contrôle")')).toBeVisible();
 	});
 
 	// ========================================================================
@@ -596,7 +596,7 @@ test.describe('Teacher Assessment List View', () => {
 
 		// Refresh page
 		await page.reload();
-		await page.waitForSelector('h1:has-text("Mes Évaluations")', { state: 'visible' });
+		await page.waitForSelector('h1:has-text("Mes contrôles")', { state: 'visible' });
 
 		// Check if drafts tab is still active (if URL persistence is implemented)
 		const draftsTab = page.locator('button:has-text("Brouillons")');
@@ -649,7 +649,7 @@ test.describe('Teacher Assessment List View', () => {
 		});
 
 		await page.goto(ASSESSMENTS_URL);
-		await page.waitForSelector('h1:has-text("Mes Évaluations")', { state: 'visible' });
+		await page.waitForSelector('h1:has-text("Mes contrôles")', { state: 'visible' });
 
 		// Should show error message or toast
 		const errorMessage = page.locator('text=/erreur|error|échec/i');

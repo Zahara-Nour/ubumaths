@@ -23,6 +23,11 @@ import { PATCH, DELETE } from '../+server.js';
 import * as authModule from '$lib/server/middleware/auth';
 
 // Mock middleware
+// Les routes sont gardées par l'interrupteur (B8) : on teste leur comportement allumé.
+vi.mock('$lib/config/google-classroom', () => ({
+	GOOGLE_CLASSROOM_ENABLED: true
+}));
+
 vi.mock('$lib/server/middleware/auth', () => ({
 	requireRole: vi.fn()
 }));
@@ -157,7 +162,10 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => PATCH(event), 'Invalid shared coursework ID');
+				await expectRejectsWithMessage(
+					() => PATCH(event),
+					'Identifiant de devoir Classroom partagé invalide'
+				);
 			});
 
 			it('returns 400 when no update fields provided', async () => {
@@ -308,7 +316,7 @@ describe('Google Shared Coursework by ID API', () => {
 
 				await expectRejectsWithMessage(
 					() => PATCH(event),
-					'Shared coursework not found or access denied'
+					'Devoir Classroom partagé introuvable ou accès refusé'
 				);
 			});
 
@@ -343,7 +351,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => PATCH(event), 'Category not found');
+				await expectRejectsWithMessage(() => PATCH(event), 'Catégorie introuvable');
 			});
 
 			it('returns 400 when category does not belong to teacher class', async () => {
@@ -383,7 +391,7 @@ describe('Google Shared Coursework by ID API', () => {
 
 				await expectRejectsWithMessage(
 					() => PATCH(event),
-					'Category does not belong to one of your classes'
+					'Cette catégorie n’appartient à aucune classe du professeur'
 				);
 			});
 
@@ -719,7 +727,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => PATCH(event), 'Shared coursework not found');
+				await expectRejectsWithMessage(() => PATCH(event), 'Devoir Classroom partagé introuvable');
 			});
 		});
 
@@ -887,7 +895,7 @@ describe('Google Shared Coursework by ID API', () => {
 
 				await expectRejectsWithMessage(
 					() => PATCH(event),
-					'Topic does not belong to one of your courses'
+					'Ce sujet Classroom n’appartient à aucun cours Classroom du professeur'
 				);
 			});
 
@@ -921,7 +929,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => PATCH(event), 'Topic not found');
+				await expectRejectsWithMessage(() => PATCH(event), 'Sujet Classroom introuvable');
 			});
 
 			it('rejects invalid topic UUID format', async () => {
@@ -1051,7 +1059,10 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => DELETE(event), 'Invalid shared coursework ID');
+				await expectRejectsWithMessage(
+					() => DELETE(event),
+					'Identifiant de devoir Classroom partagé invalide'
+				);
 			});
 
 			it('returns 400 for null ID param', async () => {
@@ -1095,7 +1106,7 @@ describe('Google Shared Coursework by ID API', () => {
 
 				await expectRejectsWithMessage(
 					() => DELETE(event),
-					'Shared coursework not found or access denied'
+					'Devoir Classroom partagé introuvable ou accès refusé'
 				);
 			});
 
@@ -1151,7 +1162,7 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => DELETE(event), 'Shared coursework not found');
+				await expectRejectsWithMessage(() => DELETE(event), 'Devoir Classroom partagé introuvable');
 			});
 
 			it('handles database errors during deletion', async () => {
@@ -1183,7 +1194,10 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => DELETE(event), 'Failed to delete shared coursework');
+				await expectRejectsWithMessage(
+					() => DELETE(event),
+					'Impossible de supprimer le devoir Classroom partagé'
+				);
 			});
 		});
 	});

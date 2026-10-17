@@ -4,7 +4,8 @@
 	import NotebookView from '$lib/components/notebook/NotebookView.svelte';
 	import ShareNotebookDialog from '$lib/components/notebook/ShareNotebookDialog.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft, Share2, BarChart3, Eye, Pencil } from '@lucide/svelte';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { Share2, BarChart3, Eye, Pencil } from '@lucide/svelte';
 
 	let { data } = $props();
 
@@ -12,10 +13,6 @@
 	let previewMode = $state(false);
 
 	let isOwnerTeacher = $derived(data.isOwner && data.userRole === 'teacher');
-
-	function handleBack() {
-		goto('/python-notebook');
-	}
 
 	function handleShare() {
 		shareDialogOpen = true;
@@ -33,10 +30,8 @@
 <div class="container mx-auto max-w-7xl px-4 py-4">
 	<!-- Header -->
 	<div class="mb-4 flex items-center justify-between">
-		<div class="flex items-center gap-4">
-			<Button variant="ghost" size="icon" onclick={handleBack}>
-				<ArrowLeft class="h-5 w-5" />
-			</Button>
+		<div>
+			<BackLink href="/python-notebook" label="Retour aux notebooks" />
 			<div>
 				<h1 class="text-2xl font-bold">{data.notebook.title}</h1>
 				{#if data.notebook.description}

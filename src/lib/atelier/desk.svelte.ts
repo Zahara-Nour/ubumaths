@@ -20,8 +20,11 @@ import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import {
 	runInput,
 	runAction,
+	isExportCommand,
+	runReciprocal,
 	promote,
 	derivativeNote,
+	type Alternative,
 	type CalcResult,
 	type CalcSession
 } from './calcul';
@@ -43,8 +46,15 @@ import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 import { syncPlots } from './plot-sync';
 import { removedLine, restoredLine } from './removal';
 import { stepOf, type ImportedHistory } from './history-import';
+import type { KeptHistory } from './history-storage';
+import {
+	NOTHING_TO_EXPORT,
+	downloadHistory,
+	exportFileName,
+	type ExportFormat
+} from './history-export';
 import { termsOf } from './engine';
-import { isList, isQualitative, type ListObject } from './types';
+import { isList, isQualitative, type AtelierObject, type ListObject } from './types';
 import { wordsReason } from './actions';
 import { lawFractions } from './simulate';
 import { nextName, displayName } from './names';
@@ -52,6 +62,7 @@ import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
+import { commonRows, droppedNote, noCommonRowsMessage, valuesOn } from './pairs';
 
 // =============================================================================
 // Types
@@ -62,6 +73,13 @@ export interface Entry {
 	readonly id: number;
 	/** Ce qui a produit cette ligne : la saisie, ou le nom de l'action. */
 	readonly label: string;
+	/**
+	 * La saisie telle qu'ÉCRITE dans le champ « Écriture mathématique », en
+	 * LaTeX : la ligne la montre à la place de `label`, qui reste le texte
+	 * envoyé au moteur (`.dériver x^3`) — celui de l'export et du rejeu.
+	 * Affichage seul.
+	 */
+	readonly inputLatex?: string;
 	/** Ce qu'on affiche en toutes lettres. */
 	readonly text: string;
 	/** Le rendu mathématique, quand il y en a un de sûr. */
@@ -76,6 +94,12 @@ export interface Entry {
 	 */
 	readonly steps?: readonly RenderedStep[];
 	/**
+	 * Les mêmes étapes en version résumée, pour l'interrupteur « Résumé /
+	 * Détaillé » du dépliage. Absente = pas d'interrupteur : le résumé ne dirait
+	 * rien de moins, ou la ligne n'en a pas (`.variations`).
+	 */
+	readonly summary?: readonly RenderedStep[];
+	/**
 	 * Le tableau de variations, quand l'action ou `.variations` en a produit un.
 	 *
 	 * Il se dessine sous la ligne — le moteur, lui, n'en rendait qu'une
@@ -89,6 +113,16 @@ export interface Entry {
 	 * (`.dériver t^2` : « Calcul par rapport à x… »).
 	 */
 	readonly note?: string;
+	/**
+	 * L'autre écriture de la réponse (valeur approchée ou exacte), montrée par
+	 * le bouton de la ligne. Affichage seul : l'export et le rejeu l'ignorent.
+	 */
+	readonly alternative?: Alternative;
+	/**
+	 * Le texte d'un refus cite des formules en `$…$` (réciproques par morceau,
+	 * lot 3 de la réciproque) : la vue les compose en mathématiques.
+	 */
+	readonly formulas?: true;
 	/** Présent seulement pour une saisie : c'est ce que « Garder » consomme. */
 	readonly result?: CalcResult;
 	/**
@@ -220,6 +254,25 @@ export class CalcDesk {
 	/** La dernière suppression, pour rejouer une annulation. */
 	#lastRemoval: RemovedWithDependents | null = null;
 
+	/**
+	 * Les saisies TAPÉES, pour ↑ / ↓ (phase 0 `atelier-cas-phase0.md`, PR 1) :
+	 * jamais une ligne écrite par un bouton du panneau, même quand il passe par
+	 * `submit` (« Comparer avec M »).
+	 */
+	#typed: string[] = [];
+
+	/** L'indice, dans `#typed`, de la saisie rappelée ; `null` hors rappel. */
+	#recalled: number | null = null;
+
+	/** Ce que le champ contenait avant le premier ↑ : ↓ le rend au bout. */
+	#draftBeforeRecall = '';
+
+	/**
+	 * Le téléchargement de `.exporter` : celui du bouton « JSON (pour
+	 * rejouer) ». Remplacé par les tests, qui n'ont pas de page.
+	 */
+	download: (entries: readonly Entry[], format: ExportFormat) => void = downloadHistory;
+
 	constructor(atelier: Atelier, engine: WebReplEngine = new WebReplEngine()) {
 		this.atelier = atelier;
 		this.session = { atelier, engine };
@@ -249,9 +302,31 @@ export class CalcDesk {
 			label: `${displayName(name)}(${value.trim()})`,
 			text,
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
+			...(outcome.ok && outcome.alternative !== undefined
+				? { alternative: outcome.alternative }
+				: {}),
 			failed: !outcome.ok
 		});
 		return { text, failed: !outcome.ok };
+	}
+
+	/** Les saisies tapées, rappelables par ↑ / ↓ : rangées avec les lignes. */
+	get typedInputs(): readonly string[] {
+		return this.#typed;
+	}
+
+	/**
+	 * Reprendre les lignes rangées au rechargement (`history-storage.ts`).
+	 *
+	 * ⚠️ Rien n'est REFAIT : ni calcul, ni définition, ni action — une ligne
+	 * `f(x) = x^2` restaurée ne crée ni ne change aucune carte. Sans l'arbre du
+	 * résultat, la ligne n'a pas de « Garder » (`keep` le dit), ni d'étapes.
+	 * Sans effet sur un historique déjà commencé.
+	 */
+	restoreHistory(history: KeptHistory): void {
+		if (this.entries.length > 0 || this.#typed.length > 0) return;
+		this.entries = history.lines.map((line) => ({ id: this.#nextId++, ...line }));
+		this.#typed = [...history.typed];
 	}
 
 	/** Vider l'historique (« Repartir de zéro ») ; le brouillon est laissé. */
@@ -260,29 +335,95 @@ export class CalcDesk {
 		this.#lastRemoval = null;
 		this.entries = [];
 		this.notice = null;
+		this.#typed = [];
+		this.#recalled = null;
 	}
 
-	/** Traiter ce que l'élève vient de taper. */
-	submit(text: string): void {
+	/**
+	 * ↑ : la saisie précédente. Sur la plus ancienne, rien ne bouge.
+	 *
+	 * Une ligne rappelée que l'élève a modifiée n'est pas perdue : ↑ repart de
+	 * la plus récente, et ↓ rendra la modification au bout.
+	 */
+	recallPrevious(): void {
+		if (this.#typed.length === 0) return;
+		if (this.#recalled === null || this.draft !== this.#typed[this.#recalled]) {
+			this.#draftBeforeRecall = this.draft;
+			this.#recalled = this.#typed.length - 1;
+		} else if (this.#recalled > 0) {
+			this.#recalled--;
+		}
+		this.draft = this.#typed[this.#recalled];
+	}
+
+	/** ↓ : la saisie suivante ; après la plus récente, le brouillon d'avant ↑. */
+	recallNext(): void {
+		if (this.#recalled === null) return;
+		// L'élève corrige la ligne rappelée : ↓ ne l'écrase pas
+		if (this.draft !== this.#typed[this.#recalled]) {
+			this.#recalled = null;
+			return;
+		}
+		if (this.#recalled < this.#typed.length - 1) {
+			this.#recalled++;
+			this.draft = this.#typed[this.#recalled];
+			return;
+		}
+		this.#recalled = null;
+		this.draft = this.#draftBeforeRecall;
+	}
+
+	/**
+	 * Traiter ce que l'élève vient de taper. `inputLatex` : la même saisie,
+	 * écrite dans le champ mathématique — la ligne la montrera.
+	 */
+	submit(text: string, inputLatex?: string): void {
+		this.#submit(text, true, inputLatex);
+	}
+
+	/** `typed` : tapée par l'élève (rappelable par ↑), ou écrite par un bouton. */
+	#submit(text: string, typed: boolean, inputLatex?: string): void {
+		// `.exporter` : le pupitre tient l'historique, le moteur ne l'a jamais eu.
+		// Pas de ligne : l'historique exporté reste celui de l'élève
+		if (isExportCommand(this.session.engine, text)) {
+			if (typed) this.#exportTyped(text);
+			return;
+		}
 		const result = runInput(this.session, text, 'text');
 		if (result.kind === 'vide') return;
 		this.#gesture = { kind: 'saisie', input: text };
+		// Seule une saisie tapée clôt le rappel : « Comparer » rend le brouillon
+		// intact, ↓ doit encore pouvoir revenir à celui d'avant ↑ (revue)
+		if (typed) {
+			this.#recalled = null;
+			// Deux saisies identiques de suite : rappelées une seule fois
+			if (this.#typed.at(-1) !== text) this.#typed.push(text);
+		}
 
 		this.#push({
 			label: text,
-			text: textOf(result),
-			...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
-			...(result.kind === 'commande' && result.steps !== undefined ? { steps: result.steps } : {}),
-			...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
-			...(result.kind === 'commande' && result.table !== undefined ? { table: result.table } : {}),
-			...((result.kind === 'commande' || result.kind === 'refus') && result.note !== undefined
-				? { note: result.note }
-				: {}),
-			failed: result.kind === 'refus',
+			...(inputLatex !== undefined && { inputLatex }),
+			...entryOf(result),
 			result
 		});
 		this.draft = '';
 		this.notice = null;
+	}
+
+	/**
+	 * `.exporter` tapé : le même fichier que le bouton JSON, ou la même raison
+	 * que le bouton désactivé. Un rejeu ne télécharge rien (il n'appelle pas ici).
+	 */
+	#exportTyped(text: string): void {
+		this.#recalled = null;
+		if (this.#typed.at(-1) !== text) this.#typed.push(text);
+		this.draft = '';
+		if (this.entries.length === 0) {
+			this.notice = NOTHING_TO_EXPORT;
+			return;
+		}
+		this.download(this.entries, 'json');
+		this.notice = `Historique exporté : ${exportFileName('json', new Date())}.`;
 	}
 
 	/**
@@ -305,19 +446,24 @@ export class CalcDesk {
 		for (const [index, entry] of history.entries.entries()) {
 			const step = stepOf(entry);
 			if (step === null) continue;
+			// `.exporter` n'écrit aucune ligne : rien à refaire, et un rejeu ne
+			// télécharge rien
+			if (step.kind === 'saisie' && isExportCommand(this.session.engine, step.input)) continue;
 			const before = this.entries.length;
 			this.notice = null;
 			const missed = this.#replayStep(step, rows, graph);
 			const first = this.entries[before];
 			if (first !== undefined) rows[index] = before;
-			// R3 : on ne s'arrête que si la ligne AVAIT réussi
+			// R3 : on ne s'arrête que si la ligne AVAIT réussi. Une définition
+			// rangée en erreur ne l'arrête pas : un export d'avant le 2026-10-13
+			// la disait réussie, et la carte existe bel et bien
 			const broken =
 				missed ??
 				(entry.failed
 					? null
 					: first === undefined
 						? (this.notice ?? 'cette ligne ne s’est pas rejouée.')
-						: first.failed
+						: first.failed && first.result?.kind !== 'definition'
 							? first.text
 							: null);
 			if (broken !== null) {
@@ -339,7 +485,9 @@ export class CalcDesk {
 	#replayStep(step: ReplayStep, rows: readonly number[], graph?: GrapheurStore): string | null {
 		switch (step.kind) {
 			case 'saisie':
-				this.submit(step.input);
+				// Un rejeu est un chargement : comme au rechargement, rien à rappeler
+				// par ↑ (« Comparer avec M » y est rejoué comme une saisie)
+				this.#submit(step.input, false);
 				return null;
 			case 'action':
 				if (step.action === 'image') this.image(step.name, step.value ?? '');
@@ -541,7 +689,9 @@ export class CalcDesk {
 			});
 			return;
 		}
-		const outcome = summarizeTable(values.values, counts.values);
+		// Une valeur et son effectif sur la même LIGNE (P1)
+		const { rows, dropped } = commonRows([values, counts]);
+		const outcome = summarizeTable(valuesOn(values, rows), valuesOn(counts, rows));
 		if (outcome === null || !outcome.ok) {
 			const text = outcome === null ? `« ${name} » n'a pas encore de valeurs.` : outcome.message;
 			this.#push({ label, text, failed: true });
@@ -549,7 +699,10 @@ export class CalcDesk {
 		}
 		this.#push({
 			label,
-			text: formatSummary(outcome.value.summary, 'fr').join('\n'),
+			text: [
+				...formatSummary(outcome.value.summary, 'fr'),
+				...(dropped > 0 ? [droppedNote(dropped)] : [])
+			].join('\n'),
 			failed: false
 		});
 	}
@@ -568,8 +721,9 @@ export class CalcDesk {
 			return;
 		}
 
-		const drawn = Math.min(xs.values.length, ys.values.length);
-		const ignored = Math.max(xs.values.length, ys.values.length) - drawn;
+		// Les lignes où les deux colonnes ont un nombre (P1) : `plot-sync` trace les
+		// mêmes, et on dit combien on en écarte
+		const ignored = commonRows([xs, ys]).dropped;
 
 		// ⚠️ On MARQUE la liste plutôt que de poser le nuage directement : c'est
 		// la synchronisation qui pose et qui suit, exactement comme « Tracer » au
@@ -584,7 +738,7 @@ export class CalcDesk {
 		if (ignored === 0) return;
 		this.#push({
 			label: `Nuage ${name}`,
-			text: `Nuage de ${xs.name} (abscisses) et ${ys.name} (ordonnées) — ${ignored} valeur${ignored > 1 ? 's' : ''} ignorée${ignored > 1 ? 's' : ''}`,
+			text: `Nuage de ${xs.name} (abscisses) et ${ys.name} (ordonnées) — ${droppedNote(ignored)}`,
 			failed: false
 		});
 	}
@@ -626,15 +780,25 @@ export class CalcDesk {
 			return;
 		}
 
-		const fit = fitAffine(xs.values, ys.values);
+		// Les points des lignes où les deux colonnes ont un nombre (P1)
+		const { rows, dropped } = commonRows([xs, ys]);
+		if (rows.length === 0) {
+			this.#push({ label: `Ajustement ${name}`, text: noCommonRowsMessage(xs, ys), failed: true });
+			return;
+		}
+		const xValues = valuesOn(xs, rows);
+		const yValues = valuesOn(ys, rows);
+		const fit = fitAffine(xValues, yValues);
 		if (!fit.ok) {
-			this.#push({ label: `Ajustement ${name}`, text: fit.message, failed: true });
+			// Les lignes écartées expliquent souvent un « il faut deux points »
+			const text = [fit.message, ...(dropped > 0 ? [droppedNote(dropped)] : [])].join(' — ');
+			this.#push({ label: `Ajustement ${name}`, text, failed: true });
 			return;
 		}
 
 		// §4 N4 : l'ajustement produit un OBJET, donc quelque chose de traçable —
 		// c'est ce qui permet de voir la droite passer dans le nuage.
-		const exact = exactFitOf(xs.values, ys.values, fit.used);
+		const exact = exactFitOf(xValues, yValues, fit.used);
 		const created = this.atelier.create({
 			kind: 'function',
 			name: nextName('function', this.atelier.names),
@@ -643,7 +807,12 @@ export class CalcDesk {
 
 		this.#push({
 			label: `Ajustement ${name}`,
-			text: created.ok ? fitSummary(created.object.name, exact) : created.message,
+			text: created.ok
+				? [
+						fitSummary(created.object.name, exact),
+						...(dropped > 0 ? [droppedNote(dropped)] : [])
+					].join(' — ')
+				: created.message,
 			failed: !created.ok
 		});
 	}
@@ -705,7 +874,7 @@ export class CalcDesk {
 		// ⚠️ Le brouillon de l'élève survit au clic : `submit` le vide (revue)
 		if (root === 'compare' && partner !== undefined) {
 			const { draft, notice } = this;
-			this.submit(`.comparer ${name} ${partner}`);
+			this.#submit(`.comparer ${name} ${partner}`, false);
 			this.draft = draft;
 			this.notice = notice;
 			return 'ok';
@@ -747,6 +916,17 @@ export class CalcDesk {
 			return 'ok';
 		}
 
+		// « Réciproque » (lot 3 de la réciproque, R1) : la même ligne que
+		// `.réciproque f`, et la carte `f⁻¹` — sans changer de vue
+		if (actionId === 'reciprocal') {
+			this.#push({
+				label: `Réciproque ${displayName(name)}`,
+				...entryOf(runReciprocal(this.session, name))
+			});
+			this.notice = null;
+			return 'ok';
+		}
+
 		const label = PANEL_ACTIONS[actionId];
 		if (label === undefined) return 'unsupported';
 
@@ -768,12 +948,41 @@ export class CalcDesk {
 			...(note !== null && { note }),
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
 			...(outcome.ok && outcome.steps !== undefined ? { steps: outcome.steps } : {}),
+			...(outcome.ok && outcome.summary !== undefined ? { summary: outcome.summary } : {}),
 			...(outcome.ok && outcome.table !== undefined ? { table: outcome.table } : {}),
+			...(outcome.ok && outcome.alternative !== undefined
+				? { alternative: outcome.alternative }
+				: {}),
 			failed: !outcome.ok
 		});
 		this.notice = null;
 		return 'ok';
 	}
+}
+
+/** Ce qu'une ligne affiche, tiré du résultat d'une saisie (ou de « Réciproque »). */
+function entryOf(result: CalcResult): Omit<Entry, 'id' | 'label'> {
+	return {
+		text: textOf(result),
+		...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
+		// Un refus peut aussi porter des étapes (`.intégrer`, pôle dans [a ; b])
+		...((result.kind === 'commande' || result.kind === 'refus') && result.steps !== undefined
+			? { steps: result.steps }
+			: {}),
+		...((result.kind === 'commande' || result.kind === 'refus') && result.summary !== undefined
+			? { summary: result.summary }
+			: {}),
+		...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
+		...(result.kind === 'commande' && result.table !== undefined ? { table: result.table } : {}),
+		...((result.kind === 'calcul' || result.kind === 'commande') && result.alternative !== undefined
+			? { alternative: result.alternative }
+			: {}),
+		...('note' in result && result.note !== undefined ? { note: result.note } : {}),
+		...(result.kind === 'refus' && result.formulas === true && { formulas: true as const }),
+		// Une définition rangée mais en erreur (`h(x) = x^^2`) : la ligne aussi
+		failed:
+			result.kind === 'refus' || (result.kind === 'definition' && result.object.status === 'error')
+	};
 }
 
 /** Ce qu'une ligne affiche en toutes lettres. */
@@ -785,8 +994,23 @@ function textOf(result: CalcResult): string {
 		case 'refus':
 			return result.message;
 		case 'definition':
-			return `« ${result.name} » est dans tes objets.`;
+			return definitionText(result.name, result.object);
 		default:
 			return '';
 	}
+}
+
+/**
+ * La ligne d'une définition dit ce que dit la carte (décision de David,
+ * 2026-10-13) : rangée, mais en erreur ou en attente, elle reprend le
+ * message de la carte au lieu d'annoncer un objet prêt.
+ */
+function definitionText(name: string, object: AtelierObject): string {
+	const placed = `« ${name} » est dans tes objets`;
+	if (object.message === undefined) return `${placed}.`;
+	if (object.status === 'error') return `${placed}, mais elle est en erreur : ${object.message}`;
+	if (object.status === 'pending') {
+		return `${placed}, ${object.message.charAt(0).toLowerCase()}${object.message.slice(1)}`;
+	}
+	return `${placed}.`;
 }

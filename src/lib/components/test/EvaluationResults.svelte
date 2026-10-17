@@ -66,7 +66,7 @@
 
 <div class="space-y-6">
 	<div class="text-center">
-		<h1 class="text-3xl font-bold">Évaluation terminée</h1>
+		<h1 class="text-3xl font-bold">Contrôle terminé</h1>
 		{#if title}
 			<p class="mt-2 text-muted-foreground">{title}</p>
 		{/if}
@@ -118,7 +118,7 @@
 	<div class="flex justify-center">
 		<Button href="/dashboard/student/assessments">
 			<ArrowLeft class="mr-2 h-4 w-4" />
-			Mes évaluations
+			Mes contrôles
 		</Button>
 	</div>
 </div>

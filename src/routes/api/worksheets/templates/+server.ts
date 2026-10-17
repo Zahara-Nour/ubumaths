@@ -7,6 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { insertTemplateWithStyle } from '$lib/server/worksheets/worksheet-styles';
 import {
 	validateListTemplatesQuery,
 	validateCreateTemplate,
@@ -14,6 +15,9 @@ import {
 	createTemplateResponseSchema
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/templates/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -31,7 +35,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Invalid query parameters: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { page, limit, search } = queryValidation.data;
@@ -58,8 +62,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data: templates, error: dbError, count } = await query;
 
 	if (dbError) {
-		console.error('Failed to fetch templates:', dbError);
-		throw error(500, 'Failed to fetch templates');
+		logger.error('Failed to fetch templates:', dbError);
+		throw error(500, 'Impossible de charger les modèles de fiche');
 	}
 
 	const total = count ?? 0;
@@ -96,7 +100,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateCreateTemplate(body);
@@ -104,27 +108,23 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data;
 
-	// Create template
-	const { data: template, error: dbError } = await locals.supabase
-		.from('worksheet_templates')
-		.insert({
-			name: data.name,
-			description: data.description ?? null,
-			template_content: data.template_content,
-			placeholders: data.placeholders ?? [],
-			created_by: user.id
-		})
-		.select()
-		.single();
+	// Le gabarit est la fiche d'un style du même nom, au même identifiant (D10)
+	const { data: template, error: dbError } = await insertTemplateWithStyle(locals.supabase, {
+		name: data.name,
+		description: data.description ?? null,
+		template_content: data.template_content,
+		placeholders: data.placeholders ?? [],
+		created_by: user.id
+	});
 
-	if (dbError) {
-		console.error('Failed to create template:', dbError);
-		throw error(500, 'Failed to create template');
+	if (dbError || !template) {
+		logger.error('Failed to create template:', dbError);
+		throw error(500, 'Impossible de créer le modèle de fiche');
 	}
 
 	// Validate response

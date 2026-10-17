@@ -3,6 +3,9 @@ import { error, redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { listStudentSharedMaterialsSchema } from '$lib/server/validation';
 import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/materials/+page.server');
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -43,7 +46,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 
 	if (!materialsResponse.ok) {
 		const errorText = await materialsResponse.text();
-		console.error('[Student Materials Page] API call failed:', materialsResponse.status, errorText);
+		logger.error('[Student Materials Page] API call failed:', materialsResponse.status, errorText);
 		throw error(materialsResponse.status, `Failed to fetch shared materials: ${errorText}`);
 	}
 
@@ -71,7 +74,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 		.order('classes(name)');
 
 	if (classesError) {
-		console.error('[Student Materials Page] Error fetching classes:', classesError);
+		logger.error('[Student Materials Page] Error fetching classes:', classesError);
 	}
 
 	// Transform classes data
@@ -79,13 +82,12 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 		.map((item) => {
 			// Handle Supabase JOIN types
 			const classData = item.classes as unknown as
-				| { id: string; name: string }
-				| { id: string; name: string }[];
+				{ id: string; name: string } | { id: string; name: string }[];
 			const classInfo = Array.isArray(classData) ? classData[0] : classData;
 
 			// Validate JOIN data exists
 			if (!classInfo?.id || !classInfo?.name) {
-				console.warn('[Student Materials Page] Invalid class data in JOIN:', item);
+				logger.warn('[Student Materials Page] Invalid class data in JOIN:', item);
 				return null;
 			}
 
@@ -106,7 +108,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 			.order('name');
 
 		if (categoriesError) {
-			console.error('[Student Materials Page] Error fetching categories:', categoriesError);
+			logger.error('[Student Materials Page] Error fetching categories:', categoriesError);
 		} else {
 			categories = categoriesData || [];
 		}
@@ -131,14 +133,13 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 			.not('topic_id', 'is', null);
 
 		if (topicsError) {
-			console.error('[Student Materials Page] Error fetching topics:', topicsError);
+			logger.error('[Student Materials Page] Error fetching topics:', topicsError);
 		} else {
 			// Extract unique topics
 			const topicMap = new Map<string, { id: string; name: string }>();
 			for (const item of topicsData || []) {
 				const topicData = item.google_classroom_topics as unknown as
-					| { id: string; name: string }
-					| { id: string; name: string }[];
+					{ id: string; name: string } | { id: string; name: string }[];
 				const topic = Array.isArray(topicData) ? topicData[0] : topicData;
 
 				// Validate JOIN data exists

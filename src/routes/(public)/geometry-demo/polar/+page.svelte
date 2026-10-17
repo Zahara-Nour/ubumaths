@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	// Polar curves (V2) — courbe("r = f(theta)", theta_min=..., theta_max=...)
@@ -68,9 +69,7 @@ B = intersection(c1, c2, 2)`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
-	<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-		>← Retour aux demos</a
-	>
+	<BackLink href="/geometry-demo" label="Retour aux démos" />
 
 	<h1 class="mt-4 mb-8 text-2xl font-bold">Courbes polaires — geometry-core</h1>
 

@@ -234,7 +234,7 @@
 
 					<!-- Template Info -->
 					<div class="flex-1">
-						<p class="font-medium">{template.title || `Template ${template.id.slice(0, 8)}`}</p>
+						<p class="font-medium">{template.title || `Modèle ${template.id.slice(0, 8)}`}</p>
 						<div class="mt-1 flex flex-wrap gap-2">
 							{#if template.topic}
 								<Badge variant="outline">{template.topic}</Badge>

@@ -13,6 +13,8 @@ import type {
 	SymbolNode,
 	HoleNode,
 	MathConstantNode,
+	SegmentLengthNode,
+	FigureNameNode,
 	AdditionNode,
 	SubtractionNode,
 	MultiplicationNode,
@@ -57,7 +59,9 @@ export function isLiteralNode(node: MathNode): node is LiteralNode {
 		node.type === 'greek' ||
 		node.type === 'symbol' ||
 		node.type === 'hole' ||
-		node.type === 'constant'
+		node.type === 'constant' ||
+		node.type === 'segmentLength' ||
+		node.type === 'figureName'
 	);
 }
 
@@ -103,6 +107,20 @@ export function isNumber(node: MathNode): node is NumberNode {
  */
 export function isVariable(node: MathNode): node is VariableNode {
 	return node.type === 'variable';
+}
+
+/**
+ * La longueur d'un segment (`AB`)
+ */
+export function isSegmentLength(node: MathNode): node is SegmentLengthNode {
+	return node.type === 'segmentLength';
+}
+
+/**
+ * Un nom de figure (`ABC`)
+ */
+export function isFigureName(node: MathNode): node is FigureNameNode {
+	return node.type === 'figureName';
 }
 
 /**
@@ -281,6 +299,21 @@ export function isMatrix(node: MathNode): node is MatrixNode {
  */
 export function isComplex(node: MathNode): node is ComplexNode {
 	return node.type === 'complex';
+}
+
+/**
+ * L'unité imaginaire `complex(0, 1)` : ce que les parseurs lisent pour la
+ * lettre `i` (hors indice) et pour `\imaginaryI`. Pas une garde de type : un
+ * `false` ne dit pas que le nœud n'est pas un complexe.
+ */
+export function isImaginaryUnit(node: MathNode): boolean {
+	return (
+		isComplex(node) &&
+		isNumber(node.real) &&
+		node.real.value === '0' &&
+		isNumber(node.imaginary) &&
+		node.imaginary.value === '1'
+	);
 }
 
 /**
@@ -607,6 +640,8 @@ export function hasUnitDescendant(node: MathNode): boolean {
 		case 'symbol':
 		case 'hole':
 		case 'constant':
+		case 'segmentLength':
+		case 'figureName':
 			return false;
 
 		case 'addition':

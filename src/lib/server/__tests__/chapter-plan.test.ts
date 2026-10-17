@@ -32,6 +32,8 @@ function section(id: string, title: string, displayOrder: number) {
 	return {
 		id,
 		chapterId: 'chap',
+		sourceId: null,
+		hidden: false,
 		title,
 		displayOrder,
 		createdAt: '2026-09-14T00:00:00Z',
@@ -58,7 +60,9 @@ function document(id: string, sectionId: string | null, sectionOrder: number) {
 		sectionOrder,
 		createdAt: '2026-09-14T00:00:00Z',
 		updatedAt: '2026-09-14T00:00:00Z',
-		publishedAt: '2026-09-14T00:00:00Z'
+		publishedAt: '2026-09-14T00:00:00Z',
+		sourceId: null,
+		hidden: false
 	};
 }
 
@@ -118,7 +122,9 @@ describe('buildChapterPlan', () => {
 						sectionId: 'a',
 						sectionOrder: 0,
 						createdAt: '2026-09-14T00:00:00Z',
-						publishedAt: '2026-09-14T00:00:00Z'
+						publishedAt: '2026-09-14T00:00:00Z',
+						sourceId: null,
+						hidden: false
 					}
 				],
 				exerciseTitles: { ex1: { title: 'Discriminant' } }
@@ -180,6 +186,8 @@ describe('buildChapterPlan', () => {
 			createdAt: '2026-09-14T00:00:00Z',
 			updatedAt: '2026-09-14T00:00:00Z',
 			publishedAt: '2026-09-14T00:00:00Z',
+			sourceId: null,
+			hidden: false,
 			isCompleted: false,
 			completedAt: null
 		});
@@ -214,6 +222,8 @@ describe('buildChapterPlan — séries de chapitre', () => {
 			sectionOrder,
 			createdAt: '2026-10-02T00:00:00Z',
 			publishedAt: '2026-10-02T00:00:00Z',
+			sourceId: null,
+			hidden: false,
 			title: `Série ${id}`,
 			questionCount: 3,
 			launchHref: '/automaths/test?mode=flash'

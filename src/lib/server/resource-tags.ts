@@ -19,6 +19,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { ResourceKind } from '$lib/resources/kinds';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/resource-tags');
 
 type SB = SupabaseClient<Database>;
 
@@ -32,7 +35,8 @@ export type TaggableKind =
 	| 'python_exercise'
 	| 'construction'
 	| 'worksheet'
-	| 'parody_evaluation';
+	| 'parody_evaluation'
+	| 'geometry_figure';
 
 /** Les types que `resource_tags` accepte, pour valider une entrée non fiable. */
 export const TAGGABLE_KINDS = [
@@ -44,7 +48,10 @@ export const TAGGABLE_KINDS = [
 	'python_exercise',
 	'construction',
 	'worksheet',
-	'parody_evaluation'
+	'parody_evaluation',
+	// Figures géométriques stockées (ADR 0027) : étiquetables ; la citation dans
+	// le cahier (type de ressource adressable) viendra au lot 2
+	'geometry_figure'
 ] as const;
 
 /** Garde de type pour un `kind` venant d'un paramètre d'URL. */
@@ -69,7 +76,7 @@ async function resolveUnifiedTagIds(supabase: SB, names: string[]): Promise<stri
 	const { data, error } = await supabase.rpc('resolve_tag_ids', { p_names: wanted });
 
 	if (error) {
-		console.error('[resource-tags] resolve_tag_ids failed', { message: error.message });
+		logger.error('[resource-tags] resolve_tag_ids failed', { message: error.message });
 		return [];
 	}
 
@@ -100,7 +107,7 @@ export async function syncResourceTags(
 		.eq('resource_id', resourceId);
 
 	if (delErr) {
-		console.error('[resource-tags] suppression impossible', {
+		logger.error('[resource-tags] suppression impossible', {
 			kind,
 			resourceId,
 			message: delErr.message
@@ -116,7 +123,7 @@ export async function syncResourceTags(
 	);
 
 	if (upsertErr) {
-		console.error('[resource-tags] écriture impossible', {
+		logger.error('[resource-tags] écriture impossible', {
 			kind,
 			resourceId,
 			message: upsertErr.message
@@ -140,7 +147,7 @@ export async function fetchResourceTagNames(
 		.eq('resource_id', resourceId);
 
 	if (error) {
-		console.error('[resource-tags] lecture impossible', {
+		logger.error('[resource-tags] lecture impossible', {
 			kind,
 			resourceId,
 			message: error.message
@@ -180,7 +187,7 @@ export async function fetchTagNamesForResources(
 		.in('resource_id', resourceIds);
 
 	if (error) {
-		console.error('[resource-tags] lecture groupée impossible', { kind, message: error.message });
+		logger.error('[resource-tags] lecture groupée impossible', { kind, message: error.message });
 		throw error;
 	}
 
@@ -215,7 +222,7 @@ export async function fetchResourceIdsByAnyTag(
 		.in('name', names);
 
 	if (tagsErr) {
-		console.error('[resource-tags] recherche de tags impossible', { message: tagsErr.message });
+		logger.error('[resource-tags] recherche de tags impossible', { message: tagsErr.message });
 		throw tagsErr;
 	}
 
@@ -229,7 +236,7 @@ export async function fetchResourceIdsByAnyTag(
 		.in('tag_id', tagIds);
 
 	if (error) {
-		console.error('[resource-tags] filtrage par tag impossible', { kind, message: error.message });
+		logger.error('[resource-tags] filtrage par tag impossible', { kind, message: error.message });
 		throw error;
 	}
 

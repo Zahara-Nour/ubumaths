@@ -7,7 +7,7 @@ couvre:
 # Panel de référence des simplifications
 
 > **Mesuré le 2026-09-21** sur `main` à `006873aad`, remis à jour le 2026-10-10 (lettre `e`
-> = constante d'Euler), et **pinné** par
+> = constante d'Euler) et le 2026-10-11 (colonne `factoriser` : ordre du noyau, ADR 0024), et **pinné** par
 > `src/lib/mathAST/__tests__/panel-simplifications.test.ts`. Si vous modifiez le
 > moteur, le test rougit : mettez les deux à jour **ensemble**, sinon ce
 > document pourrit en silence comme l'a fait le §1 de
@@ -15,13 +15,21 @@ couvre:
 
 ## Ce que chaque colonne veut dire
 
-| colonne      | ce qui est appelé                                                                                                                                                           |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `simplify`   | `simplify(node)` — `tidy` → règles → « développer seulement si moins cher » → `tidy`                                                                                        |
-| `auto`       | `generatePedagogicalSimplifySteps`, intention `auto` : `reduire` ∪ factorisation symbolique                                                                                 |
-| `reduire`    | identités, puissances, racines. Ni factorisation ni développement                                                                                                           |
-| `developper` | règles de développement + identités, puis `normalize`                                                                                                                       |
-| `factoriser` | factorisation + identités, puis extraction du contenu, puis `tidy` facteur par facteur (deux nombres côte à côte sont calculés : `2\times 3` → `6`). **Pas** de `normalize` |
+| colonne      | ce qui est appelé                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `simplify`   | `simplify(node)` — `tidy` → règles → « développer seulement si moins cher » → `tidy`                                                                                                                                                                                                                                                                                                                                                                    |
+| `auto`       | `generatePedagogicalSimplifySteps`, intention `auto` : `reduire` ∪ factorisation symbolique                                                                                                                                                                                                                                                                                                                                                             |
+| `reduire`    | identités, puissances, racines. Ni factorisation ni développement                                                                                                                                                                                                                                                                                                                                                                                       |
+| `developper` | règles de développement + identités, puis `normalize`                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `factoriser` | factorisation + identités, puis extraction du contenu (numérique, monôme, ou non polynomial : `x\exponentialE^x - \exponentialE^x` → `(x-1)\exponentialE^x`), puis les stratégies de l'ADR 0024 (facteurs réduits, racines du trinôme, racine évidente — lycée —, développer en dernier recours ; facteurs dans l'ordre du noyau), puis `tidy` facteur par facteur (deux nombres côte à côte sont calculés : `2\times 3` → `6`). **Pas** de `normalize` |
+
+La colonne `developper` est le **résultat** de l'intention. Les étapes que voit l'élève — le
+« Comment ? » de `.développer` (atelier) comme une correction d'exercice générée
+(`intent: 'developper'`, option B du 2026-10-14) — ne sont pas sa trace : `explainExpansion`
+(`expand-explained.ts`) range ce résultat dans l'ordre du manuel (`expand-order.ts`) et le fait
+rédiger par `expand-steps.ts`, qui finit dessus — voir
+[README § Les étapes de « développer »](README.md#les-étapes-de-développer-expand-stepsts).
+Ce panel n'en change pas.
 
 ⚠️ **Les quatre intentions sont mesurées à `schoolLevel: 'lycee'`.** Les
 identités trigonométriques et exponentielles sont coupées en dessous — c'est un
@@ -62,8 +70,8 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 | entrée      | `simplify` | `auto`    | `reduire` | `developper` | `factoriser` |
 | ----------- | ---------- | --------- | --------- | ------------ | ------------ |
 | `2x+3x`     | `5 x`      | `5 x`     | `5 x`     | `5 x`        | `5 x`        |
-| `x+x`       | `2 x`      | `2 x`     | `2 x`     | `2 x`        | `x 2`        |
-| `x-x`       | `0`        | `0`       | `0`       | `0`          | `x 0`        |
+| `x+x`       | `2 x`      | `2 x`     | `2 x`     | `2 x`        | `2 x`        |
+| `x-x`       | `0`        | `0`       | `0`       | `0`          | `0`          |
 | `3x+2y+x-y` | `4 x + y`  | `4 x + y` | `4 x + y` | `4 x + y`    | `4 x + y`    |
 
 ## Développement
@@ -79,7 +87,7 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 
 | entrée         | `simplify`                            | `auto`                                | `reduire`                             | `developper`                          | `factoriser`                                |
 | -------------- | ------------------------------------- | ------------------------------------- | ------------------------------------- | ------------------------------------- | ------------------------------------------- |
-| `x^2-1`        | `x^2 - 1`                             | `x^2 - 1`                             | `x^2 - 1`                             | `x^2 - 1`                             | `\left( x + 1 \right) \left( x - 1 \right)` |
+| `x^2-1`        | `x^2 - 1`                             | `x^2 - 1`                             | `x^2 - 1`                             | `x^2 - 1`                             | `\left( x - 1 \right) \left( x + 1 \right)` |
 | `x^2+2x+1`     | `\left( x + 1 \right)^2`              | `x^2 + 2 x + 1`                       | `x^2 + 2 x + 1`                       | `x^2 + 2 x + 1`                       | `\left( x + 1 \right)^2`                    |
 | `2x+4`         | `2 x + 4`                             | `2 x + 4`                             | `2 x + 4`                             | `2 x + 4`                             | `2 \left( x + 2 \right)`                    |
 | `x^2+2x`       | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x \left( x + 2 \right)`                    |
@@ -147,19 +155,19 @@ Hors panel (2026-10-05) : `normalize` calcule `factorial` / `binom` à arguments
 
 Mesuré sur le panel ci-dessus : **11 lignes sur 49** (mis à jour le 2026-10-10 : la lettre `e` est la constante d'Euler, `ln(e^x)` ne diverge plus).
 
-| entrée                   | `simplify`                                    | `auto`                               | nature                                                                                                                  |
+| entrée | `simplify` | `auto` | nature |
 | ------------------------ | --------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------ |
-| `\frac{6}{8}x`           | `\dfrac{3 x}{4}`                              | `\dfrac{3}{4} x`                     | écriture — même valeur                                                                                                  |
-| `\frac{1}{\sqrt{2}}`     | `\dfrac{\sqrt{2}}{2}`                         | `\dfrac{1}{2} \sqrt{2}`              | écriture — même valeur                                                                                                  |
-| `\sqrt{x^2}`             | `\sqrt{x^2}`                                  | `\left                               | x \right                                                                                                                | `   | ⚠️ **capacité** — `simplify` ne réduit pas |
-| `\sqrt[3]{x}\sqrt[3]{x}` | `\sqrt[3]{x}^2`                               | `\sqrt[3]{x^2}`                      | écriture — même valeur                                                                                                  |
-| `(x+1)^2`                | `\left( x + 1 \right)^2`                      | `x^2 + 2 x + 1`                      | **décision** — barrière de coût de `simplify`                                                                           |
-| `(2x-3)(x+4)`            | `\left( 2 x - 3 \right) \left( x + 4 \right)` | `2 x^2 + 5 x - 12`                   | **décision** — même barrière de coût                                                                                    |
-| `x^2+2x+1`               | `\left( x + 1 \right)^2`                      | `x^2 + 2 x + 1`                      | **décision opposée** — l'un factorise, l'autre développe                                                                |
-| `\frac{(x+y)^2}{x+2y}`   | `\dfrac{\left( x + y \right)^2}{x + 2 y}`     | `\dfrac{2 x y + x^2 + y^2}{x + 2 y}` | **décision** — `auto` développe le numérateur                                                                           |
-| `(e^{x})^{3}`            | `\left( \exponentialE^x \right)^3`            | `\exponentialE^{3 x}`                | ⚠️ **capacité** — `simplify` garde la puissance (barrière de coût) ; `developper` combine depuis `fix/normalize-ln-exp` |
-| `x^{a}x^{b}`             | `x^a x^b`                                     | `x^{a + b}`                          | ⚠️ **capacité** — `auto` sait depuis la PR #394, `simplify` non                                                         |
-| `-(x+1)`                 | `-\left( x + 1 \right)`                       | `-x - 1`                             | écriture — `simplify` garde le signe devant                                                                             |
+| `\frac{6}{8}x` | `\dfrac{3 x}{4}` | `\dfrac{3}{4} x` | écriture — même valeur |
+| `\frac{1}{\sqrt{2}}` | `\dfrac{\sqrt{2}}{2}` | `\dfrac{1}{2} \sqrt{2}` | écriture — même valeur |
+| `\sqrt{x^2}` | `\sqrt{x^2}` | `\left                               | x \right                                                                                                                | ` | ⚠️ **capacité** — `simplify` ne réduit pas |
+| `\sqrt[3]{x}\sqrt[3]{x}` | `\sqrt[3]{x}^2` | `\sqrt[3]{x^2}` | écriture — même valeur |
+| `(x+1)^2` | `\left( x + 1 \right)^2` | `x^2 + 2 x + 1` | **décision** — barrière de coût de `simplify` |
+| `(2x-3)(x+4)` | `\left( 2 x - 3 \right) \left( x + 4 \right)` | `2 x^2 + 5 x - 12` | **décision** — même barrière de coût |
+| `x^2+2x+1` | `\left( x + 1 \right)^2` | `x^2 + 2 x + 1` | **décision opposée** — l'un factorise, l'autre développe |
+| `\frac{(x+y)^2}{x+2y}` | `\dfrac{\left( x + y \right)^2}{x + 2 y}` | `\dfrac{2 x y + x^2 + y^2}{x + 2 y}` | **décision** — `auto` développe le numérateur |
+| `(e^{x})^{3}` | `\left( \exponentialE^x \right)^3` | `\exponentialE^{3 x}` | ⚠️ **capacité** — `simplify` garde la puissance (barrière de coût) ; `developper` combine depuis `fix/normalize-ln-exp` |
+| `x^{a}x^{b}` | `x^a x^b` | `x^{a + b}` | ⚠️ **capacité** — `auto` sait depuis la PR #394, `simplify` non |
+| `-(x+1)` | `-\left( x + 1 \right)` | `-x - 1` | écriture — `simplify` garde le signe devant |
 
 **Écriture** : les deux sont justes, la forme diffère.
 **Décision** : `simplify` compare les coûts et garde la forme la moins chère, là
@@ -187,6 +195,28 @@ travail, et le panel le rend visible.
 4. ⚠️ Restent aussi : `simplify((e^x)^3)` garde `\left( e^x \right)^3`
    (barrière de coût), et le **quotient** `e^{2x}/e^x` n'est réduit par aucune
    colonne.
+
+## Longueurs de segments (mode `capitalPairs: 'length'`)
+
+Une longueur `AB` est strictement positive par défaut (lot Q-F, 2026-10-12). Mesuré le
+2026-10-12, hors panel (le panel lit en mode produit, défaut du parseur) :
+
+| entrée          | `simplify` | `auto` | `reduire` | `developper` | `factoriser` |
+| --------------- | ---------- | ------ | --------- | ------------ | ------------ |
+| `\sqrt{AB^2}`   | `AB`       | `AB`   | `AB`      | `AB`         | `AB`         |
+| `\|AB\|`        | `AB`       | `AB`   | `AB`      | `AB`         | `AB`         |
+| `\sqrt{9AB^2}`  | `3 AB`     | `3 AB` | `3 AB`    | `3 AB`       | `3 AB`       |
+| `\frac{AB}{AB}` | `1`        | `1`    | `1`       | `1`          | `1`          |
+
+Les intentions (`pedagogical-simplify/pipeline.ts`, décision de David du 2026-10-12) commencent
+par une étape `length-radical` (« Une longueur est positive : √(AB²) = AB », catégorie
+`radicaux`) : chaque racine carrée qui **disparaît** quand ses longueurs sont positives
+(`normalize` avec l'oracle des longueurs) est remplacée ; `√(8AB²)` et `√(AA²)` restent à
+l'intention. Non-régression : banc avant/après sur les 4 122 chaînes de l'empreinte —
+3 328 saisies en mode produit et 3 143 sans longueur en mode longueur, `simplify`, `solve`,
+`areEquivalent` et les 4 intentions (résultat et règles des étapes) identiques (une
+différence de `simplify` sur `(x+y+…+d)^8`, due au délai de 300 ms du banc, absente au
+re-tirage).
 
 ## Non couvert
 

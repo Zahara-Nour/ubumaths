@@ -53,49 +53,49 @@ Une correction à variables sert tous les modèles d'une même stratégie / règ
 
 ### Règles (N)
 
-| code              | règle                                                                                                                                                               | modèles |
+| code | règle | modèles |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------- | --- |
-| `N-FRACDEC`       | fraction décimale ↔ écriture décimale : 1/10 = 0,1 ; 1/100 = 0,01 ; 1/1000 = 0,001 (le dénominateur donne le rang du dernier chiffre) ; simplifier si demandé      | 20      |
-| `N-DECOMP`        | décomposition selon les rangs (unités, dizaines, centaines… / dixièmes, centièmes…) et recomposition                                                                | 13      |
-| `N-SIGNES`        | règle des signes (× et :) : signe positif si le nombre de facteurs négatifs est pair, négatif s'il est impair                                                       | 9       |
-| `N-POSITION`      | valeur de position des chiffres (tableau de numération) ; nombre de dizaines ≠ chiffre des dizaines                                                                 | 8       |
-| `N-REL-ADD`       | addition de relatifs : même signe → on ajoute les distances à 0 ; signes contraires → on soustrait, signe du plus éloigné de 0 (droite graduée : avancer / reculer) | 8       |
-| `N-ENCADR`        | encadrement : garder les chiffres jusqu'au rang demandé (troncature), puis ajouter 1 à ce rang                                                                      | 4       |
-| `N-COMPARER-ENT`  | comparer deux entiers : nombre de chiffres, puis chiffre par chiffre depuis la gauche                                                                               | 4       |
-| `N-UNITES`        | conversions d'unités : tableau de conversion (1 colonne par unité), convertir dans la même unité avant d'opérer                                                     | 4       |
-| `N-OPPOSE-EXPR`   | opposé d'une expression : on change le signe de chaque terme                                                                                                        | 3       |
-| `N-PUISS-DEF`     | définition d'une puissance : aⁿ = a × a × … × a (n facteurs)                                                                                                        | 3       |
-| `N-ESPACES`       | écriture des grands nombres : groupes de 3 chiffres à partir de la droite                                                                                           | 3       |
-| `N-FRAC-MULT`     | produit de fractions : numérateurs entre eux, dénominateurs entre eux (puis simplifier)                                                                             | 3       |
-| `N-REL-SUB`       | soustraire un relatif = ajouter son opposé ; −(−a) = +a                                                                                                             | 3       |
-| `N-IDREM`         | identité remarquable (a + b)(a − b) = a² − b² (dans les deux sens)                                                                                                  | 2       |
-| `N-ECRIT-PRODUIT` | conventions d'écriture : suppression du signe × devant une lettre ou une parenthèse, le nombre s'écrit en premier                                                   | 2       |
-| `N-NEUTRE-ABS`    | produit par 0 → 0 (absorbant) ; produit par 1 → inchangé (neutre)                                                                                                   | 2       |
-| `N-FACT-COMMUN`   | facteur commun : repérer le facteur présent dans chaque terme de la somme                                                                                           | 2       |
-| `N-DIVEUCL`       | égalité de la division euclidienne : a = b × q + r avec 0 ≤ r < b                                                                                                   | 2       |
-| `N-VOCAB-OP`      | vocabulaire somme / différence / produit / quotient ; l'opération nommée en premier est la dernière effectuée                                                       | 2       |
-| `N-ABS`           | valeur absolue = distance à 0 :                                                                                                                                     | a       | = −a si a < 0 | 2   |
-| `N-FRAC-ADD`      | somme / différence de fractions de même dénominateur : on garde le dénominateur, on ajoute / soustrait les numérateurs                                              | 2       |
-| `N-PUISS-NEG`     | puissance d'exposant négatif : a⁻ⁿ = 1/aⁿ (donc a⁻¹ = inverse de a)                                                                                                 | 2       |
-| `N-UNITES-VOL`    | conversions de volumes : 3 colonnes par unité (1 m³ = 1000 dm³) ; 1 L = 1 dm³                                                                                       | 2       |
-| `N-POURCENT`      | définition : p % = p/100                                                                                                                                            | 2       |
-| `N-PUISS10`       | puissances de 10 : 10ⁿ = 1 suivi de n zéros, 10⁰ = 1 ; a × 10ⁿ                                                                                                      | 2       |
-| `N-COMPARER-REL`  | comparer deux relatifs : un négatif < un positif ; entre deux négatifs, le plus petit est le plus éloigné de 0                                                      | 2       |
-| `N-REL-DEF`       | définition d'un négatif : −a = 0 − a                                                                                                                                | 2       |
-| `N-PARENTH`       | parenthèses précédées de − : on les supprime en changeant le signe de chaque terme                                                                                  | 1       |
-| `N-COMPARER-DEC`  | comparer deux décimaux : parties entières, puis dixièmes, centièmes… (compléter par des zéros)                                                                      | 1       |
-| `N-ZEROS`         | zéros inutiles : seuls les zéros à gauche du premier chiffre non nul sont inutiles                                                                                  | 1       |
-| `N-GRADUATION`    | droite graduée : trouver le pas (écart entre deux repères ÷ nombre d'intervalles), puis compter                                                                     | 1       |
-| `N-DIVISEUR`      | définition : si n = a × b, alors a et b sont des diviseurs de n                                                                                                     | 1       |
-| `N-RACINE-AFF`    | racine d'une fonction affine : résoudre ax + b = 0, x = −b/a                                                                                                        | 1       |
-| `N-SIGNE-AFF`     | signe de ax + b : signe de a à droite de la racine, signe contraire à gauche                                                                                        | 1       |
-| `N-VOCAB-AFF`     | vocabulaire de f(x) = ax + b : a coefficient directeur, b ordonnée à l'origine                                                                                      | 1       |
-| `N-INVERSE`       | inverse : 1/a ; inverse de a/b = b/a                                                                                                                                | 1       |
-| `N-UNITES-AIRE`   | conversions d'aires : 2 colonnes par unité (1 m² = 100 dm²)                                                                                                         | 1       |
-| `N-NOTSCI`        | notation scientifique : a × 10ⁿ avec 1 ≤ a < 10 ; n = nombre de rangs de décalage de la virgule                                                                     | 1       |
-| `N-OPPOSES`       | la somme de deux nombres opposés vaut 0                                                                                                                             | 1       |
-| `N-REL-ALG`       | somme algébrique : regrouper les termes positifs et les termes négatifs                                                                                             | 1       |
-| `N-LIM-OPS`       | opérations sur les limites (tableaux) ; ∞/∞ forme indéterminée                                                                                                      | 1       |
+| `N-FRACDEC` | fraction décimale ↔ écriture décimale : 1/10 = 0,1 ; 1/100 = 0,01 ; 1/1000 = 0,001 (le dénominateur donne le rang du dernier chiffre) ; simplifier si demandé | 20 |
+| `N-DECOMP` | décomposition selon les rangs (unités, dizaines, centaines… / dixièmes, centièmes…) et recomposition | 13 |
+| `N-SIGNES` | règle des signes (× et :) : signe positif si le nombre de facteurs négatifs est pair, négatif s'il est impair | 9 |
+| `N-POSITION` | valeur de position des chiffres (tableau de numération) ; nombre de dizaines ≠ chiffre des dizaines | 8 |
+| `N-REL-ADD` | addition de relatifs : même signe → on ajoute les distances à 0 ; signes contraires → on soustrait, signe du plus éloigné de 0 (droite graduée : avancer / reculer) | 8 |
+| `N-ENCADR` | encadrement : garder les chiffres jusqu'au rang demandé (troncature), puis ajouter 1 à ce rang | 4 |
+| `N-COMPARER-ENT` | comparer deux entiers : nombre de chiffres, puis chiffre par chiffre depuis la gauche | 4 |
+| `N-UNITES` | conversions d'unités : tableau de conversion (1 colonne par unité), convertir dans la même unité avant d'opérer | 4 |
+| `N-OPPOSE-EXPR` | opposé d'une expression : on change le signe de chaque terme | 3 |
+| `N-PUISS-DEF` | définition d'une puissance : aⁿ = a × a × … × a (n facteurs) | 3 |
+| `N-ESPACES` | écriture des grands nombres : groupes de 3 chiffres à partir de la droite | 3 |
+| `N-FRAC-MULT` | produit de fractions : numérateurs entre eux, dénominateurs entre eux (puis simplifier) | 3 |
+| `N-REL-SUB` | soustraire un relatif = ajouter son opposé ; −(−a) = +a | 3 |
+| `N-IDREM` | identité remarquable (a + b)(a − b) = a² − b² (dans les deux sens) | 2 |
+| `N-ECRIT-PRODUIT` | conventions d'écriture : suppression du signe × devant une lettre ou une parenthèse, le nombre s'écrit en premier | 2 |
+| `N-NEUTRE-ABS` | produit par 0 → 0 (absorbant) ; produit par 1 → inchangé (neutre) | 2 |
+| `N-FACT-COMMUN` | facteur commun : repérer le facteur présent dans chaque terme de la somme | 2 |
+| `N-DIVEUCL` | égalité de la division euclidienne : a = b × q + r avec 0 ≤ r < b | 2 |
+| `N-VOCAB-OP` | vocabulaire somme / différence / produit / quotient ; l'opération nommée en premier est la dernière effectuée | 2 |
+| `N-ABS` | valeur absolue = distance à 0 : | a | = −a si a < 0 | 2 |
+| `N-FRAC-ADD` | somme / différence de fractions de même dénominateur : on garde le dénominateur, on ajoute / soustrait les numérateurs | 2 |
+| `N-PUISS-NEG` | puissance d'exposant négatif : a⁻ⁿ = 1/aⁿ (donc a⁻¹ = inverse de a) | 2 |
+| `N-UNITES-VOL` | conversions de volumes : 3 colonnes par unité (1 m³ = 1000 dm³) ; 1 L = 1 dm³ | 2 |
+| `N-POURCENT` | définition : p % = p/100 | 2 |
+| `N-PUISS10` | puissances de 10 : 10ⁿ = 1 suivi de n zéros, 10⁰ = 1 ; a × 10ⁿ | 2 |
+| `N-COMPARER-REL` | comparer deux relatifs : un négatif < un positif ; entre deux négatifs, le plus petit est le plus éloigné de 0 | 2 |
+| `N-REL-DEF` | définition d'un négatif : −a = 0 − a | 2 |
+| `N-PARENTH` | parenthèses précédées de − : on les supprime en changeant le signe de chaque terme | 1 |
+| `N-COMPARER-DEC` | comparer deux décimaux : parties entières, puis dixièmes, centièmes… (compléter par des zéros) | 1 |
+| `N-ZEROS` | zéros inutiles : seuls les zéros à gauche du premier chiffre non nul sont inutiles | 1 |
+| `N-GRADUATION` | droite graduée : trouver le pas (écart entre deux repères ÷ nombre d'intervalles), puis compter | 1 |
+| `N-DIVISEUR` | définition : si n = a × b, alors a et b sont des diviseurs de n | 1 |
+| `N-RACINE-AFF` | racine d'une fonction affine : résoudre ax + b = 0, x = −b/a | 1 |
+| `N-SIGNE-AFF` | signe de ax + b : signe de a à droite de la racine, signe contraire à gauche | 1 |
+| `N-VOCAB-AFF` | vocabulaire de f(x) = ax + b : a coefficient directeur, b ordonnée à l'origine | 1 |
+| `N-INVERSE` | inverse : 1/a ; inverse de a/b = b/a | 1 |
+| `N-UNITES-AIRE` | conversions d'aires : 2 colonnes par unité (1 m² = 100 dm²) | 1 |
+| `N-NOTSCI` | notation scientifique : a × 10ⁿ avec 1 ≤ a < 10 ; n = nombre de rangs de décalage de la virgule | 1 |
+| `N-OPPOSES` | la somme de deux nombres opposés vaut 0 | 1 |
+| `N-REL-ALG` | somme algébrique : regrouper les termes positifs et les termes négatifs | 1 |
+| `N-LIM-OPS` | opérations sur les limites (tableaux) ; ∞/∞ forme indéterminée | 1 |
 
 ## 3. Table complète par type de tâche
 
@@ -769,9 +769,9 @@ Une correction à variables sert tous les modèles d'une même stratégie / règ
 
 ### Puissances / Apprivoiser / Traduire une puissance en produit (1)
 
-| id       | niv   | classe | stratégie ou règle | exemple                                                                                                   |
-| -------- | ----- | ------ | ------------------ | --------------------------------------------------------------------------------------------------------- |
-| 3fe98dd9 | 2 [4] | N      | `N-PUISS-DEF`      | Réécris cette expression à l'aide de la définition d'une puissance. c^5 ⇒ c \times c \times c \times c \  |
+| id       | niv   | classe | stratégie ou règle | exemple                                                                                                  |
+| -------- | ----- | ------ | ------------------ | -------------------------------------------------------------------------------------------------------- |
+| 3fe98dd9 | 2 [4] | N      | `N-PUISS-DEF`      | Réécris cette expression à l'aide de la définition d'une puissance. c^5 ⇒ c \times c \times c \times c \ |
 
 ### Racines carrées / Apprivoiser / Trouver un nombre positif de carré donné (1)
 

@@ -15,6 +15,9 @@ import {
 //   invalidateTeacherCachesForStudents
 // } from '$lib/server/marketplace/cache-manager';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/proposals/[id]/+server');
 
 // ID validation schema
 const idSchema = z.string().uuid('ID de proposition invalide');
@@ -89,7 +92,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 	// Verify user owns the listing
 	if (!listing || listing.creator_id !== userId) {
-		throw error(403, 'Vous ne pouvez pas répondre à cette proposition');
+		throw error(403, 'Réponse à cette proposition non autorisée');
 	}
 
 	// Verify proposal is pending
@@ -111,14 +114,14 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		});
 
 		if (rpcError) {
-			console.error('Error in accept_proposal_atomic:', rpcError);
+			logger.error('Error in accept_proposal_atomic:', rpcError);
 			throw error(500, "Erreur lors de l'acceptation de la proposition");
 		}
 
 		// Validate response structure
 		const validation = acceptProposalResponseSchema.safeParse(result);
 		if (!validation.success) {
-			console.error('Invalid RPC response:', validation.error);
+			logger.error('Invalid RPC response:', validation.error);
 			throw error(500, 'Réponse invalide de la base de données');
 		}
 
@@ -149,7 +152,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			.single();
 
 		if (fetchError || !updatedProposal) {
-			console.error('Error fetching updated proposal:', fetchError);
+			logger.error('Error fetching updated proposal:', fetchError);
 			// Still return success since the operation completed
 			return json({
 				...proposal,
@@ -167,7 +170,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		try {
 			refuses = await proposersRejectedByAcceptance(proposalId);
 		} catch (e) {
-			console.error('Lecture impossible :', e);
+			logger.error('Lecture impossible :', e);
 			throw error(500, 'Impossible de charger les données');
 		}
 
@@ -204,7 +207,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			.select('id');
 
 		if (refusError || !refusee || refusee.length === 0) {
-			console.error('Error rejecting proposal:', refusError ?? 'aucune ligne modifiée');
+			logger.error('Error rejecting proposal:', refusError ?? 'aucune ligne modifiée');
 			throw error(500, 'Erreur lors du refus de la proposition');
 		}
 
@@ -270,7 +273,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	// Verify user is the proposer
 	if (proposal.proposer_id !== userId) {
-		throw error(403, 'Vous ne pouvez pas retirer cette proposition');
+		throw error(403, 'Retrait de cette proposition non autorisé');
 	}
 
 	// Verify proposal is pending
@@ -294,7 +297,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		.select('id');
 
 	if (updateError || !retiree || retiree.length === 0) {
-		console.error('Error withdrawing proposal:', updateError ?? 'aucune ligne modifiée');
+		logger.error('Error withdrawing proposal:', updateError ?? 'aucune ligne modifiée');
 		throw error(500, 'Erreur lors du retrait de la proposition');
 	}
 
@@ -319,7 +322,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.select('id');
 
 		if (compteurError || !compteur || compteur.length === 0) {
-			console.error(
+			logger.error(
 				'[marketplace] proposal_count non mis à jour :',
 				compteurError ?? 'aucune ligne modifiée'
 			);

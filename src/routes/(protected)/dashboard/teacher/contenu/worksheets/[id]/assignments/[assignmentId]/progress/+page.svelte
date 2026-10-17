@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { ChevronLeft, CircleCheck, LifeBuoy, CircleDashed, Users } from '@lucide/svelte';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { CircleCheck, LifeBuoy, CircleDashed, Users } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { page } from '$app/state';
 	import type { PageData } from './$types';
@@ -35,11 +35,11 @@
 
 <div class="container mx-auto max-w-4xl space-y-6 p-4">
 	<div>
-		<Button variant="ghost" size="sm" href="/dashboard/teacher/contenu/worksheets/{page.params.id}">
-			<ChevronLeft class="mr-1 h-4 w-4" />
-			Retour à la fiche
-		</Button>
-		<h1 class="mt-2 text-2xl font-bold tracking-tight">
+		<BackLink
+			href={`/dashboard/teacher/contenu/worksheets/${page.params.id}`}
+			label="Retour à la fiche"
+		/>
+		<h1 class="text-2xl font-bold tracking-tight">
 			Avancement — {data.assignmentTitle ?? data.worksheetTitle}
 		</h1>
 		<p class="text-sm text-muted-foreground">

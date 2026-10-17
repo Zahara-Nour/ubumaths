@@ -670,8 +670,7 @@
 				spellcheck="false"
 				autocomplete="off"
 				aria-label="Éditeur de code Python (mode dégradé)"
-				{disabled}
-			></textarea>
+				{disabled}></textarea>
 		</div>
 	{/if}
 </div>
@@ -754,8 +753,8 @@
 
 	/* Faint dot on hover (only on lines without a breakpoint) to hint clickability */
 	:global(
-			.cm-breakpointGutter .cm-gutterElement:hover:not(:has(.cm-breakpointGutterMarker))
-		)::before {
+		.cm-breakpointGutter .cm-gutterElement:hover:not(:has(.cm-breakpointGutterMarker))
+	)::before {
 		content: '●';
 		color: rgba(239, 68, 68, 0.35);
 		font-size: 12px;

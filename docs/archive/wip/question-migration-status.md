@@ -563,12 +563,12 @@ The 8 questions with "custom validation" warnings are **not blocked** - they use
 
 **Solution** : Nouvelle syntaxe simplifiée dans les définitions de variables :
 
-| Before                       | After                    |
+| Before | After |
 | ---------------------------- | ------------------------ | ------------------- | ------ |
-| `expression: '{{1..10}}'`    | `expression: '1..10'`    |
+| `expression: '{{1..10}}'` | `expression: '1..10'` |
 | `expression: '{{eval:a+b}}'` | `expression: 'eval:a+b'` |
-| `expression: '{{a}}'`        | `expression: 'a'`        |
-| `expression: '{{rouge        | vert}}'`                 | `expression: 'rouge | vert'` |
+| `expression: '{{a}}'` | `expression: 'a'` |
+| `expression: '{{rouge        | vert}}'` | `expression: 'rouge | vert'` |
 
 **Fichiers créés/modifiés** :
 

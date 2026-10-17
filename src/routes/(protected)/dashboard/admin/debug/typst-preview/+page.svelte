@@ -86,11 +86,11 @@ Typst permet de créer facilement des documents mathématiques professionnels av
 		try {
 			typst.setCompilerInitOptions({
 				getModule: () =>
-					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
+					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler@0.6.1-rc5/pkg/typst_ts_web_compiler_bg.wasm'
 			});
 			typst.setRendererInitOptions({
 				getModule: () =>
-					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
+					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer@0.6.1-rc5/pkg/typst_ts_renderer_bg.wasm'
 			});
 			isInitialized = true;
 			error = null;
@@ -182,7 +182,7 @@ Typst permet de créer facilement des documents mathématiques professionnels av
 		const script = document.createElement('script');
 		script.type = 'module';
 		script.src =
-			'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst.ts/dist/esm/contrib/all-in-one-lite.bundle.js';
+			'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst.ts@0.6.1-rc5/dist/esm/contrib/all-in-one-lite.bundle.js';
 		script.id = 'typst-script';
 
 		script.addEventListener('load', () => {

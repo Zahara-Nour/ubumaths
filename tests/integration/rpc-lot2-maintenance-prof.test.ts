@@ -93,7 +93,6 @@ const MAINTENANCE: [string, Record<string, unknown>][] = [
 	['delete_all_resolved_errors', {}],
 	['run_cleanup_all', {}],
 	['run_cleanup_expired_data', {}],
-	['run_flag_stale_python_rechecks', {}],
 	['run_recalculate_minesweeper_ref_times', {}],
 	['run_weekly_best_bonuses', {}],
 	['cleanup_abandoned_minesweeper_games', {}],
@@ -162,7 +161,6 @@ describe('RPC lot 2 : maintenance et actions réservées au prof', () => {
 		enigme = await insert('riddles', {
 			title: 'Énigme RPC lot 2',
 			statement: 'Énoncé',
-			correction: 'Correction',
 			difficulty: 1,
 			created_by: profId,
 			status: 'published'

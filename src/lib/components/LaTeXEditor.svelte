@@ -202,8 +202,7 @@
 					spellcheck="false"
 					autocomplete="off"
 					aria-label="Editeur LaTeX (mode degrade)"
-					{disabled}
-				></textarea>
+					{disabled}></textarea>
 			</div>
 		{/if}
 	</div>

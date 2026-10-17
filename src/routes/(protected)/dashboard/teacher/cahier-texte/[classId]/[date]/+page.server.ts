@@ -27,6 +27,11 @@ import {
 import { getUpcomingSessionDates } from '$lib/server/class-sessions';
 import { z } from 'zod';
 import { formLabel } from '$lib/types/evaluation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/cahier-texte/[classId]/[date]/+page.server'
+);
 
 // UUID validation schema
 const uuidSchema = z.string().uuid('ID invalide');
@@ -68,7 +73,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.single();
 
 	if (classError || !classData) {
-		throw error(404, 'Classe non trouvee');
+		throw error(404, 'Classe introuvable');
 	}
 
 	// Try to load existing entry for this class and date
@@ -81,7 +86,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	// PGRST116 = no rows returned, which is fine (creating new entry)
 	if (entryError && entryError.code !== 'PGRST116') {
-		console.error('[Journal Entry] Error fetching entry:', entryError);
+		logger.error('[Journal Entry] Error fetching entry:', entryError);
 	}
 
 	// Convert database format to application format if entry exists
@@ -121,7 +126,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			.eq('entry_id', entry.id);
 
 		if (covError) {
-			console.error('Lecture impossible :', covError);
+			logger.error('Lecture impossible :', covError);
 			throw error(500, 'Impossible de charger les données');
 		}
 		coveredPoints = (cov ?? []) as { point_id: string; source: string }[];
@@ -136,7 +141,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			.order('created_at', { ascending: true });
 
 		if (actsError) {
-			console.error('Lecture impossible :', actsError);
+			logger.error('Lecture impossible :', actsError);
 			throw error(500, 'Impossible de charger les données');
 		}
 		activities = (acts ?? []) as typeof activities;
@@ -155,7 +160,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (exsError) {
-			console.error('Enrichissement illisible :', exsError);
+			logger.error('Enrichissement illisible :', exsError);
 		}
 		exerciseOptions = (exs ?? []).map((e) => ({
 			value: e.id,
@@ -194,7 +199,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		evaluationOptions = (evals ?? [])
 			.map((e) => ({
 				value: e.id,
-				label: `${e.series?.title ?? 'Évaluation'} (${formLabel(e.form)})`
+				label: `${e.series?.title ?? 'Contrôle'} (${formLabel(e.form)})`
 			}))
 			.sort((a, b) => a.label.localeCompare(b.label, 'fr'));
 	}
@@ -344,7 +349,7 @@ export const actions: Actions = {
 		);
 
 		if (createError) {
-			console.error('[Create Journal Entry] Error:', createError);
+			logger.error('[Create Journal Entry] Error:', createError);
 			return fail(500, { error: createError.message, action: 'create' });
 		}
 
@@ -370,7 +375,7 @@ export const actions: Actions = {
 				// La séance, elle, est créée : un échec de couverture ne doit pas la
 				// perdre. On le signale sans annuler.
 				if (covError) {
-					console.error('[Create Journal Entry] coverage failed:', covError);
+					logger.error('[Create Journal Entry] coverage failed:', covError);
 					return {
 						success: true,
 						action: 'create',
@@ -390,7 +395,7 @@ export const actions: Actions = {
 					.from('journal_entry_activities')
 					.insert(rows.map((r) => ({ ...r, entry_id: entry.id })));
 				if (actError) {
-					console.error('[Create Journal Entry] activities failed:', actError);
+					logger.error('[Create Journal Entry] activities failed:', actError);
 					return {
 						success: true,
 						action: 'create',
@@ -427,7 +432,7 @@ export const actions: Actions = {
 				const rapport = await reconcileAutoCoverage(locals.supabase, entry.id);
 				avertissement = decrireNumerosIntrouvables(rapport);
 			} catch (e) {
-				console.error('[Create Journal Entry] reconcile failed:', e);
+				logger.error('[Create Journal Entry] reconcile failed:', e);
 			}
 		}
 
@@ -506,7 +511,7 @@ export const actions: Actions = {
 		);
 
 		if (updateError) {
-			console.error('[Update Journal Entry] Error:', updateError);
+			logger.error('[Update Journal Entry] Error:', updateError);
 			return fail(500, { error: updateError.message, action: 'update' });
 		}
 
@@ -533,7 +538,7 @@ export const actions: Actions = {
 			const rapport = await reconcileAutoCoverage(locals.supabase, entryId);
 			avertissement = decrireNumerosIntrouvables(rapport);
 		} catch (e) {
-			console.error('[Update Journal Entry] reconcile failed:', e);
+			logger.error('[Update Journal Entry] reconcile failed:', e);
 		}
 
 		return { success: true, action: 'update', warning: avertissement };
@@ -559,7 +564,7 @@ export const actions: Actions = {
 		const { error: deleteError } = await deleteJournalEntry(locals.supabase, entryId, user.id);
 
 		if (deleteError) {
-			console.error('[Delete Journal Entry] Error:', deleteError);
+			logger.error('[Delete Journal Entry] Error:', deleteError);
 			return fail(500, { error: deleteError.message, action: 'delete' });
 		}
 
@@ -589,7 +594,7 @@ export const actions: Actions = {
 		});
 
 		if (updateError) {
-			console.error('[Publish Journal Entry] Error:', updateError);
+			logger.error('[Publish Journal Entry] Error:', updateError);
 			return fail(500, { error: updateError.message, action: 'publish' });
 		}
 

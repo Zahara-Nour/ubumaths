@@ -252,7 +252,7 @@ export async function loadDocumentFromFile(
 	if (!file.name.endsWith(FILE_EXTENSION)) {
 		return {
 			success: false,
-			error: `Type de fichier non supporté. Utilisez un fichier ${FILE_EXTENSION}`
+			error: `Type de fichier non supporté : utiliser un fichier ${FILE_EXTENSION}`
 		};
 	}
 

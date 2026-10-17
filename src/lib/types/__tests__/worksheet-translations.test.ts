@@ -76,36 +76,55 @@ describe('localizedText()', () => {
  * continuer à se générer, en retombant sur les valeurs par défaut.
  */
 describe('asWorksheetConfig', () => {
-	it('conserve les champs bien typés', () => {
+	it('ne lit plus `shuffle_within_sections` (case retirée, D6) ; garde `shuffle_exercises`', () => {
+		const config = asWorksheetConfig({ shuffle_exercises: true, shuffle_within_sections: true });
+		expect(config.shuffle_exercises).toBe(true);
+		expect(config).not.toHaveProperty('shuffle_within_sections');
+	});
+
+	it('conserve les champs bien typés (options du type, ADR 0030)', () => {
 		const config = asWorksheetConfig({
 			language: 'en',
-			show_title: true,
-			font_size: 12,
-			page_layout: 'A4',
-			margins: { top: 1, bottom: 2, left: 3, right: 4 }
+			show_student_name: true,
+			show_points: false,
+			calculator: 'forbidden',
+			answers_on_sheet: true,
+			due_date: '2026-11-12'
 		});
 
-		expect(config.language).toBe('en');
-		expect(config.show_title).toBe(true);
-		expect(config.font_size).toBe(12);
-		expect(config.page_layout).toBe('A4');
-		expect(config.margins).toEqual({ top: 1, bottom: 2, left: 3, right: 4 });
+		expect(config).toEqual({
+			language: 'en',
+			show_student_name: true,
+			show_points: false,
+			calculator: 'forbidden',
+			answers_on_sheet: true,
+			due_date: '2026-11-12'
+		});
 	});
 
 	it('écarte les champs du mauvais type au lieu de les propager', () => {
 		const config = asWorksheetConfig({
 			language: 'kl',
-			show_title: 'oui',
-			font_size: 'grand',
-			page_layout: 'A3',
-			margins: { top: 1 }
+			show_student_name: 'oui',
+			calculator: 'parfois',
+			answers_on_sheet: 1,
+			due_date: '12/11/2026'
 		});
 
-		expect(config.language).toBeUndefined();
-		expect(config.show_title).toBeUndefined();
-		expect(config.font_size).toBeUndefined();
-		expect(config.page_layout).toBeUndefined();
-		expect(config.margins).toBeUndefined();
+		expect(config).toEqual({});
+	});
+
+	it('ne lit plus les anciennes options d’affichage (ADR 0030)', () => {
+		const config = asWorksheetConfig({
+			show_title: true,
+			numbering_style: 'roman',
+			correction_detail: 'concise',
+			font_size: 12,
+			page_layout: 'A4',
+			margins: { top: 1, bottom: 2, left: 3, right: 4 }
+		});
+
+		expect(config).toEqual({});
 	});
 
 	it('rend une configuration vide pour toute valeur non exploitable', () => {

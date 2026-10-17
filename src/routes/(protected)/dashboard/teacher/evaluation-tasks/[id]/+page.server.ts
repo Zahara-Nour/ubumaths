@@ -13,6 +13,11 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import type { MathCompetenceCode, SubdimensionLetter } from '$lib/types/skills';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/evaluation-tasks/[id]/+page.server'
+);
 
 export interface ObservableForPerimeter {
 	skill_id: string;
@@ -59,7 +64,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 		.maybeSingle();
 
 	if (taskErr) throw error(500, `Erreur de chargement : ${taskErr.message}`);
-	if (!task) throw error(404, 'Tâche introuvable');
+	if (!task) throw error(404, 'Observation introuvable');
 
 	// 2. Classes du prof pour le selecteur
 	const { data: classes, error: classesError } = await locals.supabase
@@ -71,10 +76,10 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (classesError) {
-		console.error('Enrichissement illisible :', classesError);
+		logger.error('Enrichissement illisible :', classesError);
 	}
 
-	// 3. Toutes les compétences math + sous-dimensions + observables (lecture publique)
+	// 3. Toutes les compétences math + composantes + observables (lecture publique)
 	const { data: competences, error: compErr } = await locals.supabase
 		.from('math_competences')
 		.select(
@@ -109,7 +114,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 		.eq('task_id', params.id);
 
 	if (perimeterError) {
-		console.error('Lecture impossible :', perimeterError);
+		logger.error('Lecture impossible :', perimeterError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -190,7 +195,7 @@ export const actions: Actions = {
 			})
 			.eq('id', params.id);
 		if (updErr) return fail(500, { message: updErr.message });
-		return { success: true, message: 'Tâche mise à jour' };
+		return { success: true, message: 'Observation mise à jour' };
 	},
 
 	save_perimeter: async ({ locals, request, params }) => {
@@ -204,11 +209,11 @@ export const actions: Actions = {
 
 		// PGRST116 = la tâche n'existe pas, et le 404 qui suit est légitime.
 		if (taskError && taskError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', taskError);
+			logger.error('Lecture impossible :', taskError);
 			return fail(500, { message: 'Lecture impossible' });
 		}
 		if (!task) {
-			return fail(404, { message: 'Tâche introuvable' });
+			return fail(404, { message: 'Observation introuvable' });
 		}
 
 		const formData = await request.formData();

@@ -31,6 +31,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { studentIdSchema, achievementContextSchema } from '$lib/server/validation/achievements';
 import { getStudentAchievements, AchievementServiceError } from '$lib/server/achievements/service';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/achievements/student/[studentId]/+server');
 
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const supabase = locals.supabase;
@@ -86,7 +89,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			count: achievements.length
 		});
 	} catch (err) {
-		console.error('[API] Error fetching student achievements:', err);
+		logger.error('[API] Error fetching student achievements:', err);
 
 		if (err instanceof AchievementServiceError) {
 			throw error(500, err.message);

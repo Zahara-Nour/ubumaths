@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
@@ -11,9 +13,10 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Plus, Copy, Trash2, Eye, FileText, Sparkles, Loader2 } from '@lucide/svelte';
+	import { Plus, Copy, Trash2, Eye, FileText, Sparkles, Loader2 } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
-	import type { DefaultTemplate } from '$lib/worksheets/default-templates';
+	import type { DefaultTemplate } from '$lib/typst/templates';
+	import type { WorksheetType } from '$lib/types/worksheets';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	// svelte-ignore state_referenced_locally
@@ -30,15 +33,6 @@
 	let deletingId = $state<string | null>(null);
 	let duplicatingId = $state<string | null>(null);
 	let creatingFromDefault = $state<string | null>(null);
-
-	// Type labels (for default templates)
-	const typeLabels: Record<string, string> = {
-		worksheet: 'Feuille',
-		assessment: 'Evaluation',
-		exam: lore.learning.exam,
-		quiz: 'Quiz',
-		homework: 'Corvées Domestiques'
-	};
 
 	/**
 	 * Apply filters to URL
@@ -104,25 +98,25 @@
 
 <div class="container mx-auto space-y-6 py-6">
 	<!-- Header -->
-	<div class="flex items-center gap-4">
-		<Button variant="ghost" size="icon" href="/dashboard/teacher/contenu/worksheets">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
-		<div class="flex-1">
-			<h1 class="text-3xl font-bold">Templates de mise en page</h1>
-			<p class="text-muted-foreground">
-				Gerez vos templates Typst pour personnaliser la mise en page de vos feuilles
-			</p>
-		</div>
-		<div class="flex gap-2">
-			<Button variant="outline" onclick={() => (showDefaultsDialog = true)}>
-				<Sparkles class="mr-2 h-4 w-4" />
-				Templates par defaut
-			</Button>
-			<Button href="/dashboard/teacher/contenu/worksheets/templates/new">
-				<Plus class="mr-2 h-4 w-4" />
-				Nouveau template
-			</Button>
+	<div>
+		<BackLink href="/dashboard/teacher/contenu/worksheets" label="Retour aux fiches" />
+		<div class="flex items-center gap-4">
+			<div class="flex-1">
+				<h1 class="text-3xl font-bold">Templates de mise en page</h1>
+				<p class="text-muted-foreground">
+					Gerez vos templates Typst pour personnaliser la mise en page de vos feuilles
+				</p>
+			</div>
+			<div class="flex gap-2">
+				<Button variant="outline" onclick={() => (showDefaultsDialog = true)}>
+					<Sparkles class="mr-2 h-4 w-4" />
+					Templates par defaut
+				</Button>
+				<Button href="/dashboard/teacher/contenu/worksheets/templates/new">
+					<Plus class="mr-2 h-4 w-4" />
+					Nouveau template
+				</Button>
+			</div>
 		</div>
 	</div>
 
@@ -223,7 +217,7 @@
 												return async ({ result, update }) => {
 													await update();
 													if (result.type === 'success') {
-														toaster.success('Template duplique');
+														toaster.success('Modèle dupliqué');
 														await invalidateAll();
 													}
 													duplicatingId = null;
@@ -251,7 +245,7 @@
 													return async ({ result, update }) => {
 														await update();
 														if (result.type === 'success') {
-															toaster.success('Template supprime');
+															toaster.success('Modèle supprimé');
 															await invalidateAll();
 														}
 														deletingId = null;
@@ -331,7 +325,9 @@
 					<Card.Header class="pb-2">
 						<div class="flex items-center justify-between">
 							<Card.Title class="text-base">{template.name}</Card.Title>
-							<Badge variant="outline">{typeLabels[template.type]}</Badge>
+							<Badge variant="outline"
+								>{WORKSHEET_TYPE_LABELS[template.type as WorksheetType] ?? template.type}</Badge
+							>
 						</div>
 					</Card.Header>
 					<Card.Content>

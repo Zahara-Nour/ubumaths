@@ -7,6 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { isBuiltInStyle } from '$lib/typst/templates/styles';
 import { syncResourceTags, fetchTagNamesForResources } from '$lib/server/resource-tags';
 import {
 	validateListWorksheetsQuery,
@@ -15,6 +16,9 @@ import {
 	createWorksheetResponseSchema
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -32,7 +36,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Invalid query parameters: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { page, limit, status, type, search } = queryValidation.data;
@@ -74,8 +78,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data: worksheets, error: dbError, count } = await query;
 
 	if (dbError) {
-		console.error('Failed to fetch worksheets:', dbError);
-		throw error(500, 'Failed to fetch worksheets');
+		logger.error('Failed to fetch worksheets:', dbError);
+		throw error(500, 'Impossible de charger les fiches');
 	}
 
 	// Les étiquettes ne sont plus une colonne de `worksheets` (migration
@@ -139,7 +143,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateCreateWorksheet(body);
@@ -147,7 +151,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data;
@@ -163,7 +167,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			translations: data.translations ?? null,
 			status: 'draft',
 			version: 1,
-			template_id: data.template_id ?? null,
+			// Un style de Chiphre a le même identifiant que son gabarit (voir le PUT)
+			template_id:
+				data.style_id && isBuiltInStyle(data.style_id) ? data.style_id : (data.template_id ?? null),
+			style_id: data.style_id ?? null,
 			estimated_duration_minutes: data.estimated_duration_minutes ?? null,
 			total_points: data.total_points ?? null,
 			grades: data.grades ?? [],
@@ -174,8 +181,12 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to create worksheet:', dbError);
-		throw error(500, 'Failed to create worksheet');
+		// Trigger de `worksheets.style_id` : style d'un autre auteur
+		if (dbError.code === '42501') {
+			throw error(403, 'Ce style n’est pas disponible pour cette fiche');
+		}
+		logger.error('Failed to create worksheet:', dbError);
+		throw error(500, 'Impossible de créer la fiche');
 	}
 
 	// Les tags vivent dans `resource_tags`, plus dans une colonne de la fiche.

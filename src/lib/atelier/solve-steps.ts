@@ -17,7 +17,13 @@
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import type { EquationStep } from '$lib/mathAST/pedagogical-solve';
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
+import type {
+	PedagogicalRenderOptions,
+	SchoolLevel,
+	StepRenderer
+} from '$lib/mathAST/common/step-renderer-base';
 import {
+	AbsoluteValueEquationRenderer,
 	generateEquationSteps,
 	generateInequalitySteps,
 	LinearEquationRenderer,
@@ -31,7 +37,13 @@ import {
 } from '$lib/mathAST/cli/core/variable-argument';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { astOf } from './parse';
-import { conclusionAgrees } from './solve-steps-check';
+import { concludedSolutions, conclusionAgrees } from './solve-steps-check';
+import { summaryOf } from './steps-summary';
+import { approximateSolutionsLatex } from '$lib/mathAST/cli/approximation';
+import type { Domain } from '$lib/mathAST/domain/types';
+import { containsValue } from '$lib/mathAST/domain/algebra';
+import { evaluate } from '$lib/mathAST/eval';
+import { intervalText } from './interval';
 
 // =============================================================================
 // Constantes
@@ -53,7 +65,9 @@ const CONCLUSIONS: ReadonlySet<string> = new Set([
 	// par un ensemble de solutions : `S = ]-∞ ; -2] ∪ [2 ; +∞[`.
 	'inequality-conclude-rational',
 	'inequality-conclude-from-isolated-square',
-	'inequality-conclude-quadratic'
+	'inequality-conclude-quadratic',
+	// Une équation avec valeur absolue peut conclure `S = ℝ` (|x − 1| = |1 − x|)
+	'read-all-reals'
 	// ⚠️ **`inequality-conclude-truth` est ABSENT, et délibérément.** Il annonce
 	// une contradiction dès qu'il n'arrive pas à évaluer la comparaison —
 	// mesuré, `0x<5` rend « contradiction : S = ∅ » alors que 0 < 5 est
@@ -79,8 +93,53 @@ const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 export interface SolvedSteps {
 	/** Les étapes rendues, prêtes pour `GeneratedStepsCorrection`. */
 	readonly steps: readonly RenderedStep[];
+	/** Les mêmes étapes en version résumée, absente si elle ne dit rien de moins. */
+	readonly summary?: readonly RenderedStep[];
 	/** La réponse en LaTeX, jamais vide — la ligne d'historique l'affiche. */
 	readonly answer: string;
+	/**
+	 * Les MÊMES solutions en valeurs approchées, pour le bouton ≈ : dans l'ordre
+	 * et sous la forme de `answer` (revue : celles du moteur, triées, ne
+	 * correspondaient plus à la ligne quand a < 0).
+	 */
+	readonly approximate?: string;
+}
+
+/** Le type d'équation qu'annonce la première étape (`identify-equation`). */
+type EquationType = Extract<
+	EquationStep['operation'],
+	{ kind: 'identify-equation' }
+>['equationType'];
+
+/**
+ * Le renderer d'un type d'équation, et le niveau auquel il rend.
+ *
+ * ⚠️ **Exhaustif, sans `else` fourre-tout.** L'ancien `kind === 'linear' ?
+ * Linear : Quadratic` envoyait sans bruit tout nouveau type au renderer du
+ * second degré — mesuré le 2026-10-13, `|2x+1|=5` s'y annonçait « Équation du
+ * second degré ». Un type ajouté sans sa ligne ici ne compile plus.
+ */
+export function rendererFor(kind: EquationType): {
+	readonly renderer: StepRenderer<EquationStep, PedagogicalRenderOptions>;
+	readonly schoolLevel: SchoolLevel;
+} {
+	switch (kind) {
+		case 'linear':
+			return { renderer: new LinearEquationRenderer(), schoolLevel: 'college' };
+		// `rational` : les inéquations rationnelles, que `correction-generator`
+		// confie, comme nous, au renderer du second degré
+		case 'quadratic':
+		case 'rational':
+			return { renderer: new QuadraticEquationRenderer(), schoolLevel: 'lycee' };
+		// Le niveau demandé à la génération (`college`) : chaque branche du premier
+		// degré se rédige comme l'équation seule (« On soustrait 1 aux deux membres »)
+		case 'absolute-value':
+			return { renderer: new AbsoluteValueEquationRenderer(), schoolLevel: 'college' };
+		default: {
+			const unknown: never = kind;
+			throw new Error(`rendererFor: type d'équation inconnu ${String(unknown)}`);
+		}
+	}
 }
 
 /** Le membre de gauche est-il l'inconnue toute seule ? */
@@ -130,8 +189,12 @@ function answerFor(step: EquationStep, rendered: RenderedStep): string | null {
  *   « résoudre `3x+5=14` en x ». L'inconnue est x, sauf si une autre est
  *   donnée après un point-virgule (`3 = 2t ; t`) — comme `.solve`, aucune
  *   devinette (décision de David, 2026-10-06).
+ * @param within - L'ensemble de la fonction résolue (lot 2 de
+ *   `docs/wip/atelier-intervalle-phase0.md`) : les étapes résolvent sur ℝ, puis
+ *   une dernière ne garde que les solutions de l'ensemble. Seulement pour une
+ *   équation qui conclut sur des solutions isolées ; sinon, repli (`null`).
  */
-export function solveSteps(argument: string): SolvedSteps | null {
+export function solveSteps(argument: string, within?: Domain): SolvedSteps | null {
 	try {
 		// ⚠️ **On lit l'argument comme des MATHÉMATIQUES, pas comme une ligne de
 		// commande.** Le moteur, lui, appliquait deux conventions de terminal qui
@@ -180,16 +243,8 @@ export function solveSteps(argument: string): SolvedSteps | null {
 		const kind = first?.kind === 'identify-equation' ? first.equationType : null;
 		if (kind === null) return null;
 
-		const rendered =
-			kind === 'linear'
-				? new LinearEquationRenderer().renderAll(steps, {
-						schoolLevel: 'college',
-						verbosity: 'detailed'
-					})
-				: new QuadraticEquationRenderer().renderAll(steps, {
-						schoolLevel: 'lycee',
-						verbosity: 'detailed'
-					});
+		const { renderer, schoolLevel } = rendererFor(kind);
+		const rendered = renderer.renderAll(steps, { schoolLevel, verbosity: 'detailed' });
 
 		// Sans réponse affichable, la ligne n'aurait RIEN à montrer : une zone
 		// mathématique vide, et le texte du moteur jamais affiché.
@@ -201,7 +256,25 @@ export function solveSteps(argument: string): SolvedSteps | null {
 		// conclusion que les nombres démentent n'est jamais montrée : repli.
 		if (!conclusionAgrees(relation, variable, steps[steps.length - 1])) return null;
 
-		return { steps: rendered, answer };
+		const solutions = concludedSolutions(steps[steps.length - 1]);
+		const summarized = renderer.renderAll(steps, { schoolLevel, verbosity: 'summarized' });
+		if (within !== undefined) {
+			return solutions === null
+				? null
+				: restrictedSteps(rendered, summarized, solutions, variable, within);
+		}
+		const approximate =
+			solutions === null
+				? null
+				: approximateSolutionsLatex(variable, solutions, answer.trimStart().startsWith('S'));
+		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
+		const summary = summaryOf(rendered, summarized);
+		return {
+			steps: rendered,
+			answer,
+			...(summary !== undefined && { summary }),
+			...(approximate !== null && { approximate })
+		};
 	} catch {
 		// Degré ≥ 3, non-polynomial, coefficients paramétriques, inconnue
 		// introuvable (`b*x+5=14` → « cannot detect a single variable », une
@@ -209,4 +282,54 @@ export function solveSteps(argument: string): SolvedSteps | null {
 		// qui refuse ce qu'on lui donne.
 		return null;
 	}
+}
+
+/**
+ * Les étapes sur ℝ, puis celle qui ne garde que les solutions de l'ensemble
+ * (`x = 2` pour x² = 4 sur [0 ; +∞[). La réponse est celle de cette étape.
+ */
+function restrictedSteps(
+	rendered: readonly RenderedStep[],
+	summarized: readonly RenderedStep[],
+	solutions: readonly MathNode[],
+	variable: string,
+	within: Domain
+): SolvedSteps | null {
+	const kept: MathNode[] = [];
+	for (const solution of solutions) {
+		const value = numericValueOf(solution);
+		if (value === null) return null;
+		if (containsValue(within, value)) kept.push(solution);
+	}
+	const answer =
+		kept.length === 0
+			? 'S = \\emptyset'
+			: kept.length === 1
+				? `${variable} = ${toLatex(kept[0])}`
+				: `S = \\left\\{ ${kept.map((k) => toLatex(k)).join(' \\,;\\, ')} \\right\\}`;
+	const last = (steps: readonly RenderedStep[]): RenderedStep => ({
+		id: steps.length,
+		rule: 'keep-in-interval',
+		title: `On ne garde que les solutions qui sont dans ${intervalText(within)}`,
+		expressionLatex: answer
+	});
+	const detailed = [...rendered, last(rendered)];
+	const summary = summaryOf(detailed, [...summarized, last(summarized)]);
+	const approximate = approximateSolutionsLatex(variable, kept, kept.length > 1);
+	return {
+		steps: detailed,
+		answer,
+		...(summary !== undefined && { summary }),
+		...(approximate !== null && { approximate })
+	};
+}
+
+/** La valeur décimale d'une solution, ou `null`. */
+function numericValueOf(node: MathNode): number | null {
+	const result = evaluate(node, { mode: 'decimal' });
+	return result.status === 'value' &&
+		typeof result.value === 'number' &&
+		Number.isFinite(result.value)
+		? result.value
+		: null;
 }

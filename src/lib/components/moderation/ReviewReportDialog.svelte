@@ -183,7 +183,7 @@
 
 			if (!response.ok) {
 				const error = await response.text();
-				throw new Error(error || 'Failed to review report');
+				throw new Error(error || 'Impossible de traiter le signalement');
 			}
 
 			const actionMessage =

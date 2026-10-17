@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
 	import { Figure } from '$lib/geometry-core/graph/figure';
 	import { exact } from '$lib/geometry-core/types/geo-value';
@@ -345,9 +346,7 @@
 </script>
 
 <div class="p-4">
-	<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-		>← Retour aux demos</a
-	>
+	<BackLink href="/geometry-demo" label="Retour aux démos" />
 
 	<h1 class="mt-4 mb-4 text-2xl font-bold">Geometry Demo</h1>
 	<p class="mb-4 text-muted-foreground">

@@ -15,6 +15,9 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { computePointBadges, type CapacityBadge } from '$lib/server/srs/capacity-badge';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/objectifs/[id]/+page.server');
 
 export interface CapacityDetail {
 	id: string;
@@ -117,7 +120,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Objectiv
 		.in('point_id', pointIds);
 
 	if (automatismeRowsError) {
-		console.error('Lecture impossible :', automatismeRowsError);
+		logger.error('Lecture impossible :', automatismeRowsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

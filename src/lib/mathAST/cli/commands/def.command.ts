@@ -21,6 +21,7 @@ import {
 } from '../core/eval-state';
 import { differentiate, DifferentiationError } from '../../differentiation';
 import { computeDomain } from '../../domain/compute';
+import { isLogical, isLogicalNot, isRelation } from '../../guards';
 import { formatDomainCondition } from '../../domain/format';
 
 // =============================================================================
@@ -128,8 +129,8 @@ export class DefCommand extends BaseCommand {
 			};
 		}
 
-		// Parse the expression
-		const parseResult = parse(expressionStr);
+		// Le corps lu avec les fonctions déjà liées : `.def m(x) = k(x)+1` (revue)
+		const parseResult = parse(expressionStr, { evalState: ctx.evalState });
 
 		if (parseResult.errors.length > 0 || !parseResult.ast) {
 			const errorMsg = parseResult.errors[0]?.message ?? 'Failed to parse expression';
@@ -149,24 +150,29 @@ export class DefCommand extends BaseCommand {
 		// Store the function binding
 		createFunctionBinding(ctx.evalState, funcName, params, parseResult.ast);
 
-		// Auto-compute derivative (with respect to first parameter)
+		// Auto-compute derivative (with respect to first parameter) — pas pour une définition
+		// booléenne (`f(x) = x == 2`) : « Cannot differentiate a relation », en anglais (2026-10-12)
 		let derivativeInfo = '';
-		try {
-			const derivative = differentiate(parseResult.ast, {
-				variable: params[0],
-				simplify: true
-			});
-			setFunctionDerivative(ctx.evalState, funcName, derivative);
-			const derivStr = toCustom(derivative);
-			derivativeInfo =
-				'\n  ' + chalk.dim(`${funcName}'(${paramsDisplay})`) + ' = ' + chalk.dim(derivStr);
-		} catch (err) {
-			// Differentiation failed - show warning but continue
-			if (err instanceof DifferentiationError) {
+		const booleanBody =
+			isRelation(parseResult.ast) || isLogical(parseResult.ast) || isLogicalNot(parseResult.ast);
+		if (!booleanBody) {
+			try {
+				const derivative = differentiate(parseResult.ast, {
+					variable: params[0],
+					simplify: true
+				});
+				setFunctionDerivative(ctx.evalState, funcName, derivative);
+				const derivStr = toCustom(derivative);
 				derivativeInfo =
-					'\n  ' + chalk.yellow(`Warning: Could not auto-compute derivative: ${err.message}`);
+					'\n  ' + chalk.dim(`${funcName}'(${paramsDisplay})`) + ' = ' + chalk.dim(derivStr);
+			} catch (err) {
+				// Differentiation failed - show warning but continue
+				if (err instanceof DifferentiationError) {
+					derivativeInfo =
+						'\n  ' + chalk.yellow(`Warning: Could not auto-compute derivative: ${err.message}`);
+				}
+				// For other errors, silently ignore (function is still defined)
 			}
-			// For other errors, silently ignore (function is still defined)
 		}
 
 		// Auto-compute domain (with respect to first parameter)

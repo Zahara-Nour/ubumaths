@@ -14,7 +14,7 @@ const DELETION_CONFIRMATION_PHRASE = 'SUPPRIMER MON COMPTE';
  */
 export const deleteAccountSchema = z.object({
 	confirmation: z.string().refine((val) => val === DELETION_CONFIRMATION_PHRASE, {
-		message: `Veuillez saisir exactement '${DELETION_CONFIRMATION_PHRASE}' pour confirmer la suppression`
+		message: `Saisir exactement '${DELETION_CONFIRMATION_PHRASE}' pour confirmer la suppression`
 	})
 });
 

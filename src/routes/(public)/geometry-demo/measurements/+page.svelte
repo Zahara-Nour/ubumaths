@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	const distanceDsl = `A = point(-3, -1, couleur="bleu")
@@ -67,9 +68,7 @@ rtexte(-5, 4, "**Distance** AB = $d = {d:.2f}$")`;
 
 <div class="container mx-auto max-w-6xl space-y-10 p-4">
 	<div>
-		<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline">
-			&larr; Geometry Demos
-		</a>
+		<BackLink href="/geometry-demo" label="Retour aux démos" />
 		<h1 class="mt-2 text-2xl font-bold">Mesures et texte</h1>
 		<p class="text-muted-foreground">
 			Affichage de mesures sur les figures : distances, angles, aires. Les valeurs se mettent a jour

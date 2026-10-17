@@ -21,10 +21,21 @@ sous des noms `--color-*` :
 ```css
 --color-background: light-dark(#fafafa, #262624);
 --color-foreground: light-dark(#1a1a1a, #efefef);
---color-muted-foreground: light-dark(#737373, #9e9e9e);
+--color-muted-foreground: light-dark(#666666, #9e9e9e);
 --color-border: light-dark(#e0e0e0, #3d3d3a);
---color-ring: light-dark(#ffa000, #e0d5a6);
+--color-ring: light-dark(#b25f00, #e0d5a6);
 ```
+
+**Contrastes du thème clair** (K19, décisions D16 et D17 de David, 2026-10-12), vérifiés par
+`src/lib/__tests__/accessibilite-k19.test.ts`, qui lit les valeurs dans `app.css` :
+
+- `--color-ring` `#b25f00` (anneau de focus, WCAG 1.4.11 : 3:1) : 4,6:1 sur blanc, 4,4:1 sur le
+  fond de page `#fafafa`. L'ancien `#ffa000` faisait 2,0:1.
+- `--color-muted-foreground` `#666666` (texte secondaire, WCAG 1.4.3 : 4,5:1) : 5,3:1 sur
+  `bg-muted/40`, 5,2:1 sur `bg-muted/60` (fonds composés sur `#fafafa`), 5,0:1 sur `bg-muted`
+  plein. L'ancien `#737373` faisait 4,4:1 et 4,3:1.
+
+Le thème sombre ne change pas.
 
 L'idiome `hsl(var(--border))` vient de Tailwind 3 / shadcn, où les tokens
 contenaient des **triplets HSL bruts** (`0 0% 89%`) que `hsl()` devait envelopper.
@@ -127,7 +138,7 @@ Règles :
 
 - **Ne jamais écrire `@media (prefers-color-scheme: dark)`** dans un composant : il
   suit l'OS, pas le bouton. Écrire `:global(.dark) .x` (ou `.dark .x` dans un
-  `<style>` global, p. ex. sous `<svelte:head>`, cf. `/api-docs`, #686).
+  `<style>` global, p. ex. sous `<svelte:head>`, cf. la page Swagger `/dashboard/admin/debug/api-docs`, #686).
 - Ne pas réécrire `style.colorScheme` à la main : mode-watcher le fait déjà, au
   chargement (script anti-FOUC) comme à chaque bascule.
 - Pour tester : les **deux cas mixtes** (OS clair + choix sombre, et l'inverse).
@@ -270,4 +281,4 @@ vrais fonds absents, par exemple :
 - `.choice-button`, `.ordering-item` : fonds des réponses d'exercice absents ;
 - les pouces d'ascenseur `::-webkit-scrollbar-thumb`, invisibles.
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-12.

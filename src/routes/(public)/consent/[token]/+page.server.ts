@@ -9,6 +9,9 @@ import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/consent/[token]/+page.server');
 
 const tokenSchema = z.string().uuid();
 
@@ -53,14 +56,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	});
 
 	if (dbError) {
-		console.error('[consent page] Database error:', dbError);
-		throw error(500, 'Erreur serveur. Veuillez réessayer plus tard.');
+		logger.error('[consent page] Database error:', dbError);
+		throw error(500, 'Erreur serveur. Réessayer plus tard.');
 	}
 
 	// Validate response structure
 	const validation = consentInfoSchema.safeParse(data);
 	if (!validation.success) {
-		console.error('[consent page] Invalid RPC response:', validation.error);
+		logger.error('[consent page] Invalid RPC response:', validation.error);
 		throw error(500, 'Données de consentement invalides.');
 	}
 
@@ -132,14 +135,14 @@ export const actions: Actions = {
 		});
 
 		if (dbError) {
-			console.error('[consent grant] Database error:', dbError);
-			return fail(500, { error: 'Erreur serveur. Veuillez réessayer.' });
+			logger.error('[consent grant] Database error:', dbError);
+			return fail(500, { error: 'Erreur serveur. Réessayer.' });
 		}
 
 		// Validate response structure
 		const validation = grantResponseSchema.safeParse(data);
 		if (!validation.success) {
-			console.error('[consent grant] Invalid RPC response:', validation.error);
+			logger.error('[consent grant] Invalid RPC response:', validation.error);
 			return fail(500, { error: 'Réponse serveur invalide.' });
 		}
 
@@ -155,7 +158,7 @@ export const actions: Actions = {
 
 		// Trace sans donnée personnelle (nom de l'élève mineur, IP du parent) : la preuve
 		// complète est dans parental_consents.
-		console.log(`[consent grant] Success - Token: ${token.slice(0, 8)}...`);
+		logger.info('[consent grant] Success');
 
 		// Redirect to success page
 		throw redirect(303, '/consent/success');

@@ -23,6 +23,9 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/marketplace/participants');
 
 /** Le nom d'affichage d'un participant, tel que la fonction bornée le rend. */
 export type Participant = { id: string; display_name: string; avatar_url: string | null };
@@ -45,7 +48,7 @@ export async function fetchParticipants(
 	});
 
 	if (error) {
-		console.error('[marketplace] Participants illisibles :', error);
+		logger.error('[marketplace] Participants illisibles :', error);
 		return new Map();
 	}
 

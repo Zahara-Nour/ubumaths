@@ -14,6 +14,9 @@ import {
 	enrichListingsWithCardData,
 	enrichWithParticipants
 } from '$lib/server/marketplace/helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/listings/+server');
 // TODO: Add cache invalidation when cache-manager is properly implemented
 // import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
 
@@ -73,7 +76,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// For students, check if marketplace is enabled
 		const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 		if (!marketplaceEnabled) {
-			throw error(403, "Le marketplace n'est pas activé pour votre classe");
+			throw error(403, "Le marketplace n'est pas activé pour cette classe");
 		}
 
 		// Un élève ne consulte par auteur que SES annonces (seul usage de l'interface) :
@@ -144,7 +147,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { data: listings, error: listingsError, count } = await query;
 
 	if (listingsError) {
-		console.error('Error fetching listings:', listingsError);
+		logger.error('Error fetching listings:', listingsError);
 		throw error(500, 'Erreur lors de la récupération des annonces');
 	}
 
@@ -169,16 +172,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					);
 
 					if (viewError) {
-						console.error('Error recording batch views:', viewError);
+						logger.error('Error recording batch views:', viewError);
 					} else {
 						// `RETURNS json` : on valide la forme au lieu de lire une clé sur `Json`.
 						const vues = recordListingViewsSchema.safeParse(viewResult);
 						if (vues.success && vues.data.new_views > 0) {
-							console.log(`Recorded ${vues.data.new_views} new unique views`);
+							logger.info(`Recorded ${vues.data.new_views} new unique views`);
 						}
 					}
 				} catch (err) {
-					console.error('Error recording batch views:', err);
+					logger.error('Error recording batch views:', err);
 				}
 			})();
 		}
@@ -230,13 +233,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Check if marketplace is enabled
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
-		throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		throw error(403, "Le marketplace n'est pas activé pour cette classe");
 	}
 
 	// Check active listings limit
 	const withinLimit = await checkActiveListingsLimit(supabase, userId);
 	if (!withinLimit) {
-		throw error(403, "Vous avez atteint le nombre maximum d'annonces actives");
+		throw error(403, "Nombre maximum d'annonces actives atteint");
 	}
 
 	// For 'sell' listings, validate card ownership and availability
@@ -246,7 +249,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Verify ownership
 			const ownsCards = await validateCardOwnership(supabase, userId, data.offered_card_ids);
 			if (!ownsCards) {
-				throw error(403, 'Vous ne possédez pas toutes les cartes spécifiées');
+				throw error(403, 'Certaines des cartes spécifiées manquent dans la collection');
 			}
 		}
 	}
@@ -289,7 +292,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (listingError) {
-		console.error('Error creating listing:', listingError);
+		logger.error('Error creating listing:', listingError);
 		throw error(500, "Erreur lors de la création de l'annonce");
 	}
 

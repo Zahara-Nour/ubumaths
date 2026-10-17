@@ -14,6 +14,7 @@
  */
 
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import type { Atelier } from './atelier.svelte';
 
 // =============================================================================
 // Types
@@ -42,14 +43,6 @@ export interface AtelierCommand {
 	/** Reléguée : tapable, mais pas proposée en premier (§5 L2). */
 	readonly advanced?: boolean;
 	/**
-	 * Pourquoi cette commande ne peut rien produire ici, si elle ne le peut pas.
-	 *
-	 * Même principe qu'au §3 pour les actions : **visible et désactivée avec sa
-	 * raison**, jamais cachée. Un élève qui ne la voit plus conclut que l'outil
-	 * ne sait pas faire ; un élève qui lit la raison sait à quoi s'en tenir.
-	 */
-	readonly unavailable?: string;
-	/**
 	 * Les listes que cite l'exemple (`.simuler L M 100`) : il se joue dans un
 	 * atelier qui les contient, sur le chemin réel de l'élève (Q79). Un décor
 	 * VIDE (`.binomiale`) déclare une commande qui montre un tableau ou un
@@ -58,6 +51,13 @@ export interface AtelierCommand {
 	readonly exampleSetup?: Readonly<Record<string, string>>;
 	/** La rubrique de `.aide` ; absente = commande de développeur. */
 	readonly section?: HelpSection;
+	/**
+	 * Se lance sans argument (`.aide`, `.exact`) : tapée en entier, une seule
+	 * Entrée la lance au lieu de la choisir dans la liste (décision de David,
+	 * 2026-10-11). ⚠️ « Sans exemple » ne suffit pas à le dire : `.arbre` n'a
+	 * pas d'exemple et attend une expression.
+	 */
+	readonly runsAlone?: boolean;
 }
 
 // =============================================================================
@@ -70,9 +70,9 @@ interface Translation {
 	readonly description: string;
 	readonly example?: string;
 	readonly advanced?: boolean;
-	readonly unavailable?: string;
 	readonly exampleSetup?: Readonly<Record<string, string>>;
 	readonly section?: HelpSection;
+	readonly runsAlone?: boolean;
 }
 
 /**
@@ -99,6 +99,16 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 			section: 'calculer',
 			description: 'Factoriser une expression',
 			example: '.factoriser x^2-4'
+		}
+	],
+	[
+		// Servie par l'atelier (`expand.ts`) : le registre n'a pas d'`expand`
+		'expand',
+		{
+			french: 'développer',
+			section: 'calculer',
+			description: 'Développer et réduire une expression',
+			example: '.développer (2x-1)(x+3)'
 		}
 	],
 	[
@@ -246,12 +256,41 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		}
 	],
 	[
+		'tabulate',
+		{
+			french: 'tabuler',
+			section: 'analyser',
+			description: 'Écrire le tableau de valeurs d’une fonction dans la grille (de … à … pas …)',
+			example: '.tabuler f de -2 à 3 pas 0,5',
+			// L'exemple cite une fonction : il se joue dans cet atelier (Q79)
+			exampleSetup: { 'f(x)': 'x^2-3x' }
+		}
+	],
+	[
+		'reciprocal',
+		{
+			french: 'réciproque',
+			section: 'analyser',
+			description: 'Calculer la réciproque d’une fonction (sur un intervalle : sur …)',
+			example: '.réciproque x^2 sur [0;+∞['
+		}
+	],
+	[
 		'domain',
 		{
 			french: 'domaine',
 			section: 'analyser',
 			description: 'Trouver le domaine de définition',
 			example: '.domaine 1/x'
+		}
+	],
+	[
+		'limit',
+		{
+			french: 'limite',
+			section: 'analyser',
+			description: 'Calculer une limite (en un point, à droite ou à gauche, en +∞)',
+			example: '.limite (x^2-1)/(x-1) en 1'
 		}
 	],
 	[
@@ -268,7 +307,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		{
 			french: 'évaluer',
 			section: 'calculer',
-			description: 'Évaluer une expression en remplaçant une lettre (en x=…)',
+			description: 'Évaluer une expression en remplaçant ses lettres (en x=… ; y=…)',
 			example: '.évaluer x^2 en x=3'
 		}
 	],
@@ -296,68 +335,23 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		}
 	],
 	[
-		'let',
+		'vars',
 		{
-			french: 'poser',
-			description: 'Poser une valeur',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
+			french: 'valeurs',
+			section: 'reglages',
+			description: 'Lister tes valeurs, comme « Mes objets »',
+			example: '.valeurs',
+			runsAlone: true
 		}
 	],
 	[
-		'def',
+		'fns',
 		{
-			french: 'définir',
-			description: 'Définir une fonction',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
-	],
-	[
-		'clear',
-		{
-			french: 'effacer',
-			description: 'Effacer toutes les valeurs',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
-	],
-	[
-		'unset',
-		{
-			french: 'oublier',
-			description: 'Oublier une valeur',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
-	],
-	[
-		'undef',
-		{
-			french: 'oublier-fonction',
-			description: 'Oublier une fonction',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
-	],
-	['vars', { french: 'valeurs', description: 'Lister les valeurs connues du moteur' }],
-	['fns', { french: 'fonctions', description: 'Lister les fonctions connues du moteur' }],
-	[
-		'inv',
-		{
-			french: 'réciproque',
-			description: 'Afficher ou donner la réciproque d’une fonction',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
-	],
-	[
-		"def'",
-		{
-			french: 'dérivée-de',
-			description: 'Donner soi-même la dérivée d’une fonction',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
+			french: 'fonctions',
+			section: 'reglages',
+			description: 'Lister tes fonctions (f′ et f⁻¹ comprises), comme « Mes objets »',
+			example: '.fonctions',
+			runsAlone: true
 		}
 	],
 	[
@@ -369,16 +363,16 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 			example: '.mode exact'
 		}
 	],
-	['help', { french: 'aide', description: 'Afficher les commandes disponibles' }],
+	['help', { french: 'aide', description: 'Afficher les commandes disponibles', runsAlone: true }],
 	// Avancées : elles restent tapables, mais ne s'affichent pas en premier.
 	[
 		'normal',
 		{ french: 'forme-normale', description: 'Afficher la forme normale détaillée', advanced: true }
 	],
-	['latex', { french: 'latex', description: 'Écrire la réponse en LaTeX', advanced: true }],
+	['latex', { french: 'latex', description: 'Écrire une expression en LaTeX', advanced: true }],
 	[
 		'custom',
-		{ french: 'texte', description: 'Écrire la réponse en syntaxe texte', advanced: true }
+		{ french: 'texte', description: 'Écrire une expression en syntaxe texte', advanced: true }
 	],
 	[
 		'parse',
@@ -389,6 +383,33 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'hash',
 		{ french: 'empreinte', description: 'Calculer l’empreinte d’une expression', advanced: true }
 	]
+]);
+
+/**
+ * Les commandes du registre qui n'existent PAS dans l'atelier (décision de
+ * David, 2026-10-13 : « elles ne sont pas censées exister »).
+ *
+ * Elles écrivent dans l'`EvalState` du moteur, alors que **l'atelier détient
+ * les noms** (Q1 option B) : le panneau fait la même chose (`a = 3`,
+ * `f(x) = x^2`, supprimer une carte). Hors du catalogue, tapées en entier,
+ * elles répondent comme toute commande inconnue — sans refus particulier.
+ *
+ * ⚠️ Elles étaient d'abord « indisponibles » : grisées dans la liste, mais
+ * exécutées quand on les tapait. Mesuré le 2026-10-13 : `.effacer` vidait le
+ * moteur (`a + 1` rendait « a+1 » avec `a = 3` au panneau), `.définir` créait
+ * une fonction invisible. Ne pas les remettre au catalogue sous une autre forme.
+ *
+ * `inv` : la réciproque donnée à la main, jamais vérifiée. La vraie
+ * réciproque, calculée, est `.réciproque` (`reciprocal`, servie par l'atelier).
+ */
+export const ENGINE_COMMANDS_LEFT_OUT: ReadonlySet<string> = new Set([
+	'let',
+	'def',
+	'clear',
+	'unset',
+	'undef',
+	'inv',
+	"def'"
 ]);
 
 /**
@@ -404,8 +425,32 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
  * l'intention `factoriser` de `pedagogical-simplify` n'était donc atteignable
  * depuis aucune interface.
  */
+/**
+ * Poser dans un atelier le décor d'un exemple (Q79) : `L` → une liste, `f(x)`
+ * → une fonction (`.tabuler f`, lot 3 du tableur).
+ */
+export function stageExampleSetup(
+	atelier: Atelier,
+	setup: Readonly<Record<string, string>> | undefined
+): void {
+	for (const [key, definition] of Object.entries(setup ?? {})) {
+		const call = /^([A-Za-z])\(x\)$/.exec(key);
+		if (call === null) atelier.create({ kind: 'list', name: key, definition });
+		else atelier.create({ kind: 'function', name: call[1], definition });
+	}
+}
+
 export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'factor',
+	// `.développer` : l'intention `developper`, la réponse seule (`expand.ts`)
+	'expand',
+	// `.réciproque` : calculée, vérifiée (`reciprocal.ts`) — rien à voir avec
+	// `inv` du moteur, laissée de côté (`ENGINE_COMMANDS_LEFT_OUT`)
+	'reciprocal',
+	// `.tabuler` : le tableau de valeurs, écrit dans la grille (tableur, lot 3)
+	'tabulate',
+	// `.limite` : `evaluateLimit` (`mathAST/limits`), la réponse en formule (`limit.ts`)
+	'limit',
 	'simulate',
 	'frequency',
 	'samples',
@@ -424,6 +469,9 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
  *
  * ⚠️ `getCommands()` ne les connaît pas : sans cette table, `.convertir` et
  * `.stats` resteraient invisibles alors qu'elles marchent.
+ *
+ * Exception : `export` (`.exporter`) n'est plus exécutée par le moteur
+ * (allègement, 2026-10-13) ; le pupitre la sert lui-même (`isExportCommand`).
  */
 const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 	[
@@ -460,18 +508,17 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 			example: '.ajustement 1 ; 2 ; 3 ; 4 ; 5 ; 6 : 12 ; 15 ; 19 ; 22 ; 27 ; 30 en x = 8'
 		}
 	],
-	['exact', { french: 'exact', description: 'Passer aux valeurs exactes' }],
-	['decimal', { french: 'décimal', description: 'Passer aux valeurs décimales' }],
-	['auto', { french: 'auto', description: 'Laisser l’atelier deviner la syntaxe', advanced: true }],
+	['exact', { french: 'exact', description: 'Passer aux valeurs exactes', runsAlone: true }],
+	['decimal', { french: 'décimal', description: 'Passer aux valeurs décimales', runsAlone: true }],
 	[
-		'unitmode',
+		'export',
 		{
-			french: 'mode-unités',
-			description: 'Choisir comment les unités se combinent',
-			advanced: true
+			french: 'exporter',
+			description: 'Télécharger l’historique en JSON, pour le rejouer',
+			advanced: true,
+			runsAlone: true
 		}
-	],
-	['export', { french: 'exporter', description: 'Exporter la session', advanced: true }]
+	]
 ]);
 
 /**
@@ -522,9 +569,9 @@ export function commandCatalog(engine: WebReplEngine): AtelierCommand[] {
 			description: t.description,
 			...(t.example && { example: t.example }),
 			...(t.advanced && { advanced: true }),
-			...(t.unavailable && { unavailable: t.unavailable }),
 			...(t.exampleSetup && { exampleSetup: t.exampleSetup }),
-			...(t.section && { section: t.section })
+			...(t.section && { section: t.section }),
+			...(t.runsAlone && { runsAlone: true })
 		});
 	};
 
@@ -547,6 +594,28 @@ export function commandCatalog(engine: WebReplEngine): AtelierCommand[] {
 		...catalog.filter((c) => c.advanced !== true),
 		...catalog.filter((c) => c.advanced === true)
 	];
+}
+
+/**
+ * La commande dont l'élève écrit la suite : `.taylor sin(x)` → `.taylor`.
+ *
+ * Reconnue dès l'espace qui suit son nom, sous toutes ses graphies (français,
+ * sans accent, nom moteur, raccourci) : c'est elle dont la vue montre le
+ * modèle sous le champ (phase 0 `atelier-cas-phase0.md`, PR 1). Avant
+ * l'espace, l'élève choisit encore dans la liste.
+ */
+export function commandBeingWritten(
+	catalog: readonly AtelierCommand[],
+	draft: string
+): AtelierCommand | null {
+	const match = /^\.(\S+)\s/.exec(draft);
+	if (match === null) return null;
+	const typed = plain(match[1]).toLowerCase();
+	return (
+		catalog.find((c) =>
+			[c.french, c.name, ...c.aliases].some((form) => plain(form).toLowerCase() === typed)
+		) ?? null
+	);
 }
 
 /** Le nom moteur d'une commande écrite en français, s'il y en a un. */

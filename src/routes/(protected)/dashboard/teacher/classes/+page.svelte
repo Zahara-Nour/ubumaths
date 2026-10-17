@@ -36,6 +36,7 @@
 -->
 
 <script lang="ts">
+	import { studentJournalHref } from '$lib/navigation/return-links';
 	import { lore } from '$lib/config/lore';
 	import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
 	import type { PageData } from './$types';
@@ -112,8 +113,7 @@
 				// ClassInfo requires google_classroom_course_id (nullable string)
 				google_classroom_course_id:
 					((classItem as unknown as Record<string, unknown>).google_classroom_course_id as
-						| string
-						| null) ?? null,
+						string | null) ?? null,
 				student_count: classItem.student_count,
 				schedules: classItem.schedules as never
 			};
@@ -294,8 +294,7 @@
 	async function createMathsEntry(classId: string, day: number, time: string) {
 		// Find the period that starts at this time
 		const timetable = data.school?.timetable as
-			| { periods?: Array<{ start_time: string; end_time: string; number: number }> }
-			| undefined;
+			{ periods?: Array<{ start_time: string; end_time: string; number: number }> } | undefined;
 		const period = timetable?.periods?.find((p: { start_time: string }) => p.start_time === time);
 
 		if (!period) {
@@ -719,7 +718,7 @@
 												<Button
 													variant="ghost"
 													size="sm"
-													href="/dashboard/teacher/students/{student.id}/journal"
+													href={studentJournalHref(student.id)}
 													title="Voir l'historique des récompenses"
 												>
 													<ScrollText class="h-4 w-4" />
@@ -798,7 +797,7 @@
 							<Button
 								variant="ghost"
 								size="sm"
-								href="/dashboard/teacher/students/{student.id}/journal"
+								href={studentJournalHref(student.id)}
 								title="Voir la fiche du {lore.entities.student}"
 							>
 								<ScrollText class="h-4 w-4" />

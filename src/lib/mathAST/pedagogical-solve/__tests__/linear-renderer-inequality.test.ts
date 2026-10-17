@@ -336,8 +336,9 @@ describe('LinearEquationRenderer — aligned block flipped operator', () => {
 		});
 		const divide = rendered.find((r) => r.rule === 'divide-both-sides');
 		const latex = divide!.expressionLatex!;
-		// After-line: `x \leq -3` (flipped from \geq)
-		expect(latex).toMatch(/x\s*&?\s*\\leq\s*-3/);
+		// After-line: `x \leqslant -3` (flipped from \geqslant) — `\leqslant`,
+		// celui de `toLatex`, depuis l'harmonisation du 2026-10-13.
+		expect(latex).toMatch(/x\s*&?\s*\\leqslant\s*-3/);
 	});
 
 	it('non-flip case: both lines use the same operator (regression)', () => {

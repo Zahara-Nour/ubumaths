@@ -42,6 +42,7 @@
 	import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { RotateCw, Check, X, TriangleAlert } from '@lucide/svelte';
@@ -93,6 +94,9 @@
 	provideQuestionLexicon(() => instance.grades);
 	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
 	const genericFunctions = $derived(templateGenericFunctions(instance.genericFunctions));
+	// Sens de `AB` de l'instance (longueur ou produit) : posé pour toutes les formules
+	// en syntaxe maison rendues dans cette carte ; absent (instance d'avant) : produit
+	provideCapitalPairs(() => instance.capitalPairs);
 	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');
 
 	// Réponse de l'élève, telle que le validateur la lit (absente : réponse vide)

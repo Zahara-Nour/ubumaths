@@ -26,6 +26,7 @@ import { generateRandomNumber } from './random-generator';
 import { randomInt, type RandomSource } from '$lib/utils/random';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { parseLatex } from '$lib/mathAST/parser';
+import { numberToLatexSafe } from '$lib/mathAST/common/numeric';
 import {
 	substitute,
 	evaluateAstWithModifiers,
@@ -95,7 +96,8 @@ function toBinding(value: string): BindingValue {
 export class AuthorExpressionError extends Error {}
 
 /** Erreurs d'évaluation qui ne dépendent pas des valeurs tirées */
-const AUTHOR_EVALUATION_ERROR = /Unknown function|free variables/;
+// `;sci` sur une durée `;hms` ou un calcul littéral : faute d'écriture du modèle
+const AUTHOR_EVALUATION_ERROR = /Unknown function|free variables|^;sci : /;
 
 /** Une erreur relancée avec un contexte garde sa nature (faute d'auteur ou non) */
 function rethrowWithContext(error: unknown, context: string): never {
@@ -636,7 +638,11 @@ export function resolveExpression(
 				// en poursuivant la même source
 				(subExpr) => resolveExpression(subExpr, alreadyResolved, random)
 			);
-			result = result.slice(0, token.start) + String(generatedValue) + result.slice(token.end);
+			result =
+				result.slice(0, token.start) +
+				// Tirage numérique : jamais `3e-7` (relu 3e − 7 en LaTeX, e = constante d'Euler)
+				(typeof generatedValue === 'number' ? numberToLatexSafe(generatedValue) : generatedValue) +
+				result.slice(token.end);
 		} catch (error) {
 			throw new Error(
 				`Failed to generate random number in expression "${token.content}": ${error instanceof Error ? error.message : String(error)}`
@@ -652,7 +658,7 @@ export function resolveExpression(
 		const token = digitsTokens[i];
 		try {
 			const generatedValue = generateDigitsNumber(token.inner, alreadyResolved, random);
-			result = result.slice(0, token.start) + String(generatedValue) + result.slice(token.end);
+			result = result.slice(0, token.start) + generatedValue + result.slice(token.end);
 		} catch (error) {
 			throw new Error(
 				`Failed to generate digits number in expression "${token.content}": ${error instanceof Error ? error.message : String(error)}`
@@ -825,7 +831,7 @@ function generateDigitsNumber(
 	// Adjust minValue for single digit to exclude 0
 	const adjustedMin = minDigits === 1 ? 1 : minValue;
 
-	return String(randomInt(adjustedMin, maxValue, random));
+	return numberToLatexSafe(randomInt(adjustedMin, maxValue, random));
 }
 
 /**

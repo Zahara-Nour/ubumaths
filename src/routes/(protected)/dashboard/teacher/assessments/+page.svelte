@@ -29,7 +29,7 @@
 			toaster.error(outcome.message);
 			return;
 		}
-		toaster.success('Évaluation publiée');
+		toaster.success('Contrôle publié');
 		await refreshPageData();
 	}
 
@@ -47,21 +47,21 @@
 </script>
 
 <svelte:head>
-	<title>Mes Évaluations | Chiphre</title>
+	<title>Mes contrôles | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
 	<div class="mb-8 flex items-center justify-between">
 		<div>
-			<h1 class="text-3xl font-bold tracking-tight">Mes Évaluations</h1>
+			<h1 class="text-3xl font-bold tracking-tight">Mes contrôles</h1>
 			<p class="mt-2 text-muted-foreground">
-				Créez et gérez vos évaluations pour vos {lore.entities.class}s
+				Créez et gérez vos contrôles pour vos {lore.entities.class}s
 			</p>
 		</div>
 		<Button onclick={handleCreateNew}>
 			<Plus class="mr-2 h-4 w-4" />
-			Nouvelle évaluation (depuis une série)
+			Nouveau contrôle (depuis une série)
 		</Button>
 	</div>
 
@@ -99,7 +99,7 @@
 			{#if drafts.length === 0}
 				<div class="py-12 text-center text-muted-foreground">
 					<p>Aucun brouillon</p>
-					<p class="mt-2 text-sm">Les évaluations non publiées apparaîtront ici</p>
+					<p class="mt-2 text-sm">Les contrôles non publiés apparaîtront ici</p>
 				</div>
 			{:else}
 				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -119,11 +119,11 @@
 		<Tabs.Content value="published" class="space-y-4">
 			{#if published.length === 0}
 				<div class="py-12 text-center text-muted-foreground">
-					<p>Aucune évaluation publiée</p>
-					<p class="mt-2 text-sm">Créez une évaluation pour commencer</p>
+					<p>Aucun contrôle publié</p>
+					<p class="mt-2 text-sm">Créez un contrôle pour commencer</p>
 					<Button onclick={handleCreateNew} class="mt-4">
 						<Plus class="mr-2 h-4 w-4" />
-						Créer une évaluation
+						Créer un contrôle
 					</Button>
 				</div>
 			{:else}
@@ -144,7 +144,7 @@
 		<Tabs.Content value="archived" class="space-y-4">
 			{#if archived.length === 0}
 				<div class="py-12 text-center text-muted-foreground">
-					<p>Aucune évaluation archivée</p>
+					<p>Aucun contrôle archivé</p>
 				</div>
 			{:else}
 				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

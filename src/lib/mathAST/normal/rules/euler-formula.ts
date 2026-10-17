@@ -30,7 +30,7 @@
  * de θ que la normalisation ne réduit pas l'une à l'autre ne se rencontrent pas.
  */
 
-import { add, func, multiply, variable } from '../../factory';
+import { add, func, imaginaryUnit, multiply } from '../../factory';
 import { isComplex, isFunction, isVariable } from '../../guards';
 import { findNodes, mapNode } from '../../transforms';
 import type { MathNode } from '../../types';
@@ -43,9 +43,9 @@ export interface EulerFormulaOptions {
 	readonly normalizeArgument: (node: MathNode) => NormalForm;
 }
 
-/** L'argument mentionne-t-il l'unité imaginaire (`i`, ou `\imaginaryI` lu `complex`) ? */
+/** L'argument mentionne-t-il un complexe (`i`, `\imaginaryI` : tous deux lus `complex(0, 1)`) ? */
 function mentionsImaginaryUnit(node: MathNode): boolean {
-	return findNodes(node, (n) => (isVariable(n) && n.name === 'i') || isComplex(n)).length > 0;
+	return findNodes(node, isComplex).length > 0;
 }
 
 /** Aucune lettre dans les facteurs symboliques du terme (π, constantes, fonctions de nombres) */
@@ -106,7 +106,7 @@ function eulerFormulaAt(node: MathNode, options: EulerFormulaOptions): MathNode 
 	if (!theta) return null;
 	const trigonometric = add(
 		func('cos', [theta]),
-		multiply(variable('i'), func('sin', [theta]), 'implicit')
+		multiply(imaginaryUnit(), func('sin', [theta]), 'implicit')
 	);
 	const realPart = sumOfTerms(parts.real);
 	return realPart ? multiply(func('exp', [realPart]), trigonometric, 'implicit') : trigonometric;

@@ -22,6 +22,10 @@ import {
 	getCorrectionReleaseStatus
 } from '$lib/server/worksheets/correction-release';
 import { CORRECTION_RELEASE_MODES } from '$lib/types/worksheets';
+import { guidanceLevelSchema } from '$lib/server/validation/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/+server');
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -40,12 +44,14 @@ const updateAssignmentSchema = z.object({
 	correction_release_at: z.string().datetime().nullable().optional(),
 	show_corrections: z.boolean().optional(),
 	status: z.enum(['draft', 'active', 'completed', 'cancelled']).optional(),
+	// Niveau de guidage des versions distribuées (ADR 0023)
+	guidance_level: guidanceLevelSchema.optional(),
 	// Multi-class support: update assigned classes
-	class_ids: z.array(z.string().uuid()).max(50, 'Maximum 50 classes per assignment').optional(),
+	class_ids: z.array(z.string().uuid()).max(50, '50 classes au maximum par affectation').optional(),
 	// Individual students support
 	student_ids: z
 		.array(z.string().uuid())
-		.max(500, 'Maximum 500 individual students per assignment')
+		.max(500, '500 élèves au maximum par affectation')
 		.optional()
 });
 
@@ -60,12 +66,12 @@ const actionSchema = z.object({
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, "ID de l'assignation requis");
+		throw error(400, 'Identifiant d’affectation requis');
 	}
 
 	try {
@@ -98,7 +104,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.single();
 
 		if (fetchError || !assignment) {
-			throw error(404, 'Assignation non trouvee');
+			throw error(404, 'Affectation introuvable');
 		}
 
 		// Check permissions
@@ -113,15 +119,15 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
 		// fermer la porte sans que rien ne le signale.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier vos droits');
+			logger.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		const isCreator = assignment.created_by === user.id;
 		const isAdmin = profile?.role === 'admin';
 
 		if (!isCreator && !isAdmin) {
-			throw error(403, 'Acces non autorise');
+			throw error(403, 'Accès refusé');
 		}
 
 		// Get correction release status
@@ -164,7 +170,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			correctionStatus
 		});
 	} catch (err) {
-		console.error('Error fetching assignment:', err);
+		logger.error('Error fetching assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
@@ -172,7 +178,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		throw error(500, "Erreur lors de la recuperation de l'assignation");
+		throw error(500, 'Impossible de charger l’affectation');
 	}
 };
 
@@ -183,18 +189,18 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, "ID de l'assignation requis");
+		throw error(400, 'Identifiant d’affectation requis');
 	}
 
 	// Parse request body
 	const body = await request.json().catch(() => null);
 	if (!body) {
-		throw error(400, 'Corps de requete invalide');
+		throw error(400, 'Corps de requête invalide');
 	}
 
 	// Check if this is an action request
@@ -230,7 +236,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (fetchError || !assignment) {
-			throw error(404, 'Assignation non trouvee');
+			throw error(404, 'Affectation introuvable');
 		}
 
 		const { data: profile, error: profileError } = await locals.supabase
@@ -244,12 +250,12 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 		// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
 		// fermer la porte sans que rien ne le signale.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier vos droits');
+			logger.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (assignment.created_by !== user.id && profile?.role !== 'admin') {
-			throw error(403, 'Non autorise a modifier cette assignation');
+			throw error(403, 'Modification de cette affectation non autorisée');
 		}
 
 		// Handle class_ids update if provided
@@ -262,15 +268,15 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.in('id', class_ids);
 
 				if (classesError) {
-					console.error('Error fetching classes:', classesError);
-					throw error(500, 'Erreur lors de la verification des classes');
+					logger.error('Error fetching classes:', classesError);
+					throw error(500, 'Impossible de vérifier les classes');
 				}
 
 				// Verify all classes were found
 				const foundIds = new Set(classesData?.map((c) => c.id) || []);
 				const missingIds = class_ids.filter((id) => !foundIds.has(id));
 				if (missingIds.length > 0) {
-					throw error(404, `Classes non trouvees: ${missingIds.length} classe(s) invalide(s)`);
+					throw error(404, `Classes introuvables : ${missingIds.length}`);
 				}
 			}
 
@@ -284,7 +290,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			// retirer). Vide par accident, l'écart conclut « rien n'existe encore » et
 			// réaffecte tout ce qui l'était déjà.
 			if (currentClassesError) {
-				console.error('Affectations courantes illisibles :', currentClassesError);
+				logger.error('Affectations courantes illisibles :', currentClassesError);
 				throw error(500, 'Impossible de lire les affectations existantes');
 			}
 
@@ -304,8 +310,8 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.in('class_id', toRemove);
 
 				if (deleteError) {
-					console.error('Error removing class assignments:', deleteError);
-					throw error(500, 'Erreur lors de la mise a jour des classes');
+					logger.error('Error removing class assignments:', deleteError);
+					throw error(500, 'Impossible de modifier les classes');
 				}
 			}
 
@@ -321,8 +327,8 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.insert(classInserts);
 
 				if (insertError) {
-					console.error('Error adding class assignments:', insertError);
-					throw error(500, 'Erreur lors de la mise a jour des classes');
+					logger.error('Error adding class assignments:', insertError);
+					throw error(500, 'Impossible de modifier les classes');
 				}
 			}
 		}
@@ -338,17 +344,14 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.eq('role', 'student');
 
 				if (studentsError) {
-					console.error('Error fetching students:', studentsError);
-					throw error(500, 'Erreur lors de la verification des eleves');
+					logger.error('Error fetching students:', studentsError);
+					throw error(500, 'Impossible de vérifier les élèves');
 				}
 
 				const foundStudentIds = new Set(studentsData?.map((s) => s.id) || []);
 				const invalidStudentIds = student_ids.filter((id) => !foundStudentIds.has(id));
 				if (invalidStudentIds.length > 0) {
-					throw error(
-						400,
-						`Eleves invalides: ${invalidStudentIds.length} eleve(s) non trouve(s) ou non eleves`
-					);
+					throw error(400, `Élèves introuvables : ${invalidStudentIds.length}`);
 				}
 			}
 
@@ -362,7 +365,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			// retirer). Vide par accident, l'écart conclut « rien n'existe encore » et
 			// réaffecte tout ce qui l'était déjà.
 			if (currentStudentsError) {
-				console.error('Affectations courantes illisibles :', currentStudentsError);
+				logger.error('Affectations courantes illisibles :', currentStudentsError);
 				throw error(500, 'Impossible de lire les affectations existantes');
 			}
 
@@ -382,8 +385,8 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.in('student_id', toRemoveStudents);
 
 				if (deleteError) {
-					console.error('Error removing student assignments:', deleteError);
-					throw error(500, 'Erreur lors de la mise a jour des eleves');
+					logger.error('Error removing student assignments:', deleteError);
+					throw error(500, 'Impossible de modifier les élèves');
 				}
 			}
 
@@ -399,8 +402,8 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.insert(studentInserts);
 
 				if (insertError) {
-					console.error('Error adding student assignments:', insertError);
-					throw error(500, 'Erreur lors de la mise a jour des eleves');
+					logger.error('Error adding student assignments:', insertError);
+					throw error(500, 'Impossible de modifier les élèves');
 				}
 			}
 		}
@@ -421,8 +424,16 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 				.single();
 
 			if (updateError) {
-				console.error('Error updating assignment:', updateError);
-				throw error(500, "Erreur lors de la mise a jour de l'assignation");
+				logger.error('Error updating assignment:', updateError);
+				throw error(500, 'Impossible de modifier l’affectation');
+			}
+			// La RLS refuse en silence : la ligne rendue doit porter le niveau écrit
+			if (
+				updateData.guidance_level !== undefined &&
+				updatedData?.guidance_level !== updateData.guidance_level
+			) {
+				logger.error('Niveau de guidage non écrit :', assignmentId);
+				throw error(500, 'Impossible de modifier l’affectation');
 			}
 			updated = updatedData;
 		} else {
@@ -439,8 +450,8 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			// PATCH ne portant que `class_ids` passe ici, et avaler l'erreur ferait
 			// répondre 200 avec `assignment: null` à une réaffectation qui a échoué.
 			if (updateError) {
-				console.error('Error updating assignment timestamp:', updateError);
-				throw error(500, "Erreur lors de la mise a jour de l'assignation");
+				logger.error('Error updating assignment timestamp:', updateError);
+				throw error(500, 'Impossible de modifier l’affectation');
 			}
 			updated = updatedData;
 		}
@@ -467,7 +478,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (fullAssignmentError) {
-			console.error('Lecture impossible :', fullAssignmentError);
+			logger.error('Lecture impossible :', fullAssignmentError);
 			throw error(500, 'Impossible de charger les données');
 		}
 
@@ -500,7 +511,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 
 			return json({
 				success: true,
-				message: 'Assignation mise a jour',
+				message: 'Affectation mise à jour',
 				assignment: {
 					...rest,
 					classes,
@@ -511,11 +522,11 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 
 		return json({
 			success: true,
-			message: 'Assignation mise a jour',
+			message: 'Affectation mise à jour',
 			assignment: updated
 		});
 	} catch (err) {
-		console.error('Error updating assignment:', err);
+		logger.error('Error updating assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
@@ -523,7 +534,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			throw err;
 		}
 
-		throw error(500, "Erreur lors de la mise a jour de l'assignation");
+		throw error(500, 'Impossible de modifier l’affectation');
 	}
 };
 
@@ -534,12 +545,12 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 export const POST: RequestHandler = async ({ params, locals, request }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, "ID de l'assignation requis");
+		throw error(400, 'Identifiant d’affectation requis');
 	}
 
 	// Parse and validate action
@@ -560,12 +571,12 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, "ID de l'assignation requis");
+		throw error(400, 'Identifiant d’affectation requis');
 	}
 
 	try {
@@ -577,7 +588,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.single();
 
 		if (fetchError || !assignment) {
-			throw error(404, 'Assignation non trouvee');
+			throw error(404, 'Affectation introuvable');
 		}
 
 		if (assignment.created_by !== user.id) {
@@ -592,17 +603,17 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
 			// fermer la porte sans que rien ne le signale.
 			if (profileError && profileError.code !== 'PGRST116') {
-				console.error('Rôle illisible :', profileError);
-				throw error(500, 'Impossible de vérifier vos droits');
+				logger.error('Rôle illisible :', profileError);
+				throw error(500, 'Impossible de vérifier les droits d’accès');
 			}
 
 			if (profile?.role !== 'admin') {
-				throw error(403, 'Non autorise a supprimer cette assignation');
+				throw error(403, 'Suppression de cette affectation non autorisée');
 			}
 		}
 
 		if (assignment.status !== 'draft') {
-			throw error(400, 'Seules les assignations en brouillon peuvent etre supprimees');
+			throw error(400, 'Seule une affectation en brouillon peut être supprimée');
 		}
 
 		// Delete assignment
@@ -612,15 +623,15 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.eq('id', assignmentId);
 
 		if (deleteError) {
-			throw error(500, "Erreur lors de la suppression de l'assignation");
+			throw error(500, 'Impossible de supprimer l’affectation');
 		}
 
 		return json({
 			success: true,
-			message: 'Assignation supprimee'
+			message: 'Affectation supprimée'
 		});
 	} catch (err) {
-		console.error('Error deleting assignment:', err);
+		logger.error('Error deleting assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
@@ -628,7 +639,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		throw error(500, "Erreur lors de la suppression de l'assignation");
+		throw error(500, 'Impossible de supprimer l’affectation');
 	}
 };
 

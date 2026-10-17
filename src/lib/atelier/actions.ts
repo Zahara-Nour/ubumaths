@@ -17,9 +17,39 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
-import { isValue, isList, isQualitative, type ListObject } from './types';
+import {
+	dependsOnMessage,
+	isValue,
+	isList,
+	isQualitative,
+	parametersOf,
+	type ListObject
+} from './types';
 import { crossProblem } from './cross';
 import { compareProblem } from './compare';
+import { derivativeOf, displayName, reciprocalOf } from './names';
+import { commonRows, lawMismatchMessage, noCommonRowsMessage } from './pairs';
+import { tabulationNotYet } from './tabulate';
+
+/**
+ * Ce que les cartes qui SUIVENT une fonction ne savent pas faire (`f′`, `f⁻¹`),
+ * avec la raison : pas de carte `f⁻¹′`, ni `f′⁻¹` — leurs noms ne se rangent pas.
+ */
+function followerReason(object: AtelierObject, actionId: string): string | undefined {
+	const reciprocal = reciprocalOf(object.name);
+	if (reciprocal !== null && actionId === 'reciprocal') {
+		return `La réciproque de ${displayName(object.name)}, c'est ${reciprocal}.`;
+	}
+	if (reciprocal !== null && actionId === 'derive') {
+		return `Pour dériver ${displayName(object.name)}, tape .dériver suivi de sa formule.`;
+	}
+	// La grille ne sait pas encore appeler `f^-1(…)` ni `f_1(…)` (tableur, lot 3)
+	if (actionId === 'table') return tabulationNotYet(object.name) ?? undefined;
+	if (derivativeOf(object.name) !== null && actionId === 'reciprocal') {
+		return `Pas de carte réciproque pour une dérivée : tape .réciproque suivi de sa formule.`;
+	}
+	return undefined;
+}
 
 /** Une action proposée sur un objet. */
 export interface ObjectAction {
@@ -50,6 +80,8 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 	function: [
 		{ id: 'plot', label: 'Tracer' },
 		{ id: 'derive', label: 'Dériver' },
+		// Lot 3 de la réciproque (R1) : la carte `f⁻¹`, comme « Dériver » crée `f′`
+		{ id: 'reciprocal', label: 'Réciproque' },
 		// D7 : les DEUX gestes, distincts. « Dériver » affiche, « Garder » crée
 		// un objet — donc quelque chose de traçable et de citable.
 		{ id: 'table', label: 'Tabuler' },
@@ -86,8 +118,8 @@ const NOT_YET: ReadonlySet<string> = new Set([
 	// 'derive', 'solve' et 'variations' le sont depuis la vue Calcul ('image' est
 	// devenu un champ de la carte, lot 3b).
 	// 'stats', 'scatter' et 'fit' sont câblés depuis la vue Données, 'chart'
-	// depuis le lot 5 des outils statistiques.
-	'table',
+	// depuis le lot 5 des outils statistiques, 'table' (le formulaire de la
+	// carte) depuis le lot 3 du tableur.
 	'convert',
 	'rename'
 ]);
@@ -189,7 +221,14 @@ function partnerActions(
 				label: `Diagramme avec effectifs ${partner.name}`
 			}),
 			// Lot 6 (Q44) : la partenaire donne les PROBABILITÉS d'une variable aléatoire
-			withCounts({ id: `law:${partner.name}`, label: `Loi avec probabilités ${partner.name}` }),
+			// Une loi n'écarte pas de ligne : sa raison est celle de la commande (P1)
+			{
+				id: `law:${partner.name}`,
+				label: `Loi avec probabilités ${partner.name}`,
+				...(lawReason(object, partner, words) !== undefined && {
+					disabledReason: lawReason(object, partner, words)
+				})
+			},
 			{ id: `simulate:${partner.name}`, label: `Simuler avec probabilités ${partner.name}` },
 			// Lot 5 (Q113) : deux séries de longueurs quelconques, sans appariement
 			{
@@ -201,8 +240,20 @@ function partnerActions(
 						disabledReason: compareProblem(object, partner)
 					})
 			},
-			{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
-			{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
+			{
+				id: `scatter:${partner.name}`,
+				label: `Nuage avec ${partner.name}`,
+				...(pairsProblem(object, partner) !== undefined && {
+					disabledReason: pairsProblem(object, partner)
+				})
+			},
+			{
+				id: `fit:${partner.name}`,
+				label: `Ajustement avec ${partner.name}`,
+				...(pairsProblem(object, partner) !== undefined && {
+					disabledReason: pairsProblem(object, partner)
+				})
+			}
 		].map((action) =>
 			// « Comparer » garde SA raison, celle que donne aussi la commande (revue)
 			words === undefined || action.id.startsWith('compare:')
@@ -215,20 +266,49 @@ function partnerActions(
 }
 
 /**
+ * La raison d'une « Loi avec probabilités » désactivée — celle que donne la
+ * commande (`lawFractions`) : une partenaire de mots ou en erreur, sinon une
+ * ligne incomplète. Jamais le mot « effectif », hors sujet pour une loi (revue).
+ */
+function lawReason(
+	object: AtelierObject,
+	partner: AtelierObject,
+	words: string | undefined
+): string | undefined {
+	if (words !== undefined) return words;
+	if (!isList(object) || !isList(partner)) return undefined;
+	if (partner.status !== 'ok') return countsProblem(object, partner);
+	return lawMismatchMessage(object, partner) ?? undefined;
+}
+
+/** Un nuage ou un ajustement sans aucune ligne commune : la raison, la même qu'au clic */
+function pairsProblem(object: AtelierObject, partner: AtelierObject): string | undefined {
+	if (!isList(object) || !isList(partner) || isQualitative(object) || isQualitative(partner)) {
+		return undefined;
+	}
+	return commonRows([object, partner]).rows.length === 0
+		? noCommonRowsMessage(object, partner)
+		: undefined;
+}
+
+/**
  * Pourquoi `partner` ne peut pas donner les effectifs de `object`, s'il ne le
  * peut pas. Une action qui ne ferait qu'échouer le dit AVANT le clic (revue
  * du lot 5 des outils statistiques).
  *
  * ⚠️ Seulement pour les effectifs : un nuage ou un ajustement utilisent les
- * paires complètes et disent ce qu'ils écartent (§4 L1).
+ * paires complètes et disent ce qu'ils écartent (§4 L1). Les effectifs aussi,
+ * depuis la grille (P1) : refus seulement sans aucune ligne en commun.
  */
 function countsProblem(object: AtelierObject, partner: AtelierObject): string | undefined {
 	if (!isList(object) || !isList(partner)) return undefined;
 	if (partner.status !== 'ok') {
 		return partner.message ?? `« ${partner.name} » ne peut pas donner d'effectifs pour le moment.`;
 	}
-	if (object.values.length !== partner.values.length) {
-		return `${object.name} a ${object.values.length} valeur(s) et ${partner.name} ${partner.values.length} : il faut un effectif par valeur.`;
+	// Une valeur et son effectif sur la même ligne (P1) : les lignes incomplètes
+	// sont écartées, et dites ; refus seulement s'il n'en reste aucune
+	if (object.values.length > 0 && commonRows([object, partner]).rows.length === 0) {
+		return `${object.name} et ${partner.name} n’ont aucune ligne remplie en commun : il faut un effectif sur la ligne de chaque valeur.`;
 	}
 	return undefined;
 }
@@ -287,6 +367,25 @@ function blockedBy(object: AtelierObject): string | undefined {
 }
 
 /**
+ * Une fonction à paramètre (`f(x) = a x`, a non posé) : chaque bouton dit ce
+ * que dit la commande correspondante (Q4, David, 2026-10-14). « Dériver »
+ * répond comme `.dériver f` (a) ; « Résoudre », « Variations » et
+ * « Réciproque » refusent comme `.résoudre`, `.variations`, `.réciproque`.
+ * Les autres (« Tracer » : rien à tracer sans a) gardent le message de l'objet.
+ */
+function parameterReason(
+	parameters: readonly string[],
+	actionId: string,
+	blocked: string
+): string | undefined {
+	if (actionId === 'derive') return undefined;
+	if (actionId === 'solve' || actionId === 'variations' || actionId === 'reciprocal') {
+		return dependsOnMessage(parameters);
+	}
+	return blocked;
+}
+
+/**
  * Les actions à proposer sur cet objet, dans l'ordre d'affichage.
  *
  * @param object - L'objet tel que l'atelier le connaît, statut compris
@@ -297,6 +396,7 @@ export function actionsFor(
 	partner?: string
 ): ObjectAction[] {
 	const blocked = blockedBy(object);
+	const parameters = parametersOf(object);
 
 	// Les listes voient leurs partenaires, quand l'atelier est là pour les dire.
 	const catalogue =
@@ -338,16 +438,22 @@ export function actionsFor(
 		// ⚠️ Retirer du graphe reste possible même quand l'objet ne peut plus rien
 		// produire : sinon une fonction qui casse laisse un marqueur « tracé » que
 		// l'élève ne peut plus enlever, alors que sa courbe a déjà disparu.
-		if (blocked && !(action.id === 'plot' && object.plotted)) {
+		const reason =
+			blocked !== undefined && parameters !== null
+				? parameterReason(parameters, action.id, blocked)
+				: blocked;
+		if (reason && !(action.id === 'plot' && object.plotted)) {
 			// ⚠️ Une raison déjà posée par `partnerActions` (« il faut deux listes »)
 			// est plus précise que « cet objet ne peut rien produire » : on la garde.
-			return { ...action, disabledReason: action.disabledReason ?? blocked };
+			return { ...action, disabledReason: action.disabledReason ?? reason };
 		}
 		// L'objet va bien, mais la vue qui rendrait cette action n'existe pas
 		// encore : on le dit, plutôt que de laisser un bouton sans effet.
 		// `scatter:M` et `fit:M` portent leur partenaire : c'est la racine qui
 		// décide si l'action attend son lot.
 		if (NOT_YET.has(root)) return { ...action, disabledReason: NOT_YET_REASON };
+		const follower = followerReason(object, action.id);
+		if (follower !== undefined) return { ...action, disabledReason: follower };
 		return action;
 	});
 

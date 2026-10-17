@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
 	import DslDemo from '../DslDemo.svelte';
 	import { Figure } from '$lib/geometry-core/graph/figure';
@@ -88,9 +89,7 @@ a = mesure(u, v)`;
 </script>
 
 <div class="container mx-auto max-w-6xl p-8">
-	<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-		>← Retour aux demos</a
-	>
+	<BackLink href="/geometry-demo" label="Retour aux démos" />
 
 	<h1 class="mt-4 mb-8 text-3xl font-bold">Vecteurs</h1>
 
@@ -163,8 +162,8 @@ a = mesure(u, v)`;
 
 	<!-- Display computed scalar values below the DSL demo -->
 	<p class="mt-2 text-sm text-muted-foreground">
-		norme(u) = {vectorScalarFig.symbols.get('n')?.value?.toFixed(2) ?? '?'} | produit_scalaire(u, v)
-		= {vectorScalarFig.symbols.get('p')?.value?.toFixed(2) ?? '?'} | mesure(u, v) = {vectorScalarFig.symbols
+		norme(u) = {vectorScalarFig.symbols.get('n')?.value?.toFixed(2) ?? '?'} | produit_scalaire(u, v) =
+		{vectorScalarFig.symbols.get('p')?.value?.toFixed(2) ?? '?'} | mesure(u, v) = {vectorScalarFig.symbols
 			.get('a')
 			?.value?.toFixed(1) ?? '?'}°
 	</p>

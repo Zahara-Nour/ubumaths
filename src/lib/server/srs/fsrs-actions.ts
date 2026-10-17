@@ -7,9 +7,9 @@
  * fsrs.reviewCard → UPSERT srs_card_stats` qui était répétée dans les 2
  * endpoints.
  *
- * Chaque endpoint passe sa propre instance `FSRS` (Monde 1 utilise les
- * paramètres par défaut ; Monde 2 lit `deck.config` validé via Zod). Le
- * comportement est strictement équivalent à l'ancien code inline.
+ * Chaque endpoint passe sa propre instance `FSRS`, toujours aux paramètres et
+ * à la rétention par défaut : `deck.config` n'est plus lu (décision du
+ * 2026-06-10). Le comportement est strictement équivalent à l'ancien code inline.
  *
  * Note : la table `srs_card_stats` est partagée entre tous les decks de
  * l'élève contenant le même template (UNIQUE `(user_id, card_reference_type,
@@ -30,6 +30,9 @@ import { FSRS } from '$lib/srs/fsrs';
 import type { CardState, CardStats, Grade, ReviewHistoryEntry } from '$lib/srs/types';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { reviewBestOfDay } from './best-of-day';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/srs/fsrs-actions');
 
 type SB = SupabaseClient<Database>;
 
@@ -61,7 +64,7 @@ export async function loadOrInitCardStats(
 	// panne les rendait `null`, donc « carte jamais vue » : l'algorithme
 	// repartait de zéro et l'élève perdait sa progression sur cette carte.
 	if (existingError) {
-		console.error('[srs] Statistiques de carte illisibles :', existingError);
+		logger.error('[srs] Statistiques de carte illisibles :', existingError);
 		throw new Error(existingError.message);
 	}
 

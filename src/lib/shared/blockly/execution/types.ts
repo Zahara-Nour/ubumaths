@@ -104,12 +104,7 @@ export interface TimeoutMessage {
  * Union type for all messages sent from the worker
  */
 export type FromJsWorkerMessage =
-	| ReadyMessage
-	| StdoutMessage
-	| StderrMessage
-	| ErrorMessage
-	| CompleteMessage
-	| TimeoutMessage;
+	ReadyMessage | StdoutMessage | StderrMessage | ErrorMessage | CompleteMessage | TimeoutMessage;
 
 // =============================================================================
 // Executor State

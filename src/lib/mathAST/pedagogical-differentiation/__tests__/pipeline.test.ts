@@ -1032,7 +1032,7 @@ describe("Base d'Euler — (e^u)' = u' e^u", () => {
 	it('le rendu nomme la dérivée de l’exponentielle, sans ln(e)', () => {
 		const rendered = renderTop(parseLatex('e^{3x}'));
 		expect(rendered.title).toBe("Dérivée de l'exponentielle");
-		expect(rendered.explanation).toBe("Avec u = 3 x, on a (e^u)' = e^u \\times u'.");
+		expect(rendered.explanation).toBe("Avec $u = 3 x$, on a $(e^u)' = e^u \\times u'$.");
 		expect(rendered.expressionLatex).not.toContain('\\ln');
 	});
 

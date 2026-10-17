@@ -7,10 +7,13 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireSpreadsheetUser } from '$lib/server/spreadsheet-access';
 import { updateSpreadsheetSchema } from '$lib/server/validation/spreadsheet';
 import { validateUuidParam } from '$lib/server/validation/params';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/spreadsheets/[id]/+server');
 
 /**
  * GET /api/spreadsheets/:id
@@ -19,7 +22,7 @@ import type { TablesUpdate } from '$lib/types/database';
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const id = validateUuidParam(params.id);
-	const { user } = await requireRole(locals, 'student');
+	const { user } = await requireSpreadsheetUser(locals);
 
 	// Fetch spreadsheet with explicit user_id check (in addition to RLS)
 	const { data, error: dbError } = await locals.supabase
@@ -43,7 +46,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const id = validateUuidParam(params.id);
-	const { user } = await requireRole(locals, 'student');
+	const { user } = await requireSpreadsheetUser(locals);
 
 	// Parse and validate request body
 	const body = await request.json();
@@ -87,18 +90,25 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const id = validateUuidParam(params.id);
-	const { user } = await requireRole(locals, 'student');
+	const { user } = await requireSpreadsheetUser(locals);
 
 	// Delete spreadsheet
-	const { error: dbError } = await locals.supabase
+	const { data: deleted, error: dbError } = await locals.supabase
 		.from('spreadsheets')
 		.delete()
 		.eq('id', id)
-		.eq('user_id', user.id); // Explicit ownership check
+		.eq('user_id', user.id) // Explicit ownership check
+		.select('id');
 
 	if (dbError) {
-		console.error('Error deleting spreadsheet:', dbError);
+		logger.error('Error deleting spreadsheet:', dbError);
 		throw error(500, 'Erreur lors de la suppression de la feuille de calcul');
+	}
+
+	// Un refus de la RLS ou le tableur d'un autre suppriment 0 ligne SANS erreur :
+	// seules les lignes rendues disent si la suppression a eu lieu.
+	if (!deleted || deleted.length === 0) {
+		throw error(404, 'Feuille de calcul non trouvée');
 	}
 
 	return json({ success: true });

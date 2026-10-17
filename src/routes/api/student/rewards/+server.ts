@@ -43,6 +43,9 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { StudentRewards } from '$lib/types/student-cache';
 import { asStudentVipCards } from '$lib/types/vip-card';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/rewards/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
@@ -66,7 +69,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.single();
 
 		if (fetchError) {
-			console.error('[API] Error fetching student rewards:', fetchError);
+			logger.error('[API] Error fetching student rewards:', fetchError);
 			throw error(500, 'Failed to fetch student rewards');
 		}
 
@@ -92,7 +95,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/rewards:', err);
+		logger.error('[API] Unexpected error in GET /api/student/rewards:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };

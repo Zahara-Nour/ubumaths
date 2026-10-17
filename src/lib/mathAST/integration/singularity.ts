@@ -15,11 +15,17 @@
  * Une F continue mais non dérivable en un point (2√x en 0, intégrale
  * impropre convergente) est acceptée : F(b) − F(a) est alors juste.
  *
+ * Second filet, sur f (V53) : un dénominateur de f qui CHANGE DE SIGNE dans
+ * [a ; b] s'y annule ; sa racine est localisée par bissection (jamais
+ * calculée exactement : ∛2, ln 3…) et c'est un pôle dès que f n'y reste pas
+ * bornée. Une singularité prolongeable ((x² − 1)/(x − 1)) ou intégrable
+ * (1/∛x) passe.
+ *
  * @module mathAST/integration/singularity
  */
 
 import type { MathNode } from '../types';
-import { isGreek, isVariable } from '../guards';
+import { isDivision, isGreek, isSuperscript, isVariable } from '../guards';
 import { findNodes } from '../transforms';
 import { compile } from '../eval/compile';
 
@@ -46,6 +52,21 @@ const REMOVABLE_STEP = 1e-7;
 const REMOVABLE_RATIO = 100;
 /** Écart relatif toléré entre ces voisins */
 const REMOVABLE_TOLERANCE = 1e-6;
+/** Racine d'un dénominateur : bissections (au-delà de la précision des doubles) */
+const ROOT_BISECTIONS = 80;
+/** Pôle : |f| aux distances h puis h/POLE_RATIO de la racine, h = POLE_STEP·max(1, |z|) */
+const POLE_STEP = 1e-5;
+const POLE_RATIO = 100;
+/**
+ * Croissance de |f| entre les distances h et h/100 d'une singularité : 100^p
+ * pour une singularité d'ordre p (|f| ≈ c/|x − z|^p). Non intégrable dès
+ * p ≥ 1 (pôle simple : 100 ; double : 10 000) ; 1/√ donne 10, 1/∛ 4,6.
+ * Seuil 50 (p ≈ 0,85) : nettement entre l'ordre 1/2, très courant
+ * (∫₀¹ x/√(1 − x²)), et le pôle simple — jamais un verdict d'arrondi.
+ */
+const POLE_GROWTH = 50;
+/** Croissance en deçà de laquelle f est tenue pour bornée près de z (saut fini) */
+const BOUNDED_GROWTH = 2;
 
 // =============================================================================
 // Outils
@@ -93,33 +114,39 @@ function jumpIn(F: (x: number) => number, segment: Segment, tolerance: number): 
 }
 
 /**
- * Divergence (ln|x − z| → ∞) : zoom ×1/4 autour de l'échantillon le plus
- * éloigné de la moyenne des extrémités — le plus proche de z. Une F continue
- * s'y stabilise ; une F non bornée y croît encore de c·ln(4^LOOKBACK) sur
- * les derniers LOOKBACK zooms. Abscisse de la divergence, ou null.
+ * Divergence (ln|x − z| → ∞) : zoom ×1/4 autour de l'échantillon EXTRÊME
+ * dans la direction `direction` (le minimum pour −1 : ln|x − z| → −∞ ; le
+ * maximum pour +1) — le plus proche de z. Une F continue s'y stabilise ; une
+ * F non bornée y croît encore de c·ln(4^LOOKBACK) sur les derniers LOOKBACK
+ * zooms. Abscisse de la divergence, ou null.
+ *
+ * Viser l'échantillon le plus éloigné de la MOYENNE des extrémités (avant
+ * V53) mettait les deux extrémités à égalité : le zoom partait du mauvais
+ * côté quand le pôle était proche d'une extrémité (ln|x³ − 2| sur [1 ; 2]).
  */
-function blowUpIn(F: (x: number) => number, segment: Segment, tolerance: number): number | null {
-	const reference = (segment.fLeft + segment.fRight) / 2;
+function blowUpIn(
+	F: (x: number) => number,
+	segment: Segment,
+	tolerance: number,
+	direction: 1 | -1
+): number | null {
 	let { left, right } = segment;
 	const extremes: number[] = [];
 	let best = left;
 	while (right - left > ZOOM_WIDTH * Math.max(1, Math.abs(left))) {
 		const width = right - left;
 		let bestIndex = 0;
-		let bestGap = -1;
-		let bestValue = 0;
+		let bestValue = Number.NEGATIVE_INFINITY;
 		for (let j = 0; j <= ZOOM_SAMPLES; j++) {
 			const x = left + (width * j) / ZOOM_SAMPLES;
 			const value = F(x);
 			if (!Number.isFinite(value)) return x;
-			const gap = Math.abs(value - reference);
-			if (gap > bestGap) {
-				bestGap = gap;
+			if (direction * value > bestValue) {
+				bestValue = direction * value;
 				bestIndex = j;
-				bestValue = value;
 			}
 		}
-		extremes.push(bestValue);
+		extremes.push(direction * bestValue);
 		best = left + (width * bestIndex) / ZOOM_SAMPLES;
 		const start = left;
 		left = start + (width * Math.max(0, bestIndex - 1)) / ZOOM_SAMPLES;
@@ -134,15 +161,58 @@ function blowUpIn(F: (x: number) => number, segment: Segment, tolerance: number)
 // Balayage commun (F, ou f dans le repli numérique)
 // =============================================================================
 
+/** Nature de f près d'un point singulier z */
+type SingularityKind = 'pole' | 'integrable' | 'bounded';
+
+/**
+ * Nature de f près de z (dans [lo ; hi]), par la croissance de |f| entre les
+ * distances h et h/POLE_RATIO de chaque côté :
+ * - `pole` : croissance > POLE_GROWTH d'un côté (ordre ≳ 0,85 : au doute,
+ *   refus), ou f non définie des deux côtés mesurés ;
+ * - `integrable` : f non bornée mais d'ordre < 0,85 (1/√, 1/∛, |·|^−0,6) ;
+ * - `bounded` : f bornée (prolongeable, saut fini).
+ * Un côté où f n'est pas définie (1/x^0,4 pour x < 0 compilé en NaN) ne
+ * compte pas quand l'autre est mesuré.
+ */
+function singularityKind(
+	f: (x: number) => number,
+	z: number,
+	lo: number,
+	hi: number
+): SingularityKind {
+	const h = POLE_STEP * Math.max(1, Math.abs(z));
+	let measured = 0;
+	let undefinedSides = 0;
+	let growth = 0;
+	for (const side of [-1, 1]) {
+		const far = z + side * h;
+		const near = z + (side * h) / POLE_RATIO;
+		if (far < lo || far > hi || near < lo || near > hi) continue;
+		const farValue = Math.abs(f(far));
+		const nearValue = Math.abs(f(near));
+		if (!Number.isFinite(farValue) || !Number.isFinite(nearValue)) {
+			undefinedSides++;
+			continue;
+		}
+		measured++;
+		growth = Math.max(growth, nearValue / Math.max(farValue, Number.MIN_VALUE));
+	}
+	if (measured === 0) return undefinedSides > 0 ? 'pole' : 'bounded';
+	if (growth > POLE_GROWTH) return 'pole';
+	return growth > BOUNDED_GROWTH ? 'integrable' : 'bounded';
+}
+
 /**
  * Raison pour laquelle `fn` n'est pas continue sur [lo ; hi], ou null.
- * `subject` nomme la fonction contrôlée dans les messages.
+ * `subject` nomme la fonction contrôlée dans les messages, `variable` le point
+ * (`t ≈ 0` pour `.intégrer 1/t`, pas `x ≈ 0` : mesuré le 2026-10-14).
  */
 function scanDiscontinuity(
 	fn: (x: number) => number,
 	lo: number,
 	hi: number,
-	subject: 'la primitive' | 'la fonction'
+	subject: 'la primitive' | 'la fonction',
+	variable: string
 ): string | null {
 	const length = hi - lo;
 
@@ -152,7 +222,7 @@ function scanDiscontinuity(
 	xs.push(hi - length * NEAR_END);
 	const values = xs.map(fn);
 	const bad = values.findIndex((v) => !Number.isFinite(v));
-	if (bad !== -1) return `${subject} n'y est pas définie (x ≈ ${format(xs[bad])})`;
+	if (bad !== -1) return `${subject} n'y est pas définie (${variable} ≈ ${format(xs[bad])})`;
 
 	const magnitudes = values.map(Math.abs).sort((p, q) => p - q);
 	const tolerance = RELATIVE_TOLERANCE * Math.max(1, magnitudes[magnitudes.length >> 1]);
@@ -165,7 +235,7 @@ function scanDiscontinuity(
 		const near = fn(end + toward * length * NEAR_END);
 		const nearer = fn(end + toward * length * NEARER_END);
 		if (!Number.isFinite(nearer) || Math.abs(nearer - near) > tolerance) {
-			return `${subject} diverge en x = ${format(end)}`;
+			return `${subject} diverge en ${variable} = ${format(end)}`;
 		}
 	}
 
@@ -177,8 +247,15 @@ function scanDiscontinuity(
 			fLeft: values[i],
 			fRight: values[i + 1]
 		};
-		const at = jumpIn(fn, segment, tolerance) ?? blowUpIn(fn, segment, tolerance);
-		if (at !== null) return `la fonction a une singularité en x ≈ ${format(at)}`;
+		const at =
+			jumpIn(fn, segment, tolerance) ??
+			blowUpIn(fn, segment, tolerance, -1) ??
+			blowUpIn(fn, segment, tolerance, 1);
+		if (at === null) continue;
+		// f (repli numérique) non bornée mais intégrable (1/√|x³ − 2|) : Simpson
+		// garde sa valeur approchée ; F, elle, ne doit jamais diverger
+		if (subject === 'la fonction' && singularityKind(fn, at, lo, hi) === 'integrable') continue;
+		return `la fonction a une singularité en ${variable} ≈ ${format(at)}`;
 	}
 	return null;
 }
@@ -238,7 +315,89 @@ export function antiderivativeDiscontinuity(
 	if (!Number.isFinite(lower) || !Number.isFinite(upper) || lower === upper) return null;
 	const F = compiledIn(antiderivative, variable);
 	if (F === null) return null;
-	return scanDiscontinuity(F, Math.min(lower, upper), Math.max(lower, upper), 'la primitive');
+	return scanDiscontinuity(
+		F,
+		Math.min(lower, upper),
+		Math.max(lower, upper),
+		'la primitive',
+		variable
+	);
+}
+
+/**
+ * Dénominateurs de f qui dépendent de la variable : celui d'une division, la
+ * base d'une puissance d'exposant constant négatif ((x³ − 2)^(−1)).
+ */
+function denominatorsOf(integrand: MathNode, variable: string): MathNode[] {
+	const dependsOnVariable = (node: MathNode): boolean =>
+		findNodes(node, (n) => isVariable(n) && n.name === variable).length > 0;
+	const denominators: MathNode[] = [];
+	for (const node of findNodes(integrand, (n) => isDivision(n) || isSuperscript(n))) {
+		if (isDivision(node) && dependsOnVariable(node.denominator)) {
+			denominators.push(node.denominator);
+		} else if (
+			isSuperscript(node) &&
+			dependsOnVariable(node.base) &&
+			!dependsOnVariable(node.superscript)
+		) {
+			const exponent = compiledIn(node.superscript, variable);
+			if (exponent !== null && exponent(0) < 0) denominators.push(node.base);
+		}
+	}
+	return denominators;
+}
+
+/** Racine de `g` dans [left ; right] (g(left) et g(right) de signes opposés) */
+function rootBetween(g: (x: number) => number, left: number, right: number): number {
+	const leftSign = Math.sign(g(left));
+	for (let step = 0; step < ROOT_BISECTIONS; step++) {
+		const middle = (left + right) / 2;
+		if (middle <= left || middle >= right) break;
+		const value = g(middle);
+		if (value === 0) return middle;
+		if (Math.sign(value) === leftSign) left = middle;
+		else right = middle;
+	}
+	return (left + right) / 2;
+}
+
+/**
+ * Raison (en français) pour laquelle f a un pôle dans [a ; b] : un de ses
+ * dénominateurs y change de signe (ou s'y annule) et f y a un pôle (ordre ≳ 0,85,
+ * `singularityKind`) — 1/√(2 − x) en 2, intégrable, passe.
+ * La racine est localisée par bissection : ∛2, ln 3 ou π/2 n'ont pas à être
+ * trouvés exactement. null : aucun pôle détecté, ou contrôle impossible
+ * (paramètres, bornes non numériques). Une racine double (signe constant)
+ * échappe à ce filet : le contrôle de la primitive la voit.
+ */
+export function denominatorPole(
+	integrand: MathNode,
+	variable: string,
+	lower: number,
+	upper: number
+): string | null {
+	if (!Number.isFinite(lower) || !Number.isFinite(upper) || lower === upper) return null;
+	const f = compiledIn(integrand, variable);
+	if (f === null) return null;
+	const lo = Math.min(lower, upper);
+	const hi = Math.max(lower, upper);
+	const length = hi - lo;
+	const xs: number[] = [];
+	for (let i = 0; i <= GRID_SEGMENTS; i++) xs.push(lo + (length * i) / GRID_SEGMENTS);
+	for (const denominator of denominatorsOf(integrand, variable)) {
+		const g = compiledIn(denominator, variable);
+		if (g === null) continue;
+		const values = xs.map(g);
+		for (let i = 0; i < xs.length; i++) {
+			const zero = values[i] === 0;
+			const signChange = i + 1 < xs.length && values[i] * values[i + 1] < 0;
+			if (!zero && !signChange) continue;
+			const z = zero ? xs[i] : rootBetween(g, xs[i], xs[i + 1]);
+			if (singularityKind(f, z, lo, hi) === 'pole')
+				return `la fonction a une singularité en ${variable} ≈ ${format(z)}`;
+		}
+	}
+	return null;
 }
 
 /** Intégrande prêt pour la quadrature, ou raison du refus */
@@ -270,9 +429,11 @@ export function numericIntegrand(
 	// Les bornes elles-mêmes (Simpson les évalue) : prolongeables, ou refus
 	for (const end of [lo, hi]) {
 		if (!Number.isFinite(extended(end))) {
-			return { kind: 'singular', reason: `la fonction diverge en x = ${format(end)}` };
+			return { kind: 'singular', reason: `la fonction diverge en ${variable} = ${format(end)}` };
 		}
 	}
-	const reason = scanDiscontinuity(extended, lo, hi, 'la fonction');
+	const reason =
+		scanDiscontinuity(extended, lo, hi, 'la fonction', variable) ??
+		denominatorPole(integrand, variable, lo, hi);
 	return reason === null ? { kind: 'regular', f: extended } : { kind: 'singular', reason };
 }

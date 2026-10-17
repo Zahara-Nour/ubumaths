@@ -13,6 +13,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebook-templates/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const { profile } = await requireAuth(locals);
@@ -22,7 +25,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	// prevents a student from reading a template they aren't assigned to,
 	// but explicit 403 here keeps the error semantic.
 	if (profile.role === 'student') {
-		throw error(403, 'Réservé aux enseignants');
+		throw error(403, 'Réservé aux professeurs');
 	}
 
 	// Own templates + public templates from other teachers. RLS handles the
@@ -50,8 +53,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 		.order('updated_at', { ascending: false });
 
 	if (queryError) {
-		console.error('Failed to list notebook templates:', queryError);
-		throw error(500, 'Erreur lors du chargement des templates');
+		logger.error('Failed to list notebook templates:', queryError);
+		throw error(500, 'Impossible de charger les modèles de carnet');
 	}
 
 	return json({ templates: data ?? [] });

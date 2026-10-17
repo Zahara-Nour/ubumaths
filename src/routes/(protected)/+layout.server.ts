@@ -49,17 +49,17 @@
 import type { LayoutServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/auth';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { logError } from '$lib/server/errorMonitoring';
 import { getConsentStatus, type ConsentProfile } from '$lib/utils/consent';
 
-const logger = createLogger('(protected)/+layout.server.ts');
+const logger = createServerLogger('(protected)/+layout.server.ts');
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	// User and profile are already loaded in locals by userProfileHandle (hooks.server.ts)
 	const { user, profile } = locals;
 
-	console.log('🎨 [PROTECTED LAYOUT SERVER] Exécution');
+	logger.info('🎨 [PROTECTED LAYOUT SERVER] Exécution');
 
 	// Require authentication for ALL routes in (protected) group
 	// If user is null, requireAuth() throws a redirect to /login
@@ -83,7 +83,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 				url: '(protected) layout',
 				user_id: user!.id,
 				context: {
-					user_email: user!.email,
 					possible_causes: [
 						'User signed up but profile was not created',
 						'Database trigger is missing',
@@ -92,7 +91,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 				}
 			});
 		} catch (logErr) {
-			console.error('[protected layout] Failed to log error:', logErr);
+			logger.error('[protected layout] Failed to log error:', logErr);
 		}
 
 		throw error(
@@ -103,7 +102,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 
 	// Check user approval status — deny-by-default: only 'approved' may proceed.
 	if (profile.status === 'pending') {
-		logger.info('User pending approval, redirecting:', user!.email);
+		logger.info('User pending approval, redirecting:', user!.id);
 		throw redirect(303, '/auth/pending-approval');
 	}
 
@@ -111,7 +110,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		// 'rejected' or any unexpected/future status → deny access.
 		logger.warn(
 			'Non-approved user attempting to access protected route:',
-			user!.email,
+			user!.id,
 			profile.status
 		);
 		// Sign out the non-approved user

@@ -3,7 +3,6 @@
  *
  * Provides tools for analyzing mathematical expressions:
  * - Linear combination extraction
- * - Polynomial analysis
  * - Expression classification
  * - Algebraic structure detection
  *
@@ -36,37 +35,18 @@ export {
 	type ExpressionClassification
 } from './expression-classify';
 
-// Polynomial analysis
-export {
-	analyzePolynomial,
-	getPolynomialCoefficients,
-	isMonomial,
-	isBinomial,
-	isTrinomial,
-	getTermCount,
-	type MonomialInfo,
-	type PolynomialAnalysis
-} from './polynomial-analysis';
-
 // Algebraic structure detection
 export {
-	detectStructure,
 	isDifferenceOfSquares,
 	isPerfectSquareTrinomial,
 	isSumOfCubes,
 	isDifferenceOfCubes,
-	isQuadraticForm,
-	isFactoredForm,
-	hasCommonFactor,
 	type StructureType,
 	type DetectedStructure,
 	type DifferenceOfSquaresInfo,
 	type PerfectSquareTrinomialInfo,
 	type SumOfCubesInfo,
-	type DifferenceOfCubesInfo,
-	type QuadraticFormInfo,
-	type FactoredFormInfo,
-	type CommonFactorInfo
+	type DifferenceOfCubesInfo
 } from './structures';
 
 // Symmetry detection

@@ -33,10 +33,10 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	if (!worksheetResponse.ok) {
 		if (worksheetResponse.status === 404) {
-			throw error(404, 'Feuille non trouvee');
+			throw error(404, 'Fiche introuvable');
 		}
 		if (worksheetResponse.status === 403) {
-			throw error(403, 'Acces refuse');
+			throw error(403, 'Accès refusé');
 		}
 		throw error(500, 'Erreur lors du chargement de la feuille');
 	}
@@ -63,7 +63,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	);
 
 	if (!assignment) {
-		throw error(404, 'Assignation non trouvee');
+		throw error(404, 'Affectation introuvable');
 	}
 
 	return {

@@ -16,7 +16,8 @@
 		{ href: '/dashboard/admin/debug/typst-preview', label: 'Typst PDF' },
 		{ href: '/dashboard/admin/debug/latex-preview', label: 'LaTeX PDF' },
 		{ href: '/dashboard/admin/debug/latex-transpiler', label: 'LaTeX Transpiler' },
-		{ href: '/dashboard/admin/debug/mathfield', label: 'MathField' }
+		{ href: '/dashboard/admin/debug/mathfield', label: 'MathField' },
+		{ href: '/dashboard/admin/debug/api-docs', label: 'API (Swagger)' }
 	];
 
 	function isActivePage(href: string): boolean {

@@ -19,7 +19,7 @@ import type { MatchBindings, Rule } from '../../pattern/types';
 import { P } from '../../pattern/builder';
 import { createRule } from '../../pattern/rule';
 import { multiply, number, superscript } from '../../factory';
-import { isNumber, isSuperscript } from '../../guards';
+import { isNumber, isOpposite, isSuperscript } from '../../guards';
 import type { PedagogicalArithmeticRule } from '../types';
 
 // =============================================================================
@@ -44,7 +44,7 @@ function bindingNode(bindings: MatchBindings, name: string): MathNode | undefine
 }
 
 // =============================================================================
-// expandSmallPower (priority 80)
+// expandSmallPower (priority 105)
 // =============================================================================
 
 /**
@@ -55,13 +55,32 @@ function bindingNode(bindings: MatchBindings, name: string): MathNode | undefine
  */
 const SMALL_POWER_THRESHOLD = 5n;
 
+/**
+ * `(-b)^n` avec `b` entier positif écrit : la base négative (parenthèses
+ * éventuelles retirées) et l'exposant. `null` pour tout le reste.
+ */
+function asNegativeBasePower(node: MathNode): { base: MathNode; e: bigint } | null {
+	if (!isSuperscript(node) || !isNumber(node.superscript)) return null;
+	if (!/^\d+$/.test(node.superscript.value)) return null;
+	const raw = node.base;
+	const base = raw.type === 'delimiter' && raw.delimiters === 'parentheses' ? raw.content : raw;
+	if (!isOpposite(base) || !isNumber(base.operand)) return null;
+	if (!/^\d+$/.test(base.operand.value)) return null;
+	return { base, e: BigInt(node.superscript.value) };
+}
+
 function applyExpandSmallPower(node: MathNode): MathNode | null {
+	const negative = asNegativeBasePower(node);
 	const power = asIntegerPower(node);
-	if (!power) return null;
-	if (power.e <= 1n || power.e > SMALL_POWER_THRESHOLD) return null;
-	const baseNode = number(power.b.toString());
+	const e = negative?.e ?? power?.e;
+	if (e === undefined) return null;
+	if (e <= 1n || e > SMALL_POWER_THRESHOLD) return null;
+	// `(-3)^2 → (-3) × (-3)` : le piège du carré d'un négatif se montre
+	// (décision de David, 2026-10-14) ; le renderer remet les parenthèses
+	const baseNode = negative ? negative.base : power ? number(power.b.toString()) : null;
+	if (!baseNode) return null;
 	let product: MathNode = baseNode;
-	for (let i = 1n; i < power.e; i++) {
+	for (let i = 1n; i < e; i++) {
 		product = multiply(product, baseNode, 'cross');
 	}
 	return product;
@@ -86,7 +105,10 @@ export const expandSmallPower: PedagogicalArithmeticRule = {
 		}
 	),
 	applicableLevels: ['primaire', 'college'],
-	priority: 80,
+	// Au-dessus des opérations atomiques (100) : les puissances passent avant
+	// les multiplications (`2(-1)^2 - 3(-1)` calcule d'abord le carré) ; sous
+	// `combinePowersSameBase` (110), qui doit garder `2^3 × 2^5 → 2^8`
+	priority: 105,
 	descriptions: {
 		primaire: () => 'On développe la puissance en produit',
 		college: () => 'On écrit la puissance comme un produit'

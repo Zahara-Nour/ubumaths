@@ -115,9 +115,18 @@ function formatStepExpression(
 				const F = raw.bindings?.primitive ? toCustom(raw.bindings.primitive) : toCustom(raw.after);
 				return `@blue{${integralPrefix} ${toCustom(raw.before)}${dx}} = [${F}]_{${lower ?? '?'}}^{${upper ?? '?'}}`;
 			}
+			case 'apply-parts-formula': {
+				const uv = raw.bindings?.uv;
+				const vdu = raw.bindings?.vdu;
+				if (!uv || !vdu) break;
+				const result = raw.bindings?.result;
+				const tail = result ? ` = ${toCustom(result)}` : '';
+				return `@blue{∫ ${toCustom(raw.before)}${dx}} = ${toCustom(uv)} - ∫ (${toCustom(vdu)})${dx}${tail}`;
+			}
 			default:
-				return `@blue{${integralPrefix} ${toCustom(raw.before)}${dx}} = ${toCustom(raw.after)}`;
+				break;
 		}
+		return `@blue{${integralPrefix} ${toCustom(raw.before)}${dx}} = ${toCustom(raw.after)}`;
 	}
 	return rendered.expressionLatex ? compressLatex(rendered.expressionLatex) : '';
 }
@@ -194,7 +203,12 @@ export function presentIntegral(testCase: DemoCase, format: DemoFormat = 'latex'
 					if (raw === undefined) continue;
 					lines.push(...indentStep({ rendered: r, raw, depth: 0, format }));
 				}
-				lines.push(`Antiderivative: ${formatNode(result.antiderivative, format)}`);
+				if (result.antiderivative) {
+					lines.push(`Antiderivative: ${formatNode(result.antiderivative, format)}`);
+				}
+				if (result.undefinedAt) {
+					lines.push(`Undefined at: ${formatNode(result.undefinedAt, format)}`);
+				}
 				if (result.value) {
 					lines.push(`Value: ${formatNode(result.value, format)}`);
 				}

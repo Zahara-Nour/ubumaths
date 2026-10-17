@@ -3,14 +3,15 @@
  */
 
 import { z } from 'zod';
-import { formDataTransforms, roleSchema, roleWithAllSchema } from './common';
+import { formDataTransforms, roleSchema, uuidSchema } from './common';
+import { gradeCodeSchema, gradeFlexibleSchema } from './grades';
 
 /**
  * Schema for adding a user to a class
  */
 export const addToClassSchema = z.object({
-	userId: z.string().uuid('Invalid user ID format'),
-	classId: z.string().uuid('Invalid class ID format')
+	userId: z.string().uuid('Identifiant d’utilisateur invalide'),
+	classId: z.string().uuid('Identifiant de classe invalide')
 });
 
 /**
@@ -27,9 +28,9 @@ export const removeFromClassSchema = addToClassSchema;
  * compte 77 élèves.
  */
 export const composeClassSchema = z.object({
-	targetClassId: z.string().uuid('ID de classe de destination invalide'),
+	targetClassId: z.string().uuid('Identifiant de classe de destination invalide'),
 	studentIds: z
-		.array(z.string().uuid('ID d’élève invalide'))
+		.array(z.string().uuid('Identifiant d’élève invalide'))
 		.min(1, 'Aucun élève sélectionné')
 		.max(200, 'Trop d’élèves d’un coup (200 au maximum)'),
 	/**
@@ -45,7 +46,7 @@ export const composeClassSchema = z.object({
  * Liste des élèves composables pour une classe de destination.
  */
 export const classCompositionSourceSchema = z.object({
-	targetClassId: z.string().uuid('ID de classe de destination invalide')
+	targetClassId: z.string().uuid('Identifiant de classe de destination invalide')
 });
 
 /**
@@ -61,20 +62,6 @@ export const searchUsersSchema = z.object({
 // USER MANAGEMENT FORM SCHEMAS
 // ============================================================================
 
-/**
- * Update profile form schema (admin)
- */
-export const updateProfileFormSchema = z.object({
-	user_id: formDataTransforms.uuid,
-	firstname: formDataTransforms.optionalString.nullable(),
-	lastname: formDataTransforms.optionalString.nullable(),
-	email: formDataTransforms.email,
-	role: roleSchema,
-	school_id: formDataTransforms.optionalUuid.nullable(),
-	avatar_url: formDataTransforms.optionalString.nullable(),
-	is_test: formDataTransforms.boolean.optional()
-});
-
 // ============================================================================
 // STUDENT IMPORT SCHEMAS
 // ============================================================================
@@ -87,36 +74,82 @@ export const importStudentsFormSchema = z.object({
 	school_id: formDataTransforms.uuid
 });
 
+/**
+ * Un élève importé, tel que la page l'envoie après lecture du CSV.
+ *
+ * Le niveau est ramené à son code (« 6ème » → « 6 ») : c'est la forme que
+ * portent les profils, où il est recopié à l'activation du compte.
+ */
+export const importedStudentSchema = z.object({
+	email: z.string().trim().toLowerCase().max(254, 'Courriel trop long').email('Courriel invalide'),
+	firstname: z.string().trim().min(1, 'Prénom requis').max(100, 'Prénom trop long'),
+	lastname: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long'),
+	grade: gradeFlexibleSchema.nullable(),
+	class_codes: z
+		.array(z.string().trim().toUpperCase().max(10, 'Code de classe trop long'))
+		.max(20, 'Trop de codes de classe pour un élève')
+});
+
+/**
+ * La liste des élèves d'un import. Le plafond borne la taille d'un envoi : la
+ * plus grosse école du parc compte 77 élèves.
+ */
+export const importedStudentsSchema = z
+	.array(importedStudentSchema)
+	.min(1, 'Aucun élève à importer')
+	.max(1000, 'Trop d’élèves dans un seul import (1 000 au plus)');
+
+// ============================================================================
+// CLASS MANAGEMENT SCHEMAS (dashboard/admin/classes)
+// ============================================================================
+
+/** Un champ de formulaire vide, blanc ou absent devient `null`. */
+function emptyToNull<T extends z.ZodType>(schema: T) {
+	return z.preprocess(
+		(v) => (v === undefined || (typeof v === 'string' && v.trim() === '') ? null : v),
+		schema.nullable()
+	);
+}
+
+/** Code d'inscription d'une classe : lettres, chiffres, `-` et `_`, 10 caractères au plus. */
+const joinCodeSchema = z
+	.string()
+	.trim()
+	.toUpperCase()
+	.max(10, 'Code de classe trop long (10 caractères au plus)')
+	.regex(/^[A-Z0-9_-]*$/, 'Code de classe : lettres, chiffres, « - » et « _ » seulement');
+
+/** Formulaire de création d'une classe ; un code vide est généré par la base. */
+export const adminClassCreateSchema = z.object({
+	name: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long (100 caractères au plus)'),
+	description: emptyToNull(
+		z.string().trim().max(500, 'Description trop longue (500 caractères au plus)')
+	),
+	school_id: emptyToNull(uuidSchema),
+	grade: emptyToNull(gradeCodeSchema),
+	join_code: joinCodeSchema.nullish().transform((v) => v ?? '')
+});
+
+/** Formulaire de modification d'une classe : le code y est toujours saisi. */
+export const adminClassUpdateSchema = adminClassCreateSchema.extend({
+	id: uuidSchema,
+	join_code: joinCodeSchema.min(1, 'Code de classe requis'),
+	is_active: z
+		.string()
+		.nullish()
+		.transform((v) => v === 'true')
+});
+
+/** Activation / désactivation d'une classe. */
+export const adminClassIdSchema = z.object({ id: uuidSchema });
+
 // ============================================================================
 // SCHOOL MANAGEMENT SCHEMAS
 // ============================================================================
 
-/**
- * Create/Update school form schema
- */
-export const schoolFormSchema = z.object({
-	name: z.string().trim().min(1, 'Nom requis').max(200, 'Nom trop long (max 200)'),
-	address: formDataTransforms.optionalString.nullable(),
-	city: formDataTransforms.optionalString.nullable(),
-	country: formDataTransforms.optionalString.nullable(),
-	timezone: formDataTransforms.optionalString.nullable()
-});
-
 // ============================================================================
 // NOTIFICATION MANAGEMENT SCHEMAS
 // ============================================================================
-
-/**
- * Create notification form schema
- */
-export const createNotificationFormSchema = z.object({
-	title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long (max 200)'),
-	message: z.string().min(1, 'Message requis').max(2000, 'Message trop long (max 2000)'),
-	type: z.enum(['info', 'success', 'warning', 'error']),
-	target_role: roleWithAllSchema,
-	target_class_id: formDataTransforms.optionalUuid.nullable(),
-	expires_at: formDataTransforms.optionalString.nullable()
-});
 
 // ============================================================================
 // TEST MODE SCHEMA
@@ -152,11 +185,11 @@ export const updateUserFieldsSchema = z
 			.optional(),
 		lastname: z.string().min(1, 'Nom invalide').max(100, 'Nom trop long').nullable().optional(),
 		role: z.enum(['admin', 'teacher', 'student'], { message: 'Rôle invalide' }).optional(),
-		school_id: z.string().uuid('ID école invalide').nullable().optional(),
-		is_test: z.boolean({ message: 'is_test doit être un booléen' }).optional()
+		school_id: z.string().uuid('Identifiant d’école invalide').nullable().optional(),
+		is_test: z.boolean({ message: 'Valeur de « compte de test » invalide' }).optional()
 	})
 	.refine((data) => Object.keys(data).length > 0, {
-		message: 'Au moins un champ doit être fourni'
+		message: 'Aucun champ à modifier'
 	});
 
 // ============================================================================
@@ -169,7 +202,7 @@ export const updateUserFieldsSchema = z
  * - class_id: Optional UUID of the class to filter students
  */
 export const classStudentsQuerySchema = z.object({
-	class_id: z.string().uuid('ID de classe invalide').optional()
+	class_id: z.string().uuid('Identifiant de classe invalide').optional()
 });
 
 // ============================================================================
@@ -184,11 +217,11 @@ export const classStudentsQuerySchema = z.object({
  */
 export const updateUserStatusSchema = z.object({
 	status: z.enum(['approved', 'rejected'], {
-		message: 'Le statut doit être "approved" ou "rejected"'
+		message: 'Statut invalide (approved ou rejected attendu)'
 	}),
 	rejection_reason: z
 		.string()
-		.max(500, 'Raison trop longue (max 500 caractères)')
+		.max(500, 'Motif du refus trop long (500 caractères au maximum)')
 		.nullable()
 		.optional(),
 	// Optional profile fields (for approval with updates)
@@ -199,6 +232,6 @@ export const updateUserStatusSchema = z.object({
 		.nullable()
 		.optional(),
 	lastname: z.string().min(1, 'Nom invalide').max(100, 'Nom trop long').nullable().optional(),
-	school_id: z.string().uuid('ID école invalide').nullable().optional(),
-	is_test: z.boolean({ message: 'is_test doit être un booléen' }).optional()
+	school_id: z.string().uuid('Identifiant d’école invalide').nullable().optional(),
+	is_test: z.boolean({ message: 'Valeur de « compte de test » invalide' }).optional()
 });

@@ -25,7 +25,16 @@
 
 import type { SchoolLevel } from '../common/step-renderer-base';
 import { getRuleDescription as getNormalizeRuleDescription } from '../normal/step-recorder';
+import type { MathNode } from '../types';
+import type { Rational } from '../normal/types';
+import { isNegative, isZero } from '../normal/rational';
 import type { PedagogicalSimplifyStep } from './types';
+import {
+	identityOfNode,
+	readWrittenPolynomial,
+	type PolynomialIdentity
+} from './pedagogical-rules/polynomial-identities';
+import { analyzeTrinomial, evidentRoot } from './factor-strategies';
 
 /**
  * Default French descriptions for the pattern rules used by the pedagogical
@@ -50,6 +59,15 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'diff-cubes-numeric': 'Factorisation : a³ - b³ = (a-b)(a² + ab + b²)',
 	'common-factor-products': 'Factorisation par facteur commun : a·c + b·c = (a+b)·c',
 	'common-factor-bare-term': 'Factorisation par facteur commun : c + b·c = (b+1)·c',
+	// Le contenu : facteur numérique, monôme, ou non polynomial (eˣ, (x+1)…).
+	'common-factor-content-add': 'Factorisation par facteur commun : k·a + k·b = k(a+b)',
+	'common-factor-content-sub': 'Factorisation par facteur commun : k·a - k·b = k(a-b)',
+	// Stratégies qui racontent (ADR 0024, `factor-strategies.ts`)
+	'reduce-factors': 'Réduction de chaque facteur',
+	'trinomial-roots': 'Factorisation par les racines du trinôme : a(x - x₁)(x - x₂)',
+	'trinomial-integer-form': 'Factorisation à coefficients entiers',
+	'evident-root': 'Factorisation par (x - r), r racine évidente',
+	'develop-to-factor': 'Développement et réduction, pour faire apparaître une forme connue',
 
 	// ---- valeur absolue -------------------------------------------------------
 	'abs-negation': 'Simplification : |-x| = |x|',
@@ -58,6 +76,7 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'abs-quotient': 'Distribution : |a/b| = |a|/|b|',
 	'abs-positive': 'Simplification : |x| = x (x positif)',
 	'abs-negative': 'Simplification : |x| = -x (x négatif)',
+	'length-radical': 'Une longueur est positive : √(AB²) = AB',
 	'abs-even-pow': 'Simplification : |xⁿ| = xⁿ (n pair)',
 	'abs-pow-even': 'Simplification : |x|ⁿ = xⁿ (n pair)',
 
@@ -102,7 +121,16 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'sqrt-one': '√1 = 1',
 	'sqrt-zero': '√0 = 0',
 	'sqrt-square': '√(a²) = |a|',
-	'square-sqrt': '(√a)² = a (a positif)'
+	'square-sqrt': '(√a)² = a (a positif)',
+
+	// ---- règles de normalize dont le texte écrit `^` (V25) ---------------------
+	// La prose est rendue par `InlineMarkdown` : un `^` hors des `$…$` s'afficherait
+	// tel quel. Ces entrées passent devant `normal/rule-descriptions-fr.ts`.
+	'euler-identities':
+		"Propriétés de l'exponentielle : $\\ln(e^a) = a$, $e^{\\ln a} = a$, $e^a \\times e^b = e^{a+b}$, $(e^a)^n = e^{an}$",
+	'radical-of-radical': 'Radical de radical : √(√a) = ⁴√a',
+	'sqrt-to-half-power': 'Conversion en exposant fractionnaire : $\\sqrt{a} = a^{\\frac{1}{2}}$',
+	'abs-even-power': 'Puissance paire et valeur absolue : |xⁿ| = xⁿ et |x|ⁿ = xⁿ pour n pair'
 };
 
 /**
@@ -140,6 +168,79 @@ export function getPedagogicalSimplifyRuleDescription(name: string): string {
 export type TitleFn = (step: PedagogicalSimplifyStep) => string;
 export type ExplainFn = (step: PedagogicalSimplifyStep) => string | undefined;
 
+// =============================================================================
+// Titres qui nomment a et b, Δ et les racines (stratégies de `factoriser`)
+// =============================================================================
+
+const SUPERSCRIPT_DIGITS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+
+function superscriptText(n: number): string {
+	return [...String(n)].map((d) => SUPERSCRIPT_DIGITS[Number(d)]).join('');
+}
+
+/** `−3/2`, `25` : signe moins typographique. */
+function rationalText(r: Rational): string {
+	const magnitude = `${r.n < 0n ? -r.n : r.n}${r.d === 1n ? '' : `/${r.d}`}`;
+	return isNegative(r) ? `−${magnitude}` : magnitude;
+}
+
+/** `2x`, `x²`, `3x²`. */
+function monomialText(coefficient: bigint, variable: string, degree: number): string {
+	const power = degree === 1 ? '' : superscriptText(degree);
+	return `${coefficient === 1n ? '' : coefficient}${variable}${power}`;
+}
+
+/** La phrase d'une identité lue par coefficients, ou `null` hors de ce domaine. */
+function identityTitle(before: MathNode): string | null {
+	const identity: PolynomialIdentity | null = identityOfNode(before);
+	const variable = readWrittenPolynomial(before)?.variable;
+	if (identity === null || variable === undefined) return null;
+	const shapes = {
+		'diff-squares': 'a² − b²',
+		'perfect-square': identity.sign > 0 ? 'a² + 2ab + b²' : 'a² − 2ab + b²',
+		'sum-cubes': 'a³ + b³',
+		'diff-cubes': 'a³ − b³'
+	};
+	const monomial = monomialText(identity.alpha, variable, identity.degree);
+	// Écrite constante devant (`9 − x²`) : a est la constante, b le monôme
+	const [a, b] = identity.reversed
+		? [`${identity.beta}`, monomial]
+		: [monomial, `${identity.beta}`];
+	return `On reconnaît ${shapes[identity.kind]} avec a = ${a} et b = ${b}`;
+}
+
+/** Le titre d'identité avec a et b, sinon le titre d'origine (motif symbolique, plusieurs lettres). */
+function withIdentityTitle(fallback: string): TitleFn {
+	return (step) => identityTitle(step.before) ?? fallback;
+}
+
+/** Δ et les racines, lus sur le trinôme de l'étape. */
+function trinomialTitle(step: PedagogicalSimplifyStep): string {
+	const written = readWrittenPolynomial(step.before);
+	if (written?.coefficients?.length !== 3) return step.description;
+	const { delta, parts, roots } = analyzeTrinomial(written.coefficients);
+	const deltaText = `On calcule Δ = ${rationalText(delta)}`;
+	if (parts.kind === 'surd') {
+		const center = isZero(parts.center) ? '' : `${rationalText(parts.center)} `;
+		const offset = `${parts.offset.n === 1n ? '' : parts.offset.n}√${parts.radicand}${parts.offset.d === 1n ? '' : `/${parts.offset.d}`}`;
+		const root = (sign: string) =>
+			center === '' ? `${sign === '+' ? '' : '−'}${offset}` : `${center}${sign} ${offset}`;
+		return `${deltaText} : deux racines, x₁ = ${root('+')} et x₂ = ${root('−')}`;
+	}
+	if (parts.kind === 'double')
+		return `${deltaText} : une racine double, x₀ = ${rationalText(roots[0])}`;
+	return `${deltaText} : deux racines, x₁ = ${rationalText(roots[0])} et x₂ = ${rationalText(roots[1])}`;
+}
+
+/** « 1 est racine évidente : on factorise par (x − 1) ». */
+function evidentRootTitle(step: PedagogicalSimplifyStep): string {
+	const written = readWrittenPolynomial(step.before);
+	const r = written?.coefficients ? evidentRoot(written.coefficients) : null;
+	if (written === null || r === null) return step.description;
+	const factor = `(${written.variable} ${r > 0n ? '−' : '+'} ${r > 0n ? r : -r})`;
+	return `${r < 0n ? `−${-r}` : r} est racine évidente : on factorise par ${factor}`;
+}
+
 type RuleFnMap<F> = Partial<Record<string, F>>;
 
 /**
@@ -155,12 +256,21 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'distribute-binomial-product': () => 'On distribue le produit des deux binômes',
 	// factorisation
 	'diff-squares-symbolic': () => 'On factorise avec a² - b² = (a+b)(a-b)',
-	'diff-squares-numeric': () => 'On factorise avec a² - b² = (a+b)(a-b)',
-	'perfect-square-trinomial': () => 'On reconnaît un trinôme carré parfait',
+	'diff-squares-numeric': withIdentityTitle('On factorise avec a² - b² = (a+b)(a-b)'),
+	'perfect-square-trinomial': withIdentityTitle('On reconnaît un trinôme carré parfait'),
 	'sum-cubes-symbolic': () => 'On factorise a³ + b³',
 	'diff-cubes-symbolic': () => 'On factorise a³ - b³',
+	'sum-cubes-numeric': withIdentityTitle('On factorise a³ + b³'),
+	'diff-cubes-numeric': withIdentityTitle('On factorise a³ - b³'),
+	'reduce-factors': () => 'On réduit chaque facteur',
+	'trinomial-roots': trinomialTitle,
+	'trinomial-integer-form': () => 'On écrit les facteurs avec des coefficients entiers',
+	'evident-root': evidentRootTitle,
+	'develop-to-factor': () => 'On développe et on réduit',
 	'common-factor-products': () => 'On met le facteur commun en évidence',
 	'common-factor-bare-term': () => 'On met le facteur commun en évidence',
+	'common-factor-content-add': () => 'On met le facteur commun en évidence',
+	'common-factor-content-sub': () => 'On met le facteur commun en évidence',
 	// trig
 	pythagorean: () => 'On utilise sin²(x) + cos²(x) = 1',
 	'sin-negative': () => 'sin est impaire : sin(-x) = -sin(x)',
@@ -198,10 +308,12 @@ const COLLEGE_TITLES: RuleFnMap<TitleFn> = {
 	'expand-diff-squared': () => 'On utilise (a-b)² = a² - 2ab + b²',
 	'product-to-diff-squares': () => 'On utilise (a+b)(a-b) = a² - b²',
 	'distribute-binomial-product': () => 'On distribue chaque terme',
-	'diff-squares-numeric': () => 'On factorise avec l’identité a² - b²',
-	'perfect-square-trinomial': () => 'On reconnaît a² ± 2ab + b² = (a±b)²',
+	'diff-squares-numeric': withIdentityTitle('On factorise avec l’identité a² - b²'),
+	'perfect-square-trinomial': withIdentityTitle('On reconnaît a² ± 2ab + b² = (a±b)²'),
 	'common-factor-products': () => 'On met en facteur ce qui est commun',
 	'common-factor-bare-term': () => 'On met en facteur ce qui est commun',
+	'common-factor-content-add': () => 'On met en facteur ce qui est commun',
+	'common-factor-content-sub': () => 'On met en facteur ce qui est commun',
 	'combine-like-terms': () => 'On regroupe les termes en x',
 	'simplify-fraction': () => 'On simplifie la fraction'
 };
@@ -223,6 +335,8 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'perfect-square-trinomial': () => 'Trinôme carré parfait',
 	'common-factor-products': () => 'Facteur commun',
 	'common-factor-bare-term': () => 'Facteur commun',
+	'common-factor-content-add': () => 'Facteur commun',
+	'common-factor-content-sub': () => 'Facteur commun',
 	pythagorean: () => 'Pythagore',
 	'sin-negative': () => 'Imparité de sin',
 	'cos-negative': () => 'Parité de cos',
@@ -254,10 +368,24 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		'On reconnaît une différence de deux carrés : a² - b² = (a+b)(a-b).',
 	'perfect-square-trinomial': () =>
 		'On reconnaît un trinôme du second degré qui est le carré parfait d’un binôme.',
+	'reduce-factors': () =>
+		'Dans chaque facteur, on supprime les parenthèses et on regroupe les termes semblables.',
+	'trinomial-roots': () =>
+		'Quand Δ = b² − 4ac est positif ou nul, le trinôme ax² + bx + c s’écrit a(x − x₁)(x − x₂), où x₁ et x₂ sont ses racines.',
+	'trinomial-integer-form': () =>
+		'On multiplie un facteur par a, ou par un diviseur de a, pour que ses coefficients soient entiers.',
+	'develop-to-factor': () =>
+		'Aucun facteur commun ni identité n’apparaît tel quel : on développe pour faire apparaître une forme connue.',
+	'evident-root': () =>
+		'Si P(r) = 0, alors P(x) se factorise par (x − r) : le second facteur s’obtient par division (ou par identification).',
 	'common-factor-products': () =>
 		'Les deux termes ont un facteur commun : on l’écrit une seule fois, devant la somme de ce qui reste — a·c + b·c = (a+b)·c.',
 	'common-factor-bare-term': () =>
 		'Le facteur commun est écrit seul dans l’un des termes : il y compte donc pour 1, et c’est de là que vient le 1 de la parenthèse — c + b·c = (b+1)·c.',
+	'common-factor-content-add': () =>
+		'Tous les termes ont un facteur commun : on l’écrit une seule fois, et la parenthèse garde ce qui reste de chaque terme — k·a + k·b = k(a+b).',
+	'common-factor-content-sub': () =>
+		'Tous les termes ont un facteur commun : on l’écrit une seule fois, et la parenthèse garde ce qui reste de chaque terme — k·a - k·b = k(a-b).',
 	pythagorean: () => 'L’identité fondamentale : pour tout x réel, sin²(x) + cos²(x) = 1.',
 	'sin-negative': () => 'La fonction sinus est impaire : sin(-x) = -sin(x).',
 	'cos-negative': () => 'La fonction cosinus est paire : cos(-x) = cos(x).',
@@ -269,7 +397,31 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'simplify-fraction': () => 'On divise numérateur et dénominateur par leur PGCD.',
 	'radical-simplify': () => 'On extrait du radical les facteurs qui sont des carrés parfaits.',
 	'sqrt-extract-perfect-square': () =>
-		'On extrait du radical les facteurs qui sont des carrés parfaits.'
+		'On extrait du radical les facteurs qui sont des carrés parfaits.',
+	// « développer » rédigé (`expand-steps.ts`) : le titre est dans la description
+	'expand-whole-power': () =>
+		'Au-delà du cube, distribuer à la main serait trop long : le développement est donné d’un coup.',
+	'expand-split-power': () =>
+		'Une puissance est un produit de facteurs égaux, qu’on développe un produit après l’autre.',
+	'expand-identity': () =>
+		'Une identité remarquable donne le développement d’un coup : on remplace a et b dans le membre de droite.',
+	'expand-compute': () =>
+		'On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes : 2x × 3 = 6x, x × x = x².',
+	'expand-reduce-inside': () =>
+		'On regroupe les termes semblables de la parenthèse avant de distribuer : il y aura moins de produits.',
+	'expand-distribute': () =>
+		'Chaque terme d’une parenthèse multiplie chaque terme de l’autre ; le signe de chaque produit suit la règle des signes.',
+	'expand-distribute-factor': () =>
+		'k(a + b) = ka + kb : le facteur multiplie chaque terme de la parenthèse.',
+	'expand-remove-parentheses': () =>
+		'−(a + b) = −a − b : enlever une parenthèse précédée d’un −, c’est changer le signe de chacun de ses termes.',
+	'expand-unwrap': () => 'Une parenthèse précédée d’un + s’enlève sans rien changer.',
+	'expand-double-minus': () => '−(−a) = a : l’opposé de l’opposé d’un nombre, c’est ce nombre.',
+	'expand-reduce': () =>
+		'On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.',
+	'expand-coefficients': () => 'Le coefficient s’écrit devant les lettres : y/2 = ½ y, x × 3 = 3x.',
+	'expand-order': () => 'On range les termes par puissances décroissantes de x.',
+	'expand-order-alphabetical': () => 'On range les termes dans l’ordre alphabétique des lettres.'
 };
 
 const COLLEGE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
@@ -286,7 +438,13 @@ const COLLEGE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'common-factor-products': () =>
 		'Le même facteur se trouve dans les deux termes : on l’écrit une fois devant la parenthèse.',
 	'common-factor-bare-term': () =>
-		'Le facteur commun est seul dans l’un des termes : il compte pour 1 dans la parenthèse.'
+		'Le facteur commun est seul dans l’un des termes : il compte pour 1 dans la parenthèse.',
+	'common-factor-content-add': () =>
+		'Le même facteur se trouve dans tous les termes : on l’écrit une fois, à côté de la parenthèse.',
+	'common-factor-content-sub': () =>
+		'Le même facteur se trouve dans tous les termes : on l’écrit une fois, à côté de la parenthèse.',
+	'reduce-factors': () =>
+		'Dans chaque parenthèse, on enlève les parenthèses intérieures et on regroupe les termes en x.'
 };
 
 const PRIMAIRE_EXPLANATIONS: RuleFnMap<ExplainFn> = {

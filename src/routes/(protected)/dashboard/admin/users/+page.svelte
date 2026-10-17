@@ -49,6 +49,9 @@
 	let isSearching = $state(false); // Loading state for text search
 	let isSearchingClass = $state(false); // Loading state for class filter
 	let isSearchingPending = $state(false); // Loading state for pending filter
+	// Une panne n'est pas « aucun résultat » : l'écran le dit.
+	let searchFailed = $state(false);
+	let pendingFailed = $state(false);
 	let selectedClassFilter = $state<string>('none'); // Currently selected class ID for filtering ('none' = no class selected)
 	let showPendingOnly = $state(false); // Show only pending users awaiting approval
 	let searchTimeout: NodeJS.Timeout | null = null; // Debounce timer for search
@@ -271,11 +274,18 @@
 		}
 
 		isSearching = true;
+		searchFailed = false;
 		searchTimeout = setTimeout(async () => {
 			try {
 				const response = await fetch(
 					`/api/admin/search-users?q=${encodeURIComponent(searchTerm)}&limit=50`
 				);
+				if (!response.ok) {
+					searchFailed = true;
+					searchResults = [];
+					isSearching = false;
+					return;
+				}
 				const result = (await response.json()) as { users?: ExtendedProfile[] };
 
 				if (result.users) {
@@ -287,6 +297,7 @@
 				}
 			} catch (err) {
 				console.error('Search fetch error:', err);
+				searchFailed = true;
 				searchResults = [];
 			}
 			isSearching = false;
@@ -341,9 +352,16 @@
 			selectedClassFilter = 'none';
 			classResults = [];
 
+			pendingFailed = false;
 			try {
 				// Fetch pending users via search API with status filter
 				const response = await fetch('/api/admin/search-users/pending');
+				if (!response.ok) {
+					pendingFailed = true;
+					pendingResults = [];
+					isSearchingPending = false;
+					return;
+				}
 				const result = (await response.json()) as { users?: ExtendedProfile[] };
 
 				if (result.users) {
@@ -353,6 +371,7 @@
 				}
 			} catch (err) {
 				console.error('Pending filter error:', err);
+				pendingFailed = true;
 				pendingResults = [];
 			}
 
@@ -622,7 +641,7 @@
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.error || 'Failed to update profile');
+				throw new Error(error.error || 'Impossible de mettre à jour le profil');
 			}
 
 			const result: { success: boolean; profile: ExtendedProfile } = await response.json();
@@ -938,15 +957,27 @@
 				{:else if showPendingOnly && !isSearchingPending}
 					<Card.Root>
 						<Card.Content class="py-6 text-center">
-							<p class="text-sm text-muted-foreground">
-								Aucun utilisateur en attente d'approbation
-							</p>
+							{#if pendingFailed}
+								<p class="text-sm text-destructive">
+									Impossible de charger les comptes en attente. Réessaie dans un instant.
+								</p>
+							{:else}
+								<p class="text-sm text-muted-foreground">
+									Aucun utilisateur en attente d'approbation
+								</p>
+							{/if}
 						</Card.Content>
 					</Card.Root>
 				{:else if searchTerm.length >= 3 && !isSearching}
 					<Card.Root>
 						<Card.Content class="py-6 text-center">
-							<p class="text-sm text-muted-foreground">Aucun résultat trouvé</p>
+							{#if searchFailed}
+								<p class="text-sm text-destructive">
+									La recherche a échoué. Réessaie dans un instant.
+								</p>
+							{:else}
+								<p class="text-sm text-muted-foreground">Aucun résultat trouvé</p>
+							{/if}
 						</Card.Content>
 					</Card.Root>
 				{/if}

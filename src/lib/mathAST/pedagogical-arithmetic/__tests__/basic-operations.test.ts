@@ -53,12 +53,12 @@ describe('basic-operations rules', () => {
 				a: number('2'),
 				b: number('3')
 			});
-			expect(desc).toBe('On additionne 2 et 3');
+			expect(desc).toBe('On additionne $2$ et $3$');
 		});
 
 		it('description with missing binding falls back to "?"', () => {
 			const desc = evaluateBinaryAdd.descriptions.primaire?.({});
-			expect(desc).toBe('On additionne ? et ?');
+			expect(desc).toBe('On additionne $?$ et $?$');
 		});
 
 		it('applies to all 4 levels', () => {
@@ -258,8 +258,8 @@ describe('basic-operations rules', () => {
 	});
 
 	describe('BASIC_OPERATION_RULES export', () => {
-		it('contains all 11 rules', () => {
-			expect(BASIC_OPERATION_RULES).toHaveLength(11);
+		it('contains all 13 rules (incl. subtractNegative, oppositeOfOpposite)', () => {
+			expect(BASIC_OPERATION_RULES).toHaveLength(13);
 		});
 
 		it('first item is groupParentheses (highest priority among basic ops)', () => {

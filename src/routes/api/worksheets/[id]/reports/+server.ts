@@ -10,8 +10,12 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
 import { z } from 'zod';
 import type { ErrorReportStatus } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/reports/+server');
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -80,7 +84,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Validate worksheet ID
 	const worksheetId = params.id;
 	if (!worksheetId || !z.string().uuid().safeParse(worksheetId).success) {
-		throw error(400, 'Format UUID invalide pour la feuille');
+		throw error(400, 'Identifiant de fiche invalide');
 	}
 
 	// Validate query parameters
@@ -103,7 +107,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		.single();
 
 	if (worksheetError || !worksheet) {
-		throw error(404, 'Feuille de travail non trouvee');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	if (worksheet.created_by !== user.id) {
@@ -117,12 +121,12 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier vos droits');
+			logger.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (profile?.role !== 'admin') {
-			throw error(403, 'Acces non autorise a cette feuille de travail');
+			throw error(403, 'Accès refusé à cette fiche');
 		}
 	}
 
@@ -145,8 +149,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.eq('worksheet_id', worksheetId);
 
 		if (assignmentsError) {
-			console.error('[API] Error fetching assignments:', assignmentsError);
-			throw error(500, 'Erreur lors de la recuperation des devoirs');
+			logger.error('[API] Error fetching assignments:', assignmentsError);
+			throw error(500, 'Impossible de charger les affectations');
 		}
 
 		if (!assignments || assignments.length === 0) {
@@ -194,8 +198,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.in('assignment_id', filteredAssignmentIds);
 
 		if (countError) {
-			console.error('[API] Error counting reports:', countError);
-			throw error(500, 'Erreur lors du comptage des signalements');
+			logger.error('[API] Error counting reports:', countError);
+			throw error(500, 'Impossible de compter les signalements');
 		}
 
 		// Calculate counts
@@ -243,26 +247,21 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		const { data: reports, error: fetchError, count: totalFiltered } = await query;
 
 		if (fetchError) {
-			console.error('[API] Error fetching reports:', fetchError);
-			throw error(500, 'Erreur lors de la recuperation des signalements');
+			logger.error('[API] Error fetching reports:', fetchError);
+			throw error(500, 'Impossible de charger les signalements');
 		}
 
-		// Step 4: Get exercise positions
-		const worksheetExerciseIds = [...new Set((reports ?? []).map((r) => r.worksheet_exercise_id))];
-		const exercisePositions = new Map<string, number>();
-
-		if (worksheetExerciseIds.length > 0) {
-			const { data: exercises, error: exercisesError } = await locals.supabase
-				.from('worksheet_exercises')
-				.select('id, position')
-				.in('id', worksheetExerciseIds);
-
-			if (!exercisesError && exercises) {
-				for (const e of exercises) {
-					exercisePositions.set(e.id, e.position);
-				}
-			}
-		}
+		// Step 4: le numéro de chaque exercice signalé DANS LA COPIE de son élève
+		// (D6), ordre mélangé compris — pas `position`, qui redémarre à 1 dans
+		// chaque section.
+		const numbering =
+			(reports ?? []).length > 0
+				? await fetchCopyNumbering(
+						locals.supabase,
+						worksheetId,
+						(reports ?? []).map((r) => r.assignment_id)
+					)
+				: null;
 
 		// Step 5: Transform to WorksheetReportView
 		const reportViews: WorksheetReportView[] = (reports ?? []).map((report) => {
@@ -276,7 +275,13 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				assignment_title: assignmentInfo?.title ?? null,
 				assignment_class_names: assignmentInfo?.class_names ?? [],
 				worksheet_exercise_id: report.worksheet_exercise_id,
-				exercise_position: exercisePositions.get(report.worksheet_exercise_id) ?? 0,
+				// 0 : numéro inconnu (fiche illisible), jamais un numéro faux
+				exercise_position:
+					numbering?.numberOf(
+						report.assignment_id,
+						report.student_id,
+						report.worksheet_exercise_id
+					) ?? 0,
 				student_id: report.student_id,
 				student_first_name: (student as { firstname?: string })?.firstname ?? null,
 				student_last_name: (student as { lastname?: string })?.lastname ?? null,
@@ -307,7 +312,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/worksheets/[id]/reports:', err);
-		throw error(500, 'Une erreur inattendue est survenue');
+		logger.error('[API] Unexpected error in GET /api/worksheets/[id]/reports:', err);
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

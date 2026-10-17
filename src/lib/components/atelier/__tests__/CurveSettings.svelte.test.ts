@@ -217,3 +217,37 @@ describe('revues du lot 2b', () => {
 		);
 	});
 });
+
+// Décision f du 2026-10-13 (`docs/wip/atelier-intervalle-phase0.md`)
+describe('« Sur le graphique » d’une fonction définie sur un intervalle', () => {
+	it('la tangente hors de l’ensemble est refusée, et le dit', async () => {
+		const { atelier, card } = await openPlotted('x^2');
+		atelier.update('f', 'x^2', 'text', undefined, '[0;2]');
+		atelier.setDisplay('f', { tangentAt: -1 });
+
+		await vi.waitFor(() =>
+			expect(text(card(), '.refus-tangente')).toBe(
+				"x₀ = −1 n'est pas dans l'ensemble de définition de f, [0 ; 2]."
+			)
+		);
+		expect(text(card(), '.pente')).toBe('pas de tangente');
+
+		// À une borne fermée : acceptée
+		atelier.setDisplay('f', { tangentAt: 0 });
+		await vi.waitFor(() => expect(text(card(), '.pente')).toBe('f′(x₀) = 0'));
+		expect(text(card(), '.refus-tangente')).toBe('');
+	});
+
+	it('l’aire sur un [a ; b] qui sort de l’ensemble est refusée, et le dit', async () => {
+		const { atelier, card } = await openPlotted('x^2');
+		atelier.update('f', 'x^2', 'text', undefined, '[0;2]');
+		atelier.setDisplay('f', { integral: { from: 1, to: 3 } });
+
+		await vi.waitFor(() =>
+			expect(card().textContent).toContain(
+				"3 n'est pas dans l'ensemble de définition de f, [0 ; 2]."
+			)
+		);
+		expect(text(card(), '.aire')).toBe('aire = —');
+	});
+});

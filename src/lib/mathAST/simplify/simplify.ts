@@ -38,6 +38,7 @@ import { algebraicSimplifyRules } from '../pattern/rule-sets/algebraic-identitie
 
 // Normalize
 import { preprocess } from '../normal/rules';
+import { segmentLengthOracle, type AssumptionOracle } from '../assumptions';
 import { normalizeExtended, denormalizeExtended } from '../normal';
 
 // Mise au propre
@@ -88,9 +89,9 @@ function buildSimplifyRules(options: {
  * for polynomial canonical form (arithmetic identities, like-term collection,
  * power simplification, special function values).
  */
-function normalizePass(node: MathNode): MathNode {
+function normalizePass(node: MathNode, assumptions?: AssumptionOracle): MathNode {
 	const preprocessed = preprocess(node);
-	const ext = normalizeExtended(preprocessed);
+	const ext = normalizeExtended(preprocessed, assumptions && { assumptions });
 	return denormalizeExtended(ext);
 }
 
@@ -115,7 +116,10 @@ function normalizePass(node: MathNode): MathNode {
  * mise au propre. Mais une `AbortError` — `normalize` s'interrompt
  * coopérativement — doit remonter au moteur, qui rend alors le nœud d'origine.
  */
-function makeTidyThenExpandIfCheaper(cost: (node: MathNode) => number) {
+function makeTidyThenExpandIfCheaper(
+	cost: (node: MathNode) => number,
+	assumptions?: AssumptionOracle
+) {
 	return (node: MathNode): MathNode => {
 		const tidied = tidy(node);
 
@@ -131,7 +135,7 @@ function makeTidyThenExpandIfCheaper(cost: (node: MathNode) => number) {
 
 		let expanded: MathNode;
 		try {
-			expanded = tidy(normalizePass(node));
+			expanded = tidy(normalizePass(node, assumptions));
 		} catch (error) {
 			if (error instanceof AbortError) throw error;
 			return tidied;
@@ -251,7 +255,7 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 	const engineResult = rewrite(start, {
 		rules,
 		preProcess: tidy,
-		postProcess: makeTidyThenExpandIfCheaper(costFunction),
+		postProcess: makeTidyThenExpandIfCheaper(costFunction, segmentLengthOracle(ctx, [node])),
 		strategy: { kind: 'cost-fixpoint', cost: costFunction },
 		maxIterations,
 		typeCtx: ctx,

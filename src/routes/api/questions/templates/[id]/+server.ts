@@ -25,6 +25,9 @@ import {
 	assumptionCollisionMessage,
 	findAssumptionCollisions
 } from '$lib/questions/answer-assumptions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/questions/templates/[id]/+server');
 
 /**
  * GET /api/questions/templates/[id]
@@ -48,7 +51,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 		return json(mapDbTemplateToForm(template as unknown as Record<string, unknown>));
 	} catch (err) {
-		console.error('Error fetching template:', err);
+		logger.error('Error fetching template:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -166,7 +169,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			.maybeSingle();
 
 		if (readError && readError.code !== 'PGRST116') {
-			console.error('Error reading template before update:', readError);
+			logger.error('Error reading template before update:', readError);
 			throw error(500, 'Failed to read template');
 		}
 		if (!currentRow) {
@@ -254,7 +257,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			throw error(404, 'Template not found');
 		}
 		if (updateError) {
-			console.error('Error updating template:', updateError);
+			logger.error('Error updating template:', updateError);
 			throw error(500, 'Failed to update template');
 		}
 
@@ -263,7 +266,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			template
 		});
 	} catch (err) {
-		console.error('Error in PUT /api/questions/templates/[id]:', err);
+		logger.error('Error in PUT /api/questions/templates/[id]:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -297,7 +300,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		// panne prenait le même visage et faisait conclure « rien ici », donc créer
 		// par-dessus ce qu'on n'avait simplement pas su lire.
 		if (existingError && existingError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', existingError);
+			logger.error('Lecture impossible :', existingError);
 			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 
@@ -322,19 +325,19 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 				{
 					success: false,
 					error:
-						'Ce modèle a déjà servi à des élèves (évaluation ou révisions) : il ne peut plus être supprimé. Passe-le en brouillon.'
+						'Ce modèle a déjà servi à des élèves (contrôle ou révisions) : il ne peut plus être supprimé. Passe-le en brouillon.'
 				},
 				{ status: 409 }
 			);
 		}
 		if (deleteError) {
-			console.error('Error deleting template:', deleteError);
+			logger.error('Error deleting template:', deleteError);
 			throw error(500, 'Failed to delete template');
 		}
 
 		return json({ success: true }, { status: 200 });
 	} catch (err) {
-		console.error('Error in DELETE /api/questions/templates/[id]:', err);
+		logger.error('Error in DELETE /api/questions/templates/[id]:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

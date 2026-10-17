@@ -193,7 +193,15 @@ describe('un élève archivé et ses propres signalements d’erreur', () => {
 		// secret pour lui : il l'a lue.
 		const reports = await reportsOf(archivedStudentId, archivedStudent);
 		expect(reports[0]?.worksheet_title).toBe(WORKSHEET_TITLE);
-		expect(reports[0]?.exercise_position).toBe(3);
+		// Le numéro est celui de SA copie (D6) : la fiche quittée ne lui est plus
+		// lisible, il est donc inconnu — aucun numéro plutôt que `position` (3),
+		// qui n'est pas ce qu'il lisait (exercice unique : il lisait « 1 »).
+		expect(reports[0]?.exercise_position).toBeNull();
+	});
+
+	it('un élève actif lit le numéro de sa copie, pas la position', async () => {
+		const reports = await reportsOf(activeStudentId, activeStudent);
+		expect(reports[0]?.exercise_position).toBe(1);
 	});
 
 	it('un élève ne voit jamais les signalements d’un autre', async () => {

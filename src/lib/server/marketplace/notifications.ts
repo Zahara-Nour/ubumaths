@@ -18,6 +18,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { insertSystemNotification } from '$lib/server/notifications';
 import { escapeHtml } from '$lib/utils/html-escape';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/marketplace/notifications');
 
 /**
  * Create notification when someone makes a proposal on user's listing
@@ -39,7 +42,7 @@ export async function notifyNewProposal(
 		// Le repli « Un élève » existe déjà et convient : la notification part,
 		// simplement sans le prénom. On laisse néanmoins la trace.
 		if (proposerError) {
-			console.error('[marketplace] Nom du proposant illisible :', proposerError);
+			logger.error('[marketplace] Nom du proposant illisible :', proposerError);
 		}
 
 		const proposerName = proposerProfile
@@ -58,10 +61,10 @@ export async function notifyNewProposal(
 			priority: 'normal'
 		});
 		if (insertError) {
-			console.error('[marketplace] Notification non créée :', insertError);
+			logger.error('[marketplace] Notification non créée :', insertError);
 		}
 	} catch (error) {
-		console.error('Failed to create proposal notification:', error);
+		logger.error('Failed to create proposal notification:', error);
 	}
 }
 
@@ -86,10 +89,10 @@ export async function notifyProposalAccepted(
 			priority: 'important'
 		});
 		if (insertError) {
-			console.error('[marketplace] Notification non créée :', insertError);
+			logger.error('[marketplace] Notification non créée :', insertError);
 		}
 	} catch (error) {
-		console.error('Failed to create acceptance notification:', error);
+		logger.error('Failed to create acceptance notification:', error);
 	}
 }
 
@@ -118,10 +121,10 @@ export async function notifyProposalRejected(
 			priority: 'normal'
 		});
 		if (insertError) {
-			console.error('[marketplace] Notification non créée :', insertError);
+			logger.error('[marketplace] Notification non créée :', insertError);
 		}
 	} catch (error) {
-		console.error('Failed to create rejection notification:', error);
+		logger.error('Failed to create rejection notification:', error);
 	}
 }
 
@@ -146,9 +149,9 @@ export async function notifyTradeCompleted(
 			priority: 'important'
 		});
 		if (insertError) {
-			console.error('[marketplace] Notification non créée :', insertError);
+			logger.error('[marketplace] Notification non créée :', insertError);
 		}
 	} catch (error) {
-		console.error('Failed to create trade completion notification:', error);
+		logger.error('Failed to create trade completion notification:', error);
 	}
 }

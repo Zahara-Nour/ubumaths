@@ -66,7 +66,19 @@ import {
 	rationalToNumber
 } from '../normal/rational';
 import { findNodes } from '../transforms';
-import { number as numberNode, divide, multiply, add } from '../factory';
+import {
+	number as numberNode,
+	divide,
+	multiply,
+	add,
+	subtract,
+	opposite,
+	parentheses,
+	euler,
+	superscript,
+	ln as lnNode
+} from '../factory';
+import { toPolynomial } from '../factor/polynomial';
 import { getBuiltinDomain, hasRestrictedDomain, getBuiltinRangeEntry } from './builtins';
 import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
 import { ZERO_TOLERANCE } from '../common';
@@ -491,25 +503,138 @@ function computeDivisionDomain(
 		domain = restrictTo(domain, nonZero, options, node.denominator);
 	}
 
-	// Pedagogical recording (V1 MVP): emit a `division_constraint` step when
-	// the denominator has zeros to exclude. The intermediateDomain captures
-	// the post-exclusion state (i.e. what the renderer should display as the
-	// "Domaine" line when this step is rendered in isolation).
-	if (options.showSteps && options.recorder && hasZeros) {
+	// Rédaction : une étape `division_constraint` dont l'ensemble est celui de
+	// SA contrainte (« dénominateur ≠ 0 » seul, `\frac{\ln x}{x-2}` → ℝ∖{2}) ;
+	// l'intersection avec les autres contraintes se fait à l'étape finale.
+	if (options.showSteps && options.recorder && nonZero !== null) {
 		const denomLatex = toLatex(node.denominator);
-		options.recorder.recordWithTemplate(
-			'division_constraint',
-			denomLatex,
-			buildConstraintLatex('division_constraint', denomLatex),
-			{ expr: denomLatex },
-			{
-				intermediateDomain: domain,
-				verbosityLevel: 'summarized'
+		if (hasZeros) {
+			options.recorder.recordWithTemplate(
+				'division_constraint',
+				denomLatex,
+				buildConstraintLatex('division_constraint', denomLatex),
+				{ expr: denomLatex },
+				{
+					intermediateDomain: nonZero,
+					verbosityLevel: 'summarized'
+				}
+			);
+		} else {
+			// Dénominateur qui ne s'annule jamais (`x^2+1`) : on le dit, et on
+			// le justifie quand sa forme le permet simplement.
+			const reasoning = neverZeroReasoning(node.denominator, variable, denomLatex);
+			if (reasoning !== null) {
+				options.recorder.record(
+					'division_constraint',
+					denomLatex,
+					buildConstraintLatex('division_constraint', denomLatex),
+					{ intermediateDomain: nonZero, reasoning, verbosityLevel: 'summarized' }
+				);
 			}
-		);
+		}
 	}
 
 	return domain;
+}
+
+/** Indice pair d'une racine `\sqrt[n]{…}` autre que 2 ; `null` sinon. */
+function evenRootIndex(node: { name: string; base?: MathNode }): number | null {
+	if (node.name !== 'sqrt' || node.base === undefined) return null;
+	const index = tryConstantValue(node.base);
+	return index !== null && Number.isInteger(index) && index % 2 === 0 && index !== 2 ? index : null;
+}
+
+/**
+ * Justification de « dénominateur > 0 pour tout réel » quand il est une
+ * somme de puissances paires (coefficients positifs) et d'une constante
+ * strictement positive : `x^2+1`, `2x^2+3`, `x^4+x^2+1`. `null` sinon (la
+ * rédaction se tait plutôt que d'affirmer sans justifier).
+ */
+function neverZeroReasoning(denominator: MathNode, variable: string, latex: string): string | null {
+	const terms = additiveTerms(denominator);
+	if (terms === null) return null;
+	let squares = 0;
+	let bareSquare = true;
+	let positiveConstant = false;
+	for (const term of terms) {
+		if (!containsVariable(term, variable)) {
+			const value = tryConstantValue(term);
+			if (value === null || value <= 0) return null;
+			positiveConstant = true;
+			continue;
+		}
+		const square = evenPowerTerm(term, variable);
+		if (square === null) return null;
+		squares += 1;
+		if (!square.bare) bareSquare = false;
+	}
+	if (!positiveConstant || squares === 0) return null;
+	const why =
+		squares === 1 && bareSquare
+			? 'somme d’un carré et d’un nombre strictement positif'
+			: 'somme de termes positifs ou nuls et d’un nombre strictement positif';
+	return `Pour tout réel $${variable}$, $${latex} > 0$ (${why}) : le dénominateur ne s’annule jamais.`;
+}
+
+/** Termes d'une somme (`a + b + c`) ; `null` si une soustraction s'y trouve. */
+function additiveTerms(node: MathNode): MathNode[] | null {
+	if (node.type === 'addition') {
+		const left = additiveTerms(node.left);
+		const right = additiveTerms(node.right);
+		return left && right ? [...left, ...right] : null;
+	}
+	if (node.type === 'subtraction' || node.type === 'opposite') return null;
+	return [node];
+}
+
+/**
+ * `u^{2k}` (bare) ou `c·u^{2k}` avec `c > 0` constant (non bare) ;
+ * `null` sinon.
+ */
+function evenPowerTerm(node: MathNode, variable: string): { bare: boolean } | null {
+	if (node.type === 'superscript') {
+		const exponent = tryConstantValue(node.superscript);
+		const even =
+			exponent !== null && exponent > 0 && Number.isInteger(exponent) && exponent % 2 === 0;
+		// Base polynomiale seulement : `(\frac1x)^2+1` n'est pas défini en 0
+		return even && isPolynomialIn(node.base, variable) ? { bare: true } : null;
+	}
+	if (node.type === 'multiplication') {
+		const coefficient = tryConstantValue(node.left);
+		if (coefficient === null || coefficient <= 0) return null;
+		return evenPowerTerm(node.right, variable) === null ? null : { bare: false };
+	}
+	return null;
+}
+
+/** Polynôme en `variable` : nombres, variable, +, −, ×, puissances entières ≥ 0. */
+function isPolynomialIn(node: MathNode, variable: string): boolean {
+	switch (node.type) {
+		case 'number':
+			return true;
+		case 'variable':
+			return node.name === variable;
+		case 'delimiter':
+			return isPolynomialIn(node.content, variable);
+		case 'opposite':
+		case 'positive':
+			return isPolynomialIn(node.operand, variable);
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return isPolynomialIn(node.left, variable) && isPolynomialIn(node.right, variable);
+		case 'superscript': {
+			const exponent = tryConstantValue(node.superscript);
+			return (
+				exponent !== null &&
+				exponent >= 0 &&
+				Number.isInteger(exponent) &&
+				isPolynomialIn(node.base, variable)
+			);
+		}
+		default:
+			return false;
+	}
 }
 
 /**
@@ -550,7 +675,7 @@ function computeFunctionDomain(
 					buildConstraintLatex(trigRule, argLatex),
 					{ expr: argLatex },
 					{
-						intermediateDomain: result,
+						intermediateDomain: periodicDomain,
 						verbosityLevel: 'summarized'
 					}
 				);
@@ -599,9 +724,26 @@ function computeFunctionDomain(
 	// emitted earlier in the periodic_exclusion branch above. Rules outside
 	// the MVP set are silent here; the upstream pedagogical dispatcher
 	// refuses those cases via `assertOnlyMvpRules`.
-	if (options.showSteps && options.recorder) {
+	// Argument constant (`\sqrt{2}` dans `\frac{1}{x-\sqrt2}`) : aucune
+	// contrainte sur la variable, pas d'étape « $2 \geq 0$ »
+	if (options.showSteps && options.recorder && containsVariable(arg, variable)) {
 		const constraintRule = getConstraintRuleForFunction(node.name);
-		if (constraintRule && V1_MVP_FUNCTION_CONSTRAINT_RULES.has(constraintRule)) {
+		const evenIndex = constraintRule === 'sqrt_constraint' ? evenRootIndex(node) : null;
+		if (evenIndex !== null) {
+			// Racine d'indice pair autre que 2 (`\sqrt[4]{x}`) : ni « racine
+			// carrée » ni `\sqrt{x}` dans la rédaction
+			const argLatex = toLatex(arg);
+			options.recorder.record(
+				'even_root_constraint',
+				argLatex,
+				buildConstraintLatex('even_root_constraint', argLatex),
+				{
+					intermediateDomain: preimage === null ? undefined : preimage,
+					reasoning: `Pour que $${toLatex({ type: 'function', name: node.name, args: node.args, base: node.base })}$ soit définie, il faut $${argLatex} \\geq 0$`,
+					verbosityLevel: 'summarized'
+				}
+			);
+		} else if (constraintRule && V1_MVP_FUNCTION_CONSTRAINT_RULES.has(constraintRule)) {
 			const argLatex = toLatex(arg);
 			// `computePreimage` returns `Domain | null`. When null (argument too
 			// complex to invert), omit `intermediateDomain` so the renderer
@@ -804,7 +946,7 @@ function computePowerDomain(
 					buildConstraintLatex('power_constraint', baseLatex),
 					{ expr: baseLatex },
 					{
-						intermediateDomain: domain,
+						intermediateDomain: nonZero,
 						verbosityLevel: 'summarized'
 					}
 				);
@@ -1032,9 +1174,64 @@ function shiftedLinearRoot(
 }
 
 /**
+ * `u ⊳ K`, u = a·x + b à coefficients rationnels, K constante EXACTE sans x
+ * (e², ln 3…) : x ⊳ (K − b)/a, sens retourné si a < 0. C'est le dernier pas
+ * de `invertMonotone` quand la borne cesse d'être rationnelle
+ * (ln(2x) ⊳ −2 → 2x ⊳ e^{-2}) ; `null` si u n'est pas affine.
+ */
+function solveAffineAgainstConstant(
+	u: MathNode,
+	op: '>=' | '<=',
+	K: MathNode,
+	strict: boolean,
+	variable: string
+): Domain | null {
+	const poly = toPolynomial(u, variable);
+	if (!poly || poly.length !== 2) return null;
+	const [b, a] = poly;
+	const positiveSlope = !isRationalNegative(a);
+	// a > 0 : x = (K − b)/a ; a < 0 : x = (b − K)/|a|
+	let numerator: MathNode;
+	if (isRationalZero(b)) numerator = positiveSlope ? K : opposite(K);
+	else if (!positiveSlope) numerator = subtract(rationalNode(b), K);
+	else if (isRationalNegative(b)) numerator = add(K, rationalNode(negRational(b)));
+	else numerator = subtract(K, rationalNode(b));
+	const absA = positiveSlope ? a : negRational(a);
+	let root: MathNode = numerator;
+	if (absA.n !== absA.d) {
+		// |a| = p/q : x = q·N/p (pas de fraction étagée) ; −K/2 : signe devant
+		const negated = isRationalZero(b) && !positiveSlope;
+		const body = negated ? K : numerator;
+		const scaled =
+			absA.d === 1n
+				? body
+				: multiply(
+						numberNode(absA.d.toString()),
+						isRationalZero(b) ? body : parentheses(body),
+						'implicit'
+					);
+		const quotient =
+			absA.n === 1n ? scaled : divide(scaled, numberNode(absA.n.toString()), 'inline');
+		root = negated ? opposite(quotient) : quotient;
+	}
+	const up = (op === '>=') === positiveSlope;
+	return intervalDomain([
+		up
+			? strict
+				? greaterThanInterval(root)
+				: greaterThanOrEqualInterval(root)
+			: strict
+				? lessThanInterval(root)
+				: lessThanOrEqualInterval(root)
+	]);
+}
+
+/**
  * `expr ⊳ c` quand expr = f(u) (f monotone) ou A ± k, k·A, A/k, −A : on
- * ramène la contrainte sur u. Uniquement quand la nouvelle borne reste
- * rationnelle (ln u ≥ 0 → u ≥ 1, mais ln u ≥ 2 → refus plutôt que e² décimal).
+ * ramène la contrainte sur u. La borne reste rationnelle tant que possible
+ * (ln u ≥ 0 → u ≥ 1) ; sinon, ln et exp donnent une borne exacte (e², ln 3)
+ * que seul un u affine sait recevoir (`solveAffineAgainstConstant`) :
+ * ln u ≥ 2 → u ≥ e², jamais un décimal.
  */
 function invertMonotone(
 	expr: MathNode,
@@ -1133,8 +1330,13 @@ function invertMonotone(
 				return solveInequalityForPreimage(u, op, powRationalInt(c, n), strict, variable);
 			}
 			if (name === 'ln' || name === 'log' || name === 'log10' || name === 'log2') {
-				if (!isRationalZero(c)) return null;
-				return solveInequalityForPreimage(u, op, RATIONAL_ONE, strict, variable);
+				if (isRationalZero(c)) {
+					return solveInequalityForPreimage(u, op, RATIONAL_ONE, strict, variable);
+				}
+				// ln u ⊳ c ⟺ u ⊳ e^c (log10, log2 : non couverts)
+				if (name !== 'ln') return null;
+				const bound = rationalToNumber(c) === 1 ? euler() : superscript(euler(), rationalNode(c));
+				return solveAffineAgainstConstant(u, op, bound, strict, variable);
 			}
 			if (name === 'exp') return invertExp(u, op, c, strict, variable);
 			if (name === 'abs') {
@@ -1205,14 +1407,10 @@ function invertExp(
 	variable: string
 ): Domain | null {
 	const cv = rationalToNumber(c);
-	if (op === '>=') {
-		if (cv <= 0) return universalDomain();
-		if (cv === 1) return solveInequalityForPreimage(u, '>=', RATIONAL_ZERO, strict, variable);
-		return null;
-	}
-	if (cv <= 0) return emptyDomain();
-	if (cv === 1) return solveInequalityForPreimage(u, '<=', RATIONAL_ZERO, strict, variable);
-	return null;
+	if (cv <= 0) return op === '>=' ? universalDomain() : emptyDomain();
+	if (cv === 1) return solveInequalityForPreimage(u, op, RATIONAL_ZERO, strict, variable);
+	// e^u ⊳ c, c > 0 ⟺ u ⊳ ln c
+	return solveAffineAgainstConstant(u, op, lnNode(rationalNode(c)), strict, variable);
 }
 
 /**
@@ -1347,7 +1545,7 @@ function samePeriodic(a: Domain, b: Domain): boolean {
  *   jointifs y sont recollés) ; sinon le point coupe l'intervalle
  *   (`]0 ; +∞[ \ {1}` → `]0 ; 1[ ∪ ]1 ; +∞[`).
  */
-function normalizeExcludedPoints(domain: Domain): Domain {
+export function normalizeExcludedPoints(domain: Domain): Domain {
 	if (domain.kind !== 'interval_set') return domain;
 	type Bound = { node: MathNode; value: number; closed: boolean };
 	const toBound = (b: { value: MathNode; type: string }): Bound | null => {

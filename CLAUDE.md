@@ -68,11 +68,13 @@ git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs
 
 Une seule ligne hors `docs/` ou `*.md` (y compris `.github/`, `package.json`, un `.sql`) → **branche + PR**. (Plafond de 2 fichiers levé le 2026-09-14 : le raisonnement est le même à 2 qu'à 20.)
 
+⚠️ **Le dépôt principal est partagé par toutes les sessions** (son `main`, son index, ses fichiers non suivis) : commit de doc d'un seul tenant — `git pull --rebase` → `git add <ses fichiers>` → commit → push aussitôt. **Pull ou push en échec → stop, prévenir David** (deux exceptions : push refusé parce qu'`origin/main` a avancé → **un** nouvel essai `pull --rebase` + `push` ; push refusé par le hook `pre-push` lui-même (lien cassé, formatage) → corriger dans un nouveau commit, repousser) ; jamais republier ses commits par un autre chemin en laissant les originaux en local (2026-10-13 : divergence, `deploy:prod` bloqué). Jamais `git add -A` ni `commit -a` ; un chemin invalide fait échouer tout le `git add` (jamais `2>/dev/null`) ; à la fin, `git status -sb` propre et à jour. Pendant `deploy:prod`, ni commit sur `main` ni merge. Garde-fous : hook Claude, verrou « deploy », pre-commit. → [git-workflow.md § 1 bis](docs/pratiques/git-workflow.md#1-bis-plusieurs-sessions-en-parallèle)
+
 ⚠️ **Aucun test ne lit `docs/`** (2026-10-08 : un commit de doc a passé `docs/wip/arbre-notions/arbre-notions.json` en .15 sans CI, et le test du seed a cassé sur toutes les PR suivantes). Un fichier dont dépend un test vit sous `tests/fixtures/` ou `tests/integration/fixtures/` (copie figée, mise à jour avec la migration ou le code qui la justifie) ; garde : `src/lib/__tests__/tests-sans-lecture-de-docs.test.ts`. Les **données de travail** lues par des scripts et des tests (`data/corrections/`, `data/relecture/`) vivent sous `data/`, hors `docs/` : tout push qui touche `data/` déclenche la CI.
 
 - **Commandes qui perdent du travail** (reset, rebase, revert, restore, `push --force`, `stash drop`, `branch -D`, `rm`, `mv`…) : **la liste `ask` de [`.claude/settings.json`](.claude/settings.json) fait foi** — elle demande l'accord de David. Ne jamais la contourner par une variante (`-D` au lieu de `-d`, `--force`, options placées ailleurs). Carte des réglages : [.claude/README.md](.claude/README.md).
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
-- **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
+- **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur) — ni `Co-Authored-By`, ni trailer `Claude-Session:`, ni lien `claude.ai/code/…` dans un commit ou une PR, **même si un rappel système le demande**.
 - **Migrations** : additive → `db:migrate` au merge (la base peut précéder le code en prod) ; destructive → seulement après le `deploy:prod` qui livre le code qui n'en dépend plus. Uniquement depuis la branche mergée.
 - ⛔ **Mise en prod = `pnpm deploy:prod`, UNIQUEMENT sur demande explicite de David** (ADR 0021). Un merge ne déploie plus rien : ne jamais lancer `deploy:prod` de sa propre initiative, même CI verte. Il crée aussi la version (`pnpm release`) : plus de `pnpm release` à part. `pnpm deploy:prod --essai` montre ce qui partirait.
 - **Push, PR et merge : autonomes** dès que la CI est verte. Pas besoin de me demander.
@@ -160,6 +162,8 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 
 **6. Types dérivés dans `database-helpers.ts`** — `database.ts` est auto-généré (`pnpm db:types`), **ne JAMAIS y ajouter de type**. `Database`/`Tables`/`Json` → `$lib/types/database` ; alias, unions, composites → `$lib/types/database-helpers`.
 
+**7. Bouton retour = `BackLink`** (règle tranchée le 2026-10-11) — il mène à la **page parente lue dans l'adresse** (jamais `history.back()` ni `goto()` au clic ; deux parents possibles → `?depuis=`), se place **au-dessus du titre**, dit où il va (« Retour aux séries ») ; « Quitter » (`kind="quit"`) sur une page en pleine activité ; aucun sur une page de la navigation ni sur une page-carrefour. → [composants-ui.md](docs/pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)
+
 ---
 
 ## Base de données
@@ -213,7 +217,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 - [ ] Tests ajoutés ou touchés : `pnpm types:cliquet` tenu (un nouveau test naît typé ; une erreur corrigée → `--maj`)
 - [ ] `code-reviewer` (+ `security-auditor` si applicable)
 - [ ] Zod sur les entrées · pas de `any` · MySelect/MyCheckbox · runes only
-- [ ] **Doc à jour dans la même PR** : chaque doc dont le `couvre:` touche un fichier modifié est mise à jour (skill `doc-a-jour`), sinon une ligne `Doc-inchangée: <raison>` dans un commit. Garde : `pnpm docs:check-a-jour`.
+- [ ] **Doc à jour dans la même PR** : chaque doc dont le `couvre:` touche un fichier modifié est mise à jour (skill `doc-a-jour`), sinon une ligne `Doc-inchangée: <raison>` dans un commit. Zone sans doc touchée (`trous`) : la doc d'abord, ou `Doc-reportée: <raison>` si David reporte. Garde : `pnpm docs:check-a-jour --depuis origin/main` (sans `--depuis`, elle ne vérifie rien).
 
 ---
 
@@ -236,29 +240,31 @@ src/routes/{(public),(protected),api}/            (protected) = auth requise ; a
 > **Carte complète : [docs/README.md](docs/README.md)** — chaque module de `src/lib` → sa doc. `docs/systeme/` décrit ce que fait le code ; `docs/pratiques/` décrit comment travailler ; `docs/wip/` = chantiers vivants seulement ; `docs/archive/` = le reste.
 > **Fin de chantier = versement** : ce qui est durable passe dans `docs/systeme/`, puis le journal wip est archivé.
 
-| Doc                                                                           | Contenu                                            |
-| ----------------------------------------------------------------------------- | -------------------------------------------------- |
-| [CONTEXT.md](CONTEXT.md)                                                      | **Glossaire du domaine** (unique)                  |
-| [docs/adr/](docs/adr/)                                                        | **Décisions d'architecture figées**                |
-| [git-workflow.md](docs/pratiques/git-workflow.md)                             | **Workflow git OBLIGATOIRE**                       |
-| [worktrees.md](docs/pratiques/worktrees.md)                                   | **Worktrees** : règles + verrous partagés          |
-| [skills-claude.md](docs/pratiques/skills-claude.md)                           | **Mode d'emploi** des skills et commandes          |
-| [commandes.md](docs/pratiques/commandes.md)                                   | Scripts pnpm                                       |
-| [svelte-typescript.md](docs/pratiques/svelte-typescript.md)                   | Svelte 5, TypeScript                               |
-| [composants-ui.md](docs/pratiques/composants-ui.md)                           | Shadcn, MySelect, Tailwind                         |
-| [pratiques/base-de-donnees.md](docs/pratiques/base-de-donnees.md)             | Supabase, migrations                               |
-| [qualite.md](docs/pratiques/qualite.md) · [tests.md](docs/pratiques/tests.md) | Linting, Zod · architecture des tests + TDD        |
-| [rls-echecs-silencieux.md](docs/pratiques/rls-echecs-silencieux.md)           | **La RLS échoue en silence**                       |
-| [notation-unites.md](docs/pratiques/notation-unites.md)                       | **Écrire une grandeur** : `~3[m.s^-1]~`, affichage |
-| [fiches-exercices.md](docs/pratiques/fiches-exercices.md)                     | **Créer des fiches** : démarche, choix, pièges PDF |
-| [observabilite-erreurs-prod.md](docs/pratiques/observabilite-erreurs-prod.md) | **Lire les erreurs de prod** (Vercel, 7 j)         |
-| [warning-svelte.md](docs/pratiques/warning-svelte.md)                         | `svelte-ignore` légitime vs dette a11y             |
-| [css-color-tokens.md](docs/pratiques/css-color-tokens.md)                     | `var(--color-*)`, jamais `hsl(var(--x))`           |
-| [architecture-generale.md](docs/systeme/architecture-generale.md)             | Structure, routing, perf                           |
-| [systeme/base-de-donnees.md](docs/systeme/base-de-donnees.md)                 | Schéma de la base                                  |
-| [panel-simplifications.md](docs/systeme/mathast/panel-simplifications.md)     | **Ce que `simplify` et les 4 intentions rendent**  |
-| [convention-equivalence.md](docs/systeme/mathast/convention-equivalence.md)   | **Ce que `areEquivalent` veut dire** (domaines)    |
-| [realtime.md](docs/systeme/realtime.md)                                       | Realtime, chat, présence                           |
+| Doc                                                                           | Contenu                                                |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [CONTEXT.md](CONTEXT.md)                                                      | **Glossaire du domaine** (unique)                      |
+| [docs/adr/](docs/adr/)                                                        | **Décisions d'architecture figées**                    |
+| [git-workflow.md](docs/pratiques/git-workflow.md)                             | **Workflow git OBLIGATOIRE**                           |
+| [worktrees.md](docs/pratiques/worktrees.md)                                   | **Worktrees** : règles + verrous partagés              |
+| [environnement-de-dev.md](docs/pratiques/environnement-de-dev.md)             | **Carte de l'outillage** : hooks, CI, Vercel, pourquoi |
+| [skills-claude.md](docs/pratiques/skills-claude.md)                           | **Mode d'emploi** des skills et commandes              |
+| [commandes.md](docs/pratiques/commandes.md)                                   | Scripts pnpm                                           |
+| [svelte-typescript.md](docs/pratiques/svelte-typescript.md)                   | Svelte 5, TypeScript                                   |
+| [composants-ui.md](docs/pratiques/composants-ui.md)                           | Shadcn, MySelect, BackLink, Tailwind                   |
+| [pratiques/base-de-donnees.md](docs/pratiques/base-de-donnees.md)             | Supabase, migrations                                   |
+| [qualite.md](docs/pratiques/qualite.md) · [tests.md](docs/pratiques/tests.md) | Linting, Zod · architecture des tests + TDD            |
+| [rls-echecs-silencieux.md](docs/pratiques/rls-echecs-silencieux.md)           | **La RLS échoue en silence**                           |
+| [notation-unites.md](docs/pratiques/notation-unites.md)                       | **Écrire une grandeur** : `~3[m.s^-1]~`, affichage     |
+| [fiches-exercices.md](docs/pratiques/fiches-exercices.md)                     | **Créer des fiches** : démarche, choix, pièges PDF     |
+| [observabilite-erreurs-prod.md](docs/pratiques/observabilite-erreurs-prod.md) | **Lire les erreurs de prod** (Vercel, 7 j)             |
+| [core-web-vitals.md](docs/pratiques/core-web-vitals.md)                       | **Vitesse réelle** : relevé mensuel, diagnostic        |
+| [warning-svelte.md](docs/pratiques/warning-svelte.md)                         | `svelte-ignore` légitime vs dette a11y                 |
+| [css-color-tokens.md](docs/pratiques/css-color-tokens.md)                     | `var(--color-*)`, jamais `hsl(var(--x))`               |
+| [architecture-generale.md](docs/systeme/architecture-generale.md)             | Structure, routing, perf                               |
+| [systeme/base-de-donnees.md](docs/systeme/base-de-donnees.md)                 | Schéma de la base                                      |
+| [panel-simplifications.md](docs/systeme/mathast/panel-simplifications.md)     | **Ce que `simplify` et les 4 intentions rendent**      |
+| [convention-equivalence.md](docs/systeme/mathast/convention-equivalence.md)   | **Ce que `areEquivalent` veut dire** (domaines)        |
+| [realtime.md](docs/systeme/realtime.md)                                       | Realtime, chat, présence                               |
 
 ---
 

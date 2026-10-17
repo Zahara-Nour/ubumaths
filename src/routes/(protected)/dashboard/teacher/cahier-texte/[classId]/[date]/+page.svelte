@@ -15,8 +15,8 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
@@ -30,7 +30,6 @@
 		BookOpen,
 		Save,
 		Trash2,
-		ArrowLeft,
 		FileText,
 		ClipboardList,
 		Globe,
@@ -468,9 +467,9 @@
 		isSaving = false;
 		if (result?.success) {
 			if (result.action === 'create') {
-				toaster.success('Entree creee avec succes');
+				toaster.success('Entrée créée avec succès');
 			} else if (result.action === 'update') {
-				toaster.success('Entree mise a jour');
+				toaster.success('Entrée mise à jour');
 			} else if (result.action === 'publish') {
 				toaster.success(result.isPublished ? 'Entree publiee' : 'Publication retiree');
 			}
@@ -521,31 +520,13 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-4xl px-4 py-8">
-	<!-- Breadcrumb -->
-	<Breadcrumb.Root class="mb-6">
-		<Breadcrumb.List>
-			<Breadcrumb.Item>
-				<Breadcrumb.Link href="/dashboard/teacher/cahier-texte">Cahier de Texte</Breadcrumb.Link>
-			</Breadcrumb.Item>
-			<Breadcrumb.Separator />
-			<Breadcrumb.Item>
-				<Breadcrumb.Link href="/dashboard/teacher/cahier-texte?class={data.classData.id}">
-					{data.classData.name}
-				</Breadcrumb.Link>
-			</Breadcrumb.Item>
-			<Breadcrumb.Separator />
-			<Breadcrumb.Item>
-				<Breadcrumb.Page>{formatDateLong(data.entryDate)}</Breadcrumb.Page>
-			</Breadcrumb.Item>
-		</Breadcrumb.List>
-	</Breadcrumb.Root>
-
 	<!-- Header -->
+	<BackLink
+		href={`/dashboard/teacher/cahier-texte?class=${data.classData.id}`}
+		label="Retour au cahier de texte"
+	/>
 	<div class="mb-8 flex items-start justify-between gap-4">
 		<div class="flex items-center gap-3">
-			<Button variant="ghost" size="icon" onclick={goBack} title="Retour">
-				<ArrowLeft class="h-5 w-5" />
-			</Button>
 			<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
 				<BookOpen class="h-6 w-6 text-primary" />
 			</div>

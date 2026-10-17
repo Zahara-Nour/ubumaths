@@ -3,6 +3,9 @@ import { error } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { scanDocumentation, getDocumentContent } from '$lib/server/docs-scanner';
 import { parseMarkdown } from '$lib/server/markdown-parser';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/docs/[...path]/+page.server');
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	// Admin gate (admin login OR step-up elevation)
@@ -13,7 +16,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const pathSegments = params.path.split('/').filter((s) => s.length > 0);
 
 	if (pathSegments.length < 1) {
-		throw error(400, 'Invalid document path');
+		throw error(400, 'Chemin de document invalide');
 	}
 
 	const category = pathSegments[0];
@@ -43,7 +46,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			searchQuery: null
 		};
 	} catch (err) {
-		console.error('Document load error:', err);
-		throw error(404, `Document not found: ${category}/${docPath}`);
+		logger.error('Document load error:', err);
+		throw error(404, `Document introuvable : ${category}/${docPath}`);
 	}
 };

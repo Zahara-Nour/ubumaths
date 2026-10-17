@@ -29,6 +29,14 @@ S'affiche « 3 m·s⁻¹ » : à l'écran, dans l'export `.tex` et dans le PDF. 
 
 Une unité **se déclare**, elle ne se devine pas : `~12 km~` sans crochets est le produit `12·k·m`, pas une grandeur.
 
+**Exception : l'atelier** (lot C des grandeurs, décisions de David du 2026-10-11) — dans un calcul
+ou une valeur de l'atelier, **« un nombre, une espace, une unité » est une grandeur** : `5 km`,
+`12 km + 300 m`, `90 km/h`, `1/2 m` = (1/2) m, `2 h 30 min` (deux grandeurs collées s'ajoutent, et
+la réponse garde l'écriture en h et min). Collé (`5m`) ou avec `*`, c'est un produit ; une aide le
+dit quand les lettres collées forment une unité (`5km`). Jamais dans une définition de fonction ni
+dans une commande. Lecteur : `src/lib/atelier/natural-quantities.ts` ; cartes : l'espace tapée
+arrive `\,` (`mathModeSpace`).
+
 ⚠️ `[cm]` seul, sans nombre, n'est **pas** une unité : en début d'expression, un crochet est un crochet de calcul (c × m). En LaTeX, `\unit{cm}` seul devient « 1 cm ».
 
 ### Crochet d'unité ou crochet de calcul ?
@@ -49,19 +57,22 @@ Une faute de frappe dans une unité reste donc une erreur, jamais un produit sil
 
 Lettres et caractères `€ $ ° μ Ω`, en respectant la **casse** : `2[CM]` est refusé.
 
-| Famille     | Symboles reconnus (extrait)            |
-| ----------- | -------------------------------------- |
-| Longueur    | `mm` `cm` `m` `km` `μm`                |
-| Masse       | `mg` `g` `kg` `t`                      |
-| Volume      | `mL` `cL` `dL` `L` `cm^3` `dm^3` `m^3` |
-| Aire        | `m^2` `a` `ha`                         |
-| Durée       | `ms` `s` `min` `h` `j` `jour` `an`     |
-| Température | `°C` `°F`                              |
-| Angle       | `°` `rad`                              |
-| Monnaie     | `€` `$`                                |
-| Physique    | `N` `J` `W` `kWh` `Pa` `Hz` `Ω` `mol`  |
+| Famille     | Symboles reconnus (extrait)                      |
+| ----------- | ------------------------------------------------ |
+| Longueur    | `mm` `cm` `m` `km` `μm`                          |
+| Masse       | `mg` `g` `kg` `t`                                |
+| Volume      | `mL` `cL` `dL` `L` `cm^3` `dm^3` `m^3`           |
+| Aire        | `m^2` `a` `ha`                                   |
+| Durée       | `ms` `s` `min` `h` `j` `jour` `an`               |
+| Température | `°C` `°F`                                        |
+| Angle       | `°` `rad`                                        |
+| Monnaie     | `€` `$`                                          |
+| Information | `o` `ko` `Mo` `Go` `To` `Kio` `Mio` `bit` `Mbit` |
+| Physique    | `N` `J` `W` `kWh` `Pa` `Hz` `Ω` `mol`            |
 
-Liste complète : `src/lib/mathAST/units/definitions.ts`. `%` n'est **pas** une unité.
+Information (2026-10-13) : multiples décimaux `ko` = 1 000 o et binaires `Kio` = 1 024 o, le bit
+vaut 1/8 d'octet ; aucun sous-multiple (`mo` n'est pas une unité). Liste complète :
+`src/lib/mathAST/units/definitions.ts`. `%` n'est **pas** une unité.
 
 ### Opérateurs
 
@@ -108,6 +119,33 @@ Le parseur LaTeX **ignore** les commandes d'espacement, qui n'ont aucun sens mat
 ### Températures
 
 `°C` et `°F` ne se composent pas : `°C` seul, sans exposant (`[°C/s]` est refusé).
+
+## Calculer avec des grandeurs
+
+**Un seul calculateur** : `tidy` avec `unitChoice: 'written'` (l'unité écrite d'abord). Il sert
+`{{eval}}` (`evaluateQuantity`, `src/lib/mathAST/eval/evaluate-with-modifiers.ts`) et, depuis le
+2026-10-11, Calcul (`src/lib/mathAST/cli/quantities.ts` ; phase 0
+`docs/archive/wip/grandeurs-phase0.md`, lot A). L'ancien `evaluateWithUnits` est retiré : il écrivait l'unité
+sans son coefficient (`10[km]/1[h]` → « 10 m/s »).
+
+| Calcul              | Réponse                                                           |
+| ------------------- | ----------------------------------------------------------------- |
+| `10[km]/1[h]`       | `10 km/h`                                                         |
+| `3[h]+20[min]`      | `200 min`                                                         |
+| `3[h]/1[min]`       | `180` (même dimension : un nombre)                                |
+| `10[km]/3`          | `10/3 km` (exact)                                                 |
+| `9.81[m/s^2]*2[kg]` | `19.62 m.kg/s^2 = 19.62 N` (Calcul : l'unité dérivée nommée suit) |
+| `5[m]+3[s]`         | « On ne peut pas ajouter une longueur et une durée. »             |
+
+Calcul ajoute deux règles (revue du lot A) : une **unité tapée** par l'élève (seule,
+en puissance, ou deux combinées) l'emporte quand la valeur y tombe juste (`3[kW]*2[h]` →
+`6 kW.h = 21600000 J`) ; ce que `tidy` ne réduit pas (racine, valeur absolue, fonction d'un angle,
+comparaison) passe par un repli exact, unités ramenées à leurs unités de base
+(`sqrt(9[km^2])` → `3 km`, `sin(30[°])` → `1/2`).
+
+`.convertir` (Calcul) exprime la dernière grandeur dans l'unité donnée, exactement :
+`12,3 km = 12300 m`. La réponse est un arbre qui garde son unité, affiché par `displayUnitsInLatex`
+comme un énoncé.
 
 ## 3. Comment c'est affiché
 

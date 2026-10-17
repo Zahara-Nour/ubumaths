@@ -2,9 +2,10 @@
  * Le numéro d'un exercice de fiche, tel que l'élève le lit — côté serveur.
  *
  * `worksheet_exercises.position` n'est PAS ce numéro : elle redémarre à 1 dans
- * chaque section. Ce module charge la fiche entière et applique la règle
- * partagée de `$lib/worksheets/exercise-numbering`, celle qu'utilisent déjà la
- * page élève et le générateur PDF.
+ * chaque section, et une fiche qui mélange ses exercices donne à chaque copie
+ * son ordre. Ce module charge la fiche entière et applique la règle partagée
+ * (`$lib/worksheets/exercise-numbering`, et pour une copie d'affectation
+ * `copyDisplayNumbers`), celle de la page élève et du générateur PDF.
  *
  * Il existe parce qu'un message envoyé à un élève doit nommer l'exercice comme
  * lui le nomme. Annoncer « ton signalement sur l'exercice 4 » quand sa fiche
@@ -14,57 +15,92 @@
  */
 
 import { orderExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
+import { assignmentCopyScope, copyDisplayNumbers } from '$lib/worksheets/worksheet-copy';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/worksheets/display-number');
 
 type Sb = App.Locals['supabase'];
 
-/**
- * Tous les numéros affichés d'une fiche, indexés par identifiant de jonction.
- *
- * Une seule paire de requêtes pour toute la fiche : c'est la forme à préférer
- * dès qu'on traite plusieurs exercices (une liste de signalements, par exemple).
- *
- * @returns une map vide si la fiche est illisible — jamais des numéros faux.
- */
-export async function fetchDisplayNumbers(
-	supabase: Sb,
-	worksheetId: string
-): Promise<Map<string, number>> {
-	const [{ data: exercises, error: exercisesError }, { data: sections, error: sectionsError }] =
-		await Promise.all([
-			supabase
-				.from('worksheet_exercises')
-				.select('id, section_id, position')
-				.eq('worksheet_id', worksheetId),
-			supabase.from('worksheet_sections').select('id, position').eq('worksheet_id', worksheetId)
-		]);
-
-	if (exercisesError || sectionsError) {
-		console.error('[display-number] fiche illisible:', exercisesError ?? sectionsError);
-		return new Map();
-	}
-
-	return new Map(
-		orderExercisesForDisplay(exercises ?? [], sections ?? []).map(({ exercise, number }) => [
-			exercise.id,
-			number
-		])
-	);
+/** Le numéro d'un exercice dans la copie d'un élève, pour une affectation */
+export interface CopyNumbering {
+	/**
+	 * Numéro 1-based de l'exercice de fiche dans la copie de CET élève pour
+	 * CETTE affectation, ou `null` : fiche ou affectation illisible,
+	 * affectation d'une autre fiche, exercice absent. L'appelant se tait
+	 * plutôt que d'annoncer un numéro faux.
+	 */
+	numberOf(assignmentId: string, studentId: string, worksheetExerciseId: string): number | null;
 }
 
 /**
- * Numéro affiché d'un exercice dans sa fiche.
+ * Les numéros des copies d'une fiche, tels que chaque élève les lit (D6).
  *
- * @returns le numéro 1-based tel qu'affiché, ou `null` si la fiche est illisible
- *          — l'appelant décide alors s'il vaut mieux se taire qu'annoncer un
- *          numéro faux.
+ * Ordre de la copie compris : une fiche qui mélange ses exercices donne à
+ * chaque élève (affectation individualisée) ou à la classe son propre ordre.
+ * Même calcul que la copie (`copyDisplayNumbers`). Quatre lectures pour toute
+ * la fiche, quel que soit le nombre de signalements. Appelée par le prof (fiche
+ * possédée, routes qui le vérifient) et par l'élève (avec son propre
+ * `user.id` : l'appelant garantit l'identité, un élève ne demande jamais le
+ * numéro d'un autre) ; lectures soumises à la RLS de l'appelant.
  */
-export async function fetchDisplayNumber(
+export async function fetchCopyNumbering(
 	supabase: Sb,
 	worksheetId: string,
-	worksheetExerciseId: string
-): Promise<number | null> {
-	const numbers = await fetchDisplayNumbers(supabase, worksheetId);
-	return numbers.get(worksheetExerciseId) ?? null;
+	assignmentIds: readonly string[]
+): Promise<CopyNumbering> {
+	const none: CopyNumbering = { numberOf: () => null };
+	const ids = [...new Set(assignmentIds)];
+	if (ids.length === 0) return none;
+
+	const [worksheetResult, exercisesResult, sectionsResult, assignmentsResult] = await Promise.all([
+		supabase.from('worksheets').select('config').eq('id', worksheetId).single(),
+		supabase
+			.from('worksheet_exercises')
+			.select('id, section_id, position')
+			.eq('worksheet_id', worksheetId),
+		supabase.from('worksheet_sections').select('id, position').eq('worksheet_id', worksheetId),
+		supabase
+			.from('worksheet_assignments')
+			.select('id, worksheet_id, guidance_level, individualized')
+			.eq('worksheet_id', worksheetId)
+			.in('id', ids)
+	]);
+
+	const failure =
+		worksheetResult.error ??
+		exercisesResult.error ??
+		sectionsResult.error ??
+		assignmentsResult.error;
+	if (failure || !worksheetResult.data) {
+		logger.error('[display-number] fiche illisible:', failure);
+		return none;
+	}
+
+	const config = worksheetResult.data.config;
+	const exercises = exercisesResult.data ?? [];
+	const sections = sectionsResult.data ?? [];
+	const assignments = new Map((assignmentsResult.data ?? []).map((a) => [a.id, a]));
+	const cache = new Map<string, Map<string, number>>();
+
+	return {
+		numberOf(assignmentId, studentId, worksheetExerciseId) {
+			const assignment = assignments.get(assignmentId);
+			if (!assignment) return null;
+			const key = `${assignmentId}:${studentId}`;
+			let numbers = cache.get(key);
+			if (!numbers) {
+				numbers = copyDisplayNumbers(
+					exercises,
+					sections,
+					assignmentCopyScope(assignment, { studentId }),
+					config
+				);
+				cache.set(key, numbers);
+			}
+			return numbers.get(worksheetExerciseId) ?? null;
+		}
+	};
 }
 
 /** Ce qu'une sélection a permis de désigner, et ce qu'elle a raté. */
@@ -102,7 +138,7 @@ export async function resolveExercisesAtDisplayNumbers(
 		]);
 
 	if (exercisesError || sectionsError) {
-		console.error('[display-number] fiche illisible:', exercisesError ?? sectionsError);
+		logger.error('[display-number] fiche illisible:', exercisesError ?? sectionsError);
 		return { exerciseIds: [], introuvables: [...numeros] };
 	}
 

@@ -18,6 +18,9 @@ import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { templateTagSchema, templateTagListQuerySchema } from '$lib/server/validation/curriculum';
 import { curriculumDbError } from '$lib/server/curriculum';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/curriculum/template-tags/+server');
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -35,7 +38,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.eq('template_id', parsed.data.template_id);
 
 	if (dbErr) {
-		console.error('[curriculum] template-tags GET failed:', dbErr);
+		logger.error('[curriculum] template-tags GET failed:', dbErr);
 		return json({ error: 'Échec du chargement des tags' }, { status: 500 });
 	}
 
@@ -69,7 +72,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		console.error('[curriculum] template-tags POST failed:', dbErr);
+		logger.error('[curriculum] template-tags POST failed:', dbErr);
 		return json({ error: dbErr.message }, { status: 500 });
 	}
 
@@ -96,7 +99,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		console.error('[curriculum] template-tags DELETE failed:', dbErr);
+		logger.error('[curriculum] template-tags DELETE failed:', dbErr);
 		return json({ error: dbErr.message }, { status: 500 });
 	}
 

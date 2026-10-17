@@ -73,9 +73,11 @@ Ce qu'`anon` peut lire, d'après les policies des migrations (relevé statique, 
 les `question_templates` publiés (réponses comprises : `/automaths` génère dans le navigateur) ; tout
 `curriculum_points`, `curriculum_point_automatismes`, `grade_predecessors`, `classification_nodes`,
 `source_types` (contenu public des programmes, ADR 0020) et le rangement des exercices lisibles
-(`exercise_classifications`) ; les lignes `is_public` de `exercises`, `python_exercises`,
-`constructions` ; `parody_evaluations` et leurs `resource_tags`, `tags`, `schools`,
-`riddle_of_the_day` ; les parties terminées de `minesweeper_games`.
+(`exercise_classifications`) ; les lignes `is_public` de `exercises`, `python_exercises` ;
+`parody_evaluations` et leurs `resource_tags`, `tags`, `schools`, `riddle_of_the_day`, les
+`geometry_figures` publiques (ADR 0027, sans leurs tags). Les
+constructions publiques sont réservées aux comptes connectés, et les parties de `minesweeper_games`
+à leur joueur (2026-10-15).
 
 ---
 
@@ -179,13 +181,21 @@ points neufs d'un niveau), `src/lib/server/curriculum-coverage.ts`,
 - `exercises` (+ `exercise_curriculum_points`, `exercise_classifications`) ; `exercise_assignments`
   (à un élève ou une classe), `exercise_completions`, `student_exercise_mastery` (auto-évaluation
   maîtrisé / à revoir).
+  - `exercises.search_indexed` (« Afficher sur Google », depuis `20261016100000`) : case distincte de
+    `is_public`, fausse par défaut ; elle décidera seule si un exercice public entre dans le sitemap
+    et perd sa balise `noindex` (code à venir, après `db:types`). CHECK `exercises_search_indexed_requires_public` (23514) : un exercice privé ne peut
+    pas être affiché sur Google, et dépublier exige de décocher Google dans la même mise à jour. La
+    colonne suit les droits de la ligne (aucune policy ni GRANT propre).
 - `migration_*` : outillage de la migration des questions TinyMath.
 
 Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon`), les autres par le
 professeur ; l'écriture des modèles est admin. Un exercice est lu par son auteur, par un élève qui y a
 accès (`student_has_exercise_access`) ou par tous s'il est `is_public`. L'élève lit et écrit **ses**
 complétions et sa maîtrise ; depuis `20261012120000`, le professeur lit la maîtrise des élèves inscrits
-dans une classe (`is_teacher_of_student`). Les séries : auteur, admin, et élève à qui elle est
+dans une classe (`is_teacher_of_student`). Un exercice privé partagé par lien se lit par la RPC
+`SECURITY DEFINER` `get_exercise_by_share_token` (jeton exact, actif, non expiré), qui incrémente
+aussi `exercise_share_tokens.access_count` depuis `20261016100800` (avant : seul
+`last_accessed_at` bougeait, le compteur restait à 0). Les séries : auteur, admin, et élève à qui elle est
 affectée (`student_can_read_series`).
 
 Code : `src/lib/questions/`, `src/lib/exercises/`, `src/lib/server/` (`exercises.ts`, `series.ts`,
@@ -198,7 +208,23 @@ Code : `src/lib/questions/`, `src/lib/exercises/`, `src/lib/server/` (`exercises
 - `class_chapters` (par classe, `is_visible`) → `chapter_sections` et les contenus
   `chapter_documents`, `chapter_exercises`, `chapter_worksheets`, `chapter_checklist_items`,
   `chapter_series`, `chapter_decks`.
-- `chapter_templates` (+ `_versions`, `chapter_template_instantiations`) : modèles réutilisables.
+- `chapter_templates` (+ `chapter_template_instantiations`) : modèles réutilisables. L'ancien
+  système « snapshot + versions » (`chapter_template_versions`, `content_snapshot`, numéros de
+  version) est supprimé depuis `20261016103800` (ADR 0029, étape 5B).
+- **Contenu possédé par un modèle** ([ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md),
+  migration `20261016103300`, code en cours) : `chapter_sections` et les cinq tables de contenu
+  ci-dessus (sauf `chapter_decks`) acceptent une ligne de **modèle** (`template_id`, `chapter_id`
+  vide) ou de **chapitre** — exactement un des deux. Une ligne de chapitre peut être une **ligne de
+  lien** (`source_id` → la ligne du modèle) : son contenu est recopié par déclencheur
+  (`modele_lien_remplir`, `modele_recopier`), ne se retouche pas (`modele_lien_garde`) ; publication,
+  section, ordre et `hidden` restent au chapitre. Ajouter au modèle crée les liens
+  (`modele_ajout_diffuse`), `retired_at` retire sans ôter ce qui est publié (`modele_retrait`),
+  `source_id` en `RESTRICT` interdit de supprimer un élément ou un modèle encore relié. Lier :
+  `link_chapter_to_template` (SECURITY INVOKER). Fichiers : `chapter-documents/templates/<id>/…`,
+  règles de stockage professeur seulement.
+  Une section de chapitre se masque (`chapter_sections.hidden`, chapitre seulement) :
+  `section_masquee_propage` masque et dépublie son contenu, ou le réaffiche non publié ; un lien
+  qui naît dans une section masquée naît masqué (migration `20261016103600`).
 - `class_journal_entries` → `journal_entry_activities` (exercice, question, évaluation, cours,
   manuel), `journal_entry_points` (couverture du programme : `source` `manual` ou `auto`),
   `journal_entry_homework`, `class_journal_share_tokens`.
@@ -213,6 +239,16 @@ dans la classe (`is_class_student`) et si le contenu est publié. `chapter_works
 `student_has_worksheet_access` : retirer l'une des deux gardes rouvrirait un canal de distribution
 parallèle. L'élève lit les séances publiées et passées des classes dont il est membre ; les activités
 et la couverture d'une séance sont réservées au professeur.
+
+**Lecture par lien, sans compte** : le cahier (`class_journal_share_tokens`) et le cours
+(`class_course_share_tokens`, [ADR 0025](../adr/0025-cours-lisible-par-lien-sans-compte.md)) ont
+chacun leur jeton, un seul actif par classe. `anon` ne lit aucune de ces tables : il passe par des
+fonctions `SECURITY DEFINER` qui refont les gardes élève. Pour le cours :
+`get_class_course_by_share_token` (plan, documents sans chemin, checklists, séries, fiches publiées
+**et** distribuées à la classe) et `get_course_worksheet_by_share_token` (avec, comme
+`get_worksheet_by_share_token`, le style de la fiche, la mise en page d'un style de son auteur et
+les lignes des cadres de réponse de chaque exercice) ;
+`get_course_document_by_share_token`, qui rend le chemin du fichier, est réservée au `service_role`.
 
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture
@@ -231,7 +267,41 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
 - `worksheets` (`status` = rédaction terminée ou non) → `worksheet_sections`, `worksheet_exercises`.
 - `worksheet_assignments` (distribution) → `worksheet_assignment_classes`,
   `worksheet_assignment_students`, `worksheet_assignment_exercise_settings`.
+  `worksheet_assignments.guidance_level` : **niveau de guidage** des exercices pour cette
+  affectation (`guided` par défaut, `intermediate`, `autonomous`) — [ADR 0023](../adr/0023-copie-d-une-fiche-niveau-de-guidage-par-affectation.md).
+  L'élève visé lit celui de sa propre affectation, jamais celui d'un autre groupe (test :
+  `tests/integration/worksheet-assignment-guidance-level.test.ts`).
+- `worksheet_error_reports` (signalement d'un élève sur un exercice de fiche) : l'élève le crée en
+  attente et n'en change que la description (pas d'affectation, d'exercice ni d'auteur) ; `status`, `reviewed_by`, `reviewed_at` et `response` sont
+  au prof et à l'admin (déclencheur `guard_worksheet_error_report_teacher_fields`,
+  `20261016101700`, test `tests/integration/signalement-fiche-champs-du-prof.test.ts`).
+- `worksheet_exercises.answer_frame_lines` (ADR 0030 lot 4, `20261016103900`) : nombre de lignes
+  des cadres de réponse choisi par le prof pour cet exercice dans cette fiche,
+  `{ "questions": [int|null, …], "exercise": int|null }` ; `null` (colonne ou case) = estimation
+  automatique, `0` = pas de cadre. CHECK : objet sans autre clé, ≤ 200 questions, entiers 0 à 40,
+  plus une seconde CHECK `worksheet_exercises_answer_frame_lines_max25` (`20261016104000`) qui
+  plafonne à 25 lignes (20 cm). La colonne suit les policies de la ligne (prof auteur et admin en
+  écriture, élève destinataire en lecture) ; depuis `20261016104000`, les deux RPC qui servent une
+  fiche par lien de partage (`get_worksheet_by_share_token`, `get_course_worksheet_by_share_token`)
+  la rendent pour chaque exercice, pour que le PDF du visiteur ait les cadres du prof (tests
+  `tests/integration/cadres-lignes-par-question.test.ts`, `cadres-lignes-partage.test.ts`).
 - `worksheet_instances` : exercices générés par élève (graine déterministe).
+- `worksheet_styles` (ADR 0028, `20261016103200`) : style de mise en page d'une fiche, propriétaire
+  vide = fourni par Chiphre (Typst dans le code ; 13 styles, le 13ᵉ « 2 colonnes - paysage » ajouté par
+  `20261016104100`, avec sa ligne dans `worksheet_templates` : l'API écrit l'identifiant d'un style
+  de Chiphre aussi dans `worksheets.template_id`). Lus par le prof et l'admin (ceux de Chiphre et les
+  leurs), modifiés par leur propriétaire ou l'admin ; **aucun accès élève ni `anon`**. Une clé
+  étrangère se vérifie hors RLS : deux déclencheurs refusent qu'un gabarit rejoigne un style qui
+  n'est pas celui de son auteur, ou qu'une fiche prenne le style d'un autre que Chiphre ou son auteur
+  (test `tests/integration/styles-de-fiche.test.ts`).
+- `student_print_settings` (`20261016104200`) : **taille du texte** des PDF de fiche d'un élève
+  (`text_size` : `normal` 10 pt, `large` 14 pt, `x_large` 18 pt ; pas de ligne = normale), pour
+  les élèves malvoyants. Une ligne par élève (`student_id` clé primaire, compte `student`
+  seulement). L'élève lit et modifie la sienne ; le prof et l'admin, celle de tout élève
+  (`is_my_student`) ; personne d'autre. ⚠️ Volontairement **hors de `profiles`** : un ami lit la
+  ligne `profiles` entière, et ce réglage révèle un trouble de la vue (test :
+  `tests/integration/taille-texte-fiches-eleve.test.ts`, dont le témoin vérifie que l'ami lit
+  bien le profil).
 
 **L'accès est hérité, jamais distribué** : `student_has_worksheet_access` part de
 `worksheet_assignments`, passe par `worksheet_assignment_classes` / `worksheet_assignment_students`
@@ -255,7 +325,7 @@ des fiches : [pratiques/fiches-exercices.md](../pratiques/fiches-exercices.md).
   ([ADR 0015](../adr/0015-evaluation-notee-correction-serveur.md)) — aucun droit pour `anon` ni
   `authenticated`, `service_role` seul.
 - `test_sessions` / `test_answers` : passages de séries. Une policy RESTRICTIVE interdit à un
-  compte connecté d'écrire une session d'évaluation (`evaluation_id`, note, points) : c'est le serveur
+  compte connecté d'écrire une séance de contrôle (`evaluation_id`, note, points) : c'est le serveur
   qui les écrit.
 - `evaluation_tasks` / `evaluation_task_perimeter` : tâches évaluées par compétences (observables).
 - `parody_evaluations` : les « presques-évaluations », publiques.
@@ -299,8 +369,9 @@ Exercices, fichiers et carnets Python, exécutés dans le navigateur (Pyodide). 
 - `python_exercises` → `python_exercise_assignments`, `python_exercise_submissions`,
   `python_exercise_mastery` ; `python_files` (+ affectations) ; `python_notebooks` →
   `python_notebook_assignments`, `python_notebook_checkpoint_runs`.
-- `python_submission_server_verdicts` : existe en prod mais **inerte** — la re-vérification serveur a
-  été abandonnée ([ADR 0010](../adr/0010-pas-de-reverification-serveur-python.md)).
+- `python_submission_server_verdicts` (verdicts de la re-vérification serveur, abandonnée par
+  l'[ADR 0010](../adr/0010-pas-de-reverification-serveur-python.md)) : vide et inerte, **supprimée**
+  le 2026-10-13 avec `run_flag_stale_python_rechecks` (migration `20261016103000`).
 
 Accès : l'élève lit et soumet ses propres soumissions, le professeur lit celles de tous les élèves.
 Un carnet est lu par son auteur, par l'élève à qui il est assigné (`is_notebook_assigned_to_student`,
@@ -324,6 +395,20 @@ Deux systèmes distincts, à ne pas confondre :
 Accès : on lit les messages des conversations dont on est participant, et ceux qu'on a envoyés ou
 reçus ; le professeur lit la messagerie pour la modérer et supprime (logiquement) les messages des
 chats de classe ; l'admin lit tout.
+
+Écriture (`20261016101500`, `20261016101600`) : un message envoyé ne se réécrit plus. Les
+rôles de l'API ne peuvent modifier que `private_messages.deleted_by_sender` et
+`message_inbox.read_at` / `deleted` (droits par colonne) ; statut, dossier et étoile passent
+par des fonctions SECURITY DEFINER. Détail : [messagerie-et-moderation.md](messagerie-et-moderation.md).
+
+Pièces jointes de la messagerie (`20261016101300`) : bucket **privé** `message-attachments`
+(10 Mo, comme la contrainte `file_size` de la table ; JPEG, PNG, WebP, HEIC, PDF), **sans policy sur `storage.objects`** : seul le client
+service y dépose et en signe les liens, après avoir vérifié l'accès avec la RLS de
+`message_attachments_v2` (expéditeur, destinataires non supprimés, admin). Le chemin enregistré
+a la forme exacte que le serveur produit (`messages/<message>/<uuid>-<nom>`, `20261016101400`), 3 par message. La purge des messages
+(3 ans) et le retrait d'une pièce jointe effacent la ligne, pas le fichier :
+`list_orphan_message_attachment_files` (service_role seul) liste les fichiers sans ligne, vieux de
+plus d'un jour, que le cron du dimanche retire.
 
 Code : `src/lib/stores/chat.svelte.ts`, `src/lib/server/student-inbox.ts`, `src/lib/server/notifications.ts`,
 `src/routes/api/chat`, `src/routes/api/messages`, `src/routes/api/moderation`.
@@ -357,7 +442,20 @@ VIP, récompenses hebdomadaires). Détail : [jeux-et-economie.md](jeux-et-econom
 [buddy-palotins.md](buddy-palotins.md). Pivots : `minesweeper_games`, `riddles` → `riddle_attempts`,
 `achievements` → `student_achievements`, `student_buddies`, `reward_events`, `gidouilles_activity`.
 Le solde vit dans `profiles.gidouilles` / `vip_cards`. L'élève lit ses propres traces, le professeur
-celles de tous les élèves ; les classements passent par `game_leaderboard`, borné à l'école.
+celles de tous les élèves ; les classements passent par `game_leaderboard`, borné à l'école
+(énigmes : `riddle_school_leaderboard`, prénom et score seulement, migration `20261015090800`).
+Une tentative d'énigme ne s'écrit que par le serveur (`submit_riddle_attempt` via le client
+service ; plus de policy d'insertion pour l'élève) et `riddle_progress` est fermée à anon et
+`authenticated` (migration `20261016090200`). Réponse attendue et correction d'une énigme :
+`riddle_solutions`, lisible et modifiable par l'auteur de l'énigme et l'admin seulement
+(migration `20261016100500`, test `tests/integration/enigmes-solutions-a-part.test.ts`) ; le
+code ne lit et n'écrit plus qu'elle (`src/lib/server/riddle-solutions.ts`, client service pour
+l'élève). `riddles` ne porte plus ni `answer` ni `correction` : colonnes, déclencheur de
+recopie et sa fonction supprimés (étape C, `20261016100800`, après v0.25.0) ; la migration
+refait la réconciliation et s'annule si une énigme n'a pas sa solution identique.
+`mathemo_scores`, `minesweeper_student_achievements`, `minesweeper_player_stats`,
+`marketplace_listing_views`, `game_2048_scores` : lecture par soi seul, prof et admin compris
+(migration `20261015090600`, test `tests/integration/lectures-ouvertes-fermees.test.ts`).
 Code : `src/lib/server/games/`, `src/lib/server/achievements/`, `src/routes/api/games`,
 `src/routes/api/riddles`, `src/routes/api/rewards`.
 
@@ -367,7 +465,7 @@ Synchronisation avec Google Classroom : `google_integrations` (jeton du professe
 l'admin) → `google_classroom_courses`, `_coursework`, `_materials`, `_topics` ; `shared_coursework` /
 `shared_materials` exposent aux élèves ce qui est partagé. Code : `src/lib/server/google/`, `src/routes/api/google`.
 
-### Outils du professeur (kanban, tableau blanc, tableur, constructions)
+### Outils du professeur (kanban, tableau blanc, tableur, constructions, figures)
 
 - **Kanban** : `kanban_boards` → `kanban_columns` → `kanban_cards`. Tableau personnel
   (`class_id` NULL, privé à son propriétaire) ou de classe (lisible par les membres, qui gèrent les
@@ -375,7 +473,15 @@ l'admin) → `google_classroom_courses`, `_coursework`, `_materials`, `_topics` 
   `_column`. Code : `src/lib/server/kanban.ts`, `src/routes/api/organisation/kanban`. Test :
   `tests/integration/kanban-rls.test.ts`.
 - `spreadsheets`, `constructions` : à leur auteur (les constructions `is_public` sont lisibles par
-  tous). `whiteboard_templates` : modèles publics, de l'auteur ou système.
+  tout compte connecté). `whiteboard_templates` : modèles publics, de l'auteur ou système.
+- **Figures géométriques** (ADR 0027) : `geometry_figures`, scripts du DSL `geometry-core`, distinctes
+  des `constructions` animées. Publique (`is_public`) = lisible par tous, `anon` compris ; privée =
+  l'auteur seul. Prof et admin créent ; chacun ne modifie et ne supprime **que ses** figures (l'admin
+  ne touche pas à celles du prof). Niveaux `grades` (contrôle `is_valid_grade_array`), tags par
+  `resource_tags` (type `geometry_figure`), effacés avec la figure par le trigger
+  `geometry_figures_drop_tags` (SECURITY DEFINER gardé : la suppression d'un compte y arrive en
+  cascade sous `supabase_auth_admin`, sans droit sur `resource_tags`). `UPDATE` accordé colonne par
+  colonne : ni `id`, ni `author_id`. Test : `tests/integration/figures-geometriques.test.ts`.
 
 ### Tuteur et recherche documentaire (RAG)
 
@@ -389,6 +495,12 @@ celles de tous les élèves. `rag_documents` → `rag_chunks` : documents du pro
 `error_occurrences` (`src/lib/server/errorMonitoring.ts`), `bug_reports`, `background_job_runs`
 (tâches planifiées, lues par l'admin), `rate_limits` (`service_role` seul, via la RPC
 `check_and_increment_rate_limit` de `src/lib/server/rateLimiter.ts`), `server_cache`.
+`account_deletion_audit` (RLS sans policy : client service seul) trace chaque suppression de
+compte, par l'élève ou par la purge de conservation ; `cleanup_result.storage_paths` liste ses
+fichiers, et `storage_removed_at` (`20261016101000`) dit s'ils ont été retirés du storage
+(nul = à retirer). `delete_user_account` ne rend, pour les pièces jointes de messages privés et les
+captures de signalement, que les chemins rangés chez l'élève (`20261016101200`) : il en écrit
+lui-même le chemin.
 
 ---
 
@@ -404,6 +516,12 @@ d'écrire le compte d'un autre.
   Ces deux gardes lèvent `42501` et ne sont exécutables que par `service_role` : seules les fonctions
   DEFINER les appellent. Sinon : `REVOKE EXECUTE … FROM PUBLIC, anon, authenticated` (révoquer à
   `anon` seul ne suffit pas, `anon` hérite de `PUBLIC`).
+- **Réservée au serveur, en deux temps** : quand une fonction ne doit plus être appelée que par une
+  route (client service), on pose d'abord la garde et on livre la route ; le `REVOKE … FROM
+authenticated` ne part qu'après le `deploy:prod` qui livre la route (sinon la prod casse
+  entre les deux). Exemple : `submit_riddle_attempt`, `record_game_reward`,
+  `upsert_mathemo_score` (`20261016100700`, après v0.25.0). Un appel imbriqué par une autre
+  fonction DEFINER garde son droit (droits du propriétaire).
 - **`search_path` terminé par `pg_temp`**.
 - **Garde-fou** : toute fonction DEFINER non-trigger exécutable par `authenticated` ou `anon` doit
   figurer, avec la garde **lue** dans son corps, dans
@@ -435,7 +553,8 @@ d'écrire le compte d'un autre.
   sérialisation à clés triées.
 - **Une colonne masquée ne se fait pas par `REVOKE` de colonne** : un rôle sans SELECT au niveau
   table reçoit `42501` sur un `select('*')`, ce qui casse PostgREST. Pour cacher des données à l'élève,
-  une table annexe sans policy élève (c'est ce que fait `python_submission_server_verdicts`).
+  une table annexe sans policy élève (c'était le choix de `python_submission_server_verdicts`, supprimée
+  depuis).
 - **`curriculum_points` : cinq des six clés étrangères qui le visent sont en CASCADE** ; supprimer un
   point effacerait sans un mot la couverture du cahier de texte et l'acquisition des élèves. On
   archive.
@@ -460,4 +579,4 @@ Le schéma part du baseline `20260616220000_baseline_schema.sql` (anciennes migr
 
 ---
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-11.

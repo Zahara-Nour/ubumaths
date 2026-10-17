@@ -58,6 +58,42 @@ describe('tidy raconte — les gestes', () => {
 		expect(etapes).toEqual([{ regle: 'tidy-sort-terms', avant: '2+x^2+x', apres: 'x^2+x+2' }]);
 	});
 
+	it('somme sans variable : écrit le nombre en tête, avec sa propre phrase', () => {
+		const recorder = new TidyStepRecorder();
+		const noeud = tidy(parseCustom('sqrt(5)+1'), { recorder });
+		expect(toCustom(noeud)).toBe('1+sqrt(5)');
+		expect(
+			recorder.getSteps().map((s) => ({
+				regle: s.rule,
+				description: s.description,
+				avant: toCustom(s.before),
+				apres: toCustom(s.after)
+			}))
+		).toEqual([
+			{
+				regle: 'tidy-number-first',
+				description: 'On écrit le nombre en tête',
+				avant: 'sqrt(5)+1',
+				apres: '1+sqrt(5)'
+			}
+		]);
+	});
+
+	it('somme sans variable : le nombre en tête, puis le rangement des autres termes', () => {
+		const { resultat, etapes } = raconte('sqrt(3)+3+sqrt(2)');
+		expect(resultat).toBe('3+sqrt(2)+sqrt(3)');
+		expect(etapes).toEqual([
+			{ regle: 'tidy-number-first', avant: 'sqrt(3)+3+sqrt(2)', apres: '3+sqrt(3)+sqrt(2)' },
+			{ regle: 'tidy-sort-terms', avant: '3+sqrt(3)+sqrt(2)', apres: '3+sqrt(2)+sqrt(3)' }
+		]);
+	});
+
+	it('complexe : écrit la partie réelle en tête, avec la phrase du nombre en tête', () => {
+		const { resultat, etapes } = raconte('3i-2');
+		expect(resultat).toBe('-2+3i');
+		expect(etapes).toEqual([{ regle: 'tidy-number-first', avant: '3i-2', apres: '-2+3i' }]);
+	});
+
 	it('met chaque terme au propre avant de regrouper', () => {
 		// Écrit au lot 1, quand `tidy-terms` était le seul geste disponible. Le
 		// lot 2 nomme la famille qui travaille réellement ici : l'extraction des

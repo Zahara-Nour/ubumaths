@@ -30,6 +30,9 @@
 import { error } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/middleware/auth');
 
 // ============================================================================
 // TYPES
@@ -112,7 +115,7 @@ export interface AuthResult {
  * ```typescript
  * // Before (10 lines):
  * const { user } = await locals.safeGetSession();
- * if (!user) throw error(401, 'Unauthorized');
+ * if (!user) throw error(401, 'Connexion requise');
  *
  * const { data: profile } = await locals.supabase
  *   .from('profiles')
@@ -120,7 +123,7 @@ export interface AuthResult {
  *   .eq('id', user.id)
  *   .single();
  *
- * if (!profile) throw error(403, 'Profile not found');
+ * if (!profile) throw error(403, 'Profil introuvable');
  *
  * // After (1 line):
  * const { user, profile } = await requireAuth(locals);
@@ -142,7 +145,7 @@ export async function requireAuth(locals: App.Locals): Promise<AuthResult> {
 		.single();
 
 	if (profileError || !profile) {
-		console.error('Profile fetch error:', profileError);
+		logger.error('Profile fetch error:', profileError);
 		throw error(403, 'Profil utilisateur introuvable');
 	}
 
@@ -209,7 +212,7 @@ export async function requireAuth(locals: App.Locals): Promise<AuthResult> {
  * ```typescript
  * // Before (10 lines):
  * const { user } = await locals.safeGetSession();
- * if (!user) throw error(401, 'Unauthorized');
+ * if (!user) throw error(401, 'Connexion requise');
  *
  * const { data: profile } = await locals.supabase
  *   .from('profiles')
@@ -218,7 +221,7 @@ export async function requireAuth(locals: App.Locals): Promise<AuthResult> {
  *   .single();
  *
  * if (!profile || profile.role !== 'teacher') {
- *   throw error(403, 'Forbidden - Teachers only');
+ *   throw error(403, 'Page réservée aux professeurs');
  * }
  *
  * // After (1 line):
@@ -391,5 +394,5 @@ export async function requireAdmin(locals: App.Locals): Promise<AdminAuthResult>
 	}
 
 	// 4) Authenticated, but neither elevated nor a real admin → 403.
-	throw error(403, 'Admin elevation required');
+	throw error(403, 'Élévation admin requise');
 }

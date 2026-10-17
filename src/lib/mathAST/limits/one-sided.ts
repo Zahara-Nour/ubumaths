@@ -13,6 +13,7 @@ import type { LimitStepRecorder } from './step-recorder';
 import { isNumber, isInfinity, isFunction } from '../guards';
 import { classifyLimitValue } from './indeterminate';
 import { structurallyEqual } from './known-limits';
+import { tidy } from '../tidy';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { computeDomain } from '../domain/compute';
@@ -162,7 +163,7 @@ export function analyzeDiscontinuity(
 		};
 	}
 
-	if (functionValue !== null && left.value && !structurallyEqual(functionValue, left.value)) {
+	if (functionValue !== null && left.value && !sameValue(functionValue, left.value)) {
 		return {
 			type: 'removable',
 			leftLimit: left.value,
@@ -177,6 +178,34 @@ export function analyzeDiscontinuity(
 		rightLimit: right.value,
 		description: 'Fonction continue en ce point'
 	};
+}
+
+/** Tolérance relative de la comparaison numérique limite / valeur au point. */
+const SAME_VALUE_TOLERANCE = 1e-9;
+
+/**
+ * La limite et la valeur au point sont-elles le même nombre ? Leurs écritures
+ * diffèrent : la limite est écrite par `writeLimitValue` (`0.5` d'un énoncé
+ * décimal, `1 - \\sin a`), la valeur au point vient de l'évaluation exacte
+ * (`\\dfrac{1}{2}`, `-\\sin a + 1`). Comparaison numérique quand les deux
+ * s'évaluent ; sinon structurelle, après `tidy` des deux côtés.
+ */
+function sameValue(a: MathNode, b: MathNode): boolean {
+	const x = tryApproximate(a);
+	const y = tryApproximate(b);
+	if (x !== null && y !== null) {
+		return Math.abs(x - y) <= SAME_VALUE_TOLERANCE * Math.max(1, Math.abs(x), Math.abs(y));
+	}
+	return structurallyEqual(tidy(a), tidy(b));
+}
+
+function tryApproximate(node: MathNode): number | null {
+	try {
+		const value = evaluateNodeToApproximatedNumber(node);
+		return Number.isFinite(value) ? value : null;
+	} catch {
+		return null;
+	}
 }
 
 /**
@@ -244,7 +273,8 @@ function mayHaveRestrictedDomain(expr: MathNode): boolean {
 }
 
 /**
- * Check if a numeric value is on a domain boundary (at an interval endpoint).
+ * Check if a numeric value is on a domain boundary (at an interval endpoint
+ * or an excluded point).
  * More robust than epsilon-probing with containsValue.
  */
 function isOnDomainBoundary(domain: import('../domain/types').Domain, value: number): boolean {
@@ -260,7 +290,13 @@ function isOnDomainBoundary(domain: import('../domain/types').Domain, value: num
 			return true;
 		}
 	}
-	return false;
+	// Point exclu (ℝ \ {0} pour 2 + 1/x) : une borne aussi. Sans lui, seule une
+	// division AU SOMMET de l'arbre déclenchait l'étude côté par côté — 1/x en 0
+	// n'avait pas de limite, 2 + 1/x restait « non supportée ».
+	return (domain.excludedPoints ?? []).some((point) => {
+		const excluded = tryGetEndpointNumericValue(point.value);
+		return excluded !== null && Math.abs(excluded - value) < ZERO_TOLERANCE;
+	});
 }
 
 /**

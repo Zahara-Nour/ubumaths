@@ -14,6 +14,11 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/student/cahier-texte/[entryId]/+page.server'
+);
 
 // UUID validation schema
 const uuidSchema = z.string().uuid('ID invalide');
@@ -27,7 +32,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// Validate entry ID
 	const entryIdResult = uuidSchema.safeParse(entryId);
 	if (!entryIdResult.success) {
-		throw error(400, 'ID entree invalide');
+		throw error(400, 'Identifiant d’entrée invalide');
 	}
 
 	const today = new Date().toISOString().split('T')[0];
@@ -40,14 +45,14 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.eq('status', 'active');
 
 	if (membershipError) {
-		console.error('[Student Entry Detail] Error fetching memberships:', membershipError);
+		logger.error('[Student Entry Detail] Error fetching memberships:', membershipError);
 		throw error(500, 'Erreur lors du chargement');
 	}
 
 	const classIds = (memberships || []).map((m) => m.class_id);
 
 	if (classIds.length === 0) {
-		throw error(404, 'Entree non trouvee');
+		throw error(404, 'Entrée introuvable');
 	}
 
 	// Fetch the entry (must be published, from student's class, and date <= today)
@@ -75,9 +80,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	if (entryError) {
 		if (entryError.code === 'PGRST116') {
 			// No rows returned - either doesn't exist, not published, or not in student's class
-			throw error(404, 'Entree non trouvee');
+			throw error(404, 'Entrée introuvable');
 		}
-		console.error('[Student Entry Detail] Error fetching entry:', entryError);
+		logger.error('[Student Entry Detail] Error fetching entry:', entryError);
 		throw error(500, 'Erreur lors du chargement');
 	}
 

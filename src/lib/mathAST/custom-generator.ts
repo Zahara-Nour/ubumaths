@@ -49,7 +49,9 @@ import type {
 	RelationType,
 	NodeMetadata
 } from './types';
+import { formatPointNames } from './common/point-names';
 import { flattenRelationChain } from './flatten';
+import { isImaginaryUnit } from './guards';
 import { GREEK_LETTERS } from './types';
 import { format } from './units/formatter';
 import {
@@ -190,6 +192,10 @@ function needsBracesForPower(node: MathNode): boolean {
 			// Holes and constants are atoms, don't need braces
 			return false;
 
+		case 'complex':
+			// L'unité imaginaire s'écrit `i` : un atome (x^i)
+			return !isImaginaryUnit(node);
+
 		case 'opposite':
 		case 'positive':
 			// Unary signs always need braces: x^{-2}, x^{+2}
@@ -233,6 +239,10 @@ function needsBracesForSubscript(node: MathNode): boolean {
 		case 'constant':
 			// Holes and constants are atoms, don't need braces
 			return false;
+
+		case 'complex':
+			// L'unité imaginaire s'écrit `i` : un atome
+			return !isImaginaryUnit(node);
 
 		default:
 			// All complex expressions need braces
@@ -292,16 +302,25 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'unit':
 		case 'composition':
 		case 'matrix':
-		case 'complex':
 		case 'limit':
 		case 'logical':
 		case 'logical-not':
 		case 'piecewise':
 			return true;
 
+		// Longueur `AB`, nom de figure `ABC` : la syntaxe maison les lit encore comme
+		// des produits (lot 5) — accolades pour garder le groupe
+		case 'segmentLength':
+		case 'figureName':
+			return true;
+
 		case 'boolean':
 		case 'signed-zero':
 			return false;
+
+		// L'unité imaginaire s'écrit `i` (un atome) ; un autre complexe, `a + bi`
+		case 'complex':
+			return !isImaginaryUnit(node);
 
 		default: {
 			const exhaustive: never = node;
@@ -642,6 +661,11 @@ export class CustomGenerator {
 				this.emit(node.constant === 'euler' ? 'e' : '\\pi', node.metadata);
 				break;
 
+			case 'segmentLength':
+			case 'figureName':
+				this.emit(formatPointNames(node.points), node.metadata);
+				break;
+
 			case 'composition':
 				this.visitCompositionSpans(node);
 				break;
@@ -745,6 +769,11 @@ export class CustomGenerator {
 	 * Emits a complex number span.
 	 */
 	private visitComplexSpans(node: ComplexNode): void {
+		// L'unité imaginaire s'écrit `i`, que parseCustom relit `complex(0, 1)`
+		if (isImaginaryUnit(node)) {
+			this.emit('i', node.metadata);
+			return;
+		}
 		// Complex numbers are rendered as real + imaginary*i
 		this.visitWithSpans(node.real);
 		this.emit(' + ', undefined);
@@ -1093,6 +1122,10 @@ export class CustomGenerator {
 			case 'constant':
 				this.emit(node.constant === 'euler' ? 'e' : '\\pi', effectiveMeta);
 				break;
+			case 'segmentLength':
+			case 'figureName':
+				this.emit(formatPointNames(node.points), effectiveMeta);
+				break;
 			default:
 				// For complex nodes, use normal visitWithSpans
 				this.visitWithSpans(node);
@@ -1163,6 +1196,10 @@ export class CustomGenerator {
 				break;
 			case 'constant':
 				content = node.constant === 'euler' ? 'e' : '\\pi';
+				break;
+			case 'segmentLength':
+			case 'figureName':
+				content = formatPointNames(node.points);
 				break;
 			case 'composition':
 				content = this.generateComposition(node);
@@ -1238,6 +1275,8 @@ export class CustomGenerator {
 	}
 
 	private generateComplex(node: ComplexNode): string {
+		// L'unité imaginaire s'écrit `i`, que parseCustom relit `complex(0, 1)`
+		if (isImaginaryUnit(node)) return 'i';
 		const real = this.generateNode(node.real);
 		const imag = this.generateNode(node.imaginary);
 		return `${real} + ${imag}i`;

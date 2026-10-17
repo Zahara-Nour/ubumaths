@@ -17,6 +17,9 @@ import { addChapterDocument } from '$lib/server/chapters';
 import { placeInSection } from '$lib/server/chapter-sections';
 import { targetSectionFieldSchema } from '$lib/server/validation/chapter-sections';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/documents/+server');
 
 /** Le bucket porte la même liste ; celle-ci refuse tôt, avec un message clair. */
 const ALLOWED_MIME_TYPES = [
@@ -59,7 +62,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
 	if (chapterError && chapterError.code !== 'PGRST116') {
-		console.error('[documents] Lecture impossible :', chapterError);
+		logger.error('[documents] Lecture impossible :', chapterError);
 		throw error(500, 'Vérification impossible');
 	}
 
@@ -106,7 +109,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// Le fichier est déjà dans le stockage : le laisser sans sa ligne en
 		// ferait un orphelin invisible.
 		await locals.supabase.storage.from('chapter-documents').remove([data.storagePath]);
-		console.error('[documents] Enregistrement impossible :', dbError);
+		logger.error('[documents] Enregistrement impossible :', dbError);
 		throw error(500, "Erreur lors de l'enregistrement");
 	}
 
@@ -123,7 +126,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			locals.supabase
 		);
 		if (placeError) {
-			console.error('[documents] Rangement impossible :', placeError);
+			logger.error('[documents] Rangement impossible :', placeError);
 			placed = false;
 		}
 	}

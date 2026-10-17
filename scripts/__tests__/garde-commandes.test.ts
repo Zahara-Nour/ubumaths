@@ -18,7 +18,10 @@ import { resolve } from 'node:path';
 
 const HOOK = resolve(__dirname, '../../.claude/hooks/garde-commandes.py');
 
-function hook(command: string, cwd = '/Users/david/Coding/js/ubumaths') {
+// Un dossier qui n'est pas un dépôt : les règles qui interrogent git (main partagé,
+// verrou de déploiement) ne dépendent pas de l'état du vrai dépôt. Elles sont
+// gardées par garde-commandes-main-partage.test.ts, sur des dépôts jetables.
+function hook(command: string, cwd = '/chemin/inexistant/ubumaths') {
 	const r = spawnSync('python3', [HOOK], {
 		input: JSON.stringify({ tool_name: 'Bash', tool_input: { command }, cwd }),
 		encoding: 'utf8'

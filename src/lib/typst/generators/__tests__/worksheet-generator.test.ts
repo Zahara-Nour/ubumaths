@@ -8,12 +8,9 @@
  * - Backward compatibility with legacy function
  */
 import { describe, it, expect } from 'vitest';
-import {
-	WorksheetGenerator,
-	generateWorksheetTypst,
-	generateBatchTypst
-} from '../worksheet-generator';
-import { DEFAULT_TEMPLATES } from '../../templates/default-templates';
+import { WorksheetGenerator, generateWorksheetTypst } from '../worksheet-generator';
+import { DEFAULT_TEMPLATES, DEFAULT_TEMPLATE_IDS } from '../../templates/default-templates';
+import { exerciseBadge } from '../../worksheet-palette';
 import type {
 	WorksheetRow,
 	InstanceData,
@@ -27,17 +24,7 @@ const createMockWorksheet = (overrides?: Partial<WorksheetRow>): WorksheetRow =>
 	title: 'Test Worksheet',
 	description: 'A test worksheet',
 	type: 'worksheet',
-	config: {
-		show_title: true,
-		show_date: true,
-		show_student_name: true,
-		show_class: true,
-		show_points: true,
-		numbering_style: 'numeric',
-		page_layout: 'A4',
-		font_size: 12,
-		margins: { top: 20, bottom: 20, left: 15, right: 15 }
-	},
+	config: { show_points: true },
 	status: 'published',
 	version: 1,
 	published_at: '2024-01-01',
@@ -76,16 +63,9 @@ const createMockInstance = (overrides?: Partial<InstanceData>): InstanceData => 
 	...overrides
 });
 
+// Le type décide de l'en-tête (ADR 0030) : seule l'option des points reste
 const createMockConfig = (overrides?: Partial<WorksheetConfig>): WorksheetConfig => ({
-	show_title: true,
-	show_date: true,
-	show_student_name: true,
-	show_class: true,
 	show_points: true,
-	numbering_style: 'numeric',
-	page_layout: 'A4',
-	font_size: 12,
-	margins: { top: 20, bottom: 20, left: 15, right: 15 },
 	...overrides
 });
 
@@ -149,7 +129,7 @@ describe('WorksheetGenerator', () => {
 		it('includes exercises', () => {
 			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({
-				worksheet: createMockWorksheet(),
+				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -210,9 +190,10 @@ describe('WorksheetGenerator', () => {
 				instance: createMockInstance()
 			});
 
-			expect(result.typstContent).toContain('Solution');
+			// Le corrigé ne répète plus l'énoncé : la correction seule
 			expect(result.typstContent).toContain('x = 2');
 			expect(result.typstContent).toContain('17');
+			expect(result.typstContent).not.toContain('Solve for x');
 		});
 
 		it('does not include solutions in worksheet mode', () => {
@@ -271,7 +252,7 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).toContain('Classe 3B');
 		});
 
-		it('honours display options in template mode', () => {
+		it("fiche d'exercices : le gabarit ne reçoit que le titre (ADR 0030)", () => {
 			const conditionalTemplate: WorksheetTemplateRow = {
 				...mockTemplate,
 				template_content: `#set page(paper: "a4")
@@ -282,16 +263,10 @@ describe('WorksheetGenerator', () => {
 [{{#if show_points}}*Bareme :* {{total_points}}{{/if}}]
 {{exercises}}`
 			};
-			const generator = new WorksheetGenerator(
-				createMockConfig({
-					show_date: false,
-					show_class: false,
-					show_student_name: false,
-					show_points: false
-				}),
-				undefined,
-				{ studentName: 'Jean Dupont', className: 'Classe 3B' }
-			);
+			const generator = new WorksheetGenerator(createMockConfig(), undefined, {
+				studentName: 'Jean Dupont',
+				className: 'Classe 3B'
+			});
 
 			const result = generator.generate({
 				worksheet: createMockWorksheet({ title: 'My Title' }),
@@ -306,28 +281,27 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).not.toContain('Nom :');
 			expect(result.typstContent).not.toContain('Jean Dupont');
 			expect(result.typstContent).not.toContain('Bareme :');
-			// The option left on still renders.
+			// Le titre s'imprime toujours.
 			expect(result.typstContent).toContain('*Titre :* My Title');
 		});
 
-		it('shows every field in template mode when no display option is set', () => {
+		it('évaluation écrite : date à remplir et classe dans le gabarit', () => {
 			const conditionalTemplate: WorksheetTemplateRow = {
 				...mockTemplate,
 				template_content: `[{{#if show_date}}*Date :* {{date}}{{/if}}]
 [{{#if show_class}}*Classe :* {{class}}{{/if}}]
 {{exercises}}`
 			};
-			// An empty config: flags are opt-out, an absent one means "show".
 			const generator = new WorksheetGenerator({}, undefined, { className: 'Classe 3B' });
 
 			const result = generator.generate({
-				worksheet: createMockWorksheet(),
+				worksheet: createMockWorksheet({ type: 'assessment' }),
 				instance: createMockInstance(),
 				template: conditionalTemplate
 			});
 
 			expect(result.typstContent).toContain('Date :');
-			expect(result.typstContent).toContain('*Classe :* Classe 3B');
+			expect(result.typstContent).toContain('*Classe :* #"Classe 3B";');
 		});
 
 		it('writes the chrome in English when the worksheet is', () => {
@@ -337,17 +311,17 @@ describe('WorksheetGenerator', () => {
 			});
 
 			const result = generator.generate({
-				worksheet: createMockWorksheet({ type: 'assessment' }),
+				worksheet: createMockWorksheet({
+					type: 'exam',
+					template_id: DEFAULT_TEMPLATE_IDS.exam,
+					estimated_duration_minutes: 50
+				}),
 				instance: createMockInstance()
 			});
 
-			expect(result.typstContent).toContain('*Surname :*');
-			expect(result.typstContent).toContain('*Class :*');
-			expect(result.typstContent).toContain('*Date :*');
-			expect(result.typstContent).toContain('*Duration :*');
-			expect(result.typstContent).toContain('*Marks :*');
+			expect(result.typstContent).toContain('Surname');
+			expect(result.typstContent).toContain('Duration');
 			expect(result.typstContent).toContain('Exercise 1');
-			expect(result.typstContent).toContain('Read each question carefully');
 			// No French label left behind.
 			expect(result.typstContent).not.toContain('Nom :');
 			expect(result.typstContent).not.toContain('Classe :');
@@ -363,7 +337,10 @@ describe('WorksheetGenerator', () => {
 			});
 
 			const result = generator.generate({
-				worksheet: createMockWorksheet(),
+				worksheet: createMockWorksheet({
+					type: 'assessment',
+					template_id: DEFAULT_TEMPLATE_IDS.standard
+				}),
 				instance: createMockInstance()
 			});
 
@@ -381,7 +358,8 @@ describe('WorksheetGenerator', () => {
 				instance: createMockInstance()
 			});
 
-			expect(result.typstContent).toContain('ANSWERS');
+			// « ANSWERS » nomme le PDF des réponses seules
+			expect(result.typstContent).toContain('SOLUTIONS');
 			expect(result.typstContent).not.toContain('CORRECTION');
 		});
 
@@ -405,7 +383,7 @@ describe('WorksheetGenerator', () => {
 			});
 
 			expect(result.typstContent).toContain('#set text(lang: "en")');
-			expect(result.typstContent).toContain('*Surname :* John Smith');
+			expect(result.typstContent).toContain('*Surname :* #"John Smith";');
 			expect(result.typstContent).toContain("Today's exercises");
 		});
 
@@ -547,9 +525,9 @@ describe('WorksheetGenerator', () => {
 
 	describe('numbering styles', () => {
 		it('uses numeric numbering by default', () => {
-			const generator = new WorksheetGenerator(createMockConfig({ numbering_style: 'numeric' }));
+			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({
-				worksheet: createMockWorksheet(),
+				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -557,26 +535,17 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).toContain('Exercice 2');
 		});
 
-		it('uses alphabetic numbering when configured', () => {
-			const generator = new WorksheetGenerator(createMockConfig({ numbering_style: 'alphabetic' }));
+		it('numérotation toujours en chiffres arabes, même avec l’ancienne clé (ADR 0030)', () => {
+			const generator = new WorksheetGenerator({
+				numbering_style: 'roman'
+			} as WorksheetConfig);
 			const result = generator.generate({
-				worksheet: createMockWorksheet(),
+				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
-			expect(result.typstContent).toContain('Exercice A');
-			expect(result.typstContent).toContain('Exercice B');
-		});
-
-		it('uses roman numbering when configured', () => {
-			const generator = new WorksheetGenerator(createMockConfig({ numbering_style: 'roman' }));
-			const result = generator.generate({
-				worksheet: createMockWorksheet(),
-				instance: createMockInstance()
-			});
-
-			expect(result.typstContent).toContain('Exercice I');
-			expect(result.typstContent).toContain('Exercice II');
+			expect(result.typstContent).toContain('Exercice 1');
+			expect(result.typstContent).not.toContain('Exercice I');
 		});
 	});
 
@@ -588,11 +557,19 @@ describe('WorksheetGenerator', () => {
 			instance.exercises[0].points = 5;
 			instance.exercises[1].points = 1;
 
-			const result = generator.generate({ worksheet: createMockWorksheet(), instance });
+			// Évaluation écrite, points cochés (ADR 0030 : le type décide, pas le style)
+			const result = generator.generate({
+				worksheet: createMockWorksheet({
+					type: 'assessment',
+					template_id: DEFAULT_TEMPLATE_IDS.standard
+				}),
+				instance
+			});
 
-			expect(result.typstContent).toContain('points-badge(5)');
-			expect(result.typstContent).toContain('points-badge(1)');
-			expect(result.typstContent).not.toContain('points-badge(2)');
+			// Libellé de documentLabels : « 1 pt », « 5 pts » (ADR 0028, lot 1)
+			expect(result.typstContent).toContain(')[5 pts]');
+			expect(result.typstContent).toContain(')[1 pt]');
+			expect(result.typstContent).not.toContain(')[2 pts]');
 		});
 
 		it('omits the points badge when the exercise has none', () => {
@@ -602,8 +579,7 @@ describe('WorksheetGenerator', () => {
 				instance: createMockInstance()
 			});
 
-			// (the `#let points-badge(pts)` definition always sits in the setup)
-			expect(result.typstContent).not.toMatch(/^\s+points-badge\(/m);
+			expect(result.typstContent).not.toMatch(/\)\[\d+ pts?\]/);
 		});
 
 		it('renders the custom instructions of an exercise', () => {
@@ -719,42 +695,34 @@ describe('WorksheetGenerator', () => {
 			);
 		});
 
-		it('renders the header through the sticky exercise-header helper without a template', () => {
+		it('without a template, the « Fiche élève » badge header is sticky too', () => {
 			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({
 				worksheet: createMockWorksheet(),
 				instance: createMockInstance()
 			});
 
-			expect(result.typstContent).toContain('#let exercise-header(content)');
-			expect(result.typstContent).toContain('sticky: true,');
-			expect(result.typstContent).toContain('#exercise-header[');
+			expect(result.typstContent).toContain(
+				`#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[\n  #grid(`
+			);
+			expect(result.typstContent).toContain(exerciseBadge('1'));
 		});
 	});
 
 	describe('worksheet types', () => {
-		it('generates exam with answer spaces', () => {
-			const generator = new WorksheetGenerator(createMockConfig());
-			const result = generator.generate({
-				worksheet: createMockWorksheet({ type: 'exam' }),
-				instance: createMockInstance()
-			});
+		it.each(['exam', 'assessment'] as const)(
+			'%s : cadre de réponse seulement avec « réponses sur le sujet »',
+			(type) => {
+				const generate = (config: WorksheetConfig) =>
+					new WorksheetGenerator(config).generate({
+						worksheet: createMockWorksheet({ type }),
+						instance: createMockInstance()
+					}).typstContent;
 
-			// Exams should have answer spaces
-			expect(result.typstContent).toContain('rect');
-			expect(result.typstContent).toContain('dashed');
-		});
-
-		it('generates assessment with answer spaces', () => {
-			const generator = new WorksheetGenerator(createMockConfig());
-			const result = generator.generate({
-				worksheet: createMockWorksheet({ type: 'assessment' }),
-				instance: createMockInstance()
-			});
-
-			// Assessments should have answer spaces like exams
-			expect(result.typstContent).toContain('rect');
-		});
+				expect(generate(createMockConfig({ answers_on_sheet: true }))).toContain('dashed');
+				expect(generate(createMockConfig())).not.toContain('dashed');
+			}
+		);
 	});
 });
 
@@ -782,7 +750,7 @@ describe('generateWorksheetTypst (legacy function)', () => {
 
 	it('supports studentName and className parameters', () => {
 		const result = generateWorksheetTypst({
-			worksheet: createMockWorksheet(),
+			worksheet: createMockWorksheet({ type: 'assessment' }),
 			instance: createMockInstance(),
 			config: createMockConfig(),
 			mode: 'worksheet',
@@ -803,43 +771,7 @@ describe('generateWorksheetTypst (legacy function)', () => {
 		});
 
 		expect(result).toContain('CORRECTION');
-		expect(result).toContain('Solution');
-	});
-});
-
-describe('generateBatchTypst', () => {
-	it('generates multiple worksheets with page breaks', () => {
-		const worksheet = createMockWorksheet();
-		const config = createMockConfig();
-
-		const instances = [
-			{ instance: createMockInstance(), studentName: 'Student 1', studentId: 's1' },
-			{ instance: createMockInstance(), studentName: 'Student 2', studentId: 's2' },
-			{ instance: createMockInstance(), studentName: 'Student 3', studentId: 's3' }
-		];
-
-		const result = generateBatchTypst(worksheet, instances, config, 'worksheet');
-
-		expect(result).toContain('Student 1');
-		expect(result).toContain('Student 2');
-		expect(result).toContain('Student 3');
-		expect(result).toContain('#pagebreak()');
-	});
-
-	it('removes duplicate setup sections', () => {
-		const worksheet = createMockWorksheet();
-		const config = createMockConfig();
-
-		const instances = [
-			{ instance: createMockInstance(), studentName: 'Student 1', studentId: 's1' },
-			{ instance: createMockInstance(), studentName: 'Student 2', studentId: 's2' }
-		];
-
-		const result = generateBatchTypst(worksheet, instances, config, 'worksheet');
-
-		// Count occurrences of "// Document Setup" - should only appear once
-		const setupMatches = result.match(/\/\/ Document Setup/g);
-		expect(setupMatches?.length || 0).toBeLessThanOrEqual(1);
+		expect(result).toContain('x = 2');
 	});
 });
 
@@ -861,12 +793,16 @@ describe('fonctions déclarées de l’exercice', () => {
 			]
 		});
 
-	const render = (instance: InstanceData, withTemplate: boolean): string =>
+	const render = (
+		instance: InstanceData,
+		withTemplate: boolean,
+		mode: 'worksheet' | 'correction' = 'correction'
+	): string =>
 		generateWorksheetTypst({
 			worksheet: createMockWorksheet(),
 			instance,
 			config: createMockConfig(),
-			mode: 'correction',
+			mode,
 			template: withTemplate
 				? {
 						id: 'tpl',
@@ -885,14 +821,165 @@ describe('fonctions déclarées de l’exercice', () => {
 		['sans modèle', false],
 		['avec modèle', true]
 	])('énoncé et corrigé sans erreur quand C est déclaré (%s)', (_label, withTemplate) => {
-		const typst = render(instanceWithC(['C']), withTemplate);
-		expect(typst).not.toContain('Unexpected token');
-		// Énoncé et corrigé sont bien là tous les deux
-		expect(typst).toContain('Calculer');
-		expect(typst).toContain('On trouve');
+		// Énoncé sur la fiche, correction dans le corrigé (qui ne répète plus l'énoncé)
+		const sheet = render(instanceWithC(['C']), withTemplate, 'worksheet');
+		const correction = render(instanceWithC(['C']), withTemplate);
+		for (const typst of [sheet, correction]) expect(typst).not.toContain('Unexpected token');
+		expect(sheet).toContain('Calculer');
+		expect(correction).toContain('On trouve');
 	});
 
 	it('sans déclaration, C reste une variable : l’erreur apparaît (témoin)', () => {
 		expect(render(instanceWithC(undefined), false)).toContain('Unexpected token');
+	});
+});
+
+// Sens de deux majuscules collées (lot 6 des longueurs, Q-J) : résolu à la génération de
+// l'instance depuis le thème de l'exercice et copié dessus ; absent (instance d'avant) :
+// produit, l'écriture d'avant (Q-L).
+describe('sens de AB de l’exercice (capital_pairs)', () => {
+	const instanceWithPrimes = (capitalPairs: 'length' | 'product' | undefined): InstanceData =>
+		createMockInstance({
+			exercises: [
+				{
+					exercise_id: 'ex-ab',
+					title: 'Thalès',
+					position: 1,
+					parameters: {},
+					statement: "Calculer ~A'B'~.",
+					solution: "On trouve ~A'B'=5~.",
+					...(capitalPairs && { capital_pairs: capitalPairs })
+				}
+			]
+		});
+
+	const render = (instance: InstanceData): string =>
+		generateWorksheetTypst({
+			worksheet: createMockWorksheet(),
+			instance,
+			config: createMockConfig(),
+			mode: 'correction',
+			template: null
+		});
+
+	it('longueur : énoncé et corrigé sans erreur', () => {
+		const typst = render(instanceWithPrimes('length'));
+		expect(typst).not.toContain('Unexpected token');
+		expect(typst).toContain('On trouve');
+	});
+
+	it('absent ou produit : écriture d’avant, identique (témoin)', () => {
+		const before = render(instanceWithPrimes(undefined));
+		expect(before).toContain('Unexpected token');
+		expect(render(instanceWithPrimes('product'))).toBe(before);
+	});
+});
+
+// Accessibilité (élèves malvoyants, 2026-10-16) : le gabarit grandit, les exercices suivent
+describe('taille du texte', () => {
+	const generate = (textSize?: 'normal' | 'large' | 'x_large', templateId: string | null = null) =>
+		new WorksheetGenerator(createMockConfig(), undefined, undefined, { textSize }).generate({
+			worksheet: createMockWorksheet({ template_id: templateId }),
+			instance: createMockInstance()
+		}).typstContent;
+
+	it('sans réglage : « Fiche élève » à 10 pt sur deux colonnes, comme avant', () => {
+		const typst = generate();
+		expect(typst).toContain('size: 10pt, lang:');
+		expect(typst).toContain('columns: 2,');
+	});
+
+	it('grande : 14 pt, deux colonnes gardées, exercices compris', () => {
+		const typst = generate('large');
+		expect(typst).toContain('size: 14pt, lang:');
+		expect(typst).toContain('columns: 2,');
+		expect(typst).toContain('2x + 3 = 7');
+	});
+
+	it('très grande : 18 pt', () => {
+		expect(generate('x_large')).toContain('size: 18pt, lang:');
+	});
+
+	it('un autre style grandit aussi (Standard, 11 pt → 15,4 pt)', () => {
+		const typst = generate('large', DEFAULT_TEMPLATE_IDS.standard);
+		expect(typst).toContain('size: 15.4pt');
+		expect(typst).not.toContain('size: 11pt');
+	});
+
+	// Styles qui posent leurs colonnes dans le corps (`#columns(N)[…]`) : elles restent
+	it.each([
+		['Deux colonnes', DEFAULT_TEMPLATE_IDS.twoColumns, '#columns(2'],
+		['Paysage', DEFAULT_TEMPLATE_IDS.landscape, '#columns(3']
+	])('style « %s » en grande taille : ses colonnes restent', (_, templateId, columns) => {
+		expect(generate('x_large', templateId)).toContain(columns);
+	});
+
+	it('la fonction héritée transmet la taille', () => {
+		const typst = generateWorksheetTypst({
+			worksheet: createMockWorksheet(),
+			instance: createMockInstance(),
+			config: createMockConfig(),
+			mode: 'worksheet',
+			textSize: 'x_large'
+		});
+		expect(typst).toContain('size: 18pt, lang:');
+	});
+});
+
+// « Fiche élève » en grande taille : en paysage, sauf les Réponses (David, 2026-10-17)
+describe('« Fiche élève » en paysage en grande taille', () => {
+	const typstOf = (
+		textSize: 'normal' | 'large' | 'x_large',
+		mode: 'worksheet' | 'answers' | 'correction',
+		options: { templateId?: string | null; withCorrections?: 'answers' | 'correction' } = {}
+	) =>
+		new WorksheetGenerator(
+			createMockConfig(),
+			undefined,
+			{ mode },
+			{
+				textSize,
+				withCorrections: options.withCorrections
+			}
+		).generate({
+			worksheet: createMockWorksheet({ template_id: options.templateId ?? null }),
+			instance: createMockInstance()
+		}).typstContent;
+
+	it.each([
+		['fiche', 'worksheet', undefined],
+		['corrigé', 'correction', undefined],
+		['fiche + réponses', 'worksheet', 'answers'],
+		['fiche + corrigé', 'worksheet', 'correction']
+	] as const)('%s en Grande et Très grande : paysage', (_, mode, withCorrections) => {
+		for (const size of ['large', 'x_large'] as const) {
+			const typst = typstOf(size, mode, { withCorrections });
+			expect(typst).toContain('flipped: true');
+			expect(typst).toContain('columns: 2,');
+		}
+	});
+
+	it('Réponses en Grande et Très grande : portrait', () => {
+		for (const size of ['large', 'x_large'] as const) {
+			expect(typstOf(size, 'answers')).not.toContain('flipped: true');
+		}
+	});
+
+	it('taille normale : portrait, quelle que soit la forme', () => {
+		for (const mode of ['worksheet', 'answers', 'correction'] as const) {
+			expect(typstOf('normal', mode)).not.toContain('flipped: true');
+		}
+	});
+
+	it('« Fiche élève » choisi explicitement : paysage aussi', () => {
+		expect(
+			typstOf('large', 'worksheet', { templateId: DEFAULT_TEMPLATE_IDS.studentStyle })
+		).toContain('flipped: true');
+	});
+
+	it('un autre style ne change pas d’orientation (Standard)', () => {
+		const standard = typstOf('large', 'worksheet', { templateId: DEFAULT_TEMPLATE_IDS.standard });
+		expect(standard).not.toContain('flipped: true');
+		expect(standard).toContain('size: 15.4pt');
 	});
 });

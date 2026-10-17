@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createConversationSchema } from '$lib/server/validation/chat';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/chat/conversations/+server');
 
 /**
  * GET /api/chat/conversations
@@ -31,7 +34,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		});
 
 		if (dbError) {
-			console.error('Failed to get conversations:', {
+			logger.error('Failed to get conversations:', {
 				userId: locals.user.id,
 				error: dbError.message
 			});
@@ -45,7 +48,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw err;
 		}
 
-		console.error('Conversations API error:', err);
+		logger.error('Conversations API error:', err);
 		throw error(500, 'Failed to load conversations');
 	}
 };
@@ -107,13 +110,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (createError) {
 			// Handle specific error messages from RPC
 			if (createError.message.includes('must be friends')) {
-				throw error(403, 'Vous devez être ami avec cet utilisateur pour discuter');
+				throw error(403, 'Amitié requise avec cet utilisateur pour discuter');
 			}
 			if (createError.message.includes('already exists')) {
 				throw error(409, 'La conversation existe déjà');
 			}
 
-			console.error('Failed to create conversation:', {
+			logger.error('Failed to create conversation:', {
 				userId: locals.user.id,
 				friendId,
 				error: createError.message
@@ -122,7 +125,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		if (!conversationId) {
-			console.error('create_1on1_chat returned no conversation ID', {
+			logger.error('create_1on1_chat returned no conversation ID', {
 				userId: locals.user.id,
 				friendId
 			});
@@ -136,7 +139,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw err;
 		}
 
-		console.error('Create conversation API error:', err);
+		logger.error('Create conversation API error:', err);
 		throw error(500, 'Échec de la création de la conversation');
 	}
 };

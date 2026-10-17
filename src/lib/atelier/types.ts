@@ -12,6 +12,7 @@
 import type { Provenance } from './parse';
 import type { CurveColor } from '$lib/grapheur/colors';
 import type { LineStyle } from '$lib/grapheur/types';
+import type { Domain } from '$lib/mathAST/domain/types';
 
 // =============================================================================
 // Types
@@ -141,6 +142,27 @@ export interface FunctionObject extends AtelierObjectBase {
 	 */
 	readonly letter?: string;
 	/**
+	 * L'ensemble sur lequel l'élève a défini la fonction (`f(x) = x^2 sur [0;+∞[`),
+	 * tel qu'il l'a ÉCRIT après « sur » — texte ou LaTeX selon `provenance`, relu
+	 * par `parseStudentDomain` (`interval.ts`). Absent = définie sur son domaine ;
+	 * `sur ℝ` n'est pas rangé.
+	 */
+	readonly interval?: string;
+	/**
+	 * L'ensemble HÉRITÉ des fonctions que la définition cite (`g(x) = f(x) + 1`
+	 * avec f sur [0 ; +∞[, décision d du 2026-10-13) : recalculé à chaque passage
+	 * (`citedIntervals`), jamais sauvegardé. L'ensemble de la fonction est son
+	 * intersection avec `interval` (`intervalDomainOf`).
+	 */
+	readonly inheritedInterval?: Domain;
+	/**
+	 * Carte `f⁻¹` seulement : l'intervalle I tapé dans `.réciproque f sur I`, sur
+	 * lequel f est inversée — CROISÉ avec celui de f à chaque recalcul. Absent =
+	 * celui de f (ou son domaine). L'`interval` de la carte, lui, est son ensemble de départ f(I),
+	 * recalculé avec la formule (`reciprocal.ts`), jamais rangé.
+	 */
+	readonly reciprocalOn?: string;
+	/**
 	 * Réglages d'affichage. Absents tant que la fonction n'a jamais été tracée :
 	 * ils naissent au premier tracé, puis survivent au retrait (§1 L1).
 	 */
@@ -188,6 +210,12 @@ export interface SequenceDisplay {
 export interface ListObject extends AtelierObjectBase {
 	readonly kind: 'list';
 	/**
+	 * Sa colonne dans la grille de la vue Données, 0 à 25 (A à Z) : une liste EST
+	 * une colonne nommée (tableur intégré, T1). Ses cellules sont les entrées de
+	 * `definition`, une par ligne (`grid.ts`).
+	 */
+	readonly column: number;
+	/**
 	 * Le nom de la liste qui sert d'ORDONNÉES quand celle-ci est tracée.
 	 *
 	 * ⚠️ État d'affichage, comme `plotted`, et il vit ici pour la même raison :
@@ -200,6 +228,17 @@ export interface ListObject extends AtelierObjectBase {
 	readonly values: readonly number[];
 	/** Nombre d'entrées écartées, pour pouvoir le signaler (§4 E1). */
 	readonly skipped: number;
+	/**
+	 * La ligne de la grille (1, 2…) de chaque élément de `values` — ou de
+	 * `categories` pour une liste qualitative. Deux listes s'associent PAR
+	 * LIGNE (décision P1) : voir `pairs.ts`.
+	 */
+	readonly rows: readonly number[];
+	/**
+	 * Tableur, lot 2 : le nombre de cellules de sa colonne dont la FORMULE est en
+	 * erreur — leurs lignes n'ont pas de valeur. Absent sans formule en erreur.
+	 */
+	readonly formulaErrors?: number;
 	/**
 	 * Liste QUALITATIVE (Q84) : une modalité par entrée, dans l'ordre, chacune
 	 * écrite comme sa première occurrence (Q85). Absent pour une liste de
@@ -232,6 +271,9 @@ export const MAX_LISTS = 8;
  */
 export const MAX_DEFINITION_LENGTH = 4000;
 
+/** Longueur d'un ensemble écrit après « sur » (`interval.ts`) : saisie, sauvegarde, lien. */
+export const MAX_INTERVAL_LENGTH = 200;
+
 /** Liste qualitative (Q91) : modalités distinctes, longueur d'une modalité */
 export const MAX_CATEGORIES = 20;
 export const MAX_CATEGORY_LENGTH = 40;
@@ -261,4 +303,71 @@ export function isQualitative(
 	list: ListObject
 ): list is ListObject & { categories: readonly string[] } {
 	return list.categories !== undefined;
+}
+
+// =============================================================================
+// Fonction à paramètre (V56)
+// =============================================================================
+
+/**
+ * Les paramètres d'une fonction « à paramètre » : en attente de VALEURS
+ * seulement (`f(x) = a x`, `a` non posé → `['a']`). `null` pour tout autre
+ * objet — une fonction prête, ou en attente d'une FONCTION (`missing` en
+ * `as: 'function'`), dont l'expression ne vaut rien sans elle (V56).
+ * ⚠️ `p(x) = q(x)+1`, q inconnu, n'en est PAS : l'atelier lit `q(x)` comme
+ * le produit q·x, et q comme une valeur — p est donc à paramètre q.
+ */
+export function parametersOf(object: AtelierObject): readonly string[] | null {
+	if (object.kind !== 'function' || object.status !== 'pending') return null;
+	const missing = object.missing ?? [];
+	if (missing.length === 0 || missing.some((m) => m.as !== 'value')) return null;
+	return missing.map((m) => m.name);
+}
+
+/**
+ * « Le résultat dépend de a : donne-lui une valeur (a = 2) pour l'étudier. » —
+ * le refus d'une commande, ou d'un bouton de la carte, que le paramètre
+ * empêche de conclure (V56, V57).
+ */
+export function dependsOnMessage(parameters: readonly string[]): string {
+	const letters = lettersText(parameters);
+	// Une lettre grecque ne se définit pas dans l'atelier (`α = 2` est lu comme un
+	// test d'égalité, mesuré le 2026-10-14) : pas d'exemple qui mènerait nulle part
+	const definable = parameters.find((name) => GREEK_LETTERS[name] === undefined);
+	if (definable === undefined) {
+		const them = parameters.length === 1 ? 'la par un nombre' : 'les par des nombres';
+		return `Le résultat dépend de ${letters} : remplace-${them} pour l'étudier.`;
+	}
+	const pronoun = parameters.length === 1 ? 'lui' : 'leur';
+	return `Le résultat dépend de ${letters} : donne-${pronoun} une valeur (${definable} = 2) pour l'étudier.`;
+}
+
+/** Les lettres grecques que le moteur nomme en toutes lettres (`\alpha` → `alpha`). */
+const GREEK_LETTERS: Readonly<Record<string, string>> = {
+	alpha: 'α',
+	beta: 'β',
+	gamma: 'γ',
+	delta: 'δ',
+	epsilon: 'ε',
+	theta: 'θ',
+	lambda: 'λ',
+	mu: 'μ',
+	rho: 'ρ',
+	sigma: 'σ',
+	tau: 'τ',
+	phi: 'φ',
+	omega: 'ω'
+};
+
+/** Une lettre telle que l'élève l'a écrite : `α`, pas `alpha` (revue, 2026-10-14). */
+function letterText(letter: string): string {
+	return GREEK_LETTERS[letter] ?? letter;
+}
+
+/** `a`, `a et b`, `a, b et t` — lettres grecques en symboles. */
+export function lettersText(letters: readonly string[]): string {
+	const shown = letters.map(letterText);
+	return shown.length === 1
+		? shown[0]
+		: `${shown.slice(0, -1).join(', ')} et ${shown[shown.length - 1]}`;
 }

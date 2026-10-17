@@ -453,6 +453,140 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 			dimension: 'currency',
 			name: 'dollar'
 		}
+	],
+	// =========== INFORMATION (2026-10-13) ===========
+	// Nommées une à une, sans préfixe SI générique : `mo` (milli-octet) n'existe
+	// pas. Multiples décimaux (ko = 1 000 o) et binaires (Kio = 1 024 o) ; le bit
+	// vaut 1/8 d'octet.
+	[
+		'o',
+		{
+			symbol: 'o',
+			baseSymbol: 'o',
+			coefficient: 1,
+			dimension: 'information',
+			name: 'octet'
+		}
+	],
+	[
+		'ko',
+		{
+			symbol: 'ko',
+			baseSymbol: 'o',
+			coefficient: 1000,
+			dimension: 'information',
+			name: 'kilooctet'
+		}
+	],
+	[
+		'Mo',
+		{
+			symbol: 'Mo',
+			baseSymbol: 'o',
+			coefficient: 1000000,
+			dimension: 'information',
+			name: 'mégaoctet'
+		}
+	],
+	[
+		'Go',
+		{
+			symbol: 'Go',
+			baseSymbol: 'o',
+			coefficient: 1000000000,
+			dimension: 'information',
+			name: 'gigaoctet'
+		}
+	],
+	[
+		'To',
+		{
+			symbol: 'To',
+			baseSymbol: 'o',
+			coefficient: 1000000000000,
+			dimension: 'information',
+			name: 'téraoctet'
+		}
+	],
+	[
+		'Kio',
+		{
+			symbol: 'Kio',
+			baseSymbol: 'o',
+			coefficient: 1024,
+			dimension: 'information',
+			name: 'kibioctet'
+		}
+	],
+	[
+		'Mio',
+		{
+			symbol: 'Mio',
+			baseSymbol: 'o',
+			coefficient: 1024 ** 2,
+			dimension: 'information',
+			name: 'mébioctet'
+		}
+	],
+	[
+		'Gio',
+		{
+			symbol: 'Gio',
+			baseSymbol: 'o',
+			coefficient: 1024 ** 3,
+			dimension: 'information',
+			name: 'gibioctet'
+		}
+	],
+	[
+		'Tio',
+		{
+			symbol: 'Tio',
+			baseSymbol: 'o',
+			coefficient: 1024 ** 4,
+			dimension: 'information',
+			name: 'tébioctet'
+		}
+	],
+	[
+		'bit',
+		{
+			symbol: 'bit',
+			baseSymbol: 'o',
+			coefficient: 1 / 8,
+			dimension: 'information',
+			name: 'bit'
+		}
+	],
+	[
+		'kbit',
+		{
+			symbol: 'kbit',
+			baseSymbol: 'o',
+			coefficient: 1e3 / 8,
+			dimension: 'information',
+			name: 'kilobit'
+		}
+	],
+	[
+		'Mbit',
+		{
+			symbol: 'Mbit',
+			baseSymbol: 'o',
+			coefficient: 1e6 / 8,
+			dimension: 'information',
+			name: 'mégabit'
+		}
+	],
+	[
+		'Gbit',
+		{
+			symbol: 'Gbit',
+			baseSymbol: 'o',
+			coefficient: 1e9 / 8,
+			dimension: 'information',
+			name: 'gigabit'
+		}
 	]
 ]);
 
@@ -690,6 +824,11 @@ export const UNIT_ALIASES: ReadonlyMap<string, string> = new Map([
 	['EUR', '€'],
 	['dollar', '$'],
 
+	// Information
+	['octet', 'o'],
+	['octets', 'o'],
+	['bits', 'bit'],
+
 	// Volume
 	['litre', 'L'],
 	['litres', 'L'],
@@ -908,6 +1047,9 @@ export const UNIT_FAMILIES: Readonly<Record<string, readonly string[]>> = {
 
 	// Luminous intensity (candela - no common alternatives)
 	cd: ['cd'],
+
+	// Information (octet-based) : les multiples décimaux, ceux qu'affichent les appareils
+	o: ['To', 'Go', 'Mo', 'ko', 'o'],
 
 	// Currency
 	'€': ['€'],

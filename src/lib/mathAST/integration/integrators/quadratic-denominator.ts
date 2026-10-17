@@ -2,8 +2,9 @@
  * Dénominateur trinôme NON factorisé (x² − 4x + 3, 2x² − 2, x² − a²) :
  * factorisation par les racines, puis décomposition en éléments simples.
  *
- * - racines rationnelles (Δ carré parfait) : le dénominateur est réécrit
- *   a(x − r₁)(x − r₂) ou a(x − r)², puis confié à la décomposition existante ;
+ * - racines rationnelles (Δ carré parfait) : le dénominateur est réécrit à
+ *   facteurs entiers k(q₁x − p₁)(q₂x − p₂) ou k(qx − p)², puis confié à la
+ *   décomposition existante ;
  * - racines littérales simples (x² − t², t² − x²) : formule des résidus
  *   F = Σ N(rᵢ)/D′(rᵢ) · ln|x − rᵢ| (racines simples) ;
  * - Δ < 0 (décision de David du 2026-10-08) : αx + β = (α/2a)·D′ + k, d'où
@@ -43,10 +44,11 @@ import {
 	mulRational,
 	subRational,
 	divRational,
-	negRational,
-	addRational
+	negRational
 } from '../../normal/rational';
 import { extractQuadraticCoefficients } from '../../solve/solvers/quadratic';
+import { integerNthRoot } from '../../normal/radical';
+import { integerLinearFactorNode, quadraticRootParts, toPolynomial } from '../../factor';
 import { differentiate } from '../../differentiation';
 import { substitute } from '../../eval/substitute';
 import { lnAbsRule } from '../rules';
@@ -75,19 +77,10 @@ export type QuadraticFactorization =
 // Outils
 // =============================================================================
 
-function bigintSqrt(value: bigint): bigint | null {
-	if (value < 0n) return null;
-	const root = BigInt(Math.round(Math.sqrt(Number(value))));
-	for (const candidate of [root - 1n, root, root + 1n]) {
-		if (candidate >= 0n && candidate * candidate === value) return candidate;
-	}
-	return null;
-}
-
-/** √r si r est le carré d'un rationnel */
+/** √r si r est le carré d'un rationnel (racine entière exacte du noyau) */
 function rationalSqrt(r: Rational): Rational | null {
-	const n = bigintSqrt(r.n);
-	const d = bigintSqrt(r.d);
+	const n = r.n < 0n ? null : integerNthRoot(r.n, 2n);
+	const d = integerNthRoot(r.d, 2n);
 	return n === null || d === null ? null : rational(n, d);
 }
 
@@ -111,52 +104,54 @@ function squareRoot(
 	return null;
 }
 
-/** x − r (x + |r| si r < 0, x si r = 0) */
-export function linearFactor(variable: string, root: Rational): MathNode {
-	const x = variableNode(variable);
-	const sign = isSign(root);
-	if (sign === 0) return x;
-	return sign > 0 ? subtract(x, rationalToNode(root)) : add(x, rationalToNode(negRational(root)));
-}
-
 // =============================================================================
 // Factorisation
 // =============================================================================
 
-/** Factorisation d'un trinôme ax² + bx + c en `variable`, ou null */
+/**
+ * Factorisation d'un trinôme ax² + bx + c en `variable`, ou null. Coefficients
+ * rationnels : lus et tranchés par le noyau `factor/` (ADR 0024) — écriture
+ * quelconque (`x(x − 5) + 6`, `(2x − 1)(2x + 1)`), racines exactes par Δ.
+ * Coefficient littéral : seul `ax² − t²` est reconnu (racines ±t/√a).
+ */
 export function factorQuadratic(
 	denominator: MathNode,
 	variable: string
 ): QuadraticFactorization | null {
+	const poly = toPolynomial(denominator, variable);
+	if (poly !== null) {
+		if (poly.length !== 3) return null;
+		const [c, b, a] = poly;
+		const parts = quadraticRootParts(a, b, c, 0n);
+		switch (parts.kind) {
+			case 'none': {
+				const fourAC = mulRational(rational(4n, 1n), mulRational(a, c));
+				return {
+					kind: 'negative-discriminant',
+					a,
+					b,
+					minusDelta: subRational(fourAC, mulRational(b, b))
+				};
+			}
+			case 'double':
+				return { kind: 'rational-roots', leading: a, roots: [parts.root] };
+			case 'rational':
+				// (−b − √Δ)/2a d'abord : l'ordre des termes de la primitive en dépend
+				return {
+					kind: 'rational-roots',
+					leading: a,
+					roots: isSign(a) > 0 ? parts.roots : [parts.roots[1], parts.roots[0]]
+				};
+			default:
+				return null; // racines irrationnelles : refus
+		}
+	}
+
 	const coefficients = extractQuadraticCoefficients(denominator, variable);
 	if (coefficients === null) return null;
 	const a = extractExactRational(coefficients.a);
 	const b = extractExactRational(coefficients.b);
 	if (a === null || a.n === 0n || b === null) return null;
-	const c = extractExactRational(coefficients.c);
-
-	if (c !== null) {
-		// Δ = b² − 4ac ; racines (−b ± √Δ) / 2a
-		const delta = subRational(mulRational(b, b), mulRational(rational(4n, 1n), mulRational(a, c)));
-		if (isSign(delta) < 0) {
-			return { kind: 'negative-discriminant', a, b, minusDelta: negRational(delta) };
-		}
-		const sqrtDelta = rationalSqrt(delta);
-		if (sqrtDelta === null) return null;
-		const twoA = mulRational(rational(2n, 1n), a);
-		const minusB = negRational(b);
-		if (isSign(delta) === 0) {
-			return { kind: 'rational-roots', leading: a, roots: [divRational(minusB, twoA)] };
-		}
-		return {
-			kind: 'rational-roots',
-			leading: a,
-			roots: [
-				divRational(subRational(minusB, sqrtDelta), twoA),
-				divRational(addRational(minusB, sqrtDelta), twoA)
-			]
-		};
-	}
 
 	// ax² − t² (a > 0) ou −ax² + t² : racines ±t/√|a|
 	if (b.n !== 0n) return null;
@@ -171,7 +166,13 @@ export function factorQuadratic(
 	return { kind: 'literal-roots', roots: [t, opposite(t)] };
 }
 
-/** a(x − r₁)(x − r₂) ou a(x − r)² */
+/**
+ * Le dénominateur factorisé à coefficients ENTIERS (ADR 0024, décision de
+ * David du 2026-10-12) : k(q₁x − p₁)(q₂x − p₂) ou k(qx − p)², rᵢ = pᵢ/qᵢ,
+ * k = a/(q₁q₂) — `4x² − 1` s'écrit `(2x - 1)(2x + 1)`, `2x² − 2` s'écrit
+ * `2(x - 1)(x + 1)`. La décomposition (`partial-fractions.ts`) lit ces
+ * facteurs `px + q` et intègre A/(px + q) en (A/p) ln|px + q|.
+ */
 export function factoredDenominator(
 	variable: string,
 	leading: Rational,
@@ -179,11 +180,16 @@ export function factoredDenominator(
 ): MathNode {
 	const product =
 		roots.length === 1
-			? power(linearFactor(variable, roots[0]), number('2'))
-			: multiply(linearFactor(variable, roots[0]), linearFactor(variable, roots[1]), 'implicit');
-	return leading.n === 1n && leading.d === 1n
-		? product
-		: multiply(rationalToNode(leading), product, 'implicit');
+			? power(integerLinearFactorNode(variable, roots[0]), number('2'))
+			: multiply(
+					integerLinearFactorNode(variable, roots[0]),
+					integerLinearFactorNode(variable, roots[1]),
+					'implicit'
+				);
+	// k = a / Π qᵢ^multiplicité
+	const scale = roots.length === 1 ? roots[0].d * roots[0].d : roots[0].d * roots[1].d;
+	const k = divRational(leading, rational(scale, 1n));
+	return k.n === 1n && k.d === 1n ? product : multiply(rationalToNode(k), product, 'implicit');
 }
 
 // =============================================================================

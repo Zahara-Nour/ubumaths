@@ -405,72 +405,6 @@ export const hypDoubleAngleExpansionRules: Rule[] = [
 ];
 
 // ============================================================================
-// FACTORIZATION RULES (4) - excluded from simplify
-// ============================================================================
-
-export const hypFactorizationRules: Rule[] = [
-	// sinh(a) + sinh(b) → 2sinh((a+b)/2)cosh((a-b)/2)
-	createRule(
-		P.add(P.func('sinh', [P._('a')]), P.func('sinh', [P._('b')])),
-		(b) => {
-			const a = get(b, 'a');
-			const bNode = get(b, 'b');
-			return multiply(
-				number('2'),
-				multiply(sinh(halveExpr(add(a, bNode))), cosh(halveExpr(subtract(a, bNode))), 'implicit'),
-				'implicit'
-			);
-		},
-		{ name: 'sinh-plus-sinh' }
-	),
-
-	// sinh(a) - sinh(b) → 2cosh((a+b)/2)sinh((a-b)/2)
-	createRule(
-		P.sub(P.func('sinh', [P._('a')]), P.func('sinh', [P._('b')])),
-		(b) => {
-			const a = get(b, 'a');
-			const bNode = get(b, 'b');
-			return multiply(
-				number('2'),
-				multiply(cosh(halveExpr(add(a, bNode))), sinh(halveExpr(subtract(a, bNode))), 'implicit'),
-				'implicit'
-			);
-		},
-		{ name: 'sinh-minus-sinh' }
-	),
-
-	// cosh(a) + cosh(b) → 2cosh((a+b)/2)cosh((a-b)/2)
-	createRule(
-		P.add(P.func('cosh', [P._('a')]), P.func('cosh', [P._('b')])),
-		(b) => {
-			const a = get(b, 'a');
-			const bNode = get(b, 'b');
-			return multiply(
-				number('2'),
-				multiply(cosh(halveExpr(add(a, bNode))), cosh(halveExpr(subtract(a, bNode))), 'implicit'),
-				'implicit'
-			);
-		},
-		{ name: 'cosh-plus-cosh' }
-	),
-
-	// cosh(a) - cosh(b) → 2sinh((a+b)/2)sinh((a-b)/2)
-	createRule(
-		P.sub(P.func('cosh', [P._('a')]), P.func('cosh', [P._('b')])),
-		(b) => {
-			const a = get(b, 'a');
-			const bNode = get(b, 'b');
-			return multiply(
-				number('2'),
-				multiply(sinh(halveExpr(add(a, bNode))), sinh(halveExpr(subtract(a, bNode))), 'implicit'),
-				'implicit'
-			);
-		},
-		{ name: 'cosh-minus-cosh' }
-	)
-];
-
-// ============================================================================
 // HALF ANGLE FORMULAS (3) - excluded from simplify
 // ============================================================================
 
@@ -586,21 +520,4 @@ export const hypSimplifyRules: Rule[] = [
 	...hypPythagoreanRules.filter((r) => SIMPLIFY_PYTHAGOREAN.has(r.name)),
 	...hypQuotientRules.filter((r) => SIMPLIFY_QUOTIENT.has(r.name)),
 	coshOverSinhSimplify
-];
-
-/**
- * All hyperbolic identity rules (for targeted transformations)
- */
-export const allHyperbolicRules: Rule[] = [
-	...hypDoubleAngleRules,
-	...hypPowerReductionRules,
-	...hypPythagoreanRules,
-	...hypQuotientRules,
-	...hypLinearizationRules,
-	...hypNegativeArgumentRules,
-	...hypAdditionRules,
-	...hypDoubleAngleExpansionRules,
-	...hypFactorizationRules,
-	...hypHalfAngleRules,
-	...hypHigherPowerRules
 ];

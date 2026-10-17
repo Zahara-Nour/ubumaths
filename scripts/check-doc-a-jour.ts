@@ -14,8 +14,18 @@
  * - `--depuis <ref>` (sur une PR) : une doc qui couvre un fichier modifié depuis
  *   <ref> doit être modifiée aussi, sauf si un commit de la PR porte une ligne
  *   `Doc-inchangée: <raison>` (refactor sans changement de comportement…).
+ *   « Doc d'abord » : une PR qui touche une zone sans doc (un trou) écrit la doc
+ *   de la zone, sauf si un commit porte `Doc-reportée: <raison>` (zone trop
+ *   grosse au regard du changement : David tranche, skill doc-a-jour §5).
  * - `--couverture` : chaque fichier de code est couvert par une doc, exclu, ou
- *   listé comme trou connu (scripts/doc-a-jour.config.ts).
+ *   listé comme trou connu (scripts/doc-a-jour.config.ts) ; et un trou dont la
+ *   zone est déjà décrite par une doc (ou qui ne désigne plus rien) sort de la
+ *   liste.
+ *
+ * Seul `couvre:` compte : une doc qui cite un fichier dans un index sans le
+ * décrire ne le couvre pas. Jusqu'au 2026-10-12, une clé `indexe:` comptait
+ * pour la couverture : un glob d'index (`src/lib/server/*.ts`) avalait en silence
+ * chaque module neuf, que « doc d'abord » ne voyait jamais.
  *
  * La garde dit qu'une doc a été revue au moment du changement ; qu'elle dise
  * vrai relève du skill doc-a-jour et de la relecture.
@@ -37,8 +47,6 @@ export interface DocCoverage {
 	doc: string;
 	/** Le code que la doc DÉCRIT : une PR qui le modifie modifie la doc. */
 	couvre: string[];
-	/** Le code que la doc RECENSE seulement (un index) : compte pour la couverture. */
-	indexe?: string[];
 }
 
 export interface CoverageConfig {
@@ -55,12 +63,21 @@ export interface MissingDoc {
 	files: string[];
 }
 
+export interface TouchedHole {
+	/** La zone, telle que `trous` la nomme. */
+	note: string;
+	files: string[];
+}
+
+type Hole = CoverageConfig['trous'][number];
+
 // ============================================================================
 // CONSTANTES
 // ============================================================================
 
 const DOC_ROOTS = ['docs/systeme/', 'docs/pratiques/'];
 const EXEMPTION = /^Doc-inchangée:[ \t]*\S/m;
+const DEFERRAL = /^Doc-reportée:[ \t]*\S/m;
 
 // ============================================================================
 // FONCTIONS
@@ -69,8 +86,9 @@ const EXEMPTION = /^Doc-inchangée:[ \t]*\S/m;
 const matchesAny = (file: string, globs: string[]): boolean =>
 	globs.some((glob) => matchesGlob(file, glob));
 
-/** Liste `<clé>:` de l'en-tête YAML d'une doc (forme bloc ou en ligne). */
-function parseList(markdown: string, key: string): string[] {
+/** Le code qu'une doc décrit : liste `couvre:` de son en-tête YAML (forme bloc ou en ligne). */
+export function parseCouvre(markdown: string): string[] {
+	const key = 'couvre';
 	const header = markdown.match(/^---\n([\s\S]*?)\n---/);
 	if (!header) return [];
 	const lines = header[1].split('\n');
@@ -88,11 +106,11 @@ function parseList(markdown: string, key: string): string[] {
 	return globs;
 }
 
-/** Le code qu'une doc décrit (`couvre:`). */
-export const parseCouvre = (markdown: string): string[] => parseList(markdown, 'couvre');
-
-/** Le code qu'une doc recense sans le décrire (`indexe:`). */
-export const parseIndexe = (markdown: string): string[] => parseList(markdown, 'indexe');
+/** Ce que l'en-tête d'une doc déclare, tel que la garde le lit. */
+export const readDoc = (doc: string, markdown: string): DocCoverage => ({
+	doc,
+	couvre: parseCouvre(markdown)
+});
 
 const isGuarded = (file: string, config: CoverageConfig): boolean =>
 	matchesAny(file, config.scope) && !matchesAny(file, config.excluded);
@@ -116,19 +134,47 @@ export function hasDocExemption(commitMessages: string[]): boolean {
 	return commitMessages.some((m) => EXEMPTION.test(m));
 }
 
-/** Fichiers de code couverts par aucune doc, hors exclus et trous connus. */
+/** Un commit porte-t-il une ligne `Doc-reportée: <raison>` ? */
+export function hasDocDeferral(commitMessages: string[]): boolean {
+	return commitMessages.some((m) => DEFERRAL.test(m));
+}
+
+/** Fichier gardé qu'aucune doc ne décrit. */
+const isUndescribed = (file: string, docs: DocCoverage[], config: CoverageConfig): boolean =>
+	isGuarded(file, config) && !docs.some((d) => matchesAny(file, d.couvre));
+
+/** Doc d'abord : les zones sans doc qu'une PR touche, fichiers groupés par zone. */
+export function holesTouched(
+	changed: string[],
+	docs: DocCoverage[],
+	config: CoverageConfig
+): TouchedHole[] {
+	const byNote = new Map<string, string[]>();
+	for (const file of changed) {
+		if (!isUndescribed(file, docs, config)) continue;
+		const hole = config.trous.find((t) => matchesGlob(file, t.glob));
+		if (!hole) continue;
+		const files = byNote.get(hole.note) ?? [];
+		files.push(file);
+		byNote.set(hole.note, files);
+	}
+	return [...byNote].map(([note, files]) => ({ note, files }));
+}
+
+/** Trous périmés : leur glob ne désigne plus aucun fichier gardé que nulle doc ne décrit. */
+export function staleHoles(files: string[], docs: DocCoverage[], config: CoverageConfig): Hole[] {
+	const undescribed = files.filter((f) => isUndescribed(f, docs, config));
+	return config.trous.filter((t) => !undescribed.some((f) => matchesGlob(f, t.glob)));
+}
+
+/** Fichiers de code qu'aucune doc ne décrit, hors exclus et trous connus. */
 export function uncoveredFiles(
 	files: string[],
 	docs: DocCoverage[],
 	config: CoverageConfig
 ): string[] {
 	const trous = config.trous.map((t) => t.glob);
-	return files.filter(
-		(f) =>
-			isGuarded(f, config) &&
-			!matchesAny(f, trous) &&
-			!docs.some((d) => matchesAny(f, [...d.couvre, ...(d.indexe ?? [])]))
-	);
+	return files.filter((f) => isUndescribed(f, docs, config) && !matchesAny(f, trous));
 }
 
 function git(root: string, args: string[]): string {
@@ -139,11 +185,8 @@ function loadDocs(root: string): DocCoverage[] {
 	return git(root, ['ls-files', '-z', '--', ...DOC_ROOTS])
 		.split('\0')
 		.filter((f) => f.endsWith('.md') && existsSync(resolve(root, f)))
-		.map((doc) => {
-			const markdown = readFileSync(resolve(root, doc), 'utf-8');
-			return { doc, couvre: parseCouvre(markdown), indexe: parseIndexe(markdown) };
-		})
-		.filter((d) => d.couvre.length > 0 || d.indexe.length > 0);
+		.map((doc) => readDoc(doc, readFileSync(resolve(root, doc), 'utf-8')))
+		.filter((d) => d.couvre.length > 0);
 }
 
 function main(): void {
@@ -163,6 +206,18 @@ function main(): void {
 			console.log(
 				'   → ajouter le fichier au `couvre:` de la doc qui le décrit (docs/README.md),\n' +
 					'     ou, s’il n’en a pas encore, à `trous` dans scripts/doc-a-jour.config.ts.'
+			);
+			failed = true;
+		}
+		const stale = staleHoles(files, docs, COVERAGE_CONFIG);
+		if (stale.length > 0) {
+			console.log(
+				`⛔ Trous périmés : ${stale.length} entrée(s) de \`trous\` sans code à documenter :`
+			);
+			console.log(stale.map((t) => `   ${t.glob}  (${t.note})`).join('\n'));
+			console.log(
+				'   → une doc décrit déjà toute la zone, ou le glob ne désigne plus rien :\n' +
+					'     retirer l’entrée de `trous` dans scripts/doc-a-jour.config.ts.'
 			);
 			failed = true;
 		}
@@ -192,6 +247,32 @@ function main(): void {
 			console.log(
 				'   → mettre la doc à jour (skill doc-a-jour), ou, si le comportement décrit ne change pas,\n' +
 					'     ajouter à un commit une ligne `Doc-inchangée: <raison>`.'
+			);
+			failed = true;
+		}
+
+		// Supprimer du code d'une zone sans doc ne demande pas d'écrire sa doc
+		const kept = git(root, ['diff', '--name-only', '--diff-filter=d', `${base}...HEAD`])
+			.split('\n')
+			.filter(Boolean);
+		const holes = holesTouched(kept, docs, COVERAGE_CONFIG);
+		if (holes.length === 0) {
+			console.log('🔍 Doc d’abord : aucune zone sans doc touchée.');
+		} else if (hasDocDeferral(messages)) {
+			console.log(
+				`🔍 Doc d’abord : ${holes.length} zone(s) sans doc touchée(s), report « Doc-reportée » présent.`
+			);
+		} else {
+			console.log(`⛔ Doc d’abord : ${holes.length} zone(s) sans doc touchée(s) par cette PR :`);
+			for (const h of holes) {
+				console.log(
+					`   ${h.note}  ←  ${h.files.slice(0, 5).join(', ')}${h.files.length > 5 ? ', …' : ''}`
+				);
+			}
+			console.log(
+				'   → écrire d’abord la doc de la zone et la retirer de `trous` (skill doc-a-jour §5) ;\n' +
+					'     zone trop grosse au regard du changement : demander à David, et s’il reporte,\n' +
+					'     ajouter à un commit une ligne `Doc-reportée: <raison>`.'
 			);
 			failed = true;
 		}

@@ -18,22 +18,24 @@ const simp = (s: string) => toLatex(simplify(parseLatex(s)).result);
 const norm = (s: string) => toLatex(denormalize(normalize(parseLatex(s))));
 const hash = (s: string) => normalize(parseLatex(s)).hash;
 
+// La lettre `i` est lue `complex(0, 1)` et s'écrit `\\imaginaryI` (décision de David du
+// 2026-10-11) ; elle se range comme π et e, devant les lettres (`\\pi a`).
 describe('simplify garde i dans un produit', () => {
 	it.each([
-		['a i', 'a i'],
-		['i a', 'a i'],
-		['a i b', 'a b i'],
-		['x i', 'i x'],
-		['i x^2', 'i x^2'],
-		['-a i', '-a i'],
-		['\\frac{2ai}{2}', 'a i'],
-		['a(i)', 'a i'],
-		['e i', '\\exponentialE i'],
-		['\\pi i', '\\pi i'],
-		['2 a i', '2 a i'],
-		['a i + a i', '2 a i'],
-		['3 i', '3 i'],
-		['\\frac{i}{2}', '\\dfrac{i}{2}'],
+		['a i', '\\imaginaryI a'],
+		['i a', '\\imaginaryI a'],
+		['a i b', '\\imaginaryI a b'],
+		['x i', '\\imaginaryI x'],
+		['i x^2', '\\imaginaryI x^2'],
+		['-a i', '-\\imaginaryI a'],
+		['\\frac{2ai}{2}', '\\imaginaryI a'],
+		['a(i)', '\\imaginaryI a'],
+		['e i', '\\exponentialE \\imaginaryI'],
+		['\\pi i', '\\imaginaryI \\pi'],
+		['2 a i', '2 \\imaginaryI a'],
+		['a i + a i', '2 \\imaginaryI a'],
+		['3 i', '3 \\imaginaryI'],
+		['\\frac{i}{2}', '\\dfrac{\\imaginaryI}{2}'],
 		['i^2', '-1']
 	])('%s → %s', (input, expected) => {
 		expect(simp(input)).toBe(expected);

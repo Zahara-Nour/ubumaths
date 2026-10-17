@@ -4,12 +4,12 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireSpreadsheetUser } from '$lib/server/spreadsheet-access';
 import { error } from '@sveltejs/kit';
 import { validateUuidParam } from '$lib/server/validation/params';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-	const { user } = await requireRole(locals, 'student');
+	const { user } = await requireSpreadsheetUser(locals);
 	const id = validateUuidParam(params.id);
 
 	// Fetch full spreadsheet data

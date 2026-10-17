@@ -13,6 +13,9 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/bug-report-screenshots');
 
 const BUCKET_NAME = 'bug-report-screenshots';
 
@@ -49,7 +52,7 @@ export async function signBugReportScreenshots<T extends SignableReport>(
 				.createSignedUrl(report.screenshot_path, expiresIn);
 
 			if (error || !data?.signedUrl) {
-				console.warn(
+				logger.warn(
 					`[bug-report-screenshots] Failed to sign ${report.screenshot_path}:`,
 					error?.message ?? 'no signed URL returned'
 				);

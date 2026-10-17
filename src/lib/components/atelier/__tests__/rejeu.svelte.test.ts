@@ -3,12 +3,13 @@
  * `docs/archive/wip/atelier-suppression-export-phase0.md` (R1, R2, E1).
  */
 
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { CalcDesk } from '$lib/atelier/desk.svelte';
 import { historyToJson } from '$lib/atelier/history-export';
+import { CALC_HISTORY_STORAGE_KEY } from '$lib/atelier/history-storage';
 
 // =============================================================================
 // Décor
@@ -45,6 +46,9 @@ function dialogButton(label: string): HTMLButtonElement | undefined {
 }
 
 afterEach(() => localStorage.removeItem(KEY));
+// Les lignes de Calcul rangées par le test d'avant (rangées au démontage, qui
+// précède ce `beforeEach`) : sans ça, le rejeu demanderait confirmation
+beforeEach(() => localStorage.removeItem(CALC_HISTORY_STORAGE_KEY));
 
 // =============================================================================
 // Comportements

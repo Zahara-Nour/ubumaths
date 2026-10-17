@@ -7,7 +7,7 @@
 	de l'application, pas de connexion suggérée.
 
 	La composition du PDF se fait DANS LE NAVIGATEUR (Typst.js) : la génération
-	serveur n'existe pas (`api/worksheets/[id]/pdf` répond 501). Ça tombe bien —
+	serveur n'existe pas (l'ancienne route `api/worksheets/[id]/pdf`, qui répondait 501, est retirée). Ça tombe bien —
 	le lecteur n'a pas de compte, et rien n'a besoin d'être calculé pour lui.
 
 	`variant="reader"` : voir et télécharger, rien d'autre. Ce n'est pas qu'une
@@ -15,9 +15,8 @@
 	onglets de source n'ont aucun sens pour une famille.
 -->
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from '@lucide/svelte';
 	import PdfPreview from '$lib/components/worksheets/PdfPreview.svelte';
 	import type { WorksheetWithRelations } from '$lib/types/worksheets';
 	import type { PageData } from './$types';
@@ -36,10 +35,7 @@
 
 <div class="mx-auto w-full max-w-4xl space-y-6 p-4">
 	<header class="space-y-3">
-		<Button variant="ghost" size="sm" href="/cahier/{data.token}">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour au cahier de texte
-		</Button>
+		<BackLink href={`/cahier/${data.token}`} label="Retour au cahier de texte" class="mb-0" />
 		<div>
 			<h1 class="text-2xl font-bold">{worksheet.title}</h1>
 			{#if worksheet.description}

@@ -4,6 +4,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { listActiveTournamentsSchema } from '$lib/server/validation/minesweeper-tournament';
 import { sanitizePostgresError } from '$lib/server/utils/error-handler';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/games/minesweeper/tournaments/active/+server');
 
 /**
  * List active tournaments for the current student
@@ -142,8 +145,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 					// panne doit se distinguer d'un refus mérité.
 					if (tournamentClassesError && tournamentClassesError.code !== 'PGRST116') {
-						console.error('Contrôle d’accès impossible :', tournamentClassesError);
-						throw error(500, 'Impossible de vérifier votre accès');
+						logger.error('Contrôle d’accès impossible :', tournamentClassesError);
+						throw error(500, 'Impossible de vérifier l’accès');
 					}
 
 					const tournamentClassIds = (tournamentClasses || []).map((tc) => tc.class_id);
@@ -162,7 +165,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					.eq('student_id', user.id);
 
 				if (gamesError) {
-					console.error('[MINESWEEPER_TOURNAMENT_ACTIVE_GAMES]', gamesError);
+					logger.error('[MINESWEEPER_TOURNAMENT_ACTIVE_GAMES]', gamesError);
 				}
 
 				const myGames = games || [];
@@ -179,7 +182,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 				// laisse une trace.
 				if (standingError) {
-					console.error('Enrichissement illisible :', standingError);
+					logger.error('Enrichissement illisible :', standingError);
 				}
 
 				const myAverageScore = standing?.average_score ? Math.round(standing.average_score) : null;

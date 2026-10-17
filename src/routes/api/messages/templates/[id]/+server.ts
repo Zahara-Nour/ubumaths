@@ -12,6 +12,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { validateTemplate } from '$lib/templates/templateEngine';
 import { updateMessageTemplateSchema, validateRequest } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/templates/[id]/+server');
 
 // =====================================================
 // GET - Get template details
@@ -78,8 +81,8 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		logger.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	if (!profile) {
@@ -106,12 +109,12 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 
 	// Teachers cannot modify system templates
 	if (isSystemTemplate && !isAdmin) {
-		return error(403, 'Vous ne pouvez pas modifier un template système');
+		return error(403, 'Un template système ne peut pas être modifié');
 	}
 
 	// Non-admin, non-owner cannot modify
 	if (!isAdmin && !isOwner) {
-		return error(403, 'Vous ne pouvez modifier que vos propres templates');
+		return error(403, 'Modification réservée à l’auteur du template');
 	}
 
 	// ====================================================================
@@ -180,12 +183,12 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (classDataError && classDataError.code !== 'PGRST116') {
-				console.error('Contrôle d’accès impossible :', classDataError);
-				return error(500, 'Impossible de vérifier votre accès');
+				logger.error('Contrôle d’accès impossible :', classDataError);
+				return error(500, 'Impossible de vérifier l’accès');
 			}
 
 			if (!classData) {
-				return error(403, 'Vous ne pouvez utiliser que vos propres classes');
+				return error(403, 'Utilisation réservée aux classes du professeur');
 			}
 		}
 	}
@@ -204,7 +207,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (updateError) {
-		console.error('Error updating template:', updateError);
+		logger.error('Error updating template:', updateError);
 		return error(500, 'Erreur lors de la mise à jour du template');
 	}
 
@@ -235,8 +238,8 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		logger.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	if (!profile) {
@@ -261,19 +264,19 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	// Teachers cannot delete system templates
 	if (isSystemTemplate && !isAdmin) {
-		return error(403, 'Vous ne pouvez pas supprimer un template système');
+		return error(403, 'Un template système ne peut pas être supprimé');
 	}
 
 	// Non-admin, non-owner cannot delete
 	if (!isAdmin && !isOwner) {
-		return error(403, 'Vous ne pouvez supprimer que vos propres templates');
+		return error(403, 'Suppression réservée à l’auteur du template');
 	}
 
 	// Delete template
 	const { error: deleteError } = await supabase.from('message_templates').delete().eq('id', id);
 
 	if (deleteError) {
-		console.error('Error deleting template:', deleteError);
+		logger.error('Error deleting template:', deleteError);
 		return error(500, 'Erreur lors de la suppression du template');
 	}
 

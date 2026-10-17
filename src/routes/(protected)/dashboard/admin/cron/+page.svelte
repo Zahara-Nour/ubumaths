@@ -158,7 +158,8 @@
 
 	function getJobPath(jobName: string): string {
 		const pathMap: Record<string, string> = {
-			auto_select_daily_riddle: '/api/riddles/auto-select-daily',
+			auto_select_daily_riddle: '/api/cron/riddle-of-the-day',
+			deleted_account_files: '/api/cron/deleted-account-files',
 			// pg_cron jobs (triggered via RPC, not HTTP)
 			cleanup_all: 'rpc:run_cleanup_all',
 			cleanup_stale_trades: 'rpc:cleanup_stale_trades',

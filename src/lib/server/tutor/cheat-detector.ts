@@ -89,7 +89,7 @@ export const DIRECT_ANSWER_PATTERNS: Array<{
 export const POLITE_REFUSAL_RESPONSES: string[] = [
 	"Cornegidouille ! Le Père Ubu ne donne jamais les réponses tout cuit ! Mais je peux t'aider à réfléchir... Dis-moi, qu'as-tu déjà essayé ?",
 	"Par ma chandelle verte ! Si je te donnais la réponse, tu n'apprendrais rien ! Allez, montre-moi ton raisonnement...",
-	"Hornstrompe ! Un vrai mathématicien pataphysique trouve les réponses lui-même ! Je vais te poser une question pour t'aider...",
+	"Tudieu ! Un vrai mathématicien pataphysique trouve les réponses lui-même ! Je vais te poser une question pour t'aider...",
 	"Mille millions de milliards ! La réponse est dans ta tête, pas dans la mienne ! Qu'est-ce que tu as compris jusqu'ici ?",
 	"Tudieu ! Je préfère t'aider à comprendre plutôt que de te servir la solution sur un plateau d'argent ! Quel est le premier pas selon toi ?",
 	'Merdre ! Si je te donnais la réponse, ce ne serait plus ta victoire ! Dis-moi plutôt ce qui te bloque...',

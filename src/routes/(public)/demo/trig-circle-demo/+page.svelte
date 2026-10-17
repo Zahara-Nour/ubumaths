@@ -5,6 +5,7 @@
 	Demonstrates the trigonometric circle markdown tool with various configurations.
 -->
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Circle } from '@lucide/svelte';
@@ -161,6 +162,7 @@ color: red
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
+	<BackLink href="/demo" label="Retour aux démos" />
 	<!-- Hero Section -->
 	<div class="mb-12 text-center">
 		<div class="mb-4 inline-flex items-center justify-center">
@@ -252,10 +254,5 @@ color: red
 				</Card.Content>
 			</Card.Root>
 		{/each}
-	</div>
-
-	<!-- Back link -->
-	<div class="mt-12 text-center">
-		<a href="/demo" class="text-primary hover:underline">← Retour aux démos</a>
 	</div>
 </div>

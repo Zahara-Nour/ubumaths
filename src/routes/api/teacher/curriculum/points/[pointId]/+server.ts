@@ -19,6 +19,9 @@ import { curriculumDbError } from '$lib/server/curriculum';
 import { PROGRAMME_POINT_COLS } from '$lib/server/programme-tree';
 import type { ProgrammePoint } from '$lib/types/database-helpers';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/curriculum/points/[pointId]/+server');
 
 const pointIdSchema = z.string().uuid('Identifiant de point invalide');
 
@@ -51,7 +54,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		.maybeSingle();
 
 	if (readErr) {
-		console.error('[curriculum] point PATCH read failed:', readErr);
+		logger.error('[curriculum] point PATCH read failed:', readErr);
 		return json({ error: 'Impossible de lire ce point' }, { status: 500 });
 	}
 	const found = existing as { id: string; node_id: string | null } | null;
@@ -84,7 +87,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		console.error('[curriculum] point PATCH failed:', dbErr);
+		logger.error('[curriculum] point PATCH failed:', dbErr);
 		return json({ error: 'Échec de la mise à jour du point' }, { status: 500 });
 	}
 	if (!data) {

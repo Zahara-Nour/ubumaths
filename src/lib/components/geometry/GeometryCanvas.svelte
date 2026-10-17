@@ -1,6 +1,8 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import ElementPopover from './ElementPopover.svelte';
 	import SliderControl from './SliderControl.svelte';
+	import type { Snippet } from 'svelte';
 	import type { InlineNode } from '$lib/ubumark';
 	import { parseMarkdown } from '$lib/ubumark';
 	import { convertLatexToMarkup } from 'mathlive';
@@ -94,6 +96,19 @@
 		 * with the user's zoom/pan state. The viewport object is in math coords.
 		 */
 		onViewportChange?: (viewport: Viewport, pixelsPerUnit: number) => void;
+		/**
+		 * false : aucun objet ne se déplace à la souris (points, vecteurs, étiquettes,
+		 * textes, images) et le double-clic n'ouvre plus le panneau de style ; les
+		 * curseurs, le déplacement de la vue et le zoom restent actifs (figure
+		 * stockée `deplacable: non`). Défaut true.
+		 */
+		objectsMovable?: boolean;
+		/**
+		 * Calque dessiné SOUS les objets (repère d'une figure stockée), recalculé à
+		 * chaque déplacement ou zoom de la vue. Son contenu doit être du SVG
+		 * (composant en `<svelte:options namespace="svg" />`).
+		 */
+		underlay?: Snippet<[{ viewport: Viewport; width: number; height: number }]>;
 	}
 
 	let {
@@ -110,7 +125,9 @@
 		externalVersion = 0,
 		hiddenElementIds,
 		renderMode = 'normal',
-		onViewportChange
+		onViewportChange,
+		objectsMovable = true,
+		underlay
 	}: Props = $props();
 
 	// Langue du contenu (séparateur décimal des étiquettes), posée par MarkdownRenderer
@@ -167,8 +184,13 @@
 	let spaceHeld = $state(false);
 
 	// Zoom limits
-	const MIN_PPU = 5;
-	const MAX_PPU = 200;
+	// Bornes élargies autour de l'échelle initiale : une fenêtre d'en-tête de
+	// 100 unités (4 px par unité) doit pouvoir encore dézoomer, une fenêtre d'une
+	// unité (400 px par unité) rezoomer. Inchangées à 40 px par unité.
+	// svelte-ignore state_referenced_locally
+	const MIN_PPU = Math.min(5, initialPpu / 4);
+	// svelte-ignore state_referenced_locally
+	const MAX_PPU = Math.max(200, initialPpu * 4);
 
 	// Viewport derived from center + pixelsPerUnit + SVG size.
 	let viewport: Viewport = $derived({
@@ -377,6 +399,9 @@
 			e.preventDefault();
 			return;
 		}
+
+		// Objets figés (`deplacable: non`) : seule la vue se déplace
+		if (!objectsMovable) return;
 
 		const math = getMathCoords(e);
 		if (!math) return;
@@ -681,7 +706,7 @@
 	// ─── Double-click: open popover ─────────────────────────────────
 
 	function onDblClick(e: MouseEvent) {
-		if (!interactive) return;
+		if (!interactive || !objectsMovable) return;
 		const math = getMathCoords(e as unknown as PointerEvent);
 		if (!math) return;
 
@@ -716,7 +741,7 @@
 	);
 
 	function onLabelPointerDown(e: PointerEvent, elementId: string) {
-		if (!interactive) return;
+		if (!interactive || !objectsMovable) return;
 		e.stopPropagation();
 		e.preventDefault();
 
@@ -829,6 +854,11 @@
 			</g>
 		{/if}
 
+		<!-- Calque sous les objets (repère d'une figure stockée) -->
+		{#if underlay}
+			<g class="underlay">{@render underlay({ viewport, width, height })}</g>
+		{/if}
+
 		<!-- Elements -->
 		<g class="elements">
 			<!-- Background images (couche="fond") — rendered behind all constructions -->
@@ -836,7 +866,7 @@
 				{#if el.type === 'image' && el.layer === 'fond'}
 					{@const svg = imageToSVG(el.id, figure, transformer)}
 					{@const sty = resolveScreenStyle(el, figure.defaults)}
-					{@const isDraggable = !!el.position}
+					{@const isDraggable = objectsMovable && !!el.position}
 					{#if svg}
 						{@const imgCx = svg.x + svg.width / 2}
 						{@const imgCy = svg.y + (svg.height ?? svg.width) / 2}
@@ -1791,7 +1821,7 @@
 								style:fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && 'draggable' in el && el.draggable}
+								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
@@ -1805,14 +1835,14 @@
 								stroke-width={sty.strokeWidth}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && 'draggable' in el && el.draggable}
+								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
 						{:else if sty.pointShape === 'cross'}
 							<g
 								class="point"
-								class:draggable={interactive && 'draggable' in el && el.draggable}
+								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 								opacity={sty.opacity}
@@ -1843,7 +1873,7 @@
 								style:fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && 'draggable' in el && el.draggable}
+								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
@@ -1924,7 +1954,7 @@
 				{#if el.type === 'text'}
 					{@const svg = textToSVG(el.id, figure, transformer)}
 					{@const sty = resolveScreenStyle(el, figure.defaults)}
-					{@const isDraggable = !!el.position}
+					{@const isDraggable = objectsMovable && !!el.position}
 					{#if svg}
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<g
@@ -1977,7 +2007,7 @@
 			{#each elements as el (`${el.id}_mtxt_${version}`)}
 				{#if el.type === 'mathText'}
 					{@const svg = textToSVG(el.id, figure, transformer)}
-					{@const isDraggable = !!el.position}
+					{@const isDraggable = objectsMovable && !!el.position}
 					{#if svg}
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<g
@@ -2016,7 +2046,7 @@
 			{#each elements as el (`${el.id}_rtxt_${version}`)}
 				{#if el.type === 'richText'}
 					{@const svg = textToSVG(el.id, figure, transformer)}
-					{@const isDraggable = !!el.position}
+					{@const isDraggable = objectsMovable && !!el.position}
 					{#if svg}
 						{@const inlineNodes = parseInlineNodes(svg.text)}
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -2052,7 +2082,7 @@
 				{#if el.type === 'image' && el.layer !== 'fond'}
 					{@const svg = imageToSVG(el.id, figure, transformer)}
 					{@const sty = resolveScreenStyle(el, figure.defaults)}
-					{@const isDraggable = !!el.position}
+					{@const isDraggable = objectsMovable && !!el.position}
 					{#if svg}
 						{@const imgCx2 = svg.x + svg.width / 2}
 						{@const imgCy2 = svg.y + (svg.height ?? svg.width) / 2}

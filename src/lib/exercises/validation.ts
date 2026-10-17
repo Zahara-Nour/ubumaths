@@ -91,6 +91,8 @@ const exerciseVariationSchema = z.object({
 	label: z.string(),
 	statement_md: z.string(),
 	solution_md: z.string(),
+	// Réponses seules : sans la clé, l'export puis l'import les perdraient
+	answers_md: z.string().max(50000).optional(),
 	variables: z.array(variableSchema).optional(),
 	hints: z.array(exerciseHintSchema).optional()
 });
@@ -102,6 +104,22 @@ const sharedExerciseDefaultsSchema = z.object({
 	variables: z.array(variableSchema).optional(),
 	statement_md: z.string().optional(),
 	solution_md: z.string().optional()
+});
+
+/**
+ * Ressource jointe à un exercice exporté : mêmes règles que le schéma d'écriture
+ * (`src/lib/server/validation/exercises.ts`) — adresse http(s) seulement, ce qui
+ * refuse `javascript:` et `mailto:` que `z.string().url()` seul accepte.
+ */
+const exportResourceSchema = z.object({
+	type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image']),
+	url: z
+		.string()
+		.url()
+		.max(2000)
+		.refine((url) => /^https?:\/\//i.test(url), 'Adresse http(s) attendue'),
+	title: z.string().trim().min(1).max(200),
+	description: z.string().trim().max(500).optional()
 });
 
 /**
@@ -175,7 +193,22 @@ const exerciseExportSchemaV2 = z.object({
 
 	// Variations system
 	variations: z.array(exerciseVariationSchema).optional(),
-	shared: sharedExerciseDefaultsSchema.optional()
+	shared: sharedExerciseDefaultsSchema.optional(),
+
+	// Réglages de l'exercice portés par l'export (pas le slug : il doit rester
+	// unique, l'import en génère un). Mêmes bornes que l'API d'écriture.
+	generic_functions: z
+		.array(
+			z
+				.string()
+				.min(1)
+				.regex(/^[a-zA-Z][a-zA-Z0-9_]*$/, 'Nom de fonction invalide')
+		)
+		.max(50)
+		.nullable()
+		.optional(),
+	resources: z.array(exportResourceSchema).max(20).nullable().optional(),
+	distribution_mode: z.enum(['on_demand', 'per_student', 'per_group']).optional()
 });
 
 /**

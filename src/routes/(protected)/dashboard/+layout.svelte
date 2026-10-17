@@ -37,7 +37,7 @@
 	import { page } from '$app/state';
 	import { navigating } from '$app/stores';
 	import { Sun, Moon, Minus, Plus, Maximize, Minimize, Menu } from '@lucide/svelte';
-	import { getNavLinks, getZoneTitle } from '$lib/config/dashboard-nav';
+	import { getNavLinks, getZoneTitle, isNavLinkActive } from '$lib/config/dashboard-nav';
 	import { submitLogoutForm } from '$lib/utils/auth';
 	import { resolve } from '$app/paths';
 	import { Button } from '$lib/components/ui/button';
@@ -110,46 +110,9 @@
 	let mainLinks = $derived(allLinks.filter((l) => !l.footer));
 	let footerLinks = $derived(allLinks.filter((l) => l.footer));
 
-	// Check if a link is active
+	// Lien surligné de la barre latérale (règles dans $lib/config/dashboard-nav.ts)
 	function isActive(href: string) {
-		// For debug pages, match any /dashboard/admin/debug/* route
-		if (href === '/dashboard/admin/debug/database') {
-			return page.url.pathname.startsWith('/dashboard/admin/debug');
-		}
-		// For docs pages, match any /dashboard/admin/docs/* route
-		if (href === '/dashboard/admin/docs') {
-			return page.url.pathname.startsWith('/dashboard/admin/docs');
-		}
-		// For contenu pages (templates, exercices, enigmes, worksheets)
-		if (href === '/dashboard/teacher/contenu') {
-			return page.url.pathname.startsWith('/dashboard/teacher/contenu');
-		}
-		// For gamification pages (rewards, vip-cards, marketplace)
-		if (href === '/dashboard/teacher/gamification') {
-			return page.url.pathname.startsWith('/dashboard/teacher/gamification');
-		}
-		// For moderation pages, match any /dashboard/teacher/moderation/* route
-		if (href === '/dashboard/teacher/moderation') {
-			return page.url.pathname.startsWith('/dashboard/teacher/moderation');
-		}
-		// For "Mon travail", highlight on the inbox page itself AND on any
-		// downstream page the inbox links to (worksheets is the only one whose
-		// student-facing list lives under /dashboard/student/*).
-		if (href === '/dashboard/student/work') {
-			return (
-				page.url.pathname.startsWith('/dashboard/student/work') ||
-				page.url.pathname.startsWith('/dashboard/student/worksheets')
-			);
-		}
-		// For bug reports page, match /dashboard/bug-reports
-		if (href === '/dashboard/bug-reports') {
-			return page.url.pathname.startsWith('/dashboard/bug-reports');
-		}
-		// For admin bug reports page
-		if (href === '/dashboard/admin/bug-reports') {
-			return page.url.pathname.startsWith('/dashboard/admin/bug-reports');
-		}
-		return page.url.pathname === href;
+		return isNavLinkActive(href, page.url.pathname);
 	}
 
 	// Get role-specific background color
@@ -513,7 +476,11 @@
 		<!-- For /dashboard, this renders +page.svelte which shows role-specific dashboards -->
 		<!-- For /dashboard/classes, this would render classes/+page.svelte, etc. -->
 		<!-- NOTE: min-h-0 is required for overflow-y-auto to work in a flex container -->
-		<main class="dashboard-content min-h-0 flex-1 overflow-y-auto bg-background">
+		<main
+			id="contenu-principal"
+			tabindex="-1"
+			class="dashboard-content min-h-0 flex-1 overflow-y-auto bg-background focus:outline-none"
+		>
 			<!-- Notification Banner (sticky at top) -->
 			{#if !isFullWidthRoute}
 				<NotificationBanner />

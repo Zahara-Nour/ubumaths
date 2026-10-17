@@ -21,6 +21,9 @@ import {
 } from '$lib/server/marketplace/notifications';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/listings/[id]/proposals/+server');
 
 // Refus d'auto-acceptation qui ne sont pas des pannes (cf. autoAcceptExactProposalSchema)
 const REFUS_PREVUS = new Set(['not_exact', 'busy', 'cards_unavailable']);
@@ -62,7 +65,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	}
 
 	if (listing.creator_id !== userId) {
-		throw error(403, 'Vous ne pouvez pas voir les propositions de cette annonce');
+		throw error(403, 'Consultation des propositions de cette annonce non autorisée');
 	}
 
 	// ⚠️ Plus de `vip_cards` ici. L'inventaire complet de chaque proposant était
@@ -86,7 +89,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (proposalsError) {
-		console.error('Error fetching proposals:', proposalsError);
+		logger.error('Error fetching proposals:', proposalsError);
 		throw error(500, 'Erreur lors de la récupération des propositions');
 	}
 
@@ -112,7 +115,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// Ces cartes composent la moitié du résumé d'échange. Une carte non résolue
 	// disparaît de l'offre : mieux vaut une erreur qu'un troc falsifié.
 	if (resolutionError) {
-		console.error('[marketplace] Cartes de l’annonce illisibles :', resolutionError);
+		logger.error('[marketplace] Cartes de l’annonce illisibles :', resolutionError);
 		throw error(500, 'Impossible de lire les cartes de l’annonce');
 	}
 
@@ -134,7 +137,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (templatesError) {
-			console.error('Enrichissement illisible :', templatesError);
+			logger.error('Enrichissement illisible :', templatesError);
 		}
 		if (templates) {
 			for (const t of templates) templateNameMap.set(t.id, t.name);
@@ -233,7 +236,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// Check if marketplace is enabled
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
-		throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		throw error(403, "Le marketplace n'est pas activé pour cette classe");
 	}
 
 	// Verify listing exists and is active
@@ -252,14 +255,14 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	if (listing.creator_id === userId) {
-		throw error(403, 'Vous ne pouvez pas faire une proposition sur votre propre annonce');
+		throw error(403, 'Impossible de faire une proposition sur sa propre annonce');
 	}
 
 	// L'école est la frontière du marché : une annonce d'une autre école ne se
 	// propose pas, même si son identifiant est connu.
 	const proposerSchoolId = await getStudentSchoolId(supabase, userId);
 	if (!proposerSchoolId || listing.school_id !== proposerSchoolId) {
-		throw error(403, "Cette annonce n'est pas proposée dans votre école");
+		throw error(403, 'Cette annonce est proposée dans une autre école');
 	}
 
 	// Check if user already has a pending proposal for this listing
@@ -274,13 +277,13 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (existingProposalError && existingProposalError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', existingProposalError);
+		logger.error('Lecture impossible :', existingProposalError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
 	if (existingProposal) {
 		if (existingProposal.status === 'pending') {
-			throw error(403, 'Vous avez déjà une proposition en cours pour cette annonce');
+			throw error(403, 'Une proposition est déjà en cours pour cette annonce');
 		}
 		// Resubmission: reuse the rejected/withdrawn proposal record
 	}
@@ -289,7 +292,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	if (data.offered_card_ids.length > 0) {
 		const ownsCards = await validateCardOwnership(supabase, userId, data.offered_card_ids);
 		if (!ownsCards) {
-			throw error(403, 'Vous ne possédez pas toutes les cartes spécifiées');
+			throw error(403, 'Certaines des cartes spécifiées manquent dans la collection');
 		}
 	}
 
@@ -297,7 +300,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	if (data.offered_gidouilles > 0) {
 		const userGidouilles = await getStudentGidouilles(supabase, userId);
 		if (userGidouilles < data.offered_gidouilles) {
-			throw error(403, "Vous n'avez pas assez de gidouilles");
+			throw error(403, 'Gidouilles insuffisantes');
 		}
 	}
 
@@ -368,7 +371,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	if (proposalError) {
-		console.error('Error creating proposal:', proposalError);
+		logger.error('Error creating proposal:', proposalError);
 		throw error(500, 'Erreur lors de la création de la proposition');
 	}
 
@@ -402,7 +405,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 				.select('id');
 
 			if (suppressionError || !supprimee || supprimee.length === 0) {
-				console.error(
+				logger.error(
 					'[marketplace] Proposition non annulée après échec du verrouillage :',
 					suppressionError ?? 'aucune ligne supprimée'
 				);
@@ -426,7 +429,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	if (compteurError || !compteur || compteur.length === 0) {
 		// Compteur d'affichage : son échec ne défait pas la proposition, mais il se voit.
-		console.error(
+		logger.error(
 			'[marketplace] proposal_count non mis à jour :',
 			compteurError ?? 'aucune ligne modifiée'
 		);
@@ -448,7 +451,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		try {
 			refuses = await proposersRejectedByAcceptance(proposal.id);
 		} catch (e) {
-			console.error('Lecture impossible :', e);
+			logger.error('Lecture impossible :', e);
 			throw error(500, 'Impossible de charger les données');
 		}
 
@@ -471,7 +474,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// prévus. Tout autre refus est journalisé. Dans tous les cas, rien n'a bougé
 	// et la proposition reste en attente comme une proposition ordinaire.
 	if (!REFUS_PREVUS.has(acceptation.reason)) {
-		console.error('Auto-accept failed:', acceptation.reason, acceptation.error ?? '');
+		logger.error('Auto-accept failed:', acceptation.reason, acceptation.error ?? '');
 	}
 
 	// Normal flow: notify listing creator about new proposal

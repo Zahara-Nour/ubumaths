@@ -13,6 +13,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { MathCompetenceLevel } from '$lib/types/skills';
 import type { ClassStudent } from './class-knowledge';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/stats/class-competence');
 
 type SB = SupabaseClient<Database>;
 
@@ -68,7 +71,7 @@ export async function getClassCompetenceGrid(
 		.eq('status', 'active');
 
 	if (membersErr) {
-		console.error('[class-competence] class_members lookup failed:', membersErr);
+		logger.error('[class-competence] class_members lookup failed:', membersErr);
 		return {
 			students: [],
 			competences: [],
@@ -97,7 +100,7 @@ export async function getClassCompetenceGrid(
 		.order('display_order', { ascending: true });
 
 	if (compRowsError) {
-		console.error('[class-competence] Compétences illisibles :', compRowsError);
+		logger.error('[class-competence] Compétences illisibles :', compRowsError);
 		throw new Error(compRowsError.message);
 	}
 
@@ -126,7 +129,7 @@ export async function getClassCompetenceGrid(
 		.in('student_id', studentIds);
 
 	if (levelErr) {
-		console.error('[class-competence] student_competence_level lookup failed:', levelErr);
+		logger.error('[class-competence] student_competence_level lookup failed:', levelErr);
 	}
 
 	type LevelRow = {
@@ -188,7 +191,7 @@ export async function getClassTopObservablesToConsolidate(
 	// Une classe sans élève se lit « rien à consolider » : un satisfecit, pas
 	// une absence de donnée.
 	if (membersError) {
-		console.error('[class-competence] Élèves illisibles :', membersError);
+		logger.error('[class-competence] Élèves illisibles :', membersError);
 		throw new Error(membersError.message);
 	}
 
@@ -216,7 +219,7 @@ export async function getClassTopObservablesToConsolidate(
 		.in('student_id', studentIds);
 
 	if (stateErr) {
-		console.error('[class-competence] student_observable_state lookup failed:', stateErr);
+		logger.error('[class-competence] student_observable_state lookup failed:', stateErr);
 		return [];
 	}
 
@@ -262,7 +265,7 @@ export async function getClassTopObservablesToConsolidate(
 		.in('id', observedObservableIds);
 
 	if (observableRowsError) {
-		console.error('[class-competence] Indicateurs illisibles :', observableRowsError);
+		logger.error('[class-competence] Indicateurs illisibles :', observableRowsError);
 		throw new Error(observableRowsError.message);
 	}
 

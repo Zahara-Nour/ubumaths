@@ -40,6 +40,9 @@ import {
 	deleteStudentReportResponseSchema
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/reports/[reportId]/+server');
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// Auth check: Must be a student
@@ -81,7 +84,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 			.eq('student_id', user.id);
 
 		if (deleteError) {
-			console.error('[API] Error deleting report:', deleteError);
+			logger.error('[API] Error deleting report:', deleteError);
 			throw error(500, 'Erreur lors de la suppression du signalement');
 		}
 
@@ -99,7 +102,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in DELETE /api/student/reports/[reportId]:', err);
+		logger.error('[API] Unexpected error in DELETE /api/student/reports/[reportId]:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

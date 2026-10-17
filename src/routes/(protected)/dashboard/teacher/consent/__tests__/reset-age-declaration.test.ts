@@ -93,8 +93,7 @@ function makeEvent(supabase: unknown, studentId: string | null = STUDENT_ID) {
 async function run(event: never): Promise<{ status?: number; data?: unknown; thrown?: number }> {
 	try {
 		const result = (await actions.resetAgeDeclaration(event)) as
-			| { status: number; data: unknown }
-			| Record<string, unknown>;
+			{ status: number; data: unknown } | Record<string, unknown>;
 		if (result && typeof result === 'object' && 'status' in result) {
 			return { status: result.status as number, data: result.data };
 		}

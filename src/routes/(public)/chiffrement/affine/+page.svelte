@@ -45,8 +45,8 @@
 	<p>
 		Pour déchiffrer, il faut « diviser » par a, c’est-à-dire multiplier par son
 		<strong>inverse modulo 26</strong> : un nombre a′ tel que a × a′ laisse 1 dans la division par 26.
-		Il n’existe que si a est premier avec 26. Sinon, deux lettres différentes donnent la même lettre
-		chiffrée, et plus rien ne permet de revenir en arrière.
+		Il n’existe que si a est premier avec 26. Sinon, deux lettres différentes donnent la même lettre chiffrée,
+		et plus rien ne permet de revenir en arrière.
 	</p>
 </header>
 

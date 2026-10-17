@@ -7,9 +7,13 @@
  * méthodes HTTP, et l'y déclarer casse le build.
  *
  * Les URL partent du domaine canonique (`SITE_URL`), même servies depuis une
- * préproduction. Seuls les articles du Shtam portent un `lastmod`, leur date de
- * parution : dater les pages fixes du jour de la requête apprend à Google à
- * ignorer ce signal.
+ * préproduction. Seuls les articles du Shtam (date de parution) et les exercices
+ * (date de dernière modification) portent un `lastmod` : dater les pages fixes
+ * du jour de la requête apprend à Google à ignorer ce signal.
+ *
+ * Exercices : seuls ceux que leur auteur a cochés « Afficher sur Google »
+ * (`is_public AND search_indexed`), lus avec un client ANONYME. Une panne de la
+ * base sert le plan sans eux, jamais une 500.
  *
  * Son absence produisait un 404 à chaque passage de robot, qui alimentait le
  * bruit du monitoring de production.
@@ -20,6 +24,8 @@ import { SITEMAP_PAGES } from '$lib/seo/sitemap-pages';
 import { absoluteUrl } from '$lib/seo/site';
 import { allArticles, publishedArticles } from '$lib/server/shtam/articles';
 import { todayIsoInParis } from '$lib/server/shtam/present';
+import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
+import { fetchIndexedExercises } from '$lib/server/sitemap-exercises';
 import type { RequestHandler } from './$types';
 
 interface Entry {
@@ -37,7 +43,7 @@ function toXml({ path, priority, changefreq, lastmod }: Entry): string {
 	</url>`;
 }
 
-export const GET: RequestHandler = () => {
+export const GET: RequestHandler = async () => {
 	// Articles parus seulement : un brouillon ou un article daté de demain reste secret
 	const articles: Entry[] = publishedArticles(allArticles(), todayIsoInParis()).map((a) => ({
 		path: `/shtam/${a.slug}`,
@@ -46,9 +52,17 @@ export const GET: RequestHandler = () => {
 		lastmod: a.date
 	}));
 
+	// Exercices cochés « Afficher sur Google » ; liste vide en cas de panne
+	const exercises: Entry[] = (await fetchIndexedExercises(createAnonymousSupabase())).map((e) => ({
+		path: e.path,
+		priority: 0.5,
+		changefreq: 'monthly',
+		lastmod: e.lastmod
+	}));
+
 	const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...SITEMAP_PAGES, ...articles].map(toXml).join('\n')}
+${[...SITEMAP_PAGES, ...articles, ...exercises].map(toXml).join('\n')}
 </urlset>
 `;
 

@@ -1037,7 +1037,7 @@ def _chiphre_gen_inputs():
 
 _chiphre_args = _chiphre_gen_inputs()
 if not isinstance(_chiphre_args, tuple):
-    raise TypeError('Le générateur doit renvoyer un tuple d\\'arguments (utilise une virgule, ex: (x,))')
+    raise TypeError('Le générateur doit renvoyer un tuple d\\'arguments (une virgule est nécessaire, ex: (x,))')
 
 _chiphre_ref_args = _chiphre_copy.deepcopy(_chiphre_args)
 _chiphre_expected = _chiphre_ref_func(*_chiphre_ref_args)

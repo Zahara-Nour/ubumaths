@@ -15,6 +15,11 @@
  *
  * Toute fonction rend `null` quand elle ne sait pas faire EXACTEMENT : à
  * l'appelant de se rabattre sur le chemin historique ou de refuser.
+ *
+ * Depuis l'ADR 0024, la lecture (`toRationalFunction`), les racines
+ * rationnelles ±p/q et l'analyse de Δ vivent dans `factor/`, partagées avec le
+ * noyau de factorisation ; ce fichier garde l'écriture des racines en bornes
+ * (`rationalNode`, `surdNode`), le bicarré et les inéquations.
  */
 
 import type { MathNode } from '../types';
@@ -22,18 +27,13 @@ import type { Rational } from '../normal/types';
 import type { Domain, Interval } from './types';
 import type { Endpoint } from '$lib/math/intervals/types';
 import {
-	ZERO,
 	ONE,
-	addRational,
-	subRational,
-	mulRational,
+	ZERO,
 	divRational,
+	mulRational,
 	negRational,
 	isZero,
 	isNegative,
-	isInteger,
-	rational,
-	fromInteger,
 	lcm,
 	absBigInt,
 	rationalToNumber,
@@ -52,159 +52,21 @@ import {
 	emptyDomain,
 	universalDomain
 } from './factory';
+// Lecture exacte, arithmétique des polynômes, ±p/q et Δ : partagés avec le noyau
+// de factorisation (ADR 0024), qui les a repris d'ici
+import {
+	type Poly,
+	addPoly,
+	negPoly,
+	trimPoly,
+	evalPolyFloat,
+	toRationalFunction
+} from '../factor/polynomial';
+import { extractRationalRoots } from '../factor/rational-roots';
+import { quadraticRootParts } from '../factor/quadratic';
 
-// =============================================================================
-// Polynômes et fractions rationnelles à coefficients rationnels
-// =============================================================================
-
-/** Coefficients par degré croissant : `[c0, c1, c2…]`. */
-export type Poly = readonly Rational[];
-
-export interface RationalFunction {
-	readonly num: Poly;
-	readonly den: Poly;
-}
-
-/** Degré maximal accepté (au-delà, on ne cherche pas). */
-const MAX_DEGREE = 8;
-/** Plus grand |coefficient entier| dont on énumère les diviseurs. */
-const MAX_DIVISOR_SEARCH = 1_000_000n;
-
-function trim(p: Poly): Poly {
-	let end = p.length;
-	while (end > 0 && isZero(p[end - 1])) end--;
-	return p.slice(0, end);
-}
-
-function polyAdd(a: Poly, b: Poly): Poly {
-	const out: Rational[] = [];
-	for (let i = 0; i < Math.max(a.length, b.length); i++) {
-		out.push(addRational(a[i] ?? ZERO, b[i] ?? ZERO));
-	}
-	return trim(out);
-}
-
-function polyNeg(a: Poly): Poly {
-	return a.map(negRational);
-}
-
-function polyMul(a: Poly, b: Poly): Poly {
-	if (a.length === 0 || b.length === 0) return [];
-	const out: Rational[] = Array.from({ length: a.length + b.length - 1 }, () => ZERO);
-	for (let i = 0; i < a.length; i++) {
-		for (let j = 0; j < b.length; j++) {
-			out[i + j] = addRational(out[i + j], mulRational(a[i], b[j]));
-		}
-	}
-	return trim(out);
-}
-
-function degree(p: Poly): number {
-	return trim(p).length - 1;
-}
-
-function evalPoly(p: Poly, x: Rational): Rational {
-	let acc = ZERO;
-	for (let i = p.length - 1; i >= 0; i--) acc = addRational(mulRational(acc, x), p[i]);
-	return acc;
-}
-
-export function evalPolyFloat(p: Poly, x: number): number {
-	let acc = 0;
-	for (let i = p.length - 1; i >= 0; i--) acc = acc * x + rationalToNumber(p[i]);
-	return acc;
-}
-
-const CONST_ONE: RationalFunction = { num: [ONE], den: [ONE] };
-
-function rfMul(a: RationalFunction, b: RationalFunction): RationalFunction {
-	return { num: polyMul(a.num, b.num), den: polyMul(a.den, b.den) };
-}
-
-function rfAdd(a: RationalFunction, b: RationalFunction): RationalFunction {
-	return {
-		num: polyAdd(polyMul(a.num, b.den), polyMul(b.num, a.den)),
-		den: polyMul(a.den, b.den)
-	};
-}
-
-function rfNeg(a: RationalFunction): RationalFunction {
-	return { num: polyNeg(a.num), den: a.den };
-}
-
-function rfDiv(a: RationalFunction, b: RationalFunction): RationalFunction | null {
-	if (trim(b.num).length === 0) return null;
-	return { num: polyMul(a.num, b.den), den: polyMul(a.den, b.num) };
-}
-
-function rfDegreeOk(a: RationalFunction): boolean {
-	return degree(a.num) <= MAX_DEGREE && degree(a.den) <= MAX_DEGREE;
-}
-
-/**
- * Lit `expr` comme une fraction rationnelle en `variable` à coefficients
- * rationnels exacts. `null` dès qu'apparaît autre chose (fonction, π, autre
- * lettre, exposant non entier…).
- */
-export function toRationalFunction(expr: MathNode, variable: string): RationalFunction | null {
-	const result = toRF(expr, variable);
-	return result && rfDegreeOk(result) ? result : null;
-}
-
-function toRF(expr: MathNode, variable: string): RationalFunction | null {
-	switch (expr.type) {
-		case 'number': {
-			const r = extractRational(expr);
-			return r ? { num: trim([r]), den: [ONE] } : null;
-		}
-		case 'variable':
-			return expr.name === variable ? { num: [ZERO, ONE], den: [ONE] } : null;
-		case 'opposite': {
-			const inner = toRF(expr.operand, variable);
-			return inner ? rfNeg(inner) : null;
-		}
-		case 'positive':
-			return toRF(expr.operand, variable);
-		case 'delimiter':
-			// Seul le regroupement est transparent (pas un intervalle, un vecteur…)
-			return expr.semantic === undefined || expr.semantic === 'grouping'
-				? toRF(expr.content, variable)
-				: null;
-		case 'addition':
-		case 'subtraction': {
-			const l = toRF(expr.left, variable);
-			const r = toRF(expr.right, variable);
-			if (!l || !r) return null;
-			return rfAdd(l, expr.type === 'addition' ? r : rfNeg(r));
-		}
-		case 'multiplication': {
-			const l = toRF(expr.left, variable);
-			const r = toRF(expr.right, variable);
-			return l && r ? rfMul(l, r) : null;
-		}
-		case 'division': {
-			const l = toRF(expr.numerator, variable);
-			const r = toRF(expr.denominator, variable);
-			return l && r ? rfDiv(l, r) : null;
-		}
-		case 'superscript': {
-			const exponent = extractRational(expr.superscript);
-			if (!exponent || !isInteger(exponent)) return null;
-			const n = Number(exponent.n);
-			if (Math.abs(n) > MAX_DEGREE) return null;
-			const base = toRF(expr.base, variable);
-			if (!base) return null;
-			let acc: RationalFunction = CONST_ONE;
-			for (let i = 0; i < Math.abs(n); i++) {
-				acc = rfMul(acc, base);
-				if (!rfDegreeOk(acc)) return null;
-			}
-			return n >= 0 ? acc : rfDiv(CONST_ONE, acc);
-		}
-		default:
-			return null;
-	}
-}
+export { toRationalFunction, evalPolyFloat };
+export type { Poly, RationalFunction } from '../factor/polynomial';
 
 // =============================================================================
 // Racines exactes
@@ -224,50 +86,6 @@ export function rationalNode(r: Rational): MathNode {
 			? number(n.toString())
 			: divide(number(n.toString()), number(r.d.toString()), 'inline');
 	return negative ? opposite(body) : body;
-}
-
-function integerCoefficients(p: Poly): bigint[] {
-	let common = 1n;
-	for (const c of p) common = lcm(common, c.d);
-	return p.map((c) => (c.n * common) / c.d);
-}
-
-function divisors(n: bigint): bigint[] | null {
-	const a = absBigInt(n);
-	if (a === 0n || a > MAX_DIVISOR_SEARCH) return null;
-	const out: bigint[] = [];
-	for (let i = 1n; i * i <= a; i++) {
-		if (a % i === 0n) {
-			out.push(i);
-			if (i * i !== a) out.push(a / i);
-		}
-	}
-	return out;
-}
-
-/** Division synthétique de p par (x − r) ; r doit être racine. */
-function deflate(p: Poly, r: Rational): Poly {
-	const n = p.length - 1;
-	const out: Rational[] = Array.from({ length: n }, () => ZERO);
-	let carry = ZERO;
-	for (let i = n; i >= 1; i--) {
-		carry = addRational(p[i], mulRational(carry, r));
-		out[i - 1] = carry;
-	}
-	return trim(out);
-}
-
-/** Décompose un entier positif en k²·m, m sans facteur carré. */
-function squareFree(n: bigint): { k: bigint; m: bigint } {
-	let k = 1n;
-	let m = n;
-	for (let i = 2n; i * i <= m; i++) {
-		while (m % (i * i) === 0n) {
-			m /= i * i;
-			k *= i;
-		}
-	}
-	return { k, m };
 }
 
 /**
@@ -297,26 +115,25 @@ function surdNode(R: Rational, S: Rational, m: bigint, sign: 1 | -1): ExactRoot 
 	};
 }
 
-/** Racines réelles de a·x² + b·x + c (a ≠ 0), exactes. */
-function quadraticRoots(a: Rational, b: Rational, c: Rational): ExactRoot[] {
-	const delta = subRational(mulRational(b, b), mulRational(fromInteger(4), mulRational(a, c)));
-	if (isNegative(delta)) return [];
-	const twoA = mulRational(fromInteger(2), a);
-	const R = divRational(negRational(b), twoA);
-	if (isZero(delta)) return [{ value: rationalToNumber(R), node: rationalNode(R) }];
-	// √(p/q) = √(p·q)/q
-	const { k, m } = squareFree(delta.n * delta.d);
-	let S = divRational(rational(k, delta.d), twoA);
-	if (isNegative(S)) S = negRational(S);
-	if (m === 1n) {
-		const r1 = subRational(R, S);
-		const r2 = addRational(R, S);
-		return [
-			{ value: rationalToNumber(r1), node: rationalNode(r1) },
-			{ value: rationalToNumber(r2), node: rationalNode(r2) }
-		];
+/** Racines réelles de a·x² + b·x + c (a ≠ 0), exactes ; `null` si Δ n'a pas été réduit. */
+function quadraticRoots(a: Rational, b: Rational, c: Rational): ExactRoot[] | null {
+	const parts = quadraticRootParts(a, b, c);
+	switch (parts.kind) {
+		case 'none':
+			return [];
+		case 'double':
+			return [{ value: rationalToNumber(parts.root), node: rationalNode(parts.root) }];
+		case 'rational':
+			return parts.roots.map((r) => ({ value: rationalToNumber(r), node: rationalNode(r) }));
+		case 'surd':
+			return [
+				surdNode(parts.center, parts.offset, parts.radicand, -1),
+				surdNode(parts.center, parts.offset, parts.radicand, 1)
+			];
+		case 'irrational':
+			// Sans borne sur le radicande, n'arrive pas ; « pas exact » par prudence
+			return null;
 	}
-	return [surdNode(R, S, m, -1), surdNode(R, S, m, 1)];
 }
 
 /**
@@ -325,36 +142,12 @@ function quadraticRoots(a: Rational, b: Rational, c: Rational): ExactRoot[] {
  * simple), ou si le polynôme est nul.
  */
 export function exactRealRoots(poly: Poly): ExactRoot[] | null {
-	let p = trim(poly);
-	if (p.length === 0) return null;
+	const trimmed = trimPoly(poly);
+	if (trimmed.length === 0) return null;
 	const roots: ExactRoot[] = [];
-	const found: Rational[] = [];
 
-	// x = 0
-	while (p.length > 1 && isZero(p[0])) {
-		found.push(ZERO);
-		p = p.slice(1);
-	}
-
-	// Racines rationnelles ±p/q
-	if (p.length > 2) {
-		const ints = integerCoefficients(p);
-		const ps = divisors(ints[0]);
-		const qs = divisors(ints[ints.length - 1]);
-		if (ps && qs) {
-			for (const num of ps) {
-				for (const den of qs) {
-					for (const s of [1n, -1n]) {
-						const candidate = rational(s * num, den);
-						while (p.length > 1 && isZero(evalPoly(p, candidate))) {
-							found.push(candidate);
-							p = deflate(p, candidate);
-						}
-					}
-				}
-			}
-		}
-	}
+	// x = 0, puis racines rationnelles ±p/q, avec multiplicités (dédoublonnées plus bas)
+	const { roots: found, rest: p } = extractRationalRoots(trimmed);
 
 	for (const r of found) roots.push({ value: rationalToNumber(r), node: rationalNode(r) });
 
@@ -363,10 +156,13 @@ export function exactRealRoots(poly: Poly): ExactRoot[] | null {
 		const r = divRational(negRational(p[0]), p[1]);
 		roots.push({ value: rationalToNumber(r), node: rationalNode(r) });
 	} else if (d === 2) {
-		roots.push(...quadraticRoots(p[2], p[1], p[0]));
+		const quadratic = quadraticRoots(p[2], p[1], p[0]);
+		if (!quadratic) return null;
+		roots.push(...quadratic);
 	} else if (d === 4 && isZero(p[1]) && isZero(p[3])) {
 		// Bicarré : t = x², racines t rationnelles > 0 seulement
 		const ts = quadraticRoots(p[4], p[2], p[0]);
+		if (!ts) return null;
 		for (const t of ts) {
 			if (t.value < 0) continue;
 			const tr = extractRationalFromNode(t.node);
@@ -376,6 +172,7 @@ export function exactRealRoots(poly: Poly): ExactRoot[] | null {
 				continue;
 			}
 			const rootsOfT = quadraticRoots(ONE, ZERO, negRational(tr));
+			if (!rootsOfT) return null;
 			roots.push(...rootsOfT);
 		}
 	} else if (d >= 3) {
@@ -416,10 +213,10 @@ function dedupeSorted(roots: ExactRoot[]): ExactRoot[] {
 export function exactZeros(expr: MathNode, variable: string): ExactRoot[] | null {
 	const rf = toRationalFunction(expr, variable);
 	if (!rf) return null;
-	if (trim(rf.num).length === 0) return null; // identiquement nul
+	if (trimPoly(rf.num).length === 0) return null; // identiquement nul
 	const zeros = exactRealRoots(rf.num);
 	if (!zeros) return null;
-	const poles = trim(rf.den).length > 1 ? exactRealRoots(rf.den) : [];
+	const poles = trimPoly(rf.den).length > 1 ? exactRealRoots(rf.den) : [];
 	if (!poles) return null;
 	return zeros.filter((z) => !poles.some((p) => Math.abs(p.value - z.value) < 1e-12));
 }
@@ -439,8 +236,8 @@ export function solveRationalInequality(
 	const rf = toRationalFunction(expr, variable);
 	if (!rf) return null;
 	// g = P − c·Q ; signe de (P − cQ)/Q = signe de (P − cQ)·Q
-	const g = trim(polyAdd(rf.num, polyNeg(rf.den.map((c) => mulRational(c, bound)))));
-	const den = trim(rf.den);
+	const g = trimPoly(addPoly(rf.num, negPoly(rf.den.map((c) => mulRational(c, bound)))));
+	const den = trimPoly(rf.den);
 	const poles = den.length > 1 ? exactRealRoots(den) : [];
 	if (!poles) return null;
 	const equal = g.length === 0 ? [] : exactRealRoots(g);

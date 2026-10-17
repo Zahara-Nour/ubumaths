@@ -32,7 +32,7 @@ export const DOMAIN_RULE_DESCRIPTIONS: Readonly<Record<DomainRule, string>> = {
 	csc_constraint: 'La cosécante nécessite un argument différent de kπ (csc(x) ≠ kπ)',
 	power_constraint: 'Une puissance négative nécessite une base non nulle (u⁻ⁿ défini si u ≠ 0)',
 	even_root_constraint:
-		'Une racine paire nécessite un argument positif ou nul (u^(1/2n) défini si u ≥ 0)',
+		'Une racine paire nécessite un argument positif ou nul (ⁿ√u défini si u ≥ 0, n pair)',
 	arccosh_constraint:
 		"L'argument cosinus hyperbolique inverse nécessite u ≥ 1 (arccosh(u) défini si u ≥ 1)",
 	arctanh_constraint:
@@ -96,22 +96,34 @@ export function getDomainRuleDescription(rule: DomainRule): string {
 /**
  * Templates for generating contextual explanations.
  * Use with string interpolation to create specific messages.
+ *
+ * ⚠️ Les contraintes reçoivent `{expr}` en LaTeX (`toLatex`) et écrivent leurs
+ * formules entre `$…$` : la prose est rendue par `InlineMarkdown` (V25).
  */
 export const DOMAIN_RULE_TEMPLATES: Readonly<Record<DomainRule, string>> = {
-	sqrt_constraint: 'Pour que √({expr}) soit définie, il faut {expr} ≥ 0',
-	ln_constraint: 'Pour que ln({expr}) soit défini, il faut {expr} > 0',
-	log_constraint: 'Pour que log({expr}) soit défini, il faut {expr} > 0',
-	division_constraint: 'Pour que la division soit définie, il faut {expr} ≠ 0',
-	arcsin_constraint: 'Pour que arcsin({expr}) soit défini, il faut -1 ≤ {expr} ≤ 1',
-	arccos_constraint: 'Pour que arccos({expr}) soit défini, il faut -1 ≤ {expr} ≤ 1',
-	tan_constraint: 'Pour que tan({expr}) soit définie, il faut {expr} ≠ π/2 + kπ',
-	cot_constraint: 'Pour que cot({expr}) soit définie, il faut {expr} ≠ kπ',
-	sec_constraint: 'Pour que sec({expr}) soit définie, il faut {expr} ≠ π/2 + kπ',
-	csc_constraint: 'Pour que csc({expr}) soit définie, il faut {expr} ≠ kπ',
-	power_constraint: 'Pour que ({expr})⁻ⁿ soit définie, il faut {expr} ≠ 0',
-	even_root_constraint: 'Pour que ({expr})^(1/2n) soit définie, il faut {expr} ≥ 0',
-	arccosh_constraint: 'Pour que arccosh({expr}) soit défini, il faut {expr} ≥ 1',
-	arctanh_constraint: 'Pour que arctanh({expr}) soit défini, il faut -1 < {expr} < 1',
+	sqrt_constraint: 'Pour que $\\sqrt{{expr}}$ soit définie, il faut ${expr} \\geq 0$',
+	ln_constraint: 'Pour que $\\ln\\left({expr}\\right)$ soit défini, il faut ${expr} > 0$',
+	log_constraint: 'Pour que $\\log\\left({expr}\\right)$ soit défini, il faut ${expr} > 0$',
+	division_constraint: 'Pour que la division soit définie, il faut ${expr} \\neq 0$',
+	arcsin_constraint:
+		'Pour que $\\arcsin\\left({expr}\\right)$ soit défini, il faut $-1 \\leq {expr} \\leq 1$',
+	arccos_constraint:
+		'Pour que $\\arccos\\left({expr}\\right)$ soit défini, il faut $-1 \\leq {expr} \\leq 1$',
+	tan_constraint:
+		'Pour que $\\tan\\left({expr}\\right)$ soit définie, il faut ${expr} \\neq \\dfrac{\\pi}{2} + k\\pi$',
+	cot_constraint:
+		'Pour que $\\cot\\left({expr}\\right)$ soit définie, il faut ${expr} \\neq k\\pi$',
+	sec_constraint:
+		'Pour que $\\sec\\left({expr}\\right)$ soit définie, il faut ${expr} \\neq \\dfrac{\\pi}{2} + k\\pi$',
+	csc_constraint:
+		'Pour que $\\csc\\left({expr}\\right)$ soit définie, il faut ${expr} \\neq k\\pi$',
+	power_constraint:
+		'Pour que la puissance d’exposant négatif soit définie, il faut ${expr} \\neq 0$',
+	even_root_constraint: 'Pour que la racine paire soit définie, il faut ${expr} \\geq 0$',
+	arccosh_constraint:
+		'Pour que $\\operatorname{arccosh}\\left({expr}\\right)$ soit défini, il faut ${expr} \\geq 1$',
+	arctanh_constraint:
+		'Pour que $\\operatorname{arctanh}\\left({expr}\\right)$ soit défini, il faut $-1 < {expr} < 1$',
 	intersection: "Le domaine final est l'intersection de toutes les contraintes",
 	union: 'Le domaine est la réunion des intervalles {intervals}',
 	complement: 'On prend le complémentaire du domaine',

@@ -15,6 +15,7 @@ import type {
 	Rational
 } from './types';
 import type { MathNode } from '../types';
+import { formatPointNames } from '../common/point-names';
 import type { Unit } from '../units/types';
 
 // =============================================================================
@@ -101,6 +102,17 @@ export function hashMathNode(node: MathNode): string {
 		case 'hole':
 			return `H(${node.index})`;
 
+		// Longueur : ses deux points dans l'ordre canonique, donc `AB` et `BA` ont la
+		// même empreinte (décision Q2 du 2026-10-11 : même longueur pour la correction)
+		case 'segmentLength': {
+			const [from, to] = node.points.map((point) => formatPointNames([point])).sort();
+			return `SEG(${from}|${to})`;
+		}
+
+		// Nom de figure : les points dans l'ordre écrit (`ABC` n'est pas `ACB`)
+		case 'figureName':
+			return `FIG(${formatPointNames(node.points)})`;
+
 		case 'addition':
 			return `+(${hashMathNode(node.left)},${hashMathNode(node.right)})`;
 
@@ -178,9 +190,24 @@ export function hashMathNode(node: MathNode): string {
 		case 'logical-not':
 			return `LNOT(${hashMathNode(node.operand)})`;
 
-		default:
-			// Exhaustive check - should never reach
-			return 'UNKNOWN';
+		case 'signed-zero':
+			return `Z0(${node.sign})`;
+
+		// Chaque morceau : condition et valeur ; puis le « sinon », s'il existe
+		case 'piecewise': {
+			const pieces = node.pieces
+				.map((piece) => `${hashMathNode(piece.condition)}=>${hashMathNode(piece.value)}`)
+				.join(';');
+			const otherwise = node.otherwise === undefined ? '' : `|${hashMathNode(node.otherwise)}`;
+			return `PW(${pieces}${otherwise})`;
+		}
+
+		default: {
+			// Un type de nœud ajouté sans empreinte ne compile plus : deux nœuds
+			// différents ne doivent jamais partager une empreinte
+			const exhaustive: never = node;
+			throw new Error(`Nœud sans empreinte : ${(exhaustive as MathNode).type}`);
+		}
 	}
 }
 

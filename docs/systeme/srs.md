@@ -3,6 +3,7 @@ couvre:
   - 'src/lib/srs/**'
   - 'src/lib/server/srs/**'
   - 'src/lib/server/anti-fraud/**'
+  - src/lib/server/course-card-attempts.ts
   - 'src/lib/server/validation/{srs,skill-attempts,anti-fraud}.ts'
   - 'src/lib/components/srs/**'
   - 'src/lib/components/teacher/anti-fraud/**'
@@ -19,7 +20,7 @@ couvre:
 
 > Remplace les sept fichiers de [`srs/`](../archive/systeme-2026-06/srs/README.md) (juin 2026, archivés), écrits au temps de la
 > « famille A » du référentiel, abandonnée ([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)).
-> Vérifié contre le code le 2026-10-10.
+> Vérifié contre le code le 2026-10-11.
 
 ## À quoi ça sert
 
@@ -67,6 +68,14 @@ Quatre sortes de paquets :
 | `deck-copy.ts`             | Copie d'un paquet assigné : `planDeckCopies`, `planSectionCopies`, `resolveCardSection`, `findAssignedDeckCopy` (par `source_deck_id`, jamais par le nom).          |
 | `capacity-badge.ts`        | Badge de mémoire d'un point du programme : `templateToBadge`, `worstBadge`, `aggregateBadge` (purs), `computePointBadges` (lit la base).                            |
 
+Hors du dossier, `src/lib/server/course-card-attempts.ts` dit si une tentative porte sur une carte
+de cours, en lisant la base (`question_templates.options`), jamais l'instance envoyée par le
+client : `attemptSourceForTemplate` (source `student_self` ou `auto`, `api/skill-attempts`) ;
+`fetchCourseCardTemplateIds` (`api/tests/save`, au client service : la RLS cacherait à l'élève une
+carte repassée en brouillon) réessaie deux fois (150 puis 400 ms), puis lève
+`CourseCardLookupError` et la route répond 503 avant toute écriture ; `schoolDay` donne le jour
+civil à Paris, celui de `best-of-day.ts`.
+
 Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, `submitReviewSchema`,
 `dueCardsQuerySchema`, `chapterReviewSubmitSchema`…) et `src/lib/server/validation/skill-attempts.ts`.
 
@@ -96,7 +105,7 @@ Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, 
 
 - Élève, `src/routes/(protected)/dashboard/revisions/` : liste des paquets + une entrée par chapitre
   visible (`+page.server.ts`), `create/`, `decks/[id]/` (sections et cartes), `decks/[id]/study/`
-  (séance, `?states=`), `decks/programme/` (Programme en 4 sections), `chapitres/[chapterId]/`.
+  (séance, `?states=`, `?depuis=programme`), `decks/programme/` (Programme en 4 sections), `chapitres/[chapterId]/`.
 - Prof, `src/routes/(protected)/dashboard/teacher/srs/decks/` : `create/`, `[id]/edit/`,
   `[id]/assign/`, `[id]/assignments/` (copie de chaque élève par `findAssignedDeckCopy`).
 
@@ -106,7 +115,7 @@ Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, 
 `index.ts`. Validation : `src/lib/server/validation/anti-fraud.ts`. Routes :
 `api/admin/anti-fraud/run` (POST, admin), `api/teacher/classes/[classId]/anti-fraud/flags`
 (GET), `…/flags/[flagId]` (PATCH, « Marquer comme OK »), `…/anti-fraud/count` (GET), gardées
-par `requireTeacherOfClass`. UI : `src/lib/components/teacher/anti-fraud/`
+par `requireTeacherOfClass` (rôle `teacher` seul : le compte admin est refusé depuis le 2026-10-11). UI : `src/lib/components/teacher/anti-fraud/`
 (`AntiFraudFlagsList`, `FlagDetailsDialog`, `AntiFraudFilters`), onglet « Surveillance » de
 `dashboard/teacher/classes/[classId]/analytics`.
 
@@ -123,7 +132,10 @@ par `requireTeacherOfClass`. UI : `src/lib/components/teacher/anti-fraud/`
 - `review_history` (JSONB) garde chaque révision ; pour une auto-évaluation, l'entrée porte
   aussi `before`, l'état de la fiche juste avant (ce qui permet de la remplacer dans la journée).
 - Tous les chemins instancient `new FSRS()` : paramètres et rétention **par défaut**
-  (0,9). `deck.config` n'est plus lu à la révision (décision du 2026-06-10).
+  (0,9). `deck.config` n'est plus lu à la révision (décision du 2026-06-10) : la mémoire d'une
+  question étant partagée entre paquets, une rétention par paquet n'aurait pas de sens. Aucun écran
+  ne propose donc de la régler (sélecteur retiré le 2026-10-12), et les schémas de création et de
+  modification d'un paquet ne déclarent pas `config`.
 
 ### Note ↔ réussite
 
@@ -191,6 +203,12 @@ dans la requête.
 modèle), envoie la note par `submitRequest`. Côté paquet, `srs_review_sessions` cumule par jour
 cartes revues, bonnes réponses (note ≥ 3) et temps ; une panne de ces statistiques n'annule pas
 la révision.
+
+« Quitter », en tête de séance (`BackLink kind="quit"`, [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)), ramène là
+où elle a commencé : la page du paquet, ou le Programme si elle en part (`?depuis=programme`, posé par
+`studySessionHref` et relu par `studySessionReturnHref`, `src/lib/navigation/return-links.ts`). Une
+révision de chapitre quitte vers le chapitre du cours. Le bouton de fin de séance de `ReviewSession`
+(`onBack`) mène à la liste des paquets (séance d'un paquet) ou au chapitre.
 
 ## Anti-triche
 
@@ -297,21 +315,23 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
 ## Écarts connus
 
 - **Anti-triche cassé** (voir plus haut) : à réparer avant tout rallumage.
-- **Rétention par paquet sans effet** : `create/` et `teacher/srs/decks/…` enregistrent un profil
-  de `RETENTION_PROFILES` dans `deck.config`, mais toutes les révisions utilisent `new FSRS()`
-  par défaut ; `fsrsConfigSchema` n'est plus importé hors de son fichier.
-- **Révision forcée sans bouton** : `api/srs/review/due` accepte `all=true`, mais aucun écran ne
-  le passe (`decks/[id]/study` ne transmet que `states`).
-- **`chapter_decks` sans écran** : table, policies et tests d'intégration existent, aucune route
-  ni page ne la lit ou ne l'écrit.
+- **Paquets de chapitre et révision forcée : en sommeil, pas morts** (décision de David,
+  2026-10-12). Construits exprès le 2026-09-14 : `chapter_decks` rattache un paquet SOURCE à un
+  chapitre (modes `algorithme` / `force`, publié comme le reste du contenu), et `all=true` sur
+  `api/srs/review/due` rend toutes les cartes d'un paquet, échéance ignorée (« la veille d'un
+  contrôle »). Serveur, policies et tests d'intégration sont en place ; manquent les écrans
+  (rattacher un paquet côté prof, bouton « Tout réviser » côté élève). À construire le jour où un
+  contrôle se prépare avec un paquet de chapitre ; ne pas les supprimer comme code mort.
 - ✅ **Suppressions sans `.select()`** (corrigé le 2026-10-10, E20) : les trois `DELETE` vérifient
   désormais les lignes supprimées et répondent 403 quand la RLS refuse en silence (paquet assigné
   ou géré automatiquement — Programme, chapitre). Test :
   `src/routes/api/srs/__tests__/suppressions-silencieuses.test.ts`.
+- `reviewedToday` (`src/lib/server/course-card-attempts.ts`) n'a aucun appelant hors de ses tests
+  (relevé du 2026-10-12).
 - Des en-têtes de code (renvois corrigés par la PR #1027) parlent encore de
   « famille A » (`capacity-badge.ts`, `programme-deck.ts`, `decks/programme/+page.server.ts`,
   `api/skill-attempts`).
 
 ---
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-11.

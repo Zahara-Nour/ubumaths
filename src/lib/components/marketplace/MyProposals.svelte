@@ -58,8 +58,7 @@
 	{:else}
 		{#each proposals as proposal (proposal.id)}
 			{@const listing = proposal.listing as
-				| { id: string; title: string; creator_id: string; status: string }
-				| undefined}
+				{ id: string; title: string; creator_id: string; status: string } | undefined}
 			<Card.Root>
 				<Card.Content class="flex items-center justify-between gap-4 p-4">
 					<div class="min-w-0 flex-1 space-y-1">

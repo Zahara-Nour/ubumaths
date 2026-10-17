@@ -130,7 +130,7 @@ describe('linkSeries', () => {
 		expect(r).toMatchObject({
 			success: true,
 			warning:
-				'Cette série est aussi celle d’une évaluation en cours : tes élèves pourront s’entraîner dessus avant.'
+				'Cette série est aussi celle d’un contrôle en cours : tes élèves pourront s’entraîner dessus avant.'
 		});
 		expect(findOngoingEvaluation).toHaveBeenCalledWith(SERIE, {});
 	});

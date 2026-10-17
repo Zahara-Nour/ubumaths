@@ -206,7 +206,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				throw error(403, 'Seuls les administrateurs peuvent creer des tournois globaux');
 			}
 			if (rpcError.message?.includes('does not own class')) {
-				throw error(403, 'Vous ne pouvez creer des tournois que pour vos propres classes');
+				throw error(403, 'Création de tournois réservée aux classes du professeur');
 			}
 			if (rpcError.message?.includes('Class not found')) {
 				throw error(404, 'Une ou plusieurs classes specifiees sont introuvables');

@@ -74,3 +74,19 @@ describe('conclusionAgrees — le garde-fou', () => {
 		expect(conclusionAgrees(rel('x-1>0'), 'x', lastStepOf('x-1\\ge 0'))).toBe(false);
 	});
 });
+
+describe('garde-fou — un ÉCHEC du moteur ne confirme pas « S = ∅ »', () => {
+	it('x|x| = 4 : le moteur ne sait pas (status no-solution + error), ∅ refusé', async () => {
+		const { solve } = await import('$lib/mathAST/solve');
+		const equation = rel('x\\left|x\\right|=4');
+		// Le décor : le moteur échoue, avec le statut d'une absence de solution
+		const engine = solve(equation, { variable: 'x' });
+		expect(engine.status).toBe('no-solution');
+		expect(engine.error).toBeDefined();
+
+		// Une conclusion « S = ∅ » (prise sur |x| = −2) ne doit pas passer : x = 2 convient
+		const emptyConclusion = lastStepOf('\\left|x\\right|=-2');
+		expect(emptyConclusion.operation?.kind).toBe('read-solutions');
+		expect(conclusionAgrees(equation, 'x', emptyConclusion)).toBe(false);
+	});
+});

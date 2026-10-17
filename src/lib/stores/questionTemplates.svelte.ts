@@ -148,7 +148,7 @@ class QuestionTemplatesStore {
 			const response = await fetch('/api/questions/templates/all');
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch templates');
+				throw new Error('Impossible de charger les modèles');
 			}
 
 			const data = await response.json();

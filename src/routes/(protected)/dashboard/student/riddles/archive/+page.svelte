@@ -8,9 +8,10 @@
 	import type { PageData } from './$types';
 	import { asRiddleDifficulty, getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
-	import { History, ArrowLeft, Trophy, XCircle, Clock } from '@lucide/svelte';
+	import { History, Trophy, XCircle, Clock } from '@lucide/svelte';
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 
@@ -56,10 +57,7 @@
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">
 	<!-- Header -->
 	<div class="mb-6">
-		<Button variant="ghost" href="/dashboard/student/riddles" class="mb-4">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour aux énigmes
-		</Button>
+		<BackLink href="/dashboard/student/riddles" label="Retour aux énigmes" />
 
 		<h1 class="flex items-center gap-2 text-3xl font-bold">
 			<History class="h-8 w-8 text-primary" />

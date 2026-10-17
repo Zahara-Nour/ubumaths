@@ -12,13 +12,18 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/student/minesweeper/tournaments/[id]/+page.server'
+);
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const { user, profile } = locals;
 
 	// Must be authenticated student
 	if (!user || !profile || profile.role !== 'student') {
-		throw error(403, 'Acces refuse');
+		throw error(403, 'Accès refusé');
 	}
 
 	const tournamentId = params.id;
@@ -39,7 +44,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		}
 
 		if (!standingsRes.ok) {
-			console.error('[Tournament] Error loading standings');
+			logger.error('[Tournament] Error loading standings');
 		}
 
 		const { tournament } = await tournamentRes.json();
@@ -60,7 +65,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 			.maybeSingle();
 
 		if (gameError) {
-			console.error('[Tournament] Error checking in-progress game:', gameError);
+			logger.error('[Tournament] Error checking in-progress game:', gameError);
 		}
 
 		return {
@@ -77,7 +82,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 			throw err;
 		}
 
-		console.error('[Tournament] Error loading page data:', err);
+		logger.error('[Tournament] Error loading page data:', err);
 		throw error(500, 'Erreur lors du chargement de la page');
 	}
 };

@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Save, Loader2 } from '@lucide/svelte';
+	import { Save, Loader2 } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import TypstEditor from '$lib/components/worksheets/TypstEditor.svelte';
-	import { COMMON_PLACEHOLDERS, STANDARD_TEMPLATE } from '$lib/worksheets/default-templates';
+	import { COMMON_PLACEHOLDERS, STANDARD_TEMPLATE } from '$lib/typst/templates';
 	import { asTemplatePlaceholders } from '$lib/types/worksheets';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -65,10 +66,11 @@
 
 <div class="container mx-auto max-w-5xl py-6">
 	<!-- Header -->
+	<BackLink
+		href="/dashboard/teacher/contenu/worksheets/templates"
+		label="Retour aux templates de mise en page"
+	/>
 	<div class="mb-6 flex items-center gap-4">
-		<Button variant="ghost" size="icon" href="/dashboard/teacher/contenu/worksheets/templates">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
 		<div class="flex-1">
 			<h1 class="text-3xl font-bold">
 				{isNew ? 'Nouveau template' : data.template?.name || 'Template'}

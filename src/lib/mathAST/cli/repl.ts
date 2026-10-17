@@ -181,14 +181,15 @@ function handleReplCommand(input: string, rl: readline.Interface, state: ReplSta
 		return;
 	}
 
-	// Handle mode toggle commands
-	if (cmdName === 'latex') {
+	// Bascules du mode de saisie — SANS argument seulement, comme le moteur web :
+	// `.latex x^2` et `.custom x^2` sont les commandes du registre
+	if (cmdName === 'latex' && args === '') {
 		state.inputMode = 'latex';
 		rl.setPrompt(getPrompt(state.inputMode));
 		console.log(chalk.cyan('Input mode: LaTeX'));
 		return;
 	}
-	if (cmdName === 'custom') {
+	if (cmdName === 'custom' && args === '') {
 		state.inputMode = 'custom';
 		rl.setPrompt(getPrompt(state.inputMode));
 		console.log(chalk.cyan('Input mode: Custom syntax'));

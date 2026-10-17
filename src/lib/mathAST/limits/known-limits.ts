@@ -468,6 +468,8 @@ export function substituteVariable(
 		case 'boolean':
 		case 'hole':
 		case 'constant':
+		case 'segmentLength':
+		case 'figureName':
 			return pattern;
 
 		case 'addition':

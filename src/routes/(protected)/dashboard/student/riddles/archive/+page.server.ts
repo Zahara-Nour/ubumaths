@@ -1,5 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/riddles/archive/+page.server');
 
 /**
  * Load archive of past riddles of the day
@@ -16,7 +19,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.select(
 			`
 			*,
-			riddle:riddles(*)
+			riddle:riddles(id, riddle_number, title, genre, difficulty)
 		`
 		)
 		// La table porte `date`, pas `assignment_date`.
@@ -25,7 +28,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.limit(100);
 
 	if (historyError) {
-		console.error('Error fetching history:', historyError);
+		logger.error('Error fetching history:', historyError);
 	}
 
 	// Get student's attempts for these riddles
@@ -38,7 +41,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.in('riddle_id', riddleIds);
 
 	if (attemptsError) {
-		console.error('Lecture impossible :', attemptsError);
+		logger.error('Lecture impossible :', attemptsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

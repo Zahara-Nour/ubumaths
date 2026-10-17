@@ -65,6 +65,9 @@ describe('intervalle déclaré — f = 1/x', () => {
 		['\\ln x+C', 'correct'],
 		['\\ln|x|', 'correct'],
 		['\\ln\\left|x\\right|', 'correct'],
+		// Touche « valeur absolue » du clavier virtuel MathLive.
+		['\\ln\\vert x\\vert', 'correct'],
+		['\\ln\\left\\vert x\\right\\vert', 'correct'],
 		['\\ln(-x)', 'incorrect']
 	] as const)('%s → %s', (answer, status) => {
 		expect(judgePrimitiveAnswer(answer, INVERSE).status).toBe(status);

@@ -10,6 +10,9 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { getTutorMessagesQuerySchema } from '$lib/server/validation/chat';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/tutor/conversations/[id]/messages/+server');
 
 // UUID validation schema
 const conversationIdSchema = z.string().uuid('ID conversation invalide');
@@ -58,7 +61,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	}
 
 	if (conversation.student_id !== user.id) {
-		throw error(403, "Vous n'avez pas accès à cette conversation");
+		throw error(403, 'Accès refusé à cette conversation');
 	}
 
 	// Build query for messages
@@ -77,7 +80,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const { data: messages, error: msgError } = await query;
 
 	if (msgError) {
-		console.error('Tutor messages fetch error:', msgError);
+		logger.error('Tutor messages fetch error:', msgError);
 		throw error(500, 'Erreur lors du chargement des messages');
 	}
 
@@ -113,7 +116,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	}
 
 	if (conversation.student_id !== user.id) {
-		throw error(403, "Vous n'avez pas accès à cette conversation");
+		throw error(403, 'Accès refusé à cette conversation');
 	}
 
 	// Delete all messages from the conversation
@@ -123,7 +126,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		.eq('conversation_id', conversationId);
 
 	if (deleteError) {
-		console.error('Tutor messages delete error:', deleteError);
+		logger.error('Tutor messages delete error:', deleteError);
 		throw error(500, 'Erreur lors de la suppression des messages');
 	}
 
@@ -137,7 +140,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		.eq('id', conversationId);
 
 	if (updateError) {
-		console.error('Tutor conversation update error:', updateError);
+		logger.error('Tutor conversation update error:', updateError);
 		// Messages are deleted, but metadata update failed - not critical
 	}
 

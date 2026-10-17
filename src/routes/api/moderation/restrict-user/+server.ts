@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { restrictUserSchema } from '$lib/server/validation/moderation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/moderation/restrict-user/+server');
 
 /**
  * POST /api/moderation/restrict-user
@@ -62,7 +65,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.maybeSingle();
 
 	if (targetUserError) {
-		console.error('Failed to fetch target user:', targetUserError);
+		logger.error('Failed to fetch target user:', targetUserError);
 		throw error(500, 'Failed to verify user');
 	}
 
@@ -100,7 +103,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (insertError.code === '23505') {
 			throw error(409, 'User already has an active restriction of this type in this scope');
 		}
-		console.error('Failed to create restriction:', insertError);
+		logger.error('Failed to create restriction:', insertError);
 		throw error(500, 'Failed to create restriction');
 	}
 
@@ -119,7 +122,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (logError) {
-		console.error('Failed to log moderation action:', logError);
+		logger.error('Failed to log moderation action:', logError);
 		// Don't fail the request if logging fails, but log the error
 	}
 

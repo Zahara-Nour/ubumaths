@@ -10,4 +10,4 @@ liste, un `` lointain ne ferme plus un de ces blocs séparé par du texte (comme
   vérifient le bloc produit.
 - Mesure prod : 485 contenus réels, 0 changement, 0 boucle.
 - Limite (préexistante) : un ```line FERMÉ dans une liste reste un bloc de code (pas de branche
-`line`dans`parseContentWithCodeBlocks`) ; non fermé, il devient une droite graduée.
+  `line`dans`parseContentWithCodeBlocks`) ; non fermé, il devient une droite graduée.

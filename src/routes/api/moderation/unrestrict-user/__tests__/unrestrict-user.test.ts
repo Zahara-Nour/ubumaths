@@ -139,7 +139,10 @@ describe('DELETE /api/moderation/unrestrict-user - Authentication & Authorizatio
 
 		// Mock delete operation
 		mockSupabase._mockChain.delete.mockReturnValue({
-			eq: vi.fn().mockResolvedValue({ data: null, error: null })
+			// `.select('id')` en bout : la route vérifie les lignes supprimées.
+			eq: vi.fn(() => ({
+				select: vi.fn().mockResolvedValue({ data: [{ id: TEST_IDS.restriction }], error: null })
+			}))
 		});
 
 		// Mock moderation log
@@ -203,7 +206,10 @@ describe('DELETE /api/moderation/unrestrict-user - Authentication & Authorizatio
 
 		// Mock delete operation
 		mockSupabase._mockChain.delete.mockReturnValue({
-			eq: vi.fn().mockResolvedValue({ data: null, error: null })
+			// `.select('id')` en bout : la route vérifie les lignes supprimées.
+			eq: vi.fn(() => ({
+				select: vi.fn().mockResolvedValue({ data: [{ id: TEST_IDS.restriction }], error: null })
+			}))
 		});
 
 		// Mock moderation log
@@ -292,7 +298,7 @@ describe('DELETE /api/moderation/unrestrict-user - Input Validation', () => {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(400);
 			// Zod will say "Invalid input" for required fields
-			expect(error.body.message).toContain('Invalid input');
+			expect(error.body.message).toContain('Entrée invalide');
 		}
 	});
 });
@@ -325,7 +331,10 @@ describe('DELETE /api/moderation/unrestrict-user - Restriction Types', () => {
 
 		// Mock delete operation
 		mockSupabase._mockChain.delete.mockReturnValue({
-			eq: vi.fn().mockResolvedValue({ data: null, error: null })
+			// `.select('id')` en bout : la route vérifie les lignes supprimées.
+			eq: vi.fn(() => ({
+				select: vi.fn().mockResolvedValue({ data: [{ id: TEST_IDS.restriction }], error: null })
+			}))
 		});
 
 		// Mock moderation log (should use 'unmute_user' action)
@@ -373,7 +382,10 @@ describe('DELETE /api/moderation/unrestrict-user - Restriction Types', () => {
 
 		// Mock delete operation
 		mockSupabase._mockChain.delete.mockReturnValue({
-			eq: vi.fn().mockResolvedValue({ data: null, error: null })
+			// `.select('id')` en bout : la route vérifie les lignes supprimées.
+			eq: vi.fn(() => ({
+				select: vi.fn().mockResolvedValue({ data: [{ id: TEST_IDS.restriction }], error: null })
+			}))
 		});
 
 		// Mock moderation log (should use 'unmute_user' for timeout as well)
@@ -420,7 +432,10 @@ describe('DELETE /api/moderation/unrestrict-user - Restriction Types', () => {
 
 		// Mock delete operation
 		mockSupabase._mockChain.delete.mockReturnValue({
-			eq: vi.fn().mockResolvedValue({ data: null, error: null })
+			// `.select('id')` en bout : la route vérifie les lignes supprimées.
+			eq: vi.fn(() => ({
+				select: vi.fn().mockResolvedValue({ data: [{ id: TEST_IDS.restriction }], error: null })
+			}))
 		});
 
 		// Mock moderation log (should use 'unban_user' action)
@@ -462,7 +477,10 @@ describe('DELETE /api/moderation/unrestrict-user - Restriction Types', () => {
 
 		// Mock delete operation
 		mockSupabase._mockChain.delete.mockReturnValue({
-			eq: vi.fn().mockResolvedValue({ data: null, error: null })
+			// `.select('id')` en bout : la route vérifie les lignes supprimées.
+			eq: vi.fn(() => ({
+				select: vi.fn().mockResolvedValue({ data: [{ id: TEST_IDS.restriction }], error: null })
+			}))
 		});
 
 		// Mock moderation log
@@ -574,10 +592,12 @@ describe('DELETE /api/moderation/unrestrict-user - Error Handling', () => {
 
 		// Mock delete operation failure
 		mockSupabase._mockChain.delete.mockReturnValue({
-			eq: vi.fn().mockResolvedValue({
-				data: null,
-				error: { message: 'Delete failed' }
-			})
+			eq: vi.fn(() => ({
+				select: vi.fn().mockResolvedValue({
+					data: null,
+					error: { message: 'Delete failed' }
+				})
+			}))
 		});
 
 		const request = createMockRequest(
@@ -611,7 +631,10 @@ describe('DELETE /api/moderation/unrestrict-user - Error Handling', () => {
 
 		// Mock delete operation (success)
 		mockSupabase._mockChain.delete.mockReturnValue({
-			eq: vi.fn().mockResolvedValue({ data: null, error: null })
+			// `.select('id')` en bout : la route vérifie les lignes supprimées.
+			eq: vi.fn(() => ({
+				select: vi.fn().mockResolvedValue({ data: [{ id: TEST_IDS.restriction }], error: null })
+			}))
 		});
 
 		// Mock moderation log failure (should not fail the request)

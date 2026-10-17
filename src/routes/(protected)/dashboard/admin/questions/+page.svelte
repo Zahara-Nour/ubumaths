@@ -404,7 +404,7 @@
 		try {
 			// Fetch original template
 			const response = await fetch(`/api/questions/templates/${id}`);
-			if (!response.ok) throw new Error('Failed to fetch template');
+			if (!response.ok) throw new Error('Impossible de charger le modèle');
 
 			const original = await response.json();
 
@@ -424,7 +424,7 @@
 				body: JSON.stringify(duplicate)
 			});
 
-			if (!createResponse.ok) throw new Error('Failed to create duplicate');
+			if (!createResponse.ok) throw new Error('Impossible de créer la copie');
 
 			const result = await createResponse.json();
 
@@ -433,7 +433,7 @@
 				questionCategoriesCache.invalidate();
 				questionTemplatesCache.invalidate();
 
-				toaster.success('Template dupliqué avec succès');
+				toaster.success('Modèle dupliqué avec succès');
 				// Refresh page
 				goto('/dashboard/admin/questions', { invalidateAll: true }).then(() => {});
 			} else {
@@ -441,7 +441,7 @@
 			}
 		} catch (error) {
 			console.error('Duplicate error:', error);
-			toaster.error('Erreur lors de la duplication du template');
+			toaster.error('Erreur lors de la duplication du modèle');
 		}
 	}
 
@@ -465,7 +465,7 @@
 				method: 'DELETE'
 			});
 
-			if (!response.ok) throw new Error('Delete failed');
+			if (!response.ok) throw new Error('Impossible de supprimer le modèle');
 
 			const result = await response.json();
 
@@ -474,7 +474,7 @@
 				questionCategoriesCache.invalidate();
 				questionTemplatesCache.invalidate();
 
-				toaster.success('Template supprimé avec succès');
+				toaster.success('Modèle supprimé avec succès');
 				deleteConfirmOpen = false;
 				templateToDelete = null;
 				// Refresh page
@@ -484,7 +484,7 @@
 			}
 		} catch (error) {
 			console.error('Delete error:', error);
-			toaster.error('Erreur lors de la suppression du template');
+			toaster.error('Erreur lors de la suppression du modèle');
 		} finally {
 			isDeleting = false;
 		}

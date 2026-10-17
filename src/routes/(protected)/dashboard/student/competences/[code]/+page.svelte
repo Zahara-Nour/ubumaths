@@ -4,9 +4,9 @@
 	 */
 
 	import * as Card from '$lib/components/ui/card';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import { ChevronLeft, Check, Circle } from '@lucide/svelte';
+	import { Check, Circle } from '@lucide/svelte';
 	import {
 		formatMathCompetenceLevel,
 		getMathCompetenceLevelVisual,
@@ -31,9 +31,9 @@
 			case 'one_of_codes':
 				return `Au moins 1 parmi ${item.codes.join(', ')}`;
 			case 'guard':
-				if (item.name === 'needs_more_tasks') return "Minimum 2 tâches d'observation requises";
+				if (item.name === 'needs_more_tasks') return 'Minimum 2 observations requises';
 				if (item.name === 'confirm_with_third_task')
-					return 'Confirme avec une 3ᵉ tâche pour atteindre Très bonne';
+					return 'Confirme avec une 3ᵉ observation pour atteindre Très bonne';
 				return item.name;
 		}
 	}
@@ -44,12 +44,10 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-4xl px-4 py-6">
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/student/progression?onglet=competences">
-			<ChevronLeft class="h-4 w-4" />
-			Mes compétences
-		</Button>
-	</div>
+	<BackLink
+		href="/dashboard/student/progression?onglet=competences"
+		label="Retour à mes compétences"
+	/>
 
 	<!-- Header avec niveau -->
 	<div class="mb-6">
@@ -61,7 +59,7 @@
 				<div>
 					<div class="font-semibold">{formatMathCompetenceLevel(data.niveau)}</div>
 					<div class="text-xs text-muted-foreground">
-						{data.task_count} tâche{data.task_count > 1 ? 's' : ''} d'observation
+						{data.task_count} observation{data.task_count > 1 ? 's' : ''}
 					</div>
 				</div>
 			</div>
@@ -106,13 +104,13 @@
 		</Card.Root>
 	{/if}
 
-	<!-- Observables groupés par sous-dimension -->
+	<!-- Observables groupés par composante -->
 	<Card.Root>
 		<Card.Header>
 			<h2 class="text-lg font-semibold">Observables détaillés</h2>
 			<p class="text-sm text-muted-foreground">
-				Tes observables groupés par sous-dimension. Un observable est <em>acquis</em> si ≥ 2 réussites
-				dont une dominance sur les non-réussites.
+				Tes observables groupés par composante. Un observable est <em>acquis</em> si ≥ 2 réussites dont
+				une dominance sur les non-réussites.
 			</p>
 		</Card.Header>
 		<Card.Content class="space-y-5">

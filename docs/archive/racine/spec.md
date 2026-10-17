@@ -279,11 +279,12 @@ const result = evaluateWithUnits(parseLatex('5~\\unit{km} + 3000~\\unit{m}'));
 ```
 
 **Modes de conversion** :
-| Mode | Comportement | Exemple `5 km + 3000 m` |
-|------|--------------|-------------------------|
-| `'first'` (défaut) | Convertit vers la première unité | `8 km` |
-| `'si'` | Normalise vers unités SI de base | `8000 m` |
-| `'best'` | Choisit l'unité la plus lisible (0.1-1000) | `8 km` |
+
+| Mode               | Comportement                               | Exemple `5 km + 3000 m` |
+| ------------------ | ------------------------------------------ | ----------------------- |
+| `'first'` (défaut) | Convertit vers la première unité           | `8 km`                  |
+| `'si'`             | Normalise vers unités SI de base           | `8000 m`                |
+| `'best'`           | Choisit l'unité la plus lisible (0.1-1000) | `8 km`                  |
 
 **Gestion des erreurs** :
 

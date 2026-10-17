@@ -51,6 +51,9 @@ import {
 	type ObjectivesProgression,
 	type CompetencesProgression
 } from '$lib/server/progression/student-progression';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Get profile from locals (loaded in hooks.server.ts)
@@ -115,7 +118,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 		// ne doit pas se confondre avec une donnée réellement vide.
 		if (membershipError && membershipError.code !== 'PGRST116') {
-			console.error('Contexte illisible :', membershipError);
+			logger.error('Contexte illisible :', membershipError);
 		}
 		schoolId = (membership?.classes as unknown as { school_id: string | null })?.school_id ?? null;
 	}
@@ -131,7 +134,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.maybeSingle();
 
 		if (schoolError) {
-			console.error('Configuration de semaine illisible :', schoolError);
+			logger.error('Configuration de semaine illisible :', schoolError);
 		}
 
 		weekConfig =
@@ -149,7 +152,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 		// ne doit pas se confondre avec une donnée réellement vide.
 		if (schoolYearDataError && schoolYearDataError.code !== 'PGRST116') {
-			console.error('Contexte illisible :', schoolYearDataError);
+			logger.error('Contexte illisible :', schoolYearDataError);
 		}
 
 		if (schoolYearData) {
@@ -162,7 +165,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 			// laisse une trace.
 			if (periodsError) {
-				console.error('Enrichissement illisible :', periodsError);
+				logger.error('Enrichissement illisible :', periodsError);
 			}
 
 			academicPeriods = (periods || []) as typeof academicPeriods;
@@ -254,11 +257,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 			// récompenses. Une VIEW renommée ou un timeout ne doit pas priver les 81
 			// élèves de leur page d'accueil pour une tuile de résumé.
 			getObjectivesProgression(supabase, profile.id, profile.grade).catch((err) => {
-				console.error('[dashboard] progression objectifs indisponible :', err);
+				logger.error('[dashboard] progression objectifs indisponible :', err);
 				return null;
 			}),
 			getCompetencesProgression(supabase, profile.id).catch((err) => {
-				console.error('[dashboard] progression compétences indisponible :', err);
+				logger.error('[dashboard] progression compétences indisponible :', err);
 				return null;
 			})
 		]);
@@ -269,6 +272,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 				? { objectives: objectivesProgression, competences: competencesProgression }
 				: null;
 
+		// Une lecture en échec compte 0 : la tuile « Énigmes » dit alors « Découvre les
+		// énigmes », jamais un faux total
+		if (riddleCount.error)
+			logger.error('Lecture des énigmes résolues impossible :', riddleCount.error);
 		riddlesSolved = riddleCount.count || 0;
 		recentExercises = (exercisesData.data || []) as typeof recentExercises;
 

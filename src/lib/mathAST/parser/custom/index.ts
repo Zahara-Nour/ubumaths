@@ -25,9 +25,9 @@
  */
 
 import type { MathNode } from '../../types';
-import type { ParserOptions, ParseResult, GenericFunctionConfig } from '../types';
+import type { ParserOptions, ParseResult, GenericFunctionConfig, CapitalPairs } from '../types';
 import type { ParserSecurityOptions } from '../security';
-import { DEFAULT_GENERIC_FUNCTIONS } from '../types';
+import { DEFAULT_CAPITAL_PAIRS, DEFAULT_GENERIC_FUNCTIONS } from '../types';
 import {
 	parseCustomPratt as parseCustomPrattRaw,
 	parseCustomPrattSafe as parseCustomPrattSafeRaw
@@ -101,6 +101,12 @@ export interface CustomParserOptions {
 	 * Uses sensible defaults if not specified.
 	 */
 	security?: ParserSecurityOptions;
+	/**
+	 * Sens de deux majuscules collées (`AB`) : `'product'` (défaut, `A·B` comme avant) ou
+	 * `'length'` (longueur du segment, `ABC` nom de figure). Mêmes règles que le parseur
+	 * LaTeX (`LatexParserOptions.capitalPairs`) ; seules les questions le demandent.
+	 */
+	capitalPairs?: CapitalPairs;
 }
 
 // =============================================================================
@@ -146,6 +152,7 @@ export function parseCustom(input: string, options?: CustomParserOptions): MathN
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'strict',
+		capitalPairs: options?.capitalPairs ?? DEFAULT_CAPITAL_PAIRS,
 		...(genericFunctions && { genericFunctions }),
 		...(options?.security && { security: options.security })
 	};
@@ -174,6 +181,7 @@ export function parseCustomSafe(input: string, options?: CustomParserOptions): P
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'tolerant',
+		capitalPairs: options?.capitalPairs ?? DEFAULT_CAPITAL_PAIRS,
 		...(genericFunctions && { genericFunctions }),
 		...(options?.security && { security: options.security })
 	};
@@ -193,6 +201,7 @@ export function parseCustomPratt(input: string, options?: CustomParserOptions): 
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'strict',
+		capitalPairs: options?.capitalPairs ?? DEFAULT_CAPITAL_PAIRS,
 		...(genericFunctions && { genericFunctions }),
 		...(options?.security && { security: options.security })
 	};
@@ -211,6 +220,7 @@ export function parseCustomPrattSafe(input: string, options?: CustomParserOption
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'tolerant',
+		capitalPairs: options?.capitalPairs ?? DEFAULT_CAPITAL_PAIRS,
 		...(genericFunctions && { genericFunctions }),
 		...(options?.security && { security: options.security })
 	};
@@ -230,6 +240,7 @@ export function parseCustomRD(input: string, options?: CustomParserOptions): Mat
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'strict',
+		capitalPairs: options?.capitalPairs ?? DEFAULT_CAPITAL_PAIRS,
 		...(genericFunctions && { genericFunctions }),
 		...(options?.security && { security: options.security })
 	};
@@ -248,6 +259,7 @@ export function parseCustomRDSafe(input: string, options?: CustomParserOptions):
 	const genericFunctions = resolveGenericFunctions(options?.genericFunctions);
 	const parserOptions: Partial<ParserOptions> = {
 		mode: options?.mode ?? 'tolerant',
+		capitalPairs: options?.capitalPairs ?? DEFAULT_CAPITAL_PAIRS,
 		...(genericFunctions && { genericFunctions }),
 		...(options?.security && { security: options.security })
 	};

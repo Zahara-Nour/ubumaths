@@ -30,6 +30,7 @@
 -->
 
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import { parseMarkdown } from '$lib/ubumark';
 	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
 	import { readLexicon } from '$lib/components/markdown/lexicon-context';
@@ -55,6 +56,7 @@
 	import type { BlockNode, InlineNode, TableCellNode } from '$lib/ubumark';
 	import type { Snippet } from 'svelte';
 	import type { GenericFunctionConfig } from '$lib/mathAST';
+	import type { CapitalPairs } from '$lib/mathAST/parser/types';
 
 	// Node components (reuse from MarkdownRenderer)
 	import ParagraphNode from '$lib/components/markdown/nodes/ParagraphNode.svelte';
@@ -65,6 +67,10 @@
 	import TableNode from '$lib/components/markdown/nodes/TableNode.svelte';
 	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import {
+		provideCapitalPairs,
+		readCapitalPairs
+	} from '$lib/components/markdown/content-capital-pairs';
 
 	// Utility functions
 	import {
@@ -108,6 +114,8 @@
 		onSubmit?: () => void;
 		/** LaTeX to insert when Space is pressed in math mode */
 		mathModeSpace?: string;
+		/** Sens de `AB` de l'instance : en mode longueur, raccourcis `AA`, `RR`… coupés (Q-N) */
+		capitalPairs?: CapitalPairs;
 		/**
 		 * Touches de l'onglet « Unités » fournies par l'appelant. Évaluation : le
 		 * navigateur n'a pas la réponse attendue pour les déduire (le serveur les
@@ -134,10 +142,17 @@
 		blankFeedback = [],
 		onSubmit,
 		mathModeSpace,
+		capitalPairs,
 		unitKeys: providedUnitKeys,
 		genericFunctions,
 		grades = []
 	}: Props = $props();
+
+	// Sens de `AB` pour les formules de l'énoncé rendues sous ce champ (lot 5)
+	const parentCapitalPairs = readCapitalPairs();
+	provideCapitalPairs(() => capitalPairs);
+	/** Sens qui repère les cases : la prop, sinon celui de la carte (`~A'B'=?~`) */
+	const blanksCapitalPairs = () => capitalPairs ?? parentCapitalPairs();
 
 	// When showing correct answers, force disabled
 	let effectiveDisabled = $derived(disabled || showCorrectAnswers);
@@ -145,13 +160,15 @@
 	/** Check if a block node contains blanks or math prompts */
 	function nodeHasBlanks(node: BlockNode): boolean {
 		if (node.type === 'paragraph') {
-			return inlineNodesHaveBlanks(node.children);
+			return inlineNodesHaveBlanks(node.children, blanksCapitalPairs());
 		}
 		if (node.type === 'table') {
-			return tableHasBlanks(node);
+			return tableHasBlanks(node, blanksCapitalPairs());
 		}
 		if (node.type === 'math-block') {
-			return !!node.expressionName || hasPrompts(node.expression, node.syntax);
+			return (
+				!!node.expressionName || hasPrompts(node.expression, node.syntax, blanksCapitalPairs())
+			);
 		}
 		return false;
 	}
@@ -185,7 +202,8 @@
 				sentence.some(
 					(node) =>
 						node.type === 'blank' ||
-						(node.type === 'math-inline' && hasPrompts(node.expression, node.syntax))
+						(node.type === 'math-inline' &&
+							hasPrompts(node.expression, node.syntax, blanksCapitalPairs()))
 				)
 			)
 			.flat();
@@ -203,7 +221,7 @@
 	let structuredAST = $derived.by(() => {
 		const ast = parseMarkdown(statement);
 		if (flashMode) return ast;
-		const augmented = augmentASTForExpressions(ast, expressions);
+		const augmented = augmentASTForExpressions(ast, expressions, blanksCapitalPairs());
 		if (onlyBlanks) {
 			const blanksOnly = augmented.children.filter(nodeHasBlanks);
 			return {
@@ -567,7 +585,7 @@
 	trou, flash, correction, états) ; une cellule sans trou garde le rendu du tableau.
 -->
 {#snippet blankCell(cell: TableCellNode, defaultCell: Snippet<[string]>)}
-	{#if cellHasBlanks(cell.content)}
+	{#if cellHasBlanks(cell.content, blanksCapitalPairs())}
 		<ParagraphNode
 			element="span"
 			class="table-blank-cell"
@@ -582,6 +600,7 @@
 			prefilledValues={flashMode ? mathPrefilledValues : interactivePrefilledValues}
 			{expressionDisplayMap}
 			{mathModeSpace}
+			{capitalPairs}
 			{genericFunctions}
 		/>
 	{:else}
@@ -605,25 +624,45 @@
 					prefilledValues={flashMode ? mathPrefilledValues : interactivePrefilledValues}
 					{expressionDisplayMap}
 					{mathModeSpace}
+					{capitalPairs}
 					{genericFunctions}
 				/>
 			{:else if node.type === 'math-block'}
-				{#if node.expressionName || hasPrompts(node.expression, node.syntax)}
+				{#if node.expressionName || hasPrompts(node.expression, node.syntax, blanksCapitalPairs())}
 					{#if flashMode}
 						{@const displayExpr = node.expressionName
 							? expressionDisplayMap?.[node.expressionName]
 							: undefined}
 						{@const baseLatex =
-							displayExpr ?? expressionToLatex(node.expression, node.syntax, genericFunctions)}
+							displayExpr ??
+							expressionToLatex(
+								node.expression,
+								node.syntax,
+								genericFunctions,
+								undefined,
+								capitalPairs
+							)}
 						{@const flashLatex = mathPrefilledValues
 							? replacePromptsWithPrefilled(baseLatex, mathPrefilledValues)
 							: (displayExpr ??
-								expressionToFlashLatex(node.expression, node.syntax, genericFunctions))}
+								expressionToFlashLatex(
+									node.expression,
+									node.syntax,
+									genericFunctions,
+									undefined,
+									capitalPairs
+								))}
 						{#key flashLatex}
 							<MathBlock expression={flashLatex} syntax="latex" />
 						{/key}
 					{:else if showCorrectAnswers && mathCorrectValues}
-						{@const latex = expressionToLatex(node.expression, node.syntax, genericFunctions)}
+						{@const latex = expressionToLatex(
+							node.expression,
+							node.syntax,
+							genericFunctions,
+							undefined,
+							capitalPairs
+						)}
 						{@const filledLatex = replacePromptsWithValues(latex, mathCorrectValues)}
 						{#key filledLatex}
 							<MathBlock expression={filledLatex} syntax="latex" />
@@ -640,6 +679,7 @@
 								correctValues={mathCorrectValues}
 								prefilledValues={interactivePrefilledValues}
 								{mathModeSpace}
+								{capitalPairs}
 								{genericFunctions}
 							/>
 						{/key}
@@ -661,7 +701,7 @@
 				/>
 			{:else if node.type === 'heading'}
 				<HeadingNode level={node.level} children={node.children} />
-			{:else if node.type === 'table' && tableHasBlanks(node)}
+			{:else if node.type === 'table' && tableHasBlanks(node, blanksCapitalPairs())}
 				<!-- `relative` : les éléments en position absolue des champs MathLive (libellés
 				     pour lecteur d'écran) restent dans le cadre défilant, sinon la page déborde -->
 				<TableNode

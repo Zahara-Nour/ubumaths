@@ -18,3 +18,4 @@ Dépôts clonés dans `extern/` pour inspiration et comparaison. Leur contenu es
 - https://github.com/OpenBoard-org/OpenBoard.git
 - https://forge.apps.education.fr/coopmaths/mathalea.git
 - https://github.com/typst/typst.git
+- https://github.com/Zahara-Nour/new-tinymath.git — ancien site UbuMaths (TinyMath)

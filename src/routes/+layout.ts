@@ -35,6 +35,10 @@
  */
 
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+// Module sans dépendance : son import statique ne crée pas de chaîne (Safari TDZ)
+import { browserCookieMethods } from '$lib/utils/session-cookies';
+import { browser } from '$app/environment';
+import { enforceWorkDataOwner, watchWorkDataOwnerOnce } from '$lib/utils/work-data';
 import type { LayoutLoad } from './$types';
 
 // =============================================================================
@@ -114,6 +118,19 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	// Register this load function to re-run when 'supabase:auth' is invalidated
 	// This enables reactive auth state updates throughout the app
 	depends('supabase:auth');
+
+	// Données de travail d'élève dans le navigateur (code, calculs, parties) : jamais
+	// montrées à un autre compte. Celles d'un autre sont effacées, et la page rechargée
+	// pour vider ce que les modules en ont déjà lu (`src/lib/utils/work-data.ts`).
+	// Vérifié à chaque chargement de page ; un changement de compte dans un AUTRE onglet
+	// recharge celui-ci (événement `storage`), car `data.user` n'y change pas.
+	if (browser) watchWorkDataOwnerOnce(() => location.reload());
+	if (
+		browser &&
+		enforceWorkDataOwner(data.user?.id ?? null, localStorage, () => location.reload())
+	) {
+		await new Promise<never>(() => {});
+	}
 	console.log('🎨 [ROOT LAYOUT] Exécution');
 
 	// --- DYNAMIC IMPORT (Safari/WebKit TDZ fix) ---
@@ -121,7 +138,13 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	// module from having a complex static dependency chain that triggers
 	// WebKit's TDZ bug with the 'universal' export.
 	// See: https://bugs.webkit.org/show_bug.cgi?id=242740
-	const { createBrowserClient, createServerClient, isBrowser } = await import('@supabase/ssr');
+	const {
+		createBrowserClient,
+		createServerClient,
+		isBrowser,
+		parseCookieHeader,
+		serializeCookieHeader
+	} = await import('@supabase/ssr');
 
 	/**
 	 * Create a Supabase client appropriate for the environment
@@ -139,7 +162,13 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: {
 					fetch // Use SvelteKit's fetch for better performance
-				}
+				},
+				// SECURITY (findings H3, A1) : quand le navigateur rafraîchit la session,
+				// il réécrit le cookie ; sans ces méthodes, pour 400 jours au lieu de 30.
+				cookies: browserCookieMethods({
+					parse: parseCookieHeader,
+					serialize: serializeCookieHeader
+				})
 			})
 		: createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: {

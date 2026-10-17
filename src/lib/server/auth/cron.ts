@@ -10,13 +10,16 @@
 import { error } from '@sveltejs/kit';
 import { getEnv } from '$lib/server/env';
 import { randomBytes, timingSafeEqual } from 'crypto';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/auth/cron');
 
 /**
  * Verify CRON authentication from request headers
  *
- * Supports two authentication methods:
- * 1. Vercel Cron (automatic): x-vercel-cron: 1 header + VERCEL=1 environment
- * 2. Manual triggers: Authorization: Bearer <CRON_SECRET> header
+ * Une seule méthode : `Authorization: Bearer <CRON_SECRET>`, que Vercel envoie à ses
+ * crons et que le déclencheur admin envoie aussi. (L'ancienne « méthode Vercel »,
+ * l'en-tête `x-vercel-cron`, acceptait n'importe quel appelant qui l'envoyait.)
  *
  * @param request - The incoming HTTP request
  * @throws {Error} 401 if authentication fails
@@ -33,8 +36,7 @@ import { randomBytes, timingSafeEqual } from 'crypto';
  * ```
  *
  * @security
- * - Method 1 (Vercel): Checks x-vercel-cron=1 header + VERCEL=1 env var
- * - Method 2 (Manual): Bearer token with constant-time comparison
+ * - Bearer token with constant-time comparison
  * - Fails secure: Rejects all requests if CRON_SECRET undefined
  * - Logs all authentication attempts (success + failure)
  */
@@ -44,51 +46,32 @@ export function verifyCronAuth(request: Request): void {
 	// SECURITY: Fail-secure - reject if CRON_SECRET not configured
 	// This prevents CRON endpoints from being accidentally exposed
 	if (!env.CRON_SECRET) {
-		console.error('[CRON AUTH] CRON_SECRET not configured - CRON endpoints are disabled');
+		logger.error('[CRON AUTH] CRON_SECRET not configured - CRON endpoints are disabled');
 		throw error(503, 'CRON endpoints disabled: CRON_SECRET not configured');
 	}
 
-	// METHOD 1: Check for Vercel Cron header (added automatically by Vercel)
-	const vercelCronHeader = request.headers.get('x-vercel-cron');
-	if (vercelCronHeader === '1') {
-		// Verify we're running on Vercel (additional security layer)
-		if (process.env.VERCEL === '1') {
-			console.log('[CRON AUTH] ✅ Valid Vercel Cron', {
-				url: request.url,
-				method: request.method,
-				timestamp: new Date().toISOString()
-			});
-			return; // Authorized
-		} else {
-			console.warn('[CRON AUTH] x-vercel-cron header present but not running on Vercel', {
-				url: request.url
-			});
-			throw error(401, 'Unauthorized: Invalid environment');
-		}
-	}
-
-	// METHOD 2: Check for Bearer token (for manual triggers)
+	// Seul le jeton fait foi. L'en-tête `x-vercel-cron` ne prouve rien : n'importe qui
+	// peut l'envoyer. Vercel envoie lui-même `Authorization: Bearer <CRON_SECRET>` à ses
+	// crons quand la variable est définie.
+	// Bearer token : crons Vercel et déclenchement manuel par l'admin
 	const authHeader = request.headers.get('authorization');
 	if (!authHeader) {
-		console.warn('[CRON AUTH] Missing authentication (no x-vercel-cron or Authorization header)', {
+		logger.warn('[CRON AUTH] Missing authentication (no Authorization header)', {
 			url: request.url,
 			method: request.method
 		});
-		throw error(401, 'Unauthorized: Missing authentication');
+		throw error(401, 'Authentification manquante');
 	}
 
 	// Validate Bearer token format (case-insensitive)
 	// Expected format: "Bearer <token>"
 	const match = /^Bearer\s+(.+)$/i.exec(authHeader);
 	if (!match) {
-		console.warn('[CRON AUTH] Invalid Authorization header format', {
+		logger.warn('[CRON AUTH] Invalid Authorization header format', {
 			url: request.url,
 			format: authHeader.substring(0, 20) // Log first 20 chars only (don't leak full header)
 		});
-		throw error(
-			401,
-			'Unauthorized: Invalid Authorization header format (expected "Bearer <token>")'
-		);
+		throw error(401, 'En-tête Authorization mal formé (attendu : « Bearer <jeton> »)');
 	}
 
 	const providedToken = match[1];
@@ -101,30 +84,30 @@ export function verifyCronAuth(request: Request): void {
 	// Check lengths match before calling timingSafeEqual()
 	// timingSafeEqual() requires equal-length buffers
 	if (expectedBuffer.length !== providedBuffer.length) {
-		console.warn('[CRON AUTH] Invalid token (length mismatch)', {
+		logger.warn('[CRON AUTH] Invalid token (length mismatch)', {
 			url: request.url,
 			expected_length: expectedBuffer.length,
 			provided_length: providedBuffer.length
 		});
-		throw error(401, 'Unauthorized: Invalid token');
+		throw error(401, 'Jeton invalide');
 	}
 
 	// Perform constant-time comparison
 	try {
 		if (!timingSafeEqual(expectedBuffer, providedBuffer)) {
-			console.warn('[CRON AUTH] Invalid token (value mismatch)', {
+			logger.warn('[CRON AUTH] Invalid token (value mismatch)', {
 				url: request.url
 			});
-			throw error(401, 'Unauthorized: Invalid token');
+			throw error(401, 'Jeton invalide');
 		}
 	} catch (err) {
 		// timingSafeEqual can throw if buffers are invalid
-		console.error('[CRON AUTH] Comparison error:', err);
-		throw error(401, 'Unauthorized: Invalid token');
+		logger.error('[CRON AUTH] Comparison error:', err);
+		throw error(401, 'Jeton invalide');
 	}
 
 	// Success - log and continue
-	console.log('[CRON AUTH] ✅ Valid Bearer token', {
+	logger.info('[CRON AUTH] ✅ Valid Bearer token', {
 		url: request.url,
 		method: request.method,
 		timestamp: new Date().toISOString()

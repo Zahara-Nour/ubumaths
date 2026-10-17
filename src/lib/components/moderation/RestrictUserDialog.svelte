@@ -177,7 +177,7 @@
 
 			if (!response.ok) {
 				const errorText = await response.text();
-				throw new Error(errorText || 'Failed to restrict user');
+				throw new Error(errorText || 'Impossible de restreindre l’utilisateur');
 			}
 
 			toaster.success('Restriction appliquée avec succès');

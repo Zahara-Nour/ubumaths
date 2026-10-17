@@ -20,12 +20,12 @@ const batchRejectSchema = z.object({
 	requests: z
 		.array(
 			z.object({
-				instanceId: z.string().uuid('Invalid instance ID format'),
-				studentId: z.string().uuid('Invalid student ID format')
+				instanceId: z.string().uuid('Identifiant de carte VIP invalide'),
+				studentId: z.string().uuid('Identifiant d’élève invalide')
 			})
 		)
-		.min(1, 'At least one request required')
-		.max(100, 'Maximum 100 requests per batch')
+		.min(1, 'Au moins une demande requise')
+		.max(100, '100 demandes au maximum à la fois')
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
 
 	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Only teachers can reject VIP card activations');
+		throw error(403, 'Seul le professeur peut refuser l’activation d’une carte VIP');
 	}
 
 	const body = await request.json();
@@ -60,7 +60,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		for (const req of requests) {
 			if (deniedStudents.has(req.studentId)) {
 				results.failed++;
-				results.errors.push(`${req.instanceId}: Student is not in your classes`);
+				results.errors.push(
+					`${req.instanceId} : cet élève n’est pas dans les classes du professeur`
+				);
 			}
 		}
 	}

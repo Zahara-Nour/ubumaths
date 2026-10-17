@@ -339,9 +339,7 @@ Le champ d'approbation est la colonne **`profiles.status`** (enum `user_status` 
    export const load: PageServerLoad = async ({ parent }) => {
    	const { profile } = await parent();
    	requireRole(profile, 'teacher'); // 403 si non-teacher
-   	return {
-   		/* … */
-   	};
+   	return {/* … */};
    };
    ```
 

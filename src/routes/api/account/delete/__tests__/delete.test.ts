@@ -510,6 +510,51 @@ describe('DELETE /api/account/delete', () => {
 			expect(remove).toHaveBeenCalledWith(['user-123/rapport-1/capture.png']);
 		});
 
+		// Le cron hebdomadaire reprend les suppressions sans `storage_removed_at` : la route
+		// ne date la ligne que si elle a retiré tous les fichiers.
+		test('fichiers tous retirés : la ligne d’audit est datée', async () => {
+			const { client, mockAuditChain } = setupSuccessfulDeletion();
+			client.storage.from.mockReturnValue({
+				list: vi.fn(),
+				remove: vi.fn().mockResolvedValue({ error: null })
+			});
+			client.rpc.mockResolvedValue({
+				data: { storage_paths: { 'chat-attachments': ['conv-1/msg-1/a.png'] } },
+				error: null
+			});
+
+			await DELETE(
+				createMockEvent({ confirmation: ACCOUNT_DELETION_CONFIRMATION_PHRASE }) as never
+			);
+
+			expect(mockAuditChain.update).toHaveBeenCalledWith(
+				expect.objectContaining({ status: 'completed', storage_removed_at: expect.any(String) })
+			);
+		});
+
+		test('un retrait échoué laisse la ligne sans date : le cron la reprendra', async () => {
+			const { client, mockAuditChain } = setupSuccessfulDeletion();
+			client.storage.from.mockReturnValue({
+				list: vi.fn(),
+				remove: vi.fn().mockResolvedValue({ error: { message: 'panne' } })
+			});
+			client.rpc.mockResolvedValue({
+				data: { storage_paths: { 'chat-attachments': ['conv-1/msg-1/a.png'] } },
+				error: null
+			});
+
+			await DELETE(
+				createMockEvent({ confirmation: ACCOUNT_DELETION_CONFIRMATION_PHRASE }) as never
+			);
+
+			const payloads = mockAuditChain.update.mock.calls.map(
+				(call: unknown[]) => call[0] as Record<string, unknown>
+			);
+			const completed = payloads.find((payload) => payload.status === 'completed');
+			expect(completed).toBeDefined();
+			expect(completed).not.toHaveProperty('storage_removed_at');
+		});
+
 		test('une phrase de confirmation fausse ne consomme pas la limite de débit', async () => {
 			setupSuccessfulDeletion();
 

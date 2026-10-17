@@ -101,7 +101,7 @@ describe('requireAdmin — denial', () => {
 			expect.fail('Should have thrown 403');
 		} catch (err: any) {
 			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Admin elevation required');
+			expect(err.body.message).toBe('Élévation admin requise');
 		}
 	});
 
@@ -114,7 +114,7 @@ describe('requireAdmin — denial', () => {
 			expect.fail('Should have thrown 403');
 		} catch (err: any) {
 			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Admin elevation required');
+			expect(err.body.message).toBe('Élévation admin requise');
 		}
 	});
 

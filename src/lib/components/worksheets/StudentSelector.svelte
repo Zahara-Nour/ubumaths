@@ -169,12 +169,12 @@
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || "Erreur lors de l'ajout de l'eleve");
+				throw new Error(errorData.message || 'Erreur lors de l’ajout de l’élève');
 			}
 
 			// Refresh assigned students list
 			await fetchAssignedStudents();
-			toaster.success("Eleve ajoute a l'assignation");
+			toaster.success('Élève ajouté à l’affectation');
 			onStudentsChanged?.();
 		} catch (err) {
 			console.error('Error adding student:', err);
@@ -202,12 +202,12 @@
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || "Erreur lors de la suppression de l'eleve");
+				throw new Error(errorData.message || 'Erreur lors de la suppression de l’élève');
 			}
 
 			// Refresh assigned students list
 			await fetchAssignedStudents();
-			toaster.success("Eleve retire de l'assignation");
+			toaster.success('Élève retiré de l’affectation');
 			onStudentsChanged?.();
 		} catch (err) {
 			console.error('Error removing student:', err);

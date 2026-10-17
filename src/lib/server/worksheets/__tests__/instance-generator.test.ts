@@ -3,7 +3,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { generateWorksheetInstance, generatePreviewInstance } from '../instance-generator';
+import {
+	generateWorksheetInstance,
+	generatePreviewInstance,
+	GENERATION_EXERCISE_FIELDS
+} from '../instance-generator';
 import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
 import type { Variable } from '$lib/ubumark';
 import type { ExerciseHint, ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
@@ -748,6 +752,41 @@ describe('Instance Generator', () => {
 				variantSeed: 42
 			});
 			expect(instance.exercises[0].generic_functions ?? undefined).toBeUndefined();
+		});
+	});
+	// Sens de AB (lot 6 des longueurs, Q-J/Q-K) : résolu une fois, depuis le thème
+	describe('sens de deux majuscules collées (capital_pairs)', () => {
+		it('la jointure des routes de génération lit le thème (sinon tout passe en longueur)', () => {
+			// `/instances` et `/preview` lisent l'exercice par ces champs : sans `topic`,
+			// un exercice de Graphes et matrices serait stocké en longueur (instance_data)
+			const fields = GENERATION_EXERCISE_FIELDS.split(',').map((f) => f.trim());
+			expect(fields).toContain('topic');
+		});
+
+		const withTopic = (topic: string | null | undefined) =>
+			mockExercises.map((we, i) =>
+				i === 0 ? { ...we, exercise: { ...we.exercise!, topic } } : we
+			);
+
+		it.each([
+			['Géométrie', 'length'],
+			[null, 'length'],
+			['Graphes et matrices', 'product']
+		] as const)('thème %s → %s, copié sur l’exercice résolu', (topic, expected) => {
+			const student = generateWorksheetInstance({
+				worksheetId: 'w-ab',
+				studentId: 's1',
+				exercises: withTopic(topic),
+				config: {}
+			});
+			expect(student.exercises.find((e) => e.exercise_id === 'e1')?.capital_pairs).toBe(expected);
+			const preview = generatePreviewInstance({
+				worksheetId: 'w-ab',
+				exercises: withTopic(topic),
+				config: {},
+				variantSeed: 42
+			});
+			expect(preview.exercises[0].capital_pairs).toBe(expected);
 		});
 	});
 });

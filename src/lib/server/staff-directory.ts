@@ -20,6 +20,9 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/staff-directory');
 
 /** Une ligne de l'annuaire, telle que le RPC la rend. */
 export type StaffMember = Database['public']['Functions']['get_staff_directory']['Returns'][number];
@@ -37,7 +40,7 @@ export async function fetchStaffDirectory(
 	const { data, error } = await supabase.rpc('get_staff_directory');
 
 	if (error) {
-		console.error('[staff-directory] Annuaire du personnel illisible :', error);
+		logger.error('[staff-directory] Annuaire du personnel illisible :', error);
 		return [];
 	}
 

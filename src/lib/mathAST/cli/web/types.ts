@@ -2,37 +2,10 @@
  * Web REPL Types
  *
  * Type definitions specific to the browser-based REPL interface.
- * Extends the CLI types with web-specific features like HTML output,
- * history management, and bidirectional highlighting.
+ * Extends the CLI types with web-specific features like HTML output.
  */
 
 import type { MathNode } from '../../types';
-
-// =============================================================================
-// Input Modes
-// =============================================================================
-
-/**
- * REPL input mode for expression parsing.
- *
- * - 'latex': Force LaTeX parsing
- * - 'custom': Force custom syntax parsing
- * - 'auto': Auto-detect format (default)
- */
-export type ReplInputMode = 'latex' | 'custom' | 'auto';
-
-// =============================================================================
-// UI Styles
-// =============================================================================
-
-/**
- * Visual style for the REPL interface.
- *
- * - 'terminal': Classic terminal look (monospace, dark)
- * - 'modern': Modern UI with rounded corners and gradients
- * - 'hybrid': Mix of terminal and modern aesthetics
- */
-export type TabStyle = 'terminal' | 'modern' | 'hybrid';
 
 // =============================================================================
 // Execution Results
@@ -51,7 +24,12 @@ export interface ReplExecutionResult {
 	/** Plain text output (always present) */
 	readonly output: string;
 
-	/** HTML-formatted output for browser display */
+	/**
+	 * HTML-formatted output for browser display.
+	 *
+	 * Seul lecteur hors des tests : le store de `/calc` (`calculator.svelte.ts`),
+	 * qui le recopie dans son historique sans l'afficher (relevé le 2026-10-13).
+	 */
 	readonly outputHtml?: string;
 
 	/** LaTeX representation for MathLive rendering */
@@ -60,16 +38,6 @@ export interface ReplExecutionResult {
 	/** Parsed AST for tree viewer */
 	readonly ast?: MathNode;
 
-	/**
-	 * Highlight ranges for bidirectional AST <-> output linking.
-	 * Each range maps a node ID to its position in the output string.
-	 */
-	readonly highlightRanges?: ReadonlyArray<{
-		readonly nodeId: string;
-		readonly start: number;
-		readonly end: number;
-	}>;
-
 	/** Error details if execution failed */
 	readonly error?: {
 		readonly code: string;
@@ -77,34 +45,28 @@ export interface ReplExecutionResult {
 		readonly position?: number;
 	};
 
-	// =========================================================================
-	// Exact/Decimal Toggle Support
-	// =========================================================================
+	/**
+	 * Le résultat exact aurait ce nombre de caractères (environ) : trop long, il garde
+	 * l'écriture tapée (option A de David, 2026-10-12, seuil 1 000) — `ast` est alors
+	 * l'écriture, à ne pas développer (`tidy` la recalculerait).
+	 */
+	readonly exactTooLong?: number;
 
-	/** Exact representation (e.g., "1/3", "sqrt(2)") */
-	readonly exactOutput?: string;
-	readonly exactOutputHtml?: string;
+	/**
+	 * La valeur approchée d'un résultat exact (`\approx 0.7071`, `= 0.25`),
+	 * pour le bouton ≈ de l'atelier — mode exact seulement
+	 * (`approximation.ts`).
+	 */
+	readonly approximateLatex?: string;
 
-	/** Decimal representation (e.g., "≈ 0.333", "≈ 1.414") */
-	readonly decimalOutput?: string;
-	readonly decimalOutputHtml?: string;
+	/** La valeur exacte d'un calcul fait en mode décimal, en LaTeX. */
+	readonly exactLatex?: string;
 
-	/** Whether user can toggle between exact and decimal display */
-	readonly canToggle?: boolean;
-
-	/** Initial display mode (true = show decimal first, false = show exact first) */
-	readonly showDecimalInitially?: boolean;
-
-	// =========================================================================
-	// Export Support
-	// =========================================================================
-
-	/** Data for file export (triggers download in UI) */
-	readonly exportData?: {
-		readonly content: string;
-		readonly filename: string;
-		readonly mimeType: string;
-	};
+	/**
+	 * La grandeur EXACTE d'une réponse, quand l'arbre affiché en est une autre
+	 * écriture (`2 h 30 min` juxtaposées) : c'est elle que « Garder » range.
+	 */
+	readonly quantityAst?: MathNode;
 }
 
 // =============================================================================
@@ -132,34 +94,4 @@ export interface WebFunctionInfo {
 
 	/** Inverse expression as custom syntax string, if defined */
 	readonly inverse?: string;
-}
-
-// =============================================================================
-// History Management
-// =============================================================================
-
-/**
- * Single entry in the REPL history.
- *
- * Stores the complete context of a REPL interaction for replay,
- * export, and navigation (up/down arrows).
- */
-export interface ReplHistoryEntry {
-	/** Unique identifier for this entry */
-	readonly id: string;
-
-	/** Unix timestamp (milliseconds) when entry was created */
-	readonly timestamp: number;
-
-	/** Original input string (command or expression) */
-	readonly input: string;
-
-	/** Input mode at the time of execution */
-	readonly inputMode: ReplInputMode;
-
-	/** Execution result with output and metadata */
-	readonly result: ReplExecutionResult;
-
-	/** True if input was a dot-command (e.g., .help) */
-	readonly isCommand: boolean;
 }

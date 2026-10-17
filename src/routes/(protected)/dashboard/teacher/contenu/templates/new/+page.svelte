@@ -9,6 +9,7 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -22,7 +23,6 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import type { GradeCode } from '$lib/types/grades';
-	import { ArrowLeft } from '@lucide/svelte';
 
 	let { form }: { form: ActionData } = $props();
 
@@ -42,10 +42,7 @@
 <div class="space-y-6">
 	<!-- Header -->
 	<div>
-		<Button variant="ghost" href="/dashboard/teacher/contenu/templates" class="mb-4">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour aux templates
-		</Button>
+		<BackLink href="/dashboard/teacher/contenu/templates" label="Retour aux templates" />
 		<h1 class="text-3xl font-bold tracking-tight">Nouveau Template</h1>
 		<p class="mt-1 text-muted-foreground">
 			Créez un template de chapitre réutilisable pour vos cours
@@ -61,7 +58,7 @@
 			return async ({ result, update }) => {
 				isSubmitting = false;
 				if (result.type === 'success' || result.type === 'redirect') {
-					toaster.success('Template créé avec succès');
+					toaster.success('Modèle créé avec succès');
 				}
 				await update();
 			};

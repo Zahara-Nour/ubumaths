@@ -26,6 +26,9 @@ import { Grade } from '$lib/srs/types';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/srs/record-series-reviews');
 
 // Types
 export interface SeriesReview {
@@ -56,7 +59,7 @@ export async function recordSeriesReviews(
 			.in('template_id', templateIds);
 
 		if (linksError) {
-			console.error(`${label} question_template_points illisible :`, linksError);
+			logger.error(`${label} question_template_points illisible :`, linksError);
 		} else {
 			for (const link of links ?? []) {
 				if (entersProgrammeDeck(link.question_templates)) taggedTemplates.add(link.template_id);
@@ -94,7 +97,7 @@ export async function recordSeriesReviews(
 				await applyFsrsReview(supabase, fsrs, userId, 'template', review.templateId, grade);
 			}
 		} catch (fsrsErr) {
-			console.error(`${label} FSRS update failed, attempt non inséré :`, {
+			logger.error(`${label} FSRS update failed, attempt non inséré :`, {
 				userId,
 				templateId: review.templateId,
 				grade,
@@ -121,9 +124,9 @@ export async function recordSeriesReviews(
 			.select('id');
 
 		if (attemptsError) {
-			console.error(`${label} skill_attempts INSERT failed:`, attemptsError);
+			logger.error(`${label} skill_attempts INSERT failed:`, attemptsError);
 		} else if ((attemptsRows?.length ?? 0) !== attemptsToInsert.length) {
-			console.error(`${label} skill_attempts : lignes écrites ≠ lignes envoyées`, {
+			logger.error(`${label} skill_attempts : lignes écrites ≠ lignes envoyées`, {
 				sent: attemptsToInsert.length,
 				written: attemptsRows?.length ?? 0
 			});
@@ -135,7 +138,7 @@ export async function recordSeriesReviews(
 		try {
 			await ensureProgrammeDeckCard(supabase, userId, templateId);
 		} catch (progErr) {
-			console.error(`${label} Programme deck add failed:`, progErr);
+			logger.error(`${label} Programme deck add failed:`, progErr);
 		}
 	}
 }

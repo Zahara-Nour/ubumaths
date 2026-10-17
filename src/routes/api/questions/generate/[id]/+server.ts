@@ -12,6 +12,9 @@ import { generateQuestionSchema } from '$lib/server/validation/questions';
 import { toQuestionTemplate } from '$lib/types/question-template';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/questions/generate/[id]/+server');
 
 /**
  * POST /api/questions/generate/[id]
@@ -73,7 +76,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			return json(result, { status: 400 });
 		}
 	} catch (err) {
-		console.error('Error in POST /api/questions/generate/[id]:', err);
+		logger.error('Error in POST /api/questions/generate/[id]:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

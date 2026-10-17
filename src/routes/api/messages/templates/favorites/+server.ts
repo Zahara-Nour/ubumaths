@@ -11,6 +11,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { uuidSchema, validateRequest } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/templates/favorites/+server');
 
 // Type for the nested query result structure
 type FavoriteWithTemplate = {
@@ -56,7 +59,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (dbError) {
-		console.error('Error fetching favorites:', dbError);
+		logger.error('Error fetching favorites:', dbError);
 		return error(500, 'Erreur lors de la récupération des favoris');
 	}
 
@@ -134,7 +137,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			return json({ message: 'Template déjà dans les favoris', already_favorited: true });
 		}
 
-		console.error('Error adding favorite:', insertError);
+		logger.error('Error adding favorite:', insertError);
 		return error(500, "Erreur lors de l'ajout aux favoris");
 	}
 
@@ -169,7 +172,7 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 		.eq('template_id', templateId);
 
 	if (deleteError) {
-		console.error('Error removing favorite:', deleteError);
+		logger.error('Error removing favorite:', deleteError);
 		return error(500, 'Erreur lors de la suppression du favori');
 	}
 

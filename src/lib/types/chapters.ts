@@ -128,6 +128,13 @@ export type ChapterColor =
 // ===========================================================================
 
 /**
+ * Propriétaire d'un élément de contenu (ADR 0029) : un CHAPITRE de classe ou un
+ * MODÈLE de chapitre. Les six tables de contenu portent `chapter_id` OU
+ * `template_id`, jamais les deux ; l'éditeur partagé désigne ainsi l'un ou l'autre.
+ */
+export type ContentOwner = { kind: 'chapter' | 'template'; id: string };
+
+/**
  * Class chapter - main container for course content
  */
 export interface ClassChapter {
@@ -155,6 +162,13 @@ export interface ClassChapter {
 export interface ChapterSection {
 	id: string;
 	chapterId: string;
+	/** Section du modèle que cette section RELIE (ADR 0029) ; `null` si propre au chapitre. */
+	sourceId: string | null;
+	/**
+	 * Masquée dans ce chapitre (décision du 2026-10-14) : son contenu est masqué
+	 * et dépublié avec elle. Toujours faux pour une section de modèle.
+	 */
+	hidden: boolean;
 	title: string;
 	displayOrder: number;
 	createdAt: string;
@@ -202,6 +216,14 @@ export interface ChapterDocument {
 	 * `chapter_templates.status` (le modèle est diffusable).
 	 */
 	publishedAt: string | null;
+	/**
+	 * Élément du modèle que cette ligne RELIE (ADR 0029) ; `null` pour un élément
+	 * propre au chapitre. Une ligne de lien ne se retouche ni ne se supprime dans
+	 * le chapitre : elle se masque.
+	 */
+	sourceId: string | null;
+	/** Masqué dans ce chapitre (« pas cette année ») : jamais publié, revient d'un clic. */
+	hidden: boolean;
 }
 
 /**
@@ -246,6 +268,14 @@ export interface ChapterChecklistItem {
 	 * `chapter_templates.status` (le modèle est diffusable).
 	 */
 	publishedAt: string | null;
+	/**
+	 * Élément du modèle que cette ligne RELIE (ADR 0029) ; `null` pour un élément
+	 * propre au chapitre. Une ligne de lien ne se retouche ni ne se supprime dans
+	 * le chapitre : elle se masque.
+	 */
+	sourceId: string | null;
+	/** Masqué dans ce chapitre (« pas cette année ») : jamais publié, revient d'un clic. */
+	hidden: boolean;
 }
 
 /**
@@ -288,6 +318,14 @@ export interface ChapterExercise {
 	 * `chapter_templates.status` (le modèle est diffusable).
 	 */
 	publishedAt: string | null;
+	/**
+	 * Élément du modèle que cette ligne RELIE (ADR 0029) ; `null` pour un élément
+	 * propre au chapitre. Une ligne de lien ne se retouche ni ne se supprime dans
+	 * le chapitre : elle se masque.
+	 */
+	sourceId: string | null;
+	/** Masqué dans ce chapitre (« pas cette année ») : jamais publié, revient d'un clic. */
+	hidden: boolean;
 }
 
 /**
@@ -320,6 +358,14 @@ export interface ChapterWorksheet {
 	 * `chapter_templates.status` (le modèle est diffusable).
 	 */
 	publishedAt: string | null;
+	/**
+	 * Élément du modèle que cette ligne RELIE (ADR 0029) ; `null` pour un élément
+	 * propre au chapitre. Une ligne de lien ne se retouche ni ne se supprime dans
+	 * le chapitre : elle se masque.
+	 */
+	sourceId: string | null;
+	/** Masqué dans ce chapitre (« pas cette année ») : jamais publié, revient d'un clic. */
+	hidden: boolean;
 }
 
 /**
@@ -343,6 +389,14 @@ export interface ChapterSeries {
 	createdAt: string;
 	/** Mise à disposition des élèves. `null` = préparé, invisible. */
 	publishedAt: string | null;
+	/**
+	 * Élément du modèle que cette ligne RELIE (ADR 0029) ; `null` pour un élément
+	 * propre au chapitre. Une ligne de lien ne se retouche ni ne se supprime dans
+	 * le chapitre : elle se masque.
+	 */
+	sourceId: string | null;
+	/** Masqué dans ce chapitre (« pas cette année ») : jamais publié, revient d'un clic. */
+	hidden: boolean;
 	/** Titre de la série, `null` si elle n'a pas pu être relue. */
 	title: string | null;
 	/** Nombre total de questions de la série. */
@@ -445,12 +499,24 @@ export function dbChapterToApp(db: DbClassChapter): ClassChapter {
 }
 
 /**
+ * Le chapitre d'une ligne de CHAPITRE. Depuis l'ADR 0029, une ligne de ces tables
+ * peut appartenir à un modèle (`chapter_id` vide) : lue par une requête de
+ * chapitre, c'est une erreur de requête, qui doit se voir.
+ */
+export function chapterIdOf(row: { id: string; chapter_id: string | null }): string {
+	if (row.chapter_id === null) {
+		throw new Error(`Ligne ${row.id} : élément de modèle lu comme un élément de chapitre`);
+	}
+	return row.chapter_id;
+}
+
+/**
  * Convert database document to app type
  */
 export function dbDocumentToApp(db: DbChapterDocument): ChapterDocument {
 	return {
 		id: db.id,
-		chapterId: db.chapter_id,
+		chapterId: chapterIdOf(db),
 		title: db.title,
 		description: db.description,
 		sourceType: db.source_type as DocumentSourceType,
@@ -466,7 +532,9 @@ export function dbDocumentToApp(db: DbChapterDocument): ChapterDocument {
 		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
-		publishedAt: db.published_at
+		publishedAt: db.published_at,
+		sourceId: db.source_id,
+		hidden: db.hidden
 	};
 }
 
@@ -476,7 +544,7 @@ export function dbDocumentToApp(db: DbChapterDocument): ChapterDocument {
 export function dbChecklistItemToApp(db: DbChapterChecklistItem): ChapterChecklistItem {
 	return {
 		id: db.id,
-		chapterId: db.chapter_id,
+		chapterId: chapterIdOf(db),
 		content: db.content,
 		description: db.description,
 		displayOrder: db.display_order,
@@ -484,7 +552,9 @@ export function dbChecklistItemToApp(db: DbChapterChecklistItem): ChapterCheckli
 		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
-		publishedAt: db.published_at
+		publishedAt: db.published_at,
+		sourceId: db.source_id,
+		hidden: db.hidden
 	};
 }
 
@@ -509,13 +579,15 @@ export function dbChecklistProgressToApp(db: DbStudentChecklistProgress): Studen
 export function dbExerciseToApp(db: DbChapterExercise): ChapterExercise {
 	return {
 		id: db.id,
-		chapterId: db.chapter_id,
+		chapterId: chapterIdOf(db),
 		exerciseId: db.exercise_id,
 		displayOrder: db.display_order,
 		sectionId: db.section_id,
 		sectionOrder: db.section_order,
 		createdAt: db.created_at,
-		publishedAt: db.published_at
+		publishedAt: db.published_at,
+		sourceId: db.source_id,
+		hidden: db.hidden
 	};
 }
 

@@ -31,11 +31,12 @@ import { add, divide, opposite, relation, variable as varNode } from '../factory
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
-import { getNumericValue } from '../common/numeric';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import {
 	canon,
 	addToBothSides,
+	chooseAddOrSubtract,
+	movedTerm,
 	divideBothSides,
 	isOne,
 	isZero,
@@ -80,36 +81,6 @@ export function splitSide(
 function extractCoefficientOfX(node: MathNode, variable: string): MathNode | null {
 	if (!containsVariable(node, variable)) return null;
 	return canon(divide(node, varNode(variable), 'fraction'));
-}
-
-/**
- * Resolve a "move-to-other-side" operation to either `add-both-sides` or
- * `subtract-both-sides` so the operand is always non-negative for display.
- *
- * Detects negativity in 3 forms :
- * - `opposite(X)` AST wrapper → kind = subtract, displayOperand = X
- * - Numeric value (number literal, simple fraction…) < 0 via `getNumericValue`
- *   → kind = subtract, displayOperand = canon(opposite(operand))
- * - Otherwise → kind = add, displayOperand = operand
- */
-function chooseAddOrSubtract(operand: MathNode): {
-	kind: 'add-both-sides' | 'subtract-both-sides';
-	displayOperand: MathNode;
-} {
-	if (operand.type === 'opposite') {
-		return {
-			kind: 'subtract-both-sides',
-			displayOperand: operand.operand
-		};
-	}
-	const numeric = getNumericValue(operand);
-	if (numeric !== null && numeric < 0) {
-		return {
-			kind: 'subtract-both-sides',
-			displayOperand: canon(opposite(operand))
-		};
-	}
-	return { kind: 'add-both-sides', displayOperand: operand };
 }
 
 // =============================================================================
@@ -173,11 +144,8 @@ export function generateLinearEquationSteps(
 	// Compute the two regroupement operands once (shared by atomic + combined modes)
 	const rightSplit = splitSide(current.right, variable);
 	const leftSplit = splitSide(current.left, variable);
-	const xMoveRaw = rightSplit.xPart !== null ? canon(opposite(rightSplit.xPart)) : null;
-	const constMoveRaw =
-		leftSplit.constPart !== null && !isZero(leftSplit.constPart)
-			? canon(opposite(leftSplit.constPart))
-			: null;
+	const xMoveRaw = movedTerm(rightSplit.xPart, variable);
+	const constMoveRaw = movedTerm(leftSplit.constPart, variable);
 
 	if (strategy.regroupementMode === 'combined') {
 		// Combined: ONE transpose-terms step showing both moves simultaneously
@@ -279,7 +247,7 @@ export function generateLinearEquationSteps(
 			? makeStep({
 					id: id(),
 					rule: 'read-solution',
-					description: `Solution : ${variable} = ${operandPretty(solutionValue)}`,
+					description: `Solution : $${variable} = ${operandLatex(solutionValue)}$`,
 					before: current,
 					after: current,
 					operation: { kind: 'read-solution', variable, value: solutionValue },
@@ -342,7 +310,12 @@ export function generateLinearEquationSteps(
 
 import { toLatex } from '../latex-generator';
 
+/** Un opérande dans la prose (titres de repli) : en LaTeX entre `$…$` (V25) */
 function operandPretty(node: MathNode): string {
+	return `$${operandLatex(node)}$`;
+}
+
+function operandLatex(node: MathNode): string {
 	// `toLatex` emits a literal space for implicit multiplication (`5 x`) for
 	// LaTeX source readability. In our pedagogical operand strings (terminal
 	// demos, plain-text titles) we want the tighter `5x`. Strip the space

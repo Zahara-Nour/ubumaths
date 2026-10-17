@@ -88,7 +88,7 @@
 			<Dialog.Title>Enregistrer comme série</Dialog.Title>
 			<Dialog.Description>
 				La série garde les {categories.length} catégorie{categories.length > 1 ? 's' : ''} du panier.
-				Tu pourras ensuite en faire une évaluation.
+				Tu pourras ensuite en faire un contrôle.
 			</Dialog.Description>
 		</Dialog.Header>
 

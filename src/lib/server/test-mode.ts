@@ -20,6 +20,9 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/test-mode');
 
 /**
  * Get teacher's test mode status
@@ -44,7 +47,7 @@ export async function getTeacherTestMode(
 		.single();
 
 	if (profileError) {
-		console.error('[getTeacherTestMode] Error fetching profile:', profileError);
+		logger.error('[getTeacherTestMode] Error fetching profile:', profileError);
 		return false; // Default to showing real students on error
 	}
 
@@ -61,7 +64,7 @@ export async function getTeacherTestMode(
 		.maybeSingle(); // Use maybeSingle() since preference might not exist
 
 	if (prefError) {
-		console.error('[getTeacherTestMode] Error fetching preferences:', prefError);
+		logger.error('[getTeacherTestMode] Error fetching preferences:', prefError);
 		return false; // Default to showing real students on error
 	}
 
@@ -100,7 +103,7 @@ export async function setTeacherTestMode(
 	);
 
 	if (error) {
-		console.error('[setTeacherTestMode] Error updating preference:', error);
+		logger.error('[setTeacherTestMode] Error updating preference:', error);
 		return false;
 	}
 

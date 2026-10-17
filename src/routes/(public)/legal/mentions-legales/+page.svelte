@@ -12,20 +12,20 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Mentions légales</h1>
 
-		<p class="lead text-muted-foreground">Derniere mise a jour : 15 juin 2026</p>
+		<p class="lead text-muted-foreground">Dernière mise à jour : 15 juin 2026</p>
 
 		<hr />
 
 		<section>
 			<h2>1. Éditeur du site</h2>
 			<p>
-				Le site <strong>Chiphre</strong> accessible a l'adresse
-				<a href={resolve('/')}>chiph.re</a> est edite par :
+				Le site <strong>Chiphre</strong> accessible à l'adresse
+				<a href={resolve('/')}>chiph.re</a> est édité par :
 			</p>
 			<ul>
-				<li><strong>Responsable de publication</strong> : [A COMPLETER]</li>
-				<li><strong>Statut</strong> : [A COMPLETER]</li>
-				<li><strong>Adresse</strong> : [A COMPLETER]</li>
+				<li><strong>Responsable de publication</strong> : [À COMPLÉTER]</li>
+				<li><strong>Statut</strong> : [À COMPLÉTER]</li>
+				<li><strong>Adresse</strong> : [À COMPLÉTER]</li>
 				<li><strong>Email</strong> : contact@chiph.re</li>
 			</ul>
 		</section>
@@ -50,7 +50,7 @@
 					<a href="https://supabase.com" target="_blank" rel="noopener noreferrer">supabase.com</a
 					><br />
 					Localisation des serveurs :
-					<strong>Union Europeenne (France &ndash; Paris, eu-west-3)</strong>
+					<strong>Union européenne (France &ndash; Paris, eu-west-3)</strong>
 				</p>
 			</div>
 		</section>
@@ -58,12 +58,12 @@
 		<section>
 			<h2>3. Propriété intellectuelle</h2>
 			<p>
-				L'ensemble des elements presents sur le site (textes, exercices, images, logos, code source,
-				design) sont la propriete exclusive d'Chiphre, sauf mention contraire.
+				L'ensemble des éléments présents sur le site (textes, exercices, images, logos, code source,
+				design) sont la propriété exclusive de Chiphre, sauf mention contraire.
 			</p>
 			<p>
-				Toute reproduction, representation, modification ou publication du site ou de son contenu,
-				par quelque procede que ce soit, est interdite sans autorisation prealable ecrite.
+				Toute reproduction, représentation, modification ou publication du site ou de son contenu,
+				par quelque procédé que ce soit, est interdite sans autorisation préalable écrite.
 			</p>
 		</section>
 
@@ -72,30 +72,30 @@
 
 			<h3>4.1 Responsable du traitement</h3>
 			<ul>
-				<li><strong>Nom</strong> : [A COMPLETER]</li>
+				<li><strong>Nom</strong> : [À COMPLÉTER]</li>
 				<li><strong>Email</strong> : contact@chiph.re</li>
 			</ul>
 
 			<h3>4.2 Politique de confidentialité</h3>
 			<p>
-				Pour plus d'informations sur la collecte et le traitement des donnees personnelles,
-				consultez notre <a href={resolve('/legal/confidentialite')}>Politique de Confidentialite</a
+				Pour plus d'informations sur la collecte et le traitement des données personnelles,
+				consultez notre <a href={resolve('/legal/confidentialite')}>Politique de confidentialité</a
 				>.
 			</p>
 
 			<h3>4.3 Droits des utilisateurs</h3>
-			<p>Conformement au RGPD, vous disposez des droits suivants :</p>
+			<p>Conformément au RGPD, vous disposez des droits suivants :</p>
 			<ul>
-				<li>Droit d'acces a vos donnees</li>
+				<li>Droit d'accès à vos données</li>
 				<li>Droit de rectification</li>
-				<li>Droit a l'effacement</li>
-				<li>Droit a la portabilite</li>
+				<li>Droit à l'effacement</li>
+				<li>Droit à la portabilité</li>
 				<li>Droit d'opposition</li>
 			</ul>
-			<p>Pour exercer ces droits, contactez-nous a : <strong>contact@chiph.re</strong></p>
+			<p>Pour exercer ces droits, contactez-nous à : <strong>contact@chiph.re</strong></p>
 
 			<h3>4.4 Réclamation</h3>
-			<p>En cas de difficulte, vous pouvez adresser une reclamation a la CNIL :</p>
+			<p>En cas de difficulté, vous pouvez adresser une réclamation à la CNIL :</p>
 			<ul>
 				<li>
 					<strong>Site web</strong> :
@@ -109,14 +109,14 @@
 
 		<section>
 			<h2>5. Cookies</h2>
-			<p>Le site utilise uniquement des <strong>cookies strictement necessaires</strong> :</p>
+			<p>Le site utilise uniquement des <strong>cookies strictement nécessaires</strong> :</p>
 			<div class="overflow-x-auto">
 				<table>
 					<thead>
 						<tr>
 							<th>Cookie</th>
-							<th>Finalite</th>
-							<th>Duree</th>
+							<th>Finalité</th>
+							<th>Durée</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -127,50 +127,50 @@
 						</tr>
 						<tr>
 							<td><code>google_oauth_state</code>, <code>google_code_verifier</code></td>
-							<td>Securite du flux de connexion Google (OAuth)</td>
+							<td>Sécurité du flux de connexion Google (OAuth)</td>
 							<td>10 minutes</td>
 						</tr>
 						<tr>
 							<td><code>maintenance_bypass</code></td>
-							<td>Acces pendant une maintenance (administration)</td>
+							<td>Accès pendant une maintenance (administration)</td>
 							<td>8 heures</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 			<p class="rounded-lg bg-muted p-4">
-				Le site n'utilise <strong>aucun cookie</strong> de mesure d'audience, de publicite ou de
+				Le site n'utilise <strong>aucun cookie</strong> de mesure d'audience, de publicité ou de
 				suivi. La mesure de performance (Vercel) fonctionne <strong>sans cookie</strong>. Chiphre
-				utilise par ailleurs le <strong>stockage local</strong> du navigateur a des fins strictement
-				fonctionnelles (sauvegarde de vos documents tableur / tableau blanc et preferences d'affichage)
-				; ces donnees restent sur votre appareil.
+				utilise par ailleurs le <strong>stockage local</strong> du navigateur à des fins strictement fonctionnelles
+				(sauvegarde de vos documents tableur / tableau blanc et préférences d'affichage) ; ces données
+				restent sur votre appareil.
 			</p>
 		</section>
 
 		<section>
 			<h2>6. Limitation de responsabilité</h2>
 			<p>
-				Chiphre s'efforce d'assurer la disponibilite du site 24h/24 et 7j/7, mais ne peut garantir
-				une disponibilite permanente. Des interruptions pour maintenance peuvent survenir.
+				Chiphre s'efforce d'assurer la disponibilité du site 24h/24 et 7j/7, mais ne peut garantir
+				une disponibilité permanente. Des interruptions pour maintenance peuvent survenir.
 			</p>
 			<p>
-				Les informations presentes sur le site sont fournies a titre indicatif et pedagogique.
-				Chiphre ne saurait etre tenue responsable des erreurs ou omissions eventuelles.
+				Les informations présentes sur le site sont fournies à titre indicatif et pédagogique.
+				Chiphre ne saurait être tenue responsable des erreurs ou omissions éventuelles.
 			</p>
 		</section>
 
 		<section>
 			<h2>7. Droit applicable</h2>
-			<p>Les presentes mentions legales sont soumises au <strong>droit francais</strong>.</p>
+			<p>Les présentes mentions légales sont soumises au <strong>droit français</strong>.</p>
 			<p>
-				En cas de litige, et apres echec de toute tentative de resolution amiable, les tribunaux
-				francais seront seuls competents.
+				En cas de litige, et après échec de toute tentative de résolution amiable, les tribunaux
+				français seront seuls compétents.
 			</p>
 		</section>
 
 		<section>
 			<h2>8. Contact</h2>
-			<p>Pour toute question concernant ces mentions legales :</p>
+			<p>Pour toute question concernant ces mentions légales :</p>
 			<ul>
 				<li><strong>Email</strong> : contact@chiph.re</li>
 			</ul>
@@ -181,9 +181,9 @@
 			<h3>Technologies utilisées</h3>
 			<ul>
 				<li><strong>Framework</strong> : SvelteKit</li>
-				<li><strong>Base de donnees</strong> : Supabase (PostgreSQL)</li>
-				<li><strong>Hebergement</strong> : Vercel</li>
-				<li><strong>Editeur mathematique</strong> : MathLive</li>
+				<li><strong>Base de données</strong> : Supabase (PostgreSQL)</li>
+				<li><strong>Hébergement</strong> : Vercel</li>
+				<li><strong>Éditeur mathématique</strong> : MathLive</li>
 			</ul>
 			<h3>Icônes</h3>
 			<p>Lucide Icons (licence MIT)</p>
@@ -193,8 +193,8 @@
 
 		<p class="text-sm text-muted-foreground">
 			<em>
-				Mentions legales conformes a la loi n°2004-575 du 21 juin 2004 pour la confiance dans
-				l'economie numerique (LCEN).
+				Mentions légales conformes à la loi n°2004-575 du 21 juin 2004 pour la confiance dans
+				l'économie numérique (LCEN).
 			</em>
 		</p>
 	</article>

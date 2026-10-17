@@ -18,6 +18,11 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/python-notebooks/[id]/checkpoint-runs/[cell_id]/hint-revealed/+server'
+);
 
 const cellIdSchema = z.string().min(1).max(100);
 
@@ -26,12 +31,12 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	const cellIdValidation = cellIdSchema.safeParse(params.cell_id);
 	if (!cellIdValidation.success) {
-		throw error(400, 'cell_id invalide');
+		throw error(400, 'Identifiant de cellule invalide');
 	}
 
 	const { data: run, error: dbError } = await supabase
@@ -43,10 +48,10 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 
 	if (dbError) {
 		if (dbError.code === '42501') {
-			throw error(403, 'Accès refusé à ce notebook');
+			throw error(403, 'Accès refusé à ce carnet');
 		}
-		console.error('Failed to mark checkpoint hint as revealed:', dbError);
-		throw error(500, "Erreur lors de l'enregistrement de l'indice");
+		logger.error('Failed to mark checkpoint hint as revealed:', dbError);
+		throw error(500, 'Impossible d’enregistrer l’indice');
 	}
 
 	return json({ run });

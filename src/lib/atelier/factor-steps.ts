@@ -24,6 +24,7 @@ import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/r
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { astOf } from './parse';
+import { summaryOf } from './steps-summary';
 
 // =============================================================================
 // Types
@@ -41,6 +42,8 @@ export type FactoredOutcome =
 	| {
 			readonly kind: 'factorisee';
 			readonly steps: readonly RenderedStep[];
+			/** Les mêmes étapes en version résumée, absente si elle ne dit rien de moins. */
+			readonly summary?: readonly RenderedStep[];
 			/** La forme factorisée en LaTeX — ce que la ligne affiche. */
 			readonly answer: string;
 			/** La même en syntaxe texte, pour le cas où le LaTeX ne se compose pas. */
@@ -125,8 +128,9 @@ export function factorSteps(expression: string): FactoredOutcome {
 		if (result.steps.length === 0 || latex.trim() === '') {
 			// ⚠️ Deux silences très différents, et l'élève a besoin de savoir
 			// lequel il a devant lui. `(x+1)(x-1)` n'a rien à factoriser ;
-			// `3x + 6` en aurait besoin — le module ne sait simplement pas
-			// extraire un facteur commun NUMÉRIQUE (mesuré le 2026-09-19).
+			// `x^2 + 1` est une somme qu'aucune stratégie ne factorise. On dit
+			// alors « je ne sais pas », jamais « ne se factorise pas » : le
+			// module ne le prouve pas (ADR 0024).
 			return isSum(result.result)
 				? { kind: 'inchangee', message: `Je ne sais pas factoriser « ${plain} ».` }
 				: {
@@ -135,15 +139,24 @@ export function factorSteps(expression: string): FactoredOutcome {
 					};
 		}
 
-		const steps = new PedagogicalSimplifyRenderer().renderAll(result.steps, {
-			schoolLevel: 'lycee',
-			verbosity: 'detailed'
-		});
+		const renderer = new PedagogicalSimplifyRenderer();
+		const steps = renderer.renderAll(result.steps, { schoolLevel: 'lycee', verbosity: 'detailed' });
 		if (steps.length === 0) {
 			return { kind: 'inchangee', message: `Je ne sais pas factoriser « ${plain} ».` };
 		}
+		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
+		const summary = summaryOf(
+			steps,
+			renderer.renderAll(result.steps, { schoolLevel: 'lycee', verbosity: 'summarized' })
+		);
 
-		return { kind: 'factorisee', steps, answer: latex, text: plain };
+		return {
+			kind: 'factorisee',
+			steps,
+			answer: latex,
+			text: plain,
+			...(summary !== undefined && { summary })
+		};
 	} catch {
 		// `PedagogicalSimplifyNotImplemented` (inéquation, matrice…), ou un
 		// générateur qui refuse ce qu'on lui donne.

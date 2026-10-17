@@ -1,6 +1,9 @@
 import { readdir, readFile } from 'fs/promises';
 import { join, resolve, sep } from 'path';
 import type { DocumentMetadata } from './markdown-parser';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/docs-scanner');
 
 export interface DocCategory {
 	name: string;
@@ -85,7 +88,7 @@ async function scanCategory(
 			}
 		}
 	} catch (error) {
-		console.error(`Error scanning ${dirPath}:`, error);
+		logger.error(`Error scanning ${dirPath}:`, error);
 	}
 
 	// Sort: README first, then by depth (shallower first), then alphabetically
@@ -158,22 +161,4 @@ export async function getDocumentContent(categoryPath: string, docPath: string):
 	} catch {
 		throw new Error(`Document not found: ${categoryPath}/${docPath}`);
 	}
-}
-
-/**
- * Search documentation by query
- */
-export async function searchDocumentation(query: string): Promise<DocumentMetadata[]> {
-	const allCategories = await scanDocumentation();
-	const allDocs = allCategories.flatMap((cat) => cat.docs);
-
-	const lowerQuery = query.toLowerCase();
-
-	return allDocs.filter((doc) => {
-		return (
-			doc.title.toLowerCase().includes(lowerQuery) ||
-			doc.path.toLowerCase().includes(lowerQuery) ||
-			doc.category.toLowerCase().includes(lowerQuery)
-		);
-	});
 }

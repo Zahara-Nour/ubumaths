@@ -181,7 +181,7 @@ des 123 migrations.
 | Extensions `vector`, `unaccent`                                                                                                                                | `public`                                | ✅ dump de schéma                                                                                                                                                             |
 | Lignes `auth.users`, `auth.identities`, `storage.buckets`                                                                                                      | `auth`, `storage`                       | ✅ dump de données                                                                                                                                                            |
 | Historique des migrations                                                                                                                                      | `supabase_migrations.schema_migrations` | ⚠️ non sauvegardé ; intact en restauration **sur place**, à reconstituer dans un **nouveau** projet                                                                           |
-| **Tâches `pg_cron`** (ex. `flag_stale_python_rechecks`)                                                                                                        | `cron.job`                              | ❌ **programmées à la main sur la prod** (« OUT OF BAND, like every other job », migration `20260827120000`) : dans **aucun** fichier du dépôt ; `cron.job` est vide en local |
+| **Tâches `pg_cron`**                                                                                                                                           | `cron.job`                              | ❌ **programmées à la main sur la prod** (« OUT OF BAND, like every other job », migration `20260827120000`) : dans **aucun** fichier du dépôt ; `cron.job` est vide en local |
 | Policies `cron_job_policy`, `cron_job_run_details_policy`                                                                                                      | `cron`                                  | — fournies par l'extension `pg_cron`                                                                                                                                          |
 
 Aucune fonction, vue, type ou table du projet hors `public` (hors
@@ -221,11 +221,10 @@ Toutes actives, exécutées par `postgres`. Les 8 fonctions appelées existent
 dans le schéma issu des migrations (vérifié sur la pile locale) : une
 restauration les recrée.
 
-⚠️ **Non programmée** : `flag_stale_python_rechecks`, que la migration
-`20260827120000_python_submission_server_verification.sql` décrit comme « à
-programmer » (horaire, `15 * * * *`). La fonction
-`public.run_flag_stale_python_rechecks()` existe mais **ne tourne jamais** en
-prod. À trancher par David (oubli ou choix).
+`flag_stale_python_rechecks`, que la migration
+`20260827120000_python_submission_server_verification.sql` décrivait comme « à
+programmer », n'a jamais tourné : la fonction et sa table ont été supprimées le
+2026-10-13 (migration `20261016103000`, re-vérification Python abandonnée).
 
 **Recréer dans un nouveau projet :**
 

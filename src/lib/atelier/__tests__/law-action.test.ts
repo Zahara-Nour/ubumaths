@@ -50,6 +50,9 @@ describe('Loi avec probabilités M', () => {
 		const atelier = atelierWith({ L: '1 ; 2', M: '1' });
 		const action = actionsFor(atelier.get('L')!, atelier).find((a) => a.id === 'law:M');
 
-		expect(action?.disabledReason).toMatch(/2.*1/);
+		// P1 : la raison nomme la ligne sans probabilité
+		expect(action?.disabledReason).toBe(
+			'La ligne 2 a un nombre dans L mais pas dans M : une loi demande une probabilité sur la ligne de chaque valeur.'
+		);
 	});
 });

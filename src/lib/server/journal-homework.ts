@@ -22,6 +22,9 @@ import {
 	toSessionOptions,
 	type ClassSessionCalendar
 } from './class-sessions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/journal-homework');
 
 // ============================================================================
 // TYPES
@@ -162,7 +165,7 @@ export async function getHomeworkForEntry(
 		// `error.message` et non l'objet entier : `details` / `hint` de PostgREST
 		// transportent des valeurs de ligne, donc du contenu de séance, jusque dans
 		// les journaux de la plateforme.
-		console.error('[journal-homework] Travaux illisibles :', error.message);
+		logger.error('[journal-homework] Travaux illisibles :', error.message);
 		throw new Error(error.message);
 	}
 
@@ -191,7 +194,7 @@ export async function setHomeworkForEntry(
 	});
 
 	if (error) {
-		console.error('[journal-homework] Écriture des travaux impossible :', error.message);
+		logger.error('[journal-homework] Écriture des travaux impossible :', error.message);
 		return { error: new Error(error.message) };
 	}
 

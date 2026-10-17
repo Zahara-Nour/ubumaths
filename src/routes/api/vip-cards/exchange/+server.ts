@@ -58,6 +58,9 @@ import {
 	grantVipCardsAfterAction,
 	restoreActionCard
 } from '$lib/server/vip-card-grants';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/exchange/+server');
 
 // ============================================================================
 // TYPES
@@ -106,11 +109,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			supabase
 		);
 		if (!hasAccess) {
-			throw error(403, 'You can only exchange cards for students in your classes');
+			throw error(403, 'Échange de cartes VIP réservé aux élèves des classes du professeur');
 		}
 	} else if (!isStudent) {
 		// Ni professeur, ni l'élève lui-même
-		throw error(403, 'You can only exchange cards for yourself or your students');
+		throw error(403, 'Échange de cartes VIP réservé à l’élève concerné ou à son professeur');
 	}
 	// Pour l'élève, l'approbation de la carte est vérifiée après sa lecture
 
@@ -122,8 +125,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('[exchange] Error fetching student profile:', fetchError);
-		throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
+		logger.error('[exchange] Error fetching student profile:', fetchError);
+		throw error(500, `Impossible de charger le profil de l’élève : ${fetchError.message}`);
 	}
 
 	const vipCards = asStudentVipCards(studentProfile.vip_cards);
@@ -131,15 +134,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// La carte d'action existe et n'est pas utilisée
 	const actionCard = vipCards[data.actionCardInstanceId];
 	if (!actionCard) {
-		throw error(404, `Action card instance not found: ${data.actionCardInstanceId}`);
+		throw error(404, `Carte d’action introuvable : ${data.actionCardInstanceId}`);
 	}
 	if (actionCard.usedAt) {
-		throw error(400, `Action card already used: ${data.actionCardInstanceId}`);
+		throw error(400, `Carte d’action déjà utilisée : ${data.actionCardInstanceId}`);
 	}
 
 	const actionTemplate = await getTemplateById(supabase, actionCard.cardId);
 	if (!actionTemplate) {
-		throw error(404, 'Action card template not found');
+		throw error(404, 'Modèle de la carte d’action introuvable');
 	}
 
 	// Élève : approbation du professeur OU contexte d'activation valide
@@ -151,7 +154,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				throw error(400, 'Cette carte ne peut être activée que dans un contexte spécifique');
 			}
 		} else {
-			throw error(400, 'This card must be approved by a teacher before use.');
+			throw error(400, 'Cette carte VIP doit être validée par le professeur avant d’être utilisée');
 		}
 	}
 
@@ -173,10 +176,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	for (const instanceId of data.cardsToDiscard) {
 		const instance = vipCards[instanceId];
 		if (!instance) {
-			throw error(404, `Card instance not found: ${instanceId}`);
+			throw error(404, `Carte VIP introuvable : ${instanceId}`);
 		}
 		if (instance.usedAt) {
-			throw error(400, `Card already used: ${instanceId}`);
+			throw error(400, `Carte VIP déjà utilisée : ${instanceId}`);
 		}
 	}
 
@@ -187,10 +190,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		data.actionCardInstanceId,
 		...data.cardsToDiscard
 	]).catch(() => {
-		throw error(500, 'Failed to verify marketplace lock status');
+		throw error(500, 'Impossible de vérifier si la carte est engagée sur le marché');
 	});
 	if (lockedIds.length > 0) {
-		throw error(400, `Card is locked in marketplace and cannot be exchanged: ${lockedIds[0]}`);
+		throw error(
+			400,
+			`Cette carte est engagée sur le marché et ne peut pas être échangée : ${lockedIds[0]}`
+		);
 	}
 
 	// Tout ce qui peut échouer pour une raison métier est vérifié AVANT de
@@ -221,15 +227,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (useError) {
-		console.error('[exchange] RPC use_vip_card error:', useError);
-		throw error(500, `Failed to mark action card as used: ${useError.message}`);
+		logger.error('[exchange] RPC use_vip_card error:', useError);
+		throw error(500, `Impossible d’utiliser la carte d’action : ${useError.message}`);
 	}
 
 	// `usedAt` : posé par `use_vip_card` quand la carte n'a plus d'usage (sinon
 	// null) ; la restitution exige de retrouver exactement cette valeur.
 	const rpcResult = useResult as { success: boolean; error?: string; usedAt?: string | null };
 	if (!rpcResult.success) {
-		throw error(400, rpcResult.error || 'Failed to mark action card as used');
+		throw error(400, rpcResult.error || 'Impossible d’utiliser la carte d’action');
 	}
 
 	// 2. Défausser et attribuer en UNE transaction (serveur seul, Q137 b).
@@ -291,7 +297,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 function getExchangeConfig(template: VipCardTemplate): ExchangeCardAction {
 	const action = template.action;
 	if (!action || action.type !== 'exchange_cards' || !action.exchange) {
-		throw error(400, `Card "${template.name}" does not have an exchange_cards action`);
+		throw error(400, `La carte « ${template.name} » ne permet pas d’échanger des cartes`);
 	}
 	return action.exchange;
 }
@@ -362,13 +368,13 @@ async function buildExchangePlan(
 			if (totalPoints < targetPoints) {
 				throw error(
 					400,
-					`Insufficient rarity points: Required ${targetPoints}, available ${totalPoints}`
+					`Points de rareté insuffisants : ${targetPoints} requis, ${totalPoints} disponibles`
 				);
 			}
 
 			const targetTemplates = await getTemplatesByRarity(supabase, data.targetRarity, true);
 			if (targetTemplates.length === 0) {
-				throw error(500, `No cards found with rarity ${data.targetRarity}`);
+				throw error(500, `Aucune carte VIP de rareté ${data.targetRarity} disponible`);
 			}
 			const template = targetTemplates[Math.floor(Math.random() * targetTemplates.length)];
 			return { mode: 'rarity_points', template };
@@ -377,17 +383,17 @@ async function buildExchangePlan(
 		case 'discard_for_specific': {
 			const template = await getTemplateById(supabase, data.targetCardId);
 			if (!template) {
-				throw error(404, `Target card not found: ${data.targetCardId}`);
+				throw error(404, `Carte demandée introuvable : ${data.targetCardId}`);
 			}
 			// Q138 : comme dans choose, une carte désactivée ne s'obtient pas.
 			if (!template.is_enabled) {
-				throw error(400, `Card "${template.name}" is not available`);
+				throw error(400, `La carte « ${template.name} » n’est pas disponible`);
 			}
 			return { mode: 'discard_for_specific', template };
 		}
 
 		default:
-			throw error(400, `Unknown exchange mode: ${(data as { mode: string }).mode}`);
+			throw error(400, `Mode d’échange inconnu : ${(data as { mode: string }).mode}`);
 	}
 }
 

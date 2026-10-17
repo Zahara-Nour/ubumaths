@@ -27,6 +27,10 @@ import {
 	validateRestoreOptions
 } from '$lib/server/validation/backup';
 import { fetchTagNamesForResources, syncResourceTags } from '$lib/server/resource-tags';
+import { consistentSearchIndexed } from '$lib/server/exercise-search-indexed';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/admin/exercise-backup');
 
 /**
  * `.single()` traite « zéro ligne » comme une erreur (`PGRST116`). Pendant une
@@ -81,7 +85,7 @@ async function attachBackupTags(
 		result.errors.push({
 			table: 'resource_tags',
 			record_id: recordId,
-			error: `Failed to attach tags: ${err instanceof Error ? err.message : String(err)}`
+			error: `Impossible de rattacher les étiquettes : ${err instanceof Error ? err.message : String(err)}`
 		});
 	}
 }
@@ -103,7 +107,7 @@ export async function getBackupStats(supabase: SupabaseClientType): Promise<Back
 		.select('*', { count: 'exact', head: true });
 
 	if (exercisesError) {
-		throw new Error(`Failed to count exercises: ${exercisesError.message}`);
+		throw new Error(`Impossible de compter les exercices : ${exercisesError.message}`);
 	}
 
 	// Count templates
@@ -112,7 +116,7 @@ export async function getBackupStats(supabase: SupabaseClientType): Promise<Back
 		.select('*', { count: 'exact', head: true });
 
 	if (templatesError) {
-		throw new Error(`Failed to count templates: ${templatesError.message}`);
+		throw new Error(`Impossible de compter les modèles : ${templatesError.message}`);
 	}
 
 	// Count favorites
@@ -121,7 +125,7 @@ export async function getBackupStats(supabase: SupabaseClientType): Promise<Back
 		.select('*', { count: 'exact', head: true });
 
 	if (favoritesError) {
-		throw new Error(`Failed to count favorites: ${favoritesError.message}`);
+		throw new Error(`Impossible de compter les favoris : ${favoritesError.message}`);
 	}
 
 	// Count share tokens
@@ -130,7 +134,7 @@ export async function getBackupStats(supabase: SupabaseClientType): Promise<Back
 		.select('*', { count: 'exact', head: true });
 
 	if (tokensError) {
-		throw new Error(`Failed to count share tokens: ${tokensError.message}`);
+		throw new Error(`Impossible de compter les liens de partage : ${tokensError.message}`);
 	}
 
 	const exercises = exercisesCount ?? 0;
@@ -172,7 +176,7 @@ export async function exportBackupJSON(
 		.order('created_at', { ascending: true });
 
 	if (exercisesError) {
-		throw new Error(`Failed to fetch exercises: ${exercisesError.message}`);
+		throw new Error(`Impossible de charger les exercices : ${exercisesError.message}`);
 	}
 
 	// Tags depuis `resource_tags`, en une requête groupée pour tout l'export.
@@ -194,7 +198,7 @@ export async function exportBackupJSON(
 		.order('created_at', { ascending: true });
 
 	if (templatesError) {
-		throw new Error(`Failed to fetch templates: ${templatesError.message}`);
+		throw new Error(`Impossible de charger les modèles : ${templatesError.message}`);
 	}
 
 	// Fetch all favorites with user emails
@@ -209,7 +213,7 @@ export async function exportBackupJSON(
 		.order('created_at', { ascending: true });
 
 	if (favoritesError) {
-		throw new Error(`Failed to fetch favorites: ${favoritesError.message}`);
+		throw new Error(`Impossible de charger les favoris : ${favoritesError.message}`);
 	}
 
 	// Fetch all share tokens with creator emails
@@ -224,7 +228,7 @@ export async function exportBackupJSON(
 		.order('created_at', { ascending: true });
 
 	if (tokensError) {
-		throw new Error(`Failed to fetch share tokens: ${tokensError.message}`);
+		throw new Error(`Impossible de charger les liens de partage : ${tokensError.message}`);
 	}
 
 	// Transform to backup format
@@ -249,6 +253,7 @@ export async function exportBackupJSON(
 			grades: ex.grades,
 			topic: ex.topic,
 			is_public: ex.is_public,
+			search_indexed: ex.search_indexed,
 			distribution_mode: ex.distribution_mode,
 			variables: ex.variables,
 			variations: ex.variations,
@@ -380,7 +385,7 @@ export async function exportBackupSQL(
 			// tag-normalization migration); they are emitted as exercise_tags junction rows below.
 			lines.push(`INSERT INTO exercises (
   id, slug, title, source, category,
-  grades, topic, is_public, distribution_mode, variables, variations,
+  grades, topic, is_public, search_indexed, distribution_mode, variables, variations,
   shared, resources, generic_functions, created_at, updated_at, created_by
 ) VALUES (
   ${escapeSQL(ex.id)},
@@ -391,6 +396,7 @@ export async function exportBackupSQL(
   ${escapeSQL(ex.grades)},
   ${escapeSQL(ex.topic)},
   ${ex.is_public},
+  ${consistentSearchIndexed(ex.is_public, ex.search_indexed)},
   ${escapeSQL(ex.distribution_mode)},
   ${escapeSQL(ex.variables)},
   ${escapeSQL(ex.variations)},
@@ -408,6 +414,7 @@ export async function exportBackupSQL(
   grades = EXCLUDED.grades,
   topic = EXCLUDED.topic,
   is_public = EXCLUDED.is_public,
+  search_indexed = EXCLUDED.search_indexed,
   distribution_mode = EXCLUDED.distribution_mode,
   variables = EXCLUDED.variables,
   variations = EXCLUDED.variations,
@@ -554,7 +561,13 @@ export async function restoreFromBackup(
 				exercise_favorites: { imported: 0, skipped: 0, replaced: 0, failed: 0 },
 				exercise_share_tokens: { imported: 0, skipped: 0, replaced: 0, failed: 0 }
 			},
-			errors: [{ table: 'backup', record_id: '', error: backupValidation.error ?? 'Unknown error' }]
+			errors: [
+				{
+					table: 'backup',
+					record_id: '',
+					error: backupValidation.error ?? 'Une erreur inattendue s’est produite'
+				}
+			]
 		};
 	}
 
@@ -570,7 +583,11 @@ export async function restoreFromBackup(
 				exercise_share_tokens: { imported: 0, skipped: 0, replaced: 0, failed: 0 }
 			},
 			errors: [
-				{ table: 'options', record_id: '', error: optionsValidation.error ?? 'Unknown error' }
+				{
+					table: 'options',
+					record_id: '',
+					error: optionsValidation.error ?? 'Une erreur inattendue s’est produite'
+				}
 			]
 		};
 	}
@@ -597,7 +614,7 @@ export async function restoreFromBackup(
 		.from('profiles')
 		.select('id');
 	if (existingUsersError) {
-		console.error('[restore] Comptes illisibles :', existingUsersError);
+		logger.error('[restore] Comptes illisibles :', existingUsersError);
 		throw new Error(existingUsersError.message);
 	}
 	const validUserIds = new Set((existingUsers ?? []).map((u) => u.id));
@@ -610,7 +627,7 @@ export async function restoreFromBackup(
 		.from('exercises')
 		.select('id');
 	if (existingExercisesError) {
-		console.error('[restore] Exercices illisibles :', existingExercisesError);
+		logger.error('[restore] Exercices illisibles :', existingExercisesError);
 		throw new Error(existingExercisesError.message);
 	}
 	const validExerciseIds = new Set((existingExercises ?? []).map((e) => e.id));
@@ -666,7 +683,7 @@ async function restoreExercises(
 					result.errors.push({
 						table: 'exercises',
 						record_id: record.id,
-						error: `User ${createdBy} does not exist`
+						error: `L’utilisateur ${createdBy} n’existe pas`
 					});
 					continue;
 				}
@@ -683,7 +700,7 @@ async function restoreExercises(
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (isFailure(existingError)) {
-				console.error('[restore] Lecture impossible (exercises) :', existingError);
+				logger.error('[restore] Lecture impossible (exercises) :', existingError);
 				throw new Error(existingError.message);
 			}
 
@@ -710,6 +727,9 @@ async function restoreExercises(
 						grades: record.grades,
 						topic: record.topic,
 						is_public: record.is_public,
+						// Même écriture que is_public : la base refuse « privé + Google »,
+						// et une sauvegarde ne coche jamais Google implicitement.
+						search_indexed: consistentSearchIndexed(record.is_public, record.search_indexed),
 						distribution_mode: record.distribution_mode,
 						variables: record.variables as Json,
 						variations: record.variations as Json | null,
@@ -740,6 +760,7 @@ async function restoreExercises(
 					grades: record.grades,
 					topic: record.topic,
 					is_public: record.is_public,
+					search_indexed: consistentSearchIndexed(record.is_public, record.search_indexed),
 					distribution_mode: record.distribution_mode,
 					variables: record.variables as Json,
 					variations: record.variations as Json | null,
@@ -789,7 +810,7 @@ async function restoreTemplates(
 					result.errors.push({
 						table: 'exercise_templates',
 						record_id: record.id,
-						error: `User ${createdBy} does not exist`
+						error: `L’utilisateur ${createdBy} n’existe pas`
 					});
 					continue;
 				}
@@ -806,7 +827,7 @@ async function restoreTemplates(
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (isFailure(existingError)) {
-				console.error('[restore] Lecture impossible (exercise_templates) :', existingError);
+				logger.error('[restore] Lecture impossible (exercise_templates) :', existingError);
 				throw new Error(existingError.message);
 			}
 
@@ -891,7 +912,7 @@ async function restoreFavorites(
 				result.errors.push({
 					table: 'exercise_favorites',
 					record_id: recordId,
-					error: `User ${record.user_id} does not exist`
+					error: `L’utilisateur ${record.user_id} n’existe pas`
 				});
 				continue;
 			}
@@ -901,7 +922,7 @@ async function restoreFavorites(
 				result.errors.push({
 					table: 'exercise_favorites',
 					record_id: recordId,
-					error: `Exercise ${record.exercise_id} does not exist`
+					error: `L’exercice ${record.exercise_id} n’existe pas`
 				});
 				continue;
 			}
@@ -918,7 +939,7 @@ async function restoreFavorites(
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (isFailure(existingError)) {
-				console.error('[restore] Lecture impossible (exercise_favorites) :', existingError);
+				logger.error('[restore] Lecture impossible (exercise_favorites) :', existingError);
 				throw new Error(existingError.message);
 			}
 
@@ -975,7 +996,7 @@ async function restoreTokens(
 					result.errors.push({
 						table: 'exercise_share_tokens',
 						record_id: record.id,
-						error: `User ${createdBy} does not exist`
+						error: `L’utilisateur ${createdBy} n’existe pas`
 					});
 					continue;
 				}
@@ -986,7 +1007,7 @@ async function restoreTokens(
 				result.errors.push({
 					table: 'exercise_share_tokens',
 					record_id: record.id,
-					error: `Exercise ${record.exercise_id} does not exist`
+					error: `L’exercice ${record.exercise_id} n’existe pas`
 				});
 				continue;
 			}
@@ -1002,7 +1023,7 @@ async function restoreTokens(
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (isFailure(existingError)) {
-				console.error('[restore] Lecture impossible (exercise_share_tokens) :', existingError);
+				logger.error('[restore] Lecture impossible (exercise_share_tokens) :', existingError);
 				throw new Error(existingError.message);
 			}
 

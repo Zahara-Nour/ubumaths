@@ -10,6 +10,12 @@ couvre:
   - 'src/routes/(public)/construction-demo/**'
   - 'src/routes/(public)/geometry-demo/**'
   - 'src/routes/api/construction-demo-scripts/**'
+  - 'src/lib/server/geometry-figures.ts'
+  - 'src/lib/server/validation/geometry-figures.ts'
+  - 'src/lib/utils/geometry-figure-script.ts'
+  - 'src/lib/utils/stored-figure-header.ts'
+  - 'src/routes/(protected)/dashboard/teacher/figures/**'
+  - 'src/routes/(public)/figures/**'
 ---
 
 # Géométrie : `geometry-core` et `constructions-v2`
@@ -62,7 +68,7 @@ sinon (déplacement à la souris, transcendantes, échantillonnage), avec des so
 | `compute/`     | Arithmétique sur `GeoValue`                                   | `geo-arithmetic.ts`, `to-number.ts` (`geoToNumber`), `compare.ts`                                                                                                                             |
 | `geometry/`    | Formules analytiques                                          | `intersections.ts`, `transformations.ts`, `affine-transform.ts`, `conic-classify.ts`, `conic-properties.ts`, `circumcircle.ts`                                                                |
 | `rendering/`   | Dessin et exports                                             | `svg-primitives.ts`, `export-svg.ts`, `export-typst.ts`, `export-tikz.ts`, `marching-squares.ts`, `bezier.ts`, `rough-geometry.ts`, `colors.ts`, `label-placement.ts`, `viewport-clipping.ts` |
-| `viewport/`    | Repère écran ↔ maths, grille, échantillonnage                | `viewport.ts` (`panViewport`, `zoomViewport`), `grid.ts` (`computeGridStep`), `sampler.ts`                                                                                                    |
+| `viewport/`    | Repère écran ↔ maths, grille, échantillonnage                 | `viewport.ts` (`panViewport`, `zoomViewport`), `grid.ts` (`computeGridStep`), `sampler.ts`                                                                                                    |
 | `interaction/` | Souris                                                        | `hit-testing.ts` (`findPointNear`, `findElementNear`), `snap.ts` (`snapToGrid`)                                                                                                               |
 | `validation/`  | Prédicats de vérification (`checkParallel`, `checkDistance`…) | `checks.ts` — **aucun appelant hors du module** aujourd'hui                                                                                                                                   |
 
@@ -259,7 +265,65 @@ d = mediatrice(A, B) @euclide @arcs_egaux @complet -arcs
 - **Rendu animé** : `ConstructionCanvas` masque dans `GeometryCanvas` les objets en cours de tracé et
   les dessine partiellement (`render-helpers.ts`) sous l'instrument.
 
-## 7. Comment étendre
+## 7. Figures stockées (ADR 0027)
+
+Le prof (ou l'admin) enregistre une figure — un script du DSL — dans la table
+`geometry_figures` ([ADR 0027](../../adr/0027-figures-geometriques-stockees.md)) : titre (1-200),
+description (≤ 2 000, facultative), script (1-100 000 caractères : le flocon de Koch en fait
+77 000), niveaux (codes des exercices), case publique, tags (`resource_tags`, type
+`geometry_figure`).
+
+**Qui fait quoi** (tenu par la RLS, pas par les pages) : une figure publique se lit par tous, même
+sans compte ; une privée, par son auteur seul ; seuls prof et admin créent ; chacun ne modifie et
+ne supprime que SES figures. Une écriture refusée rend zéro ligne : chaque écriture relit ses
+lignes et tient « zéro ligne » pour un 404, jamais pour un succès.
+
+| Fichier                                                  | Rôle                                                                                                                                                                                                                                                                                                                     |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/server/validation/geometry-figures.ts`          | Zod : `figureInputSchema` (bornes de la table, niveaux par `gradeCodeSchema`, 20 tags au plus), `parseFigureFormData`, `parseFigureListFilters` (`?grade=&tag=&tag=&q=&scope=mine\|public`)                                                                                                                              |
+| `src/lib/server/geometry-figures.ts`                     | `listGeometryFigures` (filtres combinés en ET, tags « au moins un », texte `ilike` échappé sur titre et description, récentes d'abord, 200 au plus, sans le script), `getOwnGeometryFigure`, `getPublicGeometryFigure`, `create/update/deleteGeometryFigure`                                                             |
+| `src/lib/utils/geometry-figure-script.ts`                | `evaluateFigureScript` : exécute le script sans jamais lever ; une erreur rend son message « Ligne N… » et sa ligne ; budget de 200 000 pas (boucles imbriquées démesurées). `evaluateStoredFigure` : texte complet (en-tête éventuel + script), erreur d'en-tête ou de script, lignes comptées depuis le début du texte |
+| `src/lib/utils/stored-figure-header.ts`                  | Lecture et écriture de la valeur brute d'une clé de l'en-tête, ligne par ligne (les champs du formulaire) ; le reste du texte est rendu tel quel                                                                                                                                                                         |
+| `src/lib/components/geometry/StoredFigureForm.svelte`    | Formulaire : champs, champs « Affichage » liés à l'en-tête, texte à gauche, aperçu à droite redessiné 400 ms après la frappe, bouton « Prendre le cadrage actuel » ; un texte en erreur ne s'enregistre pas (bouton désactivé, réexécution à l'envoi) ; suppression avec confirmation                                    |
+| `src/lib/components/geometry/StoredFigurePreview.svelte` | `GeometryCanvas` (curseurs compris) réglée par l'en-tête, ou l'erreur                                                                                                                                                                                                                                                    |
+| `src/lib/components/geometry/FigureFrameLayer.svelte`    | Repère de l'en-tête (grille, axes fléchés, graduations) sous les objets, recalculé sur la vue courante (`buildFigureFrame` + `frameToSvg` du bloc ```figure) ; disparaît au-delà de 200 lignes par axe                                                                                                                   |
+| `src/lib/ubumark/utils/figure-view.ts`                   | `figureViewFromWindow` (fenêtre + taille → centre, px par unité, taille de toile, marge des axes ; bornée par le conteneur) et `windowFromCanvasView` (vue courante → fenêtre arrondie à 3 chiffres significatifs)                                                                                                       |
+
+**Réglages d'affichage.** Le texte enregistré (`dsl_script`) est exactement le contenu d'un bloc
+` ```figure ` : en-tête, `---`, script. **Sans `---`, script nu** : affichage historique (toile
+520 × 520, 640 × 560 sur la page publique, 40 px par unité, origine au centre, grille et
+graduations de la toile, objets déplaçables). Régler un premier champ du formulaire fait naître
+l'en-tête qui garde cet affichage (`withBareScriptHeader` : `fenetre: -6.5 ; 6.5 ; -6.5 ; 6.5`,
+`taille: grande`, `axes: oui`, `grille: 1 ; 1`, `deplacable: oui`), puis écrit le champ. Avec un en-tête, `parseFigureContent(texte,
+{ interactive: true })` (le parseur du bloc, sans doublon) lit `fenetre:` (facultative ici : sans
+elle, origine au centre et 40 px par unité), `taille:`, `axes:`, `grille:`, `graduations:`,
+`description:`, et deux clés **réservées aux figures interactives** : `deplacable: oui|non`
+(défaut non : points, vecteurs, textes et étiquettes figés, double-clic coupé ; les curseurs, le
+zoom et le déplacement de la vue restent actifs — prop `objectsMovable` de `GeometryCanvas`) et
+`rendu: normal|croquis|mixte` (`renderMode` normal / rough / mixed). Mêmes mesures que le bloc
+statique : largeur de la fenêtre selon la taille (280 / 400 / 560 px), hauteur isotrope, marge de
+26 px pour les axes ; sur un écran plus étroit, la toile se réduit et garde la fenêtre entière.
+Les champs « Affichage » écrivent la ligne de leur clé (ajoutée avant `---` si absente, retirée
+si vidée) et se relisent dans le texte : l'en-tête modifié à la main met les champs à jour ; le
+script n'est jamais réécrit. « Prendre le cadrage actuel » écrit en `fenetre:` la vue de
+l'aperçu (zoom à la molette, déplacement barre d'espace enfoncée), marge des axes retirée. Le zoom de la toile
+est borné à [min(5, échelle initiale / 4) ; max(200, échelle initiale × 4)] px par unité : une
+fenêtre de 100 unités dézoome encore.
+
+**Pages.** `/dashboard/teacher/figures` : liste filtrable (filtres dans l'adresse), lien
+« Figures » de la barre latérale du prof ; `…/new` et `…/[id]/edit` (l'auteur seul : la figure
+publique d'un autre rend 404). `/figures/[id]` : page publique, sans compte, `noindex`, hors
+sitemap, sans tags (`anon` ne lit pas `resource_tags`) et sans bouton retour (aucune page
+parente) ; le filtre `is_public` y est explicite, si bien qu'une figure privée rend la même 404
+qu'une figure inexistante, même pour son auteur. Le script ne s'exécute que dans le navigateur.
+
+**Limites connues.** Le serveur n'exécute pas le script : le refus d'un script en erreur est un
+contrôle du formulaire, pas une garantie (en-tête compris). La `description:` de l'en-tête n'est
+pas encore lue par la toile (son `aria-label` reste générique). La garde du layout prof
+(`dashboard/teacher/+layout.server.ts`) n'admet que le rôle `teacher` : un admin n'atteint pas
+ces pages. La citation d'une figure dans le cahier et le cours est le lot 2.
+
+## 8. Comment étendre
 
 ### Nouveau builtin
 
@@ -284,7 +348,7 @@ Interface + garde `isXxx` + union `GeoElement` dans `types/elements.ts` · branc
 doit faire l'aller-retour · `interaction/` s'il se manipule · `DRAWABLE_TYPES` de `figure-scene.ts`
 s'il doit passer au bloc ` ```figure `.
 
-## 8. Tests
+## 9. Tests
 
 | Où                                        | Fichiers                                               | Cas (`it`/`test`)  |
 | ----------------------------------------- | ------------------------------------------------------ | ------------------ |
@@ -303,7 +367,7 @@ pnpm test:client src/lib/components/geometry/__tests__/GeometryCanvas.theme.svel
 Angles morts connus : `compute-position.ts` n'est testé qu'à travers le DSL ; `rendering/bezier.ts`
 n'a qu'un test (`bezier-monotone.test.ts`) ; `validation/checks.ts` n'a pas d'appelant.
 
-## 9. Décisions
+## 10. Décisions
 
 Pas d'ADR propre à la géométrie ; le PDF suit [ADR 0004](../../adr/0004-pdf-typst-et-jspdf.md)
 (Typst). Décisions de conception encore vraies (avril–mai 2026) :
@@ -328,10 +392,14 @@ Pas d'ADR propre à la géométrie ; le PDF suit [ADR 0004](../../adr/0004-pdf-t
 Abandonné ou jamais fait : machine à états d'outils (création d'objets à la souris), index spatial
 RBush, `validation/` branché sur des exercices.
 
-## 10. Points ouverts
+## 11. Points ouverts
 
-- `src/lib/utils/game/challenge-variables.ts` évalue encore une chaîne venue de la base par
-  `new Function` (hors module ; à remplacer par `compile()`).
+- `src/lib/utils/game/challenge-variables.ts` évalue encore par `new Function` une expression
+  venue de `game_challenges` (hors module ; à remplacer par `compile()`). Depuis T5
+  (2026-10-13), seule l'arithmétique y arrive (liste blanche `ARITHMETIC_ONLY` : chiffres, `.`,
+  `e`, opérateurs, parenthèses, `Math.sqrt`) ; tout autre texte rend `NaN`. En prod, aucun des
+  464 défis n'a de variable ou de réponse de type `expression`, et seul le prof peut écrire la
+  table.
 - La CSP autorise `unsafe-eval` pour Typst (`src/hooks.server.ts`).
 - `figure.ts` (~5 000 lignes) et `builtins.ts` (~7 400 lignes) sont les deux plus gros fichiers.
 - Trois interfaces de configuration Newton divergentes : `NewtonConfig`, `IntersectionConfig`,

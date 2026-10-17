@@ -12,6 +12,15 @@
  *   passent derrière les positifs, chaque groupe gardant l'ordre ci-dessus —
  *   `1 − x`, `3 − 2x`, `x − 3`, `b − a`. De degré ≥ 2, l'ordre décroissant
  *   reste, signes compris : `−x² + x + 1`.
+ * - **Somme sans variable** (décision de David, 2026-10-12) : le nombre
+ *   rationnel passe en tête, comme dans les manuels — `1 + √5`, `3 + 2√2`,
+ *   `1 + ln 2`, `1 + π`. `e`, `i`, `π` sont des constantes. Un rationnel
+ *   négatif n'y passe que si tous les autres termes sont négatifs (`−1 − √2`) :
+ *   sinon `√2 − 1` évite le signe − en tête.
+ * - **Nombre complexe** (décision de David, 2026-10-12) : forme algébrique
+ *   a + ib, la partie réelle (les termes sans `i`) en tête, même négative ou
+ *   irrationnelle — `−2 + 3i`, `−1 + i√3`, `−√2 + i`, `π + i`. La partie réelle
+ *   se range comme un réel (`√2 − 1 + i`).
  *
  * L'écriture d'un terme est calculée **une fois par terme** avant le tri, pas
  * à chaque comparaison.
@@ -34,8 +43,21 @@ import {
 } from '../normal/rational';
 import { buildFactor } from './build';
 import { variable } from '../factory';
-import { isEulerConstant } from '../guards';
+import {
+	isDerivativeFunction,
+	isEulerConstant,
+	isFunction,
+	isGreek,
+	isComplex,
+	isHole,
+	isImaginaryUnit,
+	isSegmentLength,
+	isSubscript,
+	isSymbol,
+	isVariable
+} from '../guards';
 import { mapNode } from '../transforms';
+import { isKnownFunctionName } from '../numtype/rules/functions';
 
 // =============================================================================
 // Types
@@ -52,13 +74,22 @@ type TermOrderKey = {
 // Constantes
 // =============================================================================
 
-/** Rang de la catégorie d'une base dans un produit. */
-const CATEGORY_SYMBOL = 0;
-const CATEGORY_FUNCTION = 1;
-const CATEGORY_OTHER = 2;
+/**
+ * Rang de la catégorie d'une base dans un produit. Les constantes `e`, `i`, `π`
+ * forment la PREMIÈRE catégorie : devant toute lettre, latine (minuscule ou
+ * majuscule) ou grecque. Comparées comme du texte, leurs clés (`\euler`, `\i`,
+ * `\pi`) passaient derrière `A` et `\alpha` (`A\pi`, `\alpha \imaginaryI`).
+ */
+const CATEGORY_CONSTANT = 0;
+const CATEGORY_SYMBOL = 1;
+const CATEGORY_FUNCTION = 2;
+const CATEGORY_OTHER = 3;
 
 /** La constante d'Euler dans une clé d'ordre (voir `writtenForm`). */
 const EULER_ORDER_KEY: MathNode = variable('\\euler');
+
+/** L'unité imaginaire dans une clé d'ordre (voir `writtenForm`). */
+const IMAGINARY_ORDER_KEY: MathNode = variable('\\i');
 
 // =============================================================================
 // Écriture d'un nœud
@@ -73,20 +104,30 @@ const EULER_ORDER_KEY: MathNode = variable('\\euler');
  * constantes passent devant les lettres (`\pi a`, `e a`). `toCustom` l'écrit
  * `e`, qui la rangerait parmi les lettres (`a e`). Le nom `\euler` ne sert qu'à
  * la clé : il n'est jamais affiché ni relu.
+ *
+ * L'unité imaginaire de même, sous `\i`. Entre constantes (catégorie à part,
+ * voir `categoryOf`), l'ordre des clés donne `e`, `i`, `π` (`e i`, `i\pi`,
+ * l'écriture de `e^{i\pi}`).
  */
 function writtenForm(node: MathNode): string {
 	try {
-		return toCustom(mapNode(node, (n) => (isEulerConstant(n) ? EULER_ORDER_KEY : n)));
+		return toCustom(
+			mapNode(node, (n) =>
+				isEulerConstant(n) ? EULER_ORDER_KEY : isImaginaryUnit(n) ? IMAGINARY_ORDER_KEY : n
+			)
+		);
 	} catch {
 		return hashMathNode(node);
 	}
 }
 
 function categoryOf(base: MathNode): number {
+	if (isImaginaryUnit(base)) return CATEGORY_CONSTANT;
 	switch (base.type) {
+		case 'constant':
+			return CATEGORY_CONSTANT;
 		case 'variable':
 		case 'greek':
-		case 'constant':
 		case 'symbol':
 		case 'hole':
 		case 'subscript':
@@ -171,17 +212,173 @@ export function isFirstDegreeSum(terms: readonly TidyTerm[]): boolean {
 	return degree !== null && equalRational(degree, ONE);
 }
 
-/** Ordonne les termes d'une somme, quel que soit son niveau d'imbrication. */
-export function sortTerms(terms: readonly TidyTerm[]): TidyTerm[] {
+/**
+ * Le nœud contient-il une inconnue ? Les constantes `e`, `i`, `π` n'en sont
+ * pas (π est un nœud `constant`, jamais `greek`), ni une fonction usuelle en un
+ * nombre (`\sin(1)`, `\ln 2`, `\sqrt{2}`). Une lettre, une lettre grecque, un
+ * indice (`u_0`), une longueur (`AB`), un trou, un symbole en sont, et aussi
+ * une fonction de l'énoncé (`f(2)`, `f'(1)`, `g(0)`) : sa valeur est inconnue.
+ */
+function containsUnknown(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (
+			isVariable(n) ||
+			isGreek(n) ||
+			isSubscript(n) ||
+			isSegmentLength(n) ||
+			isHole(n) ||
+			isSymbol(n) ||
+			(isFunction(n) && (!isKnownFunctionName(n.name) || isDerivativeFunction(n)))
+		) {
+			found = true;
+		}
+		return n;
+	});
+	return found;
+}
+
+/**
+ * Un terme ordinaire : ni opaque (infini, zéro signé), ni grandeur. Partagé
+ * avec la mise en facteur du signe d'une somme toute négative (`collect.ts`).
+ */
+export function isPlainTerm(term: TidyTerm): boolean {
+	return !term.verbatim && term.unit === null;
+}
+
+/** Un terme qui n'est qu'un nombre rationnel (ni facteur, ni unité). */
+function isRationalTerm(term: TidyTerm): boolean {
+	return term.factors.length === 0 && isPlainTerm(term);
+}
+
+/**
+ * Le rationnel qui doit passer en tête de la somme, ou `null`.
+ *
+ * Somme sans variable : le rationnel passe en tête (`1 + √5`). Négatif, il n'y
+ * passe que si tous les autres termes le sont aussi (`−1 − √2`, mais `√2 − 1`).
+ * Une somme qui contient une inconnue, une unité ou un terme opaque : `null`.
+ * Ne dépend que de l'ensemble des termes, pas de leur ordre.
+ */
+export function leadingRational(terms: readonly TidyTerm[]): TidyTerm | null {
+	const rational = terms.find(isRationalTerm);
+	if (rational === undefined || terms.length < 2) return null;
+	const others = terms.filter((term) => term !== rational);
+	const plain = others.every(
+		(term) => isPlainTerm(term) && term.factors.every((factor) => !containsUnknown(factor.base))
+	);
+	if (!plain) return null;
+	if (
+		isNegativeRational(rational.coefficient) &&
+		!others.every((term) => isNegativeRational(term.coefficient))
+	) {
+		return null;
+	}
+	return rational;
+}
+
+/** Met en tête le rationnel désigné par `leadingRational`, l'ordre des autres gardé. */
+function rationalFirst(terms: readonly TidyTerm[]): TidyTerm[] {
+	const rational = leadingRational(terms);
+	if (rational === null) return [...terms];
+	return [rational, ...terms.filter((term) => term !== rational)];
+}
+
+/** Le nœud contient-il un nombre complexe (l'unité `i` comprise) ? */
+function containsComplex(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (isComplex(n)) found = true;
+		return n;
+	});
+	return found;
+}
+
+/** Un terme de partie imaginaire : `i` en facteur (exposant 1), nulle part ailleurs. */
+function isImaginaryTerm(term: TidyTerm): boolean {
+	const imaginary = term.factors.filter(
+		(factor) => isImaginaryUnit(factor.base) && equalRational(factor.exponent, ONE)
+	);
+	return (
+		imaginary.length === 1 &&
+		term.factors.every((factor) => imaginary.includes(factor) || !containsComplex(factor.base))
+	);
+}
+
+/** Un terme de partie réelle : aucun `i`, nulle part. */
+function isRealTerm(term: TidyTerm): boolean {
+	return term.factors.every((factor) => !containsComplex(factor.base));
+}
+
+/**
+ * Les parties réelle et imaginaire d'une somme écrite a + ib, ou `null`.
+ *
+ * Il en faut une de chaque, chaque terme dans l'une ou l'autre, et aucune
+ * inconnue, unité ni terme opaque : `x + iy` et `e^{iπ/3} − 1` ne sont pas des
+ * formes algébriques au sens de cette règle. L'ordre des termes est gardé.
+ */
+function algebraicParts(
+	terms: readonly TidyTerm[]
+): { real: TidyTerm[]; imaginary: TidyTerm[] } | null {
+	const plain = terms.every(
+		(term) => isPlainTerm(term) && term.factors.every((factor) => !containsUnknown(factor.base))
+	);
+	if (!plain) return null;
+	const real = terms.filter(isRealTerm);
+	const imaginary = terms.filter((term) => !isRealTerm(term));
+	if (real.length === 0 || imaginary.length === 0 || !imaginary.every(isImaginaryTerm)) {
+		return null;
+	}
+	return { real, imaginary };
+}
+
+/**
+ * Le geste « le nombre en tête », l'ordre des autres termes gardé : la partie
+ * réelle d'un complexe (`3i − 2` → `−2 + 3i`), sinon le rationnel d'une somme
+ * sans variable (`√5 + 1` → `1 + √5`).
+ */
+export function numberFirst(terms: readonly TidyTerm[]): TidyTerm[] {
+	const parts = algebraicParts(terms);
+	if (parts === null) return rationalFirst(terms);
+	return [...rationalFirst(parts.real), ...parts.imaginary];
+}
+
+/**
+ * L'ordre d'un complexe placé sous un `−` (`−(i − 2)`, `−3(i − 2)`), ou `null`
+ * s'il n'y a rien à changer. `tidy` ne distribue pas ce signe ; la partie réelle
+ * négative en tête y ferait un double signe, `−(−2 + i)` : la somme garde alors
+ * l'ordre d'avant la règle a + ib (`i − 2`). Partie réelle positive, ou tous
+ * les termes négatifs, l'ordre a + ib reste (`−(2 + i)`, `−(−2 − i)`).
+ */
+export function orderUnderMinus(terms: readonly TidyTerm[]): TidyTerm[] | null {
+	if (algebraicParts(terms) === null) return null;
+	const algebraic = sortTerms(terms);
+	if (!isNegativeRational(algebraic[0].coefficient)) return null;
+	const previous = sortTerms(terms, false);
+	return previous.some((term, index) => term !== algebraic[index]) ? previous : null;
+}
+
+/**
+ * Ordonne les termes d'une somme, quel que soit son niveau d'imbrication.
+ * `realPartFirst` à `false` coupe la règle a + ib (voir `orderUnderMinus`).
+ */
+export function sortTerms(terms: readonly TidyTerm[], realPartFirst = true): TidyTerm[] {
 	const decorated = terms.map((term) => ({ term, key: termOrderKey(term) }));
 	decorated.sort((a, b) => compareOrderKeys(a.key, b.key));
 	const sorted = decorated.map((entry) => entry.term);
 
 	const degree = sumDegree(decorated.map((entry) => entry.key));
-	if (degree === null || !equalRational(degree, ONE)) return sorted;
-
 	// Degré 1 : les positifs devant, les négatifs derrière, l'ordre gardé dans
 	// chaque groupe. Idempotent : trier à nouveau redonne les mêmes groupes.
 	const isNegativeTerm = (term: TidyTerm) => isNegativeRational(term.coefficient);
-	return [...sorted.filter((term) => !isNegativeTerm(term)), ...sorted.filter(isNegativeTerm)];
+	const ordered =
+		degree === null || !equalRational(degree, ONE)
+			? sorted
+			: [...sorted.filter((term) => !isNegativeTerm(term)), ...sorted.filter(isNegativeTerm)];
+
+	// Complexe : la partie réelle, rangée comme un réel, puis la partie
+	// imaginaire dans l'ordre ci-dessus. Le résultat ne dépend que de
+	// l'ensemble des termes : idempotent.
+	const parts = realPartFirst ? algebraicParts(ordered) : null;
+	if (parts !== null) return [...sortTerms(parts.real), ...parts.imaginary];
+	return rationalFirst(ordered);
 }

@@ -10,7 +10,13 @@
 	import { toast } from 'svelte-sonner';
 	import { Atelier } from '$lib/atelier/atelier.svelte';
 	import { provideAtelier } from '$lib/atelier/context';
-	import { openSession, type Session, type SessionNotice } from '$lib/atelier/session';
+	import {
+		keepCalcHistory,
+		openSession,
+		type HistoryKeeper,
+		type Session,
+		type SessionNotice
+	} from '$lib/atelier/session';
 	import type { AtelierObject } from '$lib/atelier/types';
 	import type { ImportedHistory } from '$lib/atelier/history-import';
 	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
@@ -21,6 +27,8 @@
 	import CalculView from './CalculView.svelte';
 	import DataView from './DataView.svelte';
 	import ShareBar from './ShareBar.svelte';
+	import AtelierSettings from './AtelierSettings.svelte';
+	import { readInputMode, writeInputMode, type InputMode } from '$lib/atelier/input-mode';
 	import { CalcDesk } from '$lib/atelier/desk.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -29,7 +37,8 @@
 	import { ATELIER_STATE_VERSION } from '$lib/atelier/persistence';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { cascadeMessage, removedMessage } from '$lib/atelier/removal';
+	import { cascadeMessage, citingCellsNote, removedMessage } from '$lib/atelier/removal';
+	import { tabulationReport } from '$lib/atelier/tabulate';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
@@ -73,7 +82,12 @@
 	const UNDO_DURATION_MS = 10_000;
 
 	/** L'objet dont la suppression attend confirmation, avec ce qu'elle emporterait (N2). */
-	let pendingRemoval = $state<{ name: string; dependents: readonly string[] } | null>(null);
+	let pendingRemoval = $state<{
+		name: string;
+		dependents: readonly string[];
+		/** Les cellules de la grille qui citent la liste (tableur, T3 et T5). */
+		citing: number;
+	} | null>(null);
 	let confirmRemoval = $state(false);
 	/** La suppression vient-elle d'être confirmée ? Sinon, renoncer rend le focus au bouton. */
 	let removalConfirmed = false;
@@ -90,6 +104,22 @@
 
 	/** « Repartir de zéro » : la confirmation est-elle ouverte ? (B7) */
 	let confirmReset = $state(false);
+
+	/**
+	 * Le champ de Calcul : texte ou écriture mathématique (phase 0
+	 * `atelier-reglages-phase0.md`). Une préférence de l'élève, retenue dans ce
+	 * navigateur — sur un lien reçu aussi : elle n'est pas le contenu de
+	 * l'atelier. Les deux pages ne montent l'atelier que dans le navigateur.
+	 */
+	let inputMode = $state<InputMode>(readInputMode(readStorage()));
+
+	/** La ligne en cours du champ mathématique : elle survit au passage par le Graphe. */
+	let mathLatex = $state('');
+
+	function chooseInputMode(mode: InputMode) {
+		inputMode = mode;
+		writeInputMode(readStorage(), mode);
+	}
 
 	/** Un historique relu : confirmer s'il y a de quoi perdre, sinon rejouer (R1, R2). */
 	function handleReplayRequest(history: ImportedHistory) {
@@ -159,6 +189,8 @@
 	// quand la session s'ouvre, sinon il part une fois sur `null` et ne revient
 	// jamais — rien n'est alors jamais enregistré.
 	let session = $state<Session | null>(null);
+	/** Les lignes de Calcul rangées : même raison d'être un `$state`. */
+	let calcHistory = $state<HistoryKeeper | null>(null);
 
 	/**
 	 * B3 : à l'ouverture, un atelier VIDE reçoit une carte prête à taper, tracée
@@ -183,6 +215,10 @@
 			target: window,
 			onNotice: (notice) => (notices = [...notices, notice])
 		});
+		// Les lignes de Calcul aussi (décision de David du 2026-10-13) : relues
+		// sans rien refaire, et déjà « vues » — pas de pastille sur l'onglet
+		calcHistory = keepCalcHistory(desk, { storage: readStorage(), target: window });
+		seen = desk.entries.length;
 		// La carte d'accueil AVANT de noter la révision de départ : sinon la simple
 		// visite de `/grapheur` enregistrait une carte vide (revue du lot 6, C2) —
 		// elle ne l'est que si l'élève y touche.
@@ -193,6 +229,8 @@
 		return () => {
 			session?.close();
 			session = null;
+			calcHistory?.close();
+			calcHistory = null;
 		};
 	});
 
@@ -231,6 +269,13 @@
 		if (session === null || current === lastSeenRevision) return;
 		lastSeenRevision = current;
 		session.touch();
+	});
+
+	// Une ligne de plus, « Repartir de zéro », un rejeu : `entries` est remplacé
+	// à chaque fois, et c'est ce remplacement qu'on suit
+	$effect(() => {
+		void desk.entries;
+		calcHistory?.touch();
 	});
 
 	// Option B : la courbe suit l'objet. Un seul sens — l'atelier détient l'état.
@@ -301,6 +346,15 @@
 		undo(result);
 	}
 
+	/** La confirmation : les objets emportés, et les cellules qui deviendront vides. */
+	function removalDescription(pending: NonNullable<typeof pendingRemoval>): string {
+		const cells = pending.citing > 0 ? citingCellsNote(pending.citing) : '';
+		if (pending.dependents.length === 0) {
+			return `Supprimer ${displayName(pending.name)} vide sa colonne. ${cells}`;
+		}
+		return [cascadeMessage(pending.name, pending.dependents), cells].filter(Boolean).join(' ');
+	}
+
 	function handleConfirmRemoval() {
 		if (pendingRemoval === null) return;
 		removalConfirmed = true;
@@ -320,11 +374,13 @@
 	function handleAction(action: ObjectAction, object: AtelierObject) {
 		if (action.id === 'remove') {
 			const dependents = atelier.removalOf(object.name);
-			if (dependents.length === 0) {
+			// Une liste citée par des cellules de la grille : elles deviendront vides
+			const citing = atelier.citingCells(object.name);
+			if (dependents.length === 0 && citing === 0) {
 				removeNow(object.name);
 				return;
 			}
-			pendingRemoval = { name: object.name, dependents };
+			pendingRemoval = { name: object.name, dependents, citing };
 			confirmRemoval = true;
 			return;
 		}
@@ -398,6 +454,33 @@
 	function showView(next: ViewId) {
 		if (activeView === 'calcul' || next === 'calcul') seen = desk.entries.length;
 		activeView = next;
+		// La zone de Tabuler ne vaut qu'à l'arrivée : un retour par l'onglet ne la
+		// resélectionne pas (revue — sur une grille annulée, 20 cases restaient choisies)
+		dataZone = null;
+	}
+
+	/** La zone que la vue Données sélectionne en arrivant, et sa clé (Tabuler : la vue est recréée). */
+	let dataZone = $state<{ left: number; right: number; top: number; bottom: number } | null>(null);
+	let dataKey = $state(0);
+
+	/**
+	 * « Tabuler » depuis une carte (tableur, lot 3) : le tableau va dans la grille,
+	 * et l'élève y va (Q-L3-1, comme « Diagramme ») — sans ligne dans Calcul.
+	 */
+	function handleTabulate(name: string, bounds: { from: string; to: string; step: string }) {
+		const done = atelier.tabulate({ name, ...bounds });
+		if (!done.ok) return { text: done.message, failed: true };
+		const [x, image] = done.columns;
+		showView('donnees');
+		// Deux colonnes voisines : la zone entière ; sinon la zone engloberait une
+		// colonne de l'élève entre les deux, et seule la première case est choisie
+		dataZone =
+			image === x + 1
+				? { left: x, right: image, top: 1, bottom: done.rows }
+				: { left: x, right: x, top: 1, bottom: 1 };
+		dataKey++;
+		// Pas d'annonce ici : la carte la fait (`role="status"`) ; deux se bousculeraient
+		return { text: tabulationReport(name, done), failed: false };
 	}
 
 	/**
@@ -418,7 +501,12 @@
 <svelte:window onkeydown={handleUndoKey} />
 
 <div class="atelier">
-	<ObjectPanel bind:selected onAction={handleAction} onImage={handleImage} />
+	<ObjectPanel
+		bind:selected
+		onAction={handleAction}
+		onImage={handleImage}
+		onTabulate={handleTabulate}
+	/>
 
 	<!-- `section` et non `main` : la page est déjà dans le `<main>` du layout,
 	     et deux repères `main` perturbent la navigation (revue a11y du lot 6) -->
@@ -426,16 +514,20 @@
 		<h1 id="titre-atelier" class="sr-only">{heading}</h1>
 		<div class="barre">
 			<ShareBar {received} {notice} />
-			{#if !ephemeral}
-				<button
-					type="button"
-					class="vider"
-					disabled={atelier.objects.length === 0}
-					onclick={() => (confirmReset = true)}
-				>
-					Repartir de zéro
-				</button>
-			{/if}
+			<div class="outils">
+				<AtelierSettings bind:inputMode={() => inputMode, chooseInputMode} />
+				{#if !ephemeral}
+					<!-- Des lignes de Calcul seules suffisent : elles survivent au rechargement -->
+					<button
+						type="button"
+						class="vider"
+						disabled={atelier.objects.length === 0 && desk.entries.length === 0}
+						onclick={() => (confirmReset = true)}
+					>
+						Repartir de zéro
+					</button>
+				{/if}
+			</div>
 		</div>
 		<ConfirmDialog
 			bind:open={confirmReset}
@@ -448,9 +540,7 @@
 		<ConfirmDialog
 			bind:open={confirmRemoval}
 			title="Supprimer {pendingRemoval ? displayName(pendingRemoval.name) : ''} ?"
-			description={pendingRemoval
-				? cascadeMessage(pendingRemoval.name, pendingRemoval.dependents)
-				: ''}
+			description={pendingRemoval ? removalDescription(pendingRemoval) : ''}
 			confirmLabel="Tout supprimer"
 			variant="destructive"
 			onConfirm={handleConfirmRemoval}
@@ -500,7 +590,12 @@
 
 		<section class="vue" class:pleine={activeView === 'graphe'}>
 			{#if activeView === 'calcul'}
-				<CalculView {desk} onreplay={ephemeral ? undefined : handleReplayRequest} />
+				<CalculView
+					{desk}
+					{inputMode}
+					bind:mathLatex
+					onreplay={ephemeral ? undefined : handleReplayRequest}
+				/>
 			{:else if activeView === 'graphe'}
 				<!--
 					`panel={false}` : dans l'atelier, c'est « Mes objets » qui tient ce
@@ -510,7 +605,9 @@
 				-->
 				<GrapheurContainer store={graph} panel={false} />
 			{:else}
-				<DataView />
+				{#key dataKey}
+					<DataView initialZone={dataZone} />
+				{/key}
 			{/if}
 		</section>
 	</section>
@@ -541,11 +638,17 @@
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
+	.outils {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-right: 0.625rem;
+	}
+
 	.vider {
 		/* Lisible et visable en projection (revue a11y du lot 6) */
 		min-height: 2.5rem;
 		padding: 0.125rem 0.625rem;
-		margin-right: 0.625rem;
 		border: 1px solid var(--color-border);
 		border-radius: 0.375rem;
 		background: var(--color-background);
@@ -628,8 +731,12 @@
 	}
 
 	@media (max-width: 720px) {
+		/* Une colonne : le panneau au-dessus, la vue dessous. Des rangées SANS taille
+		   écrasaient le panneau, dont les boutons « + Fonction… » passaient sous la
+		   barre « Partager… / Réglages » (relevé à 390 px) */
 		.atelier {
 			grid-template-columns: 1fr;
+			grid-template-rows: auto minmax(0, 1fr);
 		}
 	}
 </style>

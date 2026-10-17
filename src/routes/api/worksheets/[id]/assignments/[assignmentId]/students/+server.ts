@@ -20,6 +20,11 @@ import {
 	removeStudentResponseSchema
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/worksheets/[id]/assignments/[assignmentId]/students/+server'
+);
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -39,7 +44,7 @@ async function verifyAssignmentAccess(
 	// Validate UUID formats
 	const paramsValidation = validateAssignmentParams({ id: worksheetId, assignmentId });
 	if (!paramsValidation.success) {
-		throw error(400, 'Format UUID invalide');
+		throw error(400, 'Identifiant invalide');
 	}
 
 	// Fetch worksheet with ownership check
@@ -50,12 +55,12 @@ async function verifyAssignmentAccess(
 		.single();
 
 	if (worksheetError || !worksheet) {
-		throw error(404, 'Feuille de travail non trouvee');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify ownership (teachers can only access their own worksheets)
 	if (role === 'teacher' && worksheet.created_by !== userId) {
-		throw error(403, 'Acces non autorise a cette feuille de travail');
+		throw error(403, 'Accès refusé à cette fiche');
 	}
 
 	// Fetch assignment and verify it belongs to this worksheet
@@ -67,12 +72,12 @@ async function verifyAssignmentAccess(
 		.single();
 
 	if (assignmentError || !assignment) {
-		throw error(404, 'Devoir non trouve');
+		throw error(404, 'Affectation introuvable');
 	}
 
 	// Additional ownership check for assignment
 	if (role === 'teacher' && assignment.created_by !== userId) {
-		throw error(403, 'Acces non autorise a ce devoir');
+		throw error(403, 'Accès refusé à cette affectation');
 	}
 
 	return { worksheet, assignment };
@@ -118,8 +123,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('created_at', { ascending: false });
 
 	if (fetchError) {
-		console.error('Failed to fetch assigned students:', fetchError);
-		throw error(500, 'Erreur lors de la recuperation des eleves');
+		logger.error('Failed to fetch assigned students:', fetchError);
+		throw error(500, 'Impossible de charger les élèves');
 	}
 
 	// Transform response to expected format
@@ -173,13 +178,13 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateAddAssignmentStudents(body);
 	if (!validation.success) {
 		const errorMsg = validation.error.issues.map((e) => e.message).join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { student_ids } = validation.data;
@@ -192,18 +197,15 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.eq('role', 'student');
 
 	if (studentError) {
-		console.error('Failed to verify students:', studentError);
-		throw error(500, 'Erreur lors de la verification des eleves');
+		logger.error('Failed to verify students:', studentError);
+		throw error(500, 'Impossible de vérifier les élèves');
 	}
 
 	const validStudentIds = new Set((validStudents ?? []).map((s) => s.id));
 	const invalidIds = student_ids.filter((id) => !validStudentIds.has(id));
 
 	if (invalidIds.length > 0) {
-		throw error(
-			400,
-			`Certains eleves n'existent pas ou ne sont pas des eleves: ${invalidIds.length} ID(s) invalide(s)`
-		);
+		throw error(400, `Élèves introuvables : ${invalidIds.length}`);
 	}
 
 	// Insert student assignments (ignore duplicates)
@@ -218,8 +220,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.select('id');
 
 	if (insertError) {
-		console.error('Failed to add students to assignment:', insertError);
-		throw error(500, "Erreur lors de l'ajout des eleves");
+		logger.error('Failed to add students to assignment:', insertError);
+		throw error(500, 'Impossible d’ajouter les élèves');
 	}
 
 	// Validate response
@@ -262,13 +264,13 @@ export const DELETE: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateRemoveAssignmentStudent(body);
 	if (!validation.success) {
 		const errorMsg = validation.error.issues.map((e) => e.message).join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { student_id } = validation.data;
@@ -281,12 +283,12 @@ export const DELETE: RequestHandler = async ({ locals, params, request }) => {
 		.eq('student_id', student_id);
 
 	if (deleteError) {
-		console.error('Failed to remove student from assignment:', deleteError);
-		throw error(500, "Erreur lors de la suppression de l'eleve");
+		logger.error('Failed to remove student from assignment:', deleteError);
+		throw error(500, 'Impossible de retirer l’élève');
 	}
 
 	if (count === 0) {
-		throw error(404, 'Eleve non trouve dans ce devoir');
+		throw error(404, 'Cet élève ne fait pas partie de l’affectation');
 	}
 
 	// Validate response
@@ -294,7 +296,7 @@ export const DELETE: RequestHandler = async ({ locals, params, request }) => {
 		removeStudentResponseSchema,
 		{
 			success: true as const,
-			message: 'Eleve retire du devoir avec succes'
+			message: 'Élève retiré de l’affectation'
 		},
 		'DELETE /api/worksheets/[id]/assignments/[assignmentId]/students'
 	);

@@ -119,7 +119,9 @@ class AchievementsManager {
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || `Failed to load achievements: ${response.status}`);
+				throw new Error(
+					errorData.message || `Impossible de charger les succès (${response.status})`
+				);
 			}
 
 			const data: AchievementsApiResponse = await response.json();
@@ -169,7 +171,7 @@ class AchievementsManager {
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
 				throw new Error(
-					errorData.message || `Failed to load student achievements: ${response.status}`
+					errorData.message || `Impossible de charger les succès de l’élève (${response.status})`
 				);
 			}
 
@@ -217,7 +219,9 @@ class AchievementsManager {
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || `Failed to load progress: ${response.status}`);
+				throw new Error(
+					errorData.message || `Impossible de charger la progression (${response.status})`
+				);
 			}
 
 			const data: ProgressApiResponse = await response.json();

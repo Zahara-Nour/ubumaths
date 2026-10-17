@@ -23,6 +23,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { WorksheetAssignmentRow } from '$lib/types/worksheets';
 import { canAccessCorrections } from './correction-release';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/worksheets/correction-visibility');
 
 // ============================================================================
 // TYPES
@@ -96,7 +99,7 @@ export async function isCorrectionVisible(
 	// alors que le professeur l'avait explicitement masquée. Sur un document
 	// noté, le repli sûr est de ne pas montrer.
 	if (exerciseSettingError) {
-		console.error('[correction-visibility] Exception illisible :', exerciseSettingError);
+		logger.error('[correction-visibility] Exception illisible :', exerciseSettingError);
 		return false;
 	}
 
@@ -115,7 +118,7 @@ export async function isCorrectionVisible(
 	// Même raison : le défaut est « visible », donc une panne ouvrait la
 	// correction au lieu de la retenir.
 	if (worksheetExerciseError) {
-		console.error('[correction-visibility] Réglage par défaut illisible :', worksheetExerciseError);
+		logger.error('[correction-visibility] Réglage par défaut illisible :', worksheetExerciseError);
 		return false;
 	}
 
@@ -191,7 +194,7 @@ export async function getCorrectionVisibilityMap(
 	// « visible ». Une panne dévoilerait donc les corrections masquées : on
 	// renvoie une carte entièrement fermée.
 	if (exerciseSettingsError) {
-		console.error('[correction-visibility] Exceptions illisibles :', exerciseSettingsError);
+		logger.error('[correction-visibility] Exceptions illisibles :', exerciseSettingsError);
 		for (const id of worksheetExerciseIds) visibilityMap.set(id, false);
 		return visibilityMap;
 	}
@@ -211,7 +214,7 @@ export async function getCorrectionVisibilityMap(
 		.in('id', worksheetExerciseIds);
 
 	if (worksheetExercisesError) {
-		console.error(
+		logger.error(
 			'[correction-visibility] Réglages par défaut illisibles :',
 			worksheetExercisesError
 		);

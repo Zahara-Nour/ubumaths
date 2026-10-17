@@ -211,7 +211,12 @@ function buildServiceRoleClient(): TrackerClient {
 				games_played: 1,
 				is_new_best: true
 			}),
-			update_student_gidouilles: () => null
+			update_student_gidouilles: () => null,
+			record_game_reward: () => ({
+				actual_reward: 0.5,
+				is_first_win: true,
+				week_best_reward: 0.5
+			})
 		}
 	});
 }
@@ -307,5 +312,30 @@ describe('POST /api/games/2048/scores - milestone inserts use service-role clien
 		const appels = serviceRoleMock.rpc.mock.calls.filter((c) => c[0] === 'upsert_2048_score');
 		expect(appels).toHaveLength(1);
 		expect((appels[0][1] as { p_user_id: string }).p_user_id).toBe(TEST_IDS.student);
+	});
+
+	it('enregistre la récompense du jour via le client service, pour l’élève de la SESSION', async () => {
+		const { POST } = await import('../+server');
+
+		const request = new Request('http://localhost/api/games/2048/scores', {
+			method: 'POST',
+			body: JSON.stringify(milestoneBody),
+			headers: { 'Content-Type': 'application/json' }
+		});
+
+		const locals = {
+			supabase: authClient,
+			user: { id: TEST_IDS.student },
+			profile: studentProfile
+		};
+
+		await POST({ request, locals } as any);
+
+		// La base retirera cette fonction aux comptes connectés : un élève
+		// s'attribuerait sinon la récompense de chaque jeu sans jouer.
+		expect(authClient.rpc.mock.calls.filter((c) => c[0] === 'record_game_reward')).toHaveLength(0);
+		const appels = serviceRoleMock.rpc.mock.calls.filter((c) => c[0] === 'record_game_reward');
+		expect(appels).toHaveLength(1);
+		expect((appels[0][1] as { p_student_id: string }).p_student_id).toBe(TEST_IDS.student);
 	});
 });

@@ -9,6 +9,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { getStudentChecklistProgress } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/progress/+server');
 
 /** Query parameters schema */
 const progressQuerySchema = z.object({
@@ -66,7 +69,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const checklistResult = await getStudentChecklistProgress(chapterId, locals.supabase, studentId);
 
 	if (checklistResult.error) {
-		console.error(
+		logger.error(
 			'[GET /api/teacher/chapters/[id]/progress] Checklist error:',
 			checklistResult.error
 		);
@@ -89,7 +92,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		.eq('status', 'active');
 
 	if (studentsError) {
-		console.error('[GET /api/teacher/chapters/[id]/progress] Students error:', studentsError);
+		logger.error('[GET /api/teacher/chapters/[id]/progress] Students error:', studentsError);
 		throw error(500, 'Failed to fetch students');
 	}
 

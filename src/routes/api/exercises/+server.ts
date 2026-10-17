@@ -16,6 +16,13 @@ import {
 } from '$lib/server/validation';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireRole } from '$lib/server/middleware/auth';
+import {
+	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
+	isSearchIndexedViolation
+} from '$lib/server/exercise-search-indexed';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/+server');
 
 type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -36,7 +43,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 					`${(e as { path: string[]; message: string }).path.join('.')}: ${(e as { path: string[]; message: string }).message}`
 			)
 			.join('; ');
-		throw error(400, `Invalid query parameters: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { page, limit, category, tags, topic, grades, search } = queryValidation.data;
@@ -68,8 +75,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const result = await getExercises(locals.supabase, filters, { page, limit });
 
 	if (result.error) {
-		console.error('Failed to fetch exercises:', result.error);
-		throw error(500, 'Failed to fetch exercises');
+		logger.error('Failed to fetch exercises:', result.error);
+		throw error(500, 'Impossible de charger les exercices');
 	}
 
 	// Validate response
@@ -103,13 +110,17 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const validation = validateCreateExercise(body);
 
 	if (!validation.success) {
+		// « Privé + Google » : le message français seul, lisible tel quel par le professeur
+		if (validation.error.issues.some((i) => i.message === SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE)) {
+			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
+		}
 		const errorMsg = validation.error.issues
 			.map(
 				(e: unknown) =>
 					`${(e as { path: string[]; message: string }).path.join('.')}: ${(e as { path: string[]; message: string }).message}`
 			)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data as Omit<ExerciseInsert, 'created_by'>;
@@ -118,8 +129,12 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const result = await createExercise(locals.supabase, data, user.id);
 
 	if (result.error) {
-		console.error('Failed to create exercise:', result.error);
-		throw error(500, 'Failed to create exercise');
+		// « Privé + Google » : refus métier ou contrainte de la base (23514)
+		if (isSearchIndexedViolation(result.error)) {
+			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
+		}
+		logger.error('Failed to create exercise:', result.error);
+		throw error(500, 'Impossible de créer l’exercice');
 	}
 
 	// Validate response

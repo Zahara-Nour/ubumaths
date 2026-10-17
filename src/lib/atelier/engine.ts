@@ -30,6 +30,7 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { tidyTerms } from './tidy-terms';
 import { derivativeOf } from './names';
+import { INTERNAL_LETTER } from './letter';
 import { astOf, readNumber } from './parse';
 import { constantOf } from './constant';
 import { transformAST } from '$lib/mathAST/visitor';
@@ -43,6 +44,13 @@ import {
 // =============================================================================
 // Types
 // =============================================================================
+
+/**
+ * La formule de `f⁻¹` en x pour une fonction de l'atelier, `null` si `name`
+ * n'en est pas une (le nœud reste tel quel). LÈVE `ReciprocalUnavailable`
+ * quand f n'a pas de réciproque : un refus est une RÉPONSE, que l'appelant dit.
+ */
+type ReciprocalResolver = (name: string) => MathNode | null;
 
 /** Ce que rend `expressionOf` : une expression prête pour le moteur, ou pourquoi non. */
 export type Substituted =
@@ -60,6 +68,48 @@ export type Substituted =
  * ni l'un ni l'autre.
  */
 const pushed = new WeakMap<Atelier, WeakMap<WebReplEngine, string>>();
+
+/**
+ * Les réciproques en cours de calcul, par atelier. Calculer `f⁻¹` relit f
+ * (`substitutedAstOf`), donc les AUTRES objets — dont `g(x) = f⁻¹(x)`, qui
+ * redemanderait `f⁻¹` sans fin. Redemandée en cours de calcul, elle est
+ * indisponible : l'objet qui la cite est laissé de côté (f ne le cite pas,
+ * sinon ce serait un cycle, déjà refusé).
+ */
+const resolving = new WeakMap<Atelier, Set<string>>();
+
+/**
+ * Les formules de `f⁻¹` déjà calculées, par atelier, valables tant que
+ * l'empreinte de l'atelier ne change pas. Sans elles, chaque `bindingsOf`
+ * recalculait toutes les réciproques citées, qui relisent f, donc refont
+ * `bindingsOf` : cinq réciproques citées prenaient 11 s (revue de la PR).
+ */
+const formulas = new WeakMap<
+	Atelier,
+	{ readonly mark: string; readonly byName: Map<string, MathNode | string> }
+>();
+
+/** Tout ce dont dépend une réciproque (et le moteur) : définitions, statuts, ensembles. */
+function atelierMark(atelier: Atelier): string {
+	return JSON.stringify(
+		atelier.objects.map((o) => [
+			o.name,
+			o.kind,
+			o.definition,
+			o.status,
+			o.provenance,
+			'interval' in o ? o.interval : null,
+			'reciprocalOn' in o ? o.reciprocalOn : null,
+			'inheritedInterval' in o ? o.inheritedInterval : null
+		])
+	);
+}
+
+/** `f⁻¹` citée sans réciproque possible (f non bijective…) ; le message est le refus. */
+export class ReciprocalUnavailable extends Error {}
+
+/** `f^{-1}` écrit dans un texte (la forme rangée, `withReciprocalNotation`). */
+const INVERSE_WRITTEN = /\^\{-1\}/;
 
 // =============================================================================
 // Fonctions
@@ -87,11 +137,6 @@ function derivable(atelier: Atelier): AtelierObject[] {
 	return atelier.objects.filter((o) => o.status !== 'error' && o.definition.trim() !== '');
 }
 
-/** L'empreinte de ce qui est poussé — deux empreintes égales, rien à refaire. */
-function fingerprint(objects: readonly AtelierObject[]): string {
-	return JSON.stringify(objects.map((o) => [o.kind, o.name, o.definition]));
-}
-
 /**
  * Mettre le moteur en accord avec l'atelier.
  *
@@ -104,7 +149,9 @@ function fingerprint(objects: readonly AtelierObject[]): string {
  */
 export function syncEngine(atelier: Atelier, engine: WebReplEngine): void {
 	const objects = usable(atelier);
-	const mark = fingerprint(objects);
+	// ⚠️ Pas seulement les définitions : `g(x) = f⁻¹(x)` change avec l'ensemble
+	// de f (`interval`, `reciprocalOn`, `inheritedInterval`) — revue de #1338
+	const mark = atelierMark(atelier);
 
 	const perEngine = pushed.get(atelier) ?? new WeakMap<WebReplEngine, string>();
 	if (perEngine.get(engine) === mark) return;
@@ -155,7 +202,8 @@ export function syncEngine(atelier: Atelier, engine: WebReplEngine): void {
  */
 function expandDerivatives(
 	node: MathNode,
-	functions: Record<string, FunctionDefinition>
+	functions: Record<string, FunctionDefinition>,
+	reciprocals?: ReciprocalResolver
 ): MathNode {
 	if (node === null || typeof node !== 'object') return node;
 
@@ -164,7 +212,27 @@ function expandDerivatives(
 		name?: string;
 		args?: MathNode[];
 		derivativeOrder?: number;
+		isInverse?: boolean;
 	};
+
+	// `f⁻¹`, comme `f'` : recalculée à chaque lecture (décision (1) de David,
+	// 2026-10-13). `f⁻¹` seule désigne la fonction ; `f⁻¹(5)` sa valeur en 5.
+	if (current.type === 'function' && current.isInverse === true && reciprocals !== undefined) {
+		const formula = typeof current.name === 'string' ? reciprocals(current.name) : null;
+		if (formula !== null) {
+			const args = current.args ?? [];
+			if (args.length === 0) return expandDerivatives(formula, functions, reciprocals);
+			const at = substitute(formula, { [INTERNAL_LETTER]: args[0] }, { maxIterations: 1 });
+			// Entre parenthèses : `2f⁻¹(5)` s'écrivait `2{5-3}/2`, illisible au moteur
+			const grouped: MathNode = {
+				type: 'delimiter',
+				delimiters: 'parentheses',
+				content: expandDerivatives(at, functions, reciprocals),
+				semantic: 'grouping'
+			};
+			return grouped;
+		}
+	}
 
 	if (
 		current.type === 'function' &&
@@ -183,12 +251,13 @@ function expandDerivatives(
 			}
 			// `f'` sans argument désigne la fonction ; `f'(2)` demande sa valeur en 2.
 			const args = current.args ?? [];
-			if (args.length === 0) return expandDerivatives(derived, functions);
+			if (args.length === 0) return expandDerivatives(derived, functions, reciprocals);
 			// ⚠️ Une seule passe : `f'(2x)` remplace x par 2x, puis plus rien —
 			// itérer donnait cos(1024x) (2026-10-06)
 			return expandDerivatives(
 				substitute(derived, { [target.parameters[0] ?? 'x']: args[0] }, { maxIterations: 1 }),
-				functions
+				functions,
+				reciprocals
 			);
 		}
 	}
@@ -208,18 +277,66 @@ function expandDerivatives(
 		if (Array.isArray(value)) {
 			copy[key] = value.map((item) =>
 				item !== null && typeof item === 'object'
-					? expandDerivatives(item as MathNode, functions)
+					? expandDerivatives(item as MathNode, functions, reciprocals)
 					: item
 			);
 		} else if (value !== null && typeof value === 'object') {
-			copy[key] = expandDerivatives(value as MathNode, functions);
+			copy[key] = expandDerivatives(value as MathNode, functions, reciprocals);
 		}
 	}
 	return copy as unknown as MathNode;
 }
 
+/** Les réciproques de l'atelier, pour `expandDerivatives` (voir `ReciprocalResolver`). */
+function reciprocalResolver(atelier: Atelier): ReciprocalResolver {
+	return (name) => {
+		if (atelier.get(name)?.kind !== 'function') return null;
+		const busy = resolving.get(atelier) ?? new Set<string>();
+		resolving.set(atelier, busy);
+		if (busy.has(name)) throw new ReciprocalUnavailable(`${name}⁻¹ se cite elle-même.`);
+		const mark = atelierMark(atelier);
+		let known = formulas.get(atelier);
+		if (known === undefined || known.mark !== mark) {
+			known = { mark, byName: new Map() };
+			formulas.set(atelier, known);
+		}
+		let found = known.byName.get(name);
+		if (found === undefined) {
+			busy.add(name);
+			try {
+				const outcome = atelier.reciprocalOutcome(name);
+				const formula = outcome.ok
+					? astOf(outcome.definition, 'text', atelier.functionNames)
+					: null;
+				found = outcome.ok ? (formula ?? `${name}⁻¹ ne se lit pas.`) : outcome.message;
+			} finally {
+				busy.delete(name);
+			}
+			known.byName.set(name, found);
+		}
+		// Un message : le refus de `.réciproque f`
+		if (typeof found === 'string') throw new ReciprocalUnavailable(found);
+		return found;
+	};
+}
+
+/** `expandDerivatives`, ou `null` si une réciproque citée est indisponible. */
+function expandedOrSkipped(
+	ast: MathNode,
+	functions: Record<string, FunctionDefinition>,
+	reciprocals: ReciprocalResolver
+): MathNode | null {
+	try {
+		return expandDerivatives(ast, functions, reciprocals);
+	} catch (error) {
+		if (error instanceof ReciprocalUnavailable) return null;
+		throw error;
+	}
+}
+
 /** Les définitions des AUTRES objets, sous la forme qu'attend `substituteAll`. */
 function bindingsOf(atelier: Atelier, exclude: string) {
+	const reciprocals = reciprocalResolver(atelier);
 	const variables: Record<string, MathNode> = {};
 	const functions: Record<string, FunctionDefinition> = {};
 
@@ -231,7 +348,9 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 	// ce qui ne se LIT pas est écarté.
 	const raw: Record<string, FunctionDefinition> = {};
 	for (const object of derivable(atelier)) {
-		const ast = astOf(object.definition, object.provenance, atelier.functionNames);
+		const plain = astOf(object.definition, object.provenance, atelier.functionNames);
+		// `g(x) = f⁻¹(x)` : la réciproque développée AVANT toute dérivée (`g'`)
+		const ast = plain === null ? null : expandedOrSkipped(plain, {}, reciprocals);
 		if (ast === null) continue;
 		if (object.kind === 'function') raw[object.name] = { expression: ast, parameters: ['x'] };
 		else if (object.kind === 'sequence' && object.mode === 'explicit')
@@ -240,11 +359,14 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 
 	for (const object of usable(atelier)) {
 		if (object.name === exclude) continue;
-		const plain = astOf(object.definition, object.provenance, atelier.functionNames);
+		// La réciproque déjà développée au premier passage, quand il y en a un
+		const plain =
+			raw[object.name]?.expression ??
+			astOf(object.definition, object.provenance, atelier.functionNames);
 		// ⚠️ Développé ICI aussi : sans quoi une fonction qui cite `g` recevrait
 		// `f'` par substitution, et le développement du niveau supérieur — déjà
 		// passé — ne le verrait jamais.
-		const ast = plain === null ? null : expandDerivatives(plain, raw);
+		const ast = plain === null ? null : expandedOrSkipped(plain, raw, reciprocals);
 		if (ast === null) continue;
 		if (object.kind === 'function') functions[object.name] = { expression: ast, parameters: ['x'] };
 		else if (object.kind === 'sequence' && object.mode === 'explicit')
@@ -252,7 +374,7 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 		else if (object.kind === 'value') variables[object.name] = ast;
 	}
 
-	return { variables, functions, derivableFunctions: raw };
+	return { variables, functions, derivableFunctions: raw, reciprocals };
 }
 
 /**
@@ -276,16 +398,16 @@ function bindingsOf(atelier: Atelier, exclude: string) {
  * d'objets.
  */
 export function expandInput(atelier: Atelier, text: string): string {
-	if (!text.includes("'") && !text.includes('’')) return text;
+	if (!text.includes("'") && !text.includes('’') && !INVERSE_WRITTEN.test(text)) return text;
 
 	const ast = astOf(text, 'url', atelier.functionNames);
 	if (ast === null) return text;
 
 	// ⚠️ Les bindings DÉRIVABLES, pas ceux de l'évaluation : `k(x) = bx` ne
 	// s'évalue pas mais se dérive, et `k'` doit valoir `b`.
-	const { derivableFunctions } = bindingsOf(atelier, '');
-	const expanded = expandDerivatives(ast, derivableFunctions);
-	return toCustom(expanded);
+	const { derivableFunctions, reciprocals } = bindingsOf(atelier, '');
+	const expanded = expandedOrSkipped(ast, derivableFunctions, reciprocals);
+	return expanded === null ? text : toCustom(expanded);
 }
 
 /**
@@ -301,10 +423,10 @@ export function expandInput(atelier: Atelier, text: string): string {
 export function expandCommandArgument(atelier: Atelier, text: string): string | null {
 	const ast = astOf(text, 'url', atelier.functionNames);
 	if (ast === null) return null;
-	const { variables, functions, derivableFunctions } = bindingsOf(atelier, '');
+	const { variables, functions, derivableFunctions, reciprocals } = bindingsOf(atelier, '');
 	let expanded: MathNode;
 	try {
-		expanded = expandDerivatives(ast, derivableFunctions);
+		expanded = expandDerivatives(ast, derivableFunctions, reciprocals);
 	} catch {
 		return null;
 	}
@@ -323,10 +445,16 @@ export function expandCommandArgument(atelier: Atelier, text: string): string | 
 export function substitutedAstOf(
 	atelier: Atelier,
 	name: string,
-	options?: { readonly forDerivation?: boolean }
+	options?: {
+		readonly forDerivation?: boolean;
+		/**
+		 * Garder les VALEURS citées en lettres (`a x + b`) : seules les fonctions
+		 * sont remplacées. La carte `f⁻¹` garde ainsi ses curseurs (`reciprocal.ts`).
+		 */
+		readonly keepValues?: boolean;
+	}
 ):
-	| { readonly ok: true; readonly ast: MathNode }
-	| { readonly ok: false; readonly message: string } {
+	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
 	const object = atelier.get(name);
 	if (object === undefined) {
 		return { ok: false, message: `« ${name} » n'existe pas dans l'atelier.` };
@@ -353,7 +481,7 @@ export function substitutedAstOf(
 		return { ok: false, message: `« ${object.definition} » ne se lit pas.` };
 	}
 
-	const { variables, functions, derivableFunctions } = bindingsOf(atelier, name);
+	const { variables, functions, derivableFunctions, reciprocals } = bindingsOf(atelier, name);
 	// Les dérivées AVANT le reste : `f'` doit devenir une expression avant que
 	// `substituteAll` cherche à y remplacer des noms. Et on les développe avec
 	// les bindings DÉRIVABLES — un objet en attente se dérive.
@@ -363,8 +491,10 @@ export function substitutedAstOf(
 	// échec de dérivation est une RÉPONSE, pas une panne.
 	let expanded: MathNode;
 	try {
-		expanded = expandDerivatives(ast, derivableFunctions);
-	} catch {
+		expanded = expandDerivatives(ast, derivableFunctions, reciprocals);
+	} catch (error) {
+		// `g(x) = f⁻¹(x)` avec f non bijective : le refus de `.réciproque f`
+		if (error instanceof ReciprocalUnavailable) return { ok: false, message: error.message };
 		const derivative = derivativeOf(name);
 		return {
 			ok: false,
@@ -378,9 +508,22 @@ export function substitutedAstOf(
 	// cette réécriture elle n'était pas remplacée, et le grapheur refusait la
 	// suite qui la cite (revue du lot 5b)
 	const withCalls = subscriptsAsCalls(expanded, functions, name);
-	const substituted = substituteAll(withCalls, variables, substituteFunction, {
-		functions: functions satisfies FunctionBindings
-	});
+	// Pour dériver (et pour une fonction à paramètre, V56) : une fonction citée
+	// EN ATTENTE est remplacée aussi — `g(x) = f(x)+1` avec `f(x) = a x` vaut
+	// `a x + 1`, et `.dériver g` répondait f'(x)
+	const cited: FunctionBindings =
+		options?.forDerivation === true
+			? {
+					...Object.fromEntries(Object.entries(derivableFunctions).filter(([n]) => n !== name)),
+					...functions
+				}
+			: functions;
+	const substituted = substituteAll(
+		withCalls,
+		options?.keepValues === true ? {} : variables,
+		substituteFunction,
+		{ functions: cited }
+	);
 
 	return { ok: true, ast: substituted };
 }
@@ -402,8 +545,7 @@ export function derivativeAstOf(
 	atelier: Atelier,
 	name: string
 ):
-	| { readonly ok: true; readonly ast: MathNode }
-	| { readonly ok: false; readonly message: string } {
+	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
 	const result = substitutedAstOf(atelier, name);
 	return result.ok ? { ok: true, ast: tidyTerms(result.ast) } : result;
 }
@@ -415,6 +557,46 @@ export function expressionOf(
 ): Substituted {
 	const result = substitutedAstOf(atelier, name, options);
 	return result.ok ? { ok: true, expression: toCustom(result.ast) } : result;
+}
+
+/**
+ * Ce qu'une cellule de la grille sait des objets de l'atelier (tableur, lot 2) :
+ * préparé UNE fois par recalcul de la grille — `bindingsOf` relit chaque
+ * définition, le refaire pour chaque cellule coûterait des milliers de lectures.
+ *
+ * `expand` fait ce que fait une ligne de Calcul : dérivées (`f'`) et
+ * réciproques (`f⁻¹`) développées, appels de suites (`u_n`), puis valeurs et
+ * fonctions de l'atelier remplacées. Rend le refus d'une `f⁻¹` impossible.
+ */
+export interface GridContext {
+	/** Les VALEURS de l'atelier remplacées, seulement (contrôle d'intervalle de `f(b)`). */
+	values(ast: MathNode): MathNode;
+	expand(
+		ast: MathNode
+	):
+		| { readonly ok: true; readonly ast: MathNode }
+		| { readonly ok: false; readonly message: string };
+}
+
+export function gridContext(atelier: Atelier): GridContext {
+	const { variables, functions, derivableFunctions, reciprocals } = bindingsOf(atelier, '');
+	return {
+		values: (ast) => substituteAll(ast, variables, substituteFunction, { functions: {} }),
+		expand(ast) {
+			let expanded: MathNode;
+			try {
+				expanded = expandDerivatives(ast, derivableFunctions, reciprocals);
+			} catch (error) {
+				if (error instanceof ReciprocalUnavailable) return { ok: false, message: error.message };
+				return { ok: false, message: 'Une dérivée citée ne se calcule pas.' };
+			}
+			const withCalls = subscriptsAsCalls(expanded, functions, '');
+			return {
+				ok: true,
+				ast: substituteAll(withCalls, variables, substituteFunction, { functions })
+			};
+		}
+	};
 }
 
 /** `v_n` → `v(n)` pour chaque autre suite explicite liée. */

@@ -112,9 +112,9 @@ describe('image d’un nombre', () => {
 
 describe('quand l’action ne peut pas aboutir', () => {
 	// §6 L2 : le message est celui du panneau, pas un second qui divergerait
-	it('refuse sur un objet en attente, avec le message de l’objet', () => {
+	it('refuse sur un objet en attente d’une fonction, avec le message de l’objet', () => {
 		const s = { atelier: new Atelier(), engine: new WebReplEngine() };
-		s.atelier.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		s.atelier.create({ kind: 'function', name: 'f', definition: 'h(x) + 1' });
 
 		const result = runAction(s, 'derive', 'f');
 
@@ -162,6 +162,67 @@ describe('ce que le panneau propose désormais', () => {
 
 		const actions = actionsFor(atelier.get('f')!);
 
-		expect(actions.find((a) => a.id === 'table')?.disabledReason).toBeTruthy();
+		expect(actions.find((a) => a.id === 'rename')?.disabledReason).toBeTruthy();
+	});
+});
+
+// Q4 (David, 2026-10-14) : les boutons de la carte d'une fonction à paramètre
+// disent ce que disent les commandes — `.dériver f` répond a, `.résoudre` refuse
+describe('fonction à paramètre : les boutons alignés sur les commandes', () => {
+	const DEPENDS_ON_A = "Le résultat dépend de a : donne-lui une valeur (a = 2) pour l'étudier.";
+
+	function withParameter(): CalcSession {
+		const session = { atelier: new Atelier(), engine: new WebReplEngine() };
+		session.atelier.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		return session;
+	}
+
+	it('« Dériver » répond f′(x) = a, comme `.dériver f` (a)', () => {
+		const result = runAction(withParameter(), 'derive', 'f');
+
+		expect(result.ok).toBe(true);
+		expect(result.ok && result.latex?.replace(/\s/g, '')).toBe("f'(x)=a");
+	});
+
+	it('la carte f′ se crée, à paramètre comme f', () => {
+		const s = withParameter();
+
+		const created = s.atelier.createDerivative('f');
+
+		expect(created.ok).toBe(true);
+		expect(s.atelier.get("f'")?.missing).toEqual([{ name: 'a', as: 'value' }]);
+	});
+
+	it('« Dériver » est actif ; « Résoudre », « Variations » et « Réciproque » nomment a', () => {
+		const s = withParameter();
+		const actions = actionsFor(s.atelier.get('f')!, s.atelier);
+		const reason = (id: string) => actions.find((a) => a.id === id)?.disabledReason;
+
+		expect(reason('derive')).toBeUndefined();
+		expect(reason('solve')).toBe(DEPENDS_ON_A);
+		expect(reason('variations')).toBe(DEPENDS_ON_A);
+		expect(reason('reciprocal')).toBe(DEPENDS_ON_A);
+	});
+
+	it('« Résoudre » cliqué quand même : le refus de `.résoudre f(x)=0`', () => {
+		const result = runAction(withParameter(), 'solve', 'f');
+
+		expect(result.ok === false && result.message).toBe(DEPENDS_ON_A);
+	});
+
+	it('l’image f(2) → 2a, comme `f(2)` tapé', () => {
+		const result = runAction(withParameter(), 'image', 'f', '2');
+
+		expect(result.ok && result.output).toBe('2a');
+	});
+
+	it('`.dériver f` crée f′ sans note d’attente', async () => {
+		const { runInput } = await import('../calcul');
+		const s = withParameter();
+
+		const result = runInput(s, '.dériver f');
+
+		expect(result.kind === 'commande' && result.note).toBeFalsy();
+		expect(s.atelier.get("f'")).toBeDefined();
 	});
 });

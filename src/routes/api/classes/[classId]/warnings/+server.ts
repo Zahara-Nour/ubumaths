@@ -20,6 +20,9 @@ import type { RequestHandler } from './$types';
 import { getClassWarnings } from '$lib/server/warnings';
 import { getClassWarningsSchema } from '$lib/server/validation/classes';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/classes/[classId]/warnings/+server');
 
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const { user } = await requireRoles(locals, ['teacher', 'admin']);
@@ -62,7 +65,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			warnings: warningsObject
 		});
 	} catch (err) {
-		console.error('Error fetching class warnings:', err);
+		logger.error('Error fetching class warnings:', err);
 
 		// Re-throw errors with status codes (from helper functions)
 		if (err && typeof err === 'object' && 'status' in err) {

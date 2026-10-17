@@ -1,6 +1,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { PythonExerciseStudentView, PythonMasteryStatus } from '$lib/types/python-exercises';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/python-exercises/[id]/+page.server');
 
 interface SubmissionSummary {
 	id: string;
@@ -85,8 +88,8 @@ export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (ownAssignmentsError && ownAssignmentsError.code !== 'PGRST116') {
-				console.error('Contrôle d’accès impossible :', ownAssignmentsError);
-				throw error(500, 'Impossible de vérifier votre accès');
+				logger.error('Contrôle d’accès impossible :', ownAssignmentsError);
+				throw error(500, 'Impossible de vérifier l’accès');
 			}
 			canViewResults = Boolean(ownAssignments && ownAssignments.length > 0);
 		}

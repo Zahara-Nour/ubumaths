@@ -193,6 +193,14 @@ export interface SolveResult {
 
 	/** Domain of definition of the expression (where the equation is defined) */
 	readonly domain?: Domain;
+
+	/**
+	 * Contraintes du domaine que `computeDomain` n'a pas su résoudre
+	 * (`x^5 − x + 1 ≠ 0`) : `domain` est alors TROP GRAND. Absent quand le
+	 * domaine est exact. Un appelant qui affiche `domain` (une identité :
+	 * « tout le domaine ») doit refuser plutôt que de le présenter comme exact.
+	 */
+	readonly domainUnresolved?: readonly string[];
 }
 
 /**

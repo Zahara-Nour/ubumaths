@@ -132,7 +132,7 @@
 		}
 
 		if (!isUniqueHintId(finalId)) {
-			toaster.error('Cet ID existe deja');
+			toaster.error('Cet identifiant existe déjà');
 			return;
 		}
 
@@ -218,7 +218,7 @@
 		}
 
 		if (!isUniqueHintId(editId, editingIndex)) {
-			toaster.error('Cet ID existe deja');
+			toaster.error('Cet identifiant existe déjà');
 			return;
 		}
 
@@ -264,7 +264,7 @@
 		hints = hints.map((h, i) => (i === editingIndex ? updatedHint : h));
 		onchange?.();
 		cancelEdit();
-		toaster.success('Aide modifiee');
+		toaster.success('Aide modifiée');
 	}
 
 	/**

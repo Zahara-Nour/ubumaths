@@ -32,10 +32,18 @@ import {
 	opposite,
 	positiveInfinity,
 	negativeInfinity,
-	parentheses
+	parentheses,
+	variable
 } from '../factory';
 import { limitByGeneralizedDegree } from './generalized-degree';
-import { numericNode } from '../common/numeric';
+import { extractExactRational, numericNode } from '../common/numeric';
+import {
+	divideOutCommonRoot,
+	divideOutRoot,
+	linearFactorText,
+	rationalPolynomialNode,
+	toPolynomial
+} from '../factor';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
@@ -70,14 +78,12 @@ export interface AlgebraicResult {
 // =============================================================================
 
 /**
- * Try to factor and cancel common terms in a division.
+ * Lève un `0/0` en a en sortant (x − a)^k de N et de D, k la plus petite des
+ * deux multiplicités : division exacte par le noyau `factor/` (ADR 0024).
+ * N et D : polynômes à coefficients rationnels ; a : rationnel exact, négatif
+ * compris (un négatif est un `opposite`, invariant 1).
  *
- * This is useful for limits like (x² - 4)/(x - 2) as x → 2.
- *
- * @param expr - The division expression
- * @param varName - The variable
- * @param approach - The approach point
- * @param recorder - Step recorder
+ * Utile pour (x² − 4)/(x − 2) en 2, (x³ − 1)/(x² − 1) en 1, (x² − 9)/(x + 3) en −3.
  */
 export function tryFactorization(
 	expr: MathNode,
@@ -85,140 +91,44 @@ export function tryFactorization(
 	approach: MathNode,
 	recorder: LimitStepRecorder
 ): AlgebraicResult {
-	if (!isDivision(expr)) {
-		return { success: false };
-	}
+	if (!isDivision(expr)) return { success: false };
+	const a = extractExactRational(approach);
+	const num = toPolynomial(expr.numerator, varName);
+	const den = toPolynomial(expr.denominator, varName);
+	if (a === null || num === null || den === null) return { success: false };
 
-	// Check if approach is a finite number
-	if (!isNumber(approach)) {
-		return { success: false };
-	}
+	const k = Math.min(divideOutRoot(num, a).multiplicity, divideOutRoot(den, a).multiplicity);
+	if (k === 0) return { success: false };
 
-	const approachVal = parseFloat(approach.value);
+	// Facteur entier (2x − 1, pas x − 1/2) et fraction réduite ((2x + 2)/2 → x + 1) : V23
+	const division = divideOutCommonRoot(num, den, a, k);
+	if (division === null) return { success: false };
+	const x = variable(varName);
+	const numQuotient = rationalPolynomialNode(division.reducedNumerator, x);
+	const denQuotient = division.reducedDenominator;
+	const isOne = denQuotient.length === 1 && denQuotient[0].n === denQuotient[0].d;
+	const simplified = isOne
+		? numQuotient
+		: divide(numQuotient, rationalPolynomialNode(denQuotient, x), 'fraction');
 
-	// Try to factor (x - a) from both numerator and denominator
-	const numFactor = tryFactorLinear(expr.numerator, varName, approachVal);
-	const denFactor = tryFactorLinear(expr.denominator, varName, approachVal);
+	// Texte sans LaTeX, comme les autres descriptions : « Factorisation par (2x − 1) »
+	const factorText = linearFactorText(varName, a, k);
+	recorder.recordStep(
+		'factorization',
+		`Factorisation par ${factorText}`,
+		expr,
+		simplified,
+		'detailed',
+		undefined,
+		'Annulation du facteur commun'
+	);
 
-	if (numFactor && denFactor) {
-		// Cancel (x - a)
-		const simplified = divide(numFactor.quotient, denFactor.quotient, 'fraction');
-
-		recorder.recordStep(
-			'factorization',
-			`Factorisation par (${varName} - ${approach.value})`,
-			expr,
-			simplified,
-			'detailed',
-			undefined,
-			'Annulation du facteur commun'
-		);
-
-		return {
-			success: true,
-			simplified,
-			technique: 'factorization',
-			description: `Factored out (${varName} - ${approach.value})`
-		};
-	}
-
-	return { success: false };
-}
-
-/**
- * Try to factor (x - a) from an expression.
- */
-function tryFactorLinear(
-	expr: MathNode,
-	varName: string,
-	a: number
-): { quotient: MathNode; multiplicity: number } | null {
-	// Simple case: expr = x - a
-	if (isSubtraction(expr)) {
-		if (isVariable(expr.left) && expr.left.name === varName && isNumber(expr.right)) {
-			if (parseFloat(expr.right.value) === a) {
-				return { quotient: number('1'), multiplicity: 1 };
-			}
-		}
-	}
-
-	// Simple case: expr = x (for a = 0)
-	if (isVariable(expr) && expr.name === varName && a === 0) {
-		return { quotient: number('1'), multiplicity: 1 };
-	}
-
-	// Polynomial case: x² - a² = (x-a)(x+a)
-	if (isSubtraction(expr) && isSuperscript(expr.left) && isNumber(expr.right)) {
-		const base = expr.left.base;
-		const exp = expr.left.superscript;
-
-		if (isVariable(base) && base.name === varName && isNumber(exp) && exp.value === '2') {
-			const aSquared = parseFloat(expr.right.value);
-			if (Math.abs(aSquared - a * a) < 1e-10) {
-				// x² - a² = (x-a)(x+a), quotient is (x+a)
-				return {
-					quotient: add(variable(varName), numericNode(a)),
-					multiplicity: 1
-				};
-			}
-		}
-	}
-
-	// Quadratic that has a as a root: check if substituting a gives 0
-	const valueAtA = evaluateSimple(expr, varName, a);
-	if (valueAtA !== null && Math.abs(valueAtA) < 1e-10) {
-		// This expression has a as a root, but we need to actually factor it
-		// For now, return null (full polynomial factoring is complex)
-		return null;
-	}
-
-	return null;
-}
-
-/**
- * Simple variable factory.
- */
-function variable(name: string): MathNode {
-	return { type: 'variable', name };
-}
-
-/**
- * Simple numeric evaluation.
- */
-function evaluateSimple(expr: MathNode, varName: string, value: number): number | null {
-	switch (expr.type) {
-		case 'number':
-			return parseFloat(expr.value);
-		case 'variable':
-			return expr.name === varName ? value : null;
-		case 'addition': {
-			const l = evaluateSimple(expr.left, varName, value);
-			const r = evaluateSimple(expr.right, varName, value);
-			return l !== null && r !== null ? l + r : null;
-		}
-		case 'subtraction': {
-			const l = evaluateSimple(expr.left, varName, value);
-			const r = evaluateSimple(expr.right, varName, value);
-			return l !== null && r !== null ? l - r : null;
-		}
-		case 'multiplication': {
-			const l = evaluateSimple(expr.left, varName, value);
-			const r = evaluateSimple(expr.right, varName, value);
-			return l !== null && r !== null ? l * r : null;
-		}
-		case 'division': {
-			const n = evaluateSimple(expr.numerator, varName, value);
-			const d = evaluateSimple(expr.denominator, varName, value);
-			return n !== null && d !== null && d !== 0 ? n / d : null;
-		}
-		case 'superscript': {
-			const b = evaluateSimple(expr.base, varName, value);
-			const e = evaluateSimple(expr.superscript, varName, value);
-			return b !== null && e !== null ? Math.pow(b, e) : null;
-		}
-		default:
-			return null;
-	}
+	return {
+		success: true,
+		simplified,
+		technique: 'factorization',
+		description: `Factored out ${factorText}`
+	};
 }
 
 // =============================================================================
@@ -781,13 +691,13 @@ export function tryAlgebraicSimplification(
 	direction: LimitDirection,
 	recorder: LimitStepRecorder
 ): AlgebraicResult {
-	// Try factorization first (for finite approach points)
-	if (isNumber(approach)) {
-		const factResult = tryFactorization(expr, varName, approach, recorder);
-		if (factResult.success) {
-			return factResult;
-		}
+	// Factorisation d'abord, en tout point rationnel (négatif compris)
+	const factResult = tryFactorization(expr, varName, approach, recorder);
+	if (factResult.success) {
+		return factResult;
+	}
 
+	if (isNumber(approach)) {
 		// Try rationalization
 		const ratResult = tryRationalization(expr, varName, approach, recorder);
 		if (ratResult.success) {

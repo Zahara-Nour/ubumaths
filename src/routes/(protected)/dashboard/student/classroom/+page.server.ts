@@ -2,6 +2,9 @@ import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/classroom/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Google Classroom access is disabled: keep students out of this view while
@@ -60,7 +63,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	// If error (likely because tables don't exist yet), return empty array
 	if (error) {
-		console.error('Error fetching coursework:', error);
+		logger.error('Error fetching coursework:', error);
 		return {
 			coursework: [],
 			needsMigration: true

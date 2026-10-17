@@ -16,12 +16,13 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Users, UserCheck, Send, Loader2 } from '@lucide/svelte';
+	import { Users, UserCheck, Send, Loader2 } from '@lucide/svelte';
 	import type { AssignDeckRequest, FSRSConfig } from '$lib/srs/types';
 
 	interface Student {
@@ -137,7 +138,7 @@
 				});
 
 				if (!response.ok) {
-					throw new Error('Failed to assign to students');
+					throw new Error('Impossible d’assigner le deck aux élèves');
 				}
 			}
 
@@ -155,7 +156,7 @@
 				});
 
 				if (!response.ok) {
-					throw new Error('Failed to assign to classes');
+					throw new Error('Impossible d’assigner le deck aux classes');
 				}
 			}
 
@@ -184,10 +185,7 @@
 <div class="assign-deck-page">
 	<!-- Header -->
 	<div class="mb-6">
-		<Button onclick={goBack} variant="ghost" class="mb-4">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour
-		</Button>
+		<BackLink href="/dashboard/teacher/srs/decks" label="Retour aux decks" />
 
 		<h1 class="mb-2 text-3xl font-bold">Attribuer un deck</h1>
 		<p class="text-muted-foreground">

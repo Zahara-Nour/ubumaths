@@ -34,12 +34,7 @@
  * - `'unknown'` — any other form (no automatic interpretation).
  */
 export type AnswerFormatKind =
-	| 'scientific'
-	| 'fraction'
-	| 'power'
-	| 'radical'
-	| 'plain'
-	| 'unknown';
+	'scientific' | 'fraction' | 'power' | 'radical' | 'plain' | 'unknown';
 
 // =============================================================================
 // Pattern Detection

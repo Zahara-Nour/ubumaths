@@ -14,11 +14,21 @@ import type { LimitDirection } from './types';
 import { normalizeExtended, isConstantPolynomial, rationalToNumber } from '../normal';
 import { denormalizeExtended } from '../normal/denormalize';
 import { substitute } from '../eval/substitute';
-import { zeroPlus, zeroMinus, number } from '../factory';
-import { mapNode } from '../transforms';
-import { isSubtraction, isAddition, isVariable, isOpposite, isInfinity } from '../guards';
+import { zeroPlus, zeroMinus, number, euler, power } from '../factory';
+import { findNodes, mapNode } from '../transforms';
+import {
+	isSubtraction,
+	isAddition,
+	isVariable,
+	isOpposite,
+	isInfinity,
+	isFunction,
+	isNumber
+} from '../guards';
 import { getNumericValue, numericNode } from '../common/numeric';
 import { exactConstantNode } from './generalized-degree';
+import { tidy } from '../tidy';
+import { hasDecimalLiteral } from '../tidy/decimal';
 
 // =============================================================================
 // Result Type Predicates
@@ -402,6 +412,87 @@ export function resultToNode(result: ExtendedNormalizeResult): MathNode | null {
 }
 
 /**
+ * Écriture d'une valeur de limite RENDUE (à l'élève, à la correction) : mise au
+ * propre par `tidy`, qui place le signe devant la fraction et le radical au
+ * numérateur — `-\\dfrac{\\sqrt{2}}{2}` et non `\\dfrac{-\\sqrt{2}}{2}` (forme
+ * de `denormalize`), `\\dfrac{\\sqrt{3}}{2}` et non `\\dfrac{1}{2}\\sqrt{3}`.
+ *
+ * Exception : une valeur qui CONTIENT un nombre décimal ressort telle quelle,
+ * car `tidy` le réécrirait en fraction (`0.5` → `\\dfrac{1}{2}`). Ce décimal y
+ * est posé par `writeLikeInput` d'`evaluate.ts` (énoncé décimal ET limite
+ * rationnelle d'écriture décimale finie : `\\frac{0.5x+1}{x}` → `0.5`), ou par
+ * un calcul en flottants (défaut V33 : `\\sqrt{\\frac{x^2+1}{4x^2}}` en −∞ rend
+ * `0.5`). Le critère est la valeur, pas l'énoncé : une limite irrationnelle
+ * d'un énoncé décimal est exacte, donc réécrite (`x + 0.5\\sqrt{2}` en 0 →
+ * `\\dfrac{\\sqrt{2}}{2}`).
+ *
+ * Réservée aux valeurs rendues : les calculs intermédiaires gardent la forme
+ * de `resultToNode`.
+ */
+export function writeLimitValue(value: MathNode): MathNode {
+	if (isInfinity(value)) return value;
+	const written = withEulerConstant(value);
+	if (hasDecimalLiteral(written)) return written;
+	return tidy(written);
+}
+
+/**
+ * `exp(1)` → e, `exp(k)` → e^k : la constante d'Euler, comme partout dans
+ * mathAST (`e` = Euler, toujours), et l'écriture de la classe. Les limites
+ * remarquables (`(1 + 1/x)^x` → `exp(1)`) et la substitution dans `exp(x)`
+ * rendaient la fonction appliquée à une constante.
+ */
+function withEulerConstant(value: MathNode): MathNode {
+	return mapNode(value, (node) => {
+		if (!isFunction(node) || node.name !== 'exp' || node.args.length !== 1) return node;
+		const [argument] = node.args;
+		return isNumber(argument) && argument.value === '1' ? euler() : power(euler(), argument);
+	});
+}
+
+/**
+ * Nombre de chiffres significatifs à partir duquel un décimal absent de
+ * l'énoncé est tenu pour l'arrondi d'un flottant (`toPrecision(10)` en écrit
+ * dix ; `0.1 + 0.2` en écrit dix-sept).
+ */
+const FLOAT_SIGNIFICANT_DIGITS = 10;
+
+/** Chiffres significatifs d'une écriture décimale (`0.0250` → 3, `1.5e-7` → 2). */
+function significantDigits(text: string): number {
+	const mantissa = text.replace(/^[-+]/, '').split(/e/i)[0];
+	return mantissa.replace('.', '').replace(/^0+/, '').length;
+}
+
+/**
+ * La valeur contient-elle un nombre issu d'un calcul en flottants (repli
+ * numérique de la substitution, de L'Hôpital, du terme dominant, des
+ * signes…) plutôt que d'un calcul exact ? Une telle valeur n'est jamais une
+ * limite `exact` : `evaluateLimit` la rend `approximate`.
+ *
+ * Critère (lu sur l'écriture, faute de trace du calcul) : un nombre non
+ * entier (point décimal ou notation `e`) qui n'est pas écrit dans l'énoncé,
+ * et — si l'énoncé contient lui-même des décimaux, d'où viennent des
+ * décimaux exacts (`0.5x` en 3 → `1.5`) — qui a au moins dix chiffres
+ * significatifs. Les valeurs exactes du moteur sont des entiers, des
+ * fractions et des constantes (√2, ln 2, e⁷) : jamais touchées.
+ *
+ * @param statement - l'expression et le point de l'énoncé
+ */
+export function containsFloatArtifact(value: MathNode, statement: readonly MathNode[]): boolean {
+	const writtenNumbers = new Set(
+		statement.flatMap((node) =>
+			findNodes(node, isNumber).flatMap((n) => (isNumber(n) ? [n.value] : []))
+		)
+	);
+	const decimalStatement = statement.some(hasDecimalLiteral);
+	return findNodes(value, isNumber).some((node) => {
+		if (!isNumber(node) || /^\d+$/.test(node.value)) return false;
+		if (writtenNumbers.has(node.value)) return false;
+		return !decimalStatement || significantDigits(node.value) >= FLOAT_SIGNIFICANT_DIGITS;
+	});
+}
+
+/**
  * Try to extract a numeric value from a constant NormalForm.
  *
  * Returns the numeric value if the form represents a constant (no variables),
@@ -519,11 +610,13 @@ export function resultToFiniteNode(result: ExtendedNormalizeResult): MathNode | 
 					return numericNode(intValue);
 				}
 				// Rationnel exact (2/3, pas 0.6666666667) lu sur la forme
-				// dénormalisée ; sinon (√2, π…) la valeur approchée
+				// dénormalisée
 				const denormalized = resultToNode(result);
 				const exact = denormalized === null ? null : exactConstantNode(denormalized);
 				if (exact !== null) return exact;
-				return numericNode(numValue.toPrecision(10).replace(/\.?0+$/, ''));
+				// Forme exacte non lue en rationnel : la forme dénormalisée, exacte,
+				// plutôt qu'un arrondi à 10 chiffres présenté comme exact
+				return denormalized;
 			}
 			// Fallback to denormalized form
 			return resultToNode(result);

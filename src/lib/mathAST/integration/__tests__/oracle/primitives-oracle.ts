@@ -328,7 +328,10 @@ function produceAtelier(c: PrimitiveCase, session: CalcSession): Produced {
 	if (firstLine.includes('Non résolu')) {
 		return { ok: false, verdict: { status: 'refus', reason: firstLine } };
 	}
-	const match = /^∫ .* d([A-Za-z]+) = (.*?)(?: \+ C)?$/.exec(firstLine);
+	// La condition d'une primitive qui divise par un paramètre (« (k ≠ 0) »,
+	// décision Q3 du 2026-10-14) se lit à part : elle n'est pas dans F
+	const withoutCondition = firstLine.replace(/ \([^()]*≠[^()]*\)$/, '');
+	const match = /^∫ .* d([A-Za-z]+) = (.*?)(?: \+ C)?$/.exec(withoutCondition);
 	if (match === null) {
 		return {
 			ok: false,

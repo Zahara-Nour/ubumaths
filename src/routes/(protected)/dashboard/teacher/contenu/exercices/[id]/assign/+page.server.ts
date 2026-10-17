@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const { user } = await locals.safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	const exerciseId = validateUuidParam(params.id);
@@ -32,12 +32,12 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		.single();
 
 	if (exerciseError || !exercise) {
-		throw error(404, 'Exercise not found');
+		throw error(404, 'Exercice introuvable');
 	}
 
 	// Check ownership
 	if (exercise.created_by !== user.id) {
-		throw error(403, 'Not authorized');
+		throw error(403, 'Accès refusé');
 	}
 
 	// Fetch existing assignments via API

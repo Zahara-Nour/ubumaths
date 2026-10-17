@@ -41,7 +41,7 @@ describe('les règles sont nommées', () => {
 
 		// ⚠️ C'est ce qui manquait le plus : `2xsin(x)+x^2cos(x)` tombait du ciel.
 		const titres = (derived!.steps[0].subSteps ?? []).map((s) => s.title);
-		expect(titres).toEqual(['Règle de la puissance (2)', 'Dérivée de sinus']);
+		expect(titres).toEqual(['Règle de la puissance ($2$)', 'Dérivée de sinus']);
 	});
 });
 

@@ -343,6 +343,21 @@ describe('generateCorrection — silent fallback', () => {
 		expect(result.correction?._renderedSteps).toBeUndefined();
 	});
 
+	// Le pipeline refuse un dénominateur nul par une erreur : la correction
+	// retombe sur le mode sans étapes, la question reste affichable
+	it('returns instance without _renderedSteps when a denominator is zero', () => {
+		const instance = makeInstance({
+			grades: ['4'],
+			resolvedVariables: [{ name: 'b', value: '3' }],
+			correction: {
+				generatedSteps: { kind: 'arithmetic', expression: '1+5/({{b}}-3)' }
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+		expect(console.warn).toHaveBeenCalled();
+	});
+
 	it('returns instance without _renderedSteps when linear-equation has no `=`', () => {
 		const instance = makeInstance({
 			grades: ['4'],
@@ -844,10 +859,8 @@ describe("generateCorrection — kind: 'limit'", () => {
 		const rules = top.map((s) => s.rule);
 		expect(rules).toContain('simplify-common-factor');
 		const parent = top.find((s) => s.rule === 'simplify-common-factor');
-		expect(parent?.subSteps?.map((s) => s.rule)).toEqual([
-			'factor-numerator',
-			'factor-denominator'
-		]);
+		// Le dénominateur EST le facteur x − 2 : pas de sous-étape « x − 2 = x − 2 »
+		expect(parent?.subSteps?.map((s) => s.rule)).toEqual(['factor-numerator']);
 	});
 
 	it('handles infinity-analysis with \\infty approach spelling', () => {
@@ -863,7 +876,7 @@ describe("generateCorrection — kind: 'limit'", () => {
 		});
 		const result = generateCorrection(instance);
 		const rules = (result.correction?._renderedSteps ?? []).map((s) => s.rule);
-		expect(rules).toContain('identify-dominant-term');
+		expect(rules).toContain('factor-dominant-term');
 		expect(rules).toContain('conclude');
 	});
 
@@ -1050,6 +1063,23 @@ describe("generateCorrection — kind: 'domain'", () => {
 		const result = generateCorrection(instance);
 		expect(result.correction?._renderedSteps).toBeUndefined();
 	});
+
+	// Domaine que le moteur ne sait pas résoudre : aucune étape plutôt que
+	// des étapes concluant « ℝ » (phase 0 du 2026-10-13, G1)
+	for (const expression of ['\\sqrt{\\sin x}', '\\frac{1}{x^5+x+1}']) {
+		for (const schoolLevel of ['lycee', 'superieur'] as const) {
+			it(`no _renderedSteps when the domain is unresolved: ${expression} (${schoolLevel})`, () => {
+				const instance = makeInstance({
+					grades: ['T_SPE'],
+					correction: {
+						generatedSteps: { kind: 'domain', expression, options: { schoolLevel } }
+					}
+				});
+				const result = generateCorrection(instance);
+				expect(result.correction?._renderedSteps).toBeUndefined();
+			});
+		}
+	}
 
 	it('honours an explicit variable', () => {
 		const instance = makeInstance({

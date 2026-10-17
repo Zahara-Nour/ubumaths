@@ -12,6 +12,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { parseKanbanId, updateBoardSchema } from '$lib/server/validation/kanban';
 import { assertBoardOwner, getBoardWithContent } from '$lib/server/kanban';
 import type { KanbanBoard } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/organisation/kanban/boards/[boardId]/+server');
 
 export const GET: RequestHandler = async ({ locals, params }) => {
 	await requireAuth(locals);
@@ -52,7 +55,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError || !data) {
-		console.error('[kanban] update board failed:', dbError);
+		logger.error('[kanban] update board failed:', dbError);
 		throw error(500, 'Erreur lors de la mise à jour du tableau');
 	}
 
@@ -65,7 +68,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	const board = await assertBoardOwner(locals.supabase, boardId, user.id);
 
-	console.info('[kanban] board deleted', {
+	logger.info('[kanban] board deleted', {
 		boardId,
 		userId: user.id,
 		classId: board.class_id,
@@ -75,7 +78,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { error: dbError } = await locals.supabase.from('kanban_boards').delete().eq('id', boardId);
 
 	if (dbError) {
-		console.error('[kanban] delete board failed:', dbError);
+		logger.error('[kanban] delete board failed:', dbError);
 		throw error(500, 'Erreur lors de la suppression du tableau');
 	}
 

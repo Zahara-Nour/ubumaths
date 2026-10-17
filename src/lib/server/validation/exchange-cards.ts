@@ -24,16 +24,16 @@ import { z } from 'zod';
 
 const baseSchema = z.object({
 	/** UUID of the student performing the exchange */
-	studentId: z.string().uuid('Invalid student ID format'),
+	studentId: z.string().uuid('Identifiant d’élève invalide'),
 
 	/** Array of VIP card instance IDs to discard (1-20 cards) */
 	cardsToDiscard: z
-		.array(z.string().uuid('Invalid card instance ID format'))
-		.min(1, 'Must discard at least 1 card')
-		.max(20, 'Cannot discard more than 20 cards'),
+		.array(z.string().uuid('Identifiant de carte VIP invalide'))
+		.min(1, 'Défausse au moins une carte VIP')
+		.max(20, 'Impossible de défausser plus de 20 cartes VIP'),
 
 	/** UUID of the action card instance being used to perform this exchange */
-	actionCardInstanceId: z.string().uuid('Invalid action card instance ID format')
+	actionCardInstanceId: z.string().uuid('Identifiant de carte d’action invalide')
 });
 
 // ============================================================================
@@ -60,7 +60,7 @@ const rarityPointsSchema = baseSchema.extend({
 
 	/** Target rarity to obtain */
 	targetRarity: z.enum(['common', 'rare', 'epic', 'legendary'], {
-		message: 'Invalid target rarity'
+		message: 'Rareté visée invalide'
 	})
 });
 
@@ -75,8 +75,8 @@ const discardForSpecificSchema = baseSchema.extend({
 	/** ID of the specific card to obtain */
 	targetCardId: z
 		.string()
-		.min(1, 'Target card ID cannot be empty')
-		.max(50, 'Target card ID too long')
+		.min(1, 'Choisis la carte VIP à obtenir')
+		.max(50, 'Identifiant de carte VIP trop long')
 });
 
 // ============================================================================

@@ -26,6 +26,7 @@ import {
 	variableNameOf
 } from '$lib/mathAST/cli/core/variable-argument';
 import { astOf } from './parse';
+import { summaryOf } from './steps-summary';
 
 // =============================================================================
 // Types
@@ -42,6 +43,8 @@ import { astOf } from './parse';
 export interface DerivedSteps {
 	/** Les étapes rendues, prêtes pour `GeneratedStepsCorrection`. */
 	readonly steps: readonly RenderedStep[];
+	/** Les mêmes étapes en version résumée, absente si elle ne dit rien de moins. */
+	readonly summary?: readonly RenderedStep[];
 	/** La réponse en LaTeX, jamais vide — la ligne d'historique l'affiche. */
 	readonly answer: string;
 }
@@ -101,13 +104,9 @@ export function deriveSteps(
 		});
 		if (result.steps.length === 0) return null;
 
-		const steps = new PedagogicalDifferentiationRenderer().renderAll(
-			result.steps.map((step) => restoreStep(step, indexed.restore)),
-			{
-				schoolLevel: 'lycee',
-				verbosity: 'detailed'
-			}
-		);
+		const renderer = new PedagogicalDifferentiationRenderer();
+		const restored = result.steps.map((step) => restoreStep(step, indexed.restore));
+		const steps = renderer.renderAll(restored, { schoolLevel: 'lycee', verbosity: 'detailed' });
 		if (steps.length === 0) return null;
 
 		// La dérivée MISE AU PROPRE (`tidyTerms`) : si elle change l'écriture de
@@ -120,9 +119,20 @@ export function deriveSteps(
 		);
 		if (derivative.trim() === '') return null;
 
+		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage).
+		// L'étape de mise au propre suit la verbosité des étapes qu'elle prolonge.
+		const summary = summaryOf(
+			allSteps,
+			withTidyStep(
+				renderer.renderAll(restored, { schoolLevel: 'lycee', verbosity: 'summarized' }),
+				indexed.restore(result.derivative)
+			).steps
+		);
+
 		return {
 			steps: allSteps,
-			answer: name === undefined ? derivative : `${name}'(x) = ${derivative}`
+			answer: name === undefined ? derivative : `${name}'(x) = ${derivative}`,
+			...(summary !== undefined && { summary })
 		};
 	} catch {
 		// `PedagogicalDifferentiationNotImplemented` (valeur absolue, par

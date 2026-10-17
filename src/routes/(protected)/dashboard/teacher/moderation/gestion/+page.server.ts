@@ -1,6 +1,9 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { getTeacherClassesWithStudents } from '$lib/server/students';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/moderation/gestion/+page.server');
 
 /**
  * Load moderation data for teachers
@@ -18,12 +21,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	// Check authentication
 	if (!user || !profile) {
-		throw error(401, 'Not authenticated');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Check teacher role
 	if (!['teacher', 'admin'].includes(profile.role)) {
-		throw error(403, 'Access denied');
+		throw error(403, 'Accès refusé');
 	}
 
 	// Fetch all data in parallel
@@ -73,22 +76,22 @@ export const load: PageServerLoad = async ({ locals }) => {
 		]);
 
 	if (restrictionsResult.error) {
-		console.error('Failed to fetch restrictions:', restrictionsResult.error);
+		logger.error('Failed to fetch restrictions:', restrictionsResult.error);
 		throw error(500, 'Failed to load restrictions');
 	}
 
 	if (logsResult.error) {
-		console.error('Failed to fetch logs:', logsResult.error);
+		logger.error('Failed to fetch logs:', logsResult.error);
 		throw error(500, 'Failed to load logs');
 	}
 
 	if (reportsResult.error) {
-		console.error('Failed to fetch reports:', reportsResult.error);
+		logger.error('Failed to fetch reports:', reportsResult.error);
 		// Don't throw, just log - reports feature might not be set up
 	}
 
 	if (pendingCountResult.error) {
-		console.error('Failed to fetch pending count:', pendingCountResult.error);
+		logger.error('Failed to fetch pending count:', pendingCountResult.error);
 		// Don't throw, just log
 	}
 

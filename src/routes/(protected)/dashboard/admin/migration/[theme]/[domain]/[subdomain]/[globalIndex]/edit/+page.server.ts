@@ -15,6 +15,11 @@ import type { PageServerLoad } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 import type { QuestionEntry } from '../../+page.server';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/admin/migration/[theme]/[domain]/[subdomain]/[globalIndex]/edit/+page.server'
+);
 
 /**
  * Get the latest export folder from data/migration-output/
@@ -28,7 +33,7 @@ async function getLatestExportFolder(): Promise<string> {
 		.reverse();
 
 	if (exportFolders.length === 0) {
-		throw error(404, 'No export folder found in data/migration-output/');
+		throw error(404, 'Aucun dossier d’export dans data/migration-output/');
 	}
 
 	return join(baseDir, exportFolders[0]);
@@ -104,7 +109,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 				.limit(1);
 
 			if (editsDataError) {
-				console.error('Lecture impossible :', editsDataError);
+				logger.error('Lecture impossible :', editsDataError);
 				throw error(500, 'Impossible de charger les données');
 			}
 
@@ -156,7 +161,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('Error loading question for edit:', err);
+		logger.error('Error loading question for edit:', err);
 		throw error(500, 'Erreur lors du chargement de la question');
 	}
 };

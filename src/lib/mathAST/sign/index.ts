@@ -128,7 +128,6 @@ export {
 	// Interval sign determination
 	determineSignOnInterval,
 	analyzeExpressionStructure,
-	analyzePolynomial,
 	// Numeric sampling
 	sampleSignOnInterval,
 	getSamplePoints,

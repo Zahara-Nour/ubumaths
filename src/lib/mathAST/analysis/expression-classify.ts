@@ -134,26 +134,50 @@ function isTranscendentalFunction(name: string): boolean {
  * (which can't handle it) instead of `solveQuadratic` (which solves it
  * trivially).
  */
-function isEulerSuperscript(node: MathNode): boolean {
+function isEulerSuperscript(node: MathNode, variable?: string): boolean {
 	if (node.type !== 'superscript') return false;
 	const base = node.base;
 	if (base.type !== 'constant' || base.constant !== 'euler') return false;
 	// Only transcendental when the exponent depends on at least one variable.
-	return getVariables(node.superscript).size > 0;
+	return dependsOn(node.superscript, variable);
+}
+
+/**
+ * Vrai quand `node` dépend de l'inconnue `variable` — ou, sans inconnue
+ * donnée, d'une variable quelconque.
+ */
+function dependsOn(node: MathNode, variable?: string): boolean {
+	const vars = getVariables(node);
+	return variable === undefined ? vars.size > 0 : vars.has(variable);
+}
+
+/**
+ * Une fonction transcendante qui compte pour le classement. Avec `variable`,
+ * seulement si son argument contient l'inconnue : `\ln 3`, `\cos(1)` sont des
+ * constantes (écart V38 : `x = \ln 3` répondait « transcendante non
+ * supporte »). Sans `variable`, toute occurrence compte (comportement public
+ * historique).
+ */
+function countsAsTranscendental(n: MathNode, variable?: string): boolean {
+	if (!isFunction(n) || !isTranscendentalFunction(n.name)) return false;
+	return variable === undefined || dependsOn(n, variable);
 }
 
 /**
  * Check if expression contains transcendental functions.
+ *
+ * @param variable - si donnée, une fonction dont l'argument ne contient pas
+ *   cette inconnue est ignorée (c'est une constante).
  */
-export function containsTranscendental(node: MathNode): boolean {
+export function containsTranscendental(node: MathNode, variable?: string): boolean {
 	let found = false;
 
 	mapNode(node, (n) => {
 		if (found) return n;
 
-		if (isFunction(n) && isTranscendentalFunction(n.name)) {
+		if (countsAsTranscendental(n, variable)) {
 			found = true;
-		} else if (isEulerSuperscript(n)) {
+		} else if (isEulerSuperscript(n, variable)) {
 			found = true;
 		}
 
@@ -165,16 +189,22 @@ export function containsTranscendental(node: MathNode): boolean {
 
 /**
  * Get the type of transcendental function in the expression.
+ *
+ * @param variable - si donnée, seules comptent les fonctions dont l'argument
+ *   contient cette inconnue : `\cos x = \ln 2` est trigonométrique.
  */
 export function getTranscendentalType(
-	node: MathNode
+	node: MathNode,
+	variable?: string
 ): 'trigonometric' | 'exponential' | 'logarithmic' | null {
 	let result: 'trigonometric' | 'exponential' | 'logarithmic' | null = null;
 
 	mapNode(node, (n) => {
 		if (result !== null) return n;
 
-		if (isFunction(n)) {
+		if (isFunction(n) && variable !== undefined && !dependsOn(n, variable)) {
+			// Fonction d'une constante : pas un type transcendant (V38)
+		} else if (isFunction(n)) {
 			if (TRIG_FUNCTIONS.has(n.name) || HYPERBOLIC_FUNCTIONS.has(n.name)) {
 				result = 'trigonometric';
 			} else if (n.name === 'exp') {
@@ -182,7 +212,7 @@ export function getTranscendentalType(
 			} else if (n.name === 'ln' || n.name === 'log') {
 				result = 'logarithmic';
 			}
-		} else if (isEulerSuperscript(n)) {
+		} else if (isEulerSuperscript(n, variable)) {
 			result = 'exponential';
 		}
 
@@ -205,8 +235,9 @@ export function getTranscendentalType(
  * @returns The degree, or null if not a polynomial
  */
 export function getPolynomialDegree(node: MathNode, variable: string): number | null {
-	// If contains transcendental, not a polynomial
-	if (containsTranscendental(node)) {
+	// Une fonction transcendante n'empêche le polynôme que si son argument
+	// contient l'inconnue : `x\ln 2 - 1` est affine (écart V38).
+	if (containsTranscendental(node, variable)) {
 		return null;
 	}
 
@@ -259,6 +290,9 @@ function getPolynomialDegreeRecursive(node: MathNode, variable: string): number 
 		}
 
 		case 'superscript': {
+			// Puissance sans l'inconnue (`2^π`, `e^{\sqrt 2}`) : une constante (V38)
+			if (!getVariables(node).has(variable)) return 0;
+
 			// x^n where n is a non-negative integer
 			const baseDeg = getPolynomialDegreeRecursive(node.base, variable);
 			if (baseDeg === null) return null;

@@ -52,8 +52,8 @@ mtexte(-3, 1.2, "\\text{Cible : } 2\\sqrt{2} \\approx 2.828")`;
 				<code>F(b) − F(a)</code> (peut être négative).
 			</li>
 			<li>
-				<code class="text-green-600">aire(f, a, b)</code> — aire entre <code>f</code> et l'axe des x
-				(toujours ≥ 0).
+				<code class="text-green-600">aire(f, a, b)</code> — aire entre <code>f</code> et l'axe des x (toujours
+				≥ 0).
 			</li>
 			<li>
 				<code class="text-orange-500">aire_entre(f, g, a, b)</code> — aire entre <code>f</code> et

@@ -26,6 +26,9 @@ import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { calculateMathemoTheoreticalReward } from '$lib/server/games/reward-mathemo';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { creditAchievementGidouilles } from '$lib/server/achievements/credit-gidouilles';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/games/mathemo/scores/+server');
 
 // ============================================================================
 // GET - Fetch user's current stats
@@ -50,7 +53,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.maybeSingle();
 
 		if (fetchError) {
-			console.error('[API] Error fetching mathemo score:', fetchError);
+			logger.error('[API] Error fetching mathemo score:', fetchError);
 			throw error(500, 'Failed to fetch game score');
 		}
 
@@ -72,7 +75,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[API] Unexpected error in GET /api/games/mathemo/scores:', err);
+		logger.error('[API] Unexpected error in GET /api/games/mathemo/scores:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };
@@ -114,8 +117,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				)
 			: 0;
 
-		// Upsert score stats
-		const { data: upsertData, error: upsertError } = await supabase
+		// Client service : la base retire cette fonction aux comptes connectés — un
+		// élève y ajouterait sinon n'importe quel score à son total. L'identité vient
+		// de la session ; le score est calculé et borné ici.
+		const { data: upsertData, error: upsertError } = await createServiceRoleClient()
 			.rpc('upsert_mathemo_score', {
 				p_user_id: user.id,
 				p_word_length: word_length,
@@ -126,12 +131,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.maybeSingle();
 
 		if (upsertError) {
-			console.error('[API] Error upserting mathemo score:', upsertError);
+			logger.error('[API] Error upserting mathemo score:', upsertError);
 			throw error(500, 'Failed to save game score');
 		}
 
 		if (!upsertData) {
-			console.error('[API] Upsert returned no data');
+			logger.error('[API] Upsert returned no data');
 			throw error(500, 'Failed to save game score');
 		}
 
@@ -172,7 +177,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				// Cette liste borne la portée du classement. Vidée par une panne, elle
 				// affiche un classement amputé sans le dire.
 				if (membershipError) {
-					console.error('Périmètre illisible :', membershipError);
+					logger.error('Périmètre illisible :', membershipError);
 					throw error(500, 'Impossible de déterminer le périmètre');
 				}
 
@@ -181,7 +186,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 				if (schoolId) {
 					const gameUuid = crypto.randomUUID();
-					const { data: rewardData, error: rewardError } = await supabase
+					// Client service : la base retire cette fonction aux comptes connectés —
+					// un élève s'attribuerait sinon la récompense de chaque jeu sans jouer.
+					// L'identité vient de la session ; le montant est calculé ici, depuis le score.
+					const { data: rewardData, error: rewardError } = await createServiceRoleClient()
 						.rpc('record_game_reward', {
 							p_student_id: user.id,
 							p_game_type: 'mathemo',
@@ -192,7 +200,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						.maybeSingle();
 
 					if (rewardError) {
-						console.error('[API] Error recording mathemo reward:', rewardError);
+						logger.error('[API] Error recording mathemo reward:', rewardError);
 					} else if (rewardData) {
 						const rd = rewardData as {
 							actual_reward: number;
@@ -232,7 +240,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[API] Unexpected error in POST /api/games/mathemo/scores:', err);
+		logger.error('[API] Unexpected error in POST /api/games/mathemo/scores:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };
@@ -277,7 +285,7 @@ async function checkAndAwardMathemoMilestones(
 		.in('id', eligibleSlugs);
 
 	if (achievementsError) {
-		console.error('Lecture impossible :', achievementsError);
+		logger.error('Lecture impossible :', achievementsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -294,8 +302,8 @@ async function checkAndAwardMathemoMilestones(
 	// rendait absente, et le succès repartait pour un tour — gidouilles créditées
 	// une seconde fois.
 	if (existingError) {
-		console.error('Succès déjà obtenus illisibles :', existingError);
-		throw error(500, 'Impossible de vérifier vos succès');
+		logger.error('Succès déjà obtenus illisibles :', existingError);
+		throw error(500, 'Impossible de vérifier les succès');
 	}
 
 	const existingIds = new Set((existing || []).map((e) => e.achievement_id));
@@ -324,7 +332,7 @@ async function checkAndAwardMathemoMilestones(
 			.select('id');
 
 		if (insertError) {
-			console.error('[API] Error awarding milestone:', achievement.id, insertError);
+			logger.error('[API] Error awarding milestone:', achievement.id, insertError);
 			continue;
 		}
 
@@ -339,7 +347,7 @@ async function checkAndAwardMathemoMilestones(
 		);
 
 		if (gidouillesError) {
-			console.error('[API] Error crediting milestone gidouilles:', achievement.id, gidouillesError);
+			logger.error('[API] Error crediting milestone gidouilles:', achievement.id, gidouillesError);
 		}
 
 		milestones.push({

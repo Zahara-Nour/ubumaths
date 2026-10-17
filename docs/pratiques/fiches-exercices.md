@@ -14,24 +14,63 @@ gardé. On ne passe par l'éditeur qu'ensuite, pour retoucher.
 
 ---
 
+## 0. Quel modèle pour quelle tâche
+
+À régler **avant de commencer** : la session principale tourne sous Opus (`/model`), et **on ne
+change pas de modèle en cours de chantier**. Chaque bascule relit tout l'historique au tarif plein,
+car le cache de prompt est propre à chaque modèle. Haiku n'est pas recommandé : une erreur de contenu
+part en production.
+
+Une tâche qui n'a pas besoin de l'historique du chantier se confie à un **sous-agent** (`Agent` avec
+`model`) : il démarre avec un contexte vide et ne reçoit que son brief. Ne jamais utiliser `fork` pour
+une tâche mécanique : il hérite de tout le contexte et tourne sur le modèle courant.
+
+| Tâche                                                                                 | Lancée par                            | Modèle | Pourquoi                                                          |
+| ------------------------------------------------------------------------------------- | ------------------------------------- | ------ | ----------------------------------------------------------------- |
+| Cadrage, inventaire en base, `CONVENTIONS.md`, plan des fiches (§ 1, § 2)             | Session principale                    | Opus   | Décisions de contenu et de programme                              |
+| Rédaction des énoncés et corrigés (agents `pedagogy-expert`, § 2.3)                   | Sous-agent, brief précis              | Opus   | Une erreur de calcul ou un corrigé faux part vite en production   |
+| `assert_all.py` et `pnpm check:ubumark` (§ 2.3)                                       | Sous-agent, brief précis              | Opus   | Vérification mathématique : c'est elle qui rattrape les erreurs   |
+| Relecture des pages PDF (§ 2.4)                                                       | Session principale                    | Opus   | Les détecteurs ne voient pas les défauts de sens                  |
+| Correctif du générateur PDF et test rouge (§ 2.7)                                     | Session principale ou sous-agent Opus | Opus   | Code critique du rendu ; le test doit prouver le défaut           |
+| Modèles d'automatismes en JSON, `genericFunctions`, `points` (§ 2 bis)                | Session principale ou sous-agent Opus | Opus   | Contenu mathématique paramétré, formules vérifiées par le système |
+| Script de création copié et adapté (`create-*-1spe.ts`, § 2.5)                        | Sous-agent, brief court               | Sonnet | Travail mécanique : titres, identifiants, constantes              |
+| Simulation puis `--publier`, `regen-depuis-base`, compilation, débords (§ 2.5, § 2.6) | Sous-agent, brief court               | Sonnet | Commandes et lecture de sorties ; à arrêter au premier doute      |
+| Lecture des écarts de la simulation vers le plan                                      | Session principale                    | Opus   | Une décision de contenu, pas une commande                         |
+
+Un sous-agent de rédaction sans modèle indiqué doit être lancé en Opus. Ne jamais déléguer à un
+modèle plus petit la décision d'un contenu mathématique.
+
+**Sessions courtes** : une session par fiche ou par phase, avec le document de progression dans
+`docs/wip/` (crash-recovery), pour reprendre sans relire tout l'historique.
+
 ## 1. Ce qui existe (1re spécialité, brouillons FR + EN)
 
 Deux fiches par thème : **Entraînement technique** (catégorie `automatisme`, exercices numérotés,
 sans section) et **Applications** (catégorie `application`, 3 sections, variantes `guided` et
-parfois `autonomous`).
+parfois `autonomous`). Depuis le 2026-10-12, David veut des **sections dans les deux fiches** et des
+**illustrations** dans la fiche d'applications : le thème « Variables aléatoires » a été refait
+ainsi (voir la ligne du tableau) et sert de modèle.
 
-| Thème (topic en base)      | Entraînement technique                                      | Applications                     | Script                                        |
-| -------------------------- | ----------------------------------------------------------- | -------------------------------- | --------------------------------------------- |
-| Second degré               | `b5ca9ed3`                                                  | `d6c03510` (de David, complétée) | `create-fiche-technique-second-degre.ts`      |
-| Suites                     | `f09992e6`                                                  | `2d043bf5`                       | `create-suites-1spe.ts`                       |
-| Fonction exponentielle     | `ad1083a2`                                                  | `18f2252a`                       | `create-exponentielle-1spe.ts`                |
-| Dérivation                 | `139ec069` (12 neufs + 17 existants)                        | `4fea9f37`                       | `create-derivation-1spe.ts`                   |
-| Fonctions trigonométriques | `808e2eee`                                                  | `dde45b26`                       | `create-trigonometrie-1spe.ts`                |
-| Géométrie (produit scal.)  | `c20d4094` (10 neufs + 6 existants)                         | `7d94d681` (7 + 5 existants)     | `create-produit-scalaire-1spe.ts`             |
-| Probabilités               | `570376ab`                                                  | `eaf297d5`                       | `create-probabilites-conditionnelles-1spe.ts` |
-| Variables aléatoires       | `0ef45afb`                                                  | `d720d039`                       | `create-variables-aleatoires-1spe.ts`         |
-| Géométrie repérée          | `6ee9c178` (10 neufs + 2 existants)                         | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`            |
-| Automatismes (évolutions)  | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8 | —                                | `create-automatismes-evolutions-1spe.ts`      |
+| Thème (topic en base)      | Entraînement technique                                      | Applications                     | Script                                                                            |
+| -------------------------- | ----------------------------------------------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
+| Second degré               | `b5ca9ed3`                                                  | `d6c03510` (de David, complétée) | `create-fiche-technique-second-degre.ts`                                          |
+| Suites                     | `f09992e6`                                                  | `2d043bf5`                       | `create-suites-1spe.ts`                                                           |
+| Fonction exponentielle     | `ad1083a2`                                                  | `18f2252a`                       | `create-exponentielle-1spe.ts`                                                    |
+| Dérivation                 | `139ec069` (12 neufs + 17 existants)                        | `4fea9f37`                       | `create-derivation-1spe.ts`                                                       |
+| Fonctions trigonométriques | `808e2eee`                                                  | `dde45b26`                       | `create-trigonometrie-1spe.ts`                                                    |
+| Géométrie (produit scal.)  | `c20d4094` (10 neufs + 6 existants)                         | `7d94d681` (7 + 5 existants)     | `create-produit-scalaire-1spe.ts`                                                 |
+| Probabilités               | `570376ab`                                                  | `eaf297d5`                       | `create-probabilites-conditionnelles-1spe.ts`                                     |
+| Variables aléatoires       | `0ef45afb` (8 sections, 18 ex. dont « Rappels »)            | `d720d039` (5 sections, 11 ex.)  | `create-variables-aleatoires-1spe.ts` puis `refonte-variables-aleatoires-1spe.ts` |
+| Géométrie repérée          | `6ee9c178` (10 neufs + 2 existants)                         | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`                                                |
+| Automatismes (évolutions)  | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8 | —                                | `create-automatismes-evolutions-1spe.ts`                                          |
+
+Terminale maths complémentaires : **« Loi binomiale »** (thème `Loi binomiale`, 2026-10-16) — technique
+`f054c015` (7 sections, 14 ex.), applications `19848611` (4 sections, 8 ex., 3 illustrations) —
+`create-loi-binomiale-tcomp.ts` (les deux fiches lues depuis un `plan.json`, sections comprises).
+Coefficients binomiaux donnés dans l'énoncé : la formule avec factorielles est hors programme.
+**« Loi géométrique »** (thème `Loi géométrique`, 2026-10-16) — technique `69187540` (6 sections,
+10 ex.), applications `7e4ade83` (3 sections, 6 ex., 3 illustrations) — `create-loi-geometrique-tcomp.ts`
+(copie du script binomial). Variance de la loi géométrique hors programme ; espérance $1/p$ admise.
 
 Seconde : **« Fonctions : généralités »** `41737393` (thème `Fonctions`, 1 fiche, 3 sections : images,
 antécédents par le calcul, lectures graphiques ; 14 neufs + « Calcul d'images » `5b233301`) —
@@ -686,7 +725,14 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   indentés de 2 espaces) ; 3 épreuves au plus en arbre complet ; sous une sous-question, indenter
   le bloc de 6 espaces.
 - Python : bloc ` ```python ` ; dans le texte, identifiants entre backticks (`` `moyenne(n)` ``).
-- Pas d'image ni de figure : décrire la configuration, conseiller une figure à main levée.
+- **Illustrations** (2026-10-12) : schémas SVG dessinés à la main, convertis en PNG de 1 200 px
+  (Chromium headless de Playwright), fond blanc, version `-en.png` dès qu'il y a du texte ; envoyés
+  dans le bucket `exercise-images` (`<id de David>/va-*.png`) par le script de la fiche. Dans le
+  texte : `![alt](URL){size=large align=center}` — à `size=medium` (50 % d'une colonne) le texte
+  d'un schéma tombe à 3-4 pt imprimé. Une image d'énoncé ne donne aucune réponse ; un graphique
+  qui en donne une va au corrigé. Diagrammes et courbes : blocs natifs ` ```barres `,
+  ` ```courbe `, ` ```simulation ` (pas d'image). Variable aléatoire : lettre parlante (S somme,
+  G gain), jamais P, E ou V.
 - **Couleurs** des blocs ` ```figure `, ` ```courbe `, ` ```stat-chart `, ` ```line ` (droite
   graduée : `points: A=2 bleu`, `segments: [1, 3] vert`) et ` ```trig ` (`color: rouge`) : écrire un
   **nom** de la palette commune (bleu, rouge, vert, orange, violet, jaune, cyan, marron, rose,
@@ -737,7 +783,10 @@ Autres leçons :
 - `jsonb` réordonne les clés : relire une ligne écrite en comparant `JSON.stringify` échoue dès
   qu'une clé est ajoutée — comparer avec des clés triées.
 - `worksheet_sections` a une contrainte d'unicité sur la position : réordonner via une position
-  temporaire.
+  temporaire. Même chose pour `worksheet_exercises`, unique par **(fiche, section, position)** :
+  ranger une fiche existante en sections demande d'abord de passer TOUS ses exercices à des
+  positions provisoires (sinon un ajout heurte un exercice qui n'a pas encore bougé — vu le
+  2026-10-12, défait automatiquement par le script).
 - Un sous-agent qui dit avoir « tué » un test peut laisser un `vitest` orphelin à 100 % CPU :
   `ps -axo pid,ppid,etime,%cpu,command | grep "node .*ubumaths-wt-"`.
 

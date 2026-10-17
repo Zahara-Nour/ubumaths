@@ -51,7 +51,7 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `src/lib/components/markdown/lexicon-context.ts`                      | `provideLexicon`, `provideQuestionLexicon` : qui active les mots cliquables              |
 | `src/lib/components/markdown/nodes/LexiconTerm.svelte`                | Le mot souligné et sa fiche (dialogue accessible)                                        |
 | `src/lib/dictionary/consistency.ts`                                   | `checkDictionary`, `newProblems` : règles de cohérence (enregistrement admin et tests)   |
-| `src/lib/dictionary/admin-draft.ts`                                   | Brouillon d'une entrée sur la page d'admin ↔ saisie envoyée au serveur                  |
+| `src/lib/dictionary/admin-draft.ts`                                   | Brouillon d'une entrée sur la page d'admin ↔ saisie envoyée au serveur                   |
 | `src/lib/server/dictionary/admin.ts`                                  | `loadAdminDictionary`, `createEntry`, `updateEntry`, `loadVersions`                      |
 | `src/routes/api/admin/dictionnaire/`                                  | `GET`/`POST` (liste, création), `PATCH [id]` (modifier, masquer), `GET [id]/versions`    |
 | `src/routes/(protected)/dashboard/admin/dictionnaire/`                | Page d'admin : recherche, fiche (`EntryEditor.svelte`), masquer, historique              |
@@ -59,6 +59,7 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `supabase/migrations/20261012153000_dictionnaire_en_base.sql`         | Tables, trigger d'historique, droits, RLS                                                |
 | `supabase/migrations/20261013090000_dictionnaire_image_meme_site.sql` | Contrainte : image du site seulement (`//hôte` refusé)                                   |
 | `supabase/migrations/20261015090000_dictionnaire_historique_*.sql`    | Historique écrit par le trigger seul (SECURITY DEFINER gardé par `is_admin()`)           |
+| `supabase/migrations/20261016090300_dictionnaire_mots_lecture.sql`    | Données : les 4 mots de la lecture (copie figée `mots-lecture-2026-10-11.ts`)            |
 
 Page de démonstration : `src/routes/(public)/demo/mots-cliquables/+page.svelte`.
 
@@ -164,7 +165,8 @@ personne n'écrit directement dans l'historique.
 | Test                                                                              | Prouve                                                                    |
 | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | `tests/integration/dictionnaire-en-base.test.ts`                                  | Droits et RLS : lecture anon, écriture admin seul, pas de DELETE, trigger |
-| `tests/integration/dictionnaire-lecture.test.ts`                                  | Lecture : base locale = référence, filtre `hidden`, mémoire 90 s, image   |
+| `tests/integration/dictionnaire-lecture.test.ts`                                  | Lecture : base locale = référence + ajouts, filtre `hidden`, mémoire 90 s |
+| `tests/integration/dictionnaire-mots-lecture.test.ts`                             | Les 4 mots de la lecture : lus par un visiteur, cohérents                 |
 | `tests/integration/dictionnaire-admin.test.ts`                                    | Enregistrement admin : refus de cohérence, historique, masquage           |
 | `src/lib/server/dictionary/__tests__/load.test.ts`                                | Mémoire, repli, lecture unique                                            |
 | `src/routes/api/dictionnaire/__tests__/server.test.ts`                            | Cache public, `?frais` réservé à l'admin                                  |
@@ -188,5 +190,7 @@ Copies figées des lots validés par David : `tests/fixtures/lexique/` (aucun te
 
 - **Le jeu de référence s'éloigne de la base** à mesure que l'admin modifie le dictionnaire :
   c'est voulu (les tests ne dépendent pas des données vivantes). Une base locale fraîche
-  (`db:reset`) contient la reprise, donc encore la référence (`dictionnaire-lecture.test.ts`).
+  (`db:reset`) contient la reprise (la référence), puis les entrées ajoutées par migration, chacune
+  avec sa copie figée sous `tests/fixtures/lexique/` (2026-10-11 : `mots-lecture-2026-10-11.ts`) ;
+  `dictionnaire-lecture.test.ts` et `dictionnaire-en-base.test.ts` comparent la base à cette suite.
 - Un marquage `[mot]{.def}` au milieu de `**gras**` casse le gras (même limite que `{.rappel}`).

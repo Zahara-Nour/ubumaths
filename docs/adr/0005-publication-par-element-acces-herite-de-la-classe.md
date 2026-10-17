@@ -1,6 +1,6 @@
 # 0005 — Publication par élément, accès hérité de la classe
 
-- **Statut** : acceptée (mise en service le 2026-09-14)
+- **Statut** : acceptée (mise en service le 2026-09-14) · ligne « Modèles de chapitre » remplacée par [0029](0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md)
 - **Date** : 2026-09-13 · **Décidée par** : David
 
 ## Contexte
@@ -18,7 +18,7 @@
 | Accès élève               | **Hérité de la classe**, résolu à la volée (même seed) — pas matérialisé par élève     |
 | Sortie de classe          | L'élève est **archivé** : relit ce qu'il a reçu, ne reçoit plus rien                   |
 | Modèles de chapitre       | Emportent les fiches ; la mise à jour **n'efface rien**                                |
-| Lien modèle ↔ chapitre   | Le chapitre d'origine est une **instanciation ordinaire** (pas de `source_chapter_id`) |
+| Lien modèle ↔ chapitre    | Le chapitre d'origine est une **instanciation ordinaire** (pas de `source_chapter_id`) |
 | Documents                 | Plafond **25 Mo**, téléversement **direct** navigateur → storage                       |
 | Quiz de chapitre          | Réutilise le moteur de questions                                                       |
 | Variations d'une question | **Tirage par élève**                                                                   |

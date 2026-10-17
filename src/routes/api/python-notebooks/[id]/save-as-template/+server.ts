@@ -27,6 +27,9 @@ import { saveAsTemplateSchema } from '$lib/server/validation/notebook-templates'
 import type { NotebookContent, NotebookCell } from '$lib/types/notebook';
 import { asNotebookContent } from '$lib/types/notebook';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/[id]/save-as-template/+server');
 
 const MAX_NOTEBOOKS_PER_USER = 50;
 
@@ -38,25 +41,25 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user, profile } = await requireAuth(locals);
 
 	if (profile.role === 'student') {
-		throw error(403, 'Réservé aux enseignants');
+		throw error(403, 'Réservé aux professeurs');
 	}
 
 	const idValidation = uuidSchema.safeParse(params.id);
-	if (!idValidation.success) throw error(400, 'ID de notebook invalide');
+	if (!idValidation.success) throw error(400, 'Identifiant de carnet invalide');
 	const notebookId = idValidation.data;
 
 	let body: unknown;
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requête invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 	const bodyValidation = saveAsTemplateSchema.safeParse(body);
 	if (!bodyValidation.success) {
 		const msg = bodyValidation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation échouée: ${msg}`);
+		throw error(400, `Données invalides : ${msg}`);
 	}
 
 	// Fetch source notebook and check ownership.
@@ -67,17 +70,17 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.maybeSingle();
 
 	if (fetchError) {
-		console.error('Failed to fetch source notebook:', fetchError);
-		throw error(500, 'Erreur lors du chargement du notebook');
+		logger.error('Failed to fetch source notebook:', fetchError);
+		throw error(500, 'Impossible de charger le carnet');
 	}
-	if (!source) throw error(404, 'Notebook introuvable');
+	if (!source) throw error(404, 'Carnet introuvable');
 	if (source.author_id !== user.id) {
-		throw error(403, "Vous n'êtes pas l'auteur de ce notebook");
+		throw error(403, 'Seul l’auteur peut faire de ce carnet un modèle');
 	}
 	if (source.is_template) {
 		// Saving a template as a template is a no-op the UI should not even
 		// surface — refuse explicitly so the dialog can't trigger by accident.
-		throw error(400, 'Ce notebook est déjà un template');
+		throw error(400, 'Ce carnet est déjà un modèle');
 	}
 
 	// Quota check.
@@ -86,21 +89,18 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.select('id', { count: 'exact', head: true })
 		.eq('author_id', user.id);
 	if (countError) {
-		console.error('Quota check failed:', countError);
-		throw error(500, 'Erreur lors de la vérification de la limite');
+		logger.error('Quota check failed:', countError);
+		throw error(500, 'Impossible de vérifier le nombre de carnets');
 	}
 	if (count !== null && count >= MAX_NOTEBOOKS_PER_USER) {
-		throw error(
-			400,
-			`Limite atteinte: vous ne pouvez pas avoir plus de ${MAX_NOTEBOOKS_PER_USER} notebooks Python`
-		);
+		throw error(400, `Limite atteinte : ${MAX_NOTEBOOKS_PER_USER} carnets au maximum`);
 	}
 
 	// `content` est une colonne jsonb : la structure est vérifiée, pas affirmée.
 	// Un notebook sans cellules serait autrement recopié en coquille vide.
 	const sourceContent = asNotebookContent(source.content);
 	if (!sourceContent) {
-		throw error(422, 'Contenu de notebook illisible');
+		throw error(422, 'Contenu du carnet illisible');
 	}
 	const now = new Date().toISOString();
 	const templateContent: NotebookContent = {
@@ -114,20 +114,18 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// Regenerate cell IDs in the template too: any future clone will
 		// regenerate them anyway, but stable distinct IDs across template/
 		// source make debugging less confusing.
-		cells: sourceContent.cells.map(
-			(cell: NotebookCell): NotebookCell => ({
-				...cell,
-				id: generateCellId(),
-				execution_count: null,
-				outputs: [],
-				state: 'idle',
-				metadata: cell.metadata
-					? Object.fromEntries(
-							Object.entries(cell.metadata).filter(([k]) => k !== 'last_executed_source')
-						)
-					: undefined
-			})
-		)
+		cells: sourceContent.cells.map((cell: NotebookCell): NotebookCell => ({
+			...cell,
+			id: generateCellId(),
+			execution_count: null,
+			outputs: [],
+			state: 'idle',
+			metadata: cell.metadata
+				? Object.fromEntries(
+						Object.entries(cell.metadata).filter(([k]) => k !== 'last_executed_source')
+					)
+				: undefined
+		}))
 	};
 
 	const insertPayload = {
@@ -148,8 +146,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (insertError) {
-		console.error('Failed to insert template:', insertError);
-		throw error(500, 'Erreur lors de la création du template');
+		logger.error('Failed to insert template:', insertError);
+		throw error(500, 'Impossible de créer le modèle de carnet');
 	}
 
 	return json({ template: inserted }, { status: 201 });

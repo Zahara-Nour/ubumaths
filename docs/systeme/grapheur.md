@@ -18,7 +18,7 @@ couvre:
 
 > Synthèse des journaux archivés `docs/archive/wip/grapheur-*`, `suites-grapheur-progress.md`,
 > `dissoudre-doublons-grapheur-progress.md` et des chantiers couleurs. Vérifié contre le code le
-> 2026-10-10.
+> 2026-10-15.
 
 ## À quoi ça sert
 
@@ -55,6 +55,7 @@ couleur + style de trait ; la **fenêtre** (`Viewport`) est le rectangle `xMin�
 | `src/lib/grapheur/asymptotes-exactes.ts`                                                   | Asymptotes d'une fraction rationnelle par division euclidienne (`exactAsymptotes`)                                                       |
 | `src/lib/grapheur/asymptote-labels.ts`                                                     | Placement des étiquettes d'asymptotes dans le cadre (`placeAsymptoteLabels`)                                                             |
 | `src/lib/grapheur/intersections.ts`                                                        | Intersections entre courbes visibles (`findAllIntersections`), via `findRoots` de mathAST                                                |
+| `src/lib/grapheur/restriction.ts`                                                          | Courbe restreinte à un ensemble : morceaux à tracer (`pieceViewports`), points de bord (`endpointMarkers`), analyses filtrées            |
 | `src/lib/grapheur/sequence.ts`                                                             | Suites explicites et récurrentes (`parseSequence`, `computeSequenceTerms`, `computeCobwebPath`)                                          |
 | `src/lib/grapheur/exact.ts`                                                                | Valeur exacte d'un terme de suite (`exactTermValue`), ou `null`                                                                          |
 | `src/lib/grapheur/pinned-labels.ts`                                                        | Étiquettes figées par un clic (`cyclePinnedLabels`) — non persistées                                                                     |
@@ -89,6 +90,12 @@ Branchement avec l'atelier : `src/lib/atelier/plot-sync.ts` (`syncPlots`) et
 `src/lib/components/atelier/AtelierContainer.svelte` — décrits dans [atelier.md](atelier.md).
 `syncPlots` transmet chaque définition en **LaTeX** (`graphLatexOf`), pas en notation maison :
 le grapheur parse du LaTeX, et `\pi x` collé en `\pix` lui était illisible.
+Il pose aussi une courbe qui n'est pas un objet : la droite y = x (`latex: 'x'`, couleur
+`var(--color-muted-foreground)` hors palette, pointillés, épaisseur 1) quand f et sa carte `f⁻¹`
+sont tracées — le grapheur de l'atelier n'est pas sauvegardé (`GrapheurStore(null)`).
+Un nuage de deux listes reçoit les points des lignes où les deux colonnes de la grille ont un
+nombre (`commonRows`, `src/lib/atelier/pairs.ts`, décision P1 du tableur intégré) : par rang, une
+case vide décalait toutes les paires suivantes.
 
 ---
 
@@ -101,6 +108,20 @@ le grapheur parse du LaTeX, et `\pi x` collé en `\pix` lui était illisible.
 Le store garde **un seul tableau** `functions` pour les trois (décision 1 des suites, 2026-09-04).
 Une fonction porte en plus `showDerivative`, `tangentAt`, `integral` et le cercle osculateur, qui
 partage l'abscisse de la tangente.
+
+**Restriction** (optionnelle, `ExplicitFunction.restriction`, lot 3 de
+[atelier-intervalle-phase0.md](../wip/atelier-intervalle-phase0.md)) : des morceaux NUMÉRIQUES
+(`CurvePiece` : bornes réelles, ±∞ permis, ouvertes ou fermées). `FunctionCurve` échantillonne
+chaque morceau à part (un sous-chemin `M…` par morceau) et marque chaque borne finie visible d'un
+cercle : plein (`endpoint-closed`, couleur de la courbe) si fermée, creux (`endpoint-open`,
+contour de la couleur de la courbe, intérieur `--color-graph-bg`) si ouverte — comme
+`functionToSVG` de geometry-core. Pas de point là où la fonction n'a pas de valeur (`1/x` sur
+`]0;5]` en 0). Zéros, extremums (`restrictAnalysis`), intersections et survol hors de l'ensemble
+sont écartés ; une asymptote verticale au bord reste, une horizontale ne garde que le côté infini
+atteint. La dérivée du grapheur hérite de la restriction, la tangente non. Seul l'atelier la pose ;
+jamais sérialisée (il la repose à chaque synchronisation). Sans restriction, rien ne change.
+Le grapheur ne juge pas la tangente ni l'aire : c'est l'atelier qui ne les lui passe pas quand
+elles sortent de l'ensemble (`allowedDisplay`, décision f du 2026-10-13, voir [atelier.md](atelier.md)).
 
 **Paramètres** : une lettre libre (`PARAMETER_NAMES`, hors `RESERVED_PARAMETER_NAMES` = `x n e
 pi i`), une valeur et des bornes. `bindParameters` substitue les valeurs dans l'AST avant
@@ -149,15 +170,36 @@ mouvement du curseur de tangente ; chaque cache se vide au-delà de 200 fenêtre
 `analyzeFunction` est **hybride** : quand l'AST est disponible (`buildAnalysisAST`), zéros et
 extremums viennent de `findCriticalZeros` / `findCriticalExtrema` (mathAST), exacts quand c'est
 possible (`exactX`, `exactY`, confiance 1,0) ; sinon balayage numérique (`findRoots`,
-`findExtrema`).
+`findExtrema`). Un nombre de plus de 10 chiffres significatifs (`0.3333333333333333`) coupe tout
+le chemin exact, asymptotes comprises (`hasUnwieldyNumber`) : l'arithmétique exacte y prenait
+plusieurs secondes, dans l'interface (2026-10-15). Un échantillon presque nul n'est une racine que si |f| y est un **minimum local**
+(`touchesZero`, mathAST) : un seuil absolu donnait à e^(−x) une racine par échantillon au-delà de
+x ≈ 28 (2026-10-15).
 
 Asymptotes, **symbolique d'abord** : sur une fraction rationnelle, `exactAsymptotes` donne
 horizontale, oblique et polynomiale (courbe) d'un coup, avec leur LaTeX. Ailleurs, repli
 numérique : `findHorizontalAsymptotes`, `findObliqueAsymptotes`, `findPolynomialAsymptotes`
 ajustent un polynôme sur des abscisses lointaines (`fitPolynomialBranch`, extrapolation de
-Richardson) ; `findVerticalAsymptotes` reste numérique. Les abscisses de sondage
-(`LARGE_X_VALUES`) ne sont volontairement **pas** des puissances de 10 (elles tombaient sur la
-période de `cos(πx/50)`).
+Richardson). Pour les **horizontales**, la limite symbolique de mathAST (`evaluateLimit` en ±∞,
+en cache par AST) vient en renfort, sans jamais retirer une asymptote : elle **ajoute** celle que
+les sondes voient converger trop lentement (ln(x)/√x, 1/ln x) et **confirme** celle qu'elles
+trouvent, avec son écriture exacte (`y = e` pour (1 + 1/x)^x) ; en désaccord, le numérique garde
+la main (2026-10-15). Une limite ou un coefficient plus petit que son incertitude (écart entre les deux
+dernières sondes, dispersion des extrapolations) vaut **0** (`snapToZero`) : ln(x)/x recevait
+`y = 0,0000862`. Les abscisses de sondage (`LARGE_X_VALUES`) ne sont volontairement **pas** des
+puissances de 10 (elles tombaient sur la période de `cos(πx/50)`).
+
+Asymptotes **verticales** (`findVerticalAsymptotes`) : les singularités de l'expression
+(`singularities`, via `getAllDiscontinuities` de mathAST, en cache par AST) passent d'abord. Un
+point isolé est retenu si une limite unilatérale infinie est établie symboliquement (e^(1/x) en 0,
+que l'évaluateur rend `null` dès qu'il dépasse les flottants), sinon la sonde numérique tranche
+(le trou de sin(x)/x est écarté). Une famille périodique de pôles (tan, 1/cos : base + k·période,
+que l'analyse n'énumère que sur [−2π ; 2π]) est placée sur **toute** la fenêtre — ou pas du
+tout au-delà d'un pôle pour deux échantillons (`MAX_PERIODIC_POLES_PER_SAMPLE`), et le balayage
+n'y ajoute alors aucun trait isolé (2026-10-15). Vient ensuite le balayage : intervalles où le domaine change ou dont le saut dépasse
+la fenêtre. `divergesAt` confirme chaque candidat en exigeant que |f| croisse d'au moins ×1,2 à
+**chaque** sonde fine (1e-7, 1e-11, 1e-15 × |x|) : eˣ passait sinon pour divergente dès x ≈ 139,
+une fausse asymptote par échantillon (2026-10-15).
 
 Une asymptote unilatérale (`direction: 'left' | 'right'`) n'est tracée **que de son côté**
 (décision de David, 2026-09-15). Les intersections passent par `findRoots` de mathAST (exact puis
@@ -293,9 +335,15 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
 - **`src/lib/components/grapheur/index.ts`** (barillet) n'a aucun importeur.
 - Les ré-exports `viewport.ts`, `bezier.ts`, `colors.ts` de `src/lib/grapheur/` sont des
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.
-- `findVerticalAsymptotes` reste purement numérique, même sur une fraction rationnelle.
+- Une somme de pôles périodiques et isolés (tan(x) + 1/(x − 3)) : `getAllDiscontinuities` ne
+  rend que la famille de tan, le pôle 3 vient du seul balayage — perdu au dézoom.
+- Une limite lente que le moteur symbolique ne sait pas calculer reste invisible : le numérique
+  seul exige une convergence en moins de 137 299.
+- Avec un curseur, chaque valeur rebâtit l'AST et refait l'analyse : mesuré le 2026-10-15 avec
+  des valeurs arrondies au pas, 0,4 à 2,5 ms par cran sur les fonctions courantes, 22 ms sur une
+  fraction de degré 3 multipliée par e⁻ˣ et ln x.
 - Nuages de points : pas de forme de point distincte par place (décision Q1a, reportée).
 
 ---
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-15.

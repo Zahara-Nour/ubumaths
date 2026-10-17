@@ -8,12 +8,15 @@ import { generateRandomMonster } from '$lib/utils/game/combat';
 import { getRandomMonsterTemplate, getMonsterImagePaths } from '$lib/data/game/monsters';
 import { startCombatSchema } from '$lib/server/validation/navadra';
 import { toGameMonster, toGamePlayer } from '$lib/types/game';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/navadra/combat/+page.server');
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Fetch game player
@@ -27,12 +30,12 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	// Une panne la rendait absente, et l'écran repartait comme pour un joueur
 	// neuf — niveau 1, tutoriel au début.
 	if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
-		console.error('Fiche de joueur illisible :', gamePlayerError);
-		throw error(500, 'Impossible de charger votre profil de jeu');
+		logger.error('Fiche de joueur illisible :', gamePlayerError);
+		throw error(500, 'Impossible de charger le profil de jeu');
 	}
 
 	if (!gamePlayer) {
-		throw error(404, 'Game profile not found');
+		throw error(404, 'Profil de jeu introuvable');
 	}
 
 	// Fetch available monsters (not dead, spawned in last 24h)
@@ -45,7 +48,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 		.limit(20);
 
 	if (availableMonstersError) {
-		console.error('Lecture impossible :', availableMonstersError);
+		logger.error('Lecture impossible :', availableMonstersError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -62,7 +65,7 @@ export const actions: Actions = {
 	// DEBUG: Create a very weak monster for testing (level 1, 1 HP)
 	spawnDebugMonster: async ({ locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();
-		if (!user) throw error(401, 'Unauthorized');
+		if (!user) throw error(401, 'Connexion requise');
 
 		// Create a super weak debug monster
 		const template = getRandomMonsterTemplate('fire', 'common');
@@ -121,7 +124,7 @@ export const actions: Actions = {
 	// Start a new combat with a random or selected monster
 	startCombat: async ({ request, locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();
-		if (!user) throw error(401, 'Unauthorized');
+		if (!user) throw error(401, 'Connexion requise');
 
 		const formData = await request.formData();
 
@@ -164,8 +167,8 @@ export const actions: Actions = {
 			// Une panne la rendait absente, et l'écran repartait comme pour un joueur
 			// neuf — niveau 1, tutoriel au début.
 			if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
-				console.error('Fiche de joueur illisible :', gamePlayerError);
-				throw error(500, 'Impossible de charger votre profil de jeu');
+				logger.error('Fiche de joueur illisible :', gamePlayerError);
+				throw error(500, 'Impossible de charger le profil de jeu');
 			}
 
 			const monsterConfig = generateRandomMonster(gamePlayer?.level || 1);

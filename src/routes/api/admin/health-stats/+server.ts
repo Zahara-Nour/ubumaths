@@ -25,6 +25,9 @@ import {
 	setCachedHealthStats
 } from '$lib/server/healthStats';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/health-stats/+server');
 
 // Cache configuration
 const CACHE_KEY = 'admin:health-stats';
@@ -72,7 +75,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// This is a fire-and-forget operation - we don't wait for it
 		setCachedHealthStats(supabase, CACHE_KEY, stats, CACHE_TTL_SECONDS).catch((err) => {
 			// Log but don't fail the request if cache write fails
-			console.error('Failed to cache health stats:', err);
+			logger.error('Failed to cache health stats:', err);
 		});
 
 		// Step 4: Add cache metadata to response
@@ -87,7 +90,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 			}
 		});
 	} catch (err) {
-		console.error('Error fetching health stats:', err);
-		throw error(500, err instanceof Error ? err.message : 'Failed to fetch health stats');
+		logger.error('Error fetching health stats:', err);
+		throw error(
+			500,
+			err instanceof Error ? err.message : 'Impossible de charger les indicateurs de santé'
+		);
 	}
 };

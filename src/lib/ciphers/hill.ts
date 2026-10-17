@@ -38,8 +38,7 @@ export interface HillResult extends CipherResult {
 }
 
 export type HillInverse =
-	| { ok: true; inverse: HillKey; steps: string[] }
-	| { ok: false; steps: string[] };
+	{ ok: true; inverse: HillKey; steps: string[] } | { ok: false; steps: string[] };
 
 export interface HillRowCandidate {
 	u: number;

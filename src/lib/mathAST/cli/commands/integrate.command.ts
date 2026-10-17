@@ -28,7 +28,8 @@ import { integrate, integrateDefinite, IntegrationError } from '../../integratio
 import type {
 	IntegrationVerbosity,
 	IntegrateResult,
-	DefiniteIntegrateResult
+	DefiniteIntegrateResult,
+	IntegrationTechnique
 } from '../../integration';
 import type { MathNode } from '../../types';
 import { numericNode } from '../../common/numeric';
@@ -40,6 +41,22 @@ import {
 	NUMERIC_BOUND,
 	readCommandArguments
 } from '../core/variable-argument';
+
+/**
+ * Le refus d'une intégrale que le moteur ne sait pas calculer, en français :
+ * l'atelier montre la sortie de la commande à l'élève (V61, 2026-10-14).
+ */
+const INTEGRATION_UNSUPPORTED = 'Je ne sais pas calculer cette intégrale';
+
+/** Les techniques d'intégration, nommées en français pour la ligne « Technique tentée ». */
+const TECHNIQUE_LABELS: Readonly<Record<IntegrationTechnique, string>> = {
+	'basic-rule': 'primitives usuelles',
+	'u-substitution': 'changement de variable',
+	parts: 'intégration par parties',
+	'partial-fractions': 'décomposition en éléments simples',
+	'trig-substitution': 'changement de variable trigonométrique',
+	numeric: 'approximation numérique'
+};
 
 /** Ajouter l'indication de variable (`otherVariableHint`) à la fin de la sortie. */
 function withHint(result: CommandResult, hint: string | null): CommandResult {
@@ -174,7 +191,7 @@ export class IntegrateCommand extends BaseCommand {
 					return {
 						success: false,
 						output: '',
-						error: { code: 'PARSE_ERROR', message: 'Failed to parse integration bounds' }
+						error: { code: 'PARSE_ERROR', message: "Bornes d'intégration illisibles" }
 					};
 				}
 
@@ -260,12 +277,12 @@ export class IntegrateCommand extends BaseCommand {
 			return { success: true, output: lines.join('\n'), ast: result.antiderivative };
 		} else {
 			lines.push(chalk.yellow(`∫ ${exprCustom} d${variable}`) + ' : ' + chalk.red('Non résolu'));
-			lines.push(chalk.dim(`Technique tentée: ${result.technique}`));
+			lines.push(chalk.dim(`Technique tentée : ${TECHNIQUE_LABELS[result.technique]}`));
 
 			return {
 				success: false,
 				output: lines.join('\n'),
-				error: { code: 'PARSE_ERROR', message: 'Integration not supported for this expression' }
+				error: { code: 'PARSE_ERROR', message: INTEGRATION_UNSUPPORTED }
 			};
 		}
 	}
@@ -340,7 +357,7 @@ export class IntegrateCommand extends BaseCommand {
 			return {
 				success: false,
 				output: lines.join('\n'),
-				error: { code: 'PARSE_ERROR', message: 'Integration not supported for this expression' }
+				error: { code: 'PARSE_ERROR', message: INTEGRATION_UNSUPPORTED }
 			};
 		}
 	}

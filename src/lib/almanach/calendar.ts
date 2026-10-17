@@ -64,8 +64,7 @@ export type PataphysicalDate =
 
 /** Date pataphysique à convertir vers le grégorien (mois de 1 à 7) */
 export type PataphysicalDateInput =
-	| { year: number; month: number; day: number }
-	| { year: number; extraDay: ExtraDay };
+	{ year: number; month: number; day: number } | { year: number; extraDay: ExtraDay };
 
 // =============================================================================
 // Constantes

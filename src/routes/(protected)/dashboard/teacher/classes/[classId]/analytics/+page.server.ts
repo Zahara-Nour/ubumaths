@@ -1,5 +1,5 @@
 /**
- * Analytics page — load class header + verify access (role-based: teacher/admin).
+ * Analytics page — load class header + verify access (role-based: teacher only).
  *
  * Les widgets fetchent leurs données via les endpoints `/api/teacher/...`
  * en client-side (lazy). On charge ici juste le nom de la classe pour le header.
@@ -8,6 +8,11 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/classes/[classId]/analytics/+page.server'
+);
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const classId = params.classId;
@@ -26,7 +31,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Cette liste borne la portée du classement. Vidée par une panne, elle
 	// affiche un classement amputé sans le dire.
 	if (memberRowsError) {
-		console.error('Périmètre illisible :', memberRowsError);
+		logger.error('Périmètre illisible :', memberRowsError);
 		throw error(500, 'Impossible de déterminer le périmètre');
 	}
 
@@ -51,7 +56,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.order('display_order', { ascending: true });
 
 	if (themeRowsError) {
-		console.error('Lecture impossible :', themeRowsError);
+		logger.error('Lecture impossible :', themeRowsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -60,15 +65,21 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.map((t) => ({ name: t.name, code: t.code as string }));
 
 	// Compteur des flags anti-fraud non-résolus pour le badge de l'onglet Surveillance.
-	let unresolvedFlagsCount = 0;
+	// null = compteur illisible : le badge le dit, au lieu d'afficher un 0 rassurant.
+	let unresolvedFlagsCount: number | null = 0;
 	const studentIds = students.map((s) => s.id);
 	if (studentIds.length > 0) {
-		const { count } = await locals.supabase
+		const { count, error: flagsCountError } = await locals.supabase
 			.from('srs_anti_fraud_flags')
 			.select('id', { count: 'exact', head: true })
 			.in('student_id', studentIds)
 			.eq('resolved', false);
-		unresolvedFlagsCount = count ?? 0;
+		if (flagsCountError) {
+			logger.error('Compteur de signalements illisible :', flagsCountError);
+			unresolvedFlagsCount = null;
+		} else {
+			unresolvedFlagsCount = count ?? 0;
+		}
 	}
 
 	return {

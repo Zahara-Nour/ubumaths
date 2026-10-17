@@ -11,8 +11,9 @@
 
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { ChevronLeft, Save, Check } from '@lucide/svelte';
+	import { Save, Check } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData, ActionData } from './$types';
 
@@ -69,12 +70,10 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-6xl px-4 py-6">
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/teacher/evaluation-tasks/{data.task_id}">
-			<ChevronLeft class="h-4 w-4" />
-			Retour à la tâche
-		</Button>
-	</div>
+	<BackLink
+		href={`/dashboard/teacher/evaluation-tasks/${data.task_id}`}
+		label="Retour à l'observation"
+	/>
 
 	<div class="mb-4">
 		<h1 class="text-2xl font-bold tracking-tight">Saisie : {data.task_name}</h1>
@@ -96,7 +95,7 @@
 	{:else if data.observables.length === 0}
 		<Card.Root>
 			<Card.Content class="py-12 text-center text-muted-foreground">
-				<p class="mb-3">Aucun observable dans le périmètre de cette tâche.</p>
+				<p class="mb-3">Aucun observable dans le périmètre de cette observation.</p>
 				<Button href="/dashboard/teacher/evaluation-tasks/{data.task_id}">
 					Déclarer le périmètre
 				</Button>

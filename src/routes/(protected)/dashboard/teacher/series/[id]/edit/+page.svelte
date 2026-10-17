@@ -2,11 +2,12 @@
 	import { goto } from '$app/navigation';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { ArrowLeft, Minus, Plus, Trash2 } from '@lucide/svelte';
+	import { Minus, Plus, Trash2 } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitAction } from '$lib/utils/form-action';
 	import { getGradeSelectItems } from '$lib/utils/grades';
@@ -74,10 +75,8 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
-	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" onclick={handleBack} aria-label="Retour aux séries">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-8">
+		<BackLink href="/dashboard/teacher/series" label="Retour aux séries" />
 		<h1 class="text-3xl font-bold tracking-tight">Modifier la série</h1>
 	</div>
 

@@ -50,22 +50,86 @@ function isComplex(value: EvalValue): value is ComplexValueResult {
 	return typeof value === 'object' && 'real' in value && 'imag' in value;
 }
 
+// =============================================================================
+// Écriture d'un nombre décimal (décisions de David du 2026-10-11)
+// =============================================================================
+// Jamais la notation JS (`3e-7`, `1e+22`) : le parseur LaTeX lit `e` comme la constante
+// d'Euler, et l'élève ne l'a jamais apprise. Le séparateur reste le point : la virgule
+// `{,}` est posée au rendu (`toFrenchDecimal`), comme pour tout résultat de `{{eval:…}}`.
+// - petit (|x| < 10⁻⁶) : toujours développé (`0.0000003`), même s'il aligne les zéros ;
+// - entier EXACT (calculé en rationnels) : toujours en entier, quelle que soit sa taille ;
+// - résultat APPROCHÉ ≥ 10¹⁵ : notation scientifique (jamais un chiffre faux) ;
+// - `;sci` : notation scientifique, toujours.
+// Aucune dépendance au niveau du modèle (décision du 2026-10-11 : la notation scientifique
+// passe en 3e dans le nouveau programme, et aucun modèle publié n'est concerné).
+
 /**
- * Formats a numeric result as a string.
- *
- * Handles integer vs decimal formatting appropriately.
+ * À partir de là, un flottant ne s'écrit plus en entier : il ne porte que 15 à 16
+ * chiffres significatifs exacts (2⁵³ ≈ 9·10¹⁵), les chiffres suivants seraient inventés.
  */
-function formatNumber(value: number): string {
-	// Check if it's effectively an integer
-	if (Number.isInteger(value)) {
-		return value.toString();
+export const MAX_EXPANDED_MAGNITUDE = 1e15;
+
+/** Chiffres significatifs gardés, comme l'ancien `toPrecision(15)` */
+const SIGNIFICANT_DIGITS = 15;
+
+/** Mantisse (chiffres sans zéros finaux, signe à part) et exposant décimal de `value` */
+function decimalParts(value: number): { negative: boolean; digits: string; exponent: number } {
+	const [mantissa, exponentText] = Math.abs(value)
+		.toExponential(SIGNIFICANT_DIGITS - 1)
+		.split('e');
+	const digits = mantissa.replace('.', '').replace(/0+$/, '') || '0';
+	return { negative: value < 0, digits, exponent: Number(exponentText) };
+}
+
+/** Écriture décimale développée : `0.0000003`, `10000000000000000000000`, `-2.5` */
+function expandedDecimal(value: number): string {
+	if (value === 0) return '0';
+	if (Number.isInteger(value) && Math.abs(value) < MAX_EXPANDED_MAGNITUDE) return value.toString();
+	const { negative, digits, exponent } = decimalParts(value);
+	let text: string;
+	if (exponent < 0) {
+		text = `0.${'0'.repeat(-exponent - 1)}${digits}`;
+	} else if (digits.length <= exponent + 1) {
+		text = digits + '0'.repeat(exponent + 1 - digits.length);
+	} else {
+		text = `${digits.slice(0, exponent + 1)}.${digits.slice(exponent + 1)}`;
 	}
+	return negative ? `-${text}` : text;
+}
 
-	// Use reasonable precision for decimals, removing trailing zeros
-	const formatted = value.toPrecision(15);
+/** Notation scientifique : `3 \times 10^{-7}`, `3.2 \times 10^{5}`, mantisse 1 → `10^{-7}` */
+function scientificNotation(value: number): string {
+	if (value === 0) return '0';
+	const { negative, digits, exponent } = decimalParts(value);
+	const mantissa = digits.length === 1 ? digits : `${digits[0]}.${digits.slice(1)}`;
+	const power = `10^{${exponent}}`;
+	const text = mantissa === '1' ? power : `${mantissa} \\times ${power}`;
+	return negative ? `-${text}` : text;
+}
 
-	// Parse and re-stringify to remove trailing zeros
-	return parseFloat(formatted).toString();
+/**
+ * Entier EXACT que vaut le calcul (`10^22`, `2^80`, `1.5*10^20`), écrit avec tous ses
+ * chiffres — tous vrais, puisque calculés en rationnels ; `null` s'il n'en est pas un.
+ */
+function exactIntegerWriting(ast: MathNode): string | null {
+	try {
+		const exact = evaluate(foldIntegerExponents(ast), { mode: 'exact' });
+		if (exact.status !== 'value' || !isMathNode(exact.value)) return null;
+		const value = rationalOf(exact.value);
+		return value !== null && value.d === 1n ? value.n.toString() : null;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Écriture d'un résultat décimal : développée sous 10¹⁵ ; au-delà, tous les chiffres si
+ * `exactSource` (le calcul) vaut un entier exact, notation scientifique sinon.
+ */
+function formatNumber(value: number, exactSource?: MathNode): string {
+	if (Math.abs(value) < MAX_EXPANDED_MAGNITUDE) return expandedDecimal(value);
+	const exactInteger = exactSource ? exactIntegerWriting(exactSource) : null;
+	return exactInteger ?? scientificNotation(value);
 }
 
 /**
@@ -79,7 +143,11 @@ function literalWriting(node: MathNode): string {
 		if (n.type === 'division') hasDivision = true;
 		return n;
 	});
-	return hasDivision ? toLatex(node) : toCustom(node);
+	if (hasDivision) return toLatex(node);
+	const custom = toCustom(node);
+	// `toCustom` garde un nombre `1e-7` (la syntaxe maison le lit) ; inséré dans une formule
+	// LaTeX, il se relirait 1·e − 7 : `toLatex` l'écrit `10^{-7}`
+	return /\d[eE][+-]?\d/.test(custom) ? toLatex(node) : custom;
 }
 
 /** Une division dont le dénominateur se calcule et vaut 0 */
@@ -121,17 +189,23 @@ export function evalResultToCustom(value: string): string {
 }
 
 /**
- * Valeur numérique d'un résultat d'évaluation : `3.5`, mais aussi `\dfrac{9}{2}` ou
- * `2 \sqrt{2}` (que `parseFloat` lirait NaN ou 2). NaN si ce n'est pas un nombre.
+ * Valeur numérique d'un résultat d'évaluation : `3.5`, mais aussi `\dfrac{9}{2}`,
+ * `2 \sqrt{2}` ou `3 \times 10^{-7}` (que `parseFloat` lirait NaN, 2 ou 3). NaN si ce
+ * n'est pas un nombre.
  */
 export function evalResultToNumber(value: string): number {
-	if (!value.includes('\\')) return parseFloat(value);
+	// Nombre écrit en entier ou en décimal : lu directement
+	if (PLAIN_NUMBER.test(value)) return parseFloat(value);
+	// Toute autre écriture passe par le parseur : `10^{-7}` (`;sci`) valait 10 par `parseFloat`
 	try {
 		return evaluateNodeToApproximatedNumber(parseLatex(value));
 	} catch {
 		return NaN;
 	}
 }
+
+/** `12`, `-2.5`, `0.0000003` : un nombre écrit sans autre signe */
+const PLAIN_NUMBER = /^\s*-?\d+(\.\d+)?\s*$/;
 
 const TRIGONOMETRIC_FUNCTIONS: ReadonlySet<string> = new Set(['cos', 'sin', 'tan']);
 
@@ -275,19 +349,19 @@ function foldIntegerExponents(node: MathNode): MathNode {
  * pas ou ne vaut pas la valeur décimale (garde-fou : jamais de valeur fausse).
  */
 function formatExact(ast: MathNode, numValue: number): string {
-	if (Number.isInteger(numValue) || hasDecimalLiteral(ast)) return formatNumber(numValue);
+	if (Number.isInteger(numValue) || hasDecimalLiteral(ast)) return formatNumber(numValue, ast);
 	try {
 		const exact = evaluate(foldIntegerExponents(ast), { mode: 'exact' });
-		if (exact.status !== 'value' || !isMathNode(exact.value)) return formatNumber(numValue);
-		if (!matchesValue(exact.value, numValue)) return formatNumber(numValue);
+		if (exact.status !== 'value' || !isMathNode(exact.value)) return formatNumber(numValue, ast);
+		if (!matchesValue(exact.value, numValue)) return formatNumber(numValue, ast);
 		return toLatex(schoolExactWriting(ast, exact.value));
 	} catch {
-		return formatNumber(numValue);
+		return formatNumber(numValue, ast);
 	}
 }
 
 // =============================================================================
-// Grandeurs (lot 2 du chantier Grandeurs, docs/wip/grandeurs-eval-progress.md)
+// Grandeurs (lot 2 du chantier Grandeurs, docs/archive/wip/grandeurs-eval-progress.md)
 // =============================================================================
 
 /** Le calcul contient une grandeur (`7[mm]`, `3[h]`) */
@@ -301,7 +375,7 @@ function hasQuantity(node: MathNode): boolean {
 }
 
 /** Valeur exacte d'un nombre, d'un opposé ou d'un quotient de nombres ; `null` sinon */
-function rationalOf(node: MathNode): Rational | null {
+export function rationalOf(node: MathNode): Rational | null {
 	if (node.type === 'opposite') {
 		const inner = rationalOf(node.operand);
 		return inner === null ? null : negRational(inner);
@@ -315,7 +389,7 @@ function rationalOf(node: MathNode): Rational | null {
 }
 
 /** `x` exprimé en `unit` : un nombre (quotient par `1[unit]`), ou `null` si la dimension diffère */
-function valueIn(ast: MathNode, unit: string): Rational | null {
+export function valueIn(ast: MathNode, unit: string): Rational | null {
 	const parsed = parseUnit(unit);
 	if (parsed === null) throw new Error(`Unité inconnue : [${unit}]`);
 	const ratio = tidy(divide(ast, withUnit(number(1), parsed), 'fraction'), {
@@ -467,9 +541,16 @@ function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
 			`Produit de durées : ${toCustom(ast)} (une durée écrite par ;hms ne se réutilise pas dans un calcul)`
 		);
 	}
-	if (modifiers.hms) return hmsWriting(ast);
-	if (modifiers.unit !== undefined)
-		return withSignModifiers(expressedIn(ast, modifiers.unit), modifiers);
+	if (modifiers.hms) {
+		if (modifiers.scientific) {
+			throw new Error(`;sci : une durée écrite par ;hms n'a pas de notation scientifique`);
+		}
+		return hmsWriting(ast);
+	}
+	if (modifiers.unit !== undefined) {
+		const expressed = expressedIn(ast, modifiers.unit);
+		return withSignModifiers(withScientificQuantity(expressed, modifiers), modifiers);
+	}
 	const reduced = tidy(ast, { unitChoice: 'written' });
 	if (!hasQuantity(reduced)) {
 		const value = rationalOf(reduced);
@@ -477,7 +558,28 @@ function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
 		if (zeroUnit !== null) return `0[${zeroUnit}]`;
 		return evaluateAstWithModifiers(reduced, modifiers);
 	}
-	return withSignModifiers(quantityWriting(reduced, ast), modifiers);
+	return withSignModifiers(
+		withScientificQuantity(quantityWriting(reduced, ast), modifiers),
+		modifiers
+	);
+}
+
+/** Grandeur écrite en syntaxe maison : `-0.0000003[m]` → signe, nombre, unité */
+const QUANTITY_WRITING = /^(-?)(\d+(?:\.\d+)?)\[([^\]]+)\]$/;
+
+/**
+ * `;sci` sur une grandeur : le nombre en notation scientifique, en syntaxe maison
+ * (`3*10^{-7}[m]`, `10^{-7}[m]`), que le parseur maison relit à la même grandeur.
+ */
+function withScientificQuantity(writing: string, modifiers: EvalModifiers): string {
+	if (!modifiers.scientific) return writing;
+	const match = QUANTITY_WRITING.exec(writing);
+	if (!match) throw new Error(`;sci : grandeur non reconnue : ${writing}`);
+	const [, sign, magnitude, unit] = match;
+	const { digits, exponent } = decimalParts(Number(magnitude));
+	const mantissa = digits.length === 1 ? digits : `${digits[0]}.${digits.slice(1)}`;
+	const power = `10^{${exponent}}`;
+	return `${sign}${mantissa === '1' ? power : `${mantissa}*${power}`}[${unit}]`;
 }
 
 // =============================================================================
@@ -567,6 +669,9 @@ export function evaluateAstWithModifiers(
 		// frappe (`{{eval:invalid}}`) ou d'une variable non définie reste une erreur
 		const letters = [...getVariables(ast)];
 		if (letters.length > 0 && letters.every((letter) => literalLetters.has(letter))) {
+			if (modifiers.scientific) {
+				throw new Error(`;sci : ${toCustom(ast)} n'est pas un nombre (calcul littéral)`);
+			}
 			const reduced = tidy(ast);
 			// `a/(b-c)` avec b = c : dénominateur nul, comme dans un calcul numérique
 			if (hasZeroDenominator(reduced)) throw new Error('Division by zero');
@@ -592,7 +697,17 @@ export function evaluateAstWithModifiers(
 	}
 
 	// Format the output : exact par défaut (comme TinyMath), décimal avec `;d`
-	let formattedOutput = modifiers.decimal ? formatNumber(numValue) : formatExact(ast, numValue);
+	if (!Number.isFinite(numValue)) {
+		throw new Error(`Résultat non fini : ${toCustom(ast)} (trop grand ou non défini)`);
+	}
+
+	// `;sci` : toujours la notation scientifique ; `;d` : décimal ; sinon exact, ou décimal.
+	// Un entier exact s'écrit toujours en entier (voir `formatNumber`)
+	let formattedOutput = modifiers.scientific
+		? scientificNotation(numValue)
+		: modifiers.decimal
+			? formatNumber(numValue, ast)
+			: formatExact(ast, numValue);
 
 	// Apply formatting modifiers
 	// `>= 0` : 0 s'écrit « +0 », sinon `y{{c;+}}` donne « y0 », lu comme un produit

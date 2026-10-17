@@ -145,7 +145,8 @@ describe('cas d’erreur — message, rien de créé', () => {
 			'longueurs différentes',
 			{ L: '1;2;3', M: '1/2;1/2' },
 			'.simuler L M 10',
-			'3 valeur(s) pour 2 probabilité(s) : il en faut autant.'
+			// P1 : la ligne sans probabilité est nommée
+			'La ligne 3 a un nombre dans L mais pas dans M : une loi demande une probabilité sur la ligne de chaque valeur.'
 		],
 		[
 			'n absent',

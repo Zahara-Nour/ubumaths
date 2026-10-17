@@ -12,14 +12,20 @@
  * }
  *
  * SECURITY:
- * - RLS policies ensure students only see their own mastery records
- * - No teacher/admin access (mastery is private to student)
+ * - Route réservée à l'élève (`requireRole(locals, 'student')`), filtrée sur
+ *   `student_id = user.id` : elle ne rend que ses propres statuts.
+ * - La RLS laisse aussi le professeur (et l'admin) LIRE la maîtrise des élèves de
+ *   ses classes (`is_teacher_of_student`, migration 20261012120000), pour la page
+ *   « Progression » d'une affectation de fiche — pas par cette route.
  */
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import type { ExerciseMasteryListResponse, MasteryStatus } from '$lib/types/exercise-mastery';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/exercise-mastery/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
 	// Auth check: Must be a student
@@ -34,7 +40,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.eq('student_id', user.id);
 
 		if (dbError) {
-			console.error('[API] Error fetching exercise mastery:', dbError);
+			logger.error('[API] Error fetching exercise mastery:', dbError);
 			throw error(500, 'Erreur lors de la recuperation des statuts de maitrise');
 		}
 
@@ -53,7 +59,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/exercise-mastery:', err);
+		logger.error('[API] Unexpected error in GET /api/student/exercise-mastery:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

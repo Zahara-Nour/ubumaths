@@ -10,6 +10,9 @@ import {
 import { computeTestScore } from '$lib/utils/test-score';
 import { toJson } from '$lib/types/database-helpers';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/tests/save/+server');
 
 /**
  * API route to save test results to database
@@ -49,7 +52,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// comme un entraînement libre, sans assignation.
 		if (assignmentId) {
 			return json(
-				{ error: "Une évaluation s'enregistre par l'envoi de l'évaluation, pas ici" },
+				{ error: "Un contrôle s'enregistre par l'envoi du contrôle, pas ici" },
 				{ status: 400 }
 			);
 		}
@@ -75,7 +78,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		} catch (lookupError) {
 			if (!(lookupError instanceof CourseCardLookupError)) throw lookupError;
 			return json(
-				{ error: 'Enregistrement momentanément impossible, réessaie dans un instant.' },
+				{ error: 'Enregistrement momentanément impossible, réessayer dans un instant.' },
 				{ status: 503 }
 			);
 		}
@@ -107,7 +110,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (sessionError || !testSession) {
-			console.error('Error inserting test session:', sessionError);
+			logger.error('Error inserting test session:', sessionError);
 			return json({ error: 'Failed to save test session' }, { status: 500 });
 		}
 
@@ -129,10 +132,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.select('id');
 
 		if (answersError) {
-			console.error('Error inserting test answers:', answersError);
+			logger.error('Error inserting test answers:', answersError);
 			// Note: session is already saved, so we return success but log the error
 		} else if ((answersRows?.length ?? 0) !== answersToInsert.length) {
-			console.error('[tests/save] test_answers : lignes écrites ≠ lignes envoyées', {
+			logger.error('[tests/save] test_answers : lignes écrites ≠ lignes envoyées', {
 				sent: answersToInsert.length,
 				written: answersRows?.length ?? 0
 			});
@@ -172,13 +175,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);
 			} catch (buddyError) {
 				// Non-critical: buddy XP failure should not fail the test save
-				console.error('⚠️ [API] Error awarding buddy XP:', buddyError);
+				logger.error('⚠️ [API] Error awarding buddy XP:', buddyError);
 			}
 		}
 
 		return json({ sessionId: testSession.id, buddy_xp: buddyXp }, { status: 201 });
 	} catch (error) {
-		console.error('Error saving test results:', error);
+		logger.error('Error saving test results:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };

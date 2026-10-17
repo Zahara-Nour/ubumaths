@@ -40,6 +40,7 @@
 		WorksheetAssignmentInsert,
 		WorksheetAssignmentWithRelations
 	} from '$lib/types/worksheets';
+	import { GUIDANCE_LEVEL_ITEMS, readGuidanceLevel } from '$lib/worksheets/worksheet-copy';
 
 	// ============================================================================
 	// TYPES
@@ -82,6 +83,9 @@
 	let title = $state<string>(initialAssignment?.title || '');
 	let instructions = $state<string>(initialAssignment?.instructions || '');
 	let individualized = $state<boolean>(initialAssignment?.individualized ?? true);
+
+	// Niveau de guidage des versions distribuées (ADR 0023) : guidé par défaut
+	let guidanceLevel = $state<string>(readGuidanceLevel(initialAssignment?.guidance_level));
 
 	// Multi-class selection - extract class IDs from assignment
 	// `classes` vient de la jonction et porte TOUTES les classes visées. Le repli
@@ -163,6 +167,7 @@
 			title: title || null,
 			instructions: instructions || null,
 			individualized,
+			guidance_level: readGuidanceLevel(guidanceLevel),
 			available_from: availableFrom ? new Date(availableFrom).toISOString() : undefined,
 			closes_at: closesAt ? new Date(closesAt).toISOString() : null,
 			// Default to manual mode - corrections are configured after creation
@@ -196,6 +201,7 @@
 			student_ids: selectedStudentIds,
 			title: title || null,
 			instructions: instructions || null,
+			guidance_level: readGuidanceLevel(guidanceLevel),
 			available_from: availableFrom ? new Date(availableFrom).toISOString() : undefined,
 			closes_at: closesAt ? new Date(closesAt).toISOString() : null,
 			show_corrections: showCorrections
@@ -265,6 +271,21 @@
 					Selectionnez au moins un {lore.entities.class} ou un eleve.
 				</p>
 			{/if}
+
+			<!-- Niveau de guidage (ADR 0023) -->
+			<div class="space-y-2">
+				<Label>Niveau de guidage</Label>
+				<MySelect
+					type="single"
+					bind:value={guidanceLevel}
+					items={GUIDANCE_LEVEL_ITEMS}
+					triggerAriaLabel="Niveau de guidage"
+				/>
+				<p class="text-xs text-muted-foreground">
+					Pour des groupes de niveau, choisis les élèves un par un ; le titre de l'affectation est
+					visible par ses élèves.
+				</p>
+			</div>
 
 			<!-- Optional title override -->
 			<div class="space-y-2">

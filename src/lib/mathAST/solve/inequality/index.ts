@@ -14,9 +14,10 @@
  * @module mathAST/solve/inequality
  */
 
-import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../../common/euler-variable';
+import { reservedVariableRefusal } from '../../common/reserved-letters';
 import type { MathNode, RelationNode } from '../../types';
-import type { Domain } from '../../domain/types';
+import type { Domain, PeriodicExclusion } from '../../domain/types';
+import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import type { SignAnalysisResult, SignedInterval } from '../../sign/types';
 import {
 	SolveInequalityError,
@@ -32,7 +33,8 @@ import { detectVariable } from '../classify';
 import { subtract } from '../../factory';
 import { denormalize, normalize } from '../../normal';
 import { getVariables } from '../../eval/substitute';
-import { isEmpty as isDomainEmpty, union, difference } from '../../domain/algebra';
+import { isEmpty as isDomainEmpty, union, difference, intersect } from '../../domain/algebra';
+import { computeDomain, normalizeExcludedPoints } from '../../domain/compute';
 import { emptyDomain, intervalSet } from '../../domain/factory';
 
 const INEQUALITY_OPS: ReadonlySet<InequalityOp> = new Set(['<', '>', '<=', '>=', '!=']);
@@ -78,8 +80,9 @@ export function solveInequality(
 	}
 	const inequalityOp = op as InequalityOp;
 
-	if (refusesEulerVariable(options.variable, relation)) {
-		throw new SolveInequalityError(EULER_NOT_A_VARIABLE, 'variable: e');
+	const refusal = reservedVariableRefusal(options.variable, relation);
+	if (refusal !== null) {
+		throw new SolveInequalityError(refusal, `variable: ${options.variable}`);
 	}
 
 	const expression = canon(subtract(relation.left, relation.right));
@@ -91,16 +94,43 @@ export function solveInequality(
 
 	rejectIfParametric(expression, variable);
 
+	// Le domaine de définition se lit sur l'inéquation ÉCRITE, pas sur la forme
+	// canonique : `normalize` simplifie \frac{3x}{3x} en 1 et \ln x − \ln x en 0,
+	// et 0 ou x ≤ 0 rentraient dans l'ensemble solution (écart V47)
+	const definition = computeDomain(subtract(relation.left, relation.right), variable);
+	if (definition.unresolved !== undefined && definition.unresolved.length > 0) {
+		// x⁵ − x + 1 ≠ 0 non résolue : le domaine serait trop grand, on ne conclut pas
+		throw new InequalityNotSolvable(
+			"Le domaine de définition n'a pas pu être déterminé exactement",
+			definition.unresolved.join(' ; ')
+		);
+	}
+	// Exclusion périodique (\frac{\sin x}{\sin x}) : le découpage du signe ne la
+	// suit pas (il la lit comme ℝ), le résultat ne peut être que partiel — sauf
+	// si aucun pôle ne tombe dans le domaine imposé (\tan x ≥ 0 sur [-1 ; 1])
+	const periodicDomain =
+		definition.domain.kind === 'condition_domain' ||
+		(definition.domain.kind === 'periodic_exclusion' &&
+			(options.domain === undefined || periodicPoleInside(definition.domain, options.domain)));
+	// Points interdits écrits en intervalles (ℝ \ {0} → ]-∞ ; 0[ ∪ ]0 ; +∞[), sans
+	// quoi `difference` ne reconnaît pas « tout le domaine » ; sur une borne du
+	// domaine imposé, le point l'ouvre : [0 ; 1] \ {0} → ]0 ; 1]
+	const domain = normalizeExcludedPoints(
+		options.domain ? intersect(definition.domain, options.domain) : definition.domain
+	);
+
 	const signResult = analyzeSign(expression, {
 		variable,
-		domain: options.domain,
+		domain,
 		numericFallback: options.numericFallback ?? true,
 		tolerance: options.tolerance,
 		strictMode: false
 	});
 
-	const { solution, hasUnknown } = aggregateSolution(signResult, inequalityOp);
-	const status = computeStatus(signResult.domain, solution, hasUnknown);
+	const aggregated = aggregateSolution(signResult, inequalityOp);
+	const solution = aggregated.solution;
+	const hasUnknown = aggregated.hasUnknown || periodicDomain;
+	const status = computeStatus(signResult.domain, solution, hasUnknown, aggregated.everyMatches);
 
 	const warnings = buildWarnings(signResult.warnings, hasUnknown);
 
@@ -178,14 +208,47 @@ function resolveConstantInequality(expression: MathNode, op: InequalityOp): Solv
 }
 
 /**
+ * Un point de `base + k·période` tombe-t-il dans `imposed` (bornes comprises) ?
+ * Dans le doute (borne ou période non évaluable, domaine non intervalle) : oui.
+ */
+function periodicPoleInside(periodic: PeriodicExclusion, imposed: Domain): boolean {
+	if (imposed.kind === 'empty') return false;
+	if (imposed.kind !== 'interval_set') return true;
+	const base = numericValue(periodic.basePoint);
+	const period = numericValue(periodic.period);
+	if (base === null || period === null || period <= 0) return true;
+	for (const piece of imposed.intervals) {
+		const lo = numericValue(piece.lower.value);
+		const hi = numericValue(piece.upper.value);
+		if (lo === null || hi === null) return true;
+		if (!Number.isFinite(lo) || !Number.isFinite(hi)) return true;
+		// Premier pôle ≥ lo, à une tolérance près (un pôle sur une borne compte)
+		const first = base + Math.ceil((lo - base) / period - 1e-9) * period;
+		if (first <= hi + 1e-9) return true;
+	}
+	return false;
+}
+
+function numericValue(node: MathNode): number | null {
+	if (node.type === 'infinity') return node.sign === 'positive' ? Infinity : -Infinity;
+	try {
+		const value = evaluateNodeToApproximatedNumber(node);
+		return Number.isNaN(value) ? null : value;
+	} catch {
+		return null;
+	}
+}
+
+/**
  * Aggregate signed sub-intervals matching the operator into a single domain.
  */
 function aggregateSolution(
 	signResult: SignAnalysisResult,
 	op: InequalityOp
-): { solution: Domain; hasUnknown: boolean } {
+): { solution: Domain; hasUnknown: boolean; everyMatches: boolean } {
 	let solution: Domain = emptyDomain();
 	let hasUnknown = false;
+	let everyMatches = true;
 
 	for (const si of signResult.signedIntervals) {
 		if (si.sign === 'unknown') {
@@ -194,10 +257,12 @@ function aggregateSolution(
 		}
 		if (matchesOperator(si.sign, op)) {
 			solution = union(solution, intervalSet([si.interval]));
+		} else {
+			everyMatches = false;
 		}
 	}
 
-	return { solution, hasUnknown };
+	return { solution, hasUnknown, everyMatches };
 }
 
 function matchesOperator(sign: SignedInterval['sign'], op: InequalityOp): boolean {
@@ -236,11 +301,18 @@ function matchesOperator(sign: SignedInterval['sign'], op: InequalityOp): boolea
  * inspect the matching intervals to confirm; reporting `'no-solution'`
  * would hide the unresolved region.
  */
-function computeStatus(domain: Domain, solution: Domain, hasUnknown: boolean): InequalityStatus {
+function computeStatus(
+	domain: Domain,
+	solution: Domain,
+	hasUnknown: boolean,
+	everyMatches: boolean
+): InequalityStatus {
 	if (isDomainEmpty(domain)) return 'empty-domain';
 	if (hasUnknown) return 'partial';
 	if (isDomainEmpty(solution)) return 'no-solution';
-	if (isDomainEmpty(difference(domain, solution))) return 'all-real';
+	// Chaque morceau du découpage convient : tout le domaine. `difference` seule
+	// ne le voit pas sur ℝ \ {0}, dont le point exclu reste à part (V47)
+	if (everyMatches || isDomainEmpty(difference(domain, solution))) return 'all-real';
 	return 'complete';
 }
 

@@ -34,13 +34,13 @@
 
 import { redirect, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { notifyAdminsOfPendingUser } from '$lib/server/notifications';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { validateRedirectUrl } from '$lib/server/validateRedirectUrl';
 import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
-const logger = createLogger('auth/callback');
+const logger = createServerLogger('auth/callback');
 
 // Allowed email domain for Google OAuth
 const ALLOWED_DOMAIN = '@voltairedoha.com';
@@ -134,7 +134,12 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 				});
 
 			if (insertError) {
-				logger.error('Failed to create profile:', insertError);
+				// code et message seulement : sur une violation de contrainte, `details` recopie
+				// la ligne insérée, nom de l'élève compris, que le masquage ne reconnaît pas
+				logger.error('Failed to create profile:', {
+					code: insertError.code,
+					message: insertError.message
+				});
 				// CRITICAL: Sign out the user since we couldn't create their profile.
 				// Without this, they would have a valid Supabase auth session but no profile
 				// in the database. The userProfileHandle hook would then silently sign them
@@ -143,7 +148,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 				// Redirect to login with explicit error message so user knows what happened
 				throw redirect(
 					303,
-					`/auth/login?error=${encodeURIComponent("Impossible de créer votre compte. Veuillez réessayer. Si le problème persiste, contactez l'administrateur.")}`
+					`/auth/login?error=${encodeURIComponent("Impossible de créer le compte. Réessayer ; si le problème persiste, voir avec l'administrateur.")}`
 				);
 			}
 
@@ -168,8 +173,8 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 			await supabase.auth.signOut();
 			// Build error message with rejection reason if available
 			const errorMessage = existingProfile.rejection_reason
-				? `Votre accès a été refusé: ${existingProfile.rejection_reason}`
-				: "Votre accès a été refusé. Contactez un administrateur pour plus d'informations.";
+				? `Accès refusé : ${existingProfile.rejection_reason}`
+				: "Accès refusé. Voir avec un administrateur pour plus d'informations.";
 			throw redirect(303, `/auth/login?error=${encodeURIComponent(errorMessage)}`);
 		}
 

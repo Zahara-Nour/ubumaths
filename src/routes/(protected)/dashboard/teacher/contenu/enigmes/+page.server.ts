@@ -1,7 +1,11 @@
 import type { PageServerLoad, Actions } from './$types';
-import type { DbRiddle } from '$lib/types/riddle';
+import { RIDDLE_COLUMNS, toDbRiddle } from '$lib/types/riddle';
+import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/contenu/enigmes/+page.server');
 
 /**
  * Load teacher's riddles
@@ -15,12 +19,24 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	// Fetch teacher's riddles
 	const { data: riddles, error: riddlesError } = await supabase
 		.from('riddles')
-		.select('*')
+		.select(RIDDLE_COLUMNS)
 		.eq('created_by', user.id)
 		.order('riddle_number', { ascending: false });
 
 	if (riddlesError) {
-		console.error('Error fetching riddles:', riddlesError);
+		logger.error('Error fetching riddles:', riddlesError);
+		throw error(500, 'Erreur lors du chargement des énigmes');
+	}
+
+	// La liste affiche si l'énigme se valide seule (réponse attendue présente) : la
+	// réponse vit dans `riddle_solutions`, que la RLS ouvre à l'auteur.
+	const { solutions, error: solutionsError } = await fetchRiddleSolutions(
+		supabase,
+		(riddles || []).map((r) => r.id)
+	);
+
+	if (solutionsError) {
+		logger.error('Error fetching riddle solutions:', solutionsError);
 		throw error(500, 'Erreur lors du chargement des énigmes');
 	}
 
@@ -31,17 +47,17 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.eq('created_by', user.id);
 
 	if (statsError) {
-		console.error('Error fetching riddle stats:', statsError);
+		logger.error('Error fetching riddle stats:', statsError);
 	}
 
 	// Merge riddles with their stats
 	const riddlesWithStats = (riddles || []).map((riddle) => ({
-		...riddle,
+		...toDbRiddle(riddle, solutions.get(riddle.id) ?? null),
 		stats: stats?.find((s) => s.riddle_id === riddle.id)
 	}));
 
 	return {
-		riddles: riddlesWithStats as unknown as DbRiddle[]
+		riddles: riddlesWithStats
 	};
 };
 
@@ -67,7 +83,7 @@ export const actions: Actions = {
 		const { error: deleteError } = await supabase.from('riddles').delete().eq('id', riddleId);
 
 		if (deleteError) {
-			console.error('Error deleting riddle:', deleteError);
+			logger.error('Error deleting riddle:', deleteError);
 			return fail(500, { message: "Erreur lors de la suppression de l'énigme" });
 		}
 
@@ -97,7 +113,7 @@ export const actions: Actions = {
 			.eq('id', riddleId);
 
 		if (updateError) {
-			console.error('Error updating riddle status:', updateError);
+			logger.error('Error updating riddle status:', updateError);
 			return fail(500, { message: 'Erreur lors de la mise à jour du statut' });
 		}
 

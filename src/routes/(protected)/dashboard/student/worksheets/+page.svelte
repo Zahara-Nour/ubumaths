@@ -5,6 +5,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import WorksheetCard from '$lib/components/student/worksheets/WorksheetCard.svelte';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { FileText, ChevronLeft, ChevronRight, Filter } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
@@ -76,6 +77,7 @@
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
 	<div class="mb-6">
+		<BackLink href="/dashboard/student/work" label="Retour à Mon travail" />
 		<h1 class="text-3xl font-bold tracking-tight">Mes Feuilles de Travail</h1>
 		<p class="mt-2 text-muted-foreground">
 			{data.pagination.total} fiche{data.pagination.total > 1 ? 's' : ''} disponible{data.pagination

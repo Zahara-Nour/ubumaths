@@ -104,20 +104,10 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'compte-appelant',
 		justification: 'garde auth.uid() = p_user_id, dossier de l’appelant'
 	},
-	'purchase_shop_item(p_student_id uuid, p_template_id uuid, p_quantity integer, p_purchase_context jsonb)':
-		{
-			categorie: 'compte-appelant',
-			justification: 'refuse si p_student_id <> auth.uid()'
-		},
 	'purchase_vip_card(p_student_id uuid, p_card_id text)': {
 		categorie: 'compte-appelant',
 		justification: 'auth.uid() requis et égal à p_student_id'
 	},
-	'record_game_reward(p_student_id uuid, p_game_type text, p_game_id uuid, p_theoretical_reward numeric, p_school_id uuid)':
-		{
-			categorie: 'compte-appelant',
-			justification: 'refuse si auth.uid() <> p_student_id ; élève seulement'
-		},
 	'record_listing_views_batch(p_listing_ids uuid[], p_user_id uuid)': {
 		categorie: 'compte-appelant',
 		justification: 'garde auth.uid() = p_user_id (lot 4)'
@@ -130,11 +120,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'compte-appelant',
 		justification: 'auth.uid() requis et égal à p_student_id'
 	},
-	'submit_riddle_attempt(p_riddle_id uuid, p_student_id uuid, p_submitted_answer jsonb, p_is_correct boolean)':
-		{
-			categorie: 'compte-appelant',
-			justification: 'refuse si auth.uid() <> p_student_id'
-		},
 	'toggle_message_star(p_message_id uuid, p_user_id uuid)': {
 		categorie: 'compte-appelant',
 		justification: 'garde auth.uid() = p_user_id'
@@ -147,11 +132,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		{
 			categorie: 'compte-appelant',
 			justification: 'garde auth.uid() = p_user_id et conversation possédée'
-		},
-	'upsert_mathemo_score(p_user_id uuid, p_word_length integer, p_won boolean, p_found_first_try boolean, p_score numeric)':
-		{
-			categorie: 'compte-appelant',
-			justification: 'refuse si auth.uid() <> p_user_id'
 		},
 	'upsert_user_presence(p_user_id uuid, p_status text)': {
 		categorie: 'compte-appelant',
@@ -201,10 +181,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'duplicate_template(p_template_id uuid, p_user_id uuid, p_new_title text)': {
 		categorie: 'compte-appelant-ou-prof',
 		justification: 'exige p_user_id = auth.uid() ET is_teacher_or_admin'
-	},
-	'get_2048_user_rank(p_user_id uuid)': {
-		categorie: 'compte-appelant-ou-prof',
-		justification: 'garde auth.uid() = p_user_id ou is_teacher_or_admin (lot 4)'
 	},
 	'get_allowed_recipients(p_user_id uuid)': {
 		categorie: 'compte-appelant-ou-prof',
@@ -447,11 +423,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'prof',
 		justification: 'is_teacher_or_admin, puis élève inscrit'
 	},
-	'award_weekly_reward(p_student_id uuid, p_class_id uuid, p_week_start date, p_week_end date, p_gidouilles integer, p_reason text)':
-		{
-			categorie: 'prof',
-			justification: 'rôle admin, ou teacher et is_teacher_or_admin'
-		},
 	'backfill_tournament_scores(p_tournament_id uuid)': {
 		categorie: 'prof',
 		justification: 'is_teacher_or_admin (lot 4)'
@@ -542,10 +513,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 			categorie: 'prof',
 			justification: 'rôle prof/admin de auth.uid() exigé, auteur = auth.uid()'
 		},
-	'process_weekly_rewards(p_week_start date, p_week_end date, p_class_ids uuid[])': {
-		categorie: 'prof',
-		justification: 'rôle admin ou teacher de auth.uid() exigé'
-	},
 	'redistribute_tournament_rewards(p_tournament_id uuid)': {
 		categorie: 'prof',
 		justification: 'créateur du tournoi (auth.uid()) ou admin'
@@ -789,6 +756,16 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		justification: 'jeton de partage du cahier de textes (16 à 64 caractères)',
 		anon: true
 	},
+	'get_class_course_by_share_token(p_token text)': {
+		categorie: 'jeton',
+		justification: 'jeton du cours (table distincte du cahier), classe active, contenus publiés',
+		anon: true
+	},
+	'get_course_worksheet_by_share_token(p_token text, p_worksheet_id uuid)': {
+		categorie: 'jeton',
+		justification: 'jeton du cours + fiche publiée dans un chapitre visible et distribuée',
+		anon: true
+	},
 	'get_consent_info(p_token uuid)': {
 		categorie: 'jeton',
 		justification: 'jeton de consentement parental, expiration vérifiée',
@@ -813,6 +790,10 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'game_leaderboard(p_game text, p_scope text, p_limit integer)': {
 		categorie: 'classement',
 		justification: 'auth.uid() requis, borné à my_school() (classe, niveau, école)'
+	},
+	'riddle_school_leaderboard(p_limit integer)': {
+		categorie: 'classement',
+		justification: 'auth.uid() requis, borné à my_school() ; prénom et score seulement'
 	},
 	'minesweeper_scoped_leaderboard(p_scope text, p_limit integer)': {
 		categorie: 'classement',
@@ -910,6 +891,10 @@ export const DECLENCHEURS_DEFINER_VERIFIES: Record<string, DeclencheurDefinerVer
 	'classification_nodes_guard_point_tags()': { justification: REGLES_DE_TAG },
 	'exercise_curriculum_points_check_rules()': { justification: REGLES_DE_TAG },
 	'exercise_classifications_guard_point_tags()': { justification: REGLES_DE_TAG },
+	'geometry_figures_drop_tags()': {
+		justification:
+			'efface les liens de tag de la figure supprimée, seulement eux ; DEFINER car la suppression d’un compte arrive en cascade sous supabase_auth_admin (ADR 0027) ; garde d’appelant prof ou admin'
+	},
 	'dictionary_entries_keep_version()': {
 		justification:
 			'historique du dictionnaire : seule voie d’écriture des versions (plus d’INSERT direct) ; garde d’appelant admin ; auteur = auth.uid()'

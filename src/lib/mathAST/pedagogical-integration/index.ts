@@ -23,6 +23,7 @@ export type {
 	IntegrationGenerationStrategy,
 	IntegrationSchoolLevel,
 	PedagogicalIntegrationOptions,
+	PedagogicalDefiniteIntegrationResult,
 	PedagogicalIntegrationResult,
 	PedagogicalIntegrationRule,
 	PedagogicalIntegrationStep

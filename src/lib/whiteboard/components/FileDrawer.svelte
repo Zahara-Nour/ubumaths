@@ -141,7 +141,9 @@
 	// ==========================================================================
 
 	onMount(() => {
-		checkGoogleConnection();
+		// Google coupé (V5) : aucune route Google appelée, le panneau reste local
+		if (GOOGLE_CLASSROOM_ENABLED) checkGoogleConnection();
+		else isCheckingConnection = false;
 	});
 
 	// Watch for drawer open to trigger initial load
@@ -1036,6 +1038,14 @@
 						{/if}
 					{/if}
 				</div>
+			{:else if !GOOGLE_CLASSROOM_ENABLED}
+				<!-- Google coupé (V5) : pas de promesse de connexion -->
+				<div class="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+					<FolderOpen class="h-12 w-12 text-muted-foreground" />
+					<p class="text-sm text-muted-foreground">
+						Enregistrez votre document sur cet appareil (Local) ou exportez-le (PDF, image).
+					</p>
+				</div>
 			{:else}
 				<!-- Not connected to Google -->
 				<div class="flex flex-1 flex-col items-center justify-center gap-4 text-center">
@@ -1058,7 +1068,8 @@
 		<Sheet.Footer class="border-t pt-4">
 			<div class="flex w-full flex-col gap-2">
 				<!-- Row 1: Primary actions -->
-				<div class="grid grid-cols-4 gap-2">
+				<!-- Google coupé : Nouveau + Export seulement (V5) -->
+				<div class="grid {GOOGLE_CLASSROOM_ENABLED ? 'grid-cols-4' : 'grid-cols-2'} gap-2">
 					<Button
 						type="button"
 						variant="ghost"
@@ -1070,23 +1081,23 @@
 						<FilePlus class="h-4 w-4" />
 						<span class="text-[10px]">Nouveau</span>
 					</Button>
-					<Button
-						type="button"
-						variant="ghost"
-						size="sm"
-						onclick={handleSaveToDrive}
-						disabled={isSavingToDrive}
-						class="h-9 flex-col gap-1 p-1"
-						title="Sauvegarder sur Drive"
-					>
-						{#if isSavingToDrive}
-							<Loader2 class="h-4 w-4 animate-spin" />
-						{:else}
-							<Cloud class="h-4 w-4" />
-						{/if}
-						<span class="text-[10px]">Drive</span>
-					</Button>
 					{#if GOOGLE_CLASSROOM_ENABLED}
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onclick={handleSaveToDrive}
+							disabled={isSavingToDrive}
+							class="h-9 flex-col gap-1 p-1"
+							title="Sauvegarder sur Drive"
+						>
+							{#if isSavingToDrive}
+								<Loader2 class="h-4 w-4 animate-spin" />
+							{:else}
+								<Cloud class="h-4 w-4" />
+							{/if}
+							<span class="text-[10px]">Drive</span>
+						</Button>
 						<Button
 							type="button"
 							variant="ghost"

@@ -90,12 +90,19 @@ describe('carte de f(t) = t²', () => {
 		const { container } = await render(WithAtelier, { atelier });
 		const card = await open(container, 'f');
 
-		await typeInto(fieldOf(card), 't+x');
+		// La carte range la frappe 300 ms après la dernière touche : une pause
+		// avant le x (fréquente sur la CI) range d'abord « t+ », illisible donc
+		// gardé tel quel (`renameVariable`). La pause est voulue : sans elle, le
+		// test dépendait de la vitesse de frappe (« expected 't+' to be '' »).
+		await typeInto(fieldOf(card), 't+');
+		await vi.waitFor(() => expect(atelier.get('f')?.definition).toBe('t+'));
+		await userEvent.keyboard('x');
 
 		await vi.waitFor(() =>
 			expect(cardFor(container, 'f').querySelector('[role="alert"]')?.textContent).toContain('f(t)')
 		);
-		expect(atelier.get('f')?.definition).toBe('');
+		// Le x n'est jamais rangé : la définition reste celle d'avant le refus
+		expect(atelier.get('f')?.definition).toBe('t+');
 	});
 
 	// Revue de #905 : Calcul `f(s) = s^2` après `f(t) = t^2` ne change pas la

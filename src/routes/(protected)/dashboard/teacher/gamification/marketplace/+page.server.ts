@@ -1,5 +1,10 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/gamification/marketplace/+page.server'
+);
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const supabase = locals.supabase;
@@ -35,7 +40,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('Error fetching teacher classes:', classesError);
+		logger.error('Error fetching teacher classes:', classesError);
 		throw error(500, 'Erreur lors de la récupération des classes');
 	}
 
@@ -48,7 +53,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	if (configError && configError.code !== 'PGRST116') {
 		// PGRST116 means no rows returned, which is fine
-		console.error('Error fetching marketplace config:', configError);
+		logger.error('Error fetching marketplace config:', configError);
 	}
 
 	// Create a map of class_id -> config

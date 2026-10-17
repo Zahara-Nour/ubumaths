@@ -428,8 +428,7 @@
 					spellcheck="false"
 					autocomplete="off"
 					aria-label="Editeur JSON (mode degrade)"
-					{disabled}
-				></textarea>
+					{disabled}></textarea>
 			</div>
 		{/if}
 	</div>

@@ -28,11 +28,11 @@ oc = cercle_osculateur(c, t0)   # cercle osculateur à t0
 
 ### Algorithmes
 
-| Builtin             | Formule                                     | Méthode                              |
+| Builtin | Formule | Méthode |
 | ------------------- | ------------------------------------------- | ------------------------------------ | ---------------------- | -------------------------------------------------------- |
-| `longueur`          | `∫                                          | γ'(t)                                | dt = ∫√(x'² + y'²) dt` | Simpson composite N=64                                   |
-| `courbure`          | `κ = (x'·y'' − y'·x'') / (x'² + y'²)^(3/2)` | Différenciation symbolique récursive |
-| `cercle_osculateur` | centre = γ(t0) + n̂/κ ; rayon = 1/           | κ                                    |                        | Réutilise `courbure` + normale `n̂ = (-y'/‖γ'‖, x'/‖γ'‖)` |
+| `longueur` | `∫                                          | γ'(t)                                | dt = ∫√(x'² + y'²) dt` | Simpson composite N=64 |
+| `courbure` | `κ = (x'·y'' − y'·x'') / (x'² + y'²)^(3/2)` | Différenciation symbolique récursive |
+| `cercle_osculateur` | centre = γ(t0) + n̂/κ ; rayon = 1/ | κ | | Réutilise `courbure` + normale `n̂ = (-y'/‖γ'‖, x'/‖γ'‖)` |
 
 ### Comportements validés
 

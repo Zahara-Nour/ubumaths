@@ -95,6 +95,13 @@ const WITHOUT_COMMAND: readonly HelpBlock[] = [
  */
 const EXTRA_EXAMPLES: Readonly<Record<string, readonly HelpEntry[]>> = {
 	diff: [{ command: 'diff', example: '.dériver a t^2 pour t', description: 'Choisir la variable' }],
+	limit: [
+		{
+			command: 'limit',
+			example: '.limite 1/x en 0+',
+			description: 'À droite (0- : à gauche) ; à l’infini : en +∞, en -∞'
+		}
+	],
 	mode: [
 		{ command: 'mode', example: '.mode décimal', description: 'Passer aux valeurs décimales' }
 	],
@@ -131,7 +138,7 @@ const SYNTAX_REMINDER: readonly string[] = [
  */
 export function studentHelp(engine: WebReplEngine): HelpBlock[] {
 	const shown = commandCatalog(engine).filter(
-		(c) => c.section !== undefined && c.unavailable === undefined && c.example !== undefined
+		(c) => c.section !== undefined && c.example !== undefined
 	);
 
 	const blocks: HelpBlock[] = [...WITHOUT_COMMAND];

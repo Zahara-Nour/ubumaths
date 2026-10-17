@@ -30,14 +30,14 @@
  */
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import {
 	ADMIN_ELEVATION_COOKIE,
 	createAdminClient,
 	decodeElevationCookie
 } from '$lib/server/adminElevation';
 
-const logger = createLogger('auth/logout');
+const logger = createServerLogger('auth/logout');
 
 export const POST: RequestHandler = async ({ locals: { supabase }, cookies }) => {
 	// Get user email before signing out for logging purposes

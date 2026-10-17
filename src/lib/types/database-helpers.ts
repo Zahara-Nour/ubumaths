@@ -467,12 +467,7 @@ export type AntiFraudFlag = Tables<'srs_anti_fraud_flags'>;
 
 /** Type discriminé pour la colonne flag_type (cf. CHECK contrainte SQL). */
 export type AntiFraudFlagType =
-	| 'high_easy_ratio'
-	| 'no_again'
-	| 'fast_timeSpent'
-	| 'burst'
-	| 'srs_vs_quiz_gap'
-	| 'composite';
+	'high_easy_ratio' | 'no_again' | 'fast_timeSpent' | 'burst' | 'srs_vs_quiz_gap' | 'composite';
 
 /** Severity 1..5 (1=info ; 5=critical). */
 export type AntiFraudSeverity = 1 | 2 | 3 | 4 | 5;
@@ -693,3 +688,29 @@ export type ChapterSeriesForm = 'flash' | 'interactive';
 
 /** `public.chapter_series` (migration `20261002100000_series_de_chapitre.sql`). */
 export type ChapterSeriesRow = Database['public']['Tables']['chapter_series']['Row'];
+
+// =============================================================================
+// FIGURES GÉOMÉTRIQUES STOCKÉES
+// =============================================================================
+
+/** `public.geometry_figures` (migration `20261016103100_geometry_figures.sql`, ADR 0027). */
+export type GeometryFigureRow = Tables<'geometry_figures'>;
+
+/** Une figure et les noms de ses tags (page de modification du prof). */
+export interface GeometryFigureWithTags extends GeometryFigureRow {
+	tags: string[];
+}
+
+/**
+ * Une ligne de la liste du prof : tout SAUF le script, qui peut peser 100 000
+ * caractères par figure — la liste n'en a pas besoin.
+ */
+export interface GeometryFigureSummary extends Omit<GeometryFigureRow, 'dsl_script'> {
+	tags: string[];
+}
+
+/** Ce que la page publique reçoit : ni auteur ni tags (`anon` ne lit pas `resource_tags`). */
+export type PublicGeometryFigure = Pick<
+	GeometryFigureRow,
+	'id' | 'title' | 'description' | 'dsl_script' | 'grades'
+>;

@@ -25,6 +25,7 @@ import {
 	VECTOR_MODES
 } from './types';
 import { genericFunctionNamesSchema } from './generic-functions';
+import { capitalPairsSchema } from './capital-pairs';
 
 // ============================================================================
 // BUILDING BLOCKS (exported, non-strict)
@@ -648,7 +649,9 @@ const sharedStrictZ = z
 		// Fonctions déclarées (`P`, `C`) : complètent f, g, h… (cf. generic-functions.ts)
 		genericFunctions: genericFunctionNamesSchema.optional(),
 		// 1x → x, +0 retiré dans les formules (cf. clean-coefficients.ts)
-		cleanCoefficients: z.boolean().optional()
+		cleanCoefficients: z.boolean().optional(),
+		// `AB` : longueur ou produit ; absent → contexte, puis longueur (cf. capital-pairs.ts)
+		capitalPairs: capitalPairsSchema.optional()
 	})
 	.strict();
 

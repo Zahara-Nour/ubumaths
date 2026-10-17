@@ -309,9 +309,12 @@ function generateVariationsInstance(
 	// The frontend component will handle rendering hints from the hints array
 	let resolvedStatementMd: string;
 	let resolvedSolutionMd: string;
+	let resolvedAnswersMd: string;
 	try {
 		resolvedStatementMd = resolveText(resolvedVariation.statement_md, resolvedVariables);
 		resolvedSolutionMd = resolveText(resolvedVariation.solution_md, resolvedVariables);
+		// Réponses seules : mêmes valeurs que la correction
+		resolvedAnswersMd = resolveText(resolvedVariation.answers_md ?? '', resolvedVariables);
 	} catch (error) {
 		return {
 			success: false,
@@ -367,6 +370,7 @@ function generateVariationsInstance(
 		// Resolved content
 		statement_md: resolvedStatementMd,
 		solution_md: resolvedSolutionMd,
+		answers_md: resolvedAnswersMd,
 
 		// Optional AST
 		statement_ast: statementAst,
@@ -474,11 +478,11 @@ export function isParameterized(exercise: Exercise): boolean {
 	// 1. Legacy: exercise.variables (deprecated, kept for compatibility)
 	// 2. New: exercise.shared.variables (shared across variations)
 	// 3. New: exercise.variations[n].variables (per-variation)
-	const hasLegacyVars = exercise.variables !== undefined && exercise.variables.length > 0;
-	const hasSharedVars =
-		exercise.shared?.variables !== undefined && exercise.shared.variables.length > 0;
+	// Une ligne de la base peut porter null (colonnes jsonb) : chaînage optionnel partout.
+	const hasLegacyVars = (exercise.variables?.length ?? 0) > 0;
+	const hasSharedVars = (exercise.shared?.variables?.length ?? 0) > 0;
 	const hasVariationVars =
-		exercise.variations?.some((v) => v.variables !== undefined && v.variables.length > 0) ?? false;
+		exercise.variations?.some((v) => (v.variables?.length ?? 0) > 0) ?? false;
 
 	return hasLegacyVars || hasSharedVars || hasVariationVars;
 }

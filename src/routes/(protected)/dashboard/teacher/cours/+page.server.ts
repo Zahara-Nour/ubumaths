@@ -11,6 +11,9 @@ import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getTeacherChapters } from '$lib/server/chapters';
 import type { ChapterSummary } from '$lib/types/chapters';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/cours/+page.server');
 
 interface ClassWithChapters {
 	classId: string;
@@ -29,7 +32,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	);
 
 	if (chaptersError) {
-		console.error('[Teacher Cours] Error fetching chapters:', chaptersError);
+		logger.error('[Teacher Cours] Error fetching chapters:', chaptersError);
 		throw error(500, 'Erreur lors du chargement des chapitres');
 	}
 
@@ -46,7 +49,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('[Teacher Cours] Error fetching classes:', classesError);
+		logger.error('[Teacher Cours] Error fetching classes:', classesError);
 	}
 
 	// Build class info map

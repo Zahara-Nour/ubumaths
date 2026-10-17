@@ -34,6 +34,9 @@ import { error } from '@sveltejs/kit';
 
 // Import and re-export shared types and constants
 import { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel } from '$lib/types/warnings';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/warnings');
 export { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel };
 
 /**
@@ -113,7 +116,7 @@ export async function getCurrentAcademicPeriod(options: {
 		.maybeSingle();
 
 	if (anneeError) {
-		console.error('[getCurrentAcademicPeriod] Error fetching school year:', anneeError);
+		logger.error('[getCurrentAcademicPeriod] Error fetching school year:', anneeError);
 		throw error(500, `Failed to fetch current academic period: ${anneeError.message}`);
 	}
 
@@ -136,7 +139,7 @@ export async function getCurrentAcademicPeriod(options: {
 		.maybeSingle();
 
 	if (queryError) {
-		console.error('[getCurrentAcademicPeriod] Error fetching period:', queryError);
+		logger.error('[getCurrentAcademicPeriod] Error fetching period:', queryError);
 		throw error(500, `Failed to fetch current academic period: ${queryError.message}`);
 	}
 
@@ -184,13 +187,13 @@ export async function getClassWarnings(options: {
 		.maybeSingle();
 
 	if (classError) {
-		console.error('[getClassWarnings] Error verifying class ownership:', classError);
+		logger.error('[getClassWarnings] Error verifying class ownership:', classError);
 		throw error(500, `Failed to verify class ownership: ${classError.message}`);
 	}
 
 	if (!classCheck) {
-		console.error('[getClassWarnings] Teacher does not own class:', classId);
-		throw error(403, 'You do not have permission to view warnings for this class');
+		logger.error('[getClassWarnings] Teacher does not own class:', classId);
+		throw error(403, 'Accès refusé aux avertissements de cette classe');
 	}
 
 	// Fetch all ACTIVE warnings for this class and period
@@ -263,7 +266,7 @@ export async function addWarning(options: {
 	});
 
 	if (rpcError) {
-		console.error('[addWarning] RPC error:', rpcError);
+		logger.error('[addWarning] RPC error:', rpcError);
 		throw error(500, `Failed to add warning: ${rpcError.message}`);
 	}
 
@@ -310,7 +313,7 @@ export async function addWarningsBulk(options: {
 	});
 
 	if (rpcError) {
-		console.error('[addWarningsBulk] RPC error:', rpcError);
+		logger.error('[addWarningsBulk] RPC error:', rpcError);
 		throw error(500, `Failed to add warnings: ${rpcError.message}`);
 	}
 
@@ -363,7 +366,7 @@ export async function removeWarningsBulk(options: {
 	});
 
 	if (rpcError) {
-		console.error('[removeWarningsBulk] RPC error:', rpcError);
+		logger.error('[removeWarningsBulk] RPC error:', rpcError);
 		throw error(500, `Failed to remove warnings: ${rpcError.message}`);
 	}
 
@@ -467,7 +470,7 @@ export async function getSchoolYearPeriods(options: {
 		.order('period_order', { ascending: true });
 
 	if (queryError) {
-		console.error('[getSchoolYearPeriods] Error fetching periods:', queryError);
+		logger.error('[getSchoolYearPeriods] Error fetching periods:', queryError);
 		throw error(500, `Failed to fetch academic periods: ${queryError.message}`);
 	}
 
@@ -505,7 +508,7 @@ export async function getActiveSchoolYear(options: {
 		.maybeSingle();
 
 	if (queryError) {
-		console.error('[getActiveSchoolYear] Error fetching school year:', queryError);
+		logger.error('[getActiveSchoolYear] Error fetching school year:', queryError);
 		throw error(500, `Failed to fetch active school year: ${queryError.message}`);
 	}
 

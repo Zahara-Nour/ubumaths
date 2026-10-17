@@ -116,7 +116,7 @@ const astRequirementSchema = z.object({
 		.string()
 		.min(1)
 		.max(FUNCTION_NAME_MAX)
-		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Name must be a valid Python identifier')
+		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Le nom doit être un identifiant Python valide')
 		.optional()
 		.describe('Required for defines_function, defines_class, uses_import'),
 	message: z.string().min(1).max(MESSAGE_MAX).describe('Error message to show on failure')
@@ -173,7 +173,10 @@ const behaviorUnitTestSchema = z.object({
 		.string()
 		.min(FUNCTION_NAME_MIN)
 		.max(FUNCTION_NAME_MAX)
-		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Function name must be a valid Python identifier'),
+		.regex(
+			/^[a-zA-Z_][a-zA-Z0-9_]*$/,
+			'Le nom de la fonction doit être un identifiant Python valide'
+		),
 	test_cases: z
 		.array(unitTestCaseSchema)
 		.min(TEST_CASES_MIN)
@@ -196,7 +199,7 @@ const expectedVarsSchema = z
 		message: 'Au moins une variable doit être vérifiée'
 	})
 	.refine((obj) => Object.keys(obj).length <= EXPECTED_VARS_MAX, {
-		message: `Maximum ${EXPECTED_VARS_MAX} variables`
+		message: `${EXPECTED_VARS_MAX} variables au maximum`
 	})
 	.refine((obj) => Object.keys(obj).every((k) => PY_IDENTIFIER_RE.test(k)), {
 		message: 'Nom de variable Python invalide'
@@ -223,7 +226,10 @@ const behaviorReferenceSolutionSchema = z.object({
 		.string()
 		.min(FUNCTION_NAME_MIN)
 		.max(FUNCTION_NAME_MAX)
-		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Function name must be a valid Python identifier'),
+		.regex(
+			/^[a-zA-Z_][a-zA-Z0-9_]*$/,
+			'Le nom de la fonction doit être un identifiant Python valide'
+		),
 	reference_code: z
 		.string()
 		.min(1)
@@ -310,7 +316,7 @@ const lockedZonesStarterRefine = (
 	const { errors } = parseTemplate(starter);
 	if (errors.length === 0) return { valid: true };
 	const summary = errors.map((e) => e.message).join(' / ');
-	return { valid: false, message: `Marqueur(s) malformé(s) dans starter_code : ${summary}` };
+	return { valid: false, message: `Marqueurs mal formés dans le code initial : ${summary}` };
 };
 
 // Create Exercise Schema

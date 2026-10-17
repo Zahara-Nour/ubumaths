@@ -21,6 +21,9 @@ import type {
 import { sanitizeNotificationHtml } from './sanitization';
 import { escapeHtml } from '$lib/utils/html-escape';
 import { createServiceRoleClient } from './serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/notifications');
 
 type SupabaseClientType = SupabaseClient<Database>;
 type NotificationInsert = Database['public']['Tables']['notifications']['Insert'];
@@ -71,7 +74,7 @@ export async function createNotification(
 				// classes visées devenaient « invalides », et le professeur se voyait
 				// reprocher de cibler des classes qui ne sont pas les siennes.
 				if (teacherClassesError) {
-					console.error('[createNotification] Classes illisibles :', teacherClassesError);
+					logger.error('[createNotification] Classes illisibles :', teacherClassesError);
 					return { success: false, error: 'Impossible de vérifier les classes ciblées' };
 				}
 
@@ -81,7 +84,7 @@ export async function createNotification(
 				if (invalidClasses.length > 0) {
 					return {
 						success: false,
-						error: 'Vous ne pouvez cibler que vos propres classes'
+						error: 'Ciblage réservé aux classes du professeur'
 					};
 				}
 			}
@@ -96,7 +99,7 @@ export async function createNotification(
 				// Même contrôle, même piège : la liste vide accusait le professeur de
 				// cibler des élèves qui ne sont pas les siens.
 				if (teacherStudentsError) {
-					console.error('[createNotification] Élèves illisibles :', teacherStudentsError);
+					logger.error('[createNotification] Élèves illisibles :', teacherStudentsError);
 					return { success: false, error: 'Impossible de vérifier les élèves ciblés' };
 				}
 
@@ -108,7 +111,7 @@ export async function createNotification(
 				if (invalidStudents.length > 0) {
 					return {
 						success: false,
-						error: 'Vous ne pouvez cibler que vos propres élèves'
+						error: 'Ciblage réservé aux élèves du professeur'
 					};
 				}
 			}
@@ -147,13 +150,13 @@ export async function createNotification(
 			.single();
 
 		if (insertError) {
-			console.error('Error creating notification:', insertError);
+			logger.error('Error creating notification:', insertError);
 			return { success: false, error: 'Erreur lors de la création de la notification' };
 		}
 
 		return { success: true, id: notification.id };
 	} catch (error) {
-		console.error('Error in createNotification:', error);
+		logger.error('Error in createNotification:', error);
 		return { success: false, error: 'Erreur inattendue' };
 	}
 }
@@ -217,13 +220,13 @@ export async function createSystemNotification(
 		});
 
 		if (insertError) {
-			console.error('Error creating system notification:', insertError);
+			logger.error('Error creating system notification:', insertError);
 			return { success: false, error: 'Erreur lors de la création de la notification système' };
 		}
 
 		return { success: true };
 	} catch (error) {
-		console.error('Error in createSystemNotification:', error);
+		logger.error('Error in createSystemNotification:', error);
 		return { success: false, error: 'Erreur inattendue' };
 	}
 }
@@ -269,7 +272,7 @@ export async function getUnreadNotifications(
 		// Le profil décide QUELLES notifications sont visibles. Une failure les
 		// faisait toutes disparaître, sans distinction avec « rien de nouveau ».
 		if (profileError) {
-			console.error('[getNotifications] Profil illisible :', profileError);
+			logger.error('[getNotifications] Profil illisible :', profileError);
 			throw new Error(profileError.message);
 		}
 
@@ -322,7 +325,7 @@ export async function getUnreadNotifications(
 			.order('created_at', { ascending: false });
 
 		if (error) {
-			console.error('Error fetching notifications:', error);
+			logger.error('Error fetching notifications:', error);
 			return {
 				notifications: [],
 				pagination: { page, limit, total: 0, totalPages: 0, hasMore: false }
@@ -347,7 +350,7 @@ export async function getUnreadNotifications(
 		// Sans les accusés de lecture, TOUT réapparaît comme non lu : l'élève
 		// croit avoir perdu son historique.
 		if (readsError) {
-			console.error('[getNotifications] Accusés de lecture illisibles :', readsError);
+			logger.error('[getNotifications] Accusés de lecture illisibles :', readsError);
 			throw new Error(readsError.message);
 		}
 
@@ -408,7 +411,7 @@ export async function getUnreadNotifications(
 			}
 		};
 	} catch (error) {
-		console.error('Error in getUnreadNotifications:', error);
+		logger.error('Error in getUnreadNotifications:', error);
 		return {
 			notifications: [],
 			pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasMore: false }
@@ -446,13 +449,13 @@ export async function markAsRead(
 			if (error.code === '23505') {
 				return { success: true };
 			}
-			console.error('Error marking notification as read:', error);
+			logger.error('Error marking notification as read:', error);
 			return { success: false, error: 'Erreur lors de la mise à jour' };
 		}
 
 		return { success: true };
 	} catch (error) {
-		console.error('Error in markAsRead:', error);
+		logger.error('Error in markAsRead:', error);
 		return { success: false, error: 'Erreur inattendue' };
 	}
 }
@@ -482,13 +485,13 @@ export async function markAllAsRead(
 		const { error } = await supabase.from('notification_reads').insert(readRecords);
 
 		if (error) {
-			console.error('Error marking all as read:', error);
+			logger.error('Error marking all as read:', error);
 			return { success: false, error: 'Erreur lors de la mise à jour' };
 		}
 
 		return { success: true };
 	} catch (error) {
-		console.error('Error in markAllAsRead:', error);
+		logger.error('Error in markAllAsRead:', error);
 		return { success: false, error: 'Erreur inattendue' };
 	}
 }
@@ -520,8 +523,8 @@ export async function deleteNotification(
 		// passer pour « la notification n'existe pas ».
 		const failure = [notificationError, profileError].find((e) => e && e.code !== 'PGRST116');
 		if (failure) {
-			console.error('[deleteNotification] Vérification impossible :', failure);
-			return { success: false, error: 'Impossible de vérifier vos droits sur cette notification' };
+			logger.error('[deleteNotification] Vérification impossible :', failure);
+			return { success: false, error: 'Impossible de vérifier les droits sur cette notification' };
 		}
 
 		if (!notification || !profile) {
@@ -549,7 +552,7 @@ export async function deleteNotification(
 		const { data: masked, error } = await maskQuery.select('id');
 
 		if (error) {
-			console.error('Error deleting notification:', error);
+			logger.error('Error deleting notification:', error);
 			return { success: false, error: 'Erreur lors de la suppression' };
 		}
 
@@ -559,7 +562,7 @@ export async function deleteNotification(
 
 		return { success: true };
 	} catch (error) {
-		console.error('Error in deleteNotification:', error);
+		logger.error('Error in deleteNotification:', error);
 		return { success: false, error: 'Erreur inattendue' };
 	}
 }
@@ -580,7 +583,7 @@ export async function getCreatedNotifications(
 			.order('created_at', { ascending: false });
 
 		if (error || !notifications) {
-			console.error('Error fetching created notifications:', error);
+			logger.error('Error fetching created notifications:', error);
 			return [];
 		}
 
@@ -597,7 +600,7 @@ export async function getCreatedNotifications(
 		// Ce décompte est une statistique de lecture affichée au professeur : une
 		// failure le montrerait à zéro. On garde l'écran, on laisse la trace.
 		if (allReadsError) {
-			console.error('[getNotificationsWithStats] Décompte de lectures illisible :', allReadsError);
+			logger.error('[getNotificationsWithStats] Décompte de lectures illisible :', allReadsError);
 		}
 
 		// Build count map for O(1) lookup: notification_id -> count
@@ -629,7 +632,7 @@ export async function getCreatedNotifications(
 
 			// Étiquette d'affichage : son absence ne justifie pas de fermer l'écran.
 			if (classesError) {
-				console.error('[getNotificationsWithStats] Noms de classes illisibles :', classesError);
+				logger.error('[getNotificationsWithStats] Noms de classes illisibles :', classesError);
 			}
 
 			for (const cls of classes || []) {
@@ -649,7 +652,7 @@ export async function getCreatedNotifications(
 			// Effectif affiché à côté de chaque envoi : une failure le montrerait à 0,
 			// laissant croire à une classe vide.
 			if (classMembersError) {
-				console.error('[getNotificationsWithStats] Effectifs illisibles :', classMembersError);
+				logger.error('[getNotificationsWithStats] Effectifs illisibles :', classMembersError);
 			}
 
 			for (const member of classMembers || []) {
@@ -718,7 +721,7 @@ export async function getCreatedNotifications(
 
 		return stats;
 	} catch (error) {
-		console.error('Error in getCreatedNotifications:', error);
+		logger.error('Error in getCreatedNotifications:', error);
 		return [];
 	}
 }
@@ -812,13 +815,13 @@ export async function cleanupExpiredNotifications(
 			.select('id');
 
 		if (error) {
-			console.error('Error cleaning up expired notifications:', error);
+			logger.error('Error cleaning up expired notifications:', error);
 			return { success: false, error: 'Erreur lors du nettoyage' };
 		}
 
 		return { success: true, deletedCount: data?.length || 0 };
 	} catch (error) {
-		console.error('Error in cleanupExpiredNotifications:', error);
+		logger.error('Error in cleanupExpiredNotifications:', error);
 		return { success: false, error: 'Erreur inattendue' };
 	}
 }

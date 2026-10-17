@@ -109,7 +109,7 @@
 		const body: unknown = await response.json().catch(() => null);
 
 		if (!response.ok) {
-			throw new Error(errorMessageOf(body, "Impossible d'ouvrir l'évaluation"));
+			throw new Error(errorMessageOf(body, "Impossible d'ouvrir le contrôle"));
 		}
 
 		const start = body as EvaluationStartResponse;
@@ -205,7 +205,7 @@
 		// Aucun modèle du tout (hors ligne, sans cache) : échec explicite
 		if (templates.length === 0) {
 			throw new Error(
-				'Aucun template disponible. Veuillez vous reconnecter à Internet et recharger la page.'
+				'Aucun modèle disponible. Veuillez vous reconnecter à Internet et recharger la page.'
 			);
 		}
 		return buildSeriesItems(categories, templates, options);
@@ -438,7 +438,7 @@
 					<h2 class="text-xl font-semibold text-destructive">Erreur</h2>
 					<p class="mt-2 text-sm text-muted-foreground">{error}</p>
 					<Button onclick={handleBack} class="mt-6">
-						{assignmentId ? 'Mes évaluations' : 'Retour au panier'}
+						{assignmentId ? 'Mes contrôles' : 'Retour au panier'}
 					</Button>
 				</div>
 			</Card.Content>
@@ -457,7 +457,7 @@
 					</p>
 					<div class="mt-6 flex justify-center gap-3">
 						<Button onclick={handleRetrySubmit} disabled={isSubmitting}>Réessayer l'envoi</Button>
-						<Button variant="outline" onclick={handleBack}>Mes évaluations</Button>
+						<Button variant="outline" onclick={handleBack}>Mes contrôles</Button>
 					</div>
 				</div>
 			</Card.Content>

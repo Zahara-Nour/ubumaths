@@ -9,7 +9,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { fetchDisplayNumbers } from '$lib/server/worksheets/display-number';
+import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
 import {
 	validateAssignmentParams,
 	validateErrorReportsQuery,
@@ -17,6 +17,9 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/assignments/[assignmentId]/reports/+server');
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -39,12 +42,12 @@ async function verifyTeacherAccess(
 		.single();
 
 	if (worksheetError || !worksheet) {
-		throw error(404, 'Feuille de travail non trouvee');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify ownership (teachers can only access their own worksheets)
 	if (worksheet.created_by !== userId) {
-		throw error(403, 'Acces non autorise a cette feuille de travail');
+		throw error(403, 'Accès refusé à cette fiche');
 	}
 
 	// Fetch assignment and verify it belongs to this worksheet
@@ -56,7 +59,7 @@ async function verifyTeacherAccess(
 		.single();
 
 	if (assignmentError || !assignment) {
-		throw error(404, 'Devoir non trouve');
+		throw error(404, 'Affectation introuvable');
 	}
 
 	return { worksheet, assignment };
@@ -93,7 +96,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		assignmentId: params.assignmentId
 	});
 	if (!paramsValidation.success) {
-		throw error(400, 'Format UUID invalide');
+		throw error(400, 'Identifiant invalide');
 	}
 
 	const { id: worksheetId, assignmentId } = paramsValidation.data;
@@ -117,8 +120,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.eq('assignment_id', assignmentId);
 
 		if (countError) {
-			console.error('[API] Error counting reports:', countError);
-			throw error(500, 'Erreur lors du comptage des signalements');
+			logger.error('[API] Error counting reports:', countError);
+			throw error(500, 'Impossible de compter les signalements');
 		}
 
 		// Calculate counts
@@ -174,22 +177,17 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		const { data: reports, error: fetchError, count: totalFiltered } = await query;
 
 		if (fetchError) {
-			console.error('[API] Error fetching reports:', fetchError);
-			throw error(500, 'Erreur lors de la recuperation des signalements');
+			logger.error('[API] Error fetching reports:', fetchError);
+			throw error(500, 'Impossible de charger les signalements');
 		}
 
-		// Step 3: le NUMÉRO AFFICHÉ de chaque exercice signalé.
-		//
-		// Pas `position` : elle redémarre à 1 dans chaque section, si bien que le
-		// professeur lisait un numéro différent de celui que l'élève lui citait
-		// dans son signalement. Même règle que la fiche et que le PDF.
-		const worksheetExerciseIds = [...new Set((reports ?? []).map((r) => r.worksheet_exercise_id))];
-
-		let exercisePositions: Map<string, number> = new Map();
-
-		if (worksheetExerciseIds.length > 0) {
-			exercisePositions = await fetchDisplayNumbers(locals.supabase, params.id);
-		}
+		// Step 3: le numéro de chaque exercice signalé DANS LA COPIE de son élève
+		// (D6) : celui que l'élève a lu et cite dans son signalement — ordre
+		// mélangé compris. Pas `position`, qui redémarre à 1 dans chaque section.
+		const numbering =
+			(reports ?? []).length > 0
+				? await fetchCopyNumbering(locals.supabase, worksheetId, [assignmentId])
+				: null;
 
 		// Step 4: Transform to TeacherErrorReportView
 		const reportViews: TeacherErrorReportView[] = (reports ?? []).map((report) => {
@@ -200,7 +198,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				id: report.id,
 				assignment_id: report.assignment_id,
 				worksheet_exercise_id: report.worksheet_exercise_id,
-				exercise_position: exercisePositions.get(report.worksheet_exercise_id) ?? 0,
+				// 0 : numéro inconnu (fiche illisible), jamais un numéro faux
+				exercise_position:
+					numbering?.numberOf(assignmentId, report.student_id, report.worksheet_exercise_id) ?? 0,
 				student_id: report.student_id,
 				student_first_name: student?.firstname ?? null,
 				student_last_name: student?.lastname ?? null,
@@ -241,10 +241,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			throw err;
 		}
 
-		console.error(
+		logger.error(
 			'[API] Unexpected error in GET /api/worksheets/[id]/assignments/[assignmentId]/reports:',
 			err
 		);
-		throw error(500, 'Une erreur inattendue est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

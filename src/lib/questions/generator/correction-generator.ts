@@ -21,6 +21,7 @@
 
 import { parseCustomSafe } from '$lib/mathAST';
 import { templateGenericFunctions } from '../generic-functions';
+import { readingOf } from '../formula-reading';
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import type {
 	PedagogicalRenderOptions,
@@ -41,6 +42,10 @@ import {
 import type { IntegrationSchoolLevel } from '$lib/mathAST/pedagogical-integration';
 import { generatePedagogicalSimplifySteps } from '$lib/mathAST/pedagogical-simplify/pipeline';
 import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/renderer';
+import {
+	explainExpansion,
+	type ExplainExpansionOptions
+} from '$lib/mathAST/pedagogical-simplify/expand-explained';
 import {
 	PedagogicalSimplifyNotImplemented,
 	type SimplifyIntent
@@ -328,9 +333,7 @@ function renderArithmeticFromBlank({
 	const expr = instance.expressions?.find((e) => e.name === expressionName);
 	if (!expr || !expr.value) return null;
 
-	const parseResult = parseCustomSafe(expr.value.trim(), {
-		genericFunctions: templateGenericFunctions(instance.genericFunctions)
-	});
+	const parseResult = parseCustomSafe(expr.value.trim(), readingOf(instance));
 	const node =
 		parseResult.ast && cleanCoefficients ? cleanCoefficientsAst(parseResult.ast) : parseResult.ast;
 	if (!node) return null;
@@ -719,6 +722,15 @@ function renderSimplify({
 	const node = parseExpression(expression, instance, cleanCoefficients);
 	if (node === null) return null;
 
+	// `developper` : la rédaction partagée avec l'atelier, jamais la trace du pipeline
+	if (intent === 'developper') {
+		return renderExpansion(node, {
+			schoolLevel,
+			verbosity,
+			pipeline: { variable, enableTrig, enableLogExp, enableAbs }
+		});
+	}
+
 	let result;
 	try {
 		result = generatePedagogicalSimplifySteps(node, {
@@ -740,6 +752,53 @@ function renderSimplify({
 	const renderer = new PedagogicalSimplifyRenderer();
 	const renderOptions: PedagogicalRenderOptions = { schoolLevel, verbosity };
 	return renderer.renderAll(result.steps, renderOptions);
+}
+
+/**
+ * ⚠️ Ni `variable` ni les `enable*` du modèle : la rédaction range toujours les
+ * termes selon x (`MAIN_VARIABLE` d'`expand-order.ts`) — `(2t-1)(t+3)` donne
+ * le même résultat avec ou sans `variable: 't'`.
+ */
+interface ExpansionDispatch {
+	readonly schoolLevel: SchoolLevel;
+	readonly verbosity: 'summarized' | 'detailed';
+	readonly pipeline: ExplainExpansionOptions['pipeline'];
+}
+
+/**
+ * `kind: 'simplify'`, `intent: 'developper'` : les étapes rédigées comme au
+ * tableau par `explainExpansion` — exactement le « Comment ? » de `.développer`
+ * dans l'atelier (décision de David du 2026-10-14, option B : une intention,
+ * une seule rédaction). `summarized` montre la version résumée (chaque ligne
+ * à × fondue dans le calcul qui la suit). Les décimaux suivent l'expression de
+ * l'énoncé : un décimal écrit donne des décimaux, sinon des fractions.
+ *
+ * ⚠️ Repli silencieux au Mode A — comme pour `PedagogicalSimplifyNotImplemented`
+ * — quand il n'y a rien à rédiger : une équation (on développe une
+ * expression), rien à développer, une réponse que le pipeline n'a pas su finir,
+ * ou une rédaction qui renonce (`writeExpandSteps` rend `null` : une somme sous
+ * une fonction, une racine, dans un exposant ou une fraction). JAMAIS de repli
+ * sur la trace du pipeline : produits collés (« 2x1 »), la même ligne jusqu'à
+ * 13 fois, distribution cachée (mesuré le 2026-10-14). La correction écrite
+ * par l'auteur, ou le seul feedback, valent mieux que des étapes illisibles.
+ */
+function renderExpansion(
+	node: MathNode,
+	{ schoolLevel, verbosity, pipeline }: ExpansionDispatch
+): readonly RenderedStep[] | null {
+	if (node.type === 'relation') return null;
+
+	let explained;
+	try {
+		explained = explainExpansion(node, { schoolLevel, pipeline });
+	} catch (err) {
+		// Hors du périmètre du module (matrices, inéquations…) : retour silencieux au Mode A
+		if (err instanceof PedagogicalSimplifyNotImplemented) return null;
+		throw err;
+	}
+
+	if (explained.kind !== 'expanded' || explained.steps === null) return null;
+	return verbosity === 'summarized' ? explained.steps.summarized : explained.steps.detailed;
 }
 
 interface LimitDispatch {
@@ -881,9 +940,7 @@ function parseExpression(
 	cleanCoefficients: boolean
 ): MathNode | null {
 	const resolved = resolveExpression(template, instance.resolvedVariables ?? []);
-	const parseResult = parseCustomSafe(resolved.trim(), {
-		genericFunctions: templateGenericFunctions(instance.genericFunctions)
-	});
+	const parseResult = parseCustomSafe(resolved.trim(), readingOf(instance));
 	if (!parseResult.ast) return null;
 	return cleanCoefficients ? cleanCoefficientsAst(parseResult.ast) : parseResult.ast;
 }
@@ -899,7 +956,11 @@ function resolveForSteps(
 ): string {
 	const resolved = resolveExpression(template, instance.resolvedVariables ?? []).trim();
 	return cleanCoefficients
-		? cleanCoefficientsCustom(resolved, templateGenericFunctions(instance.genericFunctions))
+		? cleanCoefficientsCustom(
+				resolved,
+				templateGenericFunctions(instance.genericFunctions),
+				instance.capitalPairs
+			)
 		: resolved;
 }
 

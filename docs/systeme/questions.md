@@ -9,11 +9,14 @@ couvre:
   - 'src/lib/migration/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
   - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,grading-budget,corrected-detail}.ts'
+  - src/lib/server/exercise-search-indexed.ts
   - src/lib/server/validation/questions.ts
   - 'src/lib/components/questions/**'
   - 'src/lib/components/question-inputs/**'
   - src/lib/components/markdown/nodes/BlankInput.svelte
   - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor}.svelte'
+  - 'src/lib/components/{QuestionTemplateCard,QuestionPreview*,QuestionCategoryFields,QuestionTemplateHelpDialogs,CategorySelector,CartFloatingButton,CartQuestionCard,DisplayOptionsEditor,ValidationOptionsEditor,PrecisionEditor,VariableEditor,AnswerEditor,CourseQuestionToggle}.svelte'
+  - 'src/lib/stores/{questionCart,questionCategories,questionTemplates}.svelte.ts'
   - src/lib/components/exercises/VariationEditor.svelte
   - 'src/routes/api/questions/**'
   - 'src/routes/(protected)/dashboard/admin/questions/**'
@@ -25,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-10.
+> Vérifié contre le code le 2026-10-11.
 
 ## À quoi ça sert
 
@@ -49,28 +52,28 @@ le SRS ([srs.md](srs.md)).
 
 ### `src/lib/questions/` — le moteur des modèles (208 fichiers suivis, 118 fichiers de test)
 
-| Fichier / dossier                                                | Rôle                                                                                                                                                                                                                                                                                                                                                                |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/questions/types.ts`                                     | **Le contrat** : `QuestionTemplate`, `QuestionVariation`, `SharedVariationDefaults`, `TemplateBlank`, `BlankDefaults`, `InstanceBlank`, `QuestionInstance`, `ValidationStatus`, `ConstraintId`, `RequiredForm`, `ValidationRule`, `GeneratedSteps`, `TestSpec`. Aussi `getQuestionType`, `isCourseCard`, `isCourseQuestion`, `mapDbTemplateToForm`.                 |
-| `src/lib/questions/template-schema.ts`                           | Schéma Zod **strict** `questionTemplateSchema` (éditeur JSON, `checkTemplate`).                                                                                                                                                                                                                                                                                     |
-| `src/lib/questions/index.ts`                                     | API publique (`generateInstance`, `resolveVariables`, `shuffleChoices`, `validateTemplate`, ré-export de `$lib/math`).                                                                                                                                                                                                                                              |
-| `generator/`                                                     | Génération : `instance-generator.ts` (`generateInstance`), `variable-resolver.ts`, `condition-evaluator.ts`, `variable-conditionals.ts`, `content-resolver.ts`, `assign-blank-indices.ts`, `choice-shuffler.ts`, `correction-resolver.ts`, `correction-generator.ts` (`generateCorrection`, mode B), `test-instance-builder.ts` (variables fixées, pour les specs). |
-| `validators/`                                                    | Structure d'un modèle : `template-validator.ts` (`validateTemplate`), `choice-answer-count.ts` (`choiceAnswerCountErrors`), `negative-substitution.ts` (`findUnparenthesizedNegatives`, avertissement).                                                                                                                                                             |
-| `intervals/`, `equations/`, `vectors/`, `matrices/`, `calculus/` | Une chaîne de jugement par **nature de case** (`AnswerKind`) : `interval-answer.ts`, `equation-answer.ts`, `vector-answer.ts`, `matrix-answer.ts`, `primitive-answer.ts` + `differential-equation-answer.ts`. Les `keyboard-*.ts` sont les claviers MathLive de ces cases.                                                                                          |
-| `units/`                                                         | Grandeurs : tokenizer, parser, `dimensional.ts`, `validator.ts` (`validateQuantityAnswer`), `student-input.ts`, durées composées (`composite-duration.ts`, `hms.ts`).                                                                                                                                                                                               |
-| `combinatorics/`                                                 | Clavier du dénombrement ; la notation non calculée est jugée par `combinatorial-notation.ts`.                                                                                                                                                                                                                                                                       |
-| `parser/color-parser.ts`, `colors.ts`                            | Couleurs dans les énoncés (palettes ; `colors.ts` sert aussi l'atelier).                                                                                                                                                                                                                                                                                            |
-| `src/lib/questions/required-form-validator.ts`                   | `requiredForm` : `checkRequiredForm`, `requiredFormVerdict` (`ok` / `acceptable` / `violated`), `REQUIRED_FORM_FEEDBACK`. Formes complexes : `complex-forms.ts` (base de `re^{iθ}` : la constante `euler()`).                                                                                                                                                       |
-| `src/lib/questions/validation-rule-evaluator.ts`                 | `validationRules` : `evaluateRule`, `evaluateRules`, `createEvaluationContext`.                                                                                                                                                                                                                                                                                     |
-| `src/lib/questions/constraint-validators.ts`                     | Ancien jeu de contrôles cosmétiques sur le LaTeX brut. **En service : `checkUnit` et `checkReducedFractions` seulement** (voir « Écarts connus »).                                                                                                                                                                                                                  |
-| `src/lib/questions/feedback.ts`, `constraint-constants.ts`       | Messages français des contraintes (`CONSTRAINT_FEEDBACK`), libellés et modes proposés à l'éditeur (`CONSTRAINT_IDS`, `CONSTRAINT_LABELS`).                                                                                                                                                                                                                          |
-| Options de case                                                  | `rounding.ts` (arrondi), `rules-suffice.ts` (`rulesDecide`), `angle-modulo.ts`, `answer-variable-prefix.ts`, `answer-degree-suffix.ts`, `answer-assumptions.ts` (ADR 0012), `generic-functions.ts` (`templateGenericFunctions`), `clean-coefficients.ts` (`cleanCoefficientsAst`).                                                                                  |
-| Sécurité de la réponse                                           | `answer-complexity.ts` (`isAnswerTooComplex`, garde Q58), `student-answer-safety.ts` (réponse rendue chez le prof).                                                                                                                                                                                                                                                 |
-| Correction                                                       | `expected-result.ts` (`buildExpectedResult`, `fillMarkdown`), `expected-result-markdown.ts`, `correction-card-verdict.ts`, `correction-detail.ts` (`splitCorrectionDetail`, `detailedCorrection`, `correctionForPrint` pour les fiches PDF, ADR 0017), `correction-placeholders.ts`, `grade-level-to-school-level.ts` (`gradeLevelToSchoolLevel`).                  |
-| QCM                                                              | `choices.ts` (positions affichées ↔ indices d'origine), `single-answer.ts` (`keepFirstCorrectChoice`).                                                                                                                                                                                                                                                             |
-| Cours                                                            | `course-card.ts` (`excludeCourseCards`), `course-question.ts`.                                                                                                                                                                                                                                                                                                      |
-| Séries et évaluations                                            | `series-items.ts` (`drawSeriesQuestions`, `buildSeriesItems`), `grading.ts` (`gradeQuestion`, `gradeOutOf20`), `public-question.ts` (`toPublicQuestion`, `toDisplayInstance`), `submission.ts`.                                                                                                                                                                     |
-| Catalogue, éditeur, publication                                  | `category-*.ts`, `cart-preview.ts`, `form-options.ts`, `template-put-body.ts`, `bulk-status.ts`, `test-spec-runner.ts` (`runAllTestSpecs`), `constants.ts` (bucket des images).                                                                                                                                                                                     |
+| Fichier / dossier                                                | Rôle                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/questions/types.ts`                                     | **Le contrat** : `QuestionTemplate`, `QuestionVariation`, `SharedVariationDefaults`, `TemplateBlank`, `BlankDefaults`, `InstanceBlank`, `QuestionInstance`, `ValidationStatus`, `ConstraintId`, `RequiredForm`, `ValidationRule`, `GeneratedSteps`, `TestSpec`. Aussi `getQuestionType`, `isCourseCard`, `isCourseQuestion`, `mapDbTemplateToForm`.                                              |
+| `src/lib/questions/template-schema.ts`                           | Schéma Zod **strict** `questionTemplateSchema` (éditeur JSON, `checkTemplate`).                                                                                                                                                                                                                                                                                                                  |
+| `src/lib/questions/index.ts`                                     | API publique (`generateInstance`, `resolveVariables`, `shuffleChoices`, `validateTemplate`, ré-export de `$lib/math`).                                                                                                                                                                                                                                                                           |
+| `generator/`                                                     | Génération : `instance-generator.ts` (`generateInstance`), `variable-resolver.ts`, `condition-evaluator.ts`, `variable-conditionals.ts`, `content-resolver.ts`, `assign-blank-indices.ts`, `choice-shuffler.ts`, `correction-resolver.ts`, `correction-generator.ts` (`generateCorrection`, mode B), `test-instance-builder.ts` (variables fixées, pour les specs).                              |
+| `validators/`                                                    | Structure d'un modèle : `template-validator.ts` (`validateTemplate`), `choice-answer-count.ts` (`choiceAnswerCountErrors`), `negative-substitution.ts` (`findUnparenthesizedNegatives`, avertissement).                                                                                                                                                                                          |
+| `intervals/`, `equations/`, `vectors/`, `matrices/`, `calculus/` | Une chaîne de jugement par **nature de case** (`AnswerKind`) : `interval-answer.ts`, `equation-answer.ts`, `vector-answer.ts`, `matrix-answer.ts`, `primitive-answer.ts` + `differential-equation-answer.ts`. Les `keyboard-*.ts` sont les claviers MathLive de ces cases.                                                                                                                       |
+| `units/`                                                         | Correction des cases à unité : `parser.ts`, `validator.ts` (`validateQuantityAnswer`), `student-input.ts`, durées composées (`composite-duration.ts`), touches du clavier par grandeur (`keyboard-units.ts`, octets compris depuis le 2026-10-13) — contrat : [grandeurs.md](grandeurs.md).                                                                                                      |
+| `combinatorics/`                                                 | Clavier du dénombrement ; la notation non calculée est jugée par `combinatorial-notation.ts`.                                                                                                                                                                                                                                                                                                    |
+| `parser/color-parser.ts`, `colors.ts`                            | Couleurs dans les énoncés (palettes ; `colors.ts` sert aussi l'atelier).                                                                                                                                                                                                                                                                                                                         |
+| `src/lib/questions/required-form-validator.ts`                   | `requiredForm` : `checkRequiredForm`, `requiredFormVerdict` (`ok` / `acceptable` / `violated`), `REQUIRED_FORM_FEEDBACK`. Formes complexes : `complex-forms.ts` (base de `re^{iθ}` : la constante `euler()` ; `i` : le nœud `complex(0, 1)`, lettre comme `\imaginaryI`).                                                                                                                        |
+| `src/lib/questions/validation-rule-evaluator.ts`                 | `validationRules` : `evaluateRule`, `evaluateRules`, `createEvaluationContext`.                                                                                                                                                                                                                                                                                                                  |
+| `src/lib/questions/constraint-validators.ts`                     | Ancien jeu de contrôles cosmétiques sur le LaTeX brut. **En service : `checkUnit` et `checkReducedFractions` seulement** (voir « Écarts connus »).                                                                                                                                                                                                                                               |
+| `src/lib/questions/feedback.ts`, `constraint-constants.ts`       | Messages français des contraintes (`CONSTRAINT_FEEDBACK`), libellés et modes proposés à l'éditeur (`CONSTRAINT_IDS`, `CONSTRAINT_LABELS`).                                                                                                                                                                                                                                                       |
+| Options de case                                                  | `rounding.ts` (arrondi), `rules-suffice.ts` (`rulesDecide`), `angle-modulo.ts`, `answer-variable-prefix.ts`, `answer-degree-suffix.ts`, `answer-assumptions.ts` (ADR 0012), `generic-functions.ts` (`templateGenericFunctions`), `clean-coefficients.ts` (`cleanCoefficientsAst`), `capital-pairs.ts` (sens de `AB`), `formula-reading.ts` (`readingOf`), `figure-name-check.ts` (garde auteur). |
+| Sécurité de la réponse                                           | `answer-complexity.ts` (`isAnswerTooComplex`, garde Q58), `student-answer-safety.ts` (réponse rendue chez le prof).                                                                                                                                                                                                                                                                              |
+| Correction                                                       | `expected-result.ts` (`buildExpectedResult`, `fillMarkdown`), `expected-result-markdown.ts`, `correction-card-verdict.ts`, `correction-detail.ts` (`splitCorrectionDetail`, `detailedCorrection`, `correctionForPrint` pour les fiches PDF, ADR 0017), `correction-placeholders.ts`, `grade-level-to-school-level.ts` (`gradeLevelToSchoolLevel`).                                               |
+| QCM                                                              | `choices.ts` (positions affichées ↔ indices d'origine), `single-answer.ts` (`keepFirstCorrectChoice`).                                                                                                                                                                                                                                                                                           |
+| Cours                                                            | `course-card.ts` (`excludeCourseCards`), `course-question.ts`.                                                                                                                                                                                                                                                                                                                                   |
+| Séries et évaluations                                            | `series-items.ts` (`drawSeriesQuestions`, `buildSeriesItems`), `grading.ts` (`gradeQuestion`, `gradeOutOf20`), `public-question.ts` (`toPublicQuestion`, `toDisplayInstance`), `submission.ts`.                                                                                                                                                                                                  |
+| Catalogue, éditeur, publication                                  | `category-*.ts`, `cart-preview.ts`, `form-options.ts`, `template-put-body.ts`, `bulk-status.ts`, `test-spec-runner.ts` (`runAllTestSpecs`), `constants.ts` (bucket des images).                                                                                                                                                                                                                  |
 
 ### Hors du dossier
 
@@ -91,10 +94,20 @@ le SRS ([srs.md](srs.md)).
 
 Les **exercices** (table `exercises`) sont les exercices rédigés des fiches PDF, pas des modèles
 de question. Ils ont leur propre générateur (`src/lib/exercises/generator/instance-generator.ts`,
-syntaxe `{{}}` d'ubumark), leur export Typst (`typst/exercise-typst-generator.ts`), leur import /
-export validé par Zod (`validation.ts`, `markdown-frontmatter.ts`), la traduction
-(`translation-status.ts`, `translation-draft.ts`), les images (`services/`) et l'avertissement
-`bare-greek-warnings.ts` (`~2pi~` lu 2 × p × i). Démarche d'écriture : [fiches-exercices](../pratiques/fiches-exercices.md).
+syntaxe `{{}}` d'ubumark, résolue dans l'énoncé, la correction et les réponses `answers_md`), leur export Typst (`typst/exercise-typst-generator.ts`), leur import /
+export validé par Zod (`validation.ts`, `markdown-frontmatter.ts` ; le format v2.0 porte aussi
+`generic_functions`, `resources` et `distribution_mode`, pas le slug), la traduction
+(`translation-status.ts`, `translation-draft.ts` : énoncé, correction et réponses `answers_md`), les images (`services/`) et l'avertissement
+`bare-greek-warnings.ts` (`~2pi~` lu 2 × p × i). `isParameterized` (générateur) dit si un
+exercice a des variables, où qu'elles soient (`shared`, niveaux de guidage, ancienne colonne
+`variables`), y compris sur une ligne brute aux colonnes `null`. Démarche d'écriture : [fiches-exercices](../pratiques/fiches-exercices.md).
+
+Visibilité (`Exercise.is_public`, `Exercise.search_indexed`) : un exercice public est lisible par
+son lien (`/exercice/[slug]`) ; il n'est proposé à Google (sitemap, pas de `noindex`) que si le
+professeur coche « Afficher sur Google » (`ExerciseVisibilityFields.svelte`, fenêtre d'alerte avant
+de cocher). La case exige « public » : contrainte en base (23514), refine Zod, et toute écriture qui
+rend un exercice privé écrit `search_indexed: false` dans la même requête
+(`src/lib/server/exercise-search-indexed.ts` ; formulaire, restauration, import).
 
 ### `src/lib/validation/` — schémas partagés client / serveur
 
@@ -109,10 +122,36 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   `MultipleChoiceInput.svelte`, `src/lib/components/markdown/nodes/BlankInput.svelte` (case de texte `[_]`).
 - Affichage et correction : `src/lib/components/questions/` — `QuestionCard.svelte` et
   `FlashCard.svelte` (appellent `validateAnswer`), `CorrectionCard.svelte`, `CorrectionView.svelte`,
-  `ExpectedResultView.svelte`, `GeneratedStepsCorrection.svelte`, `CourseCardView.svelte`,
+  `ExpectedResultView.svelte`, `GeneratedStepsCorrection.svelte` (étapes générées : titre et
+  explication rendus par `InlineMarkdown`, formules entre `$…$` depuis V25), `CourseCardView.svelte`,
   `TestSpecEditor.svelte`.
 - Éditeur : `src/lib/components/QuestionTemplateForm.svelte`, `SharedFieldsEditor.svelte`,
-  `exercises/VariationEditor.svelte`.
+  `exercises/VariationEditor.svelte`. Ses sous-composants, à la racine de `src/lib/components/`
+  (vérifié le 2026-10-13) : `QuestionCategoryFields` (thème / domaine / sous-domaine, options
+  filtrées par `$lib/questions/category-options`, chaque liste est un `CategorySelector` sur
+  `MySelect` avec « Ajouter… »), `VariableEditor`, `AnswerEditor` (cases ou choix de QCM selon le
+  type), `PrecisionEditor` (`none`, `decimal`, `significant`, `magnitude`, `tolerance`) — ces
+  trois-là servent aussi à `SharedFieldsEditor` —, `DisplayOptionsEditor`,
+  `ValidationOptionsEditor`, `CourseQuestionToggle` (`options.courseQuestion`, cochée et
+  désactivée pour une carte de cours), `QuestionPreview` (instance générée, graine affichée, autre
+  graine, choix de la variation, taille d'affichage) et `QuestionTemplateHelpDialogs` (sept fenêtres d'aide statiques).
+- Liste admin (`dashboard/admin/questions/`) : une `QuestionTemplateCard` par modèle (badge de
+  type, « Cours », niveaux ; aperçu, édition, duplication, suppression).
+- Automaths : `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus l'ajout au panier),
+  `CartFloatingButton` (vers `/automaths/panier`), `CartQuestionCard` (tuile d'une catégorie du
+  panier : durée par pas de 5 s entre 5 et 300 s, nombre de questions).
+- Stores (`src/lib/stores/`) :
+  - `questionCart.svelte.ts` (`questionCart`) : le **panier**, des catégories
+    (`theme`, `domain`, `subdomain`, `level`) avec un nombre de questions (1 à 99,
+    `MAX_QUANTITY`) et une durée par question ; persistant en `localStorage`
+    (`chiphre_question_cart`). `replaceWith` / `mergeItems` y chargent une série (lien de série).
+    Ses types `QuestionCategory` et `CartItem` sont repris par les séries, les évaluations et le SRS.
+  - `questionCategories.svelte.ts` (`questionCategoriesCache`) : catégories des modèles
+    (`/api/questions/categories/all`), pour refuser une catégorie déjà prise et proposer le
+    prochain niveau libre dans `QuestionTemplateForm`.
+  - `questionTemplates.svelte.ts` (`questionTemplatesCache`) : modèles publiés
+    (`/api/questions/templates/all`, ou `initializeFromServer` depuis le `load`), sans durée de
+    vie ; lu par les pages Automaths. Les pages admin invalident les deux caches après écriture.
 - Routes : `src/routes/api/questions/` (`templates`, `templates/[id]`, `templates/bulk-status`,
   `generate/[id]`, `categories`), admin `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`
@@ -146,8 +185,8 @@ Le **type** n'est pas déclaré : `getQuestionType` le déduit — `options.cour
   `requiredForm`, `blankDefaults`, `answerFormats`) : la variation **remplace en bloc** la valeur
   de `shared` (`??`), sans fusion champ par champ.
 - `blanks` : par variation seulement.
-- `shared.genericFunctions` et `shared.cleanCoefficients` valent pour tout le modèle (pas de
-  surcharge par variation).
+- `shared.genericFunctions`, `shared.cleanCoefficients` et `shared.capitalPairs` valent pour tout
+  le modèle (pas de surcharge par variation).
 
 ### 3. Génération (`generateInstance(template, seed?)`)
 
@@ -170,6 +209,25 @@ Le **type** n'est pas déclaré : `getQuestionType` le déduit — `options.cour
 8. Correction résolue, puis **mode B** : `generateCorrection` pré-rend les étapes si
    `correction.generatedSteps` est déclaré (voir § 7).
 
+**Sens de deux majuscules collées** (`AB` : longueur du segment ou produit A × B) : résolu **une
+fois** à la génération par `resolveCapitalPairs` (`capital-pairs.ts`), dans l'ordre : déclaration
+`shared.capitalPairs` → contexte (thème `Graphes et matrices`, thème contenant « physique » →
+produit) → **longueur** par défaut. Copié sur l'instance (`QuestionInstance.capitalPairs`, toujours
+présent sur une instance neuve, et dans `toPublicQuestion`). Une instance sans le champ (servie
+avant) est lue comme avant : produit, défaut du parseur. L'éditeur propose « Deux majuscules
+collées (AB) désignent : » et signale une réponse attendue qui contient un nom de figure (`ABC`)
+en mode longueur (`figureNameWarnings`) : elle ne pourrait jamais être acceptée.
+Les **exercices rédigés** n'ont pas de déclaration (Q-J) : `exerciseCapitalPairs(topic)` applique la
+même table de contexte à leur thème (écran : `ExerciseDisplay` prof et élève, `ExerciseModal`,
+`ExerciseForm`, aperçu d'affectation, signalements ; PDF : `generateTypst({ capitalPairs })`).
+Le même sens vaut pour l'**écriture** (lot 5) : formules `$…$` de l'énoncé, des choix et de la
+correction relues en syntaxe maison (`resolveMarkdownContent`, `resolveCorrectionContent`),
+`expectedAnswerLatex`, formats de réponse, coefficients nettoyés, correction rédigée
+(`generateCorrection`, `readingOf(instance)`) et série figée — `AB^2` s'écrit `AB^2`, `ABC` reste
+`ABC`. À l'écran, les cartes (`QuestionCard`, `FlashCard`, `CorrectionCard`, `CourseCardView`,
+`QuestionPreviewBaseCard`) posent le sens par `provideCapitalPairs` pour les `~…~`. Le
+préremplissage n'est pas relu par le parseur (texte LaTeX tel quel).
+
 Qui génère : le navigateur (Automaths `test`, aperçus, `FlashCard`), le SRS (`src/lib/srs/generator.ts`,
 une graine neuve à chaque révision), le serveur pour les évaluations (graine enregistrée par élève)
 et pour une série figée (`src/lib/worksheets/serie-automatismes.ts`, ADR 0011).
@@ -179,7 +237,10 @@ et pour une série figée (`src/lib/worksheets/serie-automatismes.ts`, ADR 0011)
 L'énoncé est du markdown ubumark ; les cases sont des `\placeholder[N]{}` d'un champ MathLive
 (`FillBlanksInput.svelte`) ou des cases de texte (`BlankInput.svelte`, `pool` = autocomplétion
 seulement, ne restreint pas la validation). Le clavier virtuel suit la nature de la case (unités,
-intervalles, vecteurs, matrices, dénombrement).
+intervalles, vecteurs, matrices, dénombrement). Instance en mode longueur : les raccourcis
+MathLive qui transforment deux majuscules (`AA` → ∀, `EE`, `!EE`, `NN`, `ZZ`, `QQ`, `RR`, `CC`,
+`TT`) sont retirés du champ au montage (`MathPrompt`, `withoutCapitalPairShortcuts`) : `AA'` reste
+la longueur AA'. Ailleurs, ils restent.
 
 Natures de réponse :
 
@@ -234,6 +295,12 @@ Contraintes réglables (`options.constraints`, `ConfigurableConstraintId`) : `sp
 `unoptimal_form`, `off` → ignorée. Défaut `warn` (`DEFAULT_CONSTRAINT_MODE`), **sauf `form`,
 `strict`** (`DEFAULT_FORM_CONSTRAINT_MODE`, ADR 0013 : sinon `400+80` passait pour `480`).
 
+**Lecture des formules** : réponse de l'élève et réponse attendue sont lues par le parseur avec la
+même configuration, `readingOf(instance)` (`formula-reading.ts`) : fonctions déclarées et sens de
+`AB` (`capitalPairs`), transmis à `areEquivalent`, `checkForm`, `requiredForm` et à la règle
+`equivalent`. Les chaînes `equation`, `vecteur`, `matrice`, `intervalles`, `calculus` ne le
+reçoivent pas (aucune réponse attendue à majuscules collées en base).
+
 Plusieurs cases : positionnelles par défaut ; `options.orderIndependent` → appariement maximal
 réponses ↔ cases (pas glouton). QCM : `validateChoice`, puis `requiredForm` et contraintes si une
 écriture LaTeX accompagne la réponse. `validateAnswerDetailed` rend le verdict par case / par choix
@@ -260,13 +327,26 @@ d'un QCM (bon / coché à tort / oublié), les remarques de forme. Spécificatio
 `generatedSteps` (déclaratif : `arithmetic`, `arithmetic-from-blank`, `linear-equation`,
 `quadratic-equation`, `linear-inequality`, `quadratic-inequality`, `rational-inequality`,
 `differentiate`, `integrate`, `simplify` + intention, `limit`, `domain`). Les deux peuvent coexister :
-**le mode A l'emporte à l'affichage**.
+**le mode A l'emporte à l'affichage**. Pour `limit`, l'expression et le point passent par
+`dispatchPedagogicalLimit`, qui lit la **syntaxe maison** (`parseCustomSafe` : `(x^2-4)/(x-2)`,
+`e^x/x`, `ln(x)`) et non le LaTeX : `\frac{1}{x}` y est une erreur de lecture, donc un repli
+silencieux sur le mode A (seul le point accepte aussi `\infty`, `+\infty`, `-\infty`).
 
 Mode B : `generateCorrection` résout les variables, appelle le pipeline `pedagogical-*` et range
-les étapes dans `correction._renderedSteps`. Le **niveau** (`options.schoolLevel`, défaut `auto`)
+les étapes dans `correction._renderedSteps`. Si le pipeline lève une erreur (expression
+illisible, dénominateur nul du calcul numérique…), `generateCorrection` la journalise et rend
+l'instance **sans** étapes : la question reste affichable, avec son mode A s'il existe. Le **niveau** (`options.schoolLevel`, défaut `auto`)
 vient de `gradeLevelToSchoolLevel(grades)` : le plus haut niveau des `grades`, `lycee` par défaut.
 La **stratégie** (pas atomiques au collège, combinés au lycée…) est choisie **au rendu** par niveau :
 la même suite d'opérations se rédige différemment. `verbosity` : `summarized` | `detailed`.
+
+`simplify` avec `intent: 'developper'` ne montre **pas** la trace du pipeline (produits collés
+« 2x1 », la même ligne répétée) : il montre la rédaction de `.développer` dans l'atelier,
+`explainExpansion` (`mathAST/pedagogical-simplify/expand-explained.ts`) — une intention, une seule
+rédaction (décision de David du 2026-10-14, option B). `summarized` en donne la version résumée ; un
+décimal écrit dans l'expression donne des décimaux, sinon des fractions. Sans rédaction (équation,
+rien à développer, somme sous une fonction, une racine, dans un exposant ou une fraction) : repli
+silencieux sur le mode A, jamais sur la trace. Tests : `correction-developper.test.ts`.
 
 Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\detail{…}`, les blocs
 `> [!méthode]`, `> [!rappel]`, `> [!attention]` et les spans `{.rappel}`… ; un seul interrupteur
@@ -335,6 +415,12 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
 12. **Mode B échoue en silence** : une exception dans `generateCorrection` est journalisée
     (`console.warn`) et l'instance part sans `_renderedSteps` — l'élève voit la correction sans
     étapes plutôt qu'une erreur.
+13. **Un nombre JS ne se réinjecte jamais par `String(n)` dans une expression relue** : le parseur
+    LaTeX ne lit plus la notation scientifique (`3e-7` = 3e − 7, `e` constante d'Euler), alors que
+    `String(3e-7)` vaut `'3e-7'`. La réponse numérique de l'élève et les variables substituées
+    dans une règle de validation (`validation-rule-evaluator.ts`), comme une durée composée
+    (`units/composite-duration.ts`), passent par `numberToLatexSafe` (`mathAST/common/numeric.ts`,
+    décimal développé). Les règles d'écriture de `{{eval:…}}` : [ubumark.md](ubumark.md).
 
 ## Comment étendre
 
@@ -413,6 +499,12 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - **`constraint-validators.ts` est presque mort** : `checkSpaces`, `checkProducts`, `checkBrackets`,
   `checkZeros`, `checkForm`, `checkNullTerms`, `checkFactorOne`, `checkFactorZero`, `checkSigns`
   ne sont appelés que par leurs tests ; le jugement passe par `cosmetic-transforms.ts`.
+- **Sens de `AB` dans les exercices rédigés** : résolu par leur thème depuis le lot 6
+  (`exerciseCapitalPairs`, voir [exercices.md](exercices.md)) ; une copie de fiche stockée avant
+  garde le produit (Q-L).
+- **Évaluations notées** : le serveur régénère l'instance depuis la graine au moment de corriger ;
+  une copie commencée avant un changement de sens est corrigée avec le sens nouveau (aucune
+  réponse attendue à majuscules collées en base au 2026-10-12 : aucun verdict ne change).
 - **Case graphique (droite graduée)** : `InstanceBlank.type` admet `'graphical'` et
   `graphicalConfig`, mais aucun générateur ne la produit et `NumberLineInput.svelte` n'est importé
   par aucun composant.
@@ -421,3 +513,9 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - `question_templates.type` existe en base, mais le code déduit le type de la structure
   (`getQuestionType`). CONTEXT.md liste encore des types TinyMath (`numerical_exact`…) absents de
   `QuestionType`.
+- **Durées du panier ≠ durées d'une série** : `questionCart.updateDelay` et `CartQuestionCard`
+  bornent à 5..300 s, la série enregistrée accepte jusqu'à `MAX_QUESTION_DELAY_SECONDS` (600).
+  Une série à 600 s chargée par `replaceWith` garde sa durée, mais le premier « − » la ramène à 300.
+- **Contrôles natifs** malgré la règle MySelect / MyCheckbox : `<select>` dans
+  `PrecisionEditor.svelte` et `QuestionPreview.svelte`, `<input type="checkbox">` dans
+  `QuestionPreview.svelte`.

@@ -30,6 +30,9 @@ import {
 	type BulkTemplateRefusal,
 	type BulkUnpublishResult
 } from '$lib/questions/bulk-status';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/questions-bulk-status');
 
 // ============================================================================
 // TYPES
@@ -102,7 +105,7 @@ async function fetchTemplates(supabase: Client, ids: string[]): Promise<Question
 			.select('*')
 			.in('id', part);
 		if (readError) {
-			console.error('Lecture des modèles impossible :', readError);
+			logger.error('Lecture des modèles impossible :', readError);
 			throw error(500, 'Impossible de lire les modèles');
 		}
 		rows.push(...(data ?? []));
@@ -126,7 +129,7 @@ async function fetchPublishedCategories(
 			.order('id')
 			.range(from, from + PAGE_SIZE - 1);
 		if (readError) {
-			console.error('Lecture des modèles publiés impossible :', readError);
+			logger.error('Lecture des modèles publiés impossible :', readError);
 			throw error(500, 'Impossible de vérifier les catégories publiées');
 		}
 		rows.push(...(data ?? []));
@@ -159,7 +162,7 @@ async function updateStatus(
 				conflicts.push(...part);
 				continue;
 			}
-			console.error('Mise à jour du statut impossible :', updateError);
+			logger.error('Mise à jour du statut impossible :', updateError);
 			throw error(500, 'Impossible de modifier le statut des modèles');
 		}
 		updated.push(...(data ?? []).map((row) => ({ id: row.id, title: row.title })));
@@ -183,7 +186,7 @@ function settle(
 			title: row.title,
 			reasons: [
 				conflictIds.has(row.id)
-					? 'la base a refusé le lot : une catégorie est devenue occupée entre-temps, réessaie'
+					? 'la base a refusé le lot : une catégorie est devenue occupée entre-temps, réessayer'
 					: NOT_SAVED
 			]
 		});

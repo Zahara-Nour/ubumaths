@@ -25,6 +25,9 @@ import type { RequestHandler } from './$types';
 import { addWarningsBulkSchema } from '$lib/server/validation/warnings';
 import { addWarningsBulk } from '$lib/server/warnings';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/warnings/bulk/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -54,7 +57,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			added: result.added
 		});
 	} catch (err) {
-		console.error('Error adding warnings (bulk):', err);
+		logger.error('Error adding warnings (bulk):', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

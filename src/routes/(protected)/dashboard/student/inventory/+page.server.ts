@@ -16,6 +16,9 @@ import type { VipCardInstance } from '$lib/types/vip-card';
 import { asStudentVipCards } from '$lib/types/vip-card';
 import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 import { toVipCardTemplate } from '$lib/types/vip-card-admin';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/inventory/+page.server');
 
 /**
  * Represents the complete collection status for a single card template
@@ -44,7 +47,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('sort_order', { ascending: true });
 
 	if (templatesError) {
-		console.error('[inventory] Error fetching templates:', templatesError);
+		logger.error('[inventory] Error fetching templates:', templatesError);
 		return {
 			studentId: user.id,
 			templates: [],
@@ -68,7 +71,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.single();
 
 	if (profileError) {
-		console.error('[inventory] Error fetching profile:', profileError);
+		logger.error('[inventory] Error fetching profile:', profileError);
 		return {
 			studentId: user.id,
 			templates: templates || [],

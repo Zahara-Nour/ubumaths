@@ -8,6 +8,7 @@
 -->
 
 <script lang="ts">
+	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -22,7 +23,6 @@
 		ClipboardList,
 		BookOpen,
 		PenLine,
-		FileQuestion,
 		ArrowRight
 	} from '@lucide/svelte';
 	import type { StudentWorksheetListItem, WorksheetType } from '$lib/types/worksheets';
@@ -37,15 +37,13 @@
 	function getTypeInfo(type: WorksheetType): { icon: typeof FileText; label: string } {
 		switch (type) {
 			case 'worksheet':
-				return { icon: FileText, label: 'Fiche de travail' };
+				return { icon: FileText, label: WORKSHEET_TYPE_LABELS.worksheet };
 			case 'assessment':
-				return { icon: ClipboardList, label: 'Evaluation' };
+				return { icon: ClipboardList, label: WORKSHEET_TYPE_LABELS.assessment };
 			case 'exam':
-				return { icon: GraduationCap, label: lore.learning.exam };
-			case 'quiz':
-				return { icon: FileQuestion, label: 'Quiz' };
+				return { icon: GraduationCap, label: WORKSHEET_TYPE_LABELS.exam };
 			case 'homework':
-				return { icon: PenLine, label: lore.learning.homework };
+				return { icon: PenLine, label: WORKSHEET_TYPE_LABELS.homework };
 			default:
 				return { icon: BookOpen, label: 'Fiche' };
 		}
@@ -62,8 +60,6 @@
 				return 'warning';
 			case 'homework':
 				return 'default';
-			case 'quiz':
-				return 'secondary';
 			default:
 				return 'outline';
 		}

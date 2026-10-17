@@ -32,14 +32,14 @@
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { config } from 'dotenv';
 
 // Load environment variables from .env file
 // This ensures variables are available even before SvelteKit's env module initializes
 config();
 
-const logger = createLogger('rateLimiter');
+const logger = createServerLogger('rateLimiter');
 
 // ============================================================================
 // SERVICE ROLE CLIENT (REQUIRED FOR RATE LIMITING)
@@ -122,6 +122,12 @@ interface RateLimitConfig {
 	key: string;
 	maxAttempts: number;
 	windowSeconds: number;
+	/**
+	 * En cas de panne (erreur RPC, réponse vide, exception) : refuser au lieu de laisser
+	 * passer. Réservé à l'élévation admin (B8) : une panne ne doit pas ouvrir le forçage
+	 * du mot de passe admin, alors qu'elle ne doit pas bloquer la connexion des élèves.
+	 */
+	failClosed?: boolean;
 }
 
 export interface RateLimitResult {
@@ -131,6 +137,12 @@ export interface RateLimitResult {
 }
 
 type UserRole = Database['public']['Enums']['user_role'];
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const ELEVATION_UNAVAILABLE_MESSAGE = 'Élévation indisponible. Réessayer plus tard.';
 
 // ============================================================================
 // CORE RATE LIMITING LOGIC
@@ -146,7 +158,8 @@ type UserRole = Database['public']['Enums']['user_role'];
  *
  * **Fail-Open Strategy**: Database errors return `limited: false` (allows
  * request) to prevent DoS attacks where an attacker crashes the database to
- * block legitimate users.
+ * block legitimate users. Exception : `failClosed` (élévation admin) refuse en
+ * cas de panne, pendant toute la fenêtre.
  *
  * **Nullability note**: the generated Database type marks `current_count` and
  * `expires_at` as non-null, but the SQL function's blocked branch re-fetches
@@ -156,8 +169,12 @@ type UserRole = Database['public']['Enums']['user_role'];
 async function checkRateLimit(
 	config: RateLimitConfig
 ): Promise<{ limited: boolean; expiresAt: Date | null }> {
-	const { key, maxAttempts, windowSeconds } = config;
+	const { key, maxAttempts, windowSeconds, failClosed = false } = config;
 	const supabase = getServiceRoleClient();
+	const onFailure = () =>
+		failClosed
+			? { limited: true, expiresAt: new Date(Date.now() + windowSeconds * 1000) }
+			: { limited: false, expiresAt: null };
 
 	try {
 		const { data, error } = await supabase.rpc('check_and_increment_rate_limit', {
@@ -168,13 +185,13 @@ async function checkRateLimit(
 
 		if (error) {
 			logger.error('Rate limit RPC error:', error);
-			return { limited: false, expiresAt: null }; // Fail open
+			return onFailure();
 		}
 
 		const row = data?.[0];
 		if (!row) {
 			logger.error('Rate limit RPC returned no data', { key: maskKey(key) });
-			return { limited: false, expiresAt: null }; // Fail open
+			return onFailure();
 		}
 
 		if (row.allowed) {
@@ -195,7 +212,7 @@ async function checkRateLimit(
 		};
 	} catch (error) {
 		logger.error('Rate limit error:', error);
-		return { limited: false, expiresAt: null }; // Fail open on exceptions
+		return onFailure();
 	}
 }
 
@@ -206,15 +223,17 @@ async function checkRateLimit(
  * @param maxAttempts - Maximum allowed attempts within window
  * @param windowSeconds - Time window in seconds
  * @param message - User-friendly French error message to return if rate limited
+ * @param failClosed - Refuser en cas de panne (voir {@link RateLimitConfig.failClosed})
  * @returns RateLimitResult with allowed flag, message, and retryAfter
  */
 async function checkRateLimitWithMessage(
 	key: string,
 	maxAttempts: number,
 	windowSeconds: number,
-	message: string
+	message: string,
+	failClosed = false
 ): Promise<RateLimitResult> {
-	const result = await checkRateLimit({ key, maxAttempts, windowSeconds });
+	const result = await checkRateLimit({ key, maxAttempts, windowSeconds, failClosed });
 
 	if (result.limited && result.expiresAt) {
 		const retryAfter = Math.ceil((result.expiresAt.getTime() - Date.now()) / 1000);
@@ -324,7 +343,7 @@ function maskKey(key: string): string {
  * ```typescript
  * const result = await checkLoginRateLimitByIP('192.168.1.1');
  * if (!result.allowed) {
- *   // Display to user: "Trop de tentatives de connexion. Réessayez dans 15 minutes."
+ *   // Display to user: "Trop de tentatives de connexion. Réessayer dans 15 minutes."
  *   return json({ error: result.message }, { status: 429 });
  * }
  * ```
@@ -340,7 +359,7 @@ export async function checkLoginRateLimitByIP(ip: string): Promise<RateLimitResu
 		key,
 		5,
 		900, // 15 minutes
-		'Trop de tentatives de connexion. Réessayez dans 15 minutes.'
+		'Trop de tentatives de connexion. Réessayer dans 15 minutes.'
 	);
 
 	if (!result.allowed) {
@@ -420,7 +439,7 @@ export async function checkLoginRateLimitByEmail(email: string): Promise<RateLim
 		key,
 		3,
 		900, // 15 minutes
-		'Trop de tentatives de connexion pour cet email. Réessayez dans 15 minutes.'
+		'Trop de tentatives de connexion pour cet email. Réessayer dans 15 minutes.'
 	);
 
 	if (!result.allowed) {
@@ -452,7 +471,7 @@ export async function checkLoginRateLimitByEmail(email: string): Promise<RateLim
 export async function checkElevationRateLimitByIP(ip: string): Promise<RateLimitResult> {
 	if (!ip) {
 		logger.warn('Missing IP address for elevation rate limit check');
-		return { allowed: true }; // Fail open rather than blocking legitimate users
+		return { allowed: false, message: ELEVATION_UNAVAILABLE_MESSAGE }; // Fermé (B8)
 	}
 
 	const key = `ratelimit:elevate:ip:${ip}`;
@@ -460,7 +479,8 @@ export async function checkElevationRateLimitByIP(ip: string): Promise<RateLimit
 		key,
 		5,
 		900, // 15 minutes
-		'Trop de tentatives. Réessayez dans 15 minutes.'
+		'Trop de tentatives. Réessayer dans 15 minutes.',
+		true // Fermé en cas de panne (B8)
 	);
 
 	if (!result.allowed) {
@@ -490,7 +510,7 @@ export async function checkElevationRateLimitByIP(ip: string): Promise<RateLimit
 export async function checkElevationRateLimitByEmail(email: string): Promise<RateLimitResult> {
 	if (!email) {
 		logger.warn('Missing email for elevation rate limit check');
-		return { allowed: true }; // Fail open
+		return { allowed: false, message: ELEVATION_UNAVAILABLE_MESSAGE }; // Fermé (B8)
 	}
 
 	// Normalize email to lowercase for consistent tracking
@@ -501,7 +521,8 @@ export async function checkElevationRateLimitByEmail(email: string): Promise<Rat
 		key,
 		3,
 		900, // 15 minutes
-		'Trop de tentatives pour cet email. Réessayez dans 15 minutes.'
+		'Trop de tentatives pour cet email. Réessayer dans 15 minutes.',
+		true // Fermé en cas de panne (B8)
 	);
 
 	if (!result.allowed) {
@@ -569,7 +590,7 @@ export async function checkSignupRateLimitByIP(ip: string): Promise<RateLimitRes
 		key,
 		40,
 		3600, // 1 hour
-		"Trop d'inscriptions depuis ce réseau. Réessayez dans 1 heure."
+		"Trop d'inscriptions depuis ce réseau. Réessayer dans 1 heure."
 	);
 
 	if (!result.allowed) {
@@ -603,7 +624,7 @@ export async function checkSignupRateLimitByEmail(email: string): Promise<RateLi
 		key,
 		3,
 		3600, // 1 hour
-		"Trop de tentatives d'inscription pour cet email. Réessayez dans 1 heure."
+		"Trop de tentatives d'inscription pour cet email. Réessayer dans 1 heure."
 	);
 
 	if (!result.allowed) {
@@ -628,7 +649,7 @@ export async function checkPasswordResetRateLimitByEmail(email: string): Promise
 		key,
 		3,
 		3600,
-		'Trop de demandes de réinitialisation pour cet email. Réessayez dans 1 heure.'
+		'Trop de demandes de réinitialisation pour cet email. Réessayer dans 1 heure.'
 	);
 	if (!result.allowed) {
 		logger.warn('Password-reset rate limit exceeded by email', { email: maskKey(key) });
@@ -649,7 +670,7 @@ export async function checkPasswordResetRateLimitByIP(ip: string): Promise<RateL
 		key,
 		20,
 		3600,
-		'Trop de demandes de réinitialisation. Réessayez plus tard.'
+		'Trop de demandes de réinitialisation. Réessayer plus tard.'
 	);
 	if (!result.allowed) {
 		logger.warn('Password-reset rate limit exceeded by IP', { ip: maskKey(key) });
@@ -726,7 +747,7 @@ export async function checkOAuthRateLimitByIP(ip: string): Promise<RateLimitResu
 		key,
 		100, // High limit for shared school networks
 		900, // 15 minutes
-		'Trop de tentatives OAuth. Réessayez dans 15 minutes.'
+		'Trop de tentatives OAuth. Réessayer dans 15 minutes.'
 	);
 
 	if (!result.allowed) {
@@ -808,7 +829,7 @@ export async function checkChatbotRateLimit(userId: string): Promise<RateLimitRe
 		key,
 		5,
 		900, // 15 minutes
-		'Trop de requêtes au chatbot. Réessayez dans 15 minutes.'
+		'Trop de requêtes au chatbot. Réessayer dans 15 minutes.'
 	);
 
 	if (!result.allowed) {
@@ -902,7 +923,7 @@ export async function checkNotificationCreateRateLimit(
 		key,
 		maxAttempts,
 		windowSeconds,
-		'Vous avez atteint la limite de création de notifications. Veuillez réessayer plus tard.'
+		'Limite de création de notifications atteinte. Réessayer plus tard.'
 	);
 
 	if (!result.allowed) {
@@ -991,7 +1012,7 @@ export async function checkNotificationDeleteRateLimit(
 		key,
 		maxAttempts,
 		windowSeconds,
-		'Vous avez atteint la limite de suppression de notifications. Veuillez réessayer plus tard.'
+		'Limite de suppression de notifications atteinte. Réessayer plus tard.'
 	);
 
 	if (!result.allowed) {
@@ -1073,7 +1094,7 @@ export async function checkNotificationMarkRateLimit(userId: string): Promise<Ra
 		key,
 		30,
 		900, // 15 minutes
-		'Trop de requêtes de marquage. Veuillez patienter quelques instants.'
+		'Trop de requêtes de marquage. Patienter quelques instants.'
 	);
 
 	if (!result.allowed) {
@@ -1117,7 +1138,7 @@ export async function checkKanbanBoardCreateRateLimit(userId: string): Promise<R
 		key,
 		20,
 		3600, // 1 hour
-		'Trop de tableaux créés récemment. Veuillez patienter quelques minutes.'
+		'Trop de tableaux créés récemment. Patienter quelques minutes.'
 	);
 
 	if (!result.allowed) {
@@ -1144,7 +1165,7 @@ export async function checkKanbanColumnMutationRateLimit(userId: string): Promis
 		key,
 		60,
 		3600, // 1 hour
-		'Trop de modifications de colonnes. Veuillez patienter quelques minutes.'
+		'Trop de modifications de colonnes. Patienter quelques minutes.'
 	);
 
 	if (!result.allowed) {
@@ -1172,7 +1193,7 @@ export async function checkKanbanCardMutationRateLimit(userId: string): Promise<
 		key,
 		240,
 		3600, // 1 hour
-		'Trop de modifications de cartes. Veuillez patienter quelques minutes.'
+		'Trop de modifications de cartes. Patienter quelques minutes.'
 	);
 
 	if (!result.allowed) {

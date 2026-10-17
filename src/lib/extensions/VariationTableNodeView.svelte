@@ -352,8 +352,7 @@
 				class:is-invalid={syntaxStatus === 'invalid'}
 				spellcheck="false"
 				autocomplete="off"
-				rows="12"
-			></textarea>
+				rows="12"></textarea>
 			{#if parseErrors.length > 0}
 				<div class="error-messages">
 					{#each parseErrors as error, i (i)}
@@ -443,8 +442,7 @@
 				class="dialog-textarea"
 				spellcheck="false"
 				autocomplete="off"
-				rows="15"
-			></textarea>
+				rows="15"></textarea>
 
 			<div class="dialog-preview">
 				<h4 class="preview-title">Apercu</h4>

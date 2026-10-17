@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
 	import { playerStore } from '$lib/stores/game/player.svelte';
 	import { spellsStore } from '$lib/stores/game/spells.svelte';
 	import { resolve } from '$app/paths';
@@ -64,7 +63,7 @@
 	</section>
 
 	<!-- Main Actions Grid -->
-	<section class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+	<section class="grid gap-6 md:grid-cols-2">
 		<!-- Combat Card -->
 		<a
 			href={resolve('/dashboard/navadra/combat')}
@@ -90,51 +89,5 @@
 				Gérez vos sorts et créez des decks pour le combat. ({stats.totalSpells} sorts)
 			</p>
 		</a>
-
-		<!-- Achievements Card -->
-		<a
-			href="/dashboard/navadra/achievements"
-			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
-		>
-			<div class="mb-4 text-5xl">🏆</div>
-			<h3 class="mb-2 text-xl font-bold text-card-foreground group-hover:text-primary">Succès</h3>
-			<p class="text-sm text-muted-foreground">Consultez vos succès et vos progrès dans le jeu.</p>
-		</a>
-
-		<!-- Leaderboard Card -->
-		<a
-			href="/dashboard/navadra/leaderboard"
-			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
-		>
-			<div class="mb-4 text-5xl">🥇</div>
-			<h3 class="mb-2 text-xl font-bold text-card-foreground group-hover:text-primary">
-				Classement
-			</h3>
-			<p class="text-sm text-muted-foreground">Comparez vos scores avec les autres joueurs.</p>
-		</a>
-
-		<!-- Profile Card -->
-		<a
-			href="/dashboard/navadra/profile"
-			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
-		>
-			<div class="mb-4 text-5xl">👤</div>
-			<h3 class="mb-2 text-xl font-bold text-card-foreground group-hover:text-primary">Profil</h3>
-			<p class="text-sm text-muted-foreground">
-				Consultez votre profil de joueur et vos statistiques détaillées.
-			</p>
-		</a>
 	</section>
-
-	<!-- Tutorial Section (if not completed) -->
-	{#if !playerStore.tutorialCompleted}
-		<section class="mt-8 rounded-lg border border-primary bg-primary/10 p-6">
-			<h2 class="mb-2 text-xl font-bold text-foreground">Tutoriel</h2>
-			<p class="mb-4 text-muted-foreground">
-				Vous n'avez pas encore terminé le tutoriel. Complétez-le pour débloquer toutes les
-				fonctionnalités !
-			</p>
-			<Button href="/dashboard/navadra/tutorial">Continuer le tutoriel</Button>
-		</section>
-	{/if}
 </div>

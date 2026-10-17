@@ -6,10 +6,13 @@ import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 import { unlockSpellSchema } from '$lib/server/validation/navadra';
 import { toGameSpell, toGamePlayer } from '$lib/types/game';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/navadra/spells/+page.server');
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
-	if (!user) throw error(401, 'Unauthorized');
+	if (!user) throw error(401, 'Connexion requise');
 
 	// Fetch player's spells
 	const { data: spells, error: spellsError } = await supabase
@@ -19,7 +22,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 		.order('spell_num', { ascending: true });
 
 	if (spellsError) {
-		console.error('Lecture impossible :', spellsError);
+		logger.error('Lecture impossible :', spellsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -31,7 +34,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 		.order('created_at', { ascending: true });
 
 	if (decksError) {
-		console.error('Lecture impossible :', decksError);
+		logger.error('Lecture impossible :', decksError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -46,7 +49,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 	// ne doit pas se confondre avec une donnée réellement vide.
 	if (activeDeckError && activeDeckError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', activeDeckError);
+		logger.error('Contexte illisible :', activeDeckError);
 	}
 
 	// Fetch game player for pyrs
@@ -59,7 +62,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 	// ne doit pas se confondre avec une donnée réellement vide.
 	if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', gamePlayerError);
+		logger.error('Contexte illisible :', gamePlayerError);
 	}
 
 	// L'écran du grimoire lit les pyrs du joueur dès son en-tête : sans fiche de
@@ -81,7 +84,7 @@ export const actions: Actions = {
 	// Unlock a new spell (for testing - normally unlocked through gameplay)
 	unlockSpell: async ({ request, locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();
-		if (!user) throw error(401, 'Unauthorized');
+		if (!user) throw error(401, 'Connexion requise');
 
 		const formData = await request.formData();
 
@@ -111,7 +114,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (existingSpellError && existingSpellError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', existingSpellError);
+			logger.error('Lecture impossible :', existingSpellError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 

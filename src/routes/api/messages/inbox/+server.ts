@@ -6,6 +6,9 @@ import {
 } from '$lib/server/validation/messages';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/inbox/+server');
 
 /**
  * GET /api/messages/inbox
@@ -41,7 +44,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		});
 
 		if (fetchError) {
-			console.error('Error fetching inbox:', fetchError);
+			logger.error('Error fetching inbox:', fetchError);
 			throw error(500, 'Erreur lors de la récupération de la boîte de réception');
 		}
 
@@ -54,7 +57,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		return json(validated);
 	} catch (err) {
-		console.error('Error in inbox API:', err);
+		logger.error('Error in inbox API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}

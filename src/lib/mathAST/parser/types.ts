@@ -153,9 +153,31 @@ export const DEFAULT_GENERIC_FUNCTIONS: GenericFunctionConfig = {
  * - 'strict': Fails on any invalid input
  * - 'tolerant': Attempts to recover from errors and continue parsing
  */
+/**
+ * Sens de deux majuscules collées (`AB`) :
+ * - `'length'` : la longueur du segment [AB] ; trois ou plus (`ABC`), un nom de figure ;
+ * - `'product'` : le produit `A·B`, comme avant le 2026-10-12.
+ * Le sens se décide par la déclaration de l'auteur, sinon le contexte, sinon le défaut
+ * (`DEFAULT_CAPITAL_PAIRS`) — cf. `docs/archive/wip/longueurs-segments-progress.md`.
+ */
+export type CapitalPairs = 'length' | 'product';
+
+/**
+ * Sens par défaut de deux majuscules collées, quand l'appelant ne dit rien : le
+ * produit d'avant (décision Q-M du 2026-10-12). Seuls les questions (déclaration →
+ * contexte → longueur) et `/test-structure` demandent `'length'` explicitement ;
+ * l'atelier, le grapheur, `pnpm math` et les autres appelants gardent le produit.
+ */
+export const DEFAULT_CAPITAL_PAIRS: CapitalPairs = 'product';
+
 export interface ParserOptions {
 	/** Parser mode: strict fails on errors, tolerant attempts recovery */
 	readonly mode: 'strict' | 'tolerant';
+	/**
+	 * Sens de deux majuscules collées (LaTeX seulement ; la syntaxe maison suivra).
+	 * Absent : `DEFAULT_CAPITAL_PAIRS`.
+	 */
+	readonly capitalPairs?: CapitalPairs;
 	/** Configuration for generic function names (f, g, h) */
 	readonly genericFunctions?: GenericFunctionConfig;
 	/** Security limits for input size, AST depth, and node count */

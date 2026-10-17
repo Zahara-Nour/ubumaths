@@ -262,8 +262,8 @@ PR prévues : (a) bloc `X ~ B(n ; p)` (tableau, indicateurs, `probabilités:`) ;
      calculatrice) ; `arrondi:` pour plus de décimales.
 
 - **Loi binomiale, PR (a) livrée #730** (2026-10-03) : `X ~ B(n ; p)` dans ```loi, calcul exact
-(`statistics/binomial.ts`). Suivant : (b) `diagramme:`, `intervalle:`, `seuil:`, simulation ;
-(c) atelier `.binomiale`. À part : référentiel de Terminale ; autres lois (maths compl.).
+  (`statistics/binomial.ts`). Suivant : (b) `diagramme:`, `intervalle:`, `seuil:`, simulation ;
+  (c) atelier `.binomiale`. À part : référentiel de Terminale ; autres lois (maths compl.).
 
 - **Loi binomiale, PR (b) livrée #736** (2026-10-03) : `diagramme:`, `intervalle:`, `seuil:`, simulation de B(n ; p). Reste : (c) atelier `.binomiale` ; à part : référentiel de Terminale, lois de maths complémentaires.
 
@@ -361,7 +361,7 @@ Manche 14 (2026-10-04), suites des lois — recommandations suivies :
 Manche 15 (2026-10-04), statistique à deux variables (TCOMP-116 → 124) — recommandations suivies :
 
 166. Trois PR : (a) bloc ```nuage (nuage, point moyen, droite des moindres carrés, r,
-prévisions) ; (b) changement de variable ; (c) atelier : `.ajustement` complété.
+     prévisions) ; (b) changement de variable ; (c) atelier : `.ajustement` complété.
 167. `x: …` / `y: …` (lecteur de nombres commun), `nom x:` / `nom y:` titres d'axes ; ≤ 100
      points ; longueurs égales.
 168. Nuage seul par défaut ; `ajustement: affine` (droite de y en x + équation) ;
@@ -385,9 +385,9 @@ Manche 15, PR (c) — atelier, recommandations suivies (2026-10-04) :
 
 - **Manche 15 TERMINÉE** (2026-10-04) — statistique à deux variables (TCOMP-116 → 124) :
   (a) bloc ```nuage #804 (nuage, G, moindres carrés exacts, r, prévisions ; graduations 1-2-5,
-milliers groupés ; revue : boucle des graduations bloquante corrigée) ; (b) changement de
-variable #810 (8 formes, courbe, `nuage: z`; revue : valeurs trop grandes → message, arrondi
-décimal exact) ; (c) atelier`.ajustement` #816 (r au lieu de R², G, prévisions, changement
+  milliers groupés ; revue : boucle des graduations bloquante corrigée) ; (b) changement de
+  variable #810 (8 formes, courbe, `nuage: z`; revue : valeurs trop grandes → message, arrondi
+  décimal exact) ; (c) atelier`.ajustement` #816 (r au lieu de R², G, prévisions, changement
   de variable par écrit ; même arrondi tracé / affiché ; 100 points). Q176 révisée par David :
   la carte ne trace pas la relation ; menu « Ajuster avec… » plus tard, sur besoin.
   Le programme de maths complémentaires a désormais un outil pour chaque partie.

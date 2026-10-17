@@ -56,6 +56,7 @@ Toutes les commandes `pnpm <script>` de `package.json`, par usage. Vérifié con
 | `pnpm check:ubumark`            | Vérifie la syntaxe ubumark des contenus                           |                                                                                                                     |
 | `pnpm check:integration-paths`  | Le filtre `paths` du nightly couvre-t-il la suite d'intégration ? | ~5 s                                                                                                                |
 | `pnpm docs:check-links`         | Liens internes des docs                                           |                                                                                                                     |
+| `pnpm logs:cliquet`             | Cliquet des `console.*` du code serveur, par fichier              | `--maj` abaisse la référence après une migration vers `createServerLogger` (hausse : `--accepter-hausse`)           |
 
 > Déconseillés : `npx tsc --noEmit` et `svelte-check` classique (sans `--incremental` ni `--tsgo`) meurent sur le tas par défaut de Node (~4 Go, exit 134). `check:fast` a été retiré le 2026-10-10.
 

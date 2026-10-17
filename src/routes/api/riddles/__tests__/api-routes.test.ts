@@ -3,7 +3,7 @@
  * Tests submission endpoint and auto-select endpoint
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Import the handlers (we'll mock dependencies)
@@ -24,13 +24,21 @@ vi.mock('$lib/server/riddle-auto-select', () => ({
 	checkAndAutoSelectToday: vi.fn()
 }));
 
+// Client service : `serviceRpc` délègue au `rpc` du mock de chaque test, mais reste un
+// espion distinct — il prouve que la soumission passe par le serveur, pas par l'élève.
+// `serviceFrom` sert `riddle_solutions` : la réponse attendue n'est lisible que par lui.
+const serviceRpc = vi.fn();
+const serviceFrom = vi.fn();
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => ({ rpc: serviceRpc, from: serviceFrom })
+}));
+
 vi.mock('$lib/server/buddy-xp-service', () => ({
 	addBuddyXpFromExercise: vi.fn().mockResolvedValue(null)
 }));
 
 import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
 import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
-import { checkAndAutoSelectToday } from '$lib/server/riddle-auto-select';
 
 describe('POST /api/riddles/[id]/submit', () => {
 	const RIDDLE_UUID = '12345678-1234-4234-8234-123456789012';
@@ -38,6 +46,8 @@ describe('POST /api/riddles/[id]/submit', () => {
 	let mockSupabase: SupabaseClient;
 	let mockSession: { user: { id: string }; session: { access_token: string } };
 	let mockRequest: Request;
+	/** Solutions servies par le client service (`riddle_solutions`). */
+	let solutionRows: Array<{ riddle_id: string; answer: unknown; correction: string }> = [];
 
 	/** Returns a mock for `from('profiles').select('*').eq(id).single()` used by requireAuth */
 	function makeProfileMock() {
@@ -71,6 +81,16 @@ describe('POST /api/riddles/[id]/submit', () => {
 			from: vi.fn(),
 			rpc: vi.fn()
 		} as unknown as SupabaseClient;
+		serviceRpc.mockImplementation((...args: unknown[]) => (mockSupabase.rpc as Mock)(...args));
+		solutionRows = [];
+		serviceFrom.mockImplementation((table: string) => {
+			if (table !== 'riddle_solutions') throw new Error(`table inattendue : ${table}`);
+			return {
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockResolvedValue({ data: solutionRows, error: null })
+				})
+			};
+		});
 	});
 
 	it('should reject unauthenticated requests', async () => {
@@ -114,12 +134,10 @@ describe('POST /api/riddles/[id]/submit', () => {
 		const mockRiddle = {
 			id: RIDDLE_UUID,
 			riddle_number: 10,
-			title: 'Test Riddle',
-			answer: {
-				type: 'numerical',
-				value: 42
-			}
+			title: 'Test Riddle'
 		};
+		const expectedAnswer = { type: 'numerical', value: 42 };
+		solutionRows = [{ riddle_id: RIDDLE_UUID, answer: expectedAnswer, correction: '' }];
 
 		mockRequest = new Request(`http://localhost/api/riddles/${RIDDLE_UUID}/submit`, {
 			method: 'POST',
@@ -191,7 +209,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 		expect(result.success).toBe(true);
 		expect(result.isCorrect).toBe(true);
 		expect(result.message).toContain('Bravo');
-		expect(validateRiddleAnswer).toHaveBeenCalledWith(mockAnswer, mockRiddle.answer);
+		expect(validateRiddleAnswer).toHaveBeenCalledWith(mockAnswer, expectedAnswer);
 	});
 
 	it('should handle automatic validation for incorrect answer', async () => {
@@ -199,12 +217,10 @@ describe('POST /api/riddles/[id]/submit', () => {
 		const mockRiddle = {
 			id: RIDDLE_UUID,
 			riddle_number: 10,
-			title: 'Test Riddle',
-			answer: {
-				type: 'numerical',
-				value: 42
-			}
+			title: 'Test Riddle'
 		};
+		const expectedAnswer = { type: 'numerical', value: 42 };
+		solutionRows = [{ riddle_id: RIDDLE_UUID, answer: expectedAnswer, correction: '' }];
 
 		mockRequest = new Request(`http://localhost/api/riddles/${RIDDLE_UUID}/submit`, {
 			method: 'POST',
@@ -282,9 +298,10 @@ describe('POST /api/riddles/[id]/submit', () => {
 			id: RIDDLE_UUID,
 			riddle_number: 10,
 			title: 'Essay Riddle',
-			created_by: 'teacher-456',
-			answer: null // Manual validation required
+			created_by: 'teacher-456'
 		};
+		// Pas de réponse attendue : validation manuelle.
+		solutionRows = [{ riddle_id: RIDDLE_UUID, answer: null, correction: '' }];
 
 		mockRequest = new Request(`http://localhost/api/riddles/${RIDDLE_UUID}/submit`, {
 			method: 'POST',
@@ -426,6 +443,39 @@ describe('POST /api/riddles/[id]/submit', () => {
 		).rejects.toThrow();
 	});
 
+	it('énigme cachée par la RLS : 404, et le client service ne lit aucune solution', async () => {
+		mockRequest = new Request(`http://localhost/api/riddles/${RIDDLE_UUID}/submit`, {
+			method: 'POST',
+			body: JSON.stringify({ answer: 42 })
+		});
+
+		(mockSupabase.from as Mock).mockReturnValueOnce(makeProfileMock());
+		// La lecture de l'élève ne rend rien : brouillon, énigme d'un autre, non assignée.
+		(mockSupabase.from as Mock).mockReturnValueOnce({
+			select: vi.fn().mockReturnValue({
+				eq: vi.fn().mockReturnValue({
+					single: vi.fn().mockResolvedValue({
+						data: null,
+						error: { code: 'PGRST116', message: 'no rows' }
+					})
+				})
+			})
+		});
+
+		await expect(
+			submitHandler.POST({
+				params: { id: RIDDLE_UUID },
+				request: mockRequest,
+				locals: {
+					supabase: mockSupabase,
+					safeGetSession: async () => mockSession
+				}
+			} as never)
+		).rejects.toMatchObject({ status: 404 });
+		expect(serviceFrom).not.toHaveBeenCalled();
+		expect(serviceRpc).not.toHaveBeenCalled();
+	});
+
 	it('should handle RPC submission errors', async () => {
 		const mockRiddle = {
 			id: 'riddle-123',
@@ -469,10 +519,10 @@ describe('POST /api/riddles/[id]/submit', () => {
 
 	it('should call RPC with correct parameters', async () => {
 		const mockAnswer = 'test answer';
-		const mockRiddle = {
-			id: RIDDLE_UUID,
-			answer: { type: 'text', value: 'test answer' }
-		};
+		const mockRiddle = { id: RIDDLE_UUID };
+		solutionRows = [
+			{ riddle_id: RIDDLE_UUID, answer: { type: 'text', value: 'test answer' }, correction: '' }
+		];
 
 		mockRequest = new Request(`http://localhost/api/riddles/${RIDDLE_UUID}/submit`, {
 			method: 'POST',
@@ -536,155 +586,66 @@ describe('POST /api/riddles/[id]/submit', () => {
 			p_submitted_answer: { value: mockAnswer },
 			p_is_correct: true
 		});
-	});
-});
-
-describe('POST /api/riddles/auto-select-daily', () => {
-	let mockSupabase: SupabaseClient;
-	let mockRequest: Request;
-
-	beforeEach(() => {
-		vi.clearAllMocks();
-
-		mockSupabase = {
-			from: vi.fn()
-		} as unknown as SupabaseClient;
+		// La justesse est écrite par le client service, jamais par le client de l'élève.
+		expect(serviceRpc).toHaveBeenCalledWith('submit_riddle_attempt', expect.anything());
 	});
 
-	// Clear env vars stubbed inside individual tests even if a test times out
-	// before its inline cleanup runs — otherwise a stubbed API key leaks into the
-	// next test and it wrongly returns 401 (flaky cascade). See issue #43.
-	afterEach(() => {
-		vi.unstubAllEnvs();
-	});
+	it('juge avec la solution lue par le client service, pas avec riddles.answer', async () => {
+		// Avant l'étape C, la ligne `riddles` porte encore une ancienne réponse : elle ne
+		// doit plus servir. Seule `riddle_solutions`, lue par le client service, fait foi.
+		const staleRiddle = {
+			id: RIDDLE_UUID,
+			riddle_number: 3,
+			title: 'Périmée',
+			answer: { type: 'numerical', value: 1 }
+		};
+		const solutionAnswer = { type: 'numerical', value: 42 };
+		solutionRows = [{ riddle_id: RIDDLE_UUID, answer: solutionAnswer, correction: 'secrète' }];
 
-	it('should successfully auto-select riddle', async () => {
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST'
+		const riddleSelect = vi.fn().mockReturnValue({
+			eq: vi.fn().mockReturnValue({
+				single: vi.fn().mockResolvedValue({ data: staleRiddle, error: null })
+			})
+		});
+		(mockSupabase.from as Mock).mockImplementation((table: string) => {
+			if (table === 'profiles') return makeProfileMock();
+			if (table === 'riddles') return { select: riddleSelect };
+			if (table === 'riddle_attempts')
+				return {
+					select: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: { id: 'attempt-1', is_correct: true },
+								error: null
+							})
+						})
+					})
+				};
+			throw new Error(`table inattendue côté élève : ${table}`);
+		});
+		(validateRiddleAnswer as Mock).mockReturnValue({ isCorrect: true });
+		(mockSupabase.rpc as Mock).mockResolvedValue({
+			data: [{ attempt_id: 'attempt-1' }],
+			error: null
 		});
 
-		(checkAndAutoSelectToday as Mock).mockResolvedValue({
-			success: true,
-			message: 'Énigme du jour sélectionnée automatiquement: riddle-123'
-		});
-
-		const response = await autoSelectHandler.POST({
-			request: mockRequest,
-			locals: { supabase: mockSupabase }
-		} as never);
-
-		const result = await response.json();
-
-		expect(result.success).toBe(true);
-		expect(result.message).toContain('sélectionnée automatiquement');
-	});
-
-	it('should skip if riddle already exists', async () => {
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST'
-		});
-
-		(checkAndAutoSelectToday as Mock).mockResolvedValue({
-			success: true,
-			message: 'Énigme du jour déjà définie'
-		});
-
-		const response = await autoSelectHandler.POST({
-			request: mockRequest,
-			locals: { supabase: mockSupabase }
-		} as never);
-
-		const result = await response.json();
-
-		expect(result.success).toBe(true);
-		expect(result.message).toBe('Énigme du jour déjà définie');
-	});
-
-	it('should handle auto-selection failure', async () => {
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST'
-		});
-
-		(checkAndAutoSelectToday as Mock).mockResolvedValue({
-			success: false,
-			message: 'Aucune énigme éligible disponible'
-		});
-
-		const response = await autoSelectHandler.POST({
-			request: mockRequest,
-			locals: { supabase: mockSupabase }
-		} as never);
-
-		const result = await response.json();
-
-		expect(result.success).toBe(false);
-		expect(result.message).toBe('Aucune énigme éligible disponible');
-		expect(response.status).toBe(500);
-	});
-
-	it('should validate API key when configured', async () => {
-		// Mock environment variable
-		vi.stubEnv('VITE_RIDDLE_AUTO_SELECT_API_KEY', 'secret-key-123');
-
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST',
-			headers: {
-				Authorization: 'Bearer wrong-key'
+		await submitHandler.POST({
+			params: { id: RIDDLE_UUID },
+			request: new Request(`http://localhost/api/riddles/${RIDDLE_UUID}/submit`, {
+				method: 'POST',
+				body: JSON.stringify({ answer: 42 })
+			}),
+			locals: {
+				supabase: mockSupabase,
+				safeGetSession: async () => mockSession
 			}
-		});
-
-		await expect(
-			autoSelectHandler.POST({
-				request: mockRequest,
-				locals: { supabase: mockSupabase }
-			} as never)
-		).rejects.toThrow();
-
-		vi.unstubAllEnvs();
-	});
-
-	it('should accept valid API key', async () => {
-		vi.stubEnv('VITE_RIDDLE_AUTO_SELECT_API_KEY', 'secret-key-123');
-
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST',
-			headers: {
-				Authorization: 'Bearer secret-key-123'
-			}
-		});
-
-		(checkAndAutoSelectToday as Mock).mockResolvedValue({
-			success: true,
-			message: 'Success'
-		});
-
-		const response = await autoSelectHandler.POST({
-			request: mockRequest,
-			locals: { supabase: mockSupabase }
 		} as never);
 
-		expect(response.status).toBe(200);
-
-		vi.unstubAllEnvs();
-	});
-
-	it('should handle unexpected errors gracefully', async () => {
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST'
-		});
-
-		(checkAndAutoSelectToday as Mock).mockRejectedValue(new Error('Unexpected error'));
-
-		const response = await autoSelectHandler.POST({
-			request: mockRequest,
-			locals: { supabase: mockSupabase }
-		} as never);
-
-		const result = await response.json();
-
-		expect(result.success).toBe(false);
-		expect(result.message).toBe('Erreur serveur');
-		expect(response.status).toBe(500);
+		expect(validateRiddleAnswer).toHaveBeenCalledWith(42, solutionAnswer);
+		expect(serviceFrom).toHaveBeenCalledWith('riddle_solutions');
+		// Le client de l'élève ne lit ni la réponse ni la correction dans `riddles`.
+		const columns = String(riddleSelect.mock.calls[0][0]);
+		expect(columns).not.toMatch(/\*|answer|correction/);
 	});
 });
 

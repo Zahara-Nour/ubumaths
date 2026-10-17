@@ -22,6 +22,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { fetchTagNamesForResources } from '$lib/server/resource-tags';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/presques-evaluations/+page.server');
 
 const STORAGE_BUCKET = 'parody-evaluations';
 
@@ -47,7 +50,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// « Aucune presque évaluation pour le moment. » — indiscernable d'une base
 	// réellement vide, donc invisible pour tout le monde.
 	if (loadError) {
-		console.error('[presques-evaluations:public] Load error:', loadError);
+		logger.error('[presques-evaluations:public] Load error:', loadError);
 		throw error(500, 'Impossible de charger les presques évaluations');
 	}
 

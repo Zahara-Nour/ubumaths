@@ -10,13 +10,16 @@ import type { PageServerLoad } from './$types';
 import type { Database } from '$lib/types/database';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { loadAdminDictionary } from '$lib/server/dictionary/admin';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/dictionnaire/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { supabase } = await requireAdmin(locals);
 	try {
 		return { rows: await loadAdminDictionary(supabase as SupabaseClient<Database>) };
 	} catch (cause) {
-		console.error('[dictionnaire] lecture admin impossible', cause);
+		logger.error('[dictionnaire] lecture admin impossible', cause);
 		throw error(503, 'Dictionnaire indisponible');
 	}
 };

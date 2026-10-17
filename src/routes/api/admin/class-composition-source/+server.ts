@@ -23,6 +23,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { classCompositionSourceSchema } from '$lib/server/validation/admin';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/class-composition-source/+server');
 
 interface CandidateStudent {
 	id: string;
@@ -64,7 +67,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.single();
 
 	if (cibleError && cibleError.code !== 'PGRST116') {
-		console.error('Lecture de la classe de destination impossible :', cibleError);
+		logger.error('Lecture de la classe de destination impossible :', cibleError);
 		throw error(500, 'Impossible de lire la classe de destination');
 	}
 
@@ -94,7 +97,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { data: sources, error: sourcesError } = await sourcesQuery;
 
 	if (sourcesError) {
-		console.error('Lecture des classes sources impossible :', sourcesError);
+		logger.error('Lecture des classes sources impossible :', sourcesError);
 		throw error(500, 'Impossible de lire les classes des années précédentes');
 	}
 
@@ -113,7 +116,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.in('class_id', sourceIds);
 
 	if (adhesionsError) {
-		console.error('Lecture des adhésions sources impossible :', adhesionsError);
+		logger.error('Lecture des adhésions sources impossible :', adhesionsError);
 		throw error(500, 'Impossible de lire les élèves des années précédentes');
 	}
 
@@ -123,7 +126,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.eq('class_id', targetClassId);
 
 	if (dejaError) {
-		console.error('Lecture des adhésions de destination impossible :', dejaError);
+		logger.error('Lecture des adhésions de destination impossible :', dejaError);
 		throw error(500, 'Impossible de lire les élèves déjà inscrits');
 	}
 

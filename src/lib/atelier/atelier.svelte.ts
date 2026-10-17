@@ -16,7 +16,15 @@
  */
 
 import { SvelteMap } from 'svelte/reactivity';
-import { MAX_LISTS, isFunction, isList, isSequence, isValue } from './types';
+import {
+	MAX_DEFINITION_LENGTH,
+	MAX_LISTS,
+	isFunction,
+	isList,
+	isSequence,
+	isValue,
+	parametersOf
+} from './types';
 import { constantOf } from './constant';
 import type {
 	AtelierObject,
@@ -37,10 +45,24 @@ import {
 	derivativeOf,
 	hasObjectNameShape,
 	derivativeName,
-	displayName
+	displayName,
+	reciprocalName,
+	reciprocalOf
 } from './names';
+import {
+	citedReciprocalInterval,
+	citesReciprocal,
+	reciprocalOfFunction,
+	type ReciprocalOutcome
+} from './reciprocal';
 import type { Provenance } from './parse';
-import { parseDefinition, readNumber, referencesOf, renameInDefinition } from './parse';
+import {
+	bareNamesOf,
+	parseDefinition,
+	readNumber,
+	referencesOf,
+	renameInDefinition
+} from './parse';
 import { z } from 'zod';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 import type { ListChartKind } from './chart';
@@ -58,10 +80,48 @@ import {
 	type StoredDisplay
 } from './display';
 import { astOf as astOfDefinition } from './parse';
-import { INTERNAL_LETTER, letterRejection } from './letter';
+import { INTERNAL_LETTER, letterRejection, typedLetterOf } from './letter';
+import {
+	checkInterval,
+	citedIntervals,
+	ONLY_FUNCTIONS,
+	readInterval,
+	type CheckedInterval
+} from './interval';
+import type { Domain } from '$lib/mathAST/domain/types';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { listCitedMessage } from './list-cited';
+import {
+	computeGrid,
+	gridTexts,
+	isFormula,
+	normalizeFormula,
+	plainValue,
+	referencesIn,
+	shiftFormula,
+	type CellValue,
+	type GridState
+} from './formula';
+import {
+	cellName,
+	cellTextFromStored,
+	columnLetter,
+	columnOfLetter,
+	definitionFrom,
+	entriesOf,
+	GRID_COLUMNS,
+	GRID_ROWS,
+	hasTitleRow,
+	isInGrid,
+	MAX_CELL_LENGTH,
+	MAX_TITLE_LENGTH,
+	readCellName,
+	spreadText,
+	storedCellText,
+	type CellEdit
+} from './grid';
 import { transformAST } from '$lib/mathAST/visitor';
+import { planTabulation, type TabulationRequest } from './tabulate';
 
 // =============================================================================
 // Types de retour
@@ -110,6 +170,10 @@ interface RemovalUndo {
 	readonly items: AtelierObject[];
 	readonly charts: [string, ListChartState][];
 	readonly partnerChoices: [string, string][];
+	/** Les cellules sans nom d'avant : retirer un nom y verse la colonne (T3). */
+	readonly cells: [string, string][];
+	/** Les titres d'avant : supprimer une liste vide sa colonne, titre compris. */
+	readonly titles: [number, string][];
 }
 
 export interface Updated {
@@ -136,6 +200,15 @@ export interface RestoreReport {
 	readonly skipped: readonly SkippedObject[];
 }
 
+/** La carte `f⁻¹` créée ou mise à jour, avec ce que le calcul a donné (la ligne de Calcul). */
+export interface ReciprocalCreated {
+	readonly ok: true;
+	readonly object: AtelierObject;
+	/** La carte existait : même intervalle (`same`) ou nouvel intervalle (`updated`). */
+	readonly existed?: 'same' | 'updated';
+	readonly outcome: Extract<ReciprocalOutcome, { ok: true }>;
+}
+
 /** Ce qu'il faut pour créer un objet. Sans `name`, l'atelier en propose un. */
 export interface CreateInput {
 	readonly kind: ObjectKind;
@@ -146,8 +219,20 @@ export interface CreateInput {
 	 * ⚠️ `definition` est déjà en x (voir `letter.ts`).
 	 */
 	readonly letter?: string;
+	/**
+	 * Pour une fonction : l'ensemble écrit après « sur » (`interval.ts`), jugé à
+	 * la création — illisible, vide ou hors du domaine, la création est refusée.
+	 */
+	readonly interval?: string;
+	/** Pour une carte `f⁻¹` : l'intervalle tapé dans `.réciproque f sur I` (relecture). */
+	readonly reciprocalOn?: string;
 	/** Pour une suite : mode, rang et premier terme déjà connus (relecture, Calcul). */
 	readonly sequence?: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>;
+	/**
+	 * Pour une liste : la colonne voulue (relecture, fusion, colonne nommée). Prise,
+	 * ou absente : la première colonne libre.
+	 */
+	readonly column?: number;
 }
 
 // =============================================================================
@@ -288,8 +373,59 @@ function formatSliderValue(value: number, step: number): string {
 
 const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-même.';
 
+const GRID_FULL = 'La grille est pleine : vide une colonne pour créer une liste.';
+
+/** Les gestes de la grille qu'on peut annuler (T6) : au-delà, les plus anciens partent. */
+export const MAX_GRID_UNDO = 100;
+
+const GRID_CHANGED_SINCE =
+	'La grille a changé depuis (une carte, Calcul…) : ce geste ne peut plus être annulé.';
+
+/**
+ * Un geste de la grille (saisie, collage, effacement, titre) : chaque case et
+ * chaque titre, avant et après. Annuler remet `before`, rétablir remet `after`.
+ */
+interface GridGesture {
+	readonly cells: readonly { column: number; row: number; before: string; after: string }[];
+	readonly titles: readonly { column: number; before: string; after: string }[];
+	/** « Relancer » (lot 5, Q-L5-3) : la graine d'avant et d'après. */
+	readonly seed?: { readonly before: number; readonly after: number };
+}
+
+/**
+ * Pourquoi ces entrées ne peuvent pas devenir la colonne d'une liste, ou `null`.
+ *
+ * ⚠️ Une définition plus longue que `MAX_DEFINITION_LENGTH` est écartée à la
+ * relecture (`persistence.ts`) : la liste ET ses cellules disparaîtraient au
+ * rechargement suivant (revue). 200 modalités de 20 caractères suffisent.
+ */
+function definitionTooLong(column: number, entries: readonly string[]): string | null {
+	const length = definitionFrom(entries).length;
+	if (length <= MAX_DEFINITION_LENGTH) return null;
+	return `La colonne ${columnLetter(column)} ferait ${length} caractères : une liste en garde ${MAX_DEFINITION_LENGTH} au plus pour pouvoir être enregistrée.`;
+}
+
 /** Valeur d'un curseur neuf — même convention que `addParameter` du grapheur. */
 const OFFER_DEFINITION = '1';
+
+/**
+ * Une FONCTION ou une SUITE citée comme un nombre (`f(x) = a x` avec
+ * `a(x) = x^2`, V58) : le moteur ne sait pas ce que vaut `a` seul, et
+ * `.dériver f` répondait `a`. La suggestion suit la variable de l'objet qui
+ * cite (`a(t)`, `a(n)`) ; une valeur n'en a pas.
+ */
+function functionAsNumberMessage(cited: AtelierObject, user: AtelierObject): string {
+	const what = cited.kind === 'sequence' ? 'suite' : 'fonction';
+	const variable = isFunction(user) ? (user.letter ?? 'x') : isSequence(user) ? 'n' : null;
+	// Une suite dans une fonction ou une valeur : ses termes, pas u(x)
+	const asTerm = cited.kind === 'sequence' && !isSequence(user);
+	const hint = asTerm
+		? `Écris un de ses termes, comme ${cited.name}(2)`
+		: variable === null
+			? `Écris une de ses valeurs, comme ${cited.name}(2)`
+			: `Écris ${cited.name}(${variable})`;
+	return `« ${cited.name} » est une ${what} : « ${user.name} » ne peut pas s'en servir comme d'un nombre. ${hint}, ou donne un autre nom à la lettre.`;
+}
 
 const brokenMessage = (culprits: readonly string[]) =>
 	culprits.length === 1
@@ -368,6 +504,58 @@ export class Atelier {
 	 */
 	private partnerChoices = new SvelteMap<string, string>();
 
+	/**
+	 * Les cellules des colonnes SANS nom de la grille (vue Données), par adresse
+	 * (`C3`). Celles d'une colonne nommée sont les entrées de la définition de
+	 * sa liste (`grid.ts`) : chaque cellule a un seul propriétaire. Rangées avec
+	 * l'atelier (`serialize`), contrairement aux diagrammes.
+	 */
+	private cells = new SvelteMap<string, string>();
+
+	/** Les titres des colonnes (T4), texte libre, de toute colonne — nommée ou non. */
+	private titles = new SvelteMap<number, string>();
+
+	/**
+	 * L'historique de la grille (T6, exception à D6 limitée à la grille) : pas
+	 * rangé, perdu au rechargement. `gridHistory` dit à la vue ce qui se peut.
+	 */
+	#undo: GridGesture[] = [];
+	#redo: GridGesture[] = [];
+	/** Le geste en cours de composition (un collage : cases PUIS titres), sinon `null`. */
+	#gesture: {
+		cells: GridGesture['cells'][number][];
+		titles: GridGesture['titles'][number][];
+		seed?: { before: number; after: number };
+	} | null = null;
+	/** Annuler ou rétablir écrit sans s'enregistrer comme un nouveau geste. */
+	#replaying = false;
+	gridHistory = $state({ undo: 0, redo: 0 });
+
+	/**
+	 * Les valeurs des FORMULES de la grille (tableur, lot 2), par adresse :
+	 * recalculées à chaque changement de cellule ou d'objet (`#recomputeGrid`).
+	 */
+	#values = $state.raw<ReadonlyMap<string, CellValue>>(new Map());
+	/** Le recalcul précédent : le suivant ne refait que les formules concernées (phase 0 §3). */
+	#gridState: GridState | undefined = undefined;
+	/**
+	 * La graine des tirages de la grille (ALEA, lot 5) : un tirage ne dépend que
+	 * d'elle et de sa place (T8, Q-L5-5) ; rangée, elle redonne les mêmes tirages
+	 * au rechargement et dans le lien (Q-L5-4). « Relancer » la change.
+	 */
+	#seed = newGridSeed();
+	/** Le nombre de formules évaluées par le dernier recalcul (0 : aucune n'était concernée). */
+	lastGridComputed = 0;
+	/** La grille réécrit une colonne nommée : la règle T2 ne s'applique pas à elle-même. */
+	#gridWriting = false;
+
+	/** Les entrées de chaque colonne nommée, une par ligne, relues une fois par changement. */
+	#entriesByColumn = $derived.by(() => {
+		const byColumn = new Map<number, string[]>();
+		for (const o of this.items) if (isList(o)) byColumn.set(o.column, entriesOf(o.definition));
+		return byColumn;
+	});
+
 	/** La dernière suppression en cascade, tant qu'elle peut s'annuler (lot B, N4). */
 	#lastRemoval: RemovalUndo | null = null;
 
@@ -384,6 +572,19 @@ export class Atelier {
 	 */
 	#laws = new Map<string, string>();
 
+	/** Les objets dont la ligne est fautive, posés par `recomputeAll` (V58). */
+	#miswritten: ReadonlySet<string> = new Set();
+
+	/**
+	 * L'objet est-il en erreur à cause de SA ligne — illisible, circulaire, ou
+	 * une fonction citée comme un nombre (V58) ? Faux pour un objet qui suit
+	 * un autre objet en erreur, ou que l'atelier ne sait pas encore traiter :
+	 * ce n'est pas sa définition qu'il faut corriger.
+	 */
+	isMiswritten(name: string): boolean {
+		return this.#miswritten.has(name);
+	}
+
 	get objects(): readonly AtelierObject[] {
 		return this.items;
 	}
@@ -397,8 +598,10 @@ export class Atelier {
 	 * noms réels — tout déclarer casserait la lecture de `zzz(x)`.
 	 */
 	get functionNames(): readonly string[] {
+		// `f^-1` n'est pas un nom que le parseur sait lire : la carte `f⁻¹` ne se
+		// cite pas (lot 3 de la réciproque)
 		return this.items
-			.filter((o) => o.kind === 'function' || o.kind === 'sequence')
+			.filter((o) => (o.kind === 'function' || o.kind === 'sequence') && !reciprocalOf(o.name))
 			.map((o) => o.name);
 	}
 
@@ -435,6 +638,18 @@ export class Atelier {
 				message: `Un atelier ne peut pas contenir plus de ${MAX_LISTS} listes.`
 			};
 		}
+		// Une liste EST une colonne de la grille (T1) : la voulue si elle est libre,
+		// sinon la première libre
+		let column: number | undefined;
+		if (input.kind === 'list') {
+			// Une colonne DEMANDÉE (relecture, fusion, colonne nommée) peut porter un
+			// titre : il est le sien ; la recherche d'une colonne libre les évite
+			column =
+				input.column !== undefined && this.#holdsNoData(input.column)
+					? input.column
+					: this.#firstFreeColumn();
+			if (column === undefined) return { ok: false, message: GRID_FULL };
+		}
 
 		let name: string;
 		if (input.name === undefined) {
@@ -456,6 +671,24 @@ export class Atelier {
 				return { ok: false, message: nameRejectionMessage('taken', input.name) };
 			}
 			name = input.name;
+		} else if (reciprocalOf(input.name) !== null) {
+			// La carte `f⁻¹` se CALCULE depuis f (`#reciprocals`) : une définition
+			// rangée (lien, sauvegarde) est ignorée, l'intervalle tapé est gardé
+			if (input.kind !== 'function') {
+				return {
+					ok: false,
+					message: `${displayName(input.name)} est la réciproque de ${reciprocalOf(input.name)} : elle se calcule, elle ne se définit pas.`
+				};
+			}
+			if (this.names.includes(input.name)) {
+				return { ok: false, message: nameRejectionMessage('taken', input.name) };
+			}
+			this.items.push({
+				...this.build(input.name, 'function', '', 'text'),
+				...(input.reciprocalOn !== undefined && { reciprocalOn: input.reciprocalOn })
+			} as AtelierObject);
+			this.recomputeAll();
+			return { ok: true, object: this.get(input.name)! };
 		} else {
 			const rejection = validateName(input.name, this.names);
 			if (rejection) return { ok: false, message: nameRejectionMessage(rejection, input.name) };
@@ -470,7 +703,20 @@ export class Atelier {
 			if (refused !== null) return { ok: false, message: refused };
 		}
 
-		const built = this.build(name, input.kind, definition, provenance, letter);
+		let interval: string | undefined;
+		if (input.interval !== undefined) {
+			const checked = this.#checkedInterval(
+				input.kind,
+				input.interval,
+				definition,
+				provenance,
+				letter
+			);
+			if (!checked.ok) return { ok: false, message: checked.message };
+			interval = checked.interval;
+		}
+
+		const built = this.build(name, input.kind, definition, provenance, letter, interval, column);
 		this.items.push(
 			isSequence(built) && input.sequence
 				? { ...built, ...sequenceSettings(input.sequence, built) }
@@ -494,7 +740,16 @@ export class Atelier {
 		if (base.kind !== 'function') {
 			return { ok: false, message: `Seule une fonction se dérive : « ${name} » n'en est pas une.` };
 		}
-		if (base.status !== 'ok') {
+		if (reciprocalOf(name) !== null) {
+			return {
+				ok: false,
+				message: `${displayName(name)} n'a pas de carte dérivée : tape .dériver suivi de sa formule.`
+			};
+		}
+		// Une fonction à paramètre (`f(x) = a x`) se dérive comme `.dériver f`
+		// (Q4, David, 2026-10-14) : sa carte f′ attend a, comme f
+		const parameterized = parametersOf(base) !== null;
+		if (base.status !== 'ok' && !parameterized) {
 			// Le message de l'objet d'abord : une fonction EN ATTENTE n'est pas
 			// illisible, elle attend un nom (`a`) — le dire autrement serait faux
 			return {
@@ -518,12 +773,70 @@ export class Atelier {
 		if (!created.ok) return created;
 		// E3 : une dérivée qui ne se calcule pas ne laisse pas de carte en erreur
 		// (`recomputeAll` l'a passée en erreur : voir `#underivable`)
-		if (this.get(derived)?.status !== 'ok') {
+		const card = this.get(derived);
+		if (card === undefined || (card.status !== 'ok' && parametersOf(card) === null)) {
 			this.remove(derived);
 			return { ok: false, message: `La dérivée de « ${displayName(name)} » ne se calcule pas.` };
 		}
 		if (base.plotted) this.setPlotted(derived, true);
 		return { ok: true, object: this.get(derived)! };
+	}
+
+	/**
+	 * La réciproque de f telle que `f⁻¹` tapé dans Calcul la calcule, à la volée
+	 * (`engine.ts`) : sur l'intervalle tapé pour la carte `f⁻¹` quand elle
+	 * existe, pour que la carte et `f⁻¹(5)` disent la même chose.
+	 */
+	reciprocalOutcome(base: string): ReciprocalOutcome {
+		const card = this.get(reciprocalName(base));
+		return reciprocalOfFunction(
+			this,
+			base,
+			card !== undefined && isFunction(card) ? card.reciprocalOn : undefined
+		);
+	}
+
+	/**
+	 * Créer — ou mettre à jour — la carte `f⁻¹` (lot 3 de
+	 * `docs/wip/atelier-reciproque-phase0.md`, R1).
+	 *
+	 * Refusée sans carte quand f n'a pas de réciproque (constante, non bijective,
+	 * le moteur ne sait pas) : le refus dit pourquoi. La carte SUIT f
+	 * (`#reciprocals`) ; elle est tracée d'office si f l'est, comme `f′`.
+	 *
+	 * @param on - l'intervalle tapé après « sur » ; croisé avec celui de f
+	 */
+	createReciprocal(base: string, on?: string): ReciprocalCreated | (Refused & { formulas?: true }) {
+		// Sans « sur » (le bouton), la carte existante garde l'intervalle tapé avant
+		const existing = this.get(reciprocalName(base));
+		const wanted =
+			on ?? (existing !== undefined && isFunction(existing) ? existing.reciprocalOn : undefined);
+		const outcome = reciprocalOfFunction(this, base, wanted);
+		if (!outcome.ok) return outcome;
+		// `sur ℝ` ne restreint rien : rien à ranger
+		const owner = this.get(base)!;
+		const read = wanted === undefined ? null : readInterval(wanted, typedLetterOf(this, owner));
+		const kept = read === null || (read.ok && read.domain === null) ? undefined : wanted!.trim();
+		const name = reciprocalName(base);
+		const index = this.items.findIndex((o) => o.name === name);
+		if (index !== -1) {
+			const current = this.items[index];
+			const same = isFunction(current) && current.reciprocalOn === kept;
+			if (!same && isFunction(current)) {
+				const { reciprocalOn: _dropped, ...rest } = current;
+				this.items[index] = kept === undefined ? rest : { ...rest, reciprocalOn: kept };
+				this.recomputeAll();
+			}
+			return { ok: true, object: this.get(name)!, existed: same ? 'same' : 'updated', outcome };
+		}
+		const created = this.create({
+			kind: 'function',
+			name,
+			...(kept !== undefined && { reciprocalOn: kept })
+		});
+		if (!created.ok) return created;
+		if (owner.plotted) this.setPlotted(name, true);
+		return { ok: true, object: this.get(name)!, outcome };
 	}
 
 	// ---------------------------------------------------------------------------
@@ -611,6 +924,21 @@ export class Atelier {
 	// ---------------------------------------------------------------------------
 
 	/**
+	 * L'ensemble à ranger pour une fonction (I3 : dans son domaine), ou le refus.
+	 * `sur ℝ` ne range rien. Une valeur, une suite, une liste n'en ont pas.
+	 */
+	#checkedInterval(
+		kind: ObjectKind,
+		written: string,
+		definition: string,
+		provenance: Provenance,
+		letter: string | undefined
+	): CheckedInterval {
+		if (kind !== 'function') return { ok: false, message: ONLY_FUNCTIONS };
+		return checkInterval(written, definition, provenance, this.functionNames, letter);
+	}
+
+	/**
 	 * Le refus d'un nom qui est la LETTRE d'une fonction (`t` après `f(t)`), ou
 	 * `null`. Sinon la carte de `f` montrerait `t` pour deux choses à la fois.
 	 */
@@ -653,6 +981,19 @@ export class Atelier {
 				message: `${displayName(from)} suit ${ownDerivative.base} : c'est ${ownDerivative.base} qu'on renomme, et sa dérivée suit.`
 			};
 		}
+		const ownReciprocal = reciprocalOf(from);
+		if (ownReciprocal !== null) {
+			return {
+				ok: false,
+				message: `${displayName(from)} suit ${ownReciprocal} : c'est ${ownReciprocal} qu'on renomme, et sa réciproque suit.`
+			};
+		}
+		if (this.names.includes(reciprocalName(from)) && this.names.includes(reciprocalName(to))) {
+			return {
+				ok: false,
+				message: `${displayName(reciprocalName(to))} existe déjà : renommer « ${from} » en « ${to} » en ferait deux.`
+			};
+		}
 		// Revue du lot 3a, B2 : les dérivées de `from` prennent le nom de `to` —
 		// jamais celui d'un objet qui existe déjà (une `f′` restée orpheline)
 		for (const o of this.items) {
@@ -690,13 +1031,19 @@ export class Atelier {
 			const renamed = `${to}${"'".repeat(derivative.order)}`;
 			this.items[i] = { ...o, name: renamed, definition: `${renamed}(x)` } as AtelierObject;
 		});
+		// La réciproque aussi : `f⁻¹` devient `h⁻¹` (sa formule se recalcule)
+		this.items.forEach((o, i) => {
+			if (reciprocalOf(o.name) === from) this.items[i] = { ...o, name: reciprocalName(to) };
+		});
 
 		// Les définitions qui citaient l'ancien nom suivent : c'est ce qu'attend
 		// un élève, et on le lui dit en rendant la liste. L'objet renommé n'y
 		// figure pas — il n'a pas été « mis à jour », il a été renommé.
 		const updated: string[] = [];
 		this.items.forEach((o, i) => {
-			if (o.name === to || derivativeOf(o.name)?.base === to) return;
+			if (o.name === to || derivativeOf(o.name)?.base === to || reciprocalOf(o.name) !== null) {
+				return;
+			}
 			const rewritten = this.#renamedIn(o, from, to);
 			// Le premier terme d'une suite peut citer la valeur renommée (S1)
 			const firstTerm = isSequence(o) && o.firstTerm === from ? to : undefined;
@@ -732,15 +1079,27 @@ export class Atelier {
 	/**
 	 * @param letter - Pour une fonction : la lettre de l'élève, ou `undefined`
 	 *   pour garder la sienne. ⚠️ `definition` est déjà en x (`letter.ts`).
+	 * @param interval - Pour une fonction : l'ensemble écrit après « sur », `null`
+	 *   pour le retirer (I6), `undefined` pour garder le sien.
 	 */
 	update(
 		name: string,
 		definition: string,
 		provenance: Provenance = 'url',
-		letter?: string
+		letter?: string,
+		interval?: string | null
 	): Updated | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return { ok: false, message: `« ${name} » n'existe pas.` };
+		// T2 (tableur) : une colonne qui contient des formules se modifie dans la
+		// grille, jamais par sa carte ni par `L = …`
+		const current = this.items[index];
+		if (isList(current) && !this.#gridWriting && entriesOf(current.definition).some(isFormula)) {
+			return {
+				ok: false,
+				message: `${name} est calculée dans la grille : modifie ses cellules dans l’onglet Données.`
+			};
+		}
 		if (letter !== undefined) {
 			const refused = letterRejection(
 				letter,
@@ -756,12 +1115,30 @@ export class Atelier {
 		// courbe. Même famille que le curseur écrasé (revue #334, point 7) : tout
 		// état d'affichage ajouté ici devra être reporté là.
 		const previous = this.items[index];
+		const keptLetter = letter ?? (isFunction(previous) ? previous.letter : undefined);
+		const wanted =
+			interval === undefined ? (isFunction(previous) ? previous.interval : undefined) : interval;
+		let keptInterval: string | undefined;
+		if (wanted !== null && wanted !== undefined) {
+			const checked = this.#checkedInterval(
+				previous.kind,
+				wanted,
+				definition,
+				provenance,
+				keptLetter
+			);
+			if (!checked.ok) return { ok: false, message: checked.message };
+			keptInterval = checked.interval;
+		}
 		const rebuilt = this.build(
 			name,
 			previous.kind,
 			definition,
 			provenance,
-			letter ?? (isFunction(previous) ? previous.letter : undefined)
+			keptLetter,
+			keptInterval,
+			// Une liste redéfinie (carte, `L = …`) garde sa colonne : T2
+			isList(previous) ? previous.column : undefined
 		);
 		// K3 (dette n° 2) : le curseur réglé survit à la définition — `build()`
 		// en fabrique un neuf, qu'on remplace par l'ancien, élargi si besoin (L1)
@@ -808,6 +1185,7 @@ export class Atelier {
 
 		const broken = this.allDependents(name);
 		this.items.splice(index, 1);
+		this.#forgetGridHistory();
 		this.charts.delete(name);
 		// Les diagrammes dont elle donnait les effectifs disparaissent avec elle :
 		// sinon, une liste recréée sous ce nom s'y rattacherait en silence
@@ -842,6 +1220,17 @@ export class Atelier {
 	 * Le reçu rendu permet UNE annulation, tant que rien d'autre n'a changé.
 	 */
 	removeWithDependents(name: string): RemovedWithDependents | Refused {
+		return this.#removeWithDependents(name);
+	}
+
+	/**
+	 * @param unnamed - Retirer le NOM d'une colonne : ce qui fait partie du même
+	 *   geste (y verser ses cellules), fait avant de noter la révision — sinon
+	 *   « Annuler » se croirait dépassé par un changement venu d'ailleurs. Sans
+	 *   lui, c'est une suppression : les colonnes des listes supprimées sont
+	 *   vidées, titre compris (T3).
+	 */
+	#removeWithDependents(name: string, unnamed?: () => void): RemovedWithDependents | Refused {
 		if (this.get(name) === undefined) {
 			return { ok: false, message: `« ${displayName(name)} » n'existe pas.` };
 		}
@@ -855,11 +1244,20 @@ export class Atelier {
 		const partnerChoices = [...this.partnerChoices].filter(
 			([list, partner]) => gone.has(list) || gone.has(partner)
 		);
+		const cells = [...this.cells];
+		const titles = [...this.titles];
+		const columns = this.items.flatMap((o) => (isList(o) && gone.has(o.name) ? [o.column] : []));
 
 		this.items = this.items.filter((o) => !gone.has(o.name));
 		for (const [list] of charts) this.charts.delete(list);
 		for (const [list] of partnerChoices) this.partnerChoices.delete(list);
 		this.recomputeAll();
+		if (unnamed !== undefined) unnamed();
+		else for (const column of columns) this.titles.delete(column);
+		// Une suppression FERME l'historique de la grille : annuler un geste plus
+		// ancien changerait la révision, et la suppression ne pourrait plus
+		// s'annuler — ses objets seraient perdus (revue de la PR 3a)
+		this.#forgetGridHistory();
 
 		const receipt: RemovedWithDependents = { ok: true, removed };
 		this.#lastRemoval = {
@@ -867,7 +1265,9 @@ export class Atelier {
 			revision: this.revision,
 			items,
 			charts: $state.snapshot(charts) as [string, ListChartState][],
-			partnerChoices
+			partnerChoices,
+			cells,
+			titles
 		};
 		return receipt;
 	}
@@ -882,6 +1282,12 @@ export class Atelier {
 		if (undo === null || undo.receipt !== receipt || undo.revision !== this.revision) return false;
 		this.#lastRemoval = null;
 		this.items = undo.items;
+		// Les cellules sans nom d'avant : une colonne dont on avait retiré le nom
+		// redevient la liste, sans garder une copie de ses cellules dans la grille
+		this.cells.clear();
+		for (const [address, text] of undo.cells) this.cells.set(address, text);
+		this.titles.clear();
+		for (const [column, title] of undo.titles) this.titles.set(column, title);
 		// Un diagramme remis entre-temps (hors `revision`, Q37) prime sur l'ancien
 		for (const [list, chart] of undo.charts) {
 			if (!this.charts.has(list)) this.charts.set(list, chart);
@@ -935,6 +1341,533 @@ export class Atelier {
 	}
 
 	// ---------------------------------------------------------------------------
+	// Grille (vue Données) — tableur intégré, lot 1
+	// ---------------------------------------------------------------------------
+
+	/** La colonne de la liste `name`, ou `undefined` si ce n'est pas une liste. */
+	columnOf(name: string): number | undefined {
+		const object = this.get(name);
+		return object !== undefined && isList(object) ? object.column : undefined;
+	}
+
+	/** La liste qui occupe cette colonne, s'il y en a une. */
+	listAt(column: number): ListObject | undefined {
+		return this.items.find((o): o is ListObject => isList(o) && o.column === column);
+	}
+
+	/**
+	 * Ce que vaut une cellule : rien, un nombre (exact ou approché), un mot, ou
+	 * une erreur avec sa phrase. Une formule vaut ce que le moteur a calculé.
+	 */
+	cellValue(column: number, row: number): CellValue {
+		const text = this.cell(column, row);
+		if (!isFormula(text)) return plainValue(text);
+		return this.#values.get(cellName(column, row)) ?? { kind: 'empty' };
+	}
+
+	/**
+	 * Le nombre de formules, HORS de la colonne de la liste `name`, qui se
+	 * videront si la liste est supprimée (T3, T5) : celles qui citent une de ses
+	 * cases remplies, et celles qui en dépendent en chaîne — la confirmation le dit.
+	 */
+	citingCells(name: string): number {
+		const column = this.columnOf(name);
+		if (column === undefined) return 0;
+		const letter = columnLetter(column);
+		const texts = gridTexts(this.#entriesByColumn, this.cells);
+		// Les cases de la colonne qui ont aujourd'hui une valeur : elles disparaîtront
+		const vanishing = new Set([...texts.keys()].filter((address) => address.startsWith(letter)));
+		// Puis, de proche en proche, les formules d'AUTRES colonnes qui en dépendent
+		// (C1 = B1, B1 = A1 : les deux se vident) — seulement celles qui ont une
+		// valeur aujourd'hui : une formule déjà vide ne change pas (revue)
+		const counted = new Set<string>();
+		let grew = true;
+		while (grew) {
+			grew = false;
+			for (const [address, text] of texts) {
+				if (vanishing.has(address) || address.startsWith(letter)) continue;
+				if (!referencesIn(text).some((ref) => vanishing.has(ref))) continue;
+				vanishing.add(address);
+				const at = readCellName(address);
+				if (at !== null && this.cellValue(at.column, at.row).kind !== 'empty') counted.add(address);
+				grew = true;
+			}
+		}
+		return counted.size;
+	}
+
+	/** Le texte brut d'une cellule (ligne 1 à 200), `''` si elle est vide. */
+	cell(column: number, row: number): string {
+		const entries = this.#entriesByColumn.get(column);
+		if (entries !== undefined) return entries[row - 1] ?? '';
+		return this.cells.get(cellName(column, row)) ?? '';
+	}
+
+	/** Le titre d'une colonne (T4), `''` sans titre. */
+	titleOf(column: number): string {
+		return this.titles.get(column) ?? '';
+	}
+
+	/** Poser le titre d'une colonne ; vide, le retirer. */
+	setTitle(column: number, text: string): { ok: true } | Refused {
+		if (!isInGrid(column, 1)) {
+			return { ok: false, message: 'Cette colonne est hors de la grille (A à Z).' };
+		}
+		const title = text.trim();
+		if (title.length > MAX_TITLE_LENGTH) {
+			return { ok: false, message: `Un titre garde au plus ${MAX_TITLE_LENGTH} caractères.` };
+		}
+		if (title === this.titleOf(column)) return { ok: true };
+		this.#record({ cells: [], titles: [{ column, before: this.titleOf(column), after: title }] });
+		if (title === '') this.titles.delete(column);
+		else this.titles.set(column, title);
+		this.revision++;
+		return { ok: true };
+	}
+
+	/**
+	 * Coller un tableau à partir d'une cellule (§4), tout ou rien. Une première
+	 * ligne de mots au-dessus de nombres devient les titres des colonnes (T4).
+	 * Un tableau qui déborde de A1-Z200 est refusé ENTIER, avec sa taille :
+	 * jamais tronqué en silence (Q3).
+	 */
+	pasteTable(
+		column: number,
+		row: number,
+		table: readonly (readonly string[])[],
+		/**
+		 * Copié DANS la grille, depuis cette case : les formules se décalent comme
+		 * une recopie (Q-L2-4), et aucune ligne de titres n'est devinée.
+		 */
+		origin?: { readonly column: number; readonly row: number }
+	): { ok: true } | Refused {
+		if (origin !== undefined) {
+			table = table.map((cells) =>
+				cells.map((text) => shiftFormula(text, column - origin.column, row - origin.row))
+			);
+		}
+		const titles = origin === undefined && hasTitleRow(table) ? table[0] : null;
+		const body = titles === null ? table : table.slice(1);
+		const width = Math.max(titles?.length ?? 0, ...body.map((cells) => cells.length));
+		if (width === 0) return { ok: true };
+		if (column + width > GRID_COLUMNS) {
+			return {
+				ok: false,
+				message: `${width} colonnes à partir de la colonne ${columnLetter(column)} : la grille s’arrête à la colonne Z. Rien n’a été collé.`
+			};
+		}
+		if (row + body.length - 1 > GRID_ROWS) {
+			return {
+				ok: false,
+				message: `${body.length} lignes à partir de la ligne ${row} : la grille en garde ${GRID_ROWS}. Rien n’a été collé.`
+			};
+		}
+		const single = body.length === 1 && body[0].length === 1 && titles === null;
+		// Une case seule avec « ; » se répartit vers le bas, comme tapée (P2). Dans
+		// un tableau, une case avec « ; » est refusée : la relire `3,4` en ferait
+		// un faux nombre, la répartir écraserait les lignes du dessous (revue)
+		// (une formule garde son « ; » : il sépare des arguments, `=max(1 ; A1)`)
+		const withSemicolon = single
+			? undefined
+			: body.flat().find((text) => text.includes(';') && !isFormula(text));
+		if (withSemicolon !== undefined) {
+			return {
+				ok: false,
+				message: `La case « ${withSemicolon} » contient un « ; » : sépare les cases par des tabulations (copie depuis un tableur). Rien n’a été collé.`
+			};
+		}
+		// Jamais tronqué en silence (Q3) : un titre trop long refuse le collage
+		const longTitle = titles?.find((title) => title.trim().length > MAX_TITLE_LENGTH);
+		if (longTitle !== undefined) {
+			return {
+				ok: false,
+				message: `Le titre « ${longTitle.trim().slice(0, 20)}… » dépasse ${MAX_TITLE_LENGTH} caractères. Rien n’a été collé.`
+			};
+		}
+		// Les retours à la ligne d'une case (Excel) deviennent des espaces
+		const edits = body.flatMap((cells, i) =>
+			cells.map((text, j) => ({
+				column: column + j,
+				row: row + i,
+				text: text.replace(/\s*\n\s*/g, ' ').trim()
+			}))
+		);
+		// Cases et titres : UN geste, qu'une seule annulation défait (T6)
+		return this.#grouped(() => {
+			const written = this.editCells(edits);
+			if (!written.ok) return written;
+			titles?.forEach((title, j) => {
+				if (title.trim() !== '') this.setTitle(column + j, title);
+			});
+			return { ok: true };
+		});
+	}
+
+	/**
+	 * Recopier vers le bas (§5) : la première ligne de la zone, sur toutes les
+	 * suivantes ; les références relatives se décalent, `$` les fige, une valeur
+	 * se recopie telle quelle. Un seul geste (T6), tout ou rien.
+	 */
+	fillDown(zone: {
+		readonly left: number;
+		readonly right: number;
+		readonly top: number;
+		readonly bottom: number;
+	}): { ok: true } | Refused {
+		if (zone.bottom > GRID_ROWS) {
+			return {
+				ok: false,
+				message: `Recopier jusqu’à la ligne ${zone.bottom} : la grille en garde ${GRID_ROWS}. Rien n’a été recopié.`
+			};
+		}
+		const edits: CellEdit[] = [];
+		for (let column = zone.left; column <= zone.right; column++) {
+			const source = this.cell(column, zone.top);
+			for (let row = zone.top + 1; row <= zone.bottom; row++) {
+				edits.push({ column, row, text: shiftFormula(source, 0, row - zone.top) });
+			}
+		}
+		return edits.length === 0 ? { ok: true } : this.editCells(edits);
+	}
+
+	/**
+	 * Tabuler une fonction (lot 3) : deux colonnes de formules dans les deux
+	 * premières colonnes libres — abscisses `-2`, `=A1+0,5`…, images `=f(A1)`… —
+	 * titrées `x` et `f(x)`. Un seul geste (T6), tout ou rien ; jamais
+	 * d'écrasement (Q-L3-4 : tabuler deux fois écrit deux nouvelles colonnes).
+	 */
+	tabulate(request: TabulationRequest):
+		| {
+				ok: true;
+				columns: [number, number];
+				rows: number;
+				note: string | null;
+		  }
+		| Refused {
+		const object = this.get(request.name);
+		const [x = 0, image = 1] = this.freeColumns;
+		const letter = object === undefined ? INTERNAL_LETTER : typedLetterOf(this, object);
+		const plan = planTabulation(object, request, letter, { x, image });
+		if (!plan.ok) return plan;
+		if (this.freeColumns.length < 2) {
+			return { ok: false, message: 'Il faut deux colonnes libres dans la grille.' };
+		}
+		const written = this.#grouped(() => {
+			const edited = this.editCells(plan.edits);
+			if (!edited.ok) return edited;
+			this.setTitle(x, plan.titles[0]);
+			this.setTitle(image, plan.titles[1]);
+			return { ok: true } as const;
+		});
+		if (!written.ok) return written;
+		// La dernière abscisse telle que la case la montre (`12/7`), jamais un flottant
+		const last = this.cellValue(x, plan.rows);
+		const note =
+			plan.shortOf === null || last.kind !== 'number'
+				? null
+				: `Le pas ne tombe pas juste sur ${plan.shortOf} : le tableau s’arrête à ${last.shown}.`;
+		return { ok: true, columns: [x, image], rows: plan.rows, note };
+	}
+
+	// ---------------------------------------------------------------------------
+	// Annuler dans la grille (T6)
+	// ---------------------------------------------------------------------------
+
+	/** Annuler le dernier geste de la grille. Refusé si une de ses cases a changé ailleurs depuis. */
+	undoGrid(): { ok: true } | Refused {
+		return this.#replay(this.#undo, this.#redo, 'before', 'Rien à annuler dans la grille.');
+	}
+
+	/** Rétablir le dernier geste annulé. */
+	redoGrid(): { ok: true } | Refused {
+		return this.#replay(this.#redo, this.#undo, 'after', 'Rien à rétablir dans la grille.');
+	}
+
+	#replay(
+		from: GridGesture[],
+		to: GridGesture[],
+		target: 'before' | 'after',
+		nothing: string
+	): { ok: true } | Refused {
+		const gesture = from.pop();
+		if (gesture === undefined) return { ok: false, message: nothing };
+		const current = target === 'before' ? 'after' : 'before';
+		// Jamais par-dessus un changement venu d'ailleurs (une carte, `L = …`) :
+		// l'historique ne décrit plus la grille, il est oublié
+		const untouched =
+			gesture.cells.every((c) => this.cell(c.column, c.row) === c[current]) &&
+			gesture.titles.every((t) => this.titleOf(t.column) === t[current]) &&
+			(gesture.seed === undefined || this.#seed === gesture.seed[current]);
+		if (!untouched) {
+			this.#forgetGridHistory();
+			return { ok: false, message: GRID_CHANGED_SINCE };
+		}
+		this.#replaying = true;
+		try {
+			const written = this.editCells(
+				gesture.cells.map((c) => ({ column: c.column, row: c.row, text: c[target] }))
+			);
+			if (!written.ok) {
+				this.#forgetGridHistory();
+				return written;
+			}
+			for (const t of gesture.titles) this.setTitle(t.column, t[target]);
+			if (gesture.seed !== undefined) this.#setSeed(gesture.seed[target]);
+		} finally {
+			this.#replaying = false;
+		}
+		to.push(gesture);
+		this.#countHistory();
+		return { ok: true };
+	}
+
+	/** Noter un geste : dans celui en cours de composition, sinon comme un nouveau. */
+	#record(part: GridGesture): void {
+		const empty = part.cells.length === 0 && part.titles.length === 0 && part.seed === undefined;
+		if (this.#replaying || empty) return;
+		if (this.#gesture !== null) {
+			this.#gesture.cells.push(...part.cells);
+			this.#gesture.titles.push(...part.titles);
+			// Une graine dans un geste composé : la première d'avant, la dernière d'après
+			if (part.seed !== undefined) {
+				this.#gesture.seed = {
+					before: this.#gesture.seed?.before ?? part.seed.before,
+					after: part.seed.after
+				};
+			}
+			return;
+		}
+		this.#undo.push(part);
+		if (this.#undo.length > MAX_GRID_UNDO) this.#undo.shift();
+		this.#redo = [];
+		this.#countHistory();
+	}
+
+	/** Composer un seul geste de tout ce que `run` écrit. */
+	#grouped<T>(run: () => T): T {
+		if (this.#gesture !== null) return run();
+		this.#gesture = { cells: [], titles: [] };
+		try {
+			return run();
+		} finally {
+			const gesture = this.#gesture;
+			this.#gesture = null;
+			this.#record(gesture);
+		}
+	}
+
+	#forgetGridHistory(): void {
+		this.#undo = [];
+		this.#redo = [];
+		this.#countHistory();
+	}
+
+	#countHistory(): void {
+		this.gridHistory = { undo: this.#undo.length, redo: this.#redo.length };
+	}
+
+	/**
+	 * La zone utilisée : colonnes jusqu'à la dernière nommée ou remplie, lignes
+	 * jusqu'à la dernière remplie. La vue y ajoute sa marge.
+	 */
+	get usedExtent(): { readonly columns: number; readonly rows: number } {
+		let columns = 0;
+		let rows = 0;
+		for (const [column, entries] of this.#entriesByColumn) {
+			columns = Math.max(columns, column + 1);
+			rows = Math.max(rows, entries.length);
+		}
+		for (const address of this.cells.keys()) {
+			const at = readCellName(address);
+			if (at === null) continue;
+			columns = Math.max(columns, at.column + 1);
+			rows = Math.max(rows, at.row);
+		}
+		return { columns, rows };
+	}
+
+	/**
+	 * Écrire des cellules, en un seul geste (saisie, collage, effacement). Un
+	 * texte avec « ; » se répartit vers le bas (P2). Tout ou rien : une cellule
+	 * hors de la grille ou trop longue refuse le geste entier.
+	 */
+	editCells(edits: readonly CellEdit[]): { ok: true } | Refused {
+		// `=a2+1` → `=A2+1` (lot 2) ; une formule n'est jamais répartie (P2)
+		const spread = edits.flatMap((edit) =>
+			spreadText(edit.row, edit.text).map((piece) => ({
+				column: edit.column,
+				row: piece.row,
+				text: normalizeFormula(piece.text)
+			}))
+		);
+		for (const edit of spread) {
+			if (edit.row > GRID_ROWS && Number.isInteger(edit.row)) {
+				return {
+					ok: false,
+					message: `Ces valeurs dépassent la ligne ${GRID_ROWS} : la grille en garde ${GRID_ROWS}.`
+				};
+			}
+			if (!isInGrid(edit.column, edit.row)) {
+				return { ok: false, message: 'Cette cellule est hors de la grille (A1 à Z200).' };
+			}
+			if (edit.text.length > MAX_CELL_LENGTH) {
+				return {
+					ok: false,
+					message: `Une cellule garde au plus ${MAX_CELL_LENGTH} caractères.`
+				};
+			}
+		}
+
+		// Un geste sans effet ne compte pas : il ferait monter `revision`, et
+		// « Annuler » une suppression deviendrait impossible (revue)
+		// Une case écrite deux fois dans le geste (`1 ; 2` en A1, puis 9 en A2) :
+		// la dernière écriture compte, une seule fois (revue de la PR 3a)
+		const latest = new Map(spread.map((edit) => [cellName(edit.column, edit.row), edit]));
+		const changes = [...latest.values()].filter(
+			(edit) => this.cell(edit.column, edit.row) !== edit.text
+		);
+
+		// Les colonnes nommées : une réécriture de la liste par colonne touchée,
+		// vérifiée AVANT d'écrire quoi que ce soit (tout ou rien)
+		const rewritten = new Map<number, string[]>();
+		for (const edit of changes) {
+			const list = this.listAt(edit.column);
+			if (list === undefined) continue;
+			const entries = rewritten.get(edit.column) ?? [...entriesOf(list.definition)];
+			while (entries.length < edit.row) entries.push('');
+			entries[edit.row - 1] = edit.text;
+			rewritten.set(edit.column, entries);
+		}
+		for (const [column, entries] of rewritten) {
+			const tooLong = definitionTooLong(column, entries);
+			if (tooLong !== null) return { ok: false, message: tooLong };
+		}
+
+		this.#record({
+			cells: changes.map((edit) => ({
+				column: edit.column,
+				row: edit.row,
+				before: this.cell(edit.column, edit.row),
+				after: edit.text
+			})),
+			titles: []
+		});
+
+		let unnamedChanged = false;
+		for (const edit of changes) {
+			if (this.listAt(edit.column) !== undefined) continue;
+			const address = cellName(edit.column, edit.row);
+			if (edit.text === '') this.cells.delete(address);
+			else this.cells.set(address, edit.text);
+			unnamedChanged = true;
+		}
+		this.#gridWriting = true;
+		try {
+			for (const [column, entries] of rewritten) {
+				this.update(this.listAt(column)!.name, definitionFrom(entries));
+			}
+		} finally {
+			this.#gridWriting = false;
+		}
+		// Une colonne sans nom ne touche aucun objet : pas de recalcul des objets,
+		// mais les formules (lot 2) et la sauvegarde doivent l'entendre
+		if (unnamedChanged && rewritten.size === 0) {
+			this.#recomputeGrid();
+			this.revision++;
+		}
+		return { ok: true };
+	}
+
+	/**
+	 * Nommer une colonne : elle devient la liste `name`, avec ses cellules
+	 * (phase 0 §1). Les refus de nom sont ceux d'aujourd'hui (`create`).
+	 */
+	nameColumn(column: number, name: string): Created | Refused {
+		if (!isInGrid(column, 1)) {
+			return { ok: false, message: 'Cette colonne est hors de la grille (A à Z).' };
+		}
+		const named = this.listAt(column);
+		if (named !== undefined) {
+			return {
+				ok: false,
+				message: `La colonne ${columnLetter(column)} est déjà la liste ${named.name}.`
+			};
+		}
+		// Les cellules passent à la liste : retirées de la grille AVANT la création,
+		// sinon la colonne ne serait pas libre ; remises si la création est refusée
+		const entries: string[] = [];
+		const moved: [string, string][] = [];
+		for (let row = 1; row <= GRID_ROWS; row++) {
+			const address = cellName(column, row);
+			const text = this.cells.get(address);
+			if (text === undefined) continue;
+			while (entries.length < row - 1) entries.push('');
+			entries.push(text);
+			moved.push([address, text]);
+		}
+		// Rangée trop longue, la liste serait écartée au rechargement — avec ses cellules
+		const tooLong = definitionTooLong(column, entries);
+		if (tooLong !== null) return { ok: false, message: tooLong };
+		for (const [address] of moved) this.cells.delete(address);
+		const created = this.create({
+			kind: 'list',
+			name,
+			definition: definitionFrom(entries),
+			column
+		});
+		if (!created.ok) for (const [address, text] of moved) this.cells.set(address, text);
+		return created;
+	}
+
+	/**
+	 * Retirer le nom d'une colonne : la liste disparaît (suppression en cascade,
+	 * à confirmer par la vue), ses cellules restent dans la grille. Le reçu
+	 * s'annule comme toute suppression (`undoRemoval`).
+	 */
+	unnameColumn(column: number): RemovedWithDependents | Refused {
+		const list = this.listAt(column);
+		if (list === undefined) {
+			return { ok: false, message: `La colonne ${columnLetter(column)} n'a pas de nom.` };
+		}
+		const entries = entriesOf(list.definition);
+		return this.#removeWithDependents(list.name, () => {
+			entries.forEach((text, index) => {
+				if (text !== '') this.cells.set(cellName(column, index + 1), text);
+			});
+		});
+	}
+
+	/** Ni liste, ni cellule sans nom : une liste peut s'y poser (un titre reste le sien). */
+	#holdsNoData(column: number): boolean {
+		if (!isInGrid(column, 1) || this.listAt(column) !== undefined) return false;
+		for (const address of this.cells.keys()) {
+			if (readCellName(address)?.column === column) return false;
+		}
+		return true;
+	}
+
+	/** Libre : ni liste, ni cellule sans nom, ni titre. */
+	#isFreeColumn(column: number): boolean {
+		return this.#holdsNoData(column) && !this.titles.has(column);
+	}
+
+	#firstFreeColumn(): number | undefined {
+		for (let column = 0; column < GRID_COLUMNS; column++) {
+			if (this.#isFreeColumn(column)) return column;
+		}
+		return undefined;
+	}
+
+	/** Les colonnes libres, de gauche à droite (fusion d'un atelier reçu, T7). */
+	get freeColumns(): readonly number[] {
+		const free: number[] = [];
+		for (let column = 0; column < GRID_COLUMNS; column++) {
+			if (this.#isFreeColumn(column)) free.push(column);
+		}
+		return free;
+	}
+
+	// ---------------------------------------------------------------------------
 	// Ranger et relire (§5)
 	// ---------------------------------------------------------------------------
 
@@ -961,7 +1894,7 @@ export class Atelier {
 		const objects: StoredObject[] = this.items.map((o) => ({
 			name: o.name,
 			kind: o.kind,
-			definition: o.definition,
+			definition: reciprocalOf(o.name) === null ? o.definition : '',
 			// Rangé seulement quand il est vrai : un atelier sans courbe tracée ne
 			// paie pas ce champ dans l'URL, qui est le mécanisme de partage.
 			...(o.plotted ? { plotted: true } : {}),
@@ -970,6 +1903,17 @@ export class Atelier {
 			...(isFunction(o) && o.display ? { display: compactDisplay(o.display) } : {}),
 			// La lettre de l'élève (`f(t)`) : absente pour x, qui ne pèse rien
 			...(isFunction(o) && o.letter ? { letter: o.letter } : {}),
+			// L'ensemble écrit après « sur » : absent sans intervalle. Celui d'une
+			// dérivée se relit sur sa fonction (`#inheritIntervals`)
+			// Celui d'une réciproque est son ensemble de départ, recalculé (`#reciprocals`)
+			...(isFunction(o) &&
+			o.interval !== undefined &&
+			derivativeOf(o.name) === null &&
+			reciprocalOf(o.name) === null
+				? { interval: o.interval }
+				: {}),
+			// La carte `f⁻¹` range l'intervalle TAPÉ, jamais sa formule (elle se recalcule)
+			...(isFunction(o) && o.reciprocalOn !== undefined ? { reciprocalOn: o.reciprocalOn } : {}),
 			// Seulement s'il a été réglé : un curseur par défaut ne pèse rien dans le lien
 			...(isValue(o) && o.slider && !isDefaultSlider(o.slider)
 				? { slider: { min: o.slider.min, max: o.slider.max, step: o.slider.step } }
@@ -983,9 +1927,32 @@ export class Atelier {
 						...(o.firstIndex !== 0 && { firstIndex: o.firstIndex }),
 						...(o.firstTerm !== '0' && { firstTerm: o.firstTerm })
 					}
-				: {})
+				: {}),
+			// La colonne d'une liste : ses cellules sont sa définition (tableur, T1)
+			...(isList(o) ? { column: columnLetter(o.column) } : {})
 		}));
-		return { version: ATELIER_STATE_VERSION, objects };
+		// Les cellules des colonnes sans nom, absentes quand il n'y en a pas : un
+		// atelier sans grille ne paie rien dans le lien
+		const cells = Object.fromEntries(
+			[...this.cells].map(([address, text]) => [address, storedCellText(text)])
+		);
+		const titles = Object.fromEntries(
+			[...this.titles].map(([column, title]) => [columnLetter(column), title])
+		);
+		// La graine, seulement s'il y a du hasard : une grille sans ALEA ne paie rien
+		const random = [...gridTexts(this.#entriesByColumn, this.cells).values()].some(
+			(text) => isFormula(text) && /ALEA/i.test(text)
+		);
+		const grid = {
+			...(this.cells.size > 0 && { cells }),
+			...(this.titles.size > 0 && { titles }),
+			...(random && { seed: this.#seed })
+		};
+		return {
+			version: ATELIER_STATE_VERSION,
+			objects,
+			...(Object.keys(grid).length > 0 && { grid })
+		};
 	}
 
 	/**
@@ -999,11 +1966,35 @@ export class Atelier {
 	 * Les états sont recalculés, jamais relus.
 	 */
 	restore(state: AtelierState): RestoreReport {
+		this.#seed = state.grid?.seed ?? newGridSeed();
 		this.items = [];
 		this.charts.clear();
 		this.partnerChoices.clear();
+		this.cells.clear();
+		this.titles.clear();
+		this.#forgetGridHistory();
 		this.#laws.clear();
 		const skipped: SkippedObject[] = [];
+
+		// Les titres d'abord : ils appartiennent à leur colonne, nommée ou non
+		for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
+			const column = columnOfLetter(letter);
+			if (column !== null) this.titles.set(column, title);
+		}
+
+		// Les cellules sans nom AVANT les listes, hors des colonnes qu'une liste
+		// réclame : une liste rangée sans colonne (version 1) prend alors une
+		// colonne vraiment libre, et une cellule posée sur la colonne d'une liste
+		// (état abîmé) n'a pas de propriétaire possible — la liste gagne
+		const claimed = new Set(
+			state.objects.flatMap((o) =>
+				o.kind === 'list' && o.column !== undefined ? [columnOfLetter(o.column)] : []
+			)
+		);
+		for (const [address, text] of Object.entries(state.grid?.cells ?? {})) {
+			const at = readCellName(address);
+			if (at !== null && !claimed.has(at.column)) this.cells.set(address, cellTextFromStored(text));
+		}
 
 		for (const stored of state.objects) {
 			const input: CreateInput = {
@@ -1011,13 +2002,28 @@ export class Atelier {
 				name: stored.name,
 				definition: stored.definition,
 				...(stored.kind === 'function' && stored.letter && { letter: stored.letter }),
-				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
+				...(stored.kind === 'function' && stored.interval && { interval: stored.interval }),
+				...(stored.kind === 'function' &&
+					stored.reciprocalOn && { reciprocalOn: stored.reciprocalOn }),
+				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) }),
+				// Version 1 : sans colonne, la liste prend la première libre (ordre des cartes)
+				...(stored.kind === 'list' &&
+					stored.column !== undefined && { column: columnOfLetter(stored.column) ?? undefined })
 			};
-			let result = this.create(input);
+			let attempt = input;
+			let result = this.create(attempt);
+			// Un ensemble refusé (lien abîmé, domaine changé) : la fonction est gardée
+			// sur son domaine — perdre f pour son intervalle serait disproportionné
+			if (!result.ok && attempt.interval !== undefined) {
+				attempt = { ...attempt, interval: undefined };
+				result = this.create(attempt);
+			}
 			// Une lettre refusée (`e`, `n`, le nom de la fonction) : la fonction est
-			// gardée en x — sa définition rangée l'est déjà (`persistence.ts`)
-			if (!result.ok && input.letter !== undefined) {
-				result = this.create({ ...input, letter: undefined });
+			// gardée en x — sa définition rangée l'est déjà (`persistence.ts`). Les
+			// relances s'ENCHAÎNENT : ensemble et lettre refusés, f reste (revue)
+			if (!result.ok && attempt.letter !== undefined) {
+				attempt = { ...attempt, letter: undefined };
+				result = this.create(attempt);
 			}
 			if (!result.ok) {
 				skipped.push({ name: stored.name, reason: result.message });
@@ -1213,6 +2219,10 @@ export class Atelier {
 	 * quoi supprimer `a` laisserait la suite « ok » et muette.
 	 */
 	#refsOf(o: AtelierObject): MissingReference[] {
+		// La carte `f⁻¹` dépend de f, et de rien d'autre : ses lettres (`(x − b)/a`)
+		// sont celles que f cite déjà. Supprimer f l'emporte (#828)
+		const base = reciprocalOf(o.name);
+		if (base !== null) return [{ name: base, as: 'function' }];
 		const refs = [...this.#cited(o.kind, o.definition, o.provenance)];
 		if (isSequence(o) && o.mode === 'recurrence' && hasObjectNameShape(o.firstTerm)) {
 			if (!refs.some((r) => r.name === o.firstTerm)) refs.push({ name: o.firstTerm, as: 'value' });
@@ -1302,7 +2312,10 @@ export class Atelier {
 		kind: ObjectKind,
 		definition: string,
 		provenance: Provenance = 'url',
-		letter?: string
+		letter?: string,
+		interval?: string,
+		/** Pour une liste : sa colonne, déjà choisie par l'appelant (`create`, `update`). */
+		column?: number
 	): AtelierObject {
 		const parsed = parseDefinition(kind, definition, provenance, this.functionNames);
 		const base = {
@@ -1317,8 +2330,10 @@ export class Atelier {
 				return {
 					...base,
 					kind: 'list',
+					column: column ?? 0,
 					values: parsed.values ?? [],
 					skipped: parsed.skipped ?? 0,
+					rows: parsed.rows ?? [],
 					...(parsed.categories && { categories: parsed.categories }),
 					...(parsed.qualitativeBecause !== undefined && {
 						qualitativeBecause: parsed.qualitativeBecause
@@ -1345,7 +2360,8 @@ export class Atelier {
 					...base,
 					kind: 'function',
 					variable: 'x',
-					...(letter !== undefined && letter !== INTERNAL_LETTER && { letter })
+					...(letter !== undefined && letter !== INTERNAL_LETTER && { letter }),
+					...(interval !== undefined && { interval })
 				};
 			case 'sequence':
 				// S4 : une définition qui se cite elle-même est une récurrence
@@ -1398,15 +2414,26 @@ export class Atelier {
 
 		const ownError = new Map<string, string | undefined>();
 		const deps = new Map<string, string[]>();
+		// Décision d : l'ensemble hérité des fonctions citées (`g(x) = f(x) + 1`)
+		const intervals = citedIntervals(this.items, this.functionNames, (text, others) =>
+			citedReciprocalInterval(this, text, INTERNAL_LETTER, others)
+		);
 		const missing = new Map<string, MissingReference[]>();
+		// V58 : les objets dont la LIGNE est fautive (illisible, circulaire, une
+		// fonction citée comme un nombre) — pas ceux qui suivent un autre objet
+		const miswritten = new Set<string>();
 
 		for (const o of this.items) {
 			// La provenance de l'objet, pas un défaut : sinon une définition LaTeX
 			// serait relue en texte à chaque recalcul.
-			ownError.set(
-				o.name,
-				parseDefinition(o.kind, o.definition, o.provenance, this.functionNames).error
-			);
+			const unreadable = parseDefinition(
+				o.kind,
+				o.definition,
+				o.provenance,
+				this.functionNames
+			).error;
+			ownError.set(o.name, unreadable);
+			if (unreadable) miswritten.add(o.name);
 
 			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
 			// `u(n+1) = 0,5·u(n) + 3` est une définition parfaitement saine.
@@ -1419,6 +2446,28 @@ export class Atelier {
 					refs.map((r) => r.name)
 				);
 				if (cited !== null) ownError.set(o.name, cited);
+			}
+			// V58 : `a` lettre de f, puis `a(x) = x^2` — quel que soit l'ordre de
+			// saisie, f ne vaut rien. Les cartes `f′`, `f⁻¹` suivent f, elles ne
+			// citent rien de leur propre chef
+			if (
+				!ownError.get(o.name) &&
+				o.kind !== 'list' &&
+				derivativeOf(o.name) === null &&
+				reciprocalOf(o.name) === null
+			) {
+				const asNumber = bareNamesOf(o.definition, o.provenance, this.functionNames)
+					.filter((n) => n !== o.name)
+					.map((n) => this.get(n))
+					.find((c) => c !== undefined && (c.kind === 'function' || c.kind === 'sequence'));
+				if (asNumber !== undefined) {
+					ownError.set(o.name, functionAsNumberMessage(asNumber, o));
+					miswritten.add(o.name);
+				}
+			}
+			// `g(x) = f(2x)` avec f sur un intervalle : pas encore su (décision c)
+			if (!ownError.get(o.name) && intervals.refused.has(o.name)) {
+				ownError.set(o.name, intervals.refused.get(o.name));
 			}
 			deps.set(
 				o.name,
@@ -1444,6 +2493,8 @@ export class Atelier {
 			visitState.set(node, 'done');
 		};
 		for (const name of this.names) visit(name, [name]);
+		for (const name of inCycle) miswritten.add(name);
+		this.#miswritten = miswritten;
 
 		// Propagation, par points fixes. L'erreur se propage la première : elle
 		// prime, donc un objet contaminé par une erreur n'est jamais « en attente ».
@@ -1516,8 +2567,171 @@ export class Atelier {
 			return next;
 		});
 
+		this.#inheritIntervals(intervals.inherited);
 		this.#underivable();
 		this.#sequenceChecks();
+		this.#reciprocals();
+		this.#recomputeGrid();
+	}
+
+	/** La graine des tirages (lot 5), lue par le calcul de la grille. */
+	get gridSeed(): number {
+		return this.#seed;
+	}
+
+	/**
+	 * « Relancer » (lot 5, T8) : une nouvelle graine, donc de nouveaux tirages pour
+	 * toutes les cases à hasard, et ce qui les cite se recalcule.
+	 */
+	relaunch(): void {
+		let next = newGridSeed();
+		while (next === this.#seed) next = newGridSeed();
+		// Un geste de la grille : Ctrl+Z retrouve les tirages d'avant (Q-L5-3)
+		this.#record({ cells: [], titles: [], seed: { before: this.#seed, after: next } });
+		this.#setSeed(next);
+	}
+
+	#setSeed(seed: number): void {
+		this.#seed = seed;
+		this.revision++;
+		this.#recomputeGrid();
+	}
+
+	/**
+	 * Le nombre de cases qui tirent au hasard (lot 5) : le bouton « Relancer »
+	 * n'apparaît que s'il y en a (Q-L5-2), et l'annonce les compte.
+	 */
+	get randomCells(): number {
+		let count = 0;
+		for (const text of gridTexts(this.#entriesByColumn, this.cells).values()) {
+			if (isFormula(text) && /ALEA/i.test(text)) count++;
+		}
+		return count;
+	}
+
+	/**
+	 * Recalculer les formules de la grille (lot 2), puis les listes dont la
+	 * colonne en contient : leurs valeurs sont celles des formules. Seules les
+	 * formules concernées par un changement (texte, cellule citée, objet cité)
+	 * sont recalculées (`computeGrid`, état précédent gardé).
+	 *
+	 * ⚠️ Appelé en DERNIER par `recomputeAll` : les formules lisent les objets
+	 * avec leur statut définitif. Aucun objet ne lit la grille (Q1) : les listes
+	 * se refont ici sans relancer `recomputeAll`.
+	 */
+	#recomputeGrid(): void {
+		const texts = gridTexts(this.#entriesByColumn, this.cells);
+		const state = computeGrid(texts, this, this.#gridState);
+		this.#gridState = state;
+		this.lastGridComputed = state.computed;
+		if (state.computed > 0 || state.values.size !== this.#values.size) this.#values = state.values;
+
+		// Les listes à formules se refont TOUJOURS (peu coûteux) : nommer une
+		// colonne ne change ni ses textes ni l'empreinte, mais crée la liste
+
+		let changed = false;
+		const items = this.items.map((o) => {
+			if (!isList(o) || !entriesOf(o.definition).some(isFormula)) return o;
+			changed = true;
+			return this.#formulaList(o);
+		});
+		if (changed) this.items = items;
+	}
+
+	/** Une liste dont la colonne contient des formules : leurs VALEURS, ligne par ligne. */
+	#formulaList(list: ListObject): ListObject {
+		let errors = 0;
+		const shown = entriesOf(list.definition).map((text, i) => {
+			if (!isFormula(text)) return text;
+			const value = this.#values.get(cellName(list.column, i + 1));
+			if (value?.kind === 'number') return String(value.value);
+			if (value?.kind === 'error') errors++;
+			return '';
+		});
+		const parsed = parseDefinition('list', shown.join(' ; '));
+		const rebuilt: ListObject = {
+			name: list.name,
+			kind: 'list',
+			column: list.column,
+			definition: list.definition,
+			provenance: list.provenance,
+			status: parsed.error ? 'error' : 'ok',
+			...(parsed.error !== undefined && { message: parsed.error }),
+			...(list.plotted && { plotted: true }),
+			...(list.plottedWith !== undefined && { plottedWith: list.plottedWith }),
+			values: parsed.values ?? [],
+			rows: parsed.rows ?? [],
+			skipped: parsed.skipped ?? 0,
+			...(parsed.categories && { categories: parsed.categories }),
+			...(parsed.qualitativeBecause !== undefined && {
+				qualitativeBecause: parsed.qualitativeBecause
+			}),
+			...(errors > 0 && { formulaErrors: errors })
+		};
+		return rebuilt;
+	}
+
+	/**
+	 * La carte `f⁻¹` SUIT f (lot 3 de la réciproque) : recalculée à chaque
+	 * passage, formule et ensemble de départ (son `interval`, pour le tracé et
+	 * les calculs). f devenue non bijective, constante (a = 0)… : la carte passe
+	 * en erreur avec le refus, sans formule — jamais une formule fausse.
+	 *
+	 * ⚠️ EN DERNIER : f doit avoir son statut définitif (`#sequenceChecks` peut
+	 * encore la passer en erreur). Une f en attente ou en erreur a déjà propagé
+	 * son statut à `f⁻¹` (elle en dépend, `#refsOf`).
+	 */
+	#reciprocals(): void {
+		this.items.forEach((o, i) => {
+			const base = reciprocalOf(o.name);
+			if (base === null || !isFunction(o) || this.get(base)?.status !== 'ok') return;
+			const computed = reciprocalOfFunction(this, base, o.reciprocalOn);
+			const { interval: _interval, message: _message, ...rest } = o;
+			const next: AtelierObject = computed.ok
+				? {
+						...rest,
+						definition: computed.definition,
+						provenance: 'text',
+						status: 'ok',
+						...(computed.interval !== undefined && { interval: computed.interval })
+					}
+				: { ...rest, definition: '', status: 'error', message: computed.message };
+			const same =
+				next.definition === o.definition &&
+				next.status === o.status &&
+				next.message === o.message &&
+				(next as typeof o).interval === o.interval;
+			if (!same) this.items[i] = next;
+		});
+	}
+
+	/**
+	 * La carte `f′` porte l'ensemble de f (lot 2 de
+	 * `docs/wip/atelier-intervalle-phase0.md`) : recopié à chaque recalcul, il
+	 * suit f quand son ensemble change ou disparaît (I6). Jamais sauvegardé.
+	 *
+	 * Décision d : toute fonction porte aussi l'ensemble hérité des fonctions
+	 * qu'elle cite (`inheritedInterval`, calculé par `citedIntervals`).
+	 */
+	#inheritIntervals(inheritedDomains: ReadonlyMap<string, Domain>): void {
+		this.items.forEach((o, i) => {
+			if (!isFunction(o)) return;
+			const domain = inheritedDomains.get(o.name);
+			// Comparé par contenu : un objet neuf à chaque passage relancerait le
+			// rendu de la carte et la synchronisation du tracé pour rien
+			if (JSON.stringify(o.inheritedInterval) === JSON.stringify(domain)) return;
+			const { inheritedInterval: _stale, ...rest } = o;
+			this.items[i] = domain === undefined ? rest : { ...rest, inheritedInterval: domain };
+		});
+		this.items.forEach((o, i) => {
+			const derivative = derivativeOf(o.name);
+			if (derivative === null || !isFunction(o)) return;
+			const base = this.get(derivative.base);
+			const inherited = base !== undefined && isFunction(base) ? base.interval : undefined;
+			if (o.interval === inherited) return;
+			const { interval: _dropped, ...rest } = o;
+			this.items[i] = inherited === undefined ? rest : { ...rest, interval: inherited };
+		});
 	}
 
 	/**
@@ -1574,7 +2788,9 @@ export class Atelier {
 	 */
 	#underivable(): void {
 		this.items.forEach((o, i) => {
-			if (o.status !== 'ok' || derivativeOf(o.name) === null) return;
+			// `g(x) = f⁻¹(x)` aussi : f devenue non bijective, g dit pourquoi
+			const follows = derivativeOf(o.name) !== null || citesReciprocal(this, o.definition);
+			if (o.status !== 'ok' || !follows) return;
 			const read = expressionOf(this, o.name);
 			if (!read.ok) {
 				this.items[i] = { ...o, status: 'error', message: read.message } as AtelierObject;
@@ -1596,4 +2812,9 @@ export class Atelier {
 			}
 		}
 	}
+}
+
+/** Une graine de tirages : un entier de 32 bits. */
+function newGridSeed(): number {
+	return Math.floor(Math.random() * 2 ** 32);
 }

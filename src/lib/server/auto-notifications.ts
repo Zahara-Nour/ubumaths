@@ -15,7 +15,11 @@
 
 import { createSystemNotification } from './notifications';
 import { escapeHtml } from '$lib/utils/html-escape';
+import { exerciseAnchorHash } from '$lib/worksheets/exercise-anchor';
 import type { NotificationTargetType } from '$lib/types/notification';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/auto-notifications');
 
 /**
  * Create notification when a new assignment is created
@@ -44,7 +48,7 @@ export async function notifyNewAssignment(data: {
 			action_url: `/dashboard/student/devoirs/${data.assignmentId}`
 		});
 	} catch (error) {
-		console.error('Error creating assignment notification:', error);
+		logger.error('Error creating assignment notification:', error);
 		// Don't throw - notification failure shouldn't break the assignment creation
 	}
 }
@@ -76,7 +80,7 @@ export async function notifyNewResource(data: {
 			action_url: `/dashboard/student/resources/${data.resourceId}`
 		});
 	} catch (error) {
-		console.error('Error creating resource notification:', error);
+		logger.error('Error creating resource notification:', error);
 	}
 }
 
@@ -107,7 +111,7 @@ export async function notifyRewardEarned(data: {
 			target_user_ids: [data.studentId]
 		});
 	} catch (error) {
-		console.error('Error creating reward notification:', error);
+		logger.error('Error creating reward notification:', error);
 	}
 }
 
@@ -136,7 +140,7 @@ export async function notifyVipCardEarned(data: {
 			action_url: '/dashboard/student/vip-cards'
 		});
 	} catch (error) {
-		console.error('Error creating VIP card notification:', error);
+		logger.error('Error creating VIP card notification:', error);
 	}
 }
 
@@ -171,7 +175,7 @@ export async function notifyBadgeUnlocked(data: {
 			action_url: '/dashboard/student/badges'
 		});
 	} catch (error) {
-		console.error('Error creating badge notification:', error);
+		logger.error('Error creating badge notification:', error);
 	}
 }
 
@@ -197,7 +201,7 @@ export async function notifyMaintenance(data: {
 			target_type: 'all'
 		});
 	} catch (error) {
-		console.error('Error creating maintenance notification:', error);
+		logger.error('Error creating maintenance notification:', error);
 	}
 }
 
@@ -228,7 +232,7 @@ export async function notifyFeatureRelease(data: {
 			action_url: data.actionUrl
 		});
 	} catch (error) {
-		console.error('Error creating feature release notification:', error);
+		logger.error('Error creating feature release notification:', error);
 	}
 }
 
@@ -254,47 +258,69 @@ export async function notifyNewAssessment(data: {
 			data.classIds && data.classIds.length > 0 ? 'classes' : 'users';
 
 		await createSystemNotification({
-			title: 'Nouvelle évaluation assignée',
-			message: `<p><strong>${escapeHtml(data.teacherName)}</strong> vous a assigné une nouvelle évaluation : <strong>${escapeHtml(data.assessmentTitle)}</strong></p>`,
+			title: 'Nouveau contrôle assigné',
+			message: `<p><strong>${escapeHtml(data.teacherName)}</strong> vous a assigné un nouveau contrôle : <strong>${escapeHtml(data.assessmentTitle)}</strong></p>`,
 			type: 'info',
 			priority: 'important',
 			system_event_type: 'assessment_assigned',
 			target_type: targetType,
 			target_class_ids: data.classIds,
 			target_user_ids: data.studentIds,
-			action_label: "Voir l'évaluation",
+			action_label: 'Voir le contrôle',
 			action_url: '/dashboard/student/assessments'
 		});
 	} catch (error) {
-		console.error('Error creating assessment notification:', error);
+		logger.error('Error creating assessment notification:', error);
 		// Don't throw - notification failure shouldn't break the assignment
 	}
 }
 
-/**
- * Create notification when a student's error report is validated
- *
- * @param studentId - ID of the student who submitted the report
- * @param worksheetTitle - Title of the worksheet containing the error
- * @param exercisePosition - Position of the exercise in the worksheet (1-indexed)
- */
-export async function notifyErrorReportValidated(data: {
+/** Ce qu'il faut pour annoncer à l'élève le sort de son signalement (D6) */
+interface ErrorReportNotice {
 	studentId: string;
 	worksheetTitle: string;
-	exercisePosition: number;
-}): Promise<void> {
+	/**
+	 * Numéro de l'exercice dans LA COPIE de l'élève (ordre mélangé compris,
+	 * `fetchCopyNumbering`) ; `null` s'il est inconnu : on ne cite alors aucun
+	 * numéro plutôt qu'un numéro faux.
+	 */
+	exerciseNumber: number | null;
+	/** L'affectation : le lien mène à la fiche de l'élève */
+	assignmentId: string;
+	/** L'exercice de fiche signalé : ancre du lien (jamais le numéro) */
+	worksheetExerciseId: string;
+}
+
+/** « l'exercice <strong>7</strong> », ou « un exercice » si le numéro est inconnu */
+function exerciseMention(exerciseNumber: number | null): string {
+	return exerciseNumber === null
+		? 'un exercice'
+		: `l'exercice <strong>${Number(exerciseNumber)}</strong>`;
+}
+
+/** La fiche de l'élève, défilée jusqu'à l'exercice signalé */
+function reportedExerciseUrl(data: ErrorReportNotice): string {
+	return `/dashboard/student/worksheets/${data.assignmentId}${exerciseAnchorHash(data.worksheetExerciseId)}`;
+}
+
+/**
+ * Create notification when a student's error report is validated
+ */
+export async function notifyErrorReportValidated(data: ErrorReportNotice): Promise<void> {
 	try {
 		await createSystemNotification({
 			title: '✅ Signalement validé !',
-			message: `<p>Ton signalement sur l'exercice <strong>${Number(data.exercisePosition)}</strong> du devoir "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été validé. L'erreur a été corrigée. Merci pour ta vigilance !</p><p>Tu as gagné <strong>1 bonus</strong>.</p>`,
+			message: `<p>Ton signalement sur ${exerciseMention(data.exerciseNumber)} du devoir "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été validé. L'erreur a été corrigée. Merci pour ta vigilance !</p><p>Tu as gagné <strong>1 bonus</strong>.</p>`,
 			type: 'info',
 			priority: 'normal',
 			system_event_type: 'error_report_validated',
 			target_type: 'users',
-			target_user_ids: [data.studentId]
+			target_user_ids: [data.studentId],
+			action_label: 'Voir l’exercice',
+			action_url: reportedExerciseUrl(data)
 		});
 	} catch (error) {
-		console.error('Error creating error report validated notification:', error);
+		logger.error('Error creating error report validated notification:', error);
 		// Don't throw - notification failure shouldn't break the validation flow
 	}
 }
@@ -302,32 +328,28 @@ export async function notifyErrorReportValidated(data: {
 /**
  * Create notification when a student's error report is rejected
  *
- * @param studentId - ID of the student who submitted the report
- * @param worksheetTitle - Title of the worksheet
- * @param exercisePosition - Position of the exercise in the worksheet (1-indexed)
  * @param response - Optional response/reason for rejection (HTML from RichTextEditor, already sanitized)
  */
-export async function notifyErrorReportRejected(data: {
-	studentId: string;
-	worksheetTitle: string;
-	exercisePosition: number;
-	response?: string;
-}): Promise<void> {
+export async function notifyErrorReportRejected(
+	data: ErrorReportNotice & { response?: string }
+): Promise<void> {
 	try {
 		// response is already HTML-sanitized from RichTextEditor, do not escape it
 		const responseHtml = data.response ? `<p>${data.response}</p>` : '';
 
 		await createSystemNotification({
 			title: 'Signalement traité',
-			message: `<p>Ton signalement pour l'exercice <strong>${Number(data.exercisePosition)}</strong> de "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été étudié. Aucune correction n'était nécessaire cette fois.</p>${responseHtml}<p>Continue à rester attentif !</p>`,
+			message: `<p>Ton signalement pour ${exerciseMention(data.exerciseNumber)} de "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été étudié. Aucune correction n'était nécessaire cette fois.</p>${responseHtml}<p>Continue à rester attentif !</p>`,
 			type: 'info',
 			priority: 'normal',
 			system_event_type: 'error_report_rejected',
 			target_type: 'users',
-			target_user_ids: [data.studentId]
+			target_user_ids: [data.studentId],
+			action_label: 'Voir l’exercice',
+			action_url: reportedExerciseUrl(data)
 		});
 	} catch (error) {
-		console.error('Error creating error report rejected notification:', error);
+		logger.error('Error creating error report rejected notification:', error);
 		// Don't throw - notification failure shouldn't break the rejection flow
 	}
 }

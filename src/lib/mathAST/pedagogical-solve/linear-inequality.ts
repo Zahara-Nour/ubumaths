@@ -35,18 +35,21 @@ import { add, divide, opposite, variable as varNode } from '../factory';
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
-import { getNumericValue } from '../common/numeric';
+import { constantSign } from '../common/constant-sign';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { getVariables } from '../eval/substitute';
 import {
 	canon,
 	addToBothSides,
+	chooseAddOrSubtract,
+	movedTerm,
 	divideBothSidesWithFlip,
 	isOne,
 	isZero,
 	makeStep,
 	prepareLinearRelation,
-	renumberSteps
+	renumberSteps,
+	rejectForbiddenValues
 } from './_helpers';
 import { toLatex } from '../latex-generator';
 import { InequalityNotSolvable } from '../solve/inequality/types';
@@ -117,21 +120,12 @@ function extractCoefficientOfX(node: MathNode, variable: string): MathNode | nul
 	return canon(divide(node, varNode(variable), 'fraction'));
 }
 
-function chooseAddOrSubtract(operand: MathNode): {
-	kind: 'add-both-sides' | 'subtract-both-sides';
-	displayOperand: MathNode;
-} {
-	if (operand.type === 'opposite') {
-		return { kind: 'subtract-both-sides', displayOperand: operand.operand };
-	}
-	const numeric = getNumericValue(operand);
-	if (numeric !== null && numeric < 0) {
-		return { kind: 'subtract-both-sides', displayOperand: canon(opposite(operand)) };
-	}
-	return { kind: 'add-both-sides', displayOperand: operand };
+/** Un opérande dans la prose (titres de repli) : en LaTeX entre `$…$` (V25) */
+function operandPretty(node: MathNode): string {
+	return `$${operandLatex(node)}$`;
 }
 
-function operandPretty(node: MathNode): string {
+function operandLatex(node: MathNode): string {
 	return toLatex(node).replace(/(\d|\})\s+([a-zA-Z\\])/g, '$1$2');
 }
 
@@ -183,6 +177,9 @@ export function generateLinearInequalitySteps(
 		}
 		// Membre parenthésé déballé ; terme en x non développé → UndevelopedLinearForm
 		inequality = prepareLinearRelation(input, variable);
+		// \frac{3x^2}{2x} lu \frac{3}{2}x : la conclusion x ≥ 0 garderait la
+		// valeur interdite 0 (V47)
+		rejectForbiddenValues(input, variable);
 
 		// 4. Reject parametric coefficients (free variables ≠ unknown).
 		const free = [...getVariables(inequality.left), ...getVariables(inequality.right)].filter(
@@ -229,11 +226,8 @@ export function generateLinearInequalitySteps(
 	const regroupementSteps: EquationStep[] = [];
 	const rightSplit = splitSide(current.right, variable);
 	const leftSplit = splitSide(current.left, variable);
-	const xMoveRaw = rightSplit.xPart !== null ? canon(opposite(rightSplit.xPart)) : null;
-	const constMoveRaw =
-		leftSplit.constPart !== null && !isZero(leftSplit.constPart)
-			? canon(opposite(leftSplit.constPart))
-			: null;
+	const xMoveRaw = movedTerm(rightSplit.xPart, variable);
+	const constMoveRaw = movedTerm(leftSplit.constPart, variable);
 
 	if (strategy.regroupementMode === 'combined') {
 		if (xMoveRaw !== null || constMoveRaw !== null) {
@@ -401,25 +395,35 @@ function buildConcludeStep(constantIneq: RelationNode, id: number): EquationStep
 
 /**
  * Evaluate a constant inequality (both sides numeric) into a boolean truth
- * value. Defensively returns `false` (contradiction-like) when one side is
- * non-numeric — that should not happen in practice because the caller only
- * invokes this on inequalities that have already been reduced.
+ * value, from the sign of `lhs − rhs` read on its VALUE (`constantSign`) :
+ * `0 < \frac23` est vraie (écart V36 : seuls les entiers étaient lus, et une
+ * constante fractionnaire rendait « contradiction »).
+ *
+ * @throws InequalityNotSolvable quand le signe ne peut pas être établi
+ *   (`\sqrt2 - 1.4142135623`, trop proche de 0) : mieux vaut aucune
+ *   correction pédagogique qu'un « S = ∅ » deviné — même règle que
+ *   `divideBothSidesWithFlip`.
  */
 function evaluateConstantInequality(rel: RelationNode): boolean {
-	const lhs = getNumericValue(rel.left);
-	const rhs = getNumericValue(rel.right);
-	if (lhs === null || rhs === null) return false;
+	const difference = canon(add(rel.left, opposite(rel.right)));
+	const sign = constantSign(difference);
+	if (sign === null) {
+		throw new InequalityNotSolvable(
+			`Signe indécidable : ${toLatex(difference)}`,
+			'La constante est trop proche de 0 pour comparer ses deux membres.'
+		);
+	}
 	switch (rel.relation) {
 		case '<':
-			return lhs < rhs;
+			return sign < 0;
 		case '>':
-			return lhs > rhs;
+			return sign > 0;
 		case '<=':
-			return lhs <= rhs;
+			return sign <= 0;
 		case '>=':
-			return lhs >= rhs;
+			return sign >= 0;
 		case '!=':
-			return lhs !== rhs;
+			return sign !== 0;
 		default:
 			return false;
 	}

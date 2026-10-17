@@ -25,7 +25,9 @@ import {
 	unflattenProduct,
 	isDivision,
 	isEulerConstant,
+	isComplex,
 	isFunction,
+	isImaginaryUnit,
 	isMultiplication,
 	isNumber,
 	isOpposite,
@@ -54,7 +56,10 @@ function isPlainRealConstant(node: MathNode): boolean {
 		findNodes(
 			node,
 			(n) =>
-				isVariable(n) || isEulerConstant(n) || (isFunction(n) && !RADICAL_FUNCTIONS.has(n.name))
+				isVariable(n) ||
+				isComplex(n) ||
+				isEulerConstant(n) ||
+				(isFunction(n) && !RADICAL_FUNCTIONS.has(n.name))
 		).length === 0
 	);
 }
@@ -71,8 +76,9 @@ function isPositiveConstant(node: MathNode): boolean {
 
 /** Exposant `iθ` : une seule fois `i`, aucune autre lettre, pas une somme (`1+i\pi` exclu) */
 function isImaginaryExponent(exponent: MathNode): boolean {
-	const letters = findNodes(exponent, isVariable);
-	if (letters.length !== 1 || !isVariable(letters[0]) || letters[0].name !== 'i') return false;
+	if (findNodes(exponent, isVariable).length > 0) return false;
+	const complexes = findNodes(exponent, isComplex);
+	if (complexes.length !== 1 || !isImaginaryUnit(complexes[0])) return false;
 	if (findNodes(exponent, (n) => isFunction(n) && !RADICAL_FUNCTIONS.has(n.name)).length > 0) {
 		return false;
 	}
@@ -81,7 +87,7 @@ function isImaginaryExponent(exponent: MathNode): boolean {
 	if (flattenSumShallow(core).length !== 1) return false;
 	// `\frac{i\pi}{3}`, `\frac{\pi}{3}i`, `i\frac{\pi}{3}` (déjà ramenés à `\frac{\pi}{3}i`)
 	if (isDivision(core)) return flattenSumShallow(core.numerator).length === 1;
-	return isMultiplication(core) || isVariable(core);
+	return isMultiplication(core) || isImaginaryUnit(core);
 }
 
 /** `e^{iθ}` (constante d'Euler : `\exp` y est déjà ramené) */

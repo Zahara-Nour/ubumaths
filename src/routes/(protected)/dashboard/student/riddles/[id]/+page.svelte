@@ -5,11 +5,10 @@
 -->
 
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import RiddleCard from '$lib/components/riddles/RiddleCard.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto as _goto } from '$app/navigation';
 	import { syncGidouilles } from '$lib/utils/cache-sync';
@@ -23,9 +22,9 @@
 	 * 1. Submit answer to API
 	 * 2. If correct answer: update cache with earned gidouilles (AFTER API confirms)
 	 * 3. Navigate back to riddles list (no page reload)
-	 * 4. On error: show error message, stay on page
+	 * 4. On error: show error message, resolve false — the card returns to the input
 	 */
-	async function handleSubmit(answer: string | number) {
+	async function handleSubmit(answer: string | number): Promise<boolean> {
 		try {
 			const response = await fetch(`/api/riddles/${data.riddle.id}/submit`, {
 				method: 'POST',
@@ -60,12 +59,14 @@
 				setTimeout(() => {
 					_goto('/dashboard/student/riddles');
 				}, 2000);
-			} else {
-				toaster.error(result.message || 'Erreur lors de la soumission');
+				return true;
 			}
+			toaster.error(result.message || 'Erreur lors de la soumission');
+			return false;
 		} catch (err) {
 			console.error('Submit error:', err);
 			toaster.error('Erreur de connexion');
+			return false;
 		}
 	}
 </script>
@@ -76,11 +77,7 @@
 
 <div class="container mx-auto max-w-4xl p-4 sm:p-6">
 	<h1 class="sr-only">{data.riddle.title}</h1>
-	<!-- Back Button -->
-	<Button variant="ghost" href="/dashboard/student/riddles" class="mb-4">
-		<ArrowLeft class="mr-2 h-4 w-4" />
-		Retour aux énigmes
-	</Button>
+	<BackLink href="/dashboard/student/riddles" label="Retour aux énigmes" />
 
 	<!-- Riddle Card in Interactive Mode -->
 	<RiddleCard

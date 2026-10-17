@@ -8,18 +8,12 @@
 	 * Cf. docs/systeme/srs.md §5.2
 	 */
 
+	import { studySessionHref } from '$lib/navigation/return-links';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
-	import {
-		AlertCircle,
-		RefreshCw,
-		Clock,
-		CheckCircle,
-		ChevronLeft,
-		PlayCircle,
-		Target
-	} from '@lucide/svelte';
+	import { AlertCircle, RefreshCw, Clock, CheckCircle, PlayCircle, Target } from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type { ProgrammeBadge } from './+page.server';
 
@@ -72,12 +66,7 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-4xl px-4 py-6">
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/revisions">
-			<ChevronLeft class="h-4 w-4" />
-			Mes révisions
-		</Button>
-	</div>
+	<BackLink href="/dashboard/revisions" label="Retour aux révisions" />
 
 	<header class="mb-6 flex items-start gap-3">
 		<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -111,7 +100,7 @@
 				{@const iconClass = sectionColorMap[section.badge]}
 				{@const stateFilter = sectionStateFilter[section.badge]}
 				{@const sessionHref = data.deckId
-					? `/dashboard/revisions/decks/${data.deckId}/study${stateFilter ? `?states=${stateFilter}` : ''}`
+					? studySessionHref(data.deckId, { states: stateFilter, from: 'programme' })
 					: '#'}
 				<section>
 					<div class="mb-3 flex items-center justify-between">

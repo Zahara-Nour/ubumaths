@@ -720,13 +720,13 @@ describe('Parental Consent Utilities', () => {
 		});
 
 		describe('error message format', () => {
-			it('includes "Contactez votre enseignant" in error message', () => {
+			it('includes "Voir avec l’enseignant" in error message', () => {
 				try {
 					requireConsent(studentNoConsent, 'send_message');
 					expect.fail('Should have thrown error');
 				} catch (error) {
 					expect((error as { body: { message: string } }).body.message).toContain(
-						'Contactez votre enseignant'
+						'Voir avec l’enseignant'
 					);
 				}
 			});
@@ -739,7 +739,7 @@ describe('Parental Consent Utilities', () => {
 					const message = (error as { body: { message: string } }).body.message;
 					expect(message).toContain('Consentement parental requis');
 					expect(message).toContain('gagner des récompenses');
-					expect(message).toContain('Contactez votre enseignant');
+					expect(message).toContain('Voir avec l’enseignant');
 				}
 			});
 		});

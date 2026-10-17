@@ -34,9 +34,9 @@ import { z } from 'zod';
 export const useCardSchema = z
 	.object({
 		/** UUID of the VIP card instance to mark as used */
-		instanceId: z.string().uuid('Invalid instance ID format'),
+		instanceId: z.string().uuid('Identifiant de carte VIP invalide'),
 		/** UUID of the student who owns the card (required for teacher/admin, ignored for student) */
-		studentId: z.string().uuid('Invalid student ID format').optional(),
+		studentId: z.string().uuid('Identifiant d’élève invalide').optional(),
 		/** Activation context (required for cards with action.context) */
 		context: z.string().min(1).max(64).optional()
 	})
@@ -62,7 +62,7 @@ export type UseCardInput = z.infer<typeof useCardSchema>;
 export const purchaseVipCardSchema = z
 	.object({
 		/** UUID of the student making the purchase */
-		studentId: z.string().uuid('Invalid student ID format'),
+		studentId: z.string().uuid('Identifiant d’élève invalide'),
 		/** ID of the VIP card template to purchase */
 		cardId: z
 			.string()
@@ -90,7 +90,7 @@ export const getPurchasableCardsSchema = z
 		/** Optional: Maximum price filter */
 		maxPrice: z.coerce.number().int().min(0).max(10000).optional(),
 		/** Optional: Only show cards the student can afford */
-		studentId: z.string().uuid('Invalid student ID format').optional()
+		studentId: z.string().uuid('Identifiant d’élève invalide').optional()
 	})
 	.strict();
 
@@ -136,7 +136,7 @@ export type PurchaseVipCardBodyInput = z.infer<typeof purchaseVipCardBodySchema>
 export const sellVipCardBodySchema = z
 	.object({
 		/** UUID of the VIP card instance to sell */
-		cardInstanceId: z.string().uuid('Invalid card instance ID format')
+		cardInstanceId: z.string().uuid('Identifiant de carte VIP invalide')
 	})
 	.strict();
 

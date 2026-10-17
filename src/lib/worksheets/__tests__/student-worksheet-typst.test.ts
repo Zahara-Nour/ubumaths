@@ -35,48 +35,56 @@ const createWorksheet = (overrides?: Partial<StudentWorksheetView>): StudentWork
 		...overrides
 	}) as unknown as StudentWorksheetView;
 
+// Lot 4b : le PDF de l'élève prend le gabarit du style de la fiche (« Fiche
+// élève » par défaut, numéros sur carré ambre) ; l'en-tête reste collé à
+// l'énoncé, la consigne avec lui.
 describe('generateStudentWorksheetTypst', () => {
-	it('puts the exercise header in a sticky block, ahead of the statement', () => {
-		const typst = generateStudentWorksheetTypst(createWorksheet(), false);
+	const STICKY = '#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[';
+	const BADGE =
+		'box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]';
 
-		// The badge lives inside a sticky block...
-		expect(typst).toMatch(
-			/#block\(sticky: true, below: 0\.6em\)\[\n#box\(fill: rgb\("#e8590c"\)[^\n]*\[1\]\]/
-		);
-		// ...and the statement is outside of it (après l'en-tête de lisibilité, sans contenu)
-		expect(typst).toMatch(
-			/\]\n\n#show math\.equation[^\n]*\n(?:#let [^\n]*\n)+\/\/ ubumark: fin de l’en-tête\n#ubu-item\(/
-		);
+	it('puts the exercise header in a sticky block, ahead of the statement', () => {
+		const typst = generateStudentWorksheetTypst(createWorksheet(), 'none');
+		const sticky = typst.indexOf(STICKY);
+		const badge = typst.indexOf(BADGE);
+		const statement = typst.indexOf('#ubu-item(');
+
+		expect(sticky).toBeGreaterThan(-1);
+		// Le carré du numéro dans le bloc collant, l'énoncé après lui
+		expect(badge).toBeGreaterThan(sticky);
+		expect(statement).toBeGreaterThan(badge);
+		expect(typst.slice(sticky, statement)).toContain('\n]\n#block(width: 100%');
 	});
 
-	it('keeps the points and instructions with the header', () => {
-		const worksheet = createWorksheet();
+	it('keeps the instructions with the header (and the points, for a type that prints them)', () => {
+		const worksheet = createWorksheet({
+			type: 'assessment',
+			style_id: '00000000-0000-4000-8000-000000000001'
+		});
 		worksheet.exercises![0].custom_instructions = 'Detailler les etapes.';
+		worksheet.show_points = true;
 
-		const typst = generateStudentWorksheetTypst(worksheet, false);
-		const stickyBlock = typst.slice(
-			typst.indexOf('#block(sticky: true'),
-			typst.indexOf('#show math.equation')
-		);
+		const typst = generateStudentWorksheetTypst(worksheet, 'none');
+		const header = typst.slice(typst.indexOf('#block(width: 100%, inset: 0pt, sticky: true'));
+		const stickyBlock = header.slice(0, header.indexOf('\n]\n'));
 
-		expect(stickyBlock).toContain('3 points');
+		expect(stickyBlock).toContain('3 pts');
 		expect(stickyBlock).toContain('Detailler les etapes.');
 	});
 
 	it('makes the correction header sticky too', () => {
-		const typst = generateStudentWorksheetTypst(createWorksheet(), true);
+		const typst = generateStudentWorksheetTypst(createWorksheet(), 'correction');
+		const corrections = typst.slice(typst.indexOf('#pagebreak()'));
 
-		expect(typst).toContain('= Corrections');
-		expect(typst).toMatch(/#block\(fill: rgb\("#f0fdf4"\)[^\n]*\[\n {2}#block\(sticky: true/);
+		expect(corrections).toContain('[CORRECTION]');
+		expect(corrections).toContain(STICKY);
 	});
 
 	it('numérote exercices et corrigés sur la charte ambre de la fiche enseignant, plus en rouge', () => {
-		const typst = generateStudentWorksheetTypst(createWorksheet(), true);
-		const badge =
-			'#box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]';
+		const typst = generateStudentWorksheetTypst(createWorksheet(), 'correction');
 
 		// Une fois dans l'énoncé, une fois dans le corrigé
-		expect(typst.split(badge)).toHaveLength(3);
+		expect(typst.split(BADGE)).toHaveLength(3);
 		expect(typst).not.toContain('#dc2626');
 	});
 });
@@ -93,13 +101,12 @@ describe('student worksheet language', () => {
 					}
 				]
 			}),
-			true
+			'correction'
 		);
 
 		expect(typst).toContain('lang: "fr"');
-		expect(typst).toContain('Fiche de travail');
 		expect(typst).toContain('Exercices indispensables');
-		expect(typst).toContain('= Corrections');
+		expect(typst).toContain('[CORRECTION]');
 	});
 
 	it('writes the chrome in English when the worksheet is', () => {
@@ -114,17 +121,16 @@ describe('student worksheet language', () => {
 					}
 				]
 			}),
-			true
+			'correction'
 		);
 
 		expect(typst).toContain('lang: "en"');
-		expect(typst).toContain('Worksheet');
 		expect(typst).toContain('Essential exercises');
-		expect(typst).toContain('= Answers');
+		// « Answers » nomme la partie des résultats seuls
+		expect(typst).toContain('[SOLUTIONS]');
 		// No French chrome left on an English sheet.
-		expect(typst).not.toContain('Fiche de travail');
 		expect(typst).not.toContain('Exercices indispensables');
-		expect(typst).not.toContain('= Corrections');
+		expect(typst).not.toContain('[CORRECTION]');
 	});
 });
 
@@ -139,13 +145,39 @@ describe('generateStudentWorksheetTypst — fonctions déclarées', () => {
 	};
 
 	it('énoncé et corrigé sans erreur quand C est déclaré', () => {
-		const typst = generateStudentWorksheetTypst(worksheetWithC(['C']), true);
+		const typst = generateStudentWorksheetTypst(worksheetWithC(['C']), 'correction');
 		expect(typst).not.toContain('Unexpected token');
 		expect(typst).toContain('On trouve');
 	});
 
 	it('sans déclaration, l’erreur apparaît (témoin)', () => {
-		const typst = generateStudentWorksheetTypst(worksheetWithC(undefined), true);
+		const typst = generateStudentWorksheetTypst(worksheetWithC(undefined), 'correction');
 		expect(typst).toContain('Unexpected token');
+	});
+});
+
+// Sens de deux majuscules collées (lot 6 des longueurs, Q-J), transmis par la vue élève
+describe('generateStudentWorksheetTypst — sens de AB (capital_pairs)', () => {
+	const worksheetWithPrimes = (capitalPairs: 'length' | 'product' | undefined) => {
+		const worksheet = createWorksheet();
+		worksheet.exercises![0].title = "Le segment ~A'B'~";
+		worksheet.exercises![0].statement = "Calculer ~A'B'~.";
+		worksheet.exercises![0].correction = "On trouve ~A'B'=5~.";
+		if (capitalPairs) worksheet.exercises![0].capital_pairs = capitalPairs;
+		return worksheet;
+	};
+
+	it('longueur : titre, énoncé et corrigé sans erreur', () => {
+		const typst = generateStudentWorksheetTypst(worksheetWithPrimes('length'), 'correction');
+		expect(typst).not.toContain('Unexpected token');
+		expect(typst).toContain('On trouve');
+	});
+
+	it('absent ou produit : écriture d’avant, identique (témoin)', () => {
+		const before = generateStudentWorksheetTypst(worksheetWithPrimes(undefined), 'correction');
+		expect(before).toContain('Unexpected token');
+		expect(generateStudentWorksheetTypst(worksheetWithPrimes('product'), 'correction')).toBe(
+			before
+		);
 	});
 });

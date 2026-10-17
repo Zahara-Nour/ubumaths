@@ -203,6 +203,7 @@ describe('verifyTeacherStudent', () => {
 
 		expect(result).toBe(false);
 		expect(consoleErrorSpy).toHaveBeenCalledWith(
+			expect.stringContaining('[server/middleware/student-access]'),
 			'[verifyTeacherStudent] Database error:',
 			mockError
 		);
@@ -321,6 +322,7 @@ describe('verifyTeacherStudentWithRole', () => {
 
 		expect(result).toBe(false);
 		expect(consoleErrorSpy).toHaveBeenCalledWith(
+			expect.stringContaining('[server/middleware/student-access]'),
 			'[verifyTeacherStudent] Database error:',
 			expect.any(Object)
 		);

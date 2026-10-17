@@ -6,6 +6,9 @@ import {
 } from '$lib/server/validation/messages';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/sent/+server');
 
 /**
  * GET /api/messages/sent
@@ -38,7 +41,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		);
 
 		if (fetchError) {
-			console.error('Error fetching sent messages:', fetchError);
+			logger.error('Error fetching sent messages:', fetchError);
 			throw error(500, 'Erreur lors de la récupération des messages envoyés');
 		}
 
@@ -51,7 +54,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		return json(validated);
 	} catch (err) {
-		console.error('Error in sent messages API:', err);
+		logger.error('Error in sent messages API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}

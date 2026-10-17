@@ -401,6 +401,36 @@
 		return styles.join('; ');
 	}
 
+	/**
+	 * La barre d'annotation disparaît quand on quitte la diapositive annotable. Si le
+	 * focus était sur un de ses boutons, il tomberait sur <body> et le clavier ne
+	 * piloterait plus le diaporama : on le rend au deck (et seulement dans ce cas).
+	 */
+	function returnFocusOnRemove(node: HTMLElement) {
+		// Le focus est-il dans la barre, ou en est-il sorti vers nulle part (<body>) ?
+		// Suivi pendant que la barre est montée : au démontage, elle est déjà hors du
+		// document, et un bouton remplacé (bascule) perd le focus sans le donner à personne.
+		let ownsFocus = false;
+		const onFocusIn = () => (ownsFocus = true);
+		const onFocusOut = (event: FocusEvent) => {
+			ownsFocus = event.relatedTarget === null || node.contains(event.relatedTarget as Node);
+		};
+		node.addEventListener('focusin', onFocusIn);
+		node.addEventListener('focusout', onFocusOut);
+		return {
+			destroy() {
+				node.removeEventListener('focusin', onFocusIn);
+				node.removeEventListener('focusout', onFocusOut);
+				if (!ownsFocus) return;
+				queueMicrotask(() => {
+					if (document.activeElement === document.body) {
+						wrapperElement?.focus({ preventScroll: true });
+					}
+				});
+			}
+		};
+	}
+
 	// Progress calculation
 	const progressPercent = $derived.by(() => {
 		const total = store.totalH;
@@ -573,19 +603,21 @@
 
 	<!-- Annotation toolbar rendered outside viewport transforms -->
 	{#if slideAnnotationStore.available}
-		<SlideAnnotationToolbar
-			tool={slideAnnotationStore.tool}
-			style={slideAnnotationStore.style}
-			enabled={slideAnnotationStore.enabled}
-			canUndo={slideAnnotationStore.canUndo}
-			canRedo={slideAnnotationStore.canRedo}
-			ontoolchange={(tool) => slideAnnotationStore.setTool(tool)}
-			onstylechange={(style) => slideAnnotationStore.setStyle(style)}
-			ontoggle={() => slideAnnotationStore.toggle()}
-			onclear={() => slideAnnotationStore.clear()}
-			onundo={() => slideAnnotationStore.undo()}
-			onredo={() => slideAnnotationStore.redo()}
-		/>
+		<div class="contents" use:returnFocusOnRemove>
+			<SlideAnnotationToolbar
+				tool={slideAnnotationStore.tool}
+				style={slideAnnotationStore.style}
+				enabled={slideAnnotationStore.enabled}
+				canUndo={slideAnnotationStore.canUndo}
+				canRedo={slideAnnotationStore.canRedo}
+				ontoolchange={(tool) => slideAnnotationStore.setTool(tool)}
+				onstylechange={(style) => slideAnnotationStore.setStyle(style)}
+				ontoggle={() => slideAnnotationStore.toggle()}
+				onclear={() => slideAnnotationStore.clear()}
+				onundo={() => slideAnnotationStore.undo()}
+				onredo={() => slideAnnotationStore.redo()}
+			/>
+		</div>
 	{/if}
 </div>
 
@@ -783,8 +815,10 @@
 		height: var(--control-size);
 		border-radius: 50%;
 		border: none;
-		background: transparent;
-		color: rgba(255, 255, 255, 0.7);
+		/* Couleurs du thème, sur une pastille du fond du thème : la flèche reste visible
+		   sur le fond clair du thème (carnets, séries) comme sur une diapositive sombre */
+		background: color-mix(in srgb, var(--color-background) 70%, transparent);
+		color: color-mix(in srgb, var(--color-foreground) 70%, transparent);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -809,7 +843,7 @@
 	}
 
 	.control-btn.enabled:hover {
-		color: white;
+		color: var(--color-foreground);
 	}
 
 	.control-btn.enabled:active {

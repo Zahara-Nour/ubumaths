@@ -20,6 +20,9 @@ import { globalIndexSchema, saveEditSchema } from '$lib/server/validation/migrat
 import { isValidGlobalIndex, loadQuestionByIndex } from '$lib/migration/question-data-loader';
 import { generateStableQuestionHash } from '$lib/server/migration/hash-utils';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/migration/questions/[globalIndex]/edit/+server');
 
 /**
  * POST /api/migration/questions/[globalIndex]/edit
@@ -38,7 +41,7 @@ import { toJson } from '$lib/types/database-helpers';
  * Response: 200 with save confirmation
  * {
  *   success: true,
- *   message: "Edit saved",
+ *   message: "Modification enregistrée",
  *   data: {
  *     globalIndex: number,
  *     editId: string,       // UUID of the edit record
@@ -57,12 +60,12 @@ import { toJson } from '$lib/types/database-helpers';
 export const POST: RequestHandler = async ({ request, locals, params }) => {
 	// SECURITY: Authentication check
 	if (!locals.profile) {
-		throw error(401, 'Authentication required');
+		throw error(401, 'Connexion requise');
 	}
 
 	// SECURITY: Authorization check (admin only)
 	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
+		throw error(403, 'Réservé aux administrateurs');
 	}
 
 	try {
@@ -71,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		const globalIndexNum = parseInt(globalIndexStr, 10);
 
 		if (isNaN(globalIndexNum)) {
-			throw error(400, 'Global index must be a valid number');
+			throw error(400, 'Numéro de question invalide');
 		}
 
 		const indexValidation = globalIndexSchema.safeParse(globalIndexNum);
@@ -96,13 +99,13 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		const questionExists = await isValidGlobalIndex(globalIndex);
 
 		if (!questionExists) {
-			throw error(404, `Question with global index ${globalIndex} not found`);
+			throw error(404, `Question n° ${globalIndex} introuvable`);
 		}
 
 		// Load original question for hash generation
 		const originalQuestion = await loadQuestionByIndex(globalIndex);
 		if (!originalQuestion) {
-			throw error(404, `Original question not found for index ${globalIndex}`);
+			throw error(404, `Question d’origine introuvable (n° ${globalIndex})`);
 		}
 
 		// Generate hash from original question
@@ -120,8 +123,8 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 		if (trackingQueryError && trackingQueryError.code !== 'PGRST116') {
 			// PGRST116 = no rows returned
-			console.error('Error querying migration_tracking:', trackingQueryError);
-			throw error(500, 'Database error while looking up tracking record');
+			logger.error('Error querying migration_tracking:', trackingQueryError);
+			throw error(500, 'Impossible de lire le suivi de la question');
 		}
 
 		let trackingId: string;
@@ -148,8 +151,8 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 				.single();
 
 			if (insertError || !newTracking) {
-				console.error('Error creating migration_tracking record:', insertError);
-				throw error(500, 'Failed to create tracking record');
+				logger.error('Error creating migration_tracking record:', insertError);
+				throw error(500, 'Impossible de créer le suivi de la question');
 			}
 
 			trackingId = newTracking.id;
@@ -175,13 +178,13 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			.single();
 
 		if (upsertError || !editRecord) {
-			console.error('Error upserting migration_edits:', upsertError);
-			throw error(500, 'Failed to save edit');
+			logger.error('Error upserting migration_edits:', upsertError);
+			throw error(500, 'Impossible d’enregistrer la modification');
 		}
 
 		return json({
 			success: true,
-			message: 'Edit saved',
+			message: 'Modification enregistrée',
 			data: {
 				globalIndex,
 				editId: editRecord.id,
@@ -196,7 +199,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Log and return generic error
-		console.error('Error saving question edit:', err);
-		throw error(500, 'Failed to save edit');
+		logger.error('Error saving question edit:', err);
+		throw error(500, 'Impossible d’enregistrer la modification');
 	}
 };

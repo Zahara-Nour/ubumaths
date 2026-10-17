@@ -13,6 +13,7 @@
 	 * Un réglage n'est pas une action : il n'écrit rien dans Calcul (S5).
 	 */
 	import { useAtelier } from '$lib/atelier/context';
+	import { areaRefusal, tangentRefusal } from '$lib/atelier/interval';
 	import { useGrapheurStore } from '$lib/stores/grapheur-context';
 	import { curveOf } from '$lib/atelier/plot-sync';
 	import type { CurveDisplay, FunctionObject } from '$lib/atelier/types';
@@ -77,21 +78,33 @@
 
 	// Les valeurs de l'atelier sont DÉJÀ substituées dans la courbe posée
 	// (`plot-sync`) : aucun paramètre à lier ici.
+	// Décision f : hors de l'ensemble de la fonction, ni tangente ni aire (une
+	// borne fermée est dedans) — le refus se lit ici, où l'élève règle
+	const tangentRefused = $derived(
+		display.tangentAt === null ? null : tangentRefusal(object, display.tangentAt)
+	);
+	const areaRefused = $derived(
+		display.integral === null
+			? null
+			: areaRefusal(object, display.integral.from, display.integral.to)
+	);
 	const tangent = $derived(
-		curve && display.tangentAt !== null ? tangentAt(curve, display.tangentAt) : undefined
+		curve && display.tangentAt !== null && tangentRefused === null
+			? tangentAt(curve, display.tangentAt)
+			: undefined
 	);
 	const curvature = $derived(
-		curve && display.tangentAt !== null && display.showOsculating
+		curve && display.tangentAt !== null && display.showOsculating && tangentRefused === null
 			? curvatureAt(curve, display.tangentAt)
 			: undefined
 	);
 	const area = $derived(
-		curve && display.integral
+		curve && display.integral && areaRefused === null
 			? integralUnder(curve, display.integral.from, display.integral.to)
 			: undefined
 	);
 	const length = $derived(
-		curve && display.integral && display.showArcLength
+		curve && display.integral && display.showArcLength && areaRefused === null
 			? arcLengthBetween(curve, display.integral.from, display.integral.to)
 			: undefined
 	);
@@ -235,9 +248,12 @@
 				<!-- Largeur fixe : un nombre qui change de largeur fait reculer le curseur -->
 				<span class="nombre fixe">{formatNumber(display.tangentAt)}</span>
 			</div>
+			<p class="refus refus-tangente" role="alert">{tangentRefused ?? ''}</p>
 			<div class="ligne">
 				<span class="nombre pente">
-					{#if tangent}
+					{#if tangentRefused !== null}
+						pas de tangente
+					{:else if tangent}
 						f′(x₀) = {formatNumber(tangent.slope)}
 					{:else}
 						pente non définie
@@ -287,7 +303,7 @@
 					aria-invalid={boundRefusal?.edge === 'to'}
 				/>
 			</div>
-			<p class="refus" role="alert">{boundRefusal?.message ?? ''}</p>
+			<p class="refus" role="alert">{boundRefusal?.message ?? areaRefused ?? ''}</p>
 			<div class="ligne">
 				<span class="nombre aire">aire = {area ? formatNumber(area.value) : '—'}</span>
 				<MyCheckbox

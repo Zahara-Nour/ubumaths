@@ -1035,9 +1035,8 @@ describe('Image Generation - Path Resolution', () => {
 	});
 
 	it('should track external image URLs for later fetching', async () => {
-		const { clearTrackedExternalImages, getTrackedExternalImages } = await import(
-			'../typst-generator'
-		);
+		const { clearTrackedExternalImages, getTrackedExternalImages } =
+			await import('../typst-generator');
 
 		const options: ResolvedTypstTranspilerOptions = {
 			paperSize: 'a4',
@@ -1592,6 +1591,20 @@ describe('convertLatexToTypstMath - Matrix environments', () => {
 	it('should convert \\begin{vmatrix} to mat() with bar delimiter', () => {
 		expect(convertLatexToTypstMath('\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}')).toBe(
 			'mat(delim: "|", a, b; c, d)'
+		);
+	});
+
+	// Typst n'accepte qu'UN caractère (ou none) pour `delim` : "none" et "||" faisaient
+	// échouer toute la fiche (« expected exactly one character », compilé le 2026-10-13)
+	it('\\begin{matrix} : mat() sans délimiteur (none, pas la chaîne "none")', () => {
+		expect(convertLatexToTypstMath('\\begin{matrix} a & b \\\\ c & d \\end{matrix}')).toBe(
+			'mat(delim: #none, a, b; c, d)'
+		);
+	});
+
+	it('\\begin{Vmatrix} : mat() à doubles barres, en un seul caractère ‖', () => {
+		expect(convertLatexToTypstMath('\\begin{Vmatrix} a & b \\\\ c & d \\end{Vmatrix}')).toBe(
+			'mat(delim: "‖", a, b; c, d)'
 		);
 	});
 

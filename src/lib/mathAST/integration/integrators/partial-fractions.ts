@@ -15,7 +15,9 @@ import type {
 } from '../types';
 import { isNumber, isVariable, isZero } from '../../guards';
 import { number, divide, add, subtract, power, implicitMultiply, func } from '../../factory';
-import { numericNode } from '../../common/numeric';
+import { numericNode, rationalToNode } from '../../common/numeric';
+import { divRational, negRational } from '../../normal/rational';
+import { integerLinearFactorNode, toPolynomial } from '../../factor';
 import { containsVariable } from '../rules';
 import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
 // Polynomial division utilities
@@ -58,6 +60,12 @@ interface PolynomialFactor {
 	multiplicity: number;
 	/** For quadratic: coefficients a, b, c in ax^2 + bx + c */
 	quadraticCoeffs?: { a: MathNode; b: MathNode; c: MathNode };
+	/**
+	 * Facteur linéaire à coefficients entiers `q·x − p` (racine p/q, q > 1
+	 * possible) : écrit dans la primitive, ln|2x − 1| et non ln|x − 1/2|.
+	 * Absent : le facteur s'écrit `x − root`.
+	 */
+	integerFactor?: { node: MathNode; leading: bigint };
 }
 
 /**
@@ -529,8 +537,39 @@ function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[]
 		}
 	}
 
+	// Case 7: px + q ou (px + q)^n à coefficients rationnels (`2x - 1`,
+	// `(3x + 2)^2`) : facteur entier primitif, racine −q/p
+	const integer = integerLinearPower(poly, variable);
+	if (integer) return [integer];
+
 	// Unable to factor
 	return null;
+}
+
+/**
+ * `px + q` ou `(px + q)^n`, p et q rationnels : le facteur entier primitif
+ * `q'·x − p'` de la racine −q/p (noyau `factor/`, ADR 0024), ou null.
+ */
+function integerLinearPower(node: MathNode, variable: string): PolynomialFactor | null {
+	let base = node;
+	let multiplicity = 1;
+	if (
+		node.type === 'superscript' &&
+		isNumber(node.superscript) &&
+		/^[1-9]\d*$/.test(node.superscript.value)
+	) {
+		base = unwrapDelimiter(node.base);
+		multiplicity = Number(node.superscript.value);
+	}
+	const poly = toPolynomial(base, variable);
+	if (poly === null || poly.length !== 2) return null;
+	const root = negRational(divRational(poly[0], poly[1]));
+	return {
+		type: 'linear',
+		root: rationalToNode(root),
+		multiplicity,
+		integerFactor: { node: integerLinearFactorNode(variable, root), leading: root.d }
+	};
 }
 
 // =============================================================================
@@ -1060,6 +1099,21 @@ function integratePartialFraction(
 ): MathNode | null {
 	if (term.factor.type === 'linear') {
 		// Linear factor: A/(x-a)^n
+		const integerFactor = term.factor.integerFactor;
+		if (integerFactor !== undefined) {
+			// A/(x − p/q)^n = A·qⁿ/(qx − p)^n : A ln|qx − p| (n = 1),
+			// A·q^(n−1)/(1 − n) · (qx − p)^(1−n) sinon
+			const n = term.power;
+			if (n === 1) {
+				return implicitMultiply(term.coefficient, func('ln', [func('abs', [integerFactor.node])]));
+			}
+			const value = getNumericValue(term.coefficient);
+			if (value === null) return null;
+			const coefficient = exactCoefficient(value * Math.pow(Number(integerFactor.leading), n - 1));
+			if (coefficient === null) return null;
+			const newPower = power(integerFactor.node, numericNode(-n + 1));
+			return implicitMultiply(coefficient, divide(newPower, numericNode(-n + 1), 'fraction'));
+		}
 
 		if (term.power === 1) {
 			// A/(x-a) → A * ln|x-a|
@@ -1267,7 +1321,7 @@ export const partialFractionsIntegrator: Integrator = {
 				integrandType: 'rational',
 				technique: 'partial-fractions',
 				steps: recorder.getSteps(),
-				error: 'Not a rational function'
+				error: "Ce n'est pas une fraction rationnelle"
 			};
 		}
 
@@ -1324,7 +1378,7 @@ export const partialFractionsIntegrator: Integrator = {
 					integrandType: 'rational',
 					technique: 'partial-fractions',
 					steps: recorder.getSteps(),
-					error: 'Polynomial division not yet fully implemented for complex cases'
+					error: 'Je ne sais pas encore faire cette division de polynômes'
 				};
 			}
 
@@ -1465,7 +1519,7 @@ export const partialFractionsIntegrator: Integrator = {
 				integrandType: 'rational',
 				technique: 'partial-fractions',
 				steps: recorder.getSteps(),
-				error: 'Unable to factor denominator'
+				error: 'Je ne sais pas factoriser le dénominateur : je ne peux pas calculer cette intégrale'
 			};
 		}
 
@@ -1488,7 +1542,7 @@ export const partialFractionsIntegrator: Integrator = {
 				integrandType: 'rational',
 				technique: 'partial-fractions',
 				steps: recorder.getSteps(),
-				error: 'Unable to decompose into partial fractions'
+				error: 'Je ne sais pas décomposer cette fraction en éléments simples'
 			};
 		}
 
@@ -1568,7 +1622,7 @@ export const partialFractionsIntegrator: Integrator = {
 					integrandType: 'rational',
 					technique: 'partial-fractions',
 					steps: recorder.getSteps(),
-					error: 'Unable to integrate partial fraction term'
+					error: 'Je ne sais pas intégrer un des éléments simples'
 				};
 			}
 

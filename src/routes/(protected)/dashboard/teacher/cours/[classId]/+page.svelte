@@ -14,8 +14,9 @@
 
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
-	import { navigating } from '$app/stores';
+	import { navigating, page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
@@ -25,9 +26,9 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { CourseShareLinkCard } from '$lib/components/cours/teacher';
 	import { CHAPTER_ICONS } from '$lib/types/chapters';
 	import {
-		ArrowLeft,
 		Plus,
 		Eye,
 		EyeOff,
@@ -39,10 +40,14 @@
 		FileText,
 		ClipboardList,
 		Dumbbell,
+		FileStack,
+		Layers,
 		Copy
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import type { TemplateSummary } from '$lib/types/chapter-templates';
+	import { templateSelectItems } from '$lib/utils/template-select-items';
+	import { formatGradeShort } from '$lib/utils/grades';
 
 	interface Props {
 		data: PageData;
@@ -79,9 +84,14 @@
 	let editIcon = $state('');
 	let editIsVisible = $state(false);
 
+	/** URL complète du lien du cours (ADR 0025), celle qu'on colle dans un carnet ou un mail. */
+	let courseShareUrl = $derived(
+		data.courseShareToken ? `${page.url.origin}/cours/${data.courseShareToken.token}` : null
+	);
+
 	// Loading state
 	let isSubmitting = $state(false);
-	let isNavigating = $derived(!!$navigating);
+	let isNavigating = $derived(!!navigating.to);
 
 	// Color options for MySelect
 	// Icon options for MySelect
@@ -91,12 +101,7 @@
 	]);
 
 	// Template items for MySelect
-	let templateItems = $derived(
-		data.templates.map((t: TemplateSummary) => ({
-			value: t.id,
-			label: `${t.title}${t.isOwner ? '' : ' (public)'}`
-		}))
-	);
+	let templateItems = $derived(templateSelectItems(data.templates));
 
 	// Handle form results
 	$effect(() => {
@@ -113,9 +118,13 @@
 				showDeleteDialog = false;
 				selectedChapter = null;
 			} else if (form.action === 'toggleVisibility') {
-				toaster.success('Visibilite mise a jour');
+				toaster.success('Visibilité mise à jour');
+			} else if (form.action === 'shareCourseLink') {
+				toaster.success('Lien du cours prêt');
+			} else if (form.action === 'revokeCourseLink') {
+				toaster.success('Lien du cours révoqué');
 			} else if (form.action === 'instantiateFromTemplate') {
-				toaster.success('Chapitre cree depuis le template');
+				toaster.success('Chapitre créé depuis le modèle');
 				showTemplateDialog = false;
 				resetTemplateForm();
 			}
@@ -163,13 +172,7 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-6">
-	<!-- Breadcrumb & Back -->
-	<div class="mb-6">
-		<Button variant="ghost" href="/dashboard/teacher/cours" class="mb-2 -ml-2">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour aux cours
-		</Button>
-	</div>
+	<BackLink href="/dashboard/teacher/cours" label="Retour aux cours" />
 
 	<!-- Header -->
 	<div class="mb-8 flex items-start justify-between gap-4">
@@ -188,7 +191,7 @@
 			{#if data.templates.length > 0}
 				<Button variant="outline" onclick={() => (showTemplateDialog = true)}>
 					<Copy class="mr-2 h-4 w-4" />
-					Depuis un template
+					Depuis un modèle
 				</Button>
 			{/if}
 			<Button onclick={() => (showCreateDialog = true)}>
@@ -197,6 +200,13 @@
 			</Button>
 		</div>
 	</div>
+
+	<!-- Lien du cours : les élèves sans compte n'ont pas d'autre accès (ADR 0025) -->
+	<CourseShareLinkCard
+		shareUrl={courseShareUrl}
+		expiresAt={data.courseShareToken?.expires_at ?? null}
+		accessCount={data.courseShareToken?.access_count ?? 0}
+	/>
 
 	<!-- Loading state -->
 	{#if isNavigating}
@@ -215,11 +225,11 @@
 				<FolderOpen class="mx-auto mb-4 h-16 w-16 text-muted-foreground/40" />
 				<h2 class="text-xl font-semibold">Aucun chapitre</h2>
 				<p class="mt-2 text-muted-foreground">
-					Creez votre premier chapitre pour commencer a organiser le contenu de votre cours.
+					Créez votre premier chapitre pour commencer à organiser le contenu de votre cours.
 				</p>
 				<Button onclick={() => (showCreateDialog = true)} class="mt-4">
 					<Plus class="mr-2 h-4 w-4" />
-					Creer un chapitre
+					Créer un chapitre
 				</Button>
 			</Card.Content>
 		</Card.Root>
@@ -248,7 +258,7 @@
 								{#if !chapter.isVisible}
 									<Badge variant="secondary" class="flex items-center gap-1">
 										<EyeOff class="h-3 w-3" />
-										Masque
+										Invisible des élèves
 									</Badge>
 								{/if}
 							</div>
@@ -283,7 +293,12 @@
 									type="submit"
 									variant="ghost"
 									size="icon-sm"
-									title={chapter.isVisible ? 'Masquer' : 'Afficher'}
+									title={chapter.isVisible
+										? 'Rendre invisible des élèves'
+										: 'Rendre visible des élèves'}
+									aria-label={chapter.isVisible
+										? `Rendre ${chapter.title} invisible des élèves`
+										: `Rendre ${chapter.title} visible des élèves`}
 								>
 									{#if chapter.isVisible}
 										<Eye class="h-4 w-4" />
@@ -380,7 +395,7 @@
 			</div>
 
 			<div class="flex items-center gap-2">
-				<MyCheckbox bind:checked={createIsVisible} label="Visible par les eleves" />
+				<MyCheckbox bind:checked={createIsVisible} label="Visible par les élèves" />
 				<input type="hidden" name="isVisible" value={createIsVisible} />
 			</div>
 
@@ -389,7 +404,7 @@
 					Annuler
 				</Button>
 				<Button type="submit" disabled={isSubmitting || !createTitle.trim()}>
-					{isSubmitting ? 'Creation...' : 'Creer'}
+					{isSubmitting ? 'Création…' : 'Créer'}
 				</Button>
 			</Dialog.Footer>
 		</form>
@@ -439,7 +454,7 @@
 				</div>
 
 				<div class="flex items-center gap-2">
-					<MyCheckbox bind:checked={editIsVisible} label="Visible par les eleves" />
+					<MyCheckbox bind:checked={editIsVisible} label="Visible par les élèves" />
 					<input type="hidden" name="isVisible" value={editIsVisible} />
 				</div>
 
@@ -499,10 +514,11 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Copy class="h-5 w-5 text-primary" />
-				Creer depuis un template
+				Créer depuis un modèle
 			</Dialog.Title>
 			<Dialog.Description>
-				Selectionnez un template pour creer un chapitre avec du contenu pre-rempli.
+				Sélectionnez un modèle : le chapitre créé lui sera lié, et suivra ses corrections. Son
+				contenu y arrive préparé — rien n’est publié aux élèves.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -519,13 +535,14 @@
 		>
 			<!-- Template selection -->
 			<div class="space-y-2">
-				<Label for="template-select">Template *</Label>
+				<Label for="template-select">Modèle *</Label>
 				<MySelect
 					id="template-select"
 					type="single"
 					bind:value={selectedTemplateId}
 					items={templateItems}
-					placeholder="Selectionnez un template"
+					placeholder="Sélectionnez un modèle"
+					triggerAriaLabel="Modèle : {selectedTemplate?.title ?? 'aucune sélection'}"
 				/>
 				<input type="hidden" name="templateId" value={selectedTemplateId} />
 			</div>
@@ -565,12 +582,28 @@
 									{lore.learning.exercise}{selectedTemplate.exerciseCount > 1 ? 's' : ''}</span
 								>
 							</div>
+							<div class="flex items-center gap-2">
+								<FileStack class="h-4 w-4 text-muted-foreground" />
+								<span
+									>{selectedTemplate.worksheetCount} fiche{selectedTemplate.worksheetCount > 1
+										? 's'
+										: ''}</span
+								>
+							</div>
+							<div class="flex items-center gap-2">
+								<Layers class="h-4 w-4 text-muted-foreground" />
+								<span
+									>{selectedTemplate.seriesCount} série{selectedTemplate.seriesCount > 1
+										? 's'
+										: ''}</span
+								>
+							</div>
 						</div>
 
 						{#if selectedTemplate.grades.length > 0}
 							<div class="mt-3 flex flex-wrap gap-1">
 								{#each selectedTemplate.grades as grade (grade)}
-									<Badge variant="secondary" class="text-xs">{grade}e</Badge>
+									<Badge variant="secondary" class="text-xs">{formatGradeShort(grade)}</Badge>
 								{/each}
 							</div>
 						{/if}
@@ -585,14 +618,14 @@
 					id="template-title"
 					name="title"
 					bind:value={templateTitle}
-					placeholder={selectedTemplate?.title || 'Utiliser le titre du template'}
+					placeholder={selectedTemplate?.title || 'Utiliser le titre du modèle'}
 				/>
-				<p class="text-xs text-muted-foreground">Laissez vide pour utiliser le titre du template</p>
+				<p class="text-xs text-muted-foreground">Laissez vide pour reprendre le titre du modèle.</p>
 			</div>
 
 			<!-- Visibility -->
 			<div class="flex items-center gap-2">
-				<MyCheckbox bind:checked={templateIsVisible} label="Visible par les eleves" />
+				<MyCheckbox bind:checked={templateIsVisible} label="Visible par les élèves" />
 				<input type="hidden" name="isVisible" value={templateIsVisible} />
 			</div>
 
@@ -602,7 +635,7 @@
 				</Button>
 				<Button type="submit" disabled={isSubmitting || !selectedTemplateId}>
 					<Copy class="mr-2 h-4 w-4" />
-					{isSubmitting ? 'Creation...' : 'Creer le chapitre'}
+					{isSubmitting ? 'Création…' : 'Créer le chapitre'}
 				</Button>
 			</Dialog.Footer>
 		</form>

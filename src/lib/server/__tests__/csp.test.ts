@@ -6,7 +6,7 @@
  * sécurité du 2026-10-03).
  */
 import { describe, expect, it } from 'vitest';
-import { supabaseCspSource } from '../csp';
+import { supabaseConnectSources, supabaseCspSource } from '../csp';
 
 describe('supabaseCspSource', () => {
 	it('donne l’origine exacte du projet', () => {
@@ -25,5 +25,21 @@ describe('supabaseCspSource', () => {
 
 	it('n’admet jamais de joker', () => {
 		expect(supabaseCspSource('https://projet.supabase.co')).not.toContain('*');
+	});
+});
+
+describe('supabaseConnectSources (connect-src)', () => {
+	it('en local : HTTP et WebSocket vers la base locale', () => {
+		expect(supabaseConnectSources('http://127.0.0.1:54321')).toEqual([
+			'http://127.0.0.1:54321',
+			'ws://127.0.0.1:54321'
+		]);
+	});
+
+	it('en prod : HTTPS et WebSocket sécurisé vers NOTRE projet seulement', () => {
+		expect(supabaseConnectSources('https://cnevnzsvixxpnurautls.supabase.co/')).toEqual([
+			'https://cnevnzsvixxpnurautls.supabase.co',
+			'wss://cnevnzsvixxpnurautls.supabase.co'
+		]);
 	});
 });

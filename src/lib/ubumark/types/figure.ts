@@ -87,6 +87,30 @@ export interface FigureHeader {
 	ticks: FigureStep | false | null;
 }
 
+/**
+ * Rendu des traits à l'écran (`rendu:`) : mot de l'en-tête → `renderMode` de
+ * `GeometryCanvas` (normal, croquis à la main, mixte selon chaque objet).
+ */
+export const FIGURE_RENDER_MODES = {
+	normal: 'normal',
+	croquis: 'rough',
+	mixte: 'mixed'
+} as const;
+export type FigureRenderWord = keyof typeof FIGURE_RENDER_MODES;
+export type FigureRenderMode = (typeof FIGURE_RENDER_MODES)[FigureRenderWord];
+
+/**
+ * Réglages d'une figure INTERACTIVE (figure stockée, ADR 0027) : refusés dans
+ * un bloc ```figure d'exercice, qui reste statique. Pensés pour servir tels
+ * quels à un futur bloc ```figure interactif.
+ */
+export interface FigureInteractiveSettings {
+	/** `deplacable: oui` : points, textes et étiquettes se déplacent ; défaut non (les curseurs restent actifs) */
+	draggable: boolean;
+	/** `rendu:` ; défaut normal */
+	renderMode: FigureRenderMode;
+}
+
 /** Message situé, à destination de l'AUTEUR (jamais montré à l'élève, Q48). */
 export interface FigureIssue {
 	message: string;
@@ -109,6 +133,12 @@ export interface FigureNode extends BaseNode {
 	script: string;
 	/** Ligne du bloc où commence le script (ligne 1 du script) */
 	scriptStartLine: number;
+	/**
+	 * Réglages interactifs (`deplacable:`, `rendu:`) : présents seulement quand le
+	 * parseur les accepte (`interactive: true`, figures stockées) ; absents d'un
+	 * bloc d'exercice.
+	 */
+	interactive?: FigureInteractiveSettings;
 	/** Erreurs de l'en-tête ou de structure (le script n'est alors pas interprété) */
 	errors: FigureIssue[];
 }

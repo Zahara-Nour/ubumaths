@@ -10,6 +10,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { approveTemplateSchema } from '$lib/server/validation/message-templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/templates/[id]/approve/+server');
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { supabase, user } = locals;
@@ -29,8 +32,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		logger.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	if (!profile || profile.role !== 'admin') {
@@ -71,7 +74,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (updateError) {
-		console.error('Error updating approval status:', updateError);
+		logger.error('Error updating approval status:', updateError);
 		return error(500, 'Erreur lors de la mise à jour du statut');
 	}
 

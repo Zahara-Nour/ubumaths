@@ -68,15 +68,15 @@ exports[`snapshot — edge-cases > x = x + 1 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] subtract-both-sides: On soustrait x aux deux membres
+[2] subtract-both-sides: On soustrait $x$ aux deux membres
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On soustrait x aux deux membres
+[2] On soustrait $x$ aux deux membres
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On soustrait x aux deux membres
+[2] On soustrait $x$ aux deux membres
     │ \\begin{aligned}
     │   x \\textcolor{blue}{- x} &= x + 1 \\textcolor{blue}{- x} \\\\
     │   0 &= 1
@@ -122,42 +122,42 @@ exports[`snapshot — regroupement > 3x − 2 = −5x + 7 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] add-both-sides: On ajoute 5x aux deux membres
-[3] add-both-sides: On ajoute 2 aux deux membres
-[4] divide-both-sides: On divise les deux membres par 8
-[5] read-solution: Solution : x = \\dfrac{9}{8}
+[2] add-both-sides: On ajoute $5x$ aux deux membres
+[3] add-both-sides: On ajoute $2$ aux deux membres
+[4] divide-both-sides: On divise les deux membres par $8$
+[5] read-solution: Solution : $x = \\dfrac{9}{8}$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On ajoute 5x aux deux membres
-[3] On ajoute 2 aux deux membres
-[4] On divise les deux membres par 8
-[5] Solution : x = \\dfrac{9}{8}
+[2] On ajoute $5x$ aux deux membres
+[3] On ajoute $2$ aux deux membres
+[4] On divise les deux membres par $8$
+[5] Solution : $x = \\dfrac{9}{8}$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On ajoute 5x aux deux membres
+[2] On ajoute $5x$ aux deux membres
     │ \\begin{aligned}
     │   3x - 2 \\textcolor{blue}{+ 5x} &= -5x + 7 \\textcolor{blue}{+ 5x} \\\\
     │   8x - 2 &= 7
     │ \\end{aligned}
-[3] On ajoute 2 aux deux membres
+[3] On ajoute $2$ aux deux membres
     │ \\begin{aligned}
     │   8x - 2 \\textcolor{blue}{+ 2} &= 7 \\textcolor{blue}{+ 2} \\\\
     │   8x &= 9
     │ \\end{aligned}
-[4] On divise les deux membres par 8
+[4] On divise les deux membres par $8$
     │ \\begin{aligned}
     │   \\dfrac{8x}{\\textcolor{blue}{8}} &= \\dfrac{9}{\\textcolor{blue}{8}} \\\\
     │   x &= \\dfrac{9}{8}
     │ \\end{aligned}
-[5] Solution : x = \\dfrac{9}{8}
+[5] Solution : $x = \\dfrac{9}{8}$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { \\dfrac{9}{8} }
+[4] $S = \\{ \\dfrac{9}{8} \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
@@ -168,13 +168,13 @@ exports[`snapshot — regroupement > 3x − 2 = −5x + 7 1`] = `
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = \\dfrac{9}{8}
-[4] S = { \\dfrac{9}{8} }
+[4] $S = \\{ \\dfrac{9}{8} \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { \\dfrac{9}{8} }
+    [3] $S = \\{ \\dfrac{9}{8} \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -189,7 +189,7 @@ exports[`snapshot — regroupement > 3x − 2 = −5x + 7 1`] = `
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = \\dfrac{9}{8}
-    [3] S = { \\dfrac{9}{8} }
+    [3] $S = \\{ \\dfrac{9}{8} \\}$
 "
 `;
 
@@ -203,59 +203,59 @@ exports[`snapshot — regroupement > 4x + 1 = 2x + 5 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] add-both-sides: On ajoute -2x aux deux membres
-[3] subtract-both-sides: On soustrait 1 aux deux membres
-[4] divide-both-sides: On divise les deux membres par 2
-[5] read-solution: Solution : x = 2
+[2] subtract-both-sides: On soustrait $2x$ aux deux membres
+[3] subtract-both-sides: On soustrait $1$ aux deux membres
+[4] divide-both-sides: On divise les deux membres par $2$
+[5] read-solution: Solution : $x = 2$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On ajoute -2x aux deux membres
-[3] On soustrait 1 aux deux membres
-[4] On divise les deux membres par 2
-[5] Solution : x = 2
+[2] On soustrait $2x$ aux deux membres
+[3] On soustrait $1$ aux deux membres
+[4] On divise les deux membres par $2$
+[5] Solution : $x = 2$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On ajoute -2x aux deux membres
+[2] On soustrait $2x$ aux deux membres
     │ \\begin{aligned}
-    │   4x + 1 \\textcolor{blue}{+ -2x} &= 2x + 5 \\textcolor{blue}{+ -2x} \\\\
+    │   4x + 1 \\textcolor{blue}{- 2x} &= 2x + 5 \\textcolor{blue}{- 2x} \\\\
     │   2x + 1 &= 5
     │ \\end{aligned}
-[3] On soustrait 1 aux deux membres
+[3] On soustrait $1$ aux deux membres
     │ \\begin{aligned}
     │   2x + 1 \\textcolor{blue}{- 1} &= 5 \\textcolor{blue}{- 1} \\\\
     │   2x &= 4
     │ \\end{aligned}
-[4] On divise les deux membres par 2
+[4] On divise les deux membres par $2$
     │ \\begin{aligned}
     │   \\dfrac{2x}{\\textcolor{blue}{2}} &= \\dfrac{4}{\\textcolor{blue}{2}} \\\\
     │   x &= 2
     │ \\end{aligned}
-[5] Solution : x = 2
+[5] Solution : $x = 2$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { 2 }
+[4] $S = \\{ 2 \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
     │ \\begin{aligned}
-    │   4x \\textcolor{blue}{+ -2x} &= 5 \\textcolor{blue}{- 1} \\\\
+    │   4x \\textcolor{blue}{- 2x} &= 5 \\textcolor{blue}{- 1} \\\\
     │   2x &= 4
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = 2
-[4] S = { 2 }
+[4] $S = \\{ 2 \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { 2 }
+    [3] $S = \\{ 2 \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -265,12 +265,12 @@ exports[`snapshot — regroupement > 4x + 1 = 2x + 5 1`] = `
     │ \\end{aligned}
     [1] On isole les termes en x dans le membre de gauche
         │ \\begin{aligned}
-        │   4x \\textcolor{blue}{+ -2x} &= 5 \\textcolor{blue}{- 1} \\\\
+        │   4x \\textcolor{blue}{- 2x} &= 5 \\textcolor{blue}{- 1} \\\\
         │   2x &= 4
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = 2
-    [3] S = { 2 }
+    [3] $S = \\{ 2 \\}$
 "
 `;
 
@@ -284,59 +284,59 @@ exports[`snapshot — regroupement > 5 − 2x = 11 + 3x 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] add-both-sides: On ajoute -3x aux deux membres
-[3] subtract-both-sides: On soustrait 5 aux deux membres
-[4] divide-both-sides: On divise les deux membres par -5
-[5] read-solution: Solution : x = -\\dfrac{6}{5}
+[2] subtract-both-sides: On soustrait $3x$ aux deux membres
+[3] subtract-both-sides: On soustrait $5$ aux deux membres
+[4] divide-both-sides: On divise les deux membres par $-5$
+[5] read-solution: Solution : $x = -\\dfrac{6}{5}$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On ajoute -3x aux deux membres
-[3] On soustrait 5 aux deux membres
-[4] On divise les deux membres par -5
-[5] Solution : x = -\\dfrac{6}{5}
+[2] On soustrait $3x$ aux deux membres
+[3] On soustrait $5$ aux deux membres
+[4] On divise les deux membres par $-5$
+[5] Solution : $x = -\\dfrac{6}{5}$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On ajoute -3x aux deux membres
+[2] On soustrait $3x$ aux deux membres
     │ \\begin{aligned}
-    │   5 - 2x \\textcolor{blue}{+ -3x} &= 11 + 3x \\textcolor{blue}{+ -3x} \\\\
+    │   5 - 2x \\textcolor{blue}{- 3x} &= 11 + 3x \\textcolor{blue}{- 3x} \\\\
     │   -5x + 5 &= 11
     │ \\end{aligned}
-[3] On soustrait 5 aux deux membres
+[3] On soustrait $5$ aux deux membres
     │ \\begin{aligned}
     │   -5x + 5 \\textcolor{blue}{- 5} &= 11 \\textcolor{blue}{- 5} \\\\
     │   -5x &= 6
     │ \\end{aligned}
-[4] On divise les deux membres par -5
+[4] On divise les deux membres par $-5$
     │ \\begin{aligned}
     │   \\dfrac{-5x}{\\textcolor{blue}{-5}} &= \\dfrac{6}{\\textcolor{blue}{-5}} \\\\
     │   x &= -\\dfrac{6}{5}
     │ \\end{aligned}
-[5] Solution : x = -\\dfrac{6}{5}
+[5] Solution : $x = -\\dfrac{6}{5}$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { -\\dfrac{6}{5} }
+[4] $S = \\{ -\\dfrac{6}{5} \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
     │ \\begin{aligned}
-    │   -2x \\textcolor{blue}{+ -3x} &= 11 \\textcolor{blue}{- 5} \\\\
+    │   -2x \\textcolor{blue}{- 3x} &= 11 \\textcolor{blue}{- 5} \\\\
     │   -5x &= 6
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = -\\dfrac{6}{5}
-[4] S = { -\\dfrac{6}{5} }
+[4] $S = \\{ -\\dfrac{6}{5} \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { -\\dfrac{6}{5} }
+    [3] $S = \\{ -\\dfrac{6}{5} \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -346,12 +346,12 @@ exports[`snapshot — regroupement > 5 − 2x = 11 + 3x 1`] = `
     │ \\end{aligned}
     [1] On isole les termes en x dans le membre de gauche
         │ \\begin{aligned}
-        │   -2x \\textcolor{blue}{+ -3x} &= 11 \\textcolor{blue}{- 5} \\\\
+        │   -2x \\textcolor{blue}{- 3x} &= 11 \\textcolor{blue}{- 5} \\\\
         │   -5x &= 6
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = -\\dfrac{6}{5}
-    [3] S = { -\\dfrac{6}{5} }
+    [3] $S = \\{ -\\dfrac{6}{5} \\}$
 "
 `;
 
@@ -365,59 +365,59 @@ exports[`snapshot — regroupement-fractions > 2x/3 − 1/2 = x/4 + 1 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] add-both-sides: On ajoute -\\dfrac{1}{4}x aux deux membres
-[3] add-both-sides: On ajoute \\dfrac{1}{2} aux deux membres
-[4] divide-both-sides: On divise les deux membres par \\dfrac{5}{12}
-[5] read-solution: Solution : x = \\dfrac{18}{5}
+[2] subtract-both-sides: On soustrait $\\dfrac{1}{4}x$ aux deux membres
+[3] add-both-sides: On ajoute $\\dfrac{1}{2}$ aux deux membres
+[4] divide-both-sides: On divise les deux membres par $\\dfrac{5}{12}$
+[5] read-solution: Solution : $x = \\dfrac{18}{5}$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On ajoute -\\dfrac{1}{4}x aux deux membres
-[3] On ajoute \\dfrac{1}{2} aux deux membres
-[4] On divise les deux membres par \\dfrac{5}{12}
-[5] Solution : x = \\dfrac{18}{5}
+[2] On soustrait $\\dfrac{1}{4}x$ aux deux membres
+[3] On ajoute $\\dfrac{1}{2}$ aux deux membres
+[4] On divise les deux membres par $\\dfrac{5}{12}$
+[5] Solution : $x = \\dfrac{18}{5}$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On ajoute -\\dfrac{1}{4}x aux deux membres
+[2] On soustrait $\\dfrac{1}{4}x$ aux deux membres
     │ \\begin{aligned}
-    │   \\dfrac{2x}{3} - \\dfrac{1}{2} \\textcolor{blue}{+ -\\dfrac{1}{4}x} &= \\dfrac{x}{4} + 1 \\textcolor{blue}{+ -\\dfrac{1}{4}x} \\\\
+    │   \\dfrac{2x}{3} - \\dfrac{1}{2} \\textcolor{blue}{- \\dfrac{1}{4}x} &= \\dfrac{x}{4} + 1 \\textcolor{blue}{- \\dfrac{1}{4}x} \\\\
     │   \\dfrac{5}{12}x - \\dfrac{1}{2} &= 1
     │ \\end{aligned}
-[3] On ajoute \\dfrac{1}{2} aux deux membres
+[3] On ajoute $\\dfrac{1}{2}$ aux deux membres
     │ \\begin{aligned}
     │   \\dfrac{5}{12}x - \\dfrac{1}{2} \\textcolor{blue}{+ \\dfrac{1}{2}} &= 1 \\textcolor{blue}{+ \\dfrac{1}{2}} \\\\
     │   \\dfrac{5}{12}x &= \\dfrac{3}{2}
     │ \\end{aligned}
-[4] On divise les deux membres par \\dfrac{5}{12}
+[4] On divise les deux membres par $\\dfrac{5}{12}$
     │ \\begin{aligned}
     │   \\dfrac{\\dfrac{5}{12}x}{\\textcolor{blue}{\\dfrac{5}{12}}} &= \\dfrac{\\dfrac{3}{2}}{\\textcolor{blue}{\\dfrac{5}{12}}} \\\\
     │   x &= \\dfrac{18}{5}
     │ \\end{aligned}
-[5] Solution : x = \\dfrac{18}{5}
+[5] Solution : $x = \\dfrac{18}{5}$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { \\dfrac{18}{5} }
+[4] $S = \\{ \\dfrac{18}{5} \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
     │ \\begin{aligned}
-    │   \\dfrac{2x}{3} \\textcolor{blue}{+ -\\dfrac{1}{4}x} &= 1 \\textcolor{blue}{+ \\dfrac{1}{2}} \\\\
+    │   \\dfrac{2x}{3} \\textcolor{blue}{- \\dfrac{1}{4}x} &= 1 \\textcolor{blue}{+ \\dfrac{1}{2}} \\\\
     │   \\dfrac{5}{12}x &= \\dfrac{3}{2}
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = \\dfrac{18}{5}
-[4] S = { \\dfrac{18}{5} }
+[4] $S = \\{ \\dfrac{18}{5} \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { \\dfrac{18}{5} }
+    [3] $S = \\{ \\dfrac{18}{5} \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -427,12 +427,12 @@ exports[`snapshot — regroupement-fractions > 2x/3 − 1/2 = x/4 + 1 1`] = `
     │ \\end{aligned}
     [1] On isole les termes en x dans le membre de gauche
         │ \\begin{aligned}
-        │   \\dfrac{2x}{3} \\textcolor{blue}{+ -\\dfrac{1}{4}x} &= 1 \\textcolor{blue}{+ \\dfrac{1}{2}} \\\\
+        │   \\dfrac{2x}{3} \\textcolor{blue}{- \\dfrac{1}{4}x} &= 1 \\textcolor{blue}{+ \\dfrac{1}{2}} \\\\
         │   \\dfrac{5}{12}x &= \\dfrac{3}{2}
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = \\dfrac{18}{5}
-    [3] S = { \\dfrac{18}{5} }
+    [3] $S = \\{ \\dfrac{18}{5} \\}$
 "
 `;
 
@@ -446,59 +446,59 @@ exports[`snapshot — regroupement-fractions > x/2 + 1 = x/3 + 2 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] add-both-sides: On ajoute -\\dfrac{1}{3}x aux deux membres
-[3] subtract-both-sides: On soustrait 1 aux deux membres
-[4] divide-both-sides: On divise les deux membres par \\dfrac{1}{6}
-[5] read-solution: Solution : x = 6
+[2] subtract-both-sides: On soustrait $\\dfrac{1}{3}x$ aux deux membres
+[3] subtract-both-sides: On soustrait $1$ aux deux membres
+[4] divide-both-sides: On divise les deux membres par $\\dfrac{1}{6}$
+[5] read-solution: Solution : $x = 6$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On ajoute -\\dfrac{1}{3}x aux deux membres
-[3] On soustrait 1 aux deux membres
-[4] On divise les deux membres par \\dfrac{1}{6}
-[5] Solution : x = 6
+[2] On soustrait $\\dfrac{1}{3}x$ aux deux membres
+[3] On soustrait $1$ aux deux membres
+[4] On divise les deux membres par $\\dfrac{1}{6}$
+[5] Solution : $x = 6$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On ajoute -\\dfrac{1}{3}x aux deux membres
+[2] On soustrait $\\dfrac{1}{3}x$ aux deux membres
     │ \\begin{aligned}
-    │   \\dfrac{x}{2} + 1 \\textcolor{blue}{+ -\\dfrac{1}{3}x} &= \\dfrac{x}{3} + 2 \\textcolor{blue}{+ -\\dfrac{1}{3}x} \\\\
+    │   \\dfrac{x}{2} + 1 \\textcolor{blue}{- \\dfrac{1}{3}x} &= \\dfrac{x}{3} + 2 \\textcolor{blue}{- \\dfrac{1}{3}x} \\\\
     │   \\dfrac{1}{6}x + 1 &= 2
     │ \\end{aligned}
-[3] On soustrait 1 aux deux membres
+[3] On soustrait $1$ aux deux membres
     │ \\begin{aligned}
     │   \\dfrac{1}{6}x + 1 \\textcolor{blue}{- 1} &= 2 \\textcolor{blue}{- 1} \\\\
     │   \\dfrac{1}{6}x &= 1
     │ \\end{aligned}
-[4] On divise les deux membres par \\dfrac{1}{6}
+[4] On divise les deux membres par $\\dfrac{1}{6}$
     │ \\begin{aligned}
     │   \\dfrac{\\dfrac{1}{6}x}{\\textcolor{blue}{\\dfrac{1}{6}}} &= \\dfrac{1}{\\textcolor{blue}{\\dfrac{1}{6}}} \\\\
     │   x &= 6
     │ \\end{aligned}
-[5] Solution : x = 6
+[5] Solution : $x = 6$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { 6 }
+[4] $S = \\{ 6 \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
     │ \\begin{aligned}
-    │   \\dfrac{x}{2} \\textcolor{blue}{+ -\\dfrac{1}{3}x} &= 2 \\textcolor{blue}{- 1} \\\\
+    │   \\dfrac{x}{2} \\textcolor{blue}{- \\dfrac{1}{3}x} &= 2 \\textcolor{blue}{- 1} \\\\
     │   \\dfrac{1}{6}x &= 1
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = 6
-[4] S = { 6 }
+[4] $S = \\{ 6 \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { 6 }
+    [3] $S = \\{ 6 \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -508,12 +508,12 @@ exports[`snapshot — regroupement-fractions > x/2 + 1 = x/3 + 2 1`] = `
     │ \\end{aligned}
     [1] On isole les termes en x dans le membre de gauche
         │ \\begin{aligned}
-        │   \\dfrac{x}{2} \\textcolor{blue}{+ -\\dfrac{1}{3}x} &= 2 \\textcolor{blue}{- 1} \\\\
+        │   \\dfrac{x}{2} \\textcolor{blue}{- \\dfrac{1}{3}x} &= 2 \\textcolor{blue}{- 1} \\\\
         │   \\dfrac{1}{6}x &= 1
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = 6
-    [3] S = { 6 }
+    [3] $S = \\{ 6 \\}$
 "
 `;
 
@@ -527,35 +527,35 @@ exports[`snapshot — simple > 2x + 3 = 7 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] subtract-both-sides: On soustrait 3 aux deux membres
-[3] divide-both-sides: On divise les deux membres par 2
-[4] read-solution: Solution : x = 2
+[2] subtract-both-sides: On soustrait $3$ aux deux membres
+[3] divide-both-sides: On divise les deux membres par $2$
+[4] read-solution: Solution : $x = 2$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On soustrait 3 aux deux membres
-[3] On divise les deux membres par 2
-[4] Solution : x = 2
+[2] On soustrait $3$ aux deux membres
+[3] On divise les deux membres par $2$
+[4] Solution : $x = 2$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On soustrait 3 aux deux membres
+[2] On soustrait $3$ aux deux membres
     │ \\begin{aligned}
     │   2x + 3 \\textcolor{blue}{- 3} &= 7 \\textcolor{blue}{- 3} \\\\
     │   2x &= 4
     │ \\end{aligned}
-[3] On divise les deux membres par 2
+[3] On divise les deux membres par $2$
     │ \\begin{aligned}
     │   \\dfrac{2x}{\\textcolor{blue}{2}} &= \\dfrac{4}{\\textcolor{blue}{2}} \\\\
     │   x &= 2
     │ \\end{aligned}
-[4] Solution : x = 2
+[4] Solution : $x = 2$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { 2 }
+[4] $S = \\{ 2 \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
@@ -566,13 +566,13 @@ exports[`snapshot — simple > 2x + 3 = 7 1`] = `
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = 2
-[4] S = { 2 }
+[4] $S = \\{ 2 \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { 2 }
+    [3] $S = \\{ 2 \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -587,7 +587,7 @@ exports[`snapshot — simple > 2x + 3 = 7 1`] = `
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = 2
-    [3] S = { 2 }
+    [3] $S = \\{ 2 \\}$
 "
 `;
 
@@ -601,38 +601,38 @@ exports[`snapshot — simple > 2x = 4 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] divide-both-sides: On divise les deux membres par 2
-[3] read-solution: Solution : x = 2
+[2] divide-both-sides: On divise les deux membres par $2$
+[3] read-solution: Solution : $x = 2$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On divise les deux membres par 2
-[3] Solution : x = 2
+[2] On divise les deux membres par $2$
+[3] Solution : $x = 2$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On divise les deux membres par 2
+[2] On divise les deux membres par $2$
     │ \\begin{aligned}
     │   \\dfrac{2x}{\\textcolor{blue}{2}} &= \\dfrac{4}{\\textcolor{blue}{2}} \\\\
     │   x &= 2
     │ \\end{aligned}
-[3] Solution : x = 2
+[3] Solution : $x = 2$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On termine en simplifiant le coefficient de x
-[3] S = { 2 }
+[3] $S = \\{ 2 \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
 [2] On termine en simplifiant le coefficient de x
     │ x = 2
-[3] S = { 2 }
+[3] $S = \\{ 2 \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On termine en simplifiant le coefficient de x
-    [2] S = { 2 }
+    [2] $S = \\{ 2 \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -642,7 +642,7 @@ exports[`snapshot — simple > 2x = 4 1`] = `
     │ \\end{aligned}
     [1] On termine en simplifiant le coefficient de x
         │ x = 2
-    [2] S = { 2 }
+    [2] $S = \\{ 2 \\}$
 "
 `;
 
@@ -656,31 +656,31 @@ exports[`snapshot — simple > x = 5 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] read-solution: Solution : x = 5
+[2] read-solution: Solution : $x = 5$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] Solution : x = 5
+[2] Solution : $x = 5$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] Solution : x = 5
+[2] Solution : $x = 5$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
-[2] S = { 5 }
+[2] $S = \\{ 5 \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
-[2] S = { 5 }
+[2] $S = \\{ 5 \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
-    [1] S = { 5 }
+    [1] $S = \\{ 5 \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
-    [1] S = { 5 }
+    [1] $S = \\{ 5 \\}$
 "
 `;
 
@@ -694,35 +694,35 @@ exports[`snapshot — simple-negatifs > 2x − 5 = 1 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] add-both-sides: On ajoute 5 aux deux membres
-[3] divide-both-sides: On divise les deux membres par 2
-[4] read-solution: Solution : x = 3
+[2] add-both-sides: On ajoute $5$ aux deux membres
+[3] divide-both-sides: On divise les deux membres par $2$
+[4] read-solution: Solution : $x = 3$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On ajoute 5 aux deux membres
-[3] On divise les deux membres par 2
-[4] Solution : x = 3
+[2] On ajoute $5$ aux deux membres
+[3] On divise les deux membres par $2$
+[4] Solution : $x = 3$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On ajoute 5 aux deux membres
+[2] On ajoute $5$ aux deux membres
     │ \\begin{aligned}
     │   2x - 5 \\textcolor{blue}{+ 5} &= 1 \\textcolor{blue}{+ 5} \\\\
     │   2x &= 6
     │ \\end{aligned}
-[3] On divise les deux membres par 2
+[3] On divise les deux membres par $2$
     │ \\begin{aligned}
     │   \\dfrac{2x}{\\textcolor{blue}{2}} &= \\dfrac{6}{\\textcolor{blue}{2}} \\\\
     │   x &= 3
     │ \\end{aligned}
-[4] Solution : x = 3
+[4] Solution : $x = 3$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { 3 }
+[4] $S = \\{ 3 \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
@@ -733,13 +733,13 @@ exports[`snapshot — simple-negatifs > 2x − 5 = 1 1`] = `
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = 3
-[4] S = { 3 }
+[4] $S = \\{ 3 \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { 3 }
+    [3] $S = \\{ 3 \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -754,7 +754,7 @@ exports[`snapshot — simple-negatifs > 2x − 5 = 1 1`] = `
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = 3
-    [3] S = { 3 }
+    [3] $S = \\{ 3 \\}$
 "
 `;
 
@@ -768,38 +768,38 @@ exports[`snapshot — simple-negatifs > 3x = −6 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] divide-both-sides: On divise les deux membres par 3
-[3] read-solution: Solution : x = -2
+[2] divide-both-sides: On divise les deux membres par $3$
+[3] read-solution: Solution : $x = -2$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On divise les deux membres par 3
-[3] Solution : x = -2
+[2] On divise les deux membres par $3$
+[3] Solution : $x = -2$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On divise les deux membres par 3
+[2] On divise les deux membres par $3$
     │ \\begin{aligned}
     │   \\dfrac{3x}{\\textcolor{blue}{3}} &= \\dfrac{-6}{\\textcolor{blue}{3}} \\\\
     │   x &= -2
     │ \\end{aligned}
-[3] Solution : x = -2
+[3] Solution : $x = -2$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On termine en simplifiant le coefficient de x
-[3] S = { -2 }
+[3] $S = \\{ -2 \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
 [2] On termine en simplifiant le coefficient de x
     │ x = -2
-[3] S = { -2 }
+[3] $S = \\{ -2 \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On termine en simplifiant le coefficient de x
-    [2] S = { -2 }
+    [2] $S = \\{ -2 \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -809,7 +809,7 @@ exports[`snapshot — simple-negatifs > 3x = −6 1`] = `
     │ \\end{aligned}
     [1] On termine en simplifiant le coefficient de x
         │ x = -2
-    [2] S = { -2 }
+    [2] $S = \\{ -2 \\}$
 "
 `;
 
@@ -823,35 +823,35 @@ exports[`snapshot — simple-negatifs > −2x + 4 = 10 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] subtract-both-sides: On soustrait 4 aux deux membres
-[3] divide-both-sides: On divise les deux membres par -2
-[4] read-solution: Solution : x = -3
+[2] subtract-both-sides: On soustrait $4$ aux deux membres
+[3] divide-both-sides: On divise les deux membres par $-2$
+[4] read-solution: Solution : $x = -3$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On soustrait 4 aux deux membres
-[3] On divise les deux membres par -2
-[4] Solution : x = -3
+[2] On soustrait $4$ aux deux membres
+[3] On divise les deux membres par $-2$
+[4] Solution : $x = -3$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On soustrait 4 aux deux membres
+[2] On soustrait $4$ aux deux membres
     │ \\begin{aligned}
     │   -2x + 4 \\textcolor{blue}{- 4} &= 10 \\textcolor{blue}{- 4} \\\\
     │   -2x &= 6
     │ \\end{aligned}
-[3] On divise les deux membres par -2
+[3] On divise les deux membres par $-2$
     │ \\begin{aligned}
     │   \\dfrac{-2x}{\\textcolor{blue}{-2}} &= \\dfrac{6}{\\textcolor{blue}{-2}} \\\\
     │   x &= -3
     │ \\end{aligned}
-[4] Solution : x = -3
+[4] Solution : $x = -3$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { -3 }
+[4] $S = \\{ -3 \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
@@ -862,13 +862,13 @@ exports[`snapshot — simple-negatifs > −2x + 4 = 10 1`] = `
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = -3
-[4] S = { -3 }
+[4] $S = \\{ -3 \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { -3 }
+    [3] $S = \\{ -3 \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -883,7 +883,7 @@ exports[`snapshot — simple-negatifs > −2x + 4 = 10 1`] = `
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = -3
-    [3] S = { -3 }
+    [3] $S = \\{ -3 \\}$
 "
 `;
 
@@ -897,35 +897,35 @@ exports[`snapshot — simple-negatifs > −x + 3 = 0 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] subtract-both-sides: On soustrait 3 aux deux membres
-[3] divide-both-sides: On divise les deux membres par -1
-[4] read-solution: Solution : x = 3
+[2] subtract-both-sides: On soustrait $3$ aux deux membres
+[3] divide-both-sides: On divise les deux membres par $-1$
+[4] read-solution: Solution : $x = 3$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On soustrait 3 aux deux membres
-[3] On divise les deux membres par -1
-[4] Solution : x = 3
+[2] On soustrait $3$ aux deux membres
+[3] On divise les deux membres par $-1$
+[4] Solution : $x = 3$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On soustrait 3 aux deux membres
+[2] On soustrait $3$ aux deux membres
     │ \\begin{aligned}
     │   -x + 3 \\textcolor{blue}{- 3} &= 0 \\textcolor{blue}{- 3} \\\\
     │   -x &= -3
     │ \\end{aligned}
-[3] On divise les deux membres par -1
+[3] On divise les deux membres par $-1$
     │ \\begin{aligned}
     │   \\dfrac{-x}{\\textcolor{blue}{-1}} &= \\dfrac{-3}{\\textcolor{blue}{-1}} \\\\
     │   x &= 3
     │ \\end{aligned}
-[4] Solution : x = 3
+[4] Solution : $x = 3$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { 3 }
+[4] $S = \\{ 3 \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
@@ -936,13 +936,13 @@ exports[`snapshot — simple-negatifs > −x + 3 = 0 1`] = `
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = 3
-[4] S = { 3 }
+[4] $S = \\{ 3 \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { 3 }
+    [3] $S = \\{ 3 \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -957,7 +957,7 @@ exports[`snapshot — simple-negatifs > −x + 3 = 0 1`] = `
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = 3
-    [3] S = { 3 }
+    [3] $S = \\{ 3 \\}$
 "
 `;
 
@@ -971,38 +971,38 @@ exports[`snapshot — simples-fractions > 2x/3 = 4/9 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] divide-both-sides: On divise les deux membres par \\dfrac{2}{3}
-[3] read-solution: Solution : x = \\dfrac{2}{3}
+[2] divide-both-sides: On divise les deux membres par $\\dfrac{2}{3}$
+[3] read-solution: Solution : $x = \\dfrac{2}{3}$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On divise les deux membres par \\dfrac{2}{3}
-[3] Solution : x = \\dfrac{2}{3}
+[2] On divise les deux membres par $\\dfrac{2}{3}$
+[3] Solution : $x = \\dfrac{2}{3}$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On divise les deux membres par \\dfrac{2}{3}
+[2] On divise les deux membres par $\\dfrac{2}{3}$
     │ \\begin{aligned}
     │   \\dfrac{\\dfrac{2x}{3}}{\\textcolor{blue}{\\dfrac{2}{3}}} &= \\dfrac{\\dfrac{4}{9}}{\\textcolor{blue}{\\dfrac{2}{3}}} \\\\
     │   x &= \\dfrac{2}{3}
     │ \\end{aligned}
-[3] Solution : x = \\dfrac{2}{3}
+[3] Solution : $x = \\dfrac{2}{3}$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On termine en simplifiant le coefficient de x
-[3] S = { \\dfrac{2}{3} }
+[3] $S = \\{ \\dfrac{2}{3} \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
 [2] On termine en simplifiant le coefficient de x
     │ x = \\dfrac{2}{3}
-[3] S = { \\dfrac{2}{3} }
+[3] $S = \\{ \\dfrac{2}{3} \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On termine en simplifiant le coefficient de x
-    [2] S = { \\dfrac{2}{3} }
+    [2] $S = \\{ \\dfrac{2}{3} \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -1012,7 +1012,7 @@ exports[`snapshot — simples-fractions > 2x/3 = 4/9 1`] = `
     │ \\end{aligned}
     [1] On termine en simplifiant le coefficient de x
         │ x = \\dfrac{2}{3}
-    [2] S = { \\dfrac{2}{3} }
+    [2] $S = \\{ \\dfrac{2}{3} \\}$
 "
 `;
 
@@ -1026,35 +1026,35 @@ exports[`snapshot — simples-fractions > x/2 + 1/3 = 1 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] subtract-both-sides: On soustrait \\dfrac{1}{3} aux deux membres
-[3] divide-both-sides: On divise les deux membres par \\dfrac{1}{2}
-[4] read-solution: Solution : x = \\dfrac{4}{3}
+[2] subtract-both-sides: On soustrait $\\dfrac{1}{3}$ aux deux membres
+[3] divide-both-sides: On divise les deux membres par $\\dfrac{1}{2}$
+[4] read-solution: Solution : $x = \\dfrac{4}{3}$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On soustrait \\dfrac{1}{3} aux deux membres
-[3] On divise les deux membres par \\dfrac{1}{2}
-[4] Solution : x = \\dfrac{4}{3}
+[2] On soustrait $\\dfrac{1}{3}$ aux deux membres
+[3] On divise les deux membres par $\\dfrac{1}{2}$
+[4] Solution : $x = \\dfrac{4}{3}$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On soustrait \\dfrac{1}{3} aux deux membres
+[2] On soustrait $\\dfrac{1}{3}$ aux deux membres
     │ \\begin{aligned}
     │   \\dfrac{x}{2} + \\dfrac{1}{3} \\textcolor{blue}{- \\dfrac{1}{3}} &= 1 \\textcolor{blue}{- \\dfrac{1}{3}} \\\\
     │   \\dfrac{1}{2}x &= \\dfrac{2}{3}
     │ \\end{aligned}
-[3] On divise les deux membres par \\dfrac{1}{2}
+[3] On divise les deux membres par $\\dfrac{1}{2}$
     │ \\begin{aligned}
     │   \\dfrac{\\dfrac{1}{2}x}{\\textcolor{blue}{\\dfrac{1}{2}}} &= \\dfrac{\\dfrac{2}{3}}{\\textcolor{blue}{\\dfrac{1}{2}}} \\\\
     │   x &= \\dfrac{4}{3}
     │ \\end{aligned}
-[4] Solution : x = \\dfrac{4}{3}
+[4] Solution : $x = \\dfrac{4}{3}$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { \\dfrac{4}{3} }
+[4] $S = \\{ \\dfrac{4}{3} \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
@@ -1065,13 +1065,13 @@ exports[`snapshot — simples-fractions > x/2 + 1/3 = 1 1`] = `
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = \\dfrac{4}{3}
-[4] S = { \\dfrac{4}{3} }
+[4] $S = \\{ \\dfrac{4}{3} \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { \\dfrac{4}{3} }
+    [3] $S = \\{ \\dfrac{4}{3} \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -1086,7 +1086,7 @@ exports[`snapshot — simples-fractions > x/2 + 1/3 = 1 1`] = `
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = \\dfrac{4}{3}
-    [3] S = { \\dfrac{4}{3} }
+    [3] $S = \\{ \\dfrac{4}{3} \\}$
 "
 `;
 
@@ -1100,35 +1100,35 @@ exports[`snapshot — simples-fractions > x/4 + 1/2 = 3/4 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] subtract-both-sides: On soustrait \\dfrac{1}{2} aux deux membres
-[3] divide-both-sides: On divise les deux membres par \\dfrac{1}{4}
-[4] read-solution: Solution : x = 1
+[2] subtract-both-sides: On soustrait $\\dfrac{1}{2}$ aux deux membres
+[3] divide-both-sides: On divise les deux membres par $\\dfrac{1}{4}$
+[4] read-solution: Solution : $x = 1$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On soustrait \\dfrac{1}{2} aux deux membres
-[3] On divise les deux membres par \\dfrac{1}{4}
-[4] Solution : x = 1
+[2] On soustrait $\\dfrac{1}{2}$ aux deux membres
+[3] On divise les deux membres par $\\dfrac{1}{4}$
+[4] Solution : $x = 1$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On soustrait \\dfrac{1}{2} aux deux membres
+[2] On soustrait $\\dfrac{1}{2}$ aux deux membres
     │ \\begin{aligned}
     │   \\dfrac{x}{4} + \\dfrac{1}{2} \\textcolor{blue}{- \\dfrac{1}{2}} &= \\dfrac{3}{4} \\textcolor{blue}{- \\dfrac{1}{2}} \\\\
     │   \\dfrac{1}{4}x &= \\dfrac{1}{4}
     │ \\end{aligned}
-[3] On divise les deux membres par \\dfrac{1}{4}
+[3] On divise les deux membres par $\\dfrac{1}{4}$
     │ \\begin{aligned}
     │   \\dfrac{\\dfrac{1}{4}x}{\\textcolor{blue}{\\dfrac{1}{4}}} &= \\dfrac{\\dfrac{1}{4}}{\\textcolor{blue}{\\dfrac{1}{4}}} \\\\
     │   x &= 1
     │ \\end{aligned}
-[4] Solution : x = 1
+[4] Solution : $x = 1$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { 1 }
+[4] $S = \\{ 1 \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
@@ -1139,13 +1139,13 @@ exports[`snapshot — simples-fractions > x/4 + 1/2 = 3/4 1`] = `
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = 1
-[4] S = { 1 }
+[4] $S = \\{ 1 \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { 1 }
+    [3] $S = \\{ 1 \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -1160,7 +1160,7 @@ exports[`snapshot — simples-fractions > x/4 + 1/2 = 3/4 1`] = `
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = 1
-    [3] S = { 1 }
+    [3] $S = \\{ 1 \\}$
 "
 `;
 
@@ -1174,35 +1174,35 @@ exports[`snapshot — simples-fractions-negatifs > x/2 − 1/3 = 1 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] add-both-sides: On ajoute \\dfrac{1}{3} aux deux membres
-[3] divide-both-sides: On divise les deux membres par \\dfrac{1}{2}
-[4] read-solution: Solution : x = \\dfrac{8}{3}
+[2] add-both-sides: On ajoute $\\dfrac{1}{3}$ aux deux membres
+[3] divide-both-sides: On divise les deux membres par $\\dfrac{1}{2}$
+[4] read-solution: Solution : $x = \\dfrac{8}{3}$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On ajoute \\dfrac{1}{3} aux deux membres
-[3] On divise les deux membres par \\dfrac{1}{2}
-[4] Solution : x = \\dfrac{8}{3}
+[2] On ajoute $\\dfrac{1}{3}$ aux deux membres
+[3] On divise les deux membres par $\\dfrac{1}{2}$
+[4] Solution : $x = \\dfrac{8}{3}$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On ajoute \\dfrac{1}{3} aux deux membres
+[2] On ajoute $\\dfrac{1}{3}$ aux deux membres
     │ \\begin{aligned}
     │   \\dfrac{x}{2} - \\dfrac{1}{3} \\textcolor{blue}{+ \\dfrac{1}{3}} &= 1 \\textcolor{blue}{+ \\dfrac{1}{3}} \\\\
     │   \\dfrac{1}{2}x &= \\dfrac{4}{3}
     │ \\end{aligned}
-[3] On divise les deux membres par \\dfrac{1}{2}
+[3] On divise les deux membres par $\\dfrac{1}{2}$
     │ \\begin{aligned}
     │   \\dfrac{\\dfrac{1}{2}x}{\\textcolor{blue}{\\dfrac{1}{2}}} &= \\dfrac{\\dfrac{4}{3}}{\\textcolor{blue}{\\dfrac{1}{2}}} \\\\
     │   x &= \\dfrac{8}{3}
     │ \\end{aligned}
-[4] Solution : x = \\dfrac{8}{3}
+[4] Solution : $x = \\dfrac{8}{3}$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { \\dfrac{8}{3} }
+[4] $S = \\{ \\dfrac{8}{3} \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
@@ -1213,13 +1213,13 @@ exports[`snapshot — simples-fractions-negatifs > x/2 − 1/3 = 1 1`] = `
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = \\dfrac{8}{3}
-[4] S = { \\dfrac{8}{3} }
+[4] $S = \\{ \\dfrac{8}{3} \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { \\dfrac{8}{3} }
+    [3] $S = \\{ \\dfrac{8}{3} \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -1234,7 +1234,7 @@ exports[`snapshot — simples-fractions-negatifs > x/2 − 1/3 = 1 1`] = `
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = \\dfrac{8}{3}
-    [3] S = { \\dfrac{8}{3} }
+    [3] $S = \\{ \\dfrac{8}{3} \\}$
 "
 `;
 
@@ -1248,35 +1248,35 @@ exports[`snapshot — simples-fractions-negatifs > −x/2 + 1/3 = 0 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] subtract-both-sides: On soustrait \\dfrac{1}{3} aux deux membres
-[3] divide-both-sides: On divise les deux membres par -\\dfrac{1}{2}
-[4] read-solution: Solution : x = \\dfrac{2}{3}
+[2] subtract-both-sides: On soustrait $\\dfrac{1}{3}$ aux deux membres
+[3] divide-both-sides: On divise les deux membres par $-\\dfrac{1}{2}$
+[4] read-solution: Solution : $x = \\dfrac{2}{3}$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On soustrait \\dfrac{1}{3} aux deux membres
-[3] On divise les deux membres par -\\dfrac{1}{2}
-[4] Solution : x = \\dfrac{2}{3}
+[2] On soustrait $\\dfrac{1}{3}$ aux deux membres
+[3] On divise les deux membres par $-\\dfrac{1}{2}$
+[4] Solution : $x = \\dfrac{2}{3}$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On soustrait \\dfrac{1}{3} aux deux membres
+[2] On soustrait $\\dfrac{1}{3}$ aux deux membres
     │ \\begin{aligned}
     │   -\\dfrac{x}{2} + \\dfrac{1}{3} \\textcolor{blue}{- \\dfrac{1}{3}} &= 0 \\textcolor{blue}{- \\dfrac{1}{3}} \\\\
     │   -\\dfrac{1}{2}x &= -\\dfrac{1}{3}
     │ \\end{aligned}
-[3] On divise les deux membres par -\\dfrac{1}{2}
+[3] On divise les deux membres par $-\\dfrac{1}{2}$
     │ \\begin{aligned}
     │   \\dfrac{-\\dfrac{1}{2}x}{\\textcolor{blue}{-\\dfrac{1}{2}}} &= \\dfrac{-\\dfrac{1}{3}}{\\textcolor{blue}{-\\dfrac{1}{2}}} \\\\
     │   x &= \\dfrac{2}{3}
     │ \\end{aligned}
-[4] Solution : x = \\dfrac{2}{3}
+[4] Solution : $x = \\dfrac{2}{3}$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
 [3] On termine en simplifiant le coefficient de x
-[4] S = { \\dfrac{2}{3} }
+[4] $S = \\{ \\dfrac{2}{3} \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
@@ -1287,13 +1287,13 @@ exports[`snapshot — simples-fractions-negatifs > −x/2 + 1/3 = 0 1`] = `
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
     │ x = \\dfrac{2}{3}
-[4] S = { \\dfrac{2}{3} }
+[4] $S = \\{ \\dfrac{2}{3} \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On isole les termes en x dans le membre de gauche
     [2] On termine en simplifiant le coefficient de x
-    [3] S = { \\dfrac{2}{3} }
+    [3] $S = \\{ \\dfrac{2}{3} \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -1308,7 +1308,7 @@ exports[`snapshot — simples-fractions-negatifs > −x/2 + 1/3 = 0 1`] = `
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
         │ x = \\dfrac{2}{3}
-    [3] S = { \\dfrac{2}{3} }
+    [3] $S = \\{ \\dfrac{2}{3} \\}$
 "
 `;
 
@@ -1322,38 +1322,38 @@ exports[`snapshot — simples-fractions-negatifs > −x/2 = 1/4 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] divide-both-sides: On divise les deux membres par -\\dfrac{1}{2}
-[3] read-solution: Solution : x = -\\dfrac{1}{2}
+[2] divide-both-sides: On divise les deux membres par $-\\dfrac{1}{2}$
+[3] read-solution: Solution : $x = -\\dfrac{1}{2}$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On divise les deux membres par -\\dfrac{1}{2}
-[3] Solution : x = -\\dfrac{1}{2}
+[2] On divise les deux membres par $-\\dfrac{1}{2}$
+[3] Solution : $x = -\\dfrac{1}{2}$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On divise les deux membres par -\\dfrac{1}{2}
+[2] On divise les deux membres par $-\\dfrac{1}{2}$
     │ \\begin{aligned}
     │   \\dfrac{-\\dfrac{x}{2}}{\\textcolor{blue}{-\\dfrac{1}{2}}} &= \\dfrac{\\dfrac{1}{4}}{\\textcolor{blue}{-\\dfrac{1}{2}}} \\\\
     │   x &= -\\dfrac{1}{2}
     │ \\end{aligned}
-[3] Solution : x = -\\dfrac{1}{2}
+[3] Solution : $x = -\\dfrac{1}{2}$
 
 ========== LYCEE (summarized) ==========
 [1] Équation du premier degré
 [2] On termine en simplifiant le coefficient de x
-[3] S = { -\\dfrac{1}{2} }
+[3] $S = \\{ -\\dfrac{1}{2} \\}$
 
 ========== LYCEE (detailed) ==========
 [1] Équation du premier degré
 [2] On termine en simplifiant le coefficient de x
     │ x = -\\dfrac{1}{2}
-[3] S = { -\\dfrac{1}{2} }
+[3] $S = \\{ -\\dfrac{1}{2} \\}$
 
 ========== SUPERIEUR (summarized) ==========
 [1] On isole x
     [1] On termine en simplifiant le coefficient de x
-    [2] S = { -\\dfrac{1}{2} }
+    [2] $S = \\{ -\\dfrac{1}{2} \\}$
 
 ========== SUPERIEUR (detailed) ==========
 [1] On isole x
@@ -1363,6 +1363,6 @@ exports[`snapshot — simples-fractions-negatifs > −x/2 = 1/4 1`] = `
     │ \\end{aligned}
     [1] On termine en simplifiant le coefficient de x
         │ x = -\\dfrac{1}{2}
-    [2] S = { -\\dfrac{1}{2} }
+    [2] $S = \\{ -\\dfrac{1}{2} \\}$
 "
 `;

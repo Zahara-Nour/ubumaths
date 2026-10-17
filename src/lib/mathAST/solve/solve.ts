@@ -48,26 +48,29 @@
  * @module mathAST/solve/solve
  */
 
-import type { MathNode, RelationNode } from '../types';
+import type { MathNode, RelationNode, SegmentLengthNode } from '../types';
 import type {
 	SolveResult,
 	SolveOptions,
+	SolvingVerbosity,
 	ClassificationResult,
 	SolvingStrategy,
 	EquationSolver
 } from './types';
 import { DEFAULT_SOLVE_OPTIONS, SolveError, isSolverFailure } from './types';
 import { trySubstitution } from './substitution';
+import { tryLiteralParameter } from './literal-parameter';
 import { trySinCosRatio } from './sin-cos-ratio';
 import { tryTrigEquality } from './trig-equality';
 import { mergePeriodicFamilies } from './periodic';
-import { isDelimiter, isMultiplication, isRelation } from '../guards';
+import { isDelimiter, isDivision, isMultiplication, isOpposite, isRelation } from '../guards';
 import {
 	classifyEquation,
 	toStandardForm,
 	detectVariable,
 	unwrapGrouping,
-	unwrapGroupingMembers
+	unwrapGroupingMembers,
+	getPolynomialDegree
 } from './classify';
 import { createStepRecorder } from './step-recorder';
 import { linearSolver } from './solvers/linear';
@@ -97,7 +100,8 @@ import {
 	add,
 	multiply,
 	opposite,
-	parentheses
+	parentheses,
+	subtract
 } from '../factory';
 import { numericNode } from '../common/numeric';
 import {
@@ -121,11 +125,25 @@ import {
 	intersect as intersectDomains
 } from '../domain/algebra';
 import { formatInterval } from '../domain/format';
-import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
+import { reservedVariableRefusal } from '../common/reserved-letters';
+import { tryAbsoluteValue } from './absolute-value';
 import { applyRules, RuleIterationLimitError } from '../pattern/rule';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
+import { toPolynomial } from '../factor';
 import { getBindingNode } from '../pattern/types';
+import {
+	canonicalNameAmong,
+	segmentName,
+	isDegenerateSegment,
+	segmentsAsVariables,
+	variablesAsSegments
+} from '../common/segment-names';
+import { greaterThanInterval, intervalDomain } from '../domain/factory';
+import { isNegativeType, isZeroType } from '../numtype';
+import { extractQuadraticCoefficients } from './solvers/quadratic';
+import { toLatex } from '../latex-generator';
+import { segmentLengthOracle } from '../assumptions';
 // Import direct, pas le baril `rule-sets/index.ts` (cycle de chunk documenté
 // dans `common-factor.ts`).
 import { commonFactorRules } from '../pattern/rule-sets/common-factor';
@@ -500,8 +518,9 @@ function sumOfSignedTerms(expr: MathNode): MathNode | null {
 function tidySumFactors(product: MathNode): MathNode {
 	if (!isMultiplication(product)) return product;
 	const tidy = (factor: MathNode): MathNode => {
-		if (isDelimiter(factor) && factor.content.type === 'addition') {
-			return parentheses(denormalize(normalize(factor.content)));
+		const content = isDelimiter(factor) ? factor.content : null;
+		if (content && (content.type === 'addition' || content.type === 'subtraction')) {
+			return parentheses(denormalize(normalize(content)));
 		}
 		return tidySumFactors(factor);
 	};
@@ -562,6 +581,57 @@ function tryCommonFactorDecomposition(
 }
 
 /**
+ * a² − b², et k·a² − k·b² (même coefficient numérique k). Construits à
+ * l'appel, pas au chargement du module : `solve` est dans un cycle d'imports
+ * où `P` peut ne pas être encore défini.
+ */
+function differenceOfSquaresPatterns() {
+	const square = (name: string) => P.pow(P._(name), P.num(2));
+	return {
+		bare: P.sub(square('a'), square('b')),
+		scaled: P.sub(P.mul(P._('k', P.isType('number')), square('a')), P.mul(P._('k'), square('b')))
+	};
+}
+
+/**
+ * Différence de deux carrés, puis produit nul : `sin²x − cos²x = 0` devient
+ * `(sin x + cos x)(sin x − cos x) = 0`, et chaque facteur est résolu par
+ * `solve` (V20, chantier K21). Mesuré avant : « Type d'equation
+ * transcendante non supporte ». Repli, comme la mise en facteur commun : une
+ * équation déjà résolue garde sa résolution (`x² − 4 = 0` ne passe pas ici).
+ */
+function tryDifferenceOfSquaresDecomposition(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
+	if (commonFactorDepth >= MAX_COMMON_FACTOR_DEPTH) return null;
+	// Un polynôme garde ses étapes (développer puis résoudre) : `(x − 1)² − x² = 0`
+	// est une équation du premier degré, pas un produit nul.
+	if (toPolynomial(expr, variable) !== null) return null;
+	const patterns = differenceOfSquaresPatterns();
+	const scaled = tryMatch(patterns.scaled, expr);
+	const bindings = scaled ?? tryMatch(patterns.bare, expr);
+	if (bindings === undefined) return null;
+	const a = getBindingNode(bindings, 'a');
+	const b = getBindingNode(bindings, 'b');
+	if (!a || !b) return null;
+	const factors = multiply(parentheses(add(a, b)), parentheses(subtract(a, b)), 'implicit');
+	const k = scaled === undefined ? null : getBindingNode(scaled, 'k');
+	const product = k ? multiply(k, factors, 'implicit') : factors;
+	// Une base qui est une somme laisse `((a₁ + a₂) + b)` : on réduit alors
+	// les facteurs, comme la mise en facteur commun. Sinon l'écriture reste
+	// celle de l'identité, `(sin x + cos x)(sin x − cos x)`.
+	const isSum = (n: MathNode) =>
+		isDelimiter(n) || n.type === 'addition' || n.type === 'subtraction';
+	const written = isSum(a) || isSum(b) ? tidySumFactors(product) : product;
+	return solveFactoredProduct(expr, written, variable, opts, 'difference-of-squares');
+}
+
+/**
  * La mise en facteur commun, ou `null` si les règles ne trouvent pas de point
  * fixe (`RuleIterationLimitError`) : la tentative est abandonnée et le solveur
  * passe aux autres stratégies, au lieu de faire échouer toute la résolution.
@@ -586,7 +656,8 @@ function solveFactoredProduct(
 	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
 		initialGuesses?: readonly number[];
 		domain?: Domain;
-	}
+	},
+	rule: 'common-factor' | 'difference-of-squares' = 'common-factor'
 ): SolveResult | null {
 	let productResult: SolveResult | null;
 	commonFactorDepth++;
@@ -598,13 +669,7 @@ function solveFactoredProduct(
 	if (productResult === null) return null;
 
 	const recorder = createStepRecorder();
-	recorder.recordStep(
-		'common-factor',
-		getRuleDescription('common-factor'),
-		expr,
-		product,
-		'summarized'
-	);
+	recorder.recordStep(rule, getRuleDescription(rule), expr, product, 'summarized');
 
 	return {
 		...productResult,
@@ -800,6 +865,9 @@ function tryTrigRecursiveDecomposition(
 	if (!extracted || extracted.kind !== 'trig') return null;
 
 	const { funcName, argument, constantNode, constantNumeric } = extracted;
+
+	// c paramétré (`a\sin(x^2) = 1`) : existence et valeurs inconnues, refus (V41)
+	if (constantNumeric === null) return null;
 
 	// Check domain restrictions for sin/cos
 	if ((funcName === 'sin' || funcName === 'cos') && Math.abs(constantNumeric) > 1) {
@@ -1011,6 +1079,9 @@ function tryExpLogRecursiveDecomposition(
 
 	const { kind, funcName, argument, constantNode, constantNumeric } = extracted;
 
+	// c paramétré (`a\ln(x^2) = 1`) : refus plutôt qu'une valeur fausse (V41)
+	if (constantNumeric === null) return null;
+
 	// If argument is linear, let the normal solver handle it
 	const linearForm = extractLinearForm(argument, variable);
 	if (linearForm) return null;
@@ -1057,14 +1128,16 @@ function tryExpLogRecursiveDecomposition(
 		}
 		uValues.push({ symbolic: inverseNode, numeric: Math.exp(constantNumeric) });
 	} else {
-		// log(u) = c → u = 10^c
+		// log_b(u) = c → u = b^c (b = 10 sans base écrite)
+		const base = extracted.logBase ?? number('10');
+		const baseNumeric = evaluateNodeToApproximatedNumber(base);
 		let inverseNode: MathNode;
 		if (constantNumeric === 0) {
 			inverseNode = number('1');
 		} else {
-			inverseNode = denormalize(normalize(superscript(number('10'), constantNode)));
+			inverseNode = denormalize(normalize(superscript(base, constantNode)));
 		}
-		uValues.push({ symbolic: inverseNode, numeric: Math.pow(10, constantNumeric) });
+		uValues.push({ symbolic: inverseNode, numeric: Math.pow(baseNumeric, constantNumeric) });
 	}
 
 	const recorder = createStepRecorder();
@@ -1571,6 +1644,48 @@ function tryReducedForm(
 }
 
 /**
+ * `P/c = 0`, le dénominateur c sans AUCUNE lettre et non nul : on résout
+ * `P = 0`.
+ *
+ * Écart V37 (mesuré le 2026-10-12) : `solveInequality` ramène `x < 2/π` à
+ * `(πx − 2)/π < 0`, et `solve((πx − 2)/π = 0)` échouait — la décomposition
+ * rationnelle ne regarde que les dénominateurs qui contiennent l'inconnue,
+ * et le solveur affine ne lit pas une division par π (par 5, oui : le
+ * coefficient reste un nombre). Zéros non résolus, signe inconnu partout :
+ * l'ensemble rendu était ∅. Même cause pour e, √2/π, π + 1 et le
+ * second degré (`x² < 1/π`).
+ *
+ * En repli seulement : une équation déjà résolue garde sa résolution (et ses
+ * étapes). L'opposé est traversé (−A = 0 ⇔ A = 0). Un dénominateur qui
+ * contient une autre lettre (paramètre) ou qui vaut 0 (`π − π`) n'est pas
+ * traité : rien ne garantit alors qu'il est non nul.
+ */
+function tryConstantDenominator(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
+	const core = isOpposite(expr) ? expr.operand : expr;
+	if (!isDivision(core)) return null;
+	if (getVariables(core.denominator).size > 0) return null;
+	let denominator: number;
+	try {
+		denominator = evaluateNodeToApproximatedNumber(core.denominator);
+	} catch {
+		return null;
+	}
+	if (!Number.isFinite(denominator) || Math.abs(denominator) < 1e-12) return null;
+	const result = solve(equals(core.numerator, number('0')), {
+		variable,
+		verbosity: opts.verbosity
+	});
+	return isSolverFailure(result) ? null : result;
+}
+
+/**
  * √u = v, v dépendant de x — la méthode du lycée : √u = v ⇔ v ≥ 0 et u = v².
  *
  * Mesuré le 2026-10-08 : `√x = x − 2` revenait « Type d'equation non
@@ -1694,7 +1809,11 @@ function filterSolutionsByDomain(
 
 	const kept: Solution[] = [];
 	for (const sol of result.solutions) {
-		if (!containsNode(domain, sol.value)) {
+		// Une solution qui porte un PARAMÈTRE (`a\ln x = 1` → e^{1/a}) ne se
+		// compare pas aux bornes du domaine : elle est gardée, sans condition sur
+		// le paramètre, comme 1/a pour `ax = 1` (V41 ; l'évaluation levait).
+		const parametric = getVariables(sol.value).size > 0;
+		if (!parametric && !containsNode(domain, sol.value)) {
 			const numericValue = sol.approximate ?? evaluateNodeToApproximatedNumber(sol.value);
 			recorder.recordStep(
 				'domain-exclusion',
@@ -1712,6 +1831,224 @@ function filterSolutionsByDomain(
 		kept.length === 0 ? 'no-solution' : kept.length === 1 ? 'unique' : result.status;
 
 	return { ...result, solutions: kept, status: newStatus, domain };
+}
+
+// =============================================================================
+// Longueurs de segments
+// =============================================================================
+
+/**
+ * Le résultat d'une résolution menée sur des longueurs devenues variables
+ * (`segmentsAsVariables`) : chaque variable `AB` redevient la longueur, écrite comme
+ * l'élève (`BA` reste `BA`), dans les solutions et les étapes ; l'inconnue garde le nom
+ * demandé (`requested`), sinon le nom de sa première écriture.
+ */
+function withSegmentsRestored(
+	result: SolveResult,
+	segments: ReadonlyMap<string, SegmentLengthNode>,
+	requested: string | undefined
+): SolveResult {
+	const restore = (node: MathNode): MathNode => variablesAsSegments(node, segments);
+	const unknown = segments.get(result.variable);
+	return {
+		...result,
+		variable: requested ?? (unknown ? segmentName(unknown) : result.variable),
+		solutions: result.solutions.map((solution) => ({
+			...solution,
+			value: restore(solution.value),
+			...(solution.condition && { condition: restore(solution.condition) })
+		})),
+		steps: result.steps.map((step) => ({
+			...step,
+			before: restore(step.before),
+			after: restore(step.after),
+			...(step.operand && { operand: restore(step.operand) })
+		}))
+	};
+}
+
+/** Le domaine d'une longueur : ]0 ; +∞[ (strictement positive, Q-F). */
+const POSITIVE_LENGTH_DOMAIN: Domain = intervalDomain([greaterThanInterval(number('0'))]);
+
+/** Signe strict connu d'une expression où toute longueur entre points distincts est > 0. */
+type LengthSign = 'positive' | 'negative' | 'zero' | 'unknown';
+
+function flipSign(sign: LengthSign): LengthSign {
+	return sign === 'positive' ? 'negative' : sign === 'negative' ? 'positive' : sign;
+}
+
+function productSign(a: LengthSign, b: LengthSign): LengthSign {
+	if (a === 'zero' || b === 'zero') return 'zero';
+	if (a === 'unknown' || b === 'unknown') return 'unknown';
+	return a === b ? 'positive' : 'negative';
+}
+
+function sumSign(a: LengthSign, b: LengthSign): LengthSign {
+	if (a === 'zero') return b;
+	if (b === 'zero') return a;
+	return a === b ? a : 'unknown';
+}
+
+/**
+ * Le signe d'une expression écrite avec des longueurs, chacune strictement positive (Q-F) :
+ * `−CD²` est négatif, `CD² + 5` positif, `AC² − BC²` inconnu. Lecture structurelle et
+ * locale : `numtype` ne transmet pas le signe à travers une puissance d'une base réelle
+ * (`AB²` y est de signe inconnu), et l'y ajouter changerait les verdicts sous hypothèses.
+ */
+function lengthSign(node: MathNode): LengthSign {
+	switch (node.type) {
+		case 'number': {
+			const value = Number(node.value);
+			if (!Number.isFinite(value)) return 'unknown';
+			return value > 0 ? 'positive' : value < 0 ? 'negative' : 'zero';
+		}
+		case 'segmentLength':
+			return isDegenerateSegment(node) ? 'unknown' : 'positive';
+		case 'delimiter':
+			return lengthSign(node.content);
+		case 'opposite':
+			return flipSign(lengthSign(node.operand));
+		case 'addition':
+			return sumSign(lengthSign(node.left), lengthSign(node.right));
+		case 'subtraction':
+			return sumSign(lengthSign(node.left), flipSign(lengthSign(node.right)));
+		case 'multiplication':
+			return productSign(lengthSign(node.left), lengthSign(node.right));
+		case 'division': {
+			const denominator = lengthSign(node.denominator);
+			return denominator === 'zero'
+				? 'unknown'
+				: productSign(lengthSign(node.numerator), denominator);
+		}
+		case 'superscript': {
+			const base = lengthSign(node.base);
+			if (base === 'positive') return 'positive';
+			const exponent = node.superscript;
+			const isEvenInteger =
+				exponent.type === 'number' &&
+				Number.isInteger(Number(exponent.value)) &&
+				Number(exponent.value) % 2 === 0 &&
+				Number(exponent.value) > 0;
+			return base === 'negative' && isEvenInteger ? 'positive' : 'unknown';
+		}
+		default:
+			return 'unknown';
+	}
+}
+
+/**
+ * `a·L² + c = 0` en la longueur `L` (pas de terme en `L`) : le carré `−c/a` et sa racine
+ * positive `√(−c/a)`, écrits avec les longueurs de l'élève (`AB² = AC² + BC²` →
+ * `√(AC² + BC²)`, au lieu de la formule du discriminant `½√(4AC² + 4BC²)`). La racine est
+ * normalisée avec l'oracle des longueurs : `AB² = 9AC²` → `3AC`, pas `3|AC|`. `null` si
+ * l'équation n'a pas cette forme.
+ */
+function positiveSquareRoot(
+	equation: RelationNode,
+	variable: string,
+	segments: ReadonlyMap<string, SegmentLengthNode>
+): { readonly square: MathNode; readonly root: MathNode } | null {
+	const expanded = denormalize(normalize(toStandardForm(equation)));
+	if (getPolynomialDegree(expanded, variable) !== 2) return null;
+	const coefficients = extractQuadraticCoefficients(expanded, variable);
+	if (coefficients === null || !isZeroNode(denormalize(normalize(coefficients.b)))) return null;
+	const square = variablesAsSegments(
+		denormalize(normalize(divide(opposite(coefficients.c), coefficients.a, 'fraction'))),
+		segments
+	);
+	const radical = func('sqrt', [square]);
+	const assumptions = segmentLengthOracle(undefined, [radical]);
+	const root = denormalize(normalize(radical, assumptions && { assumptions }));
+	return { square, root };
+}
+
+/** La valeur approchée d'une solution, `NaN` si elle contient une lettre ou une longueur. */
+function approximateOrNaN(value: MathNode): number {
+	try {
+		return evaluateNodeToApproximatedNumber(value);
+	} catch {
+		// Une longueur sans valeur lève (« On ne connaît pas la valeur de la longueur AC. »)
+		return Number.NaN;
+	}
+}
+
+/**
+ * Ne garde que les valeurs positives d'une longueur inconnue (Q-F) : une solution
+ * numérique hors de ]0 ; +∞[ (le domaine d'une longueur), ou de signe connu négatif ou
+ * nul (`numtype`, où les autres longueurs sont positives), est exclue, avec une étape.
+ * Une solution de signe inconnu (`10 − BC`) est gardée : rien ne permet de l'exclure.
+ * Pour `a·L² + c = 0`, la racine positive est écrite `√(−c/a)`.
+ */
+function keepPositiveLength(
+	result: SolveResult,
+	equation: RelationNode,
+	variable: string,
+	segments: ReadonlyMap<string, SegmentLengthNode>,
+	opts: { readonly verbosity: SolvingVerbosity }
+): SolveResult {
+	if (result.status === 'infinite') return result;
+	const recorder = createStepRecorder();
+	const recordExclusion = (value: MathNode): void => {
+		recorder.recordStep(
+			'domain-exclusion',
+			`${result.variable} = ${toLatex(value)} est exclu : une longueur est positive`,
+			value,
+			value,
+			'summarized'
+		);
+	};
+
+	// a·L² + c = 0 : les deux solutions sont ±√(−c/a), seule la positive reste ; aucune
+	// si −c/a est négatif ou nul (`AB² = −CD²`, `AB² + CD² = 0`)
+	const pure =
+		result.solutions.length === 2 ? positiveSquareRoot(equation, variable, segments) : null;
+	if (pure !== null) {
+		const squareSign = lengthSign(pure.square);
+		if (squareSign === 'negative' || squareSign === 'zero') {
+			for (const solution of result.solutions) recordExclusion(solution.value);
+			return {
+				...result,
+				solutions: [],
+				status: 'no-solution',
+				steps: [...result.steps, ...recorder.getStepsFiltered(opts.verbosity)]
+			};
+		}
+		recordExclusion(opposite(pure.root));
+		const approximate = Math.max(...result.solutions.map((s) => s.approximate ?? Number.NaN));
+		const solution: Solution = {
+			value: pure.root,
+			exact: true,
+			...(Number.isFinite(approximate) && { approximate })
+		};
+		return {
+			...result,
+			solutions: [solution],
+			status: 'unique',
+			steps: [...result.steps, ...recorder.getStepsFiltered(opts.verbosity)]
+		};
+	}
+
+	const isExcluded = (value: MathNode): boolean => {
+		if (Number.isFinite(approximateOrNaN(value))) {
+			return !containsNode(POSITIVE_LENGTH_DOMAIN, value);
+		}
+		return isNegativeType(value) || isZeroType(value);
+	};
+	const solutions = result.solutions.filter((solution) => {
+		if (!isExcluded(solution.value)) return true;
+		recordExclusion(solution.value);
+		return false;
+	});
+	// Rien d'exclu : le résultat d'origine, tel quel (`AB² = −4` reste `no-real-solution`)
+	if (solutions.length === result.solutions.length) return result;
+
+	return {
+		...result,
+		solutions,
+		status:
+			solutions.length === 0 ? 'no-solution' : solutions.length === 1 ? 'unique' : result.status,
+		steps: [...result.steps, ...recorder.getStepsFiltered(opts.verbosity)]
+	};
 }
 
 // =============================================================================
@@ -1762,8 +2099,27 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		);
 	}
 
-	if (refusesEulerVariable(opts.variable, equation)) {
-		throw new SolveError(EULER_NOT_A_VARIABLE, 'unknown', 'variable: e');
+	// Longueurs (`AB`, `BA`) : toutes deviennent des variables, nommées par leur paire
+	// triée, puis on résout et on rend les longueurs écrites comme l'élève. L'inconnue
+	// peut être une longueur (`AB^2 = 25` en AB) ou une autre lettre (`x + AB = 3` en x).
+	const lengths = segmentsAsVariables(equation);
+	if (lengths.segments.size > 0 && isRelation(lengths.node)) {
+		const variable =
+			opts.variable === undefined ? undefined : canonicalNameAmong(opts.variable, lengths.segments);
+		const result = solve(lengths.node, { ...options, ...(variable !== undefined && { variable }) });
+		const restored = withSegmentsRestored(result, lengths.segments, opts.variable);
+		// Une longueur inconnue est strictement positive (Q-F, 2026-10-12), sauf si
+		// l'appelant pose son propre domaine (priorité) ou si ses points sont identiques
+		const unknown = lengths.segments.get(result.variable);
+		if (unknown === undefined || isDegenerateSegment(unknown) || options?.domain !== undefined) {
+			return restored;
+		}
+		return keepPositiveLength(restored, lengths.node, result.variable, lengths.segments, opts);
+	}
+
+	const refusal = reservedVariableRefusal(opts.variable, equation);
+	if (refusal !== null) {
+		throw new SolveError(refusal, 'unknown', `variable: ${opts.variable}`);
 	}
 
 	// Un membre purement parenthésé est lu comme son contenu : `(2x-3) = 0`
@@ -1803,7 +2159,7 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	}
 
 	// Compute domain of definition, intersected with user-provided search domain
-	const { domain: computedDomain } = computeDomain(expr, variable);
+	const { domain: computedDomain, unresolved: domainUnresolved } = computeDomain(expr, variable);
 	const domain = options?.domain
 		? intersectDomains(computedDomain, options.domain)
 		: computedDomain;
@@ -1843,7 +2199,8 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 			...bySubstitution,
 			solutions: kept,
 			status: kept.length === 0 ? 'no-solution' : kept.length === 1 ? 'unique' : 'multiple',
-			domain
+			domain,
+			...(domainUnresolved !== undefined && { domainUnresolved })
 		};
 	}
 
@@ -1987,6 +2344,25 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Avant elle, le changement de variable (u = sin x, cos x, tan x, ln x,
 	// eˣ) : `sin²x = 1/4` revenait « non supporte ». Lui aussi en repli : une
 	// équation déjà résolue garde sa résolution.
+	// |u| = c et |u| = |v|, u et v affines : premier repli (écart V40 :
+	// `|x| = π` revenait « non supporte ») — voir `absolute-value.ts`
+	if (isSolverFailure(result)) {
+		const absolute = tryAbsoluteValue(expr, variable, opts, solve);
+		if (absolute) result = absolute;
+	}
+	// P/c = 0, c constante non nulle (π, e, π + 1) : P = 0. Deuxième
+	// repli : écart V37, `x < 2/π` mis sous la forme (πx − 2)/π < 0.
+	if (isSolverFailure(result)) {
+		const numeratorOnly = tryConstantDenominator(expr, variable, opts);
+		if (numeratorOnly) result = numeratorOnly;
+	}
+	// Second membre littéral (`y = e^{2x+1}`) : on ôte une couche (exp, ln,
+	// racine), avec la condition sur le paramètre — voir `literal-parameter.ts`.
+	// Avant le changement de variable, qui lit la VALEUR de ses racines.
+	if (isSolverFailure(result)) {
+		const peeled = tryLiteralParameter(promotedEq, variable, opts, solve);
+		if (peeled) result = peeled;
+	}
 	if (isSolverFailure(result)) {
 		const substituted = trySubstitution(expr, variable, opts, solve);
 		if (substituted) result = substituted;
@@ -2004,6 +2380,10 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	if (isSolverFailure(result)) {
 		const factored = tryCommonFactorDecomposition(expr, variable, opts);
 		if (factored) result = factored;
+	}
+	if (isSolverFailure(result)) {
+		const squares = tryDifferenceOfSquaresDecomposition(expr, variable, opts);
+		if (squares) result = squares;
 	}
 	// Une équation qui ne devient affine (ou d'un degré moindre) qu'une fois
 	// développée et réduite : `x² + 5 = (x + 1)²`, `x² − x² + 2x = 4`. Le
@@ -2024,6 +2404,8 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	}
 
 	result = filterSolutionsByDomain(result, domain, variable, domainRecorder);
+	// Domaine incomplet : le dire, jamais le présenter comme exact (V45)
+	if (domainUnresolved !== undefined) result = { ...result, domainUnresolved };
 
 	// Append any exclusion steps
 	const exclusionSteps = domainRecorder

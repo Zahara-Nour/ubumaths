@@ -17,12 +17,14 @@ export {
 export type {
 	LimitBindings,
 	LimitGenerationStrategy,
+	LimitLine,
 	LimitsSchoolLevel,
 	PedagogicalLimitOptions,
 	PedagogicalLimitResult,
 	PedagogicalLimitRule,
 	PedagogicalLimitStatus,
-	PedagogicalLimitStep
+	PedagogicalLimitStep,
+	TermLimits
 } from './types';
 
 // Pipeline (typed entry point)

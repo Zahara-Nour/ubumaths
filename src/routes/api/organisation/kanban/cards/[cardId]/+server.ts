@@ -16,6 +16,9 @@ import { parseKanbanId, updateCardSchema } from '$lib/server/validation/kanban';
 import { getCardColumnId, getColumnBoardId, rateLimitResponse } from '$lib/server/kanban';
 import { checkKanbanCardMutationRateLimit } from '$lib/server/rateLimiter';
 import type { KanbanCard } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/organisation/kanban/cards/[cardId]/+server');
 
 /**
  * Mutation payload accepted by the card PATCH endpoint. Differs from
@@ -96,7 +99,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			.select()
 			.single();
 		if (dbError || !data) {
-			console.error('[kanban] update card failed:', dbError);
+			logger.error('[kanban] update card failed:', dbError);
 			throw error(500, 'Erreur lors de la mise à jour de la carte');
 		}
 		cardRow = data as KanbanCard;
@@ -115,14 +118,14 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			.delete()
 			.eq('card_id', cardId);
 		if (delError) {
-			console.error('[kanban] clear card tags failed:', delError);
+			logger.error('[kanban] clear card tags failed:', delError);
 			throw error(500, 'Erreur lors de la mise à jour des tags');
 		}
 		if (parsed.data.tag_ids.length > 0) {
 			const rows = parsed.data.tag_ids.map((tag_id) => ({ card_id: cardId, tag_id }));
 			const { error: insError } = await locals.supabase.from('kanban_card_tags').insert(rows);
 			if (insError) {
-				console.error('[kanban] set card tags failed:', insError);
+				logger.error('[kanban] set card tags failed:', insError);
 				throw error(500, 'Erreur lors de la mise à jour des tags');
 			}
 		}
@@ -143,7 +146,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			.select('user_id')
 			.eq('card_id', cardId);
 		if (readErr) {
-			console.error('[kanban] read current assignees failed:', readErr);
+			logger.error('[kanban] read current assignees failed:', readErr);
 			throw error(500, 'Erreur lors de la lecture des personnes assignées');
 		}
 		const existing = new Set((current ?? []).map((r) => r.user_id));
@@ -173,11 +176,11 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			}));
 			const { error: insError } = await locals.supabase.from('kanban_card_assignees').insert(rows);
 			if (insError) {
-				console.error('[kanban] add assignees failed:', insError);
+				logger.error('[kanban] add assignees failed:', insError);
 				// RLS denies attempts to assign people the actor isn't allowed
 				// to act on. Surface as 403 so the client can roll back.
 				if (insError.code === '42501') {
-					throw error(403, "Vous n'êtes pas autorisé·e à modifier les assignations de cette carte");
+					throw error(403, 'Modification des assignations de cette carte non autorisée');
 				}
 				throw error(500, "Erreur lors de l'ajout des personnes assignées");
 			}
@@ -190,7 +193,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 				.eq('card_id', cardId)
 				.in('user_id', toRemove);
 			if (delError) {
-				console.error('[kanban] remove assignees failed:', delError);
+				logger.error('[kanban] remove assignees failed:', delError);
 				throw error(500, 'Erreur lors du retrait des personnes assignées');
 			}
 		}
@@ -206,16 +209,13 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			.eq('card_id', cardId);
 
 		if (afterRowsError) {
-			console.error('Lecture impossible :', afterRowsError);
+			logger.error('Lecture impossible :', afterRowsError);
 			throw error(500, 'Impossible de charger les données');
 		}
 		const afterSet = new Set((afterRows ?? []).map((r) => r.user_id));
 		const stillExtra = [...afterSet].filter((id) => !requested.has(id));
 		if (stillExtra.length > 0) {
-			throw error(
-				403,
-				"Vous n'êtes pas autorisé·e à retirer toutes les personnes assignées sélectionnées"
-			);
+			throw error(403, 'Retrait de toutes les personnes assignées sélectionnées non autorisé');
 		}
 	}
 
@@ -228,7 +228,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			.eq('id', cardId)
 			.single();
 		if (dbError || !data) {
-			console.error('[kanban] read-back card failed:', dbError);
+			logger.error('[kanban] read-back card failed:', dbError);
 			throw error(500, 'Erreur lors de la mise à jour de la carte');
 		}
 		cardRow = data as KanbanCard;
@@ -255,7 +255,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { error: dbError } = await locals.supabase.from('kanban_cards').delete().eq('id', cardId);
 
 	if (dbError) {
-		console.error('[kanban] delete card failed:', dbError);
+		logger.error('[kanban] delete card failed:', dbError);
 		throw error(500, 'Erreur lors de la suppression de la carte');
 	}
 

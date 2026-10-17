@@ -41,13 +41,13 @@
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { config } from 'dotenv';
 
 // Charger les variables d'environnement
 config();
 
-const logger = createLogger('tutorRateLimiter');
+const logger = createServerLogger('tutorRateLimiter');
 
 // ============================================================================
 // SERVICE ROLE CLIENT (SINGLETON POUR LE RATE LIMITING)
@@ -183,7 +183,7 @@ export const TUTOR_RATE_LIMITS: TutorRateLimitConfig = {
  * Ces messages utilisent les expressions favorites d'Ubu :
  * - "Cornegidouille !" (étonnement, reproche)
  * - "Par ma chandelle verte !" (surprise, admiration)
- * - "Hornstrompe !" (colère, frustration)
+ * - "Tudieu !" (colère, frustration)
  *
  * Le ton reste pédagogique et bienveillant malgré le vocabulaire coloré.
  */
@@ -191,7 +191,7 @@ export const TUTOR_LIMIT_MESSAGES = {
 	exercise:
 		"Cornegidouille ! Tu as utilisé beaucoup d'aide sur cet exercice. Essaie de le résoudre par toi-même ou demande à ton professeur.",
 	hour: 'Par ma chandelle verte ! Tu travailles beaucoup ! Fais une petite pause et reviens dans quelques minutes.',
-	day: "Hornstrompe ! Tu as atteint ta limite quotidienne d'aide. Le Père Ubu sera de retour demain !"
+	day: "Tudieu ! Tu as atteint ta limite quotidienne d'aide. Le Père Ubu sera de retour demain !"
 };
 
 // ============================================================================

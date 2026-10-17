@@ -1,0 +1,72 @@
+/**
+ * Redirections des anciennes adresses (`redirectHandle`)
+ * ======================================================
+ *
+ * `/cas` est retirée le 2026-10-13 : l'atelier la remplace (phase 0
+ * `docs/wip/atelier-cas-phase0.md`, PR 4). Un lien gardé ou un favori mène à
+ * `/atelier` en 308 (permanente, comme les autres anciennes routes), la query
+ * string comprise.
+ */
+import { describe, it, expect, vi } from 'vitest';
+import type { RequestEvent } from '@sveltejs/kit';
+import { redirectHandle } from '../redirectHandle';
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+/** La redirection produite pour une adresse, ou `null` si la requête passe. */
+async function redirectionOf(path: string): Promise<{ status: number; location: string } | null> {
+	const event = { url: new URL(`https://www.chiph.re${path}`) } as unknown as RequestEvent;
+	const resolve = vi.fn().mockResolvedValue(new Response('ok'));
+	try {
+		await redirectHandle({ event, resolve });
+		return null;
+	} catch (e) {
+		const thrown = e as { status: number; location: string };
+		return { status: thrown.status, location: thrown.location };
+	}
+}
+
+// ============================================================================
+// TESTS
+// ============================================================================
+
+describe('redirectHandle — /cas, remplacée par l’atelier', () => {
+	it('/cas mène à /atelier, en 308', async () => {
+		expect(await redirectionOf('/cas')).toEqual({ status: 308, location: '/atelier' });
+	});
+
+	it('/cas/ aussi', async () => {
+		expect(await redirectionOf('/cas/')).toEqual({ status: 308, location: '/atelier' });
+	});
+
+	it('la query string suit', async () => {
+		expect(await redirectionOf('/cas?expr=x%5E2')).toEqual({
+			status: 308,
+			location: '/atelier?expr=x%5E2'
+		});
+	});
+
+	it('une adresse qui commence seulement par « /cas » passe', async () => {
+		expect(await redirectionOf('/casino')).toBeNull();
+		expect(await redirectionOf('/calc')).toBeNull();
+		expect(await redirectionOf('/atelier')).toBeNull();
+	});
+});
+
+describe('redirectHandle — les anciennes routes déjà redirigées', () => {
+	it('/login mène toujours à /auth/login', async () => {
+		expect(await redirectionOf('/login?error=x')).toEqual({
+			status: 308,
+			location: '/auth/login?error=x'
+		});
+	});
+
+	it('/dashboard/teacher/templates mène toujours au contenu', async () => {
+		expect(await redirectionOf('/dashboard/teacher/templates/12')).toEqual({
+			status: 308,
+			location: '/dashboard/teacher/contenu/templates/12'
+		});
+	});
+});

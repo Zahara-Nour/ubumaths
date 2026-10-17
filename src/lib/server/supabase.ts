@@ -19,9 +19,10 @@
 import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { Handle } from '@sveltejs/kit';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
+import { capSessionCookieOptions } from '$lib/utils/session-cookies';
 
-const logger = createLogger('server/supabase.ts');
+const logger = createServerLogger('server/supabase.ts');
 
 export const handle: Handle = async ({ event, resolve }) => {
 	logger.trace('Creating server client for URL:', PUBLIC_SUPABASE_URL);
@@ -40,17 +41,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 			getAll: () => event.cookies.getAll(),
 			// Write cookies to the response (e.g., after login/logout)
 			setAll: (cookiesToSet) => {
-				// SECURITY (finding H3): @supabase/ssr defaults the auth cookies to a
-				// 400-day maxAge. Cap the session lifetime to 30 days (untouched for
-				// deletions / shorter-lived cookies) so a leaked refresh token has a
-				// bounded window.
-				const MAX_SESSION_AGE = 60 * 60 * 24 * 30; // 30 days
+				// SECURITY (finding H3) : durée de vie plafonnée à 30 jours (400 par
+				// défaut dans @supabase/ssr), pour borner la fenêtre d'un jeton volé.
+				// Même plafond côté navigateur (src/routes/+layout.ts).
 				cookiesToSet.forEach(({ name, value, options }) => {
-					const capped =
-						options?.maxAge != null && options.maxAge > MAX_SESSION_AGE
-							? { ...options, maxAge: MAX_SESSION_AGE }
-							: options;
-					event.cookies.set(name, value, { ...capped, path: '/' });
+					event.cookies.set(name, value, { ...capSessionCookieOptions(options), path: '/' });
 				});
 			}
 		}

@@ -267,7 +267,7 @@ class MarketplaceStore {
 				// Update cache timestamp
 				this.lastFetch.listings = Date.now();
 			} else {
-				throw new Error('Failed to fetch listings');
+				throw new Error('Impossible de charger les annonces');
 			}
 		} catch (_error) {
 			this.errors.listings = _error instanceof Error ? _error.message : 'Failed to fetch listings';

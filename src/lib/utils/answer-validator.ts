@@ -48,8 +48,7 @@ import {
 	MISSING_CHOICES_FEEDBACK
 } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
-import { templateGenericFunctions } from '$lib/questions/generic-functions';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser';
+import { readingOf, type FormulaReading } from '$lib/questions/formula-reading';
 import { choiceLetter, statusFromChoices, toDisplayedChoicePosition } from '$lib/questions/choices';
 import {
 	getRequiredFormFeedback,
@@ -165,12 +164,14 @@ function extractNumericLatexPart(latex: string): string {
  */
 function formOptionsOf(
 	constraints: ConstraintOptions,
-	genericFunctions: GenericFunctionConfig | undefined,
+	reading: FormulaReading,
 	assumptions?: AnswerAssumptions
 ): CheckFormOptions {
 	return {
 		allowFirstNegative: constraints.allowBracketsInFirstNegativeTerm === true,
-		...(genericFunctions && { genericFunctions }),
+		...(reading.genericFunctions && { genericFunctions: reading.genericFunctions }),
+		// Sens de `AB` (longueur ou produit) : celui de l'instance, pour la réponse ET l'attendu
+		...(reading.capitalPairs && { capitalPairs: reading.capitalPairs }),
 		// Hypothèses de l'énoncé (ADR 0012) : `|x|` s'écrit `x` quand x > 0 est déclaré
 		...(assumptions && { assumptions })
 	};
@@ -193,7 +194,7 @@ function applyConstraints(
 	answersLatex: string[],
 	expectedAnswers: string[],
 	constraints: ConstraintOptions,
-	genericFunctions?: GenericFunctionConfig,
+	reading: FormulaReading = {},
 	assumptions?: AnswerAssumptions
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
 	const violations: NonNullable<ValidationResult['constraintViolations']> = [];
@@ -201,7 +202,7 @@ function applyConstraints(
 	const isMultiple = answers.length > 1;
 	const severities = buildConstraintSeverities(constraints);
 	const formMode = (constraints.form as ConstraintMode | undefined) ?? DEFAULT_FORM_CONSTRAINT_MODE;
-	const formOptions = formOptionsOf(constraints, genericFunctions, assumptions);
+	const formOptions = formOptionsOf(constraints, reading, assumptions);
 
 	// Apply unified checkForm for each answer/expected pair
 	for (let i = 0; i < answersLatex.length; i++) {
@@ -327,8 +328,8 @@ function evaluateValidationRules(
 		numericAnswer: toNumericAnswer(userAnswer),
 		// Hypothèses de l'énoncé (ADR 0012), pour la règle `equivalent`
 		assumptions: instance.options?.answerAssumptions,
-		// Fonctions déclarées par le modèle (`P'(2)`), pour la règle `equivalent`
-		genericFunctions: templateGenericFunctions(instance.genericFunctions)
+		// Fonctions déclarées (`P'(2)`) et sens de `AB`, pour la règle `equivalent`
+		...readingOf(instance)
 	};
 
 	// Evaluate each rule
@@ -501,10 +502,8 @@ export function validateAnswer(
 		let acceptableForm = false;
 		if (result.isCorrect && instance.requiredForm && userAnswerLatex) {
 			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
-			const genericFunctions = templateGenericFunctions(instance.genericFunctions);
-			const verdicts = latex.map((l) =>
-				requiredFormVerdict(l, instance.requiredForm!, { genericFunctions })
-			);
+			const reading = readingOf(instance);
+			const verdicts = latex.map((l) => requiredFormVerdict(l, instance.requiredForm!, reading));
 			acceptableForm = verdicts.includes('acceptable');
 
 			if (verdicts.includes('violated')) {
@@ -533,7 +532,7 @@ export function validateAnswer(
 				latex,
 				expected,
 				instance.options?.constraints ?? {},
-				templateGenericFunctions(instance.genericFunctions)
+				readingOf(instance)
 			);
 
 			const form = acceptableForm ? withAcceptableForm(status, violations) : { status, violations };
@@ -623,7 +622,7 @@ function numericalResult(
 		return {
 			isCorrect: false,
 			message: 'Réponse invalide (non numérique)',
-			feedback: 'Vérifiez que vous avez entré un nombre valide'
+			feedback: 'Vérifier que la réponse est un nombre valide'
 		};
 	}
 
@@ -761,10 +760,10 @@ export function validateAlgebraic(
 function requiredFormCosmetics(
 	latex: string,
 	constraints: ConstraintOptions,
-	genericFunctions?: GenericFunctionConfig
+	reading: FormulaReading = {}
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
 	const severities = buildConstraintSeverities(constraints);
-	const formOptions = formOptionsOf(constraints, genericFunctions);
+	const formOptions = formOptionsOf(constraints, reading);
 	return mapCosmeticViolations(cosmeticViolations(latex, severities, formOptions), false);
 }
 
@@ -782,11 +781,11 @@ function requiredFormCosmetics(
 function checkSimpleNumberForm(
 	latex: string,
 	constraints: ConstraintOptions,
-	genericFunctions?: GenericFunctionConfig,
+	reading: FormulaReading = {},
 	allowFraction = false
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
 	const severities = buildConstraintSeverities(constraints);
-	const formOptions = formOptionsOf(constraints, genericFunctions);
+	const formOptions = formOptionsOf(constraints, reading);
 	const raw = cosmeticViolations(latex, severities, formOptions);
 	const { status, violations } = mapCosmeticViolations(raw, false);
 
@@ -812,10 +811,10 @@ function checkSimpleNumberForm(
 function angleWritingForm(
 	latex: string,
 	constraints: ConstraintOptions,
-	genericFunctions?: GenericFunctionConfig
+	reading: FormulaReading = {}
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
 	const severities = buildConstraintSeverities(constraints);
-	const raw = cosmeticViolations(latex, severities, formOptionsOf(constraints, genericFunctions));
+	const raw = cosmeticViolations(latex, severities, formOptionsOf(constraints, reading));
 	const { status, violations } = mapCosmeticViolations(raw, false);
 	if (!isSingleTermLatex(latex)) {
 		const feedback = CONSTRAINT_FEEDBACK['form'].single;
@@ -1417,7 +1416,7 @@ function validateSingleBlank(
 	const formVerdict =
 		blank.requiredForm && userAnswerLatex
 			? requiredFormVerdict(userAnswerLatex, blank.requiredForm, {
-					genericFunctions: templateGenericFunctions(instance.genericFunctions)
+					...readingOf(instance)
 				})
 			: 'ok';
 	if (blank.requiredForm && formVerdict === 'violated') {
@@ -1447,7 +1446,7 @@ function validateSingleBlank(
 	const constraints = instance.options?.constraints ?? {};
 	const effectiveLatex = userAnswerLatex || userAnswer;
 	// Fonctions déclarées par le modèle (`P'(2)`) : la forme se relit avec elles
-	const genericFunctions = templateGenericFunctions(instance.genericFunctions);
+	const reading = readingOf(instance);
 
 	// text: no form check — value was already validated at step 2.
 	if (blank.type === 'text') {
@@ -1455,11 +1454,11 @@ function validateSingleBlank(
 	}
 
 	const severities = buildConstraintSeverities(constraints);
-	const formOptions = formOptionsOf(constraints, genericFunctions);
+	const formOptions = formOptionsOf(constraints, reading);
 
 	// requiredForm: form handled at step 3 → only cosmetic violations here.
 	if (blank.requiredForm) {
-		const cosmetic = requiredFormCosmetics(effectiveLatex, constraints, genericFunctions);
+		const cosmetic = requiredFormCosmetics(effectiveLatex, constraints, reading);
 		const { status, violations } =
 			formVerdict === 'acceptable'
 				? withAcceptableForm(cosmetic.status, cosmetic.violations)
@@ -1515,7 +1514,7 @@ function validateSingleBlank(
 		const { status, violations } = checkSimpleNumberForm(
 			effectiveLatex,
 			constraints,
-			genericFunctions,
+			reading,
 			allowsNumberFraction(blank)
 		);
 		return {
@@ -1537,11 +1536,7 @@ function validateSingleBlank(
 	// reproduire l'écriture attendue (`0{,}5` pour `\frac{1}{2}`) ; seules restent
 	// les contraintes cosmétiques d'un nombre simple (zéros inutiles, espaces).
 	if (acceptsExactDecimal(blank, effectiveLatex)) {
-		const { status, violations } = checkSimpleNumberForm(
-			effectiveLatex,
-			constraints,
-			genericFunctions
-		);
+		const { status, violations } = checkSimpleNumberForm(effectiveLatex, constraints, reading);
 		return {
 			isCorrect: status !== 'bad_form',
 			status,
@@ -1568,7 +1563,7 @@ function validateSingleBlank(
 	// (`\frac{\pi}{4}+2\pi`) est de mauvaise forme ; sinon seules les contraintes
 	// d'écriture comptent (`-\frac{14\pi}{8}` : fraction à simplifier).
 	if (angleShifted) {
-		const { status, violations } = angleWritingForm(effectiveLatex, constraints, genericFunctions);
+		const { status, violations } = angleWritingForm(effectiveLatex, constraints, reading);
 		return {
 			isCorrect: status !== 'bad_form',
 			status,
@@ -1583,7 +1578,7 @@ function validateSingleBlank(
 		[effectiveLatex],
 		[blank.expectedAnswer],
 		constraints,
-		genericFunctions,
+		reading,
 		instance.options?.answerAssumptions
 	);
 
@@ -1818,7 +1813,8 @@ function aggregateOrderedBlanks(results: readonly SingleBlankResult[]): Validati
 /**
  * Match a single answer against expected (algebraic equivalence or case-insensitive string).
  * L'instance fournit les hypothèses de l'énoncé (ADR 0012), qui restreignent le domaine
- * de comparaison, et les fonctions déclarées par le modèle (`P'(2)`).
+ * de comparaison, les fonctions déclarées par le modèle (`P'(2)`) et le sens de `AB`
+ * (longueur ou produit), le même pour la réponse et l'attendu.
  */
 function isAnswerMatch(userAns: string, correctAns: string, instance: QuestionInstance): boolean {
 	// Same UI-protection rationale as validateAlgebraic: bound the equivalence
@@ -1826,7 +1822,7 @@ function isAnswerMatch(userAns: string, correctAns: string, instance: QuestionIn
 	const options = {
 		timeoutMs: 500,
 		assumptions: instance.options?.answerAssumptions,
-		genericFunctions: templateGenericFunctions(instance.genericFunctions)
+		...readingOf(instance)
 	};
 	if (areEquivalent(userAns, correctAns, options)) return true;
 	return userAns.trim().toLowerCase() === correctAns.trim().toLowerCase();
@@ -1977,11 +1973,7 @@ function matchedAnswerForm(
 		!isAnswerMatch(userAnswer, blank.expectedAnswer, instance) &&
 		isAngleModuloMatch(userAnswer, blank, instance)
 	) {
-		return angleWritingForm(
-			blankLatex,
-			instance.options?.constraints ?? {},
-			templateGenericFunctions(instance.genericFunctions)
-		);
+		return angleWritingForm(blankLatex, instance.options?.constraints ?? {}, readingOf(instance));
 	}
 
 	let worstStatus: ValidationStatus = 'correct';
@@ -1989,7 +1981,7 @@ function matchedAnswerForm(
 
 	if (blank.requiredForm && blankLatex) {
 		const verdict = requiredFormVerdict(blankLatex, blank.requiredForm, {
-			genericFunctions: templateGenericFunctions(instance.genericFunctions)
+			...readingOf(instance)
 		});
 		if (verdict === 'violated') {
 			const feedback = getRequiredFormFeedback(blank.requiredForm, false);
@@ -2003,17 +1995,17 @@ function matchedAnswerForm(
 	}
 
 	if (blankLatex) {
-		const genericFunctions = templateGenericFunctions(instance.genericFunctions);
+		const reading = readingOf(instance);
 		// rulesSuffice : pas de modèle de forme, cf. checkSimpleNumberForm
 		// Forme exigée : déjà jugée par le motif ; ici seules les contraintes cosmétiques,
 		// comme pour une case seule (l'attendu n'est pas LA forme à reproduire)
 		const { status, violations } = blank.requiredForm
-			? requiredFormCosmetics(blankLatex, instance.options?.constraints ?? {}, genericFunctions)
+			? requiredFormCosmetics(blankLatex, instance.options?.constraints ?? {}, reading)
 			: blank.precision || rulesDecide(blank) || acceptsExactDecimal(blank, blankLatex)
 				? checkSimpleNumberForm(
 						blankLatex,
 						instance.options?.constraints ?? {},
-						genericFunctions,
+						reading,
 						allowsNumberFraction(blank)
 					)
 				: applyConstraints(
@@ -2021,7 +2013,7 @@ function matchedAnswerForm(
 						[blankLatex],
 						[blank.expectedAnswer],
 						instance.options?.constraints ?? {},
-						genericFunctions,
+						reading,
 						instance.options?.answerAssumptions
 					);
 		if (status === 'bad_form') worstStatus = 'bad_form';

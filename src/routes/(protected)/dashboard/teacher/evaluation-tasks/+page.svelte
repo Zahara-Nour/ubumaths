@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-	<title>Tâches d'évaluation | Chiphre</title>
+	<title>Observations | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-6">
@@ -37,15 +37,15 @@
 				<ClipboardList class="h-6 w-6 text-primary" />
 			</div>
 			<div>
-				<h1 class="text-3xl font-bold tracking-tight">Tâches d'évaluation</h1>
+				<h1 class="text-3xl font-bold tracking-tight">Observations</h1>
 				<p class="text-muted-foreground">
-					{data.tasks.length} tâche{data.tasks.length > 1 ? 's' : ''} — Famille B (compétences math)
+					{data.tasks.length} observation{data.tasks.length > 1 ? 's' : ''} — Famille B (compétences math)
 				</p>
 			</div>
 		</div>
 		<Button href="/dashboard/teacher/evaluation-tasks/new" class="gap-1">
 			<Plus class="h-4 w-4" />
-			Nouvelle tâche
+			Nouvelle observation
 		</Button>
 	</div>
 
@@ -53,10 +53,10 @@
 		<Card.Root>
 			<Card.Content class="py-12 text-center text-muted-foreground">
 				<ClipboardList class="mx-auto mb-3 h-10 w-10 opacity-40" />
-				<p class="mb-3">Aucune tâche d'évaluation pour le moment.</p>
+				<p class="mb-3">Aucune observation pour le moment.</p>
 				<Button href="/dashboard/teacher/evaluation-tasks/new" variant="default">
 					<Plus class="h-4 w-4" />
-					Créer ma première tâche
+					Créer ma première observation
 				</Button>
 			</Card.Content>
 		</Card.Root>

@@ -19,10 +19,7 @@ import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
  * n'est jamais `non_commencee` (sinon il ne serait pas dans le deck).
  */
 export type ProgrammeBadge =
-	| 'a_remedier'
-	| 'a_renforcer'
-	| 'en_apprentissage'
-	| 'acquise_en_memoire';
+	'a_remedier' | 'a_renforcer' | 'en_apprentissage' | 'acquise_en_memoire';
 
 export interface ProgrammeCard {
 	cardId: string;

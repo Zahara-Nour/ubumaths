@@ -28,7 +28,7 @@
 #   `FULL=1 pnpm format:check` rejoue l'arbre suivi entier.
 #
 # WHY THE SYMLINK FILTER:
-#   `git ls-files` lists tracked symlinks (tools/shantell-math/venv/bin/python*),
+#   `git ls-files` lists tracked symlinks (tools/chiphre-math/venv/bin/python*),
 #   and Prettier ERRORS on an explicitly named symlink instead of skipping it —
 #   it only skips them silently when expanding a directory itself. Without this
 #   filter the check exits 1 on a perfectly clean tree.

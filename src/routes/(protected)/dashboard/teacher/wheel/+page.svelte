@@ -37,7 +37,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to update gidouilles');
+				throw new Error('Impossible de mettre à jour les gidouilles');
 			}
 
 			// Refresh data

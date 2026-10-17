@@ -7,6 +7,9 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { generateOpenAPISpec } from '$lib/server/openapi/generator';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/openapi.json/+server');
 
 /**
  * GET /api/openapi.json
@@ -27,7 +30,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			}
 		});
 	} catch (error) {
-		console.error('Failed to generate OpenAPI spec:', error);
+		logger.error('Failed to generate OpenAPI spec:', error);
 
 		return json(
 			{

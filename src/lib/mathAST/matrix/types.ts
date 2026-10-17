@@ -24,13 +24,7 @@ import type { BaseStep } from '../common/step-recorder-base';
  * - 'smallmatrix': Inline small matrix
  */
 export type MatrixType =
-	| 'plain'
-	| 'pmatrix'
-	| 'bmatrix'
-	| 'Bmatrix'
-	| 'vmatrix'
-	| 'Vmatrix'
-	| 'smallmatrix';
+	'plain' | 'pmatrix' | 'bmatrix' | 'Bmatrix' | 'vmatrix' | 'Vmatrix' | 'smallmatrix';
 
 // =============================================================================
 // Matrix Options

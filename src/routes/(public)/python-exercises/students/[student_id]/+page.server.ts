@@ -17,6 +17,9 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/python-exercises/students/[student_id]/+page.server');
 
 export type MasteryStatus = 'mastered' | 'needs_review' | 'not_started';
 
@@ -57,7 +60,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.single();
 
 	if (profileErr) {
-		console.error('Failed to fetch profile:', profileErr);
+		logger.error('Failed to fetch profile:', profileErr);
 		throw error(500, 'Erreur lors de la récupération du profil');
 	}
 	if (!profile || profile.role !== 'teacher') {
@@ -74,8 +77,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (studentRawError && studentRawError.code !== 'PGRST116') {
-		console.error('Contrôle d’accès impossible :', studentRawError);
-		throw error(500, 'Impossible de vérifier votre accès');
+		logger.error('Contrôle d’accès impossible :', studentRawError);
+		throw error(500, 'Impossible de vérifier l’accès');
 	}
 
 	if (!studentRaw) throw error(404, 'Élève introuvable');
@@ -89,7 +92,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Cette liste borne la portée du classement. Vidée par une panne, elle
 	// affiche un classement amputé sans le dire.
 	if (myClassesRawError) {
-		console.error('Périmètre illisible :', myClassesRawError);
+		logger.error('Périmètre illisible :', myClassesRawError);
 		throw error(500, 'Impossible de déterminer le périmètre');
 	}
 	const myClassIds = (myClassesRaw ?? []).map((c) => c.id);
@@ -106,7 +109,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		// Cette liste borne la portée du classement. Vidée par une panne, elle
 		// affiche un classement amputé sans le dire.
 		if (classMembersRawError) {
-			console.error('Périmètre illisible :', classMembersRawError);
+			logger.error('Périmètre illisible :', classMembersRawError);
 			throw error(500, 'Impossible de déterminer le périmètre');
 		}
 		classesContainingStudent = (classMembersRaw ?? [])
@@ -123,7 +126,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.eq('student_id', studentId);
 
 	if (directAssignmentsRawError) {
-		console.error('Lecture impossible :', directAssignmentsRawError);
+		logger.error('Lecture impossible :', directAssignmentsRawError);
 		throw error(500, 'Impossible de charger les données');
 	}
 	const directAssignedExoIds = new Set(
@@ -132,7 +135,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	// Scope check: in one of my classes OR I have at least one direct assignment
 	if (!isInMyClasses && directAssignedExoIds.size === 0) {
-		throw error(403, "Cet élève n'est pas dans votre périmètre");
+		throw error(403, 'Cet élève est hors du périmètre autorisé');
 	}
 
 	// 6. My class-level assignments touching this student (only on classes they belong to)
@@ -145,7 +148,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			.in('class_id', classesContainingStudent);
 
 		if (classAssignmentsRawError) {
-			console.error('Lecture impossible :', classAssignmentsRawError);
+			logger.error('Lecture impossible :', classAssignmentsRawError);
 			throw error(500, 'Impossible de charger les données');
 		}
 		for (const a of classAssignmentsRaw ?? []) {
@@ -163,7 +166,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (submissionsRawError) {
-		console.error('Lecture impossible :', submissionsRawError);
+		logger.error('Lecture impossible :', submissionsRawError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -194,7 +197,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			.eq('author_id', user.id);
 
 		if (dataError) {
-			console.error('Lecture impossible :', dataError);
+			logger.error('Lecture impossible :', dataError);
 			throw error(500, 'Impossible de charger les données');
 		}
 		authoredSubmittedRows = (data ?? []) as ExerciseSummary[];
@@ -209,7 +212,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			.in('id', Array.from(assignedExoIds));
 
 		if (dataError) {
-			console.error('Lecture impossible :', dataError);
+			logger.error('Lecture impossible :', dataError);
 			throw error(500, 'Impossible de charger les données');
 		}
 		assignedRows = (data ?? []) as ExerciseSummary[];
@@ -235,7 +238,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (masteryRawError) {
-		console.error('Enrichissement illisible :', masteryRawError);
+		logger.error('Enrichissement illisible :', masteryRawError);
 	}
 
 	type DbMasteryStatus = 'mastered' | 'needs_review';

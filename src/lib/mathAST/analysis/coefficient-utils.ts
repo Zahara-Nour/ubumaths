@@ -2,7 +2,7 @@
  * Coefficient Extraction Utilities
  *
  * Shared utilities for extracting coefficients from mathematical expressions.
- * Used by linear-combination, polynomial-analysis, and periodicity modules.
+ * Used by linear-combination and periodicity modules.
  *
  * @module mathAST/analysis/coefficient-utils
  */

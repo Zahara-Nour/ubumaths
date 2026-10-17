@@ -23,6 +23,8 @@ function serie(partiel: Partial<ChapterSeries> = {}): ChapterSeries {
 		sectionOrder: 0,
 		createdAt: '2026-10-02T00:00:00Z',
 		publishedAt: '2026-10-02T00:00:00Z',
+		sourceId: null,
+		hidden: false,
 		title: 'Étude de fonction — méthode',
 		questionCount: 4,
 		launchHref: '/automaths/test?categories=abc&mode=flash',
@@ -60,6 +62,6 @@ describe('ChapterSeriesCard', () => {
 
 	it('ne parle jamais de note', async () => {
 		const { container } = await render(ChapterSeriesCard, { series: serie() });
-		expect(texte(container as HTMLElement)).not.toMatch(/note|évaluation/i);
+		expect(texte(container as HTMLElement)).not.toMatch(/note|évaluation|contrôle/i);
 	});
 });

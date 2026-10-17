@@ -13,6 +13,11 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { Tournament, TournamentStatus } from '$lib/types/minesweeper';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/minesweeper/tournaments/+page.server'
+);
 
 export interface TournamentWithCount extends Tournament {
 	participant_count: number;
@@ -37,7 +42,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 		.single();
 
 	if (profileError || !profileData) {
-		throw error(403, 'Profil non trouve');
+		throw error(403, 'Profil introuvable');
 	}
 
 	if (profileData.role !== 'teacher') {
@@ -60,7 +65,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 	const response = await fetch(apiUrl.toString());
 
 	if (!response.ok) {
-		console.error('Failed to fetch tournaments:', await response.text());
+		logger.error('Failed to fetch tournaments:', await response.text());
 		return { tournaments: [] };
 	}
 

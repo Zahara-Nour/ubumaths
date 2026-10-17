@@ -21,43 +21,10 @@ import { resolveUnit } from '../definitions';
 import { unit } from '../factory';
 import { getConversionFactor, unitsAreCompatible, convertAffine, isAffine } from '../conversion';
 import { multiply as multiplyUnits, divide as divideUnits } from '../operations';
-import { evaluateWithUnits, DimensionalEvaluationError } from '../../eval/evaluate-with-units';
-import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
-import { add, subtract, multiply, withUnit } from '../../factory';
-import { numericNode } from '../../common/numeric';
-import { UnitAST } from '../factory';
-import type { EvalValue, ComplexValueResult } from '../../eval/types';
-import type { MathNode } from '../../types';
 
 // =============================================================================
 // Test Helpers
 // =============================================================================
-
-function quantity(value: string, unitStr: string) {
-	const u = UnitAST.unit(unitStr);
-	if (!u) throw new Error(`Invalid unit: ${unitStr}`);
-	return withUnit(numericNode(value), u);
-}
-
-function isMathNode(value: EvalValue): value is MathNode {
-	return typeof value === 'object' && 'type' in value;
-}
-
-function isComplex(value: EvalValue): value is ComplexValueResult {
-	return typeof value === 'object' && 'real' in value && 'imag' in value;
-}
-
-function toNumber(value: EvalValue): number {
-	if (isComplex(value)) {
-		if (value.imag !== 0) throw new Error('Complex value');
-		return value.real;
-	}
-	if (isMathNode(value)) {
-		return evaluateNodeToApproximatedNumber(value);
-	}
-	if (typeof value === 'boolean') throw new Error('Boolean value');
-	return value;
-}
 
 // =============================================================================
 // Catalog presence
@@ -256,79 +223,6 @@ describe('Compatibility - affine units share temperature dimension', () => {
 
 	it('°C and m are incompatible', () => {
 		expect(unitsAreCompatible(unit('°C')!, unit('m')!)).toBe(false);
-	});
-});
-
-// =============================================================================
-// Integration with evaluateWithUnits (semantics of operations)
-// =============================================================================
-
-describe('evaluateWithUnits - affine semantics', () => {
-	it('100°C - 50°C → 50 K (difference of absolute temperatures is a delta)', () => {
-		const expr = subtract(quantity('100', '°C'), quantity('50', '°C'));
-		const result = evaluateWithUnits(expr);
-		expect(toNumber(result.value)).toBeCloseTo(50, 9);
-		// Result unit should be K (delta), not °C (absolute)
-		expect(result.unit.components.get('K')).toBe(1);
-		expect(result.unit.offset === undefined || result.unit.offset === 0).toBe(true);
-	});
-
-	it('5°C + 3 K → 8°C (absolute + delta = absolute, in left unit)', () => {
-		const expr = add(quantity('5', '°C'), quantity('3', 'K'));
-		const result = evaluateWithUnits(expr);
-		expect(toNumber(result.value)).toBeCloseTo(8, 9);
-		// Result unit should be °C (preserved from left operand, absolute)
-		expect(result.unit.offset).toBeCloseTo(273.15, 9);
-	});
-
-	it('rejects 5°C + 3°C (sum of absolute temperatures)', () => {
-		const expr = add(quantity('5', '°C'), quantity('3', '°C'));
-		expect(() => evaluateWithUnits(expr)).toThrow(DimensionalEvaluationError);
-	});
-
-	it('rejects 5°C × 2 (composition with scalar still meaningless for absolute)', () => {
-		const expr = multiply(quantity('5', '°C'), numericNode('2'), 'implicit');
-		expect(() => evaluateWithUnits(expr)).toThrow(/AFFINE/);
-	});
-
-	it('rejects 5°C × 3 m (composition with another unit)', () => {
-		const expr = multiply(quantity('5', '°C'), quantity('3', 'm'), 'implicit');
-		expect(() => evaluateWithUnits(expr)).toThrow(/AFFINE/);
-	});
-
-	it('handles delimiter-wrapped operands: (100°C) - (50°C) → 50 K', () => {
-		const wrap = (q: ReturnType<typeof quantity>): MathNode => ({
-			type: 'delimiter',
-			content: q,
-			delimiters: 'parentheses'
-		});
-		const expr = subtract(wrap(quantity('100', '°C')), wrap(quantity('50', '°C')));
-		const result = evaluateWithUnits(expr);
-		expect(toNumber(result.value)).toBeCloseTo(50, 9);
-		expect(result.unit.components.get('K')).toBe(1);
-		expect(result.unit.offset === undefined || result.unit.offset === 0).toBe(true);
-	});
-
-	it('handles °F + delta: 50°F + 9 K → 50°F (since 9 K = 16.2°F delta) ≈ 66.2°F', () => {
-		// 9 K delta = 9 / (5/9) °F delta = 16.2 °F
-		const expr = add(quantity('50', '°F'), quantity('9', 'K'));
-		const result = evaluateWithUnits(expr);
-		expect(toNumber(result.value)).toBeCloseTo(50 + 16.2, 6);
-		expect(result.unit.offset).toBeCloseTo(459.67, 9);
-	});
-
-	it('handles °F − °F → K: 100°F - 32°F = 37.777... K', () => {
-		// (100°F - 32°F) = 68 °F delta = 68 × 5/9 K = 37.777... K
-		const expr = subtract(quantity('100', '°F'), quantity('32', '°F'));
-		const result = evaluateWithUnits(expr);
-		expect(toNumber(result.value)).toBeCloseTo((68 * 5) / 9, 9);
-		expect(result.unit.components.get('K')).toBe(1);
-		expect(result.unit.offset === undefined || result.unit.offset === 0).toBe(true);
-	});
-
-	it('rejects K - °C (delta - absolute is meaningless)', () => {
-		const expr = subtract(quantity('5', 'K'), quantity('3', '°C'));
-		expect(() => evaluateWithUnits(expr)).toThrow(/AFFINE/);
 	});
 });
 

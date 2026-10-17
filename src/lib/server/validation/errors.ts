@@ -41,59 +41,14 @@ export const logErrorSchema = z.object({
 	viewport_height: z.number().int().positive().max(10000).optional(),
 
 	// Additional context
-	context: z.record(z.string(), z.unknown()).optional(),
-	tags: z.array(z.string().max(100)).max(20).optional()
-});
-
-/**
- * Schema for listing errors query parameters (GET /api/errors)
- * Admin only - all fields are optional filters
- */
-export const listErrorsQuerySchema = z.object({
-	error_type: z
-		.enum([
-			'client_js',
-			'server_api',
-			'server_load',
-			'server_action',
-			'validation',
-			'performance',
-			'database'
-		])
+	// Borné : la route est ouverte aux visiteurs sans compte.
+	context: z
+		.record(z.string(), z.unknown())
+		.refine((context) => JSON.stringify(context).length <= 10_000, {
+			message: 'Contexte trop volumineux (10 000 caractères au plus)'
+		})
 		.optional(),
-	severity: z.enum(['info', 'warning', 'error', 'critical']).optional(),
-	resolved: z
-		.string()
-		.optional()
-		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-	user_id: z.string().uuid().optional(),
-	date_from: z.string().datetime('Date de début invalide').optional(),
-	date_to: z.string().datetime('Date de fin invalide').optional(),
-	search: z.string().trim().max(200).optional(),
-	limit: z.coerce.number().int().positive().max(100, 'Maximum 100 erreurs').default(50),
-	offset: z.coerce.number().int().nonnegative().default(0)
-});
-
-/**
- * Schema for resolving errors (PUT /api/errors/[id])
- * Admin adds optional notes when resolving
- */
-export const resolveErrorSchema = z.object({
-	notes: z.string().max(2000, 'Notes trop longues (max 2000 caractères)').optional()
-});
-
-/**
- * Schema for cleanup old errors (POST /api/errors/cleanup)
- * Admin specifies how many days old errors should be deleted
- */
-export const cleanupErrorsSchema = z.object({
-	days_old: z
-		.number()
-		.int('Days must be an integer')
-		.positive('Days must be positive')
-		.max(365, 'Maximum 365 days')
-		.default(90)
-		.optional()
+	tags: z.array(z.string().max(100)).max(20).optional()
 });
 
 /**

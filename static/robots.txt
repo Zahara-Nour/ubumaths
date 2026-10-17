@@ -12,8 +12,8 @@ Disallow: /api/
 Disallow: /demo
 Disallow: /geometry-demo
 Disallow: /construction-demo
-Disallow: /test-font
-Disallow: /api-docs
+Disallow: /test-
+Disallow: /slides/
 Disallow: /blockly
 
 Sitemap: https://www.chiph.re/sitemap.xml

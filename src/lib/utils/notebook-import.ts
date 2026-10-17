@@ -70,10 +70,7 @@ interface JupyterCell {
 }
 
 type JupyterOutput =
-	| JupyterStreamOutput
-	| JupyterErrorOutput
-	| JupyterDisplayOutput
-	| JupyterExecuteResultOutput;
+	JupyterStreamOutput | JupyterErrorOutput | JupyterDisplayOutput | JupyterExecuteResultOutput;
 
 interface JupyterStreamOutput {
 	output_type: 'stream';

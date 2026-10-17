@@ -145,9 +145,24 @@ describe('objets qui ne peuvent rien produire (§3 L2)', () => {
 	it('dit qu’une action attend son lot, au lieu de ne rien faire', () => {
 		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
 
-		const tabuler = action('f', 'table');
-		expect(tabuler).toBeDefined();
-		expect(tabuler?.disabledReason).toContain('prochain lot');
+		// « Tabuler » est câblé depuis le lot 3 du tableur : « Renommer » attend encore
+		const renommer = action('f', 'rename');
+		expect(renommer).toBeDefined();
+		expect(renommer?.disabledReason).toContain('prochain lot');
+	});
+
+	// Lot 3 du tableur : « Tabuler » ouvre le formulaire de la carte
+	it('« Tabuler » est câblé ; pas pour une réciproque (une fonction à indice, si)', () => {
+		a.create({ kind: 'function', name: 'f', definition: '2x+3' });
+		a.create({ kind: 'function', name: 'f_1', definition: 'x^2' });
+		a.createReciprocal('f');
+
+		expect(action('f', 'table')?.disabledReason).toBeUndefined();
+		expect(action('f^-1', 'table')?.disabledReason).toBe(
+			'La réciproque f⁻¹ ne se tabule pas encore : tabule f, et lis son tableau à l’envers.'
+		);
+		// Le parseur lit `f_1(…)` depuis le 2026-10-15 : plus de raison de griser
+		expect(action('f_1', 'table')?.disabledReason).toBeUndefined();
 	});
 
 	// Les quatre que la vue Calcul a câblées ne l'annoncent plus.

@@ -53,7 +53,8 @@ describe('\\lim(…) : les parenthèses de groupement sont transparentes', () =>
 			parseLatex('+\\infty')
 		);
 		expect(result.status).toBe('exact');
-		expect(result.value && toLatex(result.value)).toMatch(/^(e|\\exp\\left\( 1 \\right\))$/);
+		// La constante d'Euler, plus exp(1)
+		expect(result.value && toLatex(result.value)).toBe('\\exponentialE');
 	});
 
 	it('la valeur absolue reste une valeur absolue', () => {

@@ -32,8 +32,8 @@ const generateTestName = () => `Test Assessment ${Date.now()}`;
  */
 async function navigateToNewAssessment(page: Page): Promise<void> {
 	await page.goto('/dashboard/teacher/assessments');
-	await page.waitForSelector('h1:has-text("Mes Évaluations")', { state: 'visible' });
-	await page.click('button:has-text("Nouvelle évaluation")');
+	await page.waitForSelector('h1:has-text("Mes contrôles")', { state: 'visible' });
+	await page.click('button:has-text("Nouveau contrôle")');
 	await page.waitForURL(/\/dashboard\/teacher\/assessments\/new/);
 }
 
@@ -132,7 +132,7 @@ async function _addQuestionsToCart(page: Page, questionCount: number = 5): Promi
 
 	// Return to assessment creation
 	await page.goto('/dashboard/teacher/assessments/new');
-	await page.waitForSelector('h1:has-text("Nouvelle Évaluation")', { state: 'visible' });
+	await page.waitForSelector('h1:has-text("Nouveau contrôle")', { state: 'visible' });
 }
 
 /**
@@ -227,16 +227,16 @@ test.describe('Teacher Assessment Creation', () => {
 	test('should navigate to new assessment page from list', async ({ page }) => {
 		// Navigate to assessments list
 		await page.goto('/dashboard/teacher/assessments');
-		await expect(page.locator('h1:has-text("Mes Évaluations")')).toBeVisible();
+		await expect(page.locator('h1:has-text("Mes contrôles")')).toBeVisible();
 
 		// Click "Nouvelle évaluation" button
-		const createButton = page.locator('button:has-text("Nouvelle évaluation")');
+		const createButton = page.locator('button:has-text("Nouveau contrôle")');
 		await expect(createButton).toBeVisible();
 		await createButton.click();
 
 		// Verify redirect to new assessment page
 		await expect(page).toHaveURL(/\/dashboard\/teacher\/assessments\/new/);
-		await expect(page.locator('h1:has-text("Nouvelle Évaluation")')).toBeVisible();
+		await expect(page.locator('h1:has-text("Nouveau contrôle")')).toBeVisible();
 	});
 
 	// ========================================================================
@@ -540,7 +540,7 @@ test.describe('Teacher Assessment Creation', () => {
 
 			// Should return to assessment list
 			await expect(page).toHaveURL(/\/dashboard\/teacher\/assessments\/?$/);
-			await expect(page.locator('h1:has-text("Mes Évaluations")')).toBeVisible();
+			await expect(page.locator('h1:has-text("Mes contrôles")')).toBeVisible();
 		}
 	});
 

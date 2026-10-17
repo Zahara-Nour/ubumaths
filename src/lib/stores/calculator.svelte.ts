@@ -243,8 +243,10 @@ class CalculatorStore {
 			let engineInput: string;
 
 			if (input.type === 'command' && input.command) {
-				// Format: .command expression
-				engineInput = `.${input.command} ${trimmedExpr}`;
+				// Format: .command expression — UnifiedInput envoie déjà le point (« .eval ») :
+				// on le retire avant de le remettre, sinon « ..eval » est une commande inconnue (V54).
+				const command = input.command.replace(/^\./, '');
+				engineInput = `.${command} ${trimmedExpr}`;
 			} else {
 				// Direct expression
 				engineInput = trimmedExpr;

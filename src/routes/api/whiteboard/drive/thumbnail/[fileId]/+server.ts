@@ -19,14 +19,20 @@
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
+import { GoogleNotConnectedError, GoogleTokenExpiredError } from '$lib/server/google/errors';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/drive/thumbnail/[fileId]/+server');
 
 /** Google Drive file ID pattern: alphanumeric with dashes and underscores, 10-50 chars */
 const DRIVE_FILE_ID_REGEX = /^[a-zA-Z0-9_-]{10,50}$/;
 
-const fileIdSchema = z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid Google Drive file ID');
+const fileIdSchema = z
+	.string()
+	.regex(DRIVE_FILE_ID_REGEX, 'Identifiant de fichier Google Drive invalide');
 
 /**
  * Get thumbnail image from Google Drive
@@ -40,7 +46,7 @@ export const GET: RequestHandler = async ({ params, locals, setHeaders }) => {
 
 	const { fileId } = params;
 	if (!fileId) {
-		throw error(400, 'File ID required');
+		throw error(400, 'Identifiant de fichier requis');
 	}
 
 	// Validate file ID format
@@ -59,7 +65,7 @@ export const GET: RequestHandler = async ({ params, locals, setHeaders }) => {
 
 		// Validate it's an image
 		if (!metadata.mimeType.startsWith('image/')) {
-			throw error(400, 'File is not an image');
+			throw error(400, 'Ce fichier n’est pas une image');
 		}
 
 		// Fetch the file content using authenticated client
@@ -72,12 +78,12 @@ export const GET: RequestHandler = async ({ params, locals, setHeaders }) => {
 
 		if (!response.ok) {
 			if (response.status === 404) {
-				throw error(404, 'Thumbnail not found');
+				throw error(404, 'Miniature introuvable');
 			}
 			if (response.status === 403) {
-				throw error(403, 'Access denied to thumbnail');
+				throw error(403, 'Accès refusé à la miniature');
 			}
-			throw error(response.status, 'Failed to fetch thumbnail from Drive');
+			throw error(response.status, 'Impossible de charger la miniature depuis Google Drive');
 		}
 
 		// Get image data
@@ -100,22 +106,22 @@ export const GET: RequestHandler = async ({ params, locals, setHeaders }) => {
 
 		// Handle specific Google API errors
 		if (err instanceof Error) {
-			if (err.message.includes('No Google integration')) {
-				throw error(401, 'Google account not connected');
+			if (err instanceof GoogleNotConnectedError) {
+				throw error(401, 'Compte Google non connecté');
 			}
-			if (err.message.includes('Token expired') || err.message.includes('401')) {
-				throw error(401, 'Google session expired');
+			if (err instanceof GoogleTokenExpiredError || err.message.includes('401')) {
+				throw error(401, 'Session Google expirée');
 			}
 			if (err.message.includes('403')) {
-				throw error(403, 'Insufficient permissions');
+				throw error(403, 'Droits insuffisants');
 			}
 			if (err.message.includes('404')) {
-				throw error(404, 'Thumbnail not found');
+				throw error(404, 'Miniature introuvable');
 			}
 		}
 
-		console.error('[Whiteboard Drive Thumbnail] Error:', err);
-		const message = err instanceof Error ? err.message : 'Unknown error';
-		throw error(500, `Failed to fetch thumbnail: ${message}`);
+		logger.error('[Whiteboard Drive Thumbnail] Error:', err);
+		const message = err instanceof Error ? err.message : 'erreur inconnue';
+		throw error(500, `Impossible de charger la miniature : ${message}`);
 	}
 };

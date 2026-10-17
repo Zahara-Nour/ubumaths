@@ -12,6 +12,9 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { getBackupStats } from '$lib/server/admin/exercise-backup';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/exercises/backup-stats/+server');
 
 /**
  * GET /api/admin/exercises/backup-stats
@@ -35,7 +38,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const stats = await getBackupStats(supabase);
 		return json(stats);
 	} catch (err) {
-		console.error('Error fetching backup stats:', err);
-		throw error(500, 'Erreur lors de la recuperation des statistiques');
+		logger.error('Error fetching backup stats:', err);
+		throw error(500, 'Impossible de charger les statistiques');
 	}
 };

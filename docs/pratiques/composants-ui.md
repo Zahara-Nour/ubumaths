@@ -2,6 +2,8 @@
 couvre:
   - 'src/lib/components/ui/**'
   - 'src/lib/components/{MySelect,MyCheckbox,UserAvatar}.svelte'
+  - 'src/lib/components/navigation/BackLink.svelte'
+  - 'src/lib/navigation/return-links.ts'
   - 'src/lib/components/rich-text/{RichTextEditor,RichTextDisplay}.svelte'
   - 'src/lib/stores/{toaster,theme,fontSize}.svelte.ts'
 ---
@@ -103,6 +105,51 @@ Exemples réels : `DisplayOptionsEditor.svelte` (série de checkboxes), `Checkli
 
 ---
 
+## BackLink — bouton retour (OBLIGATOIRE)
+
+Règle tranchée par David le 2026-10-11. **Fichier** : `src/lib/components/navigation/BackLink.svelte`.
+
+**Quand le mettre**
+
+- **Pas de bouton retour** sur une page qu'on ouvre depuis la navigation principale (barre latérale, menu mobile) ou depuis un onglet de rubrique (`GroupedRouteLayout` : Contenu, Gamification, Modération) : la navigation joue déjà ce rôle.
+- **Un `BackLink`** sur toute page qu'on ouvre depuis une autre page : détail (`[id]`), création ou modification (`new`, `edit`), résultats, affectation, sous-page (archive, classement…).
+- **Page-carrefour** (une liste, un outil, une rubrique) : **pas de bouton retour**, même quand on y arrive par une carte de l'accueil ou du tableau de bord admin — c'est un point d'entrée. Le retour est pour ses sous-pages.
+- **Page où l'élève est en pleine activité** (test, révision, fiche en cours, combat) : `kind="quit"`, libellé « Quitter ». Le mot dit qu'on interrompt l'activité ; la destination reste la page parente.
+- **Fil d'Ariane** : seulement pour les arborescences de plus de deux niveaux (migration admin), et **jamais** avec un `BackLink` sur la même page.
+- **Hors règle** : les boutons de fin de parcours (« Retour au panier » sur l'écran de résultats, « Retour au menu » après une partie) sont des actions, pas des boutons retour — ils restent où ils sont. La page d'erreur garde « Page précédente » : elle n'a pas de page parente connue.
+- **Rubriques éditoriales** (le Shtam, le Cabinet Noir de Turingrad) : leur lien de retour typographié (« ← Le Shtam ») est gardé. Il respecte le fond de la règle — vrai lien vers la page parente, au-dessus du titre, qui dit où il mène ; seul le style diffère, par choix.
+
+**Où** : en haut de la page, **au-dessus du `h1`**, sur sa propre ligne. Le titre reste aligné avec le contenu et rien ne déborde sur mobile.
+
+**Où il mène** : à la **page parente, lue dans l'adresse de la page** — jamais `history.back()`, jamais `goto()` dans un `onclick`. Une page qui a deux parents possibles le dit dans son adresse : un exercice ouvert depuis une fiche porte `?fiche=<uuid>` (`worksheetReturnHref`, `src/lib/worksheets/exercise-edit-link.ts`) ; le journal d'un élève ouvert depuis l'accueil porte `?depuis=accueil`, une session de révision lancée depuis le Programme `?depuis=programme`, l'aperçu « vue élève » d'une affectation ouvert depuis un signalement `?depuis=signalement&signalement=<uuid>`, les copies par élève d'une affectation ouvertes depuis son aperçu `?depuis=apercu` (`src/lib/navigation/return-links.ts`, qui écrit le lien et le relit).
+
+Pourquoi : la destination écrite dans le lien est la même après un lien partagé, dans un nouvel onglet ou après un rechargement, et le libellé peut l'annoncer avant le clic. Revenir là où on était, c'est le rôle du bouton retour du navigateur, que ce lien ne double pas.
+
+**Libellé** : « Retour à… » / « Retour aux… » + la page parente. Jamais « Retour » seul, jamais une flèche seule.
+
+**Modifications non enregistrées** : `confirmLeave="…"` demande confirmation avant de partir ; un refus annule la navigation, et le lien reste un vrai lien (pas de question sur un clic qui ouvre un nouvel onglet). Exemple : édition d'un deck SRS. **Quitter un contrôle noté** demande aussi confirmation : la tentative reste ouverte, les réponses tapées sont perdues et le chrono d'une course continue de tourner (`automathsQuitLink`). Pas de confirmation en entraînement.
+
+**Garde** : `src/lib/__tests__/bouton-retour-sans-historique.test.ts` refuse tout `history.back()` hors de la page d'erreur.
+
+```svelte
+<div>
+	<BackLink href="/dashboard/teacher/series" label="Retour aux séries" />
+	<h1 class="text-3xl font-bold tracking-tight">Modifier la série</h1>
+</div>
+
+<!-- Page en pleine activité -->
+<BackLink href="/automaths/panier" label="Quitter" kind="quit" />
+
+<!-- Modifications non enregistrées -->
+<BackLink
+	href="/dashboard/teacher/srs/decks"
+	label="Retour aux decks"
+	confirmLeave={hasChanges ? 'Vous avez des modifications non sauvegardées. Quitter ?' : undefined}
+/>
+```
+
+---
+
 ## Shadcn-svelte — inventaire et imports
 
 **Emplacement** : `src/lib/components/ui/<composant>/`
@@ -149,6 +196,9 @@ import * as Avatar from '$lib/components/ui/avatar'; import * as Accordion from 
 	</Dialog.Content>
 </Dialog.Root>
 ```
+
+Les croix de `Dialog.Content` et de `Sheet.Content` sont nommées **« Fermer »** pour les lecteurs
+d'écran (« Close » jusqu'au 2026-10-14, relevé par la revue a11y des réglages de l'atelier).
 
 ### ConfirmDialog (composant custom)
 

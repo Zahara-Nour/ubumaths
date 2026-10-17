@@ -46,3 +46,31 @@ describe('generateExerciseTypst — fonctions déclarées', () => {
 		expect(result.typstContent).toContain('Unexpected token');
 	});
 });
+
+// Sens de deux majuscules collées (lot 6 des longueurs, Q-J) : le thème de l'exercice décide
+describe('generateExerciseTypst — sens de AB selon le thème', () => {
+	const exerciseOn = (topic: string | undefined): Exercise =>
+		({
+			...exerciseWith(undefined),
+			topic,
+			variations: [{ label: 'default', statement_md: "Calculer ~A'B'~.", solution_md: "~A'B'=5~" }]
+		}) as unknown as Exercise;
+
+	it.each([['Géométrie'], [undefined]])('thème %s : longueur, A′B′ sans erreur', async (topic) => {
+		const result = await generateExerciseTypst({
+			exercise: exerciseOn(topic),
+			includeSolution: true,
+			includeMetadata: false
+		});
+		expect(result.typstContent).not.toContain('Unexpected token');
+	});
+
+	it('thème Graphes et matrices : produit, l’écriture d’avant (A′B′ en erreur)', async () => {
+		const result = await generateExerciseTypst({
+			exercise: exerciseOn('Graphes et matrices'),
+			includeSolution: true,
+			includeMetadata: false
+		});
+		expect(result.typstContent).toContain('Unexpected token');
+	});
+});

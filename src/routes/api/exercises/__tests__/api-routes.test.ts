@@ -227,7 +227,7 @@ describe('POST /api/exercises/[id]/assign', () => {
 		const data = await response.json();
 		expect(response.status).toBe(201);
 		expect(data.count).toBe(3);
-		expect(data.message).toContain('3 assignment(s) created');
+		expect(data.message).toContain('Affectations créées : 3');
 	});
 
 	it('should reject assignment when not exercise owner', async () => {
@@ -727,7 +727,7 @@ describe('DELETE /api/exercises/[id]/complete', () => {
 
 		const data = await response.json();
 		expect(response.status).toBe(500);
-		expect(data.error).toBe('Failed to unmark as complete');
+		expect(data.error).toBe('Impossible de retirer la marque « terminé »');
 	});
 });
 

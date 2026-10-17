@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	const circle3PointsDsl = `A = point(3, 0, couleur="bleu")
@@ -109,9 +110,7 @@ style(c, remplissage="bleu", opacite_fond=0.3)`;
 
 <div class="container mx-auto max-w-6xl space-y-10 p-4">
 	<div>
-		<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-			>← Geometry Demos</a
-		>
+		<BackLink href="/geometry-demo" label="Retour aux démos" />
 		<h1 class="mt-2 text-2xl font-bold">Constructions sur les cercles</h1>
 		<p class="text-muted-foreground">
 			Cercle par 3 points, secteur circulaire, couronne, corde, puissance d'un point, remplissage.

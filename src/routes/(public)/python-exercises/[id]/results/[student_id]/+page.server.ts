@@ -11,6 +11,11 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(public)/python-exercises/[id]/results/[student_id]/+page.server'
+);
 
 export interface DrillDownStudent {
 	id: string;
@@ -48,7 +53,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.single();
 
 	if (profileErr) {
-		console.error('Failed to fetch profile:', profileErr);
+		logger.error('Failed to fetch profile:', profileErr);
 		throw error(500, 'Erreur lors de la récupération du profil');
 	}
 	if (!profile || profile.role !== 'teacher') {
@@ -63,7 +68,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.single();
 
 	if (exerciseErr && exerciseErr.code !== 'PGRST116') {
-		console.error('Failed to fetch exercise:', exerciseErr);
+		logger.error('Failed to fetch exercise:', exerciseErr);
 		throw error(500, "Erreur lors de la récupération de l'exercice");
 	}
 	if (!exercise) throw error(404, 'Exercice introuvable');
@@ -80,8 +85,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (ownAssignmentsError && ownAssignmentsError.code !== 'PGRST116') {
-		console.error('Contrôle d’accès impossible :', ownAssignmentsError);
-		throw error(500, 'Impossible de vérifier votre accès');
+		logger.error('Contrôle d’accès impossible :', ownAssignmentsError);
+		throw error(500, 'Impossible de vérifier l’accès');
 	}
 
 	const isAuthor = exercise.author_id === user.id;
@@ -98,7 +103,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Cette liste borne la portée du classement. Vidée par une panne, elle
 	// affiche un classement amputé sans le dire.
 	if (teacherClassesRawError) {
-		console.error('Périmètre illisible :', teacherClassesRawError);
+		logger.error('Périmètre illisible :', teacherClassesRawError);
 		throw error(500, 'Impossible de déterminer le périmètre');
 	}
 	const teacherClassIds = (teacherClassesRaw ?? []).map((c) => c.id);
@@ -114,7 +119,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		// Cette liste borne la portée du classement. Vidée par une panne, elle
 		// affiche un classement amputé sans le dire.
 		if (classMembersRawError) {
-			console.error('Périmètre illisible :', classMembersRawError);
+			logger.error('Périmètre illisible :', classMembersRawError);
 			throw error(500, 'Impossible de déterminer le périmètre');
 		}
 		for (const m of classMembersRaw ?? []) {
@@ -126,7 +131,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	if (!scope.has(studentId)) {
-		throw error(403, "Cet élève n'est pas dans votre périmètre");
+		throw error(403, 'Cet élève est hors du périmètre autorisé');
 	}
 
 	// 5. Student profile
@@ -155,7 +160,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.limit(SUBMISSIONS_LIMIT);
 
 	if (subsErr) {
-		console.error('Failed to fetch submissions:', subsErr);
+		logger.error('Failed to fetch submissions:', subsErr);
 		throw error(500, 'Erreur lors de la récupération des soumissions');
 	}
 

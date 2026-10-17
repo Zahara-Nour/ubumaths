@@ -13,6 +13,11 @@ import {
 	gradesQuerySchema
 } from '$lib/server/validation/teacher-analytics';
 import { getStudentGradeHistogram } from '$lib/server/stats';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/teacher/classes/[classId]/analytics/knowledge-grades/[studentId]/+server'
+);
 
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const paramCheck = classAndStudentParamSchema.safeParse(params);
@@ -41,8 +46,8 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (membershipError) {
-		console.error('Contrôle d’accès impossible :', membershipError);
-		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
+		logger.error('Contrôle d’accès impossible :', membershipError);
+		return json({ error: 'Impossible de vérifier l’accès' }, { status: 500 });
 	}
 
 	if (!membership) {

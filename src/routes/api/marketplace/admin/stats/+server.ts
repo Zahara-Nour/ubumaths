@@ -2,6 +2,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { adminStatsQuerySchema } from '$lib/server/marketplace/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/admin/stats/+server');
 
 /**
  * GET /api/marketplace/admin/stats
@@ -84,7 +87,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// indiscernable d'un refus mérité — le professeur s'entendait dire qu'il
 			// n'a pas accès à sa propre classe.
 			if (classDataError && classDataError.code !== 'PGRST116') {
-				console.error('Classe illisible :', classDataError);
+				logger.error('Classe illisible :', classDataError);
 				throw error(500, 'Impossible de vérifier la classe');
 			}
 
@@ -101,7 +104,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
 			// affiche « aucune activité » : un constat, pas une absence de donnée.
 			if (classStudentsError) {
-				console.error('Périmètre d’élèves illisible :', classStudentsError);
+				logger.error('Périmètre d’élèves illisible :', classStudentsError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
@@ -119,7 +122,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				.select('id');
 
 			if (classesError) {
-				console.error('Classes illisibles :', classesError);
+				logger.error('Classes illisibles :', classesError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
@@ -133,7 +136,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
 			// affiche « aucune activité » : un constat, pas une absence de donnée.
 			if (classMembersError) {
-				console.error('Périmètre d’élèves illisible :', classMembersError);
+				logger.error('Périmètre d’élèves illisible :', classMembersError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
@@ -153,12 +156,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// indiscernable d'un refus mérité — le professeur s'entendait dire qu'il
 			// n'a pas accès à sa propre classe.
 			if (classDataError && classDataError.code !== 'PGRST116') {
-				console.error('Classe illisible :', classDataError);
+				logger.error('Classe illisible :', classDataError);
 				throw error(500, 'Impossible de vérifier la classe');
 			}
 
 			if (!classData || classData.school_id !== profile.school_id) {
-				throw error(403, "Cette classe n'appartient pas à votre école");
+				throw error(403, 'Cette classe appartient à une autre école');
 			}
 
 			const { data: classStudents, error: classStudentsError } = await supabase
@@ -169,7 +172,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
 			// affiche « aucune activité » : un constat, pas une absence de donnée.
 			if (classStudentsError) {
-				console.error('Périmètre d’élèves illisible :', classStudentsError);
+				logger.error('Périmètre d’élèves illisible :', classStudentsError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
@@ -186,7 +189,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
 			// affiche « aucune activité » : un constat, pas une absence de donnée.
 			if (schoolStudentsError) {
-				console.error('Périmètre d’élèves illisible :', schoolStudentsError);
+				logger.error('Périmètre d’élèves illisible :', schoolStudentsError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
@@ -221,7 +224,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.gte('created_at', dateFrom.toISOString());
 
 	if (tradesError) {
-		console.error('Error fetching trades:', tradesError);
+		logger.error('Error fetching trades:', tradesError);
 		throw error(500, 'Erreur lors de la récupération des statistiques');
 	}
 
@@ -284,7 +287,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// Enrichissement d'affichage : son absence ne justifie pas de fermer l'écran,
 	// mais elle laisse une trace.
 	if (traderProfilesError) {
-		console.error('Enrichissement illisible :', traderProfilesError);
+		logger.error('Enrichissement illisible :', traderProfilesError);
 	}
 
 	const topTraders = topTradersData.map(([id, count]) => {

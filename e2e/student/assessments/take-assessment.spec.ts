@@ -33,7 +33,7 @@ const ASSESSMENTS_URL = '/dashboard/student/assessments';
  */
 async function findAndStartAssessment(page: Page): Promise<boolean> {
 	await page.goto(ASSESSMENTS_URL);
-	await page.waitForSelector('h1:has-text("Mes Évaluations")', { state: 'visible' });
+	await page.waitForSelector('h1:has-text("Mes contrôles")', { state: 'visible' });
 	await page.waitForLoadState('networkidle');
 
 	// Look for "Commencer" button in "À faire" section

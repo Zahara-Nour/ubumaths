@@ -43,6 +43,17 @@ describe('.intégrer : intégrale qui diverge', () => {
 		expect(outcome.message).toContain("L'intégrale diverge ou n'est pas définie sur [0 ; 3]");
 	});
 
+	// V53 (2026-10-13) : le pôle irrationnel ∛2 échappait au contrôle, la
+	// réponse était ln 2 + ln 3
+	it('`3x^2/(x^3-2) de 1 à 2` : le pôle ∛2 ≈ 1,26 est refusé', () => {
+		const outcome = runInput(session(), '.intégrer 3x^2/(x^3-2) de 1 à 2');
+		expect(outcome).toMatchObject({ kind: 'refus' });
+		if (outcome.kind !== 'refus') return;
+		expect(outcome.message).toContain("L'intégrale diverge ou n'est pas définie sur [1 ; 2]");
+		expect(outcome.message).toContain('x ≈ 1,26');
+		expect(outcome.message).not.toContain('1.2599');
+	});
+
 	it('`tan(x) 0 1` : pas de pôle, une valeur', () => {
 		expect(command('.intégrer tan(x) 0 1').output).toContain('=');
 	});

@@ -25,21 +25,21 @@ export type CronJobStatus = z.infer<typeof cronJobStatusSchema>;
 export const cronJobsQuerySchema = z.object({
 	job_name: z
 		.string()
-		.max(100, 'Job name must be 100 characters or less')
+		.max(100, 'Nom de tâche trop long (100 caractères au maximum)')
 		.optional()
 		.transform((val) => (val === '' ? undefined : val)),
 	status: z.enum(['all', 'running', 'success', 'failed', 'timeout']).default('all'),
 	period: z.enum(['24h', '7d', '30d']).default('7d'),
 	limit: z.coerce
 		.number()
-		.int('Limit must be an integer')
-		.min(1, 'Limit must be at least 1')
-		.max(100, 'Limit cannot exceed 100')
+		.int('La limite doit être un nombre entier')
+		.min(1, 'La limite doit valoir au moins 1')
+		.max(100, 'Limite trop grande (100 au maximum)')
 		.default(50),
 	offset: z.coerce
 		.number()
-		.int('Offset must be an integer')
-		.min(0, 'Offset cannot be negative')
+		.int('Le décalage doit être un nombre entier')
+		.min(0, 'Le décalage ne peut pas être négatif')
 		.default(0)
 });
 
@@ -55,7 +55,10 @@ export type CronJobsQuery = z.infer<typeof cronJobsQuerySchema>;
  * - RPC paths: rpc:function_name (pg_cron database functions)
  */
 const ALLOWED_JOB_PATHS = [
-	'/api/riddles/auto-select-daily',
+	// Énigme du jour (cron Vercel quotidien, vercel.json)
+	'/api/cron/riddle-of-the-day',
+	// Fichiers des comptes supprimés (cron Vercel hebdomadaire, vercel.json)
+	'/api/cron/deleted-account-files',
 	// pg_cron jobs (database RPC functions)
 	'rpc:cleanup_stale_trades',
 	'rpc:run_recalculate_minesweeper_ref_times',
@@ -78,10 +81,10 @@ export const CRON_TRIGGER_CONFIRM_KEYWORD = 'LANCER';
 export const cronTriggerBodySchema = z.object({
 	job_path: z
 		.string()
-		.min(1, 'Job path is required')
+		.min(1, 'Tâche requise')
 		.refine(
 			(path) => ALLOWED_JOB_PATHS.includes(path as (typeof ALLOWED_JOB_PATHS)[number]),
-			`Job path must be one of: ${ALLOWED_JOB_PATHS.join(', ')}`
+			`Tâche inconnue ; tâches possibles : ${ALLOWED_JOB_PATHS.join(', ')}`
 		),
 	// Typed-confirmation token; re-enforced server-side via assertTypedConfirmation.
 	confirm: z.string()

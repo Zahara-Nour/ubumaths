@@ -21,6 +21,9 @@ import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
 import { isBrevoConfigured } from '$lib/server/email/brevo';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/welcome-email/+page.server');
 
 // Validate student_id query parameter
 const querySchema = z.object({
@@ -47,7 +50,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	// Verify teacher-student relationship
 	const hasAccess = await verifyTeacherStudent(user.id, student_id, supabase);
 	if (!hasAccess) {
-		throw error(403, "Vous ne pouvez envoyer des emails qu'a vos propres eleves");
+		throw error(403, "Envoi d'emails réservé aux élèves du professeur");
 	}
 
 	// Fetch student profile
@@ -58,8 +61,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		.single();
 
 	if (studentError || !student) {
-		console.error('[Welcome Email] Error fetching student:', studentError);
-		throw error(404, 'Eleve non trouve');
+		logger.error('[Welcome Email] Error fetching student:', studentError);
+		throw error(404, 'Élève introuvable');
 	}
 
 	// Check the transactional email service (Brevo) is configured. The email is sent
@@ -80,7 +83,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
 	// doit pas se confondre avec une donnée réellement vide.
 	if (emailRecordError && emailRecordError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', emailRecordError);
+		logger.error('Contexte illisible :', emailRecordError);
 	}
 
 	if (emailRecord) {

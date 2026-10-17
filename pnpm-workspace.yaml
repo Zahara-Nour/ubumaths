@@ -17,6 +17,17 @@ overrides:
   nanoid@3: '>=3.3.18'
   cookie: '>=0.7.0'
 
+# Âge minimal d'une version avant de l'installer : 3 jours (en minutes). Une
+# version piégée est presque toujours retirée en quelques heures (audit du
+# 2026-10-11). Même délai que le `cooldown` de .github/dependabot.yml. Pour un
+# correctif de sécurité urgent plus récent : `minimumReleaseAgeExclude`.
+minimumReleaseAge: 4320
+# Exceptions datées, à retirer quand la version a 3 jours.
+# - mathlive@0.111.1 (publiée le 2026-10-09 à 09:58 UTC, à retirer après le
+#   2026-10-12 à 09:58 UTC) : correctifs XSS (`\enclose`, `\htmlData`, `\href`).
+minimumReleaseAgeExclude:
+  - mathlive@0.111.1
+
 # Scripts d'installation des dépendances. pnpm 12 fait échouer l'installation
 # (strictDepBuilds, actif par défaut) sur tout script ni autorisé ni refusé.
 allowBuilds:

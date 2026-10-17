@@ -872,6 +872,14 @@ describe('Cache 2B: Student Warnings', () => {
 
 		it('should cache different periods for same class separately', async () => {
 			const periodId2 = 'period-789';
+			// Les deux périodes répondent : un échec de lecture n'est plus mis en cache,
+			// ce test ne doit donc pas compter sur une URL rejetée pour la seconde
+			global.fetch = vi.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve({ warnings: mockWarningsData })
+				} as Response)
+			);
 
 			await cache.getStudentWarnings(classId, periodId);
 			await cache.getStudentWarnings(classId, periodId2);
@@ -1016,7 +1024,7 @@ describe('Cache 3: Class Info', () => {
 	describe('Fetch Behavior', () => {
 		it('should throw error when trying to fetch (endpoint not implemented)', async () => {
 			await expect(cache.getClassInfo(classId)).rejects.toThrow(
-				'Class info fetch not implemented - use hydrateClassInfo() instead'
+				'Chargement des informations de classe non disponible : utiliser hydrateClassInfo()'
 			);
 		});
 	});
@@ -1100,7 +1108,7 @@ describe('Cache 4: School Info', () => {
 	describe('Fetch Behavior', () => {
 		it('should throw error when trying to fetch (endpoint not implemented)', async () => {
 			await expect(cache.getSchoolInfo(schoolId)).rejects.toThrow(
-				'School info fetch not implemented - use hydrateSchoolInfo() instead'
+				'Chargement des informations d’établissement non disponible : utiliser hydrateSchoolInfo()'
 			);
 		});
 	});
@@ -1620,12 +1628,11 @@ describe('Edge Cases & Concurrency', () => {
 		});
 
 		it('should handle response with wrong type', async () => {
-			global.fetch = vi.fn(
-				(): Promise<Response> =>
-					Promise.resolve({
-						ok: true,
-						json: () => Promise.resolve({ students: 'not-an-array' })
-					} as Response)
+			global.fetch = vi.fn((): Promise<Response> =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve({ students: 'not-an-array' })
+				} as Response)
 			);
 
 			// Should not crash, though behavior depends on implementation
@@ -1739,4 +1746,142 @@ describe('Edge Cases & Concurrency', () => {
 	// is non-browser), so this.log() is always a no-op in Vitest. Logging behaviour is
 	// conditional on VITE_ENABLE_CACHE_MONITORING AND running in a real browser context.
 	// The monitoring infrastructure is tested indirectly via the rest of the suite.
+});
+
+// ============================================================================
+// ÉCHECS RÉSEAU : JAMAIS MIS EN CACHE (écart L34)
+// ============================================================================
+
+describe('Échec réseau : jamais stocké', () => {
+	let cache: TeacherDashboardCache;
+	const classId = 'class-123';
+	const periodId = 'period-1';
+
+	// Réponse réussie pour les trois lectures de la classe
+	function okFetch(students: BasicStudent[], gidouilles: unknown[], warnings: object) {
+		return vi.fn((url: string | URL | Request) => {
+			const u = url.toString();
+			const body = u.includes('/students')
+				? { students }
+				: u.includes('/gidouilles')
+					? { gidouilles }
+					: { warnings };
+			return Promise.resolve({ ok: true, json: () => Promise.resolve(body) } as Response);
+		});
+	}
+
+	const failingFetch = () => vi.fn(() => Promise.reject(new Error('Network error')));
+	const http500 = () =>
+		vi.fn(() => Promise.resolve({ ok: false, statusText: 'Internal Server Error' } as Response));
+
+	beforeEach(() => {
+		cache = createCache();
+		mockDateNow(Date.now());
+	});
+
+	afterEach(() => {
+		global.fetch = originalFetch;
+		restoreTime();
+	});
+
+	it("élèves : un échec n'est pas stocké, l'accès suivant relit", async () => {
+		global.fetch = failingFetch();
+		expect(await cache.getStudentBasic(classId)).toEqual([]);
+		expect(cache.hasStudentsCached(classId)).toBe(false);
+
+		const students = createMockStudents(3);
+		global.fetch = okFetch(students, [], {});
+		expect(await cache.getStudentBasic(classId)).toEqual(students);
+		expect(global.fetch).toHaveBeenCalledTimes(1);
+	});
+
+	it('récompenses : un échec HTTP ne stocke rien, l’accès suivant relit', async () => {
+		global.fetch = http500();
+		expect((await cache.getStudentRewards(classId)).size).toBe(0);
+		expect(cache.getRewardsSync(classId)).toBeNull();
+
+		global.fetch = okFetch([], [{ student_id: 's1', gidouilles: 7, bonus: 0, vip_cards: {} }], {});
+		const rewards = await cache.getStudentRewards(classId);
+		expect(rewards.get('s1')?.gidouilles).toBe(7);
+	});
+
+	it("avertissements : un échec n'est pas stocké, l'accès suivant relit", async () => {
+		global.fetch = failingFetch();
+		expect((await cache.getStudentWarnings(classId, periodId)).size).toBe(0);
+		expect(cache.getWarningsSync(classId, periodId)).toBeNull();
+
+		const counts = { C: 1, M: 0, R: 0, T: 0, warnings: [] };
+		global.fetch = okFetch([], [], { s1: counts });
+		const warnings = await cache.getStudentWarnings(classId, periodId);
+		expect(warnings.get('s1')).toEqual(counts);
+	});
+
+	it("échec après expiration : l'ancienne valeur est rendue, sans rafraîchir l'horodatage", async () => {
+		const students = createMockStudents(2);
+		global.fetch = okFetch(students, [{ student_id: 's1', gidouilles: 4 }], {});
+		await cache.getStudentBasic(classId);
+		await cache.getStudentRewards(classId);
+
+		advanceTime(3 * 60 * 60 * 1000); // au-delà des deux TTL
+		global.fetch = failingFetch();
+		expect(await cache.getStudentBasic(classId)).toEqual(students);
+		expect((await cache.getStudentRewards(classId)).get('s1')?.gidouilles).toBe(4);
+
+		// Toujours expirée : l'échec n'a pas remis l'horodatage à neuf
+		expect(cache.hasStudentsCached(classId)).toBe(false);
+		expect(cache.getRewardsSync(classId)).toBeNull();
+		await cache.getStudentBasic(classId);
+		expect(global.fetch).toHaveBeenCalledTimes(3);
+	});
+
+	it('réponse réussie mais vide : stockée normalement', async () => {
+		global.fetch = okFetch([], [], {});
+		expect(await cache.getStudentBasic(classId)).toEqual([]);
+		expect((await cache.getStudentRewards(classId)).size).toBe(0);
+		expect((await cache.getStudentWarnings(classId, periodId)).size).toBe(0);
+
+		expect(cache.hasStudentsCached(classId)).toBe(true);
+		expect(cache.getRewardsSync(classId)).not.toBeNull();
+		expect(cache.getWarningsSync(classId, periodId)).not.toBeNull();
+
+		await cache.getStudentBasic(classId);
+		await cache.getStudentRewards(classId);
+		await cache.getStudentWarnings(classId, periodId);
+		expect(global.fetch).toHaveBeenCalledTimes(3);
+	});
+});
+
+// ============================================================================
+// PURGE PAR hydrateAllClasses (écart L34)
+// ============================================================================
+
+describe('hydrateAllClasses : la liste complète fait foi', () => {
+	let cache: TeacherDashboardCache;
+
+	beforeEach(() => {
+		cache = createCache();
+		mockDateNow(Date.now());
+	});
+
+	afterEach(() => {
+		restoreTime();
+	});
+
+	it('retire les classes absentes de la liste', () => {
+		const a = { ...createMockClassInfo(), id: 'class-a', name: 'A' };
+		const b = { ...createMockClassInfo(), id: 'class-b', name: 'B' };
+		cache.hydrateAllClasses([a, b]);
+		expect(cache.getAllClassesSync().map((c) => c.id)).toEqual(['class-a', 'class-b']);
+
+		cache.hydrateAllClasses([b]);
+		expect(cache.getAllClassesSync().map((c) => c.id)).toEqual(['class-b']);
+		expect(cache.getStats().classes).toBe(1);
+	});
+
+	it('une liste vide vide le cache des classes', () => {
+		cache.hydrateAllClasses([{ ...createMockClassInfo(), id: 'class-a' }]);
+		cache.hydrateAllClasses([]);
+		expect(cache.getAllClassesSync()).toEqual([]);
+		expect(cache.getStats().classes).toBe(0);
+	});
 });

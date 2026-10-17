@@ -81,7 +81,7 @@ describe('drawCardsFiltersSchema', () => {
 			expect(result.success).toBe(false);
 			if (!result.success) {
 				expect(result.error.issues[0].message).toBe(
-					'Cannot use both forceRarity and minRarity filters together'
+					'Les filtres forceRarity et minRarity ne peuvent pas être combinés'
 				);
 			}
 		});

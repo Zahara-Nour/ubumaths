@@ -22,12 +22,7 @@ export type BugReportUpdate = Database['public']['Tables']['bug_reports']['Updat
 export type BugReportCategory = 'bug' | 'content' | 'ux' | 'feature' | 'other';
 export type BugReportSeverity = 'low' | 'medium' | 'high' | 'critical';
 export type BugReportStatus =
-	| 'pending'
-	| 'acknowledged'
-	| 'in_progress'
-	| 'resolved'
-	| 'wont_fix'
-	| 'duplicate';
+	'pending' | 'acknowledged' | 'in_progress' | 'resolved' | 'wont_fix' | 'duplicate';
 
 // =============================================================================
 // Labels (French UI)

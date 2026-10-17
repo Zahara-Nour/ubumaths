@@ -9,11 +9,17 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { generateWorksheetInstance } from '$lib/server/worksheets/instance-generator';
+import {
+	generateWorksheetInstance,
+	GENERATION_EXERCISE_FIELDS
+} from '$lib/server/worksheets/instance-generator';
 import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
 import { toJson } from '$lib/types/database-helpers';
 import { asWorksheetConfig, toWorksheetExerciseRow } from '$lib/types/worksheets';
 import type { TablesInsert } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/instances/+server');
 
 // Input validation schema for POST
 const createInstancesSchema = z.object({
@@ -27,13 +33,13 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 	try {
 		// Authenticate user
 		if (!user) {
-			return error(401, 'Unauthorized');
+			return error(401, 'Connexion requise');
 		}
 
 		// Validate worksheet ID
 		const worksheetId = params.id;
 		if (!worksheetId) {
-			return error(400, 'Worksheet ID is required');
+			return error(400, 'Identifiant de fiche requis');
 		}
 
 		// Parse and validate request body
@@ -54,12 +60,12 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
-			return error(500, 'Impossible de vérifier vos droits');
+			logger.error('Rôle illisible :', profileError);
+			return error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (!profile || profile.role !== 'teacher') {
-			return error(403, 'Only teachers can generate worksheet instances');
+			return error(403, 'Génération des copies réservée aux professeurs');
 		}
 
 		// Check if user has access to the class
@@ -70,7 +76,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.single();
 
 		if (classError || !classData) {
-			return error(404, 'Class not found');
+			return error(404, 'Classe introuvable');
 		}
 
 		// Fetch worksheet details
@@ -90,12 +96,12 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.single();
 
 		if (worksheetError || !worksheet) {
-			return error(404, 'Worksheet not found');
+			return error(404, 'Fiche introuvable');
 		}
 
 		// Check if worksheet is published
 		if (worksheet.status !== 'published') {
-			return error(400, 'Worksheet must be published before generating instances');
+			return error(400, 'La fiche doit être publiée avant de générer les copies');
 		}
 
 		// Check if user has access to this worksheet
@@ -104,7 +110,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			(worksheet.school_id && profile.school_id === worksheet.school_id);
 
 		if (!hasAccess) {
-			return error(403, 'Access denied to this worksheet');
+			return error(403, 'Accès refusé à cette fiche');
 		}
 
 		// Fetch worksheet exercises with exercise details
@@ -113,13 +119,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.select(
 				`
 				*,
-				exercise:exercises (
-					id,
-					title,
-					variables,
-					shared,
-					variations
-				)
+				exercise:exercises (${GENERATION_EXERCISE_FIELDS})
 			`
 			)
 			.eq('worksheet_id', worksheetId)
@@ -127,7 +127,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.order('position', { ascending: true });
 
 		if (exercisesError || !worksheetExercises || worksheetExercises.length === 0) {
-			return error(400, 'Worksheet has no exercises');
+			return error(400, 'Cette fiche ne contient aucun exercice');
 		}
 
 		// Fetch students in the class
@@ -140,7 +140,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.eq('role', 'student');
 
 		if (studentsError || !students || students.length === 0) {
-			return error(400, 'No students found in the class');
+			return error(400, 'Aucun élève dans cette classe');
 		}
 
 		// Check for existing instances to avoid duplicates
@@ -156,7 +156,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		// Cet ensemble sert à CALCULER un écart. Vide par accident, l'écart conclut
 		// « rien n'existe encore » et recrée ce qui existait déjà.
 		if (existingInstancesError) {
-			console.error('État courant illisible :', existingInstancesError);
+			logger.error('État courant illisible :', existingInstancesError);
 			throw error(500, 'Impossible de lire l’état actuel');
 		}
 
@@ -165,7 +165,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 
 		if (newStudents.length === 0) {
 			return json({
-				message: 'All students already have instances',
+				message: 'Tous les élèves ont déjà leur copie',
 				created: 0,
 				skipped: students.length,
 				total: students.length
@@ -208,7 +208,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			} catch (err) {
 				errors.push({
 					studentId: student.id,
-					error: err instanceof Error ? err.message : 'Unknown error'
+					error: err instanceof Error ? err.message : 'Erreur inconnue'
 				});
 			}
 		}
@@ -218,14 +218,14 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			const { error: insertError } = await supabase.from('worksheet_instances').insert(instances);
 
 			if (insertError) {
-				console.error('Error inserting instances:', insertError);
-				return error(500, 'Failed to create worksheet instances');
+				logger.error('Error inserting instances:', insertError);
+				return error(500, 'Impossible de créer les copies');
 			}
 		}
 
 		// Return summary
 		return json({
-			message: `Successfully created ${instances.length} worksheet instances`,
+			message: `Copies créées : ${instances.length}`,
 			created: instances.length,
 			skipped: existingStudentIds.size,
 			errors: errors.length > 0 ? errors : undefined,
@@ -240,8 +240,8 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			}
 		});
 	} catch (err) {
-		console.error('Error creating worksheet instances:', err);
-		return error(500, err instanceof Error ? err.message : 'Internal server error');
+		logger.error('Error creating worksheet instances:', err);
+		return error(500, err instanceof Error ? err.message : 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -252,13 +252,13 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 	try {
 		// Authenticate user
 		if (!user) {
-			return error(401, 'Unauthorized');
+			return error(401, 'Connexion requise');
 		}
 
 		// Validate worksheet ID
 		const worksheetId = params.id;
 		if (!worksheetId) {
-			return error(400, 'Worksheet ID is required');
+			return error(400, 'Identifiant de fiche requis');
 		}
 
 		// Check if user is a teacher
@@ -271,12 +271,12 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
-			return error(500, 'Impossible de vérifier vos droits');
+			logger.error('Rôle illisible :', profileError);
+			return error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (!profile || profile.role !== 'teacher') {
-			return error(403, 'Only teachers can view worksheet instances');
+			return error(403, 'Consultation des copies réservée aux professeurs');
 		}
 
 		// Fetch worksheet to check access
@@ -287,7 +287,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 			.single();
 
 		if (worksheetError || !worksheet) {
-			return error(404, 'Worksheet not found');
+			return error(404, 'Fiche introuvable');
 		}
 
 		// Check if user has access to this worksheet
@@ -296,7 +296,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 			(worksheet.school_id && profile.school_id === worksheet.school_id);
 
 		if (!hasAccess) {
-			return error(403, 'Access denied to this worksheet');
+			return error(403, 'Accès refusé à cette fiche');
 		}
 
 		// Parse query parameters
@@ -349,7 +349,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 			// Cette liste borne la portée du classement. Vidée par une panne, elle
 			// affiche un classement amputé sans le dire.
 			if (classStudentsError) {
-				console.error('Périmètre illisible :', classStudentsError);
+				logger.error('Périmètre illisible :', classStudentsError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
@@ -364,8 +364,8 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 		const { data: instances, error: instancesError, count } = await query;
 
 		if (instancesError) {
-			console.error('Error fetching instances:', instancesError);
-			return error(500, 'Failed to fetch worksheet instances');
+			logger.error('Error fetching instances:', instancesError);
+			return error(500, 'Impossible de charger les copies');
 		}
 
 		// Calculate statistics
@@ -397,7 +397,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 			}
 		});
 	} catch (err) {
-		console.error('Error fetching worksheet instances:', err);
-		return error(500, err instanceof Error ? err.message : 'Internal server error');
+		logger.error('Error fetching worksheet instances:', err);
+		return error(500, err instanceof Error ? err.message : 'Une erreur inattendue s’est produite');
 	}
 };

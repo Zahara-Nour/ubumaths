@@ -141,7 +141,7 @@ describe('createJournalEntry', () => {
 		const result = await journal.createJournalEntry(mockSupabase, mockTeacherId, input);
 
 		expect(result.error).toBeDefined();
-		expect(result.error?.message).toContain('autorise');
+		expect(result.error?.message).toContain('non autorisée');
 		expect(result.data).toBeNull();
 	});
 

@@ -333,7 +333,7 @@ export const trigSubstitutionIntegrator: Integrator = {
 				integrandType: 'radical',
 				technique: 'trig-substitution',
 				steps: recorder.getSteps(),
-				error: 'No trigonometric substitution pattern detected'
+				error: 'Aucun changement de variable trigonométrique ne convient'
 			};
 		}
 
@@ -356,7 +356,7 @@ export const trigSubstitutionIntegrator: Integrator = {
 				integrandType: 'radical',
 				technique: 'trig-substitution',
 				steps: recorder.getSteps(),
-				error: 'Trigonometric substitution transformation not yet fully implemented'
+				error: 'Je ne sais pas encore faire ce changement de variable trigonométrique'
 			};
 		}
 
@@ -384,7 +384,7 @@ export const trigSubstitutionIntegrator: Integrator = {
 			integrandType: 'radical',
 			technique: 'trig-substitution',
 			steps: recorder.getSteps(),
-			error: 'Trigonometric substitution skeleton - full implementation pending',
+			error: 'Je ne sais pas encore faire ce changement de variable trigonométrique',
 			constantNote: CONSTANT_OF_INTEGRATION_NOTE
 		};
 	}

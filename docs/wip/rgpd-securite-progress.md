@@ -284,3 +284,181 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
 - **À faire avant 2030** : une tâche qui retire du storage les fichiers d'un compte purgé (chemins
   dans `account_deletion_audit.cleanup_result`, aucun consommateur aujourd'hui).
 - Le bloc C est clos : C9, C10, C15 (documents), C11, C12, C13 (code), C14 (réglé par A1).
+
+## Questions ouvertes tranchées (David, 2026-10-11) — toutes les recommandations retenues
+
+| Point                                     | Décision                                      | État                                                                               |
+| ----------------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Données de jeu en `using (true)`          | lecture par soi seul (prof et admin compris)  | ✅ #1075, migration `20261015090600` en prod (vérifiée)                            |
+| Base qui ignore `profiles.status`         | documenter seulement                          | ✅ #1075 (auth.md)                                                                 |
+| D17 exercices / constructions `is_public` | exercices publics ; constructions → connectés | ✅ #1075 (constructions `TO authenticated`)                                        |
+| Fonctions mortes                          | DROP (accord explicite)                       | ✅ #1075, migration `20261015090700` en prod (vérifiée)                            |
+| B8 limites de débit                       | élévation fermée en panne, le reste ouvert    | ✅ #1076 (code : au `deploy:prod`)                                                 |
+| B8 interrupteur Google                    | 403 côté API sauf `disconnect` / `status`     | ✅ #1076, + `whiteboard/export-to-classroom` (audit)                               |
+| B8 `/auth/register`                       | dans `ALLOWED_SERVICE_ROLE_PATHS`             | ✅ #1076                                                                           |
+| Classement des énigmes                    | fonction bornée à l'école, prénom + score     | ✅ #1077 (migration `20261015090800` en prod, vérifiée) + #1079 (page, `db:types`) |
+
+- #1077 : seuls les élèves ayant tenté une énigme apparaissent (pas d'annuaire de l'école).
+- **Nouveau constat (audit #1077), à soumettre à David** : `submit_riddle_attempt` prend
+  `p_is_correct` de l'appelant et reste exécutable par `authenticated` ; la policy
+  « Students can create own attempts » laisse aussi l'élève insérer une tentative à sa guise.
+  Un élève peut donc s'attribuer des gidouilles d'énigme (et la tête du classement). Intégrité,
+  pas confidentialité ; prod : `riddle_attempts` vide.
+- **Drive du tableau blanc** (`api/whiteboard/drive/*`) : utilise le jeton Google sans le garde
+  Classroom ; bouton volontairement hors du `{#if}`. À trancher : Drive = Classroom, ou
+  interrupteur distinct à documenter.
+- `db:types` régénéré dans #1079. La vue `riddle_progress` n'a plus de lecteur : `REVOKE` de
+  `authenticated` possible dans une PR à part (le `DROP VIEW`, destructif, attendra David).
+
+## Triche aux énigmes, vue du classement, Drive (David, 2026-10-11 : recos retenues)
+
+- **Drive** ne fait pas partie de Classroom : routes `api/whiteboard/drive/*` laissées actives,
+  consigné dans `outils-prof.md` (#1132).
+- **#1132 (mergée, migration `20261016090200` en prod, vérifiée)** : la route de soumission
+  appelle `submit_riddle_attempt` par le client service (justesse calculée par le serveur) ;
+  policy d'insertion directe de l'élève supprimée ; `riddle_progress` fermée ; garde de la
+  fonction explicite (client service ou l'élève lui-même — un appel sans `auth.uid()` passait).
+- ⏳ **Étape 2, APRÈS le `deploy:prod` qui livre #1132** : migration
+  `REVOKE EXECUTE ON FUNCTION submit_riddle_attempt(uuid,uuid,jsonb,boolean) FROM authenticated`
+  (l'ancienne route en prod l'appelle encore avec le client de l'élève). Pas écrite d'avance :
+  un `db push --include-all` d'une autre session l'appliquerait trop tôt.
+- **Constats de l'audit de #1132 — recos retenues par David (2026-10-12)** :
+  - **#1147 (mergée, migration `20261016100200` en prod, vérifiée : md5 e322477f…, anon
+    refusé)** : 2048 et Mathémo appellent `record_game_reward` par le client service ; garde
+    explicite (client service ou l'élève lui-même ; un appel sans `auth.uid()` passait).
+  - **#1149 (mergée, code seul)** : les pages élève des énigmes n'envoient plus au navigateur
+    ni `answer.value` ni `correction` (`toStudentRiddle`) ; `RiddleCard` ne corrige plus
+    côté client. Prod : 1 énigme publiée, avec correction, 0 avec réponse automatique.
+- ✅ (fait par #1191) **Étape 2 bis, APRÈS le `deploy:prod` qui livre #1147** : `REVOKE EXECUTE ON FUNCTION
+record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migration que
+  l'étape 2 possible). L'appel imbriqué par `submit_riddle_attempt` garde son droit (DEFINER).
+- **Recos retenues par David (2026-10-12)** :
+  - **#1153 (mergée, migration `20261016100400` en prod, vérifiée)** : `upsert_mathemo_score` par
+    le client service, garde explicite (elle ajoutait `p_score` au total sans borne).
+  - **#1157 (mergée)** : un envoi d'énigme échoué rend la main à l'élève.
+  - **Réponse et correction réservées à l'auteur et à l'admin**, en 3 étapes :
+    - A **#1163 (mergée, `20261016100500` en prod, vérifiée : 2/2 recopiées, RLS, anon
+      fermé)** : table `riddle_solutions` + déclencheur de recopie ;
+    - B0 **#1166 (mergée, `20261016100600` en prod)** : `riddles.correction` vaut '' par défaut ;
+    - B **#1172 (mergée, code seul)** : tout le code lit et écrit `riddle_solutions`, plus rien
+      sur `riddles.answer/correction` (audit : 31 `from('riddles')` relus, colonnes nommées) ;
+    - C ⛔ destructive, APRÈS le deploy de B : DROP des deux colonnes + déclencheur — s'arrêter,
+      montrer à David la réconciliation et le grep d'usages.
+- ✅ **v0.25.0 en prod (2026-10-12)**, puis **#1191 (mergée, `20261016100700` en prod,
+  vérifiée)** : EXECUTE retiré à `authenticated` sur `submit_riddle_attempt`,
+  `record_game_reward`, `upsert_mathemo_score` (ACL = postgres + service_role) ; démineur
+  (`complete_minesweeper_game`, DEFINER) intact. Gardes testées sous `postgres` (rouges sans
+  la garde). #1183 : test de chronométrage du pgcd qui bloquait le deploy.
+- **Recos de David sur les points d'audit restants (2026-10-12)** :
+  - parties « gagnées » en boucle : rien à faire (gidouilles = 1/jour/jeu, seul le classement
+    se gonfle) ;
+  - **#1178 (mergée, code seul)** : réponse attendue validée par Zod à la création et à
+    l'édition (valeur validée enregistrée) ; corrigé au passage : succès affiché en erreur
+    (réponse d'action lue sans `deserialize`), création impossible sans genre/image ou en
+    validation à la main (`"undefined"`), bonne réponse QCM décalée par un choix vide,
+    UUID de `validations/[id]` ;
+  - édition non atomique : laissée (erreur visible, réenregistrer suffit) ;
+  - `profile.class_ids` de la liste élève : pas de fuite (la RLS borne, le filtre ne fait
+    que restreindre).
+
+- ✅ **Étape C FAITE (2026-10-12)** : reprise sans toucher à la base locale partagée (vert
+  prouvé par les tests d'intégration de la CI sur Supabase neuf). **#1206 (mergée,
+  `20261016100800` en prod, vérifiée)** : garde de réconciliation (2/2, 0 écart, refaite
+  juste avant le push), puis DROP du déclencheur, de `sync_riddle_solution()`, de
+  `riddles.answer` et `riddles.correction`. Après : 0 colonne, 0 déclencheur, 2 solutions
+  intactes ; aucune erreur dans les journaux Postgres. Un élève ne lit plus réponse ni
+  correction. Types : #1208.
+- ✅ **Fichiers des comptes supprimés (C11, décision de David du 2026-10-13)** : #1239
+  (`20261016101000` en prod : `account_deletion_audit.storage_removed_at`) et #1243 (cron
+  Vercel du dimanche `api/cron/deleted-account-files`, date l'audit si tout est retiré ; la
+  route de suppression date aussi). Au passage : `verifyCronAuth` ne croit plus l'en-tête
+  `x-vercel-cron` (falsifiable) ; le bouton admin des tâches HTTP envoie `Origin` (le
+  contrôle CSRF le refusait en 403 en prod). **Actif après le prochain `deploy:prod`.**
+  `profile.class_ids` (liste des énigmes élève) : pas de défaut, mesuré (0 écart / 81).
+- ✅ **Chemins forgés (audit de #1243, antérieur) — #1246 (mergée, `20261016101200` en prod, md5 prod = local testé)** : un élève peut créer une pièce jointe
+  de message privé (`message_attachments_v2.storage_path`) ou une capture de signalement
+  (`bug_reports.screenshot_path`) avec le chemin d'un fichier d'autrui ; à la suppression
+  de son compte, ce fichier serait retiré. Accord de David (2026-10-13) : `delete_user_account`
+  ne rend que les chemins conformes (`messages/<id de son message>/…`,
+  `<son id>/<id de son signalement>/…`). Prod : 0 fichier dans ces buckets.
+- ✅ **Pièces jointes de la messagerie (décision de David du 2026-10-13 : « un élève envoie
+  le scan de son cahier »)**. Le bucket n'existait pas en prod : toute pièce jointe
+  échouait en silence. Règles validées : joint = expéditeur ; lit = expéditeur,
+  destinataire non supprimé, admin ; JPEG/PNG/WebP/HEIC/PDF, 10 Mo, 3 par message ;
+  conservation du message.
+  - **#1250** (`20261016101300` en prod, vérifiée) : bucket privé sans policy de storage
+    (une migration ne peut pas en poser : `storage.objects` à `supabase_storage_admin`),
+    contrainte de taille 5 → 10 Mo, lecture admin, `list_orphan_message_attachment_files`.
+  - **#1256** (code + `20261016101400` en prod, vérifiée) : liens d'envoi et de lecture
+    signés par le serveur après contrôle RLS ; cron du dimanche qui retire les fichiers
+    orphelins. **Audit : 1 bloquant corrigé avant merge** — le serveur signait le chemin
+    écrit par le navigateur, `%2e%2e` sortait du message voire du bucket ; signature et
+    policy exigent désormais `messages/<message>/<uuid>-<nom>`. Aussi : limite de 3 sur
+    les fichiers déposés, consentement `send_message`, 303 `no-store`.
+  - **Actif après le prochain `deploy:prod`.** Reste mineur : course sur la limite de 3
+    (expéditeur seul, cron), 500 au lieu de 404 si le fichier manque.
+- ✅ **I4 élargi — #1266, migration `20261016101700` EN PROD (vérifié le 2026-10-13)** :
+  déclencheur `guard_worksheet_error_report_teacher_fields` présent et actif en prod
+  (`tgenabled = O`) ; l'élève ne remplit plus status / reviewed_by / reviewed_at /
+  response, et ne change plus que la description de son signalement en attente.
+  Prod : 14 signalements, aucun forgé. Partie avec les migrations des autres sessions
+  (101500 messages figés, 101600 boîte de réception, 103000 `python_recheck_supprime`,
+  renumérotée par sa session). Pas de RPC nouvelle → pas de `db:types`.
+- Le point 2 (safeguarding de la modération) est traité par une autre session
+  (`fix/messages-prives-non-modifiables`, `fix/ecritures-verifiees`).
+- **9bis — énigme du jour (branche `fix/enigme-du-jour-cron`)** : mesuré en prod le
+  2026-10-13 — `VITE_RIDDLE_AUTO_SELECT_API_KEY` absente (seul `CRON_SECRET` est défini) →
+  tout POST passait et faisait écrire `background_job_runs` par le client service ; la
+  sélection elle-même échoue pour tous (policy d'INSERT `selected_by = auth.uid()`, la route
+  écrit `null`), 0 exécution au journal. Correctif : `verifyCronAuth` (code seul, 4 tests
+  rouges sans lui). La sélection automatique reste morte : question produit pour David.
+- **Énigme du jour automatique (décision de David, 2026-10-13 : « je veux la garder »)** —
+  branche `fix/enigme-du-jour-auto` : route `api/cron/riddle-of-the-day` (GET cron Vercel
+  quotidien 00:05 UTC, POST bouton admin), `Bearer CRON_SECRET`, sélection par le client
+  service (seule façon d'écrire sans compte ; ne choisit que des énigmes publiées). Prod :
+  1 énigme publiée, 0 énigme du jour jamais posée → la tâche réussira le 1er jour, puis
+  échouera (« Aucune énigme éligible ») 30 jours, faute d'autre énigme publiée.
+- **T17 — conversation du Père Ubu sur une tablette partagée (choix de David, 2026-10-13)** —
+  branche `fix/historique-tuteur-par-compte` : historique rangé par compte
+  (`chatHistory:<id>`), conversations des autres comptes et ancienne clé commune effacées à
+  l'ouverture du chat, toutes effacées à la déconnexion. 4 tests rouges sans le correctif.
+  **Trouvé au passage** : le chat plantait au montage, en prod comme en dev
+  (`bind:ref={undefined}` vers `Textarea`, `props_invalid_value`) → corrigé.
+- **T17 étendu — données de travail dans le navigateur (David, 2026-10-13 : « traite les
+  pareil », effacées à la déconnexion)** — branche `fix/donnees-de-travail-par-compte` :
+  `src/lib/utils/work-data.ts` (18 clés + 4 préfixes : Python, Blockly, atelier, console,
+  calculatrice, grapheur, tableur, tableau blanc, jeux, profil de joueur, chat). Propriétaire
+  retenu dans le navigateur, vérifié par le layout racine à chaque page ; autre compte ou
+  visiteur → effacées + rechargement ; visiteur qui se connecte → son compte reprend ;
+  déconnexion, attente d'approbation, suppression du compte → effacées. Tests : 11 unitaires
+  (8 rouges sans le module) + 3 du layout (rouges sans l'appel).
+- **Adresses visitées jointes aux rapports de bug (David, 2026-10-13 : « traite le »)** —
+  branche `fix/traces-onglet-rapport-bug` : `chiphre_freeze_data` (`sessionStorage`, 20
+  dernières actions dont l'URL complète des navigations) vidé par `clearWorkData`, en mémoire
+  comme dans l'onglet (`clearFreezeDetectionData`). 2 tests rouges sans l'appel, 2 qui
+  vérifient ce qui reste (même compte, visiteur qui se connecte).
+- **T16 — HuggingFace : inactif en prod, mesuré le 2026-10-13** : `HF_API_KEY` absente des
+  variables Vercel de production, corpus vide (`rag_documents` 0, `rag_chunks` 0). Aucun
+  message d'élève n'est parti chez HuggingFace. Latent : définir la clé l'activerait sans
+  déclaration du sous-traitant. Suite à trancher par David.
+- **T16 corrigé (#1311, David : option 2)** : `hybridSearch` vérifie qu'un extrait de
+  `rag_chunks` est lisible par l'élève pour son niveau et son thème (même client, mêmes filtres
+  que la RPC `rag_hybrid_search`, SECURITY INVOKER) avant tout appel à HuggingFace ; erreur → rien
+  n'est envoyé. 2 tests rouges sans le garde-fou. Registre des sous-traitants et `tuteur-ia.md` :
+  déclarer HuggingFace avant de définir `HF_API_KEY`.
+- **T18 clos (David, 2026-10-13 : « clore, accepté »)** : la `solution` envoyée au tuteur par le
+  navigateur reste ; elle y est déjà (correction côté client), la trafiquer ne fausse que l'aide
+  reçue par l'élève lui-même. Écrit dans `tuteur-ia.md` (Pièges).
+- **T11 plus vrai (mesuré le 2026-10-13)** : `sanitizeErrorData` masque clés sensibles et
+  courriels (corps, contexte, URL, message, pile) ; prod : 934 lignes, `request_body` 0, une URL à
+  paramètre (`/glossaire?q=`), plus ancienne au 2026-09-11 (purge 30 j). §5.9 de `rgpd.md` barré.
+- **T5 corrigé (#1327)** : `challenge-variables.ts` n'envoie à `new Function` qu'une expression
+  arithmétique (`ARITHMETIC_ONLY`, classe de caractères, temps linéaire) ; noms de variables
+  substitués par `interpolateExpression` (un nom piégé faisait planter ou geler le combat).
+  Prod : `game_challenges` écrite par le prof seul, 0 / 464 défis de type `expression`. 3 tests
+  rouges sur `main`.
+- **T4 plus vrai (vérifié le 2026-10-13)** : garde `assertGoogleClassroomEnabled()` dans chaque
+  méthode des routes `/api/google/**` et `export-to-classroom` (comptage méthode par méthode),
+  test `interrupteur-google.test.ts` 25/25 ; seuls `auth/disconnect` et `auth/status` restent
+  ouverts (B8). Reste `class_google_classroom_links` : jamais lue, 0 ligne en prod → suppression
+  destructive à décider par David.

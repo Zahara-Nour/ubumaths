@@ -22,8 +22,7 @@ function screenOpacity(body: string): number | undefined {
 	const result = buildFigureScene(content(body));
 	expect(result.errors).toEqual([]);
 	const shape = figureToSvg(result.scene!, 'moyenne').shapes.find((s) => 'fill' in s && s.fill) as
-		| { fillOpacity?: number }
-		| undefined;
+		{ fillOpacity?: number } | undefined;
 	return shape?.fillOpacity;
 }
 

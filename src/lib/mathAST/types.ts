@@ -238,6 +238,39 @@ export interface MathConstantNode extends BaseNode {
 }
 
 /**
+ * Le nom d'un point géométrique : une majuscule, ses primes et son indice éventuel
+ * (`A`, `A'`, `A''`, `A_1`, `M_n`). Ce n'est pas un nœud : une donnée portée par
+ * `SegmentLengthNode` et `FigureNameNode`, construite par `pointName` (fabrique).
+ */
+export interface PointName {
+	/** Une majuscule latine, `A` à `Z` */
+	readonly letter: string;
+	/** Nombre de primes : 0 pour `A`, 1 pour `A'` */
+	readonly primes: number;
+	/** Indice en chiffres ou en lettres minuscules (`1`, `12`, `n`), absent sinon */
+	readonly index?: string;
+}
+
+/**
+ * La longueur d'un segment : deux points nommés collés (`AB`, `A'B'`, `A_1B_1`).
+ * Lue seulement en mode `capitalPairs: 'length'` du parseur. L'ordre écrit est
+ * gardé (`BA` reste `BA`) ; `AB` = `BA` se décide au calcul (lot 2).
+ */
+export interface SegmentLengthNode extends BaseNode {
+	readonly type: 'segmentLength';
+	readonly points: readonly [PointName, PointName];
+}
+
+/**
+ * Un nom de figure : trois points nommés collés ou plus (`ABC`, `ABCD`). Affiché
+ * tel quel, il ne se calcule pas : ce n'est pas une longueur (décision Q-A).
+ */
+export interface FigureNameNode extends BaseNode {
+	readonly type: 'figureName';
+	readonly points: readonly PointName[];
+}
+
+/**
  * Union of all literal node types
  */
 export type LiteralNode =
@@ -246,7 +279,9 @@ export type LiteralNode =
 	| GreekLetterNode
 	| SymbolNode
 	| HoleNode
-	| MathConstantNode;
+	| MathConstantNode
+	| SegmentLengthNode
+	| FigureNameNode;
 
 // =============================================================================
 // Binary Operation Nodes
@@ -310,10 +345,7 @@ export interface DivisionNode extends BaseNode {
  * Union of all binary operation node types
  */
 export type BinaryOperationNode =
-	| AdditionNode
-	| SubtractionNode
-	| MultiplicationNode
-	| DivisionNode;
+	AdditionNode | SubtractionNode | MultiplicationNode | DivisionNode;
 
 // =============================================================================
 // Unary Operation Nodes
@@ -768,6 +800,8 @@ export type MathNode =
 	| SymbolNode
 	| HoleNode
 	| MathConstantNode
+	| SegmentLengthNode
+	| FigureNameNode
 	| AdditionNode
 	| SubtractionNode
 	| MultiplicationNode

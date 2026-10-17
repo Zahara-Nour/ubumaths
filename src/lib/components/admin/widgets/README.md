@@ -10,7 +10,6 @@ Import components from the widgets directory:
 import {
 	MetricCard,
 	HealthStatusCard,
-	ErrorSummaryWidget,
 	TrendChart,
 	AlertBadge,
 	WidgetSkeleton
@@ -35,7 +34,7 @@ Display a single metric with value, label, trend indicator, and optional alert b
 - `value: number | string` - Main value to display
 - `trend?: number` - Percentage change (positive = green ↑, negative = red ↓)
 - `status?: 'ok' | 'warning' | 'critical'` - Alert level (affects background gradient)
-- `icon?: typeof Icon` - Lucide icon component (optional)
+- `icon?: LucideIcon` - Lucide icon component (optional)
 - `link?: string` - Link to details page (makes card clickable)
 
 **Example:**
@@ -91,33 +90,7 @@ Display system health status with colored indicator dot and expandable error det
 
 ---
 
-### 3. ErrorSummaryWidget
-
-Display error statistics with tooltips and link to error dashboard.
-
-**Props:**
-
-- `criticalErrors: number` - Count of critical errors (24h)
-- `unresolvedErrors: number` - Count of unresolved errors
-- `lastHourErrors: number` - Errors in last hour
-- `errorRate: number` - Error rate as decimal (e.g., 0.02 = 2%)
-
-**Features:**
-
-- Red pulsing badge if `criticalErrors > 0`
-- Orange badge if `unresolvedErrors > 10`
-- Tooltips explaining each metric
-- Clickable → navigates to `/dashboard/admin/errors`
-
-**Example:**
-
-```svelte
-<ErrorSummaryWidget criticalErrors={2} unresolvedErrors={15} lastHourErrors={3} errorRate={0.02} />
-```
-
----
-
-### 4. TrendChart
+### 3. TrendChart
 
 Mini sparkline chart showing 7-day trend data.
 
@@ -144,7 +117,7 @@ Mini sparkline chart showing 7-day trend data.
 
 ---
 
-### 5. AlertBadge
+### 4. AlertBadge
 
 Colored badge with count and optional pulse animation.
 
@@ -167,7 +140,7 @@ Colored badge with count and optional pulse animation.
 
 ---
 
-### 6. WidgetSkeleton
+### 5. WidgetSkeleton
 
 Loading skeleton placeholder for widgets.
 
@@ -198,7 +171,6 @@ Loading skeleton placeholder for widgets.
 	import {
 		MetricCard,
 		HealthStatusCard,
-		ErrorSummaryWidget,
 		TrendChart,
 		WidgetSkeleton
 	} from '$lib/components/admin/widgets';
@@ -242,16 +214,6 @@ Loading skeleton placeholder for widgets.
 			status="ok"
 			latency={23}
 			lastCheck="2025-01-07T10:30:05Z"
-		/>
-	</div>
-
-	<!-- Error Summary -->
-	<div class="col-span-full md:col-span-1">
-		<ErrorSummaryWidget
-			criticalErrors={0}
-			unresolvedErrors={8}
-			lastHourErrors={2}
-			errorRate={0.015}
 		/>
 	</div>
 

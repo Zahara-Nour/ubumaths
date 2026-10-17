@@ -96,12 +96,12 @@ _Rang 4_ — V4.a Convertir mots ↔ chiffres • V4.b Estimer un ordre de grand
 
 ### Item 2 — Nombres décimaux
 
-| Rang | Capacité                                                                                                                               | Type                |
-| ---- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| Rang | Capacité                                                                                                                             | Type                |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------- |
 | 1    | Reconnaître un nombre décimal et passer entre ses différentes écritures (virgule ↔ fraction décimale ↔ somme de fractions décimales) | `capacite_attendue` |
-| 2    | Placer un nombre décimal sur une demi-droite graduée et le repérer                                                                     | `capacite_attendue` |
-| 3 ⭐ | Comparer et ordonner des nombres décimaux, encadrer, intercaler                                                                        | `capacite_attendue` |
-| 4    | Arrondir un nombre décimal à l'unité, au dixième, au centième                                                                          | `capacite_attendue` |
+| 2    | Placer un nombre décimal sur une demi-droite graduée et le repérer                                                                   | `capacite_attendue` |
+| 3 ⭐ | Comparer et ordonner des nombres décimaux, encadrer, intercaler                                                                      | `capacite_attendue` |
+| 4    | Arrondir un nombre décimal à l'unité, au dixième, au centième                                                                        | `capacite_attendue` |
 
 **Variations canoniques** :
 
@@ -438,7 +438,7 @@ _Rang 4_ — V4.a Angles opposés par le sommet pour déduire • V4.b Angles su
 | 1    | Lire l'heure (cadran à aiguilles, digital) et connaître les unités de durée (jour, heure, minute, seconde) et leurs relations | `automatisme`       |
 | 2    | Convertir entre unités de durée (système sexagésimal : heures, minutes, secondes)                                             | `capacite_attendue` |
 | 3 ⭐ | Calculer la durée entre deux horaires ou un horaire à partir d'une durée                                                      | `capacite_attendue` |
-| 4    | Résoudre un problème impliquant horaires et durées (avec conversions sexagésimal ↔ décimal)                                  | `capacite_attendue` |
+| 4    | Résoudre un problème impliquant horaires et durées (avec conversions sexagésimal ↔ décimal)                                   | `capacite_attendue` |
 
 **Variations canoniques** :
 

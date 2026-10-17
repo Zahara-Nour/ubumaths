@@ -5,37 +5,37 @@
  * and parsing pipeline but adapts output for HTML display.
  */
 
-import type { MathNode } from '../../types';
+import type { MathNode, RelationNode } from '../../types';
 import type { CommandContext, ErrorCode } from '../types';
 import { CommandRegistry, parse, createEvalState, bindingsToRecord, setBinding } from '../core';
-import { getFunctionNames, getFunction } from '../core/eval-state';
+import { createFunctionBinding, getFunctionNames, getFunction } from '../core/eval-state';
 import type { EvalState } from '../core';
+import type { PipelineOptions } from '../core/pipeline';
 import { createDefaultRegistry } from '../commands';
-import type {
-	ReplExecutionResult,
-	ReplInputMode,
-	WebFunctionInfo,
-	ReplHistoryEntry
-} from './types';
+import type { ReplExecutionResult, WebFunctionInfo } from './types';
+import { formatErrorHtml, formatInputErrorHtml, formatTreeHtml } from './output-formatter-web';
 import {
-	formatErrorHtml,
-	formatInputErrorHtml,
-	escapeWithLabel,
-	formatTreeHtml
-} from './output-formatter-web';
-import { toCustom, getVariables, hasAllBindings, evaluate, substitute, toLatex } from '../../index';
+	toCustom,
+	getVariables,
+	hasAllBindings,
+	evaluate,
+	substitute,
+	substituteFunction,
+	toLatex
+} from '../../index';
+import type { FunctionBindings } from '../../eval/function-bindings';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { normalize, normalFormsEquivalent } from '../../normal';
-import { evaluateWithUnits, DimensionalEvaluationError } from '../../eval/evaluate-with-units';
-import type {
-	EvalResultWithUnit,
-	UnitConversionMode,
-	EvalValue,
-	ComplexValueResult
-} from '../../eval/types';
-import { isUnit, isVariable } from '../../guards';
-import { parse as parseUnit } from '../../units/parser';
-import { getConversionFactor } from '../../units/conversion';
+import type { EvalValue, ComplexValueResult, EvalResult } from '../../eval/types';
+import {
+	computeQuantity,
+	convertQuantity,
+	type QuantityAnswer,
+	type QuantityOutcome
+} from '../quantities';
+import { displayUnitsInLatex } from '../../units/display';
+import { isBoolean, isLogical, isLogicalNot, isRelation, isUnit, isVariable } from '../../guards';
+import { relation } from '../../factory';
 import { summarizeList, summarizeTable } from '../../../statistics/describe';
 import { formatSummary } from '../../../statistics/format';
 import {
@@ -71,6 +71,27 @@ import {
 } from '../../../ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '../../../ubumark/utils/stat-chart-text';
 import { STAT_CHART_LIMITS } from '../../../ubumark/types/stat-chart';
+import {
+	MAX_EXACT_CHARACTERS,
+	estimatedExactDigits,
+	exactCharacters,
+	isTooLongToCompute,
+	productValue
+} from '../exact-size';
+import { rationalToNode } from '../../common/numeric';
+import { boundedComparison } from '../bounded-comparison';
+import { withFrenchErrors } from './french-errors';
+import {
+	approximateDigitsOf,
+	approximateLatexOf,
+	approximationNode,
+	approximationText,
+	isWrittenNumber,
+	type ApproximateDigits
+} from '../approximation';
+import { hasDecimalLiteral } from '../../tidy/decimal';
+import { tidy } from '../../tidy';
+import { mapNode } from '../../transforms';
 
 // =============================================================================
 // Constants
@@ -84,13 +105,101 @@ const LINREG_PLACES = 3;
 // =============================================================================
 
 /**
+ * Le pendant d'un calcul pour le bouton ≈ de l'atelier : sa valeur approchée
+ * en mode exact, sa valeur exacte en mode décimal (décisions de David,
+ * 2026-10-11). Rien quand les deux écritures ne diffèrent pas.
+ */
+function approximationFields(
+	mode: string,
+	exact: MathNode,
+	canToggle: boolean,
+	digits: ApproximateDigits | null,
+	keptWriting: boolean
+): { approximateLatex?: string; exactLatex?: string } {
+	// L'arrondi déjà lu par la console : le relire coûtait autant que le calcul exact
+	const approximate = isWrittenNumber(exact) || digits === null ? null : approximateLatexOf(digits);
+	if (mode === 'exact') {
+		return approximate === null ? {} : { approximateLatex: approximate };
+	}
+	// En mode décimal, la ligne montre déjà la valeur décimale : le bouton rend
+	// l'exacte, sauf si c'est un nombre déjà écrit (« ≈ 3 » vaut 3)
+	// … écrite par `tidy`, comme la ligne en mode exact : π/3, pas ⅓ π (revue du lot B) —
+	// sauf une écriture gardée, que `tidy` développerait (`(1+1/1000)^{1000}`)
+	return canToggle && approximate !== null
+		? { exactLatex: toLatex(keptWriting ? exact : tidy(exact)) }
+		: {};
+}
+
+/**
+ * Un résultat exact mis au propre pour l'écrire (π/3, √2/2) : la forme de
+ * calcul d'`evaluate` (« coefficient × π ») passée par `tidy` — sauf avec une
+ * variable ou un décimal, que `tidy` simplifierait ou réécrirait en fraction
+ * (même règle que l'écran de l'atelier, `render.ts`).
+ */
+function readableExact(node: MathNode): MathNode {
+	if (getVariables(node).size > 0 || hasDecimalLiteral(node)) return node;
+	try {
+		return tidy(node);
+	} catch {
+		return node;
+	}
+}
+
+/**
+ * La longueur réelle d'un résultat exact calculé, s'il dépasse 1 000 caractères ; `null` sinon
+ * (un booléen, une erreur, un résultat lisible).
+ */
+function measuredTooLong(result: EvalResult, expanded: MathNode): number | null {
+	if (result.status !== 'value' || result.node.type === 'boolean') return null;
+	const length = exactCharacters(expanded, toCustom(result.node));
+	return length > MAX_EXACT_CHARACTERS ? length : null;
+}
+
+/** Les fonctions de l'utilisateur remplacées par leur définition (l'expression telle quelle sinon). */
+function withFunctionsExpanded(node: MathNode, functions: FunctionBindings | undefined): MathNode {
+	if (functions === undefined) return node;
+	try {
+		return substituteFunction(node, functions);
+	} catch {
+		return node;
+	}
+}
+
+/**
+ * L'écriture tapée, pour le texte d'un résultat exact trop long : une division tapée
+ * `1/1000` est une division EN LIGNE, que `toCustom` écrit `1:/1000` — juste et relisible,
+ * mais l'élève a tapé `/`. Même valeur, écrite comme tapée.
+ */
+function typedWriting(node: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		n.type === 'division' && n.displayStyle === 'inline' ? { ...n, displayStyle: 'fraction' } : n
+	);
+}
+
+/**
+ * La valeur que « Garder » range en mode décimal : la pleine précision du moteur,
+ * sauf si son flottant est sorti de sa plage — `e^{1000}` y vaut Infinity et
+ * `10^{-400}` 0, alors que l'écran montre 1,9701 × 10⁴³⁴ et 1 × 10⁻⁴⁰⁰ (revue) :
+ * on range alors le résultat exact.
+ */
+function keptValue(
+	decimalResult: EvalResult,
+	digits: ApproximateDigits,
+	exact: MathNode
+): MathNode {
+	if (decimalResult.status !== 'value' || typeof decimalResult.value !== 'number') return exact;
+	const value = decimalResult.value;
+	const outOfRange = !Number.isFinite(value) || (value === 0 && digits.digits !== '0');
+	return outOfRange ? exact : decimalResult.node;
+}
+
+/**
  * Browser-safe REPL execution engine.
  *
  * Handles:
  * - Dot-commands (e.g., .help, .tree, .simplify)
  * - Expression parsing and display
  * - Equivalence checking (expr1 === expr2)
- * - Input mode switching (latex/custom/auto)
  *
  * Returns results with both plain text and HTML formatting.
  *
@@ -106,19 +215,16 @@ const LINREG_PLACES = 3;
  * // Execute a command
  * const treeResult = engine.execute('.tree');
  * console.log(treeResult.ast); // Access AST
- *
- * // Change input mode
- * engine.setInputMode('latex');
  * ```
  */
 export class WebReplEngine {
 	private registry: CommandRegistry;
-	private inputMode: ReplInputMode = 'auto';
 	private lastAst: MathNode | undefined;
 	private evalState: EvalState;
-	private unitConversionMode: UnitConversionMode = 'first';
-	private lastUnitResult: EvalResultWithUnit | undefined;
-	private historyRef: ReadonlyArray<ReplHistoryEntry> = [];
+	/** La dernière grandeur calculée, exacte : celle que `.convert` reprend. */
+	private lastQuantity: MathNode | null = null;
+	/** Ce que l'élève a vu de `lastQuantity` (une durée composée), pour `.convert` */
+	private lastWritten: QuantityAnswer | undefined = undefined;
 
 	constructor() {
 		this.registry = createDefaultRegistry();
@@ -136,6 +242,12 @@ export class WebReplEngine {
 	 * @returns Execution result with output, AST, and metadata
 	 */
 	execute(input: string): ReplExecutionResult {
+		// Les messages d'erreur en français, à la sortie : les parseurs et le moteur répondent en
+		// anglais (« Unexpected token: EOF ») — 2026-10-12
+		return withFrenchErrors(this.executeInput(input));
+	}
+
+	private executeInput(input: string): ReplExecutionResult {
 		const trimmedInput = input.trim();
 
 		if (!trimmedInput) {
@@ -177,33 +289,6 @@ export class WebReplEngine {
 
 		// Handle regular expression
 		return this.executeExpression(trimmedInput);
-	}
-
-	/**
-	 * Set the input mode for expression parsing.
-	 *
-	 * @param mode - The input mode to use
-	 */
-	setInputMode(mode: ReplInputMode): void {
-		this.inputMode = mode;
-	}
-
-	/**
-	 * Get the current input mode.
-	 *
-	 * @returns Current input mode
-	 */
-	getInputMode(): ReplInputMode {
-		return this.inputMode;
-	}
-
-	/**
-	 * Get the last successfully parsed AST.
-	 *
-	 * @returns Last AST, or undefined if no AST available
-	 */
-	getLastAst(): MathNode | undefined {
-		return this.lastAst;
 	}
 
 	/**
@@ -285,50 +370,6 @@ export class WebReplEngine {
 		return this.evalState;
 	}
 
-	/**
-	 * Get the unit conversion mode for unit-aware evaluation.
-	 *
-	 * @returns Current unit conversion mode ('first', 'si', or 'best')
-	 */
-	getUnitConversionMode(): UnitConversionMode {
-		return this.unitConversionMode;
-	}
-
-	/**
-	 * Set the unit conversion mode for unit-aware evaluation.
-	 *
-	 * @param mode - The conversion mode to use:
-	 *   - 'first': Convert to the first unit encountered (default)
-	 *   - 'si': Normalize to SI base units
-	 *   - 'best': Choose the most human-readable unit
-	 */
-	setUnitConversionMode(mode: UnitConversionMode): void {
-		this.unitConversionMode = mode;
-	}
-
-	/**
-	 * Set the history reference for export functionality.
-	 *
-	 * Should be called by the REPL store before each execute() call
-	 * to keep the engine's view of history up to date.
-	 *
-	 * @param history - Current history array (newest first)
-	 */
-	setHistory(history: ReadonlyArray<ReplHistoryEntry>): void {
-		this.historyRef = history;
-	}
-
-	/**
-	 * Get the last unit-aware evaluation result.
-	 *
-	 * Used by the .convert command to convert the last result to a different unit.
-	 *
-	 * @returns Last unit evaluation result, or undefined if none
-	 */
-	getLastUnitResult(): EvalResultWithUnit | undefined {
-		return this.lastUnitResult;
-	}
-
 	// ===========================================================================
 	// Private Execution Handlers
 	// ===========================================================================
@@ -340,32 +381,6 @@ export class WebReplEngine {
 		const parts = input.slice(1).split(/\s+/);
 		const cmdName = parts[0].toLowerCase();
 		const args = parts.slice(1).join(' ').trim();
-
-		// Handle mode toggle commands (not in registry)
-		if (cmdName === 'latex') {
-			this.inputMode = 'latex';
-			return {
-				success: true,
-				output: 'Input mode: LaTeX',
-				outputHtml: escapeWithLabel('Input mode: LaTeX')
-			};
-		}
-		if (cmdName === 'custom') {
-			this.inputMode = 'custom';
-			return {
-				success: true,
-				output: 'Input mode: Custom syntax',
-				outputHtml: escapeWithLabel('Input mode: Custom syntax')
-			};
-		}
-		if (cmdName === 'auto') {
-			this.inputMode = 'auto';
-			return {
-				success: true,
-				output: 'Input mode: Auto-detect',
-				outputHtml: escapeWithLabel('Input mode: Auto-detect')
-			};
-		}
 
 		// Evaluation mode shortcuts: .exact and .decimal
 		if (cmdName === 'exact') {
@@ -385,31 +400,6 @@ export class WebReplEngine {
 			};
 		}
 
-		// Handle unit conversion mode commands
-		if (cmdName === 'unitmode') {
-			const mode = args.toLowerCase();
-			if (mode === 'first' || mode === 'si' || mode === 'best') {
-				this.unitConversionMode = mode;
-				return {
-					success: true,
-					output: `Unit conversion mode: ${mode}`,
-					outputHtml: `Unit conversion mode: <span class="text-blue-400">${mode}</span>`
-				};
-			}
-			return {
-				success: false,
-				output: 'Usage: .unitmode first|si|best',
-				outputHtml: formatErrorHtml({
-					code: 'INVALID_OPTIONS',
-					message: 'Usage: .unitmode first|si|best'
-				}),
-				error: {
-					code: 'INVALID_OPTIONS',
-					message: 'Invalid unit mode. Use: first, si, or best'
-				}
-			};
-		}
-
 		// Handle .convert command
 		if (cmdName === 'convert') {
 			return this.executeConvertCommand(args);
@@ -423,11 +413,6 @@ export class WebReplEngine {
 		// Handle .linreg command
 		if (cmdName === 'linreg') {
 			return this.executeLinregCommand(args);
-		}
-
-		// Handle .export command
-		if (cmdName === 'export' || cmdName === 'exp') {
-			return this.executeExportCommand();
 		}
 
 		// Look up command in registry
@@ -458,7 +443,7 @@ export class WebReplEngine {
 				const ctx: CommandContext = {
 					ast: this.lastAst,
 					input: args,
-					format: this.inputMode === 'auto' ? 'latex' : this.inputMode,
+					format: 'latex',
 					options: {},
 					isRepl: true,
 					evalState: this.evalState
@@ -468,8 +453,7 @@ export class WebReplEngine {
 			}
 
 			// For other commands, parse the argument as an expression
-			const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-			const parseResult = parse(args, forceFormat ? { forceFormat } : undefined);
+			const parseResult = parse(args, this.parseOptions());
 
 			if (parseResult.ast) {
 				ast = parseResult.ast;
@@ -507,7 +491,7 @@ export class WebReplEngine {
 		const ctx: CommandContext = {
 			ast,
 			input: cmdInput,
-			format: this.inputMode === 'auto' ? 'latex' : this.inputMode,
+			format: 'latex',
 			options: {},
 			isRepl: true,
 			evalState: this.evalState
@@ -522,8 +506,7 @@ export class WebReplEngine {
 	 * Parses the value and stores it in evalState.bindings.
 	 */
 	private executeInlineAssignment(varName: string, valueExpr: string): ReplExecutionResult {
-		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const parseResult = parse(valueExpr, forceFormat ? { forceFormat } : undefined);
+		const parseResult = parse(valueExpr, this.parseOptions());
 
 		if (parseResult.errors.length > 0 || !parseResult.ast) {
 			const error = parseResult.errors[0];
@@ -575,8 +558,7 @@ export class WebReplEngine {
 		parameters: string[],
 		bodyExpr: string
 	): ReplExecutionResult {
-		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const parseResult = parse(bodyExpr, forceFormat ? { forceFormat } : undefined);
+		const parseResult = parse(bodyExpr, this.parseOptions());
 
 		if (parseResult.errors.length > 0 || !parseResult.ast) {
 			const error = parseResult.errors[0];
@@ -602,11 +584,9 @@ export class WebReplEngine {
 			};
 		}
 
-		// Store the function definition
-		this.evalState.functions[funcName] = {
-			parameters,
-			expression: parseResult.ast
-		};
+		// Par `createFunctionBinding` : le nom entre dans `functionNames`, et
+		// `k(x) := x+1` puis `k(1)` se calcule (revue)
+		createFunctionBinding(this.evalState, funcName, parameters, parseResult.ast);
 		this.lastAst = parseResult.ast;
 
 		// Format output
@@ -632,6 +612,12 @@ export class WebReplEngine {
 		// Use the same regex pattern to find and split
 		const equalityRegex = /(?<![<>!=:])=(?![=>])/;
 		const parts = input.split(equalityRegex);
+
+		// Une chaîne (`2 = 2 = 2`, `1 < 2 = 2`) : lue en entier, maillon par maillon. Coupée au
+		// `=`, elle comparait un booléen à un nombre et répondait `false` (revue, 2026-10-12)
+		if (parts.length > 2 && parts.every((part) => part.trim() !== '')) {
+			return this.executeExpression(input);
+		}
 
 		if (parts.length !== 2) {
 			return {
@@ -667,9 +653,8 @@ export class WebReplEngine {
 		}
 
 		// Parse both expressions
-		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const result1 = parse(expr1Str, forceFormat ? { forceFormat } : undefined);
-		const result2 = parse(expr2Str, forceFormat ? { forceFormat } : undefined);
+		const result1 = parse(expr1Str, this.parseOptions());
+		const result2 = parse(expr2Str, this.parseOptions());
 
 		if (!result1.ast) {
 			const error = result1.errors[0];
@@ -703,12 +688,47 @@ export class WebReplEngine {
 			};
 		}
 
+		// … ou d'une expression logique (`2 > 1 && 3 = 3`) : lue en entier
+		if (
+			[result1.ast, result2.ast].some(
+				(ast) => isRelation(ast) || isLogical(ast) || isLogicalNot(ast)
+			)
+		) {
+			return this.executeExpression(input);
+		}
+
 		// Substitute bound variables before comparison
 		const bindings = bindingsToRecord(this.evalState.bindings);
-		const substituted1 =
+		let substituted1 =
 			Object.keys(bindings).length > 0 ? substitute(result1.ast, bindings) : result1.ast;
-		const substituted2 =
+		let substituted2 =
 			Object.keys(bindings).length > 0 ? substitute(result2.ast, bindings) : result2.ast;
+
+		// Le plafond de calcul, membre par membre (`boundedComparison`) :
+		// `2^{30000000}/2^{29999999} = 2` prenait 3,5 s, et
+		// `(1+1/100000)^{100000}×(1+1/100000)^{-100000} = 1` plus de 300 s
+		try {
+			const bounded = boundedComparison(
+				relation(
+					'=',
+					withFunctionsExpanded(substituted1, this.evalState.functions),
+					withFunctionsExpanded(substituted2, this.evalState.functions)
+				)
+			);
+			if (bounded !== null && isBoolean(bounded)) return this.createEqualityResult(bounded.value);
+			if (bounded !== null && isRelation(bounded)) {
+				substituted1 = bounded.left;
+				substituted2 = bounded.right;
+			}
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Erreur lors de la comparaison';
+			return {
+				success: false,
+				output: message,
+				outputHtml: formatErrorHtml({ code: 'PARSE_ERROR', message }),
+				error: { code: 'PARSE_ERROR', message }
+			};
+		}
 
 		// Try numeric evaluation first if both sides can be fully evaluated
 		try {
@@ -771,13 +791,21 @@ export class WebReplEngine {
 	}
 
 	/**
+	 * Les options de lecture d'une saisie : l'état — ses fonctions liées se
+	 * lisent comme des fonctions, quel que soit leur nom (`k(0)` restait `k(0)`,
+	 * 2026-10-13). Le format est toujours détecté : la bascule du mode de saisie
+	 * (`.latex` / `.custom` / `.auto` sans argument) servait `/cas`, retirée.
+	 */
+	private parseOptions(): PipelineOptions {
+		return { evalState: this.evalState };
+	}
+
+	/**
 	 * Parse and display a mathematical expression.
 	 * If the expression contains variables and all are bound, auto-evaluates it.
 	 */
 	private executeExpression(input: string): ReplExecutionResult {
-		// Use forced format if mode is not 'auto'
-		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const result = parse(input, forceFormat ? { forceFormat } : undefined);
+		const result = parse(input, this.parseOptions());
 
 		// Display any errors
 		if (result.errors.length > 0) {
@@ -873,6 +901,19 @@ export class WebReplEngine {
 	 * Create auto-evaluation result for an expression with all variables bound.
 	 * Computes both exact and decimal representations for toggle support.
 	 */
+	/** Une chaîne `a < b < c` : le premier maillon faux ou en erreur, sinon le dernier (vrai). */
+	private chainResult(chain: RelationNode): ReplExecutionResult {
+		const links: MathNode[] = [];
+		let node: MathNode = chain;
+		while (isRelation(node) && isRelation(node.left)) {
+			links.unshift(relation(node.relation, node.left.right, node.right));
+			node = node.left;
+		}
+		links.unshift(node);
+		const results = links.map((link) => this.createAutoEvaluationResult(link));
+		return results.find((result) => !result.success || result.output !== 'true') ?? results[0];
+	}
+
 	private createAutoEvaluationResult(ast: MathNode): ReplExecutionResult {
 		try {
 			const bindings = bindingsToRecord(this.evalState.bindings);
@@ -884,18 +925,59 @@ export class WebReplEngine {
 			// Check if expression contains units
 			const hasUnits = this.expressionHasUnits(substituted);
 
-			if (hasUnits) {
-				// Use unit-aware evaluation (keeps detailed output for units)
-				return this.createUnitAwareResult(substituted, '');
+			// Une chaîne de grandeurs (`5[m] < 6[m] < 7[m]`) : maillon par maillon, chacun par le
+			// chemin des grandeurs — en entier, le premier maillon (un booléen) était comparé à une
+			// longueur (revue, 2026-10-12)
+			if (hasUnits && isRelation(substituted) && isRelation(substituted.left)) {
+				return this.chainResult(substituted);
 			}
 
+			if (hasUnits) {
+				// Une grandeur : calculée par `tidy`, unité écrite d'abord (lot A)
+				return this.quantityResult(
+					computeQuantity(substituted, this.evalState.mode === 'decimal' ? 'decimal' : 'exact')
+				);
+			}
+
+			// Un résultat exact trop long garde son écriture (option A de David,
+			// 2026-10-12). Au-delà de 20 000 caractères PRÉVUS, rien n'est calculé : le
+			// calcul figeait la page — 13 s pour les 80 003 caractères de
+			// `(1+1/10000)^10000`, plus de 200 s pour n = 100 000
+			// … prévu sur les fonctions de l'utilisateur DÉVELOPPÉES : `u(100000)` avec
+			// `u(n) = (1+1/n)^n` (la suite de limite e) échappait au garde-fou (revue)
+			const expanded = withFunctionsExpanded(substituted, this.evalState.functions);
+			const tooLongToCompute = isTooLongToCompute(expanded);
+			// … sauf un produit de puissances, calculé sur ses facteurs compensés
+			// (`10^{60000}/10^{59990}` = 10¹⁰ ; le moteur, puissance par puissance, mettait
+			// 305 s pour `(1+1/100000)^{100000}×(1+1/100000)^{-100000}` = 1)
+			const byFactors = tooLongToCompute ? productValue(expanded) : null;
+			const factorsNode = byFactors === null ? null : rationalToNode(byFactors);
+			const notComputed =
+				tooLongToCompute && factorsNode === null ? estimatedExactDigits(expanded) : null;
+			// Le calcul exact, UNE fois : le test du booléen le refaisait en entier. Une
+			// comparaison passe par le même plafond, membre par membre (`boundedComparison` :
+			// `1.0001^{30000} > 20` prenait 16,7 s)
+			const computed: EvalResult =
+				factorsNode !== null
+					? { status: 'value', value: factorsNode, node: factorsNode, exact: true }
+					: notComputed === null
+						? evaluate(boundedComparison(expanded) ?? substituted, {
+								mode: 'exact',
+								functions: this.evalState.functions
+							})
+						: { status: 'value', value: expanded, node: expanded, exact: true };
+			// En deçà, la règle des 1 000 caractères se lit sur le résultat calculé : la
+			// prévision ignorait une base irrationnelle (`\sqrt{2}^{100000}`, 15 052
+			// caractères affichés) et les simplifications (`10^{600}×10^{-598}` = 100)
+			const tooLong = notComputed ?? measuredTooLong(computed, expanded);
+			const exactResult: EvalResult =
+				tooLong === null || notComputed !== null
+					? computed
+					: { status: 'value', value: expanded, node: expanded, exact: true };
+
 			// Boolean result: colored output, no exact/decimal toggle
-			const boolCheck = evaluate(substituted, {
-				mode: 'exact',
-				functions: this.evalState.functions
-			});
-			if (boolCheck.status === 'value' && boolCheck.node.type === 'boolean') {
-				const boolValue = boolCheck.value as boolean;
+			if (exactResult.status === 'value' && exactResult.node.type === 'boolean') {
+				const boolValue = exactResult.value as boolean;
 				const resultStr = String(boolValue);
 				const colorClass = boolValue ? 'text-green-400' : 'text-red-400';
 				let outputHtml = `<span class="${colorClass} font-bold">${resultStr}</span>`;
@@ -917,21 +999,18 @@ export class WebReplEngine {
 					success: true,
 					output: resultStr,
 					outputHtml,
-					ast: boolCheck.node
+					ast: exactResult.node
 				};
 			}
 
 			// Evaluate in BOTH modes to enable toggle
 			// Pass user-defined functions from evalState
-			const exactResult = evaluate(substituted, {
-				mode: 'exact',
-				functions: this.evalState.functions
-			});
 			const decimalResult = evaluate(substituted, {
 				mode: 'decimal',
 				functions: this.evalState.functions
 			});
-			this.lastUnitResult = undefined; // Clear last unit result
+			this.lastQuantity = null; // Un nombre : plus de grandeur à convertir
+			this.lastWritten = undefined;
 
 			// Non-value result (indeterminate / unevaluable): surface via the catch
 			if (exactResult.status !== 'value') {
@@ -941,37 +1020,67 @@ export class WebReplEngine {
 						: exactResult.reason
 				);
 			}
-			if (decimalResult.status !== 'value') {
+			// Format exact result — mis au propre comme à l'écran : `\pi/3`, pas la
+			// forme de calcul `{1/3}\pi` d'`evaluate`
+			const exactStr = toCustom(
+				tooLong === null ? readableExact(exactResult.node) : typedWriting(expanded)
+			);
+			const exactOutput = exactStr;
+			const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactStr)}</span>`;
+
+			// Format decimal result — la règle du bouton ≈ (décision Q3 de David) :
+			// 4 décimales, `≈` seulement si c'est arrondi (avant : 15 chiffres, `≈ 3`) ;
+			// hors de [10⁻⁶ ; 10⁹[, la notation scientifique, lue sur la fraction exacte
+			// (décisions a, b, c, 2026-10-12 — avant : le flottant du moteur, `e+30`, et
+			// 2⁶⁴ écrit `18446744073709552000`, chiffres faux, sans ≈).
+			// Le calcul décimal du moteur ne sert plus qu'à une valeur sans écriture
+			// décimale (non réelle) et à « Garder » : au-delà du plafond des puissances
+			// exactes, il refuse honnêtement, et la valeur se lit sur le résultat exact
+			// … lue sur le résultat CALCULÉ, même gardé : `\sqrt{2}^{100000}` n'a pas de valeur
+			// approchée tapé tel quel (√2 y entre par son flottant, dont la puissance déborde)
+			const digits = approximateDigitsOf(
+				computed.status === 'value' ? computed.node : exactResult.node
+			);
+			const currentMode = this.evalState.mode;
+			let decimal: { readonly str: string; readonly exact: boolean } | null = null;
+			if (digits !== null) {
+				decimal = { str: approximationText(digits), exact: digits.exact };
+			} else if (decimalResult.status === 'value') {
+				decimal = {
+					str: toCustom(decimalResult.node),
+					exact: decimalResult.exact || isWrittenNumber(exactResult.node)
+				};
+			} else if (currentMode === 'decimal' || tooLong !== null) {
+				// Une écriture gardée sans aucune valeur est une erreur (`(1/0)^{2000}`), pas un
+				// résultat (revue)
 				throw new Error(
 					decimalResult.status === 'indeterminate'
 						? `Indeterminate form: ${decimalResult.form}`
 						: decimalResult.reason
 				);
 			}
-
-			// Format exact result
-			const exactStr = toCustom(exactResult.node);
-			const exactOutput = exactStr;
-			const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactStr)}</span>`;
-
-			// Format decimal result
-			const decimalStr = toCustom(decimalResult.node);
-			const decimalPrefix = decimalResult.exact ? '' : '≈ ';
-			const decimalOutput = `${decimalPrefix}${decimalStr}`;
-			let decimalOutputHtml: string;
-			if (decimalResult.exact) {
-				decimalOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(decimalStr)}</span>`;
-			} else {
-				decimalOutputHtml = `<span class="text-muted-foreground">≈</span> <span class="text-cyan-400">${this.escapeHtml(decimalStr)}</span>`;
-			}
+			// Sans écriture décimale, le mode exact montre quand même son résultat (revue :
+			// `e^{-5000}+1` échouait en mode exact parce que le calcul décimal refusait)
+			const decimalOutput =
+				decimal === null ? undefined : `${decimal.exact ? '' : '≈ '}${decimal.str}`;
+			const decimalOutputHtml =
+				decimal === null
+					? undefined
+					: decimal.exact
+						? `<span class="text-cyan-400">${this.escapeHtml(decimal.str)}</span>`
+						: `<span class="text-muted-foreground">≈</span> <span class="text-cyan-400">${this.escapeHtml(decimal.str)}</span>`;
 
 			// Determine if toggle makes sense (results are different)
-			const canToggle = exactStr !== decimalStr;
+			const canToggle = decimal !== null && exactStr !== decimal.str;
 
-			// Use current mode to determine primary output
-			const currentMode = this.evalState.mode;
-			const output = currentMode === 'exact' ? exactOutput : decimalOutput;
-			let outputHtml = currentMode === 'exact' ? exactOutputHtml : decimalOutputHtml;
+			// Use current mode to determine primary output (le mode décimal a une
+			// écriture décimale : sinon il a levé plus haut)
+			const output =
+				currentMode === 'exact' || decimalOutput === undefined ? exactOutput : decimalOutput;
+			let outputHtml =
+				currentMode === 'exact' || decimalOutputHtml === undefined
+					? exactOutputHtml
+					: decimalOutputHtml;
 
 			// Add bindings info if variables were substituted
 			if (variables.size > 0) {
@@ -990,27 +1099,29 @@ export class WebReplEngine {
 				success: true,
 				output,
 				outputHtml,
-				ast: currentMode === 'exact' ? exactResult.node : decimalResult.node,
-				// Toggle support fields
-				exactOutput,
-				exactOutputHtml,
-				decimalOutput,
-				decimalOutputHtml,
-				canToggle
+				// En mode décimal, l'arbre affiché porte la valeur arrondie ; « Garder »
+				// range la valeur pleine précision (`quantityAst`)
+				ast:
+					currentMode === 'exact'
+						? exactResult.node
+						: digits === null
+							? decimalResult.status === 'value'
+								? decimalResult.node
+								: exactResult.node
+							: approximationNode(digits),
+				...(currentMode === 'decimal' &&
+					digits !== null && { quantityAst: keptValue(decimalResult, digits, exactResult.node) }),
+				...approximationFields(currentMode, exactResult.node, canToggle, digits, tooLong !== null),
+				...(tooLong !== null && { exactTooLong: Math.round(tooLong) })
 			};
 		} catch (err) {
-			// Handle dimensional errors with pedagogical messages
-			if (err instanceof DimensionalEvaluationError) {
-				return this.createDimensionalErrorResult(err);
-			}
-
 			const message = err instanceof Error ? err.message : 'Unknown error during evaluation';
 			return {
 				success: false,
-				output: `Evaluation error: ${message}`,
+				output: `Erreur de calcul : ${message}`,
 				outputHtml: formatErrorHtml({
 					code: 'PARSE_ERROR',
-					message: `Evaluation error: ${message}`
+					message: `Erreur de calcul : ${message}`
 				}),
 				error: {
 					code: 'PARSE_ERROR',
@@ -1020,129 +1131,51 @@ export class WebReplEngine {
 		}
 	}
 
-	/**
-	 * Execute the .convert command to convert the last result to a different unit.
-	 */
+	/** `.convert` : la dernière grandeur exprimée dans une autre unité, exactement. */
 	private executeConvertCommand(targetUnitStr: string): ReplExecutionResult {
-		// Check if we have a last unit result
-		if (!this.lastUnitResult) {
+		const mode = this.evalState.mode === 'decimal' ? 'decimal' : 'exact';
+		return this.quantityResult(
+			convertQuantity(this.lastQuantity, targetUnitStr, mode, this.lastWritten)
+		);
+	}
+
+	/** La réponse de la console pour un calcul ou une conversion de grandeurs. */
+	private quantityResult(outcome: QuantityOutcome): ReplExecutionResult {
+		if (outcome.ok === false) {
 			return {
 				success: false,
-				output:
-					"Aucune expression avec unites a convertir. Evaluez d'abord une expression avec des unites.",
-				outputHtml: formatErrorHtml({
-					code: 'NO_AST',
-					message: 'Aucune expression avec unites a convertir',
-					suggestion: "Evaluez d'abord une expression avec des unites, ex: 5 km + 3000 m"
-				}),
-				error: {
-					code: 'NO_AST',
-					message: 'No unit result to convert'
-				}
+				output: outcome.message,
+				outputHtml: formatErrorHtml({ code: 'QUANTITY_ERROR', message: outcome.message }),
+				error: { code: 'QUANTITY_ERROR', message: outcome.message }
 			};
 		}
-
-		if (!targetUnitStr.trim()) {
-			return {
-				success: false,
-				output: 'Usage: .convert <unite>\nExemple: .convert m',
-				outputHtml: formatErrorHtml({
-					code: 'INVALID_OPTIONS',
-					message: 'Usage: .convert <unite>',
-					suggestion: 'Exemple: .convert m'
-				}),
-				error: {
-					code: 'INVALID_OPTIONS',
-					message: 'Target unit is required'
-				}
-			};
+		// Les unités se sont simplifiées : un calcul de nombres comme un autre
+		if (outcome.ok === 'plain') {
+			this.lastQuantity = null;
+			this.lastWritten = undefined;
+			return this.createAutoEvaluationResult(outcome.node);
 		}
-
-		try {
-			// Parse the target unit
-			const targetUnit = parseUnit(targetUnitStr.trim());
-
-			if (!targetUnit) {
-				return {
-					success: false,
-					output: `Unite inconnue: ${targetUnitStr}`,
-					outputHtml: formatErrorHtml({
-						code: 'UNKNOWN_UNIT',
-						message: `Unite inconnue: ${targetUnitStr}`,
-						suggestion: 'Utilisez un symbole valide comme m, km, s, kg, etc.'
-					}),
-					error: {
-						code: 'UNKNOWN_UNIT',
-						message: `Unknown unit: ${targetUnitStr}`
-					}
-				};
-			}
-
-			// Check dimensional compatibility
-			const factor = getConversionFactor(this.lastUnitResult.unit, targetUnit);
-
-			if (factor === null) {
-				// Incompatible units
-				const sourceUnitStr =
-					this.lastUnitResult.unit.original || this.formatUnitComponents(this.lastUnitResult.unit);
-				return {
-					success: false,
-					output: `Impossible de convertir ${sourceUnitStr} en ${targetUnitStr}: dimensions incompatibles`,
-					outputHtml: formatErrorHtml({
-						code: 'DIMENSION_MISMATCH',
-						message: `Impossible de convertir ${sourceUnitStr} en ${targetUnitStr}`,
-						suggestion:
-							'Les unites doivent avoir des dimensions compatibles (ex: longueur vers longueur)'
-					}),
-					error: {
-						code: 'DIMENSION_MISMATCH',
-						message: 'Incompatible dimensions'
-					}
-				};
-			}
-
-			// Convert the value
-			const sourceValue = this.getNumericValue(this.lastUnitResult.value);
-
-			const convertedValue = sourceValue * factor;
-			const resultStr = `${convertedValue} ${targetUnitStr}`;
-
-			// Build output
-			const sourceUnitStr =
-				this.lastUnitResult.unit.original || this.formatUnitComponents(this.lastUnitResult.unit);
-			const lines = [
-				`Converted: ${sourceValue} ${sourceUnitStr} → ${resultStr}`,
-				`Factor: ${factor}`
-			];
-			const output = lines.join('\n');
-
-			// HTML output
-			const htmlLines = [
-				`<strong>Converted:</strong> <span class="text-gray-400">${sourceValue} ${this.escapeHtml(sourceUnitStr)}</span> → <span class="text-cyan-400">${this.escapeHtml(resultStr)}</span>`,
-				`<span class="text-gray-400">Factor:</span> ${factor}`
-			];
-			const outputHtml = htmlLines.join('<br>');
-
-			return {
-				success: true,
-				output,
-				outputHtml
-			};
-		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Unknown error during conversion';
-			return {
-				success: false,
-				output: `Conversion error: ${message}`,
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: `Conversion error: ${message}`
-				}),
-				error: {
-					code: 'PARSE_ERROR',
-					message
-				}
-			};
-		}
+		this.lastQuantity = outcome.quantity;
+		this.lastWritten = outcome.written;
+		const html = (text: string) => `<span class="text-cyan-400">${this.escapeHtml(text)}</span>`;
+		const approximate =
+			outcome.approximate === null
+				? undefined
+				: displayUnitsInLatex(
+						outcome.approximate.type === 'relation'
+							? toLatex(outcome.approximate)
+							: `\\approx ${toLatex(outcome.approximate)}`
+					);
+		return {
+			success: true,
+			output: outcome.answer.text,
+			outputHtml: html(outcome.answer.text),
+			ast: outcome.answer.node,
+			...(outcome.quantity !== null &&
+				outcome.quantity !== outcome.answer.node && { quantityAst: outcome.quantity }),
+			// Le bouton ≈ de l'atelier (#1086), écrit pour l'affichage
+			...(approximate !== undefined && { approximateLatex: approximate })
+		};
 	}
 
 	// ===========================================================================
@@ -1183,138 +1216,6 @@ export class WebReplEngine {
 			default:
 				return false;
 		}
-	}
-
-	/**
-	 * Create evaluation result for expression with units.
-	 * Computes both exact and decimal representations for toggle support.
-	 */
-	private createUnitAwareResult(ast: MathNode, _bindingsStr: string): ReplExecutionResult {
-		// Evaluate with units in BOTH modes
-		// Pass user-defined functions from evalState
-		const exactEvalResult = evaluateWithUnits(ast, {
-			mode: 'exact',
-			conversionMode: this.unitConversionMode,
-			functions: this.evalState.functions
-		});
-		const decimalEvalResult = evaluateWithUnits(ast, {
-			mode: 'decimal',
-			conversionMode: this.unitConversionMode,
-			functions: this.evalState.functions
-		});
-
-		// Store for .convert command (use current mode)
-		const currentMode = this.evalState.mode;
-		this.lastUnitResult = currentMode === 'exact' ? exactEvalResult : decimalEvalResult;
-
-		// Format unit string (same for both modes)
-		const unitStr =
-			exactEvalResult.unit.original || this.formatUnitComponents(exactEvalResult.unit);
-
-		// Format exact result - preserve fraction format if Rational
-		const exactValueStr = this.formatValueForDisplay(exactEvalResult.value, true);
-		const exactResultStr = `${exactValueStr} ${unitStr}`;
-		const exactOutput = exactResultStr;
-		const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactResultStr)}</span>`;
-
-		// Format decimal result - always as decimal number
-		const decimalValueNum = this.getNumericValue(decimalEvalResult.value);
-		const decimalResultStr = `${decimalValueNum} ${unitStr}`;
-		const decimalPrefix = decimalEvalResult.exact ? '' : '≈ ';
-		const decimalOutput = `${decimalPrefix}${decimalResultStr}`;
-		let decimalOutputHtml: string;
-		if (decimalEvalResult.exact) {
-			decimalOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(decimalResultStr)}</span>`;
-		} else {
-			decimalOutputHtml = `<span class="text-muted-foreground">≈</span> <span class="text-cyan-400">${this.escapeHtml(decimalResultStr)}</span>`;
-		}
-
-		// Determine if toggle makes sense (results are different)
-		const canToggle = exactResultStr !== decimalResultStr;
-
-		// Use current mode to determine primary output
-		const output = currentMode === 'exact' ? exactOutput : decimalOutput;
-		const outputHtml = currentMode === 'exact' ? exactOutputHtml : decimalOutputHtml;
-
-		return {
-			success: true,
-			output,
-			outputHtml,
-			ast: currentMode === 'exact' ? exactEvalResult.node : decimalEvalResult.node,
-			// Toggle support fields
-			exactOutput,
-			exactOutputHtml,
-			decimalOutput,
-			decimalOutputHtml,
-			canToggle
-		};
-	}
-
-	/**
-	 * Format unit components as string (fallback when no original).
-	 */
-	private formatUnitComponents(unit: { components: ReadonlyMap<string, number> }): string {
-		const parts: string[] = [];
-		const negativeParts: string[] = [];
-
-		for (const [symbol, exponent] of unit.components) {
-			if (exponent > 0) {
-				parts.push(exponent === 1 ? symbol : `${symbol}^${exponent}`);
-			} else if (exponent < 0) {
-				negativeParts.push(exponent === -1 ? symbol : `${symbol}^${-exponent}`);
-			}
-		}
-
-		if (negativeParts.length === 0) {
-			return parts.join('·') || '1';
-		}
-		if (parts.length === 0) {
-			return `1/${negativeParts.join('·')}`;
-		}
-		return `${parts.join('·')}/${negativeParts.join('·')}`;
-	}
-
-	/**
-	 * Create pedagogical error result for dimensional errors.
-	 */
-	private createDimensionalErrorResult(err: DimensionalEvaluationError): ReplExecutionResult {
-		const mainMessage = err.message;
-
-		// Build pedagogical suggestions
-		const suggestions: string[] = [];
-		for (const e of err.errors) {
-			if (e.code === 'DIMENSION_MISMATCH') {
-				suggestions.push('💡 Verifiez que les unites sont compatibles pour cette operation.');
-				suggestions.push(
-					'   Par exemple: on peut additionner des metres et des kilometres, mais pas des metres et des secondes.'
-				);
-			} else if (e.code === 'INCOMPATIBLE_DIMENSIONS') {
-				suggestions.push(`💡 ${e.message}`);
-			} else {
-				suggestions.push(`💡 ${e.message}`);
-			}
-		}
-
-		const output = [mainMessage, '', ...suggestions].join('\n');
-
-		// HTML output with styling
-		const htmlLines = [
-			`<span class="text-red-400 font-bold">Erreur dimensionnelle</span>`,
-			`<span class="text-red-300">${this.escapeHtml(mainMessage)}</span>`,
-			'<br>',
-			...suggestions.map((s) => `<span class="text-yellow-400">${this.escapeHtml(s)}</span>`)
-		];
-		const outputHtml = htmlLines.join('<br>');
-
-		return {
-			success: false,
-			output,
-			outputHtml,
-			error: {
-				code: 'DIMENSION_ERROR',
-				message: mainMessage
-			}
-		};
 	}
 
 	/**
@@ -1416,37 +1317,6 @@ export class WebReplEngine {
 	}
 
 	/**
-	 * Format a value for display, preserving exact form if exact mode.
-	 *
-	 * @param value - EvalValue (MathNode, number, or ComplexValueResult) to format
-	 * @param preserveExact - If true, format MathNode as LaTeX instead of decimal
-	 */
-	private formatValueForDisplay(value: EvalValue, preserveExact: boolean): string {
-		if (typeof value === 'number' || typeof value === 'boolean') {
-			return String(value);
-		}
-
-		// Complex value
-		if (this.isComplexValue(value)) {
-			const { real, imag } = value;
-			if (imag === 0) return String(real);
-			if (real === 0) return imag === 1 ? 'i' : imag === -1 ? '-i' : `${imag}i`;
-			const sign = imag >= 0 ? '+' : '';
-			const imagPart = imag === 1 ? 'i' : imag === -1 ? '-i' : `${imag}i`;
-			return `${real}${sign}${imagPart}`;
-		}
-
-		// It's a MathNode
-		if (preserveExact) {
-			// Format as LaTeX for exact representation
-			return toLatex(value);
-		}
-
-		// Convert to number
-		return String(evaluateNodeToApproximatedNumber(value));
-	}
-
-	/**
 	 * Type guard to check if an object is error-like (has code and/or message).
 	 */
 	private isErrorLike(e: unknown): e is { code?: string; message?: string } {
@@ -1489,13 +1359,7 @@ export class WebReplEngine {
 			ast?: MathNode;
 			latex?: string;
 			outputHtml?: string;
-			// Toggle support fields
-			exactOutput?: string;
-			exactOutputHtml?: string;
-			decimalOutput?: string;
-			decimalOutputHtml?: string;
-			canToggle?: boolean;
-			showDecimalInitially?: boolean;
+			approximateLatex?: string;
 		},
 		ast?: MathNode
 	): ReplExecutionResult {
@@ -1524,13 +1388,9 @@ export class WebReplEngine {
 				outputHtml: cmdResult.outputHtml,
 				ast: cmdResult.ast || ast,
 				...(cmdResult.latex !== undefined && { latex: cmdResult.latex }),
-				// Pass through toggle fields if present
-				exactOutput: cmdResult.exactOutput,
-				exactOutputHtml: cmdResult.exactOutputHtml,
-				decimalOutput: cmdResult.decimalOutput,
-				decimalOutputHtml: cmdResult.decimalOutputHtml,
-				canToggle: cmdResult.canToggle,
-				showDecimalInitially: cmdResult.showDecimalInitially
+				...(cmdResult.approximateLatex !== undefined && {
+					approximateLatex: cmdResult.approximateLatex
+				})
 			};
 		}
 
@@ -1553,13 +1413,9 @@ export class WebReplEngine {
 			outputHtml,
 			ast: cmdResult.ast || ast,
 			...(cmdResult.latex !== undefined && { latex: cmdResult.latex }),
-			// Pass through toggle fields if present
-			exactOutput: cmdResult.exactOutput,
-			exactOutputHtml: cmdResult.exactOutputHtml,
-			decimalOutput: cmdResult.decimalOutput,
-			decimalOutputHtml: cmdResult.decimalOutputHtml,
-			canToggle: cmdResult.canToggle,
-			showDecimalInitially: cmdResult.showDecimalInitially
+			...(cmdResult.approximateLatex !== undefined && {
+				approximateLatex: cmdResult.approximateLatex
+			})
 		};
 	}
 
@@ -1936,62 +1792,6 @@ export class WebReplEngine {
 			latex: linregLatex(left, term, shortestDecimal(fit.slope), shortestDecimal(fit.intercept))
 		};
 	}
-
-	// ===========================================================================
-	// Export Command
-	// ===========================================================================
-
-	/**
-	 * Execute the .export command.
-	 *
-	 * Exports the REPL history to a JSON file containing input/output pairs.
-	 */
-	private executeExportCommand(): ReplExecutionResult {
-		if (this.historyRef.length === 0) {
-			return {
-				success: false,
-				output: 'Aucun historique a exporter',
-				outputHtml: formatErrorHtml({
-					code: 'NO_AST',
-					message: 'Aucun historique a exporter',
-					suggestion: "Executez quelques expressions d'abord"
-				}),
-				error: {
-					code: 'NO_AST',
-					message: 'No history to export'
-				}
-			};
-		}
-
-		// Build export data (oldest to newest for chronological order)
-		// Strip ANSI codes from output for clean JSON
-		const entries = [...this.historyRef]
-			.reverse()
-			.filter((entry) => !entry.isCommand || !entry.input.startsWith('.export'))
-			.map((entry) => ({
-				input: entry.input,
-				output: this.stripAnsi(entry.result.output)
-			}));
-
-		const exportData = {
-			exportedAt: new Date().toISOString(),
-			entries
-		};
-
-		const jsonContent = JSON.stringify(exportData, null, 2);
-		const filename = `mathast-session-${Date.now()}.json`;
-
-		return {
-			success: true,
-			output: `Export: ${entries.length} entrees`,
-			outputHtml: `<span class="text-green-400">Export: ${entries.length} entrees</span>`,
-			exportData: {
-				content: jsonContent,
-				filename,
-				mimeType: 'application/json'
-			}
-		};
-	}
 }
 
 /**
@@ -2041,8 +1841,7 @@ function linregLatex(left: string, term: string, slope: Fraction, intercept: Fra
 function readLinregArguments(
 	args: string
 ):
-	| { ok: true; xRaw: string[]; yRaw: string[]; options: string[] }
-	| { ok: false; message: string } {
+	{ ok: true; xRaw: string[]; yRaw: string[]; options: string[] } | { ok: false; message: string } {
 	const colon = args.indexOf(':');
 	const xPart = args.slice(0, colon).trim();
 	const rest = args.slice(colon + 1);

@@ -12,9 +12,10 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
-	import { ChevronLeft, RefreshCw, EyeOff, Eye, Download } from '@lucide/svelte';
+	import { RefreshCw, EyeOff, Eye, Download } from '@lucide/svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import ClassCapacityGrid from '$lib/components/teacher/analytics/ClassCapacityGrid.svelte';
@@ -27,6 +28,7 @@
 	import AntiFraudFlagsList from '$lib/components/teacher/anti-fraud/AntiFraudFlagsList.svelte';
 	import AntiFraudFilters from '$lib/components/teacher/anti-fraud/AntiFraudFilters.svelte';
 	import { Badge } from '$lib/components/ui/badge';
+	import { fetchUnresolvedCount } from '$lib/components/teacher/anti-fraud/unresolved-count';
 
 	let { data }: { data: PageData } = $props();
 
@@ -34,7 +36,8 @@
 	let refreshNonce = $state(0);
 	let activeTab = $state<'knowledge' | 'competence' | 'surveillance'>('knowledge');
 	// svelte-ignore state_referenced_locally
-	let unresolvedCount = $state<number>(data.unresolvedFlagsCount ?? 0);
+	// null = compteur illisible (chargement ou rafraîchissement) : le badge affiche « ? ».
+	let unresolvedCount = $state<number | null>(data.unresolvedFlagsCount);
 	let showResolved = $state(false);
 	// svelte-ignore state_referenced_locally
 	let selectedStudentId = $state<string>(data.students[0]?.id ?? '');
@@ -56,15 +59,9 @@
 		anonymized = !anonymized;
 	}
 
+	// Échec → null : le badge affiche « ? » au lieu d'un nombre périmé (écart L30).
 	async function refreshUnresolvedCount() {
-		try {
-			const res = await fetch(`/api/teacher/classes/${data.classId}/anti-fraud/count`);
-			if (!res.ok) return;
-			const body = (await res.json()) as { count?: number };
-			unresolvedCount = body.count ?? 0;
-		} catch {
-			// silent ; gardé à la dernière valeur connue
-		}
+		unresolvedCount = await fetchUnresolvedCount(data.classId);
 	}
 </script>
 
@@ -73,12 +70,7 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-7xl px-4 py-6">
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/teacher/classes">
-			<ChevronLeft class="mr-1 h-4 w-4" />
-			Retour aux {lore.entities.class}s
-		</Button>
-	</div>
+	<BackLink href="/dashboard/teacher/classes" label={`Retour aux ${lore.entities.class}s`} />
 
 	<header class="mb-6 flex flex-wrap items-start justify-between gap-3">
 		<div>
@@ -122,7 +114,13 @@
 			<Tabs.Trigger value="competence">🎯 Compétences</Tabs.Trigger>
 			<Tabs.Trigger value="surveillance">
 				🚨 Surveillance
-				{#if unresolvedCount > 0}
+				{#if unresolvedCount === null}
+					<Badge
+						variant="outline"
+						class="ml-2 text-[0.65rem]"
+						title="Nombre de signalements indisponible">?</Badge
+					>
+				{:else if unresolvedCount > 0}
 					<Badge variant="destructive" class="ml-2 text-[0.65rem]">{unresolvedCount}</Badge>
 				{/if}
 			</Tabs.Trigger>

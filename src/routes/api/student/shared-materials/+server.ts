@@ -31,6 +31,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { listStudentSharedMaterialsSchema } from '$lib/server/validation';
 import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/shared-materials/+server');
 
 /**
  * GET /api/student/shared-materials
@@ -75,7 +78,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.eq('status', 'active');
 
 	if (classesError) {
-		console.error('[Student Shared Materials] Error fetching student classes:', classesError);
+		logger.error('[Student Shared Materials] Error fetching student classes:', classesError);
 		throw error(500, 'Failed to fetch student classes');
 	}
 
@@ -175,7 +178,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		await Promise.all([query, countQuery]);
 
 	if (materialsError || countError) {
-		console.error(
+		logger.error(
 			'[Student Shared Materials] Error fetching materials:',
 			materialsError || countError
 		);
@@ -229,8 +232,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		// Handle nested class data
 		const classData = item.classes as unknown as
-			| { id: string; name: string }
-			| { id: string; name: string }[];
+			{ id: string; name: string } | { id: string; name: string }[];
 		const classInfo = Array.isArray(classData) ? classData[0] : classData;
 
 		// Handle nested category data

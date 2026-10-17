@@ -2,7 +2,7 @@
  * `{{eval:…}}` calcule avec des grandeurs (lot 2 du chantier Grandeurs)
  * ======================================================================
  *
- * Spécification : docs/wip/grandeurs-eval-progress.md (« Lot 2 », décisions de
+ * Spécification : docs/archive/wip/grandeurs-eval-progress.md (« Lot 2 », décisions de
  * David du 2026-09-27). Avant : `evaluate` jetait l'unité en silence
  * (`{{eval:3[h]+20[min]}}` → 23). Désormais le calcul passe par
  * `tidy(…, { unitChoice: 'written' })`, garde son unité, et tout ce qui ne

@@ -37,6 +37,7 @@ import { getVariables } from '../../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { tidy } from '../../tidy';
 import { tidyCriticalAbscissa } from '../../variations/critical-points';
+import { approximateSolutionsLatex } from '../approximation';
 
 /** Plus grand coefficient de période écrit (`1000k\pi`) : au-delà, la famille n’est pas écrite. */
 const MAX_PERIOD_INTEGER = 1000;
@@ -325,6 +326,20 @@ export function periodicSolutionsText(result: SolveResult): string | null {
 }
 
 /**
+ * La condition sur les paramètres que portent TOUTES les solutions (x² = y :
+ * y ≥ 0 sur les deux), écrite une seule fois ; `undefined` si aucune ou si
+ * elles diffèrent (chaque solution porte alors la sienne).
+ */
+export function commonCondition(solutions: readonly Solution[]): MathNode | undefined {
+	const [first] = solutions;
+	if (first?.condition === undefined) return undefined;
+	const latex = toLatex(first.condition);
+	return solutions.every((s) => s.condition !== undefined && toLatex(s.condition) === latex)
+		? first.condition
+		: undefined;
+}
+
+/**
  * Le LaTeX des solutions d'un résultat du solveur — ou `null` quand il n'y a
  * rien de sûr à écrire (échec du solveur, statut inconnu) : l'appelant garde
  * alors le texte, qui EXPLIQUE l'échec.
@@ -339,13 +354,20 @@ export function solutionsLatex(result: SolveResult): string | null {
 			// Une famille qu'on ne sait pas écrire : ne pas la faire passer pour
 			// un nombre fini de solutions
 			if (result.periodicSolutions !== undefined) return null;
-			const values = sorted(result.solutions).map((s) => toLatex(tidyValue(s.value)));
+			const ordered = sorted(result.solutions);
+			const common = commonCondition(ordered);
+			const values = ordered.map(
+				(s) =>
+					toLatex(tidyValue(s.value)) +
+					(common === undefined && s.condition ? ` \\text{ si } ${toLatex(s.condition)}` : '')
+			);
+			const suffix = common ? ` \\quad \\text{si } ${toLatex(common)}` : '';
 			if (values.length === 1) {
 				const [only] = result.solutions;
 				const logarithmic = logarithmicValueLatex(only.value, only.approximate);
-				return `${result.variable} = ${logarithmic ?? values[0]}`;
+				return `${result.variable} = ${logarithmic ?? values[0]}${suffix}`;
 			}
-			return `S = \\left\\{ ${values.join(' \\,;\\, ')} \\right\\}`;
+			return `S = \\left\\{ ${values.join(' \\,;\\, ')} \\right\\}${suffix}`;
 		}
 		case 'infinite':
 			// Une identité sur un domaine (`x²/x = x`) : tout le domaine, pas ℝ
@@ -359,6 +381,26 @@ export function solutionsLatex(result: SolveResult): string | null {
 		default:
 			return null;
 	}
+}
+
+/**
+ * Les solutions en valeurs approchées, pour le bouton ≈ de l'atelier :
+ * `S \approx \left\{ -1.4142 \,;\, 1.4142 \right\}`, `x = 0.5` (règle de
+ * `approximation.ts` : 4 décimales, « = » quand l'écriture décimale est exacte).
+ *
+ * `null` quand il n'y a rien à montrer : solutions déjà entières ou décimales,
+ * famille périodique, paramètre, ensemble infini, seuil qui donne déjà sa
+ * valeur approchée (`n > \dfrac{\ln…}{\ln…} \approx 10{,}32`).
+ */
+export function solutionsApproximationLatex(result: SolveResult): string | null {
+	if (result.status !== 'unique' && result.status !== 'multiple') return null;
+	if (result.solutions.length === 0 || result.periodicSolutions !== undefined) return null;
+	if (periodicLatex(result) !== null) return null;
+
+	// Dans l'ordre et la forme de `solutionsLatex` : la ligne qu'elles accompagnent
+	const values = sorted(result.solutions).map((s) => tidyValue(s.value));
+	if (values.length === 1 && logarithmicValueLatex(values[0]) !== null) return null;
+	return approximateSolutionsLatex(result.variable, values, values.length > 1);
 }
 
 /** Une borne d'intervalle : `+\infty`, `-\infty`, sinon la valeur mise au propre. */

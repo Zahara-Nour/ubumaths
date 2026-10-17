@@ -35,6 +35,9 @@ import {
 	validateUpdateMastery
 } from '$lib/server/validation/exercise-mastery';
 import type { ExerciseMasteryUpdateResponse, MasteryStatus } from '$lib/types/exercise-mastery';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/exercise-mastery/[exerciseId]/+server');
 
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	// Auth check: Must be a student
@@ -78,7 +81,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			.maybeSingle();
 
 		if (exerciseError) {
-			console.error('[API] Error checking exercise existence:', exerciseError);
+			logger.error('[API] Error checking exercise existence:', exerciseError);
 			throw error(500, "Erreur lors de la verification de l'exercice");
 		}
 
@@ -104,7 +107,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (upsertError) {
-			console.error('[API] Error upserting mastery:', upsertError);
+			logger.error('[API] Error upserting mastery:', upsertError);
 			throw error(500, 'Erreur lors de la mise a jour du statut');
 		}
 
@@ -121,7 +124,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in PUT /api/student/exercise-mastery/[exerciseId]:', err);
+		logger.error('[API] Unexpected error in PUT /api/student/exercise-mastery/[exerciseId]:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

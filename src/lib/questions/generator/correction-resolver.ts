@@ -17,6 +17,7 @@
 
 import type { RandomSource } from '$lib/utils/random';
 import type { GenericFunctionConfig } from '$lib/mathAST';
+import type { CapitalPairs } from '$lib/mathAST/parser/types';
 import type { ResolvedVariable, InstanceBlank } from '../types';
 import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
 import { templateMarkdown, resolvedMarkdown } from '$lib/ubumark';
@@ -246,6 +247,7 @@ export function buildCorrectionContext(
  * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
  * @param cleanCoefficients - Option du modèle : coefficients nettoyés (`1x` → `x`)
+ * @param capitalPairs - Sens de `AB` résolu pour l'instance (absent : produit, comme avant)
  * @returns Resolved markdown with pseudo-variables replaced and client placeholders preserved
  */
 export function resolveCorrectionContent(
@@ -254,7 +256,8 @@ export function resolveCorrectionContent(
 	context: CorrectionContext,
 	random: RandomSource = Math.random,
 	genericFunctions?: GenericFunctionConfig,
-	cleanCoefficients = false
+	cleanCoefficients = false,
+	capitalPairs?: CapitalPairs
 ): ResolvedMarkdown {
 	// Step 0: conditions sur les variables tirées résolues ici ; les autres restent au client
 	const withoutVariableConditionals = resolveVariableConditionals(
@@ -279,7 +282,8 @@ export function resolveCorrectionContent(
 		enrichedVariables,
 		random,
 		genericFunctions,
-		cleanCoefficients
+		cleanCoefficients,
+		capitalPairs
 	);
 
 	// Step 5: Restore client placeholders

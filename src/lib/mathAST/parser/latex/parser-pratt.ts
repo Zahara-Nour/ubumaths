@@ -29,7 +29,13 @@ import { ColorStack, isValidColor, normalizeColor } from './color-stack';
 import { MathAST, compose, matrix, complex, euler } from '../../factory';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
-import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
+import {
+	DEFAULT_CAPITAL_PAIRS,
+	FUNCTION_COMMANDS,
+	GREEK_COMMANDS,
+	RELATION_COMMANDS
+} from '../types';
+import { scanPointNames } from './point-names';
 import {
 	BINOM_COMMANDS,
 	DOUBLE_FACTORIAL_ERROR,
@@ -61,6 +67,18 @@ const MATRIX_ENVIRONMENTS: Record<string, MatrixType> = {
 	Vmatrix: 'Vmatrix',
 	smallmatrix: 'smallmatrix'
 };
+
+/** Un nom de fonction générique à indice lu en avance (`f_1`, `f_{12}`). */
+interface IndexedFunctionName {
+	/** Le nom déclaré : `f_1`. */
+	name: string;
+	/** La lettre : `f`. */
+	letter: string;
+	/** L'indice, entier : `1`. */
+	index: string;
+	/** Les jetons qu'il occupe : 3 pour `f_1`, 5 pour `f_{1}`. */
+	tokenCount: number;
+}
 
 // =============================================================================
 // Binding Power (Precedence)
@@ -217,6 +235,20 @@ class PrattParser {
 	 * cellules de matrice). Cf. `parseLimit` pour la règle de portée.
 	 */
 	private inLimitArgument = false;
+	/**
+	 * Barres `|` nues (valeur absolue sans `\left`) : dans le groupe courant, une
+	 * valeur absolue est-elle ouverte ? Si oui, une barre qui suit un facteur la
+	 * ferme ; sinon elle en ouvre une nouvelle (produit implicite : `2|x|`).
+	 * Chaque groupe lu au niveau NONE (parenthèses, accolades, `\left…\right`,
+	 * contenu d'une valeur absolue) repart d'un état neuf.
+	 */
+	private inBareAbs = false;
+	/**
+	 * Une valeur absolue nue s'est fermée devant un facteur (`|2|x…`) : une barre
+	 * ouvrante par produit implicite plus loin rendrait la lecture ambiguë
+	 * (`|2|x|-1|` = |2|·x·|−1| ou |2|x|−1| ?). Remis à faux par une relation.
+	 */
+	private factorAfterBareAbs = false;
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new Tokenizer(input);
@@ -275,6 +307,12 @@ class PrattParser {
 
 	/** Dernier token consommé : `3!27!` (un nombre juste après une factorielle) */
 	private previousToken: Token | undefined;
+
+	/**
+	 * Profondeur d'indice : dans un indice, `i` est une variable (`u_i`,
+	 * `x_{i+1}`), jamais l'unité imaginaire — même règle que le parseur custom.
+	 */
+	private subscriptDepth: number = 0;
 
 	/**
 	 * Advance to the next token, skipping whitespace
@@ -374,15 +412,26 @@ class PrattParser {
 	/**
 	 * Parse an expression with the given minimum binding power
 	 */
-	private parseExpression(minBp: number): MathNode {
+	private parseExpression(minBp: number, inBareAbs = false): MathNode {
 		// Un groupe (lu au niveau NONE) ouvre une portée neuve : la règle
-		// « \lim A + \lim B » ne vaut qu'au niveau de l'argument de la limite.
+		// « \lim A + \lim B » ne vaut qu'au niveau de l'argument de la limite,
+		// et une barre `|` ne ferme que la valeur absolue ouverte dans ce groupe.
 		const savedInLimitArgument = this.inLimitArgument;
-		if (minBp === BP.NONE) this.inLimitArgument = false;
+		const savedInBareAbs = this.inBareAbs;
+		const savedFactorAfterBareAbs = this.factorAfterBareAbs;
+		if (minBp === BP.NONE) {
+			this.inLimitArgument = false;
+			this.inBareAbs = inBareAbs;
+			this.factorAfterBareAbs = false;
+		}
 		try {
 			return this.parseExpressionBody(minBp);
 		} finally {
 			this.inLimitArgument = savedInLimitArgument;
+			if (minBp === BP.NONE) {
+				this.inBareAbs = savedInBareAbs;
+				this.factorAfterBareAbs = savedFactorAfterBareAbs;
+			}
 		}
 	}
 
@@ -405,6 +454,10 @@ class PrattParser {
 			const bp = this.getLeftBindingPower();
 			if (bp <= minBp) {
 				break;
+			}
+			// Une relation sépare deux membres : `|x|y=2|x|` n'est pas ambigu
+			if (bp === BP.RELATION && !this.inBareAbs) {
+				this.factorAfterBareAbs = false;
 			}
 			// Argument de \lim : `\lim A + \lim B` = lim(A) + lim(B)
 			if (this.inLimitArgument && this.isOperatorBeforeLimit()) {
@@ -677,6 +730,11 @@ class PrattParser {
 				// Implicit multiplication
 				return BP.MULTIPLY;
 
+			case 'PIPE':
+				// Barre fermante si une valeur absolue est ouverte dans ce groupe
+				// (elle termine l'expression), ouvrante sinon (`2|x|` : produit implicite)
+				return this.inBareAbs ? BP.NONE : BP.MULTIPLY;
+
 			default:
 				break;
 		}
@@ -689,12 +747,18 @@ class PrattParser {
 	// =========================================================================
 
 	/**
-	 * La lettre déjà consommée : `e` est la constante d'Euler, sauf suivie d'un
-	 * indice (`e_1`, `e_n` : variable indicée). Mêmes règles dans les quatre
-	 * parseurs (LaTeX et custom, pratt et rd).
+	 * La lettre déjà consommée : `e` est la constante d'Euler et `i` l'unité
+	 * imaginaire `complex(0, 1)`, sauf suivies d'un indice (`e_1`, `i_n` :
+	 * variables indicées) ; `i` DANS un indice reste une variable (`u_i`).
+	 * Mêmes règles dans les quatre parseurs (LaTeX et custom, pratt et rd).
 	 */
 	private eulerOrVariable(letter: string): MathNode {
-		return letter === 'e' && !this.check('UNDERSCORE') ? euler() : MathAST.variable(letter);
+		if (this.check('UNDERSCORE')) return MathAST.variable(letter);
+		if (letter === 'e') return euler();
+		if (letter === 'i' && this.subscriptDepth === 0) {
+			return complex(MathAST.number('0'), MathAST.number('1'));
+		}
+		return MathAST.variable(letter);
 	}
 
 	/**
@@ -715,6 +779,17 @@ class PrattParser {
 		const token = this.currentToken;
 		const letter = token.value;
 
+		// Deux majuscules collées ou plus : longueur `AB`, nom de figure `ABC`
+		// (mode longueur, hors indice). Avant les fonctions génériques : `FG` est
+		// une longueur, `F(x)` reste une fonction.
+		const pointNames = this.parsePointNames();
+		if (pointNames) return pointNames;
+
+		// Une fonction générique à indice déclarée (`f_{1}\left(3\right)`, `f_1(3)`) :
+		// un appel, pas `f_1 × (3)`. Un nom indicé non déclaré reste une variable indicée.
+		const indexed = this.indexedGenericFunctionName();
+		if (indexed) return this.parseGenericFunction(indexed);
+
 		// Check if this is a generic function name
 		if (this.isGenericFunctionName(letter)) {
 			return this.parseGenericFunction();
@@ -726,6 +801,30 @@ class PrattParser {
 	}
 
 	/**
+	 * Points nommés collés à partir du jeton courant (`AB`, `A'B'`, `ABC`) : la
+	 * longueur d'un segment pour deux points, un nom de figure au-delà. `null` en
+	 * mode produit, dans un indice (`x_{AB}`), ou s'il n'y a pas deux points collés.
+	 */
+	private parsePointNames(): MathNode | null {
+		const mode = this.options.capitalPairs ?? DEFAULT_CAPITAL_PAIRS;
+		if (mode !== 'length' || this.subscriptDepth > 0) return null;
+
+		const scan = scanPointNames((offset) =>
+			offset === 0 ? this.currentToken : this.tokenizer.peekAt(offset - 1)
+		);
+		if (!scan) return null;
+
+		// Les jetons lus sont collés : aucune espace à sauter entre eux
+		for (let i = 0; i < scan.tokenCount; i++) this.advance();
+
+		const [from, to] = scan.points;
+		if (scan.points.length === 2 && from && to) {
+			return this.applyColor(MathAST.segmentLength(from, to));
+		}
+		return this.applyColor(MathAST.figureName(scan.points));
+	}
+
+	/**
 	 * Check if a name is configured as a generic function
 	 */
 	private isGenericFunctionName(name: string): boolean {
@@ -734,10 +833,47 @@ class PrattParser {
 	}
 
 	/**
+	 * Le nom d'une fonction générique À INDICE à partir du jeton courant :
+	 * `f_1`, `f_12` ou `f_{1}` (ce qu'écrit MathLive), seulement si `f_1` est
+	 * déclaré dans `genericFunctions.names`. Rend aussi l'indice et le nombre de
+	 * jetons qu'il occupe (rien n'est consommé) ; `null` sinon. Jetons collés,
+	 * indice entier seulement : la forme des noms de l'atelier (`nextName`).
+	 */
+	private indexedGenericFunctionName(): IndexedFunctionName | null {
+		const config = this.options.genericFunctions;
+		if (!config || this.currentToken.type !== 'LETTER') return null;
+		if (this.tokenizer.peekAt(0).type !== 'UNDERSCORE') return null;
+
+		const afterUnderscore = this.tokenizer.peekAt(1);
+		let index: Token;
+		let tokenCount: number;
+		if (afterUnderscore.type === 'NUMBER') {
+			index = afterUnderscore;
+			tokenCount = 3; // f _ 1
+		} else if (
+			afterUnderscore.type === 'LBRACE' &&
+			this.tokenizer.peekAt(2).type === 'NUMBER' &&
+			this.tokenizer.peekAt(3).type === 'RBRACE'
+		) {
+			index = this.tokenizer.peekAt(2);
+			tokenCount = 5; // f _ { 1 }
+		} else {
+			return null;
+		}
+		if (!/^\d+$/.test(index.value)) return null;
+
+		const letter = this.currentToken.value;
+		const name = `${letter}_${index.value}`;
+		return this.isGenericFunctionName(name)
+			? { name, letter, index: index.value, tokenCount }
+			: null;
+	}
+
+	/**
 	 * Parse a generic function: f(x), f'(x), f''(x), f^{-1}(x), f^{(n)}(x)
 	 *
 	 * Pattern:
-	 * - Function name (single letter)
+	 * - Function name (single letter, or an indexed name `f_1` when `indexed` is given)
 	 * - Optional primes: ' '' '''
 	 * - Optional ^{-1} or ^{(n)} for inverse or higher derivative
 	 * - MANDATORY arguments in parentheses: (x) or (x, y)
@@ -745,9 +881,14 @@ class PrattParser {
 	 * Special case: If no parentheses follow, return as a "naked" function
 	 * suitable for composition like f \circ g.
 	 */
-	private parseGenericFunction(): MathNode {
-		const nameToken = this.advance(); // consume function name letter
-		const name = nameToken.value;
+	private parseGenericFunction(indexed?: IndexedFunctionName): MathNode {
+		let name: string;
+		if (indexed) {
+			for (let i = 0; i < indexed.tokenCount; i++) this.advance(); // f _ 1 ou f _ { 1 }
+			name = indexed.name;
+		} else {
+			name = this.advance().value; // consume function name letter
+		}
 
 		// Count prime marks for derivatives: f', f'', f'''
 		let derivativeOrder = 0;
@@ -813,6 +954,14 @@ class PrattParser {
 					...(derivativeOrder > 0 && { derivativeOrder }),
 					...(isInverse && { isInverse })
 				})
+			);
+		}
+
+		// Un nom indicé sans appel (`f_1`, `f_1^2`) : la variable indicée, comme si
+		// le nom n'était pas déclaré
+		if (indexed) {
+			return this.applyColor(
+				MathAST.subscript(MathAST.variable(indexed.letter), MathAST.number(indexed.index))
 			);
 		}
 
@@ -1105,8 +1254,13 @@ class PrattParser {
 	 */
 	private parseAbsoluteValue(): MathNode {
 		this.advance(); // consume |
-		const content = this.parseExpression(BP.NONE);
+		const content = this.parseExpression(BP.NONE, true);
 		this.expect('PIPE', "Expected '|' to close absolute value");
+		// `|2|x…` : un facteur suit la barre fermante ; une barre ouvrante plus loin
+		// dans ce groupe serait ambiguë (cf. factorAfterBareAbs)
+		if (!this.check('PIPE') && this.shouldInsertImplicitMultiply()) {
+			this.factorAfterBareAbs = true;
+		}
 		return this.applyColor(MathAST.abs(content));
 	}
 
@@ -1429,10 +1583,24 @@ class PrattParser {
 			token.type === 'RPAREN' ||
 			token.type === 'RBRACE' ||
 			token.type === 'RBRACKET' ||
-			token.type === 'PIPE' ||
 			token.type === 'COMMA'
 		) {
 			return false;
+		}
+
+		// Barre `|` : fermante si une valeur absolue est ouverte dans ce groupe,
+		// ouvrante sinon (`2|x|`, `x|x|`, `|x||y|` : produit implicite)
+		if (token.type === 'PIPE') {
+			if (this.inBareAbs) return false;
+			if (this.factorAfterBareAbs) {
+				this.error(
+					'Barres « | » ambiguës : écris la valeur absolue extérieure avec \\left| … \\right| (par exemple \\left|2|x|-1\\right|)',
+					token.position,
+					token.length,
+					'SYNTAX_ERROR'
+				);
+			}
+			return true;
 		}
 
 		// Check for relation commands
@@ -1562,6 +1730,15 @@ class PrattParser {
 	 * But left-to-right for mixed: x^2_1 → (x^2)_1
 	 */
 	private parseSubscriptOperand(): MathNode {
+		this.subscriptDepth++;
+		try {
+			return this.parseSubscriptOperandContent();
+		} finally {
+			this.subscriptDepth--;
+		}
+	}
+
+	private parseSubscriptOperandContent(): MathNode {
 		if (this.check('LBRACE')) {
 			return this.parseBraceGroup();
 		}
@@ -1955,6 +2132,11 @@ class PrattParser {
 			this.expect('RPAREN', "Expected ')' after function arguments");
 			return args;
 		}
+
+		// `\max\left(2,x\right)` (MathLive, toLatex) : des arguments, comme `(2,x)` —
+		// lu en délimiteur, la virgule arrêtait la lecture (« Expected \right »)
+		const roundArgs = this.tryParseGenericFunctionArguments();
+		if (roundArgs) return roundArgs;
 
 		if (this.checkCommand('left')) {
 			const delim = this.parseLeftDelimiter();

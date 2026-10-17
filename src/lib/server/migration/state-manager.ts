@@ -28,6 +28,9 @@ import {
 	type MigrationState
 } from '../validation/migration';
 import { generateStableQuestionHash, generateQuestionDescription } from './hash-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/migration/state-manager');
 
 /**
  * State manager for the question migration process
@@ -97,7 +100,7 @@ export class MigrationStateManager {
 			// Validate the state with Zod
 			const validation = validateMigrationState(parsed);
 			if (!validation.success) {
-				console.warn('Invalid migration state, returning initial state:', validation.error);
+				logger.warn('Invalid migration state, returning initial state:', validation.error);
 				return this.getInitialState();
 			}
 
@@ -158,7 +161,7 @@ export class MigrationStateManager {
 		const description = generateQuestionDescription(oldQuestion);
 
 		// LOGGING: Track hash generation for debugging
-		console.log(
+		logger.info(
 			`[Migration Tracking] Processing question ${questionIndex} (hash: ${hash.substring(0, 12)}...)`
 		);
 
@@ -175,30 +178,30 @@ export class MigrationStateManager {
 
 		if (checkError && checkError.code !== 'PGRST116') {
 			// PGRST116 = not found, which is OK
-			console.error('[Migration Tracking] Error checking existing entry:', checkError);
+			logger.error('[Migration Tracking] Error checking existing entry:', checkError);
 		}
 
 		if (existing) {
 			// Entry exists - this is expected (updating status)
-			console.log(
+			logger.info(
 				`[Migration Tracking] ✓ Found existing entry for index ${questionIndex} (current status: ${existing.migration_status}, phase: ${existing.phase})`
 			);
 
 			// Verify index matches
 			if (existing.old_question_index !== questionIndex) {
-				console.warn(
+				logger.warn(
 					`[Migration Tracking] ⚠️  HASH COLLISION DETECTED! Same hash for different indices: ${existing.old_question_index} vs ${questionIndex}`
 				);
 			}
 		} else {
 			// No entry found - this might indicate a hash mismatch problem
-			console.warn(
+			logger.warn(
 				`[Migration Tracking] ⚠️  No existing entry found with hash ${hash.substring(0, 12)}... for index ${questionIndex}`
 			);
-			console.warn(
+			logger.warn(
 				'[Migration Tracking]    This might indicate a hash mismatch between initialization and processing.'
 			);
-			console.warn(`[Migration Tracking]    Proceeding with upsert (will create new entry)...`);
+			logger.warn(`[Migration Tracking]    Proceeding with upsert (will create new entry)...`);
 		}
 
 		// Build and validate the tracking record
@@ -238,7 +241,7 @@ export class MigrationStateManager {
 		// Validate with Zod before sending to database
 		const validation = validateMigrationTrackingInsert(trackingData);
 		if (!validation.success) {
-			console.error('[Migration Tracking] ❌ Validation failed:', validation.error.message);
+			logger.error('[Migration Tracking] ❌ Validation failed:', validation.error.message);
 			throw new Error(`Invalid migration tracking data: ${validation.error.message}`);
 		}
 
@@ -250,18 +253,18 @@ export class MigrationStateManager {
 			});
 
 		if (dbError) {
-			console.error(
+			logger.error(
 				`[Migration Tracking] ❌ Database update failed for index ${questionIndex}:`,
 				dbError
 			);
-			console.error(`[Migration Tracking]    Hash: ${hash.substring(0, 12)}...`);
-			console.error(`[Migration Tracking]    Status: ${status}`);
-			console.error(`[Migration Tracking]    Template ID: ${options?.newTemplateId || 'none'}`);
+			logger.error(`[Migration Tracking]    Hash: ${hash.substring(0, 12)}...`);
+			logger.error(`[Migration Tracking]    Status: ${status}`);
+			logger.error(`[Migration Tracking]    Template ID: ${options?.newTemplateId || 'none'}`);
 			throw new Error(`Database update failed: ${dbError.message}`);
 		}
 
 		// SUCCESS logging
-		console.log(
+		logger.info(
 			`[Migration Tracking] ✅ Successfully recorded index ${questionIndex} as '${status}'${options?.newTemplateId ? ` (template: ${options.newTemplateId.substring(0, 8)}...)` : ''}`
 		);
 

@@ -49,6 +49,18 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { StudentErrorReportView, WorksheetErrorReportInsert } from '$lib/types/worksheets';
+import {
+	assignmentCopyScope,
+	resolveWorksheetExerciseCopy,
+	worksheetExerciseSeed,
+	type ExerciseContentRow
+} from '$lib/worksheets/worksheet-copy';
+import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/student/worksheets/[assignmentId]/exercises/[exerciseId]/report/+server'
+);
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Auth check: Must be a student
@@ -89,8 +101,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (canAccessError && canAccessError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', canAccessError);
-			throw error(500, 'Impossible de vérifier votre accès');
+			logger.error('Contrôle d’accès impossible :', canAccessError);
+			throw error(500, 'Impossible de vérifier l’accès');
 		}
 
 		if (!canAccess) {
@@ -105,6 +117,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 				`
 				id,
 				worksheet_id,
+				guidance_level,
+				individualized,
 				worksheets!inner (
 					id,
 					title,
@@ -116,7 +130,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (assignmentError || !assignment) {
-			console.error('[API] Error fetching assignment:', assignmentError);
+			logger.error('[API] Error fetching assignment:', assignmentError);
 			throw error(404, 'Devoir non trouve');
 		}
 
@@ -129,55 +143,32 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// Step 3: Find the worksheet_exercise by exercise_id within this worksheet
 		const { data: worksheetExercise, error: weError } = await locals.supabase
 			.from('worksheet_exercises')
-			.select('id, position')
+			.select('id, position, variation_index, exercise:exercises (id, title, shared, variations)')
 			.eq('worksheet_id', worksheet.id)
 			.eq('exercise_id', exerciseId)
 			.single();
 
 		if (weError || !worksheetExercise) {
-			console.error('[API] Error fetching worksheet exercise:', weError);
+			logger.error('[API] Error fetching worksheet exercise:', weError);
 			throw error(404, 'Exercice non trouve dans ce devoir');
 		}
 
-		// Step 4: Get student's instance to retrieve variation_index and seed
-		let variationIndex: number | null = null;
-		let seed: number | null = null;
-
-		const { data: instanceData, error: instanceError } = await locals.supabase
-			.from('worksheet_instances')
-			.select('variant_seed, instance_data')
-			.eq('worksheet_id', worksheet.id)
-			.eq('student_id', user.id)
-			.single();
-
-		if (instanceError) {
-			// Log but continue - variation info is optional for backwards compatibility
-			console.warn(
-				`[API] Could not retrieve student instance for variation tracking: ${instanceError.message}`,
-				{ worksheetId: worksheet.id, studentId: user.id }
-			);
-		} else if (instanceData) {
-			seed = instanceData.variant_seed ?? null;
-
-			// Extract selectedVariationIndex from instance_data.exercises[position]
-			const exercises = (
-				instanceData.instance_data as { exercises?: Array<{ selectedVariationIndex?: number }> }
-			)?.exercises;
-
-			if (!exercises || !Array.isArray(exercises)) {
-				console.warn('[API] Instance data has no exercises array', {
-					worksheetId: worksheet.id,
-					studentId: user.id
-				});
-			} else if (worksheetExercise.position >= exercises.length) {
-				console.warn('[API] Exercise position out of bounds in instance data', {
-					position: worksheetExercise.position,
-					exercisesLength: exercises.length
-				});
-			} else {
-				variationIndex = exercises[worksheetExercise.position]?.selectedVariationIndex ?? null;
-			}
-		}
+		// Step 4: La version et la graine de la copie de l'élève (ADR 0023), par
+		// le même calcul que l'API élève : la page du prof montre ce qu'il a vu
+		const copyScope = assignmentCopyScope(assignment, { studentId: user.id });
+		const exerciseContent = worksheetExercise.exercise as unknown as ExerciseContentRow | null;
+		const variationIndex = exerciseContent
+			? resolveWorksheetExerciseCopy(
+					{
+						id: worksheetExercise.id,
+						variation_index: worksheetExercise.variation_index,
+						exercise: exerciseContent
+					},
+					copyScope
+				).variationIndex
+			: null;
+		// Graine de la copie : 31 bits, tient dans la colonne `integer`
+		const seed = worksheetExerciseSeed(worksheetExercise.id, copyScope);
 
 		// Step 5: Check report limit (max 10 per exercise per student)
 		const MAX_REPORTS_PER_EXERCISE = 10;
@@ -188,7 +179,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			.eq('student_id', user.id);
 
 		if (countError) {
-			console.error('[API] Error counting existing reports:', countError);
+			logger.error('[API] Error counting existing reports:', countError);
 			throw error(500, 'Erreur lors de la verification des signalements');
 		}
 
@@ -216,18 +207,22 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (insertError) {
-			console.error('[API] Error inserting error report:', insertError);
+			logger.error('[API] Error inserting error report:', insertError);
 			throw error(500, 'Erreur lors de la creation du signalement');
 		}
 
 		// Note: Notification is created automatically by database trigger
 		// (see migration: 20251213100000_error_report_notification_trigger.sql)
 
-		// Step 6: Build response
+		// Step 7: le numéro de l'exercice dans LA COPIE de cet élève (D6) ;
+		// inconnu → null, jamais la position brute
+		const numbering = await fetchCopyNumbering(locals.supabase, worksheet.id, [assignmentId]);
+
+		// Step 8: Build response
 		const reportView: StudentErrorReportView = {
 			id: newReport.id,
 			worksheet_exercise_id: newReport.worksheet_exercise_id,
-			exercise_position: worksheetExercise.position,
+			exercise_position: numbering.numberOf(assignmentId, user.id, worksheetExercise.id),
 			description: newReport.description,
 			status: newReport.status as StudentErrorReportView['status'],
 			response: newReport.response,
@@ -249,7 +244,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			throw err;
 		}
 
-		console.error(
+		logger.error(
 			'[API] Unexpected error in POST /api/student/worksheets/[assignmentId]/exercises/[exerciseId]/report:',
 			err
 		);

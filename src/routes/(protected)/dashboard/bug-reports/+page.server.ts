@@ -8,6 +8,9 @@ import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { BugReportWithAuthor } from '$lib/types/bug-reports';
 import { signBugReportScreenshots } from '$lib/server/bug-report-screenshots';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/bug-reports/+page.server');
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Check authentication
@@ -37,7 +40,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const { data: reports, error: reportsError } = await query;
 
 	if (reportsError) {
-		console.error('Error fetching bug reports:', reportsError);
+		logger.error('Error fetching bug reports:', reportsError);
 		return {
 			reports: [] as BugReportWithAuthor[],
 			filters: { status, category }
@@ -54,7 +57,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.eq('user_id', user.id);
 
 	if (statsError) {
-		console.error('Lecture impossible :', statsError);
+		logger.error('Lecture impossible :', statsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

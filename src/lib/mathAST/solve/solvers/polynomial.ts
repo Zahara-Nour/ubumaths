@@ -923,9 +923,16 @@ function handleCubicWithCommonFactor(
 	},
 	recorder: SolveStepRecorder
 ): SolveResult {
+	const aValue = computeNumericValue(a);
+	const bValue = computeNumericValue(b);
+	const cValue = computeNumericValue(c);
+	// c = 0 aussi : ax³ + bx² = x²(ax + b), le second facteur ne redonne pas 0
+	// (avant : `4x³ − 2x² = 0` rendait {0 ; 1/2 ; 0}).
+	const squareFactor = isZeroNode(c) || cValue === 0;
+
 	recorder.recordStep(
 		'factor-common-root',
-		describeFactorCommonRoot(variable),
+		describeFactorCommonRoot(variable, squareFactor ? 2 : 1),
 		equals(varNode(variable), number('0')),
 		equals(varNode(variable), number('0')),
 		'detailed'
@@ -935,12 +942,15 @@ function handleCubicWithCommonFactor(
 	const zeroSolution: Solution = { value: number('0'), exact: true, approximate: 0 };
 	const solutions: Solution[] = [zeroSolution];
 
-	// Solve the quadratic ax² + bx + c = 0
-	const aValue = computeNumericValue(a);
-	const bValue = computeNumericValue(b);
-	const cValue = computeNumericValue(c);
-
-	if (aValue !== null && bValue !== null && cValue !== null) {
+	if (squareFactor) {
+		// ax + b = 0 → x = −b/a, seulement si elle diffère de 0
+		if (!isZeroNode(b) && bValue !== 0) {
+			const root = denormalize(normalize(fraction(opposite(b), a)));
+			const approximate = aValue !== null && bValue !== null ? -bValue / aValue : undefined;
+			solutions.push({ value: root, exact: true, approximate });
+		}
+	} else if (aValue !== null && bValue !== null && cValue !== null) {
+		// Solve the quadratic ax² + bx + c = 0
 		const discriminant = bValue * bValue - 4 * aValue * cValue;
 
 		if (discriminant >= 0) {

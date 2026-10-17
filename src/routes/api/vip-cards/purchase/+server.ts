@@ -29,6 +29,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { purchaseVipCardBodySchema } from '$lib/server/validation/vip-cards';
 import { purchaseResultSchema } from '$lib/server/validation/vip-card-rpc';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/purchase/+server');
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -49,7 +52,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête illisible');
 	}
 
 	const validation = purchaseVipCardBodySchema.safeParse(body);
@@ -72,8 +75,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('[purchase] RPC error:', rpcError);
-		throw error(500, `Failed to purchase card: ${rpcError.message}`);
+		logger.error('[purchase] RPC error:', rpcError);
+		throw error(500, `Impossible d’acheter la carte VIP : ${rpcError.message}`);
 	}
 
 	// The RPC returns a JSON object with the result
@@ -83,7 +86,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (!result.success) {
 		// Return appropriate status based on error type
-		const errorMessage = result.error || 'Purchase failed';
+		const errorMessage = result.error || 'L’achat n’a pas pu se faire';
 
 		// Determine appropriate status code from error message
 		if (errorMessage.includes('not found') || errorMessage.includes('does not exist')) {

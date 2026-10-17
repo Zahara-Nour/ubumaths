@@ -20,11 +20,12 @@
 import type { AtelierObject } from './types';
 import type { MathNode } from '$lib/mathAST/types';
 import { astOf, readingMode, renameInDefinition, type Provenance } from './parse';
-import { RESERVED_NAMES, derivativeOf } from './names';
+import { RESERVED_NAMES, derivativeOf, reciprocalOf } from './names';
 import { transformAST, visitAST } from '$lib/mathAST/visitor';
 import { nodesEqual } from '$lib/mathAST/normal/hash';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import type { CellValue } from './formula';
 
 // =============================================================================
 // Types
@@ -57,8 +58,9 @@ export const INTERNAL_LETTER = 'x';
  * peut changer si `f` est redéfinie.
  */
 export function typedLetterOf(atelier: LetterSource, object: AtelierObject): string {
-	const derivative = derivativeOf(object.name);
-	const owner = derivative === null ? object : atelier.get(derivative.base);
+	// `f′` et `f⁻¹` suivent la lettre de f (`f(t) = 2t + 3` → `f⁻¹(t) = (t − 3)/2`)
+	const base = derivativeOf(object.name)?.base ?? reciprocalOf(object.name);
+	const owner = base === null ? object : atelier.get(base);
 	if (owner?.kind !== 'function') return object.kind === 'sequence' ? 'n' : INTERNAL_LETTER;
 	return owner.letter ?? INTERNAL_LETTER;
 }
@@ -119,9 +121,36 @@ export function renameVariable(
 
 /** La définition telle que l'élève la lit : rangée en x, rendue dans sa lettre. */
 export function studentDefinitionOf(
-	atelier: LetterSource & { readonly functionNames: readonly string[] },
+	atelier: LetterSource & {
+		readonly functionNames: readonly string[];
+		/** La valeur d'une case de la grille (l'`Atelier` la donne). */
+		cellValue?(column: number, row: number): CellValue;
+	},
 	object: AtelierObject
 ): string {
+	// Une liste calculée dans la grille (tableur, lot 2) : ses VALEURS, jamais `=A1*2`
+	if (
+		object.kind === 'list' &&
+		object.definition.split(';').some((e) => e.trim().startsWith('='))
+	) {
+		// Ce que montre la grille, case par case (`1/3`, `≈ 1,4142`, « erreur ») :
+		// jamais 0,3333333333333333 (revue)
+		const shown = object.definition
+			.split(';')
+			.map((_, i) => atelier.cellValue?.(object.column, i + 1))
+			.map((value) => {
+				if (value === undefined) return '';
+				if (value.kind === 'number') return value.shown;
+				if (value.kind === 'word') return value.text;
+				return value.kind === 'error' ? value.label : '';
+			})
+			.filter((text) => text !== '');
+		const values =
+			atelier.cellValue === undefined
+				? object.values.map((v) => String(v).replace('.', ','))
+				: shown;
+		return `${values.join(' ; ')} (calculée dans la grille)`;
+	}
 	const letter = typedLetterOf(atelier, object);
 	return letter === INTERNAL_LETTER || object.kind !== 'function'
 		? object.definition

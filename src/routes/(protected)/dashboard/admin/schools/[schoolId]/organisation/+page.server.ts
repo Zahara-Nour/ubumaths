@@ -17,6 +17,11 @@ import {
 	deleteSchoolHolidaySchema,
 	duplicateSchoolYearSchema
 } from '$lib/server/validation/academic';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/admin/schools/[schoolId]/organisation/+page.server'
+);
 
 /**
  * Load school data with academic years, periods, holidays, and timetable
@@ -35,7 +40,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.single();
 
 	if (schoolError || !school) {
-		throw error(404, 'School not found');
+		throw error(404, 'École introuvable');
 	}
 
 	// Fetch all school years for this school
@@ -46,7 +51,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.order('start_date', { ascending: false });
 
 	if (yearsError) {
-		console.error('Error fetching school years:', yearsError);
+		logger.error('Error fetching school years:', yearsError);
 	}
 
 	// Find active year
@@ -64,7 +69,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			.order('period_order');
 
 		if (periodsError) {
-			console.error('Error fetching academic periods:', periodsError);
+			logger.error('Error fetching academic periods:', periodsError);
 		} else {
 			academicPeriods = periods || [];
 		}
@@ -76,7 +81,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			.order('start_date');
 
 		if (holidaysError) {
-			console.error('Error fetching school holidays:', holidaysError);
+			logger.error('Error fetching school holidays:', holidaysError);
 		} else {
 			schoolHolidays = holidays || [];
 		}
@@ -124,7 +129,7 @@ export const actions: Actions = {
 		const { error: dbError } = await supabase.from('school_years').insert(validation.data);
 
 		if (dbError) {
-			console.error('Error creating school year:', dbError);
+			logger.error('Error creating school year:', dbError);
 			return fail(500, { error: "Erreur lors de la création de l'année scolaire" });
 		}
 
@@ -164,7 +169,7 @@ export const actions: Actions = {
 		const { error: dbError } = await supabase.from('school_years').update(updateData).eq('id', id);
 
 		if (dbError) {
-			console.error('Error updating school year:', dbError);
+			logger.error('Error updating school year:', dbError);
 			return fail(500, { error: "Erreur lors de la mise à jour de l'année scolaire" });
 		}
 
@@ -204,7 +209,7 @@ export const actions: Actions = {
 			.eq('id', validation.data.id);
 
 		if (dbError) {
-			console.error('Error deleting school year:', dbError);
+			logger.error('Error deleting school year:', dbError);
 			return fail(500, { error: "Erreur lors de la suppression de l'année scolaire" });
 		}
 
@@ -234,7 +239,7 @@ export const actions: Actions = {
 			.eq('school_id', validation.data.school_id);
 
 		if (deactivateError) {
-			console.error('Error deactivating years:', deactivateError);
+			logger.error('Error deactivating years:', deactivateError);
 			return fail(500, { error: 'Erreur lors de la désactivation des années' });
 		}
 
@@ -245,7 +250,7 @@ export const actions: Actions = {
 			.eq('id', validation.data.id);
 
 		if (activateError) {
-			console.error('Error activating year:', activateError);
+			logger.error('Error activating year:', activateError);
 			return fail(500, { error: "Erreur lors de l'activation de l'année" });
 		}
 
@@ -283,7 +288,7 @@ export const actions: Actions = {
 		const { error: dbError } = await supabase.from('academic_periods').insert(validation.data);
 
 		if (dbError) {
-			console.error('Error creating academic period:', dbError);
+			logger.error('Error creating academic period:', dbError);
 			return fail(500, { error: 'Erreur lors de la création de la période académique' });
 		}
 
@@ -331,7 +336,7 @@ export const actions: Actions = {
 			.eq('id', id);
 
 		if (dbError) {
-			console.error('Error updating academic period:', dbError);
+			logger.error('Error updating academic period:', dbError);
 			return fail(500, { error: 'Erreur lors de la mise à jour de la période académique' });
 		}
 
@@ -371,7 +376,7 @@ export const actions: Actions = {
 			.eq('id', validation.data.id);
 
 		if (dbError) {
-			console.error('Error deleting academic period:', dbError);
+			logger.error('Error deleting academic period:', dbError);
 			return fail(500, { error: 'Erreur lors de la suppression de la période académique' });
 		}
 
@@ -406,7 +411,7 @@ export const actions: Actions = {
 		const { error: dbError } = await supabase.from('school_holidays').insert(validation.data);
 
 		if (dbError) {
-			console.error('Error creating school holiday:', dbError);
+			logger.error('Error creating school holiday:', dbError);
 			return fail(500, { error: 'Erreur lors de la création des vacances scolaires' });
 		}
 
@@ -447,7 +452,7 @@ export const actions: Actions = {
 			.eq('id', id);
 
 		if (dbError) {
-			console.error('Error updating school holiday:', dbError);
+			logger.error('Error updating school holiday:', dbError);
 			return fail(500, { error: 'Erreur lors de la mise à jour des vacances scolaires' });
 		}
 
@@ -487,7 +492,7 @@ export const actions: Actions = {
 			.eq('id', validation.data.id);
 
 		if (dbError) {
-			console.error('Error deleting school holiday:', dbError);
+			logger.error('Error deleting school holiday:', dbError);
 			return fail(500, { error: 'Erreur lors de la suppression des vacances scolaires' });
 		}
 
@@ -555,7 +560,7 @@ export const actions: Actions = {
 			.single();
 
 		if (yearError || !newYear) {
-			console.error('Error creating duplicate year:', yearError);
+			logger.error('Error creating duplicate year:', yearError);
 			return fail(500, { error: "Erreur lors de la création de l'année dupliquée" });
 		}
 
@@ -588,7 +593,7 @@ export const actions: Actions = {
 					.insert(newPeriods);
 
 				if (insertPeriodsError) {
-					console.error('Error duplicating periods:', insertPeriodsError);
+					logger.error('Error duplicating periods:', insertPeriodsError);
 				}
 			}
 		}
@@ -618,7 +623,7 @@ export const actions: Actions = {
 					.insert(newHolidays);
 
 				if (insertHolidaysError) {
-					console.error('Error duplicating holidays:', insertHolidaysError);
+					logger.error('Error duplicating holidays:', insertHolidaysError);
 				}
 			}
 		}
@@ -667,7 +672,7 @@ export const actions: Actions = {
 			.eq('id', params.schoolId);
 
 		if (updateError) {
-			console.error('Error updating timetable:', updateError);
+			logger.error('Error updating timetable:', updateError);
 			return fail(500, { message: 'Failed to update timetable' });
 		}
 

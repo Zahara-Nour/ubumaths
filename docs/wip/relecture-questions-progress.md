@@ -200,7 +200,7 @@ Après relecture (`code-reviewer`) :
 
 - 41 relues et importées en brouillon (`data/relecture/grandeurs/RAPPORT.md`) : 1 approuvée,
   40 corrigées ; 4 choix des relecteurs validés par David.
-- Moteur : chantier `docs/wip/grandeurs-eval-progress.md` (#483 tidy unité écrite, #484 `{{eval}}`
+- Moteur : chantier `docs/archive/wip/grandeurs-eval-progress.md` (#483 tidy unité écrite, #484 `{{eval}}`
   avec grandeurs, #485 convertisseur, #486 affichage).
 - **Restent #462, #464, #466, #468** : réponse « 2 h 15 min » (lot 3 du chantier, mesure MathLive
   au vrai clavier à faire d'abord).

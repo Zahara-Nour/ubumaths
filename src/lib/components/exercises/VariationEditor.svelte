@@ -76,6 +76,11 @@
 		variation.translations = withTranslatedField(variation.translations, field, value);
 	}
 
+	/** Réponses facultatives : un champ vidé disparaît de la variation */
+	function setAnswers(value: string) {
+		variation.answers_md = value === '' ? undefined : value;
+	}
+
 	const isTranslating = $derived(locale === 'en');
 	const hasTranslation = $derived(hasEnglishStatement(variation.translations));
 
@@ -101,6 +106,7 @@
 	// Collapsible section states
 	let statementOpen = $state(true);
 	let solutionOpen = $state(true);
+	let answersOpen = $state(true);
 	let variablesOpen = $state(false);
 	let hintsOpen = $state(false);
 
@@ -287,6 +293,50 @@
 						bind:value={
 							() => (isTranslating ? translated('solution_md') : variation.solution_md),
 							(v) => (isTranslating ? setTranslated('solution_md', v) : (variation.solution_md = v))
+						}
+						{supabase}
+						{userId}
+						{genericFunctions}
+						{imageSlug}
+						{getNextImageNumber}
+						{ensureSlugExists}
+						{onchange}
+					/>
+				</Card.Content>
+			</Collapsible.Content>
+		</Card.Root>
+	</Collapsible.Root>
+
+	<!-- Réponses seules (collapsible, facultatives) -->
+	<Collapsible.Root bind:open={answersOpen}>
+		<Card.Root>
+			<Collapsible.Trigger>
+				{#snippet child({ props })}
+					<Card.Header class="cursor-pointer py-3" {...props}>
+						<div class="flex items-center justify-between">
+							<div>
+								<Card.Title class="text-base">Réponses (sans détail)</Card.Title>
+								<Card.Description>
+									Les résultats seuls, question par question. Imprimés dans le PDF « Réponses ».
+								</Card.Description>
+							</div>
+							<span
+								class="text-muted-foreground transition-transform"
+								class:rotate-180={answersOpen}
+							>
+								▼
+							</span>
+						</div>
+					</Card.Header>
+				{/snippet}
+			</Collapsible.Trigger>
+			<Collapsible.Content>
+				<Card.Content class="pt-0">
+					{@render localeTabs()}
+					<ExerciseRichTextEditor
+						bind:value={
+							() => (isTranslating ? translated('answers_md') : (variation.answers_md ?? '')),
+							(v) => (isTranslating ? setTranslated('answers_md', v) : setAnswers(v))
 						}
 						{supabase}
 						{userId}

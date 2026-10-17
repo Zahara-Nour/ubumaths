@@ -30,6 +30,9 @@ import {
 import { createExercise } from './exercises';
 import { syncResourceTags } from './resource-tags';
 import { createHash } from 'crypto';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/exercise-import-export');
 
 // ============================================================================
 // EXPORT FUNCTIONS
@@ -84,7 +87,11 @@ export function exerciseToExportV2(exercise: Exercise): ExerciseExportV2 {
 		grades: exercise.grades,
 		topic: exercise.topic,
 		variations: variations,
-		shared: shared
+		shared: shared,
+		// Réglages relus par l'import ; le slug n'est pas exporté (il doit rester unique).
+		generic_functions: exercise.generic_functions,
+		resources: exercise.resources,
+		distribution_mode: exercise.distribution_mode
 	};
 }
 
@@ -171,6 +178,9 @@ function computeExerciseHash(statement: string, title?: string): string {
 	return createHash('sha256').update(content.trim()).digest('hex');
 }
 
+/** Taille d'une page de lecture des exercices de l'auteur (détection des doublons). */
+export const DUPLICATE_SCAN_PAGE_SIZE = 1000;
+
 /**
  * Check if exercise already exists (duplicate detection)
  *
@@ -186,37 +196,39 @@ async function findDuplicateExercise(
 ): Promise<string | null> {
 	const hash = computeExerciseHash(exercise.statement_md, exercise.title);
 
-	// Query exercises by user with matching title or content hash
-	// Include variations and shared for content extraction
-	const { data, error } = await supabase
-		.from('exercises')
-		.select('id, title, shared, variations')
-		.eq('created_by', userId)
-		.limit(100);
+	// TOUS les exercices de l'auteur, page par page, dans un ordre stable : un
+	// `.limit(100)` sans ordre laissait passer les doublons au-delà des 100
+	// premiers, et PostgREST plafonne de toute façon une lecture non bornée.
+	for (let from = 0; ; from += DUPLICATE_SCAN_PAGE_SIZE) {
+		const { data, error } = await supabase
+			.from('exercises')
+			.select('id, title, shared, variations')
+			.eq('created_by', userId)
+			.order('id', { ascending: true })
+			.range(from, from + DUPLICATE_SCAN_PAGE_SIZE - 1);
 
-	// Cette lecture sert à détecter un doublon. Une panne rendait « aucun
-	// doublon trouvé », et l'import créait une seconde copie de l'exercice.
-	if (error) {
-		console.error('[import] Exercices existants illisibles :', error);
-		throw new Error(error.message);
-	}
-
-	if (!data) return null;
-
-	// Check for duplicates by content hash
-	for (const existing of data) {
-		// Get content from variations (single source of truth)
-		const existingContent = getExerciseContentSafe(existing as unknown as Exercise);
-		const existingHash = computeExerciseHash(
-			existingContent.statement_md,
-			existing.title ?? undefined
-		);
-		if (existingHash === hash) {
-			return existing.id;
+		// Cette lecture sert à détecter un doublon. Une panne rendait « aucun
+		// doublon trouvé », et l'import créait une seconde copie de l'exercice.
+		if (error) {
+			logger.error('[import] Exercices existants illisibles :', error);
+			throw new Error(error.message);
 		}
-	}
 
-	return null;
+		const rows = data ?? [];
+		for (const existing of rows) {
+			// Get content from variations (single source of truth)
+			const existingContent = getExerciseContentSafe(existing as unknown as Exercise);
+			const existingHash = computeExerciseHash(
+				existingContent.statement_md,
+				existing.title ?? undefined
+			);
+			if (existingHash === hash) {
+				return existing.id;
+			}
+		}
+
+		if (rows.length < DUPLICATE_SCAN_PAGE_SIZE) return null;
+	}
 }
 
 /**
@@ -245,7 +257,7 @@ async function generateUniqueCopyTitle(
 
 	// Même piège : la liste des titres existants sert à éviter une collision.
 	if (exercisesError) {
-		console.error('[import] Titres existants illisibles :', exercisesError);
+		logger.error('[import] Titres existants illisibles :', exercisesError);
 		throw new Error(exercisesError.message);
 	}
 
@@ -337,6 +349,10 @@ export async function importExerciseFromJSON(
 				...rowUpdate
 			} = cleanData;
 
+			// Ni `is_public` ni `search_indexed` ici : le format d'échange ne les porte
+			// pas (Zod les retire), donc remplacer garde la visibilité et la case
+			// « Afficher sur Google » de l'exercice existant — jamais de « privé +
+			// Google » (CHECK 23514), jamais de Google coché par un fichier.
 			const { data, error } = await supabase
 				.from('exercises')
 				.update({
@@ -357,7 +373,7 @@ export async function importExerciseFromJSON(
 			try {
 				await syncResourceTags(supabase, 'exercise', data!.id, replaceTags ?? []);
 			} catch (e) {
-				console.error('Failed to sync tags while replacing imported exercise:', e);
+				logger.error('Failed to sync tags while replacing imported exercise:', e);
 				return {
 					success: false,
 					error: e instanceof Error ? e.message : 'Failed to sync tags for exercise'

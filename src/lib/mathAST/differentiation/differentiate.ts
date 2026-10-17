@@ -47,6 +47,8 @@ import {
 	atanhRule,
 	simplifiedMultiply
 } from './rules';
+import { segmentHasName } from '../common/segment-names';
+import { one } from '../common/simplify';
 import { substitute } from '../eval/substitute';
 import {
 	derivativeFunc,
@@ -60,7 +62,7 @@ import {
 } from '../factory';
 import { isDerivativeFunction, isInverseFunction, isZero } from '../guards';
 import { rewriteFunctionPower } from '../common/function-power';
-import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
+import { reservedVariableRefusal } from '../common/reserved-letters';
 
 // =============================================================================
 // Main Differentiation Function
@@ -103,13 +105,9 @@ export function differentiate(node: MathNode, options?: DifferentiationOptions):
 	const simplify = options?.simplify ?? DEFAULT_DIFFERENTIATION_OPTIONS.simplify;
 	const functions = options?.functions;
 
-	if (refusesEulerVariable(variable, node)) {
-		throw new DifferentiationError(
-			EULER_NOT_A_VARIABLE,
-			'variable',
-			'variable: e',
-			EULER_NOT_A_VARIABLE
-		);
+	const refusal = reservedVariableRefusal(variable, node);
+	if (refusal !== null) {
+		throw new DifferentiationError(refusal, 'variable', `variable: ${variable}`, refusal);
 	}
 
 	return differentiateNode(node, variable, simplify, functions);
@@ -182,6 +180,14 @@ function differentiateNode(
 		case 'constant':
 			// Holes and mathematical constants are treated as constants
 			// Note: d/dx(e) = 0 and d/dx(π) = 0
+			return constantRule();
+
+		case 'segmentLength':
+			// Une longueur est une inconnue : d/dAB(AB) = d/dAB(BA) = 1, constante sinon
+			return segmentHasName(node, variable) ? one() : constantRule();
+
+		case 'figureName':
+			// Un nom de figure (`ABC`) n'est pas une inconnue : constante
 			return constantRule();
 
 		case 'addition': {

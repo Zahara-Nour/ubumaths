@@ -27,6 +27,9 @@ import { cloneTemplateSchema } from '$lib/server/validation/notebook-templates';
 import type { NotebookContent, NotebookCell } from '$lib/types/notebook';
 import { asNotebookContent } from '$lib/types/notebook';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/from-template/[templateId]/+server');
 
 const MAX_NOTEBOOKS_PER_USER = 50;
 
@@ -43,11 +46,11 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user, profile } = await requireAuth(locals);
 
 	if (profile.role === 'student') {
-		throw error(403, 'Réservé aux enseignants');
+		throw error(403, 'Réservé aux professeurs');
 	}
 
 	const idValidation = uuidSchema.safeParse(params.templateId);
-	if (!idValidation.success) throw error(400, 'ID de template invalide');
+	if (!idValidation.success) throw error(400, 'Identifiant de modèle de carnet invalide');
 	const templateId = idValidation.data;
 
 	let body: unknown = {};
@@ -56,7 +59,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		try {
 			body = await request.json();
 		} catch {
-			throw error(400, 'Corps de requête invalide');
+			throw error(400, 'Corps de requête JSON invalide');
 		}
 	}
 	const bodyValidation = cloneTemplateSchema.safeParse(body);
@@ -64,7 +67,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		const msg = bodyValidation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation échouée: ${msg}`);
+		throw error(400, `Données invalides : ${msg}`);
 	}
 
 	// Fetch the template — RLS rejects if the caller can't see it.
@@ -75,14 +78,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.maybeSingle();
 
 	if (fetchError) {
-		console.error('Failed to fetch template for clone:', fetchError);
-		throw error(500, 'Erreur lors du chargement du template');
+		logger.error('Failed to fetch template for clone:', fetchError);
+		throw error(500, 'Impossible de charger le modèle de carnet');
 	}
-	if (!template) throw error(404, 'Template introuvable');
+	if (!template) throw error(404, 'Modèle de carnet introuvable');
 	if (!template.is_template) {
 		// The endpoint name is specific — refuse cloning a regular notebook
 		// here (use the duplicate flow if/when we add one).
-		throw error(400, "L'identifiant fourni n'est pas un template");
+		throw error(400, 'Ce carnet n’est pas un modèle');
 	}
 
 	// Quota check (mirrors POST /api/python-notebooks).
@@ -91,14 +94,11 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.select('id', { count: 'exact', head: true })
 		.eq('author_id', user.id);
 	if (countError) {
-		console.error('Quota check failed:', countError);
-		throw error(500, 'Erreur lors de la vérification de la limite');
+		logger.error('Quota check failed:', countError);
+		throw error(500, 'Impossible de vérifier le nombre de carnets');
 	}
 	if (count !== null && count >= MAX_NOTEBOOKS_PER_USER) {
-		throw error(
-			400,
-			`Limite atteinte: vous ne pouvez pas avoir plus de ${MAX_NOTEBOOKS_PER_USER} notebooks Python`
-		);
+		throw error(400, `Limite atteinte : ${MAX_NOTEBOOKS_PER_USER} carnets au maximum`);
 	}
 
 	// Clone the content with fresh cell IDs. We treat `template.content` as
@@ -108,7 +108,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Un notebook sans cellules serait autrement recopié en coquille vide.
 	const sourceContent = asNotebookContent(template.content);
 	if (!sourceContent) {
-		throw error(422, 'Contenu de notebook illisible');
+		throw error(422, 'Contenu du carnet illisible');
 	}
 	const now = new Date().toISOString();
 	const clonedContent: NotebookContent = {
@@ -119,24 +119,22 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			updated_at: now,
 			kernel_info: sourceContent.metadata?.kernel_info
 		},
-		cells: sourceContent.cells.map(
-			(cell: NotebookCell): NotebookCell => ({
-				...cell,
-				id: generateCellId(),
-				// Wipe stale execution state — the clone hasn't been run yet.
-				execution_count: null,
-				outputs: [],
-				state: 'idle',
-				metadata: cell.metadata
-					? // Drop `last_executed_source` so the gutter doesn't draw
-						// a misleading "modified since last run" dot on cells
-						// that were never executed in this notebook.
-						Object.fromEntries(
-							Object.entries(cell.metadata).filter(([k]) => k !== 'last_executed_source')
-						)
-					: undefined
-			})
-		)
+		cells: sourceContent.cells.map((cell: NotebookCell): NotebookCell => ({
+			...cell,
+			id: generateCellId(),
+			// Wipe stale execution state — the clone hasn't been run yet.
+			execution_count: null,
+			outputs: [],
+			state: 'idle',
+			metadata: cell.metadata
+				? // Drop `last_executed_source` so the gutter doesn't draw
+					// a misleading "modified since last run" dot on cells
+					// that were never executed in this notebook.
+					Object.fromEntries(
+						Object.entries(cell.metadata).filter(([k]) => k !== 'last_executed_source')
+					)
+				: undefined
+		}))
 	};
 
 	const insertPayload = {
@@ -157,8 +155,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (insertError) {
-		console.error('Failed to insert cloned notebook:', insertError);
-		throw error(500, 'Erreur lors de la création du notebook depuis le template');
+		logger.error('Failed to insert cloned notebook:', insertError);
+		throw error(500, 'Impossible de créer le carnet à partir du modèle');
 	}
 
 	return json({ notebook: inserted }, { status: 201 });

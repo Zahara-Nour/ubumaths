@@ -12,12 +12,12 @@ import { z } from 'zod';
 /**
  * UUID validation schema
  */
-export const uuidSchema = z.string().uuid('Invalid UUID format');
+export const uuidSchema = z.string().uuid('Identifiant invalide');
 
 /**
  * Array of UUIDs
  */
-export const uuidArraySchema = z.array(z.string().uuid('Invalid UUID format'));
+export const uuidArraySchema = z.array(z.string().uuid('Identifiant invalide'));
 
 // ============================================================================
 // PAGINATION SCHEMAS

@@ -68,6 +68,9 @@ import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { calculate2048TheoreticalReward } from '$lib/server/games/reward-2048';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { creditAchievementGidouilles } from '$lib/server/achievements/credit-gidouilles';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/games/2048/scores/+server');
 
 // ============================================================================
 // GET - Fetch user's current score
@@ -95,7 +98,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.maybeSingle();
 
 		if (fetchError) {
-			console.error('[API] Error fetching 2048 score:', fetchError);
+			logger.error('[API] Error fetching 2048 score:', fetchError);
 			throw error(500, 'Failed to fetch game score');
 		}
 
@@ -121,7 +124,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/games/2048/scores:', err);
+		logger.error('[API] Unexpected error in GET /api/games/2048/scores:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };
@@ -170,12 +173,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.maybeSingle();
 
 		if (upsertError) {
-			console.error('[API] Error upserting score:', upsertError);
+			logger.error('[API] Error upserting score:', upsertError);
 			throw error(500, 'Failed to save game score');
 		}
 
 		if (!upsertData) {
-			console.error('[API] Upsert returned no data');
+			logger.error('[API] Upsert returned no data');
 			throw error(500, 'Failed to save game score');
 		}
 
@@ -211,7 +214,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Cette liste borne la portée du classement. Vidée par une panne, elle
 			// affiche un classement amputé sans le dire.
 			if (membershipError) {
-				console.error('Périmètre illisible :', membershipError);
+				logger.error('Périmètre illisible :', membershipError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
@@ -221,7 +224,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			if (schoolId) {
 				// Record reward via atomic RPC (handles daily cap per game type)
 				const gameUuid = crypto.randomUUID();
-				const { data: rewardData, error: rewardError } = await supabase
+				// Client service : la base retire cette fonction aux comptes connectés —
+				// un élève s'attribuerait sinon la récompense de chaque jeu sans jouer.
+				// L'identité vient de la session ; le montant est calculé ici, depuis le score.
+				const { data: rewardData, error: rewardError } = await createServiceRoleClient()
 					.rpc('record_game_reward', {
 						p_student_id: user.id,
 						p_game_type: '2048',
@@ -232,7 +238,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					.maybeSingle();
 
 				if (rewardError) {
-					console.error('[API] Error recording 2048 reward:', rewardError);
+					logger.error('[API] Error recording 2048 reward:', rewardError);
 					// Non-blocking: score is already saved, reward is bonus
 				} else if (rewardData) {
 					const rd = rewardData as {
@@ -283,7 +289,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in POST /api/games/2048/scores:', err);
+		logger.error('[API] Unexpected error in POST /api/games/2048/scores:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };
@@ -330,7 +336,7 @@ async function checkAndAward2048Milestones(
 		.in('id', eligibleSlugs);
 
 	if (achievementsError) {
-		console.error('Lecture impossible :', achievementsError);
+		logger.error('Lecture impossible :', achievementsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -348,8 +354,8 @@ async function checkAndAward2048Milestones(
 	// rendait absente, et le succès repartait pour un tour — gidouilles créditées
 	// une seconde fois.
 	if (existingError) {
-		console.error('Succès déjà obtenus illisibles :', existingError);
-		throw error(500, 'Impossible de vérifier vos succès');
+		logger.error('Succès déjà obtenus illisibles :', existingError);
+		throw error(500, 'Impossible de vérifier les succès');
 	}
 
 	const existingIds = new Set((existing || []).map((e) => e.achievement_id));
@@ -382,7 +388,7 @@ async function checkAndAward2048Milestones(
 
 		if (insertError) {
 			// Unique constraint violation = concurrent race, skip silently
-			console.error('[API] Error awarding milestone:', achievement.id, insertError);
+			logger.error('[API] Error awarding milestone:', achievement.id, insertError);
 			continue;
 		}
 
@@ -398,7 +404,7 @@ async function checkAndAward2048Milestones(
 		);
 
 		if (gidouillesError) {
-			console.error('[API] Error crediting milestone gidouilles:', achievement.id, gidouillesError);
+			logger.error('[API] Error crediting milestone gidouilles:', achievement.id, gidouillesError);
 		}
 
 		milestones.push({

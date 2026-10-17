@@ -46,10 +46,12 @@
 		{#if report}
 			<div class="rounded-md border bg-muted/30 p-3 text-sm">
 				<p class="font-medium">{report.assignment_title || report.worksheet_title}</p>
-				<p class="mt-1 text-muted-foreground">
-					{lore.learning.exercise}
-					{report.exercise_position}
-				</p>
+				{#if report.exercise_position !== null}
+					<p class="mt-1 text-muted-foreground">
+						{lore.learning.exercise}
+						{report.exercise_position}
+					</p>
+				{/if}
 			</div>
 		{/if}
 

@@ -10,6 +10,9 @@ import { getAssignmentsForStudent } from '$lib/server/exercise-assignments';
 import type { StudentExerciseFilters } from '$lib/exercises/types';
 import { validateStudentExerciseFilters } from '$lib/server/validation';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/assigned/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -36,7 +39,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		return json({ error: `Invalid query parameters: ${errorMsg}` }, { status: 400 });
+		return json({ error: `Paramètres invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	// Build filters
@@ -68,8 +71,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const fetchError = 'error' in result ? result.error : null;
 
 	if (fetchError) {
-		console.error('Failed to fetch assigned exercises:', fetchError);
-		return json({ error: 'Failed to fetch exercises' }, { status: 500 });
+		logger.error('Failed to fetch assigned exercises:', fetchError);
+		return json({ error: 'Impossible de charger les exercices' }, { status: 500 });
 	}
 
 	return json(exercises);

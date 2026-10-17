@@ -91,11 +91,14 @@
 						<FileText class="h-4 w-4 text-muted-foreground" />
 						<span>{displayTitle}</span>
 					</div>
-					<span class="text-muted-foreground">-</span>
-					<div class="flex items-center gap-1.5 text-sm text-muted-foreground">
-						<Hash class="h-4 w-4" />
-						<span>{lore.learning.exercise} {report.exercise_position}</span>
-					</div>
+					<!-- Numéro dans la copie de l'élève (D6) ; inconnu : rien plutôt qu'un faux -->
+					{#if report.exercise_position !== null}
+						<span class="text-muted-foreground">-</span>
+						<div class="flex items-center gap-1.5 text-sm text-muted-foreground">
+							<Hash class="h-4 w-4" />
+							<span>{lore.learning.exercise} {report.exercise_position}</span>
+						</div>
+					{/if}
 				</div>
 
 				<!-- Description -->

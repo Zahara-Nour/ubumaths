@@ -20,6 +20,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { MathTerm } from '$lib/dictionary/model';
 import { DICTIONARY_COLUMNS, rowToTerm } from '$lib/dictionary/entry-schema';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/dictionary/load');
 
 // ---------------------------------------------------------------------------
 // Constantes
@@ -73,8 +76,7 @@ async function queryDictionary(supabase: SupabaseClient<Database>): Promise<Math
 			const term = rowToTerm(row);
 			// Une ligne invalide ne doit pas priver le site du reste du dictionnaire
 			if (term) entries.push(term);
-			// console : le logger du projet est muet en production (logs Vercel)
-			else console.error('[dictionnaire] entrée invalide, ignorée :', row.term);
+			else logger.error('[dictionnaire] entrée invalide, ignorée :', row.term);
 		}
 		if (data.length < PAGE_SIZE) return entries;
 	}
@@ -104,7 +106,7 @@ export async function loadDictionary(
 		return entries;
 	} catch (error) {
 		if (memo && now - memo.at < DICTIONARY_FALLBACK_MS) {
-			console.error('[dictionnaire] base injoignable, dernière lecture servie', error);
+			logger.error('[dictionnaire] base injoignable, dernière lecture servie', error);
 			return memo.entries;
 		}
 		throw error;

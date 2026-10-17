@@ -20,7 +20,9 @@ import type {
 	CustomExpressionRule
 } from './types';
 import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser';
+import { numberToLatexSafe } from '$lib/mathAST/common/numeric';
+import { evalResultToNumber } from '$lib/mathAST/eval';
+import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser';
 import { numbersAreClose } from '$lib/mathAST/common/constants';
 import { isStudentFacingRuleDescription } from './rules-suffice';
 
@@ -42,6 +44,8 @@ export interface EvaluationContext {
 	assumptions?: AnswerAssumptions;
 	/** Fonctions déclarées par le modèle (`P'(2)`), transmises à la comparaison symbolique */
 	genericFunctions?: GenericFunctionConfig;
+	/** Sens de `AB` (longueur ou produit) de l'instance ; absent : produit, comme avant */
+	capitalPairs?: CapitalPairs;
 }
 
 /**
@@ -385,7 +389,8 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		const valid = areEquivalent(ctx.answer, resolvedExpr, {
 			timeoutMs: EQUIVALENCE_BUDGET_MS,
 			assumptions: ctx.assumptions,
-			genericFunctions: ctx.genericFunctions
+			genericFunctions: ctx.genericFunctions,
+			capitalPairs: ctx.capitalPairs
 		});
 		return {
 			valid,
@@ -397,7 +402,8 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		const valid = areEquivalent(ctx.answer, resolvedExpr, {
 			timeoutMs: EQUIVALENCE_BUDGET_MS,
 			assumptions: ctx.assumptions,
-			genericFunctions: ctx.genericFunctions
+			genericFunctions: ctx.genericFunctions,
+			capitalPairs: ctx.capitalPairs
 		});
 		return {
 			valid,
@@ -533,7 +539,8 @@ const ATOMIC_VALUE_REGEX = /^\s*(\d+([.,]\d+)?|[A-Za-z]+)\s*$/;
  * donnait `answer^2 + -3` (illisible) et `{{p}}^2` valait −9.
  */
 function substitutedValue(value: number | string): string {
-	const text = String(value);
+	// Jamais `3e-7` : relu 3e − 7 par le parseur LaTeX (e = constante d'Euler)
+	const text = typeof value === 'number' ? numberToLatexSafe(value) : value;
 	return ATOMIC_VALUE_REGEX.test(text) ? text : `(${text})`;
 }
 
@@ -572,7 +579,9 @@ function substituteVariable(expr: string, variable: string, value: number): stri
 	// Use word boundary to avoid partial replacements
 	const pattern = new RegExp(`\\b${variable}\\b`, 'g');
 	// Wrap negative numbers in parentheses to avoid precedence issues
-	const valueStr = value < 0 ? `(${value})` : String(value);
+	// Jamais `3e-7` : relu 3e − 7 par le parseur LaTeX (e = constante d'Euler)
+	const written = numberToLatexSafe(value);
+	const valueStr = value < 0 ? `(${written})` : written;
 	return expr.replace(pattern, valueStr);
 }
 
@@ -781,9 +790,10 @@ export function createEvaluationContext(
 	const variables: Record<string, number | string> = {};
 
 	for (const { name, value } of resolvedVariables) {
-		// Try to parse as number
-		const num = parseFloat(value);
-		variables[name] = isNaN(num) ? value : num;
+		// Valeur numérique, `10^{-7}` et `3.2 \\times 10^{5}` (`;sci`) compris : `parseFloat`
+		// lisait 10 et 3.2
+		const num = evalResultToNumber(value);
+		variables[name] = Number.isFinite(num) ? num : value;
 	}
 
 	// Parse answer as number if possible

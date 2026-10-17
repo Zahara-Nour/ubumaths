@@ -50,11 +50,13 @@ const PLACEHOLDER_SUFFIX = '§';
  * - (?<!\\) - Negative lookbehind: not preceded by backslash (handles \$)
  * - \$ - Literal dollar sign
  * - ([^$\n]+) - Capture group: one or more characters that are not $ or newline
+ *   — sauf qu'un `\text{…}` (ou `\textrm`, `\mbox`) est pris d'un bloc : le `$` d'une
+ *   formule écrite dans le texte (`$x = \text{ si $a>0$ }$`) ne ferme pas la formule
  * - \$ - Closing dollar sign
  *
  * Note: Inline math cannot span multiple lines
  */
-const INLINE_MATH_REGEX = /(?<!\\)\$([^$\n]+)\$/g;
+const INLINE_MATH_REGEX = /(?<!\\)\$((?:\\(?:text|textrm|mbox)\{[^{}\n]*\}|[^$\n])+?)\$/g;
 
 /**
  * Regex for matching block math $$...$$
@@ -190,6 +192,14 @@ export function extractMathOutside(
 	return { text: parts.join('\n'), placeholders };
 }
 
+/**
+ * L'expression capturée telle qu'écrite : `\$` et `\~`, masqués pendant le découpage,
+ * y redeviennent `\$` et `\~` (le PDF affichait « ___ESCAPED_DOLLAR___ »).
+ */
+function expressionOf(expression: string): string {
+	return rawOf(expression).trim();
+}
+
 /** Le texte remplacé tel qu'écrit : les échappements masqués redeviennent `\$`, `\~` */
 function rawOf(match: string): string {
 	return match
@@ -230,7 +240,7 @@ function extractInto(markdown: string, placeholders: MathPlaceholder[]): string 
 
 		placeholders.push({
 			placeholder,
-			expression: expression.trim(),
+			expression: expressionOf(expression),
 			syntax: 'latex',
 			isBlock: true,
 			startIndex: offset,
@@ -248,7 +258,7 @@ function extractInto(markdown: string, placeholders: MathPlaceholder[]): string 
 
 		placeholders.push({
 			placeholder,
-			expression: expression.trim(),
+			expression: expressionOf(expression),
 			syntax: 'custom',
 			isBlock: true,
 			startIndex: offset,
@@ -266,7 +276,7 @@ function extractInto(markdown: string, placeholders: MathPlaceholder[]): string 
 
 		placeholders.push({
 			placeholder,
-			expression: expression.trim(),
+			expression: expressionOf(expression),
 			syntax: 'latex',
 			isBlock: false,
 			startIndex: offset,
@@ -284,7 +294,7 @@ function extractInto(markdown: string, placeholders: MathPlaceholder[]): string 
 
 		placeholders.push({
 			placeholder,
-			expression: expression.trim(),
+			expression: expressionOf(expression),
 			syntax: 'custom',
 			isBlock: false,
 			startIndex: offset,

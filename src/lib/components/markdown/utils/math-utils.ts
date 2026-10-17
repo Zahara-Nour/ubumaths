@@ -12,7 +12,7 @@ import { toLatex, parseLatexSafe } from '$lib/mathAST';
 import { toLocaleDecimal } from '$lib/utils/french-math';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import type { MathNode } from '$lib/mathAST/types';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 /**
  * Configuration du parseur à partir des fonctions déclarées par un exercice
@@ -47,17 +47,22 @@ export function genericFunctionsConfig(
  *   - undefined: Use parser defaults (f, g, h, u, v, w, F, G, H)
  *   - null: Disable generic function parsing entirely
  *   - GenericFunctionConfig: Custom configuration
+ * @param capitalPairs - Sens de `AB` (longueur ou produit) de la question affichée ;
+ *   absent : défaut du parseur, le produit (écriture d'avant)
  * @returns LaTeX string suitable for MathLive rendering
  */
 export function expressionToLatex(
 	expression: string,
 	syntax: 'latex' | 'custom',
 	genericFunctions?: GenericFunctionConfig | null,
-	locale?: string
+	locale?: string,
+	capitalPairs?: CapitalPairs
 ): string {
 	// `\unit` (siunitx) n'existe ni dans MathLive ni dans le préambule de
 	// l'export `.tex` : on l'affiche en LaTeX de base.
-	return displayUnitsInLatex(expressionToRawLatex(expression, syntax, genericFunctions, locale));
+	return displayUnitsInLatex(
+		expressionToRawLatex(expression, syntax, genericFunctions, locale, capitalPairs)
+	);
 }
 
 /**
@@ -69,14 +74,15 @@ export function expressionToRawLatex(
 	expression: string,
 	syntax: 'latex' | 'custom',
 	genericFunctions?: GenericFunctionConfig | null,
-	locale?: string
+	locale?: string,
+	capitalPairs?: CapitalPairs
 ): string {
 	let latex: string;
 
 	if (syntax === 'latex') {
 		latex = expression;
 	} else {
-		const result = parseCustomSafe(expression, { genericFunctions });
+		const result = parseCustomSafe(expression, { genericFunctions, capitalPairs });
 		if (result.ast) {
 			latex = toLatex(result.ast);
 		} else {
@@ -156,12 +162,23 @@ function findPlaceholderIndices(latex: string): number[] {
  *
  * @param expression - The math expression string
  * @param syntax - The syntax type: 'latex' or 'custom'
+ * @param capitalPairs - Sens de deux majuscules collées (défaut du parseur : produit)
  * @returns Array of unique hole indices, sorted
  */
-export function extractPromptIndices(expression: string, syntax: 'latex' | 'custom'): number[] {
+export function extractPromptIndices(
+	expression: string,
+	syntax: 'latex' | 'custom',
+	capitalPairs?: CapitalPairs
+): number[] {
 	let ast: ReturnType<typeof parseLatexSafe>['ast'] | undefined;
 	try {
-		ast = (syntax === 'latex' ? parseLatexSafe(expression) : parseCustomSafe(expression)).ast;
+		// Le sens de `AB` de la question : en longueur, `A'B'=?` se lit et sa case existe
+		const options = capitalPairs && { capitalPairs };
+		ast = (
+			syntax === 'latex'
+				? parseLatexSafe(expression, options)
+				: parseCustomSafe(expression, options)
+		).ast;
 	} catch {
 		// Le parseur LÈVE au-delà de sa longueur maximale (`SecurityError`) : appelé
 		// au rendu d'un paragraphe, avant tout filtrage, il ferait tomber tout le
@@ -184,8 +201,12 @@ export function extractPromptIndices(expression: string, syntax: 'latex' | 'cust
  * @param syntax - The syntax type: 'latex' or 'custom'
  * @returns true if the expression contains at least one hole node
  */
-export function hasPrompts(expression: string, syntax: 'latex' | 'custom'): boolean {
-	return extractPromptIndices(expression, syntax).length > 0;
+export function hasPrompts(
+	expression: string,
+	syntax: 'latex' | 'custom',
+	capitalPairs?: CapitalPairs
+): boolean {
+	return extractPromptIndices(expression, syntax, capitalPairs).length > 0;
 }
 
 /**
@@ -204,9 +225,10 @@ export function expressionToFlashLatex(
 	expression: string,
 	syntax: 'latex' | 'custom',
 	genericFunctions?: GenericFunctionConfig | null,
-	locale?: string
+	locale?: string,
+	capitalPairs?: CapitalPairs
 ): string {
-	const latex = expressionToLatex(expression, syntax, genericFunctions, locale);
+	const latex = expressionToLatex(expression, syntax, genericFunctions, locale, capitalPairs);
 	return latex.replace(/\\placeholder\[\d+\]\{[^}]*\}/g, '\\boxed{?}');
 }
 

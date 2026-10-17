@@ -16,6 +16,9 @@ import {
 	isDictionaryAdmin,
 	loadDictionary
 } from '$lib/server/dictionary/load';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/dictionnaire/+server');
 
 export const GET: RequestHandler = async ({ locals, url, setHeaders }) => {
 	const fresh = url.searchParams.has('frais') && isDictionaryAdmin(locals);
@@ -23,7 +26,7 @@ export const GET: RequestHandler = async ({ locals, url, setHeaders }) => {
 	try {
 		entries = await loadDictionary(locals.supabase, { fresh });
 	} catch (cause) {
-		console.error('[dictionnaire] lecture impossible', cause);
+		logger.error('[dictionnaire] lecture impossible', cause);
 		return json({ message: 'Dictionnaire indisponible' }, { status: 503 });
 	}
 	setHeaders({ 'cache-control': fresh ? DICTIONARY_ADMIN_CACHE : DICTIONARY_PUBLIC_CACHE });

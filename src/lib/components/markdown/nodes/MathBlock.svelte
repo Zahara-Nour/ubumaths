@@ -19,9 +19,11 @@
 	@see ExerciseDisplay.svelte for rendering context
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import { expressionToLatex } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
+	import { readCapitalPairs } from '../content-capital-pairs';
 	import { isRefusedRestrictedFormula, readRestrictedRendering } from '../restricted-rendering';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
@@ -37,9 +39,13 @@
 
 	// Langue du contenu (séparateur décimal), posée par MarkdownRenderer
 	const contentLocale = readContentLocale();
+	// Sens de `AB` de la question affichée (longueur ou produit), posé par sa carte
+	const capitalPairs = readCapitalPairs();
 
 	// Convert to LaTeX for rendering
-	let latex = $derived(expressionToLatex(expression, syntax, genericFunctions, contentLocale()));
+	let latex = $derived(
+		expressionToLatex(expression, syntax, genericFunctions, contentLocale(), capitalPairs())
+	);
 
 	// Mode restreint (chat élève) : une commande MathLive de style, classe,
 	// identifiant, données ou lien ne part pas dans MathLive — texte (S1) ; une

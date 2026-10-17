@@ -7,6 +7,9 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { CronJobRun, CronJobsStats } from '$lib/server/validation/cron';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/cron/+page.server');
 
 // Type for background_job_runs table (not in generated types)
 interface BackgroundJobRunRow {
@@ -38,7 +41,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.limit(50);
 
 	if (jobsError) {
-		console.error('[CRON Page] Failed to fetch jobs:', jobsError);
+		logger.error('[CRON Page] Failed to fetch jobs:', jobsError);
 		throw error(500, 'Failed to load job data');
 	}
 

@@ -8,9 +8,12 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { generateUniqueFilename } from '$lib/utils/filename';
+import {
+	MESSAGE_ATTACHMENT_BUCKET,
+	messageAttachmentRefusal
+} from '$lib/utils/message-attachment-rules';
 
 export const MAX_FILE_SIZE = 1048576; // 1MB in bytes
-export const MAX_MESSAGE_FILE_SIZE = 5 * 1024 * 1024; // 5MB for messages
 
 export interface FileUploadResult {
 	success: boolean;
@@ -189,50 +192,53 @@ export function getFileIcon(fileType: string): string {
 	return '📎';
 }
 
+/** Pièce jointe de la messagerie, déposée et prête à être enregistrée. */
+export interface MessageAttachmentUploadResult {
+	success: boolean;
+	attachment?: {
+		file_name: string;
+		file_type: string;
+		file_size: number;
+		storage_path: string;
+	};
+	error?: string;
+}
+
 /**
- * Upload a file attachment for a private message
+ * Dépose une pièce jointe de la messagerie (bucket privé `message-attachments`).
  *
- * @param supabase - Supabase client
- * @param file - File to upload
- * @param messageId - Message ID
- * @returns Upload result with attachment metadata
+ * Le serveur vérifie que l'utilisateur est l'expéditeur du message et rend un lien
+ * d'envoi à usage unique, rangé sous le message ; le fichier part ensuite directement
+ * dans le storage (Vercel refuse les corps de plus de 4,5 Mo). Aucun lien public : la
+ * lecture passe par `/api/messages/attachments/<id>`.
  */
 export async function uploadMessageAttachment(
 	supabase: SupabaseClient,
 	file: File,
 	messageId: string
-): Promise<FileUploadResult> {
-	// Validate file size
-	if (file.size > MAX_MESSAGE_FILE_SIZE) {
-		return {
-			success: false,
-			error: `Le fichier dépasse la limite de 5MB (${Math.round(file.size / (1024 * 1024))}MB)`
-		};
-	}
-
-	// Create storage path: messages/message_id/filename
-	const uniqueFilename = generateUniqueFilename(file.name);
-	const storagePath = `messages/${messageId}/${uniqueFilename}`;
+): Promise<MessageAttachmentUploadResult> {
+	const refusal = messageAttachmentRefusal(file);
+	if (refusal) return { success: false, error: refusal };
 
 	try {
-		// Upload to Supabase Storage
-		const { error } = await supabase.storage.from('message-attachments').upload(storagePath, file, {
-			cacheControl: '3600',
-			upsert: false
+		const response = await fetch(`/api/messages/${messageId}/attachments`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ file_name: file.name, file_type: file.type, file_size: file.size })
 		});
+		if (!response.ok) {
+			const body = await response.json().catch(() => null);
+			return { success: false, error: body?.message ?? `Envoi refusé (${response.status})` };
+		}
+		const { path, token } = (await response.json()) as { path: string; token: string };
 
+		const { error } = await supabase.storage
+			.from(MESSAGE_ATTACHMENT_BUCKET)
+			.uploadToSignedUrl(path, token, file, { contentType: file.type });
 		if (error) {
 			console.error('Storage upload error:', error);
-			return {
-				success: false,
-				error: `Erreur d'upload: ${error.message}`
-			};
+			return { success: false, error: `Envoi du fichier impossible : ${error.message}` };
 		}
-
-		// Get public URL
-		const {
-			data: { publicUrl }
-		} = supabase.storage.from('message-attachments').getPublicUrl(storagePath);
 
 		return {
 			success: true,
@@ -240,58 +246,20 @@ export async function uploadMessageAttachment(
 				file_name: file.name,
 				file_type: file.type,
 				file_size: file.size,
-				storage_path: storagePath,
-				public_url: publicUrl
+				storage_path: path
 			}
 		};
 	} catch (error) {
 		console.error('Exception during file upload:', error);
-		return {
-			success: false,
-			error: "Erreur inattendue lors de l'upload"
-		};
+		return { success: false, error: "Erreur inattendue lors de l'envoi du fichier" };
 	}
 }
 
-/**
- * Upload multiple message attachments
- *
- * @param supabase - Supabase client
- * @param files - Files to upload
- * @param messageId - Message ID
- * @returns Array of upload results
- */
+/** Dépose plusieurs pièces jointes d'un même message. */
 export async function uploadMultipleMessageAttachments(
 	supabase: SupabaseClient,
 	files: File[],
 	messageId: string
-): Promise<FileUploadResult[]> {
-	const results = await Promise.all(
-		files.map((file) => uploadMessageAttachment(supabase, file, messageId))
-	);
-
-	return results;
-}
-
-/**
- * Lien de téléchargement d'une pièce jointe de messagerie, s'il est sûr.
- *
- * ⚠️ `public_url` est écrit par le navigateur de l'expéditeur, sans contrôle en
- * base : il pourrait valoir `javascript:…` ou un site externe, sur lequel le
- * prof cliquerait (audit de sécurité du 2026-10-03). Seule une adresse de NOTRE
- * stockage, dans le compartiment `message-attachments`, est rendue ; sinon null
- * (pas de lien).
- */
-export function safeMessageAttachmentUrl(publicUrl: string, supabaseUrl: string): string | null {
-	try {
-		const url = new URL(publicUrl);
-		const base = new URL(supabaseUrl);
-		const ours =
-			url.protocol === base.protocol &&
-			url.origin === base.origin &&
-			url.pathname.startsWith('/storage/v1/object/public/message-attachments/');
-		return ours ? url.href : null;
-	} catch {
-		return null;
-	}
+): Promise<MessageAttachmentUploadResult[]> {
+	return Promise.all(files.map((file) => uploadMessageAttachment(supabase, file, messageId)));
 }

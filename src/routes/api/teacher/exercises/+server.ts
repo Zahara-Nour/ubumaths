@@ -2,6 +2,9 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { GradeCode } from '$lib/types/grades';
 import { getTeacherExercises } from '$lib/server/exercises';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/exercises/+server');
 
 /**
  * GET /api/teacher/exercises
@@ -75,7 +78,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		});
 
 		if (result.error) {
-			console.error('[API] Error fetching teacher exercises:', result.error);
+			logger.error('[API] Error fetching teacher exercises:', result.error);
 			throw error(500, 'Failed to load exercises');
 		}
 
@@ -91,7 +94,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			sortOrder
 		});
 	} catch (err) {
-		console.error('[API] Error in teacher exercises endpoint:', err);
+		logger.error('[API] Error in teacher exercises endpoint:', err);
 		throw error(500, 'Failed to load exercises');
 	}
 };

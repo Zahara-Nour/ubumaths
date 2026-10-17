@@ -18,6 +18,10 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { CORRECTION_RELEASE_MODES, ASSIGNMENT_STATUSES } from '$lib/types/worksheets';
 import { getCorrectionReleaseStatus } from '$lib/server/worksheets/correction-release';
+import { guidanceLevelSchema } from '$lib/server/validation/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/assignments/+server');
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -39,18 +43,20 @@ const createAssignmentSchema = z
 		// New multi-class support
 		class_ids: z
 			.array(z.string().uuid())
-			.max(50, 'Maximum 50 classes per assignment')
+			.max(50, '50 classes au maximum par affectation')
 			.optional()
 			.default([]),
 		// Individual students (in addition to class members)
 		student_ids: z
 			.array(z.string().uuid())
-			.max(500, 'Maximum 500 individual students per assignment')
+			.max(500, '500 élèves au maximum par affectation')
 			.optional()
 			.default([]),
 		title: z.string().max(255).nullable().optional(),
 		instructions: z.string().max(5000).nullable().optional(),
 		individualized: z.boolean().optional().default(true),
+		// Niveau de guidage des versions distribuées (ADR 0023) : guidé par défaut
+		guidance_level: guidanceLevelSchema.optional().default('guided'),
 		available_from: z.string().datetime().optional(),
 		closes_at: z.string().datetime().nullable().optional(),
 		correction_release_mode: z.enum(CORRECTION_RELEASE_MODES).optional().default('manual'),
@@ -66,7 +72,7 @@ const createAssignmentSchema = z
 			return classIds.length > 0 || data.student_ids.length > 0;
 		},
 		{
-			message: 'Au moins une classe ou un eleve doit etre specifie',
+			message: 'Choisir au moins une classe ou un élève',
 			path: ['class_ids']
 		}
 	);
@@ -78,12 +84,12 @@ const createAssignmentSchema = z
 export const GET: RequestHandler = async ({ params, locals, url }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const worksheetId = params.id;
 	if (!worksheetId) {
-		throw error(400, 'ID de la feuille requis');
+		throw error(400, 'Identifiant de fiche requis');
 	}
 
 	// Optional filters
@@ -99,7 +105,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			.single();
 
 		if (worksheetError || !worksheet) {
-			throw error(404, 'Feuille non trouvee');
+			throw error(404, 'Fiche introuvable');
 		}
 
 		const { data: profile, error: profileError } = await locals.supabase
@@ -111,12 +117,12 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier vos droits');
+			logger.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (worksheet.created_by !== user.id && profile?.role !== 'admin') {
-			throw error(403, 'Acces non autorise');
+			throw error(403, 'Accès refusé');
 		}
 
 		// Build query - include multi-class data
@@ -156,7 +162,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			// Cette liste borne la portée du classement. Vidée par une panne, elle
 			// affiche un classement amputé sans le dire.
 			if (assignmentIdsError) {
-				console.error('Périmètre illisible :', assignmentIdsError);
+				logger.error('Périmètre illisible :', assignmentIdsError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
@@ -172,8 +178,8 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		const { data: assignments, error: fetchError } = await query;
 
 		if (fetchError) {
-			console.error('[API] Fetch error:', fetchError);
-			throw error(500, 'Erreur lors de la recuperation des assignations');
+			logger.error('[API] Fetch error:', fetchError);
+			throw error(500, 'Impossible de charger les affectations');
 		}
 
 		// Transform assignments to include classes array
@@ -223,7 +229,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 					correctionStatus
 				});
 			} catch (statusErr) {
-				console.error('[API] Error getting correction status for', assignment.id, statusErr);
+				logger.error('[API] Error getting correction status for', assignment.id, statusErr);
 				assignmentsWithStatus.push({
 					...assignment,
 					correctionStatus: null
@@ -236,17 +242,17 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			assignments: assignmentsWithStatus
 		});
 	} catch (err) {
-		console.error('Error fetching assignments:', err);
+		logger.error('Error fetching assignments:', err);
 		if (err instanceof Error) {
-			console.error('Error message:', err.message);
-			console.error('Error stack:', err.stack);
+			logger.error('Error message:', err.message);
+			logger.error('Error stack:', err.stack);
 		}
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
-		throw error(500, 'Erreur lors de la recuperation des assignations');
+		throw error(500, 'Impossible de charger les affectations');
 	}
 };
 
@@ -257,12 +263,12 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 export const POST: RequestHandler = async ({ params, locals, request }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const worksheetId = params.id;
 	if (!worksheetId) {
-		throw error(400, 'ID de la feuille requis');
+		throw error(400, 'Identifiant de fiche requis');
 	}
 
 	// Parse and validate body
@@ -290,7 +296,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (worksheetError || !worksheet) {
-			throw error(404, 'Feuille non trouvee');
+			throw error(404, 'Fiche introuvable');
 		}
 
 		const { data: profile, error: profileError } = await locals.supabase
@@ -302,17 +308,17 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier vos droits');
+			logger.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (worksheet.created_by !== user.id && profile?.role !== 'admin') {
-			throw error(403, 'Acces non autorise');
+			throw error(403, 'Accès refusé');
 		}
 
 		// Verify worksheet is published
 		if (worksheet.status !== 'published') {
-			throw error(400, 'La feuille doit etre publiee avant de pouvoir etre assignee');
+			throw error(400, 'La fiche doit être publiée avant d’être distribuée');
 		}
 
 		// Verify all classes exist and user has access to them
@@ -323,15 +329,15 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				.in('id', classIds);
 
 			if (classesError) {
-				console.error('Error fetching classes:', classesError);
-				throw error(500, 'Erreur lors de la verification des classes');
+				logger.error('Error fetching classes:', classesError);
+				throw error(500, 'Impossible de vérifier les classes');
 			}
 
 			// Verify all classes were found
 			const foundIds = new Set(classesData?.map((c) => c.id) || []);
 			const missingIds = classIds.filter((id) => !foundIds.has(id));
 			if (missingIds.length > 0) {
-				throw error(404, `Classes non trouvees: ${missingIds.length} classe(s) invalide(s)`);
+				throw error(404, `Classes introuvables : ${missingIds.length}`);
 			}
 
 			// Une classe fermée ne reçoit plus rien. Personne n'y est en cours
@@ -359,17 +365,14 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				.eq('role', 'student');
 
 			if (studentsError) {
-				console.error('Error fetching students:', studentsError);
-				throw error(500, 'Erreur lors de la verification des eleves');
+				logger.error('Error fetching students:', studentsError);
+				throw error(500, 'Impossible de vérifier les élèves');
 			}
 
 			const foundStudentIds = new Set(studentsData?.map((s) => s.id) || []);
 			const invalidStudentIds = studentIds.filter((id) => !foundStudentIds.has(id));
 			if (invalidStudentIds.length > 0) {
-				throw error(
-					400,
-					`Eleves invalides: ${invalidStudentIds.length} eleve(s) non trouve(s) ou non eleves`
-				);
+				throw error(400, `Élèves introuvables : ${invalidStudentIds.length}`);
 			}
 		}
 
@@ -380,6 +383,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				title: data.title,
 				instructions: data.instructions,
 				individualized: data.individualized,
+				guidance_level: data.guidance_level,
 				available_from: data.available_from || new Date().toISOString(),
 				closes_at: data.closes_at,
 				correction_release_mode: data.correction_release_mode,
@@ -392,8 +396,14 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (createError) {
-			console.error('Error creating assignment:', createError);
-			throw error(500, "Erreur lors de la creation de l'assignation");
+			logger.error('Error creating assignment:', createError);
+			throw error(500, 'Impossible de créer l’affectation');
+		}
+
+		// La RLS refuse en silence : la ligne rendue doit porter ce qu'on a écrit
+		if (!assignment || assignment.guidance_level !== data.guidance_level) {
+			logger.error('Affectation non écrite telle que demandée :', assignment?.id);
+			throw error(500, 'Impossible de créer l’affectation');
 		}
 
 		// Insert into junction table: worksheet_assignment_classes
@@ -408,10 +418,10 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				.insert(classInserts);
 
 			if (classInsertError) {
-				console.error('Error inserting class assignments:', classInsertError);
+				logger.error('Error inserting class assignments:', classInsertError);
 				// Rollback: delete the assignment
 				await locals.supabase.from('worksheet_assignments').delete().eq('id', assignment.id);
-				throw error(500, "Erreur lors de l'assignation aux classes");
+				throw error(500, 'Impossible d’affecter la fiche aux classes');
 			}
 		}
 
@@ -427,10 +437,10 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				.insert(studentInserts);
 
 			if (studentInsertError) {
-				console.error('Error inserting student assignments:', studentInsertError);
+				logger.error('Error inserting student assignments:', studentInsertError);
 				// Rollback: delete the assignment (cascade will clean up classes)
 				await locals.supabase.from('worksheet_assignments').delete().eq('id', assignment.id);
-				throw error(500, "Erreur lors de l'assignation aux eleves");
+				throw error(500, 'Impossible d’affecter la fiche aux élèves');
 			}
 		}
 
@@ -456,11 +466,11 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (fetchError) {
-			console.error('Error fetching created assignment:', fetchError);
+			logger.error('Error fetching created assignment:', fetchError);
 			// Assignment was created, just return basic data
 			return json({
 				success: true,
-				message: 'Assignation creee avec succes',
+				message: 'Affectation créée',
 				assignment
 			});
 		}
@@ -493,7 +503,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 		return json({
 			success: true,
-			message: 'Assignation creee avec succes',
+			message: 'Affectation créée',
 			assignment: {
 				...rest,
 				classes,
@@ -501,7 +511,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			}
 		});
 	} catch (err) {
-		console.error('Error creating assignment:', err);
+		logger.error('Error creating assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
@@ -509,6 +519,6 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw err;
 		}
 
-		throw error(500, "Erreur lors de la creation de l'assignation");
+		throw error(500, 'Impossible de créer l’affectation');
 	}
 };

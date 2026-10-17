@@ -32,11 +32,22 @@ import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import { compile } from '$lib/mathAST/eval/compile';
 import { differentiate } from '$lib/mathAST/differentiation';
-import { findCriticalZeros, findCriticalExtrema } from '$lib/mathAST/analysis';
+import { visitAST } from '$lib/mathAST/visitor';
+import {
+	findCriticalZeros,
+	findCriticalExtrema,
+	getAllDiscontinuities
+} from '$lib/mathAST/analysis';
+import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
+import { isInfinity } from '$lib/mathAST/guards';
 import { exactAsymptotes } from './asymptotes-exactes';
+import { touchesZero } from '$lib/mathAST/analysis/near-zero';
+import { restrictAnalysis, type Restriction } from './restriction';
 import { simplify } from '$lib/mathAST/simplify';
 import { substitute } from '$lib/mathAST/eval/substitute';
-import { add, multiply, variable } from '$lib/mathAST/factory';
+import { add, infinity, multiply, variable } from '$lib/mathAST/factory';
+import { evaluateLimit } from '$lib/mathAST/limits';
+import { toLatex } from '$lib/mathAST/latex-generator';
 // `number()` refuse un littéral signé ; `numericNode()` gère le signe lui-même.
 import { numericNode } from '$lib/mathAST/common/numeric';
 import { integrateDefinite } from '$lib/mathAST/integration';
@@ -121,8 +132,8 @@ export function findRoots(
 			}
 		}
 
-		// Check for near-zero value (exact or very close to zero)
-		if (y !== null && Math.abs(y) < TOLERANCE) {
+		// Échantillon où la courbe touche l'axe (racine double comprise)
+		if (touchesZero((t) => evaluator(t) ?? NaN, x, step, TOLERANCE)) {
 			if (!roots.some((r) => Math.abs(r.x - x) < step)) {
 				roots.push({
 					x,
@@ -413,8 +424,16 @@ function classifyExtremum(evaluator: (x: number) => number | null, x: number): '
  */
 const POLE_PROBE_RATIOS = [1e-2, 1e-4, 1e-7, 1e-11, 1e-15] as const;
 
-/** Croissance minimale de |f| entre la première et la dernière sonde. */
-const POLE_GROWTH_FACTOR = 4;
+/**
+ * Croissance minimale de |f| d'une sonde fine à la suivante (1e-7 → 1e-11 →
+ * 1e-15). Un pôle croît encore là (ln : ×1,36 au pire, à l'échelle 1). Une
+ * exponentielle non, ni un point simplement VOISIN d'un pôle : tan en
+ * 10 004,4, à 0,0017 du pôle, vaut 553 et ne bouge plus à 1e-11 près.
+ */
+const POLE_STEP_GROWTH_FACTOR = 1.2;
+
+/** Indice, dans `POLE_PROBE_RATIOS`, de la sonde à 1e-7. */
+const POLE_NEAR_PROBE_INDEX = 2;
 
 /** Nombre maximal d'intervalles candidats examinés par fenêtre. */
 const MAX_ASYMPTOTE_CANDIDATES = 64;
@@ -425,7 +444,16 @@ const MAX_ASYMPTOTE_CANDIDATES = 64;
  * On sonde de plus en plus près, des deux côtés. Une vraie asymptote fait
  * croître |f| SANS BORNE : il ne suffit pas que |f| soit grande (une
  * exponentielle l'est aussi) ni qu'elle croisse (√x croît). On exige donc que
- * |f| grandisse encore quand on se rapproche, d'un facteur net.
+ * |f| croisse encore à CHAQUE sonde fine, de 1e-7 à 1e-15 : eˣ en x = 164
+ * croît d'un facteur 5 sur la première sonde, puis plus du tout.
+ *
+ * Les sondes lointaines (1 % et 0,01 % de |x|) doivent seulement exister :
+ * elles ne jugent PAS la monotonie. Loin de l'origine, elles enjambent le pôle
+ * voisin de tan, ou tombent sur ln(1) = 0 pour ln(x − 100).
+ *
+ * ⚠️ L'évaluateur du grapheur rend `null` pour ±∞ : un pôle qui dépasse les
+ * flottants avant la sonde fine (e^(1/x) en 0) est indécidable ici. C'est
+ * l'analyse symbolique qui le tranche (`singularities`).
  *
  * ⚠️ Pas de seuil « |f| dépasse la fenêtre » : la sonde la plus fine est à
  * 1e-15 du pôle, donc |ln| n'y vaut que ~34. Un tel seuil faisait disparaître
@@ -435,28 +463,26 @@ function divergesAt(evaluator: (x: number) => number | null, x: number): boolean
 	const scale = Math.max(Math.abs(x), 1);
 
 	for (const side of [-1, 1]) {
-		let first: number | null = null;
 		let previous = 0;
 		let increasing = true;
 
-		for (const ratio of POLE_PROBE_RATIOS) {
+		for (const [index, ratio] of POLE_PROBE_RATIOS.entries()) {
 			const y = evaluator(x + side * ratio * scale);
 			if (y === null || !Number.isFinite(y)) {
 				increasing = false;
 				break;
 			}
+
 			const magnitude = Math.abs(y);
-			if (magnitude < previous) {
+			if (index < POLE_NEAR_PROBE_INDEX) continue;
+			if (index > POLE_NEAR_PROBE_INDEX && magnitude < previous * POLE_STEP_GROWTH_FACTOR) {
 				increasing = false;
 				break;
 			}
-			if (first === null) first = magnitude;
 			previous = magnitude;
 		}
 
-		if (increasing && first !== null && first > 0 && previous >= first * POLE_GROWTH_FACTOR) {
-			return true;
-		}
+		if (increasing && previous > 0) return true;
 	}
 
 	return false;
@@ -558,17 +584,55 @@ function locatePole(evaluator: (x: number) => number | null, xLow: number, xHigh
  * @param viewport - The mathematical viewport bounds
  * @param functionId - ID of the function being analyzed
  * @param numSamples - Number of samples for initial sweep
+ * @param known - Singularités lues dans l'expression, examinées avant le
+ *   balayage. Un point est retenu si une limite unilatérale y est infinie
+ *   (symboliquement), ou à défaut si la sonde numérique le voit diverger. Une
+ *   famille périodique est énumérée sur toute la fenêtre — ou pas du tout,
+ *   si ses pôles sont trop serrés pour être lus.
  * @returns Array of detected vertical asymptotes
  */
 export function findVerticalAsymptotes(
 	evaluator: (x: number) => number | null,
 	viewport: Viewport,
 	functionId: string,
-	numSamples: number = DEFAULT_SAMPLES
+	numSamples: number = DEFAULT_SAMPLES,
+	known: Singularities = NO_SINGULARITIES
 ): VerticalAsymptote[] {
 	const asymptotes: VerticalAsymptote[] = [];
 	const step = (viewport.xMax - viewport.xMin) / numSamples;
 	const viewportHeight = Math.max(viewport.yMax - viewport.yMin, 1);
+	const push = (x: number): void => {
+		asymptotes.push({ x, functionId, behavior: determineBehavior(evaluator, x) });
+	};
+
+	// D'abord les candidats de l'expression : leur abscisse est exacte, et ils
+	// ne dépendent pas de l'échantillonnage. Dézoomé, le balayage tombe à ±3 du
+	// pôle de 1/x, où la courbe vaut ±0,3 : aucun saut, rien à examiner.
+	for (const { x, infiniteLimit } of known.points) {
+		if (x < viewport.xMin || x > viewport.xMax) continue;
+		if (!infiniteLimit && !divergesAt(evaluator, x)) continue;
+		if (asymptotes.some((a) => Math.abs(a.x - x) < step * 2)) continue;
+		push(x);
+	}
+
+	// Familles périodiques : tous les pôles de la fenêtre, ou aucun. Trop
+	// serrés, ils font un mur de traits ; et en garder un seul (le balayage
+	// gardait 45,5π pour tan sur [−580 ; 600]) laisse croire qu'il est seul.
+	const unreadable: PoleFamily[] = [];
+	for (const family of known.families) {
+		const first = Math.ceil((viewport.xMin - family.base) / family.period);
+		const last = Math.floor((viewport.xMax - family.base) / family.period);
+		if (last - first + 1 > numSamples * MAX_PERIODIC_POLES_PER_SAMPLE) {
+			unreadable.push(family);
+			continue;
+		}
+		for (let k = first; k <= last; k++) push(family.base + k * family.period);
+	}
+	const onUnreadableFamily = (x: number): boolean =>
+		unreadable.some((family) => {
+			const k = Math.round((x - family.base) / family.period);
+			return Math.abs(x - (family.base + k * family.period)) < step * 2;
+		});
 
 	let prevX = viewport.xMin;
 	let prevY = evaluator(prevX);
@@ -593,13 +657,10 @@ export function findVerticalAsymptotes(
 
 			if (
 				divergesAt(evaluator, poleX) &&
+				!onUnreadableFamily(poleX) &&
 				!asymptotes.some((a) => Math.abs(a.x - poleX) < step * 2)
 			) {
-				asymptotes.push({
-					x: poleX,
-					functionId,
-					behavior: determineBehavior(evaluator, poleX)
-				});
+				push(poleX);
 			}
 		}
 
@@ -608,6 +669,88 @@ export function findVerticalAsymptotes(
 	}
 
 	return asymptotes;
+}
+
+/** Un point où l'expression n'est pas définie ou pas continue. */
+export interface SingularPoint {
+	readonly x: number;
+	/** Une limite unilatérale y est ±∞, établie symboliquement. */
+	readonly infiniteLimit: boolean;
+}
+
+/** Des pôles réguliers : `base + k · period`, pour tout entier k. */
+export interface PoleFamily {
+	readonly base: number;
+	readonly period: number;
+}
+
+/** Ce que l'expression dit de ses singularités. */
+export interface Singularities {
+	readonly points: readonly SingularPoint[];
+	readonly families: readonly PoleFamily[];
+}
+
+const NO_SINGULARITIES: Singularities = { points: [], families: [] };
+
+/**
+ * Au-delà d'un pôle périodique pour deux échantillons (100 dans une fenêtre
+ * ordinaire), les traits ne se lisent plus : on n'en dessine aucun.
+ */
+const MAX_PERIODIC_POLES_PER_SAMPLE = 0.5;
+
+/** Singularités par expression : l'analyse de continuité est coûteuse. */
+const singularitiesCache = new WeakMap<MathNode, Singularities>();
+
+/**
+ * Les singularités de l'expression : points isolés (zéros de dénominateurs,
+ * bords de domaine de ln) et familles périodiques (tan, 1/cos).
+ *
+ * Une famille n'est retenue que si tous ses représentants sont des pôles
+ * ('infinite') : l'analyse ne les énumère que sur [−2π ; 2π], et c'est leur
+ * base et leur période qui permettent de les placer partout.
+ *
+ * Tous les types de points sont rendus, trous compris : sans limite infinie
+ * établie, c'est `divergesAt` qui tranche, et sin(x)/x en 0 ne diverge pas.
+ * Une analyse en échec ne rend rien — le balayage numérique reste alors
+ * seul, comme avant.
+ */
+function singularities(expression: MathNode): Singularities {
+	const cached = singularitiesCache.get(expression);
+	if (cached) return cached;
+
+	const points: SingularPoint[] = [];
+	const families = new Map<string, PoleFamily & { allPoles: boolean }>();
+	for (const discontinuity of getAllDiscontinuities(expression, 'x') ?? []) {
+		try {
+			if (discontinuity.periodic) {
+				const base = evaluateNodeToApproximatedNumber(discontinuity.periodic.basePoint);
+				const period = Math.abs(evaluateNodeToApproximatedNumber(discontinuity.periodic.period));
+				if (!Number.isFinite(base) || !Number.isFinite(period) || period === 0) continue;
+				const key = `${base}|${period}`;
+				const allPoles = discontinuity.type === 'infinite' && (families.get(key)?.allPoles ?? true);
+				families.set(key, { base, period, allPoles });
+				continue;
+			}
+			const x = evaluateNodeToApproximatedNumber(discontinuity.point);
+			if (!Number.isFinite(x)) continue;
+			const { leftLimit, rightLimit } = discontinuity;
+			const infiniteLimit =
+				(leftLimit !== null && isInfinity(leftLimit)) ||
+				(rightLimit !== null && isInfinity(rightLimit));
+			points.push({ x, infiniteLimit });
+		} catch {
+			// Point symbolique non évaluable : le balayage s'en charge.
+		}
+	}
+
+	const result: Singularities = {
+		points,
+		families: [...families.values()]
+			.filter((family) => family.allPoles)
+			.map(({ base, period }) => ({ base, period }))
+	};
+	singularitiesCache.set(expression, result);
+	return result;
 }
 
 /**
@@ -772,7 +915,13 @@ function fitPolynomialBranch(
 		if (gaps[2][k] > gaps[1][k] / CONVERGENCE_RATIO) return null;
 	}
 
-	return second[2];
+	// Incertitude de chaque coefficient : la dispersion des trois dernières
+	// extrapolations. x² + ln(x)/x recevait sinon un terme constant de 1,1·10⁻⁴,
+	// qui oscillait de 2·10⁻⁴ à 4,7·10⁻⁵ d'une extrapolation à l'autre.
+	return second[2].map((coefficient, k) => {
+		const estimates = second.map((extrapolation) => extrapolation[k]);
+		return snapToZero(coefficient, Math.max(...estimates) - Math.min(...estimates));
+	});
 }
 
 /**
@@ -911,17 +1060,34 @@ function differsFromPolynomial(
  */
 export function findHorizontalAsymptotes(
 	evaluator: (x: number) => number | null,
-	functionId: string
+	functionId: string,
+	expression?: MathNode
 ): HorizontalAsymptote[] {
 	const asymptotes: HorizontalAsymptote[] = [];
 
-	// Check positive direction (x → +∞)
-	const limitRight = estimateLimit(evaluator, LARGE_X_VALUES);
-	// Check negative direction (x → -∞)
-	const limitLeft = estimateLimit(
-		evaluator,
-		LARGE_X_VALUES.map((x) => -x)
-	);
+	// Le numérique d'abord, le symbolique en renfort : il ne fait qu'AJOUTER
+	// une limite que les sondes voient converger trop lentement (ln(x)/√x vaut
+	// encore 0,032 en x = 137 299), ou CONFIRMER celle qu'elles trouvent, avec
+	// son écriture exacte. En désaccord, le numérique garde la main.
+	const resolve = (sign: 1 | -1): { y: number; exactLatex?: string } | null => {
+		const numeric = estimateLimit(
+			evaluator,
+			LARGE_X_VALUES.map((x) => sign * x)
+		);
+		const exact = expression ? symbolicLimit(expression, sign) : null;
+		if (exact === null) return numeric === null ? null : { y: numeric };
+		if (numeric === null) return exact;
+		const agree = Math.abs(numeric - exact.y) <= LIMIT_TOLERANCE * Math.max(1, Math.abs(exact.y));
+		return agree ? exact : { y: numeric };
+	};
+	const right = resolve(1);
+	const left = resolve(-1);
+	const limitRight = right?.y ?? null;
+	const limitLeft = left?.y ?? null;
+	const latexOf = (y: number): { exactLatex?: string } => {
+		const latex = [right, left].find((limit) => limit?.y === y)?.exactLatex;
+		return latex === undefined ? {} : { exactLatex: latex };
+	};
 
 	// Une fonction constante n'est pas sa propre asymptote : le pointillé se
 	// poserait exactement sur la courbe. Les obliques et les courbes refusent
@@ -938,40 +1104,84 @@ export function findHorizontalAsymptotes(
 	if (usableRight !== null && usableLeft !== null) {
 		// Both limits exist
 		if (Math.abs(usableRight - usableLeft) < LIMIT_TOLERANCE) {
+			const exact = right?.exactLatex !== undefined ? right : left;
+			const exactOfEither = exact?.exactLatex !== undefined ? { exactLatex: exact.exactLatex } : {};
 			// Same limit in both directions
 			asymptotes.push({
-				y: (usableRight + usableLeft) / 2,
+				y: exact?.exactLatex !== undefined ? exact.y : (usableRight + usableLeft) / 2,
 				functionId,
-				direction: 'both'
+				direction: 'both',
+				// Même limite des deux côtés, à la tolérance près : l'écriture exacte
+				// d'un côté vaut pour l'autre ((1 + 1/x)^x : e, que le moteur ne
+				// trouve qu'en +∞).
+				...exactOfEither
 			});
 		} else {
 			// Different limits
 			asymptotes.push({
 				y: usableRight,
 				functionId,
-				direction: 'right'
+				direction: 'right',
+				...latexOf(usableRight)
 			});
 			asymptotes.push({
 				y: usableLeft,
 				functionId,
-				direction: 'left'
+				direction: 'left',
+				...latexOf(usableLeft)
 			});
 		}
 	} else if (usableRight !== null) {
 		asymptotes.push({
 			y: usableRight,
 			functionId,
-			direction: 'right'
+			direction: 'right',
+			...latexOf(usableRight)
 		});
 	} else if (usableLeft !== null) {
 		asymptotes.push({
 			y: usableLeft,
 			functionId,
-			direction: 'left'
+			direction: 'left',
+			...latexOf(usableLeft)
 		});
 	}
 
 	return asymptotes;
+}
+
+/** Limites symboliques par expression et par sens : `evaluateLimit` coûte. */
+const symbolicLimitCache = new WeakMap<MathNode, Map<1 | -1, SymbolicLimit | null>>();
+
+interface SymbolicLimit {
+	readonly y: number;
+	readonly exactLatex: string;
+}
+
+/**
+ * La limite FINIE de l'expression en ±∞, établie symboliquement, ou `null`
+ * (infinie, inexistante, hors de portée, ou analyse en échec).
+ */
+function symbolicLimit(expression: MathNode, sign: 1 | -1): SymbolicLimit | null {
+	let bySign = symbolicLimitCache.get(expression);
+	if (!bySign) {
+		bySign = new Map();
+		symbolicLimitCache.set(expression, bySign);
+	}
+	if (bySign.has(sign)) return bySign.get(sign) ?? null;
+
+	let found: SymbolicLimit | null = null;
+	try {
+		const result = evaluateLimit(expression, 'x', infinity(sign === 1 ? 'positive' : 'negative'));
+		if (result.status === 'exact' && result.value !== null) {
+			const y = evaluateNodeToApproximatedNumber(result.value);
+			if (Number.isFinite(y)) found = { y, exactLatex: `y = ${toLatex(result.value)}` };
+		}
+	} catch {
+		// Hors de portée du moteur : le numérique reste seul.
+	}
+	bySign.set(sign, found);
+	return found;
 }
 
 /**
@@ -1009,8 +1219,17 @@ function estimateLimit(
 		return null;
 	}
 
-	// Return the last value as the limit
-	return values[values.length - 1];
+	// La dernière valeur, sauf si elle est plus petite que l'incertitude de
+	// l'estimation : ln(x)/x vaut encore 8,6·10⁻⁵ à la dernière sonde.
+	return snapToZero(values[values.length - 1], Math.abs(lastTwo[0] - lastTwo[1]));
+}
+
+/**
+ * Une estimation plus petite que sa propre incertitude ne se distingue pas de
+ * 0 : on rend 0. Sinon, l'élève lit `y = 0.00008616` au lieu de `y = 0`.
+ */
+function snapToZero(value: number, uncertainty: number): number {
+	return Math.abs(value) <= uncertainty ? 0 : value;
 }
 
 // =============================================================================
@@ -1109,6 +1328,25 @@ function estimateObliqueAsymptote(
  * @param functionId - ID of the function being analyzed
  * @returns Complete analysis results
  */
+/**
+ * Au-delà, l'arithmétique exacte de mathAST explose : `0.3333333333333333`
+ * coûtait 7 s aux singularités d'une fraction rationnelle, 0,4 s à ses zéros,
+ * et l'analyse tourne dans l'interface. Jusqu'à 10 chiffres : moins de 15 ms.
+ */
+const MAX_EXACT_SIGNIFICANT_DIGITS = 10;
+
+/** L'expression contient-elle un nombre trop long pour le calcul exact ? */
+function hasUnwieldyNumber(expression: MathNode): boolean {
+	let unwieldy = false;
+	visitAST(expression, {
+		enterNumber: (node) => {
+			const digits = node.value.replace(/^[-+]?0*\.?0*/, '').replace(/[^0-9]/g, '');
+			if (digits.length > MAX_EXACT_SIGNIFICANT_DIGITS) unwieldy = true;
+		}
+	});
+	return unwieldy;
+}
+
 /** Optional AST info for hybrid exact+numeric analysis. */
 export interface AnalysisASTInfo {
 	expression: MathNode;
@@ -1121,8 +1359,10 @@ export function analyzeFunction(
 	evaluator: (x: number) => number | null,
 	viewport: Viewport,
 	functionId: string,
-	ast?: AnalysisASTInfo
+	analysisAst?: AnalysisASTInfo
 ): FunctionAnalysis {
+	// Un nombre à rallonge rend le chemin exact hors de prix : on reste numérique.
+	const ast = analysisAst && !hasUnwieldyNumber(analysisAst.expression) ? analysisAst : undefined;
 	// Use hybrid exact+numeric analysis when AST is available
 	let roots: Root[];
 	let extrema: Extremum[];
@@ -1179,8 +1419,15 @@ export function analyzeFunction(
 		functionId,
 		roots,
 		extrema,
-		verticalAsymptotes: findVerticalAsymptotes(evaluator, viewport, functionId),
-		horizontalAsymptotes: exact?.horizontal ?? findHorizontalAsymptotes(evaluator, functionId),
+		verticalAsymptotes: findVerticalAsymptotes(
+			evaluator,
+			viewport,
+			functionId,
+			DEFAULT_SAMPLES,
+			ast ? singularities(ast.expression) : NO_SINGULARITIES
+		),
+		horizontalAsymptotes:
+			exact?.horizontal ?? findHorizontalAsymptotes(evaluator, functionId, ast?.expression),
 		obliqueAsymptotes: exact?.oblique ?? findObliqueAsymptotes(evaluator, functionId),
 		polynomialAsymptotes: exact?.polynomial ?? findPolynomialAsymptotes(evaluator, functionId)
 	};
@@ -1197,7 +1444,8 @@ export function analyzeAllFunctions(
 	functions: readonly AnalysisInput[],
 	viewport: Viewport
 ): FunctionAnalysis[] {
-	return functions.map((f) => analyzeCached(f, viewport));
+	// La restriction filtre APRÈS le cache : celui-ci ne dépend que de l'expression.
+	return functions.map((f) => restrictAnalysis(analyzeCached(f, viewport), f.restriction));
 }
 
 /**
@@ -1261,6 +1509,8 @@ export interface AnalysisInput {
 	readonly id: string;
 	readonly evaluator: (x: number) => number | null;
 	readonly ast?: AnalysisASTInfo;
+	/** L'ensemble où la courbe est tracée : les points hors de lui sont écartés. */
+	readonly restriction?: Restriction;
 }
 
 /**
@@ -1329,7 +1579,8 @@ export function toAnalysisInputs(
 		inputs.push({
 			id: plottable.id,
 			evaluator: cachedEvaluator(bound),
-			ast: buildAnalysisAST(bound)
+			ast: buildAnalysisAST(bound),
+			...(plottable.restriction && { restriction: plottable.restriction })
 		});
 	}
 
@@ -1396,7 +1647,8 @@ export function derivativeCurve(
 
 	// Rendre le même objet pour les mêmes entrées : le composant de tracé
 	// n'échantillonne à nouveau que si sa prop a réellement changé.
-	const key = `${func.id}|${func.color}|${func.lineWidth}|${func.visible}`;
+	// La restriction en fait partie : la dérivée tracée hérite de l'ensemble de f.
+	const key = `${func.id}|${func.color}|${func.lineWidth}|${func.visible}|${JSON.stringify(func.restriction ?? null)}`;
 	const cached = derivativeCache.get(derivative);
 	if (cached?.key === key) return cached.curve;
 
@@ -1474,7 +1726,9 @@ export function tangentAt(
 			lineWidth: 1,
 			lineStyle: 'solid',
 			showDerivative: false,
-			tangentAt: null
+			tangentAt: null,
+			// La tangente est une droite entière : elle ne garde pas l'ensemble de f.
+			restriction: undefined
 		}
 	};
 }
@@ -1683,7 +1937,7 @@ export function osculatingCircleAt(
  */
 const evaluatorCache = new WeakMap<MathNode, (x: number) => number | null>();
 
-function cachedEvaluator(ast: MathNode): (x: number) => number | null {
+export function cachedEvaluator(ast: MathNode): (x: number) => number | null {
 	const cached = evaluatorCache.get(ast);
 	if (cached) return cached;
 

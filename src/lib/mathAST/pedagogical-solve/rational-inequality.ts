@@ -45,7 +45,8 @@ import {
 	isConstantCoefficient,
 	isZero,
 	makeStep,
-	renumberSteps
+	renumberSteps,
+	domainDescriptionLatex
 } from './_helpers';
 import {
 	generateLinearInequalitySteps,
@@ -499,7 +500,7 @@ function buildConcludeRationalStep(
 	return makeStep({
 		id: idGen(),
 		rule: 'inequality-conclude-rational',
-		description: `Solution : ${solutionDescription}`,
+		description: `Solution : $${domainDescriptionLatex(solutionDescription)}$`,
 		before: originalIneq,
 		after: originalIneq,
 		operation: {

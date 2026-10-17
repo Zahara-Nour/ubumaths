@@ -18,6 +18,9 @@ import {
 } from '$lib/server/validation/bug-reports';
 import { z } from 'zod';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/bug-reports/[reportId]/+server');
 
 const reportIdSchema = z.string().uuid('ID de rapport invalide');
 
@@ -60,7 +63,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			if (queryError.code === 'PGRST116') {
 				throw error(404, 'Rapport non trouvé');
 			}
-			console.error('[API] Error fetching bug report:', queryError);
+			logger.error('[API] Error fetching bug report:', queryError);
 			throw error(500, 'Erreur lors de la récupération du rapport');
 		}
 
@@ -74,7 +77,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[API] Unexpected error in GET /api/bug-reports/[reportId]:', err);
+		logger.error('[API] Unexpected error in GET /api/bug-reports/[reportId]:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };
@@ -144,7 +147,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				.single();
 
 			if (updateError) {
-				console.error('[API] Error updating bug report:', updateError);
+				logger.error('[API] Error updating bug report:', updateError);
 				throw error(500, 'Erreur lors de la mise à jour du rapport');
 			}
 
@@ -184,7 +187,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				.single();
 
 			if (updateError) {
-				console.error('[API] Error updating bug report:', updateError);
+				logger.error('[API] Error updating bug report:', updateError);
 				throw error(500, 'Erreur lors de la mise à jour du rapport');
 			}
 
@@ -194,7 +197,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[API] Unexpected error in PATCH /api/bug-reports/[reportId]:', err);
+		logger.error('[API] Unexpected error in PATCH /api/bug-reports/[reportId]:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };
@@ -217,14 +220,22 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	}
 
 	try {
-		const { error: deleteError } = await locals.supabase
+		// ⚠️ Une suppression refusée par la RLS, ou d'un rapport inconnu, touche
+		// zéro ligne sans erreur : on vérifie les lignes rendues avant d'annoncer
+		// la suppression (cf. docs/pratiques/rls-echecs-silencieux.md).
+		const { data: deletedReports, error: deleteError } = await locals.supabase
 			.from('bug_reports')
 			.delete()
-			.eq('id', params.reportId);
+			.eq('id', params.reportId)
+			.select('id');
 
 		if (deleteError) {
-			console.error('[API] Error deleting bug report:', deleteError);
+			logger.error('[API] Error deleting bug report:', deleteError);
 			throw error(500, 'Erreur lors de la suppression du rapport');
+		}
+
+		if (!deletedReports || deletedReports.length === 0) {
+			throw error(404, 'Rapport non trouvé : rien n’a été supprimé');
 		}
 
 		return json({ success: true });
@@ -232,7 +243,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[API] Unexpected error in DELETE /api/bug-reports/[reportId]:', err);
+		logger.error('[API] Unexpected error in DELETE /api/bug-reports/[reportId]:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

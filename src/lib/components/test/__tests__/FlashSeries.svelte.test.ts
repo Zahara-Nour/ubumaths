@@ -83,6 +83,14 @@ async function answer(container: HTMLElement, found: boolean) {
 }
 
 describe('FlashSeries — une carte à la fois', () => {
+	it('pendant la série, « Quitter » mène au panier', async () => {
+		const { container } = await open(threeCards());
+		const quit = [...container.querySelectorAll<HTMLAnchorElement>('a')].find(
+			(link) => link.textContent?.trim() === 'Quitter'
+		);
+		expect(quit?.getAttribute('href')).toBe('/automaths/panier');
+	});
+
 	it('affiche la première carte, au recto, avec sa position', async () => {
 		const { container } = await open(threeCards());
 

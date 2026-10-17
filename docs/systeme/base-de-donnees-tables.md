@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-220 tables · 25 vues · 313 fonctions. Colonne suivie de `?` : peut être nulle.
+223 tables · 25 vues · 314 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (20)
 
@@ -16,7 +16,7 @@ Liens : `school_year_id` → `school_years`
 
 ### `account_deletion_audit`
 
-`cleanup_result?` · `completed_at?` · `email_hash` · `error_message?` · `id` · `ip_address` · `requested_at` · `status` · `user_agent?` · `user_id?`
+`cleanup_result?` · `completed_at?` · `email_hash` · `error_message?` · `id` · `ip_address` · `requested_at` · `status` · `storage_removed_at?` · `user_agent?` · `user_id?`
 
 ### `class_members`
 
@@ -254,7 +254,7 @@ Liens : `created_by` → `profiles`
 
 ### `exercises`
 
-`category` · `created_at` · `created_by` · `distribution_mode` · `generic_functions?` · `grades?` · `id` · `is_public` · `resources?` · `shared?` · `slug?` · `source?` · `source_type_id?` · `title?` · `topic?` · `updated_at` · `variables` · `variations?`
+`category` · `created_at` · `created_by` · `distribution_mode` · `generic_functions?` · `grades?` · `id` · `is_public` · `resources?` · `search_indexed` · `shared?` · `slug?` · `source?` · `source_type_id?` · `title?` · `topic?` · `updated_at` · `variables` · `variations?`
 
 Liens : `created_by` → `profiles` · `source_type_id` → `source_types`
 
@@ -320,9 +320,9 @@ Liens : `template_id` → `message_templates` · `user_id` → `profiles`
 
 ### `chapter_checklist_items`
 
-`chapter_id` · `content` · `created_at` · `description?` · `display_order` · `id` · `published_at?` · `section_id?` · `section_order` · `updated_at`
+`chapter_id?` · `content` · `created_at` · `description?` · `display_order` · `hidden` · `id` · `published_at?` · `retired_at?` · `section_id?` · `section_order` · `source_id?` · `template_id?` · `updated_at`
 
-Liens : `chapter_id` → `class_chapters` · `section_id, chapter_id` → `chapter_sections`
+Liens : `chapter_id` → `class_chapters` · `section_id, chapter_id` → `chapter_sections` · `section_id, template_id` → `chapter_sections` · `source_id` → `chapter_checklist_items` · `template_id` → `chapter_templates`
 
 ### `chapter_decks`
 
@@ -332,57 +332,57 @@ Liens : `chapter_id` → `class_chapters` · `deck_id` → `srs_decks` · `deck_
 
 ### `chapter_documents`
 
-`chapter_id` · `created_at` · `description?` · `display_order` · `file_name?` · `file_size?` · `google_drive_url?` · `google_file_id?` · `id` · `mime_type?` · `published_at?` · `section_id?` · `section_order` · `source_type` · `storage_path?` · `thumbnail_url?` · `title` · `updated_at`
+`chapter_id?` · `created_at` · `description?` · `display_order` · `file_name?` · `file_size?` · `google_drive_url?` · `google_file_id?` · `hidden` · `id` · `mime_type?` · `published_at?` · `retired_at?` · `section_id?` · `section_order` · `source_id?` · `source_type` · `storage_path?` · `template_id?` · `thumbnail_url?` · `title` · `updated_at`
 
-Liens : `chapter_id` → `class_chapters` · `section_id, chapter_id` → `chapter_sections`
+Liens : `chapter_id` → `class_chapters` · `section_id, chapter_id` → `chapter_sections` · `section_id, template_id` → `chapter_sections` · `source_id` → `chapter_documents` · `template_id` → `chapter_templates`
 
 ### `chapter_exercises`
 
-`chapter_id` · `created_at` · `display_order` · `exercise_id` · `id` · `published_at?` · `section_id?` · `section_order`
+`chapter_id?` · `created_at` · `display_order` · `exercise_id` · `hidden` · `id` · `published_at?` · `retired_at?` · `section_id?` · `section_order` · `source_id?` · `template_id?`
 
-Liens : `chapter_id` → `class_chapters` · `exercise_id` → `exercises` · `section_id, chapter_id` → `chapter_sections`
+Liens : `chapter_id` → `class_chapters` · `exercise_id` → `exercises` · `section_id, chapter_id` → `chapter_sections` · `section_id, template_id` → `chapter_sections` · `source_id` → `chapter_exercises` · `template_id` → `chapter_templates`
 
 ### `chapter_sections`
 
-`chapter_id` · `created_at` · `display_order` · `id` · `title` · `updated_at`
+`chapter_id?` · `created_at` · `display_order` · `hidden` · `id` · `source_id?` · `template_id?` · `title` · `updated_at`
 
-Liens : `chapter_id` → `class_chapters`
+Liens : `chapter_id` → `class_chapters` · `source_id` → `chapter_sections` · `template_id` → `chapter_templates`
 
 ### `chapter_series`
 
-`chapter_id` · `created_at` · `display_order` · `form` · `id` · `published_at?` · `section_id?` · `section_order` · `series_id`
+`chapter_id?` · `created_at` · `display_order` · `form` · `hidden` · `id` · `published_at?` · `retired_at?` · `section_id?` · `section_order` · `series_id` · `source_id?` · `template_id?`
 
-Liens : `chapter_id` → `class_chapters` · `section_id, chapter_id` → `chapter_sections` · `series_id` → `series`
+Liens : `chapter_id` → `class_chapters` · `section_id, chapter_id` → `chapter_sections` · `section_id, template_id` → `chapter_sections` · `series_id` → `series` · `source_id` → `chapter_series` · `template_id` → `chapter_templates`
 
 ### `chapter_template_instantiations`
 
-`chapter_id` · `current_template_version?` · `id` · `instantiated_at` · `is_detached` · `last_migrated_at?` · `template_id?` · `template_version`
+`chapter_id` · `id` · `instantiated_at` · `is_detached` · `template_id?`
 
 Liens : `chapter_id` → `class_chapters` · `template_id` → `chapter_templates`
 
-### `chapter_template_versions`
-
-`change_summary?` · `content_snapshot` · `created_at` · `created_by` · `diff?` · `id` · `template_id` · `version_number`
-
-Liens : `created_by` → `profiles` · `template_id` → `chapter_templates`
-
 ### `chapter_templates`
 
-`color?` · `content_snapshot` · `created_at` · `created_by` · `current_version` · `description?` · `grades` · `icon?` · `id` · `instantiation_count` · `status` · `title` · `updated_at`
+`color?` · `created_at` · `created_by` · `description?` · `grades` · `icon?` · `id` · `instantiation_count` · `status` · `title` · `updated_at`
 
 Liens : `created_by` → `profiles`
 
 ### `chapter_worksheets`
 
-`chapter_id` · `created_at` · `display_order` · `id` · `published_at?` · `section_id?` · `section_order` · `worksheet_id`
+`chapter_id?` · `created_at` · `display_order` · `hidden` · `id` · `published_at?` · `retired_at?` · `section_id?` · `section_order` · `source_id?` · `template_id?` · `worksheet_id`
 
-Liens : `chapter_id` → `class_chapters` · `section_id, chapter_id` → `chapter_sections` · `worksheet_id` → `worksheets`
+Liens : `chapter_id` → `class_chapters` · `section_id, chapter_id` → `chapter_sections` · `section_id, template_id` → `chapter_sections` · `source_id` → `chapter_worksheets` · `template_id` → `chapter_templates` · `worksheet_id` → `worksheets`
 
 ### `class_chapters`
 
 `class_id` · `color?` · `created_at` · `description?` · `display_order` · `icon?` · `id` · `is_visible` · `title` · `updated_at`
 
 Liens : `class_id` → `classes`
+
+### `class_course_share_tokens`
+
+`access_count` · `class_id` · `created_at` · `created_by?` · `expires_at?` · `id` · `is_active` · `last_accessed_at?` · `token`
+
+Liens : `class_id` → `classes` · `created_by` → `profiles`
 
 ### `class_journal_entries`
 
@@ -420,7 +420,13 @@ Liens : `entry_id` → `class_journal_entries` · `point_id` → `curriculum_poi
 
 Liens : `checklist_item_id` → `chapter_checklist_items` · `student_id` → `profiles`
 
-## Fiches (10)
+## Fiches (12)
+
+### `student_print_settings`
+
+`student_id` · `text_size` · `updated_at`
+
+Liens : `student_id` → `profiles`
 
 ### `worksheet_assignment_classes`
 
@@ -442,7 +448,7 @@ Liens : `assignment_id` → `worksheet_assignments` · `student_id` → `profile
 
 ### `worksheet_assignments`
 
-`assigned_at` · `available_from?` · `closes_at?` · `correction_release_at?` · `correction_release_mode?` · `created_at` · `created_by` · `id` · `individualized?` · `instructions?` · `show_corrections?` · `status?` · `title?` · `updated_at` · `worksheet_id`
+`assigned_at` · `available_from?` · `closes_at?` · `correction_release_at?` · `correction_release_mode?` · `created_at` · `created_by` · `guidance_level` · `id` · `individualized?` · `instructions?` · `show_corrections?` · `status?` · `title?` · `updated_at` · `worksheet_id`
 
 Liens : `created_by` → `profiles` · `worksheet_id` → `worksheets`
 
@@ -454,7 +460,7 @@ Liens : `assignment_id` → `worksheet_assignments` · `reviewed_by` → `profil
 
 ### `worksheet_exercises`
 
-`correction_visible?` · `created_at` · `custom_instructions?` · `exercise_id` · `id` · `is_essential` · `points?` · `position` · `section_id?` · `translations?` · `updated_at` · `variant_config?` · `variant_mode?` · `variation_index?` · `worksheet_id`
+`answer_frame_lines?` · `correction_visible?` · `created_at` · `custom_instructions?` · `exercise_id` · `id` · `is_essential` · `points?` · `position` · `section_id?` · `translations?` · `updated_at` · `variant_config?` · `variant_mode?` · `variation_index?` · `worksheet_id`
 
 Liens : `exercise_id` → `exercises` · `section_id` → `worksheet_sections` · `worksheet_id` → `worksheets`
 
@@ -470,17 +476,23 @@ Liens : `student_id` → `profiles` · `worksheet_id` → `worksheets`
 
 Liens : `worksheet_id` → `worksheets`
 
+### `worksheet_styles`
+
+`common_typst` · `created_at` · `description?` · `id` · `name` · `owner_id?` · `updated_at`
+
+Liens : `owner_id` → `profiles`
+
 ### `worksheet_templates`
 
-`created_at` · `created_by?` · `description?` · `id` · `name` · `placeholders?` · `template_content` · `updated_at`
+`created_at` · `created_by?` · `description?` · `form` · `id` · `name` · `placeholders?` · `style_id?` · `template_content` · `updated_at`
 
-Liens : `created_by` → `profiles`
+Liens : `created_by` → `profiles` · `style_id` → `worksheet_styles`
 
 ### `worksheets`
 
-`archived_at?` · `config?` · `created_at` · `created_by` · `description?` · `estimated_duration_minutes?` · `grades?` · `id` · `published_at?` · `school_id?` · `status` · `template_id?` · `title` · `total_points?` · `translations?` · `type` · `updated_at` · `version?`
+`archived_at?` · `config?` · `created_at` · `created_by` · `description?` · `estimated_duration_minutes?` · `grades?` · `id` · `published_at?` · `school_id?` · `status` · `style_id?` · `template_id?` · `title` · `total_points?` · `translations?` · `type` · `updated_at` · `version?`
 
-Liens : `created_by` → `profiles` · `school_id` → `schools` · `template_id` → `worksheet_templates`
+Liens : `created_by` → `profiles` · `school_id` → `schools` · `style_id` → `worksheet_styles` · `template_id` → `worksheet_templates`
 
 ## Évaluations (8)
 
@@ -588,7 +600,7 @@ Liens : `owner_id` → `profiles` · `source_deck_id` → `srs_decks`
 
 Liens : `deck_id` → `srs_decks` · `user_id` → `profiles`
 
-## Python (10)
+## Python (9)
 
 ### `python_exercise_assignments`
 
@@ -643,12 +655,6 @@ Liens : `notebook_id` → `python_notebooks` · `user_id` → `profiles`
 `author_id` · `content` · `created_at` · `description?` · `id` · `is_public?` · `is_template` · `template_category?` · `title` · `updated_at`
 
 Liens : `author_id` → `profiles`
-
-### `python_submission_server_verdicts`
-
-`created_at` · `server_is_correct?` · `server_validation_result?` · `submission_id` · `verification_status` · `verified_at?`
-
-Liens : `submission_id` → `python_exercise_submissions`
 
 ## Messagerie, notifications, modération (17)
 
@@ -804,7 +810,7 @@ Liens : `offered_by` → `profiles` · `trade_id` → `marketplace_trades`
 
 Liens : `initiator_id` → `profiles` · `last_offer_by` → `profiles` · `listing_id` → `marketplace_listings` · `partner_id` → `profiles` · `proposal_id` → `marketplace_proposals`
 
-## Jeux, défis et récompenses (48)
+## Jeux, défis et récompenses (49)
 
 ### `achievement_events`
 
@@ -1018,9 +1024,15 @@ Liens : `riddle_id` → `riddles` · `student_id` → `profiles` · `validated_b
 
 Liens : `riddle_id` → `riddles` · `selected_by` → `profiles`
 
+### `riddle_solutions`
+
+`answer?` · `correction` · `riddle_id` · `updated_at`
+
+Liens : `riddle_id` → `riddles`
+
 ### `riddles`
 
-`answer?` · `correction` · `created_at` · `created_by` · `difficulty` · `genre?` · `id` · `image_url?` · `riddle_number` · `statement` · `status` · `title` · `updated_at`
+`created_at` · `created_by` · `difficulty` · `genre?` · `id` · `image_url?` · `riddle_number` · `statement` · `status` · `title` · `updated_at`
 
 Liens : `created_by` → `profiles`
 
@@ -1136,7 +1148,7 @@ Liens : `shared_coursework_id` → `shared_coursework` · `student_id` → `prof
 
 Liens : `category_id` → `coursework_categories` · `class_id` → `classes` · `material_id` → `google_classroom_materials` · `shared_by` → `profiles` · `topic_id` → `google_classroom_topics`
 
-## Outils du professeur (kanban, tableau blanc, tableur, constructions) (12)
+## Outils du professeur (kanban, tableau blanc, tableur, constructions, figures) (13)
 
 ### `construction_demo_scripts`
 
@@ -1147,6 +1159,12 @@ Liens : `author_id` → `profiles`
 ### `constructions`
 
 `author_id?` · `created_at?` · `description?` · `dsl_script?` · `format` · `id` · `is_public?` · `script` · `title` · `updated_at?`
+
+Liens : `author_id` → `profiles`
+
+### `geometry_figures`
+
+`author_id` · `created_at` · `description?` · `dsl_script` · `grades` · `id` · `is_public` · `title` · `updated_at`
 
 Liens : `author_id` → `profiles`
 
@@ -1298,6 +1316,6 @@ Liens : `teacher_id` → `profiles`
 
 `active_student_warnings` · `admin_content_stats` · `admin_error_stats_24h` · `admin_job_failures` · `admin_job_status` · `admin_online_users` · `admin_pg_cron_jobs` · `admin_user_activity` · `deck_stats_view` · `game_scores_unified` · `migration_review_tree` · `minesweeper_achievements_compat` · `minesweeper_leaderboard` · `minesweeper_multiplayer_leaderboard` · `minesweeper_student_achievement_progress` · `minesweeper_student_achievements_compat` · `minesweeper_tournament_standings` · `resources` · `riddle_progress` · `riddle_stats` · `riddle_student_history` · `student_achievement_stats` · `student_coursework_view` · `student_point_state_v` · `user_conversations_view`
 
-## Fonctions (313)
+## Fonctions (314)
 
-`abandon_multiplayer_match` · `abandon_tournament_game` · `accept_proposal_atomic` · `add_buddy_xp` · `add_student_gidouilles` · `add_warning` · `add_warnings_bulk` · `admin_compose_class` · `app_is_anti_fraud_enabled` · `approve_vip_card` · `are_classmates` · `assert_can_read_student` · `assert_teacher_or_admin` · `auto_accept_exact_proposal` · `auto_activate_scheduled_tournaments` · `auto_complete_ended_tournaments` · `auto_expire_listings` · `award_achievement_manual` · `award_random_vip_card` · `award_vip_card_no_cost` · `award_vip_cards_with_filters` · `award_weekly_best_bonuses` · `award_weekly_reward` · `backfill_tournament_scores` · `calculate_3bv` · `calculate_daily_challenge_gidouilles` · `calculate_elo_change` · `calculate_minesweeper_gidouilles` · `calculate_minesweeper_points` · `calculate_riddle_gidouilles` · `calculate_tournament_score` · `calculate_week_boundaries` · `calculate_worksheet_total_points` · `can_access_assignment` · `can_access_kanban_board` · `can_access_kanban_column` · `can_assign_kanban_card` · `can_grant_kanban_card_assignment` · `can_manage_kanban_card_tag` · `can_moderate_message` · `can_participate_in_tournament` · `can_read_assignment` · `can_view_student_profile` · `check_achievement_prerequisites` · `check_and_increment_rate_limit` · `check_and_unlock_achievements` · `check_daily_trade_limit` · `check_expired_items` · `check_gidouilles_balance` · `check_marketplace_enabled` · `check_match_status` · `check_profanity_simple` · `cleanup_abandoned_minesweeper_games` · `cleanup_account_deletion_audit` · `cleanup_expired_cache` · `cleanup_expired_rate_limits` · `cleanup_old_audit_logs` · `cleanup_old_errors` · `cleanup_old_job_runs` · `cleanup_stale_presence` · `cleanup_stale_queue_entries` · `cleanup_stale_trades` · `cleanup_stuck_job_runs` · `close_school_year` · `complete_job_run` · `complete_minesweeper_game` · `complete_multiplayer_match` · `complete_tournament_game` · `compute_calculer_level` · `compute_chercher_level` · `compute_communiquer_level` · `compute_competence_level` · `compute_daily_summary` · `compute_modeliser_level` · `compute_raisonner_level` · `compute_representer_level` · `count_student_active_cards` · `count_user_notebooks` · `count_user_python_files` · `create_1on1_chat` · `create_tournament` · `current_school_year` · `curriculum_point_reference_counts` · `curriculum_referenced_points` · `delete_all_resolved_errors` · `delete_attachment` · `delete_user_account` · `discard_vip_cards` · `draw_multiple_vip_cards` · `duplicate_template` · `ensure_player_stats_exist` · `execute_trade` · `exercise_has_multiple_variations` · `exercise_has_valid_share_token` · `exercise_variation_count` · `exercises_search_vector` · `extract_plain_text_from_tiptap` · `finalize_tournament` · `game_leaderboard` · `generate_error_signature` · `generate_join_code` · `generate_reward_event_description` · `generate_share_token` · `generate_variant_seed` · `get_2048_user_rank` · `get_accessible_kanban_boards` · `get_achievement_leaderboard` · `get_all_exercise_assignments` · `get_allowed_recipients` · `get_assignment_completion_stats` · `get_class_journal_by_share_token` · `get_classes_by_user_grade` · `get_consent_info` · `get_conversation_participants` · `get_cycle_for_grade` · `get_database_stats` · `get_deck_stats` · `get_due_cards_for_deck` · `get_error_stats` · `get_exercise_by_share_token` · `get_exercise_completion_stats` · `get_friend_ids` · `get_match_state` · `get_mathemo_user_rank` · `get_message_attachments` · `get_message_context_for_moderation` · `get_message_details` · `get_message_reaction_counts` · `get_message_thread` · `get_messages_paginated` · `get_minesweeper_reference_time` · `get_my_error_reports` · `get_my_exercise_assignments` · `get_next_export_counter` · `get_next_riddle_attempt_number` · `get_pending_reports_count` · `get_private_messages_unread_count` · `get_reaction_users` · `get_reports_for_moderation` · `get_riddle_of_the_day` · `get_shop_item_detail` · `get_shop_items` · `get_staff_directory` · `get_student_exercises` · `get_student_week_best` · `get_students_in_class` · `get_students_in_class_by_grade` · `get_teacher_assignment_stats` · `get_teacher_classes_for_messaging` · `get_teacher_classes_with_data` · `get_teacher_classes_with_students` · `get_teacher_exercise_assignments` · `get_template_statistics` · `get_templates_for_context` · `get_tournament_details` · `get_unread_count` · `get_user_conversations` · `get_user_frequent_templates` · `get_user_inbox` · `get_user_moderation_history` · `get_user_sent_messages` · `get_user_status` · `get_whiteboard_templates` · `get_worksheet_by_share_token` · `grade_ancestors` · `grant_parental_consent` · `grant_specific_vip_card` · `grant_vip_cards_after_action` · `had_class_access_to_assignment` · `has_full_access` · `has_individual_assignment` · `has_pending_request_from` · `has_proposal_on_listing` · `increment_rate_limit` · `initialize_default_categories` · `insert_tutor_messages` · `is_admin` · `is_assignment_creator` · `is_class_member` · `is_class_student` · `is_class_teacher` · `is_classmate` · `is_conversation_participant` · `is_evaluation_owner` · `is_exercise_parameterized` · `is_file_assigned_to_student` · `is_friend` · `is_in_assigned_class` · `is_kanban_board_member` · `is_my_student` · `is_notebook_assigned_to_student` · `is_riddle_assigned_to_student` · `is_riddle_of_the_day` · `is_series_owner` · `is_student` · `is_student_in_class` · `is_teacher_for_shared_coursework` · `is_teacher_of_class` · `is_teacher_of_student` · `is_teacher_or_admin` · `is_user_restricted` · `is_valid_grade_array` · `join_multiplayer_queue` · `leave_multiplayer_queue` · `lock_cards` · `log_moderation_action` · `log_template_action` · `mark_checkpoint_hint_revealed` · `mark_conversation_read` · `mark_message_as_read` · `marketplace_hidden_creators` · `minesweeper_scoped_leaderboard` · `move_message_to_folder` · `my_school` · `next_curriculum_point_code` · `normalize_grade_array` · `normalize_grade_value` · `process_achievement_event` · `process_weekly_rewards` · `promote_user_to_admin` · `purchase_shop_item` · `purchase_vip_card` · `rag_hybrid_search` · `recalculate_minesweeper_reference_times` · `record_game_reward` · `record_listing_view` · `record_listing_views_batch` · `record_minesweeper_loss` · `redistribute_tournament_rewards` · `refresh_achievement_stats` · `refresh_achievement_stats_if_needed` · `reject_vip_card` · `remove_student_vip_card` · `remove_vip_card` · `remove_warnings_bulk` · `reopen_school_year` · `reorder_curriculum_objectives` · `reorder_curriculum_points` · `reorder_curriculum_themes` · `reorder_worksheet_exercises` · `reorder_worksheet_sections` · `report_message` · `request_vip_card_activation` · `resolve_card_instances` · `resolve_error` · `resolve_error_by_signature` · `resolve_marketplace_participants` · `resolve_open_class_by_code` · `resolve_tag_ids` · `restore_vip_card_instance` · `review_report` · `run_cleanup_all` · `run_cleanup_expired_data` · `run_daily_summaries` · `run_flag_stale_python_rechecks` · `run_recalculate_minesweeper_ref_times` · `run_weekly_best_bonuses` · `run_weekly_rewards` · `same_school` · `search_private_messages` · `search_resources` · `search_users_unaccent` · `sell_vip_card` · `send_private_message` · `set_journal_entry_homework` · `set_riddle_of_the_day` · `shared_coursework_is_restricted` · `shares_tournament` · `soft_delete_message` · `soft_delete_warning` · `start_job_run` · `start_match` · `start_tournament_game` · `student_can_read_evaluation` · `student_can_read_series` · `student_has_exercise_access` · `student_has_worksheet_access` · `submit_riddle_attempt` · `tag_slug` · `teacher_owns_riddle` · `toggle_message_star` · `toggle_reaction` · `unaccent` · `unlock_cards` · `unlock_specific_cards` · `update_achievement_progress` · `update_class_gidouilles` · `update_game_state` · `update_message_status` · `update_student_bonus` · `update_student_competence_level` · `update_student_gidouilles` · `update_student_observable_state` · `update_student_point_state` · `update_tutor_conversation_stats` · `upsert_2048_score` · `upsert_checkpoint_run` · `upsert_error_occurrence` · `upsert_mathemo_score` · `upsert_user_presence` · `use_2048_power` · `use_detector` · `use_hint` · `use_item` · `use_mathemo_power` · `use_minesweeper_undo` · `use_vip_card` · `validate_1on1_chat_creation` · `validate_attachment_upload` · `validate_class_message_recipients` · `validate_message_recipients` · `validate_minesweeper_win` · `validate_riddle_attempt`
+`abandon_multiplayer_match` · `abandon_tournament_game` · `accept_proposal_atomic` · `add_buddy_xp` · `add_student_gidouilles` · `add_warning` · `add_warnings_bulk` · `admin_compose_class` · `app_is_anti_fraud_enabled` · `approve_vip_card` · `are_classmates` · `assert_can_read_student` · `assert_teacher_or_admin` · `auto_accept_exact_proposal` · `auto_activate_scheduled_tournaments` · `auto_complete_ended_tournaments` · `auto_expire_listings` · `award_achievement_manual` · `award_random_vip_card` · `award_vip_card_no_cost` · `award_vip_cards_with_filters` · `award_weekly_best_bonuses` · `backfill_tournament_scores` · `calculate_3bv` · `calculate_elo_change` · `calculate_minesweeper_gidouilles` · `calculate_minesweeper_points` · `calculate_riddle_gidouilles` · `calculate_tournament_score` · `calculate_week_boundaries` · `calculate_worksheet_total_points` · `can_access_assignment` · `can_access_kanban_board` · `can_access_kanban_column` · `can_assign_kanban_card` · `can_grant_kanban_card_assignment` · `can_manage_kanban_card_tag` · `can_moderate_message` · `can_participate_in_tournament` · `can_read_assignment` · `can_view_student_profile` · `check_achievement_prerequisites` · `check_and_increment_rate_limit` · `check_and_unlock_achievements` · `check_daily_trade_limit` · `check_expired_items` · `check_gidouilles_balance` · `check_marketplace_enabled` · `check_match_status` · `check_profanity_simple` · `cleanup_abandoned_minesweeper_games` · `cleanup_account_deletion_audit` · `cleanup_expired_cache` · `cleanup_expired_rate_limits` · `cleanup_old_audit_logs` · `cleanup_old_errors` · `cleanup_old_job_runs` · `cleanup_stale_presence` · `cleanup_stale_queue_entries` · `cleanup_stale_trades` · `cleanup_stuck_job_runs` · `close_school_year` · `complete_job_run` · `complete_minesweeper_game` · `complete_multiplayer_match` · `complete_tournament_game` · `compute_calculer_level` · `compute_chercher_level` · `compute_communiquer_level` · `compute_competence_level` · `compute_daily_summary` · `compute_modeliser_level` · `compute_raisonner_level` · `compute_representer_level` · `count_student_active_cards` · `count_user_notebooks` · `count_user_python_files` · `create_1on1_chat` · `create_tournament` · `current_school_year` · `curriculum_point_reference_counts` · `curriculum_referenced_points` · `delete_all_resolved_errors` · `delete_attachment` · `delete_user_account` · `discard_vip_cards` · `draw_multiple_vip_cards` · `duplicate_template` · `ensure_player_stats_exist` · `execute_trade` · `exercise_has_multiple_variations` · `exercise_has_valid_share_token` · `exercise_variation_count` · `exercises_search_vector` · `extract_plain_text_from_tiptap` · `finalize_tournament` · `game_leaderboard` · `generate_error_signature` · `generate_join_code` · `generate_reward_event_description` · `generate_share_token` · `generate_variant_seed` · `get_accessible_kanban_boards` · `get_achievement_leaderboard` · `get_all_exercise_assignments` · `get_allowed_recipients` · `get_assignment_completion_stats` · `get_class_course_by_share_token` · `get_class_journal_by_share_token` · `get_classes_by_user_grade` · `get_consent_info` · `get_conversation_participants` · `get_course_document_by_share_token` · `get_course_worksheet_by_share_token` · `get_cycle_for_grade` · `get_database_stats` · `get_deck_stats` · `get_due_cards_for_deck` · `get_error_stats` · `get_exercise_by_share_token` · `get_exercise_completion_stats` · `get_friend_ids` · `get_match_state` · `get_mathemo_user_rank` · `get_message_attachments` · `get_message_context_for_moderation` · `get_message_details` · `get_message_reaction_counts` · `get_message_thread` · `get_messages_paginated` · `get_minesweeper_reference_time` · `get_my_error_reports` · `get_my_exercise_assignments` · `get_next_export_counter` · `get_next_riddle_attempt_number` · `get_pending_reports_count` · `get_private_messages_unread_count` · `get_reaction_users` · `get_reports_for_moderation` · `get_riddle_of_the_day` · `get_shop_item_detail` · `get_shop_items` · `get_staff_directory` · `get_student_exercises` · `get_student_week_best` · `get_students_in_class` · `get_students_in_class_by_grade` · `get_teacher_assignment_stats` · `get_teacher_classes_for_messaging` · `get_teacher_classes_with_data` · `get_teacher_classes_with_students` · `get_teacher_exercise_assignments` · `get_template_statistics` · `get_templates_for_context` · `get_tournament_details` · `get_unread_count` · `get_user_conversations` · `get_user_frequent_templates` · `get_user_inbox` · `get_user_moderation_history` · `get_user_sent_messages` · `get_user_status` · `get_whiteboard_templates` · `get_worksheet_by_share_token` · `grade_ancestors` · `grant_parental_consent` · `grant_specific_vip_card` · `grant_vip_cards_after_action` · `had_class_access_to_assignment` · `has_full_access` · `has_individual_assignment` · `has_pending_request_from` · `has_proposal_on_listing` · `increment_rate_limit` · `initialize_default_categories` · `insert_tutor_messages` · `is_admin` · `is_assignment_creator` · `is_class_member` · `is_class_student` · `is_class_teacher` · `is_classmate` · `is_conversation_participant` · `is_evaluation_owner` · `is_exercise_parameterized` · `is_file_assigned_to_student` · `is_friend` · `is_in_assigned_class` · `is_kanban_board_member` · `is_my_student` · `is_notebook_assigned_to_student` · `is_riddle_assigned_to_student` · `is_riddle_of_the_day` · `is_series_owner` · `is_student` · `is_student_in_class` · `is_teacher_for_shared_coursework` · `is_teacher_of_class` · `is_teacher_of_student` · `is_teacher_or_admin` · `is_user_restricted` · `is_valid_grade_array` · `join_multiplayer_queue` · `leave_multiplayer_queue` · `link_chapter_to_template` · `list_orphan_message_attachment_files` · `lock_cards` · `log_moderation_action` · `log_template_action` · `mark_checkpoint_hint_revealed` · `mark_conversation_read` · `mark_message_as_read` · `marketplace_hidden_creators` · `minesweeper_scoped_leaderboard` · `move_message_to_folder` · `my_school` · `next_curriculum_point_code` · `normalize_grade_array` · `normalize_grade_value` · `process_achievement_event` · `promote_user_to_admin` · `purchase_vip_card` · `rag_hybrid_search` · `recalculate_minesweeper_reference_times` · `record_game_reward` · `record_listing_view` · `record_listing_views_batch` · `record_minesweeper_loss` · `redistribute_tournament_rewards` · `refresh_achievement_stats` · `refresh_achievement_stats_if_needed` · `reject_vip_card` · `remove_student_vip_card` · `remove_vip_card` · `remove_warnings_bulk` · `reopen_school_year` · `reorder_curriculum_objectives` · `reorder_curriculum_points` · `reorder_curriculum_themes` · `reorder_worksheet_exercises` · `reorder_worksheet_sections` · `report_message` · `request_vip_card_activation` · `resolve_card_instances` · `resolve_error` · `resolve_error_by_signature` · `resolve_marketplace_participants` · `resolve_open_class_by_code` · `resolve_tag_ids` · `restore_vip_card_instance` · `review_report` · `riddle_school_leaderboard` · `run_cleanup_all` · `run_cleanup_expired_data` · `run_daily_summaries` · `run_recalculate_minesweeper_ref_times` · `run_retention_c11` · `run_weekly_best_bonuses` · `run_weekly_rewards` · `same_school` · `search_private_messages` · `search_resources` · `search_users_unaccent` · `sell_vip_card` · `send_private_message` · `set_journal_entry_homework` · `set_riddle_of_the_day` · `shared_coursework_is_restricted` · `shares_tournament` · `soft_delete_message` · `soft_delete_warning` · `start_job_run` · `start_match` · `start_tournament_game` · `student_can_read_evaluation` · `student_can_read_series` · `student_has_exercise_access` · `student_has_worksheet_access` · `submit_riddle_attempt` · `tag_slug` · `teacher_owns_riddle` · `toggle_message_star` · `toggle_reaction` · `unaccent` · `unlock_cards` · `unlock_specific_cards` · `update_achievement_progress` · `update_class_gidouilles` · `update_game_state` · `update_message_status` · `update_student_bonus` · `update_student_competence_level` · `update_student_gidouilles` · `update_student_observable_state` · `update_student_point_state` · `update_tutor_conversation_stats` · `upsert_2048_score` · `upsert_checkpoint_run` · `upsert_error_occurrence` · `upsert_mathemo_score` · `upsert_user_presence` · `use_2048_power` · `use_detector` · `use_hint` · `use_item` · `use_mathemo_power` · `use_minesweeper_undo` · `use_vip_card` · `validate_1on1_chat_creation` · `validate_attachment_upload` · `validate_class_message_recipients` · `validate_message_recipients` · `validate_minesweeper_win` · `validate_riddle_attempt`

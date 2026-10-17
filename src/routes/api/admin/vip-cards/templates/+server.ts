@@ -15,6 +15,9 @@ import { requireAdmin } from '$lib/server/middleware/auth';
 import { createTemplateSchema } from '$lib/server/validation/vip-card-admin';
 import { templateToResponse } from '$lib/types/vip-card-admin';
 import { toVipCardTemplate } from '$lib/types/vip-card-admin';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/vip-cards/templates/+server');
 
 /**
  * POST /api/admin/vip-cards/templates
@@ -64,12 +67,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking template existence:', checkError);
-			throw error(500, 'Failed to check template existence');
+			logger.error('Error checking template existence:', checkError);
+			throw error(500, 'Impossible de vérifier le modèle de carte VIP');
 		}
 
 		if (existing) {
-			throw error(400, `Template with ID "${data.id}" already exists`);
+			throw error(400, `Un modèle de carte VIP porte déjà l’identifiant « ${data.id} »`);
 		}
 
 		// 5. Insert template (convert camelCase to snake_case)
@@ -94,14 +97,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (insertError) {
-			console.error('Error creating template:', insertError);
-			throw error(500, 'Failed to create template');
+			logger.error('Error creating template:', insertError);
+			throw error(500, 'Impossible de créer le modèle de carte VIP');
 		}
 
 		// 6. Return created template (convert snake_case to camelCase)
 		return json(templateToResponse(toVipCardTemplate(created)), { status: 201 });
 	} catch (err) {
-		console.error('Error in POST /api/admin/vip-cards/templates:', err);
+		logger.error('Error in POST /api/admin/vip-cards/templates:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -109,7 +112,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -138,8 +141,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('name', { ascending: true });
 
 		if (fetchError) {
-			console.error('Error fetching templates:', fetchError);
-			throw error(500, 'Failed to fetch templates');
+			logger.error('Error fetching templates:', fetchError);
+			throw error(500, 'Impossible de charger les modèles de cartes VIP');
 		}
 
 		// 4. Convert to camelCase and return
@@ -147,7 +150,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		return json(response);
 	} catch (err) {
-		console.error('Error in GET /api/admin/vip-cards/templates:', err);
+		logger.error('Error in GET /api/admin/vip-cards/templates:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -155,6 +158,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

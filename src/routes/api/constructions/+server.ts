@@ -12,6 +12,9 @@ import { constructionScriptSchema } from '$lib/constructions';
 import type { TablesInsert } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
 import { syncResourceTags } from '$lib/server/resource-tags';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/constructions/+server');
 
 // =============================================================================
 // VALIDATION SCHEMAS
@@ -37,22 +40,22 @@ const createConstructionSchema = z
 		title: z
 			.string()
 			.min(1, 'Le titre est requis')
-			.max(200, 'Le titre ne doit pas depasser 200 caracteres'),
+			.max(200, 'Le titre ne doit pas dépasser 200 caractères'),
 		description: z
 			.string()
-			.max(2000, 'La description ne doit pas depasser 2000 caracteres')
+			.max(2000, 'La description ne doit pas dépasser 2000 caractères')
 			.optional(),
 		format: z.enum(['json', 'dsl']).default('json'),
 		script: constructionScriptSchema.optional(),
 		dsl_script: z.string().max(50000, 'Le script DSL est trop long').optional(),
 		is_public: z.boolean().default(false),
-		tags: z.array(z.string().min(1).max(50)).max(10, 'Maximum 10 tags autorises').optional()
+		tags: z.array(z.string().min(1).max(50)).max(10, '10 tags au maximum').optional()
 	})
 	.refine(
 		(data) =>
 			(data.format === 'json' && data.script !== undefined) ||
 			(data.format === 'dsl' && data.dsl_script !== undefined),
-		{ message: 'script requis pour format json, dsl_script requis pour format dsl' }
+		{ message: 'Script requis : JSON pour le format json, DSL pour le format dsl' }
 	);
 
 // =============================================================================
@@ -78,7 +81,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const errorMsg = queryResult.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Parametres de requete invalides: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { page, limit, onlyMine } = queryResult.data;
@@ -116,8 +119,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data, error: queryError, count } = await query;
 
 	if (queryError) {
-		console.error('Error fetching constructions:', queryError);
-		throw error(500, 'Erreur lors de la recuperation des constructions');
+		logger.error('Error fetching constructions:', queryError);
+		throw error(500, 'Impossible de charger les constructions');
 	}
 
 	const totalPages = count ? Math.ceil(count / limit) : 0;
@@ -146,7 +149,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = createConstructionSchema.safeParse(body);
@@ -155,7 +158,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { title, description, format, script, dsl_script, is_public, tags } = validation.data;
@@ -183,8 +186,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	}
 
 	if (insertError) {
-		console.error('Error creating construction:', insertError);
-		throw error(500, 'Erreur lors de la creation de la construction');
+		logger.error('Error creating construction:', insertError);
+		throw error(500, 'Impossible de créer la construction');
 	}
 
 	return json({ construction: data }, { status: 201 });

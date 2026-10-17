@@ -12,6 +12,9 @@ import { uuidSchema } from '$lib/server/validation/common';
 import type { NotebookContent } from '$lib/types/notebook';
 import { z } from 'zod';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/+server');
 
 // =============================================================================
 // CONSTANTS
@@ -104,7 +107,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const errorMsg = queryResult.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Parametres de requete invalides: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { author_id, is_public, limit, offset } = queryResult.data;
@@ -140,7 +143,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Validate author_id is UUID
 		const authorIdValidation = uuidSchema.safeParse(author_id);
 		if (!authorIdValidation.success) {
-			throw error(400, 'author_id invalide');
+			throw error(400, 'Identifiant d’auteur invalide');
 		}
 		query = query.eq('author_id', author_id);
 	}
@@ -152,8 +155,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data: notebooks, error: queryError, count } = await query;
 
 	if (queryError) {
-		console.error('Error fetching python notebooks:', queryError);
-		throw error(500, 'Erreur lors de la recuperation des notebooks Python');
+		logger.error('Error fetching python notebooks:', queryError);
+		throw error(500, 'Impossible de charger les carnets');
 	}
 
 	// If student, also fetch assigned notebooks
@@ -188,7 +191,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.order('created_at', { ascending: false });
 
 		if (assignedError) {
-			console.error('Error fetching assigned notebooks:', assignedError);
+			logger.error('Error fetching assigned notebooks:', assignedError);
 			// Don't fail the whole request, just skip assigned notebooks
 		} else if (assigned) {
 			// Transform assigned notebooks to match the notebook format
@@ -239,7 +242,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = createNotebookSchema.safeParse(body);
@@ -248,7 +251,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { title, description, is_public } = validation.data;
@@ -260,15 +263,12 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.eq('author_id', user.id);
 
 	if (countError) {
-		console.error('Error counting python notebooks:', countError);
-		throw error(500, 'Erreur lors de la verification de la limite de notebooks');
+		logger.error('Error counting python notebooks:', countError);
+		throw error(500, 'Impossible de vérifier le nombre de carnets');
 	}
 
 	if (count !== null && count >= MAX_NOTEBOOKS_PER_USER) {
-		throw error(
-			400,
-			`Limite atteinte: vous ne pouvez pas avoir plus de ${MAX_NOTEBOOKS_PER_USER} notebooks Python`
-		);
+		throw error(400, `Limite atteinte : ${MAX_NOTEBOOKS_PER_USER} carnets au maximum`);
 	}
 
 	// Create initial notebook content with one empty code cell
@@ -312,14 +312,11 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (insertError) {
-		console.error('Error creating python notebook:', insertError);
+		logger.error('Error creating python notebook:', insertError);
 		if (insertError.message?.includes('maximum limit')) {
-			throw error(
-				400,
-				`Limite atteinte: vous ne pouvez pas avoir plus de ${MAX_NOTEBOOKS_PER_USER} notebooks Python`
-			);
+			throw error(400, `Limite atteinte : ${MAX_NOTEBOOKS_PER_USER} carnets au maximum`);
 		}
-		throw error(500, 'Erreur lors de la creation du notebook Python');
+		throw error(500, 'Impossible de créer le carnet');
 	}
 
 	return json({ notebook: data }, { status: 201 });

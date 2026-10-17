@@ -3,6 +3,7 @@ couvre:
   - 'src/lib/ubumark/**'
   - 'src/lib/components/markdown/**'
   - 'src/lib/extensions/**'
+  - 'src/lib/resources/**'
   - 'src/lib/components/rich-text/markdown-{import,export}.ts'
   - src/lib/components/exercises/LaTeXImportDialog.svelte
   - src/lib/utils/markdown-cache.ts
@@ -49,7 +50,7 @@ Hors périmètre : les **QCM** (choix, mélange) ne sont pas de la notation ubum
 | `utils/`            | **Scènes** : `courbe-scene.ts`, `figure-scene.ts`, `stat-chart-scene.ts`, `simulation-scene.ts`, `comparison-scene.ts`, `number-line-render.ts`… — géométrie calculée une fois, dessinée par l'écran ET le PDF. Plus `detail-kinds.ts` (encadrés), `list-depth.ts`.                                       |
 | `generators/`       | `typst-generator.ts` (`generateTypst`, aiguillage par type de nœud) + un générateur Typst par bloc (`*-typst.ts`). `latex-generator.ts` (export `.tex`, sans appelant hors du module à ce jour).                                                                                                          |
 | `parameterization/` | `parser/` (tokenizer, `{{random}}`, `{{eval}}`), `resolver/` (`resolveVariables`, `resolveText`), `validator/` (dépendances circulaires), `display-options.ts`, `expression-transforms.ts`.                                                                                                               |
-| `builders/`         | `sign-table.ts` (`signTableNode`), `variation-table.ts` (`variationTableNode`) : traduisent une grille calculée par `mathAST` en `VariationTableNode`. **Ne calculent aucun signe.**                                                                                                                      |
+| `builders/`         | `sign-table.ts` (`signTableNode`), `variation-table.ts` (`variationTableNode`) : traduisent une grille calculée par `mathAST` en `VariationTableNode`. **Ne calculent aucun signe.** La première borne n'est marquée ouverte que si le PREMIER intervalle l'est (x² sur [0 ; +∞[ commence par `[0 ; 0]`). |
 | `importers/latex/`  | `transpileLatexToMarkdown` : import d'un exercice LaTeX (dialogue `src/lib/components/exercises/LaTeXImportDialog.svelte`).                                                                                                                                                                               |
 
 ### Rendu écran — `src/lib/components/markdown/`
@@ -61,20 +62,51 @@ Hors périmètre : les **QCM** (choix, mélange) ne sont pas de la notation ubum
 | `nodes/ListNode.svelte`, `nodes/StaticBlockNode.svelte` | Rendent les blocs **dans un item de liste** : chaque nouveau bloc doit y être aussi.                                                                                     |
 | `utils/math-utils.ts`                                   | `expressionToLatex` / `expressionToRawLatex` : `~…~` → LaTeX via `parseCustomSafe` de `mathAST` ; erreur → LaTeX rouge.                                                  |
 | `content-locale.ts`                                     | Langue du document (virgule FR / point EN des décimaux).                                                                                                                 |
+| `content-capital-pairs.ts`                              | Sens de `AB` (longueur ou produit) des formules maison, posé par la carte d'une question ou d'un exercice ; `clearCapitalPairs` le coupe (chat).                         |
 | `authoring-errors.ts`                                   | Le prof voit le message d'erreur d'un bloc, l'élève un cadre neutre.                                                                                                     |
 | `render-budget.ts`                                      | `DOCUMENT_FIGURE_LIMITS` : plafond de figures/courbes par document.                                                                                                      |
 | `restricted-rendering.ts`                               | Mode restreint du chat élève (`restrictDocument`, `stripFenceLanguages`).                                                                                                |
 
 ### Ailleurs
 
-- **PDF** : `src/lib/typst/` (fiches, carnets), `src/lib/exercises/typst/exercise-typst-generator.ts`,
-  `src/lib/worksheets/student-worksheet-typst.ts` appellent `generateTypst`.
+- **PDF** : `src/lib/typst/` (carnets), `src/lib/exercises/typst/exercise-typst-generator.ts` et
+  le rendu des exercices de fiche (`src/lib/worksheets/document/render-exercise.ts`, prof et élève)
+  appellent `generateTypst`.
 - **Éditeur riche** (TipTap) : `src/lib/components/rich-text/markdown-import.ts` /
   `markdown-export.ts` (aller-retour : un bloc spécial devient un `codeBlock` de son langage et
   revient intact), vues d'édition dans `src/lib/extensions/`.
 - **Contrôle d'auteur** : `scripts/check-ubumark.ts` (`pnpm check:ubumark`).
 - **Instanciation** des modèles : `src/lib/questions/generator/instance-generator.ts`
   (`generateInstance`) et `src/lib/questions/generator/content-resolver.ts` appellent le paramétrage.
+
+### Références internes et adressage — `src/lib/resources/`
+
+Vérifié contre le code le 2026-10-13. Une référence `[[type:uuid|libellé]]` (ou
+`[[worksheet:uuid#3,5-7|libellé]]`) cite une ressource ; ce module dit **où elle vit** pour un
+lecteur donné, et rien de plus (le droit de lire reste aux gardes des routes et à la RLS).
+
+- `kinds.ts` : `RESOURCE_KINDS` (exercice, fiche, `worksheet_exercise` — l'identifiant est celui
+  de la jonction `worksheet_exercises` —, question, évaluation, chapitre, exercice Python,
+  notebook, construction, document) et `isResourceKind`. Sans dépendance, importable côté serveur.
+- `registry.ts` : `RESOURCE_REGISTRY` (libellé, icône, une route par rôle `ViewerRole` :
+  `teacher`, `student`, `admin`, `public`, ou `null`) et `resolveResource` → `url` ou `null`.
+  Routes construites par `resolve()` de SvelteKit : une route disparue est une erreur de type.
+  Appelants : `InternalLink.svelte` (rendu ubumark), la page `/dashboard/teacher/recherche`.
+- `references.ts` : `REFERENCE_REGEX` (même grammaire que le parser, `markdown-parser.ts`),
+  `extractResourceReferences` (dédoublonnées, sélection comprise), `referenceIdsOfKind`,
+  `referencesToLabels` (aperçu en texte du cahier de texte). Lus par
+  `src/lib/server/curriculum-coverage.ts` (couverture du programme tirée d'une séance) et
+  `src/lib/server/worksheets/citations.ts`.
+- `linkify.ts` : `linkifyResourceReferences` change les références en liens **dans du HTML**
+  (cahier de texte saisi dans TipTap), à appliquer **après** l'assainissement ; un type sans page
+  pour ce lecteur reste du texte grisé. Appelants : cahier de texte élève et cahier public.
+- `prefixes.ts` (`KIND_PREFIXES`, `parseResourceQuery`, `prefixHint`) et
+  `exercise-selection.ts` (`parseExerciseSelection`, `formatExerciseSelection`,
+  `describeExerciseSelection`) servent le sélecteur `[[` de
+  `src/lib/extensions/resource-link-extension.ts` : `[[exos:derivees#3` cherche les fiches et vise
+  l'exercice 3. La sélection désigne des **numéros** dans la fiche, pas des identifiants.
+- Tests : `src/lib/resources/__tests__/` ; `registry.test.ts` parcourt `src/routes` et vérifie
+  que chaque route déclarée existe.
 
 ## La syntaxe
 
@@ -93,9 +125,20 @@ Chaque exemple ci-dessous est **tiré d'un test existant** (cité) ; aucun n'est
 La notation custom est stockée **telle quelle** dans l'AST ; elle n'est convertie en LaTeX qu'au
 rendu (`expressionToLatex` à l'écran, `expressionToRawLatex` puis `convertLatexToTypstMath` au PDF).
 Les lettres-fonctions viennent de `generic_functions` de l'exercice (`genericFunctionsConfig`) :
-une liste déclarée **remplace** les défauts (f, g, h, u, v, w, F, G, H). Règles des unités et des
+une liste déclarée **remplace** les défauts (f, g, h, u, v, w, F, G, H). Le sens de `AB` (longueur
+ou produit) passe au PDF par l'option `capitalPairs` de `generateTypst` (absente : produit, l'écriture
+d'avant) ; à l'écran par le contexte `content-capital-pairs.ts`. Règles des unités et des
 crochets de calcul : [notation-unites](../pratiques/notation-unites.md). Pièges connus (grec sans
 antislash, prime hors `f'`, années groupées « 2 026 ») : `pnpm check:ubumark` les signale.
+
+Option `afterQuestion(index)` de `generateTypst` (cadres de réponse des fiches, ADR 0030 lot 3) :
+ce qu'elle rend se pose à la fin de chaque élément de **premier niveau** des listes numérotées de
+**premier niveau**, après ses sous-éléments ; `index` court d'une liste à l'autre. Le cadre
+emmène ce qui le précède : élément d'un seul bloc insécable, sinon son dernier bloc `sticky`.
+Option `keepEndWithNext` : le dernier bloc du document (dernier élément d'une liste) reste collé
+à ce qui suit (cadre unique). Aucun nœud d'AST
+ajouté : le parseur ne peut pas produire de cadre depuis le texte d'un prof. Détail :
+[fiches-et-pdf](fiches-et-pdf.md) § Cadres de réponse.
 
 ### Marques en ligne propres à ubumark
 
@@ -191,6 +234,11 @@ A = point(1, 1)
 ```
 ````
 
+Clés de l'en-tête : `fenetre:` (obligatoire), `taille:`, `description:`, `axes:`, `grille:`,
+`graduations:`. `deplacable:` et `rendu:` sont **réservées aux figures interactives** (figures
+stockées, option `interactive` de `parseFigureContent`) : dans un bloc d'exercice, refus situé
+« réglage réservé aux figures interactives » — `src/lib/ubumark/__tests__/figure/figure-reglages-interactifs.test.ts`.
+
 **Statistiques** — `src/lib/ubumark/__tests__/stat-chart/markdown.test.ts` sauf mention :
 
 ````text
@@ -232,6 +280,33 @@ collée à un marqueur (`\dfrac{{{a}}…}`) est lue comme groupe LaTeX
 (`src/lib/ubumark/__tests__/parameterization/parser/triple-brace.test.ts`). Les variables se
 résolvent dans l'ordre de déclaration (`resolveVariables`) ; `detectCircularDependencies` et
 `validateVariables` refusent les cycles et références inconnues.
+
+**Écriture d'un nombre calculé** (`{{eval:…}}`, `evaluateAstWithModifiers` dans
+`src/lib/mathAST/eval/evaluate-with-modifiers.ts` ; décisions de David du 2026-10-11). Jamais la
+notation JS (`3e-7`, `1e+22`) : le parseur LaTeX lit `e` comme la constante d'Euler. Le séparateur
+décimal reste le point (la virgule est posée au rendu, `toFrenchDecimal`).
+
+Règle : **jamais un chiffre faux ; notation scientifique seulement si demandée par `;sci` ou si le
+résultat est approché et ≥ 10¹⁵** (`MAX_EXPANDED_MAGNITUDE`).
+
+| Modificateur | `0.0000001*3`      | `10^22`                   | `10^22/3`                         |
+| ------------ | ------------------ | ------------------------- | --------------------------------- |
+| aucun        | `0.0000003`        | `10000000000000000000000` | `3.33333333333333 \times 10^{21}` |
+| `;d`         | `0.0000003`        | `10000000000000000000000` | `3.33333333333333 \times 10^{21}` |
+| `;sci`       | `3 \times 10^{-7}` | `10^{22}`                 | `3.33333333333333 \times 10^{21}` |
+
+Un entier EXACT (calculé en rationnels : `10^22`, `2^80`, `factorial(18)` → `6402373705728000`)
+s'écrit toujours en entier, quelle que soit sa taille, avec ou sans `;d`. Un résultat approché
+≥ 10¹⁵ passe en notation scientifique (mantisse à 15 chiffres significatifs) : au-delà, les
+chiffres d'un flottant seraient inventés. Un petit nombre est toujours développé (`0.0000003`).
+Une fraction exacte reste une fraction ; `1 000 000` reste `1000000` (pas de détection de
+puissance simple) ; mantisse 1 : `10^{-7}`. Aucune dépendance au niveau du modèle. `;sci` sur une grandeur écrit le nombre en syntaxe
+maison (`0.0000003[m];sci` → `3*10^{-7}[m]`, `10^{-7}[m]`) ; avec `;hms` ou un calcul littéral,
+c'est une faute d'auteur (« ;sci : … »). Un résultat non fini (`10^400`) lève « Résultat non
+fini ». Un nombre JS réinjecté dans une expression relue (tirage `{{random:…}}`, règle de
+validation `custom`) passe par `numberToLatexSafe` (`mathAST/common/numeric.ts`), jamais
+`String(n)` (`String(3e-7)` = `3e-7`, relu 3e − 7). Tests :
+`src/lib/mathAST/eval/__tests__/evaluate-with-modifiers-sans-notation-js.test.ts`.
 
 ## Le pipeline
 

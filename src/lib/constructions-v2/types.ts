@@ -30,12 +30,7 @@ export interface ConstructionMeta {
 
 /** Known directive names. */
 export type DirectiveName =
-	| 'pause'
-	| 'instrument'
-	| 'instruction'
-	| 'vitesse'
-	| 'cacher'
-	| 'montrer';
+	'pause' | 'instrument' | 'instruction' | 'vitesse' | 'cacher' | 'montrer';
 
 /** Start/end positions for instrument movement animation. */
 export interface InstrumentMove {

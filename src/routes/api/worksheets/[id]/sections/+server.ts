@@ -17,6 +17,9 @@ import {
 } from '$lib/server/validation/worksheets';
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/sections/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -34,7 +37,7 @@ async function verifyWorksheetAccess(
 	// Validate UUID format
 	const idValidation = uuidSchema.safeParse(worksheetId);
 	if (!idValidation.success) {
-		throw error(400, 'Invalid worksheet ID format');
+		throw error(400, 'Identifiant de fiche invalide');
 	}
 
 	// Fetch worksheet (only need id and ownership fields)
@@ -45,16 +48,16 @@ async function verifyWorksheetAccess(
 		.single();
 
 	if (dbError || !worksheet) {
-		throw error(404, 'Worksheet not found');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify ownership/authorization
 	if (role === 'teacher' && worksheet.created_by !== userId) {
-		throw error(403, 'Forbidden - Not your worksheet');
+		throw error(403, 'Accès réservé à l’auteur de la fiche');
 	}
 
 	if (role === 'admin' && schoolId && worksheet.school_id !== schoolId) {
-		throw error(403, 'Forbidden - Worksheet belongs to different school');
+		throw error(403, 'Cette fiche appartient à une autre école');
 	}
 
 	return worksheet;
@@ -85,8 +88,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('position', { ascending: true });
 
 	if (dbError) {
-		console.error('Failed to fetch sections:', dbError);
-		throw error(500, 'Failed to fetch sections');
+		logger.error('Failed to fetch sections:', dbError);
+		throw error(500, 'Impossible de charger les sections');
 	}
 
 	// Validate response
@@ -121,7 +124,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateCreateWorksheetSection(body);
@@ -129,7 +132,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data;
@@ -149,14 +152,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to create section:', dbError);
+		logger.error('Failed to create section:', dbError);
 
 		// Handle unique constraint violation (duplicate position)
 		if (dbError.code === '23505') {
-			throw error(400, 'A section already exists at this position');
+			throw error(400, 'Une section occupe déjà cette position');
 		}
 
-		throw error(500, 'Failed to create section');
+		throw error(500, 'Impossible de créer la section');
 	}
 
 	// Validate response
@@ -190,7 +193,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (worksheet.status !== 'draft') {
 		throw error(
 			400,
-			`Cannot reorder sections in worksheet with status '${worksheet.status}'. Only draft worksheets can be modified.`
+			`Impossible de réordonner les sections de cette fiche (statut « ${worksheet.status} ») : seul un brouillon peut être modifié.`
 		);
 	}
 
@@ -199,7 +202,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateReorderSections(body);
@@ -207,7 +210,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { sections } = validation.data;
@@ -221,15 +224,18 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.in('id', sectionIds);
 
 	if (fetchError) {
-		console.error('Failed to verify sections:', fetchError);
-		throw error(500, 'Failed to verify sections');
+		logger.error('Failed to verify sections:', fetchError);
+		throw error(500, 'Impossible de vérifier les sections');
 	}
 
 	const existingIds = new Set(existingSections?.map((s) => s.id) ?? []);
 	const invalidIds = sectionIds.filter((id) => !existingIds.has(id));
 
 	if (invalidIds.length > 0) {
-		throw error(400, `Some sections do not belong to this worksheet: ${invalidIds.join(', ')}`);
+		throw error(
+			400,
+			`Certaines sections n’appartiennent pas à cette fiche : ${invalidIds.join(', ')}`
+		);
 	}
 
 	// Use RPC for atomic update in a single transaction
@@ -245,8 +251,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	);
 
 	if (rpcError) {
-		console.error('Failed to reorder sections:', rpcError);
-		throw error(500, rpcError.message || 'Failed to reorder sections');
+		logger.error('Failed to reorder sections:', rpcError);
+		throw error(500, rpcError.message || 'Impossible de réordonner les sections');
 	}
 
 	// Validate response
@@ -255,7 +261,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		reorderSectionsResponseSchema,
 		{
 			success: true as const,
-			message: `Reordered ${count} sections`,
+			message: `Sections réordonnées : ${count}`,
 			updated_count: count
 		},
 		'PUT /api/worksheets/[id]/sections'

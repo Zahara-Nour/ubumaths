@@ -14,6 +14,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { TriggerType } from '$lib/types/messageTemplates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/templates/match/+server');
 
 // =====================================================
 // GET - Find matching template
@@ -58,8 +61,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (classMembersError && classMembersError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', classMembersError);
-			return error(500, 'Impossible de vérifier votre accès');
+			logger.error('Contrôle d’accès impossible :', classMembersError);
+			return error(500, 'Impossible de vérifier l’accès');
 		}
 
 		userClassIds = classMembers?.map((cm) => (cm as { class_id: string }).class_id) || [];

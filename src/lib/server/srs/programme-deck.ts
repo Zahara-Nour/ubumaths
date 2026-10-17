@@ -51,7 +51,7 @@ export async function ensureProgrammeDeck(supabase: SB, userId: string): Promise
 		.maybeSingle();
 
 	if (lookupErr) {
-		console.error('[programme-deck] Lookup failed:', lookupErr);
+		logger.error('[programme-deck] Lookup failed:', lookupErr);
 		throw lookupErr;
 	}
 
@@ -146,7 +146,7 @@ export async function ensureProgrammeDeckCard(
 	if (insertErr) {
 		// Code 23505 = unique violation : carte déjà présente, no-op.
 		if (insertErr.code === '23505') return;
-		console.error('[programme-deck] Card insert failed:', insertErr);
+		logger.error('[programme-deck] Card insert failed:', insertErr);
 		throw insertErr;
 	}
 
@@ -154,7 +154,7 @@ export async function ensureProgrammeDeckCard(
 	// (cf. docs/pratiques/rls-echecs-silencieux.md) : on le rend visible.
 	if (!inserted || inserted.length !== 1) {
 		const message = `[programme-deck] Carte non écrite : ${inserted?.length ?? 0} ligne(s) rendue(s)`;
-		console.error(message, { deckId, templateId });
+		logger.error(message, { deckId, templateId });
 		throw new Error(message);
 	}
 }

@@ -20,6 +20,9 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { distinctCategoryEntries } from '$lib/questions/category-options';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/questions/categories/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -32,7 +35,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.select('theme, domain, subdomain');
 
 		if (queryError) {
-			console.error('Error fetching templates:', queryError);
+			logger.error('Error fetching templates:', queryError);
 			throw error(500, 'Failed to fetch templates');
 		}
 
@@ -59,7 +62,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			entries: distinctCategoryEntries(templates ?? [])
 		});
 	} catch (err) {
-		console.error('Error in GET /api/questions/categories:', err);
+		logger.error('Error in GET /api/questions/categories:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

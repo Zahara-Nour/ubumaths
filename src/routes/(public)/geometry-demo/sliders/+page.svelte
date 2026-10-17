@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 </script>
 
 <svelte:head>
@@ -7,9 +8,7 @@
 
 <div class="container mx-auto max-w-4xl space-y-6 p-4">
 	<div>
-		<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-			>&larr; Geometry Demos</a
-		>
+		<BackLink href="/geometry-demo" label="Retour aux démos" />
 		<h1 class="mt-2 text-2xl font-bold">Sliders interactifs</h1>
 		<p class="text-muted-foreground">
 			Les sliders permettent de controler dynamiquement les parametres geometriques (rayon, angle,
@@ -61,6 +60,12 @@
 			<h2 class="font-bold">Similitude (rotation + homothetie)</h2>
 			<p class="text-sm text-muted-foreground">
 				Deux sliders : angle et rapport. Spirales et rosaces combinees.
+			</p>
+		</a>
+		<a href="/geometry-demo/sliders/koch" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Flocon de Von Koch</h2>
+			<p class="text-sm text-muted-foreground">
+				Le curseur montre chaque étape, de 0 à 4 (768 sommets à l'étape 4).
 			</p>
 		</a>
 		<a href="/geometry-demo/sliders/integrale" class="rounded-lg border p-4 hover:bg-muted">

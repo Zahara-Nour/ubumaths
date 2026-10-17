@@ -191,12 +191,16 @@ describe('revue — une liste trouée décalerait les individus', () => {
 		);
 	});
 
-	it('.croiser refuse aussi une liste trouée', () => {
-		expect(runInput(session({ L: 'a ;  ; b', M: 'x ; y ; z' }), '.croiser L M')).toEqual({
-			kind: 'refus',
-			message:
-				"L'entrée n° 2 de L est vide ou illisible : il faut une entrée par individu, dans le même ordre que les autres listes."
-		});
+	// P1 (2026-10-15) : .croiser associe par LIGNE — la ligne trouée est écartée
+	// et dite, au lieu d'être refusée (.filtrer, lui, garde son refus)
+	it('.croiser écarte la ligne trouée, et le dit', () => {
+		const result = runInput(session({ L: 'a ;  ; b', M: 'x ; y ; z' }), '.croiser L M');
+
+		expect(result.kind).toBe('commande');
+		if (result.kind === 'commande') {
+			expect(result.output).toContain('2 individus');
+			expect(result.output).toContain('1 ligne incomplète écartée');
+		}
 	});
 });
 

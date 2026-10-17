@@ -9,20 +9,19 @@
 	- Rich text support for statement
 	- Image support
 	- Genre and difficulty badges
-	- Correction visibility (teacher only)
 
 	Props:
-	- riddle: DbRiddle - The riddle data
+	- riddle: StudentRiddle - The riddle, without expected answer nor correction
 	- mode: 'display' | 'interactive' - Display only or allow interaction
-	- showCorrection: boolean - Show correction (teachers only)
-	- onSubmit: (answer) => void - Callback for answer submission
+	- onSubmit: (answer) => Promise<boolean> | void - Callback; resolves false when the
+	  submission failed, so the student can try again
 	- size: 'sm' | 'md' | 'lg' - Card size
 	- studentAttempt?: DbRiddleAttempt - Student's latest attempt (if any)
 -->
 
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
-	import type { DbRiddle, DbRiddleAttempt } from '$lib/types/riddle';
+	import type { DbRiddleAttempt, StudentRiddle } from '$lib/types/riddle';
 	import {
 		getDifficultyLabel,
 		getDifficultyColor,
@@ -31,7 +30,7 @@
 		getAttemptStatusColor,
 		formatAttemptNumber
 	} from '$lib/types/riddle';
-	import { validateRiddleAnswer, isAnswerComplete } from '$lib/utils/riddle-validator';
+	import { isAnswerComplete } from '$lib/utils/riddle-validator';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import ConsentButton from '$lib/components/ConsentButton.svelte';
@@ -42,14 +41,13 @@
 	import RiddleManualInput from '$lib/components/riddles/inputs/RiddleManualInput.svelte';
 	import { cn } from '$lib/utils';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { Send, CheckCircle2, XCircle, Clock } from '@lucide/svelte';
+	import { Send, Clock } from '@lucide/svelte';
 
 	// Props
 	interface Props {
-		riddle: DbRiddle;
+		riddle: StudentRiddle;
 		mode?: 'display' | 'interactive';
-		showCorrection?: boolean;
-		onSubmit?: (answer: unknown) => void;
+		onSubmit?: (answer: unknown) => Promise<boolean> | void;
 		size?: 'sm' | 'md' | 'lg';
 		studentAttempt?: DbRiddleAttempt | null;
 		loading?: boolean;
@@ -58,7 +56,6 @@
 	let {
 		riddle,
 		mode = 'display',
-		showCorrection = false,
 		onSubmit,
 		size = 'md',
 		studentAttempt = null,
@@ -78,7 +75,6 @@
 
 	// Submission state
 	let isSubmitted = $state(false);
-	let validationResult = $state<{ isCorrect: boolean; message?: string } | null>(null);
 
 	// Calculate next attempt number
 	const nextAttemptNumber = $derived((studentAttempt?.attempt_number || 0) + 1);
@@ -121,7 +117,7 @@
 	// HANDLERS
 	// ============================================================================
 
-	function handleSubmit() {
+	async function handleSubmit() {
 		if (!canSubmit) return;
 
 		let answer: unknown;
@@ -147,13 +143,13 @@
 				break;
 		}
 
-		// Client-side validation (if automatic)
-		if (hasAnswer) {
-			validationResult = validateRiddleAnswer(answer, riddle.answer);
-		}
-
+		// Le verdict vient du serveur : la page n'a pas la réponse attendue.
 		isSubmitted = true;
-		onSubmit?.(answer);
+		const accepted = await onSubmit?.(answer);
+		// Envoi refusé ou échoué (erreur serveur, réseau) : l'élève reprend la main.
+		if (accepted === false) {
+			isSubmitted = false;
+		}
 	}
 
 	// ============================================================================
@@ -267,42 +263,20 @@
 				</div>
 			{/if}
 
-			<!-- Validation Result (After Submission with Automatic Validation) -->
-			{#if isSubmitted && validationResult}
+			<!-- Réponse envoyée : le verdict arrive du serveur -->
+			{#if isSubmitted && hasAnswer}
 				<div
-					class={cn(
-						'result-section rounded-lg border-2 p-4',
-						validationResult.isCorrect
-							? 'border-green-500 bg-green-50 dark:bg-green-950'
-							: 'border-red-500 bg-red-50 dark:bg-red-950'
-					)}
+					class="result-section rounded-lg border-2 border-blue-500 bg-blue-50 p-4 dark:bg-blue-950"
 				>
 					<div class="flex items-center gap-3">
-						{#if validationResult.isCorrect}
-							<CheckCircle2 class="h-8 w-8 text-green-600 dark:text-green-400" />
-							<div>
-								<p class="font-semibold text-green-700 dark:text-green-300">
-									Bravo ! Réponse correcte !
-								</p>
-								<p class="text-sm text-green-600 dark:text-green-400">
-									Vous avez gagné {potentialGidouilles} gidouilles
-								</p>
-							</div>
-						{:else}
-							<XCircle class="h-8 w-8 text-red-600 dark:text-red-400" />
-							<div>
-								<p class="font-semibold text-red-700 dark:text-red-300">Réponse incorrecte</p>
-								<p class="text-sm text-red-600 dark:text-red-400">
-									Vous pouvez réessayer (récompense réduite)
-								</p>
-							</div>
-						{/if}
+						<Send class="h-8 w-8 text-blue-600 dark:text-blue-400" />
+						<p class="font-semibold text-blue-700 dark:text-blue-300">Réponse envoyée</p>
 					</div>
 				</div>
 			{/if}
 
 			<!-- Pending Manual Validation -->
-			{#if isSubmitted && !validationResult}
+			{#if isSubmitted && !hasAnswer}
 				<div
 					class="result-section rounded-lg border-2 border-blue-500 bg-blue-50 p-4 dark:bg-blue-950"
 				>
@@ -313,22 +287,6 @@
 							<p class="text-sm text-blue-600 dark:text-blue-400">
 								Votre {lore.entities.teacher} validera votre réponse prochainement
 							</p>
-						</div>
-					</div>
-				</div>
-			{/if}
-
-			<!-- Correction Section (Teachers Only) -->
-			{#if showCorrection}
-				<div class="correction-section">
-					<h3 class="mb-3 text-lg font-semibold text-primary">
-						Correction (visible {lore.entities.teacher} uniquement)
-					</h3>
-					<div
-						class="correction-content rounded-lg border border-primary/30 bg-primary/5 p-4 dark:bg-primary/10"
-					>
-						<div class="prose max-w-none dark:prose-invert">
-							<MarkdownRenderer content={riddle.correction} />
 						</div>
 					</div>
 				</div>
@@ -344,7 +302,6 @@
 
 	.statement-section,
 	.answer-section,
-	.correction-section,
 	.result-section {
 		animation: fadeIn 0.3s ease-in-out;
 	}

@@ -41,7 +41,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e: ZodIssue) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { exercise_ids, format, pretty_print = true } = validation.data;
@@ -51,12 +51,12 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	for (const id of exercise_ids) {
 		const result = await getExercise(locals.supabase, id);
 		if (result.error || !result.data) {
-			throw error(404, `Exercise not found: ${id}`);
+			throw error(404, `Exercice introuvable : ${id}`);
 		}
 
 		// Verify user owns the exercise or it's public
 		if (result.data.created_by !== user.id && !(result.data as { is_public?: boolean }).is_public) {
-			throw error(403, `Forbidden - Cannot export exercise: ${id}`);
+			throw error(403, `Export non autorisé pour l’exercice ${id}`);
 		}
 
 		exercises.push(result.data as unknown as Exercise);
@@ -104,7 +104,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			return json({
 				files,
 				mime_type: 'text/markdown',
-				message: 'Multiple markdown files. Download as ZIP or individually.'
+				message: 'Plusieurs fichiers Markdown : à télécharger en ZIP ou un par un.'
 			});
 		}
 	}

@@ -10,4 +10,6 @@
 export { default as ChapterSectionsEditor } from './ChapterSectionsEditor.svelte';
 export { default as StudentProgressTable } from './StudentProgressTable.svelte';
 export { default as DocumentUpload } from './DocumentUpload.svelte';
+export { default as ChapterAddDialogs } from './ChapterAddDialogs.svelte';
 export { default as PublicationToggle } from './PublicationToggle.svelte';
+export { default as CourseShareLinkCard } from './CourseShareLinkCard.svelte';

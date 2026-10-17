@@ -14,6 +14,9 @@ import {
 import type { Database } from '$lib/types/database';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-exercises/[id]/submit/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -35,7 +38,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Verify student role and check consent
@@ -46,7 +49,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (profileError || !profile || profile.role !== 'student') {
-		throw error(403, 'Seuls les étudiants peuvent soumettre des solutions');
+		throw error(403, 'Réservé aux élèves');
 	}
 
 	requireConsent(profile, 'submit_exercise');
@@ -62,14 +65,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation échouée: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data as SubmitExerciseInput;
 
 	// Validate the validation_result structure (from client)
 	if (!body.validation_result) {
-		throw error(400, 'Le résultat de validation est requis');
+		throw error(400, 'Résultat de la vérification requis');
 	}
 
 	const validationResultValidation = validationResultSchema.safeParse(body.validation_result);
@@ -77,7 +80,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validationResultValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Résultat de validation invalide: ${errorMsg}`);
+		throw error(400, `Résultat de la vérification invalide : ${errorMsg}`);
 	}
 
 	const validationResult = validationResultValidation.data;
@@ -96,8 +99,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (assignmentsError && assignmentsError.code !== 'PGRST116') {
-		console.error('Contrôle d’accès impossible :', assignmentsError);
-		throw error(500, 'Impossible de vérifier votre accès');
+		logger.error('Contrôle d’accès impossible :', assignmentsError);
+		throw error(500, 'Impossible de vérifier les droits d’accès');
 	}
 
 	const assignment =
@@ -114,10 +117,10 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (exErr || !exercise) {
-			throw error(404, 'Exercice introuvable');
+			throw error(404, 'Corvée Python introuvable');
 		}
 		if (!exercise.is_public) {
-			throw error(403, "Vous n'avez pas accès à cet exercice");
+			throw error(403, 'Accès refusé à cette corvée Python');
 		}
 	}
 
@@ -126,7 +129,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		if (assignment.due_date) {
 			const dueDate = new Date(assignment.due_date);
 			if (dueDate < new Date()) {
-				console.warn(`Student ${user.id} submitting after due date for exercise ${exerciseId}`);
+				logger.warn(`Student ${user.id} submitting after due date for exercise ${exerciseId}`);
 			}
 		}
 
@@ -139,12 +142,12 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 				.eq('assignment_id', assignment.id);
 
 			if (countError) {
-				console.error('Failed to count submissions:', countError);
-				throw error(500, 'Erreur lors de la vérification du nombre de tentatives');
+				logger.error('Failed to count submissions:', countError);
+				throw error(500, 'Impossible de vérifier le nombre de tentatives');
 			}
 
 			if (submissionCount !== null && submissionCount >= assignment.max_attempts) {
-				throw error(400, `Nombre maximum de tentatives atteint (${assignment.max_attempts})`);
+				throw error(400, `Nombre maximal de tentatives atteint (${assignment.max_attempts})`);
 			}
 		}
 	}
@@ -176,7 +179,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (submissionError) {
-		console.error('Failed to create submission:', submissionError);
+		logger.error('Failed to create submission:', submissionError);
 
 		// Check for rate limit error
 		if (submissionError.message?.includes('Limite de taux dépassée')) {
@@ -188,15 +191,15 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			throw error(400, submissionError.message);
 		}
 
-		throw error(500, 'Erreur lors de la création de la soumission');
+		throw error(500, 'Impossible d’enregistrer la solution');
 	}
 
 	return json(
 		{
 			submission,
 			message: validationResult.valid
-				? 'Solution correcte ! Félicitations !'
-				: 'Solution incorrecte. Réessayez !'
+				? 'Solution correcte, bravo !'
+				: 'Solution incorrecte : encore un essai !'
 		},
 		{ status: 201 }
 	);
@@ -218,7 +221,7 @@ async function getStudentClassIds(
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (classesError) {
-		console.error('Enrichissement illisible :', classesError);
+		logger.error('Enrichissement illisible :', classesError);
 	}
 
 	if (!classes || classes.length === 0) {

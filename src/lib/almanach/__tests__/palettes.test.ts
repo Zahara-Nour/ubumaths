@@ -23,9 +23,10 @@ describe('palettes des mois', () => {
 		}
 	);
 
-	it('le corps d’Ubu dans l’accueil est bien #080808', async () => {
+	it('le corps d’Ubu de l’accueil (et du Tour du Royaume) est bien #080808', async () => {
 		const { readFileSync } = await import('node:fs');
-		const page = readFileSync('src/routes/(public)/+page.svelte', 'utf8');
+		// Le dessin vit dans le composant partagé depuis le Tour du Royaume
+		const page = readFileSync('src/lib/components/kingdom-tour/PereUbuFigure.svelte', 'utf8');
 		expect(page).toContain(`fill="${UBU_BODY_COLOR}"`);
 		// Plus aucun trait figé en dur : ils suivent la variable du mois
 		expect(page).not.toContain('stroke="#ffcf33"');

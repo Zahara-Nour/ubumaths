@@ -76,7 +76,8 @@ export interface MessageAttachment {
 	file_name: string;
 	file_type: string;
 	file_size: number;
-	public_url: string;
+	/** Héritage : jamais lu. La pièce jointe s'ouvre par `/api/messages/attachments/<id>`. */
+	public_url: string | null;
 }
 
 export interface MessageDetails {

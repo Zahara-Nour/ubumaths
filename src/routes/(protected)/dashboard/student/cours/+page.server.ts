@@ -11,6 +11,9 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import type { ChapterSummary } from '$lib/types/chapters';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/cours/+page.server');
 
 interface ClassWithChapters {
 	classId: string;
@@ -38,7 +41,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('display_order', { ascending: true });
 
 	if (chaptersError) {
-		console.error('[Student Cours] Error fetching chapters:', chaptersError);
+		logger.error('[Student Cours] Error fetching chapters:', chaptersError);
 		throw error(500, 'Erreur lors du chargement des chapitres');
 	}
 
@@ -59,7 +62,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.eq('status', 'active');
 
 	if (membershipError) {
-		console.error('[Student Cours] Error fetching memberships:', membershipError);
+		logger.error('[Student Cours] Error fetching memberships:', membershipError);
 	}
 
 	// Le professeur unique, pour l'attribution à l'affichage.

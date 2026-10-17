@@ -360,38 +360,113 @@ export function asRiddleDifficulty(value: number | null | undefined): RiddleDiff
 }
 
 /**
- * Narrows a `riddles` row to {@link DbRiddle}.
+ * What a student needs to answer a riddle: the input kind and, for a QCM, the choices.
+ * Never the expected value — the server judges the answer.
+ */
+export interface StudentAnswerConfig {
+	type: AnswerType;
+	options?: {
+		choices?: string[];
+		multipleAnswers?: boolean;
+	};
+}
+
+/**
+ * A riddle as sent to a student's browser: no expected answer, no correction.
+ * Les deux se lisaient dans les données de la page (constat du 2026-10-12).
+ */
+export type StudentRiddle = Omit<DbRiddle, 'answer' | 'correction'> & {
+	answer: StudentAnswerConfig | null;
+};
+
+/**
+ * Strips from a riddle everything a student must not read before answering: the
+ * expected value (and its tolerance settings) and the written correction.
+ */
+export function toStudentRiddle(riddle: DbRiddle): StudentRiddle {
+	const { answer, correction: _correction, ...rest } = riddle;
+	return {
+		...rest,
+		answer: answer
+			? {
+					type: answer.type,
+					options: {
+						choices: answer.options?.choices,
+						multipleAnswers: answer.options?.multipleAnswers
+					}
+				}
+			: null
+	};
+}
+
+/**
+ * Colonnes de `riddles` lues par le code, SANS `answer` ni `correction`.
+ *
+ * Réponse attendue et correction vivent dans `riddle_solutions` (auteur de l'énigme et
+ * admin seulement) ; les deux colonnes de `riddles` sont supprimées (étape C,
+ * `20261016100800`). Les colonnes restent nommées : un `select('*')` suivrait en silence
+ * toute colonne ajoutée plus tard.
+ */
+export const RIDDLE_COLUMNS =
+	'id, riddle_number, title, genre, difficulty, statement, image_url, created_by, status, created_at, updated_at' as const;
+
+/**
+ * Réponse attendue et correction d'une énigme, telles que rangées dans `riddle_solutions`.
+ * `answer` est du jsonb : {@link toDbRiddle} le resserre.
+ */
+export interface RiddleSolution {
+	answer: unknown;
+	correction: string;
+}
+
+/**
+ * Narrows a `riddles` row, joined with its {@link RiddleSolution}, to {@link DbRiddle}.
  *
  * Postgres is looser than the domain type: `difficulty` is a plain integer,
  * `status` a plain text and `answer` a jsonb. A cast would have asserted the
  * three at once without checking any of them.
  *
  * `answer` stays `null` when it is not a usable object, which is exactly what
- * the domain means by it: manual validation required.
+ * the domain means by it: manual validation required. Sans solution (`null`),
+ * l'énigme se valide à la main et sa correction est vide.
+ *
+ * Les champs sont recopiés un à un : rien d'autre que ce qui est listé ne peut
+ * fuir par un `...row`.
  */
-export function toDbRiddle(row: {
-	id: string;
-	riddle_number: number;
-	title: string;
-	genre: string | null;
-	difficulty: number | null;
-	statement: string;
-	correction: string;
-	image_url: string | null;
-	answer: unknown;
-	created_by: string;
-	status: string;
-	created_at: string;
-	updated_at: string;
-}): DbRiddle {
+export function toDbRiddle(
+	row: {
+		id: string;
+		riddle_number: number;
+		title: string;
+		genre: string | null;
+		difficulty: number | null;
+		statement: string;
+		image_url: string | null;
+		created_by: string;
+		status: string;
+		created_at: string;
+		updated_at: string;
+	},
+	solution: RiddleSolution | null
+): DbRiddle {
+	const answer = solution?.answer;
 	return {
-		...row,
+		id: row.id,
+		riddle_number: row.riddle_number,
+		title: row.title,
+		genre: row.genre,
 		difficulty: asRiddleDifficulty(row.difficulty),
-		status: row.status === 'published' ? 'published' : 'draft',
+		statement: row.statement,
+		correction: solution?.correction ?? '',
+		image_url: row.image_url,
 		answer:
-			typeof row.answer === 'object' && row.answer !== null && !Array.isArray(row.answer)
-				? (row.answer as AnswerConfig)
-				: null
+			typeof answer === 'object' && answer !== null && !Array.isArray(answer)
+				? (answer as AnswerConfig)
+				: null,
+		created_by: row.created_by,
+		status: row.status === 'published' ? 'published' : 'draft',
+		created_at: row.created_at,
+		updated_at: row.updated_at
 	};
 }
 

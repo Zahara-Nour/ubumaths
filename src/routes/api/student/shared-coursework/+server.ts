@@ -28,6 +28,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { listStudentSharedCourseworkSchema } from '$lib/server/validation';
 import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/shared-coursework/+server');
 
 /**
  * List all visible coursework shared with student's classes
@@ -53,7 +56,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	const validation = listStudentSharedCourseworkSchema.safeParse(queryParams);
 	if (!validation.success) {
-		console.error('[Student Shared Coursework] Validation error:', validation.error.issues);
+		logger.error('[Student Shared Coursework] Validation error:', validation.error.issues);
 		throw error(400, validation.error.issues[0].message);
 	}
 
@@ -68,7 +71,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.eq('status', 'active');
 
 		if (classesError) {
-			console.error('[Student Shared Coursework] Classes fetch error:', classesError);
+			logger.error('[Student Shared Coursework] Classes fetch error:', classesError);
 			throw error(500, 'Failed to fetch student classes');
 		}
 
@@ -143,7 +146,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const { data: sharedCourseworkList, error: fetchError, count } = await query;
 
 		if (fetchError) {
-			console.error('[Student Shared Coursework] Database error:', fetchError);
+			logger.error('[Student Shared Coursework] Database error:', fetchError);
 			throw error(500, 'Failed to fetch shared coursework');
 		}
 
@@ -170,7 +173,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.in('coursework_id', courseworkIds);
 
 		if (materialsError) {
-			console.error('[Student Shared Coursework] Materials fetch error:', materialsError);
+			logger.error('[Student Shared Coursework] Materials fetch error:', materialsError);
 		}
 
 		// Group materials by coursework_id
@@ -269,7 +272,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		}
 
 		// Handle other errors
-		console.error('[Student Shared Coursework] Error fetching data:', err);
+		logger.error('[Student Shared Coursework] Error fetching data:', err);
 		throw error(500, 'An error occurred while fetching shared coursework');
 	}
 };

@@ -35,7 +35,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		return json({ error: "Lien d'évaluation invalide" }, { status: 400 });
+		return json({ error: 'Lien de contrôle invalide' }, { status: 400 });
 	}
 
 	try {

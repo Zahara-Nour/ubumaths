@@ -24,6 +24,9 @@ import type { RequestHandler } from './$types';
 import { removeWarningsBulkSchema } from '$lib/server/validation/warnings';
 import { removeWarningsBulk } from '$lib/server/warnings';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/warnings/remove-bulk/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -55,7 +58,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			removed: result.removed
 		});
 	} catch (err) {
-		console.error('Error removing warnings (bulk):', err);
+		logger.error('Error removing warnings (bulk):', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

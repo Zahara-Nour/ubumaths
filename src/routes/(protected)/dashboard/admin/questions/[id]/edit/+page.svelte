@@ -22,14 +22,14 @@
 -->
 
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { QuestionTemplate } from '$lib/questions/types';
 	import { toTemplatePutBody } from '$lib/questions/template-put-body';
-	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { ArrowLeft, Loader2, ListTodo, ChevronDown, ChevronRight } from '@lucide/svelte';
+	import { Loader2, ListTodo, ChevronDown, ChevronRight } from '@lucide/svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
@@ -173,11 +173,8 @@
 <div class="container mx-auto max-w-7xl space-y-6 p-6">
 	<!-- Header -->
 	<div class="flex items-center justify-between">
-		<div class="flex items-center gap-4">
-			<Button variant="outline" onclick={handleCancel} class="gap-2">
-				<ArrowLeft class="h-4 w-4" />
-				Retour
-			</Button>
+		<div>
+			<BackLink href="/dashboard/admin/questions" label="Retour aux questions" />
 			<div>
 				<h1 class="text-3xl font-bold">Modifier la Question</h1>
 				<p class="text-muted-foreground">

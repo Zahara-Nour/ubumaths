@@ -29,6 +29,9 @@ import type {
 	UpdateJournalEntryInput
 } from '$lib/server/validation/journal';
 import { getOrderedSchoolDays, type WeekConfig } from '$lib/utils/week-config';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/journal');
 
 // ============================================================================
 // TYPES
@@ -94,10 +97,10 @@ export async function createJournalEntry(
 		.single();
 
 	if (classError || !classData) {
-		console.error('[createJournalEntry] Class not found:', classError);
+		logger.error('[createJournalEntry] Class not found:', classError);
 		return {
 			data: null,
-			error: new Error("Vous n'etes pas autorise a creer des entrees pour cette classe")
+			error: new Error("Création d'entrées non autorisée pour cette classe")
 		};
 	}
 
@@ -114,7 +117,7 @@ export async function createJournalEntry(
 		.single();
 
 	if (error) {
-		console.error('[createJournalEntry] Error:', error);
+		logger.error('[createJournalEntry] Error:', error);
 		// Check for unique constraint violation
 		if (error.code === '23505') {
 			return {
@@ -159,7 +162,7 @@ export async function updateJournalEntry(
 		.single();
 
 	if (error) {
-		console.error('[updateJournalEntry] Error:', error);
+		logger.error('[updateJournalEntry] Error:', error);
 		// Check for unique constraint violation (if entry_date was changed)
 		if (error.code === '23505') {
 			return {
@@ -173,7 +176,7 @@ export async function updateJournalEntry(
 	if (!entry) {
 		return {
 			data: null,
-			error: new Error("Entree introuvable ou vous n'etes pas autorise a la modifier")
+			error: new Error('Entrée introuvable ou modification non autorisée')
 		};
 	}
 
@@ -196,7 +199,7 @@ export async function deleteJournalEntry(
 	const { error } = await supabase.from('class_journal_entries').delete().eq('id', entryId);
 
 	if (error) {
-		console.error('[deleteJournalEntry] Error:', error);
+		logger.error('[deleteJournalEntry] Error:', error);
 		return { error: new Error(error.message) };
 	}
 
@@ -235,7 +238,7 @@ export async function getJournalEntriesForWeek(
 		.single();
 
 	if (classError || !classData) {
-		console.error('[getJournalEntriesForWeek] Error fetching class:', classError);
+		logger.error('[getJournalEntriesForWeek] Error fetching class:', classError);
 		return { data: null, error: new Error('Classe introuvable') };
 	}
 
@@ -249,7 +252,7 @@ export async function getJournalEntriesForWeek(
 		.order('entry_date', { ascending: true });
 
 	if (entriesError) {
-		console.error('[getJournalEntriesForWeek] Error fetching entries:', entriesError);
+		logger.error('[getJournalEntriesForWeek] Error fetching entries:', entriesError);
 		return { data: null, error: new Error(entriesError.message) };
 	}
 
@@ -262,7 +265,7 @@ export async function getJournalEntriesForWeek(
 	// Sans l'emploi du temps, aucun jour n'est « jour de cours » : le cahier de
 	// texte se présente vide, comme si la classe n'avait jamais eu lieu.
 	if (schedulesError) {
-		console.error('[journal] Emploi du temps illisible :', schedulesError);
+		logger.error('[journal] Emploi du temps illisible :', schedulesError);
 		throw new Error(schedulesError.message);
 	}
 
@@ -280,7 +283,7 @@ export async function getJournalEntriesForWeek(
 			.in('entry_id', entryIds);
 
 		if (travauxError) {
-			console.error('[journal] Travaux illisibles :', travauxError.message);
+			logger.error('[journal] Travaux illisibles :', travauxError.message);
 			throw new Error(travauxError.message);
 		}
 
@@ -374,7 +377,7 @@ export async function getTeacherJournalEntries(
 	const { data, error } = await query;
 
 	if (error) {
-		console.error('[getTeacherJournalEntries] Error:', error);
+		logger.error('[getTeacherJournalEntries] Error:', error);
 		return { data: [], error: new Error(error.message), count: 0 };
 	}
 
@@ -408,7 +411,7 @@ export async function getJournalStatistics(
 		.eq('class_id', classId);
 
 	if (error) {
-		console.error('[getJournalStatistics] Error:', error);
+		logger.error('[getJournalStatistics] Error:', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -424,7 +427,7 @@ export async function getJournalStatistics(
 			.in('entry_id', entryIds);
 
 		if (travauxError) {
-			console.error('[getJournalStatistics] Travaux illisibles :', travauxError.message);
+			logger.error('[getJournalStatistics] Travaux illisibles :', travauxError.message);
 			return { data: null, error: new Error(travauxError.message) };
 		}
 
@@ -495,7 +498,7 @@ export async function getUpcomingHomework(
 		.eq('status', 'active');
 
 	if (membershipError) {
-		console.error('[getUpcomingHomework] Error fetching memberships:', membershipError);
+		logger.error('[getUpcomingHomework] Error fetching memberships:', membershipError);
 		return { data: [], error: new Error(membershipError.message), count: 0 };
 	}
 
@@ -537,7 +540,7 @@ export async function getUpcomingHomework(
 		.order('due_date', { ascending: true });
 
 	if (rowsError) {
-		console.error('[getUpcomingHomework] Error fetching homework:', rowsError);
+		logger.error('[getUpcomingHomework] Error fetching homework:', rowsError);
 		return { data: [], error: new Error(rowsError.message), count: 0 };
 	}
 
@@ -586,7 +589,7 @@ export async function getNextClassDate(
 		.eq('class_id', classId);
 
 	if (scheduleError) {
-		console.error('[getNextClassDate] Error fetching schedule:', scheduleError);
+		logger.error('[getNextClassDate] Error fetching schedule:', scheduleError);
 		return { data: null, error: new Error(scheduleError.message) };
 	}
 

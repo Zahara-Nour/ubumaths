@@ -21,15 +21,21 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { bulkShareMaterialsSchema } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/materials/bulk-share/+server');
 
 /**
  * POST /api/google/materials/bulk-share
  * Share multiple course work materials with multiple classes
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -56,20 +62,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.in('id', materialIds);
 
 	if (materialsError) {
-		console.error('[Bulk Material Share] Error fetching materials:', materialsError);
-		throw error(500, 'Failed to fetch materials');
+		logger.error('[Bulk Material Share] Error fetching materials:', materialsError);
+		throw error(500, 'Impossible de charger les supports');
 	}
 
 	if (!materials || materials.length !== materialIds.length) {
-		throw error(404, 'One or more materials not found');
+		throw error(404, 'Un ou plusieurs supports introuvables');
 	}
 
 	// Verify ALL materials belong to the teacher
 	const invalidMaterials = materials.filter((m) => {
 		// Handle nested course data (Supabase JOIN types)
 		const courseData = m.google_classroom_courses as unknown as
-			| { teacher_id: string }
-			| { teacher_id: string }[];
+			{ teacher_id: string } | { teacher_id: string }[];
 		const teacherId = Array.isArray(courseData)
 			? courseData[0]?.teacher_id
 			: courseData?.teacher_id;
@@ -77,11 +82,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (invalidMaterials.length > 0) {
-		console.error(
+		logger.error(
 			`[Bulk Material Share] Unauthorized material access attempt by teacher ${user.id}:`,
 			invalidMaterials.map((m) => m.id)
 		);
-		throw error(403, 'You do not own all selected materials');
+		throw error(403, 'Accès refusé à certains des supports choisis');
 	}
 
 	// Verify all classes exist and are active. Mono-teacher: the sole teacher owns
@@ -94,12 +99,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.eq('is_active', true);
 
 	if (classesError) {
-		console.error('[Bulk Material Share] Error fetching classes:', classesError);
-		throw error(500, 'Failed to verify class ownership');
+		logger.error('[Bulk Material Share] Error fetching classes:', classesError);
+		throw error(500, 'Impossible de vérifier les classes');
 	}
 
 	if (!classes || classes.length !== classIds.length) {
-		throw error(400, 'One or more classes not found or inactive');
+		throw error(400, 'Une ou plusieurs classes introuvables ou inactives');
 	}
 
 	// Create shared_materials records for all combinations
@@ -125,8 +130,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 	if (insertError) {
-		console.error('[Bulk Material Share] Error sharing materials:', insertError);
-		throw error(500, 'Failed to share materials');
+		logger.error('[Bulk Material Share] Error sharing materials:', insertError);
+		throw error(500, 'Impossible de partager les supports');
 	}
 
 	return json({

@@ -27,8 +27,8 @@ const CDN_BASE = 'https://cdn.jsdelivr.net/npm';
 // Pin versions to ensure compatibility between bundle and WASM modules
 const TYPST_VERSION = '0.6.1-rc5';
 const TYPST_BUNDLE_URL = `${CDN_BASE}/@myriaddreamin/typst.ts@${TYPST_VERSION}/dist/esm/contrib/all-in-one-lite.bundle.js`;
-const COMPILER_WASM_URL = `${CDN_BASE}/@myriaddreamin/typst-ts-web-compiler@${TYPST_VERSION}/pkg/typst_ts_web_compiler_bg.wasm`;
-const RENDERER_WASM_URL = `${CDN_BASE}/@myriaddreamin/typst-ts-renderer@${TYPST_VERSION}/pkg/typst_ts_renderer_bg.wasm`;
+export const COMPILER_WASM_URL = `${CDN_BASE}/@myriaddreamin/typst-ts-web-compiler@${TYPST_VERSION}/pkg/typst_ts_web_compiler_bg.wasm`;
+export const RENDERER_WASM_URL = `${CDN_BASE}/@myriaddreamin/typst-ts-renderer@${TYPST_VERSION}/pkg/typst_ts_renderer_bg.wasm`;
 
 // Window keys for singleton state (survives HMR)
 // Include version in key to force reinitialization when version changes

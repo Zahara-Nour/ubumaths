@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import { redirect, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { fetchWorksheetCitations } from '$lib/server/worksheets/citations';
+import { listWorksheetStyles } from '$lib/server/worksheets/worksheet-styles';
 
 // UUID validation schema
 const uuidSchema = z.string().uuid();
@@ -30,15 +31,19 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	if (!response.ok) {
 		if (response.status === 404) {
-			throw error(404, 'Feuille non trouvee');
+			throw error(404, 'Fiche introuvable');
 		}
 		if (response.status === 403) {
-			throw error(403, 'Acces refuse');
+			throw error(403, 'Accès refusé');
 		}
 		throw error(500, 'Erreur lors du chargement de la feuille');
 	}
 
 	const data = await response.json();
+
+	// Les styles de l'AUTEUR de la fiche : l'admin qui ouvre la fiche du prof
+	// voit le style qu'elle porte, comme le PDF.
+	const styles = await listWorksheetStyles(locals.supabase, data.worksheet.created_by);
 
 	return {
 		worksheet: data.worksheet,
@@ -49,6 +54,8 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		// avec d'autres consommateurs — dont un schéma Zod qui laisserait tomber le
 		// champ en silence.
 		citations,
+		// Le menu « Style » : ceux de Chiphre, puis ceux du prof (lot 3b)
+		styles,
 		user
 	};
 };

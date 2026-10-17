@@ -14,6 +14,7 @@
 		calculateGidouilles
 	} from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Card from '$lib/components/ui/card';
@@ -23,7 +24,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
 	import { submitAction } from '$lib/utils/form-action';
-	import { CheckCircle2, XCircle, AlertTriangle, ArrowLeft } from '@lucide/svelte';
+	import { CheckCircle2, XCircle, AlertTriangle } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 
@@ -82,11 +83,7 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl p-4 sm:p-6">
-	<!-- Back Button -->
-	<Button variant="ghost" href="/dashboard/teacher/contenu/enigmes/validations" class="mb-4">
-		<ArrowLeft class="mr-2 h-4 w-4" />
-		Retour aux validations
-	</Button>
+	<BackLink href="/dashboard/teacher/contenu/enigmes/validations" label="Retour aux validations" />
 
 	<!-- Student Info Card -->
 	<Card.Root class="mb-6">

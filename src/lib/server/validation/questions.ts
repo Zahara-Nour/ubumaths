@@ -22,6 +22,7 @@ import {
 } from '$lib/questions/template-schema';
 import { refineAssumptionCollisions } from '$lib/questions/answer-assumptions';
 import { genericFunctionNamesSchema } from '$lib/questions/generic-functions';
+import { capitalPairsSchema } from '$lib/questions/capital-pairs';
 
 // Re-export building blocks for downstream consumers (migration-review.ts, index.ts)
 export {
@@ -116,6 +117,22 @@ function refineSharedCleanCoefficients(data: { shared?: unknown }, ctx: z.Refine
 	});
 }
 
+/**
+ * `shared.capitalPairs` : « length » ou « product », lu par la génération et
+ * transmis au parseur (sens de `AB` pour la correction de l'élève).
+ */
+function refineSharedCapitalPairs(data: { shared?: unknown }, ctx: z.RefinementCtx): void {
+	const shared = data.shared;
+	if (typeof shared !== 'object' || shared === null || !('capitalPairs' in shared)) return;
+	const result = capitalPairsSchema.safeParse(shared.capitalPairs);
+	if (result.success) return;
+	ctx.addIssue({
+		code: 'custom',
+		message: result.error.issues[0].message,
+		path: ['shared', 'capitalPairs']
+	});
+}
+
 /** Contrôles croisés communs à la création et à la mise à jour */
 function refineTemplate(
 	data: Parameters<typeof refineAssumptionCollisions>[0] & { shared?: unknown },
@@ -124,6 +141,7 @@ function refineTemplate(
 	refineAssumptionCollisions(data, ctx);
 	refineSharedGenericFunctions(data, ctx);
 	refineSharedCleanCoefficients(data, ctx);
+	refineSharedCapitalPairs(data, ctx);
 }
 
 /**

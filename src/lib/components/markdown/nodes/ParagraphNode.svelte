@@ -23,7 +23,7 @@
 <script lang="ts">
 	import { sanitizeUrl } from '$lib/utils/sanitize';
 	import type { InlineNode, InputState, InternalLinkReferenceType } from '$lib/ubumark';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import type { ExerciseHint } from '$lib/exercises/types';
 	import MathInline from './MathInline.svelte';
 	import MathPrompt from './MathPrompt.svelte';
@@ -41,6 +41,7 @@
 		replacePromptsWithPrefilled
 	} from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
+	import { readCapitalPairs } from '../content-capital-pairs';
 
 	interface Props {
 		children: InlineNode[];
@@ -65,6 +66,8 @@
 		prefilledValues?: Record<string, string>;
 		/** LaTeX to insert when Space is pressed in math mode */
 		mathModeSpace?: string;
+		/** Sens de `AB` (champs de réponse : raccourcis `AA`, `RR`… coupés en mode longueur) */
+		capitalPairs?: CapitalPairs;
 		/** Display LaTeX overrides for expression nodes (e.g., with removeSpaces applied) */
 		expressionDisplayMap?: Record<string, string>;
 		/** Callback when a hashtag is clicked */
@@ -96,6 +99,7 @@
 		correctValues,
 		prefilledValues,
 		mathModeSpace,
+		capitalPairs,
 		expressionDisplayMap,
 		onHashtagClick,
 		onMentionClick,
@@ -108,6 +112,10 @@
 
 	// Langue du contenu (séparateur décimal), posée par MarkdownRenderer
 	const contentLocale = readContentLocale();
+	// Sens de `AB` pour écrire les formules : la prop (champ de réponse) ou, à défaut, celui
+	// posé par la carte de la question
+	const contextCapitalPairs = readCapitalPairs();
+	const writingCapitalPairs = () => capitalPairs ?? contextCapitalPairs();
 
 	/**
 	 * Check if adjacent node is inline-block (math, blank, hint, or internal-link) for whitespace handling
@@ -173,14 +181,20 @@
 				termOffset={adjusted.hasLeadingSpace ? 1 : 0}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline'}
-			{#if hasPrompts(child.expression, child.syntax)}
+			{#if hasPrompts(child.expression, child.syntax, writingCapitalPairs())}
 				{#if flashMode}
 					{@const displayExpr = child.expressionName
 						? expressionDisplayMap?.[child.expressionName]
 						: undefined}
 					{@const baseLatex =
 						displayExpr ??
-						expressionToLatex(child.expression, child.syntax, genericFunctions, contentLocale())}
+						expressionToLatex(
+							child.expression,
+							child.syntax,
+							genericFunctions,
+							contentLocale(),
+							writingCapitalPairs()
+						)}
 					{@const flashLatex = prefilledValues
 						? replacePromptsWithPrefilled(baseLatex, prefilledValues)
 						: (displayExpr ??
@@ -188,7 +202,8 @@
 								child.expression,
 								child.syntax,
 								genericFunctions,
-								contentLocale()
+								contentLocale(),
+								writingCapitalPairs()
 							))}
 					{#key flashLatex}
 						<MathInline expression={flashLatex} syntax="latex" />
@@ -198,7 +213,8 @@
 						child.expression,
 						child.syntax,
 						genericFunctions,
-						contentLocale()
+						contentLocale(),
+						writingCapitalPairs()
 					)}
 					{@const filledLatex = replacePromptsWithValues(latex, correctValues)}
 					{#key filledLatex}
@@ -217,6 +233,7 @@
 							{prefilledValues}
 							{genericFunctions}
 							{mathModeSpace}
+							{capitalPairs}
 						/>
 					{/key}
 				{/if}

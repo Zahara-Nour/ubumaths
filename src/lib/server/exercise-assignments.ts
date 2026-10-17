@@ -43,7 +43,6 @@ import type {
 	StudentExerciseFilters,
 	TeacherAssignmentFilters,
 	AssignmentStats,
-	ExerciseCompletionStats,
 	PaginationParams,
 	PaginatedResponse,
 	DistributionMode,
@@ -52,6 +51,9 @@ import type {
 import type { GradeCode } from '$lib/types/grades';
 import { validateAssignmentData } from '$lib/exercises/types';
 import { validateSearchQuery } from '$lib/utils/search';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/exercise-assignments');
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -163,7 +165,7 @@ export async function createExerciseAssignment(
 		.single();
 
 	if (exerciseError) {
-		console.error('Error fetching exercise:', exerciseError);
+		logger.error('Error fetching exercise:', exerciseError);
 		return { data: null, error: 'Exercise not found' };
 	}
 
@@ -190,7 +192,7 @@ export async function createExerciseAssignment(
 		.single();
 
 	if (error) {
-		console.error('Error creating assignment:', error);
+		logger.error('Error creating assignment:', error);
 		return { data: null, error: error.message };
 	}
 
@@ -327,7 +329,7 @@ export async function createBulkAssignments(
 		.select();
 
 	if (error) {
-		console.error('Error creating bulk assignments:', error);
+		logger.error('Error creating bulk assignments:', error);
 		return { count: 0, error: error.message };
 	}
 
@@ -416,7 +418,7 @@ export async function getAssignmentsForExercise(
 	const { data, error, count } = await query;
 
 	if (error) {
-		console.error('Error fetching assignments:', error);
+		logger.error('Error fetching assignments:', error);
 		return {
 			data: [],
 			total: 0,
@@ -539,7 +541,7 @@ export async function getAssignmentsForStudent(
 	});
 
 	if (functionError) {
-		console.error('Error fetching student exercises:', functionError);
+		logger.error('Error fetching student exercises:', functionError);
 		return {
 			data: [],
 			total: 0,
@@ -591,7 +593,7 @@ export async function getAssignmentsForStudent(
 	const { data: exercises, error: exercisesError } = await exerciseQuery;
 
 	if (exercisesError) {
-		console.error('Error fetching exercises:', exercisesError);
+		logger.error('Error fetching exercises:', exercisesError);
 		return {
 			data: [],
 			total: 0,
@@ -628,7 +630,7 @@ export async function getAssignmentsForStudent(
 		.or(`student_id.eq.${studentId},assigned_to_type.eq.public`);
 
 	if (directAssignmentsError) {
-		console.error('Lecture impossible :', directAssignmentsError);
+		logger.error('Lecture impossible :', directAssignmentsError);
 		throw new Error(directAssignmentsError.message);
 	}
 
@@ -658,7 +660,7 @@ export async function getAssignmentsForStudent(
 		]);
 
 	if (classAssignmentsError) {
-		console.error('Lecture impossible :', classAssignmentsError);
+		logger.error('Lecture impossible :', classAssignmentsError);
 		throw new Error(classAssignmentsError.message);
 	}
 
@@ -676,7 +678,7 @@ export async function getAssignmentsForStudent(
 		.eq('student_id', studentId);
 
 	if (allCompletionsError) {
-		console.error('Lecture impossible :', allCompletionsError);
+		logger.error('Lecture impossible :', allCompletionsError);
 		throw new Error(allCompletionsError.message);
 	}
 
@@ -820,7 +822,7 @@ export async function updateAssignment(
 		.single();
 
 	if (error) {
-		console.error('Error updating assignment:', error);
+		logger.error('Error updating assignment:', error);
 		return { data: null, error: error.message };
 	}
 
@@ -868,7 +870,7 @@ export async function deleteAssignment(
 		const { error } = await supabase.from('exercise_assignments').delete().eq('id', assignmentId);
 
 		if (error) {
-			console.error('Error deleting assignment:', error);
+			logger.error('Error deleting assignment:', error);
 			return { success: false, error: error.message };
 		}
 	} else {
@@ -879,7 +881,7 @@ export async function deleteAssignment(
 			.eq('id', assignmentId);
 
 		if (error) {
-			console.error('Error deactivating assignment:', error);
+			logger.error('Error deactivating assignment:', error);
 			return { success: false, error: error.message };
 		}
 	}
@@ -932,7 +934,7 @@ export async function markExerciseAsViewed(
 	// PGRST116 = la row n'existe pas, ce que la suite traite déjà. Une AUTRE
 	// panne prenait le même visage et faisait créer par-dessus.
 	if (existingError && existingError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', existingError);
+		logger.error('Lecture impossible :', existingError);
 		throw new Error(existingError.message);
 	}
 
@@ -949,7 +951,7 @@ export async function markExerciseAsViewed(
 			.single();
 
 		if (error) {
-			console.error('Error updating view count:', error);
+			logger.error('Error updating view count:', error);
 			return { data: null, error: error.message };
 		}
 
@@ -970,7 +972,7 @@ export async function markExerciseAsViewed(
 			.single();
 
 		if (error) {
-			console.error('Error creating completion record:', error);
+			logger.error('Error creating completion record:', error);
 			return { data: null, error: error.message };
 		}
 
@@ -1017,7 +1019,7 @@ export async function markExerciseAsComplete(
 	// PGRST116 = la row n'existe pas, ce que la suite traite déjà. Une AUTRE
 	// panne prenait le même visage et faisait créer par-dessus.
 	if (existingError && existingError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', existingError);
+		logger.error('Lecture impossible :', existingError);
 		throw new Error(existingError.message);
 	}
 
@@ -1035,7 +1037,7 @@ export async function markExerciseAsComplete(
 			.single();
 
 		if (error) {
-			console.error('Error marking exercise as complete:', error);
+			logger.error('Error marking exercise as complete:', error);
 			return { data: null, error: error.message };
 		}
 
@@ -1056,7 +1058,7 @@ export async function markExerciseAsComplete(
 			.single();
 
 		if (error) {
-			console.error('Error creating completion record:', error);
+			logger.error('Error creating completion record:', error);
 			return { data: null, error: error.message };
 		}
 
@@ -1103,7 +1105,7 @@ export async function markExerciseAsIncomplete(
 		.single();
 
 	if (error) {
-		console.error('Error marking exercise as incomplete:', error);
+		logger.error('Error marking exercise as incomplete:', error);
 		return { data: null, error: error.message };
 	}
 
@@ -1143,7 +1145,7 @@ export async function getStudentCompletion(
 		.maybeSingle();
 
 	if (error) {
-		console.error('Error fetching completion:', error);
+		logger.error('Error fetching completion:', error);
 		return { data: null, error: error.message };
 	}
 
@@ -1182,7 +1184,7 @@ export async function getAssignmentStats(
 	const { data, error } = await supabase.rpc('get_teacher_assignment_stats');
 
 	if (error) {
-		console.error('Error fetching assignment stats:', error);
+		logger.error('Error fetching assignment stats:', error);
 		return { data: null, error: error.message };
 	}
 
@@ -1204,30 +1206,6 @@ export async function getAssignmentStats(
 	return { data: stats, error: null };
 }
 
-/**
- * Get completion statistics for a specific exercise
- *
- * Uses the get_exercise_completion_stats() database function.
- * Returns completion rates, view counts, and engagement metrics.
- *
- * **Important**: This function gets stats for ALL assignments of an exercise,
- * not just a single assignment. Use get_assignment_completion_stats(p_assignment_id)
- * for a specific assignment.
- *
- * @param supabase - Supabase client
- * @param exerciseId - Exercise ID
- * @returns Completion statistics or error
- *
- * @example Get exercise stats
- * ```typescript
- * const result = await getExerciseCompletionStats(supabase, 'ex-123');
- * if (result.data) {
- *   console.log('Completion rate:', result.data.completion_rate + '%');
- *   console.log('Total assigned:', result.data.total_assigned);
- *   console.log('Total completed:', result.data.total_completed);
- * }
- * ```
- */
 /** Stats de complétion d'UNE assignation : ciblés / vus / terminés / taux. */
 export interface AssignmentCompletionStats {
 	total_target_students: number;
@@ -1253,45 +1231,12 @@ export async function getAssignmentCompletionStats(
 	});
 
 	if (error) {
-		console.error('[exercise-assignments] get_assignment_completion_stats failed:', error);
+		logger.error('[exercise-assignments] get_assignment_completion_stats failed:', error);
 		return null;
 	}
 
 	const row = Array.isArray(data) ? data[0] : data;
 	return (row as AssignmentCompletionStats | undefined) ?? null;
-}
-
-export async function getExerciseCompletionStats(
-	supabase: TypedSupabaseClient,
-	exerciseId: string
-): Promise<{ data: ExerciseCompletionStats | null; error: string | null }> {
-	// Call the correct RPC function with exercise_id parameter
-	const { data, error } = await supabase.rpc('get_exercise_completion_stats', {
-		p_exercise_id: exerciseId
-	});
-
-	if (error) {
-		console.error('Error fetching completion stats:', error);
-		return { data: null, error: error.message };
-	}
-
-	// ⚠️ Trois des cinq statistiques lisaient un nom que la fonction ne renvoie
-	// pas — `total_assigned`, `total_completed`, `completion_rate` — et valaient
-	// donc TOUJOURS 0 : le professeur voyait « personne n'a rendu » sur tous les
-	// exercices. L'enveloppe `any` empêchait le typage de le dire.
-	//
-	// Noms réels : `total_students`, `completed_count`, `completion_percentage`.
-	const row = data?.[0];
-	const stats: ExerciseCompletionStats = {
-		exercise_id: exerciseId,
-		total_assigned: row?.total_students ?? 0,
-		total_viewed: row?.total_viewed ?? 0,
-		total_completed: row?.completed_count ?? 0,
-		completion_rate: row?.completion_percentage ?? 0,
-		average_view_count: row?.average_view_count ?? 0
-	};
-
-	return { data: stats, error: null };
 }
 
 /**
@@ -1328,7 +1273,7 @@ export async function getStudentProgress(
 	});
 
 	if (functionError) {
-		console.error('Error fetching student exercises:', functionError);
+		logger.error('Error fetching student exercises:', functionError);
 		return {
 			total_assigned: 0,
 			total_completed: 0,
@@ -1358,7 +1303,7 @@ export async function getStudentProgress(
 		.in('exercise_id', exerciseIdArray);
 
 	if (completionsError) {
-		console.error('Error fetching completions:', completionsError);
+		logger.error('Error fetching completions:', completionsError);
 		return {
 			total_assigned,
 			total_completed: 0,
@@ -1420,7 +1365,7 @@ export async function studentHasAccess(
 	});
 
 	if (error) {
-		console.error('Error checking exercise access:', error);
+		logger.error('Error checking exercise access:', error);
 		return false;
 	}
 
@@ -1458,7 +1403,7 @@ export async function getAccessibleExercises(
 	});
 
 	if (functionError) {
-		console.error('Error fetching student exercises:', functionError);
+		logger.error('Error fetching student exercises:', functionError);
 		return { data: [], error: functionError.message };
 	}
 
@@ -1475,7 +1420,7 @@ export async function getAccessibleExercises(
 		.order('created_at', { ascending: false });
 
 	if (exercisesError) {
-		console.error('Error fetching exercises:', exercisesError);
+		logger.error('Error fetching exercises:', exercisesError);
 		return { data: [], error: exercisesError.message };
 	}
 
@@ -1559,7 +1504,7 @@ export async function getStudentClasses(
 		.eq('status', 'active');
 
 	if (error) {
-		console.error('Error fetching student classes:', error);
+		logger.error('Error fetching student classes:', error);
 		return { data: [], error: error.message };
 	}
 

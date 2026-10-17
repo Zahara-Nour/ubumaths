@@ -32,6 +32,8 @@ import {
 	isHole,
 	isUnit,
 	isComposition,
+	isSegmentLength,
+	isFigureName,
 	isDerivativeFunction,
 	isInverseFunction,
 	isComplex,
@@ -40,13 +42,15 @@ import {
 	isLogicalNot
 } from '../guards';
 import { substituteFunction } from './function-bindings';
+import { formatPointNames } from '../common/point-names';
+import { pointNamesEvaluationRefusal, unknownSegmentMessage } from '../common/segment-names';
 import {
 	rational,
 	fromInteger,
-	addRational,
-	subRational,
-	mulRational,
-	divRational,
+	addReduced,
+	subReduced,
+	mulReduced,
+	divReduced,
 	negRational,
 	powRational,
 	rationalToNumber,
@@ -57,20 +61,95 @@ import {
 } from '../normal/rational';
 import { integerNthRoot } from '../normal/radical';
 import { number, divide, opposite, boolean as booleanNode } from '../factory';
-import { numericNode } from '../common/numeric';
+import { numericNode, rationalToNode } from '../common/numeric';
 import { normalize } from '../normal/normalize';
 import { denormalize } from '../normal/denormalize';
 import { normalizeExtended } from '../normal/normalize-extended';
 import { denormalizeExtended } from '../normal/denormalize';
-import { mapNode } from '../transforms';
+import { findNodes, getChildren, mapNode } from '../transforms';
 import { areEquivalentCore } from '../equivalence-core';
 import { getActiveAbortChecker } from '../common/abort';
 import { rewriteFunctionPower } from '../common/function-power';
 import { compareNumericNodes } from './compare-numeric';
 import { oddDenominatorExponent, realNthRoot } from './real-root';
 
-/** Indice maximal d'une racine entière exacte (comme l'exposant entier, ≤ 1000). */
+/** Indice maximal d'une racine entière exacte. */
 const MAX_EXACT_ROOT_INDEX = 1000n;
+
+/**
+ * Un pôle de tan, sec (cos nul), csc, cot (sin nul) est refusé. Le flottant de
+ * π/2 n'annule pas exactement cos : `Math.tan(Math.PI / 2)` vaut 1,6331 × 10¹⁶, que
+ * le bouton ≈ affichait comme la valeur de tan(π/2) (revue, 2026-10-12). Le seuil
+ * suit l'erreur du flottant de l'argument, qui croît avec lui.
+ */
+function refuseTrigPole(name: string, denominator: number, argument: number): void {
+	if (Math.abs(denominator) < 1e-14 * Math.max(1, Math.abs(argument))) {
+		throw new Error(`${name} n’est pas définie en cette valeur (division par zéro)`);
+	}
+}
+
+/**
+ * Exposant entier maximal d'une puissance calculée exactement. ⚠️ Pas plus haut
+ * tant que le pgcd est celui d'Euclide (décision de David, 2026-10-12) : à 10 000,
+ * la base d'un e ou d'un π (fraction de 16 chiffres tirée de son flottant) donnait
+ * des fractions de centaines de milliers de bits, réduites ensuite par pgcd —
+ * `.variations e^{-2x^2}` passait de 23 ms à 5,7 s, `e^{-5000}+1` à 71 s (revue).
+ * Au-delà, par le flottant ; la console lit l'arrondi sur le résultat exact, si
+ * bien que `1.5^{2000}` y vaut quand même ≈ 1,5224 × 10³⁵².
+ */
+const MAX_EXACT_INTEGER_EXPONENT = 1000;
+
+/**
+ * Le budget de taille de la lecture de l'arrondi (`evaluateNodeToRational`), au-delà de
+ * l'exposant 1000 et de la borne des factorielles (lot « lenteur des grandes fractions »,
+ * phase 0 validée par David le 2026-10-12). Une écriture gardée (`1.5^{2000}`, `1000!`) y trouve
+ * sa valeur approchée, exacte puis arrondie. Le plus petit des deux termes reste sous
+ * 30 000 bits : c'est leur pgcd (Euclide, quadratique) qui coûte — e et π, fractions de
+ * 16 chiffres, gardent donc la limite de l'exposant 1000. Le plus grand reste sous
+ * 500 000 bits (2^{100000}, 10000! y tiennent ; une puissance native, sans pgcd).
+ */
+const BUDGET_SMALLER_TERM_BITS = 30_000;
+const BUDGET_LARGER_TERM_BITS = 500_000;
+
+/**
+ * Vrai pendant `evaluateNodeToRational` seulement : le calcul décimal général (`evaluate`,
+ * `evaluateNodeToApproximatedNumber`, une quarantaine d'appelants) garde ses bornes — sa
+ * factorielle rend un entier exact en `number`, et une puissance hors du flottant y est refusée.
+ */
+let withinSizeBudget = false;
+
+/** log₂ d'un entier positif, même au-delà des flottants. */
+function log2Of(x: bigint): number {
+	if (x <= 1n) return 0;
+	return x < 2n ** 53n ? Math.log2(Number(x)) : x.toString(2).length;
+}
+
+/** log₂(n!), par la formule de Stirling. */
+function log2Factorial(n: number): number {
+	if (n < 2) return 0;
+	return (n * Math.log(n) - n + 0.5 * Math.log(2 * Math.PI * n)) / Math.LN2;
+}
+
+/** base^k se calcule exactement : exposant ≤ 1000, ou, dans le budget, une taille raisonnable. */
+function exactPowerAllowed(base: Rational, k: number): boolean {
+	if (Math.abs(k) <= MAX_EXACT_INTEGER_EXPONENT) return true;
+	if (!withinSizeBudget) return false;
+	const numerator = log2Of(base.n < 0n ? -base.n : base.n) * Math.abs(k);
+	const denominator = log2Of(base.d) * Math.abs(k);
+	return (
+		Math.min(numerator, denominator) <= BUDGET_SMALLER_TERM_BITS &&
+		Math.max(numerator, denominator) <= BUDGET_LARGER_TERM_BITS
+	);
+}
+
+/** Une factorielle (`log₂` de son résultat) que le budget autorise. */
+function budgetedLog2(log2: number, name: string): void {
+	if (log2 > BUDGET_LARGER_TERM_BITS) throw new Error(`${name}: result too large to stay exact`);
+}
+
+/** Le refus d'une puissance qui sort du flottant (0 ou ±Infinity pour une base non nulle). */
+const OUT_OF_SCALE =
+	'Valeur hors d’échelle : cette puissance sort des nombres que le calcul approché représente';
 
 /**
  * base^{exp} pour un exposant non entier : racine exacte si la base est un
@@ -86,7 +165,7 @@ function nonNegativeRationalPower(base: Rational, exp: Rational): Rational {
 		const exactRoot = integerNthRoot(base.n, exp.d);
 		if (exactRoot !== null) {
 			const pNum = Number(exp.n);
-			if (Number.isSafeInteger(pNum) && Math.abs(pNum) <= 1000) {
+			if (Number.isSafeInteger(pNum) && Math.abs(pNum) <= MAX_EXACT_INTEGER_EXPONENT) {
 				return powRational(fromInteger(exactRoot), pNum);
 			}
 		}
@@ -97,7 +176,15 @@ function nonNegativeRationalPower(base: Rational, exp: Rational): Rational {
 	if (baseNum < 0 && !Number.isInteger(expNum)) {
 		throw new Error('Cannot compute non-integer power of negative number');
 	}
-	return floatToRational(Math.pow(baseNum, expNum));
+	// 0 à une puissance négative : une division par zéro, pas une valeur hors d'échelle
+	if (baseNum === 0 && expNum < 0) throw new Error('Division by zero');
+	const result = Math.pow(baseNum, expNum);
+	// Une base non nulle ne donne ni 0 ni l'infini : c'est le flottant qui en sort.
+	// Jamais « = 0 » ni « Cannot convert Infinity to Rational »
+	if (!Number.isFinite(result) || (result === 0 && baseNum !== 0)) {
+		throw new Error(OUT_OF_SCALE);
+	}
+	return floatToRational(result);
 }
 
 // =============================================================================
@@ -323,6 +410,11 @@ function evaluateFunctionToRational(
 	depth: number,
 	base?: MathNode
 ): Rational {
+	// `root(a, n)` : la racine n-ième du solveur et de `denormalize` — la même
+	// que `\sqrt[n]{a}`, dont le parseur range l'indice dans `base`
+	if (name === 'root' && args.length === 2 && base === undefined) {
+		return evaluateFunctionToRational('sqrt', [args[0]], depth, args[1]);
+	}
 	// Evaluate arguments to Rationals first (for exact computation where possible)
 	const rationalArgs = args.map((arg) => evaluateToRational(arg, depth + 1));
 
@@ -342,6 +434,7 @@ function evaluateFunctionToRational(
 			break;
 		case 'tan':
 			if (numArgs.length !== 1) throw new Error('tan requires exactly 1 argument');
+			refuseTrigPole('tan', Math.cos(numArgs[0]), numArgs[0]);
 			result = Math.tan(numArgs[0]);
 			break;
 		// Réciproques : leur définition (sec = 1/cos…). Le parseur maison les lit
@@ -354,6 +447,10 @@ function evaluateFunctionToRational(
 		case 'coth': {
 			if (numArgs.length !== 1) throw new Error(`${name} requires exactly 1 argument`);
 			const t = numArgs[0];
+			if (name.toLowerCase() === 'sec') refuseTrigPole('sec', Math.cos(t), t);
+			if (name.toLowerCase() === 'csc' || name.toLowerCase() === 'cot') {
+				refuseTrigPole(name.toLowerCase(), Math.sin(t), t);
+			}
 			const reciprocal: Record<string, number> = {
 				sec: 1 / Math.cos(t),
 				csc: 1 / Math.sin(t),
@@ -512,13 +609,24 @@ function evaluateFunctionToRational(
 			break;
 		case 'factorial': {
 			if (numArgs.length !== 1) throw new Error('factorial requires exactly 1 argument');
-			return fromInteger(exactFactorial(naturalArgument(rationalArgs[0], 'factorial')));
+			const factorialN = naturalArgument(rationalArgs[0], 'factorial');
+			if (withinSizeBudget) {
+				budgetedLog2(log2Factorial(Number(factorialN)), 'factorial');
+				return fromInteger(exactFactorial(factorialN, false));
+			}
+			return fromInteger(exactFactorial(factorialN));
 		}
 		case 'binom': {
 			if (numArgs.length !== 2) throw new Error('binom requires exactly 2 arguments');
 			const binomN = naturalArgument(rationalArgs[0], 'binom');
 			const binomK = rationalArgs[1];
 			if (!isIntegerRational(binomK)) throw new Error('binom requires integer arguments');
+			if (withinSizeBudget) {
+				const n = Number(binomN);
+				const k = Math.min(Math.max(Number(binomK.n), 0), n);
+				budgetedLog2(log2Factorial(n) - log2Factorial(k) - log2Factorial(n - k), 'binom');
+				return fromInteger(exactBinomial(binomN, binomK.n, false));
+			}
 			return fromInteger(exactBinomial(binomN, binomK.n));
 		}
 		case 'gcd': {
@@ -556,6 +664,12 @@ function evaluateFunctionToRational(
  * ALL internal arithmetic is done in BigInt via Rational operations.
  * Transcendental functions (sin, cos, exp, etc.) use Math.* and then
  * convert the result back to Rational via floatToRational.
+ *
+ * Contrat : le résultat est exact seulement si aucun flottant n'y est entré
+ * (π, e, fonction transcendante, puissance non entière : environ 16 chiffres
+ * significatifs). Ses termes peuvent dépasser 10³⁰⁸ pour une valeur ordinaire
+ * ((1001/1000)¹⁰⁰⁰ : 3001 chiffres, π²⁰ : 310) — le convertir par
+ * `rationalToNumber`, jamais par `Number(n) / Number(d)`.
  *
  * @param node - The MathNode to evaluate
  * @param depth - Current recursion depth (for stack overflow protection)
@@ -608,25 +722,29 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		throw new Error('Cannot evaluate expression with holes');
 	}
 
+	// Les quatre opérations sur des fractions réduites (Henrici) : chaque valeur d'ici sort de
+	// `rational()`, `fromInteger`, `floatToRational` ou `powRational`. Une somme de cinq
+	// fractions de 9 000 chiffres prenait 4,1 s (le pgcd sur le résultat entier, 2026-10-12)
+
 	// AdditionNode
 	if (isAddition(node)) {
 		const left = evaluateToRational(node.left, depth + 1);
 		const right = evaluateToRational(node.right, depth + 1);
-		return addRational(left, right);
+		return addReduced(left, right);
 	}
 
 	// SubtractionNode
 	if (isSubtraction(node)) {
 		const left = evaluateToRational(node.left, depth + 1);
 		const right = evaluateToRational(node.right, depth + 1);
-		return subRational(left, right);
+		return subReduced(left, right);
 	}
 
 	// MultiplicationNode
 	if (isMultiplication(node)) {
 		const left = evaluateToRational(node.left, depth + 1);
 		const right = evaluateToRational(node.right, depth + 1);
-		return mulRational(left, right);
+		return mulReduced(left, right);
 	}
 
 	// DivisionNode
@@ -636,7 +754,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		if (isZeroRational(den)) {
 			throw new Error('Division by zero');
 		}
-		return divRational(num, den);
+		return divReduced(num, den);
 	}
 
 	// OppositeNode (negation)
@@ -652,7 +770,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 
 	// PercentageNode : `20 %` = 20/100, exact
 	if (isPercentage(node)) {
-		return divRational(evaluateToRational(node.operand, depth + 1), { n: 100n, d: 1n });
+		return divReduced(evaluateToRational(node.operand, depth + 1), { n: 100n, d: 1n });
 	}
 
 	// SuperscriptNode (power)
@@ -663,7 +781,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		// For integer exponent, use exact Rational power
 		if (isIntegerRational(exp)) {
 			const expNum = Number(exp.n);
-			if (Number.isSafeInteger(expNum) && Math.abs(expNum) <= 1000) {
+			if (Number.isSafeInteger(expNum) && exactPowerAllowed(base, expNum)) {
 				return powRational(base, expNum);
 			}
 		}
@@ -714,7 +832,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 
 	// RelationNode - cannot evaluate to a single value
 	if (isRelation(node)) {
-		throw new Error('Cannot evaluate relation expressions to a numeric value');
+		throw new Error('Une comparaison n’a pas de valeur numérique');
 	}
 
 	// UnitNode - evaluate the expression part (ignore the unit)
@@ -734,7 +852,17 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 
 	// Boolean/Logical nodes - not numeric
 	if (isBoolean(node) || isLogical(node) || isLogicalNot(node)) {
-		throw new Error('Cannot evaluate boolean/logical expression to a numeric value');
+		throw new Error('Une comparaison ou une expression logique n’a pas de valeur numérique');
+	}
+
+	// Longueur `AB`, nom de figure `ABC` : un message lisible par un élève, s'il remonte
+	if (isSegmentLength(node)) {
+		throw new Error(unknownSegmentMessage(node));
+	}
+	if (isFigureName(node)) {
+		throw new Error(
+			`${formatPointNames(node.points)} est le nom d’une figure, pas un nombre : on ne peut pas le calculer.`
+		);
 	}
 
 	// Unknown node type
@@ -762,6 +890,24 @@ export function evaluateNodeToApproximatedNumber(
 	const rationalResult = evaluateToRational(node, 0);
 	// Apply precision directly to the Rational to preserve exact arithmetic
 	return applyPrecisionToRational(rationalResult, precision);
+}
+
+/**
+ * La valeur d'une expression numérique en RATIONNEL, sans passer par un
+ * flottant — pour décider qu'une écriture décimale est exacte (1/4 = 0,25)
+ * sans tolérance. Une fonction transcendante y entre par son flottant : sa
+ * valeur rationnelle n'a alors jamais un dénominateur court.
+ *
+ * @throws comme `evaluateNodeToApproximatedNumber`, si le nœud n'est pas numérique
+ */
+export function evaluateNodeToRational(node: MathNode): Rational {
+	const previous = withinSizeBudget;
+	withinSizeBudget = true;
+	try {
+		return evaluateToRational(node, 0);
+	} finally {
+		withinSizeBudget = previous;
+	}
 }
 
 // =============================================================================
@@ -797,6 +943,7 @@ const KNOWN_FUNCTIONS = new Set([
 	'log2',
 	'sqrt',
 	'cbrt',
+	'root',
 	'abs',
 	'sign',
 	'floor',
@@ -879,11 +1026,11 @@ function validateEvaluable(node: MathNode, exactMode: boolean = false): void {
 	}
 
 	if (isRelation(node)) {
-		throw new Error('Cannot evaluate relation expressions to a numeric value');
+		throw new Error('Une comparaison n’a pas de valeur numérique');
 	}
 
 	if (isBoolean(node) || isLogical(node) || isLogicalNot(node)) {
-		throw new Error('Cannot evaluate boolean/logical expressions to a numeric value');
+		throw new Error('Une comparaison ou une expression logique n’a pas de valeur numérique');
 	}
 
 	if (isSubscript(node)) {
@@ -964,6 +1111,52 @@ function reduceMultiArgFunctions(node: MathNode): MathNode {
 		}
 
 		return n;
+	});
+}
+
+/**
+ * Un exposant fait de nombres et d'opérations rationnelles seulement
+ * (`2 \times 1`, `1^2`, `-0`, `\frac{3}{2}+1`) : son calcul est exact.
+ */
+function isRationalArithmetic(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+			return true;
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return isRationalArithmetic(node.left) && isRationalArithmetic(node.right);
+		case 'division':
+			return isRationalArithmetic(node.numerator) && isRationalArithmetic(node.denominator);
+		case 'opposite':
+		case 'positive':
+			return isRationalArithmetic(node.operand);
+		case 'delimiter':
+			return isRationalArithmetic(node.content);
+		case 'superscript':
+			return isRationalArithmetic(node.base) && isRationalArithmetic(node.superscript);
+		default:
+			return false;
+	}
+}
+
+/**
+ * Calcule un exposant rationnel écrit comme un calcul : `e^{2 \times 1}` → `e^{2}`,
+ * `e^{1^2}` → `e`, `2^{1+1}` → `4`. `normalize` ne lit qu'un exposant LITTÉRAL :
+ * le reste devenait une puissance opaque, et la valeur d'une intégrale définie
+ * s'affichait `-\dfrac{1}{2}e^{2 \times 0}+\dfrac{1}{2}e^{2 \times 1}` (revue du
+ * 2026-10-11). Un exposant déjà littéral, ou non rationnel (`\ln 2`, `\pi`),
+ * n'est pas touché.
+ */
+function reduceComputedExponents(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (n.type !== 'superscript' || n.superscript.type === 'number') return n;
+		if (!isRationalArithmetic(n.superscript)) return n;
+		try {
+			return { ...n, superscript: rationalToNode(evaluateToRational(n.superscript)) };
+		} catch {
+			return n;
+		}
 	});
 }
 
@@ -1050,7 +1243,57 @@ function evaluateRoundingFunctions(node: MathNode): MathNode {
  * Checks if a node is a boolean expression (boolean, relation, logical, logical-not).
  */
 function isBooleanExpression(node: MathNode): boolean {
+	// `(2 > 1)`, `\lnot (2 > 1)` : des parenthèses autour d'une comparaison
+	if (isDelimiter(node)) return isBooleanExpression(node.content);
 	return isBoolean(node) || isRelation(node) || isLogical(node) || isLogicalNot(node);
+}
+
+/** Les relations que le calcul tranche ; les autres (≈, ∈, ⊂…) ne sont pas évaluables. */
+const DECIDABLE_RELATIONS: ReadonlySet<string> = new Set([
+	'=',
+	'≡',
+	'!=',
+	'≢',
+	'<',
+	'>',
+	'<=',
+	'>='
+]);
+
+/** Un « non » appliqué à autre chose qu'une comparaison (`!5 > 1` : (¬5) > 1). */
+function hasNumericNot(node: MathNode): boolean {
+	if (isLogicalNot(node) && !isBooleanExpression(node.operand)) return true;
+	return getChildren(node).some(hasNumericNot);
+}
+
+/** Pourquoi une expression booléenne ne s'évalue pas — la vraie cause, en français. */
+function booleanRefusal(node: MathNode): string {
+	const relation = undecidableRelation(node);
+	if (relation !== undefined) {
+		return `Relation « ${relation} » non évaluable : seules = ≠ < > ≤ ≥ se tranchent`;
+	}
+	if (hasNumericNot(node)) {
+		// `!5 > 1` se lit (non 5) > 1
+		return findNodes(node, isRelation).length > 0
+			? '« non » s’applique ici à un nombre : mets la comparaison entre parenthèses, non(2 > 1)'
+			: '« non » s’applique à une comparaison, pas à un nombre';
+	}
+	const variables = [...getVariables(node)];
+	return variables.length > 0
+		? `Comparaison non évaluable : ${variables.join(', ')} sans valeur`
+		: 'Comparaison non évaluable';
+}
+
+/** La première relation que le calcul ne tranche pas, ou `undefined`. */
+function undecidableRelation(node: MathNode): string | undefined {
+	if (isDelimiter(node)) return undecidableRelation(node.content);
+	if (isRelation(node)) {
+		if (!DECIDABLE_RELATIONS.has(node.relation)) return node.relation;
+		return undecidableRelation(node.left);
+	}
+	if (isLogical(node)) return undecidableRelation(node.left) ?? undecidableRelation(node.right);
+	if (isLogicalNot(node)) return undecidableRelation(node.operand);
+	return undefined;
 }
 
 /**
@@ -1072,8 +1315,20 @@ function evaluateToBoolean(node: MathNode): boolean | undefined {
 		return node.value;
 	}
 
+	if (isDelimiter(node)) return evaluateToBoolean(node.content);
+
 	if (isRelation(node)) {
 		const rel = node.relation;
+
+		// Une chaîne `a < b < c` (arbre `(a < b) < c`) : vraie si chaque maillon l'est —
+		// `a < b`, puis `b < c`. Répondait « Cannot evaluate boolean expression » (2026-10-12)
+		if (isRelation(node.left)) {
+			const first = evaluateToBoolean(node.left);
+			if (first === false) return false;
+			const second = evaluateToBoolean({ ...node, left: node.left.right });
+			if (second === false) return false;
+			return first === undefined || second === undefined ? undefined : true;
+		}
 
 		// Equality and inequality use semantic equivalence
 		if (rel === '=' || rel === '≡' || rel === '!=' || rel === '≢') {
@@ -1214,11 +1469,8 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 	if (isBooleanExpression(processedNode)) {
 		const boolResult = evaluateToBoolean(processedNode);
 		if (boolResult === undefined) {
-			return {
-				status: 'unevaluable',
-				reason:
-					'Cannot evaluate boolean expression (may contain free variables or unsupported relations)'
-			};
+			// En français : la console de Calcul montre ce message à l'élève (2026-10-12)
+			return { status: 'unevaluable', reason: booleanRefusal(processedNode) };
 		}
 		return {
 			status: 'value',
@@ -1228,9 +1480,16 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 		};
 	}
 
+	// 1c. Nom de figure (refusé, Q-A) ou longueur sans valeur : un message en français,
+	// avant la liste générique des variables libres
+	const pointNamesRefusal = pointNamesEvaluationRefusal(processedNode);
+	if (pointNamesRefusal !== null) {
+		return { status: 'unevaluable', reason: pointNamesRefusal };
+	}
+
 	// 2. Check for free variables (exclude known constants)
 	const variables = getVariables(processedNode);
-	const freeVars = [...variables].filter((v) => !['pi', 'i'].includes(v));
+	const freeVars = [...variables].filter((v) => v !== 'pi');
 
 	if (freeVars.length > 0) {
 		return {
@@ -1273,7 +1532,7 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 
 			// Standard exact mode: use regular normalize/denormalize
 			// min, max, gcd, mod : normalize ne les calcule pas → réduits d'abord
-			const normalForm = normalize(reduceMultiArgFunctions(processedNode));
+			const normalForm = normalize(reduceComputedExponents(reduceMultiArgFunctions(processedNode)));
 			let simplifiedNode = denormalize(normalForm);
 
 			// Post-process to evaluate rounding functions (floor, ceil, round, abs)

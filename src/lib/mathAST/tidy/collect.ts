@@ -63,7 +63,14 @@ import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
 import { decimalString } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
-import { isFirstDegreeSum, sortFactors, sortTerms } from './order';
+import {
+	isFirstDegreeSum,
+	isPlainTerm,
+	numberFirst,
+	orderUnderMinus,
+	sortFactors,
+	sortTerms
+} from './order';
 
 // =============================================================================
 // Types internes
@@ -705,9 +712,7 @@ function positiveFirstDegreeSum(node: MathNode, acc: Accumulator): MathNode | nu
 	if (!isSumNode(node)) return null;
 	const terms = toSumTerms(node, undefined, acc.unitChoice);
 	if (terms.length < 2) return null;
-	const plain = terms.every(
-		(term) => !term.verbatim && term.unit === null && isNegativeRational(term.coefficient)
-	);
+	const plain = terms.every((term) => isPlainTerm(term) && isNegativeRational(term.coefficient));
 	if (!plain || !isFirstDegreeSum(terms)) return null;
 	return buildSum(sortTerms(terms.map(negateTerm)));
 }
@@ -849,10 +854,29 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
 			terms.push(...toSumTerms(inner, watch, unitChoice));
 			continue;
 		}
-		terms.push(sign === '-' ? negateTerm(collected) : collected);
+		terms.push(withoutDoubleSign(sign === '-' ? negateTerm(collected) : collected, unitChoice));
 	}
 
 	return terms;
+}
+
+/**
+ * Un terme négatif dont un facteur est un complexe : ce facteur garde l'ordre
+ * d'avant la règle a + ib s'il commençait par un signe −, pour ne pas écrire
+ * `−(−2 + i)` (voir `orderUnderMinus`). `−(i − 2)`, `−3(i − 2)`, `(3i − 2)/(−1)`.
+ */
+function withoutDoubleSign(term: TidyTerm, unitChoice: UnitChoice): TidyTerm {
+	if (term.verbatim || !isNegativeRational(term.coefficient)) return term;
+	let changed = false;
+	const factors = term.factors.map((factor) => {
+		if (!isSumNode(factor.base)) return factor;
+		const order = orderUnderMinus(toSumTerms(factor.base, undefined, unitChoice));
+		if (order === null) return factor;
+		changed = true;
+		const base = buildSum(order);
+		return { base, exponent: factor.exponent, key: hashMathNode(base) };
+	});
+	return changed ? { ...term, factors: sortFactors(factors) } : term;
 }
 
 /**
@@ -1316,6 +1340,11 @@ function narrateSum(
 				: 'tidy-collect-like-terms';
 	step(grouping, materialise(collected, unitChoice));
 
+	// Somme sans variable, ou partie réelle d'un complexe (`3i − 2` → `−2 + 3i`) :
+	// le nombre passe d'abord en tête (sa propre phrase),
+	// puis les autres termes se rangent — l'étape de rangement ne s'attribue
+	// pas un déplacement qui n'est pas « par degré décroissant ».
+	step('tidy-number-first', buildSum(numberFirst(unitedCollected)));
 	return step('tidy-sort-terms', buildSum(sortTerms(unitedCollected)));
 }
 

@@ -21,11 +21,15 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { GoogleNotConnectedError, GoogleTokenExpiredError } from '$lib/server/google/errors';
 import { requireRole } from '$lib/server/middleware/auth';
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
 import { DRIVE_MIME_TYPE } from '$lib/whiteboard/utils/sync-state';
 import { listFilesQuerySchema } from '$lib/server/validation/whiteboard-drive';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/drive/list/+server');
 
 /**
  * Construct proxy URL for thumbnail
@@ -84,7 +88,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// List subfolders
 		const folders = await driveClient.listFolders(targetFolderId);
 
-		console.log(
+		logger.info(
 			`[Whiteboard Drive] Listed ${files.length} files and ${folders.length} folders for teacher ${user.id}`
 		);
 
@@ -117,20 +121,20 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		// Handle specific Google API errors
 		if (err instanceof Error) {
-			if (err.message.includes('No Google integration')) {
-				throw error(401, 'Google account not connected. Please connect in Settings.');
+			if (err instanceof GoogleNotConnectedError) {
+				throw error(401, 'Compte Google non connecté : à connecter dans les Paramètres');
 			}
-			if (err.message.includes('Token expired') || err.message.includes('401')) {
-				throw error(401, 'Google session expired. Please reconnect your Google account.');
+			if (err instanceof GoogleTokenExpiredError || err.message.includes('401')) {
+				throw error(401, 'Session Google expirée : reconnecter le compte Google');
 			}
 		}
 
-		console.error('[Whiteboard Drive] List error:', {
+		logger.error('[Whiteboard Drive] List error:', {
 			error: err,
 			requestedFolderId,
 			userId: user.id
 		});
-		const message = err instanceof Error ? err.message : 'Unknown error';
-		throw error(500, `Failed to list Drive files: ${message}`);
+		const message = err instanceof Error ? err.message : 'erreur inconnue';
+		throw error(500, `Impossible de lister les fichiers Google Drive : ${message}`);
 	}
 };

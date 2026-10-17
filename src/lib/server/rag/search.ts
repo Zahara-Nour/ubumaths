@@ -9,6 +9,9 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getEmbeddingService } from './embeddings';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/rag/search');
 
 export interface SearchOptions {
 	limit?: number;
@@ -41,6 +44,11 @@ export async function hybridSearch(
 ): Promise<SearchResult[]> {
 	const { limit = 5, grade, topics, vectorWeight = 0.7, ftsWeight = 0.3 } = options;
 
+	// T16 : sans extrait lisible par l'appelant, la recherche (`rag_hybrid_search`, droits
+	// de l'appelant) ne peut rien rendre. Le message de l'élève ne part donc pas chez
+	// HuggingFace (États-Unis) pour rien.
+	if (!(await hasReadableChunk(supabase, grade, topics))) return [];
+
 	// Try to get query embedding
 	const embeddingService = getEmbeddingService();
 	const queryEmbedding = await embeddingService.embedQuery(query);
@@ -56,9 +64,30 @@ export async function hybridSearch(
 		});
 	} else {
 		// Fallback to FTS-only
-		console.warn('Embeddings unavailable, falling back to FTS-only search');
+		logger.warn('Embeddings unavailable, falling back to FTS-only search');
 		return executeFtsSearch(supabase, query, { limit, grade, topics });
 	}
+}
+
+/**
+ * Au moins un extrait du corpus lisible avec ce client (RLS de `rag_chunks`), avec les
+ * mêmes filtres de niveau et de thème que la RPC. En cas d'erreur : non, pour ne rien
+ * envoyer à l'aveugle.
+ */
+async function hasReadableChunk(
+	supabase: SupabaseClient,
+	grade?: string,
+	topics?: string[]
+): Promise<boolean> {
+	let query = supabase.from('rag_chunks').select('id, rag_documents!inner(grades, topics)');
+	if (grade) query = query.overlaps('rag_documents.grades', [grade]);
+	if (topics && topics.length > 0) query = query.overlaps('rag_documents.topics', topics);
+	const { data, error } = await query.limit(1);
+	if (error) {
+		logger.warn('Corpus RAG non vérifié, recherche ignorée :', error);
+		return false;
+	}
+	return (data ?? []).length > 0;
 }
 
 /**
@@ -91,7 +120,7 @@ async function executeHybridSearch(
 		});
 
 		if (error) {
-			console.error('Hybrid search error:', error);
+			logger.error('Hybrid search error:', error);
 			// Fallback to FTS
 			return executeFtsSearch(supabase, queryText, {
 				limit: options.limit,
@@ -120,7 +149,7 @@ async function executeHybridSearch(
 			})
 		);
 	} catch (error) {
-		console.error('Hybrid search failed:', error);
+		logger.error('Hybrid search failed:', error);
 		return executeFtsSearch(supabase, queryText, {
 			limit: options.limit,
 			grade: options.grade,
@@ -187,7 +216,7 @@ async function executeFtsSearch(
 		const { data, error } = await query;
 
 		if (error) {
-			console.error('FTS search error:', error);
+			logger.error('FTS search error:', error);
 			return [];
 		}
 
@@ -205,7 +234,7 @@ async function executeFtsSearch(
 			};
 		});
 	} catch (error) {
-		console.error('FTS search failed:', error);
+		logger.error('FTS search failed:', error);
 		return [];
 	}
 }

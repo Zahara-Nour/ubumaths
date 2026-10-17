@@ -71,9 +71,9 @@ describe('ce qui ne doit PAS être touché', () => {
 	});
 
 	/**
-	 * ⚠️ Le facteur commun NUMÉRIQUE est laissé de côté, délibérément : le
-	 * module traite déjà la factorisation numérique à part (`hasCommonFactor`),
-	 * et `intent-rules.ts` note qu'elle est « ambiguë » — `2x+2` peut se vouloir
+	 * ⚠️ Le facteur commun NUMÉRIQUE est laissé de côté, délibérément : il
+	 * relève des règles de contenu (`commonContentFactorRules`), et
+	 * `intent-rules.ts` note qu'elle est « ambiguë » — `2x+2` peut se vouloir
 	 * `2(x+1)` ou rester tel quel selon ce qu'on cherche.
 	 */
 	it('un facteur commun purement numérique', () => {

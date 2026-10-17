@@ -51,7 +51,7 @@ export function readRestrictedRendering(): FlagGetter {
 // ============================================================================
 
 /**
- * Commandes MathLive (0.10x) qui écrivent dans le DOM autre chose que des
+ * Commandes MathLive (0.10x, 0.111) qui écrivent dans le DOM autre chose que des
  * symboles : style CSS libre (`\htmlStyle`, alias `\style`), classe
  * (`\class`, `\htmlClass`), identifiant (`\cssId`, `\htmlId`), attributs
  * `data-` (`\htmlData`), lien (`\href`, `\url` par précaution), cadres dont
@@ -95,6 +95,8 @@ export const UNSAFE_MATH_COMMANDS = [
 	'mskip',
 	'mspace',
 	'the',
+	// Épaisseur de trait libre (MathLive 0.111) : une barre de fraction géante
+	'genfrac',
 	// Définitions de macros : contourneraient toute liste
 	'def',
 	'gdef',

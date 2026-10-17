@@ -7,6 +7,9 @@ import {
 	enrichWithUsernames
 } from '$lib/server/marketplace/helpers';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/trades/[id]/+server');
 
 // ID validation schema
 const idSchema = z.string().uuid("ID d'échange invalide");
@@ -78,7 +81,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	// Verify user is a participant
 	if (trade.initiator_id !== userId && trade.partner_id !== userId) {
-		throw error(403, "Vous n'êtes pas participant à cet échange");
+		throw error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	// Sort offers and messages by created_at
@@ -132,7 +135,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	// Verify user is a participant
 	if (trade.initiator_id !== userId && trade.partner_id !== userId) {
-		throw error(403, "Vous n'êtes pas participant à cet échange");
+		throw error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	// Verify trade is still negotiating
@@ -151,7 +154,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		.eq('id', tradeId);
 
 	if (updateError) {
-		console.error('Error cancelling trade:', updateError);
+		logger.error('Error cancelling trade:', updateError);
 		throw error(500, "Erreur lors de l'annulation de l'échange");
 	}
 

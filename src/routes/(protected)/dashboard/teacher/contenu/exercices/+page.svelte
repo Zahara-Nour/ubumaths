@@ -195,7 +195,7 @@
 
 		try {
 			const response = await fetch(`/api/teacher/exercises?${params.toString()}`);
-			if (!response.ok) throw new Error('Failed to fetch');
+			if (!response.ok) throw new Error('Impossible de charger les exercices');
 
 			const result = await response.json();
 			// Apply client-side sorting for grades

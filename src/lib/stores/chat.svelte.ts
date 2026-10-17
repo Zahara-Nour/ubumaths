@@ -155,9 +155,7 @@ interface BroadcastReadReceiptPayload {
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type BroadcastPayload =
-	| BroadcastMessagePayload
-	| BroadcastReactionPayload
-	| BroadcastReadReceiptPayload;
+	BroadcastMessagePayload | BroadcastReactionPayload | BroadcastReadReceiptPayload;
 
 /**
  * Hybrid Chat Store - Uses DUAL subscription strategy for optimal UX and quota management
@@ -897,7 +895,7 @@ class ChatStore {
 					insertError.message?.includes('Consentement parental requis') ?? false;
 				if (this.lastSendRefusedForConsent) {
 					toaster.error(
-						'Consentement parental requis pour envoyer des messages. Contactez votre enseignant.'
+						'Consentement parental requis pour envoyer des messages. Voir avec l’enseignant.'
 					);
 				}
 				// Remove optimistic message on failure
@@ -1702,7 +1700,7 @@ class ChatStore {
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-				throw new Error(errorData.message || 'Failed to report message');
+				throw new Error(errorData.message || 'Impossible de signaler le message');
 			}
 
 			logger.info('Message reported:', messageId, reason);

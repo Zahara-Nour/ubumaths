@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import type { AnswerConfig } from '$lib/types/riddle';
+import { toDbRiddle, RIDDLE_COLUMNS } from '$lib/types/riddle';
 import { error, json } from '@sveltejs/kit';
 import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
 import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
@@ -8,6 +8,11 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { addBuddyXpFromExercise } from '$lib/server/buddy-xp-service';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/riddles/[id]/submit/+server');
 
 /**
  * Submit riddle attempt
@@ -28,10 +33,11 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	const { answer } = validation.data;
 
-	// Fetch riddle
+	// Fetch riddle — client de l'élève : sa RLS ne lui rend que l'énigme du jour ou une
+	// énigme qui lui est assignée. C'est ce contrôle d'accès qui autorise la suite.
 	const { data: riddle, error: riddleError } = await locals.supabase
 		.from('riddles')
-		.select('*')
+		.select(RIDDLE_COLUMNS)
 		.eq('id', riddleId)
 		.single();
 
@@ -39,8 +45,20 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(404, 'Énigme non trouvée');
 	}
 
-	// Validate answer (automatic or manual)
-	const answerConfig = riddle.answer as AnswerConfig | null;
+	// La réponse attendue vit dans `riddle_solutions`, que l'élève ne lit pas : le client
+	// service la lit, pour CETTE énigme, que la RLS de l'élève vient de lui rendre.
+	const serviceClient = createServiceRoleClient();
+	const { solutions, error: solutionError } = await fetchRiddleSolutions(serviceClient, [
+		riddle.id
+	]);
+
+	if (solutionError) {
+		logger.error('Error fetching riddle solution:', solutionError);
+		throw error(500, 'Erreur lors de la correction de la réponse');
+	}
+
+	// Validate answer (automatic or manual). Sans réponse attendue : validation manuelle.
+	const answerConfig = toDbRiddle(riddle, solutions.get(riddle.id) ?? null).answer;
 	let isCorrect: boolean | null = null;
 
 	if (answerConfig) {
@@ -52,21 +70,21 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		isCorrect = null;
 	}
 
-	// Submit attempt using RPC function (now returns table with reward info)
-	const { data: rpcResult, error: submitError } = await locals.supabase.rpc(
-		'submit_riddle_attempt',
-		{
-			p_riddle_id: riddleId,
-			p_student_id: user.id,
-			p_submitted_answer: { value: answer }, // Store as JSONB
-			// Paramètre `DEFAULT NULL` : `null` signifie « en attente de validation
-			// manuelle », et l'omettre applique exactement ce défaut.
-			p_is_correct: isCorrect ?? undefined
-		}
-	);
+	// Soumission par le client SERVICE : la justesse vient de la correction ci-dessus, jamais
+	// du navigateur. Un élève qui appelait la RPC lui-même pouvait se déclarer juste et
+	// toucher les gidouilles (audit de #1077) ; EXECUTE lui est retiré par la migration
+	// qui suit le `deploy:prod`. `p_student_id` vient de la session.
+	const { data: rpcResult, error: submitError } = await serviceClient.rpc('submit_riddle_attempt', {
+		p_riddle_id: riddleId,
+		p_student_id: user.id,
+		p_submitted_answer: { value: answer }, // Store as JSONB
+		// Paramètre `DEFAULT NULL` : `null` signifie « en attente de validation
+		// manuelle », et l'omettre applique exactement ce défaut.
+		p_is_correct: isCorrect ?? undefined
+	});
 
 	if (submitError) {
-		console.error('Error submitting attempt:', submitError);
+		logger.error('Error submitting attempt:', submitError);
 		throw error(500, 'Erreur lors de la soumission de la tentative');
 	}
 
@@ -102,7 +120,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		// panne prenait le même visage et faisait conclure « rien ici », donc créer
 		// par-dessus ce qu'on n'avait simplement pas su lire.
 		if (studentError && studentError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', studentError);
+			logger.error('Lecture impossible :', studentError);
 			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 
@@ -170,7 +188,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 				(response as Record<string, unknown>).buddy_xp = buddyXp;
 			}
 		} catch (buddyError) {
-			console.error('⚠️ [API] Error awarding buddy XP for riddle:', buddyError);
+			logger.error('⚠️ [API] Error awarding buddy XP for riddle:', buddyError);
 		}
 	}
 

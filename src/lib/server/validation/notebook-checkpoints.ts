@@ -45,11 +45,11 @@ export const upsertCheckpointRunSchema = z
 		error_message: z.string().min(1).max(MAX_ERROR_MESSAGE_LENGTH).optional()
 	})
 	.refine((data) => data.status === 'failed' || data.error_message === undefined, {
-		message: 'error_message is only allowed when status is failed',
+		message: 'Message d’erreur réservé à un checkpoint échoué',
 		path: ['error_message']
 	})
 	.refine((data) => data.status === 'passed' || data.error_message !== undefined, {
-		message: 'error_message is required when status is failed',
+		message: 'Message d’erreur requis pour un checkpoint échoué',
 		path: ['error_message']
 	});
 

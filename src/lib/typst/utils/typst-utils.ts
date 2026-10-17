@@ -8,6 +8,9 @@
  * @module typst/utils
  */
 
+import type { WorksheetType } from '$lib/types/worksheets';
+import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
+
 /**
  * Escape special Typst characters in text
  * Re-exports from ubumark/generators for convenience
@@ -106,16 +109,9 @@ export function formatDateFR(date?: Date): string {
  * @returns French label for the type
  *
  * @example
- * getTypeLabel('worksheet') // "Feuille d'exercices"
+ * getTypeLabel('worksheet') // "Fiche d'exercices"
  * getTypeLabel('exam') // 'Examen'
  */
 export function getTypeLabel(type: string): string {
-	const labels: Record<string, string> = {
-		worksheet: "Feuille d'exercices",
-		assessment: 'Evaluation',
-		exam: 'Examen',
-		quiz: 'Quiz',
-		homework: 'Devoirs'
-	};
-	return labels[type] || "Feuille d'exercices";
+	return WORKSHEET_TYPE_LABELS[type as WorksheetType] ?? WORKSHEET_TYPE_LABELS.worksheet;
 }

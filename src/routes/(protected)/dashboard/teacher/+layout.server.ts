@@ -41,6 +41,9 @@ import {
 	getActiveSchoolYear,
 	getSchoolYearPeriods
 } from '$lib/server/warnings';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/+layout.server');
 
 type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 
@@ -49,7 +52,7 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 
 	// Must be logged in as teacher
 	if (!user || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Access denied');
+		throw error(403, 'Accès refusé');
 	}
 
 	// Mark this data as dependent on 'teacher:classes' for reactive invalidation
@@ -58,11 +61,15 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 	try {
 		// Fetch classes with counts using optimized RPC function
 		let classes: ClassWithData[] = [];
+		// Vrai seulement si la liste a été lue : une liste vide après un échec ne doit
+		// ni purger le cache des classes ni vider la classe retenue côté client
+		let classesLoaded = false;
 		try {
 			classes = await getTeacherClassesWithCounts(user.id, supabase);
-			console.log(`[Teacher Layout Server] ✅ Loaded ${classes.length} classes`);
+			classesLoaded = true;
+			logger.info(`[Teacher Layout Server] ✅ Loaded ${classes.length} classes`);
 		} catch (err) {
-			console.error('[Teacher Layout Server] Error fetching classes:', err);
+			logger.error('[Teacher Layout Server] Error fetching classes:', err);
 			// Non-critical - continue with empty classes
 		}
 
@@ -88,11 +95,11 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 					}).catch(() => []);
 				}
 
-				console.log(
+				logger.info(
 					`[Teacher Layout Server] ✅ Loaded periods (current: ${currentPeriod?.name || 'none'}, total: ${allPeriods.length})`
 				);
 			} catch (err) {
-				console.error('[Teacher Layout Server] Error fetching periods:', err);
+				logger.error('[Teacher Layout Server] Error fetching periods:', err);
 				// Non-critical - continue with null/empty
 			}
 		}
@@ -101,14 +108,16 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 		// The +layout.svelte will call teacherCache.hydrateAllClasses() and setPeriods()
 		return {
 			classes,
+			classesLoaded,
 			currentPeriod,
 			allPeriods
 		};
 	} catch (err) {
-		console.error('[Teacher Layout Server] Unexpected error loading teacher dashboard:', err);
+		logger.error('[Teacher Layout Server] Unexpected error loading teacher dashboard:', err);
 		// Return minimal data to prevent crashes
 		return {
 			classes: [],
+			classesLoaded: false,
 			currentPeriod: null,
 			allPeriods: []
 		};

@@ -44,12 +44,7 @@ const isBrowser = typeof window !== 'undefined';
  * Executor state representing the lifecycle of Pyodide execution.
  */
 export type ExecutorState =
-	| 'initial'
-	| 'loading-pyodide'
-	| 'loading-packages'
-	| 'ready'
-	| 'executing'
-	| 'error';
+	'initial' | 'loading-pyodide' | 'loading-packages' | 'ready' | 'executing' | 'error';
 
 /**
  * Configuration for pending autocomplete requests

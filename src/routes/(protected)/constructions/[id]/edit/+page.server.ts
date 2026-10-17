@@ -15,13 +15,13 @@ export const load: PageServerLoad = async ({ params, parent, locals: { supabase 
 
 	if (queryError || !construction) {
 		if (queryError?.code === 'PGRST116') {
-			throw error(404, 'Construction non trouvee');
+			throw error(404, 'Construction introuvable');
 		}
 		throw error(500, 'Erreur lors du chargement');
 	}
 
 	if (construction.author_id !== user.id) {
-		throw error(403, 'Vous ne pouvez modifier que vos propres constructions');
+		throw error(403, 'Modification réservée à l’auteur de la construction');
 	}
 
 	return { construction };

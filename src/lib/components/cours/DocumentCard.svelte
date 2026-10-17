@@ -6,6 +6,10 @@
 	Shows file icon based on type, title, description,
 	view/download buttons, and Google Drive badge if applicable.
 
+	`hrefs` : adresses imposées par l'appelant. Le lien du cours (ADR 0025) n'a
+	ni compte ni chemin de stockage : ses documents passent par
+	`/cours/[token]/document/[id]`, pas par `/api/documents`.
+
 	@module components/cours/DocumentCard
 -->
 <script lang="ts">
@@ -27,11 +31,20 @@
 	} from '@lucide/svelte';
 
 	// Props
+	/** Ce que la carte affiche ; `storagePath` absent = pas de lien `/api/documents`. */
+	type DocumentCardData = Pick<
+		ChapterDocument,
+		'id' | 'title' | 'description' | 'sourceType' | 'mimeType' | 'fileSize' | 'googleDriveUrl'
+	> &
+		Partial<Pick<ChapterDocument, 'storagePath'>>;
+
 	interface Props {
-		document: ChapterDocument;
+		document: DocumentCardData;
+		/** Adresses imposées (lien du cours) ; sinon calculées depuis le document. */
+		hrefs?: { view: string | null; download: string | null };
 	}
 
-	let { document }: Props = $props();
+	let { document, hrefs }: Props = $props();
 
 	// Get icon component based on MIME type
 	function getFileIcon(mimeType: string | null): typeof File {
@@ -91,6 +104,7 @@
 
 	// Generate URLs
 	const viewUrl = $derived.by(() => {
+		if (hrefs) return hrefs.view;
 		if (isGoogleDrive && document.googleDriveUrl) {
 			return document.googleDriveUrl;
 		}
@@ -101,6 +115,7 @@
 	});
 
 	const downloadUrl = $derived.by(() => {
+		if (hrefs) return hrefs.download;
 		if (document.storagePath) {
 			return `/api/documents/${document.id}?download`;
 		}

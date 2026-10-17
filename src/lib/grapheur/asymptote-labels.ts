@@ -110,6 +110,14 @@ function anchorOnBranch(
 	return null;
 }
 
+/** Macros affichées en un seul signe : les limites symboliques écrivent e et π ainsi. */
+const SINGLE_GLYPHS: Readonly<Record<string, string>> = {
+	exponentialE: 'e',
+	imaginaryI: 'i',
+	pi: 'π',
+	infty: '∞'
+};
+
 /**
  * Version lisible d'un libellé LaTeX, pour la mesure de la boîte.
  *
@@ -123,7 +131,7 @@ export function plainTextOf(latex: string): string {
 	return latex
 		.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2')
 		.replace(/\\(left|right|,|;|!)/g, '')
-		.replace(/\\([a-zA-Z]+)/g, '$1')
+		.replace(/\\([a-zA-Z]+)/g, (_, name: string) => SINGLE_GLYPHS[name] ?? name)
 		.replace(/[{}]/g, '')
 		.replace(/\s+/g, ' ')
 		.trim();

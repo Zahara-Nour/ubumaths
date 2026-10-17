@@ -116,9 +116,7 @@ interface ExchangeDiscardForSpecific {
  * Union type for all exchange card modes
  */
 export type ExchangeCardAction =
-	| ExchangeReplaceRandom
-	| ExchangeRarityPoints
-	| ExchangeDiscardForSpecific;
+	ExchangeReplaceRandom | ExchangeRarityPoints | ExchangeDiscardForSpecific;
 
 /**
  * Filters for draw_cards action

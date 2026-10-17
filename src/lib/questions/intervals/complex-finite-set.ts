@@ -31,8 +31,11 @@ const MAX_ELEMENTS = 12;
 /** Budget d'une comparaison d'éléments (même ordre que la case ordinaire) */
 const EQUIVALENCE_TIMEOUT_MS = 500;
 
-/** Lettres admises dans un élément : unité imaginaire, constante d'Euler */
-const CONSTANT_LETTERS = new Set(['i', 'e']);
+/**
+ * Lettres admises dans un élément. L'unité imaginaire n'en est plus une : les
+ * parseurs lisent `i` en `complex(0, 1)` (décision de David du 2026-10-11).
+ */
+const CONSTANT_LETTERS = new Set(['e']);
 
 /** `i` employé seul (pas dans `\pi`, `\sin`, `\infty`) ou `\imaginaryI` */
 const IMAGINARY_UNIT = /\\imaginaryI|(?<![\\a-zA-Z])i(?![a-zA-Z])/;

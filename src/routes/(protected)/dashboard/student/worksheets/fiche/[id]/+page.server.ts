@@ -16,6 +16,11 @@ import type { PageServerLoad } from './$types';
 import { resolve } from '$app/paths';
 import { requireRole } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/student/worksheets/fiche/[id]/+page.server'
+);
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	await requireRole(locals, 'student');
@@ -34,13 +39,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.maybeSingle();
 
 	if (assignmentError) {
-		console.error('[fiche/élève] distribution introuvable:', assignmentError);
+		logger.error('[fiche/élève] distribution introuvable:', assignmentError);
 		throw error(500, 'Erreur lors de la résolution de la référence');
 	}
 
 	// Le dire plutôt que de renvoyer vers une liste où il la chercherait en vain.
 	if (!assignment) {
-		throw error(404, "Cette fiche ne t'a pas encore été distribuée");
+		throw error(404, "Cette fiche n'a pas encore été distribuée");
 	}
 
 	redirect(

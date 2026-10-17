@@ -68,8 +68,8 @@ const SUPERIEUR_TITLES: Partial<Record<DomainRule, TitleFn>> = {
 	csc_constraint: () => 'csc u défini',
 	arccosh_constraint: () => 'arccosh u défini',
 	arctanh_constraint: () => 'arctanh u défini',
-	power_constraint: () => 'u^(-n) défini',
-	even_root_constraint: () => 'u^(1/2n) défini',
+	power_constraint: () => 'u⁻ⁿ défini',
+	even_root_constraint: () => 'ⁿ√u défini (n pair)',
 	intersection: () => 'Intersection',
 	universal: () => 'D = ℝ',
 	empty: () => 'D = ∅'
@@ -137,7 +137,7 @@ const SUPERIEUR_EXPLANATIONS: Partial<Record<DomainRule, ExplainFn>> = {
 	arccosh_constraint: (step) => step.reasoning ?? 'arccosh u défini ⟺ u ≥ 1.',
 	arctanh_constraint: (step) => step.reasoning ?? 'arctanh u défini ⟺ |u| < 1.',
 	power_constraint: (step) => step.reasoning ?? 'u⁻ⁿ défini ⟺ u ≠ 0.',
-	even_root_constraint: (step) => step.reasoning ?? 'u^(1/2n) défini ⟺ u ≥ 0.',
+	even_root_constraint: (step) => step.reasoning ?? 'ⁿ√u défini (n pair) ⟺ u ≥ 0.',
 	intersection: () => 'D = ⋂ contraintes.',
 	universal: () => 'Pas de restriction : D = ℝ.',
 	empty: () => 'Contraintes incompatibles : D = ∅.'

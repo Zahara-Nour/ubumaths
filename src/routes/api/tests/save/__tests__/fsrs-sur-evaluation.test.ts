@@ -383,9 +383,13 @@ describe('enregistrement d’une évaluation', () => {
 
 		await enregistrer([reponse(MODELE_A, true)]);
 
-		const messages = consoleError.mock.calls.map((c) => String(c[0]));
-		expect(messages).toContain('[tests/save] skill_attempts : lignes écrites ≠ lignes envoyées');
-		expect(messages).toContain('[tests/save] test_answers : lignes écrites ≠ lignes envoyées');
+		// Tous les arguments : un message passé par createServerLogger suit l'en-tête [fichier]
+		const messages = consoleError.mock.calls.map((c) => c.map(String).join(' '));
+		for (const table of ['skill_attempts', 'test_answers']) {
+			expect(messages).toContainEqual(
+				expect.stringContaining(`[tests/save] ${table} : lignes écrites ≠ lignes envoyées`)
+			);
+		}
 		consoleError.mockRestore();
 	});
 	// R2 (David, 2026-09-28) : la nature « carte » décide du score, de l'XP et

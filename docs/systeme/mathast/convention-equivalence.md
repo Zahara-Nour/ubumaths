@@ -329,13 +329,16 @@ leurs copies en brouillon en prod ; aucun modèle publié touché.
 
 ## Nombres complexes (décisions de David du 2026-10-05)
 
-La lettre `i` est l'unité imaginaire (`normalize` : i² = −1). Sondes sur les cartes de maths
+La lettre `i` est l'unité imaginaire (`normalize` : i² = −1). Depuis le 2026-10-11 (décision de
+David), les quatre parseurs la lisent `complex(0, 1)`, le même nœud que `\imaginaryI` et
+`\mathrm{i}` ; dans un indice (`u_i`) ou suivie d'un indice (`i_1`), elle reste une variable —
+qu'aucune équivalence ne lit comme l'imaginaire (`u_i` ≢ `u_1`). Sondes sur les cartes de maths
 expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
 
-- **`\imaginaryI`** (MathLive : « ii », variante « i imaginaire » de la touche i), lu
-  `complex(0, 1)` par le parseur, est la même notation que `i` (`unifyEulerNotationAST`, qui
-  ramène aussi `e`, `\exponentialE` et `\exp(u)` à une forme unique, la constante `euler()`) : `2-3\imaginaryI` pour `2-3i` est juste (avant : « pas sous la
-  forme demandée ») ; `\mathrm{i}` l'était déjà. Mesure (dépôt + `REAL_TEMPLATES` + 994 modèles
+- **`\imaginaryI`** (MathLive : « ii », variante « i imaginaire » de la touche i) est la même
+  notation que `i` : `2-3\imaginaryI` et `2-3i` donnent le même arbre (depuis le 2026-10-11 ;
+  avant, `unifyEulerNotationAST` les ramenait à la lettre). `2-3\imaginaryI` pour `2-3i` est
+  juste (avant le 2026-10-05 : « pas sous la forme demandée »). Mesure (dépôt + `REAL_TEMPLATES` + 994 modèles
   de prod en lecture + synthétiques) : 37 973 verdicts, 330 changés, tous des réponses contenant
   `\imaginaryI` (dont l'attendue recopiée du corrigé, qui l'écrit ainsi), mauvaise forme → juste,
   sur 11 brouillons ; aucun modèle publié.
@@ -393,9 +396,46 @@ expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
   (`questions/intervals/complex-finite-set.ts`) : ordre libre, éléments appariés par
   équivalence de valeur (`\{1-i;1+i\}`, `\{1+\imaginaryI;1-\imaginaryI\}`,
   `\{\sqrt{2}e^{i\frac{\pi}{4}};1-i\}` justes) ; manquant, en trop ou faux : faux ; fraction
-  simplifiable dans un élément : ½ (`intervalForm`). Jamais d'intervalle complexe. Ensembles
-  réels inchangés. Mesure (même corpus) : 37 973 verdicts, 15 changés, tous synthétiques
+  simplifiable dans un élément : ½ (`intervalForm`). Un élément ne contient aucune variable
+  (seule la base indicée `e_1` passe encore, écart connu) : `i` y est `complex(0, 1)`, `i_1` une
+  variable refusée. Jamais d'intervalle complexe. Ensembles réels inchangés. Mesure (même corpus) : 37 973 verdicts, 15 changés, tous synthétiques
   (ensembles de complexes) ; 0 sur les cases intervalles réelles.
+
+## Longueurs de segments (`AB`), en mode `capitalPairs: 'length'`
+
+Une longueur est une inconnue dont l'identité est la **paire de points triée** : `BA` ≡ `AB`,
+`BA^2=CA^2+CB^2` ≡ `AB^2=AC^2+BC^2`, `\frac{MA}{BA}=\frac{NA}{CA}` ≡
+`\frac{AM}{AB}=\frac{AN}{AC}`. Une longueur n'est **pas** le produit de ses lettres :
+`AB` ≢ `A\times B`. Un **nom de figure** (`ABC`) ne se calcule pas : une expression qui en contient
+n'est équivalente qu'à la **même écriture** (`ABC` ≡ `ABC`, `ABC` ≢ `ACB`) ; le calcul et la
+forme le refusent avec le message de `figureNameRefusal`. Sans l'option (défaut du
+parseur), `AB` reste le produit `A·B`, comme avant. Journal du chantier : [longueurs-segments-progress.md](../../archive/wip/longueurs-segments-progress.md).
+
+**Une longueur est strictement positive** (décision de David du 2026-10-12, Q-F) : sans
+hypothèse déclarée, `√(AB²)` ≡ `AB`, `|AB|` ≡ `BA`, `√(9AB²)` ≡ `3AB`. Mécanisme : celui des
+hypothèses de l'énoncé — `numtype` type `AB` en réel positif, et `areEquivalent` pose l'oracle
+(`assumptionOracle(…, [a, b])`) dès qu'une des deux expressions mentionne une longueur ; il ne
+répond que pour un nœud qui mentionne une longueur (ou une variable déclarée). Restent faux :
+`|AB−CD|` ≡ `AB−CD` (signe inconnu), `|AA|` ≡ `AA` (points identiques : la longueur vaut 0, rien
+n'est supposé). Une hypothèse déclarée sur `AB` (ou `BA`) **garde la priorité**, même si elle dit
+moins : avec `{ AB: 'nonzero' }`, `|AB|` ≢ `AB`. Une longueur n'est plus un nœud qui coupe les
+hypothèses (`segmentLength` est dans la liste blanche `isPlainAlgebra`) : une hypothèse déclarée sur
+`x` s'applique aussi dans une expression qui contient une longueur — `|x|·AB` ≡ `x·AB` sous x > 0,
+et la forme (`checkForm`) le lit pareil (`correct`, avant : `bad_form`). En revanche, sans
+hypothèse, la comparaison de forme ne lit pas `|AB|` comme `AB` : `|AB|` pour l'attendu `AB` reste
+`bad_form` (décision de David du 2026-10-12).
+
+**Deux choix confirmés par David (2026-10-12)** :
+
+- une hypothèse déclarée sur `AB`, ou un `domain` passé à `solve`, **remplace** la positivité par
+  défaut, elle ne s'y ajoute pas : le moteur fait ce qui est écrit, sans contrainte cachée ;
+- `AB² = 0` n'a **aucune solution** (`AB = 0` est exclu : deux points distincts) ; un exercice qui
+  voudrait une longueur nulle déclare `AB: 'nonnegative'`.
+
+**Hors champ** (décision de David du 2026-10-12, à rouvrir seulement sur un cas réel) : les
+notations `\overline{AB}`, `\widehat{ABC}`, vecteurs, `(AB)`, `[AB]` — aucune réponse attendue en
+base ne les utilise, et l'affichage passe par MathLive ; la déclaration du sens lettre par lettre
+dans l'éditeur de modèle.
 
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 

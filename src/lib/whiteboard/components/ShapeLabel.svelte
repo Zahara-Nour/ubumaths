@@ -337,8 +337,7 @@
 				onkeydown={handleKeyDown}
 				class="label-editor min-w-16 resize-none rounded border-2 border-primary bg-white px-2 py-1 text-center text-sm shadow-lg outline-none"
 				rows="1"
-				placeholder="Label..."
-			></textarea>
+				placeholder="Label..."></textarea>
 		</div>
 	{:else if isLineOrArrow && labelParts.below}
 		<!-- VIEW Mode: Line/Arrow with TWO lines (above + below) -->

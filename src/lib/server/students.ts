@@ -11,20 +11,7 @@
  * - Easy to add caching or optimization later
  * - Consistent error handling
  *
- * USAGE:
- * ```typescript
- * import { getClassStudents } from '$lib/server/students';
- *
- * const students = await getClassStudents({
- *   classId: 'uuid',
- *   userId: user.id,
- *   supabase,
- *   full: true
- * });
- * ```
- *
  * PATTERNS:
- * - Use getClassStudents() for single class
  * - Use getTeacherClassesWithStudents() for all classes with full data (rewards page)
  * - Use getTeacherClassesWithCounts() for all classes with counts only (dashboard layout)
  */
@@ -32,6 +19,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { getTeacherTestMode } from './test-mode';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/students');
 
 // ============================================================================
 // TYPES
@@ -100,131 +90,9 @@ export interface ClassWithData {
 	}>;
 }
 
-/**
- * Options for getClassStudents
- */
-export interface GetClassStudentsOptions {
-	classId: string;
-	userId: string;
-	supabase: SupabaseClient<Database>;
-	full?: boolean;
-}
-
 // ============================================================================
 // MAIN FUNCTIONS
 // ============================================================================
-
-/**
- * Get students for a specific class
- *
- * This is the recommended function for fetching students for a single class.
- * Automatically applies test mode filtering based on teacher's preference.
- *
- * @param options - Configuration object
- * @param options.classId - The class ID
- * @param options.userId - The teacher's user ID (for test mode lookup)
- * @param options.supabase - Supabase client instance
- * @param options.full - Whether to include full student data (default: false)
- * @returns Promise resolving to array of students
- *
- * @example
- * // Get minimal student data
- * const students = await getClassStudents({
- *   classId: 'class-uuid',
- *   userId: user.id,
- *   supabase
- * });
- *
- * @example
- * // Get full student data (with gidouilles, vip_cards, etc.)
- * const students = await getClassStudents({
- *   classId: 'class-uuid',
- *   userId: user.id,
- *   supabase,
- *   full: true
- * });
- */
-export async function getClassStudents(
-	options: GetClassStudentsOptions
-): Promise<Student[] | StudentFull[]> {
-	const { classId, userId, supabase, full = false } = options;
-
-	// Get teacher's test mode preference
-	const isTestMode = await getTeacherTestMode(userId, supabase);
-
-	console.log('[getClassStudents] Fetching students for class:', classId, 'Test mode:', isTestMode);
-
-	// Build select fields based on 'full' parameter
-	const selectFields = full
-		? `
-			student_id,
-			profiles!class_members_student_id_fkey (
-				id,
-				firstname,
-				lastname,
-				full_name,
-				avatar_url,
-				gidouilles,
-				vip_cards,
-				role,
-				is_test
-			)
-		`
-		: `
-			student_id,
-			profiles!class_members_student_id_fkey (
-				id,
-				firstname,
-				lastname,
-				avatar_url,
-				is_test
-			)
-		`;
-
-	// Fetch students with test mode filtering
-	const { data: members, error } = await supabase
-		.from('class_members')
-		.select(selectFields)
-		.eq('class_id', classId)
-		.eq('status', 'active')
-		.eq('profiles.is_test', isTestMode); // KEY: Filter by test mode
-
-	if (error) {
-		console.error('[getClassStudents] Error fetching students:', error);
-		throw new Error(`Failed to fetch students: ${error.message}`);
-	}
-
-	// Transform members to students array
-	const students = (members || [])
-		.map((member) => {
-			const profile = Array.isArray(member.profiles) ? member.profiles[0] : member.profiles;
-			if (!profile) return null;
-
-			if (full) {
-				return {
-					id: profile.id,
-					firstname: profile.firstname || '',
-					lastname: profile.lastname || null,
-					full_name: profile.full_name || null,
-					avatar_url: profile.avatar_url || null,
-					gidouilles: profile.gidouilles || 0,
-					vip_cards: profile.vip_cards || {},
-					role: profile.role || null,
-					is_test: profile.is_test || false
-				} as StudentFull;
-			} else {
-				return {
-					id: profile.id,
-					firstname: profile.firstname || '',
-					lastname: profile.lastname || null,
-					avatar_url: profile.avatar_url || null
-				} as Student;
-			}
-		})
-		.filter((s): s is Student | StudentFull => s !== null);
-
-	return students;
-}
 
 /**
  * Get all teacher's classes with full student data
@@ -259,7 +127,7 @@ export async function getTeacherClassesWithStudents(
 	});
 
 	if (error) {
-		console.error('[getTeacherClassesWithStudents] Error fetching classes:', error);
+		logger.error('[getTeacherClassesWithStudents] Error fetching classes:', error);
 		throw new Error(`Failed to fetch teacher classes: ${error.message}`);
 	}
 
@@ -296,7 +164,7 @@ export async function getTeacherClassesWithCounts(
 	});
 
 	if (error) {
-		console.error('[getTeacherClassesWithCounts] Error fetching classes:', error);
+		logger.error('[getTeacherClassesWithCounts] Error fetching classes:', error);
 		throw new Error(`Failed to fetch teacher classes: ${error.message}`);
 	}
 
@@ -335,7 +203,7 @@ export async function getUnassignedStudents(
 		.eq('is_test', isTestMode);
 
 	if (studentsError) {
-		console.error('[getUnassignedStudents] Error fetching students:', studentsError);
+		logger.error('[getUnassignedStudents] Error fetching students:', studentsError);
 		throw new Error(`Failed to fetch students: ${studentsError.message}`);
 	}
 
@@ -346,7 +214,7 @@ export async function getUnassignedStudents(
 		.eq('status', 'active');
 
 	if (membersError) {
-		console.error('[getUnassignedStudents] Error fetching memberships:', membersError);
+		logger.error('[getUnassignedStudents] Error fetching memberships:', membersError);
 		throw new Error(`Failed to fetch memberships: ${membersError.message}`);
 	}
 
@@ -373,44 +241,6 @@ export async function getUnassignedStudents(
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
-
-/**
- * Count students in a class (lightweight - no data fetching)
- *
- * Use this when you only need the count, not the actual student data.
- *
- * @param classId - The class ID
- * @param userId - The teacher's user ID (for test mode lookup)
- * @param supabase - Supabase client instance
- * @returns Promise resolving to student count
- *
- * @example
- * const count = await getClassStudentCount('class-uuid', user.id, supabase);
- * console.log('Class has', count, 'students');
- */
-export async function getClassStudentCount(
-	classId: string,
-	userId: string,
-	supabase: SupabaseClient<Database>
-): Promise<number> {
-	// Get teacher's test mode preference
-	const isTestMode = await getTeacherTestMode(userId, supabase);
-
-	// Count with test mode filtering
-	const { count, error } = await supabase
-		.from('class_members')
-		.select('student_id, profiles!inner(is_test)', { count: 'exact', head: true })
-		.eq('class_id', classId)
-		.eq('status', 'active')
-		.eq('profiles.is_test', isTestMode);
-
-	if (error) {
-		console.error('[getClassStudentCount] Error counting students:', error);
-		throw new Error(`Failed to count students: ${error.message}`);
-	}
-
-	return count || 0;
-}
 
 /**
  * Get classes and students for assignment purposes

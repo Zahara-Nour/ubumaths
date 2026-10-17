@@ -13,8 +13,12 @@ import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { generateClaudeCodeExport } from '$lib/server/bug-report-export';
+import { attachReportErrors } from '$lib/server/bug-report-errors';
 import { signBugReportScreenshot, EXPORT_SIGNED_URL_TTL } from '$lib/server/bug-report-screenshots';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/bug-reports/[reportId]/export/+server');
 
 const reportIdSchema = z.string().uuid('ID de rapport invalide');
 
@@ -53,13 +57,16 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			if (fetchError?.code === 'PGRST116') {
 				throw error(404, 'Rapport non trouvé');
 			}
-			console.error('[API] Error fetching bug report for export:', fetchError);
+			logger.error('[API] Error fetching bug report for export:', fetchError);
 			throw error(500, 'Erreur lors de la récupération du rapport');
 		}
 
 		// Sign the screenshot URL with a longer TTL so the exported markdown link
 		// stays openable after download (private bucket).
 		await signBugReportScreenshot(locals.supabase, report, EXPORT_SIGNED_URL_TTL);
+
+		// Erreurs de l'auteur avant le signalement : lues ici, réservées à l'admin.
+		await attachReportErrors(locals.supabase, [report]);
 
 		// Generate the export
 		const exportData = generateClaudeCodeExport(report);
@@ -77,7 +84,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[API] Unexpected error in GET /api/bug-reports/[reportId]/export:', err);
+		logger.error('[API] Unexpected error in GET /api/bug-reports/[reportId]/export:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

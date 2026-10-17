@@ -4,11 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import {
-	updateSchoolConfigSchema,
-	partialSchoolConfigSchema,
-	weekConfigSchema
-} from '../school-config';
+import { updateSchoolConfigSchema, weekConfigSchema } from '../school-config';
 import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
 
 describe('weekConfigSchema', () => {
@@ -97,7 +93,7 @@ describe('weekConfigSchema', () => {
 			const result = weekConfigSchema.safeParse(invalidConfig);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('school_days and weekend_days');
+				expect(result.error.issues[0].message).toContain('jours de classe et de week-end');
 			}
 		});
 
@@ -129,7 +125,7 @@ describe('weekConfigSchema', () => {
 			const result = weekConfigSchema.safeParse(invalidConfig);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('school_days and weekend_days');
+				expect(result.error.issues[0].message).toContain('jours de classe et de week-end');
 			}
 		});
 
@@ -161,7 +157,7 @@ describe('weekConfigSchema', () => {
 			const result = weekConfigSchema.safeParse(invalidConfig);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('school_days');
+				expect(result.error.issues[0].message).toContain('Au moins un jour de classe');
 			}
 		});
 
@@ -193,7 +189,7 @@ describe('weekConfigSchema', () => {
 			const result = weekConfigSchema.safeParse(invalidConfig);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('first_day');
+				expect(result.error.issues[0].message).toContain('premier jour');
 			}
 		});
 
@@ -445,7 +441,7 @@ describe('updateSchoolConfigSchema', () => {
 			const result = updateSchoolConfigSchema.safeParse(invalidInput);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('Invalid timezone');
+				expect(result.error.issues[0].message).toContain('Fuseau horaire invalide');
 			}
 		});
 
@@ -535,61 +531,6 @@ describe('updateSchoolConfigSchema', () => {
 			if (result.success) {
 				expect(result.data.timezone).toBe('Europe/Paris');
 			}
-		});
-	});
-});
-
-describe('partialSchoolConfigSchema', () => {
-	describe('Valid Partial Updates', () => {
-		it('should accept only timezone', () => {
-			const result = partialSchoolConfigSchema.safeParse({
-				timezone: 'Europe/Paris'
-			});
-			expect(result.success).toBe(true);
-		});
-
-		it('should accept only week_config', () => {
-			const result = partialSchoolConfigSchema.safeParse({
-				week_config: DEFAULT_WEEK_CONFIG
-			});
-			expect(result.success).toBe(true);
-		});
-
-		it('should accept both timezone and week_config', () => {
-			const result = partialSchoolConfigSchema.safeParse({
-				timezone: 'Europe/Paris',
-				week_config: DEFAULT_WEEK_CONFIG
-			});
-			expect(result.success).toBe(true);
-		});
-	});
-
-	describe('Invalid Partial Updates', () => {
-		it('should reject empty object', () => {
-			const result = partialSchoolConfigSchema.safeParse({});
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('At least one field');
-			}
-		});
-
-		it('should reject invalid timezone when provided', () => {
-			const result = partialSchoolConfigSchema.safeParse({
-				timezone: 'Invalid/Timezone'
-			});
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject invalid week_config when provided', () => {
-			const result = partialSchoolConfigSchema.safeParse({
-				week_config: {
-					first_day: 1,
-					last_day: 5,
-					school_days: [], // Invalid
-					weekend_days: [0, 6]
-				}
-			});
-			expect(result.success).toBe(false);
 		});
 	});
 });

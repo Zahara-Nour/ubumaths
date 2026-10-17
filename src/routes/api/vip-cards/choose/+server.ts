@@ -51,6 +51,9 @@ import {
 	grantVipCardsAfterAction,
 	restoreActionCard
 } from '$lib/server/vip-card-grants';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/choose/+server');
 
 // ============================================================================
 // POST HANDLER
@@ -84,11 +87,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			supabase
 		);
 		if (!hasAccess) {
-			throw error(403, 'You can only choose cards for students in your classes');
+			throw error(403, 'Choix de cartes VIP réservé aux élèves des classes du professeur');
 		}
 	} else if (!isStudent) {
 		// Ni professeur, ni l'élève lui-même
-		throw error(403, 'You can only choose cards for yourself or your students');
+		throw error(403, 'Choix de cartes VIP réservé à l’élève concerné ou à son professeur');
 	} else {
 		// Élève : consentement requis
 		requireConsent(profile, 'purchase_items');
@@ -103,8 +106,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('[choose] Error fetching student profile:', fetchError);
-		throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
+		logger.error('[choose] Error fetching student profile:', fetchError);
+		throw error(500, `Impossible de charger le profil de l’élève : ${fetchError.message}`);
 	}
 
 	const vipCards = asStudentVipCards(studentProfile.vip_cards);
@@ -112,16 +115,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// La carte d'action existe et n'est pas utilisée
 	const actionCardInstance = vipCards[data.actionCardInstanceId];
 	if (!actionCardInstance) {
-		throw error(404, `Action card instance not found: ${data.actionCardInstanceId}`);
+		throw error(404, `Carte d’action introuvable : ${data.actionCardInstanceId}`);
 	}
 	if (actionCardInstance.usedAt) {
-		throw error(400, `Action card already used: ${data.actionCardInstanceId}`);
+		throw error(400, `Carte d’action déjà utilisée : ${data.actionCardInstanceId}`);
 	}
 
 	// Modèle de la carte d'action (contexte d'activation et action)
 	const actionCard = await getTemplateById(supabase, actionCardInstance.cardId);
 	if (!actionCard) {
-		throw error(404, `Action card definition not found: ${actionCardInstance.cardId}`);
+		throw error(404, `Modèle de la carte d’action introuvable : ${actionCardInstance.cardId}`);
 	}
 
 	// Élève : approbation du professeur OU contexte d'activation valide
@@ -133,13 +136,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				throw error(400, 'Cette carte ne peut être activée que dans un contexte spécifique');
 			}
 		} else {
-			throw error(400, 'This card must be approved by a teacher before use.');
+			throw error(400, 'Cette carte VIP doit être validée par le professeur avant d’être utilisée');
 		}
 	}
 
 	// La carte porte une action choose_card
 	if (!actionCard.action || actionCard.action.type !== 'choose_card') {
-		throw error(400, `Card "${actionCard.name}" does not have a choose_card action`);
+		throw error(400, `La carte « ${actionCard.name} » ne permet pas de choisir des cartes`);
 	}
 
 	const chooseAction = actionCard.action;
@@ -148,7 +151,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (data.chosenCardIds.length !== chooseAction.count) {
 		throw error(
 			400,
-			`Must choose exactly ${chooseAction.count} card${chooseAction.count > 1 ? 's' : ''}, got ${data.chosenCardIds.length}`
+			`Il faut choisir exactement ${chooseAction.count} carte${chooseAction.count > 1 ? 's' : ''}, pas ${data.chosenCardIds.length}`
 		);
 	}
 
@@ -161,7 +164,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const lockedIds = await findLockedCardInstances(data.studentId, [
 		data.actionCardInstanceId
 	]).catch(() => {
-		throw error(500, 'Failed to verify marketplace lock status');
+		throw error(500, 'Impossible de vérifier si la carte est engagée sur le marché');
 	});
 	if (lockedIds.length > 0) {
 		throw error(400, 'Cette carte est engagée sur le marché et ne peut pas être utilisée');
@@ -181,15 +184,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (useError) {
-		console.error('[choose] RPC use_vip_card error:', useError);
-		throw error(500, `Failed to mark action card as used: ${useError.message}`);
+		logger.error('[choose] RPC use_vip_card error:', useError);
+		throw error(500, `Impossible d’utiliser la carte d’action : ${useError.message}`);
 	}
 
 	// `usedAt` : posé par `use_vip_card` quand la carte n'a plus d'usage (sinon
 	// null) ; la restitution exige de retrouver exactement cette valeur.
 	const rpcResult = useResult as { success: boolean; error?: string; usedAt?: string | null };
 	if (!rpcResult.success) {
-		throw error(400, rpcResult.error || 'Failed to mark action card as used');
+		throw error(400, rpcResult.error || 'Impossible d’utiliser la carte d’action');
 	}
 
 	// Attribuer toutes les cartes ou aucune (serveur seul, Q137 b). En cas
@@ -264,10 +267,10 @@ async function validateChosenCards(
 	for (const cardId of chosenCardIds) {
 		const template = templatesMap.get(cardId);
 		if (!template) {
-			throw error(404, `Card not found: ${cardId}`);
+			throw error(404, `Carte VIP introuvable : ${cardId}`);
 		}
 		if (!template.is_enabled) {
-			throw error(400, `Card "${template.name}" is not available`);
+			throw error(400, `La carte « ${template.name} » n’est pas disponible`);
 		}
 		chosenTemplates.push(template);
 	}
@@ -279,7 +282,7 @@ async function validateChosenCards(
 				const template = templatesMap.get(cardId);
 				throw error(
 					400,
-					`Card "${template?.name || cardId}" is not in the allowed list for this action`
+					`La carte « ${template?.name || cardId} » ne fait pas partie des cartes proposées par cette action`
 				);
 			}
 		}
@@ -299,7 +302,7 @@ async function validateChosenCards(
 			if (cardRarityValue > maxRarityValue) {
 				throw error(
 					400,
-					`Card "${template.name}" (${template.rarity}) exceeds maximum rarity ${action.maxRarity}`
+					`La carte « ${template.name} » (${template.rarity}) dépasse la rareté maximale permise (${action.maxRarity})`
 				);
 			}
 		}

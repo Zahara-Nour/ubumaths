@@ -5,7 +5,7 @@
  * Traduit la structure de `buildExpectedResult` (statuts sémantiques, aucune
  * couleur) en markdown que `MarkdownRenderer` sait rendre : couleurs par
  * variables CSS (`\textcolor{var(--expected-…)}`, posées par
- * `ExpectedResultView` à partir des tokens), solution encadrée (`\bbox`).
+ * `ExpectedResultView` à partir des tokens), solution encadrée (`\htmlStyle`).
  *
  * SÉCURITÉ (audit de la PR #643, exigence du lot 2) : toute valeur
  * `context: 'math'` est écrite DANS une formule `$…$`, jamais dans le texte
@@ -72,15 +72,19 @@ export function balanceBraces(latex: string): string {
 
 /**
  * LaTeX coloré selon le statut ; `boxed` : encadré de la même couleur (solution,
- * juste). `\boxed` garderait un cadre noir : `\bbox` prend la couleur du statut ;
- * épaisseur et arrondi en `px` : un décimal (`0.06em`) deviendrait `0{,}06` (locale fr).
- * Coins arrondis : demande de David (2026-10-02).
+ * juste). `\boxed` garderait un cadre noir : le cadre prend la couleur du statut ;
+ * dimensions en `px` : un décimal (`0.06em`) deviendrait `0{,}06` (locale fr).
+ * Coins arrondis : demande de David (2026-10-02). Cadre posé par `\htmlStyle` :
+ * depuis MathLive 0.111.1, `\bbox` refuse `border-radius` (bordure entière
+ * ignorée), et `\enclose{roundedbox}` décale son cadre (fractions débordantes,
+ * mesuré le 2026-10-11 sous Chromium et WebKit). La marge verticale garde les
+ * fractions dans le cadre.
  */
 export function colorLatex(latex: string, status: ExpectedStatus, boxed = false): string {
 	const body = balanceBraces(latex);
 	const color = STATUS_COLOR[status];
 	const framed = boxed
-		? String.raw`\bbox[border:1px solid ${color ?? 'currentColor'}; border-radius:4px]{${body}}`
+		? String.raw`\htmlStyle{display:inline-block;border:1px solid ${color ?? 'currentColor'};border-radius:4px;padding:3px 5px}{${body}}`
 		: body;
 	return color ? String.raw`\textcolor{${color}}{${framed}}` : framed;
 }

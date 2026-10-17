@@ -20,10 +20,18 @@ import type { Exercise } from '$lib/exercises/types';
 import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
 import { worksheetLocale } from '$lib/types/worksheets';
 import type { ContentLocale } from '$lib/types/locale';
+import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 
 /**
  * Parameters for generating a worksheet instance
  */
+/**
+ * Champs de l'exercice lus par les routes qui génèrent les copies (`/instances`,
+ * `/preview`) : tout ce que `resolveExercise` lit doit y être. Sans `topic`, le sens
+ * de `AB` serait résolu sans thème (longueur) et stocké tel quel (`instance_data`).
+ */
+export const GENERATION_EXERCISE_FIELDS = 'id, title, variables, shared, variations, topic';
+
 export interface GenerateInstanceParams {
 	worksheetId: string;
 	studentId: string;
@@ -247,6 +255,7 @@ function resolveExercise(
 		parameters,
 		statement: instance.statement_md,
 		solution: instance.solution_md,
+		answers: instance.answers_md ?? '',
 		statement_ast: instance.statement_ast,
 		solution_ast: instance.solution_ast,
 		selectedVariationIndex: instance.selectedVariationIndex,
@@ -255,7 +264,9 @@ function resolveExercise(
 		// Suit l'exercice jusqu'au PDF : sans elle, `C'(x)` s'y imprime en erreur.
 		...(exercise.exercise.generic_functions != null && {
 			generic_functions: exercise.exercise.generic_functions
-		})
+		}),
+		// Sens de `AB` (longueur ou produit) : résolu une fois, depuis le thème (Q-J, Q-K)
+		capital_pairs: exerciseCapitalPairs(exercise.exercise.topic)
 	};
 }
 
@@ -288,17 +299,9 @@ export function generateWorksheetInstance(params: GenerateInstanceParams): Insta
 	let globalPosition = 0;
 
 	// Process exercises section by section
-	for (const [sectionId, sectionExercises] of exercisesBySection) {
-		let exercisesToProcess = [...sectionExercises];
-
-		// Shuffle within section if configured
-		if (config.shuffle_within_sections && sectionId !== null) {
-			// Use a section-specific seed component
-			const sectionSeed =
-				worksheetId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) +
-				(sectionId ? sectionId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) : 0);
-			exercisesToProcess = shuffleArray(exercisesToProcess, sectionSeed);
-		}
+	for (const sectionExercises of exercisesBySection.values()) {
+		// « Mélanger dans les sections » n'existe plus (D6) : ordre des positions
+		const exercisesToProcess = [...sectionExercises];
 
 		// Process each exercise in the section
 		for (const exercise of exercisesToProcess) {
@@ -360,7 +363,7 @@ export function generateWorksheetInstance(params: GenerateInstanceParams): Insta
 	};
 
 	// Include exercise order if shuffled
-	if (config.shuffle_exercises || config.shuffle_within_sections) {
+	if (config.shuffle_exercises) {
 		instanceData.exercise_order = exerciseOrder;
 	}
 

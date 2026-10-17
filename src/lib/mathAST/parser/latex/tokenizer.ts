@@ -23,6 +23,9 @@ import type { Token, TokenType } from '../types';
 /** Caractères de relation tapés tels quels → commande LaTeX équivalente */
 const UNICODE_RELATIONS: Readonly<Record<string, string>> = { '≤': 'leq', '≥': 'geq', '≠': 'neq' };
 
+/** Commandes lues comme la barre `|` (valeur absolue) */
+const VERTICAL_BAR_COMMANDS: ReadonlySet<string> = new Set(['vert', 'lvert', 'rvert']);
+
 // =============================================================================
 // Tokenizer Class
 // =============================================================================
@@ -193,12 +196,21 @@ export class Tokenizer {
 			return this.makeToken('COMMAND', '', startPos);
 		}
 
+		// `\vert`, `\lvert`, `\rvert` : la barre `|` de la valeur absolue. La touche
+		// du clavier virtuel de MathLive rend `\left\vert … \right\vert` : sans cette
+		// lecture, la réponse de l'élève était refusée. Lues comme la barre nue, elles
+		// suivent toutes ses règles (`\left`/`\right`, facteur collé `2\vert x\vert`).
+		// `\mid` (divisibilité) et `\Vert`, `\|` (norme) restent hors de cette lecture.
+		if (VERTICAL_BAR_COMMANDS.has(commandName)) {
+			return this.makeToken('PIPE', '|', startPos, this.position - startPos);
+		}
+
 		return this.makeToken('COMMAND', commandName, startPos);
 	}
 
 	/**
-	 * Scans a number (integer, decimal, or scientific notation).
-	 * Supports: 42, 3.14, .5, 1e10, 1E10, 1.5e-10, 1.5e+10
+	 * Lit un nombre, entier ou décimal : 42, 3.14, .5, 3{,}5.
+	 * Pas de notation scientifique : `1e10` = 1·e·10 (`e` = constante d'Euler).
 	 */
 	private scanNumber(): Token {
 		const startPos = this.position;
@@ -263,41 +275,10 @@ export class Tokenizer {
 			}
 		}
 
-		// Check for exponent part (scientific notation)
-		if (this.position < this.length) {
-			const expChar = this.input[this.position];
-			if (expChar === 'e' || expChar === 'E') {
-				// Look ahead to validate exponent format
-				let expStart = this.position + 1;
-
-				// Check for optional sign
-				if (
-					expStart < this.length &&
-					(this.input[expStart] === '+' || this.input[expStart] === '-')
-				) {
-					expStart++;
-				}
-
-				// Must have at least one digit after e/E or e+/e-
-				if (expStart < this.length && this.isDigit(this.input[expStart])) {
-					// Valid scientific notation - consume it all
-					value += this.input[this.position]; // 'e' or 'E'
-					this.position++;
-
-					// Consume optional sign
-					if (this.input[this.position] === '+' || this.input[this.position] === '-') {
-						value += this.input[this.position];
-						this.position++;
-					}
-
-					// Consume exponent digits
-					while (this.position < this.length && this.isDigit(this.input[this.position])) {
-						value += this.input[this.position];
-						this.position++;
-					}
-				}
-			}
-		}
+		// Pas de notation scientifique en LaTeX (décision de David, 2026-10-10) :
+		// `e` est la constante d'Euler, donc `3e-2` se lit 3e − 2 et non 0,03.
+		// Le nombre s'arrête au dernier chiffre ; `e`/`E` devient une lettre.
+		// La syntaxe custom, elle, garde `1e5` (tokenizer custom).
 
 		// Pass explicit sourceLength because `value` is the canonicalised form
 		// (with '.' instead of '{,}') and may be shorter than the consumed

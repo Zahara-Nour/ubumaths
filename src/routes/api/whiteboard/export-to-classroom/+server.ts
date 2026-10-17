@@ -23,12 +23,21 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
+import {
+	GoogleNotConnectedError,
+	GoogleTokenExpiredError,
+	GoogleInsufficientPermissionsError
+} from '$lib/server/google/errors';
 import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
 import { GoogleClassroomClient } from '$lib/server/google/classroom-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/export-to-classroom/+server');
 
 /**
  * Request body schema - Simplified
@@ -39,10 +48,10 @@ import { getTeacherAccessToken } from '$lib/server/google/sync';
 const exportToClassroomRequestSchema = z.object({
 	pdfBase64: z
 		.string()
-		.min(100, 'PDF data appears to be invalid or empty')
-		.max(5_000_000, 'PDF file is too large (max 3MB)'),
-	classId: z.string().uuid('Invalid class ID'),
-	date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
+		.min(100, 'Données PDF vides ou invalides')
+		.max(5_000_000, 'Fichier PDF trop lourd (3 Mo au maximum)'),
+	classId: z.string().uuid('Identifiant de classe invalide'),
+	date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date attendue au format AAAA-MM-JJ')
 });
 
 /**
@@ -69,6 +78,8 @@ function generateFilename(joinCode: string, date: string, counter: number): stri
  * Export whiteboard PDF to Google Classroom
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -77,8 +88,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch (err) {
-		console.error('[Export to Classroom] Invalid JSON body:', err);
-		throw error(400, 'Invalid JSON body');
+		logger.error('[Export to Classroom] Invalid JSON body:', err);
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = exportToClassroomRequestSchema.safeParse(body);
@@ -113,28 +124,28 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			if (classError.code === 'PGRST116') {
 				throw error(404, 'Classe introuvable ou accès refusé');
 			}
-			console.error('[Export to Classroom] Class lookup error:', classError);
-			throw error(500, 'Échec de la vérification de la classe');
+			logger.error('[Export to Classroom] Class lookup error:', classError);
+			throw error(500, 'Impossible de vérifier la classe');
 		}
 
 		// Step 2: Verify class has a Google Classroom course associated
 		if (!classData.google_classroom_course_id) {
 			throw error(
 				400,
-				"Cette classe n'est pas associée à un cours Google Classroom. Associez d'abord un cours dans Mes Classes."
+				'Cette classe n’est associée à aucun cours Classroom. Associer d’abord un cours dans Mes Classes.'
 			);
 		}
 
 		const course = classData.google_classroom_courses;
 		if (!course || (Array.isArray(course) && course.length === 0)) {
-			throw error(400, 'Le cours Google Classroom associé est introuvable.');
+			throw error(400, 'Cours Classroom associé introuvable');
 		}
 
 		// Handle both single object and array (Supabase may return either)
 		const courseData = Array.isArray(course) ? course[0] : course;
 
 		if (courseData.course_state !== 'ACTIVE') {
-			throw error(400, 'Le cours Google Classroom est archivé ou inactif.');
+			throw error(400, 'Le cours Classroom est archivé ou inactif');
 		}
 
 		// Step 3: Find "Notes de cours" topic
@@ -148,7 +159,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (topicError || !topic) {
 			throw error(
 				400,
-				`Le topic "Notes de cours" n'existe pas dans le cours "${courseData.name}". Créez-le d'abord dans Google Classroom.`
+				`Le thème « Notes de cours » n’existe pas dans le cours Classroom « ${courseData.name} ». Le créer d’abord dans Google Classroom.`
 			);
 		}
 
@@ -162,19 +173,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		);
 
 		if (counterError) {
-			console.error('[Export to Classroom] Counter error:', counterError);
-			throw error(500, "Erreur lors de la génération du numéro d'export");
+			logger.error('[Export to Classroom] Counter error:', counterError);
+			throw error(500, 'Impossible de numéroter l’export');
 		}
 
 		if (counter === null || counter === undefined) {
-			console.error('[Export to Classroom] Counter is null/undefined');
-			throw error(500, "Erreur: compteur d'export invalide");
+			logger.error('[Export to Classroom] Counter is null/undefined');
+			throw error(500, 'Compteur d’export invalide');
 		}
 
 		// Step 5: Generate title and filename
 		const title = generateFrenchTitle(date);
 		const filename = generateFilename(classData.join_code, date, counter);
-		console.log(`[Export to Classroom] Generated filename: ${filename} (counter: ${counter})`);
+		logger.info(`[Export to Classroom] Generated filename: ${filename} (counter: ${counter})`);
 
 		// Step 6: Get access token and initialize clients
 		const accessToken = await getTeacherAccessToken(user.id, locals.supabase);
@@ -190,15 +201,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Validate by decoding a small portion to check PDF magic bytes
 			const testDecode = atob(pdfBase64Content.slice(0, 20));
 			if (!testDecode.startsWith('%PDF-')) {
-				throw error(400, 'Fichier invalide: le contenu ne semble pas être un PDF');
+				throw error(400, 'Fichier invalide : ce n’est pas un PDF');
 			}
 		} catch (err) {
 			// Re-throw SvelteKit errors
 			if (err && typeof err === 'object' && 'status' in err) {
 				throw err;
 			}
-			console.error('[Export to Classroom] Base64 validation error:', err);
-			throw error(400, 'Données PDF invalides: encodage base64 incorrect');
+			logger.error('[Export to Classroom] Base64 validation error:', err);
+			throw error(400, 'Données PDF invalides : encodage base64 incorrect');
 		}
 
 		// Get or create the app folder in Google Drive
@@ -214,7 +225,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			isBase64: true
 		});
 
-		console.log(
+		logger.info(
 			`[Export to Classroom] Uploaded PDF ${driveFile.id} (${filename}) for teacher ${user.id}`
 		);
 
@@ -238,7 +249,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			]
 		});
 
-		console.log(
+		logger.info(
 			`[Export to Classroom] Created material ${material.id} in course ${courseData.google_course_id} for class ${classData.name}`
 		);
 
@@ -258,26 +269,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Handle specific Google API errors with user-friendly French messages
 		if (err instanceof Error) {
-			if (err.message.includes('No Google integration')) {
-				throw error(
-					401,
-					'Compte Google non connecté. Veuillez vous connecter dans les Paramètres.'
-				);
+			if (err instanceof GoogleNotConnectedError) {
+				throw error(401, 'Compte Google non connecté : à connecter dans les Paramètres');
 			}
-			if (err.message.includes('Token expired') || err.message.includes('401')) {
-				throw error(401, 'Session Google expirée. Veuillez reconnecter votre compte Google.');
+			if (err instanceof GoogleTokenExpiredError || err.message.includes('401')) {
+				throw error(401, 'Session Google expirée : reconnecter le compte Google');
 			}
-			if (err.message.includes('403') || err.message.includes('Insufficient')) {
+			if (err instanceof GoogleInsufficientPermissionsError || err.message.includes('403')) {
 				throw error(
 					403,
-					'Permissions insuffisantes. Veuillez reconnecter votre compte avec les accès Classroom.'
+					'Droits insuffisants : reconnecter le compte Google avec l’accès à Classroom'
 				);
 			}
 		}
 
 		// Log detailed error server-side only
-		console.error('[Export to Classroom] Internal error:', err);
+		logger.error('[Export to Classroom] Internal error:', err);
 		// Return generic error to client (no internal details)
-		throw error(500, "Une erreur est survenue lors de l'export. Veuillez réessayer.");
+		throw error(500, 'Impossible d’exporter vers Google Classroom');
 	}
 };

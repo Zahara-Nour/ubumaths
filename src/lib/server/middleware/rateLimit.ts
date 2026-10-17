@@ -63,7 +63,7 @@ export function rateLimit(key: string, maxRequests = 100, windowMs = 60000): voi
 
 	if (record.count >= maxRequests) {
 		const retryAfter = Math.ceil((record.resetTime - now) / 1000);
-		throw error(429, `Trop de requetes. Reessayez dans ${retryAfter} secondes.`);
+		throw error(429, `Trop de requêtes. Réessayer dans ${retryAfter} secondes.`);
 	}
 
 	record.count++;

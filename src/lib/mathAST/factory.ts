@@ -39,6 +39,9 @@ import type {
 	OppositeNode,
 	PiecewiseNode,
 	PiecewisePiece,
+	PointName,
+	FigureNameNode,
+	SegmentLengthNode,
 	PositiveNode,
 	PercentageNode,
 	RelationNode,
@@ -308,6 +311,64 @@ export function symbol(sym: MathSymbol, metadata?: NodeMetadata): SymbolNode {
 	return {
 		type: 'symbol',
 		symbol: sym,
+		...(metadata && { metadata })
+	} as const;
+}
+
+// =============================================================================
+// Points nommés : longueurs de segments et noms de figure
+// =============================================================================
+
+/** Une majuscule latine seule : la lettre d'un point */
+const POINT_LETTER = /^[A-Z]$/;
+
+/** Un indice de point : chiffres ou lettres minuscules (`1`, `12`, `n`) */
+const POINT_INDEX = /^[a-z0-9]+$/;
+
+/**
+ * Le nom d'un point : `pointName('A')`, `pointName('A', 1)` pour `A'`,
+ * `pointName('M', 0, 'n')` pour `M_n`. Lève sur une lettre qui n'est pas une
+ * majuscule, un nombre de primes négatif ou un indice mal formé.
+ */
+export function pointName(letter: string, primes = 0, index?: string): PointName {
+	if (!POINT_LETTER.test(letter)) {
+		throw new Error(`Nom de point invalide : « ${letter} » (une majuscule attendue)`);
+	}
+	if (!Number.isInteger(primes) || primes < 0) {
+		throw new Error(`Nombre de primes invalide pour le point ${letter} : ${primes}`);
+	}
+	if (index !== undefined && !POINT_INDEX.test(index)) {
+		throw new Error(`Indice de point invalide : « ${index} »`);
+	}
+	return index === undefined ? { letter, primes } : { letter, primes, index };
+}
+
+/**
+ * La longueur du segment d'extrémités `from` et `to`, dans l'ordre écrit (`AB`).
+ */
+export function segmentLength(
+	from: PointName,
+	to: PointName,
+	metadata?: NodeMetadata
+): SegmentLengthNode {
+	return {
+		type: 'segmentLength',
+		points: [from, to],
+		...(metadata && { metadata })
+	} as const;
+}
+
+/**
+ * Un nom de figure (`ABC`, `ABCD`) : trois points au moins, sinon c'est une
+ * longueur (`segmentLength`) ou un point seul. Lève en dessous de trois.
+ */
+export function figureName(points: readonly PointName[], metadata?: NodeMetadata): FigureNameNode {
+	if (points.length < 3) {
+		throw new Error(`Un nom de figure a au moins trois points (reçu : ${points.length})`);
+	}
+	return {
+		type: 'figureName',
+		points: [...points],
 		...(metadata && { metadata })
 	} as const;
 }
@@ -1258,6 +1319,14 @@ export function complex(real: MathNode, imaginary: MathNode, metadata?: NodeMeta
 	} as const;
 }
 
+/**
+ * L'unité imaginaire `i` = `complex(0, 1)` : ce que les parseurs lisent pour la
+ * lettre `i` (hors indice), `\mathrm{i}` et `\imaginaryI`.
+ */
+export function imaginaryUnit(metadata?: NodeMetadata): ComplexNode {
+	return complex(number('0'), number('1'), metadata);
+}
+
 // =============================================================================
 // Infinity Factories
 // =============================================================================
@@ -1925,6 +1994,9 @@ export const MathAST = {
 	greek,
 	symbol,
 	hole,
+	pointName,
+	segmentLength,
+	figureName,
 
 	// Mathematical constants
 	mathConstant,
@@ -2016,6 +2088,7 @@ export const MathAST = {
 
 	// Complex numbers
 	complex,
+	imaginaryUnit,
 
 	// Infinity
 	infinity,

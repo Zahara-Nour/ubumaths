@@ -13,6 +13,9 @@
 
 import { z } from 'zod';
 import { error } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/validation/response-utils');
 
 /**
  * Validates API response data against a Zod schema
@@ -43,13 +46,13 @@ export function validateResponse<T>(schema: z.ZodSchema<T>, data: unknown, endpo
 
 	if (!validation.success) {
 		// Log detailed error for debugging (never expose to client)
-		console.error(`[RESPONSE VALIDATION ERROR] ${endpoint}:`, {
+		logger.error(`[RESPONSE VALIDATION ERROR] ${endpoint}:`, {
 			issues: validation.error.issues,
 			data: JSON.stringify(data, null, 2)
 		});
 
 		// Throw generic 500 error (don't expose internal structure)
-		throw error(500, 'Internal server error: Invalid response format');
+		throw error(500, 'Erreur interne : réponse du serveur mal formée');
 	}
 
 	return validation.data;

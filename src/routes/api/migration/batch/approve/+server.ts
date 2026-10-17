@@ -18,6 +18,9 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { batchApproveSchema } from '$lib/server/validation/migration-review';
 import { loadQuestionWithTransform, getQuestionCount } from '$lib/migration/question-data-loader';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/migration/batch/approve/+server');
 
 /**
  * POST /api/migration/batch/approve
@@ -32,7 +35,7 @@ import { loadQuestionWithTransform, getQuestionCount } from '$lib/migration/ques
  * Response: 200 with batch approval results
  * {
  *   success: true,
- *   message: "Batch approval completed",
+ *   message: "Approbation groupée terminée",
  *   data: {
  *     approved: number[],         // Successfully approved indices
  *     failed: Array<{             // Failed approvals with reasons
@@ -53,12 +56,12 @@ import { loadQuestionWithTransform, getQuestionCount } from '$lib/migration/ques
 export const POST: RequestHandler = async ({ request, locals }) => {
 	// ✅ SECURITY: Authentication check
 	if (!locals.profile) {
-		throw error(401, 'Authentication required');
+		throw error(401, 'Connexion requise');
 	}
 
 	// ✅ SECURITY: Authorization check (admin only)
 	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
+		throw error(403, 'Réservé aux administrateurs');
 	}
 
 	try {
@@ -86,7 +89,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				if (globalIndex < 0 || globalIndex >= totalQuestions) {
 					failed.push({
 						globalIndex,
-						reason: `Global index ${globalIndex} is out of bounds (0-${totalQuestions - 1})`
+						reason: `Question n° ${globalIndex} hors limites (de 0 à ${totalQuestions - 1})`
 					});
 					continue;
 				}
@@ -97,7 +100,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				if (!questionData) {
 					failed.push({
 						globalIndex,
-						reason: 'Question not found'
+						reason: 'Question introuvable'
 					});
 					continue;
 				}
@@ -106,7 +109,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				if (!questionData.transformed) {
 					failed.push({
 						globalIndex,
-						reason: `Transformation failed: ${questionData.transformError || 'Unknown error'}`
+						reason: `Transformation en échec : ${questionData.transformError || 'erreur inconnue'}`
 					});
 					continue;
 				}
@@ -117,7 +120,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			} catch (err) {
 				failed.push({
 					globalIndex,
-					reason: err instanceof Error ? err.message : 'Unknown error'
+					reason: err instanceof Error ? err.message : 'Erreur inconnue'
 				});
 			}
 		}
@@ -125,7 +128,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Return batch results
 		return json({
 			success: true,
-			message: 'Batch approval completed',
+			message: 'Approbation groupée terminée',
 			data: {
 				approved,
 				failed,
@@ -145,7 +148,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Log and return generic error
-		console.error('Error in batch approval:', err);
-		throw error(500, 'Failed to process batch approval');
+		logger.error('Error in batch approval:', err);
+		throw error(500, 'Impossible de terminer l’approbation groupée');
 	}
 };

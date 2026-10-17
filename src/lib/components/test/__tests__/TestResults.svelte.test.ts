@@ -62,6 +62,6 @@ describe('TestResults — évaluation', () => {
 		expect(container.textContent).not.toContain('Recommencer');
 		expect(container.textContent).not.toContain('Retour au panier');
 		const link = container.querySelector('a[href="/dashboard/student/assessments"]');
-		expect(link?.textContent).toContain('Mes évaluations');
+		expect(link?.textContent).toContain('Mes contrôles');
 	});
 });

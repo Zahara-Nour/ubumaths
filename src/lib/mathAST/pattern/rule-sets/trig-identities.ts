@@ -34,10 +34,6 @@ function doubleArg(node: MathNode): MathNode {
 	return multiply(number('2'), node, 'implicit');
 }
 
-function halveExpr(node: MathNode): MathNode {
-	return divide(node, number('2'), 'fraction');
-}
-
 function get(b: MatchBindings, name: string): MathNode {
 	const node = getBindingNode(b, name);
 	if (!node) throw new Error(`Missing binding '${name}'`);
@@ -450,67 +446,6 @@ export const trigShiftPiOver2Rules: Rule[] = [
 ];
 
 // ============================================================================
-// FACTORIZATION Group (excluded from simplify)
-// ============================================================================
-
-export const trigFactorizationRules: Rule[] = [
-	createRule(
-		P.add(P.func('sin', [P._('a')]), P.func('sin', [P._('b')])),
-		(b) => {
-			const a = get(b, 'a');
-			const bNode = get(b, 'b');
-			return multiply(
-				multiply(number('2'), sin(halveExpr(add(a, bNode))), 'implicit'),
-				cos(halveExpr(subtract(a, bNode))),
-				'implicit'
-			);
-		},
-		{ name: 'sin-plus-sin', group: 'FACTORIZATION' }
-	),
-	createRule(
-		P.sub(P.func('sin', [P._('a')]), P.func('sin', [P._('b')])),
-		(b) => {
-			const a = get(b, 'a');
-			const bNode = get(b, 'b');
-			return multiply(
-				multiply(number('2'), cos(halveExpr(add(a, bNode))), 'implicit'),
-				sin(halveExpr(subtract(a, bNode))),
-				'implicit'
-			);
-		},
-		{ name: 'sin-minus-sin', group: 'FACTORIZATION' }
-	),
-	createRule(
-		P.add(P.func('cos', [P._('a')]), P.func('cos', [P._('b')])),
-		(b) => {
-			const a = get(b, 'a');
-			const bNode = get(b, 'b');
-			return multiply(
-				multiply(number('2'), cos(halveExpr(add(a, bNode))), 'implicit'),
-				cos(halveExpr(subtract(a, bNode))),
-				'implicit'
-			);
-		},
-		{ name: 'cos-plus-cos', group: 'FACTORIZATION' }
-	),
-	createRule(
-		P.sub(P.func('cos', [P._('a')]), P.func('cos', [P._('b')])),
-		(b) => {
-			const a = get(b, 'a');
-			const bNode = get(b, 'b');
-			return opposite(
-				multiply(
-					multiply(number('2'), sin(halveExpr(add(a, bNode))), 'implicit'),
-					sin(halveExpr(subtract(a, bNode))),
-					'implicit'
-				)
-			);
-		},
-		{ name: 'cos-minus-cos', group: 'FACTORIZATION' }
-	)
-];
-
-// ============================================================================
 // HALF_ANGLE Group (excluded from simplify)
 // ============================================================================
 
@@ -632,22 +567,4 @@ export const trigSimplifyRules: Rule[] = [
 	...trigPythagoreanRules.filter((r) => SIMPLIFY_PYTHAGOREAN.has(r.name)),
 	...trigQuotientRules.filter((r) => SIMPLIFY_QUOTIENT.has(r.name)),
 	cosOverSinSimplify
-];
-
-export const allTrigRules: Rule[] = [
-	...trigPythagoreanRules,
-	...trigQuotientRules,
-	...trigPeriodicRules,
-	...trigNegativeAngleRules,
-	...trigDoubleAngleRules,
-	...trigPowerReductionRules,
-	...trigLinearizationRules,
-	...trigAdditionRules,
-	...trigDoubleAngleExpansionRules,
-	...trigCofunctionRules,
-	...trigSupplementaryRules,
-	...trigShiftPiOver2Rules,
-	...trigFactorizationRules,
-	...trigHalfAngleRules,
-	...trigHigherPowerRules
 ];

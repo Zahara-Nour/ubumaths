@@ -28,6 +28,9 @@ import { gcd } from './rational';
  * integerNthRoot(10n, 2n)  // null (not a perfect square)
  */
 export function integerNthRoot(n: bigint, index: bigint): bigint | null {
+	// Indice < 1 : la méthode de Newton ci-dessous ne converge pas et bouclait
+	// sans fin (`\sqrt[-3]{27}` figeait la page, mesuré le 2026-10-13)
+	if (index < 1n) return null;
 	if (n < 0n) {
 		// Negative numbers: only odd roots work
 		if (index % 2n === 0n) return null;

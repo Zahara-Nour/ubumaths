@@ -2,6 +2,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/tutor/stats/+server');
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -156,7 +159,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Cette liste borne la portée du classement. Vidée par une panne, elle
 		// affiche un classement amputé sans le dire.
 		if (teacherClassesError) {
-			console.error('Périmètre illisible :', teacherClassesError);
+			logger.error('Périmètre illisible :', teacherClassesError);
 			throw error(500, 'Impossible de déterminer le périmètre');
 		}
 
@@ -183,7 +186,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { data: rawConversations, error: dbError } = await query;
 
 	if (dbError) {
-		console.error('Database error:', dbError);
+		logger.error('Database error:', dbError);
 		throw error(500, 'Erreur lors de la récupération des statistiques');
 	}
 

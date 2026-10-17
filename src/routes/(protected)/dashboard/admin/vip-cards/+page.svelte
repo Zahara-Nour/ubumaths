@@ -103,7 +103,7 @@
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.message || 'Failed to update');
+				throw new Error(error.message || 'Impossible de mettre à jour');
 			}
 
 			// API returns camelCase, convert to snake_case for local state
@@ -156,7 +156,7 @@
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.message || 'Failed to save');
+				throw new Error(error.message || 'Impossible d’enregistrer');
 			}
 
 			// API returns camelCase, convert to snake_case for local state
@@ -225,7 +225,7 @@
 
 		if (!response.ok) {
 			const error = await response.json();
-			throw new Error(error.message || 'Failed to delete');
+			throw new Error(error.message || 'Impossible de supprimer');
 		}
 
 		templates = templates.filter((t) => t.id !== cardId);
@@ -253,7 +253,7 @@
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.message || 'Failed to update');
+				throw new Error(error.message || 'Impossible de mettre à jour');
 			}
 
 			// API returns camelCase, convert to snake_case for local state
@@ -288,7 +288,7 @@
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.message || 'Failed to save');
+				throw new Error(error.message || 'Impossible d’enregistrer');
 			}
 
 			const savedConfig: VipCardConfig = await response.json();
@@ -319,7 +319,7 @@
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.message || 'Failed to activate');
+				throw new Error(error.message || 'Impossible d’activer');
 			}
 
 			const _updatedConfig: VipCardConfig = await response.json();
@@ -349,7 +349,7 @@
 
 		if (!response.ok) {
 			const error = await response.json();
-			throw new Error(error.message || 'Failed to delete');
+			throw new Error(error.message || 'Impossible de supprimer');
 		}
 
 		configs = configs.filter((c) => c.id !== configId);

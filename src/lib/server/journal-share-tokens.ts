@@ -16,6 +16,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { generateShareTokenString } from '$lib/server/exercise-share-tokens';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/journal-share-tokens');
 
 type SB = SupabaseClient<Database>;
 
@@ -66,6 +69,19 @@ export interface PublicWorksheet {
 	estimated_duration_minutes: number | null;
 	sections: unknown[];
 	exercises: unknown[];
+	/**
+	 * Le style de la fiche et, pour un style de son auteur, sa mise en page
+	 * (lot 4a, D11) : le PDF les suit. Absents : « Fiche élève ».
+	 */
+	style_id?: string | null;
+	template_id?: string | null;
+	template?: {
+		id: string;
+		name: string;
+		description: string | null;
+		style_id: string | null;
+		template_content: string;
+	} | null;
 }
 
 export interface JournalShareToken {
@@ -116,7 +132,7 @@ export async function getActiveShareToken(
 		.maybeSingle();
 
 	if (error) {
-		console.error('[journal-share] lecture du jeton actif impossible:', error.message);
+		logger.error('[journal-share] lecture du jeton actif impossible:', error.message);
 		return { token: null, error: 'Impossible de lire le lien de partage' };
 	}
 
@@ -154,7 +170,7 @@ export async function rotateShareToken(
 		.single();
 
 	if (error) {
-		console.error('[journal-share] création du jeton impossible:', error.message);
+		logger.error('[journal-share] création du jeton impossible:', error.message);
 		return { token: null, error: 'Impossible de créer le lien de partage' };
 	}
 
@@ -181,7 +197,7 @@ export async function revokeShareToken(
 		.eq('is_active', true);
 
 	if (error) {
-		console.error('[journal-share] révocation impossible:', error.message);
+		logger.error('[journal-share] révocation impossible:', error.message);
 		return { error: 'Impossible de révoquer le lien' };
 	}
 
@@ -203,7 +219,7 @@ export async function resolveShareToken(
 	});
 
 	if (error) {
-		console.error('[journal-share] résolution impossible:', error.message);
+		logger.error('[journal-share] résolution impossible:', error.message);
 		return null;
 	}
 
@@ -230,7 +246,7 @@ export async function resolveWorksheetByShareToken(
 	});
 
 	if (error) {
-		console.error('[journal-share] fiche illisible:', error.message);
+		logger.error('[journal-share] fiche illisible:', error.message);
 		return null;
 	}
 

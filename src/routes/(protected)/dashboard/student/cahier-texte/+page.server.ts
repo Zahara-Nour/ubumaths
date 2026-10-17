@@ -13,6 +13,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { getUpcomingHomework } from '$lib/server/journal';
 import type { UpcomingHomework, JournalDayView } from '$lib/types/journal';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/cahier-texte/+page.server');
 
 // Validation schemas for URL query parameters
 const weekSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Format de date invalide');
@@ -82,7 +85,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.eq('status', 'active');
 
 	if (membershipError) {
-		console.error('[Student Cahier de Texte] Error fetching memberships:', membershipError);
+		logger.error('[Student Cahier de Texte] Error fetching memberships:', membershipError);
 	}
 
 	// Transform class data
@@ -156,7 +159,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			.order('entry_date', { ascending: false });
 
 		if (entriesError) {
-			console.error('[Student Cahier de Texte] Error fetching entries:', entriesError);
+			logger.error('[Student Cahier de Texte] Error fetching entries:', entriesError);
 		} else {
 			weekEntries = (entries || []).map((e) => ({
 				...e,
@@ -206,7 +209,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		);
 
 		if (homeworkError) {
-			console.error('[Student Cahier de Texte] Error fetching homework:', homeworkError);
+			logger.error('[Student Cahier de Texte] Error fetching homework:', homeworkError);
 			// Continue with empty array - homework is supplementary info
 		}
 		upcomingHomework = homeworkData || [];

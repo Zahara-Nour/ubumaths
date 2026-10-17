@@ -70,7 +70,7 @@ export const registerFormSchema = z
 			.optional()
 			.transform((v) => v === 'true' || v === 'on' || v === '1')
 			.refine((v) => v === true, {
-				message: 'Vous devez accepter les CGU et la politique de confidentialité'
+				message: 'Acceptation des CGU et de la politique de confidentialité requise'
 			})
 	})
 	.refine((d) => d.password === d.confirmPassword, {

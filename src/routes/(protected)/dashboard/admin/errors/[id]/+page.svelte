@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -67,11 +67,7 @@
 <div class="container mx-auto max-w-6xl py-8">
 	<h1 class="sr-only">Détails de l’erreur</h1>
 	<!-- Header -->
-	<div class="mb-6">
-		<Button variant="ghost" onclick={() => goto('/dashboard/admin/errors').then(() => {})}>
-			← Retour à la liste
-		</Button>
-	</div>
+	<BackLink href="/dashboard/admin/errors" label="Retour aux erreurs" class="mb-6" />
 
 	{#if form?.success}
 		<Alert.Root class="mb-6">

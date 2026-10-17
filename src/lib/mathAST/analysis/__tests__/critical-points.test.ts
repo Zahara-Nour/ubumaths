@@ -96,6 +96,14 @@ describe('findCriticalZeros', () => {
 		const pts = zeros('sin(x)');
 		expect(pts.length).toBeGreaterThanOrEqual(6);
 	});
+
+	it('ne prend pas une exponentielle qui tend vers 0 pour une suite de racines', () => {
+		// e^(−28) ≈ 7·10⁻¹³ passait le seuil absolu de 10⁻¹² : une racine par
+		// échantillon, de x = 28 à x = 100.
+		expect(zeros('exp(-x)', -100, 100)).toHaveLength(0);
+		expect(zeros('x*exp(x)', -100, 100).map((p) => Math.round(p.xNumeric))).toEqual([0]);
+		expect(zeros('100/(1+exp(-0.1*x))', -580, 600)).toHaveLength(0);
+	});
 });
 
 // =============================================================================

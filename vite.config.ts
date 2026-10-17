@@ -1,6 +1,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, type ViteUserConfig } from 'vitest/config';
-import { loadEnv } from 'vite';
+import { loadEnv, type Plugin } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { readFileSync } from 'fs';
 import { visualizer } from 'rollup-plugin-visualizer';
@@ -22,6 +22,24 @@ const APP_VERSION = pkg.version;
  *
  * See PERFORMANCE_OPTIMIZATIONS.md for detailed explanation
  */
+/**
+ * MathLive (0.107 à 0.110 au moins) publie `font-display:"swap"` entre guillemets :
+ * valeur invalide, le navigateur retombe sur `auto` et masque le texte des maths
+ * jusqu'à 3 s le temps que la police arrive. On corrige le CSS du paquet au
+ * passage dans Vite (dev comme build : le CSS des dépendances n'est pas
+ * pré-empaqueté par esbuild). Sans effet si MathLive corrige un jour.
+ */
+function mathliveFontDisplay(): Plugin {
+	return {
+		name: 'mathlive-font-display',
+		enforce: 'pre',
+		transform(code, id) {
+			if (!/[\\/]mathlive[\\/]mathlive-(static|fonts)\.css(\?|$)/.test(id)) return null;
+			return { code: code.replaceAll('font-display:"swap"', 'font-display:swap'), map: null };
+		}
+	};
+}
+
 // Retour typé explicitement : sur une fonction `async`, l'inférence ne
 // retrouve pas la bonne surcharge de `defineConfig` (TS2769).
 export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
@@ -39,6 +57,7 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 
 	return {
 		plugins: [
+			mathliveFontDisplay(),
 			tailwindcss(),
 			sveltekit(),
 			// Bundle treemap, only when ANALYZE=1 (never in normal/prod builds).

@@ -14,6 +14,9 @@ import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { exerciseTagSchema, exerciseTagListQuerySchema } from '$lib/server/validation/curriculum';
 import { curriculumDbError } from '$lib/server/curriculum';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/curriculum/exercise-tags/+server');
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -31,7 +34,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.eq('exercise_id', parsed.data.exercise_id);
 
 	if (dbErr) {
-		console.error('[curriculum] exercise-tags GET failed:', dbErr);
+		logger.error('[curriculum] exercise-tags GET failed:', dbErr);
 		return json({ error: 'Échec du chargement des tags' }, { status: 500 });
 	}
 
@@ -64,7 +67,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		console.error('[curriculum] exercise-tags POST failed:', dbErr);
+		logger.error('[curriculum] exercise-tags POST failed:', dbErr);
 		return json({ error: dbErr.message }, { status: 500 });
 	}
 
@@ -91,7 +94,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		console.error('[curriculum] exercise-tags DELETE failed:', dbErr);
+		logger.error('[curriculum] exercise-tags DELETE failed:', dbErr);
 		return json({ error: dbErr.message }, { status: 500 });
 	}
 

@@ -103,7 +103,6 @@ describe('Mono-teacher RPC param cleanup - Integration Tests', () => {
 				title: 'R',
 				difficulty: 1,
 				statement: 's',
-				correction: 'c',
 				created_by: teacher.id
 			})
 			.select('id')
@@ -148,7 +147,6 @@ describe('Mono-teacher RPC param cleanup - Integration Tests', () => {
 				title: 'Own',
 				difficulty: 1,
 				statement: 's',
-				correction: 'c',
 				created_by: teacher.id
 			})
 			.select('id')
@@ -160,7 +158,6 @@ describe('Mono-teacher RPC param cleanup - Integration Tests', () => {
 				title: 'Other',
 				difficulty: 1,
 				statement: 's',
-				correction: 'c',
 				created_by: student.id
 			})
 			.select('id')

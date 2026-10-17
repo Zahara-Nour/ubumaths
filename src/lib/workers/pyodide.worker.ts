@@ -1415,8 +1415,7 @@ _stderr_value
 
 		// Check for sympy LaTeX output
 		const latexResult = pyodide.runPython('_chiphre_check_sympy_result(_chiphre_last_result)') as
-			| string
-			| null;
+			string | null;
 		if (latexResult) {
 			postMessage({ type: 'latex', latex: latexResult, id });
 		}
@@ -1482,8 +1481,7 @@ sys.stderr = _chiphre_old_stderr
 		try {
 			// Try to get the formatted exception from Python's sys.last_exc
 			const formattedException = pyodide.runPython('_chiphre_reformat_exception()') as
-				| string
-				| null;
+				string | null;
 			if (formattedException && formattedException.trim()) {
 				errorMessage = formattedException;
 			} else {
@@ -1822,12 +1820,7 @@ _chiphre_get_completions(_chiphre_autocomplete_code, _chiphre_autocomplete_curso
 			) {
 				const itemType = validTypes.includes((item as Record<string, unknown>).type as string)
 					? ((item as Record<string, unknown>).type as
-							| 'function'
-							| 'variable'
-							| 'module'
-							| 'class'
-							| 'property'
-							| 'keyword')
+							'function' | 'variable' | 'module' | 'class' | 'property' | 'keyword')
 					: 'variable'; // fallback to variable
 
 				safeCompletions.push({

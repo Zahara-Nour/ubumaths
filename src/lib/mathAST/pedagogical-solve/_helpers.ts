@@ -15,12 +15,25 @@
 import type { MathNode, RelationNode } from '../types';
 import type { Domain, IntervalSet } from '../domain/types';
 import type { Verbosity } from '../common/verbosity';
-import { add, divide, relation, variable as varNode } from '../factory';
+import {
+	add,
+	divide,
+	multiply,
+	opposite,
+	relation,
+	subtract,
+	variable as varNode
+} from '../factory';
+import { computeDomain } from '../domain/compute';
+import { isUniversal } from '../domain/algebra';
 import { flattenSumShallow } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
 import { unwrapGroupingMembers } from '../solve/classify';
 import { denormalize, normalize } from '../normal';
+import { constantSign } from '../common/constant-sign';
 import { getNumericValue } from '../common/numeric';
+import { tidy } from '../tidy';
+import { InequalityNotSolvable } from '../solve/inequality/types';
 import { getVariables } from '../eval/substitute';
 import { toLatex } from '../latex-generator';
 import type { EquationOperation, EquationStep } from './types';
@@ -84,6 +97,31 @@ export function prepareLinearRelation(rel: RelationNode, variable: string): Rela
 	return unwrapped;
 }
 
+/**
+ * Inéquation dont l'écriture a des valeurs interdites : `InequalityNotSolvable`.
+ *
+ * Le pipeline du premier degré lit la forme canonique, où `\frac{3x^2}{2x}`
+ * devient `\frac{3}{2}x` : la valeur interdite 0 disparaît, et
+ * `\frac{3x^2}{2x}\geq 0` concluait x ≥ 0 (écart V47, 2026-10-13). Sa
+ * conclusion est une forme résolue (`x ≥ 0`), qui ne peut pas exclure un
+ * point : il refuse, l'appelant se replie sur `solveInequality`, qui lit le
+ * domaine sur l'inéquation écrite. Le second degré refuse aussi (V48) :
+ * sa conclusion lue sur `solveInequality` était juste, mais ses étapes
+ * rédigeaient `\frac{2x^3}{x}<2` comme 2x² − 2 < 0 sans exclure 0.
+ */
+export function rejectForbiddenValues(inequality: RelationNode, variable: string): void {
+	const { domain, unresolved } = computeDomain(
+		subtract(inequality.left, inequality.right),
+		variable
+	);
+	if (!isUniversal(domain) || (unresolved !== undefined && unresolved.length > 0)) {
+		throw new InequalityNotSolvable(
+			"L'inéquation a des valeurs interdites : ses étapes du premier ou du second degré les perdraient",
+			'Repli sur solveInequality, qui lit le domaine de définition.'
+		);
+	}
+}
+
 // =============================================================================
 // Bilateral operations on equations
 // =============================================================================
@@ -106,27 +144,33 @@ export function divideBothSides(eq: RelationNode, divisor: MathNode): RelationNo
 
 /**
  * Divide both sides by `divisor` and, for inequalities, flip the operator if
- * the divisor is a numerically negative scalar. Returns the resulting
- * relation along with a `flipped` flag indicating whether the operator was
- * inverted (`<` → `>`, etc.). For `=` and `!=` the flag is always `false`.
+ * the divisor is negative. Returns the resulting relation along with a
+ * `flipped` flag indicating whether the operator was inverted (`<` → `>`,
+ * etc.). For `=` and `!=` the flag is always `false`.
  *
- * If `divisor` is symbolic (no numeric value extractable), `flipped` defaults
- * to `false` — the caller is expected to either ensure `divisor` is numeric
- * or to call `divideBothSides` directly. This is the V1 pedagogical
- * inequality flow which only handles numeric coefficients.
+ * Le signe se lit sur la VALEUR du diviseur (`constantSign`), pas sur la forme
+ * de son nœud : `-\frac23`, `\frac{-3}{4}`, `-\sqrt2` sont négatifs (écart V36,
+ * où seuls `number` / `opposite(number)` étaient vus). Signe indécidable
+ * (diviseur symbolique) sur `<`, `>`, `<=`, `>=` → `InequalityNotSolvable` :
+ * mieux vaut aucune correction pédagogique qu'un sens deviné.
  */
 export function divideBothSidesWithFlip(
 	ineq: RelationNode,
 	divisor: MathNode
 ): { result: RelationNode; flipped: boolean } {
-	const numeric = getNumericValue(divisor);
-	const shouldFlip =
-		numeric !== null &&
-		numeric < 0 &&
-		(ineq.relation === '<' ||
-			ineq.relation === '>' ||
-			ineq.relation === '<=' ||
-			ineq.relation === '>=');
+	const ordering =
+		ineq.relation === '<' ||
+		ineq.relation === '>' ||
+		ineq.relation === '<=' ||
+		ineq.relation === '>=';
+	const sign = ordering ? constantSign(divisor) : null;
+	if (ordering && sign === null) {
+		throw new InequalityNotSolvable(
+			`Signe du diviseur indécidable : ${toLatex(divisor)}`,
+			'Le sens de l’inégalité dépend du signe du diviseur.'
+		);
+	}
+	const shouldFlip = sign === -1;
 
 	const newRelation = shouldFlip ? flipRelation(ineq.relation) : ineq.relation;
 	const result = canonEquation(
@@ -181,6 +225,86 @@ export function isZero(node: MathNode): boolean {
  */
 export function isConstantCoefficient(coeff: MathNode): boolean {
 	return getVariables(coeff).size === 0;
+}
+
+// =============================================================================
+// Terme déplacé d'un membre à l'autre : son signe
+// =============================================================================
+
+/**
+ * Valeur absolue d'un terme qui s'écrit avec un signe moins en tête, ou `null`
+ * s'il s'écrit sans signe : `-5` → `5`, `-2x` (produit `(-2)·x`) → `2x`,
+ * `-\dfrac{1}{2}x` → `\dfrac{1}{2}x`, `\left(-1-\sqrt{2}\right)x` →
+ * `\left(1+\sqrt{2}\right)x`. Sert à écrire « − 2x » plutôt que « + −2x ».
+ *
+ * ⚠️ Lire le signe du seul nombre ou du seul `opposite(…)` laissait passer
+ * `-2x` pour positif : « On ajoute -2x », `\textcolor{blue}{+ -2x}` (V50).
+ * Un facteur de tête qui est une SOMME (coefficient irrationnel) se lit sur sa
+ * valeur (`constantSign`), pas sur sa forme. Le produit se reconstruit
+ * facteur par facteur : `canon` du terme entier redévelopperait
+ * `(\pi - 4)x` en `\pi x - 4x`. Une somme seule (`1 - \sqrt{2}`) n'est pas
+ * lue : sa valeur absolue s'écrirait sans parenthèses après le « − ».
+ */
+export function negativeTermMagnitude(term: MathNode): MathNode | null {
+	switch (term.type) {
+		case 'opposite':
+			return term.operand;
+		case 'multiplication': {
+			const leading = term.left;
+			const leadingMagnitude =
+				leading.type === 'addition' || leading.type === 'subtraction'
+					? constantSign(leading) === -1
+						? tidy(canon(opposite(leading)))
+						: null
+					: negativeTermMagnitude(leading);
+			if (leadingMagnitude === null) return null;
+			if (isOne(leadingMagnitude)) return term.right;
+			return multiply(leadingMagnitude, term.right, term.displayStyle);
+		}
+		case 'division':
+			return negativeTermMagnitude(term.numerator) !== null ? canon(opposite(term)) : null;
+		default: {
+			const numeric = getNumericValue(term);
+			return numeric !== null && numeric < 0 ? canon(opposite(term)) : null;
+		}
+	}
+}
+
+/**
+ * Le terme à ajouter aux deux membres pour faire passer `part` de l'autre
+ * côté : son opposé, ou `null` s'il est nul (« On ajoute 0 » n'est pas une
+ * étape : `5x - 0 = x + 1`). Une somme de termes en x (`-\pi x + 4x`, ce que
+ * `canon` fait de `-(\pi - 4)x`) s'écrit factorisée, `\left(4 - \pi\right)x`, et un
+ * coefficient somme rangé par `tidy` (`\left(\sqrt{2} - 1\right)x`).
+ */
+export function movedTerm(part: MathNode | null, variable: string): MathNode | null {
+	if (part === null) return null;
+	const moved = canon(opposite(part));
+	if (isZero(moved)) return null;
+	const isSum = (node: MathNode) => node.type === 'addition' || node.type === 'subtraction';
+	const sumCoefficient = isSum(moved) || (moved.type === 'multiplication' && isSum(moved.left));
+	if (sumCoefficient && containsVariable(moved, variable)) {
+		const coefficient = canon(divide(moved, varNode(variable), 'fraction'));
+		if (!containsVariable(coefficient, variable)) {
+			// `tidy` range la somme : `\sqrt{2} - 1`, pas `-1 + \sqrt{2}` (ordre de `canon`).
+			return multiply(tidy(coefficient), varNode(variable), 'implicit');
+		}
+	}
+	return moved;
+}
+
+/**
+ * Déplacer un terme vers l'autre membre : on ajoute son opposé, écrit comme
+ * une soustraction quand cet opposé est négatif (« on soustrait 2x »), pour
+ * que l'opérande affiché ne porte jamais de signe moins.
+ */
+export function chooseAddOrSubtract(operand: MathNode): {
+	kind: 'add-both-sides' | 'subtract-both-sides';
+	displayOperand: MathNode;
+} {
+	const magnitude = negativeTermMagnitude(operand);
+	if (magnitude !== null) return { kind: 'subtract-both-sides', displayOperand: magnitude };
+	return { kind: 'add-both-sides', displayOperand: operand };
 }
 
 // =============================================================================
@@ -349,4 +473,55 @@ function formatInterval(int: {
 	const lb = int.lower.type === 'closed' ? '[' : ']';
 	const rb = int.upper.type === 'closed' ? ']' : '[';
 	return `${lb}${lo} ; ${hi}${rb}`;
+}
+
+/**
+ * Échappe les accolades d'ENSEMBLE (`{2}`, `ℝ \ {0}`), jamais celles d'un
+ * groupe LaTeX : une borne `\sqrt{2}` vient de `toLatex`. Les échapper toutes
+ * affichait `]-∞ ; -\sqrt\{2\}[`, soit « √{2} » à l'écran, sur `x² > 2`
+ * (revue, 2026-10-08). Une accolade ouvre un groupe LaTeX quand elle suit
+ * une commande (`\sqrt`), une autre accolade (`\dfrac{a}{b}`), `^` ou `_`.
+ */
+function escapeSetBraces(s: string): string {
+	const opened: boolean[] = [];
+	let out = '';
+	for (let i = 0; i < s.length; i++) {
+		const char = s[i];
+		if (char === '{') {
+			const before = s.slice(0, i);
+			const isGroup = /\\[A-Za-z]+$/.test(before) || /[}^_]$/.test(before);
+			opened.push(!isGroup);
+			out += isGroup ? '{' : '\\{';
+		} else if (char === '}') {
+			out += opened.pop() === true ? '\\}' : '}';
+		} else {
+			out += char;
+		}
+	}
+	return out;
+}
+
+/**
+ * La description d'un ensemble de solutions (`describeDomain`, Unicode : `∅`,
+ * `ℝ \ {0}`, `∪`, `∞`) en LaTeX. Sert au bloc de conclusion et, entre `$…$`,
+ * aux titres et descriptions (V25 : la prose est rendue par `InlineMarkdown`).
+ */
+export function domainDescriptionLatex(s: string): string {
+	// Accolades d'ensemble d'abord (`{2}`, `ℝ \ {0}`) ; celles des bornes
+	// (`\sqrt{2}`) et des macros introduites ensuite restent des groupes.
+	return (
+		escapeSetBraces(s)
+			// ℝ privé de points : `\left\{ a \,;\, b \right\}`, comme le LaTeX
+			// du moteur (`solve-latex.ts`)
+			.replace(
+				/ℝ\s*\\\s*\\\{(.*?)\\\}/g,
+				(_, points: string) =>
+					`\\mathbb{R} \\setminus \\left\\{ ${points.split(' ; ').join(' \\,;\\, ')} \\right\\}`
+			)
+			.replace(/∪/g, '\\cup')
+			.replace(/∅/g, '\\emptyset')
+			.replace(/ℝ\s*\\\s*/g, '\\mathbb{R} \\setminus ')
+			.replace(/ℝ/g, '\\mathbb{R}')
+			.replace(/∞/g, '\\infty')
+	);
 }

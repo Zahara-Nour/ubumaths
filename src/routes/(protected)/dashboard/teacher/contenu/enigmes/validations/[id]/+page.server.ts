@@ -3,7 +3,13 @@ import type { AttemptWithDetails } from '$lib/types/riddle';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { sendValidationResultMessage } from '$lib/server/riddle-messages';
 import { validateUuidParam } from '$lib/server/validation/params';
-import { toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
+import { RIDDLE_COLUMNS, toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
+import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/enigmes/validations/[id]/+page.server'
+);
 
 /**
  * Load validation details
@@ -14,41 +20,52 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		throw redirect(303, '/auth/login');
 	}
 
+	const id = validateUuidParam(params.id);
+
 	// Fetch attempt with details
 	const { data: attempt, error: attemptError } = await supabase
 		.from('riddle_attempts')
 		.select(
 			`
 			*,
-			riddle:riddles!inner(*),
+			riddle:riddles!inner(${RIDDLE_COLUMNS}),
 			student:profiles!riddle_attempts_student_id_fkey(
 				id,
 				firstname,
 				lastname,
 				avatar_url
 			)
-		`
+		` as const
 		)
-		.eq('id', params.id)
+		.eq('id', id)
 		.is('is_correct', null) // Must be pending
 		.single();
 
 	if (attemptError || !attempt) {
-		console.error('Error fetching attempt:', attemptError);
+		logger.error('Error fetching attempt:', attemptError);
 		throw error(404, 'Tentative non trouvée ou déjà validée');
 	}
 
 	// Verify teacher owns this riddle
 	if (attempt.riddle.created_by !== user.id) {
-		throw error(403, 'Vous ne pouvez valider que vos propres énigmes');
+		throw error(403, 'Validation réservée à l’auteur de l’énigme');
 	}
 
-	// Sélection complète de l'énigme, et conversion plutôt que cast : `difficulty`
-	// et `status` sont des colonnes permissives, `answer` et `submitted_answer`
-	// du jsonb.
+	// La page affiche la correction : elle vit dans `riddle_solutions`, que la RLS ouvre
+	// à l'auteur de l'énigme (vérifié juste au-dessus) et à l'admin.
+	const { solutions, error: solutionsError } = await fetchRiddleSolutions(supabase, [
+		attempt.riddle.id
+	]);
+	if (solutionsError) {
+		logger.error('Error fetching riddle solution:', solutionsError);
+		throw error(500, 'Impossible de charger la correction de l’énigme');
+	}
+
+	// Conversion plutôt que cast : `difficulty` et `status` sont des colonnes
+	// permissives, `answer` et `submitted_answer` du jsonb.
 	const attemptWithDetails: AttemptWithDetails = {
 		...toDbRiddleAttempt(attempt),
-		riddle: toDbRiddle(attempt.riddle),
+		riddle: toDbRiddle(attempt.riddle, solutions.get(attempt.riddle.id) ?? null),
 		student: {
 			id: attempt.student.id,
 			firstname: attempt.student.firstname,
@@ -91,7 +108,7 @@ export const actions: Actions = {
 		});
 
 		if (validateError) {
-			console.error('Error validating attempt:', validateError);
+			logger.error('Error validating attempt:', validateError);
 			return fail(500, { message: 'Erreur lors de la validation' });
 		}
 
@@ -104,13 +121,13 @@ export const actions: Actions = {
 				riddle:riddles!inner(riddle_number, title)
 			`
 			)
-			.eq('id', params.id)
+			.eq('id', id)
 			.single();
 
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
 		// doit pas se confondre avec une donnée réellement vide.
 		if (attemptError && attemptError.code !== 'PGRST116') {
-			console.error('Contexte illisible :', attemptError);
+			logger.error('Contexte illisible :', attemptError);
 		}
 
 		// Send notification to student

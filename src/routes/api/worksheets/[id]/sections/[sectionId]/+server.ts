@@ -15,6 +15,9 @@ import {
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/sections/[sectionId]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -32,12 +35,12 @@ async function verifyAccess(
 	// Validate UUID formats
 	const worksheetIdValidation = uuidSchema.safeParse(worksheetId);
 	if (!worksheetIdValidation.success) {
-		throw error(400, 'Invalid worksheet ID format');
+		throw error(400, 'Identifiant de fiche invalide');
 	}
 
 	const sectionIdValidation = uuidSchema.safeParse(sectionId);
 	if (!sectionIdValidation.success) {
-		throw error(400, 'Invalid section ID format');
+		throw error(400, 'Identifiant de section invalide');
 	}
 
 	// Fetch worksheet
@@ -48,16 +51,16 @@ async function verifyAccess(
 		.single();
 
 	if (worksheetError || !worksheet) {
-		throw error(404, 'Worksheet not found');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify ownership/authorization
 	if (role === 'teacher' && worksheet.created_by !== userId) {
-		throw error(403, 'Forbidden - Not your worksheet');
+		throw error(403, 'Accès réservé à l’auteur de la fiche');
 	}
 
 	if (role === 'admin' && schoolId && worksheet.school_id !== schoolId) {
-		throw error(403, 'Forbidden - Worksheet belongs to different school');
+		throw error(403, 'Cette fiche appartient à une autre école');
 	}
 
 	// Fetch section
@@ -69,7 +72,7 @@ async function verifyAccess(
 		.single();
 
 	if (sectionError || !section) {
-		throw error(404, 'Section not found');
+		throw error(404, 'Section introuvable');
 	}
 
 	return { worksheet, section };
@@ -120,7 +123,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (worksheet.status !== 'draft') {
 		throw error(
 			400,
-			`Cannot modify sections in worksheet with status '${worksheet.status}'. Only draft worksheets can be modified.`
+			`Impossible de modifier les sections de cette fiche (statut « ${worksheet.status} ») : seul un brouillon peut être modifié.`
 		);
 	}
 
@@ -129,7 +132,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateUpdateWorksheetSection(body);
@@ -137,7 +140,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data;
@@ -160,8 +163,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to update section:', dbError);
-		throw error(500, 'Failed to update section');
+		logger.error('Failed to update section:', dbError);
+		throw error(500, 'Impossible de modifier la section');
 	}
 
 	const validated = validateJsonResponse(
@@ -180,7 +183,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
-	const { worksheet } = await verifyAccess(
+	const { worksheet, section } = await verifyAccess(
 		locals.supabase,
 		params.id,
 		params.sectionId,
@@ -193,33 +196,65 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	if (worksheet.status !== 'draft') {
 		throw error(
 			400,
-			`Cannot delete sections in worksheet with status '${worksheet.status}'. Only draft worksheets can be modified.`
+			`Impossible de supprimer une section de cette fiche (statut « ${worksheet.status} ») : seul un brouillon peut être modifié.`
 		);
 	}
 
-	// Move all exercises from this section to unsectioned (null section_id)
-	const { error: moveError } = await locals.supabase
+	// Sortir les exercices de la section vers « Sans section », APRÈS ceux qui y
+	// sont déjà. `position` redémarre à 1 dans chaque groupe, et l'index unique
+	// `idx_worksheet_exercises_unique_position` met tous les exercices hors
+	// section dans le même groupe : garder leur rang heurtait celui des autres
+	// (23505), et la suppression échouait.
+	const { data: rows, error: readError } = await locals.supabase
 		.from('worksheet_exercises')
-		.update({ section_id: null })
-		.eq('section_id', params.sectionId)
+		.select('id, section_id, position')
 		.eq('worksheet_id', params.id);
 
-	if (moveError) {
-		console.error('Failed to move exercises:', moveError);
-		throw error(500, 'Failed to move exercises to unsectioned');
+	if (readError) {
+		logger.error('Failed to read exercises:', readError);
+		throw error(500, 'Impossible de lire les exercices de la fiche');
+	}
+
+	// Comparé à l'identifiant RENDU par la base (`verifyAccess`), pas au paramètre :
+	// un UUID reçu en majuscules ne correspondrait à aucune ligne, et la FK
+	// (`ON DELETE SET NULL`) sortirait ensuite les exercices à leur ancien rang.
+	const toMove = rows
+		.filter((r) => r.section_id === section.id)
+		.sort((a, b) => a.position - b.position);
+	let nextPosition = Math.max(
+		0,
+		...rows.filter((r) => r.section_id === null).map((r) => r.position)
+	);
+
+	// Un par un : chaque rang visé est libre (au-delà du dernier hors section).
+	// La RLS échoue en silence : on vérifie la ligne rendue.
+	for (const row of toMove) {
+		nextPosition += 1;
+		const { data: moved, error: moveError } = await locals.supabase
+			.from('worksheet_exercises')
+			.update({ section_id: null, position: nextPosition })
+			.eq('id', row.id)
+			.eq('worksheet_id', params.id)
+			.select('id');
+
+		if (moveError || moved?.length !== 1) {
+			logger.error('Failed to move exercise:', moveError ?? 'no row updated');
+			throw error(500, 'Impossible de sortir les exercices de la section');
+		}
 	}
 
 	// Delete the section
-	const { error: deleteError } = await locals.supabase
+	const { data: deleted, error: deleteError } = await locals.supabase
 		.from('worksheet_sections')
 		.delete()
-		.eq('id', params.sectionId)
-		.eq('worksheet_id', params.id);
+		.eq('id', section.id)
+		.eq('worksheet_id', params.id)
+		.select('id');
 
-	if (deleteError) {
-		console.error('Failed to delete section:', deleteError);
-		throw error(500, 'Failed to delete section');
+	if (deleteError || deleted?.length !== 1) {
+		logger.error('Failed to delete section:', deleteError ?? 'no row deleted');
+		throw error(500, 'Impossible de supprimer la section');
 	}
 
-	return json({ success: true, message: 'Section deleted' });
+	return json({ success: true, message: 'Section supprimée' });
 };

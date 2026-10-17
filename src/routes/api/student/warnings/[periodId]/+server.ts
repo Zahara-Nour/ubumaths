@@ -46,6 +46,9 @@ import type { RequestHandler } from './$types';
 import type { StudentWarnings } from '$lib/types/student-cache';
 import type { Warning, WarningType, StudentWarningCounts } from '$lib/server/warnings';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/warnings/[periodId]/+server');
 
 // Zod schema for periodId validation
 const periodIdSchema = z.string().uuid();
@@ -80,7 +83,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.order('created_at', { ascending: false });
 
 		if (fetchError) {
-			console.error('[API] Error fetching student warnings:', fetchError);
+			logger.error('[API] Error fetching student warnings:', fetchError);
 			throw error(500, 'Failed to fetch warnings');
 		}
 
@@ -122,7 +125,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/warnings/[periodId]:', err);
+		logger.error('[API] Unexpected error in GET /api/student/warnings/[periodId]:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };

@@ -23,6 +23,8 @@ import {
 	logicalNot,
 	piecewise,
 	mathConstant,
+	segmentLength,
+	figureName,
 	matrix,
 	multiply,
 	number,
@@ -176,6 +178,8 @@ export function getChildren(node: MathNode): MathNode[] {
 		case 'symbol':
 		case 'hole':
 		case 'constant':
+		case 'segmentLength':
+		case 'figureName':
 			return [];
 
 		// Binary operations
@@ -289,6 +293,8 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 		case 'symbol':
 		case 'hole':
 		case 'constant':
+		case 'segmentLength':
+		case 'figureName':
 			transformedNode = node;
 			break;
 
@@ -513,6 +519,8 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 		case 'symbol':
 		case 'hole':
 		case 'constant':
+		case 'segmentLength':
+		case 'figureName':
 			return transformedParent;
 
 		// Binary operations
@@ -840,6 +848,12 @@ export function cloneNode<T extends MathNode>(node: T): T {
 		case 'constant':
 			return mathConstant(node.constant, node.metadata) as T;
 
+		case 'segmentLength':
+			return segmentLength(node.points[0], node.points[1], node.metadata) as T;
+
+		case 'figureName':
+			return figureName(node.points, node.metadata) as T;
+
 		// Binary operations
 		case 'addition':
 			return add(cloneNode(node.left), cloneNode(node.right), {
@@ -1028,6 +1042,8 @@ function isSimpleElement(node: MathNode): boolean {
 		case 'symbol':
 		case 'hole':
 		case 'constant':
+		case 'segmentLength':
+		case 'figureName':
 		case 'function': // Functions already have their own delimiters
 		case 'delimiter': // Already delimited
 			return true;
@@ -1153,6 +1169,8 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 		case 'symbol':
 		case 'hole':
 		case 'constant':
+		case 'segmentLength':
+		case 'figureName':
 		case 'infinity':
 		case 'signed-zero':
 			return node;

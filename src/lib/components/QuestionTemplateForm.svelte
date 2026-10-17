@@ -45,6 +45,12 @@
 		genericFunctionNamesSchema,
 		parseGenericFunctionNames
 	} from '$lib/questions/generic-functions';
+	import {
+		capitalPairsChoiceItems,
+		capitalPairsChoiceOf,
+		type CapitalPairsChoice
+	} from '$lib/questions/capital-pairs';
+	import { figureNameWarnings } from '$lib/questions/figure-name-check';
 	import { CONSTRAINT_IDS } from '$lib/questions/constraint-constants';
 	import {
 		ACCEPTABLE_PLACEHOLDER,
@@ -425,6 +431,12 @@
 	);
 	// Coefficients nettoyés après le tirage (shared.cleanCoefficients) : 1x → x, +0 retiré
 	let cleanCoefficients = $state(initialTemplate?.shared?.cleanCoefficients === true);
+	// Sens de deux majuscules collées (shared.capitalPairs) : `auto` = le contexte décide
+	let capitalPairsChoice = $state<CapitalPairsChoice>(
+		capitalPairsChoiceOf(initialTemplate?.shared?.capitalPairs)
+	);
+	// Options de la liste : la première dit ce que donne le contexte (thème courant)
+	let capitalPairsItems = $derived(capitalPairsChoiceItems(theme));
 	let genericFunctionsError = $derived.by(() => {
 		const result = genericFunctionNamesSchema.safeParse(
 			parseGenericFunctionNames(genericFunctionsText)
@@ -512,6 +524,14 @@
 				blankDefaults: { precision: { type: 'none' as const } }
 			}
 		]
+	);
+	// Garde auteur (Q-A) : un nom de figure attendu en mode longueur ne serait jamais accepté
+	let capitalPairsWarnings = $derived(
+		figureNameWarnings({
+			shared: capitalPairsChoice === 'auto' ? undefined : { capitalPairs: capitalPairsChoice },
+			theme,
+			variations
+		})
 	);
 
 	// Per-variation extra state (correction, overrides, etc.)
@@ -837,6 +857,8 @@
 		if (genericFunctionNames.length > 0) shared.genericFunctions = genericFunctionNames;
 		// Absente quand décochée : un modèle sans l'option reste identique
 		if (cleanCoefficients) shared.cleanCoefficients = true;
+		// Absente sur « selon le contexte » : le thème décide à la génération
+		if (capitalPairsChoice !== 'auto') shared.capitalPairs = capitalPairsChoice;
 
 		// Build defaultDisplayOptions
 		const displayOpts: DisplayOptions = {};
@@ -989,6 +1011,7 @@
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
 		genericFunctionsText = formatGenericFunctionNames(t.shared?.genericFunctions);
 		cleanCoefficients = t.shared?.cleanCoefficients === true;
+		capitalPairsChoice = capitalPairsChoiceOf(t.shared?.capitalPairs);
 
 		// Variations
 		variations = t.variations?.map((v) => ({
@@ -1192,6 +1215,7 @@
 			exerciseInstruction,
 			genericFunctionsText,
 			cleanCoefficients,
+			capitalPairsChoice,
 			multipleAnswers,
 			variations: variations.map((v) => ({
 				statement: v.statement,
@@ -1620,6 +1644,28 @@
 			{/if}
 		</div>
 
+		<!-- Sens de deux majuscules collées (shared.capitalPairs) -->
+		<div class="space-y-2">
+			<Label for="capital-pairs">Deux majuscules collées (AB) désignent :</Label>
+			<MySelect
+				id="capital-pairs"
+				type="single"
+				bind:value={capitalPairsChoice}
+				items={capitalPairsItems}
+				triggerAriaLabel="Deux majuscules collées (AB) désignent : {capitalPairsItems.find(
+					(item) => item.value === capitalPairsChoice
+				)?.label ?? ''}"
+			/>
+			<p id="capital-pairs-help" class="text-xs text-muted-foreground">
+				Lecture de AB dans les réponses (élève et attendue) : la longueur du segment [AB] (BA = AB,
+				AB² = BA²), ou le produit A × B (matrices, physique). Rien de déclaré : produit pour le
+				thème « Graphes et matrices » ou un thème de physique, longueur sinon.
+			</p>
+			{#each capitalPairsWarnings as warning (warning)}
+				<p class="text-xs text-destructive" role="alert">{warning}</p>
+			{/each}
+		</div>
+
 		<!-- Coefficients nettoyés (shared.cleanCoefficients) -->
 		<div class="space-y-1">
 			<MyCheckbox
@@ -1998,8 +2044,7 @@
 														class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
 														bind:value={variationExtras[index].validationRulesJson}
 														rows={3}
-														placeholder="[]"
-													></textarea>
+														placeholder="[]"></textarea>
 													<p class="text-xs text-muted-foreground">
 														Format JSON (tableau de regles)
 													</p>
@@ -2012,8 +2057,7 @@
 														class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
 														bind:value={variationExtras[index].answerFormatsJson}
 														rows={3}
-														placeholder={'{}'}
-													></textarea>
+														placeholder={'{}'}></textarea>
 													<p class="text-xs text-muted-foreground">
 														Format JSON (cle = nom de variable, valeur = format)
 													</p>

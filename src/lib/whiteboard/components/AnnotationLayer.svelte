@@ -589,10 +589,7 @@
 		} else if (isShapeTool(currentTool) && shapeStart && shapeEnd) {
 			// Finalize shape
 			const shapeType = currentTool.replace('annotation-', '') as
-				| 'line'
-				| 'rectangle'
-				| 'circle'
-				| 'arrow';
+				'line' | 'rectangle' | 'circle' | 'arrow';
 			whiteboardStore.addAnnotationShape(shapeStart, shapeEnd, shapeType);
 		}
 

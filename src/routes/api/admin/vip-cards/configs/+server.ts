@@ -15,6 +15,9 @@ import { requireAdmin } from '$lib/server/middleware/auth';
 import { createConfigSchema } from '$lib/server/validation/vip-card-admin';
 import type { VipCardConfig } from '$lib/types/vip-card-admin';
 import { configToResponse } from '$lib/types/vip-card-admin';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/vip-cards/configs/+server');
 
 /**
  * POST /api/admin/vip-cards/configs
@@ -76,14 +79,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (insertError) {
-			console.error('Error creating config:', insertError);
-			throw error(500, 'Failed to create config');
+			logger.error('Error creating config:', insertError);
+			throw error(500, 'Impossible de créer la configuration');
 		}
 
 		// 5. Return created config (convert snake_case to camelCase)
 		return json(configToResponse(created as VipCardConfig), { status: 201 });
 	} catch (err) {
-		console.error('Error in POST /api/admin/vip-cards/configs:', err);
+		logger.error('Error in POST /api/admin/vip-cards/configs:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -91,7 +94,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -120,8 +123,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('created_at', { ascending: false });
 
 		if (fetchError) {
-			console.error('Error fetching configs:', fetchError);
-			throw error(500, 'Failed to fetch configs');
+			logger.error('Error fetching configs:', fetchError);
+			throw error(500, 'Impossible de charger les configurations');
 		}
 
 		// 4. Convert to camelCase and return
@@ -129,7 +132,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		return json(response);
 	} catch (err) {
-		console.error('Error in GET /api/admin/vip-cards/configs:', err);
+		logger.error('Error in GET /api/admin/vip-cards/configs:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -137,6 +140,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

@@ -10,6 +10,9 @@ import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { updatePythonFileSchema } from '$lib/server/validation/python-files';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-files/[id]/+server');
 
 // =============================================================================
 // HANDLERS
@@ -41,10 +44,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (queryError || !data) {
 		if (queryError?.code === 'PGRST116') {
-			throw error(404, 'Fichier Python non trouve');
+			throw error(404, 'Fichier Python introuvable');
 		}
-		console.error('Error fetching python file:', queryError);
-		throw error(500, 'Erreur lors de la recuperation du fichier Python');
+		logger.error('Error fetching python file:', queryError);
+		throw error(500, 'Impossible de charger le fichier Python');
 	}
 
 	// Access check is handled by RLS, but let's add explicit checks for better error messages
@@ -65,8 +68,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (isTeacherError && isTeacherError.code !== 'PGRST116') {
-				console.error('Contrôle d’accès impossible :', isTeacherError);
-				throw error(500, 'Impossible de vérifier votre accès');
+				logger.error('Contrôle d’accès impossible :', isTeacherError);
+				throw error(500, 'Impossible de vérifier les droits d’accès');
 			}
 
 			if (!isTeacher) {
@@ -82,12 +85,12 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 				// panne doit se distinguer d'un refus mérité.
 				if (assignmentError && assignmentError.code !== 'PGRST116') {
-					console.error('Contrôle d’accès impossible :', assignmentError);
-					throw error(500, 'Impossible de vérifier votre accès');
+					logger.error('Contrôle d’accès impossible :', assignmentError);
+					throw error(500, 'Impossible de vérifier les droits d’accès');
 				}
 
 				if (!assignment) {
-					throw error(403, 'Acces refuse a ce fichier Python');
+					throw error(403, 'Accès refusé à ce fichier Python');
 				}
 			}
 		} else if (profile.role === 'student') {
@@ -102,15 +105,15 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (isAssignedError && isAssignedError.code !== 'PGRST116') {
-				console.error('Contrôle d’accès impossible :', isAssignedError);
-				throw error(500, 'Impossible de vérifier votre accès');
+				logger.error('Contrôle d’accès impossible :', isAssignedError);
+				throw error(500, 'Impossible de vérifier les droits d’accès');
 			}
 
 			if (!isAssigned) {
-				throw error(403, 'Acces refuse a ce fichier Python');
+				throw error(403, 'Accès refusé à ce fichier Python');
 			}
 		} else if (profile.role !== 'admin') {
-			throw error(403, 'Acces refuse a ce fichier Python');
+			throw error(403, 'Accès refusé à ce fichier Python');
 		}
 	}
 
@@ -138,7 +141,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (assignmentDataError) {
-			console.error('Enrichissement illisible :', assignmentDataError);
+			logger.error('Enrichissement illisible :', assignmentDataError);
 		}
 
 		if (assignmentData) {
@@ -174,7 +177,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = updatePythonFileSchema.safeParse(body);
@@ -183,14 +186,14 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const updateData = validation.data;
 
 	// Check if there's anything to update
 	if (Object.keys(updateData).length === 0) {
-		throw error(400, 'Aucune donnee a mettre a jour');
+		throw error(400, 'Aucune modification demandée');
 	}
 
 	// First check if user owns this file
@@ -202,14 +205,14 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	if (fetchError || !existing) {
 		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Fichier Python non trouve');
+			throw error(404, 'Fichier Python introuvable');
 		}
-		console.error('Error fetching python file:', fetchError);
-		throw error(500, 'Erreur lors de la recuperation du fichier Python');
+		logger.error('Error fetching python file:', fetchError);
+		throw error(500, 'Impossible de charger le fichier Python');
 	}
 
 	if (existing.owner_id !== user.id) {
-		throw error(403, 'Vous ne pouvez modifier que vos propres fichiers Python');
+		throw error(403, 'Seul l’auteur peut modifier ce fichier Python');
 	}
 
 	// Update file
@@ -221,8 +224,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (updateError) {
-		console.error('Error updating python file:', updateError);
-		throw error(500, 'Erreur lors de la mise a jour du fichier Python');
+		logger.error('Error updating python file:', updateError);
+		throw error(500, 'Impossible de modifier le fichier Python');
 	}
 
 	return json({ file: data });
@@ -246,22 +249,22 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (fetchError || !existing) {
 		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Fichier Python non trouve');
+			throw error(404, 'Fichier Python introuvable');
 		}
-		console.error('Error fetching python file:', fetchError);
-		throw error(500, 'Erreur lors de la recuperation du fichier Python');
+		logger.error('Error fetching python file:', fetchError);
+		throw error(500, 'Impossible de charger le fichier Python');
 	}
 
 	if (existing.owner_id !== user.id) {
-		throw error(403, 'Vous ne pouvez supprimer que vos propres fichiers Python');
+		throw error(403, 'Seul l’auteur peut supprimer ce fichier Python');
 	}
 
 	// Delete file (assignments will be cascade deleted)
 	const { error: deleteError } = await locals.supabase.from('python_files').delete().eq('id', id);
 
 	if (deleteError) {
-		console.error('Error deleting python file:', deleteError);
-		throw error(500, 'Erreur lors de la suppression du fichier Python');
+		logger.error('Error deleting python file:', deleteError);
+		throw error(500, 'Impossible de supprimer le fichier Python');
 	}
 
 	return json({ success: true });

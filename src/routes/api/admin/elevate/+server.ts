@@ -41,9 +41,9 @@ import {
 	checkElevationRateLimitByIP,
 	checkElevationRateLimitByEmail
 } from '$lib/server/rateLimiter';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 
-const logger = createLogger('api/admin/elevate');
+const logger = createServerLogger('api/admin/elevate');
 
 /** Hard ceiling on the elevation cookie lifetime (seconds) — ~1h. */
 const MAX_ELEVATION_MAX_AGE = 3600;
@@ -54,10 +54,10 @@ export const POST: RequestHandler = async ({ request, locals, cookies, getClient
 	//    hooks.server.ts) rather than re-querying — it's the same source of truth
 	//    used elsewhere (e.g. /api/moderation/restrict-user).
 	if (!locals.user) {
-		throw error(401, 'Non autorisé - Authentification requise');
+		throw error(401, 'Connexion requise');
 	}
 	if (!locals.profile || !['teacher', 'admin'].includes(locals.profile.role ?? '')) {
-		throw error(403, 'Interdit - Enseignants et administrateurs uniquement');
+		throw error(403, 'Réservé aux professeurs et aux administrateurs');
 	}
 
 	// 2. Parse + validate body.
@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ request, locals, cookies, getClient
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON');
+		throw error(400, 'Corps de requête illisible');
 	}
 
 	const validation = adminElevateSchema.safeParse(body);
@@ -80,7 +80,7 @@ export const POST: RequestHandler = async ({ request, locals, cookies, getClient
 	const ip = getClientAddress();
 	const ipLimit = await checkElevationRateLimitByIP(ip);
 	if (!ipLimit.allowed) {
-		throw error(429, ipLimit.message ?? 'Trop de tentatives. Réessayez plus tard.');
+		throw error(429, ipLimit.message ?? 'Trop de tentatives : réessayer plus tard');
 	}
 
 	// 4. Mono-admin model: the caller submits only the password. Resolve the
@@ -103,7 +103,7 @@ export const POST: RequestHandler = async ({ request, locals, cookies, getClient
 	// Brute-force protection on the admin account itself (dedicated email bucket).
 	const emailLimit = await checkElevationRateLimitByEmail(adminEmail);
 	if (!emailLimit.allowed) {
-		throw error(429, emailLimit.message ?? 'Trop de tentatives. Réessayez plus tard.');
+		throw error(429, emailLimit.message ?? 'Trop de tentatives : réessayer plus tard');
 	}
 
 	// 5. Verify the ADMIN credentials with an ephemeral client. This client

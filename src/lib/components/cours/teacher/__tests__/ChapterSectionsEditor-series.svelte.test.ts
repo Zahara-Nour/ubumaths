@@ -19,7 +19,16 @@ const LIEN = '55555555-5555-4555-8555-555555555555';
 const QUAND = '2026-10-02T05:36:02.215Z';
 
 function section(id: string, title: string, displayOrder: number): ChapterSection {
-	return { id, chapterId: CHAPITRE, title, displayOrder, createdAt: QUAND, updatedAt: QUAND };
+	return {
+		id,
+		chapterId: CHAPITRE,
+		sourceId: null,
+		hidden: false,
+		title,
+		displayOrder,
+		createdAt: QUAND,
+		updatedAt: QUAND
+	};
 }
 
 function serie(partiel: Partial<ChapterSeries> = {}): ChapterSeries {
@@ -33,6 +42,8 @@ function serie(partiel: Partial<ChapterSeries> = {}): ChapterSeries {
 		sectionOrder: 0,
 		createdAt: QUAND,
 		publishedAt: null,
+		sourceId: null,
+		hidden: false,
 		title: 'Étude de fonction — méthode',
 		questionCount: 4,
 		launchHref: '/automaths/test?mode=flash',

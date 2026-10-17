@@ -76,16 +76,16 @@ export const GLOBAL_VARIABLES: TemplateVariable[] = [
 export const ASSESSMENT_VARIABLES: TemplateVariable[] = [
 	{
 		name: 'assessment_title',
-		label: "Titre de l'évaluation",
+		label: 'Titre du contrôle',
 		example: 'Devoir Maison #3',
-		description: "Titre de l'évaluation concernée",
+		description: 'Titre du contrôle concerné',
 		required: true
 	},
 	{
 		name: 'assessment_link',
-		label: "Lien vers l'évaluation",
+		label: 'Lien vers le contrôle',
 		example: 'https://chiph.re/assessments/123',
-		description: "URL vers la page de l'évaluation",
+		description: 'URL vers la page du contrôle',
 		required: true
 	},
 	{
@@ -96,7 +96,7 @@ export const ASSESSMENT_VARIABLES: TemplateVariable[] = [
 	},
 	{
 		name: 'assessment_type',
-		label: "Type d'évaluation",
+		label: 'Type de contrôle',
 		example: 'Devoir Maison',
 		description: 'Type: Devoir Maison, Interrogation, etc.'
 	},
@@ -197,14 +197,14 @@ export const NOTIFICATION_VARIABLES: TemplateVariable[] = [
 	{
 		name: 'notification_title',
 		label: 'Titre de la notification',
-		example: 'Nouvelle évaluation disponible',
+		example: 'Nouveau contrôle disponible',
 		description: 'Titre de la notification système',
 		required: true
 	},
 	{
 		name: 'notification_body',
 		label: 'Corps de la notification',
-		example: 'Une nouvelle évaluation a été assignée à votre classe.',
+		example: 'Un nouveau contrôle a été assigné à votre classe.',
 		description: 'Contenu de la notification',
 		required: true
 	},

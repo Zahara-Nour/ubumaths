@@ -80,7 +80,7 @@ const sharedDefaultsSchema = z.object({
  * Optional notes field for documentation
  */
 export const approveQuestionSchema = z.object({
-	notes: z.string().max(1000, 'Notes must be less than 1000 characters').optional()
+	notes: z.string().max(1000, 'Notes trop longues (1000 caractères au maximum)').optional()
 });
 
 /**
@@ -90,8 +90,8 @@ export const approveQuestionSchema = z.object({
 export const rejectQuestionSchema = z.object({
 	reason: z
 		.string()
-		.min(1, 'Rejection reason is required')
-		.max(1000, 'Rejection reason must be less than 1000 characters')
+		.min(1, 'Motif du rejet requis')
+		.max(1000, 'Motif du rejet trop long (1000 caractères au maximum)')
 });
 
 /**
@@ -103,12 +103,12 @@ export const batchApproveSchema = z.object({
 		.array(
 			z
 				.number()
-				.int('Global index must be an integer')
-				.min(0, 'Global index must be non-negative')
-				.max(632, 'Global index must not exceed 632')
+				.int('Le numéro de question doit être un nombre entier')
+				.min(0, 'Le numéro de question ne peut pas être négatif')
+				.max(632, 'Numéro de question trop grand (632 au maximum)')
 		)
-		.min(1, 'At least one question must be specified')
-		.max(100, 'Cannot approve more than 100 questions at once')
+		.min(1, 'Aucune question sélectionnée')
+		.max(100, '100 questions au maximum par approbation groupée')
 });
 
 /**
@@ -116,9 +116,9 @@ export const batchApproveSchema = z.object({
  */
 export const globalIndexSchema = z
 	.number()
-	.int('Global index must be an integer')
-	.min(0, 'Global index must be non-negative')
-	.max(632, 'Global index must not exceed 632');
+	.int('Le numéro de question doit être un nombre entier')
+	.min(0, 'Le numéro de question ne peut pas être négatif')
+	.max(632, 'Numéro de question trop grand (632 au maximum)');
 
 // ============================================================================
 // EDIT SCHEMAS
@@ -166,7 +166,7 @@ export const editedQuestionTemplateSchema = z
 			);
 		},
 		{
-			message: 'Chaque variation doit avoir un enonce, ou un enonce partage doit etre defini',
+			message: 'Chaque variation doit avoir un énoncé, sauf si un énoncé partagé est défini',
 			path: ['variations']
 		}
 	)
@@ -177,7 +177,7 @@ export const editedQuestionTemplateSchema = z
  */
 export const saveEditSchema = z.object({
 	editedTransformed: editedQuestionTemplateSchema,
-	notes: z.string().max(2000, 'Notes must be less than 2000 characters').optional()
+	notes: z.string().max(2000, 'Notes trop longues (2000 caractères au maximum)').optional()
 });
 
 // ============================================================================

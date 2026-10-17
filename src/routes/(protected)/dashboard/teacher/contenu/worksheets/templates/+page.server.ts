@@ -7,8 +7,18 @@
 import type { PageServerLoad, Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { DEFAULT_TEMPLATES } from '$lib/worksheets/default-templates';
+import { DEFAULT_TEMPLATES } from '$lib/typst/templates';
 import { toJson } from '$lib/types/database-helpers';
+import {
+	countWorksheetsUsingTemplate,
+	deleteTemplateWithStyle,
+	insertTemplateWithStyle
+} from '$lib/server/worksheets/worksheet-styles';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/worksheets/templates/+page.server'
+);
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const { user } = await requireRoles(locals, ['teacher', 'admin']);
@@ -38,7 +48,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const { data: templates, error, count } = await query;
 
 	if (error) {
-		console.error('Failed to fetch templates:', error);
+		logger.error('Failed to fetch templates:', error);
 		return {
 			templates: [],
 			defaultTemplates: DEFAULT_TEMPLATES,
@@ -81,22 +91,19 @@ export const actions: Actions = {
 		}
 
 		// Create a new template based on the default
-		const { data: template, error } = await locals.supabase
-			.from('worksheet_templates')
-			.insert({
-				name: `${defaultTemplate.name} (copie)`,
-				description: defaultTemplate.description,
-				// `template_content` est du Typst stocké en `text` ; seule
-				// `placeholders` est une colonne jsonb.
-				template_content: defaultTemplate.template_content,
-				placeholders: toJson(defaultTemplate.placeholders),
-				created_by: user.id
-			})
-			.select()
-			.single();
+		// Le gabarit est la fiche d'un style du même nom (D10)
+		const { data: template, error } = await insertTemplateWithStyle(locals.supabase, {
+			name: `${defaultTemplate.name} (copie)`,
+			description: defaultTemplate.description,
+			// `template_content` est du Typst stocké en `text` ; seule
+			// `placeholders` est une colonne jsonb.
+			template_content: defaultTemplate.template_content,
+			placeholders: toJson(defaultTemplate.placeholders),
+			created_by: user.id
+		});
 
-		if (error) {
-			console.error('Failed to create template:', error);
+		if (error || !template) {
+			logger.error('Failed to create template:', error);
 			return fail(500, { message: 'Failed to create template' });
 		}
 
@@ -133,20 +140,17 @@ export const actions: Actions = {
 		}
 
 		// Create duplicate
-		const { data: template, error } = await locals.supabase
-			.from('worksheet_templates')
-			.insert({
-				name: `${original.name} (copie)`,
-				description: original.description,
-				template_content: original.template_content,
-				placeholders: original.placeholders,
-				created_by: user.id
-			})
-			.select()
-			.single();
+		// La copie a son propre style (D10)
+		const { data: template, error } = await insertTemplateWithStyle(locals.supabase, {
+			name: `${original.name} (copie)`,
+			description: original.description,
+			template_content: original.template_content,
+			placeholders: original.placeholders,
+			created_by: user.id
+		});
 
-		if (error) {
-			console.error('Failed to duplicate template:', error);
+		if (error || !template) {
+			logger.error('Failed to duplicate template:', error);
 			return fail(500, { message: 'Failed to duplicate template' });
 		}
 
@@ -169,7 +173,7 @@ export const actions: Actions = {
 		// Check ownership
 		const { data: template, error: fetchError } = await locals.supabase
 			.from('worksheet_templates')
-			.select('id, created_by, name')
+			.select('id, created_by, name, style_id')
 			.eq('id', templateId)
 			.single();
 
@@ -182,31 +186,28 @@ export const actions: Actions = {
 			return fail(403, { message: 'You can only delete your own templates' });
 		}
 
-		// Check if template is in use
-		const { count, error: countError } = await locals.supabase
-			.from('worksheets')
-			.select('id', { count: 'exact', head: true })
-			.eq('template_id', templateId);
+		// Une fiche qui désigne ce gabarit, ou son style (D10), le garde
+		const { count, error: countError } = await countWorksheetsUsingTemplate(
+			locals.supabase,
+			template
+		);
 
 		if (countError) {
-			console.error('Failed to check template usage:', countError);
+			logger.error('Failed to check template usage:', countError);
 			return fail(500, { message: 'Failed to check template usage' });
 		}
 
-		if (count && count > 0) {
+		if (count > 0) {
 			return fail(400, {
-				message: `Ce template est utilise par ${count} feuille(s). Retirez-le d'abord de ces feuilles.`
+				message: `Ce template est utilisé par ${count} feuille(s) : le retirer d'abord de ces feuilles.`
 			});
 		}
 
-		// Delete template
-		const { error } = await locals.supabase
-			.from('worksheet_templates')
-			.delete()
-			.eq('id', templateId);
+		// Le gabarit part avec son style ; la RLS refuse en silence
+		const { deleted, error } = await deleteTemplateWithStyle(locals.supabase, template);
 
-		if (error) {
-			console.error('Failed to delete template:', error);
+		if (!deleted) {
+			logger.error('Failed to delete template:', error);
 			return fail(500, { message: 'Failed to delete template' });
 		}
 

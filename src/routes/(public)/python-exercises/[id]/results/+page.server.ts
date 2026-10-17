@@ -15,6 +15,9 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/python-exercises/[id]/results/+page.server');
 
 export type MasteryStatus = 'mastered' | 'needs_review' | 'not_started';
 
@@ -56,7 +59,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.single();
 
 	if (profileErr) {
-		console.error('Failed to fetch profile:', profileErr);
+		logger.error('Failed to fetch profile:', profileErr);
 		throw error(500, 'Erreur lors de la récupération du profil');
 	}
 	if (!profile || profile.role !== 'teacher') {
@@ -72,7 +75,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	if (exerciseErr && exerciseErr.code !== 'PGRST116') {
 		// PGRST116 = no rows; treat as 404 below. Anything else is a real DB error.
-		console.error('Failed to fetch exercise:', exerciseErr);
+		logger.error('Failed to fetch exercise:', exerciseErr);
 		throw error(500, "Erreur lors de la récupération de l'exercice");
 	}
 	if (!exercise) throw error(404, 'Exercice introuvable');
@@ -92,8 +95,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (ownAssignmentsError && ownAssignmentsError.code !== 'PGRST116') {
-		console.error('Contrôle d’accès impossible :', ownAssignmentsError);
-		throw error(500, 'Impossible de vérifier votre accès');
+		logger.error('Contrôle d’accès impossible :', ownAssignmentsError);
+		throw error(500, 'Impossible de vérifier l’accès');
 	}
 
 	const isAuthor = exercise.author_id === user.id;
@@ -110,7 +113,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Cette liste borne la portée du classement. Vidée par une panne, elle
 	// affiche un classement amputé sans le dire.
 	if (teacherClassesRawError) {
-		console.error('Périmètre illisible :', teacherClassesRawError);
+		logger.error('Périmètre illisible :', teacherClassesRawError);
 		throw error(500, 'Impossible de déterminer le périmètre');
 	}
 	const teacherClasses: TeacherClass[] = teacherClassesRaw ?? [];
@@ -164,7 +167,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.in('id', studentIdsArr);
 
 	if (profilesRawError) {
-		console.error('Lecture impossible :', profilesRawError);
+		logger.error('Lecture impossible :', profilesRawError);
 		throw error(500, 'Impossible de charger les données');
 	}
 	const profilesById = new Map((profilesRaw ?? []).map((p) => [p.id, p as StudentRow['student']]));
@@ -178,7 +181,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (submissionsRawError) {
-		console.error('Lecture impossible :', submissionsRawError);
+		logger.error('Lecture impossible :', submissionsRawError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -208,7 +211,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (masteryRawError) {
-		console.error('Enrichissement illisible :', masteryRawError);
+		logger.error('Enrichissement illisible :', masteryRawError);
 	}
 	type DbMasteryStatus = 'mastered' | 'needs_review';
 	const masteryByStudent = new Map<string, DbMasteryStatus>(

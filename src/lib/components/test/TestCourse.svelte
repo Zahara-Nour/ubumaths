@@ -31,8 +31,10 @@
 	import TestTimer from './TestTimer.svelte';
 	import TestResults from './TestResults.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { automathsQuitLink } from '$lib/navigation/return-links';
 	import * as Card from '$lib/components/ui/card';
-	import { ArrowLeft, CheckCircle2, ArrowUp } from '@lucide/svelte';
+	import { CheckCircle2, ArrowUp } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	interface Props {
@@ -54,6 +56,9 @@
 		showResults = true,
 		unitKeys = []
 	}: Props = $props();
+
+	// « Quitter » : « Mes contrôles » (avec confirmation) en contrôle, le panier sinon
+	const quit = $derived(automathsQuitLink({ inEvaluation, attemptOpen: collectOnly, timed: true }));
 
 	// State
 	let answers = $state<Map<number, AnswerData>>(new Map());
@@ -207,15 +212,14 @@
 				<Card.Content class="p-4">
 					<div class="flex flex-wrap items-center justify-between gap-4">
 						<!-- Left: Back button and title -->
-						<div class="flex items-center gap-3">
-							<Button
-								variant="ghost"
-								size="icon"
-								onclick={onBack}
-								aria-label={inEvaluation ? 'Mes évaluations' : 'Retour au panier'}
-							>
-								<ArrowLeft class="h-5 w-5" />
-							</Button>
+						<div>
+							<BackLink
+								href={quit.href}
+								label="Quitter"
+								kind="quit"
+								confirmLeave={quit.confirmLeave}
+								class="mb-0"
+							/>
 							<div>
 								<h1 class="font-bold">Course aux nombres</h1>
 								<p class="text-sm text-muted-foreground">

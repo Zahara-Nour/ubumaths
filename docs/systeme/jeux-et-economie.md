@@ -29,12 +29,12 @@ couvre:
   - 'src/routes/(public)/games/**'
   - 'src/routes/(public)/demo/vip-cards-demo/**'
   - 'src/routes/api/{vip-cards,games,marketplace,riddles,rewards,achievements}/**'
+  - 'src/routes/api/cron/riddle-of-the-day/**'
   - 'src/routes/api/teacher/rewards/**'
   - 'src/routes/api/admin/vip-cards/**'
   - 'src/routes/api/student/{bonus-history,gidouilles-activity,rewards}/**'
   - 'src/routes/api/students/*/vip-cards/**'
   - 'src/routes/api/classes/*/gidouilles/**'
-  - scripts/simulate-vip-economy.ts
 ---
 
 # Jeux et économie (gidouilles, cartes VIP, marché, classements)
@@ -73,9 +73,12 @@ commenté).
 | **Énigmes**          | `src/routes/(protected)/dashboard/student/riddles/+page.svelte` | `src/routes/api/riddles/[id]/submit/+server.ts` ; validation `src/lib/utils/riddle-validator.ts`                                      | oui, par `submit_riddle_attempt`              |
 
 Côté prof, les énigmes se gèrent sous `src/routes/(protected)/dashboard/teacher/contenu/enigmes/`
-(création, énigme du jour, validation des réponses libres, stats). L'énigme du jour est choisie
-par `src/lib/server/riddle-auto-select.ts` via `src/routes/api/riddles/auto-select-daily/+server.ts`
-(appelable par l'admin ; `vercel.json` n'a aucun cron).
+(création, énigme du jour, validation des réponses libres, stats). L'énigme du jour, quand le prof n'en
+a pas programmé, est choisie par `src/lib/server/riddle-auto-select.ts` (énigme publiée, absente
+des 30 derniers jours, difficulté tournante) via `src/routes/api/cron/riddle-of-the-day/+server.ts` :
+cron Vercel chaque jour à 00:05 UTC, ou bouton admin. Elle écrit avec le client service (la
+policy d'INSERT de `riddle_of_the_day` exige `selected_by = auth.uid()`) et ne remplace jamais
+une énigme choisie à la main. `api/riddles/auto-select-daily` ne garde que le GET de statut.
 
 ### Démineur : tournois et multijoueur
 
@@ -97,31 +100,38 @@ par `src/lib/server/riddle-auto-select.ts` via `src/routes/api/riddles/auto-sele
 
 ### Jeux présents mais pas au catalogue
 
+Navadra et Evoland sont **en pause de développement** (décision de David, 2026-10-13) : gardés
+dans le code, hors catalogue, sans travaux tant qu'ils ne reprennent pas.
+
 - **Navadra** (combats de monstres, sorts) : routes `src/routes/(protected)/dashboard/navadra/`
   (hub, `combat/`, `spells/`), tables `game_players`, `game_spells`, `game_combats`,
   `game_monsters`…, stores `src/lib/stores/game/`. Retiré du catalogue (entrée commentée). Le hub
-  renvoie vers `achievements`, `leaderboard`, `profile` et `tutorial`, **routes inexistantes**.
+  ne mène qu'à `combat/` et `spells/` : ses quatre liens vers des routes inexistantes
+  (`achievements`, `leaderboard`, `profile`, `tutorial`) ont été retirés le 2026-10-13.
   Le trigger `trigger_award_gidouilles_on_combat_victory` (fonction `award_gidouilles_on_victory`,
-  `xp_gained / 10 + 5`) crédite sans écrire `gidouilles_activity`.
+  `xp_gained / 10 + 5`) crédite sans écrire `gidouilles_activity`. Les défis du combat
+  (`game_challenges`, écrits par le prof seul) passent par `src/lib/utils/game/challenge-variables.ts` :
+  une expression n'y est évaluée que si elle est purement arithmétique (T5, 2026-10-13), sinon
+  `NaN`.
 - **Evoland** (moteur d'aventure, `src/lib/games/evoland/`) : page `src/routes/(public)/games/evoland/+page.svelte`,
-  aucun lien vers elle.
+  aucun lien vers elle ; exclue du plan du site (`src/lib/seo/sitemap-pages.ts`).
 
 ### Économie
 
-| Rôle                                  | Où                                                                                                                                                                                                           |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Récompense de partie (cap journalier) | `record_game_reward` (SQL)                                                                                                                                                                                   |
-| Bonus hebdomadaires                   | `run_weekly_best_bonuses` → `award_weekly_best_bonuses` ; `run_weekly_rewards` (pg_cron, hors dépôt)                                                                                                         |
-| Gestes du prof                        | `src/routes/api/teacher/rewards/` (`update-student`, `update-class`, `grant-specific-vip-card`, `use-vip-card`) ; écran `src/routes/(protected)/dashboard/teacher/gamification/rewards/GidouillesTab.svelte` |
-| Journal des gains                     | `gidouilles_activity` → trigger `trigger_log_gidouilles_to_events` → `reward_events` ; `src/routes/api/rewards/journal/+server.ts`, `src/lib/server/reward-journal-balance.ts`                               |
-| Succès (achievements)                 | `src/lib/server/achievements/service.ts`, `process_achievement_event` ; versement `src/lib/server/achievements/credit-gidouilles.ts`                                                                         |
-| Cartes VIP : boutique, vente          | `src/routes/api/vip-cards/shop/+server.ts`, `purchase/`, `sell/` → `purchase_vip_card`, `sell_vip_card`                                                                                                      |
-| Cartes VIP : tirages                  | `src/routes/api/rewards/draw-vip-cards/+server.ts` → `draw_multiple_vip_cards` ; prix `VIP_CARD_COST` dans `src/lib/utils/vip-cards.ts`                                                                      |
-| Cartes VIP : activation par le prof   | `request_vip_card_activation`, `approve_vip_card`, `reject_vip_card`, `use_vip_card` ; onglet `ActivationRequestsTab.svelte`                                                                                 |
-| Cartes VIP : admin                    | `src/routes/(protected)/dashboard/admin/vip-cards/+page.svelte`, `src/routes/api/admin/vip-cards/` ; Zod `src/lib/server/validation/vip-card-admin.ts`                                                       |
-| Inventaire élève                      | `src/routes/(protected)/dashboard/student/inventory/+page.svelte` (`vip-cards/collection` y redirige)                                                                                                        |
-| Marché                                | `src/routes/(protected)/dashboard/student/marketplace/`, `src/routes/api/marketplace/`, `src/lib/server/marketplace/`, `src/lib/stores/marketplace.svelte.ts`                                                |
-| Marché (prof)                         | `src/routes/(protected)/dashboard/teacher/gamification/marketplace/+page.svelte`                                                                                                                             |
+| Rôle                                  | Où                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Récompense de partie (cap journalier) | `record_game_reward` (SQL)                                                                                                                                                                                                                                                                                                   |
+| Bonus hebdomadaires                   | `run_weekly_best_bonuses` → `award_weekly_best_bonuses` ; `run_weekly_rewards` (pg_cron, hors dépôt)                                                                                                                                                                                                                         |
+| Gestes du prof                        | `src/routes/api/teacher/rewards/` (`update-student`, `update-class`, `grant-specific-vip-card`, `use-vip-card`) ; écran `src/routes/(protected)/dashboard/teacher/gamification/rewards/GidouillesTab.svelte`                                                                                                                 |
+| Journal des gains                     | `gidouilles_activity` → trigger `trigger_log_gidouilles_to_events` → `reward_events` ; `src/routes/api/rewards/journal/+server.ts`, `src/lib/server/reward-journal-balance.ts` ; lu par `rewardJournalStore` (fenêtre `StudentJournalModal` de l'accueil élève, page prof `/dashboard/teacher/students/[studentId]/journal`) |
+| Succès (achievements)                 | `src/lib/server/achievements/service.ts`, `process_achievement_event` ; versement `src/lib/server/achievements/credit-gidouilles.ts`                                                                                                                                                                                         |
+| Cartes VIP : boutique, vente          | `src/routes/api/vip-cards/shop/+server.ts`, `purchase/`, `sell/` → `purchase_vip_card`, `sell_vip_card`                                                                                                                                                                                                                      |
+| Cartes VIP : tirages                  | `src/routes/api/rewards/draw-vip-cards/+server.ts` → `draw_multiple_vip_cards` ; prix `VIP_CARD_COST` dans `src/lib/utils/vip-cards.ts`                                                                                                                                                                                      |
+| Cartes VIP : activation par le prof   | `request_vip_card_activation`, `approve_vip_card`, `reject_vip_card`, `use_vip_card` ; onglet `ActivationRequestsTab.svelte`                                                                                                                                                                                                 |
+| Cartes VIP : admin                    | `src/routes/(protected)/dashboard/admin/vip-cards/+page.svelte`, `src/routes/api/admin/vip-cards/` ; Zod `src/lib/server/validation/vip-card-admin.ts`                                                                                                                                                                       |
+| Inventaire élève                      | `src/routes/(protected)/dashboard/student/inventory/+page.svelte` (`vip-cards/collection` y redirige)                                                                                                                                                                                                                        |
+| Marché                                | `src/routes/(protected)/dashboard/student/marketplace/`, `src/routes/api/marketplace/`, `src/lib/server/marketplace/`, `src/lib/stores/marketplace.svelte.ts`                                                                                                                                                                |
+| Marché (prof)                         | `src/routes/(protected)/dashboard/teacher/gamification/marketplace/+page.svelte`                                                                                                                                                                                                                                             |
 
 Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue dans
 `vip_card_templates`, les probabilités de tirage dans `vip_card_config`, le journal dans
@@ -133,8 +143,14 @@ Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue da
 | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | **Classements unifiés** (2048, Mathémo, Démineur) | `src/routes/(protected)/games/leaderboards/+page.server.ts` → `game_leaderboard`, `minesweeper_scoped_leaderboard` ; constantes `src/lib/games/leaderboards.ts` | portée `class` / `grade` / `school`, toutes bornées par `my_school()` |
 | Tournoi                                           | `src/routes/api/games/minesweeper/tournaments/[id]/standings/+server.ts`                                                                                        | classes du tournoi                                                    |
-| Énigmes                                           | `src/routes/(protected)/dashboard/student/riddles/leaderboard/+page.server.ts` (vue `riddle_progress`)                                                          | voir Doutes                                                           |
+| Énigmes                                           | `src/routes/(protected)/dashboard/student/riddles/leaderboard/+page.server.ts` (`riddle_school_leaderboard`)                                                    | voir Doutes                                                           |
 | Succès                                            | `src/routes/api/achievements/leaderboard/+server.ts` → `get_achievement_leaderboard`                                                                            | —                                                                     |
+
+Les scores qui nourrissent ces classements s'écrivent **par le serveur** : `upsert_2048_score`
+(lot 3, Q141) et `upsert_mathemo_score` (client service depuis `20261016100400` ; garde : client
+service seul : EXECUTE retiré à `authenticated` par `20261016100700` — la fonction
+ajoute `p_score` au total sans borne, seule la route le calcule et le borne). Le score reste
+déclaré par le navigateur, puisque le jeu tourne côté client.
 
 Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_leaderboard_union_order_by.sql`.
 
@@ -146,8 +162,12 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
    `minesweeper`, `riddle`, `2048`, `mathemo`, et verse `1` à la première victoire du jour **de ce
    type de jeu** (`daily_game_rewards.is_first_win_of_day`), `0` ensuite. ⚠️ L'ancienne doc disait
    le cap « partagé entre jeux » : c'est faux depuis l'ajout de 2048 et Mathémo (commentaire de la
-   fonction : « 1 gidouille/day PER GAME TYPE »). Elle n'accepte que l'élève lui-même
-   (`auth.uid() = p_student_id`, rôle `student`) et une récompense théorique entre 0 et 1000. La
+   fonction : « 1 gidouille/day PER GAME TYPE »). Elle n'accepte que le **serveur** (client
+   service : routes 2048 et Mathémo ; appels imbriqués par `complete_minesweeper_game` et
+   `submit_riddle_attempt`, SECURITY DEFINER), refuse l'appel sans identité (`20261016100200`), exige le rôle `student` et une
+   récompense théorique entre 0 et 1000. L'EXECUTE est retiré à `authenticated`
+   (`20261016100700`) : un élève ne s'attribue plus la gidouille du jour de chaque type sans
+   jouer. La
    date et la semaine sont celles du fuseau et de la `week_config` de l'école
    (`calculate_week_boundaries`).
 2. **La récompense théorique ne sert qu'au bonus hebdomadaire.** Chaque partie gagnée met à jour
@@ -217,6 +237,11 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
 - **`execute_trade` exige les quatre drapeaux** (validation et confirmation des deux côtés) ;
   chaque élève n'écrit que **sa** moitié de l'offre. Faille du 2026-10-04 (vol de cartes et de
   gidouilles) fermée par `supabase/migrations/20261004190000_echanges_garde_base.sql`.
+- **Validation dans le navigateur** : le store (`src/lib/stores/marketplace.svelte.ts`) et
+  `MarketplaceSettings.svelte` valident avec `src/lib/validation/marketplace.ts` et affichent
+  `issues[0].message` dans une notification. Zod y parle anglais (`src/lib/zod-locale.ts` ne
+  règle que le serveur) : chaque schéma porte ses messages, **messages de type compris** (champ
+  vidé → `NaN`). Garde : `src/lib/validation/__tests__/marketplace-messages.test.ts`.
 
 ### L'école est la frontière sociale ([ADR 0002](../adr/0002-mono-professeur-ecole-frontiere-sociale.md))
 
@@ -239,14 +264,60 @@ Tout ce qui met deux élèves en relation est borné par `my_school()` / `same_s
 
 ⚠️ Classement des énigmes (`riddle_progress`, vue invoker) : pas de fuite — un élève ne voit que les
 profils de ses camarades/amis et ses propres tentatives —, mais le classement est **faux** (les
-autres à 0). Bug fonctionnel, à traiter à part.
+autres à 0). Correction décidée par David (2026-10-11) : `riddle_school_leaderboard(p_limit)`,
+SECURITY DEFINER bornée à `my_school()`, hors comptes de test, ne rend que prénom, gidouilles
+des énigmes, énigmes réussies, rang et `is_me` (migration `20261015090800`, test
+`tests/integration/classement-enigmes-ecole.test.ts`). La page du classement la lit ; seuls les
+élèves qui ont tenté une énigme apparaissent, sans nom ni photo. La vue `riddle_progress` n'a
+plus de lecteur : fermée à anon et `authenticated` (migration `20261016090200`), pas supprimée.
+
+⚠️ **Tentatives d'énigme écrites par le serveur seulement** (audit de #1077, décision de David du
+2026-10-11) : la justesse est calculée par `api/riddles/[id]/submit` (`validateRiddleAnswer`), qui
+appelle `submit_riddle_attempt` par le client service — la RPC prend `p_is_correct` de son
+appelant, un élève qui l'appelait lui-même pouvait se déclarer juste. La policy d'insertion
+directe de l'élève est supprimée (`20261016090200`) ; EXECUTE est retiré à `authenticated`
+(`20261016100700`, après le `deploy:prod` de v0.25.0). Test :
+`tests/integration/enigmes-tentatives-par-le-serveur.test.ts`.
+
+⚠️ **La page élève ne reçoit ni la réponse attendue ni la correction** (constat du 2026-10-12) :
+les pages `dashboard/student/riddles/**` passent l'énigme par `toStudentRiddle`
+(`src/lib/types/riddle.ts`), qui ne garde de `answer` que le type de saisie et, pour un QCM, les
+choix. `RiddleCard` ne corrige donc plus dans le navigateur : le verdict vient de la route de
+soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`.
+
+⚠️ **Réponse attendue et correction : `riddle_solutions`, plus `riddles`** (étape B, 2026-10-12).
+`riddles.answer` / `riddles.correction` n'existent plus (étape C, `20261016100800`) : les requêtes sur
+`riddles` nomment leurs colonnes (`RIDDLE_COLUMNS`, `src/lib/types/riddle.ts` ; jamais `*` ni
+`riddles(*)`), et `toDbRiddle(ligne, solution)` assemble l'énigme. Le module
+`src/lib/server/riddle-solutions.ts` lit les solutions d'une liste d'énigmes
+(`fetchRiddleSolutions`) et en écrit une (`saveRiddleSolution`, upsert tenu pour échoué si
+`.select()` ne rend aucune ligne). Côté prof, le client de la session suffit (RLS : auteur et
+admin) ; la création insère l'énigme puis sa solution, et **supprime l'énigme** si la solution
+n'est pas écrite ; l'édition vérifie les lignes rendues des deux écritures. Côté élève, qui ne lit
+pas `riddle_solutions`, les pages `dashboard/student/riddles/+page.server.ts` et `[id]/` et la
+route de soumission lisent l'énigme avec le client de l'élève (sa RLS décide de l'accès), puis la
+solution de **ces seules énigmes** par le client service (`ALLOWED_SERVICE_ROLE_PATHS`) : la
+soumission juge avec elle, les pages n'en gardent que ce que `toStudentRiddle` laisse. Tests :
+`src/routes/(protected)/dashboard/teacher/contenu/enigmes/__tests__/solutions-ecriture.test.ts`,
+`src/routes/api/riddles/__tests__/api-routes.test.ts`.
+
+**Réponse attendue validée avant toute écriture** (2026-10-12). Création et édition passent par
+`riddleFormSchema` puis `parseRiddleAnswerField` (`src/lib/server/validation/riddles.ts`) : nombre
+fini, texte ou expression non vides, QCM d'au moins deux choix dont la bonne réponse est l'un
+des indices. Une réponse refusée rend `fail(400, { message })` et rien n'est écrit. C'est la
+valeur **validée** qui est enregistrée : clés inconnues retirées, indices de QCM en nombres
+(l'éditeur ne relit que des nombres). Les pages envoient le formulaire par
+`src/lib/components/riddles/submit-riddle-form.ts`, qui le construit (`answer` à `null` pour une
+validation à la main, jamais la chaîne `"undefined"`) et lit la réponse de l'action avec
+`deserialize` (format SvelteKit `{ type, data }` : lu brut, un enregistrement réussi
+s'affichait en erreur).
 
 ## Comment étendre
 
 - **Nouveau jeu qui rapporte** : ajouter son type à la liste blanche de `record_game_reward`
   (migration), calculer la récompense théorique côté serveur (modèle :
   `src/lib/server/games/reward-2048.ts` + son test), appeler `record_game_reward` depuis la route
-  de score, l'ajouter au libellé de `award_weekly_best_bonuses`. Pour le classement : la liste
+  de score **avec le client service**, l'ajouter au libellé de `award_weekly_best_bonuses`. Pour le classement : la liste
   blanche de `game_leaderboard` **et** `GAME_LEADERBOARD_GAMES` (`src/lib/games/leaderboards.ts`).
 - **Nouvelle carte** : par l'admin (`vip_card_templates`), pas par migration — la prod fait foi.
 - **Tout ce qui relie deux élèves** : borner par `same_school()`, avec un test d'intégration
@@ -299,12 +370,22 @@ autres à 0). Bug fonctionnel, à traiter à part.
 - ✅ File multijoueur et scores 2048 : bornés / privés le 2026-10-10 (D18, voir « L'école est la
   frontière sociale »).
 - **Classement des énigmes** : vue `riddle_progress` lue avec les droits de l'élève — pas de fuite,
-  mais classement faux (les autres à 0).
-- **Sans appelant applicatif** : `process_weekly_rewards`, `award_weekly_reward`,
-  `purchase_shop_item`, `calculate_daily_challenge_gidouilles` (défis quotidiens supprimés).
-- **Navadra** : routes vivantes mais hors catalogue, quatre liens morts dans le hub, gains de combat
-  hors journal. **Evoland** : page sans lien.
-- `scripts/simulate-vip-economy.ts` simule l'ancienne économie (cap partagé) : périmé.
+  mais classement faux (les autres à 0) ; remplacée par `riddle_school_leaderboard` (voir plus haut).
+- ✅ **Fonctions sans appelant supprimées** : `process_weekly_rewards`, `purchase_shop_item` et
+  `get_2048_user_rank` le 2026-10-11 (migration `20261015090700`) ; `award_weekly_reward` et
+  `calculate_daily_challenge_gidouilles` (défis quotidiens supprimés) le 2026-10-13 (migration
+  `20261016101100`, M13). Les bonus hebdomadaires passent par `run_weekly_rewards` et
+  `run_weekly_best_bonuses`.
+- ✅ **Page sans entrée supprimée** (2026-10-12, décision de David) : `/dashboard/student/journal`,
+  qu'aucun lien n'a jamais atteint, doublait la fenêtre `StudentJournalModal` de l'accueil élève
+  (même `rewardJournalStore`, mêmes `RewardEventCard`). Ses filtres par type
+  (`RewardJournalFilters`) restent sur la page prof du journal d'un élève.
+- **Données de jeu privées** (2026-10-11, migration `20261015090600`) : `mathemo_scores`,
+  `minesweeper_student_achievements`, `minesweeper_player_stats`, `marketplace_listing_views` —
+  chacun ne lit que les siennes (avant : `using (true)` pour tout compte, toutes écoles).
+- **Navadra** (en pause) : routes vivantes mais hors catalogue, gains de combat hors journal
+  (à reprendre avec la réécriture). ✅ Les quatre liens morts du hub sont retirés (2026-10-13).
+  **Evoland** (en pause) : page sans lien, hors plan du site.
 
 ---
 

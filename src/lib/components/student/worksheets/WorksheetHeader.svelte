@@ -9,19 +9,19 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
+	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import {
-		ArrowLeft,
 		Calendar,
 		CheckCircle,
 		FileText,
 		GraduationCap,
 		ClipboardList,
-		FileQuestion,
 		PenLine,
 		BookOpen,
 		Info,
@@ -29,15 +29,30 @@
 		Loader2
 	} from '@lucide/svelte';
 	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
-	import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
+	import {
+		generateStudentWorksheetTypst,
+		type StudentPdfEnding
+	} from '$lib/worksheets/student-worksheet-typst';
+	import { fallbackWarning } from '$lib/typst/compiler/correction-fonts-compiler';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { StudentWorksheetView, WorksheetType } from '$lib/types/worksheets';
+	import TextSizeSelect from '$lib/components/worksheets/TextSizeSelect.svelte';
+	import type { TextSize } from '$lib/typst/text-size';
 
 	interface Props {
 		worksheet: StudentWorksheetView;
+		/** Taille du texte enregistrée pour l'élève (accessibilité) */
+		textSize?: TextSize;
 	}
 
-	let { worksheet }: Props = $props();
+	let { worksheet, textSize: savedTextSize = 'normal' }: Props = $props();
+
+	// L'élève peut la changer (dérivé réassignable : le choix l'emporte jusqu'au
+	// prochain chargement) ; enregistrée pour toutes ses fiches
+	let textSize = $derived<TextSize>(savedTextSize);
+	let isSavingTextSize = $state(false);
+
+	let readOnly = $derived(worksheet.read_only === true);
 
 	// PDF download state
 	let isPdfLoading = $state(false);
@@ -56,25 +71,27 @@
 		if (worksheet.show_corrections) {
 			showPdfDialog = true;
 		} else {
-			downloadPdf(false);
+			downloadPdf('none');
 		}
 	}
 
 	/**
-	 * Download worksheet as PDF
+	 * Télécharge la fiche en PDF, suivie de ses réponses ou de son corrigé
+	 * (exercices dont la correction est visible seulement)
 	 */
-	async function downloadPdf(includeSolution: boolean) {
+	async function downloadPdf(ending: StudentPdfEnding) {
 		showPdfDialog = false;
 		isPdfLoading = true;
 
-		const filename = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+		const kind = ending === 'none' ? 'worksheet' : ending;
 		const result = await generateAndDownloadPdf(
-			() => generateStudentWorksheetTypst(worksheet, includeSolution),
-			filename
+			() => generateStudentWorksheetTypst(worksheet, ending, { textSize }),
+			worksheetPdfFileName(worksheet.title, kind)
 		);
 
 		if (result.success) {
 			toaster.success('PDF telecharge !');
+			if (result.fallbackError) toaster.warning(fallbackWarning(result.fallbackError));
 		} else {
 			toaster.error(result.error || 'Erreur lors de la generation du PDF');
 		}
@@ -82,19 +99,38 @@
 		isPdfLoading = false;
 	}
 
+	/** Change la taille du texte de toutes les fiches de l'élève */
+	async function handleTextSizeChange(size: TextSize) {
+		const previous = textSize;
+		textSize = size;
+		isSavingTextSize = true;
+		try {
+			const response = await fetch('/api/worksheets/print-settings', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ textSize: size })
+			});
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			toaster.success('Taille du texte enregistrée pour toutes tes fiches');
+		} catch {
+			textSize = previous;
+			toaster.error("La taille du texte n'a pas pu être enregistrée");
+		} finally {
+			isSavingTextSize = false;
+		}
+	}
+
 	// Get icon and label for worksheet type (same logic as WorksheetCard)
 	function getTypeInfo(type: WorksheetType): { icon: typeof FileText; label: string } {
 		switch (type) {
 			case 'worksheet':
-				return { icon: FileText, label: 'Fiche de travail' };
+				return { icon: FileText, label: WORKSHEET_TYPE_LABELS.worksheet };
 			case 'assessment':
-				return { icon: ClipboardList, label: 'Evaluation' };
+				return { icon: ClipboardList, label: WORKSHEET_TYPE_LABELS.assessment };
 			case 'exam':
-				return { icon: GraduationCap, label: lore.learning.exam };
-			case 'quiz':
-				return { icon: FileQuestion, label: 'Quiz' };
+				return { icon: GraduationCap, label: WORKSHEET_TYPE_LABELS.exam };
 			case 'homework':
-				return { icon: PenLine, label: lore.learning.homework };
+				return { icon: PenLine, label: WORKSHEET_TYPE_LABELS.homework };
 			default:
 				return { icon: BookOpen, label: 'Fiche' };
 		}
@@ -111,8 +147,6 @@
 				return 'warning';
 			case 'homework':
 				return 'default';
-			case 'quiz':
-				return 'secondary';
 			default:
 				return 'outline';
 		}
@@ -173,11 +207,13 @@
 </script>
 
 <div class="space-y-4">
-	<!-- Back Button -->
-	<Button variant="ghost" href="/dashboard/student/worksheets" class="gap-2 pl-2">
-		<ArrowLeft class="h-4 w-4" />
-		Retour aux fiches
-	</Button>
+	<!-- Fiche en cours : « Quitter » ; consultation seule : simple retour -->
+	<BackLink
+		href="/dashboard/student/worksheets"
+		label={readOnly ? 'Retour aux fiches' : 'Quitter'}
+		kind={readOnly ? 'back' : 'quit'}
+		class="mb-0"
+	/>
 
 	<!-- Header Card -->
 	<Card.Root>
@@ -196,6 +232,12 @@
 						</Badge>
 					{/if}
 				</div>
+
+				<TextSizeSelect
+					value={textSize}
+					onchange={handleTextSizeChange}
+					disabled={isSavingTextSize}
+				/>
 
 				<!-- PDF Download Button -->
 				<Button
@@ -262,13 +304,20 @@
 	<Dialog.Content class="sm:max-w-md">
 		<Dialog.Header>
 			<Dialog.Title>Telecharger en PDF</Dialog.Title>
-			<Dialog.Description>Voulez-vous inclure les corrections dans le PDF ?</Dialog.Description>
+			<Dialog.Description>
+				Ajouter à la fin les réponses seules, ou le corrigé détaillé ?
+			</Dialog.Description>
 		</Dialog.Header>
 		<Dialog.Footer class="flex-col gap-2 sm:flex-row">
-			<Button variant="outline" onclick={() => downloadPdf(false)} class="w-full sm:w-auto">
+			<Button variant="outline" onclick={() => downloadPdf('none')} class="w-full sm:w-auto">
 				Sans corrections
 			</Button>
-			<Button onclick={() => downloadPdf(true)} class="w-full sm:w-auto">Avec corrections</Button>
+			<Button variant="outline" onclick={() => downloadPdf('answers')} class="w-full sm:w-auto">
+				Avec réponses
+			</Button>
+			<Button onclick={() => downloadPdf('correction')} class="w-full sm:w-auto">
+				Avec corrigé
+			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

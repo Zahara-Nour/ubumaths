@@ -14,33 +14,35 @@ couvre:
   - 'src/lib/utils/{test-launch,test-score,grades}.ts'
 ---
 
-# Séries, évaluations, tâches d'évaluation
+# Séries, contrôles, observations
 
 > Première doc de référence de cette zone. Le **pourquoi** est dans les journaux archivés :
 > [series-formes-progress.md](../archive/wip/series-formes-progress.md) (décisions Q18-Q59, chantiers
 > 4 et 5), [series-de-questions-dans-un-chapitre-spec.md](../archive/wip/series-de-questions-dans-un-chapitre-spec.md)
-> (Q124-Q129), [skills-referentiel-design.md](../archive/wip/skills-referentiel-design.md) (tâches
-> d'évaluation, observables), [progression-eleve-progress.md](../archive/wip/progression-eleve-progress.md).
+> (Q124-Q129), [skills-referentiel-design.md](../archive/wip/skills-referentiel-design.md) (observations,
+> alors « tâches d'évaluation », observables), [progression-eleve-progress.md](../archive/wip/progression-eleve-progress.md).
 > Ils décrivent l'histoire, pas le code actuel.
 
 ## À quoi ça sert
 
-Le mot « évaluation » recouvre ici **quatre choses sans lien de code entre elles**, plus deux faux
-amis. Vocabulaire : [CONTEXT.md](../../CONTEXT.md) (série, en classe, flash-cards, entraînement,
-course aux nombres, évaluation, auto-évaluation, compétence mathématique, composante, indicateur).
+Le code nomme `evaluation*` **quatre choses sans lien de code entre elles**, plus deux faux amis ;
+le glossaire leur donne des noms distincts (« évaluation » seule est bannie). Vocabulaire :
+[CONTEXT.md](../../CONTEXT.md) (série, en classe, flash-cards, entraînement, course aux nombres,
+contrôle, observation, presque évaluation, auto-évaluation, compétence mathématique, composante,
+observable, mode test).
 
-| Chose                                | Ce que c'est                                                                                                    | Tables                                                                  |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| **Série** passée sous une **forme**  | Composition de questions lancée en classe, en flash-cards, en entraînement ou en course aux nombres. Non notée. | `series` (si enregistrée), `test_sessions`, `test_answers`              |
-| **Évaluation** (notée)               | Une série + une forme (entraînement ou course) + réglages, assignée ; **corrigée et notée par le serveur**.     | `evaluations`, `evaluation_assignments`, `evaluation_attempt_questions` |
-| **Tâche d'évaluation** (compétences) | Séance où le prof coche, élève par élève, les **observables** réussis d'une compétence mathématique.            | `evaluation_tasks`, `evaluation_task_perimeter`, `skill_attempts`       |
-| **Presque-évaluation**               | PDF parodique déposé par le prof, lisible par tous, même sans compte.                                           | `parody_evaluations` + bucket Storage `parody-evaluations`              |
-| _faux ami_ : **mode test** du prof   | Interrupteur « voir les élèves de test / les vrais ». Rien à voir avec `TestMode` (= forme de série).           | `user_preferences.test_mode_enabled`, `profiles.is_test`                |
-| _faux ami_ : **reports** (élève)     | Signalements d'erreur sur un exercice de **fiche**, pas des bulletins.                                          | `worksheet_error_reports` → [fiches-et-pdf.md](fiches-et-pdf.md)        |
+| Chose                               | Ce que c'est                                                                                                    | Tables                                                                  |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Série** passée sous une **forme** | Composition de questions lancée en classe, en flash-cards, en entraînement ou en course aux nombres. Non notée. | `series` (si enregistrée), `test_sessions`, `test_answers`              |
+| **Contrôle** (noté)                 | Une série + une forme (entraînement ou course) + réglages, assignée ; **corrigée et notée par le serveur**.     | `evaluations`, `evaluation_assignments`, `evaluation_attempt_questions` |
+| **Observation** (compétences)       | Séance où le prof coche, élève par élève, les **observables** réussis d'une compétence mathématique.            | `evaluation_tasks`, `evaluation_task_perimeter`, `skill_attempts`       |
+| **Presque évaluation**              | PDF parodique déposé par le prof, lisible par tous, même sans compte.                                           | `parody_evaluations` + bucket Storage `parody-evaluations`              |
+| _faux ami_ : **mode test** du prof  | Interrupteur « voir les élèves de test / les vrais ». Rien à voir avec `TestMode` (= forme de série).           | `user_preferences.test_mode_enabled`, `profiles.is_test`                |
+| _faux ami_ : **reports** (élève)    | Signalements d'erreur sur un exercice de **fiche**, pas des bulletins.                                          | `worksheet_error_reports` → [fiches-et-pdf.md](fiches-et-pdf.md)        |
 
-Dans le code et les URL, l'ancien nom subsiste : `assessments` = évaluations, `test` = séance de série.
+Dans le code et les URL, l'ancien nom subsiste : `assessments` et `evaluations` = contrôles, `evaluation_tasks` = observations, `test` = séance de série.
 Le moteur de questions (génération, validation, barème) est décrit dans [questions.md](questions.md) ;
-les tables dans [base-de-donnees.md](base-de-donnees.md) (domaine « Évaluations ») ; le SRS nourri
+les tables dans [base-de-donnees.md](base-de-donnees.md) (domaine « Évaluations » du schéma) ; le SRS nourri
 par les séances dans [srs.md](srs.md).
 
 ## Carte du code
@@ -55,7 +57,7 @@ par les séances dans [srs.md](srs.md).
 | `src/lib/types/evaluation.ts`                                       | `EvaluationForm`, bornes de la course (`COURSE_TIME_LIMIT_*`), statuts, `getStudentStatus`, `formatGrade`.                                                        |
 | `src/lib/types/evaluation-attempt.ts`                               | Ce qu'échangent navigateur et serveur : `EvaluationStartResponse`, `EvaluationSubmitResponse`, `CorrectedQuestion`.                                               |
 | `src/lib/server/series.ts`                                          | CRUD des séries ; traduit le verrou de la base (`SERIES_LOCKED_SQLSTATE` = `UBS01`).                                                                              |
-| `src/lib/server/evaluations.ts`                                     | Évaluations : création, réglages, statut, assignation, destinataires, résultats, statistiques.                                                                    |
+| `src/lib/server/evaluations.ts`                                     | Contrôles : création, réglages, statut, assignation, destinataires, résultats, statistiques.                                                                      |
 | `src/lib/server/evaluation-attempts.ts`                             | `startEvaluationAttempt`, `submitEvaluationAttempt`, `readSubmittedCopy` (ADR 0015).                                                                              |
 | `src/lib/server/grading-budget.ts`                                  | Budget de temps de la correction d'un envoi → [questions.md](questions.md).                                                                                       |
 | `src/lib/server/chapter-series.ts`                                  | Série rattachée à un chapitre de « Mon cours » (forme flash ou entraînement, sans note).                                                                          |
@@ -63,7 +65,7 @@ par les séances dans [srs.md](srs.md).
 | `src/lib/server/validation/tests.ts`                                | `validateSaveTest` : corps de `POST /api/tests/save`.                                                                                                             |
 | `src/lib/types/skills.ts`                                           | Types famille B : `MathCompetenceCode`, `SubdimensionLetter`, `SkillAttemptCode` (`plus`/`minus`), `isCompetenceObserved`.                                        |
 | `src/lib/server/test-mode.ts`, `src/lib/stores/test-mode.svelte.ts` | Mode test du prof : `getTeacherTestMode` / `setTeacherTestMode` (serveur), store `testMode` (navigateur).                                                         |
-| `src/lib/server/validation/parody-evaluations.ts`                   | Zod du dépôt de presques-évaluations (PDF ≤ 10 Mo, `MAX_FILE_SIZE_BYTES`).                                                                                        |
+| `src/lib/server/validation/parody-evaluations.ts`                   | Zod du dépôt de presques évaluations (PDF ≤ 10 Mo, `MAX_FILE_SIZE_BYTES`).                                                                                        |
 
 Hors sujet mais rangés ici par la couverture : `src/lib/types/grades.ts`, `src/lib/utils/grades.ts` et
 `src/lib/server/validation/grades.ts` décrivent les **niveaux scolaires** (`GradeCode` : `6`, `1_SPE`…),
@@ -71,21 +73,21 @@ pas des notes.
 
 ### Routes
 
-| Route                                                                                  | Qui           | Quoi                                                                                   |
-| -------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------------------- |
-| `/automaths/test` (couverte par [questions.md](questions.md))                          | tous          | Page unique qui joue toutes les formes, libres ou évaluation.                          |
-| `POST /api/series`                                                                     | prof, admin   | Enregistrer le panier comme série. Liste et édition : `/dashboard/teacher/series`.     |
-| `POST /api/tests/save`                                                                 | connecté      | Enregistrer une séance **libre** (entraînement, course, flash). Refuse une évaluation. |
-| `/dashboard/teacher/assessments` (+ `new`, `[id]/edit`, `[id]/assign`, `[id]/results`) | prof, admin   | Créer depuis une série, régler (brouillon seulement), publier, assigner, résultats.    |
-| `/dashboard/student/assessments` (+ `[id]/results`)                                    | élève         | Ses évaluations ; ses tentatives (`[id]` = identifiant de l'**assignation**).          |
-| `POST /api/evaluations/assignments/[id]/start`                                         | élève, prof   | Démarrer / reprendre (élève) ou aperçu (propriétaire, admin). 20 appels/min.           |
-| `POST /api/evaluations/attempts/[id]/submit`                                           | élève         | Envoyer la copie, recevoir la note et la correction. 10 appels/min.                    |
-| `/dashboard/teacher/evaluation-tasks` (+ `new`, `[id]`, `[id]/saisie`)                 | prof          | Tâches d'évaluation famille B : périmètre, saisie en séance.                           |
-| `/dashboard/student/competences/[code]`                                                | élève         | Détail d'une compétence mathématique (la liste redirige vers `progression`).           |
-| `/presques-evaluations` · `/dashboard/teacher/presques-evaluations`                    | public · prof | Lecture publique · dépôt, édition, suppression.                                        |
-| `POST /api/test-mode`                                                                  | prof          | Basculer le mode test.                                                                 |
-| `/dashboard/student/work`                                                              | élève         | Boîte « travail à faire » (`getStudentWorkInbox`, quatre systèmes d'assignation).      |
-| `/dashboard/student/reports`, `GET /api/student/reports`                               | élève         | Ses signalements d'erreur de fiche (RPC `get_my_error_reports`).                       |
+| Route                                                                                  | Qui           | Quoi                                                                                                                                                                               |
+| -------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/automaths/test` (couverte par [questions.md](questions.md))                          | tous          | Page unique qui joue toutes les formes, libres ou contrôle.                                                                                                                        |
+| `POST /api/series`                                                                     | prof, admin   | Enregistrer le panier comme série. Liste et édition : `/dashboard/teacher/series`.                                                                                                 |
+| `POST /api/tests/save`                                                                 | connecté      | Enregistrer une séance **libre** (entraînement, course, flash). Refuse un contrôle.                                                                                                |
+| `/dashboard/teacher/assessments` (+ `new`, `[id]/edit`, `[id]/assign`, `[id]/results`) | prof, admin   | Créer depuis une série, régler (brouillon seulement), publier, assigner, résultats.                                                                                                |
+| `/dashboard/student/assessments` (+ `[id]/results`)                                    | élève         | Ses contrôles ; ses tentatives (`[id]` = identifiant de l'**assignation**). S'ouvre depuis « Mon travail » (« Tous mes contrôles »), y revient (`BackLink`).                       |
+| `POST /api/evaluations/assignments/[id]/start`                                         | élève, prof   | Démarrer / reprendre (élève) ou aperçu (propriétaire, admin). 20 appels/min.                                                                                                       |
+| `POST /api/evaluations/attempts/[id]/submit`                                           | élève         | Envoyer la copie, recevoir la note et la correction. 10 appels/min.                                                                                                                |
+| `/dashboard/teacher/evaluation-tasks` (+ `new`, `[id]`, `[id]/saisie`)                 | prof          | Observations famille B : périmètre, saisie en séance.                                                                                                                              |
+| `/dashboard/student/competences/[code]`                                                | élève         | Détail d'une compétence mathématique (la liste redirige vers `progression`).                                                                                                       |
+| `/presques-evaluations` · `/dashboard/teacher/presques-evaluations`                    | public · prof | Lecture publique · dépôt, édition, suppression.                                                                                                                                    |
+| `POST /api/test-mode`                                                                  | prof          | Basculer le mode test.                                                                                                                                                             |
+| `/dashboard/student/work`                                                              | élève         | Boîte « travail à faire » (`getStudentWorkInbox`, quatre systèmes d'assignation) ; seule entrée vers les listes complètes des fiches et des contrôles.                             |
+| `/dashboard/student/reports`, `GET /api/student/reports`                               | élève         | Ses signalements d'erreur de fiche (RPC `get_my_error_reports`) ; numéro de l'exercice dans sa copie, `null` si la fiche lui est illisible ([fiches-et-pdf.md](fiches-et-pdf.md)). |
 
 ## Les formes d'une série
 
@@ -102,10 +104,18 @@ catégories, 99 répétitions, 600 s (`src/lib/validation/series.ts`).
 | Entraînement (`interactive`)  | `TestInteractive` | oui, hors score | Par question ; à 0, ce qui est saisi est validé, rien = faux ; pas de chrono global | Navigateur (ADR 0001), score sur 10 (`computeTestScore`) | `test_sessions`, `test_answers`, SRS, XP          |
 | Course aux nombres (`course`) | `TestCourse`      | **non**         | Global, toutes les questions à l'écran ; 1 à 60 min (5 min proposées)               | Navigateur, score sur 10                                 | Comme l'entraînement                              |
 
-Lancement (`resolveTestLaunch`) : `?assignment=<id>` → évaluation (forme et temps viennent du serveur,
+Lancement (`resolveTestLaunch`) : `?assignment=<id>` → contrôle (forme et temps viennent du serveur,
 le `mode` de l'URL est ignoré) ; `?categories=…` sans `mode` → le panier ; `?categories=…&mode=…[&time=…]`
 → démarrage direct. `SeriesLinkShare` fabrique ces liens. Visiteur non connecté : la série se joue,
 rien n'est enregistré.
+
+**Quitter** ([composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)) : pendant la série, l'en-tête porte un lien « Quitter »
+(`BackLink kind="quit"`). Entraînement et course y mènent au panier, ou à « Mes contrôles »
+(`/dashboard/student/assessments`) en contrôle : `automathsQuitLink` (`src/lib/navigation/return-links.ts`).
+En contrôle **avec une tentative ouverte**, le lien demande confirmation : les réponses tapées seront
+perdues (voir « Démarrer », étape 3) et, en course, le temps continue de courir (`remainingSeconds`).
+Pas de confirmation en entraînement ni dans l'aperçu du prof. « En classe » et les flash-cards (jamais
+en contrôle) quittent vers le panier. Les boutons de l'écran de fin gardent `onBack`.
 
 Séance libre enregistrée : `POST /api/tests/save` écrit `test_sessions` puis `test_answers` et appelle
 `recordSeriesReviews` (`src/lib/server/srs/record-series-reviews.ts`) avec le **verdict du navigateur**.
@@ -114,9 +124,9 @@ hors cartes.
 
 **Série de chapitre** (`chapter_series`, `chapter-series.ts`) : un chapitre de « Mon cours » pointe une
 série du prof sous la forme `flash` (défaut) ou `interactive` ; l'élève la lance comme une séance libre.
-`findOngoingEvaluation` prévient le prof quand la même série sert une évaluation non terminée (Q129).
+`findOngoingEvaluation` prévient le prof quand la même série sert un contrôle non terminé (Q129).
 
-## L'évaluation notée
+## Le contrôle (noté)
 
 ### Modèle
 
@@ -138,8 +148,8 @@ Cycle de vie (prof) : créer depuis une série (`/dashboard/teacher/assessments/
 brouillon modifiable (`[id]/edit` refuse hors `draft`) → publier → assigner à des classes (`assignEvaluation`
 refuse si non publiée). Le statut `archived` existe (lu par la liste et par
 `isEvaluationUnfinished`) mais aucun écran ne le pose. Une **série** est verrouillée par la base dès qu'une séance est
-rattachée à une évaluation qui l'utilise (trigger `series_lock_guard`, SQLSTATE `UBS01`) : il faut la
-dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'une évaluation commencée
+rattachée à un contrôle qui l'utilise (trigger `series_lock_guard`, SQLSTATE `UBS01`) : il faut la
+dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'un contrôle commencé
 (`evaluation_series_lock_guard`).
 
 ### Démarrer (`startEvaluationAttempt`)
@@ -147,7 +157,7 @@ dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'une évaluation
 1. L'assignation est lue **sous RLS** avec le client de l'élève. Destinataire = élève nommé ou membre
    **actif** de la classe (`isAssignmentRecipient`). Sinon : propriétaire ou admin → **aperçu**
    (catégories renvoyées, le navigateur génère comme une séance libre, rien n'est rattaché) ; autre → 404.
-2. Évaluation non publiée → 404.
+2. Contrôle non publié → 404.
 3. **Tentative ouverte** (commencée, non envoyée) → reprise telle quelle, mêmes questions, même ordre,
    sans compter de tentative, **même après la date limite** ; les réponses tapées sont perdues (Q34).
 4. Date limite passée → 403 ; tentatives épuisées → 403. Toute séance compte dès sa création,
@@ -169,7 +179,7 @@ dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'une évaluation
    sur 20 au demi-point (`gradeOutOf20`). Budget total 5 s ; au-delà, les questions restantes valent 0.
    Tout verdict envoyé par le navigateur est ignoré (le schéma Zod le retire).
 4. Écritures par le client **service_role** (la base refuse à un compte connecté d'écrire une séance
-   d'évaluation, policies restrictives `test_sessions_insert_not_evaluation` et
+   de contrôle, policies restrictives `test_sessions_insert_not_evaluation` et
    `test_answers_insert_not_evaluation`) : réponses d'abord, puis clôture `completed_at` conditionnelle
    (`is('completed_at', null)`) — un envoi concurrent retire ses réponses et rend la copie existante.
 5. Durée mesurée par le serveur (démarrage → envoi). `score` = note / 2 pour les anciens écrans.
@@ -186,7 +196,7 @@ même s'il est assigné deux fois, toutes ses tentatives) et `computeEvaluationS
 min, max sur la meilleure note de chaque élève). Les résultats suivent le **mode test** : vrais
 élèves ou élèves de test, jamais les deux.
 
-## Les tâches d'évaluation (compétences, famille B)
+## Les observations (compétences, famille B)
 
 Le prof évalue les six **compétences mathématiques** par leurs **observables** (table `observables`,
 rattachés à une composante `math_competence_subdimensions`, lettres A à D). La famille A (capacités)
@@ -206,7 +216,7 @@ est abandonnée : [ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md).
    `/dashboard/student/competences/[code]`. Le prof : [analytique-prof.md](analytique-prof.md) ;
    l'export vers l'ENT : [export-competences.md](export-competences.md).
 
-## Les presques-évaluations
+## Les presques évaluations
 
 PDF parodiques : le prof dépose (PDF seul, 10 Mo, titre, niveaux, thèmes via `resource_tags`) dans le
 bucket public `parody-evaluations` et la table `parody_evaluations`. La page publique
@@ -219,19 +229,19 @@ vérification explicite).
 
 Un prof `is_test` est toujours en mode test ; un autre bascule `user_preferences.test_mode_enabled`
 par `TestModeToggle` (tableau de bord) → `POST /api/test-mode` → rechargement complet de la page.
-`getTeacherTestMode` filtre ensuite élèves de classe, résultats d'évaluation, énigmes, paquets SRS
+`getTeacherTestMode` filtre ensuite élèves de classe, résultats de contrôle, énigmes, paquets SRS
 assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ## Invariants
 
-1. **Une évaluation n'est corrigée que par le serveur** ; `/api/tests/save` refuse un
+1. **Un contrôle n'est corrigé que par le serveur** ; `/api/tests/save` refuse un
    `assignmentId` (400). Les séances libres restent corrigées par le navigateur (ADR 0001).
 2. **La graine et l'attendu ne quittent jamais le serveur** pendant une tentative : seules les
    questions publiques partent ; la correction arrive avec la note.
 3. **Une tentative compte dès son démarrage** ; une tentative ouverte se reprend sans en coûter une.
 4. **Le verrou de série est tenu par la base**, pas par l'application : le drapeau `locked` de
    `getTeacherSeries` sert à l'affichage seulement.
-5. **Pas de carte de cours** dans une évaluation ni dans une course aux nombres.
+5. **Pas de carte de cours** dans un contrôle ni dans une course aux nombres.
 6. **Lire avec le client de l'utilisateur, écrire avec service_role** dans `evaluation-attempts.ts`,
    après vérification explicite de l'identité et des droits.
 7. **Le mode test sépare** : un prof ne voit jamais vrais élèves et élèves de test ensemble.
@@ -242,7 +252,7 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
   un composant dans `src/lib/components/test/`, le choix dans `TestModeDialog` et `SeriesLinkShare`,
   la contrainte `mode` de `test_sessions`. Pour qu'elle soit **notée**, il faut aussi
   `EvaluationForm`, `evaluationFormSchema` et la contrainte de `evaluations.form`.
-- **Nouveau réglage d'évaluation** : colonne (migration additive), `evaluationSettingsSchema`,
+- **Nouveau réglage de contrôle** : colonne (migration additive), `evaluationSettingsSchema`,
   `EvaluationConfigForm`, `createEvaluation`/`updateEvaluation`, et **le lire** dans
   `startEvaluationAttempt` (voir l'écart `shuffle_questions`).
 - **Toucher à la correction** : c'est [questions.md](questions.md) (`grading.ts`). La note d'une copie
@@ -265,7 +275,7 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
   `acces-evaluation-eleve-archive.test.ts`, `series-de-chapitre.test.ts`,
   `presques-evaluations-visiteur.test.ts`, `test-sessions-mode-flash.test.ts`,
   `competence-referentiel.test.ts`.
-- **Sans test** : la saisie des tâches d'évaluation, le dépôt de presques-évaluations, le mode test.
+- **Sans test** : la saisie des observations, le dépôt de presques évaluations, le mode test.
 
 ## Décisions (ADR)
 
@@ -273,7 +283,7 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 [0008](../adr/0008-referentiel-famille-a-abandonne.md) famille A abandonnée ·
 [0009](../adr/0009-carte-de-cours-type-explicite.md) carte de cours ·
 [0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md) série figée par graine (fiches) ·
-[0015](../adr/0015-evaluation-notee-correction-serveur.md) évaluation notée corrigée par le serveur ·
+[0015](../adr/0015-evaluation-notee-correction-serveur.md) contrôle (évaluation notée) corrigé par le serveur ·
 [0016](../adr/0016-auto-evaluation-meilleur-resultat-du-jour.md) auto-évaluation, meilleur du jour.
 
 ## Écarts connus
@@ -284,25 +294,27 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 - **`validateAttempt` (`evaluations.ts`) n'est appelé que par les tests** : `startEvaluationAttempt`
   refait les mêmes contrôles à sa façon. Deux règles à tenir d'accord.
 - **Archivage sans écran** : seule l'action `publish` existe sur `/dashboard/teacher/assessments` ;
-  aucune route ne passe une évaluation en `archived`.
+  aucune route ne passe un contrôle en `archived`.
 - **Assignation à un élève sans écran** : `assignEvaluation` accepte `student_ids`, la page
   `[id]/assign` n'envoie que des classes.
-- **Saisie des tâches d'évaluation** : `DELETE` puis `INSERT` sans `.select()` ni transaction ; un
+- **Saisie des observations** : `DELETE` puis `INSERT` sans `.select()` ni transaction ; un
   refus RLS du `DELETE` rend 0 ligne sans erreur et la grille est **doublée**
   ([rls-echecs-silencieux.md](../pratiques/rls-echecs-silencieux.md)). Les caches ne se recalculent
   qu'à l'`INSERT` : un observable retiré du périmètre garde ses anciennes observations dans le cache.
 - **Mode test, deux sources** : le store `testMode` part de `localStorage`, la vérité est
   `user_preferences`. Sur un nouvel appareil, l'interrupteur peut afficher l'inverse de l'état serveur
   et le premier clic renvoyer la valeur déjà enregistrée. Le store utilise `writable`, pas les runes.
-- **Temps de course par défaut** : 5 min dans `TestModeDialog` (séance libre), 7 min pour une
-  évaluation.
+- **Temps de course par défaut** : 5 min dans `TestModeDialog` (séance libre), 7 min pour un
+  contrôle.
 - **En-têtes de code anglais et anciens** : `test.ts`, `TestCourse`, `TestResults`, `test-mode.ts`
   parlent encore de « quiz », « Revision », « assessment ».
-- **Vocabulaire absent de CONTEXT.md** : « presque-évaluation », « tâche d'évaluation »,
-  « observable », « mode test » n'y ont pas d'entrée.
+- **Le code garde les anciens noms** : les écrans disent **contrôle** et **observation** depuis le
+  2026-10-11, mais les URL (`/assessments`, `/evaluation-tasks`), les tables et les identifiants
+  (`evaluations`, `EvaluationCard`…) n'ont pas été renommés. Les notifications déjà envoyées et les
+  modèles de messages en base gardent « évaluation ».
 - **Couverture mal rangée** : `grades.ts` (niveaux scolaires) et les signalements de fiches
   (`student/reports`) relèveraient d'autres docs.
 
 ---
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-11 ; `GET /api/student/reports` le 2026-10-14.

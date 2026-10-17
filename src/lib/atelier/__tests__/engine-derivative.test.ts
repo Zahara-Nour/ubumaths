@@ -40,7 +40,9 @@ describe('un objet défini par une dérivée s’évalue', () => {
 		const s = session();
 		runInput(s, "g=f'");
 
-		expect(outputOf(runInput(s, 'g(3)'))).not.toMatch(/Evaluation error|without a definition/);
+		expect(outputOf(runInput(s, 'g(3)'))).not.toMatch(
+			/Evaluation error|Erreur de calcul|without a definition/
+		);
 	});
 
 	/**

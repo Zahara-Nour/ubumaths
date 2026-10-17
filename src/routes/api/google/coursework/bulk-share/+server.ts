@@ -21,15 +21,21 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { bulkShareCourseworkSchema } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/coursework/bulk-share/+server');
 
 /**
  * POST /api/google/coursework/bulk-share
  * Share multiple coursework items with multiple classes
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -56,20 +62,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.in('id', courseworkIds);
 
 	if (courseworkError) {
-		console.error('[Bulk Coursework Share] Error fetching coursework:', courseworkError);
-		throw error(500, 'Failed to fetch coursework');
+		logger.error('[Bulk Coursework Share] Error fetching coursework:', courseworkError);
+		throw error(500, 'Impossible de charger les devoirs Classroom');
 	}
 
 	if (!coursework || coursework.length !== courseworkIds.length) {
-		throw error(404, 'One or more coursework items not found');
+		throw error(404, 'Un ou plusieurs devoirs Classroom introuvables');
 	}
 
 	// Verify ALL coursework belong to the teacher
 	const invalidCoursework = coursework.filter((c) => {
 		// Handle nested course data (Supabase JOIN types)
 		const courseData = c.google_classroom_courses as unknown as
-			| { teacher_id: string }
-			| { teacher_id: string }[];
+			{ teacher_id: string } | { teacher_id: string }[];
 		const teacherId = Array.isArray(courseData)
 			? courseData[0]?.teacher_id
 			: courseData?.teacher_id;
@@ -77,11 +82,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (invalidCoursework.length > 0) {
-		console.error(
+		logger.error(
 			`[Bulk Coursework Share] Unauthorized coursework access attempt by teacher ${user.id}:`,
 			invalidCoursework.map((c) => c.id)
 		);
-		throw error(403, 'You do not own all selected coursework items');
+		throw error(403, 'Accès refusé à certains des devoirs Classroom choisis');
 	}
 
 	// Verify teacher owns all classes
@@ -92,12 +97,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.eq('is_active', true);
 
 	if (classesError) {
-		console.error('[Bulk Coursework Share] Error fetching classes:', classesError);
-		throw error(500, 'Failed to verify class ownership');
+		logger.error('[Bulk Coursework Share] Error fetching classes:', classesError);
+		throw error(500, 'Impossible de vérifier les classes');
 	}
 
 	if (!classes || classes.length !== classIds.length) {
-		throw error(400, 'One or more classes not found or inactive');
+		throw error(400, 'Une ou plusieurs classes introuvables ou inactives');
 	}
 
 	// Verify category ownership if provided (SECURITY: Prevent authorization bypass)
@@ -109,16 +114,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (categoryError || !category) {
-			throw error(404, 'Category not found');
+			throw error(404, 'Catégorie introuvable');
 		}
 
 		// Verify category belongs to one of the selected classes
 		if (!classIds.includes(category.class_id)) {
-			console.error(
+			logger.error(
 				`[Bulk Coursework Share] Category ${categoryId} does not belong to any selected class`,
 				{ classIds, categoryClassId: category.class_id, teacherId: user.id }
 			);
-			throw error(403, 'Category does not belong to selected classes');
+			throw error(403, 'Cette catégorie n’appartient à aucune des classes choisies');
 		}
 	}
 
@@ -131,7 +136,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (topicError || !topic) {
-			throw error(404, 'Topic not found');
+			throw error(404, 'Sujet Classroom introuvable');
 		}
 
 		// Extract teacher_id from nested course data and verify ownership
@@ -140,11 +145,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			: (topic.google_classroom_courses as unknown as { teacher_id: string })?.teacher_id;
 
 		if (topicTeacherId !== user.id) {
-			console.error(
+			logger.error(
 				`[Bulk Coursework Share] Unauthorized topic access attempt by teacher ${user.id}:`,
 				{ topicId, topicTeacherId }
 			);
-			throw error(403, 'You do not own this topic');
+			throw error(403, 'Accès refusé à ce sujet Classroom');
 		}
 	}
 
@@ -171,8 +176,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 	if (insertError) {
-		console.error('[Bulk Coursework Share] Error sharing coursework:', insertError);
-		throw error(500, 'Failed to share coursework');
+		logger.error('[Bulk Coursework Share] Error sharing coursework:', insertError);
+		throw error(500, 'Impossible de partager les devoirs Classroom');
 	}
 
 	return json({

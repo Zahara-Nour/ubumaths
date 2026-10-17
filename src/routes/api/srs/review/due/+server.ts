@@ -17,6 +17,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { asCardState } from '$lib/srs/types';
 import { templateMarkdown } from '$lib/ubumark/types/template';
 import { toQuestionTemplate } from '$lib/types/question-template';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/srs/review/due/+server');
 
 /**
  * GET /api/srs/review/due?deck_id=X
@@ -61,11 +64,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck not found or access denied' }, { status: 404 });
+			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		// Get due cards using helper function
-		console.log(`[SRS] Fetching due cards for user ${user.id}, deck ${deckId}`);
+		logger.info(`[SRS] Fetching due cards for user ${user.id}, deck ${deckId}`);
 		// `p_all` ignore l'échéance : la veille d'un contrôle, l'élève veut tout
 		// repasser, pas seulement ce que l'algorithme juge dû. Le deck lui
 		// appartient — vérifié juste au-dessus — donc ce drapeau n'ouvre l'accès
@@ -77,14 +80,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		});
 
 		if (dueCardsError) {
-			console.error('Error fetching due cards:', dueCardsError);
-			return json({ error: 'Failed to fetch due cards' }, { status: 500 });
+			logger.error('Error fetching due cards:', dueCardsError);
+			return json({ error: 'Impossible de charger les cartes à réviser' }, { status: 500 });
 		}
 
-		console.log(`[SRS] RPC returned ${dueCards?.length || 0} due cards`);
+		logger.info(`[SRS] RPC returned ${dueCards?.length || 0} due cards`);
 
 		if (!dueCards || dueCards.length === 0) {
-			console.log('[SRS] No due cards found - returning empty array');
+			logger.info('[SRS] No due cards found - returning empty array');
 			return json({ cards: [] });
 		}
 
@@ -107,7 +110,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (statsCartesError) {
-			console.error('Enrichissement illisible :', statsCartesError);
+			logger.error('Enrichissement illisible :', statsCartesError);
 		}
 
 		const statsByCard = new Map(
@@ -124,17 +127,17 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// session est incomplète.
 		const skipped: { cardId: string; templateId: string | null; reason: string }[] = [];
 
-		console.log('[SRS] Processing due cards...');
+		logger.info('[SRS] Processing due cards...');
 		for (const dueCard of dueCards) {
 			// Filtre states optionnel (Phase 3 — sections deck Programme)
 			if (allowedStates && !allowedStates.has(dueCard.state as CardState)) {
 				continue;
 			}
 			try {
-				console.log(`[SRS] Processing card ${dueCard.card_id}, type: ${dueCard.card_type}`);
+				logger.info(`[SRS] Processing card ${dueCard.card_id}, type: ${dueCard.card_type}`);
 				if (dueCard.card_type === 'template') {
 					// Fetch template and generate instance
-					console.log(`[SRS] Fetching template ${dueCard.template_id}`);
+					logger.info(`[SRS] Fetching template ${dueCard.template_id}`);
 					const { data: template, error: templateError } = await supabase
 						.from('question_templates')
 						.select('*')
@@ -142,24 +145,24 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 						.single();
 
 					if (templateError || !template) {
-						console.error(
+						logger.error(
 							`[SRS] Template ${dueCard.template_id} not found for card ${dueCard.card_id}:`,
 							templateError
 						);
 						skipped.push({
 							cardId: dueCard.card_id,
 							templateId: dueCard.template_id,
-							reason: 'template introuvable'
+							reason: 'modèle introuvable'
 						});
 						continue;
 					}
 
-					console.log(`[SRS] Generating instance for template ${dueCard.template_id}`);
+					logger.info(`[SRS] Generating instance for template ${dueCard.template_id}`);
 					// Generate new instance with random seed
 					const result = generateSRSInstance(toQuestionTemplate(template));
 
 					if (!result.success) {
-						console.error(
+						logger.error(
 							`[SRS] Failed to generate instance for template ${dueCard.template_id}:`,
 							result.errors // TypeScript now knows result.errors exists when success is false
 						);
@@ -185,7 +188,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 							nextReview: dueCard.next_review
 						}
 					});
-					console.log(`[SRS] ✓ Template card added to review session`);
+					logger.info(`[SRS] ✓ Template card added to review session`);
 				} else {
 					// Custom card - fetch from srs_cards to get content
 					const { data: customCard, error: customCardError } = await supabase
@@ -195,7 +198,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 						.single();
 
 					if (customCardError || !customCard) {
-						console.error(`Custom card ${dueCard.card_id} not found`);
+						logger.error(`Custom card ${dueCard.card_id} not found`);
 						continue;
 					}
 
@@ -218,7 +221,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					});
 				}
 			} catch (error) {
-				console.error(`Error processing card ${dueCard.card_id}:`, error);
+				logger.error(`Error processing card ${dueCard.card_id}:`, error);
 				// Carte écartée, tracée ; les autres continuent
 				skipped.push({
 					cardId: dueCard.card_id,
@@ -229,14 +232,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		}
 
-		console.log(`[SRS] Returning ${reviewCards.length} review cards to client`);
+		logger.info(`[SRS] Returning ${reviewCards.length} review cards to client`);
 		if (skipped.length > 0) {
-			console.error(`[SRS] ${skipped.length} carte(s) écartée(s) de la session :`, skipped);
+			logger.error(`[SRS] ${skipped.length} carte(s) écartée(s) de la session :`, skipped);
 		}
 		// Au client : le seul NOMBRE de cartes écartées (le détail reste dans les logs)
 		return json({ cards: reviewCards, skipped: skipped.length } satisfies DueCardsResponse);
 	} catch (error) {
-		console.error('Unexpected error in GET /api/srs/review/due:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		logger.error('Unexpected error in GET /api/srs/review/due:', error);
+		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

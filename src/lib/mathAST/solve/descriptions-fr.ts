@@ -78,12 +78,17 @@ export type SolvingRule =
 	// Product decomposition (zero-product property)
 	| 'zero-product-property'
 	| 'common-factor'
+	| 'difference-of-squares'
 	| 'solve-factor'
 	// Trig recursive decomposition
 	| 'trig-recursive-decomposition'
 	// Exp/log recursive decomposition
 	| 'exp-log-recursive-decomposition'
 	| 'equal-exponentials'
+	// Valeur absolue (|u| = c, |u| = |v|)
+	| 'absolute-value'
+	| 'absolute-value-negative'
+	| 'equal-absolute-values'
 	// Changement de variable (u = sin x, cos x, tan x, ln x, eˣ)
 	| 'change-of-variable'
 	| 'change-of-variable-back'
@@ -175,6 +180,7 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	'zero-product-property': 'Par la propriete du produit nul: si A × B = 0 alors A = 0 ou B = 0',
 	'solve-factor': 'On resout chaque facteur separement',
 	'common-factor': 'On factorise par le facteur commun à tous les termes',
+	'difference-of-squares': 'On factorise avec l’identité a² − b² = (a + b)(a − b)',
 
 	// Trig recursive decomposition
 	'trig-recursive-decomposition':
@@ -184,6 +190,12 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	'exp-log-recursive-decomposition':
 		'On decompose en resolvant f(x) = u pour chaque u-valeur exponentielle/logarithmique',
 	'equal-exponentials': "L'exponentielle est injective : e^A = e^B equivaut a A = B",
+
+	// Valeur absolue
+	'absolute-value': '|A| = c, avec c ≥ 0, équivaut à A = c ou A = −c',
+	'absolute-value-negative':
+		"Une valeur absolue est positive : |A| = c, avec c < 0, n'a pas de solution",
+	'equal-absolute-values': '|A| = |B| équivaut à A = B ou A = −B',
 
 	// Changement de variable
 	'change-of-variable': 'On pose u pour ramener a une equation polynomiale en u',
@@ -385,8 +397,9 @@ export function describeCubicDiscriminant(delta: MathNode, numericValue?: number
 /**
  * Create a description for factoring out a common root (x = 0).
  */
-export function describeFactorCommonRoot(variable: string): string {
-	return `On factorise par ${variable} (racine evidente: ${variable} = 0)`;
+export function describeFactorCommonRoot(variable: string, power: 1 | 2 = 1): string {
+	const factor = power === 1 ? variable : `${variable}^2`;
+	return `On factorise par ${factor} (racine evidente: ${variable} = 0)`;
 }
 
 // =============================================================================

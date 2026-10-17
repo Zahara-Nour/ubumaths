@@ -48,6 +48,7 @@
 	import { createLogger } from '$lib/utils/logger';
 	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
 	import type { JSONContent } from '@tiptap/core';
+	import { clearCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 
 	const logger = createLogger('TutorChat');
 
@@ -74,6 +75,10 @@
 		assignmentId,
 		onConversationCreated
 	}: Props = $props();
+
+	// Le chat garde l'écriture d'avant pour `AB` (produit, décision Q-M), même ouvert à
+	// côté d'un exercice qui pose « longueur » (lot 6 des longueurs)
+	clearCapitalPairs();
 
 	// Message types
 	interface TextContent {
@@ -496,7 +501,7 @@
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || `API Error: ${response.status}`);
+				throw new Error(errorData.message || `Erreur du serveur (${response.status})`);
 			}
 
 			const data = await response.json();
@@ -576,7 +581,7 @@
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || 'Failed to clear conversation');
+				throw new Error(errorData.message || 'Impossible d’effacer la conversation');
 			}
 
 			// Clear local state after successful server deletion

@@ -376,7 +376,8 @@
 		height: 140%;
 		border-radius: 9999px;
 		filter: blur(60px);
-		background: radial-gradient(circle at 30% 40%, var(--halo-1), transparent 60%),
+		background:
+			radial-gradient(circle at 30% 40%, var(--halo-1), transparent 60%),
 			radial-gradient(circle at 70% 50%, var(--halo-2), transparent 60%),
 			radial-gradient(circle at 50% 70%, var(--halo-3), transparent 60%);
 	}

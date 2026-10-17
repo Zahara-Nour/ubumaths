@@ -1,6 +1,19 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import {
+	adminClassCreateSchema,
+	adminClassIdSchema,
+	adminClassUpdateSchema
+} from '$lib/server/validation/admin';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/classes/+page.server');
+
+/** Les champs du formulaire, un champ absent valant `undefined`. */
+function formFields(formData: FormData, names: string[]): Record<string, unknown> {
+	return Object.fromEntries(names.map((name) => [name, formData.get(name) ?? undefined]));
+}
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Admin gate (admin login OR step-up elevation)
@@ -13,7 +26,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (schoolsError) {
-		console.error('Error fetching schools:', schoolsError);
+		logger.error('Error fetching schools:', schoolsError);
 		throw error(500, 'Failed to load schools');
 	}
 
@@ -30,7 +43,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('Error fetching classes:', classesError);
+		logger.error('Error fetching classes:', classesError);
 		throw error(500, 'Failed to load classes');
 	}
 
@@ -43,7 +56,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				.contains('class_ids', [classItem.id]);
 
 			if (countError) {
-				console.error(`Error counting students for class ${classItem.id}:`, countError);
+				logger.error(`Error counting students for class ${classItem.id}:`, countError);
 			}
 
 			return {
@@ -64,27 +77,29 @@ export const actions: Actions = {
 		// Admin gate (admin login OR step-up elevation)
 		const { supabase } = await requireAdmin(locals);
 
-		const formData = await request.formData();
-		const name = formData.get('name') as string;
-		const description = formData.get('description') as string;
-		const school_id = formData.get('school_id') as string;
-		const grade = formData.get('grade') as string | null;
-		const custom_join_code = formData.get('join_code') as string;
-
-		// Validate required fields
-		if (!name) {
-			return fail(400, { message: 'Name is required' });
+		const parsed = adminClassCreateSchema.safeParse(
+			formFields(await request.formData(), [
+				'name',
+				'description',
+				'school_id',
+				'grade',
+				'join_code'
+			])
+		);
+		if (!parsed.success) {
+			return fail(400, { message: parsed.error.issues[0].message });
 		}
+		const { name, description, school_id, grade } = parsed.data;
 
 		// Generate or use custom join code
-		let join_code = custom_join_code?.trim().toUpperCase();
+		let join_code = parsed.data.join_code;
 
 		if (!join_code) {
 			// Auto-generate join code
 			const { data: generatedCode, error: rpcError } = await supabase.rpc('generate_join_code');
 
 			if (rpcError || !generatedCode) {
-				console.error('Error generating join code:', rpcError);
+				logger.error('Error generating join code:', rpcError);
 				return fail(500, { message: 'Failed to generate join code' });
 			}
 
@@ -99,7 +114,7 @@ export const actions: Actions = {
 
 			if (checkError && checkError.code !== 'PGRST116') {
 				// PGRST116 = no rows returned (good, code is unique)
-				console.error('Error checking join code:', checkError);
+				logger.error('Error checking join code:', checkError);
 				return fail(400, { message: 'Error validating join code' });
 			}
 
@@ -111,15 +126,15 @@ export const actions: Actions = {
 		// Insert class
 		const { error: insertError } = await supabase.from('classes').insert({
 			name,
-			description: description || null,
-			school_id: school_id || null,
-			grade: grade || null,
+			description,
+			school_id,
+			grade,
 			join_code,
 			is_active: true
 		});
 
 		if (insertError) {
-			console.error('Error creating class:', insertError);
+			logger.error('Error creating class:', insertError);
 			return fail(400, { message: insertError.message });
 		}
 
@@ -130,19 +145,21 @@ export const actions: Actions = {
 		// Admin gate (admin login OR step-up elevation)
 		const { supabase } = await requireAdmin(locals);
 
-		const formData = await request.formData();
-		const id = formData.get('id') as string;
-		const name = formData.get('name') as string;
-		const description = formData.get('description') as string;
-		const school_id = formData.get('school_id') as string;
-		const grade = formData.get('grade') as string | null;
-		const join_code = formData.get('join_code') as string;
-		const is_active = formData.get('is_active') === 'true';
-
-		// Validate required fields
-		if (!id || !name) {
-			return fail(400, { message: 'ID and name are required' });
+		const parsed = adminClassUpdateSchema.safeParse(
+			formFields(await request.formData(), [
+				'id',
+				'name',
+				'description',
+				'school_id',
+				'grade',
+				'join_code',
+				'is_active'
+			])
+		);
+		if (!parsed.success) {
+			return fail(400, { message: parsed.error.issues[0].message });
 		}
+		const { id, name, description, school_id, grade, join_code, is_active } = parsed.data;
 
 		// If join code changed, validate it's unique
 		const { data: currentClass, error: fetchError } = await supabase
@@ -152,7 +169,7 @@ export const actions: Actions = {
 			.single();
 
 		if (fetchError) {
-			console.error('Error fetching current class:', fetchError);
+			logger.error('Error fetching current class:', fetchError);
 			return fail(400, { message: 'Failed to fetch class' });
 		}
 
@@ -165,7 +182,7 @@ export const actions: Actions = {
 				.single();
 
 			if (checkError && checkError.code !== 'PGRST116') {
-				console.error('Error checking join code:', checkError);
+				logger.error('Error checking join code:', checkError);
 				return fail(400, { message: 'Error validating join code' });
 			}
 
@@ -175,21 +192,31 @@ export const actions: Actions = {
 		}
 
 		// Update class
-		const { error: updateError } = await supabase
+		// ⚠️ Une mise à jour refusée par la RLS touche zéro ligne sans erreur :
+		// `.select()` pour ne pas annoncer un succès qui n'a pas eu lieu
+		// (cf. docs/pratiques/rls-echecs-silencieux.md).
+		const { data: updatedClasses, error: updateError } = await supabase
 			.from('classes')
 			.update({
 				name,
-				description: description || null,
-				school_id: school_id || null,
-				grade: grade || null,
+				description,
+				school_id,
+				grade,
 				join_code,
 				is_active
 			})
-			.eq('id', id);
+			.eq('id', id)
+			.select('id');
 
 		if (updateError) {
-			console.error('Error updating class:', updateError);
+			logger.error('Error updating class:', updateError);
 			return fail(400, { message: updateError.message });
+		}
+
+		// La classe a été lue juste au-dessus : zéro ligne = refus, pas absence.
+		if (!updatedClasses || updatedClasses.length === 0) {
+			logger.error('[admin/classes update] Aucune ligne modifiée pour', id);
+			return fail(403, { message: 'Classe non modifiée : droits insuffisants' });
 		}
 
 		return { success: true };
@@ -199,21 +226,26 @@ export const actions: Actions = {
 		// Admin gate (admin login OR step-up elevation)
 		const { supabase } = await requireAdmin(locals);
 
-		const formData = await request.formData();
-		const id = formData.get('id') as string;
-
-		if (!id) {
-			return fail(400, { message: 'Class ID is required' });
+		const parsed = adminClassIdSchema.safeParse(formFields(await request.formData(), ['id']));
+		if (!parsed.success) {
+			return fail(400, { message: 'Identifiant de classe invalide' });
 		}
+		const { id } = parsed.data;
 
-		const { error: updateError } = await supabase
+		// Zéro ligne touchée (classe inconnue ou refus de la RLS) n'est pas un succès.
+		const { data: updatedClasses, error: updateError } = await supabase
 			.from('classes')
 			.update({ is_active: false })
-			.eq('id', id);
+			.eq('id', id)
+			.select('id');
 
 		if (updateError) {
-			console.error('Error deactivating class:', updateError);
+			logger.error('Error deactivating class:', updateError);
 			return fail(400, { message: updateError.message });
+		}
+
+		if (!updatedClasses || updatedClasses.length === 0) {
+			return fail(404, { message: 'Classe introuvable : non désactivée' });
 		}
 
 		return { success: true };
@@ -223,21 +255,26 @@ export const actions: Actions = {
 		// Admin gate (admin login OR step-up elevation)
 		const { supabase } = await requireAdmin(locals);
 
-		const formData = await request.formData();
-		const id = formData.get('id') as string;
-
-		if (!id) {
-			return fail(400, { message: 'Class ID is required' });
+		const parsed = adminClassIdSchema.safeParse(formFields(await request.formData(), ['id']));
+		if (!parsed.success) {
+			return fail(400, { message: 'Identifiant de classe invalide' });
 		}
+		const { id } = parsed.data;
 
-		const { error: updateError } = await supabase
+		// Zéro ligne touchée (classe inconnue ou refus de la RLS) n'est pas un succès.
+		const { data: updatedClasses, error: updateError } = await supabase
 			.from('classes')
 			.update({ is_active: true })
-			.eq('id', id);
+			.eq('id', id)
+			.select('id');
 
 		if (updateError) {
-			console.error('Error activating class:', updateError);
+			logger.error('Error activating class:', updateError);
 			return fail(400, { message: updateError.message });
+		}
+
+		if (!updatedClasses || updatedClasses.length === 0) {
+			return fail(404, { message: 'Classe introuvable : non activée' });
 		}
 
 		return { success: true };

@@ -22,6 +22,11 @@
 	import { page } from '$app/state';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { uploadMultipleMessageAttachments } from '$lib/utils/file-upload';
+	import {
+		MESSAGE_ATTACHMENT_ACCEPT,
+		MESSAGE_ATTACHMENT_MAX_COUNT,
+		messageAttachmentRefusal
+	} from '$lib/utils/message-attachment-rules';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 
 	// Props
@@ -42,8 +47,7 @@
 	let attachments = $state<File[]>([]);
 	let fileInputRef: HTMLInputElement | undefined = $state();
 
-	const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-	const MAX_FILES = 3;
+	const MAX_FILES = MESSAGE_ATTACHMENT_MAX_COUNT;
 
 	// Load recipients and draft on mount
 	onMount(() => {
@@ -110,7 +114,7 @@
 		try {
 			const response = await fetch(`/api/messages/drafts/${draftId}`);
 			if (!response.ok) {
-				throw new Error('Draft not found');
+				throw new Error('Brouillon introuvable');
 			}
 
 			const data = await response.json();
@@ -281,7 +285,6 @@
 			file_type: string;
 			file_size: number;
 			storage_path: string;
-			public_url: string;
 		}>
 	) {
 		try {
@@ -290,7 +293,7 @@
 				data: { user }
 			} = await data.supabase.auth.getUser();
 			if (!user) {
-				throw new Error('User not authenticated');
+				throw new Error('Utilisateur non connecté');
 			}
 
 			const attachmentRecords = attachmentData.map((att) => ({
@@ -299,7 +302,6 @@
 				file_type: att.file_type,
 				file_size: att.file_size,
 				storage_path: att.storage_path,
-				public_url: att.public_url,
 				uploaded_by: user.id
 			}));
 
@@ -350,8 +352,9 @@
 
 		// Validate each file
 		for (const file of files) {
-			if (file.size > MAX_FILE_SIZE) {
-				toaster.error(`Le fichier "${file.name}" dépasse la taille maximale de 5MB`);
+			const refusal = messageAttachmentRefusal(file);
+			if (refusal) {
+				toaster.error(refusal);
 				input.value = '';
 				return;
 			}
@@ -614,7 +617,7 @@
 						<div class="flex items-center justify-between">
 							<Label>Pièces jointes (optionnel)</Label>
 							<span class="text-xs text-muted-foreground">
-								Max {MAX_FILES} fichiers, 5MB chacun
+								Images ou PDF, {MAX_FILES} fichiers, 10 Mo chacun
 							</span>
 						</div>
 
@@ -626,7 +629,7 @@
 								onchange={handleFileSelect}
 								multiple
 								class="hidden"
-								accept="*/*"
+								accept={MESSAGE_ATTACHMENT_ACCEPT}
 							/>
 							<Button
 								type="button"

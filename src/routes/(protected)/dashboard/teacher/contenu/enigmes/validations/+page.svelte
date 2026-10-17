@@ -15,6 +15,7 @@
 		calculateGidouilles
 	} from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
@@ -36,6 +37,7 @@
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">
 	<!-- Header -->
 	<div class="mb-6">
+		<BackLink href="/dashboard/teacher/contenu/enigmes" label="Retour aux énigmes" />
 		<h1 class="flex items-center gap-2 text-3xl font-bold">
 			<FileCheck class="h-8 w-8 text-primary" />
 			Validations en attente

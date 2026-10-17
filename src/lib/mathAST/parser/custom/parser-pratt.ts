@@ -31,6 +31,8 @@ import type {
 } from '../../types';
 import { GREEK_LETTERS } from '../../types';
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
+import { DEFAULT_CAPITAL_PAIRS } from '../types';
+import { scanPointNames, type PointNamesSyntax } from '../latex/point-names';
 import {
 	CustomTokenizer,
 	KNOWN_FUNCTION_NAMES,
@@ -55,6 +57,18 @@ import {
 	guardStackDepth,
 	type ParserSecurityOptions
 } from '../security';
+
+/** Un nom de fonction générique à indice lu en avance (`f_1`, `f_{12}`). */
+interface IndexedFunctionName {
+	/** Le nom déclaré : `f_1`. */
+	name: string;
+	/** La lettre : `f`. */
+	letter: string;
+	/** L'indice, entier : `1`. */
+	index: string;
+	/** Les jetons qu'il occupe : 3 pour `f_1`, 5 pour `f_{1}`. */
+	tokenCount: number;
+}
 
 // =============================================================================
 // Binding Power (Precedence)
@@ -148,6 +162,9 @@ export class ParseException extends Error {
 // =============================================================================
 // Pratt Parser Class
 // =============================================================================
+
+/** Syntaxe maison : `A_12` est l'indice 12 (comme `x_12`). */
+const CUSTOM_POINT_NAMES_SYNTAX: PointNamesSyntax = { bareMultiDigitIndex: true };
 
 /**
  * Pratt parser for custom syntax to MathAST conversion.
@@ -721,15 +738,30 @@ class CustomPrattParser {
 		const token = this.currentToken;
 		const letter = token.value;
 
+		// Deux majuscules collées ou plus : longueur `AB`, nom de figure `ABC` (mode
+		// longueur, hors indice). Avant les fonctions génériques : `FG` est une
+		// longueur, `F(x)` reste une fonction. Mêmes règles que les parseurs LaTeX.
+		const pointNames = this.parsePointNames();
+		if (pointNames) return pointNames;
+
+		// Une fonction générique à indice déclarée (`f_1(3)`, `f_{12}(x)`) : un appel,
+		// pas `f_1 × (3)`. Un nom indicé non déclaré reste une variable indicée.
+		const indexed = this.indexedGenericFunctionName();
+		if (indexed) return this.parseGenericFunction(indexed);
+
 		// Reserved constants: 'e' for Euler's number, 'i' for imaginary unit
-		// `e_1`, `e_n` : variable indicée (même règle que les parseurs LaTeX)
+		// `e_1`, `i_n` : variables indicées (même règle que les parseurs LaTeX)
 		if (letter === 'e') {
 			this.advance();
 			return this.applyColor(this.check('UNDERSCORE') ? MathAST.variable('e') : euler());
 		}
 		if (letter === 'i' && this.subscriptDepth === 0) {
 			this.advance();
-			return this.applyColor(complex(MathAST.number('0'), MathAST.number('1')));
+			return this.applyColor(
+				this.check('UNDERSCORE')
+					? MathAST.variable('i')
+					: complex(MathAST.number('0'), MathAST.number('1'))
+			);
 		}
 
 		// Check if this is a generic function name
@@ -743,6 +775,31 @@ class CustomPrattParser {
 	}
 
 	/**
+	 * Points nommés collés à partir du jeton courant (`AB`, `A'B'`, `A_1B_1`, `ABC`) : la
+	 * longueur d'un segment pour deux points, un nom de figure au-delà. `null` en mode
+	 * produit (défaut), dans un indice (`x_{AB}`), ou s'il n'y a pas deux points collés.
+	 */
+	private parsePointNames(): MathNode | null {
+		const mode = this.options.capitalPairs ?? DEFAULT_CAPITAL_PAIRS;
+		if (mode !== 'length' || this.subscriptDepth > 0) return null;
+
+		const scan = scanPointNames(
+			(offset) => (offset === 0 ? this.currentToken : this.tokenizer.peekAt(offset - 1)),
+			CUSTOM_POINT_NAMES_SYNTAX
+		);
+		if (!scan) return null;
+
+		// Les jetons lus sont collés : rien à sauter entre eux
+		for (let i = 0; i < scan.tokenCount; i++) this.advance();
+
+		const [from, to] = scan.points;
+		if (scan.points.length === 2 && from && to) {
+			return this.applyColor(MathAST.segmentLength(from, to));
+		}
+		return this.applyColor(MathAST.figureName(scan.points));
+	}
+
+	/**
 	 * Check if a name is configured as a generic function
 	 */
 	private isGenericFunctionName(name: string): boolean {
@@ -751,18 +808,60 @@ class CustomPrattParser {
 	}
 
 	/**
+	 * Le nom d'une fonction générique À INDICE à partir du jeton courant :
+	 * `f_1`, `f_12` ou `f_{1}`, seulement si `f_1` est déclaré dans
+	 * `genericFunctions.names`. Rend aussi l'indice et le nombre de jetons qu'il
+	 * occupe (rien n'est consommé) ; `null` sinon. Indice entier seulement : c'est
+	 * la forme que l'atelier donne à ses noms (`nextName`).
+	 */
+	private indexedGenericFunctionName(): IndexedFunctionName | null {
+		const config = this.options.genericFunctions;
+		if (!config || this.currentToken.type !== 'LETTER') return null;
+		if (this.tokenizer.peekAt(0).type !== 'UNDERSCORE') return null;
+
+		const afterUnderscore = this.tokenizer.peekAt(1);
+		let index: CustomToken;
+		let tokenCount: number;
+		if (afterUnderscore.type === 'NUMBER') {
+			index = afterUnderscore;
+			tokenCount = 3; // f _ 1
+		} else if (
+			afterUnderscore.type === 'LBRACE' &&
+			this.tokenizer.peekAt(2).type === 'NUMBER' &&
+			this.tokenizer.peekAt(3).type === 'RBRACE'
+		) {
+			index = this.tokenizer.peekAt(2);
+			tokenCount = 5; // f _ { 1 }
+		} else {
+			return null;
+		}
+		if (!/^\d+$/.test(index.value)) return null;
+
+		const letter = this.currentToken.value;
+		const name = `${letter}_${index.value}`;
+		return this.isGenericFunctionName(name)
+			? { name, letter, index: index.value, tokenCount }
+			: null;
+	}
+
+	/**
 	 * Parse a generic function: f(x), f'(x), f''(x), f^{-1}(x), f^{(n)}(x)
 	 *
 	 * Pattern:
-	 * - Function name (single letter)
+	 * - Function name (single letter, or an indexed name `f_1` when `indexed` is given)
 	 * - Optional primes: ' '' '''
 	 * - Optional ^{-1} or ^{(n)} for inverse or higher derivative
 	 * - OPTIONAL arguments in parentheses: (x) or (x, y)
 	 *   (not mandatory for composition support)
 	 */
-	private parseGenericFunction(): MathNode {
-		const nameToken = this.advance(); // consume function name letter
-		const name = nameToken.value;
+	private parseGenericFunction(indexed?: IndexedFunctionName): MathNode {
+		let name: string;
+		if (indexed) {
+			for (let i = 0; i < indexed.tokenCount; i++) this.advance(); // f _ 1 ou f _ { 1 }
+			name = indexed.name;
+		} else {
+			name = this.advance().value; // consume function name letter
+		}
 
 		// Count prime marks for derivatives: f', f'', f'''
 		let derivativeOrder = 0;
@@ -825,6 +924,14 @@ class CustomPrattParser {
 					...(derivativeOrder > 0 && { derivativeOrder }),
 					...(isInverse && { isInverse })
 				})
+			);
+		}
+
+		// Un nom indicé sans appel (`f_1`, `f_1^2`) : la variable indicée, comme si
+		// le nom n'était pas déclaré
+		if (indexed) {
+			return this.applyColor(
+				MathAST.subscript(MathAST.variable(indexed.letter), MathAST.number(indexed.index))
 			);
 		}
 

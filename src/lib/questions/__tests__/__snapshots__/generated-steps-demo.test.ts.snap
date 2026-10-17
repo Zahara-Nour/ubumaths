@@ -71,7 +71,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité polynomial differentiation
                 "id": 1,
                 "rule": "power-natural",
                 "schoolLevel": "lycee",
-                "title": "Règle de la puissance (3)",
+                "title": "Règle de la puissance ($3$)",
               },
               {
                 "hasExplanation": true,
@@ -86,10 +86,10 @@ exports[`Mode B end-to-end demos > 1ère spécialité polynomial differentiation
                     "id": 2,
                     "rule": "power-natural",
                     "schoolLevel": "lycee",
-                    "title": "Règle de la puissance (2)",
+                    "title": "Règle de la puissance ($2$)",
                   },
                 ],
-                "title": "On sort la constante 2",
+                "title": "On sort la constante $2$",
               },
             ],
             "title": "On dérive chaque terme",
@@ -100,7 +100,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité polynomial differentiation
             "id": 5,
             "rule": "linear-coefficient",
             "schoolLevel": "lycee",
-            "title": "On sort la constante 5",
+            "title": "On sort la constante $5$",
           },
         ],
         "title": "On dérive chaque terme",
@@ -183,7 +183,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité quadratic inequality with 
     "id": 8,
     "rule": "inequality-conclude-quadratic",
     "schoolLevel": "lycee",
-    "title": "Solution : S = ]2 ; 3[",
+    "title": "Solution : $S = ]2 ; 3[$",
   },
 ]
 `;
@@ -252,7 +252,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité quadratic inequality — p
     "id": 8,
     "rule": "inequality-conclude-quadratic",
     "schoolLevel": "lycee",
-    "title": "Solution : S = ]2 ; 3[",
+    "title": "Solution : $S = ]2 ; 3[$",
   },
 ]
 `;
@@ -305,7 +305,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité rational inequality (palie
     "id": 6,
     "rule": "inequality-conclude-rational",
     "schoolLevel": "lycee",
-    "title": "Solution : S = ]1 ; 3[",
+    "title": "Solution : $S = ]1 ; 3[$",
   },
 ]
 `;
@@ -366,7 +366,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité rational inequality V2 (mu
     "id": 7,
     "rule": "inequality-conclude-rational",
     "schoolLevel": "lycee",
-    "title": "Solution : S = ]-∞ ; 0[ ∪ ]\\dfrac{1}{2} ; 1[",
+    "title": "Solution : $S = ]-\\infty ; 0[ \\cup ]\\dfrac{1}{2} ; 1[$",
   },
 ]
 `;
@@ -387,7 +387,7 @@ exports[`Mode B end-to-end demos > 4e linear equation — produces college steps
     "id": 2,
     "rule": "subtract-both-sides",
     "schoolLevel": "college",
-    "title": "On soustrait 5 aux deux membres",
+    "title": "On soustrait $5$ aux deux membres",
   },
   {
     "hasExplanation": true,
@@ -395,7 +395,7 @@ exports[`Mode B end-to-end demos > 4e linear equation — produces college steps
     "id": 3,
     "rule": "divide-both-sides",
     "schoolLevel": "college",
-    "title": "On divise les deux membres par 3",
+    "title": "On divise les deux membres par $3$",
   },
   {
     "hasExplanation": true,
@@ -403,7 +403,7 @@ exports[`Mode B end-to-end demos > 4e linear equation — produces college steps
     "id": 4,
     "rule": "read-solution",
     "schoolLevel": "college",
-    "title": "Solution : x = 3",
+    "title": "Solution : $x = 3$",
   },
 ]
 `;
@@ -424,7 +424,7 @@ exports[`Mode B end-to-end demos > 4e linear inequality with flip — produces c
     "id": 2,
     "rule": "divide-both-sides",
     "schoolLevel": "college",
-    "title": "On divise les deux membres par -2 (changement de sens car -2 est négatif)",
+    "title": "On divise les deux membres par $-2$ (changement de sens car $-2$ est négatif)",
   },
 ]
 `;
@@ -445,7 +445,7 @@ exports[`Mode B end-to-end demos > 4e linear inequality with x on both sides —
     "id": 2,
     "rule": "subtract-both-sides",
     "schoolLevel": "college",
-    "title": "On soustrait x aux deux membres",
+    "title": "On soustrait $x$ aux deux membres",
   },
   {
     "hasExplanation": true,
@@ -453,36 +453,28 @@ exports[`Mode B end-to-end demos > 4e linear inequality with x on both sides —
     "id": 3,
     "rule": "subtract-both-sides",
     "schoolLevel": "college",
-    "title": "On soustrait 1 aux deux membres",
+    "title": "On soustrait $1$ aux deux membres",
   },
 ]
 `;
 
-exports[`Mode B end-to-end demos > 4e simplify distribution — produces a product-to-diff-squares step 1`] = `
+exports[`Mode B end-to-end demos > 4e simplify distribution — produces an identity step, written as in the atelier 1`] = `
 [
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
     "id": 1,
-    "rule": "product-to-diff-squares",
+    "rule": "expand-identity",
     "schoolLevel": "college",
-    "title": "On utilise (a+b)(a-b) = a² - b²",
-  },
-  {
-    "hasExplanation": false,
-    "hasExpressionLatex": true,
-    "id": 2,
-    "rule": "expand-power",
-    "schoolLevel": "college",
-    "title": "On développe la puissance",
+    "title": "On reconnaît (a + b)(a − b) = a² − b², avec a = x et b = 3",
   },
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
-    "id": 3,
-    "rule": "combine-like-terms",
+    "id": 2,
+    "rule": "expand-compute",
     "schoolLevel": "college",
-    "title": "On regroupe les termes en x",
+    "title": "On calcule chaque terme",
   },
 ]
 `;
@@ -495,7 +487,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps wi
     "id": 0,
     "rule": "evaluate-binary-mul",
     "schoolLevel": "primaire",
-    "title": "On multiplie 3 par 4",
+    "title": "On multiplie $3$ par $4$",
   },
   {
     "hasExplanation": false,
@@ -503,7 +495,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps wi
     "id": 1,
     "rule": "evaluate-binary-add",
     "schoolLevel": "primaire",
-    "title": "On additionne 2 et 12",
+    "title": "On additionne $2$ et $12$",
   },
   {
     "hasExplanation": false,
@@ -511,7 +503,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps wi
     "id": 2,
     "rule": "evaluate-binary-mul",
     "schoolLevel": "primaire",
-    "title": "On multiplie 5 par 6",
+    "title": "On multiplie $5$ par $6$",
   },
   {
     "hasExplanation": false,
@@ -519,7 +511,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps wi
     "id": 3,
     "rule": "evaluate-binary-add",
     "schoolLevel": "primaire",
-    "title": "On additionne 14 et 30",
+    "title": "On additionne $14$ et $30$",
   },
 ]
 `;
@@ -532,7 +524,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic-from-blank — produces primai
     "id": 0,
     "rule": "evaluate-binary-mul",
     "schoolLevel": "primaire",
-    "title": "On multiplie 3 par 4",
+    "title": "On multiplie $3$ par $4$",
   },
   {
     "hasExplanation": false,
@@ -540,7 +532,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic-from-blank — produces primai
     "id": 1,
     "rule": "evaluate-binary-add",
     "schoolLevel": "primaire",
-    "title": "On additionne 2 et 12",
+    "title": "On additionne $2$ et $12$",
   },
 ]
 `;
@@ -560,7 +552,7 @@ exports[`Mode B end-to-end demos > Terminale spécialité composition differenti
         "id": 1,
         "rule": "linear-coefficient",
         "schoolLevel": "lycee",
-        "title": "On sort la constante 3",
+        "title": "On sort la constante $3$",
       },
     ],
     "title": "Dérivée de sinus",
@@ -654,7 +646,7 @@ exports[`Mode B end-to-end demos > Terminale spécialité indefinite integration
             "title": "Règle de la puissance",
           },
         ],
-        "title": "On sort la constante 3",
+        "title": "On sort la constante $3$",
       },
       {
         "hasExplanation": true,
@@ -672,7 +664,7 @@ exports[`Mode B end-to-end demos > Terminale spécialité indefinite integration
             "title": "Règle de la puissance",
           },
         ],
-        "title": "On sort la constante 2",
+        "title": "On sort la constante $2$",
       },
       {
         "hasExplanation": true,
@@ -689,6 +681,14 @@ exports[`Mode B end-to-end demos > Terminale spécialité indefinite integration
     "hasExplanation": true,
     "hasExpressionLatex": true,
     "id": 8,
+    "rule": "simplify-result",
+    "schoolLevel": "lycee",
+    "title": "On simplifie",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 9,
     "rule": "add-constant",
     "schoolLevel": "lycee",
     "title": "On ajoute la constante d'intégration C",
@@ -744,7 +744,7 @@ exports[`Mode B end-to-end demos > Terminale spécialité rational inequality wi
     "id": 6,
     "rule": "inequality-conclude-rational",
     "schoolLevel": "lycee",
-    "title": "Solution : S = ]-1 ; 0] ∪ ]1 ; +∞[",
+    "title": "Solution : $S = ]-1 ; 0] \\cup ]1 ; +\\infty[$",
   },
 ]
 `;
@@ -783,20 +783,20 @@ exports[`Mode B end-to-end demos > Tle spé limit — factorisation cluster on (
     "id": 1,
     "rule": "identify-limit",
     "schoolLevel": "lycee",
-    "title": "On veut calculer la limite de l'expression quand x tend vers 2",
+    "title": "On veut calculer la limite de l'expression quand $x$ tend vers $2$",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "detect-indeterminate-form",
+    "schoolLevel": "lycee",
+    "title": "Forme indéterminée $\\frac{0}{0}$ reconnue",
   },
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
     "id": 4,
-    "rule": "detect-indeterminate-form",
-    "schoolLevel": "lycee",
-    "title": "Forme indéterminée 0/0 reconnue",
-  },
-  {
-    "hasExplanation": true,
-    "hasExpressionLatex": true,
-    "id": 5,
     "rule": "simplify-common-factor",
     "schoolLevel": "lycee",
     "subSteps": [
@@ -808,32 +808,24 @@ exports[`Mode B end-to-end demos > Tle spé limit — factorisation cluster on (
         "schoolLevel": "lycee",
         "title": "Factorisation du numérateur",
       },
-      {
-        "hasExplanation": true,
-        "hasExpressionLatex": true,
-        "id": 3,
-        "rule": "factor-denominator",
-        "schoolLevel": "lycee",
-        "title": "Factorisation du dénominateur",
-      },
     ],
     "title": "Simplification du facteur commun",
   },
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
-    "id": 6,
+    "id": 5,
     "rule": "apply-direct-substitution",
     "schoolLevel": "lycee",
-    "title": "Substitution directe : on remplace x par 2",
+    "title": "Substitution directe : on remplace $x$ par $2$",
   },
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
-    "id": 7,
+    "id": 6,
     "rule": "conclude",
     "schoolLevel": "lycee",
-    "title": "La limite vaut 4",
+    "title": "La limite vaut $4$",
   },
 ]
 `;
@@ -846,23 +838,55 @@ exports[`Mode B end-to-end demos > Tle spé limit — infinity-analysis on (3x²
     "id": 1,
     "rule": "identify-limit",
     "schoolLevel": "lycee",
-    "title": "On veut calculer la limite de l'expression quand x tend vers +∞",
+    "title": "On veut calculer la limite de l'expression quand $x$ tend vers $+\\infty$",
   },
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
     "id": 2,
-    "rule": "identify-dominant-term",
+    "rule": "detect-indeterminate-form",
     "schoolLevel": "lycee",
-    "title": "Étude du comportement à +∞ : on identifie les termes dominants",
+    "title": "Forme indéterminée $\\frac{\\infty}{\\infty}$ reconnue",
   },
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
     "id": 3,
+    "rule": "factor-dominant-term",
+    "schoolLevel": "lycee",
+    "title": "On factorise par le terme prépondérant",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 4,
+    "rule": "simplify-common-factor",
+    "schoolLevel": "lycee",
+    "title": "Simplification par $x^2$",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 5,
+    "rule": "limits-of-terms",
+    "schoolLevel": "lycee",
+    "title": "Limites des termes",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 6,
+    "rule": "apply-quotient",
+    "schoolLevel": "lycee",
+    "title": "Limite d'un quotient",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 7,
     "rule": "conclude",
     "schoolLevel": "lycee",
-    "title": "La limite vaut 3",
+    "title": "La limite vaut $3$",
   },
 ]
 `;

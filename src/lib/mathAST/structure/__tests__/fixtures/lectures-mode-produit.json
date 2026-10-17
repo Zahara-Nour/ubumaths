@@ -1,0 +1,802 @@
+{
+	"2x-3": {
+		"reading": "la différence du produit de 2 par x et de 3",
+		"hash": "678eccc56c5cd92e"
+	},
+	"-x+5": {
+		"reading": "la somme de l'opposé de x et de 5",
+		"hash": "185af56a24cac482"
+	},
+	"-x^2+3x-1": {
+		"reading": "la somme de l'opposé du carré de x, du produit de 3 par x et de −1",
+		"hash": "a61b3103b2695309"
+	},
+	"-2x^2+3x-1": {
+		"reading": "la somme de l'opposé du produit de 2 par le carré de x, du produit de 3 par x et de −1",
+		"hash": "72536d71fe95686e"
+	},
+	"3-(-2)": {
+		"reading": "la différence de 3 et −2",
+		"hash": "72c1b88a8f579013"
+	},
+	"3+(-2)": {
+		"reading": "la somme de 3 et −2",
+		"hash": "089ef89751166ab3"
+	},
+	"3\\times(-2)": {
+		"reading": "le produit de 3 par −2",
+		"hash": "a540a2d46ccd4f96"
+	},
+	"-3\\times(-2)": {
+		"reading": "l'opposé du produit de 3 par −2",
+		"hash": "39ee9e3dfe834645"
+	},
+	"(-3)^2": {
+		"reading": "le carré de −3",
+		"hash": "eb8a625ee1c72af4"
+	},
+	"-3^2": {
+		"reading": "l'opposé du carré de 3",
+		"hash": "84db956a9e3c6635"
+	},
+	"(-x)^2": {
+		"reading": "le carré de l'opposé de x",
+		"hash": "558680a46c43d634"
+	},
+	"(2x)^2": {
+		"reading": "le carré du produit de 2 par x",
+		"hash": "df09a3f90312c590"
+	},
+	"(x+1)(x-1)": {
+		"reading": "le produit de la somme de x et 1 par la différence de x et 1",
+		"hash": "1604ef391204b002"
+	},
+	"(x+1)^2-4": {
+		"reading": "la différence du carré de la somme de x et 1 et de 4",
+		"hash": "626b95a3603f1a13"
+	},
+	"2(x+1)-3(x-2)": {
+		"reading": "la différence du produit de 2 par la somme de x et 1 et du produit de 3 par la différence de x et 2",
+		"hash": "87711c352d70b3af"
+	},
+	"-2(x+1)": {
+		"reading": "l'opposé du produit de 2 par la somme de x et 1",
+		"hash": "3b0b734b4f937125"
+	},
+	"-(x+1)(x-2)": {
+		"reading": "l'opposé du produit de la somme de x et 1 par la différence de x et 2",
+		"hash": "61b75e696c0869f1"
+	},
+	"\\frac{-3}{4}": {
+		"reading": "le quotient de −3 par 4",
+		"hash": "8bceafc34a96d9b2"
+	},
+	"-\\frac{3}{4}": {
+		"reading": "l'opposé du quotient de 3 par 4",
+		"hash": "554a394a7db0b9c5"
+	},
+	"\\frac{3}{4}x": {
+		"reading": "le produit du quotient de 3 par 4 et de x",
+		"hash": "7fd5a9e2d5fde0bb"
+	},
+	"\\frac{x+1}{x-1}": {
+		"reading": "le quotient de la somme de x et 1 par la différence de x et 1",
+		"hash": "11fcc52699fcee74"
+	},
+	"\\frac{1}{2}\\times\\frac{3}{4}": {
+		"reading": "le produit du quotient de 1 par 2 et du quotient de 3 par 4",
+		"hash": "6b403eb1b75b46ed"
+	},
+	"\\frac{2}{3}+\\frac{1}{6}": {
+		"reading": "la somme du quotient de 2 par 3 et du quotient de 1 par 6",
+		"hash": "5bf8cf29676632a1"
+	},
+	"3\\div(-2)": {
+		"reading": "le quotient de 3 par −2",
+		"hash": "5d5520af12721166"
+	},
+	"-6\\div3": {
+		"reading": "l'opposé du quotient de 6 par 3",
+		"hash": "e3d21d914f4769b2"
+	},
+	"x^{-2}": {
+		"reading": "x puissance −2",
+		"hash": "c15bc20461be63d4"
+	},
+	"x^{n+1}": {
+		"reading": "la puissance n + 1 de x",
+		"hash": "6d4cfbb4d58e99b5"
+	},
+	"2^{x+1}": {
+		"reading": "la puissance x + 1 de 2",
+		"hash": "ee5306896eff508b"
+	},
+	"e^{-x}": {
+		"reading": "la puissance −x de \\exponentialE",
+		"hash": "bdb76d64edab0f13"
+	},
+	"e^{-x^2}": {
+		"reading": "la puissance −x^{2} de \\exponentialE",
+		"hash": "46e149c1eb19d66d"
+	},
+	"\\mathrm{e}^{x}": {
+		"reading": "\\exponentialE puissance x",
+		"hash": "54e2d115b73b08a5"
+	},
+	"10^{-3}": {
+		"reading": "10 puissance −3",
+		"hash": "f12bdb5613a38087"
+	},
+	"3\\times10^{-2}": {
+		"reading": "le produit de 3 par 10 puissance −2",
+		"hash": "e0fb245b6e8cfde4"
+	},
+	"\\sqrt{2}x": {
+		"reading": "le produit de la racine carrée de 2 par x",
+		"hash": "be28ddbfac03543a"
+	},
+	"2\\sqrt{3}": {
+		"reading": "le produit de 2 par la racine carrée de 3",
+		"hash": "3609184920dad3b3"
+	},
+	"\\sqrt{x}+\\sqrt{y}": {
+		"reading": "la somme de la racine carrée de x et de la racine carrée de y",
+		"hash": "57124cd2d50a148f"
+	},
+	"\\sqrt{(x-1)^2}": {
+		"reading": "la racine carrée du carré de la différence de x et 1",
+		"hash": "f9cb12d373cfdc30"
+	},
+	"\\cos(x)^2": {
+		"reading": "le carré du cosinus de x",
+		"hash": "79a9b0b9c0bdf5d1"
+	},
+	"\\cos^2x+\\sin^2x=1": {
+		"reading": "la somme du carré du cosinus de x et du carré du sinus de x est égale à 1",
+		"hash": "69da23c17ca324a3"
+	},
+	"\\cos(2x)": {
+		"reading": "le cosinus du produit de 2 par x",
+		"hash": "f73658d010c90fad"
+	},
+	"\\sin(x)\\cos(x)": {
+		"reading": "le produit du sinus de x par le cosinus de x",
+		"hash": "d3a98fd01aedb91f"
+	},
+	"\\ln(x+1)": {
+		"reading": "le logarithme népérien de la somme de x et 1",
+		"hash": "2a5c151f3a9d7115"
+	},
+	"\\ln(x)-\\ln(2)": {
+		"reading": "la différence du logarithme népérien de x et du logarithme népérien de 2",
+		"hash": "e7520a0a85455361"
+	},
+	"x\\ln x": {
+		"reading": "le produit de x par le logarithme népérien de x",
+		"hash": "b3b8b50ee2438b71"
+	},
+	"\\exp(2x)": {
+		"reading": "l'exponentielle du produit de 2 par x",
+		"hash": "5369221abe4f3fd3"
+	},
+	"f(x)=2x+3": {
+		"reading": "l'image de x par f est égale à la somme du produit de 2 par x et de 3",
+		"hash": "c71ebba25a9f1106"
+	},
+	"f(x)=-x^2+4": {
+		"reading": "l'image de x par f est égale à la somme de l'opposé du carré de x et de 4",
+		"hash": "6d75ecb381e1e09b"
+	},
+	"g(x)=\\frac{1}{x}": {
+		"reading": "l'image de x par g est égale au quotient de 1 par x",
+		"hash": "e32e1d251ffd852f"
+	},
+	"f'(x)=3x^2": {
+		"reading": "l'image de x par f' est égale au produit de 3 par le carré de x",
+		"hash": "548cc9e3c502e131"
+	},
+	"u(n)=2n+1": {
+		"reading": "l'image de n par u est égale à la somme du produit de 2 par n et de 1",
+		"hash": "0b7808ecd6d85b60"
+	},
+	"u_n=2n+1": {
+		"reading": "u_n est égal à la somme du produit de 2 par n et de 1",
+		"hash": "6783033bb2015ac5"
+	},
+	"u_{n+1}=3u_n-2": {
+		"reading": "u_{n + 1} est égal à la différence du produit de 3 par u_n et de 2",
+		"hash": "b41320cf8deddfe3"
+	},
+	"2x+3\\leq 7": {
+		"reading": "la somme du produit de 2 par x et de 3 est inférieure ou égale à 7",
+		"hash": "d85da0a9fc787379"
+	},
+	"-2x>4": {
+		"reading": "l'opposé du produit de 2 par x est strictement supérieur à 4",
+		"hash": "0992b0e39f36f834"
+	},
+	"-3\\leq x\\leq 5": {
+		"reading": "−3 est inférieur ou égal à x, qui est inférieur ou égal à 5",
+		"hash": "2332da29b4163298"
+	},
+	"0<x<1": {
+		"reading": "0 est strictement inférieur à x, qui est strictement inférieur à 1",
+		"hash": "12353aba8e00cb6a"
+	},
+	"x^2-4=0": {
+		"reading": "la différence du carré de x et de 4 est égale à 0",
+		"hash": "2cabb8587301012a"
+	},
+	"(2x-1)(x+3)=0": {
+		"reading": "le produit de la différence du produit de 2 par x et de 1 et de la somme de x et 3 est égal à 0",
+		"hash": "3c9168a49da0df2f"
+	},
+	"3x-5=-2x+10": {
+		"reading": "la différence du produit de 3 par x et de 5 est égale à la somme de l'opposé du produit de 2 par x et de 10",
+		"hash": "26564adad8a11e14"
+	},
+	"a^2+b^2=c^2": {
+		"reading": "la somme du carré de a et du carré de b est égale au carré de c",
+		"hash": "4859f108d7172118"
+	},
+	"AB^2=AC^2+BC^2": {
+		"reading": "le produit de A par le carré de B est égal à la somme du produit de A par le carré de C et du produit de B par le carré de C",
+		"hash": "6f9ca24dacca88ef"
+	},
+	"\\pi\\times r^2": {
+		"reading": "le produit de \\pi par le carré de r",
+		"hash": "750d857253aa5059"
+	},
+	"2\\pi r": {
+		"reading": "le produit de 2, \\pi et r",
+		"hash": "2279388de3294eaf"
+	},
+	"V=\\frac{4}{3}\\pi r^3": {
+		"reading": "V est égal au produit du quotient de 4 par 3, de \\pi et du cube de r",
+		"hash": "aa7d433ea916438a"
+	},
+	"v=\\frac{d}{t}": {
+		"reading": "v est égal au quotient de d par t",
+		"hash": "d2d58d4e8ff343cc"
+	},
+	"d=v\\times t": {
+		"reading": "d est égal au produit de v par t",
+		"hash": "5a197bf024826f93"
+	},
+	"\\left|-3\\right|": {
+		"reading": "la valeur absolue de −3",
+		"hash": "0c846b053f9fd36d"
+	},
+	"|x|-|y|": {
+		"reading": "la différence de la valeur absolue de x et de la valeur absolue de y",
+		"hash": "81fcf8350adebf84"
+	},
+	"-|x|": {
+		"reading": "l'opposé de la valeur absolue de x",
+		"hash": "82cd96c427def4e7"
+	},
+	"5\\%": {
+		"reading": "5\\,\\%",
+		"hash": "db47408f4a5c2bf0"
+	},
+	"3x+2y-z": {
+		"reading": "la somme du produit de 3 par x, du produit de 2 par y et de l'opposé de z",
+		"hash": "a913784c717b169f"
+	},
+	"a-b-c": {
+		"reading": "la somme de a, de l'opposé de b et de l'opposé de c",
+		"hash": "17349e3b8392f119"
+	},
+	"a-(b-c)": {
+		"reading": "la différence de a et de la différence de b et c",
+		"hash": "8583e3f1cb4702f1"
+	},
+	"a-(-b)": {
+		"reading": "la différence de a et de l'opposé de b",
+		"hash": "3e6ae78c9f3c0512"
+	},
+	"-a-b": {
+		"reading": "la somme de l'opposé de a et de l'opposé de b",
+		"hash": "9399e78b1d626797"
+	},
+	"x\\times y\\times z": {
+		"reading": "le produit de x, y et z",
+		"hash": "8791eec090e9f0b5"
+	},
+	"2\\times x\\times y": {
+		"reading": "le produit de 2, x et y",
+		"hash": "b2ba16a467325bc3"
+	},
+	"4ab": {
+		"reading": "le produit de 4, a et b",
+		"hash": "7d227eb887324633"
+	},
+	"-4ab": {
+		"reading": "l'opposé du produit de 4, a et b",
+		"hash": "838f1debc850c6c1"
+	},
+	"x^2y": {
+		"reading": "le produit du carré de x par y",
+		"hash": "93fbff7b6045dc45"
+	},
+	"xy^2": {
+		"reading": "le produit de x par le carré de y",
+		"hash": "71a2937414c19b1f"
+	},
+	"(x^2)^3": {
+		"reading": "le cube du carré de x",
+		"hash": "2d87814c1b4d49dd"
+	},
+	"x^{2^3}": {
+		"reading": "la puissance 2^{3} de x",
+		"hash": "64cd2136119da463"
+	},
+	"\\frac{x^2}{2}": {
+		"reading": "le quotient du carré de x par 2",
+		"hash": "40a3b738b1a4bad9"
+	},
+	"\\frac{1}{x^2}": {
+		"reading": "le quotient de 1 par le carré de x",
+		"hash": "cf09b3cef398cb1a"
+	},
+	"-\\frac{1}{x}+1": {
+		"reading": "la somme de l'opposé du quotient de 1 par x et de 1",
+		"hash": "d32cf9ff69e412a8"
+	},
+	"1-\\frac{1}{x}": {
+		"reading": "la différence de 1 et du quotient de 1 par x",
+		"hash": "a371e3283b4160ab"
+	},
+	"\\sqrt{\\frac{a}{b}}": {
+		"reading": "la racine carrée du quotient de a par b",
+		"hash": "2a9fe77a9413d186"
+	},
+	"\\frac{\\sqrt{3}}{2}": {
+		"reading": "le quotient de la racine carrée de 3 par 2",
+		"hash": "c61a5915932684f1"
+	},
+	"2\\times3+4\\times5": {
+		"reading": "la somme du produit de 2 par 3 et du produit de 4 par 5",
+		"hash": "5f058fbd3f2cea2e"
+	},
+	"(2+3)\\times4": {
+		"reading": "le produit de la somme de 2 et 3 par 4",
+		"hash": "eaee087f230c1352"
+	},
+	"2+3\\times(4-1)": {
+		"reading": "la somme de 2 et du produit de 3 par la différence de 4 et 1",
+		"hash": "0011b6936f4ecf17"
+	},
+	"12:4": {
+		"reading": "le quotient de 12 par 4",
+		"hash": "d9495f5a08060acc"
+	},
+	"12:(2+1)": {
+		"reading": "le quotient de 12 par la somme de 2 et 1",
+		"hash": "efd94a8367eacc7d"
+	},
+	"-(-3)": {
+		"reading": "l'opposé de −3",
+		"hash": "320b46a1fc23e652"
+	},
+	"+3": {
+		"reading": "+3",
+		"hash": "155ecc843de8455f"
+	},
+	"x^2-2x+1": {
+		"reading": "la somme du carré de x, de l'opposé du produit de 2 par x et de 1",
+		"hash": "cfacdd4d16791a9d"
+	},
+	"(x-1)^2": {
+		"reading": "le carré de la différence de x et 1",
+		"hash": "e5ba95a1999d0637"
+	},
+	"\\left(x-1\\right)^2": {
+		"reading": "le carré de la différence de x et 1",
+		"hash": "e5ba95a1999d0637"
+	},
+	"\\left[2x-1\\right]": {
+		"reading": "la différence du produit de 2 par x et de 1",
+		"hash": "1bad6bd0a0cdab3a"
+	},
+	"f(2)=5": {
+		"reading": "l'image de 2 par f est égale à 5",
+		"hash": "f3678925e3ebbfb2"
+	},
+	"f(-1)": {
+		"reading": "l'image de −1 par f",
+		"hash": "736d89ed8784af98"
+	},
+	"f(x+h)": {
+		"reading": "l'image de la somme de x et h par f",
+		"hash": "b7036e2c4e2e243d"
+	},
+	"\\sin(-x)=-\\sin(x)": {
+		"reading": "le sinus de l'opposé de x est égal à l'opposé du sinus de x",
+		"hash": "937c5440be194044"
+	},
+	"\\frac{f(x+h)-f(x)}{h}": {
+		"reading": "le quotient dont le numérateur est la différence de l'image de la somme de x et h par f et de l'image de x par f et le dénominateur h",
+		"hash": "2a23b739e3f87134"
+	},
+	"\\lim_{x\\to0}\\frac{\\sin x}{x}": {
+		"reading": "\\lim_{x \\to 0} \\dfrac{\\sin\\left( x \\right)}{x}",
+		"hash": "2d50fc5e7ca07b42"
+	},
+	"3^{-1}": {
+		"reading": "3 puissance −1",
+		"hash": "7c9fabf2ad520ad4"
+	},
+	"2^{-x}": {
+		"reading": "la puissance −x de 2",
+		"hash": "564b17ad778e2b1b"
+	},
+	"(-1)^n": {
+		"reading": "la puissance n de −1",
+		"hash": "dae7e21886e356f1"
+	},
+	"-1^n": {
+		"reading": "l'opposé de 1 puissance n",
+		"hash": "5a78461430a8ca68"
+	},
+	"n!": {
+		"reading": "n!",
+		"hash": "a69b5f8d88dd2fd5"
+	},
+	"\\binom{n}{k}": {
+		"reading": "\\binom{n}{k}",
+		"hash": "b76ba40907031b64"
+	},
+	"\\frac{n!}{k!(n-k)!}": {
+		"reading": "le quotient dont le numérateur est n! et le dénominateur le produit de k! par \\left( n − k \\right)!",
+		"hash": "dae6531e3994987c"
+	},
+	"3x(x-2)": {
+		"reading": "le produit de 3, de x et de la différence de x et 2",
+		"hash": "ae6b77f5fd9d2112"
+	},
+	"x(x+1)": {
+		"reading": "le produit de x par la somme de x et 1",
+		"hash": "1c7ac1c1ea94eec9"
+	},
+	"-x(x+1)": {
+		"reading": "l'opposé du produit de x par la somme de x et 1",
+		"hash": "810b73dfca767148"
+	},
+	"(x+1)x": {
+		"reading": "le produit de la somme de x et 1 par x",
+		"hash": "c5b603f2e6ea3bc9"
+	},
+	"\\frac{3x}{2}-1": {
+		"reading": "la différence du quotient dont le numérateur est le produit de 3 par x et le dénominateur 2 et de 1",
+		"hash": "5ae20888ef4bc7de"
+	},
+	"2x\\div3": {
+		"reading": "le quotient dont le numérateur est le produit de 2 par x et le dénominateur 3",
+		"hash": "145a5ce2c987ad37"
+	},
+	"x^2\\div x": {
+		"reading": "le quotient du carré de x par x",
+		"hash": "b182d026a18f536e"
+	},
+	"\\log(100)": {
+		"reading": "le logarithme décimal de 100",
+		"hash": "799a4b282636aa3f"
+	},
+	"\\log_{2}(8)": {
+		"reading": "\\log_2\\left( 8 \\right)",
+		"hash": "20b3abb5de57db06"
+	},
+	"\\sin^{-1}(x)": {
+		"reading": "\\sin^{−1}\\left( x \\right)",
+		"hash": "3e4de03b4230d969"
+	},
+	"\\arccos(x)": {
+		"reading": "\\arccos\\left( x \\right)",
+		"hash": "cb269b7ba8aefef6"
+	},
+	"e^{i\\pi}+1=0": {
+		"reading": "la somme de la puissance \\imaginaryI \\pi de \\exponentialE et de 1 est égale à 0",
+		"hash": "860192d6c2a97765"
+	},
+	"2\\times(-x)": {
+		"reading": "le produit de 2 par l'opposé de x",
+		"hash": "bae55903358ee135"
+	},
+	"x\\times(-1)": {
+		"reading": "le produit de x par −1",
+		"hash": "f447bd0e6beb3036"
+	},
+	"-1\\times x": {
+		"reading": "l'opposé du produit de 1 par x",
+		"hash": "0e24fc27da61ad0e"
+	},
+	"2{,}5\\times10^{3}": {
+		"reading": "le produit de 2,5 par 10 puissance 3",
+		"hash": "6df6f1982ddaf546"
+	},
+	"1{,}5x": {
+		"reading": "le produit de 1,5 par x",
+		"hash": "b0f94f52748ec407"
+	},
+	"0{,}5x^2-1": {
+		"reading": "la différence du produit de 0,5 par le carré de x et de 1",
+		"hash": "2ddf95658ef4cd75"
+	},
+	"-0{,}5x+2": {
+		"reading": "la somme de l'opposé du produit de 0,5 par x et de 2",
+		"hash": "2baf103115b195e1"
+	},
+	"3{,}14\\times r^2": {
+		"reading": "le produit de 3,14 par le carré de r",
+		"hash": "22cd66e8cc9c2dd6"
+	},
+	"2.5x": {
+		"reading": "le produit de 2,5 par x",
+		"hash": "41b7d6e4308c8f21"
+	},
+	"\\frac{-b-\\sqrt{\\Delta}}{2a}": {
+		"reading": "le quotient dont le numérateur est la somme de l'opposé de b et de l'opposé de la racine carrée de \\Delta et le dénominateur le produit de 2 par a",
+		"hash": "7d7d2603e3051cc2"
+	},
+	"\\frac{-b+\\sqrt{b^2-4ac}}{2a}": {
+		"reading": "le quotient dont le numérateur est la somme de l'opposé de b et de la racine carrée de la différence du carré de b et du produit de 4, a et c et le dénominateur le produit de 2 par a",
+		"hash": "f0e8a04455585cb8"
+	},
+	"\\Delta=b^2-4ac": {
+		"reading": "\\Delta est égal à la différence du carré de b et du produit de 4, a et c",
+		"hash": "f55ba19b0740d7c0"
+	},
+	"x\\neq0": {
+		"reading": "x est différent de 0",
+		"hash": "5a7a3832649eb04f"
+	},
+	"x\\approx3{,}14": {
+		"reading": "x \\approx 3,14",
+		"hash": "679ca7ff2b960d26"
+	},
+	"\\ln\\left|x\\right|": {
+		"reading": "le logarithme népérien de la valeur absolue de x",
+		"hash": "c4790cbefa3f52ce"
+	},
+	"\\ln|x|": {
+		"reading": "le logarithme népérien de la valeur absolue de x",
+		"hash": "c4790cbefa3f52ce"
+	},
+	"\\sqrt[n]{x}": {
+		"reading": "la racine d'indice n de x",
+		"hash": "265cb7d3b5080f58"
+	},
+	"\\max(a,b)": {
+		"reading": "\\max\\left( a, b \\right)",
+		"hash": "3ab9f63440bce96c"
+	},
+	"f(x,y)": {
+		"reading": "l'image de x et y par f",
+		"hash": "90626dafbe6ace6d"
+	},
+	"\\left(\\frac{1}{2}\\right)^n": {
+		"reading": "la puissance n du quotient de 1 par 2",
+		"hash": "d50ddbb6deeb124f"
+	},
+	"\\left(-\\frac{1}{2}\\right)^2": {
+		"reading": "le carré de l'opposé du quotient de 1 par 2",
+		"hash": "234404091aef2f1f"
+	},
+	"2^n\\times2^m=2^{n+m}": {
+		"reading": "le produit de 2 puissance n par 2 puissance m est égal à la puissance n + m de 2",
+		"hash": "db209aeacda7299e"
+	},
+	"\\frac{2^5}{2^3}": {
+		"reading": "le quotient de 2 puissance 5 par le cube de 2",
+		"hash": "c6aabedc8d492e0d"
+	},
+	"(ab)^2=a^2b^2": {
+		"reading": "le carré du produit de a par b est égal au produit du carré de a par le carré de b",
+		"hash": "eed5223b0df16a3d"
+	},
+	"\\frac{a}{b}\\times\\frac{c}{d}=\\frac{ac}{bd}": {
+		"reading": "le produit du quotient de a par b et du quotient de c par d est égal au quotient dont le numérateur est le produit de a par c et le dénominateur le produit de b par d",
+		"hash": "d9d31acdf54b3246"
+	},
+	"k\\times(a+b)=ka+kb": {
+		"reading": "le produit de k par la somme de a et b est égal à la somme du produit de k par a et du produit de k par b",
+		"hash": "c3ceda8893f2bc1e"
+	},
+	"(a+b)^2=a^2+2ab+b^2": {
+		"reading": "le carré de la somme de a et b est égal à la somme du carré de a, du produit de 2, a et b et du carré de b",
+		"hash": "28e213f365f2bbb9"
+	},
+	"(a-b)(a+b)=a^2-b^2": {
+		"reading": "le produit de la différence de a et b par la somme de a et b est égal à la différence du carré de a et du carré de b",
+		"hash": "b4a22bd67e733e03"
+	},
+	"f^{\\prime}(x)": {
+		"reading": "l'image de x par f'",
+		"hash": "28412a20a72eba97"
+	},
+	"f''(x)": {
+		"reading": "l'image de x par f''",
+		"hash": "c43bba3adea58887"
+	},
+	"\\cos\\left(\\frac{\\pi}{3}\\right)": {
+		"reading": "le cosinus du quotient de \\pi par 3",
+		"hash": "1eab5104b0f36ab9"
+	},
+	"\\sin\\frac{\\pi}{6}": {
+		"reading": "le sinus du quotient de \\pi par 6",
+		"hash": "1eede99bbb6acb78"
+	},
+	"\\tan x=\\frac{\\sin x}{\\cos x}": {
+		"reading": "la tangente de x est égale au quotient du sinus de x par le cosinus de x",
+		"hash": "a93b98768e29833c"
+	},
+	"2\\cos x-1=0": {
+		"reading": "la différence du produit de 2 par le cosinus de x et de 1 est égale à 0",
+		"hash": "18e5efcccda607f0"
+	},
+	"\\mathrm{e}^{2x}-3\\mathrm{e}^x": {
+		"reading": "la différence de la puissance 2 x de \\exponentialE et du produit de 3 par \\exponentialE puissance x",
+		"hash": "f25d0de6b8019436"
+	},
+	"\\mathrm{e}^{-x}": {
+		"reading": "la puissance −x de \\exponentialE",
+		"hash": "bdb76d64edab0f13"
+	},
+	"x\\mathrm{e}^{x}": {
+		"reading": "le produit de x par \\exponentialE puissance x",
+		"hash": "52897af43c95b100"
+	},
+	"-x\\mathrm{e}^{-x}": {
+		"reading": "l'opposé du produit de x par la puissance −x de \\exponentialE",
+		"hash": "ebbd7e494103a0f7"
+	},
+	"\\left(2x+1\\right)\\mathrm{e}^{x}": {
+		"reading": "le produit de la somme du produit de 2 par x et de 1 et de \\exponentialE puissance x",
+		"hash": "a7cca76dde216dcc"
+	},
+	"\\frac{\\mathrm{e}^x}{x}": {
+		"reading": "le quotient de \\exponentialE puissance x par x",
+		"hash": "c29d333f1dfa67bb"
+	},
+	"u_{n}=u_0\\times q^n": {
+		"reading": "u_n est égal au produit de u_0 par q puissance n",
+		"hash": "1b1ad68df4acbaa6"
+	},
+	"u_n=u_0+nr": {
+		"reading": "u_n est égal à la somme de u_0 et du produit de n par r",
+		"hash": "9399fe3ea4534079"
+	},
+	"\\frac{u_{n+1}}{u_n}": {
+		"reading": "le quotient de u_{n + 1} par u_n",
+		"hash": "6fe2c57c27e5a833"
+	},
+	"P(A\\cap B)": {
+		"reading": "le produit de P par le produit de A, \\cap et B",
+		"hash": "90776eaf3298f46f"
+	},
+	"P_A(B)": {
+		"reading": "le produit de P_A par B",
+		"hash": "f0d353fa705b511d"
+	},
+	"\\begin{pmatrix}1\\\\2\\end{pmatrix}": {
+		"reading": "\\begin{pmatrix}1 \\\\ 2\\end{pmatrix}",
+		"hash": "b2198c353ac2d53f"
+	},
+	"3x^2-\\frac{1}{2}x+\\frac{3}{4}": {
+		"reading": "la somme du produit de 3 par le carré de x, de l'opposé du produit du quotient de 1 par 2 et de x et du quotient de 3 par 4",
+		"hash": "07098314aa95d6c2"
+	},
+	"-\\frac{x^2}{2}+x": {
+		"reading": "la somme de l'opposé du quotient du carré de x par 2 et de x",
+		"hash": "e672cd2a8f7b85c5"
+	},
+	"\\frac{1}{3}x^3-x": {
+		"reading": "la différence du produit du quotient de 1 par 3 et du cube de x et de x",
+		"hash": "b8ec884ad9931e2a"
+	},
+	"x^3-3x+\\frac{1}{x}": {
+		"reading": "la somme du cube de x, de l'opposé du produit de 3 par x et du quotient de 1 par x",
+		"hash": "efb1d54752045b46"
+	},
+	"4\\times(-5)\\times(-2)": {
+		"reading": "le produit de 4, −5 et −2",
+		"hash": "c09730ec4236c4f8"
+	},
+	"(-2)\\times(-3)": {
+		"reading": "le produit de −2 par −3",
+		"hash": "8fc908f6ffd2216a"
+	},
+	"(-2)(-3)": {
+		"reading": "le produit de −2 par −3",
+		"hash": "214e14b7f666fda2"
+	},
+	"5-(-3)+(-2)": {
+		"reading": "la somme de 5, de l'opposé de −3 et de −2",
+		"hash": "193bf80aeabd2f9b"
+	},
+	"-5+(-3)-(-2)": {
+		"reading": "la somme de −5, de −3 et de l'opposé de −2",
+		"hash": "499391e7358d38c7"
+	},
+	"(-5)+(+3)": {
+		"reading": "la somme de −5 et +3",
+		"hash": "074d5dbff15e8f20"
+	},
+	"(+5)-(+3)": {
+		"reading": "la différence de +5 et +3",
+		"hash": "94032cef90abf9be"
+	},
+	"-(2x-3)+4(x+1)": {
+		"reading": "la somme de l'opposé de la différence du produit de 2 par x et de 3 et du produit de 4 par la somme de x et 1",
+		"hash": "6e5c36eb4700c044"
+	},
+	"3x-(2x+5)": {
+		"reading": "la différence du produit de 3 par x et de la somme du produit de 2 par x et de 5",
+		"hash": "57bd6a00c11b03cc"
+	},
+	"\\frac{3}{4}-\\frac{1}{4}\\times\\frac{2}{3}": {
+		"reading": "la différence du quotient de 3 par 4 et du produit du quotient de 1 par 4 et du quotient de 2 par 3",
+		"hash": "b50d3f01f8e0992e"
+	},
+	"\\left(\\frac{3}{4}-\\frac{1}{4}\\right)\\times\\frac{2}{3}": {
+		"reading": "le produit de la différence du quotient de 3 par 4 et du quotient de 1 par 4 et du quotient de 2 par 3",
+		"hash": "a0d1650a85ac83d2"
+	},
+	"\\frac{\\frac{1}{2}}{3}": {
+		"reading": "le quotient dont le numérateur est le quotient de 1 par 2 et le dénominateur 3",
+		"hash": "cdf9e947ce181d39"
+	},
+	"1+\\frac{1}{1+\\frac{1}{2}}": {
+		"reading": "la somme de 1 et du quotient dont le numérateur est 1 et le dénominateur la somme de 1 et du quotient de 1 par 2",
+		"hash": "7bfe36a408cc28d8"
+	},
+	"2^{3}\\times5^{2}": {
+		"reading": "le produit du cube de 2 par le carré de 5",
+		"hash": "0145748ffb6b84d0"
+	},
+	"\\sqrt{12}=2\\sqrt{3}": {
+		"reading": "la racine carrée de 12 est égale au produit de 2 par la racine carrée de 3",
+		"hash": "19d67fb954910489"
+	},
+	"\\sqrt{2}\\times\\sqrt{8}": {
+		"reading": "le produit de la racine carrée de 2 par la racine carrée de 8",
+		"hash": "439f7b8633ffbd07"
+	},
+	"\\frac{\\sqrt{2}}{\\sqrt{8}}": {
+		"reading": "le quotient de la racine carrée de 2 par la racine carrée de 8",
+		"hash": "a73ccb462e6cff14"
+	},
+	"(\\sqrt{2})^2": {
+		"reading": "le carré de la racine carrée de 2",
+		"hash": "0cfccb44dbd24cfe"
+	},
+	"\\sqrt{2}^2": {
+		"reading": "le carré de la racine carrée de 2",
+		"hash": "2f29e565f2b97d5a"
+	},
+	"3\\sqrt{2}-5\\sqrt{2}": {
+		"reading": "la différence du produit de 3 par la racine carrée de 2 et du produit de 5 par la racine carrée de 2",
+		"hash": "35907cefbb52a910"
+	},
+	"x^{\\frac{1}{2}}": {
+		"reading": "la puissance \\dfrac{1}{2} de x",
+		"hash": "944db039aa34fcb7"
+	},
+	"x^{-\\frac{1}{2}}": {
+		"reading": "la puissance −\\dfrac{1}{2} de x",
+		"hash": "4bb62733f0f4e555"
+	},
+	"10^{-3}\\times10^{5}": {
+		"reading": "le produit de 10 puissance −3 par 10 puissance 5",
+		"hash": "5f2904363d50add5"
+	},
+	"8\\times10^{-3}": {
+		"reading": "le produit de 8 par 10 puissance −3",
+		"hash": "dda66f8da88243fa"
+	},
+	"-3\\times10^{2}": {
+		"reading": "l'opposé du produit de 3 par 10 puissance 2",
+		"hash": "4a9d42fcc3cdfff6"
+	}
+}

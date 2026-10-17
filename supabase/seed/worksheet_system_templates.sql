@@ -86,12 +86,12 @@ ON CONFLICT (id) DO UPDATE SET
   template_content = EXCLUDED.template_content,
   placeholders = EXCLUDED.placeholders;
 
--- Evaluation — Mise en page formelle pour evaluation avec section notation
+-- Contrôle — Mise en page formelle pour contrôle avec section notation
 INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, created_by)
 VALUES (
   '00000000-0000-4000-8000-000000000002',
-  'Evaluation',
-  'Mise en page formelle pour evaluation avec section notation',
+  'Contrôle',
+  'Mise en page formelle pour contrôle avec section notation',
   '// Configuration de la page
 #set page(
   paper: "a4",
@@ -1523,3 +1523,12 @@ ON CONFLICT (id) DO UPDATE SET
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
   placeholders = EXCLUDED.placeholders;
+
+-- Chaque gabarit système est la forme « fiche » de son style (ADR 0028) : la
+-- migration 20261016103200_worksheet_styles le fait en production, mais en
+-- local ce seed insère les gabarits APRÈS les migrations.
+UPDATE public.worksheet_templates t
+SET style_id = t.id
+WHERE t.created_by IS NULL
+  AND t.style_id IS NULL
+  AND EXISTS (SELECT 1 FROM public.worksheet_styles s WHERE s.id = t.id);

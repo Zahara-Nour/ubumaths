@@ -14,7 +14,17 @@
 
 import { Atelier, sequenceInputOf } from './atelier.svelte';
 import { loadAtelier, saveAtelier, type AtelierState } from './persistence';
-import { nextName, derivativeOf, displayName } from './names';
+import { nextName, derivativeOf, displayName, reciprocalName, reciprocalOf } from './names';
+import {
+	cellTextFromStored,
+	columnLetter,
+	columnOfLetter,
+	definitionFrom,
+	entriesOf,
+	readCellName,
+	type CellEdit
+} from './grid';
+import { isFormula, remapColumns } from './formula';
 
 // =============================================================================
 // Types
@@ -28,7 +38,22 @@ export interface MergeReport {
 	readonly renamed: ReadonlyArray<{ readonly from: string; readonly to: string }>;
 	/** Objets refusés, et pourquoi — un plafond atteint, par exemple. */
 	readonly refused: ReadonlyArray<{ readonly name: string; readonly reason: string }>;
+	/**
+	 * Des cases à hasard sont arrivées (ALEA, lot 5) : la graine reste la nôtre,
+	 * leurs tirages sont donc refaits — à dire (phase 0 §4).
+	 */
+	readonly redrawn: boolean;
 }
+
+// =============================================================================
+// Constantes
+// =============================================================================
+
+/**
+ * Un nom d'objet dans une formule : jamais une référence de cellule (`L2`,
+ * `L$2`), qu'une liste `L` renommée en `M` ne doit pas déplacer.
+ */
+const OBJECT_NAME = /(?<![A-Za-z$])[A-Za-z]+(?:_\d+)?(?![A-Za-z\d$])/g;
 
 // =============================================================================
 // Fonctions
@@ -41,25 +66,101 @@ export interface MergeReport {
  * réclament le même nom ne peuvent pas recevoir le même remplacement, sinon le
  * second écraserait le premier — l'écrasement qu'on cherche justement à éviter.
  */
+/**
+ * Les colonnes qu'occupe un atelier reçu, dans l'ordre : une par liste (sa
+ * colonne rangée, ou une place à elle en version 1), une par colonne sans nom
+ * remplie. Chacune ira dans une colonne libre de l'atelier qui reçoit (T7).
+ */
+function arrivingColumns(state: AtelierState): string[] {
+	const slots: string[] = [];
+	const add = (slot: string) => {
+		if (!slots.includes(slot)) slots.push(slot);
+	};
+	state.objects.forEach((stored, index) => {
+		if (stored.kind === 'list') add(stored.column ?? `liste ${index}`);
+	});
+	for (const address of Object.keys(state.grid?.cells ?? {})) {
+		const at = readCellName(address);
+		if (at !== null) add(columnLetter(at.column));
+	}
+	// Une colonne qui n'a qu'un titre est une colonne aussi (T4)
+	for (const letter of Object.keys(state.grid?.titles ?? {})) {
+		if (columnOfLetter(letter) !== null) add(letter);
+	}
+	// De gauche à droite, pour que la grille reçue garde son ordre
+	return slots.sort((a, b) => columnRank(a) - columnRank(b));
+}
+
+/** Une lettre de colonne, puis les listes de version 1 dans leur ordre. */
+function columnRank(slot: string): number {
+	const letter = columnOfLetter(slot);
+	return letter !== null ? letter : 100 + Number(slot.slice('liste '.length));
+}
+
+/**
+ * Pourquoi cet atelier reçu ne peut pas être versé, ou `null` : ses colonnes
+ * doivent toutes trouver une colonne libre (T7). Tout ou rien — une grille
+ * versée à moitié mélangerait les colonnes de l'élève et celles reçues.
+ */
+export function mergeRefusal(atelier: Atelier, state: AtelierState): string | null {
+	const needed = arrivingColumns(state).length;
+	const free = atelier.freeColumns.length;
+	if (needed <= free) return null;
+	return `Cet atelier a besoin de ${needed} colonnes libres dans ta grille, il en reste ${free} : rien n’a été versé.`;
+}
+
 export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
+	const randomBefore = atelier.randomCells;
 	let added = 0;
+	// Chaque colonne reçue va dans une colonne libre, de gauche à droite (T7)
+	const free = atelier.freeColumns;
+	const placed = new Map(arrivingColumns(state).map((slot, index) => [slot, free[index]]));
+	// Les colonnes reçues → leur place : les références des formules les suivent (T7)
+	const moved = new Map<number, number>();
+	for (const [slot, column] of placed) {
+		const from = columnOfLetter(slot);
+		if (from !== null && column !== undefined) moved.set(from, column);
+	}
+	const follow = (text: string) => remapColumns(text, moved);
 	const renamed: Array<{ from: string; to: string }> = [];
 	const refused: Array<{ name: string; reason: string }> = [];
 
 	// Les fonctions renommées à l'arrivée : leurs dérivées doivent les suivre
 	const arrivedAs = new Map<string, string>();
+	/** Les objets effectivement créés (une f refusée n'emmène pas sa réciproque) */
+	const landed = new Set<string>();
+	/** Les listes créées : leurs formules suivront les objets renommés */
+	const landedLists: { column: number; entries: string[] }[] = [];
 
 	// Les fonctions AVANT leurs dérivées : supprimer puis recréer `f` range `f′`
 	// devant elle, et `f′` aurait suivi la `f` locale (revue du lot 3a, C1)
-	const order = (name: string) => derivativeOf(name)?.order ?? 0;
-	const ordered = [...state.objects].sort((a, b) => order(a.name) - order(b.name));
+	// (et avant leur réciproque `f⁻¹`, qui suit f de la même façon)
+	const order = (name: string) =>
+		derivativeOf(name)?.order ?? (reciprocalOf(name) !== null ? 1 : 0);
+	const ordered = [...state.objects]
+		.map((stored, index) => ({ stored, index }))
+		.sort((a, b) => order(a.stored.name) - order(b.stored.name));
 
-	for (const stored of ordered) {
+	for (const { stored, index } of ordered) {
 		const taken = atelier.names;
 		const wanted = stored.name;
 		const derivative = derivativeOf(wanted);
+		const reciprocal = reciprocalOf(wanted);
 		let chosen: string;
-		if (derivative !== null) {
+		if (reciprocal !== null) {
+			// `f⁻¹` suit f : arrivée sous le nom `g`, sa réciproque devient `g⁻¹`
+			// Sa f n'est pas arrivée (refusée) : la rattacher à la f locale serait faux
+			const base = landed.has(reciprocal) ? arrivedAs.get(reciprocal) : undefined;
+			if (base === undefined) {
+				refused.push({ name: wanted, reason: `${reciprocal} n'est pas arrivée.` });
+				continue;
+			}
+			chosen = reciprocalName(base);
+			if (taken.includes(chosen)) {
+				refused.push({ name: wanted, reason: `${displayName(chosen)} existe déjà.` });
+				continue;
+			}
+		} else if (derivative !== null) {
 			// `f′` suit `f` : si `f` est arrivée sous le nom `g`, elle devient `g′`
 			const base = arrivedAs.get(derivative.base) ?? derivative.base;
 			chosen = `${base}${"'".repeat(derivative.order)}`;
@@ -72,24 +173,42 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		}
 		arrivedAs.set(wanted, chosen);
 
-		const created = atelier.create(
-			{
-				kind: stored.kind,
-				name: chosen,
-				// La définition d'une dérivée est son propre nom : `g′(x)`, pas `f′(x)`
-				definition: derivative !== null ? `${chosen}(x)` : stored.definition,
-				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
-			},
-			// Ce qui vient d'une URL a été écrit par nous : même lecture qu'au
-			// rangement, pour que l'aller-retour ne change pas le sens (D10).
-			'url'
-		);
+		const input = {
+			kind: stored.kind,
+			name: chosen,
+			// La définition d'une dérivée est son propre nom : `g′(x)`, pas `f′(x)`
+			definition:
+				derivative !== null
+					? `${chosen}(x)`
+					: stored.kind === 'list'
+						? definitionFrom(entriesOf(stored.definition).map(follow))
+						: stored.definition,
+			...(stored.kind === 'function' &&
+				stored.reciprocalOn !== undefined && { reciprocalOn: stored.reciprocalOn }),
+			...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) }),
+			...(stored.kind === 'list' && {
+				column: placed.get(stored.column ?? `liste ${index}`)
+			})
+		};
+		// Ce qui vient d'une URL a été écrit par nous : même lecture qu'au
+		// rangement, pour que l'aller-retour ne change pas le sens (D10).
+		// L'ensemble d'une fonction suit ; refusé, la fonction arrive sur son domaine.
+		let created =
+			stored.kind === 'function' && stored.interval !== undefined
+				? atelier.create({ ...input, interval: stored.interval }, 'url')
+				: atelier.create(input, 'url');
+		if (!created.ok && stored.interval !== undefined) created = atelier.create(input, 'url');
 
 		if (!created.ok) {
 			refused.push({ name: wanted, reason: created.message });
 			continue;
 		}
 
+		landed.add(wanted);
+		const column = input.column;
+		if (column !== undefined) {
+			landedLists.push({ column, entries: entriesOf(input.definition) });
+		}
 		if (chosen === wanted) added++;
 		else renamed.push({ from: wanted, to: chosen });
 
@@ -102,7 +221,40 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		if (stored.plotted) atelier.setPlotted(chosen, true);
 	}
 
-	return { added, renamed, refused };
+	// Un objet renommé à l'arrivée (`f` → `g`) : les formules reçues l'appellent
+	// sous son nouveau nom, sinon `=f(3)` calculerait avec la f locale, sans rien
+	// dire (revue). Après la boucle : une liste peut arriver avant sa fonction.
+	const renames = new Map(renamed.map((r) => [r.from, r.to]));
+	const renameIn = (text: string) =>
+		!isFormula(text) ? text : text.replace(OBJECT_NAME, (name) => renames.get(name) ?? name);
+	const cells: CellEdit[] = landedLists.flatMap(({ column, entries }) =>
+		entries.flatMap((text, i) => {
+			const after = renameIn(text);
+			return after === text ? [] : [{ column, row: i + 1, text: after }];
+		})
+	);
+
+	// Les cellules sans nom, dans la colonne que leur colonne d'origine a reçue
+	for (const [address, text] of Object.entries(state.grid?.cells ?? {})) {
+		const at = readCellName(address);
+		const column = at === null ? undefined : placed.get(columnLetter(at.column));
+		if (at !== null && column !== undefined) {
+			cells.push({ column, row: at.row, text: renameIn(follow(cellTextFromStored(text))) });
+		}
+	}
+	for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
+		const column = placed.get(letter);
+		if (column !== undefined) atelier.setTitle(column, title);
+	}
+
+	// Un refus se dit dans le rapport, jamais en silence (revue)
+	const written = cells.length > 0 ? atelier.editCells(cells) : null;
+	if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });
+
+	// Tout ce qui est arrivé : cases sans nom ET entrées des listes nommées
+	// Ce qui a vraiment été écrit (une grille refusée n'a rien tiré : revue)
+	const redrawn = atelier.randomCells > randomBefore;
+	return { added, renamed, refused, redrawn };
 }
 
 /**
@@ -130,6 +282,8 @@ export function keepReceived(
 			message: 'Ton atelier enregistré ne peut pas être ouvert ici : rien n’a été versé.'
 		};
 	}
+	const refusal = mergeRefusal(personal, received);
+	if (refusal !== null) return { ok: false, message: refusal };
 	const report = mergeInto(personal, received);
 	const saved = saveAtelier(storage, personal.serialize());
 	if (saved.kind !== 'saved') {

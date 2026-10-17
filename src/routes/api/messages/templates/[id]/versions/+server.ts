@@ -10,6 +10,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { templateVersionSchema } from '$lib/server/validation/message-templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/templates/[id]/versions/+server');
 
 // GET - List versions
 export const GET: RequestHandler = async ({ locals, params }) => {
@@ -31,7 +34,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (templateError && templateError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', templateError);
+		logger.error('Lecture impossible :', templateError);
 		return error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -49,8 +52,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		logger.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	// Check permissions
@@ -76,7 +79,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('version_number', { ascending: false });
 
 	if (fetchError) {
-		console.error('Error fetching versions:', fetchError);
+		logger.error('Error fetching versions:', fetchError);
 		return error(500, 'Erreur lors de la récupération des versions');
 	}
 
@@ -120,7 +123,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (templateError && templateError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', templateError);
+		logger.error('Lecture impossible :', templateError);
 		return error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -138,8 +141,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		logger.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	const isAdmin = profile?.role === 'admin';
@@ -179,7 +182,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (restoreError) {
-		console.error('Error restoring version:', restoreError);
+		logger.error('Error restoring version:', restoreError);
 		return error(500, 'Erreur lors de la restauration de la version');
 	}
 

@@ -19,6 +19,7 @@ import {
 	MAX_SEQUENCE_TERMS
 } from '$lib/grapheur/sequence';
 import type { SequenceMode } from '$lib/grapheur/sequence';
+import type { Restriction } from '$lib/grapheur/restriction';
 
 export type { SequenceMode, SequenceTerm } from '$lib/grapheur/sequence';
 
@@ -92,6 +93,12 @@ export interface ExplicitFunction extends PlottableBase {
 	readonly showOsculating: boolean;
 	/** Whether the arc length is shown, over the same bounds as the area. */
 	readonly showArcLength: boolean;
+	/**
+	 * L'ensemble où la courbe est tracée (fonction de l'atelier `sur [0;+∞[`),
+	 * bornes marquées d'un point plein ou creux. Absent : toute la fenêtre.
+	 * Jamais sauvegardé par le grapheur : l'atelier le repose à chaque synchronisation.
+	 */
+	readonly restriction?: Restriction;
 }
 
 /**

@@ -76,7 +76,7 @@
 
 	const triggerTypeOptions = [
 		{ value: 'general', label: 'Message général' },
-		{ value: 'assessment_question', label: 'Question sur évaluation' },
+		{ value: 'assessment_question', label: 'Question sur un contrôle' },
 		{ value: 'srs_help', label: 'Aide SRS' },
 		{ value: 'system_notification', label: 'Notification système' },
 		{ value: 'enigma_answer', label: 'Réponse énigme (futur)' }
@@ -303,7 +303,7 @@
 					.eq('id', editingTemplate.id);
 
 				if (error) throw error;
-				toaster.success('Template mis à jour');
+				toaster.success('Modèle mis à jour');
 			} else {
 				const { error } = await data.supabase.from('message_templates').insert({
 					...templateData,
@@ -311,7 +311,7 @@
 				});
 
 				if (error) throw error;
-				toaster.success('Template créé');
+				toaster.success('Modèle créé');
 			}
 
 			isDialogOpen = false;
@@ -337,7 +337,7 @@
 			console.error('Error deleting:', error);
 			toaster.error('Erreur lors de la suppression');
 		} else {
-			toaster.success('Template supprimé');
+			toaster.success('Modèle supprimé');
 			await loadTemplates();
 		}
 	}
@@ -354,9 +354,9 @@
 				})
 			});
 
-			if (!response.ok) throw new Error('Duplication failed');
+			if (!response.ok) throw new Error('Impossible de dupliquer le modèle');
 
-			toaster.success('Template dupliqué');
+			toaster.success('Modèle dupliqué');
 			await loadTemplates();
 		} catch (error) {
 			console.error('Error duplicating:', error);

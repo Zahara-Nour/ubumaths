@@ -275,11 +275,11 @@ Trois builtins, une même mécanique (`dsl/area-builtin-helper.ts`, `interpretAr
 rendent un **scalaire** réactif ET dessinent une zone liée (les arguments de style vont à la zone,
 `styleTargetId`). `f` et `g` doivent être des courbes cartésiennes `courbe("…")`.
 
-| Builtin                  | Valeur            | Zone fermée par     | Couleur par défaut       |
+| Builtin | Valeur | Zone fermée par | Couleur par défaut |
 | ------------------------ | ----------------- | ------------------- | ------------------------ | ------------------- | ---------------- |
-| `integrale(f, a, b)`     | ∫ₐᵇ f, **signée** | l'axe des abscisses | bleu (défaut de la zone) |
-| `aire(f, a, b)`          | ∫                 | f                   | , toujours ≥ 0           | l'axe des abscisses | vert `#22c55e`   |
-| `aire_entre(f, g, a, b)` | ∫                 | f − g               | , toujours ≥ 0           | la courbe `g`       | orange `#fb923c` |
+| `integrale(f, a, b)` | ∫ₐᵇ f, **signée** | l'axe des abscisses | bleu (défaut de la zone) |
+| `aire(f, a, b)` | ∫ | f | , toujours ≥ 0 | l'axe des abscisses | vert `#22c55e` |
+| `aire_entre(f, g, a, b)` | ∫ | f − g | , toujours ≥ 0 | la courbe `g` | orange `#fb923c` |
 
 - **Vocabulaire** : l'intégrale peut être négative ; l'aire est une grandeur géométrique. Elles ne
   coïncident que si f ≥ 0 sur [a ; b]. `integrale(x^3 - x, -1, 1)` = 0, `aire(…)` = 0,5.

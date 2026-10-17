@@ -11,6 +11,9 @@ import { getTeacherChapters, createChapter } from '$lib/server/chapters';
 import { createChapterSchema, type CreateChapterInput } from '$lib/server/validation/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/+server');
 
 /** Query parameters schema for GET */
 const listChaptersQuerySchema = z.object({
@@ -45,7 +48,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const result = await getTeacherChapters(user.id, locals.supabase, classId);
 
 	if (result.error) {
-		console.error('[GET /api/teacher/chapters] Error:', result.error);
+		logger.error('[GET /api/teacher/chapters] Error:', result.error);
 		throw error(500, 'Failed to fetch chapters');
 	}
 
@@ -96,7 +99,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const result = await createChapter(data, locals.supabase);
 
 	if (result.error) {
-		console.error('[POST /api/teacher/chapters] Error:', result.error);
+		logger.error('[POST /api/teacher/chapters] Error:', result.error);
 		throw error(500, 'Failed to create chapter');
 	}
 

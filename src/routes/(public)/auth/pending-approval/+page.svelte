@@ -9,6 +9,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Clock } from '@lucide/svelte';
+	import { clearWorkData } from '$lib/utils/work-data';
 
 	let isLoggingOut = $state(false);
 	let dialogOpen = $state(true);
@@ -17,6 +18,12 @@
 		if (isLoggingOut) return;
 		isLoggingOut = true;
 		try {
+			// Données de travail de l'élève (T17, `src/lib/utils/work-data.ts`).
+			try {
+				clearWorkData(localStorage);
+			} catch (e) {
+				console.error('Données de travail non effacées :', e);
+			}
 			await fetch('/auth/logout', { method: 'POST' });
 			await invalidateAll();
 			await goto('/');

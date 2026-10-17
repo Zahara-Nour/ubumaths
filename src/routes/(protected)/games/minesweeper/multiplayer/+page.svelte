@@ -10,6 +10,7 @@
 	import MinesweeperBoard from '$lib/components/game/minesweeper/MinesweeperBoard.svelte';
 	import { Card } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 
 	// Get Supabase client and user from page data
 	let { data } = $props();
@@ -242,12 +243,9 @@
 {:else if showLobby}
 	<!-- Lobby: Queue and Matchmaking -->
 	<div class="container mx-auto py-8">
-		<div class="mb-6 flex items-center justify-between">
+		<div class="mb-6">
+			<BackLink href="/games/minesweeper" label="Retour au démineur" />
 			<h1 class="text-3xl font-bold text-foreground">Démineur Multijoueur</h1>
-			<Button variant="outline" onclick={handleReturnToMenu}>
-				<span class="mr-2">←</span>
-				Retour
-			</Button>
 		</div>
 		<MultiplayerLobby />
 	</div>

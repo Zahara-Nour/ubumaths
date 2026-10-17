@@ -27,6 +27,7 @@ import type {
 // =============================================================================
 
 const MINUS_INFINITY = '-\\infty';
+const PLUS_INFINITY = '+\\infty';
 
 /** Le sens d'un intervalle, ramené au signe de la dérivée. */
 type Direction = '+' | '-';
@@ -40,6 +41,7 @@ interface Studied {
 	readonly lower: string;
 	readonly upper: string;
 	readonly lowerOpen: boolean;
+	readonly upperOpen: boolean;
 	readonly direction: Direction;
 }
 
@@ -65,6 +67,7 @@ function realIntervals(variations: VariationResult): readonly Studied[] | null {
 			lower,
 			upper,
 			lowerOpen: interval.lower.type === 'open',
+			upperOpen: interval.upper.type === 'open',
 			direction: derivativeSign === 'positive' ? '+' : '-'
 		});
 	}
@@ -208,8 +211,20 @@ export function variationTableNode(
 		});
 	}
 
+	// La première borne se lit sur le PREMIER intervalle, point critique compris :
+	// x² étudiée sur [0 ; +∞[ commence par `[0 ; 0]`, et `]0 ; +∞[` marquait 0
+	// exclu (lot 2 de `docs/wip/atelier-intervalle-phase0.md`)
+	// La dernière, symétriquement, sur le DERNIER : sans elle, `[0 ; 5[` sortait
+	// fermé en 5, avec 25 en haut — « f(5) = 25 est atteint », faux (revue de #1307)
+	const firstOpen =
+		variations.monotonicIntervals[0]?.interval.lower.type === 'open' && intervals[0].lowerOpen;
+	const lastOpen =
+		variations.monotonicIntervals.at(-1)?.interval.upper.type === 'open' &&
+		intervals[intervals.length - 1].upperOpen;
+	const last = points.length - 1;
 	const domain: DomainPoint[] = points.map((expression, index) =>
-		index === 0 && intervals[0].lowerOpen && expression !== MINUS_INFINITY
+		(index === 0 && firstOpen && expression !== MINUS_INFINITY) ||
+		(index === last && lastOpen && expression !== PLUS_INFINITY)
 			? { expression, open: true }
 			: { expression }
 	);

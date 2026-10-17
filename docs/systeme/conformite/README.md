@@ -82,6 +82,9 @@ sous-traitants **incomplet** (IA tierce non listée) + des **docts datés** à r
 > fonction écrivait dans des tables disparues → 500 pour tout le monde, aucune suppression jamais
 > aboutie. ✅ **Réparée** (migration `20261014100000_suppression_compte_art17`, élèves seulement,
 > messages et économie supprimés) : détail dans [rgpd.md §7.2](rgpd.md#72-droit-a-loubli).
+> Fichiers du storage : retirés par la route, et repris chaque dimanche par
+> `/api/cron/deleted-account-files` tant que `account_deletion_audit.storage_removed_at` est nul
+> (purge C11 comprise, 2026-10-13).
 
 ### 3. Portabilité (Art. 20)
 

@@ -159,7 +159,9 @@ describe('privilèges par défaut du schéma public — aucun droit pour anon', 
 			'public.get_consent_info(uuid)',
 			'public.get_worksheet_by_share_token(text, uuid)',
 			'public.get_class_journal_by_share_token(text)',
-			'public.get_exercise_by_share_token(text)'
+			'public.get_exercise_by_share_token(text)',
+			'public.get_class_course_by_share_token(text)',
+			'public.get_course_worksheet_by_share_token(text, uuid)'
 			// grant_parental_consent : réservée au serveur depuis 20261001150000
 			// (cf. consentement-parental-serveur.test.ts).
 		])('anon exécute toujours la RPC publique %s', async (signature) => {
@@ -170,6 +172,24 @@ describe('privilèges par défaut du schéma public — aucun droit pour anon', 
 			);
 			expect(rows[0].granted).toBe(true);
 		});
+
+		// Le chemin de stockage d'un document du cours ne sort que par le serveur
+		// (client service role), jamais vers un navigateur.
+		it.each([
+			['anon', false],
+			['authenticated', false],
+			['service_role', true]
+		] as const)(
+			'get_course_document_by_share_token : EXECUTE pour %s = %s',
+			async (role, attendu) => {
+				const pg = await getPostgresClient();
+				const { rows } = await pg.query<{ granted: boolean }>(
+					`select has_function_privilege($1, 'public.get_course_document_by_share_token(text, uuid)', 'EXECUTE') as granted`,
+					[role]
+				);
+				expect(rows[0].granted).toBe(attendu);
+			}
+		);
 
 		it.each(TABLES_EXISTANTES_LISIBLES)('anon lit toujours %s', async (table) => {
 			expect(await hasTablePrivilege('anon', `public.${table}`, 'SELECT')).toBe(true);

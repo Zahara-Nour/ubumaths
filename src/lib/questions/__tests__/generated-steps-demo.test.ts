@@ -381,7 +381,8 @@ describe('Mode B end-to-end demos', () => {
 		expect(summary).toMatchSnapshot();
 	});
 
-	it('4e simplify distribution — produces a product-to-diff-squares step', () => {
+	// Option B (David, 2026-10-14) : la rédaction de `.développer` (atelier), plus la trace du pipeline
+	it('4e simplify distribution — produces an identity step, written as in the atelier', () => {
 		const result = generateInstance(simplifyDistributionDemo, 1);
 		expect(result.success).toBe(true);
 		if (!result.success) return;
@@ -394,7 +395,8 @@ describe('Mode B end-to-end demos', () => {
 		expect(steps!.every((s) => s.schoolLevel === 'college')).toBe(true);
 
 		const rules = steps!.map((s) => s.rule);
-		expect(rules).toContain('product-to-diff-squares');
+		expect(rules).toContain('expand-identity');
+		expect(rules).not.toContain('product-to-diff-squares');
 
 		const summary = steps!.map(summarize);
 		expect(summary).toMatchSnapshot();
@@ -471,7 +473,7 @@ describe('Mode B end-to-end demos', () => {
 		expect(steps!.every((s) => s.schoolLevel === 'lycee')).toBe(true);
 
 		const rules = steps!.map((s) => s.rule);
-		expect(rules).toContain('identify-dominant-term');
+		expect(rules).toContain('factor-dominant-term');
 		expect(rules).toContain('conclude');
 
 		const summary = steps!.map(summarize);

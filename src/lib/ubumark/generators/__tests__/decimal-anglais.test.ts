@@ -116,17 +116,22 @@ describe('PDF : fiche complète', () => {
 				worksheet,
 				instance
 			}).typstContent;
-			expect(out).toContain('0.2');
+			// Le corrigé n'imprime plus l'énoncé : le décimal vérifié est celui de la solution
+			expect(out).toContain(mode === 'worksheet' ? '0.2' : '0.08');
 			expect(out).not.toMatch(/\d","\d/);
 		}
 	});
 
 	it('fiche en français : virgule', () => {
+		const fiche = new WorksheetGenerator(config(), undefined, { mode: 'worksheet' }).generate({
+			worksheet,
+			instance
+		}).typstContent;
 		const out = new WorksheetGenerator(config(), undefined, { mode: 'correction' }).generate({
 			worksheet,
 			instance
 		}).typstContent;
-		expect(out).toContain('0","2');
+		expect(fiche).toContain('0","2');
 		expect(out).toContain('0","08');
 	});
 });

@@ -12,20 +12,20 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Conditions générales d’utilisation</h1>
 
-		<p class="lead text-muted-foreground">Derniere mise a jour : 15 janvier 2026 | Version 1.0</p>
+		<p class="lead text-muted-foreground">Dernière mise à jour : 15 janvier 2026 | Version 1.0</p>
 
 		<hr />
 
 		<section>
 			<h2>1. Objet</h2>
 			<p>
-				Les presentes Conditions Generales d'Utilisation (ci-apres "CGU") ont pour objet de definir
-				les modalites et conditions d'utilisation de la plateforme <strong>Chiphre</strong>,
-				accessible a l'adresse <a href={resolve('/')}>chiph.re</a>.
+				Les présentes Conditions générales d'utilisation (ci-après "CGU") ont pour objet de définir
+				les modalités et conditions d'utilisation de la plateforme <strong>Chiphre</strong>,
+				accessible à l'adresse <a href={resolve('/')}>chiph.re</a>.
 			</p>
 			<p class="rounded-lg bg-muted p-4">
 				<strong
-					>L'utilisation du Service implique l'acceptation pleine et entiere des presentes CGU.</strong
+					>L'utilisation du Service implique l'acceptation pleine et entière des présentes CGU.</strong
 				>
 			</p>
 		</section>
@@ -33,29 +33,29 @@
 		<section>
 			<h2>2. Présentation du Service</h2>
 			<p>
-				Chiphre est une plateforme educative de mathematiques destinee aux eleves du secondaire
-				(college et lycee) et a leurs enseignants.
+				Chiphre est une plateforme éducative de mathématiques destinée aux élèves du secondaire
+				(collège et lycée) et à leurs enseignants.
 			</p>
 
 			<h3>2.1 Fonctionnalités principales</h3>
 			<ul>
 				<li>
-					<strong>Exercices interactifs</strong> : Exercices de mathematiques adaptes au niveau scolaire
+					<strong>Exercices interactifs</strong> : Exercices de mathématiques adaptés au niveau scolaire
 				</li>
-				<li><strong>Suivi de progression</strong> : Statistiques et indicateurs de maitrise</li>
-				<li><strong>Gamification</strong> : Systeme de points, recompenses et classements</li>
-				<li><strong>Communication</strong> : Messagerie entre eleves et enseignants</li>
-				<li><strong>Integration Google Classroom</strong> : Synchronisation des classes</li>
-				<li><strong>Tableau blanc</strong> : Outil de dessin mathematique</li>
+				<li><strong>Suivi de progression</strong> : Statistiques et indicateurs de maîtrise</li>
+				<li><strong>Gamification</strong> : Système de points, récompenses et classements</li>
+				<li><strong>Communication</strong> : Messagerie entre élèves et enseignants</li>
+				<li><strong>Intégration Google Classroom</strong> : Synchronisation des classes</li>
+				<li><strong>Tableau blanc</strong> : Outil de dessin mathématique</li>
 			</ul>
 
 			<h3>2.2 Types d'utilisateurs</h3>
 			<ul>
 				<li>
-					<strong>Eleves</strong> : Acces aux exercices, progression, messagerie avec leurs enseignants
+					<strong>Élèves</strong> : Accès aux exercices, progression, messagerie avec leurs enseignants
 				</li>
 				<li>
-					<strong>Enseignants</strong> : Gestion des classes, suivi des eleves, creation de devoirs
+					<strong>Enseignants</strong> : Gestion des classes, suivi des élèves, création de devoirs
 				</li>
 			</ul>
 		</section>
@@ -65,26 +65,26 @@
 
 			<h3>3.1 Inscription</h3>
 			<p>
-				L'acces au Service necessite la creation d'un compte utilisateur via l'authentification
+				L'accès au Service nécessite la création d'un compte utilisateur via l'authentification
 				Google (OAuth 2.0).
 			</p>
 			<p>
-				Pour les <strong>eleves de moins de 15 ans</strong>, le consentement d'un parent ou tuteur
-				legal est requis conformement a l'article 8 du RGPD.
+				Pour les <strong>élèves de moins de 15 ans</strong>, le consentement d'un parent ou tuteur
+				légal est requis conformément à l'article 8 du RGPD.
 			</p>
 
 			<h3>3.2 Conditions d'accès</h3>
-			<p>L'utilisateur s'engage a :</p>
+			<p>L'utilisateur s'engage à :</p>
 			<ul>
 				<li>Fournir des informations exactes lors de l'inscription</li>
-				<li>Maintenir la confidentialite de ses identifiants de connexion</li>
+				<li>Maintenir la confidentialité de ses identifiants de connexion</li>
 				<li>Ne pas partager son compte avec des tiers</li>
-				<li>Signaler immediatement toute utilisation non autorisee de son compte</li>
+				<li>Signaler immédiatement toute utilisation non autorisée de son compte</li>
 			</ul>
 
 			<h3>3.3 Gratuité</h3>
 			<p class="rounded-lg bg-green-50 p-4 dark:bg-green-950">
-				L'utilisation du Service est <strong>gratuite</strong> pour les eleves et les enseignants.
+				L'utilisation du Service est <strong>gratuite</strong> pour les élèves et les enseignants.
 			</p>
 		</section>
 
@@ -92,48 +92,48 @@
 			<h2>4. Obligations de l'utilisateur</h2>
 
 			<h3>4.1 Comportement général</h3>
-			<p>L'utilisateur s'engage a utiliser le Service de maniere responsable et a ne pas :</p>
+			<p>L'utilisateur s'engage à utiliser le Service de manière responsable et à ne pas :</p>
 			<ul>
 				<li>Perturber le fonctionnement normal du Service</li>
-				<li>Tenter d'acceder a des fonctionnalites ou donnees non autorisees</li>
-				<li>Utiliser le Service a des fins illegales</li>
-				<li>Publier des contenus injurieux, diffamatoires, obscenes ou discriminatoires</li>
+				<li>Tenter d'accéder à des fonctionnalités ou données non autorisées</li>
+				<li>Utiliser le Service à des fins illégales</li>
+				<li>Publier des contenus injurieux, diffamatoires, obscènes ou discriminatoires</li>
 				<li>Harceler d'autres utilisateurs</li>
-				<li>Usurper l'identite d'un autre utilisateur</li>
+				<li>Usurper l'identité d'un autre utilisateur</li>
 			</ul>
 
 			<h3>4.2 Contenu utilisateur</h3>
 			<p>
 				L'utilisateur est seul responsable des contenus qu'il publie sur le Service (messages,
-				reponses aux exercices). Ces contenus doivent respecter la legislation en vigueur.
+				réponses aux exercices). Ces contenus doivent respecter la législation en vigueur.
 			</p>
 		</section>
 
 		<section>
 			<h2>5. Propriété intellectuelle</h2>
 			<p>
-				L'ensemble des elements du Service (exercices, textes, images, logos, code source) sont la
-				propriete exclusive d'Chiphre et sont proteges par les lois relatives a la propriete
+				L'ensemble des éléments du Service (exercices, textes, images, logos, code source) sont la
+				propriété exclusive de Chiphre et sont protégés par les lois relatives à la propriété
 				intellectuelle.
 			</p>
 			<p>
-				Chiphre accorde a l'utilisateur une licence personnelle, non exclusive et non transferable
-				pour utiliser le Service dans le cadre de son usage pedagogique.
+				Chiphre accorde à l'utilisateur une licence personnelle, non exclusive et non transférable
+				pour utiliser le Service dans le cadre de son usage pédagogique.
 			</p>
 		</section>
 
 		<section>
 			<h2>6. Protection des données personnelles</h2>
 			<p>
-				Le traitement des donnees personnelles est decrit dans notre
-				<a href={resolve('/legal/confidentialite')}>Politique de Confidentialite</a>.
+				Le traitement des données personnelles est décrit dans notre
+				<a href={resolve('/legal/confidentialite')}>Politique de confidentialité</a>.
 			</p>
-			<p>En resume :</p>
+			<p>En résumé :</p>
 			<ul>
-				<li>Seules les donnees necessaires au Service sont collectees</li>
-				<li>Les donnees ne sont jamais vendues a des tiers</li>
-				<li>L'utilisateur dispose de droits d'acces, rectification et suppression</li>
-				<li>Des mesures de securite appropriees sont mises en oeuvre</li>
+				<li>Seules les données nécessaires au Service sont collectées</li>
+				<li>Les données ne sont jamais vendues à des tiers</li>
+				<li>L'utilisateur dispose de droits d'accès, rectification et suppression</li>
+				<li>Des mesures de sécurité appropriées sont mises en œuvre</li>
 			</ul>
 		</section>
 
@@ -141,25 +141,25 @@
 			<h2>7. Responsabilités</h2>
 
 			<h3>7.1 Responsabilité de Chiphre</h3>
-			<p>Chiphre s'engage a :</p>
+			<p>Chiphre s'engage à :</p>
 			<ul>
-				<li>Assurer la disponibilite du Service dans la mesure du possible</li>
-				<li>Mettre en oeuvre des mesures de securite appropriees</li>
-				<li>Corriger les dysfonctionnements signales dans des delais raisonnables</li>
+				<li>Assurer la disponibilité du Service dans la mesure du possible</li>
+				<li>Mettre en œuvre des mesures de sécurité appropriées</li>
+				<li>Corriger les dysfonctionnements signalés dans des délais raisonnables</li>
 			</ul>
 
 			<h3>7.2 Responsabilité de l'utilisateur</h3>
 			<p>L'utilisateur est responsable :</p>
 			<ul>
 				<li>De l'utilisation qu'il fait du Service</li>
-				<li>De la confidentialite de ses identifiants</li>
+				<li>De la confidentialité de ses identifiants</li>
 				<li>Des contenus qu'il publie</li>
-				<li>Du respect des presentes CGU</li>
+				<li>Du respect des présentes CGU</li>
 			</ul>
 
 			<h3>7.3 Cas des mineurs</h3>
 			<p>
-				Pour les utilisateurs mineurs, les parents ou tuteurs legaux restent responsables de
+				Pour les utilisateurs mineurs, les parents ou tuteurs légaux restent responsables de
 				l'utilisation du Service par leur enfant.
 			</p>
 		</section>
@@ -167,53 +167,53 @@
 		<section>
 			<h2>8. Modération et sanctions</h2>
 			<p>
-				Les enseignants ont acces aux messages de leurs eleves dans le cadre du suivi pedagogique.
-				Les contenus contraires aux CGU peuvent etre supprimes sans preavis.
+				Les enseignants ont accès aux messages de leurs élèves dans le cadre du suivi pédagogique.
+				Les contenus contraires aux CGU peuvent être supprimés sans préavis.
 			</p>
-			<p>En cas de non-respect des CGU, Chiphre se reserve le droit de :</p>
+			<p>En cas de non-respect des CGU, Chiphre se réserve le droit de :</p>
 			<ul>
-				<li>Adresser un avertissement a l'utilisateur</li>
-				<li>Suspendre temporairement l'acces au Service</li>
-				<li>Supprimer definitivement le compte de l'utilisateur</li>
+				<li>Adresser un avertissement à l'utilisateur</li>
+				<li>Suspendre temporairement l'accès au Service</li>
+				<li>Supprimer définitivement le compte de l'utilisateur</li>
 			</ul>
 		</section>
 
 		<section>
 			<h2>9. Disponibilité du Service</h2>
 			<p>
-				Chiphre peut interrompre temporairement le Service pour des operations de maintenance. Ces
-				interruptions seront, dans la mesure du possible, planifiees en dehors des heures de cours.
+				Chiphre peut interrompre temporairement le Service pour des opérations de maintenance. Ces
+				interruptions seront, dans la mesure du possible, planifiées en dehors des heures de cours.
 			</p>
 			<p>
-				En cas d'arret definitif du Service, les utilisateurs seront informes avec un preavis
-				raisonnable pour leur permettre de recuperer leurs donnees.
+				En cas d'arrêt définitif du Service, les utilisateurs seront informés avec un préavis
+				raisonnable pour leur permettre de récupérer leurs données.
 			</p>
 		</section>
 
 		<section>
 			<h2>10. Modification des CGU</h2>
 			<p>
-				Chiphre se reserve le droit de modifier les presentes CGU a tout moment. Les utilisateurs
-				seront informes des modifications substantielles par une notification dans l'application.
+				Chiphre se réserve le droit de modifier les présentes CGU à tout moment. Les utilisateurs
+				seront informés des modifications substantielles par une notification dans l'application.
 			</p>
 			<p>
-				La poursuite de l'utilisation du Service apres modification vaut acceptation des nouvelles
+				La poursuite de l'utilisation du Service après modification vaut acceptation des nouvelles
 				CGU.
 			</p>
 		</section>
 
 		<section>
 			<h2>11. Droit applicable</h2>
-			<p>Les presentes CGU sont soumises au <strong>droit francais</strong>.</p>
+			<p>Les présentes CGU sont soumises au <strong>droit français</strong>.</p>
 			<p>
-				En cas de litige, les parties s'efforceront de trouver une solution amiable. A defaut, les
-				tribunaux francais seront competents.
+				En cas de litige, les parties s'efforceront de trouver une solution amiable. À défaut, les
+				tribunaux français seront compétents.
 			</p>
 		</section>
 
 		<section>
 			<h2>12. Contact</h2>
-			<p>Pour toute question relative aux presentes CGU :</p>
+			<p>Pour toute question relative aux présentes CGU :</p>
 			<ul>
 				<li><strong>Email</strong> : contact@chiph.re</li>
 			</ul>
@@ -223,8 +223,8 @@
 
 		<p class="text-sm text-muted-foreground">
 			<em>
-				Conditions Generales d'Utilisation conformes au droit francais et au Reglement General sur
-				la Protection des Donnees (RGPD).
+				Conditions générales d'utilisation conformes au droit français et au Règlement général sur
+				la protection des données (RGPD).
 			</em>
 		</p>
 	</article>

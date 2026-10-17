@@ -17,6 +17,9 @@ import {
 	getSchoolYearPeriods,
 	getActiveSchoolYear
 } from '$lib/server/warnings';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/periods/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const { user, profile } = locals;
@@ -60,7 +63,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			allPeriods
 		});
 	} catch (err) {
-		console.error('[API] Failed to load periods:', err);
+		logger.error('[API] Failed to load periods:', err);
 		throw error(500, 'Failed to load academic periods');
 	}
 };

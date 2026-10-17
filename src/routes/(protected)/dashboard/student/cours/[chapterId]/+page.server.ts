@@ -19,6 +19,9 @@ import { buildChapterPlan, type WorksheetPlacement } from '$lib/server/chapter-p
 import { toggleChecklistSchema } from '$lib/server/validation/chapters';
 import { listChapterSeries } from '$lib/server/chapter-series';
 import { summarizeChapterDecks, type ChapterDeckSummary } from '$lib/server/srs/chapter-deck';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/cours/[chapterId]/+page.server');
 
 /**
  * Paquet de révision calculé du chapitre (étape 3) : `null` si illisible —
@@ -33,7 +36,7 @@ async function loadRevisionDeck(
 		const [summary] = await summarizeChapterDecks(supabase, userId, { chapterId });
 		return summary ?? null;
 	} catch (err) {
-		console.error(`Paquet de révision illisible pour le chapitre ${chapterId} :`, err);
+		logger.error(`Paquet de révision illisible pour le chapitre ${chapterId} :`, err);
 		return null;
 	}
 }
@@ -56,7 +59,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	);
 
 	if (chapterError) {
-		console.error('[Student Chapter Detail] Error:', chapterError);
+		logger.error('[Student Chapter Detail] Error:', chapterError);
 		if (chapterError.message.includes('not found') || chapterError.message.includes('PGRST116')) {
 			throw error(404, 'Chapitre non trouvé');
 		}
@@ -77,7 +80,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 	// ne doit pas se confondre avec une donnée réellement vide.
 	if (classInfoError && classInfoError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', classInfoError);
+		logger.error('Contexte illisible :', classInfoError);
 	}
 
 	// Get exercise details for linked exercises
@@ -95,7 +98,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 			.in('id', exerciseIds);
 
 		if (exercisesError) {
-			console.error('Lecture impossible :', exercisesError);
+			logger.error('Lecture impossible :', exercisesError);
 			throw error(500, 'Impossible de charger les données');
 		}
 
@@ -124,7 +127,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	);
 	const worksheetsUnavailable = !worksheetsResponse.ok;
 	if (worksheetsUnavailable) {
-		console.error(
+		logger.error(
 			`Fiches du chapitre illisibles (HTTP ${worksheetsResponse.status}) pour le chapitre ${chapter.id}`
 		);
 	}
@@ -155,17 +158,17 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	// Même règle que pour les fiches : une panne ne se lit pas « aucune série ».
 	if (seriesResult.error) {
-		console.error(`Séries du chapitre illisibles pour ${chapter.id} :`, seriesResult.error);
+		logger.error(`Séries du chapitre illisibles pour ${chapter.id} :`, seriesResult.error);
 	}
 	const seriesUnavailable = seriesResult.error !== null;
 
 	// Une panne de rangement ne doit pas se lire « chapitre vide » : le plan
 	// retombe alors sur « Non classé », qui montre TOUT plutôt que rien.
 	if (sectionsResult.error) {
-		console.error(`Sections illisibles pour le chapitre ${chapter.id} :`, sectionsResult.error);
+		logger.error(`Sections illisibles pour le chapitre ${chapter.id} :`, sectionsResult.error);
 	}
 	if (placementsResult.error) {
-		console.error(`Rangement des fiches illisible pour ${chapter.id} :`, placementsResult.error);
+		logger.error(`Rangement des fiches illisible pour ${chapter.id} :`, placementsResult.error);
 	}
 
 	const worksheetPlacements: Record<string, WorksheetPlacement> = {};
@@ -179,7 +182,9 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	const plan = buildChapterPlan({
 		sections: (sectionsResult.data ?? []).map((s) => ({
 			id: s.id,
-			chapterId: s.chapter_id,
+			chapterId,
+			sourceId: s.source_id,
+			hidden: s.hidden,
 			title: s.title,
 			displayOrder: s.display_order,
 			createdAt: s.created_at,
@@ -239,7 +244,7 @@ export const actions: Actions = {
 		);
 
 		if (toggleError) {
-			console.error('[Toggle Checklist] Error:', toggleError);
+			logger.error('[Toggle Checklist] Error:', toggleError);
 			return fail(500, {
 				error: 'Erreur lors de la mise à jour',
 				action: 'toggleChecklist'

@@ -14,8 +14,7 @@
 export type CombiningAccent = 'arrow' | 'arrow.l' | 'arrow.l.r' | 'harpoon';
 
 export type TextRun =
-	| { kind: 'text'; text: string }
-	| { kind: 'accent'; base: string; accent: CombiningAccent };
+	{ kind: 'text'; text: string } | { kind: 'accent'; base: string; accent: CombiningAccent };
 
 /** Accent combinant (U+20D0–U+20FF) → nom de l'accent (celui du mode math de Typst) */
 const ACCENTS: Readonly<Record<string, CombiningAccent>> = {

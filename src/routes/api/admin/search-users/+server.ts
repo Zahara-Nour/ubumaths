@@ -2,6 +2,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { searchUsersSchema } from '$lib/server/validation/admin';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/search-users/+server');
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	// ✅ SECURITY: admin elevation OR real admin login. Privileged search runs via the
@@ -16,7 +19,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	});
 
 	if (!validation.success) {
-		console.error('Search validation error:', validation.error.issues);
+		logger.error('Search validation error:', validation.error.issues);
 		throw error(400, validation.error.issues[0].message);
 	}
 
@@ -33,9 +36,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		result_limit: limit
 	});
 
+	// Une panne n'est pas « aucun résultat » : rendre 200 avec une liste vide
+	// faisait conclure à l'admin que l'élève n'existait pas.
 	if (searchError) {
-		console.error('Search error:', searchError);
-		return json({ error: searchError.message, users: [] });
+		logger.error('Search error:', searchError);
+		throw error(500, 'La recherche a échoué');
 	}
 
 	// Transform the result to match expected format

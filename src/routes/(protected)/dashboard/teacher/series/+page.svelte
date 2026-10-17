@@ -60,7 +60,7 @@
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Mes séries</h1>
 			<p class="mt-2 text-muted-foreground">
-				Une série compose les questions ; une évaluation la donne à des élèves, sous une forme.
+				Une série compose les questions ; un contrôle la donne à des élèves, sous une forme.
 			</p>
 		</div>
 		<Button href="/automaths">
@@ -104,18 +104,18 @@
 							{questions} question{questions > 1 ? 's' : ''}
 						</p>
 						<p>
-							{series.evaluations_count} évaluation{series.evaluations_count > 1 ? 's' : ''}
+							{series.evaluations_count} contrôle{series.evaluations_count > 1 ? 's' : ''}
 						</p>
 						{#if series.locked}
 							<p class="text-xs">
-								Un élève a commencé une évaluation qui l'utilise : duplique-la pour la modifier.
+								Un élève a commencé un contrôle qui l'utilise : duplique-la pour la modifier.
 							</p>
 						{/if}
 					</Card.Content>
 					<Card.Footer class="flex flex-wrap gap-2">
 						<Button size="sm" onclick={() => handleCreateEvaluation(series)}>
 							<Plus class="mr-2 h-4 w-4" />
-							Créer une évaluation
+							Créer un contrôle
 						</Button>
 						<Button
 							size="sm"

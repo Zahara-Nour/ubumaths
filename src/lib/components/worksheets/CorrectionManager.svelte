@@ -6,18 +6,16 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
 	import * as Popover from '$lib/components/ui/popover';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import {
+		compileTypstDocument,
+		fallbackWarning
+	} from '$lib/typst/compiler/correction-fonts-compiler';
 	import { Eye, Loader2, EyeOff, Settings2, FileText, AlertTriangle } from '@lucide/svelte';
 	import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '$lib/types/worksheets';
-
-	// Typst library type
-	type TypstLibrary = {
-		setCompilerInitOptions: (options: { getModule: () => string }) => void;
-		setRendererInitOptions: (options: { getModule: () => string }) => void;
-		pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
-	};
 
 	interface ExerciseWithVisibility {
 		id: string;
@@ -86,10 +84,15 @@
 	let isReleasing = $state(false);
 	let isRevoking = $state(false);
 	let isPreviewing = $state(false);
+	// Chaque élève a sa version (valeurs ou ordre, D6) : le corrigé de classe
+	// est la copie d'un élève choisi ici, au moment de le produire
+	let studentDialogOpen = $state(false);
+	let copyStudentItems = $state<{ value: string; label: string; description?: string }[]>([]);
+	// Liste des élèves : chargée, vide (affectation sans élève) ou en panne
+	let copyStudentsStatus = $state<'ok' | 'empty' | 'error'>('ok');
+	let copyStudentId = $state<string | undefined>(undefined);
 	let isLoadingExercises = $state(false);
 	let isTogglingExercise = $state<string | null>(null);
-	let isTypstLoaded = $state(false);
-	let isTypstLoading = $state(false);
 
 	let exercises = $state<ExerciseWithVisibility[]>([]);
 	let exercisePopoverOpen = $state(false);
@@ -272,77 +275,68 @@
 		}
 	}
 
-	async function loadTypst(): Promise<void> {
-		const existingTypst = (window as { $typst?: TypstLibrary }).$typst;
-		if (existingTypst) {
-			isTypstLoaded = true;
-			return;
+	/**
+	 * Les élèves de l'affectation, triés par nom (comme l'aperçu « vue
+	 * élève ») : le premier est présélectionné. Une panne se distingue d'une
+	 * liste vide (`copyStudentsStatus`) : l'une se réessaie, l'autre non.
+	 */
+	async function loadCopyStudents(): Promise<void> {
+		try {
+			const response = await fetch(`/api/worksheets/assignments/${assignment.id}/students`);
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			const data: {
+				students?: {
+					id: string;
+					first_name: string | null;
+					last_name: string | null;
+					class_name: string | null;
+				}[];
+			} = await response.json();
+			copyStudentItems = (data.students ?? [])
+				.map((s) => ({
+					value: s.id,
+					label: [s.first_name, s.last_name].filter(Boolean).join(' ') || 'Élève sans nom',
+					description: s.class_name || undefined
+				}))
+				.sort((a, b) => a.label.localeCompare(b.label, 'fr'));
+			copyStudentId = copyStudentItems[0]?.value;
+			copyStudentsStatus = copyStudentItems.length > 0 ? 'ok' : 'empty';
+		} catch (err) {
+			console.error('Élèves de l’affectation illisibles :', err);
+			copyStudentItems = [];
+			copyStudentId = undefined;
+			copyStudentsStatus = 'error';
 		}
-		if (isTypstLoaded) return;
-		if (isTypstLoading) {
-			await new Promise<void>((resolve) => {
-				const check = setInterval(() => {
-					if (isTypstLoaded || (window as { $typst?: TypstLibrary }).$typst) {
-						clearInterval(check);
-						isTypstLoaded = true;
-						resolve();
-					}
-				}, 100);
-			});
-			return;
-		}
-		isTypstLoading = true;
-		return new Promise((resolve, reject) => {
-			const script = document.createElement('script');
-			script.type = 'module';
-			script.src =
-				'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst.ts/dist/esm/contrib/all-in-one-lite.bundle.js';
-			script.addEventListener('load', () => {
-				setTimeout(() => {
-					const typst = (window as { $typst?: TypstLibrary }).$typst;
-					if (typst) {
-						try {
-							typst.setCompilerInitOptions({
-								getModule: () =>
-									'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
-							});
-							typst.setRendererInitOptions({
-								getModule: () =>
-									'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
-							});
-						} catch {
-							/* already init */
-						}
-						isTypstLoaded = true;
-						isTypstLoading = false;
-						resolve();
-					} else {
-						isTypstLoading = false;
-						reject(new Error('Typst not available'));
-					}
-				}, 100);
-			});
-			script.addEventListener('error', () => {
-				isTypstLoading = false;
-				reject(new Error('Failed'));
-			});
-			document.head.appendChild(script);
-		});
 	}
 
-	async function handlePreviewCorrection() {
+	/**
+	 * Le corrigé de classe. Sans élève : la route dit si chaque élève a sa
+	 * version (`needs_student`) ; la liste des élèves s'ouvre alors, et le
+	 * corrigé part d'après la copie de l'élève choisi.
+	 */
+	async function handlePreviewCorrection(studentId?: string) {
 		isPreviewing = true;
 		try {
-			await loadTypst();
+			const query = new URLSearchParams({ format: 'typst' });
+			if (studentId) query.set('studentId', studentId);
 			const response = await fetch(
-				`/api/worksheets/assignments/${assignment.id}/correction?format=typst`
+				`/api/worksheets/assignments/${assignment.id}/correction?${query.toString()}`
 			);
 			const data = await response.json();
 			if (!response.ok) throw new Error(data.message);
-			const typst = (window as { $typst?: TypstLibrary }).$typst;
-			if (!typst) throw new Error('Typst not loaded');
-			const pdfData = await typst.pdf({ mainContent: data.typst });
-			const blob = new Blob([pdfData as unknown as BlobPart], { type: 'application/pdf' });
+			if (data.needs_student === true) {
+				await loadCopyStudents();
+				studentDialogOpen = true;
+				return;
+			}
+			studentDialogOpen = false;
+			// Versions épinglées (écart T10) ; le Corrigé passe par le compilateur de ses
+			// polices, avec repli dans la police standard
+			const compiled = await compileTypstDocument(data.typst);
+			if (compiled.fallbackError) toaster.warning(fallbackWarning(compiled.fallbackError));
+			const blob = new Blob([compiled.data.pdf as unknown as BlobPart], {
+				type: 'application/pdf'
+			});
 			window.open(URL.createObjectURL(blob), '_blank');
 		} catch (_err) {
 			toaster.error('Erreur apercu');
@@ -493,7 +487,7 @@
 		<Button
 			variant="outline"
 			size="sm"
-			onclick={handlePreviewCorrection}
+			onclick={() => handlePreviewCorrection()}
 			disabled={isPreviewing}
 			class="h-8 gap-1.5 text-xs"
 		>
@@ -506,3 +500,42 @@
 		</Button>
 	</div>
 </div>
+
+<!-- Corrigé de classe d'une affectation individualisée : l'élève dont la copie sert de corrigé -->
+<Dialog.Root bind:open={studentDialogOpen}>
+	<Dialog.Content class="sm:max-w-md">
+		<Dialog.Header>
+			<Dialog.Title>Corrigé de classe</Dialog.Title>
+			<Dialog.Description>
+				Chaque élève a sa propre version de cette fiche (valeurs ou ordre des exercices). Le corrigé
+				reprend la copie de l’élève choisi ; son nom n’est pas imprimé, et un avertissement invite
+				chaque élève à consulter sa correction personnelle.
+			</Dialog.Description>
+		</Dialog.Header>
+		{#if copyStudentsStatus === 'error'}
+			<div class="flex items-center justify-between gap-3 text-sm text-destructive">
+				<span>Impossible de charger la liste des élèves.</span>
+				<Button variant="outline" size="sm" onclick={loadCopyStudents}>Réessayer</Button>
+			</div>
+		{:else if copyStudentsStatus === 'empty'}
+			<p class="text-sm text-muted-foreground">Aucun élève dans cette affectation.</p>
+		{:else}
+			<MySelect
+				type="single"
+				bind:value={copyStudentId}
+				items={copyStudentItems}
+				placeholder="Choisir un élève"
+			/>
+		{/if}
+		<Dialog.Footer>
+			<Button variant="outline" onclick={() => (studentDialogOpen = false)}>Annuler</Button>
+			<Button
+				onclick={() => handlePreviewCorrection(copyStudentId)}
+				disabled={!copyStudentId || isPreviewing}
+			>
+				{#if isPreviewing}<Loader2 class="mr-1 h-4 w-4 animate-spin" />{/if}
+				Produire le corrigé
+			</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>

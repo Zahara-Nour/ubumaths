@@ -114,6 +114,8 @@ export function computeCost(node: MathNode): number {
 		case 'constant':
 		case 'symbol':
 		case 'hole':
+		case 'segmentLength':
+		case 'figureName':
 		case 'infinity':
 		case 'signed-zero':
 		case 'boolean':

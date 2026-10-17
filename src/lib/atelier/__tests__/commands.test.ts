@@ -8,9 +8,18 @@
 
 import { describe, it, expect } from 'vitest';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { commandCatalog, resolveCommand, suggestFor, ATELIER_ONLY_COMMANDS } from '../commands';
+import {
+	commandCatalog,
+	commandBeingWritten,
+	resolveCommand,
+	suggestFor,
+	ATELIER_ONLY_COMMANDS,
+	ENGINE_COMMANDS_LEFT_OUT,
+	stageExampleSetup
+} from '../commands';
 import { Atelier } from '../atelier.svelte';
 import { runInput } from '../calcul';
+import { CalcDesk } from '../desk.svelte';
 
 describe('le catalogue des commandes', () => {
 	it('vient du registre, pas d’une liste écrite en dur', () => {
@@ -81,11 +90,14 @@ describe('le catalogue des commandes', () => {
 
 	// L'invariant qui compte : une commande ajoutée au moteur ne doit pas rester
 	// en anglais dans l'atelier. Sans ce test, elle passerait inaperçue.
+	// Seules les commandes laissées dehors EXPRÈS (`ENGINE_COMMANDS_LEFT_OUT`) y échappent.
 	it('ne laisse aucune commande du registre sans traduction', () => {
 		const engine = new WebReplEngine();
 
 		const traduites = new Set(commandCatalog(engine).map((c) => c.name));
-		const oubliees = engine.getCommands().filter((c) => !traduites.has(c.name));
+		const oubliees = engine
+			.getCommands()
+			.filter((c) => !traduites.has(c.name) && !ENGINE_COMMANDS_LEFT_OUT.has(c.name));
 
 		expect(oubliees.map((c) => c.name)).toEqual([]);
 	});
@@ -100,7 +112,7 @@ describe('le catalogue des commandes', () => {
 	 */
 	it('ne propose que des exemples qui s’exécutent vraiment', () => {
 		for (const command of commandCatalog(new WebReplEngine())) {
-			if (command.example === undefined || command.unavailable !== undefined) continue;
+			if (command.example === undefined) continue;
 
 			// ⚠️ **Une garde ne protège que ce qui passe par elle.** Les
 			// commandes servies par l'atelier ne vont jamais au moteur : les
@@ -117,9 +129,7 @@ describe('le catalogue des commandes', () => {
 				// qui les contient ; il doit alors CRÉER quelque chose (`.simuler`
 				// range ses effectifs dans une liste) ou afficher une formule
 				const atelier = new Atelier();
-				for (const [name, definition] of Object.entries(command.exampleSetup ?? {})) {
-					atelier.create({ kind: 'list', name, definition });
-				}
+				stageExampleSetup(atelier, command.exampleSetup);
 				const before = atelier.objects.length;
 				const result = runInput({ atelier, engine: new WebReplEngine() }, command.example);
 				const latex = result.kind === 'commande' ? result.latex : undefined;
@@ -135,11 +145,13 @@ describe('le catalogue des commandes', () => {
 					command.name === 'filter' &&
 					result.kind === 'commande' &&
 					/^\d+ individus? sur \d+ /.test(result.output);
+				// `.tabuler` écrit dans la grille (tableur, lot 3) : la réponse est le tableau
+				const tabulated = staged && command.name === 'tabulate' && atelier.cell(1, 1) !== '';
 				expect(
 					{
 						commande: command.french,
 						kind: result.kind,
-						repond: latex !== undefined || created || drawn || answered
+						repond: latex !== undefined || created || drawn || answered || tabulated
 					},
 					`l'exemple de « .${command.french} » ne montre pas ce qu'elle fait`
 				).toMatchObject({ kind: 'commande', repond: true });
@@ -175,42 +187,34 @@ describe('le catalogue des commandes', () => {
 		}
 	});
 
-	// Une commande indisponible doit dire pourquoi, et ne pas porter d'exemple
-	// qui laisserait croire qu'elle marche.
-	it('donne une raison à toute commande indisponible', () => {
-		for (const command of commandCatalog(new WebReplEngine())) {
-			if (command.unavailable === undefined) continue;
-			expect(command.unavailable.trim()).not.toBe('');
-			expect(command.example).toBeUndefined();
-		}
-	});
-
 	/**
 	 * ⚠️ Q1 option B : **l'atelier détient les noms.** Une commande qui écrit
 	 * dans l'`EvalState` fabrique un nom que le panneau ignore, et les deux
-	 * divergent en silence — mesuré le 2026-09-16, dans les deux sens :
-	 *
-	 * - `.effacer` vide les liaisons du moteur ; le panneau affiche toujours
-	 *   `a = 3`, mais `a + 1` rend « a+1 » avec `success: true` ;
-	 * - `.poser b = 5` marche, puis la première modification d'un objet du
-	 *   panneau détruit `b` sans un mot — `syncEngine` repose tout.
+	 * divergent en silence — mesuré le 2026-09-16, puis le 2026-10-13 alors
+	 * qu'elles étaient « indisponibles » (grisées, mais exécutées une fois
+	 * tapées). Décision de David (2026-10-13) : elles n'existent pas ici.
+	 * Le comportement tapé est vérifié dans `commandes-inexistantes.svelte.test.ts`.
 	 */
-	it('rend indisponible toute commande qui écrirait dans le moteur', () => {
+	it('ne met au catalogue aucune commande qui écrirait dans le moteur', () => {
 		const catalog = commandCatalog(new WebReplEngine());
 
-		for (const name of ['let', 'def', 'unset', 'undef', 'clear', 'inv', "def'"]) {
-			const command = catalog.find((c) => c.name === name);
-			expect(command, name).toBeDefined();
-			expect(command?.unavailable, name).toBeTruthy();
+		for (const name of ['let', 'def', 'unset', 'undef', 'clear', 'inv', "def'", 'auto']) {
+			expect(
+				catalog.find((c) => c.name === name),
+				name
+			).toBeUndefined();
 		}
 	});
 
-	// Celles qui LISENT seulement restent utilisables : elles ne mentent jamais.
-	it('laisse utilisables les commandes qui ne font que lire', () => {
+	// Celles qui LISENT seulement restent au catalogue : elles ne mentent jamais.
+	it('garde les commandes qui ne font que lire', () => {
 		const catalog = commandCatalog(new WebReplEngine());
 
 		for (const name of ['vars', 'fns', 'simplify', 'diff', 'solve', 'variations']) {
-			expect(catalog.find((c) => c.name === name)?.unavailable, name).toBeUndefined();
+			expect(
+				catalog.find((c) => c.name === name),
+				name
+			).toBeDefined();
 		}
 	});
 
@@ -277,5 +281,78 @@ describe('quand la commande n’existe pas', () => {
 		const engine = new WebReplEngine();
 
 		expect(suggestFor(engine, 'd').length).toBeLessThanOrEqual(2);
+	});
+});
+
+/**
+ * Le modèle affiché sous le champ une fois la commande choisie (phase 0
+ * `docs/wip/atelier-cas-phase0.md`, PR 1, décision de David du 2026-10-11).
+ */
+describe('la commande en cours d’écriture', () => {
+	const catalog = commandCatalog(new WebReplEngine());
+	const written = (draft: string) => commandBeingWritten(catalog, draft)?.french ?? null;
+
+	it('reconnaît la commande dès l’espace qui suit son nom', () => {
+		expect(written('.taylor ')).toBe('taylor');
+		expect(written('.taylor sin(x) ordre')).toBe('taylor');
+	});
+
+	it('reconnaît un nom sans accent ou un raccourci, sous son nom français', () => {
+		expect(written('.deriver x^2')).toBe('dériver');
+		expect(written('.diff x^2')).toBe('dériver');
+	});
+
+	it('ne reconnaît rien tant que le nom n’est pas suivi d’un espace', () => {
+		expect(written('.taylor')).toBeNull();
+	});
+
+	it('ne reconnaît rien sans point, ni pour une commande inconnue', () => {
+		expect(written('taylor sin(x)')).toBeNull();
+		expect(written('.zz x')).toBeNull();
+		expect(written('')).toBeNull();
+	});
+
+	// Le modèle est l'EXEMPLE : une commande d'élève sans exemple n'aurait que
+	// sa description sous le champ, qui ne dit pas comment écrire la suite
+	it('chaque commande d’élève disponible a un exemple', () => {
+		const missing = catalog
+			.filter((c) => c.section !== undefined)
+			.filter((c) => c.example === undefined)
+			.map((c) => c.french);
+
+		expect(missing).toEqual([]);
+	});
+});
+
+/**
+ * Les commandes qui se lancent sans argument (décision de David, 2026-10-11) :
+ * tapées en entier, une seule Entrée les lance — la liste ne les « choisit » pas.
+ */
+describe('les commandes qui se lancent seules', () => {
+	const catalog = commandCatalog(new WebReplEngine());
+	const alone = catalog.filter((c) => c.runsAlone === true);
+
+	it('sont celles qu’on attend', () => {
+		expect(alone.map((c) => c.french).sort()).toEqual(
+			['aide', 'décimal', 'exact', 'exporter', 'fonctions', 'valeurs'].sort()
+		);
+	});
+
+	// Sinon une seule Entrée enverrait une commande incomplète. Par le PUPITRE,
+	// le chemin de l'élève : `.exporter` n'y passe pas par le moteur, il
+	// télécharge l'historique (ou dit qu'il n'y a rien) sans écrire de ligne
+	it('répondent vraiment, tapées seules', () => {
+		for (const command of alone) {
+			const desk = new CalcDesk(new Atelier());
+			const downloads: string[] = [];
+			desk.download = (_entries, format) => downloads.push(format);
+			desk.submit('1+1');
+			desk.submit(`.${command.french}`);
+			const answer = desk.entries.length === 2 ? desk.entries[1] : null;
+			expect({
+				commande: command.french,
+				answered: answer === null ? downloads.length === 1 : !answer.failed
+			}).toEqual({ commande: command.french, answered: true });
+		}
 	});
 });

@@ -26,6 +26,8 @@ import {
 	variable
 } from '../../factory';
 import type { MathNode } from '../../types';
+import { parseLatex } from '../../parser';
+import { isLimit } from '../../guards';
 import { generatePedagogicalLimitSteps } from '../pipeline';
 import { PedagogicalLimitRenderer } from '../renderer';
 import type { PedagogicalLimitStep } from '../types';
@@ -211,7 +213,7 @@ describe('renderer — LaTeX format', () => {
 	it('handles infinity in the limit subscript', () => {
 		const synthetic: PedagogicalLimitStep = {
 			id: 1,
-			rule: 'identify-dominant-term',
+			rule: 'factor-dominant-term',
 			description: '',
 			before: variable('x'),
 			after: variable('x'),
@@ -244,6 +246,147 @@ describe('renderer — LaTeX format', () => {
 		const r = renderer.render(synthetic, { schoolLevel: 'lycee', verbosity: 'detailed' });
 		expect(r.expressionLatex).not.toContain('\\lim_{');
 		expect(r.expressionLatex).toContain('\\textcolor{blue}');
+	});
+});
+
+// =============================================================================
+// Membre de droite : une limite reste une limite tant que x y figure
+// =============================================================================
+
+/** Rendu détaillé des étapes d'une limite SAISIE (jamais un arbre fabriqué). */
+function renderParsed(latex: string, schoolLevel: 'lycee' | 'superieur' = 'lycee') {
+	const limit = parseLatex(latex);
+	if (!isLimit(limit)) throw new Error(`pas une limite : ${latex}`);
+	const { steps } = generatePedagogicalLimitSteps(limit.expression, {
+		variable: limit.variable,
+		approach: limit.approach,
+		direction: limit.direction,
+		schoolLevel
+	});
+	return renderer.renderAll(steps, { schoolLevel, verbosity: 'detailed' });
+}
+
+/** La 2ᵉ ligne du bloc `aligned` : `= …`. */
+function rightHandSide(expressionLatex: string | undefined): string {
+	const line = (expressionLatex ?? '').split('\n').find((l) => l.trimStart().startsWith('& ='));
+	if (line === undefined) throw new Error(`pas de membre de droite : ${expressionLatex}`);
+	return line.trim().replace(/^& = /, '');
+}
+
+/** x écrit comme lettre seule (pas le x de `\exp`). */
+const MENTIONS_X = /(?<![a-zA-Z\\])x(?![a-zA-Z])/;
+
+describe('renderer — `\\lim f = \\lim g` tant que g dépend de x', () => {
+	it('factorisation : le membre de droite garde `\\lim_{x \\to 2}`, puis la valeur', () => {
+		const steps = renderParsed('\\lim_{x\\to 2}\\frac{3x^2-12}{x-2}');
+		const simplify = steps.find((s) => s.rule === 'simplify-common-factor');
+		expect(simplify).toBeDefined();
+		expect(rightHandSide(simplify?.expressionLatex)).toMatch(/^\\lim_\{x \\to 2\} /);
+		const conclusion = steps[steps.length - 1];
+		expect(rightHandSide(conclusion.expressionLatex)).toBe('12');
+	});
+
+	it('conjugué : le membre de droite garde `\\lim_{x \\to 4}`', () => {
+		const steps = renderParsed('\\lim_{x\\to 4}\\frac{2-\\sqrt{x}}{3x-12}');
+		const rationalized = steps.filter(
+			(s) => s.rule === 'multiply-by-conjugate' || s.rule === 'simplify-after-rationalization'
+		);
+		expect(rationalized.length).toBeGreaterThan(0);
+		for (const step of rationalized) {
+			expect(rightHandSide(step.expressionLatex)).toMatch(/^\\lim_\{x \\to 4\} /);
+		}
+	});
+
+	it("L'Hôpital (supérieur) : `\\lim f/g = \\lim f'/g'`", () => {
+		const steps = renderParsed('\\lim_{x\\to 0}\\frac{1-\\cos x}{3x^2}', 'superieur');
+		const lhopital = steps.filter((s) => s.rule === 'apply-lhopital');
+		expect(lhopital.length).toBeGreaterThan(0);
+		for (const step of lhopital) {
+			expect(rightHandSide(step.expressionLatex)).toMatch(/^\\lim_\{x \\to 0\} /);
+		}
+	});
+
+	it('à l’infini : forme indéterminée annoncée (la limite seule), conclusion `= -\\dfrac{3}{2}` sans `\\lim`', () => {
+		const steps = renderParsed('\\lim_{x\\to +\\infty}\\frac{-3x+1}{2x}');
+		const detect = steps.find((s) => s.rule === 'detect-indeterminate-form');
+		expect(detect?.expressionLatex).toContain('\\lim_{x \\to +\\infty}');
+		expect(detect?.expressionLatex).not.toContain('& =');
+		const conclusion = steps[steps.length - 1];
+		expect(rightHandSide(conclusion.expressionLatex)).toBe('-\\dfrac{3}{2}');
+	});
+
+	it('une somme sous `\\lim` à droite est parenthésée', () => {
+		const steps = renderParsed('\\lim_{x\\to 2}\\frac{3x^2-12}{x-2}');
+		const simplify = steps.find((s) => s.rule === 'simplify-common-factor');
+		expect(rightHandSide(simplify?.expressionLatex)).toMatch(
+			/^\\lim_\{x \\to 2\} \\left\( .* \\right\)$/
+		);
+	});
+
+	it('règle générale : x à droite ⇔ `\\lim` à droite (hors sous-étapes de fragment)', () => {
+		const cases = [
+			['\\lim_{x\\to 2}\\frac{3x^2-12}{x-2}', 'lycee'],
+			['\\lim_{x\\to 4}\\frac{2-\\sqrt{x}}{3x-12}', 'lycee'],
+			['\\lim_{x\\to +\\infty}\\frac{-3x+1}{2x}', 'lycee'],
+			['\\lim_{x\\to 3}2x^2+x', 'lycee'],
+			['\\lim_{x\\to 0}x\\sin(\\frac{1}{x})', 'lycee'],
+			['\\lim_{x\\to 0}\\frac{\\sin(2x)}{\\sin(3x)}', 'superieur']
+		] as const;
+		for (const [latex, level] of cases) {
+			for (const step of renderParsed(latex, level)) {
+				// Étape d'annonce : la limite seule, pas de membre de droite
+				if (!step.expressionLatex?.includes('& =')) continue;
+				const rhs = rightHandSide(step.expressionLatex);
+				const withoutLim = rhs.replace(/^\\lim_\{[^}]*\} /, '');
+				expect(rhs.startsWith('\\lim_{'), `${latex} [${step.rule}] ${rhs}`).toBe(
+					MENTIONS_X.test(withoutLim)
+				);
+			}
+		}
+	});
+
+	it('étape d’annonce (membre de droite = membre de gauche) : la limite seule, sans « = »', () => {
+		const announcing = new Set([
+			'identify-limit',
+			'detect-indeterminate-form',
+			'identify-bounds',
+			'compare-one-sided'
+		]);
+		const cases = [
+			'\\lim_{x\\to 2}\\frac{3x^2-12}{x-2}',
+			'\\lim_{x\\to +\\infty}\\frac{-3x+1}{2x}',
+			'\\lim_{x\\to 0}x\\sin(\\frac{1}{x})',
+			'\\lim_{x\\to 0}\\frac{2}{x}'
+		];
+		const seen = new Set<string>();
+		for (const latex of cases) {
+			for (const step of renderParsed(latex)) {
+				if (!announcing.has(step.rule)) continue;
+				seen.add(step.rule);
+				expect(step.expressionLatex, `${latex} [${step.rule}]`).not.toContain('& =');
+				expect(step.expressionLatex).toMatch(/\\textcolor\{blue\}\{\\lim_\{x \\to /);
+			}
+		}
+		expect([...seen].sort()).toEqual([...announcing].sort());
+	});
+});
+
+describe('renderer — côtés d’une limite bilatérale', () => {
+	it('2/x en 0 : la limite à gauche s’écrit en 0^-, la limite à droite en 0^+', () => {
+		const steps = renderParsed('\\lim_{x\\to 0}\\frac{2}{x}');
+		const left = steps.find((s) => s.rule === 'analyze-left-limit');
+		const right = steps.find((s) => s.rule === 'analyze-right-limit');
+		expect(left?.expressionLatex).toContain('\\lim_{x \\to 0^-}');
+		expect(left?.expressionLatex).toContain('= -\\infty');
+		expect(right?.expressionLatex).toContain('\\lim_{x \\to 0^+}');
+		expect(right?.expressionLatex).toContain('= +\\infty');
+	});
+
+	it('la conclusion reste bilatérale', () => {
+		const steps = renderParsed('\\lim_{x\\to 0}\\frac{3}{x^2}');
+		const conclusion = steps[steps.length - 1];
+		expect(conclusion.expressionLatex).toContain('\\lim_{x \\to 0}');
+		expect(conclusion.expressionLatex).not.toMatch(/0\^[+-]/);
 	});
 });
 
@@ -291,7 +434,14 @@ describe('renderer — recursion', () => {
 		const steps = generatePedagogicalLimitSteps(
 			divide(
 				subtract(power(variable('x'), number('2')), number('4')),
-				subtract(variable('x'), number('2'))
+				// x² − 3x + 2 = (x − 2)(x − 1) : les deux côtés se factorisent
+				add(
+					subtract(
+						power(variable('x'), number('2')),
+						multiply(number('3'), variable('x'), 'implicit')
+					),
+					number('2')
+				)
 			),
 			{ variable: 'x', approach: number('2'), schoolLevel: 'lycee' }
 		).steps;
@@ -306,7 +456,14 @@ describe('renderer — recursion', () => {
 		const steps = generatePedagogicalLimitSteps(
 			divide(
 				subtract(power(variable('x'), number('2')), number('4')),
-				subtract(variable('x'), number('2'))
+				// x² − 3x + 2 = (x − 2)(x − 1) : les deux côtés se factorisent
+				add(
+					subtract(
+						power(variable('x'), number('2')),
+						multiply(number('3'), variable('x'), 'implicit')
+					),
+					number('2')
+				)
 			),
 			{ variable: 'x', approach: number('2'), schoolLevel: 'lycee' }
 		).steps;

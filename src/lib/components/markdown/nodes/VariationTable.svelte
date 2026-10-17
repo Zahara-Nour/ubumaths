@@ -19,6 +19,7 @@
 	@module components/markdown/nodes/VariationTable
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import type {
 		VariationTableNode,
@@ -52,9 +53,14 @@
 	 * 3. Table 1's DOM may be hidden/destroyed → url(#vt-arrowhead-up) points to nothing
 	 * 4. Result: arrows display without arrowheads in Table 2
 	 *
-	 * Solution: Each instance gets unique marker IDs like "vt-arrowhead-abc123de-up"
+	 * Solution: Each instance gets unique marker IDs like "vt-arrowhead-s1-up"
+	 *
+	 * L'identifiant vient de Svelte ($props.id()) : unique dans la page, le même au
+	 * rendu serveur et dans le navigateur, et disponible partout. crypto.randomUUID
+	 * n'existe qu'en HTTPS et sur localhost : en HTTP sur une adresse IP, le tableau
+	 * plantait, et avec lui tout ce qui l'entourait.
 	 */
-	const instanceId = crypto.randomUUID().slice(0, 8);
+	const instanceId = $props.id();
 
 	/**
 	 * Convert expression to proper LaTeX for MathLive rendering

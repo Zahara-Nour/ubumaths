@@ -16,7 +16,11 @@ import {
 	deleteChapter,
 	reorderChapters
 } from '$lib/server/chapters';
-import { listChapterTemplates, instantiateTemplate } from '$lib/server/chapter-templates';
+import {
+	listChapterTemplates,
+	instantiateTemplate,
+	TemplateUnusableError
+} from '$lib/server/chapter-templates';
 import {
 	createChapterSchema,
 	updateChapterSchema,
@@ -25,6 +29,17 @@ import {
 import { instantiateTemplateSchema } from '$lib/server/validation/chapter-templates';
 import type { ChapterSummary } from '$lib/types/chapters';
 import type { TemplateSummary } from '$lib/types/chapter-templates';
+import { z } from 'zod';
+import {
+	getActiveCourseShareToken,
+	revokeCourseShareToken,
+	rotateCourseShareToken
+} from '$lib/server/course-share-tokens';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/cours/[classId]/+page.server');
+
+const classIdSchema = z.string().uuid('Identifiant de classe invalide');
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	// Only teachers can view this page
@@ -51,7 +66,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	);
 
 	if (chaptersError) {
-		console.error('[Teacher Class Chapters] Error:', chaptersError);
+		logger.error('[Teacher Class Chapters] Error:', chaptersError);
 		throw error(500, 'Erreur lors du chargement des chapitres');
 	}
 
@@ -78,7 +93,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.eq('profiles.is_test', false);
 
 	if (studentsError) {
-		console.error('Lecture impossible :', studentsError);
+		logger.error('Lecture impossible :', studentsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -105,18 +120,67 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (templatesError) {
-		console.error('Enrichissement illisible :', templatesError);
+		logger.error('Enrichissement illisible :', templatesError);
 	}
+
+	// Lien du cours (ADR 0025) : les élèves sans compte n'ont pas d'autre accès.
+	// Une panne de lecture n'empêche pas de gérer les chapitres ; elle est journalisée.
+	const { token: courseShareToken } = await getActiveCourseShareToken(locals.supabase, classId);
 
 	return {
 		classData,
 		chapters: chapters.sort((a, b) => a.displayOrder - b.displayOrder) as ChapterSummary[],
 		students: studentList,
-		templates: (templates || []) as TemplateSummary[]
+		templates: (templates || []) as TemplateSummary[],
+		courseShareToken
 	};
 };
 
 export const actions: Actions = {
+	/**
+	 * Créer / renouveler le lien du cours (ADR 0025).
+	 *
+	 * `requireRole` est refait dans chaque action : le `load` ne protège pas les
+	 * actions, qui sont des points d'entrée à part entière.
+	 */
+	shareCourseLink: async ({ locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+
+		const parsed = classIdSchema.safeParse(params.classId);
+		if (!parsed.success) return fail(400, { error: 'Classe invalide', action: 'shareCourseLink' });
+
+		const { error: rotateError } = await rotateCourseShareToken(
+			locals.supabase,
+			parsed.data,
+			user.id
+		);
+		if (rotateError) return fail(500, { error: rotateError, action: 'shareCourseLink' });
+
+		return { success: true, action: 'shareCourseLink' };
+	},
+
+	/**
+	 * Révoquer le lien du cours. Zéro ligne désactivée n'est pas un succès : la
+	 * RLS échoue en silence, et le professeur croirait le lien coupé.
+	 */
+	revokeCourseLink: async ({ locals, params }) => {
+		await requireRole(locals, 'teacher');
+
+		const parsed = classIdSchema.safeParse(params.classId);
+		if (!parsed.success) return fail(400, { error: 'Classe invalide', action: 'revokeCourseLink' });
+
+		const { revoked, error: revokeError } = await revokeCourseShareToken(
+			locals.supabase,
+			parsed.data
+		);
+		if (revokeError) return fail(500, { error: revokeError, action: 'revokeCourseLink' });
+		if (revoked === 0) {
+			return fail(404, { error: 'Aucun lien actif à révoquer', action: 'revokeCourseLink' });
+		}
+
+		return { success: true, action: 'revokeCourseLink' };
+	},
+
 	/**
 	 * Create a new chapter
 	 */
@@ -134,7 +198,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (classDataError && classDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', classDataError);
+			logger.error('Vérification impossible :', classDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -168,7 +232,7 @@ export const actions: Actions = {
 		);
 
 		if (createError) {
-			console.error('[Create Chapter] Error:', createError);
+			logger.error('[Create Chapter] Error:', createError);
 			return fail(500, { error: 'Erreur lors de la creation', action: 'create' });
 		}
 
@@ -195,7 +259,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (chapterDataError && chapterDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', chapterDataError);
+			logger.error('Vérification impossible :', chapterDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -227,7 +291,7 @@ export const actions: Actions = {
 		const { error: updateError } = await updateChapter(chapterId, validation.data, locals.supabase);
 
 		if (updateError) {
-			console.error('[Update Chapter] Error:', updateError);
+			logger.error('[Update Chapter] Error:', updateError);
 			return fail(500, { error: 'Erreur lors de la mise a jour', action: 'update' });
 		}
 
@@ -254,7 +318,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (chapterDataError && chapterDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', chapterDataError);
+			logger.error('Vérification impossible :', chapterDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -266,7 +330,7 @@ export const actions: Actions = {
 		const { error: deleteError } = await deleteChapter(chapterId, locals.supabase);
 
 		if (deleteError) {
-			console.error('[Delete Chapter] Error:', deleteError);
+			logger.error('[Delete Chapter] Error:', deleteError);
 			return fail(500, { error: 'Erreur lors de la suppression', action: 'delete' });
 		}
 
@@ -290,7 +354,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (classDataError && classDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', classDataError);
+			logger.error('Vérification impossible :', classDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -328,7 +392,7 @@ export const actions: Actions = {
 		);
 
 		if (reorderError) {
-			console.error('[Reorder Chapters] Error:', reorderError);
+			logger.error('[Reorder Chapters] Error:', reorderError);
 			return fail(500, { error: 'Erreur lors du reordonnancement', action: 'reorder' });
 		}
 
@@ -356,7 +420,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (chapterDataError && chapterDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', chapterDataError);
+			logger.error('Vérification impossible :', chapterDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -368,7 +432,7 @@ export const actions: Actions = {
 		const { error: updateError } = await updateChapter(chapterId, { isVisible }, locals.supabase);
 
 		if (updateError) {
-			console.error('[Toggle Visibility] Error:', updateError);
+			logger.error('[Toggle Visibility] Error:', updateError);
 			return fail(500, { error: 'Erreur lors de la mise a jour', action: 'toggleVisibility' });
 		}
 
@@ -392,7 +456,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (classDataError && classDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', classDataError);
+			logger.error('Vérification impossible :', classDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -424,8 +488,14 @@ export const actions: Actions = {
 			locals.supabase
 		);
 
+		// Brouillon, archivé : le professeur doit lire quoi faire (« publiez-le
+		// d'abord »). Le message générique ne le disait pas.
+		if (instError instanceof TemplateUnusableError) {
+			return fail(409, { error: instError.message, action: 'instantiateFromTemplate' });
+		}
+
 		if (instError || !result) {
-			console.error('[Instantiate Template] Error:', instError);
+			logger.error('[Instantiate Template] Error:', instError);
 			return fail(500, {
 				error: 'Erreur lors de la creation du chapitre depuis le template',
 				action: 'instantiateFromTemplate'

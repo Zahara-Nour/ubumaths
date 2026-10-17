@@ -14,7 +14,7 @@ Décisions Q150 (c) et Q142 (aucune liste créée). Spec validée par David le 2
 - Densités : courbe toujours dessinée. Discrètes : diagramme en bâtons affiché, AJOUTÉ aussi
   à `.binomiale` (accord de David, 2026-10-04).
 - Erreurs du bloc ```loi sans « Ligne N : » ; option sans valeur et variable minuscule
-expliquées ; catalogue `commands.ts` : 3 entrées, exemple jouable, décor vide (Q79).
+  expliquées ; catalogue `commands.ts` : 3 entrées, exemple jouable, décor vide (Q79).
 
 ## Étapes
 

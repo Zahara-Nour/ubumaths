@@ -1,6 +1,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/vip-cards/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Check admin (real admin login OR step-up elevation)
@@ -14,7 +17,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('sort_order', { ascending: true });
 
 	if (templatesError) {
-		console.error('Error loading VIP card templates:', templatesError);
+		logger.error('Error loading VIP card templates:', templatesError);
 		throw error(500, 'Échec du chargement des cartes VIP');
 	}
 
@@ -26,7 +29,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (configsError) {
-		console.error('Error loading VIP card configs:', configsError);
+		logger.error('Error loading VIP card configs:', configsError);
 		throw error(500, 'Échec du chargement des configurations');
 	}
 

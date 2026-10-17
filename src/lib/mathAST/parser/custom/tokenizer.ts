@@ -311,8 +311,11 @@ export const KNOWN_FUNCTION_NAMES: readonly string[] = [
 	...Object.keys(FUNCTION_ALIASES)
 ];
 
-/** Les fonctions citées par le message d'un nom inconnu. */
-const SHOWN_FUNCTIONS = [
+/**
+ * Les fonctions citées par le message d'un nom inconnu — et proposées par la
+ * complétion de l'atelier (`atelier/completion.ts`) : celles d'un élève.
+ */
+export const SHOWN_FUNCTIONS: readonly string[] = [
 	'sqrt',
 	'cbrt',
 	'exp',

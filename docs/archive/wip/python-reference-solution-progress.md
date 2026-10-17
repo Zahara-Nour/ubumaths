@@ -33,13 +33,13 @@
 
 ## Phases livrées
 
-| Phase | Description                                                  | Tests  |
-| ----- | ------------------------------------------------------------ | ------ |
+| Phase | Description                                                 | Tests  |
+| ----- | ----------------------------------------------------------- | ------ |
 | A     | Types + Zod schemas (mirror types.ts ↔ python-exercises.ts) | 13 Zod |
-| B     | Worker `runReferenceSolutionBehavior` + tests Pyodide réels  | 13     |
-| C     | UI éditeur (panel à 3 sections, toggles fixed/generator)     | —      |
-| D     | UI résultat (`failureSubline` étendu)                        | —      |
-| E     | Code review + quality checks + commit                        | ✅     |
+| B     | Worker `runReferenceSolutionBehavior` + tests Pyodide réels | 13     |
+| C     | UI éditeur (panel à 3 sections, toggles fixed/generator)    | —      |
+| D     | UI résultat (`failureSubline` étendu)                       | —      |
+| E     | Code review + quality checks + commit                       | ✅     |
 
 **Total : 26 tests nouveaux** (13 Zod + 13 client Pyodide).
 

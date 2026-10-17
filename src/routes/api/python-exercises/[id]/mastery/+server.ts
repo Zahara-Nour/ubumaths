@@ -13,6 +13,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { pythonMasterySingleQuerySchema } from '$lib/server/validation/python-exercises';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-exercises/[id]/mastery/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -21,7 +24,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	const parsed = pythonMasterySingleQuerySchema.safeParse({
@@ -31,7 +34,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		const msg = parsed.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Paramètres invalides: ${msg}`);
+		throw error(400, `Paramètres invalides : ${msg}`);
 	}
 
 	const targetStudent = parsed.data.student_id ?? user.id;
@@ -44,8 +47,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		.maybeSingle();
 
 	if (dbErr) {
-		console.error('Failed to read mastery row:', dbErr);
-		throw error(500, 'Erreur lors de la lecture du statut de maîtrise');
+		logger.error('Failed to read mastery row:', dbErr);
+		throw error(500, 'Impossible de charger le statut de maîtrise');
 	}
 
 	return json({ status: data?.status ?? null });

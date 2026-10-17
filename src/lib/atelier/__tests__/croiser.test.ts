@@ -79,11 +79,13 @@ describe('cas nominal', () => {
 
 describe('cas d’erreur — message, rien de créé', () => {
 	it.each([
+		// P1 (2026-10-15) : des longueurs différentes s'associent par ligne ; refus
+		// seulement sans aucune ligne en commun
 		[
-			'longueurs différentes',
-			{ L: 'a ; b ; a ; b', M: 'x ; y ; x' },
+			'aucune ligne en commun',
+			{ L: 'a ; b', M: ' ;  ; x ; y' },
 			'.croiser L M',
-			'L a 4 entrées et M 3 : il faut une entrée par individu.'
+			'L et M n’ont aucune ligne remplie en commun : il faut une entrée par individu, sur la même ligne.'
 		],
 		[
 			'une liste de nombres',
@@ -147,7 +149,10 @@ describe('l’action « Tableau croisé avec M »', () => {
 			{ L: 'a ; b', M: '1 ; 2' },
 			'M est une liste de nombres : le tableau croisé croise deux listes de mots.'
 		],
-		[{ L: 'a ; b ; c', M: 'x ; y' }, 'L a 3 entrées et M 2 : il faut une entrée par individu.']
+		[
+			{ L: 'a ; b', M: ' ;  ; x ; y' },
+			'L et M n’ont aucune ligne remplie en commun : il faut une entrée par individu, sur la même ligne.'
+		]
 	])('désactivée avec sa raison (%#)', (lists, reason) => {
 		const s = session(lists);
 		const action = actionsFor(s.atelier.get('L')!, s.atelier, 'M').find((a) => a.id === 'cross:M');

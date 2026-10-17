@@ -146,16 +146,35 @@ export const extractPerfectSquare: PedagogicalArithmeticRule = {
 	),
 	applicableLevels: ['college', 'lycee', 'superieur'],
 	priority: 100,
+	// `√9 = 3` n'extrait aucun facteur : 9 EST un carré parfait. Le titre le
+	// dit (décision de David, 2026-10-14) ; `√12 = 2√3` garde l'extraction
 	descriptions: {
-		college: () => 'On extrait le facteur carré parfait sous la racine',
-		lycee: () => 'Extraction du carré parfait',
+		college: (b) => {
+			const root = perfectSquareRoot(b.s);
+			if (root === null) return 'On extrait le facteur carré parfait sous la racine';
+			return `$${root * root} = ${root}^2$, donc $\\sqrt{${root * root}} = ${root}$`;
+		},
+		lycee: (b) =>
+			perfectSquareRoot(b.s) === null ? 'Extraction du carré parfait' : 'Racine d’un carré parfait',
 		superieur: () => 'simpl. √'
 	},
 	explanations: {
-		college: () =>
-			'On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.'
+		college: (b) => {
+			const root = perfectSquareRoot(b.s);
+			if (root === null) {
+				return 'On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.';
+			}
+			return `La racine carrée de $${root * root}$ est le nombre positif dont le carré vaut $${root * root}$ : c'est $${root}$.`;
+		}
 	}
 };
+
+/** `r` quand `node` est `√(r²)` écrit `√n` (n carré parfait > 1), sinon `null`. */
+function perfectSquareRoot(node: MathNode | undefined): bigint | null {
+	const n = asSqrtRadicand(node);
+	if (n === null || n <= 1n || !isPerfectSquare(n)) return null;
+	return simplifyRadical(n, 2n).coefficient;
+}
 
 // =============================================================================
 // multiplyRadicals (priority 110)

@@ -12,6 +12,9 @@ import { parseKanbanId, updateColumnSchema } from '$lib/server/validation/kanban
 import { assertBoardOwner, getColumnBoardId, rateLimitResponse } from '$lib/server/kanban';
 import { checkKanbanColumnMutationRateLimit } from '$lib/server/rateLimiter';
 import type { KanbanColumn, KanbanColumnUpdate } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/organisation/kanban/columns/[columnId]/+server');
 
 export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	const { user } = await requireAuth(locals);
@@ -52,7 +55,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError || !data) {
-		console.error('[kanban] update column failed:', dbError);
+		logger.error('[kanban] update column failed:', dbError);
 		throw error(500, 'Erreur lors de la mise à jour de la colonne');
 	}
 
@@ -79,7 +82,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('id', columnId);
 
 	if (dbError) {
-		console.error('[kanban] delete column failed:', dbError);
+		logger.error('[kanban] delete column failed:', dbError);
 		throw error(500, 'Erreur lors de la suppression de la colonne');
 	}
 

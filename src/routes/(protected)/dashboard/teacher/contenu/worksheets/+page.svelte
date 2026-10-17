@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_OPTIONS } from '$lib/utils/worksheet-constants';
 	import { lore } from '$lib/config/lore';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -19,7 +20,6 @@
 		FileText,
 		ClipboardCheck,
 		BookOpen,
-		HelpCircle,
 		Home,
 		Loader2
 	} from '@lucide/svelte';
@@ -74,7 +74,7 @@
 				throw new Error(error.message || 'Erreur lors de la suppression');
 			}
 
-			toaster.success('Feuille supprimee');
+			toaster.success('Feuille supprimée');
 			await invalidateAll();
 		} catch (error) {
 			console.error('Delete error:', error);
@@ -120,30 +120,13 @@
 	];
 
 	// Type filter options
-	const typeOptions = [
-		{ value: '', label: 'Tous les types' },
-		{ value: 'worksheet', label: `Feuille de ${lore.learning.exercise}s` },
-		{ value: 'assessment', label: 'Evaluation' },
-		{ value: 'exam', label: lore.learning.exam },
-		{ value: 'quiz', label: 'Quiz' },
-		{ value: 'homework', label: 'Corvées Domestiques' }
-	];
-
-	// Type label map
-	const typeLabels: Record<WorksheetType, string> = {
-		worksheet: 'Feuille',
-		assessment: 'Evaluation',
-		exam: lore.learning.exam,
-		quiz: 'Quiz',
-		homework: 'Corvées Domestiques'
-	};
+	const typeOptions = [{ value: '', label: 'Tous les types' }, ...WORKSHEET_TYPE_OPTIONS];
 
 	// Type icon map
 	const typeIcons: Record<WorksheetType, typeof FileText> = {
 		worksheet: FileText,
 		assessment: ClipboardCheck,
 		exam: BookOpen,
-		quiz: HelpCircle,
 		homework: Home
 	};
 
@@ -336,7 +319,7 @@
 								<Table.Cell>
 									<div class="flex items-center gap-2">
 										<TypeIcon class="h-4 w-4 text-muted-foreground" />
-										<span>{typeLabels[worksheetType]}</span>
+										<span>{WORKSHEET_TYPE_LABELS[worksheetType]}</span>
 									</div>
 								</Table.Cell>
 								<Table.Cell>

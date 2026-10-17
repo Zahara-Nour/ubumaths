@@ -2,11 +2,11 @@
 	import { onMount } from 'svelte';
 	import type { Component } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
-	import { ArrowLeft } from '@lucide/svelte';
 
 	let EditorComponent = $state<Component | null>(null);
 
@@ -47,7 +47,7 @@ segment(A, B)
 
 			if (response.ok) {
 				const result = await response.json();
-				toaster.success('Construction creee');
+				toaster.success('Construction créée');
 				goto(`/constructions/${result.construction.id}`);
 			} else {
 				const result = await response.json();
@@ -67,11 +67,7 @@ segment(A, B)
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">
-	<Button variant="ghost" href="/constructions" class="mb-4 w-fit">
-		<ArrowLeft class="mr-2 h-4 w-4" />
-		Retour aux constructions
-	</Button>
-
+	<BackLink href="/constructions" label="Retour aux constructions" />
 	<h1 class="mb-6 text-2xl font-bold">Nouvelle construction DSL</h1>
 
 	<!-- Metadata form -->

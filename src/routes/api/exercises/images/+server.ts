@@ -39,6 +39,9 @@ import {
 	type ImageMetadata
 } from '$lib/server/validation/image-upload';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/images/+server');
 
 // ============================================================================
 // CONSTANTS
@@ -87,7 +90,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// 2. Validate Content-Type header
 	const contentType = request.headers.get('content-type');
 	if (!contentType || !contentType.includes('multipart/form-data')) {
-		throw error(400, 'Content-Type must be multipart/form-data');
+		throw error(400, 'La requête doit être envoyée en multipart/form-data');
 	}
 
 	// 3. Parse form data
@@ -95,37 +98,37 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		formData = await request.formData();
 	} catch (err) {
-		console.error('Error parsing form data:', err);
-		throw error(400, 'Invalid form data');
+		logger.error('Error parsing form data:', err);
+		throw error(400, 'Formulaire invalide');
 	}
 
 	// 4. Get image file from form
 	const imageFile = formData.get('image');
 
 	if (!imageFile) {
-		throw error(400, 'Image file is required (field name: "image")');
+		throw error(400, 'Fichier image requis (champ « image »)');
 	}
 
 	if (!(imageFile instanceof File)) {
-		throw error(400, 'Invalid file upload');
+		throw error(400, 'Envoi de fichier invalide');
 	}
 
 	// 5. Validate file is not empty
 	if (imageFile.size === 0) {
-		throw error(400, 'Image file cannot be empty');
+		throw error(400, 'Le fichier image est vide');
 	}
 
 	// 6. Validate file size
 	if (imageFile.size > MAX_FILE_SIZE) {
 		const sizeMB = (imageFile.size / (1024 * 1024)).toFixed(2);
-		throw error(400, `File size (${sizeMB}MB) exceeds maximum of 5MB`);
+		throw error(400, `Fichier trop lourd (${sizeMB} Mo) : 5 Mo au maximum`);
 	}
 
 	// 7. Validate MIME type is allowed
 	if (!isAllowedMimeType(imageFile.type)) {
 		throw error(
 			400,
-			`Invalid file type: ${imageFile.type}. Allowed types: ${ALLOWED_IMAGE_TYPES.join(', ')}`
+			`Type de fichier non autorisé : ${imageFile.type}. Types acceptés : ${ALLOWED_IMAGE_TYPES.join(', ')}`
 		);
 	}
 
@@ -141,14 +144,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const arrayBuffer = await imageFile.arrayBuffer();
 		fileBuffer = new Uint8Array(arrayBuffer);
 	} catch (err) {
-		console.error('Error reading file buffer:', err);
-		throw error(400, 'Error reading image file');
+		logger.error('Error reading file buffer:', err);
+		throw error(400, 'Impossible de lire le fichier image');
 	}
 
 	// 10. Validate file signature (magic bytes)
 	// This prevents malicious files masquerading as images
 	if (!validateFileSignature(fileBuffer, imageFile.type)) {
-		throw error(400, 'File content does not match declared file type');
+		throw error(400, 'Le contenu du fichier ne correspond pas à son type');
 	}
 
 	// 11. Extract image dimensions
@@ -160,7 +163,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const dimensionResult = await extractDimensionsFromFile(fileForDimensions);
 
 	if (!dimensionResult.success || !dimensionResult.dimensions) {
-		throw error(400, dimensionResult.error || 'Failed to extract image dimensions');
+		throw error(400, dimensionResult.error || 'Impossible de lire les dimensions de l’image');
 	}
 
 	const { width, height, aspectRatio } = dimensionResult.dimensions;
@@ -169,7 +172,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
 		throw error(
 			400,
-			`Image dimensions (${width}x${height}) exceed maximum of ${MAX_DIMENSION}x${MAX_DIMENSION} pixels`
+			`Image trop grande (${width}×${height}) : ${MAX_DIMENSION}×${MAX_DIMENSION} pixels au maximum`
 		);
 	}
 
@@ -180,8 +183,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const uploadResult = await uploadExerciseImage(locals.supabase, fileForUpload, user.id);
 
 	if (!uploadResult.success) {
-		console.error('Image upload failed:', uploadResult.error);
-		throw error(500, uploadResult.error || 'Failed to upload image');
+		logger.error('Image upload failed:', uploadResult.error);
+		throw error(500, uploadResult.error || 'Impossible d’envoyer l’image');
 	}
 
 	// 14. Build response

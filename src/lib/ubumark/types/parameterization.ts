@@ -129,8 +129,7 @@ export interface ResolvedVariable {
  * Used for bounds, digit counts, and exclusion values.
  */
 export type NumberOrVariable =
-	| { type: 'number'; value: number }
-	| { type: 'variable'; name: string };
+	{ type: 'number'; value: number } | { type: 'variable'; name: string };
 
 /**
  * Exclusion pattern for random generation
@@ -250,8 +249,13 @@ export type RandomSpec =
  * {{eval:{{a}}*{{b}}|d,+}} -> "+15" (if a*b = 15)
  */
 export interface EvalModifiers {
-	/** Écriture décimale ; sans lui, le résultat est exact (fraction irréductible, racine) */
+	/**
+	 * `;d` : écriture décimale DÉVELOPPÉE (`0.0000003`), jamais de notation scientifique ;
+	 * sans lui, le résultat est exact (fraction irréductible, racine)
+	 */
 	decimal?: boolean;
+	/** `;sci` : notation scientifique, toujours (`3 \times 10^{-7}`, `10^{-7}`) */
+	scientific?: boolean;
 	/** Add + sign for positive results */
 	addPositive?: boolean;
 	/** Wrap negative results in parentheses: -5 -> (-5) */

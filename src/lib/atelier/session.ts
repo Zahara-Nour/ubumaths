@@ -9,6 +9,8 @@
  */
 
 import type { Atelier } from './atelier.svelte';
+import type { CalcDesk, Entry } from './desk.svelte';
+import { loadCalcHistory, saveCalcHistory } from './history-storage';
 import { loadAtelier, saveAtelier, readForeignWrite } from './persistence';
 
 /** Délai avant de ranger, pour ne pas écrire à chaque frappe. */
@@ -33,6 +35,13 @@ export interface Session {
 	touch(): void;
 	/** Ranger tout de suite, sans attendre le délai. */
 	saveNow(): void;
+	close(): void;
+}
+
+/** Les lignes de Calcul rangées (`keepCalcHistory`). */
+export interface HistoryKeeper {
+	/** Signaler que les lignes ont changé — déclenche un rangement différé. */
+	touch(): void;
 	close(): void;
 }
 
@@ -125,6 +134,59 @@ export function openSession(atelier: Atelier, options: SessionOptions): Session 
 			if (timer !== null) saveNow();
 			closed = true;
 			target?.removeEventListener('storage', onStorage as EventListener);
+			target?.removeEventListener('pagehide', onPagehide as EventListener);
+		}
+	};
+}
+
+// =============================================================================
+// Les lignes de Calcul (décision de David du 2026-10-13, « option 1 »)
+// =============================================================================
+
+/**
+ * Relire les lignes de Calcul rangées dans le pupitre, puis les ranger en
+ * différé (`history-storage.ts`). Rien à dire à l'élève : un historique
+ * illisible, trop gros ou refusé laisse Calcul vide, jamais l'atelier en échec.
+ *
+ * ⚠️ Jamais ouvert en mode éphémère : un atelier reçu par lien ne lit ni
+ * n'écrit l'historique de l'élève.
+ */
+export function keepCalcHistory(
+	desk: CalcDesk,
+	options: Pick<SessionOptions, 'storage' | 'target'>
+): HistoryKeeper {
+	const { storage, target = null } = options;
+	const loaded = loadCalcHistory(storage);
+	// Rangé par une version plus récente : ni relu, ni écrasé
+	const frozen = loaded.kind === 'too-recent' || storage === null;
+	if (loaded.kind === 'loaded') desk.restoreHistory(loaded.history);
+
+	let timer: ReturnType<typeof setTimeout> | null = null;
+	let closed = false;
+	// Les lignes déjà rangées (ou tout juste relues) : rien à refaire
+	let saved: readonly Entry[] = desk.entries;
+
+	function saveNow(): void {
+		if (timer !== null) clearTimeout(timer);
+		timer = null;
+		saved = desk.entries;
+		saveCalcHistory(storage, desk.entries, desk.typedInputs);
+	}
+
+	const onPagehide = () => {
+		if (timer !== null) saveNow();
+	};
+	target?.addEventListener('pagehide', onPagehide as EventListener);
+
+	return {
+		touch() {
+			if (closed || frozen || desk.entries === saved) return;
+			if (timer !== null) clearTimeout(timer);
+			timer = setTimeout(saveNow, SAVE_DELAY_MS);
+		},
+		close() {
+			if (timer !== null) saveNow();
+			closed = true;
 			target?.removeEventListener('pagehide', onPagehide as EventListener);
 		}
 	};

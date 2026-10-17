@@ -15,6 +15,9 @@ import {
 	autoAcceptExactProposalSchema,
 	type AutoAcceptExactProposalResult
 } from '$lib/server/validation/marketplace-rpc';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/marketplace/auto-accept');
 
 // Absente de database.ts tant que la migration n'a pas été générée depuis la production.
 type RpcNonTypee = (
@@ -38,13 +41,13 @@ export async function autoAcceptExactProposal(
 	});
 
 	if (error) {
-		console.error('[marketplace] auto_accept_exact_proposal en erreur :', error);
+		logger.error('[marketplace] auto_accept_exact_proposal en erreur :', error);
 		return { success: false, reason: 'rpc_error', error: error.message };
 	}
 
 	const resultat = autoAcceptExactProposalSchema.safeParse(data);
 	if (!resultat.success) {
-		console.error('[marketplace] Réponse inattendue de auto_accept_exact_proposal :', data);
+		logger.error('[marketplace] Réponse inattendue de auto_accept_exact_proposal :', data);
 		return { success: false, reason: 'invalid_response' };
 	}
 

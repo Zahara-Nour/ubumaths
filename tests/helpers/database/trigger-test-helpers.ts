@@ -7,6 +7,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { deleteTestAuthUsers, closePostgresClient, getPostgresClient } from './postgres-client';
+import { purgeTemplatesOf } from './purge-modeles';
 
 /**
  * Creates a Supabase client for trigger testing
@@ -94,6 +95,7 @@ export async function cleanupAllTestData(): Promise<void> {
 	const serviceClient = createServiceRoleClient();
 
 	await purgeTestSeriesAndEvaluations();
+	await purgeTestTemplates();
 
 	// Order matters - delete children before parents
 	const tables = [
@@ -184,6 +186,25 @@ export async function cleanupAllTestData(): Promise<void> {
 	// que le `try/catch` ne pouvait donc pas voir. Le nettoyage était cassé
 	// depuis des mois en annonçant le succès. C'est exactement la règle
 	// `supabase/require-error-check` du dépôt, appliquée ici aux tests.
+	// ⚠️ Les documents des chapitres AVANT les classes : supprimer un chapitre
+	// archive ses fichiers téléversés dans `orphaned_documents`, au nom de
+	// l'unique professeur — et sans professeur (profil déjà purgé, ou suite
+	// lancée juste après `global-setup`), `teacher_id` NOT NULL fait échouer
+	// TOUTE la purge des classes. Toutes les classes partent : leurs documents
+	// aussi. Les lignes du modèle (`chapter_id` vide) ne sont pas touchées.
+	{
+		const { error } = await serviceClient
+			.from('chapter_documents')
+			.delete()
+			.not('chapter_id', 'is', null);
+		if (error) {
+			console.error(
+				'[cleanupAllTestData] Purge des documents de chapitre impossible :',
+				error.message
+			);
+		}
+	}
+
 	for (const table of ['exercise_assignments', 'classes', 'evaluation_tasks']) {
 		const { error } = await serviceClient
 			.from(table as never)
@@ -236,6 +257,25 @@ async function purgeTestSeriesAndEvaluations(): Promise<void> {
 		if (code !== '42P01' && code !== '42703') {
 			console.error('[cleanupAllTestData] Purge séries/évaluations impossible :', error);
 		}
+	}
+}
+
+/**
+ * Modèles de chapitre des profils de test (ADR 0029).
+ *
+ * ⚠️ À purger AVANT les profils : une ligne de lien (`source_id` en RESTRICT)
+ * fait échouer la cascade profil → modèle → éléments, et le DELETE massif des
+ * profils échoue en entier, sans lever. La suppression de secours en mode
+ * `replica` laissait alors le modèle orphelin. Voir `purge-modeles.ts`.
+ */
+async function purgeTestTemplates(): Promise<void> {
+	const client = await getPostgresClient();
+	try {
+		await purgeTemplatesOf(client, `select id from public.profiles where email like '%@test.com%'`);
+	} catch (error) {
+		// Bruyant EXPRÈS, comme la purge des classes : un échec ici fait échouer
+		// la purge des profils, et la suite suivante trébuche dessus.
+		console.error('[cleanupAllTestData] Purge des modèles impossible :', error);
 	}
 }
 

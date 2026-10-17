@@ -12,6 +12,8 @@
 
 export const SITE_URL = 'https://www.chiph.re';
 export const SITE_NAME = 'Chiphre';
+/** Logo de la marque (gidouille, 512 × 512) pour les données structurées ; source : `static/logo.svg` */
+export const SITE_LOGO = '/logo.png';
 /** Image de partage par défaut (1200 × 630), dans `static/` */
 export const DEFAULT_OG_IMAGE = '/og-image.png';
 

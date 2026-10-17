@@ -14,6 +14,11 @@ import * as authModule from '$lib/server/middleware/auth';
  */
 
 // Mock middleware
+// Les routes sont gardées par l'interrupteur (B8) : on teste leur comportement allumé.
+vi.mock('$lib/config/google-classroom', () => ({
+	GOOGLE_CLASSROOM_ENABLED: true
+}));
+
 vi.mock('$lib/server/middleware/auth', () => ({
 	requireRole: vi.fn()
 }));
@@ -424,7 +429,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expectHttpError(POST(event as any), 'You do not own this material');
+			await expectHttpError(POST(event as any), 'Accès refusé à ce support');
 		});
 
 		it('should reject if trying to share with archived classes', async () => {
@@ -453,8 +458,11 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expectHttpError(POST(event as any), 'Invalid request');
+			await expectHttpError(
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				POST(event as any),
+				'Une ou plusieurs classes introuvables ou inactives'
+			);
 		});
 	});
 
@@ -478,7 +486,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expectHttpError(POST(event as any), 'Material not found');
+			await expectHttpError(POST(event as any), 'Support introuvable');
 		});
 	});
 
@@ -502,7 +510,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expectHttpError(POST(event as any), 'Failed to fetch material');
+			await expectHttpError(POST(event as any), 'Impossible de charger le support');
 		});
 
 		it('should handle class fetch errors', async () => {
@@ -532,7 +540,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expectHttpError(POST(event as any), 'Failed to verify class ownership');
+			await expectHttpError(POST(event as any), 'Impossible de vérifier les classes');
 		});
 
 		it('should handle upsert errors', async () => {
@@ -567,7 +575,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expectHttpError(POST(event as any), 'Failed to share material');
+			await expectHttpError(POST(event as any), 'Impossible de partager le support');
 		});
 	});
 
@@ -867,7 +875,7 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expectHttpError(DELETE(event as any), 'Unauthorized');
+			await expectHttpError(DELETE(event as any), 'Accès refusé à ce support');
 		});
 	});
 
@@ -889,7 +897,7 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expectHttpError(DELETE(event as any), 'Material not found');
+			await expectHttpError(DELETE(event as any), 'Support introuvable');
 		});
 	});
 
@@ -920,7 +928,7 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expectHttpError(DELETE(event as any), 'Failed to unshare material');
+			await expectHttpError(DELETE(event as any), 'Impossible de retirer le partage du support');
 		});
 	});
 });

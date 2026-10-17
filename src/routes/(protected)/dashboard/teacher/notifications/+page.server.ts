@@ -15,6 +15,9 @@ import {
 	checkNotificationDeleteRateLimit
 } from '$lib/server/rateLimiter';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/notifications/+page.server');
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -63,7 +66,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			.eq('status', 'active');
 
 		if (studentsDataError) {
-			console.error('Lecture impossible :', studentsDataError);
+			logger.error('Lecture impossible :', studentsDataError);
 			throw error(500, 'Impossible de charger les données');
 		}
 
@@ -156,12 +159,12 @@ export const actions: Actions = {
 		// Add target data based on type
 		if (targetType === 'classes') {
 			if (!classIds || classIds.length === 0) {
-				return fail(400, { error: 'Veuillez sélectionner au moins une classe' });
+				return fail(400, { error: 'Sélectionner au moins une classe' });
 			}
 			notificationData.target_class_ids = classIds;
 		} else if (targetType === 'users') {
 			if (!userIds || userIds.length === 0) {
-				return fail(400, { error: 'Veuillez sélectionner au moins un élève' });
+				return fail(400, { error: 'Sélectionner au moins un élève' });
 			}
 			notificationData.target_user_ids = userIds;
 		}

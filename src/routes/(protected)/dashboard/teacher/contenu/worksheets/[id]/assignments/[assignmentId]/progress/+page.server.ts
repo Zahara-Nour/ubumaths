@@ -23,6 +23,11 @@ import {
 	formatClassNames
 } from '$lib/server/worksheets/assignment-classes';
 import type { MasteryStatus } from '$lib/types/exercise-mastery';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/worksheets/[id]/assignments/[assignmentId]/progress/+page.server'
+);
 
 const uuidSchema = z.string().uuid();
 
@@ -85,7 +90,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
 	// doit pas se confondre avec une donnée réellement vide.
 	if (worksheetError && worksheetError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', worksheetError);
+		logger.error('Contexte illisible :', worksheetError);
 	}
 	if (!worksheet) throw error(404, 'Fiche non trouvée');
 
@@ -99,7 +104,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
 	// doit pas se confondre avec une donnée réellement vide.
 	if (assignmentError && assignmentError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', assignmentError);
+		logger.error('Contexte illisible :', assignmentError);
 	}
 	if (!assignment) throw error(404, 'Assignation non trouvée');
 
@@ -127,7 +132,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 		// Cette liste borne le périmètre du suivi. Vidée par une panne, elle
 		// affiche un suivi amputé sans le dire.
 		if (membersError) {
-			console.error('Périmètre illisible :', membersError);
+			logger.error('Périmètre illisible :', membersError);
 			throw error(500, 'Impossible de déterminer le périmètre');
 		}
 		for (const m of members ?? []) studentIds.add(m.student_id);
@@ -141,7 +146,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 	// Cette liste borne la portée du classement. Vidée par une panne, elle
 	// affiche un classement amputé sans le dire.
 	if (individualError) {
-		console.error('Périmètre illisible :', individualError);
+		logger.error('Périmètre illisible :', individualError);
 		throw error(500, 'Impossible de déterminer le périmètre');
 	}
 	for (const row of individual ?? []) studentIds.add(row.student_id);
@@ -156,7 +161,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 			.select('student_id')
 			.in('student_id', individualIds);
 		if (anyMembershipError) {
-			console.error('Périmètre illisible :', anyMembershipError);
+			logger.error('Périmètre illisible :', anyMembershipError);
 			throw error(500, 'Impossible de déterminer le périmètre');
 		}
 		const enrolled = new Set((anyMembership ?? []).map((m) => m.student_id));
@@ -170,7 +175,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 		.eq('worksheet_id', params.id);
 
 	if (exercisesError) {
-		console.error('Lecture impossible :', exercisesError);
+		logger.error('Lecture impossible :', exercisesError);
 		throw error(500, 'Impossible de charger les données');
 	}
 	const exerciseIds = [...new Set((exercises ?? []).map((e) => e.exercise_id))];
@@ -201,7 +206,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Workshee
 	// Une panne ici s'afficherait « personne n'a rien fait » : le même symptôme
 	// muet que l'absence de règle RLS corrigée le 2026-10-12.
 	if (profilesError || masteryError) {
-		console.error('Lecture impossible :', profilesError ?? masteryError);
+		logger.error('Lecture impossible :', profilesError ?? masteryError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

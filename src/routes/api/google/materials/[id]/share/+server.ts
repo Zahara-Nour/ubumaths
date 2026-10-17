@@ -26,6 +26,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import {
@@ -33,12 +34,17 @@ import {
 	shareMaterialSchema,
 	unshareMaterialSchema
 } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/materials/[id]/share/+server');
 
 /**
  * POST /api/google/materials/[id]/share
  * Share a course work material with one or more classes
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -74,20 +80,19 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	if (materialError || !material) {
 		if (materialError?.code === 'PGRST116') {
-			throw error(404, 'Material not found');
+			throw error(404, 'Support introuvable');
 		}
-		console.error('[Material Share] Error fetching material:', materialError);
-		throw error(500, 'Failed to fetch material');
+		logger.error('[Material Share] Error fetching material:', materialError);
+		throw error(500, 'Impossible de charger le support');
 	}
 
 	// Handle nested course data (Supabase JOIN types)
 	const courseData = material.google_classroom_courses as unknown as
-		| { teacher_id: string }
-		| { teacher_id: string }[];
+		{ teacher_id: string } | { teacher_id: string }[];
 	const teacherId = Array.isArray(courseData) ? courseData[0]?.teacher_id : courseData?.teacher_id;
 
 	if (teacherId !== user.id) {
-		throw error(403, 'You do not own this material');
+		throw error(403, 'Accès refusé à ce support');
 	}
 
 	// Verify teacher owns all classes
@@ -98,12 +103,12 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		.eq('is_active', true);
 
 	if (classesError) {
-		console.error('[Material Share] Error fetching classes:', classesError);
-		throw error(500, 'Failed to verify class ownership');
+		logger.error('[Material Share] Error fetching classes:', classesError);
+		throw error(500, 'Impossible de vérifier les classes');
 	}
 
 	if (!classes || classes.length !== classIds.length) {
-		throw error(400, 'Invalid request');
+		throw error(400, 'Une ou plusieurs classes introuvables ou inactives');
 	}
 
 	// Create shared_materials records
@@ -124,8 +129,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		});
 
 	if (insertError) {
-		console.error('[Material Share] Error sharing material:', insertError);
-		throw error(500, 'Failed to share material');
+		logger.error('[Material Share] Error sharing material:', insertError);
+		throw error(500, 'Impossible de partager le support');
 	}
 
 	return json({ success: true, classesShared: classIds.length });
@@ -136,6 +141,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
  * Unshare a material from one or more classes
  */
 export const DELETE: RequestHandler = async ({ params, request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -171,20 +178,19 @@ export const DELETE: RequestHandler = async ({ params, request, locals }) => {
 
 	if (materialError || !material) {
 		if (materialError?.code === 'PGRST116') {
-			throw error(404, 'Material not found');
+			throw error(404, 'Support introuvable');
 		}
-		console.error('[Material Unshare] Error fetching material:', materialError);
-		throw error(500, 'Failed to fetch material');
+		logger.error('[Material Unshare] Error fetching material:', materialError);
+		throw error(500, 'Impossible de charger le support');
 	}
 
 	// Handle nested course data
 	const courseData = material.google_classroom_courses as unknown as
-		| { teacher_id: string }
-		| { teacher_id: string }[];
+		{ teacher_id: string } | { teacher_id: string }[];
 	const teacherId = Array.isArray(courseData) ? courseData[0]?.teacher_id : courseData?.teacher_id;
 
 	if (teacherId !== user.id) {
-		throw error(403, 'Unauthorized');
+		throw error(403, 'Accès refusé à ce support');
 	}
 
 	// Delete shares
@@ -195,8 +201,8 @@ export const DELETE: RequestHandler = async ({ params, request, locals }) => {
 		.in('class_id', classIds);
 
 	if (deleteError) {
-		console.error('[Material Unshare] Error unsharing material:', deleteError);
-		throw error(500, 'Failed to unshare material');
+		logger.error('[Material Unshare] Error unsharing material:', deleteError);
+		throw error(500, 'Impossible de retirer le partage du support');
 	}
 
 	return json({ success: true, classesUnshared: classIds.length });

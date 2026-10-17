@@ -17,6 +17,7 @@
 	 * @component
 	 */
 
+	import { isInsideRestriction } from '$lib/grapheur/restriction';
 	import { useGrapheurStore } from '$lib/stores/grapheur-context';
 
 	// L'instance de l'atelier qui nous contient, ou celle par défaut.
@@ -367,6 +368,8 @@
 		// =======================================================================
 		for (const func of grapheurStore.functions) {
 			if (!isExplicitFunction(func) || !func.visible || !func.ast) continue;
+			// Hors de l'ensemble, la courbe n'est pas tracée : rien à survoler.
+			if (!isInsideRestriction(func.restriction, cursor.x)) continue;
 
 			const evaluator = createEvaluator(func.ast, grapheurStore.parameterBindings);
 			const y = evaluator(cursor.x);

@@ -8,6 +8,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
@@ -31,7 +32,6 @@
 		Play,
 		Save,
 		ChevronDown,
-		ArrowLeft,
 		Loader2,
 		X,
 		Code2
@@ -372,11 +372,7 @@
 <div class="container mx-auto max-w-7xl p-4 sm:p-6">
 	<!-- Header -->
 	<div class="mb-6">
-		<Button variant="ghost" href="/constructions" class="mb-4 gap-2">
-			<ArrowLeft class="h-4 w-4" />
-			Retour a la liste
-		</Button>
-
+		<BackLink href="/constructions" label="Retour aux constructions" />
 		<h1 class="flex items-center gap-2 text-2xl font-bold sm:text-3xl">
 			<FileCode class="h-7 w-7 text-primary sm:h-8 sm:w-8" />
 			Importer une construction InstrumenPoche

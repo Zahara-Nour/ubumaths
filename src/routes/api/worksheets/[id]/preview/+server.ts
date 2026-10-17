@@ -8,9 +8,15 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { generatePreviewInstance } from '$lib/server/worksheets/instance-generator';
+import {
+	generatePreviewInstance,
+	GENERATION_EXERCISE_FIELDS
+} from '$lib/server/worksheets/instance-generator';
 import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
 import { asWorksheetConfig, toWorksheetExerciseRow } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/preview/+server');
 
 // Input validation schema
 const previewRequestSchema = z.object({
@@ -22,13 +28,13 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 	try {
 		// Authenticate user
 		if (!user) {
-			return error(401, 'Unauthorized');
+			return error(401, 'Connexion requise');
 		}
 
 		// Validate worksheet ID
 		const worksheetId = params.id;
 		if (!worksheetId) {
-			return error(400, 'Worksheet ID is required');
+			return error(400, 'Identifiant de fiche requis');
 		}
 
 		// Parse and validate request body
@@ -49,12 +55,12 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
-			return error(500, 'Impossible de vérifier vos droits');
+			logger.error('Rôle illisible :', profileError);
+			return error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (!profile || profile.role !== 'teacher') {
-			return error(403, 'Only teachers can preview worksheet variants');
+			return error(403, 'Aperçu des variantes réservé aux professeurs');
 		}
 
 		// Fetch worksheet details
@@ -73,7 +79,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.single();
 
 		if (worksheetError || !worksheet) {
-			return error(404, 'Worksheet not found');
+			return error(404, 'Fiche introuvable');
 		}
 
 		// Check if user has access to this worksheet
@@ -83,7 +89,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			(worksheet.school_id && profile.school_id === worksheet.school_id);
 
 		if (!hasAccess) {
-			return error(403, 'Access denied to this worksheet');
+			return error(403, 'Accès refusé à cette fiche');
 		}
 
 		// Fetch worksheet exercises with exercise details
@@ -92,13 +98,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.select(
 				`
 				*,
-				exercise:exercises (
-					id,
-					title,
-					variables,
-					shared,
-					variations
-				)
+				exercise:exercises (${GENERATION_EXERCISE_FIELDS})
 			`
 			)
 			.eq('worksheet_id', worksheetId)
@@ -106,8 +106,8 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.order('position', { ascending: true });
 
 		if (exercisesError) {
-			console.error('Error fetching exercises:', exercisesError);
-			return error(500, 'Failed to fetch worksheet exercises');
+			logger.error('Error fetching exercises:', exercisesError);
+			return error(500, 'Impossible de charger les exercices de la fiche');
 		}
 
 		if (!worksheetExercises || worksheetExercises.length === 0) {
@@ -138,13 +138,13 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 			// laisse une trace.
 			if (studentError) {
-				console.error('Enrichissement illisible :', studentError);
+				logger.error('Enrichissement illisible :', studentError);
 			}
 
 			if (student) {
 				studentInfo = {
 					id: student.id,
-					name: `${student.firstname || ''} ${student.lastname || ''}`.trim() || 'Unknown Student'
+					name: `${student.firstname || ''} ${student.lastname || ''}`.trim() || 'Élève inconnu'
 				};
 			}
 		}
@@ -179,7 +179,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			}
 		});
 	} catch (err) {
-		console.error('Error generating worksheet preview:', err);
-		return error(500, err instanceof Error ? err.message : 'Internal server error');
+		logger.error('Error generating worksheet preview:', err);
+		return error(500, err instanceof Error ? err.message : 'Une erreur inattendue s’est produite');
 	}
 };

@@ -22,6 +22,9 @@ import {
 } from '$lib/types/game';
 import type { GameSpell } from '$lib/types/game';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/navadra/combat/[combatId]/+page.server');
 
 /**
  * Tolérance de comparaison d'un défi, lue dans la colonne jsonb `answer`.
@@ -38,7 +41,7 @@ function toleranceDuDefi(answer: unknown): number | undefined {
 
 export const load: PageServerLoad = async ({ params, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
-	if (!user) throw error(401, 'Unauthorized');
+	if (!user) throw error(401, 'Connexion requise');
 
 	const combatId = validateUuidParam(params.combatId, 'combatId');
 
@@ -55,14 +58,14 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 		.single();
 
 	if (combatError || !combat) {
-		throw error(404, 'Combat not found');
+		throw error(404, 'Combat introuvable');
 	}
 
 	// Verify user is a participant
 	const isParticipant = combat.organizer_id === user.id;
 
 	if (!isParticipant) {
-		throw error(403, 'You are not a participant in this combat');
+		throw error(403, 'Accès réservé aux participants de ce combat');
 	}
 
 	// Fetch game player
@@ -76,8 +79,8 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 	// Une panne la rendait absente, et l'écran repartait comme pour un joueur
 	// neuf — niveau 1, tutoriel au début.
 	if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
-		console.error('Fiche de joueur illisible :', gamePlayerError);
-		throw error(500, 'Impossible de charger votre profil de jeu');
+		logger.error('Fiche de joueur illisible :', gamePlayerError);
+		throw error(500, 'Impossible de charger le profil de jeu');
 	}
 
 	// L'écran de combat lit le niveau du joueur dès son initialisation : sans
@@ -101,7 +104,7 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 		.single();
 
 	if (activeDeckError) {
-		console.error('Lecture impossible :', activeDeckError);
+		logger.error('Lecture impossible :', activeDeckError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -118,7 +121,7 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 			.limit(10);
 
 		if (spellsError) {
-			console.error('Lecture impossible :', spellsError);
+			logger.error('Lecture impossible :', spellsError);
 			throw error(500, 'Impossible de charger les données');
 		}
 		playerSpells = (spells ?? []).map(toGameSpell);
@@ -137,7 +140,7 @@ export const actions: Actions = {
 	// Select a spell for this turn
 	selectSpell: async ({ request, params, locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();
-		if (!user) throw error(401, 'Unauthorized');
+		if (!user) throw error(401, 'Connexion requise');
 
 		const combatId = validateUuidParam(params.combatId, 'combatId');
 		const formData = await request.formData();
@@ -164,7 +167,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (combatError && combatError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', combatError);
+			logger.error('Lecture impossible :', combatError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 
@@ -182,7 +185,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (spellError && spellError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', spellError);
+			logger.error('Lecture impossible :', spellError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 
@@ -200,7 +203,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (challengesError && challengesError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', challengesError);
+			logger.error('Lecture impossible :', challengesError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 
@@ -221,7 +224,7 @@ export const actions: Actions = {
 	// Submit challenge answer and resolve combat turn
 	submitAnswer: async ({ request, params, locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();
-		if (!user) throw error(401, 'Unauthorized');
+		if (!user) throw error(401, 'Connexion requise');
 
 		const combatId = validateUuidParam(params.combatId, 'combatId');
 		const formData = await request.formData();
@@ -243,7 +246,8 @@ export const actions: Actions = {
 
 		const { challenge_id, answer, correct_answer, time_taken, spell_num } = validation.data;
 
-		console.log('[submitAnswer] Received form data:', {
+		// Réponses d'élève : trace, donc dev seulement (jamais dans les logs de prod)
+		logger.trace('[submitAnswer] Received form data:', {
 			challenge_id,
 			answer,
 			correct_answer,
@@ -260,7 +264,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (combatError && combatError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', combatError);
+			logger.error('Lecture impossible :', combatError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 
@@ -281,7 +285,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (challengeError && challengeError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', challengeError);
+			logger.error('Lecture impossible :', challengeError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 
@@ -291,16 +295,16 @@ export const actions: Actions = {
 
 		// Validate answer using the correct answer from the client
 		// (generated on the client with the same random seed as displayed)
-		console.log('[submitAnswer] Validating answer:');
-		console.log('  - Student answer:', JSON.stringify(answer));
-		console.log('  - Correct answer:', JSON.stringify(correct_answer));
+		logger.trace('[submitAnswer] Validating answer:');
+		logger.trace('  - Student answer:', JSON.stringify(answer));
+		logger.trace('  - Correct answer:', JSON.stringify(correct_answer));
 		// `game_challenges.answer` est du jsonb, donc typé `Json` : il ne porte
 		// aucune clé. On extrait la tolérance avec un garde, et `validateAnswer`
 		// applique sa valeur par défaut (0.01) quand elle est absente.
 		const tolerance = toleranceDuDefi(challenge.answer);
-		console.log('  - Tolerance:', tolerance);
+		logger.info('  - Tolerance:', tolerance);
 		const success = validateAnswer(answer, correct_answer, tolerance);
-		console.log('[submitAnswer] Validation result:', success);
+		logger.trace('[submitAnswer] Validation result:', success);
 
 		// Record challenge attempt
 		await supabase.from('game_challenge_attempts').insert({
@@ -324,7 +328,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (spellError && spellError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', spellError);
+			logger.error('Lecture impossible :', spellError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 
@@ -336,7 +340,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', gamePlayerError);
+			logger.error('Lecture impossible :', gamePlayerError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 

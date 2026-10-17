@@ -41,7 +41,6 @@ describe('.dériver : sortie et étapes disent la même dérivée', () => {
 describe('une fonction de l’atelier se dérive toujours en x', () => {
 	// ⚠️ `f(x) = k` ne contient pas x : la règle « la seule variable libre »
 	// dériverait en k et répondrait 1. Une fonction de l'atelier est en x.
-	// (Le bouton ne peut pas le montrer : sur un objet en attente, il refuse.)
 	it('la commande `.dériver f`', () => {
 		const s: CalcSession = { atelier: new Atelier(), engine: new WebReplEngine() };
 		runInput(s, 'f(x) = k');
@@ -53,9 +52,13 @@ describe('une fonction de l’atelier se dérive toujours en x', () => {
 		expect(outcome).toMatchObject({
 			kind: 'commande',
 			latex: '0',
-			output: 'd/dx(f) = 0',
-			note: "En attente de « k », qui n'est pas encore défini."
+			// L'expression de f, comme pour une fonction prête (V56) : le moteur
+			// recevait le symbole f, et `.dériver f` de `f(x) = a x` répondait 0
+			output: 'd/dx((k)) = 0'
 		});
+		// Q4 (David, 2026-10-14) : la carte f′ se crée, à paramètre comme f
+		expect(outcome.kind === 'commande' && outcome.note).toBeFalsy();
+		expect(s.atelier.get("f'")).toBeDefined();
 	});
 });
 
@@ -107,6 +110,6 @@ it('le refus d’une fonction sans parenthèses est montré tel quel', () => {
 
 	expect(runInput(s, '.dériver sin x + cos x')).toEqual({
 		kind: 'refus',
-		message: 'Écris sin(x) avec des parenthèses.'
+		message: '« sin x » : écris sin(x) avec des parenthèses.'
 	});
 });

@@ -71,11 +71,6 @@
 				</p>
 			{/if}
 		</div>
-
-		<!-- Back button -->
-		<Button variant="outline" onclick={() => goto('/dashboard/admin/docs').then(() => {})}
-			>← Retour</Button
-		>
 	</div>
 
 	<!-- Search -->
@@ -173,11 +168,8 @@
 				</article>
 
 				<!-- Footer navigation -->
-				<div class="mt-8 flex items-center justify-between border-t pt-6">
-					<Button variant="outline" onclick={() => window.history.back()}>← Précédent</Button>
-					<Button variant="outline" onclick={() => goto('/dashboard/admin/docs').then(() => {})}>
-						📚 Retour à l'index
-					</Button>
+				<div class="mt-8 flex items-center justify-end border-t pt-6">
+					<Button variant="outline" href="/dashboard/admin/docs">📚 Retour à l'index</Button>
 				</div>
 			</div>
 		</main>

@@ -20,7 +20,8 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft, MessageCircle, X, Check, Pencil } from '@lucide/svelte';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { MessageCircle, X, Check, Pencil } from '@lucide/svelte';
 
 	// Components
 	import TradeOfferPanel from '$lib/components/marketplace/trade/TradeOfferPanel.svelte';
@@ -223,13 +224,6 @@
 	function closeChatDrawer(): void {
 		showChatDrawer = false;
 	}
-
-	/**
-	 * Navigate back to marketplace
-	 */
-	function goBack(): void {
-		goto('/dashboard/student/marketplace?tab=exchanges');
-	}
 </script>
 
 <svelte:head>
@@ -240,10 +234,12 @@
 	<!-- Header -->
 	<header class="flex items-center justify-between border-b bg-card px-2 py-2 sm:px-3">
 		<div class="flex items-center gap-3">
-			<Button variant="ghost" size="sm" onclick={goBack}>
-				<ArrowLeft class="h-5 w-5" />
-			</Button>
 			<div>
+				<BackLink
+					href="/dashboard/student/marketplace?tab=exchanges"
+					label="Retour aux échanges"
+					class="mb-0"
+				/>
 				<h1 class="text-lg font-semibold">Echange avec {partnerName}</h1>
 				<TradePresenceIndicator online={tradeRealtimeStore.partnerOnline} />
 			</div>

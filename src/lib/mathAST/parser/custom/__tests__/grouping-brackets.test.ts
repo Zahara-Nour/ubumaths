@@ -212,7 +212,8 @@ describe('PDF (Typst) — de bout en bout', () => {
 			includeSetup: false
 		});
 		expect(typst).not.toMatch(/Unexpected|red/);
-		// Typst écrit les crochets `bracket.l` / `bracket.r`
-		expect(typst).toContain('$2  bracket.l  ( x + 2 )^2 - 4  bracket.r + 3$');
+		// Typst écrit les crochets `bracket.l` / `bracket.r`, dans `lr(…)` pour qu'ils
+		// grandissent avec leur contenu (paire \left[ … \right], depuis 2026-10-13)
+		expect(typst).toMatch(/\$2 lr\(\s*bracket\.l\s+\( x \+ 2 \)\^2 - 4\s+bracket\.r \) \+ 3\$/);
 	});
 });

@@ -20,7 +20,10 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import type { ChapterContentType } from '$lib/types/chapters';
+import { chapterIdOf, type ChapterContentType } from '$lib/types/chapters';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/chapters-publication');
 
 /**
  * Correspondance FERMÉE entre ce qu'un formulaire envoie et la table visée.
@@ -80,7 +83,7 @@ export async function setContentPublication(
 		: undefined;
 
 	if (!table) {
-		console.error(`[setContentPublication] Type de contenu inconnu : ${input.contentType}`);
+		logger.error(`[setContentPublication] Type de contenu inconnu : ${input.contentType}`);
 		return { data: null, error: new Error('Type de contenu inconnu') };
 	}
 
@@ -128,7 +131,7 @@ export async function setContentPublication(
 	}
 
 	if (error) {
-		console.error('[setContentPublication] Écriture impossible :', error);
+		logger.error('[setContentPublication] Écriture impossible :', error);
 		// Une fiche déjà distribuée dont le chapitre n'a pas pu être mis à jour :
 		// la classe l'a reçue, l'écran dira « Préparé ». Le dire, plutôt que de
 		// laisser le professeur croire que rien n'est parti.
@@ -144,7 +147,7 @@ export async function setContentPublication(
 	}
 
 	return {
-		data: { itemId: data.id, chapterId: data.chapter_id, publishedAt: data.published_at ?? null },
+		data: { itemId: data.id, chapterId: chapterIdOf(data), publishedAt: data.published_at ?? null },
 		error: null
 	};
 }
@@ -196,7 +199,7 @@ export async function listDistributedWorksheetIds(
 		.or('available_from.is.null,available_from.lte.now');
 
 	if (error) {
-		console.error('[listDistributedWorksheetIds] Affectations illisibles :', error);
+		logger.error('[listDistributedWorksheetIds] Affectations illisibles :', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -217,7 +220,7 @@ async function ensureWorksheetDistributed(
 		.single();
 
 	if (lienError || !lien) {
-		console.error('[ensureWorksheetDistributed] Rattachement illisible :', lienError);
+		logger.error('[ensureWorksheetDistributed] Rattachement illisible :', lienError);
 		return { error: new Error('Fiche introuvable dans ce chapitre') };
 	}
 
@@ -266,7 +269,7 @@ async function ensureWorksheetDistributed(
 		.single();
 
 	if (affectationError || !affectation) {
-		console.error('[ensureWorksheetDistributed] Affectation impossible :', affectationError);
+		logger.error('[ensureWorksheetDistributed] Affectation impossible :', affectationError);
 		return { error: new Error('Distribution impossible') };
 	}
 
@@ -275,7 +278,7 @@ async function ensureWorksheetDistributed(
 		.insert({ assignment_id: affectation.id, class_id: classId });
 
 	if (lienClasseError) {
-		console.error(
+		logger.error(
 			'[ensureWorksheetDistributed] Rattachement à la classe impossible :',
 			lienClasseError
 		);
@@ -285,7 +288,7 @@ async function ensureWorksheetDistributed(
 			.delete()
 			.eq('id', affectation.id);
 		if (menageError) {
-			console.error('[ensureWorksheetDistributed] Ménage impossible :', menageError);
+			logger.error('[ensureWorksheetDistributed] Ménage impossible :', menageError);
 		}
 		return { error: new Error('Distribution impossible') };
 	}
@@ -298,9 +301,117 @@ async function ensureWorksheetDistributed(
 		.eq('id', affectation.id);
 
 	if (activationError) {
-		console.error('[ensureWorksheetDistributed] Activation impossible :', activationError);
+		logger.error('[ensureWorksheetDistributed] Activation impossible :', activationError);
 		// Le brouillon reste, invisible aux élèves, et supprimable.
 		return { error: new Error('Distribution impossible') };
+	}
+
+	return { error: null };
+}
+
+/**
+ * Masquer (ou démasquer) un élément du modèle dans UN chapitre (ADR 0029, Q4).
+ *
+ * Masqué, il disparaît du plan du professeur (« pas cette année ») et n'est
+ * jamais publié : masquer force `published_at` à vide, la base refusant de toute
+ * façon un élément masqué et publié. Démasquer ne republie rien.
+ *
+ * Seule une ligne de LIEN se masque : un élément propre au chapitre se supprime.
+ * Le filtre `source_id` le garantit ; zéro ligne rendue = introuvable dans ce
+ * chapitre, propre au chapitre, ou refusé par la RLS (`notFound`).
+ */
+export async function setLinkedElementHidden(
+	input: { chapterId: string; contentType: ChapterContentType; itemId: string; hidden: boolean },
+	supabase: SupabaseClient<Database>
+): Promise<{ error: Error | null; notFound?: boolean; sectionHidden?: boolean }> {
+	const table = Object.prototype.hasOwnProperty.call(TABLES, input.contentType)
+		? TABLES[input.contentType]
+		: undefined;
+
+	if (!table) {
+		return { error: new Error('Type de contenu inconnu'), notFound: true };
+	}
+
+	// Réafficher seul un élément d'une section masquée le rendrait publiable dans
+	// une section que la classe a écartée : on réaffiche d'abord la section.
+	if (!input.hidden) {
+		const { data: element, error: lectureError } = await supabase
+			.from(table)
+			.select('section_id')
+			.eq('id', input.itemId)
+			.eq('chapter_id', input.chapterId)
+			.maybeSingle();
+		if (lectureError) {
+			logger.error('[setLinkedElementHidden] Lecture impossible :', lectureError);
+			return { error: new Error(lectureError.message) };
+		}
+		const sectionId = (element as { section_id: string | null } | null)?.section_id;
+		if (sectionId) {
+			const { data: section, error: sectionError } = await supabase
+				.from('chapter_sections')
+				.select('hidden')
+				.eq('id', sectionId)
+				.eq('chapter_id', input.chapterId)
+				.maybeSingle();
+			if (sectionError) {
+				logger.error('[setLinkedElementHidden] Section illisible :', sectionError);
+				return { error: new Error(sectionError.message) };
+			}
+			if (section?.hidden === true) {
+				return {
+					error: new Error('Section masquée : réaffichez la section d’abord'),
+					sectionHidden: true
+				};
+			}
+		}
+	}
+
+	const { data, error } = await supabase
+		.from(table)
+		.update(input.hidden ? { hidden: true, published_at: null } : { hidden: false })
+		.eq('id', input.itemId)
+		.eq('chapter_id', input.chapterId)
+		.not('source_id', 'is', null)
+		.select('id');
+
+	if (error) {
+		logger.error('[setLinkedElementHidden] Écriture impossible :', error);
+		return { error: new Error(error.message) };
+	}
+	if (!data || data.length !== 1) {
+		return { error: new Error('Élément du modèle introuvable dans ce chapitre'), notFound: true };
+	}
+
+	return { error: null };
+}
+
+/**
+ * Masquer (ou réafficher) une SECTION dans un chapitre — du modèle ou propre à
+ * la classe (décision du 2026-10-14). La base fait le reste
+ * (`section_masquee_propage`) : masquer masque ET dépublie tout ce que la
+ * section contient ; réafficher fait revenir ce contenu, non publié.
+ *
+ * Le filtre `chapter_id` borne l'écriture au chapitre de l'adresse. Zéro ligne
+ * rendue = section introuvable dans ce chapitre ou refusée par la RLS
+ * (`notFound`) : jamais un succès silencieux.
+ */
+export async function setChapterSectionHidden(
+	input: { chapterId: string; sectionId: string; hidden: boolean },
+	supabase: SupabaseClient<Database>
+): Promise<{ error: Error | null; notFound?: boolean }> {
+	const { data, error } = await supabase
+		.from('chapter_sections')
+		.update({ hidden: input.hidden })
+		.eq('id', input.sectionId)
+		.eq('chapter_id', input.chapterId)
+		.select('id');
+
+	if (error) {
+		logger.error('[setChapterSectionHidden] Écriture impossible :', error);
+		return { error: new Error(error.message) };
+	}
+	if (!data || data.length !== 1) {
+		return { error: new Error('Section introuvable dans ce chapitre'), notFound: true };
 	}
 
 	return { error: null };

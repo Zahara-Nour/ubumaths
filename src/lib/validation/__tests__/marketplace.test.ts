@@ -134,8 +134,8 @@ describe('createListingSchema', () => {
 		});
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			// Zod rejects Infinity at type level with generic "Invalid input" message
-			expect(result.error.issues[0].message).toContain('Invalid input');
+			// Zod refuse Infinity au niveau du type : message de type écrit dans le schéma
+			expect(result.error.issues[0].message).toBe('Les gidouilles doivent être un nombre');
 		}
 	});
 

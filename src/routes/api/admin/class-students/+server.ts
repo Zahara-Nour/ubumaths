@@ -2,6 +2,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { classStudentsQuerySchema } from '$lib/server/validation/admin';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/class-students/+server');
 
 /**
  * GET /api/admin/class-students
@@ -77,8 +80,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.eq('status', 'active');
 
 		if (queryError) {
-			console.error('[GET /api/admin/class-students] Error fetching students:', queryError);
-			throw error(500, `Failed to fetch class students: ${queryError.message}`);
+			logger.error('[GET /api/admin/class-students] Error fetching students:', queryError);
+			throw error(500, `Impossible de charger les élèves de la classe : ${queryError.message}`);
 		}
 
 		// Transform the nested structure to flat user objects
@@ -101,7 +104,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		return json({ users });
 	} catch (err) {
-		console.error('[GET /api/admin/class-students] Error:', err);
+		logger.error('[GET /api/admin/class-students] Error:', err);
 
 		// Re-throw SvelteKit errors (they have proper status codes)
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -109,6 +112,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		// Generic error for unexpected issues
-		throw error(500, 'Erreur interne du serveur');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

@@ -169,11 +169,11 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 			// panne doit se distinguer d'un refus mérité.
 			if (docError && docError.code !== 'PGRST116') {
 				console.error('Contrôle d’accès impossible :', docError);
-				throw error(500, 'Impossible de vérifier votre accès');
+				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
 			if (!doc || doc.teacher_id !== user.id) {
-				throw error(403, { message: 'Vous ne pouvez supprimer que vos propres documents' });
+				throw error(403, { message: 'Suppression réservée à l’auteur du document' });
 			}
 		}
 
@@ -230,11 +230,11 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 			// panne doit se distinguer d'un refus mérité.
 			if (docError && docError.code !== 'PGRST116') {
 				console.error('Contrôle d’accès impossible :', docError);
-				throw error(500, 'Impossible de vérifier votre accès');
+				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
 			if (!doc || doc.teacher_id !== user.id) {
-				throw error(403, { message: 'Vous ne pouvez modifier que vos propres documents' });
+				throw error(403, { message: 'Modification réservée à l’auteur du document' });
 			}
 		}
 

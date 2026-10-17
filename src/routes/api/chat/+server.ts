@@ -13,6 +13,10 @@ import { analyzeMessage } from '$lib/server/tutor/cheat-detector';
 import { analyzeStudentMessages, calculateEffortScore } from '$lib/server/tutor/help-escalation';
 import { hybridSearch, formatResultsForPrompt } from '$lib/server/rag';
 import type { GradeCode } from '$lib/types/grades';
+import { personalities } from '$lib/config/personalities';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/chat/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -47,7 +51,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const rateLimitResult = await checkTutorRateLimit(user.id, exerciseContext?.exerciseId);
 			if (!rateLimitResult.allowed) {
 				throw error(429, {
-					message: rateLimitResult.message || 'Limite de tuteur dépassée. Réessayez plus tard.'
+					message: rateLimitResult.message || 'Limite de tuteur dépassée. Réessayer plus tard.'
 				});
 			}
 
@@ -147,7 +151,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					}
 				} catch (ragError) {
 					// RAG failure is non-critical - continue without context
-					console.warn('RAG search failed:', ragError);
+					logger.warn('RAG search failed:', ragError);
 				}
 			}
 
@@ -164,7 +168,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 			// Check if API key is configured
 			if (!env.GROQ_API_KEY) {
-				console.error('GROQ_API_KEY not configured');
+				logger.error('GROQ_API_KEY not configured');
 				return json(
 					{
 						error: 'Service temporairement indisponible',
@@ -196,7 +200,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 			if (!response.ok) {
 				const errorData = await response.text();
-				console.error('Groq API Error:', errorData);
+				logger.error('Groq API Error:', errorData);
 				throw new Error(`API Error: ${response.status}`);
 			}
 
@@ -263,7 +267,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						.insert(messagesToInsert);
 
 					if (insertError) {
-						console.error('[API chat] Message insert error:', insertError);
+						logger.error('[API chat] Message insert error:', insertError);
 					}
 
 					// Update conversation stats
@@ -276,10 +280,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						.eq('id', conversationId);
 
 					if (updateError) {
-						console.error('[API chat] Conversation update error:', updateError);
+						logger.error('[API chat] Conversation update error:', updateError);
 					}
 				} catch (persistError) {
-					console.error('[API chat] Failed to persist tutor messages:', persistError);
+					logger.error('[API chat] Failed to persist tutor messages:', persistError);
 				}
 			}
 
@@ -303,7 +307,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (!rateLimitResult.allowed) {
 			throw error(429, {
-				message: rateLimitResult.message || 'Trop de requêtes. Veuillez réessayer plus tard.'
+				message: rateLimitResult.message || 'Trop de requêtes. Réessayer plus tard.'
 			});
 		}
 
@@ -314,11 +318,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(400, { message: validation.error.issues[0].message });
 		}
 
-		const { messages } = validation.data;
+		const { messages, personality } = validation.data;
 
 		// Check if API key is configured (type-safe optional check)
 		if (!env.GROQ_API_KEY) {
-			console.error('GROQ_API_KEY not configured');
+			logger.error('GROQ_API_KEY not configured');
 			return json(
 				{
 					error: 'Service temporairement indisponible',
@@ -329,7 +333,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Strip out any extra properties (like timestamp) and keep only role and content for API
-		const apiMessages = messages.map(({ role, content }) => ({ role, content }));
+		// Le prompt système est posé ici, jamais reçu du client (H11, écart V30).
+		const apiMessages = [
+			{ role: 'system' as const, content: personalities[personality].systemPrompt },
+			...messages.map(({ role, content }) => ({ role, content }))
+		];
 
 		// Detect if any message contains images (array content with image_url type)
 		const hasImages = apiMessages.some(
@@ -362,7 +370,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (!response.ok) {
 			const errorData = await response.text();
-			console.error('Groq API Error:', errorData);
+			logger.error('Groq API Error:', errorData);
 			throw new Error(`API Error: ${response.status}`);
 		}
 
@@ -383,7 +391,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Enhanced error logging
 		const errorMessage = err instanceof Error ? err.message : String(err);
 		// Note: user might not be available if error occurred during auth
-		console.error('AI Chat API Error:', {
+		logger.error('AI Chat API Error:', {
 			error: errorMessage,
 			timestamp: new Date().toISOString()
 		});

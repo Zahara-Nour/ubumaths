@@ -87,7 +87,7 @@
 		try {
 			const response = await fetch('/api/admin/exercises/backup?format=json');
 			if (!response.ok) {
-				throw new Error('Export failed');
+				throw new Error('Impossible d’exporter la sauvegarde');
 			}
 
 			// Get filename from Content-Disposition header
@@ -113,7 +113,7 @@
 		try {
 			const response = await fetch('/api/admin/exercises/backup?format=sql');
 			if (!response.ok) {
-				throw new Error('Export failed');
+				throw new Error('Impossible d’exporter la sauvegarde');
 			}
 
 			// Get filename from Content-Disposition header

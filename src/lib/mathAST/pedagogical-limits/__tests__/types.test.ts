@@ -106,8 +106,8 @@ describe('pedagogical-limits types', () => {
 	it('PedagogicalLimitStep accepts InfinityNode as approach point', () => {
 		const step: PedagogicalLimitStep = {
 			id: 1,
-			rule: 'identify-dominant-term',
-			description: 'Terme dominant identifié',
+			rule: 'factor-dominant-term',
+			description: 'On factorise par le terme prépondérant',
 			before: variable('x'),
 			after: variable('x'),
 			variable: 'x',
@@ -383,7 +383,9 @@ describe('pedagogical-limits types', () => {
 			'multiply-by-conjugate',
 			'simplify-after-rationalization',
 			// Comportement à l'infini
-			'identify-dominant-term',
+			'expand',
+			'factor-dominant-term',
+			'limits-of-terms',
 			'apply-growth-comparison',
 			'compute-asymptotic-equivalent',
 			// Limites unilatérales
@@ -399,6 +401,7 @@ describe('pedagogical-limits types', () => {
 			'identify-composition',
 			'apply-composition',
 			'apply-linearity',
+			'apply-sum',
 			'apply-product',
 			'apply-quotient',
 			// Conclusion
@@ -408,7 +411,7 @@ describe('pedagogical-limits types', () => {
 		] as const satisfies readonly PedagogicalLimitRule[];
 
 		// Count sentinel — matches the union cardinality.
-		expect(allRules).toHaveLength(28);
+		expect(allRules).toHaveLength(31);
 
 		// Compile-time exhaustiveness check.
 		type _MissingFromAllRules = Exclude<PedagogicalLimitRule, (typeof allRules)[number]>;

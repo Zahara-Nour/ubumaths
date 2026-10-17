@@ -24,6 +24,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { AGE_QUESTION_GRADE } from '$lib/utils/age-declaration';
 import type { AgeDeclaration } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/age-declaration/+server');
 
 /** Délai de grâce ouvert par un « Non » quand aucun n'est en cours (Q69 : 30 jours). */
 const GRACE_PERIOD_MS = 30 * 24 * 60 * 60 * 1000;
@@ -49,13 +52,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	if (profile.age_declaration !== null) {
-		throw error(409, 'Tu as déjà répondu à cette question');
+		throw error(409, 'Réponse déjà enregistrée pour cette question');
 	}
 
 	// Élève déjà dispensé par le professeur : la question ne le concerne pas (Q74),
 	// et un « Non » ne doit pas faire sauter la dispense.
 	if (!profile.consent_required) {
-		throw error(403, 'Cette question ne te concerne pas');
+		throw error(403, 'Cette question ne concerne pas ce compte');
 	}
 
 	const declaration: AgeDeclaration = validation.data.fifteenOrOlder ? '15_plus' : 'under_15';
@@ -88,13 +91,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.select('id');
 
 	if (updateError) {
-		console.error('[age-declaration] Écriture impossible :', updateError);
+		logger.error('[age-declaration] Écriture impossible :', updateError);
 		throw error(500, "Impossible d'enregistrer la réponse");
 	}
 
 	// Client service : pas de RLS. 0 ligne = la réponse a été donnée entre-temps.
 	if (!data || data.length !== 1) {
-		throw error(409, 'Tu as déjà répondu à cette question');
+		throw error(409, 'Réponse déjà enregistrée pour cette question');
 	}
 
 	return json({ success: true, ageDeclaration: declaration });

@@ -38,22 +38,22 @@ import { z } from 'zod';
  */
 export const chooseCardsSchema = z.object({
 	/** UUID of the student receiving the chosen cards */
-	studentId: z.string().uuid('Invalid student ID format'),
+	studentId: z.string().uuid('Identifiant d’élève invalide'),
 
 	/** UUID of the VIP card instance with choose_card action being used */
-	actionCardInstanceId: z.string().uuid('Invalid action card instance ID format'),
+	actionCardInstanceId: z.string().uuid('Identifiant de carte d’action invalide'),
 
 	/** Array of VIP card IDs to receive (e.g., ['bonus', 'azuka']) */
 	chosenCardIds: z
 		.array(
 			z
 				.string()
-				.min(1, 'Card ID cannot be empty')
-				.max(50, 'Card ID too long')
-				.regex(/^[a-z0-9-]+$/i, 'Card ID must contain only alphanumeric characters and hyphens')
+				.min(1, 'Identifiant de carte VIP vide')
+				.max(50, 'Identifiant de carte VIP trop long')
+				.regex(/^[a-z0-9-]+$/i, 'Identifiant de carte VIP invalide')
 		)
-		.min(1, 'Must choose at least 1 card')
-		.max(10, 'Cannot choose more than 10 cards')
+		.min(1, 'Choisis au moins une carte VIP')
+		.max(10, 'Impossible de choisir plus de 10 cartes VIP')
 });
 
 // ============================================================================

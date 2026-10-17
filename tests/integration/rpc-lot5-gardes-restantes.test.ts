@@ -51,13 +51,15 @@ const SUCCES = 'test_lot5_attribution_manuelle';
 /** Identifiants quelconques : les gardes refusent AVANT toute lecture. */
 const QUELCONQUE = '00000000-0000-4000-8000-0000000000c5';
 
-/** Les 16 signatures révoquées à authenticated (section 2 de la migration). */
+/**
+ * Les signatures révoquées à authenticated (section 2 de la migration) : 16, moins
+ * calculate_daily_challenge_gidouilles, supprimée depuis (20261016101100).
+ */
 const SIGNATURES_REVOQUEES = [
 	'public.record_listing_view(uuid, uuid)',
 	'public.get_user_frequent_templates(uuid, integer)',
 	'public.validate_attachment_upload(uuid, uuid, integer)',
 	'public.validate_1on1_chat_creation(uuid, uuid)',
-	'public.calculate_daily_challenge_gidouilles(text, integer, uuid)',
 	'public.calculate_minesweeper_gidouilles(text, integer, uuid, integer)',
 	'public.calculate_minesweeper_gidouilles(text, integer, uuid, integer, integer)',
 	'public.check_and_unlock_achievements(uuid)',
@@ -293,10 +295,6 @@ describe('RPC lot 5 : gardes restantes', () => {
 		['get_user_frequent_templates', { p_user_id: id, p_limit: 5 }],
 		['validate_attachment_upload', { p_message_id: QUELCONQUE, p_user_id: id, p_file_size: 1 }],
 		['validate_1on1_chat_creation', { p_user1_id: id, p_user2_id: QUELCONQUE }],
-		[
-			'calculate_daily_challenge_gidouilles',
-			{ p_difficulty: 'beginner', p_time_seconds: 60, p_student_id: id }
-		],
 		// La surcharge à 4 arguments est indiscernable en RPC (PGRST203) : ses
 		// droits sont vérifiés en SQL ci-dessous.
 		[

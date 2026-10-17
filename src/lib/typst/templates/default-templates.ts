@@ -13,6 +13,12 @@
  *   style). Use one or the other, not both.
  * - {{total_points}} - Total points for the worksheet
  * - {{duration}} - Estimated duration in minutes
+ * - {{due_date}} - Due date (homework)
+ * - {{calculator}} - « La calculatrice est autorisée / interdite. »
+ * Conditions set from the worksheet type (ADR 0030, `worksheetHeader`):
+ * show_title (always), show_identity, show_student_name, show_class, show_date
+ * (date line to fill), show_due_date, show_points, show_total, show_duration,
+ * show_calculator, show_header_notes.
  * - {{instructions}} - General instructions
  * - {{school_name}} - School name
  * - {{teacher_name}} - Teacher's name
@@ -31,6 +37,22 @@ export interface DefaultTemplate {
 	placeholders: TemplatePlaceholder[];
 	is_system: boolean; // System templates cannot be deleted
 }
+
+/**
+ * Ligne d'informations de l'en-tête, selon le type de la fiche (ADR 0030) :
+ * durée (examen blanc), calculatrice (évaluation écrite, examen blanc), total
+ * des points. Absente quand elle serait vide.
+ */
+const HEADER_NOTES = `{{#if show_header_notes}}#grid(
+  columns: (1fr, auto, 1fr),
+  align: (left, center, right),
+  [{{#if show_duration}}*{{label_duration}} :* {{duration}} {{label_minutes}}{{/if}}],
+  [{{#if show_calculator}}{{calculator}}{{/if}}],
+  [{{#if show_total}}*{{label_total}} :* {{total_points}} {{label_points}}{{/if}}]
+){{/if}}`;
+
+/** La date de rendu (devoir maison) à la place de la date à remplir */
+const DUE_DATE = '{{#if show_due_date}}*{{label_due_date}} :* {{due_date}}{{/if}}';
 
 /**
  * Common placeholders used across templates
@@ -64,7 +86,8 @@ export const DEFAULT_TEMPLATE_IDS = {
 	landscape: '00000000-0000-4000-8000-000000000009',
 	magazine: '00000000-0000-4000-8000-000000000010',
 	scientific: '00000000-0000-4000-8000-000000000011',
-	studentStyle: '00000000-0000-4000-8000-000000000012'
+	studentStyle: '00000000-0000-4000-8000-000000000012',
+	studentStyleLandscape: '00000000-0000-4000-8000-000000000013'
 } as const;
 
 /**
@@ -95,12 +118,12 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
 
 #v(0.5cm)
 
-// Informations
-#grid(
+// Informations (selon le type de la fiche)
+{{#if show_identity}}#grid(
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    {{#if show_student_name}}*{{label_name}} :* #underline[#h(3cm) {{student_name}} #h(3cm)]{{/if}}
+    {{#if show_student_name}}*{{label_name}} :* {{student_name}}{{/if}}
   ],
   [
     {{#if show_class}}*{{label_class}} :* {{class}}{{/if}}
@@ -111,10 +134,12 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}
+    {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}${DUE_DATE}
   ],
-  [{{#if show_points}}*{{label_total}} :* {{total_points}} {{label_points}}{{/if}}]
-)
+  []
+){{/if}}
+
+${HEADER_NOTES}
 
 #v(0.5cm)
 #line(length: 100%, stroke: 0.5pt)
@@ -142,8 +167,8 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
  */
 export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
 	id: DEFAULT_TEMPLATE_IDS.assessment,
-	name: 'Evaluation',
-	description: 'Mise en page formelle pour evaluation avec section notation',
+	name: 'Contrôle',
+	description: 'Mise en page formelle pour contrôle avec section notation',
 	type: 'assessment',
 	is_system: true,
 	placeholders: [
@@ -187,7 +212,7 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
           #align(center)[
             *{{label_grade}}*
             #v(0.5cm)
-            {{#if show_points}}#text(size: 14pt)[\\/ {{total_points}}]{{/if}}
+            {{#if show_total}}#text(size: 14pt)[\\/ {{total_points}}]{{/if}}
           ]
         ]
       ]
@@ -201,16 +226,17 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
 #grid(
   columns: (1fr, 1fr, 1fr),
   gutter: 0.5cm,
-  [{{#if show_student_name}}*{{label_name}} :* #underline[#h(2cm) {{student_name}} #h(2cm)]{{/if}}],
+  [{{#if show_student_name}}*{{label_name}} :* {{student_name}}{{/if}}],
   [{{#if show_class}}*{{label_class}} :* {{class}}{{/if}}],
-  [{{#if show_date}}*{{label_date}} :* {{date}}{{/if}}]
+  [{{#if show_date}}*{{label_date}} :* {{date}}{{/if}}${DUE_DATE}]
 )
 
 #v(0.3cm)
 
-// Duree
+// Duree et calculatrice (selon le type de la fiche)
 #align(right)[
-  #text(style: "italic")[{{label_duration}} : {{duration}} {{label_minutes}}]
+  {{#if show_duration}}#text(style: "italic")[{{label_duration}} : {{duration}} {{label_minutes}}]{{/if}}
+  {{#if show_calculator}}#text(style: "italic")[{{calculator}}]{{/if}}
 ]
 
 #v(0.5cm)
@@ -273,7 +299,7 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
       columns: (1fr, auto, 1fr),
       [{{school_name}}],
       [#text(weight: "bold")[{{label_exam}}]],
-      [{{#if show_date}}#align(right)[{{date}}]{{/if}}]
+      [{{#if show_date}}#align(right)[*{{label_date}} :* {{date}}]{{/if}}{{#if show_due_date}}#align(right)[*{{label_due_date}} :* {{due_date}}]{{/if}}]
     )
     #line(length: 100%, stroke: 0.5pt)
   ],
@@ -303,7 +329,7 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
       #v(0.3cm)
       #grid(
         columns: (1fr, 1fr),
-        [*{{label_duration}} :* {{duration}} min],
+        [{{#if show_duration}}*{{label_duration}} :* {{duration}} min{{/if}}],
         [*{{label_coefficient}} :* {{coefficient}}]
       )
     ]
@@ -312,8 +338,8 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
 
 #v(0.5cm)
 
-// Zone identification
-#rect(
+// Zone identification (selon le type de la fiche)
+{{#if show_student_name}}#rect(
   width: 100%,
   inset: 10pt,
   stroke: 1pt
@@ -332,7 +358,7 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
       *{{label_candidate_number}} :* #underline[#h(3cm)]
     ]
   )
-]
+]{{/if}}
 
 #v(0.5cm)
 
@@ -345,14 +371,14 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
 )[
   #text(weight: "bold", size: 12pt)[{{label_instructions}}]
   #v(0.3cm)
-  - {{label_calculator_unless_stated}}
+  {{#if show_calculator}}- {{calculator}}{{/if}}
   - {{label_no_documents}}
   - {{label_answers_on_paper}}
   - {{label_any_order}}
   #v(0.2cm)
   {{instructions}}
   #v(0.3cm)
-  {{#if show_points}}*{{label_total_points}} :* {{total_points}}{{/if}}
+  {{#if show_total}}*{{label_total_points}} :* {{total_points}}{{/if}}
 ]
 
 #v(0.5cm)
@@ -435,23 +461,25 @@ export const HOMEWORK_TEMPLATE: DefaultTemplate = {
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    {{#if show_date}}#text(weight: "bold")[{{label_handed_out}} :] {{date}}{{/if}}
+    {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}
   ],
   [
-    #rect(
+    {{#if show_due_date}}#rect(
       fill: rgb("#d4edda"),
       inset: 5pt,
       radius: 3pt
     )[
-      #text(weight: "bold")[{{label_due_date}} :] {{due_date}}
-    ]
+      *{{label_due_date}} :* {{due_date}}
+    ]{{/if}}
   ]
 )
 
 #v(0.3cm)
 
 // Nom de l'eleve
-{{#if show_student_name}}*{{label_name}} :* #underline[#h(4cm) {{student_name}} #h(4cm)]{{/if}}
+{{#if show_student_name}}*{{label_name}} :* {{student_name}}{{/if}}
+
+${HEADER_NOTES}
 
 #v(0.5cm)
 #line(length: 100%, stroke: 0.5pt)
@@ -532,14 +560,14 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
     ],
     [
       #align(center)[
-        {{#if show_student_name}}*{{label_name}} :* #underline[#h(3cm) {{student_name}} #h(3cm)]{{/if}}
+        {{#if show_student_name}}*{{label_name}} :* {{student_name}}{{/if}}
       ]
     ],
     [
       #align(right)[
         {{#if show_class}}*{{label_class}} :* {{class}}
         #v(0.1cm){{/if}}
-        {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}
+        {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}${DUE_DATE}
       ]
     ]
   )
@@ -550,8 +578,8 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
 // Informations rapides
 #grid(
   columns: (1fr, 1fr),
-  [#text(style: "italic")[{{label_duration}} : {{duration}} min]],
-  [{{#if show_points}}#align(right)[*{{label_total}} : {{total_points}} {{label_points}}*]{{/if}}]
+  [{{#if show_duration}}#text(style: "italic")[{{label_duration}} : {{duration}} min]{{/if}}{{#if show_calculator}} #text(style: "italic")[{{calculator}}]{{/if}}],
+  [{{#if show_total}}#align(right)[*{{label_total}} : {{total_points}} {{label_points}}*]{{/if}}]
 )
 
 #v(0.3cm)
@@ -573,7 +601,7 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
     inset: 8pt,
     stroke: 1pt
   )[
-    *{{label_grade}} :* #h(2cm) {{#if show_points}}/ {{total_points}}{{/if}}
+    *{{label_grade}} :* #h(2cm) {{#if show_total}}/ {{total_points}}{{/if}}
   ]
 ]
 `
@@ -603,11 +631,13 @@ export const MINIMAL_TEMPLATE: DefaultTemplate = {
 // En-tete minimaliste
 {{#if show_title}}#text(size: 16pt, weight: "bold")[{{title}}]{{/if}}
 #h(1fr)
-{{#if show_date}}#text(size: 10pt)[{{date}}]{{/if}}
+{{#if show_date}}#text(size: 10pt)[{{label_date}} : {{date}}]{{/if}}{{#if show_due_date}}#text(size: 10pt)[{{label_due_date}} : {{due_date}}]{{/if}}
 
 #v(0.3cm)
 
-{{#if show_student_name}}{{student_name}}{{/if}} #h(1fr) {{#if show_class}}{{class}}{{/if}}
+{{#if show_student_name}}{{label_name}} : {{student_name}}{{/if}} #h(1fr) {{#if show_class}}{{label_class}} : {{class}}{{/if}}
+
+${HEADER_NOTES}
 
 #v(0.5cm)
 #line(length: 100%, stroke: 0.3pt)
@@ -675,7 +705,8 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
       ],
       text(fill: white)[
         {{#if show_date}}#text(weight: "bold", size: 9pt)[#upper[{{label_date}}]]\\
-        #text(size: 11pt)[{{date}}]{{/if}}
+        #text(size: 11pt)[{{date}}]{{/if}}{{#if show_due_date}}#text(weight: "bold", size: 9pt)[#upper[{{label_due_date}}]]\\
+        #text(size: 11pt)[{{due_date}}]{{/if}}
       ]
     )
   ]
@@ -709,12 +740,17 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
 #grid(
   columns: (auto, auto, 1fr, auto),
   column-gutter: 12pt,
-  box(
+  [{{#if show_duration}}#box(
     fill: rgb("#dbeafe"),
     inset: (x: 12pt, y: 6pt),
     radius: 15pt,
     text(size: 9pt, fill: rgb("#1e40af"))[⏱ {{duration}} min]
-  ),
+  ){{/if}}{{#if show_calculator}} #box(
+    fill: rgb("#dbeafe"),
+    inset: (x: 12pt, y: 6pt),
+    radius: 15pt,
+    text(size: 9pt, fill: rgb("#1e40af"))[{{calculator}}]
+  ){{/if}}],
   box(
     fill: rgb("#fce7f3"),
     inset: (x: 12pt, y: 6pt),
@@ -730,7 +766,7 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
   )[
     #text(size: 9pt, fill: rgb("#64748b"))[Score]
     #h(10pt)
-    #text(size: 14pt, weight: "bold")[\\_\\_\\_\\_\\_{{#if show_points}} / {{total_points}}{{/if}}]
+    #text(size: 14pt, weight: "bold")[\\_\\_\\_\\_\\_{{#if show_total}} / {{total_points}}{{/if}}]
   ]
 )
 
@@ -809,7 +845,7 @@ export const TWO_COLUMNS_TEMPLATE: DefaultTemplate = {
       [
         {{#if show_class}}#text(size: 9pt, fill: rgb("#6b7280"))[{{class}}]
         #v(0.1cm){{/if}}
-        {{#if show_date}}#text(weight: "bold", size: 11pt)[{{date}}]{{/if}}
+        {{#if show_date}}#text(weight: "bold", size: 11pt)[{{label_date}} : {{date}}]{{/if}}{{#if show_due_date}}#text(weight: "bold", size: 11pt)[{{label_due_date}} : {{due_date}}]{{/if}}
       ]
     )
   ]
@@ -823,11 +859,12 @@ export const TWO_COLUMNS_TEMPLATE: DefaultTemplate = {
   column-gutter: 15pt,
   align: (right, center, left),
   [
-    #text(size: 9pt)[{{label_duration}} : #text(weight: "bold")[{{duration}} {{label_minutes}}]]
+    {{#if show_duration}}#text(size: 9pt)[{{label_duration}} : #text(weight: "bold")[{{duration}} {{label_minutes}}]]{{/if}}
+    {{#if show_calculator}}#text(size: 9pt)[{{calculator}}]{{/if}}
   ],
   circle(radius: 3pt, fill: rgb("#9ca3af")),
   [
-    {{#if show_points}}#text(size: 9pt)[{{label_total}} : #text(weight: "bold")[{{total_points}} {{label_points}}]]{{/if}}
+    {{#if show_total}}#text(size: 9pt)[{{label_total}} : #text(weight: "bold")[{{total_points}} {{label_points}}]]{{/if}}
   ]
 )
 
@@ -915,7 +952,7 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
       align: (left, center, right),
       [{{school_name}}],
       [{{#if show_title}}#text(weight: "bold")[{{title}}]{{/if}}],
-      [{{#if show_class}}{{class}}{{/if}}{{#if show_date}}{{#if show_class}} • {{/if}}{{date}}{{/if}}]
+      [{{#if show_class}}{{class}}{{/if}}{{#if show_due_date}} • {{label_due_date}} : {{due_date}}{{/if}}]
     )
     #line(length: 100%, stroke: 0.3pt + rgb("#d1d5db"))
   ],
@@ -972,7 +1009,7 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
               {{#if show_student_name}}#text(weight: "bold")[{{label_name}} :]\\
               {{student_name}}
               #v(0.3cm){{/if}}
-              {{#if show_points}}#text(weight: "bold")[{{label_points}} :] {{total_points}}{{/if}}
+              {{#if show_total}}#text(weight: "bold")[{{label_points}} :] {{total_points}}{{/if}}
             ]
           ]
         ]
@@ -996,7 +1033,8 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
     #align(center)[
       #text(size: 16pt)[⏰]
       #v(0.1cm)
-      #text(size: 9pt, weight: "bold")[{{duration}} min]
+      {{#if show_duration}}#text(size: 9pt, weight: "bold")[{{duration}} min]{{/if}}
+      {{#if show_calculator}}#text(size: 9pt)[{{calculator}}]{{/if}}
     ]
   ],
   rect(
@@ -1032,7 +1070,7 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
     #align(center)[
       #text(size: 16pt)[📅]
       #v(0.1cm)
-      {{#if show_date}}#text(size: 9pt, weight: "bold")[{{date}}]{{/if}}
+      {{#if show_date}}#text(size: 9pt, weight: "bold")[{{label_date}} : {{date}}]{{/if}}{{#if show_due_date}}#text(size: 9pt, weight: "bold")[{{label_due_date}} : {{due_date}}]{{/if}}
     ]
   ]
 )
@@ -1143,7 +1181,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
           #v(0.1cm)
           {{#if show_class}}#text(size: 16pt, weight: "bold")[{{class}}]
           #v(0.2cm){{/if}}
-          {{#if show_date}}#text(size: 9pt)[{{date}}]{{/if}}
+          {{#if show_due_date}}#text(size: 9pt)[{{label_due_date}} : {{due_date}}]{{/if}}
         ]
       ]
     ]
@@ -1175,7 +1213,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
       {{#if show_title}}#text(size: 22pt, weight: "bold")[{{title}}]{{/if}}
       #v(0.2cm)
       #text(size: 10pt, style: "italic", fill: rgb("#64748b"))[
-        {{label_by}} {{teacher_name}} • {{duration}} {{label_minutes}}{{#if show_points}} • {{total_points}} {{label_points}}{{/if}}
+        {{label_by}} {{teacher_name}}{{#if show_duration}} • {{duration}} {{label_minutes}}{{/if}}{{#if show_calculator}} • {{calculator}}{{/if}}{{#if show_total}} • {{total_points}} {{label_points}}{{/if}}
       ]
     ]
   )
@@ -1258,7 +1296,9 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
         #v(0.3cm){{/if}}
         {{#if show_date}}#text(weight: "bold")[{{label_date}} :]
         #v(0.1cm)
-        {{date}}{{/if}}
+        {{date}}{{/if}}{{#if show_due_date}}#text(weight: "bold")[{{label_due_date}} :]
+        #v(0.1cm)
+        {{due_date}}{{/if}}
       ]
     ]
 
@@ -1293,7 +1333,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
         #text(size: 9pt, fill: accent)[{{label_score}}]
         #v(0.4cm)
         #text(size: 20pt, weight: "bold")[
-          \\_\\_\\_{{#if show_points}} / {{total_points}}{{/if}}
+          \\_\\_\\_{{#if show_total}} / {{total_points}}{{/if}}
         ]
       ]
     ]
@@ -1399,8 +1439,8 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
 
   [*{{label_field}}*], [*{{label_value}}*], [*{{label_field}}*], [*{{label_value}}*],
   [{{label_name}}], [{{#if show_student_name}}{{student_name}}{{/if}}], [{{label_class}}], [{{#if show_class}}{{class}}{{/if}}],
-  [{{label_date}}], [{{#if show_date}}{{date}}{{/if}}], [{{label_duration}}], [{{duration}} {{label_minutes}}],
-  [{{label_teacher}}], [{{teacher_name}}], [{{label_points}}], [{{#if show_points}}{{total_points}}{{/if}}]
+  [{{label_date}}], [{{#if show_date}}{{date}}{{/if}}{{#if show_due_date}}{{label_due_date}} {{due_date}}{{/if}}], [{{label_duration}}], [{{#if show_duration}}{{duration}} {{label_minutes}}{{/if}}],
+  [{{label_teacher}}], [{{teacher_name}}], [{{label_points}}], [{{#if show_total}}{{total_points}}{{/if}}]
 )
 
 #v(0.8cm)
@@ -1440,6 +1480,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
   inset: 12pt
 )[
   #text(size: 10pt)[
+    {{#if show_calculator}}{{calculator}}{{/if}}
     {{instructions}}
 
     #v(0.4cm)
@@ -1470,7 +1511,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
 
 #v(1.5cm)
 
-// Grille d'évaluation (pour l'examinateur)
+// Grille de notation (pour l'examinateur)
 #text(size: 12pt, weight: "bold")[4. {{label_marking_grid}}]
 #text(size: 9pt, style: "italic", fill: rgb("#6b7280"))[ ({{label_examiner_only}})]
 #v(0.3cm)
@@ -1487,7 +1528,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
   [2], [{{label_skill_equations}}], [/5], [], [],
   [3], [{{label_skill_reasoning}}], [/5], [], [],
   [4], [{{label_skill_application}}], [/5], [], [],
-  table.cell(colspan: 2)[*{{label_total}}*], [{{#if show_points}}/{{total_points}}{{/if}}], [], []
+  table.cell(colspan: 2)[*{{label_total}}*], [{{#if show_total}}/{{total_points}}{{/if}}], [], []
 )
 
 #v(0.8cm)
@@ -1515,17 +1556,16 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
  * amber square, sections in amber small caps over a rule. Opts into the badge
  * numbering via {{exercises_badge}}.
  */
-export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.studentStyle,
-	name: 'Fiche élève',
-	description:
-		"Deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice sur carré ambre, sections soulignées",
-	type: 'worksheet',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Mise en page proche du PDF de l'élève : A4 sur deux colonnes
+/**
+ * Code commun aux gabarits de « Fiche élève » et de « 2 colonnes - paysage »,
+ * importé par chacun via `{{style_common}}` — page A4 sur deux colonnes avec
+ * filet, police, espacements. Seule l'orientation de la page les distingue.
+ */
+const studentStyleCommon = (
+	landscape: boolean
+) => `// Mise en page proche du PDF de l'élève : A4${landscape ? ' paysage' : ''} sur deux colonnes
 #set page(
-  paper: "a4",
+  paper: "a4",${landscape ? '\n  flipped: true,' : ''}
   margin: (x: 1cm, y: 1.5cm),
   columns: 2,
   // Filet vertical entre les deux colonnes (hauteur = zone de texte)
@@ -1550,27 +1590,126 @@ export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
 #set list(spacing: 1.5em, tight: false)
 #set block(spacing: 1.8em)
 
-// En-tête sur toute la largeur, au-dessus des deux colonnes.
+`;
+
+/** Style « Fiche élève » (style par défaut, ADR 0028 D7) : A4 portrait */
+export const STUDENT_STYLE_COMMON = studentStyleCommon(false);
+
+/** Style « 2 colonnes - paysage » : « Fiche élève » en A4 paysage */
+export const STUDENT_LANDSCAPE_STYLE_COMMON = studentStyleCommon(true);
+
+/**
+ * En-tête pleine largeur des gabarits « Fiche élève » : titre, puis selon le
+ * type de la fiche (ADR 0030) nom, date, classe, durée, calculatrice, total ; `banner` se place en haut du même bloc (bandeau d'un corrigé), pour
+ * que le fond blanc masque le filet derrière tout l'en-tête.
+ */
+const studentStyleHeader = (
+	banner = ''
+) => `// En-tête sur toute la largeur, au-dessus des deux colonnes.
 // Le fond blanc masque le filet vertical derrière le bandeau.
 #place(top + center, scope: "parent", float: true)[
   #block(width: 100%, fill: white, inset: (bottom: 6pt), below: 1.2em)[
-    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
+${banner}    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
     #v(0.4em){{/if}}
-    #grid(
+    {{#if show_identity}}#grid(
       columns: (1fr, auto, 1fr),
       align: (left, center, right),
-      [{{#if show_student_name}}{{student_name}}{{/if}}],
-      [{{#if show_date}}#text(size: 0.9em, fill: gray)[{{date}}]{{/if}}],
-      [{{#if show_class}}{{class}}{{/if}}]
+      [{{#if show_student_name}}*{{label_name}} :* {{student_name}}{{/if}}],
+      [{{#if show_date}}*{{label_date}} :* {{date}}{{/if}}${DUE_DATE}],
+      [{{#if show_class}}*{{label_class}} :* {{class}}{{/if}}]
     )
-    #v(0.3em)
+    #v(0.3em){{/if}}
+    {{#if show_header_notes}}#text(size: 0.9em)[${HEADER_NOTES}]
+    #v(0.3em){{/if}}
     #line(length: 100%, stroke: 0.5pt + gray)
   ]
 ]
+`;
 
+/**
+ * Bandeau vert d'un corrigé (« CORRECTION », « RÉPONSES ») et avertissement du
+ * corrigé de classe d'une affectation individualisée (D6), en tête de l'en-tête.
+ */
+const STUDENT_STYLE_HEADER_BANNER = `    #block(width: 100%, fill: rgb("#228b22"), inset: 10pt, below: 0.6em)[
+      #align(center)[#text(size: 1.4em, weight: "bold", fill: white)[{{form_title}}]]
+    ]
+    {{#if individual_copy_notice}}#block(width: 100%, fill: rgb("#fff4d6"), stroke: rgb("#d9a400"), inset: 8pt, radius: 4pt, below: 0.6em)[
+      #text(weight: "bold")[{{individual_copy_notice}}]
+    ]{{/if}}
+`;
+
+/** Bandeau vert seul, pleine largeur : en tête de la partie corrections d'une fiche + corrections */
+const STUDENT_STYLE_CORRECTION_BANNER = `#place(top + center, scope: "parent", float: true, clearance: 0.8em)[
+  #block(width: 100%, fill: rgb("#228b22"), inset: 10pt)[
+    #align(center)[#text(size: 1.4em, weight: "bold", fill: white)[{{form_title}}]]
+  ]
+]
+`;
+
+/**
+ * La partie de fin d'une fiche + corrections : sur une nouvelle page, les
+ * polices du corrigé, le bandeau vert, puis les réponses ou le corrigé. Écrite
+ * une fois : « Fiche élève » la place dans sa forme, et un style qui n'a que sa
+ * fiche la reçoit après elle (`resolveTemplate`).
+ */
+export const CORRECTIONS_PART = `{{#if corrections}}
+#pagebreak()
+{{correction_fonts}}
+${STUDENT_STYLE_CORRECTION_BANNER}
+{{corrections}}
+{{/if}}`;
+
+/**
+ * Les gabarits du style « Fiche élève », un par forme (ADR 0028 : une forme =
+ * un gabarit). Réponses et corrigé : sans énoncé, numéros sur carré ambre,
+ * bandeau vert écrit ici (plus injecté par le générateur). Fiche +
+ * corrections : la fiche, puis les réponses ou le corrigé sur une nouvelle page.
+ */
+export const STUDENT_STYLE_FORMS = {
+	worksheet: `{{style_common}}${studentStyleHeader()}
 // Exercices (numéros sur carré ambre, sections soulignées en ambre)
 {{exercises_badge}}
-`
+`,
+	answers: `{{style_common}}${studentStyleHeader(STUDENT_STYLE_HEADER_BANNER)}
+// Réponses (numéros sur carré ambre)
+{{exercises_badge}}
+`,
+	correction: `{{style_common}}${studentStyleHeader(STUDENT_STYLE_HEADER_BANNER)}
+// Corrigé (numéros sur carré ambre)
+{{exercises_badge}}
+`,
+	worksheet_with_corrections: `{{style_common}}${studentStyleHeader()}
+// Exercices (numéros sur carré ambre, sections soulignées en ambre)
+{{exercises_badge}}
+${CORRECTIONS_PART}`
+} as const;
+
+export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
+	id: DEFAULT_TEMPLATE_IDS.studentStyle,
+	name: 'Fiche élève',
+	description:
+		"Deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice sur carré ambre, sections soulignées",
+	type: 'worksheet',
+	is_system: true,
+	placeholders: COMMON_PLACEHOLDERS,
+	template_content:
+		STUDENT_STYLE_COMMON + STUDENT_STYLE_FORMS.worksheet.slice('{{style_common}}'.length)
+};
+
+/**
+ * Style « 2 colonnes - paysage » : les gabarits de « Fiche élève », sur une
+ * page A4 paysage (David, 2026-10-16).
+ */
+export const STUDENT_LANDSCAPE_STYLE_TEMPLATE: DefaultTemplate = {
+	id: DEFAULT_TEMPLATE_IDS.studentStyleLandscape,
+	name: '2 colonnes - paysage',
+	description:
+		"Comme « Fiche élève », en A4 paysage : deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice sur carré ambre, sections soulignées",
+	type: 'worksheet',
+	is_system: true,
+	placeholders: COMMON_PLACEHOLDERS,
+	template_content:
+		STUDENT_LANDSCAPE_STYLE_COMMON + STUDENT_STYLE_FORMS.worksheet.slice('{{style_common}}'.length)
 };
 
 /**
@@ -1588,7 +1727,8 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
 	LANDSCAPE_TEMPLATE,
 	MAGAZINE_TEMPLATE,
 	SCIENTIFIC_TEMPLATE,
-	STUDENT_STYLE_TEMPLATE
+	STUDENT_STYLE_TEMPLATE,
+	STUDENT_LANDSCAPE_STYLE_TEMPLATE
 ];
 
 /**
@@ -1632,10 +1772,16 @@ export const SAMPLE_PREVIEW_DATA = {
 	// worksheet's config says. Kept last so the editor's placeholder panel, which
 	// lists the first entries, keeps showing content fields.
 	show_title: 'true',
+	show_identity: 'true',
 	show_date: 'true',
 	show_class: 'true',
 	show_student_name: 'true',
 	show_points: 'true',
+	show_total: 'true',
+	show_header_notes: 'true',
+	show_duration: 'true',
+	show_calculator: 'true',
+	calculator: 'La calculatrice est interdite.',
 	// New placeholders for advanced templates
 	theme_color: '#e11d48',
 	academic_year: '2024-2025',
@@ -1730,10 +1876,9 @@ function renderConditionals(templateContent: string, data: Record<string, string
  * Replace placeholders in template content with actual values
  */
 export function renderTemplate(templateContent: string, data: Record<string, string>): string {
-	let result = renderConditionals(templateContent, data);
-	for (const [key, value] of Object.entries(data)) {
-		const placeholder = `{{${key}}}`;
-		result = result.split(placeholder).join(value);
-	}
-	return result;
+	// Une seule passe : une valeur insérée (énoncé, corrigé) qui contiendrait
+	// `{{clé}}` n'est jamais réinterprétée. Placeholder inconnu : laissé tel quel.
+	return renderConditionals(templateContent, data).replace(/\{\{(\w+)\}\}/g, (placeholder, key) =>
+		Object.hasOwn(data, key) ? data[key] : placeholder
+	);
 }

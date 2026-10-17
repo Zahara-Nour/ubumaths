@@ -5,6 +5,7 @@
  */
 
 import type { MathNode } from '../types';
+import { segmentHasName } from './segment-names';
 
 /**
  * Check if an expression contains the given variable
@@ -15,6 +16,14 @@ export function containsVariable(node: MathNode, varName: string): boolean {
 		case 'symbol':
 		case 'hole':
 		case 'constant':
+			return false;
+
+		// Une longueur est une inconnue, nommée `AB` ou `BA`
+		case 'segmentLength':
+			return segmentHasName(node, varName);
+
+		// Un nom de figure n'est pas une inconnue
+		case 'figureName':
 			return false;
 
 		case 'variable':

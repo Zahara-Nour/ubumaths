@@ -21,6 +21,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { REFERENCE_DICTIONARY } from '../fixtures/lexique/dictionnaire-reference';
+import { READING_WORDS_2026_10_11 } from '../fixtures/lexique/mots-lecture-2026-10-11';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
@@ -149,7 +150,10 @@ describe('Dictionnaire en base (dictionary_entries, dictionary_entry_versions)',
 	// Reprise
 	// --------------------------------------------------------------------------
 
-	it('reprend les entrées du fichier, une à une, dans le même ordre', async () => {
+	// La reprise du fichier (20261012153000), puis les ajouts par migration (20261016090300)
+	const EXPECTED = [...REFERENCE_DICTIONARY, ...READING_WORDS_2026_10_11];
+
+	it('reprend les entrées du fichier puis les ajouts, une à une, dans le même ordre', async () => {
 		const { data, error } = await service
 			.from('dictionary_entries')
 			.select('*')
@@ -158,9 +162,9 @@ describe('Dictionnaire en base (dictionary_entries, dictionary_entry_versions)',
 			.returns<EntryRow[]>();
 		expect(error).toBeNull();
 		const rows = data ?? [];
-		expect(rows).toHaveLength(REFERENCE_DICTIONARY.length);
+		expect(rows).toHaveLength(EXPECTED.length);
 		const differences: string[] = [];
-		REFERENCE_DICTIONARY.forEach((term, i) => {
+		EXPECTED.forEach((term, i) => {
 			const row = rows[i];
 			const expected = {
 				term: term.term,

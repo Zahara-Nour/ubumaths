@@ -10,6 +10,9 @@ import type { PageServerLoad } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { getCurriculumTree, type CurriculumTreeTheme } from '$lib/server/curriculum';
 import { error } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/avancement/+page.server');
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -20,7 +23,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.order('name', { ascending: true });
 
 	if (classesRawError) {
-		console.error('Lecture impossible :', classesRawError);
+		logger.error('Lecture impossible :', classesRawError);
 		throw error(500, 'Impossible de charger les données');
 	}
 	const classes = (classesRaw ?? []) as { id: string; name: string; grade: string | null }[];
@@ -48,7 +51,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			.lt('entry_date', yearEnd);
 
 		if (entriesError) {
-			console.error('Lecture impossible :', entriesError);
+			logger.error('Lecture impossible :', entriesError);
 			throw error(500, 'Impossible de charger les données');
 		}
 		const entryIds = (entries ?? []).map((e) => e.id);
@@ -60,7 +63,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				.in('entry_id', entryIds);
 
 			if (covError) {
-				console.error('Lecture impossible :', covError);
+				logger.error('Lecture impossible :', covError);
 				throw error(500, 'Impossible de charger les données');
 			}
 			for (const row of cov ?? []) {

@@ -95,15 +95,24 @@ describe('l’inconnue en exposant : aⁿ = b', () => {
 describe('ce que le moteur ne sait pas résoudre : un refus en français', () => {
 	// Mesuré (revue, 2026-10-09) : texte brut « Equation inconnue … Type
 	// d'equation non supporte: unknown », de genre `commande`
-	it.each([
-		['u_0*0.5^n=1 pour n', 'u_0'],
-		['u_0*q^n=10 pour n', 'q, u_0']
-	])('%s → la solution dépend de %s', (input, letters) => {
-		const result = solve(input);
-		expect(result).toMatchObject({
-			kind: 'refus',
-			message: `La solution dépend de ${letters} : je ne sais pas encore résoudre avec un paramètre.`
-		});
+	// Le message de l'atelier pour un paramètre (revue de 0d3d9beea)
+	it.each([['u_0*q^n=10 pour n', 'q et u_0']])(
+		'%s → le résultat dépend de %s',
+		(input, letters) => {
+			const result = solve(input);
+			expect(result).toMatchObject({
+				kind: 'refus',
+				message: `Le résultat dépend de ${letters} : donne-leur une valeur (q = 2) pour l'étudier.`
+			});
+		}
+	);
+
+	// Depuis le lot 1 « réciproque » (2026-10-13) : 0,5ⁿ = 1/u₀ se résout,
+	// avec la condition sous laquelle la solution existe
+	it('u_0*0.5^n=1 pour n → n = ln(1/u₀)/ln(0,5), si u₀ > 0', () => {
+		expect(answer(solve('u_0*0.5^n=1 pour n'))).toBe(
+			'n=\\dfrac{\\ln\\left(\\dfrac{1}{\\mathit{u_0}}\\right)}{\\ln\\left(0{,}5\\right)}\\quad\\text{si}\\mathit{u_0}>0'
+		);
 	});
 
 	it('le coefficient numérique, lui, se résout : 2*0.5^n=1 → n = 1', () => {

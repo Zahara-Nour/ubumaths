@@ -49,7 +49,7 @@
 
 <div class="relative">
 	<!-- Filter chips container with horizontal scroll on mobile -->
-	<div class="scrollbar-thin scrollbar-thumb-muted flex items-center gap-2 overflow-x-auto pb-2">
+	<div class="flex scrollbar-thin scrollbar-thumb-muted items-center gap-2 overflow-x-auto pb-2">
 		{#each filterOptions as option (option.value)}
 			{@const isSelected = selectedType === option.value}
 			<Button

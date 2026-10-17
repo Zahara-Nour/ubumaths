@@ -16,6 +16,12 @@
 		StudentSectionView
 	} from '$lib/types/worksheets';
 	import { groupExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
+	import { page } from '$app/state';
+	import {
+		ANCHOR_HIGHLIGHT_MS,
+		exerciseAnchorId,
+		scrollToAnchoredExercise
+	} from '$lib/worksheets/exercise-anchor';
 	import { provideContentLocale } from '$lib/components/markdown/content-locale';
 	import { isContentLocale } from '$lib/types/locale';
 
@@ -46,12 +52,35 @@
 	// Groupement et numérotation : `$lib/worksheets/exercise-numbering`, la même
 	// règle que le générateur PDF. Elle était réécrite ici, et une troisième
 	// copie avait déjà divergé — d'où le module partagé.
-	let displayGroups = $derived(groupExercisesForDisplay(exercises, sections));
+	// Fiche mélangée : l'ordre de la copie, servi par l'API, prime sur `position`
+	// (le même que dans le PDF).
+	let displayGroups = $derived(
+		groupExercisesForDisplay(exercises, sections, {
+			preserveExerciseOrder: worksheet.shuffled === true
+		})
+	);
 
 	// Ordre visuel, utilisé pour la numérotation et la navigation dans la modale.
 	let visualOrderExercises = $derived(
 		displayGroups.flatMap((g) => g.exercises.map((e) => e.exercise))
 	);
+
+	// Arrivée par la notification d'un signalement (D6) : l'ancre
+	// `#exercice-<id>` vise un exercice de fiche ; la page défile jusqu'à lui et
+	// le met brièvement en évidence.
+	let highlightedExerciseId = $state<string | null>(null);
+
+	$effect(() => {
+		const hash = page.url.hash;
+		if (exercises.length === 0) return;
+		const id = scrollToAnchoredExercise(hash);
+		if (!id) return;
+		highlightedExerciseId = id;
+		const timer = setTimeout(() => {
+			highlightedExerciseId = null;
+		}, ANCHOR_HIGHLIGHT_MS);
+		return () => clearTimeout(timer);
+	});
 
 	// Check if there are essential exercises (for legend display)
 	let hasEssentialExercises = $derived(exercises.some((e: StudentExerciseView) => e.is_essential));
@@ -206,7 +235,7 @@
 	<!-- Breadcrumb -->
 
 	<!-- Header -->
-	<WorksheetHeader {worksheet} />
+	<WorksheetHeader {worksheet} textSize={data.textSize} />
 
 	{#if readOnly}
 		<!-- Le dire franchement : sans ce bandeau, l'élève constaterait
@@ -217,8 +246,8 @@
 			<Archive class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
 			<p class="text-muted-foreground">
 				<span class="font-medium text-foreground">Consultation seule.</span>
-				Cette fiche vient d'une classe que tu as quittée : tu peux la relire, mais tu ne peux plus y
-				répondre ni signaler une erreur.
+				Cette fiche vient d'une classe que tu as quittée : tu peux la relire, mais tu ne peux plus y répondre
+				ni signaler une erreur.
 			</p>
 		</div>
 	{/if}
@@ -285,12 +314,22 @@
 								<!-- `number` vient du module de numérotation : plus de recherche
 								     d'indice à chaque rendu, et surtout plus de règle recopiée. -->
 								{#each group.exercises as { exercise, number } (exercise.id)}
-									<ExerciseListItem
-										{exercise}
-										index={number}
-										masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
-										onclick={() => openExercise(number - 1)}
-									/>
+									{@const highlighted = highlightedExerciseId === exercise.id}
+									<!-- Ancre d'un exercice de fiche : cible des notifications de signalement -->
+									<div
+										id={exerciseAnchorId(exercise.id)}
+										data-highlighted={highlighted}
+										class="scroll-mt-24 rounded-lg transition-shadow duration-500 {highlighted
+											? 'ring-2 ring-amber-400 ring-offset-2'
+											: ''}"
+									>
+										<ExerciseListItem
+											{exercise}
+											index={number}
+											masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
+											onclick={() => openExercise(number - 1)}
+										/>
+									</div>
 								{/each}
 							</div>
 						{/if}

@@ -4,6 +4,9 @@ import { schoolUpsertSchema } from '$lib/server/validation/schools';
 import { uuidSchema } from '$lib/server/validation/common';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { assertTypedConfirmation } from '$lib/server/confirmAction';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/schools/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Admin only (real admin login OR step-up elevation)
@@ -16,7 +19,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (schoolsError) {
-		console.error('Error fetching schools:', schoolsError);
+		logger.error('Error fetching schools:', schoolsError);
 		throw error(500, 'Failed to load schools');
 	}
 
@@ -97,7 +100,12 @@ export const actions: Actions = {
 		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
-		const id = formData.get('id') as string;
+
+		const idResult = uuidSchema.safeParse(formData.get('id'));
+		if (!idResult.success) {
+			return fail(400, { message: 'Identifiant école invalide' });
+		}
+		const id = idResult.data;
 
 		// Typed confirmation (destructive): the admin must type the exact school name.
 		// Enforced server-side — the dialog is only the friendly front door.
@@ -128,10 +136,23 @@ export const actions: Actions = {
 			});
 		}
 
-		const { error: deleteError } = await supabase.from('schools').delete().eq('id', id);
+		// ⚠️ Une suppression refusée par la RLS touche zéro ligne sans erreur :
+		// sans les lignes rendues, l'écran annonçait une école supprimée qui
+		// existait toujours (cf. docs/pratiques/rls-echecs-silencieux.md).
+		const { data: deletedSchools, error: deleteError } = await supabase
+			.from('schools')
+			.delete()
+			.eq('id', id)
+			.select('id');
 
 		if (deleteError) {
 			return fail(400, { message: deleteError.message });
+		}
+
+		// L'école a été lue juste au-dessus : zéro ligne = refus, pas absence.
+		if (!deletedSchools || deletedSchools.length === 0) {
+			logger.error('[admin/schools delete] Aucune ligne supprimée pour', id);
+			return fail(403, { message: 'École non supprimée : droits insuffisants' });
 		}
 
 		return { success: true };

@@ -1,17 +1,23 @@
+import '$lib/zod-locale';
 import { accountStatusHandle } from '$lib/server/accountStatusHandle';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { supabaseCspSource } from '$lib/server/csp';
+import { supabaseConnectSources, supabaseCspSource } from '$lib/server/csp';
 import { handle as supabaseHandle } from '$lib/server/supabase';
 import { maintenanceHandle } from '$lib/server/maintenance';
 import { adminElevationHandle } from '$lib/server/adminElevation';
+import { redirectHandle } from '$lib/server/redirectHandle';
 import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle } from '@sveltejs/kit';
 import { logError, getUserContext } from '$lib/server/errorMonitoring';
 import { dev } from '$app/environment';
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { initEnv } from '$lib/server/env';
 import { getUserProfile } from '$lib/server/auth';
 import { mustStayPrivate, PRIVATE_NO_STORE } from '$lib/server/private-response';
+import { csrfHandle } from '$lib/server/csrfHandle';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('hooks.server');
 
 // ====================================================================
 // Environment Variable Validation
@@ -21,7 +27,7 @@ try {
 	initEnv();
 } catch (err) {
 	const errorMessage = err instanceof Error ? err.message : String(err);
-	console.error('Failed to initialize environment:', errorMessage);
+	logger.error('Failed to initialize environment:', errorMessage);
 	// Application won't start with invalid env vars in production
 	// In development, validation errors are logged but execution continues
 }
@@ -43,100 +49,22 @@ const requestIdHandle: Handle = async ({ event, resolve }) => {
 	const requestId = crypto.randomUUID().slice(0, 8);
 	event.locals.requestId = requestId;
 
-	const response = await resolve(event);
+	// Préchargement limité au CSS. Par défaut SvelteKit précharge aussi tout le JS
+	// de la page (`rel="modulepreload"` dans l'en-tête HTTP `Link`) : 94 chunks,
+	// 189 Ko brotli sur l'accueil (prod, octobre 2026), qui disputaient la bande
+	// passante aux CSS bloquantes — FCP/LCP p75 à 3,4 s pour un TTFB de 0,5 s.
+	// Mesuré en labo (HTTP/2, 1,5 Mb/s) : FCP de l'accueil 2,2 s → 0,6 s, pour une
+	// hydratation retardée de ~0,1 à 0,4 s (le JS arrive en cascade d'imports).
+	// Placé dans le PREMIER handle : `sequence()` retient le `preload` du premier
+	// handle qui le définit.
+	const response = await resolve(event, {
+		preload: ({ type }) => type === 'css'
+	});
 
 	// Add request ID to response headers for client correlation
 	response.headers.set('X-Request-ID', requestId);
 
 	return response;
-};
-
-/**
- * URL Redirect Handle
- * Handles deprecated route redirects to maintain backwards compatibility
- * Includes navigation restructure redirects (2026-01)
- */
-const redirectHandle: Handle = async ({ event, resolve }) => {
-	const pathname = event.url.pathname;
-
-	// === NAVIGATION RESTRUCTURE REDIRECTS (308 Permanent) ===
-	// Note: We access event.url.search only when performing actual redirects
-	// to avoid "Cannot access url.search on a page with prerendering enabled" errors
-
-	// Contenu group redirects
-	if (pathname.startsWith('/dashboard/teacher/templates')) {
-		const newPath = pathname.replace(
-			'/dashboard/teacher/templates',
-			'/dashboard/teacher/contenu/templates'
-		);
-		throw redirect(308, newPath + event.url.search);
-	}
-	if (pathname.startsWith('/dashboard/teacher/exercises')) {
-		const newPath = pathname.replace(
-			'/dashboard/teacher/exercises',
-			'/dashboard/teacher/contenu/exercices'
-		);
-		throw redirect(308, newPath + event.url.search);
-	}
-	if (pathname.startsWith('/dashboard/teacher/riddles')) {
-		const newPath = pathname.replace(
-			'/dashboard/teacher/riddles',
-			'/dashboard/teacher/contenu/enigmes'
-		);
-		throw redirect(308, newPath + event.url.search);
-	}
-	if (pathname.startsWith('/dashboard/teacher/worksheets')) {
-		const newPath = pathname.replace(
-			'/dashboard/teacher/worksheets',
-			'/dashboard/teacher/contenu/worksheets'
-		);
-		throw redirect(308, newPath + event.url.search);
-	}
-
-	// Gamification group redirects
-	if (pathname.startsWith('/dashboard/teacher/rewards')) {
-		const newPath = pathname.replace(
-			'/dashboard/teacher/rewards',
-			'/dashboard/teacher/gamification/rewards'
-		);
-		throw redirect(308, newPath + event.url.search);
-	}
-	if (pathname.startsWith('/dashboard/teacher/marketplace')) {
-		const newPath = pathname.replace(
-			'/dashboard/teacher/marketplace',
-			'/dashboard/teacher/gamification/marketplace'
-		);
-		throw redirect(308, newPath + event.url.search);
-	}
-
-	// Moderation group redirects
-	if (pathname.startsWith('/dashboard/teacher/warnings')) {
-		const newPath = pathname.replace(
-			'/dashboard/teacher/warnings',
-			'/dashboard/teacher/moderation/avertissements'
-		);
-		throw redirect(308, newPath + event.url.search);
-	}
-
-	// Google Classroom redirect to existing settings/google page
-	if (pathname === '/dashboard/teacher/google') {
-		throw redirect(308, '/dashboard/teacher/settings/google' + event.url.search);
-	}
-
-	// Students redirect (now accessed via Classes)
-	if (pathname === '/dashboard/students') {
-		throw redirect(308, '/dashboard/teacher/classes');
-	}
-
-	// Legacy login path → canonical auth route. The only login route lives at
-	// /auth/login ((public)/auth/login); a bare /login matches no route (404).
-	// Safety net for external / bookmarked /login URLs (internal code uses
-	// /auth/login directly — see src/routes/login-redirect.test.ts).
-	if (pathname === '/login') {
-		throw redirect(308, '/auth/login' + event.url.search);
-	}
-
-	return resolve(event);
 };
 
 /**
@@ -165,11 +93,7 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 			// Sign out and redirect - this prevents "Unexpected token '<'" errors
 			// during client-side navigation when pages try to redirect with HTML response
 			if (!event.locals.profile) {
-				console.error(
-					'[userProfileHandle] Profile not found for authenticated user:',
-					user.id,
-					user.email
-				);
+				logger.error('[userProfileHandle] Profile not found for authenticated user:', user.id);
 
 				// Log to error_logs table for admin visibility
 				try {
@@ -181,12 +105,11 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 						user_agent: event.request.headers.get('user-agent') ?? undefined,
 						user_id: user.id,
 						context: {
-							user_email: user.email,
 							request_id: event.locals.requestId || 'unknown'
 						}
 					});
 				} catch (logErr) {
-					console.error('[userProfileHandle] Failed to log error:', logErr);
+					logger.error('[userProfileHandle] Failed to log error:', logErr);
 				}
 
 				// Sign out and redirect to login
@@ -201,7 +124,7 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 
 			// Log the error
 			const errorMessage = err instanceof Error ? err.message : String(err);
-			console.error('[userProfileHandle] Failed to fetch profile for user:', user.id, errorMessage);
+			logger.error('[userProfileHandle] Failed to fetch profile for user:', user.id, errorMessage);
 
 			// Log to error_logs table for admin visibility
 			try {
@@ -214,12 +137,11 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 					user_id: user.id,
 					stack_trace: err instanceof Error ? err.stack : undefined,
 					context: {
-						user_email: user.email,
 						request_id: event.locals.requestId || 'unknown'
 					}
 				});
 			} catch (logErr) {
-				console.error('[userProfileHandle] Failed to log error:', logErr);
+				logger.error('[userProfileHandle] Failed to log error:', logErr);
 			}
 
 			// Sign out and redirect to login - this prevents "Unexpected token '<'" errors
@@ -232,63 +154,6 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 		}
 	} else {
 		event.locals.profile = null;
-	}
-
-	return resolve(event);
-};
-
-/**
- * CSRF Protection Handle
- * Validates origin header for all state-changing requests (POST, PUT, DELETE, PATCH)
- *
- * SECURITY: Prevents Cross-Site Request Forgery attacks
- * - Checks origin header matches host header
- * - Only enforced for state-changing methods
- * - Critical for API endpoints and form submissions
- */
-const csrfHandle: Handle = async ({ event, resolve }) => {
-	// Allow safe methods (read-only)
-	const method = event.request.method;
-	if (['GET', 'HEAD', 'OPTIONS'].includes(method)) {
-		return resolve(event);
-	}
-
-	// For state-changing methods, validate origin
-	const origin = event.request.headers.get('origin');
-	const host = event.request.headers.get('host');
-
-	// Missing headers - check if internal server-to-server call
-	if (!origin || !host) {
-		// Internal fetch calls from server actions/load functions don't have origin/host headers
-		// These are safe as they don't come from a browser (no CSRF risk)
-		// Allow if BOTH are missing (indicates internal SvelteKit fetch)
-		if (!origin && !host) {
-			return resolve(event);
-		}
-
-		// In development, allow localhost without origin (for testing tools)
-		if (dev && host?.includes('localhost')) {
-			return resolve(event);
-		}
-
-		throw error(403, {
-			message: 'CSRF validation failed: Missing origin or host header'
-		});
-	}
-
-	// Validate origin matches host
-	try {
-		const originUrl = new URL(origin);
-		if (originUrl.host !== host) {
-			throw error(403, {
-				message: 'CSRF validation failed: Origin mismatch'
-			});
-		}
-	} catch (_err) {
-		// Invalid origin URL
-		throw error(403, {
-			message: 'CSRF validation failed: Invalid origin header'
-		});
 	}
 
 	return resolve(event);
@@ -354,7 +219,7 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 				} catch (error) {
 					// Silently fail - don't let logging errors break the app
 					if (dev) {
-						console.error('Error logging slow request:', error);
+						logger.error('Error logging slow request:', error);
 					}
 				}
 			});
@@ -397,7 +262,7 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 
 		// Log to console in development
 		if (dev) {
-			console.error('[Server Error]', {
+			logger.error('[Server Error]', {
 				url: event.url.pathname,
 				method: event.request.method,
 				error: errorMessage
@@ -457,6 +322,8 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 			"connect-src 'self'",
 			'https://*.supabase.co',
 			'wss://*.supabase.co',
+			// NOTRE projet, nommé : seul effet réel en dev, sur la base locale
+			...supabaseConnectSources(PUBLIC_SUPABASE_URL),
 			'https://cdn.jsdelivr.net',
 			'https://cdn.plot.ly',
 			'https://*.googleapis.com',

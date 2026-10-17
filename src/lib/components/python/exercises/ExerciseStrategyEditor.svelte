@@ -717,8 +717,7 @@
 								class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
 								rows="14"
 								value={customCmp.code}
-								oninput={(e) => setCustomCode((e.target as HTMLTextAreaElement).value)}
-							></textarea>
+								oninput={(e) => setCustomCode((e.target as HTMLTextAreaElement).value)}></textarea>
 						</div>
 						<div>
 							<label class="mb-1 block text-sm font-medium" for="cmp-custom-timeout">
@@ -955,8 +954,7 @@
 													input: (e.target as HTMLTextAreaElement).value
 												};
 												return { ...b, test_cases: updated };
-											})}
-									></textarea>
+											})}></textarea>
 								</div>
 								<div>
 									<label class="mb-1 block text-xs text-muted-foreground" for="case-expected-{i}">
@@ -975,8 +973,7 @@
 													expected_output: (e.target as HTMLTextAreaElement).value
 												};
 												return { ...b, test_cases: updated };
-											})}
-									></textarea>
+											})}></textarea>
 								</div>
 							</div>
 						</div>
@@ -1048,8 +1045,7 @@
 										class:border-red-500={unitDrafts[i]?.argsErr}
 										rows="2"
 										bind:value={unitDrafts[i].args}
-										onblur={() => commitUnitDraft(i)}
-									></textarea>
+										onblur={() => commitUnitDraft(i)}></textarea>
 									{#if unitDrafts[i]?.argsErr}
 										<p class="mt-1 text-xs text-red-600">{unitDrafts[i].argsErr}</p>
 									{/if}
@@ -1064,8 +1060,7 @@
 										class:border-red-500={unitDrafts[i]?.expectedErr}
 										rows="2"
 										bind:value={unitDrafts[i].expected}
-										onblur={() => commitUnitDraft(i)}
-									></textarea>
+										onblur={() => commitUnitDraft(i)}></textarea>
 									{#if unitDrafts[i]?.expectedErr}
 										<p class="mt-1 text-xs text-red-600">{unitDrafts[i].expectedErr}</p>
 									{/if}
@@ -1132,8 +1127,7 @@
 										class:border-red-500={draft.valueErr}
 										rows="2"
 										bind:value={varDrafts[i].valueDraft}
-										onblur={() => commitVarDraft(i)}
-									></textarea>
+										onblur={() => commitVarDraft(i)}></textarea>
 									{#if draft.valueErr}
 										<p class="mt-1 text-xs text-red-600">{draft.valueErr}</p>
 									{/if}
@@ -1189,8 +1183,7 @@
 							updateReferenceSolutionBehavior((b) => ({
 								...b,
 								reference_code: (e.target as HTMLTextAreaElement).value
-							}))}
-					></textarea>
+							}))}></textarea>
 					<p class="mt-1 text-xs text-muted-foreground">
 						Cachée au {lore.entities.student}. C'est ta solution officielle ; elle sera comparée à
 						celle du {lore.entities.student}
@@ -1247,8 +1240,7 @@
 												class:border-red-500={refFixedDrafts[i]?.argsErr}
 												rows="2"
 												bind:value={refFixedDrafts[i].args}
-												onblur={() => commitRefFixedDraft(i)}
-											></textarea>
+												onblur={() => commitRefFixedDraft(i)}></textarea>
 											{#if refFixedDrafts[i]?.argsErr}
 												<p class="mt-1 text-xs text-red-600">{refFixedDrafts[i].argsErr}</p>
 											{/if}
@@ -1266,8 +1258,7 @@
 												class:border-red-500={refFixedDrafts[i]?.expectedErr}
 												rows="2"
 												bind:value={refFixedDrafts[i].expected}
-												onblur={() => commitRefFixedDraft(i)}
-											></textarea>
+												onblur={() => commitRefFixedDraft(i)}></textarea>
 											{#if refFixedDrafts[i]?.expectedErr}
 												<p class="mt-1 text-xs text-red-600">
 													{refFixedDrafts[i].expectedErr}
@@ -1310,8 +1301,7 @@
 											generator: b.generator
 												? { ...b.generator, code: (e.target as HTMLTextAreaElement).value }
 												: b.generator
-										}))}
-								></textarea>
+										}))}></textarea>
 								<p class="mt-1 text-xs text-muted-foreground">
 									Doit retourner un tuple : <code>(a,)</code> pour 1 argument,
 									<code>(a, b)</code> pour 2.

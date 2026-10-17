@@ -48,7 +48,8 @@
 	import {
 		Menu,
 		FlaskConical,
-		Shapes,
+		Zap,
+		Newspaper,
 		KeyRound,
 		LogIn,
 		LogOut,
@@ -110,6 +111,8 @@
 		profile = null,
 		sidebarItems = [
 			{ label: 'Accueil', href: '/', icon: Home },
+			// D14 (décision de David, 2026-10-12) : les deux pages publiques les plus vivantes
+			{ label: 'Automaths', href: '/automaths', icon: Zap },
 			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
 			{
 				label: 'Python',
@@ -118,13 +121,13 @@
 				roles: ['student', 'teacher']
 			},
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
-			// Sans `roles` : ni l'atelier ni les démos de géométrie ne lisent de
-			// donnée serveur, ils sont donc ouverts, y compris hors connexion.
+			// Sans `roles` : ni l'atelier, ni Automaths, ni le Shtam ne lisent de
+			// donnée serveur réservée, ils sont donc ouverts, y compris hors connexion.
 			// G1 : l'atelier est l'entrée unique (`/grapheur` y mène encore).
 			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
 			// Le Cabinet Noir de Turingrad : public, aucune donnée serveur
 			{ label: 'Chiffrement', href: '/chiffrement', icon: KeyRound },
-			{ label: 'Géométrie', href: '/geometry-demo', icon: Shapes },
+			{ label: 'Le Shtam', href: '/shtam', icon: Newspaper },
 			{
 				label: 'Whiteboard',
 				href: '/whiteboard',

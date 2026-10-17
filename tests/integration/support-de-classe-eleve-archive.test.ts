@@ -135,7 +135,6 @@ describe('le support de classe et l’élève archivé', () => {
 				title: 'Énigme support ZZ',
 				difficulty: 1,
 				statement: 'Combien font deux et deux ?',
-				correction: 'Quatre.',
 				created_by: teacher.id
 			})
 			.select('id')

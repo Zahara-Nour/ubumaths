@@ -42,7 +42,12 @@ function item(statement: string, delaySeconds: number): ClassroomItem {
 	return { instance: qcm(statement), delaySeconds, categoryKey: 'x' };
 }
 
-async function open(items: ClassroomItem[], isLoggedIn = true, inEvaluation = false) {
+async function open(
+	items: ClassroomItem[],
+	isLoggedIn = true,
+	inEvaluation = false,
+	collectOnly = false
+) {
 	const onComplete = vi.fn<(result: TestResult) => void>();
 	const onRestart = vi.fn();
 	const onBack = vi.fn();
@@ -52,7 +57,8 @@ async function open(items: ClassroomItem[], isLoggedIn = true, inEvaluation = fa
 		onComplete,
 		onRestart,
 		onBack,
-		inEvaluation
+		inEvaluation,
+		collectOnly
 	});
 	flushSync();
 	await tick();
@@ -90,6 +96,26 @@ function clickButton(root: HTMLElement, label: string) {
 	if (!found) throw new Error(`Bouton « ${label} » introuvable`);
 	found.click();
 	flushSync();
+}
+
+/** Clique le lien « Quitter » ; rend true si le lien a annulé la navigation */
+function clickQuit(container: HTMLElement): boolean {
+	const link = [...container.querySelectorAll<HTMLAnchorElement>('a')].find(
+		(candidate) => candidate.textContent?.trim() === 'Quitter'
+	);
+	if (!link) throw new Error('lien « Quitter » introuvable');
+	let cancelledByLink = false;
+	// Écouteur posé après celui du lien : relève sa décision, puis bloque la vraie navigation
+	link.ownerDocument.addEventListener(
+		'click',
+		(event) => {
+			cancelledByLink = event.defaultPrevented;
+			event.preventDefault();
+		},
+		{ once: true }
+	);
+	link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+	return cancelledByLink;
 }
 
 describe('TestInteractive — Entraînement', () => {
@@ -208,16 +234,51 @@ describe('TestInteractive — Entraînement', () => {
 		expect(onComplete).toHaveBeenCalledTimes(1);
 	});
 
+	it('en-tête : « Quitter » mène au panier, ou à « Mes contrôles » en évaluation', async () => {
+		const quitHref = (container: HTMLElement) =>
+			[...container.querySelectorAll<HTMLAnchorElement>('a')]
+				.find((link) => link.textContent?.trim() === 'Quitter')
+				?.getAttribute('href');
+
+		const training = await open([item('Énoncé A', 10)]);
+		expect(quitHref(training.container)).toBe('/automaths/panier');
+		await training.unmount();
+
+		const evaluation = await open([item('Énoncé A', 10)], true, true);
+		expect(quitHref(evaluation.container)).toBe('/dashboard/student/assessments');
+	});
+
+	it('contrôle : « Quitter » demande confirmation (réponses perdues) ; entraînement : non', async () => {
+		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+		const evaluation = await open([item('Énoncé A', 10)], true, true, true);
+		expect(clickQuit(evaluation.container)).toBe(true);
+		expect(confirmSpy).toHaveBeenCalledWith(
+			expect.stringContaining('réponses tapées seront perdues')
+		);
+		await evaluation.unmount();
+
+		confirmSpy.mockClear();
+		const training = await open([item('Énoncé A', 10)]);
+		expect(clickQuit(training.container)).toBe(false);
+		expect(confirmSpy).not.toHaveBeenCalled();
+		confirmSpy.mockRestore();
+	});
+
 	it('évaluation : ni « Recommencer » ni « Retour au panier », mais « Mes évaluations »', async () => {
 		const { container } = await open([item('Énoncé A', 1)], true, true);
-		expect(container.querySelector('[aria-label="Retour au panier"]')).toBeNull();
 
 		elapse(1200);
 		await tick();
 
+		// Le lien « Quitter » de l'en-tête mène aussi à « Mes contrôles » : on cible
+		// le lien de l'écran de fin par son texte
+		const myAssessments = [...container.querySelectorAll<HTMLAnchorElement>('a')].find((link) =>
+			link.textContent?.includes('Mes contrôles')
+		);
+		expect(myAssessments?.getAttribute('href')).toBe('/dashboard/student/assessments');
 		expect(container.textContent).not.toContain(RESTART);
 		expect(container.textContent).not.toContain('Retour au panier');
-		expect(container.querySelector('a[href="/dashboard/student/assessments"]')).not.toBeNull();
 	});
 
 	it('visiteur non connecté : averti que ses réponses ne comptent pas', async () => {

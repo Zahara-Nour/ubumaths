@@ -101,7 +101,7 @@ describe('Migration Review API', () => {
 				} as never)
 			).rejects.toMatchObject({
 				status: 403,
-				body: { message: 'Admin access required' }
+				body: { message: 'Réservé aux administrateurs' }
 			});
 		});
 
@@ -115,7 +115,7 @@ describe('Migration Review API', () => {
 				} as never)
 			).rejects.toMatchObject({
 				status: 401,
-				body: { message: 'Authentication required' }
+				body: { message: 'Connexion requise' }
 			});
 		});
 
@@ -149,7 +149,7 @@ describe('Migration Review API', () => {
 				} as never)
 			).rejects.toMatchObject({
 				status: 400,
-				body: { message: 'Global index must be a valid number' }
+				body: { message: 'Numéro de question invalide' }
 			});
 		});
 
@@ -195,7 +195,7 @@ describe('Migration Review API', () => {
 			const data = await response.json();
 
 			expect(data.success).toBe(true);
-			expect(data.message).toBe('Question approved');
+			expect(data.message).toBe('Question approuvée');
 			expect(data.data.globalIndex).toBe(10);
 			expect(data.data.approved).toBe(true);
 			expect(data.data.approvedBy).toBe(adminId);
@@ -314,7 +314,7 @@ describe('Migration Review API', () => {
 			const data = await response.json();
 
 			expect(data.success).toBe(true);
-			expect(data.message).toBe('Question rejected');
+			expect(data.message).toBe('Question rejetée');
 			expect(data.data.globalIndex).toBe(10);
 			expect(data.data.rejected).toBe(true);
 			expect(data.data.rejectedBy).toBe(adminId);

@@ -11,6 +11,9 @@ import { updateAssignment, deleteAssignment } from '$lib/server/exercise-assignm
 import type { ExerciseAssignment } from '$lib/exercises/types';
 import { validateUpdateAssignment } from '$lib/server/validation';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/assignments/[assignmentId]/+server');
 
 /**
  * PATCH /api/exercises/assignments/[assignmentId]
@@ -34,7 +37,7 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		return json({ error: `Validation failed: ${errorMsg}` }, { status: 400 });
+		return json({ error: `Données invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	const updates: Partial<Pick<ExerciseAssignment, 'optional_deadline' | 'notes' | 'is_active'>> =
@@ -49,7 +52,7 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 	);
 
 	if (updateError) {
-		console.error('Failed to update assignment:', updateError);
+		logger.error('Failed to update assignment:', updateError);
 
 		// Check if it's an authorization error
 		if (updateError.includes('not authorized') || updateError.includes('not found')) {
@@ -87,7 +90,7 @@ export const DELETE: RequestHandler = async ({ params, url, locals }) => {
 	);
 
 	if (deleteError) {
-		console.error('Failed to delete assignment:', deleteError);
+		logger.error('Failed to delete assignment:', deleteError);
 
 		// Check if it's an authorization error
 		if (deleteError.includes('not authorized') || deleteError.includes('not found')) {
@@ -100,7 +103,7 @@ export const DELETE: RequestHandler = async ({ params, url, locals }) => {
 	return json(
 		{
 			success,
-			message: hardDelete ? 'Assignment deleted permanently' : 'Assignment deactivated'
+			message: hardDelete ? 'Affectation supprimée définitivement' : 'Affectation désactivée'
 		},
 		{ status: 200 }
 	);

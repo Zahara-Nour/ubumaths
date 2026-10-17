@@ -599,8 +599,8 @@
 						</div>
 					{:else}
 						<p class="text-sm text-muted-foreground">
-							Le {lore.entities.student} peut sélectionner entre 1 et 10 cartes à échanger contre le
-							même nombre de nouvelles cartes aléatoires.
+							Le {lore.entities.student} peut sélectionner entre 1 et 10 cartes à échanger contre le même
+							nombre de nouvelles cartes aléatoires.
 						</p>
 					{/if}
 				</div>
@@ -719,8 +719,8 @@
 								Le {lore.entities.student} pourra choisir des cartes <strong>communes</strong>,
 								<strong>rares</strong> ou <strong>épiques</strong>.
 							{:else}
-								Le {lore.entities.student} pourra choisir parmi toutes les raretés (communes, rares,
-								épiques, légendaires).
+								Le {lore.entities.student} pourra choisir parmi toutes les raretés (communes, rares, épiques,
+								légendaires).
 							{/if}
 						</p>
 					</div>

@@ -8,6 +8,9 @@ import type { RequestHandler } from './$types';
 import { logError, getUserContext, type LogErrorData } from '$lib/server/errorMonitoring';
 import { logErrorSchema } from '$lib/server/validation/errors';
 import { rateLimit } from '$lib/server/middleware/rateLimit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/errors/log/+server');
 
 export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
 	try {
@@ -27,6 +30,13 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 
 		// Get user context if session exists
 		const { user } = await locals.safeGetSession();
+
+		// Une erreur « critical » alerte les admins en urgence : seul un compte approuvé
+		// peut la déclencher. L'inscription est ouverte et un compte en attente garde
+		// l'accès à cette route : sans approbation, l'erreur est gardée en « error ».
+		if (locals.profile?.status !== 'approved' && errorData.severity === 'critical') {
+			errorData.severity = 'error';
+		}
 		let userContext = {};
 		if (user?.id) {
 			userContext = await getUserContext(locals.supabase, user.id);
@@ -42,7 +52,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 		const result = await logError(locals.supabase, completeErrorData);
 
 		if (!result.success) {
-			console.error('Failed to log error:', result.error);
+			logger.error('Failed to log error:', result.error);
 			throw error(500, result.error || 'Failed to log error');
 		}
 
@@ -53,7 +63,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 			throw err;
 		}
 
-		console.error('Error in /api/errors/log:', err);
+		logger.error('Error in /api/errors/log:', err);
 		throw error(500, 'Internal server error');
 	}
 };

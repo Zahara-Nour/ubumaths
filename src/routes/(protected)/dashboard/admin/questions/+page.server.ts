@@ -28,6 +28,9 @@ import { COURSE_QUESTION_FILTER } from '$lib/questions/course-question';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/questions/+page.server');
 
 // ============================================================================
 // TYPES
@@ -158,7 +161,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			.order('id');
 
 		if (draftsError) {
-			console.error('Error fetching draft templates:', draftsError);
+			logger.error('Error fetching draft templates:', draftsError);
 			throw error(500, 'Failed to load draft templates');
 		}
 
@@ -179,7 +182,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			.order('id');
 
 		if (queryError) {
-			console.error('Error fetching templates:', queryError);
+			logger.error('Error fetching templates:', queryError);
 			throw error(500, 'Failed to load question templates');
 		}
 
@@ -199,7 +202,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			const { data: idRows, error: idsError } = await applyTemplateFilters(idsQuery, filters);
 
 			if (idsError) {
-				console.error('Error fetching published template ids:', idsError);
+				logger.error('Error fetching published template ids:', idsError);
 				throw error(500, 'Failed to load question templates');
 			}
 			publishedIds.push(...idRows.map((row) => row.id));
@@ -217,7 +220,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			.select('theme, domain, subdomain');
 
 		if (allTemplatesError) {
-			console.error('Lecture impossible :', allTemplatesError);
+			logger.error('Lecture impossible :', allTemplatesError);
 			throw error(500, 'Impossible de charger les données');
 		}
 
@@ -260,7 +263,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			}
 		};
 	} catch (err) {
-		console.error('Error in question templates load:', err);
+		logger.error('Error in question templates load:', err);
 		throw error(500, 'Failed to load question templates');
 	}
 };

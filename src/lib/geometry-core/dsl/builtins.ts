@@ -182,7 +182,7 @@ function requireElement(val: ResolvedValue, name: string, line: number): string 
 				hint:
 					val.type === 'nombre'
 						? 'Pour passer un nombre à un builtin qui attend un point, utilisez `point(x, y)` d’abord.'
-						: 'Vérifiez le type de la variable passée — elle doit avoir été créée par un builtin (`point`, `cercle`, …).'
+						: 'Vérifier le type de la variable passée — elle doit avoir été créée par un builtin (`point`, `cercle`, …).'
 			},
 			line
 		);
@@ -1369,7 +1369,7 @@ function handlePointSur(ctx: BuiltinCtx): BuiltinResult {
 		throw new DslRuntimeError(
 			{
 				summary: '`point_sur()` : objet introuvable.',
-				hint: 'Vérifiez que la variable passée en 1er argument a bien été définie au-dessus.'
+				hint: 'Vérifier que la variable passée en 1er argument a bien été définie au-dessus.'
 			},
 			line
 		);
@@ -1826,7 +1826,7 @@ function handleLieu(ctx: BuiltinCtx): BuiltinResult {
 		throw new DslRuntimeError(
 			{
 				summary: `\`lieu()\` : conducteur \`${driverId}\` introuvable.`,
-				hint: 'Vérifiez que la variable passée en 2ᵉ argument a bien été définie.'
+				hint: 'Vérifier que la variable passée en 2ᵉ argument a bien été définie.'
 			},
 			line
 		);
@@ -1854,7 +1854,7 @@ function handleLieu(ctx: BuiltinCtx): BuiltinResult {
 		throw new DslRuntimeError(
 			{
 				summary: `\`lieu()\` : traceur \`${tracerId}\` introuvable.`,
-				hint: 'Vérifiez que la variable passée en 1er argument a bien été définie.'
+				hint: 'Vérifier que la variable passée en 1er argument a bien été définie.'
 			},
 			line
 		);
@@ -2156,7 +2156,7 @@ function handleProduitScalaire(ctx: BuiltinCtx): BuiltinScalarResult {
 		throw new DslRuntimeError(
 			{
 				summary: '`produit_scalaire()` : impossible de résoudre les composantes des vecteurs.',
-				hint: 'Vérifiez que les deux arguments sont bien des vecteurs définis.'
+				hint: 'Vérifier que les deux arguments sont bien des vecteurs définis.'
 			},
 			line
 		);
@@ -2196,7 +2196,7 @@ function handleCercle(ctx: BuiltinCtx): BuiltinResult {
 				throw new DslRuntimeError(
 					{
 						summary: 'Les 3 points sont alignés, le cercle circonscrit n’existe pas.',
-						hint: 'Vérifiez que les trois points ne sont pas tous sur la même droite.'
+						hint: 'Vérifier que les trois points ne sont pas tous sur la même droite.'
 					},
 					line
 				);
@@ -5326,7 +5326,7 @@ function handleTrace(ctx: BuiltinCtx): BuiltinResult {
 		throw new DslRuntimeError(
 			{
 				summary: `\`trace()\` : point \`${trackedId}\` introuvable.`,
-				hint: 'Vérifiez que la variable a bien été définie au-dessus.'
+				hint: 'Vérifier que la variable a bien été définie au-dessus.'
 			},
 			line
 		);
@@ -6074,7 +6074,7 @@ function handleCorde(ctx: BuiltinCtx): BuiltinResult {
 		throw new DslRuntimeError(
 			{
 				summary: '`corde()` attend un cercle et une droite (ou segment / demi-droite).',
-				hint: 'Vérifiez que vous passez bien un `cercle()` et une `droite()`.'
+				hint: 'Vérifier que les arguments sont bien un `cercle()` et une `droite()`.'
 			},
 			line
 		);
@@ -6611,7 +6611,7 @@ function createCurveFromEquation(
 		throw new DslRuntimeError(
 			{
 				summary: '`courbe()` : impossible de compiler `F(x, y)` pour cette équation.',
-				hint: 'Vérifiez la syntaxe de l’équation et que toutes les variables sont reconnues.'
+				hint: 'Vérifier la syntaxe de l’équation et que toutes les variables sont reconnues.'
 			},
 			line
 		);

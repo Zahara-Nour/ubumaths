@@ -20,7 +20,7 @@
 import type { Variable, ResolvedVariable, DocumentNode } from '$lib/ubumark';
 import type { GradeCode } from '$lib/types/grades';
 import type { ContentLocale, TranslatedLocale } from '$lib/types/locale';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 // ============================================================================
 // EXERCISE CATEGORY
@@ -383,6 +383,13 @@ export interface Exercise {
 	 */
 	is_public?: boolean;
 
+	/**
+	 * « Afficher sur Google » : listé dans le sitemap, sans balise noindex.
+	 * Exige `is_public` (contrainte en base).
+	 * @default false
+	 */
+	search_indexed?: boolean;
+
 	// Additional metadata
 	/** Applicable grade levels (e.g., ['3', '2', '1_SPE']) - uses GradeCode from unified system */
 	grades?: GradeCode[];
@@ -584,6 +591,8 @@ export interface TranslatedHint {
 export interface TranslatedExerciseContent {
 	statement_md?: string;
 	solution_md?: string;
+	/** Réponses seules (PDF « Réponses ») : variation seulement */
+	answers_md?: string;
 	hints?: Record<string, TranslatedHint>;
 }
 
@@ -615,6 +624,13 @@ export interface ExerciseVariation {
 	 * might show just the final answer.
 	 */
 	solution_md: string;
+
+	/**
+	 * Réponses seules, sans détail, question par question : imprimées dans le
+	 * PDF « Réponses » de la fiche. Facultatif ; peut contenir des `{{var}}`,
+	 * résolues comme dans la correction.
+	 */
+	answers_md?: string;
 
 	/**
 	 * Per-variation variables (merged with shared variables)
@@ -860,6 +876,11 @@ export interface ExerciseInstance {
 	 */
 	solution_md: string;
 
+	/**
+	 * Réponses seules, variables résolues ; chaîne vide si la variation n'en a pas
+	 */
+	answers_md?: string;
+
 	// Parsed content (optional, only if parseAST was requested)
 	/**
 	 * Parsed AST from resolved statement
@@ -1101,17 +1122,46 @@ export interface TypstTranspilerOptions {
 	 * - une configuration : ces lettres-là (`C'(x)` devient lisible).
 	 */
 	genericFunctions?: GenericFunctionConfig | null;
+
+	/**
+	 * Sens de deux majuscules collées dans les formules `~…~` (`AB`) : longueur ou
+	 * produit, résolu depuis le thème de l'exercice (lot 6 des longueurs, Q-J).
+	 * Absent : défaut du parseur, le produit — l'écriture d'avant.
+	 */
+	capitalPairs?: CapitalPairs;
+
+	/**
+	 * Ce qui se pose à la fin de chaque QUESTION — élément de premier niveau d'une
+	 * liste numérotée de premier niveau —, après ses sous-éléments ; `index` court
+	 * d'une liste à l'autre (0, 1, 2…). Cadres de réponse des fiches (ADR 0030,
+	 * lot 3). Absent : rien.
+	 */
+	afterQuestion?: (index: number) => string;
+
+	/**
+	 * Le dernier bloc reste collé à ce qui suit le document (cadre de réponse
+	 * unique) : jamais de cadre seul en haut d'une colonne. Une liste : son
+	 * dernier élément seulement. Défaut : non.
+	 */
+	keepEndWithNext?: boolean;
 }
 
 /**
- * Options une fois les défauts appliqués. `genericFunctions` reste optionnel :
+ * Options une fois les défauts appliqués. `genericFunctions`, `capitalPairs`,
+ * `afterQuestion` et `keepEndWithNext` restent optionnels :
  * son absence a un sens (« défauts du parseur ») distinct de `null`, qu'un
  * `Required<>` effacerait.
  */
 export type ResolvedTypstTranspilerOptions = Required<
-	Omit<TypstTranspilerOptions, 'genericFunctions'>
+	Omit<
+		TypstTranspilerOptions,
+		'genericFunctions' | 'capitalPairs' | 'afterQuestion' | 'keepEndWithNext'
+	>
 > &
-	Pick<TypstTranspilerOptions, 'genericFunctions'>;
+	Pick<
+		TypstTranspilerOptions,
+		'genericFunctions' | 'capitalPairs' | 'afterQuestion' | 'keepEndWithNext'
+	>;
 
 // Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from $lib/ubumark
 
@@ -1167,6 +1217,11 @@ export interface ExerciseExportV2 {
 	// Variations system
 	variations?: ExerciseVariation[];
 	shared?: SharedExerciseDefaults;
+
+	// Réglages de l'exercice (le slug n'est pas exporté : il doit rester unique)
+	generic_functions?: string[] | null;
+	resources?: ExerciseResource[] | null;
+	distribution_mode?: DistributionMode;
 }
 
 /**
@@ -2110,47 +2165,6 @@ export interface AssignmentStats {
 	unique_students_engaged: number;
 }
 
-/**
- * Completion statistics for a specific exercise
- *
- * Tracks student engagement and completion rates for an exercise.
- * Useful for teachers to monitor exercise effectiveness.
- *
- * @example Exercise performance
- * ```typescript
- * const stats: ExerciseCompletionStats = {
- *   exercise_id: 'ex-123',
- *   total_assigned: 30, // Assigned to 30 students
- *   total_viewed: 28, // 28 students viewed it
- *   total_completed: 25, // 25 students completed it
- *   completion_rate: 83.33, // 25/30 = 83.33%
- *   average_view_count: 2.4 // Students viewed it 2.4 times on average
- * };
- * ```
- */
-export interface ExerciseCompletionStats {
-	/** Exercise being tracked */
-	exercise_id: string;
-
-	/** Number of students assigned this exercise */
-	total_assigned: number;
-
-	/** Number of students who viewed the exercise */
-	total_viewed: number;
-
-	/** Number of students who completed the exercise */
-	total_completed: number;
-
-	/**
-	 * Completion percentage: (total_completed / total_assigned) * 100
-	 * Value between 0 and 100
-	 */
-	completion_rate: number;
-
-	/** Average number of times students viewed this exercise */
-	average_view_count: number;
-}
-
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
@@ -2249,25 +2263,6 @@ export function hasDeadline(assignment: ExerciseAssignment): boolean {
  */
 export function isExerciseCompleted(completion?: ExerciseCompletion): boolean {
 	return completion?.completed_at !== null && completion?.completed_at !== undefined;
-}
-
-/**
- * Get completion percentage as rounded integer
- *
- * @param stats - Completion statistics
- * @returns Completion rate as integer (0-100)
- *
- * @example
- * ```typescript
- * const stats: ExerciseCompletionStats = {
- *   // ... fields ...
- *   completion_rate: 83.33333
- * };
- * getCompletionPercentage(stats); // 83
- * ```
- */
-export function getCompletionPercentage(stats: ExerciseCompletionStats): number {
-	return Math.round(stats.completion_rate);
 }
 
 /**
@@ -2472,6 +2467,10 @@ export function resolveExerciseVariationWithShared(
 			sharedTr?.solution_md ||
 			shared?.solution_md ||
 			'',
+		// Réponses : propres à la variation, rien dans les valeurs partagées
+		...((variationTr?.answers_md || variation.answers_md) && {
+			answers_md: variationTr?.answers_md || variation.answers_md
+		}),
 		variables: mergeExerciseVariables(shared?.variables, variation.variables),
 		hints: localizeHints(variation.hints, variationTr?.hints)
 	};
@@ -2503,6 +2502,15 @@ function localizeHints(
 	});
 }
 
+/** Le contenu d'une variation, dans la langue demandée */
+export interface ExerciseContent {
+	statement_md: string;
+	solution_md: string;
+	/** Réponses seules ; chaîne vide si la variation n'en a pas */
+	answers_md: string;
+	hints?: ExerciseHint[];
+}
+
 /**
  * Get exercise content from variations (the single source of truth)
  *
@@ -2529,7 +2537,7 @@ export function getExerciseContent(
 	exercise: Exercise,
 	variationIndex = 0,
 	locale: ContentLocale = 'fr'
-): { statement_md: string; solution_md: string; hints?: ExerciseHint[] } {
+): ExerciseContent {
 	if (!exercise.variations || exercise.variations.length === 0) {
 		throw new Error(`Exercise ${exercise.id} has no variations`);
 	}
@@ -2544,6 +2552,7 @@ export function getExerciseContent(
 	return {
 		statement_md: resolved.statement_md,
 		solution_md: resolved.solution_md,
+		answers_md: resolved.answers_md ?? '',
 		hints: resolved.hints
 	};
 }
@@ -2562,11 +2571,12 @@ export function getExerciseContentSafe(
 	exercise: Exercise,
 	variationIndex = 0,
 	locale: ContentLocale = 'fr'
-): { statement_md: string; solution_md: string; hints?: ExerciseHint[] } {
+): ExerciseContent {
 	if (!exercise.variations || exercise.variations.length === 0) {
 		return {
 			statement_md: '',
 			solution_md: '',
+			answers_md: '',
 			hints: undefined
 		};
 	}

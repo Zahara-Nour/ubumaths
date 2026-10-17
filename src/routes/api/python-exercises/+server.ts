@@ -20,6 +20,9 @@ import {
 	fetchTagNamesForResources,
 	syncResourceTags
 } from '$lib/server/resource-tags';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-exercises/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -42,7 +45,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Get user role
@@ -53,7 +56,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		.single();
 
 	if (profileError || !profile) {
-		throw error(403, 'Profil utilisateur introuvable');
+		throw error(403, 'Profil introuvable');
 	}
 
 	// Validate query parameters. `searchParams.get(absent)` returns null, but
@@ -71,7 +74,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Paramètres de requête invalides: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { level, tags, is_public, author_id, limit, offset } = queryValidation.data;
@@ -122,8 +125,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.or(`student_id.eq.${user.id},class_id.in.(${await getStudentClassIds(supabase, user.id)})`);
 
 		if (assignmentsError) {
-			console.error('Failed to fetch student assignments:', assignmentsError);
-			throw error(500, 'Erreur lors de la récupération des devoirs');
+			logger.error('Failed to fetch student assignments:', assignmentsError);
+			throw error(500, 'Impossible de charger les affectations');
 		}
 
 		const exerciseIds = assignments.map((a) => a.exercise_id);
@@ -158,7 +161,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			query = query.eq('level', level);
 		}
 	} else {
-		throw error(403, 'Rôle utilisateur non autorisé');
+		throw error(403, 'Accès refusé');
 	}
 
 	// Apply pagination
@@ -168,8 +171,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data: exercises, error: exercisesError, count } = await query;
 
 	if (exercisesError) {
-		console.error('Failed to fetch exercises:', exercisesError);
-		throw error(500, 'Erreur lors de la récupération des exercices');
+		logger.error('Failed to fetch exercises:', exercisesError);
+		throw error(500, 'Impossible de charger les corvées Python');
 	}
 
 	// Les tags viennent de `resource_tags`, en une requête groupée : le contrat de
@@ -217,7 +220,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Verify teacher role
@@ -228,7 +231,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Seuls les enseignants peuvent créer des exercices');
+		throw error(403, 'Réservé aux professeurs');
 	}
 
 	// Parse and validate request body
@@ -239,7 +242,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation échouée: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data as CreateExerciseInput;
@@ -264,8 +267,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (insertError) {
-		console.error('Failed to create exercise:', insertError);
-		throw error(500, "Erreur lors de la création de l'exercice");
+		logger.error('Failed to create exercise:', insertError);
+		throw error(500, 'Impossible de créer la corvée Python');
 	}
 
 	// Resolve tag names to ids (auto-create missing) and populate the junction.
@@ -275,9 +278,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		try {
 			await syncResourceTags(supabase, 'python_exercise', exercise.id, data.tags);
 		} catch (e) {
-			console.error('Failed to attach tags to new exercise — rolling back:', e);
+			logger.error('Failed to attach tags to new exercise — rolling back:', e);
 			await supabase.from('python_exercises').delete().eq('id', exercise.id);
-			throw error(500, "Erreur lors de l'attachement des tags");
+			throw error(500, 'Impossible d’enregistrer les tags');
 		}
 	}
 
@@ -300,7 +303,7 @@ async function getStudentClassIds(
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (classesError) {
-		console.error('Enrichissement illisible :', classesError);
+		logger.error('Enrichissement illisible :', classesError);
 	}
 
 	if (!classes || classes.length === 0) {

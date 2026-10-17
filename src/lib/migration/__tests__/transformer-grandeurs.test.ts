@@ -2,7 +2,7 @@
  * Grandeurs TinyMath → `{{eval}}` avec unités (lot 4 du chantier Grandeurs)
  * ==========================================================================
  *
- * Spécification : docs/wip/grandeurs-eval-progress.md (« Lot 4 »). TinyMath calcule avec
+ * Spécification : docs/archive/wip/grandeurs-eval-progress.md (« Lot 4 »). TinyMath calcule avec
  * des grandeurs (`&1 mm`, `[_4*&1_mm_]`, `[_&1 h_min_]`, `_HMS_`) ; le moteur les sait
  * depuis #484 (`7[mm]`, `;[unité]`, `;hms`). Le convertisseur les traduit.
  */

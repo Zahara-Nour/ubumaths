@@ -22,6 +22,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/classes-for-drawer/+server');
 
 /**
  * Get classes for FileDrawer
@@ -59,8 +62,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('name');
 
 		if (classesError) {
-			console.error('[Classes for Drawer] Query error:', classesError);
-			throw error(500, 'Erreur lors de la récupération des classes');
+			logger.error('[Classes for Drawer] Query error:', classesError);
+			throw error(500, 'Impossible de charger les classes');
 		}
 
 		// Transform to expected format
@@ -78,7 +81,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw err;
 		}
 
-		console.error('[Classes for Drawer] Error:', err);
-		throw error(500, 'Une erreur interne est survenue');
+		logger.error('[Classes for Drawer] Error:', err);
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

@@ -22,15 +22,17 @@
  * via database triggers for backward compatibility.
  */
 
-import { error, fail } from '@sveltejs/kit';
-import type { PageServerLoad, Actions } from './$types';
-import { validateFormData, updateProfileFormSchema } from '$lib/server/validation';
+import { error } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/users/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase, safeGetSession: _safeGetSession } = locals;
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Allow admin and teacher roles (teachers will only see pending users due to RLS)
@@ -45,7 +47,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('Error fetching classes:', classesError);
+		logger.error('Error fetching classes:', classesError);
 		throw error(500, 'Failed to load classes');
 	}
 
@@ -56,7 +58,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (schoolsError) {
-		console.error('Error fetching schools:', schoolsError);
+		logger.error('Error fetching schools:', schoolsError);
 		throw error(500, 'Failed to load schools');
 	}
 
@@ -67,7 +69,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.eq('status', 'pending');
 
 	if (countError) {
-		console.error('Error counting pending users:', countError);
+		logger.error('Error counting pending users:', countError);
 		// Don't throw - just log and continue with 0
 	}
 
@@ -76,95 +78,4 @@ export const load: PageServerLoad = async ({ locals }) => {
 		schools: schools || [],
 		pendingCount: pendingCount ?? 0
 	};
-};
-
-export const actions: Actions = {
-	update_profile: async ({ request, locals }) => {
-		const { user, profile, supabase } = locals;
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
-
-		// SECURITY (finding C4): form actions bypass the layout load, so this is the
-		// only app-layer authz on a privileged mutation (role/school/email). Without
-		// it any authenticated student could POST ?/update_profile. The DB (WITH CHECK
-		// + guard_profile_role_change trigger) is the ultimate guard on `role`.
-		if (!profile || (profile.role !== 'admin' && profile.role !== 'teacher')) {
-			return fail(403, { message: 'Accès réservé aux administrateurs et enseignants' });
-		}
-
-		const formData = await request.formData();
-
-		const validation = validateFormData(updateProfileFormSchema, formData);
-		if (!validation.success) {
-			return fail(400, { errors: validation.errors });
-		}
-
-		// Single-teacher invariant: never promote another account to teacher.
-		// (Defense-in-depth: the DB trigger trg_enforce_single_teacher is the ultimate guard.)
-		if (validation.data.role === 'teacher') {
-			const { data: currentTeacher, error: currentTeacherError } = await supabase
-				.from('profiles')
-				.select('id')
-				.eq('role', 'teacher')
-				.maybeSingle();
-
-			// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
-			// panne prenait le même visage et faisait conclure « rien ici », donc créer
-			// par-dessus ce qu'on n'avait simplement pas su lire.
-			if (currentTeacherError && currentTeacherError.code !== 'PGRST116') {
-				console.error('Lecture impossible :', currentTeacherError);
-				throw error(500, 'Impossible de vérifier l’état actuel');
-			}
-			if (currentTeacher && currentTeacher.id !== validation.data.user_id) {
-				return fail(400, {
-					message: 'Un seul professeur est autorisé : impossible de promouvoir ce compte.'
-				});
-			}
-		}
-
-		// Build update object
-		const updateData = {
-			firstname: validation.data.firstname,
-			lastname: validation.data.lastname,
-			email: validation.data.email,
-			role: validation.data.role,
-			school_id: validation.data.school_id,
-			avatar_url: validation.data.avatar_url,
-			// is_test réservé à l'admin par la base : ne l'écrire que s'il est fourni,
-			// sinon toute modification d'un compte de test échouerait.
-			...(validation.data.is_test !== undefined && { is_test: validation.data.is_test })
-		};
-
-		const { error: updateError } = await supabase
-			.from('profiles')
-			.update(updateData)
-			.eq('id', validation.data.user_id);
-
-		if (updateError) {
-			console.error('Update error:', updateError);
-			return fail(400, { message: updateError.message });
-		}
-
-		// Fetch the updated profile with school relation and classes
-		const { data: updatedProfile, error: fetchError } = await supabase
-			.from('profiles')
-			.select('*, schools(name), class_members(class_id)')
-			.eq('id', validation.data.user_id)
-			.single();
-
-		if (fetchError) {
-			console.error('Fetch error:', fetchError);
-			return { success: true }; // Still return success even if fetch fails
-		}
-
-		// Transform class_members array to class_ids array for easier use
-		const profileWithClasses = {
-			...updatedProfile,
-			class_ids: updatedProfile.class_members?.map((cm: { class_id: string }) => cm.class_id) || []
-		};
-
-		return { success: true, profile: profileWithClasses };
-	}
 };

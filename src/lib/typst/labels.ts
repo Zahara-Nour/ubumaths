@@ -15,6 +15,7 @@
  */
 
 import type { ContentLocale } from '$lib/types/locale';
+import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 
 export interface DocumentLabels {
 	// --- Identity block -------------------------------------------------------
@@ -48,6 +49,19 @@ export interface DocumentLabels {
 	exercises: string;
 	corrections: string;
 	correction: string;
+	/** PDF « Réponses » : les résultats seuls, sans détail */
+	answers: string;
+	/** Exercice sans réponses rédigées, dans le PDF « Réponses » */
+	answersNotWritten: string;
+	/** Exercice sans corrigé rédigé, dans les PDF « Réponses » et « Corrigé » (ADR 0028, D4) */
+	correctionNotWritten: string;
+	/**
+	 * En tête du corrigé de classe d'une affectation dont chaque élève a sa
+	 * version (valeurs ou ordre) : ce corrigé est la copie d'un élève (D6)
+	 */
+	individualCopyNotice: string;
+	/** En-tête d'un exercice sans titre, quand les numéros ne s'impriment pas (D6) */
+	untitledExercise: string;
 	instructions: string;
 	guidelines: string;
 	essentialExercises: string;
@@ -127,7 +141,6 @@ export interface DocumentLabels {
 	typeWorksheet: string;
 	typeAssessment: string;
 	typeExam: string;
-	typeQuiz: string;
 	typeHomework: string;
 }
 
@@ -159,6 +172,11 @@ const FR: DocumentLabels = {
 	exercises: 'Exercices',
 	corrections: 'Corrections',
 	correction: 'Correction',
+	answers: 'Réponses',
+	answersNotWritten: 'Réponses non rédigées : voir le corrigé.',
+	correctionNotWritten: 'Correction non écrite.',
+	individualCopyNotice: 'Chaque élève a sa propre version : consulte ta correction personnelle.',
+	untitledExercise: 'Exercice sans titre',
 	instructions: 'Instructions',
 	guidelines: 'Consignes',
 	essentialExercises: 'Exercices indispensables',
@@ -166,11 +184,11 @@ const FR: DocumentLabels = {
 	skill: 'Compétence évaluée',
 	observations: 'Observations',
 
-	assessment: 'ÉVALUATION',
+	assessment: 'CONTRÔLE',
 	exam: 'EXAMEN',
 	homework: 'DEVOIRS',
 	quiz: 'QUIZ',
-	worksheet: "Feuille d'exercices",
+	worksheet: "Fiche d'exercices",
 
 	studentInfo: 'Info Élève',
 	edition: 'Édition',
@@ -188,7 +206,7 @@ const FR: DocumentLabels = {
 	by: 'Par',
 	honourStatement:
 		"Je soussigné(e) atteste sur l'honneur avoir pris connaissance du règlement de l'examen et m'engage à le respecter.",
-	skillsAssessment: 'Évaluation de compétences mathématiques',
+	skillsAssessment: 'Compétences mathématiques',
 	generatedOn: 'Document généré le',
 	markingScale: 'Barème de notation',
 	totalPoints: 'Total des points',
@@ -203,7 +221,7 @@ const FR: DocumentLabels = {
 	academicYear: 'Année académique',
 	semester: 'Semestre',
 	learningObjectives: 'Objectifs pédagogiques',
-	objectivesIntro: 'Cette évaluation vise à mesurer les compétences suivantes :',
+	objectivesIntro: 'Ce contrôle vise à mesurer les compétences suivantes :',
 	objectiveEquations: "Résolution d'équations algébriques",
 	objectiveTheorems: 'Application des théorèmes fondamentaux',
 	objectiveReasoning: 'Raisonnement logique et démonstration',
@@ -212,7 +230,7 @@ const FR: DocumentLabels = {
 	criterionClarity: 'Clarté de la démarche',
 	criterionRigour: 'Rigueur mathématique',
 	criterionPresentation: 'Présentation',
-	markingGrid: "Grille d'évaluation",
+	markingGrid: 'Grille de notation',
 	examinerOnly: "réservé à l'examinateur",
 	skillAlgebra: 'Calcul algébrique',
 	skillEquations: "Résolution d'équations",
@@ -234,11 +252,10 @@ const FR: DocumentLabels = {
 	answersOnPaper: "Les réponses doivent être rédigées sur la copie d'examen.",
 	anyOrder: "Les exercices peuvent être traités dans n'importe quel ordre.",
 
-	typeWorksheet: "Feuille d'exercices",
-	typeAssessment: 'Évaluation',
-	typeExam: 'Examen',
-	typeQuiz: 'Quiz',
-	typeHomework: 'Devoirs'
+	typeWorksheet: WORKSHEET_TYPE_LABELS.worksheet,
+	typeAssessment: WORKSHEET_TYPE_LABELS.assessment,
+	typeExam: WORKSHEET_TYPE_LABELS.exam,
+	typeHomework: WORKSHEET_TYPE_LABELS.homework
 };
 
 const EN: DocumentLabels = {
@@ -267,8 +284,14 @@ const EN: DocumentLabels = {
 
 	exercise: 'Exercise',
 	exercises: 'Exercises',
-	corrections: 'Answers',
-	correction: 'Answers',
+	// « Answers » nomme désormais le PDF des résultats seuls
+	corrections: 'Solutions',
+	correction: 'Solutions',
+	answers: 'Answers',
+	answersNotWritten: 'Answers not written: see the worked solutions.',
+	correctionNotWritten: 'Solution not written.',
+	individualCopyNotice: 'Each student has their own version: check your personal correction.',
+	untitledExercise: 'Untitled exercise',
 	instructions: 'Instructions',
 	guidelines: 'Instructions',
 	essentialExercises: 'Essential exercises',
@@ -343,9 +366,8 @@ const EN: DocumentLabels = {
 	anyOrder: 'Exercises may be tackled in any order.',
 
 	typeWorksheet: 'Worksheet',
-	typeAssessment: 'Assessment',
-	typeExam: 'Exam',
-	typeQuiz: 'Quiz',
+	typeAssessment: 'Written test',
+	typeExam: 'Mock exam',
 	typeHomework: 'Homework'
 };
 
@@ -373,27 +395,3 @@ export function labelPlaceholders(locale: ContentLocale): Record<string, string>
 function toSnakeCase(key: string): string {
 	return key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 }
-
-/**
- * Document type as named on the *student* sheet.
- *
- * Deliberately worded differently from the teacher document ("Fiche de travail"
- * rather than "Feuille d'exercices"): changing that wording is not part of
- * adding English, so the French strings stay exactly as they were.
- */
-export const STUDENT_TYPE_LABELS: Record<ContentLocale, Record<string, string>> = {
-	fr: {
-		worksheet: 'Fiche de travail',
-		assessment: 'Évaluation',
-		exam: 'Examen',
-		quiz: 'Quiz',
-		homework: 'Devoir'
-	},
-	en: {
-		worksheet: 'Worksheet',
-		assessment: 'Assessment',
-		exam: 'Exam',
-		quiz: 'Quiz',
-		homework: 'Homework'
-	}
-};

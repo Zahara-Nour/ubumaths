@@ -31,15 +31,21 @@
  * - Only active assignments with available_from <= NOW are accessible
  * - Correction visibility respects assignment and exercise settings
  *
- * INSTANCE RESOLUTION:
- * - If a worksheet_instance exists, uses pre-resolved data
- * - Otherwise, resolves dynamically using generateExerciseInstance
+ * COPIE DE L'ÉLÈVE (ADR 0023) :
+ * - Recalculée à chaque lecture par `resolveWorksheetExerciseCopy` : version
+ *   d'après le niveau de guidage de l'affectation (jamais tirée), valeurs
+ *   d'après la graine de l'affectation (et de l'élève si elle est
+ *   individualisée). Rien n'est lu dans `worksheet_instances`.
+ * - Fiche qui mélange ses exercices : `exercises` dans l'ordre de la copie
+ *   (`copyExerciseOrder`) et `shuffled: true`.
  */
 
+import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { resolveAssignmentAccess } from '$lib/server/worksheets/assignment-access';
+import { loadAuthorStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
 import {
 	validateStudentWorksheetParam,
 	studentWorksheetDetailResponseSchema
@@ -47,162 +53,51 @@ import {
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { fetchAssignmentClasses } from '$lib/server/worksheets/assignment-classes';
 import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-visibility';
-import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
-import type { Exercise, ExerciseResource, ExerciseHint } from '$lib/exercises/types';
-import { getExerciseContentSafe } from '$lib/exercises/types';
+import type { ExerciseResource } from '$lib/exercises/types';
+import {
+	assignmentCopyScope,
+	copyExerciseOrder,
+	resolveWorksheetExerciseCopy,
+	type ExerciseContentRow
+} from '$lib/worksheets/worksheet-copy';
 import {
 	localizedText,
 	asRowTranslations,
 	worksheetLocale,
 	asWorksheetConfig,
+	viewTypeOptions,
 	type RowTranslations
 } from '$lib/types/worksheets';
-import type { ContentLocale } from '$lib/types/locale';
-import type { Variable } from '$lib/ubumark';
-import type { ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
 import type {
 	StudentExerciseView,
 	StudentWorksheetView,
 	StudentSectionView,
 	WorksheetType
 } from '$lib/types/worksheets';
+import { worksheetHeader } from '$lib/worksheets/worksheet-header';
+import { estimateAnswerFrames } from '$lib/worksheets/document/answer-frames';
+import {
+	resolveAnswerFrames,
+	toAnswerFrameLines
+} from '$lib/worksheets/document/answer-frame-lines';
+import { createServerLogger } from '$lib/utils/logger';
 
-// ============================================================================
-// SEED GENERATION
-// ============================================================================
-
-/**
- * Generates a deterministic seed based on worksheet ID and student ID.
- * Ensures each student gets consistent exercise variations.
- */
-function generateSeed(worksheetId: string, studentId: string): number {
-	const baseString = `${worksheetId}-${studentId}`;
-	let hash = 0;
-	for (let i = 0; i < baseString.length; i++) {
-		const char = baseString.charCodeAt(i);
-		hash = (hash << 5) - hash + char;
-		hash = hash & hash; // Convert to 32-bit integer
-	}
-	return Math.abs(hash);
-}
+const logger = createServerLogger('api/student/worksheets/[assignmentId]/+server');
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 /**
- * Exercise data from database query (strongly typed)
+ * Exercise data from database query: its content (the copy is computed from
+ * it) and what the student view carries alongside.
  */
-interface ExerciseData {
-	id: string;
+interface ExerciseData extends ExerciseContentRow {
 	title: string | null;
-	statement_md: string;
-	solution_md: string | null;
-	variables: Variable[] | null;
-	shared: SharedExerciseDefaults | null;
-	variations: ExerciseVariation[] | null;
 	/** Supplementary resources (videos, PDFs, links) */
 	resources: ExerciseResource[] | null;
 	/** Generic function names for math parsing */
 	generic_functions: string[] | null;
-	/** Exercise tags for categorization */
-	tags: string[] | null;
-}
-
-interface WorksheetExerciseData {
-	id: string;
-	position: number;
-	points: number | null;
-	custom_instructions: string | null;
-	correction_visible: boolean;
-	/**
-	 * Teacher control (R3): Force specific variation index.
-	 * If null, variation is selected based on seed.
-	 * If set, overrides seed-based selection for all students.
-	 */
-	variation_index: number | null;
-	/** Section this exercise belongs to */
-	section_id: string | null;
-	/** Indicates if this exercise is essential/priority for students */
-	is_essential: boolean;
-	exercise: ExerciseData;
-}
-
-// ============================================================================
-// EXERCISE RESOLUTION
-// ============================================================================
-
-/**
- * Result of resolving an exercise instance
- */
-interface ResolvedExerciseResult {
-	statement: string;
-	correction: string | null;
-	/** Hints from the selected variation (if applicable) */
-	hints?: ExerciseHint[];
-}
-
-/**
- * Resolves an exercise using the central exercise generator.
- * Supports variations and AST parsing.
- */
-function resolveExercise(
-	worksheetExercise: WorksheetExerciseData,
-	seed: number,
-	locale: ContentLocale
-): ResolvedExerciseResult {
-	const exercise = worksheetExercise.exercise;
-
-	// Convert to Exercise template for the generator
-	const template: Exercise = {
-		id: exercise.id,
-		title: exercise.title ?? undefined,
-		shared: exercise.shared ?? undefined,
-		variations: exercise.variations ?? undefined,
-		distribution_mode: 'on_demand',
-		category: 'application',
-		tags: [],
-		// Audit fields (not used by generator but required by type)
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString(),
-		created_by: 'system'
-	};
-
-	// Use the central generator with the seed + position for uniqueness
-	// Variation selection (R3): Pass teacher-forced index if set
-	const result = generateExerciseInstance(template, {
-		seed: seed + worksheetExercise.position,
-		parseAST: false, // Don't parse AST for student view (performance)
-		variationIndex: worksheetExercise.variation_index ?? undefined,
-		locale
-	});
-
-	if (!result.success) {
-		const errorMessage = result.errors?.join(', ') ?? 'Unknown error';
-		console.error(`[API] Failed to resolve exercise ${exercise.id}: ${errorMessage}`);
-		// Fallback: use content from variations (single source of truth)
-		const content = getExerciseContentSafe(template, 0, locale);
-		return {
-			statement: content.statement_md,
-			correction: content.solution_md
-		};
-	}
-
-	const instance = result.instance;
-	if (!instance) {
-		// Fallback: use content from variations (single source of truth)
-		const content = getExerciseContentSafe(template, 0, locale);
-		return {
-			statement: content.statement_md,
-			correction: content.solution_md
-		};
-	}
-
-	return {
-		statement: instance.statement_md,
-		correction: instance.solution_md || null,
-		hints: instance.resolvedHints
-	};
 }
 
 // ============================================================================
@@ -239,6 +134,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				`
 				id,
 				worksheet_id,
+				guidance_level,
+				individualized,
 				instructions,
 				available_from,
 				closes_at,
@@ -249,7 +146,12 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					description,
 					type,
 					config,
-					translations
+					translations,
+					style_id,
+					template_id,
+					created_by,
+					total_points,
+					estimated_duration_minutes
 				)
 			`
 			)
@@ -257,7 +159,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.single();
 
 		if (assignmentError || !assignment) {
-			console.error('[API] Error fetching assignment:', assignmentError);
+			logger.error('[API] Error fetching assignment:', assignmentError);
 			throw error(404, 'Devoir non trouve');
 		}
 
@@ -272,6 +174,11 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				type: string;
 				config: Record<string, unknown>;
 				translations: RowTranslations | null;
+				style_id: string | null;
+				template_id: string | null;
+				created_by: string;
+				total_points: number | null;
+				estimated_duration_minutes: number | null;
 			}
 		);
 		// La classe rapportée à l'élève est la SIENNE : la RLS ne lui montre de la
@@ -294,6 +201,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				variation_index,
 				section_id,
 				is_essential,
+				answer_frame_lines,
 				exercise:exercises (
 					id,
 					title,
@@ -302,7 +210,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					variations,
 					resources,
 					generic_functions,
-					tags
+					topic
 				)
 			`
 			)
@@ -310,7 +218,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.order('position', { ascending: true });
 
 		if (exercisesError) {
-			console.error('[API] Error fetching exercises:', exercisesError);
+			logger.error('[API] Error fetching exercises:', exercisesError);
 			throw error(500, 'Erreur lors de la recuperation des exercices');
 		}
 
@@ -322,24 +230,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.order('position', { ascending: true });
 
 		if (sectionsError) {
-			console.error('[API] Error fetching sections:', sectionsError);
+			logger.error('[API] Error fetching sections:', sectionsError);
 			// Non-blocking: sections are optional, continue without them
-		}
-
-		// Check if a pre-resolved instance exists
-		const { data: existingInstance, error: existingInstanceError } = await locals.supabase
-			.from('worksheet_instances')
-			.select('instance_data')
-			.eq('worksheet_id', worksheet.id)
-			.eq('student_id', user.id)
-			.maybeSingle();
-
-		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
-		// panne prenait le même visage et faisait conclure « rien ici », donc créer
-		// par-dessus ce qu'on n'avait simplement pas su lire.
-		if (existingInstanceError && existingInstanceError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', existingInstanceError);
-			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 
 		// Get exercise IDs for correction visibility check
@@ -352,16 +244,44 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			exerciseIds
 		);
 
-		// Generate seed for exercise resolution
-		const seed = generateSeed(worksheet.id, user.id);
-
 		// Language of the whole sheet: exercise content and PDF chrome alike.
 		const locale = worksheetLocale(asWorksheetConfig(worksheet.config));
+
+		// La copie de CET élève pour CETTE affectation (ADR 0023)
+		const copyScope = assignmentCopyScope(assignment, { studentId: user.id, locale });
 
 		// Build exercises array
 		const exercises: StudentExerciseView[] = [];
 
-		for (const we of worksheetExercises ?? []) {
+		// Option « mélanger les exercices » : l'ordre de CETTE copie, tiré comme
+		// celui du PDF du prof (même fonction, même graine), sur les MÊMES lignes
+		// que lui — avant d'écarter les exercices orphelins, sinon la permutation
+		// de toute la section changerait. `null` : pas de mélange, l'ordre des
+		// positions comme avant.
+		const shuffledRows = copyExerciseOrder(
+			worksheetExercises ?? [],
+			sections ?? [],
+			copyScope,
+			worksheet.config
+		);
+		// Sections illisibles : tout tomberait hors section, avec une autre graine.
+		// Mieux vaut une erreur qu'un ordre faux ; sans mélange, elles restent facultatives.
+		if (sectionsError && shuffledRows) {
+			throw error(500, 'Erreur lors de la recuperation des exercices');
+		}
+
+		// Réponses sur le sujet (ADR 0030, lots 3 et 4) : les cadres sont résolus
+		// ici — réglage du prof, sinon estimation d'après le corrigé de la copie —
+		// pour que l'élève dont la correction est masquée ait les mêmes cadres que
+		// le prof. N'en partent que les lignes que le PDF imprime (audit S1)
+		const typeOptions = viewTypeOptions(worksheet.config);
+		const answersOnSheet = worksheetHeader(
+			worksheet.type as WorksheetType,
+			typeOptions
+		).answersOnSheet;
+		const answerFrameMode = typeOptions.answer_frames ?? 'question';
+
+		for (const we of shuffledRows ?? worksheetExercises ?? []) {
 			const exerciseData = getFirstOrSelf(we.exercise as unknown as ExerciseData | null);
 
 			if (!exerciseData) {
@@ -369,61 +289,13 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				continue;
 			}
 
-			// Check if we have pre-resolved data in instance
-			let statement: string;
-			let correction: string | null;
-			let hints: ExerciseHint[] | undefined;
-
-			if (existingInstance?.instance_data) {
-				// Use pre-resolved instance data
-				const instanceData = existingInstance.instance_data as {
-					exercises?: Array<{
-						exercise_id: string;
-						statement: string;
-						solution: string;
-						hints?: ExerciseHint[];
-					}>;
-				};
-				const instanceExercise = instanceData.exercises?.find(
-					(e) => e.exercise_id === exerciseData.id
-				);
-
-				if (instanceExercise) {
-					statement = instanceExercise.statement;
-					correction = instanceExercise.solution || null;
-					hints = instanceExercise.hints;
-				} else {
-					// Fallback to dynamic resolution
-					const resolved = resolveExercise(
-						{
-							...we,
-							// `correction_visible` est nullable en base : masquée par défaut,
-							// ce qui est le sens sûr sur un document noté.
-							correction_visible: we.correction_visible ?? false,
-							exercise: exerciseData
-						},
-						seed,
-						locale
-					);
-					statement = resolved.statement;
-					correction = resolved.correction;
-					hints = resolved.hints;
-				}
-			} else {
-				// No instance exists - resolve dynamically
-				const resolved = resolveExercise(
-					{
-						...we,
-						correction_visible: we.correction_visible ?? false,
-						exercise: exerciseData
-					},
-					seed,
-					locale
-				);
-				statement = resolved.statement;
-				correction = resolved.correction;
-				hints = resolved.hints;
-			}
+			const copy = resolveWorksheetExerciseCopy(
+				{ id: we.id, variation_index: we.variation_index, exercise: exerciseData },
+				copyScope
+			);
+			const statement = copy.statement;
+			const correction = copy.solution || null;
+			const hints = copy.hints;
 
 			// Determine if correction should be visible for this exercise
 			const correctionVisible = visibilityMap.get(we.id) ?? false;
@@ -444,18 +316,31 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				statement,
 				correction: correctionVisible ? correction : null,
 				correction_visible: correctionVisible,
+				// Réponses seules : EXACTEMENT sous la condition de la correction
+				answers: correctionVisible ? copy.answers || null : null,
 				section_id: we.section_id ?? null,
 				is_essential: we.is_essential ?? false
 			};
 
-			// Fonctions déclarées : lues sur l'exercice (frais), pas sur l'instance
-			// stockée — les instances antérieures n'ont pas ce champ. Sans elles, le
-			// PDF imprime `C'(x)` en erreur.
+			if (answersOnSheet) {
+				exerciseView.printed_frame_lines = resolveAnswerFrames(
+					estimateAnswerFrames(statement, correction),
+					toAnswerFrameLines(we.answer_frame_lines),
+					answerFrameMode
+				);
+			}
+
+			// Fonctions déclarées, lues sur l'exercice : sans elles, le PDF imprime
+			// `C'(x)` en erreur.
 			if (exerciseData.generic_functions) {
 				exerciseView.generic_functions = exerciseData.generic_functions;
 			}
 
-			// Add hints if present (from variation or instance)
+			// Sens de `AB` (longueur ou produit) résolu ici depuis le thème (Q-J) :
+			// la vue reçoit le sens, pas le thème.
+			exerciseView.capital_pairs = exerciseCapitalPairs(exerciseData.topic);
+
+			// Add hints if present (from the version given)
 			if (hints && hints.length > 0) {
 				exerciseView.hints = hints;
 			}
@@ -463,11 +348,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			// Add resources if present (from exercise definition)
 			if (exerciseData.resources && exerciseData.resources.length > 0) {
 				exerciseView.resources = exerciseData.resources;
-			}
-
-			// Add tags if present
-			if (exerciseData.tags && exerciseData.tags.length > 0) {
-				exerciseView.tags = exerciseData.tags;
 			}
 
 			exercises.push(exerciseView);
@@ -499,8 +379,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				) ?? worksheet.title,
 			// Drives both the exercise content and the chrome of the student PDF.
 			language: locale,
-			// Corrigé imprimé concis ou détaillé (réglage de la fiche, D11)
-			correction_detail: asWorksheetConfig(worksheet.config).correction_detail,
+			// Options du type de la fiche (ADR 0030) : l'en-tête et les points du PDF
+			// suivent la même règle que pour le prof
+			...viewTypeOptions(worksheet.config),
 			description: worksheet.description,
 			type: worksheet.type as WorksheetType,
 			instructions: assignment.instructions,
@@ -509,8 +390,17 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			show_corrections: assignment.show_corrections ?? false,
 			class_name: studentClass?.name || null,
 			read_only: readOnly,
+			...(shuffledRows ? { shuffled: true } : {}),
 			exercises,
-			sections: sectionViews
+			sections: sectionViews,
+			// Le style de la fiche et, pour un style de son auteur, sa mise en page
+			// (D11) : l'accès de l'élève à l'affectation est vérifié plus haut
+			style_id: worksheet.style_id,
+			template_id: worksheet.template_id,
+			template: await loadAuthorStyleTemplate(worksheet),
+			// Cartouche du gabarit, comme le PDF du prof
+			total_points: worksheet.total_points,
+			estimated_duration_minutes: worksheet.estimated_duration_minutes
 		};
 
 		// Validate response
@@ -527,7 +417,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/worksheets/[assignmentId]:', err);
+		logger.error('[API] Unexpected error in GET /api/student/worksheets/[assignmentId]:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

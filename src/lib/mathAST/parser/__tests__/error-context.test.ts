@@ -146,7 +146,7 @@ describe('getSuggestions', () => {
 	it('should suggest closing brace for MISSING_BRACE', () => {
 		const suggestions = getSuggestions('MISSING_BRACE', 'Expected }');
 
-		expect(suggestions).toContain("Avez-vous oublié '}' ?");
+		expect(suggestions).toContain("'}' oublié ?");
 	});
 
 	it('should suggest closing delimiter for MISSING_DELIMITER', () => {

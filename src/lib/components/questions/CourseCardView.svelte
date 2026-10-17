@@ -15,6 +15,7 @@
 	import type { QuestionInstance } from '$lib/questions/types';
 	import { courseCardFront } from '$lib/questions/course-card';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -50,6 +51,9 @@
 	const front = $derived(courseCardFront(instance));
 	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
 	const genericFunctions = $derived(templateGenericFunctions(instance.genericFunctions));
+	// Sens de `AB` de l'instance (longueur ou produit) : posé pour toutes les formules
+	// en syntaxe maison rendues dans cette carte ; absent (instance d'avant) : produit
+	provideCapitalPairs(() => instance.capitalPairs);
 	const showBack = $derived(revealed || isFlipped);
 	const sizeClasses = $derived(SIZE_CLASSES[size]);
 

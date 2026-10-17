@@ -97,9 +97,9 @@
 	</p>
 	<aside class="rounded-lg border bg-card p-4 text-sm text-card-foreground">
 		<strong>Pourquoi ça marche ?</strong> Comme e × d = 1 + k × φ(n), on a (mᵉ)ᵈ = m × (mᵠ⁽ⁿ⁾)ᵏ. Si p
-		ne divise pas m, le petit théorème de Fermat donne mᵖ⁻¹ ≡ 1 (mod p), donc mᵠ⁽ⁿ⁾ = (mᵖ⁻¹)^(q − 1)
-		≡ 1 et (mᵉ)ᵈ ≡ m (mod p). Si p divise m, les deux membres sont nuls modulo p. De même modulo q ;
-		p et q étant premiers entre eux, l’égalité vaut modulo n = p × q.
+		ne divise pas m, le petit théorème de Fermat donne mᵖ⁻¹ ≡ 1 (mod p), donc mᵠ⁽ⁿ⁾ = (mᵖ⁻¹)^(q − 1) ≡
+		1 et (mᵉ)ᵈ ≡ m (mod p). Si p divise m, les deux membres sont nuls modulo p. De même modulo q ; p et
+		q étant premiers entre eux, l’égalité vaut modulo n = p × q.
 	</aside>
 </header>
 
@@ -208,8 +208,8 @@
 					Exponentiation rapide du premier bloc : {block}<sup>{keys.e}</sup> mod {keys.n}
 				</h3>
 				<p class="text-sm text-muted-foreground">
-					e = {keys.e} s’écrit {pow.binary} en binaire. On élève au carré, encore et encore, et l’on
-					ne multiplie que les carrés des bits à 1 : {pow.multiplications} multiplication{pow.multiplications >
+					e = {keys.e} s’écrit {pow.binary} en binaire. On élève au carré, encore et encore, et l’on ne
+					multiplie que les carrés des bits à 1 : {pow.multiplications} multiplication{pow.multiplications >
 					1
 						? 's'
 						: ''} au lieu de {formatMultiplier(keys.e - 1)}.

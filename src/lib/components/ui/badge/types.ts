@@ -4,9 +4,4 @@
  */
 
 export type BadgeVariant =
-	| 'default'
-	| 'secondary'
-	| 'destructive'
-	| 'warning'
-	| 'success'
-	| 'outline';
+	'default' | 'secondary' | 'destructive' | 'warning' | 'success' | 'outline';

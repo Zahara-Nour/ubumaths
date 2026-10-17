@@ -50,9 +50,10 @@ function formatExpressionLatex(step: PedagogicalSimplifyStep): string {
 // Renderer
 // =============================================================================
 
-export class PedagogicalSimplifyRenderer
-	implements StepRenderer<PedagogicalSimplifyStep, PedagogicalRenderOptions>
-{
+export class PedagogicalSimplifyRenderer implements StepRenderer<
+	PedagogicalSimplifyStep,
+	PedagogicalRenderOptions
+> {
 	render(step: PedagogicalSimplifyStep, options: PedagogicalRenderOptions): RenderedStep {
 		const { schoolLevel, verbosity } = options;
 		const title = lookupTitle(schoolLevel, step);

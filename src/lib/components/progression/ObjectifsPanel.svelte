@@ -70,8 +70,7 @@
 		<Card.Content class="py-12 text-center">
 			<Hourglass class="mx-auto mb-3 h-10 w-10 text-muted-foreground opacity-40" />
 			<p class="mb-1 font-medium">
-				Le programme {gradeLabel ? `de ${gradeLabel}` : 'de ton niveau'} n'est pas encore disponible
-				ici.
+				Le programme {gradeLabel ? `de ${gradeLabel}` : 'de ton niveau'} n'est pas encore disponible ici.
 			</p>
 			<p class="text-sm text-muted-foreground">
 				{#if competencesObserved}

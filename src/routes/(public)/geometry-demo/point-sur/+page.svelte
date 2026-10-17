@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	// ==========================================================================
@@ -124,9 +125,7 @@ R = point_sur(r, 1.5, couleur="rouge")`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
-	<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-		>&larr; Retour aux demos</a
-	>
+	<BackLink href="/geometry-demo" label="Retour aux démos" />
 
 	<h1 class="mt-4 mb-8 text-2xl font-bold">Points contraints — point_sur()</h1>
 

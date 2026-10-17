@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import ExerciseForm, {
@@ -34,6 +35,7 @@
 
 <div class="container mx-auto max-w-3xl p-4">
 	<header class="mb-6">
+		<BackLink href="/python-exercises/mine" label="Retour à mes exercices Python" />
 		<h1 class="text-2xl font-bold">Créer une {lore.learning.exercise} Python</h1>
 		<p class="mt-1 text-sm text-muted-foreground">
 			Remplis le formulaire, vérifie que ta solution passe la validation, puis crée la {lore

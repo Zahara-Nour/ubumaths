@@ -7,12 +7,15 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/srs/decks/[id]/edit/+page.server');
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	const { id: deckId } = params;
@@ -29,7 +32,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 	}
 
 	if (profileData.role !== 'teacher' && profileData.role !== 'admin') {
-		throw error(403, 'Forbidden. Only teachers can access this page.');
+		throw error(403, 'Page réservée aux professeurs');
 	}
 
 	try {
@@ -42,13 +45,13 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			.single();
 
 		if (deckError || !deck) {
-			console.error('Error fetching deck:', deckError);
-			throw error(404, 'Deck not found');
+			logger.error('Error fetching deck:', deckError);
+			throw error(404, 'Deck introuvable');
 		}
 
 		// Check if deck is assigned (cannot edit)
 		if (deck.is_assigned) {
-			throw error(403, 'Cannot edit assigned deck. Assigned decks are read-only.');
+			throw error(403, 'Un deck déjà affecté ne se modifie plus');
 		}
 
 		// Map deck to camelCase
@@ -59,7 +62,6 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			ownerId: deck.owner_id,
 			deckType: deck.deck_type,
 			isAssigned: deck.is_assigned,
-			config: deck.config,
 			createdAt: deck.created_at,
 			updatedAt: deck.updated_at
 		};
@@ -72,7 +74,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			.order('created_at', { ascending: false });
 
 		if (cardsError) {
-			console.error('Error fetching cards:', cardsError);
+			logger.error('Error fetching cards:', cardsError);
 		}
 
 		// Map cards to camelCase
@@ -92,7 +94,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			cards: mappedCards
 		};
 	} catch (err) {
-		console.error('Error in edit deck page load:', err);
+		logger.error('Error in edit deck page load:', err);
 		throw error(500, 'Internal server error');
 	}
 };

@@ -1,10 +1,11 @@
 /**
- * Fiche PDF : correction concise ou détaillée (ADR 0017, D11 ; écart D4, 2026-10-11)
+ * Fiche PDF : le corrigé imprimé est toujours détaillé (ADR 0030, qui remplace
+ * le choix concis / détaillé de la fiche, ADR 0017 D11)
  *
- * La fiche choisit (`config.correction_detail`, détaillée par défaut). Le choix
- * s'applique À L'IMPRESSION, avant Typst, à chaque corrigé imprimé : PDF du
- * prof (`worksheet-generator`) et PDF de l'élève (`student-worksheet-typst`).
- * Aucun marqueur brut n'arrive jamais à Typst.
+ * Le marquage des détails est résolu À L'IMPRESSION, avant Typst, pour chaque
+ * corrigé imprimé : PDF du prof (`worksheet-generator`) et PDF de l'élève
+ * (`student-worksheet-typst`). Aucun marqueur brut n'arrive jamais à Typst.
+ * L'ancienne clé `correction_detail` peut rester en base : elle n'est plus lue.
  */
 import { describe, it, expect } from 'vitest';
 import { correctionForPrint } from '$lib/questions/correction-detail';
@@ -106,16 +107,16 @@ function teacherCorrection(config: WorksheetConfig): string {
 	return generator.generate({ worksheet, instance }).typstContent;
 }
 
-describe('PDF du prof : la fiche choisit', () => {
-	it('concise : aucun détail imprimé, aucun marqueur brut', () => {
-		const typst = teacherCorrection({ correction_detail: 'concise' });
-		for (const word of DETAILS) expect(typst).not.toContain(word);
+describe('PDF du prof : toujours détaillé', () => {
+	it('ancienne clé « concise » en base : ignorée, tous les détails', () => {
+		const typst = teacherCorrection({ correction_detail: 'concise' } as WorksheetConfig);
+		for (const word of DETAILS) expect(typst).toContain(word);
 		expect(typst).toContain('On obtient');
 		expectNoRawMarker(typst);
 	});
 
-	it('détaillée : tous les détails, aucun marqueur brut', () => {
-		const typst = teacherCorrection({ correction_detail: 'detailed' });
+	it('ancienne clé « detailed » : tous les détails, aucun marqueur brut', () => {
+		const typst = teacherCorrection({ correction_detail: 'detailed' } as WorksheetConfig);
 		for (const word of DETAILS) expect(typst).toContain(word);
 		expectNoRawMarker(typst);
 	});
@@ -162,13 +163,13 @@ function studentCorrection(correction_detail?: 'concise' | 'detailed'): string {
 			}
 		]
 	} as unknown as StudentWorksheetView;
-	return generateStudentWorksheetTypst(view, true);
+	return generateStudentWorksheetTypst(view, 'correction');
 }
 
-describe('PDF de l’élève : le réglage de la fiche', () => {
-	it('concise : aucun détail, aucun marqueur brut', () => {
+describe('PDF de l’élève : toujours détaillé', () => {
+	it('ancienne clé « concise » : ignorée, tous les détails', () => {
 		const typst = studentCorrection('concise');
-		for (const word of DETAILS) expect(typst).not.toContain(word);
+		for (const word of DETAILS) expect(typst).toContain(word);
 		expectNoRawMarker(typst);
 	});
 
@@ -194,9 +195,8 @@ describe('le réglage correction_detail', () => {
 		expect(worksheetConfigSchema.safeParse({ correction_detail: 'brève' }).success).toBe(false);
 	});
 
-	it('lecture de la colonne : valeur connue gardée, inconnue ignorée', () => {
-		expect(asWorksheetConfig({ correction_detail: 'concise' }).correction_detail).toBe('concise');
-		expect(asWorksheetConfig({ correction_detail: 'brève' }).correction_detail).toBeUndefined();
+	it('lecture de la colonne : la clé n’est plus lue (ADR 0030)', () => {
+		expect(asWorksheetConfig({ correction_detail: 'concise' })).toEqual({});
 	});
 });
 
@@ -227,12 +227,16 @@ describe('série d’automatismes : les marqueurs sont gardés, le choix se fait
 		]
 	} as unknown as QuestionTemplate;
 
-	it('le corrigé figé garde le détail ; la fiche concise ne l’imprime pas', () => {
+	it('le corrigé figé garde le détail ; le PDF l’imprime, même avec l’ancienne clé « concise »', () => {
 		const serie = buildSerie(new Map([['marque', marque]]), [{ templateId: 'marque', seed: 3 }]);
 		expect(serie.solution).toContain('[!méthode]');
-		const concise = new WorksheetGenerator({ correction_detail: 'concise' }, undefined, {
-			mode: 'correction'
-		}).generate({
+		const concise = new WorksheetGenerator(
+			{ correction_detail: 'concise' } as WorksheetConfig,
+			undefined,
+			{
+				mode: 'correction'
+			}
+		).generate({
 			worksheet,
 			instance: {
 				exercises: [
@@ -247,16 +251,16 @@ describe('série d’automatismes : les marqueurs sont gardés, le choix se fait
 				]
 			} as InstanceData
 		}).typstContent;
-		expect(concise).not.toContain('doigts');
+		expect(concise).toContain('doigts');
 		expect(concise).toContain('additionne');
 	});
 });
 
 // La page de l'élève lit l'API : son schéma de réponse retire les clés qu'il ne
-// connaît pas (`validation.data`). Sans ces deux champs, le PDF de l'élève
-// perdait la langue de la fiche (constaté le 2026-10-11) et perdrait le réglage.
-describe('API élève : la langue et le réglage du corrigé arrivent au PDF', () => {
-	it('le schéma de réponse garde language et correction_detail', () => {
+// connaît pas (`validation.data`). Sans la langue, le PDF de l'élève la perdait
+// (constaté le 2026-10-11). Le réglage du corrigé n'existe plus (ADR 0030).
+describe('API élève : la langue arrive au PDF', () => {
+	it('le schéma de réponse garde language, retire correction_detail', () => {
 		const response = {
 			assignment_id: '11111111-1111-4111-8111-111111111111',
 			worksheet_id: '22222222-2222-4222-8222-222222222222',
@@ -276,6 +280,6 @@ describe('API élève : la langue et le réglage du corrigé arrivent au PDF', (
 		};
 		const parsed = studentWorksheetDetailResponseSchema.parse(response);
 		expect(parsed.language).toBe('en');
-		expect(parsed.correction_detail).toBe('concise');
+		expect(parsed).not.toHaveProperty('correction_detail');
 	});
 });

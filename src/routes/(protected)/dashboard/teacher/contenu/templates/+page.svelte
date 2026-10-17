@@ -19,7 +19,16 @@
 		CardHeader,
 		CardTitle
 	} from '$lib/components/ui/card';
-	import { Plus, Search, FileText, CheckSquare, BookOpen } from '@lucide/svelte';
+	import {
+		Plus,
+		Search,
+		FileText,
+		CheckSquare,
+		BookOpen,
+		ClipboardList,
+		Layers
+	} from '@lucide/svelte';
+	import { formatGradeShort } from '$lib/utils/grades';
 	import { goto } from '$app/navigation';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import type { GradeCode } from '$lib/types/grades';
@@ -162,7 +171,7 @@
 							<div class="mb-3 flex flex-wrap gap-1">
 								{#each template.grades as grade (grade)}
 									<Badge variant="outline" class="text-xs">
-										{(grade as string) === 'T' ? 'Term' : `${grade}ème`}
+										{formatGradeShort(grade)}
 									</Badge>
 								{/each}
 							</div>
@@ -176,20 +185,25 @@
 							</div>
 							<div class="flex items-center gap-1">
 								<CheckSquare class="h-4 w-4" />
-								<span>{template.checklistItemCount} tâches</span>
+								<span>{template.checklistItemCount} objectifs</span>
 							</div>
 							<div class="flex items-center gap-1">
 								<BookOpen class="h-4 w-4" />
-								<span>{template.exerciseCount} exos</span>
+								<span>{template.exerciseCount} {lore.learning.exercise.toLowerCase()}s</span>
+							</div>
+							<div class="flex items-center gap-1">
+								<ClipboardList class="h-4 w-4" />
+								<span>{template.worksheetCount} fiches</span>
+							</div>
+							<div class="flex items-center gap-1">
+								<Layers class="h-4 w-4" />
+								<span>{template.seriesCount} séries</span>
 							</div>
 						</div>
 
 						<!-- Meta info -->
 						<div class="mt-4 border-t pt-4 text-xs text-muted-foreground">
-							<div class="flex items-center justify-between">
-								<span>{template.instantiationCount} utilisations</span>
-								<span>v{template.currentVersion}</span>
-							</div>
+							<span>{template.instantiationCount} utilisations</span>
 							{#if template.creatorName}
 								<p class="mt-1">Par {template.creatorName}</p>
 							{/if}

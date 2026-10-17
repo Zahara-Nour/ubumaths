@@ -25,12 +25,12 @@
 
 ## Décisions PO (2026-06-18)
 
-| #   | Sujet                   | Décision                                                                                                                                                                                                |
-| --- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D1  | Portée messagerie       | **Tous les élèves, sans filtre école** (pur Option B, role-based).                                                                                                                                      |
+| #   | Sujet                   | Décision                                                                                                                                                                                               |
+| --- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| D1  | Portée messagerie       | **Tous les élèves, sans filtre école** (pur Option B, role-based).                                                                                                                                     |
 | D2  | RLS features à basculer | **Python (lecture du travail élève) + Profils prof↔élève.** `student_warnings` **exclu** (reste par classe). **Kanban : recommandé hors périmètre** (pas de divergence réelle — voir §Hors périmètre). |
-| D3  | Exercices publics       | **Garder** l'accès public élève (`is_public`, share tokens, `/exercice/[slug]`). Retirer seulement le résiduel inter-profs (`Teachers can view all exercises`).                                         |
-| D4  | Colonnes `is_public`    | **DROP COLUMN** sur `chapter_templates` ET `worksheet_templates` (destructif → après déploiement).                                                                                                      |
+| D3  | Exercices publics       | **Garder** l'accès public élève (`is_public`, share tokens, `/exercice/[slug]`). Retirer seulement le résiduel inter-profs (`Teachers can view all exercises`).                                        |
+| D4  | Colonnes `is_public`    | **DROP COLUMN** sur `chapter_templates` ET `worksheet_templates` (destructif → après déploiement).                                                                                                     |
 
 ## Périmètre — ce qui change
 

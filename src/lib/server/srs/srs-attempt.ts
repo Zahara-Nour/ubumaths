@@ -19,6 +19,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { Grade } from '$lib/srs/types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/srs/srs-attempt');
 
 /** Insère la trace ; `false` si l'écriture a échoué (déjà tracé). */
 export async function recordSrsReviewAttempt(
@@ -36,7 +39,7 @@ export async function recordSrsReviewAttempt(
 		with_help: false
 	});
 	if (error) {
-		console.error('[srs] skill_attempts INSERT failed:', error);
+		logger.error('[srs] skill_attempts INSERT failed:', error);
 		return false;
 	}
 	return true;

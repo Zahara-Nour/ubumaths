@@ -6,11 +6,14 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireSpreadsheetUser } from '$lib/server/spreadsheet-access';
 import {
 	createSpreadsheetSchema,
 	listSpreadsheetsSchema
 } from '$lib/server/validation/spreadsheet';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/spreadsheets/+server');
 
 /**
  * GET /api/spreadsheets
@@ -18,7 +21,7 @@ import {
  * Students and teachers can access their own spreadsheets
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user } = await requireRole(locals, 'student'); // Both students and teachers
+	const { user } = await requireSpreadsheetUser(locals);
 
 	// Validate query parameters
 	const paramsValidation = listSpreadsheetsSchema.safeParse({
@@ -46,7 +49,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		.range(offset, offset + limit - 1);
 
 	if (dbError) {
-		console.error('Error fetching spreadsheets:', dbError);
+		logger.error('Error fetching spreadsheets:', dbError);
 		throw error(500, 'Erreur lors de la récupération des feuilles de calcul');
 	}
 
@@ -65,7 +68,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
  * Students and teachers can create spreadsheets
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { user } = await requireRole(locals, 'student');
+	const { user } = await requireSpreadsheetUser(locals);
 
 	// Parse and validate request body
 	const body = await request.json();
@@ -97,7 +100,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Error creating spreadsheet:', dbError);
+		logger.error('Error creating spreadsheet:', dbError);
 		throw error(500, 'Erreur lors de la création de la feuille de calcul');
 	}
 

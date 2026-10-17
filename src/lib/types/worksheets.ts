@@ -11,6 +11,8 @@ import type {
 	ExerciseResource
 } from '$lib/exercises/types';
 import type { GradeCode } from '$lib/types/grades';
+import type { CapitalPairs } from '$lib/mathAST/parser/types';
+import type { GuidanceLevel } from '$lib/worksheets/student-copy';
 import {
 	DEFAULT_CONTENT_LOCALE,
 	isContentLocale,
@@ -22,7 +24,12 @@ import {
 // ENUMS AND CONSTANTS
 // =============================================================================
 
-export const WORKSHEET_TYPES = ['worksheet', 'assessment', 'exam', 'quiz', 'homework'] as const;
+/**
+ * Les quatre types de fiche (ADR 0030) : le type décide de l'en-tête du PDF
+ * (`worksheet-header.ts`). « quiz » est retiré du code ; la contrainte CHECK de
+ * la base l'accepte encore, mais aucune ligne ne le porte.
+ */
+export const WORKSHEET_TYPES = ['worksheet', 'assessment', 'homework', 'exam'] as const;
 export type WorksheetType = (typeof WORKSHEET_TYPES)[number];
 
 export const WORKSHEET_STATUSES = ['draft', 'published', 'archived'] as const;
@@ -101,7 +108,11 @@ export interface StudentErrorReportUpdate {
 export interface StudentErrorReportView {
 	id: string;
 	worksheet_exercise_id: string;
-	exercise_position: number;
+	/**
+	 * Numéro de l'exercice dans la copie de l'élève (ordre mélangé compris,
+	 * D6) ; `null` s'il est inconnu (fiche illisible) — jamais un numéro faux.
+	 */
+	exercise_position: number | null;
 	description: string;
 	status: ErrorReportStatus;
 	response: string | null;
@@ -149,33 +160,122 @@ export type NumberingStyle = (typeof NUMBERING_STYLES)[number];
 // CONFIG TYPES (JSONB structures)
 // =============================================================================
 
-/** Correction imprimée par une fiche (ADR 0017, D11) : sans ou avec ses détails */
+/** Corrigé concis ou détaillé : ancien réglage de la fiche, plus lu (ADR 0030 : toujours détaillé) */
 export type CorrectionDetail = 'concise' | 'detailed';
 
+/** Calculatrice autorisée ou interdite : option de l'évaluation écrite et de l'examen blanc */
+export const CALCULATOR_RULES = ['allowed', 'forbidden'] as const;
+export type CalculatorRule = (typeof CALCULATOR_RULES)[number];
+
+/**
+ * Réponses sur le sujet (ADR 0030, lot 3) : un cadre après chaque question
+ * (défaut) ou un seul après l'exercice
+ */
+export const ANSWER_FRAME_MODES = ['question', 'exercise'] as const;
+export type AnswerFrameMode = (typeof ANSWER_FRAME_MODES)[number];
+
+/** Taille d'un cadre de réponse (hauteurs : `worksheets/document/answer-frames.ts`) */
+export const ANSWER_FRAME_SIZES = ['small', 'medium', 'large'] as const;
+export type AnswerFrameSize = (typeof ANSWER_FRAME_SIZES)[number];
+
+/**
+ * Hauteurs possibles du cadre unique d'un exercice, en cm : une énumération
+ * fermée (audit S1), pour que la hauteur ne révèle pas la longueur du corrigé
+ * à la ligne près. Les trois premières sont petit, moyen et grand.
+ */
+export const EXERCISE_FRAME_HEIGHTS_CM = [2.5, 4.5, 7, 10, 14] as const;
+export type ExerciseFrameCm = (typeof EXERCISE_FRAME_HEIGHTS_CM)[number];
+
+/**
+ * Cadres d'un exercice, estimés d'après le corrigé de la variante imprimée
+ * (`estimateAnswerFrames`) :
+ * - `questions` : une taille par question de l'énoncé, dans l'ordre ;
+ * - `exercise_cm` : hauteur du cadre unique (après l'exercice, ou énoncé sans
+ *   question numérotée).
+ * Converties en lignes (lot 4, `autoAnswerFrameLines`) : c'est l'estimation
+ * « auto » quand le prof n'a rien réglé.
+ */
+export interface AnswerFrameEstimate {
+	questions?: AnswerFrameSize[];
+	exercise_cm?: ExerciseFrameCm;
+}
+
+/**
+ * Plafond du nombre de lignes d'un cadre : 25 lignes (20 cm, une page A4 ; décision de
+ * David, 2026-10-16). Contrainte CHECK `worksheet_exercises_answer_frame_lines_max25` ;
+ * partagé par le Zod du PUT, les schémas de réponse, la lecture de la colonne et le stepper.
+ */
+export const ANSWER_FRAME_MAX_LINES = 25;
+/** Questions réglables par exercice, au plus (contrainte CHECK de la colonne) */
+export const ANSWER_FRAME_MAX_QUESTIONS = 200;
+
+/**
+ * Lignes des cadres choisies par le prof pour un exercice de la fiche (ADR 0030,
+ * lot 4 ; colonne `worksheet_exercises.answer_frame_lines`) :
+ * - `questions[k]` : cadre de la question k+1 (mode « après chaque question ») ;
+ * - `exercise` : cadre unique (mode « après l'exercice », ou énoncé sans question).
+ * `null` (ou absent) = estimation automatique ; 0 = pas de cadre ; 0 à 25 lignes.
+ */
+export interface AnswerFrameLines {
+	questions?: (number | null)[];
+	exercise?: number | null;
+}
+
+/**
+ * Les cadres qu'un PDF imprime pour un exercice, en lignes (0 = aucun cadre) :
+ * réglage du prof, sinon estimation (`resolveAnswerFrames`). Les lignes par
+ * question OU le cadre unique, jamais les deux.
+ */
+export interface PrintedAnswerFrames {
+	questions?: number[];
+	exercise?: number;
+}
+
+/**
+ * Réglages d'une fiche (colonne `config`, jsonb).
+ *
+ * ADR 0030 : le type décide de l'en-tête ; seules restent les options du type
+ * (`TYPE_OPTION_KEYS` dans `worksheet-header.ts`). Les anciennes clés
+ * d'affichage (`show_title`, `show_date`, `show_class`,
+ * `numbering_style`, `page_layout`, `font_size`, `margins`,
+ * `correction_detail`) peuvent rester en base : plus aucun code ne les lit,
+ * et les retirer des données est une étape à part, avec l'accord de David.
+ */
 export interface WorksheetConfig {
 	/**
 	 * Language the whole worksheet is rendered in: exercise content and PDF
 	 * chrome alike. Absent means French.
 	 */
 	language?: ContentLocale;
-	/** Corrigé imprimé concis ou détaillé ; absent : détaillé */
-	correction_detail?: CorrectionDetail;
-	show_title?: boolean;
-	show_date?: boolean;
+	/** Fiche d'exercices : ligne « Nom » (groupes de niveaux) ; absent : non */
 	show_student_name?: boolean;
-	show_class?: boolean;
+	/** Évaluation écrite : points par exercice et total imprimés ; absent : non */
 	show_points?: boolean;
-	numbering_style?: NumberingStyle;
+	/** Évaluation écrite, examen blanc : calculatrice ; absent : rien d'imprimé */
+	calculator?: CalculatorRule;
+	/** Évaluation écrite, examen blanc : l'élève répond sur le sujet (cadres) ; absent : non */
+	answers_on_sheet?: boolean;
+	/** Avec réponses sur le sujet : cadre après chaque question ou après l'exercice ; absent : question */
+	answer_frames?: AnswerFrameMode;
+	/** Devoir maison : date de rendu, `AAAA-MM-JJ` ; absente : ligne à remplir */
+	due_date?: string;
 	shuffle_exercises?: boolean;
+	/**
+	 * @deprecated Case « Mélanger dans les sections » retirée (D6, 2026-10-13) :
+	 * « mélanger les exercices » mélange déjà dans chaque section. La clé peut
+	 * rester en base (anciennes fiches) ; plus aucun code ne la lit.
+	 */
 	shuffle_within_sections?: boolean;
-	page_layout?: 'A4' | 'Letter';
-	font_size?: number;
-	margins?: {
-		top: number;
-		bottom: number;
-		left: number;
-		right: number;
-	};
+}
+
+/**
+ * Date de calendrier `AAAA-MM-JJ` qui existe (`2026-02-30` refusée) : la date
+ * de rendu d'un devoir maison. Lue en UTC, pour ne pas glisser d'un jour.
+ */
+export function isIsoDate(value: unknown): value is string {
+	if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+	const date = new Date(`${value}T00:00:00Z`);
+	return !isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 export interface VariantConfig {
@@ -201,6 +301,11 @@ export interface ResolvedExercise {
 	parameters: Record<string, number | string>;
 	statement: string;
 	solution: string;
+	/**
+	 * Réponses seules, sans détail (PDF « Réponses »). Absent ou vide : le PDF
+	 * renvoie au corrigé. Les instances stockées avant l'ajout du champ ne l'ont pas.
+	 */
+	answers?: string;
 	/** Optional title for the exercise */
 	title?: string | null;
 	/** Points awarded for this exercise, as set on the worksheet */
@@ -223,6 +328,17 @@ export interface ResolvedExercise {
 	 * Les instances stockées avant l'ajout du champ ne l'ont pas.
 	 */
 	generic_functions?: string[] | null;
+	/**
+	 * Sens de deux majuscules collées (`AB`) dans les formules `~…~` de l'exercice :
+	 * longueur ou produit, résolu à la génération depuis son thème (lot 6 des
+	 * longueurs, Q-J). Absent (instance stockée avant) : produit, l'écriture d'avant.
+	 */
+	capital_pairs?: CapitalPairs;
+	/**
+	 * Lignes des cadres réglées par le prof (`worksheet_exercises.answer_frame_lines`,
+	 * ADR 0030 lot 4). Absent (instance stockée, copie hors base) : automatique.
+	 */
+	answer_frame_lines?: AnswerFrameLines | null;
 }
 
 /** Section data for PDF generation */
@@ -256,6 +372,8 @@ export interface WorksheetTemplateRow {
 	template_content: string;
 	placeholders: TemplatePlaceholder[];
 	created_by: string | null;
+	/** Le style dont ce gabarit est une forme (lot 3) */
+	style_id?: string | null;
 	created_at: string;
 	updated_at: string;
 }
@@ -273,6 +391,12 @@ export interface WorksheetRow {
 	published_at: string | null;
 	archived_at: string | null;
 	template_id: string | null;
+	/**
+	 * Le style de la fiche (`worksheet_styles`, lot 3). Vide pour les fiches
+	 * d'avant : `template_id` désigne alors le style (`styleIdOf`). Optionnel :
+	 * les fiches construites hors de la base (scripts, tests) n'en ont pas.
+	 */
+	style_id?: string | null;
 	estimated_duration_minutes: number | null;
 	total_points: number | null;
 	grades: string[];
@@ -326,6 +450,11 @@ export interface WorksheetExerciseRow {
 	 * Displayed with a star icon in student view.
 	 */
 	is_essential: boolean;
+	/**
+	 * Lignes des cadres de réponse réglées par le prof (ADR 0030, lot 4).
+	 * `null` ou absent : tout automatique.
+	 */
+	answer_frame_lines?: AnswerFrameLines | null;
 	created_at: string;
 	updated_at: string;
 }
@@ -349,6 +478,8 @@ export interface WorksheetAssignmentRow {
 	title: string | null;
 	instructions: string | null;
 	individualized: boolean;
+	/** Niveau de guidage des versions distribuées (ADR 0023) ; `GuidanceLevel` attendu */
+	guidance_level: string;
 	assigned_at: string;
 	available_from: string;
 	closes_at: string | null;
@@ -404,6 +535,7 @@ export interface WorksheetInsert {
 	status?: WorksheetStatus;
 	version?: number;
 	template_id?: string | null;
+	style_id?: string | null;
 	estimated_duration_minutes?: number | null;
 	total_points?: number | null;
 	grades?: number[];
@@ -471,6 +603,8 @@ export interface WorksheetAssignmentInsert {
 	title?: string | null;
 	instructions?: string | null;
 	individualized?: boolean;
+	/** Niveau de guidage (ADR 0023) : guidé si absent */
+	guidance_level?: GuidanceLevel;
 	available_from?: string;
 	closes_at?: string | null;
 	correction_release_mode?: CorrectionReleaseMode;
@@ -512,6 +646,7 @@ export interface WorksheetUpdate {
 	published_at?: string | null;
 	archived_at?: string | null;
 	template_id?: string | null;
+	style_id?: string | null;
 	estimated_duration_minutes?: number | null;
 	total_points?: number | null;
 	grades?: number[];
@@ -586,6 +721,8 @@ export interface WorksheetExerciseWithExercise extends WorksheetExerciseRow {
 		variations?: ExerciseVariation[] | null;
 		/** Lettres déclarées comme fonctions (`C'(x)`, `u(x)`…) ; absent = défauts du parseur */
 		generic_functions?: string[] | null;
+		/** Thème de l'exercice : décide du sens de `AB` (longueur ou produit, Q-J) */
+		topic?: string | null;
 	};
 }
 
@@ -641,6 +778,11 @@ export interface StudentExerciseView {
 	statement: string;
 	correction: string | null;
 	correction_visible: boolean;
+	/**
+	 * Réponses seules : transmises EXACTEMENT quand la correction l'est
+	 * (`correction_visible`), jamais avant. Absent ou `null` : rien à montrer.
+	 */
+	answers?: string | null;
 	/** Section ID if exercise belongs to a section */
 	section_id: string | null;
 	/** Optional title for the exercise */
@@ -655,6 +797,20 @@ export interface StudentExerciseView {
 	is_essential?: boolean;
 	/** Lettres déclarées comme fonctions par l'exercice ; absent = défauts du parseur */
 	generic_functions?: string[] | null;
+	/**
+	 * Sens de deux majuscules collées (`AB`) : longueur ou produit, résolu par le
+	 * serveur depuis le thème de l'exercice (Q-J) ; le thème lui-même n'est pas
+	 * transmis. Absent : produit, l'écriture d'avant.
+	 */
+	capital_pairs?: CapitalPairs;
+	/**
+	 * Cadres de réponse (réponses sur le sujet, ADR 0030 lots 3 et 4) : les
+	 * lignes que le PDF imprime, résolues par le serveur (réglage du prof, sinon
+	 * estimation d'après le corrigé de la copie de l'élève), envoyées même si la
+	 * correction est masquée (le texte, lui, ne l'est jamais) : le PDF de l'élève
+	 * a les mêmes cadres que celui du prof. Absent : sans cadres.
+	 */
+	printed_frame_lines?: PrintedAnswerFrames;
 }
 
 /**
@@ -676,8 +832,17 @@ export interface StudentWorksheetView {
 	title: string;
 	/** Language of the worksheet, driving both content and PDF chrome. */
 	language?: ContentLocale;
-	/** Corrigé imprimé concis ou détaillé (réglage de la fiche) ; absent : détaillé */
-	correction_detail?: CorrectionDetail;
+	/**
+	 * Les options du type de la fiche (ADR 0030), telles que la config les porte :
+	 * l'en-tête du PDF de l'élève les lit par la même règle que celui du prof
+	 * (`worksheetHeader`). Absentes : comme absentes de la config.
+	 */
+	show_student_name?: boolean;
+	show_points?: boolean;
+	calculator?: CalculatorRule;
+	answers_on_sheet?: boolean;
+	answer_frames?: AnswerFrameMode;
+	due_date?: string;
 	description: string | null;
 	type: WorksheetType;
 	instructions: string | null;
@@ -696,9 +861,30 @@ export interface StudentWorksheetView {
 	 * proposer.
 	 */
 	read_only: boolean;
+	/**
+	 * Ordre tiré (option « mélanger les exercices », copie d'une affectation) :
+	 * `exercises` arrive dans l'ordre de la copie, à NE PAS retrier par
+	 * `position`. Absent : ordre des positions, comme avant.
+	 */
+	shuffled?: boolean;
 	exercises: StudentExerciseView[];
 	/** Sections for grouping exercises */
 	sections: StudentSectionView[];
+	/**
+	 * Le style de la fiche (lot 4b) : `style_id`, sinon `template_id` (fiches
+	 * d'avant le lot 3). Absents : « Fiche élève ».
+	 */
+	style_id?: string | null;
+	template_id?: string | null;
+	/**
+	 * La mise en page (forme « fiche ») d'un style du prof auteur de la fiche,
+	 * fournie par le serveur (D11) ; `null` pour un style de Chiphre (Typst
+	 * dans le code) ou un style illisible. Son Typst seul, rien d'autre.
+	 */
+	template?: { template_content: string } | null;
+	/** Cartouche du gabarit, comme le PDF du prof (lot 4b) : total, durée */
+	total_points?: number | null;
+	estimated_duration_minutes?: number | null;
 }
 
 /**
@@ -787,17 +973,7 @@ export function hasValidAssignmentRecipients(
 // =============================================================================
 
 export const DEFAULT_WORKSHEET_CONFIG: WorksheetConfig = {
-	show_title: true,
-	show_date: true,
-	show_student_name: true,
-	show_class: true,
-	show_points: true,
-	numbering_style: 'numeric',
-	shuffle_exercises: false,
-	shuffle_within_sections: false,
-	page_layout: 'A4',
-	font_size: 12,
-	margins: { top: 20, bottom: 20, left: 15, right: 15 }
+	shuffle_exercises: false
 };
 
 export const DEFAULT_VARIANT_CONFIG: VariantConfig = {
@@ -952,42 +1128,19 @@ export function asWorksheetConfig(value: unknown): WorksheetConfig {
 	const config: WorksheetConfig = {};
 
 	if (isContentLocale(raw.language)) config.language = raw.language;
-	if (raw.correction_detail === 'concise' || raw.correction_detail === 'detailed')
-		config.correction_detail = raw.correction_detail;
-
 	for (const flag of [
-		'show_title',
-		'show_date',
 		'show_student_name',
-		'show_class',
 		'show_points',
-		'shuffle_exercises',
-		'shuffle_within_sections'
+		'answers_on_sheet',
+		'shuffle_exercises'
 	] as const) {
 		if (typeof raw[flag] === 'boolean') config[flag] = raw[flag];
 	}
-
-	if (typeof raw.font_size === 'number') config.font_size = raw.font_size;
-	if (raw.page_layout === 'A4' || raw.page_layout === 'Letter')
-		config.page_layout = raw.page_layout;
-
-	const m = raw.margins;
-	if (typeof m === 'object' && m !== null && !Array.isArray(m)) {
-		const side = m as Record<string, unknown>;
-		if (
-			typeof side.top === 'number' &&
-			typeof side.bottom === 'number' &&
-			typeof side.left === 'number' &&
-			typeof side.right === 'number'
-		) {
-			config.margins = {
-				top: side.top,
-				bottom: side.bottom,
-				left: side.left,
-				right: side.right
-			};
-		}
-	}
+	const calculator = CALCULATOR_RULES.find((rule) => rule === raw.calculator);
+	if (calculator) config.calculator = calculator;
+	const answerFrames = ANSWER_FRAME_MODES.find((mode) => mode === raw.answer_frames);
+	if (answerFrames) config.answer_frames = answerFrames;
+	if (isIsoDate(raw.due_date)) config.due_date = raw.due_date;
 
 	return config;
 }
@@ -1026,6 +1179,33 @@ export function asRowTranslations(value: unknown): RowTranslations | null {
  * An unknown value falls back to French rather than throwing: a worksheet with
  * a corrupted config must still generate.
  */
+/**
+ * Les options du type de la fiche (ADR 0030), pour la vue de l'élève : le PDF
+ * de l'élève les interprète par la même règle que celui du prof
+ * (`worksheetHeader`). Lues depuis la colonne `config` brute.
+ */
+export function viewTypeOptions(
+	value: unknown
+): Pick<
+	StudentWorksheetView,
+	| 'show_student_name'
+	| 'show_points'
+	| 'calculator'
+	| 'answers_on_sheet'
+	| 'answer_frames'
+	| 'due_date'
+> {
+	const config = asWorksheetConfig(value);
+	return {
+		show_student_name: config.show_student_name,
+		show_points: config.show_points,
+		calculator: config.calculator,
+		answers_on_sheet: config.answers_on_sheet,
+		answer_frames: config.answer_frames,
+		due_date: config.due_date
+	};
+}
+
 export function worksheetLocale(config: WorksheetConfig | null | undefined): ContentLocale {
 	const language = config?.language;
 	return isContentLocale(language) ? language : DEFAULT_CONTENT_LOCALE;

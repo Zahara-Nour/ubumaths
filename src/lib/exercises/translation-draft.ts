@@ -16,7 +16,7 @@ import type { ExerciseTranslations, TranslatedExerciseContent, TranslatedHint } 
 /** Fields the variation editor can translate today. */
 export type TranslatableField = Extract<
 	keyof TranslatedExerciseContent,
-	'statement_md' | 'solution_md'
+	'statement_md' | 'solution_md' | 'answers_md'
 >;
 
 /**

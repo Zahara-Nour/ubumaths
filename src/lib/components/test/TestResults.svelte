@@ -150,7 +150,7 @@
 		{#if inEvaluation}
 			<Button href="/dashboard/student/assessments">
 				<ArrowLeft class="mr-2 h-4 w-4" />
-				Mes évaluations
+				Mes contrôles
 			</Button>
 		{:else}
 			<Button variant="outline" onclick={onBackToCart}>

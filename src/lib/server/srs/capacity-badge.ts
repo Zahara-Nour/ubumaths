@@ -21,15 +21,14 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { fetchInChunks } from '$lib/server/utils/chunked-in';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/srs/capacity-badge');
 
 type SB = SupabaseClient<Database>;
 
 export type CapacityBadge =
-	| 'a_remedier'
-	| 'a_renforcer'
-	| 'acquise_en_memoire'
-	| 'en_apprentissage'
-	| 'non_commencee';
+	'a_remedier' | 'a_renforcer' | 'acquise_en_memoire' | 'en_apprentissage' | 'non_commencee';
 
 type CardState = 'new' | 'learning' | 'review' | 'relearning';
 
@@ -63,7 +62,7 @@ export async function computePointBadges(
 	);
 
 	if (tagErr) {
-		console.error('[capacity-badge] tag lookup failed:', tagErr);
+		logger.error('[capacity-badge] tag lookup failed:', tagErr);
 		for (const id of pointIds) result.set(id, 'non_commencee');
 		return result;
 	}
@@ -95,7 +94,7 @@ export async function computePointBadges(
 	);
 
 	if (fsrsErr) {
-		console.error('[capacity-badge] fsrs lookup failed:', fsrsErr);
+		logger.error('[capacity-badge] fsrs lookup failed:', fsrsErr);
 		for (const id of pointIds) result.set(id, 'non_commencee');
 		return result;
 	}

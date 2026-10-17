@@ -16,6 +16,7 @@ import {
 	decimalCommaDeep,
 	decimalCommaInput,
 	decimalCommaLatex,
+	decimalCommaProse,
 	decimalCommaText
 } from '../decimal-comma';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
@@ -129,14 +130,31 @@ describe('la conversion elle-même', () => {
 			'\\left\\{ -1{,}5 \\,;\\, 2{,}5 \\right\\}'
 		);
 	});
+
+	// V25 : les titres et explications des étapes portent leurs formules entre
+	// `$…$` (rendues par ubumark) — la convention LaTeX dedans, la prose dehors
+	it('une phrase mêlée de maths : `{,}` dans les `$…$`, la virgule ailleurs', () => {
+		expect(decimalCommaProse('On sort la constante $0.5$')).toBe('On sort la constante $0{,}5$');
+		expect(decimalCommaProse('On divise par 0.5, puis par $\\dfrac{1.5}{2}$.')).toBe(
+			'On divise par 0,5, puis par $\\dfrac{1{,}5}{2}$.'
+		);
+		expect(decimalCommaProse('$S = \\{ 1.5 \\}$ et $x = 2.25$')).toBe(
+			'$S = \\{ 1{,}5 \\}$ et $x = 2{,}25$'
+		);
+		// Sans maths : la virgule seule, la ponctuation intacte
+		expect(decimalCommaProse('on divise par 0.5, l’égalité est préservée')).toBe(
+			'on divise par 0,5, l’égalité est préservée'
+		);
+	});
 });
 
 describe('chaque commande de la vue Calcul écrit la virgule', () => {
 	it('calcul direct (mode décimal) : 0.1+0.2', () => {
 		const result = calcul(runInput(decimalSession(), '0.1+0.2'));
 
-		expect(result.output).toBe('≈ 0,300000000000000');
-		expect(result.latex).toBe('0{,}300000000000000');
+		// 0,1 + 0,2 vaut exactement 0,3 : ni ≈ ni zéros (règle du bouton ≈, décision Q3)
+		expect(result.output).toBe('0,3');
+		expect(result.latex).toBe('0{,}3');
 		// L'arbre gardé reste un nombre lisible par le moteur
 		expect(result.ast).toBeDefined();
 	});
@@ -144,13 +162,14 @@ describe('chaque commande de la vue Calcul écrit la virgule', () => {
 	it('calcul direct (mode décimal) : \\pi approché', () => {
 		const result = calcul(runInput(decimalSession(), '\\pi'));
 
-		expect(result.latex).toBe('3{,}14159265358979');
+		expect(result.latex).toBe('\\approx 3{,}1416');
 	});
 
+	// Lot C des grandeurs : « 3.5 km » est une grandeur (avant : le produit 3,5·k·m)
 	it('calcul avec une unité : 3.5 km', () => {
 		const result = calcul(runInput(session(), '3.5 km'));
 
-		expect(result.output).toBe('3,5km');
+		expect(result.output).toBe('3,5 km');
 		expect(result.latex).toContain('3{,}5');
 	});
 
@@ -179,7 +198,7 @@ describe('chaque commande de la vue Calcul écrit la virgule', () => {
 		const result = commande(runInput(session(), '.dériver 0.5x^2'));
 
 		expect(result.output).toBe('d/dx(0,5x^2) = x');
-		expect(result.steps?.[0]?.title).toBe('On sort la constante 0,5');
+		expect(result.steps?.[0]?.title).toBe('On sort la constante $0{,}5$');
 		expectNoDotDecimal(result);
 	});
 
@@ -207,7 +226,9 @@ describe('chaque commande de la vue Calcul écrit la virgule', () => {
 	it('.domaine', () => {
 		const result = commande(runInput(session(), '.domaine ln(x-0.5)'));
 
-		expect(result.output).toContain('ln(x-0,5)');
+		// La réponse écrit ½ (`domainToLatex`) ; le 0,5 tapé vit dans les étapes
+		expect(result.output).toBe('D = ]1/2 ; +∞[');
+		expect(result.steps?.map((s) => s.explanation ?? '').join(' ')).toContain('0{,}5');
 		expectNoDotDecimal(result);
 	});
 
@@ -271,8 +292,9 @@ describe('les actions des cartes, affichées dans la même vue', () => {
 
 		const outcome = runAction(s, 'image', 'f', '0.3');
 
-		expect(outcome.ok && outcome.output).toBe('≈ -1,45500000000000');
-		expect(outcome.ok && outcome.latex).toBe('-1{,}45500000000000');
+		// -1,455 exactement : ni ≈ ni zéros (règle du bouton ≈, décision Q3)
+		expect(outcome.ok && outcome.output).toBe('-1,455');
+		expect(outcome.ok && outcome.latex).toBe('-1{,}455');
 	});
 });
 
@@ -287,11 +309,13 @@ describe('la saisie lit la virgule que l’affichage écrit', () => {
 	it('dans l’expression d’une commande : .évaluer x^2+0,5 en x=0,3', () => {
 		const result = commande(runInput(session(), '.évaluer x^2+0,5 en x=0,3'));
 
-		expect(result.output).toContain('59/100');
+		// E5 (David, 2026-10-14) : saisie décimale → réponse décimale (avant : 59/100)
+		expect(result.output).toBe('0,59');
 	});
 
 	it.each([
-		['.évaluer 2x en x=1,5', 'Result: 3'],
+		// La ligne est une formule depuis 2026-10-14 (avant : « Result: 3 (exact) »)
+		['.évaluer 2x en x=1,5', '3'],
 		['.résoudre 0,5x+3=1', 'x = -4'],
 		['.intégrer x de 0 à 0,5', '1/8'],
 		['.taylor e^x ordre 3 en 0,5', 'x-0,5'],
@@ -513,7 +537,7 @@ describe('ce qui ne change pas', () => {
 		const message = result.kind === 'refus' ? result.message : '';
 		expect(message).toBe('Pour remplacer x par 0,3, écris : .évaluer x^2+0,5 en x=0,3');
 		const retyped = commande(runInput(session(), message.split('écris : ')[1]));
-		expect(retyped.output).toContain('59/100');
+		expect(retyped.output).toBe('0,59');
 	});
 
 	it('l’écho de la saisie reste ce qui a été tapé', () => {

@@ -4,6 +4,14 @@
 	import { ArrowLeft } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import pereUbuImage from '$lib/assets/images/pereubu.png';
+	import { resolve } from '$app/paths';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
+
+	// Le chat exige un compte (`/api/chat`) : un visiteur est invité à se connecter
+	// au lieu d'écrire dans un chat qui lui répondrait par une erreur (V14) : voir
+	// `{#if data.user}` plus bas, qui donne aussi au chat l'identifiant du compte (T17).
 
 	// Pere Ubu quotes for interaction
 	const pereUbuQuotes = [
@@ -12,7 +20,7 @@
 		'Merdre ! Quelle belle équation !',
 		'Par ma science phynancière, tout devient clair !',
 		'Tudieu ! Les nombres sont mes amis !',
-		'Hornphynance ! Voilà qui est bien calculé !',
+		'De par ma phynance, voilà qui est bien calculé !',
 		"Ventrebleu ! Les fractions sont un jeu d'enfant !",
 		'Par ma gidouille ! Les mathématiques pataphysiques règnent !'
 	];
@@ -88,7 +96,18 @@
 			</button>
 		</div>
 
-		<ChatBot personalityKey="pereUbu" />
+		{#if data.user}
+			<ChatBot personalityKey="pereUbu" userId={data.user.id} />
+		{:else}
+			<div class="flex flex-col items-center gap-4 rounded-xl border bg-card p-8 text-center">
+				<h2 class="text-xl font-semibold">Cornegidouille ! Qui va là ?</h2>
+				<p class="max-w-prose text-muted-foreground">
+					Le Père Ubu ne parle qu'aux sujets de son royaume. Connecte-toi avec ton compte Chiphre
+					pour discuter avec lui.
+				</p>
+				<Button href={`${resolve('/auth/login')}?redirectTo=/pere-ubu`}>Se connecter</Button>
+			</div>
+		{/if}
 	</div>
 </div>
 

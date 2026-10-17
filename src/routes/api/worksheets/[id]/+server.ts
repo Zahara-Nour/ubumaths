@@ -8,6 +8,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { loadStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
+import { isBuiltInStyle } from '$lib/typst/templates/styles';
 import { fetchResourceTagNames, syncResourceTags } from '$lib/server/resource-tags';
 import {
 	validateUpdateWorksheet,
@@ -17,6 +19,9 @@ import {
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -34,7 +39,7 @@ async function getWorksheetWithAuth(
 	// Validate UUID format
 	const idValidation = uuidSchema.safeParse(worksheetId);
 	if (!idValidation.success) {
-		throw error(400, 'Invalid worksheet ID format');
+		throw error(400, 'Identifiant de fiche invalide');
 	}
 
 	// Fetch worksheet
@@ -45,16 +50,16 @@ async function getWorksheetWithAuth(
 		.single();
 
 	if (dbError || !worksheet) {
-		throw error(404, 'Worksheet not found');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify ownership/authorization
 	if (role === 'teacher' && worksheet.created_by !== userId) {
-		throw error(403, 'Forbidden - Not your worksheet');
+		throw error(403, 'Accès réservé à l’auteur de la fiche');
 	}
 
 	if (role === 'admin' && schoolId && worksheet.school_id !== schoolId) {
-		throw error(403, 'Forbidden - Worksheet belongs to different school');
+		throw error(403, 'Cette fiche appartient à une autre école');
 	}
 
 	return worksheet;
@@ -84,8 +89,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('position', { ascending: true });
 
 	if (sectionsError) {
-		console.error('Failed to fetch sections:', sectionsError);
-		throw error(500, 'Failed to fetch worksheet sections');
+		logger.error('Failed to fetch sections:', sectionsError);
+		throw error(500, 'Impossible de charger les sections de la fiche');
 	}
 
 	// Fetch exercises with joined exercise data
@@ -100,7 +105,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				variables,
 				shared,
 				variations,
-				generic_functions
+				generic_functions,
+				topic
 			)
 		`
 		)
@@ -108,23 +114,13 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('position', { ascending: true });
 
 	if (exercisesError) {
-		console.error('Failed to fetch exercises:', exercisesError);
-		throw error(500, 'Failed to fetch worksheet exercises');
+		logger.error('Failed to fetch exercises:', exercisesError);
+		throw error(500, 'Impossible de charger les exercices de la fiche');
 	}
 
-	// Fetch template if template_id exists
-	let template = null;
-	if (worksheet.template_id) {
-		const { data: templateData, error: templateError } = await locals.supabase
-			.from('worksheet_templates')
-			.select('id, name, description')
-			.eq('id', worksheet.template_id)
-			.single();
-
-		if (!templateError && templateData) {
-			template = templateData;
-		}
-	}
+	// La fiche d'un style du prof, pour le PDF ; `null` pour un style de
+	// Chiphre (Typst dans le code) ou un style illisible (style par défaut).
+	const template = await loadStyleTemplate(locals.supabase, worksheet);
 
 	// Les étiquettes ne sont plus une colonne de `worksheets` (migration
 	// 20260908180000). Sans cette lecture, `tags` vaut `undefined` et le schéma
@@ -173,7 +169,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateUpdateWorksheet(body);
@@ -181,7 +177,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data;
@@ -195,6 +191,13 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (data.type !== undefined) updateData.type = data.type;
 	if (data.config !== undefined) updateData.config = data.config;
 	if (data.template_id !== undefined) updateData.template_id = data.template_id;
+	if (data.style_id !== undefined) {
+		updateData.style_id = data.style_id;
+		// Un style de Chiphre a le même identifiant que son gabarit : `template_id`
+		// le suit, pour que la fiche garde sa mise en page si le code revenait en
+		// arrière. Un style du prof ne touche pas `template_id`.
+		if (data.style_id && isBuiltInStyle(data.style_id)) updateData.template_id = data.style_id;
+	}
 	if (data.estimated_duration_minutes !== undefined)
 		updateData.estimated_duration_minutes = data.estimated_duration_minutes;
 	if (data.total_points !== undefined) updateData.total_points = data.total_points;
@@ -216,7 +219,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	// Only proceed if there are fields to update
 	if (Object.keys(updateData).length === 0) {
-		throw error(400, 'No fields provided for update');
+		throw error(400, 'Aucune modification demandée');
 	}
 
 	// Update worksheet
@@ -228,8 +231,12 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to update worksheet:', dbError);
-		throw error(500, 'Failed to update worksheet');
+		// Trigger de `worksheets.style_id` : style d'un autre auteur
+		if (dbError.code === '42501') {
+			throw error(403, 'Ce style n’est pas disponible pour cette fiche');
+		}
+		logger.error('Failed to update worksheet:', dbError);
+		throw error(500, 'Impossible de modifier la fiche');
 	}
 
 	// `undefined` signifie « champ absent de la requête » : on ne touche alors pas
@@ -264,7 +271,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	if (worksheet.status !== 'draft') {
 		throw error(
 			400,
-			`Cannot delete worksheet with status '${worksheet.status}'. Only draft worksheets can be deleted.`
+			`Impossible de supprimer cette fiche (statut « ${worksheet.status} ») : seul un brouillon peut être supprimé.`
 		);
 	}
 
@@ -272,8 +279,8 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { error: dbError } = await locals.supabase.from('worksheets').delete().eq('id', params.id);
 
 	if (dbError) {
-		console.error('Failed to delete worksheet:', dbError);
-		throw error(500, 'Failed to delete worksheet');
+		logger.error('Failed to delete worksheet:', dbError);
+		throw error(500, 'Impossible de supprimer la fiche');
 	}
 
 	// Validate response
@@ -281,7 +288,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		deleteWorksheetResponseSchema,
 		{
 			success: true as const,
-			message: 'Worksheet deleted successfully'
+			message: 'Fiche supprimée'
 		},
 		'DELETE /api/worksheets/[id]'
 	);

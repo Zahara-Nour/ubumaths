@@ -14,6 +14,9 @@ import { createBoardSchema, listBoardsQuerySchema } from '$lib/server/validation
 import { getAccessibleBoards, isClassTeacher, rateLimitResponse } from '$lib/server/kanban';
 import { checkKanbanBoardCreateRateLimit } from '$lib/server/rateLimiter';
 import type { KanbanBoard, KanbanBoardInsert } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/organisation/kanban/boards/+server');
 
 export const GET: RequestHandler = async ({ locals, url }) => {
 	await requireAuth(locals);
@@ -79,7 +82,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (dbError || !data) {
-		console.error('[kanban] create board failed:', dbError);
+		logger.error('[kanban] create board failed:', dbError);
 		throw error(500, 'Erreur lors de la création du tableau');
 	}
 

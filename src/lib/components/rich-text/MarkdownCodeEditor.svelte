@@ -211,8 +211,7 @@
 				spellcheck="false"
 				autocomplete="off"
 				aria-label="Editeur Markdown (mode degrade)"
-				{disabled}
-			></textarea>
+				{disabled}></textarea>
 		{/if}
 	</div>
 </div>

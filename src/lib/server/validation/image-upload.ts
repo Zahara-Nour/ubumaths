@@ -83,31 +83,31 @@ export const IMAGE_MAGIC_BYTES: Record<string, number[][]> = {
 export const imageFileMetadataSchema = z.object({
 	filename: z
 		.string()
-		.min(1, 'Filename is required')
-		.max(255, 'Filename too long')
+		.min(1, 'Nom de fichier requis')
+		.max(255, 'Nom de fichier trop long')
 		.refine(
 			(name) => {
 				const ext = name.substring(name.lastIndexOf('.')).toLowerCase();
 				return Object.keys(EXTENSION_TO_MIME).includes(ext);
 			},
 			{
-				message: `Invalid file extension. Allowed: ${Object.keys(EXTENSION_TO_MIME).join(', ')}`
+				message: `Extension de fichier non autorisée. Extensions acceptées : ${Object.keys(EXTENSION_TO_MIME).join(', ')}`
 			}
 		),
 	size: z
 		.number()
-		.int('File size must be an integer')
-		.positive('File size must be positive')
+		.int('La taille du fichier doit être un nombre entier')
+		.positive('La taille du fichier doit être positive')
 		.max(
 			MAX_IMAGE_SIZE_BYTES,
-			`File size must be less than ${MAX_IMAGE_SIZE_BYTES / (1024 * 1024)}MB`
+			`Le fichier doit faire moins de ${MAX_IMAGE_SIZE_BYTES / (1024 * 1024)} Mo`
 		),
 	type: z
 		.string()
 		.refine(
 			(val) => ALLOWED_IMAGE_MIME_TYPES.includes(val as (typeof ALLOWED_IMAGE_MIME_TYPES)[number]),
 			{
-				message: `Invalid MIME type. Allowed: ${ALLOWED_IMAGE_MIME_TYPES.join(', ')}`
+				message: `Type de fichier non autorisé. Types acceptés : ${ALLOWED_IMAGE_MIME_TYPES.join(', ')}`
 			}
 		)
 });
@@ -118,7 +118,7 @@ export const imageFileMetadataSchema = z.object({
 export const contentTypeHeaderSchema = z
 	.string()
 	.refine((ct) => ct.startsWith('multipart/form-data'), {
-		message: 'Content-Type must be multipart/form-data'
+		message: 'La requête doit être envoyée en multipart/form-data'
 	});
 
 // ============================================================================
@@ -129,9 +129,9 @@ export const contentTypeHeaderSchema = z
  * Image metadata returned after successful upload
  */
 export const imageMetadataSchema = z.object({
-	url: z.string().url('Invalid URL'),
-	width: z.number().int().positive().max(MAX_IMAGE_DIMENSION, 'Width exceeds maximum'),
-	height: z.number().int().positive().max(MAX_IMAGE_DIMENSION, 'Height exceeds maximum'),
+	url: z.string().url('Adresse invalide'),
+	width: z.number().int().positive().max(MAX_IMAGE_DIMENSION, 'Largeur trop grande'),
+	height: z.number().int().positive().max(MAX_IMAGE_DIMENSION, 'Hauteur trop grande'),
 	aspectRatio: z.number().positive().finite(),
 	filename: z.string().min(1),
 	size: z.number().int().positive(),

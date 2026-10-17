@@ -566,7 +566,7 @@ describe('French Feedback Messages', () => {
 	test('provides French message for invalid input', () => {
 		const result = validateQuantityAnswer('invalid', '5\\unit{m}');
 
-		expect(result.feedback).toBe('Réponse invalide. Vérifiez le format.');
+		expect(result.feedback).toBe('Réponse invalide : vérifier le format.');
 	});
 
 	test('provides French message for incompatible units', () => {

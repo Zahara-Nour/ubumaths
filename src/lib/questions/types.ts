@@ -47,6 +47,7 @@ export { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
 
 // Import from mathAST pedagogical layer (used by Mode B `generatedSteps`)
 import type { RenderedStep, SchoolLevel } from '$lib/mathAST/common/step-renderer-base';
+import type { CapitalPairs } from '$lib/mathAST/parser/types';
 
 /**
  * French educational grade levels
@@ -236,12 +237,7 @@ export type QuestionVariable = SharedVariable;
  */
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
 export type AnswerKind =
-	| 'intervalles'
-	| 'equation'
-	| 'vecteur'
-	| 'matrice'
-	| 'primitive'
-	| 'solution-ed';
+	'intervalles' | 'equation' | 'vecteur' | 'matrice' | 'primitive' | 'solution-ed';
 
 /** Valeurs de `AnswerKind` (schémas Zod, éditeur) */
 export const ANSWER_KINDS = [
@@ -576,6 +572,15 @@ export interface SharedVariationDefaults {
 	 * @see cleanCoefficientsAst (clean-coefficients.ts)
 	 */
 	cleanCoefficients?: boolean;
+
+	/**
+	 * Sens de deux majuscules collées (`AB`) dans tout le modèle : `'length'`, longueur
+	 * du segment ; `'product'`, produit A × B (matrices). Absente : le contexte décide
+	 * (thème `Graphes et matrices`, physique → produit), sinon longueur. Pas de
+	 * surcharge par variation.
+	 * @see resolveCapitalPairs (capital-pairs.ts)
+	 */
+	capitalPairs?: CapitalPairs;
 }
 
 // ============================================================================
@@ -871,6 +876,14 @@ export interface QuestionInstance {
 	 * (via `templateGenericFunctions`).
 	 */
 	genericFunctions?: string[];
+
+	/**
+	 * Sens de deux majuscules collées, résolu UNE fois à la génération (déclaration →
+	 * contexte → longueur) et porté jusqu'au parseur (validation, forme). Absent sur une
+	 * instance servie avant le chantier : défaut du parseur, le produit d'avant (Q-L).
+	 * @see resolveCapitalPairs (capital-pairs.ts)
+	 */
+	capitalPairs?: CapitalPairs;
 
 	grades: GradeLevel[];
 	theme: string;
@@ -1548,13 +1561,7 @@ export interface PredicateRule {
 	type: 'predicate';
 	/** Predicate function to apply */
 	predicate:
-		| 'isPrime'
-		| 'isComposite'
-		| 'isEven'
-		| 'isOdd'
-		| 'isPositive'
-		| 'isNegative'
-		| 'isInteger';
+		'isPrime' | 'isComposite' | 'isEven' | 'isOdd' | 'isPositive' | 'isNegative' | 'isInteger';
 }
 
 /**

@@ -993,3 +993,39 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - R4 (refusée, recadrée par David) : les deux sous-notions « double et moitié » (sous Addition et sous Multiplication)
     restent. Elles distinguent un modèle dont l'énoncé ou la correction passe par une **somme** de celui qui passe par
     un **produit** : chaque modèle se range en lisant son contenu en détail, puis se tague selon la règle (a).
+- **2026-10-11 — Étape 2 bis : scission des points « dans les deux sens » validée par David.**
+  - CP-018, CE1-026, CE2-020 (tables d'addition) et CE1-027, CE2-021 (tables de multiplication) deviennent le sens
+    direct (« donner la somme / le produit ») ; nouveaux CP-073, CE1-090, CE2-084, CE1-091, CE2-085 = l'autre sens,
+    **uniquement l'opération à trou** (3 + ? = 7 ; 3 × ? = 12). Même nœud « tables », juste après dans l'ordre du BO.
+  - Règle de David : une soustraction ou une division est explicite, elle n'est PAS le sens inverse des tables → point
+    de calcul astucieux qui la décrit (après déplacement, R2), sinon pas de tag (R1). Les deux soustractions du CP
+    (73550ee8, fa57c725) passent en R1.
+  - Les 13 modèles dont les variations relèvent de plusieurs points sont sortis des parties 1 à 3 de la page à cocher :
+    choix « Scinder » / « Un seul tag » en partie 4.
+- **2026-10-17 — Principes validés par David, consignés dans l'ADR 0020 (§7, précisions du 2026-10-17).**
+  - Le BO est immuable : pas de point « entraînement » ou « approfondissement ». Un modèle qu'aucun point ne décrit
+    reste sur son nœud, jouable, hors progression du programme (progression par nœud possible plus tard).
+  - Un savoir-faire répété d'une année à l'autre garde un point par année ; un modèle porte un tag par programme
+    (déjà la règle en base : « au plus un point par programme »).
+  - Une scission vaut pour toute la famille de points répétés (ex. tables CP → CE2 et répertoires CM1, CM2).
+- **2026-10-17 — Scissions : réponses de David sur la page à cocher.**
+  - Les 20 familles de la page sont à scinder (101 points). Q1 : opérations à trou hors tables → pas de tag (R1).
+    Q2 : répertoires du CM scindés comme les tables. Q3 : garder « connaître les moitiés » et « déterminer la moitié ».
+    Q4 : **trois** points comparer / encadrer / intercaler. Q6 : « lire et interpréter » à revoir → familles M19
+    (18 points lire / interpréter) et M20 (moyenne, médiane, étendue : calculer / interpréter) ajoutées à la page.
+  - Q5 : 3-001 et 3-002 sont un doublon du BO lui-même (cycle 4, 3e, Nombres rationnels, lignes consécutives).
+    David : « je ne veux pas de deux points qui disent la même chose » → 3-002 archivé dans la migration des
+    scissions ; exception consignée dans l'ADR 0020 (§7).
+  - Programmes du BO des cycles 2, 3 et 4 (PDF) commités sous `docs/ref/programmes/`.
+- **2026-10-17 — Critère de scission de David, consigné dans l'ADR 0020 (§7).** On scinde quand la scission donne au
+  moins un point évaluable par un modèle de question, avec nos outils actuels ou à venir ; l'autre partie peut relever
+  du cours (démonstration, oral, collecte). 5-058 se scinde (connaître / démontrer). Pas de retour sur les familles
+  déjà tranchées. Recos de la partie 3 de la page mises à jour en conséquence : suite écrite / orale, 5-058,
+  représentations des solides (5-048, 4-028), recueillir / présenter des données → scinder.
+- **2026-10-17 — Vérifications avant migration (page « Vérifications des scissions »).** David : CM1-019 et CM2-018
+  scindés comme leurs jumeaux ; 3-038 archivé (quasi-doublon du BO avec 3-041) ; les 25 corrections de libellés prises ;
+  automatismes revus ligne par ligne (52 lignes). Principe nouveau, consigné dans l'ADR 0020 §7 : une partie de ligne
+  d'automatisme sans référence → d'abord scinder un point antérieur (avec sa famille), sinon point ⚙ dans le programme
+  de la ligne. 11 mots à reprendre ainsi (quadruple, quart, tiers en 6e ; perspective cavalière en 5e ; somme des
+  opposés, triple / prédécesseur / successeur en 4e ; pourcentage sans coefficient en 3e ; périmètre d'un polygone,
+  interpréter les quartiles au lycée).

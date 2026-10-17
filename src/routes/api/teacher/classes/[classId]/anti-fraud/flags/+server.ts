@@ -12,6 +12,9 @@ import type { RequestHandler } from './$types';
 import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
 import { classIdParamSchema } from '$lib/server/validation/teacher-analytics';
 import { flagsListQuerySchema } from '$lib/server/validation/anti-fraud';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/classes/[classId]/anti-fraud/flags/+server');
 
 const MAX_FLAGS_PER_REQUEST = 100;
 const DEFAULT_SINCE_DAYS = 30;
@@ -46,7 +49,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	// Cette liste borne la portée du classement. Vidée par une panne, elle
 	// affiche un classement amputé sans le dire.
 	if (memberRowsError) {
-		console.error('Périmètre illisible :', memberRowsError);
+		logger.error('Périmètre illisible :', memberRowsError);
 		throw error(500, 'Impossible de déterminer le périmètre');
 	}
 

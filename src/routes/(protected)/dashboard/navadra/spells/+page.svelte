@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { getSpellIconUrl } from '$lib/utils/game/assets';
 	import type { PageData } from './$types';
 
@@ -39,9 +40,7 @@
 <div class="spells-page mx-auto max-w-6xl p-8">
 	<!-- Header -->
 	<div class="mb-8">
-		<div class="mb-4">
-			<Button href="/dashboard/navadra" variant="ghost" class="gap-2">← Retour au hub</Button>
-		</div>
+		<BackLink href="/dashboard/navadra" label="Retour au hub" />
 		<h1 class="mb-2 text-4xl font-bold text-foreground">📖 Grimoire</h1>
 		<p class="text-lg text-muted-foreground">Gère tes sorts et crée des decks pour le combat.</p>
 	</div>

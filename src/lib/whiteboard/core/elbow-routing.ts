@@ -499,18 +499,16 @@ function calculateGrid(
 	const cols = sortedHorizontal.length;
 
 	const data: (Node | null)[] = sortedVertical.flatMap((y, row) =>
-		sortedHorizontal.map(
-			(x, col): Node => ({
-				f: 0,
-				g: 0,
-				h: 0,
-				closed: false,
-				visited: false,
-				parent: null,
-				addr: [col, row],
-				pos: { x, y }
-			})
-		)
+		sortedHorizontal.map((x, col): Node => ({
+			f: 0,
+			g: 0,
+			h: 0,
+			closed: false,
+			visited: false,
+			parent: null,
+			addr: [col, row],
+			pos: { x, y }
+		}))
 	);
 
 	return { row: rows, col: cols, data };

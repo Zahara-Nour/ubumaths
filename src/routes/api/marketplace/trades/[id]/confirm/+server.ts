@@ -3,6 +3,9 @@ import type { RequestHandler } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { notifyTradeCompleted } from '$lib/server/marketplace/notifications';
 import { executeTradeSchema } from '$lib/server/validation/marketplace-rpc';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/trades/[id]/confirm/+server');
 
 /**
  * Délai de confirmation : 5 minutes après confirmation_started_at.
@@ -49,7 +52,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	const isPartner = trade.partner_id === userId;
 
 	if (!isInitiator && !isPartner) {
-		throw error(403, "Vous n'etes pas participant a cet echange");
+		throw error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	// Verify trade is still negotiating
@@ -94,14 +97,14 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			.select('id');
 
 		if (resetError || !resetRows || resetRows.length === 0) {
-			console.error('Remise a zero de l echange expire impossible :', resetError ?? '0 ligne');
+			logger.error('Remise a zero de l echange expire impossible :', resetError ?? '0 ligne');
 			throw error(
 				500,
-				"La confirmation a expiré, mais l'échange n'a pas pu être réinitialisé. Réessayez."
+				"La confirmation a expiré, mais l'échange n'a pas pu être réinitialisé. Réessayer."
 			);
 		}
 
-		throw error(410, 'La confirmation a expire. Veuillez revalider.');
+		throw error(410, 'La confirmation a expiré : nouvelle validation nécessaire.');
 	}
 
 	// Record this user's confirmation.
@@ -165,7 +168,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 	// Check for RPC call error (HTTP/connection level)
 	if (rpcError) {
-		console.error('RPC call error:', rpcError);
+		logger.error('RPC call error:', rpcError);
 		throw error(500, "Erreur lors de l'execution de l'echange");
 	}
 
@@ -175,7 +178,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 	if (!result.success) {
 		const errorMsg = result.error;
-		console.error('Trade execution failed:', errorMsg);
+		logger.error('Trade execution failed:', errorMsg);
 
 		// If trade was already completed by another request, that's OK
 		if (errorMsg.includes('not in negotiating status')) {
@@ -199,7 +202,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 	// Le nom n'orne que la notification ; le repli « Un élève » existe déjà.
 	if (initiatorProfileError && initiatorProfileError.code !== 'PGRST116') {
-		console.error('Nom illisible :', initiatorProfileError);
+		logger.error('Nom illisible :', initiatorProfileError);
 	}
 
 	const { data: partnerProfile, error: partnerProfileError } = await supabase
@@ -210,7 +213,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 	// Le nom n'orne que la notification ; le repli « Un élève » existe déjà.
 	if (partnerProfileError && partnerProfileError.code !== 'PGRST116') {
-		console.error('Nom illisible :', partnerProfileError);
+		logger.error('Nom illisible :', partnerProfileError);
 	}
 
 	const initiatorName = initiatorProfile
@@ -235,7 +238,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	// Relecture de la ligne qu'on vient d'écrire : son échec ne remet pas
 	// l'opération en cause, mais la réponse renvoyée serait incomplète.
 	if (completedTradeError && completedTradeError.code !== 'PGRST116') {
-		console.error('Relecture impossible :', completedTradeError);
+		logger.error('Relecture impossible :', completedTradeError);
 	}
 
 	return json({

@@ -8,6 +8,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { uuidSchema } from '$lib/server/validation/common';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/[id]/assignments/+server');
 
 // =============================================================================
 // VALIDATION SCHEMAS
@@ -49,7 +52,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Validate notebook ID
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'ID de notebook invalide');
+		throw error(400, 'Identifiant de carnet invalide');
 	}
 
 	const notebookId = idValidation.data;
@@ -63,14 +66,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (fetchError || !notebook) {
 		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Notebook introuvable');
+			throw error(404, 'Carnet introuvable');
 		}
-		console.error('Error fetching notebook:', fetchError);
-		throw error(500, 'Erreur lors de la verification du notebook');
+		logger.error('Error fetching notebook:', fetchError);
+		throw error(500, 'Impossible de vérifier le carnet');
 	}
 
 	if (notebook.author_id !== user.id) {
-		throw error(403, "Seul l'auteur peut voir les partages de ce notebook");
+		throw error(403, 'Seul l’auteur peut voir les partages de ce carnet');
 	}
 
 	// Fetch all assignments for this notebook
@@ -93,8 +96,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('created_at', { ascending: false });
 
 	if (assignmentsError) {
-		console.error('Error fetching notebook assignments:', assignmentsError);
-		throw error(500, 'Erreur lors du chargement des partages');
+		logger.error('Error fetching notebook assignments:', assignmentsError);
+		throw error(500, 'Impossible de charger les partages');
 	}
 
 	// Validate and transform the response to include class info directly
@@ -102,7 +105,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		// Validate assignment structure
 		const validation = assignmentResponseSchema.safeParse(assignment);
 		if (!validation.success) {
-			console.error('Invalid assignment structure:', validation.error);
+			logger.error('Invalid assignment structure:', validation.error);
 			throw error(500, 'Structure de données invalide');
 		}
 

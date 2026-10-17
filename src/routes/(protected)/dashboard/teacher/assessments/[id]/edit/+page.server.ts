@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		if (e instanceof EvaluationError) throw error(e.status, e.message);
 		throw e;
 	}
-	if (!evaluation) throw error(404, 'Évaluation introuvable');
+	if (!evaluation) throw error(404, 'Contrôle introuvable');
 	if (evaluation.created_by !== user.id && profile.role !== 'admin') {
 		throw error(403, 'Non autorisé');
 	}
@@ -49,9 +49,9 @@ export const actions: Actions = {
 		try {
 			// La page n'est pas une garde : un POST direct la contourne. On relit.
 			const current = await getEvaluation(locals.supabase, id);
-			if (!current) return fail(404, { message: 'Évaluation introuvable' });
+			if (!current) return fail(404, { message: 'Contrôle introuvable' });
 			if (current.status !== 'draft') {
-				return fail(409, { message: 'Seule une évaluation en brouillon se modifie' });
+				return fail(409, { message: 'Seul un contrôle en brouillon se modifie' });
 			}
 
 			await updateEvaluation(locals.supabase, current.id, validation.data.settings);

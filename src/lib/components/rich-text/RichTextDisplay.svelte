@@ -47,6 +47,7 @@
 	@see src/lib/extensions/math-extension.ts for math rendering logic
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import { onMount } from 'svelte';
 	import { Editor, type Content } from '@tiptap/core';
 	import { createEditorExtensions } from './editor-config';

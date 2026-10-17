@@ -91,6 +91,37 @@ function isMulDivOperand(node: MathNode): boolean {
 	return isNumericAtom(node) || isNumericMulDivChain(node);
 }
 
+/**
+ * `true` pour une fraction écrite `a/b` (deux entiers) qui n'est pas un
+ * quotient entier : `\frac34` est un nombre, pas un calcul à faire. La
+ * compter comme une opération faisait colorer `\frac34` dans « On effectue
+ * d'abord les multiplications » sans la calculer, ou la réduire en silence
+ * (`\frac68` → `\frac34`, réduction avalée).
+ */
+function isFractionLiteral(node: MathNode): boolean {
+	if (!isDivision(node)) return false;
+	if (!isNumericAtom(node.numerator) || !isNumericAtom(node.denominator)) return false;
+	const evaluated = evaluateExact(node);
+	if (!evaluated) return true;
+	return !(isNumericAtom(evaluated) && /^-?\d+$/.test(atomDigits(evaluated)));
+}
+
+/** Les chiffres d'un atome numérique (`5`, `-5`). */
+function atomDigits(node: MathNode): string {
+	if (isNumber(node)) return node.value;
+	if (isOpposite(node) && isNumber(node.operand)) return node.operand.value;
+	return '';
+}
+
+/**
+ * Terme d'une somme que le regroupement « multiplications et divisions
+ * d'abord » calcule : une chaîne de × et ÷, hors fraction littérale.
+ * Exporté pour que le pipeline colore exactement ces termes-là.
+ */
+export function isGroupableMulDivTerm(node: MathNode): boolean {
+	return isNumericMulDivChain(node) && !isFractionLiteral(node);
+}
+
 /** Lookup a wildcard binding by name; returns `undefined` if not present. */
 function bindingNode(bindings: MatchBindings, name: string): MathNode | undefined {
 	const found = bindings.get(name);
@@ -154,10 +185,11 @@ export const evaluateBinaryAdd: PedagogicalArithmeticRule = {
 	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
 	priority: 100,
 	descriptions: {
-		primaire: (b) => `On additionne ${bindingLatex(b, 'a')} et ${bindingLatex(b, 'b')}`,
+		primaire: (b) => `On additionne $${bindingLatex(b, 'a')}$ et $${bindingLatex(b, 'b')}$`,
 		college: () => 'Addition',
 		lycee: () => 'Somme',
-		superieur: () => '+'
+		// `$+$` : un « + » seul ouvrirait une liste ubumark (V25)
+		superieur: () => '$+$'
 	}
 };
 
@@ -174,7 +206,7 @@ export const evaluateBinarySub: PedagogicalArithmeticRule = {
 	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
 	priority: 100,
 	descriptions: {
-		primaire: (b) => `On soustrait ${bindingLatex(b, 'b')} de ${bindingLatex(b, 'a')}`,
+		primaire: (b) => `On soustrait $${bindingLatex(b, 'b')}$ de $${bindingLatex(b, 'a')}$`,
 		college: () => 'Soustraction',
 		lycee: () => 'Différence',
 		superieur: () => '−'
@@ -194,7 +226,7 @@ export const evaluateBinaryMul: PedagogicalArithmeticRule = {
 	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
 	priority: 100,
 	descriptions: {
-		primaire: (b) => `On multiplie ${bindingLatex(b, 'a')} par ${bindingLatex(b, 'b')}`,
+		primaire: (b) => `On multiplie $${bindingLatex(b, 'a')}$ par $${bindingLatex(b, 'b')}$`,
 		college: () => 'Multiplication',
 		lycee: () => 'Produit',
 		superieur: () => '×'
@@ -244,10 +276,112 @@ export const evaluateBinaryDiv: PedagogicalArithmeticRule = {
 	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
 	priority: 100,
 	descriptions: {
-		primaire: (b) => `On divise ${bindingLatex(b, 'a')} par ${bindingLatex(b, 'b')}`,
+		primaire: (b) => `On divise $${bindingLatex(b, 'a')}$ par $${bindingLatex(b, 'b')}$`,
 		college: () => 'Division',
 		lycee: () => 'Quotient',
 		superieur: () => '÷'
+	}
+};
+
+// =============================================================================
+// Nombres négatifs (collège, priority 100)
+// =============================================================================
+
+/** `-n` (opposé d'un nombre écrit), parenthèses éventuelles comprises. */
+function asNegativeNumber(node: MathNode): MathNode | null {
+	const inner =
+		node.type === 'delimiter' && node.delimiters === 'parentheses' ? node.content : node;
+	if (isOpposite(inner) && isNumber(inner.operand)) return inner;
+	return null;
+}
+
+/** `a - (-b) → a + b` ; `null` quand le terme retranché n'est pas un négatif. */
+function applySubtractNegative(node: MathNode): MathNode | null {
+	if (!isSubtraction(node)) return null;
+	const negative = asNegativeNumber(node.right);
+	if (!negative || !isOpposite(negative)) return null;
+	return add(node.left, negative.operand);
+}
+
+/**
+ * Pédagogique : `a - (-b) → a + b`. Au collège, « soustraire un nombre,
+ * c'est ajouter son opposé » est une étape à part entière : la sauter, c'est
+ * avaler le piège du moins-moins (décision de David, 2026-10-14).
+ *
+ * Même priorité que les opérations atomiques, placée avant
+ * `evaluateBinarySub` dans la liste : sur le même nœud `5 - (-3)`, c'est elle
+ * qui mord ; ailleurs, l'ordre de lecture départage.
+ */
+export const subtractNegative: PedagogicalArithmeticRule = {
+	name: 'subtract-negative',
+	rule: createRule(
+		P._('s'),
+		(bindings) => {
+			const s = bindingNode(bindings, 's');
+			if (!s) return number('0');
+			return applySubtractNegative(s) ?? s;
+		},
+		{
+			name: 'subtract-negative',
+			condition: (bindings) => {
+				const s = bindingNode(bindings, 's');
+				if (!s) return false;
+				return applySubtractNegative(s) !== null;
+			}
+		}
+	),
+	applicableLevels: ['college'],
+	priority: 100,
+	descriptions: {
+		college: (b) => {
+			const s = b.s;
+			const negative = s && isSubtraction(s) ? asNegativeNumber(s.right) : null;
+			if (!negative || !isOpposite(negative))
+				return "Soustraire un nombre, c'est ajouter son opposé";
+			return `Soustraire $${toLatex(negative)}$, c'est ajouter $${toLatex(negative.operand)}$`;
+		}
+	},
+	explanations: {
+		college: () => 'Soustraire un nombre revient à ajouter son opposé.'
+	}
+};
+
+/** `-(-b) → b` ; `null` pour tout le reste. */
+function applyOppositeOfOpposite(node: MathNode): MathNode | null {
+	if (!isOpposite(node)) return null;
+	const negative = asNegativeNumber(node.operand);
+	if (!negative || !isOpposite(negative)) return null;
+	return negative.operand;
+}
+
+/** Pédagogique : `-(-b) → b`, « l'opposé de −3 est 3 » (collège). */
+export const oppositeOfOpposite: PedagogicalArithmeticRule = {
+	name: 'opposite-of-opposite',
+	rule: createRule(
+		P._('s'),
+		(bindings) => {
+			const s = bindingNode(bindings, 's');
+			if (!s) return number('0');
+			return applyOppositeOfOpposite(s) ?? s;
+		},
+		{
+			name: 'opposite-of-opposite',
+			condition: (bindings) => {
+				const s = bindingNode(bindings, 's');
+				if (!s) return false;
+				return applyOppositeOfOpposite(s) !== null;
+			}
+		}
+	),
+	applicableLevels: ['college'],
+	priority: 100,
+	descriptions: {
+		college: (b) => {
+			const s = b.s;
+			const value = s ? applyOppositeOfOpposite(s) : null;
+			if (!value) return "L'opposé d'un nombre négatif est positif";
+			return `L'opposé de $-${toLatex(value)}$ est $${toLatex(value)}$`;
+		}
 	}
 };
 
@@ -266,7 +400,7 @@ function shouldGroupMultiplications(node: MathNode): boolean {
 	const terms = flattenSumShallow(node);
 	let count = 0;
 	for (const { term } of terms) {
-		if (isNumericMulDivChain(term)) {
+		if (isGroupableMulDivTerm(term)) {
 			count += 1;
 			if (count >= 2) return true;
 		}
@@ -283,7 +417,7 @@ function shouldGroupMultiplications(node: MathNode): boolean {
 function applyGroupMultiplications(node: MathNode): MathNode | null {
 	const terms = flattenSumShallow(node);
 	const replaced: typeof terms = terms.map(({ sign, term }) => {
-		if (!isNumericMulDivChain(term)) return { sign, term };
+		if (!isGroupableMulDivTerm(term)) return { sign, term };
 		const evaluated = evaluateExact(term);
 		return evaluated ? { sign, term: evaluated } : { sign, term };
 	});
@@ -321,6 +455,9 @@ function isCalculableParens(node: MathNode): boolean {
 	if (node.type !== 'delimiter') return false;
 	if (node.delimiters !== 'parentheses') return false;
 	if (isAtomLikeNode(node.content)) return false;
+	// `(-(-2))` : un jeu de signes, pas un calcul ; `oppositeOfOpposite` le
+	// rédige (« l'opposé de −2 est 2 ») au lieu de l'avaler ici
+	if (isOpposite(node.content) && isAtomLikeNode(node.content.operand)) return false;
 	const evaluated = evaluateExact(node.content);
 	if (!evaluated || !isAtomLikeNode(evaluated)) return false;
 	return true;
@@ -623,6 +760,10 @@ export const simplifyAddOpposite: PedagogicalArithmeticRule = {
 export const BASIC_OPERATION_RULES: readonly PedagogicalArithmeticRule[] = [
 	groupParentheses,
 	groupMultiplicationsInAddition,
+	// Avant `evaluateBinarySub` : à priorité égale, sur le même nœud, la
+	// première de la liste mord (`5 - (-3)` → `5 + 3`, pas `8` d'un coup)
+	subtractNegative,
+	oppositeOfOpposite,
 	evaluateBinaryAdd,
 	evaluateBinarySub,
 	evaluateBinaryMul,

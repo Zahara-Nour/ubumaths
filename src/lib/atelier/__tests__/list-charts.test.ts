@@ -62,14 +62,28 @@ describe('actions d’une liste', () => {
 	});
 
 	// Revue du lot 5 : une action qui ne peut qu'échouer dit pourquoi AVANT le clic
-	it('partenaire de longueur différente : actions « avec effectifs » désactivées, avec la raison', () => {
+	// P1 (2026-10-15) : par ligne, une longueur différente n'empêche plus rien ;
+	// seule l'absence de toute ligne commune désactive, avec la raison
+	it('partenaire sans ligne en commun : actions « avec effectifs » désactivées, avec la raison', () => {
+		const atelier = atelierWith({ L: '1 ; 2', N: ' ;  ; 3 ; 4' });
+		const actions = actionsFor(atelier.get('L')!, atelier);
+
+		for (const id of ['stats:N', 'chart:N']) {
+			expect(actions.find((a) => a.id === id)?.disabledReason).toContain('aucune ligne');
+		}
+		// Le nuage aussi : rien à tracer (revue de la PR 3b)
+		expect(actions.find((a) => a.id === 'scatter:N')?.disabledReason).toBe(
+			'L et N n’ont aucune ligne remplie en commun.'
+		);
+	});
+
+	it('partenaire de longueur différente : actions « avec effectifs » actives', () => {
 		const atelier = atelierWith({ L: '1 ; 2', N: '3 ; 4 ; 5' });
 		const actions = actionsFor(atelier.get('L')!, atelier);
 
 		for (const id of ['stats:N', 'chart:N']) {
-			expect(actions.find((a) => a.id === id)?.disabledReason).toMatch(/2.*3|3.*2/);
+			expect(actions.find((a) => a.id === id)?.disabledReason).toBeUndefined();
 		}
-		expect(actions.find((a) => a.id === 'scatter:N')?.disabledReason).toBeUndefined();
 	});
 
 	it('le bouton du diagramme bascule : « Retirer le diagramme »', () => {
@@ -112,13 +126,14 @@ describe('Statistiques', () => {
 		expect(desk.entries[0].text).toContain('Moyenne = 1,3');
 	});
 
-	it('avec effectifs M de longueur différente : le message du module', () => {
+	// P1 : la ligne 3 n'a pas d'effectif — écartée, et dite
+	it('avec effectifs M de longueur différente : les lignes communes, et la ligne écartée', () => {
 		const desk = new CalcDesk(atelierWith({ L: '1 ; 2 ; 3', M: '5 ; 8' }));
 
 		desk.runFromPanel('stats:M', 'L');
 
-		expect(desk.entries[0].failed).toBe(true);
-		expect(desk.entries[0].text).toMatch(/3/);
+		expect(desk.entries[0].failed).toBe(false);
+		expect(desk.entries[0].text).toContain('1 ligne incomplète écartée');
 	});
 });
 

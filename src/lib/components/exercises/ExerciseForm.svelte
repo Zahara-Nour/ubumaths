@@ -9,13 +9,13 @@
 	import ExerciseResourceEditor from './ExerciseResourceEditor.svelte';
 	import VariationEditor from './VariationEditor.svelte';
 	import BareGreekWarning from './BareGreekWarning.svelte';
+	import ExerciseVisibilityFields from './ExerciseVisibilityFields.svelte';
 	import { hasEnglishStatement } from '$lib/exercises/translation-draft';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
 	import GenericFunctionInput from './GenericFunctionInput.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { Database } from '$lib/types/database';
 	import type { SupabaseClient } from '@supabase/supabase-js';
@@ -31,6 +31,8 @@
 	import { EXERCISE_CATEGORIES } from '$lib/exercises/types';
 	import type { Variable } from '$lib/ubumark';
 	import { Save, Loader2 } from '@lucide/svelte';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -67,11 +69,17 @@
 	let category = $state<ExerciseCategory | ''>(initialExercise?.category || '');
 	let tags = $state<string[]>(initialExercise?.tags || []);
 	let topic = $state(initialExercise?.topic || '');
+	// Aperçus des versions : sens de `AB` selon le thème saisi (Q-J), comme à l'affichage
+	provideCapitalPairs(() => exerciseCapitalPairs(topic));
 	let gradeLevels = $state<GradeCode[]>((initialExercise?.grades as GradeCode[]) || []);
 	let resources = $state<ExerciseResource[]>(
 		(initialExercise?.resources as unknown as ExerciseResource[]) || []
 	);
 	let isPublic = $state(initialExercise?.is_public ?? false);
+	// « Afficher sur Google » : n'a de sens que pour un exercice public
+	let searchIndexed = $state(
+		(initialExercise?.is_public ?? false) && (initialExercise?.search_indexed ?? false)
+	);
 
 	/**
 	 * Generic function names for math expression parsing.
@@ -149,6 +157,7 @@
 		for (const v of variations) {
 			count += (v.statement_md.match(imageRegex) || []).length;
 			count += (v.solution_md.match(imageRegex) || []).length;
+			count += (v.answers_md?.match(imageRegex) || []).length;
 		}
 		return count;
 	}
@@ -297,6 +306,8 @@
 			label: source.label,
 			statement_md: source.statement_md,
 			solution_md: source.solution_md,
+			// Réponses seules : facultatives, absentes par défaut
+			answers_md: source.answers_md,
 			variables: source.variables ? [...source.variables.map((v) => ({ ...v }))] : undefined,
 			hints: source.hints ? [...source.hints.map((h) => ({ ...h }))] : undefined,
 			// The translation follows its statement: duplicating a translated
@@ -419,7 +430,8 @@
 			grades: gradeLevels,
 			resources: (resources.length > 0 ? resources : null) as ExerciseInsert['resources'],
 			generic_functions: genericFunctions.length > 0 ? genericFunctions : null,
-			is_public: isPublic
+			is_public: isPublic,
+			search_indexed: isPublic && searchIndexed
 		};
 
 		// Always use variations - they are the single source of truth
@@ -619,24 +631,8 @@
 						</div>
 					</div>
 
-					<!-- Public visibility -->
-					<div
-						class="rounded-lg border p-4 {isPublic
-							? 'border-green-500/50 bg-green-50 dark:bg-green-950/20'
-							: 'bg-muted/30'}"
-					>
-						<div class="flex items-start gap-3">
-							<MyCheckbox bind:checked={isPublic} label="{lore.learning.exercise} publique" />
-						</div>
-						<p class="mt-2 text-sm text-muted-foreground">
-							{#if isPublic}
-								Cette {lore.learning.exercise} est accessible a tous via son lien direct.
-							{:else}
-								Cette {lore.learning.exercise} est privée. Seuls les eleves assignes ou avec un lien
-								de partage peuvent y acceder.
-							{/if}
-						</p>
-					</div>
+					<!-- Visibilité : publique, puis « Afficher sur Google » -->
+					<ExerciseVisibilityFields bind:isPublic bind:searchIndexed onchange={markDirty} />
 				</Card.Content>
 			</Collapsible.Content>
 		</Card.Root>

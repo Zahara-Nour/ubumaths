@@ -16,7 +16,15 @@
  */
 
 import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
+import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { tidy } from '$lib/mathAST/tidy';
+import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
+import { isScientificNotation } from '$lib/mathAST/cli/approximation';
+import { getVariables } from '$lib/mathAST/eval/substitute';
+import { findNodes } from '$lib/mathAST/transforms';
+import { isUnit } from '$lib/mathAST/guards';
+import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
 // Types
@@ -125,6 +133,31 @@ function cleanText(output: string): string {
 }
 
 /**
+ * La forme de LECTURE d'un résultat : `evaluate` rend une forme de calcul
+ * (« coefficient × π » : ⅓ π), `tidy` la remet au propre (π/3, √2/2).
+ */
+function readable(ast: MathNode): MathNode {
+	// Un décimal (mode décimal, `0.1+0.2`, `3.5`) reste tel quel : `tidy` le
+	// réécrirait en fraction (`3/10`)
+	if (hasDecimalLiteral(ast)) return ast;
+	// Une notation scientifique (mode décimal) aussi : `tidy` recalculerait `3 × 10²⁰`
+	// en 300000000000000000000
+	if (isScientificNotation(ast)) return ast;
+	// Une expression à variables libres aussi : `tidy` y simplifierait `x/x` en 1
+	// (faux en 0, et autre chose que ce que « Garder » range) et réordonnerait
+	// `3-2x+x^2` (revue du lot B). Sa cible est π, √, e, ln — sans variable
+	if (getVariables(ast).size > 0) return ast;
+	// Une grandeur est déjà mise au propre par la console (`quantities.ts`) :
+	// `tidy` recalculerait l'écriture juxtaposée `2 h 30 min` en h² (lot C)
+	if (findNodes(ast, isUnit).length > 0) return ast;
+	try {
+		return tidy(ast);
+	} catch {
+		return ast;
+	}
+}
+
+/**
  * Rendre un résultat du moteur.
  *
  * ⚠️ `fromCommand` n'est pas un détail : pour une **expression**, `result.ast`
@@ -142,17 +175,26 @@ export function renderResult(
 	// Une erreur s'affiche en français, jamais en mathématiques.
 	if (!result.success) return { text };
 
-	// Le moteur mêle déjà du LaTeX au texte pour les grandeurs
-	// (« \dfrac{123}{10} km »). C'est le seul endroit où l'unité survit :
-	// l'arbre, lui, l'a perdue et ne rend que \dfrac{123}{10}.
-	if (HAS_LATEX_COMMAND.test(text) && !text.includes('\n') && onlySafeCommands(text)) {
-		return { latex: text, text };
+	if (options?.fromCommand === true) {
+		// Le texte d'une commande peut déjà porter du LaTeX : il est alors
+		// montré tel quel, s'il n'emploie que des commandes sûres
+		if (HAS_LATEX_COMMAND.test(text) && !text.includes('\n') && onlySafeCommands(text)) {
+			return { latex: text, text };
+		}
+		return { text };
 	}
 
-	if (options?.fromCommand === true) return { text };
-
+	// Un calcul s'écrit depuis son ARBRE, mis au propre par `tidy` (phase 0
+	// grandeurs, lot B). ⚠️ Plus jamais depuis le texte : un antislash y faisait
+	// prendre `{1/3}\pi` pour du LaTeX (« 1/3π » en ligne), et une grandeur n'y
+	// gardait son unité que si sa valeur était une fraction.
+	// Une grandeur s'écrit `5~\unit{km}`, que MathLive ne connaît pas : on la
+	// traduit comme les énoncés (`displayUnitsInLatex`, `5~\mathrm{km}`)
 	if (result.ast !== undefined) {
-		return { latex: toLatex(result.ast), text };
+		// Une écriture gardée (résultat exact trop long) : `tidy` la développerait — le
+		// calcul de 13 s que le garde-fou évite
+		const ast = result.exactTooLong === undefined ? readable(result.ast) : result.ast;
+		return { latex: displayUnitsInLatex(toLatex(ast)), text };
 	}
 
 	return { text };

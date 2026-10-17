@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { safeMessageAttachmentUrl } from '$lib/utils/file-upload';
-	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+	import { resolve } from '$app/paths';
 	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
 	import { lore } from '$lib/config/lore';
 	import { page } from '$app/state';
 	import { privateMessages } from '$lib/stores/privateMessages.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import {
 		Loader2,
-		ArrowLeft,
 		Reply,
 		MessageSquare,
 		Download,
@@ -86,10 +85,8 @@
 	<div class="border-b border-border bg-card p-4">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-3">
-				<Button variant="ghost" size="sm" onclick={() => goto('/messages/inbox')}>
-					<ArrowLeft class="h-4 w-4" />
-				</Button>
 				<div>
+					<BackLink href="/messages/inbox" label="Retour à la boîte de réception" class="mb-0" />
 					<h1 class="text-lg font-bold text-foreground">
 						<MessageSquare class="inline h-5 w-5" />
 						Fil de discussion
@@ -121,9 +118,7 @@
 				<p class="mt-2 text-sm text-muted-foreground">
 					Ce fil de discussion n'existe pas ou vous n'y avez pas accès
 				</p>
-				<Button onclick={() => goto('/messages/inbox').then(() => {})} class="mt-4">
-					Retour à la boîte de réception
-				</Button>
+				<Button href="/messages/inbox" class="mt-4">Retour à la boîte de réception</Button>
 			</div>
 		{:else}
 			<div class="mx-auto max-w-4xl space-y-6 p-6">
@@ -207,22 +202,18 @@
 													{formatFileSize(attachment.file_size)}
 												</div>
 											</div>
-											{#if safeMessageAttachmentUrl(attachment.public_url, PUBLIC_SUPABASE_URL)}
-												<a
-													href={safeMessageAttachmentUrl(
-														attachment.public_url,
-														PUBLIC_SUPABASE_URL
-													)}
-													download={attachment.file_name}
-													target="_blank"
-													rel="noopener noreferrer"
-													class="opacity-0 transition-opacity group-hover:opacity-100"
-												>
-													<Button variant="ghost" size="sm" title="Télécharger">
-														<Download class="h-4 w-4" />
-													</Button>
-												</a>
-											{/if}
+											<a
+												href={resolve('/api/messages/attachments/[attachmentId]', {
+													attachmentId: attachment.id
+												})}
+												target="_blank"
+												rel="noopener noreferrer"
+												aria-label="Télécharger {attachment.file_name}"
+											>
+												<Button variant="ghost" size="sm" title="Télécharger">
+													<Download class="h-4 w-4" />
+												</Button>
+											</a>
 										</div>
 									{/each}
 								</div>

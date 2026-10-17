@@ -451,7 +451,7 @@ describe('/api/marketplace/listings', () => {
 				} as any)
 			).rejects.toMatchObject({
 				status: 403,
-				body: { message: "Le marketplace n'est pas activé pour votre classe" }
+				body: { message: "Le marketplace n'est pas activé pour cette classe" }
 			});
 		});
 
@@ -644,7 +644,7 @@ describe('/api/marketplace/listings', () => {
 				} as any)
 			).rejects.toMatchObject({
 				status: 403,
-				body: { message: "Le marketplace n'est pas activé pour votre classe" }
+				body: { message: "Le marketplace n'est pas activé pour cette classe" }
 			});
 		});
 
@@ -673,7 +673,7 @@ describe('/api/marketplace/listings', () => {
 				} as any)
 			).rejects.toMatchObject({
 				status: 403,
-				body: { message: "Vous avez atteint le nombre maximum d'annonces actives" }
+				body: { message: "Nombre maximum d'annonces actives atteint" }
 			});
 		});
 
@@ -702,7 +702,7 @@ describe('/api/marketplace/listings', () => {
 				} as any)
 			).rejects.toMatchObject({
 				status: 403,
-				body: { message: 'Vous ne possédez pas toutes les cartes spécifiées' }
+				body: { message: 'Certaines des cartes spécifiées manquent dans la collection' }
 			});
 		});
 
@@ -1119,7 +1119,7 @@ describe('/api/marketplace/listings', () => {
 				} as any)
 			).rejects.toMatchObject({
 				status: 403,
-				body: { message: "Vous avez atteint le nombre maximum d'annonces actives" }
+				body: { message: "Nombre maximum d'annonces actives atteint" }
 			});
 		});
 	});

@@ -247,13 +247,18 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 
 	it('rend les chemins exacts des fichiers à retirer du storage', async () => {
 		const eleve = await TestData.profile().withRole('student').create();
-		const chemin = `${eleve.id}/zz-rapport/capture.png`;
 		const pg = await getPostgresClient();
-		await pg.query(
-			`insert into bug_reports (user_id, category, title, description, screenshot_path)
-			 values ($1, 'bug', 'zz-titre', 'zz-description assez longue', $2)`,
-			[eleve.id, chemin]
+		const { rows } = await pg.query<{ id: string }>(
+			`insert into bug_reports (user_id, category, title, description)
+			 values ($1, 'bug', 'zz-titre', 'zz-description assez longue') returning id`,
+			[eleve.id]
 		);
+		// Rangement de la route api/bug-reports/[reportId]/screenshot.
+		const chemin = `${eleve.id}/${rows[0].id}/1700000000000.png`;
+		await pg.query('update bug_reports set screenshot_path = $1 where id = $2', [
+			chemin,
+			rows[0].id
+		]);
 
 		const { data, error } = await service.rpc('delete_user_account', { p_user_id: eleve.id });
 		expect(error).toBeNull();
@@ -265,6 +270,86 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 			}
 		});
 		await service.auth.admin.deleteUser(eleve.id);
+	});
+
+	// Audit de #1243 (2026-10-13) : un élève écrit lui-même `storage_path` d'une pièce
+	// jointe et `screenshot_path` d'un signalement, sans contrôle du chemin. En supprimant
+	// son compte, il faisait retirer par le client service le fichier d'un camarade.
+	it('ne rend pas un chemin rangé hors des messages et signalements de l’élève', async () => {
+		const eleve = await TestData.profile().withRole('student').create();
+		const camarade = await TestData.profile().withRole('student').create();
+		const pg = await getPostgresClient();
+
+		const message = async (senderId: string) =>
+			(
+				await pg.query<{ id: string }>(
+					`insert into private_messages (sender_id, subject, content)
+					 values ($1, 'zz-sujet', '{}'::jsonb) returning id`,
+					[senderId]
+				)
+			).rows[0].id;
+		const sonMessage = await message(eleve.id);
+		const messageDuCamarade = await message(camarade.id);
+
+		const sonAutreMessage = await message(eleve.id);
+		const legitime = `messages/${sonMessage}/a.png`;
+		// Nom légitime à points consécutifs : rendu (seul un segment « .. » est refusé).
+		const legitimePoints = `messages/${sonAutreMessage}/photo..png`;
+		// Au plus 3 pièces jointes par message : les chemins se répartissent sur deux.
+		for (const [messageId, chemin] of [
+			[sonMessage, legitime],
+			[sonMessage, `messages/${messageDuCamarade}/b.png`],
+			[sonMessage, `messages/${sonMessage}/../${messageDuCamarade}/c.png`],
+			[sonAutreMessage, `${camarade.id}/zz/d.png`],
+			[sonAutreMessage, legitimePoints],
+			// Déposée par l'élève sur le message du camarade (la RLS d'insertion l'interdit ;
+			// la fonction ne s'y fie pas) : non rendue.
+			[messageDuCamarade, `messages/${messageDuCamarade}/e.png`]
+		]) {
+			await pg.query(
+				`insert into message_attachments_v2
+				   (message_id, file_name, file_type, file_size, storage_path, uploaded_by)
+				 values ($1, 'f.png', 'image/png', 1, $2, $3)`,
+				[messageId, chemin, eleve.id]
+			);
+		}
+
+		const rapport = async (userId: string) =>
+			(
+				await pg.query<{ id: string }>(
+					`insert into bug_reports (user_id, category, title, description)
+					 values ($1, 'bug', 'zz-titre', 'zz-description assez longue') returning id`,
+					[userId]
+				)
+			).rows[0].id;
+		const sonRapport = await rapport(eleve.id);
+		const rapportDuCamarade = await rapport(camarade.id);
+		const capture = `${eleve.id}/${sonRapport}/1.png`;
+		await pg.query('update bug_reports set screenshot_path = $1 where id = $2', [
+			capture,
+			sonRapport
+		]);
+		const forge = await rapport(eleve.id);
+		await pg.query('update bug_reports set screenshot_path = $1 where id = $2', [
+			`${camarade.id}/${rapportDuCamarade}/2.png`,
+			forge
+		]);
+
+		const { data, error } = await service.rpc('delete_user_account', { p_user_id: eleve.id });
+		expect(error).toBeNull();
+		expect(data).toMatchObject({
+			storage_paths: {
+				'bug-report-screenshots': [capture]
+			}
+		});
+		// Liste EXACTE (ordre libre) : aucun chemin forgé en plus des deux légitimes.
+		const rendus = (data as { storage_paths: Record<string, string[]> }).storage_paths[
+			'message-attachments'
+		];
+		expect([...rendus].sort()).toEqual([legitime, legitimePoints].sort());
+		await service.auth.admin.deleteUser(eleve.id);
+		await pg.query('delete from bug_reports where user_id = $1', [camarade.id]);
+		await pg.query('delete from private_messages where sender_id = $1', [camarade.id]);
 	});
 
 	it.each(['teacher', 'admin'] as const)('un compte %s est refusé sans effet', async (role) => {
@@ -282,5 +367,57 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 	it('une identité NULL est refusée', async () => {
 		const pg = await getPostgresClient();
 		await expect(pg.query('select public.delete_user_account(null)')).rejects.toThrow();
+	});
+});
+
+// Les fichiers d'un compte supprimé sont retirés par une tâche hebdomadaire, qui reprend
+// les suppressions terminées sans `storage_removed_at` (migration 20261016101000).
+describe('audit de suppression : date de retrait des fichiers', () => {
+	it('la colonne existe, nulle par défaut, et la table reste fermée aux comptes', async () => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			`select
+				(select data_type from information_schema.columns
+				 where table_schema = 'public' and table_name = 'account_deletion_audit'
+				   and column_name = 'storage_removed_at') as type,
+				(select column_default from information_schema.columns
+				 where table_schema = 'public' and table_name = 'account_deletion_audit'
+				   and column_name = 'storage_removed_at') as defaut,
+				(select relrowsecurity from pg_class
+				 where oid = 'public.account_deletion_audit'::regclass) as rls,
+				(select count(*) from pg_policy
+				 where polrelid = 'public.account_deletion_audit'::regclass)::int as policies,
+				has_table_privilege('anon', 'public.account_deletion_audit', 'select') as anon_lit`
+		);
+		expect(rows).toEqual([
+			{
+				type: 'timestamp with time zone',
+				defaut: null,
+				rls: true,
+				policies: 0,
+				anon_lit: false
+			}
+		]);
+	});
+
+	// `authenticated` garde le droit SELECT de la table (prod comme local) : la barrière
+	// est la RLS sans policy, qui ne lui rend aucune ligne.
+	it('un compte connecté ne lit aucune ligne, même avec une suppression consignée', async () => {
+		const pg = await getPostgresClient();
+		await pg.query('begin');
+		try {
+			await pg.query(
+				`insert into account_deletion_audit (email_hash, status, cleanup_result)
+				 values ('zz-hash', 'completed', '{"storage_paths": {"chat-attachments": ["zz/a.png"]}}')`
+			);
+			await pg.query(`set local role authenticated`);
+			await pg.query(
+				`select set_config('request.jwt.claims', '{"role":"authenticated","sub":"00000000-0000-4000-8000-000000000001"}', true)`
+			);
+			const { rows } = await pg.query('select id from account_deletion_audit');
+			expect(rows).toEqual([]);
+		} finally {
+			await pg.query('rollback');
+		}
 	});
 });

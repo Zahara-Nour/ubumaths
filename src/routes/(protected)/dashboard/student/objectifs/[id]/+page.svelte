@@ -12,8 +12,8 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import {
-		ChevronLeft,
 		Star,
 		Check,
 		Circle,
@@ -62,13 +62,7 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-6">
-	<!-- Breadcrumb / retour -->
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/student/progression?onglet=objectifs">
-			<ChevronLeft class="h-4 w-4" />
-			Mes objectifs
-		</Button>
-	</div>
+	<BackLink href="/dashboard/student/progression?onglet=objectifs" label="Retour à mes objectifs" />
 
 	<!-- Header -->
 	<div class="mb-6">

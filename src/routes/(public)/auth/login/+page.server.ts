@@ -39,7 +39,7 @@
  */
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import {
 	checkLoginRateLimitByIP,
 	checkLoginRateLimitByEmail,
@@ -48,7 +48,7 @@ import {
 import { validateFormData, loginFormSchema } from '$lib/server/validation';
 import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
-const logger = createLogger('login/+page.server.ts');
+const logger = createServerLogger('login/+page.server.ts');
 
 /**
  * Redirect already authenticated users to dashboard

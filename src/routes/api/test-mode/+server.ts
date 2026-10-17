@@ -11,6 +11,9 @@ import type { RequestHandler } from './$types';
 import { setTeacherTestMode } from '$lib/server/test-mode';
 import { testModeSchema } from '$lib/server/validation/common';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/test-mode/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user } = await requireAuth(locals);
@@ -34,7 +37,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return json({ success: true, enabled });
 	} catch (err) {
-		console.error('Error updating test mode:', err);
+		logger.error('Error updating test mode:', err);
 		throw error(500, 'Failed to update test mode');
 	}
 };

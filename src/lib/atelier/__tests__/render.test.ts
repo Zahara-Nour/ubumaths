@@ -97,11 +97,22 @@ describe('les grandeurs gardent leur unité', () => {
  * commandes qui posent des attributs HTML (`\htmlStyle`, `\class`, `\cssId`).
  */
 describe('le texte promu en LaTeX est bridé', () => {
+	it('un calcul ne promeut jamais son texte, même anodin', () => {
+		const rendered = renderResult({ success: true, output: '{1/3}\\pi' } as never);
+
+		expect(rendered.latex).toBeUndefined();
+	});
+
+	// Seule une COMMANDE promeut son texte en LaTeX : un calcul s'écrit depuis
+	// son arbre (phase 0 grandeurs, lot B)
 	it('laisse passer ce qui écrit un nombre avec son unité', () => {
-		const rendered = renderResult({
-			success: true,
-			output: '\\dfrac{123}{10} km'
-		} as never);
+		const rendered = renderResult(
+			{
+				success: true,
+				output: '\\dfrac{123}{10} km'
+			} as never,
+			{ fromCommand: true }
+		);
 
 		expect(rendered.latex).toBe('\\dfrac{123}{10} km');
 	});
@@ -113,7 +124,9 @@ describe('le texte promu en LaTeX est bridé', () => {
 			'\\cssId{y}{1}',
 			'\\href{javascript:alert(1)}{1}'
 		]) {
-			const rendered = renderResult({ success: true, output: hostile } as never);
+			const rendered = renderResult({ success: true, output: hostile } as never, {
+				fromCommand: true
+			});
 			expect(rendered.latex, hostile).toBeUndefined();
 			// Et le texte reste affiché, échappé par Svelte
 			expect(rendered.text, hostile).toBe(hostile);
@@ -145,5 +158,25 @@ describe('ce qui ne regarde pas l’élève', () => {
 
 	it('retire l’annotation « (variables: x) »', () => {
 		expect(render('(x^2-1)/(x+1)').text).not.toContain('variables:');
+	});
+});
+
+// Décision a de David (2026-10-12) : à l'écran, la notation scientifique du collège.
+// `tidy` ne doit pas recalculer `3 × 10²⁰` en 300000000000000000000
+describe('la notation scientifique à l’écran (mode décimal)', () => {
+	function decimal(input: string) {
+		const engine = new WebReplEngine();
+		engine.execute('.mode decimal');
+		return renderResult(engine.execute(input)).latex;
+	}
+
+	it('une valeur arrondie', () => {
+		expect(decimal('\\pi^{20}')).toBe('8.7700 \\times 10^9');
+		expect(decimal('1/7000000')).toBe('1.4286 \\times 10^{-7}');
+		expect(decimal('-\\pi^{20}')).toBe('-8.7700 \\times 10^9');
+	});
+
+	it('une valeur exacte n’est pas recalculée', () => {
+		expect(decimal('3*10^20')).toBe('3 \\times 10^{20}');
 	});
 });

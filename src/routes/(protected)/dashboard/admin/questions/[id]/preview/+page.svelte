@@ -21,7 +21,6 @@
 	} from '$lib/questions/choices';
 	import { page } from '$app/state';
 	import { untrack } from 'svelte';
-	import { goto } from '$app/navigation';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 	import QuestionPreviewTabs, {
@@ -30,12 +29,13 @@
 	import { provideAuthoringErrors } from '$lib/components/markdown/authoring-errors';
 	import AnswerAssumptionsNotice from '$lib/components/questions/AnswerAssumptionsNotice.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, RefreshCw, Loader2 } from '@lucide/svelte';
+	import { RefreshCw, Loader2 } from '@lucide/svelte';
 
 	// ===========================
 	// PROPS & DERIVED STATE
@@ -156,13 +156,6 @@
 	function handleRegenerate() {
 		generateInstance(randomSeed());
 	}
-
-	/**
-	 * Navigate back to questions list page
-	 */
-	function handleBack() {
-		goto('/dashboard/admin/questions').then(() => {});
-	}
 </script>
 
 <!--
@@ -175,12 +168,8 @@ TEMPLATE - PAGE LAYOUT
 	<!-- ========== PAGE HEADER ========== -->
 	<div class="flex items-center justify-between">
 		<div class="space-y-1">
-			<div class="flex items-center gap-3">
-				<Button variant="ghost" size="sm" onclick={handleBack}>
-					<ArrowLeft class="h-4 w-4" />
-				</Button>
-				<h1 class="text-3xl font-bold">Aperçu de la Question</h1>
-			</div>
+			<BackLink href="/dashboard/admin/questions" label="Retour aux questions" />
+			<h1 class="text-3xl font-bold">Aperçu de la Question</h1>
 			<p class="text-muted-foreground">
 				Testez l'affichage et la validation des réponses avec des instances réelles
 			</p>

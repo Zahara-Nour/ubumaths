@@ -10,6 +10,9 @@ import { markExerciseAsViewed } from '$lib/server/exercise-assignments';
 import { validateViewExercise } from '$lib/server/validation';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/[id]/view/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -35,7 +38,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		return json({ error: `Validation failed: ${errorMsg}` }, { status: 400 });
+		return json({ error: `Données invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	const assignmentId = validation.data.assignment_id;
@@ -49,8 +52,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	);
 
 	if (viewError) {
-		console.error('Failed to track exercise view:', viewError);
-		return json({ error: 'Failed to track view' }, { status: 500 });
+		logger.error('Failed to track exercise view:', viewError);
+		return json({ error: 'Impossible d’enregistrer la consultation' }, { status: 500 });
 	}
 
 	return json(completion);

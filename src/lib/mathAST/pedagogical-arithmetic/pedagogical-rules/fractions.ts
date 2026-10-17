@@ -25,7 +25,7 @@ import type { MathNode } from '../../types';
 import type { MatchBindings, Rule } from '../../pattern/types';
 import { P } from '../../pattern/builder';
 import { createRule } from '../../pattern/rule';
-import { add, divide, multiply, number, opposite } from '../../factory';
+import { add, divide, multiply, number, opposite, subtract } from '../../factory';
 import { isDivision, isNumber, isOpposite } from '../../guards';
 import { gcd, lcm } from '../../normal/rational';
 import { toLatex } from '../../latex-generator';
@@ -156,7 +156,8 @@ export const addSameDenominator: PedagogicalArithmeticRule = {
 		primaire: () => 'On additionne les numérateurs',
 		college: () => 'On additionne les numérateurs (même dénominateur)',
 		lycee: () => 'Addition des numérateurs',
-		superieur: () => '+ num.'
+		// `$+$` : un « + » en tête ouvrirait une liste ubumark (V25)
+		superieur: () => '$+$ num.'
 	}
 };
 
@@ -279,6 +280,165 @@ export const toCommonDenominatorMultiply: PedagogicalArithmeticRule = {
 	}
 };
 
+/**
+ * Fraction écrite `\frac{a}{b}` (entiers) qui n'est pas un quotient entier :
+ * `\frac34` oui, `\frac{12}{3}` non (c'est une division à faire, la règle
+ * `evaluateBinaryDiv` s'en charge), `12 ÷ 3` non plus.
+ */
+function asProperFractionLiteral(node: MathNode): { n: bigint; d: bigint } | null {
+	const inner = isOpposite(node) ? node.operand : node;
+	if (!isDivision(inner) || inner.displayStyle !== 'fraction') return null;
+	const f = asIntegerFraction(node);
+	if (!f || f.n % f.d === 0n) return null;
+	return f;
+}
+
+// =============================================================================
+// integerToFraction (priority 130, collège)
+// =============================================================================
+
+/**
+ * `n ± a/b → (n·b)/b ± a/b` (et `a/b ± n`) : l'entier s'écrit avec le
+ * dénominateur de la fraction, puis `addSameDenominator` ou
+ * `subtractSameDenominator` calcule. Sans elle, `1 + \frac34` et
+ * `1 - \frac34` tombaient d'un bloc sous « On calcule » (décision de David,
+ * 2026-10-14 : pas de dénominateur commun avalé au collège).
+ */
+function applyIntegerToFraction(
+	node: MathNode
+): { result: MathNode; integer: MathNode; d: bigint } | null {
+	if (node.type !== 'addition' && node.type !== 'subtraction') return null;
+	const { left, right } = node;
+	const rebuild = (l: MathNode, r: MathNode): MathNode =>
+		node.type === 'addition' ? add(l, r) : subtract(l, r);
+	const li = asInteger(left);
+	const ri = asInteger(right);
+	const lf = asProperFractionLiteral(left);
+	const rf = asProperFractionLiteral(right);
+	if (li !== null && rf) {
+		return {
+			result: rebuild(unreducedFractionNode(li * rf.d, rf.d), right),
+			integer: left,
+			d: rf.d
+		};
+	}
+	if (lf && ri !== null) {
+		return {
+			result: rebuild(left, unreducedFractionNode(ri * lf.d, lf.d)),
+			integer: right,
+			d: lf.d
+		};
+	}
+	return null;
+}
+
+export const integerToFraction: PedagogicalArithmeticRule = {
+	name: 'integer-to-fraction',
+	rule: createRule(
+		P._('s'),
+		(bindings) => {
+			const s = bindingNode(bindings, 's');
+			if (!s) return number('0');
+			return applyIntegerToFraction(s)?.result ?? s;
+		},
+		{
+			name: 'integer-to-fraction',
+			condition: (bindings) => {
+				const s = bindingNode(bindings, 's');
+				return s !== undefined && applyIntegerToFraction(s) !== null;
+			}
+		}
+	),
+	applicableLevels: ['college'],
+	priority: 130,
+	descriptions: {
+		college: (b) => {
+			const found = b.s ? applyIntegerToFraction(b.s) : null;
+			if (!found) return 'On écrit le nombre entier sous forme de fraction';
+			return `On écrit $${toLatex(found.integer)}$ sous forme de fraction de dénominateur $${found.d}$`;
+		}
+	},
+	explanations: {
+		college: () =>
+			'Pour ajouter ou soustraire un entier et une fraction, on écrit l’entier avec le même dénominateur que la fraction.'
+	}
+};
+
+// =============================================================================
+// subtractSameDenominator (priority 110, collège)
+// =============================================================================
+
+/** `a/d - c/d → (a-c)/d`, dénominateur gardé (la réduction a son étape). */
+function applySubtractSameDenominator(node: MathNode): MathNode | null {
+	if (node.type !== 'subtraction') return null;
+	const lf = asIntegerFraction(node.left);
+	const rf = asIntegerFraction(node.right);
+	if (!lf || !rf || lf.d !== rf.d) return null;
+	return unreducedFractionNode(lf.n - rf.n, lf.d);
+}
+
+export const subtractSameDenominator: PedagogicalArithmeticRule = {
+	name: 'subtract-same-denominator',
+	rule: createRule(
+		P._('s'),
+		(bindings) => {
+			const s = bindingNode(bindings, 's');
+			if (!s) return number('0');
+			return applySubtractSameDenominator(s) ?? s;
+		},
+		{
+			name: 'subtract-same-denominator',
+			condition: (bindings) => {
+				const s = bindingNode(bindings, 's');
+				return s !== undefined && applySubtractSameDenominator(s) !== null;
+			}
+		}
+	),
+	applicableLevels: ['college'],
+	priority: 110,
+	descriptions: {
+		college: () => 'On soustrait les numérateurs (même dénominateur)'
+	}
+};
+
+// =============================================================================
+// multiplyFractionByInteger (priority 110)
+// =============================================================================
+
+/** `(a/b) × n → (a·n)/b` (et `n × (a/b)`), sans réduction. */
+function applyMultiplyFractionByInteger(bindings: MatchBindings): MathNode | null {
+	const left = bindingNode(bindings, 'l');
+	const right = bindingNode(bindings, 'r');
+	if (!left || !right) return null;
+	const lf = asProperFractionLiteral(left);
+	const rf = asProperFractionLiteral(right);
+	const li = asInteger(left);
+	const ri = asInteger(right);
+	if (lf && ri !== null) return unreducedFractionNode(lf.n * ri, lf.d);
+	if (li !== null && rf) return unreducedFractionNode(li * rf.n, rf.d);
+	return null;
+}
+
+export const multiplyFractionByInteger: PedagogicalArithmeticRule = {
+	name: 'multiply-fraction-by-integer',
+	rule: createRule(
+		P.parse('l * r'),
+		(bindings) =>
+			applyMultiplyFractionByInteger(bindings) ?? (bindingNode(bindings, 'l') as MathNode),
+		{
+			name: 'multiply-fraction-by-integer',
+			condition: (bindings) => applyMultiplyFractionByInteger(bindings) !== null
+		}
+	),
+	applicableLevels: ['college', 'lycee', 'superieur'],
+	priority: 110,
+	descriptions: {
+		college: () => 'On multiplie le numérateur par le nombre entier',
+		lycee: () => 'Produit par un entier',
+		superieur: () => '×'
+	}
+};
+
 // =============================================================================
 // multiplyFractions (priority 110)
 // =============================================================================
@@ -394,7 +554,7 @@ export const reduceFraction: PedagogicalArithmeticRule = {
 	applicableLevels: ['college', 'lycee', 'superieur'],
 	priority: 30,
 	descriptions: {
-		primaire: (b) => `On simplifie ${bindingLatex(b, 'f')}`,
+		primaire: (b) => `On simplifie $${bindingLatex(b, 'f')}$`,
 		college: () => 'On simplifie la fraction',
 		lycee: () => 'Réduction',
 		superieur: () => 'red.'
@@ -412,8 +572,11 @@ export const FRACTION_RULES: readonly PedagogicalArithmeticRule[] = [
 	toCommonDenominator,
 	toCommonDenominatorMultiply,
 	divideFractions,
+	integerToFraction,
 	addSameDenominator,
+	subtractSameDenominator,
 	multiplyFractions,
+	multiplyFractionByInteger,
 	reduceFraction
 ];
 

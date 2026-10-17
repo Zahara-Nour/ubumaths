@@ -130,31 +130,89 @@ export function remettreAuRang<T>(liste: T[], index: number, element: T): T[] {
  * deviendrait impossible sans recharger la page.
  */
 export type EmpreinteSource = {
-	sections: { id: string; title: string }[];
-	documents: { id: string; title: string; publishedAt: string | null }[];
-	exercises: { id: string; publishedAt: string | null }[];
-	checklistItems: {
-		id: string;
-		content: string;
-		description: string | null;
-		publishedAt: string | null;
-	}[];
-	worksheets: { id: string; title: string | null; publishedAt: string | null }[];
+	/** Une section masquée (décision du 2026-10-14) quitte le plan comme un élément masqué. */
+	sections: { id: string; title: string; sourceId?: string | null; hidden?: boolean }[];
+	documents: Visible<{ id: string; title: string }>[];
+	exercises: Visible<{ id: string }>[];
+	checklistItems: Visible<{ id: string; content: string; description: string | null }>[];
+	worksheets: Visible<{ id: string; title: string | null }>[];
 	distributedWorksheetIds: string[];
 	/** Séries de chapitre : la FORME s'affiche aussi, et se change depuis le plan. */
-	series?: { id: string; title: string | null; publishedAt: string | null; form: string }[];
+	series?: Visible<{ id: string; title: string | null; form: string }>[];
 };
+
+/**
+ * Ce qui change l'affichage d'un élément sans changer son identifiant : sa
+ * publication (absente dans un modèle, qui ne publie rien), son masquage et son
+ * LIEN au modèle dans un chapitre lié (ADR 0029). Masquer doit faire disparaître
+ * la ligne aussitôt ; détacher (`sourceId` remis à vide) doit retirer la marque
+ * « Modèle » et rendre la corbeille — sinon « Masquer » viserait une ligne qui
+ * n'est plus un lien (404).
+ */
+type Visible<T> = T & { publishedAt?: string | null; hidden?: boolean; sourceId?: string | null };
+
+/** L'état d'affichage d'un élément, dans l'empreinte. */
+function vue(x: {
+	publishedAt?: string | null;
+	hidden?: boolean;
+	sourceId?: string | null;
+}): string {
+	return `${x.publishedAt ?? null}~${x.hidden === true}~${(x.sourceId ?? null) !== null}`;
+}
 
 export function empreinteAffichage(source: EmpreinteSource): string {
 	return [
-		source.sections.map((x) => `${x.id}~${x.title}`).join(','),
-		source.documents.map((x) => `${x.id}~${x.publishedAt}~${x.title}`).join(','),
-		source.exercises.map((x) => `${x.id}~${x.publishedAt}`).join(','),
-		source.checklistItems
-			.map((x) => `${x.id}~${x.publishedAt}~${x.content}~${x.description}`)
+		source.sections
+			.map((x) => `${x.id}~${x.title}~${(x.sourceId ?? null) !== null}~${x.hidden === true}`)
 			.join(','),
-		source.worksheets.map((x) => `${x.id}~${x.publishedAt}~${x.title}`).join(','),
+		source.documents.map((x) => `${x.id}~${vue(x)}~${x.title}`).join(','),
+		source.exercises.map((x) => `${x.id}~${vue(x)}`).join(','),
+		source.checklistItems.map((x) => `${x.id}~${vue(x)}~${x.content}~${x.description}`).join(','),
+		source.worksheets.map((x) => `${x.id}~${vue(x)}~${x.title}`).join(','),
 		source.distributedWorksheetIds.join(','),
-		(source.series ?? []).map((x) => `${x.id}~${x.publishedAt}~${x.form}~${x.title}`).join(',')
+		(source.series ?? []).map((x) => `${x.id}~${vue(x)}~${x.form}~${x.title}`).join(',')
 	].join('|');
+}
+
+/**
+ * La zone entière à enregistrer, masqués compris, quand le plan ne montre pas
+ * les éléments masqués.
+ *
+ * La liste affichée n'a que les visibles : la renuméroter seule (0, 1, 2…)
+ * mettrait un masqué à égalité de rang avec un visible, et réaffiché il
+ * sauterait à une place quelconque. Chaque masqué reprend sa place juste APRÈS
+ * l'élément qu'il suivait (s'il est encore là), sinon en tête de zone.
+ *
+ * @param complet la zone telle qu'elle était, masqués compris, dans l'ordre
+ * @param affichee la zone telle que le professeur vient de la ranger
+ */
+export function avecMasquesASaPlace<T extends { id: string; hidden?: boolean }>(
+	complet: T[],
+	affichee: T[]
+): T[] {
+	const presents = new Set(affichee.map((x) => x.id));
+	const sortie = [...affichee];
+	let ancre: string | null = null;
+	let insertionsEnTete = 0;
+	// Combien de masqués déjà rangés derrière chaque ancre, pour garder leur ordre.
+	const apresAncre = new Map<string, number>();
+
+	for (const x of complet) {
+		if (presents.has(x.id)) {
+			ancre = x.id;
+			continue;
+		}
+		if (x.hidden !== true) continue; // parti dans une autre zone
+
+		if (ancre === null) {
+			sortie.splice(insertionsEnTete, 0, x);
+			insertionsEnTete += 1;
+		} else {
+			const deja = apresAncre.get(ancre) ?? 0;
+			const rang = sortie.findIndex((y) => y.id === ancre) + 1 + deja;
+			sortie.splice(rang, 0, x);
+			apresAncre.set(ancre, deja + 1);
+		}
+	}
+	return sortie;
 }

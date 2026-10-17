@@ -24,6 +24,9 @@ import {
 	type HolidayPeriod,
 	type SessionDatesOptions
 } from '$lib/utils/class-sessions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/class-sessions');
 
 // ============================================================================
 // TYPES
@@ -85,11 +88,11 @@ export async function getClassSessionCalendar(
 		]);
 
 	if (schedulesError) {
-		console.error('[class-sessions] Emploi du temps illisible :', schedulesError);
+		logger.error('[class-sessions] Emploi du temps illisible :', schedulesError);
 		throw new Error(schedulesError.message);
 	}
 	if (classError) {
-		console.error('[class-sessions] Classe illisible :', classError);
+		logger.error('[class-sessions] Classe illisible :', classError);
 		throw new Error(classError.message);
 	}
 
@@ -133,7 +136,7 @@ async function getSchoolCalendar(
 		.maybeSingle();
 
 	if (yearError) {
-		console.error('[class-sessions] Année scolaire illisible :', yearError);
+		logger.error('[class-sessions] Année scolaire illisible :', yearError);
 		throw new Error(yearError.message);
 	}
 	if (!year) return { holidays: [], until: fallbackUntil };
@@ -147,7 +150,7 @@ async function getSchoolCalendar(
 	// precisely what the teacher asked us to prevent. Better no list than a
 	// wrong one.
 	if (holidaysError) {
-		console.error('[class-sessions] Vacances illisibles :', holidaysError);
+		logger.error('[class-sessions] Vacances illisibles :', holidaysError);
 		throw new Error(holidaysError.message);
 	}
 

@@ -28,6 +28,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { decryptToken } from '$lib/server/google/encryption';
 import { revokeAccess } from '$lib/server/google/oauth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/auth/disconnect/+server');
 
 /**
  * Disconnect Google Classroom integration
@@ -50,7 +53,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 
 		// If no integration exists, consider it already disconnected
 		if (fetchError || !integration) {
-			console.log(`[Google OAuth] No integration found for teacher ${user.id}`);
+			logger.info(`[Google OAuth] No integration found for teacher ${user.id}`);
 			return json({ success: true });
 		}
 
@@ -61,13 +64,13 @@ export const POST: RequestHandler = async ({ locals }) => {
 				const revoked = await revokeAccess(accessToken);
 
 				if (revoked) {
-					console.log(`[Google OAuth] Successfully revoked access for teacher ${user.id}`);
+					logger.info(`[Google OAuth] Successfully revoked access for teacher ${user.id}`);
 				} else {
-					console.warn(`[Google OAuth] Failed to revoke access for teacher ${user.id}`);
+					logger.warn(`[Google OAuth] Failed to revoke access for teacher ${user.id}`);
 				}
 			} catch (revokeError) {
 				// Log but don't fail - we'll delete from DB anyway
-				console.warn(
+				logger.warn(
 					`[Google OAuth] Error revoking access for teacher ${user.id}:`,
 					revokeError instanceof Error ? revokeError.message : 'Unknown error'
 				);
@@ -81,11 +84,11 @@ export const POST: RequestHandler = async ({ locals }) => {
 			.eq('teacher_id', user.id);
 
 		if (deleteError) {
-			console.error('[Google OAuth] Database deletion error:', deleteError);
-			throw error(500, 'Failed to disconnect Google Classroom. Please try again.');
+			logger.error('[Google OAuth] Database deletion error:', deleteError);
+			throw error(500, 'Impossible de déconnecter Google Classroom');
 		}
 
-		console.log(`[Google OAuth] Successfully disconnected Google account for teacher ${user.id}`);
+		logger.info(`[Google OAuth] Successfully disconnected Google account for teacher ${user.id}`);
 
 		return json({ success: true });
 	} catch (err) {
@@ -95,7 +98,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 		}
 
 		// Handle other errors
-		console.error('[Google OAuth] Disconnect error:', err);
-		throw error(500, 'An error occurred while disconnecting Google Classroom');
+		logger.error('[Google OAuth] Disconnect error:', err);
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

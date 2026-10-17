@@ -9,12 +9,17 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 import { findAssignedDeckCopy } from '$lib/server/srs/deck-copy';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/srs/decks/[id]/assignments/+page.server'
+);
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	const { id: deckId } = params;
@@ -29,8 +34,8 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			.single();
 
 		if (deckError || !deck) {
-			console.error('Error fetching deck:', deckError);
-			throw error(404, 'Deck not found');
+			logger.error('Error fetching deck:', deckError);
+			throw error(404, 'Deck introuvable');
 		}
 
 		// Map deck to camelCase
@@ -57,7 +62,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			.order('assigned_at', { ascending: false });
 
 		if (assignmentsError) {
-			console.error('Error fetching assignments:', assignmentsError);
+			logger.error('Error fetching assignments:', assignmentsError);
 		}
 
 		// Get student details and their deck copies
@@ -74,7 +79,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 				// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
 				// doit pas se confondre avec une donnée réellement vide.
 				if (studentError && studentError.code !== 'PGRST116') {
-					console.error('Contexte illisible :', studentError);
+					logger.error('Contexte illisible :', studentError);
 				}
 
 				// La copie de CE deck, retrouvée par sa source — jamais par le nom.
@@ -91,7 +96,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 					// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 					// laisse une trace.
 					if (statsError) {
-						console.error('Enrichissement illisible :', statsError);
+						logger.error('Enrichissement illisible :', statsError);
 					}
 
 					deckStats = stats?.[0] || null;
@@ -129,7 +134,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			assignments: assignmentsWithDetails
 		};
 	} catch (err) {
-		console.error('Error in assignments page load:', err);
+		logger.error('Error in assignments page load:', err);
 		throw error(500, 'Internal server error');
 	}
 };

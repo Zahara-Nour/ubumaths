@@ -21,6 +21,9 @@ import { requireRoles } from '$lib/server/middleware/auth';
 import { createSystemNotification } from '$lib/server/notifications';
 import type { Database } from '$lib/types/database';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/users/[id]/status/+server');
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type ExtendedProfile = Profile & {
@@ -28,7 +31,7 @@ type ExtendedProfile = Profile & {
 };
 
 // UUID validation schema
-const uuidSchema = z.string().uuid('Invalid user ID format');
+const uuidSchema = z.string().uuid('Identifiant d’utilisateur invalide');
 
 /**
  * PATCH /api/admin/users/[id]/status
@@ -72,7 +75,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 	// Validate UUID format
 	const uuidValidation = uuidSchema.safeParse(userId);
 	if (!uuidValidation.success) {
-		throw error(400, 'Invalid user ID format');
+		throw error(400, 'Identifiant d’utilisateur invalide');
 	}
 
 	try {
@@ -94,12 +97,12 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking user existence:', checkError);
-			throw error(500, 'Failed to check user existence');
+			logger.error('Error checking user existence:', checkError);
+			throw error(500, 'Impossible de vérifier le compte');
 		}
 
 		if (!existingUser) {
-			throw error(404, `User with ID "${userId}" not found`);
+			throw error(404, 'Utilisateur introuvable');
 		}
 
 		// is_test est réservé à l'admin : on le refuse clairement ici plutôt que de
@@ -110,7 +113,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			approverProfile.role !== 'admin' &&
 			!locals.adminSupabase
 		) {
-			throw error(403, "Seul l'administrateur peut changer le statut « compte de test ».");
+			throw error(403, 'Seul l’administrateur peut changer le statut « compte de test »');
 		}
 
 		// Build update object with status fields
@@ -138,8 +141,8 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.eq('id', userId);
 
 		if (updateError) {
-			console.error('Error updating user status:', updateError);
-			throw error(500, 'Failed to update user status');
+			logger.error('Error updating user status:', updateError);
+			throw error(500, 'Impossible de modifier le statut du compte');
 		}
 
 		// If approving, create notifications
@@ -162,63 +165,38 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 				action_url: '/dashboard'
 			});
 
-			// Notify teachers of the student's classes
+			// Prévenir le professeur si l'élève est déjà inscrit dans des classes.
+			// Modèle mono-professeur : `classes.teacher_id` n'existe plus (migration
+			// 20260620090000), toutes les classes sont celles du professeur.
 			const { data: studentClasses, error: studentClassesError } = await supabase
 				.from('class_members')
-				.select('class_id, classes!inner(id, name, teacher_id)')
+				.select('class_id, classes!inner(name)')
 				.eq('student_id', userId);
 
 			if (studentClassesError) {
-				console.error('Lecture impossible :', studentClassesError);
+				logger.error('Lecture impossible :', studentClassesError);
 				throw error(500, 'Impossible de charger les données');
 			}
 
-			if (studentClasses && studentClasses.length > 0) {
-				// Get unique teacher IDs with their class info
-				const teacherClassMap = new Map<
-					string,
-					{ teacherId: string; classNames: string[]; studentId: string }
-				>();
+			const classNames = (studentClasses ?? []).map((membership) => membership.classes.name);
 
-				for (const membership of studentClasses) {
-					const classInfo = membership.classes as unknown as {
-						id: string;
-						name: string;
-						teacher_id: string | null;
-					};
-					if (classInfo?.teacher_id) {
-						const existing = teacherClassMap.get(classInfo.teacher_id);
-						if (existing) {
-							existing.classNames.push(classInfo.name);
-						} else {
-							teacherClassMap.set(classInfo.teacher_id, {
-								teacherId: classInfo.teacher_id,
-								classNames: [classInfo.name],
-								studentId: userId
-							});
-						}
-					}
-				}
+			if (classNames.length > 0) {
+				const classText =
+					classNames.length === 1
+						? `la classe ${classNames[0]}`
+						: `les classes ${classNames.join(', ')}`;
 
-				// Create notification for each unique teacher
-				for (const { teacherId, classNames, studentId } of teacherClassMap.values()) {
-					const classText =
-						classNames.length === 1
-							? `la classe ${classNames[0]}`
-							: `les classes ${classNames.join(', ')}`;
-
-					await createSystemNotification({
-						title: 'Nouvel élève approuvé',
-						message: `${fullName} a été ajouté à ${classText}. Vous pouvez lui envoyer un email de bienvenue.`,
-						type: 'info',
-						priority: 'normal',
-						system_event_type: 'student_approved',
-						target_type: 'users',
-						target_user_ids: [teacherId],
-						action_label: 'Envoyer email de bienvenue',
-						action_url: `/dashboard/teacher/welcome-email?student_id=${studentId}`
-					});
-				}
+				await createSystemNotification({
+					title: 'Nouvel élève approuvé',
+					message: `${fullName} a été ajouté à ${classText}. Vous pouvez lui envoyer un email de bienvenue.`,
+					type: 'info',
+					priority: 'normal',
+					system_event_type: 'student_approved',
+					target_type: 'role',
+					target_roles: ['teacher'],
+					action_label: 'Envoyer email de bienvenue',
+					action_url: `/dashboard/teacher/welcome-email?student_id=${userId}`
+				});
 			}
 		}
 
@@ -235,8 +213,8 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.single();
 
 		if (fetchError) {
-			console.error('Error fetching updated profile:', fetchError);
-			throw error(500, 'Failed to fetch updated profile');
+			logger.error('Error fetching updated profile:', fetchError);
+			throw error(500, 'Impossible de recharger le profil');
 		}
 
 		const extendedProfile: ExtendedProfile = updatedProfile;
@@ -246,13 +224,13 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			profile: extendedProfile
 		});
 	} catch (err) {
-		console.error('Error in PATCH /api/admin/users/[id]/status:', err);
+		logger.error('Error in PATCH /api/admin/users/[id]/status:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

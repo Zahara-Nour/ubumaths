@@ -4,6 +4,7 @@ couvre:
   - src/hooks.client.ts
   - src/app.d.ts
   - src/app.html
+  - src/lib/utils/mathlive-styles.ts
   - src/routes/+layout.server.ts
   - src/routes/+layout.ts
   - 'src/routes/(protected)/+layout.server.ts'
@@ -27,8 +28,9 @@ document n'en redécrit aucun. Vocabulaire : [CONTEXT.md](../../CONTEXT.md). Rè
 src/
 ├── hooks.server.ts     # handle = sequence(...) : peuple event.locals, une fois par requête
 ├── hooks.client.ts     # surveillance d'erreurs, Web Vitals, détection de gel (navigateur)
-├── app.d.ts            # App.Locals : supabase, safeGetSession, user, profile, requestId, adminSupabase…
+├── app.d.ts            # App.Locals : supabase, safeGetSession, user, profile, requestId, adminSupabase… ; App.Error.detail
 ├── routes/
+│   ├── +error.svelte       # page d'erreur de tout le site, préchargée partout (cf. page-erreur.md)
 │   ├── +layout.server.ts   # racine serveur : renvoie user/profile (lus dans locals), cookies sb-*
 │   ├── +layout.ts          # racine universelle : crée le client Supabase (imports DYNAMIQUES, cf. TDZ)
 │   ├── (public)/           # pages sans authentification
@@ -53,7 +55,8 @@ Ordre dans un fichier : Imports → Types → Constantes → Variables → Funct
 
 `src/hooks.server.ts` enchaîne, dans cet ordre : `requestIdHandle` → `maintenanceHandle` (avant
 Supabase, pour fonctionner base gelée) → `supabaseHandle` (`src/lib/server/supabase.ts` :
-`locals.supabase`, `locals.safeGetSession` vérifié par `getUser()`) → `redirectHandle` →
+`locals.supabase`, `locals.safeGetSession` vérifié par `getUser()`) → `redirectHandle`
+(`src/lib/server/redirectHandle.ts` : anciennes adresses, dont `/login` et `/cas`) →
 `userProfileHandle` (`locals.user`, `locals.profile`) → `adminElevationHandle` →
 `csrfHandle` → `securityHeadersHandle` → `errorMonitoringHandle`. Détail de chaque maillon :
 [auth.md](auth.md#la-chaîne-de-handles) · ce que les hooks font pour tous les endpoints :
@@ -95,7 +98,10 @@ Deux `load` racine, dans l'ordre :
    session existe.
 2. **`src/routes/+layout.ts`** (universel : SSR puis navigateur) : crée le client Supabase
    (`createServerClient` à partir des cookies en SSR, `createBrowserClient` dans le navigateur),
-   `depends('supabase:auth')`. Les composants utilisent ce client (`data.supabase`).
+   `depends('supabase:auth')`. Les composants utilisent ce client (`data.supabase`). Dans le
+   navigateur, il vérifie d'abord à qui appartiennent les données de travail de l'élève gardées
+   dans `localStorage` (`enforceWorkDataOwner`, `src/lib/utils/work-data.ts`) : celles d'un autre
+   compte sont effacées et la page rechargée ([conformite/rgpd.md](conformite/rgpd.md)).
 
 **Flux d'auth réactif** : `onAuthStateChange` ne consomme **jamais** la session du rappel (non
 vérifiée) ; il appelle `invalidate('supabase:auth')`, qui relance le `load` racine et la
@@ -114,6 +120,23 @@ Le chunk du layout racine doit rester **< 100 Ko**, sinon iPad/Safari lève
   `102400` octets.
 
 Détail : [safari-webkit-tdz.md](../pratiques/safari-webkit-tdz.md).
+
+### Premier affichage : préchargement et CSS
+
+- **Seul le CSS est préchargé.** Le premier handle de `src/hooks.server.ts` passe
+  `preload: ({ type }) => type === 'css'` à `resolve` : sans lui, l'en-tête HTTP `Link` de
+  chaque page préchargeait aussi ~94 chunks JS (189 Ko brotli sur l'accueil) qui disputaient la
+  bande passante aux CSS bloquantes (FCP p75 de l'accueil 3,4 s pour un TTFB de 0,5 s, octobre
+  2026). Le JS arrive ensuite en cascade d'imports : hydratation un peu plus tardive, mesurée à
+  +0,1 à +0,3 s en labo pour un FCP divisé par 3 à 7 sur réseau lent.
+- **Le CSS de MathLive n'est plus chargé sur toutes les pages.** `src/app.html` ne le référence
+  plus ; `src/lib/utils/mathlive-styles.ts` importe `mathlive/static.css` depuis le paquet (à
+  jour, haché, immuable), et chaque composant qui rend des maths importe ce module. Les polices
+  KaTeX restent déclarées dans le document, comme `<math-field>` l'exige à son montage. Le
+  plugin Vite `mathliveFontDisplay` (`vite.config.ts`) corrige le `font-display:"swap"` entre
+  guillemets que MathLive écrit (invalide : le texte restait invisible jusqu'à 3 s).
+- **Cache de `static/`** : règles `headers` de `vercel.json` (polices 30 j, images, sons et CSS
+  1 j, avec `stale-while-revalidate`) ; ces fichiers étaient revalidés à chaque visite.
 
 ## Motif : UI optimiste + envoi groupé
 

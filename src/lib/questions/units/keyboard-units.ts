@@ -39,7 +39,8 @@ const UNIT_CATALOGUE: readonly (readonly string[])[] = [
 	['m/s', 'km/h'], // vitesse
 	['°C'], // température
 	['°'], // angle
-	['€'] // monnaie
+	['€'], // monnaie
+	['bit', 'o', 'ko', 'Mo', 'Go', 'To'] // quantité de données (SNT, NSI)
 ];
 
 /** Grandeur inconnue (ou réponse attendue illisible) : quelques unités d'usage courant */

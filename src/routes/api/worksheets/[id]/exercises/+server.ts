@@ -18,6 +18,9 @@ import {
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/exercises/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -35,7 +38,7 @@ async function verifyWorksheetAccess(
 	// Validate UUID format
 	const idValidation = uuidSchema.safeParse(worksheetId);
 	if (!idValidation.success) {
-		throw error(400, 'Invalid worksheet ID format');
+		throw error(400, 'Identifiant de fiche invalide');
 	}
 
 	// Fetch worksheet (only need id and ownership fields)
@@ -46,16 +49,16 @@ async function verifyWorksheetAccess(
 		.single();
 
 	if (dbError || !worksheet) {
-		throw error(404, 'Worksheet not found');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify ownership/authorization
 	if (role === 'teacher' && worksheet.created_by !== userId) {
-		throw error(403, 'Forbidden - Not your worksheet');
+		throw error(403, 'Accès réservé à l’auteur de la fiche');
 	}
 
 	if (role === 'admin' && schoolId && worksheet.school_id !== schoolId) {
-		throw error(403, 'Forbidden - Worksheet belongs to different school');
+		throw error(403, 'Cette fiche appartient à une autre école');
 	}
 
 	return worksheet;
@@ -90,7 +93,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				variables,
 				shared,
 				variations,
-				generic_functions
+				generic_functions,
+				topic
 			)
 		`
 		)
@@ -98,8 +102,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('position', { ascending: true });
 
 	if (dbError) {
-		console.error('Failed to fetch exercises:', dbError);
-		throw error(500, 'Failed to fetch exercises');
+		logger.error('Failed to fetch exercises:', dbError);
+		throw error(500, 'Impossible de charger les exercices');
 	}
 
 	// Validate response
@@ -133,7 +137,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	if (worksheet.status !== 'draft') {
 		throw error(
 			400,
-			`Cannot add exercises to worksheet with status '${worksheet.status}'. Only draft worksheets can be modified.`
+			`Impossible d’ajouter des exercices à cette fiche (statut « ${worksheet.status} ») : seul un brouillon peut être modifié.`
 		);
 	}
 
@@ -142,7 +146,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateCreateWorksheetExercise(body);
@@ -150,7 +154,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data;
@@ -163,7 +167,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (exerciseError || !exerciseExists) {
-		throw error(404, 'Exercise not found');
+		throw error(404, 'Exercice introuvable');
 	}
 
 	// Verify section exists if provided
@@ -176,7 +180,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (sectionError || !sectionExists) {
-			throw error(404, 'Section not found in this worksheet');
+			throw error(404, 'Section introuvable dans cette fiche');
 		}
 	}
 
@@ -200,14 +204,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to add exercise to worksheet:', dbError);
+		logger.error('Failed to add exercise to worksheet:', dbError);
 
 		// Handle duplicate exercise in worksheet
 		if (dbError.code === '23505') {
-			throw error(400, 'This exercise is already in the worksheet at this position');
+			throw error(400, 'Cet exercice est déjà à cette position dans la fiche');
 		}
 
-		throw error(500, 'Failed to add exercise to worksheet');
+		throw error(500, 'Impossible d’ajouter l’exercice à la fiche');
 	}
 
 	// Validate response
@@ -241,7 +245,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (worksheet.status !== 'draft') {
 		throw error(
 			400,
-			`Cannot reorder exercises in worksheet with status '${worksheet.status}'. Only draft worksheets can be modified.`
+			`Impossible de réordonner les exercices de cette fiche (statut « ${worksheet.status} ») : seul un brouillon peut être modifié.`
 		);
 	}
 
@@ -250,7 +254,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateReorderExercises(body);
@@ -258,7 +262,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { exercises } = validation.data;
@@ -272,15 +276,18 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.in('id', exerciseIds);
 
 	if (fetchError) {
-		console.error('Failed to verify exercises:', fetchError);
-		throw error(500, 'Failed to verify exercises');
+		logger.error('Failed to verify exercises:', fetchError);
+		throw error(500, 'Impossible de vérifier les exercices');
 	}
 
 	const existingIds = new Set(existingExercises?.map((e) => e.id) ?? []);
 	const invalidIds = exerciseIds.filter((id) => !existingIds.has(id));
 
 	if (invalidIds.length > 0) {
-		throw error(400, `Some exercises do not belong to this worksheet: ${invalidIds.join(', ')}`);
+		throw error(
+			400,
+			`Certains exercices n’appartiennent pas à cette fiche : ${invalidIds.join(', ')}`
+		);
 	}
 
 	// Use RPC for atomic update in a single transaction
@@ -298,8 +305,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	);
 
 	if (rpcError) {
-		console.error('Failed to reorder exercises:', rpcError);
-		throw error(500, rpcError.message || 'Failed to reorder exercises');
+		logger.error('Failed to reorder exercises:', rpcError);
+		throw error(500, rpcError.message || 'Impossible de réordonner les exercices');
 	}
 
 	// Validate response
@@ -308,7 +315,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		reorderExercisesResponseSchema,
 		{
 			success: true as const,
-			message: `Reordered ${count} exercises`,
+			message: `Exercices réordonnés : ${count}`,
 			updated_count: count
 		},
 		'PUT /api/worksheets/[id]/exercises'

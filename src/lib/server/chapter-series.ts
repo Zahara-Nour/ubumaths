@@ -18,18 +18,24 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { ChapterSeriesForm, ChapterSeriesRow } from '$lib/types/database-helpers';
-import type { ChapterSeries } from '$lib/types/chapters';
+import { chapterIdOf, type ChapterSeries } from '$lib/types/chapters';
 import { buildSeriesLink, seriesCategoriesSchema, totalQuestions } from '$lib/validation/series';
 import { isDeadlinePassed } from '$lib/utils/dates';
+import { createServerLogger } from '$lib/utils/logger';
+import { ownerColumn, ownerInsert, toOwner, type ContentOwner } from './content-owner';
+import { placementColumns, type SectionPlacement } from './chapters';
+
+const logger = createServerLogger('server/chapter-series');
 
 // Types
 /**
  * Pourquoi une opération n'a pas abouti — c'est ce qui choisit le code HTTP :
  * `not_found` (introuvable, ou refusé par la RLS : zéro ligne) → 404 ;
  * `duplicate` (23505) → 409 ; `series_gone` (23503 : série supprimée
- * entre-temps) → 409 ; `db` → 500.
+ * entre-temps) → 409 ; `linked` (élément du modèle, ADR 0029 : il se masque, il
+ * ne se retire pas du chapitre) → 409 ; `db` → 500.
  */
-export type ChapterSeriesErrorKind = 'not_found' | 'duplicate' | 'series_gone' | 'db';
+export type ChapterSeriesErrorKind = 'not_found' | 'duplicate' | 'series_gone' | 'linked' | 'db';
 
 export class ChapterSeriesError extends Error {
 	readonly kind: ChapterSeriesErrorKind;
@@ -64,13 +70,13 @@ export function toChapterSeries(
 	const form = toForm(row.form);
 	const categories = series ? seriesCategoriesSchema.safeParse(series.categories) : null;
 	if (categories && !categories.success) {
-		console.error('[chapter-series] Composition illisible pour la série', row.series_id);
+		logger.error('[chapter-series] Composition illisible pour la série', row.series_id);
 	}
 	const lisible = categories?.success ? categories.data : null;
 
 	return {
 		id: row.id,
-		chapterId: row.chapter_id,
+		chapterId: chapterIdOf(row),
 		seriesId: row.series_id,
 		form,
 		displayOrder: row.display_order,
@@ -78,6 +84,8 @@ export function toChapterSeries(
 		sectionOrder: row.section_order,
 		createdAt: row.created_at,
 		publishedAt: row.published_at,
+		sourceId: row.source_id,
+		hidden: row.hidden,
 		title: series?.title ?? null,
 		questionCount: lisible ? totalQuestions(lisible) : 0,
 		// Lien RELATIF : la même page sert l'élève connecté, sans origine à deviner.
@@ -107,7 +115,7 @@ export async function listChapterSeries(
 		.order('display_order');
 
 	if (error) {
-		console.error('[listChapterSeries] Rattachements illisibles :', error);
+		logger.error('[listChapterSeries] Rattachements illisibles :', error);
 		return { data: null, error: new ChapterSeriesError('db', error.message) };
 	}
 	if (!links || links.length === 0) return { data: [], error: null };
@@ -119,7 +127,7 @@ export async function listChapterSeries(
 		.in('id', seriesIds);
 
 	if (seriesError) {
-		console.error('[listChapterSeries] Séries illisibles :', seriesError);
+		logger.error('[listChapterSeries] Séries illisibles :', seriesError);
 		return { data: null, error: new ChapterSeriesError('db', seriesError.message) };
 	}
 
@@ -128,7 +136,7 @@ export async function listChapterSeries(
 	if (manquantes.length > 0) {
 		// Rattachement lisible, série non : ne devrait pas arriver (mêmes
 		// conditions des deux côtés). Le tracer plutôt que de le taire.
-		console.error('[listChapterSeries] Séries rattachées mais illisibles :', manquantes);
+		logger.error('[listChapterSeries] Séries rattachées mais illisibles :', manquantes);
 	}
 
 	return { data: links.map((l) => toChapterSeries(l, parId.get(l.series_id))), error: null };
@@ -147,7 +155,7 @@ export async function listAvailableSeries(
 		.limit(AVAILABLE_SERIES_LIMIT);
 
 	if (error) {
-		console.error('[listAvailableSeries] Séries illisibles :', error);
+		logger.error('[listAvailableSeries] Séries illisibles :', error);
 		return { data: null, error: new ChapterSeriesError('db', error.message) };
 	}
 
@@ -169,13 +177,15 @@ export async function listAvailableSeries(
  * (`published_at` NULL) : l'élève ne voit rien avant la publication.
  */
 export async function linkSeries(
-	chapterId: string,
+	owner: ContentOwner | string,
 	seriesId: string,
 	form: ChapterSeriesForm,
 	ownerId: string,
-	supabase: SupabaseClient<Database>
+	supabase: SupabaseClient<Database>,
+	placement?: SectionPlacement
 ): Promise<Result<{ id: string }>> {
 	const db = supabase;
+	const proprietaire = toOwner(owner);
 
 	// On ne rattache que SA série. La policy l'exige déjà (WITH CHECK) ; le
 	// vérifier ici rend un 404 lisible au lieu d'un refus RLS anonyme.
@@ -186,7 +196,7 @@ export async function linkSeries(
 		.maybeSingle();
 
 	if (serieError) {
-		console.error('[linkSeries] Série illisible :', serieError);
+		logger.error('[linkSeries] Série illisible :', serieError);
 		return { data: null, error: new ChapterSeriesError('db', serieError.message) };
 	}
 	if (!serie || serie.created_by !== ownerId) {
@@ -196,29 +206,30 @@ export async function linkSeries(
 	const { data: dernier, error: ordreError } = await db
 		.from('chapter_series')
 		.select('display_order')
-		.eq('chapter_id', chapterId)
+		.eq(ownerColumn(proprietaire), proprietaire.id)
 		.order('display_order', { ascending: false })
 		.limit(1)
 		.maybeSingle();
 
 	// Aucune ligne = première série, cas légitime ; toute autre panne se dit.
 	if (ordreError) {
-		console.error('[linkSeries] Rang suivant illisible :', ordreError);
+		logger.error('[linkSeries] Rang suivant illisible :', ordreError);
 		return { data: null, error: new ChapterSeriesError('db', ordreError.message) };
 	}
 
 	const { data, error } = await db
 		.from('chapter_series')
 		.insert({
-			chapter_id: chapterId,
+			...ownerInsert(proprietaire),
 			series_id: seriesId,
 			form,
-			display_order: (dernier?.display_order ?? -1) + 1
+			display_order: (dernier?.display_order ?? -1) + 1,
+			...placementColumns(placement)
 		})
 		.select('id');
 
 	if (error) {
-		console.error('[linkSeries] Rattachement impossible :', error);
+		logger.error('[linkSeries] Rattachement impossible :', error);
 		const kind: ChapterSeriesErrorKind =
 			error.code === '23505' ? 'duplicate' : error.code === '23503' ? 'series_gone' : 'db';
 		return { data: null, error: new ChapterSeriesError(kind, error.message) };
@@ -232,20 +243,21 @@ export async function linkSeries(
 
 /** Change la forme de lancement (flash-cards ou entraînement). */
 export async function setSeriesForm(
-	chapterId: string,
+	owner: ContentOwner | string,
 	chapterSeriesId: string,
 	form: ChapterSeriesForm,
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: ChapterSeriesError | null }> {
+	const proprietaire = toOwner(owner);
 	const { data, error } = await supabase
 		.from('chapter_series')
 		.update({ form })
 		.eq('id', chapterSeriesId)
-		.eq('chapter_id', chapterId)
+		.eq(ownerColumn(proprietaire), proprietaire.id)
 		.select('id');
 
 	if (error) {
-		console.error('[setSeriesForm] Écriture impossible :', error);
+		logger.error('[setSeriesForm] Écriture impossible :', error);
 		return { error: new ChapterSeriesError('db', error.message) };
 	}
 	// Zéro ligne : introuvable, ou refusé par la RLS — dans les deux cas, rien
@@ -265,18 +277,36 @@ export async function unlinkSeries(
 	chapterSeriesId: string,
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: ChapterSeriesError | null }> {
+	// Une ligne de lien (élément du modèle, ADR 0029) ne se supprime pas du
+	// chapitre : elle se masque. `source_id is null` la laisse hors d'atteinte.
 	const { data, error } = await supabase
 		.from('chapter_series')
 		.delete()
 		.eq('id', chapterSeriesId)
 		.eq('chapter_id', chapterId)
+		.is('source_id', null)
 		.select('id');
 
 	if (error) {
-		console.error('[unlinkSeries] Suppression impossible :', error);
+		logger.error('[unlinkSeries] Suppression impossible :', error);
 		return { error: new ChapterSeriesError('db', error.message) };
 	}
 	if (!data || data.length !== 1) {
+		// Zéro ligne : introuvable, refusé, ou élément du modèle — ce dernier cas
+		// mérite son propre message.
+		const { data: lien, error: lienError } = await supabase
+			.from('chapter_series')
+			.select('source_id')
+			.eq('id', chapterSeriesId)
+			.eq('chapter_id', chapterId)
+			.maybeSingle();
+		// Une relecture en échec n'invente pas de cause : on reste sur « introuvable ».
+		if (lienError) {
+			logger.error('[unlinkSeries] Relecture impossible :', lienError);
+		}
+		if (lien && lien.source_id !== null) {
+			return { error: new ChapterSeriesError('linked', 'Élément du modèle : masquez-le') };
+		}
 		return { error: new ChapterSeriesError('not_found', 'Série introuvable dans ce chapitre') };
 	}
 	return { error: null };
@@ -308,7 +338,7 @@ export async function findOngoingEvaluation(
 		.eq('series_id', seriesId);
 
 	if (error) {
-		console.error('[findOngoingEvaluation] Évaluations illisibles :', error);
+		logger.error('[findOngoingEvaluation] Évaluations illisibles :', error);
 		return { data: null, error: new ChapterSeriesError('db', error.message) };
 	}
 

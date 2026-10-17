@@ -107,7 +107,7 @@ export async function checkCategoryUniqueness(
  */
 export function categoryTakenMessage(category: QuestionCategory): string {
 	const subdomain = category.subdomain ? `, Sous-domaine: ${category.subdomain}` : '';
-	return `Cette catégorie existe déjà (Thème: ${category.theme}, Domaine: ${category.domain}${subdomain}, Niveau: ${category.level}). Veuillez choisir un niveau différent.`;
+	return `Cette catégorie existe déjà (Thème: ${category.theme}, Domaine: ${category.domain}${subdomain}, Niveau: ${category.level}). Choisir un niveau différent.`;
 }
 
 /**

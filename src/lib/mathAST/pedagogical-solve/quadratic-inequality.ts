@@ -55,7 +55,9 @@ import {
 	isConstantCoefficient,
 	isZero,
 	makeStep,
-	renumberSteps
+	rejectForbiddenValues,
+	renumberSteps,
+	domainDescriptionLatex
 } from './_helpers';
 import {
 	_buildStandardizeStep,
@@ -137,7 +139,7 @@ function buildConcludeFromIsolatedSquareStep(
 	return makeStep({
 		id: idGen(),
 		rule: 'inequality-conclude-from-isolated-square',
-		description: `Solution : ${solutionDescription}`,
+		description: `Solution : $${domainDescriptionLatex(solutionDescription)}$`,
 		before: originalIneq,
 		after: originalIneq,
 		operation: {
@@ -204,7 +206,7 @@ function buildBZeroInequalitySteps(
 			description: 'On isole le carré',
 			before: current,
 			after: isolatedIneq,
-			operation: { kind: 'isolate-square', rhs }
+			operation: { kind: 'isolate-square', rhs, divisor: a }
 		})
 	);
 
@@ -347,7 +349,7 @@ function buildConcludeStep(
 	return makeStep({
 		id: idGen(),
 		rule: 'inequality-conclude-quadratic',
-		description: `Solution : ${solutionDescription}`,
+		description: `Solution : $${domainDescriptionLatex(solutionDescription)}$`,
 		before: originalIneq,
 		after: originalIneq,
 		operation: {
@@ -423,6 +425,11 @@ export function generateQuadraticInequalitySteps(
 			level: level === 'lycee' ? 'lycee' : 'superieur'
 		});
 	}
+
+	// 4 bis. Valeur interdite effacée par la forme canonique : refus, comme au
+	// premier degré. \frac{2x^3}{x}<2 se rédigeait 2x² − 2 < 0, sans jamais
+	// exclure 0 (V48) ; l'appelant se replie sur `solveInequality`.
+	rejectForbiddenValues(inequality, variable);
 
 	// 5. Extract coefficients (a, b, c)
 	const coeffs = extractQuadraticCoefficients(standardForm, variable);

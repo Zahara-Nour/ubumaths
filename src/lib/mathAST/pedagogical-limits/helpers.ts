@@ -9,7 +9,9 @@
  */
 
 import type { MathNode } from '../types';
-import type { LimitDirection } from '../limits/types';
+import type { IndeterminateForm, LimitDirection } from '../limits/types';
+import { toLatex } from '../latex-generator';
+import { mapNode } from '../transforms';
 import {
 	isAddition,
 	isDivision,
@@ -28,14 +30,19 @@ import {
 import {
 	add,
 	divide,
+	euler,
+	func,
 	multiply,
 	number,
-	opposite,
 	power,
 	subtract,
 	variable as makeVariable
 } from '../factory';
-import { numericNode } from '../common/numeric';
+import { extractExactRational, numericNode } from '../common/numeric';
+import { readableText } from '../variations/display';
+import type { Rational } from '../normal/types';
+import { absRational, isNegative } from '../normal/rational';
+import { divideOutRoot, linearFactorText, rationalPolynomialNode, toPolynomial } from '../factor';
 
 // =============================================================================
 // Approach classification
@@ -78,10 +85,9 @@ export function isAtInfinity(approach: MathNode): boolean {
  * to check whether direct substitution yields a finite result, and to
  * estimate the value of complex sub-expressions.
  *
- * Walks the AST recursively. Mirrors `evaluateSimple` in
- * `limits/algebraic.ts` (which is private) — replicating it here avoids a
- * dependency on a private function and lets us extend the supported node
- * types over time without touching the algorithmic module.
+ * Walks the AST recursively. (L'ancien jumeau `evaluateSimple` de
+ * `limits/algebraic.ts` a été supprimé au lot 3a de l'ADR 0024 : ce module
+ * est le seul à évaluer ainsi.)
  */
 export function evaluateAtPoint(expr: MathNode, varName: string, value: number): number | null {
 	// Transparent unwrap of delimiter nodes (parens emitted by the custom parser).
@@ -180,194 +186,34 @@ export function evaluateAtPoint(expr: MathNode, varName: string, value: number):
 	}
 }
 
-/**
- * `true` if `expr` evaluates (numerically) to zero at `varName = a`.
- */
-export function isRootAt(expr: MathNode, varName: string, a: number): boolean {
-	const v = evaluateAtPoint(expr, varName, a);
-	return v !== null && Math.abs(v) < 1e-10;
-}
-
 // =============================================================================
-// Polynomial helpers (Horner-style synthetic division)
+// Division par une racine commune (noyau `factor/`)
 // =============================================================================
 
 /**
- * Polynomial coefficients indexed by degree (constant first, then x¹, x², …).
+ * Divise N et D une fois par (x − a), exactement (noyau `factor/`, ADR 0024) :
+ * les deux quotients écrits (négatifs en soustractions), ou `null` si l'un
+ * n'est pas un polynôme en `varName` ou n'a pas `a` pour racine.
  *
- * `[2, 0, 1]` ↔ `2 + x²`. `[]` ↔ zero.
+ * Exemple : (x² − 9, x + 3) en a = −3 → (x − 3, 1).
  */
-export type PolynomialCoeffs = readonly number[];
-
-/**
- * Try to extract polynomial coefficients (in `varName`) from a `MathNode`.
- *
- * Returns `null` when:
- * - the expression contains a non-polynomial sub-expression (function call,
- *   transcendental, division-by-non-constant, …)
- * - exponents are non-integer or negative
- *
- * Supports `+`, `-`, `*`, integer `^`, leaf `variable` and `number`. Implicit
- * multiplication and unary minus / plus are handled. Constant subexpressions
- * (e.g. `(2+3)·x`) are folded numerically.
- */
-export function asPolynomial(expr: MathNode, varName: string): PolynomialCoeffs | null {
-	// Transparent unwrap of delimiter nodes.
-	if (expr.type === 'delimiter') return asPolynomial(expr.content, varName);
-
-	switch (expr.type) {
-		case 'number': {
-			const v = parseFloat(expr.value);
-			return Number.isFinite(v) ? [v] : null;
-		}
-		case 'variable': {
-			if (expr.name === varName) return [0, 1];
-			// A different variable folds to a constant only if numerically
-			// resolvable, which is not the case at this level — fail.
-			return null;
-		}
-		case 'opposite': {
-			const inner = asPolynomial(expr.operand, varName);
-			return inner === null ? null : negPolyCoeffs(inner);
-		}
-		case 'positive': {
-			return asPolynomial(expr.operand, varName);
-		}
-		case 'addition': {
-			const l = asPolynomial(expr.left, varName);
-			const r = asPolynomial(expr.right, varName);
-			return l && r ? addPolyCoeffs(l, r) : null;
-		}
-		case 'subtraction': {
-			const l = asPolynomial(expr.left, varName);
-			const r = asPolynomial(expr.right, varName);
-			return l && r ? subPolyCoeffs(l, r) : null;
-		}
-		case 'multiplication': {
-			const l = asPolynomial(expr.left, varName);
-			const r = asPolynomial(expr.right, varName);
-			return l && r ? mulPolyCoeffs(l, r) : null;
-		}
-		case 'superscript': {
-			const base = asPolynomial(expr.base, varName);
-			if (base === null) return null;
-			if (!isNumber(expr.superscript)) return null;
-			const n = parseFloat(expr.superscript.value);
-			if (!Number.isInteger(n) || n < 0) return null;
-			return powPolyCoeffs(base, n);
-		}
-		case 'division': {
-			// Only allowed if the denominator is a non-zero constant.
-			const num = asPolynomial(expr.numerator, varName);
-			const den = asPolynomial(expr.denominator, varName);
-			if (!num || !den) return null;
-			if (den.length !== 1 || den[0] === 0) return null;
-			return num.map((c) => c / den[0]);
-		}
-		default:
-			return null;
-	}
-}
-
-function addPolyCoeffs(a: PolynomialCoeffs, b: PolynomialCoeffs): number[] {
-	const n = Math.max(a.length, b.length);
-	const out = new Array<number>(n).fill(0);
-	for (let i = 0; i < n; i++) out[i] = (a[i] ?? 0) + (b[i] ?? 0);
-	return trimPoly(out);
-}
-
-function subPolyCoeffs(a: PolynomialCoeffs, b: PolynomialCoeffs): number[] {
-	const n = Math.max(a.length, b.length);
-	const out = new Array<number>(n).fill(0);
-	for (let i = 0; i < n; i++) out[i] = (a[i] ?? 0) - (b[i] ?? 0);
-	return trimPoly(out);
-}
-
-function negPolyCoeffs(a: PolynomialCoeffs): number[] {
-	return a.map((c) => -c);
-}
-
-function mulPolyCoeffs(a: PolynomialCoeffs, b: PolynomialCoeffs): number[] {
-	if (a.length === 0 || b.length === 0) return [];
-	const out = new Array<number>(a.length + b.length - 1).fill(0);
-	for (let i = 0; i < a.length; i++) {
-		for (let j = 0; j < b.length; j++) {
-			out[i + j] += a[i] * b[j];
-		}
-	}
-	return trimPoly(out);
-}
-
-function powPolyCoeffs(a: PolynomialCoeffs, n: number): number[] {
-	let result: number[] = [1];
-	for (let i = 0; i < n; i++) result = mulPolyCoeffs(result, a);
-	return result;
-}
-
-function trimPoly(coeffs: number[]): number[] {
-	let n = coeffs.length;
-	while (n > 0 && Math.abs(coeffs[n - 1]) < 1e-12) n--;
-	return coeffs.slice(0, n);
-}
-
-/**
- * Synthetic division of `poly` by `(x - a)`. Returns the quotient
- * coefficients and the remainder (as a number).
- *
- * If `Math.abs(remainder) < 1e-10`, the divisor is a true factor of `poly`.
- *
- * Example : `[−4, 0, 1] ÷ (x − 2)` (i.e. `(x²−4)/(x−2)`) returns
- * `{ quotient: [2, 1], remainder: 0 }` ↔ `x + 2`.
- */
-export function syntheticDivide(
-	poly: PolynomialCoeffs,
-	a: number
-): { quotient: number[]; remainder: number } {
-	if (poly.length === 0) return { quotient: [], remainder: 0 };
-	// Horner-style: walk highest-degree coefficient down.
-	const reversed = [...poly].reverse(); // highest degree first
-	const out: number[] = [reversed[0]];
-	for (let i = 1; i < reversed.length; i++) {
-		out.push(reversed[i] + a * out[i - 1]);
-	}
-	const remainder = out.pop() ?? 0;
-	return { quotient: trimPoly(out.reverse()), remainder };
-}
-
-/**
- * Convert polynomial coefficients back to a `MathNode`.
- *
- * Best-effort cosmetic AST reconstruction (no normalisation pass) — the
- * factor `1` is dropped, integer coefficients are `number()` nodes, and
- * monomials follow the conventional `c · x^n` shape.
- */
-export function polyToNode(coeffs: PolynomialCoeffs, varName: string): MathNode {
-	if (coeffs.length === 0) return number('0');
-
-	const terms: MathNode[] = [];
-	for (let i = coeffs.length - 1; i >= 0; i--) {
-		const c = coeffs[i];
-		if (Math.abs(c) < 1e-12) continue;
-		terms.push(monomial(c, i, varName));
-	}
-
-	if (terms.length === 0) return number('0');
-	if (terms.length === 1) return terms[0];
-
-	let acc = terms[0];
-	for (let k = 1; k < terms.length; k++) {
-		acc = add(acc, terms[k]);
-	}
-	return acc;
-}
-
-function monomial(coeff: number, degree: number, varName: string): MathNode {
-	if (degree === 0) return numericNode(coeff);
+export function divideByCommonRoot(
+	numerator: MathNode,
+	denominator: MathNode,
+	varName: string,
+	a: Rational
+): { numerator: MathNode; denominator: MathNode } | null {
+	const num = toPolynomial(numerator, varName);
+	const den = toPolynomial(denominator, varName);
+	if (num === null || den === null) return null;
+	const n = divideOutRoot(num, a, 1);
+	const d = divideOutRoot(den, a, 1);
+	if (n.multiplicity === 0 || d.multiplicity === 0) return null;
 	const x = makeVariable(varName);
-	const xPow = degree === 1 ? x : power(x, number(String(degree)));
-	if (Math.abs(coeff - 1) < 1e-12) return xPow;
-	if (Math.abs(coeff + 1) < 1e-12) return opposite(xPow);
-	return multiply(numericNode(coeff), xPow, 'implicit');
+	return {
+		numerator: rationalPolynomialNode(n.quotient, x),
+		denominator: rationalPolynomialNode(d.quotient, x)
+	};
 }
 
 // =============================================================================
@@ -383,26 +229,118 @@ export function formatApproachShort(approach: MathNode): string {
 	if (isNumber(approach)) return approach.value;
 	if (isVariable(approach)) return approach.name;
 	if (isOpposite(approach) && isNumber(approach.operand)) return `−${approach.operand.value}`;
+	const exact = extractExactRational(approach);
+	if (exact !== null) return `${isNegative(exact) ? '−' : ''}${formatRational(absRational(exact))}`;
 	return '?';
 }
 
 /**
- * Format the linear factor `(x − a)` (or `(x + |a|)` when `a < 0`) for
- * human-readable titles.
+ * Une valeur en texte pour les titres (prose, pas de LaTeX) : `3/2`, `−1/4`,
+ * `+∞`, sinon l'écriture lisible de `readableText`, racines et π en symboles
+ * (`3√2`, `√(x+1)`, `π/4`).
  */
-export function formatLinearFactor(varName: string, a: number): string {
-	if (a === 0) return varName;
-	if (a > 0) return `(${varName} − ${a})`;
-	return `(${varName} + ${-a})`;
+export function formatValueShort(node: MathNode): string {
+	const short = formatApproachShort(node);
+	if (short !== '?') return short;
+	return readableText(node)
+		.replace(/sqrt\((\w+)\)/g, '√$1')
+		.replace(/sqrt\(/g, '√(')
+		.replace(/\\?\bpi\b/g, 'π')
+		.replace(/^-/, '−');
+}
+
+const SUPERSCRIPT_DIGITS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+
+/** Une puissance de la variable en texte, pour les titres et explications : `x`, `x²`, `x¹⁰` */
+export function formatPowerShort(node: MathNode): string {
+	if (isVariable(node)) return node.name;
+	if (isSuperscript(node) && isVariable(node.base) && isNumber(node.superscript)) {
+		const digits = [...node.superscript.value].map((d) => SUPERSCRIPT_DIGITS[Number(d)]);
+		return `${node.base.name}${digits.join('')}`;
+	}
+	return formatValueShort(node);
 }
 
 /**
- * Build the linear factor `(x − a)` as a `MathNode`. When `a < 0`, returns
- * `(x + |a|)` for cleaner display.
+ * Le facteur entier de la racine a pour les titres, comme un élève l'écrit :
+ * `(x − 2)`, `(x + 3)`, `(2x − 1)` en 1/2 (V23).
  */
-export function buildLinearFactor(varName: string, a: number): MathNode {
-	if (a >= 0) return subtract(makeVariable(varName), numericNode(a));
-	return add(makeVariable(varName), numericNode(-a));
+export function formatLinearFactor(varName: string, a: Rational): string {
+	return linearFactorText(varName, a);
+}
+
+function formatRational(r: Rational): string {
+	return r.d === 1n ? `${r.n}` : `${r.n}/${r.d}`;
+}
+
+// =============================================================================
+// Prose : les maths entre `$…$` (V25)
+// =============================================================================
+
+/**
+ * Une formule pour la prose des titres et explications, entre `$…$` :
+ * `InlineMarkdown` (ubumark) l'affiche en maths. Jamais d'Unicode (`+∞`, `x²`)
+ * dans la prose : `$+\\infty$`, `$x^{2}$`.
+ */
+export function inlineMath(node: MathNode): string {
+	return `$${toLatex(node)}$`;
+}
+
+/** Le point d'approche, côté compris : `$0^+$`, `$2^-$`, `$+\\infty$` */
+export function approachMath(approach: MathNode, direction: LimitDirection = 'both'): string {
+	const latex = toLatex(approach);
+	if (direction === 'left') return `$${latex}^-$`;
+	if (direction === 'right') return `$${latex}^+$`;
+	return `$${latex}$`;
+}
+
+const FORM_LATEX: Readonly<Record<IndeterminateForm, string>> = {
+	'0/0': '\\frac{0}{0}',
+	'∞/∞': '\\frac{\\infty}{\\infty}',
+	'0*∞': '0 \\times \\infty',
+	'∞-∞': '\\infty - \\infty',
+	'0^0': '0^{0}',
+	'∞^0': '\\infty^{0}',
+	'1^∞': '1^{\\infty}',
+	none: ''
+};
+
+/** Une forme indéterminée en LaTeX : `$\\frac{0}{0}$`, `$\\infty - \\infty$` */
+export function formMath(form: IndeterminateForm | undefined): string {
+	return form && form !== 'none' ? `$${FORM_LATEX[form]}$` : 'indéterminée';
+}
+
+// =============================================================================
+// Exponentielle : e^u (écriture de l'élève) ⇄ \\exp(u) (table de référence)
+// =============================================================================
+
+/**
+ * `e^{u}` → `\\exp(u)`, et la parenthèse obligatoire autour de la base d'une
+ * puissance ôtée (`\\left(1 + \\frac{1}{x}\\right)^x`) : la forme que lisent
+ * les motifs de `KNOWN_LIMITS` (`e^x/x` n'y était pas reconnu). Pour la
+ * reconnaissance seulement : l'étape garde l'écriture de l'élève. Les autres
+ * parenthèses restent : la table ne s'élargit pas au-delà de ces écritures.
+ */
+export function toKnownLimitShape(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (!isSuperscript(n)) return n;
+		if (n.base.type === 'constant' && n.base.constant === 'euler') {
+			return func('exp', [n.superscript]);
+		}
+		if (n.base.type === 'delimiter' && (n.base.semantic ?? 'grouping') === 'grouping') {
+			return power(n.base.content, n.superscript);
+		}
+		return n;
+	});
+}
+
+/** `\\exp(1)` → e, `\\exp(u)` → `e^{u}` : la valeur écrite comme en classe */
+export function withEulerPowers(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (!isFunction(n) || n.name !== 'exp' || n.args.length !== 1) return n;
+		const arg = n.args[0];
+		return isNumber(arg) && arg.value === '1' ? euler() : power(euler(), arg);
+	});
 }
 
 // =============================================================================

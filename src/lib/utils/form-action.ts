@@ -44,8 +44,7 @@ import { toaster } from '$lib/stores/toaster.svelte';
  * Verdict d'un form action, lu là où il se trouve VRAIMENT.
  */
 export type ActionOutcome<T = Record<string, unknown>> =
-	| { ok: true; data: T | undefined; redirect?: string }
-	| { ok: false; message: string };
+	{ ok: true; data: T | undefined; redirect?: string } | { ok: false; message: string };
 
 // ============================================================================
 // CONSTANTS
@@ -55,7 +54,7 @@ export type ActionOutcome<T = Record<string, unknown>> =
 const DEFAULT_ERROR_MESSAGE = 'Une erreur est survenue';
 
 /** Message affiché quand la session ne permet plus d'exécuter l'action. */
-const SESSION_EXPIRED_MESSAGE = 'Session expirée, reconnectez-vous';
+const SESSION_EXPIRED_MESSAGE = 'Session expirée, reconnexion nécessaire';
 
 // ============================================================================
 // FUNCTIONS

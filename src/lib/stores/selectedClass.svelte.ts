@@ -124,6 +124,30 @@ export function clearSelectedClass(): void {
 }
 
 /**
+ * Confronte la classe retenue à la liste COMPLÈTE des classes du prof
+ *
+ * L'identifiant gardé dans localStorage peut désigner une classe supprimée
+ * ou désactivée. Il est conservé s'il figure dans la liste ; sinon il est
+ * remplacé par la première classe, ou vidé si la liste est vide.
+ *
+ * À n'appeler qu'avec une liste réellement lue : une lecture en échec ne
+ * doit pas vider la sélection.
+ *
+ * @param classIds - Identifiants des classes du prof, dans l'ordre d'affichage
+ */
+export function reconcileSelectedClass(classIds: readonly string[]): void {
+	ensureInitialized();
+
+	if (selectedClassId && classIds.includes(selectedClassId)) return;
+
+	if (classIds.length > 0) {
+		setSelectedClass(classIds[0]);
+	} else if (selectedClassId) {
+		clearSelectedClass();
+	}
+}
+
+/**
  * Find the selected class object from an array of classes
  *
  * Helper function to get the full class object (not just ID).

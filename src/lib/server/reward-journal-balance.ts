@@ -14,6 +14,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { RewardEvent, RewardEventType } from '$lib/types/reward-journal';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/reward-journal-balance');
 
 const POSITIVE_TYPES: ReadonlySet<RewardEventType> = new Set(['earned', 'awarded', 'unlocked']);
 const NEGATIVE_TYPES: ReadonlySet<RewardEventType> = new Set(['spent', 'removed']);
@@ -69,11 +72,11 @@ export async function attachGidouillesBalances(
 	]);
 
 	if (profileResult.error || !profileResult.data) {
-		console.error('[reward-journal-balance] Failed to fetch profile:', profileResult.error);
+		logger.error('[reward-journal-balance] Failed to fetch profile:', profileResult.error);
 		return;
 	}
 	if (newerResult.error) {
-		console.error('[reward-journal-balance] Failed to fetch newer events:', newerResult.error);
+		logger.error('[reward-journal-balance] Failed to fetch newer events:', newerResult.error);
 		return;
 	}
 

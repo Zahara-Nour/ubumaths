@@ -39,10 +39,10 @@ Fait :
 
 - **Transformation** `src/lib/questions/correction-detail.ts` → `splitCorrectionDetail(md)` :
   `{ concise, detailed, hasDetails, conciseEmpty, errors }`. Blocs de code ```jamais touchés.
-Appliquée APRÈS résolution des variables (dans le composant, sur l'instance) ; marche aussi avant
-(accolades de`{{a}}`équilibrées, testé). Ménage du concis :`\\`avant`\end{…}`retiré,
-formule`$\detail{x}$`retirée avec ses délimiteurs, lignes vides compactées.
-Erreur (D5) →`concise = detailed`, `hasDetails = false`.
+  Appliquée APRÈS résolution des variables (dans le composant, sur l'instance) ; marche aussi avant
+  (accolades de`{{a}}`équilibrées, testé). Ménage du concis :`\\`avant`\end{…}`retiré,
+  formule`$\detail{x}$`retirée avec ses délimiteurs, lignes vides compactées.
+  Erreur (D5) →`concise = detailed`, `hasDetails = false`.
 - **Types partagés** `src/lib/ubumark/utils/detail-kinds.ts` : `DetailKind`
   (`calculation | reminder | method | warning`), `CalloutKind`, libellés français, mots d'auteur
   insensibles à la casse et aux accents.

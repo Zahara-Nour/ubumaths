@@ -50,12 +50,12 @@ status: phase 0 VALIDÉE par David le 2026-10-04 (Q1, Q2 tranchées, reprise aba
 
 ### Fermée
 
-| #   | Cas                                   | Attendu                                                                                                |
-| --- | ------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| #   | Cas                                   | Attendu                                                                                               |
+| --- | ------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | C1  | Fonction tracée                       | Pastille de la couleur de la courbe · définition **rendue en écriture mathématique** · type · 👁 actif |
 | C2  | Fonction non tracée                   | Pastille grise · 👁 barré                                                                              |
-| C3  | Clic sur 👁                           | Trace / retire la courbe **sans ouvrir la carte et sans changer de vue**                               |
-| C4  | Objet en erreur / attente / incomplet | L'état reste affiché, comme aujourd'hui                                                                |
+| C3  | Clic sur 👁                            | Trace / retire la courbe **sans ouvrir la carte et sans changer de vue**                              |
+| C4  | Objet en erreur / attente / incomplet | L'état reste affiché, comme aujourd'hui                                                               |
 
 ### Ouverte (une seule à la fois, comme aujourd'hui)
 
@@ -194,14 +194,14 @@ affichages, comme les réglages S5).
 
 ## Lots, par ordre de dépendance
 
-| Lot | Contenu                                                                                            | Visible en classe ? |
-| --- | -------------------------------------------------------------------------------------------------- | ------------------- |
-| 1   | Réglages d'affichage portés par l'objet (S1–S4), synchro vers le graphique, sauvegarde, lien       | non                 |
+| Lot | Contenu                                                                                           | Visible en classe ? |
+| --- | ------------------------------------------------------------------------------------------------- | ------------------- |
+| 1   | Réglages d'affichage portés par l'objet (S1–S4), synchro vers le graphique, sauvegarde, lien      | non                 |
 | 2   | Carte modifiable : MathLive, frappe en direct, rendu math, pastille, 👁, « Sur le graphique » (§1) | atelier seulement   |
-| 3   | Dériver → `f′`, `.dériver f`, règle des actions sans changement de vue (§2, §3)                    | atelier seulement   |
-| 4   | Curseurs (§4)                                                                                      | atelier seulement   |
-| 5   | Suites (§5)                                                                                        | atelier seulement   |
-| 6   | Bascule de `/grapheur` (§6)                                                                        | **oui**             |
+| 3   | Dériver → `f′`, `.dériver f`, règle des actions sans changement de vue (§2, §3)                   | atelier seulement   |
+| 4   | Curseurs (§4)                                                                                     | atelier seulement   |
+| 5   | Suites (§5)                                                                                       | atelier seulement   |
+| 6   | Bascule de `/grapheur` (§6)                                                                       | **oui**             |
 
 Chaque lot : branche + PR, tests rouges d'abord, `code-reviewer`. Le lot 6 se
 livre quand les lots 1 à 5 ont été **essayés par David** dans l'atelier.

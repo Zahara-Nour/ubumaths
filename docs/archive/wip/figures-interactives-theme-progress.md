@@ -62,7 +62,7 @@ background:rgba(255,255,255,.92)`) et ~17 halos `stroke="white"` **en dur**. En 
 - `svg-primitives.ts` : `resolveScreenStyle` (nom palette → `var()`, hex, nom CSS validé par
   `isValidColor`, sinon défaut) ; repli de `resolveStyle` = `'bleu'`.
 - `figure.ts` : `DEFAULT_COLOR = 'bleu'` (L2-a). `FIGURE_DEFAULTS` du bloc ```figure
-(`#000000`) intact. Exports : `#2563eb`.
+  (`#000000`) intact. Exports : `#2563eb`.
 - `GeometryCanvas.svelte` : 31 `stroke=` + 31 `fill=` d'auteur → `style:` ; 15 halos
   `stroke="white"` → `.label, .angle-label { stroke: var(--color-card) }` ; extrémité ouverte
   et fond des textes → `--color-card` ; info-bulles mathText/richText → `.geo-html-label`

@@ -57,6 +57,9 @@ export type {
 	MathNode,
 	NumberNode,
 	VariableNode,
+	PointName,
+	SegmentLengthNode,
+	FigureNameNode,
 	GreekLetterNode,
 	SymbolNode,
 	HoleNode,
@@ -105,6 +108,9 @@ export {
 	greek,
 	symbol,
 	hole,
+	pointName,
+	segmentLength,
+	figureName,
 
 	// Mathematical constants
 	mathConstant,
@@ -187,6 +193,7 @@ export {
 
 	// Complex numbers
 	complex,
+	imaginaryUnit,
 
 	// Boolean and logical
 	boolean,
@@ -212,7 +219,7 @@ export type {
 
 // Signed-literal-safe factory (handles negatives via opposite() wrapping).
 // Use this instead of `number()` when the input value may be negative.
-export { numericNode } from './common/numeric';
+export { numericNode, numberToLatexSafe } from './common/numeric';
 
 // =============================================================================
 // Transformation Helpers
@@ -257,10 +264,13 @@ export {
 	isNumber,
 	isVariable,
 	isGreek,
+	isSegmentLength,
+	isFigureName,
 	isSymbol,
 	isHole,
 	isMathConstant,
 	isEulerConstant,
+	isImaginaryUnit,
 	isPiConstant,
 	isAddition,
 	isSubtraction,
@@ -818,18 +828,6 @@ export {
 export type { ValidatedEvalBindings, ValidatedSecurityOptions } from './eval';
 
 // =============================================================================
-// Auto-Completion API
-// =============================================================================
-
-export { CompletionProvider } from './cli/completion';
-export type {
-	Completion,
-	CompletionKind,
-	CompletionContext,
-	CompletionOptions
-} from './cli/completion';
-
-// =============================================================================
 // Visitor Pattern
 // =============================================================================
 
@@ -1002,22 +1000,11 @@ export {
 	containsRadical,
 	isRationalIn,
 	calculateComplexity,
-	// Polynomial analysis
-	analyzePolynomial,
-	getPolynomialCoefficients,
-	isMonomial,
-	isBinomial,
-	isTrinomial,
-	getTermCount,
 	// Algebraic structure detection
-	detectStructure,
 	isDifferenceOfSquares,
 	isPerfectSquareTrinomial,
 	isSumOfCubes,
 	isDifferenceOfCubes,
-	isQuadraticForm,
-	isFactoredForm,
-	hasCommonFactor,
 	// Symmetry detection
 	detectSymmetry,
 	isEven,
@@ -1066,9 +1053,6 @@ export type {
 	// Expression classification
 	ExpressionCategory,
 	ExpressionClassification,
-	// Polynomial analysis
-	MonomialInfo,
-	PolynomialAnalysis,
 	// Algebraic structures
 	StructureType,
 	DetectedStructure,
@@ -1076,9 +1060,6 @@ export type {
 	PerfectSquareTrinomialInfo,
 	SumOfCubesInfo,
 	DifferenceOfCubesInfo,
-	QuadraticFormInfo,
-	FactoredFormInfo,
-	CommonFactorInfo,
 	// Symmetry
 	SymmetryType,
 	SymmetryResult,

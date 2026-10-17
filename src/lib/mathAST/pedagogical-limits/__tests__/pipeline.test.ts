@@ -30,6 +30,7 @@ import {
 	variable
 } from '../../factory';
 import type { MathNode } from '../../types';
+import { toLatex } from '../../latex-generator';
 import { generatePedagogicalLimitSteps } from '../pipeline';
 import { PedagogicalLimitNotImplemented } from '../types';
 import type { PedagogicalLimitStep } from '../types';
@@ -160,15 +161,23 @@ describe('pipeline — factorisation', () => {
 		expect(rules).toContain('detect-indeterminate-form');
 		expect(rules).toContain('simplify-common-factor');
 		expect(rules).toContain('factor-numerator');
-		expect(rules).toContain('factor-denominator');
+		// Le dénominateur EST le facteur x − 2 : pas de sous-étape « x − 2 = x − 2 »
+		expect(rules).not.toContain('factor-denominator');
 		expect(rules).toContain('apply-direct-substitution');
 		expect(rules).toContain('conclude');
 	});
 
 	it('factor-numerator and factor-denominator nest under simplify-common-factor', () => {
+		// x² − 3x + 2 = (x − 2)(x − 1) : les deux côtés se factorisent
 		const expr = divide(
 			subtract(power(variable('x'), number('2')), number('4')),
-			subtract(variable('x'), number('2'))
+			add(
+				subtract(
+					power(variable('x'), number('2')),
+					multiply(number('3'), variable('x'), 'implicit')
+				),
+				number('2')
+			)
 		);
 		const result = generatePedagogicalLimitSteps(expr, {
 			variable: 'x',
@@ -235,8 +244,8 @@ describe('pipeline — rationalisation', () => {
 		});
 
 		expect(result.status).toBe('exact');
-		// 1/2 numeric — value formatting: numericNode(0.5) → number('0.5')
-		expect(result.value).toMatchObject({ type: 'number', value: '0.5' });
+		// Valeur exacte (V21) : \dfrac{1}{2}, plus number('0.5')
+		expect(result.value && toLatex(result.value)).toBe('\\dfrac{1}{2}');
 
 		const rules = flatRules(result.steps);
 		expect(rules).toContain('detect-indeterminate-form');
@@ -257,7 +266,7 @@ describe('pipeline — rationalisation', () => {
 		});
 
 		expect(result.status).toBe('exact');
-		expect(result.value).toMatchObject({ type: 'number', value: '0.25' });
+		expect(result.value && toLatex(result.value)).toBe('\\dfrac{1}{4}');
 	});
 
 	it('(2 − √x)/(4 − x) at x = 4 → 1/4 (b − √a form)', () => {
@@ -272,7 +281,7 @@ describe('pipeline — rationalisation', () => {
 		});
 
 		expect(result.status).toBe('exact');
-		expect(result.value).toMatchObject({ type: 'number', value: '0.25' });
+		expect(result.value && toLatex(result.value)).toBe('\\dfrac{1}{4}');
 	});
 
 	it('simplify-after-rationalization nests under multiply-by-conjugate', () => {
@@ -328,7 +337,7 @@ describe('pipeline — rationalisation', () => {
 		});
 
 		expect(result.status).toBe('exact');
-		expect(result.value).toMatchObject({ type: 'number', value: '0.25' });
+		expect(result.value && toLatex(result.value)).toBe('\\dfrac{1}{4}');
 		const rules = flatRules(result.steps);
 		expect(rules).toContain('multiply-by-conjugate');
 	});
@@ -545,7 +554,7 @@ describe('pipeline — infinity-analysis', () => {
 
 		expect(result.status).toBe('exact');
 		expect(result.value).toMatchObject({ type: 'number', value: '3' });
-		expect(flatRules(result.steps)).toContain('identify-dominant-term');
+		expect(flatRules(result.steps)).toContain('factor-dominant-term');
 	});
 
 	it('x²/(x + 1) at x → +∞ → +∞', () => {

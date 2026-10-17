@@ -5,7 +5,10 @@
 			"production": true
 		}
 	},
-	"crons": [],
+	"crons": [
+		{ "path": "/api/cron/deleted-account-files", "schedule": "0 4 * * 0" },
+		{ "path": "/api/cron/riddle-of-the-day", "schedule": "5 0 * * *" }
+	],
 	"ignoreCommand": "bash scripts/vercel-ignore-build.sh",
 	"headers": [
 		{
@@ -14,6 +17,24 @@
 				{
 					"key": "Cache-Control",
 					"value": "public, max-age=2592000"
+				}
+			]
+		},
+		{
+			"source": "/fonts/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=2592000, stale-while-revalidate=31536000"
+				}
+			]
+		},
+		{
+			"source": "/((?!_app/|api/|fonts/|upsilon-simulator/).*)\\.(png|jpg|jpeg|webp|gif|svg|ico|mp3|ogg|wav|css)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400, stale-while-revalidate=604800"
 				}
 			]
 		}

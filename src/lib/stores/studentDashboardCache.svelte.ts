@@ -47,6 +47,33 @@ import { browser } from '$app/environment';
 import { SvelteMap } from 'svelte/reactivity';
 
 // ============================================================================
+// VALEURS VIDES (rendues après un échec de lecture, jamais mises en cache)
+// ============================================================================
+
+function emptyProfile(): StudentProfile {
+	return {
+		id: '',
+		email: '',
+		firstname: '',
+		lastname: null,
+		full_name: null,
+		avatar_url: null,
+		grade: null,
+		is_test: false,
+		school_id: null,
+		classes: []
+	};
+}
+
+function emptyRewards(): StudentRewards {
+	return { gidouilles: 0, bonus: 0, vip_cards: {} };
+}
+
+function emptyWarnings(): StudentWarnings {
+	return { counts: { C: 0, M: 0, R: 0, T: 0 }, warnings: [] };
+}
+
+// ============================================================================
 // CACHE CLASS
 // ============================================================================
 
@@ -198,6 +225,8 @@ export class StudentDashboardCache {
 	 *
 	 * ERROR HANDLING:
 	 * - Returns empty profile object on API failure (prevents crashes)
+	 * - Un échec n'est JAMAIS mis en cache : la dernière valeur connue (même
+	 *   expirée) est rendue si elle existe, et l'accès suivant refait la lecture
 	 * - Logs error to console for debugging
 	 *
 	 * @returns Promise resolving to student profile with class memberships
@@ -220,6 +249,11 @@ export class StudentDashboardCache {
 
 		// Fetch from API
 		const profile = await this.fetchProfile();
+		if (profile === null) {
+			// Échec : rien n'est stocké, l'accès suivant refera la lecture.
+			// On rend la dernière valeur connue, même expirée, sinon un profil vide.
+			return cached?.profile ?? emptyProfile();
+		}
 		this.profileCache = { profile, fetchedAt: now };
 
 		const elapsed = (performance.now() - startTime).toFixed(2);
@@ -262,7 +296,7 @@ export class StudentDashboardCache {
 	 * - Cache miss: ~100-200ms
 	 *
 	 * @returns Promise resolving to student rewards object
-	 * @throws Never throws - returns empty rewards on error
+	 * @throws Never throws - returns last known (or empty) rewards on error, never cached
 	 */
 	async getRewards(): Promise<StudentRewards> {
 		const startTime = performance.now();
@@ -281,6 +315,10 @@ export class StudentDashboardCache {
 
 		// Fetch from API
 		const rewards = await this.fetchRewards();
+		if (rewards === null) {
+			// Échec : rien n'est stocké (voir getProfile)
+			return cached?.rewards ?? emptyRewards();
+		}
 		this.rewardsCache = { rewards, fetchedAt: now };
 
 		const elapsed = (performance.now() - startTime).toFixed(2);
@@ -316,7 +354,7 @@ export class StudentDashboardCache {
 	 *
 	 * @param periodId - The UUID of the academic period to fetch warnings for
 	 * @returns Promise resolving to warnings with counts and detail array
-	 * @throws Never throws - returns empty warnings on error
+	 * @throws Never throws - returns last known (or empty) warnings on error, never cached
 	 */
 	async getWarnings(periodId: string): Promise<StudentWarnings> {
 		const startTime = performance.now();
@@ -338,6 +376,10 @@ export class StudentDashboardCache {
 
 		// Fetch from API
 		const warnings = await this.fetchWarnings(periodId);
+		if (warnings === null) {
+			// Échec : rien n'est stocké (voir getProfile)
+			return cached?.warnings ?? emptyWarnings();
+		}
 		this.warningsCache.set(periodId, { warnings, fetchedAt: now });
 
 		const elapsed = (performance.now() - startTime).toFixed(2);
@@ -753,76 +795,56 @@ export class StudentDashboardCache {
 
 	/**
 	 * Fetch student profile from API
+	 * Rend null en cas d'échec (réseau, HTTP), pour que l'appelant ne le stocke pas
 	 * @private
 	 */
-	private async fetchProfile(): Promise<StudentProfile> {
+	private async fetchProfile(): Promise<StudentProfile | null> {
 		try {
 			const response = await fetch('/api/student/profile');
 			if (!response.ok) {
-				throw new Error(`Failed to fetch profile: ${response.statusText}`);
+				throw new Error(`Impossible de charger le profil : ${response.statusText}`);
 			}
 			const data = await response.json();
 			return data.profile;
 		} catch (error) {
 			console.error('[Cache] Error fetching student profile:', error);
-			// Return empty profile as fallback
-			return {
-				id: '',
-				email: '',
-				firstname: '',
-				lastname: null,
-				full_name: null,
-				avatar_url: null,
-				grade: null,
-				is_test: false,
-				school_id: null,
-				classes: []
-			};
+			return null;
 		}
 	}
 
 	/**
-	 * Fetch student rewards from API
+	 * Fetch student rewards from API (null en cas d'échec)
 	 * @private
 	 */
-	private async fetchRewards(): Promise<StudentRewards> {
+	private async fetchRewards(): Promise<StudentRewards | null> {
 		try {
 			const response = await fetch('/api/student/rewards');
 			if (!response.ok) {
-				throw new Error(`Failed to fetch rewards: ${response.statusText}`);
+				throw new Error(`Impossible de charger les récompenses : ${response.statusText}`);
 			}
 			const data = await response.json();
 			return data.rewards;
 		} catch (error) {
 			console.error('[Cache] Error fetching student rewards:', error);
-			// Return empty rewards as fallback
-			return {
-				gidouilles: 0,
-				bonus: 0,
-				vip_cards: {}
-			};
+			return null;
 		}
 	}
 
 	/**
-	 * Fetch student warnings from API
+	 * Fetch student warnings from API (null en cas d'échec)
 	 * @private
 	 */
-	private async fetchWarnings(periodId: string): Promise<StudentWarnings> {
+	private async fetchWarnings(periodId: string): Promise<StudentWarnings | null> {
 		try {
 			const response = await fetch(`/api/student/warnings/${periodId}`);
 			if (!response.ok) {
-				throw new Error(`Failed to fetch warnings: ${response.statusText}`);
+				throw new Error(`Impossible de charger les avertissements : ${response.statusText}`);
 			}
 			const data = await response.json();
 			return data.warnings;
 		} catch (error) {
 			console.error('[Cache] Error fetching student warnings:', error);
-			// Return empty warnings as fallback
-			return {
-				counts: { C: 0, M: 0, R: 0, T: 0 },
-				warnings: []
-			};
+			return null;
 		}
 	}
 

@@ -12,6 +12,9 @@ import {
 } from '$lib/server/marketplace/helpers';
 import { requireConsent, hasConsentFields } from '$lib/server/middleware/consent';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/trades/+server');
 
 // Query schema - use union with null because url.searchParams.get() returns null, not undefined
 const tradesQuerySchema = z.object({
@@ -54,7 +57,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// Check if marketplace is enabled
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
-		throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		throw error(403, "Le marketplace n'est pas activé pour cette classe");
 	}
 
 	// Build query - use column hints instead of FK names for compatibility
@@ -102,7 +105,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { data: trades, error: tradesError, count } = await query;
 
 	if (tradesError) {
-		console.error('Error fetching trades:', tradesError);
+		logger.error('Error fetching trades:', tradesError);
 		throw error(500, 'Erreur lors de la récupération des échanges');
 	}
 
@@ -183,14 +186,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Check if marketplace is enabled for initiator
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
-		throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		throw error(403, "Le marketplace n'est pas activé pour cette classe");
 	}
 
 	// Amitié vérifiée AVANT toute lecture sur le partenaire : les fonctions qui
 	// le concernent n'acceptent que soi, un ami ou le prof (lot 5).
 	const areFriends = await verifyFriendship(supabase, userId, partner_id);
 	if (!areFriends) {
-		throw error(403, 'Vous devez être amis pour échanger');
+		throw error(403, 'Amitié requise pour échanger');
 	}
 
 	// Check if marketplace is enabled for partner
@@ -205,7 +208,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (limitError) {
-		console.error('Error checking trade limit:', limitError);
+		logger.error('Error checking trade limit:', limitError);
 		throw error(500, 'Erreur lors de la vérification de la limite quotidienne');
 	}
 
@@ -215,14 +218,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const limit = dailyTradeLimitSchema.parse(limitCheck);
 
 	if (!limit.success) {
-		console.error('check_daily_trade_limit a échoué:', limit.error);
+		logger.error('check_daily_trade_limit a échoué:', limit.error);
 		throw error(500, 'Erreur lors de la vérification de la limite quotidienne');
 	}
 
 	if (!limit.can_create_trade) {
 		throw error(
 			429, // 429 Too Many Requests
-			`Vous avez atteint la limite quotidienne de ${limit.max_trades} échanges. Revenez demain pour créer de nouveaux échanges.`
+			`Limite quotidienne de ${limit.max_trades} échanges atteinte. Nouveaux échanges possibles demain.`
 		);
 	}
 
@@ -235,21 +238,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	);
 
 	if (partnerLimitError) {
-		console.error('Error checking partner trade limit:', partnerLimitError);
+		logger.error('Error checking partner trade limit:', partnerLimitError);
 		throw error(500, 'Erreur lors de la vérification de la limite quotidienne du partenaire');
 	}
 
 	const partnerLimit = dailyTradeLimitSchema.parse(partnerLimitCheck);
 
 	if (!partnerLimit.success) {
-		console.error('check_daily_trade_limit (partenaire) a échoué:', partnerLimit.error);
+		logger.error('check_daily_trade_limit (partenaire) a échoué:', partnerLimit.error);
 		throw error(500, 'Erreur lors de la vérification de la limite quotidienne du partenaire');
 	}
 
 	if (!partnerLimit.can_create_trade) {
 		throw error(
 			429,
-			`Votre ami a atteint sa limite quotidienne de ${partnerLimit.max_trades} échanges. Réessayez demain.`
+			`Cet ami a atteint sa limite quotidienne de ${partnerLimit.max_trades} échanges. Réessayer demain.`
 		);
 	}
 
@@ -268,19 +271,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (existingTradeError && existingTradeError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', existingTradeError);
+		logger.error('Lecture impossible :', existingTradeError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
 	if (existingTrade) {
-		throw error(403, 'Vous avez déjà un échange en cours avec cet ami');
+		throw error(403, 'Un échange est déjà en cours avec cet ami');
 	}
 
 	// Validate card ownership if offering cards
 	if (initial_offer.cards.length > 0) {
 		const ownsCards = await validateCardOwnership(supabase, userId, initial_offer.cards);
 		if (!ownsCards) {
-			throw error(403, 'Vous ne possédez pas toutes les cartes spécifiées');
+			throw error(403, 'Certaines des cartes spécifiées manquent dans la collection');
 		}
 	}
 
@@ -288,7 +291,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (initial_offer.gidouilles > 0) {
 		const userGidouilles = await getStudentGidouilles(supabase, userId);
 		if (userGidouilles < initial_offer.gidouilles) {
-			throw error(403, "Vous n'avez pas assez de gidouilles");
+			throw error(403, 'Gidouilles insuffisantes');
 		}
 	}
 
@@ -327,7 +330,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (tradeError.message?.includes('Consentement parental requis')) {
 			throw error(403, "Cet échange n'est pas possible pour le moment.");
 		}
-		console.error('Error creating trade:', tradeError);
+		logger.error('Error creating trade:', tradeError);
 		throw error(500, "Erreur lors de la création de l'échange");
 	}
 

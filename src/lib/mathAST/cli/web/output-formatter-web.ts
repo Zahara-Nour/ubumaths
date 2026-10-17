@@ -18,19 +18,8 @@ import type { PipelineError, CommandError } from '../types';
  */
 const CSS_CLASSES = {
 	error: 'repl-error', // Red text for errors
-	success: 'repl-success', // Green text for success messages
-	hash: 'repl-hash', // Cyan text for hash values
 	dim: 'repl-dim', // Gray text for secondary info
-	warning: 'repl-warning', // Yellow text for warnings
-	info: 'repl-info', // Blue text for informational messages
-
-	// Function-related classes
-	fnName: 'repl-fn-name', // Purple/accent for function names
-	fnParam: 'repl-fn-param', // Cyan for parameters
-	fnExpr: 'repl-fn-expr', // Default/white for expressions
-	fnLabel: 'repl-fn-label', // Dim gray for labels
-	fnDerivative: 'repl-fn-derivative', // Yellow for derivative indicator
-	fnInverse: 'repl-fn-inverse' // Orange for inverse indicator
+	warning: 'repl-warning' // Yellow text for warnings
 } as const;
 
 // =============================================================================
@@ -41,7 +30,7 @@ const CSS_CLASSES = {
  * Escape HTML special characters to prevent XSS.
  * Uses simple string replacement for browser and Node compatibility.
  */
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
 	return text
 		.replace(/&/g, '&amp;')
 		.replace(/</g, '&lt;')
@@ -134,33 +123,6 @@ export function formatInputErrorHtml(input: string, position: number, message: s
 }
 
 // =============================================================================
-// Success Formatting
-// =============================================================================
-
-/**
- * Escape text for safe HTML display, with optional styled label.
- *
- * Use this for user-provided content that needs XSS protection.
- * For system messages with HTML formatting, pass outputHtml directly.
- *
- * @param text - The text to escape (user content)
- * @param label - Optional label to prefix (styled as success)
- * @returns HTML-safe string
- *
- * @example
- * ```typescript
- * const html = escapeWithLabel('x^2 + 3x', 'LaTeX:');
- * // => "<span class="repl-success">LaTeX:</span><br>x^2 + 3x"
- * ```
- */
-export function escapeWithLabel(text: string, label?: string): string {
-	if (label) {
-		return `${span(label, CSS_CLASSES.success)}<br>${escapeHtml(text)}`;
-	}
-	return escapeHtml(text);
-}
-
-// =============================================================================
 // Tree Formatting
 // =============================================================================
 
@@ -209,135 +171,4 @@ export function formatTreeHtml(tree: string): string {
 	});
 
 	return formattedLines.join('<br>');
-}
-
-/**
- * Format a hash value with highlighting.
- *
- * @param hash - The hash string to format
- * @returns HTML-formatted hash with cyan color
- *
- * @example
- * ```typescript
- * const html = formatHashHtml('a1b2c3d4');
- * // => "<span class="repl-hash">a1b2c3d4</span>"
- * ```
- */
-export function formatHashHtml(hash: string): string {
-	return span(hash, CSS_CLASSES.hash);
-}
-
-// =============================================================================
-// Function Formatting
-// =============================================================================
-
-/**
- * Format a function definition as HTML.
- *
- * Displays function signature with syntax highlighting:
- * - Function name in accent color
- * - Parameters in cyan
- * - Expression in default color
- *
- * @param name - Function name (e.g., 'f', 'g')
- * @param params - Parameter names (e.g., ['x'] or ['x', 'y'])
- * @param expression - Function body as string
- * @returns HTML-formatted function definition
- *
- * @example
- * ```typescript
- * const html = formatFunctionDefinitionHtml('f', ['x'], 'x^2 + 1');
- * // => "<span class="repl-fn-name">f</span>(<span class="repl-fn-param">x</span>) = x^2 + 1"
- * ```
- */
-export function formatFunctionDefinitionHtml(
-	name: string,
-	params: readonly string[],
-	expression: string
-): string {
-	const fnName = span(name, CSS_CLASSES.fnName);
-	const fnParams = params.map((p) => span(p, CSS_CLASSES.fnParam)).join(', ');
-	const fnExpr = escapeHtml(expression);
-
-	return `${fnName}(${fnParams}) = ${fnExpr}`;
-}
-
-/**
- * Format a function definition with optional derivative and inverse as HTML.
- *
- * Shows all available information about a function:
- * - Function definition: f(x) = expression
- * - Derivative (if defined): f'(x) = derivative
- * - Inverse (if defined): f^(-1)(x) = inverse
- *
- * @param name - Function name
- * @param params - Parameter names
- * @param expression - Function body
- * @param derivative - Optional derivative expression
- * @param inverse - Optional inverse expression
- * @returns Multi-line HTML-formatted function info
- *
- * @example
- * ```typescript
- * const html = formatFunctionInfoHtml('f', ['x'], 'x^2', '2*x', 'sqrt(x)');
- * // => "<span class="repl-fn-name">f</span>(x) = x^2<br>
- * //     <span class="repl-fn-derivative">f'</span>(x) = 2*x<br>
- * //     <span class="repl-fn-inverse">f^(-1)</span>(x) = sqrt(x)"
- * ```
- */
-export function formatFunctionInfoHtml(
-	name: string,
-	params: readonly string[],
-	expression: string,
-	derivative?: string,
-	inverse?: string
-): string {
-	const lines: string[] = [];
-
-	// Main definition
-	lines.push(formatFunctionDefinitionHtml(name, params, expression));
-
-	// Derivative if defined
-	if (derivative) {
-		const derivName = span(`${name}'`, CSS_CLASSES.fnDerivative);
-		const fnParams = params.map((p) => span(p, CSS_CLASSES.fnParam)).join(', ');
-		lines.push(`${derivName}(${fnParams}) = ${escapeHtml(derivative)}`);
-	}
-
-	// Inverse if defined
-	if (inverse) {
-		const invName = span(`${name}^(-1)`, CSS_CLASSES.fnInverse);
-		const fnParams = params.map((p) => span(p, CSS_CLASSES.fnParam)).join(', ');
-		lines.push(`${invName}(${fnParams}) = ${escapeHtml(inverse)}`);
-	}
-
-	return lines.join('<br>');
-}
-
-/**
- * Format a list of functions as HTML.
- *
- * Shows all defined functions with their definitions.
- *
- * @param functions - Array of function info objects
- * @returns HTML-formatted function list
- */
-export function formatFunctionListHtml(
-	functions: ReadonlyArray<{
-		name: string;
-		params: readonly string[];
-		expression: string;
-		derivative?: string;
-		inverse?: string;
-	}>
-): string {
-	if (functions.length === 0) {
-		return span('No functions defined', CSS_CLASSES.dim);
-	}
-
-	return functions
-		.map((fn) =>
-			formatFunctionInfoHtml(fn.name, fn.params, fn.expression, fn.derivative, fn.inverse)
-		)
-		.join('<br><br>');
 }

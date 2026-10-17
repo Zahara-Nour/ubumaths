@@ -42,6 +42,10 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { StudentErrorReportWithDisplay } from '$lib/types/worksheets';
+import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/reports/+server');
 
 /**
  * Une ligne rendue par `get_my_error_reports()`.
@@ -85,9 +89,9 @@ function isReportRow(value: unknown): value is OwnErrorReportRow {
 }
 
 export const GET: RequestHandler = async ({ locals, url }) => {
-	// Auth check: Must be a student. L'identité n'est plus reprise ici : c'est
-	// `get_my_error_reports()` qui borne à `auth.uid()`, côté base.
-	await requireRole(locals, 'student');
+	// Auth check: Must be a student. `get_my_error_reports()` borne à
+	// `auth.uid()`, côté base ; l'identité sert seulement au numéro de SA copie.
+	const { user } = await requireRole(locals, 'student');
 
 	// Validate query parameters
 	const queryValidation = validateStudentReportsQuery(url.searchParams);
@@ -113,7 +117,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			await locals.supabase.rpc('get_my_error_reports');
 
 		if (queryError) {
-			console.error('[API] Error fetching student reports:', queryError);
+			logger.error('[API] Error fetching student reports:', queryError);
 			throw error(500, 'Erreur lors de la recuperation des signalements');
 		}
 
@@ -124,7 +128,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// `student_id = auth.uid()` sans rien apporter.
 		const filtered = allReports.filter((row) => {
 			if (!isReportRow(row)) {
-				console.error('[API] Ligne de signalement inattendue :', row);
+				logger.error('[API] Ligne de signalement inattendue :', row);
 				throw error(500, 'Erreur de structure de donnees');
 			}
 			if (status !== 'all' && row.status !== status) return false;
@@ -135,10 +139,32 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const from = (page - 1) * limit;
 		const reports = filtered.slice(from, from + limit);
 
+		// Le numéro de chaque exercice dans LA COPIE de cet élève (D6), fiche par
+		// fiche ; fiche illisible (ancien membre, panne) → null, jamais
+		// `exercise_position` de la fonction, qui est la position brute.
+		const numberings = new Map(
+			await Promise.all(
+				[...new Set(reports.map((r) => r.worksheet_id))].map(
+					async (worksheetId) =>
+						[
+							worksheetId,
+							await fetchCopyNumbering(
+								locals.supabase,
+								worksheetId,
+								reports.filter((r) => r.worksheet_id === worksheetId).map((r) => r.assignment_id)
+							)
+						] as const
+				)
+			)
+		);
+
 		const transformedReports: StudentErrorReportWithDisplay[] = reports.map((report) => ({
 			id: report.id,
 			worksheet_exercise_id: report.worksheet_exercise_id,
-			exercise_position: report.exercise_position,
+			exercise_position:
+				numberings
+					.get(report.worksheet_id)
+					?.numberOf(report.assignment_id, user.id, report.worksheet_exercise_id) ?? null,
 			description: report.description,
 			status: report.status as StudentErrorReportWithDisplay['status'],
 			response: report.response,
@@ -175,7 +201,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/reports:', err);
+		logger.error('[API] Unexpected error in GET /api/student/reports:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

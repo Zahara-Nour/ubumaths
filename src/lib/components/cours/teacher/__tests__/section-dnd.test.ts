@@ -17,6 +17,7 @@
 import { describe, expect, it } from 'vitest';
 import { SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
 import {
+	avecMasquesASaPlace,
 	empreinteAffichage,
 	origineDuGlisser,
 	remettreAuRang,
@@ -211,6 +212,48 @@ describe('empreinteAffichage — ce qui doit rafraîchir le plan', () => {
 		);
 	});
 
+	/**
+	 * Masquer un élément du modèle (ADR 0029) ne change ni son identifiant ni sa
+	 * publication quand il était préparé : sans ce champ, la ligne resterait à
+	 * l'écran après « Masquer », et le bouton renverrait « masquer » à chaque clic.
+	 */
+	it('masquer un élément change l’empreinte', () => {
+		const masque = {
+			...BASE,
+			documents: [{ id: 'd1', title: 'Fiche de rappel', publishedAt: null, hidden: true }]
+		};
+		expect(empreinteAffichage(masque)).not.toBe(empreinteAffichage(BASE));
+	});
+
+	/**
+	 * Détacher un chapitre du modèle délie ses lignes (`source_id` remis à vide)
+	 * sans changer ni identifiant, ni publication, ni masquage. Sans ce champ, le
+	 * plan gardait marques « Modèle » et boutons « Masquer » (404 au clic).
+	 */
+	it('délier un élément change l’empreinte', () => {
+		const lie = {
+			...BASE,
+			documents: [{ id: 'd1', title: 'Fiche de rappel', publishedAt: null, sourceId: 'src' }]
+		};
+		const delie = {
+			...BASE,
+			documents: [{ id: 'd1', title: 'Fiche de rappel', publishedAt: null, sourceId: null }]
+		};
+		expect(empreinteAffichage(delie)).not.toBe(empreinteAffichage(lie));
+	});
+
+	it('délier une section change l’empreinte', () => {
+		const lie = { ...BASE, sections: [{ id: 's1', title: 'Le cours', sourceId: 'src' }] };
+		const delie = { ...BASE, sections: [{ id: 's1', title: 'Le cours', sourceId: null }] };
+		expect(empreinteAffichage(delie)).not.toBe(empreinteAffichage(lie));
+	});
+
+	it('masquer une section change l’empreinte', () => {
+		const visible = { ...BASE, sections: [{ id: 's1', title: 'Le cours', hidden: false }] };
+		const masquee = { ...BASE, sections: [{ id: 's1', title: 'Le cours', hidden: true }] };
+		expect(empreinteAffichage(masquee)).not.toBe(empreinteAffichage(visible));
+	});
+
 	it('renommer une section change l’empreinte', () => {
 		expect(empreinteAffichage({ ...BASE, sections: [{ id: 's1', title: 'Bilan' }] })).not.toBe(
 			empreinteAffichage(BASE)
@@ -233,5 +276,39 @@ describe('empreinteAffichage — ce qui doit rafraîchir le plan', () => {
 		// Le rangement ne fait pas partie de la source : deux plans dont les
 		// ressources sont identiques ont la même empreinte, où qu'elles soient.
 		expect(empreinteAffichage({ ...BASE })).toBe(empreinteAffichage(BASE));
+	});
+});
+
+/**
+ * Ranger une zone quand ses éléments masqués sont cachés : la liste affichée ne
+ * les contient pas. Renuméroter cette liste seule (0, 1, 2…) mettait un masqué
+ * à égalité de rang avec un visible — réaffiché, il sautait à une place
+ * arbitraire. Le masqué garde SA place : juste après l'élément qu'il suivait.
+ */
+describe('avecMasquesASaPlace — les masqués gardent leur rang', () => {
+	const A = { id: 'a', hidden: false };
+	const H = { id: 'h', hidden: true };
+	const B = { id: 'b', hidden: false };
+	const C = { id: 'c', hidden: false };
+
+	it('le masqué suit l’élément qu’il suivait', () => {
+		expect(avecMasquesASaPlace([A, H, B], [B, A]).map((x) => x.id)).toEqual(['b', 'a', 'h']);
+	});
+
+	it('une ressource arrivée d’ailleurs s’insère, le masqué reste', () => {
+		expect(avecMasquesASaPlace([A, H, B], [A, C, B]).map((x) => x.id)).toEqual([
+			'a',
+			'h',
+			'c',
+			'b'
+		]);
+	});
+
+	it('une ressource partie ailleurs n’est pas remise ; sans voisin, le masqué passe en tête', () => {
+		expect(avecMasquesASaPlace([A, H, B], [B]).map((x) => x.id)).toEqual(['h', 'b']);
+	});
+
+	it('masqués affichés : la liste est déjà complète', () => {
+		expect(avecMasquesASaPlace([A, H, B], [H, B, A]).map((x) => x.id)).toEqual(['h', 'b', 'a']);
 	});
 });

@@ -373,7 +373,7 @@ class Interpreter {
 								: 'La destructuration nécessite une valeur de type tuple.',
 							hint:
 								migrationHint ??
-								'Vérifiez que le builtin appelé à droite retourne bien un tuple. Depuis 2026-05-18, les macros stdlib (`mediatrice`, `cercle_circonscrit`, `rectangle`…) retournent un objet unique — utilisez les accesseurs (`centre`, `milieu`, `sommet`, `extremite`) pour récupérer les sous-parties.'
+								'Vérifier que le builtin appelé à droite retourne bien un tuple. Depuis 2026-05-18, les macros stdlib (`mediatrice`, `cercle_circonscrit`, `rectangle`…) retournent un objet unique — utiliser les accesseurs (`centre`, `milieu`, `sommet`, `extremite`) pour récupérer les sous-parties.'
 						},
 						stmt.line
 					);

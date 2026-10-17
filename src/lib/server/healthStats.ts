@@ -9,6 +9,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { HealthStatsResponse } from './validation/health';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/healthStats');
 
 // Type definitions for new tables/views not yet in database.ts
 interface ServerCacheRow {
@@ -160,7 +163,7 @@ async function fetchErrorStats(supabase: SupabaseClient<Database>) {
 	// Statistique d'administration : son absence ne ferme pas le tableau de bord,
 	// mais un « tout va bien » qu'on n'a pas pu lire doit se voir.
 	if (errorStatsError) {
-		console.error('Statistique illisible :', errorStatsError);
+		logger.error('Statistique illisible :', errorStatsError);
 	}
 
 	const trend7d = await fetch7DayErrorTrend(supabase);
@@ -262,7 +265,7 @@ async function fetchPerformanceStats(supabase: SupabaseClient<Database>) {
 	// Un tableau de bord de santé qui n'a rien pu lire affiche « tout va bien ».
 	// C'est le pire moment pour se taire.
 	if (errorsError) {
-		console.error('[healthStats] Journal d’erreurs illisible :', errorsError);
+		logger.error('[healthStats] Journal d’erreurs illisible :', errorsError);
 		throw new Error(errorsError.message);
 	}
 
@@ -325,7 +328,7 @@ async function fetchContentStats(supabase: SupabaseClient<Database>) {
 	// Statistique d'administration : son absence ne ferme pas le tableau de bord,
 	// mais un « tout va bien » qu'on n'a pas pu lire doit se voir.
 	if (contentStatsError) {
-		console.error('Statistique illisible :', contentStatsError);
+		logger.error('Statistique illisible :', contentStatsError);
 	}
 
 	const stats = contentStats as AdminContentStats | null;
@@ -360,7 +363,7 @@ async function fetchJobStats(supabase: SupabaseClient<Database>) {
 	// Statistique d'administration : son absence ne ferme pas le tableau de bord,
 	// mais un « tout va bien » qu'on n'a pas pu lire doit se voir.
 	if (recentJobsError) {
-		console.error('Statistique illisible :', recentJobsError);
+		logger.error('Statistique illisible :', recentJobsError);
 	}
 
 	// Get job status summary
@@ -371,7 +374,7 @@ async function fetchJobStats(supabase: SupabaseClient<Database>) {
 	// Statistique d'administration : son absence ne ferme pas le tableau de bord,
 	// mais un « tout va bien » qu'on n'a pas pu lire doit se voir.
 	if (jobSummaryError) {
-		console.error('Statistique illisible :', jobSummaryError);
+		logger.error('Statistique illisible :', jobSummaryError);
 	}
 
 	const jobs = (jobSummary ?? []) as AdminJobStatus[];

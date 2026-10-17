@@ -100,7 +100,7 @@
 
 	const triggerTypeOptions = [
 		{ value: 'general', label: 'Message général' },
-		{ value: 'assessment_question', label: 'Question sur évaluation' },
+		{ value: 'assessment_question', label: 'Question sur un contrôle' },
 		{ value: 'srs_help', label: 'Aide SRS' },
 		{ value: 'system_notification', label: 'Notification système' },
 		{ value: 'enigma_answer', label: 'Réponse énigme (futur)' }
@@ -395,7 +395,7 @@
 					console.error('Error updating template:', error);
 					toaster.error('Erreur lors de la mise à jour');
 				} else {
-					toaster.success('Template mis à jour avec succès');
+					toaster.success('Modèle mis à jour avec succès');
 					isDialogOpen = false;
 					await loadTemplates();
 				}
@@ -406,7 +406,7 @@
 					console.error('Error creating template:', error);
 					toaster.error('Erreur lors de la création');
 				} else {
-					toaster.success('Template créé avec succès');
+					toaster.success('Modèle créé avec succès');
 					isDialogOpen = false;
 					await loadTemplates();
 				}
@@ -440,7 +440,7 @@
 				console.error('Error deleting template:', error);
 				toaster.error('Erreur lors de la suppression');
 			} else {
-				toaster.success('Template supprimé avec succès');
+				toaster.success('Modèle supprimé avec succès');
 				await loadTemplates();
 			}
 		} finally {
@@ -500,7 +500,7 @@
 
 			if (response.ok) {
 				toaster.success(
-					`Template dupliqué : modèle personnel, à rattacher à un ${lore.entities.class} en le modifiant`
+					`Modèle dupliqué en modèle personnel, à rattacher à un ${lore.entities.class} en le modifiant`
 				);
 				await loadTemplates();
 			} else {

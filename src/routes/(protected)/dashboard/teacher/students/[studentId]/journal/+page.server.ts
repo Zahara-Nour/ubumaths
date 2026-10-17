@@ -18,6 +18,11 @@ import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/students/[studentId]/journal/+page.server'
+);
 
 // Validate studentId path parameter
 const studentIdSchema = z.object({
@@ -41,7 +46,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 
 	if (!hasAccess) {
-		throw error(403, 'Vous ne pouvez consulter que le journal de vos propres élèves');
+		throw error(403, 'Consultation réservée au journal des élèves du professeur');
 	}
 
 	// Fetch student profile
@@ -52,7 +57,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.single();
 
 	if (studentError || !student) {
-		console.error('[Teacher Journal] Error fetching student:', studentError);
+		logger.error('[Teacher Journal] Error fetching student:', studentError);
 		throw error(404, 'Élève non trouvé');
 	}
 

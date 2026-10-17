@@ -10,6 +10,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { duplicateTemplateSchema } from '$lib/server/validation/message-templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/templates/[id]/duplicate/+server');
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { supabase, user } = locals;
@@ -29,8 +32,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		logger.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	if (!profile) {
@@ -60,7 +63,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	});
 
 	if (dupError) {
-		console.error('Error duplicating template:', dupError);
+		logger.error('Error duplicating template:', dupError);
 		return error(500, dupError.message || 'Erreur lors de la duplication');
 	}
 
@@ -76,8 +79,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (classDataError && classDataError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', classDataError);
-			return error(500, 'Impossible de vérifier votre accès');
+			logger.error('Contrôle d’accès impossible :', classDataError);
+			return error(500, 'Impossible de vérifier l’accès');
 		}
 
 		if (classData) {
@@ -96,7 +99,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('Error fetching new template:', fetchError);
+		logger.error('Error fetching new template:', fetchError);
 		return error(500, 'Template dupliqué mais erreur lors de la récupération');
 	}
 

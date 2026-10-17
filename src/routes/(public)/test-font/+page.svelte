@@ -1,13 +1,21 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import { switchMathFonts, getCurrentFontSet, type MathFontSet } from '$lib/utils/mathlive-fonts';
+	import demoExercises from './exercices-demo.json';
+	import { downloadExercisePdf, type PdfFontSet } from './shantell-pdf';
 
 	let isReady = $state(false);
 	let currentFont = $state<MathFontSet>('shantell');
 	let isSwitching = $state(false);
 	let renderKey = $state(0); // Force re-render of mathfields
+	// PDF en cours de compilation : « <id>:<police> »
+	let pendingPdf = $state<string | null>(null);
 
 	// UbuMark examples mixing text and math
 	const ubumarkExamples = [
@@ -52,6 +60,46 @@
 				'On dit que $\\lim_{x \\to a} f(x) = L$ si pour tout $\\epsilon > 0$, il existe $\\delta > 0$ tel que $|x - a| < \\delta$ implique $|f(x) - L| < \\epsilon$.'
 		}
 	];
+
+	// Expression de l'éditeur : tous les symboles de la police, petits et grands,
+	// une famille par ligne
+	const showcaseLines = [
+		// Ponctuation et prime
+		"x=1{,}5\\quad I=]2;5]\\quad n!\\quad a:b\\quad f'(x)\\quad f''(x)\\quad x\\ne 2",
+		// Opérateurs et petits délimiteurs
+		'f(x)=(2x+1)(x-3)-|x-2|\\times 3\\div 4\\pm 1\\quad a/b\\approx 0{,}5\\quad\\{1;2;3\\}',
+		// Comparaisons et flèches
+		'a<b\\leq c\\quad d>e\\geq f\\quad a\\leqslant b\\geqslant c\\quad A\\rightarrow B\\leftarrow C\\leftrightarrow D\\quad\\nearrow\\searrow',
+		'x\\simeq 2\\quad f\\sim g\\quad a\\ll b\\gg c\\quad a\\mid b\\quad a\\mp b',
+		// Logique
+		'P\\Rightarrow Q\\quad P\\implies Q\\quad P\\Leftrightarrow Q\\quad P\\iff Q\\quad f:x\\mapsto x^2\\quad g:x\\longmapsto 2x',
+		'\\forall x\\in E,\\ \\exists n\\quad\\nexists y\\quad A\\land B\\lor\\lnot C\\quad P\\Leftarrow Q\\quad P\\Longleftarrow Q',
+		// Ensembles
+		'x\\in[0;1]\\cup]2;+\\infty[\\quad A\\cap B=\\emptyset\\quad C=\\varnothing\\quad\\mathbb{N}\\subset\\mathbb{Z}\\subset\\mathbb{Q}\\subset\\mathbb{R}\\subset\\mathbb{C}',
+		'x\\notin E\\quad A\\subseteq B\\supseteq C\\quad A\\subsetneq B\\supsetneq C\\quad A\\nsubseteq B\\nsupseteq C\\quad D\\supset E\\quad A\\setminus B',
+		// Vecteurs
+		'\\vec{u}+\\vec{v}=\\vec{AB}\\quad\\vec{u}\\cdot\\vec{n}=0',
+		// Géométrie
+		"(d)\\perp(d')\\quad(d)\\parallel(\\Delta)\\nparallel(D)\\quad\\angle ABC=\\measuredangle ABC=90^\\circ\\quad\\hat{A}\\quad\\bar{x}\\quad\\tilde{u}\\quad\\triangle ABC",
+		// Lettres grecques
+		'\\alpha\\beta\\gamma\\delta\\varepsilon\\zeta\\eta\\theta\\iota\\kappa\\lambda\\mu\\nu\\rho\\sigma\\tau\\upsilon\\varphi\\phi\\chi\\psi\\omega\\quad\\xi\\vartheta\\varpi\\varrho\\varsigma\\quad\\Gamma\\Delta\\Theta\\Lambda\\Xi\\Pi\\Sigma\\Upsilon\\Phi\\Psi',
+		// Lettres calligraphiques
+		'\\mathcal{S}=\\{2\\}\\quad\\mathcal{C}_f\\quad\\mathcal{P}\\quad\\mathcal{D}_f\\quad\\mathcal{L}\\quad\\mathcal{A}\\quad S\\ne\\mathcal{S}',
+		'\\mathcal{ABCDEFGHIJKLM}\\quad\\mathcal{NOPQRSTUVWXYZ}',
+		'\\mathcal{B}(n;p)\\quad\\mathcal{N}(0;1)\\quad\\mathcal{E}\\quad\\mathcal{R}\\quad\\mathcal{T}\\quad\\mathcal{F}',
+		// Lettres-symboles et divers
+		'E=\\hbar\\omega\\quad\\ell\\quad 20\\,\\%\\quad u_1,\\ldots,u_n\\quad 1+\\cdots+n\\quad\\therefore\\ \\because\\quad\\spadesuit\\heartsuit\\diamondsuit\\clubsuit',
+		'2\\pi r\\quad\\frac{\\partial f}{\\partial x}\\quad\\Omega\\quad x\\times y',
+		// Grands opérateurs
+		'\\sum_{k=0}^{n}k\\quad\\prod_{i=1}^{n}i\\quad\\coprod_i A_i\\quad\\int_0^1 x^2\\,dx\\quad\\iint_D f\\quad\\iiint_V g',
+		// Racines
+		'\\sqrt{2}\\quad\\sqrt{\\frac{a}{b}}\\quad\\sqrt{\\frac{\\frac{a}{b}}{c}}\\quad\\sqrt[3]{x}',
+		// Grands délimiteurs
+		'\\left(\\frac{2x+1}{x-3}\\right)^2\\quad\\left[\\frac{\\frac{1}{2}}{\\frac{3}{4}}\\right]\\quad\\left\\{\\frac{a}{b}\\right\\}\\quad\\left\\langle\\frac{a}{b}\\right\\rangle\\quad\\left\\lceil\\frac{a}{b}\\right\\rceil\\quad\\left\\lfloor\\frac{a}{b}\\right\\rfloor\\quad\\left|\\frac{a}{b}\\right|',
+		// Très grands délimiteurs et racine, faits de morceaux empilés
+		'\\left(\\begin{matrix}a\\\\b\\\\c\\\\d\\end{matrix}\\right)\\left[\\begin{matrix}1\\\\2\\\\3\\\\4\\end{matrix}\\right]\\left\\{\\begin{matrix}x\\\\y\\\\z\\\\t\\end{matrix}\\right.\\left\\|\\begin{matrix}u\\\\v\\\\w\\\\s\\end{matrix}\\right\\|\\quad\\sqrt{\\begin{matrix}a\\\\b\\\\c\\\\d\\end{matrix}}'
+	];
+	const showcaseLatex = `\\begin{gathered}${showcaseLines.join('\\\\')}\\end{gathered}`;
 
 	const testFormulas = [
 		{ label: 'Équation quadratique', latex: 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}' },
@@ -102,6 +150,19 @@
 		}
 	}
 
+	async function handleDownloadPdf(exercise: (typeof demoExercises)[number], fonts: PdfFontSet) {
+		if (pendingPdf) return;
+		pendingPdf = `${exercise.id}:${fonts}`;
+		try {
+			await downloadExercisePdf(exercise, fonts);
+		} catch (err) {
+			console.error('PDF de démonstration :', err);
+			toaster.error('La compilation du PDF a échoué');
+		} finally {
+			pendingPdf = null;
+		}
+	}
+
 	onMount(async () => {
 		if (browser) {
 			// Initialize with shantell fonts by default
@@ -113,7 +174,7 @@
 </script>
 
 <svelte:head>
-	<title>Test Police ShantellMath | Chiphre</title>
+	<title>Test Police Chiphre Math | Chiphre</title>
 	<style>
 		@font-face {
 			font-family: 'ShantellSans';
@@ -137,8 +198,8 @@
 			font-display: swap;
 		}
 		@font-face {
-			font-family: 'ShantellKaTeX';
-			src: url('/fonts/shantell-katex/KaTeX_Main-Regular.woff2') format('woff2');
+			font-family: 'ChiphreMathMain';
+			src: url('/fonts/chiphre-math/KaTeX_Main-Regular.woff2') format('woff2');
 			font-weight: normal;
 			font-style: normal;
 			font-display: swap;
@@ -157,8 +218,8 @@
 		.font-shantell {
 			font-family: 'ShantellMath', serif;
 		}
-		.font-shantell-katex {
-			font-family: 'ShantellKaTeX', serif;
+		.font-chiphre-math {
+			font-family: 'ChiphreMathMain', serif;
 		}
 		.font-katex-original {
 			font-family: 'KaTeXOriginal', serif;
@@ -167,51 +228,60 @@
 </svelte:head>
 
 <div class="container mx-auto p-4">
-	<h1 class="mb-4 text-2xl font-bold">Test Police ShantellMath</h1>
+	<h1 class="mb-4 text-2xl font-bold">Test Police Chiphre Math</h1>
 
 	<!-- Direct font test without MathLive -->
-	<div class="mb-8 rounded-lg border-2 border-orange-300 bg-orange-50 p-4">
-		<h2 class="mb-4 text-xl font-semibold text-orange-800">
+	<div class="mb-8 rounded-lg border-2 border-orange-300 bg-card p-4">
+		<h2 class="mb-4 text-xl font-semibold text-orange-600">
 			Test direct des polices (sans MathLive)
 		</h2>
+		<p class="mb-4 text-sm text-muted-foreground">
+			Seulement les caractères de KaTeX_Main-Regular. Les autres (² ∑ ∏ ≠ α…) s'afficheraient ici
+			dans une police du système : MathLive les prend dans d'autres polices KaTeX ou les compose,
+			comme le montrent les formules plus bas.
+		</p>
 
 		<div class="space-y-4">
-			<div class="rounded bg-white p-4">
-				<div class="mb-1 text-xs font-medium text-gray-500">ShantellMath (fichier original)</div>
-				<div class="font-shantell text-3xl">
+			<div class="rounded bg-card p-4">
+				<div class="mb-1 text-xs font-medium text-muted-foreground">
+					ShantellMath (premier essai, fichier d'origine)
+				</div>
+				<div class="font-shantell text-3xl break-all">
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 				</div>
 				<div class="font-shantell mt-2 text-2xl">
-					x² + y² = z² ∫ ∑ ∏ √ ∞ ± × ÷ = ≠ &lt; &gt; ≤ ≥ α β γ δ Γ Δ Θ Σ Ω
+					x + y = z ∫ √ ∞ ± × ÷ &lt; &gt; ≤ ≥ ∈ ∀ ∃ → ⇒ Γ Δ Θ Σ Ω
 				</div>
 			</div>
 
-			<div class="rounded bg-white p-4">
-				<div class="mb-1 text-xs font-medium text-gray-500">
-					ShantellKaTeX (copie dans shantell-katex/)
+			<div class="rounded bg-card p-4">
+				<div class="mb-1 text-xs font-medium text-muted-foreground">
+					Chiphre Math (KaTeX_Main-Regular de static/fonts/chiphre-math/)
 				</div>
-				<div class="font-shantell-katex text-3xl">
+				<div class="font-chiphre-math text-3xl break-all">
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 				</div>
-				<div class="font-shantell-katex mt-2 text-2xl">
-					x² + y² = z² ∫ ∑ ∏ √ ∞ ± × ÷ = ≠ &lt; &gt; ≤ ≥ α β γ δ Γ Δ Θ Σ Ω
+				<div class="font-chiphre-math mt-2 text-2xl">
+					x + y = z ∫ √ ∞ ± × ÷ &lt; &gt; ≤ ≥ ∈ ∀ ∃ → ⇒ Γ Δ Θ Σ Ω
 				</div>
 			</div>
 
-			<div class="rounded bg-white p-4">
-				<div class="mb-1 text-xs font-medium text-gray-500">KaTeX Original (pour comparaison)</div>
-				<div class="font-katex-original text-3xl">
+			<div class="rounded bg-card p-4">
+				<div class="mb-1 text-xs font-medium text-muted-foreground">
+					KaTeX Original (pour comparaison)
+				</div>
+				<div class="font-katex-original text-3xl break-all">
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 				</div>
 				<div class="font-katex-original mt-2 text-2xl">
-					x² + y² = z² ∫ ∑ ∏ √ ∞ ± × ÷ = ≠ &lt; &gt; ≤ ≥ α β γ δ Γ Δ Θ Σ Ω
+					x + y = z ∫ √ ∞ ± × ÷ &lt; &gt; ≤ ≥ ∈ ∀ ∃ → ⇒ Γ Δ Θ Σ Ω
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Font switcher -->
-	<div class="mb-6 flex flex-wrap items-center gap-4 rounded-lg bg-gray-100 p-4">
+	<div class="mb-6 flex flex-wrap items-center gap-4 rounded-lg bg-muted p-4">
 		<div class="flex gap-2">
 			<button
 				onclick={() => handleSwitchFont('shantell')}
@@ -219,9 +289,9 @@
 				class="rounded-lg px-4 py-2 font-medium transition-colors disabled:opacity-50 {currentFont ===
 				'shantell'
 					? 'bg-green-500 text-white'
-					: 'bg-gray-300 text-gray-700 hover:bg-gray-400'}"
+					: 'bg-secondary text-secondary-foreground hover:opacity-80'}"
 			>
-				{isSwitching && currentFont !== 'shantell' ? 'Chargement...' : 'ShantellMath'}
+				{isSwitching && currentFont !== 'shantell' ? 'Chargement...' : 'Chiphre Math'}
 			</button>
 			<button
 				onclick={() => handleSwitchFont('katex')}
@@ -229,14 +299,14 @@
 				class="rounded-lg px-4 py-2 font-medium transition-colors disabled:opacity-50 {currentFont ===
 				'katex'
 					? 'bg-blue-500 text-white'
-					: 'bg-gray-300 text-gray-700 hover:bg-gray-400'}"
+					: 'bg-secondary text-secondary-foreground hover:opacity-80'}"
 			>
 				{isSwitching && currentFont !== 'katex' ? 'Chargement...' : 'KaTeX Standard'}
 			</button>
 		</div>
-		<span class="text-sm text-gray-600">
+		<span class="text-sm text-muted-foreground">
 			Police active: <strong
-				>{currentFont === 'shantell' ? 'ShantellMath (manuscrite)' : 'KaTeX (standard)'}</strong
+				>{currentFont === 'shantell' ? 'Chiphre Math (manuscrite)' : 'KaTeX (standard)'}</strong
 			>
 		</span>
 		<span class="text-xs text-green-600"> Changement dynamique sans rechargement de page </span>
@@ -244,18 +314,18 @@
 
 	{#if !isReady}
 		<div class="flex items-center justify-center p-8">
-			<div class="text-gray-500">Chargement de MathLive...</div>
+			<div class="text-muted-foreground">Chargement de MathLive...</div>
 		</div>
 	{:else}
 		{#key renderKey}
 			<div class="mb-8">
 				<h2 class="mb-4 text-xl font-semibold">Éditeur interactif</h2>
-				<div class="rounded-lg border-2 border-gray-300 bg-white p-2">
+				<div class="rounded-lg border-2 border-border bg-card p-2">
 					<math-field style="width: 100%; font-size: 1.5rem; border: none; outline: none;">
-						x = \frac{'{-b \\pm \\sqrt{b^2 - 4ac}}'}{'{2a}'}
+						{showcaseLatex}
 					</math-field>
 				</div>
-				<p class="mt-2 text-sm text-gray-600">
+				<p class="mt-2 text-sm text-muted-foreground">
 					Cliquez pour éditer. Utilisez le clavier ou les raccourcis LaTeX.
 				</p>
 			</div>
@@ -264,9 +334,9 @@
 
 			<div class="grid gap-4 md:grid-cols-2">
 				{#each testFormulas as formula (formula.label)}
-					<div class="rounded-lg border bg-gray-50 p-4">
-						<div class="mb-2 text-sm font-medium text-gray-700">{formula.label}</div>
-						<div class="flex min-h-16 items-center justify-center rounded-lg bg-white p-4">
+					<div class="rounded-lg border bg-muted p-4">
+						<div class="mb-2 text-sm font-medium text-muted-foreground">{formula.label}</div>
+						<div class="flex min-h-16 items-center justify-center rounded-lg bg-card p-4">
 							<math-field
 								read-only
 								style="border: none; background: transparent; font-size: 1.25rem;"
@@ -275,7 +345,7 @@
 							</math-field>
 						</div>
 						<div
-							class="mt-2 overflow-x-auto rounded bg-gray-200 p-2 font-mono text-xs text-gray-600"
+							class="mt-2 overflow-x-auto rounded bg-muted p-2 font-mono text-xs text-muted-foreground"
 						>
 							{formula.latex}
 						</div>
@@ -286,17 +356,59 @@
 			<!-- UbuMark section: text mixed with math -->
 			<div class="mt-8">
 				<h2 class="mb-4 text-xl font-semibold">Texte mixte (UbuMark)</h2>
-				<p class="mb-4 text-sm text-gray-600">
+				<p class="mb-4 text-sm text-muted-foreground">
 					Test de l'harmonie entre le texte normal (Shantell Sans) et les formules mathématiques
 					(KaTeX modifié).
 				</p>
 
 				<div class="space-y-4">
 					{#each ubumarkExamples as example (example.label)}
-						<div class="rounded-lg border bg-white p-4">
-							<div class="mb-2 text-sm font-medium text-gray-500">{example.label}</div>
+						<div class="rounded-lg border bg-card p-4">
+							<div class="mb-2 text-sm font-medium text-muted-foreground">{example.label}</div>
 							<div class="font-shantell-sans text-lg leading-relaxed">
 								<InlineMarkdown content={example.content} />
+							</div>
+						</div>
+					{/each}
+				</div>
+			</div>
+
+			<!-- Exercices réels : copie figée de trois exercices de la base -->
+			<div class="mt-8">
+				<h2 class="mb-2 text-xl font-semibold">Exercices de la base</h2>
+				<p class="mb-4 text-sm text-muted-foreground">
+					Trois exercices réels (énoncé et corrigé), copiés de la base le 2026-10-12. Le PDF est
+					compilé par Typst, comme les fiches, avec Shantell Sans pour le texte et Chiphre Math pour
+					les formules ; « PDF standard » montre la même chose avec les polices habituelles.
+				</p>
+
+				<div class="space-y-6">
+					{#each demoExercises as exercise (exercise.id)}
+						<div class="rounded-lg border bg-card p-4">
+							<div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+								<h3 class="text-lg font-semibold">{exercise.title}</h3>
+								<div class="flex gap-2">
+									<Button
+										size="sm"
+										disabled={pendingPdf !== null}
+										onclick={() => handleDownloadPdf(exercise, 'shantell')}
+									>
+										{pendingPdf === `${exercise.id}:shantell` ? 'Compilation…' : 'PDF Chiphre Math'}
+									</Button>
+									<Button
+										size="sm"
+										variant="outline"
+										disabled={pendingPdf !== null}
+										onclick={() => handleDownloadPdf(exercise, 'standard')}
+									>
+										{pendingPdf === `${exercise.id}:standard` ? 'Compilation…' : 'PDF standard'}
+									</Button>
+								</div>
+							</div>
+							<div class="font-shantell-sans">
+								<MarkdownRenderer content={exercise.statement_md} />
+								<h4 class="mt-4 mb-2 font-semibold text-muted-foreground">Corrigé</h4>
+								<MarkdownRenderer content={exercise.solution_md} />
 							</div>
 						</div>
 					{/each}
@@ -306,7 +418,7 @@
 	{/if}
 
 	<div class="mt-8 rounded-lg bg-blue-50 p-4">
-		<h3 class="mb-2 font-semibold text-blue-800">À propos de ShantellMath</h3>
+		<h3 class="mb-2 font-semibold text-blue-800">À propos de Chiphre Math</h3>
 		<ul class="list-inside list-disc space-y-1 text-sm text-blue-700">
 			<li>Caractères A-Z, a-z, 0-9 remplacés par Shantell Sans (police manuscrite)</li>
 			<li>Symboles mathématiques avec effet "roughen" (petites perturbations)</li>
@@ -318,12 +430,14 @@
 	<div class="mt-4 rounded-lg bg-purple-50 p-4">
 		<h3 class="mb-2 font-semibold text-purple-800">Fonctionnement technique</h3>
 		<ul class="list-inside list-disc space-y-1 text-sm text-purple-700">
-			<li>Change dynamiquement la feuille de style CSS des polices MathLive</li>
 			<li>
-				Deux fichiers CSS: <code>mathlive-fonts-katex.css</code> et
-				<code>mathlive-fonts-shantell.css</code>
+				Polices KaTeX par défaut : <code>mathlive/static.css</code>, importé par les composants de
+				maths
 			</li>
-			<li>Chaque CSS pointe vers un repertoire de polices different</li>
+			<li>
+				Chiphre Math : la feuille <code>mathlive-fonts-shantell.css</code> est ajoutée par-dessus, puis
+				retirée pour revenir à KaTeX
+			</li>
 			<li>Force le re-render des mathfields via une cle Svelte</li>
 		</ul>
 	</div>

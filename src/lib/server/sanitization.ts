@@ -30,6 +30,9 @@
 
 import * as DOMPurifyModule from 'isomorphic-dompurify';
 import { NOTIFICATION_SANITIZE_CONFIG } from '$lib/utils/sanitize-configs';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/sanitization');
 
 // isomorphic-dompurify exports DOMPurify as both default and named export
 // Use type assertion to handle both module formats
@@ -80,7 +83,7 @@ export function sanitizeNotificationHtml(html: string): string {
 		const cleanedLength = cleaned.length;
 		const removed = originalLength - cleanedLength;
 
-		console.warn('[SECURITY] Notification HTML sanitized - potential XSS attempt blocked', {
+		logger.warn('[SECURITY] Notification HTML sanitized - potential XSS attempt blocked', {
 			original_length: originalLength,
 			cleaned_length: cleanedLength,
 			removed_bytes: removed,
@@ -90,8 +93,8 @@ export function sanitizeNotificationHtml(html: string): string {
 
 		// Additional logging for debugging (only in development)
 		if (process.env.NODE_ENV === 'development') {
-			console.warn('[SECURITY] Original HTML (first 200 chars):', html.substring(0, 200));
-			console.warn('[SECURITY] Cleaned HTML (first 200 chars):', cleaned.substring(0, 200));
+			logger.warn('[SECURITY] Original HTML (first 200 chars):', html.substring(0, 200));
+			logger.warn('[SECURITY] Cleaned HTML (first 200 chars):', cleaned.substring(0, 200));
 		}
 	}
 

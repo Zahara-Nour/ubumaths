@@ -29,12 +29,7 @@ import {
 // Types
 /** Statut d'affichage : la couleur est choisie par l'écran ou le PDF */
 export type ExpectedStatus =
-	| 'correct'
-	| 'unoptimal'
-	| 'incorrect'
-	| 'empty'
-	| 'solution'
-	| 'neutral';
+	'correct' | 'unoptimal' | 'incorrect' | 'empty' | 'solution' | 'neutral';
 
 /** Valeur à mettre dans une case : solution, ou réponse de l'élève */
 export interface ExpectedFill {

@@ -51,6 +51,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import type { TablesUpdate } from '$lib/types/database';
@@ -61,6 +62,9 @@ import {
 	bulkUnshareMaterialSchema,
 	uuidSchema
 } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/shared-materials/+server');
 
 /**
  * List all shared materials for the teacher
@@ -70,6 +74,8 @@ import {
  * Supports pagination and filtering by class, course, and visibility
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can list shared materials
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -143,8 +149,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const { data: sharedMaterialsList, error: fetchError, count } = await query;
 
 		if (fetchError) {
-			console.error('[Google Shared Materials] Database error:', fetchError);
-			throw error(500, 'Failed to fetch shared materials');
+			logger.error('[Google Shared Materials] Database error:', fetchError);
+			throw error(500, 'Impossible de charger les supports partagés');
 		}
 
 		// Optimize: Fetch all courses in bulk queries instead of N+1
@@ -172,7 +178,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.eq('teacher_id', user.id);
 
 		if (coursesError) {
-			console.error('[Google Shared Materials] Courses fetch error:', coursesError);
+			logger.error('[Google Shared Materials] Courses fetch error:', coursesError);
 		}
 
 		// Create course lookup map
@@ -191,7 +197,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.in('google_material_id', materialIds);
 
 		if (attachmentsError) {
-			console.error('[Google Shared Materials] Attachments fetch error:', attachmentsError);
+			logger.error('[Google Shared Materials] Attachments fetch error:', attachmentsError);
 		}
 
 		// Group attachments by material_id
@@ -224,12 +230,12 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			return {
 				id: item.id,
 				materialId: item.material_id,
-				materialTitle: material?.title || 'Untitled',
+				materialTitle: material?.title || 'Sans titre',
 				materialDescription: material?.description || null,
 				courseId: course?.id || null,
-				courseName: course?.name || 'Unknown Course',
+				courseName: course?.name || 'Cours Classroom inconnu',
 				classId: item.class_id,
-				className: className || 'Unknown Class',
+				className: className || 'Classe inconnue',
 				visible: item.visible,
 				categoryId: item.category_id,
 				categoryName: categoryData?.name || null,
@@ -259,8 +265,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		}
 
 		// Handle other errors
-		console.error('[Google Shared Materials] Error fetching data:', err);
-		throw error(500, 'An error occurred while fetching shared materials');
+		logger.error('[Google Shared Materials] Error fetching data:', err);
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -272,6 +278,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
  * Creates shared_materials records for material+class combinations
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -300,27 +308,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (materialError) {
 		if (materialError.code === 'PGRST116') {
-			throw error(404, 'Material not found or access denied');
+			throw error(404, 'Support introuvable ou accès refusé');
 		}
-		console.error('[Share Material] Error fetching material:', materialError);
-		throw error(500, 'Failed to fetch material');
+		logger.error('[Share Material] Error fetching material:', materialError);
+		throw error(500, 'Impossible de charger le support');
 	}
 
 	if (!material) {
-		throw error(404, 'Material not found');
+		throw error(404, 'Support introuvable');
 	}
 
 	// Verify material belongs to teacher
 	const courseData = material.google_classroom_courses as unknown as
-		| { teacher_id: string }
-		| { teacher_id: string }[];
+		{ teacher_id: string } | { teacher_id: string }[];
 	const teacherId = Array.isArray(courseData) ? courseData[0]?.teacher_id : courseData?.teacher_id;
 
 	if (teacherId !== user.id) {
-		console.error(
+		logger.error(
 			`[Share Material] Unauthorized material access attempt by teacher ${user.id}: material ${materialId}`
 		);
-		throw error(403, 'You do not own this material');
+		throw error(403, 'Ce support appartient à un autre professeur');
 	}
 
 	// Verify teacher owns all classes
@@ -331,12 +338,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.eq('is_active', true);
 
 	if (classesError) {
-		console.error('[Share Material] Error fetching classes:', classesError);
-		throw error(500, 'Failed to verify class ownership');
+		logger.error('[Share Material] Error fetching classes:', classesError);
+		throw error(500, 'Impossible de vérifier les classes');
 	}
 
 	if (!classes || classes.length !== classIds.length) {
-		throw error(400, 'One or more classes not found or inactive');
+		throw error(400, 'Classe introuvable ou inactive');
 	}
 
 	// If categoryId is provided, verify it belongs to one of the teacher's classes
@@ -348,7 +355,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (categoryError || !category) {
-			throw error(400, 'Category not found');
+			throw error(400, 'Catégorie introuvable');
 		}
 
 		// Verify the category's class is accessible (mono-teacher: RLS-scoped)
@@ -359,7 +366,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (categoryClassError || !categoryClass) {
-			throw error(400, 'Category does not belong to one of your classes');
+			throw error(400, 'Cette catégorie n’appartient à aucune classe du professeur');
 		}
 	}
 
@@ -372,7 +379,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (topicError || !topic) {
-			throw error(400, 'Topic not found');
+			throw error(400, 'Sujet Classroom introuvable');
 		}
 
 		// Verify topic belongs to a course owned by teacher
@@ -384,7 +391,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (topicCourseError || !topicCourse) {
-			throw error(400, 'Topic does not belong to one of your courses');
+			throw error(400, 'Ce sujet Classroom n’appartient à aucun cours Classroom du professeur');
 		}
 	}
 
@@ -406,8 +413,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 	if (insertError) {
-		console.error('[Share Material] Error sharing material:', insertError);
-		throw error(500, 'Failed to share material');
+		logger.error('[Share Material] Error sharing material:', insertError);
+		throw error(500, 'Impossible de partager le support');
 	}
 
 	return json({
@@ -424,6 +431,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
  * Deletes shared_materials records (idempotent)
  */
 export const DELETE: RequestHandler = async ({ request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -446,10 +455,10 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 
 	if (materialError || !material) {
 		if (materialError?.code === 'PGRST116') {
-			throw error(404, 'Material not found or access denied');
+			throw error(404, 'Support introuvable ou accès refusé');
 		}
-		console.error('[Unshare Material] Material verification error:', materialError);
-		throw error(403, 'Material does not belong to you');
+		logger.error('[Unshare Material] Material verification error:', materialError);
+		throw error(403, 'Ce support appartient à un autre professeur');
 	}
 
 	// Verify teacher owns all classes
@@ -459,12 +468,12 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		.in('id', classIds);
 
 	if (classesError) {
-		console.error('[Unshare Material] Error fetching classes:', classesError);
-		throw error(500, 'Failed to verify class ownership');
+		logger.error('[Unshare Material] Error fetching classes:', classesError);
+		throw error(500, 'Impossible de vérifier les classes');
 	}
 
 	if (!classes || classes.length !== classIds.length) {
-		throw error(400, 'One or more classes not found or access denied');
+		throw error(400, 'Classe introuvable ou accès refusé');
 	}
 
 	// Delete from shared_materials (bulk, idempotent - no error if not found)
@@ -476,13 +485,13 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		.eq('shared_by', user.id);
 
 	if (deleteError) {
-		console.error('[Unshare Material] Delete error:', deleteError);
-		throw error(500, 'Failed to unshare material');
+		logger.error('[Unshare Material] Delete error:', deleteError);
+		throw error(500, 'Impossible d’arrêter le partage du support');
 	}
 
 	return json({
 		success: true,
-		message: 'Material unshared successfully'
+		message: 'Partage du support arrêté'
 	});
 };
 
@@ -494,6 +503,8 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
  * Updates visibility, category, or custom description
  */
 export const PATCH: RequestHandler = async ({ locals, request }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can update shared materials
 	await requireRole(locals, 'teacher');
 
@@ -502,17 +513,17 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 	try {
 		requestBody = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON in request body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	// Extract and validate sharedMaterialId
 	if (!requestBody || typeof requestBody !== 'object' || !('sharedMaterialId' in requestBody)) {
-		throw error(400, 'sharedMaterialId is required');
+		throw error(400, 'Identifiant de support partagé requis');
 	}
 
 	const idValidation = uuidSchema.safeParse(requestBody.sharedMaterialId);
 	if (!idValidation.success) {
-		throw error(400, 'Invalid sharedMaterialId: ' + idValidation.error.issues[0].message);
+		throw error(400, 'Identifiant de support partagé invalide');
 	}
 
 	const sharedMaterialId = idValidation.data;
@@ -537,10 +548,10 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 
 		if (fetchError || !existingRecord) {
 			if (fetchError?.code === 'PGRST116') {
-				throw error(404, 'Shared material not found or access denied');
+				throw error(404, 'Support partagé introuvable ou accès refusé');
 			}
-			console.error('[Google Shared Materials] Record verification error:', fetchError);
-			throw error(403, 'You do not have permission to update this record');
+			logger.error('[Google Shared Materials] Record verification error:', fetchError);
+			throw error(403, 'Ce partage appartient à un autre professeur');
 		}
 
 		// If categoryId is being updated and is not null, verify it belongs to teacher (via class)
@@ -552,7 +563,7 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 				.single();
 
 			if (categoryError || !category) {
-				throw error(400, 'Category not found');
+				throw error(400, 'Catégorie introuvable');
 			}
 
 			// Verify the category's class is accessible (mono-teacher: RLS-scoped)
@@ -563,7 +574,7 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 				.single();
 
 			if (categoryClassError || !categoryClass) {
-				throw error(400, 'Category does not belong to one of your classes');
+				throw error(400, 'Cette catégorie n’appartient à aucune classe du professeur');
 			}
 		}
 
@@ -606,8 +617,8 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 			.single();
 
 		if (updateError) {
-			console.error('[Google Shared Materials] Update error:', updateError);
-			throw error(500, 'Failed to update shared material');
+			logger.error('[Google Shared Materials] Update error:', updateError);
+			throw error(500, 'Impossible de modifier le support partagé');
 		}
 
 		// Transform to camelCase
@@ -631,7 +642,7 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 		}
 
 		// Handle other errors
-		console.error('[Google Shared Materials] Error updating record:', err);
-		throw error(500, 'An error occurred while updating shared material');
+		logger.error('[Google Shared Materials] Error updating record:', err);
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

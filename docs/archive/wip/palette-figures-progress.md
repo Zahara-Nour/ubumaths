@@ -90,7 +90,7 @@ Contraste ≥ 4,5 sur page et carte (`#ffffff`/`#fafafa`, `#262624`/`#2f2f2f`). 
 - **Deux bleus jusqu'au lot 2** : un objet sans couleur garde le défaut `#1e40af`, un objet
   `bleu` prend `#2563eb`. Le lot 2 rendra le défaut thémable (à trancher dans sa spécification).
 - `#000000` écrit par un auteur dans un bloc ```figure est assimilé au défaut et suit le texte
-(comportement antérieur, conservé) ; `#000` reste noir.
+  (comportement antérieur, conservé) ; `#000` reste noir.
 
 ## Trouvé en route (hors lot)
 

@@ -557,13 +557,7 @@ export interface ParsedTable {
  * Section levels in LaTeX
  */
 export type SectionLevel =
-	| 'part'
-	| 'chapter'
-	| 'section'
-	| 'subsection'
-	| 'subsubsection'
-	| 'paragraph'
-	| 'subparagraph';
+	'part' | 'chapter' | 'section' | 'subsection' | 'subsubsection' | 'paragraph' | 'subparagraph';
 
 /**
  * Parsed section information

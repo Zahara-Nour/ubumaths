@@ -21,6 +21,9 @@ import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { orderExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/exercise-number/[number]/+server');
 
 /** Borne haute large mais finie : aucune fiche réelle n'a mille exercices. */
 const numberSchema = z.coerce.number().int().min(1).max(999);
@@ -48,8 +51,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		]);
 
 	if (exercisesError || sectionsError) {
-		console.error('[exercise-number] fiche illisible:', exercisesError ?? sectionsError);
-		throw error(500, 'Erreur lors de la lecture de la fiche');
+		logger.error('[exercise-number] fiche illisible:', exercisesError ?? sectionsError);
+		throw error(500, 'Impossible de lire la fiche');
 	}
 
 	const ordered = orderExercisesForDisplay(exercises ?? [], sections ?? []);

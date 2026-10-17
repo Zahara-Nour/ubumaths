@@ -76,6 +76,19 @@ Un goût nouveau ou un refus qui se répète → le dire (« note-le dans le ski
 
 ---
 
+## `fiches-exercices` — créer les fiches d'un thème pour un niveau
+
+Se déclenche dès qu'on demande une fiche d'exercices (technique, applications, ou un thème pour un
+niveau) ; il refuse de travailler sans **grade** et **thème** précisés.
+
+- **Avant tout travail**, il interroge la base de production en lecture seule : si les deux fiches
+  (technique et applications) existent déjà pour ce niveau et ce thème, il s'arrête et te demande
+  quoi faire.
+- Il suit la démarche de [fiches-exercices.md](fiches-exercices.md), modèle par tâche compris.
+- Rien n'est écrit en production sans ton accord (`--publier`).
+
+---
+
 ## Les commandes du projet : retirées le 2026-10-10
 
 Les quatorze commandes de `.claude/commands/` (`/feature`, `/fix`, `/pr`, `/check`…) ont été retirées.

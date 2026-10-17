@@ -230,8 +230,12 @@ export function accentTspans(runs: readonly TextRun[]): AccentTspan[] {
 	return out;
 }
 
-/** Repère (grille, axes, graduations) en px de la fenêtre. */
-function frameToSvg(
+/**
+ * Repère (grille, axes, graduations) en px de la fenêtre. Exporté pour la
+ * toile interactive des figures stockées (`FigureFrameLayer`), qui le redessine
+ * à chaque déplacement de la vue.
+ */
+export function frameToSvg(
 	frame: NonNullable<FigureScene['frame']>,
 	toPx: (x: number, y: number) => { x: number; y: number },
 	width: number,

@@ -137,9 +137,10 @@ function formatExpressionLatex(
 // Renderer
 // =============================================================================
 
-export class PedagogicalDifferentiationRenderer
-	implements StepRenderer<PedagogicalDifferentiationStep, DifferentiationRenderOptions>
-{
+export class PedagogicalDifferentiationRenderer implements StepRenderer<
+	PedagogicalDifferentiationStep,
+	DifferentiationRenderOptions
+> {
 	render(
 		step: PedagogicalDifferentiationStep,
 		options: DifferentiationRenderOptions

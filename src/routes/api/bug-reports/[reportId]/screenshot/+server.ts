@@ -17,6 +17,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { MAX_IMAGE_SIZE_BYTES, validateFileSignature } from '$lib/server/validation/image-upload';
 import { DISPLAY_SIGNED_URL_TTL } from '$lib/server/bug-report-screenshots';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/bug-reports/[reportId]/screenshot/+server');
 
 const reportIdSchema = z.string().uuid('ID de rapport invalide');
 
@@ -43,7 +46,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	if (report.user_id !== user.id) {
-		throw error(403, 'Vous ne pouvez ajouter une capture que sur vos propres rapports');
+		throw error(403, 'Ajout de capture réservé à l’auteur du rapport');
 	}
 
 	// Check Content-Type
@@ -107,25 +110,38 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			});
 
 		if (uploadError) {
-			console.error('[API] Error uploading screenshot:', uploadError);
+			logger.error('[API] Error uploading screenshot:', uploadError);
 			throw error(500, "Erreur lors de l'upload de la capture d'écran");
 		}
 
 		// Bucket is private: there is no durable public URL. We store only the
 		// storage path; signed URLs are generated on read (see bug-report-screenshots.ts).
-		const { error: updateError } = await locals.supabase
+		//
+		// ⚠️ Une mise à jour refusée par la RLS touche zéro ligne sans erreur. Sans
+		// les lignes rendues, on annonçait la capture enregistrée alors que le
+		// rapport ne la référençait pas, et le fichier restait orphelin au bucket.
+		const { data: updatedReports, error: updateError } = await locals.supabase
 			.from('bug_reports')
 			.update({
 				screenshot_url: null,
 				screenshot_path: storagePath
 			})
-			.eq('id', params.reportId);
+			.eq('id', params.reportId)
+			.select('id');
 
 		if (updateError) {
-			console.error('[API] Error updating bug report with screenshot:', updateError);
+			logger.error('[API] Error updating bug report with screenshot:', updateError);
 			// Try to clean up the uploaded file
 			await locals.supabase.storage.from(BUCKET_NAME).remove([storagePath]);
 			throw error(500, 'Erreur lors de la mise à jour du rapport');
+		}
+
+		if (!updatedReports || updatedReports.length === 0) {
+			logger.error('[API] Capture non rattachée au rapport', params.reportId);
+			// Le fichier vient d'être envoyé : sans rapport qui le référence, il
+			// resterait orphelin dans le bucket.
+			await locals.supabase.storage.from(BUCKET_NAME).remove([storagePath]);
+			throw error(403, 'Capture non enregistrée : rapport non modifiable');
 		}
 
 		// Return a short-lived signed URL so the client can preview immediately.
@@ -134,7 +150,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			.createSignedUrl(storagePath, DISPLAY_SIGNED_URL_TTL);
 
 		if (signedError) {
-			console.error('Lecture impossible :', signedError);
+			logger.error('Lecture impossible :', signedError);
 			throw error(500, 'Impossible de charger les données');
 		}
 
@@ -151,7 +167,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[API] Unexpected error in POST /api/bug-reports/[reportId]/screenshot:', err);
+		logger.error('[API] Unexpected error in POST /api/bug-reports/[reportId]/screenshot:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

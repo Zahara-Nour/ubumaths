@@ -35,12 +35,7 @@ export type Family = 'knowledge' | 'competence';
  * en PL/pgSQL utilise ces codes (cf. décision 69, migration 1.2).
  */
 export type MathCompetenceCode =
-	| 'chercher'
-	| 'modeliser'
-	| 'representer'
-	| 'raisonner'
-	| 'calculer'
-	| 'communiquer';
+	'chercher' | 'modeliser' | 'representer' | 'raisonner' | 'calculer' | 'communiquer';
 
 /**
  * Niveau du socle commun (LSU) pour une compétence math, calculé par règle
@@ -50,9 +45,9 @@ export type MathCompetenceCode =
 export type MathCompetenceLevel = 'insuffisante' | 'fragile' | 'satisfaisante' | 'tres_bonne';
 
 /**
- * Lettre d'une sous-dimension du cadre canonique (A/B/C/D).
+ * Lettre d'une composante du cadre canonique (A/B/C/D).
  * En DB : `math_competence_subdimensions.letter`.
- * Les sous-dimensions sont des regroupements structurels sans état propre
+ * Les composantes sont des regroupements structurels sans état propre
  * (décision 50).
  */
 export type SubdimensionLetter = 'A' | 'B' | 'C' | 'D';
@@ -199,7 +194,7 @@ export type ObjectiveLevel = 0 | 1 | 2 | 3 | 4;
 export type MissingForNextItem =
 	/** Un observable précis manque (ex. C2 pour Chercher Très bonne) */
 	| { kind: 'observable'; code: string }
-	/** Au moins 1 observable de cette sous-dimension manque (ex. ≥ 1 de D pour Chercher Très bonne) */
+	/** Au moins 1 observable de cette composante manque (ex. ≥ 1 de D pour Chercher Très bonne) */
 	| { kind: 'one_of_subdim'; letter: SubdimensionLetter }
 	/** Au moins n observables sur total (ex. ≥ 2 des 3 obs de A pour Chercher Satisfaisante) */
 	| { kind: 'n_of_subdim'; letter: SubdimensionLetter; n: number; total: number }

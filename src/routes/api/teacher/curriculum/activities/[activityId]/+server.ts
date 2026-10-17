@@ -13,6 +13,9 @@ import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { curriculumDbError } from '$lib/server/curriculum';
 import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/curriculum/activities/[activityId]/+server');
 
 /** Kinds whose tags feed the entry's auto coverage. */
 const TAGGED_KINDS = new Set(['exercise', 'question', 'assessment']);
@@ -28,7 +31,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		.maybeSingle();
 
 	if (fetchErr) {
-		console.error('[curriculum] activity fetch (DELETE) failed:', fetchErr);
+		logger.error('[curriculum] activity fetch (DELETE) failed:', fetchErr);
 		return json({ error: 'Échec de la suppression' }, { status: 500 });
 	}
 	if (!activity) {
@@ -45,7 +48,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		console.error('[curriculum] activity DELETE failed:', dbErr);
+		logger.error('[curriculum] activity DELETE failed:', dbErr);
 		return json({ error: dbErr.message }, { status: 500 });
 	}
 
@@ -53,7 +56,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		try {
 			await reconcileAutoCoverage(locals.supabase, entry_id);
 		} catch (e) {
-			console.error('[curriculum] reconcile after activity DELETE failed:', e);
+			logger.error('[curriculum] reconcile after activity DELETE failed:', e);
 		}
 	}
 

@@ -554,3 +554,32 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 		});
 	});
 });
+
+describe('`\\$` et `$` dans un `\\text{…}` (2026-10-13)', () => {
+	it('`\\$` dans une formule reste `\\$` dans l’expression', () => {
+		const { placeholders } = extractMath('Prix : $5\\$ + 3\\$$ et $$7\\$$$');
+		expect(placeholders.map((p) => p.expression)).toEqual(['7\\$', '5\\$ + 3\\$']);
+	});
+
+	it('`\\~` dans une formule reste `\\~` dans l’expression', () => {
+		const { placeholders } = extractMath('$a \\~ b$');
+		expect(placeholders[0].expression).toBe('a \\~ b');
+	});
+
+	it('le `$` d’un `\\text{…}` ne ferme pas la formule', () => {
+		const { text, placeholders } = extractMath('Soit $x = \\text{ si $a>0$ }$ fin.');
+		expect(placeholders).toHaveLength(1);
+		expect(placeholders[0].expression).toBe('x = \\text{ si $a>0$ }');
+		expect(text).toBe(`Soit ${placeholders[0].placeholder} fin.`);
+	});
+
+	it('deux formules séparées par du texte restent deux formules', () => {
+		const { placeholders } = extractMath('$\\text{a}$ puis $b$, et $c$');
+		expect(placeholders.map((p) => p.expression)).toEqual(['\\text{a}', 'b', 'c']);
+	});
+
+	it('un `\\text{` non fermé garde le découpage d’avant', () => {
+		const { placeholders } = extractMath('$\\text{a$ puis $b$');
+		expect(placeholders.map((p) => p.expression)).toEqual(['\\text{a', 'b']);
+	});
+});

@@ -3,11 +3,12 @@
 	import type { Component } from 'svelte';
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
-	import { ArrowLeft, Edit, Trash2, Globe, Lock, User, Calendar } from '@lucide/svelte';
+	import { Edit, Trash2, Globe, Lock, User, Calendar } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -40,7 +41,7 @@
 			});
 
 			if (response.ok) {
-				toaster.success('Construction supprimee');
+				toaster.success('Construction supprimée');
 				goto('/constructions');
 			} else {
 				const result = await response.json();
@@ -77,10 +78,7 @@
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">
 	<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 		<div class="flex flex-col gap-4">
-			<Button variant="ghost" href="/constructions" class="w-fit">
-				<ArrowLeft class="mr-2 h-4 w-4" />
-				Retour aux constructions
-			</Button>
+			<BackLink href="/constructions" label="Retour aux constructions" class="mb-0 self-start" />
 
 			<div>
 				<h1 class="text-2xl font-bold sm:text-3xl">{data.construction.title}</h1>

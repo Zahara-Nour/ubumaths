@@ -19,6 +19,9 @@ import {
 } from '$lib/server/exercise-share-tokens';
 import { validateCreateShareToken } from '$lib/server/validation/exercises';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/[id]/share/+server');
 
 /**
  * POST /api/exercises/[id]/share
@@ -38,11 +41,11 @@ export const POST: RequestHandler = async ({ locals, params, request, url }) => 
 	// Verify exercise exists and belongs to user
 	const exerciseResult = await getExercise(locals.supabase, exerciseId);
 	if (exerciseResult.error || !exerciseResult.data) {
-		throw error(404, 'Exercise not found');
+		throw error(404, 'Exercice introuvable');
 	}
 
 	if (exerciseResult.data.created_by !== user.id) {
-		throw error(403, 'You can only create share tokens for your own exercises');
+		throw error(403, 'Seul l’auteur de l’exercice peut créer un lien de partage');
 	}
 
 	// Parse and validate request body
@@ -50,7 +53,7 @@ export const POST: RequestHandler = async ({ locals, params, request, url }) => 
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateCreateShareToken(body);
@@ -58,7 +61,7 @@ export const POST: RequestHandler = async ({ locals, params, request, url }) => 
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	// Create share token
@@ -70,8 +73,8 @@ export const POST: RequestHandler = async ({ locals, params, request, url }) => 
 	);
 
 	if (tokenResult.error || !tokenResult.data) {
-		console.error('Failed to create share token:', tokenResult.error);
-		throw error(500, 'Failed to create share token');
+		logger.error('Failed to create share token:', tokenResult.error);
+		throw error(500, 'Impossible de créer le lien de partage');
 	}
 
 	// Build shareable URL
@@ -102,19 +105,19 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Verify exercise exists and belongs to user
 	const exerciseResult = await getExercise(locals.supabase, exerciseId);
 	if (exerciseResult.error || !exerciseResult.data) {
-		throw error(404, 'Exercise not found');
+		throw error(404, 'Exercice introuvable');
 	}
 
 	if (exerciseResult.data.created_by !== user.id) {
-		throw error(403, 'You can only view share tokens for your own exercises');
+		throw error(403, 'Seul l’auteur de l’exercice peut voir ses liens de partage');
 	}
 
 	// Get tokens
 	const tokensResult = await getExerciseShareTokens(locals.supabase, exerciseId);
 
 	if (tokensResult.error) {
-		console.error('Failed to fetch share tokens:', tokensResult.error);
-		throw error(500, 'Failed to fetch share tokens');
+		logger.error('Failed to fetch share tokens:', tokensResult.error);
+		throw error(500, 'Impossible de charger les liens de partage');
 	}
 
 	return json({

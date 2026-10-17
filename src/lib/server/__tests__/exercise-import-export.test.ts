@@ -14,8 +14,10 @@ import {
 	generateExportFilename,
 	importExerciseFromJSON,
 	importExerciseFromMarkdown,
-	importExercisesFromJSON
+	importExercisesFromJSON,
+	DUPLICATE_SCAN_PAGE_SIZE
 } from '../exercise-import-export';
+import { validateExerciseExport } from '$lib/exercises/validation';
 import type { Exercise } from '$lib/exercises/types';
 
 // Stub tag-resolution helpers: importExerciseFromJSON calls createExercise()
@@ -57,7 +59,8 @@ const createMockSupabase = () => {
 	const mockQuery = {
 		select: vi.fn().mockReturnThis(),
 		eq: vi.fn().mockReturnThis(),
-		limit: vi.fn().mockReturnThis(),
+		order: vi.fn().mockReturnThis(),
+		range: vi.fn().mockReturnThis(),
 		insert: vi.fn().mockReturnThis(),
 		update: vi.fn().mockReturnThis(),
 		single: vi.fn().mockReturnThis(),
@@ -231,8 +234,8 @@ describe('importExerciseFromJSON', () => {
 			title: 'Imported Exercise'
 		};
 
-		// Mock no duplicates found (limit returns empty array)
-		mockSupabase.__mockQuery.limit.mockResolvedValue({ data: [], error: null });
+		// Mock no duplicates found (range returns empty array)
+		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null });
 		// Mock successful insert
 		mockSupabase.__mockQuery.single.mockResolvedValue({
 			data: { id: 'new-ex-id', ...jsonData, created_by: 'user-123' },
@@ -258,8 +261,8 @@ describe('importExerciseFromJSON', () => {
 			title: 'Duplicate'
 		};
 
-		// Mock duplicate found (limit returns the duplicate with variations for content extraction)
-		mockSupabase.__mockQuery.limit.mockResolvedValue({
+		// Mock duplicate found (range returns the duplicate with variations for content extraction)
+		mockSupabase.__mockQuery.range.mockResolvedValue({
 			data: [
 				{
 					id: 'existing-ex-id',
@@ -294,7 +297,7 @@ describe('importExerciseFromJSON', () => {
 		};
 
 		// Mock duplicate found (with variations for content extraction)
-		mockSupabase.__mockQuery.limit.mockResolvedValueOnce({
+		mockSupabase.__mockQuery.range.mockResolvedValueOnce({
 			data: [
 				{
 					id: 'existing-ex-id',
@@ -352,7 +355,7 @@ describe('importExerciseFromJSON', () => {
 		};
 
 		// Mock duplicate found (with variations for content extraction)
-		mockSupabase.__mockQuery.limit.mockResolvedValueOnce({
+		mockSupabase.__mockQuery.range.mockResolvedValueOnce({
 			data: [
 				{
 					id: 'other-user-ex-id',
@@ -383,7 +386,8 @@ describe('importExerciseFromJSON', () => {
 		const mockQuery1 = {
 			select: vi.fn().mockReturnThis(),
 			eq: vi.fn().mockReturnThis(),
-			limit: vi.fn().mockResolvedValue({
+			order: vi.fn().mockReturnThis(),
+			range: vi.fn().mockResolvedValue({
 				data: [
 					{
 						id: 'existing-ex-id',
@@ -454,7 +458,8 @@ describe('importExerciseFromJSON', () => {
 		const mockQuery1 = {
 			select: vi.fn().mockReturnThis(),
 			eq: vi.fn().mockReturnThis(),
-			limit: vi.fn().mockResolvedValue({
+			order: vi.fn().mockReturnThis(),
+			range: vi.fn().mockResolvedValue({
 				data: [
 					{
 						id: 'existing-ex-id',
@@ -532,7 +537,7 @@ describe('importExerciseFromJSON', () => {
 		expect(result.success).toBe(false);
 		expect(result.error).toBeDefined();
 		// Union validation fails when category is invalid
-		expect(result.error).toContain('Invalid');
+		expect(result.error).toContain('invalide');
 	});
 
 	it('should skip validation when validate is false', async () => {
@@ -546,7 +551,7 @@ describe('importExerciseFromJSON', () => {
 		};
 
 		// Mock no duplicates
-		mockSupabase.__mockQuery.limit.mockResolvedValue({ data: [], error: null });
+		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null });
 		// Mock successful insert (would fail validation normally)
 		mockSupabase.__mockQuery.single.mockResolvedValue({
 			data: { id: 'new-id', category: 'invalid_category', created_by: 'user-123' },
@@ -594,7 +599,7 @@ Answer from markdown
 `;
 
 		// Mock no duplicates
-		mockSupabase.__mockQuery.limit.mockResolvedValue({ data: [], error: null });
+		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null });
 		// Mock successful insert
 		mockSupabase.__mockQuery.single.mockResolvedValue({
 			data: {
@@ -658,7 +663,7 @@ describe('importExercisesFromJSON', () => {
 		];
 
 		// Mock no duplicates for both
-		mockSupabase.__mockQuery.limit.mockResolvedValue({ data: [], error: null });
+		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null });
 		// Mock successful inserts
 		mockSupabase.__mockQuery.single
 			.mockResolvedValueOnce({ data: { id: 'ex-1' }, error: null })
@@ -702,11 +707,11 @@ describe('importExercisesFromJSON', () => {
 		];
 
 		// First: no duplicate, successful insert
-		mockSupabase.__mockQuery.limit.mockResolvedValueOnce({ data: [], error: null });
+		mockSupabase.__mockQuery.range.mockResolvedValueOnce({ data: [], error: null });
 		mockSupabase.__mockQuery.single.mockResolvedValueOnce({ data: { id: 'ex-1' }, error: null });
 
 		// Second: duplicate found
-		mockSupabase.__mockQuery.limit.mockResolvedValueOnce({
+		mockSupabase.__mockQuery.range.mockResolvedValueOnce({
 			data: [
 				{
 					id: 'existing',
@@ -730,7 +735,7 @@ describe('importExercisesFromJSON', () => {
 		expect(result.errors).toHaveLength(1);
 		expect(result.errors[0].index).toBe(2);
 		// Union validation fails when category is invalid
-		expect(result.errors[0].error).toContain('Invalid');
+		expect(result.errors[0].error).toContain('invalide');
 	});
 
 	it('should reject non-array input', async () => {
@@ -748,5 +753,122 @@ describe('importExercisesFromJSON', () => {
 		expect(result.success).toBe(false);
 		expect(result.imported).toBe(0);
 		expect(result.errors[0].error).toContain('array');
+	});
+});
+
+describe('doublons à l’import : TOUS les exercices de l’auteur', () => {
+	it('trouve un doublon au-delà de la première page (lecture paginée et ordonnée)', async () => {
+		const mockSupabase = createMockSupabase() as any;
+		const otherRows = Array.from({ length: DUPLICATE_SCAN_PAGE_SIZE }, (_, i) => ({
+			id: `other-${i}`,
+			title: `Autre ${i}`,
+			shared: null,
+			variations: [{ label: 'default', statement_md: `Énoncé ${i}`, solution_md: 'R' }]
+		}));
+		mockSupabase.__mockQuery.range
+			.mockResolvedValueOnce({ data: otherRows, error: null })
+			.mockResolvedValueOnce({
+				data: [
+					{
+						id: 'dup-page-2',
+						title: 'Tardif',
+						shared: null,
+						variations: [{ label: 'default', statement_md: 'Question tardive', solution_md: 'R' }]
+					}
+				],
+				error: null
+			});
+
+		const result = await importExerciseFromJSON(
+			mockSupabase,
+			{
+				version: '1.0',
+				category: 'automatisme',
+				tags: [],
+				statement_md: 'Question tardive',
+				solution_md: 'R',
+				title: 'Tardif'
+			},
+			'user-123',
+			{ onDuplicate: 'skip' }
+		);
+
+		expect(result).toMatchObject({ success: true, skipped: true, exerciseId: 'dup-page-2' });
+		expect(mockSupabase.__mockQuery.order).toHaveBeenCalledWith('id', { ascending: true });
+		expect(mockSupabase.__mockQuery.range).toHaveBeenNthCalledWith(
+			2,
+			DUPLICATE_SCAN_PAGE_SIZE,
+			2 * DUPLICATE_SCAN_PAGE_SIZE - 1
+		);
+	});
+});
+
+describe('export : fonctions génériques, ressources, mode de distribution', () => {
+	const fullExercise: Exercise = {
+		...sampleExercise,
+		slug: 'pythagore-unique',
+		generic_functions: ['f', 'P'],
+		resources: [{ type: 'video', url: 'https://example.org/v', title: 'Vidéo' }],
+		distribution_mode: 'per_student'
+	};
+
+	it('les porte dans le JSON, sans le slug (qui doit rester unique)', () => {
+		const parsed = JSON.parse(exportExerciseToJSON(fullExercise));
+
+		expect(parsed.generic_functions).toEqual(['f', 'P']);
+		expect(parsed.resources).toEqual([
+			{ type: 'video', url: 'https://example.org/v', title: 'Vidéo' }
+		]);
+		expect(parsed.distribution_mode).toBe('per_student');
+		expect(parsed.slug).toBeUndefined();
+	});
+
+	it('l’import les relit (validation Zod)', () => {
+		const parsed = JSON.parse(exportExerciseToJSON(fullExercise));
+		const validation = validateExerciseExport(parsed);
+
+		expect(validation.success).toBe(true);
+		expect(validation.data).toMatchObject({
+			generic_functions: ['f', 'P'],
+			resources: [{ type: 'video', url: 'https://example.org/v', title: 'Vidéo' }],
+			distribution_mode: 'per_student'
+		});
+	});
+
+	it('l’import refuse un mode de distribution inconnu ou une fonction mal nommée', () => {
+		const parsed = JSON.parse(exportExerciseToJSON(fullExercise));
+
+		expect(validateExerciseExport({ ...parsed, distribution_mode: 'tous' }).success).toBe(false);
+		expect(validateExerciseExport({ ...parsed, generic_functions: ['1f'] }).success).toBe(false);
+		expect(
+			validateExerciseExport({
+				...parsed,
+				resources: [{ type: 'video', url: 'javascript:alert(1)', title: 'x' }]
+			}).success
+		).toBe(false);
+	});
+
+	it('l’import transmet ces champs à la création', async () => {
+		const mockSupabase = createMockSupabase() as any;
+		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null });
+		mockSupabase.__mockQuery.single.mockResolvedValue({
+			data: { id: 'new-ex-id', created_by: 'user-123' },
+			error: null
+		});
+
+		const result = await importExerciseFromJSON(
+			mockSupabase,
+			JSON.parse(exportExerciseToJSON(fullExercise)),
+			'user-123'
+		);
+
+		expect(result.success).toBe(true);
+		expect(mockSupabase.__mockQuery.insert).toHaveBeenCalledWith(
+			expect.objectContaining({
+				generic_functions: ['f', 'P'],
+				resources: [{ type: 'video', url: 'https://example.org/v', title: 'Vidéo' }],
+				distribution_mode: 'per_student'
+			})
+		);
 	});
 });

@@ -6,11 +6,14 @@
  * objets ».
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { tick } from 'svelte';
+import { userEvent } from 'vitest/browser';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { commandCatalog } from '$lib/atelier/commands';
+import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 
 /** Laisser Svelte appliquer ses effets ET le DOM se mettre à jour. */
 async function settle() {
@@ -271,17 +274,16 @@ describe('les commandes se découvrent', () => {
 		expect(container.querySelector('.commandes .quoi')?.textContent).toContain('Dériver');
 	});
 
-	// ⚠️ Visible et DÉSACTIVÉE avec sa raison, jamais cachée — sinon l'élève
-	// conclut que l'outil ne sait pas faire. Les commandes qui écrivent dans le
-	// moteur sont dans ce cas : dans l'atelier, les noms viennent du panneau.
-	it('désactive une commande indisponible sans la cacher', async () => {
+	// Les commandes qui écrivent dans le moteur n'existent pas dans l'atelier
+	// (décision de David, 2026-10-13) : les noms viennent du panneau. Elles
+	// étaient grisées dans la liste — et exécutées une fois tapées.
+	it('ne propose pas une commande qui n’existe pas dans l’atelier', async () => {
 		const { type, container } = await open();
 
 		await type('.pose');
 
-		const bouton = container.querySelector('.commandes button') as HTMLButtonElement;
-		expect(bouton.disabled).toBe(true);
-		expect(bouton.textContent).toContain('panneau');
+		const noms = [...container.querySelectorAll('.commandes .nom')].map((n) => n.textContent);
+		expect(noms).not.toContain('.poser');
 	});
 
 	// `.taylor` était désactivée tant que le dispatch la tuait sur ses propres
@@ -396,5 +398,558 @@ describe('exporter l’historique', () => {
 			'JSON (pour rejouer)',
 			'ubumark (pour lire)'
 		]);
+	});
+
+	/** Les fichiers que la page a lancés en téléchargement, sans rien enregistrer. */
+	function watchDownloads() {
+		const files: { name: string; blob: Blob }[] = [];
+		const blobs = new Map<string, Blob>();
+		const create = vi.spyOn(URL, 'createObjectURL').mockImplementation((blob) => {
+			const url = `blob:test-${blobs.size}`;
+			blobs.set(url, blob as Blob);
+			return url;
+		});
+		const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (
+			this: HTMLAnchorElement
+		) {
+			const blob = blobs.get(this.href);
+			if (blob) files.push({ name: this.download, blob });
+		});
+		return {
+			files,
+			restore() {
+				create.mockRestore();
+				click.mockRestore();
+			}
+		};
+	}
+
+	it('`.exporter` tapé télécharge le même fichier JSON que le bouton (retrait de /cas)', async () => {
+		const { container, submit } = await open();
+		const downloads = watchDownloads();
+		try {
+			await submit('2+3');
+			await submit('a = 5');
+			await submit('.exporter');
+
+			expect(downloads.files).toHaveLength(1);
+			const [file] = downloads.files;
+			expect(file.name).toMatch(/^calcul-\d{4}-\d{2}-\d{2}\.json$/);
+			const content = JSON.parse(await file.blob.text());
+			expect(content.format).toBe('chiphre-calcul');
+			expect(content.entries.map((e: { label: string }) => e.label)).toEqual(['2+3', 'a = 5']);
+			// Le bouton JSON donne le même contenu
+			exportButtons(container)[0].click();
+			expect(downloads.files).toHaveLength(2);
+			const fromButton = JSON.parse(await downloads.files[1].blob.text());
+			expect(fromButton.entries).toEqual(content.entries);
+			expect(container.querySelector('.retour')?.textContent).toContain('Historique exporté');
+		} finally {
+			downloads.restore();
+		}
+	});
+
+	it('`.exporter` sur un historique vide : la raison du bouton désactivé', async () => {
+		const { container, submit } = await open();
+		const downloads = watchDownloads();
+		try {
+			await submit('.exporter');
+
+			expect(downloads.files).toEqual([]);
+			expect(container.querySelector('.retour')?.textContent).toBe(
+				'Rien à exporter pour l’instant.'
+			);
+		} finally {
+			downloads.restore();
+		}
+	});
+});
+
+/**
+ * Le clavier de Calcul (phase 0 `docs/wip/atelier-cas-phase0.md`, PR 1).
+ *
+ * ⚠️ De VRAIES frappes (`userEvent.keyboard`) : Entrée doit être empêchée
+ * d'envoyer le formulaire, Tab de quitter le champ — un `KeyboardEvent`
+ * fabriqué ne déclenche aucune de ces actions par défaut, et le test
+ * passerait sur une vue qui les laisse faire.
+ */
+describe('le clavier de Calcul', () => {
+	async function typing(keys: string, atelier = new Atelier()) {
+		const opened = await open(atelier);
+		await userEvent.click(opened.field);
+		if (keys !== '') await userEvent.keyboard(keys);
+		await settle();
+		return opened;
+	}
+
+	const lines = (container: HTMLElement) => container.querySelectorAll('.historique > li').length;
+	const highlighted = (container: HTMLElement) =>
+		container.querySelector('.commandes [aria-selected="true"]');
+
+	describe('↑ / ↓ rappellent les saisies', () => {
+		it('↑ rappelle les saisies, ↓ redescend', async () => {
+			const { field, submit } = await typing('');
+			await submit('1+1');
+			await submit('2+2');
+			await userEvent.click(field);
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+			expect(field.value).toBe('2+2');
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+			expect(field.value).toBe('1+1');
+			await userEvent.keyboard('{ArrowDown}');
+			await settle();
+			expect(field.value).toBe('2+2');
+		});
+
+		// Revue : une ligne rappelée qui commence par un point rouvrait la liste,
+		// et `.pose` (aucune commande disponible) bloquait ↑ et ↓
+		it('une commande rappelée n’ouvre pas la liste, et ↑ continue de remonter', async () => {
+			const { field, submit, container } = await typing('');
+			await submit('1+1');
+			await submit('.pose');
+			await userEvent.click(field);
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+			expect(field.value).toBe('.pose');
+			expect(container.querySelector('.commandes')).toBeNull();
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+			expect(field.value).toBe('1+1');
+		});
+
+		it('le curseur se place à la fin de la ligne rappelée', async () => {
+			const { field, submit } = await typing('');
+			await submit('12+345');
+			await userEvent.click(field);
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+
+			expect(field.selectionStart).toBe('12+345'.length);
+			expect(field.selectionEnd).toBe('12+345'.length);
+		});
+	});
+
+	describe('la liste des commandes au clavier', () => {
+		it('le champ annonce la liste, et la première commande est surlignée', async () => {
+			const { field, container } = await typing('.dé');
+
+			expect(field.getAttribute('role')).toBe('combobox');
+			expect(field.getAttribute('aria-expanded')).toBe('true');
+			const first = highlighted(container);
+			expect(first).toBeTruthy();
+			expect(field.getAttribute('aria-activedescendant')).toBe(first!.id);
+		});
+
+		it('↓ parcourt la liste, et boucle', async () => {
+			const { container } = await typing('.d');
+			const available = [...container.querySelectorAll('.commandes [role="option"]')];
+			expect(available.length).toBeGreaterThan(1);
+
+			const seen: string[] = [];
+			for (let i = 0; i < available.length; i++) {
+				seen.push(highlighted(container)!.id);
+				await userEvent.keyboard('{ArrowDown}');
+				await settle();
+			}
+
+			expect(seen).toEqual(available.map((o) => o.id));
+			// Revenu au début
+			expect(highlighted(container)!.id).toBe(available[0].id);
+		});
+
+		it('↑ depuis la première commande va à la dernière disponible', async () => {
+			const { container } = await typing('.d');
+			const available = [...container.querySelectorAll('.commandes [role="option"]')];
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+
+			expect(highlighted(container)!.id).toBe(available.at(-1)!.id);
+		});
+
+		it('retaper le début d’une commande surligne de nouveau la première', async () => {
+			const { container, type } = await typing('.d{ArrowDown}');
+			const first = container.querySelector('.commandes [role="option"]');
+			expect(highlighted(container)!.id).not.toBe(first!.id);
+
+			await type('');
+			await userEvent.keyboard('.d');
+			await settle();
+
+			expect(highlighted(container)!.id).toBe(first!.id);
+		});
+
+		it('↑ dans la liste ne rappelle pas une saisie', async () => {
+			const { field, submit, container } = await typing('');
+			await submit('1+1');
+			await userEvent.click(field);
+			await userEvent.keyboard('.dé');
+			await settle();
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+
+			expect(field.value).toBe('.dé');
+			expect(highlighted(container)).toBeTruthy();
+		});
+
+		it('Entrée choisit la commande surlignée, sans rien calculer', async () => {
+			const { field, container } = await typing('.dér');
+
+			await userEvent.keyboard('{Enter}');
+			await settle();
+
+			expect(field.value).toBe('.dériver ');
+			expect(lines(container)).toBe(0);
+			expect(container.querySelector('.commandes')).toBeNull();
+		});
+
+		// Décision de David (2026-10-11) : une commande complète qui se lance
+		// sans argument ne demande pas deux Entrée
+		it('Entrée lance une commande sans argument tapée en entier', async () => {
+			const { field, container } = await typing('.aide');
+
+			await userEvent.keyboard('{Enter}');
+			await settle();
+
+			expect(lines(container)).toBe(1);
+			expect(field.value).toBe('');
+		});
+
+		it('mais choisit tant que son nom n’est pas complet', async () => {
+			const { field, container } = await typing('.ai');
+
+			await userEvent.keyboard('{Enter}');
+			await settle();
+
+			expect(field.value).toBe('.aide ');
+			expect(lines(container)).toBe(0);
+		});
+
+		it('et choisit toujours une commande qui attend la suite, même tapée en entier', async () => {
+			const { field, container } = await typing('.dériver');
+
+			await userEvent.keyboard('{Enter}');
+			await settle();
+
+			expect(field.value).toBe('.dériver ');
+			expect(lines(container)).toBe(0);
+		});
+
+		it('Tab choisit aussi, et le champ garde la main', async () => {
+			const { field } = await typing('.dér');
+
+			await userEvent.keyboard('{Tab}');
+			await settle();
+
+			expect(field.value).toBe('.dériver ');
+			expect(document.activeElement).toBe(field);
+		});
+
+		it('Maj+Tab quitte le champ sans rien choisir', async () => {
+			const { field } = await typing('.dér');
+
+			await userEvent.keyboard('{Shift>}{Tab}{/Shift}');
+			await settle();
+
+			expect(field.value).toBe('.dér');
+			expect(document.activeElement).not.toBe(field);
+		});
+
+		it('Échap ferme la liste sans toucher au champ ; elle revient à la frappe suivante', async () => {
+			const { field, container } = await typing('.dé');
+
+			await userEvent.keyboard('{Escape}');
+			await settle();
+			expect(container.querySelector('.commandes')).toBeNull();
+			expect(field.value).toBe('.dé');
+			expect(field.getAttribute('aria-expanded')).toBe('false');
+
+			await userEvent.keyboard('r');
+			await settle();
+			expect(container.querySelector('.commandes')).toBeTruthy();
+		});
+
+		it('sans commande proposée, Entrée calcule comme avant', async () => {
+			const { container } = await typing('.zz');
+			expect(container.querySelector('.commandes')).toBeNull();
+
+			await userEvent.keyboard('{Enter}');
+			await settle();
+
+			expect(lines(container)).toBe(1);
+		});
+	});
+
+	describe('le modèle de la commande choisie', () => {
+		const taylor = commandCatalog(new WebReplEngine()).find((c) => c.french === 'taylor')!;
+
+		it('s’affiche sous le champ une fois la commande choisie', async () => {
+			const { container } = await typing('.tay{Enter}');
+
+			expect(container.querySelector('.modele')?.textContent).toContain(taylor.example);
+		});
+
+		it('reste pendant qu’on tape la suite, part quand le champ est vidé', async () => {
+			const { container, type } = await typing('.tay{Enter}sin(x)');
+			expect(container.querySelector('.modele')?.textContent).toContain(taylor.example);
+
+			await type('');
+
+			expect(container.querySelector('.modele')).toBeNull();
+		});
+
+		// `.poser` n'existe pas dans l'atelier : aucun modèle à montrer
+		it('ne s’affiche pas pour une commande qui n’existe pas', async () => {
+			const { container } = await typing('.poser a');
+
+			expect(container.querySelector('.modele')).toBeNull();
+		});
+
+		it('apparaît aussi pour une commande tapée en entier, raccourci compris', async () => {
+			const derive = commandCatalog(new WebReplEngine()).find((c) => c.french === 'dériver')!;
+			const { container } = await typing('.diff x');
+
+			expect(container.querySelector('.modele')?.textContent).toContain(derive.example);
+		});
+	});
+});
+
+/**
+ * Le bouton exact ⇄ décimal de chaque ligne (phase 0
+ * `docs/wip/atelier-cas-phase0.md`, PR 2). Un VRAI clic (`userEvent.click`).
+ */
+describe('le bouton valeur approchée', () => {
+	const lastLine = (container: HTMLElement) =>
+		[...container.querySelectorAll('.historique > li')].at(-1)!;
+	const toggle = (line: Element) =>
+		[...line.querySelectorAll('button')].find((b) =>
+			/Valeur (approchée|exacte)/.test(b.textContent ?? '')
+		);
+
+	it('montre la valeur approchée, puis revient à l’exacte', async () => {
+		const { submit, container } = await open();
+		await submit('\\sqrt{2}/2');
+		const line = lastLine(container);
+		const exact = line.querySelector('.reponse')!.textContent;
+
+		const button = toggle(line)!;
+		expect(button.textContent).toContain('Valeur approchée');
+		await userEvent.click(button);
+		await settle();
+		expect(line.querySelector('.reponse')!.textContent).toMatch(/0,7071/);
+		expect(toggle(line)!.textContent).toContain('Valeur exacte');
+
+		await userEvent.click(toggle(line)!);
+		await settle();
+		expect(line.querySelector('.reponse')!.textContent).toBe(exact);
+	});
+
+	it('pas de bouton sur un entier', async () => {
+		const { submit, container } = await open();
+		await submit('1+2');
+
+		expect(toggle(lastLine(container))).toBeUndefined();
+	});
+
+	it('chaque ligne bascule seule', async () => {
+		const { submit, container } = await open();
+		await submit('\\sqrt{2}');
+		await submit('\\sqrt{3}');
+		const [first, second] = [...container.querySelectorAll('.historique > li')];
+
+		await userEvent.click(toggle(second)!);
+		await settle();
+
+		expect(second.querySelector('.reponse')!.textContent).toMatch(/1,7321/);
+		expect(first.querySelector('.reponse')!.textContent).not.toMatch(/1,4142/);
+	});
+});
+
+/**
+ * La complétion des fonctions et des lettres grecques (phase 0
+ * `docs/wip/atelier-cas-phase0.md`, PR 3). De VRAIES frappes : Tab ne doit pas
+ * quitter le champ, et Entrée doit CALCULER même liste ouverte (décision de
+ * David : `3ta` avec t et a dans le panneau donne 3·t·a, pas `3tan(`).
+ */
+describe('la complétion des fonctions et des lettres grecques', () => {
+	async function typing(keys: string) {
+		const opened = await open();
+		await userEvent.click(opened.field);
+		await userEvent.keyboard(keys);
+		await settle();
+		return opened;
+	}
+	const proposals = (container: HTMLElement) =>
+		[...container.querySelectorAll('.propositions [role="option"]')].map(
+			(o) => o.querySelector('.nom')?.textContent
+		);
+	const highlightedProposal = (container: HTMLElement) =>
+		container.querySelector('.propositions [aria-selected="true"] .nom')?.textContent;
+
+	it('`si` ouvre la liste, la première proposition surlignée', async () => {
+		const { container, field } = await typing('si');
+
+		expect(proposals(container)).toEqual(['sin(', 'sinh(', 'sign(', 'σ']);
+		expect(highlightedProposal(container)).toBe('sin(');
+		expect(field.getAttribute('aria-expanded')).toBe('true');
+	});
+
+	it('Tab insère, le curseur après, et le champ garde la main', async () => {
+		const { field, container } = await typing('2si{Tab}');
+
+		expect(field.value).toBe('2sin(');
+		expect(field.selectionStart).toBe(5);
+		expect(document.activeElement).toBe(field);
+		expect(container.querySelector('.propositions')).toBeNull();
+	});
+
+	it('↓ puis Tab insère la proposition suivante', async () => {
+		const { field } = await typing('si{ArrowDown}{Tab}');
+
+		expect(field.value).toBe('sinh(');
+	});
+
+	it('une lettre grecque s’insère en symbole', async () => {
+		const { field } = await typing('2al{Tab}');
+
+		expect(field.value).toBe('2α');
+	});
+
+	it('Entrée calcule, même liste ouverte', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 't', definition: '2' });
+		atelier.create({ kind: 'value', name: 'a', definition: '5' });
+		const opened = await open(atelier);
+		await userEvent.click(opened.field);
+		await userEvent.keyboard('3ta');
+		await settle();
+		expect(proposals(opened.container)).toContain('tan(');
+
+		await userEvent.keyboard('{Enter}');
+		await settle();
+
+		expect(opened.field.value).toBe('');
+		expect(opened.container.querySelector('.historique')?.textContent).toContain('30');
+	});
+
+	it('Échap ferme la liste ; elle revient à la frappe suivante', async () => {
+		const { container } = await typing('co{Escape}');
+		expect(container.querySelector('.propositions')).toBeNull();
+
+		await userEvent.keyboard('s');
+		await settle();
+		expect(proposals(container)).toEqual(['cos(', 'cosh(']);
+	});
+
+	it('un clic insère aussi', async () => {
+		const { field, container } = await typing('2al');
+		const alpha = container.querySelector('.propositions [role="option"]') as HTMLElement;
+
+		await userEvent.click(alpha);
+		await settle();
+
+		expect(field.value).toBe('2α');
+	});
+
+	// Le mot en cours est celui du CURSEUR : déplacé au clavier, il doit suivre
+	it('au milieu du champ, le mot du curseur est complété', async () => {
+		const { field } = await typing('co + 1{Home}{ArrowRight}{ArrowRight}');
+
+		await userEvent.keyboard('{Tab}');
+		await settle();
+
+		expect(field.value).toBe('cos( + 1');
+		expect(field.selectionStart).toBe(4);
+	});
+
+	// Revue : Cmd+← (Mac) ne donne pas de relâchement de touche, une sélection
+	// à la souris peut finir hors du champ — le curseur RETENU était périmé, et
+	// Tab insérait à l'ancienne place. Le curseur déplacé sans frappe ni clic :
+	it('Tab complète le mot du curseur réel, même déplacé sans touche ni clic', async () => {
+		const { field } = await typing('co + si');
+
+		field.setSelectionRange(2, 2);
+		await userEvent.keyboard('{Tab}');
+		await settle();
+
+		expect(field.value).toBe('cos( + si');
+	});
+
+	it('la liste suit un curseur déplacé sans touche ni clic', async () => {
+		const { field, container } = await typing('co + 1');
+		expect(container.querySelector('.propositions')).toBeNull();
+
+		field.setSelectionRange(2, 2);
+		await settle();
+
+		expect(proposals(container)).toEqual(['cos(', 'cosh(']);
+	});
+
+	it('Retour arrière rouvre la liste sur le mot raccourci', async () => {
+		const { container } = await typing('cox');
+		expect(container.querySelector('.propositions')).toBeNull();
+
+		await userEvent.keyboard('{Backspace}');
+		await settle();
+
+		expect(proposals(container)).toEqual(['cos(', 'cosh(']);
+	});
+
+	it('après un clic sur une proposition, le champ a la main, curseur après l’insertion', async () => {
+		const { field, container } = await typing('co + 1{Home}{ArrowRight}{ArrowRight}');
+		const cos = container.querySelector('.propositions [role="option"]') as HTMLElement;
+
+		await userEvent.click(cos);
+		await settle();
+
+		expect(field.value).toBe('cos( + 1');
+		expect(document.activeElement).toBe(field);
+		expect(field.selectionStart).toBe(4);
+	});
+
+	it('dans le nom d’une commande, c’est la liste des commandes', async () => {
+		const { container } = await typing('.si');
+
+		expect(container.querySelector('.propositions')).toBeNull();
+		expect(container.querySelector('.commandes')).toBeTruthy();
+	});
+
+	it('rien pour une lettre seule', async () => {
+		const { container } = await typing('2x+a');
+
+		expect(container.querySelector('.propositions')).toBeNull();
+	});
+});
+
+/**
+ * L'écriture d'une réponse à l'écran (phase 0 `docs/archive/wip/grandeurs-phase0.md`,
+ * lot B) : mesuré avant, `π/3` s'affichait « 1/3π » en ligne ; `5[km]` est une
+ * non-régression (son unité passe par l'arbre depuis le lot A).
+ */
+describe('une réponse s’écrit comme en mathématiques', () => {
+	const lastAnswer = (container: HTMLElement) =>
+		[...container.querySelectorAll('.historique > li .reponse')].at(-1)!;
+
+	it('π/3 : une fraction empilée', async () => {
+		const { submit, container } = await open();
+		await submit('π/3');
+
+		// π DANS la fraction : ⅓ π serait aussi une fraction empilée, mais sans π
+		const fraction = lastAnswer(container).querySelector('.ML__mfrac');
+		expect(fraction?.textContent).toContain('π');
+	});
+
+	it('5[km] : l’unité est affichée', async () => {
+		const { submit, container } = await open();
+		await submit('5[km]');
+
+		expect(lastAnswer(container).textContent?.replace(/\s+/g, '')).toContain('km');
 	});
 });

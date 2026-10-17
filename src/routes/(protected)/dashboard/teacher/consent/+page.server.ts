@@ -20,6 +20,9 @@ import { requireRole, requireRoles } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
 import { requiresParentalConsent } from '$lib/utils/consent';
 import { isBrevoConfigured } from '$lib/server/email/brevo';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/consent/+page.server');
 
 /**
  * Student with consent information
@@ -66,7 +69,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classError) {
-		console.error('[Consent Page] Error fetching classes:', classError);
+		logger.error('[Consent Page] Error fetching classes:', classError);
 		throw error(500, 'Erreur lors du chargement des classes');
 	}
 
@@ -105,7 +108,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.in('class_id', classIds);
 
 	if (memberError) {
-		console.error('[Consent Page] Error fetching students:', memberError);
+		logger.error('[Consent Page] Error fetching students:', memberError);
 		throw error(500, 'Erreur lors du chargement des élèves');
 	}
 
@@ -126,7 +129,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (consentsError) {
-		console.error('Lecture impossible :', consentsError);
+		logger.error('Lecture impossible :', consentsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -298,7 +301,7 @@ export const actions: Actions = {
 
 		const hasAccess = await verifyTeacherStudent(user.id, studentId, supabase);
 		if (!hasAccess) {
-			return fail(403, { error: 'Vous ne pouvez modifier que vos propres élèves' });
+			return fail(403, { error: 'Modification réservée aux élèves du professeur' });
 		}
 
 		const graceEnds = new Date(Date.now() + AGE_RESET_GRACE_DAYS * 24 * 60 * 60 * 1000);
@@ -318,7 +321,7 @@ export const actions: Actions = {
 			.select('id');
 
 		if (updateError) {
-			console.error('[Consent Page] Annulation de la réponse d’âge impossible :', updateError);
+			logger.error('[Consent Page] Annulation de la réponse d’âge impossible :', updateError);
 			return fail(500, { error: "Erreur lors de l'annulation de la déclaration" });
 		}
 
@@ -350,7 +353,7 @@ export const actions: Actions = {
 		// Verify teacher has access to this student
 		const hasAccess = await verifyTeacherStudent(user.id, studentId, supabase);
 		if (!hasAccess) {
-			return fail(403, { error: 'Vous ne pouvez modifier que vos propres élèves' });
+			return fail(403, { error: 'Modification réservée aux élèves du professeur' });
 		}
 
 		// Check if consent record exists, create or update
@@ -366,7 +369,7 @@ export const actions: Actions = {
 		// panne prenait le même visage et faisait conclure « rien ici », donc créer
 		// par-dessus ce qu'on n'avait simplement pas su lire.
 		if (existingError && existingError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', existingError);
+			logger.error('Lecture impossible :', existingError);
 			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 
@@ -377,7 +380,7 @@ export const actions: Actions = {
 				.eq('id', existing.id);
 
 			if (updateError) {
-				console.error('[Consent Page] Update error:', updateError);
+				logger.error('[Consent Page] Update error:', updateError);
 				return fail(500, { error: 'Erreur lors de la mise à jour' });
 			}
 		} else {
@@ -389,7 +392,7 @@ export const actions: Actions = {
 			});
 
 			if (insertError) {
-				console.error('[Consent Page] Insert error:', insertError);
+				logger.error('[Consent Page] Insert error:', insertError);
 				return fail(500, { error: 'Erreur lors de la création' });
 			}
 		}

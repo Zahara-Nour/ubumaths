@@ -31,6 +31,7 @@ export type {
 	LimitRule,
 	LimitStep,
 	LimitResult,
+	NoLimitReason,
 	OneSidedLimitResult,
 	LimitOptions,
 	KnownLimitEntry
@@ -171,8 +172,4 @@ export {
 // Piecewise Functions
 // =============================================================================
 
-export {
-	tryPiecewiseFunctionLimit,
-	containsPiecewiseFunction,
-	type PiecewiseLimitResult
-} from './piecewise';
+export { evaluatePiecewiseLimit, containsPiecewiseFunction, type LimitOf } from './piecewise';

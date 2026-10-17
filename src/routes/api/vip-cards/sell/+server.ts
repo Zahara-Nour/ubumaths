@@ -28,6 +28,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { sellVipCardBodySchema } from '$lib/server/validation/vip-cards';
 import { sellResultSchema } from '$lib/server/validation/vip-card-rpc';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/sell/+server');
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -47,7 +50,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête illisible');
 	}
 
 	const validation = sellVipCardBodySchema.safeParse(body);
@@ -65,8 +68,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('[sell] RPC error:', rpcError);
-		throw error(500, `Failed to sell card: ${rpcError.message}`);
+		logger.error('[sell] RPC error:', rpcError);
+		throw error(500, `Impossible de vendre la carte VIP : ${rpcError.message}`);
 	}
 
 	// `RETURNS jsonb` : forme validée, pas affirmée. Cette fonction crédite le
@@ -74,7 +77,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const result = sellResultSchema.parse(data);
 
 	if (!result.success) {
-		const errorMessage = result.error || 'Sale failed';
+		const errorMessage = result.error || 'La vente n’a pas pu se faire';
 
 		if (errorMessage.includes('not found')) {
 			throw error(404, errorMessage);

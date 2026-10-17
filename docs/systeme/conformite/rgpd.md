@@ -1,10 +1,13 @@
 ---
 couvre:
   - src/lib/utils/consent.ts
+  - src/lib/utils/work-data.ts
   - src/lib/server/validation/account.ts
   - 'src/lib/server/email/**'
   - 'src/lib/components/account/**'
   - 'src/routes/api/account/**'
+  - src/lib/server/deleted-account-files.ts
+  - 'src/routes/api/cron/deleted-account-files/**'
   - 'src/routes/(public)/legal/**'
   - 'supabase/migrations/*_security_rgpd_erasure.sql'
   - 'supabase/migrations/*_suppression_compte_art17.sql'
@@ -292,7 +295,11 @@ CRON_SECRET                   # Secret taches planifiees
 > **eleves sans activite depuis 5 ans** (connexion, session rafraichie ou presence) (suppression complete, tracee dans
 > `account_deletion_audit`), les **conversations du tuteur 1 an apres leur dernier message**, les
 > **pre-inscriptions non activees apres 1 an**. Les fichiers du storage d'un compte purge ne sont
-> pas retires par le SQL (chemins consignes dans `cleanup_result`). Autres durees reelles :
+> pas retires par le SQL (chemins consignes dans `cleanup_result`) : une tache hebdomadaire
+> (`/api/cron/deleted-account-files`, cron Vercel du dimanche) les retire, et date la ligne
+> d'audit (`storage_removed_at`) une fois tout retire. Elle reprend aussi les retraits echoues
+> de la suppression par l'eleve. Le meme passage retire les pieces jointes de la messagerie restees
+> sans ligne en base (message purge apres 3 ans, piece jointe retiree). Autres durees reelles :
 > `error_logs` 30 j, `audit_logs` 60 j, `user_presence` 30 j, `friendships` refusees 2 ans,
 > `messages` / `private_messages` 3 ans.
 
@@ -455,13 +462,17 @@ CRON_SECRET                   # Secret taches planifiees
 
 ---
 
-### 5.9 MOYEN - Error logs avec PII
+### 5.9 ~~MOYEN - Error logs avec PII~~ **TRAITE** (verifie le 2026-10-13)
 
-**Situation actuelle** :
+`logError` (`src/lib/server/errorMonitoring.ts`, `sanitizeErrorData`) assainit avant ecriture :
+cles sensibles (`password`, `token`, `secret`, `auth`, `session`, `cookie`, `bearer`…) remplacees
+par `[REDACTED]` dans les en-tetes, le corps et le contexte ; adresses courriel masquees dans
+toutes les valeurs texte, l'URL, le message et la pile. Purge a 30 jours.
 
-- `request_body` peut contenir des donnees de formulaire (noms, emails)
-- `url` peut reveler des identifiants
-- Pas de sanitization automatique
+Mesure en prod (2026-10-13, lecture seule) : 934 lignes, `request_body` jamais renseigne (0),
+aucune adresse courriel dans un corps, une seule URL a parametre (recherche du glossaire), plus
+ancienne ligne au 2026-09-11 (purge effective). Restent, assumes : `user_id` (pseudonyme,
+necessaire au diagnostic) et les identifiants techniques dans les chemins d'URL.
 
 ---
 
@@ -580,6 +591,35 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
 - **Limite** : 1 demande / 24 h (limiteur en mémoire, par instance).
 - **Audit** : `account_deletion_audit` (hash SHA-256 de l'e-mail, IP, navigateur, statut) ;
   `user_id` passé à NULL une fois la suppression terminée.
+- **Navigateur** : après la suppression réussie, `AccountDeletionDialog` efface de l'appareil les
+  données de travail de l'élève (`clearWorkData`, voir ci-dessous).
+
+**Données de travail dans le navigateur** (constat T17 étendu, décision de David du 2026-10-13 :
+effacées à la déconnexion). `localStorage` garde le travail de l'élève : conversation avec le
+Père Ubu, code Python et Blockly, atelier, console de calcul, calculatrice, grapheur, tableur,
+tableau blanc, parties de jeux (démineur, 2048, Mathémo, Evoland, Cabinet Noir) et profil de
+joueur. La liste des clés vit dans `src/lib/utils/work-data.ts` ; **une nouvelle clé de travail
+s'y ajoute**, sinon elle survit au changement de compte. Le navigateur retient à qui ces données
+appartiennent ; le layout racine (`src/routes/+layout.ts`) le vérifie à chaque page et à chaque
+changement de session :
+
+- même compte : rien ne change ;
+- visiteur sans compte qui se connecte : son compte reprend son travail (le bac à sable Python
+  propose alors de l'enregistrer dans le compte) ;
+- autre compte, visiteur après un compte (session expirée), propriétaire inconnu (données
+  d'avant le 2026-10-13) : effacées, puis la page est rechargée pour vider ce qui était déjà lu ;
+- déconnexion (`submitLogoutForm`, page d'attente d'approbation) et suppression du compte :
+  effacées.
+
+Les adresses visitées et les gels que l'onglet retient pour les rapports de bug
+(`sessionStorage`, clé `chiphre_freeze_data`) partent avec ces données, en mémoire comme dans
+l'onglet (`clearFreezeDetectionData`), y compris dans les autres onglets ouverts quand le compte
+change : l'élève suivant n'envoie pas, avec son rapport, les pages ouvertes par le précédent. Ces
+adresses sont retenues sans paramètres ni fragment.
+
+Les préférences (thème, police, position des barres d'outils) et les réglages du prof (classe,
+période, panier de questions) restent. Limite : sans déconnexion, le travail reste dans le
+navigateur jusqu'à la prochaine page ouverte par un autre compte ou un visiteur.
 
 **Ce qui part** (décisions de David, 2026-10-10) :
 
@@ -590,7 +630,11 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
 - tout ce qui pointe vers le profil en cascade (jeux, SRS, progression, consentements…) ;
 - les fichiers de `chat-attachments`, `message-attachments`, `bug-report-screenshots` : la fonction
   rend leurs chemins exacts, collectés avant la cascade, et la route les retire (au mieux : un échec
-  est journalisé en erreur, il n'interrompt pas la suppression).
+  est journalisé en erreur, il n'interrompt pas la suppression ; le cron du dimanche reprend).
+  Pour `message-attachments` et `bug-report-screenshots`, dont l'élève écrit lui-même le chemin,
+  seul un chemin rangé chez lui est rendu (`messages/<son message>/…`, `<son id>/<son
+signalement>/…`, aucun segment `..`) : sinon il ferait retirer le fichier d'un camarade
+  (`20261016101200`).
 
 **Atomicité** : en fin de fonction, si une clé étrangère sans `ON DELETE` vise encore le compte
 (quelle que soit la table, future comprise), la fonction lève une exception et la transaction est

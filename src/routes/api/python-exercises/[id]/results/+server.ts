@@ -7,6 +7,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { exerciseIdParamSchema } from '$lib/server/validation/python-exercises';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-exercises/[id]/results/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -32,13 +35,13 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Validate ID parameter
 	const idValidation = exerciseIdParamSchema.safeParse({ id: params.id });
 	if (!idValidation.success) {
-		throw error(400, "ID d'exercice invalide");
+		throw error(400, 'Identifiant de corvée Python invalide');
 	}
 
 	const exerciseId = params.id;
@@ -51,7 +54,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		.single();
 
 	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Seuls les enseignants peuvent voir les résultats');
+		throw error(403, 'Réservé aux professeurs');
 	}
 
 	// Verify exercise exists and teacher has access
@@ -62,7 +65,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		.single();
 
 	if (exerciseError || !exercise) {
-		throw error(404, 'Exercice introuvable');
+		throw error(404, 'Corvée Python introuvable');
 	}
 
 	// Teacher must be the author or have assigned this exercise
@@ -75,12 +78,12 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (assignmentsError && assignmentsError.code !== 'PGRST116') {
-		console.error('Contrôle d’accès impossible :', assignmentsError);
-		throw error(500, 'Impossible de vérifier votre accès');
+		logger.error('Contrôle d’accès impossible :', assignmentsError);
+		throw error(500, 'Impossible de vérifier les droits d’accès');
 	}
 
 	if (exercise.author_id !== user.id && (!assignments || assignments.length === 0)) {
-		throw error(403, "Vous n'avez pas accès aux résultats de cet exercice");
+		throw error(403, 'Accès refusé aux résultats de cette corvée Python');
 	}
 
 	// Validate query parameters. Coerce null → undefined for .optional() fields.
@@ -93,7 +96,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Paramètres de requête invalides: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { class_id, student_id } = queryValidation.data;
@@ -142,8 +145,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Cette liste borne la portée du classement. Vidée par une panne, elle
 		// affiche un classement amputé sans le dire.
 		if (classMembersError) {
-			console.error('Périmètre illisible :', classMembersError);
-			throw error(500, 'Impossible de déterminer le périmètre');
+			logger.error('Périmètre illisible :', classMembersError);
+			throw error(500, 'Impossible de déterminer les élèves concernés');
 		}
 
 		if (!classMembers || classMembers.length === 0) {
@@ -162,8 +165,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Cette liste borne la portée du classement. Vidée par une panne, elle
 		// affiche un classement amputé sans le dire.
 		if (allClassesError) {
-			console.error('Périmètre illisible :', allClassesError);
-			throw error(500, 'Impossible de déterminer le périmètre');
+			logger.error('Périmètre illisible :', allClassesError);
+			throw error(500, 'Impossible de déterminer les élèves concernés');
 		}
 
 		if (allClasses && allClasses.length > 0) {
@@ -178,8 +181,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			// Cette liste borne la portée du classement. Vidée par une panne, elle
 			// affiche un classement amputé sans le dire.
 			if (classMembersError) {
-				console.error('Périmètre illisible :', classMembersError);
-				throw error(500, 'Impossible de déterminer le périmètre');
+				logger.error('Périmètre illisible :', classMembersError);
+				throw error(500, 'Impossible de déterminer les élèves concernés');
 			}
 
 			if (classMembers && classMembers.length > 0) {
@@ -197,8 +200,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const { data: submissions, error: submissionsError } = await query;
 
 	if (submissionsError) {
-		console.error('Failed to fetch submissions:', submissionsError);
-		throw error(500, 'Erreur lors de la récupération des résultats');
+		logger.error('Failed to fetch submissions:', submissionsError);
+		throw error(500, 'Impossible de charger les résultats');
 	}
 
 	// Transform data for response

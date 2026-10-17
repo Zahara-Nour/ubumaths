@@ -33,12 +33,12 @@
  */
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { checkSignupRateLimitByIP, checkSignupRateLimitByEmail } from '$lib/server/rateLimiter';
 import { validateFormData, registerFormSchema } from '$lib/server/validation';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
-const logger = createLogger('auth/register/+page.server.ts');
+const logger = createServerLogger('auth/register/+page.server.ts');
 
 // CGU / privacy policy version recorded on acceptance. Bump when the terms change.
 const CURRENT_TERMS_VERSION = 'cgu-2026-08';
@@ -96,7 +96,7 @@ export const actions = {
 
 		if (rpcError) {
 			logger.error('resolve_open_class_by_code failed:', rpcError.message);
-			return fail(500, { error: 'Une erreur est survenue. Réessaie plus tard.', ...echo });
+			return fail(500, { error: 'Une erreur est survenue. Réessayer plus tard.', ...echo });
 		}
 
 		if (!classId) {

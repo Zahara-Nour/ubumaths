@@ -11,14 +11,18 @@
 -->
 
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import ReviewSession from '$lib/components/srs/ReviewSession.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from '@lucide/svelte';
+	import { studySessionReturnHref } from '$lib/navigation/return-links';
 
 	const deckId = $derived(page.params.id);
 	const states = $derived(page.url.searchParams.get('states') ?? undefined);
+	// « Quitter » ramène là où la session a commencé : la page du deck, ou le Programme
+	const quitHref = $derived(
+		deckId ? studySessionReturnHref(deckId, page.url.searchParams) : '/dashboard/revisions'
+	);
 
 	/**
 	 * Handle session completion
@@ -47,13 +51,7 @@
 
 <div class="study-session-page">
 	<h1 class="sr-only">Session de révision</h1>
-	<!-- Back Button -->
-	<div class="mb-6">
-		<Button onclick={goBack} variant="ghost">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour aux decks
-		</Button>
-	</div>
+	<BackLink href={quitHref} label="Quitter" kind="quit" class="mb-6" />
 
 	<!-- Review Session -->
 	{#if deckId}

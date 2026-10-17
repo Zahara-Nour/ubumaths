@@ -54,10 +54,10 @@
  */
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { validateRedirectUrl } from '$lib/server/validateRedirectUrl';
 
-const logger = createLogger('auth/confirm/+server.ts');
+const logger = createServerLogger('auth/confirm/+server.ts');
 
 // Supabase OTP verification types accepted by this handler.
 const VALID_OTP_TYPES = [
@@ -78,7 +78,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	// Validate redirect URL to prevent open redirect attacks
 	const next = validateRedirectUrl(rawNext, url.origin);
 
-	logger.info('Auth confirmation request:', { type, has_token: !!token_hash });
+	logger.info('Auth confirmation request:', { type, hasOtpHash: !!token_hash });
 
 	// Validate that we have the required parameters and a known OTP type
 	if (!token_hash || !type || !VALID_OTP_TYPES.includes(type as OtpType)) {

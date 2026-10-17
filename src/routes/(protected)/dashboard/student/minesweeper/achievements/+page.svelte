@@ -61,8 +61,8 @@
 					<div class="flex gap-3">
 						<span class="text-lg" aria-hidden="true">🚫</span>
 						<div>
-							<strong class="text-foreground">Sans drapeaux</strong> - Gagnez une partie sans placer
-							aucun drapeau (pour chaque difficulté)
+							<strong class="text-foreground">Sans drapeaux</strong> - Gagnez une partie sans placer aucun
+							drapeau (pour chaque difficulté)
 						</div>
 					</div>
 				</div>

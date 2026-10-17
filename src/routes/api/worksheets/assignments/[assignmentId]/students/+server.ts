@@ -17,6 +17,9 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/students/+server');
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -29,11 +32,11 @@ import { z } from 'zod';
 const addStudentSchema = z
 	.object({
 		student_id: z.string().uuid().optional(),
-		student_ids: z.array(z.string().uuid()).max(500, 'Maximum 500 students per request').optional()
+		student_ids: z.array(z.string().uuid()).max(500, '500 élèves au maximum par envoi').optional()
 	})
 	.refine(
 		(data) => data.student_id !== undefined || (data.student_ids && data.student_ids.length > 0),
-		{ message: 'student_id or student_ids is required', path: ['student_id'] }
+		{ message: 'Au moins un élève requis', path: ['student_id'] }
 	);
 
 /**
@@ -41,7 +44,7 @@ const addStudentSchema = z
  * DELETE query param: ?student_id=uuid
  */
 const removeStudentSchema = z.object({
-	student_id: z.string().uuid('Invalid student ID format')
+	student_id: z.string().uuid('Identifiant d’élève invalide')
 });
 
 // ============================================================================
@@ -77,7 +80,7 @@ async function verifyAssignmentAccess(
 		.single();
 
 	if (fetchError || !assignment) {
-		throw error(404, 'Assignation non trouvee');
+		throw error(404, 'Affectation introuvable');
 	}
 
 	// Check permissions
@@ -90,15 +93,15 @@ async function verifyAssignmentAccess(
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
-		throw error(500, 'Impossible de vérifier vos droits');
+		logger.error('Rôle illisible :', profileError);
+		throw error(500, 'Impossible de vérifier les droits d’accès');
 	}
 
 	const isCreator = assignment.created_by === userId;
 	const isAdmin = profile?.role === 'admin';
 
 	if (!isCreator && !isAdmin) {
-		throw error(403, 'Acces non autorise');
+		throw error(403, 'Accès refusé');
 	}
 
 	return { assignment, isAdmin };
@@ -130,12 +133,12 @@ async function verifyAssignmentAccess(
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, "ID de l'assignation requis");
+		throw error(400, 'Identifiant d’affectation requis');
 	}
 
 	try {
@@ -156,8 +159,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.eq('assignment_id', assignmentId);
 
 		if (classError) {
-			console.error('Error fetching class assignments:', classError);
-			throw error(500, 'Erreur lors de la recuperation des classes');
+			logger.error('Error fetching class assignments:', classError);
+			throw error(500, 'Impossible de charger les classes');
 		}
 
 		// Get students from each assigned class
@@ -179,7 +182,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 				.eq('status', 'active');
 
 			if (membersError) {
-				console.error('Error fetching class members:', membersError);
+				logger.error('Error fetching class members:', membersError);
 				continue;
 			}
 
@@ -213,8 +216,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.eq('assignment_id', assignmentId);
 
 		if (individualError) {
-			console.error('Error fetching individual students:', individualError);
-			throw error(500, 'Erreur lors de la recuperation des eleves individuels');
+			logger.error('Error fetching individual students:', individualError);
+			throw error(500, 'Impossible de charger les élèves affectés individuellement');
 		}
 
 		for (const is of individualStudents || []) {
@@ -260,7 +263,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			individual_count: (individualStudents || []).length
 		});
 	} catch (err) {
-		console.error('Error fetching assignment students:', err);
+		logger.error('Error fetching assignment students:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
@@ -268,7 +271,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		throw error(500, 'Erreur lors de la recuperation des eleves');
+		throw error(500, 'Impossible de charger les élèves');
 	}
 };
 
@@ -293,12 +296,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 export const POST: RequestHandler = async ({ params, locals, request }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, "ID de l'assignation requis");
+		throw error(400, 'Identifiant d’affectation requis');
 	}
 
 	// Parse and validate body
@@ -314,7 +317,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		validation.data.student_ids || (validation.data.student_id ? [validation.data.student_id] : []);
 
 	if (studentIds.length === 0) {
-		throw error(400, 'Au moins un eleve requis');
+		throw error(400, 'Au moins un élève requis');
 	}
 
 	try {
@@ -328,18 +331,15 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.eq('role', 'student');
 
 		if (studentsError) {
-			console.error('Error fetching students:', studentsError);
-			throw error(500, 'Erreur lors de la verification des eleves');
+			logger.error('Error fetching students:', studentsError);
+			throw error(500, 'Impossible de vérifier les élèves');
 		}
 
 		const foundStudentIds = new Set(studentsData?.map((s) => s.id) || []);
 		const invalidStudentIds = studentIds.filter((id) => !foundStudentIds.has(id));
 
 		if (invalidStudentIds.length > 0) {
-			throw error(
-				400,
-				`${invalidStudentIds.length} eleve(s) invalide(s): non trouve(s) ou ne sont pas des eleves`
-			);
+			throw error(400, `Élèves introuvables : ${invalidStudentIds.length}`);
 		}
 
 		// Insert student assignments (ignore duplicates)
@@ -354,20 +354,20 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.select('id');
 
 		if (insertError) {
-			console.error('Error adding students to assignment:', insertError);
-			throw error(500, "Erreur lors de l'ajout des eleves");
+			logger.error('Error adding students to assignment:', insertError);
+			throw error(500, 'Impossible d’ajouter les élèves');
 		}
 
 		return json(
 			{
 				success: true,
-				message: `${inserted?.length || 0} eleve(s) ajoute(s)`,
+				message: `Élèves ajoutés : ${inserted?.length || 0}`,
 				added_count: inserted?.length || 0
 			},
 			{ status: 201 }
 		);
 	} catch (err) {
-		console.error('Error adding students to assignment:', err);
+		logger.error('Error adding students to assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
@@ -375,7 +375,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw err;
 		}
 
-		throw error(500, "Erreur lors de l'ajout des eleves");
+		throw error(500, 'Impossible d’ajouter les élèves');
 	}
 };
 
@@ -400,12 +400,12 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 export const DELETE: RequestHandler = async ({ params, locals, url }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, "ID de l'assignation requis");
+		throw error(400, 'Identifiant d’affectation requis');
 	}
 
 	// Validate query param
@@ -427,20 +427,20 @@ export const DELETE: RequestHandler = async ({ params, locals, url }) => {
 			.eq('student_id', validation.data.student_id);
 
 		if (deleteError) {
-			console.error('Error removing student from assignment:', deleteError);
-			throw error(500, "Erreur lors de la suppression de l'eleve");
+			logger.error('Error removing student from assignment:', deleteError);
+			throw error(500, 'Impossible de retirer l’élève');
 		}
 
 		if (count === 0) {
-			throw error(404, 'Eleve non trouve dans les assignations individuelles');
+			throw error(404, 'Cet élève n’est pas affecté individuellement');
 		}
 
 		return json({
 			success: true,
-			message: 'Eleve retire du devoir avec succes'
+			message: 'Élève retiré de l’affectation'
 		});
 	} catch (err) {
-		console.error('Error removing student from assignment:', err);
+		logger.error('Error removing student from assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
@@ -448,6 +448,6 @@ export const DELETE: RequestHandler = async ({ params, locals, url }) => {
 			throw err;
 		}
 
-		throw error(500, "Erreur lors de la suppression de l'eleve");
+		throw error(500, 'Impossible de retirer l’élève');
 	}
 };

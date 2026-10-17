@@ -20,7 +20,7 @@ import type { Database } from '$lib/types/database';
 
 // Mock the logger to avoid console noise in tests (must be hoisted)
 vi.mock('$lib/utils/logger', () => ({
-	createLogger: vi.fn(() => ({
+	createServerLogger: vi.fn(() => ({
 		info: vi.fn(),
 		warn: vi.fn(),
 		error: vi.fn(),
@@ -43,7 +43,9 @@ import {
 	checkOAuthRateLimitByIP,
 	checkNotificationCreateRateLimit,
 	checkNotificationMarkRateLimit,
-	checkNotificationDeleteRateLimit
+	checkNotificationDeleteRateLimit,
+	checkElevationRateLimitByIP,
+	checkElevationRateLimitByEmail
 } from '../rateLimiter';
 
 // ============================================================================
@@ -65,6 +67,12 @@ const rateLimits = new Map<
 		expires_at: string;
 	}
 >();
+
+/**
+ * Panne simulée de la base (B8) : lue par le faux `rpc`, quel que soit le client mis en
+ * cache par le module. `'error'` = la RPC rend une erreur, `'throw'` = elle lève.
+ */
+let rpcFailure: 'error' | 'throw' | null = null;
 
 /**
  * Build a mock Supabase client whose `rpc('check_and_increment_rate_limit')`
@@ -127,6 +135,12 @@ function createMockSupabase() {
 			if (fn !== 'check_and_increment_rate_limit') {
 				throw new Error(`Unexpected RPC: ${fn}`);
 			}
+			if (rpcFailure === 'error') {
+				return Promise.resolve({ data: null, error: { message: 'panne simulée' } });
+			}
+			if (rpcFailure === 'throw') {
+				return Promise.reject(new Error('panne simulée'));
+			}
 			return handleCheckAndIncrement(args);
 		}
 	} as unknown as SupabaseClient<Database>;
@@ -155,6 +169,7 @@ describe('Rate Limiter (Database-backed)', () => {
 	beforeEach(() => {
 		// Clear the in-memory storage
 		rateLimits.clear();
+		rpcFailure = null;
 
 		// Reset the singleton service role client
 		const globalForSupabase = globalThis as unknown as {
@@ -485,7 +500,7 @@ describe('Rate Limiter (Database-backed)', () => {
 					// 11th request should be blocked
 					const result = await checkNotificationCreateRateLimit(userId, 'teacher');
 					expect(result.allowed).toBe(false);
-					expect(result.message).toContain('limite de création de notifications');
+					expect(result.message).toContain('Limite de création de notifications');
 					expect(result.retryAfter).toBeDefined();
 					expect(result.retryAfter).toBeGreaterThan(0);
 					expect(result.retryAfter).toBeLessThanOrEqual(3600);
@@ -501,7 +516,7 @@ describe('Rate Limiter (Database-backed)', () => {
 
 					const result = await checkNotificationCreateRateLimit(userId, 'teacher');
 					expect(result.allowed).toBe(false);
-					expect(result.message).toContain('Vous avez atteint la limite');
+					expect(result.message).toContain('Limite de création de notifications atteinte');
 					expect(result.message).toContain('notifications');
 				});
 
@@ -704,7 +719,7 @@ describe('Rate Limiter (Database-backed)', () => {
 					const result = await checkNotificationMarkRateLimit(userId);
 					expect(result.allowed).toBe(false);
 					expect(result.message).toContain('Trop de requêtes de marquage');
-					expect(result.message).toContain('patienter');
+					expect(result.message).toContain('Patienter');
 				});
 
 				it('should return retryAfter value when limit exceeded', async () => {
@@ -829,7 +844,7 @@ describe('Rate Limiter (Database-backed)', () => {
 					// 21st request should be blocked
 					const result = await checkNotificationDeleteRateLimit(userId, 'teacher');
 					expect(result.allowed).toBe(false);
-					expect(result.message).toContain('limite de suppression');
+					expect(result.message).toContain('Limite de suppression');
 					expect(result.retryAfter).toBeDefined();
 					expect(result.retryAfter).toBeGreaterThan(0);
 					expect(result.retryAfter).toBeLessThanOrEqual(3600);
@@ -886,7 +901,7 @@ describe('Rate Limiter (Database-backed)', () => {
 
 					const result = await checkNotificationDeleteRateLimit(userId, 'teacher');
 					expect(result.allowed).toBe(false);
-					expect(result.message).toContain('Vous avez atteint la limite');
+					expect(result.message).toContain('Limite de suppression de notifications atteinte');
 					expect(result.message).toContain('suppression');
 				});
 
@@ -1096,7 +1111,7 @@ describe('Rate Limiter (Database-backed)', () => {
 					const result = await checkNotificationDeleteRateLimit(userId, 'teacher');
 					expect(result.allowed).toBe(false);
 					expect(result.message).toContain('suppression');
-					expect(result.message).toContain('limite');
+					expect(result.message).toContain('Limite');
 				});
 			});
 		});
@@ -1262,6 +1277,37 @@ describe('Rate Limiter (Database-backed)', () => {
 			expect(rateLimits.get(`ratelimit:login:ip:${testIP2}`)?.count).toBeLessThanOrEqual(5);
 			expect(rateLimits.get(`ratelimit:login:email:${testEmail1}`)?.count).toBeLessThanOrEqual(3);
 			expect(rateLimits.get(`notification_create:${userId1}`)?.count).toBeLessThanOrEqual(10);
+		});
+	});
+	describe('Panne de la base (B8) : élévation fermée, connexion ouverte', () => {
+		it.each(['error', 'throw'] as const)(
+			'RPC en panne (%s) : l’élévation est refusée, par IP comme par e-mail',
+			async (mode) => {
+				rpcFailure = mode;
+				expect((await checkElevationRateLimitByIP('192.0.2.10')).allowed).toBe(false);
+				expect((await checkElevationRateLimitByEmail('admin@example.com')).allowed).toBe(false);
+			}
+		);
+
+		it.each(['error', 'throw'] as const)(
+			'RPC en panne (%s) : la connexion passe toujours',
+			async (mode) => {
+				rpcFailure = mode;
+				expect((await checkLoginRateLimitByIP('192.0.2.10')).allowed).toBe(true);
+				expect((await checkLoginRateLimitByEmail('eleve@example.com')).allowed).toBe(true);
+			}
+		);
+
+		it('IP ou e-mail absent : l’élévation est refusée', async () => {
+			expect((await checkElevationRateLimitByIP('')).allowed).toBe(false);
+			expect((await checkElevationRateLimitByEmail('')).allowed).toBe(false);
+		});
+
+		it('base disponible : l’élévation passe sous la limite, puis bloque au-delà', async () => {
+			for (let i = 0; i < 3; i++) {
+				expect((await checkElevationRateLimitByEmail('admin@example.com')).allowed).toBe(true);
+			}
+			expect((await checkElevationRateLimitByEmail('admin@example.com')).allowed).toBe(false);
 		});
 	});
 });

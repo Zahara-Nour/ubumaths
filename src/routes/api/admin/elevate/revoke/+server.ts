@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ locals, cookies }) => {
 	// — revoking elevation needs no role/profile, and avoids an unnecessary DB
 	// round-trip. CSRF is enforced globally in hooks.server.ts.
 	if (!locals.user) {
-		throw error(401, 'Non autorisé - Authentification requise');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Best-effort server-side invalidation of the admin session. The admin client

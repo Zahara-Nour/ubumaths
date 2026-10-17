@@ -173,7 +173,7 @@ describe('Google Classroom Materials Validation Schemas', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('At least one class');
+					expect(result.error.issues[0].message).toContain('Choisir au moins une classe');
 				}
 			});
 
@@ -185,7 +185,7 @@ describe('Google Classroom Materials Validation Schemas', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('Cannot share with more than 50');
+					expect(result.error.issues[0].message).toContain('50 classes au maximum');
 				}
 			});
 
@@ -277,7 +277,7 @@ describe('Google Classroom Materials Validation Schemas', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('cannot exceed 2000 characters');
+					expect(result.error.issues[0].message).toContain('2000 caractères au maximum');
 				}
 			});
 
@@ -386,7 +386,7 @@ describe('Google Classroom Materials Validation Schemas', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('At least one class');
+					expect(result.error.issues[0].message).toContain('Choisir au moins une classe');
 				}
 			});
 
@@ -397,7 +397,7 @@ describe('Google Classroom Materials Validation Schemas', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('Cannot share with more than 50');
+					expect(result.error.issues[0].message).toContain('50 classes au maximum');
 				}
 			});
 

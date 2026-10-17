@@ -15,6 +15,11 @@ import type { PageServerLoad } from './$types';
 import { resolve } from '$app/paths';
 import { requireRole } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/worksheets/exercice/[id]/+page.server'
+);
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	await requireRole(locals, 'teacher');
@@ -28,7 +33,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.maybeSingle();
 
 	if (lookupError) {
-		console.error('[worksheet-exercise] résolution impossible:', lookupError);
+		logger.error('[worksheet-exercise] résolution impossible:', lookupError);
 		throw error(500, 'Erreur lors de la résolution de la référence');
 	}
 

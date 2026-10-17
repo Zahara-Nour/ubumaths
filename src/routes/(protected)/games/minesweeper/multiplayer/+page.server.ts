@@ -1,5 +1,8 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/games/minesweeper/multiplayer/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const authUser = locals.user;
@@ -16,7 +19,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.single();
 
 	if (profileError || !userProfile) {
-		console.error('Failed to load user profile:', profileError);
+		logger.error('Failed to load user profile:', profileError);
 		throw error(500, 'Impossible de charger le profil utilisateur');
 	}
 
@@ -30,7 +33,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.eq('season', currentMonth);
 
 	if (statsError) {
-		console.error('Failed to load player stats:', statsError);
+		logger.error('Failed to load player stats:', statsError);
 		// Don't throw - stats are optional for gameplay
 	}
 

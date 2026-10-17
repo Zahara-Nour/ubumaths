@@ -1,6 +1,9 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/marketplace/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const supabase = locals.supabase;
@@ -25,7 +28,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 	// ne doit pas se confondre avec une donnée réellement vide.
 	if (configError && configError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', configError);
+		logger.error('Contexte illisible :', configError);
 	}
 
 	// Fetch user's active listings count for initial display

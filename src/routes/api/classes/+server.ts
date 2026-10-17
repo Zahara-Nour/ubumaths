@@ -7,6 +7,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/classes/+server');
 
 // =============================================================================
 // HANDLERS
@@ -28,7 +31,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			classes
 		});
 	} catch (err) {
-		console.error('Error fetching teacher classes:', err);
+		logger.error('Error fetching teacher classes:', err);
 		throw error(500, 'Erreur lors du chargement des classes');
 	}
 };

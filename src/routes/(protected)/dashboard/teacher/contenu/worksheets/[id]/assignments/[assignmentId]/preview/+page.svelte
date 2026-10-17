@@ -8,22 +8,30 @@
 -->
 
 <script lang="ts">
+	import { worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
+	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import TextSizeSelect from '$lib/components/worksheets/TextSizeSelect.svelte';
+	import { textSizeOf, type TextSize } from '$lib/typst/text-size';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
-	import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
+	import {
+		generateStudentWorksheetTypst,
+		type StudentPdfEnding
+	} from '$lib/worksheets/student-worksheet-typst';
+	import { fallbackWarning } from '$lib/typst/compiler/correction-fonts-compiler';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
-		ArrowLeft,
 		Eye,
 		User,
 		Users,
@@ -37,15 +45,23 @@
 		FileText,
 		GraduationCap,
 		ClipboardList,
-		FileQuestion,
 		PenLine,
 		BookOpen,
 		Download,
 		Pencil,
+		Printer,
 		Star
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { page } from '$app/state';
+	import { assignmentCopiesHref, assignmentPreviewReturn } from '$lib/navigation/return-links';
+	import {
+		ANCHOR_HIGHLIGHT_MS,
+		exerciseAnchorId,
+		scrollToAnchoredExercise
+	} from '$lib/worksheets/exercise-anchor';
 	import type {
 		StudentWorksheetView,
 		StudentExerciseView,
@@ -54,9 +70,16 @@
 
 	let { data }: { data: PageData } = $props();
 
+	// Deux parents : la fiche, ou la page d'un signalement (`?depuis=signalement`)
+	let backLink = $derived(
+		assignmentPreviewReturn(data.worksheetId, data.assignmentId, page.url.searchParams)
+	);
+
 	// State
-	// Use string | undefined (not null) so MySelect can bind directly
-	let selectedStudentId = $state<string | undefined>(undefined);
+	// Use string | undefined (not null) so MySelect can bind directly.
+	// Élève présélectionné par l'adresse (`?studentId=`, lien d'un signalement)
+	// svelte-ignore state_referenced_locally
+	let selectedStudentId = $state<string | undefined>(data.initialStudentId ?? undefined);
 	let worksheet = $state<StudentWorksheetView | null>(null);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
@@ -64,10 +87,19 @@
 	// Preview metadata from API
 	let previewMode = $state<'teacher' | 'student'>('teacher');
 	let previewStudentName = $state<string | null>(null);
+	// Chaque élève a sa version (valeurs ou ordre, D6) : la vue prof s'appuie
+	// sur la copie d'un élève choisi (premier de la liste par défaut)
+	let perStudentCopies = $state(false);
+	let referenceStudentId = $state<string | undefined>(undefined);
 
 	// Modal state
 	let modalOpen = $state(false);
 	let currentExerciseIndex = $state(0);
+
+	// Taille du texte du PDF (accessibilité) : celle de l'élève prévisualisé,
+	// enregistrée pour lui si on la change ; en vue prof, normale et ponctuelle
+	let textSize = $state<TextSize>('normal');
+	let isSavingTextSize = $state(false);
 
 	// PDF download state
 	let isPdfLoading = $state(false);
@@ -79,14 +111,25 @@
 		...data.students
 			.map((s) => ({
 				value: s.id,
-				label: [s.first_name, s.last_name].filter(Boolean).join(' ') || 'Eleve sans nom',
+				label: [s.first_name, s.last_name].filter(Boolean).join(' ') || 'Élève sans nom',
 				description: s.class_name || undefined
 			}))
 			.sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 	]);
 
+	// Les élèves dont la copie peut servir de vue prof (déjà triés par nom)
+	let referenceStudentItems = $derived(studentOptions.filter((option) => option.value !== ''));
+
+	/** La vue prof montre la copie d'un élève : avertissement à l'écran et dans le PDF */
+	let showsIndividualCopy = $derived(previewMode === 'teacher' && perStudentCopies);
+
+	function handleReferenceStudentChange(value: string) {
+		referenceStudentId = value;
+		fetchPreview();
+	}
+
 	// Fetch preview data when student selection changes
-	async function fetchPreview() {
+	async function fetchPreview(): Promise<void> {
 		loading = true;
 		error = null;
 
@@ -97,6 +140,8 @@
 			);
 			if (selectedStudentId) {
 				url.searchParams.set('studentId', selectedStudentId);
+			} else if (referenceStudentId) {
+				url.searchParams.set('copyOf', referenceStudentId);
 			}
 
 			const response = await fetch(url.toString());
@@ -107,14 +152,72 @@
 			}
 
 			const responseData = await response.json();
+			// Vue prof d'une affectation individualisée sans élève de référence :
+			// on prend le premier de la liste et on redemande sa copie
+			const firstStudent = referenceStudentItems[0]?.value;
+			if (
+				!selectedStudentId &&
+				responseData.per_student_copies === true &&
+				!referenceStudentId &&
+				firstStudent
+			) {
+				referenceStudentId = firstStudent;
+				return fetchPreview();
+			}
+			perStudentCopies = responseData.per_student_copies === true;
 			worksheet = responseData as StudentWorksheetView;
 			previewMode = responseData.preview_mode || 'teacher';
 			previewStudentName = responseData.preview_student_name || null;
+			// La taille de l'élève demandé ; un autre choisi entre-temps : réponse périmée
+			const sizeFor = selectedStudentId;
+			const size = sizeFor ? await studentTextSize(sizeFor) : 'normal';
+			if (selectedStudentId === sizeFor) textSize = size;
 		} catch (err) {
 			console.error('Error fetching preview:', err);
 			error = err instanceof Error ? err.message : 'Erreur lors du chargement';
 		} finally {
 			loading = false;
+		}
+	}
+
+	/** La taille enregistrée pour l'élève ; normale si elle est illisible */
+	async function studentTextSize(studentId: string): Promise<TextSize> {
+		try {
+			const url = new URL('/api/worksheets/print-settings', window.location.origin);
+			url.searchParams.set('studentId', studentId);
+			const response = await fetch(url.toString());
+			if (!response.ok) return 'normal';
+			const body: unknown = await response.json();
+			return textSizeOf(
+				body && typeof body === 'object' && 'textSize' in body ? body.textSize : null
+			);
+		} catch {
+			return 'normal';
+		}
+	}
+
+	async function handleTextSizeChange(size: TextSize) {
+		const previous = textSize;
+		textSize = size;
+		const studentId = selectedStudentId;
+		if (!studentId) return;
+
+		isSavingTextSize = true;
+		try {
+			const response = await fetch('/api/worksheets/print-settings', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ studentId, textSize: size })
+			});
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			toaster.success(
+				`Taille du texte enregistrée pour ${previewStudentName ?? 'cet élève'} (toutes ses fiches)`
+			);
+		} catch {
+			textSize = previous;
+			toaster.error("La taille du texte n'a pas pu être enregistrée");
+		} finally {
+			isSavingTextSize = false;
 		}
 	}
 
@@ -139,27 +242,37 @@
 		if (worksheet?.show_corrections) {
 			showPdfDialog = true;
 		} else {
-			downloadPdf(false);
+			downloadPdf('none');
 		}
 	}
 
-	async function downloadPdf(includeSolution: boolean) {
+	async function downloadPdf(ending: StudentPdfEnding) {
 		if (!worksheet) return;
 		showPdfDialog = false;
 		isPdfLoading = true;
 
 		// Capture worksheet in a local const so the closure doesn't see the reactive null state
 		const capturedWorksheet = worksheet;
-		const suffix = previewStudentName ? `_${previewStudentName.replace(/\s+/g, '_')}` : '';
-		const filename = `${capturedWorksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}${suffix}.pdf`;
+		const filename = worksheetPdfFileName(
+			capturedWorksheet.title,
+			ending === 'none' ? 'worksheet' : ending,
+			previewStudentName || undefined
+		);
 
+		// Copie d'un élève servant de vue prof : avertissement imprimé en tête (D6)
+		const individualCopyNotice = showsIndividualCopy;
 		const result = await generateAndDownloadPdf(
-			() => generateStudentWorksheetTypst(capturedWorksheet, includeSolution),
+			() =>
+				generateStudentWorksheetTypst(capturedWorksheet, ending, {
+					individualCopyNotice,
+					textSize
+				}),
 			filename
 		);
 
 		if (result.success) {
 			toaster.success('PDF telecharge !');
+			if (result.fallbackError) toaster.warning(fallbackWarning(result.fallbackError));
 		} else {
 			toaster.error(result.error || 'Erreur lors de la generation du PDF');
 		}
@@ -171,15 +284,13 @@
 	function getTypeInfo(type: WorksheetType): { icon: typeof FileText; label: string } {
 		switch (type) {
 			case 'worksheet':
-				return { icon: FileText, label: 'Fiche de travail' };
+				return { icon: FileText, label: WORKSHEET_TYPE_LABELS.worksheet };
 			case 'assessment':
-				return { icon: ClipboardList, label: 'Evaluation' };
+				return { icon: ClipboardList, label: WORKSHEET_TYPE_LABELS.assessment };
 			case 'exam':
-				return { icon: GraduationCap, label: lore.learning.exam };
-			case 'quiz':
-				return { icon: FileQuestion, label: 'Quiz' };
+				return { icon: GraduationCap, label: WORKSHEET_TYPE_LABELS.exam };
 			case 'homework':
-				return { icon: PenLine, label: lore.learning.homework };
+				return { icon: PenLine, label: WORKSHEET_TYPE_LABELS.homework };
 			default:
 				return { icon: BookOpen, label: 'Fiche' };
 		}
@@ -195,8 +306,6 @@
 				return 'warning';
 			case 'homework':
 				return 'default';
-			case 'quiz':
-				return 'secondary';
 			default:
 				return 'outline';
 		}
@@ -282,6 +391,9 @@
 	let currentExercise = $derived(visualOrderExercises[currentExerciseIndex] ?? null);
 	// Fonctions déclarées par l'exercice (`P(x)`, `C'(x)`) : sans elles, `P(x)` se lit comme un produit
 	let exerciseFunctions = $derived(genericFunctionsConfig(currentExercise?.generic_functions));
+	// Sens de `AB` (longueur ou produit) de l'exercice ouvert, résolu par le serveur (Q-J).
+	// Chaque titre de la liste passe le sien (absent : produit, l'écriture d'avant).
+	provideCapitalPairs(() => currentExercise?.capital_pairs);
 	let hasCorrection = $derived(
 		currentExercise?.correction_visible && currentExercise?.correction !== null
 	);
@@ -290,6 +402,32 @@
 
 	// Check if we have sections to display
 	let hasSections = $derived(sections.length > 0);
+
+	// Ouvert depuis un signalement (D6) : l'ancre `#exercice-<id>` vise un
+	// exercice de fiche ; une fois la copie chargée, la page défile jusqu'à lui
+	// et le met brièvement en évidence.
+	let highlightedExerciseId = $state<string | null>(null);
+
+	$effect(() => {
+		const hash = page.url.hash;
+		if (loading || exercises.length === 0) return;
+		const id = scrollToAnchoredExercise(hash);
+		if (!id) return;
+		highlightedExerciseId = id;
+		const timer = setTimeout(() => {
+			highlightedExerciseId = null;
+		}, ANCHOR_HIGHLIGHT_MS);
+		return () => clearTimeout(timer);
+	});
+
+	/** Classes de l'élément d'un exercice : mis en évidence s'il est visé par l'ancre */
+	function exerciseItemClass(exerciseId: string): string {
+		const base =
+			'flex w-full scroll-mt-24 items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50';
+		return highlightedExerciseId === exerciseId
+			? `${base} ring-2 ring-amber-400 ring-offset-2`
+			: base;
+	}
 
 	// Modal navigation
 	function openExercise(index: number) {
@@ -327,14 +465,7 @@
 	<!-- Header with back button and student selector -->
 	<div class="mb-6 space-y-4">
 		<div class="flex items-center justify-between">
-			<Button
-				variant="ghost"
-				href="/dashboard/teacher/contenu/worksheets/{data.worksheetId}"
-				class="gap-2 pl-2"
-			>
-				<ArrowLeft class="h-4 w-4" />
-				Retour a la feuille
-			</Button>
+			<BackLink href={backLink.href} label={backLink.label} class="mb-0" />
 
 			<!-- Preview mode badge -->
 			<Badge variant={previewMode === 'teacher' ? 'default' : 'secondary'} class="gap-1">
@@ -347,6 +478,16 @@
 				{/if}
 			</Badge>
 		</div>
+
+		{#if data.discardedStudent}
+			<!-- Lien d'un signalement vers un élève qui n'est plus destinataire -->
+			<p
+				class="flex items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100"
+			>
+				<Info class="h-4 w-4 shrink-0" />
+				L’élève demandé n’est plus destinataire de cette affectation : sa copie ne peut pas être affichée.
+			</p>
+		{/if}
 
 		<!-- Student selector -->
 		<Card.Root>
@@ -363,7 +504,46 @@
 						placeholder="Selectionnez un eleve..."
 						fitContent
 					/>
+					<!-- Inactif pendant le chargement : la taille affichée serait celle de l'élève précédent -->
+					<TextSizeSelect
+						value={textSize}
+						onchange={handleTextSizeChange}
+						disabled={isSavingTextSize || loading}
+					/>
+					{#if data.students.length > 0}
+						<!-- Une copie au nom de chaque élève visé (ADR 0030, lot 5) -->
+						<Button
+							variant="outline"
+							size="sm"
+							class="sm:ml-auto"
+							href={assignmentCopiesHref(data.worksheetId, data.assignmentId, {
+								fromPreview: true
+							})}
+						>
+							<Printer class="mr-2 h-4 w-4" />
+							Imprimer une copie par élève
+						</Button>
+					{/if}
 				</div>
+				{#if showsIndividualCopy}
+					<!-- Chaque élève a sa version : la vue prof est la copie d'un élève (D6) -->
+					<div class="mt-3 flex flex-col gap-3 border-t pt-3 sm:flex-row sm:items-center">
+						<div class="shrink-0 text-sm font-medium">Copie de référence :</div>
+						<MySelect
+							type="single"
+							value={referenceStudentId}
+							onchange={handleReferenceStudentChange}
+							items={referenceStudentItems}
+							placeholder="Choisir un élève"
+							fitContent
+						/>
+					</div>
+					<p class="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+						<Info class="h-3.5 w-3.5" />
+						Chaque élève a sa propre version de cette fiche : cette vue reprend la copie de l’élève choisi
+						(son nom n’est pas imprimé), et le PDF avertit chaque élève de consulter sa correction personnelle.
+					</p>
+				{/if}
 			</Card.Content>
 		</Card.Root>
 	</div>
@@ -483,8 +663,10 @@
 								{@const visualIndex = visualOrderExercises.findIndex((e) => e.id === exercise.id)}
 								<button
 									type="button"
+									id={exerciseAnchorId(exercise.id)}
+									data-highlighted={highlightedExerciseId === exercise.id}
 									onclick={() => openExercise(visualIndex)}
-									class="flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50"
+									class={exerciseItemClass(exercise.id)}
 								>
 									<div
 										class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
@@ -503,6 +685,7 @@
 												{lore.learning.exercise}
 												{visualIndex + 1}{#if exercise.title}:&ensp;<InlineMarkdown
 														content={exercise.title}
+														capitalPairs={exercise.capital_pairs ?? 'product'}
 													/>{/if}
 											</span>
 											{#if exercise.correction_visible && exercise.correction}
@@ -536,8 +719,10 @@
 				{#each exercises as exercise, i (exercise.id)}
 					<button
 						type="button"
+						id={exerciseAnchorId(exercise.id)}
+						data-highlighted={highlightedExerciseId === exercise.id}
 						onclick={() => openExercise(i)}
-						class="flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50"
+						class={exerciseItemClass(exercise.id)}
 					>
 						<div
 							class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
@@ -554,7 +739,10 @@
 								{/if}
 								<span class="font-medium">
 									{lore.learning.exercise}
-									{i + 1}{#if exercise.title}:&ensp;<InlineMarkdown content={exercise.title} />{/if}
+									{i + 1}{#if exercise.title}:&ensp;<InlineMarkdown
+											content={exercise.title}
+											capitalPairs={exercise.capital_pairs ?? 'product'}
+										/>{/if}
 								</span>
 								{#if exercise.correction_visible && exercise.correction}
 									<BookOpen
@@ -728,11 +916,14 @@
 	<Dialog.Content class="sm:max-w-md">
 		<Dialog.Header>
 			<Dialog.Title>Telecharger en PDF</Dialog.Title>
-			<Dialog.Description>Voulez-vous inclure les corrections dans le PDF ?</Dialog.Description>
+			<Dialog.Description>
+				Ajouter à la fin les réponses seules, ou le corrigé détaillé ?
+			</Dialog.Description>
 		</Dialog.Header>
 		<Dialog.Footer class="flex-col gap-2 sm:flex-row">
-			<Button variant="outline" onclick={() => downloadPdf(false)}>Sans corrections</Button>
-			<Button onclick={() => downloadPdf(true)}>Avec corrections</Button>
+			<Button variant="outline" onclick={() => downloadPdf('none')}>Sans corrections</Button>
+			<Button variant="outline" onclick={() => downloadPdf('answers')}>Avec réponses</Button>
+			<Button onclick={() => downloadPdf('correction')}>Avec corrigé</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

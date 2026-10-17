@@ -7,6 +7,9 @@
 
 import type { PageServerLoad } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/constructions/conversion/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Require teacher or admin role
@@ -24,7 +27,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (tagRowsError) {
-		console.error('Enrichissement illisible :', tagRowsError);
+		logger.error('Enrichissement illisible :', tagRowsError);
 	}
 
 	const existingTags = (tagRows ?? []).map((row) => row.name);

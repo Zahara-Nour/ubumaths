@@ -29,8 +29,12 @@
 import type { MathNode } from '../../types';
 import { getVariables } from '../../eval/substitute';
 import { variable } from '../../factory';
-import { isEulerConstant, isGreek, isSubscript, isVariable } from '../../guards';
-import { EULER_NOT_A_VARIABLE } from '../../common/euler-variable';
+import { isEulerConstant, isGreek, isImaginaryUnit, isSubscript, isVariable } from '../../guards';
+import {
+	EULER_NOT_A_VARIABLE,
+	IMAGINARY_NOT_A_VARIABLE,
+	reservedLetterMessage
+} from '../../common/reserved-letters';
 import { toLatex } from '../../latex-generator';
 import { mapNode } from '../../transforms';
 import { parse, type PipelineOptions } from './pipeline';
@@ -49,22 +53,55 @@ const VARIABLE_NAME = /^\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9+-
 
 /**
  * Noms que l'expression contient mais qu'on ne propose pas comme autre
- * variable : `e` (Euler), `i` (imaginaire), `pi`. Nommer `e` après `;` est refusé :
- * `e` est la constante d'Euler, jamais une variable de calcul.
+ * variable : `e` (Euler), `i` (imaginaire), `pi`. Nommer `e` ou `i` après `;`
+ * est refusé : ce sont des constantes, jamais des variables de calcul.
  */
 const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 
 /**
  * Une fonction usuelle écrite en lettres, sans antislash ni parenthèse :
  * `sin x`, `ln x`, `sin^2 x`. Le nom doit être DÉLIMITÉ — `cost`, `lnx`,
- * `\arcsin`, `\cosh`, `\operatorname{sin}` ne comptent pas — et n'est pas
+ * `\arcsin`, `\cosh`, `\operatorname{sin}` ne comptent pas (l'atelier refuse
+ * à part `cost` et `lnx` : `GLUED_FUNCTION`) — et n'est pas
  * suivi (indice et exposant éventuels compris : `log_2(x)`, que `toCustom`
- * écrit pour un logarithme de base donnée) d'une parenthèse ouvrante. Un
+ * écrit pour un logarithme de base donnée) d'une parenthèse ouvrante, ou de `\left(` (ce qu'écrit MathLive). Un
  * indice de racine entre crochets (`sqrt[3](x)`, que la définition
  * `f(x) = …` accepte) peut précéder la parenthèse.
  */
 const BARE_FUNCTION =
-	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\[[^\]]*\]\s*)?\()/;
+	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\[[^\]]*\]\s*)?(?:\(|\\left\s*\())/;
+
+/**
+ * Ce qui suit le nom d'une fonction sans parenthèses : son indice et son
+ * exposant éventuels (`log_2 x`, `sin^2 x`), puis l'argument que l'élève
+ * voulait lui donner, signe compris (`-x`) — un nombre (`2`, `2,5`, `2x`), un
+ * mot (`x`, `xy`), `π`, une commande LaTeX (`\pi`) ou une valeur absolue
+ * (`|x|`), jamais un mot-clé de commande (`.limite ln en 0`).
+ */
+const BARE_FUNCTION_TAIL =
+	/^(\s*_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?(\s*\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?(?:\s*(?!(?:en|pour|de|dans|ordre|et|sur)(?![A-Za-z0-9]))([-−]?(?:\d+(?:[.,]\d+)?[A-Za-z]*|[A-Za-z][A-Za-z0-9]*|\\[A-Za-z]+|π|[α-ωΑ-Ωϑϕ]|\|[^|]+\|)))?/;
+
+/**
+ * Une fonction usuelle COLLÉE à son argument : `lnx`, `sinx`, `cost`, `ln2`,
+ * `ln2x`, `sin2,5`, `sin2π`, `cos2θ`. Deux formes :
+ * - `argument` : une lettre ASCII seule, ou un nombre suivi d'au plus une
+ *   lettre (ASCII, grecque ou π), puis une fin, une espace, un opérateur (`^`,
+ *   `²`, `³` compris), un délimiteur fermant ou un antislash (`\cdot`, `\right`) ;
+ * - `numberOnly` : un nombre suivi d'une parenthèse ouvrante ou d'une autre
+ *   commande LaTeX (`ln2(x)`, `cos2\pi`, `ln2\sqrt{x}`) — l'argument n'est pas
+ *   le nombre seul, le refus ne le devine pas.
+ * `sinus`, `lnxy`, `costume` ne sont pas visés. Le nom peut suivre une lettre
+ * SEULE (`xlnx`, `2xlnx` ; `asinx` : a·sin x, la lettre est un coefficient),
+ * un nombre ou une puissance (`x^2lnx`), pas un mot (`explnx`), ni un
+ * antislash (`\cos t`), ni un `\operatorname{…}` ; `{` seul ne l'arrête pas
+ * (`e^{lnx}`, `\frac{lnx}{x}`). `sinh`, `cosh`, `tanh` (fonctions
+ * hyperboliques) sont écartés par `gluedFunction`.
+ */
+const GLUED_FUNCTION =
+	/(?<![A-Za-z\\][A-Za-z]|\\|\\(?:operatorname|mathrm|mathit|text)\s*\{)(sin|cos|tan|ln|log|exp|sqrt)(?:(?<numberOnly>\d+(?:[.,]\d+)?)(?=\(|\\(?!(?:right|cdot|times|div|leq?|geq?|neq)(?![A-Za-z]))[A-Za-z])|(?<argument>\d+(?:[.,]\d+)?(?:[A-Za-z]|[α-ωΑ-Ωϑϕ])?|[A-Za-z])(?=$|[\s+\-−*/^=<>≤≥·×÷,;)\]}|!²³\\]))/g;
+
+/** Les fonctions hyperboliques : `sinh` n'est pas sin(h). */
+const HYPERBOLIC = /^(?:sin|cos|tan)h$/;
 
 /**
  * Les deux bornes d'une intégrale définie, en fin de texte : `… 0 1`, ou
@@ -362,6 +399,9 @@ export function chosenVariable(
 	if (parsed !== undefined && isEulerConstant(parsed)) {
 		return { ok: false, message: EULER_NOT_A_VARIABLE };
 	}
+	if (parsed !== undefined && isImaginaryUnit(parsed)) {
+		return { ok: false, message: IMAGINARY_NOT_A_VARIABLE };
+	}
 	const name = parsed === undefined ? null : variableNameOf(parsed);
 	if (name === null) return { ok: false, message: `« ${typed} » n'est pas une variable.` };
 	return { ok: true, variable: name };
@@ -387,20 +427,61 @@ export function bareFunctionMessage(name: string): string {
 	return `Écris ${name}(x) avec des parenthèses.`;
 }
 
+/**
+ * Le refus d'une fonction usuelle écrite sans parenthèses, qui CITE ce que
+ * l'élève a tapé, ou `null` : `ln x + 1` → « ln x » : écris ln(x) avec des
+ * parenthèses. Sans argument lisible (`ln` seul, `ln + 1`) : « écris ln(…) ».
+ *
+ * C'est le refus de l'atelier, le même partout (V59, 2026-10-14) : ligne de
+ * calcul, définition, argument de toute commande de calcul. Les commandes du
+ * CLI gardent `bareFunctionMessage`, que l'atelier devance.
+ */
+export function bareFunctionRefusal(input: string): string | null {
+	const found = BARE_FUNCTION.exec(input);
+	// Décision de David (2026-10-14) : `lnx`, `sinx` (s·i·n·x, i l'imaginaire),
+	// `ln2x` se lisaient en produits de lettres. Le même refus, cité tel quel
+	const glued = gluedFunction(input);
+	if (glued !== null && (found === null || glued.index <= found.index)) {
+		// `log10`, `log2` : base ou argument ? On ne devine pas (revue du 2026-10-14)
+		const digits = /^log(\d+)$/.exec(glued.typed);
+		if (digits !== null) {
+			const base = digits[1] === '10' ? '' : ` En base ${digits[1]} : log_${digits[1]}(…).`;
+			return `« ${glued.typed} » : écris log(…) avec des parenthèses ; log est le logarithme décimal.${base}`;
+		}
+		// `cos2\pi`, `ln2(x)` : proposer cos(2) changerait le sens
+		return `« ${glued.typed} » : écris ${glued.name}(${glued.argument ?? '…'}) avec des parenthèses.`;
+	}
+	if (found === null) return null;
+	const name = found[1];
+	const tail = BARE_FUNCTION_TAIL.exec(input.slice(found.index + name.length));
+	const [written = '', subscript = '', exponent = '', argument] = tail ?? [];
+	const typed = (name + written).trim();
+	const compact = (text: string) => text.replace(/\s+/g, '');
+	// Rien de lisible après le nom : on n'invente pas d'argument
+	const suggested = `${name}${compact(subscript)}${compact(exponent)}(${argument ?? '…'})`;
+	return `« ${typed} » : écris ${suggested} avec des parenthèses.`;
+}
+
+/** La première fonction usuelle collée à son argument (`GLUED_FUNCTION`), ou `null`. */
+function gluedFunction(
+	input: string
+): { index: number; typed: string; name: string; argument: string | null } | null {
+	for (const match of input.matchAll(GLUED_FUNCTION)) {
+		const [typed, name] = match;
+		if (HYPERBOLIC.test(typed)) continue;
+		const argument = match.groups?.argument ?? null;
+		return { index: match.index, typed, name, argument };
+	}
+	return null;
+}
+
 // =============================================================================
 // Mots-clés (décisions de David, 2026-10-08 — docs/systeme/atelier-syntaxe.md)
 // =============================================================================
 
 /** Les commandes dont l'argument se lit avec des mots-clés. */
 export type KeywordCommand =
-	| 'diff'
-	| 'integrate'
-	| 'solve'
-	| 'eval'
-	| 'equiv'
-	| 'taylor'
-	| 'variations'
-	| 'domain';
+	'diff' | 'integrate' | 'solve' | 'eval' | 'equiv' | 'taylor' | 'variations' | 'domain';
 
 /** Un mot-clé, écrit sans accent (`à` se lit `a`). */
 type Keyword = 'pour' | 'de' | 'en' | 'ordre' | 'dans' | 'et';
@@ -413,7 +494,7 @@ const COMMAND_KEYWORDS: Readonly<Record<KeywordCommand, readonly Keyword[]>> = {
 	eval: ['en', 'pour'],
 	equiv: ['et'],
 	taylor: ['ordre', 'en', 'pour'],
-	variations: ['pour'],
+	variations: ['pour', 'dans'],
 	domain: ['pour']
 };
 
@@ -432,6 +513,14 @@ const COMMAND_LABELS: Readonly<Record<KeywordCommand, string>> = {
 /** `x=3`, `x = 3`, `x_1=2` : une affectation de `.évaluer`. */
 const ASSIGNMENT =
 	/^(\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+\}))?)\s*=\s*(\S.*)$/s;
+
+/** Une virgule suivie d'une autre affectation : `a=1, b=2`, `a=1,5,b=2`. */
+const COMMA_BEFORE_ASSIGNMENT =
+	/,\s*\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+\}))?\s*=/;
+
+/** Le refus d'une virgule entre deux valeurs de `.évaluer` (E6). */
+const EVAL_SEPARATOR_MESSAGE =
+	'Sépare les valeurs avec « ; » : .évaluer 2a+3b en a=1,5 ; b=2, par exemple.';
 
 /** L'ancienne écriture de `.évaluer` : `x^2 x=3`, une affectation finale sans mot-clé. */
 const TRAILING_ASSIGNMENT =
@@ -459,12 +548,21 @@ export interface CommandArguments {
 	readonly order: number | null;
 	/** `en A` (`.taylor`), 0 par défaut */
 	readonly center: number | null;
-	/** `en x=3` / `pour x=3` (`.évaluer`) */
-	readonly assignment: { readonly name: string; readonly value: string } | null;
-	/** `dans INTERVALLE` (`.résoudre`) */
+	/**
+	 * `en x=3` / `pour x=3` (`.évaluer`) ; plusieurs lettres séparées par
+	 * « ; », `en a=1,5 ; b=2` (E6), dans l'ordre tapé. Vide : aucune.
+	 */
+	readonly assignments: readonly Assignment[];
+	/** `dans INTERVALLE` (`.résoudre`, `.variations`) */
 	readonly interval: string | null;
 	/** `et EXPR` (`.équivalent`) */
 	readonly other: string | null;
+}
+
+/** Une lettre de `.évaluer` et sa valeur tapée (point décimal). */
+export interface Assignment {
+	readonly name: string;
+	readonly value: string;
 }
 
 export type CommandArgumentsReading =
@@ -514,7 +612,7 @@ const EMPTY_ARGUMENTS: CommandArguments = {
 	bounds: null,
 	order: null,
 	center: null,
-	assignment: null,
+	assignments: [],
 	interval: null,
 	other: null
 };
@@ -594,7 +692,22 @@ export function readCommandArguments(
 		index = next;
 	}
 	if (result.expression === '') return { ok: false, message: 'Il manque l’expression.' };
-	if (command === 'eval' && result.assignment === null) {
+	// `.évaluer 2a+3b en a=1 ; b` : le « ; » final se lisait comme la variable
+	// de l'ancienne écriture (`pour b`), puis comme une seconde liste de valeurs
+	if (command === 'eval' && result.variable !== null && result.assignments.length > 0) {
+		const letter = result.variable;
+		if (result.assignments.some((assignment) => assignment.name === letter)) {
+			return { ok: false, message: `${letter} a déjà sa valeur : retire « ; ${letter} ».` };
+		}
+		const example = [...result.assignments, { name: letter, value: '3' }]
+			.map(({ name, value }) => `${name}=${value}`)
+			.join(' ; ');
+		return {
+			ok: false,
+			message: `Il manque la valeur de ${letter} : ${label} ${result.expression} en ${example}, par exemple.`
+		};
+	}
+	if (command === 'eval' && result.assignments.length === 0) {
 		return {
 			ok: false,
 			message: `Écris la valeur après « en » : ${label} ${result.expression} en x=3.`
@@ -616,21 +729,35 @@ function applyKeyword(
 	value: string,
 	result: { -readonly [K in keyof CommandArguments]: CommandArguments[K] }
 ): string | null {
-	// `.évaluer … en x=3` / `pour x=3`
+	// `.évaluer … en x=3` / `pour x=3`, plusieurs lettres séparées par « ; »
+	// (E6) : `en a=1,5 ; b=2`
 	if (command === 'eval') {
-		const assignment = ASSIGNMENT.exec(value);
-		if (assignment === null) return `Écris « ${keyword} x=3 » : une lettre, =, sa valeur.`;
-		if (result.assignment !== null) return 'Une seule valeur à remplacer à la fois.';
-		result.assignment = { name: assignment[1], value: decimalPoint(assignment[2].trim()) };
+		// `en … pour …` : deux listes de valeurs, comme une virgule entre deux
+		if (result.assignments.length > 0) return EVAL_SEPARATOR_MESSAGE;
+		const assignments: Assignment[] = [];
+		for (const part of value.split(';')) {
+			const assignment = ASSIGNMENT.exec(part.trim());
+			if (assignment === null) return `Écris « ${keyword} x=3 » : une lettre, =, sa valeur.`;
+			// La virgule est la virgule décimale : entre deux valeurs, refusée
+			// même sans ambiguïté (`a=1, b=2`), par cohérence (décision de David)
+			if (COMMA_BEFORE_ASSIGNMENT.test(assignment[2])) return EVAL_SEPARATOR_MESSAGE;
+			if (assignments.some((known) => known.name === assignment[1])) {
+				return `La valeur de ${assignment[1]} est donnée deux fois.`;
+			}
+			assignments.push({ name: assignment[1], value: decimalPoint(assignment[2].trim()) });
+		}
+		result.assignments = assignments;
 		return null;
 	}
 	switch (keyword) {
-		case 'pour':
-			if (value === 'e') return EULER_NOT_A_VARIABLE;
+		case 'pour': {
+			const reserved = reservedLetterMessage(value);
+			if (reserved !== null) return reserved;
 			if (!VARIABLE_NAME.test(value)) return `« ${value} » n'est pas une variable.`;
 			if (result.variable !== null) return 'La variable est donnée deux fois.';
 			result.variable = value;
 			return null;
+		}
 		case 'ordre':
 			if (!ORDER.test(value)) return `L'ordre est un entier : « ordre 3 », pas « ordre ${value} ».`;
 			result.order = parseInt(value, 10);
@@ -647,9 +774,17 @@ function applyKeyword(
 				parseFloat(numerator) / (denominator === undefined ? 1 : parseFloat(denominator));
 			return null;
 		}
-		case 'dans':
+		case 'dans': {
+			// `dans [0;+∞[ pour t` : le crochet de +∞ ne se referme pas, et `pour t`
+			// restait dans l'intervalle (revue du lot 2 de l'intervalle)
+			const swallowed = /^(.*\S)\s+pour\s+(\S+)$/s.exec(value);
+			if (swallowed !== null) {
+				result.interval = decimalPoint(swallowed[1]);
+				return applyKeyword(command, 'pour', swallowed[2], result);
+			}
 			result.interval = decimalPoint(value);
 			return null;
+		}
 		case 'et':
 			result.other = value;
 			return null;
@@ -730,10 +865,14 @@ export function writeCommandArguments(args: CommandArguments): string {
 	if (args.bounds !== null) parts.push(`de ${args.bounds.lower} à ${args.bounds.upper}`);
 	if (args.order !== null) parts.push(`ordre ${args.order}`);
 	if (args.center !== null) parts.push(`en ${args.center}`);
-	if (args.assignment !== null) parts.push(`en ${args.assignment.name}=${args.assignment.value}`);
-	if (args.interval !== null) parts.push(`dans ${args.interval}`);
+	if (args.assignments.length > 0) {
+		parts.push(`en ${args.assignments.map(({ name, value }) => `${name}=${value}`).join(' ; ')}`);
+	}
 	if (args.other !== null) parts.push(`et ${args.other}`);
 	if (args.variable !== null) parts.push(`pour ${args.variable}`);
+	// En dernier : un intervalle semi-ouvert (`[0 ; +∞[`) ne referme pas ses
+	// crochets, et tout ce qui le suit y restait collé (`pour t` compris)
+	if (args.interval !== null) parts.push(`dans ${args.interval}`);
 	return parts.join(' ');
 }
 

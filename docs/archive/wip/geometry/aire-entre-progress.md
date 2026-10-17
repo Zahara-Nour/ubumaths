@@ -48,7 +48,7 @@ Catégories couvertes :
 | ------- | -------------------------------------------------------------------------- |
 | A1-A3   | Création : champs `signed=false`, `secondFunctionId`, `dependsOn` corrects |
 | B4-B7   | Calcul correct sur 4 cas pédagogiques (1/12, 2√2, 2 avec sign change, 2)   |
-| C8-C9   | Invariances : symétrie (f, g) ↔ (g, f) ; bornes inversées                 |
+| C8-C9   | Invariances : symétrie (f, g) ↔ (g, f) ; bornes inversées                  |
 | D10-D11 | Cas dégénérés : a===b → 0 ; f≡g → 0                                        |
 | E12     | Réactivité slider sur la borne basse                                       |
 | F13-F14 | Validation : rejet d'un id non-fonction et d'un id inexistant              |

@@ -18,10 +18,7 @@ import { failure, formatForMessage, success, type Outcome } from './outcome';
 
 /** Ce que le tableau affiche dans ses cases */
 export type CrossTableMode =
-	| 'effectifs'
-	| 'fréquences'
-	| 'fréquences par ligne'
-	| 'fréquences par colonne';
+	'effectifs' | 'fréquences' | 'fréquences par ligne' | 'fréquences par colonne';
 
 /**
  * Valeurs à afficher, totaux compris. En fréquences : un nombre de [0 ; 1] ;

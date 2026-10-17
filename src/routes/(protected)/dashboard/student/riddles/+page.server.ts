@@ -1,7 +1,15 @@
 import type { PageServerLoad } from './$types';
-import type { DbRiddle, DbRiddleAttempt } from '$lib/types/riddle';
-import { toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
+import type { DbRiddleAttempt, StudentRiddle } from '$lib/types/riddle';
+import { RIDDLE_COLUMNS, toDbRiddle, toDbRiddleAttempt, toStudentRiddle } from '$lib/types/riddle';
 import { error, redirect } from '@sveltejs/kit';
+import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/riddles/+page.server');
+
+/** Ligne `riddles` telle que la lit cette page : sans réponse attendue ni correction. */
+type RiddleRow = Parameters<typeof toDbRiddle>[0];
 
 /**
  * Load riddle of the day for student
@@ -27,29 +35,29 @@ export const load: PageServerLoad = async ({ locals }) => {
 		await supabase.rpc('get_riddle_of_the_day');
 
 	if (riddleError) {
-		console.error('Error fetching riddle of the day:', riddleError);
+		logger.error('Error fetching riddle of the day:', riddleError);
 	}
 
 	let studentAttempt: DbRiddleAttempt | null = null;
-	let riddleOfTheDay: DbRiddle | null = null;
+	let riddleOfTheDayRow: RiddleRow | null = null;
 	// Le RPC interroge CURRENT_DATE : la date affichée est donc celle du jour.
 	let riddleOfTheDayDate: string | null = null;
 
 	if (riddleOfTheDayId) {
 		const { data: riddle, error: riddleError } = await supabase
 			.from('riddles')
-			.select('*')
+			.select(RIDDLE_COLUMNS)
 			.eq('id', riddleOfTheDayId)
 			.maybeSingle();
 
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
 		// doit pas se confondre avec une donnée réellement vide.
 		if (riddleError && riddleError.code !== 'PGRST116') {
-			console.error('Contexte illisible :', riddleError);
+			logger.error('Contexte illisible :', riddleError);
 		}
 
 		if (riddle) {
-			riddleOfTheDay = toDbRiddle(riddle);
+			riddleOfTheDayRow = riddle;
 			riddleOfTheDayDate = new Date().toISOString().slice(0, 10);
 
 			// Fetch student's latest attempt for this riddle
@@ -62,7 +70,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				.limit(1);
 
 			if (attemptsError) {
-				console.error('Lecture impossible :', attemptsError);
+				logger.error('Lecture impossible :', attemptsError);
 				throw error(500, 'Impossible de charger les données');
 			}
 
@@ -79,27 +87,49 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.select(
 			`
 			*,
-			riddle:riddles(*)
-		`
+			riddle:riddles(${RIDDLE_COLUMNS})
+		` as const
 		)
 		.or(`student_id.eq.${user.id},class_id.in.(${classIds.join(',')})`)
 		.eq('riddles.status', 'published')
 		.order('assigned_at', { ascending: false });
 
 	if (assignmentsError) {
-		console.error('Lecture impossible :', assignmentsError);
+		logger.error('Lecture impossible :', assignmentsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
+	// Le type de saisie et les choix d'un QCM sont rangés avec la réponse attendue, dans
+	// `riddle_solutions`, que l'élève ne lit pas. Le client service la lit, mais SEULEMENT
+	// pour les énigmes que les requêtes de l'élève ci-dessus ont rendues sous sa RLS ; et
+	// `toStudentRiddle` n'en garde ni la valeur attendue ni la correction.
+	const visibleRows = [
+		...(riddleOfTheDayRow ? [riddleOfTheDayRow] : []),
+		...(assignments || []).flatMap((a) => (a.riddle ? [a.riddle] : []))
+	];
+	const { solutions, error: solutionsError } = await fetchRiddleSolutions(
+		createServiceRoleClient(),
+		visibleRows.map((r) => r.id)
+	);
+
+	if (solutionsError) {
+		logger.error('Lecture impossible :', solutionsError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
+	const toStudent = (row: RiddleRow): StudentRiddle =>
+		toStudentRiddle(toDbRiddle(row, solutions.get(row.id) ?? null));
+
 	return {
-		riddleOfTheDay,
+		riddleOfTheDay: riddleOfTheDayRow ? toStudent(riddleOfTheDayRow) : null,
 		riddleOfTheDayDate,
 		studentAttempt,
 		// `difficulty` et `status` sont des colonnes permissives, `answer` du jsonb :
-		// converties ici plutôt qu'affirmées dans la carte d'affichage.
+		// converties ici plutôt qu'affirmées dans la carte d'affichage. Réponse attendue
+		// et correction ne partent pas au navigateur.
 		assignments: (assignments || []).map((a) => ({
 			...a,
-			riddle: a.riddle ? toDbRiddle(a.riddle) : null
+			riddle: a.riddle ? toStudent(a.riddle) : null
 		}))
 	};
 };

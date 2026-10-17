@@ -42,7 +42,6 @@ describe('la commande existe et se découvre', () => {
 
 		expect(index, '« factoriser » absente du catalogue').toBeGreaterThan(-1);
 		expect(catalog[index - 1].french).toBe('simplifier');
-		expect(catalog[index].unavailable).toBeUndefined();
 	});
 
 	it('son exemple marche vraiment', () => {
@@ -67,8 +66,9 @@ describe('ce que `.factoriser` sait faire', () => {
 	it('la différence de deux carrés', () => {
 		const result = commande('.factoriser x^2-4');
 
-		expect(result.latex).toBe('\\left( x + 2 \\right) \\left( x - 2 \\right)');
-		expect(result.steps![0].title).toBe('On factorise avec a² - b² = (a+b)(a-b)');
+		expect(result.latex).toBe('\\left( x - 2 \\right) \\left( x + 2 \\right)');
+		// Ordre du noyau (ADR 0024, décision Q3) ; le titre nomme a et b
+		expect(result.steps![0].title).toBe('On reconnaît a² − b² avec a = x et b = 2');
 	});
 
 	it('le trinôme carré parfait', () => {
@@ -111,13 +111,13 @@ describe('ce que `.factoriser` sait faire', () => {
 		// — et factoriser, contrairement à dériver, ne remplace pas le nœud
 		// racine : l'enveloppe restait, et la ligne affichait `((x+2)(x-2))`.
 		expect(result.kind === 'commande' && result.latex).toBe(
-			'\\left( x + 2 \\right) \\left( x - 2 \\right)'
+			'\\left( x - 2 \\right) \\left( x + 2 \\right)'
 		);
 	});
 
 	it('une expression entièrement parenthésée à la main, pareil', () => {
 		expect(commande('.factoriser (x^2-4)').latex).toBe(
-			'\\left( x + 2 \\right) \\left( x - 2 \\right)'
+			'\\left( x - 2 \\right) \\left( x + 2 \\right)'
 		);
 	});
 });

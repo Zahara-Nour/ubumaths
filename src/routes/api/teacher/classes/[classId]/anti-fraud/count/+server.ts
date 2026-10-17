@@ -10,6 +10,9 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
 import { classIdParamSchema } from '$lib/server/validation/teacher-analytics';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/classes/[classId]/anti-fraud/count/+server');
 
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const paramCheck = classIdParamSchema.safeParse(params);
@@ -29,7 +32,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// Cette liste borne la portée du classement. Vidée par une panne, elle
 	// affiche un classement amputé sans le dire.
 	if (memberRowsError) {
-		console.error('Périmètre illisible :', memberRowsError);
+		logger.error('Périmètre illisible :', memberRowsError);
 		return json({ error: 'Impossible de déterminer le périmètre' }, { status: 500 });
 	}
 

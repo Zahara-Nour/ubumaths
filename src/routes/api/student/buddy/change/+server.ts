@@ -19,6 +19,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getStudentBuddy, changeStudentPalotin } from '$lib/server/buddy-queries';
 import { changeBuddySchema } from '$lib/server/validation/buddy';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/buddy/change/+server');
 
 const CHANGE_COST = 50;
 
@@ -46,7 +49,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		}
 
 		if (buddy.palotin_type === newPalotinType) {
-			throw error(400, 'Tu as deja ce Palotin');
+			throw error(400, 'Palotin déjà choisi');
 		}
 
 		// Check cost (first change is free)
@@ -61,7 +64,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			if (profileError) throw profileError;
 
 			if ((profile.gidouilles ?? 0) < CHANGE_COST) {
-				throw error(400, `Il te faut ${CHANGE_COST} gidouilles pour changer de Palotin`);
+				throw error(400, `${CHANGE_COST} gidouilles nécessaires pour changer de Palotin`);
 			}
 
 			// Deduct gidouilles
@@ -81,7 +84,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		});
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) throw err;
-		console.error('❌ [API] POST /api/student/buddy/change:', err);
+		logger.error('❌ [API] POST /api/student/buddy/change:', err);
 		throw error(500, 'Erreur lors du changement de Palotin');
 	}
 };

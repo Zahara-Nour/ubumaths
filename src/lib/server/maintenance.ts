@@ -3,6 +3,9 @@ import { redirect } from '@sveltejs/kit';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { building, dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
+import avatarPereUbu from '$lib/assets/images/avatar-pereubu.png?inline';
+import { frenchOrdinal, PI_STATUS_OCCURRENCES } from '$lib/error-page/pi-status';
+import { piSpiralSvg } from '$lib/error-page/pi-spiral-svg';
 
 /**
  * Maintenance mode — serves a self-contained 503 page while the app is being
@@ -80,7 +83,16 @@ function formatUntil(until: string | undefined): string | null {
 	return time;
 }
 
-/** Self-contained maintenance HTML — no external assets, no JS, no DB. */
+/** Première apparition de 503 dans π : le code coloré dans la spirale. */
+const MAINTENANCE_OCCURRENCE = PI_STATUS_OCCURRENCES[503];
+
+/**
+ * Page de maintenance autonome — ni JS, ni base, ni ressource externe : elle
+ * doit tenir pendant qu'on fige la base. Même famille que la page d'erreur
+ * (`src/routes/+error.svelte`) : spirale de π, 503 en ambre, Père Ubu au centre,
+ * mais en HTML pur. L'image est intégrée (`?inline`) et la spirale construite en
+ * texte SVG (`piSpiralSvg`).
+ */
 export function renderMaintenancePage(opts: { until?: string } = {}): string {
 	const until = formatUntil(opts.until);
 	const etaLine = until
@@ -92,44 +104,113 @@ export function renderMaintenancePage(opts: { until?: string } = {}): string {
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="robots" content="noindex" />
-		<title>Maintenance · Chiphre</title>
+		<title>Maintenance | Chiphre</title>
 		<style>
-			:root { color-scheme: light dark; }
+			:root {
+				color-scheme: light dark;
+				--bg: #ffffff;
+				--fg: #1c1917;
+				--muted: #57534e;
+				--spiral: rgba(28, 25, 23, 0.85);
+				--accent: #d97706;
+				--accent-fg: #1c1917;
+				--ring: #f59e0b;
+			}
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--bg: #252525;
+					--fg: #f5f5f4;
+					--muted: #a8a29e;
+					--spiral: rgba(245, 245, 244, 0.85);
+					--accent: #fbbf24;
+					--ring: #fbbf24;
+				}
+			}
 			* { box-sizing: border-box; }
 			body {
 				margin: 0;
 				min-height: 100vh;
-				display: grid;
-				place-items: center;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 2rem 3rem;
+				flex-wrap: wrap;
+				padding: 2rem 1rem;
 				font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-				background: linear-gradient(135deg, #6d28d9 0%, #2563eb 100%);
-				color: #fff;
-				padding: 1.5rem;
+				background: var(--bg);
+				color: var(--fg);
 			}
-			.card {
-				max-width: 30rem;
-				text-align: center;
-				background: rgba(255, 255, 255, 0.08);
-				border: 1px solid rgba(255, 255, 255, 0.18);
-				border-radius: 1.25rem;
-				padding: 2.5rem 2rem;
-				backdrop-filter: blur(8px);
+			.visual {
+				position: relative;
+				width: min(28rem, 85vw, 70vh);
+				aspect-ratio: 1;
+				flex-shrink: 0;
 			}
-			.emoji { font-size: 3.5rem; line-height: 1; }
-			h1 { font-size: 1.6rem; margin: 1rem 0 0.5rem; }
-			p { margin: 0.5rem 0; line-height: 1.5; opacity: 0.95; }
-			.eta { margin-top: 1rem; font-size: 0.95rem; opacity: 0.9; }
-			.brand { margin-top: 1.5rem; font-weight: 700; letter-spacing: 0.02em; }
+			.pi-spiral {
+				width: 100%;
+				height: 100%;
+				color: var(--spiral);
+				font-variant-numeric: tabular-nums;
+				animation: spin 20s linear infinite;
+				will-change: transform;
+			}
+			.pi-spiral .highlighted { fill: var(--accent); font-weight: 700; }
+			@keyframes spin { to { transform: rotate(360deg); } }
+			@media (prefers-reduced-motion: reduce) { .pi-spiral { animation: none; } }
+			.ubu {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				width: 26%;
+				height: 26%;
+				transform: translate(-50%, -50%);
+				border-radius: 50%;
+				border: 2px solid var(--ring);
+				background: var(--bg);
+				object-fit: cover;
+			}
+			main { max-width: 34rem; display: flex; flex-direction: column; gap: 1rem; }
+			.eyebrow {
+				margin: 0;
+				font-weight: 600;
+				letter-spacing: 0.2em;
+				text-transform: uppercase;
+				color: var(--muted);
+			}
+			h1 { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 2.25rem; }
+			p { margin: 0; line-height: 1.6; text-wrap: balance; }
+			.eta { color: var(--muted); }
+			.retry {
+				align-self: flex-start;
+				margin-top: 0.5rem;
+				padding: 0.6rem 1.1rem;
+				border-radius: 0.5rem;
+				background: var(--accent);
+				color: var(--accent-fg);
+				font-weight: 600;
+				text-decoration: none;
+			}
+			@media (max-width: 1023px) {
+				main { align-items: center; text-align: center; }
+				.retry { align-self: center; }
+			}
 		</style>
 	</head>
 	<body>
-		<main class="card">
-			<div class="emoji" aria-hidden="true">🛠️</div>
+		<div class="visual">
+			${piSpiralSvg(MAINTENANCE_OCCURRENCE.position)}
+			<img class="ubu" src="${avatarPereUbu}" alt="" width="262" height="266" />
+		</div>
+		<main>
+			<p class="eyebrow">Erreur 503</p>
 			<h1>Maintenance en cours</h1>
-			<p>Chiphre est momentanément indisponible pendant une mise à jour technique.</p>
-			<p>On revient très vite&nbsp;!</p>
+			<p>
+				Le nombre 503 est de service à la
+				<strong>${frenchOrdinal(MAINTENANCE_OCCURRENCE.position)} décimale</strong>&nbsp;de&nbsp;π&nbsp;;
+				Chiphre, lui, est hors service le temps d’une mise à jour.
+			</p>
 			${etaLine}
-			<div class="brand">Chiphre</div>
+			<a class="retry" href="">Réessayer</a>
 		</main>
 	</body>
 </html>`;

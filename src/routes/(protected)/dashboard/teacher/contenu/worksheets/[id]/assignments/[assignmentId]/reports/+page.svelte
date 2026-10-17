@@ -11,11 +11,10 @@
 	- Review dialog with approve/reject actions
 -->
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
 	import ErrorReportsPanel from '$lib/components/worksheets/teacher/ErrorReportsPanel.svelte';
-	import { ArrowLeft } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -38,15 +37,11 @@
 
 <div class="container mx-auto max-w-5xl py-6">
 	<!-- Header -->
-	<div class="mb-6 flex items-start gap-4">
-		<Button
-			variant="ghost"
-			size="icon"
-			href="/dashboard/teacher/contenu/worksheets/{data.worksheetId}"
-			class="mt-1"
-		>
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-6">
+		<BackLink
+			href={`/dashboard/teacher/contenu/worksheets/${data.worksheetId}`}
+			label="Retour à la fiche"
+		/>
 		<div>
 			<h1 class="text-3xl font-bold">Signalements</h1>
 			<p class="mt-1 text-muted-foreground">

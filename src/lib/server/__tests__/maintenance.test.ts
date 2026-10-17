@@ -89,6 +89,17 @@ describe('renderMaintenancePage', () => {
 		const html = renderMaintenancePage({ until: '2026-06-13T12:30:00Z' });
 		expect(html).toContain('Retour prévu');
 	});
+	it('reprend la page d’erreur : spirale de π, 503 coloré, Père Ubu intégré', () => {
+		const html = renderMaintenancePage();
+		const highlighted = [...html.matchAll(/class="highlighted">(\d)</g)].map((m) => m[1]);
+
+		expect(highlighted.join('')).toBe('503');
+		expect(html).toContain('837ᵉ décimale');
+		expect(html).toContain('Chiphre, lui, est hors service');
+		// Aucune ressource externe : l'image est dans la page
+		expect(html).toMatch(/<img class="ubu" src="data:image\/png;base64,/);
+		expect(html).not.toMatch(/<script|<link /);
+	});
 });
 
 describe('createMaintenanceHandle', () => {

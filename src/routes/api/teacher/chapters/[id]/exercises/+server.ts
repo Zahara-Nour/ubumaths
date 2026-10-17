@@ -10,6 +10,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { linkExercise } from '$lib/server/chapters';
 import { linkExerciseSchema } from '$lib/server/validation/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/exercises/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -61,7 +64,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('display_order', { ascending: true });
 
 	if (linksError) {
-		console.error('[GET /api/teacher/chapters/[id]/exercises] Error:', linksError);
+		logger.error('[GET /api/teacher/chapters/[id]/exercises] Error:', linksError);
 		throw error(500, 'Failed to fetch exercises');
 	}
 
@@ -132,7 +135,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (existingLinkError && existingLinkError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', existingLinkError);
+		logger.error('Lecture impossible :', existingLinkError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -149,7 +152,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	);
 
 	if (result.error) {
-		console.error('[POST /api/teacher/chapters/[id]/exercises] Error:', result.error);
+		logger.error('[POST /api/teacher/chapters/[id]/exercises] Error:', result.error);
 		throw error(500, 'Failed to link exercise');
 	}
 

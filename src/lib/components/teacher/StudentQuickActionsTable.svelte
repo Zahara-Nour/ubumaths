@@ -83,6 +83,7 @@
 
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
+	import { studentJournalHref } from '$lib/navigation/return-links';
 	import * as Table from '$lib/components/ui/table';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Badge } from '$lib/components/ui/badge';
@@ -279,7 +280,7 @@
 					const plural = Math.abs(accumulatedDelta) > 1 ? 's' : '';
 					toaster.success(`${amountStr} gidouille${plural} (${studentName})`);
 				} else {
-					throw new Error('Failed');
+					throw new Error('Échec');
 				}
 			} catch {
 				teacherCache.updateGidouillesOptimistic(classId, studentId, -accumulatedDelta);
@@ -337,7 +338,7 @@
 
 				if (!response.ok) {
 					const errorText = await response.text();
-					throw new Error(errorText || 'Failed to remove VIP card');
+					throw new Error(errorText || 'Impossible de retirer la carte VIP');
 				}
 
 				// Success: Cache already has correct optimistic value
@@ -401,7 +402,7 @@
 					if (response.ok) {
 						toaster.success(`+1 bonus (${student.firstname})`);
 					} else {
-						throw new Error('Failed');
+						throw new Error('Échec');
 					}
 				} catch (_error) {
 					// Rollback optimistic update
@@ -464,7 +465,7 @@
 					const labels = accumulated.map((t: WarningType) => WARNING_TYPE_LABELS[t]).join(', ');
 					toaster.success(`+${labels} (${student.firstname})`);
 				} else {
-					throw new Error('Failed');
+					throw new Error('Échec');
 				}
 			} catch {
 				// Rollback to pre-update snapshot (avoids reading stale cache at error-time)
@@ -582,7 +583,7 @@
 									{/if}
 								</span>
 								<a
-									href="/dashboard/teacher/students/{student.id}/journal"
+									href={studentJournalHref(student.id, 'accueil')}
 									title="Voir l'historique des récompenses"
 									class="ml-auto text-muted-foreground transition-colors hover:text-foreground"
 								>

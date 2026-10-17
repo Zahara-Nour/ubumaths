@@ -33,8 +33,12 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/courses/+server');
 
 /**
  * List synced Google Classroom courses
@@ -44,6 +48,8 @@ import { requireRole } from '$lib/server/middleware/auth';
  * Returns array of synced courses for current teacher, sorted by most recent update
  */
 export const GET: RequestHandler = async ({ locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can list courses
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -58,8 +64,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('updated_at', { ascending: false });
 
 		if (fetchError) {
-			console.error('[Google Courses] Database error:', fetchError);
-			throw error(500, 'Failed to fetch Google Classroom courses');
+			logger.error('[Google Courses] Database error:', fetchError);
+			throw error(500, 'Impossible de charger les cours Classroom');
 		}
 
 		// Transform to camelCase for response
@@ -88,7 +94,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 
 		// Handle other errors
-		console.error('[Google Courses] Error fetching courses:', err);
-		throw error(500, 'An error occurred while fetching courses');
+		logger.error('[Google Courses] Error fetching courses:', err);
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

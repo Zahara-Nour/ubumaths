@@ -20,7 +20,9 @@ ECHEC=0
 echo "== 1. Typst (générateur de l'application)"
 pnpm exec tsx scripts/fiches/rendu-fiche.ts "$DOSSIER" "$TITRE" || ECHEC=1
 echo "== 2. Compilation prod"
-node scripts/fiches/compile-prod.mjs "$DOSSIER"/{fiche,corrige,fiche-en,corrige-en}.typ || ECHEC=1
+node scripts/fiches/compile-prod.mjs "$DOSSIER"/{fiche,fiche-en}.typ || ECHEC=1
+# Le corrigé utilise Shantell Sans et Chiphre Math : polices à charger en plus
+node scripts/fiches/compile-prod.mjs --polices-corrige "$DOSSIER"/{corrige,corrige-en}.typ || ECHEC=1
 echo "== 3. Débords de colonne"
 "$PY" scripts/fiches/debord.py "$DOSSIER"/{fiche,corrige,fiche-en,corrige-en}.pdf || ECHEC=1
 echo "== 4. Pages en images (à relire)"

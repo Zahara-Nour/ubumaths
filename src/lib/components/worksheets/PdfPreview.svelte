@@ -1,4 +1,9 @@
 <script lang="ts">
+	import {
+		sanitizeForFileName,
+		worksheetPdfFileName,
+		type WorksheetPdfKind
+	} from '$lib/worksheets/pdf-file-name';
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -10,6 +15,7 @@
 	import { Progress } from '$lib/components/ui/progress';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import CodeViewer from '$lib/components/CodeViewer.svelte';
+	import PdfSvgView from './PdfSvgView.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		FileDown,
@@ -17,7 +23,6 @@
 		Users,
 		Download,
 		Loader2,
-		FileText,
 		CheckCircle,
 		AlertCircle,
 		Printer,
@@ -26,28 +31,37 @@
 		Copy,
 		FileCode
 	} from '@lucide/svelte';
-	import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
+	import { generateWorksheetTypst } from '$lib/typst/generators';
+	import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
+	import { renderMarkdownPreview } from '$lib/worksheets/document/render-exercise';
 	import {
 		clearTrackedExternalImages,
 		getTrackedExternalImages
 	} from '$lib/ubumark/generators/typst-generator';
-	import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
-	import type {
-		WorksheetWithRelations,
-		InstanceData,
-		InstanceSection,
-		WorksheetExerciseWithExercise
-	} from '$lib/types/worksheets';
-	import { localizedText, worksheetLocale } from '$lib/types/worksheets';
-	import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
+	import { fetchExternalImages } from '$lib/typst/image-loader';
+	import { pdfPageCount } from '$lib/typst/pdf-page-count';
+	import {
+		compileTypstDocument,
+		fallbackWarning
+	} from '$lib/typst/compiler/correction-fonts-compiler';
+	import type { WorksheetWithRelations, InstanceData } from '$lib/types/worksheets';
+	import { worksheetLocale } from '$lib/types/worksheets';
+	import { documentLabels } from '$lib/typst/labels';
+	import { buildWorksheetCopy, GUIDANCE_LEVEL_ITEMS } from '$lib/worksheets/worksheet-copy';
+	import {
+		DEFAULT_GUIDANCE_LEVEL,
+		isGuidanceLevel,
+		type GuidanceLevel
+	} from '$lib/worksheets/student-copy';
 	import JSZip from 'jszip';
-	import { correctionForPrint } from '$lib/questions/correction-detail';
+	import TextSizeSelect from './TextSizeSelect.svelte';
+	import type { TextSize } from '$lib/typst/text-size';
 	import {
 		getTypstCompiler,
 		type TypstCompiler,
 		getCompilerError,
 		resetCompilerState
-	} from '$lib/worksheets/typst-compiler';
+	} from '$lib/typst/compiler';
 
 	// ============================================================================
 	// PROPS AND STATE
@@ -82,17 +96,39 @@
 	let isTypstLoading = $state(true);
 	let typstError = $state<string | null>(null);
 
-	// Preview state
-	let modeChoisi = $state<'worksheet' | 'correction'>('worksheet');
+	// Preview state : les trois PDF de la fiche
+	const PDF_KIND_ITEMS: { value: WorksheetPdfKind; label: string }[] = [
+		{ value: 'worksheet', label: 'Fiche' },
+		{ value: 'answers', label: 'Réponses' },
+		{ value: 'correction', label: 'Corrigé' },
+		// Chaque correction sous son énoncé (demande de David, 2026-10-14)
+		{ value: 'worksheet_correction', label: 'Fiche + corrigé' }
+	];
+	let modeChoisi = $state<WorksheetPdfKind>('worksheet');
 
 	// Verrou, pas simple masquage : même si un sélecteur subsistait quelque part,
 	// le mode retomberait sur « fiche ».
 	const mode = $derived(estLecteur ? ('worksheet' as const) : modeChoisi);
+	// Ce que le générateur reçoit : « Fiche + corrigé » est une fiche, corrections sous les énoncés
+	const generatorMode = $derived(mode === 'worksheet_correction' ? ('worksheet' as const) : mode);
+	const inlineCorrections = $derived(mode === 'worksheet_correction');
 	let selectedStudentId = $state<string | undefined>(undefined);
+
+	// Niveau de guidage imprimé hors affectation (ADR 0023) : guidé par défaut.
+	// Le lecteur du cahier public n'a pas le choix : toujours guidé.
+	let niveauChoisi = $state<string>(DEFAULT_GUIDANCE_LEVEL);
+	const printLevel = $derived<GuidanceLevel>(
+		!estLecteur && isGuidanceLevel(niveauChoisi) ? niveauChoisi : DEFAULT_GUIDANCE_LEVEL
+	);
+	// Taille du texte (accessibilité) : choisie au coup par coup, jamais
+	// enregistrée ; normale à chaque ouverture
+	let textSize = $state<TextSize>('normal');
 	let isGenerating = $state(false);
 	let pdfUrl = $state<string | null>(null);
 	let pdfBlob = $state<Blob | null>(null);
 	let pdfFilename = $state<string>('');
+	// Pages du PDF compilé (« Aperçu : N pages ») ; 0 : inconnu ou pas encore compilé
+	let pageCount = $state(0);
 	let svgContent = $state<string>('');
 	let typstContent = $state<string>('');
 	let markdownContent = $state<string>('');
@@ -146,7 +182,7 @@
 			// Generate initial preview
 			generatePreview();
 		} catch (err) {
-			typstError = getCompilerError() || `Initialization error: ${err}`;
+			typstError = getCompilerError() || `Erreur d’initialisation : ${err}`;
 			isTypstLoading = false;
 			console.error('Typst initialization error:', err);
 		}
@@ -162,80 +198,32 @@
 	// ============================================================================
 
 	/**
-	 * Generate a simple instance from worksheet exercises
-	 * This creates the data structure needed for Typst generation
+	 * La copie imprimée hors affectation (ADR 0023) : le calcul de toutes les
+	 * copies, au niveau choisi, avec la graine de la fiche — la même pour tous
+	 * les élèves du lot, et pour la correction générale.
 	 */
-	function generateSimpleInstance(ws: WorksheetWithRelations, studentId?: string): InstanceData {
-		const exercises = ws.exercises || [];
-
-		// Sort exercises by position
-		const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
-
-		// Map to resolved exercises (using variations as source of truth).
-		// Title, points, section and custom instructions must be carried over:
-		// without them the PDF shows no title, no section, and the exercise
-		// position instead of its points.
-		// The worksheet language drives the exercise content too, not just the chrome.
-		const locale = worksheetLocale(worksheet.config);
-		const resolvedExercises = sortedExercises.map((we: WorksheetExerciseWithExercise) => {
-			const content = we.exercise
-				? getExerciseContentSafe(we.exercise as Exercise, 0, locale)
-				: { statement_md: '', solution_md: '' };
-			return {
-				exercise_id: we.exercise_id,
-				title: we.exercise?.title ?? null,
-				position: we.position,
-				points: we.points,
-				section_id: we.section_id ?? null,
-				custom_instructions: localizedText(
-					we.custom_instructions,
-					we.translations,
-					'custom_instructions',
-					locale
-				),
-				parameters: {},
-				statement: content.statement_md,
-				solution: content.solution_md,
-				// Fonctions déclarées : sans elles, `C'(x)` s'imprime en erreur dans le PDF.
-				generic_functions: we.exercise?.generic_functions
-			};
+	function generateSimpleInstance(ws: WorksheetWithRelations): InstanceData {
+		return buildWorksheetCopy(ws, {
+			assignmentId: null,
+			worksheetId: ws.id,
+			level: printLevel,
+			individualized: false,
+			locale: worksheetLocale(ws.config)
 		});
-
-		// Sections, so the PDF groups exercises the way the worksheet does
-		const sections: InstanceSection[] = (ws.sections ?? [])
-			.slice()
-			.sort((a, b) => a.position - b.position)
-			.map((s) => ({
-				id: s.id,
-				title: localizedText(s.title, s.translations, 'title', locale) ?? s.title,
-				instructions: localizedText(s.instructions, s.translations, 'instructions', locale),
-				position: s.position
-			}));
-
-		// Generate a deterministic seed based on student ID if provided
-		const seed = studentId ? hashString(ws.id + studentId) : Math.floor(Math.random() * 1000000);
-
-		return {
-			exercises: resolvedExercises,
-			sections: sections.length > 0 ? sections : undefined,
-			variant_info: {
-				seed,
-				version: studentId ? 'student' : 'preview'
-			}
-		};
 	}
 
 	/**
-	 * Simple hash function for deterministic seed generation
+	 * Changer le niveau à imprimer (onglet Aperçu ou Lot) refait l'aperçu. Une
+	 * génération en cours le rattrape en finissant (voir `generatePreview`).
 	 */
-	function hashString(str: string): number {
-		let hash = 0;
-		for (let i = 0; i < str.length; i++) {
-			const char = str.charCodeAt(i);
-			hash = (hash << 5) - hash + char;
-			hash = hash & hash; // Convert to 32bit integer
-		}
-		return Math.abs(hash);
+	function handlePrintLevelChange(level: string) {
+		niveauChoisi = level;
+		generatePreview();
+	}
+
+	function handleTextSizeChange(size: TextSize) {
+		textSize = size;
+		generatePreview();
 	}
 
 	// ============================================================================
@@ -247,6 +235,9 @@
 
 		isGenerating = true;
 		svgContent = '';
+		// Le niveau de CETTE génération : changé entre-temps, on recommence
+		const levelAtStart = printLevel;
+		const sizeAtStart = textSize;
 
 		// Clean up previous PDF
 		if (pdfUrl) {
@@ -254,6 +245,7 @@
 			pdfUrl = null;
 		}
 		pdfBlob = null;
+		pageCount = 0;
 
 		try {
 			// Determine student info
@@ -264,26 +256,24 @@
 				: undefined;
 
 			// Generate instance data
-			const instanceData = generateSimpleInstance(worksheet, studentId);
+			const instanceData = generateSimpleInstance(worksheet);
 
-			// Generate markdown content for display
-			const mdParts: string[] = [];
-			mdParts.push(`# ${worksheet.title}\n`);
-			if (worksheet.description) {
-				mdParts.push(`${worksheet.description}\n`);
-			}
-			instanceData.exercises.forEach((ex, i) => {
-				mdParts.push(`## ${lore.learning.exercise} ${i + 1}\n`);
-				mdParts.push(ex.statement || '');
-				if (mode === 'correction' && ex.solution) {
-					// Comme le PDF : concise ou détaillée selon la fiche (D11)
-					mdParts.push(
-						`\n### Solution\n${correctionForPrint(ex.solution, worksheet.config?.correction_detail)}`
-					);
+			// Aperçu à l'écran : le même document que le PDF (ordre, numéros, corrections)
+			markdownContent = renderMarkdownPreview(
+				documentFromTeacherCopy({
+					worksheet,
+					instance: instanceData,
+					config: worksheet.config || {}
+				}),
+				generatorMode,
+				{
+					inlineCorrections,
+					// Comme le titre du PDF
+					titleSuffix: inlineCorrections
+						? ` — ${documentLabels(worksheetLocale(worksheet.config)).correction}`
+						: undefined
 				}
-				mdParts.push('\n');
-			});
-			markdownContent = mdParts.join('\n');
+			);
 
 			// Clear tracked images before generating Typst
 			clearTrackedExternalImages();
@@ -293,48 +283,42 @@
 				worksheet,
 				instance: instanceData,
 				config: worksheet.config || {},
-				mode,
+				mode: generatorMode,
+				inlineCorrections,
 				studentName,
 				className: classId ? 'Classe' : undefined,
-				template: worksheet.template
+				template: worksheet.template,
+				textSize
 			});
-			typstContent = generatedTypst;
+			// Images externes, posées dans le système de fichiers virtuel à la compilation
+			const imageData = await fetchExternalImages(getTrackedExternalImages());
 
-			// Fetch and map external images to virtual file system
-			const externalImageUrls = getTrackedExternalImages();
-			if (externalImageUrls.length > 0) {
-				console.log('[PdfPreview] Fetching external images:', externalImageUrls.length);
-				const imageData = await fetchExternalImages(externalImageUrls);
-				for (const [url, data] of imageData) {
-					const virtualPath = urlToVirtualPath(url);
-					typst.mapShadow(virtualPath, data);
-					console.log('[PdfPreview] Mapped image:', url.slice(0, 60), '->', virtualPath);
-				}
-			}
-
-			// Generate SVG for preview
-			const svg = await typst.svg({ mainContent: generatedTypst });
-			svgContent = svg;
-
-			// Generate PDF
-			const pdfData = await typst.pdf({ mainContent: typstContent });
-			pdfBlob = new Blob([pdfData as BlobPart], { type: 'application/pdf' });
+			// Aperçu SVG et PDF ; le Corrigé passe par le compilateur de ses polices,
+			// et retombe sur la police standard si elles échouent
+			const compiled = await compileTypstDocument(generatedTypst, {
+				images: imageData,
+				svg: true,
+				compiler: typst ?? undefined
+			});
+			typstContent = compiled.typst;
+			svgContent = compiled.data.svg ?? '';
+			pdfBlob = new Blob([compiled.data.pdf as BlobPart], { type: 'application/pdf' });
 			pdfUrl = URL.createObjectURL(pdfBlob);
-
-			// Reset shadow file system to free memory
-			typst.resetShadow();
-
-			// Set filename
-			const safeName = studentName ? sanitizeFilename(studentName) : 'preview';
-			pdfFilename = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${safeName}_${mode}.pdf`;
+			pageCount = pdfPageCount(compiled.data.pdf);
+			pdfFilename = worksheetPdfFileName(worksheet.title, mode, studentName);
 
 			toaster.success('PDF genere avec succes');
+			if (compiled.fallbackError) toaster.warning(fallbackWarning(compiled.fallbackError));
 		} catch (err) {
 			console.error('PDF generation error:', err);
 			typstError = `Erreur de compilation: ${err}`;
 			toaster.error('Erreur lors de la generation du PDF');
 		} finally {
 			isGenerating = false;
+		}
+		// Niveau ou taille changés pendant la génération : le changement n'est pas perdu
+		if (printLevel !== levelAtStart || textSize !== sizeAtStart) {
+			generatePreview();
 		}
 	}
 
@@ -378,11 +362,11 @@
 
 		try {
 			const zip = new JSZip();
-			const folderName = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${mode}`;
+			const folderName = `${sanitizeForFileName(worksheet.title)}_${mode}`;
 			const folder = zip.folder(folderName);
 
 			if (!folder) {
-				throw new Error('Failed to create zip folder');
+				throw new Error('Impossible de créer le dossier de l’archive zip');
 			}
 
 			// Pre-fetch external images by generating a sample Typst content first
@@ -390,27 +374,30 @@
 			clearTrackedExternalImages();
 
 			// Generate sample Typst to collect external image URLs
-			const sampleInstance = generateSimpleInstance(worksheet, students[0].id);
+			const sampleInstance = generateSimpleInstance(worksheet);
 			generateWorksheetTypst({
 				worksheet,
 				instance: sampleInstance,
 				config: worksheet.config || {},
-				mode,
+				mode: generatorMode,
+				inlineCorrections,
 				studentName: formatStudentName(students[0]),
 				className: classId ? 'Classe' : undefined,
 				template: worksheet.template
 			});
 
-			// Fetch and map external images once for all PDFs
-			const externalImageUrls = getTrackedExternalImages();
-			if (externalImageUrls.length > 0) {
-				console.log('[PdfPreview Batch] Fetching external images:', externalImageUrls.length);
-				const imageData = await fetchExternalImages(externalImageUrls);
-				for (const [url, data] of imageData) {
-					const virtualPath = urlToVirtualPath(url);
-					typst.mapShadow(virtualPath, data);
-				}
-			}
+			// Images externes, téléchargées une fois pour tous les PDF
+			const imageData = await fetchExternalImages(getTrackedExternalImages());
+			// Première erreur de police du Corrigé : un seul avertissement pour le lot
+			let firstFallbackError: string | null = null;
+			const compileForBatch = async (source: string) => {
+				const compiled = await compileTypstDocument(source, {
+					images: imageData,
+					compiler: typst ?? undefined
+				});
+				firstFallbackError ??= compiled.fallbackError;
+				return compiled.data.pdf;
+			};
 
 			// Generate PDFs for each student
 			for (let i = 0; i < students.length; i++) {
@@ -420,7 +407,7 @@
 				batchProgress = i;
 
 				// Generate instance for this student
-				const instanceData = generateSimpleInstance(worksheet, student.id);
+				const instanceData = generateSimpleInstance(worksheet);
 
 				// Clear tracked images (to avoid memory accumulation, images are already mapped)
 				clearTrackedExternalImages();
@@ -430,36 +417,35 @@
 					worksheet,
 					instance: instanceData,
 					config: worksheet.config || {},
-					mode,
+					mode: generatorMode,
+					inlineCorrections,
 					studentName,
 					className: classId ? 'Classe' : undefined,
 					template: worksheet.template
 				});
 
-				// Compile to PDF (images already mapped to virtual file system)
-				const pdfData = await typst.pdf({ mainContent: typstContent });
-
-				// Add to zip
-				const filename = `${sanitizeFilename(studentName)}_${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${mode}.pdf`;
-				folder.file(filename, pdfData);
+				const pdfData = await compileForBatch(typstContent);
+				folder.file(worksheetPdfFileName(worksheet.title, mode, studentName), pdfData);
 			}
 
-			// If correction mode, add master correction document
-			if (mode === 'correction') {
-				batchCurrentStudent = 'Correction generale...';
+			// Corrigés : un exemplaire général, sans nom d'élève (et sans énoncé)
+			if (mode === 'answers' || mode === 'correction') {
+				const general = mode === 'answers' ? 'REPONSES GENERALES' : 'CORRECTION GENERALE';
+				batchCurrentStudent =
+					mode === 'answers' ? 'Reponses generales...' : 'Correction generale...';
 				const masterInstance = generateSimpleInstance(worksheet);
 				clearTrackedExternalImages();
 				const masterTypst = generateWorksheetTypst({
 					worksheet,
 					instance: masterInstance,
 					config: worksheet.config || {},
-					mode: 'correction',
-					studentName: 'CORRECTION GENERALE',
+					mode: generatorMode,
+					studentName: general,
 					className: classId ? 'Classe' : undefined,
 					template: worksheet.template
 				});
-				const masterPdf = await typst.pdf({ mainContent: masterTypst });
-				folder.file('00_CORRECTION_GENERALE.pdf', masterPdf);
+				const masterPdf = await compileForBatch(masterTypst);
+				folder.file(`00_${general.replace(' ', '_')}.pdf`, masterPdf);
 			}
 
 			// Add summary document
@@ -485,12 +471,11 @@
 			URL.revokeObjectURL(url);
 
 			toaster.success(`${batchTotal} PDFs generes et telecharges avec succes`);
+			if (firstFallbackError) toaster.warning(fallbackWarning(firstFallbackError));
 		} catch (err) {
 			console.error('Batch PDF generation error:', err);
 			toaster.error('Erreur lors de la generation des PDFs en lot');
 		} finally {
-			// Reset shadow file system to free memory
-			typst.resetShadow();
 			isBatchGenerating = false;
 			batchProgress = 0;
 			batchCurrentStudent = '';
@@ -499,7 +484,7 @@
 
 	function generateBatchSummary(): string {
 		const date = new Date().toLocaleString('fr-FR');
-		const modeLabel = mode === 'correction' ? 'Corrections' : 'Feuilles de travail';
+		const modeLabel = PDF_KIND_ITEMS.find((item) => item.value === mode)?.label ?? 'Fiche';
 
 		return `========================================
 GENERATION BATCH DE PDFS
@@ -522,7 +507,13 @@ INFORMATIONS
 
 - Chaque PDF est personnalise avec le nom de l'eleve
 - Les ${lore.learning.exercise}s peuvent etre melangees selon la configuration
-- ${mode === 'correction' ? 'Les solutions sont incluses' : 'Les solutions ne sont pas incluses'}
+- ${
+			mode === 'worksheet'
+				? 'Les solutions ne sont pas incluses'
+				: mode === 'worksheet_correction'
+					? 'Chaque correction sous son enonce'
+					: 'Sans les enonces : ' + (mode === 'answers' ? 'les reponses seules' : 'le corrige')
+		}
 - Generation effectuee cote client (navigateur)
 
 ========================================
@@ -542,21 +533,12 @@ INFORMATIONS
 		return `${lastName} ${firstName}`.trim() || 'Eleve';
 	}
 
-	function sanitizeFilename(name: string): string {
-		return name
-			.normalize('NFD')
-			.replace(/[\u0300-\u036f]/g, '') // Remove accents
-			.replace(/[^a-zA-Z0-9_-]/g, '_') // Replace special chars with underscore
-			.replace(/__+/g, '_') // Remove duplicate underscores
-			.trim();
-	}
-
 	// ============================================================================
 	// REACTIVE STATEMENTS
 	// ============================================================================
 
 	// Track previous values to detect changes
-	let prevMode = $state<'worksheet' | 'correction' | null>(null);
+	let prevMode = $state<WorksheetPdfKind | null>(null);
 	let prevStudentId = $state<string | null | undefined>(undefined);
 	let hasInitialized = $state(false);
 
@@ -583,27 +565,6 @@ INFORMATIONS
 			prevMode = mode;
 			prevStudentId = selectedStudentId;
 			hasInitialized = true;
-		}
-	});
-
-	// Scale SVG to fit container
-	$effect(() => {
-		if (svgContent) {
-			setTimeout(() => {
-				const container = document.getElementById('pdf-svg-preview');
-				const svgElem = container?.querySelector('svg');
-				if (svgElem && container) {
-					const width = Number.parseFloat(svgElem.getAttribute('width') || '0');
-					const height = Number.parseFloat(svgElem.getAttribute('height') || '0');
-					const containerWidth = container.clientWidth - 40;
-
-					// Only resize if we have valid dimensions
-					if (width > 0 && height > 0 && containerWidth > 0) {
-						svgElem.setAttribute('width', String(containerWidth));
-						svgElem.setAttribute('height', String((height * containerWidth) / width));
-					}
-				}
-			}, 50);
 		}
 	});
 </script>
@@ -673,17 +634,34 @@ INFORMATIONS
 					<div class="grid gap-4 sm:grid-cols-2">
 						{#if !estLecteur}
 							<div class="space-y-2">
-								<Label>Mode</Label>
+								<Label>PDF</Label>
 								<MySelect
 									type="single"
 									bind:value={modeChoisi}
-									items={[
-										{ value: 'worksheet', label: 'Feuille de travail' },
-										{ value: 'correction', label: 'Correction' }
-									]}
+									items={PDF_KIND_ITEMS}
+									disabled={isBatchGenerating}
+									triggerAriaLabel="PDF à générer"
 								/>
 							</div>
 						{/if}
+
+						{#if !estLecteur}
+							<div class="space-y-2">
+								<Label>Niveau à imprimer</Label>
+								<MySelect
+									type="single"
+									bind:value={niveauChoisi}
+									items={GUIDANCE_LEVEL_ITEMS}
+									triggerAriaLabel="Niveau à imprimer"
+									onValueChange={handlePrintLevelChange}
+								/>
+							</div>
+						{/if}
+
+						<!-- Pour tous, lecteur du cahier compris : un élève malvoyant peut l'utiliser -->
+						<div class="flex items-end">
+							<TextSizeSelect value={textSize} onchange={handleTextSizeChange} />
+						</div>
 
 						{#if students.length > 0}
 							<div class="space-y-2">
@@ -718,6 +696,20 @@ INFORMATIONS
 								Imprimer
 							</Button>
 						{/if}
+
+						<!-- Nombre de pages : régler les cadres de réponse sans imprimer pour voir -->
+						{#if pageCount > 0 && !isGenerating}
+							<span
+								class="flex items-center gap-1 self-center text-sm {pageCount > 1
+									? 'text-amber-600'
+									: 'text-muted-foreground'}"
+								data-testid="apercu-pages"
+							>
+								{#if pageCount > 1}<AlertCircle class="h-4 w-4" />{/if}
+								Aperçu : {pageCount}
+								{pageCount > 1 ? 'pages' : 'page'}
+							</span>
+						{/if}
 					</div>
 
 					{#if !estLecteur}
@@ -725,38 +717,7 @@ INFORMATIONS
 					{/if}
 
 					<!-- SVG Preview -->
-					<div class="relative">
-						{#if isGenerating}
-							<div
-								class="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-							>
-								<div class="space-y-2 text-center">
-									<Loader2 class="mx-auto h-8 w-8 animate-spin text-primary" />
-									<p class="text-sm text-muted-foreground">Generation du PDF...</p>
-								</div>
-							</div>
-						{/if}
-
-						{#if svgContent}
-							<div
-								id="pdf-svg-preview"
-								class="min-h-[400px] overflow-auto rounded-lg border border-border bg-white p-5"
-							>
-								{@html svgContent}
-							</div>
-						{:else}
-							<div
-								class="rounded-lg border border-dashed border-muted-foreground/25 bg-muted/5 p-12"
-							>
-								<div class="space-y-3 text-center">
-									<FileText class="mx-auto h-12 w-12 text-muted-foreground/50" />
-									<p class="text-muted-foreground">
-										Cliquez sur "Rafraichir" pour generer un apercu
-									</p>
-								</div>
-							</div>
-						{/if}
-					</div>
+					<PdfSvgView svg={svgContent} generating={isGenerating} />
 				</Tabs.Content>
 
 				<!-- Markdown Tab -->
@@ -834,27 +795,37 @@ INFORMATIONS
 							<div class="space-y-2">
 								<div class="flex items-center gap-2">
 									<Badge variant="secondary">{students.length} eleves</Badge>
-									<Badge variant={mode === 'correction' ? 'default' : 'outline'}>
-										Mode: {mode === 'correction' ? 'Corrections' : 'Feuilles de travail'}
+									<Badge variant={mode === 'worksheet' ? 'outline' : 'default'}>
+										PDF : {PDF_KIND_ITEMS.find((item) => item.value === mode)?.label}
 									</Badge>
 								</div>
 								<p class="text-sm text-muted-foreground">
-									Generez un PDF personnalise pour chaque eleve. Les PDFs seront telecharges dans un
-									fichier ZIP.
+									Un PDF par élève, à son nom (même copie pour tous, au niveau choisi), téléchargés
+									dans un fichier ZIP.
 								</p>
 							</div>
 						</div>
 
 						<!-- Mode selector for batch -->
 						<div class="space-y-2">
-							<Label>Mode de generation</Label>
+							<Label>PDF à générer</Label>
 							<MySelect
 								type="single"
 								bind:value={modeChoisi}
-								items={[
-									{ value: 'worksheet', label: 'Feuilles de travail' },
-									{ value: 'correction', label: 'Corrections' }
-								]}
+								items={PDF_KIND_ITEMS}
+								disabled={isBatchGenerating}
+								triggerAriaLabel="PDF à générer pour le lot"
+							/>
+						</div>
+
+						<div class="space-y-2">
+							<Label>Niveau à imprimer</Label>
+							<MySelect
+								type="single"
+								bind:value={niveauChoisi}
+								items={GUIDANCE_LEVEL_ITEMS}
+								triggerAriaLabel="Niveau à imprimer"
+								onValueChange={handlePrintLevelChange}
 							/>
 						</div>
 
@@ -893,8 +864,12 @@ INFORMATIONS
 								<li>- Variantes de {lore.learning.exercise}s selon la configuration</li>
 								<li>- Fichier ZIP contenant tous les PDFs</li>
 								<li>- Document de synthese avec la liste des eleves</li>
-								{#if mode === 'correction'}
+								{#if mode === 'worksheet_correction'}
+									<li>- Chaque correction sous son enonce</li>
+								{:else if mode === 'correction'}
 									<li>- Correction generale incluse</li>
+								{:else if mode === 'answers'}
+									<li>- Reponses generales incluses</li>
 								{/if}
 								<li>- Generation 100% cote client (pas de serveur)</li>
 							</ul>

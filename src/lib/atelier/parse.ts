@@ -12,6 +12,7 @@ import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { parseLatexSafe } from '$lib/mathAST/parser';
 import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/input-detector';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { format as formatUnit } from '$lib/mathAST/units';
 import type { MathNode } from '$lib/mathAST/types';
@@ -24,7 +25,7 @@ import {
 import type { MissingReference, ObjectKind } from './types';
 import { readListValue, readNumber } from '$lib/statistics/read-value';
 import { hasObjectNameShape } from './names';
-import { coupleOrSetRefusal } from './decimal-comma';
+import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from './decimal-comma';
 
 /**
  * D'où vient une définition. Décision D10 : c'est la provenance qui décide du
@@ -122,6 +123,17 @@ export function withPiCommand(text: string): string {
 }
 
 /**
+ * `ln\left(x\right)` → `\ln\left(x\right)`. MathLive écrit ainsi un `ln` tapé
+ * lettre à lettre puis une parenthèse : sans l'antislash, le parseur LaTeX lit
+ * l·n·(x). L'élève a mis les parenthèses : c'est bien ln de x (revue de V59).
+ * Seulement devant `\left(` : `ln x` reste refusé (`bareFunctionRefusal`), et
+ * `ln(x)` se lit déjà.
+ */
+export function withLatexFunctionNames(text: string): string {
+	return text.replace(/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?=\s*\\left\s*\()/g, '\\$1');
+}
+
+/**
  * Le refus d'une saisie MÊLÉE : `sin(` sans antislash (texte) avec une commande
  * LaTeX que le parseur maison ne connaît pas (`\frac`, `\sqrt`, `\cdot`…).
  */
@@ -144,22 +156,46 @@ export function mixedNotationMessage(text: string): string | null {
 		: null;
 }
 
+/** Les provenances qui sont la saisie de l'élève, virgule décimale et « ; » compris. */
+const STUDENT_TYPED: ReadonlySet<Provenance> = new Set(['text', 'paste', 'command']);
+
+/** Un exposant négatif sans accolades : `^-1`, `^-12`, `^-x` (un nombre ou UNE lettre, pas `^-sin(x)`) ;
+ * jamais suivi d'un autre `^` : `e^-x^2` se lirait (e^{-x})² ici et e^{-x²} dans Calcul. */
+const NEGATIVE_EXPONENT = /\^\s*-\s*(\d+(?:\.\d+)?|[A-Za-z](?![A-Za-z(]))(?!\s*\^)/g;
+
 function parseByProvenance(
 	rawDefinition: string,
 	provenance: Provenance,
 	functionNames?: readonly string[]
 ) {
-	const definition = withPiCommand(rawDefinition);
+	const typed = withPiCommand(withLatexFunctionNames(rawDefinition));
 	// Les mêmes noms de fonctions dans les deux lectures : en LaTeX, l'atelier ne
 	// les transmettait pas, et `k(x)` tapé dans la carte se lisait k·x
 	const genericFunctions = genericFunctionsFor(functionNames);
-	if (readingMode(provenance) === 'latex') return parseLatexSafe(definition, { genericFunctions });
+	// Le « ; » de l'élève entre les arguments (`max(2,5 ; x)`) : traduit pour un
+	// calcul, il ne l'était pas pour une définition — `f(1)` répondait « Écriture
+	// non reconnue » (2026-10-13)
+	if (readingMode(provenance) === 'latex') {
+		return parseLatexSafe(argumentSemicolonsLatex(typed), { genericFunctions });
+	}
+	// ⚠️ La saisie de l'élève seulement : `'url'` relit aussi le texte du moteur
+	// (`toCustom` écrit `max(2,3)`), dont la virgule n'est pas décimale (revue)
+	const definition = STUDENT_TYPED.has(provenance) ? decimalCommaInput(typed) : typed;
 
 	const detected = detectInputFormat(definition);
 	if (detected.format === 'latex' && detected.confidence > 0.5) {
 		return parseLatexSafe(definition, { genericFunctions });
 	}
-	return parseCustomSafe(definition, { genericFunctions });
+	const read = parseCustomSafe(definition, { genericFunctions });
+	// `x^-1`, `f(x)^-1`, `e^-x` : le parseur maison exige `x^{-1}`, alors qu'une
+	// ligne de Calcul les lit. `g(x) = f(x)^-1` créait une g en erreur, et `g(2)`
+	// répondait « Fonction inconnue : g » (constat du lot 3 de la réciproque).
+	// Relu avec l'exposant entre parenthèses, seulement après ce refus-là.
+	if (read.ast === null && read.errors.some((e) => e.code === 'INVALID_SUPERSCRIPT')) {
+		const bracketed = definition.replace(NEGATIVE_EXPONENT, '^(-$1)');
+		if (bracketed !== definition) return parseCustomSafe(bracketed, { genericFunctions });
+	}
+	return read;
 }
 
 /**
@@ -213,6 +249,11 @@ export interface ParsedDefinition {
 	readonly categories?: readonly string[];
 	/** La 1re entrée-mot d'une liste qui mélange nombres et mots (Q92) */
 	readonly qualitativeBecause?: string;
+	/**
+	 * Liste : la LIGNE (1, 2…) de chaque élément de `values` ou de `categories` —
+	 * une entrée par ligne de la grille (P1 : deux listes s'associent par ligne).
+	 */
+	readonly rows?: readonly number[];
 }
 
 /** Une valeur purement numérique, sans unité ni expression. */
@@ -349,6 +390,8 @@ export function parseDefinition(
 
 		// Q84 : un mot, et toute la liste est qualitative
 		const entries = parts.map((part) => part.trim()).filter((part) => part !== '');
+		// La ligne de chaque entrée non vide (P1)
+		const entryRows = parts.flatMap((part, i) => (part.trim() === '' ? [] : [i + 1]));
 		// Q92 : une entrée qui se lit comme un nombre (`1e3`) n'est jamais un mot
 		const isWord = (entry: string) => WORD.test(entry) && readListValue(entry) === null;
 		if (entries.some(isWord)) {
@@ -369,17 +412,31 @@ export function parseDefinition(
 			const mixed = entries.some((entry) => !isWord(entry));
 			const because = mixed ? { qualitativeBecause: entries.find(isWord)! } : {};
 			return 'error' in read
-				? { values: [], skipped: 0, categories: entries, error: read.error, ...because }
-				: { values: [], skipped: 0, categories: read.categories, ...because };
+				? {
+						values: [],
+						skipped: 0,
+						categories: entries,
+						rows: entryRows,
+						error: read.error,
+						...because
+					}
+				: { values: [], skipped: 0, categories: read.categories, rows: entryRows, ...because };
 		}
 
 		const values: number[] = [];
+		const rows: number[] = [];
 		let skipped = 0;
-		for (const part of parts) {
+		parts.forEach((part, i) => {
+			// Une entrée vide est une case vide de la grille (`12 ; ; 15`, tableur
+			// intégré), pas une valeur écartée : rien à signaler
+			if (part.trim() === '') return;
 			const n = readListValue(part);
 			if (n === null) skipped++;
-			else values.push(n);
-		}
+			else {
+				values.push(n);
+				rows.push(i + 1);
+			}
+		});
 		// Plafond D8 : la liste garde ses valeurs et porte son erreur — on ne jette
 		// pas la saisie de l'élève, on lui dit ce qui bloque. Le contrôle vit ici
 		// et non à la construction de l'objet : `recomputeAll` repart toujours de
@@ -388,13 +445,19 @@ export function parseDefinition(
 			return {
 				values,
 				skipped,
+				rows,
 				error: `Une liste ne peut pas dépasser ${MAX_LIST_VALUES} valeurs (celle-ci en a ${values.length}).`
 			};
 		}
-		return { values, skipped };
+		return { values, skipped, rows };
 	}
 
 	if (kind === 'value' && PLAIN_NUMBER.test(definition)) return {};
+
+	// V59 : la carte refuse `ln x` comme la ligne de calcul — sans quoi un
+	// `ln x` sans antislash venu de MathLive se lisait l·n·x
+	const bare = bareFunctionRefusal(definition);
+	if (bare !== null) return { error: bare };
 
 	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) {
@@ -453,6 +516,62 @@ export function referencesOf(
 	}
 
 	return [...found.values()];
+}
+
+/**
+ * Les noms qu'une définition emploie COMME UN NOMBRE (V58) : `a` dans
+ * `ax`, `a^2`, et dans `a(2) + a` — là où `referencesOf` fait gagner l'appel.
+ *
+ * Lus dans l'ARBRE, jamais dans le texte (`ax` est `a·x`) : une variable
+ * seule. Ne comptent pas :
+ * - la base d'un indice (`a_1`, `u_n`) : `a_1` est un autre nom, `u_n` la
+ *   notation d'une suite ;
+ * - la base d'une puissance −1 (`f^(-1)`, ce que devient `f^-1`) : la
+ *   réciproque. `f'(x)`, `f^{-1}(x)` sont déjà des appels dans l'arbre.
+ */
+export function bareNamesOf(
+	definition: string,
+	provenance: Provenance = 'url',
+	functionNames?: readonly string[]
+): string[] {
+	const result = parseByProvenance(definition, provenance, functionNames);
+	if (!result.ast) return [];
+	const found = new Set<string>();
+	collectBareNames(result.ast, found);
+	return [...found].filter(hasObjectNameShape);
+}
+
+/** Une puissance −1 : `-1` ou `-(1)`, tels que les parseurs les rendent. */
+function isMinusOne(node: unknown): boolean {
+	if (!node || typeof node !== 'object') return false;
+	const o = node as Record<string, unknown>;
+	if (o.type === 'number') return o.value === '-1';
+	if (o.type === 'opposite') {
+		const operand = o.operand as Record<string, unknown> | undefined;
+		return operand?.type === 'number' && operand.value === '1';
+	}
+	if (o.type === 'delimiter') return isMinusOne(o.content);
+	return false;
+}
+
+function collectBareNames(node: unknown, into: Set<string>): void {
+	if (!node || typeof node !== 'object') return;
+	if (Array.isArray(node)) {
+		for (const item of node) collectBareNames(item, into);
+		return;
+	}
+	const o = node as Record<string, unknown>;
+	if (o.type === 'variable' && typeof o.name === 'string') {
+		into.add(o.name);
+		return;
+	}
+	// `a_1`, `u_n` : ni la base ni l'indice ne sont un nombre de l'atelier
+	if (o.type === 'subscript') return;
+	if (o.type === 'superscript' && isMinusOne(o.superscript)) {
+		const base = o.base as Record<string, unknown> | undefined;
+		if (base?.type === 'variable') return;
+	}
+	for (const value of Object.values(o)) collectBareNames(value, into);
 }
 
 /**

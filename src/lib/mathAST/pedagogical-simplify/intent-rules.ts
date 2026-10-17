@@ -38,6 +38,7 @@ import {
 // Import direct lui aussi, pour la même raison de cycle de chunk.
 import { commonFactorRules } from '../pattern/rule-sets/common-factor';
 import { distributeBinomialProduct } from './pedagogical-rules';
+import { factoriserIdentityRules } from './pedagogical-rules/polynomial-identities';
 import type { PedagogicalSimplifyCategory, SimplifyIntent } from './types';
 
 // =============================================================================
@@ -100,9 +101,13 @@ export function dedupeByName(rules: readonly Rule[]): readonly Rule[] {
  *
  * Each intent assembles a different mix of rule sources :
  *
- *  - `factoriser`  : `algebraicFactoringRules` + identities (trig / log-exp /
+ *  - `factoriser`  : `commonFactorRules` + `factoriserIdentityRules` (les
+ *                    identités de `algebraicFactoringRules`, les numériques
+ *                    lues par coefficients) + identities (trig / log-exp /
  *                    abs / hyperbolic) gated by flags. No expansion rules.
- *                    `useNormalize: false` (would undo the factoring).
+ *                    `useNormalize: false` (would undo the factoring). Le
+ *                    pipeline ajoute le contenu des sommes maximales et les
+ *                    stratégies de `factor-strategies.ts` (ADR 0024).
  *
  *  - `developper`  : `algebraicExpandingRules` + identities. No factoring.
  *                    `useNormalize: true` (combine-like-terms after expand).
@@ -128,9 +133,11 @@ export function selectRulesForIntent(
 			// ⚠️ La mise en facteur commun n'existait pas : `algebraicFactoringRules`
 			// ne contient que des identités remarquables. Sans elle, `eˣ + x·eˣ`
 			// restait tel quel au lieu de devenir `(x+1)eˣ`.
+			// Les identités numériques y sont lues par coefficients (`4x² − 25`),
+			// facteurs dans l'ordre du noyau : `factoriserIdentityRules` (ADR 0024).
 			const rules = dedupeByName([
 				...commonFactorRules,
-				...algebraicFactoringRules,
+				...factoriserIdentityRules,
 				...identitiesAndUtilities
 			]);
 			return { rules, useNormalize: false };
@@ -214,12 +221,16 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['common-factor-bare-term', 'factorisation'],
 	['common-factor-content-add', 'factorisation'],
 	['common-factor-content-sub', 'factorisation'],
+	['trinomial-roots', 'factorisation'],
+	['trinomial-integer-form', 'factorisation'],
+	['evident-root', 'factorisation'],
 
 	// ---- distribution ---------------------------------------------------------
 	['expand-sum-squared', 'distribution'],
 	['expand-diff-squared', 'distribution'],
 	['product-to-diff-squares', 'distribution'],
 	['distribute-binomial-product', 'distribution'],
+	['develop-to-factor', 'distribution'],
 
 	// ---- identites-trig -------------------------------------------------------
 	['pythagorean', 'identites-trig'],
@@ -273,10 +284,6 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['sin-half-angle', 'identites-trig'],
 	['cos-half-angle', 'identites-trig'],
 	['tan-half-angle', 'identites-trig'],
-	['sin-plus-sin', 'identites-trig'],
-	['sin-minus-sin', 'identites-trig'],
-	['cos-plus-cos', 'identites-trig'],
-	['cos-minus-cos', 'identites-trig'],
 	['sin-remarkable', 'identites-trig'],
 	['cos-remarkable', 'identites-trig'],
 	['tan-remarkable', 'identites-trig'],
@@ -341,6 +348,8 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['sqrt-square', 'radicaux'],
 	['square-sqrt', 'radicaux'],
 	// normalize-side radical steps
+	// √(AB²) = AB : une longueur est positive (lot Q-F, 2026-10-12)
+	['length-radical', 'radicaux'],
 	['radical-simplify', 'radicaux'],
 	['radical-of-radical', 'radicaux'],
 	['sqrt-extract-perfect-square', 'radicaux'],
@@ -388,7 +397,8 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['double-negative', 'combinaison-termes-semblables'],
 	['constant-addition', 'combinaison-termes-semblables'],
 	['constant-subtraction', 'combinaison-termes-semblables'],
-	['constant-multiplication', 'combinaison-termes-semblables']
+	['constant-multiplication', 'combinaison-termes-semblables'],
+	['reduce-factors', 'combinaison-termes-semblables']
 ]);
 
 /**

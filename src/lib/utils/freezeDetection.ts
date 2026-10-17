@@ -187,7 +187,7 @@ export function getRecentActions(): UserAction[] {
 /**
  * Get web vitals
  */
-export function getWebVitals(): WebVitalsData {
+function getWebVitals(): WebVitalsData {
 	return { ...state.webVitals };
 }
 
@@ -197,13 +197,6 @@ export function getWebVitals(): WebVitalsData {
 export function updateWebVitals(vitals: Partial<WebVitalsData>): void {
 	state.webVitals = { ...state.webVitals, ...vitals };
 	persistState();
-}
-
-/**
- * Check if currently unresponsive
- */
-export function isUnresponsive(): boolean {
-	return state.isUnresponsive;
 }
 
 /**
@@ -254,6 +247,23 @@ function restoreState(): void {
 	}
 }
 
+/**
+ * Oublie les actions et les gels retenus par cet onglet, en mémoire et dans
+ * `sessionStorage`. Ils contiennent les adresses visitées, jointes aux rapports de bug :
+ * sur une tablette partagée, l'élève suivant ne doit pas envoyer celles du précédent.
+ * Appelée avec l'effacement des données de travail (`src/lib/utils/work-data.ts`).
+ */
+export function clearFreezeDetectionData(): void {
+	state.freezeEvents = [];
+	state.actions = [];
+	if (!browser) return;
+	try {
+		sessionStorage.removeItem(SESSION_STORAGE_KEY);
+	} catch {
+		// Stockage inaccessible : rien à effacer
+	}
+}
+
 // =============================================================================
 // Long Task Observer
 // =============================================================================
@@ -300,7 +310,7 @@ function initLongTaskObserver(): void {
 						duration,
 						type: 'long_task',
 						context: {
-							url: window.location.href,
+							url: pageAddress(window.location.href),
 							lastAction: getLastAction()?.type
 						}
 					};
@@ -475,7 +485,7 @@ function initHeartbeat(): void {
 				duration: drift,
 				type: 'unresponsive',
 				context: {
-					url: window.location.href,
+					url: pageAddress(window.location.href),
 					lastAction: getLastAction()?.type
 				}
 			};
@@ -526,6 +536,19 @@ function initHeartbeat(): void {
 // =============================================================================
 
 let activityInitialized = false;
+
+/**
+ * Adresse sans paramètres ni fragment : un lien de réinitialisation ou un code d'accès
+ * ne doit pas finir dans un rapport de bug.
+ */
+function pageAddress(url: string): string {
+	try {
+		const parsed = new URL(url, window.location.href);
+		return `${parsed.origin}${parsed.pathname}`;
+	} catch {
+		return '';
+	}
+}
 
 /**
  * Get simple CSS selector for an element
@@ -637,7 +660,7 @@ function initActivityTracking(): void {
 			const navEvent = e as unknown as { destination?: { url?: string } };
 			addAction({
 				type: 'navigation',
-				target: navEvent.destination?.url || window.location.href
+				target: pageAddress(navEvent.destination?.url || window.location.href)
 			});
 		});
 	} else {
@@ -645,7 +668,7 @@ function initActivityTracking(): void {
 		window.addEventListener('popstate', () => {
 			addAction({
 				type: 'navigation',
-				target: window.location.href
+				target: pageAddress(window.location.href)
 			});
 		});
 	}

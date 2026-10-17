@@ -5,7 +5,7 @@ Branche `fix/ubumark-restes-formules`. Décisions Q62-Q65 (2026-10-02).
 - Q62 : le code d'un bloc dans un item de liste affichait `§M:n§` → formules exactement écrites
   (champ `raw` des placeholders, `restoreRawMath`). Limite : un `\$` échappé y devient `$`.
 - Q63 : ```variation / probtree / line / trig NON FERMÉ → s'arrête à la 1re ligne vide
-(`unclosed-block.ts`) ; avant, variation / probtree / line faisaient disparaître tout le document.
+  (`unclosed-block.ts`) ; avant, variation / probtree / line faisaient disparaître tout le document.
   Les 7 blocs spéciaux sont masqués pour la recherche des blocs de code.
 - Q64 : bloc spécial invalide → sa source en bloc de code (premier niveau et listes).
 - Q65 : la garde des fences indentées (#630) ignore les `$$` des blocs (`block-ranges.ts`, partagé).

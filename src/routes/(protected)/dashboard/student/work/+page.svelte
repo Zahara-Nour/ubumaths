@@ -18,7 +18,7 @@
 	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { Inbox, BookOpen, Code } from '@lucide/svelte';
+	import { Inbox, BookOpen, Code, FileText, ClipboardCheck } from '@lucide/svelte';
 	import WorkInboxSection from '$lib/components/student-inbox/WorkInboxSection.svelte';
 	import type { PageData } from './$types';
 
@@ -68,6 +68,18 @@
 				{totalCount} élément{totalCount > 1 ? 's' : ''} au total
 			</p>
 		{/if}
+		<!-- « Mon travail » montre ce qui reste à faire et ce qui a été fait cette semaine ;
+		     les listes complètes, anciens travaux compris, n'ont pas d'autre entrée (#1121) -->
+		<div class="mt-4 flex flex-wrap gap-2">
+			<Button href="/dashboard/student/worksheets" variant="outline" size="sm">
+				<FileText class="mr-2 h-4 w-4" />
+				Toutes mes fiches
+			</Button>
+			<Button href="/dashboard/student/assessments" variant="outline" size="sm">
+				<ClipboardCheck class="mr-2 h-4 w-4" />
+				Tous mes contrôles
+			</Button>
+		</div>
 	</div>
 
 	{#if isEmpty}

@@ -10,6 +10,9 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { constructionScriptSchema } from '$lib/constructions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/constructions/[id]/+server');
 
 // =============================================================================
 // VALIDATION SCHEMAS
@@ -18,7 +21,7 @@ import { constructionScriptSchema } from '$lib/constructions';
 /**
  * UUID validation schema
  */
-const uuidSchema = z.string().uuid('ID invalide');
+const uuidSchema = z.string().uuid('Identifiant invalide');
 
 /**
  * Request body for updating a construction
@@ -27,11 +30,11 @@ const updateConstructionSchema = z.object({
 	title: z
 		.string()
 		.min(1, 'Le titre est requis')
-		.max(200, 'Le titre ne doit pas depasser 200 caracteres')
+		.max(200, 'Le titre ne doit pas dépasser 200 caractères')
 		.optional(),
 	description: z
 		.string()
-		.max(2000, 'La description ne doit pas depasser 2000 caracteres')
+		.max(2000, 'La description ne doit pas dépasser 2000 caractères')
 		.optional(),
 	script: constructionScriptSchema.optional(),
 	dsl_script: z.string().max(50000, 'Le script DSL est trop long').optional(),
@@ -53,7 +56,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'ID de construction invalide');
+		throw error(400, 'Identifiant de construction invalide');
 	}
 
 	// Fetch construction
@@ -73,15 +76,15 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (queryError || !data) {
 		if (queryError?.code === 'PGRST116') {
-			throw error(404, 'Construction non trouvee');
+			throw error(404, 'Construction introuvable');
 		}
-		console.error('Error fetching construction:', queryError);
-		throw error(500, 'Erreur lors de la recuperation de la construction');
+		logger.error('Error fetching construction:', queryError);
+		throw error(500, 'Impossible de charger la construction');
 	}
 
 	// Check access: user must be owner OR construction must be public
 	if (data.author_id !== user.id && !data.is_public) {
-		throw error(403, 'Acces refuse a cette construction');
+		throw error(403, 'Accès refusé à cette construction');
 	}
 
 	return json({ construction: data });
@@ -98,7 +101,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'ID de construction invalide');
+		throw error(400, 'Identifiant de construction invalide');
 	}
 
 	// Parse and validate request body
@@ -106,7 +109,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = updateConstructionSchema.safeParse(body);
@@ -115,14 +118,14 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const updateData = validation.data;
 
 	// Check if there's anything to update
 	if (Object.keys(updateData).length === 0) {
-		throw error(400, 'Aucune donnee a mettre a jour');
+		throw error(400, 'Aucune modification demandée');
 	}
 
 	// First check if user owns this construction
@@ -134,14 +137,14 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	if (fetchError || !existing) {
 		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Construction non trouvee');
+			throw error(404, 'Construction introuvable');
 		}
-		console.error('Error fetching construction:', fetchError);
-		throw error(500, 'Erreur lors de la recuperation de la construction');
+		logger.error('Error fetching construction:', fetchError);
+		throw error(500, 'Impossible de charger la construction');
 	}
 
 	if (existing.author_id !== user.id) {
-		throw error(403, 'Vous ne pouvez modifier que vos propres constructions');
+		throw error(403, 'Seul l’auteur peut modifier cette construction');
 	}
 
 	// Update construction
@@ -153,8 +156,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (updateError) {
-		console.error('Error updating construction:', updateError);
-		throw error(500, 'Erreur lors de la mise a jour de la construction');
+		logger.error('Error updating construction:', updateError);
+		throw error(500, 'Impossible de modifier la construction');
 	}
 
 	return json({ construction: data });
@@ -171,7 +174,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'ID de construction invalide');
+		throw error(400, 'Identifiant de construction invalide');
 	}
 
 	// First check if user owns this construction
@@ -183,14 +186,14 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (fetchError || !existing) {
 		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Construction non trouvee');
+			throw error(404, 'Construction introuvable');
 		}
-		console.error('Error fetching construction:', fetchError);
-		throw error(500, 'Erreur lors de la recuperation de la construction');
+		logger.error('Error fetching construction:', fetchError);
+		throw error(500, 'Impossible de charger la construction');
 	}
 
 	if (existing.author_id !== user.id) {
-		throw error(403, 'Vous ne pouvez supprimer que vos propres constructions');
+		throw error(403, 'Seul l’auteur peut supprimer cette construction');
 	}
 
 	// Delete construction
@@ -200,8 +203,8 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('id', params.id);
 
 	if (deleteError) {
-		console.error('Error deleting construction:', deleteError);
-		throw error(500, 'Erreur lors de la suppression de la construction');
+		logger.error('Error deleting construction:', deleteError);
+		throw error(500, 'Impossible de supprimer la construction');
 	}
 
 	return json({ success: true });

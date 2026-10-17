@@ -6,11 +6,11 @@
  *
  * Body:
  * - job_path: The API path of the job to trigger
- *   - HTTP jobs: "/api/cron/daily-summaries-and-rewards"
+ *   - HTTP jobs: "/api/cron/deleted-account-files"
  *   - RPC jobs: "rpc:cleanup_stale_trades" (pg_cron functions)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { assertTypedConfirmation } from '$lib/server/confirmAction';
@@ -21,6 +21,9 @@ import {
 	type CronTriggerResponse
 } from '$lib/server/validation/cron';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/cron/trigger/+server');
 
 // Simple in-memory rate limit store
 // WARNING: Resets on server restart. In Vercel serverless, each cold start
@@ -40,7 +43,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête illisible');
 	}
 
 	const validation = cronTriggerBodySchema.safeParse(body);
@@ -59,14 +62,11 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 
 	if (lastTrigger && now - lastTrigger < RATE_LIMIT_MS) {
 		const waitSeconds = Math.ceil((RATE_LIMIT_MS - (now - lastTrigger)) / 1000);
-		throw error(
-			429,
-			`Rate limit exceeded. Please wait ${waitSeconds} seconds before triggering this job again.`
-		);
+		throw error(429, `Tâche lancée il y a peu : attendre ${waitSeconds} s avant de la relancer`);
 	}
 
 	try {
-		console.log(`[CRON Trigger] Admin triggering job: ${job_path}`);
+		logger.info(`[CRON Trigger] Admin triggering job: ${job_path}`);
 
 		// Check if this is an RPC job (pg_cron function)
 		if (job_path.startsWith('rpc:')) {
@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 		// HTTP job - requires CRON_SECRET
 		const env = getEnv();
 		if (!env.CRON_SECRET) {
-			throw error(503, 'CRON trigger disabled: CRON_SECRET not configured');
+			throw error(503, 'Lancement manuel désactivé : CRON_SECRET n’est pas configuré');
 		}
 
 		// Build the full URL for the CRON endpoint
@@ -89,6 +89,9 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				// Le fetch de Node n'envoie pas d'origine : sans elle, le contrôle CSRF de
+				// hooks.server.ts refuse le POST (403) hors du dev sur localhost.
+				Origin: baseUrl,
 				Authorization: `Bearer ${env.CRON_SECRET}`
 			}
 		});
@@ -99,11 +102,11 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 		// Handle response
 		if (!response.ok) {
 			const errorText = await response.text().catch(() => 'Unknown error');
-			console.error(`[CRON Trigger] Job failed with status ${response.status}:`, errorText);
+			logger.error(`[CRON Trigger] Job failed with status ${response.status}:`, errorText);
 
 			const triggerResponse: CronTriggerResponse = {
 				success: false,
-				message: `Job execution failed: ${response.status} ${response.statusText}`,
+				message: `Échec de la tâche : ${response.status} ${response.statusText}`,
 				job_path,
 				triggered_at: new Date().toISOString()
 			};
@@ -119,11 +122,11 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 			jobResult = null;
 		}
 
-		console.log(`[CRON Trigger] Job completed successfully:`, job_path);
+		logger.info(`[CRON Trigger] Job completed successfully:`, job_path);
 
 		const triggerResponse: CronTriggerResponse = {
 			success: true,
-			message: 'Job triggered successfully',
+			message: 'Tâche lancée',
 			job_path,
 			triggered_at: new Date().toISOString()
 		};
@@ -134,13 +137,14 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 			result: jobResult
 		});
 	} catch (err) {
-		console.error(`[CRON Trigger] Failed to trigger job ${job_path}:`, err);
+		logger.error(`[CRON Trigger] Failed to trigger job ${job_path}:`, err);
 
-		if (err instanceof Response) throw err;
+		// Une erreur SvelteKit (`error(503, …)`) n'est pas une `Response` : la relancer telle quelle.
+		if (isHttpError(err)) throw err;
 
 		const triggerResponse: CronTriggerResponse = {
 			success: false,
-			message: err instanceof Error ? err.message : 'Failed to trigger job',
+			message: err instanceof Error ? err.message : 'Impossible de lancer la tâche',
 			job_path,
 			triggered_at: new Date().toISOString()
 		};
@@ -167,11 +171,11 @@ async function triggerRpcJob(
 	rateLimitStore.set(job_path, now);
 
 	if (rpcError) {
-		console.error(`[CRON Trigger] RPC job failed:`, rpcError);
+		logger.error(`[CRON Trigger] RPC job failed:`, rpcError);
 
 		const triggerResponse: CronTriggerResponse = {
 			success: false,
-			message: `RPC job failed: ${rpcError.message}`,
+			message: `Échec de la tâche (RPC) : ${rpcError.message}`,
 			job_path,
 			triggered_at: new Date().toISOString()
 		};
@@ -179,11 +183,11 @@ async function triggerRpcJob(
 		return json(triggerResponse, { status: 500 });
 	}
 
-	console.log(`[CRON Trigger] RPC job completed successfully:`, functionName);
+	logger.info(`[CRON Trigger] RPC job completed successfully:`, functionName);
 
 	const triggerResponse: CronTriggerResponse = {
 		success: true,
-		message: 'RPC job triggered successfully',
+		message: 'Tâche lancée (RPC)',
 		job_path,
 		triggered_at: new Date().toISOString()
 	};

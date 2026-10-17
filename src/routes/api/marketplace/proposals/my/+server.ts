@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/proposals/my/+server');
 
 type VipCardsJson = Record<string, { cardId: string; earnedAt: string; usedAt?: string }>;
 
@@ -37,7 +40,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
-		throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		throw error(403, "Le marketplace n'est pas activé pour cette classe");
 	}
 
 	const { data: proposals, error: proposalsError } = await supabase
@@ -61,7 +64,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (proposalsError) {
-		console.error('Error fetching user proposals:', proposalsError);
+		logger.error('Error fetching user proposals:', proposalsError);
 		throw error(500, 'Erreur lors de la récupération des propositions');
 	}
 
@@ -72,10 +75,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 	// DEBUG: log the first proposal's listing structure
 	if (proposals.length > 0) {
 		const first = proposals[0];
-		console.log('=== LISTING STRUCTURE DEBUG ===');
-		console.log('typeof listing:', typeof first.listing);
-		console.log('Array.isArray:', Array.isArray(first.listing));
-		console.log('listing value:', JSON.stringify(first.listing));
+		logger.info('=== LISTING STRUCTURE DEBUG ===');
+		logger.info('typeof listing:', typeof first.listing);
+		logger.info('Array.isArray:', Array.isArray(first.listing));
+		logger.info('listing value:', JSON.stringify(first.listing));
 	}
 
 	// --- Step 1: Collect all template IDs we need names for ---
@@ -124,7 +127,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Ces cartes composent l'offre affichée à l'élève. Une carte non résolue
 		// disparaît de l'offre : mieux vaut une erreur qu'un troc falsifié.
 		if (profilesError) {
-			console.error('Cartes illisibles :', profilesError);
+			logger.error('Cartes illisibles :', profilesError);
 			throw error(500, 'Impossible de lire les cartes');
 		}
 
@@ -152,7 +155,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (templatesError) {
-			console.error('Enrichissement illisible :', templatesError);
+			logger.error('Enrichissement illisible :', templatesError);
 		}
 
 		if (templates) {

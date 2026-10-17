@@ -1,5 +1,5 @@
 /**
- * Erreurs d'authentification Supabase → messages en français (tutoiement).
+ * Erreurs d'authentification Supabase → messages en français (formulation neutre, sans personne).
  *
  * Supabase renvoie des messages en anglais (« New password should be different
  * from the old password »). On ne les affiche jamais tels quels : on traduit les
@@ -10,16 +10,16 @@
 
 // Constantes
 
-export const AUTH_ERROR_FALLBACK = 'Une erreur est survenue. Réessaie dans quelques instants.';
+export const AUTH_ERROR_FALLBACK = 'Une erreur est survenue. Réessayer dans quelques instants.';
 
-const LINK_EXPIRED = 'Ton lien a expiré. Demande un nouveau lien depuis « Mot de passe oublié ».';
-const RATE_LIMITED = 'Trop de tentatives. Réessaie dans quelques minutes.';
-const REAUTH = 'Pour ta sécurité, reconnecte-toi avant de changer ton mot de passe.';
+const LINK_EXPIRED = 'Lien expiré. Demander un nouveau lien depuis « Mot de passe oublié ».';
+const RATE_LIMITED = 'Trop de tentatives. Réessayer dans quelques minutes.';
+const REAUTH = 'Par sécurité, reconnexion nécessaire avant de changer le mot de passe.';
 
 /** Codes de `AuthError.code` (@supabase/auth-js) */
 const MESSAGES: Record<string, string> = {
-	same_password: 'Ton nouveau mot de passe doit être différent de l’ancien.',
-	weak_password: 'Ce mot de passe est trop faible : choisis-en un plus long et plus varié.',
+	same_password: 'Le nouveau mot de passe doit être différent de l’ancien.',
+	weak_password: 'Ce mot de passe est trop faible : en choisir un plus long et plus varié.',
 	session_not_found: LINK_EXPIRED,
 	session_expired: LINK_EXPIRED,
 	refresh_token_not_found: LINK_EXPIRED,

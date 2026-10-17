@@ -24,6 +24,8 @@ import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../custom-generator';
 import {
 	solutionsLatex,
+	commonCondition,
+	solutionsApproximationLatex,
 	periodicSolutionsText,
 	inequalitySolutionLatex,
 	inequalityThresholdText,
@@ -44,12 +46,15 @@ import { number, opposite, add, subtract } from '../../factory';
 import { findZerosWithStatus } from '../../sign/helpers/zeros';
 import { closedEndpoint, interval, intervalSet, openEndpoint } from '../../domain/factory';
 import { intersect, isEmpty } from '../../domain/algebra';
+import { normalizeExcludedPoints } from '../../domain/compute';
 import type { Domain } from '../../domain/types';
+import { parseStudentDomain } from '../../domain/validation/parse-student-domain';
 import { toLatex } from '../../latex-generator';
 
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { getVariables } from '../../eval/substitute';
 import { evaluate } from '../../eval/evaluate';
+import { approximateSolutionsLatex } from '../approximation';
 import {
 	bareFunctionMessage,
 	bareFunctionName,
@@ -74,6 +79,10 @@ export const EQUATION_UNSOLVED = 'EQUATION_UNSOLVED' satisfies ErrorCode;
 
 /** Ce qu'on dit alors, au lieu de « Type d'equation non supporte: unknown ». */
 export const EQUATION_UNSOLVED_MESSAGE = 'Je ne sais pas encore résoudre cette équation.';
+
+/** Une famille périodique sur un ensemble non borné : les solutions ne s'énumèrent pas. */
+const INFINITELY_MANY_MESSAGE =
+	"Une infinité de solutions sur cet ensemble : elles ne s'énumèrent que sur un intervalle borné (dans [0 ; 10]).";
 
 /** Une solution qui dépendrait de paramètres (`u_0·q^n = 10` en n). */
 function parameterMessage(letters: readonly string[]): string {
@@ -772,6 +781,10 @@ function generateQuadraticPedagogicalSteps(
 
 	// Step 3: Interpret discriminant
 	const deltaNum = parseFloat(deltaStr);
+	// Δ littéral (x² = a : Δ = 4a) : son signe dépend du paramètre. `parseFloat`
+	// rendait NaN, lu comme « Δ < 0, pas de solution reelle » juste au-dessus
+	// de x = ±√a (2026-10-13). On s'arrête au calcul de Δ.
+	if (Number.isNaN(deltaNum)) return steps;
 	let interpretation: string;
 	if (deltaNum > 0) {
 		interpretation = `Delta = ${deltaStr} > 0, deux solutions reelles`;
@@ -1014,12 +1027,29 @@ export class SolveCommand extends BaseCommand {
 				};
 			}
 
+			// Une identité sur un domaine qu'on n'a pas su déterminer
+			// (`\frac{x^5-x+1}{x^5-x+1}=1`) : « S = ℝ » serait faux, on le dit
+			if (result.status === 'infinite' && result.domainUnresolved !== undefined) {
+				return {
+					success: false,
+					output: '',
+					error: { code: EQUATION_UNSOLVED, message: EQUATION_UNSOLVED_MESSAGE }
+				};
+			}
+
 			// Format output with toggle support
 			const formatted = this.formatOutputWithToggle(relation, result, verbosity, ctx);
 			// Les solutions en LaTeX, bâties sur le résultat STRUCTURÉ : le texte
 			// (`{1/2}sqrt(2)`) ne se relit pas, et `ast` ne porte que la première
 			const latex = solutionsLatex(result);
-			return this.withHint(latex === null ? formatted : { ...formatted, latex }, hint);
+			// Leurs valeurs approchées, pour le bouton ≈ de l'atelier
+			const approximateLatex = latex === null ? null : solutionsApproximationLatex(result);
+			return this.withHint(
+				latex === null
+					? formatted
+					: { ...formatted, latex, ...(approximateLatex !== null && { approximateLatex }) },
+				hint
+			);
 		} catch (err) {
 			if (err instanceof SolveError) {
 				const message = err.details ? `${err.message}: ${err.details}` : err.message;
@@ -1103,9 +1133,101 @@ export class SolveCommand extends BaseCommand {
 		}
 	}
 
+	/** Le solveur trouve-t-il une famille périodique de solutions ? */
+	private hasPeriodicSolutions(equation: RelationNode, variable: string): boolean {
+		try {
+			return solve(equation, { variable }).periodicSolutions !== undefined;
+		} catch {
+			return false;
+		}
+	}
+
 	/**
-	 * Résoudre dans un intervalle BORNÉ, écrit à la française : `[0 ; 2\pi]`,
-	 * `]0 ; 1]`. Les zéros de `gauche − droite` sur ce domaine, familles
+	 * L'ensemble écrit après `dans`. Un intervalle BORNÉ à la française
+	 * (`[0 ; 2\pi]`) garde son écriture ; sinon, tout ce que lit le parseur
+	 * des réponses d'élève : borne infinie (`[0 ; +∞[`), réunion, `ℝ \ {0}` —
+	 * l'ensemble d'une fonction de l'atelier (lot 2 de
+	 * `docs/wip/atelier-intervalle-phase0.md`).
+	 */
+	private readSolvingDomain(
+		text: string,
+		variable: string,
+		parserOptions: Parameters<typeof parse>[1]
+	):
+		| {
+				ok: true;
+				domain: Domain;
+				intervalLatex: string;
+				intervalText: string;
+				/** Toutes les bornes finies : une famille périodique s'y énumère */
+				bounded: boolean;
+		  }
+		| { ok: false; message: string } {
+		const written = /^([[\]])\s*(.+?)\s*;\s*(.+?)\s*([[\]])$/s.exec(text.trim());
+		const lower = written === null ? undefined : parse(written[2], parserOptions).ast;
+		const upper = written === null ? undefined : parse(written[3], parserOptions).ast;
+		const finite = (node: MathNode | undefined): node is MathNode => {
+			if (node === undefined) return false;
+			const value = evaluate(node, { mode: 'decimal' });
+			return (
+				value.status === 'value' && typeof value.value === 'number' && Number.isFinite(value.value)
+			);
+		};
+		if (written === null || !finite(lower) || !finite(upper)) {
+			// Pas un intervalle borné : le parseur des ensembles d'élève
+			const student = parseStudentDomain(text, variable);
+			if (student.success && !isEmpty(student.domain) && student.domain.kind !== 'universal') {
+				const set = inequalitySolutionLatex(student.domain);
+				if (set !== null) {
+					return {
+						ok: true,
+						domain: student.domain,
+						intervalLatex: set.replace(/^S = /, ''),
+						intervalText: formatInterval(student.domain),
+						bounded:
+							student.domain.kind === 'interval_set' &&
+							student.domain.intervals.every(
+								(i) => i.lower.value.type !== 'infinity' && i.upper.value.type !== 'infinity'
+							)
+					};
+				}
+			}
+			return {
+				ok: false,
+				message:
+					written === null
+						? `Écris l'intervalle avec des crochets et « ; » : dans [0 ; 2\\pi], pas « ${text} ».`
+						: `Les bornes de l'intervalle doivent être des nombres : « ${text} ».`
+			};
+		}
+		const lowerNumber = evaluate(lower, { mode: 'decimal' });
+		const upperNumber = evaluate(upper, { mode: 'decimal' });
+		const lowerValue = lowerNumber.status === 'value' ? Number(lowerNumber.value) : NaN;
+		const upperValue = upperNumber.status === 'value' ? Number(upperNumber.value) : NaN;
+		const closed = written[1] === '[' && written[4] === ']';
+		if (lowerValue > upperValue || (lowerValue === upperValue && !closed)) {
+			return {
+				ok: false,
+				message: `Intervalle inversé ou vide : la plus petite borne d'abord, comme dans [${written[3]} ; ${written[2]}].`
+			};
+		}
+		return {
+			ok: true,
+			domain: intervalSet([
+				interval(
+					written[1] === '[' ? closedEndpoint(lower) : openEndpoint(lower),
+					written[4] === ']' ? closedEndpoint(upper) : openEndpoint(upper)
+				)
+			]),
+			intervalLatex: `\\left${written[1]}${toLatex(lower)} ; ${toLatex(upper)}\\right${written[4]}`,
+			intervalText: `${written[1]}${written[2]} ; ${written[3]}${written[4]}`,
+			bounded: true
+		};
+	}
+
+	/**
+	 * Résoudre dans un intervalle (`[0 ; 2\pi]`, `]0 ; 1]`, `[0 ; +∞[`, une
+	 * réunion — `readSolvingDomain`). Les zéros de `gauche − droite` sur ce domaine, familles
 	 * périodiques comprises (`findZerosWithStatus`, celui des tableaux de signes).
 	 */
 	private solveInInterval(
@@ -1119,61 +1241,65 @@ export class SolveCommand extends BaseCommand {
 			output: '',
 			error: { code: 'COMMAND_SYNTAX', message }
 		});
-		const written = /^([[\]])\s*(.+?)\s*;\s*(.+?)\s*([[\]])$/s.exec(text.trim());
-		if (written === null) {
-			return fail(
-				`Écris l'intervalle avec des crochets et « ; » : dans [0 ; 2\\pi], pas « ${text} ».`
-			);
-		}
-		const lower = parse(written[2], parserOptions).ast;
-		const upper = parse(written[3], parserOptions).ast;
-		const finite = (node: MathNode | undefined): boolean => {
-			if (node === undefined) return false;
-			const value = evaluate(node, { mode: 'decimal' });
-			return (
-				value.status === 'value' && typeof value.value === 'number' && Number.isFinite(value.value)
-			);
-		};
-		if (lower === undefined || upper === undefined || !finite(lower) || !finite(upper)) {
-			return fail(`Les bornes de l'intervalle doivent être des nombres : « ${text} ».`);
-		}
-		const lowerNumber = evaluate(lower, { mode: 'decimal' });
-		const upperNumber = evaluate(upper, { mode: 'decimal' });
-		const lowerValue = lowerNumber.status === 'value' ? Number(lowerNumber.value) : NaN;
-		const upperValue = upperNumber.status === 'value' ? Number(upperNumber.value) : NaN;
-		const closed = written[1] === '[' && written[4] === ']';
-		if (lowerValue > upperValue || (lowerValue === upperValue && !closed)) {
-			return fail(
-				`Intervalle inversé ou vide : la plus petite borne d'abord, comme dans [${written[3]} ; ${written[2]}].`
-			);
-		}
-		const domain = intervalSet([
-			interval(
-				written[1] === '[' ? closedEndpoint(lower) : openEndpoint(lower),
-				written[4] === ']' ? closedEndpoint(upper) : openEndpoint(upper)
-			)
-		]);
+		const read = this.readSolvingDomain(text, variable, parserOptions);
+		if (!read.ok) return fail(read.message);
+		const { domain, intervalLatex, intervalText, bounded } = read;
 		// Une inéquation : son ensemble solution, restreint à l'intervalle
 		if (equation.relation !== '=') {
 			return this.solveInequalityInInterval(equation, variable, domain);
 		}
-		const intervalLatex = `\\left${written[1]}${toLatex(lower)} ; ${toLatex(upper)}\\right${written[4]}`;
 		// Identité (`x = x`, `0 = 0`) : tout l'intervalle ; impossible : ∅ — comme
 		// sans `dans`, puis restreint à l'intervalle
 		try {
 			const whole = solve(equation, { variable });
 			if (whole.status === 'infinite') {
-				return {
-					success: true,
-					output: `Tous les nombres de ${written[1]}${written[2]} ; ${written[3]}${written[4]}`,
-					latex: `S = ${intervalLatex}`
-				};
+				// Tout le DOMAINE dans l'intervalle, pas tout l'intervalle :
+				// `\frac{|x|-2}{|x|-2}=1 dans [-5;5]` rendait [-5 ; 5] (écart V43)
+				// Exclusion périodique, condition : `intersect` la perdrait en silence
+				// (sin x / sin x = 1 dans [-1 ; 3] gardait 0) ; domaine non déterminé
+				// (x⁵ − x + 1 ≠ 0) : trop grand. On ne sait pas, on le dit
+				const definedOn = whole.domain ?? { kind: 'universal' };
+				if (
+					whole.domainUnresolved !== undefined ||
+					(definedOn.kind !== 'universal' &&
+						definedOn.kind !== 'interval_set' &&
+						definedOn.kind !== 'empty')
+				) {
+					return {
+						success: false,
+						output: '',
+						error: { code: EQUATION_UNSOLVED, message: EQUATION_UNSOLVED_MESSAGE }
+					};
+				}
+				// Un point interdit hors de l'intervalle disparaît, sur une borne il l'ouvre
+				const restricted = normalizeExcludedPoints(intersect(definedOn, domain));
+				if (formatInterval(restricted) === formatInterval(domain)) {
+					return {
+						success: true,
+						output: `Tous les nombres de ${intervalText}`,
+						latex: `S = ${intervalLatex}`
+					};
+				}
+				const set = inequalitySolutionLatex(restricted) ?? 'S = \\emptyset';
+				return isEmpty(restricted)
+					? { success: true, output: 'Pas de solution dans cet intervalle', latex: set }
+					: { success: true, output: `S = ${formatInterval(restricted)}`, latex: set };
 			}
 			if (whole.status === 'no-solution' && !isSolverFailure(whole)) {
 				return { success: true, output: 'Pas de solution', latex: 'S = \\emptyset' };
 			}
 		} catch {
 			// Le solveur ne sait pas : les zéros sur l'intervalle prennent le relais
+		}
+		// Une famille périodique sur un ensemble NON borné (`sin(x) = 0` sur
+		// [0 ; +∞[) : `findZeros` n'en rendrait que les premiers termes — une
+		// réponse finie, donc fausse (revue du lot 2 de l'intervalle)
+		if (!bounded && this.hasPeriodicSolutions(equation, variable)) {
+			return {
+				success: false,
+				output: '',
+				error: { code: EQUATION_UNSOLVED, message: INFINITELY_MANY_MESSAGE }
+			};
 		}
 		const { zeros, resolved } = findZerosWithStatus(
 			subtract(equation.left, equation.right),
@@ -1210,7 +1336,13 @@ export class SolveCommand extends BaseCommand {
 								`${variable} = ${(only && logarithmicValueText(only.value, only.approximate)) ?? toCustom(v)}`
 						)
 						.join(' ou ');
-		return { success: true, output, latex };
+		// Leurs valeurs approchées, pour le bouton ≈ de l'atelier — sauf une solution
+		// en ln, qui donne déjà la sienne
+		const approximateLatex =
+			only !== null && logarithmicValueLatex(only.value, only.approximate) !== null
+				? null
+				: approximateSolutionsLatex(variable, values, values.length > 1);
+		return { success: true, output, latex, ...(approximateLatex !== null && { approximateLatex }) };
 	}
 
 	/**
@@ -1293,6 +1425,7 @@ export class SolveCommand extends BaseCommand {
 			exponential: 'exponentielle',
 			logarithmic: 'logarithmique',
 			trigonometric: 'trigonometrique',
+			rational: 'rationnelle',
 			mixed: 'mixte',
 			constant: 'constante',
 			unknown: 'inconnue'
@@ -1369,12 +1502,18 @@ export class SolveCommand extends BaseCommand {
 			case 'multiple': {
 				// Build exact and decimal solution strings
 				// Une seule solution en ln : sa valeur approchée, comme le LaTeX
-				const exactSolutions = result.solutions
-					.map(
-						(sol) =>
-							`${result.variable} = ${(result.solutions.length === 1 && logarithmicValueText(sol.value, sol.approximate)) || toCustom(sol.value)}`
-					)
-					.join(result.solutions.length > 1 ? ' ou ' : '');
+				// La condition sur un paramètre (y = eˣ : x = ln(y) si y > 0), une
+				// seule fois quand toutes les solutions la partagent
+				const common = commonCondition(result.solutions);
+				const exactSolutions =
+					result.solutions
+						.map(
+							(sol) =>
+								`${result.variable} = ${(result.solutions.length === 1 && logarithmicValueText(sol.value, sol.approximate)) || toCustom(sol.value)}` +
+								(common === undefined && sol.condition ? ` si ${toCustom(sol.condition)}` : '')
+						)
+						.join(result.solutions.length > 1 ? ' ou ' : '') +
+					(common ? `, si ${toCustom(common)}` : '');
 
 				// Check if a fraction has a terminating decimal representation
 				// A fraction in lowest terms has terminating decimal iff denominator only has factors 2 and 5

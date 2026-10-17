@@ -13,14 +13,7 @@ import { browser } from '$app/environment';
  */
 
 export type ExerciseFontId =
-	| 'system'
-	| 'inter'
-	| 'lora'
-	| 'georgia'
-	| 'times'
-	| 'comic'
-	| 'libertine'
-	| 'excalifont';
+	'system' | 'inter' | 'lora' | 'georgia' | 'times' | 'comic' | 'libertine' | 'excalifont';
 
 export interface ExerciseFontOption {
 	id: ExerciseFontId;

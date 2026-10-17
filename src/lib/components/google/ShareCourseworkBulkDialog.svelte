@@ -138,7 +138,7 @@
 		try {
 			const response = await fetch('/api/teacher/classes');
 			if (!response.ok) {
-				throw new Error('Failed to fetch classes');
+				throw new Error('Impossible de charger les classes');
 			}
 
 			const data = await response.json();
@@ -164,7 +164,7 @@
 		try {
 			const response = await fetch(`/api/teacher/categories/${classId}`);
 			if (!response.ok) {
-				throw new Error('Failed to fetch categories');
+				throw new Error('Impossible de charger les catégories');
 			}
 
 			const data = await response.json();
@@ -187,7 +187,7 @@
 				`/api/google/topics?page=1&limit=100&courseId=${coursework.courseId}`
 			);
 			if (!response.ok) {
-				throw new Error('Failed to fetch topics');
+				throw new Error('Impossible de charger les thèmes');
 			}
 
 			const data = await response.json();

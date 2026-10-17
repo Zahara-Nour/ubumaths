@@ -28,7 +28,6 @@ export { functionParityRules } from './function-parity';
 // Identity rule sets (trig, hyperbolic, algebraic)
 export {
 	trigSimplifyRules,
-	allTrigRules,
 	trigDoubleAngleRules,
 	trigPowerReductionRules,
 	trigPythagoreanRules,
@@ -41,14 +40,12 @@ export {
 	trigCofunctionRules,
 	trigSupplementaryRules,
 	trigShiftPiOver2Rules,
-	trigFactorizationRules,
 	trigHalfAngleRules,
 	trigHigherPowerRules
 } from './trig-identities';
 
 export {
 	hypSimplifyRules,
-	allHyperbolicRules,
 	hypDoubleAngleRules,
 	hypPowerReductionRules,
 	hypPythagoreanRules,
@@ -57,7 +54,6 @@ export {
 	hypNegativeArgumentRules,
 	hypAdditionRules,
 	hypDoubleAngleExpansionRules,
-	hypFactorizationRules,
 	hypHalfAngleRules,
 	hypHigherPowerRules
 } from './hyperbolic-identities';

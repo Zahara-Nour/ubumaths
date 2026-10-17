@@ -21,6 +21,7 @@ import type {
 import { parseMarkdown } from '$lib/ubumark';
 import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
 import { hasPrompts } from '$lib/components/markdown/utils/math-utils';
+import type { CapitalPairs } from '$lib/mathAST/parser/types';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 
 type Expression = NonNullable<QuestionInstance['expressions']>[number];
@@ -36,7 +37,8 @@ type Expression = NonNullable<QuestionInstance['expressions']>[number];
  */
 export function augmentASTForExpressions(
 	ast: DocumentNode,
-	expressions: Expression[] | undefined
+	expressions: Expression[] | undefined,
+	capitalPairs?: CapitalPairs
 ): DocumentNode {
 	if (!expressions || expressions.length === 0) {
 		return ast;
@@ -44,29 +46,37 @@ export function augmentASTForExpressions(
 
 	return {
 		type: 'document',
-		children: ast.children.map((block) => augmentBlockNode(block, expressions))
+		children: ast.children.map((block) => augmentBlockNode(block, expressions, capitalPairs))
 	};
 }
 
-function augmentBlockNode(node: BlockNode, expressions: Expression[]): BlockNode {
+function augmentBlockNode(
+	node: BlockNode,
+	expressions: Expression[],
+	capitalPairs?: CapitalPairs
+): BlockNode {
 	if (node.type === 'paragraph') {
 		return {
 			...node,
-			children: node.children.map((child) => augmentInlineNode(child, expressions))
+			children: node.children.map((child) => augmentInlineNode(child, expressions, capitalPairs))
 		} as ParagraphNode;
 	}
 
 	if (node.type === 'math-block') {
-		return augmentMathNode(node, expressions) as MathBlockNode;
+		return augmentMathNode(node, expressions, capitalPairs) as MathBlockNode;
 	}
 
 	// Other block types (heading, list, table, etc.) — pass through
 	return node;
 }
 
-function augmentInlineNode(node: InlineNode, expressions: Expression[]): InlineNode {
+function augmentInlineNode(
+	node: InlineNode,
+	expressions: Expression[],
+	capitalPairs?: CapitalPairs
+): InlineNode {
 	if (node.type === 'math-inline') {
-		return augmentMathNode(node, expressions) as MathInlineNode;
+		return augmentMathNode(node, expressions, capitalPairs) as MathInlineNode;
 	}
 
 	// Other inline types (text, blank, line-break, etc.) — pass through
@@ -75,7 +85,8 @@ function augmentInlineNode(node: InlineNode, expressions: Expression[]): InlineN
 
 function augmentMathNode(
 	node: MathInlineNode | MathBlockNode,
-	expressions: Expression[]
+	expressions: Expression[],
+	capitalPairs?: CapitalPairs
 ): MathInlineNode | MathBlockNode {
 	if (!node.expressionName) {
 		return node;
@@ -83,7 +94,7 @@ function augmentMathNode(
 
 	// If the expression already contains prompts/holes, it has its own
 	// blanks — never augment with " = answerFormat"
-	if (hasPrompts(node.expression, node.syntax)) {
+	if (hasPrompts(node.expression, node.syntax, capitalPairs)) {
 		return node;
 	}
 
@@ -162,11 +173,14 @@ export function applyValidationToInputStates(
 // ============================================================================
 
 /** Vrai si un des éléments en ligne est un trou (texte ou case MathLive) */
-export function inlineNodesHaveBlanks(children: InlineNode[]): boolean {
+export function inlineNodesHaveBlanks(
+	children: InlineNode[],
+	capitalPairs?: CapitalPairs
+): boolean {
 	return children.some(
 		(child) =>
 			child.type === 'blank' ||
-			(child.type === 'math-inline' && hasPrompts(child.expression, child.syntax))
+			(child.type === 'math-inline' && hasPrompts(child.expression, child.syntax, capitalPairs))
 	);
 }
 
@@ -185,14 +199,16 @@ export function tableCellInlineNodes(content: string): InlineNode[] {
 }
 
 /** Vrai si la cellule contient au moins un trou */
-export function cellHasBlanks(content: string): boolean {
+export function cellHasBlanks(content: string, capitalPairs?: CapitalPairs): boolean {
 	// Filtre rapide : sans `\placeholder`, `{{blank:` ni `?` (trou d'une formule `~…~`),
 	// pas de trou — évite de relire chaque cellule de chaque tableau
 	if (!/placeholder|\{\{blank:|\?/.test(content)) return false;
-	return inlineNodesHaveBlanks(tableCellInlineNodes(content));
+	return inlineNodesHaveBlanks(tableCellInlineNodes(content), capitalPairs);
 }
 
 /** Vrai si une cellule du tableau (en-tête compris) contient un trou */
-export function tableHasBlanks(node: TableNode): boolean {
-	return [node.header, ...node.rows].some((row) => row.some((cell) => cellHasBlanks(cell.content)));
+export function tableHasBlanks(node: TableNode, capitalPairs?: CapitalPairs): boolean {
+	return [node.header, ...node.rows].some((row) =>
+		row.some((cell) => cellHasBlanks(cell.content, capitalPairs))
+	);
 }

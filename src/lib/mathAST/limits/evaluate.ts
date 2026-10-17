@@ -13,7 +13,7 @@
  * @module mathAST/limits/evaluate
  */
 
-import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
+import { reservedVariableRefusal } from '../common/reserved-letters';
 import type { MathNode, LimitNode, GreekLetterNode } from '../types';
 import type {
 	LimitResult,
@@ -22,7 +22,8 @@ import type {
 	LimitStatus,
 	IndeterminateForm,
 	LimitRule,
-	OneSidedLimitResult
+	OneSidedLimitResult,
+	NoLimitReason
 } from './types';
 import { LimitError } from './types';
 import {
@@ -56,11 +57,12 @@ import {
 	variable as variableNode,
 	greek,
 	power,
-	mathConstant
+	mathConstant,
+	parentheses
 } from '../factory';
 import { findNodes, mapNode } from '../transforms';
 import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../flatten';
-import { isEulerBase } from '../differentiation/rules';
+import { isEulerBase, rootIndexOf } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
 import { expandFunctionPowers } from '../common/function-power';
 import { expandOddRootPowers, hasOddRootPower } from '../common/odd-root-power';
@@ -76,7 +78,7 @@ import { trySqueeze } from './squeeze';
 import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } from './one-sided';
 import { tryCompositionLimit } from './composition';
 import { rewriteReciprocalTrig } from './reciprocal-trig';
-import { tryPiecewiseFunctionLimit, containsPiecewiseFunction } from './piecewise';
+import { evaluatePiecewiseLimit } from './piecewise';
 import {
 	limitByGeneralizedDegree,
 	involvesFractionalPower,
@@ -107,7 +109,9 @@ import {
 	resultToFiniteNode,
 	resultToNode,
 	isIndeterminateResult,
-	isInfinityResult
+	isInfinityResult,
+	writeLimitValue,
+	containsFloatArtifact
 } from './exact-evaluation';
 import { getNumericValue, ZERO_TOLERANCE } from '../common';
 
@@ -343,17 +347,63 @@ export function evaluateLimit(
 	options: LimitOptions = {}
 ): LimitResult {
 	const requestedVariable = isLimit(expr) ? expr.variable : variable;
-	if (refusesEulerVariable(requestedVariable, expr)) {
-		throw new LimitError(EULER_NOT_A_VARIABLE, 'INVALID_VARIABLE');
+	const refusal = reservedVariableRefusal(requestedVariable, expr);
+	if (refusal !== null) {
+		throw new LimitError(refusal, 'INVALID_VARIABLE');
 	}
 	const greekResult = evaluateGreekVariableLimit(expr, variable, approach, direction, options);
 	if (greekResult !== null) return greekResult;
+	const piecewiseResult = piecewiseLimit(expr, variable, approach, direction, options);
+	if (piecewiseResult !== null) return piecewiseResult;
 	const result = rejectUnreducedInfinity(
 		evaluateLimitExactForm(expr, variable, approach, direction, options)
 	);
 	const expression = isLimit(expr) ? expr.expression : expr;
 	const twoSided = oddRootTwoSided(expr, variable, approach, options, result, expression);
-	return withInfiniteStatus(writeLikeInput(twoSided ?? result, expression));
+	const checked = withApproximateStatus(twoSided ?? result, expression);
+	return withInfiniteStatus(writeValue(writeLikeInput(checked, expression)));
+}
+
+/**
+ * Fonctions en escalier (`floor`, `ceil`, `round`, `sign`) dépendant de la
+ * variable : tranchées avant toute stratégie, qui ne voit pas leurs sauts
+ * (V60 : `floor(x)` en 1 rendait 1). Ce module refuse plutôt que de laisser
+ * la substitution directe conclure. `null` sans fonction en escalier.
+ */
+function piecewiseLimit(
+	expr: MathNode | LimitNode,
+	variable: string | undefined,
+	approach: MathNode | undefined,
+	direction: LimitDirection,
+	options: LimitOptions
+): LimitResult | null {
+	const expression = isLimit(expr) ? expr.expression : expr;
+	const varName = isLimit(expr) ? expr.variable : variable;
+	const point = isLimit(expr) ? expr.approach : approach;
+	const dir = isLimit(expr) ? expr.direction : direction;
+	if (varName === undefined || point === undefined) return null;
+	const limitOf = (node: MathNode, side: LimitDirection): LimitResult | null => {
+		try {
+			return evaluateLimit(node, varName, point, side, options);
+		} catch (error) {
+			if (error instanceof LimitError) return null;
+			throw error;
+		}
+	};
+	return evaluatePiecewiseLimit(expression, varName, normalizeApproach(point), dir, limitOf);
+}
+
+/**
+ * Invariant de sortie : une valeur qui porte un nombre issu d'un calcul en
+ * flottants (`containsFloatArtifact`) est `approximate`, jamais `exact` —
+ * quelle que soit la stratégie qui l'a produite (substitution numérique,
+ * terme dominant, signes…). Vérifié avant `writeLikeInput`, qui écrit en
+ * décimal des valeurs exactes.
+ */
+function withApproximateStatus(result: LimitResult, expression: MathNode): LimitResult {
+	if (result.status !== 'exact' || result.value === null) return result;
+	if (!containsFloatArtifact(result.value, [expression, result.approach])) return result;
+	return { ...result, status: 'approximate' };
 }
 
 /**
@@ -384,7 +434,7 @@ function oddRootTwoSided(
 	if (toLatex(left.value as MathNode) === toLatex(right.value as MathNode)) {
 		return { ...left, direction: 'both' };
 	}
-	return { ...result, status: 'does-not-exist', value: null };
+	return { ...result, status: 'does-not-exist', value: null, noLimitReason: 'sides-differ' };
 }
 
 /**
@@ -454,8 +504,9 @@ function evaluateGreekVariableLimit(
  * son `positive`, `-\infty` son `opposite`. Sans cette traduction en nœud
  * `infinity`, aucune stratégie ne voyait une borne infinie : la substitution
  * directe remplaçait x par le symbole et rendait « exact ∞/e^∞ » pour x/eˣ.
+ * Exportée pour la limite pédagogique, qui reçoit la même borne (V26).
  */
-function normalizeApproach(approach: MathNode): MathNode {
+export function normalizeApproach(approach: MathNode): MathNode {
 	if (isDelimiter(approach)) return normalizeApproach(approach.content);
 	if (isSymbol(approach) && approach.symbol === 'infinity') return positiveInfinity();
 	if (isPositive(approach)) {
@@ -518,6 +569,12 @@ function writeLikeInput(result: LimitResult, expression: MathNode): LimitResult 
 	if (text === null) return result;
 	const magnitude = number(text);
 	return { ...result, value: isNegative(value) ? opposite(magnitude) : magnitude };
+}
+
+/** La valeur rendue, mise au propre (signe devant la fraction ; un décimal le reste). */
+function writeValue(result: LimitResult): LimitResult {
+	if (result.value === null) return result;
+	return { ...result, value: writeLimitValue(result.value) };
 }
 
 /** Calcul de la limite ; valeur exacte en entier ou fraction réduite. */
@@ -586,18 +643,19 @@ function evaluateLimitExactForm(
 			'direct-substitution',
 			recorder,
 			opts,
-			domainValidation.message
+			domainValidation.message,
+			'outside-domain'
 		);
 	}
 
 	// Convention lycée : un seul côté dans le domaine (ln x en 0, √x en 0) →
 	// la limite bilatérale est celle de ce côté. Le résultat garde 'both'.
 	if (dir === 'both' && domainValidation.leftDefined !== domainValidation.rightDefined) {
-		const side: LimitDirection = domainValidation.rightDefined ? 'right' : 'left';
+		const side = domainValidation.rightDefined ? 'right' : 'left';
 		const oneSided = evaluateLimitExactForm(expression, varName, approachPoint, side, options);
 		const status =
 			oneSided.value !== null && isInfinity(oneSided.value) ? 'infinite' : oneSided.status;
-		return { ...oneSided, direction: 'both', status };
+		return { ...oneSided, direction: 'both', status, definedSide: side };
 	}
 
 	// Verify variable is used in expression
@@ -663,31 +721,6 @@ function evaluateLimitExactForm(
 		);
 	}
 
-	// Strategy 1.5: Try piecewise function limits (floor, ceil, sign)
-	// Must be before direct substitution to handle direction correctly
-	if (!isInfinity(approachPoint) && containsPiecewiseFunction(expression)) {
-		const piecewiseResult = tryPiecewiseFunctionLimit(
-			expression,
-			varName,
-			approachPoint,
-			dir,
-			recorder
-		);
-		if (piecewiseResult.success && piecewiseResult.value) {
-			return createResult(
-				piecewiseResult.value,
-				varName,
-				approachPoint,
-				dir,
-				'exact',
-				'none',
-				piecewiseResult.technique,
-				recorder,
-				opts
-			);
-		}
-	}
-
 	// Stratégie 1.9 : u^v, u ET v variables (xˣ, x^{1/x}), forme 0^0, ∞^0 ou
 	// 1^∞ (ou borne infinie) : u^v = e^{v ln u}. Le domaine est u > 0
 	// (convention x^a = e^{a ln x}) : la substitution directe de 0^0 (= 1 par
@@ -733,6 +766,32 @@ function evaluateLimitExactForm(
 				opts
 			);
 		}
+	}
+
+	// Stratégie 2.45 : f(u) avec f continue en la limite EXACTE et finie de u
+	// (√, ⁿ√, exp, a^u, u^p). Avant la composition, qui suit la limite de u en
+	// flottants : √((x²+1)/(4x²)) en −∞ rendait 0.5 (√0.25), désormais 1/2.
+	const continuous = tryContinuousOfExactLimit(expression, varName, approachPoint, dir, options);
+	if (continuous !== null) {
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			continuous,
+			'summarized',
+			approachPoint,
+			'Continuité : lim f(u) = f(lim u)'
+		);
+		return createResult(
+			continuous,
+			varName,
+			approachPoint,
+			dir,
+			'exact',
+			'none',
+			'composition',
+			recorder,
+			opts
+		);
 	}
 
 	// Strategy 2.5: Try composition limits (for infinity, function compositions, divisions by zero)
@@ -1100,10 +1159,16 @@ function evaluateLimitExactForm(
 			);
 		}
 
-		// Un côté seulement approché : rien ne prouve que les limites diffèrent
-		const approximateSide =
-			oneSided.left?.status === 'approximate' || oneSided.right?.status === 'approximate';
-		if (!oneSided.twoSidedExists && !approximateSide) {
+		// « Gauche ≠ droite » n'est prouvé que si les DEUX côtés sont conclus
+		// (valeur exacte ou infinie) : un côté approché, non supporté ou sans
+		// limite ne prouve rien. Depuis que le point exclu d'un domaine
+		// (ℝ \ {0} pour 2 + 1/x) déclenche cette analyse, 1/x − 1/(eˣ − 1) en 0
+		// se disait sans limite (vaut 1/2).
+		const concluded = (side: LimitResult | null) =>
+			side !== null &&
+			(side.status === 'exact' || side.status === 'infinite') &&
+			side.value !== null;
+		if (!oneSided.twoSidedExists && concluded(oneSided.left) && concluded(oneSided.right)) {
 			return createResult(
 				null,
 				varName,
@@ -1114,9 +1179,29 @@ function evaluateLimitExactForm(
 				'one-sided',
 				recorder,
 				opts,
-				'Les limites à gauche et à droite sont différentes'
+				'Les limites à gauche et à droite sont différentes',
+				'sides-differ'
 			);
 		}
+	}
+
+	// Stratégie 6.5 : sin u, cos u (à un facteur et une constante près) avec
+	// u → ±∞ — pas de limite, la fonction oscille. En dernier recours : sin x / x,
+	// x sin(1/x), e^{−x} sin x ont une limite, trouvée plus haut.
+	if (oscillatesWithoutLimit(expression, varName, approachPoint, dir, options)) {
+		return createResult(
+			null,
+			varName,
+			approachPoint,
+			dir,
+			'does-not-exist',
+			indeterminateForm,
+			'composition',
+			recorder,
+			opts,
+			'La fonction oscille sans se rapprocher d’une valeur',
+			'oscillation'
+		);
 	}
 
 	// Stratégie 7 : `e^u` relu comme `exp(u)`. Les règles du moteur — limites
@@ -1159,6 +1244,88 @@ function evaluateLimitExactForm(
 		opts,
 		'Limite non supportée avec les techniques actuelles'
 	);
+}
+
+// =============================================================================
+// Oscillation
+// =============================================================================
+
+/**
+ * f = a·sin(u) + b ou a·cos(u) + b (a ≠ 0, a et b constants, écrits sous
+ * forme de somme, produit, quotient par une constante, opposé) avec u → ±∞ du
+ * côté demandé : f oscille, elle n'a pas de limite. En bilatéral en un point
+ * fini, u doit tendre vers l'infini des deux côtés (sin(1/x) en 0).
+ * Toute autre forme (x sin x, sin x + cos x) : false, on ne conclut pas.
+ */
+function oscillatesWithoutLimit(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): boolean {
+	const node = stripDelimiters(expression);
+	if (isFunction(node) && (node.name === 'sin' || node.name === 'cos') && node.args.length === 1) {
+		return argumentTendsToInfinity(node.args[0], varName, approach, dir, options);
+	}
+	if (isAddition(node) || isSubtraction(node)) {
+		const terms = flattenSumShallow(node);
+		const variableTerms = terms.filter(({ term }) => containsVariable(term, varName));
+		if (variableTerms.length !== 1) return false;
+		const constantsFinite = terms.every(
+			({ term }) => containsVariable(term, varName) || isFiniteConstant(term)
+		);
+		return (
+			constantsFinite &&
+			oscillatesWithoutLimit(variableTerms[0].term, varName, approach, dir, options)
+		);
+	}
+	if (isDivision(node)) {
+		if (containsVariable(node.denominator, varName)) return false;
+		if (!isSafeNonZeroConstant(node.denominator)) return false;
+		return oscillatesWithoutLimit(node.numerator, varName, approach, dir, options);
+	}
+	const split = splitConstantFactor(node, varName);
+	if (split === null || !isSafeNonZeroConstant(split.constant)) return false;
+	return oscillatesWithoutLimit(split.rest, varName, approach, dir, options);
+}
+
+/** u → ±∞ du côté demandé (des deux côtés en bilatéral en un point fini). */
+function argumentTendsToInfinity(
+	argument: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): boolean {
+	if (!containsVariable(argument, varName)) return false;
+	const tendsToInfinity = (side: LimitDirection) => {
+		const result = evaluateLimit(argument, varName, approach, side, options);
+		return result.value !== null && isInfinity(result.value);
+	};
+	if (tendsToInfinity(dir)) return true;
+	if (dir !== 'both' || isInfinity(approach)) return false;
+	return tendsToInfinity('left') && tendsToInfinity('right');
+}
+
+/** Constante dont la valeur approchée est finie. */
+function isFiniteConstant(node: MathNode): boolean {
+	try {
+		return Number.isFinite(evaluateNodeToApproximatedNumber(node));
+	} catch {
+		return false;
+	}
+}
+
+/** Constante non nulle, sûre (rationnel exact, ou flottant loin de 0 et de ∞). */
+function isSafeNonZeroConstant(node: MathNode): boolean {
+	if (isExactZero(node)) return false;
+	try {
+		const value = evaluateNodeToApproximatedNumber(node);
+		return Number.isFinite(value) && value !== 0 && isSafeFactor(node, value);
+	} catch {
+		return false;
+	}
 }
 
 // =============================================================================
@@ -1335,6 +1502,93 @@ function tryLogarithmOfPositiveLimit(
 	if (value.n === value.d) return number('0');
 	const constant = exactConstantNode(inner.value);
 	return constant === null ? null : ln(constant);
+}
+
+/**
+ * lim f(u) = f(L) quand u tend vers une limite EXACTE et finie L où f est
+ * continue : √u et ⁿ√u d'indice pair (L > 0 ; L = 0 relève du côté 0⁺, laissé
+ * à la composition), ⁿ√u d'indice impair, exp u, a^u (a > 0 constant, e
+ * compris), u^p (p constant : entier positif, entier négatif si L ≠ 0, sinon
+ * L > 0). La valeur est exacte : f(L) réduit en rationnel s'il l'est
+ * (√(1/4) = 1/2), sinon gardé symbolique (√(1/2), e³). Null hors de ces cas.
+ */
+function tryContinuousOfExactLimit(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	const node = stripDelimiters(expression);
+	const limitOf = (inner: MathNode): { node: MathNode; value: number } | null => {
+		if (!containsVariable(inner, varName)) return null;
+		const result = evaluateLimit(inner, varName, approach, dir, options);
+		if (result.status !== 'exact' || result.value === null || isInfinity(result.value)) {
+			return null;
+		}
+		try {
+			const value = evaluateNodeToApproximatedNumber(result.value);
+			return Number.isFinite(value) ? { node: result.value, value } : null;
+		} catch {
+			return null;
+		}
+	};
+	const exactOrSymbolic = (value: MathNode): MathNode => exactConstantNode(value) ?? value;
+
+	if (isFunction(node) && node.args.length === 1 && (node.name === 'sqrt' || node.name === 'exp')) {
+		const inner = limitOf(node.args[0]);
+		if (inner === null) return null;
+		if (node.name === 'exp') {
+			return inner.value === 0 ? number('1') : power(mathConstant('euler'), inner.node);
+		}
+		const index = rootIndexOf(node);
+		const n = index === null ? 2 : isNumber(index) ? Number(index.value) : NaN;
+		if (!Number.isInteger(n) || n < 2) return null;
+		if (n % 2 === 0 && !(inner.value > 0)) return null;
+		const root = func('sqrt', [inner.node], index === null ? undefined : { base: index });
+		return exactOrSymbolic(root);
+	}
+
+	if (!isSuperscript(node)) return null;
+	const baseHasVariable = containsVariable(node.base, varName);
+	const exponentHasVariable = containsVariable(node.superscript, varName);
+	if (baseHasVariable === exponentHasVariable) return null;
+
+	if (exponentHasVariable) {
+		// a^u, a > 0 constant (e^u compris)
+		let base: number;
+		try {
+			base = evaluateNodeToApproximatedNumber(node.base);
+		} catch {
+			return null;
+		}
+		if (!Number.isFinite(base) || !(base > 0)) return null;
+		const inner = limitOf(node.superscript);
+		if (inner === null) return null;
+		if (inner.value === 0) return number('1');
+		const baseNode = isEulerBase(node.base) ? mathConstant('euler') : node.base;
+		return exactOrSymbolic(power(baseNode, inner.node));
+	}
+
+	// u^p, p constant
+	const exponent = exactConstantRational(node.superscript);
+	if (exponent === null) return null;
+	const inner = limitOf(node.base);
+	if (inner === null) return null;
+	const integer = exponent.d === 1n;
+	if (integer && exponent.n < 0n && inner.value === 0) return null;
+	if (!integer && !(inner.value > 0)) return null;
+	const base = isNumber(inner.node) ? inner.node : parentheses(inner.node);
+	if (integer) return exactOrSymbolic(power(base, node.superscript));
+	// L^{p/q} s'écrit en radical, comme √(2 + 1/x) : (2 − 1/x)^{1/2} → √2, pas 2^{1/2}
+	const magnitude = exponent.n < 0n ? -exponent.n : exponent.n;
+	const radicand = magnitude === 1n ? inner.node : power(base, number(magnitude.toString()));
+	const root = func(
+		'sqrt',
+		[radicand],
+		exponent.d === 2n ? undefined : { base: number(exponent.d.toString()) }
+	);
+	return exactOrSymbolic(exponent.n < 0n ? divide(number('1'), root, 'fraction') : root);
 }
 
 /** Formes 0^0, ∞^0, 1^∞ d'une puissance u^v (ou borne infinie). */
@@ -1522,7 +1776,11 @@ function tryProductOfLimits(
 		const zeroTimesInfinity =
 			limits.some((l) => l?.kind === 'zero' || l?.kind === 'finite') &&
 			limits.some((l) => l?.kind === 'infinite');
-		const noTwoSidedLimit = results.some((r) => r.status === 'does-not-exist');
+		// Un facteur qui oscille (sin x en +∞) n'a pas de « côtés » : seul le
+		// quotient réécrit (sin x · 1/x) peut conclure
+		const noTwoSidedLimit = results.some(
+			(r) => r.status === 'does-not-exist' && r.noLimitReason !== 'oscillation'
+		);
 		if (!zeroTimesInfinity && !noTwoSidedLimit) return null;
 		// Facteur sans limite bilatérale : le produit est calculé à gauche puis
 		// à droite, et on ne conclut que si les deux côtés concordent —
@@ -2026,7 +2284,8 @@ function evaluateLimitInternal(
 			'direct-substitution',
 			recorder,
 			opts,
-			domainValidation.message
+			domainValidation.message,
+			'outside-domain'
 		);
 	}
 
@@ -2090,25 +2349,6 @@ function evaluateLimitInternal(
 			recorder,
 			opts
 		);
-	}
-
-	// Try piecewise function limits (floor, ceil, sign)
-	// Must be before direct substitution to handle direction correctly
-	if (!isInfinity(approach) && containsPiecewiseFunction(expr)) {
-		const piecewiseResult = tryPiecewiseFunctionLimit(expr, varName, approach, direction, recorder);
-		if (piecewiseResult.success && piecewiseResult.value) {
-			return createResult(
-				piecewiseResult.value,
-				varName,
-				approach,
-				direction,
-				'exact',
-				'none',
-				piecewiseResult.technique,
-				recorder,
-				opts
-			);
-		}
 	}
 
 	// Try direct substitution
@@ -2543,7 +2783,8 @@ function createResult(
 	technique: LimitRule,
 	recorder: LimitStepRecorderImpl,
 	opts: Required<LimitOptions>,
-	error?: string
+	error?: string,
+	noLimitReason?: NoLimitReason
 ): LimitResult {
 	return {
 		variable,
@@ -2554,7 +2795,8 @@ function createResult(
 		indeterminateForm,
 		technique,
 		steps: recorder.getStepsFiltered(opts.verbosity),
-		...(error && { error })
+		...(error && { error }),
+		...(noLimitReason && { noLimitReason })
 	};
 }
 

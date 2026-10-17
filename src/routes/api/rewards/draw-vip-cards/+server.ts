@@ -5,6 +5,9 @@ import { requireConsent, hasConsentFields } from '$lib/server/middleware/consent
 import { requireAuth } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { VIP_CARD_COST } from '$lib/utils/vip-cards';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/rewards/draw-vip-cards/+server');
 
 /**
  * Draw multiple VIP cards for a student
@@ -127,7 +130,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// 5. Error handling
 		if (rpcError) {
-			console.error('RPC error drawing VIP cards:', rpcError);
+			logger.error('RPC error drawing VIP cards:', rpcError);
 
 			// RPC errors contain user-friendly validation messages
 			// (e.g., "Insufficient gidouilles: Required 10, available 5")
@@ -140,7 +143,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// 7. Success response
 		return json(result);
 	} catch (err) {
-		console.error('Error drawing VIP cards:', err);
+		logger.error('Error drawing VIP cards:', err);
 
 		// Re-throw SvelteKit errors (they already have proper status codes)
 		if (err && typeof err === 'object' && 'status' in err) {

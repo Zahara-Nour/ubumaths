@@ -1,6 +1,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/automaths/panier/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { supabase } = locals;
@@ -15,7 +18,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (templatesError) {
-		console.error('Failed to load question templates:', templatesError);
+		logger.error('Failed to load question templates:', templatesError);
 		throw error(500, 'Failed to load questions');
 	}
 
@@ -35,7 +38,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
 		// doit pas se confondre avec une donnée réellement vide.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Contexte illisible :', profileError);
+			logger.error('Contexte illisible :', profileError);
 		}
 
 		userRole = profile?.role || null;

@@ -36,6 +36,8 @@ export type Dimension =
 	| 'luminous_intensity'
 	| 'angle'
 	| 'currency'
+	// Quantité d'information : octet, bit et leurs multiples (2026-10-13)
+	| 'information'
 	| 'dimensionless'
 	| 'area'
 	// Named SI derived dimensions (mathematically composite, but commonly named)

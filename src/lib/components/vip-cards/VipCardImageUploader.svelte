@@ -89,7 +89,7 @@
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.message || 'Upload failed');
+				throw new Error(error.message || 'Échec de l’envoi');
 			}
 
 			const { imagePath } = await response.json();

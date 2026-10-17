@@ -1,8 +1,8 @@
 /**
  * Unit tests for WebReplEngine Phase 2 - Unit Integration
  *
- * Tests for unit-aware evaluation, .convert command,
- * .unitmode command, and dimensional error handling.
+ * Tests for unit-aware evaluation, .convert command and dimensional error
+ * handling (`.unitmode` retirée, phase 0 `docs/archive/wip/grandeurs-phase0.md`).
  *
  * Note: Units must be entered using LaTeX syntax: 5~\unit{m}
  */
@@ -35,13 +35,11 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			expect(result.output).not.toContain('Mode:');
 		});
 
-		it('evaluates expression with units using evaluateWithUnits', () => {
-			// Use LaTeX unit syntax: 5~\unit{km}
+		it('evaluates expression with units as a quantity (tidy, written unit first)', () => {
 			const result = engine.execute('5~\\unit{km}');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('5');
-			expect(result.output).toContain('km');
+			expect(result.output).toBe('5 km');
 		});
 
 		it('evaluates complex expression without units using standard evaluation', () => {
@@ -62,23 +60,23 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			const result = engine.execute('5~\\unit{km} + 3000~\\unit{m}');
 
 			expect(result.success).toBe(true);
-			// Result should be 8 km (in first mode by default)
-			expect(result.output).toContain('8');
+			// L'unité écrite d'abord (phase 0 grandeurs) : pas 8000 m
+			expect(result.output).toBe('8 km');
 		});
 
 		it('adds quantities with same unit: 3 m + 2 m', () => {
 			const result = engine.execute('3~\\unit{m} + 2~\\unit{m}');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('5');
-			expect(result.output).toContain('m');
+			expect(result.output).toBe('5 m');
 		});
 
 		it('adds time units: 1 h + 30 min', () => {
 			const result = engine.execute('1~\\unit{h} + 30~\\unit{min}');
 
 			expect(result.success).toBe(true);
-			// Default mode is 'first', so result should be in hours (1.5 h)
+			// Deux unités de durée écrites : l'écriture composée (lot C, décision de David)
+			expect(result.output).toBe('1 h 30 min');
 		});
 	});
 
@@ -87,12 +85,12 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 	// ===========================================================================
 
 	describe('addition with incompatible units', () => {
-		it('returns DimensionalEvaluationError for incompatible units: 5 m + 3 s', () => {
+		it('refuses incompatible units in French: 5 m + 3 s', () => {
 			const result = engine.execute('5~\\unit{m} + 3~\\unit{s}');
 
 			expect(result.success).toBe(false);
 			expect(result.error).toBeDefined();
-			expect(result.error?.code).toBe('DIMENSION_ERROR');
+			expect(result.error?.code).toBe('QUANTITY_ERROR');
 		});
 
 		it('provides pedagogical message for dimensional errors', () => {
@@ -100,15 +98,15 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 
 			expect(result.success).toBe(false);
 			expect(result.output).toBeTruthy();
-			// Should contain a helpful suggestion with incompatible dimensions message
-			expect(result.output).toContain('incompatible dimensions');
+			// En français, la grandeur nommée (phase 0 grandeurs, lot A)
+			expect(result.output).toBe('On ne peut pas ajouter une longueur et une durée.');
 		});
 
 		it('returns error for mass + length: 2 kg + 5 m', () => {
 			const result = engine.execute('2~\\unit{kg} + 5~\\unit{m}');
 
 			expect(result.success).toBe(false);
-			expect(result.error?.code).toBe('DIMENSION_ERROR');
+			expect(result.error?.code).toBe('QUANTITY_ERROR');
 		});
 
 		it('HTML output contains dimensional error styling', () => {
@@ -116,8 +114,7 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 
 			expect(result.success).toBe(false);
 			expect(result.outputHtml).toBeDefined();
-			expect(result.outputHtml).toContain('Erreur dimensionnelle');
-			expect(result.outputHtml).toContain('text-red');
+			expect(result.outputHtml).toContain('On ne peut pas ajouter une longueur et une durée.');
 		});
 	});
 
@@ -154,9 +151,7 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			const result = engine.execute('.convert m');
 
 			expect(result.success).toBe(false);
-			expect(result.error).toBeDefined();
-			expect(result.error?.code).toBe('NO_AST');
-			expect(result.output).toContain('unites');
+			expect(result.output).toContain("Il n'y a pas de grandeur à convertir");
 		});
 
 		it('returns error when no previous unit result after standard expression', () => {
@@ -167,7 +162,7 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			const result = engine.execute('.convert m');
 
 			expect(result.success).toBe(false);
-			expect(result.error?.code).toBe('NO_AST');
+			expect(result.output).toContain("Il n'y a pas de grandeur à convertir");
 		});
 
 		it('returns error for invalid unit', () => {
@@ -175,8 +170,7 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			const result = engine.execute('.convert xyz123');
 
 			expect(result.success).toBe(false);
-			expect(result.error?.code).toBe('UNKNOWN_UNIT');
-			expect(result.output).toContain('inconnue');
+			expect(result.output).toBe('Unité inconnue : xyz123.');
 		});
 
 		it('returns error for incompatible target unit', () => {
@@ -187,8 +181,9 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			const result = engine.execute('.convert s');
 
 			expect(result.success).toBe(false);
-			expect(result.error?.code).toBe('DIMENSION_MISMATCH');
-			expect(result.output).toContain('incompatibles');
+			expect(result.output).toBe(
+				'On ne peut pas convertir des km en s : ce ne sont pas les mêmes grandeurs.'
+			);
 		});
 
 		it('returns error when .convert has no argument', () => {
@@ -196,16 +191,7 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			const result = engine.execute('.convert');
 
 			expect(result.success).toBe(false);
-			expect(result.error?.code).toBe('INVALID_OPTIONS');
-			expect(result.output).toContain('Usage:');
-		});
-
-		it('shows conversion factor in output', () => {
-			engine.execute('1~\\unit{km}');
-			const result = engine.execute('.convert m');
-
-			expect(result.success).toBe(true);
-			expect(result.output).toContain('Factor:');
+			expect(result.output).toBe('Indique l’unité voulue, par exemple : .convertir m.');
 		});
 
 		it('HTML output is properly formatted', () => {
@@ -214,168 +200,7 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 
 			expect(result.success).toBe(true);
 			expect(result.outputHtml).toBeDefined();
-			expect(result.outputHtml).toContain('Converted:');
-		});
-	});
-
-	// ===========================================================================
-	// .unitmode Command
-	// ===========================================================================
-
-	describe('.unitmode command', () => {
-		it('changes mode to "first"', () => {
-			const result = engine.execute('.unitmode first');
-
-			expect(result.success).toBe(true);
-			expect(result.output).toContain('first');
-			expect(engine.getUnitConversionMode()).toBe('first');
-		});
-
-		it('changes mode to "si"', () => {
-			const result = engine.execute('.unitmode si');
-
-			expect(result.success).toBe(true);
-			expect(result.output).toContain('si');
-			expect(engine.getUnitConversionMode()).toBe('si');
-		});
-
-		it('changes mode to "best"', () => {
-			const result = engine.execute('.unitmode best');
-
-			expect(result.success).toBe(true);
-			expect(result.output).toContain('best');
-			expect(engine.getUnitConversionMode()).toBe('best');
-		});
-
-		it('returns error for invalid mode', () => {
-			const result = engine.execute('.unitmode invalid');
-
-			expect(result.success).toBe(false);
-			expect(result.error).toBeDefined();
-			expect(result.error?.code).toBe('INVALID_OPTIONS');
-			expect(result.output).toContain('first|si|best');
-		});
-
-		it('returns error for empty mode', () => {
-			const result = engine.execute('.unitmode');
-
-			expect(result.success).toBe(false);
-			expect(result.error?.code).toBe('INVALID_OPTIONS');
-		});
-
-		it('is case insensitive', () => {
-			const result = engine.execute('.unitmode SI');
-
-			expect(result.success).toBe(true);
-			expect(engine.getUnitConversionMode()).toBe('si');
-		});
-
-		it('HTML output has proper styling', () => {
-			const result = engine.execute('.unitmode best');
-
-			expect(result.success).toBe(true);
-			expect(result.outputHtml).toBeDefined();
-			expect(result.outputHtml).toContain('text-blue-400');
-		});
-
-		it('default mode is "first"', () => {
-			expect(engine.getUnitConversionMode()).toBe('first');
-		});
-	});
-
-	// ===========================================================================
-	// Unit Mode Affects Evaluation
-	// ===========================================================================
-
-	describe('unit mode affects evaluation results', () => {
-		it('first mode converts to first unit encountered', () => {
-			engine.execute('.unitmode first');
-			const result = engine.execute('5~\\unit{km} + 3000~\\unit{m}');
-
-			expect(result.success).toBe(true);
-			// Result should be 8 km
-			expect(result.output).toContain('8');
-		});
-
-		it('si mode normalizes to SI base units', () => {
-			engine.execute('.unitmode si');
-			const result = engine.execute('5~\\unit{km} + 3000~\\unit{m}');
-
-			expect(result.success).toBe(true);
-			// Result should be 8000 m
-			expect(result.output).toContain('8000');
-		});
-
-		it('mode persists across multiple evaluations', () => {
-			engine.execute('.unitmode si');
-			engine.execute('2~\\unit{km}');
-
-			const result = engine.execute('3~\\unit{km}');
-
-			expect(result.success).toBe(true);
-			// Should still be in SI mode
-			expect(result.output).toContain('3000'); // 3 km = 3000 m
-		});
-	});
-
-	// ===========================================================================
-	// getLastUnitResult API
-	// ===========================================================================
-
-	describe('getLastUnitResult()', () => {
-		it('returns undefined initially', () => {
-			expect(engine.getLastUnitResult()).toBeUndefined();
-		});
-
-		it('returns undefined after standard evaluation', () => {
-			engine.execute('2 + 3');
-			expect(engine.getLastUnitResult()).toBeUndefined();
-		});
-
-		it('returns result after unit evaluation', () => {
-			engine.execute('5~\\unit{km}');
-			const result = engine.getLastUnitResult();
-
-			expect(result).toBeDefined();
-			expect(result?.unit).toBeDefined();
-		});
-
-		it('is updated after each unit evaluation', () => {
-			engine.execute('5~\\unit{km}');
-			const first = engine.getLastUnitResult();
-
-			engine.execute('10~\\unit{m}');
-			const second = engine.getLastUnitResult();
-
-			expect(first).not.toBe(second);
-		});
-
-		it('is cleared after standard evaluation', () => {
-			engine.execute('5~\\unit{km}');
-			expect(engine.getLastUnitResult()).toBeDefined();
-
-			engine.execute('2 + 3');
-			expect(engine.getLastUnitResult()).toBeUndefined();
-		});
-	});
-
-	// ===========================================================================
-	// setUnitConversionMode API
-	// ===========================================================================
-
-	describe('setUnitConversionMode()', () => {
-		it('sets mode programmatically', () => {
-			engine.setUnitConversionMode('si');
-			expect(engine.getUnitConversionMode()).toBe('si');
-		});
-
-		it('affects subsequent evaluations', () => {
-			engine.setUnitConversionMode('si');
-			const result = engine.execute('2~\\unit{km}');
-
-			expect(result.success).toBe(true);
-			// 2 km in SI mode = 2000 m
-			expect(result.output).toContain('2000');
+			expect(result.outputHtml).toContain('5 km = 5000 m');
 		});
 	});
 
@@ -420,13 +245,6 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 
 			expect(result.success).toBe(true);
 		});
-
-		it('handles whitespace in .unitmode command', () => {
-			const result = engine.execute('.unitmode   si');
-
-			expect(result.success).toBe(true);
-			expect(engine.getUnitConversionMode()).toBe('si');
-		});
 	});
 
 	// ===========================================================================
@@ -442,14 +260,6 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			const result = engine.execute('.convert m');
 
 			expect(result.success).toBe(true);
-		});
-
-		it('unit mode is independent of input mode', () => {
-			engine.execute('.latex');
-			engine.execute('.unitmode si');
-
-			expect(engine.getInputMode()).toBe('latex');
-			expect(engine.getUnitConversionMode()).toBe('si');
 		});
 	});
 });

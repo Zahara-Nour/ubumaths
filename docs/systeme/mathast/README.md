@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-10.**
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15).
 
 ## À quoi ça sert
 
@@ -29,7 +29,7 @@ Deux usages portent tout le reste :
 Bibliothèque pure : ni base de données, ni réseau, ni `eval` JavaScript. Consommateurs
 principaux (imports de `$lib/mathAST` hors du module) : `src/lib/atelier/`,
 `src/lib/questions/`, `src/lib/geometry-core/`, `src/lib/math/`,
-`src/lib/components/markdown/`, `src/lib/components/cas/`, `src/lib/ubumark/`,
+`src/lib/components/markdown/`, `src/lib/ubumark/`,
 `src/lib/grapheur/`.
 
 Taille au 2026-10-10 : 502 fichiers `.ts` hors tests (~188 000 lignes), 445 fichiers de
@@ -59,43 +59,45 @@ test, ~14 000 cas (`it(`/`test(`).
 
 ### Sous-dossiers
 
-| Dossier                                                                                                                             | Rôle                                                                                                                                                                                                                                |
-| ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Lire et écrire**                                                                                                                  |                                                                                                                                                                                                                                     |
-| `parser/`                                                                                                                           | `parseLatex`/`parseLatexSafe` (`latex/` : Pratt par défaut, `rd` en option) ; `custom/` : syntaxe maison (`parseCustom`), motifs (`parsePattern`), règles (`parseRule`), contraintes ; `security.ts` (plafonds)                     |
-| `cache/`                                                                                                                            | `ParseCache`, LRU exporté mais **branché nulle part**                                                                                                                                                                               |
-| **Mettre au propre, comparer**                                                                                                      |                                                                                                                                                                                                                                     |
-| `tidy/`                                                                                                                             | `tidy` : mise au propre **sans jamais développer** ; raconte ses gestes (`TidyStepRecorder`) ; grandeurs (`unitChoice`)                                                                                                             |
-| `simplify/`                                                                                                                         | `simplify` : `tidy` + règles + « développer seulement si moins cher » (`computeCost`, `costFunction` injectable)                                                                                                                    |
-| `normal/`                                                                                                                           | `normalize` → `NormalForm` (forme normale rationnelle), `denormalize`, `equivalenceForm`, `hashMathNode`, `nodesEqual`                                                                                                              |
-| `pattern/`                                                                                                                          | motifs (`P`, `tryMatch`), règles, jeux de règles, `verifyForm` — voir [pattern-matching.md](pattern-matching.md)                                                                                                                    |
-| `transform/`                                                                                                                        | identités algébriques/trigo/hyperboliques en fonctions (`factorAlgebraic`…) — **aucun import hors de ses tests**                                                                                                                    |
-| `common/`                                                                                                                           | moteur de réécriture `rewrite`, `numericNode`, interruption (`AbortError`), bases des enregistreurs et rendus d'étapes, constructeurs simplifiants (`common/simplify.ts`), refus de `e` comme variable (`common/euler-variable.ts`) |
-| `numtype/`                                                                                                                          | inférence du type numérique (entier, rationnel, réel…) et `TypeContext`                                                                                                                                                             |
-| **Calculer**                                                                                                                        |                                                                                                                                                                                                                                     |
-| `eval/`                                                                                                                             | `substitute`, `evaluate`, `evaluateWithUnits`, `compile`/`createSafeEvaluator` (seule génération de code)                                                                                                                           |
-| `differentiation/`                                                                                                                  | `differentiate`                                                                                                                                                                                                                     |
-| `integration/`                                                                                                                      | `integrate` (primitives, intégrales définies, numérique)                                                                                                                                                                            |
-| `limits/`                                                                                                                           | limites (dont `analyzeSign` unilatéral de `limits/one-sided.ts`)                                                                                                                                                                    |
-| `solve/`                                                                                                                            | `solve`, `solveEquation`                                                                                                                                                                                                            |
-| `domain/`                                                                                                                           | `computeDomain`, `findZeros`, intervalles                                                                                                                                                                                           |
-| `sign/`                                                                                                                             | `analyzeSign` (tableaux de signes)                                                                                                                                                                                                  |
-| `variations/`                                                                                                                       | `computeVariations`                                                                                                                                                                                                                 |
-| `taylor/`                                                                                                                           | développements de Taylor                                                                                                                                                                                                            |
-| `analysis/`                                                                                                                         | continuité (`analyzeContinuity`), périodicité, symétrie, polynômes, classification                                                                                                                                                  |
-| `piecewise/`                                                                                                                        | `extractPiecewiseBoundaries` : ruptures d'une fonction par morceaux (consommé par `geometry-core`)                                                                                                                                  |
-| `matrix/`                                                                                                                           | opérations matricielles                                                                                                                                                                                                             |
-| `units/`                                                                                                                            | unités physiques (`parse`, `format`, conversions, `selectBestUnit`) — doc : `units/README.md`, notation : [notation-unites.md](../../pratiques/notation-unites.md)                                                                  |
-| `dimensional/`                                                                                                                      | analyse dimensionnelle                                                                                                                                                                                                              |
-| **Raconter**                                                                                                                        |                                                                                                                                                                                                                                     |
-| `pedagogical-simplify/`                                                                                                             | `generatePedagogicalSimplifySteps` : quatre intentions (`SimplifyIntent`)                                                                                                                                                           |
-| `pedagogical-solve/`                                                                                                                | `generateEquationSteps`, `generateInequalitySteps` ; paliers par tables `STRATEGIES*`                                                                                                                                               |
-| `pedagogical-arithmetic/`, `pedagogical-differentiation/`, `pedagogical-integration/`, `pedagogical-limits/`, `pedagogical-domain/` | `generatePedagogical…Steps` du domaine                                                                                                                                                                                              |
-| `pedagogical-evaluate/`                                                                                                             | types seuls, aucune logique                                                                                                                                                                                                         |
-| `step-generator/`                                                                                                                   | `generateSteps`, `canGenerateSteps`, `suggestLevel` (calcul arithmétique)                                                                                                                                                           |
-| **Outils**                                                                                                                          |                                                                                                                                                                                                                                     |
-| `cli/`                                                                                                                              | `pnpm math` (`cli/cli.ts`) : REPL et complétion — doc : `cli/README.md`, `cli/web/README.md`                                                                                                                                        |
-| `__tests__/`                                                                                                                        | tests transverses (garde-fous, panel)                                                                                                                                                                                               |
+| Dossier                                                                                                                             | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Lire et écrire**                                                                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `parser/`                                                                                                                           | `parseLatex`/`parseLatexSafe` (`latex/` : Pratt par défaut, `rd` en option) ; `custom/` : syntaxe maison (`parseCustom`), motifs (`parsePattern`), règles (`parseRule`), contraintes ; `security.ts` (plafonds)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `cache/`                                                                                                                            | `ParseCache`, LRU exporté mais **branché nulle part**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **Mettre au propre, comparer**                                                                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `tidy/`                                                                                                                             | `tidy` : mise au propre **sans jamais développer** ; raconte ses gestes (`TidyStepRecorder`) ; grandeurs (`unitChoice`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `simplify/`                                                                                                                         | `simplify` : `tidy` + règles + « développer seulement si moins cher » (`computeCost`, `costFunction` injectable)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `normal/`                                                                                                                           | `normalize` → `NormalForm` (forme normale rationnelle), `denormalize`, `equivalenceForm`, `hashMathNode`, `nodesEqual`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `pattern/`                                                                                                                          | motifs (`P`, `tryMatch`), règles, jeux de règles, `verifyForm` — voir [pattern-matching.md](pattern-matching.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `common/`                                                                                                                           | moteur de réécriture `rewrite`, `numericNode`, interruption (`AbortError`), bases des enregistreurs et rendus d'étapes, constructeurs simplifiants (`common/simplify.ts`), `e`, `i` jamais variables (`common/reserved-letters.ts`), signe d'une constante sur sa valeur (`constantSign`, `common/constant-sign.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `numtype/`                                                                                                                          | inférence du type numérique (entier, rationnel, réel…) et `TypeContext`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **Calculer**                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `eval/`                                                                                                                             | `substitute`, `evaluate`, `evaluateWithModifiers` (`{{eval}}`, grandeurs comprises), `compile`/`createSafeEvaluator` ; `forbiddenValue` (`forbidden-value.ts`, `.eval`) : la cause, la plus intérieure, qui prive un calcul sans lettre de valeur réelle (dénominateur nul, racine d'indice pair d'un négatif, logarithme ⩽ 0, 0 à une puissance négative, exposant non entier d'un négatif, tangente où cos s'annule, arcsin/arccos hors de [−1 ; 1]), lue exactement — à ne pas confondre avec `integration/forbidden-value.ts` ; `root(a, n)` (forme du solveur et de `denormalize`) s'évalue et se compile comme `\sqrt[n]{a}`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `differentiation/`                                                                                                                  | `differentiate`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `integration/`                                                                                                                      | `integrate` (primitives, intégrales définies, numérique)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `limits/`                                                                                                                           | limites (dont `analyzeSign` unilatéral de `limits/one-sided.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `solve/`                                                                                                                            | `solve`, `solveEquation`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `reciprocal/`                                                                                                                       | `computeReciprocal` : f⁻¹ sur un intervalle, ensembles de départ et d'arrivée, étapes, refus (non bijective — sin, cos, tan : arcsin… nommée, sans commande —, constante, ne sait pas) — voir [reciproque.md](reciproque.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `domain/`                                                                                                                           | `computeDomain`, `findZeros`, intervalles                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `factor/`                                                                                                                           | noyau exact de factorisation (ADR 0024) : `factorPolynomial`, `factorizationToNode` ; lecture exacte des polynômes, racines ±p/q et Δ partagées avec `domain/` — voir [§ factor/](#factor--le-moteur-commun-de-factorisation)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `sign/`                                                                                                                             | `analyzeSign` (tableaux de signes)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `variations/`                                                                                                                       | `computeVariations`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `taylor/`                                                                                                                           | développements de Taylor                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `analysis/`                                                                                                                         | continuité (`analyzeContinuity`), périodicité, symétrie, classification, détecteurs d'identités (`structures.ts`, lus par `algebraicFactoringRules`) ; zéros hybrides exact + balayage (`roots.ts`, `critical-points.ts`), où un échantillon presque nul ne compte que si \|f\| y est un minimum local (`touchesZero`, `near-zero.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `piecewise/`                                                                                                                        | `extractPiecewiseBoundaries` : ruptures d'une fonction par morceaux (consommé par `geometry-core`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `matrix/`                                                                                                                           | opérations matricielles                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `units/`                                                                                                                            | unités physiques (`parse`, `format`, conversions, `selectBestUnit`) ; dimension `information` (octet, bit, multiples nommés un à un, 2026-10-13) — doc : `units/README.md`, notation : [notation-unites.md](../../pratiques/notation-unites.md), contrat : [grandeurs.md](../grandeurs.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `dimensional/`                                                                                                                      | analyse dimensionnelle                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **Raconter**                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `pedagogical-simplify/`                                                                                                             | `generatePedagogicalSimplifySteps` : quatre intentions (`SimplifyIntent`) ; `explainExpansion` (`expand-explained.ts`) : la seule rédaction montrée de `developper` (atelier, corrections, démo), par `writeExpandSteps` (`expand-steps.ts`, ordre du manuel `expand-order.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `pedagogical-solve/`                                                                                                                | `generateEquationSteps`, `generateInequalitySteps` ; paliers par tables `STRATEGIES*`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `pedagogical-arithmetic/`, `pedagogical-differentiation/`, `pedagogical-integration/`, `pedagogical-limits/`, `pedagogical-domain/` | `generatePedagogical…Steps` du domaine                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `pedagogical-evaluate/`                                                                                                             | types seuls, aucune logique                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `step-generator/`                                                                                                                   | `generateSteps`, `canGenerateSteps`, `suggestLevel` (calcul arithmétique)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `structure/`                                                                                                                        | `structureFromLatex`, `buildStructure` : arbre des sous-expressions vu par l'élève (sommes et produits aplatis, signe « − » à la somme, `signs` gardés pour la lecture) et LaTeX marqué `\class{ubs-n<id>}{…}` au rendu identique à `toLatex` ; lecture en français (`readingOf`) et message « 6e ou avant » (`parenthesesAdvice`) ; déplacer une partie dans son groupe, glisser-déposer (`rearrange.ts` : `movableGroupOf`, `movedLatex`, `expressionLatex` pour la formule redessinée pendant le glisser) ; outil « Structure d'une expression » (`/test-structure`), voir [structure-expression.md](structure-expression.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **Outils**                                                                                                                          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `cli/`                                                                                                                              | `pnpm math` (`cli/cli.ts`) : REPL ; moteur web de Calcul et de `/calc` (`cli/web/`, allégé de ce que seule `/cas` lisait le 2026-10-13) ; grandeurs de la console (`cli/quantities.ts`, contrat : [grandeurs.md](../grandeurs.md)) ; arguments à mots-clés des commandes (`cli/core/variable-argument.ts`, `readCommandArguments` → `CommandArguments`) : pour `.eval`, `assignments`, la liste des lettres et valeurs dans l'ordre tapé — `en x=3`, plusieurs lettres séparées par « ; » (`en a=1,5 ; b=2`, E6, 2026-10-14), virgule décimale lue en point ; refus de la lecture : virgule entre deux valeurs (« Sépare les valeurs avec « ; » … »), lettre donnée deux fois, « ; » final sans valeur (« Il manque la valeur de b : … », « x a déjà sa valeur … ») ; refus de `cli/commands/eval.command.ts` : lettre absente de l'expression, valeur qui n'est pas un nombre, lettre sans valeur (« Il manque la valeur de b : … ; b=3, par exemple. »), valeur interdite citant toutes les valeurs (« Pour $a = 1$ et $b = 0$, ce calcul n'a pas de valeur : … ») ; fonction usuelle sans parenthèses (`sin x`, lu s·i·n·x) : `bareFunctionName` (refus des commandes du CLI, « Écris sin(x) avec des parenthèses. ») et `bareFunctionRefusal` (refus de l'atelier, qui cite le fragment tapé : « « ln 2x » : écris ln(2x) avec des parenthèses. », V59 ; refuse aussi le nom collé, `lnx`, `cost`, `ln2x` : `GLUED_FUNCTION`, que `bareFunctionName` ignore) — doc : `cli/README.md`, `cli/web/README.md` |
+| `__tests__/`                                                                                                                        | tests transverses (garde-fous, panel)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 ## Le pipeline
 
@@ -162,7 +164,11 @@ Il y a aujourd'hui **deux moteurs** qui ne partagent pas leurs règles :
 - `generatePedagogicalSimplifySteps` (`pedagogical-simplify/pipeline.ts`) — une boucle de
   règles de motifs choisies par intention (`selectRulesForIntent`), puis une passe
   `normalize` enregistrée (`runNormalizePass`), sauf pour `factoriser` qui finit par la mise
-  en facteur du contenu et `tidy`. Il a **le vocabulaire** (les étapes nommées).
+  en facteur du contenu, puis les **stratégies qui racontent** de l'ADR 0024 (voir
+  [§ Les stratégies](#les-stratégies-de-factoriser-lot-2)) et `tidy`. Le contenu est numérique,
+  monôme **ou non polynomial** depuis le 2026-10-11 (`xe^x - e^x` → `(x-1)e^x`,
+  `(x+1)^2-(x+1)` → `x(x+1)` ; le facteur non polynomial s'écrit après la parenthèse). Il a
+  **le vocabulaire** (les étapes nommées).
 
 L'ADR 0007 (acceptée le 2026-09-21) décide **un seul moteur, quatre politiques sur
 « faut-il développer ? »** : `réduire` jamais (= `tidy`), `développer` toujours, `auto`
@@ -176,17 +182,389 @@ livrée (#396, #397). Dans le code, `auto` passe toujours par `runNormalizePass`
 Le tableau des écarts, pinné par un test : [panel-simplifications.md](panel-simplifications.md).
 Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
 
+## factor/ — le moteur commun de factorisation
+
+L'[ADR 0024](../../adr/0024-moteur-commun-de-factorisation.md) (2026-10-11) remplace la dizaine de
+lieux qui factorisent chacun à sa façon par un module en deux couches : un **noyau exact sur ℚ**,
+sans étapes, et des **stratégies qui racontent** (facteur commun, identités, racines du trinôme,
+racine évidente) branchées sur l'intention `factoriser`. Livraison par lots : noyau → stratégies →
+migration des appelants internes (`limits`, `integration`, `domain`, `normalize`) et suppression
+du code mort → écriture des primitives (V18).
+
+**État au 2026-10-12 : chantier clos.** Lot 1, le noyau (#1127) ; lot 2, les stratégies branchées
+sur l'intention `factoriser`, donc sur l'atelier (#1134) ; lot 3a, limites et intégration (#1136,
+[§ Les appelants](#les-appelants-migrés-lot-3a)) ; lot 3b, le ménage (#1141,
+[§ Le ménage](#le-ménage-lot-3b)) ; lot 4, l'exponentielle commune d'une primitive mise en facteur
+(#1143, voir « Dérivées et primitives finissent par « On simplifie » » plus bas). `normalize` et
+`solve` factorisent encore comme avant (ADR 0006 : `normalize` est sur le chemin du décideur) :
+leurs doublons sont rattachés à K3. Journal :
+[moteur-factorisation-progress.md](../../archive/wip/mathAST/moteur-factorisation-progress.md).
+
+Suites (K21, 2026-10-12) : `solve` ne rend plus la racine 0 en double (`4x³ − 2x² = 0` →
+`{0 ; 1/2}`, « On factorise par x^2 », `solvers/polynomial.ts`), et résout en repli une
+**différence de deux carrés** NON polynomiale (un polynôme garde ses étapes : `(x − 1)² − x² = 0` reste du premier degré), de même coefficient (`sin²x − cos²x = 0`, `2sin²x = 2cos²x` →
+`(a + b)(a − b) = 0`, puis produit nul : π/4 + kπ/2), règle `difference-of-squares` de
+`solve.ts`, motifs `P.*` construits à l'appel (cycle d'imports). Tests :
+`solve/__tests__/{racine-nulle-sans-doublon,difference-de-carres}.test.ts`.
+
+Écart V37 (2026-10-12) : `solve` résout en repli **P/c = 0, c constante sans lettre et non nulle**
+(π, e, π + 1, √2/π) comme P = 0 (`tryConstantDenominator`, `solve.ts`). `solveInequality` ramène
+`x < 2/π` à `(πx − 2)/π < 0` ; ni la décomposition rationnelle (dénominateurs en x seulement) ni
+le solveur affine (division par 5 oui, par π non) ne le lisaient : zéros non résolus, signe
+inconnu, ensemble ∅ (statut `partial`). Tests :
+`solve/inequality/__tests__/denominateur-constant.test.ts` (bornes et échantillonnage de points).
+
+Écart V38 (2026-10-12) : **une fonction dont l'argument ne contient pas l'inconnue est une
+constante pour le classement**. `containsTranscendental` et `getTranscendentalType`
+(`analysis/expression-classify.ts`) prennent une inconnue facultative : avec elle, `\ln 3`,
+`\cos(1)`, `\log_{10}2` ne comptent plus, et `getPolynomialDegree` lit une puissance sans
+l'inconnue (`2^π`) comme une constante (degré 0). `classifyEquation` et le solveur transcendant
+passent l'inconnue ; sans elle, le comportement public est inchangé. Avant, `x = \ln 3`,
+`x\ln 2 = 1`, `x^2 = \ln 5`, `\frac{1}{x} = \ln 2` répondaient « transcendante non supporte » et
+`x < \frac{1}{\ln 2}` rendait ∅. Tests : `solve/__tests__/fonction-de-constante.test.ts`
+(forme exacte, vérification numérique, échantillonnage des inéquations, témoins `\ln x = 2`,
+`\cos x = \frac12`, `e^x = 3`).
+
+Écart V41 (2026-10-12) : **un coefficient littéral devant ln, exp, sin, cos n'est plus remplacé
+par 1**. `extractTranscendentalEquation` (`solve/solvers/transcendental.ts`) évaluait le
+coefficient et, faute d'y arriver, le prenait pour 1 : `a\ln x = 1` rendait e, `k e^x = 2`
+rendait ln 2, `a\cos x = 1` rendait 0. Désormais c = −b/a reste symbolique et `constantNumeric`
+vaut `null` quand le coefficient porte une lettre. Convention suivie, celle de `ax = 1` → 1/a :
+**la valeur porte le paramètre, sans condition sur lui** (aucun solveur n'écrit de condition ; le
+champ `Solution.condition` n'est jamais rempli). ln et log en tirent une valeur juste pour tout
+paramètre non nul (`a\ln x = 1` → e^{1/a}, `-a\ln x = 1` → e^{−1/a}, signe hors de la fraction
+comme e^{−1/3}, `a\ln(2x + 1) = 3`), sans `approximate` ; tan aussi (`a\tan x = 1` → arctan(1/a),
+période π) ; exp, sin, cos et les décompositions récursives **refusent** (le signe ou la taille de c décide de
+l'existence) et le CLI répond « La solution dépend de a : je ne sais pas encore résoudre avec un
+paramètre ». Un second membre littéral (`\ln x = a`) reste refusé : il peut venir du
+développement `\ln(ax)` → ln a + ln x, valable pour a > 0 seulement. `filterSolutionsByDomain`
+(`solve.ts`) garde une solution à paramètre sans la comparer au domaine (l'évaluation levait).
+Tests : `solve/__tests__/parametre-litteral.test.ts` (vérification numérique pour plusieurs
+valeurs du paramètre). ⚠️ Dépassé en partie le 2026-10-13, voir le paragraphe suivant :
+`e^x = 1/a`, `\ln x = a` et `\ln(ax) = 1` sont résolues, avec condition quand il en faut une.
+
+Second membre littéral (2026-10-13, lot 1 « réciproque ») : **`y = f(x)` résolue en x, la
+solution porte sa condition** (`Solution.condition`, désormais rempli). `tryLiteralParameter`
+(`solve/literal-parameter.ts`), repli après la classification et avant le changement de
+variable, seulement si l'équation a un paramètre : isole l'unique terme en x (k·T = c, k
+numérique non nul ; littéral → refus), ôte UNE couche (eᵘ = c → u = ln c si c > 0 ; aᵘ = c →
+u = ln c / ln a si c > 0 ; ln u = c → u = eᶜ ; log_b u = c → u = bᶜ (b = 10 sans base) ;
+ⁿ√u = c → u = cⁿ, si c ≥ 0 quand n est pair) et rend `u = k` à `solve`, k lettre neuve remplacée ensuite par f⁻¹(c) (la
+normalisation développerait ln(−y/(y − 1)) en ln(−y) − ln(y − 1), indéfini pour 0 < y < 1). Les
+conditions des couches se cumulent ; `parameterCondition` les résout en la lettre quand il n'y
+en a qu'une (`solveInequality`) : `(y + 1)/3 > 0` → `y > −1`, ensemble vide → la solution
+tombe (aucune : `no-real-solution`, démontré). c doit être défini pour toute valeur du
+paramètre, sauf si la condition de la couche, à une lettre, en tient compte. Le second degré
+écrit `Δ ≥ 0` quand Δ porte un paramètre (`x² = y` → ±√y si y ≥ 0 ; toujours négatif →
+`no-real-solution`) ; le changement de variable laisse passer une racine en u paramétrée
+(`y = eˣ/(eˣ + 1)` → x = ln(−y/(y − 1)) si 0 < y < 1) et lit alors une équation en u
+rationnelle. Le CLI affiche la condition (« x = ln(a)/2 − 1/2, si a > 0 », `\quad \text{si }
+a > 0`, une seule fois si toutes les solutions la partagent) et ne conclut plus « Δ < 0 » sur un
+Δ littéral (`parseFloat` rendait NaN). ⚠️ `P.func` ignore `base` (indice de racine, base de log) : `peel` et
+`extractTranscendentalEquation` la lisent (`logarithmBase`) — `\log_2(x) = 3` rendait 1000 sur
+main. Chaque solution doit aussi être DÉFINIE : `\ln(ax) = 1` → e/a si a ≠ 0. Dans le changement
+de variable, une racine en u paramétrée ne doit annuler aucun dénominateur en u
+(`y = (e^{2x} − 1)/(e^x − 1)` → ln(y − 1) si y > 1 et y ≠ 2). Restent refusés : coefficient littéral devant ln
+(`a\ln x + b = 1`), cos, sin ; plusieurs termes en x (`y = xe^x`). Tests :
+`solve/__tests__/second-membre-litteral.test.ts`, `cli/commands/__tests__/condition-sur-parametre.test.ts`.
+
+Écart V40 (2026-10-13) : **valeur absolue d'une expression affine**. `tryAbsoluteValue`
+(`solve/absolute-value.ts`), premier repli après la classification, remplace la valeur absolue
+par une lettre neuve t, résout en t (premier degré, sans autre lettre : `2\left|x\right| = 6`,
+`|x + 1| − 2 = 0`, `5 − |x| = 2` isolent |u| = c), lit le signe de c avec `constantSign`
+(c < 0 → ∅, c = 0 → u = 0, c > 0 → u = c ou u = −c) ; |u| = |v| (forme a(|u| − |v|) = 0) donne
+u = v ou u = −v, identité comprise (`|x − 1| = |1 − x|` → tout réel). Avant, `|x| = 3`,
+`|x| = \pi`, `|x| = \ln 2` répondaient « Type d'equation non supporte: unknown ». Refusés
+(rend la main) : u non affine (`|x^2 − 1| = 3`), l'inconnue hors de la valeur absolue
+(`|x| = x + 1`), un paramètre (`|x| = a`), deux valeurs absolues hors de |u| = |v|. Effet de
+bord juste : les décompositions qui rappellent `solve` (`\ln|x| = 1`, `\sqrt{|x|} = 2`) et les
+inéquations affines (`|x| < 3`, tableau de signes de |u| − c une fois ses zéros trouvés) se
+concluent. Un facteur collé à une barre se lit en produit implicite (2026-10-13 :
+`2|x|`, `x|x|`, `|x||y|`, `\frac12|x|`). Règle des barres nues (`parser-pratt.ts`,
+`inBareAbs`) : dans un groupe (parenthèses, accolades, `\left…\right`, contenu d'une valeur
+absolue), une barre qui suit un facteur ferme la valeur absolue ouverte s'il y en a une, en
+ouvre une sinon ; après un opérateur ou au début, elle ouvre. Une barre ouvrante par produit
+implicite après `|…|` suivi d'un facteur est refusée comme ambiguë (`|2|x|-1|`, `|x|y|z|` :
+« écris \left| … \right| ») ; une relation lève l'ambiguïté (`|x|y=2|x|` se lit). Tests :
+`parser/latex/__tests__/abs-implicit-multiply.test.ts`. Tests : `solve/__tests__/valeur-absolue.test.ts`.
+`\vert`, `\lvert`, `\rvert` sont lus par le tokenizer comme la barre `|` (2026-10-13) : la touche
+« valeur absolue » du clavier virtuel de MathLive rend `\left\vert2x+1\right\vert`, refusé
+auparavant. `\mid` (divisibilité) et `\Vert`, `\|` (norme) restent refusés. Tests :
+`parser/latex/__tests__/vert-commands.test.ts`, `utils/__tests__/answer-validator-vert.test.ts`.
+
+Les arguments d'une fonction connue entre `\left( … \right)` se lisent comme entre `( … )`
+(2026-10-13, `parseFunctionArguments` de `parser-pratt.ts`) : `\max\left(2,x\right)`, la forme
+qu'écrit MathLive et que rend `toLatex`, ne se relisait pas (« Expected \right to close
+delimiter »). Tests : `parser/latex/__tests__/parser-pratt.test.ts` (« inside \left( \right) »).
+
+**Ce que voit l'élève (2026-10-13, atelier seulement).** `generateEquationSteps` envoie toute
+équation où l'inconnue paraît sous une valeur absolue vers `pedagogical-solve/absolute-value.ts`
+(`equationType: 'absolute-value'`, rendu par `AbsoluteValueEquationRenderer`). La forme est lue
+par `analyzeAbsoluteValue`, la même analyse que `tryAbsoluteValue` : même périmètre, refus
+(`UnsupportedAbsoluteValueEquation`) ailleurs, et l'ensemble conclu est celui de `solve`.
+Rédaction validée par David : « Équation avec une valeur absolue » → « On isole la valeur
+absolue » si besoin (`3\left|x-1\right| = 6` ⇒ `|x − 1| = 2`) → « Deux nombres ont pour valeur
+absolue $5$ : $5$ et $-5$ » (`|2x + 1| = 5 ⇔ 2x + 1 = 5 ou 2x + 1 = −5`), « Seul $0$ a pour
+valeur absolue $0$ », ou « Une valeur absolue est positive ou nulle » (c < 0, puis `S = ∅`) ;
+|u| = |v| : « Deux nombres ont la même valeur absolue s'ils sont égaux ou opposés ». Chaque
+équation du premier degré est résolue À PLAT (« On résout $2x + 1 = 5$ » puis les étapes du
+pipeline linéaire, sans son titre ni son `S`), une branche dégénérée se conclut (`0 = 4` sans
+solution, `0 = 0` tout réel), puis `S = {…}` ou `S = ℝ` (`read-all-reals`). L'atelier choisit le
+renderer par un `switch` exhaustif (`rendererFor`, `atelier/solve-steps.ts`) — l'ancien
+`linear ? Linear : Quadratic` annonçait `|2x+1|=5` « Équation du second degré » — et son
+garde-fou vérifie `S = ℝ` contre le moteur (`solve-steps-check.ts`, qui ne prend plus un échec
+du moteur, statut `no-solution` + `error`, pour un ∅). Les modèles de questions n'ont pas encore
+de `generatedSteps.kind` pour la valeur absolue (PR suivante). Tests :
+`pedagogical-solve/__tests__/valeur-absolue.test.ts`, `atelier/__tests__/resoudre-valeur-absolue.test.ts`.
+
+Écart V43 (2026-10-13) : **une identité résolue « dans » un intervalle** rendait tout
+l'intervalle, valeurs interdites comprises (`.résoudre \frac{|x|-2}{|x|-2}=1 dans [-5;5]` →
+`[-5 ; 5]`, `\frac{3x}{3x}=1 dans [-1;1]` → `[-1 ; 1]`). Le domaine de `solve` était exact
+(`ℝ \ {−2 ; 2}`, zéros de |u| − c lus par `invertMonotone` dans `domain/compute.ts`) : c'est la
+branche « identité » de `solveInInterval` (`cli/commands/solve.command.ts`) qui ne le lisait pas.
+Elle rend maintenant le domaine de `solve` intersecté avec l'intervalle, mis en forme par
+`normalizeExcludedPoints` (exporté de `domain/compute.ts` : point hors de l'intervalle effacé,
+point sur une borne qui l'ouvre — `\frac{2x}{2x}=1 dans [0;1]` → `]0 ; 1]`), et refuse
+(« Je ne sais pas encore résoudre ») un domaine à exclusion périodique, qu'`intersect` perdait
+(`\frac{\sin x}{\sin x}=1 dans [-1;3]` gardait 0). Tests :
+`cli/commands/__tests__/identite-dans-intervalle.test.ts`.
+
+**Zéros transcendants d'un dénominateur** (2026-10-15). `nonZeroSet` (`domain/compute.ts`) lit
+u ≠ 0 comme u > 0 ∪ u < 0, et `invertMonotone` remonte ces inéquations à travers A ± k, k·A, A/k,
+−A, √, |·|, ln et exp. Il n'inversait `ln u ⊳ c` que pour c = 0 et `e^u ⊳ c` que pour c = 1 (la
+borne devait rester rationnelle) : `\frac{1}{e^x-2}` avait pour domaine ℝ, `\frac{1}{\ln x-1}`
+oubliait e (contrainte `unresolved`, qu'`analyzeContinuity` ne lit pas). Désormais, quand la borne
+devient irrationnelle, `ln u ⊳ c` donne u ⊳ e^c et `e^u ⊳ c` (c > 0) donne u ⊳ ln c, et
+`solveAffineAgainstConstant` reporte cette borne EXACTE sur x quand u = ax + b (coefficients
+rationnels) : ln 2, e, e^{-2}, e², (ln 3 − 1)/2, −ln 3, 2e. Même mécanisme pour les inéquations de
+domaine (`\sqrt{\ln x - 1}` → [e ; +∞[, `\ln(e^x-2)` → ]ln 2 ; +∞[). Sans solution réelle
+(eˣ + 2) : rien d'exclu. Non couvert : u non affine (`\ln(x^2)-1` reste `unresolved`),
+`log`, `log10`, `log2` avec c ≠ 0 (refus, comme avant), écriture non simplifiée de ln(1/2). Tests :
+`domain/__tests__/denominateurs-transcendants.test.ts`,
+`analysis/__tests__/continuity-denominateurs-transcendants.test.ts` (discontinuité `infinite` à
+la valeur exacte) ; oracle : `comp-16` (1/(1 − ln x)) n'est plus un refus connu.
+
+Écart V45 (2026-10-13, en partie) : quand `computeDomain` ne résout pas une contrainte
+(`unresolved` : `x^5 − x + 1 ≠ 0`, deux exclusions périodiques croisées), `solve` le dit dans
+`SolveResult.domainUnresolved` (absent si le domaine est exact) et la console refuse une
+identité sur un tel domaine, avec ou sans `dans`, au lieu de « S = ℝ » ou de tout l'intervalle.
+Reste (V45) : les solutions finies ne sont pas vérifiées contre ces contraintes, et les autres
+lecteurs de `solve` ignorent le champ.
+Écart V47 (2026-10-13) : **les inéquations lisent le domaine de définition sur l'inéquation
+écrite**. `solveInequality` étudie le signe de la forme canonique de f − g, où `normalize`
+simplifie `\frac{3x}{3x}` en 1 et `\ln x − \ln x` en 0 ; le domaine se calculait sur cette forme
+(`\frac{3x}{3x}\geq 1` → S = ℝ, `\frac{2x^2-2}{x+1}\leq 0` → `]-∞ ; 1]`, −1 compris). Il se calcule
+maintenant par `computeDomain` sur f − g avant simplification, intersecté avec le domaine imposé
+(qui remplaçait le domaine de définition au lieu de le restreindre), et passé à `analyzeSign`
+après `normalizeExcludedPoints`. Statut `all-real` lu sur le découpage (chaque morceau convient),
+`difference` ne voyant pas « tout ℝ \ {0} ». Contrainte non résolue (`x^5 − x + 1 ≠ 0`) →
+`InequalityNotSolvable` ; exclusion périodique (`\frac{\sin x}{\sin x}`), que le découpage du
+signe lit comme ℝ → statut `partial`, sauf si aucun pôle ne tombe dans le domaine imposé
+(`\tan x \geq 0` sur [-1 ; 1] reste `complete`). La console (avec ou sans `dans`) en hérite. Le pipeline
+pédagogique du premier degré, dont la conclusion est une forme résolue (`x ≥ 0`), refuse une
+inéquation à valeur interdite (`rejectForbiddenValues`, `pedagogical-solve/_helpers.ts`) ; le
+second degré refuse aussi depuis V48 (`\frac{2x^3}{x}<2` se rédigeait 2x² − 2 < 0 sans exclure 0) :
+l'appelant (atelier, `correction-generator`) se replie sur la réponse du moteur. Tests : `solve/inequality/__tests__/domaine-de-definition.test.ts`,
+`pedagogical-solve/__tests__/inequation-valeurs-interdites.test.ts`.
+**`dans` lit tout ensemble d'élève** (2026-10-13, lot 2 de l'intervalle de l'atelier) : hors d'un
+intervalle borné à la française, `solveInInterval` (`readSolvingDomain`) et `.variations` lisent
+l'ensemble par `parseStudentDomain` — borne infinie (`[0 ; +∞[`), réunion, `ℝ \ {0}`. Pour
+`.variations`, `studyDomain` (`domain/study.ts`) le croise avec le domaine de l'expression avant
+`computeVariations`, qui prend le domaine fourni tel quel. `writeCommandArguments` écrit `dans` en
+dernier : un intervalle semi-ouvert ne referme pas ses crochets, et un `pour t` placé après y
+restait collé (et `dans [0;+∞[ pour t` tapé se relit). Une famille périodique sur un ensemble non borné est refusée (« Une infinité de solutions »), `findZeros` n'en rendant que les premiers termes. Tests : `atelier/__tests__/intervalle-calculs.test.ts`.
+
+### Carte du code
+
+| Fichier              | Rôle                                                                                                                                                                                                                                                              |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index.ts`           | point d'entrée du module                                                                                                                                                                                                                                          |
+| `factor.ts`          | `factorPolynomial` et ses types (`Factorization`, `IntegerFactor`, `SurdFactor`), les bornes                                                                                                                                                                      |
+| `render.ts`          | `factorizationToNode` : la factorisation en `MathNode`                                                                                                                                                                                                            |
+| `polynomial.ts`      | `Poly` (coefficients `Rational` par degré croissant), arithmétique, `deflate`, lecteur `toRationalFunction` — repris de `domain/exact-roots.ts` ; `toPolynomial` (dénominateur constant exigé), `divideOutRoot` (division par (x − r) avec multiplicité)          |
+| `rational-roots.ts`  | `extractRationalRoots` : x = 0 puis ±p/q, avec multiplicités — repris de `domain/exact-roots.ts`                                                                                                                                                                  |
+| `quadratic.ts`       | `discriminant` (Δ exact, partagé avec les stratégies) ; `quadraticRootParts` : racine double, racines rationnelles ou `centre ± écart·√m` — repris de `domain/exact-roots.ts`                                                                                     |
+| `polynomial-node.ts` | `polynomialNode`, `monomialNode`, `integerNode` : un polynôme entier en nœud, négatifs en soustractions — repris de `normal/rules/trig-multiple-arcs.ts` ; `rationalPolynomialNode` (coefficients rationnels)                                                     |
+| `common-root.ts`     | `divideOutCommonRoot` : sortir de N et D le facteur **entier** `q·x − p` de la racine p/q (`2x − 1`, pas `x − 1/2`), fraction restante réduite de son contenu (`(2x + 2)/2` → `x + 1`) ; `linearFactorText` (`(2x − 1)`, `(x − 1)²`, texte sans LaTeX) — K21, V23 |
+
+`factor.ts` exporte aussi `compareFactors` (l'ordre des facteurs, réutilisé par les stratégies) et
+`primitivePart` (contenu et partie primitive entière). `common-root.ts` exporte aussi
+`integerLinearFactorNode`, le facteur entier `q·x − p` en nœud (`2x - 1`), lu par les éléments
+simples de l'intégration.
+
+`domain/exact-roots.ts` et `normal/rules/trig-multiple-arcs.ts` importent désormais ces pièces de
+`factor/` : aucune copie n'a été ajoutée. Comportement inchangé (877 tests de `domain/` et de
+`trig-normal-form` verts avant et après ; ancien / nouveau `exactRealRoots` comparés sur 4 000
+polynômes : 0 différence).
+
+### Le noyau
+
+`factorPolynomial(node, variable, { field?: 'Q' | 'R' })` lit `node` comme un polynôme en
+`variable` à coefficients rationnels exacts (la forme d'entrée n'importe pas :
+`(2x+1)^2-(x-3)^2` est lu `3x² + 10x − 8`) et rend `P = constant × Π factors^multiplicité × rest` :
+
+- `constant` : le contenu, avec son signe (`Rational`) ;
+- `factors` : irréductibles dans le corps demandé, à coefficients **entiers primitifs**,
+  dominant > 0 (`IntegerFactor`, coefficients par degré croissant), ou, dans ℝ, `x − (c ± e√m)`
+  (`SurdFactor`) ;
+- `rest` : la partie de degré ≥ 3 non décomposée, ou `null` ; **sans racine rationnelle quand `complete` vaut `true`** ;
+- `complete` : `false` quand une borne a coupé le travail (le produit reste exact). `true` ne veut pas dire « irréductible » : `rest` est sans racine rationnelle, mais peut encore se factoriser (`x^8-1` laisse `x^6+x^4+x^2+1`).
+
+Corps : `Q` (défaut), racines rationnelles seulement ; `R`, un facteur de degré 2 à Δ > 0 non
+carré se scinde (`x^2-2x-1` → `(x-1-√2)(x-1+√2)`, le dominant `a` en constante) ; Δ < 0 reste
+irréductible dans les deux.
+
+`factorizationToNode` écrit le produit par la fabrique, coefficients entiers dès que possible
+(`2x^2+x-3` → `(x-1)(2x+3)`, jamais `2(x+3/2)(x-1)`), sans littéral négatif, les sommes entre
+parenthèses de regroupement, la constante −1 en signe (`-(x-3)(x+3)`). Ordre des facteurs,
+déterministe et sans valeur de produit : premier degré par |racine| croissante, la racine
+positive d'abord (donc `x` en tête) ; puis les facteurs irrationnels ; puis le degré 2 ; le reste
+en dernier.
+
+**Hors champ → `null`, sans lever** : pas un polynôme en la variable (`xe^x-e^x`, `\sin x`,
+`\frac{1}{x}`), coefficient non rationnel ou symbolique (`\sqrt2 x`, `ax+ay` en x), degré au-delà
+de la borne. Ces cas relèvent de la passe de motifs de `factoriser` (facteur commun non
+polynomial, plusieurs lettres).
+
+**Bornes** (constantes exportées) :
+
+| Borne                          | Valeur | Au-delà                                                                                              |
+| ------------------------------ | ------ | ---------------------------------------------------------------------------------------------------- |
+| `MAX_FACTOR_DEGREE`            | 8      | `null` (borne du lecteur `toRationalFunction`, `domain` aussi)                                       |
+| `MAX_DIVISOR_SEARCH`           | 10⁶    | \|a₀\| ou \|aₙ\| plus grand : pas de recherche ±p/q, `complete = false` si le reste est de degré ≥ 3 |
+| `MAX_RATIONAL_ROOT_CANDIDATES` | 1 000  | candidats rangés par hauteur, les suivants pas essayés, `complete = false`                           |
+| `MAX_RADICAND`                 | 10¹⁰   | ℝ seulement : le facteur de degré 2 n'est pas scindé, `complete = false`                             |
+
+Un reste de degré 2 est toujours tranché exactement par Δ (racine carrée entière de Newton),
+même au-delà de ces bornes : `10^{12}x^2-1` → `(10^6x-1)(10^6x+1)`.
+
+**Limites assumées du lot 1** : pas de recherche de facteur de degré 2 dans un reste de degré ≥ 3
+(`x^8-1` → `(x-1)(x+1)(x^6+x^4+x^2+1)`, `x^4+4` reste) ; pas de décomposition sans carré
+(`(x^2+1)^2` développé reste entier) ; dans ℝ, seul le degré 2 se scinde (ni `x^3-2`, ni le
+bicarré `x^4-5x^2+6`, que `domain` sait pourtant résoudre).
+
+Tests : `factor/__tests__/factor-core.test.ts` (panel de l'ADR, ℝ, hors champ, bornes ; chaque
+rendu comparé à l'entrée par `areEquivalent`).
+
+### Les stratégies de `factoriser` (lot 2)
+
+Le noyau trouve, la stratégie **raconte** : chaque étape porte un nom de règle, un titre français
+(`pedagogical-simplify/descriptions-fr.ts`) et l'expression avant / après. Deux fichiers :
+
+| Fichier (`pedagogical-simplify/`)            | Rôle                                                                                                                                                                                                                                                                                                         |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `factor-strategies.ts`                       | `runFactoriserStrategies` : l'enchaînement, le produit en cours (`ProductView`), la réduction des facteurs, Δ (`analyzeTrinomial`), la racine évidente (`evidentRoot`), la stratégie 6                                                                                                                       |
+| `pedagogical-rules/polynomial-identities.ts` | lecture d'un polynôme **tel qu'écrit** (`readWrittenPolynomial` : réduit ? développable ?), identités par coefficients (`polynomialIdentity`), et `factoriserIdentityRules` : les quatre règles numériques de `algebraicFactoringRules` relues par coefficients, **mêmes noms**, pour `factoriser` seulement |
+
+**Enchaînement**, la suivante si la précédente ne factorise pas :
+
+- **1 · facteur commun**, **2 · identité remarquable** (coefficients compris : `4x^2-25` →
+  « On reconnaît a² − b² avec a = 2x et b = 5 » → `(2x-5)(2x+5)`), **3 · facteur commun puis
+  identité** (`2x^2-8` → `2(x^2-4)` → `2(x-2)(x+2)`) : d'abord sur l'expression telle
+  qu'écrite, par la passe de motifs (`commonFactorRules`, `factoriserIdentityRules`, contenu des
+  sommes maximales) ; puis sur chaque facteur polynomial du produit obtenu, **réduit** s'il le
+  faut (étape `reduce-factors`, « On réduit chaque facteur » : `(2x+1)^2-(x-3)^2` →
+  `(3x-2)(x+4)`) ;
+- **4 · racines du trinôme** (lycée) : « On calcule Δ = 25 : deux racines, x₁ = 1 et x₂ = −3/2 »
+  → `2(x-1)(x+3/2)` (`trinomial-roots`), puis `(x-1)(2x+3)` (`trinomial-integer-form`) ; une
+  seule ligne si les racines sont entières ; racines irrationnelles comprises
+  (`x^2-2x-1` → `(x-1-√2)(x-1+√2)`) ;
+- **5 · racine évidente** (lycée, degré ≥ 3, essais ±1, ±2, ±3) puis division
+  (`evident-root`) : `x^3-6x^2+11x-6` → `(x-1)(x^2-5x+6)` → `(x-1)(x-2)(x-3)` ;
+- **6 · développer pour refactoriser**, en dernier recours, sur une somme qui contient un produit
+  de sommes : le développement tient en **une** étape (`develop-to-factor`, « On développe et
+  on réduit »), jetée si rien ne factorise ensuite (l'expression rendue est alors l'entrée). Au
+  collège, seules 1 à 3 peuvent conclure (`x(x+1)-6` reste inchangé ; `x(4x+4)+1` →
+  `(2x+1)^2`).
+
+a² − b² se lit aussi écrit constante devant, aux deux niveaux et avant Δ : `9-x^2` → « a = 3 et
+b = x » → `(3-x)(3+x)` ; `-x^3+x` → `x(1-x)(1+x)`. **Chaque étape part exactement de la ligne
+précédente**, et la dernière ligne est le résultat (test d'invariant) : la réduction d'un facteur
+(`(x+3)-x` → 3) est une étape, la mise au propre finale (ordre du noyau, `tidy` des facteurs
+écrits) se fait dans la dernière étape, les parenthèses doubles `3((2x-1)(2x+1))` sont retirées
+(`flattenGroupedProducts`). `x-x` → `0`.
+
+**Niveau** : `college` → 1, 2, 3, 6 ; `lycee` et `superieur` → toutes (pas de distinction 1re /
+terminale). **Ordre des facteurs** : celui du noyau (`compareFactors`) partout où le produit
+n'a que des facteurs polynomiaux réduits ; les facteurs non polynomiaux suivent, dans l'ordre
+écrit (`x^2e^x-4e^x` → `(x-2)(x+2)e^x`). Une entrée déjà produit sans étape n'est pas réordonnée
+(`(x+1)(x-1)` reste tel quel).
+
+**Champ** : un polynôme d'**une** lettre (`soleVariable` ; `e` est une constante). Plusieurs
+lettres (`x^2-y^2`, `ax+ay`) : la seule passe de motifs, comme avant. « Factorisé » veut dire une
+étape de factorisation **et** un résultat qui n'est plus une somme. Aucune stratégie ne conclut
+« ne se factorise pas » : rien ne bouge, sans phrase.
+
+**Limites** : la stratégie 6 ne s'applique qu'à l'expression entière (`2x(x+1)-12` → `2(x(x+1)-6)`,
+pas développé dans la parenthèse) ; un facteur à coefficients non entiers (`x/2 - 1/4`) n'est pas
+repris par les stratégies ; une identité ne se lit que sur une partie primitive (`4x^2-16` passe
+d'abord par `4(x^2-4)`).
+
+Tests : `pedagogical-simplify/__tests__/factoriser-strategies.test.ts` (rendu, `areEquivalent` de
+chaque étape avec l'entrée, suite des règles, titres, collège et lycée, atelier).
+
+### Les étapes de « développer » (`expand-steps.ts`)
+
+**Une intention, une seule rédaction** (décision de David du 2026-10-14, option B) : tout chemin qui
+montre à un élève les étapes de l'intention `developper` passe par `explainExpansion`
+(`expand-explained.ts`) — le « Comment ? » de `.développer` (atelier), les corrections d'exercices
+générées (`generatedSteps: { kind: 'simplify', intent: 'developper' }`, `correction-generator.ts`)
+et la démo du module (`demo-helpers.ts`, script `pedagogical-simplify-demo`). Son chemin : résultat
+du pipeline (`-(x+1)` écrit `-1(x+1)`, parenthèses de tête retirées) → `orderExpanded` → décimaux
+(un décimal écrit dans l'expression, ou `decimal: true` pour le mode décimal de l'atelier ; sinon
+des fractions) → `writeExpandSteps` → rendu détaillé et résumé au niveau demandé. Trois issues :
+`expanded` (réponse, étapes ou `null`), `unchanged` (rien à développer), `unfinished` (réponse que
+le pipeline n'a pas su finir, `2 x 1`). Les exceptions du pipeline remontent à l'appelant. Le
+générateur de corrections retombe en silence sur le mode A pour une relation, `unchanged`,
+`unfinished` ou des étapes `null` — jamais sur la trace.
+
+Cette trace n'est montrée nulle part : elle répétait la
+même ligne (passe `normalize`), collait les produits (`2 x 1`) et cachait la distribution — et la
+décision du 2026-09-21 sort la trace de `normalize` du chemin de l'élève. Ce n'est pas un moteur
+de plus (ADR 0007) : `writeExpandSteps(node, answer, { format })` **reçoit** la réponse — le
+résultat de `developper`, que l'intégration et la stratégie 6 emploient tel quel, rangé par
+`orderExpanded` (`expand-order.ts`, l'ordre du manuel : puissances décroissantes de x, sinon
+alphabétique, lettres indicées comprises — pour une somme de **monômes** seulement ; un terme sans
+degré, `eˣ`, `√x`, garde l'ordre du module) — et rédige le chemin jusqu'à elle.
+
+Chaque terme de la somme principale se lit comme un produit (`readChunk` : signe, facteurs simples,
+sommes entre parenthèses et leur puissance). Puis des phases, la première qui s'applique faisant la
+ligne, pour tous les termes où elle vaut : cube → carré × parenthèse ; identités remarquables (une
+seule : ligne à ×, puis « On calcule chaque terme ») ; réduction d'une parenthèse d'un produit ;
+double distribution (ligne à ×, puis « On calcule chaque produit ») ; facteur et signe − devant une
+parenthèse ; enfin la ligne jusqu'à la réponse (`closingOf`) : « On réduit » si des termes se
+regroupent, « On ordonne les termes » si seul l'ordre change dans une somme de monômes, l'ordre du
+module fondu dans la ligne précédente, « On écrit chaque terme avec son coefficient » ou « On
+calcule chaque terme » si un terme change d'écriture. Exposant ≥ 4 : une seule ligne. Chaque terme
+est calculé par `normalize` ; chaque image est vérifiée par `areEquivalent` ; jamais deux images
+identiques de suite ; `format` (les décimaux de l'atelier) s'applique à chaque image, la dernière
+comprise. La version résumée fond chaque ligne à × dans le calcul qui la suit. Ce qui ne se lit pas
+(somme sous une fonction, une racine, dans un exposant ou une fraction ; plus de `MAX_PRODUCTS`
+produits sur une ligne) rend `null` : pas d'étapes, la réponse reste. Titres : la `description` de
+chaque étape ; « pourquoi » : règles `expand-*` de `descriptions-fr.ts`.
+
+La trace de `generatePedagogicalSimplifySteps` reste celle d'avant (son résultat sert à
+l'intégration et à la stratégie 6) ; les deux instantanés qui la figeaient (`pedagogical-simplify-demo`,
+`questions/generated-steps-demo`) figent désormais la rédaction.
+
+Tests : `pedagogical-simplify/__tests__/expand-steps.test.ts` (équivalence de chaque image),
+`expand-explained.test.ts` (trois issues, réponse = résultat rangé, décimaux, niveau),
+`atelier/__tests__/developper-commande.test.ts` (titres et images rendus, résumé),
+`questions/generator/__tests__/correction-developper.test.ts` (la correction d'exercice montre la
+même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimitees.test.ts` (titres
+à maths entre `$…$`).
+
 ## Les nœuds
 
-29 variantes dans `types.ts`, discriminées par `type` :
+31 variantes dans `types.ts`, discriminées par `type` :
 
-| Famille    | `type`                                                                                                    |
-| ---------- | --------------------------------------------------------------------------------------------------------- |
-| feuilles   | `number`, `variable`, `greek`, `symbol`, `constant` (`euler`, `pi`), `hole` (trou d'exercice)             |
-| opérations | `addition`, `subtraction`, `multiplication`, `division`, `opposite`, `positive`                           |
-| structure  | `delimiter`, `subscript`, `superscript`, `function`                                                       |
-| relations  | `relation`, `boolean`, `logical`, `logical-not`                                                           |
-| domaines   | `unit`, `percentage`, `matrix`, `composition`, `complex`, `infinity`, `signed-zero`, `limit`, `piecewise` |
+| Famille    | `type`                                                                                                                                      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| feuilles   | `number`, `variable`, `greek`, `symbol`, `constant` (`euler`, `pi`), `hole` (trou d'exercice), `segmentLength` (`AB`), `figureName` (`ABC`) |
+| opérations | `addition`, `subtraction`, `multiplication`, `division`, `opposite`, `positive`                                                             |
+| structure  | `delimiter`, `subscript`, `superscript`, `function`                                                                                         |
+| relations  | `relation`, `boolean`, `logical`, `logical-not`                                                                                             |
+| domaines   | `unit`, `percentage`, `matrix`, `composition`, `complex`, `infinity`, `signed-zero`, `limit`, `piecewise`                                   |
 
 - `multiplication.displayStyle` : `'implicit' | 'dot' | 'cross' | 'star'` ;
   `division.displayStyle` : `'fraction' | 'inline' | 'ratio'`. Le style ne change pas la
@@ -195,6 +573,51 @@ Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
   mathématique ; rendues par `LatexGenerator` avec `renderMetadata: true`.
 - `function` porte `name`, `args`, et en option `power` (`\sin^2 x`) et `base`
   (indice de racine `\sqrt[3]{x}`, base de logarithme).
+- **Longueurs de segments** (2026-10-12, chantier clos : [journal](../../archive/wip/longueurs-segments-progress.md)) :
+  `segmentLength` porte deux `PointName` (`{ letter, primes, index? }` : `A`, `A'`, `A_1`) dans
+  l'ordre écrit ; `figureName` (`ABC`, trois points ou plus) s'affiche tel quel et ne se calcule
+  pas. Le parseur LaTeX (Pratt et rd) les lit selon l'option **`capitalPairs`**, transmise aussi
+  par `areEquivalent` (`math/index.ts`) et `checkForm` : `'product'` (défaut,
+  `DEFAULT_CAPITAL_PAIRS`, décision Q-M : seuls les questions et `/test-structure` demandent la
+  longueur) — l'arbre d'avant, à l'identique ; `'length'` — deux majuscules **collées dans la source**, primes
+  et indices compris (`AB`, `A'B'`, `A^{\prime}B^{\prime}`, `A_1B_1`) ; `A B` (espace), `x_{AB}`
+  (indice) et les minuscules restent des produits (empreinte de 4 122 chaînes, dont environ 2 400 formules, `parser/latex/__tests__/capital-pairs-empreinte.test.ts`). Lecture
+  sur les jetons : `parser/latex/point-names.ts`, qui fournit aussi `separateSpacedCapitals` :
+  `stripLatexSpacing` et `removeSpaces` gardent une espace entre deux majuscules (`A\,B` reste
+  un produit). `toLatex` écrit `AB`, `A'_{1}B` (relu à
+  l'identique). **Calcul** (lot 2, toujours en mode `'length'`) : la longueur
+  est un facteur symbolique de `normalize` dont l'identité est la paire de points triée
+  (`hashMathNode`) — `AB` = `BA`, `3AB+2BA` → `5AB` (ordre de la première écriture gardé) ;
+  `getVariables` la nomme une fois, comme sa première écriture ; `substitute`/`containsVariable`/
+  `differentiate` l'acceptent sous `AB` ou `BA` ; `solve` change toutes les longueurs en variables
+  (paire triée) puis les rend écrites comme l'élève (Thalès, Pythagore littéraux) ; sans valeur, `evaluate()` la dit
+  `unevaluable` en français ; `checkForm` laisse libre l'ordre des points, les parenthèses
+  autour d'une longueur seule et le `×` entre deux longueurs (`unifySegmentNotationAST`). Un nom de figure (`ABC`) n'est équivalent qu'à la même
+  écriture et est refusé par `evaluate()` et `checkForm`, avec le message de `figureNameRefusal`
+  (`common/segment-names.ts`). **Positivité** (lot Q-F, 2026-10-12) : une longueur entre deux
+  points distincts est **strictement positive** par défaut — `numtype` la type en réel positif
+  (`inferSegmentLengthType`, `numtype/rules/literals.ts`), sauf hypothèse déclarée sur `AB`/`BA`
+  (priorité) ou points identiques (`AA` vaut 0 : rien n'est supposé, `isDegenerateSegment`).
+  `areEquivalent` et `simplify` posent l'oracle des hypothèses (`assumptionOracle(…, [a, b])`,
+  `segmentLengthOracle`) dès qu'une longueur est mentionnée : `√(AB²)` → `AB`, `|AB|` → `AB` ;
+  `solve` ne garde que les valeurs positives d'une longueur inconnue (domaine ]0 ; +∞[, sauf
+  domaine passé par l'appelant) et écrit `√(−c/a)` pour `a·L² + c = 0` (Pythagore littéral →
+  `√(AC² + BC²)`, aucune solution si `−c/a` est négatif ou nul : `AB² = −CD²`) ; les quatre
+  intentions pédagogiques commencent par l'étape `length-radical` (`√(9AB²)` → `3AB`). Non-régression : 3 327 saisies du corpus en produit et 3 143 sans longueur
+  en mode longueur, `simplify`/`solve`/`areEquivalent` identiques avant/après.
+  **Lecture** (lot 4) : `structureFromLatex(latex, { capitalPairs })`
+  (sans option : le parseur par défaut, produit) ; une longueur est une feuille de genre `length`
+  (un bloc, comme une lettre), lue « la longueur AB » (mot du dictionnaire `longueur`) ; un nom
+  de figure rend `{ status: 'figureName', message }` (message de `figureNameRefusal`), sans
+  lecture. En mode produit, lectures identiques à avant (empreinte des 200 saisies du corpus,
+  `structure/__tests__/reading-mode-produit.test.ts`). **Syntaxe maison** (lot 5) : `parseCustom`
+  et ses variantes (Pratt et rd) prennent la même option `capitalPairs` (défaut `'product'`), avec
+  les mêmes règles et le même scanner de jetons (`scanPointNames`, réglage
+  `bareMultiDigitIndex` : `A_12B` a l'indice 12, comme `x_12`) ; `toCustom` relu en mode longueur
+  rend le même arbre. Non-régression : empreinte de 1 299 saisies (dont les 678 formules `~…~` à
+  majuscules des exercices de prod, 355 à majuscules collées) identique sans option et en
+  produit, et aucune saisie lisible en produit ne devient une erreur en longueur
+  (`parser/custom/__tests__/capital-pairs-empreinte.test.ts`).
 
 ## Invariants structurels non évidents
 
@@ -221,14 +644,41 @@ Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
    - la lettre `e` est la **constante** `euler` dans les quatre parseurs (LaTeX et custom,
      pratt et rd), comme `\pi` est `constant` — **sauf suivie d'un indice** : `e_1`, `e_n`
      restent des variables indicées. `toLatex(euler())` écrit `\exponentialE` (MathLive et le
-     parseur le relisent), `toCustom` écrit `e`. Calculer « par rapport à `e` » (intégrer,
-     dériver, résoudre, limite, Taylor, variations, `; e` en CLI) est **refusé** : « e est la
-     constante d'Euler, pas une variable » (`refusesEulerVariable`, `common/euler-variable.ts`),
-     sauf si l'arbre contient une variable `e` (base indicée `e_1`) ;
-   - `i` reste une **variable** en LaTeX (`\imaginaryI` donne `complex(0, 1)`) ;
+     parseur le relisent), `toCustom` écrit `e` ;
+   - la lettre `i` est l'**unité imaginaire** `complex(0, 1)` (`imaginaryUnit()`,
+     `isImaginaryUnit`) dans les quatre parseurs, comme `\imaginaryI` et `\mathrm{i}` —
+     **sauf dans un indice** (`u_i`, `x_{i+1}`, `x_{2i}` : un rang) **ou suivie d'un indice**
+     (`i_1`, `i_{n}`) : là, une variable. `toLatex` écrit `\imaginaryI`, `toCustom` écrit `i`.
+     Une `variable('i')` est donc toujours une vraie variable : rien ne la lit comme l'imaginaire
+     (ni `normalize`, ni `evaluate`) ; `tidy` range `i` comme π et `e`, devant les lettres
+     (`x i` → `i x`, `\pi i` → `i\pi`). Le parseur LaTeX rd ne lit pas `\imaginaryI` (écart
+     connu) ;
+   - calculer « par rapport à `e` » ou « à `i` » (intégrer, dériver, résoudre, limite, Taylor,
+     variations, `; e` / `pour i` en CLI) est **refusé** : « e est la constante d'Euler, pas une
+     variable », « i est l'unité imaginaire, pas une variable » (`reservedVariableRefusal`,
+     `common/reserved-letters.ts`), sauf si l'arbre contient une variable de ce nom (base
+     indicée `e_1`, `i_1`, ou `i` dans un indice) ;
+   - **le signe d'une constante se lit sur sa valeur, pas sur son type** : `-\frac23` est
+     `opposite(division)`, `\frac{-3}{4}` une division, `-0.5` devient `-\dfrac12` après
+     `canon`, `-\sqrt2` un opposé de racine. `getNumericValue` ne voit que `number` et
+     `opposite(number)` : pour décider d'un signe (sens d'une inéquation, tableau de signes),
+     `constantSign` (`common/constant-sign.ts` : rationnel exact, sinon valeur approchée hors
+     d'une marge de 10⁻⁹, `null` si indécidable). Écart V36 : `-\dfrac{2}{3}x+1<5` concluait
+     x < −6 ;
    - `\sin^2 x` est une `function` avec `power`, `(\sin x)^2` un `superscript` ;
    - la virgule : MathLive écrit `3{,}14` (lu `3.14`) ; la virgule nue passe par
-     `decimal-comma.ts`.
+     `decimal-comma.ts` ;
+   - **pas de notation scientifique en LaTeX** (pratt et rd, tokenizer commun
+     `parser/latex/tokenizer.ts`) : `3e-2` se lit 3e − 2, `3E-2` 3E − 2 (variable `E`), et
+     `2e3` est refusé comme `2e 3` (« nombre écrit après un facteur »). La syntaxe custom la
+     garde : `parseCustom('1e5')` = 100 000. En sens inverse, `toLatex` d'un `number` dont la
+     chaîne est en notation scientifique JS (`String(1e-7)` = `'1e-7'`, `'1e+21'`) écrit
+     `10^{-7}`, `1.5 \times 10^{-7}` (réécriture avant rendu dans `latex-generator.ts`, les
+     parenthèses se décident sur la forme écrite : `\left( 10^{-7} \right)^2`, plus deux cas
+     posés par la passe — facteur de droite d'un produit implicite, `\pi \left( 10^{-7} \right)`,
+     et dénominateur d'une division en ligne, `\pi / \left( 1.5 \times 10^{-7} \right)`) ;
+     `toCustom` garde `1e-7`. `{{eval:…}}` (`evaluateAstWithModifiers`) n'écrit pas non plus la
+     notation JS : voir [ubumark.md](../ubumark.md#paramétrage-modèles-de-question).
      Toujours tester une règle ou une analyse **sur une entrée parsée**.
 7. **Plafonds du parseur** (`parser/security.ts`) : 10 000 caractères **avant** l'analyse ;
    profondeur d'AST 100 et 10 000 nœuds **après**. Une imbrication de quelques milliers de
@@ -242,6 +692,61 @@ Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
 9. **Ne pas ré-exporter `rewriting-engine.ts` ni `technical-renderer.ts` depuis
    `common/index.ts`** : un ordre de chargement casse des dizaines de tests de continuité.
    Les importer par leur chemin (commentaire en tête de `common/index.ts`).
+10. **Le mode décimal calcule en fractions exactes, pas en flottants.** `evaluateToRational`
+    (`eval/evaluate.ts`, derrière `evaluate` en mode décimal, `evaluateNodeToApproximatedNumber` et
+    `evaluateNodeToRational`) rend un `Rational` en BigInt : `0.1 + 0.2` vaut exactement 3/10. π, e,
+    les fonctions transcendantes et les puissances non entières y entrent **par leur flottant**
+    (`floatToRational`, environ 16 chiffres significatifs : π = 3141592653589793/10¹⁵) ; le
+    résultat n'est exact que si aucun d'eux n'est entré. Les termes peuvent être géants pour une
+    valeur ordinaire ((1001/1000)¹⁰⁰⁰ : 3001 chiffres en haut et en bas, pour 2,7169) : **jamais
+    `Number(n) / Number(d)`** (NaN dès que les termes dépassent 10³⁰⁸), toujours `rationalToNumber`
+    (`normal/rational.ts`), qui calcule alors le quotient en entiers (mesuré le 2026-10-11 : la
+    suite qui tend vers e, les intérêts composés et π²⁰ rendaient NaN ou Infinity).
+    Une puissance entière est exacte jusqu'à l'exposant 1000 (`MAX_EXACT_INTEGER_EXPONENT`,
+    `eval/evaluate.ts`) ; au-delà, par le flottant, et une valeur qui en sort (0 pour une base
+    non nulle, ±Infinity) est refusée (« Valeur hors d'échelle… ») plutôt que rendue comme 0.
+    ⚠️ Ne pas relever ce plafond : à 10 000, e et π (fractions de 16 chiffres) donnaient des
+    fractions de centaines de milliers de bits, puis des pgcd de plusieurs secondes
+    (`.variations e^{-2x^2}` : 5,7 s ; mesuré le 2026-10-12, pgcd d'Euclide). Le pgcd (`gcd`,
+    `normal/rational.ts`) est celui de **Lehmer** au-delà de 64 bits (Knuth, algorithme L) : 1,7 s
+    → 0,4 s pour deux entiers de 40 000 chiffres, toujours quadratique. `normalize`, `tidy` et
+    `rational()` en calculent sur les grandes fractions. Le calcul en fractions d'`evaluate`
+    (`evaluateToRational`) additionne et multiplie par `addReduced`, `mulReduced`… (Henrici, Knuth
+    4.5.1 : le pgcd porte sur les termes, pas sur le résultat) — ⚠️ **seulement sur des fractions
+    déjà réduites** : le dépôt construit des rationnels à la main sans les réduire, et
+    `addRational` & co. gardent leur réduction complète. Une somme de cinq fractions de 9 000
+    chiffres : 4,1 s → 71 ms. `powRational` calcule `nᵏ / dᵏ`
+    par la puissance native de BigInt : une fraction irréductible élevée à une puissance le reste
+    ((101/100)¹⁰⁰⁰⁰⁰ : 194 s avant, 2 ms). Les pôles de tan, sec, csc, cot sont refusés (le
+    flottant de π/2 donnait tan = 1,6331 × 10¹⁶).
+    **Budget de taille** (2026-10-12) : pendant `evaluateNodeToRational` seulement (la lecture de
+    l'arrondi), une puissance au-delà de l'exposant 1000 reste exacte si le plus petit terme du
+    résultat fait au plus 30 000 bits et le plus grand 500 000 (`1.5^{2000}`, `2^{100000}` ; e et π
+    n'en profitent pas, leurs fractions font 16 chiffres) ; une factorielle ou un coefficient
+    binomial dépasse alors la borne 2⁵³ dans le même budget (`1000!`). Le calcul décimal général
+    (`evaluate`, `evaluateNodeToApproximatedNumber`) garde ses bornes. La taille d'un résultat
+    exact se **prévoit** sans le calculer : `cli/exact-size.ts` (`estimatedExactDigits`, une borne
+    qui ignore les simplifications ; la console n'en tire que son plafond de calcul,
+    `isTooLongToCompute`, et mesure la longueur réelle par `exactCharacters`). Au-delà du
+    plafond, un produit ou quotient de puissances se calcule sur ses facteurs premiers compensés
+    (`productValue`) : le moteur, lui, calcule chaque puissance avant de compenser
+    (`(1+1/100000)^{100000}×(1+1/100000)^{-100000}` : 305 s). Une comparaison passe par le même
+    plafond membre par membre (`cli/bounded-comparison.ts`) : produit de puissances par ses
+    facteurs, sinon encadrements rigoureux (`cli/interval.ts` : binaires à 256 bits arrondis
+    vers l'extérieur, `+ − × ÷` et puissances entières), refus s'ils se recouvrent. ⚠️ Jamais
+    la valeur approchée du bouton ≈ pour trancher : elle a donné des sens faux. Une chaîne `a < b < c` est
+    vraie si chaque maillon l'est (`evaluateToBoolean`), et passe par le plafond maillon par
+    maillon. La console réécrit les opérateurs logiques et d'égalité (`&&`, `and`, `!=`, `==`…) dans la notation du parseur (`cli/core/pipeline.ts`, `withLogicOperators`) — au plus près : mots et « non » seulement s'il y a une comparaison ou un opérateur logique, `||` hors d'une valeur absolue, un « non » sans parenthèses enveloppant toute la comparaison qui le suit ; `.def` ne dérive pas une définition booléenne. Les messages d'erreur de la console sont traduits à sa sortie (`cli/web/french-errors.ts`, `withFrenchErrors` dans `execute`) : le message seul, remplacé dans la sortie et, échappé, dans le HTML — les parseurs gardent leurs messages anglais (leurs tests les vérifient), et
+    lit en entier une entrée à plusieurs `=` ou dont un membre est une comparaison.
+    Chaque lecture de la console reçoit son état (`parseOptions` de `web-repl-engine.ts`) : les
+    fonctions liées (`.def k(x) = …`, `createFunctionBinding`) s'ajoutent aux noms par défaut
+    du parseur (f, g, h, u, v, w, F, G, H), en texte comme en LaTeX (`genericFunctionsOf`,
+    `cli/core/pipeline.ts`). Avant le 2026-10-13, `k(0)` restait `k(0)`.
+    Un nom déclaré peut porter un indice entier (`f_1`, `g_12`, noms de l'atelier) : les deux
+    parseurs pratt lisent `f_1(3)`, `f_{1}\left(3\right)`, `f_1'(2)`, `f_1^{-1}(x)` comme un appel
+    de la fonction `f_1` (`indexedGenericFunctionName`) ; non déclaré, ou sans appel (`f_1`,
+    `f_1^2`), il reste la variable indicée. `toLatex` écrit `f_{12}` (sans accolades, KaTeX
+    afficherait f₁2). Les parseurs rd ne connaissent pas les fonctions génériques.
 
 ## Le moteur de réécriture et les étapes
 
@@ -255,12 +760,200 @@ Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
   `SchoolLevel` (`'primaire' | 'college' | 'lycee' | 'superieur'`). Référence :
   `pedagogical-solve/linear-renderer.ts` (titres par niveau, repli sur `lycee` puis sur la
   description du pas).
+- **Les maths de la prose entre `$…$`** (V25, 2026-10-12). `GeneratedStepsCorrection.svelte`
+  rend le titre et l'explication d'une étape par `InlineMarkdown` (ubumark) : une formule entre
+  `$…$` s'affiche en maths, le reste en texte. L'intégration, la dérivation et le premier degré
+  (équations et inéquations) y écrivent donc leurs formules : « On pose $u = 2 x$ et
+  $dv = \exponentialE^{3 x}$ », « On divise les deux membres par $\dfrac{2}{3}$ », un titre du
+  supérieur qui n'est qu'une formule en entier (`$\int u\,dv = uv - \int v\,du$`),
+  `$S = \{ 6 \}$`. Hors des `$`, ni `\`, `^`, `_`, `{`, `}`, ni `*` (italique d'ubumark) ni
+  `~` (syntaxe maison), jamais `$$` (bloc) ; les descriptions par défaut restent du texte simple.
+  Garde-fou sur les 11 pipelines que `generateCorrection` appelle (listes et cas de démo, à
+  chaque niveau) : `__tests__/prose-maths-delimitees.test.ts` — il refuse aussi un texte qui
+  commencerait par un marqueur de bloc ubumark (`+`, `-`, `1.`, `#`, `>` : les titres « + » de
+  l'arithmétique s'écrivent `$+$`). Second degré : ensembles de solutions par
+  `domainDescriptionLatex` (`pedagogical-solve/_helpers.ts`), forme standard en `$…$` (plus de
+  backticks) ; domaine : gabarits de `domain/step-descriptions.ts` en `$…$` ; simplification : les
+  propriétés de l'exponentielle et des radicaux de `normal/` réécrites dans
+  `pedagogical-simplify/descriptions-fr.ts`. Les **limites** aussi depuis le 2026-10-14
+  (`inlineMath`, `approachMath`, `formMath` de `pedagogical-limits/helpers.ts`) : « La limite vaut
+  $-\infty$ », « Forme indéterminée $\frac{\infty}{\infty}$ », « Simplification par $x^2$ » ;
+  pour elles le garde-fou refuse en plus toute maths en clair hors des `$…$` (Unicode `+∞`, `x²`,
+  `0⁺`, `−`, `×`, ni `lim`, `=`, `0/0`). Sous ∫, une constante négative s'écrit entre parenthèses
+  (`\int \left( -3 \right) f(x)\,dx = -3 \int f(x)\,dx`).
+  Côté atelier, `decimalCommaProse` écrit `{,}` dans les `$…$` et `historyToUbumark` garde ces
+  formules (`$…$`, pas `\$`).
+- **Étapes d'ensemble de définition** (`pedagogical-domain/`, 2026-10-13). Chaque étape de
+  contrainte montre l'ensemble de **sa** contrainte (`intermediateDomain` posé par
+  `domain/compute.ts`) : `\frac{\ln x}{x-2}` → « $x - 2 \neq 0$ » : ℝ ∖ {2} ;
+  `\frac{1}{\sqrt{x-1}}` → « $\sqrt{x-1} \neq 0$ » : ℝ ∖ {1} (la racine a son étape [1 ; +∞[) ;
+  le domaine se lit à l'étape d'intersection (ajoutée par `dispatch.ts` au-delà d'une contrainte
+  si le moteur ne l'a pas émise). **Les étapes doivent prouver le domaine** : `dispatch.ts` refuse
+  (`PedagogicalDomainNotImplemented`, donc pas d'étapes côté `correction-generator`) quand
+  l'intersection des ensembles affichés diffère, par valeur, du domaine du moteur (contrainte
+  appliquée sans être écrite : `\sqrt{x}+x^{-1/2}`), quand une contrainte n'est pas résolue
+  (`result.unresolved` : `\sqrt{\sin x}`, `\frac{1}{x^5+x+1}`) et quand une valeur n'est connue
+  qu'en décimal (plus de 6 décimales : `\frac{1}{x^3-2}`). Ensembles écrits par `domainToLatex`
+  (`renderer.ts`, depuis la structure du domaine et non plus depuis `formatInterval`) :
+  `\left\{0\right\}`, `\sqrt{2}`, `\frac{1}{2}` (pas 0.5), `]a ; b[ ∪ ]b ; c[` écrit `]a ; c[ ∖ {b}`,
+  `\frac{\pi}{4}+\frac{k\pi}{2},\ k\in\mathbb{Z}`, `1+2k`. Racine d'indice pair autre que 2 →
+  `even_root_constraint` ; argument constant (`\sqrt{2}`) → pas d'étape. Dénominateur sans zéro
+  réel, somme de puissances paires de polynômes et d'une constante > 0 (`x^2+1`) → étape
+  « division » justifiée (« somme d'un carré et d'un nombre strictement positif ») ; autre forme
+  (`x^2+x+1`, `e^x`, `(\frac1x)^2+1`) → pas de justification.
+  Tests : `pedagogical-domain/__tests__/redaction-etapes.test.ts`. Côté atelier, `.domaine`
+  répond `D = …` écrit par ce même `domainToLatex`, et branche ces étapes derrière sa propre garde
+  (`src/lib/atelier/domain-steps.ts`, voir [atelier.md](../atelier.md)) ; l'oracle du domaine
+  (`domain/__tests__/oracle/oracle.test.ts`) lit cette réponse texte, `D = ℝ \ {1/2}`.
+- **Calcul numérique : une opération par étape au collège** (`pedagogical-arithmetic/`,
+  décisions de David du 2026-10-14). Plus aucun sous-calcul avalé sous « On calcule »
+  (`evaluate-final`) quand une règle existe : `(-3)^2 = (-3) \times (-3) = 9`
+  (`expand-small-power` accepte une base négative, et passe avant les multiplications : priorité 105) ; `5 - (-3) = 5 + 3` (`subtract-negative`) ; `-(-3) = 3` (`opposite-of-opposite`) ;
+  `1 \pm \frac34 = \frac44 \pm \frac34` (`integer-to-fraction`, puis `subtract-same-denominator` pour la différence) ; `\frac12 \times 2 = \frac22`
+  (`multiply-fraction-by-integer`, aussi au lycée). Une fraction littérale (`\frac34`) n'est pas
+  un calcul : le regroupement « multiplications d'abord » ne la compte ni ne la colore
+  (`isGroupableMulDivTerm`). `\sqrt{9}` se titre « $9 = 3^2$, donc $\sqrt{9} = 3$ » (plus
+  « on extrait le facteur carré parfait »). Le pipeline retire d'entrée les parenthèses autour
+  d'un nombre (les règles ne voient pas au travers) et écrit le produit `\times` (plus
+  d'astérisque `3*(-2)`) ; le renderer écrit **les deux lignes** de l'étape par le même
+  parcours, qui parenthèse un facteur ou un diviseur négatif (`12 : (-3)`) des deux côtés (`(-3) \times (-3)`) et remplace
+  la juxtaposition devant un nombre (`2 \times 1`, pas `2 1`). Un **dénominateur nul** lève
+  `PedagogicalArithmeticDivisionByZero` (message en français) au lieu d'un arrêt silencieux ;
+  `generateCorrection` l'attrape comme toute erreur et laisse la question sans étapes. Le lycée
+  garde son niveau de détail (règles nouvelles au collège seulement, sauf le produit
+  fraction × entier). Tests : `pedagogical-arithmetic/__tests__/college-une-operation-par-etape.test.ts`.
 - La résolution d'équation pédagogique ne rejoue **pas** le solveur algorithmique : elle
   suit ce que l'élève fait sur papier (`pedagogical-solve/`). Paliers : 1 (équation du
   1er degré), 2a (inéquation du 1er degré), 2b (inéquation du 2nd degré), 3 (inéquation
   rationnelle) ; granularité par les tables `STRATEGIES`, `STRATEGIES_QUADRATIC`,
   `STRATEGIES_RATIONAL`. `generateEquationSteps` relève le niveau insuffisant
   (`primaire` → `college` pour le 1er degré, jusqu'à `lycee` pour le 2nd).
+  **Une inéquation du 2nd degré garde son opérateur à chaque ligne** (2026-10-13) : la forme
+  standard s'écrit `2x^2 - 2 < 0`, pas `= 0` (`buildStandardizeStep` reprend l'opérateur de
+  départ), et les blocs alignés du rendu passent par `RELATION_MAP` (`\leqslant`, `\geqslant`,
+  comme `toLatex`) au lieu de l'opérateur brut `>=`. Tests :
+  `pedagogical-solve/__tests__/inequation-second-degre-relation.test.ts`. L'explication de
+  « On isole le carré » nomme alors le diviseur `a` (champ `divisor` de l'opération) et dit si le
+  sens est préservé ou retourné, comme le 1er degré ; une équation garde « x² = −c / a ». `≠` n'a
+  pas de sens à retourner : diviser ou multiplier par un nombre non nul le garde (« $-3$ n'est pas
+  nul, donc la relation $\neq$ est préservée », 1er et 2nd degré). Les textes de la forme standard
+  et de « b = 0 » / « c = 0 » écrivent la vraie relation (`$f(x) - g(x) \geqslant 0$`), plus de `⊻`. Le 1er
+  degré écrit aussi ses blocs alignés par `RELATION_MAP` (`\leqslant`/`\geqslant`, plus de
+  `\leq`/`\geq`) : `inequation-premier-degre-symboles.test.ts`. Typst les lit (`lt.eq.slant`).
+  **Un terme déplacé s'écrit sans signe moins** (V50, 2026-10-13) : déplacer `-2x` se dit « On
+  soustrait $2x$ », `\textcolor{blue}{- 2x}`, plus « On ajoute −2x » / `+ -2x`. Le signe se lit
+  sur le facteur de tête (`-2x`, `-\dfrac{1}{2}x`, `-5`) par `negativeTermMagnitude` et
+  `chooseAddOrSubtract` (`pedagogical-solve/_helpers.ts`), au collège (équation et inéquation)
+  comme dans le transfert du lycée ; un coefficient somme (irrationnel) se lit sur sa valeur
+  (`constantSign`) : `5x+1=(1+\sqrt{2})x+7` → « On soustrait $(1+\sqrt2)x$ ». `movedTerm` écrit
+  le terme déplacé factorisé et rangé par `tidy` (`\left(4 - \pi\right)x`, `\left(\sqrt{2} - 1\right)x`),
+  et l'omet s'il est nul (`5x-0=x+1` : plus d'« On ajoute 0 »). Tests : `terme-negatif-deplace.test.ts`.
+- **Dérivées et primitives finissent par « On simplifie ».** Les règles laissent le
+  résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit avec
+  `tidyTerms` (`tidy/terms.ts`). Dérivées : `withTidyStep`
+  (`pedagogical-differentiation/tidy-step.ts`), ajouté par l'appelant. Primitives :
+  `pushSimplifyStep` (`pedagogical-integration/pipeline.ts`) émet l'étape
+  `simplify-result` avant le `+ C` (ou avant le théorème fondamental), **sauf** quand la
+  primitive est un seul terme « coefficient en chiffres × une seule fonction » sous un `-`
+  éventuel (`singleCoefficientTerm` : `\dfrac{1}{2}e^{2x}`, `-\dfrac{1}{3}\cos(3x+1)`),
+  gardé tel quel si le coefficient est réduit (un `\dfrac{2}{4}e^x` devient
+  `\dfrac{1}{2}e^x` par l'étape) ; un coefficient pas encore calculé
+  (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe par `tidy`. **Exponentielle commune** (lot 4 de
+  l'ADR 0024, `developAndFactor`) : l'étape développe (intention `developper`), puis met en
+  facteur, par `factoriser`, la `e^{u}` que portent au moins deux termes (exposants comparés par
+  `areEquivalent`, écrits partout comme dans la primitive brute) : ∫x²eˣ → `(x^2-2x+2)e^x`,
+  ∫xe^{-x} → `-(x+1)e^{-x}`, ∫xe^{2x} → `\left(\dfrac{x}{2}-\dfrac{1}{4}\right)e^{2x}` (accepté
+  pour l'instant), ∫eˣ sin x → `\left(\dfrac{\sin x}{2}-\dfrac{\cos x}{2}\right)e^x`, ∫x²e^{2x}+x →
+  `(…)e^{2x}+\dfrac{x^2}{2}`. Le rendu montre brute = développée = factorisée, la ligne
+  développée omise (et le texte réduit à « On met eᵘ en facteur ») si elle égale la brute.
+  Sans exponentielle partagée, une parenthèse de `- ∫ v du` est développée puis rangée par `tidy`
+  (∫x² sin x) ; sinon `tidy` seul (∫x cos x, ∫ln x, la parenthèse de u dans ∫(2x+1) sin x). Seul
+  `PedagogicalSimplifyNotImplemented` fait revenir à `tidy` ; les autres erreurs remontent. L'IPP accepte `e^{ax+b}`
+  (`isAffineOf`, `_helpers.ts`), plus seulement `e^x`. L'étape d'IPP écrit `uv - \int v\,du`,
+  l'intégrale restante en toutes lettres, avant sa valeur (pas de « = » faux). Le facteur 1/u′ des formes composées est un rationnel exact
+  (`findProportionalityRatio`), et l'exponentielle s'écrit `e^{u}`
+  (`superscript(euler(), u)`), jamais `\exp(u)` (décisions de David du 2026-10-11).
+- **Composées : le coefficient s'explique** (décisions de David du 2026-10-13). Quand
+  l'intégrande n'est pas exactement u′·g(u), `integrateComposite` émet d'abord
+  `reveal-derivative` (« On fait apparaître $u'$ ») : `e^{2x} = \dfrac12 \times 2e^{2x}`, ∫ = ½∫2e^{2x}
+  (signe : `e^{-x} = -(-e^{-x})`), puis la forme
+  composée sur `revealed` = u′g(u), qui rend k·G(u) (bindings `k`, `scaled`). **Quand u′ = 1**
+  (`\frac3x`, `3(x+1)^2`, `\frac{-2}{x}`), il n'y a pas de u′ à faire apparaître : la même règle
+  s'intitule « On sort la constante $3$ » (« On sort le signe $-$ » pour k = −1), aux deux niveaux,
+  explication `\int \dfrac3x\,dx = 3\int \dfrac1x\,dx`, sans la ligne `k × …` du calcul
+  (`onlyConstantOut`, `descriptions-fr.ts` ; décision de David du 2026-10-13). La réécriture est un
+  calcul : elle reste en version résumée. **Le signe − devant l'intégrande** (`-e^x`,
+  `-\frac{1}{x+1}`, `-(x+1)^3`, étape `extract-constant` avec c = −1) se rédige comme
+  `\frac{-1}{x}` : « On sort le signe $-$ », explication
+  `\int \left( -f(x) \right)\,dx = -\int f(x)\,dx`, sans $(-1)$ ni $-1 \times$, aux deux niveaux ;
+  les autres constantes gardent « On sort la constante $k$ ». Une seule définition de k = −1 pour
+  les deux étapes (`isMinusOneCoefficient(bindings, 'k' | 'c')`, lu sur la valeur : `(-1)x^2` compris ; décision
+  de David du 2026-10-13). Avec u′ ≠ 1 et k = −1 (`e^{-x}`), la réécriture finit « puis on sort le
+  signe $-$ » (k = −½ reste « la constante »).
+  Les étapes s'enchaînent (`after` de la réécriture =
+  `before` de la forme). Dans une IPP, v = ∫dv avec réécriture vient en sous-étapes de
+  `choose-u-dv`. u′ s'écrit propre (`cleanDerivative` : constante exacte, sinon `tidyTerms`).
+- **IPP : notation selon le niveau** (décision de David du 2026-10-13). Au **lycée**, notation de
+  terminale (`descriptions-fr.ts`) : « On pose $u(x) = …$ et $v'(x) = …$, donc $u'(x) = …$ et
+  $v(x) = …$ », formule $\int u(x)v'(x)\,dx = u(x)v(x) - \int u'(x)v(x)\,dx$ ; dans une intégrale
+  définie, l'annonce `identify-parts` énonce d'abord la version avec bornes
+  ($\int_a^b … = \left[u(x)v(x)\right]_a^b - …$, bindings `lower`/`upper` tirés de
+  `ctx.definite`), puis la version primitive, celle des lignes de calcul (le pipeline cherche une
+  primitive avant le théorème fondamental). Les intégrales imbriquées d'une IPP (v, ∫u′v) se
+  calculent sans bornes (`primitiveInsideParts`). Au **supérieur**, inchangé : u, dv, du
+  (`SUPERIEUR_EXPLANATIONS`). L'IPP cyclique suit la même notation.
+- **ln|u| ou ln u.** Les étapes écrivent `\ln\left| u \right|` (`latex.ts`, `collapseLnAbs` ;
+  la réponse du moteur garde `\ln\left( \left| u \right| \right)`), et `\ln u` sans valeur absolue
+  quand u > 0 est **certain** (`positivity.ts`, `isCertainlyPositive` par `analyzeSign` : domaine
+  ℝ, zéros résolus) — pour tout réel (`x^2+1`), ou sur [a ; b] d'une intégrale définie bornée par
+  des nombres et sans valeur interdite (`ctx.interval` ; `\frac1x` de 1 à e). Couvert : forme
+  u′/u et 1/x ; les éléments simples gardent |…|. L'évaluation aux bornes dit
+  « $F(b) - F(a)$ » (juste quand a > b), ou les bornes elles-mêmes si l'une s'appelle a ou b.
+- **Intégrale définie : aucune valeur à travers une valeur interdite.** Version pédagogique
+  (V28, 2026-10-12) : avant tout calcul, **primitive comprise**, `forbiddenValueOnInterval`
+  (`integration/forbidden-value.ts`) lit le domaine exact de f (`computeDomain` : points exclus,
+  extrémités des intervalles, premier point d'une exclusion périodique, écrit `\dfrac{3\pi}{2}`)
+  et rend la première valeur interdite de [a ; b], **bornes comprises**. Si elle existe, les
+  étapes s'arrêtent à `integrand-undefined-on-interval` (« La fonction n'est pas définie en
+  x = 3/2, qui appartient à [1 ; 2] : l'intégrale n'est pas définie sur cet intervalle. », mots en
+  `\text{}` ; une valeur que le domaine ne rend qu'en décimal, racine de x³ − 2, s'écrit à 3
+  chiffres significatifs, « x ≈ 1.26 », « x ≈ 0.000412 » (jamais « ≈ 0 »), par `forbiddenPointLatex`, le binding `point` gardant la valeur
+  complète), sans `value` ni `antiderivative` (type `PedagogicalDefiniteIntegrationResult`) ;
+  `result.undefinedAt` porte la valeur. Le refus s'affiche donc même pour une primitive que le
+  pipeline ne sait pas écrire (∫₀¹ 4/(3x − 2)²). Bornes littérales : pas de contrôle, valeur
+  symbolique comme avant. **Domaine non résolu** (`unresolved`, par exemple un dénominateur
+  `x^5+x+1`) avec des bornes numériques : `PedagogicalIntegrationNotImplemented`, aucun nombre
+  publié, et `correction-generator` se replie sur le mode A. Depuis le 2026-10-15, `e^x - 2`
+  n'en est plus un : ln 2 est exclu exactement, et ∫₀¹ eˣ/(eˣ − 2) reçoit le refus
+  `integrand-undefined-on-interval` en ln 2 ∈ [0 ; 1]. Sous ∫, une somme ou un opposé s'écrit entre
+  parenthèses dans toutes les étapes (`integralLatex`, `renderer.ts`). Moteur
+  (`integrateDefinite`) : contrôle **numérique** de la continuité de F sur [a ; b]
+  (`integration/singularity.ts`, revue de #947) — saut par bissection, divergence logarithmique
+  par zoom vers le minimum puis le maximum de F (V53 : viser l'écart à la moyenne des extrémités
+  laissait filer ln|x³ − 2| sur [1 ; 2]) — et second filet sur f, `denominatorPole` : un
+  dénominateur qui change de signe dans [a ; b] (racine localisée par bissection, ∛2 ou ln 3
+  jamais calculés exactement) est un pôle quand |f| y croît d'un ordre
+  ≳ 0,85 (`singularityKind` : |f| multiplié par plus de 50 entre les distances h et h/100 ; un
+  pôle simple donne 100, l'ordre 1/2 donne 10). Prolongeable, 1/∛x, 1/√(2 − x) en 2,
+  x/√(1 − x²) en 1 : acceptés ; un côté où f n'est pas définie (1/x^0,4 pour x < 0) ne compte
+  pas si l'autre est mesuré. Repli numérique : une singularité de f d'ordre < 0,85
+  (1/√|x³ − 2|) garde sa valeur approchée ; refus = `status: 'unsupported'`,
+  `value: null`, `error` en français (∫₀¹ eˣ/(eˣ − 2) compris). Il accepte une intégrale impropre
+  convergente (∫₀¹ 1/√x = 2) que la version pédagogique refuserait (borne interdite) si elle
+  savait calculer la primitive.
+  Les messages de refus nomment le point dans la variable de l'intégrale (`t ≈ 0` pour
+  `\int \frac1t\,dt`, plus `x ≈ 0`) et écrivent les bornes lisibles (`boundText` : `1/2`, plus
+  la division en ligne `1:/2` de `toCustom`), mesurés le 2026-10-14.
+- **Intégrales à paramètre** (V61, 2026-10-14) : la règle arctan (`isArctanPattern`,
+  `integrators/basic.ts`) déballe les parenthèses du dénominateur — `1/(x^2+a^2)` tapé en
+  notation maison arrive en `delimiter` et n'était pas reconnu (« Unable to factor
+  denominator ») ; numérateur 1 seulement (`3/(x^2+a^2)`, `1/(x^2+a^2+1)` restent refusés).
+  La valeur symbolique de `integrateDefinite` réduit `1^u` en 1 (`withoutPowersOfOne` :
+  `x^a` de 1 à 2 → (2^{a+1} − 1)/(a + 1)). Les refus des intégrateurs sont écrits en français
+  à la source (partial-fractions, trig-substitution, basic), comme le reste du module :
+  `integrateDefinite` les recopie dans `error`, que l'atelier montre à l'élève ;
+  `integrate.command.ts` dit « Je ne sais pas calculer cette intégrale » et nomme la technique
+  tentée en français (`TECHNIQUE_LABELS`).
 - ⚠️ Les étapes de `normalize` sont du calcul interne, pas une leçon : elles arrivent
   pourtant dans `auto`/`reduire`/`developper` via `runNormalizePass` (ADR 0007 veut les
   retirer du chemin élève).
@@ -310,20 +1003,232 @@ français, attendre la validation, tests rouges, puis code ; une entrée de tabl
   `pedagogical-simplify/demo-cases/`.
 - Méthode générale (TDD, intégration) : [docs/pratiques/tests.md](../../pratiques/tests.md).
 
+### Les appelants migrés (lot 3a)
+
+Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
+
+- **`limits/algebraic.ts` `tryFactorization`** (stratégie 4, après L'Hôpital) : N et D lus par
+  `toPolynomial`, (q·x − p)^k sorti par `divideOutCommonRoot`, k la plus petite des deux
+  multiplicités ; le point d'approche est un **rationnel exact** (`extractExactRational`), donc
+  négatif compris (`opposite`, invariant 1) ou fractionnaire. Tout polynôme de degré ≤ 8 qui a la
+  racine, plus seulement `x² − a²`. Description en texte, sans LaTeX : « Factorisation par
+  (2x − 1) » (K21, V23).
+- **`pedagogical-limits`** : la stratégie factorisation sort une racine par passe par
+  `divideOutCommonRoot` (K21, V23) : facteur entier comme un élève (`(2x - 1)(x + 1)`, pas
+  `(x - 1/2)(2x + 2)`), constante écrite DEVANT la parenthèse (`3(2x - 1)`), fraction restante
+  réduite (`x + 1`, plus `\dfrac{2x+2}{2}`). La rationalisation garde `divideByCommonRoot`
+  (`helpers.ts`). Quotients exacts écrits en soustractions (`x - 3`, plus `x + (-3)`), plus de
+  `/1`, de `(x - 2)·1` ni de `1·(√x + 2)`. La substitution directe, les limites à un côté et les
+  gendarmes acceptent aussi un point négatif ou fractionnaire. La **substitution directe rend la
+  valeur exacte** de `limits/exact-evaluation.ts` (`tryEvaluateLimitExact`, réduite par
+  `normalize`) quand elle retombe sur la valeur flottante : `\dfrac{3}{2}`, `3\sqrt{2}`, plus
+  `1.5` (K21, V21) ; titres en LaTeX entre `$…$` (« La limite vaut $\dfrac{3}{2}$ », « $3 \sqrt{2}$ »).
+  Un numérateur ou un dénominateur qui EST déjà le facteur (`x - 1` en 1) n'a pas de sous-étape
+  (plus de « x − 1 = x − 1 ») ; une fraction simplifiée en constante (`\dfrac{x+1}{x+1}` → 1)
+  conclut sur l'expression de départ, sans « \lim 1 = 1 » (2026-10-14).
+  **Limites de référence** (`tryKnownLimit`) : `e^u` est lu comme `\exp(u)` pour la table
+  `KNOWN_LIMITS`, et la parenthèse autour de la base d'une puissance ôtée
+  (`toKnownLimitShape`) — `\dfrac{e^x}{x}`, `x e^{-x}`, `\dfrac{x^3}{e^x}` en +∞ (croissances
+  comparées), `\left(1+\dfrac{1}{x}\right)^x` ; l'étape garde l'écriture de l'élève, la valeur
+  `\exp(1)` s'écrit e (`withEulerPowers`) ; titre : la famille (« Croissance comparée », « Limite
+  fondamentale », « Limite de référence »), la formule est dans le bloc. **Composée e^u**
+  (`tryExponentialComposition`) : limite de l'exposant (par le pipeline, même côté), puis de
+  l'exponentielle — `e^{1/x}` en 0⁺ : +∞, en 0⁻ : 0. **Pôle** (`tryOneSided`) : chaque côté a
+  sa limite (±∞ lue au signe, sinon calculée par le pipeline sur ce côté) ; en un pôle d'un
+  quotient, l'explication donne le signe du dénominateur (« Le numérateur tend vers $1$ et
+  $x - 2 \to 0^+$ ») ; sans côté demandé, comparaison puis **conclusion** : la valeur commune, ou
+  `conclude-does-not-exist` (`\dfrac{1}{x}` en 0), à tous les niveaux. **Côté implicite**
+  (`tryImplicitSide`) : sans côté demandé, une expression définie d'un seul côté du point
+  (`\ln x` en 0) est étudiée de ce côté, une étape le dit (« L'expression n'est définie qu'à
+  droite de $0$ »).
+  **En ±∞** (`tryInfinityAnalysis`, K21, V26, 2026-10-12) : la **factorisation du terme
+  prépondérant**, seule méthode au programme (BO 2019, Tle spé, capacités attendues ; la règle
+  « quotient des termes de plus haut degré » et l'étape `identify-dominant-term` ont disparu). Au
+  lycée, en mode détaillé : forme indéterminée (`∞/∞` pour un quotient de degrés ≥ 1, `∞ − ∞`
+  quand des termes ÉCRITS de la somme, développés ou non, tendent vers +∞ et −∞ :
+  `(x+1)^2 - x^2`) → `expand` (« On développe », si
+  l'expression n'est pas une somme de monômes de degrés distincts : `\dfrac{(x+1)^2}{2x^2}`) →
+  `factor-dominant-term` (chaque somme factorisée par xⁿ, jamais par c·xⁿ :
+  `x\left(3 + \dfrac{1}{x}\right)`, termes négatifs en soustractions) →
+  `simplify-common-factor` (« Simplification par x² », liaison `dominant`) → `limits-of-terms`
+  (bloc `\lim \dfrac{1}{x} = 0`, `\text{donc } \lim (3 + \dfrac{1}{x}) = 3`, champ
+  `termLimits` de l'étape) → `apply-quotient` ou `apply-product` (explication : « Le facteur x³
+  tend vers −∞ et l'autre facteur tend vers −2 : par produit, (−∞) × (−2) = +∞ », « 2 divisé
+  par une quantité qui tend vers +∞ » ; le facteur restant nommé en mots, « le quotient restant », « la parenthèse » ; formules en LaTeX entre `$…$`, rendues par `InlineMarkdown`) → conclusion. Mode
+  résumé : développement, factorisation, simplification, conclusion. Deux monômes
+  (`\dfrac{2x^2}{3x^2}`) : pas de factorisation, « On simplifie par x² ». **Sans forme
+  indéterminée** (`\dfrac{1}{x+1}`, `x^2+1`, `(x+1)^2`, `-x^4+x` en −∞), pas de factorisation :
+  une étape `apply-sum` / `apply-product` / `apply-quotient` (limites des opérandes, « donc »
+  celle du tout), puis la conclusion. Supérieur : la même factorisation sans les limites des termes ni
+  le produit / quotient. Un monôme seul (`\pi x`, `-3x^2`) ou une constante : une seule étape ;
+  deux monômes de même degré (`\dfrac{-3x}{2x}`) : la simplification donne la valeur. Les
+  coefficients se lisent par `toPolynomial` (sur ℚ) et, à défaut, dans la forme normale pour une
+  constante irrationnelle (π, √2) ; la VALEUR ne dépend pas de la rédaction : quotient exact des
+  coefficients dominants (`\dfrac{3}{2}`, plus `1.5` ; un quotient irrationnel réduit par
+  `normalize`, réécrit par `tryEvaluateLimitExact` puis `writeLimitValue`, comme le moteur :
+  `\dfrac{\pi}{2}`, `2\sqrt{2}`, `-\dfrac{\sqrt{2}}{2}`), 0, ou ±∞ selon signe et parité.
+  Une constante (`5`, `\pi`) : « La fonction est constante : sa limite vaut 5. » Le signe d'un
+  coefficient à plusieurs termes (π − 4, √2 − 1) se lit par évaluation numérique, retenu si
+  |valeur| > 1e-9 ; sinon refus, jamais un décimal — et seulement quand il décide du résultat
+  (n > m) : `\dfrac{x}{(\pi-4)x^2} = 0`. La borne
+  d'un `\lim` parsé (`positive(∞)`) est
+  traduite en nœud `infinity` par `normalizeApproach` de `limits/evaluate.ts`, comme dans le
+  moteur. **Écriture des étapes** (`renderer.ts`, 2026-10-12) : tant que le membre de droite
+  dépend de la variable, il reste une limite — `\lim_{x\to 2} \dfrac{3x^2-12}{x-2} = \lim_{x\to 2}
+(3x + 6)`, jamais `= 3x + 6` ; une valeur (nombre, ±∞) s'écrit seule. Les sous-étapes de
+  fragment (`factor-numerator`, `factor-denominator`) n'ont `\lim` d'aucun côté. Une étape
+  d'annonce, dont le membre de droite égale le gauche (identification, forme indéterminée,
+  encadrement, comparaison des côtés), s'écrit `\lim_{x\to a} f(x)` seul, sans « = ».
+- **Valeur rendue par `limits/`** (`writeLimitValue`, `limits/exact-evaluation.ts`, 2026-10-12) :
+  la valeur de `evaluateLimit` et le quotient dominant pédagogique passent par `tidy` — signe
+  devant la fraction (`-\dfrac{\sqrt{2}}{2}`, plus `\dfrac{-\sqrt{2}}{2}` de `denormalize`),
+  radical au numérateur (`\dfrac{\sqrt{3}}{2}`, plus `\dfrac{1}{2}\sqrt{3}`), ordre canonique
+  (somme sans variable : le rationnel en tête, `1 + \sqrt{2}`, depuis le 2026-10-12). `exp(1)` s'écrit
+  e et `exp(k)` s'écrit e^k (constante `euler`, 2026-10-14 : `(1+\frac{1}{x})^x` en +∞ rendait
+  `\exp(1)`). Une valeur qui contient un décimal reste telle quelle (`0.5`, jamais
+  `\dfrac{1}{2}`) : décimal de l'énoncé (`writeLikeInput`) ou des flottants du suivi de signe.
+  **Un flottant n'est jamais
+  `exact`** (2026-10-14) : à la sortie de `evaluateLimit`, `withApproximateStatus` passe en
+  `approximate` toute valeur où `containsFloatArtifact` voit un nombre non entier absent de
+  l'énoncé (et, si l'énoncé a des décimaux, d'au moins dix chiffres significatifs). La
+  **stratégie 2.45** (`tryContinuousOfExactLimit`, avant la composition)
+  calcule f(u), f continue (√, ⁿ√, exp, a^u, u^p — u^{p/q} écrit en radical, `(2 - \frac{1}{x})^{\frac{1}{2}}` en +∞ = `\sqrt{2}`), sur la limite EXACTE de u, sans le
+  flottant du suivi de signe —
+  `\sqrt{\frac{x^2+1}{4x^2}}` en −∞ = `\dfrac{1}{2}`, `e^{\frac{3x+1}{x}}` en −∞ = e³,
+  `(\frac{2x+1}{x})^3` en −∞ = 8. `resultToFiniteNode` rend la forme dénormalisée exacte au lieu
+  d'un arrondi à dix chiffres. Les calculs intermédiaires
+  gardent la forme de `resultToNode` ; `analyzeDiscontinuity` (`limits/one-sided.ts`) compare la
+  valeur au point et la limite numériquement (repli : `tidy` des deux côtés) — `|x| + 0.5` en 0
+  a pour limite `0.5` et pour valeur `\dfrac{1}{2}`, continue. Les étapes « limite à gauche /
+  à droite » d'une limite bilatérale s'écrivent en `a^-` / `a^+` (côté étudié, pas celui de la
+  limite).
+- **Fonctions en escalier** (`limits/piecewise.ts`, `evaluatePiecewiseLimit`, V60,
+  2026-10-14) : `floor`, `ceil`, `round`, `sign`/`sgn` dépendant de la variable sont tranchées
+  par `evaluateLimit` AVANT toute stratégie (la substitution directe ne voit pas les sauts :
+  `floor(x)` en 1 rendait 1). Chaque appel g(u) devient la constante qu'il vaut au voisinage, du
+  côté demandé : L = lim u (moteur) ; L hors d'un saut → g(L) (exact sur un rationnel, flottant
+  sur un irrationnel loin du saut, refus à moins de 10⁻⁹) ; L sur un saut (entier, demi-entier
+  pour `round`, 0 pour `sign`) → le côté lu sur la limite de 1/(u − L) (±∞), **confirmé** sur
+  u − L en a ± 10⁻³, 10⁻⁴, 10⁻⁶ (en ±∞ : ±10³, 10⁴, 10⁶), non nul et du signe annoncé — le moteur
+  rend +∞ même quand u − L ≡ 0 de ce côté (`sign(x+|x|)` en 0⁻), d'où un refus ; π tapé `π`
+  (variable du parseur) vaut la constante dans ces évaluations ; u → ±∞ → `sign`
+  vaut ±1, `floor`/`ceil`/`round` tendent vers cet infini **seulement si l'appel est toute
+  l'expression**. Le reste se calcule par le moteur. Sans côté, en un point fini : les deux
+  côtés, différents → `does-not-exist` / `sides-differ` (`floor(x)` en 1 : 0 et 1 ;
+  `floor(sin x)` en 0 : −1 et 0), égaux → leur valeur (`floor(x^2)` en 0 = 0). **Refus**
+  (`unsupported`) : appels imbriqués, argument sans limite ou côté illisible, `floor(x)/x` ou
+  `x − floor(x)` en ±∞, `mod`/`gcd` appliqués à la variable (fonctions des entiers). Les étapes
+  du résultat sont vidées (elles parleraient du reste). Remplace l'ancienne évaluation en
+  a ± 10⁻⁸. Tests : `limits/__tests__/step-functions.test.ts`.
+- **Domaine d'un côté, raison du « pas de limite », oscillation** (`limits/evaluate.ts`,
+  2026-10-14). Deux champs optionnels de `LimitResult` (`limits/types.ts`) :
+  `definedSide: 'left' | 'right'` — limite bilatérale en un point fini où f n'est définie que
+  d'un côté au voisinage (`\ln x`, `\sqrt{x}` en 0 → `'right'`, `\sqrt{-x}` → `'left'`) : la
+  valeur est celle de ce côté (convention lycée, x → 0⁺), `direction` reste `'both'` ; absent si
+  un côté est demandé, en ±∞, ou si l'étude du domaine n'a pas montré de côté unique
+  (`\sqrt{\cos x}` en π/2 n'est pas vu). `noLimitReason`
+  (`NoLimitReason`) sur un `does-not-exist` : `'outside-domain'` (f non définie au voisinage du
+  côté demandé : `\sqrt{x}` en −1, `\ln x` en −∞), `'sides-differ'` (gauche ≠ droite : `1/x` en
+  0, `x^{-1/3}` en 0), `'oscillation'`. L'analyse côté par côté (stratégie 6) se déclenche aussi
+  en un **point exclu** du domaine (`isOnDomainBoundary`, `limits/one-sided.ts` : `2 + 1/x` en 0),
+  et ne conclut « pas de limite » que si les DEUX côtés ont une limite exacte ou infinie
+  différente — un côté non conclu laisse la main aux stratégies suivantes. **Oscillation** (`oscillatesWithoutLimit`, stratégie
+  6.5, en dernier recours) : `a\sin(u) + b`, `a\cos(u) + b` (a ≠ 0 et b constants ; somme à un
+  seul terme variable, facteur ou diviseur constant, opposé) avec u → ±∞ du côté demandé — en
+  bilatéral en un point fini, des deux côtés (`\sin\frac{1}{x}` en 0). Les limites trouvées
+  avant restent (`\frac{\sin x}{x}` en +∞ = 0, `x\sin\frac{1}{x}` en 0 = 0) ; `x\sin x`,
+  `\sin x + \cos x` restent `unsupported`. Un facteur qui oscille ne déclenche pas l'analyse
+  côté par côté du produit (`tryProductOfLimits`). Tests :
+  `limits/__tests__/domaine-oscillation-exactitude.test.ts`.
+- **`integration/integrators/quadratic-denominator.ts` `factorQuadratic`** : trinôme lu par
+  `toPolynomial` (toute écriture : `x(x-5)+6`, `(2x-1)(2x+1)` passent), racines par
+  `quadraticRootParts`. Le littéral `x² − a²` garde sa lecture par `extractQuadraticCoefficients`.
+  **`factoredDenominator`** écrit le dénominateur à facteurs entiers (décision de David du
+  2026-10-12), plus d'exception : `k(q₁x − p₁)(q₂x − p₂)`, rᵢ = pᵢ/qᵢ, `k = a/(q₁q₂)`, par
+  `integerLinearFactorNode` (`factor/common-root.ts`) — `4x² − 1` devient `(2x - 1)(2x + 1)`,
+  `2x² − 2` reste `2(x - 1)(x + 1)`. La décomposition (`partial-fractions.ts`, `factorDenominator`
+  cas 7 `integerLinearPower`) lit `px + q` et `(px + q)^n` à coefficients rationnels par
+  `toPolynomial` : les coefficients restent calculés sur la base 1/(x − r)ʲ, la primitive écrit le
+  facteur entier, A/(x − p/q) donnant A ln|qx − p| (et A·q^(j−1)/(1 − j)·(qx − p)^(1−j) pour
+  j ≥ 2). Primitive de 1/(4x² − 1) : `\dfrac{1}{4}\ln|2x - 1| - \dfrac{1}{4}\ln|2x + 1|`, plus
+  `\ln|x - \dfrac{1}{2}|`. Coefficient dominant 1 : rendu inchangé.
+- **`pedagogical-integration/_helpers.ts` `tryDetectPartialFractions`** : racines et
+  coefficients A, B exacts (`Rational`) au lieu de flottants « rationnels » ; la décomposition
+  s'écrit `\frac{3}{2(x - 1)} + \frac{1}{2(x + 1)}` (plus `\frac{1.5}{x - 1}`), le signe dehors.
+  L'explication de `decompose-rational` écrit le dénominateur factorisé par
+  `factorizationToNode` : `4x^2 - 1 = (2x - 1)(2x + 1)`, une égalité vraie (K21, V22 : elle
+  annonçait `(x − r₁)(x − r₂)` sans le coefficient dominant). Depuis le 2026-10-12, la
+  décomposition elle-même porte sur ces facteurs entiers (`integratePartialFractions`,
+  `pipeline.ts`) : `\frac{1}{2(2x - 1)} - \frac{1}{2(2x + 1)}` (A′ = A·q), primitive
+  `\frac{\ln|2x - 1|}{4} - \frac{\ln|2x + 1|}{4}` ; les facteurs annoncés (`factor1`,
+  `factor2`) sont ceux du dénominateur factorisé. Un facteur `px + q`, p ≠ 1, ajoute la liaison
+  `p`, qui fait écrire les formules en `$\int \dfrac{A}{px+q}\,dx = \dfrac{A}{p}\ln|px+q|$`. Un coefficient nul
+  (P et Q ont un facteur commun, `(3x + 1)/(6x² − x − 1)`) laisse un seul terme
+  (`\frac{1}{2x - 1}`) au lieu du refus d'avant.
+
+Tests : `limits/__tests__/factorisation-noyau.test.ts`,
+`pedagogical-limits/__tests__/factorisation-noyau.test.ts`,
+`integration/__tests__/denominateur-trinome-noyau.test.ts` (F′ = f par `areEquivalent`),
+`pedagogical-integration/__tests__/elements-simples-exacts.test.ts`, facteurs entiers :
+`{integration,pedagogical-integration}/__tests__/elements-simples-entiers.test.ts` ; K21 :
+`pedagogical-limits/__tests__/{valeur-exacte,point-fractionnaire,terme-preponderant}.test.ts`,
+`pedagogical-integration/__tests__/explications-exactes.test.ts`.
+
+### Le ménage (lot 3b)
+
+Supprimés, faute d'appelant hors de leurs tests (grep sur `src/`, `scripts/`, `tests/`, chaînes
+comprises) : `transform/` entier (`factorAlgebraic`, `factorize`, `factorizeH`…) ; les formules
+somme → produit `trigFactorizationRules`, `hypFactorizationRules` et les agrégats
+`allTrigRules`, `allHyperbolicRules`, lus par `transform/` seul ; dans `analysis/structures.ts`,
+`isQuadraticForm`, `isFactoredForm`, `hasCommonFactor`, `detectStructure` ; avec eux
+`analysis/polynomial-analysis.ts` (`analyzePolynomial`, `getPolynomialCoefficients`…, dont
+`isQuadraticForm` était le seul lecteur) ; `analyzePolynomial` de `sign/helpers/interval-sign.ts` ;
+`isRootAt` de `pedagogical-limits/helpers.ts`.
+
+Doublons qui restent, chacun pour un autre besoin :
+
+- **Carré parfait** : `isPerfectSquareTrinomial` (`analysis/structures.ts`) lit des termes
+  **symboliques** (`sin²x + 2 sin x cos x + cos²x`, plusieurs lettres) pour `simplify` et `auto` ;
+  `polynomialIdentity` (stratégies) des coefficients entiers d'un polynôme d'une lettre ;
+  `tryFactorPerfectSquareTrinomial` (`normal/normalize.ts`) une `NormalForm`, sur le chemin du
+  décideur (ADR 0006).
+- **PGCD de monômes** : le contenu de `common-factor.ts` lit l'écriture sans développer deux
+  sommes, avec des facteurs non polynomiaux (`eˣ`, `(x+1)`) et une politique « PGCD entier
+  seulement » ; `gcdMonomials` (`normal/monomial.ts`) travaille sur la forme normale (chemin du
+  décideur, et `solve`).
+- **Division de polynômes** : `deflate` / `divideOutRoot` (noyau, ℚ, par x − r) ;
+  `divideUnivariate` (coefficients algébriques, utilisée aussi par `partial-fractions.ts` et le
+  grapheur) et `exactDividePolynomials` (multivariée), toutes deux dans `normal/`.
+- **Extracteurs de coefficients** : `toPolynomial` / `toRationalFunction` (noyau, exacts) ;
+  `toUnivariateView` (`normal/`) ; (`asPolynomial` et `polyToNode`, lecteur en flottants de
+  `pedagogical-limits/helpers.ts`, supprimés après V26 : le terme dominant en ±∞ passe au noyau) ;
+  `extract{Quadratic,Cubic,Quartic}Coefficients` (`solve/`, coefficients `MathNode`).
+- **Δ** : un seul calcul exact sur ℚ, `discriminant` (`factor/quadratic.ts`). Les autres
+  calculent en `MathNode` pour l'afficher (`pedagogical-solve/quadratic.ts`, `solve/`) ou en
+  flottants sur des coefficients décimaux (`domain/preimage.ts`, solveurs de degré 3-4 de
+  `solve/`).
+
 ## Points ouverts connus (mesurés le 2026-10-10)
 
 - Fusion des deux moteurs : voir plus haut ; `auto ≡ reduire` sur `(x+1)²`.
-- `ParseCache` exporté, jamais branché ; `transform/` sans consommateur ;
-  `pedagogical-evaluate/` réduit à des types.
+- `ParseCache` exporté, jamais branché ; `pedagogical-evaluate/` réduit à des types.
 - Cycle dans `runPatternLoop` (`pedagogical-simplify/pipeline.ts`) : sur `x(1+1)` et
-  `x(1-1)`, `sum-cubes-numeric` (et `diff-squares-numeric`) tire jusqu'à la limite de
-  20 itérations sans point fixe (mesuré par instrumentation sur la suite serveur, cas du
-  panel). La boucle s'arrête sans le signaler ; `applyRules`, lui, lève
-  `RuleIterationLimitError`.
+  `x(1-1)`, `sum-cubes-numeric` (et `diff-squares-numeric`) tirait jusqu'à la limite de
+  20 itérations sans point fixe. **Corrigé pour `factoriser` le 2026-10-11** : ses règles
+  d'identité ne touchent plus un nombre seul (`factoriserIdentityRules`, mesuré : `x(1-1)` →
+  0 étape). Les règles d'origine gardent ce défaut là où elles servent encore (`simplify`, sous
+  barrière de coût) ; la boucle s'arrête toujours sans le signaler.
 - `solve` ne gère pas les inconnues indicées : `x_1+1=3` répond « pas de solution »
-  (`getVariables` rend la base `x`) ; `e_1+1=3` aussi (le refus « constante d'Euler » ne
-  s'applique pas quand l'arbre contient une variable `e`, base d'une variable indicée :
-  `refusesEulerVariable`).
+  (`getVariables` rend la base `x`) ; `e_1+1=3` et `i_1+1=3` aussi (le refus « constante
+  d'Euler » / « unité imaginaire » ne s'applique pas quand l'arbre contient une variable `e`
+  ou `i`, base d'une variable indicée : `reservedVariableRefusal`).
+- Domaine (`domain/compute.ts`, relevé le 2026-10-15) : `shiftedLinearRoot` construit un nœud
+  `{ type: 'opposite', … }` à la main, hors `factory.ts` (invariant 2) ; l'inversion exacte de
+  `ln u ⊳ c` / `e^u ⊳ c` ne couvre ni u non affine (`\ln(x^2)-1`) ni `log`, `log10`, `log2`
+  avec c ≠ 0 (contrainte `unresolved`).
+- Les filtres de noms qui écartent `e` et `i` de `getVariables` (`atelier/solve-steps.ts`,
+  `questions/calculus/calculus-reading.ts`, `CONSTANT_NAMES` de `cli/core/variable-argument.ts`)
+  ne servent plus que pour `e_1`, `i_1`, `u_i`, qu'ils traitent à tort comme des constantes.
 
 ## Décisions
 
@@ -333,6 +1238,7 @@ français, attendre la validation, tests rouges, puis code ; une entrée de tabl
 | Réduire pour comparer (`equivalenceForm`), pas pour écrire | [ADR 0006](../../adr/0006-reduire-pour-comparer-pas-pour-ecrire.md)              |
 | Un moteur, quatre intentions                               | [ADR 0007](../../adr/0007-un-moteur-quatre-intentions.md)                        |
 | Les hypothèses de l'énoncé restreignent la comparaison     | [ADR 0012](../../adr/0012-hypotheses-de-l-enonce-restreignent-la-comparaison.md) |
+| Un moteur commun de factorisation (amende 0007)            | [ADR 0024](../../adr/0024-moteur-commun-de-factorisation.md)                     |
 
 Décisions de module, toujours en vigueur (ex-`decisions.md` de juin, revérifiées) :
 
@@ -354,7 +1260,9 @@ Décisions de module, toujours en vigueur (ex-`decisions.md` de juin, revérifi�
   quatre intentions, pinné par un test.
 - [convention-equivalence.md](convention-equivalence.md) — ce que `areEquivalent` veut dire.
 - [pattern-matching.md](pattern-matching.md) — le module `pattern`.
+- [reciproque.md](reciproque.md) — la réciproque calculée (`reciprocal/`).
 - [notation-unites.md](../../pratiques/notation-unites.md) — écrire une grandeur.
+- [grandeurs.md](../grandeurs.md) — lire, calculer, écrire une grandeur : le contrat unique.
 
 ## Glossaire technique
 

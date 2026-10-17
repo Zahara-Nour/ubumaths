@@ -54,6 +54,7 @@ import { resolveVariableConditionals } from './variable-conditionals';
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 import { generateCorrection } from './correction-generator';
 import { declaredGenericFunctions, templateGenericFunctions } from '../generic-functions';
+import { resolveCapitalPairs } from '../capital-pairs';
 import { cleanCoefficientsCustom } from '../clean-coefficients';
 import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { expectedVectorLatex } from '../vectors/vector-answer';
@@ -336,6 +337,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		// Sans déclaration, `undefined` partout → défauts du parseur, rien ne change.
 		const genericFunctionNames = declaredGenericFunctions(template.shared?.genericFunctions);
 		const genericFunctions = templateGenericFunctions(genericFunctionNames);
+		// Sens de `AB` (longueur ou produit), résolu UNE fois ici (Q-K) : déclaration du
+		// modèle → contexte (thème) → longueur. Porté par l'instance jusqu'au parseur.
+		const { capitalPairs } = resolveCapitalPairs({
+			declaration: template.shared?.capitalPairs,
+			theme: template.theme
+		});
 		// Coefficients nettoyés (`1x-1y+0` → `x-y`) : strictement `true`, sinon rien ne change
 		const cleanCoefficients = template.shared?.cleanCoefficients === true;
 
@@ -411,7 +418,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			resolvedVariables,
 			random,
 			genericFunctions,
-			cleanCoefficients
+			cleanCoefficients,
+			capitalPairs
 		);
 
 		// Resolve correctChoiceIndex from explicit value or derive from isCorrect on choices
@@ -461,7 +469,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						rawFormat,
 						resolvedVariables,
 						random,
-						genericFunctions
+						genericFunctions,
+						capitalPairs
 					);
 				}
 			}
@@ -517,7 +526,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					answerKind !== 'vecteur' &&
 					answerKind !== 'matrice';
 				const expectedAnswer = isCleanable
-					? cleanCoefficientsCustom(resolvedExpected, genericFunctions)
+					? cleanCoefficientsCustom(resolvedExpected, genericFunctions, capitalPairs)
 					: resolvedExpected;
 
 				// `i` matches the blank counter assigned by `assignBlankIndices`
@@ -599,7 +608,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 								? expectedVectorLatex(resolved.expectedAnswer)
 								: resolved.answerKind === 'matrice'
 									? expectedMatrixLatex(resolved.expectedAnswer)
-									: convertToLatex(resolved.expectedAnswer, genericFunctions, isCleanable);
+									: convertToLatex(
+											resolved.expectedAnswer,
+											genericFunctions,
+											isCleanable,
+											capitalPairs
+										);
 				}
 				return resolved;
 			});
@@ -619,7 +633,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					}
 					expressionsArray.push({
 						name: exprName,
-						latex: convertToLatex(variable.value, genericFunctions),
+						latex: convertToLatex(variable.value, genericFunctions, false, capitalPairs),
 						displayLatex: variable.displayValue ?? undefined,
 						answerFormat: blankResult.answerFormats?.[exprName],
 						value: variable.value
@@ -653,7 +667,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							resolvedVariables,
 							random,
 							genericFunctions,
-							cleanCoefficients
+							cleanCoefficients,
+							capitalPairs
 						)
 					: resolvedMarkdown(content);
 				// Use choice.isCorrect if set, otherwise derive from correctChoiceIndex
@@ -705,7 +720,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						correctionContext,
 						random,
 						genericFunctions,
-						cleanCoefficients
+						cleanCoefficients,
+						capitalPairs
 					);
 				}
 				if (feedback.incorrect) {
@@ -715,7 +731,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						correctionContext,
 						random,
 						genericFunctions,
-						cleanCoefficients
+						cleanCoefficients,
+						capitalPairs
 					);
 				}
 				if (feedback.partial) {
@@ -725,7 +742,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						correctionContext,
 						random,
 						genericFunctions,
-						cleanCoefficients
+						cleanCoefficients,
+						capitalPairs
 					);
 				}
 			}
@@ -738,7 +756,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						correctionContext,
 						random,
 						genericFunctions,
-						cleanCoefficients
+						cleanCoefficients,
+						capitalPairs
 					)
 				);
 			}
@@ -753,6 +772,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			exerciseInstruction: template.exerciseInstruction,
 			options: template.options,
 			...(genericFunctionNames && { genericFunctions: genericFunctionNames }),
+			capitalPairs,
 			grades: template.grades,
 			theme: template.theme,
 			domain: template.domain,

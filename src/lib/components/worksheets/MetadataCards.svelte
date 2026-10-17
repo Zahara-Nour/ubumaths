@@ -17,7 +17,6 @@
 	```
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
@@ -25,7 +24,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { worksheetLocale } from '$lib/types/worksheets';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import WorksheetTypeOptions from '$lib/components/worksheets/WorksheetTypeOptions.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import { Loader2, Check, X, Settings } from '@lucide/svelte';
@@ -38,18 +37,18 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { WorksheetWithRelations, WorksheetConfig } from '$lib/types/worksheets';
 	import type { GradeCode } from '$lib/types/grades';
-
-	// Template type for the selector
-	interface TemplateOption {
-		id: string;
-		name: string;
-		description: string | null;
-	}
+	import {
+		BUILT_IN_STYLE_OPTIONS,
+		DEFAULT_STYLE_ID,
+		styleIdOf,
+		type StyleOption
+	} from '$lib/typst/templates/styles';
 
 	// Props - controlled component pattern
 	interface Props {
 		worksheet: WorksheetWithRelations; // Already merged with pending changes
-		templates?: TemplateOption[];
+		/** Le menu « Style » : ceux de Chiphre, puis ceux du prof */
+		styles?: StyleOption[];
 		hasPendingChanges?: boolean;
 		onFieldChange?: (field: string, value: unknown) => void;
 		onSave?: () => Promise<void>;
@@ -58,7 +57,7 @@
 
 	let {
 		worksheet,
-		templates = [],
+		styles = BUILT_IN_STYLE_OPTIONS,
 		hasPendingChanges = false,
 		onFieldChange,
 		onSave,
@@ -69,12 +68,11 @@
 	let editingTitle = $state(false);
 	let editingDescription = $state(false);
 	let editingType = $state(false);
-	let editingTemplate = $state(false);
+	let editingStyle = $state(false);
 	let editingLanguage = $state(false);
 	let editingDuration = $state(false);
 	let editingGrades = $state(false);
 	let editingTags = $state(false);
-	let editingConfig = $state(false);
 
 	// Saving state
 	let isSaving = $state(false);
@@ -103,11 +101,10 @@
 		editingTitle = false;
 		editingDescription = false;
 		editingType = false;
-		editingTemplate = false;
+		editingStyle = false;
 		editingDuration = false;
 		editingGrades = false;
 		editingTags = false;
-		editingConfig = false;
 	}
 
 	// Cancel all edits - calls parent's cancel
@@ -139,8 +136,8 @@
 			case 'type':
 				editingType = true;
 				break;
-			case 'template':
-				if (templates.length > 0) editingTemplate = true;
+			case 'style':
+				editingStyle = true;
 				break;
 			case 'language':
 				editingLanguage = true;
@@ -153,9 +150,6 @@
 				break;
 			case 'tags':
 				editingTags = true;
-				break;
-			case 'config':
-				editingConfig = true;
 				break;
 		}
 	}
@@ -208,36 +202,15 @@
 	// Type options for MySelect
 	const typeOptions = [...WORKSHEET_TYPE_OPTIONS] as { value: string; label: string }[];
 
-	// Template options for MySelect
-	let templateOptions = $derived(templates.map((t) => ({ value: t.id, label: t.name })));
+	// Style options for MySelect
+	let styleOptions = $derived(styles.map((s) => ({ value: s.id, label: s.name })));
 
-	// Helper to get template name by ID
-	function getTemplateName(templateId: string | null | undefined): string {
-		if (!templateId) return '-';
-		const template = templates.find((t) => t.id === templateId);
-		if (template) return template.name;
-		if (worksheet.template?.name) return worksheet.template.name;
-		if (!templateId.includes('-')) return templateId.charAt(0).toUpperCase() + templateId.slice(1);
-		return '-';
-	}
-
-	// Select options for config
-	const numberingOptions = [
-		{ value: 'numeric', label: 'Numerique (1, 2, 3)' },
-		{ value: 'alphabetic', label: 'Alphabetique (a, b, c)' },
-		{ value: 'roman', label: 'Romain (i, ii, iii)' }
-	];
-
-	// Corrigé imprimé (ADR 0017, D11) : détaillé par défaut
-	const correctionDetailOptions = [
-		{ value: 'detailed', label: 'Détaillée' },
-		{ value: 'concise', label: 'Concise' }
-	];
-
-	const layoutOptions = [
-		{ value: 'A4', label: 'A4' },
-		{ value: 'Letter', label: 'Letter' }
-	];
+	// Le style retenu ; absent ou illisible → le style par défaut, comme le PDF
+	let chosenStyle = $derived(styles.find((s) => s.id === styleIdOf(worksheet)));
+	let defaultStyle = $derived(styles.find((s) => s.id === DEFAULT_STYLE_ID));
+	let styleLabel = $derived(
+		chosenStyle?.name ?? `${defaultStyle?.name ?? 'Fiche élève'} (par défaut)`
+	);
 </script>
 
 <!-- Floating action buttons -->
@@ -339,7 +312,7 @@
 
 			<Separator />
 
-			<!-- Type, Template, Langue, Duration - compact row -->
+			<!-- Type, Style, Langue, Duration - compact row -->
 			<div class="grid grid-cols-4 gap-4">
 				<!-- Type -->
 				<div>
@@ -366,33 +339,39 @@
 					{/if}
 				</div>
 
-				<!-- Template -->
+				<!-- Style -->
 				<div>
-					<p class="text-xs text-muted-foreground">Template</p>
-					{#if !editingTemplate}
+					<p class="text-xs text-muted-foreground">Style</p>
+					{#if !editingStyle}
 						<button
 							type="button"
-							class="text-left text-sm font-medium {isEditable && templates.length > 0
+							class="text-left text-sm font-medium {isEditable
 								? 'cursor-pointer hover:text-primary'
 								: 'cursor-default'}"
-							onclick={() => startEdit('template')}
-							disabled={!isEditable || templates.length === 0}
+							onclick={() => startEdit('style')}
+							disabled={!isEditable}
 						>
-							{getTemplateName(worksheet.template_id)}
+							{styleLabel}
 						</button>
 					{:else}
 						<MySelect
 							type="single"
-							value={worksheet.template_id || undefined}
-							onchange={(v) => onFieldChange?.('template_id', v || null)}
-							items={templateOptions}
-							placeholder="Template"
+							value={chosenStyle?.id ?? DEFAULT_STYLE_ID}
+							onchange={(v) => onFieldChange?.('style_id', v || null)}
+							items={styleOptions}
+							placeholder="Style"
+							triggerAriaLabel="Choisir le style"
+							contentProps={{
+								// La colonne est étroite : le menu prend la largeur de ses noms
+								class:
+									'z-[200] max-h-96 w-max min-w-[var(--bits-select-anchor-width)] overflow-hidden rounded-md border bg-popover p-1 shadow-md'
+							}}
 						/>
 					{/if}
 				</div>
 
 				<!--
-					Langue : volontairement ici, à côté du type et du template, et non
+					Langue : volontairement ici, à côté du type et du style, et non
 					dans « Options d'affichage ». Ce n'est pas un réglage d'affichage :
 					elle change le contenu même de la fiche. Visible sans clic.
 				-->
@@ -525,167 +504,24 @@
 		</Card.Content>
 	</Card.Root>
 
-	<!-- Options d'affichage card -->
+	<!-- Options du type de la fiche (ADR 0030) : le type décide de l'en-tête du PDF -->
 	<Card.Root>
 		<Card.Header class="pb-3">
 			<div class="flex items-center gap-2">
 				<Settings class="h-4 w-4 text-muted-foreground" />
-				<Card.Title class="text-base">Options d'affichage</Card.Title>
+				<Card.Title class="text-base">Options</Card.Title>
 			</div>
+			<Card.Description>
+				{WORKSHEET_TYPE_LABELS[worksheet.type] ?? WORKSHEET_TYPE_LABELS.worksheet} : ce que le PDF imprime
+			</Card.Description>
 		</Card.Header>
 		<Card.Content class="pt-0">
-			{#if !editingConfig}
-				<!-- Display mode: compact inline view -->
-				<button
-					type="button"
-					class="w-full text-left {isEditable ? 'cursor-pointer' : 'cursor-default'}"
-					onclick={() => startEdit('config')}
-					disabled={!isEditable}
-				>
-					<div class="space-y-3">
-						<!-- Elements affiches - inline -->
-						<div>
-							<p class="mb-1.5 text-xs text-muted-foreground">En-tete</p>
-							<div class="flex flex-wrap gap-1">
-								{#if worksheet.config?.show_title ?? true}
-									<Badge variant="secondary" class="text-xs">Titre</Badge>
-								{/if}
-								{#if worksheet.config?.show_date ?? true}
-									<Badge variant="secondary" class="text-xs">Date</Badge>
-								{/if}
-								{#if worksheet.config?.show_student_name ?? true}
-									<Badge variant="secondary" class="text-xs">Nom</Badge>
-								{/if}
-								{#if worksheet.config?.show_class ?? true}
-									<Badge variant="secondary" class="text-xs">{lore.entities.class}</Badge>
-								{/if}
-								{#if worksheet.config?.show_points ?? true}
-									<Badge variant="secondary" class="text-xs">Points</Badge>
-								{/if}
-								{#if !(worksheet.config?.show_title ?? true) && !(worksheet.config?.show_date ?? true) && !(worksheet.config?.show_student_name ?? true) && !(worksheet.config?.show_class ?? true) && !(worksheet.config?.show_points ?? true)}
-									<span class="text-xs text-muted-foreground/50 italic">Aucun</span>
-								{/if}
-							</div>
-						</div>
-
-						<!-- Mise en page - inline compact -->
-						<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-							<span>
-								<span class="text-muted-foreground">Num:</span>
-								<span class="font-medium">{worksheet.config?.numbering_style ?? '1,2,3'}</span>
-							</span>
-							<span>
-								<span class="text-muted-foreground">Format:</span>
-								<span class="font-medium">{worksheet.config?.page_layout ?? 'A4'}</span>
-							</span>
-							<span>
-								<span class="text-muted-foreground">Correction :</span>
-								<span class="font-medium"
-									>{worksheet.config?.correction_detail === 'concise'
-										? 'concise'
-										: 'détaillée'}</span
-								>
-							</span>
-							{#if worksheet.config?.shuffle_exercises || worksheet.config?.shuffle_within_sections}
-								<span class="text-muted-foreground">
-									Melange:
-									<span class="font-medium">
-										{#if worksheet.config?.shuffle_exercises && worksheet.config?.shuffle_within_sections}
-											Tout
-										{:else if worksheet.config?.shuffle_exercises}
-											{lore.learning.exercise}s
-										{:else}
-											Sections
-										{/if}
-									</span>
-								</span>
-							{/if}
-						</div>
-
-						{#if isEditable}
-							<p class="text-xs text-muted-foreground/50 italic">Cliquer pour modifier</p>
-						{/if}
-					</div>
-				</button>
-			{:else}
-				<!-- Edit mode: compact grid -->
-				<div class="space-y-4">
-					<!-- Elements affiches -->
-					<div>
-						<p class="mb-2 text-xs font-medium text-muted-foreground">En-tete du document</p>
-						<div class="grid grid-cols-2 gap-2 text-sm">
-							<MyCheckbox
-								checked={worksheet.config?.show_title ?? true}
-								onchange={(v) => handleConfigChange('show_title', v)}
-								label="Titre"
-							/>
-							<MyCheckbox
-								checked={worksheet.config?.show_date ?? true}
-								onchange={(v) => handleConfigChange('show_date', v)}
-								label="Date"
-							/>
-							<MyCheckbox
-								checked={worksheet.config?.show_student_name ?? true}
-								onchange={(v) => handleConfigChange('show_student_name', v)}
-								label="Nom"
-							/>
-							<MyCheckbox
-								checked={worksheet.config?.show_class ?? true}
-								onchange={(v) => handleConfigChange('show_class', v)}
-								label={lore.entities.class}
-							/>
-							<MyCheckbox
-								checked={worksheet.config?.show_points ?? true}
-								onchange={(v) => handleConfigChange('show_points', v)}
-								label="Points"
-							/>
-						</div>
-					</div>
-
-					<Separator />
-
-					<!-- Mise en page + melange - compact grid -->
-					<div class="grid grid-cols-2 gap-3">
-						<div>
-							<p class="mb-1 text-xs text-muted-foreground">Numerotation</p>
-							<MySelect
-								value={worksheet.config?.numbering_style ?? 'numeric'}
-								onchange={(v: string) => handleConfigChange('numbering_style', v)}
-								items={numberingOptions}
-								placeholder="Style"
-							/>
-						</div>
-						<div>
-							<p class="mb-1 text-xs text-muted-foreground">Format</p>
-							<MySelect
-								value={worksheet.config?.page_layout ?? 'A4'}
-								onchange={(v: string) => handleConfigChange('page_layout', v)}
-								items={layoutOptions}
-								placeholder="Format"
-							/>
-						</div>
-						<div>
-							<p class="mb-1 text-xs text-muted-foreground">Correction imprimée</p>
-							<MySelect
-								value={worksheet.config?.correction_detail ?? 'detailed'}
-								onchange={(v: string) => handleConfigChange('correction_detail', v)}
-								items={correctionDetailOptions}
-								placeholder="Correction"
-							/>
-						</div>
-						<MyCheckbox
-							checked={worksheet.config?.shuffle_exercises ?? false}
-							onchange={(v) => handleConfigChange('shuffle_exercises', v)}
-							label="Melanger {lore.learning.exercise}s"
-						/>
-						<MyCheckbox
-							checked={worksheet.config?.shuffle_within_sections ?? false}
-							onchange={(v) => handleConfigChange('shuffle_within_sections', v)}
-							label="Melanger sections"
-						/>
-					</div>
-				</div>
-			{/if}
+			<WorksheetTypeOptions
+				type={worksheet.type}
+				config={worksheet.config}
+				editable={isEditable}
+				onchange={handleConfigChange}
+			/>
 		</Card.Content>
 	</Card.Root>
 </div>

@@ -25,7 +25,7 @@
  * @module mathAST/solve/solvers/transcendental
  */
 
-import type { MathNode } from '../../types';
+import type { FunctionNode, MathNode } from '../../types';
 import type {
 	EquationSolver,
 	SolveResult,
@@ -46,10 +46,14 @@ import {
 	TWO_PI,
 	subtract,
 	divide,
+	multiply,
 	opposite
 } from '../../factory';
 import { denormalize, normalize } from '../../normal';
 import { getVariables } from '../../eval/substitute';
+import { isDivision, isFunction, isOpposite } from '../../guards';
+import { findNodes } from '../../transforms';
+import { nodesEqual } from '../../normal/hash';
 import { extractLinearForm } from '../../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
@@ -77,11 +81,30 @@ export interface TranscendentalEquationParts {
 	readonly funcName: string; // 'sin'|'cos'|'tan'|'ln'|'log'|'exp'
 	readonly argument: MathNode; // u in f(u)
 	readonly constantNode: MathNode; // c in f(u) = c (already isolated: c = -b/a)
-	readonly constantNumeric: number;
+	/**
+	 * Valeur numérique de c, ou `null` quand c dépend d'un PARAMÈTRE littéral
+	 * (`a\ln x = 1` : c = 1/a). Chaque solveur qui lit le signe ou la taille de
+	 * c doit alors refuser (écart V41 : le coefficient `a` valait 1 en silence).
+	 */
+	readonly constantNumeric: number | null;
+	/** Base du logarithme `log` (10, ou 2 pour `\log_2`) ; absente sinon. */
+	readonly logBase?: MathNode;
 }
 
 // Keep backward compat alias
 export type TrigEquationParts = TranscendentalEquationParts;
+
+/**
+ * La base d'un logarithme `log` : 10 sans base écrite, sinon la base (`\log_2`)
+ * si c'est un nombre > 0 et ≠ 1 ; `null` pour une base qu'on ne sait pas lire.
+ * ⚠️ `P.func('log', …)` ignore la base : `\log_2(x) = 3` rendait 1000 (revue #1302).
+ */
+export function logarithmBase(node: FunctionNode): MathNode | null {
+	if (node.base === undefined) return number('10');
+	if (getVariables(node.base).size > 0) return null;
+	const value = tryNumeric(node.base);
+	return value !== null && value > 0 && value !== 1 ? node.base : null;
+}
 
 /**
  * Result of matching a transcendental pattern against a term.
@@ -91,6 +114,7 @@ interface TranscendentalPatternMatch {
 	readonly funcName: string;
 	readonly argument: MathNode;
 	readonly coeffFactors: readonly MathNode[];
+	readonly logBase?: MathNode;
 }
 
 /**
@@ -123,7 +147,22 @@ function tryTranscendentalPatterns(
 		if (bindings) {
 			const u = getBindingNode(bindings, 'u');
 			if (u && getVariables(u).has(variable)) {
-				return { kind, funcName, argument: u, coeffFactors: extractCoeffFactors(bindings) };
+				// La base que le motif ignore : log_b lue, toute autre base refusée
+				const call = findNodes(
+					term,
+					(n) =>
+						isFunction(n) && n.name === funcName && n.args.length === 1 && nodesEqual(n.args[0], u)
+				)[0];
+				if (call === undefined || !isFunction(call)) continue;
+				const logBase = funcName === 'log' ? logarithmBase(call) : null;
+				if (call.base !== undefined && logBase === null) continue;
+				return {
+					kind,
+					funcName,
+					argument: u,
+					coeffFactors: extractCoeffFactors(bindings),
+					...(logBase !== null && { logBase })
+				};
 			}
 		}
 	}
@@ -177,9 +216,29 @@ function reconstructCoefficient(factors: readonly MathNode[]): MathNode {
 	if (factors.length === 1) return factors[0];
 	let result = factors[0];
 	for (let i = 1; i < factors.length; i++) {
-		result = { type: 'multiplication', left: result, right: factors[i], displayStyle: 'implicit' };
+		result = multiply(result, factors[i], 'implicit');
 	}
 	return result;
+}
+
+/**
+ * Le signe d'un numérateur sorti de la fraction : (−1)/a → −1/a, comme la
+ * branche numérique écrit −1/3 (`-a\ln x = 1` → e^{−1/a}, revue V41).
+ */
+function signOutOfFraction(node: MathNode): MathNode {
+	if (isDivision(node) && isOpposite(node.numerator)) {
+		return opposite(divide(node.numerator.operand, node.denominator, 'fraction'));
+	}
+	return node;
+}
+
+/** Valeur numérique d'un nœud, ou `null` s'il ne s'évalue pas. */
+function tryNumeric(node: MathNode): number | null {
+	try {
+		return evaluateNodeToApproximatedNumber(node);
+	} catch {
+		return null;
+	}
 }
 
 /**
@@ -230,34 +289,48 @@ export function extractTranscendentalEquation(
 
 		// Compute the coefficient a (considering sign of the transcendental term)
 		const coeffNode = reconstructCoefficient(matched.coeffFactors);
-		let aNumeric: number;
-		try {
-			aNumeric = evaluateNodeToApproximatedNumber(coeffNode);
-		} catch {
-			aNumeric = 1;
-		}
-		if (sign === '-') aNumeric = -aNumeric;
+		const bNode = remainingTerms.length === 0 ? null : unflattenSum(remainingTerms);
+		const coeffValue = tryNumeric(coeffNode);
+		const bValue = bNode === null ? 0 : tryNumeric(bNode);
+		// Second membre non numérique (`\ln x = a`) : refus, comme avant. Un
+		// paramètre y vient aussi d'un développement (`\ln(ax)` → ln a + ln x,
+		// valable pour a > 0 seulement) : c = 1 − ln a manquerait e/a pour a < 0.
+		if (bValue === null) continue;
 
-		// Compute b from remaining terms
-		const bNode = unflattenSum(remainingTerms);
+		// Un coefficient PARAMÈTRE (`a\ln x = 1`) : c = −b/a reste symbolique et
+		// sa valeur numérique est inconnue (`null`). Il valait 1 en silence :
+		// `a\ln x = 1` rendait e (écart V41). Un coefficient sans lettre qui ne
+		// s'évalue pas n'est pas un paramètre : refus.
+		if (coeffValue === null) {
+			if (getVariables(coeffNode).size === 0) continue;
+			const signedCoeff = sign === '-' ? opposite(coeffNode) : coeffNode;
+			return {
+				kind: matched.kind,
+				funcName: matched.funcName,
+				argument: matched.argument,
+				constantNode:
+					bNode === null
+						? number('0')
+						: signOutOfFraction(
+								denormalize(normalize(divide(opposite(bNode), signedCoeff, 'fraction')))
+							),
+				constantNumeric: bNode === null ? 0 : null,
+				...(matched.logBase && { logBase: matched.logBase })
+			};
+		}
+
+		const aNumeric = sign === '-' ? -coeffValue : coeffValue;
 
 		// Compute c = -b/a
 		let constantNode: MathNode;
 		let constantNumeric: number;
 
-		if (bNode === null || remainingTerms.length === 0) {
+		if (bNode === null) {
 			// No remaining terms: f(u) = 0 (with possible coefficient)
 			constantNode = number('0');
 			constantNumeric = 0;
 		} else {
-			let bNumeric: number;
-			try {
-				bNumeric = evaluateNodeToApproximatedNumber(bNode);
-			} catch {
-				continue; // Can't evaluate remaining terms numerically
-			}
-
-			constantNumeric = -bNumeric / aNumeric;
+			constantNumeric = -bValue / aNumeric;
 
 			// Build symbolic constant: -b/a
 			if (Math.abs(aNumeric - 1) < 1e-15 && sign === '+') {
@@ -278,7 +351,8 @@ export function extractTranscendentalEquation(
 			funcName: matched.funcName,
 			argument: matched.argument,
 			constantNode,
-			constantNumeric
+			constantNumeric,
+			...(matched.logBase && { logBase: matched.logBase })
 		};
 	}
 
@@ -411,6 +485,10 @@ function solveExponential(
 
 	const { argument, constantNode, constantNumeric } = extracted;
 
+	// e^u = c avec c paramétré (`a e^x = 1`) : la solution existe selon le signe
+	// de c, qu'on ne connaît pas. Refus plutôt qu'une valeur fausse (V41).
+	if (constantNumeric === null) return null;
+
 	// Check for no solution (e^u = negative or zero)
 	if (constantNumeric <= 0) {
 		recorder.recordStep(
@@ -528,7 +606,7 @@ function solveLogarithmic(
 	const extracted = extractTranscendentalEquation(expr, variable);
 	if (!extracted || extracted.kind !== 'log') return null;
 
-	const { funcName, argument, constantNode, constantNumeric } = extracted;
+	const { funcName, argument, constantNode, constantNumeric, logBase } = extracted;
 
 	// Extract linear form from argument: u = ax + b
 	const linearForm = extractLinearForm(argument, variable);
@@ -549,22 +627,23 @@ function solveLogarithmic(
 
 	// ln(ax+b) = c → ax+b = e^c → x = (e^c - b) / a
 	// log(ax+b) = c → ax+b = 10^c → x = (10^c - b) / a
-	let inverseNode: MathNode;
-	let inverseNumeric: number;
-
-	if (funcName === 'ln') {
-		inverseNode =
-			constantNumeric === 0
-				? number('1')
-				: constantNumeric === 1
-					? euler()
-					: superscript(euler(), constantNode);
-		inverseNumeric = Math.exp(constantNumeric);
-	} else {
-		// log base 10
-		inverseNode = constantNumeric === 0 ? number('1') : superscript(number('10'), constantNode);
-		inverseNumeric = Math.pow(10, constantNumeric);
-	}
+	// ln u = c existe pour TOUT c réel : un c paramétré (`a\ln x = 1`, c = 1/a)
+	// donne une valeur juste, e^c, sans valeur approchée.
+	const base = funcName === 'ln' ? euler() : (logBase ?? number('10'));
+	const baseNumeric = tryNumeric(base);
+	if (baseNumeric === null) return null;
+	const inverseNode: MathNode =
+		constantNumeric === 0
+			? number('1')
+			: constantNumeric === 1 && funcName === 'ln'
+				? euler()
+				: superscript(base, constantNode);
+	const inverseNumeric: number = // NaN : valeur paramétrée, sans valeur approchée
+		constantNumeric === null
+			? NaN
+			: funcName === 'ln'
+				? Math.exp(constantNumeric)
+				: Math.pow(baseNumeric, constantNumeric);
 
 	let solution: MathNode;
 	let approximate: number;
@@ -593,7 +672,9 @@ function solveLogarithmic(
 
 	const applyRule = funcName === 'ln' ? 'apply-exponential' : 'apply-exponential';
 	const applyDesc =
-		funcName === 'ln' ? `On applique l'exponentielle` : `On applique la puissance de 10`;
+		funcName === 'ln'
+			? `On applique l'exponentielle`
+			: `On applique la puissance de ${baseNumeric}`;
 
 	recorder.recordStep(
 		applyRule,
@@ -603,9 +684,13 @@ function solveLogarithmic(
 		'detailed'
 	);
 
+	const parametric = Number.isNaN(approximate);
+
 	recorder.recordStep(
 		'isolate-variable',
-		`Solution: ${variable} = ${approximate.toPrecision(options.precision)}`,
+		parametric
+			? `Solution exprimée avec le paramètre`
+			: `Solution: ${variable} = ${approximate.toPrecision(options.precision)}`,
 		equals(varNode(variable), solution),
 		equals(varNode(variable), solutionSimplified),
 		'summarized'
@@ -618,7 +703,7 @@ function solveLogarithmic(
 			{
 				value: solutionSimplified,
 				exact: true,
-				approximate
+				...(!parametric && { approximate })
 			}
 		],
 		equationType: 'logarithmic',
@@ -647,9 +732,13 @@ function solveTrigonometric(
 
 	const { funcName, argument, constantNode, constantNumeric: constant } = extracted;
 
+	// sin u = c avec c paramétré (`a\cos x = 1`) : l'existence dépend de |c| ≤ 1.
+	// Refus (V41). tan u = c a une solution pour TOUT c : arctan(c) + kπ.
+	if (constant === null && funcName !== 'tan') return null;
+
 	// Check domain restrictions for sin/cos
 	if (funcName === 'sin' || funcName === 'cos') {
-		if (constant < -1 || constant > 1) {
+		if (constant !== null && (constant < -1 || constant > 1)) {
 			recorder.recordStep(
 				'no-real-solution',
 				`L'equation ${funcName}(x) = ${constant} n'a pas de solution car ${constant} n'est pas dans [-1, 1]`,
@@ -691,7 +780,8 @@ function solveTrigonometric(
 	const basePeriodNumeric = funcName === 'tan' ? Math.PI : 2 * Math.PI;
 	const basePeriodNode: MathNode = funcName === 'tan' ? PI : TWO_PI;
 
-	const uSolutions = computeUSolutions(funcName, constantNode, constant, basePeriodNumeric);
+	// NaN : c paramétré (tan seulement), les valeurs approchées sont omises
+	const uSolutions = computeUSolutions(funcName, constantNode, constant ?? NaN, basePeriodNumeric);
 
 	// Transform from u-space to x-space: x = (u - b) / a
 	const absA = Math.abs(aNumeric);
@@ -723,7 +813,7 @@ function solveTrigonometric(
 
 		return {
 			value: simplified,
-			approximate: xNumeric,
+			...(!Number.isNaN(xNumeric) && { approximate: xNumeric }),
 			exact: true
 		};
 	});
@@ -752,7 +842,7 @@ function solveTrigonometric(
 	// Record steps
 	recorder.recordStep(
 		`apply-${inverseFuncName}`,
-		`On resout ${funcName}(u) = ${constant}`,
+		`On resout ${funcName}(u) = ${constant ?? 'c'}`,
 		expr,
 		expr,
 		'detailed'
@@ -788,7 +878,7 @@ export const transcendentalSolver: EquationSolver = {
 	name: 'transcendental',
 
 	canSolve(expr: MathNode, variable: string): boolean {
-		return containsTranscendental(expr) && getVariables(expr).has(variable);
+		return containsTranscendental(expr, variable);
 	},
 
 	solve(
@@ -799,7 +889,7 @@ export const transcendentalSolver: EquationSolver = {
 		},
 		recorder: SolveStepRecorder
 	): SolveResult {
-		const transcType = getTranscendentalType(expr);
+		const transcType = getTranscendentalType(expr, variable);
 
 		// Try specific solver based on type
 		let result: SolveResult | null = null;

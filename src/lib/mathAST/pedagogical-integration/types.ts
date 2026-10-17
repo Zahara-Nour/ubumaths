@@ -77,6 +77,7 @@ export type PedagogicalIntegrationRule =
 	| 'apply-linearity-sum' // ∫(f+g) = ∫f + ∫g
 	| 'extract-constant' // ∫c·f = c·∫f
 	// ---- Composite forms (recognised before u-substitution) ----
+	| 'reveal-derivative' // f = k × u'·g(u) : on fait apparaître u', on sort k (avant la forme composée)
 	| 'apply-composite-power' // u'·u^n → u^(n+1)/(n+1)
 	| 'apply-composite-ln' // u'/u → ln|u|
 	| 'apply-composite-exp' // u'·e^u → e^u
@@ -86,6 +87,7 @@ export type PedagogicalIntegrationRule =
 	| 'apply-fundamental-theorem' // ∫_a^b f = [F]_a^b
 	| 'substitute-bounds' // [F]_a^b → F(b) - F(a)
 	| 'simplify-bounds-result' // F(b) - F(a) → numeric value
+	| 'integrand-undefined-on-interval' // valeur interdite de f dans [a ; b] : pas de valeur (V28)
 	// ---- Explicit u-substitution (supérieur) ----
 	| 'identify-substitution'
 	| 'compute-du'
@@ -119,14 +121,22 @@ export type PedagogicalIntegrationRule =
  * - `apply-known-primitive`         : `{}` (renderer reads `step.before`)
  * - `apply-linearity-sum`           : `{ f, g }` (or empty for n>2 terms — renderer reads `step.before`)
  * - `extract-constant`              : `{ c, f }`
- * - `apply-composite-power`         : `{ u, n }`
- * - `apply-composite-ln`            : `{ u }`
- * - `apply-composite-exp`           : `{ u }`
- * - `apply-composite-sin`           : `{ u }`
- * - `apply-composite-cos`           : `{ u }`
+ * - `reveal-derivative`             : `{ u, du, k, revealed, integrand, variable }` — `before` = f = k × `revealed`,
+ *                                     `after` = `revealed` = u′·g(u) EXACTEMENT ; l'étape composée suit ;
+ *                                     du = 1 : titre « On sort la constante k » (`onlyConstantOut`)
+ * - `apply-composite-power`         : `{ u, n, k?, scaled? }`
+ * - `apply-composite-ln`            : `{ u, k?, scaled?, positive? }`
+ * - `apply-composite-exp`           : `{ u, k?, scaled? }`
+ * - `apply-composite-sin`           : `{ u, k?, scaled? }`
+ * - `apply-composite-cos`           : `{ u, k?, scaled? }`
+ *   (une forme composée a toujours `before` = u′·g(u) ; `after` = G(u) sans
+ *   coefficient, et avec un coefficient `after` = `scaled` = k·G(u), `k` étant
+ *   celui de l'étape `reveal-derivative` qui la précède ;
+ *   `positive` (u, ou l'intervalle) : u > 0 certain, `\ln u` sans valeur absolue)
  * - `apply-fundamental-theorem`     : `{ primitive }`
- * - `substitute-bounds`             : `{ primitive }`
+ * - `substitute-bounds`             : `{ primitive, lower, upper }`
  * - `simplify-bounds-result`        : `{}`
+ * - `integrand-undefined-on-interval` : `{ point }` (valeur interdite de f dans [a ; b])
  * - `identify-substitution`         : `{ u }`
  * - `compute-du`                    : `{ u, du }`
  * - `apply-substitution`            : `{ u, du, transformed }`
@@ -192,7 +202,9 @@ export interface PedagogicalIntegrationStep extends BaseStep<PedagogicalIntegrat
 /**
  * Output of running the pedagogical integration pipeline.
  *
- * - `antiderivative` is always populated (the F(x) such that F'(x) = f(x)).
+ * - `antiderivative` is always populated (the F(x) such that F'(x) = f(x)),
+ *   except for a definite integral refused because of a forbidden value
+ *   (see `PedagogicalDefiniteIntegrationResult`).
  * - `value` is populated only for definite integrals (the numeric value of
  *   F(b) - F(a)).
  */
@@ -200,11 +212,33 @@ export interface PedagogicalIntegrationResult {
 	/** Antiderivative F(x) such that F'(x) = f(x) — without the `+ C` */
 	readonly antiderivative: MathNode;
 
-	/** Numeric value of the definite integral (when `options.definite` was set) */
+	/**
+	 * Numeric value of the definite integral (when `options.definite` was set).
+	 * Absent when f has a forbidden value in [a ; b] (`undefinedAt`).
+	 */
 	readonly value?: MathNode;
+
+	/**
+	 * Intégrale définie seulement : valeur de [a ; b] (bornes comprises) où f
+	 * n'est pas définie. L'intégrale n'est alors pas calculée (V28) : ni
+	 * `value`, ni étapes du théorème fondamental.
+	 */
+	readonly undefinedAt?: MathNode;
 
 	/** Recorded steps (top-level entries; subSteps live inside each entry) */
 	readonly steps: readonly PedagogicalIntegrationStep[];
+}
+
+/**
+ * Résultat d'une intégrale définie : comme `PedagogicalIntegrationResult`,
+ * mais sans primitive quand f a une valeur interdite dans [a ; b]
+ * (`undefinedAt`) — le refus ne la calcule pas (V28).
+ */
+export interface PedagogicalDefiniteIntegrationResult extends Omit<
+	PedagogicalIntegrationResult,
+	'antiderivative'
+> {
+	readonly antiderivative?: MathNode;
 }
 
 // =============================================================================
@@ -369,11 +403,14 @@ export const STRATEGIES_INTEGRATION: Readonly<
 
 /**
  * Error thrown when a pedagogical integration cannot be performed within the
- * V1 scope (e.g. requires partial fractions, trigonometric substitution,
- * cyclic IPP, tabular IPP, parametric integrals, improper integrals, or
- * piecewise functions).
+ * current scope (e.g. trigonometric substitution, tabular IPP, parametric
+ * integrals, improper integrals, piecewise functions, or `1/x^2`). L'IPP
+ * cyclique (`enableCyclicParts`) et les éléments simples
+ * (`enablePartialFractions`) ne sont PLUS hors périmètre : actifs au lycée.
  *
- * Caught by `correction-generator.ts` to fall back silently to Mode A.
+ * Caught by `correction-generator.ts` to fall back silently to Mode A, and by
+ * `atelier/integrate-steps.ts` (la ligne `.intégrer` garde alors la réponse du
+ * moteur, sans « Comment ? »).
  */
 export class PedagogicalIntegrationNotImplemented extends Error {
 	readonly integrand: MathNode;

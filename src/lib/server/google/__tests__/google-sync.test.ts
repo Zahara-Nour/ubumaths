@@ -251,7 +251,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				expect(result.synced).toBe(0);
 				expect(result.errors.length).toBeGreaterThan(0);
-				expect(result.errors[0]).toContain('No Google integration found');
+				expect(result.errors[0]).toContain('Aucun compte Google connecté');
 			});
 
 			it('should handle topic upsert errors', async () => {
@@ -287,7 +287,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				expect(result.synced).toBe(0);
 				expect(result.errors.length).toBeGreaterThan(0);
-				expect(result.errors[0]).toContain('Failed to sync topic');
+				expect(result.errors[0]).toContain('Impossible de synchroniser le thème');
 			});
 
 			it('should handle API errors gracefully', async () => {
@@ -310,7 +310,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				expect(result.synced).toBe(0);
 				expect(result.errors.length).toBeGreaterThan(0);
-				expect(result.errors[0]).toContain('Failed to sync topics');
+				expect(result.errors[0]).toContain('Impossible de synchroniser les thèmes');
 			});
 
 			it('should handle cleanup errors gracefully', async () => {
@@ -351,7 +351,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				expect(result.synced).toBe(1);
 				expect(result.errors.length).toBeGreaterThan(0);
-				expect(result.errors[0]).toContain('Failed to cleanup old topics');
+				expect(result.errors[0]).toContain('Impossible de retirer les anciens thèmes');
 			});
 		});
 
@@ -714,7 +714,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				expect(result.synced).toBe(0);
 				expect(result.errors.length).toBeGreaterThan(0);
-				expect(result.errors[0]).toContain('Failed to sync material');
+				expect(result.errors[0]).toContain('Impossible de synchroniser le support');
 			});
 
 			it('should handle topic fetch errors gracefully', async () => {
@@ -769,7 +769,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 				// Should still sync materials, but with error about topics
 				expect(result.synced).toBe(1);
 				expect(result.errors.length).toBeGreaterThan(0);
-				expect(result.errors[0]).toContain('Failed to fetch topics');
+				expect(result.errors[0]).toContain('impossible de charger les thèmes');
 			});
 
 			it('should handle attachment sync errors', async () => {
@@ -846,7 +846,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 				// Material synced but attachment failed
 				expect(result.synced).toBe(1);
 				expect(result.errors.length).toBeGreaterThan(0);
-				expect(result.errors[0]).toContain('Failed to sync attachment');
+				expect(result.errors[0]).toContain('Impossible de synchroniser la pièce jointe');
 			});
 		});
 

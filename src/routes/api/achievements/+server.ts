@@ -22,6 +22,9 @@ import {
 	getAchievementsByContext,
 	AchievementServiceError
 } from '$lib/server/achievements/service';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/achievements/+server');
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
@@ -48,7 +51,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			count: achievements.length
 		});
 	} catch (err) {
-		console.error('[API] Error fetching achievements:', err);
+		logger.error('[API] Error fetching achievements:', err);
 
 		if (err instanceof AchievementServiceError) {
 			throw error(500, err.message);

@@ -41,6 +41,7 @@ import {
 	type GenericFunctionConfig,
 	type MathNode
 } from '$lib/mathAST';
+import type { CapitalPairs } from '$lib/mathAST/parser/types';
 import { coefficientCleanupSteps } from '$lib/mathAST/cosmetic-transforms';
 import { mapNode, mapNodeTopDown } from '$lib/mathAST/transforms';
 import { positive, variable } from '$lib/mathAST/factory';
@@ -252,35 +253,38 @@ export function cleanCoefficientsAst(ast: MathNode): MathNode {
  */
 function readableCustom(
 	cleaned: MathNode,
-	genericFunctions?: GenericFunctionConfig
+	genericFunctions?: GenericFunctionConfig,
+	capitalPairs?: CapitalPairs
 ): string | null {
 	const text = toCustom(cleaned);
-	const reread = parseCustomSafe(text, { genericFunctions });
+	const reread = parseCustomSafe(text, { genericFunctions, capitalPairs });
 	return reread.ast && toLatex(reread.ast) === toLatex(cleaned) ? text : null;
 }
 
 /**
  * Réponse attendue en syntaxe maison (`1x-1y+0=0` → `x-y=0`), ou inégalité écrite en
  * LaTeX (`x^2+1x\\leqslant 2` → `x^2 + x \\leqslant 2`, rendue en LaTeX). Formule
- * illisible ou déjà propre : le texte d'origine, à l'octet près.
+ * illisible ou déjà propre : le texte d'origine, à l'octet près. `capitalPairs` : sens de
+ * `AB` résolu pour l'instance (absent : produit, comme avant).
  */
 export function cleanCoefficientsCustom(
 	source: string,
-	genericFunctions?: GenericFunctionConfig
+	genericFunctions?: GenericFunctionConfig,
+	capitalPairs?: CapitalPairs
 ): string {
 	if (source.trim() === '') return source;
 	try {
-		const parsed = parseCustomSafe(source.trim(), { genericFunctions });
+		const parsed = parseCustomSafe(source.trim(), { genericFunctions, capitalPairs });
 		if (parsed.ast) {
 			const cleaned = cleanCoefficientsAst(parsed.ast);
 			if (cleaned === parsed.ast) return source;
-			return readableCustom(cleaned, genericFunctions) ?? source;
+			return readableCustom(cleaned, genericFunctions, capitalPairs) ?? source;
 		}
 		// Inégalité écrite en LaTeX (`x^2+1x\\leqslant 2`) : relue en syntaxe maison pour être
 		// nettoyée, et rendue en LaTeX comme l'auteur l'a écrite (`x^2 + x \\leqslant 2`)
 		const custom = latexRelationsToCustom(source.trim());
 		if (custom === source.trim()) return source;
-		const relation = parseCustomSafe(custom, { genericFunctions });
+		const relation = parseCustomSafe(custom, { genericFunctions, capitalPairs });
 		if (!relation.ast) return source;
 		const cleaned = cleanCoefficientsAst(relation.ast);
 		return cleaned === relation.ast ? source : toLatex(cleaned);

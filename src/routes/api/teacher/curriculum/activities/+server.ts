@@ -16,6 +16,9 @@ import { curriculumDbError } from '$lib/server/curriculum';
 import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
 import type { JournalEntryActivity } from '$lib/types/database-helpers';
 import type { TablesInsert } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/curriculum/activities/+server');
 
 const ACTIVITY_COLS =
 	'id, entry_id, kind, exercise_id, question_template_id, evaluation_id, chapter_id, textbook_ref, label, display_order, created_at';
@@ -39,7 +42,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.order('created_at', { ascending: true });
 
 	if (dbErr) {
-		console.error('[curriculum] activities GET failed:', dbErr);
+		logger.error('[curriculum] activities GET failed:', dbErr);
 		return json({ error: 'Échec du chargement des activités' }, { status: 500 });
 	}
 
@@ -91,7 +94,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		console.error('[curriculum] activities POST failed:', dbErr);
+		logger.error('[curriculum] activities POST failed:', dbErr);
 		return json({ error: dbErr.message }, { status: 500 });
 	}
 
@@ -100,7 +103,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		try {
 			await reconcileAutoCoverage(locals.supabase, input.entry_id);
 		} catch (e) {
-			console.error('[curriculum] reconcile after activity POST failed:', e);
+			logger.error('[curriculum] reconcile after activity POST failed:', e);
 			// activity is created; coverage will re-reconcile on next change.
 		}
 	}

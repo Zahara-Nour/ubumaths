@@ -766,6 +766,7 @@ describe('exercise validation schemas', () => {
 				title: 'Linear Equation',
 				variables: { x: 2 },
 				is_public: true,
+				search_indexed: false,
 				created_by: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
 				created_at: '2025-01-01T00:00:00.000Z',
 				updated_at: '2025-01-02T00:00:00.000Z'
@@ -782,6 +783,7 @@ describe('exercise validation schemas', () => {
 				solution_md: 'Solution',
 				category: 'application',
 				is_public: false,
+				search_indexed: false,
 				created_by: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
 				created_at: '2025-01-01T00:00:00.000Z',
 				updated_at: '2025-01-02T00:00:00.000Z'
@@ -802,6 +804,7 @@ describe('exercise validation schemas', () => {
 						solution_md: 'Solution',
 						category: 'automatisme',
 						is_public: true,
+						search_indexed: false,
 						created_by: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
 						created_at: '2025-01-01T00:00:00Z',
 						updated_at: '2025-01-02T00:00:00Z'
@@ -827,5 +830,29 @@ describe('exercise validation schemas', () => {
 			const result = exerciseListResponseSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
+	});
+});
+
+// Ressources d'un exercice : rendues en lien, donc adresse http(s) seulement.
+// `z.string().url()` seul laissait passer `javascript:alert(1)`.
+describe('ressources : adresse http(s) seulement (écriture)', () => {
+	const base = {
+		category: 'automatisme',
+		variations: [{ label: 'default', statement_md: 'Q', solution_md: 'R' }]
+	};
+	const withUrl = (url: string) => ({
+		...base,
+		resources: [{ type: 'link', url, title: 'Lien' }]
+	});
+
+	it.each(['javascript:alert(1)', 'mailto:prof@example.org'])('refuse %s', (url) => {
+		expect(createExerciseSchema.safeParse(withUrl(url)).success).toBe(false);
+		expect(updateExerciseSchema.safeParse({ resources: withUrl(url).resources }).success).toBe(
+			false
+		);
+	});
+
+	it('accepte https', () => {
+		expect(createExerciseSchema.safeParse(withUrl('https://example.org/cours')).success).toBe(true);
 	});
 });

@@ -14,6 +14,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-exercises/[id]/my-submissions/+server');
 
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;
@@ -23,7 +26,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	const rawLimit = parseInt(url.searchParams.get('limit') ?? '', 10);
@@ -41,8 +44,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		.limit(limit);
 
 	if (dbErr) {
-		console.error('Failed to read submissions:', dbErr);
-		throw error(500, 'Erreur lors de la lecture des soumissions');
+		logger.error('Failed to read submissions:', dbErr);
+		throw error(500, 'Impossible de charger les solutions envoyées');
 	}
 
 	return json({ submissions: data ?? [] });

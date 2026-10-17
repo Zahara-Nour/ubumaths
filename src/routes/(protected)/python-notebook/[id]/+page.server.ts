@@ -7,6 +7,9 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { uuidSchema } from '$lib/server/validation/common';
 import { isForeignStudentNotebook } from '$lib/utils/notebook-foreign-content';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/python-notebook/[id]/+page.server');
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const { user, profile } = locals;
@@ -50,7 +53,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		if (queryError.code === 'PGRST116') {
 			throw error(404, 'Notebook introuvable');
 		}
-		console.error('Error loading notebook:', queryError);
+		logger.error('Error loading notebook:', queryError);
 		throw error(500, 'Erreur lors du chargement du notebook');
 	}
 
@@ -76,8 +79,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (assignmentError && assignmentError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', assignmentError);
-			throw error(500, 'Impossible de vérifier votre accès');
+			logger.error('Contrôle d’accès impossible :', assignmentError);
+			throw error(500, 'Impossible de vérifier l’accès');
 		}
 
 		if (assignment) {
@@ -89,7 +92,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	if (!isOwner && !isPublicAndTeacher && !isAssigned) {
-		throw error(403, 'Acces interdit a ce notebook');
+		throw error(403, 'Accès interdit à ce notebook');
 	}
 
 	// Carnet d'élève lu par un autre : rendu restreint, exécution interdite

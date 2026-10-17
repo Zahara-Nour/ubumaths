@@ -32,7 +32,7 @@ const ASSESSMENTS_URL = '/dashboard/student/assessments';
  */
 async function navigateToAssessments(page: Page): Promise<void> {
 	await page.goto(ASSESSMENTS_URL);
-	await page.waitForSelector('h1:has-text("Mes Évaluations")', { state: 'visible' });
+	await page.waitForSelector('h1:has-text("Mes contrôles")', { state: 'visible' });
 	await page.waitForLoadState('networkidle');
 }
 
@@ -55,7 +55,7 @@ function _getAssessmentCard(page: Page, title: string): ReturnType<typeof page.l
  * Check if empty state is visible
  */
 async function _isEmptyStateVisible(page: Page): Promise<boolean> {
-	const emptyState = page.locator('text=/Aucune évaluation/i');
+	const emptyState = page.locator('text=/Aucun contrôle/i');
 	return await emptyState.isVisible();
 }
 
@@ -109,12 +109,10 @@ test.describe('Student Assessment List View', () => {
 		await navigateToAssessments(page);
 
 		// Verify page header
-		await expect(page.locator('h1:has-text("Mes Évaluations")')).toBeVisible();
+		await expect(page.locator('h1:has-text("Mes contrôles")')).toBeVisible();
 
 		// Verify subtitle
-		await expect(
-			page.locator('text=/Vos évaluations assignées par vos professeurs/i')
-		).toBeVisible();
+		await expect(page.locator('text=/Vos contrôles assignés par vos professeurs/i')).toBeVisible();
 
 		// Page should load without errors
 		await expect(page).toHaveURL(ASSESSMENTS_URL);
@@ -131,8 +129,8 @@ test.describe('Student Assessment List View', () => {
 
 		if (count === 0) {
 			// Should show empty state
-			await expect(page.locator('text=/Aucune évaluation/i')).toBeVisible();
-			await expect(page.locator("text=/n'ont pas encore assigné d'évaluations/i")).toBeVisible();
+			await expect(page.locator('text=/Aucun contrôle/i')).toBeVisible();
+			await expect(page.locator("text=/n'ont pas encore assigné de contrôles/i")).toBeVisible();
 
 			// Should show empty state icon
 			const emptyIcon = page.locator('svg').filter({ hasText: '' }).first();

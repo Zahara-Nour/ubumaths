@@ -663,10 +663,10 @@ Goodbye!
 
 ### Delimiters
 
-| Type           | Examples                      |
+| Type | Examples |
 | -------------- | ----------------------------- | --- | --------- | -------- | --- |
-| Parentheses    | `(x + y)`, `\left( x \right)` |
-| Absolute value | `                             | x   | `, `\left | x \right | `   |
+| Parentheses | `(x + y)`, `\left( x \right)` |
+| Absolute value | `                            | x   |`, `\left | x \right | ` |
 
 ## Supported Custom Syntax
 

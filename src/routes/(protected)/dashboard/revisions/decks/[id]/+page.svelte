@@ -7,24 +7,18 @@
 	 * à une section.
 	 */
 
+	import { studySessionHref } from '$lib/navigation/return-links';
 	import { invalidateAll, goto } from '$app/navigation';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import {
-		ChevronLeft,
-		Plus,
-		PlayCircle,
-		Pencil,
-		Trash2,
-		BookOpen,
-		FileText
-	} from '@lucide/svelte';
+	import { Plus, PlayCircle, Pencil, Trash2, BookOpen, FileText } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 	import type { DeckSection, DeckCardLite } from './+page.server';
@@ -151,7 +145,7 @@
 	}
 
 	function startStudy() {
-		goto(`/dashboard/revisions/decks/${data.deck.id}/study`).then(() => {});
+		goto(studySessionHref(data.deck.id)).then(() => {});
 	}
 </script>
 
@@ -160,12 +154,7 @@
 </svelte:head>
 
 <main class="container mx-auto max-w-4xl px-4 py-6">
-	<div class="mb-4">
-		<Button variant="ghost" size="sm" href="/dashboard/revisions">
-			<ChevronLeft class="h-4 w-4" />
-			Mes révisions
-		</Button>
-	</div>
+	<BackLink href="/dashboard/revisions" label="Retour aux révisions" />
 
 	<header class="mb-6 flex flex-wrap items-start justify-between gap-3">
 		<div class="flex items-start gap-3">

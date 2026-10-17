@@ -3,6 +3,9 @@ import type { Database } from '$lib/types/database';
 import { insertSystemNotification } from '$lib/server/notifications';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { completerParticipant, fetchParticipants } from './participants';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/marketplace/helpers');
 
 // ============================================================================
 // PROFILE HELPERS
@@ -182,7 +185,7 @@ export async function validateCardOwnership(
 	const { data: locks, error: locksError } = await query;
 
 	if (locksError) {
-		console.error('Lecture impossible :', locksError);
+		logger.error('Lecture impossible :', locksError);
 		throw new Error(locksError.message);
 	}
 
@@ -478,7 +481,7 @@ export async function createMarketplaceNotification(
 		priority: 'normal'
 	});
 	if (insertError) {
-		console.error('[marketplace] Notification non créée :', insertError);
+		logger.error('[marketplace] Notification non créée :', insertError);
 	}
 }
 
@@ -634,7 +637,7 @@ export async function enrichListingsWithCardData<
 	// Une carte non résolue est SIGNALÉE, jamais retirée en silence (cf. la
 	// construction de `offered_cards` plus bas).
 	if (creatorsError) {
-		console.error('[marketplace] Cartes des vendeurs illisibles :', creatorsError);
+		logger.error('[marketplace] Cartes des vendeurs illisibles :', creatorsError);
 		throw new Error(creatorsError.message);
 	}
 
@@ -660,7 +663,7 @@ export async function enrichListingsWithCardData<
 			.in('id', allTemplateIds);
 
 		if (templatesError) {
-			console.error('[marketplace] Modèles de cartes illisibles :', templatesError);
+			logger.error('[marketplace] Modèles de cartes illisibles :', templatesError);
 			throw new Error(templatesError.message);
 		}
 
@@ -696,7 +699,7 @@ export async function enrichListingsWithCardData<
 	if (instancesIntrouvables.size > 0) {
 		// Bruyant exprès : une offre incomplète est un problème de consentement,
 		// pas un détail d'affichage.
-		console.warn(
+		logger.warn(
 			`[marketplace] ${instancesIntrouvables.size} carte(s) offerte(s) introuvable(s) — les annonces concernées seront marquées incomplètes.`
 		);
 	}
@@ -791,7 +794,7 @@ export async function enrichProposalsWithCardData<
 	const { data: resolues, error: proposersError } = await resolveCardInstances(instancesProposees);
 
 	if (proposersError) {
-		console.error('[marketplace] Cartes des proposants illisibles :', proposersError);
+		logger.error('[marketplace] Cartes des proposants illisibles :', proposersError);
 		throw new Error(proposersError.message);
 	}
 
@@ -812,7 +815,7 @@ export async function enrichProposalsWithCardData<
 			.in('id', Array.from(templateIds));
 
 		if (templatesError) {
-			console.error('[marketplace] Modèles de cartes illisibles :', templatesError);
+			logger.error('[marketplace] Modèles de cartes illisibles :', templatesError);
 			throw new Error(templatesError.message);
 		}
 

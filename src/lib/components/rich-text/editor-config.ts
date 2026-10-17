@@ -81,12 +81,7 @@ function getCacheKey(headingLevels: number): string {
 function createExtensionsInternal(headingLevels: number): Extensions {
 	// Build heading levels array [1, 2, 3, ...] up to headingLevels
 	const levels = Array.from({ length: headingLevels }, (_, i) => i + 1) as (
-		| 1
-		| 2
-		| 3
-		| 4
-		| 5
-		| 6
+		1 | 2 | 3 | 4 | 5 | 6
 	)[];
 
 	return [

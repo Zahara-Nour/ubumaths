@@ -10,9 +10,9 @@
 
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 
-const logger = createLogger('auth/pending-approval');
+const logger = createServerLogger('auth/pending-approval');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
@@ -40,8 +40,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		logger.warn('Rejected user accessing pending-approval:', user.email);
 		await supabase.auth.signOut();
 		const errorMessage = profile.rejection_reason
-			? `Votre inscription a été refusée : ${profile.rejection_reason}`
-			: 'Votre inscription a été refusée.';
+			? `Inscription refusée : ${profile.rejection_reason}`
+			: 'Inscription refusée.';
 		throw redirect(303, `/auth/login?error=${encodeURIComponent(errorMessage)}`);
 	}
 

@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/drafts/+server');
 
 /**
  * GET /api/messages/drafts
@@ -17,13 +20,13 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('updated_at', { ascending: false });
 
 		if (fetchError) {
-			console.error('Error fetching drafts:', fetchError);
+			logger.error('Error fetching drafts:', fetchError);
 			throw error(500, 'Erreur lors de la récupération des brouillons');
 		}
 
 		return json({ drafts: drafts || [] });
 	} catch (err) {
-		console.error('Error in drafts API:', err);
+		logger.error('Error in drafts API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
@@ -69,7 +72,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (updateError) {
-				console.error('Error updating draft:', updateError);
+				logger.error('Error updating draft:', updateError);
 				throw error(500, 'Erreur lors de la mise à jour du brouillon');
 			}
 
@@ -91,14 +94,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (createError) {
-				console.error('Error creating draft:', createError);
+				logger.error('Error creating draft:', createError);
 				throw error(500, 'Erreur lors de la création du brouillon');
 			}
 
 			return json({ draft });
 		}
 	} catch (err) {
-		console.error('Error in save draft API:', err);
+		logger.error('Error in save draft API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}

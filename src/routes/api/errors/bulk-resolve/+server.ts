@@ -12,6 +12,9 @@ import {
 } from '$lib/server/errorMonitoring';
 import { bulkResolveErrorsSchema } from '$lib/server/validation/errors';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/errors/bulk-resolve/+server');
 
 /**
  * POST /api/errors/bulk-resolve
@@ -97,7 +100,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				affectedOccurrences++;
 			} else {
 				// Log the error but continue processing other occurrences
-				console.error(
+				logger.error(
 					`Failed to resolve error signature ${occurrence.error_signature}:`,
 					resolveResult.error
 				);
@@ -115,7 +118,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw err;
 		}
 
-		console.error('Error in POST /api/errors/bulk-resolve:', err);
+		logger.error('Error in POST /api/errors/bulk-resolve:', err);
 		throw error(500, 'Internal server error');
 	}
 };

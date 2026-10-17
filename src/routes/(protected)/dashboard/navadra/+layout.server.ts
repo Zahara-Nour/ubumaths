@@ -5,12 +5,15 @@
 import type { LayoutServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { toGameSpell, toGamePlayer } from '$lib/types/game';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/navadra/+layout.server');
 
 export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
 
 	if (!user) {
-		throw error(401, 'You must be logged in to play Navadra');
+		throw error(401, 'Connexion requise pour jouer à Navadra');
 	}
 
 	// Fetch or create game player profile
@@ -34,13 +37,13 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 			.single();
 
 		if (createError) {
-			console.error('Failed to create game player:', createError);
+			logger.error('Failed to create game player:', createError);
 			throw error(500, 'Failed to create game profile');
 		}
 
 		gamePlayer = newGamePlayer;
 	} else if (gamePlayerError) {
-		console.error('Failed to fetch game player:', gamePlayerError);
+		logger.error('Failed to fetch game player:', gamePlayerError);
 		throw error(500, 'Failed to load game profile');
 	}
 
@@ -58,7 +61,7 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 		.order('spell_num', { ascending: true });
 
 	if (spellsError) {
-		console.error('Lecture impossible :', spellsError);
+		logger.error('Lecture impossible :', spellsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -73,7 +76,7 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 	// ne doit pas se confondre avec une donnée réellement vide.
 	if (activeDeckError && activeDeckError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', activeDeckError);
+		logger.error('Contexte illisible :', activeDeckError);
 	}
 
 	// Fetch all player's spell decks
@@ -84,7 +87,7 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 		.order('created_at', { ascending: true });
 
 	if (allDecksError) {
-		console.error('Lecture impossible :', allDecksError);
+		logger.error('Lecture impossible :', allDecksError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

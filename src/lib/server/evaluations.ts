@@ -27,6 +27,9 @@ import { isDeadlinePassed } from '$lib/utils/dates';
 import { toDbSeries } from '$lib/server/series';
 import { savedSeriesCategoriesSchema } from '$lib/validation/series';
 import type { EvaluationSettings } from '$lib/server/validation/evaluations';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/evaluations');
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -93,7 +96,7 @@ function mapEvaluationWriteError(error: { code?: string; message?: string }): Ev
 	if (error.code === CHECK_VIOLATION) {
 		return new EvaluationError(400, 'Réglages incohérents avec la forme choisie');
 	}
-	return new EvaluationError(500, 'Enregistrement impossible, réessaie dans un instant');
+	return new EvaluationError(500, 'Enregistrement impossible, réessayer dans un instant');
 }
 
 // ===========================================================================
@@ -114,7 +117,7 @@ export async function createEvaluation(
 		.eq('id', input.series_id)
 		.maybeSingle();
 	if (seriesError) {
-		console.error('[createEvaluation] Série illisible :', seriesError);
+		logger.error('[createEvaluation] Série illisible :', seriesError);
 		throw new EvaluationError(500, 'Impossible de vérifier la série');
 	}
 	if (!series) throw new EvaluationError(404, 'Série introuvable');
@@ -139,7 +142,7 @@ export async function createEvaluation(
 		.single();
 
 	if (error || !data) {
-		console.error('[createEvaluation] Insertion impossible :', error);
+		logger.error('[createEvaluation] Insertion impossible :', error);
 		throw error ? mapEvaluationWriteError(error) : new EvaluationError(500, 'Création impossible');
 	}
 	return toDbEvaluation(data);
@@ -162,8 +165,8 @@ export async function getEvaluation(
 			.maybeSingle();
 
 		if (error) {
-			console.error('[getEvaluation] Lecture impossible :', error);
-			throw new EvaluationError(500, "Impossible de charger l'évaluation");
+			logger.error('[getEvaluation] Lecture impossible :', error);
+			throw new EvaluationError(500, 'Impossible de charger le contrôle');
 		}
 		if (data) return toEvaluationWithSeries(data as EvaluationRowWithSeries);
 	}
@@ -182,8 +185,8 @@ export async function getTeacherEvaluations(
 		.order('created_at', { ascending: false });
 
 	if (error) {
-		console.error('[getTeacherEvaluations] Lecture impossible :', error);
-		throw new EvaluationError(500, 'Impossible de charger les évaluations');
+		logger.error('[getTeacherEvaluations] Lecture impossible :', error);
+		throw new EvaluationError(500, 'Impossible de charger les contrôles');
 	}
 
 	const rows = (data ?? []) as Array<
@@ -219,11 +222,11 @@ export async function updateEvaluation(
 		.select();
 
 	if (error) {
-		console.error('[updateEvaluation] Écriture impossible :', error);
+		logger.error('[updateEvaluation] Écriture impossible :', error);
 		throw mapEvaluationWriteError(error);
 	}
 	if (!data || data.length === 0) {
-		throw new EvaluationError(404, 'Évaluation introuvable');
+		throw new EvaluationError(404, 'Contrôle introuvable');
 	}
 	return toDbEvaluation(data[0]);
 }
@@ -241,11 +244,11 @@ export async function setEvaluationStatus(
 		.select('id');
 
 	if (error) {
-		console.error('[setEvaluationStatus] Écriture impossible :', error);
-		throw new EvaluationError(500, 'Enregistrement impossible, réessaie dans un instant');
+		logger.error('[setEvaluationStatus] Écriture impossible :', error);
+		throw new EvaluationError(500, 'Enregistrement impossible, réessayer dans un instant');
 	}
 	if (!data || data.length === 0) {
-		throw new EvaluationError(404, 'Évaluation introuvable');
+		throw new EvaluationError(404, 'Contrôle introuvable');
 	}
 }
 
@@ -266,13 +269,13 @@ export async function assignEvaluation(
 	const teacherId = actor.id;
 	const evaluation = await getEvaluation(supabase, evaluationId);
 	if (!evaluation) {
-		throw new EvaluationError(404, 'Évaluation introuvable');
+		throw new EvaluationError(404, 'Contrôle introuvable');
 	}
 	if (evaluation.created_by !== teacherId && !actor.isAdmin) {
-		throw new EvaluationError(403, 'Cette évaluation ne vous appartient pas');
+		throw new EvaluationError(403, 'Ce contrôle appartient à un autre professeur');
 	}
 	if (evaluation.status !== 'published') {
-		throw new EvaluationError(400, "Publie l'évaluation avant de l'assigner");
+		throw new EvaluationError(400, "Publie le contrôle avant de l'assigner");
 	}
 
 	const rows = [
@@ -290,13 +293,13 @@ export async function assignEvaluation(
 		}))
 	];
 	if (rows.length === 0) {
-		throw new EvaluationError(400, 'Choisis au moins une classe ou un élève');
+		throw new EvaluationError(400, 'Choisir au moins une classe ou un élève');
 	}
 
 	const { data, error } = await supabase.from('evaluation_assignments').insert(rows).select();
 
 	if (error) {
-		console.error('[assignEvaluation] Insertion impossible :', error);
+		logger.error('[assignEvaluation] Insertion impossible :', error);
 		throw new EvaluationError(500, "L'assignation n'a pas pu être enregistrée");
 	}
 	if (!data || data.length !== rows.length) {
@@ -315,7 +318,7 @@ export async function getEvaluationAssignments(
 		.eq('evaluation_id', evaluationId);
 
 	if (error) {
-		console.error('[getEvaluationAssignments] Lecture impossible :', error);
+		logger.error('[getEvaluationAssignments] Lecture impossible :', error);
 		throw new EvaluationError(500, 'Impossible de charger les assignations');
 	}
 	return data ?? [];
@@ -335,7 +338,7 @@ export async function removeAssignment(
 		.select('id');
 
 	if (error) {
-		console.error('[removeAssignment] Suppression impossible :', error);
+		logger.error('[removeAssignment] Suppression impossible :', error);
 		throw new EvaluationError(500, 'Échec de la suppression');
 	}
 	if (!data || data.length === 0) {
@@ -363,7 +366,7 @@ export async function getAssignmentWithEvaluation(
 		.maybeSingle();
 
 	if (error) {
-		console.error('[getAssignmentWithEvaluation] Lecture impossible :', error);
+		logger.error('[getAssignmentWithEvaluation] Lecture impossible :', error);
 		throw new EvaluationError(500, "Impossible de vérifier l'assignation");
 	}
 	if (!data) return null;
@@ -397,8 +400,8 @@ export async function isAssignmentRecipient(
 		.maybeSingle();
 
 	if (error) {
-		console.error('[isAssignmentRecipient] Adhésion illisible :', error);
-		throw new EvaluationError(500, 'Impossible de vérifier votre accès');
+		logger.error('[isAssignmentRecipient] Adhésion illisible :', error);
+		throw new EvaluationError(500, 'Impossible de vérifier l’accès');
 	}
 	return !!data;
 }
@@ -416,8 +419,8 @@ export async function countAttempts(
 		.eq('user_id', userId);
 
 	if (error) {
-		console.error('[countAttempts] Tentatives illisibles :', error);
-		throw new EvaluationError(500, 'Impossible de vérifier vos tentatives précédentes');
+		logger.error('[countAttempts] Tentatives illisibles :', error);
+		throw new EvaluationError(500, 'Impossible de vérifier les tentatives précédentes');
 	}
 	return count ?? 0;
 }
@@ -445,7 +448,7 @@ export async function validateAttempt(
 	studentId: string
 ): Promise<AttemptValidation> {
 	if (evaluation.status !== 'published') {
-		return refused("Cette évaluation n'est pas ouverte");
+		return refused("Ce contrôle n'est pas ouvert");
 	}
 	if (isDeadlinePassed(evaluation.deadline)) {
 		return refused('La date limite est dépassée', { deadline_passed: true });
@@ -455,7 +458,7 @@ export async function validateAttempt(
 	try {
 		currentAttempts = await countAttempts(supabase, evaluation.id, studentId);
 	} catch {
-		return refused('Impossible de vérifier vos tentatives précédentes');
+		return refused('Impossible de vérifier les tentatives précédentes');
 	}
 
 	const attemptsRemaining = getAttemptsRemaining(currentAttempts, evaluation.max_attempts);
@@ -488,8 +491,8 @@ export async function getStudentAssignments(
 	// Sans cette garde, une panne réduisait la liste des classes à zéro : les
 	// évaluations affectées À LA CLASSE disparaissaient de l'écran de l'élève.
 	if (membershipsError) {
-		console.error('[getStudentAssignments] Classes illisibles :', membershipsError);
-		throw new EvaluationError(500, 'Impossible de charger vos évaluations');
+		logger.error('[getStudentAssignments] Classes illisibles :', membershipsError);
+		throw new EvaluationError(500, 'Impossible de charger les contrôles');
 	}
 	const classIds = (memberships ?? []).map((m) => m.class_id);
 
@@ -503,8 +506,8 @@ export async function getStudentAssignments(
 
 	const { data, error } = await query;
 	if (error) {
-		console.error('[getStudentAssignments] Assignations illisibles :', error);
-		throw new EvaluationError(500, 'Impossible de charger vos évaluations');
+		logger.error('[getStudentAssignments] Assignations illisibles :', error);
+		throw new EvaluationError(500, 'Impossible de charger les contrôles');
 	}
 
 	const assignments: Array<{
@@ -530,8 +533,8 @@ export async function getStudentAssignments(
 	// Le nombre de tentatives décide de ce que l'élève peut encore faire : une
 	// panne ne doit pas le ramener à zéro.
 	if (sessionsError) {
-		console.error('[getStudentAssignments] Tentatives illisibles :', sessionsError);
-		throw new EvaluationError(500, 'Impossible de charger vos évaluations');
+		logger.error('[getStudentAssignments] Tentatives illisibles :', sessionsError);
+		throw new EvaluationError(500, 'Impossible de charger les contrôles');
 	}
 
 	const attemptsByEvaluation = new Map<
@@ -609,7 +612,7 @@ export async function getEvaluationResults(
 		.eq('evaluation_id', evaluation.id);
 
 	if (assignError) {
-		console.error('[getEvaluationResults] Assignations illisibles :', assignError);
+		logger.error('[getEvaluationResults] Assignations illisibles :', assignError);
 		throw new EvaluationError(500, 'Impossible de charger les résultats');
 	}
 	if (!assignments || assignments.length === 0) return [];
@@ -627,7 +630,7 @@ export async function getEvaluationResults(
 		// Ces membres décident QUELS élèves figurent au tableau : une panne les
 		// faisait tous disparaître (« personne n'a composé »).
 		if (membersError) {
-			console.error('[getEvaluationResults] Membres illisibles :', membersError);
+			logger.error('[getEvaluationResults] Membres illisibles :', membersError);
 			throw new EvaluationError(500, 'Impossible de charger les résultats');
 		}
 		for (const member of members ?? []) {
@@ -674,17 +677,17 @@ export async function getEvaluationResults(
 	]);
 
 	if (studentsRes.error) {
-		console.error('[getEvaluationResults] Profils illisibles :', studentsRes.error);
+		logger.error('[getEvaluationResults] Profils illisibles :', studentsRes.error);
 		throw new EvaluationError(500, 'Impossible de charger les résultats');
 	}
 	// Ce sont les copies : sans elles, tout le monde paraîtrait « non composé »
 	if (sessionsRes.error) {
-		console.error('[getEvaluationResults] Copies illisibles :', sessionsRes.error);
+		logger.error('[getEvaluationResults] Copies illisibles :', sessionsRes.error);
 		throw new EvaluationError(500, 'Impossible de charger les résultats');
 	}
 	// Le nom de classe n'est qu'une étiquette : son absence se journalise
 	if (classesRes.error) {
-		console.error('[getEvaluationResults] Noms de classes illisibles :', classesRes.error);
+		logger.error('[getEvaluationResults] Noms de classes illisibles :', classesRes.error);
 	}
 
 	const classNames = new Map((classesRes.data ?? []).map((c) => [c.id, c.name]));

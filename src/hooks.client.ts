@@ -36,9 +36,15 @@ if (browser) {
  *
  * These errors are NOT caught by window.onerror because SvelteKit
  * intercepts them internally before they reach the global handler.
+ *
+ * Une 404 arrive aussi ici, quand la navigation côté client suit un lien vers une
+ * route inexistante : journalisée en avertissement (un lien interne cassé), pas
+ * en erreur. Le détail technique part dans `detail`, que la page d'erreur replie
+ * sous « Détails techniques » ; `message` reste celui de SvelteKit.
  */
 export const handleError: HandleClientError = async ({ error, event, status, message }) => {
 	const err = error instanceof Error ? error : new Error(String(error));
+	const notFound = status === 404;
 
 	console.error('[SvelteKit Client Error]', {
 		status,
@@ -63,8 +69,10 @@ export const handleError: HandleClientError = async ({ error, event, status, mes
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
 				error_type: 'client_js',
-				severity: 'error',
-				message: `[SvelteKit handleError] ${message}: ${err.message}`,
+				severity: notFound ? 'warning' : 'error',
+				message: notFound
+					? `[SvelteKit handleError] Page introuvable : ${event.url.pathname}`
+					: `[SvelteKit handleError] ${message}: ${err.message}`,
 				url: event.url.href,
 				stack_trace: err.stack,
 				error_name: err.name,
@@ -80,7 +88,9 @@ export const handleError: HandleClientError = async ({ error, event, status, mes
 		// Ignore logging failures
 	}
 
+	if (notFound) return { message };
 	return {
-		message: `Erreur: ${err.message} | ${err.stack?.split('\n').slice(0, 3).join(' | ') || 'no stack'}`
+		message,
+		detail: `${err.message} | ${err.stack?.split('\n').slice(0, 3).join(' | ') || 'no stack'}`
 	};
 };

@@ -50,7 +50,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// caller's own client (locals.supabase) and session, not the admin-context one.
 	const { user, profile, supabase } = locals;
 	if (!user || !profile) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// For this debug page only, we need to inspect the session object

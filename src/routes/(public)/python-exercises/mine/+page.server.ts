@@ -2,6 +2,9 @@ import { error, redirect } from '@sveltejs/kit';
 import { fetchTagNamesForResources } from '$lib/server/resource-tags';
 import type { PageServerLoad } from './$types';
 import type { PythonExercise } from '$lib/types/python-exercises';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/python-exercises/mine/+page.server');
 
 /**
  * List the teacher's own exercises.
@@ -36,8 +39,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.order('created_at', { ascending: false });
 
 	if (fetchError) {
-		console.error('Failed to load teacher exercises:', fetchError);
-		throw error(500, 'Erreur lors du chargement de tes exercices');
+		logger.error('Failed to load teacher exercises:', fetchError);
+		throw error(500, 'Erreur lors du chargement des exercices');
 	}
 
 	// Tags depuis `resource_tags`, en une requête groupée.

@@ -7,33 +7,33 @@ exports[`pedagogical-limits demo cases > category: direct-substitution > renders
 Expression: 3*x^2-x+1, x → 0 (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [apply-direct-substitution] Substitution directe : on remplace x par 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
-- [conclude] La limite vaut 1
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $0$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
+- [conclude] La limite vaut $1$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $0$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 3 \\times x^2 - x + 1 \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $0$
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
-- [conclude] La limite vaut 1
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
+- [conclude] La limite vaut $1$
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== SUPERIEUR (detailed) ==========
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} 3 \\times x^2 - x + 1} \\\\ & = 1 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( 3 \\times x^2 - x + 1 \\right)} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 "
 `;
@@ -45,20 +45,20 @@ exports[`pedagogical-limits demo cases > category: direct-substitution > renders
 Expression: (x+1)/(x-2), x → 5 (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [apply-direct-substitution] Substitution directe : on remplace x par 5
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $5$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 5} \\dfrac{\\left( x + 1 \\right)}{\\left( x - 2 \\right)}} \\\\ & = 2 \\end{aligned}
-- [conclude] La limite vaut 2
+- [conclude] La limite vaut $2$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 5} \\dfrac{\\left( x + 1 \\right)}{\\left( x - 2 \\right)}} \\\\ & = 2 \\end{aligned}
 Status: exact, Value: 2
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 5
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $5$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 5} \\dfrac{\\left( x + 1 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{\\left( x + 1 \\right)}{\\left( x - 2 \\right)} \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 5
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 5} \\dfrac{\\left( x + 1 \\right)}{\\left( x - 2 \\right)}} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $5$
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 5} \\dfrac{\\left( x + 1 \\right)}{\\left( x - 2 \\right)}} \\\\ & = 2 \\end{aligned}
-- [conclude] La limite vaut 2
+- [conclude] La limite vaut $2$
   · On peut maintenant conclure.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 5} \\dfrac{\\left( x + 1 \\right)}{\\left( x - 2 \\right)}} \\\\ & = 2 \\end{aligned}
 Status: exact, Value: 2
@@ -83,33 +83,33 @@ exports[`pedagogical-limits demo cases > category: direct-substitution > renders
 Expression: x^2+2*x, x → 3 (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [apply-direct-substitution] Substitution directe : on remplace x par 3
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
-- [conclude] La limite vaut 15
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $3$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
+- [conclude] La limite vaut $15$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
 Status: exact, Value: 15
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 3
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $3$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = x^2 + 2 \\times x \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 3
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $3$
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
-- [conclude] La limite vaut 15
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
+- [conclude] La limite vaut $15$
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
 Status: exact, Value: 15
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
 Status: exact, Value: 15
 
 ========== SUPERIEUR (detailed) ==========
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} x^2 + 2 \\times x} \\\\ & = 15 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x^2 + 2 \\times x \\right)} \\\\ & = 15 \\end{aligned}
 Status: exact, Value: 15
 "
 `;
@@ -122,60 +122,54 @@ Expression: (x^2-4)/(x-2), x → 2 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 2
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x + 2}{1}} \\\\ & = 4 \\end{aligned}
-- [conclude] La limite vaut 4
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x + 2}{1}} \\\\ & = 4 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $2$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
+- [conclude] La limite vaut $4$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 Status: exact, Value: 4
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 2
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $2$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)} \\end{aligned}
-- [detect-indeterminate-form] Forme indéterminée 0/0 reconnue
-  · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$ reconnue
+  · Numérateur et dénominateur tendent vers $0$. Une simplification (factorisation, rationalisation) est nécessaire.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
-    · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
+    · Le numérateur s'annule en $2$, donc $x - 2$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - 4 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x + 2 \\right) \\end{aligned}
-  - [factor-denominator] Factorisation du dénominateur
-    · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = \\left( x - 2 \\right) 1 \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 2
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $2$
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x + 2}{1}} \\\\ & = 4 \\end{aligned}
-- [conclude] La limite vaut 4
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
+- [conclude] La limite vaut $4$
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x + 2}{1}} \\\\ & = 4 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 Status: exact, Value: 4
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x + 2}{1}} \\\\ & = 4 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 Status: exact, Value: 4
 
 ========== SUPERIEUR (detailed) ==========
-- [detect-indeterminate-form] Forme indéterminée 0/0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
-    · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
+    · Le numérateur s'annule en $2$, donc $x - 2$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - 4 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x + 2 \\right) \\end{aligned}
-  - [factor-denominator] Factorisation du dénominateur
-    · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = \\left( x - 2 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x + 2}{1}} \\\\ & = 4 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 Status: exact, Value: 4
 "
 `;
@@ -188,60 +182,54 @@ Expression: (x^2-x-6)/(x-3), x → 3 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 3
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{x + 2}{1}} \\\\ & = 5 \\end{aligned}
-- [conclude] La limite vaut 5
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{x + 2}{1}} \\\\ & = 5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $3$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
+- [conclude] La limite vaut $5$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 Status: exact, Value: 5
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 3
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $3$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)} \\end{aligned}
-- [detect-indeterminate-form] Forme indéterminée 0/0 reconnue
-  · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$ reconnue
+  · Numérateur et dénominateur tendent vers $0$. Une simplification (factorisation, rationalisation) est nécessaire.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
-    · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
+    · Le numérateur s'annule en $3$, donc $x - 3$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - x - 6 \\right)} \\\\ & = \\left( x - 3 \\right) \\left( x + 2 \\right) \\end{aligned}
-  - [factor-denominator] Factorisation du dénominateur
-    · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 3 \\right)} \\\\ & = \\left( x - 3 \\right) 1 \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 3
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $3$
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{x + 2}{1}} \\\\ & = 5 \\end{aligned}
-- [conclude] La limite vaut 5
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
+- [conclude] La limite vaut $5$
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{x + 2}{1}} \\\\ & = 5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 Status: exact, Value: 5
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{x + 2}{1}} \\\\ & = 5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 Status: exact, Value: 5
 
 ========== SUPERIEUR (detailed) ==========
-- [detect-indeterminate-form] Forme indéterminée 0/0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\dfrac{x + 2}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
-    · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
+    · Le numérateur s'annule en $3$, donc $x - 3$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - x - 6 \\right)} \\\\ & = \\left( x - 3 \\right) \\left( x + 2 \\right) \\end{aligned}
-  - [factor-denominator] Factorisation du dénominateur
-    · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 3 \\right)} \\\\ & = \\left( x - 3 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{x + 2}{1}} \\\\ & = 5 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 Status: exact, Value: 5
 "
 `;
@@ -254,60 +242,54 @@ Expression: (x^3-1)/(x-1), x → 1 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\dfrac{x^2 + x + 1}{1} \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 1
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{x^2 + x + 1}{1}} \\\\ & = 3 \\end{aligned}
-- [conclude] La limite vaut 3
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{x^2 + x + 1}{1}} \\\\ & = 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $1$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
+- [conclude] La limite vaut $3$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 1
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $1$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)} \\end{aligned}
-- [detect-indeterminate-form] Forme indéterminée 0/0 reconnue
-  · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$ reconnue
+  · Numérateur et dénominateur tendent vers $0$. Une simplification (factorisation, rationalisation) est nécessaire.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\dfrac{x^2 + x + 1}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
-    · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
+    · Le numérateur s'annule en $1$, donc $x - 1$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 1 \\right)} \\\\ & = \\left( x - 1 \\right) \\left( x^2 + x + 1 \\right) \\end{aligned}
-  - [factor-denominator] Factorisation du dénominateur
-    · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ & = \\left( x - 1 \\right) 1 \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 1
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $1$
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{x^2 + x + 1}{1}} \\\\ & = 3 \\end{aligned}
-- [conclude] La limite vaut 3
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
+- [conclude] La limite vaut $3$
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{x^2 + x + 1}{1}} \\\\ & = 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\dfrac{x^2 + x + 1}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{x^2 + x + 1}{1}} \\\\ & = 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 
 ========== SUPERIEUR (detailed) ==========
-- [detect-indeterminate-form] Forme indéterminée 0/0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\dfrac{x^2 + x + 1}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
-    · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
+    · Le numérateur s'annule en $1$, donc $x - 1$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 1 \\right)} \\\\ & = \\left( x - 1 \\right) \\left( x^2 + x + 1 \\right) \\end{aligned}
-  - [factor-denominator] Factorisation du dénominateur
-    · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ & = \\left( x - 1 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{x^2 + x + 1}{1}} \\\\ & = 3 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 "
 `;
@@ -320,230 +302,315 @@ Expression: (x^3-8)/(x-2), x → 2 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x^2 + 2 x + 4}{1} \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 2
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x^2 + 2 x + 4}{1}} \\\\ & = 12 \\end{aligned}
-- [conclude] La limite vaut 12
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x^2 + 2 x + 4}{1}} \\\\ & = 12 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $2$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
+- [conclude] La limite vaut $12$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 Status: exact, Value: 12
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 2
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $2$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)} \\end{aligned}
-- [detect-indeterminate-form] Forme indéterminée 0/0 reconnue
-  · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$ reconnue
+  · Numérateur et dénominateur tendent vers $0$. Une simplification (factorisation, rationalisation) est nécessaire.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x^2 + 2 x + 4}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
-    · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
+    · Le numérateur s'annule en $2$, donc $x - 2$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 8 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
-  - [factor-denominator] Factorisation du dénominateur
-    · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = \\left( x - 2 \\right) 1 \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 2
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $2$
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x^2 + 2 x + 4}{1}} \\\\ & = 12 \\end{aligned}
-- [conclude] La limite vaut 12
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
+- [conclude] La limite vaut $12$
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x^2 + 2 x + 4}{1}} \\\\ & = 12 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 Status: exact, Value: 12
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x^2 + 2 x + 4}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x^2 + 2 x + 4}{1}} \\\\ & = 12 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 Status: exact, Value: 12
 
 ========== SUPERIEUR (detailed) ==========
-- [detect-indeterminate-form] Forme indéterminée 0/0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\dfrac{x^2 + 2 x + 4}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
-    · Si le numérateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
+    · Le numérateur s'annule en $2$, donc $x - 2$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 8 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
-  - [factor-denominator] Factorisation du dénominateur
-    · Si le dénominateur s'annule au point étudié, alors ((x − a)) en est un facteur. On factorise pour préparer la simplification.
-    \\begin{aligned} & \\textcolor{blue}{\\left( x - 2 \\right)} \\\\ & = \\left( x - 2 \\right) 1 \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{x^2 + 2 x + 4}{1}} \\\\ & = 12 \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 Status: exact, Value: 12
 "
 `;
 
-exports[`pedagogical-limits demo cases > category: infinity-analysis > renders (3x²−x)/(x²+1) à +∞ (ratio des coeffs dominants) 1`] = `
+exports[`pedagogical-limits demo cases > category: infinity-analysis > renders (3x²−x)/(x²+1) à +∞ (mêmes degrés : limite d’un quotient) 1`] = `
 "
-###### (3x²−x)/(x²+1) à +∞ (ratio des coeffs dominants) ######
+###### (3x²−x)/(x²+1) à +∞ (mêmes degrés : limite d’un quotient) ######
 
 Expression: (3*x^2-x)/(x^2+1), x → \\infty (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [identify-dominant-term] Étude du comportement à +∞ : on identifie les termes dominants
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)} \\end{aligned}
-- [conclude] La limite vaut 3
+- [factor-dominant-term] On factorise par le terme prépondérant
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x^2 \\left( 3 - \\dfrac{1}{x} \\right)}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x^2$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x^2 \\left( 3 - \\dfrac{1}{x} \\right)}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{3 - \\dfrac{1}{x}}{1 + \\dfrac{1}{x^2}} \\end{aligned}
+- [conclude] La limite vaut $3$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers +∞
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $+\\infty$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)} \\end{aligned}
-- [identify-dominant-term] Étude du comportement à +∞ : on identifie les termes dominants
-  · À l'infini, seuls les termes de plus haut degré comptent. On compare les degrés du numérateur et du dénominateur.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)} \\end{aligned}
-- [conclude] La limite vaut 3
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{\\infty}{\\infty}$ reconnue
+  · Numérateur et dénominateur tendent vers l'infini : on ne peut pas conclure directement. On factorise par le terme prépondérant.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\end{aligned}
+- [factor-dominant-term] On factorise par le terme prépondérant
+  · Dans chaque somme, on met en facteur la plus grande puissance de $x$ : les autres termes deviennent des quotients qui tendent vers $0$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x^2 \\left( 3 - \\dfrac{1}{x} \\right)}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x^2$
+  · $x^2$ est un facteur commun au numérateur et au dénominateur : on simplifie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x^2 \\left( 3 - \\dfrac{1}{x} \\right)}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{3 - \\dfrac{1}{x}}{1 + \\dfrac{1}{x^2}} \\end{aligned}
+- [limits-of-terms] Limites des termes
+  · Un nombre divisé par une puissance de $x$ tend vers $0$ : chaque parenthèse tend vers son premier terme.
+  \\begin{aligned} & \\lim_{x \\to +\\infty} \\dfrac{1}{x} = 0 \\\\ & \\lim_{x \\to +\\infty} \\dfrac{1}{x^2} = 0 \\\\ & \\text{donc } \\lim_{x \\to +\\infty} \\left( 3 - \\dfrac{1}{x} \\right) = 3 \\\\ & \\text{et } \\lim_{x \\to +\\infty} \\left( 1 + \\dfrac{1}{x^2} \\right) = 1 \\end{aligned}
+- [apply-quotient] Limite d'un quotient
+  · Le numérateur tend vers $3$ et le dénominateur vers $1$ : par quotient, la limite vaut $3$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{3 - \\dfrac{1}{x}}{1 + \\dfrac{1}{x^2}}} \\\\ & = 3 \\end{aligned}
+- [conclude] La limite vaut $3$
   · On peut maintenant conclure.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 
 ========== SUPERIEUR (summarized) ==========
-- [identify-dominant-term] Identification du terme dominant
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)} \\end{aligned}
-- [conclude] = 3
+- [factor-dominant-term] Factorisation par le terme prépondérant
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x^2 \\left( 3 - \\dfrac{1}{x} \\right)}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x^2$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x^2 \\left( 3 - \\dfrac{1}{x} \\right)}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{3 - \\dfrac{1}{x}}{1 + \\dfrac{1}{x^2}} \\end{aligned}
+- [conclude] $= 3$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 
 ========== SUPERIEUR (detailed) ==========
-- [identify-dominant-term] Identification du terme dominant
-  · Comparer les ordres de grandeur via le terme de plus haut degré.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)} \\end{aligned}
-- [conclude] = 3
+- [detect-indeterminate-form] Forme indéterminée $\\frac{\\infty}{\\infty}$
+  · On factorise par le terme prépondérant.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\end{aligned}
+- [factor-dominant-term] Factorisation par le terme prépondérant
+  · Dans chaque somme, on met en facteur la plus grande puissance de $x$ : les autres termes deviennent des quotients qui tendent vers $0$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x^2 \\left( 3 - \\dfrac{1}{x} \\right)}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x^2$
+  · $x^2$ est un facteur commun au numérateur et au dénominateur : on simplifie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x^2 \\left( 3 - \\dfrac{1}{x} \\right)}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{3 - \\dfrac{1}{x}}{1 + \\dfrac{1}{x^2}} \\end{aligned}
+- [conclude] $= 3$
   · On peut maintenant conclure.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( 3 \\times x^2 - x \\right)}{\\left( x^2 + 1 \\right)}} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
 "
 `;
 
-exports[`pedagogical-limits demo cases > category: infinity-analysis > renders x/(x²+1) à +∞ (numDeg < denDeg → 0) 1`] = `
+exports[`pedagogical-limits demo cases > category: infinity-analysis > renders x/(x²+1) à +∞ (dénominateur prépondérant : 0) 1`] = `
 "
-###### x/(x²+1) à +∞ (numDeg < denDeg → 0) ######
+###### x/(x²+1) à +∞ (dénominateur prépondérant : 0) ######
 
 Expression: x/(x^2+1), x → \\infty (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [identify-dominant-term] Étude du comportement à +∞ : on identifie les termes dominants
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = \\dfrac{x}{\\left( x^2 + 1 \\right)} \\end{aligned}
-- [conclude] La limite vaut 0
+- [factor-dominant-term] On factorise par le terme prépondérant
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{1}{x \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [conclude] La limite vaut $0$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers +∞
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $+\\infty$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = \\dfrac{x}{\\left( x^2 + 1 \\right)} \\end{aligned}
-- [identify-dominant-term] Étude du comportement à +∞ : on identifie les termes dominants
-  · À l'infini, seuls les termes de plus haut degré comptent. On compare les degrés du numérateur et du dénominateur.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = \\dfrac{x}{\\left( x^2 + 1 \\right)} \\end{aligned}
-- [conclude] La limite vaut 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{\\infty}{\\infty}$ reconnue
+  · Numérateur et dénominateur tendent vers l'infini : on ne peut pas conclure directement. On factorise par le terme prépondérant.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\end{aligned}
+- [factor-dominant-term] On factorise par le terme prépondérant
+  · Dans chaque somme, on met en facteur la plus grande puissance de $x$ : les autres termes deviennent des quotients qui tendent vers $0$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  · $x$ est un facteur commun au numérateur et au dénominateur : on simplifie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{1}{x \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [limits-of-terms] Limites des termes
+  · Un nombre divisé par une puissance de $x$ tend vers $0$ : chaque parenthèse tend vers son premier terme.
+  \\begin{aligned} & \\lim_{x \\to +\\infty} \\dfrac{1}{x^2} = 0 \\\\ & \\text{donc } \\lim_{x \\to +\\infty} \\left( 1 + \\dfrac{1}{x^2} \\right) = 1 \\end{aligned}
+- [apply-product] Limite d'un produit
+  · Le facteur $x$ tend vers $+\\infty$ et la parenthèse tend vers $1$ : par produit, $\\left(+\\infty\\right) \\times 1 = +\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} x \\left( 1 + \\dfrac{1}{x^2} \\right)} \\\\ & = +\\infty \\end{aligned}
+- [apply-quotient] Limite d'un quotient
+  · $1$ divisé par une quantité qui tend vers $+\\infty$ : la limite vaut $0$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{1}{x \\left( 1 + \\dfrac{1}{x^2} \\right)}} \\\\ & = 0 \\end{aligned}
+- [conclude] La limite vaut $0$
   · On peut maintenant conclure.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 
 ========== SUPERIEUR (summarized) ==========
-- [identify-dominant-term] Identification du terme dominant
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = \\dfrac{x}{\\left( x^2 + 1 \\right)} \\end{aligned}
-- [conclude] = 0
+- [factor-dominant-term] Factorisation par le terme prépondérant
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{1}{x \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [conclude] $= 0$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 
 ========== SUPERIEUR (detailed) ==========
-- [identify-dominant-term] Identification du terme dominant
-  · Comparer les ordres de grandeur via le terme de plus haut degré.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = \\dfrac{x}{\\left( x^2 + 1 \\right)} \\end{aligned}
-- [conclude] = 0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{\\infty}{\\infty}$
+  · On factorise par le terme prépondérant.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\end{aligned}
+- [factor-dominant-term] Factorisation par le terme prépondérant
+  · Dans chaque somme, on met en facteur la plus grande puissance de $x$ : les autres termes deviennent des quotients qui tendent vers $0$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  · $x$ est un facteur commun au numérateur et au dénominateur : on simplifie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{x^2 \\left( 1 + \\dfrac{1}{x^2} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{1}{x \\left( 1 + \\dfrac{1}{x^2} \\right)} \\end{aligned}
+- [conclude] $= 0$
   · On peut maintenant conclure.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{\\left( x^2 + 1 \\right)}} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 "
 `;
 
-exports[`pedagogical-limits demo cases > category: infinity-analysis > renders x²/(x+1) à +∞ (numDeg > denDeg → +∞) 1`] = `
+exports[`pedagogical-limits demo cases > category: infinity-analysis > renders x²/(x+1) à +∞ (numérateur prépondérant : limite d’un produit) 1`] = `
 "
-###### x²/(x+1) à +∞ (numDeg > denDeg → +∞) ######
+###### x²/(x+1) à +∞ (numérateur prépondérant : limite d’un produit) ######
 
 Expression: (x^2)/(x+1), x → \\infty (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [identify-dominant-term] Étude du comportement à +∞ : on identifie les termes dominants
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)} \\end{aligned}
-- [conclude-infinite] La limite vaut +∞
+- [factor-dominant-term] On factorise par le terme prépondérant
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x^2}{x \\left( 1 + \\dfrac{1}{x} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x^2}{x \\left( 1 + \\dfrac{1}{x} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x}{1 + \\dfrac{1}{x}} \\end{aligned}
+- [conclude-infinite] La limite vaut $+\\infty$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers +∞
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $+\\infty$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)} \\end{aligned}
-- [identify-dominant-term] Étude du comportement à +∞ : on identifie les termes dominants
-  · À l'infini, seuls les termes de plus haut degré comptent. On compare les degrés du numérateur et du dénominateur.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)} \\end{aligned}
-- [conclude-infinite] La limite vaut +∞
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{\\infty}{\\infty}$ reconnue
+  · Numérateur et dénominateur tendent vers l'infini : on ne peut pas conclure directement. On factorise par le terme prépondérant.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\end{aligned}
+- [factor-dominant-term] On factorise par le terme prépondérant
+  · Dans chaque somme, on met en facteur la plus grande puissance de $x$ : les autres termes deviennent des quotients qui tendent vers $0$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x^2}{x \\left( 1 + \\dfrac{1}{x} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  · $x$ est un facteur commun au numérateur et au dénominateur : on simplifie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x^2}{x \\left( 1 + \\dfrac{1}{x} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x}{1 + \\dfrac{1}{x}} \\end{aligned}
+- [limits-of-terms] Limites des termes
+  · Un nombre divisé par une puissance de $x$ tend vers $0$ : chaque parenthèse tend vers son premier terme.
+  \\begin{aligned} & \\lim_{x \\to +\\infty} \\dfrac{1}{x} = 0 \\\\ & \\text{donc } \\lim_{x \\to +\\infty} \\left( 1 + \\dfrac{1}{x} \\right) = 1 \\end{aligned}
+- [apply-product] Limite d'un produit
+  · Le facteur $x$ tend vers $+\\infty$ et le quotient restant tend vers $1$ : par produit, $\\left(+\\infty\\right) \\times 1 = +\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{1 + \\dfrac{1}{x}}} \\\\ & = +\\infty \\end{aligned}
+- [conclude-infinite] La limite vaut $+\\infty$
   · Le résultat est une limite infinie.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (summarized) ==========
-- [identify-dominant-term] Identification du terme dominant
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)} \\end{aligned}
-- [conclude-infinite] = +∞
+- [factor-dominant-term] Factorisation par le terme prépondérant
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x^2}{x \\left( 1 + \\dfrac{1}{x} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x^2}{x \\left( 1 + \\dfrac{1}{x} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x}{1 + \\dfrac{1}{x}} \\end{aligned}
+- [conclude-infinite] $= +\\infty$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (detailed) ==========
-- [identify-dominant-term] Identification du terme dominant
-  · Comparer les ordres de grandeur via le terme de plus haut degré.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)} \\end{aligned}
-- [conclude-infinite] = +∞
+- [detect-indeterminate-form] Forme indéterminée $\\frac{\\infty}{\\infty}$
+  · On factorise par le terme prépondérant.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\end{aligned}
+- [factor-dominant-term] Factorisation par le terme prépondérant
+  · Dans chaque somme, on met en facteur la plus grande puissance de $x$ : les autres termes deviennent des quotients qui tendent vers $0$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x^2}{x \\left( 1 + \\dfrac{1}{x} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  · $x$ est un facteur commun au numérateur et au dénominateur : on simplifie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x^2}{x \\left( 1 + \\dfrac{1}{x} \\right)}} \\\\ & = \\lim_{x \\to +\\infty} \\dfrac{x}{1 + \\dfrac{1}{x}} \\end{aligned}
+- [conclude-infinite] $= +\\infty$
   · Le résultat est une limite infinie.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{\\left( x^2 \\right)}{\\left( x + 1 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 "
 `;
 
-exports[`pedagogical-limits demo cases > category: infinity-analysis > renders x³/(x+1) à −∞ (signe à −∞ : x³≈−∞ et x+1≈−∞ → +∞) 1`] = `
+exports[`pedagogical-limits demo cases > category: infinity-analysis > renders x³/(x+1) à −∞ (après simplification, x² → +∞) 1`] = `
 "
-###### x³/(x+1) à −∞ (signe à −∞ : x³≈−∞ et x+1≈−∞ → +∞) ######
+###### x³/(x+1) à −∞ (après simplification, x² → +∞) ######
 
 Expression: (x^3)/(x+1), x → -\\infty (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [identify-dominant-term] Étude du comportement à −∞ : on identifie les termes dominants
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)} \\end{aligned}
-- [conclude-infinite] La limite vaut +∞
+- [factor-dominant-term] On factorise par le terme prépondérant
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\lim_{x \\to -\\infty} \\dfrac{x^3}{x \\left( 1 + \\dfrac{1}{x} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{x^3}{x \\left( 1 + \\dfrac{1}{x} \\right)}} \\\\ & = \\lim_{x \\to -\\infty} \\dfrac{x^2}{1 + \\dfrac{1}{x}} \\end{aligned}
+- [conclude-infinite] La limite vaut $+\\infty$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers −∞
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $-\\infty$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)} \\end{aligned}
-- [identify-dominant-term] Étude du comportement à −∞ : on identifie les termes dominants
-  · À l'infini, seuls les termes de plus haut degré comptent. On compare les degrés du numérateur et du dénominateur.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)} \\end{aligned}
-- [conclude-infinite] La limite vaut +∞
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{\\infty}{\\infty}$ reconnue
+  · Numérateur et dénominateur tendent vers l'infini : on ne peut pas conclure directement. On factorise par le terme prépondérant.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\end{aligned}
+- [factor-dominant-term] On factorise par le terme prépondérant
+  · Dans chaque somme, on met en facteur la plus grande puissance de $x$ : les autres termes deviennent des quotients qui tendent vers $0$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\lim_{x \\to -\\infty} \\dfrac{x^3}{x \\left( 1 + \\dfrac{1}{x} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  · $x$ est un facteur commun au numérateur et au dénominateur : on simplifie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{x^3}{x \\left( 1 + \\dfrac{1}{x} \\right)}} \\\\ & = \\lim_{x \\to -\\infty} \\dfrac{x^2}{1 + \\dfrac{1}{x}} \\end{aligned}
+- [limits-of-terms] Limites des termes
+  · Un nombre divisé par une puissance de $x$ tend vers $0$ : chaque parenthèse tend vers son premier terme.
+  \\begin{aligned} & \\lim_{x \\to -\\infty} \\dfrac{1}{x} = 0 \\\\ & \\text{donc } \\lim_{x \\to -\\infty} \\left( 1 + \\dfrac{1}{x} \\right) = 1 \\end{aligned}
+- [apply-product] Limite d'un produit
+  · Le facteur $x^2$ tend vers $+\\infty$ et le quotient restant tend vers $1$ : par produit, $\\left(+\\infty\\right) \\times 1 = +\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{x^2}{1 + \\dfrac{1}{x}}} \\\\ & = +\\infty \\end{aligned}
+- [conclude-infinite] La limite vaut $+\\infty$
   · Le résultat est une limite infinie.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (summarized) ==========
-- [identify-dominant-term] Identification du terme dominant
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)} \\end{aligned}
-- [conclude-infinite] = +∞
+- [factor-dominant-term] Factorisation par le terme prépondérant
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\lim_{x \\to -\\infty} \\dfrac{x^3}{x \\left( 1 + \\dfrac{1}{x} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{x^3}{x \\left( 1 + \\dfrac{1}{x} \\right)}} \\\\ & = \\lim_{x \\to -\\infty} \\dfrac{x^2}{1 + \\dfrac{1}{x}} \\end{aligned}
+- [conclude-infinite] $= +\\infty$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (detailed) ==========
-- [identify-dominant-term] Identification du terme dominant
-  · Comparer les ordres de grandeur via le terme de plus haut degré.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)} \\end{aligned}
-- [conclude-infinite] = +∞
+- [detect-indeterminate-form] Forme indéterminée $\\frac{\\infty}{\\infty}$
+  · On factorise par le terme prépondérant.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\end{aligned}
+- [factor-dominant-term] Factorisation par le terme prépondérant
+  · Dans chaque somme, on met en facteur la plus grande puissance de $x$ : les autres termes deviennent des quotients qui tendent vers $0$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = \\lim_{x \\to -\\infty} \\dfrac{x^3}{x \\left( 1 + \\dfrac{1}{x} \\right)} \\end{aligned}
+- [simplify-common-factor] Simplification par $x$
+  · $x$ est un facteur commun au numérateur et au dénominateur : on simplifie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{x^3}{x \\left( 1 + \\dfrac{1}{x} \\right)}} \\\\ & = \\lim_{x \\to -\\infty} \\dfrac{x^2}{1 + \\dfrac{1}{x}} \\end{aligned}
+- [conclude-infinite] $= +\\infty$
   · Le résultat est une limite infinie.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{\\left( x^3 \\right)}{\\left( x + 1 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
@@ -564,30 +631,30 @@ Expression: (1-cos(x))/x^2, x → 0 (variable: x)
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-lhopital] Règle de L'Hôpital
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( 1 - \\cos\\left( x \\right) \\right)}{x^2}} \\\\ & = \\dfrac{-\\left( -\\sin\\left( x \\right) \\right)}{2 x} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( 1 - \\cos\\left( x \\right) \\right)}{x^2}} \\\\ & = \\lim_{x \\to 0} \\dfrac{-\\left( -\\sin\\left( x \\right) \\right)}{2 x} \\end{aligned}
 - [apply-lhopital] Règle de L'Hôpital
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{-\\left( -\\sin\\left( x \\right) \\right)}{2 x}} \\\\ & = \\dfrac{\\cos\\left( x \\right)}{2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{-\\left( -\\sin\\left( x \\right) \\right)}{2 x}} \\\\ & = \\lim_{x \\to 0} \\dfrac{\\cos\\left( x \\right)}{2} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x \\right)}{2}} \\\\ & = 0.5 \\end{aligned}
-Status: exact, Value: 0.5
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x \\right)}{2}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{2}
 
 ========== SUPERIEUR (detailed) ==========
-- [detect-indeterminate-form] Forme indéterminée 0/0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( 1 - \\cos\\left( x \\right) \\right)}{x^2}} \\\\ & = \\dfrac{\\left( 1 - \\cos\\left( x \\right) \\right)}{x^2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( 1 - \\cos\\left( x \\right) \\right)}{x^2}} \\end{aligned}
 - [apply-lhopital] Règle de L'Hôpital
   · Sous les hypothèses de L'Hôpital, la limite du quotient est égale à la limite du quotient des dérivées.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( 1 - \\cos\\left( x \\right) \\right)}{x^2}} \\\\ & = \\dfrac{-\\left( -\\sin\\left( x \\right) \\right)}{2 x} \\end{aligned}
-- [detect-indeterminate-form] Forme indéterminée 0/0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( 1 - \\cos\\left( x \\right) \\right)}{x^2}} \\\\ & = \\lim_{x \\to 0} \\dfrac{-\\left( -\\sin\\left( x \\right) \\right)}{2 x} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{-\\left( -\\sin\\left( x \\right) \\right)}{2 x}} \\\\ & = \\dfrac{-\\left( -\\sin\\left( x \\right) \\right)}{2 x} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{-\\left( -\\sin\\left( x \\right) \\right)}{2 x}} \\end{aligned}
 - [apply-lhopital] Règle de L'Hôpital
   · Sous les hypothèses de L'Hôpital, la limite du quotient est égale à la limite du quotient des dérivées.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{-\\left( -\\sin\\left( x \\right) \\right)}{2 x}} \\\\ & = \\dfrac{\\cos\\left( x \\right)}{2} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{-\\left( -\\sin\\left( x \\right) \\right)}{2 x}} \\\\ & = \\lim_{x \\to 0} \\dfrac{\\cos\\left( x \\right)}{2} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x \\right)}{2}} \\\\ & = 0.5 \\end{aligned}
-Status: exact, Value: 0.5
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x \\right)}{2}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{2}
 "
 `;
 
@@ -598,31 +665,31 @@ exports[`pedagogical-limits demo cases > category: known-limits > renders ln(1+x
 Expression: ln(1+x)/x, x → 0 (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [apply-known-limit] Limite : lim(ln(1+x)/x) = 1 quand x tend vers 0
+- [apply-known-limit] Limite de référence
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\ln\\left( 1 + x \\right)}{x}} \\\\ & = 1 \\end{aligned}
-- [conclude] La limite vaut 1
+- [conclude] La limite vaut $1$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\ln\\left( 1 + x \\right)}{x}} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $0$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\ln\\left( 1 + x \\right)}{x}} \\\\ & = \\dfrac{\\ln\\left( 1 + x \\right)}{x} \\end{aligned}
-- [apply-known-limit] Limite : lim(ln(1+x)/x) = 1 quand x tend vers 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\ln\\left( 1 + x \\right)}{x}} \\end{aligned}
+- [apply-known-limit] Limite de référence
   · On reconnaît une limite de référence du cours.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\ln\\left( 1 + x \\right)}{x}} \\\\ & = 1 \\end{aligned}
-- [conclude] La limite vaut 1
+- [conclude] La limite vaut $1$
   · On peut maintenant conclure.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\ln\\left( 1 + x \\right)}{x}} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== SUPERIEUR (summarized) ==========
-- [apply-known-limit] Limite : lim(ln(1+x)/x) = 1 quand x tend vers 0
+- [apply-known-limit] Limite de référence
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\ln\\left( 1 + x \\right)}{x}} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== SUPERIEUR (detailed) ==========
-- [apply-known-limit] Limite : lim(ln(1+x)/x) = 1 quand x tend vers 0
+- [apply-known-limit] Limite de référence
   · On reconnaît une limite de référence du cours.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\ln\\left( 1 + x \\right)}{x}} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
@@ -636,31 +703,31 @@ exports[`pedagogical-limits demo cases > category: known-limits > renders sin(x)
 Expression: sin(x)/x, x → 0 (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [apply-known-limit] Limite fondamentale : lim(sin(x)/x) = 1 quand x tend vers 0
+- [apply-known-limit] Limite fondamentale
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x \\right)}{x}} \\\\ & = 1 \\end{aligned}
-- [conclude] La limite vaut 1
+- [conclude] La limite vaut $1$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x \\right)}{x}} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $0$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x \\right)}{x}} \\\\ & = \\dfrac{\\sin\\left( x \\right)}{x} \\end{aligned}
-- [apply-known-limit] Limite fondamentale : lim(sin(x)/x) = 1 quand x tend vers 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x \\right)}{x}} \\end{aligned}
+- [apply-known-limit] Limite fondamentale
   · On reconnaît une limite de référence du cours.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x \\right)}{x}} \\\\ & = 1 \\end{aligned}
-- [conclude] La limite vaut 1
+- [conclude] La limite vaut $1$
   · On peut maintenant conclure.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x \\right)}{x}} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== SUPERIEUR (summarized) ==========
-- [apply-known-limit] Limite fondamentale : lim(sin(x)/x) = 1 quand x tend vers 0
+- [apply-known-limit] Limite fondamentale
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x \\right)}{x}} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== SUPERIEUR (detailed) ==========
-- [apply-known-limit] Limite fondamentale : lim(sin(x)/x) = 1 quand x tend vers 0
+- [apply-known-limit] Limite fondamentale
   · On reconnaît une limite de référence du cours.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x \\right)}{x}} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
@@ -675,18 +742,18 @@ Expression: (exp(x)-1)/x, x → 0 (variable: x)
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-lhopital] Règle de L'Hôpital
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\exp\\left( x \\right) - 1 \\right)}{x}} \\\\ & = \\dfrac{\\exp\\left( x \\right)}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\exp\\left( x \\right) - 1 \\right)}{x}} \\\\ & = \\lim_{x \\to 0} \\dfrac{\\exp\\left( x \\right)}{1} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\exp\\left( x \\right)}{1}} \\\\ & = 1 \\end{aligned}
 Status: exact, Value: 1
 
 ========== SUPERIEUR (detailed) ==========
-- [detect-indeterminate-form] Forme indéterminée 0/0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\exp\\left( x \\right) - 1 \\right)}{x}} \\\\ & = \\dfrac{\\left( \\exp\\left( x \\right) - 1 \\right)}{x} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\exp\\left( x \\right) - 1 \\right)}{x}} \\end{aligned}
 - [apply-lhopital] Règle de L'Hôpital
   · Sous les hypothèses de L'Hôpital, la limite du quotient est égale à la limite du quotient des dérivées.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\exp\\left( x \\right) - 1 \\right)}{x}} \\\\ & = \\dfrac{\\exp\\left( x \\right)}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\exp\\left( x \\right) - 1 \\right)}{x}} \\\\ & = \\lim_{x \\to 0} \\dfrac{\\exp\\left( x \\right)}{1} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\exp\\left( x \\right)}{1}} \\\\ & = 1 \\end{aligned}
@@ -702,22 +769,22 @@ Expression: sin(2*x)/sin(3*x), x → 0 (variable: x)
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-lhopital] Règle de L'Hôpital
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)}} \\\\ & = \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)}} \\\\ & = \\lim_{x \\to 0} \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3}} \\\\ & = 0.6666666666666666 \\end{aligned}
-Status: exact, Value: 0.6666666666666666
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3}} \\\\ & = \\dfrac{2}{3} \\end{aligned}
+Status: exact, Value: \\dfrac{2}{3}
 
 ========== SUPERIEUR (detailed) ==========
-- [detect-indeterminate-form] Forme indéterminée 0/0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)}} \\\\ & = \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)}} \\end{aligned}
 - [apply-lhopital] Règle de L'Hôpital
   · Sous les hypothèses de L'Hôpital, la limite du quotient est égale à la limite du quotient des dérivées.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)}} \\\\ & = \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( 2 \\times x \\right)}{\\sin\\left( 3 \\times x \\right)}} \\\\ & = \\lim_{x \\to 0} \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3}} \\\\ & = 0.6666666666666666 \\end{aligned}
-Status: exact, Value: 0.6666666666666666
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( 2 \\times x \\right) \\times 2}{\\cos\\left( 3 \\times x \\right) \\times 3}} \\\\ & = \\dfrac{2}{3} \\end{aligned}
+Status: exact, Value: \\dfrac{2}{3}
 "
 `;
 
@@ -729,18 +796,18 @@ Expression: sin(x^2)/x, x → 0 (variable: x)
 
 ========== SUPERIEUR (summarized) ==========
 - [apply-lhopital] Règle de L'Hôpital
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x^2 \\right)}{x}} \\\\ & = \\dfrac{\\cos\\left( x^2 \\right) \\times 2 x}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x^2 \\right)}{x}} \\\\ & = \\lim_{x \\to 0} \\dfrac{\\cos\\left( x^2 \\right) \\times 2 x}{1} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x^2 \\right) \\times 2 x}{1}} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 
 ========== SUPERIEUR (detailed) ==========
-- [detect-indeterminate-form] Forme indéterminée 0/0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x^2 \\right)}{x}} \\\\ & = \\dfrac{\\sin\\left( x^2 \\right)}{x} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x^2 \\right)}{x}} \\end{aligned}
 - [apply-lhopital] Règle de L'Hôpital
   · Sous les hypothèses de L'Hôpital, la limite du quotient est égale à la limite du quotient des dérivées.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x^2 \\right)}{x}} \\\\ & = \\dfrac{\\cos\\left( x^2 \\right) \\times 2 x}{1} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\sin\\left( x^2 \\right)}{x}} \\\\ & = \\lim_{x \\to 0} \\dfrac{\\cos\\left( x^2 \\right) \\times 2 x}{1} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\cos\\left( x^2 \\right) \\times 2 x}{1}} \\\\ & = 0 \\end{aligned}
@@ -755,50 +822,56 @@ exports[`pedagogical-limits demo cases > category: one-sided-asymptotes > render
 Expression: 1/((x-1)^2), x → 1 (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [analyze-left-limit] Étude de la limite à gauche en 1
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] Étude de la limite à droite en 1
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-left-limit] Étude de la limite à gauche en $1$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^-} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en $1$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^+} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison des limites à gauche et à droite
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [conclude-infinite] La limite vaut +∞
+- [conclude-infinite] La limite vaut $+\\infty$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 1
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $1$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)} \\end{aligned}
-- [analyze-left-limit] Étude de la limite à gauche en 1
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] Étude de la limite à droite en 1
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\end{aligned}
+- [analyze-left-limit] Étude de la limite à gauche en $1$
+  · Le numérateur tend vers $1$ et $\\left( x - 1 \\right)^2 \\to 0^+$ : par quotient, la limite à gauche vaut $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^-} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en $1$
+  · Le numérateur tend vers $1$ et $\\left( x - 1 \\right)^2 \\to 0^+$ : par quotient, la limite à droite vaut $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^+} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison des limites à gauche et à droite
+  · La limite à gauche vaut $+\\infty$ et la limite à droite $+\\infty$.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [conclude-infinite] La limite vaut +∞
+- [conclude-infinite] La limite vaut $+\\infty$
   · Le résultat est une limite infinie.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (summarized) ==========
-- [analyze-left-limit] \\lim_{x \\to 1^-}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 1^+}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-left-limit] $\\lim_{x \\to 1^-}$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^-} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] $\\lim_{x \\to 1^+}$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^+} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [conclude-infinite] = +∞
+- [conclude-infinite] $= +\\infty$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (detailed) ==========
-- [analyze-left-limit] \\lim_{x \\to 1^-}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 1^+}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-left-limit] $\\lim_{x \\to 1^-}$
+  · Le numérateur tend vers $1$ et $\\left( x - 1 \\right)^2 \\to 0^+$ : par quotient, la limite à gauche vaut $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^-} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] $\\lim_{x \\to 1^+}$
+  · Le numérateur tend vers $1$ et $\\left( x - 1 \\right)^2 \\to 0^+$ : par quotient, la limite à droite vaut $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^+} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
+  · La limite à gauche vaut $+\\infty$ et la limite à droite $+\\infty$.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [conclude-infinite] = +∞
+- [conclude-infinite] $= +\\infty$
   · Le résultat est une limite infinie.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
@@ -812,42 +885,58 @@ exports[`pedagogical-limits demo cases > category: one-sided-asymptotes > render
 Expression: 1/x, x → 0 (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [analyze-left-limit] Étude de la limite à gauche en 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
-- [analyze-right-limit] Étude de la limite à droite en 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-left-limit] Étude de la limite à gauche en $0$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en $0$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison des limites à gauche et à droite
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\end{aligned}
+- [conclude-does-not-exist] La limite n'existe pas (limites à gauche et à droite distinctes)
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\end{aligned}
 Status: does-not-exist, Value: ∅ (does not exist)
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $0$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = \\dfrac{1}{x} \\end{aligned}
-- [analyze-left-limit] Étude de la limite à gauche en 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
-- [analyze-right-limit] Étude de la limite à droite en 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\end{aligned}
+- [analyze-left-limit] Étude de la limite à gauche en $0$
+  · Le numérateur tend vers $1$ et $x \\to 0^-$ : par quotient, la limite à gauche vaut $-\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en $0$
+  · Le numérateur tend vers $1$ et $x \\to 0^+$ : par quotient, la limite à droite vaut $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison des limites à gauche et à droite
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+  · La limite à gauche vaut $-\\infty$ et la limite à droite $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\end{aligned}
+- [conclude-does-not-exist] La limite n'existe pas (limites à gauche et à droite distinctes)
+  · Comme les limites à gauche et à droite sont distinctes, la limite n'existe pas en ce point.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\end{aligned}
 Status: does-not-exist, Value: ∅ (does not exist)
 
 ========== SUPERIEUR (summarized) ==========
-- [analyze-left-limit] \\lim_{x \\to 0^-}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 0^+}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-left-limit] $\\lim_{x \\to 0^-}$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
+- [analyze-right-limit] $\\lim_{x \\to 0^+}$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\end{aligned}
+- [conclude-does-not-exist] La limite n'existe pas
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\end{aligned}
 Status: does-not-exist, Value: ∅ (does not exist)
 
 ========== SUPERIEUR (detailed) ==========
-- [analyze-left-limit] \\lim_{x \\to 0^-}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 0^+}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-left-limit] $\\lim_{x \\to 0^-}$
+  · Le numérateur tend vers $1$ et $x \\to 0^-$ : par quotient, la limite à gauche vaut $-\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
+- [analyze-right-limit] $\\lim_{x \\to 0^+}$
+  · Le numérateur tend vers $1$ et $x \\to 0^+$ : par quotient, la limite à droite vaut $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+  · La limite à gauche vaut $-\\infty$ et la limite à droite $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\end{aligned}
+- [conclude-does-not-exist] La limite n'existe pas
+  · Comme les limites à gauche et à droite sont distinctes, la limite n'existe pas en ce point.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\end{aligned}
 Status: does-not-exist, Value: ∅ (does not exist)
 "
 `;
@@ -859,50 +948,56 @@ exports[`pedagogical-limits demo cases > category: one-sided-asymptotes > render
 Expression: 1/(x^2), x → 0 (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [analyze-left-limit] Étude de la limite à gauche en 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] Étude de la limite à droite en 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-left-limit] Étude de la limite à gauche en $0$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en $0$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison des limites à gauche et à droite
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [conclude-infinite] La limite vaut +∞
+- [conclude-infinite] La limite vaut $+\\infty$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $0$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = \\dfrac{1}{\\left( x^2 \\right)} \\end{aligned}
-- [analyze-left-limit] Étude de la limite à gauche en 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] Étude de la limite à droite en 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\end{aligned}
+- [analyze-left-limit] Étude de la limite à gauche en $0$
+  · Le numérateur tend vers $1$ et $x^2 \\to 0^+$ : par quotient, la limite à gauche vaut $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en $0$
+  · Le numérateur tend vers $1$ et $x^2 \\to 0^+$ : par quotient, la limite à droite vaut $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison des limites à gauche et à droite
+  · La limite à gauche vaut $+\\infty$ et la limite à droite $+\\infty$.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [conclude-infinite] La limite vaut +∞
+- [conclude-infinite] La limite vaut $+\\infty$
   · Le résultat est une limite infinie.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (summarized) ==========
-- [analyze-left-limit] \\lim_{x \\to 0^-}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 0^+}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-left-limit] $\\lim_{x \\to 0^-}$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] $\\lim_{x \\to 0^+}$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [conclude-infinite] = +∞
+- [conclude-infinite] $= +\\infty$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (detailed) ==========
-- [analyze-left-limit] \\lim_{x \\to 0^-}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 0^+}
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-left-limit] $\\lim_{x \\to 0^-}$
+  · Le numérateur tend vers $1$ et $x^2 \\to 0^+$ : par quotient, la limite à gauche vaut $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] $\\lim_{x \\to 0^+}$
+  · Le numérateur tend vers $1$ et $x^2 \\to 0^+$ : par quotient, la limite à droite vaut $+\\infty$.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
+  · La limite à gauche vaut $+\\infty$ et la limite à droite $+\\infty$.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [conclude-infinite] = +∞
+- [conclude-infinite] $= +\\infty$
   · Le résultat est une limite infinie.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 Status: infinite, Value: +\\infty
@@ -917,51 +1012,51 @@ Expression: (2-sqrt(x))/(4-x), x → 4 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 4
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
-- [conclude] La limite vaut 0.25
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
-Status: exact, Value: 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $4$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+- [conclude] La limite vaut $\\dfrac{1}{4}$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{4}
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 4
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $4$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)} \\end{aligned}
-- [detect-indeterminate-form] Forme indéterminée 0/0 reconnue
-  · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$ reconnue
+  · Numérateur et dénominateur tendent vers $0$. Une simplification (factorisation, rationalisation) est nécessaire.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\end{aligned}
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
   - [simplify-after-rationalization] Simplification après rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{4 - x}{\\left( 4 - x \\right) \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 4
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{4 - x}{\\left( 4 - x \\right) \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $4$
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
-- [conclude] La limite vaut 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+- [conclude] La limite vaut $\\dfrac{1}{4}$
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
-Status: exact, Value: 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{4}
 
 ========== SUPERIEUR (summarized) ==========
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
-Status: exact, Value: 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{4}
 
 ========== SUPERIEUR (detailed) ==========
-- [detect-indeterminate-form] Forme indéterminée 0/0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\end{aligned}
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
   - [simplify-after-rationalization] Simplification post-rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{4 - x}{\\left( 4 - x \\right) \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{4 - x}{\\left( 4 - x \\right) \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = 0.25 \\end{aligned}
-Status: exact, Value: 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 \\left( 2 + \\sqrt{x} \\right)}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{4}
 "
 `;
 
@@ -973,51 +1068,51 @@ Expression: (sqrt(x+1)-1)/x, x → 0 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 0
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
-- [conclude] La limite vaut 0.5
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
-Status: exact, Value: 0.5
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $0$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+- [conclude] La limite vaut $\\dfrac{1}{2}$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{2}
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $0$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x} \\end{aligned}
-- [detect-indeterminate-form] Forme indéterminée 0/0 reconnue
-  · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$ reconnue
+  · Numérateur et dénominateur tendent vers $0$. Une simplification (factorisation, rationalisation) est nécessaire.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\end{aligned}
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1} \\end{aligned}
   - [simplify-after-rationalization] Simplification après rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{x + 1 - 1}{x \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 0
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{x + 1 - 1}{x \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = \\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $0$
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
-- [conclude] La limite vaut 0.5
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+- [conclude] La limite vaut $\\dfrac{1}{2}$
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
-Status: exact, Value: 0.5
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{2}
 
 ========== SUPERIEUR (summarized) ==========
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
-Status: exact, Value: 0.5
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{2}
 
 ========== SUPERIEUR (detailed) ==========
-- [detect-indeterminate-form] Forme indéterminée 0/0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\end{aligned}
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1} \\end{aligned}
   - [simplify-after-rationalization] Simplification post-rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{x + 1 - 1}{x \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)} \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{x + 1 - 1}{x \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = \\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\left( \\sqrt{x + 1} + 1 \\right)}} \\\\ & = 0.5 \\end{aligned}
-Status: exact, Value: 0.5
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\sqrt{x + 1} + 1}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{2}
 "
 `;
 
@@ -1029,51 +1124,51 @@ Expression: (sqrt(x)-2)/(x-4), x → 4 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 4
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
-- [conclude] La limite vaut 0.25
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
-Status: exact, Value: 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $4$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+- [conclude] La limite vaut $\\dfrac{1}{4}$
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{4}
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 4
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $4$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)} \\end{aligned}
-- [detect-indeterminate-form] Forme indéterminée 0/0 reconnue
-  · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$ reconnue
+  · Numérateur et dénominateur tendent vers $0$. Une simplification (factorisation, rationalisation) est nécessaire.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\end{aligned}
 - [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2} \\end{aligned}
   - [simplify-after-rationalization] Simplification après rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{x - 4}{\\left( x - 4 \\right) \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
-- [apply-direct-substitution] Substitution directe : on remplace x par 4
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{x - 4}{\\left( x - 4 \\right) \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace $x$ par $4$
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
-- [conclude] La limite vaut 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+- [conclude] La limite vaut $\\dfrac{1}{4}$
   · On peut maintenant conclure.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
-Status: exact, Value: 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{4}
 
 ========== SUPERIEUR (summarized) ==========
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
-Status: exact, Value: 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{4}
 
 ========== SUPERIEUR (detailed) ==========
-- [detect-indeterminate-form] Forme indéterminée 0/0
+- [detect-indeterminate-form] Forme indéterminée $\\frac{0}{0}$
   · On peut tenter L'Hôpital ou un développement asymptotique.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\end{aligned}
 - [multiply-by-conjugate] Multiplication par le conjugué
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2} \\end{aligned}
   - [simplify-after-rationalization] Simplification post-rationalisation
-    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{x - 4}{\\left( x - 4 \\right) \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)} \\end{aligned}
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{x - 4}{\\left( x - 4 \\right) \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = \\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2} \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\left( \\sqrt{x} + 2 \\right)}} \\\\ & = 0.25 \\end{aligned}
-Status: exact, Value: 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{\\sqrt{x} + 2}} \\\\ & = \\dfrac{1}{4} \\end{aligned}
+Status: exact, Value: \\dfrac{1}{4}
 "
 `;
 
@@ -1085,34 +1180,34 @@ Expression: x*sin(1/x), x → 0 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [identify-bounds] Encadrement de l'expression
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = x \\times \\sin\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\end{aligned}
 - [apply-squeeze] Application du théorème des gendarmes
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $0$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = x \\times \\sin\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\end{aligned}
 - [identify-bounds] Encadrement de l'expression
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = x \\times \\sin\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\end{aligned}
 - [apply-squeeze] Application du théorème des gendarmes
-  · Si f ≤ g ≤ h et f, h tendent vers la même limite ℓ, alors g aussi.
+  · Si $f \\leq g \\leq h$ et si $f$ et $h$ tendent vers la même limite $\\ell$, alors $g$ aussi.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 
 ========== SUPERIEUR (summarized) ==========
 - [identify-bounds] Encadrement
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = x \\times \\sin\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\end{aligned}
 - [apply-squeeze] Théorème d'encadrement (squeeze)
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 
 ========== SUPERIEUR (detailed) ==========
 - [identify-bounds] Encadrement
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = x \\times \\sin\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\end{aligned}
 - [apply-squeeze] Théorème d'encadrement (squeeze)
-  · Théorème d'encadrement : si f ≤ g ≤ h et lim f = lim h = ℓ, alors lim g = ℓ.
+  · Théorème d'encadrement : si $f \\leq g \\leq h$ et $\\lim f = \\lim h = \\ell$, alors $\\lim g = \\ell$.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 "
@@ -1126,34 +1221,34 @@ Expression: (x^2)*cos(1/x), x → 0 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [identify-bounds] Encadrement de l'expression
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\end{aligned}
 - [apply-squeeze] Application du théorème des gendarmes
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 
 ========== LYCEE (detailed) ==========
-- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+- [identify-limit] On veut calculer la limite de l'expression quand $x$ tend vers $0$
   · On commence par observer la forme de l'expression pour choisir une technique adaptée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\end{aligned}
 - [identify-bounds] Encadrement de l'expression
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\end{aligned}
 - [apply-squeeze] Application du théorème des gendarmes
-  · Si f ≤ g ≤ h et f, h tendent vers la même limite ℓ, alors g aussi.
+  · Si $f \\leq g \\leq h$ et si $f$ et $h$ tendent vers la même limite $\\ell$, alors $g$ aussi.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 
 ========== SUPERIEUR (summarized) ==========
 - [identify-bounds] Encadrement
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\end{aligned}
 - [apply-squeeze] Théorème d'encadrement (squeeze)
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 
 ========== SUPERIEUR (detailed) ==========
 - [identify-bounds] Encadrement
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\end{aligned}
 - [apply-squeeze] Théorème d'encadrement (squeeze)
-  · Théorème d'encadrement : si f ≤ g ≤ h et lim f = lim h = ℓ, alors lim g = ℓ.
+  · Théorème d'encadrement : si $f \\leq g \\leq h$ et $\\lim f = \\lim h = \\ell$, alors $\\lim g = \\ell$.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
 Status: exact, Value: 0
 "

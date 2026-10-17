@@ -31,7 +31,7 @@ import {
 	isSuperscript,
 	isFunction
 } from '../guards';
-import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
+import { reservedVariableRefusal } from '../common/reserved-letters';
 import { mapNode, findNodes, getChildren } from '../transforms';
 import {
 	AbortError,
@@ -55,7 +55,7 @@ import { dropAbsOfPositive } from './positive-abs';
 import { absorbLnConstantFactors } from './ln-constant';
 import { asPowerSum, integratePowerSum, powerSumAsNode } from './power-sum';
 import { laurentForm } from './laurent-form';
-import { antiderivativeDiscontinuity, numericIntegrand } from './singularity';
+import { antiderivativeDiscontinuity, denominatorPole, numericIntegrand } from './singularity';
 import { compile } from '../eval/compile';
 import {
 	absProductForm,
@@ -67,6 +67,22 @@ import {
 	positiveLeadForm,
 	powerOfSumForm
 } from './class-form';
+
+// =============================================================================
+// Écriture des bornes dans un message
+// =============================================================================
+
+/**
+ * Une borne lisible par l'élève : la notation interne écrit la division en
+ * ligne `:/`, π `\pi` et la racine `sqrt`, que les messages montraient tels
+ * quels (« [-1 ; 1:/2] », « [0 ; \pi] », mesurés le 2026-10-14).
+ */
+function boundText(bound: MathNode): string {
+	return toCustom(bound)
+		.replaceAll(':/', '/')
+		.replace(/\\pi(?![A-Za-z])/g, 'π')
+		.replace(/\bsqrt(?=\()/g, '√');
+}
 
 // =============================================================================
 // Budget global
@@ -725,9 +741,10 @@ function integrateInternal(
  * ```
  */
 export function integrate(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
-	// `e` est la constante d'Euler : intégrer « par rapport à e » est refusé
-	if (refusesEulerVariable(options?.variable, rawExpr)) {
-		return oversizedResult('e', EULER_NOT_A_VARIABLE);
+	// `e` (Euler) et `i` (unité imaginaire) : intégrer « par rapport à » eux est refusé
+	const refusal = reservedVariableRefusal(options?.variable, rawExpr);
+	if (refusal !== null) {
+		return oversizedResult(options?.variable ?? 'x', refusal);
 	}
 	// Premier appel (non imbriqué) : le budget repart de zéro, et TOUT le
 	// calcul — mise en forme finale comprise — est placé sous le signal ambiant
@@ -904,6 +921,18 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 // Definite Integral Function
 // =============================================================================
 
+/**
+ * `1^u` → 1, quel que soit l'exposant u (réel) : la primitive x^{a+1}/(a+1)
+ * prise en 1 donne `1^{a+1}`, que `normalize` laisse en l'état (V61).
+ */
+function withoutPowersOfOne(node: MathNode): MathNode {
+	return mapNode(node, (current) => {
+		if (current.type !== 'superscript') return current;
+		const base = current.base.type === 'delimiter' ? current.base.content : current.base;
+		return base.type === 'number' && base.value === '1' ? number('1') : current;
+	});
+}
+
 /** Valeur numérique d'une borne (NaN si littérale : `a`, `b`) */
 function numericBound(bound: MathNode): number {
 	try {
@@ -951,8 +980,8 @@ export function integrateDefinite(
 	// First, find the indefinite integral
 	const indefiniteResult = integrate(expr, options);
 
-	// Refus sans repli numérique : `e` n'est pas une variable
-	if (refusesEulerVariable(options?.variable, expr)) {
+	// Refus sans repli numérique : `e` et `i` ne sont pas des variables
+	if (reservedVariableRefusal(options?.variable, expr) !== null) {
 		return { ...indefiniteResult, lowerBound: lower, upperBound: upper, value: null };
 	}
 
@@ -980,13 +1009,13 @@ export function integrateDefinite(
 			}
 			if (integrand.kind === 'singular') {
 				return refused(
-					`L'intégrale diverge ou n'est pas définie sur [${toCustom(lower)} ; ${toCustom(upper)}] : ${integrand.reason}`
+					`L'intégrale diverge ou n'est pas définie sur [${boundText(lower)} ; ${boundText(upper)}] : ${integrand.reason}`
 				);
 			}
 			const value = adaptiveSimpson(integrand.f, a, b, NUMERIC_TOLERANCE, NUMERIC_MAX_DEPTH);
 			if (!Number.isFinite(value)) {
 				return refused(
-					`L'intégrale diverge ou n'est pas définie sur [${toCustom(lower)} ; ${toCustom(upper)}]`
+					`L'intégrale diverge ou n'est pas définie sur [${boundText(lower)} ; ${boundText(upper)}]`
 				);
 			}
 
@@ -1028,13 +1057,16 @@ export function integrateDefinite(
 	const variable = indefiniteResult.variable;
 
 	// F(b) − F(a) n'a de sens que si F est continue sur [a ; b] : à travers un
-	// pôle, refus explicite — jamais une valeur (revue de #947)
-	const discontinuity = antiderivativeDiscontinuity(
-		indefiniteResult.antiderivative,
-		variable,
-		numericBound(lower),
-		numericBound(upper)
-	);
+	// pôle, refus explicite — jamais une valeur (revue de #947). Second filet
+	// sur f (V53) : un dénominateur qui change de signe dans [a ; b], racine
+	// localisée par bissection (∛2 n'a pas à être trouvée exactement)
+	const discontinuity =
+		antiderivativeDiscontinuity(
+			indefiniteResult.antiderivative,
+			variable,
+			numericBound(lower),
+			numericBound(upper)
+		) ?? denominatorPole(expr, variable, numericBound(lower), numericBound(upper));
 	if (discontinuity !== null) {
 		return {
 			...indefiniteResult,
@@ -1044,7 +1076,7 @@ export function integrateDefinite(
 			value: null,
 			approximate: undefined,
 			steps: [],
-			error: `L'intégrale diverge ou n'est pas définie sur [${toCustom(lower)} ; ${toCustom(upper)}] : ${discontinuity}`
+			error: `L'intégrale diverge ou n'est pas définie sur [${boundText(lower)} ; ${boundText(upper)}] : ${discontinuity}`
 		};
 	}
 
@@ -1074,7 +1106,11 @@ export function integrateDefinite(
 		if (upperEval.status !== 'value' || lowerEval.status !== 'value') {
 			// Bornes ou primitive littérales (`∫₀ᵃ x² dx`, `∫₀² ax dx`) : la valeur
 			// reste symbolique, F(b) − F(a) simplifiée — jamais « exact » sans valeur
-			const normalized = normalizeAntiderivative(subtract(upperSubstituted, lowerSubstituted));
+			// 1^{a+1} → 1 (`x^a de 1 à 2`, V61) : `normalize` ne réduit pas une
+			// puissance de 1 à exposant littéral
+			const normalized = normalizeAntiderivative(
+				subtract(withoutPowersOfOne(upperSubstituted), withoutPowersOfOne(lowerSubstituted))
+			);
 			// `e^{…}` tapé → valeur écrite `e^{…}`, comme la primitive
 			const symbolic = containsExpFunction(expr) ? normalized : expAsEulerPower(normalized);
 			recorder.recordStep(
@@ -1084,7 +1120,7 @@ export function integrateDefinite(
 				symbolic,
 				'summarized',
 				undefined,
-				`F(${toCustom(upper)}) - F(${toCustom(lower)})`
+				`F(${boundText(upper)}) - F(${boundText(lower)})`
 			);
 			return {
 				...indefiniteResult,

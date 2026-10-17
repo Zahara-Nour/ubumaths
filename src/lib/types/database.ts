@@ -74,6 +74,7 @@ export type Database = {
           ip_address: unknown
           requested_at: string
           status: string
+          storage_removed_at: string | null
           user_agent: string | null
           user_id: string | null
         }
@@ -86,6 +87,7 @@ export type Database = {
           ip_address?: unknown
           requested_at?: string
           status: string
+          storage_removed_at?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
@@ -98,6 +100,7 @@ export type Database = {
           ip_address?: unknown
           requested_at?: string
           status?: string
+          storage_removed_at?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
@@ -694,39 +697,51 @@ export type Database = {
       }
       chapter_checklist_items: {
         Row: {
-          chapter_id: string
+          chapter_id: string | null
           content: string
           created_at: string
           description: string | null
           display_order: number
+          hidden: boolean
           id: string
           published_at: string | null
+          retired_at: string | null
           section_id: string | null
           section_order: number
+          source_id: string | null
+          template_id: string | null
           updated_at: string
         }
         Insert: {
-          chapter_id: string
+          chapter_id?: string | null
           content: string
           created_at?: string
           description?: string | null
           display_order?: number
+          hidden?: boolean
           id?: string
           published_at?: string | null
+          retired_at?: string | null
           section_id?: string | null
           section_order?: number
+          source_id?: string | null
+          template_id?: string | null
           updated_at?: string
         }
         Update: {
-          chapter_id?: string
+          chapter_id?: string | null
           content?: string
           created_at?: string
           description?: string | null
           display_order?: number
+          hidden?: boolean
           id?: string
           published_at?: string | null
+          retired_at?: string | null
           section_id?: string | null
           section_order?: number
+          source_id?: string | null
+          template_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -743,6 +758,27 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "chapter_sections"
             referencedColumns: ["id", "chapter_id"]
+          },
+          {
+            foreignKeyName: "chapter_checklist_items_section_modele_fkey"
+            columns: ["section_id", "template_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "template_id"]
+          },
+          {
+            foreignKeyName: "chapter_checklist_items_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_checklist_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_checklist_items_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_templates"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -823,7 +859,7 @@ export type Database = {
       }
       chapter_documents: {
         Row: {
-          chapter_id: string
+          chapter_id: string | null
           created_at: string
           description: string | null
           display_order: number
@@ -831,19 +867,23 @@ export type Database = {
           file_size: number | null
           google_drive_url: string | null
           google_file_id: string | null
+          hidden: boolean
           id: string
           mime_type: string | null
           published_at: string | null
+          retired_at: string | null
           section_id: string | null
           section_order: number
+          source_id: string | null
           source_type: string
           storage_path: string | null
+          template_id: string | null
           thumbnail_url: string | null
           title: string
           updated_at: string
         }
         Insert: {
-          chapter_id: string
+          chapter_id?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
@@ -851,19 +891,23 @@ export type Database = {
           file_size?: number | null
           google_drive_url?: string | null
           google_file_id?: string | null
+          hidden?: boolean
           id?: string
           mime_type?: string | null
           published_at?: string | null
+          retired_at?: string | null
           section_id?: string | null
           section_order?: number
+          source_id?: string | null
           source_type?: string
           storage_path?: string | null
+          template_id?: string | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string
         }
         Update: {
-          chapter_id?: string
+          chapter_id?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
@@ -871,13 +915,17 @@ export type Database = {
           file_size?: number | null
           google_drive_url?: string | null
           google_file_id?: string | null
+          hidden?: boolean
           id?: string
           mime_type?: string | null
           published_at?: string | null
+          retired_at?: string | null
           section_id?: string | null
           section_order?: number
+          source_id?: string | null
           source_type?: string
           storage_path?: string | null
+          template_id?: string | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
@@ -897,38 +945,71 @@ export type Database = {
             referencedRelation: "chapter_sections"
             referencedColumns: ["id", "chapter_id"]
           },
+          {
+            foreignKeyName: "chapter_documents_section_modele_fkey"
+            columns: ["section_id", "template_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "template_id"]
+          },
+          {
+            foreignKeyName: "chapter_documents_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_documents_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_templates"
+            referencedColumns: ["id"]
+          },
         ]
       }
       chapter_exercises: {
         Row: {
-          chapter_id: string
+          chapter_id: string | null
           created_at: string
           display_order: number
           exercise_id: string
+          hidden: boolean
           id: string
           published_at: string | null
+          retired_at: string | null
           section_id: string | null
           section_order: number
+          source_id: string | null
+          template_id: string | null
         }
         Insert: {
-          chapter_id: string
+          chapter_id?: string | null
           created_at?: string
           display_order?: number
           exercise_id: string
+          hidden?: boolean
           id?: string
           published_at?: string | null
+          retired_at?: string | null
           section_id?: string | null
           section_order?: number
+          source_id?: string | null
+          template_id?: string | null
         }
         Update: {
-          chapter_id?: string
+          chapter_id?: string | null
           created_at?: string
           display_order?: number
           exercise_id?: string
+          hidden?: boolean
           id?: string
           published_at?: string | null
+          retired_at?: string | null
           section_id?: string | null
           section_order?: number
+          source_id?: string | null
+          template_id?: string | null
         }
         Relationships: [
           {
@@ -952,30 +1033,60 @@ export type Database = {
             referencedRelation: "chapter_sections"
             referencedColumns: ["id", "chapter_id"]
           },
+          {
+            foreignKeyName: "chapter_exercises_section_modele_fkey"
+            columns: ["section_id", "template_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "template_id"]
+          },
+          {
+            foreignKeyName: "chapter_exercises_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_exercises_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_templates"
+            referencedColumns: ["id"]
+          },
         ]
       }
       chapter_sections: {
         Row: {
-          chapter_id: string
+          chapter_id: string | null
           created_at: string
           display_order: number
+          hidden: boolean
           id: string
+          source_id: string | null
+          template_id: string | null
           title: string
           updated_at: string
         }
         Insert: {
-          chapter_id: string
+          chapter_id?: string | null
           created_at?: string
           display_order?: number
+          hidden?: boolean
           id?: string
+          source_id?: string | null
+          template_id?: string | null
           title: string
           updated_at?: string
         }
         Update: {
-          chapter_id?: string
+          chapter_id?: string | null
           created_at?: string
           display_order?: number
+          hidden?: boolean
           id?: string
+          source_id?: string | null
+          template_id?: string | null
           title?: string
           updated_at?: string
         }
@@ -987,41 +1098,67 @@ export type Database = {
             referencedRelation: "class_chapters"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "chapter_sections_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_sections_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_templates"
+            referencedColumns: ["id"]
+          },
         ]
       }
       chapter_series: {
         Row: {
-          chapter_id: string
+          chapter_id: string | null
           created_at: string
           display_order: number
           form: string
+          hidden: boolean
           id: string
           published_at: string | null
+          retired_at: string | null
           section_id: string | null
           section_order: number
           series_id: string
+          source_id: string | null
+          template_id: string | null
         }
         Insert: {
-          chapter_id: string
+          chapter_id?: string | null
           created_at?: string
           display_order?: number
           form?: string
+          hidden?: boolean
           id?: string
           published_at?: string | null
+          retired_at?: string | null
           section_id?: string | null
           section_order?: number
           series_id: string
+          source_id?: string | null
+          template_id?: string | null
         }
         Update: {
-          chapter_id?: string
+          chapter_id?: string | null
           created_at?: string
           display_order?: number
           form?: string
+          hidden?: boolean
           id?: string
           published_at?: string | null
+          retired_at?: string | null
           section_id?: string | null
           section_order?: number
           series_id?: string
+          source_id?: string | null
+          template_id?: string | null
         }
         Relationships: [
           {
@@ -1039,10 +1176,31 @@ export type Database = {
             referencedColumns: ["id", "chapter_id"]
           },
           {
+            foreignKeyName: "chapter_series_section_modele_fkey"
+            columns: ["section_id", "template_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "template_id"]
+          },
+          {
             foreignKeyName: "chapter_series_series_id_fkey"
             columns: ["series_id"]
             isOneToOne: false
             referencedRelation: "series"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_series_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_series"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_series_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -1050,33 +1208,24 @@ export type Database = {
       chapter_template_instantiations: {
         Row: {
           chapter_id: string
-          current_template_version: number | null
           id: string
           instantiated_at: string
           is_detached: boolean
-          last_migrated_at: string | null
           template_id: string | null
-          template_version: number
         }
         Insert: {
           chapter_id: string
-          current_template_version?: number | null
           id?: string
           instantiated_at?: string
           is_detached?: boolean
-          last_migrated_at?: string | null
           template_id?: string | null
-          template_version: number
         }
         Update: {
           chapter_id?: string
-          current_template_version?: number | null
           id?: string
           instantiated_at?: string
           is_detached?: boolean
-          last_migrated_at?: string | null
           template_id?: string | null
-          template_version?: number
         }
         Relationships: [
           {
@@ -1095,75 +1244,11 @@ export type Database = {
           },
         ]
       }
-      chapter_template_versions: {
-        Row: {
-          change_summary: string | null
-          content_snapshot: Json
-          created_at: string
-          created_by: string
-          diff: Json | null
-          id: string
-          template_id: string
-          version_number: number
-        }
-        Insert: {
-          change_summary?: string | null
-          content_snapshot: Json
-          created_at?: string
-          created_by: string
-          diff?: Json | null
-          id?: string
-          template_id: string
-          version_number: number
-        }
-        Update: {
-          change_summary?: string | null
-          content_snapshot?: Json
-          created_at?: string
-          created_by?: string
-          diff?: Json | null
-          id?: string
-          template_id?: string
-          version_number?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chapter_template_versions_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "chapter_template_versions_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chapter_template_versions_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "chapter_template_versions_template_id_fkey"
-            columns: ["template_id"]
-            isOneToOne: false
-            referencedRelation: "chapter_templates"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       chapter_templates: {
         Row: {
           color: string | null
-          content_snapshot: Json
           created_at: string
           created_by: string
-          current_version: number
           description: string | null
           grades: string[]
           icon: string | null
@@ -1175,10 +1260,8 @@ export type Database = {
         }
         Insert: {
           color?: string | null
-          content_snapshot?: Json
           created_at?: string
           created_by: string
-          current_version?: number
           description?: string | null
           grades?: string[]
           icon?: string | null
@@ -1190,10 +1273,8 @@ export type Database = {
         }
         Update: {
           color?: string | null
-          content_snapshot?: Json
           created_at?: string
           created_by?: string
-          current_version?: number
           description?: string | null
           grades?: string[]
           icon?: string | null
@@ -1229,33 +1310,45 @@ export type Database = {
       }
       chapter_worksheets: {
         Row: {
-          chapter_id: string
+          chapter_id: string | null
           created_at: string
           display_order: number
+          hidden: boolean
           id: string
           published_at: string | null
+          retired_at: string | null
           section_id: string | null
           section_order: number
+          source_id: string | null
+          template_id: string | null
           worksheet_id: string
         }
         Insert: {
-          chapter_id: string
+          chapter_id?: string | null
           created_at?: string
           display_order?: number
+          hidden?: boolean
           id?: string
           published_at?: string | null
+          retired_at?: string | null
           section_id?: string | null
           section_order?: number
+          source_id?: string | null
+          template_id?: string | null
           worksheet_id: string
         }
         Update: {
-          chapter_id?: string
+          chapter_id?: string | null
           created_at?: string
           display_order?: number
+          hidden?: boolean
           id?: string
           published_at?: string | null
+          retired_at?: string | null
           section_id?: string | null
           section_order?: number
+          source_id?: string | null
+          template_id?: string | null
           worksheet_id?: string
         }
         Relationships: [
@@ -1272,6 +1365,27 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "chapter_sections"
             referencedColumns: ["id", "chapter_id"]
+          },
+          {
+            foreignKeyName: "chapter_worksheets_section_modele_fkey"
+            columns: ["section_id", "template_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "template_id"]
+          },
+          {
+            foreignKeyName: "chapter_worksheets_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_worksheets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_worksheets_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_templates"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "chapter_worksheets_worksheet_id_fkey"
@@ -1326,6 +1440,71 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "classes"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_course_share_tokens: {
+        Row: {
+          access_count: number
+          class_id: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          last_accessed_at: string | null
+          token: string
+        }
+        Insert: {
+          access_count?: number
+          class_id: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_accessed_at?: string | null
+          token: string
+        }
+        Update: {
+          access_count?: number
+          class_id?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_accessed_at?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_course_share_tokens_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_course_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "class_course_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_course_share_tokens_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -3435,6 +3614,7 @@ export type Database = {
           id: string
           is_public: boolean
           resources: Json | null
+          search_indexed: boolean
           shared: Json | null
           slug: string | null
           source: string | null
@@ -3455,6 +3635,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           resources?: Json | null
+          search_indexed?: boolean
           shared?: Json | null
           slug?: string | null
           source?: string | null
@@ -3475,6 +3656,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           resources?: Json | null
+          search_indexed?: boolean
           shared?: Json | null
           slug?: string | null
           source?: string | null
@@ -4467,6 +4649,64 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "classes"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      geometry_figures: {
+        Row: {
+          author_id: string
+          created_at: string
+          description: string | null
+          dsl_script: string
+          grades: string[]
+          id: string
+          is_public: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string
+          created_at?: string
+          description?: string | null
+          dsl_script: string
+          grades?: string[]
+          id?: string
+          is_public?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          description?: string | null
+          dsl_script?: string
+          grades?: string[]
+          id?: string
+          is_public?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "geometry_figures_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "geometry_figures_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "geometry_figures_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -9052,41 +9292,6 @@ export type Database = {
           },
         ]
       }
-      python_submission_server_verdicts: {
-        Row: {
-          created_at: string
-          server_is_correct: boolean | null
-          server_validation_result: Json | null
-          submission_id: string
-          verification_status: string
-          verified_at: string | null
-        }
-        Insert: {
-          created_at?: string
-          server_is_correct?: boolean | null
-          server_validation_result?: Json | null
-          submission_id: string
-          verification_status?: string
-          verified_at?: string | null
-        }
-        Update: {
-          created_at?: string
-          server_is_correct?: boolean | null
-          server_validation_result?: Json | null
-          submission_id?: string
-          verification_status?: string
-          verified_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "python_submission_server_verdicts_submission_id_fkey"
-            columns: ["submission_id"]
-            isOneToOne: true
-            referencedRelation: "python_exercise_submissions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       question_template_points: {
         Row: {
           created_at: string
@@ -9736,10 +9941,44 @@ export type Database = {
           },
         ]
       }
-      riddles: {
+      riddle_solutions: {
         Row: {
           answer: Json | null
           correction: string
+          riddle_id: string
+          updated_at: string
+        }
+        Insert: {
+          answer?: Json | null
+          correction?: string
+          riddle_id: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: Json | null
+          correction?: string
+          riddle_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "riddle_solutions_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: true
+            referencedRelation: "riddle_stats"
+            referencedColumns: ["riddle_id"]
+          },
+          {
+            foreignKeyName: "riddle_solutions_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: true
+            referencedRelation: "riddles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      riddles: {
+        Row: {
           created_at: string
           created_by: string
           difficulty: number
@@ -9753,8 +9992,6 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          answer?: Json | null
-          correction: string
           created_at?: string
           created_by: string
           difficulty: number
@@ -9768,8 +10005,6 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          answer?: Json | null
-          correction?: string
           created_at?: string
           created_by?: string
           difficulty?: number
@@ -11444,6 +11679,46 @@ export type Database = {
           },
         ]
       }
+      student_print_settings: {
+        Row: {
+          student_id: string
+          text_size: string
+          updated_at: string
+        }
+        Insert: {
+          student_id: string
+          text_size?: string
+          updated_at?: string
+        }
+        Update: {
+          student_id?: string
+          text_size?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_print_settings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_print_settings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_print_settings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       student_warnings: {
         Row: {
           academic_period_id: string
@@ -12881,6 +13156,7 @@ export type Database = {
           correction_release_mode: string | null
           created_at: string
           created_by: string
+          guidance_level: string
           id: string
           individualized: boolean | null
           instructions: string | null
@@ -12898,6 +13174,7 @@ export type Database = {
           correction_release_mode?: string | null
           created_at?: string
           created_by: string
+          guidance_level?: string
           id?: string
           individualized?: boolean | null
           instructions?: string | null
@@ -12915,6 +13192,7 @@ export type Database = {
           correction_release_mode?: string | null
           created_at?: string
           created_by?: string
+          guidance_level?: string
           id?: string
           individualized?: boolean | null
           instructions?: string | null
@@ -13062,6 +13340,7 @@ export type Database = {
       }
       worksheet_exercises: {
         Row: {
+          answer_frame_lines: Json | null
           correction_visible: boolean | null
           created_at: string
           custom_instructions: string | null
@@ -13079,6 +13358,7 @@ export type Database = {
           worksheet_id: string
         }
         Insert: {
+          answer_frame_lines?: Json | null
           correction_visible?: boolean | null
           created_at?: string
           custom_instructions?: string | null
@@ -13096,6 +13376,7 @@ export type Database = {
           worksheet_id: string
         }
         Update: {
+          answer_frame_lines?: Json | null
           correction_visible?: boolean | null
           created_at?: string
           custom_instructions?: string | null
@@ -13248,14 +13529,68 @@ export type Database = {
           },
         ]
       }
+      worksheet_styles: {
+        Row: {
+          common_typst: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          common_typst?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          common_typst?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worksheet_styles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "worksheet_styles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worksheet_styles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       worksheet_templates: {
         Row: {
           created_at: string
           created_by: string | null
           description: string | null
+          form: string
           id: string
           name: string
           placeholders: Json | null
+          style_id: string | null
           template_content: string
           updated_at: string
         }
@@ -13263,9 +13598,11 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          form?: string
           id?: string
           name: string
           placeholders?: Json | null
+          style_id?: string | null
           template_content: string
           updated_at?: string
         }
@@ -13273,9 +13610,11 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          form?: string
           id?: string
           name?: string
           placeholders?: Json | null
+          style_id?: string | null
           template_content?: string
           updated_at?: string
         }
@@ -13301,6 +13640,13 @@ export type Database = {
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
           },
+          {
+            foreignKeyName: "worksheet_templates_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "worksheet_styles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       worksheets: {
@@ -13316,6 +13662,7 @@ export type Database = {
           published_at: string | null
           school_id: string | null
           status: string
+          style_id: string | null
           template_id: string | null
           title: string
           total_points: number | null
@@ -13336,6 +13683,7 @@ export type Database = {
           published_at?: string | null
           school_id?: string | null
           status?: string
+          style_id?: string | null
           template_id?: string | null
           title: string
           total_points?: number | null
@@ -13356,6 +13704,7 @@ export type Database = {
           published_at?: string | null
           school_id?: string | null
           status?: string
+          style_id?: string | null
           template_id?: string | null
           title?: string
           total_points?: number | null
@@ -13391,6 +13740,13 @@ export type Database = {
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worksheets_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "worksheet_styles"
             referencedColumns: ["id"]
           },
           {
@@ -14292,17 +14648,6 @@ export type Database = {
         Args: { p_week_end: string; p_week_start: string }
         Returns: number
       }
-      award_weekly_reward: {
-        Args: {
-          p_class_id: string
-          p_gidouilles?: number
-          p_reason?: string
-          p_student_id: string
-          p_week_end: string
-          p_week_start: string
-        }
-        Returns: string
-      }
       backfill_tournament_scores: {
         Args: { p_tournament_id: string }
         Returns: {
@@ -14310,14 +14655,6 @@ export type Database = {
         }[]
       }
       calculate_3bv: { Args: { p_grid_state: Json }; Returns: number }
-      calculate_daily_challenge_gidouilles: {
-        Args: {
-          p_difficulty: string
-          p_student_id: string
-          p_time_seconds: number
-        }
-        Returns: number
-      }
       calculate_elo_change: {
         Args: { p_loser_elo: number; p_winner_elo: number }
         Returns: number
@@ -14737,14 +15074,6 @@ export type Database = {
         }
         Returns: number
       }
-      get_2048_user_rank: {
-        Args: { p_user_id: string }
-        Returns: {
-          total_players: number
-          user_rank: number
-          user_score: number
-        }[]
-      }
       get_accessible_kanban_boards: {
         Args: { p_cursor?: string; p_limit?: number }
         Returns: {
@@ -14819,6 +15148,10 @@ export type Database = {
           total_views: number
         }[]
       }
+      get_class_course_by_share_token: {
+        Args: { p_token: string }
+        Returns: Json
+      }
       get_class_journal_by_share_token: {
         Args: { p_token: string }
         Returns: Json
@@ -14841,6 +15174,14 @@ export type Database = {
           lastname: string
           user_id: string
         }[]
+      }
+      get_course_document_by_share_token: {
+        Args: { p_document_id: string; p_token: string }
+        Returns: Json
+      }
+      get_course_worksheet_by_share_token: {
+        Args: { p_token: string; p_worksheet_id: string }
+        Returns: Json
       }
       get_cycle_for_grade: { Args: { p_grade: string }; Returns: string }
       get_database_stats: { Args: never; Returns: Json }
@@ -14889,6 +15230,7 @@ export type Database = {
           id: string
           is_public: boolean
           resources: Json | null
+          search_indexed: boolean
           shared: Json | null
           slug: string | null
           source: string | null
@@ -15557,6 +15899,16 @@ export type Database = {
         Returns: Json
       }
       leave_multiplayer_queue: { Args: never; Returns: Json }
+      link_chapter_to_template: {
+        Args: { p_chapter_id: string; p_template_id: string }
+        Returns: undefined
+      }
+      list_orphan_message_attachment_files: {
+        Args: { p_limit?: number }
+        Returns: {
+          name: string
+        }[]
+      }
       lock_cards: {
         Args: {
           p_card_ids: string[]
@@ -15656,31 +16008,9 @@ export type Database = {
         }
         Returns: Json
       }
-      process_weekly_rewards: {
-        Args: {
-          p_class_ids?: string[]
-          p_week_end: string
-          p_week_start: string
-        }
-        Returns: {
-          awarded: boolean
-          class_id: string
-          reason: string
-          student_id: string
-        }[]
-      }
       promote_user_to_admin: {
         Args: { user_email: string }
         Returns: undefined
-      }
-      purchase_shop_item: {
-        Args: {
-          p_purchase_context?: Json
-          p_quantity?: number
-          p_student_id: string
-          p_template_id: string
-        }
-        Returns: Json
       }
       purchase_vip_card: {
         Args: { p_card_id: string; p_student_id: string }
@@ -15868,11 +16198,22 @@ export type Database = {
         }
         Returns: undefined
       }
+      riddle_school_leaderboard: {
+        Args: { p_limit?: number }
+        Returns: {
+          firstname: string
+          is_me: boolean
+          rank: number
+          riddles_completed: number
+          riddles_gidouilles: number
+          student_id: string
+        }[]
+      }
       run_cleanup_all: { Args: never; Returns: undefined }
       run_cleanup_expired_data: { Args: never; Returns: undefined }
       run_daily_summaries: { Args: never; Returns: undefined }
-      run_flag_stale_python_rechecks: { Args: never; Returns: undefined }
       run_recalculate_minesweeper_ref_times: { Args: never; Returns: undefined }
+      run_retention_c11: { Args: never; Returns: Json }
       run_weekly_best_bonuses: { Args: never; Returns: undefined }
       run_weekly_rewards: { Args: never; Returns: undefined }
       same_school: { Args: { p_other: string }; Returns: boolean }

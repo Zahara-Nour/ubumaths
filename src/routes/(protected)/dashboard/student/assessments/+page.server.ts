@@ -1,6 +1,9 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { EvaluationError, getStudentAssignments } from '$lib/server/evaluations';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/assessments/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -18,8 +21,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// PGRST116 = pas de profil, et la redirection qui suit est légitime. Une
 	// AUTRE panne renvoyait l'élève au tableau de bord sans rien expliquer.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Profil illisible :', profileError);
-		throw error(500, 'Impossible de vérifier votre profil');
+		logger.error('Profil illisible :', profileError);
+		throw error(500, 'Impossible de vérifier le profil');
 	}
 
 	if (!profile || profile.role !== 'student') {

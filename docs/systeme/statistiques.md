@@ -173,7 +173,8 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
    variance flottante nulle ; R² = 1 si toutes les ordonnées sont égales.
 6. **`fitAffine` n'utilise que les paires complètes** (liste plus longue : valeurs ignorées,
    comptées dans `ignored`) ; `bivariateFit` suppose des longueurs égales (contrôlées par
-   l'appelant).
+   l'appelant). L'atelier lui passe déjà des séries appariées par ligne de la grille
+   (`src/lib/atelier/pairs.ts`, décision P1) : ce sont les lignes incomplètes qu'il compte.
 7. **Exact d'abord, arrondi une seule fois** : probabilités et moments en `Fraction` / `bigint`
    (E(X) = 7/2, pas 3,5000000000000004). r est irrationnel en général : décimal, mais r² exact
    dit si r = ±1. Exponentielle, normale, changement de variable : flottants.
@@ -200,7 +201,9 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   `randomVariable`), `src/lib/atelier/simulate.ts` (`.simuler`, `.fréquence`, `.échantillons`),
   `src/lib/atelier/parse.ts` (`readListValue`), `src/lib/atelier/chart.ts`,
   `src/lib/atelier/compare.ts`, `src/lib/atelier/filter.ts`,
-  `src/lib/atelier/law-commands.ts`, `src/lib/components/atelier/DataView.svelte`.
+  `src/lib/atelier/law-commands.ts`, `src/lib/components/atelier/DataView.svelte` (la grille :
+  aperçu des listes par `summarizeList` ; une case ordinaire se lit par `readListValue`, via
+  `plainValue` de `src/lib/atelier/formula.ts`).
   Détails : [atelier.md](atelier.md).
 - **Moteur web** : `src/lib/mathAST/cli/web/web-repl-engine.ts` (`.stats`, `.ajustement`,
   `.linreg`), par **chemins relatifs**.

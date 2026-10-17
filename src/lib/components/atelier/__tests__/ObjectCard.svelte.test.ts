@@ -144,6 +144,19 @@ describe('carte ouverte — le champ', () => {
 		expect(atelier.get('a')).toMatchObject({ unit: 'km' });
 	});
 
+	// Lot C des grandeurs : l'espace tapée doit survivre dans MathLive — sans
+	// elle, « 5 m » arrivait « 5m », le produit 5 × m
+	it('« 5 m » tapé avec une espace est une grandeur', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '' });
+		const { container } = await render(WithAtelier, { atelier });
+		const card = await open(container, 'a');
+
+		await typeInto(fieldOf(card), '5 m');
+
+		await vi.waitFor(() => expect(atelier.get('a')).toMatchObject({ unit: 'm' }));
+	});
+
 	// C11
 	it('une liste n’a pas de champ dans la carte', async () => {
 		const atelier = new Atelier();

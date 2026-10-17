@@ -2,6 +2,9 @@
  * API Route: /api/teacher/chapters/[id]/documents/[docId]
  * PUT - Update a document
  * DELETE - Delete a document
+ *
+ * Une ligne de LIEN (élément du modèle, ADR 0029) ne se supprime pas d'un
+ * chapitre : elle se masque. Son fichier, celui du modèle, n'est jamais touché.
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -10,6 +13,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { updateChapterDocument, deleteChapterDocument } from '$lib/server/chapters';
 import { updateDocumentSchema } from '$lib/server/validation/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/documents/[docId]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -35,7 +41,7 @@ async function verifyDocumentOwnership(
 	// Verify document exists and belongs to chapter
 	const { data: document, error: docError } = await supabase
 		.from('chapter_documents')
-		.select('id, chapter_id')
+		.select('id, chapter_id, source_id')
 		.eq('id', docId)
 		.single();
 
@@ -95,7 +101,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const result = await updateChapterDocument(docId, validation.data, locals.supabase);
 
 	if (result.error) {
-		console.error('[PUT /api/teacher/chapters/[id]/documents/[docId]] Error:', result.error);
+		logger.error('[PUT /api/teacher/chapters/[id]/documents/[docId]] Error:', result.error);
 		throw error(500, 'Failed to update document');
 	}
 
@@ -124,13 +130,17 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const docId = docIdValidation.data;
 
 	// Verify ownership
-	await verifyDocumentOwnership(chapterId, docId, locals.supabase);
+	const { document } = await verifyDocumentOwnership(chapterId, docId, locals.supabase);
+
+	if (document.source_id !== null) {
+		throw error(409, 'Élément du modèle : masquez-le plutôt que de le supprimer.');
+	}
 
 	// Delete document
 	const result = await deleteChapterDocument(docId, locals.supabase);
 
 	if (result.error) {
-		console.error('[DELETE /api/teacher/chapters/[id]/documents/[docId]] Error:', result.error);
+		logger.error('[DELETE /api/teacher/chapters/[id]/documents/[docId]] Error:', result.error);
 		throw error(500, 'Failed to delete document');
 	}
 

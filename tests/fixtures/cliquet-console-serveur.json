@@ -1,0 +1,10 @@
+{
+	"src/lib/server/documents/pdf-extractor.ts": 1,
+	"src/routes/(protected)/dashboard/teacher/contenu/templates/+page.server.ts": 2,
+	"src/routes/(protected)/dashboard/teacher/contenu/templates/new/+page.server.ts": 1,
+	"src/routes/api/documents/+server.ts": 7,
+	"src/routes/api/documents/[id]/+server.ts": 3,
+	"src/routes/api/documents/upload/+server.ts": 1,
+	"src/routes/api/latex/compile/+server.ts": 1,
+	"src/routes/api/teacher/categories/[classId]/+server.ts": 3
+}

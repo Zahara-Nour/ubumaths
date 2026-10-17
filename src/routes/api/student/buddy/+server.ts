@@ -13,6 +13,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getStudentBuddy, createStudentBuddy } from '$lib/server/buddy-queries';
 import { chooseBuddySchema } from '$lib/server/validation/buddy';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/buddy/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const { user } = await requireRole(locals, 'student');
@@ -21,7 +24,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const buddy = await getStudentBuddy(locals.supabase, user.id);
 		return json({ buddy });
 	} catch (err) {
-		console.error('❌ [API] GET /api/student/buddy:', err);
+		logger.error('❌ [API] GET /api/student/buddy:', err);
 		throw error(500, 'Erreur lors de la recuperation du buddy');
 	}
 };
@@ -55,7 +58,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		return json({ buddy }, { status: 201 });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) throw err;
-		console.error('❌ [API] POST /api/student/buddy:', err);
+		logger.error('❌ [API] POST /api/student/buddy:', err);
 		throw error(500, 'Erreur lors de la creation du buddy');
 	}
 };

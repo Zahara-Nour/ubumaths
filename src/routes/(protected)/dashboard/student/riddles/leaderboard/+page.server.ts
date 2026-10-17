@@ -1,8 +1,16 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/riddles/leaderboard/+page.server');
 
 /**
- * Load global riddle leaderboard
+ * Classement des énigmes de l'école de l'élève.
+ *
+ * Lu par `riddle_school_leaderboard` (SECURITY DEFINER, bornée à l'école, comptes de
+ * test exclus) : prénom et score seulement — décision de David (2026-10-11). L'ancienne
+ * lecture de la vue `riddle_progress` avec les droits de l'élève mettait tous ses
+ * camarades à 0 (la RLS ne lui montre que ses propres tentatives).
  */
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -10,59 +18,26 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		throw redirect(303, '/auth/login');
 	}
 
-	// Use the riddle_progress view which already aggregates data
-	const { data: leaderboard, error: leaderboardError } = await supabase
-		.from('riddle_progress')
-		.select('*')
-		.order('riddles_gidouilles', { ascending: false })
-		.limit(50);
-
-	if (leaderboardError) {
-		console.error('Error fetching leaderboard:', leaderboardError);
-	}
-
-	// Enrich with profile data
-	// `riddle_progress` est une vue : `student_id` y est nullable. Sans garde de
-	// type, la liste reste `(string | null)[]` et ne peut pas alimenter `.in()`.
-	const studentIds = (leaderboard || [])
-		.map((entry) => entry.student_id)
-		.filter((id): id is string => id !== null);
-
-	const { data: profiles, error: profilesError } = await supabase
-		.from('profiles')
-		.select('id, firstname, lastname, avatar_url')
-		.in('id', studentIds);
-
-	if (profilesError) {
-		console.error('Lecture impossible :', profilesError);
-		throw error(500, 'Impossible de charger les données');
-	}
-
-	// Create profile map
-	const profileMap = new Map();
-	(profiles || []).forEach((profile) => {
-		profileMap.set(profile.id, profile);
+	const { data, error: leaderboardError } = await supabase.rpc('riddle_school_leaderboard', {
+		p_limit: 50
 	});
 
-	// Merge data
-	const enrichedLeaderboard = (leaderboard || []).map((entry, index: number) => ({
-		...entry,
-		rank: index + 1,
-		profile: profileMap.get(entry.student_id) || {
-			id: entry.student_id,
-			firstname: 'Inconnu',
-			lastname: '',
-			avatar_url: null
-		}
-	}));
+	if (leaderboardError) {
+		logger.error('Lecture impossible :', leaderboardError);
+		throw error(500, 'Impossible de charger le classement');
+	}
 
-	// Find current user rank
-	const currentUserEntry = enrichedLeaderboard.find((entry) => entry.student_id === user.id);
-	const currentUserRank = currentUserEntry ? currentUserEntry.rank : null;
+	// Prénom et score seulement : l'identifiant des camarades ne part pas au navigateur.
+	const leaderboard = (data ?? []).map(
+		({ rank, firstname, riddles_gidouilles, riddles_completed, is_me }) => ({
+			rank,
+			firstname,
+			riddles_gidouilles,
+			riddles_completed,
+			is_me
+		})
+	);
+	const currentUserRank = leaderboard.find((entry) => entry.is_me)?.rank ?? null;
 
-	return {
-		leaderboard: enrichedLeaderboard,
-		currentUserId: user.id,
-		currentUserRank
-	};
+	return { leaderboard, currentUserRank };
 };

@@ -7,6 +7,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -104,6 +105,7 @@
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
+	<BackLink href="/games/minesweeper" label="Retour au démineur" />
 	<div class="mb-8 flex items-center justify-between">
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Tournois Demineur</h1>

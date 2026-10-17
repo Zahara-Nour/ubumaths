@@ -66,7 +66,8 @@ describe('bloquant 2 : variable tapée ≠ lettre de la fonction', () => {
 
 describe('virgule décimale dans les valeurs et les bornes', () => {
 	it('.évaluer 2x en x=1,5 → 3', () => {
-		expect(output('.évaluer 2x en x=1,5')).toContain('Result: 3');
+		// La ligne est une formule depuis 2026-10-14 (avant : « Result: 3 (exact) »)
+		expect(output('.évaluer 2x en x=1,5')).toBe('3');
 	});
 
 	it('.résoudre x^2=1/4 dans [0,1;1] → 1/2', () => {
@@ -80,7 +81,7 @@ describe('virgule décimale dans les valeurs et les bornes', () => {
 
 describe('.évaluer : lettre de la fonction, refus clairs', () => {
 	it('f(t)=t^2, .évaluer f en t=2 → 4', () => {
-		expect(output('.évaluer f en t=2', ['f(t) = t^2'])).toContain('Result: 4');
+		expect(output('.évaluer f en t=2', ['f(t) = t^2'])).toBe('f(2) = 4');
 	});
 
 	it('.évaluer x^2 sans valeur : propose « en x=3 »', () => {
@@ -104,7 +105,7 @@ describe('.évaluer : lettre de la fonction, refus clairs', () => {
 	});
 
 	it('.évaluer 2+3 sans lettre : 5, comme avant', () => {
-		expect(output('.évaluer 2+3')).toContain('Result: 5');
+		expect(output('.évaluer 2+3')).toBe('5');
 	});
 
 	it('proposition sans « ; » résiduel', () => {

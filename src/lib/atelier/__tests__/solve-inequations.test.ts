@@ -141,4 +141,12 @@ describe('les replis des inéquations', () => {
 	it('une inéquation non polynomiale se replie', () => {
 		expect(solveSteps('sin(x)<0')).toBeNull();
 	});
+
+	it('une valeur interdite effacée par la simplification se replie, au 1er comme au 2nd degré', () => {
+		// V47 (1er degré) puis V48 (2nd degré) : les étapes perdraient la
+		// valeur interdite, l'atelier montre la réponse du moteur seule
+		expect(solveSteps('(3x^2)/(2x)>=0')).toBeNull();
+		expect(solveSteps('(2x^3)/x<2')).toBeNull();
+		expect(solveSteps('(x^3-1)/(x-1)<0')).toBeNull();
+	});
 });

@@ -35,9 +35,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { Profile, UserRole } from '$lib/server/middleware/auth';
 import { error, redirect } from '@sveltejs/kit';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 
-const logger = createLogger('server/auth.ts');
+const logger = createServerLogger('server/auth.ts');
 
 /**
  * Get the user's profile from the database
@@ -189,7 +189,7 @@ export function requireAuth(user: { id: string } | null) {
 export function requireRole(profile: Profile | null, allowedRoles: UserRole | UserRole[]) {
 	// Check if profile exists
 	if (!profile) {
-		throw error(403, 'Access denied: No profile found');
+		throw error(403, 'Accès refusé : profil introuvable');
 	}
 
 	// Normalize to array for consistent checking
@@ -197,7 +197,7 @@ export function requireRole(profile: Profile | null, allowedRoles: UserRole | Us
 
 	// Check if user's role is in the allowed list
 	if (!roles.includes(profile.role)) {
-		throw error(403, `Access denied: This page requires ${roles.join(' or ')} role`);
+		throw error(403, `Accès refusé : page réservée au rôle ${roles.join(' ou ')}`);
 	}
 
 	// User has required role, continue

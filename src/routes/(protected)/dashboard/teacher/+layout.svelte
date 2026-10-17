@@ -7,45 +7,23 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getSelectedClassId, setSelectedClass } from '$lib/stores/selectedClass.svelte';
+	import { getSelectedClassId, reconcileSelectedClass } from '$lib/stores/selectedClass.svelte';
 	import { getSelectedPeriodId, setSelectedPeriod } from '$lib/stores/selectedPeriod.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import type { LayoutData } from './$types';
-	import type { ClassWithData } from '$lib/server/students';
 	import type { Snippet } from 'svelte';
 
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
-	// svelte-ignore state_referenced_locally
-	const initialData = data;
-
-	// Classes loaded via SSR hydration
-	let classes = $state<ClassWithData[]>(initialData.classes || []);
-
-	/**
-	 * Initialize selectedClassId if not already set
-	 * Auto-selects first class if no selection exists
-	 */
-	function initializeSelectedClass() {
-		const currentSelectedId = getSelectedClassId();
-
-		if (!currentSelectedId && classes.length > 0) {
-			// No class selected - auto-select first class
-			const firstClassId = classes[0].id;
-			setSelectedClass(firstClassId);
-			console.log(`[Teacher Layout] 🎯 Auto-selected first class: ${classes[0].name}`);
-		}
-	}
 
 	// Hydrate cache on mount with SSR data
+	// (onMount est déclaré avant les effets : la classe retenue est vérifiée
+	// avant que l'effet 1 ne lance les lectures pour elle)
 	onMount(() => {
-		// Hydrate classes
-		if (data.classes && data.classes.length > 0) {
-			console.log(
-				`[Teacher Layout] ✅ Hydrating cache with ${data.classes.length} classes (from SSR)`
-			);
+		// La liste n'est connue que si la lecture serveur a réussi : alors elle fait
+		// foi, purge le cache des classes et corrige la classe retenue
+		if (data.classesLoaded) {
 			teacherCache.hydrateAllClasses(data.classes);
-			classes = data.classes;
-			initializeSelectedClass();
+			reconcileSelectedClass(data.classes.map((c) => c.id));
 		}
 
 		// Hydrate periods

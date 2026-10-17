@@ -11,6 +11,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { summarizeChapterDecks, type ChapterDeckSummary } from '$lib/server/srs/chapter-deck';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/revisions/+page.server');
 
 /**
  * Paquets de chapitre de l'élève. Une panne ne doit pas se lire « aucun
@@ -28,7 +31,7 @@ async function loadChapterDecks(
 			chapterDecksUnavailable: false
 		};
 	} catch (err) {
-		console.error('Paquets de chapitre illisibles :', err);
+		logger.error('Paquets de chapitre illisibles :', err);
 		return { chapterDecks: [], chapterDecksUnavailable: true };
 	}
 }
@@ -37,7 +40,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession,
 	const { user } = await safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Les chapitres sont lus aux droits de l'appelant : réservé à l'élève (un
@@ -53,7 +56,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession,
 			.order('created_at', { ascending: false });
 
 		if (decksError) {
-			console.error('Error fetching decks:', decksError);
+			logger.error('Error fetching decks:', decksError);
 			throw error(500, 'Failed to load decks');
 		}
 
@@ -73,7 +76,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession,
 				});
 
 				if (statsError) {
-					console.error(`Error fetching stats for deck ${deck.id}:`, statsError);
+					logger.error(`Error fetching stats for deck ${deck.id}:`, statsError);
 					// Return deck without stats on error
 					return {
 						id: deck.id,
@@ -126,7 +129,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession,
 			...(await chapterDecksPromise)
 		};
 	} catch (err) {
-		console.error('Error in revisions page load:', err);
+		logger.error('Error in revisions page load:', err);
 		throw error(500, 'Internal server error');
 	}
 };

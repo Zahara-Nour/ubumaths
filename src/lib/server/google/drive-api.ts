@@ -21,6 +21,9 @@ import {
 	GoogleNotFoundError
 } from './errors';
 import { sleep, calculateBackoff } from './utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/google/drive-api');
 
 /**
  * Google Drive API base URL
@@ -203,7 +206,7 @@ export class GoogleDriveClient {
 							const retryAfter = this.getRetryAfter(response);
 							const delay = retryAfter || calculateBackoff(retryCount);
 
-							console.warn(
+							logger.warn(
 								`[GoogleDriveClient] Rate limit hit. ` +
 									`Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
 							);
@@ -223,7 +226,7 @@ export class GoogleDriveClient {
 						// Server errors - retry with backoff
 						if (retryCount < MAX_SERVER_ERROR_RETRIES) {
 							const delay = calculateBackoff(retryCount);
-							console.warn(
+							logger.warn(
 								`[GoogleDriveClient] Server error ${response.status}. ` +
 									`Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_SERVER_ERROR_RETRIES}). ` +
 									`Endpoint: ${endpoint.substring(0, 100)}...`
@@ -231,7 +234,7 @@ export class GoogleDriveClient {
 							await sleep(delay);
 							return this.request<T>(endpoint, options, retryCount + 1);
 						}
-						console.error(
+						logger.error(
 							`[GoogleDriveClient] Server error ${response.status} after ${MAX_SERVER_ERROR_RETRIES} retries. ` +
 								`Endpoint: ${endpoint.substring(0, 100)}...`
 						);
@@ -329,7 +332,7 @@ export class GoogleDriveClient {
 						if (retryCount < MAX_RETRIES) {
 							const retryAfter = this.getRetryAfter(response);
 							const delay = retryAfter || calculateBackoff(retryCount);
-							console.warn(
+							logger.warn(
 								`[GoogleDriveClient] Rate limit hit. Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
 							);
 							await sleep(delay);
@@ -396,7 +399,7 @@ export class GoogleDriveClient {
 						if (retryCount < MAX_RETRIES) {
 							const retryAfter = this.getRetryAfter(response);
 							const delay = retryAfter || calculateBackoff(retryCount);
-							console.warn(
+							logger.warn(
 								`[GoogleDriveClient] Rate limit hit. Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
 							);
 							await sleep(delay);
@@ -472,7 +475,7 @@ export class GoogleDriveClient {
 						if (retryCount < MAX_RETRIES) {
 							const retryAfter = this.getRetryAfter(response);
 							const delay = retryAfter || calculateBackoff(retryCount);
-							console.warn(
+							logger.warn(
 								`[GoogleDriveClient] Rate limit hit. Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
 							);
 							await sleep(delay);
@@ -618,7 +621,7 @@ export class GoogleDriveClient {
 				result.set(fileId, metadata);
 			} catch (error) {
 				// Log error but continue with other files
-				console.warn(`[GoogleDriveClient] Failed to fetch metadata for file ${fileId}:`, error);
+				logger.warn(`[GoogleDriveClient] Failed to fetch metadata for file ${fileId}:`, error);
 			}
 		}
 

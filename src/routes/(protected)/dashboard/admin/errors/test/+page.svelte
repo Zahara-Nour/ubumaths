@@ -8,7 +8,7 @@
 	} from '$lib/utils/errorMonitoring';
 
 	function testClientError() {
-		throw new Error('Test client-side error');
+		throw new Error('Erreur de test côté client');
 	}
 
 	function testPromiseRejection() {
@@ -17,7 +17,7 @@
 
 	function testManualCapture() {
 		try {
-			throw new Error('Test manual error capture');
+			throw new Error('Erreur de test capturée manuellement');
 		} catch (err) {
 			captureError(err as Error, {
 				severity: 'warning',

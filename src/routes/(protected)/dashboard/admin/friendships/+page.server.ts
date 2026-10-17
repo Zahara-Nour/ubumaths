@@ -1,6 +1,9 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { requireRole } from '$lib/server/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/friendships/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Get authenticated user and profile from locals
@@ -43,7 +46,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (friendshipsError) {
-		console.error('Error fetching friendships:', friendshipsError);
+		logger.error('Error fetching friendships:', friendshipsError);
 		return {
 			friendships: [],
 			classes: [],
@@ -59,7 +62,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('Error fetching classes:', classesError);
+		logger.error('Error fetching classes:', classesError);
 	}
 
 	// Transform friendships data
@@ -127,8 +130,8 @@ export const actions: Actions = {
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier vos droits');
+			logger.error('Rôle illisible :', profileError);
+			throw error(500, 'Impossible de vérifier les droits');
 		}
 
 		if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
@@ -159,14 +162,14 @@ export const actions: Actions = {
 			.select('id');
 
 		if (deleteError) {
-			console.error('Error deleting friendship:', deleteError);
+			logger.error('Error deleting friendship:', deleteError);
 			return fail(500, { error: 'Failed to delete friendship' });
 		}
 
 		if (!supprimees || supprimees.length === 0) {
-			console.error('[admin/friendships] Suppression sans effet :', friendshipId);
+			logger.error('[admin/friendships] Suppression sans effet :', friendshipId);
 			return fail(403, {
-				error: 'Cette amitié n’a pas pu être supprimée — vos droits ne le permettent pas.'
+				error: 'Cette amitié n’a pas pu être supprimée — droits insuffisants.'
 			});
 		}
 

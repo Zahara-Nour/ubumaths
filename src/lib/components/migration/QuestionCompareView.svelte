@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	/**
 	 * QuestionCompareView Component
 	 * ==============================
@@ -169,8 +170,7 @@
 						  }
 						| undefined,
 					defaultDisplayOptions: transformed.defaultDisplayOptions as
-						| Record<string, boolean>
-						| undefined,
+						Record<string, boolean> | undefined,
 					exerciseInstruction: transformed.exerciseInstruction as string | undefined
 				}
 			: null

@@ -13,6 +13,9 @@ import { parseKanbanId, createCardSchema } from '$lib/server/validation/kanban';
 import { getColumnBoardId, rateLimitResponse } from '$lib/server/kanban';
 import { checkKanbanCardMutationRateLimit } from '$lib/server/rateLimiter';
 import type { KanbanCard, KanbanCardInsert } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/organisation/kanban/columns/[columnId]/cards/+server');
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user } = await requireAuth(locals);
@@ -58,7 +61,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError || !data) {
-		console.error('[kanban] create card failed:', dbError);
+		logger.error('[kanban] create card failed:', dbError);
 		throw error(500, 'Erreur lors de la création de la carte');
 	}
 

@@ -482,7 +482,7 @@ class TradeRealtimeStore {
 	 */
 	private async loadTradeData(): Promise<void> {
 		if (!this.supabase || !this.tradeId || !this.userId) {
-			throw new Error('Store not properly configured');
+			throw new Error('Échange mal configuré');
 		}
 
 		// Fetch trade with relations
@@ -509,11 +509,11 @@ class TradeRealtimeStore {
 			.single();
 
 		if (error) {
-			throw new Error(`Failed to load trade: ${error.message}`);
+			throw new Error(`Impossible de charger l’échange : ${error.message}`);
 		}
 
 		if (!trade) {
-			throw new Error('Trade not found');
+			throw new Error('Échange introuvable');
 		}
 
 		// Determine user's role
@@ -522,7 +522,7 @@ class TradeRealtimeStore {
 		} else if (trade.partner_id === this.userId) {
 			this.myRole = 'partner';
 		} else {
-			throw new Error('User is not part of this trade');
+			throw new Error('Accès réservé aux participants de cet échange');
 		}
 
 		// Transform initiator data
@@ -595,7 +595,7 @@ class TradeRealtimeStore {
 	 */
 	private async subscribeToChannel(): Promise<void> {
 		if (!this.tradeId || !this.supabase) {
-			throw new Error('Trade ID not set');
+			throw new Error('Identifiant d’échange manquant');
 		}
 
 		const channelName = `trade:${this.tradeId}`;
@@ -980,7 +980,7 @@ class TradeRealtimeStore {
 							.eq('id', this.tradeId);
 
 			if (error) {
-				throw new Error(`Failed to update validation: ${error.message}`);
+				throw new Error(`Impossible de mettre à jour la validation : ${error.message}`);
 			}
 
 			// Update local state
@@ -1123,7 +1123,7 @@ class TradeRealtimeStore {
 				.eq('id', this.tradeId);
 
 			if (error) {
-				throw new Error(`Failed to refuse confirmation: ${error.message}`);
+				throw new Error(`Impossible de refuser la confirmation : ${error.message}`);
 			}
 
 			// Reset local state

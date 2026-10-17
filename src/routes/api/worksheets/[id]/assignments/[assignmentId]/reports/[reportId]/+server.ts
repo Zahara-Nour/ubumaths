@@ -10,7 +10,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { fetchDisplayNumber } from '$lib/server/worksheets/display-number';
+import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
+import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
 import {
 	validateErrorReportParams,
 	validateReviewErrorReport,
@@ -24,6 +25,11 @@ import {
 } from '$lib/server/auto-notifications';
 import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]/+server'
+);
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -44,11 +50,11 @@ async function verifyTeacherWorksheetAccess(
 		.single();
 
 	if (worksheetError || !worksheet) {
-		throw error(404, 'Feuille de travail non trouvee');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	if (worksheet.created_by !== userId) {
-		throw error(403, 'Acces non autorise a cette feuille de travail');
+		throw error(403, 'Accès refusé à cette fiche');
 	}
 
 	return worksheet;
@@ -80,7 +86,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		reportId: params.reportId
 	});
 	if (!paramsValidation.success) {
-		throw error(400, 'Format UUID invalide');
+		throw error(400, 'Identifiant invalide');
 	}
 
 	const { id: worksheetId, assignmentId, reportId } = paramsValidation.data;
@@ -118,7 +124,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 						slug,
 						shared,
 						variations,
-						generic_functions
+						generic_functions,
+						topic
 					)
 				)
 			`
@@ -128,8 +135,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.single();
 
 		if (reportError || !reportData) {
-			console.error('[API] Error fetching report:', reportError);
-			throw error(404, 'Signalement non trouve');
+			logger.error('[API] Error fetching report:', reportError);
+			throw error(404, 'Signalement introuvable');
 		}
 
 		// Extract nested data safely
@@ -142,14 +149,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			: worksheetExerciseData;
 
 		if (!worksheetExercise) {
-			throw error(500, 'Exercice du signalement non trouve');
+			throw error(500, 'Exercice du signalement introuvable');
 		}
 
 		const exerciseData = worksheetExercise.exercise;
 		const exercise = Array.isArray(exerciseData) ? exerciseData[0] : exerciseData;
 
 		if (!exercise) {
-			throw error(500, "Donnees de l'exercice non trouvees");
+			throw error(500, 'Données de l’exercice introuvables');
 		}
 
 		// Step 2: Find next pending report for this assignment (for navigation)
@@ -163,22 +170,45 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.limit(1);
 
 		if (nextError) {
-			console.error('[API] Error fetching next pending report:', nextError);
+			logger.error('[API] Error fetching next pending report:', nextError);
 		}
 
 		const nextPendingReportId = nextPendingReports?.[0]?.id ?? null;
 
-		// Step 3: Build response
+		// Step 3: le numéro de l'exercice DANS LA COPIE de l'élève (D6), celui
+		// qu'il a lu et cite dans son signalement — ordre mélangé compris.
+		// Inconnu (fiche illisible) : 0, jamais un numéro faux.
+		const numbering = await fetchCopyNumbering(locals.supabase, worksheetId, [assignmentId]);
+		const copyNumber =
+			numbering.numberOf(assignmentId, reportData.student_id, reportData.worksheet_exercise_id) ??
+			0;
+
+		// L'auteur est-il encore destinataire de l'affectation ? Sinon, l'aperçu
+		// « vue élève » ne peut pas montrer sa copie : la page ne propose pas le
+		// lien. Lecture en panne : inconnu (null), pas « a quitté la classe ».
+		let studentIsRecipient: boolean | null;
+		try {
+			studentIsRecipient = await isStudentOfAssignment(
+				locals.supabase,
+				assignmentId,
+				reportData.student_id
+			);
+		} catch (recipientError) {
+			logger.error('[API] Destinataires de l’affectation illisibles :', recipientError);
+			studentIsRecipient = null;
+		}
+
+		// Step 4: Build response
 		const studentName =
 			student?.firstname && student?.lastname
 				? `${student.firstname} ${student.lastname}`
-				: (student?.firstname ?? student?.lastname ?? 'Etudiant inconnu');
+				: (student?.firstname ?? student?.lastname ?? 'Élève inconnu');
 
 		const reportView = {
 			id: reportData.id,
 			assignment_id: reportData.assignment_id,
 			worksheet_exercise_id: reportData.worksheet_exercise_id,
-			exercise_position: worksheetExercise.position ?? 0,
+			exercise_position: copyNumber,
 			student_id: reportData.student_id,
 			student_first_name: student?.firstname ?? null,
 			student_last_name: student?.lastname ?? null,
@@ -204,7 +234,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					variables?: unknown[];
 				}>) ?? [],
 			shared: exercise.shared ?? null,
-			generic_functions: (exercise.generic_functions as string[]) ?? null
+			generic_functions: (exercise.generic_functions as string[]) ?? null,
+			// Thème : décide du sens de `AB` dans l'aperçu (Q-J). Page du prof seulement.
+			topic: (exercise.topic as string | null) ?? null
 		};
 
 		const responseData = {
@@ -213,7 +245,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			context: {
 				worksheet_title: worksheet.title,
 				student_name: studentName,
-				exercise_position: worksheetExercise.position ?? 0
+				exercise_position: copyNumber,
+				student_is_recipient: studentIsRecipient
 			},
 			next_pending_report_id: nextPendingReportId
 		};
@@ -232,11 +265,11 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw err;
 		}
 
-		console.error(
+		logger.error(
 			'[API] Unexpected error in GET /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]:',
 			err
 		);
-		throw error(500, 'Une erreur inattendue est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -281,7 +314,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		reportId: params.reportId
 	});
 	if (!paramsValidation.success) {
-		throw error(400, 'Format UUID invalide');
+		throw error(400, 'Identifiant invalide');
 	}
 
 	const { id: worksheetId, assignmentId, reportId } = paramsValidation.data;
@@ -291,7 +324,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const bodyValidation = validateReviewErrorReport(body);
@@ -332,12 +365,12 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (fetchError || !existingReport) {
-			throw error(404, 'Signalement non trouve');
+			throw error(404, 'Signalement introuvable');
 		}
 
 		// Check that report is still pending
 		if (existingReport.status !== 'pending') {
-			throw error(400, 'Ce signalement a deja ete traite');
+			throw error(400, 'Ce signalement a déjà été traité');
 		}
 
 		// Step 2: Get exercise data (position and exercise_id)
@@ -348,29 +381,28 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (worksheetExerciseError || !worksheetExerciseData) {
-			console.error('[API] Error fetching worksheet exercise:', worksheetExerciseError);
-			throw error(500, 'Exercice du signalement non trouve');
+			logger.error('[API] Error fetching worksheet exercise:', worksheetExerciseError);
+			throw error(500, 'Exercice du signalement introuvable');
 		}
 
 		const exerciseId = worksheetExerciseData.exercise_id;
 
-		// Le numéro ANNONCÉ À L'ÉLÈVE doit être celui qu'il lit sur sa fiche.
-		//
-		// Ce code utilisait `position + 1`, faux deux fois : `position` est déjà
-		// 1-based (ExerciseList.svelte l'écrit `idx + 1`), donc le message
-		// décalait d'un rang ; et `position` redémarre à 1 dans chaque section,
-		// donc elle ne désigne de toute façon pas l'ordinal affiché. Sur une fiche
-		// à sections, l'élève lisait un numéro sans rapport avec le sien.
-		// Repli sur `position` si la fiche est illisible : ce n'est atteignable
-		// qu'en cas d'erreur base, où la requête est de toute façon en difficulté,
-		// et un numéro approché vaut mieux qu'un plantage — mais SANS le `+ 1`
-		// qui faisait le décalage.
-		const displayNumber =
-			(await fetchDisplayNumber(
-				locals.supabase,
-				worksheetExerciseData.worksheet_id,
-				worksheetExerciseData.id
-			)) ?? worksheetExerciseData.position;
+		// Le numéro ANNONCÉ À L'ÉLÈVE est celui qu'il lit sur SA copie (D6) :
+		// ordre mélangé compris, même calcul que la copie. Ni `position` (elle
+		// redémarre à 1 dans chaque section, et l'ancien `position + 1` décalait
+		// en plus d'un rang), ni l'ordre des positions d'une fiche mélangée. Fiche
+		// illisible : `null`, la notification ne cite alors aucun numéro — un
+		// numéro faux est pire que pas de numéro.
+		const numbering = await fetchCopyNumbering(
+			locals.supabase,
+			worksheetExerciseData.worksheet_id,
+			[assignmentId]
+		);
+		const displayNumber = numbering.numberOf(
+			assignmentId,
+			existingReport.student_id,
+			worksheetExerciseData.id
+		);
 
 		// Step 3 : la classe par laquelle CET élève est concerné par l'affectation.
 		//
@@ -393,7 +425,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		// pour ne pas accuser l'élève d'un refus de lecture.
 		let readFailed = Boolean(targetClassesError);
 		if (targetClassesError) {
-			console.error('[API] Classes de l’affectation illisibles :', targetClassesError.message);
+			logger.error('[API] Classes de l’affectation illisibles :', targetClassesError.message);
 		}
 
 		let classId: string | undefined;
@@ -411,7 +443,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 			if (membershipError) {
 				readFailed = true;
-				console.error('[API] Appartenance de classe illisible :', membershipError.message);
+				logger.error('[API] Appartenance de classe illisible :', membershipError.message);
 			}
 
 			classId = membership?.class_id;
@@ -433,8 +465,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 					.single();
 
 				if (fetchExerciseError || !currentExercise) {
-					console.error('[API] Error fetching exercise:', fetchExerciseError);
-					throw error(500, "Erreur lors de la recuperation de l'exercice");
+					logger.error('[API] Error fetching exercise:', fetchExerciseError);
+					throw error(500, 'Impossible de charger l’exercice');
 				}
 
 				const existingVariations =
@@ -455,7 +487,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 					};
 				}
 			} else {
-				throw error(400, "Les variations ou l'enonce corrige sont requis");
+				throw error(400, 'Les niveaux de guidage ou l’énoncé corrigé sont requis');
 			}
 
 			const { error: exerciseUpdateError } = await locals.supabase
@@ -465,8 +497,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 				.eq('id', exerciseId);
 
 			if (exerciseUpdateError) {
-				console.error('[API] Error updating exercise variations:', exerciseUpdateError);
-				throw error(500, "Erreur lors de la mise a jour de l'exercice");
+				logger.error('[API] Error updating exercise variations:', exerciseUpdateError);
+				throw error(500, 'Impossible de modifier l’exercice');
 			}
 
 			// Step 5 : la gidouille, si l'élève appartient bien à l'une des classes
@@ -483,10 +515,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 				if (bonusError) {
 					// Log but don't fail the request - bonus is a nice-to-have
-					console.error('[API] Error awarding bonus:', bonusError);
+					logger.error('[API] Error awarding bonus:', bonusError);
 				}
 			} else {
-				console.warn(
+				logger.warn(
 					readFailed
 						? '[API] Classe indéterminable (lecture en panne) : pas de gidouille pour'
 						: '[API] Élève membre d’aucune classe visée par l’affectation : pas de gidouille pour',
@@ -527,8 +559,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (updateError || !updatedReport) {
-			console.error('[API] Error updating report:', updateError);
-			throw error(500, 'Erreur lors de la mise a jour du signalement');
+			logger.error('[API] Error updating report:', updateError);
+			throw error(500, 'Impossible de modifier le signalement');
 		}
 
 		// Step 7: Create notification for student
@@ -536,13 +568,17 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			await notifyErrorReportValidated({
 				studentId: existingReport.student_id,
 				worksheetTitle: worksheet.title,
-				exercisePosition: displayNumber
+				exerciseNumber: displayNumber,
+				assignmentId,
+				worksheetExerciseId: worksheetExerciseData.id
 			});
 		} else {
 			await notifyErrorReportRejected({
 				studentId: existingReport.student_id,
 				worksheetTitle: worksheet.title,
-				exercisePosition: displayNumber,
+				exerciseNumber: displayNumber,
+				assignmentId,
+				worksheetExerciseId: worksheetExerciseData.id,
 				response: teacherResponse ?? undefined
 			});
 		}
@@ -555,7 +591,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			id: updatedReport.id,
 			assignment_id: updatedReport.assignment_id,
 			worksheet_exercise_id: updatedReport.worksheet_exercise_id,
-			exercise_position: displayNumber,
+			exercise_position: displayNumber ?? 0,
 			student_id: updatedReport.student_id,
 			student_first_name: student?.firstname ?? null,
 			student_last_name: student?.lastname ?? null,
@@ -585,10 +621,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			throw err;
 		}
 
-		console.error(
+		logger.error(
 			'[API] Unexpected error in PUT /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]:',
 			err
 		);
-		throw error(500, 'Une erreur inattendue est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

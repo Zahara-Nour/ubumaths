@@ -65,8 +65,31 @@ describe('verifyCronAuth', () => {
 		} catch (err: unknown) {
 			expect((err as { status: number }).status).toBe(401);
 			expect((err as { body?: { message?: string } }).body?.message).toContain(
-				'Missing authentication'
+				'Authentification manquante'
 			);
+		}
+	});
+
+	// N'importe qui peut envoyer `x-vercel-cron: 1`, et `VERCEL=1` est vrai en prod : cet
+	// en-tête seul ouvrait la route. Vercel envoie lui-même `Bearer CRON_SECRET` à ses crons.
+	test('refuse l’en-tête x-vercel-cron sans jeton, même sur Vercel', () => {
+		vi.mocked(envModule.getEnv).mockReturnValue({
+			CRON_SECRET: 'test-secret-12345678901234567890'
+		} as ReturnType<typeof envModule.getEnv>);
+		vi.stubEnv('VERCEL', '1');
+
+		const request = new Request('https://example.com/api/cron/deleted-account-files', {
+			method: 'GET',
+			headers: { 'x-vercel-cron': '1' }
+		});
+
+		try {
+			verifyCronAuth(request);
+			expect.fail('Should have thrown an error');
+		} catch (err: unknown) {
+			expect((err as { status: number }).status).toBe(401);
+		} finally {
+			vi.unstubAllEnvs();
 		}
 	});
 
@@ -96,7 +119,7 @@ describe('verifyCronAuth', () => {
 			} catch (err: unknown) {
 				expect((err as { status: number }).status).toBe(401);
 				expect((err as { body?: { message?: string } }).body?.message).toContain(
-					'Invalid Authorization header format'
+					'En-tête Authorization mal formé'
 				);
 			}
 		}
@@ -120,7 +143,7 @@ describe('verifyCronAuth', () => {
 			expect.fail('Should have thrown an error for short token');
 		} catch (err: unknown) {
 			expect((err as { status: number }).status).toBe(401);
-			expect((err as { body?: { message?: string } }).body?.message).toContain('Invalid token');
+			expect((err as { body?: { message?: string } }).body?.message).toContain('Jeton invalide');
 		}
 
 		// Test with longer token
@@ -134,7 +157,7 @@ describe('verifyCronAuth', () => {
 			expect.fail('Should have thrown an error for long token');
 		} catch (err: unknown) {
 			expect((err as { status: number }).status).toBe(401);
-			expect((err as { body?: { message?: string } }).body?.message).toContain('Invalid token');
+			expect((err as { body?: { message?: string } }).body?.message).toContain('Jeton invalide');
 		}
 	});
 
@@ -156,7 +179,7 @@ describe('verifyCronAuth', () => {
 			expect.fail('Should have thrown an error for wrong token');
 		} catch (err: unknown) {
 			expect((err as { status: number }).status).toBe(401);
-			expect((err as { body?: { message?: string } }).body?.message).toContain('Invalid token');
+			expect((err as { body?: { message?: string } }).body?.message).toContain('Jeton invalide');
 		}
 	});
 

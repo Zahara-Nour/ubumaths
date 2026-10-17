@@ -3,6 +3,9 @@ import type { RequestHandler } from './$types';
 import { sendMessageSchema } from '$lib/server/validation/messages';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/send/+server');
 
 /**
  * POST /api/messages/send
@@ -57,13 +60,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		);
 
 		if (sendError) {
-			console.error('Error sending message:', sendError);
+			logger.error('Error sending message:', sendError);
 			throw error(500, sendError.message || "Erreur lors de l'envoi du message");
 		}
 
 		return json({ success: true, messageId });
 	} catch (err) {
-		console.error('Error in send message API:', err);
+		logger.error('Error in send message API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err; // Re-throw SvelteKit errors
 		}

@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
-	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import ExerciseSelector from '$lib/components/worksheets/ExerciseSelector.svelte';
-	import SectionManager from '$lib/components/worksheets/SectionManager.svelte';
 	import ExerciseList from '$lib/components/worksheets/ExerciseList.svelte';
 	import ExerciseConfigModal from '$lib/components/worksheets/ExerciseConfigModal.svelte';
 	import PdfPreview from '$lib/components/worksheets/PdfPreview.svelte';
@@ -31,6 +30,7 @@
 		UserPlus,
 		AlertCircle,
 		Gauge,
+		Printer,
 		Eye
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
@@ -49,7 +49,8 @@
 	} from '$lib/utils/worksheet-constants';
 	import type { Exercise } from '$lib/exercises/types';
 	import { worksheetLocale } from '$lib/types/worksheets';
-	import { DEFAULT_TEMPLATES } from '$lib/worksheets/default-templates';
+	import { worksheetHeader } from '$lib/worksheets/worksheet-header';
+	import { assignmentCopiesHref } from '$lib/navigation/return-links';
 	import UntranslatedExercisesNotice from '$lib/components/worksheets/UntranslatedExercisesNotice.svelte';
 	import WorksheetCitationsNotice from '$lib/components/worksheets/WorksheetCitationsNotice.svelte';
 
@@ -82,17 +83,6 @@
 	let selectedAssignment = $state<AssignmentWithExtras | null>(null);
 	let classes = $state<{ id: string; name: string }[]>([]);
 
-	// Built-in templates, always offered alongside the teacher's own ones
-	const defaultTemplateOptions = DEFAULT_TEMPLATES.map((t) => ({
-		id: t.id,
-		name: t.name,
-		description: t.description
-	}));
-
-	// Templates state - initialize with default templates
-	let templates =
-		$state<{ id: string; name: string; description: string | null }[]>(defaultTemplateOptions);
-
 	// Type-safe worksheet access with local state for updates.
 	// Snapshot intentional: $effect below resets it on data changes.
 	// svelte-ignore state_referenced_locally
@@ -120,14 +110,11 @@
 	// Check if there are pending changes
 	let hasPendingChanges = $derived(Object.keys(pendingChanges).length > 0);
 
-	// Load templates on mount (needed for editing)
-	onMount(() => {
-		loadTemplates();
-	});
-
 	// Derived values
 	let worksheet = $derived(worksheetData);
 	let isDraft = $derived(worksheet.status === 'draft');
+	// Réponses sur le sujet (ADR 0030) : le réglage des cadres s'affiche sous chaque exercice
+	let answersOnSheet = $derived(worksheetHeader(worksheet.type, worksheet.config).answersOnSheet);
 
 	// Get IDs of already added exercises
 	let existingExerciseIds = $derived(worksheet.exercises?.map((e) => e.exercise_id) ?? []);
@@ -255,7 +242,7 @@
 	}
 
 	/**
-	 * Handle sections change from SectionManager
+	 * Handle sections change from ExerciseList
 	 */
 	function handleSectionsChange(newSections: WorksheetSectionRow[]) {
 		worksheetData = {
@@ -326,31 +313,6 @@
 	}
 
 	/**
-	 * Load the teacher's own templates and append them to the built-in ones.
-	 * The API only returns templates the user created (system templates are
-	 * hidden by RLS), so the built-ins must stay in the list.
-	 */
-	async function loadTemplates() {
-		try {
-			const response = await fetch('/api/worksheets/templates');
-			const data = await response.json();
-			if (response.ok && data.templates?.length > 0) {
-				const ownTemplates = data.templates as {
-					id: string;
-					name: string;
-					description: string | null;
-				}[];
-				const ownIds = new Set(ownTemplates.map((t) => t.id));
-				templates = [...defaultTemplateOptions.filter((t) => !ownIds.has(t.id)), ...ownTemplates];
-			}
-			// If API returns empty, keep the built-in templates from state
-		} catch (err) {
-			console.error('Error loading templates:', err);
-			// On error, keep the built-in templates from state
-		}
-	}
-
-	/**
 	 * Handle assignment form success (create or edit)
 	 */
 	async function handleAssignmentFormSuccess(): Promise<void> {
@@ -402,9 +364,13 @@
 		// Update local worksheet data with the response
 		const { worksheet: updatedWorksheet } = await response.json();
 		worksheetData = { ...worksheetData, ...updatedWorksheet };
+		const styleChanged = 'style_id' in pendingChanges;
 
 		// Clear pending changes after successful save
 		pendingChanges = {};
+
+		// Nouveau style : la fiche d'un style du prof se relit pour le PDF
+		if (styleChanged) await invalidateAll();
 
 		toaster.success('Modifications enregistrees');
 	}
@@ -423,11 +389,9 @@
 
 <div class="container mx-auto max-w-5xl py-6">
 	<!-- Header -->
+	<BackLink href="/dashboard/teacher/contenu/worksheets" label="Retour aux fiches" />
 	<div class="mb-6 flex items-start justify-between">
 		<div class="flex items-start gap-4">
-			<Button variant="ghost" size="icon" href="/dashboard/teacher/contenu/worksheets" class="mt-1">
-				<ArrowLeft class="h-5 w-5" />
-			</Button>
 			<div>
 				<div class="flex items-center gap-3">
 					<h1 class="text-3xl font-bold">{worksheet.title || '(Sans titre)'}</h1>
@@ -517,7 +481,7 @@
 		<!-- Metadata with inline editing -->
 		<MetadataCards
 			worksheet={effectiveWorksheet}
-			{templates}
+			styles={data.styles}
 			{hasPendingChanges}
 			onFieldChange={isDraft ? handleFieldChange : undefined}
 			onSave={isDraft ? handleSaveChanges : undefined}
@@ -556,36 +520,7 @@
 
 			<!-- Exercises Tab -->
 			<Tabs.Content value="exercises" class="space-y-6">
-				<!-- Sections management (only for draft worksheets) -->
-				{#if isDraft}
-					<SectionManager
-						worksheetId={worksheet.id}
-						sections={worksheet.sections ?? []}
-						readonly={!isDraft}
-						language={worksheetLocale(worksheet.config)}
-						onSectionsChange={handleSectionsChange}
-					/>
-				{/if}
-
-				<!-- Exercise list with drag-and-drop -->
 				<div class="space-y-4">
-					{#if isDraft}
-						<div class="flex justify-end">
-							{#if addingExercises}
-								<Button variant="outline" disabled>
-									<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-									Ajout en cours...
-								</Button>
-							{:else}
-								<ExerciseSelector
-									bind:open={exerciseSelectorOpen}
-									onSelect={handleAddExercises}
-									selectedIds={existingExerciseIds}
-								/>
-							{/if}
-						</div>
-					{/if}
-
 					<UntranslatedExercisesNotice
 						exercises={worksheet.exercises ?? []}
 						config={worksheet.config}
@@ -600,8 +535,29 @@
 						sections={worksheet.sections ?? []}
 						readonly={!isDraft}
 						onExercisesChange={handleExercisesChange}
+						onSectionsChange={handleSectionsChange}
 						onEditExercise={handleEditExercise}
-					/>
+						{answersOnSheet}
+						answerFrameMode={worksheet.config.answer_frames ?? 'question'}
+						language={worksheetLocale(worksheet.config)}
+					>
+						{#snippet actions()}
+							{#if isDraft}
+								{#if addingExercises}
+									<Button variant="outline" disabled>
+										<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+										Ajout en cours...
+									</Button>
+								{:else}
+									<ExerciseSelector
+										bind:open={exerciseSelectorOpen}
+										onSelect={handleAddExercises}
+										selectedIds={existingExerciseIds}
+									/>
+								{/if}
+							{/if}
+						{/snippet}
+					</ExerciseList>
 				</div>
 			</Tabs.Content>
 
@@ -663,6 +619,14 @@
 								>
 									<Eye class="mr-2 h-4 w-4" />
 									Previsualiser
+								</Button>
+								<Button
+									variant="outline"
+									size="sm"
+									href={assignmentCopiesHref(worksheet.id, selectedAssignment.id)}
+								>
+									<Printer class="mr-2 h-4 w-4" />
+									Imprimer une copie par élève
 								</Button>
 								<Button
 									variant="outline"
@@ -819,6 +783,16 @@
 															title="Voir l'avancement des élèves"
 														>
 															<Gauge class="h-4 w-4" />
+														</Button>
+														<Button
+															variant="ghost"
+															size="sm"
+															href={assignmentCopiesHref(worksheet.id, assignment.id)}
+															onclick={(e) => e.stopPropagation()}
+															title="Imprimer une copie par élève"
+														>
+															<Printer class="h-4 w-4" />
+															<span class="sr-only">Imprimer une copie par élève</span>
 														</Button>
 														<Button
 															variant="ghost"

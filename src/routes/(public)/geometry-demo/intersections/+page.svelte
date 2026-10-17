@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	// ==========================================================================
@@ -215,9 +216,7 @@ style(U, couleur="rouge")`;
 
 <div class="mx-auto max-w-6xl space-y-10 p-4">
 	<div>
-		<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-			>← Retour aux demos</a
-		>
+		<BackLink href="/geometry-demo" label="Retour aux démos" />
 		<h1 class="mt-4 text-2xl font-bold">Intersections — geometry-core</h1>
 	</div>
 

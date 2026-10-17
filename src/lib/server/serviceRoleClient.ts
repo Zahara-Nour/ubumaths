@@ -43,17 +43,34 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'lib/server/srs/fsrs-actions.ts',
 	// Test files
 	'.test.ts',
-	// Cleanup endpoints
-	'/api/cleanup/',
-	'/api/errors/cleanup',
 	// Profil créé à la connexion Google : valeurs imposées par le serveur
 	'/auth/callback',
+	// Inscription par code de classe : résolution du code par une RPC réservée à
+	// service_role, derrière les limites de débit (pas d'énumération des codes)
+	'/auth/register/+page.server',
+	// Lien du cours (ADR 0025) : chemin de stockage d'un document rendu par une RPC
+	// réservée à service_role, jeton vérifié en base, puis URL signée de 60 s
+	'/cours/[token]/document/[id]/+server',
+	// Fichier d'un document de chapitre (ADR 0029) : servi APRÈS la lecture de sa ligne
+	// avec le client de l'utilisateur (RLS : chapitre visible, document publié) ; le
+	// fichier d'un élément de modèle vit sous `templates/…`, sans règle de stockage élève
+	'/api/documents/[id]/+server',
+	// Suppression d'un modèle (ADR 0029) : ses fichiers `templates/<id>/` après la
+	// suppression VÉRIFIÉE de sa ligne, quand la règle de stockage ne s'applique plus
+	'lib/server/chapter-templates.ts',
 	// Consentement parental : IP et navigateur relevés par le serveur, pas par le client
 	'/consent/',
+	// Style d'une fiche (lot 4b, D11) : l'élève destinataire reçoit la mise en page
+	// du style de l'auteur ; il n'a aucun droit sur les tables des styles
+	'lib/server/worksheets/worksheet-styles.ts',
 	// Question d'âge en 2nde : la base refuse à l'élève l'écriture de sa réponse
 	'/api/student/age-declaration',
 	// GDPR account deletion (requires auth.admin.deleteUser)
 	'/api/account/delete',
+	// Pièces jointes de la messagerie : bucket privé sans policy de storage ; l'accès est
+	// vérifié avec la RLS de l'utilisateur avant de signer (message-attachments.ts)
+	'/api/messages/[id]/attachments/+server',
+	'/api/messages/attachments/[attachmentId]/+server',
 	// Nature d'un modèle (carte de cours, statut) lue même en brouillon — lecture seule
 	'/api/skill-attempts',
 	'/api/tests/save',
@@ -69,6 +86,13 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'/api/moderation/messages/[id]/+server',
 	// Élévation admin : e-mail du compte admin, invisible au prof par la RLS (B5)
 	'/api/admin/elevate/+server',
+	// Énigmes : la justesse d'une tentative est calculée par le serveur, jamais par l'élève
+	'/api/riddles/[id]/submit/+server',
+	// Énigmes : type de saisie et choix d'un QCM, rangés avec la réponse attendue dans
+	// `riddle_solutions` que l'élève ne lit pas ; lus seulement pour les énigmes que sa
+	// RLS lui a déjà rendues, et jamais envoyés avec la valeur ni la correction
+	'/dashboard/student/riddles/+page.server',
+	'/dashboard/student/riddles/[id]/+page.server',
 	// Marché : verrous des cartes d'une proposition et compteur de l'annonce
 	'lib/server/marketplace/proposal-locks.ts',
 	'lib/server/marketplace/acceptance.ts',
@@ -116,7 +140,7 @@ function auditServiceRoleUsage(): void {
 	}
 
 	if (!callerLine) {
-		console.warn(
+		logger.warn(
 			'\x1b[33m%s\x1b[0m',
 			'[SECURITY WARNING] Could not determine service role client caller from stack trace'
 		);
@@ -127,7 +151,7 @@ function auditServiceRoleUsage(): void {
 	const isAllowed = ALLOWED_SERVICE_ROLE_PATHS.some((path) => callerLine!.includes(path));
 
 	if (!isAllowed) {
-		console.warn(
+		logger.warn(
 			'\x1b[33m%s\x1b[0m', // Yellow color
 			`[SECURITY WARNING] Service role client used from unexpected location:\n  ${callerLine}\n` +
 				`  Allowed paths: ${ALLOWED_SERVICE_ROLE_PATHS.join(', ')}\n` +

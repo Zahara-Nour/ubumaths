@@ -12,6 +12,9 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { uuidSchema } from '$lib/server/validation/common';
 import { isForeignStudentNotebook } from '$lib/utils/notebook-foreign-content';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/python-notebook/[id]/present/+page.server');
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const { user, profile } = locals;
@@ -50,7 +53,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	if (queryError) {
 		if (queryError.code === 'PGRST116') throw error(404, 'Notebook introuvable');
-		console.error('Error loading notebook for presentation:', queryError);
+		logger.error('Error loading notebook for presentation:', queryError);
 		throw error(500, 'Erreur lors du chargement du notebook');
 	}
 	if (!notebook) throw error(404, 'Notebook introuvable');
@@ -71,8 +74,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (assignmentError && assignmentError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', assignmentError);
-			throw error(500, 'Impossible de vérifier votre accès');
+			logger.error('Contrôle d’accès impossible :', assignmentError);
+			throw error(500, 'Impossible de vérifier l’accès');
 		}
 		isAssigned = !!assignment;
 	}

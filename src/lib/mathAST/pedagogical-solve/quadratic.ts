@@ -314,7 +314,10 @@ function buildStandardizeStep(
 	standardForm: MathNode,
 	idGen: () => number
 ): { step: EquationStep; after: RelationNode } {
-	const after = relation('=', standardForm, number('0'));
+	// ⚠️ **L'opérateur de départ est conservé.** Écrit `'='` en dur, il
+	// changeait une inéquation en équation à mi-chemin (`2x^2 &< 2 \\
+	// 2x^2 - 2 &= 0`), et le `= 0` se propageait aux étapes suivantes.
+	const after = relation(before.relation, standardForm, number('0'));
 	const step = makeStep({
 		id: idGen(),
 		rule: 'standardize',
@@ -712,7 +715,7 @@ function buildBZeroCaseSteps(
 			description: 'On isole le carré',
 			before: current,
 			after: isolatedEq,
-			operation: { kind: 'isolate-square', rhs }
+			operation: { kind: 'isolate-square', rhs, divisor: a }
 		})
 	);
 	current = isolatedEq;

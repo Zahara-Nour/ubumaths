@@ -1,6 +1,9 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import type { BadgeProgress } from '$lib/utils/riddle-badges';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/riddles/history/+page.server');
 
 /**
  * Load student's personal riddle history
@@ -36,7 +39,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 	const { data: history, error: historyError } = await query;
 
 	if (historyError) {
-		console.error('Error fetching history:', historyError);
+		logger.error('Error fetching history:', historyError);
 	}
 
 	// Get unique genres for filter
@@ -47,7 +50,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 		.eq('status', 'published');
 
 	if (allGenresError) {
-		console.error('Lecture impossible :', allGenresError);
+		logger.error('Lecture impossible :', allGenresError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -103,7 +106,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 		.order('created_at', { ascending: false });
 
 	if (riddleOfTheDayAttemptsError) {
-		console.error('Lecture impossible :', riddleOfTheDayAttemptsError);
+		logger.error('Lecture impossible :', riddleOfTheDayAttemptsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

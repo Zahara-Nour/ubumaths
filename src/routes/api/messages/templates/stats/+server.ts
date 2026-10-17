@@ -12,6 +12,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { templateStatsQuerySchema } from '$lib/server/validation/message-templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/templates/stats/+server');
 
 export const GET: RequestHandler = async ({ locals, url }) => {
 	const { supabase, user } = locals;
@@ -29,8 +32,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		logger.error('Rôle illisible :', profileError);
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	if (!profile || (profile.role !== 'admin' && profile.role !== 'teacher')) {
@@ -73,7 +76,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		});
 
 		if (statsError) {
-			console.error('Error fetching template stats:', statsError);
+			logger.error('Error fetching template stats:', statsError);
 			return error(500, 'Erreur lors de la récupération des statistiques');
 		}
 
@@ -98,7 +101,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const { data: usageData, error: usageError } = await query;
 
 		if (usageError) {
-			console.error('Error fetching usage stats:', usageError);
+			logger.error('Error fetching usage stats:', usageError);
 			return error(500, 'Erreur lors de la récupération des statistiques');
 		}
 

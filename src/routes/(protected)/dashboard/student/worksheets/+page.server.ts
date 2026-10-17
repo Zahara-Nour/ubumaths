@@ -8,6 +8,9 @@
 import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/worksheets/+page.server');
 
 // Validation schema for query parameters
 const querySchema = z.object({
@@ -46,7 +49,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 
 	if (!worksheetsResponse.ok) {
 		const errorText = await worksheetsResponse.text();
-		console.error(
+		logger.error(
 			'[Student Worksheets Page] API call failed:',
 			worksheetsResponse.status,
 			errorText
@@ -74,15 +77,14 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 		.order('classes(name)');
 
 	if (classesError) {
-		console.error('[Student Worksheets Page] Error fetching classes:', classesError);
+		logger.error('[Student Worksheets Page] Error fetching classes:', classesError);
 	}
 
 	// Transform classes data for the filter dropdown
 	const classes = (studentClasses || []).map((item) => {
 		// Handle Supabase JOIN types
 		const classData = item.classes as unknown as
-			| { id: string; name: string }
-			| { id: string; name: string }[];
+			{ id: string; name: string } | { id: string; name: string }[];
 		const classInfo = Array.isArray(classData) ? classData[0] : classData;
 
 		return {

@@ -25,11 +25,7 @@ export {
 // Interval Sign Determination
 // =============================================================================
 
-export {
-	determineSignOnInterval,
-	analyzeExpressionStructure,
-	analyzePolynomial
-} from './interval-sign';
+export { determineSignOnInterval, analyzeExpressionStructure } from './interval-sign';
 
 export type { ExpressionStructure } from './interval-sign';
 

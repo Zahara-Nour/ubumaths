@@ -27,18 +27,6 @@ export const bugReportStatusSchema = z.enum([
 // Session Context Schemas
 // =============================================================================
 
-const capturedErrorSchema = z.object({
-	id: z.string(),
-	type: z.string(),
-	message: z.string(),
-	severity: z.string(),
-	timestamp: z.string(),
-	url: z.string().optional(),
-	file_path: z.string().optional(),
-	line_number: z.number().int().nonnegative().optional(),
-	stack_trace: z.string().optional()
-});
-
 const freezeEventSchema = z.object({
 	id: z.string(),
 	timestamp: z.string(),
@@ -58,12 +46,6 @@ const userActionSchema = z.object({
 	timestamp: z.string()
 });
 
-const slowRequestSchema = z.object({
-	url: z.string(),
-	duration: z.number().positive(),
-	status: z.number().int()
-});
-
 const webVitalsSchema = z.object({
 	LCP: z.number().optional(),
 	FID: z.number().optional(),
@@ -75,8 +57,8 @@ const webVitalsSchema = z.object({
 
 const sessionContextSchema = z.object({
 	capturedAt: z.string().optional(),
-	recentErrors: z.array(capturedErrorSchema).max(20).optional(),
-	slowRequests: z.array(slowRequestSchema).max(10).optional(),
+	// Pas de `recentErrors` ni de `slowRequests` : lus dans le journal par
+	// l'admin à la lecture du signalement, jamais fournis par le client.
 	freezeEvents: z.array(freezeEventSchema).max(50).optional(),
 	recentActions: z.array(userActionSchema).max(30).optional(),
 	webVitals: webVitalsSchema.optional(),

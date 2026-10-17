@@ -21,6 +21,9 @@ import {
 	BADGE_PRIORITY,
 	type CapacityBadge
 } from '$lib/server/srs/capacity-badge';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/stats/class-knowledge');
 
 type SB = SupabaseClient<Database>;
 
@@ -107,7 +110,7 @@ export async function getClassCapacityGrid(
 		.eq('status', 'active');
 
 	if (membersErr) {
-		console.error('[class-knowledge] class_members lookup failed:', membersErr);
+		logger.error('[class-knowledge] class_members lookup failed:', membersErr);
 		return { students: [], capacities: [], cells: {}, columnStats: {} };
 	}
 
@@ -142,7 +145,7 @@ export async function getClassCapacityGrid(
 		.maybeSingle();
 
 	if (classRowError) {
-		console.error('[getClassCapacityGrid] Niveau de classe illisible :', classRowError);
+		logger.error('[getClassCapacityGrid] Niveau de classe illisible :', classRowError);
 		throw new Error(classRowError.message);
 	}
 	const classGrade = classRow?.grade ?? null;
@@ -156,7 +159,7 @@ export async function getClassCapacityGrid(
 		.not('template_id', 'is', null);
 
 	if (attErr) {
-		console.error('[class-knowledge] skill_attempts lookup failed:', attErr);
+		logger.error('[class-knowledge] skill_attempts lookup failed:', attErr);
 		return { students, capacities: [], cells: {}, columnStats: {} };
 	}
 
@@ -177,7 +180,7 @@ export async function getClassCapacityGrid(
 		);
 
 		if (tagErr) {
-			console.error('[class-knowledge] question_template_points lookup failed:', tagErr);
+			logger.error('[class-knowledge] question_template_points lookup failed:', tagErr);
 		}
 
 		type TagRow = {
@@ -232,7 +235,7 @@ export async function getClassCapacityGrid(
 				.is('archived_at', null);
 
 			if (cyclePointsError) {
-				console.error('[getClassCapacityGrid] Points du cycle illisibles :', cyclePointsError);
+				logger.error('[getClassCapacityGrid] Points du cycle illisibles :', cyclePointsError);
 				throw new Error(cyclePointsError.message);
 			}
 
@@ -272,7 +275,7 @@ export async function getClassCapacityGrid(
 	);
 
 	if (fsrsErr) {
-		console.error('[class-knowledge] srs_card_stats lookup failed:', fsrsErr);
+		logger.error('[class-knowledge] srs_card_stats lookup failed:', fsrsErr);
 	}
 
 	type FsrsRow = {
@@ -390,7 +393,7 @@ export async function getStudentRetentionCurve(
 	// Une courbe de rétention vide se lit « cet élève ne révise pas ». Mieux vaut
 	// que le widget dise qu'il n'a pas pu lire.
 	if (pointRowsError) {
-		console.error('[getStudentRetentionCurve] Points illisibles :', pointRowsError);
+		logger.error('[getStudentRetentionCurve] Points illisibles :', pointRowsError);
 		throw new Error(pointRowsError.message);
 	}
 
@@ -404,7 +407,7 @@ export async function getStudentRetentionCurve(
 	);
 
 	if (tagRowsError) {
-		console.error('[getStudentRetentionCurve] Étiquetage illisible :', tagRowsError);
+		logger.error('[getStudentRetentionCurve] Étiquetage illisible :', tagRowsError);
 		throw new Error(tagRowsError.message);
 	}
 
@@ -423,7 +426,7 @@ export async function getStudentRetentionCurve(
 	);
 
 	if (statsError) {
-		console.error('[getStudentRetentionCurve] Historique de révision illisible :', statsError);
+		logger.error('[getStudentRetentionCurve] Historique de révision illisible :', statsError);
 		throw new Error(statsError.message);
 	}
 
@@ -503,7 +506,7 @@ export async function getClassActivityHeatmap(
 		.eq('status', 'active');
 
 	if (membersErr) {
-		console.error('[class-knowledge] heatmap class_members lookup failed:', membersErr);
+		logger.error('[class-knowledge] heatmap class_members lookup failed:', membersErr);
 		return { days: [], students: [], cells: [] };
 	}
 
@@ -527,7 +530,7 @@ export async function getClassActivityHeatmap(
 	// Une carte de chaleur vide dit « personne n'a rien fait cette semaine ».
 	// C'est un jugement, pas une absence de donnée.
 	if (attemptsError) {
-		console.error('[getClassActivityHeatmap] Tentatives illisibles :', attemptsError);
+		logger.error('[getClassActivityHeatmap] Tentatives illisibles :', attemptsError);
 		throw new Error(attemptsError.message);
 	}
 
@@ -621,7 +624,7 @@ export async function getStudentGradeHistogram(
 		.not('grade', 'is', null);
 
 	if (rowsError) {
-		console.error('[getStudentGradeHistogram] Tentatives illisibles :', rowsError);
+		logger.error('[getStudentGradeHistogram] Tentatives illisibles :', rowsError);
 		throw new Error(rowsError.message);
 	}
 
@@ -659,7 +662,7 @@ export async function getStudentGradeHistogram(
 		);
 
 		if (statsError) {
-			console.error('[getStudentGradeHistogram] Stabilité illisible :', statsError);
+			logger.error('[getStudentGradeHistogram] Stabilité illisible :', statsError);
 			throw new Error(statsError.message);
 		}
 

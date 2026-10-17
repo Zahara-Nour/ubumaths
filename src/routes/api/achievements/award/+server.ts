@@ -34,6 +34,9 @@ import { requireRoles } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { awardAchievementSchema } from '$lib/server/validation/achievements';
 import { awardAchievement, AchievementServiceError } from '$lib/server/achievements/service';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/achievements/award/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
@@ -71,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			message: 'Achievement awarded successfully'
 		});
 	} catch (err) {
-		console.error('[API] Error awarding achievement:', err);
+		logger.error('[API] Error awarding achievement:', err);
 
 		if (err instanceof AchievementServiceError) {
 			throw error(500, err.message);

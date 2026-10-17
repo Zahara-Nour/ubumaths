@@ -78,8 +78,8 @@
 	<p class="text-lg">
 		Tu croyais que <strong>Chiphre</strong> voulait dire « chiffres » ? En français, un
 		<em>chiffre</em> est aussi une manière d’écrire en secret : on parle du chiffre de César comme du
-		chiffre de Vigenère. Bienvenue au bureau du Royaume où l’on cache les messages, et où l’on perce
-		ceux des autres.
+		chiffre de Vigenère. Bienvenue au bureau du Royaume où l’on cache les messages, et où l’on perce ceux
+		des autres.
 	</p>
 </header>
 

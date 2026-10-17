@@ -114,7 +114,7 @@
 			const response = await fetch(dueUrl(source));
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch due cards');
+				throw new Error('Impossible de charger les cartes à réviser');
 			}
 
 			// Cartes PLATES du serveur → cartes de séance (une carte mal formée est
@@ -182,7 +182,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to submit review');
+				throw new Error('Impossible d’enregistrer la révision');
 			}
 
 			// Move to next card

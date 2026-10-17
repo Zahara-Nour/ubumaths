@@ -12,6 +12,11 @@ import {
 	getAssignmentWithEvaluation,
 	isAssignmentRecipient
 } from '$lib/server/evaluations';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/student/assessments/[id]/results/+page.server'
+);
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -30,8 +35,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// PGRST116 = pas de profil, et la redirection qui suit est légitime. Une
 	// AUTRE panne renvoyait l'élève au tableau de bord sans rien expliquer.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Profil illisible :', profileError);
-		throw error(500, 'Impossible de vérifier votre profil');
+		logger.error('Profil illisible :', profileError);
+		throw error(500, 'Impossible de vérifier le profil');
 	}
 
 	if (!profile || profile.role !== 'student') {
@@ -40,7 +45,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	try {
 		const found = await getAssignmentWithEvaluation(locals.supabase, id);
-		if (!found) throw error(404, 'Évaluation introuvable');
+		if (!found) throw error(404, 'Contrôle introuvable');
 
 		// La RLS le garantit déjà ; on ne s'en remet pas à elle seule
 		if (!(await isAssignmentRecipient(locals.supabase, found.assignment, user.id))) {
@@ -56,8 +61,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 		// Des tentatives illisibles ne sont pas « aucune tentative »
 		if (attemptsError) {
-			console.error('[student results] Tentatives illisibles :', attemptsError);
-			throw error(500, 'Impossible de charger vos résultats');
+			logger.error('[student results] Tentatives illisibles :', attemptsError);
+			throw error(500, 'Impossible de charger les résultats');
 		}
 
 		return {

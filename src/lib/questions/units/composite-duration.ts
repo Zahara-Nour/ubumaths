@@ -25,6 +25,7 @@
 import { cleanStudentQuantityLatex } from './student-input';
 import { parseUnitExpression } from './parser';
 import { isDuration } from './operations';
+import { numberToLatexSafe } from '$lib/mathAST/common/numeric';
 
 // ============================================================================
 // TYPES
@@ -221,7 +222,8 @@ export function readCompositeDuration(latex: string): CompositeDurationReading |
 
 	return {
 		kind: 'duration',
-		latex: `${total}\\unit{${smallest}}`,
+		// Relu par parseLatex : jamais `1e-7` (e = constante d'Euler)
+		latex: `${numberToLatexSafe(total)}\\unit{${smallest}}`,
 		multiPart: parts.length > 1,
 		issue: formIssue(parts, totalSeconds)
 	};

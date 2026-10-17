@@ -17,6 +17,9 @@ import { requireAdmin } from '$lib/server/middleware/auth';
 import { updateUserFieldsSchema } from '$lib/server/validation/admin';
 import type { Database } from '$lib/types/database';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/users/[id]/+server');
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type ExtendedProfile = Profile & {
@@ -63,7 +66,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 	// Validate UUID format for userId
 	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 	if (!uuidRegex.test(userId)) {
-		throw error(400, 'Invalid user ID format');
+		throw error(400, 'Identifiant d’utilisateur invalide');
 	}
 
 	try {
@@ -85,12 +88,12 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking user existence:', checkError);
-			throw error(500, 'Failed to check user existence');
+			logger.error('Error checking user existence:', checkError);
+			throw error(500, 'Impossible de vérifier le compte');
 		}
 
 		if (!existing) {
-			throw error(404, `User with ID "${userId}" not found`);
+			throw error(404, 'Utilisateur introuvable');
 		}
 
 		// Single-teacher invariant: never promote another account to teacher.
@@ -106,7 +109,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			// panne prenait le même visage et faisait conclure « rien ici », donc créer
 			// par-dessus ce qu'on n'avait simplement pas su lire.
 			if (currentTeacherError && currentTeacherError.code !== 'PGRST116') {
-				console.error('Lecture impossible :', currentTeacherError);
+				logger.error('Lecture impossible :', currentTeacherError);
 				throw error(500, 'Impossible de vérifier l’état actuel');
 			}
 			if (currentTeacher && currentTeacher.id !== userId) {
@@ -126,7 +129,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		// Always update timestamp
 		updateData.updated_at = new Date().toISOString();
 
-		console.log('🔧 [API] Updating user:', {
+		logger.info('🔧 [API] Updating user:', {
 			userId,
 			receivedData: data,
 			updateData
@@ -139,15 +142,15 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.eq('id', userId);
 
 		if (updateError) {
-			console.error('❌ [API] Error updating profile:', updateError);
+			logger.error('❌ [API] Error updating profile:', updateError);
 			// Single-teacher invariant enforced at DB level (trigger raises check_violation).
 			if (updateError.code === '23514' || /mono-professeur/i.test(updateError.message)) {
 				throw error(400, 'Un seul professeur est autorisé.');
 			}
-			throw error(500, 'Failed to update profile');
+			throw error(500, 'Impossible de modifier le profil');
 		}
 
-		console.log('✅ [API] Profile updated successfully');
+		logger.info('✅ [API] Profile updated successfully');
 
 		// 4. Fetch updated profile with relations (schools + class_members)
 		const { data: updatedProfile, error: fetchError } = await supabase
@@ -163,11 +166,11 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.single();
 
 		if (fetchError) {
-			console.error('❌ [API] Error fetching updated profile:', fetchError);
-			throw error(500, 'Failed to fetch updated profile');
+			logger.error('❌ [API] Error fetching updated profile:', fetchError);
+			throw error(500, 'Impossible de recharger le profil');
 		}
 
-		console.log('📥 [API] Fetched updated profile:', {
+		logger.info('📥 [API] Fetched updated profile:', {
 			school_id: updatedProfile?.school_id,
 			schools: updatedProfile?.schools
 		});
@@ -187,7 +190,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			profile: extendedProfile
 		});
 	} catch (err) {
-		console.error('Error in PATCH /api/admin/users/[id]:', err);
+		logger.error('Error in PATCH /api/admin/users/[id]:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -195,6 +198,6 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

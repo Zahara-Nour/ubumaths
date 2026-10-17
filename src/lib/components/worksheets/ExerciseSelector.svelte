@@ -144,7 +144,7 @@
 
 			const response = await fetch(`/api/exercises?${params.toString()}`);
 			if (!response.ok) {
-				throw new Error('Failed to fetch exercises');
+				throw new Error('Impossible de charger les exercices');
 			}
 
 			const data = await response.json();

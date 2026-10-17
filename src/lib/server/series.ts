@@ -13,6 +13,9 @@ import { toJson } from '$lib/types/database-helpers';
 import type { DbSeries, SeriesWithUsage } from '$lib/types/evaluation';
 import { seriesCategoriesSchema } from '$lib/validation/series';
 import type { CreateSeriesInput, UpdateSeriesInput } from '$lib/server/validation/evaluations';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/series');
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -26,7 +29,7 @@ export const SERIES_LOCKED_UPDATE_MESSAGE =
 export const SERIES_LOCKED_DELETE_MESSAGE =
 	'Cette série a déjà été commencée par un élève : elle ne peut plus être supprimée';
 export const SERIES_IN_USE_MESSAGE =
-	'Cette série est utilisée par une évaluation : elle ne peut pas être supprimée. Duplique-la pour en faire une autre.';
+	'Cette série est utilisée par un contrôle : elle ne peut pas être supprimée. Duplique-la pour en faire une autre.';
 export const SERIES_NOT_FOUND_MESSAGE = 'Série introuvable';
 
 const MAX_TITLE_LENGTH = 200;
@@ -60,7 +63,7 @@ export function mapSeriesWriteError(
 	if (error.code === FOREIGN_KEY_VIOLATION && operation === 'delete') {
 		return new SeriesError(409, SERIES_IN_USE_MESSAGE);
 	}
-	return new SeriesError(500, 'Enregistrement impossible, réessaie dans un instant');
+	return new SeriesError(500, 'Enregistrement impossible, réessayer dans un instant');
 }
 
 /**
@@ -71,7 +74,7 @@ export function mapSeriesWriteError(
 export function toDbSeries(row: Tables<'series'>): DbSeries {
 	const categories = seriesCategoriesSchema.safeParse(row.categories);
 	if (!categories.success) {
-		console.error('[series] Catégories illisibles pour la série', row.id);
+		logger.error('[series] Catégories illisibles pour la série', row.id);
 	}
 	return {
 		id: row.id,
@@ -105,7 +108,7 @@ export async function getSeries(
 		.maybeSingle();
 
 	if (error) {
-		console.error('[getSeries] Lecture impossible :', error);
+		logger.error('[getSeries] Lecture impossible :', error);
 		throw new SeriesError(500, 'Impossible de charger la série');
 	}
 	return data ? toDbSeries(data) : null;
@@ -126,7 +129,7 @@ export async function getTeacherSeries(
 		.order('updated_at', { ascending: false });
 
 	if (error) {
-		console.error('[getTeacherSeries] Séries illisibles :', error);
+		logger.error('[getTeacherSeries] Séries illisibles :', error);
 		throw new SeriesError(500, 'Impossible de charger les séries');
 	}
 	const series = (rows ?? []).map(toDbSeries);
@@ -141,7 +144,7 @@ export async function getTeacherSeries(
 		);
 
 	if (evaluationsError) {
-		console.error('[getTeacherSeries] Évaluations illisibles :', evaluationsError);
+		logger.error('[getTeacherSeries] Évaluations illisibles :', evaluationsError);
 		throw new SeriesError(500, 'Impossible de charger les séries');
 	}
 
@@ -164,7 +167,7 @@ export async function getTeacherSeries(
 		// Le verrou affiché n'est qu'une indication (la base refuse de toute façon) ;
 		// une panne ici ne doit pas masquer les séries, mais elle se journalise.
 		if (sessionsError) {
-			console.error('[getTeacherSeries] Séances illisibles :', sessionsError);
+			logger.error('[getTeacherSeries] Séances illisibles :', sessionsError);
 		}
 		for (const session of sessions ?? []) {
 			const seriesId = session.evaluation_id
@@ -204,7 +207,7 @@ export async function createSeries(
 		.single();
 
 	if (error || !data) {
-		console.error('[createSeries] Insertion impossible :', error);
+		logger.error('[createSeries] Insertion impossible :', error);
 		throw new SeriesError(500, "La série n'a pas pu être enregistrée");
 	}
 	return toDbSeries(data);
@@ -227,7 +230,7 @@ export async function updateSeries(
 
 	if (error) {
 		if (error.code !== SERIES_LOCKED_SQLSTATE) {
-			console.error('[updateSeries] Écriture impossible :', error);
+			logger.error('[updateSeries] Écriture impossible :', error);
 		}
 		throw mapSeriesWriteError(error, 'update');
 	}
@@ -272,7 +275,7 @@ export async function deleteSeries(supabase: TypedSupabaseClient, seriesId: stri
 
 	if (error) {
 		if (error.code !== SERIES_LOCKED_SQLSTATE && error.code !== FOREIGN_KEY_VIOLATION) {
-			console.error('[deleteSeries] Suppression impossible :', error);
+			logger.error('[deleteSeries] Suppression impossible :', error);
 		}
 		throw mapSeriesWriteError(error, 'delete');
 	}

@@ -19,6 +19,10 @@ import { isExplicitFunction, isScatter, type ExplicitFunction } from '$lib/graph
 import { firstTermValue, graphLatexOf } from './engine';
 import { plainDisplay } from './display';
 import { isFunction, isList, isSequence } from './types';
+import { allowedDisplay, plotRestrictionOf } from './interval';
+import { sameRestriction, type Restriction } from '$lib/grapheur/restriction';
+import { reciprocalOf } from './names';
+import { commonRows, valuesOn } from './pairs';
 
 /**
  * Les courbes posées par l'atelier, par nom d'objet.
@@ -33,6 +37,23 @@ import { isFunction, isList, isSequence } from './types';
  * L'invariant est structurel plutôt que supposé.
  */
 const posted = new WeakMap<Atelier, WeakMap<GrapheurStore, Map<string, string>>>();
+
+/**
+ * La clé de la droite y = x dans les courbes posées : jamais un nom d'objet
+ * (une espace n'en contient pas), elle ne peut donc pas en écraser un.
+ */
+const IDENTITY_LINE = 'y = x';
+
+/**
+ * La droite y = x (décision (3) de David, 2026-10-13) : grise, en pointillés,
+ * plus fine que les courbes. Un token, lisible en clair et en sombre ; la
+ * couleur hors palette passe telle quelle (`curveColorValue`).
+ */
+const IDENTITY_SETTINGS = {
+	color: 'var(--color-muted-foreground)',
+	lineStyle: 'dashed',
+	lineWidth: 1
+} as const;
 
 /** Ce qu'un nuage doit valoir. */
 interface WantedScatter {
@@ -60,6 +81,12 @@ interface Wanted {
 	 * alors ceux que le grapheur lui a donnés.
 	 */
 	readonly display?: CurveDisplay;
+	/**
+	 * L'ensemble de la fonction (`f(x) = x^2 sur [0;+∞[`), en morceaux
+	 * numériques ; absent sans ensemble. `f′` le porte aussi : elle hérite de
+	 * celui de f (`#inheritIntervals`).
+	 */
+	readonly restriction?: Restriction;
 }
 
 /** Ce que le grapheur reçoit d'un réglage d'atelier. */
@@ -127,10 +154,14 @@ function wantedFor(atelier: Atelier, object: AtelierObject): Wanted | null {
 	// les deux divergeaient sur les constantes — `\pix` lui était illisible,
 	// `f(x) = e^x` ne se traçait pas (retour de David, 2026-10-05)
 	const latex = graphLatexOf(atelier, object.name);
+	const restriction = plotRestrictionOf(object);
 	return {
 		definition: latex ?? object.definition,
 		visible: object.status === 'ok',
-		...(isFunction(object) && object.display && { display: object.display })
+		// Décision f : la tangente ou l'aire hors de l'ensemble ne se dessine pas
+		...(isFunction(object) &&
+			object.display && { display: allowedDisplay(object, object.display) }),
+		...(restriction && { restriction })
 	};
 }
 
@@ -156,10 +187,13 @@ function wantedScatterFor(atelier: Atelier, object: AtelierObject): WantedScatte
 	const partner = chosen ?? lists[index + 1] ?? (index === 0 ? undefined : lists[0]);
 	if (partner === undefined) return null;
 
+	// Les points des lignes où les DEUX colonnes ont un nombre (P1) : par rang,
+	// une case vide décalait toutes les paires suivantes
+	const { rows } = commonRows([object, partner]);
 	return {
 		kind: 'scatter',
-		xs: object.values,
-		ys: partner.values,
+		xs: valuesOn(object, rows),
+		ys: valuesOn(partner, rows),
 		label: `${object.name} / ${partner.name}`
 	};
 }
@@ -197,9 +231,9 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 		if (sequence !== null) wanted.set(object.name, sequence);
 	}
 
-	// Retirer ce qui ne doit plus être tracé.
+	// Retirer ce qui ne doit plus être tracé (la droite y = x a sa propre pose).
 	for (const [name, id] of mine) {
-		if (!wanted.has(name)) {
+		if (!wanted.has(name) && name !== IDENTITY_LINE) {
 			graph.removeFunction(id);
 			mine.delete(name);
 		}
@@ -242,14 +276,54 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 
 		// N'écrire que ce qui diffère : c'est cette condition qui rend la
 		// synchronisation idempotente, donc l'effet qui l'appelle non bouclant.
-		const changes: Partial<CurveSettings> & { latex?: string; visible?: boolean } = {};
+		const changes: Partial<CurveSettings> & {
+			latex?: string;
+			visible?: boolean;
+			restriction?: Restriction;
+		} = {};
 		if (isExplicitFunction(curve)) {
 			if (curve.latex !== target.definition) changes.latex = target.definition;
+			// Comparée par contenu : la conversion rend une copie neuve à chaque passage.
+			if (!sameRestriction(curve.restriction, target.restriction)) {
+				changes.restriction = target.restriction;
+			}
 			if (target.display) Object.assign(changes, settingsDiff(curve, target.display));
 		}
 		if (curve.visible !== target.visible) changes.visible = target.visible;
 		if (Object.keys(changes).length > 0) graph.updateFunction(curveId, changes);
 	}
+
+	syncIdentityLine(atelier, graph, mine);
+}
+
+/** Une fonction affichée dans le Graphe : tracée, et qui produit une courbe. */
+function isShown(object: AtelierObject | undefined): boolean {
+	return (
+		object !== undefined && isFunction(object) && object.plotted === true && object.status === 'ok'
+	);
+}
+
+/**
+ * La droite y = x, d'office quand f ET sa carte f⁻¹ sont affichées ; retirée
+ * dès que l'une est masquée, supprimée ou en erreur. Pas une carte : rien dans
+ * l'atelier, donc rien de sauvegardé. Idempotente, comme le reste.
+ */
+function syncIdentityLine(atelier: Atelier, graph: GrapheurStore, mine: Map<string, string>): void {
+	const wanted = atelier.objects.some((o) => {
+		const base = reciprocalOf(o.name);
+		return base !== null && isShown(o) && isShown(atelier.get(base));
+	});
+	const id = mine.get(IDENTITY_LINE);
+	const current = id === undefined ? undefined : graph.getFunction(id);
+	if (!wanted) {
+		if (id !== undefined) graph.removeFunction(id);
+		mine.delete(IDENTITY_LINE);
+		return;
+	}
+	if (current !== undefined && isExplicitFunction(current)) return;
+	const posed = graph.addFunction('x');
+	graph.updateFunction(posed, IDENTITY_SETTINGS);
+	mine.set(IDENTITY_LINE, posed);
 }
 
 /**

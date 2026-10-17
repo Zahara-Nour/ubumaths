@@ -9,7 +9,7 @@ couvre:
 
 # Analytique prof — la page « analytics » d'une classe
 
-> Vérifié contre le code le 2026-10-10. Historique du chantier (V2.0, juin 2026) :
+> Vérifié contre le code le 2026-10-11. Historique du chantier (V2.0, juin 2026) :
 > [teacher-analytics-progress.md](../archive/wip/teacher-analytics-progress.md) (archivé, ne décrit
 > pas le code actuel).
 
@@ -18,11 +18,11 @@ couvre:
 Une page par classe, `/dashboard/teacher/classes/[classId]/analytics`, ouverte depuis la liste des
 classes du prof. Elle montre l'état de la classe sous trois onglets :
 
-| Onglet           | Ce qu'il montre                                                                         | Sources                                                                                   |
-| ---------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| 📘 Connaissances | Mémorisation (FSRS) des **points du programme** travaillés, activité, notes de révision | `skill_attempts`, `question_template_points` → `curriculum_points`, `srs_card_stats`      |
-| 🎯 Compétences   | Niveaux des six **compétences mathématiques** et observables à consolider               | `math_competences`, `student_competence_level`, `student_observable_state`, `observables` |
-| Surveillance     | Drapeaux anti-triche non résolus (badge = leur nombre)                                  | `srs_anti_fraud_flags` — voir [srs.md](srs.md) (anti-triche éteint en prod)               |
+| Onglet           | Ce qu'il montre                                                                                                                                              | Sources                                                                                   |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| 📘 Connaissances | Mémorisation (FSRS) des **points du programme** travaillés, activité, notes de révision                                                                      | `skill_attempts`, `question_template_points` → `curriculum_points`, `srs_card_stats`      |
+| 🎯 Compétences   | Niveaux des six **compétences mathématiques** et observables à consolider                                                                                    | `math_competences`, `student_competence_level`, `student_observable_state`, `observables` |
+| Surveillance     | Drapeaux anti-triche non résolus (badge = leur nombre ; « ? » si le compteur est illisible, au chargement comme au rafraîchissement : `unresolved-count.ts`) | `srs_anti_fraud_flags` — voir [srs.md](srs.md) (anti-triche éteint en prod)               |
 
 Termes ([CONTEXT.md](../../CONTEXT.md)) : Point du programme, compétences mathématiques. ⚠️ Le code
 et l'interface disent encore « **capacité** » (`ClassCapacityGrid`, « Top capacités à remédier ») et
@@ -31,8 +31,11 @@ les commentaires « famille A » : c'est le **vocabulaire du référentiel aband
 `curriculum_points` ; seule la famille B (compétences) reste un référentiel vivant.
 
 **Accès** : `requireTeacherOfClass(locals, classId)` (`src/lib/server/stats/teacher-class-auth.ts`)
-= `requireRoles(['teacher','admin'])` puis existence de la classe (404 sinon) ; la page elle-même
-passe d'abord par le layout du tableau de bord prof, réservé au rôle `teacher`. Mono-prof : aucun
+= `requireRole('teacher')` puis existence de la classe (404 sinon) ; la page elle-même passe
+d'abord par le layout du tableau de bord prof, réservé au rôle `teacher`. Le compte admin est refusé
+partout, page comme endpoints (analytique et anti-triche ; décision du 2026-10-11) : David enseigne avec son compte prof et
+s'élève quand il a besoin de l'admin ; l'élévation laisse le rôle de session à `teacher`
+([auth.md](auth.md)). Mono-prof : aucun
 `teacher_id` de classe n'entre en jeu ([ADR 0002](../adr/0002-mono-professeur-ecole-frontiere-sociale.md)).
 
 ## Les widgets
@@ -104,7 +107,9 @@ chaque widget suit dans son `$effect` de chargement).
 
 Serveur : `src/lib/server/stats/__tests__/class-knowledge.test.ts` (28),
 `class-competence.test.ts` (12). Composants : un `*.svelte.test.ts` par widget dans
-`src/lib/components/teacher/analytics/__tests__/` (29 au total). Aucun test d'intégration base.
+`src/lib/components/teacher/analytics/__tests__/` (29 au total). Garde : `src/lib/server/stats/__tests__/teacher-class-auth.test.ts` (prof accepté,
+admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page.server.test.ts`
+(compteur de signalements illisible → `null`, pas 0). Aucun test d'intégration base.
 
 ## Décisions
 
@@ -121,9 +126,5 @@ Serveur : `src/lib/server/stats/__tests__/class-knowledge.test.ts` (28),
   alors que les données sont des points du programme. À renommer (non tranché).
 - **Deux « acquis » différents** : la grille A calcule un badge **FSRS** depuis `srs_card_stats` ;
   elle ne lit pas `student_point_state` (régime d'acquisition `fluence` / `diversite`). Un point
-  peut être « acquis » pour l'un et pas pour l'autre ; la page ne montre pas le second.
-- `+page.server.ts` compte `srs_anti_fraud_flags` sans tester l'erreur : un échec donne un badge à 0.
-- Accès asymétrique : la **page** est réservée au rôle `teacher` (le layout
-  `src/routes/(protected)/dashboard/teacher/+layout.server.ts` refuse tout autre rôle), alors que les
-  **endpoints** acceptent aussi `admin`. Sans conséquence aujourd'hui (l'élévation admin ne change pas
-  le rôle de session, voir [auth.md](auth.md)), mais la doc d'origine promettait l'accès admin.
+  peut être « acquis » pour l'un et pas pour l'autre ; la page ne montre pas le second. Tranché le
+  2026-10-12 : on ne change rien tant que `student_point_state` est vide en prod.

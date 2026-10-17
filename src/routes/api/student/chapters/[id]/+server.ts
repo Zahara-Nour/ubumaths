@@ -33,6 +33,9 @@ import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { getChapterWithContent } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/chapters/[id]/+server');
 
 /**
  * Path parameters schema
@@ -62,7 +65,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			if (result.error.message.includes('not found') || result.error.message.includes('PGRST116')) {
 				throw error(404, 'Chapter not found');
 			}
-			console.error('[API] Error fetching chapter content:', result.error);
+			logger.error('[API] Error fetching chapter content:', result.error);
 			throw error(500, 'Failed to fetch chapter');
 		}
 
@@ -79,7 +82,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/chapters/[id]:', err);
+		logger.error('[API] Unexpected error in GET /api/student/chapters/[id]:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };

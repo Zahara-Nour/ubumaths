@@ -6,6 +6,9 @@ import {
 } from '$lib/server/validation/messages';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/thread/+server');
 
 /**
  * GET /api/messages/thread?rootId=xxx
@@ -34,10 +37,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		});
 
 		if (fetchError) {
-			console.error('Error fetching thread:', fetchError);
+			logger.error('Error fetching thread:', fetchError);
 
 			if (fetchError.message?.includes('do not have access')) {
-				throw error(403, "Vous n'avez pas accès à ce fil de discussion");
+				throw error(403, 'Accès refusé à ce fil de discussion');
 			}
 
 			throw error(500, 'Erreur lors de la récupération du fil de discussion');
@@ -59,7 +62,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				if (detailsError?.message?.includes('do not have access')) return null;
 				// Toute autre erreur : jamais un fil partiel
 				if (detailsError || !details?.[0]) {
-					console.error('Error fetching thread message details:', detailsError);
+					logger.error('Error fetching thread message details:', detailsError);
 					throw error(500, 'Erreur lors de la récupération du fil de discussion');
 				}
 				const detail = details[0];
@@ -89,7 +92,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		return json(validated);
 	} catch (err) {
-		console.error('Error in thread API:', err);
+		logger.error('Error in thread API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}

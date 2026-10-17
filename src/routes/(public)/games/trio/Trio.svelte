@@ -253,25 +253,21 @@
 
 			for (let i = 0; i < gridSize; i++) {
 				for (let j = 0; j < gridSize; j++) {
-					if (
-						!(
-							// il y a un trou
-							(
-								(min_j < j && j < max_j && min_i < i && i < max_i) ||
-								(min_j === max_j && j === min_j && min_i < i && i < max_i) ||
-								(min_i === max_i && i === min_i && min_j < j && j < max_j) ||
-								// pas de trou
-								// les éléments se suivent sous la même progression
+					if (!(
+						// il y a un trou
+						(min_j < j && j < max_j && min_i < i && i < max_i) ||
+						(min_j === max_j && j === min_j && min_i < i && i < max_i) ||
+						(min_i === max_i && i === min_i && min_j < j && j < max_j) ||
+						// pas de trou
+						// les éléments se suivent sous la même progression
 
-								(max_j - min_j <= 1 &&
-									max_i - min_i <= 1 &&
-									((selecteds[0].j - j === selecteds[1].j - selecteds[0].j &&
-										selecteds[0].i - i === selecteds[1].i - selecteds[0].i) ||
-										(j - selecteds[1].j === selecteds[1].j - selecteds[0].j &&
-											i - selecteds[1].i === selecteds[1].i - selecteds[0].i)))
-							)
-						)
-					) {
+						(max_j - min_j <= 1 &&
+							max_i - min_i <= 1 &&
+							((selecteds[0].j - j === selecteds[1].j - selecteds[0].j &&
+								selecteds[0].i - i === selecteds[1].i - selecteds[0].i) ||
+								(j - selecteds[1].j === selecteds[1].j - selecteds[0].j &&
+									i - selecteds[1].i === selecteds[1].i - selecteds[0].i)))
+					)) {
 						grid[i][j].status = 'not_available';
 					}
 				}
@@ -280,15 +276,13 @@
 			const selected = selecteds[0];
 			for (let i = 0; i < gridSize; i++) {
 				for (let j = 0; j < gridSize; j++) {
-					if (
-						!(
-							Math.abs(selected.i - i) <= 2 &&
-							Math.abs(selected.j - j) <= 2 &&
-							(selected.j === j ||
-								selected.i === i ||
-								Math.abs(selected.j - j) === Math.abs(selected.i - i))
-						)
-					) {
+					if (!(
+						Math.abs(selected.i - i) <= 2 &&
+						Math.abs(selected.j - j) <= 2 &&
+						(selected.j === j ||
+							selected.i === i ||
+							Math.abs(selected.j - j) === Math.abs(selected.i - i))
+					)) {
 						grid[i][j].status = 'not_available';
 					}
 				}

@@ -21,17 +21,54 @@ import { browser } from '$app/environment';
 /** Available font sets */
 export type MathFontSet = 'katex' | 'shantell';
 
-/** CSS file paths for each font set */
-const CSS_FILES: Record<MathFontSet, string> = {
-	katex: '/mathlive-fonts-katex.css',
+/**
+ * Feuille qui SURCHARGE les polices KaTeX par défaut. Le jeu `katex` n'en a pas :
+ * ses `@font-face` viennent de `mathlive/static.css`, importé par les composants
+ * qui rendent des maths (`$lib/utils/mathlive-styles`). La surcharge est ajoutée
+ * en fin de `<head>`, donc déclarée après : à descripteurs égaux, la dernière
+ * `@font-face` l'emporte.
+ */
+const OVERRIDE_CSS: Record<MathFontSet, string | null> = {
+	katex: null,
 	shantell: '/mathlive-fonts-shantell.css'
 };
+
+/** Identifiant du `<link>` de surcharge */
+const OVERRIDE_LINK_ID = 'mathlive-fonts-css';
 
 /** Font directories for each set (used by MathLive) */
 const FONT_DIRECTORIES: Record<MathFontSet, string> = {
 	katex: '/fonts/katex-original',
-	shantell: '/fonts/shantell-katex'
+	shantell: '/fonts/chiphre-math'
 };
+
+/**
+ * Barres de fraction et de racine à l'épaisseur du trait des lettres de Chiphre Math,
+ * bouts arrondis ; la barre de racine dépasse un peu l'expression et se referme par un
+ * petit trait. MathLive trace ces barres en CSS (pas dans la police) : sans ces règles,
+ * elles font 0,04 em, bien plus fines que les lettres.
+ *
+ * Elles grandissent vers le bas (le haut reste celui de MathLive, que le cadre du champ
+ * couperait) ; la barre et le petit trait partent du même haut. MathLive a déjà une
+ * règle `.ML__sqrt-line:after` (marge de -0,1 em) : le petit trait l'annule.
+ */
+const STROKE = '0.068em';
+const MATHLIVE_STROKE = '0.04em';
+const SQRT_OVERHANG = '0.15em';
+const SQRT_TICK = '0.22em';
+const STROKE_RULES = [
+	`.ML__frac-line:after { min-height: ${STROKE} !important; margin-top: -${MATHLIVE_STROKE} !important; border-radius: ${STROKE}; }`,
+	`.ML__sqrt-sign + .ML__vlist-t { margin-right: ${SQRT_OVERHANG} !important; }`,
+	`.ML__sqrt-line { position: relative; height: ${STROKE} !important; width: calc(100% + ${SQRT_OVERHANG}) !important; }`,
+	`.ML__sqrt-line:before { min-height: ${STROKE} !important; margin-top: -${MATHLIVE_STROKE} !important; border-radius: ${STROKE}; }`,
+	`.ML__sqrt-line:after { content: ''; position: absolute; right: 0; top: -${MATHLIVE_STROKE}; margin-top: 0 !important; border: none; width: ${STROKE}; height: ${SQRT_TICK}; background: currentColor; border-radius: ${STROKE}; }`
+];
+
+/** Feuille du document qui porte les règles des barres hors des champs */
+let documentStrokeSheet: CSSStyleSheet | null = null;
+
+/** Règles des barres posées, par feuille, pour pouvoir les retirer */
+const insertedStrokeRules = new Map<CSSStyleSheet, CSSRule[]>();
 
 /** Currently loaded font set */
 let currentFontSet: MathFontSet = 'katex';
@@ -48,19 +85,12 @@ export async function switchMathFonts(fontSet: MathFontSet): Promise<void> {
 	// Skip if already using this font set
 	if (currentFontSet === fontSet) return;
 
-	const cssLink = document.getElementById('mathlive-fonts-css') as HTMLLinkElement | null;
-	if (!cssLink) {
-		console.warn('MathLive fonts CSS link not found');
-		return;
-	}
-
-	// Update CSS href
-	const newHref = CSS_FILES[fontSet];
-	cssLink.href = newHref;
+	applyOverrideCss(fontSet);
 
 	// Update MathfieldElement.fontsDirectory for any new mathfields
 	const { MathfieldElement } = await import('mathlive');
 	MathfieldElement.fontsDirectory = FONT_DIRECTORIES[fontSet];
+	applyStrokeRules(fontSet);
 
 	currentFontSet = fontSet;
 
@@ -88,11 +118,8 @@ export async function initMathFonts(fontSet: MathFontSet = 'katex'): Promise<voi
 	const { MathfieldElement } = await import('mathlive');
 	MathfieldElement.fontsDirectory = FONT_DIRECTORIES[fontSet];
 
-	// Update CSS if needed
-	const cssLink = document.getElementById('mathlive-fonts-css') as HTMLLinkElement | null;
-	if (cssLink && fontSet !== 'katex') {
-		cssLink.href = CSS_FILES[fontSet];
-	}
+	applyOverrideCss(fontSet);
+	applyStrokeRules(fontSet);
 
 	currentFontSet = fontSet;
 }
@@ -103,11 +130,55 @@ export async function initMathFonts(fontSet: MathFontSet = 'katex'): Promise<voi
 export async function preloadAllFonts(): Promise<void> {
 	if (!browser) return;
 
-	// Preload the other CSS file
-	const otherSet: MathFontSet = currentFontSet === 'katex' ? 'shantell' : 'katex';
+	// Seule la surcharge Shantell est un fichier à part ; le jeu KaTeX est déjà là
+	const href = OVERRIDE_CSS.shantell;
+	if (currentFontSet === 'shantell' || !href) return;
 	const link = document.createElement('link');
 	link.rel = 'prefetch';
-	link.href = CSS_FILES[otherSet];
+	link.href = href;
 	link.as = 'style';
 	document.head.appendChild(link);
+}
+
+/** Pose ou retire le `<link>` de surcharge des polices selon le jeu choisi */
+function applyOverrideCss(fontSet: MathFontSet): void {
+	const href = OVERRIDE_CSS[fontSet];
+	const existing = document.getElementById(OVERRIDE_LINK_ID) as HTMLLinkElement | null;
+	if (!href) {
+		existing?.remove();
+		return;
+	}
+	const link = existing ?? document.createElement('link');
+	link.id = OVERRIDE_LINK_ID;
+	link.rel = 'stylesheet';
+	link.href = href;
+	if (!existing) document.head.appendChild(link);
+}
+
+/**
+ * Pose ou retire les règles des barres (STROKE_RULES). Les champs MathLive (`math-field`,
+ * `math-span`) partagent une feuille de style, adoptée par chaque shadow DOM : une règle
+ * ajoutée à celle-ci vaut pour tous les champs, présents et futurs. Les formules rendues
+ * hors champ lisent les styles du document : les règles y sont posées aussi.
+ */
+function applyStrokeRules(fontSet: MathFontSet): void {
+	if (!documentStrokeSheet) {
+		documentStrokeSheet = new CSSStyleSheet();
+		document.adoptedStyleSheets = [...document.adoptedStyleSheets, documentStrokeSheet];
+	}
+	const shared = document.createElement('math-span').shadowRoot?.adoptedStyleSheets[0];
+	const sheets = shared ? [shared, documentStrokeSheet] : [documentStrokeSheet];
+	for (const sheet of sheets) {
+		// Retrait des règles déjà posées, puis ajout si Chiphre Math
+		for (const rule of insertedStrokeRules.get(sheet) ?? []) {
+			const index = Array.from(sheet.cssRules).indexOf(rule);
+			if (index >= 0) sheet.deleteRule(index);
+		}
+		insertedStrokeRules.delete(sheet);
+		if (fontSet !== 'shantell') continue;
+		const inserted = STROKE_RULES.map(
+			(rule) => sheet.cssRules[sheet.insertRule(rule, sheet.cssRules.length)]
+		);
+		insertedStrokeRules.set(sheet, inserted);
+	}
 }

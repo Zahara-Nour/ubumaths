@@ -14,6 +14,7 @@ import { Client } from 'pg';
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { purgeTemplatesOf } from '../helpers/database/purge-modeles';
 
 function makeClient(): Client {
 	return new Client({
@@ -40,6 +41,12 @@ export async function setup(): Promise<void> {
 			`select exists (select 1 from public.classes where join_code like 'LOCAL%') as present`
 		);
 		seedRicheARefaire = !process.env.CI && rows[0]?.present === true;
+
+		// ADR 0029 : un modèle relié par un chapitre bloque la cascade (lignes de
+		// lien en RESTRICT) — les classes, elles, ne sont pas purgées ici. Les
+		// lignes de lien vers les modèles d'un professeur, puis ses modèles, sont
+		// donc supprimées AVANT les comptes (incident du 2026-10-14).
+		await purgeTemplatesOf(client, `select id from public.profiles where role = 'teacher'`);
 
 		// Deleting from auth.users cascades to profiles → classes → class_members,
 		// clearing the seeded demo teachers (and any leftover teacher from a prior run).

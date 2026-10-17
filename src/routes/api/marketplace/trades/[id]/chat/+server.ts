@@ -3,6 +3,9 @@ import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { chatMessageSchema } from '$lib/server/marketplace/validation';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/trades/[id]/chat/+server');
 
 // ID validation schema
 const idSchema = z.string().uuid("ID d'échange invalide");
@@ -39,7 +42,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	}
 
 	if (trade.initiator_id !== userId && trade.partner_id !== userId) {
-		throw error(403, "Vous n'êtes pas participant à cet échange");
+		throw error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	// Get chat messages
@@ -60,7 +63,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		.order('created_at', { ascending: true });
 
 	if (messagesError) {
-		console.error('Error fetching chat messages:', messagesError);
+		logger.error('Error fetching chat messages:', messagesError);
 		throw error(500, 'Erreur lors de la récupération des messages');
 	}
 
@@ -104,7 +107,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	if (trade.initiator_id !== userId && trade.partner_id !== userId) {
-		throw error(403, "Vous n'êtes pas participant à cet échange");
+		throw error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	if (trade.status === 'cancelled') {
@@ -133,7 +136,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		.single();
 
 	if (messageError) {
-		console.error('Error creating chat message:', messageError);
+		logger.error('Error creating chat message:', messageError);
 		throw error(500, "Erreur lors de l'envoi du message");
 	}
 

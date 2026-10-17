@@ -18,11 +18,19 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import {
+	GoogleNotConnectedError,
+	GoogleTokenExpiredError,
+	GoogleInsufficientPermissionsError
+} from '$lib/server/google/errors';
 import { requireRole } from '$lib/server/middleware/auth';
 import { loadFromDriveParamsSchema } from '$lib/server/validation/whiteboard-drive';
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
 import { validateUbwFile } from '$lib/whiteboard/utils/file-operations';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/drive/load/[fileId]/+server');
 
 /**
  * Load whiteboard document from Google Drive
@@ -52,13 +60,13 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// Validate document structure
 		const docValidation = validateUbwFile(content);
 		if (!docValidation.valid) {
-			throw error(400, `Invalid document: ${docValidation.error}`);
+			throw error(400, `Document invalide : ${docValidation.error}`);
 		}
 
 		// Get file metadata for name and modifiedTime
 		const metadata = await driveClient.getFileMetadata(fileId);
 
-		console.log(`[Whiteboard Drive] Loaded file ${fileId} for teacher ${user.id}`);
+		logger.info(`[Whiteboard Drive] Loaded file ${fileId} for teacher ${user.id}`);
 
 		return json({
 			document: docValidation.document,
@@ -74,22 +82,22 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 		// Handle specific Google API errors
 		if (err instanceof Error) {
-			if (err.message.includes('No Google integration')) {
-				throw error(401, 'Google account not connected. Please connect in Settings.');
+			if (err instanceof GoogleNotConnectedError) {
+				throw error(401, 'Compte Google non connecté : à connecter dans les Paramètres');
 			}
-			if (err.message.includes('Token expired') || err.message.includes('401')) {
-				throw error(401, 'Google session expired. Please reconnect your Google account.');
+			if (err instanceof GoogleTokenExpiredError || err.message.includes('401')) {
+				throw error(401, 'Session Google expirée : reconnecter le compte Google');
 			}
 			if (err.message.includes('404') || err.message.includes('Not found')) {
-				throw error(404, 'File not found on Google Drive.');
+				throw error(404, 'Fichier introuvable sur Google Drive');
 			}
-			if (err.message.includes('403') || err.message.includes('Insufficient')) {
-				throw error(403, 'Access denied to this file.');
+			if (err instanceof GoogleInsufficientPermissionsError || err.message.includes('403')) {
+				throw error(403, 'Accès refusé à ce fichier');
 			}
 		}
 
-		console.error('[Whiteboard Drive] Load error:', err);
-		const message = err instanceof Error ? err.message : 'Unknown error';
-		throw error(500, `Failed to load from Drive: ${message}`);
+		logger.error('[Whiteboard Drive] Load error:', err);
+		const message = err instanceof Error ? err.message : 'erreur inconnue';
+		throw error(500, `Impossible de charger depuis Google Drive : ${message}`);
 	}
 };

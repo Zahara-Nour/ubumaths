@@ -259,14 +259,15 @@ describe('palier 3 — dispatcher integration', () => {
 		).toThrow(UndevelopedLinearForm);
 	});
 
-	it('dispatcher routes (x³-1)/(x-1) < 0 to the quadratic pipeline (canon → x²+x+1)', async () => {
+	it('dispatcher : (x³-1)/(x-1) < 0 refusé, la valeur interdite 1 serait perdue (V48)', async () => {
+		// Avant le 2026-10-13 : la forme canonique x²+x+1 l'envoyait au second
+		// degré (commodité de routage du 2026-05-06), qui rédigeait x²+x+1 < 0
+		// sans jamais exclure 1. Refus, comme au premier degré : l'appelant se
+		// replie sur `solveInequality`, qui lit le domaine.
 		const { generateInequalitySteps } = await import('../index');
-		const steps = generateInequalitySteps(ineq('(x^3 - 1)/(x - 1) < 0'), { level: 'lycee' });
-		const kinds = flatten(steps).map((s) => s.operation?.kind);
-		// Quadratic path : compute-discriminant + quadratic-sign-table
-		expect(kinds).toContain('compute-discriminant');
-		expect(kinds).toContain('quadratic-sign-table');
-		expect(kinds).not.toContain('rational-sign-table');
+		expect(() =>
+			generateInequalitySteps(ineq('(x^3 - 1)/(x - 1) < 0'), { level: 'lycee' })
+		).toThrow(InequalityNotSolvable);
 	});
 });
 

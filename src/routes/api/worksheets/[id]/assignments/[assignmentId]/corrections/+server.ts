@@ -21,6 +21,11 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/worksheets/[id]/assignments/[assignmentId]/corrections/+server'
+);
 
 // ============================================================================
 // REQUEST/RESPONSE SCHEMAS
@@ -56,7 +61,7 @@ async function verifyAssignmentAccess(
 	// Validate UUID formats
 	const paramsValidation = validateAssignmentParams({ id: worksheetId, assignmentId });
 	if (!paramsValidation.success) {
-		throw error(400, 'Format UUID invalide');
+		throw error(400, 'Identifiant invalide');
 	}
 
 	// Fetch worksheet with ownership check
@@ -67,12 +72,12 @@ async function verifyAssignmentAccess(
 		.single();
 
 	if (worksheetError || !worksheet) {
-		throw error(404, 'Feuille de travail non trouvee');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify ownership (teachers can only access their own worksheets)
 	if (role === 'teacher' && worksheet.created_by !== userId) {
-		throw error(403, 'Acces non autorise a cette feuille de travail');
+		throw error(403, 'Accès refusé à cette fiche');
 	}
 
 	// Fetch assignment and verify it belongs to this worksheet
@@ -84,12 +89,12 @@ async function verifyAssignmentAccess(
 		.single();
 
 	if (assignmentError || !assignment) {
-		throw error(404, 'Devoir non trouve');
+		throw error(404, 'Affectation introuvable');
 	}
 
 	// Additional ownership check for assignment
 	if (role === 'teacher' && assignment.created_by !== userId) {
-		throw error(403, 'Acces non autorise a ce devoir');
+		throw error(403, 'Accès refusé à cette affectation');
 	}
 
 	return { worksheet, assignment };
@@ -123,8 +128,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.eq('assignment_id', params.assignmentId);
 
 	if (fetchError) {
-		console.error('Failed to fetch exercise settings:', fetchError);
-		throw error(500, 'Erreur lors de la recuperation des parametres');
+		logger.error('Failed to fetch exercise settings:', fetchError);
+		throw error(500, 'Impossible de charger les réglages');
 	}
 
 	// Validate response
@@ -169,7 +174,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	// Validate against union schema - ESLint requires Zod validation after request.json()
@@ -177,7 +182,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (!validation.success) {
 		throw error(
 			400,
-			'Corps de requete invalide: doit contenir show_corrections, worksheet_exercise_id, ou settings'
+			'Requête invalide : show_corrections, worksheet_exercise_id ou settings attendu'
 		);
 	}
 
@@ -222,8 +227,8 @@ async function handleGlobalUpdate(
 		.eq('id', assignmentId);
 
 	if (updateError) {
-		console.error('Failed to update correction settings:', updateError);
-		throw error(500, 'Erreur lors de la mise a jour des parametres');
+		logger.error('Failed to update correction settings:', updateError);
+		throw error(500, 'Impossible de modifier les réglages');
 	}
 
 	// Validate response
@@ -259,7 +264,7 @@ async function handleExerciseUpdate(
 		.single();
 
 	if (exerciseError || !exercise) {
-		throw error(404, 'Exercice non trouve dans cette feuille de travail');
+		throw error(404, 'Exercice introuvable dans cette fiche');
 	}
 
 	// Upsert the exercise setting
@@ -275,8 +280,8 @@ async function handleExerciseUpdate(
 		);
 
 	if (upsertError) {
-		console.error('Failed to update exercise correction setting:', upsertError);
-		throw error(500, 'Erreur lors de la mise a jour du parametre');
+		logger.error('Failed to update exercise correction setting:', upsertError);
+		throw error(500, 'Impossible de modifier le réglage');
 	}
 
 	// Validate response
@@ -315,18 +320,15 @@ async function handleBulkUpdate(
 		.in('id', exerciseIds);
 
 	if (exercisesError) {
-		console.error('Failed to verify exercises:', exercisesError);
-		throw error(500, 'Erreur lors de la verification des exercices');
+		logger.error('Failed to verify exercises:', exercisesError);
+		throw error(500, 'Impossible de vérifier les exercices');
 	}
 
 	const validExerciseIds = new Set((exercises ?? []).map((e) => e.id));
 	const invalidIds = exerciseIds.filter((id) => !validExerciseIds.has(id));
 
 	if (invalidIds.length > 0) {
-		throw error(
-			400,
-			`Certains exercices n'appartiennent pas a cette feuille de travail: ${invalidIds.length} ID(s) invalide(s)`
-		);
+		throw error(400, `Certains exercices n’appartiennent pas à cette fiche (${invalidIds.length})`);
 	}
 
 	// Prepare upsert data
@@ -342,8 +344,8 @@ async function handleBulkUpdate(
 		.upsert(upsertData, { onConflict: 'assignment_id,worksheet_exercise_id' });
 
 	if (upsertError) {
-		console.error('Failed to bulk update exercise settings:', upsertError);
-		throw error(500, 'Erreur lors de la mise a jour des parametres');
+		logger.error('Failed to bulk update exercise settings:', upsertError);
+		throw error(500, 'Impossible de modifier les réglages');
 	}
 
 	// Validate response

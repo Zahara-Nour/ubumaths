@@ -13,6 +13,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/search-users/pending/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
 	// Allow admin and teacher roles
@@ -35,8 +38,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('created_at', { ascending: false });
 
 		if (fetchError) {
-			console.error('Error fetching pending users:', fetchError);
-			throw error(500, 'Erreur lors de la récupération des utilisateurs en attente');
+			logger.error('Error fetching pending users:', fetchError);
+			throw error(500, 'Impossible de charger les comptes en attente');
 		}
 
 		// Transform to include class_ids array
@@ -49,13 +52,13 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		return json({ users: usersWithClasses });
 	} catch (err) {
-		console.error('Error in GET /api/admin/search-users/pending:', err);
+		logger.error('Error in GET /api/admin/search-users/pending:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
-		throw error(500, 'Erreur interne du serveur');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

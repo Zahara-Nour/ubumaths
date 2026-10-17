@@ -7,8 +7,17 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
+import {
+	insertTemplateWithStyle,
+	syncTemplateStyle
+} from '$lib/server/worksheets/worksheet-styles';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/worksheets/templates/[id]/+page.server'
+);
 
 // Validation schema for updating template
 const updateTemplateSchema = z.object({
@@ -44,15 +53,15 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	if (dbError) {
 		if (dbError.code === 'PGRST116') {
-			throw error(404, 'Template not found');
+			throw error(404, 'Modèle introuvable');
 		}
-		console.error('Failed to fetch template:', dbError);
+		logger.error('Failed to fetch template:', dbError);
 		throw error(500, 'Failed to fetch template');
 	}
 
 	// Check access: must be owned by user (no inter-teacher sharing)
 	if (template.created_by !== user.id) {
-		throw error(403, 'Access denied');
+		throw error(403, 'Accès refusé');
 	}
 
 	// Can edit if owned by user or admin
@@ -91,20 +100,17 @@ export const actions: Actions = {
 		}
 
 		// Create template
-		const { data: template, error: dbError } = await locals.supabase
-			.from('worksheet_templates')
-			.insert({
-				name: validation.data.name,
-				description: validation.data.description,
-				template_content: validation.data.template_content,
-				placeholders: [], // Will be extracted from content later
-				created_by: user.id
-			})
-			.select()
-			.single();
+		// Le gabarit est la fiche d'un style du même nom (D10)
+		const { data: template, error: dbError } = await insertTemplateWithStyle(locals.supabase, {
+			name: validation.data.name ?? '',
+			description: validation.data.description,
+			template_content: validation.data.template_content ?? '',
+			placeholders: [], // Will be extracted from content later
+			created_by: user.id
+		});
 
-		if (dbError) {
-			console.error('Failed to create template:', dbError);
+		if (dbError || !template) {
+			logger.error('Failed to create template:', dbError);
 			return fail(500, { message: 'Erreur lors de la creation du template' });
 		}
 
@@ -120,7 +126,7 @@ export const actions: Actions = {
 		// Check ownership
 		const { data: existingTemplate, error: fetchError } = await locals.supabase
 			.from('worksheet_templates')
-			.select('id, created_by')
+			.select('id, created_by, style_id')
 			.eq('id', params.id)
 			.single();
 
@@ -130,7 +136,7 @@ export const actions: Actions = {
 
 		// Only owner or admin can update
 		if (existingTemplate.created_by !== user.id && profile.role !== 'admin') {
-			return fail(403, { message: 'Vous ne pouvez modifier que vos propres templates' });
+			return fail(403, { message: 'Modification réservée à l’auteur du template' });
 		}
 
 		const formData = await request.formData();
@@ -174,8 +180,19 @@ export const actions: Actions = {
 			.eq('id', params.id);
 
 		if (dbError) {
-			console.error('Failed to update template:', dbError);
+			logger.error('Failed to update template:', dbError);
 			return fail(500, { message: 'Erreur lors de la mise a jour du template' });
+		}
+
+		// Le style du gabarit porte son nom dans le menu de la fiche (D10)
+		const styleSynced = await syncTemplateStyle(locals.supabase, existingTemplate, {
+			name: validation.data.name,
+			description: validation.data.description
+		});
+		if (!styleSynced) {
+			return fail(500, {
+				message: 'Template enregistré, mais son nom n’a pas suivi dans le menu « Style »'
+			});
 		}
 
 		return { success: true, message: 'Template mis a jour' };

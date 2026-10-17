@@ -36,13 +36,16 @@ import type { StudentProfile, ClassMembership, StudentRewards } from '$lib/types
 import { asStudentVipCards } from '$lib/types/vip-card';
 import { error } from '@sveltejs/kit';
 import { toBuddyState } from '$lib/types/buddy';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/+layout.server');
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
 
 	// Must be logged in as student
 	if (!user || !profile || profile.role !== 'student') {
-		throw error(403, 'Access denied');
+		throw error(403, 'Accès refusé');
 	}
 
 	try {
@@ -65,7 +68,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			.order('joined_at', { ascending: false });
 
 		if (membershipError) {
-			console.error('[Layout] Error fetching class memberships:', membershipError);
+			logger.error('[Layout] Error fetching class memberships:', membershipError);
 			// Non-critical - continue with empty classes
 		}
 
@@ -105,7 +108,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			.single();
 
 		if (rewardsError) {
-			console.error('[Layout] Error fetching rewards:', rewardsError);
+			logger.error('[Layout] Error fetching rewards:', rewardsError);
 			// Non-critical - continue with default rewards
 		}
 
@@ -130,7 +133,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 		// ne doit pas se confondre avec une donnée réellement vide.
 		if (buddyDataError && buddyDataError.code !== 'PGRST116') {
-			console.error('Contexte illisible :', buddyDataError);
+			logger.error('Contexte illisible :', buddyDataError);
 		}
 
 		// Check for streak loss (last activity > 1 day ago with active streak)
@@ -164,7 +167,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			streakLost
 		};
 	} catch (err) {
-		console.error('[Layout] Unexpected error loading student dashboard:', err);
+		logger.error('[Layout] Unexpected error loading student dashboard:', err);
 		// Return minimal data to prevent crashes
 		return {
 			studentProfile: {

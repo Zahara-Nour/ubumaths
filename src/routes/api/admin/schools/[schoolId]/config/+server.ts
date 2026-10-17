@@ -14,6 +14,9 @@ import { updateSchoolConfigSchema } from '$lib/server/validation/school-config';
 import { DEFAULT_TIMEZONE } from '$lib/utils/timezones';
 import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
 import type { SchoolTimetable } from '$lib/utils/timetable';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/schools/[schoolId]/config/+server');
 
 /**
  * Update school configuration (timezone and week_config)
@@ -31,7 +34,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		!schoolId ||
 		!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(schoolId)
 	) {
-		throw error(400, 'Invalid school ID format');
+		throw error(400, 'Identifiant d’école invalide');
 	}
 
 	// Parse and validate request body
@@ -39,7 +42,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête illisible');
 	}
 
 	const validation = updateSchoolConfigSchema.safeParse(body);
@@ -57,12 +60,12 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('[PUT /api/admin/schools/[schoolId]/config] Fetch error:', fetchError);
-		throw error(404, 'School not found');
+		logger.error('[PUT /api/admin/schools/[schoolId]/config] Fetch error:', fetchError);
+		throw error(404, 'École introuvable');
 	}
 
 	if (!school) {
-		throw error(404, 'School not found');
+		throw error(404, 'École introuvable');
 	}
 
 	// Prepare updated timetable
@@ -88,18 +91,18 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		.single();
 
 	if (updateError) {
-		console.error('[PUT /api/admin/schools/[schoolId]/config] Update error:', updateError);
-		throw error(500, 'Failed to update school configuration');
+		logger.error('[PUT /api/admin/schools/[schoolId]/config] Update error:', updateError);
+		throw error(500, 'Impossible d’enregistrer la configuration de l’école');
 	}
 
 	if (!updatedSchool) {
-		throw error(500, 'Failed to update school configuration');
+		throw error(500, 'Impossible d’enregistrer la configuration de l’école');
 	}
 
 	// Return success response
 	return json({
 		success: true,
-		message: 'Configuration mise à jour avec succès',
+		message: 'Configuration enregistrée',
 		school: {
 			id: updatedSchool.id,
 			name: updatedSchool.name,
@@ -128,7 +131,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		!schoolId ||
 		!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(schoolId)
 	) {
-		throw error(400, 'Invalid school ID format');
+		throw error(400, 'Identifiant d’école invalide');
 	}
 
 	// Fetch school
@@ -139,12 +142,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('[GET /api/admin/schools/[schoolId]/config] Fetch error:', fetchError);
-		throw error(404, 'School not found');
+		logger.error('[GET /api/admin/schools/[schoolId]/config] Fetch error:', fetchError);
+		throw error(404, 'École introuvable');
 	}
 
 	if (!school) {
-		throw error(404, 'School not found');
+		throw error(404, 'École introuvable');
 	}
 
 	const timetable = (school.timetable as SchoolTimetable | null) || {

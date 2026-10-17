@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from '@lucide/svelte';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import TemplateGallery from '$lib/components/notebook/templates/TemplateGallery.svelte';
 	import type { PageData } from './$types';
 
@@ -21,10 +19,6 @@
 			profiles: Array.isArray(t.profiles) ? (t.profiles[0] ?? null) : t.profiles
 		}))
 	);
-
-	function handleBack(): void {
-		void goto('/dashboard/teacher/contenu/notebooks');
-	}
 </script>
 
 <svelte:head>
@@ -34,10 +28,8 @@
 <div class="space-y-6">
 	<!-- Header -->
 	<div class="flex items-center justify-between">
-		<div class="flex items-center gap-3">
-			<Button variant="ghost" size="icon" onclick={handleBack} aria-label="Retour aux notebooks">
-				<ArrowLeft class="h-5 w-5" />
-			</Button>
+		<div>
+			<BackLink href="/dashboard/teacher/contenu/notebooks" label="Retour aux notebooks" />
 			<div>
 				<h1 class="text-xl! font-semibold">Templates Python</h1>
 				<p class="text-sm text-muted-foreground">

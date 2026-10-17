@@ -19,6 +19,9 @@ import type { RequestHandler } from './$types';
 import { globalIndexSchema, rejectQuestionSchema } from '$lib/server/validation/migration-review';
 import { isValidGlobalIndex, loadQuestionByIndex } from '$lib/migration/question-data-loader';
 import { MigrationStateManager } from '$lib/server/migration/state-manager';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/migration/questions/[globalIndex]/reject/+server');
 
 /**
  * POST /api/migration/questions/[globalIndex]/reject
@@ -36,7 +39,7 @@ import { MigrationStateManager } from '$lib/server/migration/state-manager';
  * Response: 200 with rejection confirmation
  * {
  *   success: true,
- *   message: "Question rejected",
+ *   message: "Question rejetée",
  *   data: {
  *     globalIndex: number,
  *     rejected: true,
@@ -56,12 +59,12 @@ import { MigrationStateManager } from '$lib/server/migration/state-manager';
 export const POST: RequestHandler = async ({ request, locals, params }) => {
 	// ✅ SECURITY: Authentication check
 	if (!locals.profile) {
-		throw error(401, 'Authentication required');
+		throw error(401, 'Connexion requise');
 	}
 
 	// ✅ SECURITY: Authorization check (admin only)
 	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
+		throw error(403, 'Réservé aux administrateurs');
 	}
 
 	try {
@@ -70,7 +73,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		const globalIndexNum = parseInt(globalIndexStr, 10);
 
 		if (isNaN(globalIndexNum)) {
-			throw error(400, 'Global index must be a valid number');
+			throw error(400, 'Numéro de question invalide');
 		}
 
 		const indexValidation = globalIndexSchema.safeParse(globalIndexNum);
@@ -95,13 +98,13 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		const questionExists = await isValidGlobalIndex(globalIndex);
 
 		if (!questionExists) {
-			throw error(404, `Question with global index ${globalIndex} not found`);
+			throw error(404, `Question n° ${globalIndex} introuvable`);
 		}
 
 		// Load original question for hash generation
 		const originalQuestion = await loadQuestionByIndex(globalIndex);
 		if (!originalQuestion) {
-			throw error(404, `Original question not found for index ${globalIndex}`);
+			throw error(404, `Question d’origine introuvable (n° ${globalIndex})`);
 		}
 
 		// Persist rejection to database using MigrationStateManager
@@ -141,7 +144,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 		return json({
 			success: true,
-			message: 'Question rejected',
+			message: 'Question rejetée',
 			data: rejectionData
 		});
 	} catch (err) {
@@ -151,7 +154,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Log and return generic error
-		console.error('Error rejecting question:', err);
-		throw error(500, 'Failed to reject question');
+		logger.error('Error rejecting question:', err);
+		throw error(500, 'Impossible de rejeter la question');
 	}
 };

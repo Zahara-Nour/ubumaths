@@ -7,40 +7,108 @@
 
 import { z } from 'zod';
 import { uuidSchema } from './common';
-import { exerciseHintSchema } from './exercises';
+import { exerciseHintSchema, exerciseTranslationsSchema } from './exercises';
 import { gradeCodeSchema } from './grades';
 import { CONTENT_LOCALES } from '$lib/types/locale';
+import { capitalPairsSchema } from '$lib/questions/capital-pairs';
+import { TEXT_SIZES } from '$lib/typst/text-size';
+import {
+	ANSWER_FRAME_MAX_LINES,
+	ANSWER_FRAME_MAX_QUESTIONS,
+	ANSWER_FRAME_MODES,
+	CALCULATOR_RULES,
+	WORKSHEET_TYPES,
+	isIsoDate
+} from '$lib/types/worksheets';
 
 // ============================================================================
 // ENUM SCHEMAS
 // ============================================================================
 
 /**
- * Worksheet type enum
+ * Type de fiche (ADR 0030) : les quatre types ; « quiz » est refusé
  */
-export const worksheetTypeSchema = z.enum(['worksheet', 'assessment', 'exam', 'quiz', 'homework'], {
-	message: 'Invalid worksheet type'
+export const worksheetTypeSchema = z.enum(WORKSHEET_TYPES, {
+	message: 'Type de fiche invalide'
 });
+
+/** Calculatrice autorisée ou interdite (évaluation écrite, examen blanc) */
+const calculatorRuleSchema = z.enum(CALCULATOR_RULES, {
+	message: 'Règle de calculatrice invalide'
+});
+
+/** Cadres de réponse : après chaque question ou après l'exercice (ADR 0030, lot 3) */
+const answerFrameModeSchema = z.enum(ANSWER_FRAME_MODES, {
+	message: 'Placement des cadres invalide'
+});
+
+/** Nombre de lignes d'un cadre de réponse : entier de 0 (pas de cadre) à `ANSWER_FRAME_MAX_LINES` (25) */
+const answerFrameLineCountSchema = z
+	.number()
+	.int('Nombre de lignes entier attendu')
+	.min(0, 'Nombre de lignes négatif')
+	.max(ANSWER_FRAME_MAX_LINES, `${ANSWER_FRAME_MAX_LINES} lignes au plus`);
+
+/**
+ * Lignes des cadres réglées par le prof (`worksheet_exercises.answer_frame_lines`,
+ * ADR 0030 lot 4) : mêmes bornes que la contrainte CHECK de la colonne. `null` =
+ * auto ; `.strict()` : une clé inconnue est refusée, pas retirée en silence.
+ */
+export const answerFrameLinesSchema = z
+	.object({
+		questions: z
+			.array(answerFrameLineCountSchema.nullable())
+			.max(ANSWER_FRAME_MAX_QUESTIONS, `${ANSWER_FRAME_MAX_QUESTIONS} questions au plus`)
+			.optional(),
+		exercise: answerFrameLineCountSchema.nullable().optional()
+	})
+	.strict()
+	.nullable();
+
+/**
+ * Cadres imprimés d'un exercice, résolus par le serveur (vue de l'élève, audit
+ * S1) : lignes par question (au plus `ANSWER_FRAME_MAX_QUESTIONS`, le serveur
+ * tronque avant) ou cadre unique ; jamais `null` (déjà résolus), aucune autre clé
+ */
+const printedAnswerFramesSchema = z
+	.object({
+		questions: z.array(answerFrameLineCountSchema).max(ANSWER_FRAME_MAX_QUESTIONS).optional(),
+		exercise: answerFrameLineCountSchema.optional()
+	})
+	.strict();
+
+/** Date de rendu d'un devoir maison : `AAAA-MM-JJ`, une date qui existe */
+const dueDateSchema = z
+	.string()
+	.refine(isIsoDate, { message: 'Date de rendu invalide (AAAA-MM-JJ attendu)' });
 
 /**
  * Worksheet status enum
  */
 export const worksheetStatusSchema = z.enum(['draft', 'published', 'archived'], {
-	message: 'Invalid worksheet status'
+	message: 'Statut de fiche invalide'
+});
+
+/**
+ * Niveau de guidage d'une affectation (ADR 0023) : les étiquettes des
+ * versions d'un exercice (`GuidanceLevel`)
+ */
+export const guidanceLevelSchema = z.enum(['guided', 'intermediate', 'autonomous'], {
+	message: 'Niveau de guidage invalide'
 });
 
 /**
  * Variant mode enum
  */
 export const variantModeSchema = z.enum(['none', 'individual', 'n_versions', 'group'], {
-	message: 'Invalid variant mode'
+	message: 'Mode de variantes invalide'
 });
 
 /**
  * Numbering style enum
  */
 export const numberingStyleSchema = z.enum(['numeric', 'alphabetic', 'roman'], {
-	message: 'Invalid numbering style'
+	message: 'Style de numérotation invalide'
 });
 
 // ============================================================================
@@ -64,10 +132,10 @@ const rowTranslationsSchema = z
 	.object({
 		en: z
 			.object({
-				title: z.string().trim().max(200, 'Title too long').optional(),
-				description: z.string().trim().max(5000, 'Description too long').optional(),
-				instructions: z.string().trim().max(5000, 'Instructions too long').optional(),
-				custom_instructions: z.string().trim().max(5000, 'Instructions too long').optional()
+				title: z.string().trim().max(200, 'Titre trop long').optional(),
+				description: z.string().trim().max(5000, 'Description trop longue').optional(),
+				instructions: z.string().trim().max(5000, 'Consignes trop longues').optional(),
+				custom_instructions: z.string().trim().max(5000, 'Consignes trop longues').optional()
 			})
 			.strict()
 			.optional()
@@ -83,21 +151,33 @@ const rowTranslationsSchema = z
  */
 const worksheetConfigObjectSchema = z.object({
 	language: contentLocaleSchema.optional(),
+	// Options du type de fiche (ADR 0030, `TYPE_OPTION_KEYS`)
+	show_student_name: z.boolean().optional(),
+	show_points: z.boolean().optional(),
+	calculator: calculatorRuleSchema.optional(),
+	answers_on_sheet: z.boolean().optional(),
+	answer_frames: answerFrameModeSchema.optional(),
+	due_date: dueDateSchema.optional(),
+	shuffle_exercises: z.boolean().optional(),
+	// Anciennes options d'affichage (ADR 0030) : plus lues, mais encore acceptées.
+	// La config d'une fiche existante les renvoie telles quelles ; les retirer du
+	// schéma les effacerait de la base au prochain envoi, et retirer ces données
+	// est une étape à part, avec l'accord de David.
 	correction_detail: z.enum(['concise', 'detailed']).optional(),
 	show_title: z.boolean().optional(),
 	show_date: z.boolean().optional(),
-	show_student_name: z.boolean().optional(),
 	show_class: z.boolean().optional(),
-	show_points: z.boolean().optional(),
 	numbering_style: numberingStyleSchema.optional(),
-	shuffle_exercises: z.boolean().optional(),
+	// Case retirée (D6) mais clé encore acceptée : un client ancien ou un script
+	// l'envoie, et la config d'une fiche existante la renvoie telle quelle — la
+	// retirer du schéma la ferait disparaître de la base au prochain envoi.
 	shuffle_within_sections: z.boolean().optional(),
 	page_layout: z.enum(['A4', 'Letter']).optional(),
 	font_size: z
 		.number()
-		.int('Font size must be an integer')
-		.min(8, 'Font size too small')
-		.max(24, 'Font size too large')
+		.int('La taille de police doit être un nombre entier')
+		.min(8, 'Taille de police trop petite')
+		.max(24, 'Taille de police trop grande')
 		.optional(),
 	margins: z
 		.object({
@@ -127,15 +207,15 @@ export const variantConfigSchema = z
 		mode: variantModeSchema.optional(),
 		n_versions: z
 			.number()
-			.int('Number of versions must be an integer')
-			.positive('Number of versions must be positive')
-			.max(50, 'Maximum 50 versions')
+			.int('Le nombre de versions doit être entier')
+			.positive('Le nombre de versions doit être positif')
+			.max(50, '50 versions au maximum')
 			.optional(),
 		group_size: z
 			.number()
-			.int('Group size must be an integer')
-			.positive('Group size must be positive')
-			.max(100, 'Maximum group size is 100')
+			.int('La taille de groupe doit être un nombre entier')
+			.positive('La taille de groupe doit être positive')
+			.max(100, '100 élèves au maximum par groupe')
 			.optional(),
 		seed_base: z.number().int().optional(),
 		parameter_overrides: z.record(z.string(), z.unknown()).optional()
@@ -151,32 +231,38 @@ export const variantConfigSchema = z
  * Schema for creating a new worksheet (POST /api/worksheets)
  */
 export const createWorksheetSchema = z.object({
-	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
-	description: z.string().trim().max(5000, 'Description too long').optional().nullable(),
+	title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long'),
+	description: z.string().trim().max(5000, 'Description trop longue').optional().nullable(),
 	translations: rowTranslationsSchema.optional().nullable(),
 	type: worksheetTypeSchema.default('worksheet'),
 	config: worksheetConfigSchema,
 	template_id: uuidSchema.optional().nullable(),
+	// Le style de la fiche (lot 3) ; son accès est vérifié en base (trigger)
+	style_id: uuidSchema.optional().nullable(),
 	estimated_duration_minutes: z
 		.number()
-		.int('Duration must be an integer')
-		.positive('Duration must be positive')
-		.max(600, 'Duration too long (max 600 minutes)')
+		.int('La durée doit être un nombre entier')
+		.positive('La durée doit être positive')
+		.max(600, 'Durée trop longue (600 minutes au maximum)')
 		.optional()
 		.nullable(),
 	total_points: z
 		.number()
-		.int('Points must be an integer')
-		.positive('Points must be positive')
-		.max(10000, 'Points too high')
+		.int('Le nombre de points doit être entier')
+		.positive('Le nombre de points doit être positif')
+		.max(10000, 'Nombre de points trop grand')
 		.optional()
 		.nullable(),
 	grades: z
 		.array(z.string().trim().min(1).max(10))
-		.max(20, 'Maximum 20 grade levels')
+		.max(20, '20 niveaux au maximum')
 		.optional()
 		.default([]),
-	tags: z.array(z.string().trim().min(1).max(50)).max(30, 'Maximum 30 tags').optional().default([])
+	tags: z
+		.array(z.string().trim().min(1).max(50))
+		.max(30, '30 mots-clés au maximum')
+		.optional()
+		.default([])
 });
 
 /**
@@ -186,27 +272,29 @@ export const createWorksheetSchema = z.object({
  * This prevents overwriting DB values when a field is not in the request.
  */
 export const updateWorksheetSchema = z.object({
-	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long').optional(),
-	description: z.string().trim().max(5000, 'Description too long').optional().nullable(),
+	title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long').optional(),
+	description: z.string().trim().max(5000, 'Description trop longue').optional().nullable(),
 	type: worksheetTypeSchema.optional(),
 	config: worksheetConfigSchemaForUpdate, // No default - won't be set if not in request
 	template_id: uuidSchema.optional().nullable(),
+	// Le style de la fiche (lot 3) ; son accès est vérifié en base (trigger)
+	style_id: uuidSchema.optional().nullable(),
 	estimated_duration_minutes: z
 		.number()
-		.int('Duration must be an integer')
-		.positive('Duration must be positive')
-		.max(600, 'Duration too long (max 600 minutes)')
+		.int('La durée doit être un nombre entier')
+		.positive('La durée doit être positive')
+		.max(600, 'Durée trop longue (600 minutes au maximum)')
 		.optional()
 		.nullable(),
 	total_points: z
 		.number()
-		.int('Points must be an integer')
-		.positive('Points must be positive')
-		.max(10000, 'Points too high')
+		.int('Le nombre de points doit être entier')
+		.positive('Le nombre de points doit être positif')
+		.max(10000, 'Nombre de points trop grand')
 		.optional()
 		.nullable(),
-	grades: z.array(gradeCodeSchema).max(20, 'Maximum 20 grade levels').optional(), // No default - won't be set if not in request
-	tags: z.array(z.string().trim().min(1).max(50)).max(30, 'Maximum 30 tags').optional(), // No default - won't be set if not in request
+	grades: z.array(gradeCodeSchema).max(20, '20 niveaux au maximum').optional(), // No default - won't be set if not in request
+	tags: z.array(z.string().trim().min(1).max(50)).max(30, '30 mots-clés au maximum').optional(), // No default - won't be set if not in request
 	status: worksheetStatusSchema.optional(),
 	translations: rowTranslationsSchema.optional().nullable()
 });
@@ -217,19 +305,19 @@ export const updateWorksheetSchema = z.object({
 export const listWorksheetsQuerySchema = z.object({
 	page: z.coerce
 		.number()
-		.int('Page must be an integer')
-		.positive('Page must be positive')
-		.max(1000, 'Page too high')
+		.int('La page doit être un nombre entier')
+		.positive('La page doit être positive')
+		.max(1000, 'Numéro de page trop grand')
 		.default(1),
 	limit: z.coerce
 		.number()
-		.int('Limit must be an integer')
-		.positive('Limit must be positive')
-		.max(100, 'Maximum 100 items per page')
+		.int('La limite doit être un nombre entier')
+		.positive('La limite doit être positive')
+		.max(100, '100 éléments au maximum par page')
 		.default(50),
 	status: worksheetStatusSchema.optional(),
 	type: worksheetTypeSchema.optional(),
-	search: z.string().trim().max(200, 'Search query too long').optional()
+	search: z.string().trim().max(200, 'Recherche trop longue').optional()
 });
 
 // ============================================================================
@@ -240,19 +328,19 @@ export const listWorksheetsQuerySchema = z.object({
  * Schema for creating a worksheet section (POST /api/worksheets/[id]/sections)
  */
 export const createWorksheetSectionSchema = z.object({
-	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
-	instructions: z.string().trim().max(5000, 'Instructions too long').optional().nullable(),
+	title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long'),
+	instructions: z.string().trim().max(5000, 'Consignes trop longues').optional().nullable(),
 	translations: rowTranslationsSchema.optional().nullable(),
 	position: z
 		.number()
-		.int('Position must be an integer')
-		.nonnegative('Position must be non-negative')
-		.max(100, 'Position too high'),
+		.int('La position doit être un nombre entier')
+		.nonnegative('La position ne peut pas être négative')
+		.max(100, 'Position trop grande'),
 	points_total: z
 		.number()
-		.int('Points must be an integer')
-		.positive('Points must be positive')
-		.max(10000, 'Points too high')
+		.int('Le nombre de points doit être entier')
+		.positive('Le nombre de points doit être positif')
+		.max(10000, 'Nombre de points trop grand')
 		.optional()
 		.nullable()
 });
@@ -274,27 +362,41 @@ export const createWorksheetExerciseSchema = z.object({
 	section_id: uuidSchema.optional().nullable(),
 	position: z
 		.number()
-		.int('Position must be an integer')
-		.nonnegative('Position must be non-negative')
-		.max(1000, 'Position too high'),
+		.int('La position doit être un nombre entier')
+		.nonnegative('La position ne peut pas être négative')
+		.max(1000, 'Position trop grande'),
 	points: z
 		.number()
-		.int('Points must be an integer')
-		.positive('Points must be positive')
-		.max(1000, 'Points too high')
+		.int('Le nombre de points doit être entier')
+		.positive('Le nombre de points doit être positif')
+		.max(1000, 'Nombre de points trop grand')
 		.optional()
 		.nullable(),
 	variant_mode: variantModeSchema.default('none'),
 	variant_config: variantConfigSchema,
-	custom_instructions: z.string().trim().max(5000, 'Instructions too long').optional().nullable(),
+	custom_instructions: z.string().trim().max(5000, 'Consignes trop longues').optional().nullable(),
 	translations: rowTranslationsSchema.optional().nullable(),
 	is_essential: z.boolean().optional().default(false)
 });
 
 /**
- * Schema for updating a worksheet exercise
+ * Schema for updating a worksheet exercise. Sans valeur par défaut : une mise à
+ * jour n'écrit que ce qu'elle reçoit (avec `.partial()` seul, les défauts de la
+ * création s'appliquaient encore, et une modification des cadres aurait remis
+ * `is_essential` à faux). `.strict()` : une clé inconnue est refusée.
  */
-export const updateWorksheetExerciseSchema = createWorksheetExerciseSchema.partial();
+export const updateWorksheetExerciseSchema = createWorksheetExerciseSchema
+	.extend({
+		variant_mode: variantModeSchema,
+		variant_config: variantConfigSchema.unwrap().unwrap(),
+		is_essential: z.boolean()
+	})
+	.partial()
+	.extend({
+		answer_frame_lines: answerFrameLinesSchema.optional()
+	})
+	// Une clé inconnue (mal orthographiée) : 400, pas un 200 qui n'écrit rien
+	.strict();
 
 /**
  * Schema for reordering exercises (PUT /api/worksheets/[id]/exercises)
@@ -308,8 +410,8 @@ export const reorderExercisesSchema = z.object({
 				section_id: uuidSchema.optional().nullable()
 			})
 		)
-		.min(1, 'At least one exercise required')
-		.max(200, 'Maximum 200 exercises per batch')
+		.min(1, 'Au moins un exercice requis')
+		.max(200, '200 exercices au maximum par envoi')
 });
 
 /**
@@ -323,8 +425,8 @@ export const reorderSectionsSchema = z.object({
 				position: z.number().int().nonnegative().max(100)
 			})
 		)
-		.min(1, 'At least one section required')
-		.max(50, 'Maximum 50 sections per batch')
+		.min(1, 'Au moins une section requise')
+		.max(50, '50 sections au maximum par envoi')
 });
 
 // ============================================================================
@@ -373,15 +475,15 @@ export const studentWorksheetsQuerySchema = z.object({
 	chapter_id: uuidSchema.optional(),
 	page: z.coerce
 		.number()
-		.int('Page must be an integer')
-		.positive('Page must be positive')
-		.max(1000, 'Page too high')
+		.int('La page doit être un nombre entier')
+		.positive('La page doit être positive')
+		.max(1000, 'Numéro de page trop grand')
 		.default(1),
 	limit: z.coerce
 		.number()
-		.int('Limit must be an integer')
-		.positive('Limit must be positive')
-		.max(100, 'Maximum 100 items per page')
+		.int('La limite doit être un nombre entier')
+		.positive('La limite doit être positive')
+		.max(100, '100 éléments au maximum par page')
 		.default(50)
 });
 
@@ -403,8 +505,8 @@ export const studentWorksheetParamSchema = z.object({
 export const addAssignmentStudentsSchema = z.object({
 	student_ids: z
 		.array(uuidSchema)
-		.min(1, 'At least one student required')
-		.max(200, 'Maximum 200 students per request')
+		.min(1, 'Au moins un élève requis')
+		.max(200, '200 élèves au maximum par envoi')
 });
 
 /**
@@ -447,8 +549,8 @@ export const bulkUpdateExerciseCorrectionsSchema = z.object({
 				show_correction: z.boolean()
 			})
 		)
-		.min(1, 'At least one setting required')
-		.max(200, 'Maximum 200 settings per request')
+		.min(1, 'Au moins un réglage requis')
+		.max(200, '200 réglages au maximum par envoi')
 });
 
 // ============================================================================
@@ -603,7 +705,7 @@ export function validateAssignmentParams(params: Record<string, string>) {
 // Helper for Supabase timestamps (accepts both Z and +00:00 formats)
 const timestampSchema = z
 	.string()
-	.refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid timestamp' });
+	.refine((val) => !isNaN(Date.parse(val)), { message: 'Date invalide' });
 
 export const worksheetResponseSchema = z.object({
 	id: z.string().uuid(),
@@ -616,6 +718,8 @@ export const worksheetResponseSchema = z.object({
 	published_at: timestampSchema.nullable(),
 	archived_at: timestampSchema.nullable(),
 	template_id: z.string().uuid().nullable(),
+	// Optionnel : une route qui choisit ses colonnes peut ne pas le lire
+	style_id: z.string().uuid().nullable().optional(),
 	estimated_duration_minutes: z.number().int().nullable(),
 	total_points: z.number().nullable(),
 	grades: z.array(gradeCodeSchema),
@@ -654,6 +758,8 @@ export const worksheetExerciseResponseSchema = z.object({
 	variant_config: z.record(z.string(), z.unknown()),
 	custom_instructions: z.string().nullable(),
 	is_essential: z.boolean(),
+	/** Lignes des cadres ; sans cette clé, le schéma la retire en silence */
+	answer_frame_lines: answerFrameLinesSchema.optional(),
 	created_at: timestampSchema,
 	updated_at: timestampSchema
 });
@@ -674,7 +780,10 @@ export const worksheetExerciseWithDataResponseSchema = worksheetExerciseResponse
 			variations: z.array(z.unknown()).nullable(),
 			// Lettres déclarées comme fonctions : sans cette clé, le schéma la
 			// retire en silence et le PDF imprime `C'(x)` en erreur.
-			generic_functions: z.array(z.string()).nullable().optional()
+			generic_functions: z.array(z.string()).nullable().optional(),
+			// Thème : décide du sens de `AB` dans le PDF (Q-J). Même piège que
+			// ci-dessus : sans la clé, le schéma la retire en silence.
+			topic: z.string().nullable().optional()
 		})
 		.nullable()
 		.optional()
@@ -707,11 +816,14 @@ export const worksheetDetailResponseSchema = z.object({
 	worksheet: worksheetResponseSchema.extend({
 		sections: z.array(worksheetSectionResponseSchema).optional(),
 		exercises: z.array(worksheetExerciseWithDataResponseSchema).optional(),
+		// La fiche d'un style du prof (`loadStyleTemplate`) : son Typst sert au PDF
 		template: z
 			.object({
 				id: z.string().uuid(),
 				name: z.string(),
-				description: z.string().nullable()
+				description: z.string().nullable(),
+				template_content: z.string().optional(),
+				style_id: z.string().uuid().nullable().optional()
 			})
 			.nullable()
 			.optional()
@@ -741,25 +853,22 @@ export const deleteWorksheetResponseSchema = z.object({
  * Placeholder definition schema
  */
 export const templatePlaceholderSchema = z.object({
-	key: z.string().trim().min(1, 'Key is required').max(50, 'Key too long'),
+	key: z.string().trim().min(1, 'Clé requise').max(50, 'Clé trop longue'),
 	type: z.enum(['text', 'date', 'dynamic']),
-	label: z.string().trim().max(100, 'Label too long').optional(),
-	default_value: z.string().trim().max(500, 'Default value too long').optional()
+	label: z.string().trim().max(100, 'Libellé trop long').optional(),
+	default_value: z.string().trim().max(500, 'Valeur par défaut trop longue').optional()
 });
 
 /**
  * Schema for creating a new template (POST /api/worksheets/templates)
  */
 export const createTemplateSchema = z.object({
-	name: z.string().trim().min(1, 'Name is required').max(255, 'Name too long'),
-	description: z.string().trim().max(2000, 'Description too long').optional().nullable(),
-	template_content: z
-		.string()
-		.min(1, 'Template content is required')
-		.max(50000, 'Template too long'),
+	name: z.string().trim().min(1, 'Nom requis').max(255, 'Nom trop long'),
+	description: z.string().trim().max(2000, 'Description trop longue').optional().nullable(),
+	template_content: z.string().min(1, 'Contenu du modèle requis').max(50000, 'Modèle trop long'),
 	placeholders: z
 		.array(templatePlaceholderSchema)
-		.max(50, 'Maximum 50 placeholders')
+		.max(50, '50 champs à remplir au maximum')
 		.optional()
 		.default([])
 });
@@ -775,17 +884,17 @@ export const updateTemplateSchema = createTemplateSchema.partial();
 export const listWorksheetTemplatesQuerySchema = z.object({
 	page: z.coerce
 		.number()
-		.int('Page must be an integer')
-		.positive('Page must be positive')
-		.max(1000, 'Page too high')
+		.int('La page doit être un nombre entier')
+		.positive('La page doit être positive')
+		.max(1000, 'Numéro de page trop grand')
 		.default(1),
 	limit: z.coerce
 		.number()
-		.int('Limit must be an integer')
-		.positive('Limit must be positive')
-		.max(100, 'Maximum 100 items per page')
+		.int('La limite doit être un nombre entier')
+		.positive('La limite doit être positive')
+		.max(100, '100 éléments au maximum par page')
 		.default(50),
-	search: z.string().trim().max(200, 'Search query too long').optional()
+	search: z.string().trim().max(200, 'Recherche trop longue').optional()
 });
 
 /**
@@ -939,11 +1048,11 @@ export const studentWorksheetsListResponseSchema = z.object({
  */
 export const exerciseResourceSchema = z.object({
 	type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
-		message: 'Resource type must be video, pdf, link, geogebra, or image'
+		message: 'Type de ressource invalide (video, pdf, link, geogebra ou image)'
 	}),
-	url: z.string().url('Invalid URL').max(2000, 'URL too long'),
-	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
-	description: z.string().trim().max(500, 'Description too long').optional()
+	url: z.string().url('Adresse invalide').max(2000, 'Adresse trop longue'),
+	title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long'),
+	description: z.string().trim().max(500, 'Description trop longue').optional()
 });
 
 /**
@@ -960,6 +1069,8 @@ export const studentExerciseViewSchema = z.object({
 	statement: z.string(),
 	correction: z.string().nullable(),
 	correction_visible: z.boolean(),
+	/** Réponses seules, sous la même condition que la correction ; sans la clé, retirée en silence */
+	answers: z.string().nullable().optional(),
 	/** Section ID if exercise belongs to a section */
 	section_id: z.string().uuid().nullable(),
 	/** Hints from selected variation (for guided exercises) */
@@ -974,7 +1085,15 @@ export const studentExerciseViewSchema = z.object({
 	 * Lettres déclarées comme fonctions par l'exercice. Sans cette clé, le schéma
 	 * la retire en silence et le PDF imprime `C'(x)` en erreur.
 	 */
-	generic_functions: z.array(z.string()).nullable().optional()
+	generic_functions: z.array(z.string()).nullable().optional(),
+	/**
+	 * Sens de deux majuscules collées (`AB`), résolu par le serveur depuis le thème
+	 * de l'exercice (Q-J). Sans cette clé, le schéma la retire en silence et l'élève
+	 * lit `AB` comme un produit.
+	 */
+	capital_pairs: capitalPairsSchema.optional(),
+	/** Lignes des cadres imprimés ; sans cette clé, le schéma la retire en silence */
+	printed_frame_lines: printedAnswerFramesSchema.optional()
 });
 
 /**
@@ -996,8 +1115,13 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	title: z.string(),
 	/** Langue de la fiche : contenu et habillage du PDF de l'élève */
 	language: contentLocaleSchema.optional(),
-	/** Corrigé imprimé concis ou détaillé (réglage de la fiche, D11) */
-	correction_detail: z.enum(['concise', 'detailed']).optional(),
+	/** Options du type de la fiche (ADR 0030) : sans ces clés, le schéma les retire */
+	show_student_name: z.boolean().optional(),
+	show_points: z.boolean().optional(),
+	calculator: calculatorRuleSchema.optional(),
+	answers_on_sheet: z.boolean().optional(),
+	answer_frames: answerFrameModeSchema.optional(),
+	due_date: dueDateSchema.optional(),
 	description: z.string().nullable(),
 	type: worksheetTypeSchema,
 	instructions: z.string().nullable(),
@@ -1012,9 +1136,19 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	 * proposer.
 	 */
 	read_only: z.boolean(),
+	/** Ordre tiré (« mélanger les exercices ») : sans cette clé, le schéma la retire */
+	shuffled: z.boolean().optional(),
 	exercises: z.array(studentExerciseViewSchema),
 	/** Sections for grouping exercises */
-	sections: z.array(studentSectionViewSchema)
+	sections: z.array(studentSectionViewSchema),
+	/** Le style de la fiche (lot 4b) : sans ces clés, le schéma les retire */
+	style_id: z.string().uuid().nullable().optional(),
+	template_id: z.string().uuid().nullable().optional(),
+	/** La mise en page d'un style de l'auteur de la fiche (D11) : son Typst seul */
+	template: z.object({ template_content: z.string() }).nullable().optional(),
+	/** Cartouche du gabarit (lot 4b) : sans ces clés, le schéma les retire */
+	total_points: z.number().nullable().optional(),
+	estimated_duration_minutes: z.number().int().nullable().optional()
 });
 
 // ============================================================================
@@ -1090,7 +1224,7 @@ export const updateExerciseCorrectionResponseSchema = z.object({
  * Error report status enum
  */
 export const errorReportStatusSchema = z.enum(['pending', 'fixed', 'rejected'], {
-	message: 'Invalid error report status'
+	message: 'Statut de signalement invalide'
 });
 
 /**
@@ -1139,6 +1273,10 @@ const reviewVariationSchema = z.object({
 	label: z.string(),
 	statement_md: z.string(),
 	solution_md: z.string(),
+	// La page renvoie la variation entière : sans ces clés, les réponses et la
+	// traduction seraient retirées en silence, puis effacées à l'enregistrement.
+	answers_md: z.string().trim().max(50000, 'Réponses trop longues').optional(),
+	translations: exerciseTranslationsSchema.optional(),
 	hints: z.array(z.unknown()).optional(),
 	variables: z.array(z.unknown()).optional()
 });
@@ -1146,13 +1284,13 @@ const reviewVariationSchema = z.object({
 export const reviewErrorReportSchema = z
 	.object({
 		status: z.enum(['fixed', 'rejected'], {
-			message: 'Status must be "fixed" or "rejected"'
+			message: 'Le statut doit être « corrigé » ou « rejeté »'
 		}),
 		response: z
 			.string()
 			.trim()
-			.min(1, 'La reponse ne peut pas etre vide')
-			.max(2000, 'La reponse ne peut pas depasser 2000 caracteres')
+			.min(1, 'La réponse ne peut pas être vide')
+			.max(2000, 'La réponse ne peut pas dépasser 2000 caractères')
 			.nullable()
 			.optional()
 			.default(null),
@@ -1162,13 +1300,13 @@ export const reviewErrorReportSchema = z
 		statement_md: z
 			.string()
 			.trim()
-			.min(1, "L'enonce ne peut pas etre vide")
-			.max(50000, "L'enonce ne peut pas depasser 50000 caracteres")
+			.min(1, 'L’énoncé ne peut pas être vide')
+			.max(50000, 'L’énoncé ne peut pas dépasser 50000 caractères')
 			.optional(),
 		solution_md: z
 			.string()
 			.trim()
-			.max(50000, 'La solution ne peut pas depasser 50000 caracteres')
+			.max(50000, 'La correction ne peut pas dépasser 50000 caractères')
 			.nullable()
 			.optional()
 	})
@@ -1203,7 +1341,7 @@ export const reviewErrorReportSchema = z
 			return true;
 		},
 		{
-			message: "Les variations ou l'enonce corrige sont requis pour valider la correction",
+			message: 'Les niveaux de guidage ou l’énoncé corrigé sont requis pour valider la correction',
 			path: ['variations']
 		}
 	);
@@ -1215,15 +1353,15 @@ export const errorReportsQuerySchema = z.object({
 	status: errorReportStatusSchema.optional(),
 	page: z.coerce
 		.number()
-		.int('Page must be an integer')
-		.positive('Page must be positive')
-		.max(1000, 'Page too high')
+		.int('La page doit être un nombre entier')
+		.positive('La page doit être positive')
+		.max(1000, 'Numéro de page trop grand')
 		.default(1),
 	limit: z.coerce
 		.number()
-		.int('Limit must be an integer')
-		.positive('Limit must be positive')
-		.max(100, 'Maximum 100 items per page')
+		.int('La limite doit être un nombre entier')
+		.positive('La limite doit être positive')
+		.max(100, '100 éléments au maximum par page')
 		.default(50)
 });
 
@@ -1254,7 +1392,8 @@ export const studentErrorReportParamSchema = z.object({
 export const studentErrorReportViewSchema = z.object({
 	id: z.string().uuid(),
 	worksheet_exercise_id: z.string().uuid(),
-	exercise_position: z.number().int().nonnegative(),
+	// Numéro dans la copie de l'élève ; null : inconnu (D6)
+	exercise_position: z.number().int().positive().nullable(),
 	description: z.string(),
 	status: errorReportStatusSchema,
 	response: z.string().nullable(),
@@ -1332,6 +1471,9 @@ const exerciseVariationSchema = z.object({
 	label: z.string(),
 	statement_md: z.string(),
 	solution_md: z.string(),
+	// Sans ces clés, le schéma les retire en silence (puis la page les efface)
+	answers_md: z.string().optional(),
+	translations: z.unknown().optional(),
 	hints: z.array(z.unknown()).optional(),
 	variables: z.array(z.unknown()).optional()
 });
@@ -1349,12 +1491,16 @@ export const getErrorReportDetailResponseSchema = z.object({
 		slug: z.string(),
 		variations: z.array(exerciseVariationSchema),
 		shared: z.unknown().nullable(),
-		generic_functions: z.array(z.string()).nullable()
+		generic_functions: z.array(z.string()).nullable(),
+		// Thème : décide du sens de `AB` (Q-J) ; sans la clé, le schéma la retire en silence
+		topic: z.string().nullable().optional()
 	}),
 	context: z.object({
 		worksheet_title: z.string(),
 		student_name: z.string(),
-		exercise_position: z.number().int().nonnegative()
+		exercise_position: z.number().int().nonnegative(),
+		// L'auteur est-il encore destinataire ? null : inconnu (lecture en panne)
+		student_is_recipient: z.boolean().nullable()
 	}),
 	next_pending_report_id: z.string().uuid().nullable()
 });
@@ -1414,7 +1560,7 @@ export function validateStudentErrorReportParams(params: Record<string, string>)
  * 'all' returns all statuses
  */
 export const studentReportsStatusFilterSchema = z.enum(['pending', 'fixed', 'rejected', 'all'], {
-	message: 'Invalid status filter'
+	message: 'Filtre de statut invalide'
 });
 
 /**
@@ -1425,15 +1571,15 @@ export const studentReportsQuerySchema = z.object({
 	assignmentId: uuidSchema.optional(),
 	page: z.coerce
 		.number()
-		.int('Page must be an integer')
-		.positive('Page must be positive')
-		.max(1000, 'Page too high')
+		.int('La page doit être un nombre entier')
+		.positive('La page doit être positive')
+		.max(1000, 'Numéro de page trop grand')
 		.default(1),
 	limit: z.coerce
 		.number()
-		.int('Limit must be an integer')
-		.positive('Limit must be positive')
-		.max(50, 'Maximum 50 items per page')
+		.int('La limite doit être un nombre entier')
+		.positive('La limite doit être positive')
+		.max(50, '50 éléments au maximum par page')
 		.default(10)
 });
 
@@ -1451,7 +1597,7 @@ export const studentReportIdParamSchema = z.object({
 // Helper for Supabase timestamps (accepts both Z and +00:00 formats)
 const studentReportsTimestampSchema = z
 	.string()
-	.refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid timestamp' });
+	.refine((val) => !isNaN(Date.parse(val)), { message: 'Date invalide' });
 
 /**
  * Extended student error report view with display information
@@ -1459,7 +1605,8 @@ const studentReportsTimestampSchema = z
 export const studentErrorReportWithDisplaySchema = z.object({
 	id: z.string().uuid(),
 	worksheet_exercise_id: z.string().uuid(),
-	exercise_position: z.number().int().nonnegative(),
+	// Numéro dans la copie de l'élève ; null : inconnu (D6)
+	exercise_position: z.number().int().positive().nullable(),
 	description: z.string(),
 	status: errorReportStatusSchema,
 	response: z.string().nullable(),
@@ -1509,3 +1656,21 @@ export function validateStudentReportsQuery(params: URLSearchParams) {
 export function validateStudentReportIdParam(params: Record<string, string>) {
 	return studentReportIdParamSchema.safeParse(params);
 }
+
+// ============================================================================
+// TAILLE DU TEXTE DES FICHES (par élève)
+// ============================================================================
+
+/**
+ * PUT /api/worksheets/print-settings : la taille du texte d'un élève. L'élève
+ * omet `studentId` (c'est le sien) ; le prof et l'admin le donnent.
+ */
+export const printSettingsUpdateSchema = z.object({
+	studentId: uuidSchema.optional(),
+	textSize: z.enum(TEXT_SIZES)
+});
+
+/** GET /api/worksheets/print-settings?studentId= */
+export const printSettingsQuerySchema = z.object({
+	studentId: uuidSchema.optional()
+});

@@ -315,3 +315,13 @@ describe('modificateurs de grandeur : ;[unité] et ;hms', () => {
 		});
 	});
 });
+
+// Décision de David (2026-10-11) : `;sci` force la notation scientifique
+describe('modificateur ;sci', () => {
+	it.each([
+		['{{eval:a*b;sci}}', { expression: 'a*b', modifiers: { scientific: true } }],
+		['{{eval:a;sci,+}}', { expression: 'a', modifiers: { scientific: true, addPositive: true } }]
+	])('%s', (token, expected) => {
+		expect(parseEvalExpressionWithModifiers(token)).toEqual(expected);
+	});
+});

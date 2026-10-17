@@ -16,7 +16,7 @@ const upsertSchema = z.object({
 });
 
 const deleteSchema = z.object({
-	id: z.string().uuid('ID invalide')
+	id: z.string().uuid('Identifiant invalide')
 });
 
 // GET — list all demo scripts for the authenticated user
@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user } = await requireAuth(locals);
 
 	const body = await request.json().catch(() => {
-		throw error(400, 'JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	});
 
 	const validation = upsertSchema.safeParse(body);

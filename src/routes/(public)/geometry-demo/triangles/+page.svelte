@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	const centreGraviteDsl = `A = point(-4, -2, couleur="bleu")
@@ -132,9 +133,7 @@ style(de, couleur="cyan", trait="tirets")`;
 
 <div class="container mx-auto max-w-6xl space-y-10 p-4">
 	<div>
-		<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline">
-			&larr; Geometry Demos
-		</a>
+		<BackLink href="/geometry-demo" label="Retour aux démos" />
 		<h1 class="mt-2 text-2xl font-bold">Points remarquables du triangle</h1>
 		<p class="text-muted-foreground">
 			Exploration des proprietes geometriques remarquables d'un triangle. Deplacez les sommets A, B,

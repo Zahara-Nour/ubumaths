@@ -18,11 +18,12 @@ import type {
 	RenderedStep,
 	SchoolLevel
 } from '../common/step-renderer-base';
-import { toLatex } from '../latex-generator';
+import { toLatex, RELATION_MAP } from '../latex-generator';
 import { toCustom } from '../custom-generator';
 import type { MathNode } from '../types';
 import type { EquationStep, EquationOperation, LinearSchoolLevel } from './types';
 import { splitSide } from './linear';
+import { negativeTermMagnitude } from './_helpers';
 
 // =============================================================================
 // Vocabulary (titles + explanations)
@@ -54,12 +55,25 @@ function fmt(node: { type: string } & object): string {
 	return toLatex(node as Parameters<typeof toLatex>[0]).replace(/(\d|\})\s+([a-zA-Z\\])/g, '$1$2');
 }
 
-// Helpers to extract operand-ish strings
-function operandStr(op: EquationOperation): string {
+/**
+ * Une formule LaTeX dans la prose : entre `$…$` (V25). Titres et explications
+ * sont rendus par `InlineMarkdown` (ubumark) : `On divise par $\dfrac{2}{3}$`.
+ */
+function math(latex: string): string {
+	return `$${latex}$`;
+}
+
+/** L'opérande en LaTeX brut, sans délimiteurs */
+function operandLatex(op: EquationOperation): string {
 	if (op.kind === 'add-both-sides' || op.kind === 'subtract-both-sides') return fmt(op.operand);
 	if (op.kind === 'multiply-both-sides' || op.kind === 'divide-both-sides') return fmt(op.operand);
 	if (op.kind === 'read-solution') return fmt(op.value);
 	return '';
+}
+
+/** L'opérande dans la prose, entre `$…$` */
+function operandStr(op: EquationOperation): string {
+	return math(operandLatex(op));
 }
 
 /**
@@ -97,7 +111,7 @@ function flipNote(op: EquationOperation): string {
 		op.flipOperator
 	) {
 		const operand = op.kind === 'simplify-coefficient' ? fmt(op.coefficient) : fmt(op.operand);
-		return ` (changement de sens car ${operand} est négatif)`;
+		return ` (changement de sens car ${math(operand)} est négatif)`;
 	}
 	return '';
 }
@@ -137,7 +151,7 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 		'group-constants': () => 'On regroupe les constantes',
 		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
 		'read-solution': (op) =>
-			`Solution : ${(op as { variable: string }).variable} = ${operandStr(op)}`,
+			`Solution : ${math(`${(op as { variable: string }).variable} = ${operandLatex(op)}`)}`,
 		'inequality-conclude-truth': inequalityConcludeTruthTitle
 	},
 	// Lycée : « aux deux membres » devient implicite, notation S = { … } pour la solution.
@@ -158,7 +172,7 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
 		'group-constants': () => 'On regroupe les constantes',
 		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
-		'read-solution': (op) => `S = { ${operandStr(op)} }`,
+		'read-solution': (op) => math(`S = \\{ ${operandLatex(op)} \\}`),
 		'inequality-conclude-truth': inequalityConcludeTruthTitle
 	},
 	// Supérieur : vocabulaire identique au lycée — la différence est structurelle
@@ -178,7 +192,7 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
 		'group-constants': () => 'On regroupe les constantes',
 		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
-		'read-solution': (op) => `S = { ${operandStr(op)} }`,
+		'read-solution': (op) => math(`S = \\{ ${operandLatex(op)} \\}`),
 		'inequality-conclude-truth': inequalityConcludeTruthTitle
 	}
 };
@@ -213,6 +227,19 @@ function variableOf(step: EquationStep): string {
 }
 
 /**
+ * ⚠️ **`≠` n'a pas de sens à retourner** : diviser ou multiplier par un nombre
+ * non nul le garde. Sans cette branche, `-3x + 1 ≠ 7` tombait dans « $-3$ est
+ * positif, donc l'inéquation est préservée » — faux deux fois.
+ */
+function isNotEqualStep(step: EquationStep): boolean {
+	return step.before.type === 'relation' && step.before.relation === '!=';
+}
+
+function notEqualPreserved(operand: string): string {
+	return `${operand} n'est pas nul, donc la relation ${math('\\neq')} est préservée.`;
+}
+
+/**
  * Explanation for `divide-both-sides` and `multiply-both-sides` adapted to
  * the operator kind (equation vs inequality) and the flip flag.
  *
@@ -223,6 +250,9 @@ function variableOf(step: EquationStep): string {
 function divideExplanation(op: EquationOperation, step: EquationStep): string {
 	if (op.kind !== 'divide-both-sides') return '';
 	const operand = operandStr(op);
+	if (isNotEqualStep(step)) {
+		return `On divise les deux membres par ${operand} pour isoler ${variableOf(step)}. ${notEqualPreserved(operand)}`;
+	}
 	if (isInequalityStep(step)) {
 		if (op.flipOperator) {
 			return `On divise les deux membres par ${operand} pour isoler ${variableOf(step)}. Comme ${operand} est négatif, l'opérateur de l'inéquation est retourné (changement de sens : < devient >, ≤ devient ≥, etc.).`;
@@ -235,6 +265,9 @@ function divideExplanation(op: EquationOperation, step: EquationStep): string {
 function multiplyExplanation(op: EquationOperation, step: EquationStep): string {
 	if (op.kind !== 'multiply-both-sides') return '';
 	const operand = operandStr(op);
+	if (isNotEqualStep(step)) {
+		return `On multiplie les deux membres par ${operand}. ${notEqualPreserved(operand)}`;
+	}
 	if (isInequalityStep(step)) {
 		if (op.flipOperator) {
 			return `On multiplie les deux membres par ${operand}. Comme ${operand} est négatif, l'opérateur de l'inéquation est retourné (changement de sens).`;
@@ -252,7 +285,7 @@ const EXPLANATIONS: Record<
 		// L'inconnue de la résolution (`.résoudre 3 = 2t ; t` isole t, pas x)
 		'identify-equation': (op, step) =>
 			isInequalityStep(step)
-				? `Une inéquation du premier degré s'écrit ax + b ⊻ 0 (avec ⊻ ∈ {<, >, ≤, ≥, ≠}). On isole ${unknownOf(op)} étape par étape, en respectant la règle clé : multiplier ou diviser par un nombre négatif retourne l'opérateur.`
+				? `Une inéquation du premier degré s'écrit ax + b ⊻ 0 (avec ⊻ ∈ $\\{<, >, \\leq, \\geq, \\neq\\}$). On isole ${unknownOf(op)} étape par étape, en respectant la règle clé : multiplier ou diviser par un nombre négatif retourne l'opérateur.`
 				: `Une équation du premier degré s'écrit ax + b = 0. On va isoler ${unknownOf(op)} étape par étape.`,
 		'add-both-sides': (op, step) =>
 			`On ajoute ${operandStr(op)} aux deux membres : ${preservedNoun(step)} est préservée car on ajoute la même quantité de chaque côté.`,
@@ -268,7 +301,7 @@ const EXPLANATIONS: Record<
 	lycee: {
 		'identify-equation': (_op, step) =>
 			isInequalityStep(step)
-				? `Forme canonique ax + b ⊻ 0 avec a ≠ 0 et ⊻ ∈ {<, >, ≤, ≥, ≠}. La règle clé : si on divise (ou multiplie) par un négatif, on retourne l'opérateur.`
+				? `Forme canonique ax + b ⊻ 0 avec a ≠ 0 et ⊻ ∈ $\\{<, >, \\leq, \\geq, \\neq\\}$. La règle clé : si on divise (ou multiplie) par un négatif, on retourne l'opérateur.`
 				: 'Forme canonique ax + b = 0 avec a ≠ 0.',
 		'add-both-sides': (op, step) =>
 			isInequalityStep(step)
@@ -280,7 +313,7 @@ const EXPLANATIONS: Record<
 		'multiply-both-sides': multiplyExplanation,
 		'reduce-to-canonical': (_op, step) =>
 			`Réduction à la forme ax ${isInequalityStep(step) ? '⊻' : '='} b par transformations équivalentes successives.`,
-		'read-solution': () => 'Solution unique S = { −b/a }.',
+		'read-solution': () => 'Solution unique $S = \\left\\{ -\\dfrac{b}{a} \\right\\}$.',
 		'inequality-conclude-truth': inequalityConcludeTruthExplanation
 	},
 	superieur: {
@@ -294,7 +327,7 @@ const EXPLANATIONS: Record<
 		'multiply-both-sides': multiplyExplanation,
 		'reduce-to-canonical': (_op, step) =>
 			isInequalityStep(step) ? 'Forme canonique : ax + b ⊻ 0.' : 'Forme canonique : ax + b = 0.',
-		'read-solution': () => 'S = { −b·a⁻¹ }.',
+		'read-solution': () => '$S = \\{ -b a^{-1} \\}$.',
 		'inequality-conclude-truth': inequalityConcludeTruthExplanation
 	}
 };
@@ -308,9 +341,10 @@ const EXPLANATIONS: Record<
  * subSteps so the dual-rendering Phase 1 `RenderedStep.subSteps` field
  * is populated end-to-end.
  */
-export class LinearEquationRenderer
-	implements StepRenderer<EquationStep, PedagogicalRenderOptions>
-{
+export class LinearEquationRenderer implements StepRenderer<
+	EquationStep,
+	PedagogicalRenderOptions
+> {
 	render(step: EquationStep, options: PedagogicalRenderOptions): RenderedStep {
 		const title = this.resolveTitle(step, options.schoolLevel);
 		const explanation =
@@ -406,32 +440,6 @@ function formatExpressionLatex(step: EquationStep): string {
  * for info-only steps (no transformation to display). Exposed for the demo
  * which prints each line on its own terminal row.
  */
-/**
- * Map a `RelationNode.relation` string to its LaTeX equivalent for use inside
- * an aligned block (where `>=`/`<=`/`!=` are not valid LaTeX tokens).
- *
- * Scope: only the 5 operators that the linear inequality pipeline emits
- * (`<`, `>`, `<=`, `>=`, `!=`), plus `=` for the equation pipeline. The
- * extended `RelationType` (`≡`, `≢`, `≈`, `⟹`, …) is not produced by either
- * pipeline; the `default` arm passes such tokens through unchanged.
- */
-function relToLatex(rel: string): string {
-	switch (rel) {
-		case '<=':
-			return '\\leq';
-		case '>=':
-			return '\\geq';
-		case '!=':
-			return '\\neq';
-		case '<':
-		case '>':
-		case '=':
-			return rel;
-		default:
-			return rel;
-	}
-}
-
 export function formatTransformationLines(step: EquationStep): readonly string[] | null {
 	const op = step.operation;
 	// `relBefore` is used on the upper line of the aligned block ("operation
@@ -441,8 +449,10 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 	// (before line, original operator) on the upper line and `x > -3`
 	// (after line, flipped operator) on the lower line. For all
 	// non-flip cases (equations, positive divisor), they are equal.
-	const relBefore = step.before.type === 'relation' ? relToLatex(step.before.relation) : '=';
-	const relAfter = step.after.type === 'relation' ? relToLatex(step.after.relation) : '=';
+	// ⚠️ `RELATION_MAP`, celui de `toLatex` : `\leqslant`/`\geqslant` comme les
+	// lignes simples (l'ancien `relToLatex` écrivait `\leq`/`\geq`).
+	const relBefore = step.before.type === 'relation' ? RELATION_MAP[step.before.relation] : '=';
+	const relAfter = step.after.type === 'relation' ? RELATION_MAP[step.after.relation] : '=';
 	const bL = step.before.type === 'relation' ? fmt(step.before.left) : fmt(step.before);
 	const bR = step.before.type === 'relation' ? fmt(step.before.right) : '';
 	const aL = step.after.type === 'relation' ? fmt(step.after.left) : fmt(step.after);
@@ -551,19 +561,12 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 
 /**
  * Format an operand for display in a colored `+` / `-` addition. Detects
- * negative operands (number literals or `opposite(...)` AST) and renders them
+ * negative operands (`negativeTermMagnitude` : `-5`, `-2x`, `-\dfrac{1}{2}x`…) and renders them
  * as `\textcolor{blue}{- |X|}` instead of the ugly `\textcolor{blue}{+ -X}`.
  */
 function formatColoredAddend(operand: MathNode): string {
-	if (operand.type === 'opposite') {
-		return `\\textcolor{blue}{- ${fmt(operand.operand)}}`;
-	}
-	if (operand.type === 'number') {
-		const numericValue = parseFloat(operand.value);
-		if (numericValue < 0) {
-			return `\\textcolor{blue}{- ${Math.abs(numericValue)}}`;
-		}
-	}
+	const magnitude = negativeTermMagnitude(operand);
+	if (magnitude !== null) return `\\textcolor{blue}{- ${fmt(magnitude)}}`;
 	return `\\textcolor{blue}{+ ${fmt(operand)}}`;
 }
 
@@ -671,14 +674,7 @@ export function formatTransformationCustom(step: EquationStep): string | null {
  * of `@blue{+ -X}` when the operand is negative.
  */
 function customColoredAddend(operand: MathNode): string {
-	if (operand.type === 'opposite') {
-		return `@blue{- ${toCustom(operand.operand)}}`;
-	}
-	if (operand.type === 'number') {
-		const numericValue = parseFloat(operand.value);
-		if (numericValue < 0) {
-			return `@blue{- ${Math.abs(numericValue)}}`;
-		}
-	}
+	const magnitude = negativeTermMagnitude(operand);
+	if (magnitude !== null) return `@blue{- ${toCustom(magnitude)}}`;
 	return `@blue{+ ${toCustom(operand)}}`;
 }

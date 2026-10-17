@@ -19,7 +19,7 @@ describe('solveSteps — cas nominaux', () => {
 		expect(solved).not.toBeNull();
 		expect(solved!.steps.length).toBe(4);
 		expect(solved!.steps[0].title).toBe('Équation du premier degré');
-		expect(solved!.steps[3].title).toBe('Solution : x = 3');
+		expect(solved!.steps[3].title).toBe('Solution : $x = 3$');
 	});
 
 	it('N1 bis : chaque étape porte son explication (verbosité détaillée)', () => {

@@ -13,6 +13,7 @@
 	@module components/question-inputs/NumberLineInput
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 	import {

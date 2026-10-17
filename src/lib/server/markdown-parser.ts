@@ -1,6 +1,9 @@
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import { slugify } from '$lib/utils/string';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/markdown-parser');
 
 // Configure marked
 marked.setOptions({
@@ -17,7 +20,7 @@ renderer.code = function ({ text, lang }: { text: string; lang?: string }) {
 			const highlighted = hljs.highlight(text, { language: lang }).value;
 			return `<pre><code class="hljs language-${lang}">${highlighted}</code></pre>`;
 		} catch (err) {
-			console.error('Highlight error:', err);
+			logger.error('Highlight error:', err);
 		}
 	}
 	const autoHighlighted = hljs.highlightAuto(text).value;

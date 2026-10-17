@@ -30,8 +30,9 @@ export interface TidiedDerivation {
 /**
  * Le même arbre, avec un `×` explicite entre deux nombres : `3 \cdot 3x^2`
  * s'écrivait `3 3 x^2`, lu « 33x² » dans l'étape « On simplifie » (revue).
+ * Partagé avec l'étape « On simplifie » des primitives.
  */
-function withExplicitNumberProducts(node: MathNode): MathNode {
+export function withExplicitNumberProducts(node: MathNode): MathNode {
 	const startsWithNumber = (n: MathNode): boolean =>
 		n.type === 'number' ||
 		(n.type === 'multiplication' && startsWithNumber(n.left)) ||

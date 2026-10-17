@@ -25,6 +25,7 @@
 	import { goto } from '$app/navigation';
 	import { z } from 'zod';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import VariationEditor from '$lib/components/exercises/VariationEditor.svelte';
@@ -32,8 +33,11 @@
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Check, X, Loader2, AlertTriangle } from '@lucide/svelte';
+	import { Check, X, Loader2, AlertTriangle, Eye, Pencil } from '@lucide/svelte';
+	import { assignmentPreviewHref } from '$lib/navigation/return-links';
 	import type { ExerciseVariation } from '$lib/exercises/types';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 
 	// Types
 	interface ReportData {
@@ -59,12 +63,15 @@
 		variations: ExerciseVariation[];
 		shared: unknown;
 		generic_functions: string[] | null;
+		topic?: string | null;
 	}
 
 	interface ContextData {
 		worksheet_title: string;
 		student_name: string;
 		exercise_position: number;
+		/** Encore destinataire de l'affectation ? null : inconnu */
+		student_is_recipient: boolean | null;
 	}
 
 	// Props
@@ -77,8 +84,24 @@
 	// Cast for type safety
 	const report = initialData.report as ReportData;
 	const exercise = initialData.exercise as ExerciseData;
+	// Sens de `AB` (longueur ou produit) : le thème de l'exercice décide (Q-J)
+	provideCapitalPairs(() => exerciseCapitalPairs(exercise.topic));
 	const context = initialData.context as ContextData;
 	const nextPendingReportId = initialData.nextPendingReportId as string | null;
+
+	// Numéro de l'exercice dans LA COPIE de l'élève (D6), servi par l'API ;
+	// 0 : inconnu (fiche illisible) — un tiret plutôt qu'un numéro faux.
+	const exerciseNumber = context.exercise_position > 0 ? String(context.exercise_position) : '—';
+	const studentFirstName = report.student_first_name ?? context.student_name;
+	// La copie de l'élève : aperçu « vue élève » présélectionné, ancré sur l'exercice signalé
+	// (l'aperçu revient ici : `?depuis=signalement`)
+	const studentCopyHref = assignmentPreviewHref(initialData.worksheetId, initialData.assignmentId, {
+		studentId: report.student_id,
+		reportId: report.id,
+		worksheetExerciseId: report.worksheet_exercise_id
+	});
+	// L'exercice d'origine, dans son éditeur
+	const exerciseEditorHref = `/dashboard/teacher/contenu/exercices/${exercise.id}`;
 
 	// State - deep copy variations for editing
 	let variations = $state<ExerciseVariation[]>(JSON.parse(JSON.stringify(exercise.variations)));
@@ -284,20 +307,41 @@
 </script>
 
 <svelte:head>
-	<title>Signalement - {lore.learning.exercise} {context.exercise_position + 1} - Chiphre</title>
+	<title>Signalement - {lore.learning.exercise} {exerciseNumber} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl py-6">
 	<!-- Header -->
-	<div class="mb-6 flex items-start gap-4">
-		<Button variant="ghost" size="icon" onclick={navigateToReportsList} class="mt-1">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-6">
+		<BackLink
+			href={`/dashboard/teacher/contenu/worksheets/${data.worksheetId}/assignments/${data.assignmentId}/reports`}
+			label="Retour aux signalements"
+		/>
 		<div>
 			<h1 class="text-3xl font-bold">Signalement</h1>
 			<p class="mt-1 text-muted-foreground">
 				{context.worksheet_title}
 			</p>
+			<div class="mt-3 flex flex-wrap gap-2">
+				{#if context.student_is_recipient === true}
+					<Button variant="outline" size="sm" href={studentCopyHref} class="gap-2">
+						<Eye class="h-4 w-4" />
+						Voir la copie de {studentFirstName}
+					</Button>
+				{:else}
+					<!-- L'aperçu ne montrerait pas SA copie : pas de lien, et on dit pourquoi -->
+					<span class="inline-flex items-center gap-2 text-sm text-muted-foreground">
+						<Eye class="h-4 w-4" />
+						{context.student_is_recipient === false
+							? `Copie de ${studentFirstName} indisponible : n’est plus dans la classe`
+							: `Copie de ${studentFirstName} indisponible pour le moment`}
+					</span>
+				{/if}
+				<Button variant="outline" size="sm" href={exerciseEditorHref} class="gap-2">
+					<Pencil class="h-4 w-4" />
+					Corriger l’exercice
+				</Button>
+			</div>
 		</div>
 	</div>
 
@@ -315,7 +359,7 @@
 				</span>
 				<span>
 					<span class="font-medium text-foreground">{lore.learning.exercise} :</span>
-					{context.exercise_position + 1}
+					{exerciseNumber}
 				</span>
 				{#if report.variation_index !== null}
 					<span>

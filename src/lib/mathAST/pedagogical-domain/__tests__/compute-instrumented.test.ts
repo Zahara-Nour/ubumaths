@@ -49,7 +49,8 @@ describe('compute.ts instrumentation — sqrt_constraint', () => {
 		computeDomain(expr, 'x', { showSteps: true, recorder });
 		const steps = recorder.getSteps();
 		expect(steps[0].reasoning).toContain('définie');
-		expect(steps[0].reasoning).toContain('≥ 0');
+		// Formules entre `$…$` depuis V25 (prose rendue par InlineMarkdown)
+		expect(steps[0].reasoning).toContain('$x - 2 \\geq 0$');
 	});
 });
 
@@ -95,12 +96,24 @@ describe('compute.ts instrumentation — division_constraint', () => {
 		expect(steps[0].expression).toMatch(/x.*-.*2|x - 2/);
 	});
 
-	it('does NOT emit division_constraint for x/(x²+1) (no real zeros)', () => {
+	// Dénominateur sans zéro réel : une étape qui le justifie (phase 0 du
+	// 2026-10-13, Q6), d'ensemble ℝ
+	it('emits a justified division_constraint for x/(x²+1) (no real zeros)', () => {
 		const expr = parseLatex('\\dfrac{x}{x^2 + 1}');
 		const recorder = createDomainStepRecorder();
 		computeDomain(expr, 'x', { showSteps: true, recorder });
 		const steps = recorder.getSteps();
-		expect(steps).toHaveLength(0);
+		expect(steps).toHaveLength(1);
+		expect(steps[0].rule).toBe('division_constraint');
+		expect(steps[0].intermediateDomain?.kind).toBe('universal');
+		expect(steps[0].reasoning).toContain('somme d’un carré');
+	});
+
+	it('does NOT emit division_constraint for x/(x²+x+1) (no real zeros, no simple proof)', () => {
+		const expr = parseLatex('\\dfrac{x}{x^2 + x + 1}');
+		const recorder = createDomainStepRecorder();
+		computeDomain(expr, 'x', { showSteps: true, recorder });
+		expect(recorder.getSteps()).toHaveLength(0);
 	});
 });
 

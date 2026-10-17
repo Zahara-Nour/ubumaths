@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/admin/analytics/+server');
 
 /**
  * Query schema for marketplace analytics
@@ -80,7 +83,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
 			// affiche « aucune activité » : un constat, pas une absence de donnée.
 			if (classStudentsError) {
-				console.error('Périmètre d’élèves illisible :', classStudentsError);
+				logger.error('Périmètre d’élèves illisible :', classStudentsError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 			studentIds = classStudents?.map((m: { student_id: string }) => m.student_id) || [];
@@ -94,7 +97,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
 			// affiche « aucune activité » : un constat, pas une absence de donnée.
 			if (classMembersError) {
-				console.error('Périmètre d’élèves illisible :', classMembersError);
+				logger.error('Périmètre d’élèves illisible :', classMembersError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 			studentIds = classMembers?.map((m: { student_id: string }) => m.student_id) || [];
@@ -263,7 +266,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (activitesError) {
-			console.error('Enrichissement illisible :', activitesError);
+			logger.error('Enrichissement illisible :', activitesError);
 		}
 
 		const modelByInstance = new Map<string, string>();
@@ -281,7 +284,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (modelesError) {
-			console.error('Enrichissement illisible :', modelesError);
+			logger.error('Enrichissement illisible :', modelesError);
 		}
 
 		const nameByModel = new Map((modeles ?? []).map((m) => [m.id, m.name]));
@@ -337,7 +340,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.in('listing_id', listings?.map((l) => l.id) || []);
 
 	if (acceptedProposalsError) {
-		console.error('Lecture impossible :', acceptedProposalsError);
+		logger.error('Lecture impossible :', acceptedProposalsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

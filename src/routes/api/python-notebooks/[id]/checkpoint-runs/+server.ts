@@ -20,6 +20,9 @@ import { upsertCheckpointRunSchema } from '$lib/server/validation/notebook-check
 import { validateUuidParam } from '$lib/server/validation/params';
 import type { CheckpointRun, CheckpointRunStatus } from '$lib/types/database-helpers';
 import { rpcNullable } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/[id]/checkpoint-runs/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -43,14 +46,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	let body: unknown;
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requête invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = upsertCheckpointRunSchema.safeParse(body);
@@ -58,7 +61,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation échouée: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { cell_id, status, error_message } = validation.data;
@@ -84,14 +87,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	if (dbError) {
 		if (dbError.code === '42501') {
-			throw error(403, 'Accès refusé à ce notebook');
+			throw error(403, 'Accès refusé à ce carnet');
 		}
-		console.error('Failed to upsert checkpoint run:', dbError);
-		throw error(500, 'Erreur lors de la sauvegarde du checkpoint');
+		logger.error('Failed to upsert checkpoint run:', dbError);
+		throw error(500, 'Impossible d’enregistrer le résultat du checkpoint');
 	}
 
 	if (!run) {
-		throw error(500, 'Erreur inattendue lors de la sauvegarde');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 
 	return json({ run: run as CheckpointRunResponse });
@@ -112,7 +115,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	const { data: runs, error: dbError } = await supabase
@@ -122,8 +125,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('ran_at', { ascending: false });
 
 	if (dbError) {
-		console.error('Failed to fetch checkpoint runs:', dbError);
-		throw error(500, 'Erreur lors de la récupération des checkpoints');
+		logger.error('Failed to fetch checkpoint runs:', dbError);
+		throw error(500, 'Impossible de charger les résultats des checkpoints');
 	}
 
 	return json({ runs: (runs ?? []) as CheckpointRunResponse[] });

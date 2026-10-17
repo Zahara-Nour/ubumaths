@@ -30,17 +30,13 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Code2, Eye, Plus, AlertCircle, FileText, RefreshCw, Loader2 } from '@lucide/svelte';
 	import type { TemplatePlaceholder } from '$lib/types/worksheets';
-	import {
-		COMMON_PLACEHOLDERS,
-		SAMPLE_PREVIEW_DATA,
-		renderTemplate
-	} from '$lib/worksheets/default-templates';
+	import { COMMON_PLACEHOLDERS, SAMPLE_PREVIEW_DATA, renderTemplate } from '$lib/typst/templates';
 	import {
 		getTypstCompiler,
 		type TypstCompiler,
 		getCompilerError,
 		resetCompilerState
-	} from '$lib/worksheets/typst-compiler';
+	} from '$lib/typst/compiler';
 
 	// Props
 	interface Props {

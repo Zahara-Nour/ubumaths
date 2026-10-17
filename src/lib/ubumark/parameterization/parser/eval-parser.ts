@@ -6,7 +6,8 @@
  * Supports modifiers: {{eval:expression;modifiers}}
  *
  * Modifiers:
- * - d/decimal: écriture décimale (sinon résultat exact : fraction, racine)
+ * - d/decimal: écriture décimale développée (sinon résultat exact : fraction, racine)
+ * - sci: notation scientifique (`{{eval:320000;sci}}` → 3.2 \times 10^{5})
  * - +/positive: Add + sign for positive results
  * - ()/bracket: Wrap negative results in parentheses
  * - '/derivative: Take derivative before evaluating
@@ -30,7 +31,8 @@ const MODIFIER_ALIASES: Record<string, FlagModifier> = {
 	bracket: 'bracketNegative',
 	"'": 'derivative',
 	derivative: 'derivative',
-	hms: 'hms'
+	hms: 'hms',
+	sci: 'scientific'
 };
 
 /** Modificateurs booléens (tous sauf l'unité imposée `;[unité]`) */

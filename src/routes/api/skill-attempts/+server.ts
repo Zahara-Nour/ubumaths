@@ -37,6 +37,9 @@ import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { attemptSourceForTemplate } from '$lib/server/course-card-attempts';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/skill-attempts/+server');
 
 // ============================================================================
 // POST /api/skill-attempts
@@ -79,7 +82,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.maybeSingle();
 
 	if (templateError) {
-		console.error('[skill-attempts] Failed to verify template:', templateError);
+		logger.error('[skill-attempts] Failed to verify template:', templateError);
 		throw error(500, 'Failed to verify template');
 	}
 
@@ -123,7 +126,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			await applyFsrsReview(locals.supabase, new FSRS(), user.id, 'template', template_id, grade);
 		}
 	} catch (fsrsErr) {
-		console.error('[skill-attempts] FSRS update failed (fail-loud):', {
+		logger.error('[skill-attempts] FSRS update failed (fail-loud):', {
 			userId: user.id,
 			templateId: template_id,
 			grade,
@@ -152,12 +155,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.select('id');
 
 	if (insertError) {
-		console.error('[skill-attempts] INSERT failed:', insertError);
+		logger.error('[skill-attempts] INSERT failed:', insertError);
 		return json({ error: 'insert_failed', detail: insertError.message }, { status: 500 });
 	}
 
 	if (!insertedRows || insertedRows.length !== 1) {
-		console.error('[skill-attempts] INSERT sans ligne écrite', {
+		logger.error('[skill-attempts] INSERT sans ligne écrite', {
 			userId: user.id,
 			templateId: template_id,
 			written: insertedRows?.length ?? 0
@@ -172,7 +175,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		try {
 			await ensureProgrammeDeckCard(locals.supabase, user.id, template_id);
 		} catch (progErr) {
-			console.error('[skill-attempts] Programme deck add failed:', progErr);
+			logger.error('[skill-attempts] Programme deck add failed:', progErr);
 			// Non bloquant : le skill_attempts est déjà enregistré.
 		}
 	}

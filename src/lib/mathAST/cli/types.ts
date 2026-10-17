@@ -34,6 +34,8 @@ export type ErrorCode =
 	| 'UNKNOWN_UNIT'
 	| 'DIMENSION_MISMATCH'
 	| 'MATH_ERROR'
+	/** Grandeurs qui ne se combinent pas, conversion impossible : message en français, destiné à l'élève */
+	| 'QUANTITY_ERROR'
 	/** Ce qui suit le « ; » n'est pas une variable : message en français, destiné à l'élève */
 	| 'AMBIGUOUS_VARIABLE'
 	/** Mots-clés d'une commande mal écrits (`de … à`, `en x=3`, `ordre`…) : message en français, destiné à l'élève */
@@ -51,7 +53,9 @@ export type ErrorCode =
 	/** Inéquation lue mais pas résolue (signe inconnu) : message en français, destiné à l'élève */
 	| 'INEQUALITY_UNSOLVED'
 	/** Équation lue mais pas résolue (aucun solveur, ou un paramètre) : message en français, destiné à l'élève */
-	| 'EQUATION_UNSOLVED';
+	| 'EQUATION_UNSOLVED'
+	/** `.eval` : valeur interdite (dénominateur nul, racine d'un négatif…) — message en français, destiné à l'élève */
+	| 'VALUE_FORBIDDEN';
 
 /**
  * Structured error for command execution
@@ -118,6 +122,12 @@ export interface CommandResult {
 
 	/** Initial display mode (true = show decimal first, false = show exact first) */
 	readonly showDecimalInitially?: boolean;
+
+	/**
+	 * Les solutions en valeurs approchées (`.solve` : `S \approx \{…\}`), pour
+	 * le bouton ≈ de l'atelier (`solutionsApproximationLatex`).
+	 */
+	readonly approximateLatex?: string;
 }
 
 // =============================================================================

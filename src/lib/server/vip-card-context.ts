@@ -11,6 +11,9 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/vip-card-context');
 
 type ContextValidator = (supabase: SupabaseClient<Database>, studentId: string) => Promise<boolean>;
 
@@ -34,7 +37,7 @@ const contextValidators: Record<string, ContextValidator> = {
 			.eq('status', 'in_progress')
 			.limit(1);
 		if (error) {
-			console.error('[vip-card-context] minesweeper query failed:', error);
+			logger.error('[vip-card-context] minesweeper query failed:', error);
 			return false;
 		}
 		return (data?.length ?? 0) > 0;

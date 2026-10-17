@@ -18,6 +18,11 @@ import {
 	MAX_FILE_SIZE_BYTES,
 	ALLOWED_MIME_TYPE
 } from '$lib/server/validation/parody-evaluations';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/presques-evaluations/+page.server'
+);
 
 const STORAGE_BUCKET = 'parody-evaluations';
 
@@ -135,7 +140,7 @@ export const actions: Actions = {
 			});
 
 		if (uploadError) {
-			console.error('[parody-evaluations:upload] Storage error:', uploadError);
+			logger.error('[parody-evaluations:upload] Storage error:', uploadError);
 			return fail(500, { action: 'upload', error: "Erreur lors de l'upload du fichier" });
 		}
 
@@ -157,7 +162,7 @@ export const actions: Actions = {
 		if (insertError || !inserted) {
 			// Rollback: remove the orphan storage object
 			await locals.supabase.storage.from(STORAGE_BUCKET).remove([storagePath]);
-			console.error('[parody-evaluations:upload] DB insert error:', insertError);
+			logger.error('[parody-evaluations:upload] DB insert error:', insertError);
 			return fail(500, { action: 'upload', error: "Erreur lors de l'enregistrement" });
 		}
 
@@ -206,13 +211,13 @@ export const actions: Actions = {
 			.single();
 
 		if (fetchError || !existing) {
-			return fail(404, { action: 'update', error: 'Évaluation introuvable' });
+			return fail(404, { action: 'update', error: 'Presque évaluation introuvable' });
 		}
 
 		if (existing.created_by !== user.id) {
 			return fail(403, {
 				action: 'update',
-				error: 'Vous ne pouvez modifier que vos propres uploads'
+				error: 'Modification réservée à l’auteur de l’upload'
 			});
 		}
 
@@ -226,7 +231,7 @@ export const actions: Actions = {
 			.eq('id', input.id);
 
 		if (updateError) {
-			console.error('[parody-evaluations:update] DB error:', updateError);
+			logger.error('[parody-evaluations:update] DB error:', updateError);
 			return fail(500, { action: 'update', error: 'Erreur lors de la modification' });
 		}
 
@@ -256,13 +261,13 @@ export const actions: Actions = {
 			.single();
 
 		if (fetchError || !existing) {
-			return fail(404, { action: 'delete', error: 'Évaluation introuvable' });
+			return fail(404, { action: 'delete', error: 'Presque évaluation introuvable' });
 		}
 
 		if (existing.created_by !== user.id) {
 			return fail(403, {
 				action: 'delete',
-				error: 'Vous ne pouvez supprimer que vos propres uploads'
+				error: 'Suppression réservée à l’auteur de l’upload'
 			});
 		}
 
@@ -272,7 +277,7 @@ export const actions: Actions = {
 			.eq('id', validation.data.id);
 
 		if (deleteDbError) {
-			console.error('[parody-evaluations:delete] DB error:', deleteDbError);
+			logger.error('[parody-evaluations:delete] DB error:', deleteDbError);
 			return fail(500, { action: 'delete', error: 'Erreur lors de la suppression' });
 		}
 
@@ -282,7 +287,7 @@ export const actions: Actions = {
 			.remove([existing.storage_path]);
 
 		if (storageError) {
-			console.warn('[parody-evaluations:delete] Storage cleanup warning:', storageError);
+			logger.warn('[parody-evaluations:delete] Storage cleanup warning:', storageError);
 		}
 
 		return { action: 'delete', success: true };

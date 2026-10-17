@@ -135,7 +135,7 @@ Exemple de matrice :
 			});
 
 			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
+				throw new Error(`Erreur HTTP ${response.status}`);
 			}
 
 			const contentType = response.headers.get('content-type');

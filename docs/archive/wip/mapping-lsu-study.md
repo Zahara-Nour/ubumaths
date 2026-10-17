@@ -243,14 +243,7 @@ Le LSU n'attend que des niveaux de socle, pas le détail des capacités. La fami
 
 ```ts
 type SocleCode =
-	| 'CPD_FRA'
-	| 'CPD_ETR'
-	| 'CPD_SCI'
-	| 'CPD_ART'
-	| 'MET_APP'
-	| 'FRM_CIT'
-	| 'SYS_NAT'
-	| 'REP_MND';
+	'CPD_FRA' | 'CPD_ETR' | 'CPD_SCI' | 'CPD_ART' | 'MET_APP' | 'FRM_CIT' | 'SYS_NAT' | 'REP_MND';
 type Positionnement = 0 | 1 | 2 | 3 | 4;
 
 // niveau UbuMaths → positionnement LSU

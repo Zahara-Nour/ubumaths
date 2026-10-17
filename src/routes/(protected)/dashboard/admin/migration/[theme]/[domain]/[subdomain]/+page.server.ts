@@ -23,6 +23,11 @@ import type {
 	ValidationRule
 } from '$lib/questions/types';
 import type { DisplayOptions } from '$lib/ubumark';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/admin/migration/[theme]/[domain]/[subdomain]/+page.server'
+);
 
 /**
  * Get the latest export folder from data/migration-output/
@@ -36,7 +41,7 @@ async function getLatestExportFolder(): Promise<string> {
 		.reverse();
 
 	if (exportFolders.length === 0) {
-		throw error(404, 'No export folder found in data/migration-output/');
+		throw error(404, 'Aucun dossier d’export dans data/migration-output/');
 	}
 
 	return join(baseDir, exportFolders[0]);
@@ -205,7 +210,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 				.in('old_question_index', globalIndices);
 
 			if (trackingDataError) {
-				console.error('Lecture impossible :', trackingDataError);
+				logger.error('Lecture impossible :', trackingDataError);
 				throw error(500, 'Impossible de charger les données');
 			}
 
@@ -238,7 +243,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 				.in('migration_tracking.old_question_index', globalIndices);
 
 			if (editsDataError) {
-				console.error('Lecture impossible :', editsDataError);
+				logger.error('Lecture impossible :', editsDataError);
 				throw error(500, 'Impossible de charger les données');
 			}
 
@@ -270,7 +275,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
 			throw error(404, `Données non trouvées pour ${theme}/${domain}/${subdomain}`);
 		}
-		console.error('Error loading subdomain data:', err);
+		logger.error('Error loading subdomain data:', err);
 		throw error(500, 'Erreur lors du chargement des données de migration');
 	}
 };

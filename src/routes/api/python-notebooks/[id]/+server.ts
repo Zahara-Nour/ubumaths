@@ -11,6 +11,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { updateNotebookSchema } from '$lib/server/validation/notebooks';
 import { uuidSchema } from '$lib/server/validation/common';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/[id]/+server');
 
 // =============================================================================
 // HANDLERS
@@ -28,7 +31,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Validate notebook ID
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'ID de notebook invalide');
+		throw error(400, 'Identifiant de carnet invalide');
 	}
 
 	const notebookId = idValidation.data;
@@ -57,14 +60,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (queryError) {
 		if (queryError.code === 'PGRST116') {
-			throw error(404, 'Notebook introuvable');
+			throw error(404, 'Carnet introuvable');
 		}
-		console.error('Error fetching python notebook:', queryError);
-		throw error(500, 'Erreur lors de la recuperation du notebook Python');
+		logger.error('Error fetching python notebook:', queryError);
+		throw error(500, 'Impossible de charger le carnet');
 	}
 
 	if (!notebook) {
-		throw error(404, 'Notebook introuvable');
+		throw error(404, 'Carnet introuvable');
 	}
 
 	// Check access permissions
@@ -84,15 +87,15 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (assignmentError && assignmentError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', assignmentError);
-			throw error(500, 'Impossible de vérifier votre accès');
+			logger.error('Contrôle d’accès impossible :', assignmentError);
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		isAssigned = !!assignment;
 	}
 
 	if (!isOwner && !isPublicAndTeacher && !isAssigned) {
-		throw error(403, 'Acces interdit a ce notebook');
+		throw error(403, 'Accès refusé à ce carnet');
 	}
 
 	return json({ notebook });
@@ -109,7 +112,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	// Validate notebook ID
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'ID de notebook invalide');
+		throw error(400, 'Identifiant de carnet invalide');
 	}
 
 	const notebookId = idValidation.data;
@@ -119,7 +122,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = updateNotebookSchema.safeParse(body);
@@ -128,7 +131,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const updateData = validation.data;
@@ -142,14 +145,14 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	if (fetchError || !existing) {
 		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Notebook introuvable');
+			throw error(404, 'Carnet introuvable');
 		}
-		console.error('Error fetching notebook for update:', fetchError);
-		throw error(500, 'Erreur lors de la verification du notebook');
+		logger.error('Error fetching notebook for update:', fetchError);
+		throw error(500, 'Impossible de vérifier le carnet');
 	}
 
 	if (existing.author_id !== user.id) {
-		throw error(403, "Seul l'auteur peut modifier ce notebook");
+		throw error(403, 'Seul l’auteur peut modifier ce carnet');
 	}
 
 	// Update notebook
@@ -170,8 +173,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (updateError) {
-		console.error('Error updating python notebook:', updateError);
-		throw error(500, 'Erreur lors de la mise a jour du notebook Python');
+		logger.error('Error updating python notebook:', updateError);
+		throw error(500, 'Impossible de modifier le carnet');
 	}
 
 	return json({ notebook: data });
@@ -188,7 +191,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// Validate notebook ID
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'ID de notebook invalide');
+		throw error(400, 'Identifiant de carnet invalide');
 	}
 
 	const notebookId = idValidation.data;
@@ -202,14 +205,14 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (fetchError || !existing) {
 		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Notebook introuvable');
+			throw error(404, 'Carnet introuvable');
 		}
-		console.error('Error fetching notebook for deletion:', fetchError);
-		throw error(500, 'Erreur lors de la verification du notebook');
+		logger.error('Error fetching notebook for deletion:', fetchError);
+		throw error(500, 'Impossible de vérifier le carnet');
 	}
 
 	if (existing.author_id !== user.id) {
-		throw error(403, "Seul l'auteur peut supprimer ce notebook");
+		throw error(403, 'Seul l’auteur peut supprimer ce carnet');
 	}
 
 	// Delete notebook (cascade will delete assignments)
@@ -219,9 +222,9 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('id', notebookId);
 
 	if (deleteError) {
-		console.error('Error deleting python notebook:', deleteError);
-		throw error(500, 'Erreur lors de la suppression du notebook Python');
+		logger.error('Error deleting python notebook:', deleteError);
+		throw error(500, 'Impossible de supprimer le carnet');
 	}
 
-	return json({ success: true, message: 'Notebook supprime avec succes' });
+	return json({ success: true, message: 'Carnet supprimé' });
 };

@@ -5,15 +5,16 @@
 -->
 
 <script lang="ts">
-	import { goto, invalidateAll } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import * as Alert from '$lib/components/ui/alert';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Users, Trophy, RefreshCw, XCircle, AlertTriangle } from '@lucide/svelte';
+	import { Users, Trophy, RefreshCw, XCircle, AlertTriangle } from '@lucide/svelte';
 	import { DIFFICULTY_LABELS, type TournamentStatus } from '$lib/types/minesweeper';
 	import type { PageData } from './$types';
 
@@ -35,10 +36,6 @@
 			);
 		}
 	});
-
-	async function handleBack() {
-		await goto('/dashboard/teacher/minesweeper/tournaments');
-	}
 
 	async function handleRefresh() {
 		isRefreshing = true;
@@ -189,11 +186,9 @@
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
 	<!-- Header -->
+	<BackLink href="/dashboard/teacher/minesweeper/tournaments" label="Retour aux tournois" />
 	<div class="mb-8 flex items-start justify-between">
 		<div class="flex items-start gap-4">
-			<Button variant="ghost" size="icon" onclick={handleBack}>
-				<ArrowLeft class="h-5 w-5" />
-			</Button>
 			<div>
 				<div class="flex items-center gap-3">
 					<h1 class="text-3xl font-bold tracking-tight">{data.tournament.name}</h1>

@@ -3,7 +3,7 @@
 Décisions Q160-Q165 (`outils-statistiques-v2-progress.md`). Spec validée par David le 2026-10-04.
 
 - Bloc ```loi, `X ~ G(p)`:`seuil:` aux huit formes de la binomiale (`<`, `⩽`, `>`, `⩾`dans
-l'événement ;`⩽`, `⩾` dans la comparaison), exact (fractions, BigInt sans réduction),
+  l'événement ;`⩽`, `⩾` dans la comparaison), exact (fractions, BigInt sans réduction),
   arrondi une fois ; même ligne que la binomiale (« plus petit / grand k tel que … : k = …
   (P(X … k) ≈ …) ») ; k cherché de 0 à 1 000, sinon « aucun k de 0 à 1 000 ne vérifie … ».
 - Valeurs (Python) pour G(0,2) : P(X > k) ⩽ 0,05 → k = 14 (≈ 0,044) ; P(X ⩽ k) ⩾ 0,95 → 14 ;

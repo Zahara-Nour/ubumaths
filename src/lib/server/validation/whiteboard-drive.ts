@@ -32,23 +32,29 @@ export const saveToDriveRequestSchema = z.object({
 	/** File name (without extension) */
 	fileName: z
 		.string()
-		.min(1, 'File name is required')
-		.max(255, 'File name cannot exceed 255 characters')
+		.min(1, 'Nom de fichier requis')
+		.max(255, 'Nom de fichier trop long (255 caractères au maximum)')
 		.transform((val) => val.trim()),
 	/** Existing file ID to update (optional - creates new if not provided) */
-	fileId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid Google Drive file ID').optional(),
+	fileId: z
+		.string()
+		.regex(DRIVE_FILE_ID_REGEX, 'Identifiant de fichier Google Drive invalide')
+		.optional(),
 	/** Target folder ID (optional - uses app root folder if not provided) */
-	folderId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid folder ID').optional(),
+	folderId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Identifiant de dossier invalide').optional(),
 	/** Optional thumbnail data URL (WebP/JPEG/PNG) */
 	thumbnail: z
 		.string()
-		.regex(DATA_URL_IMAGE_REGEX, 'Invalid thumbnail data URL format')
-		.max(MAX_THUMBNAIL_BASE64_LENGTH, 'Thumbnail too large (max 100KB)')
+		.regex(DATA_URL_IMAGE_REGEX, 'Format de miniature invalide')
+		.max(MAX_THUMBNAIL_BASE64_LENGTH, 'Miniature trop lourde (100 Ko au maximum)')
 		.optional(),
 	/** Mark this save as an autosave (hidden from gallery) */
 	isAutosave: z.boolean().optional(),
 	/** Original file ID this autosave is for (required if isAutosave is true) */
-	originalFileId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid original file ID').optional()
+	originalFileId: z
+		.string()
+		.regex(DRIVE_FILE_ID_REGEX, 'Identifiant du fichier d’origine invalide')
+		.optional()
 });
 
 export type SaveToDriveRequest = z.infer<typeof saveToDriveRequestSchema>;
@@ -62,7 +68,7 @@ export type SaveToDriveRequest = z.infer<typeof saveToDriveRequestSchema>;
  * GET /api/whiteboard/drive/load/[fileId]
  */
 export const loadFromDriveParamsSchema = z.object({
-	fileId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid Google Drive file ID')
+	fileId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Identifiant de fichier Google Drive invalide')
 });
 
 export type LoadFromDriveParams = z.infer<typeof loadFromDriveParamsSchema>;
@@ -111,7 +117,7 @@ export interface LoadFromDriveResponse {
  */
 export const listFilesQuerySchema = z.object({
 	/** Optional folder ID to list files from (defaults to app root) */
-	folderId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid folder ID').optional()
+	folderId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Identifiant de dossier invalide').optional()
 });
 
 export type ListFilesQuery = z.infer<typeof listFilesQuerySchema>;
@@ -128,11 +134,11 @@ export const createFolderRequestSchema = z.object({
 	/** Folder name */
 	name: z
 		.string()
-		.min(1, 'Folder name is required')
-		.max(255, 'Folder name cannot exceed 255 characters')
+		.min(1, 'Nom de dossier requis')
+		.max(255, 'Nom de dossier trop long (255 caractères au maximum)')
 		.transform((val) => val.trim()),
 	/** Parent folder ID */
-	parentFolderId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Invalid parent folder ID')
+	parentFolderId: z.string().regex(DRIVE_FILE_ID_REGEX, 'Identifiant du dossier parent invalide')
 });
 
 export type CreateFolderRequest = z.infer<typeof createFolderRequestSchema>;

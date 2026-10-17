@@ -24,5 +24,6 @@ conservée sur origin, réactivable.
 ## Conséquences
 
 - Même modèle que l'ADR 0001 : le verdict Python est un outil pour l'élève, pas une note.
-- **Ouvert** : la migration `20260827120000` (table `python_submission_server_verdicts`) est en
-  production mais inutilisée — la laisser inerte ou la retirer reste à trancher.
+- **Tranché le 2026-10-13** : la table `python_submission_server_verdicts` (migration
+  `20260827120000`), vide et inutilisée, est supprimée avec `run_flag_stale_python_rechecks`
+  (migration `20261016103000`, en production).

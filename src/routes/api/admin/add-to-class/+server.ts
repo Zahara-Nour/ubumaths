@@ -2,6 +2,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { addToClassSchema } from '$lib/server/validation/admin';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/add-to-class/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	// ✅ SECURITY: admin elevation OR real admin login. Privileged ops run via the
@@ -30,7 +33,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (existingError && existingError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', existingError);
+		logger.error('Lecture impossible :', existingError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -48,11 +51,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.eq('id', existing.id);
 
 		if (reactivationError) {
-			console.error('Réactivation impossible :', reactivationError);
+			logger.error('Réactivation impossible :', reactivationError);
 			return json({ error: reactivationError.message }, { status: 400 });
 		}
 	} else if (existing) {
-		return json({ error: 'User is already in this class' }, { status: 400 });
+		return json({ error: 'Cet utilisateur est déjà inscrit dans cette classe' }, { status: 400 });
 	}
 
 	// Add to class_members table
@@ -61,7 +64,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		: await supabase.from('class_members').insert({ student_id: userId, class_id: classId });
 
 	if (insertError) {
-		console.error('Insert error:', insertError);
+		logger.error('Insert error:', insertError);
 		return json({ error: insertError.message }, { status: 400 });
 	}
 
@@ -73,7 +76,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('Fetch error:', fetchError);
+		logger.error('Fetch error:', fetchError);
 		return json({ error: fetchError.message }, { status: 400 });
 	}
 

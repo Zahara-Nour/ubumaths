@@ -14,6 +14,7 @@
 import type { EquationStep } from '$lib/mathAST/pedagogical-solve';
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import { solve } from '$lib/mathAST/solve';
+import { isSolverFailure } from '$lib/mathAST/solve/types';
 import { solveInequality } from '$lib/mathAST/solve/inequality';
 import { containsValue } from '$lib/mathAST/domain/algebra';
 import { compile } from '$lib/mathAST/eval/compile';
@@ -78,7 +79,7 @@ function sameSet(a: readonly number[], b: readonly number[]): boolean {
 // =============================================================================
 
 /** Les solutions que la dernière étape annonce, ou `null` si elle ne conclut pas. */
-function concludedSolutions(last: EquationStep): readonly MathNode[] | null {
+export function concludedSolutions(last: EquationStep): readonly MathNode[] | null {
 	const op = last.operation;
 	if (op?.kind === 'read-solution') return [op.value];
 	if (op?.kind === 'read-solutions') return op.solutions;
@@ -90,6 +91,9 @@ function concludedSolutions(last: EquationStep): readonly MathNode[] | null {
 function engineSolutions(equation: RelationNode, variable: string): readonly number[] | null {
 	try {
 		const result = solve(equation, { variable });
+		// ⚠️ Un échec du moteur porte le statut `no-solution` : sans ce test,
+		// « type non supporté » confirmait une conclusion `S = ∅` (x|x| = 4)
+		if (isSolverFailure(result)) return null;
 		if (result.status === 'no-solution' || result.status === 'no-real-solution') return [];
 		if (result.status !== 'unique' && result.status !== 'multiple') return null;
 		return result.solutions.map((s) => s.approximate ?? evalAt(s.value, variable, 0));
@@ -98,7 +102,21 @@ function engineSolutions(equation: RelationNode, variable: string): readonly num
 	}
 }
 
+/** Le moteur dit-il, lui aussi, que tout réel est solution ? */
+function engineSaysAllReals(equation: RelationNode, variable: string): boolean {
+	try {
+		return solve(equation, { variable }).status === 'infinite';
+	} catch {
+		return false;
+	}
+}
+
 function equationAgrees(equation: RelationNode, variable: string, last: EquationStep): boolean {
+	// `S = ℝ` (|x − 1| = |1 − x|) : vérifié sur une grille ET par le moteur
+	if (last.operation?.kind === 'read-all-reals') {
+		const holdsEverywhere = samplePoints([]).every((x) => holdsAt(equation, variable, x) !== false);
+		return holdsEverywhere && engineSaysAllReals(equation, variable);
+	}
 	const concluded = concludedSolutions(last);
 	if (concluded === null) return false;
 	const values = concluded.map((node) => evalAt(node, variable, 0));

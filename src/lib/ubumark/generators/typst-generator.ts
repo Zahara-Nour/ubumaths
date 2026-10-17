@@ -128,8 +128,8 @@ const DEFAULT_OPTIONS: ResolvedTypstTranspilerOptions = {
 	includeSetup: true,
 	title: '',
 	author: ''
-	// `genericFunctions` n'a pas de défaut ici : son absence veut dire « défauts
-	// du parseur », comme à l'écran.
+	// `genericFunctions` et `capitalPairs` n'ont pas de défaut ici : leur absence veut
+	// dire « défauts du parseur » (pour `AB` : le produit), comme à l'écran.
 };
 
 // ============================================================================
@@ -283,8 +283,48 @@ function generateSetup(options: ResolvedTypstTranspilerOptions): string {
  * @returns Typst body content
  */
 function generateBody(ast: DocumentNode, options: ResolvedTypstTranspilerOptions): string {
-	return ast.children.map((node) => generateBlock(node, options)).join('\n\n');
+	const { afterQuestion, keepEndWithNext } = options;
+	if (keepEndWithNext) {
+		// Ce qui suit le document (cadre de réponse) emmène son dernier bloc
+		const last = ast.children.length - 1;
+		return ast.children
+			.map((node, index) =>
+				index === last ? stickyBlock(node, options) : generateBlock(node, options)
+			)
+			.join('\n\n');
+	}
+	if (!afterQuestion) return ast.children.map((node) => generateBlock(node, options)).join('\n\n');
+
+	// Questions : éléments de premier niveau des listes numérotées de premier
+	// niveau, numérotées d'une liste à l'autre (cadres de réponse, ADR 0030)
+	let questionIndex = 0;
+	return ast.children
+		.map((node) => {
+			if (node.type !== 'list' || !node.ordered) return generateBlock(node, options);
+			const first = questionIndex;
+			questionIndex += node.items.length;
+			return generateList(node, options, 0, (index) => afterQuestion(first + index));
+		})
+		.join('\n\n');
 }
+
+/**
+ * Un bloc qui reste collé au suivant (`sticky`) : s'il ne tient pas avant une
+ * fin de colonne, le suivant (cadre de réponse) ne part pas seul. Une liste :
+ * seul son dernier élément est collé, le reste peut se couper.
+ */
+function stickyBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions): string {
+	if (node.type === 'list') return generateList(node, options, 0, undefined, true);
+	return keepWithNext(generateBlock(node, options));
+}
+
+/** Typst collé à ce qui le suit */
+function keepWithNext(typst: string, spacing = ''): string {
+	return `#block(width: 100%, sticky: true${spacing})[\n${typst}\n]`;
+}
+
+/** Espacement d'un élément de liste (celui de `ubu-item`), pour un élément enveloppé */
+const ITEM_SPACING = ', above: 1.5em, below: 1.5em';
 
 /**
  * Generate a single block node
@@ -400,7 +440,12 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 			// Fractions de premier niveau en taille normale
 			const typstMath =
 				node.syntax === 'custom'
-					? customInlineMathToTypst(node.expression, options.genericFunctions, options.language)
+					? customInlineMathToTypst(
+							node.expression,
+							options.genericFunctions,
+							options.language,
+							options.capitalPairs
+						)
 					: convertLatexToTypstMath(
 							markDisplayFractions(toLocaleDecimal(node.expression, options.language))
 						);
@@ -549,12 +594,15 @@ function widestLabel(pattern: string, first: number, last: number): string {
  * @param node - List node
  * @param options - Generator options
  * @param enumerateDepth - Current enumerate depth (only increments for ordered lists)
+ * @param afterItem - Posé à la fin de chaque élément (questions, `afterQuestion`)
  * @returns Typst list
  */
 function generateList(
 	node: ListNode,
 	options: ResolvedTypstTranspilerOptions,
-	enumerateDepth: number = 0
+	enumerateDepth: number = 0,
+	afterItem?: (index: number) => string,
+	stickyLast = false
 ): string {
 	// Calculate new depth: only ordered lists increment enumerate depth
 	const newDepth = node.ordered ? enumerateDepth + 1 : enumerateDepth;
@@ -568,11 +616,23 @@ function generateList(
 		: '•';
 	const items = node.items.map((item: ListItemNode, index: number) => {
 		const num = `${node.ordered ? `numbering("${pattern}", ${startNumber + index})` : '[•]'}, w: "${widest}"`;
-		const content = generateListItemContent(item, options, newDepth);
+		// Fin de l'élément, après ses sous-éléments (cadre de réponse d'une question)
+		const after = afterItem?.(index) ?? '';
+		// Le cadre n'est jamais séparé de ce qui le précède : élément d'un seul bloc,
+		// insécable avec son cadre ; sinon son dernier bloc reste collé au cadre
+		const unbreakable = after !== '' && item.children.length <= 1;
+		const itemContent = generateListItemContent(
+			item,
+			options,
+			newDepth,
+			after !== '' && !unbreakable
+		);
+		const content = after ? `${itemContent}\n${after}` : itemContent;
 		// Item qui commence par un bloc (formule centrée, cercle…) : numéro à côté du bloc
 		const helper =
 			item.children[0] && item.children[0].type !== 'paragraph' ? 'ubu-item-bloc' : 'ubu-item';
-		return { helper, num, content };
+		const sticky = stickyLast && index === node.items.length - 1;
+		return { helper, num, content, unbreakable, sticky };
 	});
 
 	// `:colonnes N` : grille lue en lignes (a) b) / c) d)). `columns()` de Typst ne se
@@ -580,10 +640,17 @@ function generateList(
 	if (node.columns && node.columns > 1) {
 		const cells = items.map(({ helper, num, content }) => `${helper}(${num})[${content}]`);
 		const fractions = Array(node.columns).fill('1fr').join(', ');
-		return `#grid(columns: (${fractions}), column-gutter: 1em, row-gutter: 1.5em,\n  ${cells.join(',\n  ')}\n)`;
+		const grid = `#grid(columns: (${fractions}), column-gutter: 1em, row-gutter: 1.5em,\n  ${cells.join(',\n  ')}\n)`;
+		return stickyLast ? keepWithNext(grid) : grid;
 	}
 
-	return items.map(({ helper, num, content }) => `#${helper}(${num})[${content}]`).join('\n');
+	return items
+		.map(({ helper, num, content, unbreakable, sticky }) => {
+			const typst = `#${helper}(${num})[${content}]`;
+			if (unbreakable) return `#block(width: 100%, breakable: false${ITEM_SPACING})[${typst}]`;
+			return sticky ? keepWithNext(typst, ITEM_SPACING) : typst;
+		})
+		.join('\n');
 }
 
 /**
@@ -592,16 +659,19 @@ function generateList(
 function generateListItemContent(
 	item: ListItemNode,
 	options: ResolvedTypstTranspilerOptions,
-	currentDepth: number
+	currentDepth: number,
+	stickyLast = false
 ): string {
 	const blocks: string[] = [];
 
 	for (let i = 0; i < item.children.length; i++) {
 		const child = item.children[i];
+		// Dernier bloc collé à ce qui suit l'élément (cadre de réponse)
+		const sticky = stickyLast && i === item.children.length - 1;
 
 		if (child.type === 'list') {
 			// Nested list - generate with current depth
-			const listContent = generateList(child, options, currentDepth);
+			const listContent = generateList(child, options, currentDepth, undefined, sticky);
 			// Add blank line before nested list if there's content before it
 			if (blocks.length > 0) {
 				blocks.push('\n' + listContent);
@@ -610,7 +680,8 @@ function generateListItemContent(
 			}
 		} else {
 			// Regular block (paragraph, math, etc.)
-			const blockContent = generateBlock(child as BlockNode, options);
+			const generated = generateBlock(child as BlockNode, options);
+			const blockContent = sticky ? keepWithNext(generated) : generated;
 
 			// Add blank line between paragraphs to preserve line breaks
 			if (i > 0 && item.children[i - 1].type !== 'list') {
@@ -650,12 +721,12 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 		for (let col = 0; col < node.header.length; col++) {
 			const cells: string[] = [
 				// First cell: header in bold (may contain math like $z_i$)
-				`[*${processTableCellContent(node.header[col].content, options.language, options.genericFunctions)}*]`
+				`[*${processTableCellContent(node.header[col].content, options.language, options.genericFunctions, options.capitalPairs)}*]`
 			];
 			// Data cells from each row (may contain math)
 			for (const row of node.rows) {
 				cells.push(
-					`[${processTableCellContent(row[col]?.content || '', options.language, options.genericFunctions)}]`
+					`[${processTableCellContent(row[col]?.content || '', options.language, options.genericFunctions, options.capitalPairs)}]`
 				);
 			}
 			rows.push(cells.join(', '));
@@ -691,7 +762,8 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 				const content = processTableCellContent(
 					cell.content,
 					options.language,
-					options.genericFunctions
+					options.genericFunctions,
+					options.capitalPairs
 				);
 				if (index === 0) {
 					// Corner cell: bold only if has content
@@ -709,7 +781,8 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 						const content = processTableCellContent(
 							cell.content,
 							options.language,
-							options.genericFunctions
+							options.genericFunctions,
+							options.capitalPairs
 						);
 						return cellIndex === 0 ? `[*${content}*]` : `[${content}]`;
 					})
@@ -747,7 +820,7 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 	const headerCells = node.header
 		.map(
 			(cell: { content: string }) =>
-				`[*${processTableCellContent(cell.content, options.language, options.genericFunctions)}*]`
+				`[*${processTableCellContent(cell.content, options.language, options.genericFunctions, options.capitalPairs)}*]`
 		)
 		.join(', ');
 
@@ -757,7 +830,7 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 			row
 				.map(
 					(cell: { content: string }) =>
-						`[${processTableCellContent(cell.content, options.language, options.genericFunctions)}]`
+						`[${processTableCellContent(cell.content, options.language, options.genericFunctions, options.capitalPairs)}]`
 				)
 				.join(', ')
 		)
@@ -817,13 +890,23 @@ const ALIGNMENT_SYMBOL_PATTERN =
 function generateMathBlock(node: MathBlockNode, options: ResolvedTypstTranspilerOptions): string {
 	const latex =
 		node.syntax === 'custom'
-			? expressionToRawLatex(node.expression, 'custom', options.genericFunctions, options.language)
+			? expressionToRawLatex(
+					node.expression,
+					'custom',
+					options.genericFunctions,
+					options.language,
+					options.capitalPairs
+				)
 			: toLocaleDecimal(node.expression, options.language);
 
-	// Check if this is an aligned equation (contains \begin{align} etc.)
-	const alignMatch = latex.match(/\\begin\s*\{(align|aligned)\*?\}([\s\S]*?)\\end\s*\{\1\*?\}/);
+	// Formule réduite à un environnement d'alignement → grille. Seulement si elle ne
+	// contient RIEN d'autre : ce qui entoure l'environnement (`S = \left\{ … \right.` d'un
+	// système) était jeté avec la grille, et l'accolade disparaissait du PDF.
+	const alignMatch = latex.match(
+		/^\s*\\begin\s*\{(align|aligned)\*?\}([\s\S]*?)\\end\s*\{\1\*?\}\s*$/
+	);
 
-	if (alignMatch) {
+	if (alignMatch && !/\\begin\s*\{align/.test(alignMatch[2])) {
 		return generateAlignedEquation(alignMatch[2]);
 	}
 
@@ -855,7 +938,7 @@ function generateAlignedEquation(content: string): string {
 	// These environments contain \\ that should NOT be treated as row separators
 	const nestedEnvs: string[] = [];
 	const protectedContent = content.replace(
-		/\\begin\s*\{(cases|matrix|pmatrix|bmatrix|vmatrix|Vmatrix)\}[\s\S]*?\\end\s*\{\1\}/g,
+		/\\begin\s*\{(cases|matrix|pmatrix|bmatrix|vmatrix|Vmatrix|array)\}[\s\S]*?\\end\s*\{\1\}/g,
 		(match) => {
 			nestedEnvs.push(match);
 			return `__NESTED_ENV_${nestedEnvs.length - 1}__`;
@@ -1293,9 +1376,16 @@ function findMatchingBrace(str: string, openPos: number): number {
  * @param str - Input string
  * @param latexCmd - LaTeX command without backslash (e.g., "mathcal")
  * @param typstFunc - Typst function name (e.g., "cal")
+ * @param options.decimalCommas - virgules nues de premier niveau = virgules décimales
+ *   (`\sqrt{1,44}` : `sqrt(1,44)` recevait deux arguments)
  * @returns String with command converted
  */
-function convertLatexOneArgCommand(str: string, latexCmd: string, typstFunc: string): string {
+function convertLatexOneArgCommand(
+	str: string,
+	latexCmd: string,
+	typstFunc: string,
+	options?: { decimalCommas?: boolean }
+): string {
 	let result = str;
 
 	// First, handle \command{...} syntax (with braces)
@@ -1315,7 +1405,8 @@ function convertLatexOneArgCommand(str: string, latexCmd: string, typstFunc: str
 			const closeIndex = findMatchingBrace(result, openBraceIndex);
 			if (closeIndex === -1) continue;
 
-			const content = result.slice(openBraceIndex + 1, closeIndex);
+			const rawContent = result.slice(openBraceIndex + 1, closeIndex);
+			const content = options?.decimalCommas ? protectTopLevelCommas(rawContent) : rawContent;
 
 			// Replace the whole \command{...} with func(...). Collé derrière un nom
 			// (`\lambda\vec{u}`, `k\vec{u}`), on sépare : sinon `lambdaarrow`, variable
@@ -1462,17 +1553,97 @@ function convertTextcolorCommand(str: string): string {
 }
 
 /**
+ * `\boxed{…}` → `#box(stroke: 0.5pt, inset: 2pt)[$…$]`, formule encadrée. Comme pour
+ * `\textcolor`, le contenu reste en place (converti par la suite de la conversion) entre
+ * deux marqueurs de crochets, restitués en fin de conversion.
+ */
+function convertBoxedCommand(str: string): string {
+	let result = str;
+	const pattern = /\\boxed\s*\{/;
+	let match;
+	while ((match = pattern.exec(result)) !== null) {
+		const openBrace = match.index + match[0].length - 1;
+		const closeBrace = findMatchingBrace(result, openBrace);
+		if (closeBrace === -1) break;
+		const content = result.slice(openBrace + 1, closeBrace);
+		const before = /[A-Za-z0-9]/.test(result[match.index - 1] ?? '') ? ' ' : '';
+		const replacement = `${before}#box(stroke: 0.5pt, inset: 2pt)<<<CONTENT_L>>>$${content}$<<<CONTENT_R>>>`;
+		result = result.slice(0, match.index) + replacement + result.slice(closeBrace + 1);
+	}
+	return result;
+}
+
+/**
+ * `\underset{a}{b}` → `limits(b)_{a}`, `\overset{a}{b}` → `limits(b)^{a}` : les accolades
+ * de l'indice sont converties plus loin avec les autres. Sortaient en « "underset" ».
+ */
+function convertStackedCommand(str: string, latexCmd: string, operator: '_' | '^'): string {
+	let result = str;
+	const pattern = new RegExp(`\\\\${latexCmd}(?![a-zA-Z])`);
+	let match;
+	while ((match = pattern.exec(result)) !== null) {
+		const script = readLatexArgument(result, match.index + match[0].length);
+		const base = script && readLatexArgument(result, script.end);
+		if (!script || !base) break;
+		const before = /[A-Za-z0-9]/.test(result[match.index - 1] ?? '') ? ' ' : '';
+		const replacement = `${before}limits(${base.content})${operator}{${script.content}}`;
+		result = result.slice(0, match.index) + replacement + result.slice(base.end);
+	}
+	return result;
+}
+
+/**
+ * Texte d'un `\text{…}` (sans ses formules `$…$`) → chaîne Typst entre guillemets.
+ *
+ * Seules les commandes de TEXTE sont converties : espaces (`\,` `\;` `\:` `\ ` `~`
+ * `\quad`) → espace, `\%` `\{` `\}` `\$` `\&` `\_` `\#` → le caractère, `{,}` → virgule,
+ * accolades de groupe effacées, `\ldots` → points de suspension ; une commande inconnue
+ * garde son nom. `"` et `\` sont échappés pour la chaîne Typst.
+ */
+function latexTextToTypstString(text: string): string {
+	const result = text
+		// Virgule décimale `\{,\}` ou `{,}` avant les accolades échappées
+		.replace(/\\\{,\\\}|\{,\}/g, ',')
+		// Accolades échappées : mises de côté le temps d'effacer les accolades de groupe
+		.replace(/\\\{/g, '\u0001')
+		.replace(/\\\}/g, '\u0002')
+		.replace(/[{}]/g, '')
+		.replaceAll('\u0001', '{')
+		.replaceAll('\u0002', '}')
+		// Saut de ligne `\\` avant les espaces (`\\ ` n'est pas une espace de contrôle)
+		.replace(/\\\\/g, ' ')
+		.replace(/\\(?:q?quad(?![a-zA-Z])|[,;: ])\s*/g, ' ')
+		.replace(/\\!/g, '')
+		.replace(/~/g, ' ')
+		.replace(/\\([%$&_#])/g, '$1')
+		.replace(/\\(?:ldots|dots)(?![a-zA-Z])\s*/g, '…')
+		.replace(/\\([a-zA-Z]+)\s*/g, '$1');
+	return `"${result.replace(/[\\"]/g, '\\$&')}"`;
+}
+
+/**
  * Convert LaTeX \text{...} commands to Typst, handling nested math expressions.
  *
  * In LaTeX, \text{car $x-1<0$} contains text "car " and math "$x-1<0$".
  * In Typst math mode, this becomes: "car " x - 1 < 0
  *
- * @param str - Input string containing \text{...} commands
+ * Le texte devient une chaîne Typst mise À L'ABRI derrière un marqueur `<<<TEXTn>>>`
+ * (rangée dans `texts`), restituée en fin de conversion : aucune règle mathématique ne
+ * doit la toucher (`\,` → « thin », `[` → « bracket.l », `"` → « prime.double »).
+ * Les formules `$…$` imbriquées restent en place, converties avec le reste.
+ *
+ * @param str - Input string containing \text commands
+ * @param texts - Chaînes Typst mises de côté (indice = numéro du marqueur)
  * @returns String with \text commands converted
  */
-function convertTextCommand(str: string): string {
+function convertTextCommand(str: string, texts: string[]): string {
+	const protectText = (text: string): string => {
+		texts.push(latexTextToTypstString(text.replaceAll('\u0003', '\\$')));
+		return `<<<TEXT${texts.length - 1}>>>`;
+	};
 	let result = str;
-	const pattern = /\\text\s*\{/g;
+	// `\textrm{…}` : texte droit, comme `\text` (sortait « "textrm" »)
+	const pattern = /\\text(?:rm)?\s*\{/g;
 	let match;
 
 	let changed = true;
@@ -1488,7 +1659,8 @@ function convertTextCommand(str: string): string {
 			const closeIndex = findMatchingBrace(result, openBraceIndex);
 			if (closeIndex === -1) continue;
 
-			const content = result.slice(openBraceIndex + 1, closeIndex);
+			// `\$` (dollar affiché) n'ouvre pas de formule : mis de côté pendant le découpage
+			const content = result.slice(openBraceIndex + 1, closeIndex).replace(/\\\$/g, '\u0003');
 
 			// Parse content for $...$ math segments
 			const parts: string[] = [];
@@ -1499,29 +1671,23 @@ function convertTextCommand(str: string): string {
 			while ((mathMatch = mathRegex.exec(content)) !== null) {
 				// Add text before this math segment (quoted)
 				if (mathMatch.index > lastIndex) {
-					const textPart = content.slice(lastIndex, mathMatch.index);
-					if (textPart) {
-						parts.push(`"${textPart}"`);
-					}
+					parts.push(protectText(content.slice(lastIndex, mathMatch.index)));
 				}
 
 				// Add the math segment (will be converted by the outer function)
 				// Just remove the $ delimiters - the math is already in math mode
-				parts.push(mathMatch[1]);
+				parts.push(mathMatch[1].replaceAll('\u0003', '\\$'));
 
 				lastIndex = mathMatch.index + mathMatch[0].length;
 			}
 
 			// Add remaining text after last math segment (quoted)
 			if (lastIndex < content.length) {
-				const textPart = content.slice(lastIndex);
-				if (textPart) {
-					parts.push(`"${textPart}"`);
-				}
+				parts.push(protectText(content.slice(lastIndex)));
 			}
 
 			// If no math was found, just quote the whole content
-			const replacement = parts.length > 0 ? parts.join(' ') : `"${content}"`;
+			const replacement = parts.length > 0 ? parts.join(' ') : protectText(content);
 			result = result.slice(0, startIndex) + replacement + result.slice(closeIndex + 1);
 
 			changed = true;
@@ -1569,7 +1735,7 @@ function convertLatexNthRoot(str: string): string {
 			const content = result.slice(openBraceIndex + 1, closeIndex);
 
 			// Replace \sqrt[n]{...} with root(n, ...)
-			const replacement = `root(${nthRoot}, ${content})`;
+			const replacement = `root(${nthRoot}, ${protectTopLevelCommas(content)})`;
 			result = result.slice(0, startIndex) + replacement + result.slice(closeIndex + 1);
 
 			changed = true;
@@ -1717,7 +1883,7 @@ export function markDisplayFractions(latex: string): string {
 			i++;
 			continue;
 		}
-		const frac = latex.slice(i).match(/^\\(d?)frac(?![a-zA-Z])\s*/);
+		const frac = latex.slice(i).match(/^\\([dt]?)frac(?![a-zA-Z])\s*/);
 		if (frac) {
 			const open = i + frac[0].length;
 			const numEnd = latex[open] === '{' ? findMatchingBrace(latex, open) : -1;
@@ -1748,7 +1914,7 @@ export function markDisplayFractions(latex: string): string {
 			i += frac[0].length - 1;
 			continue;
 		}
-		if (/^\\begin\s*\{[pbvV]?matrix\}/.test(latex.slice(i))) {
+		if (/^\\begin\s*\{(?:[pbvV]?matrix|array)\}/.test(latex.slice(i))) {
 			const prevChar = out.replace(/\s+$/, '').slice(-1);
 			const topLevel =
 				!stack.includes('frac') &&
@@ -1771,15 +1937,39 @@ export function markDisplayFractions(latex: string): string {
 }
 
 /**
+ * Lit l'argument d'une commande LaTeX qui commence à `pos` (espaces sautées) : un groupe
+ * `{…}`, une commande (`\pi`) ou un seul caractère (`\frac56`, `\dfrac{\pi}2`).
+ * Rend son contenu (sans accolades) et l'index qui le suit, ou `null`.
+ */
+function readLatexArgument(str: string, pos: number): { content: string; end: number } | null {
+	let i = pos;
+	while (i < str.length && /\s/.test(str[i])) i++;
+	if (i >= str.length) return null;
+	if (str[i] === '{') {
+		const close = findMatchingBrace(str, i);
+		return close === -1 ? null : { content: str.slice(i + 1, close), end: close + 1 };
+	}
+	const command = str.slice(i).match(/^\\[a-zA-Z]+/);
+	if (command) return { content: command[0], end: i + command[0].length };
+	if (/[}\\^_&<]/.test(str[i])) return null;
+	return { content: str[i], end: i + 1 };
+}
+
+/**
  * Convert LaTeX \frac{...}{...} and \dfrac{...}{...} to Typst frac(..., ...)
  * Handles nested braces properly (e.g., \dfrac{(-1)^{n+1}}{u^2_n})
+ *
+ * Arguments sans accolades acceptés (`\frac56`, `\frac{1}2`, `\dfrac{\pi}2`) : ils
+ * sortaient en « "frac"56 », et `pi2` faisait échouer tout le PDF. `\tfrac` comme `\frac`.
+ * Une virgule nue de premier niveau dans un argument (`\frac{2,5}{3}`) est la virgule
+ * décimale : sinon `frac(2,5, 3)` reçoit trois arguments.
  *
  * @param str - Input string
  * @returns String with fractions converted
  */
 function convertLatexFractions(str: string): string {
 	let result = str;
-	const fracPattern = /\\(?:ubud|d)?frac\s*\{/g;
+	const fracPattern = /\\(?:ubud|d|t)?frac(?![a-zA-Z])/g;
 	let match;
 
 	// Keep converting until no more matches (handles nested fractions)
@@ -1790,37 +1980,27 @@ function convertLatexFractions(str: string): string {
 
 		while ((match = fracPattern.exec(result)) !== null) {
 			const startIndex = match.index;
-			const openBraceIndex = match.index + match[0].length - 1;
-
-			// Find matching closing brace for numerator
-			const numEnd = findMatchingBrace(result, openBraceIndex);
-			if (numEnd === -1) continue;
-
-			const numerator = result.slice(openBraceIndex + 1, numEnd);
-
-			// Skip whitespace and find denominator
-			let i = numEnd + 1;
-			while (i < result.length && /\s/.test(result[i])) i++;
-
-			if (result[i] !== '{') continue;
-
-			const denomStart = i;
-			const denomEnd = findMatchingBrace(result, denomStart);
-			if (denomEnd === -1) continue;
-
-			const denominator = result.slice(denomStart + 1, denomEnd);
+			const numerator = readLatexArgument(result, startIndex + match[0].length);
+			if (!numerator) continue;
+			const denominator = readLatexArgument(result, numerator.end);
+			if (!denominator) continue;
 
 			// Replace the whole \frac{...}{...} with frac(...)
 			// Add space before frac() if preceded by a letter to prevent fusion
 			// Example: \times\dfrac{...} should become "\times frac(...)" not "\timesfrac(...)"
 			// This allows the later \times conversion to match properly.
 			const needsSpace = startIndex > 0 && /[a-zA-Z]/.test(result[startIndex - 1]);
-			const fraction = 'frac(' + numerator + ', ' + denominator + ')';
+			const fraction =
+				'frac(' +
+				protectTopLevelCommas(numerator.content) +
+				', ' +
+				protectTopLevelCommas(denominator.content) +
+				')';
 			// `\ubudfrac` : fraction de premier niveau d'une formule du texte (markDisplayFractions)
 			const replacement =
 				(needsSpace ? ' ' : '') +
 				(match[0].startsWith('\\ubud') ? 'display(' + fraction + ')' : fraction);
-			result = result.slice(0, startIndex) + replacement + result.slice(denomEnd + 1);
+			result = result.slice(0, startIndex) + replacement + result.slice(denominator.end);
 
 			changed = true;
 			// Reset and start over since string changed
@@ -1933,6 +2113,8 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	'Delta',
 	'Theta',
 	'Lambda',
+	'Xi',
+	'Pi',
 	'Sigma',
 	'Upsilon',
 	'Phi',
@@ -1960,6 +2142,11 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	'times',
 	'div',
 	'dots',
+	// Symboles écrits par la conversion avant le découpage (`angle.l`, `divides`,
+	// `bracket.l.double`) : découpés, ils devenaient « a n g l e »
+	'angle',
+	'divides',
+	'bracket',
 	// Dot variants
 	'thin',
 	'med',
@@ -1986,6 +2173,24 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	// NOTE: dx, dy, dt etc. are NOT protected here because Typst needs "d x" (with space).
 	// Typst treats "dx" as an unknown variable. The implicit multiplication split into "d x"
 	// is the correct Typst rendering for differential notation in integrals.
+]);
+
+/**
+ * Fonctions Typst que la conversion écrit devant une parenthèse, en plus de celles de
+ * KNOWN_TYPST_SYMBOLS. Seuls ces noms (et ceux de KNOWN_TYPST_SYMBOLS) restent collés à
+ * leur `(` : un autre mot devant une parenthèse est un produit de lettres (`3xy(x+2)`,
+ * `AB(1;2)`), que Typst lirait sinon comme un appel de la variable inconnue `xy`.
+ */
+const TYPST_FUNCTIONS = new Set([
+	'op',
+	'bb',
+	'mat',
+	'attach',
+	'limits',
+	'abs',
+	'norm',
+	'floor',
+	'ceil'
 ]);
 
 /**
@@ -2050,9 +2255,9 @@ function addImplicitMultiplicationSpaces(str: string): string {
 	protected_ = protected_.replace(
 		/([A-Z]{2,}|[A-Z][a-z]+|[a-z]{2,})/g,
 		(match, _group, offset, fullStr) => {
-			// If followed by '(', it's a function call - preserve entire match
+			// Suivi de '(' : appel de fonction, seulement pour un nom connu
 			const nextChar = fullStr[offset + match.length];
-			if (nextChar === '(') {
+			if (nextChar === '(' && TYPST_FUNCTIONS.has(match)) {
 				return match;
 			}
 
@@ -2185,8 +2390,148 @@ function padSymbol(typst: string, str: string, offset: number, length: number): 
 	return `${before}${typst}${after}`;
 }
 
+// `\left` ou `\right` suivi de son délimiteur (ceux que la conversion sait écrire)
+const LEFT_RIGHT =
+	/\\(left|right)\s*(\\\{|\\\}|\\lbrace|\\rbrace|\\langle(?![a-zA-Z])|\\rangle(?![a-zA-Z])|\\\||[()[\]|.])/g;
+
+/** Le délimiteur LaTeX, tel que la suite de la conversion l'attend */
+function delimiterToken(delimiter: string, insideLr: boolean): string {
+	switch (delimiter) {
+		case '\\{':
+		case '\\lbrace':
+			return '<<<VISIBLE_LBRACE>>>';
+		case '\\}':
+		case '\\rbrace':
+			return '<<<VISIBLE_RBRACE>>>';
+		case '\\|':
+			return '||';
+		// Espacés : `angle.l` ne doit se coller à rien
+		case '\\langle':
+			return ' angle.l ';
+		case '\\rangle':
+			return ' angle.r ';
+		case '.':
+			return '';
+		// Dans `lr(…)`, une parenthèse nue ouvrirait un groupe que Typst voudrait fermer
+		// (marqueurs : la multiplication implicite découperait « paren » en lettres)
+		case '(':
+			return insideLr ? ' <<<PAREN_L>>> ' : '(';
+		case ')':
+			return insideLr ? ' <<<PAREN_R>>> ' : ')';
+		case '[':
+		case ']':
+			// Deviennent bracket.l/bracket.r plus loin ; espacés pour ne coller à rien
+			return insideLr ? ` ${delimiter} ` : delimiter;
+		default:
+			return delimiter;
+	}
+}
+
+/**
+ * Apparie les `\left` et `\right` (pile) et écrit chaque paire pour Typst.
+ *
+ * Typst ne fait grandir que les délimiteurs tapés tels quels (`(`) : les symboles
+ * `brace.l`, `bracket.l` restaient à la taille d'une lettre autour d'une fraction
+ * (`S = {-π/4 ; π/4}`, relevé le 2026-10-13). Une paire `( … )` reste telle quelle,
+ * toute autre devient `lr(ouvrant … fermant)`, `.` étant un délimiteur vide : la paire
+ * reste équilibrée même quand un côté est invisible (`\left\{ … \right.` d'un système,
+ * `\left. … \right|` d'une évaluation, qui laissait un `)` orphelin). Un `\left` ou un
+ * `\right` sans partenaire garde son seul délimiteur.
+ */
+function pairLeftRight(text: string): string {
+	const matches = [...text.matchAll(LEFT_RIGHT)];
+	if (matches.length === 0) return text;
+	const replacements: string[] = matches.map((match) => delimiterToken(match[2], false));
+	const open: number[] = [];
+	matches.forEach((match, index) => {
+		if (match[1] === 'left') {
+			open.push(index);
+			return;
+		}
+		const leftIndex = open.pop();
+		if (leftIndex === undefined) return;
+		const left = matches[leftIndex];
+		if (left[2] === '(' && match[2] === ')') return;
+		// Espace avant `lr(` collé à une lettre : `xlr` serait un identifiant inconnu
+		const before = /[A-Za-z0-9]/.test(text[(left.index ?? 0) - 1] ?? '') ? ' ' : '';
+		replacements[leftIndex] = `${before}lr(${delimiterToken(left[2], true)}`;
+		replacements[index] = `${delimiterToken(match[2], true)})`;
+	});
+	let out = '';
+	let last = 0;
+	matches.forEach((match, index) => {
+		out += text.slice(last, match.index) + replacements[index];
+		last = (match.index ?? 0) + match[0].length;
+	});
+	return out + text.slice(last);
+}
+
+/**
+ * Dans les arguments de `lr(…)`, `;` sépare des lignes et `,` des arguments : au premier
+ * niveau, ils deviennent `semi` et la virgule affichée (`","`), par des marqueurs
+ * restitués en fin de conversion. Ceux des appels imbriqués
+ * (`frac(1, 2)`) et des chaînes restent intacts.
+ *
+ * Même chose pour le seul `;` dans tout autre appel (`max(a;b)`, `display(x=1 ; y=2)`
+ * d'une ligne de `cases`) : Typst y lit un tableau d'arguments, « expected content,
+ * found array », et tout le PDF échoue. Les lignes d'une matrice (`mat(…)`) restent.
+ */
+function protectLrArguments(text: string): string {
+	let out = '';
+	// Pour chaque parenthèse ouverte : celle d'un `lr(`, d'un autre appel, ou un groupe
+	const stack: ('lr' | 'call' | 'group')[] = [];
+	let inString = false;
+	for (let i = 0; i < text.length; i++) {
+		const char = text[i];
+		if (char === '"') inString = !inString;
+		if (!inString) {
+			// Une matrice (`mat(…` caché derrière son marqueur) ouvre une parenthèse
+			const matrix = text.slice(i).match(/^<<<mat\d+>>>/);
+			if (matrix) {
+				stack.push('group');
+				out += matrix[0];
+				i += matrix[0].length - 1;
+				continue;
+			}
+			const top = stack[stack.length - 1];
+			if (char === '(') {
+				// Nom d'au moins deux lettres collé à la parenthèse : un appel (une lettre
+				// seule devant `(` n'en est jamais un pour Typst)
+				const name = text.slice(Math.max(0, i - 64), i).match(/[A-Za-z]{2,}$/)?.[0];
+				stack.push(
+					name === 'lr' && !/[A-Za-z0-9.]/.test(text[i - 3] ?? '')
+						? 'lr'
+						: name !== undefined
+							? 'call'
+							: 'group'
+				);
+			} else if (char === ')') {
+				stack.pop();
+			} else if ((top === 'lr' || top === 'call') && char === ';') {
+				// Marqueur : la multiplication implicite découperait « semi » en lettres
+				out += ' <<<LR_SEMI>>> ';
+				continue;
+			} else if (top === 'lr' && char === ',') {
+				out += '<<<DECIMAL_COMMA>>>';
+				continue;
+			}
+		}
+		out += char;
+	}
+	return out;
+}
+
 export function convertLatexToTypstMath(latex: string): string {
 	let result = latex;
+
+	// ========================================================================
+	// TEXTE (Étape 1 sur 2)
+	// ========================================================================
+	// `\text{d}x` → différentielle droite ; tout autre `\text{…}` / `\textrm{…}` devient
+	// une chaîne Typst mise de côté AVANT toute règle mathématique (voir convertTextCommand)
+	result = result.replace(/\\text\s*\{d\}\s*([a-zA-Z])/g, 'dif $1');
+	const textPlaceholders: string[] = [];
+	result = convertTextCommand(result, textPlaceholders);
 
 	// Degrés : `60^{\circ}` / `60^\circ` → `60°` ; `\circ` seul (composition) → `compose`.
 	// Avant tout traitement des exposants : sinon « circ » s'affichait en toutes lettres.
@@ -2251,38 +2596,22 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\rightarrow/g, '<<<ARROW_RIGHT>>>');
 	result = result.replace(/\\to(?![a-z])/g, '<<<ARROW_RIGHT>>>');
 
-	// Convert \left( ... \right) to ( ... ) - Typst auto-sizes
-	result = result.replace(/\\left\s*\(/g, '(');
-	result = result.replace(/\\right\s*\)/g, ')');
+	// `\lVert … \rVert` (norme) et `\lvert … \rvert` (valeur absolue) d'amsmath, et leurs
+	// formes sans côté `\Vert`, `\vert` : ramenés à `\|` et `|`, traités ci-dessous. Sinon
+	// ils sortaient en texte brut (« lVert », « vert »).
+	result = result.replace(/\\[lr]?Vert(?![a-zA-Z])/g, '\\|');
+	result = result.replace(/\\[lr]?vert(?![a-zA-Z])\s*/g, '|');
 
-	// Convert \left[ ... \right] to [ ... ]
-	result = result.replace(/\\left\s*\[/g, '[');
-	result = result.replace(/\\right\s*\]/g, ']');
+	// `\left … \right` appariés : `lr(…)` fait grandir accolades, crochets et barres
+	// (voir pairLeftRight) ; les `;` et `,` de son contenu sont protégés plus bas.
+	result = pairLeftRight(result);
 
-	// `\lVert … \rVert` (norme) et `\lvert … \rvert` (valeur absolue) d'amsmath : ramenés à
-	// `\|` et `|`, traités ci-dessous. Sinon ils sortaient en texte brut (« lVert »).
-	result = result.replace(/\\[lr]Vert(?![a-zA-Z])/g, '\\|');
-	result = result.replace(/\\[lr]vert(?![a-zA-Z])\s*/g, '|');
-
-	// Convert \left\| ... \right\| to norm: lr(||...||) for proper sizing
-	// MUST be before \left| to avoid \left\| matching \left\ then |
-	result = result.replace(/\\left\s*\\\|/g, 'lr(||');
-	result = result.replace(/\\right\s*\\\|/g, '||)');
-
-	// Convert \left| ... \right| to abs( ... ) or |...|
-	// Use lr(|...|) for proper sizing in Typst
-	result = result.replace(/\\left\s*\|/g, 'lr(|');
-	result = result.replace(/\\right\s*\|/g, '|)');
-
-	// Convert \left\{ ... \right\} to auto-sized visible braces
-	// Use placeholders because in Typst math, plain { } are visible (set notation)
-	// but in LaTeX, plain { } are invisible grouping
-	result = result.replace(/\\left\s*\\{/g, '<<<VISIBLE_LBRACE>>>');
-	result = result.replace(/\\right\s*\\}/g, '<<<VISIBLE_RBRACE>>>');
-
-	// Convert \left\lbrace ... \right\rbrace
-	result = result.replace(/\\left\s*\\lbrace/g, '<<<VISIBLE_LBRACE>>>');
-	result = result.replace(/\\right\s*\\rbrace/g, '<<<VISIBLE_RBRACE>>>');
+	// Chevrons seuls (produit scalaire `\langle u, v\rangle`) : sortaient en texte brut
+	result = result.replace(
+		/\\([lr])angle(?![a-zA-Z])/g,
+		(m: string, side: string, offset: number, str: string) =>
+			padSymbol(`angle.${side}`, str, offset, m.length)
+	);
 
 	// Convert standalone \lbrace and \rbrace
 	result = result.replace(/\\lbrace/g, '<<<VISIBLE_LBRACE>>>');
@@ -2297,10 +2626,6 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\{/g, '<<<VISIBLE_LBRACE>>>');
 	result = result.replace(/\\}/g, '<<<VISIBLE_RBRACE>>>');
 
-	// Handle invisible delimiters \left. and \right.
-	result = result.replace(/\\left\s*\./g, '');
-	result = result.replace(/\\right\s*\./g, '');
-
 	// Fallback: remove any remaining \left or \right (unhandled delimiter cases)
 	result = result.replace(/\\left\s*/g, '');
 	result = result.replace(/\\right\s*/g, '');
@@ -2314,7 +2639,15 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Remove \big, \Big, \bigg, \Bigg sizing commands (Typst auto-sizes delimiters)
 	// These commands just affect delimiter size in LaTeX, not needed in Typst
 	// Must be done BEFORE removing unknown commands to avoid "\big" becoming "big" text
-	result = result.replace(/\\[Bb]igg?\s*/g, '');
+	// `\bigl(`, `\bigr)`, `\bigm|` : la lettre de côté part avec (sortait « l(x+1r) »).
+	// `\bigcup`, `\bigcap` sont des opérateurs, pas des tailles : convertis avant.
+	result = result.replace(/\\bigcup(?![a-zA-Z])/g, (m: string, offset: number, str: string) =>
+		padSymbol('union.big', str, offset, m.length)
+	);
+	result = result.replace(/\\bigcap(?![a-zA-Z])/g, (m: string, offset: number, str: string) =>
+		padSymbol('sect.big', str, offset, m.length)
+	);
+	result = result.replace(/\\[Bb]igg?[lrm]?(?![a-zA-Z])\s*/g, '');
 
 	// Convert \dfrac{a}{b} and \frac{a}{b} to frac(a, b)
 	// Uses balanced brace matching to handle nested braces like \dfrac{(-1)^{n+1}}{u^2_n}
@@ -2328,6 +2661,12 @@ export function convertLatexToTypstMath(latex: string): string {
 		/\\d?frac\s+([a-zA-Z0-9])\s*([a-zA-Z0-9])/g,
 		(_match, num: string, den: string) => ` frac(${num}, ${den})`
 	);
+
+	// \underset{a}{b} / \overset{a}{b} : `a` sous / sur `b` (`limits` place l'indice en
+	// dessous même dans le texte). \substack{a\\b} : ses lignes, empilées par `\\`.
+	result = convertStackedCommand(result, 'underset', '_');
+	result = convertStackedCommand(result, 'overset', '^');
+	result = result.replace(/\\substack(?![a-zA-Z])\s*/g, '');
 
 	// Convert \begin{cases} ... \end{cases} to Typst cases()
 	// LaTeX: \begin{cases} a & b \\ c & d \end{cases}
@@ -2359,35 +2698,67 @@ export function convertLatexToTypstMath(latex: string): string {
 		pmatrix: '"("',
 		bmatrix: '"["',
 		vmatrix: '"|"',
-		Vmatrix: '"||"',
-		matrix: '"none"'
+		// Typst n'accepte qu'un caractère ou none : "||" et "none" faisaient échouer la fiche
+		Vmatrix: '"‖"',
+		matrix: '#none'
 	};
 	const matPrefixes: string[] = [];
+	// `display` : `\ubudisplay` devant, matrice de premier niveau d'une formule du texte
+	// (markDisplayFractions), composée en taille normale
+	const toMatrix = (display: string | undefined, content: string, delim: string): string => {
+		const rows = content
+			.split(/\\\\/)
+			.map((row: string) => row.trim())
+			.filter((row: string) => row.length > 0)
+			.map((row: string) =>
+				row
+					.split('&')
+					// Une virgule dans une cellule n'est pas un séparateur de colonnes
+					.map((cell: string) => protectTopLevelCommas(cell.trim()))
+					.join(', ')
+			);
+		const idx = matPrefixes.length;
+		matPrefixes.push(`mat(delim: ${delim}, `);
+		const mat = `<<<mat${idx}>>>${rows.join('; ')})`;
+		return display ? `display(${mat})` : mat;
+	};
 	for (const [env, delim] of Object.entries(matrixDelimiters)) {
-		// `\ubudisplay` devant : matrice de premier niveau d'une formule du texte
-		// (markDisplayFractions), composée en taille normale
 		const regex = new RegExp(
 			`(\\\\ubudisplay\\s*)?\\\\begin\\s*\\{${env}\\}([\\s\\S]*?)\\\\end\\s*\\{${env}\\}`,
 			'g'
 		);
-		result = result.replace(regex, (_, display: string | undefined, content: string) => {
+		result = result.replace(regex, (_, display: string | undefined, content: string) =>
+			toMatrix(display, content, delim)
+		);
+	}
+	// `array` (système `\left\{\begin{array}{l} … \end{array}\right.`) : matrice sans
+	// délimiteur, comme `matrix`. L'argument de colonnes (`{l}`, `{cc}`, `{l|r}`) et les
+	// `\hline` sont ignorés ; ils sortaient en « yl », variable inconnue → PDF en échec.
+	result = result.replace(
+		/(\\ubudisplay\s*)?\\begin\s*\{array\}\s*\{[^{}]*\}([\s\S]*?)\\end\s*\{array\}/g,
+		(_, display: string | undefined, content: string) =>
+			toMatrix(display, content.replace(/\\hline(?![a-zA-Z])/g, ''), '#none')
+	);
+
+	// `aligned` DANS une formule (système `S = \left\{\begin{aligned} … \end{aligned}\right.`) :
+	// colonne sans délimiteur, `vec(delim: #none, …)`, dont les lignes s'alignent sur leurs
+	// `&` et autour de laquelle `lr(…)` fait grandir l'accolade. Effacer l'environnement
+	// laissait des sauts de ligne `\` qu'aucune accolade n'englobait. (Une formule de bloc
+	// réduite à `aligned` passe par la grille de generateMathBlock.) `display` : taille
+	// normale ; virgules de premier niveau protégées, comme dans `cases`.
+	result = result.replace(
+		/\\begin\s*\{aligned\*?\}([\s\S]*?)\\end\s*\{aligned\*?\}/g,
+		(_, content: string) => {
 			const rows = content
 				.split(/\\\\/)
-				.map((row: string) => row.trim())
+				.map(trimLatex)
 				.filter((row: string) => row.length > 0)
-				.map((row: string) =>
-					row
-						.split('&')
-						// Une virgule dans une cellule n'est pas un séparateur de colonnes
-						.map((cell: string) => protectTopLevelCommas(cell.trim()))
-						.join(', ')
-				);
+				.map((row: string) => `display(${protectTopLevelCommas(row)})`);
 			const idx = matPrefixes.length;
-			matPrefixes.push(`mat(delim: ${delim}, `);
-			const mat = `<<<mat${idx}>>>${rows.join('; ')})`;
-			return display ? `display(${mat})` : mat;
-		});
-	}
+			matPrefixes.push('vec(delim: #none, ');
+			return `<<<mat${idx}>>>${rows.join(', ')})`;
+		}
+	);
 
 	// \sqrt sans accolades : en LaTeX, `\sqrt5` ou `\sqrt x` prend UN seul jeton
 	// (un caractère ou une commande) comme argument. On le ramène à la forme
@@ -2403,12 +2774,19 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = convertLatexNthRoot(result);
 
 	// Convert \sqrt{x} to sqrt(x) - use balanced brace matching
-	result = convertLatexOneArgCommand(result, 'sqrt', 'sqrt');
+	result = convertLatexOneArgCommand(result, 'sqrt', 'sqrt', { decimalCommas: true });
 
 	// Add space before sqrt and root when preceded by letter/digit to prevent
 	// variable fusion like "esqrt" being parsed as unknown variable
 	result = result.replace(/([a-zA-Z0-9)])sqrt\(/g, '$1 sqrt(');
 	result = result.replace(/([a-zA-Z0-9)])root\(/g, '$1 root(');
+
+	// \pmod{n} → `(mod n)` précédé d'un cadratin, comme LaTeX ; \bmod → mod
+	result = result.replace(
+		/\\pmod\s*\{([^{}]*)\}/g,
+		(_m, modulus: string) => ` quad (mod ${modulus.trim()})`
+	);
+	result = replaceLatexCmd(result, 'bmod', 'mod');
 
 	// Convert known functions: \sin, \cos, \tan, \log, \ln, \exp, etc.
 	// Remove backslash - Typst recognizes these directly
@@ -2626,17 +3004,24 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'ell', 'ell'); // Script lowercase L (ℓ)
 	result = replaceLatexCmd(result, 'prime', 'prime'); // Prime symbol (′)
 	result = replaceLatexCmd(result, 'doubleprime', 'prime.double'); // Double prime (″)
+	// Relations et flèches courantes, imprimées en texte brut par le filet de fin
+	// (« "mid" », « "simeq" ») : noms Typst vérifiés par compilation (2026-10-13)
+	result = replaceLatexCmd(result, 'mid', 'divides');
+	result = replaceLatexCmd(result, 'simeq', 'tilde.eq');
+	result = replaceLatexCmd(result, 'nearrow', 'arrow.tr');
+	result = replaceLatexCmd(result, 'searrow', 'arrow.br');
+	result = replaceLatexCmd(result, 'nwarrow', 'arrow.tl');
+	result = replaceLatexCmd(result, 'swarrow', 'arrow.bl');
+	result = replaceLatexCmd(result, 'longmapsto', 'arrow.r.long.bar');
+	result = replaceLatexCmd(result, 'llbracket', 'bracket.l.double');
+	result = replaceLatexCmd(result, 'rrbracket', 'bracket.r.double');
 
-	// Convert \text{d}x → dif x (differential notation before general \text handler)
-	// \text{d} is commonly used in LaTeX for upright "d" in integrals: \int f(x)\text{d}x
-	result = result.replace(/\\text\s*\{d\}\s*([a-zA-Z])/g, 'dif $1');
-
-	// Convert text command (handles nested math like \text{car $x-1<0$})
-	result = convertTextCommand(result);
 	result = result.replace(/\\textbf\s*{([^{}]*)}/g, 'bold("$1")');
 	result = result.replace(/\\textit\s*{([^{}]*)}/g, 'italic("$1")');
 	// Convert \textcolor{color}{content} -> #text(fill: color)[content]
 	result = convertTextcolorCommand(result);
+	// \boxed{…} → formule encadrée, même mécanisme que \textcolor (sortait « "boxed" »)
+	result = convertBoxedCommand(result);
 
 	// ========================================================================
 	// NEW CONVERSIONS - Must be BEFORE the catch-all
@@ -2669,7 +3054,7 @@ export function convertLatexToTypstMath(latex: string): string {
 	}
 
 	// 2. Binomial coefficients (2 arguments)
-	result = result.replace(/\\binom\s*{([^{}]*)}\s*{([^{}]*)}/g, 'binom($1, $2)');
+	result = result.replace(/\\[dt]?binom\s*{([^{}]*)}\s*{([^{}]*)}/g, 'binom($1, $2)');
 
 	// 2b. Underbrace/Overbrace: \underbrace{content}_{label} -> underbrace(content, label)
 	// Must be BEFORE subscript/superscript conversion which would consume the _{label}
@@ -2801,6 +3186,9 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/~/g, ' ');
 
 	// 10. Double backslash for line breaks (align environment)
+	// Collé à une lettre (`x=1\\y=2`), le `\` restant formerait la commande `\y`, que la
+	// suite imprimait en texte : une espace l'en sépare (`\ ` est aussi un saut en Typst).
+	result = result.replace(/\\\\(?=[a-zA-Z])/g, '\\ ');
 	result = result.replace(/\\\\/g, '\\');
 
 	// ========================================================================
@@ -2826,6 +3214,10 @@ export function convertLatexToTypstMath(latex: string): string {
 	// LaTeX: u_n(1-x) means u subscript n, then parenthetical expression
 	// Typst: u_n (1-x) - space needed to separate subscript from parenthesis
 	result = result.replace(/_([a-zA-Z0-9])\(/g, '_$1 (');
+	// Même règle pour un exposant d'une lettre : `e^x(x+1)` → `e^x (x+1)`. Sans l'espace,
+	// Typst lit l'appel `x(x+1)` et met toute la parenthèse en exposant. Un chiffre
+	// (`x^2(x-3)`) n'est jamais appelé : rien à faire.
+	result = result.replace(/\^([a-zA-Z])\(/g, '^$1 (');
 
 	// Add space after multi-character subscripts when followed by open parenthesis
 	// Handles cases like P_(overline(R_(n)))(x) -> P_(overline(R_(n))) (x)
@@ -2875,6 +3267,7 @@ export function convertLatexToTypstMath(latex: string): string {
 	// - String "," displays as literal comma without extra spacing
 	// - This is the recommended approach per Typst GitHub issue #5272
 	// Must be done AFTER \, -> thin conversion to avoid conflict.
+	result = protectLrArguments(result);
 	result = result.replace(/<<<DECIMAL_COMMA>>>/g, '","');
 
 	// ========================================================================
@@ -2935,7 +3328,10 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Detect interval patterns by the semicolon separator (French notation).
 	result = result.replace(
 		/([[\]])\s*([^[\]]*?)\s*;\s*([^[\]]*?)\s*([[\]])/g,
-		(_match, open: string, left: string, right: string, close: string) => {
+		(match: string, open: string, left: string, right: string, close: string) => {
+			// Une matrice entre `]` et `[` (ses lignes sont séparées par `;`) n'est pas un
+			// intervalle : ses crochets sont convertis plus bas, un par un
+			if (match.includes('<<<mat')) return match;
 			const openSym = open === '[' ? 'bracket.l' : 'bracket.r';
 			const closeSym = close === '[' ? 'bracket.l' : 'bracket.r';
 			// Leading/trailing spaces prevent variable fusion (e.g., "xbracket.l")
@@ -2950,7 +3346,13 @@ export function convertLatexToTypstMath(latex: string): string {
 	// (set notation). After all \command{arg} conversions consumed their braces,
 	// any remaining { } are just LaTeX grouping and must be removed.
 	// Intentionally visible braces (\{, \left\{) were converted to placeholders earlier.
-	result = result.replace(/[{}]/g, '');
+	// Une accolade effacée entre une lettre et une lettre ou un chiffre (`{x}{y}`, `{x}2`)
+	// les recollerait en un identifiant inconnu (`xy`, `x2`) : elle devient une espace.
+	result = result.replace(/[{}]+/g, (braces: string, offset: number, str: string) => {
+		const before = str[offset - 1] ?? '';
+		const after = str[offset + braces.length] ?? '';
+		return /[A-Za-z]/.test(before) && /[A-Za-z0-9]/.test(after) ? ' ' : '';
+	});
 	// Restore visible braces as Typst symbols
 	result = result.replace(/<<<VISIBLE_LBRACE>>>/g, ' brace.l ');
 	result = result.replace(/<<<VISIBLE_RBRACE>>>/g, ' brace.r ');
@@ -2987,6 +3389,11 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Restore placeholder to Typst double prime symbol
 	result = result.replace(/<<<DOUBLE_PRIME>>>/g, 'prime.double');
 
+	// Marqueurs de `lr(…)` (pairLeftRight, protectLrArguments)
+	result = result.replace(/<<<LR_SEMI>>>/g, 'semi');
+	result = result.replace(/<<<PAREN_L>>>/g, 'paren.l');
+	result = result.replace(/<<<PAREN_R>>>/g, 'paren.r');
+
 	// ========================================================================
 	// MATRIX PLACEHOLDER RESTORATION
 	// ========================================================================
@@ -2994,6 +3401,9 @@ export function convertLatexToTypstMath(latex: string): string {
 
 	// UNITÉS (Étape 2 sur 2)
 	result = result.replace(/<<<UNIT(\d+)>>>/g, (_, idx) => unitPlaceholders[parseInt(idx)]);
+
+	// TEXTE (Étape 2 sur 2)
+	result = result.replace(/<<<TEXT(\d+)>>>/g, (_, idx) => textPlaceholders[parseInt(idx)]);
 
 	// Final trim: bracket symbol insertions may add leading/trailing spaces
 	result = result.trim();
@@ -3060,9 +3470,16 @@ function cellText(text: string): string {
 function customInlineMathToTypst(
 	expression: string,
 	genericFunctions: ResolvedTypstTranspilerOptions['genericFunctions'],
-	language: string | undefined
+	language: string | undefined,
+	capitalPairs: ResolvedTypstTranspilerOptions['capitalPairs']
 ): string {
-	const latex = expressionToRawLatex(expression, 'custom', genericFunctions, language);
+	const latex = expressionToRawLatex(
+		expression,
+		'custom',
+		genericFunctions,
+		language,
+		capitalPairs
+	);
 	return convertLatexToTypstMath(markDisplayFractions(latex));
 }
 
@@ -3082,12 +3499,14 @@ function customInlineMathToTypst(
  *
  * @param language - Langue du document (`en` : point décimal ; sinon virgule)
  * @param genericFunctions - Fonctions déclarées de l'exercice (formules `~…~`)
+ * @param capitalPairs - Sens de `AB` de l'exercice (formules `~…~`) ; absent : produit
  * @returns Processed content safe for Typst tables
  */
 export function processTableCellContent(
 	content: string,
 	language?: string,
-	genericFunctions?: ResolvedTypstTranspilerOptions['genericFunctions']
+	genericFunctions?: ResolvedTypstTranspilerOptions['genericFunctions'],
+	capitalPairs?: ResolvedTypstTranspilerOptions['capitalPairs']
 ): string {
 	// `$…$` ou `~…~` (sans retour à la ligne)
 	const parts: string[] = [];
@@ -3102,7 +3521,9 @@ export function processTableCellContent(
 		}
 
 		if (match[2] !== undefined) {
-			parts.push(`$${customInlineMathToTypst(match[2], genericFunctions, language)}$`);
+			parts.push(
+				`$${customInlineMathToTypst(match[2], genericFunctions, language, capitalPairs)}$`
+			);
 			lastIndex = match.index + match[0].length;
 			continue;
 		}

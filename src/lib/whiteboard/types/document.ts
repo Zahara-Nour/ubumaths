@@ -538,11 +538,7 @@ export interface GroupElement {
 
 /** Union of all element types */
 export type WhiteboardElement =
-	| StrokeElement
-	| ShapeElement
-	| TextBlockElement
-	| ImageElement
-	| GroupElement;
+	StrokeElement | ShapeElement | TextBlockElement | ImageElement | GroupElement;
 
 // =============================================================================
 // Background Types

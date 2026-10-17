@@ -4,15 +4,18 @@ couvre:
   - src/app.d.ts
   - src/lib/server/supabase.ts
   - src/lib/server/auth.ts
+  - src/lib/server/accountStatusHandle.ts
+  - src/lib/server/redirectHandle.ts
   - 'src/lib/server/auth/**'
   - 'src/lib/server/middleware/**'
   - src/lib/server/adminElevation.ts
   - src/lib/server/serviceRoleClient.ts
   - src/lib/server/rateLimiter.ts
-  - src/lib/server/csrfProtection.ts
+  - src/lib/server/csrfHandle.ts
   - src/lib/server/passwordPolicy.ts
   - src/lib/server/validateRedirectUrl.ts
   - src/lib/server/private-response.ts
+  - src/lib/utils/session-cookies.ts
   - src/lib/server/validation/auth.ts
   - src/lib/server/validation/admin-elevation.ts
   - src/lib/server/google/oauth.ts
@@ -25,7 +28,6 @@ couvre:
   - 'src/routes/(protected)/dashboard/admin/+layout.server.ts'
   - 'src/routes/(protected)/dashboard/elevate/**'
   - 'src/routes/api/admin/elevate/**'
-  - 'src/routes/api/admin/pending-users/**'
   - 'src/routes/api/admin/users/*/status/**'
   - 'src/routes/api/google/auth/**'
 ---
@@ -62,49 +64,51 @@ Deux callbacks différents : `/auth/callback` (connexion Google) ≠ `/api/googl
 
 ## Carte du code
 
-| Fichier                                           | Rôle                                                                                                                            |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `src/hooks.server.ts`                             | Chaîne des handles (ordre ci-dessous) ; `userProfileHandle`, `csrfHandle`, `securityHeadersHandle`.                             |
-| `src/lib/server/supabase.ts`                      | Handle Supabase : `locals.supabase` (cookies SSR) et `locals.safeGetSession()`.                                                 |
-| `src/lib/server/auth.ts`                          | Pour les **pages** : `getUserProfile`, `requireAuth(user)` (redirige), `requireRole(profile, …)`, `hasRole`, `hasAnyRole`.      |
-| `src/lib/server/middleware/auth.ts`               | Pour les **API** : `requireAuth(locals)`, `requireRole`, `requireRoles`, `requireAdmin` ; types `UserRole`, `Profile`.          |
-| `src/lib/server/adminElevation.ts`                | Élévation : cookie `ubu-admin-elevation`, `createAdminClient`, `createEphemeralAuthClient`, `adminElevationHandle`.             |
-| `src/lib/server/serviceRoleClient.ts`             | `createServiceRoleClient()` — contourne la RLS ; liste `ALLOWED_SERVICE_ROLE_PATHS` (avertissement **en dev seulement**).       |
-| `src/lib/server/rateLimiter.ts`                   | Limites persistantes (RPC `check_and_increment_rate_limit`, table `rate_limits`) : login, inscription, reset, élévation, OAuth. |
-| `src/lib/server/middleware/rateLimit.ts`          | Limiteur **en mémoire** (par instance), utilisé par quelques API (`account/delete`, `search`…).                                 |
-| `src/lib/server/validation/auth.ts`               | Zod : `loginFormSchema`, `registerFormSchema`, `requestPasswordResetSchema`, `updatePasswordSchema`…                            |
-| `src/lib/server/passwordPolicy.ts`                | `validatePasswordPolicy`, appliquée par les schémas d'inscription et de changement de mot de passe.                             |
-| `src/lib/server/validateRedirectUrl.ts`           | Anti open-redirect pour les paramètres `next`.                                                                                  |
-| `src/lib/server/private-response.ts`              | `mustStayPrivate` / `PRIVATE_NO_STORE` : pas de cache partagé pour une réponse connectée ou qui pose un cookie.                 |
-| `src/lib/server/auth/cron.ts`                     | `verifyCronAuth(request)` : `Authorization: Bearer <CRON_SECRET>` pour `/api/cron/*`.                                           |
-| `src/lib/server/auth/auth-error-fr.ts`            | `authErrorToFrench` : messages GoTrue traduits.                                                                                 |
-| `src/lib/server/middleware/consent.ts`            | `requireConsent(profile, action)` — voir [conformite/](conformite/).                                                            |
-| `src/lib/server/middleware/student-access.ts`     | `verifyTeacherStudent`, `verifyTeacherStudentWithRole`.                                                                         |
-| `src/lib/config/google-login.ts`                  | `GOOGLE_LOGIN_ENABLED = false`.                                                                                                 |
-| `src/lib/config/google-classroom.ts`              | `GOOGLE_CLASSROOM_ENABLED = false`.                                                                                             |
-| `src/lib/server/google/oauth.ts`, `encryption.ts` | Classroom : `getAuthUrl`, `exchangeCodeForTokens`, `refreshAccessToken`, `revokeAccess` ; `encryptToken`/`decryptToken`.        |
-| `src/app.d.ts`                                    | Type de `App.Locals` (`user`, `profile`, `supabase`, `safeGetSession`, `adminSupabase?`, `adminElevation?`).                    |
+| Fichier                                           | Rôle                                                                                                                                                                                                                                                                      |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/hooks.server.ts`                             | Chaîne des handles (ordre ci-dessous) ; `userProfileHandle`, `securityHeadersHandle` ; `csrfHandle` vit dans `src/lib/server/csrfHandle.ts`, `redirectHandle` dans `src/lib/server/redirectHandle.ts`.                                                                    |
+| `src/lib/server/supabase.ts`                      | Handle Supabase : `locals.supabase` (cookies SSR) et `locals.safeGetSession()`.                                                                                                                                                                                           |
+| `src/lib/server/auth.ts`                          | Pour les **pages** : `getUserProfile`, `requireAuth(user)` (redirige), `requireRole(profile, …)`, `hasRole`, `hasAnyRole`.                                                                                                                                                |
+| `src/lib/server/middleware/auth.ts`               | Pour les **API** : `requireAuth(locals)`, `requireRole`, `requireRoles`, `requireAdmin` ; types `UserRole`, `Profile`.                                                                                                                                                    |
+| `src/lib/server/adminElevation.ts`                | Élévation : cookie `ubu-admin-elevation`, `createAdminClient`, `createEphemeralAuthClient`, `adminElevationHandle`.                                                                                                                                                       |
+| `src/lib/server/serviceRoleClient.ts`             | `createServiceRoleClient()` — contourne la RLS ; liste `ALLOWED_SERVICE_ROLE_PATHS` (avertissement **en dev seulement**) ; ex. pièces jointes de la messagerie, signées après contrôle RLS ; style d'une fiche pour l'élève destinataire (`worksheet-styles.ts`, lot 4b). |
+| `src/lib/server/rateLimiter.ts`                   | Limites persistantes (RPC `check_and_increment_rate_limit`, table `rate_limits`) : login, inscription, reset, élévation, OAuth.                                                                                                                                           |
+| `src/lib/server/middleware/rateLimit.ts`          | Limiteur **en mémoire** (par instance), utilisé par quelques API (`account/delete`, `search`…).                                                                                                                                                                           |
+| `src/lib/server/validation/auth.ts`               | Zod : `loginFormSchema`, `registerFormSchema`, `requestPasswordResetSchema`, `updatePasswordSchema`…                                                                                                                                                                      |
+| `src/lib/server/passwordPolicy.ts`                | `validatePasswordPolicy`, appliquée par les schémas d'inscription et de changement de mot de passe.                                                                                                                                                                       |
+| `src/lib/server/validateRedirectUrl.ts`           | Anti open-redirect pour les paramètres `next`.                                                                                                                                                                                                                            |
+| `src/lib/server/private-response.ts`              | `mustStayPrivate` / `PRIVATE_NO_STORE` : pas de cache partagé pour une réponse connectée ou qui pose un cookie.                                                                                                                                                           |
+| `src/lib/server/auth/cron.ts`                     | `verifyCronAuth(request)` : `Bearer <CRON_SECRET>` seul pour `/api/cron/*` (`x-vercel-cron`, falsifiable, n'ouvre plus rien).                                                                                                                                             |
+| `src/lib/server/auth/auth-error-fr.ts`            | `authErrorToFrench` : messages GoTrue traduits.                                                                                                                                                                                                                           |
+| `src/lib/server/middleware/consent.ts`            | `requireConsent(profile, action)` — voir [conformite/](conformite/).                                                                                                                                                                                                      |
+| `src/lib/server/middleware/student-access.ts`     | `verifyTeacherStudent`, `verifyTeacherStudentWithRole`.                                                                                                                                                                                                                   |
+| `src/lib/config/google-login.ts`                  | `GOOGLE_LOGIN_ENABLED = false`.                                                                                                                                                                                                                                           |
+| `src/lib/config/google-classroom.ts`              | `GOOGLE_CLASSROOM_ENABLED = false`.                                                                                                                                                                                                                                       |
+| `src/lib/server/google/oauth.ts`, `encryption.ts` | Classroom : `getAuthUrl`, `exchangeCodeForTokens`, `refreshAccessToken`, `revokeAccess` ; `encryptToken`/`decryptToken`.                                                                                                                                                  |
+| `src/app.d.ts`                                    | Type de `App.Locals` (`user`, `profile`, `supabase`, `safeGetSession`, `adminSupabase?`, `adminElevation?`).                                                                                                                                                              |
 
 Routes :
 
-| Route                                                    | Rôle                                                                                          |
-| -------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `(public)/auth/login`                                    | Actions `login` (e-mail + mot de passe) et `googleSignIn` (refusée : drapeau à `false`).      |
-| `(public)/auth/register`                                 | Inscription autonome d'un élève par **code de classe**.                                       |
-| `(public)/auth/confirm`                                  | Lien e-mail (`verifyOtp`) : confirmation d'inscription, `recovery` → `/auth/update-password`. |
-| `(public)/auth/callback`                                 | Retour de la connexion Google (refusé tant que `GOOGLE_LOGIN_ENABLED` est `false`).           |
-| `(public)/auth/reset-password`, `update-password`        | Mot de passe oublié / nouveau mot de passe.                                                   |
-| `(public)/auth/pending-approval`                         | Écran d'attente d'un compte `pending`.                                                        |
-| `(public)/auth/logout`                                   | `POST` → `signOut()`, révoque et efface l'élévation admin → `/`.                              |
-| `(protected)/+layout.server.ts`                          | Garde de groupe des **pages** protégées (session, profil, statut, consentement).              |
-| `(protected)/dashboard/admin/+layout.server.ts`          | Garde de la section admin (élévation ou vrai admin ; deux préfixes ouverts au prof).          |
-| `(protected)/dashboard/elevate`                          | Écran de saisie du mot de passe admin.                                                        |
-| `api/admin/elevate`, `api/admin/elevate/revoke`          | Pose / retire l'élévation.                                                                    |
-| `api/admin/pending-users`, `api/admin/users/[id]/status` | Approbation des comptes (prof **et** admin, via `requireRoles`).                              |
-| `api/google/auth/{connect,callback,disconnect,status}`   | Autorisation Google Classroom (prof seulement).                                               |
+| Route                                                           | Rôle                                                                                                                                                                                                                                        |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `(public)/auth/login`                                           | Actions `login` (e-mail + mot de passe) et `googleSignIn` (refusée : drapeau à `false`).                                                                                                                                                    |
+| `(public)/auth/register`                                        | Inscription autonome d'un élève par **code de classe**.                                                                                                                                                                                     |
+| `(public)/auth/confirm`                                         | Lien e-mail (`verifyOtp`) : confirmation d'inscription, `recovery` → `/auth/update-password`.                                                                                                                                               |
+| `(public)/auth/callback`                                        | Retour de la connexion Google (refusé tant que `GOOGLE_LOGIN_ENABLED` est `false`).                                                                                                                                                         |
+| `(public)/auth/reset-password`, `update-password`               | Mot de passe oublié / nouveau mot de passe.                                                                                                                                                                                                 |
+| `(public)/auth/pending-approval`                                | Écran d'attente d'un compte `pending`.                                                                                                                                                                                                      |
+| `(public)/auth/logout`                                          | `POST` → `signOut()`, révoque et efface l'élévation admin → `/`. Côté navigateur, `submitLogoutForm` et la page d'attente d'approbation effacent d'abord les données de travail de l'élève (T17, [conformite/rgpd.md](conformite/rgpd.md)). |
+| `(protected)/+layout.server.ts`                                 | Garde de groupe des **pages** protégées (session, profil, statut, consentement).                                                                                                                                                            |
+| `(protected)/dashboard/admin/+layout.server.ts`                 | Garde de la section admin (élévation ou vrai admin ; deux préfixes ouverts au prof).                                                                                                                                                        |
+| `(protected)/dashboard/elevate`                                 | Écran de saisie du mot de passe admin.                                                                                                                                                                                                      |
+| `api/admin/elevate`, `api/admin/elevate/revoke`                 | Pose / retire l'élévation.                                                                                                                                                                                                                  |
+| `api/admin/search-users/pending`, `api/admin/users/[id]/status` | Approbation des comptes (prof **et** admin, via `requireRoles`).                                                                                                                                                                            |
+| `api/google/auth/{connect,callback,disconnect,status}`          | Autorisation Google Classroom (prof seulement).                                                                                                                                                                                             |
 
-`/login` n'existe pas : `redirectHandle` le renvoie en 308 vers `/auth/login`
-(test : `src/routes/__tests__/login-redirect.test.ts`).
+`/login` n'existe pas : `redirectHandle` (`src/lib/server/redirectHandle.ts`) le renvoie en 308
+vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
+`src/lib/server/__tests__/redirectHandle.test.ts`). Même filet pour `/cas`, retirée le 2026-10-13 :
+`/cas` et `/cas/` mènent à `/atelier` en 308, query string comprise.
 
 ## Processus 1 — la connexion (Supabase Auth)
 
@@ -115,7 +119,7 @@ Routes :
 1. `requestIdHandle` — `locals.requestId`, en-tête `X-Request-ID`.
 2. `maintenanceHandle` — avant Supabase, pour marcher base gelée.
 3. `supabaseHandle` — `locals.supabase` et `locals.safeGetSession`.
-4. `redirectHandle` — anciennes routes, dont `/login`.
+4. `redirectHandle` — anciennes routes, dont `/login` et `/cas`.
 5. `userProfileHandle` — `locals.user` puis `locals.profile`.
 6. `adminElevationHandle` — `locals.adminSupabase`, `locals.adminElevation`.
 7. `csrfHandle` — `Origin` doit correspondre à `Host` pour POST/PUT/PATCH/DELETE.
@@ -125,7 +129,13 @@ Routes :
 ### Session et cookies SSR
 
 - `locals.supabase` est un client `@supabase/ssr` qui lit et écrit les cookies `sb-*`.
-  Leur `maxAge` est **plafonné à 30 jours** (le défaut de la bibliothèque est 400 jours).
+  Leur `maxAge` est **plafonné à 30 jours** (le défaut de la bibliothèque est 400 jours),
+  **côté serveur comme côté navigateur** : `capSessionCookieOptions`
+  (`src/lib/utils/session-cookies.ts`) dans le `setAll` du serveur, et `browserCookieMethods`
+  pour le client navigateur de `+layout.ts`. La bibliothèque ignore un `cookieOptions.maxAge`
+  (elle le remet à 400 jours) : le plafond ne peut vivre que dans nos `setAll`. Sans celui du
+  navigateur, un rafraîchissement de session fait par le navigateur réécrivait le cookie pour
+  400 jours (finding A1, corrigé le 2026-10-12).
 - `safeGetSession()` appelle **`auth.getUser()`** (vérification auprès du serveur d'auth,
   délai max 15 s, échec → `{ user: null }`). **Jamais `getSession()`** : elle lit le cookie
   sans le vérifier.
@@ -166,11 +176,16 @@ Routes :
   le chemin brut (SvelteKit route sur le chemin décodé : `/%61pi/…` atteint `/api/…`). Restent
   ouverts : déconnexion, connexion, inscription, `update-password`, `/consent/[token]`,
   `/api/errors/log`, `/api/account/export` et `/api/account/delete` (droits RGPD).
-- ⚠️ **La base, elle, ignore le statut** : avec son jeton, un compte en attente garde via PostgREST
-  ce qu'a un élève sans école ni classe (écrire ses propres données, écrire au prof, lire des
-  statistiques de jeu pseudonymes en `using (true)`). Aucun accès à un mineur. Constat ouvert.
-- Le prof et l'admin approuvent ou refusent via `api/admin/pending-users` et
-  `api/admin/users/[id]/status` (motif dans `rejection_reason`).
+- **La base ignore le statut, par décision** (David, 2026-10-11) : avec son jeton, un compte en
+  attente garde via PostgREST ce qu'a un élève sans école ni classe — écrire ses propres données,
+  écrire au prof. Aucun accès à un mineur (amitiés et conversations bornées à l'école ; données de
+  jeu privées depuis le 2026-10-11). Garder le statut dans chaque policy coûterait cher pour un gain
+  faible ; le garde du hook ferme l'application.
+- Le prof et l'admin listent les comptes en attente via `api/admin/search-users/pending` et
+  approuvent ou refusent via `api/admin/users/[id]/status` (motif dans `rejection_reason`).
+  À l'approbation, l'élève reçoit une notification (`user_approved`) ; s'il est déjà inscrit dans
+  des classes, le professeur en reçoit une aussi (`student_approved`, ciblée par rôle `teacher`,
+  avec un lien vers le courriel de bienvenue).
 
 ### Qui crée le profil
 
@@ -257,7 +272,7 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
 4. `requireAdmin(locals)` rend `{ supabase, adminUserId }` : le client d'élévation s'il est
    actif, sinon `locals.supabase` pour un vrai login admin ; 401 sans session (même élevé),
    sinon 403
-   « Admin elevation required ». **Les écritures privilégiées utilisent le `supabase` rendu.**
+   « Élévation admin requise ». **Les écritures privilégiées utilisent le `supabase` rendu.**
 5. `POST /api/admin/elevate/revoke` **et `POST /auth/logout`** : `signOut()` best-effort du
    jeton admin, puis effacement du cookie. Sinon, expiration naturelle (≤ 1 h) puis nouvelle
    saisie.
@@ -268,8 +283,10 @@ Un élève reçoit 403.
 
 ## Processus 2 — l'autorisation Google Classroom
 
-Désactivée (`GOOGLE_CLASSROOM_ENABLED = false` : points d'entrée de l'interface masqués),
-plomberie conservée. `api/google/auth/connect` (prof) crée un `state` et un vérificateur PKCE,
+Désactivée (`GOOGLE_CLASSROOM_ENABLED = false` : points d'entrée de l'interface masqués, et
+toute route `/api/google/**` répond 403 par `assertGoogleClassroomEnabled()` — sauf
+`auth/disconnect`, pour révoquer, et `auth/status`, en lecture ; B8, test
+`src/routes/api/google/__tests__/interrupteur-google.test.ts`), plomberie conservée. `api/google/auth/connect` (prof) crée un `state` et un vérificateur PKCE,
 stockés en cookies `httpOnly` (`google_oauth_state`, `google_code_verifier`) ; `callback`
 vérifie le `state`, échange le code, chiffre les jetons (`encryptToken`, AES-256-GCM, clé
 `GOOGLE_TOKEN_ENCRYPTION_KEY`) et les range dans `google_integrations`. Ce n'est **pas** une
@@ -284,7 +301,11 @@ connexion : aucune session n'est créée.
    jamais `profile.role` pour élever.
 5. **Le client service contourne la RLS** : seulement quand la base refuse légitimement
    l'écriture à l'utilisateur, **après** le contrôle d'identité de la route, et en
-   l'ajoutant à `ALLOWED_SERVICE_ROLE_PATHS`.
+   l'ajoutant à `ALLOWED_SERVICE_ROLE_PATHS`. Seule lecture anonyme : le document du lien du
+   cours (`(public)/cours/[token]/document/[id]`, ADR 0025), où la garde est le jeton, vérifiée
+   par une fonction SQL que seul le service role exécute. Le fichier d'un document de chapitre
+   (`api/documents/[id]`, ADR 0029) se lit aussi par le service, après la lecture de sa ligne
+   avec le client de l'utilisateur (RLS : chapitre visible, document publié).
 6. **Pas d'énumération** : login, inscription et reset rendent le même message que le compte
    existe ou non.
 7. **Les limites de débit échouent ouvertes** (`rateLimiter.ts` : erreur RPC → autorisé) —
@@ -334,21 +355,22 @@ d'intégration obligatoires, et relire [rls-echecs-silencieux](../pratiques/rls-
 
 ## Tests
 
-| Où                                                                                                                                                                                      | Quoi                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `src/lib/server/__tests__/adminElevation.test.ts`, `adminElevationHandle.test.ts`                                                                                                       | Cookie (encode/décode/expiration) ; handle : pas d'élévation sans session. |
-| `src/routes/(public)/auth/logout/__tests__/logout.test.ts`                                                                                                                              | Le logout efface et révoque l'élévation.                                   |
-| `src/routes/api/admin/elevate/__tests__/elevate.test.ts`, `revoke/__tests__/revoke.test.ts`                                                                                             | Endpoints d'élévation.                                                     |
-| `src/lib/server/middleware/__tests__/requireAdmin.test.ts`, `student-access.test.ts`                                                                                                    | Gardes API.                                                                |
-| `src/lib/server/__tests__/csrfProtection.test.ts`, `private-response.test.ts`, `validateRedirectUrl.test.ts`, `rateLimiter.test.ts`                                                     | Défenses transverses.                                                      |
-| `src/lib/server/auth/__tests__/cron.test.ts`, `auth-error-fr.test.ts`                                                                                                                   | Secret cron, messages traduits.                                            |
-| `src/routes/(public)/auth/{login,reset-password,update-password}/__tests__/`                                                                                                            | Formulaires publics.                                                       |
-| `src/routes/__tests__/login-redirect.test.ts`                                                                                                                                           | `/login` → `/auth/login`.                                                  |
-| `tests/integration/admin-elevation.test.ts`                                                                                                                                             | Le client admin agit bien en tant qu'admin sous RLS.                       |
-| `tests/integration/student-self-registration.test.ts`, `security-signup-anchor.test.ts`                                                                                                 | `handle_new_user`, code de classe.                                         |
-| `tests/integration/profile-insert-role-guard.test.ts`, `role-guard-functions.test.ts`, `security-authz-guards.test.ts`, `profiles-columns.test.ts`, `database/profile-triggers.test.ts` | RLS et triggers de `profiles`.                                             |
-| `tests/integration/consentement-*.test.ts`                                                                                                                                              | Consentement (voir conformite/).                                           |
-| `e2e/auth/` (`login`, `logout`, `protected-routes`)                                                                                                                                     | Parcours navigateur.                                                       |
+| Où                                                                                                                                                                                      | Quoi                                                                                                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `src/lib/server/__tests__/adminElevation.test.ts`, `adminElevationHandle.test.ts`                                                                                                       | Cookie (encode/décode/expiration) ; handle : pas d'élévation sans session.                                   |
+| `src/routes/(public)/auth/logout/__tests__/logout.test.ts`                                                                                                                              | Le logout efface et révoque l'élévation.                                                                     |
+| `src/lib/utils/__tests__/session-cookies.test.ts`                                                                                                                                       | Plafond de 30 jours (400 → 30 j, effacement `Max-Age=0` intact) ; écriture navigateur sur `document.cookie`. |
+| `src/routes/api/admin/elevate/__tests__/elevate.test.ts`, `revoke/__tests__/revoke.test.ts`                                                                                             | Endpoints d'élévation.                                                                                       |
+| `src/lib/server/middleware/__tests__/requireAdmin.test.ts`, `student-access.test.ts`                                                                                                    | Gardes API.                                                                                                  |
+| `src/lib/server/__tests__/csrfHandle.test.ts`, `private-response.test.ts`, `validateRedirectUrl.test.ts`, `rateLimiter.test.ts`                                                         | Défenses transverses.                                                                                        |
+| `src/lib/server/auth/__tests__/cron.test.ts`, `auth-error-fr.test.ts`                                                                                                                   | Secret cron, messages traduits.                                                                              |
+| `src/routes/(public)/auth/{login,reset-password,update-password}/__tests__/`                                                                                                            | Formulaires publics.                                                                                         |
+| `src/routes/__tests__/login-redirect.test.ts`                                                                                                                                           | `/login` → `/auth/login`.                                                                                    |
+| `tests/integration/admin-elevation.test.ts`                                                                                                                                             | Le client admin agit bien en tant qu'admin sous RLS.                                                         |
+| `tests/integration/student-self-registration.test.ts`, `security-signup-anchor.test.ts`                                                                                                 | `handle_new_user`, code de classe.                                                                           |
+| `tests/integration/profile-insert-role-guard.test.ts`, `role-guard-functions.test.ts`, `security-authz-guards.test.ts`, `profiles-columns.test.ts`, `database/profile-triggers.test.ts` | RLS et triggers de `profiles`.                                                                               |
+| `tests/integration/consentement-*.test.ts`                                                                                                                                              | Consentement (voir conformite/).                                                                             |
+| `e2e/auth/` (`login`, `logout`, `protected-routes`)                                                                                                                                     | Parcours navigateur.                                                                                         |
 
 Commandes : `pnpm test:server <fichier>`, `pnpm test:integration` (Supabase local). Aucun
 test unitaire ne couvre `(protected)/+layout.server.ts` ni `userProfileHandle`.
@@ -359,7 +381,8 @@ test unitaire ne couvre `(protected)/+layout.server.ts` ni `userProfileHandle`.
   distinct joint par élévation, école = frontière sociale.
 - [ADR 0003](../adr/0003-donnees-hebergees-en-ue.md) — données (dont Auth) hébergées en UE.
 - Décisions sans ADR, toujours en vigueur : `getUser()` seul ; rôle lu en base ; import
-  dynamique de `@supabase/ssr` ; limites de débit fail-open ; élévation sans jeton de
+  dynamique de `@supabase/ssr` ; limites de débit fail-open, sauf l'élévation admin, fermée en cas de panne de la base
+  ou d'IP / e-mail absent (B8 : une panne n'ouvre pas le forçage du mot de passe admin) ; élévation sans jeton de
   rafraîchissement, fuite ≤ 1 h acceptée ; connexion Google et Classroom coupées par drapeau,
   plomberie gardée. Historique : [élévation](../archive/wip/admin-elevation-progress.md),
   [mono-prof](../archive/wip/single-teacher-refactor.md),

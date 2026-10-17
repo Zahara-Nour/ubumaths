@@ -24,22 +24,24 @@ import {
 	add,
 	subtract,
 	percentage,
-	variable,
 	superscript,
 	func,
 	sqrt,
-	euler
+	euler,
+	imaginaryUnit
 } from './factory';
 import {
 	isComplex,
 	isDivision,
 	isEulerConstant,
+	isImaginaryUnit,
 	isMultiplication,
 	isNumber,
 	isOpposite,
 	isPercentage,
 	isPiConstant,
 	isPositive,
+	isSegmentLength,
 	isSymbol,
 	isVariable
 } from './guards';
@@ -59,7 +61,9 @@ import {
 	unflattenSum,
 	unflattenProduct
 } from './flatten';
-import { parseLatexSafe, type GenericFunctionConfig } from './parser';
+import { parseLatexSafe, type CapitalPairs, type GenericFunctionConfig } from './parser';
+import { separateSpacedCapitals } from './parser/latex/point-names';
+import { canonicalSegment, figureNameRefusal } from './common/segment-names';
 import { bareDecimalCommaToPoint } from './decimal-comma';
 import { toLatex } from './latex-generator';
 import { compareNodes } from './normal';
@@ -255,8 +259,9 @@ export function checkSpacesViolation(latex: string): boolean {
  * Removes regular spaces and LaTeX thin spaces (\,) that are used for digit grouping.
  */
 export function removeSpaces(latex: string): string {
+	// Deux majuscules séparées restent séparées : `A\,B` est un produit, pas la longueur AB
 	// Remove LaTeX thin spaces
-	let result = latex.replace(/\\,/g, '');
+	let result = separateSpacedCapitals(latex).replace(/\\,/g, '');
 	// Remove regular spaces between digits (grouping spaces)
 	result = result.replace(/(\d)\s+(\d)/g, '$1$2');
 	return result;
@@ -903,6 +908,11 @@ export interface CheckFormOptions {
 	 * Absent ou vide : rien ne change.
 	 */
 	assumptions?: AnswerAssumptions;
+	/**
+	 * Sens de deux majuscules collées pour relire la réponse et l'attendu (`AB` :
+	 * longueur ou produit). Absent : défaut du parseur (produit).
+	 */
+	capitalPairs?: CapitalPairs;
 }
 
 /**
@@ -955,15 +965,46 @@ export interface CheckFormOptions {
  * Build the ordered AST transformer pipeline, binding bracket-stripping to the
  * supplied options (e.g. `allowFirstNegative`).
  */
-/** `complex(0, 1)` : l'unité imaginaire telle que le parseur lit `\imaginaryI` */
-function isImaginaryUnitNode(node: MathNode): boolean {
-	return (
-		isComplex(node) &&
-		isNumber(node.real) &&
-		node.real.value === '0' &&
-		isNumber(node.imaginary) &&
-		node.imaginary.value === '1'
-	);
+/** Le dernier facteur d'un produit (`2AN` → `AN`), l'expression elle-même sinon. */
+function rightmostFactor(node: MathNode): MathNode {
+	return node.type === 'multiplication' ? rightmostFactor(node.right) : node;
+}
+
+/** Le premier facteur d'un produit, ou la base d'une puissance (`AB^2` → `AB`). */
+function leftmostFactor(node: MathNode): MathNode {
+	if (node.type === 'multiplication') return leftmostFactor(node.left);
+	if (node.type === 'superscript') return leftmostFactor(node.base);
+	return node;
+}
+
+/**
+ * Longueurs : l'ordre des points est libre (`BA` a la forme de `AB`, décision Q2 du
+ * 2026-10-11) et des parenthèses autour d'une longueur seule (`(AB)^2`) ne sont pas une
+ * faute — l'élève groupe les deux lettres pour dire « une longueur » ; un `×` ou un `·`
+ * entre deux longueurs (`AN×AB`) non plus. Notation, pas forme : aucune pénalité.
+ */
+export function unifySegmentNotationAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (isSegmentLength(node)) return canonicalSegment(node);
+		// `AN×AB`, `AN·AB` : le signe entre deux longueurs est une notation (l'élève
+		// sépare deux noms de segments), écrit comme le produit implicite `AN AB`
+		if (
+			node.type === 'multiplication' &&
+			node.displayStyle !== 'implicit' &&
+			isSegmentLength(rightmostFactor(node.left)) &&
+			isSegmentLength(leftmostFactor(node.right))
+		) {
+			return multiply(node.left, node.right, 'implicit', { metadata: node.metadata });
+		}
+		if (
+			node.type === 'delimiter' &&
+			node.delimiters === 'parentheses' &&
+			isSegmentLength(node.content)
+		) {
+			return canonicalSegment(node.content);
+		}
+		return node;
+	});
 }
 
 /**
@@ -972,14 +1013,12 @@ function isImaginaryUnitNode(node: MathNode): boolean {
  * `\exp(u)` (notation du programme) devient `e^{u}`. Ce sont des notations, pas
  * des formes : aucune pénalité (décision de David du 2026-10-02).
  *
- * De même pour l'unité imaginaire : `\imaginaryI` (MathLive, « ii » ou la variante
- * « i imaginaire » de la touche i), que le parseur lit `complex(0, 1)`, devient la
- * lettre `i` (`\mathrm{i}` l'était déjà). Avant : `2-3\imaginaryI` pour `2-3i`
- * était « pas sous la forme demandée » (décision de David du 2026-10-05).
+ * L'unité imaginaire n'a plus rien à unifier : les parseurs lisent la lettre `i`,
+ * `\mathrm{i}` et `\imaginaryI` (MathLive) en un seul nœud, `complex(0, 1)`
+ * (décisions de David du 2026-10-05 et du 2026-10-11).
  */
 export function unifyEulerNotationAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
-		if (isImaginaryUnitNode(node)) return variable('i');
 		if (node.type === 'function' && node.name === 'exp' && node.args.length === 1) {
 			return superscript(euler(), node.args[0]);
 		}
@@ -1065,14 +1104,9 @@ function unifyPiAngleNotationAST(ast: MathNode): MathNode {
 	});
 }
 
-/** La lettre `i` (unité imaginaire ; `\imaginaryI` y est déjà ramené par `unifyEulerNotationAST`) */
-function isImaginaryLetter(node: MathNode): boolean {
-	return isVariable(node) && node.name === 'i';
-}
-
-/** Constante réelle écrite : aucune lettre (ni `i`, ni variable) */
+/** Constante réelle écrite : aucune lettre (ni variable, ni unité imaginaire `i`) */
 function isLetterFree(node: MathNode): boolean {
-	return findNodes(node, isVariable).length === 0;
+	return findNodes(node, (n) => isVariable(n) || isComplex(n)).length === 0;
 }
 
 /**
@@ -1081,16 +1115,20 @@ function isLetterFree(node: MathNode): boolean {
  */
 export function imaginaryProductRest(node: MathNode): MathNode | null | undefined {
 	const factors = flattenProductShallow(node);
-	const imaginary = factors.filter((f) => isImaginaryLetter(f.factor));
+	const imaginary = factors.filter((f) => isImaginaryUnit(f.factor));
 	if (imaginary.length !== 1) return undefined;
-	const rest = factors.filter((f) => !isImaginaryLetter(f.factor));
+	const rest = factors.filter((f) => !isImaginaryUnit(f.factor));
 	if (!rest.every((f) => isLetterFree(f.factor))) return undefined;
 	return unflattenProduct(rest.map((f, k) => (k === 0 ? { ...f, style: 'implicit' } : f)));
 }
 
 /** `\frac{R}{d}i` (`\frac{1}{d}i` pour `R` absent) */
 function imaginaryOverDenominator(rest: MathNode | null, denominator: MathNode): MathNode {
-	return multiply(divide(rest ?? number('1'), denominator, 'fraction'), variable('i'), 'implicit');
+	return multiply(
+		divide(rest ?? number('1'), denominator, 'fraction'),
+		imaginaryUnit(),
+		'implicit'
+	);
 }
 
 /**
@@ -1465,6 +1503,7 @@ function unifyNegativeExponentialNotationAST(ast: MathNode): MathNode {
 
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
+		{ transform: unifySegmentNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyEulerNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyInfinityNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyPiAngleNotationAST, constraintId: null }, // notation, pas forme
@@ -1681,7 +1720,10 @@ export function cosmeticViolations(
 	const answerStr = normalizeDecimalComma(removeSpaces(answerNoZeros));
 
 	// === Parse AST ===
-	const answerParse = parseLatexSafe(answerStr, { genericFunctions: options.genericFunctions });
+	const answerParse = parseLatexSafe(answerStr, {
+		genericFunctions: options.genericFunctions,
+		capitalPairs: options.capitalPairs
+	});
 	if (!answerParse.ast || answerParse.errors.length > 0) {
 		// Can't parse → no cosmetic verdict to give.
 		return violations;
@@ -1759,7 +1801,10 @@ export function checkForm(
 	const answerStr = normalizeDecimalComma(removeSpaces(answerNoZeros));
 
 	// === Parse AST ===
-	const answerParse = parseLatexSafe(answerStr, { genericFunctions: options.genericFunctions });
+	const answerParse = parseLatexSafe(answerStr, {
+		genericFunctions: options.genericFunctions,
+		capitalPairs: options.capitalPairs
+	});
 	if (!answerParse.ast || answerParse.errors.length > 0) {
 		// Can't parse, can't check form — treat as bad_form
 		return {
@@ -1768,6 +1813,12 @@ export function checkForm(
 			violations: [],
 			messages: ['Parse error on answer']
 		};
+	}
+
+	// Un nom de figure (`ABC`) n'est pas une réponse : refusé, avec le message (Q-A)
+	const figureRefusal = figureNameRefusal(answerParse.ast);
+	if (figureRefusal !== null) {
+		return { valid: false, status: 'bad_form', violations: [], messages: [figureRefusal] };
 	}
 
 	let answerAST = answerParse.ast;
@@ -1791,7 +1842,8 @@ export function checkForm(
 	// === Same pipeline for expected ===
 	const expectedStr = normalizeDecimalComma(removeSpaces(removeZeros(expectedLatex)));
 	const expectedParse = parseLatexSafe(expectedStr, {
-		genericFunctions: options.genericFunctions
+		genericFunctions: options.genericFunctions,
+		capitalPairs: options.capitalPairs
 	});
 	if (!expectedParse.ast || expectedParse.errors.length > 0) {
 		return {

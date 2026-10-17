@@ -45,6 +45,9 @@ import {
 import { requireRole, requireRoles } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import { formDataTransforms } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/classes/+page.server');
 
 /**
  * Schema for associating a Google Classroom course with a class
@@ -82,12 +85,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
 
 	if (!user || !profile) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Verify user is a teacher (not student or admin accessing this route)
 	if (profile.role !== 'teacher') {
-		throw error(403, 'Only teachers can access this page');
+		throw error(403, 'Page réservée aux professeurs');
 	}
 
 	// Use unified helper to fetch classes with counts and schedules
@@ -123,7 +126,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.eq('status', 'active');
 
 		if (membersError) {
-			console.error('[Teacher Classes] Error fetching students:', membersError);
+			logger.error('[Teacher Classes] Error fetching students:', membersError);
 		}
 
 		// Get all unique student IDs across all classes
@@ -149,7 +152,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 			// laisse une trace.
 			if (allWelcomeEmailsError) {
-				console.error('Enrichissement illisible :', allWelcomeEmailsError);
+				logger.error('Enrichissement illisible :', allWelcomeEmailsError);
 			}
 
 			for (const email of allWelcomeEmails || []) {
@@ -200,7 +203,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.single();
 
 		if (schoolError) {
-			console.error('[Teacher Classes] Error fetching school:', schoolError);
+			logger.error('[Teacher Classes] Error fetching school:', schoolError);
 		} else {
 			school = data;
 		}
@@ -217,7 +220,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (googleCoursesError) {
-		console.error('Enrichissement illisible :', googleCoursesError);
+		logger.error('Enrichissement illisible :', googleCoursesError);
 	}
 
 	// Fetch which courses are already associated with classes (for filtering).
@@ -230,7 +233,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (associatedCourseIdsError) {
-		console.error('Enrichissement illisible :', associatedCourseIdsError);
+		logger.error('Enrichissement illisible :', associatedCourseIdsError);
 	}
 
 	// Single-teacher (Option B): students not enrolled in any active class.
@@ -242,7 +245,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.select('id, registration_open');
 
 	if (regRowsError) {
-		console.error('Lecture impossible :', regRowsError);
+		logger.error('Lecture impossible :', regRowsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 	const registrationOpenById = new Map((regRows ?? []).map((r) => [r.id, r.registration_open]));
@@ -345,7 +348,7 @@ export const actions: Actions = {
 		});
 
 		if (insertError) {
-			console.error('Error creating schedule entry:', insertError);
+			logger.error('Error creating schedule entry:', insertError);
 			return fail(500, { message: 'Impossible de créer le créneau' });
 		}
 
@@ -419,12 +422,12 @@ export const actions: Actions = {
 			.select('id');
 
 		if (updateError) {
-			console.error('Error updating schedule entry:', updateError);
+			logger.error('Error updating schedule entry:', updateError);
 			return fail(500, { message: 'Impossible de modifier le créneau' });
 		}
 
 		if (!updated || updated.length === 0) {
-			console.error('[updateScheduleEntry] Aucune ligne modifiée pour', id);
+			logger.error('[updateScheduleEntry] Aucune ligne modifiée pour', id);
 			return fail(403, { message: 'Créneau non modifié : droits insuffisants' });
 		}
 
@@ -478,12 +481,12 @@ export const actions: Actions = {
 			.select('id');
 
 		if (deleteError) {
-			console.error('Error deleting schedule entry:', deleteError);
+			logger.error('Error deleting schedule entry:', deleteError);
 			return fail(500, { message: 'Impossible de supprimer le créneau' });
 		}
 
 		if (!deleted || deleted.length === 0) {
-			console.error('[deleteScheduleEntry] Aucune ligne supprimée pour', id);
+			logger.error('[deleteScheduleEntry] Aucune ligne supprimée pour', id);
 			return fail(403, { message: 'Créneau non supprimé : droits insuffisants' });
 		}
 
@@ -541,7 +544,7 @@ export const actions: Actions = {
 			}
 
 			if (courseData.teacher_id !== user.id) {
-				return fail(403, { message: 'Vous ne possédez pas ce cours' });
+				return fail(403, { message: 'Accès refusé à ce cours' });
 			}
 		}
 
@@ -552,7 +555,7 @@ export const actions: Actions = {
 			.eq('id', classId);
 
 		if (updateError) {
-			console.error('Error updating class association:', updateError);
+			logger.error('Error updating class association:', updateError);
 			return fail(500, { message: "Erreur lors de la mise à jour de l'association" });
 		}
 
@@ -575,18 +578,25 @@ export const actions: Actions = {
 		// New unique code from the DB helper (loops until unique).
 		const { data: newCode, error: genError } = await locals.supabase.rpc('generate_join_code');
 		if (genError || !newCode) {
-			console.error('Error generating join code:', genError);
+			logger.error('Error generating join code:', genError);
 			return fail(500, { message: 'Erreur lors de la génération du code' });
 		}
 
 		// Mono-teacher: RLS scopes write access to the sole teacher/admin.
-		const { error: updateError } = await locals.supabase
+		// Un refus de la RLS (ou une classe inconnue) touche zéro ligne sans erreur :
+		// sans les lignes rendues, l'écran affichait un code qui n'existait nulle part.
+		const { data: updatedClasses, error: updateError } = await locals.supabase
 			.from('classes')
 			.update({ join_code: newCode })
-			.eq('id', classId);
+			.eq('id', classId)
+			.select('id');
 		if (updateError) {
-			console.error('Error updating join code:', updateError);
+			logger.error('Error updating join code:', updateError);
 			return fail(500, { message: 'Erreur lors de la mise à jour du code' });
+		}
+		if (!updatedClasses || updatedClasses.length === 0) {
+			logger.error('[regenerateJoinCode] Aucune ligne modifiée pour', classId);
+			return fail(404, { message: 'Classe introuvable : code non modifié' });
 		}
 
 		return { success: true, joinCode: newCode };
@@ -605,13 +615,19 @@ export const actions: Actions = {
 		}
 		const { classId, open } = validation.data;
 
-		const { error: updateError } = await locals.supabase
+		// Même piège : zéro ligne touchée n'est pas un succès.
+		const { data: updatedClasses, error: updateError } = await locals.supabase
 			.from('classes')
 			.update({ registration_open: open })
-			.eq('id', classId);
+			.eq('id', classId)
+			.select('id');
 		if (updateError) {
-			console.error('Error toggling registration:', updateError);
+			logger.error('Error toggling registration:', updateError);
 			return fail(500, { message: "Erreur lors du changement d'état de l'inscription" });
+		}
+		if (!updatedClasses || updatedClasses.length === 0) {
+			logger.error('[toggleRegistration] Aucune ligne modifiée pour', classId);
+			return fail(404, { message: 'Classe introuvable : inscription inchangée' });
 		}
 
 		return { success: true };

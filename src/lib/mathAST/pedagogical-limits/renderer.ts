@@ -27,6 +27,8 @@
  */
 
 import { toLatex } from '../latex-generator';
+import { isAddition, isOpposite, isSubtraction } from '../guards';
+import { containsVariable } from '../common/contains-variable';
 import type { LimitDirection } from '../limits/types';
 import type { MathNode } from '../types';
 import type {
@@ -37,7 +39,13 @@ import type {
 } from '../common/step-renderer-base';
 import { EXPLANATIONS, TITLES, getDefaultDescription } from './descriptions-fr';
 import { FACTORISATION_CLUSTER_RULES } from './types';
-import type { LimitsSchoolLevel, PedagogicalLimitRule, PedagogicalLimitStep } from './types';
+import type {
+	LimitLine,
+	LimitsSchoolLevel,
+	PedagogicalLimitRule,
+	PedagogicalLimitStep,
+	TermLimits
+} from './types';
 
 // Sub-rules of the factorisation cluster that operate on a *fragment* of the
 // limit expression (numerator or denominator), not the whole limit. Drop the
@@ -89,7 +97,15 @@ function formatLimitSubscript(
  * ```
  * \begin{aligned}
  *   & \textcolor{blue}{\lim_{x \to a} f(x)} \\
- *   & = g(x)
+ *   & = \lim_{x \to a} g(x)   (ou la valeur, quand g ne dépend plus de x)
+ * \end{aligned}
+ * ```
+ *
+ * Quand g = f (étape d'annonce), la limite seule, sans 2ᵉ ligne :
+ *
+ * ```
+ * \begin{aligned}
+ *   & \textcolor{blue}{\lim_{x \to a} f(x)}
  * \end{aligned}
  * ```
  *
@@ -103,14 +119,13 @@ function formatLimitSubscript(
  * lying about the scope — they show `before \Rightarrow after` instead.
  */
 function formatExpressionLatex(step: PedagogicalLimitStep): string {
-	const beforeLatex = toLatex(step.before);
-	const afterLatex = toLatex(step.after);
-
 	// Sub-steps of a factorisation cluster operate on a fragment, not the
 	// whole limit — render them as a transformation arrow rather than a
 	// limit identity. Driven by `FRAGMENT_RULES` so V1.1 cluster extensions
 	// are picked up automatically.
 	if (FRAGMENT_RULES.has(step.rule)) {
+		const beforeLatex = toLatex(step.before);
+		const afterLatex = toLatex(step.after);
 		return (
 			`\\begin{aligned}\n` +
 			`  & \\textcolor{blue}{${beforeLatex}} \\\\\n` +
@@ -120,21 +135,80 @@ function formatExpressionLatex(step: PedagogicalLimitStep): string {
 	}
 
 	const limitSub = formatLimitSubscript(step.variable, step.approach, step.direction);
+	if (step.termLimits) {
+		return termLimitsLatex(step.termLimits, limitSub);
+	}
+	const left = limitLatex(limitSub, step.before);
+	const right = rightHandSideLatex(step, limitSub);
+	// Étape d'annonce (identification, forme indéterminée, terme dominant,
+	// encadrement, comparaison des côtés) : rien ne change, donc pas de « = » —
+	// `\\lim f = \\lim f` serait juste mais redondant. Même arbre ⇒ même LaTeX.
+	if (right === left) {
+		return `\\begin{aligned}\n  & \\textcolor{blue}{${left}}\n\\end{aligned}`;
+	}
 	return (
 		`\\begin{aligned}\n` +
-		`  & \\textcolor{blue}{\\lim_{${limitSub}} ${beforeLatex}} \\\\\n` +
-		`  & = ${afterLatex}\n` +
+		`  & \\textcolor{blue}{${left}} \\\\\n` +
+		`  & = ${right}\n` +
 		`\\end{aligned}`
 	);
+}
+
+/**
+ * Limites des termes, une ligne chacune, sans couleur :
+ *
+ * ```
+ * \\begin{aligned}
+ *   & \\lim \\dfrac{1}{x} = 0 \\\\
+ *   & \\lim \\dfrac{5}{x} = 0 \\\\
+ *   & \\text{donc } \\lim \\left( 3 + \\dfrac{1}{x} \\right) = 3 \\\\
+ *   & \\text{et } \\lim \\left( 2 - \\dfrac{5}{x} \\right) = 2
+ * \\end{aligned}
+ * ```
+ */
+function termLimitsLatex(termLimits: TermLimits, limitSub: string): string {
+	const line = (l: LimitLine) => {
+		// `\\lim (-x^4)`, jamais `\\lim -x^4`
+		const body = isOpposite(l.expression)
+			? `\\lim_{${limitSub}} \\left( ${toLatex(l.expression)} \\right)`
+			: limitLatex(limitSub, l.expression);
+		return `${body} = ${toLatex(l.value)}`;
+	};
+	const rows = [
+		...termLimits.premises.map(line),
+		...termLimits.conclusions.map((l, k) => `\\text{${k === 0 ? 'donc' : 'et'} } ${line(l)}`)
+	];
+	return `\\begin{aligned}\n${rows.map((r) => `  & ${r}`).join(' \\\\\n')}\n\\end{aligned}`;
+}
+
+/** `\\lim_{…} f` ; une somme est parenthésée : `\\lim (x + 2)`, jamais lu (lim x) + 2. */
+function limitLatex(limitSub: string, expression: MathNode): string {
+	const latex = toLatex(expression);
+	const isSum = isAddition(expression) || isSubtraction(expression);
+	const body = isSum ? `\\left( ${latex} \\right)` : latex;
+	return `\\lim_{${limitSub}} ${body}`;
+}
+
+/**
+ * Membre de droite d'une étape sur la limite entière : tant que l'expression
+ * dépend encore de la variable, c'est encore une limite — `\\lim f = \\lim g`,
+ * jamais `\\lim f = g(x)` (faux : une limite n'est pas une fonction de x).
+ * Une valeur (nombre, ±∞) s'écrit seule : `\\lim f = 3`.
+ */
+function rightHandSideLatex(step: PedagogicalLimitStep, limitSub: string): string {
+	return containsVariable(step.after, step.variable)
+		? limitLatex(limitSub, step.after)
+		: toLatex(step.after);
 }
 
 // =============================================================================
 // Renderer
 // =============================================================================
 
-export class PedagogicalLimitRenderer
-	implements StepRenderer<PedagogicalLimitStep, PedagogicalRenderOptions>
-{
+export class PedagogicalLimitRenderer implements StepRenderer<
+	PedagogicalLimitStep,
+	PedagogicalRenderOptions
+> {
 	render(step: PedagogicalLimitStep, options: PedagogicalRenderOptions): RenderedStep {
 		const effective = effectiveSchoolLevel(options.schoolLevel);
 
@@ -174,9 +248,25 @@ export class PedagogicalLimitRenderer
 }
 
 /**
- * Filter rules per verbosity. At `'summarized'`, the `identify-limit` and
- * `detect-indeterminate-form` informational steps are dropped so the trace
- * stays compact. At `'detailed'`, everything is shown.
+ * Étapes cachées en mode résumé : l'annonce (`identify-limit`), la forme
+ * indéterminée, et, en ±∞, les limites des termes et la limite de la somme /
+ * du produit / du quotient — le résumé garde le développement, la
+ * factorisation, la simplification et la conclusion (décision de David,
+ * 2026-10-12).
+ */
+const HIDDEN_WHEN_SUMMARIZED: ReadonlySet<PedagogicalLimitRule> = new Set([
+	'identify-limit',
+	'detect-indeterminate-form',
+	'limits-of-terms',
+	'apply-sum',
+	'apply-product',
+	'apply-quotient'
+]);
+
+/**
+ * Filter rules per verbosity. At `'summarized'`, the informational steps of
+ * `HIDDEN_WHEN_SUMMARIZED` are dropped so the trace stays compact. At
+ * `'detailed'`, everything is shown.
  *
  * Note : sub-steps are NOT filtered here — only top-level entries. The
  * renderer recurses into sub-steps unconditionally so the parent's
@@ -188,6 +278,5 @@ function shouldEmitForVerbosity(
 ): boolean {
 	if (options.verbosity === 'detailed') return true;
 	// summarized : drop purely informational steps
-	if (rule === 'identify-limit' || rule === 'detect-indeterminate-form') return false;
-	return true;
+	return !HIDDEN_WHEN_SUMMARIZED.has(rule);
 }

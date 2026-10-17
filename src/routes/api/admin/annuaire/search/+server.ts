@@ -63,15 +63,15 @@ export const GET: RequestHandler = async ({ url, fetch, locals }) => {
 	try {
 		res = await fetch(apiUrl, { headers: { Accept: 'application/json' } });
 	} catch {
-		throw error(502, "Annuaire de l'éducation indisponible");
+		throw error(502, 'Annuaire de l’éducation indisponible');
 	}
 	if (!res.ok) {
-		throw error(502, "Annuaire de l'éducation indisponible");
+		throw error(502, 'Annuaire de l’éducation indisponible');
 	}
 
 	const validated = annuaireResponseSchema.safeParse(await res.json());
 	if (!validated.success) {
-		throw error(502, 'Réponse Annuaire inattendue');
+		throw error(502, 'Réponse inattendue de l’Annuaire');
 	}
 
 	const schools: AnnuaireSchool[] = validated.data.results

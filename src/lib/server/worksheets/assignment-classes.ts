@@ -32,6 +32,9 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/worksheets/assignment-classes');
 
 // ============================================================================
 // TYPES
@@ -79,7 +82,7 @@ export async function fetchClassesByAssignment(
 		.order('class_id');
 
 	if (error) {
-		console.error('[assignment-classes] Classes de l’affectation illisibles :', error);
+		logger.error('[assignment-classes] Classes de l’affectation illisibles :', error);
 		throw new Error(error.message);
 	}
 

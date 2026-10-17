@@ -26,8 +26,7 @@ let pdfParse: PdfParseFunction | null = null;
 async function getPdfParse(): Promise<PdfParseFunction> {
 	if (!pdfParse) {
 		const pdfModule = (await import('pdf-parse')) as unknown as
-			| { default: PdfParseFunction }
-			| PdfParseFunction;
+			{ default: PdfParseFunction } | PdfParseFunction;
 		// pdf-parse exports the function directly in ESM or as default
 		pdfParse =
 			'default' in pdfModule

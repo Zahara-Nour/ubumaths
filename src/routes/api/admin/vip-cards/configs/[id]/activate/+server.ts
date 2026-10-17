@@ -13,6 +13,9 @@ import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import type { VipCardConfig } from '$lib/types/vip-card-admin';
 import { configToResponse } from '$lib/types/vip-card-admin';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/vip-cards/configs/[id]/activate/+server');
 
 /**
  * PATCH /api/admin/vip-cards/configs/[id]/activate
@@ -38,7 +41,7 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 	const configId = parseInt(params.id, 10);
 
 	if (isNaN(configId)) {
-		throw error(400, 'Invalid config ID');
+		throw error(400, 'Identifiant de configuration invalide');
 	}
 
 	try {
@@ -50,12 +53,12 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking config existence:', checkError);
-			throw error(500, 'Failed to check config existence');
+			logger.error('Error checking config existence:', checkError);
+			throw error(500, 'Impossible de vérifier la configuration');
 		}
 
 		if (!targetConfig) {
-			throw error(404, `Config with ID ${configId} not found`);
+			throw error(404, 'Configuration introuvable');
 		}
 
 		// 4. Deactivate all configs
@@ -65,8 +68,8 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 			.neq('id', configId);
 
 		if (deactivateError) {
-			console.error('Error deactivating configs:', deactivateError);
-			throw error(500, 'Failed to deactivate existing configs');
+			logger.error('Error deactivating configs:', deactivateError);
+			throw error(500, 'Impossible de désactiver les autres configurations');
 		}
 
 		// 5. Activate target config
@@ -78,14 +81,14 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 			.single();
 
 		if (activateError) {
-			console.error('Error activating config:', activateError);
-			throw error(500, 'Failed to activate config');
+			logger.error('Error activating config:', activateError);
+			throw error(500, 'Impossible d’activer la configuration');
 		}
 
 		// 6. Return activated config (convert snake_case to camelCase)
 		return json(configToResponse(activated as VipCardConfig));
 	} catch (err) {
-		console.error('Error in PATCH /api/admin/vip-cards/configs/[id]/activate:', err);
+		logger.error('Error in PATCH /api/admin/vip-cards/configs/[id]/activate:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -93,6 +96,6 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

@@ -32,8 +32,8 @@
 		<Alert.Title>Lettre grecque sans antislash</Alert.Title>
 		<Alert.Description class="text-amber-900 dark:text-amber-100">
 			<p>
-				Dans une formule <code>~…~</code>, chaque lettre est une variable : <code>pi</code> se lit p
-				× i. Pour une lettre grecque, écrivez-la avec un antislash.
+				Dans une formule <code>~…~</code>, chaque lettre est une variable : <code>pi</code> se lit p ×
+				i. Pour une lettre grecque, écrivez-la avec un antislash.
 			</p>
 			<ul class="mt-1 list-disc pl-5">
 				{#each warnings as { field, names } (field)}

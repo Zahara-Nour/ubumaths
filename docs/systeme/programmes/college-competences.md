@@ -49,7 +49,7 @@ date_generation: 2026-06-06
 
 > **Glose élève** : _« essayer des pistes, persévérer »_ > **Cœur d'excellence** : la **réorientation** — ne pas s'enfermer dans la première idée.
 
-### Sous-dimensions
+### Composantes
 
 - **A — S'approprier le problème** (3 observables)
 - **B — S'engager et explorer** (5 observables)
@@ -121,7 +121,7 @@ Insuffisante (◯) : niveau résiduel — aucune des conditions ci-dessus.
 
 > **Glose élève** : _« calculer juste, vérifier »_ > **Cœur d'excellence** : le **contrôle du résultat** ; au collège, le calcul littéral conditionne aussi la maîtrise la plus haute.
 
-### Sous-dimensions
+### Composantes
 
 - **A — Choisir une stratégie de calcul** (3 observables)
 - **B — Exécuter le calcul** (5 observables)
@@ -185,9 +185,9 @@ Insuffisante (◯) : niveau résiduel.
 
 ### Note d'observation
 
-Concevoir des tâches qui **laissent le choix du mode ouvert**, mettent des grandeurs en jeu (pour les unités) et rendent le contrôle utile. Le calcul littéral (C) verrouille la Très bonne maîtrise : prévoir une composante algébrique au périmètre dès qu'il s'agit de positionner un élève au plus haut niveau.
+Concevoir des tâches qui **laissent le choix du mode ouvert**, mettent des grandeurs en jeu (pour les unités) et rendent le contrôle utile. Le calcul littéral (C) verrouille la Très bonne maîtrise : prévoir une volet algébrique au périmètre dès qu'il s'agit de positionner un élève au plus haut niveau.
 
-**6ᵉ** : la sous-dimension C est largement en `∅` (le calcul littéral n'est pas encore central). Le niveau Très bonne maîtrise est donc difficile à atteindre en 6ᵉ — ce qui est cohérent avec la progression collège.
+**6ᵉ** : la composante C est largement en `∅` (le calcul littéral n'est pas encore central). Le niveau Très bonne maîtrise est donc difficile à atteindre en 6ᵉ — ce qui est cohérent avec la progression collège.
 
 ---
 
@@ -195,7 +195,7 @@ Concevoir des tâches qui **laissent le choix du mode ouvert**, mettent des gran
 
 > **Glose élève** : _« justifier mes affirmations »_ > **Cœur d'excellence** : le **raisonnement sur le cas général**, appuyé par un outil logique et la relecture critique.
 
-### Sous-dimensions
+### Composantes
 
 - **A — Organiser** (1 observable)
 - **B — Justifier et démontrer** (2 observables)
@@ -261,7 +261,7 @@ Il faut des consignes qui **appellent une justification** (« démontre », « e
 
 > **Glose élève** : _« expliquer ma démarche »_ > **Cœur d'excellence** : la **dimension dialogique** — comprendre autrui et argumenter — servie par un langage rigoureux.
 
-### Sous-dimensions
+### Composantes
 
 - **A — Employer un langage mathématique correct** (2 observables)
 - **B — Expliquer ma démarche** (2 observables)
@@ -315,7 +315,7 @@ Insuffisante (◯) : niveau résiduel.
 
 ### Note d'observation
 
-La sous-dimension dialogique (C) ne s'observe que dans des **situations d'oral et d'échange**. Sans elles, C reste en `∅` et la Très bonne maîtrise est inatteignable : prévoir exposés, débats ou explications entre pairs est la condition pour évaluer le cœur de la compétence.
+La composante dialogique (C) ne s'observe que dans des **situations d'oral et d'échange**. Sans elles, C reste en `∅` et la Très bonne maîtrise est inatteignable : prévoir exposés, débats ou explications entre pairs est la condition pour évaluer le cœur de la compétence.
 
 ---
 
@@ -323,7 +323,7 @@ La sous-dimension dialogique (C) ne s'observe que dans des **situations d'oral e
 
 > **Glose élève** : _« traduire en maths »_ > **Cœur d'excellence** : le **regard critique sur le modèle** — le confronter au réel, en voir les limites, l'ajuster.
 
-### Sous-dimensions
+### Composantes
 
 - **A — Mathématiser la situation** (3 observables — du réel vers les maths)
 - **B — Revenir à la situation réelle** (2 observables — des maths vers le réel)
@@ -374,7 +374,7 @@ Insuffisante (◯) : niveau résiduel.
 
 ### Note d'observation
 
-« Modéliser » suppose de **vraies situations réelles** à mathématiser puis à valider — pas des énoncés déjà mis en équation. Sans confrontation au réel, la sous-dimension critique (C), qui porte l'excellence, reste en `∅`.
+« Modéliser » suppose de **vraies situations réelles** à mathématiser puis à valider — pas des énoncés déjà mis en équation. Sans confrontation au réel, la composante critique (C), qui porte l'excellence, reste en `∅`.
 
 ---
 
@@ -382,7 +382,7 @@ Insuffisante (◯) : niveau résiduel.
 
 > **Glose élève** : _« schémas, tableaux, figures »_ > **Cœur d'excellence** : la **conversion entre registres** et leur coordination (au sens de Duval).
 
-### Sous-dimensions
+### Composantes
 
 - **A — Lire et interpréter** (2 observables)
 - **B — Produire une représentation** (2 observables)
@@ -407,10 +407,10 @@ Insuffisante (◯) : niveau résiduel.
 
 #### C — Convertir et mettre en relation
 
-| Code   | Énoncé élève                                                                                     | Grille enseignant                                                                                                                                     |
-| ------ | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Code   | Énoncé élève                                                                                     | Grille enseignant                                                                                                                                  |
+| ------ | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **C1** | Je passe d'une représentation à une autre du même objet.                                         | Convertit une représentation en une autre du même objet, sans en altérer le sens (formule ↔ courbe, tableau ↔ graphique, figure ↔ coordonnées...). |
-| **C2** | Je mets en relation plusieurs représentations du même objet et je contrôle qu'elles s'accordent. | Fait correspondre plusieurs représentations du même objet et vérifie leur cohérence mutuelle.                                                         |
+| **C2** | Je mets en relation plusieurs représentations du même objet et je contrôle qu'elles s'accordent. | Fait correspondre plusieurs représentations du même objet et vérifie leur cohérence mutuelle.                                                      |
 
 #### D — Choisir et exploiter
 
@@ -449,7 +449,7 @@ C'est la confusion la plus fréquente du référentiel.
 
 |                     | **Modéliser**                                                                                               | **Représenter**                                                                                                   |
 | ------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Frontière           | franchit la **frontière réel ↔ math**                                                                      | reste **à l'intérieur des maths**                                                                                 |
+| Frontière           | franchit la **frontière réel ↔ math**                                                                       | reste **à l'intérieur des maths**                                                                                 |
 | Geste               | traduire une situation **concrète** en objet mathématique, puis revenir au réel pour interpréter et valider | passer d'un **registre** à un autre d'un **même objet mathématique** (au sens des registres sémiotiques de Duval) |
 | Question            | _« Comment capter cette situation en maths, et le résultat a-t-il un sens dans la situation ? »_            | _« Comment exprimer cet objet sous différentes formes et passer de l'une à l'autre ? »_                           |
 | Critère de fidélité | au **réel**                                                                                                 | à l'**objet ou aux données**                                                                                      |
@@ -477,16 +477,16 @@ L'IGÉSR assume explicitement que « des cas de chevauchement entre compétences
 
 - Pour les **justifications pédagogiques** détaillées de chaque observable, les **notes d'arbitrage** sur les choix de fusion / séparation, et les **frontières** entre compétences : voir le cadre canonique `cadre_evaluation_six_competences_mathematiques.md`.
 - Pour le **modèle de données**, l'algorithme de consolidation et les caches : voir `docs/archive/wip/skills-referentiel-design.md` (sections 3, 6, 7).
-- Pour le **vocabulaire fixé** (sous-dimensions, observables, codes, périmètre) : voir le design doc section 1.
+- Pour le **vocabulaire fixé** (composantes, observables, codes, périmètre) : voir le design doc section 1.
 
 ## Récapitulatif
 
-| Compétence  | Sous-dim. | Observables        | Cœur                                                             |
-| ----------- | --------- | ------------------ | ---------------------------------------------------------------- |
-| Chercher    | A B C D   | 13                 | C2 (réorientation) + C1 (organisation) + au moins 1 de D         |
-| Calculer    | A B C D   | 13                 | D1 ET D2 (contrôle) + 3 de B + 2 de A + 1 de C (calcul littéral) |
-| Raisonner   | A B C D   | 8                  | B2 (cas général) + D2 (relecture critique) + 1 de C              |
-| Communiquer | A B C     | 6                  | C1 ET C2 (dialogue) + A1 ET A2 (langage rigoureux)               |
-| Modéliser   | A B C     | 8                  | C1 (validation modèle) + B2 (plausibilité) + 1 parmi C2/C3       |
-| Représenter | A B C D   | 8                  | C1 ET C2 (conversion + coordination) + 1 de D                    |
-| **Total**   | —         | **56 observables** |                                                                  |
+| Compétence  | Composantes | Observables        | Cœur                                                             |
+| ----------- | ----------- | ------------------ | ---------------------------------------------------------------- |
+| Chercher    | A B C D     | 13                 | C2 (réorientation) + C1 (organisation) + au moins 1 de D         |
+| Calculer    | A B C D     | 13                 | D1 ET D2 (contrôle) + 3 de B + 2 de A + 1 de C (calcul littéral) |
+| Raisonner   | A B C D     | 8                  | B2 (cas général) + D2 (relecture critique) + 1 de C              |
+| Communiquer | A B C       | 6                  | C1 ET C2 (dialogue) + A1 ET A2 (langage rigoureux)               |
+| Modéliser   | A B C       | 8                  | C1 (validation modèle) + B2 (plausibilité) + 1 parmi C2/C3       |
+| Représenter | A B C D     | 8                  | C1 ET C2 (conversion + coordination) + 1 de D                    |
+| **Total**   | —           | **56 observables** |                                                                  |

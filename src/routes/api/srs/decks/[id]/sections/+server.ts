@@ -14,6 +14,9 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { createSectionSchema } from '$lib/server/validation/srs';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/srs/decks/[id]/sections/+server');
 
 /**
  * GET /api/srs/decks/[id]/sections
@@ -35,12 +38,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (deckError) {
-		console.error('Contrôle d’accès impossible :', deckError);
-		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
+		logger.error('Contrôle d’accès impossible :', deckError);
+		return json({ error: 'Impossible de vérifier l’accès' }, { status: 500 });
 	}
 
 	if (!deck) {
-		return json({ error: 'Deck not found or access denied' }, { status: 404 });
+		return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 	}
 
 	const { data, error: dbErr } = await locals.supabase
@@ -51,8 +54,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		.order('name', { ascending: true });
 
 	if (dbErr) {
-		console.error('[sections] GET failed:', dbErr);
-		return json({ error: 'Failed to fetch sections' }, { status: 500 });
+		logger.error('[sections] GET failed:', dbErr);
+		return json({ error: 'Impossible de charger les sections' }, { status: 500 });
 	}
 
 	return json({ sections: data ?? [] });
@@ -71,7 +74,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	try {
 		bodyRaw = await request.json();
 	} catch {
-		return json({ error: 'Invalid JSON body' }, { status: 400 });
+		return json({ error: 'Corps de requête illisible' }, { status: 400 });
 	}
 
 	const validation = createSectionSchema.safeParse(bodyRaw);
@@ -104,7 +107,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 				{ status: 403 }
 			);
 		}
-		console.error('[sections] POST failed:', insertErr);
+		logger.error('[sections] POST failed:', insertErr);
 		return json({ error: insertErr.message }, { status: 500 });
 	}
 

@@ -14,7 +14,8 @@
 
 import { z } from 'zod';
 import type { ObjectKind } from './types';
-import { MAX_DEFINITION_LENGTH } from './types';
+import { MAX_DEFINITION_LENGTH, MAX_INTERVAL_LENGTH } from './types';
+import { MAX_CELL_LENGTH, MAX_TITLE_LENGTH, readCellName } from './grid';
 import { sequenceDisplaySchema, storedDisplaySchema, type StoredDisplay } from './display';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 
@@ -30,8 +31,14 @@ export const ATELIER_STORAGE_KEY = 'chiphre-atelier';
  * À incrémenter dès que la forme change. Un état d'une version PLUS RÉCENTE
  * n'est jamais relu ni écrasé : l'élève a peut-être ouvert l'atelier ailleurs
  * dans une version plus neuve, et son travail vaut mieux que le nôtre (§5 L2).
+ *
+ * Version 2 (2026-10-15, tableur intégré) : la colonne de chaque liste et les
+ * cellules des colonnes sans nom. ⚠️ Sans elle, un onglet resté sur l'ancien
+ * code relirait l'état en jetant la grille (Zod retire les clés inconnues),
+ * puis l'enregistrerait. Une version 1 se relit : ses listes sont placées en
+ * A, B… dans l'ordre des cartes.
  */
-export const ATELIER_STATE_VERSION = 1;
+export const ATELIER_STATE_VERSION = 2;
 
 /**
  * Au-delà, on refuse d'enregistrer plutôt que d'écrire un état qu'on ne saura
@@ -51,7 +58,8 @@ const MAX_SERIALIZED_LENGTH = 500_000;
  * relecture. Les ranger, c'est risquer de relire un verdict devenu faux.
  */
 const storedObjectSchema = z.object({
-	name: z.string().min(1).max(8),
+	// 12 : la carte `f⁻¹` s'appelle `f^-1`, `u_12^-1` (lot 3 de la réciproque)
+	name: z.string().min(1).max(12),
 	kind: z.enum(['value', 'function', 'sequence', 'list']),
 	definition: z.string().max(MAX_DEFINITION_LENGTH),
 	/** Affiché dans la vue Graphe. Absent = non tracé. */
@@ -65,6 +73,17 @@ const storedObjectSchema = z.object({
 		.regex(/^[A-Za-z]$/)
 		.optional()
 		.catch(undefined),
+	/**
+	 * L'ensemble d'une fonction, tel qu'écrit après « sur » (`interval.ts`).
+	 * Abîmé ou refusé à la relecture : oublié, la fonction gardée sur son domaine.
+	 */
+	interval: z.string().min(1).max(MAX_INTERVAL_LENGTH).optional().catch(undefined),
+	/**
+	 * Carte `f⁻¹` : l'intervalle tapé dans `.réciproque f sur I`. Sa formule n'est
+	 * pas rangée, elle se recalcule depuis f. Abîmé : oublié, la carte reprend
+	 * l'intervalle de f.
+	 */
+	reciprocalOn: z.string().min(1).max(MAX_INTERVAL_LENGTH).optional().catch(undefined),
 	/**
 	 * Réglages d'affichage d'une fonction. ⚠️ `.catch(undefined)` : un réglage
 	 * abîmé est OUBLIÉ, l'objet est gardé — perdre `f` pour une couleur illisible
@@ -91,17 +110,52 @@ const storedObjectSchema = z.object({
 	firstIndex: z.number().int().min(0).max(1000).optional().catch(undefined),
 	firstTerm: z.string().max(20).optional().catch(undefined),
 	/** Réglages du tracé d'une suite (lot 5b). Abîmés : oubliés, l'objet gardé. */
-	sequenceDisplay: sequenceDisplaySchema.optional().catch(undefined)
+	sequenceDisplay: sequenceDisplaySchema.optional().catch(undefined),
+	/**
+	 * La colonne d'une liste dans la grille (`A` à `Z`, version 2). Absente ou
+	 * abîmée : la liste prend la première colonne libre.
+	 */
+	column: z
+		.string()
+		.regex(/^[A-Z]$/)
+		.optional()
+		.catch(undefined)
 });
 
 /**
  * L'enveloppe, volontairement permissive : elle ne juge QUE la forme générale.
- * Le tri des objets se fait un par un, pour n'en perdre qu'un à la fois.
+ * Le tri des objets se fait un par un, pour n'en perdre qu'un à la fois — et
+ * celui des cellules une par une (`salvageGrid`).
  */
 export const atelierShellSchema = z.object({
 	version: z.number().int().positive(),
-	objects: z.array(z.unknown())
+	objects: z.array(z.unknown()),
+	grid: z.unknown().optional()
 });
+
+/** Une cellule rangée : son adresse dans la grille (`B3`), son texte brut. */
+const storedCellSchema = z.tuple([
+	z.string().refine((name) => readCellName(name) !== null),
+	// Sans « ; » : la saisie le répartit vers le bas (P2), une cellule rangée n'en a
+	// jamais — un lien forgé qui en porte s'afficherait autrement selon le chemin
+	z
+		.string()
+		.max(MAX_CELL_LENGTH)
+		.refine((text) => !text.includes(';'))
+]);
+
+/** La graine des tirages : un entier de 32 bits (règle 1, bornes). */
+const seedSchema = z
+	.number()
+	.int()
+	.min(0)
+	.max(2 ** 32 - 1);
+
+/** Un titre rangé : sa colonne (`B`), son texte non vide. */
+const storedTitleSchema = z.tuple([
+	z.string().regex(/^[A-Z]$/),
+	z.string().trim().min(1).max(MAX_TITLE_LENGTH)
+]);
 
 export interface StoredObject {
 	readonly name: string;
@@ -110,17 +164,36 @@ export interface StoredObject {
 	readonly plotted?: boolean;
 	/** La lettre de l'élève d'une fonction (`f(t)`), absente pour x. */
 	readonly letter?: string;
+	/** L'ensemble d'une fonction (`[0;+∞[`), absent sans « sur ». */
+	readonly interval?: string;
+	/** Carte `f⁻¹` : l'intervalle tapé dans `.réciproque f sur I`. */
+	readonly reciprocalOn?: string;
 	readonly display?: StoredDisplay;
 	readonly slider?: { readonly min: number; readonly max: number; readonly step: number };
 	readonly mode?: 'explicit' | 'recurrence';
 	readonly firstIndex?: number;
 	readonly firstTerm?: string;
 	readonly sequenceDisplay?: unknown;
+	/** La colonne d'une liste (`A` à `Z`). */
+	readonly column?: string;
+}
+
+/** Les cellules des colonnes SANS nom ; celles d'une liste sont dans sa définition. */
+export interface StoredGrid {
+	readonly cells?: Readonly<Record<string, string>>;
+	/** Les titres des colonnes (T4), par lettre (`B`). */
+	readonly titles?: Readonly<Record<string, string>>;
+	/** Dans un LIEN seulement : les formules y sont écrites en relatif (`toRelative`). */
+	readonly relative?: boolean;
+	/** La graine des tirages (ALEA, lot 5) : mêmes tirages au rechargement et dans le lien. */
+	readonly seed?: number;
 }
 
 export interface AtelierState {
 	readonly version: number;
 	readonly objects: readonly StoredObject[];
+	/** Absente en version 1, et quand aucune colonne sans nom n'a de cellule. */
+	readonly grid?: StoredGrid;
 }
 
 // =============================================================================
@@ -190,8 +263,8 @@ export function loadAtelier(storage: Storage | null): LoadOutcome {
 		return { kind: 'corrupt', message: "L'atelier enregistré n'a pas la forme attendue." };
 	}
 
-	const { objects, dropped } = salvageObjects(shell.data.objects);
-	return { kind: 'loaded', state: { version: shell.data.version, objects }, dropped };
+	const { state, dropped } = salvageState(shell.data);
+	return { kind: 'loaded', state, dropped };
 }
 
 /**
@@ -213,9 +286,69 @@ export function salvageObjects(candidates: readonly unknown[]): {
 	return { objects, dropped };
 }
 
+/**
+ * Trier les cellules une par une : une adresse hors de A1-Z200, un texte trop
+ * long ou qui n'est pas du texte écarte la cellule, jamais la grille.
+ */
+export function salvageGrid(candidate: unknown): { grid: StoredGrid; dropped: number } {
+	let dropped = 0;
+	const kept = <T extends readonly [string, string]>(
+		entries: unknown,
+		schema: z.ZodType<T>,
+		empty: (text: string) => boolean
+	): Record<string, string> => {
+		const result: Record<string, string> = {};
+		if (entries === null || typeof entries !== 'object' || Array.isArray(entries)) return result;
+		for (const entry of Object.entries(entries)) {
+			const one = schema.safeParse(entry);
+			if (one.success && !empty(one.data[1])) result[one.data[0]] = one.data[1];
+			else if (!one.success) dropped++;
+		}
+		return result;
+	};
+	const raw = candidate as { cells?: unknown; titles?: unknown; seed?: unknown } | null | undefined;
+	const cells = kept(raw?.cells, storedCellSchema, (text) => text.trim() === '');
+	const titles = kept(raw?.titles, storedTitleSchema, () => false);
+	// Une graine illisible est écartée : les tirages seront neufs, la grille reste
+	const seed = seedSchema.safeParse(raw?.seed);
+	const grid: StoredGrid = {
+		...(Object.keys(cells).length > 0 && { cells }),
+		...(Object.keys(titles).length > 0 && { titles }),
+		...(seed.success && { seed: seed.data })
+	};
+	return { grid, dropped };
+}
+
+/** L'état relu d'une enveloppe validée : objets puis cellules, chacun trié à part. */
+export function salvageState(shell: z.infer<typeof atelierShellSchema>): {
+	state: AtelierState;
+	dropped: number;
+} {
+	const { objects, dropped } = salvageObjects(shell.objects);
+	const { grid, dropped: lostCells } = salvageGrid(shell.grid);
+	// Sans cellule ni titre, pas de grille : l'état relu est celui qui a été rangé
+	const kept = Object.keys(grid).length > 0 ? { grid } : {};
+	return { state: { version: shell.version, objects, ...kept }, dropped: dropped + lostCells };
+}
+
 // =============================================================================
 // Ranger
 // =============================================================================
+
+/**
+ * Le stockage est-il plein ? Firefox n'emploie pas le même nom ni le même code
+ * que les autres — s'en tenir à « QuotaExceededError » faisait afficher le
+ * message « rien ne sera conservé » à la place de « exporte ou supprime ».
+ */
+export function isQuotaExceeded(error: unknown): boolean {
+	return (
+		error instanceof DOMException &&
+		(error.name === 'QuotaExceededError' ||
+			error.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+			error.code === 22 ||
+			error.code === 1014)
+	);
+}
 
 export function saveAtelier(storage: Storage | null, state: AtelierState): SaveOutcome {
 	if (!storage) return { kind: 'unavailable' };
@@ -242,16 +375,7 @@ export function saveAtelier(storage: Storage | null, state: AtelierState): SaveO
 		storage.setItem(ATELIER_STORAGE_KEY, serialized);
 		return { kind: 'saved' };
 	} catch (error) {
-		// Firefox n'emploie pas le même nom ni le même code que les autres —
-		// s'en tenir à « QuotaExceededError » faisait afficher le message
-		// « rien ne sera conservé » à la place de « exporte ou supprime ».
-		const isQuota =
-			error instanceof DOMException &&
-			(error.name === 'QuotaExceededError' ||
-				error.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
-				error.code === 22 ||
-				error.code === 1014);
-		if (isQuota) {
+		if (isQuotaExceeded(error)) {
 			// ⚠️ On ne réduit PAS l'atelier pour faire tenir : le store de la
 			// calculatrice le fait et vide l'historique sans rien dire. Ici c'est
 			// le travail de l'élève, il doit savoir et choisir.
@@ -320,10 +444,10 @@ export function readForeignWrite(event: StorageEvent): ForeignWriteOutcome {
 	}
 
 	// Même tolérance qu'à la lecture : un objet abîmé ne coûte pas le reste.
-	const { objects } = salvageObjects(shell.data.objects);
+	const { state } = salvageState(shell.data);
 	return {
 		kind: 'changed',
-		state: { version: shell.data.version, objects },
+		state,
 		message: "L'atelier a été modifié dans un autre onglet."
 	};
 }

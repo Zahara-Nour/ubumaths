@@ -19,12 +19,12 @@
  */
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { updatePasswordSchema } from '$lib/server/validation/auth';
 import { validateFormData } from '$lib/server/validation/common';
 import { authErrorToFrench } from '$lib/server/auth/auth-error-fr';
 
-const logger = createLogger('auth/update-password/+page.server.ts');
+const logger = createServerLogger('auth/update-password/+page.server.ts');
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
 	// Check if user has a valid session (should have been created by /auth/confirm)
@@ -86,7 +86,7 @@ export const actions = {
 			logger.error('Password update error:', error.message);
 			// Jamais le message anglais de Supabase : code connu traduit, sinon repli
 			return fail(400, {
-				error: authErrorToFrench(error, 'Impossible de changer ton mot de passe. Réessaie.')
+				error: authErrorToFrench(error, 'Impossible de changer le mot de passe. Réessayer.')
 			});
 		}
 

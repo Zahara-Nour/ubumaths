@@ -5,11 +5,12 @@
  * - Difference of squares: a² - b²
  * - Perfect square trinomial: a² ± 2ab + b²
  * - Sum/difference of cubes: a³ ± b³
- * - Quadratic form: ax² + bx + c
- * - Factored form: (x - r₁)(x - r₂)
- * - Common factors: k(...)
  *
- * Uses the pattern matching system for structure detection.
+ * Uses the pattern matching system for structure detection. Seuls lecteurs :
+ * les règles d'identités de `pattern/rule-sets/algebraic-identities.ts`.
+ * Les détecteurs sans appelant (forme quadratique, forme factorisée, facteur
+ * commun, `detectStructure`) ont été retirés au lot 3b de l'ADR 0024 : la
+ * factorisation passe par `factor/`.
  *
  * @module mathAST/analysis/structures
  */
@@ -18,20 +19,7 @@ import type { MathNode } from '../types';
 import { P, match, type MatchBindings } from '../pattern';
 import { isMathNodeBinding } from '../pattern/types';
 import { flattenSumShallow, flattenProductShallow } from '../flatten';
-import {
-	isNumber,
-	isVariable,
-	isGreek,
-	isMultiplication,
-	isOpposite,
-	isDelimiter,
-	isAddition,
-	isSubtraction
-} from '../guards';
-import { getVariables } from '../eval/substitute';
-import { getNumericValue } from '../common/numeric';
-import { analyzePolynomial } from './polynomial-analysis';
-import { getPolynomialDegree } from './expression-classify';
+import { isNumber, isAddition, isSubtraction } from '../guards';
 
 // =============================================================================
 // Types
@@ -41,13 +29,7 @@ import { getPolynomialDegree } from './expression-classify';
  * Types of algebraic structures
  */
 export type StructureType =
-	| 'difference_of_squares'
-	| 'perfect_square_trinomial'
-	| 'sum_of_cubes'
-	| 'difference_of_cubes'
-	| 'quadratic_form'
-	| 'factored_form'
-	| 'common_factor';
+	'difference_of_squares' | 'perfect_square_trinomial' | 'sum_of_cubes' | 'difference_of_cubes';
 
 /**
  * Base detected structure
@@ -92,36 +74,6 @@ export interface DifferenceOfCubesInfo extends DetectedStructure {
 	readonly type: 'difference_of_cubes';
 	readonly a: MathNode;
 	readonly b: MathNode;
-}
-
-/**
- * Quadratic form: ax² + bx + c
- */
-export interface QuadraticFormInfo extends DetectedStructure {
-	readonly type: 'quadratic_form';
-	readonly variable: string;
-	readonly a: MathNode; // Coefficient of x²
-	readonly b: MathNode; // Coefficient of x
-	readonly c: MathNode; // Constant term
-}
-
-/**
- * Factored form: (x - r₁)(x - r₂)...
- */
-export interface FactoredFormInfo extends DetectedStructure {
-	readonly type: 'factored_form';
-	readonly variable: string;
-	readonly factors: readonly MathNode[];
-	readonly roots: readonly MathNode[]; // The rᵢ values
-}
-
-/**
- * Common factor: k(...)
- */
-export interface CommonFactorInfo extends DetectedStructure {
-	readonly type: 'common_factor';
-	readonly factor: MathNode; // The common factor
-	readonly remainder: MathNode; // What's left after factoring
 }
 
 // =============================================================================
@@ -177,20 +129,6 @@ function numericPerfectCubeRoot(node: MathNode): MathNode | null {
 		return { type: 'number', value: String(cbrt) };
 	}
 	return null;
-}
-
-/**
- * Greatest common divisor of two numbers.
- */
-function gcd(a: number, b: number): number {
-	a = Math.abs(a);
-	b = Math.abs(b);
-	while (b > 0) {
-		const t = b;
-		b = a % b;
-		a = t;
-	}
-	return a;
 }
 
 // =============================================================================
@@ -493,336 +431,4 @@ export function isDifferenceOfCubes(node: MathNode): DifferenceOfCubesInfo | nul
 	}
 
 	return null;
-}
-
-/**
- * Detect if expression is a quadratic form: ax² + bx + c
- *
- * @param node - The expression to check
- * @param variable - Optional: specific variable to check for
- * @returns QuadraticFormInfo if detected, null otherwise
- */
-export function isQuadraticForm(node: MathNode, variable?: string): QuadraticFormInfo | null {
-	// Detect variable if not provided
-	const vars = Array.from(getVariables(node));
-	const targetVar = variable ?? (vars.length === 1 ? vars[0] : null);
-
-	if (!targetVar) {
-		return null;
-	}
-
-	// Check if it's a degree 2 polynomial
-	const degree = getPolynomialDegree(node, targetVar);
-	if (degree !== 2) {
-		return null;
-	}
-
-	// Analyze to get coefficients
-	const analysis = analyzePolynomial(node, targetVar);
-	if (!analysis.isPolynomial) {
-		return null;
-	}
-
-	const a = analysis.coefficients.get(2) ?? ({ type: 'number', value: '0' } as MathNode);
-	const b = analysis.coefficients.get(1) ?? ({ type: 'number', value: '0' } as MathNode);
-	const c = analysis.coefficients.get(0) ?? ({ type: 'number', value: '0' } as MathNode);
-
-	// a must be non-zero for quadratic
-	const aVal = getNumericValue(a);
-	if (aVal === 0) {
-		return null;
-	}
-
-	return {
-		type: 'quadratic_form',
-		variable: targetVar,
-		a,
-		b,
-		c,
-		confidence: 'certain'
-	};
-}
-
-/**
- * Detect if expression is in factored form: (x - r₁)(x - r₂)...
- *
- * @param node - The expression to check
- * @param variable - Optional: specific variable to check for
- * @returns FactoredFormInfo if detected, null otherwise
- */
-export function isFactoredForm(node: MathNode, variable?: string): FactoredFormInfo | null {
-	// Check if it's a product
-	const factors = flattenProductShallow(node);
-
-	if (factors.length < 2) {
-		return null;
-	}
-
-	// Detect variable if not provided
-	const vars = Array.from(getVariables(node));
-	const targetVar = variable ?? (vars.length === 1 ? vars[0] : null);
-
-	if (!targetVar) {
-		return null;
-	}
-
-	const linearFactors: MathNode[] = [];
-	const roots: MathNode[] = [];
-
-	// Patterns for linear factors: (x - r) and (x + r)
-	const patternXMinusR = P.sub(P.var(targetVar), P._('r'));
-	const patternXPlusR = P.add(P.var(targetVar), P._('r'));
-	const patternRMinusX = P.sub(P._('r'), P.var(targetVar));
-	const patternRPlusX = P.add(P._('r'), P.var(targetVar));
-
-	for (const { factor } of factors) {
-		// Unwrap delimiter if present
-		const inner = isDelimiter(factor) ? factor.content : factor;
-
-		// Try (x - r): root is r
-		let matchResult = match(patternXMinusR, inner);
-		if (matchResult.success) {
-			const r = getBinding(matchResult.bindings, 'r');
-			if (r) {
-				linearFactors.push(factor);
-				roots.push(r);
-				continue;
-			}
-		}
-
-		// Try (x + r): root is -r
-		matchResult = match(patternXPlusR, inner);
-		if (matchResult.success) {
-			const r = getBinding(matchResult.bindings, 'r');
-			if (r) {
-				linearFactors.push(factor);
-				roots.push({ type: 'opposite', operand: r });
-				continue;
-			}
-		}
-
-		// Try (r - x): root is r
-		matchResult = match(patternRMinusX, inner);
-		if (matchResult.success) {
-			const r = getBinding(matchResult.bindings, 'r');
-			if (r) {
-				linearFactors.push(factor);
-				roots.push(r);
-				continue;
-			}
-		}
-
-		// Try (r + x): root is -r
-		matchResult = match(patternRPlusX, inner);
-		if (matchResult.success) {
-			const r = getBinding(matchResult.bindings, 'r');
-			if (r) {
-				linearFactors.push(factor);
-				roots.push({ type: 'opposite', operand: r });
-				continue;
-			}
-		}
-
-		// Allow numeric coefficients
-		if (isNumber(factor)) {
-			continue;
-		}
-
-		// Not a recognized factor
-		return null;
-	}
-
-	if (linearFactors.length < 2) {
-		return null;
-	}
-
-	return {
-		type: 'factored_form',
-		variable: targetVar,
-		factors: linearFactors,
-		roots,
-		confidence: 'certain'
-	};
-}
-
-/**
- * Detect if expression has a common factor that can be extracted.
- *
- * @param node - The expression to check
- * @returns CommonFactorInfo if detected, null otherwise
- */
-export function hasCommonFactor(node: MathNode): CommonFactorInfo | null {
-	// Flatten the sum
-	const terms = flattenSumShallow(node);
-
-	if (terms.length < 2) {
-		return null;
-	}
-
-	// Find GCD of numeric coefficients
-	const coefficients: number[] = [];
-
-	for (const { term } of terms) {
-		const coeff = extractLeadingCoefficient(term);
-		if (coeff !== null) {
-			coefficients.push(Math.abs(coeff));
-		}
-	}
-
-	if (coefficients.length !== terms.length) {
-		return null;
-	}
-
-	const gcdValue = coefficients.reduce((a, b) => gcd(a, b));
-
-	if (gcdValue <= 1) {
-		return null;
-	}
-
-	// Create the factored result
-	const factor: MathNode = { type: 'number', value: String(gcdValue) };
-
-	// Divide each term by the GCD
-	const newTerms = terms.map(({ sign, term }) => {
-		const divided = divideByCoefficient(term, gcdValue);
-		return { sign, term: divided };
-	});
-
-	// Rebuild the expression
-	let remainder: MathNode;
-	if (newTerms.length === 1) {
-		remainder =
-			newTerms[0].sign === '+' ? newTerms[0].term : { type: 'opposite', operand: newTerms[0].term };
-	} else {
-		remainder =
-			newTerms[0].sign === '+' ? newTerms[0].term : { type: 'opposite', operand: newTerms[0].term };
-		for (let i = 1; i < newTerms.length; i++) {
-			const { sign, term } = newTerms[i];
-			if (sign === '+') {
-				remainder = { type: 'addition', left: remainder, right: term };
-			} else {
-				remainder = { type: 'subtraction', left: remainder, right: term };
-			}
-		}
-	}
-
-	return {
-		type: 'common_factor',
-		factor,
-		remainder,
-		confidence: 'certain'
-	};
-}
-
-/**
- * Extract leading numeric coefficient from a term.
- */
-function extractLeadingCoefficient(node: MathNode): number | null {
-	if (isNumber(node)) {
-		return parseFloat(node.value);
-	}
-
-	if (isOpposite(node)) {
-		const inner = extractLeadingCoefficient(node.operand);
-		return inner !== null ? -inner : null;
-	}
-
-	if (isMultiplication(node)) {
-		if (isNumber(node.left)) {
-			return parseFloat(node.left.value);
-		}
-		return 1;
-	}
-
-	if (isVariable(node) || isGreek(node)) {
-		return 1;
-	}
-
-	// Check for power pattern
-	const powResult = match(P.pow(P._('base'), P._('exp')), node);
-	if (powResult.success) {
-		return 1;
-	}
-
-	if (isDelimiter(node)) {
-		return extractLeadingCoefficient(node.content);
-	}
-
-	return null;
-}
-
-/**
- * Divide a term by a coefficient.
- */
-function divideByCoefficient(node: MathNode, coeff: number): MathNode {
-	if (isNumber(node)) {
-		const val = parseFloat(node.value) / coeff;
-		return { type: 'number', value: String(val) };
-	}
-
-	if (isMultiplication(node) && isNumber(node.left)) {
-		const newCoeff = parseFloat(node.left.value) / coeff;
-		if (newCoeff === 1) {
-			return node.right;
-		}
-		return {
-			...node,
-			left: { type: 'number', value: String(newCoeff) }
-		};
-	}
-
-	// Variable or power with implicit coefficient 1
-	if (coeff === 1) {
-		return node;
-	}
-
-	// Return as fraction
-	return {
-		type: 'division',
-		numerator: node,
-		denominator: { type: 'number', value: String(coeff) },
-		displayStyle: 'fraction'
-	};
-}
-
-// =============================================================================
-// Main Detection Function
-// =============================================================================
-
-/**
- * Detect all algebraic structures in an expression.
- *
- * @param node - The expression to analyze
- * @returns Array of detected structures, sorted by confidence
- */
-export function detectStructure(node: MathNode): DetectedStructure[] {
-	const structures: DetectedStructure[] = [];
-
-	// Try each detector
-	const diffSquares = isDifferenceOfSquares(node);
-	if (diffSquares) structures.push(diffSquares);
-
-	const perfectSquare = isPerfectSquareTrinomial(node);
-	if (perfectSquare) structures.push(perfectSquare);
-
-	const sumCubes = isSumOfCubes(node);
-	if (sumCubes) structures.push(sumCubes);
-
-	const diffCubes = isDifferenceOfCubes(node);
-	if (diffCubes) structures.push(diffCubes);
-
-	const quadratic = isQuadraticForm(node);
-	if (quadratic) structures.push(quadratic);
-
-	const factored = isFactoredForm(node);
-	if (factored) structures.push(factored);
-
-	const commonFactor = hasCommonFactor(node);
-	if (commonFactor) structures.push(commonFactor);
-
-	// Sort by confidence
-	const confidenceOrder = { certain: 0, likely: 1, possible: 2 };
-	structures.sort((a, b) => confidenceOrder[a.confidence] - confidenceOrder[b.confidence]);
-
-	return structures;
 }

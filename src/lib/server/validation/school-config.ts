@@ -19,38 +19,38 @@ const weekConfigSchema = z
 	.object({
 		first_day: z
 			.number()
-			.int('first_day must be an integer')
-			.min(0, 'first_day must be between 0-6')
-			.max(6, 'first_day must be between 0-6'),
+			.int('Le premier jour doit être un nombre entier')
+			.min(0, 'Le premier jour doit être compris entre 0 et 6')
+			.max(6, 'Le premier jour doit être compris entre 0 et 6'),
 		last_day: z
 			.number()
-			.int('last_day must be an integer')
-			.min(0, 'last_day must be between 0-6')
-			.max(6, 'last_day must be between 0-6'),
+			.int('Le dernier jour doit être un nombre entier')
+			.min(0, 'Le dernier jour doit être compris entre 0 et 6')
+			.max(6, 'Le dernier jour doit être compris entre 0 et 6'),
 		school_days: z
 			.array(
 				z
 					.number()
-					.int('school_days must contain integers')
-					.min(0, 'school_days must be 0-6')
-					.max(6, 'school_days must be 0-6')
+					.int('Les jours de classe doivent être des nombres entiers')
+					.min(0, 'Les jours de classe doivent être compris entre 0 et 6')
+					.max(6, 'Les jours de classe doivent être compris entre 0 et 6')
 			)
-			.min(1, 'school_days must contain at least 1 day')
-			.max(7, 'school_days cannot exceed 7 days'),
+			.min(1, 'Au moins un jour de classe requis')
+			.max(7, 'Sept jours de classe au maximum'),
 		weekend_days: z
 			.array(
 				z
 					.number()
-					.int('weekend_days must contain integers')
-					.min(0, 'weekend_days must be 0-6')
-					.max(6, 'weekend_days must be 0-6')
+					.int('Les jours de week-end doivent être des nombres entiers')
+					.min(0, 'Les jours de week-end doivent être compris entre 0 et 6')
+					.max(6, 'Les jours de week-end doivent être compris entre 0 et 6')
 			)
-			.min(0, 'weekend_days must be an array')
-			.max(7, 'weekend_days cannot exceed 7 days')
+			.min(0, 'Les jours de week-end doivent former une liste')
+			.max(7, 'Sept jours de week-end au maximum')
 	})
 	.refine((data) => isValidWeekConfig(data), {
 		message:
-			'Invalid week configuration: school_days and weekend_days must cover all 7 days without overlap'
+			'Semaine invalide : les jours de classe et de week-end doivent couvrir les 7 jours sans se chevaucher'
 	});
 
 /**
@@ -60,13 +60,12 @@ const weekConfigSchema = z
 const timezoneSchema = z
 	.string()
 	.trim()
-	.min(1, 'Timezone cannot be empty')
+	.min(1, 'Fuseau horaire requis')
 	.refine(
 		(tz): tz is (typeof ALL_TIMEZONES)[number] =>
 			ALL_TIMEZONES.includes(tz as (typeof ALL_TIMEZONES)[number]),
 		{
-			message:
-				'Invalid timezone. Must be a valid IANA timezone (e.g., Europe/Paris, America/New_York)'
+			message: 'Fuseau horaire invalide (ex. Europe/Paris, America/New_York)'
 		}
 	);
 
@@ -83,19 +82,6 @@ export const updateSchoolConfigSchema = z.object({
  * Type for validated school configuration
  */
 export type ValidatedSchoolConfig = z.infer<typeof updateSchoolConfigSchema>;
-
-/**
- * Partial school configuration update schema
- * Allows updating only timezone OR week_config
- */
-export const partialSchoolConfigSchema = z
-	.object({
-		timezone: timezoneSchema.optional(),
-		week_config: weekConfigSchema.optional()
-	})
-	.refine((data) => data.timezone !== undefined || data.week_config !== undefined, {
-		message: 'At least one field (timezone or week_config) must be provided'
-	});
 
 /**
  * Export week config schema for reuse

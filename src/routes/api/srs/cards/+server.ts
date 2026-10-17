@@ -19,6 +19,9 @@ import {
 } from '$lib/server/validation/srs';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/srs/cards/+server');
 
 /**
  * GET /api/srs/cards?deck_id=X
@@ -56,7 +59,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck not found or access denied' }, { status: 404 });
+			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		// Get cards (RLS ensures user owns deck)
@@ -67,8 +70,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.order('created_at', { ascending: false });
 
 		if (cardsError) {
-			console.error('Error fetching cards:', cardsError);
-			return json({ error: 'Failed to fetch cards' }, { status: 500 });
+			logger.error('Error fetching cards:', cardsError);
+			return json({ error: 'Impossible de charger les cartes de révision' }, { status: 500 });
 		}
 
 		// Validate response
@@ -80,8 +83,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		return json(validated);
 	} catch (error) {
-		console.error('Unexpected error in GET /api/srs/cards:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		logger.error('Unexpected error in GET /api/srs/cards:', error);
+		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
 
@@ -131,12 +134,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck not found or access denied' }, { status: 404 });
+			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		if (deck.is_assigned) {
 			return json(
-				{ error: 'Cannot add cards to assigned deck. Assigned decks are read-only.' },
+				{ error: 'Impossible d’ajouter des cartes à un deck assigné : il est en lecture seule.' },
 				{ status: 403 }
 			);
 		}
@@ -145,7 +148,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// l'insertion (migration 20261003100000) — on répond 403, pas 500.
 		if (deck.is_auto_managed) {
 			return json(
-				{ error: 'Cannot add cards to the Programme deck. It is managed automatically.' },
+				{
+					error: 'Impossible d’ajouter des cartes au deck Programme : il est géré automatiquement.'
+				},
 				{ status: 403 }
 			);
 		}
@@ -160,11 +165,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (templateError || !template) {
-				return json({ error: 'Question template not found' }, { status: 404 });
+				return json({ error: 'Modèle de question introuvable' }, { status: 404 });
 			}
 
 			if (template.status !== 'published') {
-				return json({ error: 'Template must be published for SRS use' }, { status: 400 });
+				return json(
+					{ error: 'Le modèle doit être publié pour servir en révision' },
+					{ status: 400 }
+				);
 			}
 
 			// Create template card
@@ -181,8 +189,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (createError) {
-				console.error('Error creating template card:', createError);
-				return json({ error: 'Failed to create card' }, { status: 500 });
+				logger.error('Error creating template card:', createError);
+				return json({ error: 'Impossible de créer la carte de révision' }, { status: 500 });
 			}
 
 			// Validate response
@@ -209,8 +217,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (createError) {
-				console.error('Error creating custom card:', createError);
-				return json({ error: 'Failed to create card' }, { status: 500 });
+				logger.error('Error creating custom card:', createError);
+				return json({ error: 'Impossible de créer la carte de révision' }, { status: 500 });
 			}
 
 			// Validate response
@@ -223,7 +231,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json(validated, { status: 201 });
 		}
 	} catch (error) {
-		console.error('Unexpected error in POST /api/srs/cards:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		logger.error('Unexpected error in POST /api/srs/cards:', error);
+		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

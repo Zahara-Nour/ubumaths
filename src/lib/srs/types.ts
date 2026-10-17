@@ -576,7 +576,8 @@ export interface CreateDeckRequest {
 	name: string;
 	description?: string;
 	deckType: DeckType;
-	config?: FSRSConfig;
+	// Pas de `config` : la rétention est celle par défaut pour tous les paquets, la mémoire
+	// d'une question étant partagée entre paquets (décision du 2026-06-10, Q165).
 }
 
 /**

@@ -27,6 +27,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { addBuddyXpFromExercise } from '$lib/server/buddy-xp-service';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/buddy/xp/+server');
 
 const bodySchema = z.object({
 	isCorrect: z.boolean(),
@@ -60,7 +63,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 		return json({ buddy_xp: result });
 	} catch (err) {
-		console.error('❌ [API] POST /api/student/buddy/xp:', err);
+		logger.error('❌ [API] POST /api/student/buddy/xp:', err);
 		throw error(500, "Erreur lors de l'ajout d'XP");
 	}
 };

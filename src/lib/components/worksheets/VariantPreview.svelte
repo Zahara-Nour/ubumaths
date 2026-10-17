@@ -13,6 +13,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
+	import { readApiErrorMessage } from '$lib/utils/errors';
 	import { Eye, RefreshCw, Users, Copy } from '@lucide/svelte';
 	import type { InstanceData } from '$lib/types/worksheets';
 
@@ -71,7 +72,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error(await response.text());
+				throw new Error(await readApiErrorMessage(response));
 			}
 
 			const data = await response.json();
@@ -141,7 +142,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error(await response.text());
+				throw new Error(await readApiErrorMessage(response));
 			}
 
 			const result = await response.json();

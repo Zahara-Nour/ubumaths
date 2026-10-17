@@ -14,14 +14,14 @@
  */
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { requestPasswordResetSchema } from '$lib/server/validation/auth';
 import {
 	checkPasswordResetRateLimitByEmail,
 	checkPasswordResetRateLimitByIP
 } from '$lib/server/rateLimiter';
 
-const logger = createLogger('auth/reset-password/+page.server.ts');
+const logger = createServerLogger('auth/reset-password/+page.server.ts');
 
 /** Generic success — never reveals whether the account exists (anti-enumeration). */
 const GENERIC_SUCCESS = {

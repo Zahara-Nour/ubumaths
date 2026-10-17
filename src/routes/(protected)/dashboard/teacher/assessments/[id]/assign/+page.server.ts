@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	try {
 		const evaluation = await getEvaluation(locals.supabase, id);
-		if (!evaluation) throw error(404, 'Évaluation introuvable');
+		if (!evaluation) throw error(404, 'Contrôle introuvable');
 		if (evaluation.created_by !== user.id && profile.role !== 'admin') {
 			throw error(403, 'Non autorisé');
 		}
@@ -104,7 +104,7 @@ export const actions: Actions = {
 		try {
 			// L'URL peut porter un ancien id d'assessment : on retrouve l'évaluation
 			const evaluation = await getEvaluation(locals.supabase, id);
-			if (!evaluation) return fail(404, { message: 'Évaluation introuvable' });
+			if (!evaluation) return fail(404, { message: 'Contrôle introuvable' });
 			await removeAssignment(locals.supabase, assignmentId.data, evaluation.id);
 			return { success: true };
 		} catch (e) {

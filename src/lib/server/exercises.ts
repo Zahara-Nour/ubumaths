@@ -17,11 +17,18 @@ import {
 } from '$lib/exercises/generator/instance-generator';
 import { generateExerciseSlug } from '$lib/exercises/slug-generator';
 import {
+	SearchIndexedRequiresPublicError,
+	consistentSearchIndexed
+} from '$lib/server/exercise-search-indexed';
+import {
 	fetchResourceIdsByAnyTag,
 	fetchResourceTagNames,
 	fetchTagNamesForResources,
 	syncResourceTags
 } from '$lib/server/resource-tags';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/exercises');
 
 type _Exercise = Database['public']['Tables']['exercises']['Row'];
 type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
@@ -118,7 +125,11 @@ function validateVariables(
 
 /**
  * Get exercises with filters and pagination
- * Teachers can see all exercises
+ *
+ * Aucun filtre d'auteur ici : la RLS de `exercises` rend au professeur ses
+ * propres exercices et les exercices publics (`is_public`), pas ceux des autres
+ * (depuis 20260618093000). Appelée par `GET /api/exercises` (sélecteur
+ * d'exercices de l'éditeur de fiche).
  */
 export async function getExercises(
 	supabase: SupabaseClient<Database>,
@@ -189,7 +200,7 @@ export async function getExercises(
 	const { data, error, count } = await query;
 
 	if (error) {
-		console.error('Error fetching exercises:', error);
+		logger.error('Error fetching exercises:', error);
 		return { data: null, error, count: 0 };
 	}
 
@@ -225,7 +236,7 @@ export async function getExercise(supabase: SupabaseClient<Database>, id: string
 	const { data, error } = await supabase.from('exercises').select('*').eq('id', id).single();
 
 	if (error) {
-		console.error('Error fetching exercise:', error);
+		logger.error('Error fetching exercise:', error);
 		return { data: null, error };
 	}
 
@@ -243,7 +254,7 @@ export async function getExerciseBySlug(supabase: SupabaseClient<Database>, slug
 	const { data, error } = await supabase.from('exercises').select('*').eq('slug', slug).single();
 
 	if (error) {
-		console.error('Error fetching exercise by slug:', error);
+		logger.error('Error fetching exercise by slug:', error);
 		return { data: null, error };
 	}
 
@@ -272,6 +283,12 @@ export async function createExercise(
 				`Invalid distribution_mode: ${distributionMode}. Must be one of: on_demand, per_student, per_group`
 			)
 		};
+	}
+
+	// « Afficher sur Google » exige un exercice public (CHECK 23514 en base) :
+	// refusé ici avec un message lisible plutôt qu'à l'écriture.
+	if (exercise.search_indexed === true && exercise.is_public !== true) {
+		return { data: null, error: new SearchIndexedRequiresPublicError() };
 	}
 
 	// Validate legacy variables (if provided) - backward compatibility
@@ -310,6 +327,8 @@ export async function createExercise(
 				: undefined,
 		distribution_mode: distributionMode,
 		created_by: userId,
+		// Jamais coché implicitement : seule une demande explicite sur un exercice public.
+		search_indexed: consistentSearchIndexed(exercise.is_public, exercise.search_indexed),
 		variations: (exercise as { variations?: unknown })
 			.variations as Database['public']['Tables']['exercises']['Row']['variations'],
 		shared: (exercise as { shared?: unknown })
@@ -319,7 +338,7 @@ export async function createExercise(
 	const { data, error } = await supabase.from('exercises').insert(insertData).select().single();
 
 	if (error) {
-		console.error('Error creating exercise:', error);
+		logger.error('Error creating exercise:', error);
 		return { data: null, error };
 	}
 
@@ -330,7 +349,7 @@ export async function createExercise(
 		try {
 			await syncResourceTags(supabase, 'exercise', data.id, tagNames);
 		} catch (e) {
-			console.error('Failed to attach tags to new exercise — rolling back:', e);
+			logger.error('Failed to attach tags to new exercise — rolling back:', e);
 			await supabase.from('exercises').delete().eq('id', data.id);
 			return {
 				data: null,
@@ -363,6 +382,18 @@ export async function updateExercise(
 
 	if (existing.created_by !== userId) {
 		return { data: null, error: new Error('Unauthorized') };
+	}
+
+	// « Afficher sur Google » exige un exercice public (CHECK 23514 en base).
+	// Visibilité finale = celle demandée, sinon celle déjà enregistrée.
+	const willBePublic = updates.is_public ?? existing.is_public;
+	if (!willBePublic) {
+		if (updates.search_indexed === true) {
+			return { data: null, error: new SearchIndexedRequiresPublicError() };
+		}
+		// Dépublier décoche Google dans la MÊME écriture, sinon la base refuse
+		// la mise à jour dès que la case était cochée.
+		updates = { ...updates, search_indexed: false };
 	}
 
 	// Validate distribution_mode if provided
@@ -425,7 +456,7 @@ export async function updateExercise(
 		.single();
 
 	if (error) {
-		console.error('Error updating exercise:', error);
+		logger.error('Error updating exercise:', error);
 		return { data: null, error };
 	}
 
@@ -437,7 +468,7 @@ export async function updateExercise(
 		try {
 			await syncResourceTags(supabase, 'exercise', data.id, tagsUpdate);
 		} catch (e) {
-			console.error('Failed to sync tags on update:', e);
+			logger.error('Failed to sync tags on update:', e);
 			return {
 				data: null,
 				error: e instanceof Error ? e : new Error('Failed to sync tags for exercise')
@@ -447,6 +478,9 @@ export async function updateExercise(
 
 	return { data: data ? { ...data, tags: tagsUpdate ?? existing.tags ?? [] } : data, error: null };
 }
+
+/** Message d'erreur de `deleteExercise` quand la base n'a supprimé aucune ligne. */
+export const EXERCISE_NOT_DELETED = 'Exercise not deleted';
 
 /**
  * Delete an exercise
@@ -468,12 +502,23 @@ export async function deleteExercise(
 		return { error: new Error('Unauthorized') };
 	}
 
-	// Delete the exercise
-	const { error } = await supabase.from('exercises').delete().eq('id', id).eq('created_by', userId); // Double-check ownership via RLS
+	// Suppression, avec `.select()` : un refus RLS ne rend pas d'erreur mais
+	// zéro ligne (docs/pratiques/rls-echecs-silencieux.md).
+	const { data: deleted, error } = await supabase
+		.from('exercises')
+		.delete()
+		.eq('id', id)
+		.eq('created_by', userId)
+		.select('id');
 
 	if (error) {
-		console.error('Error deleting exercise:', error);
+		logger.error('Error deleting exercise:', error);
 		return { error };
+	}
+
+	if (!deleted || deleted.length === 0) {
+		logger.error('Exercise not deleted (0 row):', id);
+		return { error: new Error(EXERCISE_NOT_DELETED) };
 	}
 
 	return { error: null };
@@ -551,7 +596,7 @@ export async function getTeacherExercises(
 	const { data, error, count } = await query;
 
 	if (error) {
-		console.error('Error fetching teacher exercises:', error);
+		logger.error('Error fetching teacher exercises:', error);
 		return { data: null, error, count: 0 };
 	}
 

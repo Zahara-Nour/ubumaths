@@ -19,6 +19,9 @@ import {
 } from '$lib/server/validation/curriculum';
 import { curriculumDbError } from '$lib/server/curriculum';
 import type { JournalEntryPoint } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/curriculum/coverage/+server');
 
 const COVERAGE_COLS = 'id, entry_id, point_id, source, created_at';
 
@@ -36,7 +39,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.eq('entry_id', parsed.data.entry_id);
 
 	if (dbErr) {
-		console.error('[curriculum] coverage GET failed:', dbErr);
+		logger.error('[curriculum] coverage GET failed:', dbErr);
 		return json({ error: 'Échec du chargement de la couverture' }, { status: 500 });
 	}
 
@@ -81,14 +84,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.select(COVERAGE_COLS)
 				.single();
 			if (upErr) {
-				console.error('[curriculum] coverage POST promote failed:', upErr);
+				logger.error('[curriculum] coverage POST promote failed:', upErr);
 				return json({ error: 'Erreur serveur' }, { status: 500 });
 			}
 			return json({ coverage: promoted as JournalEntryPoint, promoted: true });
 		}
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		console.error('[curriculum] coverage POST failed:', dbErr);
+		logger.error('[curriculum] coverage POST failed:', dbErr);
 		return json({ error: 'Erreur serveur' }, { status: 500 });
 	}
 
@@ -115,7 +118,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		console.error('[curriculum] coverage DELETE failed:', dbErr);
+		logger.error('[curriculum] coverage DELETE failed:', dbErr);
 		return json({ error: dbErr.message }, { status: 500 });
 	}
 

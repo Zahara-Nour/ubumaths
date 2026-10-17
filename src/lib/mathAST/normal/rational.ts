@@ -33,9 +33,30 @@ export const HALF: Rational = { n: 1n, d: 2n };
 // Helper Functions
 // =============================================================================
 
+/** Euclide, pour des entiers positifs. */
+function euclid(a: bigint, b: bigint): bigint {
+	while (b !== 0n) {
+		const temp = b;
+		b = a % b;
+		a = temp;
+	}
+	return a;
+}
+
+/** Bits de tête lus par la boucle intérieure de Lehmer : les produits restent sous 2⁵³. */
+const LEHMER_HEAD_BITS = 26;
+
+/** Sous cette taille, Euclide seul (ses divisions tiennent dans un mot machine). */
+const LEHMER_FROM = 1n << 64n;
+
 /**
- * Computes the greatest common divisor of two BigInts using Euclidean algorithm.
+ * Computes the greatest common divisor of two BigInts.
  * Always returns a positive value.
+ *
+ * Lehmer (Knuth, algorithme L) au-delà de 64 bits : la suite des quotients d'Euclide est lue
+ * sur les 26 bits de tête, en nombres exacts, puis appliquée d'un coup aux grands entiers.
+ * Euclide seul est quadratique : 1,7 s pour deux nombres de 40 000 chiffres, et une somme de
+ * cinq fractions géantes prenait 4,1 s dans Calcul (2026-10-12).
  *
  * @param a - First BigInt
  * @param b - Second BigInt
@@ -50,15 +71,33 @@ export function gcd(a: bigint, b: bigint): bigint {
 	// Work with absolute values
 	a = a < 0n ? -a : a;
 	b = b < 0n ? -b : b;
+	if (a < b) [a, b] = [b, a];
 
-	// Euclidean algorithm
-	while (b !== 0n) {
-		const temp = b;
-		b = a % b;
-		a = temp;
+	while (b >= LEHMER_FROM) {
+		const shift = BigInt(bitLength(a) - LEHMER_HEAD_BITS);
+		let aHead = Number(a >> shift);
+		let bHead = Number(b >> shift);
+		let A = 1,
+			B = 0,
+			C = 0,
+			D = 1;
+		// Les quotients sont sûrs tant que les deux encadrements de Knuth s'accordent
+		while (bHead + C !== 0 && bHead + D !== 0) {
+			const q = Math.floor((aHead + A) / (bHead + C));
+			if (q !== Math.floor((aHead + B) / (bHead + D))) break;
+			[A, C] = [C, A - q * C];
+			[B, D] = [D, B - q * D];
+			[aHead, bHead] = [bHead, aHead - q * bHead];
+		}
+		if (B === 0) {
+			// Aucun quotient sûr : un pas d'Euclide sur les grands entiers
+			[a, b] = [b, a % b];
+		} else {
+			[a, b] = [BigInt(A) * a + BigInt(B) * b, BigInt(C) * a + BigInt(D) * b];
+		}
 	}
 
-	return a;
+	return euclid(a, b);
 }
 
 /**
@@ -234,6 +273,56 @@ export function divRational(a: Rational, b: Rational): Rational {
 	return rational(a.n * b.d, a.d * b.n);
 }
 
+// -----------------------------------------------------------------------------
+// Les quatre opérations sur des fractions DÉJÀ RÉDUITES (Henrici, Knuth 4.5.1)
+// -----------------------------------------------------------------------------
+// Le pgcd porte sur les termes, pas sur le résultat deux fois plus grand : une somme de cinq
+// fractions d'environ 9 000 chiffres passe de 979 ms à 74 ms (pgcd de Lehmer compris,
+// 2026-10-12). ⚠️ Contrat : deux fractions réduites, dénominateur positif — sinon le résultat
+// peut ne pas l'être. Le dépôt construit des rationnels à la main sans les réduire
+// (`{ n, d: d * 2n }`) : `addRational` et les autres gardent donc leur réduction complète, et
+// seul le calcul en fractions d'`evaluate`, dont chaque valeur sort de `rational()`, s'en sert.
+
+/** n₁/d₁ + n₂/d₂, deux fractions réduites. */
+function sumOfReduced(n1: bigint, d1: bigint, n2: bigint, d2: bigint): Rational {
+	const g = gcd(d1, d2);
+	if (g === 1n) return { n: n1 * d2 + n2 * d1, d: d1 * d2 };
+	const t = n1 * (d2 / g) + n2 * (d1 / g);
+	if (t === 0n) return ZERO;
+	const h = gcd(t, g);
+	return { n: t / h, d: (d1 / g) * (d2 / h) };
+}
+
+/** (n₁/d₁)(n₂/d₂), deux fractions réduites : simplification croisée avant le produit. */
+function productOfReduced(n1: bigint, d1: bigint, n2: bigint, d2: bigint): Rational {
+	if (n1 === 0n || n2 === 0n) return ZERO;
+	const g1 = gcd(n1, d2);
+	const g2 = gcd(n2, d1);
+	return { n: (n1 / g1) * (n2 / g2), d: (d1 / g2) * (d2 / g1) };
+}
+
+/** a + b, deux fractions réduites (voir le contrat ci-dessus). */
+export function addReduced(a: Rational, b: Rational): Rational {
+	return sumOfReduced(a.n, a.d, b.n, b.d);
+}
+
+/** a − b, deux fractions réduites. */
+export function subReduced(a: Rational, b: Rational): Rational {
+	return sumOfReduced(a.n, a.d, -b.n, b.d);
+}
+
+/** a × b, deux fractions réduites. */
+export function mulReduced(a: Rational, b: Rational): Rational {
+	return productOfReduced(a.n, a.d, b.n, b.d);
+}
+
+/** a ÷ b, deux fractions réduites, b non nul. */
+export function divReduced(a: Rational, b: Rational): Rational {
+	if (b.n === 0n) throw new Error('Rational: division by zero');
+	// Le signe passe au numérateur : le dénominateur reste positif
+	return b.n < 0n ? productOfReduced(a.n, a.d, -b.d, -b.n) : productOfReduced(a.n, a.d, b.d, b.n);
+}
+
 /**
  * Negates a rational.
  *
@@ -387,26 +476,17 @@ export function powRational(base: Rational, exp: number): Rational {
 	if (isOne(base)) return ONE;
 	if (exp === -1) return reciprocal(base);
 
-	// Handle negative exponent
+	// Une fraction irréductible élevée à une puissance reste irréductible : nᵏ / dᵏ par
+	// la puissance native de BigInt, la base réduite une seule fois. ⚠️ Pas de
+	// multiplications successives réduites chacune par un pgcd : (101/100)^100000
+	// prenait 194 s (2 ms ainsi), (1+1/10000)^10000 bloquait Calcul 14 s (2026-10-12)
+	let reduced = rational(base.n, base.d);
 	if (exp < 0) {
-		base = reciprocal(base);
+		reduced = reciprocal(reduced);
 		exp = -exp;
 	}
-
-	// Compute power using repeated squaring
-	let result = ONE;
-	let current = base;
-	let e = BigInt(exp);
-
-	while (e > 0n) {
-		if (e % 2n === 1n) {
-			result = mulRational(result, current);
-		}
-		current = mulRational(current, current);
-		e = e / 2n;
-	}
-
-	return result;
+	const e = BigInt(exp);
+	return { n: reduced.n ** e, d: reduced.d ** e };
 }
 
 // =============================================================================
@@ -514,8 +594,26 @@ export function isInteger(r: Rational): boolean {
 // =============================================================================
 
 /**
+ * Les bits du quotient entier calculé quand les termes ne tiennent pas dans un
+ * flottant : au moins 54, plus un bit « collant » pour un arrondi correct.
+ */
+const QUOTIENT_BITS = 64;
+
+/** Le nombre de bits d'un entier positif. */
+function bitLength(x: bigint): number {
+	return x === 0n ? 0 : x.toString(2).length;
+}
+
+/**
  * Converts a rational to an approximate floating-point number.
- * May lose precision for very large numerators/denominators.
+ *
+ * ⚠️ Des termes au-delà de 10³⁰⁸ ne se convertissent pas un à un : (1001/1000)¹⁰⁰⁰
+ * porte 3001 chiffres en haut et en bas, et `Number(n) / Number(d)` rendait
+ * Infinity / Infinity = NaN pour une valeur de 2,7169 (2026-10-11 : la suite qui
+ * tend vers e, les intérêts composés, π²⁰ en mode décimal). Dans ce cas, le
+ * quotient est calculé en entiers sur 64 bits, puis remis à l'échelle par des
+ * puissances de 2 (exactes). Un vrai débordement reste un débordement :
+ * Infinity au-delà du plus grand flottant, 0 en deçà du plus petit.
  *
  * @param r - A rational
  * @returns Approximate floating-point value
@@ -524,7 +622,29 @@ export function isInteger(r: Rational): boolean {
  * rationalToNumber({ n: 1n, d: 3n }) // 0.3333333333333333
  */
 export function rationalToNumber(r: Rational): number {
-	return Number(r.n) / Number(r.d);
+	const quotient = Number(r.n) / Number(r.d);
+	// Cas ordinaire : les deux termes tiennent dans un flottant (division par zéro : inchangée)
+	if ((Number.isFinite(quotient) && (quotient !== 0 || r.n === 0n)) || r.d === 0n) {
+		return quotient;
+	}
+
+	const negative = r.n < 0n !== r.d < 0n;
+	const n = absBigInt(r.n);
+	const d = absBigInt(r.d);
+	// La valeur vaut environ 2^magnitude ; q = n·2^shift / d porte environ QUOTIENT_BITS bits
+	const magnitude = bitLength(n) - bitLength(d);
+	const shift = QUOTIENT_BITS - magnitude;
+	const numerator = shift >= 0 ? n << BigInt(shift) : n;
+	const denominator = shift >= 0 ? d : d << BigInt(-shift);
+	let q = numerator / denominator;
+	// Bit collant : un reste non nul départage une égalité apparente (2⁵³ + 1 + ε
+	// s'arrondit à 2⁵³ + 2, pas à 2⁵³) — sans lui, troncature puis arrondi = 1 ulp d'écart
+	if (numerator % denominator !== 0n) q |= 1n;
+	// valeur = q · 2^-shift, en deux facteurs : sous ~2⁻¹⁰¹⁰, 2^-shift seul
+	// sous-dépasserait vers 0 (shift > 1074) et la valeur, dénormale, serait perdue
+	const half = Math.trunc(-shift / 2);
+	const value = Number(q) * 2 ** half * 2 ** (-shift - half);
+	return negative ? -value : value;
 }
 
 /**

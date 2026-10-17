@@ -14,7 +14,7 @@
 
 import type { Atelier } from './atelier.svelte';
 import { isList, isQualitative, type ListObject } from './types';
-import { individualEntries } from './parse';
+import { categoriesOn, commonRows, droppedNote } from './pairs';
 import type { StatChartSpec } from '$lib/ubumark/types/stat-chart';
 import type { CrossTableDisplay } from '$lib/ubumark/types/stat-chart';
 import { buildStatChartScene, type StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
@@ -64,9 +64,6 @@ export function crossProblem(rows: ListObject, columns: ListObject): string | un
 		if (!isQualitative(list)) {
 			return `${list.name} est une liste de nombres : le tableau croisé croise deux listes de mots.`;
 		}
-		// Un trou décalerait les individus suivants (revue de `.filtrer`)
-		const read = individualEntries(list.definition, true);
-		if ('hole' in read) return holeMessage(list.name, read.hole);
 	}
 	// `Total` est réservé aux totaux du tableau, comme dans un bloc de la v1
 	// (sinon deux colonnes « Total », revue)
@@ -75,10 +72,10 @@ export function crossProblem(rows: ListObject, columns: ListObject): string | un
 			return `« Total » est réservé aux totaux du tableau : renomme cette modalité dans ${list.name}.`;
 		}
 	}
-	const a = rows.categories?.length ?? 0;
-	const b = columns.categories?.length ?? 0;
-	if (a !== b) {
-		return `${rows.name} a ${a} entrées et ${columns.name} ${b} : il faut une entrée par individu.`;
+	// Un individu = une LIGNE remplie dans les deux listes (P1) : les lignes
+	// incomplètes sont écartées et dites ; refus seulement s'il n'en reste aucune
+	if (commonRows([rows, columns]).rows.length === 0) {
+		return `${rows.name} et ${columns.name} n’ont aucune ligne remplie en commun : il faut une entrée par individu, sur la même ligne.`;
 	}
 	return undefined;
 }
@@ -124,8 +121,10 @@ export function crossCommand(atelier: Atelier, argument: string): CrossResult {
 	const problem = crossProblem(rows, columns);
 	if (problem !== undefined) return { ok: false, message: problem };
 
-	const rowCategories = rows.categories!;
-	const columnCategories = columns.categories!;
+	// Les individus des lignes remplies dans les deux listes (P1)
+	const common = commonRows([rows, columns]);
+	const rowCategories = categoriesOn(rows, common.rows);
+	const columnCategories = categoriesOn(columns, common.rows);
 	const rowLabels = distinct(rowCategories);
 	const columnLabels = distinct(columnCategories);
 	const cells = rowLabels.map(() => columnLabels.map(() => 0));
@@ -170,10 +169,12 @@ export function crossCommand(atelier: Atelier, argument: string): CrossResult {
 	return {
 		ok: true,
 		text: [
-			`Tableau croisé de ${rowsName} (lignes) et ${columnsName} (colonnes), ${count} individu${count > 1 ? 's' : ''}`,
+			`Tableau croisé de ${rowsName} (lignes) et ${columnsName} (colonnes), ${count} individu${count > 1 ? 's' : ''}${common.dropped > 0 ? ` — ${droppedNote(common.dropped)}` : ''}`,
 			// Q90 : la piste vers `.filtrer`, avec les noms et des modalités réelles —
 			// seulement si elles se citent telles quelles
-			...(quotable(rowLabels[0]) && quotable(columnLabels[0])
+			// …et pas quand une ligne est écartée : `.filtrer` refuse une liste
+			// trouée, la piste mènerait à un refus (revue de la PR 3b)
+			...(common.dropped === 0 && quotable(rowLabels[0]) && quotable(columnLabels[0])
 				? [
 						`Pour filtrer : .filtrer ${rowsName} = ${rowLabels[0]} et ${columnsName} = ${columnLabels[0]}`
 					]

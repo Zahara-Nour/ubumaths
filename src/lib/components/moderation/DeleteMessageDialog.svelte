@@ -66,7 +66,7 @@
 
 			if (!response.ok) {
 				const error = await response.text();
-				throw new Error(error || 'Failed to delete message');
+				throw new Error(error || 'Impossible de supprimer le message');
 			}
 
 			toaster.success('Message supprimé avec succès');

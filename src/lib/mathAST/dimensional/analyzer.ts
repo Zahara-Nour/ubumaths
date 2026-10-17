@@ -42,6 +42,8 @@ import type {
 	FunctionRule
 } from './types';
 import { getFunctionRule } from './rules';
+import { segmentNameIn } from '../common/segment-names';
+import { variable } from '../factory';
 
 // =============================================================================
 // Helper Functions
@@ -749,11 +751,8 @@ function determineFunctionOutput(
 
 		case 'preserve':
 			// Unit is preserved (possibly transformed)
-			if (rule.name === 'sqrt') {
-				return handleSqrtOutput(node, argUnits[0], errors, context);
-			}
-			if (rule.name === 'cbrt') {
-				return handleCbrtOutput(node, argUnits[0], errors, context);
+			if (rule.name === 'sqrt' || rule.name === 'cbrt') {
+				return handleRootOutput(node, argUnits[0], errors, context, rule.name);
 			}
 			// For abs, floor, ceil, round, etc. - preserve unit as-is
 			return argUnits.length > 0 ? argUnits[0] : null;
@@ -764,84 +763,56 @@ function determineFunctionOutput(
 }
 
 /**
- * Handle sqrt output - halve all exponents
- * Respects allowFractionalExponents option to determine error vs warning behavior
+ * L'indice d'une racine : `\sqrt[3]{…}` porte son indice dans `base`, une
+ * racine carrée n'en porte pas (2), `cbrt` vaut 3.
+ *
+ * ⚠️ Avant, l'indice était ignoré : `\sqrt[3]{8~\unit{km^3}}` rendait des
+ * m^1,5 (phase 0 grandeurs, revue du lot A) — même angle mort que celui de
+ * `domain/validate.ts`, corrigé en #942.
  */
-function handleSqrtOutput(
-	node: FunctionNode,
-	inputUnit: Unit | null,
-	errors: DimensionalError[],
-	context: DimensionalContext
-): Unit | null {
-	if (inputUnit === null) {
-		return null;
+function rootIndex(node: FunctionNode, name: 'sqrt' | 'cbrt'): number {
+	if (name === 'cbrt') return 3;
+	const base = node.base;
+	if (base !== undefined && base.type === 'number') {
+		const index = Number(base.value);
+		if (Number.isInteger(index) && index >= 2) return index;
 	}
-
-	const allowFractional = context.options?.allowFractionalExponents ?? true;
-	let hasOddExponent = false;
-
-	// Check that all exponents are even (so sqrt results in integers)
-	for (const [symbol, exponent] of inputUnit.components) {
-		if (exponent % 2 !== 0) {
-			hasOddExponent = true;
-			if (!allowFractional) {
-				// Odd exponent - sqrt would produce fractional exponent
-				errors.push(
-					createError(
-						'NON_INTEGER_EXPONENT',
-						`sqrt() of '${formatUnit(inputUnit)}' produces fractional exponent for '${symbol}'`,
-						node,
-						{
-							functionName: 'sqrt',
-							actual: inputUnit,
-							context: `${symbol}^${exponent} -> ${symbol}^${exponent / 2}`
-						}
-					)
-				);
-			}
-		}
-	}
-
-	// If fractional exponents not allowed and we have odd exponents, return null
-	if (hasOddExponent && !allowFractional) {
-		return null;
-	}
-
-	// Halve all exponents (fractional exponents are allowed or not needed)
-	return power(inputUnit, 0.5);
+	return 2;
 }
 
 /**
- * Handle cbrt output - divide all exponents by 3
+ * Handle root output (sqrt, cbrt, n-th root) - divide all exponents by the index
  * Respects allowFractionalExponents option to determine error vs warning behavior
  */
-function handleCbrtOutput(
+function handleRootOutput(
 	node: FunctionNode,
 	inputUnit: Unit | null,
 	errors: DimensionalError[],
-	context: DimensionalContext
+	context: DimensionalContext,
+	name: 'sqrt' | 'cbrt'
 ): Unit | null {
 	if (inputUnit === null) {
 		return null;
 	}
 
+	const index = rootIndex(node, name);
 	const allowFractional = context.options?.allowFractionalExponents ?? true;
 	let hasNonDivisibleExponent = false;
 
-	// Check that all exponents are divisible by 3
+	// Check that all exponents are divisible by the index
 	for (const [symbol, exponent] of inputUnit.components) {
-		if (exponent % 3 !== 0) {
+		if (exponent % index !== 0) {
 			hasNonDivisibleExponent = true;
 			if (!allowFractional) {
 				errors.push(
 					createError(
 						'NON_INTEGER_EXPONENT',
-						`cbrt() of '${formatUnit(inputUnit)}' produces fractional exponent for '${symbol}'`,
+						`${name}() of '${formatUnit(inputUnit)}' produces fractional exponent for '${symbol}'`,
 						node,
 						{
-							functionName: 'cbrt',
+							functionName: name,
 							actual: inputUnit,
-							context: `${symbol}^${exponent} -> ${symbol}^${exponent / 3}`
+							context: `${symbol}^${exponent} -> ${symbol}^${exponent / index}`
 						}
 					)
 				);
@@ -854,8 +825,7 @@ function handleCbrtOutput(
 		return null;
 	}
 
-	// Divide all exponents by 3
-	return power(inputUnit, 1 / 3);
+	return power(inputUnit, 1 / index);
 }
 
 /**
@@ -1024,6 +994,20 @@ function analyzeNode(
 		case 'hole':
 		case 'constant':
 			// Holes and mathematical constants (e, π) are dimensionless
+			return createDimensionlessUnit();
+
+		case 'segmentLength':
+			// Une longueur est une inconnue : son unité est celle déclarée sous `AB` ou
+			// `BA`, sinon comme une variable inconnue (erreur en mode strict)
+			return analyzeVariable(
+				variable(segmentNameIn(node, context.variables)),
+				context,
+				errors,
+				warnings
+			);
+
+		case 'figureName':
+			// Un nom de figure (`ABC`) n'est pas une grandeur : sans dimension
 			return createDimensionlessUnit();
 
 		case 'composition':

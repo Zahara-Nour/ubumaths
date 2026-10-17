@@ -5,7 +5,8 @@
  * `loadDictionary` (src/lib/server/dictionary/load.ts), qui sert
  * `/api/dictionnaire`, le glossaire et Mathémo. Comportements de
  * docs/wip/dictionnaire-en-base-spec.md :
- *   1. le site lit exactement les entrées du fichier d'origine ;
+ *   1. le site lit exactement les entrées du fichier d'origine, suivies des 4 mots
+ *      de la lecture ajoutés le 2026-10-11 (migration 20261016090300) ;
  *   3. une lecture est gardée 90 secondes, l'admin relit tout de suite ;
  *   4. une entrée masquée disparaît, y compris pour l'admin (à qui la RLS la
  *      montre) : le résultat est partagé par tous les visiteurs.
@@ -16,6 +17,7 @@
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { REFERENCE_DICTIONARY } from '../fixtures/lexique/dictionnaire-reference';
+import { READING_WORDS_2026_10_11 } from '../fixtures/lexique/mots-lecture-2026-10-11';
 import type { Database } from '$lib/types/database';
 import { forgetDictionary, loadDictionary } from '$lib/server/dictionary/load';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
@@ -110,9 +112,12 @@ describe('Dictionnaire en base — lecture par le site (loadDictionary)', () => 
 		await cleanupAllTestData();
 	});
 
-	it('1. un visiteur lit exactement les entrées du fichier, dans son ordre', async () => {
+	it('1. un visiteur lit exactement les entrées du fichier puis les ajouts, dans leur ordre', async () => {
 		const entries = await loadDictionary(anon);
-		expect(entries.filter((e) => !e.term.startsWith(TAG))).toEqual(REFERENCE_DICTIONARY);
+		expect(entries.filter((e) => !e.term.startsWith(TAG))).toEqual([
+			...REFERENCE_DICTIONARY,
+			...READING_WORDS_2026_10_11
+		]);
 	});
 
 	it('4. une entrée masquée n’est lue ni par un visiteur, ni par l’admin', async () => {

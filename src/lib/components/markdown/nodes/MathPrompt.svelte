@@ -15,11 +15,15 @@
 	@module components/markdown/nodes/MathPrompt
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import type { InputState } from '$lib/ubumark';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { MathfieldElement } from 'mathlive';
+	import { withoutCapitalPairShortcuts } from '$lib/questions/capital-pairs';
 	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
+	import { readCapitalPairs } from '../content-capital-pairs';
 	import { isRefusedRestrictedFormula, readRestrictedRendering } from '../restricted-rendering';
 
 	/**
@@ -59,6 +63,11 @@
 		genericFunctions?: GenericFunctionConfig | null;
 		/** LaTeX to insert when Space is pressed in math mode (e.g. '\\,' for thin space) */
 		mathModeSpace?: string;
+		/**
+		 * Sens de `AB` dans la question : en mode `'length'`, les raccourcis MathLive qui
+		 * transforment deux majuscules collées (`AA` → ∀, `RR` → ℝ…) sont coupés (Q-N)
+		 */
+		capitalPairs?: CapitalPairs;
 	}
 
 	let {
@@ -72,15 +81,26 @@
 		prefilledValues,
 		class: className = '',
 		genericFunctions,
-		mathModeSpace
+		mathModeSpace,
+		capitalPairs
 	}: Props = $props();
 
 	// Langue du contenu (séparateur décimal), posée par MarkdownRenderer
 	const contentLocale = readContentLocale();
+	// Sens de `AB` pour écrire les formules : la prop (champ de réponse) ou, à défaut, celui
+	// posé par la carte de la question
+	const contextCapitalPairs = readCapitalPairs();
+	const writingCapitalPairs = () => capitalPairs ?? contextCapitalPairs();
 
 	// Convert to LaTeX for rendering, embedding prefilled values in placeholder syntax
 	let latex = $derived.by(() => {
-		let base = expressionToLatex(expression, syntax, genericFunctions, contentLocale());
+		let base = expressionToLatex(
+			expression,
+			syntax,
+			genericFunctions,
+			contentLocale(),
+			writingCapitalPairs()
+		);
 		if (prefilledValues && !correctValues) {
 			for (const [id, value] of Object.entries(prefilledValues)) {
 				base = base.replace(
@@ -103,7 +123,7 @@
 	);
 
 	// Extract prompt indices from the expression
-	let promptIndices = $derived(extractPromptIndices(expression, syntax));
+	let promptIndices = $derived(extractPromptIndices(expression, syntax, writingCapitalPairs()));
 
 	let mathField: HTMLElement | undefined = $state();
 
@@ -178,6 +198,32 @@
 			}
 		} catch (error) {
 			console.error('MathPrompt: Error setting correct values:', error);
+		}
+	});
+
+	/** Champ MathLive (garde de type, sans importer mathlive à l'exécution ici) */
+	function isMathfield(element: HTMLElement): element is MathfieldElement {
+		return element.tagName === 'MATH-FIELD';
+	}
+
+	/** Raccourcis du champ avant le filtre : remis quand le sens n'est plus « longueur » */
+	let originalShortcuts: MathfieldElement['inlineShortcuts'] | undefined;
+
+	/**
+	 * Mode longueur (Q-N) : `AA'` reste la longueur AA', pas `∀'`. Posé au montage,
+	 * avant toute saisie (une option posée sur un champ focalisé referme le clavier).
+	 * L'aperçu de l'éditeur garde le champ quand l'auteur change de sens : les
+	 * raccourcis d'origine y sont alors rétablis.
+	 */
+	$effect(() => {
+		if (!mathField || !isMathfield(mathField)) return;
+		if (writingCapitalPairs() === 'length') {
+			if (originalShortcuts) return;
+			originalShortcuts = mathField.inlineShortcuts;
+			mathField.inlineShortcuts = withoutCapitalPairShortcuts(originalShortcuts);
+		} else if (originalShortcuts) {
+			mathField.inlineShortcuts = originalShortcuts;
+			originalShortcuts = undefined;
 		}
 	});
 

@@ -23,7 +23,9 @@
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import InlineRenderer from './InlineRenderer.svelte';
 	import { provideContentLocale } from './content-locale';
+	import { provideCapitalPairs } from './content-capital-pairs';
 	import type { ContentLocale } from '$lib/types/locale';
+	import type { CapitalPairs } from '$lib/mathAST/parser/types';
 
 	interface Props {
 		/** Markdown content to render inline */
@@ -34,11 +36,14 @@
 		genericFunctions?: GenericFunctionConfig | null;
 		/** Langue du contenu (séparateur décimal) ; absente : celle du parent, sinon fr */
 		locale?: ContentLocale;
+		/** Sens de `AB` (longueur ou produit) ; absent : celui du parent, sinon produit */
+		capitalPairs?: CapitalPairs;
 	}
 
-	let { content, class: className = '', genericFunctions, locale }: Props = $props();
+	let { content, class: className = '', genericFunctions, locale, capitalPairs }: Props = $props();
 
 	provideContentLocale(() => locale);
+	provideCapitalPairs(() => capitalPairs);
 
 	/**
 	 * Parse the content and extract inline nodes from the first paragraph.
