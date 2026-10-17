@@ -124,8 +124,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 
 `src/lib/components/worksheets/` : `PdfPreview.svelte` (aperçu, téléchargement, lot ZIP),
 `PdfSvgView.svelte` (la vue SVG d'un PDF compilé, partagée par `PdfPreview` et les copies par élève),
-`CorrectionManager.svelte` (libération par affectation), `SectionManager.svelte`,
-`ExerciseList.svelte`, `MetadataCards.svelte` (config, dont la langue),
+`CorrectionManager.svelte` (libération par affectation),
+`ExerciseList.svelte` (le plan de la fiche en édition, voir ci-dessous), `MetadataCards.svelte` (config, dont la langue),
 `WorksheetTypeOptions.svelte` (options du type choisi, à la création et sur la fiche, ADR 0030),
 `WorksheetAssignmentForm.svelte`, `UntranslatedExercisesNotice.svelte`, `StyleSelector.svelte` (style à la création),
 `TypstEditor.svelte` ; côté élève `src/lib/components/student/worksheets/WorksheetHeader.svelte`
@@ -170,6 +170,16 @@ worksheets (type, status, config jsonb, translations, template_id, style_id, sch
   est une étape à part, avec l'accord de David.
 - **Numéro affiché** ≠ `worksheet_exercises.position` : `position` redémarre à 1 dans chaque
   section ; le numéro est un ordinal continu calculé par `exercise-numbering.ts`.
+- **Édition : une seule liste** (`ExerciseList.svelte`, 2026-10-16) — la fiche telle qu'imprimée :
+  toutes les sections dans leur ordre, **vides comprises** (on y dépose), chacune avec titre,
+  instructions et nombre de corvées, puis « Sans section », toujours dernier et sans en-tête
+  quand la fiche n'a aucune section. Les sections s'y créent, se modifient, se suppriment (leurs
+  corvées passent dans « Sans section », APRÈS celles qui y sont déjà : l'API `DELETE sections/[sectionId]` leur donne les rangs suivants, sinon l'index unique `idx_worksheet_exercises_unique_position`, qui met tous les hors-section dans un même groupe, refusait la suppression) et se déplacent avec leurs corvées ; il
+  n'y a plus de carte « Sections » à part. Glisser-déposer `svelte-dnd-action` ; ce qu'une dépose
+  enregistre (rien si l'ordre de la zone n'a pas changé, sinon la zone renumérotée 1..n, et celle qu'une corvée a quittée) est
+  décidé par `worksheet-outline.ts`, qui compare aux **props** et jamais à l'état du geste (l'ombre
+  de la bibliothèque y porte déjà l'identifiant de l'élément tiré). Fiche publiée : même liste,
+  en lecture seule.
 - **Exercice ↔ variation** : le contenu vient de `exercises.variations` (énoncé, solution, indices),
   via `getExerciseContentSafe` / `generateExerciseInstance` (`src/lib/exercises/`) ;
   `worksheet_exercises.variation_index` force une variation. Les **fonctions déclarées**

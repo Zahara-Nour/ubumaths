@@ -8,7 +8,6 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import ExerciseSelector from '$lib/components/worksheets/ExerciseSelector.svelte';
-	import SectionManager from '$lib/components/worksheets/SectionManager.svelte';
 	import ExerciseList from '$lib/components/worksheets/ExerciseList.svelte';
 	import ExerciseConfigModal from '$lib/components/worksheets/ExerciseConfigModal.svelte';
 	import PdfPreview from '$lib/components/worksheets/PdfPreview.svelte';
@@ -243,7 +242,7 @@
 	}
 
 	/**
-	 * Handle sections change from SectionManager
+	 * Handle sections change from ExerciseList
 	 */
 	function handleSectionsChange(newSections: WorksheetSectionRow[]) {
 		worksheetData = {
@@ -521,36 +520,7 @@
 
 			<!-- Exercises Tab -->
 			<Tabs.Content value="exercises" class="space-y-6">
-				<!-- Sections management (only for draft worksheets) -->
-				{#if isDraft}
-					<SectionManager
-						worksheetId={worksheet.id}
-						sections={worksheet.sections ?? []}
-						readonly={!isDraft}
-						language={worksheetLocale(worksheet.config)}
-						onSectionsChange={handleSectionsChange}
-					/>
-				{/if}
-
-				<!-- Exercise list with drag-and-drop -->
 				<div class="space-y-4">
-					{#if isDraft}
-						<div class="flex justify-end">
-							{#if addingExercises}
-								<Button variant="outline" disabled>
-									<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-									Ajout en cours...
-								</Button>
-							{:else}
-								<ExerciseSelector
-									bind:open={exerciseSelectorOpen}
-									onSelect={handleAddExercises}
-									selectedIds={existingExerciseIds}
-								/>
-							{/if}
-						</div>
-					{/if}
-
 					<UntranslatedExercisesNotice
 						exercises={worksheet.exercises ?? []}
 						config={worksheet.config}
@@ -565,11 +535,29 @@
 						sections={worksheet.sections ?? []}
 						readonly={!isDraft}
 						onExercisesChange={handleExercisesChange}
+						onSectionsChange={handleSectionsChange}
 						onEditExercise={handleEditExercise}
 						{answersOnSheet}
 						answerFrameMode={worksheet.config.answer_frames ?? 'question'}
 						language={worksheetLocale(worksheet.config)}
-					/>
+					>
+						{#snippet actions()}
+							{#if isDraft}
+								{#if addingExercises}
+									<Button variant="outline" disabled>
+										<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+										Ajout en cours...
+									</Button>
+								{:else}
+									<ExerciseSelector
+										bind:open={exerciseSelectorOpen}
+										onSelect={handleAddExercises}
+										selectedIds={existingExerciseIds}
+									/>
+								{/if}
+							{/if}
+						{/snippet}
+					</ExerciseList>
 				</div>
 			</Tabs.Content>
 

@@ -183,7 +183,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
-	const { worksheet } = await verifyAccess(
+	const { worksheet, section } = await verifyAccess(
 		locals.supabase,
 		params.id,
 		params.sectionId,
@@ -200,27 +200,59 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		);
 	}
 
-	// Move all exercises from this section to unsectioned (null section_id)
-	const { error: moveError } = await locals.supabase
+	// Sortir les exercices de la section vers « Sans section », APRÈS ceux qui y
+	// sont déjà. `position` redémarre à 1 dans chaque groupe, et l'index unique
+	// `idx_worksheet_exercises_unique_position` met tous les exercices hors
+	// section dans le même groupe : garder leur rang heurtait celui des autres
+	// (23505), et la suppression échouait.
+	const { data: rows, error: readError } = await locals.supabase
 		.from('worksheet_exercises')
-		.update({ section_id: null })
-		.eq('section_id', params.sectionId)
+		.select('id, section_id, position')
 		.eq('worksheet_id', params.id);
 
-	if (moveError) {
-		logger.error('Failed to move exercises:', moveError);
-		throw error(500, 'Impossible de sortir les exercices de la section');
+	if (readError) {
+		logger.error('Failed to read exercises:', readError);
+		throw error(500, 'Impossible de lire les exercices de la fiche');
+	}
+
+	// Comparé à l'identifiant RENDU par la base (`verifyAccess`), pas au paramètre :
+	// un UUID reçu en majuscules ne correspondrait à aucune ligne, et la FK
+	// (`ON DELETE SET NULL`) sortirait ensuite les exercices à leur ancien rang.
+	const toMove = rows
+		.filter((r) => r.section_id === section.id)
+		.sort((a, b) => a.position - b.position);
+	let nextPosition = Math.max(
+		0,
+		...rows.filter((r) => r.section_id === null).map((r) => r.position)
+	);
+
+	// Un par un : chaque rang visé est libre (au-delà du dernier hors section).
+	// La RLS échoue en silence : on vérifie la ligne rendue.
+	for (const row of toMove) {
+		nextPosition += 1;
+		const { data: moved, error: moveError } = await locals.supabase
+			.from('worksheet_exercises')
+			.update({ section_id: null, position: nextPosition })
+			.eq('id', row.id)
+			.eq('worksheet_id', params.id)
+			.select('id');
+
+		if (moveError || moved?.length !== 1) {
+			logger.error('Failed to move exercise:', moveError ?? 'no row updated');
+			throw error(500, 'Impossible de sortir les exercices de la section');
+		}
 	}
 
 	// Delete the section
-	const { error: deleteError } = await locals.supabase
+	const { data: deleted, error: deleteError } = await locals.supabase
 		.from('worksheet_sections')
 		.delete()
-		.eq('id', params.sectionId)
-		.eq('worksheet_id', params.id);
+		.eq('id', section.id)
+		.eq('worksheet_id', params.id)
+		.select('id');
 
-	if (deleteError) {
-		logger.error('Failed to delete section:', deleteError);
+	if (deleteError || deleted?.length !== 1) {
+		logger.error('Failed to delete section:', deleteError ?? 'no row deleted');
 		throw error(500, 'Impossible de supprimer la section');
 	}
 
