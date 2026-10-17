@@ -374,6 +374,10 @@ est transformé avant d'y placer les exercices (`withTextSize`) : chaque `size: 
 (titres, pied de page ; les tailles en `em` suivent seules). La **mise en page du style ne change
 pas** : ses colonnes restent (David n'a pas voulu de passage à une colonne, 2026-10-16). Les exercices n'ont aucune taille fixe : ils
 suivent le texte, maths comprises. Un gabarit écrit par un prof est transformé de la même façon.
+**« Fiche élève » en Grande ou Très grande passe en paysage** (David, 2026-10-17), toutes formes
+sauf Réponses (fiche, corrigé, fiche + réponses, fiche + corrigé) : `printedStyleId` (`styles.ts`)
+imprime alors son jumeau « 2 colonnes - paysage » (mêmes gabarits, page retournée, deux colonnes).
+Les autres styles, la taille normale et le style d'un prof ne changent pas d'orientation.
 Où la taille est choisie :
 
 - **réglage de l'élève** (`student_print_settings`, voir [base-de-donnees.md](base-de-donnees.md)) :

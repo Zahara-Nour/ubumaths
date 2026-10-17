@@ -925,3 +925,61 @@ describe('taille du texte', () => {
 		expect(typst).toContain('size: 18pt, lang:');
 	});
 });
+
+// « Fiche élève » en grande taille : en paysage, sauf les Réponses (David, 2026-10-17)
+describe('« Fiche élève » en paysage en grande taille', () => {
+	const typstOf = (
+		textSize: 'normal' | 'large' | 'x_large',
+		mode: 'worksheet' | 'answers' | 'correction',
+		options: { templateId?: string | null; withCorrections?: 'answers' | 'correction' } = {}
+	) =>
+		new WorksheetGenerator(
+			createMockConfig(),
+			undefined,
+			{ mode },
+			{
+				textSize,
+				withCorrections: options.withCorrections
+			}
+		).generate({
+			worksheet: createMockWorksheet({ template_id: options.templateId ?? null }),
+			instance: createMockInstance()
+		}).typstContent;
+
+	it.each([
+		['fiche', 'worksheet', undefined],
+		['corrigé', 'correction', undefined],
+		['fiche + réponses', 'worksheet', 'answers'],
+		['fiche + corrigé', 'worksheet', 'correction']
+	] as const)('%s en Grande et Très grande : paysage', (_, mode, withCorrections) => {
+		for (const size of ['large', 'x_large'] as const) {
+			const typst = typstOf(size, mode, { withCorrections });
+			expect(typst).toContain('flipped: true');
+			expect(typst).toContain('columns: 2,');
+		}
+	});
+
+	it('Réponses en Grande et Très grande : portrait', () => {
+		for (const size of ['large', 'x_large'] as const) {
+			expect(typstOf(size, 'answers')).not.toContain('flipped: true');
+		}
+	});
+
+	it('taille normale : portrait, quelle que soit la forme', () => {
+		for (const mode of ['worksheet', 'answers', 'correction'] as const) {
+			expect(typstOf('normal', mode)).not.toContain('flipped: true');
+		}
+	});
+
+	it('« Fiche élève » choisi explicitement : paysage aussi', () => {
+		expect(
+			typstOf('large', 'worksheet', { templateId: DEFAULT_TEMPLATE_IDS.studentStyle })
+		).toContain('flipped: true');
+	});
+
+	it('un autre style ne change pas d’orientation (Standard)', () => {
+		const standard = typstOf('large', 'worksheet', { templateId: DEFAULT_TEMPLATE_IDS.standard });
+		expect(standard).not.toContain('flipped: true');
+		expect(standard).toContain('size: 15.4pt');
+	});
+});
