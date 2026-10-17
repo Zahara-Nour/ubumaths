@@ -396,7 +396,7 @@ les références dans la même migration). Lignes au contenu neuf → points ⚙
 | Multiplier et diviser par 10, 100, 1 000                                           | CM2-042 · CM2-043     |
 | Additionner et soustraire des décimaux (2,7 + 1,4)                                 | 6-114 · 6-198         |
 | Additionner, soustraire, multiplier des décimaux à une ou deux décimales           | 6-114 · 6-198 · 6-118 |
-| Compléter une addition à trou par une soustraction (2 + … = 7)                     | CE2-020               |
+| Compléter une addition à trou par une soustraction (2 + … = 7)                     | CE2-084               |
 | Écriture décimale des fractions simples (1/2, 1/4, 3/4…)                           | CM2-039               |
 | Nombre quotient : compléter 3 × … = 7 par 7/3                                      | 6-127                 |
 | Abscisse d'un point en tiers, quarts, moitiés, dixièmes                            | 6-128                 |

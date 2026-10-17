@@ -1105,10 +1105,6 @@
 			"grade": "T_TECHNO"
 		},
 		{
-			"code": "3-030",
-			"grade": "T_TECHNO"
-		},
-		{
 			"code": "5-096",
 			"grade": "T_TECHNO"
 		},
@@ -1254,6 +1250,34 @@
 		},
 		{
 			"code": "3-052",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "3-058",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "3-062",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "4-080",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-112",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-113",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-114",
+			"grade": "T_TECHNO"
+		},
+		{
+			"code": "5-129",
 			"grade": "T_TECHNO"
 		}
 	]

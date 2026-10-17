@@ -9,6 +9,10 @@
  * pour le cycle terminal (A1). VALIDÉS par David le 2026-10-08
  * (docs/wip/arbre-notions/seed-tcomp.md).
  *
+ * Références reportées par les scissions validées par David (migration
+ * `20261017090000_scission_points_programme`) : fixture transformée par
+ * docs/wip/arbre-notions/c5-scissions-generer.py.
+ *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade 'T_COMP', l'ensemble exact des
  * références, et l'ancien seed Tle comp. (TCOMP-001…TCOMP-139, grade NULL) INTACT.

@@ -1,0 +1,1489 @@
+{
+	"corrections": [
+		{
+			"code": "CE1-007",
+			"grade": "CE1",
+			"libelle_actuel": "Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles (=, <, >).",
+			"classe": "B",
+			"raison": "Les exemples « 47 … 52 » sont ceux du CP (BO CP : « entre 49 et 53 ») ; au CE1, le BO donne « 234, 243, 239, 300 et 229 ». Seuls les exemples changent.",
+			"labels_proposes": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (47 … 52).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 47 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (47 < … < 52)."
+			],
+			"labels_corriges": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (239 … 243).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 239 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (391 < … < 396)."
+			]
+		},
+		{
+			"code": "CE2-007",
+			"grade": "CE2",
+			"libelle_actuel": "Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles (=, <, >).",
+			"classe": "B",
+			"raison": "Les exemples « 47 … 52 » sont ceux du CP (BO CP : « entre 49 et 53 ») ; au CE2, le BO donne « 6 234, 6 243, 6 239 ». Seuls les exemples changent.",
+			"labels_proposes": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (47 … 52).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 47 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (47 < … < 52)."
+			],
+			"labels_corriges": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (6 239 … 6 243).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 6 239 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (2 393 < … < 2 396)."
+			]
+		},
+		{
+			"code": "CM1-008",
+			"grade": "CM1",
+			"libelle_actuel": "Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles =, < et >",
+			"classe": "B",
+			"raison": "Les exemples « 47 … 52 » sont ceux du CP (BO CP : « entre 49 et 53 ») ; au CM1, les nombres vont jusqu'à 999 999. Seuls les exemples changent.",
+			"labels_proposes": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (47 … 52).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 47 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (47 < … < 52)."
+			],
+			"labels_corriges": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (45 307 … 45 370).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 45 307 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (45 307 < … < 45 370)."
+			]
+		},
+		{
+			"code": "CM1-132",
+			"grade": "CM1",
+			"libelle_actuel": "Encadrer, intercaler des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
+			"classe": "B",
+			"raison": "Le libellé annonce « au dixième près » mais l'exemple 3 < 3,7 < 4 encadre à l'unité ; l'exemple corrigé montre les deux (au CM1 les décimaux s'arrêtent aux centièmes, 3,74 y reste).",
+			"labels_proposes": [
+				"Encadrer un nombre décimal (par deux entiers consécutifs, au dixième près : 3 < 3,7 < 4).",
+				"Intercaler un nombre décimal entre deux nombres décimaux (3,4 < … < 3,5)."
+			],
+			"labels_corriges": [
+				"Encadrer un nombre décimal (entre deux entiers consécutifs : 3 < 3,7 < 4 ; au dixième près : 3,7 < 3,74 < 3,8).",
+				"Intercaler un nombre décimal entre deux nombres décimaux (3,4 < … < 3,5)."
+			]
+		},
+		{
+			"code": "6-133",
+			"grade": "6",
+			"libelle_actuel": "Comparer et encadrer des fractions",
+			"classe": "B",
+			"raison": "En 6e le BO dit « Comparer et encadrer des fractions », sans borne ; « par deux nombres entiers consécutifs » est la formulation du CM (CM1-017, CM2-016) et rétrécit le point.",
+			"labels_proposes": [
+				"Comparer deux fractions (3/4 … 5/6).",
+				"Encadrer une fraction par deux nombres entiers consécutifs (… < 7/3 < …)."
+			],
+			"labels_corriges": [
+				"Comparer deux fractions (3/4 … 5/6).",
+				"Encadrer une fraction (… < 7/3 < …)."
+			]
+		},
+		{
+			"code": "CM2-005",
+			"grade": "CM2",
+			"libelle_actuel": "Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles =, < et >",
+			"classe": "B",
+			"raison": "Les exemples « 47 … 52 » sont ceux du CP (BO CP : « entre 49 et 53 ») ; au CM2, les nombres vont jusqu'à 999 999 999. Seuls les exemples changent.",
+			"labels_proposes": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (47 … 52).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 47 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (47 < … < 52)."
+			],
+			"labels_corriges": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (3 405 270 … 3 450 207).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 3 405 270 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (3 405 270 < … < 3 450 207)."
+			]
+		},
+		{
+			"code": "CM2-117",
+			"grade": "CM2",
+			"libelle_actuel": "Encadrer, intercaler des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
+			"classe": "B",
+			"raison": "Le libellé annonce « au dixième près » mais l'exemple 3 < 3,7 < 4 encadre à l'unité ; l'exemple corrigé montre les deux (au CM1 les décimaux s'arrêtent aux centièmes, 3,74 y reste).",
+			"labels_proposes": [
+				"Encadrer un nombre décimal (par deux entiers consécutifs, au dixième près : 3 < 3,7 < 4).",
+				"Intercaler un nombre décimal entre deux nombres décimaux (3,4 < … < 3,5)."
+			],
+			"labels_corriges": [
+				"Encadrer un nombre décimal (entre deux entiers consécutifs : 3 < 3,7 < 4 ; au dixième près : 3,7 < 3,74 < 3,8).",
+				"Intercaler un nombre décimal entre deux nombres décimaux (3,4 < … < 3,5)."
+			]
+		},
+		{
+			"code": "5-017",
+			"grade": "5",
+			"libelle_actuel": "Comparer et ranger dans l'ordre croissant et décroissant des nombres décimaux relatifs.",
+			"classe": "A",
+			"raison": "Le BO dit « des nombres décimaux relatifs » ; les libellés proposés disent « nombres relatifs » et l'exemple n'utilise que des entiers.",
+			"labels_proposes": [
+				"Comparer deux nombres relatifs (−3 … −5).",
+				"Ranger des nombres relatifs dans l'ordre croissant ou décroissant."
+			],
+			"labels_corriges": [
+				"Comparer deux nombres décimaux relatifs (−3,5 … −5).",
+				"Ranger des nombres décimaux relatifs dans l'ordre croissant ou décroissant."
+			]
+		},
+		{
+			"code": "CE1-016",
+			"grade": "CE1",
+			"libelle_actuel": "Savoir interpréter, représenter, écrire et lire les fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ et 1/10.",
+			"classe": "A",
+			"raison": "Le BO du CE1 limite ce point aux fractions « ½, ⅓, ¼, ⅕, ⅙, ⅛ et 1/10 » ; les trois libellés proposés (repris du CM) parlent d'« une fraction » sans cette liste.",
+			"labels_proposes": [
+				"Lire et écrire une fraction en chiffres et en lettres (un quart ↔ 1/4).",
+				"Représenter une fraction donnée par un partage (colorier les parts d'une figure).",
+				"Interpréter un partage par une fraction (quelle part de la figure est coloriée ?)."
+			],
+			"labels_corriges": [
+				"Lire et écrire les fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ et 1/10 en chiffres et en lettres (un quart ↔ 1/4).",
+				"Représenter l'une des fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ ou 1/10 par un partage (colorier les parts d'une figure).",
+				"Interpréter un partage par l'une des fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ ou 1/10 (quelle part de la figure est coloriée ?)."
+			]
+		},
+		{
+			"code": "CE1-017",
+			"grade": "CE1",
+			"libelle_actuel": "Savoir interpréter, représenter, écrire et lire des fractions inférieures ou égales à 1.",
+			"classe": "A",
+			"raison": "Le BO du CE1 dit « fractions inférieures ou égales à 1 » (« Les fractions rencontrées au CE1 … sont, par nature, inférieures ou égales à 1 ») ; les libellés proposés perdent cette borne.",
+			"labels_proposes": [
+				"Lire et écrire une fraction en chiffres et en lettres (trois quarts ↔ 3/4).",
+				"Représenter une fraction donnée par un partage (colorier les parts d'une figure).",
+				"Interpréter un partage par une fraction (quelle part de la figure est coloriée ?)."
+			],
+			"labels_corriges": [
+				"Lire et écrire une fraction inférieure ou égale à 1 en chiffres et en lettres (trois quarts ↔ 3/4).",
+				"Représenter une fraction inférieure ou égale à 1 par un partage (colorier les parts d'une figure).",
+				"Interpréter un partage par une fraction inférieure ou égale à 1 (quelle part de la figure est coloriée ?)."
+			]
+		},
+		{
+			"code": "6-157",
+			"grade": "6",
+			"libelle_actuel": "Effectuer des calculs sur des horaires et des durées",
+			"classe": "C",
+			"raison": "BO : « Effectuer des calculs sur des horaires et des durées » ; la durée entre deux horaires n'est dans aucun des deux libellés proposés : le premier est élargi pour la couvrir (même nombre de libellés).",
+			"labels_proposes": [
+				"Calculer un horaire à partir d'un horaire et d'une durée (départ 9 h 40, durée 1 h 35 : arrivée ?).",
+				"Calculer sur des durées (1 h 40 min + 2 h 35 min = ?)."
+			],
+			"labels_corriges": [
+				"Calculer un horaire ou une durée à partir des deux autres données (départ 9 h 40, durée 1 h 35 : arrivée ? ; départ 9 h 40, arrivée 11 h 15 : durée ?).",
+				"Calculer sur des durées (1 h 40 min + 2 h 35 min = ?)."
+			]
+		},
+		{
+			"code": "4-029",
+			"grade": "4",
+			"libelle_actuel": "Connaitre le volume de la pyramide et du cône de révolution.",
+			"classe": "C",
+			"raison": "Le BO dit « Connaitre le volume de la pyramide et du cône de révolution » (point de genre connaissance) ; « Calculer » change le verbe (mineur).",
+			"labels_proposes": [
+				"Calculer le volume d'une pyramide (V = B × h / 3).",
+				"Calculer le volume d'un cône de révolution (V = π r² h / 3)."
+			],
+			"labels_corriges": [
+				"Connaître le volume d'une pyramide (V = B × h / 3).",
+				"Connaître le volume d'un cône de révolution (V = π r² h / 3)."
+			]
+		},
+		{
+			"code": "4-060",
+			"grade": "4",
+			"libelle_actuel": "Savoir appliquer un programme de calcul à deux (plusieurs) étapes à un nombre simple puis à une variable.",
+			"classe": "C",
+			"raison": "Le BO dit « un programme de calcul à deux (plusieurs) étapes » ; les libellés perdent ce nombre d'étapes (mineur).",
+			"labels_proposes": [
+				"Appliquer un programme de calcul à un nombre donné.",
+				"Appliquer un programme de calcul à une variable (écrire l'expression obtenue en fonction de x)."
+			],
+			"labels_corriges": [
+				"Appliquer un programme de calcul à plusieurs étapes à un nombre donné.",
+				"Appliquer un programme de calcul à plusieurs étapes à une variable (écrire l'expression obtenue en fonction de x)."
+			]
+		},
+		{
+			"code": "5-051",
+			"grade": "5",
+			"libelle_actuel": "Connaitre et convertir des unités usuelles (volume et capacité).",
+			"classe": "C",
+			"raison": "BO : « Connaitre et convertir des unités usuelles (volume et capacité) » ; les conversions entre unités de contenance (L, cL, mL) ne sont dans aucun libellé proposé : le second est élargi (même nombre de libellés).",
+			"labels_proposes": [
+				"Convertir des unités de volume (m³, dm³, cm³).",
+				"Convertir entre unités de volume et de contenance (1 L = 1 dm³)."
+			],
+			"labels_corriges": [
+				"Convertir des unités de volume (m³, dm³, cm³).",
+				"Convertir des unités de contenance et passer d'une unité de volume à une unité de contenance (1 L = 1 dm³)."
+			]
+		},
+		{
+			"code": "CE1-063",
+			"grade": "CE1",
+			"libelle_actuel": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (pour des intervalles de temps situés dans une même journée, avec des heures données en heures entières, en heures et demi-heure ou en heures et quarts d'heure).",
+			"classe": "A",
+			"raison": "Le BO du CE1 précise « pour des intervalles de temps situés dans une même journée, avec des heures données en heures entières, en heures et demi-heure ou en heures et quarts d'heure » ; les deux libellés proposés, identiques sur les quatre niveaux, perdent cette borne.",
+			"labels_proposes": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge.",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge."
+			],
+			"labels_corriges": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge (même journée ; heures entières, demi-heures ou quarts d'heure).",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge (même journée ; heures entières, demi-heures ou quarts d'heure)."
+			]
+		},
+		{
+			"code": "CE2-059",
+			"grade": "CE2",
+			"libelle_actuel": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (pour des intervalles de temps situés dans une même journée).",
+			"classe": "A",
+			"raison": "Le BO du CE2 précise « pour des intervalles de temps situés dans une même journée » ; les deux libellés proposés, identiques sur les quatre niveaux, perdent cette borne.",
+			"labels_proposes": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge.",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge."
+			],
+			"labels_corriges": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge (dans une même journée).",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge (dans une même journée)."
+			]
+		},
+		{
+			"code": "CM1-094",
+			"grade": "CM1",
+			"libelle_actuel": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (instants et durées sont exprimés en heure et minute)",
+			"classe": "A",
+			"raison": "Le BO du CM1 précise « instants et durées sont exprimés en heure et minute » ; les deux libellés proposés, identiques sur les quatre niveaux, perdent cette borne.",
+			"labels_proposes": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge.",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge."
+			],
+			"labels_corriges": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge (en heures et minutes).",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge (en heures et minutes)."
+			]
+		},
+		{
+			"code": "CM2-084",
+			"grade": "CM2",
+			"libelle_actuel": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (instants et durées sont exprimés en heure, minute et seconde)",
+			"classe": "A",
+			"raison": "Le BO du CM2 précise « instants et durées sont exprimés en heure, minute et seconde » ; les deux libellés proposés, identiques sur les quatre niveaux, perdent cette borne.",
+			"labels_proposes": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge.",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge."
+			],
+			"labels_corriges": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge (en heures, minutes et secondes).",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge (en heures, minutes et secondes)."
+			]
+		},
+		{
+			"code": "5-045",
+			"grade": "5",
+			"libelle_actuel": "Résoudre des équations du type ax = c ou x + b = c par des méthodes arithmétiques s'appuyant sur les opérations inverses.",
+			"classe": "C",
+			"raison": "Le BO impose la méthode : « par des méthodes arithmétiques s'appuyant sur les opérations inverses » (pas de transformation algébrique en 5e) ; les libellés la perdent.",
+			"labels_proposes": [
+				"Résoudre une équation du type x + b = c (x + 7 = 12).",
+				"Résoudre une équation du type ax = c (3x = 12)."
+			],
+			"labels_corriges": [
+				"Résoudre une équation du type x + b = c par l'opération inverse (x + 7 = 12 : x = 12 − 7).",
+				"Résoudre une équation du type ax = c par l'opération inverse (3x = 12 : x = 12 ÷ 3)."
+			]
+		},
+		{
+			"code": "5-044",
+			"grade": "5",
+			"libelle_actuel": "Modéliser des problèmes relevant des opérations à trous par des équations du type ax = c ou x + b = c.",
+			"classe": "C",
+			"raison": "Le BO dit « Modéliser des problèmes relevant des opérations à trous » ; cette précision disparaît des libellés (mineur).",
+			"labels_proposes": [
+				"Modéliser un problème par une équation du type x + b = c.",
+				"Modéliser un problème par une équation du type ax = c."
+			],
+			"labels_corriges": [
+				"Modéliser par une équation du type x + b = c un problème relevant d'une addition à trou.",
+				"Modéliser par une équation du type ax = c un problème relevant d'une multiplication à trou."
+			]
+		},
+		{
+			"code": "3-014",
+			"grade": "3",
+			"libelle_actuel": "Résoudre analytiquement et graphiquement une inéquation du premier degré du type ax ⩾ b.",
+			"classe": "C",
+			"raison": "Le BO dit « une inéquation du premier degré du type ax ⩾ b » ; les libellés perdent « du type ax ⩾ b », et le second, sans exemple, s'ouvre à toute inéquation.",
+			"labels_proposes": [
+				"Résoudre par le calcul une inéquation du premier degré (3x ⩾ 12).",
+				"Résoudre graphiquement une inéquation du premier degré."
+			],
+			"labels_corriges": [
+				"Résoudre par le calcul une inéquation du premier degré du type ax ⩾ b (3x ⩾ 12).",
+				"Résoudre graphiquement une inéquation du premier degré du type ax ⩾ b."
+			]
+		},
+		{
+			"code": "CE1-070",
+			"grade": "CE1",
+			"libelle_actuel": "Reconnaitre, nommer et décrire un cercle, un carré, un rectangle, un triangle, un triangle rectangle en utilisant le vocabulaire approprié.",
+			"classe": "A",
+			"raison": "Le BO du CE1 nomme les figures : « un cercle, un carré, un rectangle, un triangle, un triangle rectangle » ; « une figure plane usuelle » élargit l'objet.",
+			"labels_proposes": [
+				"Reconnaître et nommer une figure plane usuelle (quelle est cette figure ?).",
+				"Décrire une figure plane usuelle avec le vocabulaire approprié (côtés, sommets, angles droits)."
+			],
+			"labels_corriges": [
+				"Reconnaître et nommer un cercle, un carré, un rectangle, un triangle ou un triangle rectangle (quelle est cette figure ?).",
+				"Décrire un cercle, un carré, un rectangle, un triangle ou un triangle rectangle avec le vocabulaire approprié (côtés, sommets, angles droits)."
+			]
+		},
+		{
+			"code": "CE2-068",
+			"grade": "CE2",
+			"libelle_actuel": "Reconnaitre, nommer et décrire le carré, le rectangle, le triangle, le triangle rectangle et le losange.",
+			"classe": "A",
+			"raison": "Le BO du CE2 nomme les figures : « le carré, le rectangle, le triangle, le triangle rectangle et le losange » (le losange y entre, le cercle en sort) ; « une figure plane usuelle » efface cette différence.",
+			"labels_proposes": [
+				"Reconnaître et nommer une figure plane usuelle (quelle est cette figure ?).",
+				"Décrire une figure plane usuelle avec le vocabulaire approprié (côtés, sommets, angles droits)."
+			],
+			"labels_corriges": [
+				"Reconnaître et nommer le carré, le rectangle, le triangle, le triangle rectangle et le losange (quelle est cette figure ?).",
+				"Décrire le carré, le rectangle, le triangle, le triangle rectangle et le losange avec le vocabulaire approprié (côtés, sommets, angles droits)."
+			]
+		},
+		{
+			"code": "5-094",
+			"grade": "5",
+			"libelle_actuel": "Lire et interpréter un tableau de valeurs.",
+			"classe": "B",
+			"raison": "Le mot « image » n'est introduit qu'en 3e (BO : « Définir et connaitre le vocabulaire : image, antécédents ») ; l'exemple d'un point de 5e ne doit pas l'employer.",
+			"labels_proposes": [
+				"Lire une donnée dans un tableau de valeurs (quelle est l'image de 3 ?).",
+				"Interpréter les données d'un tableau de valeurs (la grandeur augmente-t-elle quand x augmente ?)."
+			],
+			"labels_corriges": [
+				"Lire une donnée dans un tableau de valeurs (quelle valeur correspond à 3 ?).",
+				"Interpréter les données d'un tableau de valeurs (la grandeur augmente-t-elle quand x augmente ?)."
+			]
+		},
+		{
+			"code": "3-022",
+			"grade": "3",
+			"libelle_actuel": "Connaitre et appliquer le théorème de Thalès (configurations des triangles emboités et configuration dite du papillon).",
+			"classe": "B",
+			"raison": "L'exemple « les droites (BC) et (MN) sont-elles parallèles ? » relève de la réciproque (point 3-055) ; dans le théorème direct, le parallélisme est une donnée.",
+			"labels_proposes": [
+				"Reconnaître une configuration où le théorème de Thalès s'applique : triangles emboîtés ou papillon (les droites (BC) et (MN) sont-elles parallèles ? quelle configuration ?).",
+				"Écrire l'égalité des rapports du théorème de Thalès dans une configuration donnée (AM/AB = … = …).",
+				"Appliquer le théorème de Thalès pour calculer une longueur (AM = 3, AB = 5, BC = 7 : calcule MN)."
+			],
+			"labels_corriges": [
+				"Reconnaître une configuration où le théorème de Thalès s'applique : triangles emboîtés ou papillon, avec (BC) // (MN) (quelle configuration ? quels triangles ?).",
+				"Écrire l'égalité des rapports du théorème de Thalès dans une configuration donnée (AM/AB = … = …).",
+				"Appliquer le théorème de Thalès pour calculer une longueur (AM = 3, AB = 5, BC = 7 : calcule MN)."
+			]
+		}
+	],
+	"automatismes": [
+		{
+			"code": "CM2-036",
+			"moities": [
+				"Connaître le répertoire multiplicatif : donner le produit de deux nombres (7 × 8 = ?).",
+				"Connaître le répertoire multiplicatif : compléter une multiplication à trou (7 × ? = 56)."
+			],
+			"lignes": [
+				{
+					"texte": "Tables pour factoriser un entier en produit de deux nombres (21 = 3 × 7)",
+					"source": "cycle 4 (seed) l.394",
+					"grades": ["5"],
+					"cible": "2",
+					"justification": "factoriser 21 = 3 × 7 : trouver les facteurs, c'est la multiplication à trou",
+					"a_trancher": true,
+					"lectures": "Lecture 1 : factoriser 21 = 3 × 7, c'est trouver les facteurs, donc la multiplication à trou (2ᵉ), comme « 2 + … = 7 » (option A, 2026-10-11). Lecture 2 : il faut aussi connaître le produit (les deux)."
+				},
+				{
+					"texte": "Entretien des tables de multiplication",
+					"source": "cycle 4 (seed) l.440",
+					"grades": ["4"],
+					"cible": "les deux",
+					"justification": "« entretien des tables » : les deux sens"
+				}
+			]
+		},
+		{
+			"code": "5-026",
+			"moities": [
+				"Additionner des fractions de dénominateurs quelconques (2/3 + 1/4 = ?).",
+				"Soustraire des fractions de dénominateurs quelconques (2/3 − 1/4 = ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Addition et soustraction de fractions de dénominateurs quelconques mais simples",
+					"source": "cycle 4 (seed) l.444",
+					"grades": ["4"],
+					"cible": "les deux",
+					"justification": "« addition et soustraction de fractions » : les deux"
+				},
+				{
+					"texte": "Dénominateur commun pour additionner, soustraire, comparer",
+					"source": "cycle 4 (seed) l.482",
+					"grades": ["3"],
+					"cible": "les deux",
+					"justification": "« dénominateur commun pour additionner, soustraire » : les deux"
+				}
+			]
+		},
+		{
+			"code": "6-135",
+			"moities": [
+				"Additionner des fractions (2/3 + 1/6 = ?).",
+				"Soustraire des fractions (2/3 − 1/6 = ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Addition et soustraction de fractions simples",
+					"source": "cycle 4 (seed) l.406",
+					"grades": ["5"],
+					"cible": "les deux",
+					"justification": "« addition et soustraction de fractions simples » : les deux"
+				}
+			]
+		},
+		{
+			"code": "CE2-022",
+			"moities": [
+				"Connaître des faits multiplicatifs usuels : les doubles (double de 35 = ?).",
+				"Connaître des faits multiplicatifs usuels : les moitiés (moitié de 70 = ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Relations multiplicatives simples (double, quadruple, moitié, tiers, quart)",
+					"source": "6e l.218",
+					"grades": ["6"],
+					"cible": "les deux",
+					"justification": "« double, quadruple, moitié … » : doubles et moitiés"
+				},
+				{
+					"texte": "Double, triple, moitié, prédécesseur, successeur, carré d'un nombre",
+					"source": "cycle 4 (seed) l.456",
+					"grades": ["4"],
+					"cible": "les deux",
+					"justification": "« double, triple, moitié … » : doubles et moitiés"
+				}
+			]
+		},
+		{
+			"code": "6-133",
+			"moities": ["Comparer deux fractions (3/4 … 5/6).", "Encadrer une fraction (… < 7/3 < …)."],
+			"lignes": [
+				{
+					"texte": "Comparer deux fractions",
+					"source": "cycle 4 (seed) l.404",
+					"grades": ["5"],
+					"cible": "origine",
+					"justification": "« comparer deux fractions » : comparer"
+				}
+			]
+		},
+		{
+			"code": "5-016",
+			"moities": [
+				"Lire l'abscisse d'un point sur une droite graduée (nombres relatifs).",
+				"Placer sur une droite graduée un point d'abscisse relative donnée."
+			],
+			"lignes": [
+				{
+					"texte": "Sur une droite graduée, repérer ou placer un point d'abscisse un relatif",
+					"source": "2de l.382",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« repérer ou placer » : lire et placer"
+				},
+				{
+					"texte": "Placer / repérer un relatif sur une droite graduée ; coordonnées dans le plan",
+					"source": "cycle 4 (seed) l.459",
+					"grades": ["4"],
+					"cible": "les deux",
+					"justification": "BO « placer … ; repérer … » : les deux"
+				},
+				{
+					"texte": "Placer / repérer un relatif ; coordonnées dans le plan",
+					"source": "cycle 4 (seed) l.490",
+					"grades": ["3"],
+					"cible": "les deux",
+					"justification": "BO « placer … ; repérer … » : les deux"
+				}
+			]
+		},
+		{
+			"code": "5-047",
+			"moities": [
+				"Lire les coordonnées d'un point dans un repère orthogonal.",
+				"Placer un point de coordonnées données dans un repère orthogonal."
+			],
+			"lignes": [
+				{
+					"texte": "Dans un repère orthogonal, lire ou placer les coordonnées d'un point",
+					"source": "2de l.383",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« lire ou placer les coordonnées » : les deux"
+				},
+				{
+					"texte": "Placer / repérer un relatif sur une droite graduée ; coordonnées dans le plan",
+					"source": "cycle 4 (seed) l.459",
+					"grades": ["4"],
+					"cible": "les deux",
+					"justification": "BO « lire les coordonnées ; placer un point » : les deux"
+				},
+				{
+					"texte": "Placer / repérer un relatif ; coordonnées dans le plan",
+					"source": "cycle 4 (seed) l.490",
+					"grades": ["3"],
+					"cible": "les deux",
+					"justification": "BO « lire les coordonnées ; placer un point » : les deux"
+				}
+			]
+		},
+		{
+			"code": "CM2-013",
+			"moities": [
+				"Lire et écrire une fraction en chiffres et en lettres (cinq tiers ↔ 5/3).",
+				"Représenter une fraction donnée par un partage (colorier les parts d'une figure).",
+				"Interpréter un partage par une fraction (quelle part de la figure est coloriée ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Reconnaître une fraction sur des représentations variées",
+					"source": "6e l.192",
+					"grades": ["6"],
+					"cible": "3",
+					"justification": "« reconnaître une fraction sur des représentations variées » : interpréter un partage"
+				}
+			]
+		},
+		{
+			"code": "6-181",
+			"moities": [
+				"Associer à un assemblage de cubes ses représentations planes (vue de dessus, de face…).",
+				"Retrouver un assemblage de cubes à partir de ses représentations planes.",
+				"Dénombrer les cubes d'un assemblage."
+			],
+			"lignes": [
+				{
+					"texte": "Vues et dénombrement d'empilements de cubes ; cube et pavé en perspective",
+					"source": "cycle 4 (seed) l.416",
+					"grades": ["5"],
+					"cible": "origine+3",
+					"justification": "BO 5e « reconnaitre des vues » (associer) et « dénombrer des cubes » : 1re et 3e parties",
+					"a_trancher": true,
+					"lectures": "BO 5e : « Reconnaitre des vues … d'empilements de cubes » et « Dénombrer des cubes » visent l'origine et la 3ᵉ ; lecture plus large : reconnaître des vues inclut aussi retrouver l'assemblage (la 2ᵉ), d'où les trois."
+				}
+			]
+		},
+		{
+			"code": "CM2-030",
+			"moities": [
+				"Écrire à virgule un nombre donné par une fraction décimale ou une somme de fractions décimales (237/100 = ? ou 2 + 3/10 + 7/100 = ?).",
+				"Écrire un nombre à virgule sous forme de fraction décimale ou de somme de fractions décimales (2,37 = ?/100)."
+			],
+			"lignes": [
+				{
+					"texte": "Équivalences d'écriture 1/10 = 0,1 ; 1/100 = 0,01 ; 1/1000 = 0,001",
+					"source": "6e l.188",
+					"grades": ["6"],
+					"cible": "les deux",
+					"justification": "équivalences et passage « ↔ » : les deux sens"
+				},
+				{
+					"texte": "Passage fraction décimale / somme de fractions décimales ↔ écriture décimale (4,107…)",
+					"source": "6e l.189",
+					"grades": ["6"],
+					"cible": "les deux",
+					"justification": "équivalences et passage « ↔ » : les deux sens"
+				}
+			]
+		},
+		{
+			"code": "5-013",
+			"moities": [
+				"Donner l'opposé d'un nombre relatif (opposé de −3 = ?).",
+				"Donner la valeur absolue d'un nombre relatif (valeur absolue de −3 = ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Opposé d'un nombre, somme des opposés",
+					"source": "cycle 4 (seed) l.439",
+					"grades": ["4"],
+					"cible": "origine",
+					"justification": "« opposé d'un nombre, somme des opposés » : l'opposé seul, pas la valeur absolue"
+				}
+			]
+		},
+		{
+			"code": "4-029",
+			"moities": [
+				"Connaître le volume d'une pyramide (V = B × h / 3).",
+				"Connaître le volume d'un cône de révolution (V = π r² h / 3)."
+			],
+			"lignes": [
+				{
+					"texte": "Calculer périmètres (polygone, cercle), aires (rectangle, triangle, disque), volumes (pavé, prisme, cylindre, pyramide, cône, boule)",
+					"source": "2de l.384",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "la ligne liste « pyramide, cône » : les deux solides"
+				},
+				{
+					"texte": "Formules du volume d'une pyramide, d'un cône",
+					"source": "cycle 4 (seed) l.492",
+					"grades": ["3"],
+					"cible": "les deux",
+					"justification": "BO 3e « formules du volume d'une pyramide ou d'un cône » : les deux solides"
+				}
+			]
+		},
+		{
+			"code": "4-048",
+			"moities": [
+				"Calculer la probabilité d'un évènement.",
+				"Calculer la probabilité de l'évènement contraire (P(non A) = 1 − P(A))."
+			],
+			"lignes": [
+				{
+					"texte": "Calculer la probabilité de l'évènement contraire",
+					"source": "2de l.391",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "2",
+					"justification": "« probabilité de l'évènement contraire » : la 2e moitié"
+				},
+				{
+					"texte": "Probabilité d'un évènement comme somme des probabilités des issues",
+					"source": "2de l.392",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "origine",
+					"justification": "« probabilité d'un évènement comme somme des probabilités des issues » : la 1re moitié"
+				}
+			]
+		},
+		{
+			"code": "4-057",
+			"moities": [
+				"Traduire une augmentation de t % par un coefficient multiplicateur (+ 20 % → × 1,2).",
+				"Traduire une diminution de t % par un coefficient multiplicateur (− 20 % → × 0,8)."
+			],
+			"lignes": [
+				{
+					"texte": "Passer d'une formulation additive (« augmenter de 5 % ») à une formulation multiplicative",
+					"source": "2de l.378",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« augmenter de t % » → × : vaut pour hausse et baisse"
+				},
+				{
+					"texte": "Augmentation/diminution en pourcentages, avec ou sans coefficient multiplicateur",
+					"source": "cycle 4 (seed) l.502",
+					"grades": ["3"],
+					"cible": "les deux",
+					"justification": "BO 3e « une augmentation ou une diminution … avec ou sans coefficient » : les deux"
+				},
+				{
+					"texte": "Passer d'une formulation additive à une formulation multiplicative",
+					"source": "ttechno l.87",
+					"grades": ["T_TECHNO"],
+					"cible": "les deux",
+					"justification": "« augmenter de t % » → × : vaut pour hausse et baisse"
+				}
+			]
+		},
+		{
+			"code": "5-051",
+			"moities": [
+				"Convertir des unités de volume (m³, dm³, cm³).",
+				"Convertir des unités de contenance et passer d'une unité de volume à une unité de contenance (1 L = 1 dm³)."
+			],
+			"lignes": [
+				{
+					"texte": "Conversions d'unités : longueurs, aires, volumes, contenances, durées, vitesses, masses",
+					"source": "2de l.370",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« conversions … volumes, contenances » : les deux"
+				},
+				{
+					"texte": "Effectuer des conversions d'unités",
+					"source": "ttechno l.98",
+					"grades": ["T_TECHNO"],
+					"cible": "les deux",
+					"justification": "« effectuer des conversions d'unités » : les deux"
+				}
+			]
+		},
+		{
+			"code": "5-076",
+			"moities": [
+				"Calculer des effectifs à partir de données.",
+				"Calculer une fréquence (sous forme décimale, fractionnaire ou de pourcentage)."
+			],
+			"lignes": [
+				{
+					"texte": "Effectif manquant dans un tableau ; fréquence simple",
+					"source": "cycle 4 (seed) l.469",
+					"grades": ["4"],
+					"cible": "les deux",
+					"justification": "BO 4e « effectif manquant » ET « fréquence simple » : les deux"
+				}
+			]
+		},
+		{
+			"code": "3-016",
+			"moities": [
+				"Développer avec les identités remarquables ((x + 3)² = ?).",
+				"Factoriser avec les identités remarquables (x² − 9 = ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Développer, factoriser, réduire une expression algébrique simple",
+					"source": "1gen l.96",
+					"grades": ["1_GEN"],
+					"cible": "les deux",
+					"justification": "« développer, factoriser » : les deux gestes sont nommés"
+				},
+				{
+					"texte": "Développer, factoriser, réduire une expression algébrique simple",
+					"source": "1spe l.400",
+					"grades": ["1_SPE", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« développer, factoriser » : les deux gestes sont nommés"
+				},
+				{
+					"texte": "Développer, factoriser, réduire une expression algébrique simple",
+					"source": "1techno l.94",
+					"grades": ["1_TECHNO"],
+					"cible": "les deux",
+					"justification": "« développer, factoriser » : les deux gestes sont nommés"
+				},
+				{
+					"texte": "Développer, factoriser, réduire (identités (a±b)², (a+b)(a−b) ; factorisations ax²+bx, ax+bx)",
+					"source": "2de l.372",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« développer, factoriser » : les deux gestes sont nommés"
+				},
+				{
+					"texte": "Développer, factoriser, réduire une expression algébrique simple",
+					"source": "ttechno l.103",
+					"grades": ["T_TECHNO"],
+					"cible": "les deux",
+					"justification": "« développer, factoriser » : les deux gestes sont nommés"
+				}
+			]
+		},
+		{
+			"code": "5-045",
+			"moities": [
+				"Résoudre une équation du type x + b = c par l'opération inverse (x + 7 = 12 : x = 12 − 7).",
+				"Résoudre une équation du type ax = c par l'opération inverse (3x = 12 : x = 12 ÷ 3)."
+			],
+			"lignes": [
+				{
+					"texte": "Équations ax = c et x + b = c",
+					"source": "cycle 4 (seed) l.454",
+					"grades": ["4"],
+					"cible": "les deux",
+					"justification": "« équations ax = c et x + b = c » : les deux types"
+				},
+				{
+					"texte": "Équations ax = c, x + b = c, ax + b = c",
+					"source": "cycle 4 (seed) l.484",
+					"grades": ["3"],
+					"cible": "les deux",
+					"justification": "« équations ax = c et x + b = c » : les deux types"
+				}
+			]
+		},
+		{
+			"code": "3-014",
+			"moities": [
+				"Résoudre par le calcul une inéquation du premier degré du type ax ⩾ b (3x ⩾ 12).",
+				"Résoudre graphiquement une inéquation du premier degré du type ax ⩾ b."
+			],
+			"lignes": [
+				{
+					"texte": "Résoudre x² = a, ax + b = cx + d, a/x = b, une inéquation du premier degré",
+					"source": "2de l.373",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "origine",
+					"justification": "« résoudre une inéquation du premier degré » parmi des résolutions algébriques : le calcul"
+				}
+			]
+		},
+		{
+			"code": "3-044",
+			"moities": [
+				"Reconnaître une fonction affine (expression ou droite).",
+				"Utiliser une fonction affine donnée par son expression (calculer une image : f(3) = ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Reconnaitre l'expression d'une fonction linéaire, affine ; leur représentation est une droite",
+					"source": "2de l.381",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "origine",
+					"justification": "« reconnaitre l'expression … ; leur représentation est une droite » : reconnaître"
+				}
+			]
+		},
+		{
+			"code": "3-041",
+			"moities": [
+				"Reconnaître une fonction linéaire (expression ou droite passant par l'origine).",
+				"Utiliser une fonction linéaire donnée par son expression (calculer une image : f(3) = ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Reconnaitre l'expression d'une fonction linéaire, affine ; leur représentation est une droite",
+					"source": "2de l.381",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "origine",
+					"justification": "« reconnaitre l'expression … ; leur représentation est une droite » : reconnaître"
+				}
+			]
+		},
+		{
+			"code": "3-030",
+			"moities": [
+				"Construire la boîte à moustaches d'une série statistique.",
+				"Lire une boîte à moustaches (médiane, quartiles, étendue)."
+			],
+			"lignes": [
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1gen l.102",
+					"grades": ["1_GEN"],
+					"cible": "2",
+					"justification": "« lire … une boite » : lire, pas construire"
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1spe l.406",
+					"grades": ["1_SPE", "T_COMP", "T_SPE"],
+					"cible": "2",
+					"justification": "« lire … une boite » : lire, pas construire"
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1techno l.100",
+					"grades": ["1_TECHNO"],
+					"cible": "2",
+					"justification": "« lire … une boite » : lire, pas construire"
+				},
+				{
+					"texte": "Comparer des distributions à l'aide de boites à moustaches",
+					"source": "2de l.389",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "2",
+					"justification": "« comparer des distributions à l'aide de boites » : lire et exploiter une boîte donnée"
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "ttechno l.115",
+					"grades": ["T_TECHNO"],
+					"cible": "2",
+					"justification": "« lire … une boite » : lire, pas construire"
+				}
+			]
+		},
+		{
+			"code": "5-062",
+			"moities": [
+				"Définir une hauteur d'un triangle (quel segment est la hauteur issue de A ?).",
+				"Tracer une hauteur d'un triangle."
+			],
+			"lignes": [
+				{
+					"texte": "Droites remarquables du triangle (médiatrices, médianes, hauteurs, bissectrices)",
+					"source": "cycle 4 (seed) l.467",
+					"grades": ["4"],
+					"cible": "origine",
+					"justification": "BO 4e « reconnaitre des droites remarquables » : reconnaître (définir), pas tracer"
+				}
+			]
+		},
+		{
+			"code": "5-064",
+			"moities": [
+				"Définir une médiane d'un triangle (quel segment est la médiane issue de A ?).",
+				"Tracer une médiane d'un triangle."
+			],
+			"lignes": [
+				{
+					"texte": "Droites remarquables du triangle (médiatrices, médianes, hauteurs, bissectrices)",
+					"source": "cycle 4 (seed) l.467",
+					"grades": ["4"],
+					"cible": "origine",
+					"justification": "BO 4e « reconnaitre des droites remarquables » : reconnaître (définir), pas tracer"
+				}
+			]
+		},
+		{
+			"code": "5-070",
+			"moities": [
+				"Donner la nature d'un quadrilatère à l'aide d'une propriété de ses côtés ou de ses diagonales.",
+				"Construire un parallélogramme à l'aide d'une propriété de ses côtés ou de ses diagonales."
+			],
+			"lignes": [
+				{
+					"texte": "Reconnaitre un parallélogramme (définition, propriété, codages)",
+					"source": "cycle 4 (seed) l.465",
+					"grades": ["4"],
+					"cible": "origine",
+					"justification": "BO 4e « reconnaitre un parallélogramme … grâce aux codages » : donner la nature"
+				}
+			]
+		},
+		{
+			"code": "6-178",
+			"moities": [
+				"Connaître le cercle circonscrit à un triangle (son centre est le point de concours des médiatrices).",
+				"Construire le cercle circonscrit à un triangle."
+			],
+			"lignes": [
+				{
+					"texte": "Médiatrice, cercle circonscrit (notions)",
+					"source": "cycle 4 (seed) l.425",
+					"grades": ["5"],
+					"cible": "origine",
+					"justification": "BO 5e « connaitre la notion de médiatrice, de cercle circonscrit » : connaître"
+				}
+			]
+		},
+		{
+			"code": "CM2-008",
+			"moities": [
+				"Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné (7 est-il un diviseur de 56 ?).",
+				"Déterminer si un nombre entier donné est un multiple d'un nombre entier inférieur ou égal à 10 (56 est-il un multiple de 7 ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Diviseurs, multiples et tables de multiplication réactivés (calcul sur les fractions)",
+					"source": "6e l.195",
+					"grades": ["6"],
+					"cible": "les deux",
+					"justification": "« diviseurs, multiples » : les deux"
+				}
+			]
+		},
+		{
+			"code": "CM2-107",
+			"moities": [
+				"Lire une donnée dans un tableau (quelle est la population de Lyon ?).",
+				"Interpréter les données d'un tableau (quelle ville est la plus peuplée ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Lire un tableau, un diagramme en barres, un diagramme circulaire ou une courbe (lecture immédiate)",
+					"source": "6e l.217",
+					"grades": ["6"],
+					"cible": "origine",
+					"justification": "« lire … (lecture immédiate) » : lire"
+				}
+			]
+		},
+		{
+			"code": "CM2-123",
+			"moities": [
+				"Lire une donnée sur un diagramme en barres (combien de livres ont été prêtés en mars ?).",
+				"Interpréter les données d'un diagramme en barres (combien de livres de plus en mars qu'en février ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Lire un tableau, un diagramme en barres, un diagramme circulaire ou une courbe (lecture immédiate)",
+					"source": "6e l.217",
+					"grades": ["6"],
+					"cible": "origine",
+					"justification": "« lire … (lecture immédiate) » : lire"
+				}
+			]
+		},
+		{
+			"code": "CM2-124",
+			"moities": [
+				"Lire une donnée sur un diagramme circulaire (quelle part des élèves vient à vélo ?).",
+				"Interpréter les données d'un diagramme circulaire (quel moyen de transport est le plus utilisé ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Lire un tableau, un diagramme en barres, un diagramme circulaire ou une courbe (lecture immédiate)",
+					"source": "6e l.217",
+					"grades": ["6"],
+					"cible": "origine",
+					"justification": "« lire … (lecture immédiate) » : lire"
+				}
+			]
+		},
+		{
+			"code": "CM2-125",
+			"moities": [
+				"Lire une donnée sur une courbe (quelle température à 14 h ?).",
+				"Interpréter les données d'une courbe (entre quelles heures la température augmente-t-elle ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Lire un tableau, un diagramme en barres, un diagramme circulaire ou une courbe (lecture immédiate)",
+					"source": "6e l.217",
+					"grades": ["6"],
+					"cible": "origine",
+					"justification": "« lire … (lecture immédiate) » : lire"
+				}
+			]
+		},
+		{
+			"code": "5-077",
+			"moities": [
+				"Lire une donnée sur un graphique (quelle est la valeur en 2020 ?).",
+				"Interpréter les données d'un graphique (entre quelles années la valeur a-t-elle le plus augmenté ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1gen l.102",
+					"grades": ["1_GEN"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1gen l.103",
+					"grades": ["1_GEN"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1spe l.406",
+					"grades": ["1_SPE", "T_COMP", "T_SPE"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1spe l.407",
+					"grades": ["1_SPE", "T_COMP", "T_SPE"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1techno l.100",
+					"grades": ["1_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1techno l.101",
+					"grades": ["1_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Lire et commenter des graphiques usuels (barres, circulaire, courbe, nuage)",
+					"source": "2de l.387",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« lire ET commenter » : lire et interpréter",
+					"a_trancher": true,
+					"lectures": "Lecture 1 : la ligne de 2de « lire et commenter » est reprise telle quelle en 1re (générale, spé, techno) et en T_COMP/T_SPE, donc ces grades visent aussi l'interprétation (les deux). Lecture 2 : en 1re et Tle seules les lignes propres comptent (« lire un graphique », « passer du graphique aux données »), et ces grades ne visent que l'origine (lire) ; seul le grade 2 garde « les deux »."
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "ttechno l.115",
+					"grades": ["T_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice versa",
+					"source": "ttechno l.116",
+					"grades": ["T_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				}
+			]
+		},
+		{
+			"code": "5-096",
+			"moities": [
+				"Lire une donnée sur un graphique cartésien, courbe ou nuage de points (quelle est l'ordonnée du point d'abscisse 2 ?).",
+				"Interpréter les données d'un graphique cartésien, courbe ou nuage de points (pour quelles valeurs la grandeur dépasse-t-elle 10 ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1gen l.103",
+					"grades": ["1_GEN"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1spe l.407",
+					"grades": ["1_SPE", "T_COMP", "T_SPE"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1techno l.101",
+					"grades": ["1_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Lire et commenter des graphiques usuels (barres, circulaire, courbe, nuage)",
+					"source": "2de l.387",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« lire ET commenter » : lire et interpréter",
+					"a_trancher": true,
+					"lectures": "Lecture 1 : la ligne de 2de « lire et commenter » est reprise telle quelle en 1re (générale, spé, techno) et en T_COMP/T_SPE, donc ces grades visent aussi l'interprétation (les deux). Lecture 2 : en 1re et Tle seules les lignes propres comptent (« lire un graphique », « passer du graphique aux données »), et ces grades ne visent que l'origine (lire) ; seul le grade 2 garde « les deux »."
+				},
+				{
+					"texte": "Passer du graphique aux données et vice versa",
+					"source": "ttechno l.116",
+					"grades": ["T_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				}
+			]
+		},
+		{
+			"code": "5-110",
+			"moities": [
+				"Lire une donnée sur un diagramme en barres (combien d'élèves ont 12 ans ?).",
+				"Interpréter les données d'un diagramme en barres (quel âge est le plus fréquent ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1gen l.102",
+					"grades": ["1_GEN"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1gen l.103",
+					"grades": ["1_GEN"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1spe l.406",
+					"grades": ["1_SPE", "T_COMP", "T_SPE"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1spe l.407",
+					"grades": ["1_SPE", "T_COMP", "T_SPE"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1techno l.100",
+					"grades": ["1_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1techno l.101",
+					"grades": ["1_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Lire et commenter des graphiques usuels (barres, circulaire, courbe, nuage)",
+					"source": "2de l.387",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« lire ET commenter » : lire et interpréter",
+					"a_trancher": true,
+					"lectures": "Lecture 1 : la ligne de 2de « lire et commenter » est reprise telle quelle en 1re (générale, spé, techno) et en T_COMP/T_SPE, donc ces grades visent aussi l'interprétation (les deux). Lecture 2 : en 1re et Tle seules les lignes propres comptent (« lire un graphique », « passer du graphique aux données »), et ces grades ne visent que l'origine (lire) ; seul le grade 2 garde « les deux »."
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "ttechno l.115",
+					"grades": ["T_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice versa",
+					"source": "ttechno l.116",
+					"grades": ["T_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				}
+			]
+		},
+		{
+			"code": "5-111",
+			"moities": [
+				"Lire une donnée sur un diagramme circulaire (quelle part des élèves vient à vélo ?).",
+				"Interpréter les données d'un diagramme circulaire (quel moyen de transport est le plus utilisé ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1gen l.102",
+					"grades": ["1_GEN"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1gen l.103",
+					"grades": ["1_GEN"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1spe l.406",
+					"grades": ["1_SPE", "T_COMP", "T_SPE"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1spe l.407",
+					"grades": ["1_SPE", "T_COMP", "T_SPE"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "1techno l.100",
+					"grades": ["1_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice-versa",
+					"source": "1techno l.101",
+					"grades": ["1_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Lire et commenter des graphiques usuels (barres, circulaire, courbe, nuage)",
+					"source": "2de l.387",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« lire ET commenter » : lire et interpréter",
+					"a_trancher": true,
+					"lectures": "Lecture 1 : la ligne de 2de « lire et commenter » est reprise telle quelle en 1re (générale, spé, techno) et en T_COMP/T_SPE, donc ces grades visent aussi l'interprétation (les deux). Lecture 2 : en 1re et Tle seules les lignes propres comptent (« lire un graphique », « passer du graphique aux données »), et ces grades ne visent que l'origine (lire) ; seul le grade 2 garde « les deux »."
+				},
+				{
+					"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+					"source": "ttechno l.115",
+					"grades": ["T_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"texte": "Passer du graphique aux données et vice versa",
+					"source": "ttechno l.116",
+					"grades": ["T_TECHNO"],
+					"cible": "origine",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				}
+			]
+		},
+		{
+			"code": "5-080",
+			"moities": [
+				"Calculer la moyenne simple d'une série de données (12, 15, 9, 14 → ?).",
+				"Interpréter la moyenne simple d'une série de données (une moyenne de 12 veut-elle dire que chacun a 12 ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Moyenne d'un très petit nombre de valeurs",
+					"source": "cycle 4 (seed) l.468",
+					"grades": ["4"],
+					"cible": "origine",
+					"justification": "BO « calculer une moyenne » : calculer"
+				},
+				{
+					"texte": "Moyenne ; médiane d'une petite série ; étendue",
+					"source": "cycle 4 (seed) l.498",
+					"grades": ["3"],
+					"cible": "origine",
+					"justification": "BO « calculer une moyenne » : calculer"
+				}
+			]
+		},
+		{
+			"code": "4-040",
+			"moities": [
+				"Déterminer la médiane d'une série de petit effectif présentée sous forme de données brutes (3, 7, 8, 12, 15 → ?).",
+				"Interpréter la médiane d'une série de petit effectif (que dire des valeurs si la médiane vaut 8 ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Calculer et interpréter des indicateurs statistiques",
+					"source": "1gen l.104",
+					"grades": ["1_GEN"],
+					"cible": "les deux",
+					"justification": "« calculer et interpréter » : déterminer ET interpréter"
+				},
+				{
+					"texte": "Calculer et interpréter des indicateurs statistiques",
+					"source": "1spe l.408",
+					"grades": ["1_SPE", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« calculer et interpréter » : déterminer ET interpréter"
+				},
+				{
+					"texte": "Calculer et interpréter des indicateurs statistiques",
+					"source": "1techno l.102",
+					"grades": ["1_TECHNO"],
+					"cible": "les deux",
+					"justification": "« calculer et interpréter » : déterminer ET interpréter"
+				},
+				{
+					"texte": "Calculer et interpréter moyenne, médiane, quartiles selon la présentation des données",
+					"source": "2de l.388",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "« calculer et interpréter » : déterminer ET interpréter"
+				},
+				{
+					"texte": "Moyenne ; médiane d'une petite série ; étendue",
+					"source": "cycle 4 (seed) l.498",
+					"grades": ["3"],
+					"cible": "origine",
+					"justification": "BO 3e « donner une médiane pour une série comportant un petit nombre de valeurs » : déterminer"
+				}
+			]
+		},
+		{
+			"code": "4-041",
+			"moities": [
+				"Calculer l'étendue d'une série présentée sous forme de données brutes, d'un tableau ou d'un diagramme.",
+				"Interpréter l'étendue d'une série (laquelle des deux classes a les notes les plus dispersées ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Moyenne ; médiane d'une petite série ; étendue",
+					"source": "cycle 4 (seed) l.498",
+					"grades": ["3"],
+					"cible": "origine",
+					"justification": "BO 3e « calculer l'étendue d'une série » : calculer"
+				}
+			]
+		},
+		{
+			"code": "5-010",
+			"moities": [
+				"Connaître le critère de divisibilité par 3 (4 518 est-il divisible par 3 ?).",
+				"Connaître le critère de divisibilité par 9 (4 518 est-il divisible par 9 ?)."
+			],
+			"lignes": [
+				{
+					"texte": "Critères de divisibilité par 2, 3, 5, 9",
+					"source": "cycle 4 (seed) l.483",
+					"grades": ["3"],
+					"cible": "les deux",
+					"justification": "BO 3e « appliquer les critères de divisibilité par 2, 3, 5, 9 » : 3 et 9"
+				}
+			]
+		},
+		{
+			"code": "3-022",
+			"moities": [
+				"Reconnaître une configuration où le théorème de Thalès s'applique : triangles emboîtés ou papillon, avec (BC) // (MN) (quelle configuration ? quels triangles ?).",
+				"Écrire l'égalité des rapports du théorème de Thalès dans une configuration donnée (AM/AB = … = …).",
+				"Appliquer le théorème de Thalès pour calculer une longueur (AM = 3, AB = 5, BC = 7 : calcule MN)."
+			],
+			"lignes": [
+				{
+					"texte": "Application simple des théorèmes de Pythagore et de Thalès",
+					"source": "2de l.385",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "3",
+					"justification": "« application simple » du théorème : calculer une longueur",
+					"a_trancher": true,
+					"lectures": "Lecture 1 : « application simple » = calculer une longueur (3ᵉ seule). Lecture 2 : appliquer suppose d'écrire l'égalité des rapports (2ᵉ + 3ᵉ)."
+				}
+			]
+		},
+		{
+			"code": "3-023",
+			"moities": [
+				"Connaître les lignes trigonométriques dans le triangle rectangle : écrire cosinus, sinus et tangente d'un angle (cos(B) = … / …).",
+				"Utiliser les lignes trigonométriques pour calculer une longueur ou un angle dans un triangle rectangle (BC = 6, angle B = 40° : calcule AB)."
+			],
+			"lignes": [
+				{
+					"texte": "Lignes trigonométriques dans le triangle rectangle : cosinus, sinus, tangente",
+					"source": "2de l.386",
+					"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+					"cible": "les deux",
+					"justification": "la ligne nomme les rapports sans geste ; en 2de on les écrit ET on les utilise pour calculer",
+					"a_trancher": true,
+					"lectures": "La ligne nomme les rapports sans verbe. Lecture 1 : savoir les écrire ET s'en servir (les deux). Lecture 2 : en 2de on attend l'usage pour calculer (2ᵉ seule)."
+				}
+			]
+		}
+	],
+	"familles_incompletes": [
+		{
+			"codes": ["CM1-019", "CM2-018"],
+			"libelles": [
+				"Savoir repérer un point d'une demi-droite graduée par une fraction ou par la somme d'un nombre entier et d'une fraction",
+				"Repérer un point d'une demi-droite graduée par une fraction ou par la somme d'un nombre entier et d'une fraction"
+			],
+			"pourquoi": "Jumeaux de CM1-018 / CM2-017 (« placer une fraction ou la somme … »), scindés en « fraction » / « somme » ; ici le geste inverse (lire au lieu de placer), même « ou ».",
+			"proposition": [
+				"Repérer un point d'une demi-droite graduée par une fraction (le point A repère … : 3/4).",
+				"Repérer un point d'une demi-droite graduée par la somme d'un nombre entier et d'une fraction (le point B repère … : 2 + 1/4)."
+			],
+			"reco": "scinder"
+		},
+		{
+			"codes": ["3-055"],
+			"libelles": [
+				"Connaitre et appliquer la réciproque et la contraposée du théorème de Thalès (configurations des triangles emboités et configuration dite du papillon)."
+			],
+			"pourquoi": "Même forme que 3-022 (« Connaitre et appliquer le théorème de Thalès », scindé en trois) ; réciproque et contraposée sont deux savoir-faire séparables, chacun évaluable (prouver un parallélisme / un non-parallélisme).",
+			"proposition": [
+				"Appliquer la réciproque du théorème de Thalès pour prouver que deux droites sont parallèles, triangles emboîtés ou papillon (AM/AB = AN/AC = 0,6 : (MN) et (BC) sont-elles parallèles ?).",
+				"Appliquer la contraposée du théorème de Thalès pour prouver que deux droites ne sont pas parallèles, triangles emboîtés ou papillon (AM/AB = 0,6 et AN/AC = 0,65 : conclure)."
+			],
+			"reco": "scinder"
+		},
+		{
+			"codes": ["3-038"],
+			"libelles": ["Connaitre et utiliser les fonctions linéaires."],
+			"pourquoi": "Même forme que 3-041 « Définir et utiliser les fonctions linéaires » (scindé en reconnaître / utiliser). Les deux lignes du BO 3e (rubriques Proportionnalité et Fonctions) disent presque la même chose : c'est peut-être un doublon du BO, comme 3-001 / 3-002, à signaler à David plutôt qu'à scinder.",
+			"proposition": [
+				"Reconnaître une fonction linéaire (expression ou droite passant par l'origine).",
+				"Utiliser une fonction linéaire donnée par son expression (calculer une image : f(3) = ?)."
+			],
+			"reco": "scinder"
+		}
+	]
+}

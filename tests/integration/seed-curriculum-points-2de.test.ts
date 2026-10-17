@@ -10,7 +10,11 @@
  * puces multi-parties, discutables 1-5, L1-L4). Puis la passe « points vagues »
  * (migration `20261010200000_points_vagues_2de`, validée le 2026-10-08,
  * docs/wip/arbre-notions/passe-points-vagues-2de.md) : 2-332 retiré, cinq libellés
- * spécifiés, 2-262 sur la notion Calcul littéral → 199 points.
+ * spécifiés, 2-262 sur la notion Calcul littéral → 199 points. Puis les scissions validées par
+ * David (migration `20261017090000_scission_points_programme`) : deux points ⚙ de la partie
+ * Automatismes du BO (2-401 périmètre d'un polygone, 2-402 interpréter les quartiles), rangés
+ * avant 2-235, et le trou laissé par 2-332 refermé → 201 points ; fixture transformée par
+ * docs/wip/arbre-notions/c5-scissions-generer.py.
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade '2', l'ensemble exact des
@@ -174,14 +178,14 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (199 points, arbre .16)', () => {
+	it('la fixture est bien celle du document validé (201 points, arbre .16)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
-		expect(fixture.points).toHaveLength(199);
+		expect(fixture.points).toHaveLength(201);
 		expect(fixture.points.every((p) => p.grade === '2')).toBe(true);
 		expect(fixture.references.length).toBeGreaterThan(50);
 	});
 
-	it('les 199 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 201 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -196,7 +200,7 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(199);
+		expect(pointRows).toHaveLength(201);
 	});
 
 	it('les références d’automatismes du grade 2 visent EXACTEMENT les cibles du document', () => {
@@ -227,7 +231,13 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 	it('architecture cible et décisions L1-L3 (L2 corrigée par E1) : kinds, exigences, régime', () => {
 		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
-		expect(pointRows.every((r) => r.regime_acquisition === 'diversite')).toBe(true);
+		// Seuls les deux points ⚙ de la partie Automatismes sont en fluence.
+		expect(
+			pointRows
+				.filter((r) => r.regime_acquisition !== 'diversite')
+				.map((r) => r.code)
+				.sort()
+		).toEqual(['2-401', '2-402']);
 
 		// L1 : tout le bloc Algorithmique et programmation (2-218…2-234) en algorithme.
 		const bloc = pointRows.filter((r) => r.display_order >= 18 && r.display_order <= 34);

@@ -1,0 +1,547 @@
+[
+	{
+		"id": "l6_0",
+		"ligne": "l6",
+		"grades": ["6"],
+		"texte_bo": "L’élève sait repérer des relations multiplicatives simples entre des nombres (double, quadruple, moitié, tiers, quart).",
+		"texte_bo_source": "BO cycle 3 (PDF, pdftotext -layout) — 6e, « La proportionnalité > Automatismes », 1re puce.",
+		"mot": "quadruple",
+		"options": [
+			{
+				"type": "scission",
+				"point": "CM1-045",
+				"libelle_actuel": "Multiplier un nombre entier par 4 ou par 8",
+				"labels": [
+					"Multiplier un nombre entier par 4 (4 × 45 = ?).",
+					"Multiplier un nombre entier par 8 (8 × 45 = ?)."
+				],
+				"famille": [
+					{
+						"code": "CE2-026",
+						"grade": "CE2",
+						"libelle_actuel": "Multiplier un nombre entier par 4 ou par 8.",
+						"labels": [
+							"Multiplier un nombre entier par 4 (4 × 37 = ?).",
+							"Multiplier un nombre entier par 8 (8 × 27 = ?)."
+						],
+						"note": "exemples repris du BO cycle 2 (« 4 × 37 ? », « 8 × 27 ? »)"
+					},
+					{
+						"code": "CM1-045",
+						"grade": "CM1",
+						"libelle_actuel": "Multiplier un nombre entier par 4 ou par 8"
+					}
+				],
+				"famille_note": "Lu en prod : seuls CE2-026 et CM1-045 portent « par 4 ou par 8 » en multiplication (rien au CM2).",
+				"reference": {
+					"code": "CM1-045",
+					"rang": 1,
+					"libelle": "Multiplier un nombre entier par 4 (4 × 45 = ?)."
+				},
+				"noeud_moitie_x4": "Nombres et calculs > Entiers : multiplication > quadruple et quart (sous-notion existante, vide aujourd'hui ; les deux points sont sur « calcul astucieux »)",
+				"critere": "les deux moitiés sont évaluables (calcul mental, réponse numérique)",
+				"fidelite": "bornes du BO conservées (« par 4 ou par 8 » → « par 4 » / « par 8 »), rien d'ajouté ; type « deux notions » comme M10"
+			}
+		],
+		"reco": "1",
+		"justification": "Le quadruple est exactement × 4 et le BO écrit « par 4 ou par 8 » : la scission est fidèle, même grain, deux moitiés évaluables. C'est l'exemple même de David."
+	},
+	{
+		"id": "l6_1",
+		"ligne": "l6",
+		"grades": ["6"],
+		"texte_bo": "L’élève sait repérer des relations multiplicatives simples entre des nombres (double, quadruple, moitié, tiers, quart).",
+		"texte_bo_source": "BO cycle 3 (PDF, pdftotext -layout) — 6e, « La proportionnalité > Automatismes », 1re puce.",
+		"mot": "quart",
+		"options": [
+			{
+				"type": "scission",
+				"point": "CM2-050",
+				"libelle_actuel": "Diviser un nombre entier par 4 ou par 8",
+				"labels": [
+					"Diviser un nombre entier par 4 (128 ÷ 4 = ?).",
+					"Diviser un nombre entier par 8 (128 ÷ 8 = ?)."
+				],
+				"famille": [
+					{
+						"code": "CM2-050",
+						"grade": "CM2",
+						"libelle_actuel": "Diviser un nombre entier par 4 ou par 8"
+					}
+				],
+				"famille_note": "Lu en prod : aucun autre point « diviser par 4 ou par 8 » (ni CE2, ni CM1). Famille d'un seul point. Pendant inverse de CM1-045 (même découpage).",
+				"reference": {
+					"code": "CM2-050",
+					"rang": 1,
+					"libelle": "Diviser un nombre entier par 4 (128 ÷ 4 = ?)."
+				},
+				"noeud_moitie_div4": "Nombres et calculs > Entiers : multiplication > quadruple et quart (aujourd'hui CM2-050 est sur « Entiers : division > calcul réfléchi »)",
+				"critere": "les deux moitiés sont évaluables",
+				"fidelite": "bornes du BO conservées, rien d'ajouté"
+			}
+		],
+		"reco": "1",
+		"justification": "Le quart est exactement ÷ 4 ; même raisonnement que pour le quadruple, et CM2-050 se scinde comme CM1-045."
+	},
+	{
+		"id": "l6_2",
+		"ligne": "l6",
+		"grades": ["6"],
+		"texte_bo": "L’élève sait repérer des relations multiplicatives simples entre des nombres (double, quadruple, moitié, tiers, quart).",
+		"texte_bo_source": "BO cycle 3 (PDF, pdftotext -layout) — 6e, « La proportionnalité > Automatismes », 1re puce.",
+		"mot": "tiers",
+		"options": [
+			{
+				"type": "scission",
+				"point": null,
+				"faisable": false,
+				"candidats_ecartes": [
+					{
+						"code": "CM2-036",
+						"raison": "déjà scindé (produit / multiplication à trou) ; le scinder table par table ajouterait un grain que le BO n'a pas"
+					},
+					{
+						"code": "CM2-022",
+						"raison": "« Déterminer une fraction d'une quantité ou d'une grandeur » : le BO n'énumère pas de fractions, aucune moitié « tiers » ne sort sans ajout"
+					},
+					{
+						"code": "CE1-016",
+						"raison": "« Savoir interpréter, représenter, écrire et lire les fractions ½, ⅓, ¼… » : c'est la fraction comme écriture, pas la relation entre deux nombres ; le scinder en 7 fractions serait absurde"
+					}
+				],
+				"labels": [],
+				"famille": [],
+				"reference": null
+			},
+			{
+				"type": "point_auto",
+				"grade": "6",
+				"code": "nouveau code 6e (prochain libre, > 6-201 et après ceux des scissions)",
+				"labels": [
+					"Repérer des relations multiplicatives simples entre des nombres : le tiers (12 est le tiers de 36)."
+				],
+				"rubrique": "La proportionnalité > Automatismes",
+				"rubrique_note": "en prod, la rubrique de 6e s'écrit « La proportionnalité » (6-189 à 6-193) ; précédents 6e : « Grandeurs et mesures > Les longueurs > Automatismes » (6-144, 6-199)",
+				"kind": "savoir_faire",
+				"regime": "fluence",
+				"exigence": "attendu",
+				"noeud": "Nombres et calculs > Entiers : multiplication > triple et tiers (sous-notion existante, aucun point)",
+				"place": "en tête de la rubrique, juste avant 6-189 (display_order 93), comme les ⚙ 6-144/6-199 en tête des Longueurs",
+				"critere": "évaluable (le tiers de 36 = ? ; 12 est-il le tiers de 36 ?)"
+			}
+		],
+		"reco": "2",
+		"justification": "Aucun point antérieur ne divise par 3 ni ne nomme le tiers ; aucune scission fidèle n'en sort. Point ⚙ fidèle à la ligne. Si David préfère, la même tournure peut couvrir quadruple et quart, mais ils ont une référence par scission."
+	},
+	{
+		"id": "l10_0",
+		"ligne": "l10",
+		"grades": ["5"],
+		"texte_bo": "Reconnaitre un cube, un pavé représenté en perspective cavalière.",
+		"texte_bo_source": "BO cycle 4 (PDF, pdftotext -layout) — 5e, « Représentation de l'espace > Automatismes », 3e puce.",
+		"mot": "cube et pavé représentés en perspective cavalière",
+		"options": [
+			{
+				"type": "scission",
+				"point": null,
+				"faisable": false,
+				"candidats_ecartes": [
+					{
+						"code": "CM2-098",
+						"raison": "« Nommer un cube, une boule, un pavé… » : ne parle pas de représentation. L'identification d'un solide « à partir d'une représentation en perspective » n'est que dans le texte d'introduction du CE2, du CM1 et du CM2, pas dans les objectifs : ce n'est pas un point."
+					},
+					{
+						"code": "5-048",
+						"raison": "point de 5e même (pas un programme précédent) ; « construire / mettre en relation » ne donne pas « reconnaître »"
+					}
+				],
+				"labels": [],
+				"famille": [],
+				"reference": null
+			},
+			{
+				"type": "point_auto",
+				"grade": "5",
+				"code": "nouveau code 5e (prochain libre, > 5-115)",
+				"labels": ["Reconnaitre un cube, un pavé représenté en perspective cavalière."],
+				"rubrique": "Espace et géométrie > Représentation de l'espace > Automatismes",
+				"kind": "savoir_faire",
+				"regime": "fluence",
+				"exigence": "attendu",
+				"noeud": "Géométrie > Solides > perspective cavalière (sous-notion existante : 5-048, 4-028…)",
+				"place": "en tête de la rubrique, juste avant 5-048 (display_order 49)",
+				"critere": "évaluable (QCM sur dessins ; module de géométrie)"
+			}
+		],
+		"reco": "2",
+		"justification": "Le mot est verbatim au BO et aucun point antérieur ne porte la perspective ; même forme que 5-056 (ligne d'automatisme de 5e devenue point ⚙)."
+	},
+	{
+		"id": "l12_0",
+		"ligne": "l12",
+		"grades": ["4"],
+		"texte_bo": "Opposé d’un nombre, somme des opposés.",
+		"texte_bo_source": "BO cycle 4 (PDF, pdftotext -layout) — 4e, « Opérations sur les nombres relatifs > Automatismes », 2e puce.",
+		"mot": "somme des opposés (a + (−a) = 0)",
+		"options": [
+			{
+				"type": "scission",
+				"point": null,
+				"faisable": false,
+				"candidats_ecartes": [
+					{
+						"code": "5-018",
+						"raison": "« Additionner deux nombres décimaux relatifs » : le cas des opposés n'y est pas nommé, le séparer ajouterait un cas"
+					},
+					{
+						"code": "5-013",
+						"raison": "déjà scindé ; « Définir l'opposé » ne dit rien de la somme"
+					}
+				],
+				"labels": [],
+				"famille": [],
+				"reference": null
+			},
+			{
+				"type": "point_auto",
+				"grade": "4",
+				"code": "nouveau code 4e (prochain libre, > 4-072)",
+				"labels": [
+					"Somme des opposés : savoir que la somme de deux nombres opposés est nulle (−7,5 + 7,5 = 0)."
+				],
+				"rubrique": "Nombres et calculs > Opérations sur les nombres relatifs > Automatismes",
+				"kind": "connaissance",
+				"regime": "fluence",
+				"exigence": "attendu",
+				"noeud": "Nombres et calculs > Relatifs : calculs > sommes (sous-notion existante : 5-018, 5-019)",
+				"place": "en tête de la rubrique, juste avant 4-001 (display_order 1)",
+				"critere": "évaluable",
+				"forme": "calquée sur 3-011 « Prendre l'opposé d'une expression : savoir que −(5 − 4x) = −5 + 4x. »"
+			}
+		],
+		"reco": "2",
+		"justification": "Aucun point ne dit que deux opposés ont une somme nulle, et aucune scission fidèle ne le fait apparaître ; 5-018 reste plus large. Point ⚙ comme 3-011."
+	},
+	{
+		"id": "l16_0",
+		"ligne": "l16",
+		"grades": ["4"],
+		"texte_bo": "Donner le double, le triple, la moitié, le prédécesseur, le successeur, le carré d’un nombre.",
+		"texte_bo_source": "BO cycle 4 (PDF, pdftotext -layout) — 4e, « Calcul littéral et algébrique > Automatismes », 5e puce (voisines : « Écrire 3 × x sous la forme 3x », « x + x = 2x ; x × x = x² »).",
+		"mot": "triple, prédécesseur, successeur (et double, moitié, carré en écriture littérale)",
+		"options": [
+			{
+				"type": "scission",
+				"point": "5-034",
+				"libelle_actuel": "Produire des formules (double, triple, carré, successeur, prédécesseur, aire, périmètre, etc.).",
+				"labels": [
+					"Produire des formules pour un nombre : double, triple, carré, successeur, prédécesseur (triple de n : 3n ; successeur de n : n + 1).",
+					"Produire des formules de grandeurs : aire, périmètre (aire d'un rectangle de longueur L et de largeur l : L × l)."
+				],
+				"fidelite": "scission par contenu (nombre / grandeur) selon la liste même du BO ; le « etc. » du BO est à garder sur l'une des moitiés (ou les deux) ; la moitié n'est PAS dans la liste de 5-034 : elle reste couverte en numérique par CE2-022 rang 2",
+				"famille": [
+					{
+						"code": "5-034",
+						"grade": "5",
+						"libelle_actuel": "Produire des formules (double, triple, carré, successeur, prédécesseur, aire, périmètre, etc.)."
+					},
+					{
+						"code": "4-021",
+						"grade": "4",
+						"libelle_actuel": "Produire des formules et tester leur vraisemblance : aires de formes géométriques simples, nombres pairs/impairs, etc.",
+						"labels": [
+							"Produire des formules et tester leur vraisemblance : nombres pairs/impairs (un nombre pair : 2n).",
+							"Produire des formules et tester leur vraisemblance : aires de formes géométriques simples (aire d'un triangle de base b et de hauteur h)."
+						],
+						"note": "même savoir-faire un an plus tard, même axe nombre / grandeur. 4-021 est référencé par la liste de 3e (ligne « Expression générique d'un nombre pair, d'un nombre impair ») : cette référence passerait à la moitié « pairs/impairs »."
+					}
+				],
+				"reference": {
+					"code": "5-034",
+					"rang": 1,
+					"libelle": "Produire des formules pour un nombre : double, triple, carré, successeur, prédécesseur (triple de n : 3n ; successeur de n : n + 1)."
+				},
+				"critere": "les deux moitiés évaluables (saisie d'une expression littérale)"
+			},
+			{
+				"type": "point_auto",
+				"grade": "4",
+				"code": "nouveau code 4e (prochain libre, > 4-072)",
+				"labels": [
+					"Donner le double, le triple, la moitié, le prédécesseur, le successeur, le carré d'un nombre (pour x : 2x, 3x, x/2, x − 1, x + 1, x²)."
+				],
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique > Automatismes",
+				"kind": "savoir_faire",
+				"regime": "fluence",
+				"exigence": "attendu",
+				"noeud": "Algèbre > Calcul littéral (notion, comme 5-034)",
+				"place": "en tête de la rubrique, juste avant 4-021 (display_order 21)",
+				"critere": "évaluable",
+				"note": "verbatim BO, couvre les six mots d'un coup (l16_0, l16_1, l16_2) ; mais le contenu n'est pas neuf (5-034 le nomme), ce qui sort du précédent ⚙ « contenu neuf »"
+			}
+		],
+		"reco": "1",
+		"justification": "Le principe dit « scinder d'abord » et 5-034 nomme cinq des six mots ; la rubrique (calcul littéral) et les puces voisines (3x, x + x = 2x, x × x = x²) imposent la lecture littérale. La moitié reste à CE2-022 rang 2. Le point ⚙ (option 2) est plus net mais ajoute au 4e un contenu déjà nommé en 5e."
+	},
+	{
+		"id": "l16_1",
+		"ligne": "l16",
+		"grades": ["4"],
+		"texte_bo": "Donner le double, le triple, la moitié, le prédécesseur, le successeur, le carré d’un nombre.",
+		"texte_bo_source": "BO cycle 4 (PDF, pdftotext -layout) — 4e, « Calcul littéral et algébrique > Automatismes », 5e puce (voisines : « Écrire 3 × x sous la forme 3x », « x + x = 2x ; x × x = x² »).",
+		"mot": "triple (lecture numérique)",
+		"options": [
+			{
+				"type": "scission",
+				"point": null,
+				"faisable": false,
+				"candidats_ecartes": [
+					{
+						"code": "CM2-036",
+						"raison": "déjà scindé ; isoler la table de 3 ajouterait un grain absent du BO"
+					}
+				],
+				"labels": [],
+				"famille": [],
+				"reference": null
+			},
+			{
+				"type": "point_auto",
+				"grade": "4",
+				"code": "nouveau code 4e",
+				"labels": ["Donner le triple d'un nombre (triple de 14 = ?)."],
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique > Automatismes",
+				"kind": "savoir_faire",
+				"regime": "fluence",
+				"exigence": "attendu",
+				"noeud": "Nombres et calculs > Entiers : multiplication > triple et tiers",
+				"place": "en tête de la rubrique, avant 4-021",
+				"note": "découpe la ligne du BO en morceaux ; déconseillé"
+			}
+		],
+		"reco": "aucune",
+		"justification": "Dans la lecture littérale (rubrique Calcul littéral), le triple est couvert par l16_0 (5-034 rang 1, ou le point ⚙ de l'option 2). La lecture numérique n'a pas d'appui dans le BO de 4e."
+	},
+	{
+		"id": "l16_2",
+		"ligne": "l16",
+		"grades": ["4"],
+		"texte_bo": "Donner le double, le triple, la moitié, le prédécesseur, le successeur, le carré d’un nombre.",
+		"texte_bo_source": "BO cycle 4 (PDF, pdftotext -layout) — 4e, « Calcul littéral et algébrique > Automatismes », 5e puce (voisines : « Écrire 3 × x sous la forme 3x », « x + x = 2x ; x × x = x² »).",
+		"mot": "prédécesseur, successeur (lecture numérique)",
+		"options": [
+			{
+				"type": "scission",
+				"point": "CP-020",
+				"libelle_actuel": "Ajouter ou soustraire 1 ou 2 à un nombre.",
+				"deja_scinde_en": [
+					"Ajouter 1 ou 2 à un nombre (37 + 2 = ?).",
+					"Soustraire 1 ou 2 à un nombre (37 − 2 = ?)."
+				],
+				"labels": [
+					"Ajouter 1 à un nombre (37 + 1 = ?).",
+					"Ajouter 2 à un nombre (37 + 2 = ?).",
+					"Soustraire 1 à un nombre (37 − 1 = ?).",
+					"Soustraire 2 à un nombre (37 − 2 = ?)."
+				],
+				"famille": [
+					{
+						"code": "CP-020",
+						"grade": "CP",
+						"libelle_actuel": "Ajouter ou soustraire 1 ou 2 à un nombre."
+					}
+				],
+				"famille_note": "seul point « 1 ou 2 » en prod ; le BO de CP relie « ajouter 1 » au nombre « juste après » et « soustraire 1 » au nombre « qui précède »",
+				"reference": {
+					"code": "CP-020",
+					"rang": "« ajouter 1 » et « soustraire 1 »"
+				},
+				"critere": "évaluable",
+				"note": "re-scission d'un point déjà scindé (4 points pour une ligne de CP) : possible mais lourde ; sans re-scission, les deux moitiés actuelles de CP-020 sont une référence plus large"
+			}
+		],
+		"reco": "aucune",
+		"justification": "Même raison que l16_1 : en lecture littérale, prédécesseur et successeur (n − 1, n + 1) sont couverts par l16_0. Une référence numérique de CP pour une ligne de calcul littéral de 4e serait un contresens."
+	},
+	{
+		"id": "l28_0",
+		"ligne": "l28",
+		"grades": ["3"],
+		"texte_bo": "Appliquer, dans des cas simples, une augmentation ou une diminution exprimée en pourcentages, en utilisant ou non le coefficient multiplicateur.",
+		"texte_bo_source": "BO cycle 4 (PDF, pdftotext -layout) — 3e, « Proportionnalité > Automatismes », dernière puce.",
+		"mot": "ou non (sans coefficient multiplicateur)",
+		"options": [
+			{
+				"type": "scission",
+				"point": null,
+				"faisable": false,
+				"candidats_ecartes": [
+					{
+						"code": "6-141",
+						"raison": "« Appliquer un pourcentage à une grandeur » : calcule 20 % de 120, pas la hausse qui suit ; rien à scinder"
+					},
+					{
+						"code": "4-056",
+						"raison": "« Calculer avec des pourcentages » : un seul geste, rien à scinder"
+					},
+					{
+						"code": "3-036",
+						"raison": "point de 3e même (« Traduire une augmentation ou une diminution en pourcentages »), déjà scindé ; pas un programme précédent"
+					}
+				],
+				"labels": [],
+				"famille": [],
+				"reference": null
+			},
+			{
+				"type": "point_auto",
+				"grade": "3",
+				"code": "deux nouveaux codes 3e (prochains libres, > 3-056)",
+				"labels": [
+					"Appliquer, dans des cas simples, une augmentation exprimée en pourcentage sans utiliser le coefficient multiplicateur (120 € augmenté de 20 % : 120 + 24 = 144 €).",
+					"Appliquer, dans des cas simples, une diminution exprimée en pourcentage sans utiliser le coefficient multiplicateur (120 € diminué de 20 % : 120 − 24 = 96 €)."
+				],
+				"labels_variante_un_point": [
+					"Appliquer, dans des cas simples, une augmentation ou une diminution exprimée en pourcentages sans utiliser le coefficient multiplicateur (120 augmenté de 20 % : 120 + 24 = 144)."
+				],
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité > Automatismes",
+				"kind": "savoir_faire",
+				"regime": "fluence",
+				"exigence": "attendu",
+				"noeud": "Proportionnalité > Évolutions > variations en pourcentage (sous-notion de 4-057 et 3-036)",
+				"place": "en tête de la rubrique, juste avant 3-036 (display_order 40)",
+				"critere": "évaluable",
+				"note": "deux points pour rester cohérent avec la famille M10 (4-057 et 3-036 scindés en augmentation / diminution)"
+			}
+		],
+		"reco": "2",
+		"justification": "Aucun point antérieur n'applique une hausse ou une baisse sans coefficient ; 6-141 n'en fait que la première étape. La partie « avec coefficient » garde 4-057 (ses deux moitiés)."
+	},
+	{
+		"id": "l36_0",
+		"ligne": "l36",
+		"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+		"texte_bo": "Calculer périmètres (polygone, cercle), aires (rectangle, triangle, disque), volumes (pavé, prisme, cylindre, pyramide, cône, boule)",
+		"texte_bo_source": "BO de seconde ABSENT du dépôt (docs/ref/programmes ne contient que les cycles 2, 3, 4) : texte = résumé de seed-2de.md, non vérifiable mot pour mot (seed-2de.md l.384).",
+		"mot": "périmètre d'un polygone (autre que carré et rectangle)",
+		"options": [
+			{
+				"type": "scission",
+				"point": null,
+				"faisable": false,
+				"candidats_ecartes": [
+					{
+						"code": "CM1-075",
+						"raison": "« Résoudre des problèmes mettant en jeu les longueurs des côtés d'un polygone et son périmètre » : le couper en « calculer le périmètre » / « retrouver un côté » changerait le grain (résoudre des problèmes → technique) et ajouterait un sens que le BO ne nomme pas"
+					},
+					{
+						"code": "CE2-044 / CM1-074",
+						"raison": "« Déterminer le périmètre d'un polygone en utilisant une règle graduée » : mesurer, un seul geste"
+					},
+					{
+						"code": "CM1-073",
+						"raison": "« Savoir ce qu'est le périmètre d'une figure plane » : définition, un seul geste"
+					}
+				],
+				"labels": [],
+				"famille": [],
+				"reference": null
+			},
+			{
+				"type": "point_auto",
+				"grade": "2",
+				"code": "nouveau code 2de (prochain libre, > 2-400)",
+				"labels": ["Calculer le périmètre d'un polygone."],
+				"labels_note": "libellé à confirmer sur le BO de seconde (absent du dépôt) : la ligne lue n'est que le résumé du seed",
+				"rubrique": "Automatismes",
+				"kind": "savoir_faire",
+				"regime": "fluence",
+				"exigence": "attendu",
+				"noeud": "Grandeurs et mesures > Périmètres (notion ; sous-notions carré | rectangle | disque, pas de « polygone »)",
+				"place": "à fixer selon la place de la partie Automatismes dans le BO de 2de ; à défaut, en fin de liste (display_order 201)",
+				"critere": "évaluable",
+				"note": "1re et Tle reprennent la ligne mot pour mot : elles référenceraient ce point de 2de"
+			}
+		],
+		"reco": "2",
+		"justification": "Aucun point antérieur ne calcule le périmètre d'un polygone quelconque ; aucune scission fidèle. À écrire seulement après lecture du texte exact du BO de seconde (non disponible ici). Sinon, CM1-075 reste une référence plus large."
+	},
+	{
+		"id": "l40_1",
+		"ligne": "l40",
+		"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+		"texte_bo": "Calculer et interpréter moyenne, médiane, quartiles selon la présentation des données",
+		"texte_bo_source": "BO de seconde ABSENT du dépôt (docs/ref/programmes ne contient que les cycles 2, 3, 4) : texte = résumé de seed-2de.md, non vérifiable mot pour mot (seed-2de.md l.388).",
+		"mot": "interpréter (les quartiles)",
+		"options": [
+			{
+				"type": "scission",
+				"point": "2-382",
+				"faisable": "partiellement",
+				"libelle_actuel": "Décrire les différences entre deux séries statistiques, en s'appuyant sur des indicateurs ou couples d'indicateurs (moyenne–écart type, médiane–écart interquartile) ou sur des représentations graphiques données",
+				"labels": [
+					"Décrire les différences entre deux séries statistiques en s'appuyant sur le couple moyenne–écart type.",
+					"Décrire les différences entre deux séries statistiques en s'appuyant sur le couple médiane–écart interquartile.",
+					"Décrire les différences entre deux séries statistiques en s'appuyant sur des représentations graphiques données."
+				],
+				"famille": [
+					{
+						"code": "2-382",
+						"grade": "2",
+						"libelle_actuel": "(ci-dessus)"
+					}
+				],
+				"reference": {
+					"code": "2-382",
+					"rang": 2
+				},
+				"critere": "évaluable",
+				"ecart": "point de 2de même (auto-référence, admise en 2de comme 2-380/2-381), et il compare DEUX séries : il ne dit pas ce que signifient les quartiles d'une série. Écarté : 3-029 « Donner les quartiles… » (un seul geste, déterminer), 3-030 rang 2 « Lire une boîte à moustaches » (lire, pas interpréter)."
+			},
+			{
+				"type": "point_auto",
+				"grade": "2",
+				"code": "nouveau code 2de (prochain libre, > 2-400)",
+				"labels": [
+					"Interpréter les quartiles d'une série statistique (Q1 = 12 : au moins un quart des valeurs sont inférieures ou égales à 12)."
+				],
+				"labels_note": "libellé à confirmer sur le BO de seconde (absent du dépôt)",
+				"rubrique": "Automatismes",
+				"kind": "savoir_faire",
+				"regime": "fluence",
+				"exigence": "attendu",
+				"noeud": "Statistiques > Indicateurs > quartiles (sous-notion existante, porte 3-029)",
+				"place": "comme l36_0 : selon la place de la partie Automatismes dans le BO de 2de",
+				"critere": "évaluable (QCM sur le sens de Q1, Q3), comme « Interpréter la médiane » (4-040 rang 2) et « Interpréter la moyenne » (5-080 rang 2), déjà des points"
+			}
+		],
+		"reco": "2",
+		"justification": "Ce n'est pas une compétence : la spec a déjà fait d'« interpréter la médiane » et d'« interpréter la moyenne » des points évaluables, et les quartiles se traitent pareil. Aucun point antérieur ne les interprète ; scinder 2-382 ne donnerait qu'une référence voisine (deux séries). À confirmer sur le texte du BO de 2de."
+	},
+	{
+		"id": "l16_CE2-022",
+		"ligne": "l16",
+		"grades": ["4"],
+		"texte_bo": "Donner le double, le triple, la moitié, le prédécesseur, le successeur, le carré d’un nombre.",
+		"texte_bo_source": "BO cycle 4 (PDF, pdftotext -layout) — 4e, « Calcul littéral et algébrique > Automatismes », 5e puce (voisines : « Écrire 3 × x sous la forme 3x », « x + x = 2x ; x × x = x² »).",
+		"mot": "double, moitié → CE2-022 (rang 1 doubles, rang 2 moitiés)",
+		"options": [
+			{
+				"type": "cible",
+				"choix": "1",
+				"libelle": "Connaître des faits multiplicatifs usuels : les doubles (double de 35 = ?)."
+			},
+			{
+				"type": "cible",
+				"choix": "2",
+				"libelle": "Connaître des faits multiplicatifs usuels : les moitiés (moitié de 70 = ?)."
+			},
+			{
+				"type": "cible",
+				"choix": "1+2"
+			}
+		],
+		"reco": "1+2",
+		"justification": "La ligne nomme le double ET la moitié, comme celle de 6e (déjà « les deux »). Avec la reco 1 de l16_0, 5-034 rang 1 porte le double littéral mais pas la moitié : CE2-022 rang 2 est alors la seule référence de la moitié. Le rang 1 reste utile pour le double numérique. Plus récents mais sur les décimaux : CM2-048 / CM2-049, si « d'un nombre » inclut les décimaux. Si David choisit plutôt le point ⚙ (option 2 de l16_0), CE2-022 devient facultatif."
+	}
+]

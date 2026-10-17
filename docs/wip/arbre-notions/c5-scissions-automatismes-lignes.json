@@ -1,0 +1,3132 @@
+{
+	"genere_le": "2026-10-17",
+	"methode": [
+		"Lignes : tableaux « références d'automatismes » des seeds (worktree ubumaths-wt-tables), dont chaque ligne cite au moins un point scindé (spec 137 + CM1-019/CM2-018 ; ces deux derniers et 3-038/3-002 ne sont visés par aucune ligne).",
+		"Prod ne stocke que (point, grade) : vérifié que l'union des cibles des seeds = curriculum_point_automatismes en prod, grade par grade (écarts : seulement les auto-références 1GEN-027/1TECHNO-066, les points neufs de 6e 6-144/6-199/6-156 non référencés en 6e, l'entretien ensembliste de 1re spé/Tle, et CE2-084 du seed devenu CE2-020 en prod sur une ligne sans point scindé).",
+		"Libellés actuels : prod. Moitiés : spec + corrections de verif.json ; rang 1 = le code d'origine.",
+		"Les lignes de 1re (1re spé, 1re ens. sci., 1re techno, mot pour mot) forment une seule entrée ; la Tle techno, dont le BO redonne sa propre liste, garde ses entrées.",
+		"texte_bo : BO cycles 3 et 4 (PDF de docs/ref/programmes) ; le BO de lycée n'est pas dans le dépôt, le texte est alors le résumé du seed."
+	],
+	"lignes": [
+		{
+			"id": "l1",
+			"texte": "Équivalences d'écriture 1/10 = 0,1 ; 1/100 = 0,01 ; 1/1000 = 0,001",
+			"source": "6e — BO cycle 3, rubrique Automatismes (seed-6e.md l.188)",
+			"grades": ["6"],
+			"texte_bo": "L'élève restitue de manière automatique les équivalences d'écriture suivantes : 1/10 = 0,1 ; 1/100 = 0,01 ; 1/1000 = 0,001.",
+			"refs_actuelles": [
+				{
+					"code": "CM2-030",
+					"libelle": "Passer d'une écriture sous forme d'une fraction décimale ou de la somme de fractions décimales à une écriture à virgule et réciproquement",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "CM2-030",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CM2-030",
+							"rang": 1,
+							"libelle": "Écrire à virgule un nombre donné par une fraction décimale ou une somme de fractions décimales (237/100 = ? ou 2 + 3/10 + 7/100 = ?)."
+						},
+						{
+							"code": "CM2-030",
+							"rang": 2,
+							"libelle": "Écrire un nombre à virgule sous forme de fraction décimale ou de somme de fractions décimales (2,37 = ?/100)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "équivalences et passage « ↔ » : les deux sens"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "La ligne demande de savoir par cœur que 1/10 = 0,1, 1/100 = 0,01, 1/1000 = 0,001. Une équivalence se lit dans les deux sens : elle pointe vers les deux moitiés de CM2-030 (fraction → virgule et virgule → fraction)."
+		},
+		{
+			"id": "l2",
+			"texte": "Passage fraction décimale / somme de fractions décimales ↔ écriture décimale (4,107…)",
+			"source": "6e — BO cycle 3, rubrique Automatismes (seed-6e.md l.189)",
+			"grades": ["6"],
+			"texte_bo": "L'élève passe de manière automatique d'une écriture sous forme de fraction décimale ou de somme de fractions décimales à une écriture décimale, et inversement (4 107/1000 ; 4 + 107/1000 ; 4 + 1/10 + 7/1000 ; 4,107).",
+			"refs_actuelles": [
+				{
+					"code": "CM2-030",
+					"libelle": "Passer d'une écriture sous forme d'une fraction décimale ou de la somme de fractions décimales à une écriture à virgule et réciproquement",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "CM2-030",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CM2-030",
+							"rang": 1,
+							"libelle": "Écrire à virgule un nombre donné par une fraction décimale ou une somme de fractions décimales (237/100 = ? ou 2 + 3/10 + 7/100 = ?)."
+						},
+						{
+							"code": "CM2-030",
+							"rang": 2,
+							"libelle": "Écrire un nombre à virgule sous forme de fraction décimale ou de somme de fractions décimales (2,37 = ?/100)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "équivalences et passage « ↔ » : les deux sens"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Passer d'une fraction décimale (ou d'une somme de fractions décimales) à l'écriture à virgule, « et inversement ». Le « et inversement » du BO garde les deux moitiés de CM2-030."
+		},
+		{
+			"id": "l3",
+			"texte": "Reconnaître une fraction sur des représentations variées",
+			"source": "6e — BO cycle 3, rubrique Automatismes (seed-6e.md l.192)",
+			"grades": ["6"],
+			"texte_bo": "L'élève sait reconnaître une fraction sur des représentations variées, par exemple : [figures du BO].",
+			"refs_actuelles": [
+				{
+					"code": "CM2-013",
+					"libelle": "Interpréter, représenter, écrire et lire des fractions",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "CM2-013",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CM2-013",
+							"rang": 3,
+							"libelle": "Interpréter un partage par une fraction (quelle part de la figure est coloriée ?)."
+						}
+					],
+					"reco_verif": "3",
+					"decision": "reco verif reprise",
+					"justification": "« reconnaître une fraction sur des représentations variées » : interpréter un partage"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "représentations variées (si la demi-droite graduée en fait partie)",
+					"point_propose": {
+						"code": "CM2-018",
+						"rang": 1,
+						"libelle": "Repérer un point d'une demi-droite graduée par une fraction (le point A repère … : 3/4).",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "Si les « représentations variées » du BO comprennent un point repéré sur une demi-droite graduée, le geste est « repérer un point par une fraction », c'est-à-dire la 1re moitié du point CM2-018 qui vient d'être scindé. Les figures du BO ne sont pas lisibles dans le texte extrait : à vérifier sur le PDF."
+				}
+			],
+			"a_trancher": true,
+			"lectures": [
+				"Lecture 1 (reco) : les représentations sont des partages de figures → CM2-013 rang 3 (interpréter un partage) seul.",
+				"Lecture 2 : les représentations incluent la demi-droite graduée → ajouter CM2-018 rang 1 « Repérer un point d'une demi-droite graduée par une fraction (le point A repère … : 3/4) »."
+			],
+			"explication": "Reconnaître quelle fraction représente un dessin. Après scission de CM2-013 en trois, seule la 3e moitié (« interpréter un partage ») correspond. Reste à savoir si la droite graduée fait partie des représentations : si oui, on ajoute CM2-018 rang 1."
+		},
+		{
+			"id": "l4",
+			"texte": "Diviseurs, multiples et tables de multiplication réactivés (calcul sur les fractions)",
+			"source": "6e — BO cycle 3, rubrique Automatismes (seed-6e.md l.195)",
+			"grades": ["6"],
+			"texte_bo": "Les notions de diviseur et de multiple et les tables de multiplication sont réactivées en vue de leur utilisation dans le calcul sur les fractions (simplification, addition et soustraction).",
+			"refs_actuelles": [
+				{
+					"code": "CM2-021",
+					"libelle": "Calculer le produit d'un entier et d'une fraction",
+					"scinde": false
+				},
+				{
+					"code": "CM2-008",
+					"libelle": "Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné ou si un nombre entier donné est un multiple d'un nombre entier inférieur ou égal à 10",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "CM2-021",
+					"inchange": true
+				},
+				{
+					"code": "CM2-008",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CM2-008",
+							"rang": 1,
+							"libelle": "Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné (7 est-il un diviseur de 56 ?)."
+						},
+						{
+							"code": "CM2-008",
+							"rang": 2,
+							"libelle": "Déterminer si un nombre entier donné est un multiple d'un nombre entier inférieur ou égal à 10 (56 est-il un multiple de 7 ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« diviseurs, multiples » : les deux"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "tables de multiplication",
+					"point_propose": [
+						{
+							"code": "CM2-036",
+							"rang": 1,
+							"libelle": "Connaître le répertoire multiplicatif : donner le produit de deux nombres (7 × 8 = ?).",
+							"deja_dans_la_liste_pour": []
+						},
+						{
+							"code": "CM2-036",
+							"rang": 2,
+							"libelle": "Connaître le répertoire multiplicatif : compléter une multiplication à trou (7 × ? = 56).",
+							"deja_dans_la_liste_pour": []
+						}
+					],
+					"justification": "La ligne nomme « les tables de multiplication » ; aucun point du répertoire multiplicatif n'est visé aujourd'hui en 6e. CM2-036 (le plus récent du parcours) les porte ; « réactivées » = les deux sens, comme « Entretien des tables » en 4e."
+				}
+			],
+			"a_trancher": false,
+			"remarque_hors_scission": "CM2-021 « Calculer le produit d'un entier et d'une fraction » ne correspond à aucun mot de la ligne : « calcul sur les fractions » est le but de la réactivation, pas son contenu, et le BO le précise par « simplification, addition et soustraction ». Référence douteuse, hors scission.",
+			"explication": "La ligne demande de réactiver diviseurs, multiples et tables pour calculer sur les fractions. Diviseur et multiple → les deux moitiés de CM2-008 ; les tables de multiplication n'ont aucun point aujourd'hui (CM2-036 proposé) ; CM2-021 semble de trop."
+		},
+		{
+			"id": "l5",
+			"texte": "Lire un tableau, un diagramme en barres, un diagramme circulaire ou une courbe (lecture immédiate)",
+			"source": "6e — BO cycle 3, rubrique Automatismes (seed-6e.md l.217)",
+			"grades": ["6"],
+			"texte_bo": "L'élève sait lire un tableau, un diagramme en barres, un diagramme circulaire ou une courbe dans des cas adaptés à une lecture immédiate.",
+			"refs_actuelles": [
+				{
+					"code": "CM2-107",
+					"libelle": "Lire et interpréter les données d'un tableau",
+					"scinde": true
+				},
+				{
+					"code": "CM2-123",
+					"libelle": "Lire et interpréter les données d'un diagramme en barres",
+					"scinde": true
+				},
+				{
+					"code": "CM2-124",
+					"libelle": "Lire et interpréter les données d'un diagramme circulaire",
+					"scinde": true
+				},
+				{
+					"code": "CM2-125",
+					"libelle": "Lire et interpréter les données d'une courbe",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "CM2-107",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CM2-107",
+							"rang": 1,
+							"libelle": "Lire une donnée dans un tableau (quelle est la population de Lyon ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire … (lecture immédiate) » : lire"
+				},
+				{
+					"code": "CM2-123",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CM2-123",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme en barres (combien de livres ont été prêtés en mars ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire … (lecture immédiate) » : lire"
+				},
+				{
+					"code": "CM2-124",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CM2-124",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme circulaire (quelle part des élèves vient à vélo ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire … (lecture immédiate) » : lire"
+				},
+				{
+					"code": "CM2-125",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CM2-125",
+							"rang": 1,
+							"libelle": "Lire une donnée sur une courbe (quelle température à 14 h ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire … (lecture immédiate) » : lire"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Lire une donnée dans un tableau, un diagramme en barres, un diagramme circulaire ou une courbe (« lecture immédiate »). Chacun des quatre points CM2 est scindé en lire / interpréter : la ligne ne vise que « lire » (rang 1) pour les quatre."
+		},
+		{
+			"id": "l6",
+			"texte": "Relations multiplicatives simples (double, quadruple, moitié, tiers, quart)",
+			"source": "6e — BO cycle 3, rubrique Automatismes (seed-6e.md l.218)",
+			"grades": ["6"],
+			"texte_bo": "L'élève sait repérer des relations multiplicatives simples entre des nombres (double, quadruple, moitié, tiers, quart).",
+			"refs_actuelles": [
+				{
+					"code": "CE2-022",
+					"libelle": "Connaitre des faits multiplicatifs usuels : les doubles et les moitiés.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "CE2-022",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CE2-022",
+							"rang": 1,
+							"libelle": "Connaître des faits multiplicatifs usuels : les doubles (double de 35 = ?)."
+						},
+						{
+							"code": "CE2-022",
+							"rang": 2,
+							"libelle": "Connaître des faits multiplicatifs usuels : les moitiés (moitié de 70 = ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« double, quadruple, moitié … » : doubles et moitiés"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "quadruple",
+					"point_propose": {
+						"code": "CM1-045",
+						"libelle": "Multiplier un nombre entier par 4 ou par 8",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "« Multiplier un nombre entier par 4 ou par 8 » : le quadruple est exactement × 4. Point du CM1 non scindé, le plus récent du parcours qui le porte (CE2-026 est le même au CE2)."
+				},
+				{
+					"mot": "quart",
+					"point_propose": {
+						"code": "CM2-050",
+						"libelle": "Diviser un nombre entier par 4 ou par 8",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "« Diviser un nombre entier par 4 ou par 8 » : le quart est exactement ÷ 4. Point non scindé."
+				},
+				{
+					"mot": "tiers",
+					"point_propose": {
+						"code": "CM2-036",
+						"rang": 2,
+						"libelle": "Connaître le répertoire multiplicatif : compléter une multiplication à trou (7 × ? = 56).",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "Plus large. Aucun point « diviser par 3 » n'existe. Trouver le tiers de 36, c'est compléter 3 × … = 36 : la 2e moitié de CM2-036 (multiplication à trou) le couvre, mais pour toutes les tables. Autre candidat, plus large encore : CM2-022 « Déterminer une fraction d'une quantité »."
+				}
+			],
+			"a_trancher": true,
+			"lectures": [
+				"Tiers : (a) CM2-036 rang 2, plus large mais même geste (table à trou) ; (b) CM2-022, plus large (fraction d'une quantité) ; (c) aucune référence.",
+				"Double et moitié : CE2-022 (entiers, CE2) reste la cible ; si « entre des nombres » inclut les décimaux, les points plus récents CM2-048 « Calculer le double d'un nombre décimal dans des cas simples » et CM2-049 « … la moitié … » sont aussi candidats (règle du plus récent)."
+			],
+			"explication": "Repérer qu'un nombre est le double, le quadruple, la moitié, le tiers ou le quart d'un autre. Aujourd'hui seul CE2-022 (doubles et moitiés) est visé, et ses deux moitiés restent ; il manque quadruple (CM1-045), quart (CM2-050) et tiers (pas de point dédié)."
+		},
+		{
+			"id": "l7",
+			"texte": "Tables pour factoriser un entier en produit de deux nombres (21 = 3 × 7)",
+			"source": "5e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.394)",
+			"grades": ["5"],
+			"texte_bo": "Utiliser les tables de multiplication pour factoriser des nombres entiers décomposables en produit de deux nombres différents de 1, par exemple, 21 = 3 × 7.",
+			"refs_actuelles": [
+				{
+					"code": "CM2-036",
+					"libelle": "Connaître des faits numériques usuels avec des entiers — répertoire multiplicatif ✂",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "CM2-036",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CM2-036",
+							"rang": 2,
+							"libelle": "Connaître le répertoire multiplicatif : compléter une multiplication à trou (7 × ? = 56)."
+						}
+					],
+					"reco_verif": "2",
+					"decision": "reco verif reprise",
+					"justification": "factoriser 21 = 3 × 7 : trouver les facteurs, c'est la multiplication à trou"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": true,
+			"lectures": [
+				"Lecture 1 (reco verif, option A du 2026-10-11) : trouver les facteurs de 21, c'est la multiplication à trou → rang 2 seul.",
+				"Lecture 2 : il faut aussi connaître le produit 3 × 7 = 21 → les deux moitiés."
+			],
+			"explication": "Écrire 21 = 3 × 7 en s'appuyant sur les tables. Après scission de CM2-036 (produit / multiplication à trou), la ligne vise la multiplication à trou ; à trancher si le produit direct compte aussi."
+		},
+		{
+			"id": "l8",
+			"texte": "Comparer deux fractions",
+			"source": "5e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.404)",
+			"grades": ["5"],
+			"texte_bo": "Comparer deux fractions : [quatre paires d'exemples].",
+			"refs_actuelles": [
+				{
+					"code": "6-133",
+					"libelle": "Comparer et encadrer des fractions",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "6-133",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "6-133",
+							"rang": 1,
+							"libelle": "Comparer deux fractions (3/4 … 5/6)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« comparer deux fractions » : comparer"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Comparer deux fractions. 6-133 est scindé en comparer / encadrer : seule la 1re moitié est nommée."
+		},
+		{
+			"id": "l9",
+			"texte": "Addition et soustraction de fractions simples",
+			"source": "5e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.406)",
+			"grades": ["5"],
+			"texte_bo": "Addition et soustraction de fractions simples : [exemples].",
+			"refs_actuelles": [
+				{
+					"code": "6-135",
+					"libelle": "Additionner et soustraire des fractions",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "6-135",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "6-135",
+							"rang": 1,
+							"libelle": "Additionner des fractions (2/3 + 1/6 = ?)."
+						},
+						{
+							"code": "6-135",
+							"rang": 2,
+							"libelle": "Soustraire des fractions (2/3 − 1/6 = ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« addition et soustraction de fractions simples » : les deux"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Additionner et soustraire des fractions simples. Les deux moitiés de 6-135 (additionner, soustraire) sont nommées."
+		},
+		{
+			"id": "l10",
+			"texte": "Vues et dénombrement d'empilements de cubes ; cube et pavé en perspective",
+			"source": "5e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.416)",
+			"grades": ["5"],
+			"texte_bo": "Reconnaitre des vues (de dessus, dessous…) d'empilements de cubes. Dénombrer des cubes dans des empilements. Reconnaitre un cube, un pavé représenté en perspective cavalière.",
+			"refs_actuelles": [
+				{
+					"code": "6-181",
+					"libelle": "Voir dans l'espace des assemblages de cubes : passage, dans les deux sens, entre l'objet à trois dimensions et ses diverses représentations à deux dimensions ; dénombrements",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "6-181",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "6-181",
+							"rang": 1,
+							"libelle": "Associer à un assemblage de cubes ses représentations planes (vue de dessus, de face…)."
+						},
+						{
+							"code": "6-181",
+							"rang": 3,
+							"libelle": "Dénombrer les cubes d'un assemblage."
+						}
+					],
+					"reco_verif": "origine+3",
+					"decision": "reco verif reprise",
+					"justification": "BO 5e « reconnaitre des vues » (associer) et « dénombrer des cubes » : 1re et 3e parties"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "cube et pavé représentés en perspective cavalière",
+					"point_propose": {
+						"code": "CM2-098",
+						"libelle": "Nommer un cube, une boule, un pavé, un cône, une pyramide, un cylindre ou un prisme droit",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "Plus large : CM2-098 « Nommer un cube, … un pavé … » reconnaît le solide, pas son dessin en perspective. Aucun point avant la 5e ne porte la perspective cavalière ; le seul qui la nomme est 5-048 (point de 5e même, plus large : construire et mettre en relation). La 4e fait le même choix (« Reconnaitre les solides » → CM2-098)."
+				}
+			],
+			"a_trancher": true,
+			"lectures": [
+				"6-181 : (a) reco : rang 1 (associer un assemblage à ses vues) + rang 3 (dénombrer) ; (b) lecture large : reconnaître des vues implique aussi retrouver l'assemblage → les trois rangs.",
+				"Perspective : (a) CM2-098, plus large ; (b) 5-048, point de 5e même, plus large ; (c) aucune référence."
+			],
+			"explication": "Reconnaître les vues d'un empilement de cubes, compter les cubes, reconnaître un cube ou un pavé dessiné en perspective. 6-181 scindé en trois : vues (1) et dénombrement (3) ; la partie « perspective » n'a aujourd'hui aucun point."
+		},
+		{
+			"id": "l11",
+			"texte": "Médiatrice, cercle circonscrit (notions)",
+			"source": "5e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.425)",
+			"grades": ["5"],
+			"texte_bo": "Connaitre la notion de médiatrice, de cercle circonscrit.",
+			"refs_actuelles": [
+				{
+					"code": "6-165",
+					"libelle": "Connaître la définition de la médiatrice d'un segment",
+					"scinde": false
+				},
+				{
+					"code": "6-178",
+					"libelle": "Connaître et construire le cercle circonscrit à un triangle",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "6-165",
+					"inchange": true
+				},
+				{
+					"code": "6-178",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "6-178",
+							"rang": 1,
+							"libelle": "Connaître le cercle circonscrit à un triangle (son centre est le point de concours des médiatrices)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "BO 5e « connaitre la notion de médiatrice, de cercle circonscrit » : connaître"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Connaître ce que sont une médiatrice et le cercle circonscrit. 6-165 (médiatrice) est inchangé ; 6-178 est scindé en connaître / construire : la ligne dit « connaitre la notion », donc rang 1."
+		},
+		{
+			"id": "l12",
+			"texte": "Opposé d'un nombre, somme des opposés",
+			"source": "4e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.439)",
+			"grades": ["4"],
+			"texte_bo": "Opposé d'un nombre, somme des opposés.",
+			"refs_actuelles": [
+				{
+					"code": "5-013",
+					"libelle": "Définir l'opposé et la valeur absolue d'un nombre.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-013",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-013",
+							"rang": 1,
+							"libelle": "Donner l'opposé d'un nombre relatif (opposé de −3 = ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« opposé d'un nombre, somme des opposés » : l'opposé seul, pas la valeur absolue"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "somme des opposés (a + (−a) = 0)",
+					"point_propose": {
+						"code": "5-018",
+						"libelle": "Additionner deux nombres décimaux relatifs.",
+						"deja_dans_la_liste_pour": ["4"]
+					},
+					"justification": "Plus large : « Additionner deux nombres décimaux relatifs » contient la somme de deux opposés, sans la nommer. Aucun point ne dit « la somme de deux opposés est nulle ». 5-018 est déjà dans la liste de 4e (ligne « Manipulation de sommes ») : aucune ligne nouvelle dans la table."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Donner l'opposé d'un nombre et savoir que la somme de deux opposés vaut 0. 5-013 est scindé en opposé / valeur absolue : seul l'opposé (rang 1) est nommé ; la « somme des opposés » n'a pas de point propre."
+		},
+		{
+			"id": "l13",
+			"texte": "Entretien des tables de multiplication",
+			"source": "4e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.440)",
+			"grades": ["4"],
+			"texte_bo": "Entretien des tables de multiplication.",
+			"refs_actuelles": [
+				{
+					"code": "CM2-036",
+					"libelle": "Connaître des faits numériques usuels avec des entiers — répertoire multiplicatif ✂",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "CM2-036",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CM2-036",
+							"rang": 1,
+							"libelle": "Connaître le répertoire multiplicatif : donner le produit de deux nombres (7 × 8 = ?)."
+						},
+						{
+							"code": "CM2-036",
+							"rang": 2,
+							"libelle": "Connaître le répertoire multiplicatif : compléter une multiplication à trou (7 × ? = 56)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« entretien des tables » : les deux sens"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Entretenir les tables. Les deux moitiés de CM2-036 (donner le produit, compléter un produit à trou)."
+		},
+		{
+			"id": "l14",
+			"texte": "Addition et soustraction de fractions de dénominateurs quelconques mais simples",
+			"source": "4e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.444)",
+			"grades": ["4"],
+			"texte_bo": "Addition et soustraction de fractions de dénominateurs quelconques mais simples.",
+			"refs_actuelles": [
+				{
+					"code": "5-026",
+					"libelle": "Additionner et soustraire des fractions de dénominateurs quelconques.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-026",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-026",
+							"rang": 1,
+							"libelle": "Additionner des fractions de dénominateurs quelconques (2/3 + 1/4 = ?)."
+						},
+						{
+							"code": "5-026",
+							"rang": 2,
+							"libelle": "Soustraire des fractions de dénominateurs quelconques (2/3 − 1/4 = ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« addition et soustraction de fractions » : les deux"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Additionner et soustraire des fractions de dénominateurs différents. Les deux moitiés de 5-026."
+		},
+		{
+			"id": "l15",
+			"texte": "Équations ax = c et x + b = c",
+			"source": "4e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.454)",
+			"grades": ["4"],
+			"texte_bo": "Résoudre des équations du type ax = c et x + b = c, où a, b et c sont des nombres.",
+			"refs_actuelles": [
+				{
+					"code": "5-045",
+					"libelle": "Résoudre des équations du type ax = c ou x + b = c par des méthodes arithmétiques s'appuyant sur les opérations inverses.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-045",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-045",
+							"rang": 1,
+							"libelle": "Résoudre une équation du type x + b = c par l'opération inverse (x + 7 = 12 : x = 12 − 7)."
+						},
+						{
+							"code": "5-045",
+							"rang": 2,
+							"libelle": "Résoudre une équation du type ax = c par l'opération inverse (3x = 12 : x = 12 ÷ 3)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« équations ax = c et x + b = c » : les deux types"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Résoudre ax = c et x + b = c. 5-045 scindé par type d'équation (rang 1 : x + b = c ; rang 2 : ax = c) : les deux."
+		},
+		{
+			"id": "l16",
+			"texte": "Double, triple, moitié, prédécesseur, successeur, carré d'un nombre",
+			"source": "4e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.456)",
+			"grades": ["4"],
+			"texte_bo": "Donner le double, le triple, la moitié, le prédécesseur, le successeur, le carré d'un nombre. (Rubrique « Calcul littéral et algébrique » de 4e.)",
+			"refs_actuelles": [
+				{
+					"code": "CE2-022",
+					"libelle": "Connaitre des faits multiplicatifs usuels : les doubles et les moitiés.",
+					"scinde": true
+				},
+				{
+					"code": "5-029",
+					"libelle": "Connaitre les carrés des entiers de 0 à 12.",
+					"scinde": false
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "CE2-022",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "CE2-022",
+							"rang": 1,
+							"libelle": "Connaître des faits multiplicatifs usuels : les doubles (double de 35 = ?)."
+						},
+						{
+							"code": "CE2-022",
+							"rang": 2,
+							"libelle": "Connaître des faits multiplicatifs usuels : les moitiés (moitié de 70 = ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« double, triple, moitié … » : doubles et moitiés"
+				},
+				{
+					"code": "5-029",
+					"inchange": true
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "triple, prédécesseur, successeur (et double, moitié, carré en écriture littérale)",
+					"point_propose": {
+						"code": "5-034",
+						"libelle": "Produire des formules (double, triple, carré, successeur, prédécesseur, aire, périmètre, etc.).",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "« Produire des formules (double, triple, carré, successeur, prédécesseur…) » nomme presque mot pour mot la ligne ; la ligne est rangée par le BO sous « Calcul littéral et algébrique » : donner le double de n, c'est écrire 2n. Point de 5e non scindé."
+				},
+				{
+					"mot": "triple (lecture numérique)",
+					"point_propose": {
+						"code": "CM2-036",
+						"rang": 1,
+						"libelle": "Connaître le répertoire multiplicatif : donner le produit de deux nombres (7 × 8 = ?).",
+						"deja_dans_la_liste_pour": ["4"]
+					},
+					"justification": "Plus large : en lecture numérique, le triple de 7 relève de la table de 3, 1re moitié de CM2-036 (donner un produit). Seulement si on garde la lecture numérique."
+				},
+				{
+					"mot": "prédécesseur, successeur (lecture numérique)",
+					"point_propose": null,
+					"justification": "Aucun point du parcours ne porte « nombre précédent / suivant » en tant que tel. Seulement si on garde la lecture numérique."
+				}
+			],
+			"a_trancher": true,
+			"lectures": [
+				"Lecture 1 (numérique, cibles actuelles) : double et moitié → CE2-022 rangs 1 et 2, carré → 5-029 ; triple → CM2-036 rang 1 (plus large) ; prédécesseur, successeur → aucun point.",
+				"Lecture 2 (littérale, recommandée : la ligne est dans la rubrique Calcul littéral) : 5-034 couvre les six mots ; CE2-022 et 5-029 deviennent discutables (doubles et carrés numériques)."
+			],
+			"explication": "Donner le double, le triple, la moitié, le prédécesseur, le successeur et le carré d'un nombre ; en 4e, le BO range cette ligne dans le calcul littéral (2n, 3n, n/2, n − 1, n + 1, n²). Aujourd'hui elle pointe vers des faits numériques (CE2-022, ses deux moitiés ; 5-029) ; il manque 5-034, qui nomme exactement ces mots."
+		},
+		{
+			"id": "l17",
+			"texte": "Placer / repérer un relatif sur une droite graduée ; coordonnées dans le plan",
+			"source": "4e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.459)",
+			"grades": ["4"],
+			"texte_bo": "Placer sur une droite graduée un point dont l'abscisse est un nombre relatif. Repérer un nombre relatif sur une droite graduée. Dans le plan muni d'un repère orthogonal : lire les coordonnées d'un point donné ; placer un point de coordonnées données.",
+			"refs_actuelles": [
+				{
+					"code": "5-016",
+					"libelle": "Lire l'abscisse d'un nombre relatif sur une droite graduée et placer un nombre relatif d'abscisse donnée.",
+					"scinde": true
+				},
+				{
+					"code": "5-047",
+					"libelle": "Dans le plan muni d'un repère orthogonal : lire les coordonnées d'un point donné ; placer un point de coordonnées données.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-016",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-016",
+							"rang": 1,
+							"libelle": "Lire l'abscisse d'un point sur une droite graduée (nombres relatifs)."
+						},
+						{
+							"code": "5-016",
+							"rang": 2,
+							"libelle": "Placer sur une droite graduée un point d'abscisse relative donnée."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "BO « placer … ; repérer … » : les deux"
+				},
+				{
+					"code": "5-047",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-047",
+							"rang": 1,
+							"libelle": "Lire les coordonnées d'un point dans un repère orthogonal."
+						},
+						{
+							"code": "5-047",
+							"rang": 2,
+							"libelle": "Placer un point de coordonnées données dans un repère orthogonal."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "BO « lire les coordonnées ; placer un point » : les deux"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Placer et repérer un relatif sur une droite graduée ; lire et placer un point dans un repère. 5-016 et 5-047 sont chacun scindés en lire / placer : les deux gestes sont nommés pour les deux."
+		},
+		{
+			"id": "l18",
+			"texte": "Reconnaitre un parallélogramme (définition, propriété, codages)",
+			"source": "4e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.465)",
+			"grades": ["4"],
+			"texte_bo": "Reconnaitre un parallélogramme à l'aide de sa définition ou d'une propriété caractéristique grâce aux codages.",
+			"refs_actuelles": [
+				{
+					"code": "5-070",
+					"libelle": "Utiliser une propriété caractéristique sur les diagonales ou les côtés pour construire des parallélogrammes ou donner la nature du quadrilatère.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-070",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-070",
+							"rang": 1,
+							"libelle": "Donner la nature d'un quadrilatère à l'aide d'une propriété de ses côtés ou de ses diagonales."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "BO 4e « reconnaitre un parallélogramme … grâce aux codages » : donner la nature"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "à l'aide de sa définition",
+					"point_propose": {
+						"code": "5-067",
+						"libelle": "Définir le parallélogramme.",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "« Définir le parallélogramme » : reconnaître par la définition (côtés opposés parallèles), exactement ce que la ligne nomme à côté de la propriété caractéristique. Point non scindé, absent de la liste de 4e."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Dire qu'un quadrilatère codé est un parallélogramme, par la définition ou par une propriété. 5-070 scindé en donner la nature / construire : rang 1. La définition n'a pas de référence : 5-067 proposé."
+		},
+		{
+			"id": "l19",
+			"texte": "Droites remarquables du triangle (médiatrices, médianes, hauteurs, bissectrices)",
+			"source": "4e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.467)",
+			"grades": ["4"],
+			"texte_bo": "Reconnaitre des droites remarquables, y compris dans les triangles particuliers (médiatrices, médianes, hauteurs, bissectrices).",
+			"refs_actuelles": [
+				{
+					"code": "5-062",
+					"libelle": "Définir et tracer les hauteurs dans un triangle.",
+					"scinde": true
+				},
+				{
+					"code": "5-064",
+					"libelle": "Définir et tracer les médianes dans un triangle.",
+					"scinde": true
+				},
+				{
+					"code": "6-165",
+					"libelle": "Connaître la définition de la médiatrice d'un segment",
+					"scinde": false
+				},
+				{
+					"code": "6-171",
+					"libelle": "Connaître la définition de la bissectrice d'un angle saillant",
+					"scinde": false
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-062",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-062",
+							"rang": 1,
+							"libelle": "Définir une hauteur d'un triangle (quel segment est la hauteur issue de A ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "BO 4e « reconnaitre des droites remarquables » : reconnaître (définir), pas tracer"
+				},
+				{
+					"code": "5-064",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-064",
+							"rang": 1,
+							"libelle": "Définir une médiane d'un triangle (quel segment est la médiane issue de A ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "BO 4e « reconnaitre des droites remarquables » : reconnaître (définir), pas tracer"
+				},
+				{
+					"code": "6-165",
+					"inchange": true
+				},
+				{
+					"code": "6-171",
+					"inchange": true
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "y compris dans les triangles particuliers (hauteurs, médianes)",
+					"point_propose": {
+						"code": "5-066",
+						"libelle": "Utiliser les propriétés des hauteurs et des médianes dans le cas de triangles particuliers.",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "« Utiliser les propriétés des hauteurs et des médianes dans le cas de triangles particuliers » : reconnaître que dans un triangle isocèle la médiane issue du sommet principal est aussi hauteur. Point non scindé ; le résumé du seed avait omis ce membre de phrase."
+				},
+				{
+					"mot": "y compris dans les triangles particuliers (médiatrices)",
+					"point_propose": {
+						"code": "5-060",
+						"libelle": "Connaitre les propriétés des médiatrices et du cercle circonscrit dans le cas de triangles particuliers.",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "« Connaitre les propriétés des médiatrices et du cercle circonscrit dans le cas de triangles particuliers ». Non scindé."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Reconnaître médiatrices, médianes, hauteurs et bissectrices, y compris dans les triangles particuliers. 5-062 et 5-064 sont scindés en définir / tracer : « reconnaître » = rang 1 ; 6-165 et 6-171 inchangés ; « triangles particuliers » n'a pas de référence (5-066, 5-060 proposés)."
+		},
+		{
+			"id": "l20",
+			"texte": "Moyenne d'un très petit nombre de valeurs",
+			"source": "4e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.468)",
+			"grades": ["4"],
+			"texte_bo": "Calculer une moyenne pour un très petit nombre de valeurs.",
+			"refs_actuelles": [
+				{
+					"code": "5-080",
+					"libelle": "Calculer et interpréter la moyenne simple d'une série de données.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-080",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-080",
+							"rang": 1,
+							"libelle": "Calculer la moyenne simple d'une série de données (12, 15, 9, 14 → ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "BO « calculer une moyenne » : calculer"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Calculer une moyenne de quelques valeurs. 5-080 scindé en calculer / interpréter : rang 1."
+		},
+		{
+			"id": "l21",
+			"texte": "Effectif manquant dans un tableau ; fréquence simple",
+			"source": "4e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.469)",
+			"grades": ["4"],
+			"texte_bo": "Calculer un effectif manquant dans un tableau pour un petit nombre de valeurs. Calculer une fréquence simple.",
+			"refs_actuelles": [
+				{
+					"code": "5-076",
+					"libelle": "Calculer des effectifs et des fréquences (exprimées sous forme décimale, fractionnaire ou de pourcentage).",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-076",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-076",
+							"rang": 1,
+							"libelle": "Calculer des effectifs à partir de données."
+						},
+						{
+							"code": "5-076",
+							"rang": 2,
+							"libelle": "Calculer une fréquence (sous forme décimale, fractionnaire ou de pourcentage)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "BO 4e « effectif manquant » ET « fréquence simple » : les deux"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Trouver un effectif manquant et calculer une fréquence. 5-076 scindé en effectifs / fréquence : les deux sont nommés."
+		},
+		{
+			"id": "l22",
+			"texte": "Dénominateur commun pour additionner, soustraire, comparer",
+			"source": "3e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.482)",
+			"grades": ["3"],
+			"texte_bo": "Trouver un dénominateur commun à deux fractions pour les additionner, les soustraire ou les comparer.",
+			"refs_actuelles": [
+				{
+					"code": "5-026",
+					"libelle": "Additionner et soustraire des fractions de dénominateurs quelconques.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-026",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-026",
+							"rang": 1,
+							"libelle": "Additionner des fractions de dénominateurs quelconques (2/3 + 1/4 = ?)."
+						},
+						{
+							"code": "5-026",
+							"rang": 2,
+							"libelle": "Soustraire des fractions de dénominateurs quelconques (2/3 − 1/4 = ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« dénominateur commun pour additionner, soustraire » : les deux"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "les comparer",
+					"point_propose": {
+						"code": "5-025",
+						"libelle": "Comparer des fractions.",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "« Comparer des fractions » (5e, non scindé) : la ligne nomme la comparaison au même titre que l'addition et la soustraction. Aucun point de 4e ne porte la comparaison. 5-025 absent de la liste de 3e."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Mettre deux fractions au même dénominateur pour les additionner, les soustraire ou les comparer. Additionner / soustraire → les deux moitiés de 5-026 ; « comparer » n'a pas de référence (5-025 proposé)."
+		},
+		{
+			"id": "l23",
+			"texte": "Critères de divisibilité par 2, 3, 5, 9",
+			"source": "3e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.483)",
+			"grades": ["3"],
+			"texte_bo": "Appliquer les critères de divisibilité par 2, 3, 5, 9.",
+			"refs_actuelles": [
+				{
+					"code": "5-010",
+					"libelle": "Connaitre les critères de divisibilité par 3 et par 9.",
+					"scinde": true
+				},
+				{
+					"code": "CM1-011",
+					"libelle": "Savoir reconnaître les multiples de 2, de 5 et de 10 à partir de leur écriture chiffrée",
+					"scinde": false
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-010",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-010",
+							"rang": 1,
+							"libelle": "Connaître le critère de divisibilité par 3 (4 518 est-il divisible par 3 ?)."
+						},
+						{
+							"code": "5-010",
+							"rang": 2,
+							"libelle": "Connaître le critère de divisibilité par 9 (4 518 est-il divisible par 9 ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "BO 3e « appliquer les critères de divisibilité par 2, 3, 5, 9 » : 3 et 9"
+				},
+				{
+					"code": "CM1-011",
+					"inchange": true
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Appliquer les critères de divisibilité par 2, 3, 5, 9. 2 et 5 → CM1-011 (inchangé) ; 3 et 9 → les deux moitiés de 5-010."
+		},
+		{
+			"id": "l24",
+			"texte": "Équations ax = c, x + b = c, ax + b = c",
+			"source": "3e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.484)",
+			"grades": ["3"],
+			"texte_bo": "Résoudre des équations du type ax = c, x + b = c, ax + b = c.",
+			"refs_actuelles": [
+				{
+					"code": "4-024",
+					"libelle": "Résoudre une équation du premier degré du type ax + b = c.",
+					"scinde": false
+				},
+				{
+					"code": "5-045",
+					"libelle": "Résoudre des équations du type ax = c ou x + b = c par des méthodes arithmétiques s'appuyant sur les opérations inverses.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "4-024",
+					"inchange": true
+				},
+				{
+					"code": "5-045",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-045",
+							"rang": 1,
+							"libelle": "Résoudre une équation du type x + b = c par l'opération inverse (x + 7 = 12 : x = 12 − 7)."
+						},
+						{
+							"code": "5-045",
+							"rang": 2,
+							"libelle": "Résoudre une équation du type ax = c par l'opération inverse (3x = 12 : x = 12 ÷ 3)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« équations ax = c et x + b = c » : les deux types"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Résoudre les trois types d'équations. ax + b = c → 4-024 (inchangé) ; x + b = c et ax = c → les deux moitiés de 5-045."
+		},
+		{
+			"id": "l25",
+			"texte": "Placer / repérer un relatif ; coordonnées dans le plan",
+			"source": "3e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.490)",
+			"grades": ["3"],
+			"texte_bo": "Placer sur une droite graduée un point dont l'abscisse est un nombre relatif. Repérer un nombre relatif sur une droite graduée. Dans le plan muni d'un repère orthogonal : lire les coordonnées d'un point donné ; placer un point de coordonnées données.",
+			"refs_actuelles": [
+				{
+					"code": "5-016",
+					"libelle": "Lire l'abscisse d'un nombre relatif sur une droite graduée et placer un nombre relatif d'abscisse donnée.",
+					"scinde": true
+				},
+				{
+					"code": "5-047",
+					"libelle": "Dans le plan muni d'un repère orthogonal : lire les coordonnées d'un point donné ; placer un point de coordonnées données.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-016",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-016",
+							"rang": 1,
+							"libelle": "Lire l'abscisse d'un point sur une droite graduée (nombres relatifs)."
+						},
+						{
+							"code": "5-016",
+							"rang": 2,
+							"libelle": "Placer sur une droite graduée un point d'abscisse relative donnée."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "BO « placer … ; repérer … » : les deux"
+				},
+				{
+					"code": "5-047",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-047",
+							"rang": 1,
+							"libelle": "Lire les coordonnées d'un point dans un repère orthogonal."
+						},
+						{
+							"code": "5-047",
+							"rang": 2,
+							"libelle": "Placer un point de coordonnées données dans un repère orthogonal."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "BO « lire les coordonnées ; placer un point » : les deux"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Même ligne qu'en 4e : lire et placer, sur la droite et dans le plan → les deux moitiés de 5-016 et de 5-047."
+		},
+		{
+			"id": "l26",
+			"texte": "Formules du volume d'une pyramide, d'un cône",
+			"source": "3e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.492)",
+			"grades": ["3"],
+			"texte_bo": "Connaitre et utiliser les formules du volume d'une pyramide ou d'un cône.",
+			"refs_actuelles": [
+				{
+					"code": "4-029",
+					"libelle": "Connaitre le volume de la pyramide et du cône de révolution.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "4-029",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "4-029",
+							"rang": 1,
+							"libelle": "Connaître le volume d'une pyramide (V = B × h / 3)."
+						},
+						{
+							"code": "4-029",
+							"rang": 2,
+							"libelle": "Connaître le volume d'un cône de révolution (V = π r² h / 3)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "BO 3e « formules du volume d'une pyramide ou d'un cône » : les deux solides"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Connaître et utiliser les formules du volume de la pyramide et du cône. 4-029 scindé par solide : les deux."
+		},
+		{
+			"id": "l27",
+			"texte": "Moyenne ; médiane d'une petite série ; étendue",
+			"source": "3e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.498)",
+			"grades": ["3"],
+			"texte_bo": "Calculer une moyenne. Donner une médiane pour une série comportant un petit nombre de valeurs. Calculer l'étendue d'une série.",
+			"refs_actuelles": [
+				{
+					"code": "5-080",
+					"libelle": "Calculer et interpréter la moyenne simple d'une série de données.",
+					"scinde": true
+				},
+				{
+					"code": "4-040",
+					"libelle": "Déterminer une médiane et l'interpréter dans le cas d'une série de petit effectif présentée sous forme de données brutes.",
+					"scinde": true
+				},
+				{
+					"code": "4-041",
+					"libelle": "Calculer et interpréter l'étendue d'une série présentée sous forme de données brutes, d'un tableau, d'un diagramme en barres, d'un diagramme circulaire.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-080",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-080",
+							"rang": 1,
+							"libelle": "Calculer la moyenne simple d'une série de données (12, 15, 9, 14 → ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "BO « calculer une moyenne » : calculer"
+				},
+				{
+					"code": "4-040",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "4-040",
+							"rang": 1,
+							"libelle": "Déterminer la médiane d'une série de petit effectif présentée sous forme de données brutes (3, 7, 8, 12, 15 → ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "BO 3e « donner une médiane pour une série comportant un petit nombre de valeurs » : déterminer"
+				},
+				{
+					"code": "4-041",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "4-041",
+							"rang": 1,
+							"libelle": "Calculer l'étendue d'une série présentée sous forme de données brutes, d'un tableau ou d'un diagramme."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "BO 3e « calculer l'étendue d'une série » : calculer"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"remarque_hors_scission": "Hors scission : « calculer une moyenne » en 3e vise 5-080 (moyenne simple, 5e) alors que 4-039 (moyenne pondérée, 4e) est plus récent ; la règle du plus récent pourrait le préférer.",
+			"explication": "Calculer une moyenne, donner une médiane, calculer une étendue. Les trois points sont scindés en calculer / interpréter : la ligne ne demande que le calcul, donc rang 1 partout."
+		},
+		{
+			"id": "l28",
+			"texte": "Augmentation/diminution en pourcentages, avec ou sans coefficient multiplicateur",
+			"source": "3e — BO cycle 4, rubrique Automatismes (seed-cycle4.md l.502)",
+			"grades": ["3"],
+			"texte_bo": "Appliquer, dans des cas simples, une augmentation ou une diminution exprimée en pourcentages, en utilisant ou non le coefficient multiplicateur.",
+			"refs_actuelles": [
+				{
+					"code": "4-057",
+					"libelle": "Rendre compte d'une augmentation ou une diminution exprimée en pourcentages au moyen d'un coefficient multiplicateur",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "4-057",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "4-057",
+							"rang": 1,
+							"libelle": "Traduire une augmentation de t % par un coefficient multiplicateur (+ 20 % → × 1,2)."
+						},
+						{
+							"code": "4-057",
+							"rang": 2,
+							"libelle": "Traduire une diminution de t % par un coefficient multiplicateur (− 20 % → × 0,8)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "BO 3e « une augmentation ou une diminution … avec ou sans coefficient » : les deux"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "ou non (sans coefficient multiplicateur)",
+					"point_propose": {
+						"code": "6-141",
+						"libelle": "Appliquer un pourcentage à une grandeur ou à un nombre",
+						"deja_dans_la_liste_pour": ["3"]
+					},
+					"justification": "Plus étroit que la ligne : « Appliquer un pourcentage à une grandeur » couvre le calcul de 20 % de 120, pas l'ajout ou le retrait qui suit. Déjà dans la liste de 3e (ligne « Pourcentage d'une quantité ») : aucune ligne nouvelle dans la table. Autres candidats : 4-056 « Calculer avec des pourcentages » (plus large) ; 3-036 (point de 3e même, lui aussi scindé en augmentation / diminution)."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Appliquer une hausse ou une baisse en pourcentage, avec ou sans coefficient multiplicateur. 4-057 est scindé en hausse / baisse : les deux. Le calcul « sans coefficient » n'a pas de point propre ; 6-141 le couvre en partie et figure déjà dans la liste."
+		},
+		{
+			"id": "l29",
+			"texte": "Conversions d'unités : longueurs, aires, volumes, contenances, durées, vitesses, masses",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.370)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "CM1-068",
+					"libelle": "Connaître les relations entre les unités de longueur",
+					"scinde": false
+				},
+				{
+					"code": "6-150",
+					"libelle": "Effectuer des conversions d'aire",
+					"scinde": false
+				},
+				{
+					"code": "5-051",
+					"libelle": "Connaitre et convertir des unités usuelles (volume et capacité).",
+					"scinde": true
+				},
+				{
+					"code": "CE2-052",
+					"libelle": "Connaitre et utiliser les unités litre, décilitre et centilitre et les symboles associés (L, dL et cL).",
+					"scinde": false
+				},
+				{
+					"code": "6-159",
+					"libelle": "Convertir des durées",
+					"scinde": false
+				},
+				{
+					"code": "4-052",
+					"libelle": "Utiliser des grandeurs quotients, avec ou sans unités.",
+					"scinde": false
+				},
+				{
+					"code": "CE2-047",
+					"libelle": "Connaitre les relations entre les unités de masse usuelles.",
+					"scinde": false
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "CM1-068",
+					"inchange": true
+				},
+				{
+					"code": "6-150",
+					"inchange": true
+				},
+				{
+					"code": "5-051",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-051",
+							"rang": 1,
+							"libelle": "Convertir des unités de volume (m³, dm³, cm³)."
+						},
+						{
+							"code": "5-051",
+							"rang": 2,
+							"libelle": "Convertir des unités de contenance et passer d'une unité de volume à une unité de contenance (1 L = 1 dm³)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« conversions … volumes, contenances » : les deux"
+				},
+				{
+					"code": "CE2-052",
+					"inchange": true
+				},
+				{
+					"code": "6-159",
+					"inchange": true
+				},
+				{
+					"code": "4-052",
+					"inchange": true
+				},
+				{
+					"code": "CE2-047",
+					"inchange": true
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"remarque_hors_scission": "Hors scission, règle du plus récent : masses → CE2-047, alors que CM1-077 « Connaître les relations entre les unités de masse » est plus récent ; contenances → CE2-052 (litre, dL, cL), alors que CM1-083 « Connaître les relations entre les unités de contenance » est plus récent (5-051 rang 2 porte aussi 1 L = 1 dm³).",
+			"explication": "Convertir longueurs, aires, volumes, contenances, durées, vitesses, masses. Seul 5-051 est scindé (volumes / contenances) : les deux moitiés, puisque volumes et contenances sont nommés."
+		},
+		{
+			"id": "l30",
+			"texte": "Développer, factoriser, réduire (identités (a±b)², (a+b)(a−b) ; factorisations ax²+bx, ax+bx)",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.372)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "3-016",
+					"libelle": "Manipuler les trois identités remarquables pour développer et factoriser : a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)² ; a² − b² = (a − b)(a + b).",
+					"scinde": true
+				},
+				{
+					"code": "4-022",
+					"libelle": "Connaitre et utiliser la distributivité simple pour développer une expression algébrique.",
+					"scinde": false
+				},
+				{
+					"code": "4-070",
+					"libelle": "Connaitre et utiliser la distributivité simple pour factoriser une expression algébrique.",
+					"scinde": false
+				},
+				{
+					"code": "5-039",
+					"libelle": "Réduire une expression littérale de la forme ax + b, où a et b sont des nombres décimaux.",
+					"scinde": false
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "3-016",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "3-016",
+							"rang": 1,
+							"libelle": "Développer avec les identités remarquables ((x + 3)² = ?)."
+						},
+						{
+							"code": "3-016",
+							"rang": 2,
+							"libelle": "Factoriser avec les identités remarquables (x² − 9 = ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« développer, factoriser » : les deux gestes sont nommés"
+				},
+				{
+					"code": "4-022",
+					"inchange": true
+				},
+				{
+					"code": "4-070",
+					"inchange": true
+				},
+				{
+					"code": "5-039",
+					"inchange": true
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Développer, factoriser, réduire, avec les identités remarquables. 3-016 scindé en développer / factoriser : les deux. 4-022, 4-070, 5-039 inchangés."
+		},
+		{
+			"id": "l31",
+			"texte": "Résoudre x² = a, ax + b = cx + d, a/x = b, une inéquation du premier degré",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.373)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "3-008",
+					"libelle": "Résoudre analytiquement des équations de la forme x² = a.",
+					"scinde": false
+				},
+				{
+					"code": "4-025",
+					"libelle": "Résoudre une équation du premier degré du type ax + b = cx + d.",
+					"scinde": false
+				},
+				{
+					"code": "3-014",
+					"libelle": "Résoudre analytiquement et graphiquement une inéquation du premier degré du type ax ⩾ b.",
+					"scinde": true
+				},
+				{
+					"code": "2-269",
+					"libelle": "Équation $\\tfrac{A(x)}{B(x)} = k$ (équation quotient), en lien avec l'ensemble de définition d'une expression",
+					"scinde": false
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "3-008",
+					"inchange": true
+				},
+				{
+					"code": "4-025",
+					"inchange": true
+				},
+				{
+					"code": "3-014",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "3-014",
+							"rang": 1,
+							"libelle": "Résoudre par le calcul une inéquation du premier degré du type ax ⩾ b (3x ⩾ 12)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« résoudre une inéquation du premier degré » parmi des résolutions algébriques : le calcul"
+				},
+				{
+					"code": "2-269",
+					"inchange": true
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "une inéquation du premier degré (au-delà de ax ⩾ b)",
+					"point_propose": {
+						"code": "2-280",
+						"libelle": "Donner l'ensemble des solutions d'une inéquation du premier degré du type $ax \\geqslant b$, $a + x \\geqslant b$, $ax + b \\geqslant cx + d$",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "3-014 ne porte que ax ⩾ b. 2-280 « Donner l'ensemble des solutions d'une inéquation du premier degré du type ax ⩾ b, a + x ⩾ b, ax + b ⩾ cx + d » couvre toute la forme nommée. Point de 2de : ce serait une auto-référence, comme 2-269 sur la même ligne ; la Tle techno vise déjà 2-280 pour la même ligne."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Résoudre x² = a, ax + b = cx + d, a/x = b et une inéquation du premier degré. 3-014 est scindé en calcul / graphique : la ligne est algébrique, donc rang 1. 3-014 ne couvre que ax ⩾ b : 2-280 couvrirait toutes les inéquations du premier degré."
+		},
+		{
+			"id": "l32",
+			"texte": "Passer d'une formulation additive (« augmenter de 5 % ») à une formulation multiplicative",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.378)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "4-057",
+					"libelle": "Rendre compte d'une augmentation ou une diminution exprimée en pourcentages au moyen d'un coefficient multiplicateur",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "4-057",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "4-057",
+							"rang": 1,
+							"libelle": "Traduire une augmentation de t % par un coefficient multiplicateur (+ 20 % → × 1,2)."
+						},
+						{
+							"code": "4-057",
+							"rang": 2,
+							"libelle": "Traduire une diminution de t % par un coefficient multiplicateur (− 20 % → × 0,8)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« augmenter de t % » → × : vaut pour hausse et baisse"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Passer de « augmenter (ou diminuer) de 5 % » à « multiplier par 1,05 (ou 0,95) ». Le BO de 2de cite la hausse et la baisse : les deux moitiés de 4-057."
+		},
+		{
+			"id": "l33",
+			"texte": "Reconnaitre l'expression d'une fonction linéaire, affine ; leur représentation est une droite",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.381)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "3-041",
+					"libelle": "Définir et utiliser les fonctions linéaires.",
+					"scinde": true
+				},
+				{
+					"code": "3-044",
+					"libelle": "Définir et utiliser les fonctions affines.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "3-041",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "3-041",
+							"rang": 1,
+							"libelle": "Reconnaître une fonction linéaire (expression ou droite passant par l'origine)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« reconnaitre l'expression … ; leur représentation est une droite » : reconnaître"
+				},
+				{
+					"code": "3-044",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "3-044",
+							"rang": 1,
+							"libelle": "Reconnaître une fonction affine (expression ou droite)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« reconnaitre l'expression … ; leur représentation est une droite » : reconnaître"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Reconnaître l'expression d'une fonction linéaire ou affine, et savoir que sa courbe est une droite. 3-041 et 3-044 sont scindés en reconnaître / utiliser : rang 1 pour les deux (leur libellé dit « expression ou droite »)."
+		},
+		{
+			"id": "l34",
+			"texte": "Sur une droite graduée, repérer ou placer un point d'abscisse un relatif",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.382)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "5-016",
+					"libelle": "Lire l'abscisse d'un nombre relatif sur une droite graduée et placer un nombre relatif d'abscisse donnée.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-016",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-016",
+							"rang": 1,
+							"libelle": "Lire l'abscisse d'un point sur une droite graduée (nombres relatifs)."
+						},
+						{
+							"code": "5-016",
+							"rang": 2,
+							"libelle": "Placer sur une droite graduée un point d'abscisse relative donnée."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« repérer ou placer » : lire et placer"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Repérer ou placer un relatif sur une droite graduée : les deux moitiés de 5-016 (lire, placer)."
+		},
+		{
+			"id": "l35",
+			"texte": "Dans un repère orthogonal, lire ou placer les coordonnées d'un point",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.383)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "5-047",
+					"libelle": "Dans le plan muni d'un repère orthogonal : lire les coordonnées d'un point donné ; placer un point de coordonnées données.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-047",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-047",
+							"rang": 1,
+							"libelle": "Lire les coordonnées d'un point dans un repère orthogonal."
+						},
+						{
+							"code": "5-047",
+							"rang": 2,
+							"libelle": "Placer un point de coordonnées données dans un repère orthogonal."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« lire ou placer les coordonnées » : les deux"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Lire ou placer un point dans un repère : les deux moitiés de 5-047."
+		},
+		{
+			"id": "l36",
+			"texte": "Calculer périmètres (polygone, cercle), aires (rectangle, triangle, disque), volumes (pavé, prisme, cylindre, pyramide, cône, boule)",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.384)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "6-144",
+					"libelle": "Calculer le périmètre d'un carré",
+					"scinde": false
+				},
+				{
+					"code": "6-199",
+					"libelle": "Calculer le périmètre d'un rectangle",
+					"scinde": false
+				},
+				{
+					"code": "6-147",
+					"libelle": "Calculer le périmètre d'un disque",
+					"scinde": false
+				},
+				{
+					"code": "6-152",
+					"libelle": "Calculer l'aire d'un carré",
+					"scinde": false
+				},
+				{
+					"code": "6-201",
+					"libelle": "Calculer l'aire d'un rectangle",
+					"scinde": false
+				},
+				{
+					"code": "5-061",
+					"libelle": "Calculer l'aire d'un triangle.",
+					"scinde": false
+				},
+				{
+					"code": "5-052",
+					"libelle": "Calculer l'aire du disque.",
+					"scinde": false
+				},
+				{
+					"code": "5-050",
+					"libelle": "Calculer le volume du cube, du pavé droit.",
+					"scinde": false
+				},
+				{
+					"code": "5-108",
+					"libelle": "Calculer le volume du prisme droit.",
+					"scinde": false
+				},
+				{
+					"code": "5-053",
+					"libelle": "Calculer le volume du cylindre de révolution.",
+					"scinde": false
+				},
+				{
+					"code": "4-029",
+					"libelle": "Connaitre le volume de la pyramide et du cône de révolution.",
+					"scinde": true
+				},
+				{
+					"code": "3-021",
+					"libelle": "Connaitre et utiliser la formule du volume d'une boule de rayon donné.",
+					"scinde": false
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "6-144",
+					"inchange": true
+				},
+				{
+					"code": "6-199",
+					"inchange": true
+				},
+				{
+					"code": "6-147",
+					"inchange": true
+				},
+				{
+					"code": "6-152",
+					"inchange": true
+				},
+				{
+					"code": "6-201",
+					"inchange": true
+				},
+				{
+					"code": "5-061",
+					"inchange": true
+				},
+				{
+					"code": "5-052",
+					"inchange": true
+				},
+				{
+					"code": "5-050",
+					"inchange": true
+				},
+				{
+					"code": "5-108",
+					"inchange": true
+				},
+				{
+					"code": "5-053",
+					"inchange": true
+				},
+				{
+					"code": "4-029",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "4-029",
+							"rang": 1,
+							"libelle": "Connaître le volume d'une pyramide (V = B × h / 3)."
+						},
+						{
+							"code": "4-029",
+							"rang": 2,
+							"libelle": "Connaître le volume d'un cône de révolution (V = π r² h / 3)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "la ligne liste « pyramide, cône » : les deux solides"
+				},
+				{
+					"code": "3-021",
+					"inchange": true
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "périmètre d'un polygone (autre que carré et rectangle)",
+					"point_propose": {
+						"code": "CM1-075",
+						"libelle": "Résoudre des problèmes mettant en jeu les longueurs des côtés d'un polygone et son périmètre",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "Plus large : « Résoudre des problèmes mettant en jeu les longueurs des côtés d'un polygone et son périmètre » ; c'est le seul point qui calcule le périmètre d'un polygone quelconque (CE2-044 et CM1-074 le mesurent à la règle). Les cibles actuelles 6-144 et 6-199 ne portent que le carré et le rectangle."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Calculer périmètres, aires et volumes des figures et solides usuels. Seul 4-029 est scindé (pyramide / cône) : les deux, la ligne cite les deux solides. Le périmètre d'un polygone quelconque n'a pas de référence exacte."
+		},
+		{
+			"id": "l37",
+			"texte": "Application simple des théorèmes de Pythagore et de Thalès",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.385)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "4-034",
+					"libelle": "Connaitre le théorème de Pythagore.",
+					"scinde": false
+				},
+				{
+					"code": "3-022",
+					"libelle": "Connaitre et appliquer le théorème de Thalès (configurations des triangles emboités et configuration dite du papillon).",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "4-034",
+					"inchange": true
+				},
+				{
+					"code": "3-022",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "3-022",
+							"rang": 3,
+							"libelle": "Appliquer le théorème de Thalès pour calculer une longueur (AM = 3, AB = 5, BC = 7 : calcule MN)."
+						}
+					],
+					"reco_verif": "3",
+					"decision": "reco verif reprise",
+					"justification": "« application simple » du théorème : calculer une longueur"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": true,
+			"lectures": [
+				"Lecture 1 (reco) : « application simple » = calculer une longueur → rang 3 seul (le rang 3 suppose les deux autres).",
+				"Lecture 2 : appliquer, c'est aussi écrire l'égalité des rapports → rangs 2 et 3."
+			],
+			"explication": "Appliquer simplement Pythagore et Thalès. 4-034 (Pythagore) inchangé ; 3-022 est scindé en trois (reconnaître la configuration, écrire les rapports, calculer) : la reco garde « calculer une longueur »."
+		},
+		{
+			"id": "l38",
+			"texte": "Lignes trigonométriques dans le triangle rectangle : cosinus, sinus, tangente",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.386)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "3-023",
+					"libelle": "Connaitre et utiliser les lignes trigonométriques dans le triangle rectangle : cosinus, sinus, tangente.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "3-023",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "3-023",
+							"rang": 1,
+							"libelle": "Connaître les lignes trigonométriques dans le triangle rectangle : écrire cosinus, sinus et tangente d'un angle (cos(B) = … / …)."
+						},
+						{
+							"code": "3-023",
+							"rang": 2,
+							"libelle": "Utiliser les lignes trigonométriques pour calculer une longueur ou un angle dans un triangle rectangle (BC = 6, angle B = 40° : calcule AB)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "la ligne nomme les rapports sans geste ; en 2de on les écrit ET on les utilise pour calculer"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": true,
+			"lectures": [
+				"Lecture 1 (reco) : écrire les rapports ET s'en servir → les deux.",
+				"Lecture 2 : en 2de on attend l'usage pour calculer → rang 2 seul."
+			],
+			"explication": "Cosinus, sinus, tangente dans le triangle rectangle. La ligne nomme les rapports sans verbe ; 3-023 scindé en connaître / utiliser : la reco garde les deux."
+		},
+		{
+			"id": "l39",
+			"texte": "Lire et commenter des graphiques usuels (barres, circulaire, courbe, nuage)",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.387)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "5-077",
+					"libelle": "Lire et interpréter des informations présentées sous forme de graphiques.",
+					"scinde": true
+				},
+				{
+					"code": "5-110",
+					"libelle": "Lire et interpréter des informations présentées sous forme de diagrammes en barres.",
+					"scinde": true
+				},
+				{
+					"code": "5-111",
+					"libelle": "Lire et interpréter des informations présentées sous forme de diagrammes circulaires.",
+					"scinde": true
+				},
+				{
+					"code": "5-096",
+					"libelle": "Lire et interpréter un graphique cartésien donné par une courbe ou un nuage de points.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-077",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-077",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un graphique (quelle est la valeur en 2020 ?)."
+						},
+						{
+							"code": "5-077",
+							"rang": 2,
+							"libelle": "Interpréter les données d'un graphique (entre quelles années la valeur a-t-elle le plus augmenté ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« lire ET commenter » : lire et interpréter"
+				},
+				{
+					"code": "5-110",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-110",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme en barres (combien d'élèves ont 12 ans ?)."
+						},
+						{
+							"code": "5-110",
+							"rang": 2,
+							"libelle": "Interpréter les données d'un diagramme en barres (quel âge est le plus fréquent ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« lire ET commenter » : lire et interpréter"
+				},
+				{
+					"code": "5-111",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-111",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme circulaire (quelle part des élèves vient à vélo ?)."
+						},
+						{
+							"code": "5-111",
+							"rang": 2,
+							"libelle": "Interpréter les données d'un diagramme circulaire (quel moyen de transport est le plus utilisé ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« lire ET commenter » : lire et interpréter"
+				},
+				{
+					"code": "5-096",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-096",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un graphique cartésien, courbe ou nuage de points (quelle est l'ordonnée du point d'abscisse 2 ?)."
+						},
+						{
+							"code": "5-096",
+							"rang": 2,
+							"libelle": "Interpréter les données d'un graphique cartésien, courbe ou nuage de points (pour quelles valeurs la grandeur dépasse-t-elle 10 ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« lire ET commenter » : lire et interpréter"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": true,
+			"lectures": [
+				"Lecture 1 (recommandée) : la ligne de 2de est reprise telle quelle en 1re et en Tle comp./spé (le BO de 1re dit « s'ajoute la liste de seconde ») → ces grades gardent aussi « interpréter ». Comme la table a pour clé (point, grade), les rangs 1 seuls des lignes propres de 1re n'y changent alors rien.",
+				"Lecture 2 : en 1re et Tle, seules les lignes propres comptent → ces grades ne visent que « lire » ; seul le grade 2 garde les deux."
+			],
+			"explication": "Lire et commenter des graphiques usuels. Les quatre points sont scindés en lire / interpréter ; « commenter » = interpréter, donc les deux. La question ouverte porte sur les grades qui héritent de la ligne."
+		},
+		{
+			"id": "l40",
+			"texte": "Calculer et interpréter moyenne, médiane, quartiles selon la présentation des données",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.388)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "4-039",
+					"libelle": "Calculer une moyenne pondérée dans le cas d'une série discrète de petits effectifs présentée sous forme de données brutes, d'un tableau ou d'un diagramme en barres.",
+					"scinde": false
+				},
+				{
+					"code": "4-040",
+					"libelle": "Déterminer une médiane et l'interpréter dans le cas d'une série de petit effectif présentée sous forme de données brutes.",
+					"scinde": true
+				},
+				{
+					"code": "3-029",
+					"libelle": "Donner les quartiles d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres.",
+					"scinde": false
+				},
+				{
+					"code": "3-056",
+					"libelle": "Donner la médiane d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres.",
+					"scinde": false
+				},
+				{
+					"code": "2-380",
+					"libelle": "Pour une série regroupée en classes, calculer la moyenne à partir de la moyenne et des effectifs de chaque classe",
+					"scinde": false
+				},
+				{
+					"code": "2-381",
+					"libelle": "Pour une série regroupée en classes, déterminer la classe médiane et estimer la médiane dans le cas d'une répartition uniforme",
+					"scinde": false
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "4-039",
+					"inchange": true
+				},
+				{
+					"code": "4-040",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "4-040",
+							"rang": 1,
+							"libelle": "Déterminer la médiane d'une série de petit effectif présentée sous forme de données brutes (3, 7, 8, 12, 15 → ?)."
+						},
+						{
+							"code": "4-040",
+							"rang": 2,
+							"libelle": "Interpréter la médiane d'une série de petit effectif (que dire des valeurs si la médiane vaut 8 ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« calculer et interpréter » : déterminer ET interpréter"
+				},
+				{
+					"code": "3-029",
+					"inchange": true
+				},
+				{
+					"code": "3-056",
+					"inchange": true
+				},
+				{
+					"code": "2-380",
+					"inchange": true
+				},
+				{
+					"code": "2-381",
+					"inchange": true
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "interpréter (la moyenne)",
+					"point_propose": {
+						"code": "5-080",
+						"rang": 2,
+						"libelle": "Interpréter la moyenne simple d'une série de données (une moyenne de 12 veut-elle dire que chacun a 12 ?).",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "« Interpréter la moyenne simple d'une série de données » : 4-039 (moyenne pondérée) ne porte que le calcul ; l'interprétation de la moyenne n'existe que dans la 2e moitié de 5-080. Absent de la liste de 2de."
+				},
+				{
+					"mot": "interpréter (les quartiles)",
+					"point_propose": null,
+					"justification": "Aucun point ne porte l'interprétation des quartiles : 3-029 « Donner les quartiles » ne fait que les déterminer ; 3-030 rang 2 (lire une boîte à moustaches) est voisin, pas équivalent ; 2-382 compare deux séries, plus large."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Calculer et interpréter moyenne, médiane, quartiles. 4-040 est scindé en déterminer / interpréter : les deux. Interpréter la moyenne n'est visé par aucun point aujourd'hui (5-080 rang 2 proposé) ; interpréter les quartiles n'a pas de point."
+		},
+		{
+			"id": "l41",
+			"texte": "Comparer des distributions à l'aide de boites à moustaches",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.389)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "3-030",
+					"libelle": "Construire et utiliser des boites à moustache pour représenter les valeurs de position d'une série statistique.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "3-030",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "3-030",
+							"rang": 2,
+							"libelle": "Lire une boîte à moustaches (médiane, quartiles, étendue)."
+						}
+					],
+					"reco_verif": "2",
+					"decision": "reco verif reprise",
+					"justification": "« comparer des distributions à l'aide de boites » : lire et exploiter une boîte donnée"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "comparer des distributions",
+					"point_propose": {
+						"code": "2-382",
+						"libelle": "Décrire les différences entre deux séries statistiques, en s'appuyant sur des indicateurs ou couples d'indicateurs (moyenne–écart type, médiane–écart interquartile) ou sur des représentations graphiques données",
+						"deja_dans_la_liste_pour": ["1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"]
+					},
+					"justification": "Plus large : « Décrire les différences entre deux séries statistiques, en s'appuyant sur des indicateurs … ou sur des représentations graphiques données ». C'est le seul point qui compare deux séries ; il est de 2de (auto-référence, comme 2-380/2-381 sur la ligne voisine) et déjà dans les listes de 1re."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Comparer deux séries à l'aide de leurs boîtes à moustaches. 3-030 est scindé en construire / lire : la boîte est donnée, donc rang 2. Le geste « comparer » n'a pas de référence (2-382 proposé)."
+		},
+		{
+			"id": "l42",
+			"texte": "Calculer la probabilité de l'évènement contraire",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.391)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "4-048",
+					"libelle": "Calculer la probabilité d'un évènement et de l'évènement contraire.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "4-048",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "4-048",
+							"rang": 2,
+							"libelle": "Calculer la probabilité de l'évènement contraire (P(non A) = 1 − P(A))."
+						}
+					],
+					"reco_verif": "2",
+					"decision": "reco verif reprise",
+					"justification": "« probabilité de l'évènement contraire » : la 2e moitié"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Calculer la probabilité de l'évènement contraire. 4-048 scindé en évènement / évènement contraire : rang 2."
+		},
+		{
+			"id": "l43",
+			"texte": "Probabilité d'un évènement comme somme des probabilités des issues",
+			"source": "2de — BO de seconde, partie Automatismes (seed-2de.md l.392)",
+			"grades": ["2", "1_GEN", "1_SPE", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "4-048",
+					"libelle": "Calculer la probabilité d'un évènement et de l'évènement contraire.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "4-048",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "4-048",
+							"rang": 1,
+							"libelle": "Calculer la probabilité d'un évènement."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« probabilité d'un évènement comme somme des probabilités des issues » : la 1re moitié"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Calculer la probabilité d'un évènement en additionnant celles de ses issues. 4-048 rang 1 (probabilité d'un évènement)."
+		},
+		{
+			"id": "l44",
+			"texte": "Développer, factoriser, réduire une expression algébrique simple",
+			"source": "1re — partie Automatismes, mot pour mot en 1re spé, 1re ens. sci. et 1re techno (seed-1spe.md l.400, seed-1gen.md, seed-1techno.md)",
+			"grades": ["1_SPE", "1_GEN", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "3-016",
+					"libelle": "Manipuler les trois identités remarquables pour développer et factoriser : a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)² ; a² − b² = (a − b)(a + b).",
+					"scinde": true
+				},
+				{
+					"code": "4-022",
+					"libelle": "Connaitre et utiliser la distributivité simple pour développer une expression algébrique.",
+					"scinde": false
+				},
+				{
+					"code": "4-070",
+					"libelle": "Connaitre et utiliser la distributivité simple pour factoriser une expression algébrique.",
+					"scinde": false
+				},
+				{
+					"code": "5-039",
+					"libelle": "Réduire une expression littérale de la forme ax + b, où a et b sont des nombres décimaux.",
+					"scinde": false
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "3-016",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "3-016",
+							"rang": 1,
+							"libelle": "Développer avec les identités remarquables ((x + 3)² = ?)."
+						},
+						{
+							"code": "3-016",
+							"rang": 2,
+							"libelle": "Factoriser avec les identités remarquables (x² − 9 = ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« développer, factoriser » : les deux gestes sont nommés"
+				},
+				{
+					"code": "4-022",
+					"inchange": true
+				},
+				{
+					"code": "4-070",
+					"inchange": true
+				},
+				{
+					"code": "5-039",
+					"inchange": true
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Développer, factoriser, réduire une expression simple. 3-016 : les deux moitiés (développer, factoriser)."
+		},
+		{
+			"id": "l45",
+			"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+			"source": "1re — partie Automatismes, mot pour mot en 1re spé, 1re ens. sci. et 1re techno (seed-1spe.md l.406, seed-1gen.md, seed-1techno.md)",
+			"grades": ["1_SPE", "1_GEN", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "5-077",
+					"libelle": "Lire et interpréter des informations présentées sous forme de graphiques.",
+					"scinde": true
+				},
+				{
+					"code": "5-110",
+					"libelle": "Lire et interpréter des informations présentées sous forme de diagrammes en barres.",
+					"scinde": true
+				},
+				{
+					"code": "5-111",
+					"libelle": "Lire et interpréter des informations présentées sous forme de diagrammes circulaires.",
+					"scinde": true
+				},
+				{
+					"code": "2-372",
+					"libelle": "Représentation graphique : histogramme, polygone des fréquences cumulées",
+					"scinde": false
+				},
+				{
+					"code": "3-030",
+					"libelle": "Construire et utiliser des boites à moustache pour représenter les valeurs de position d'une série statistique.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-077",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-077",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un graphique (quelle est la valeur en 2020 ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "5-110",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-110",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme en barres (combien d'élèves ont 12 ans ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "5-111",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-111",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme circulaire (quelle part des élèves vient à vélo ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "2-372",
+					"inchange": true
+				},
+				{
+					"code": "3-030",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "3-030",
+							"rang": 2,
+							"libelle": "Lire une boîte à moustaches (médiane, quartiles, étendue)."
+						}
+					],
+					"reco_verif": "2",
+					"decision": "reco verif reprise",
+					"justification": "« lire … une boite » : lire, pas construire"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"remarque_hors_scission": "Pour 1_GEN, 1_SPE, 1_TECHNO, T_COMP, T_SPE, les rangs 2 de 5-077, 5-110, 5-111 arrivent quand même par la ligne de 2de « Lire et commenter » si la lecture 1 de celle-ci est retenue.",
+			"explication": "Lire graphiques, histogrammes, diagrammes et boîtes. « Lire » = rang 1 de 5-077, 5-110, 5-111 ; pour la boîte à moustaches, lire = rang 2 de 3-030. 2-372 (histogramme) inchangé."
+		},
+		{
+			"id": "l46",
+			"texte": "Passer du graphique aux données et vice-versa",
+			"source": "1re — partie Automatismes, mot pour mot en 1re spé, 1re ens. sci. et 1re techno (seed-1spe.md l.407, seed-1gen.md, seed-1techno.md)",
+			"grades": ["1_SPE", "1_GEN", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "5-077",
+					"libelle": "Lire et interpréter des informations présentées sous forme de graphiques.",
+					"scinde": true
+				},
+				{
+					"code": "5-110",
+					"libelle": "Lire et interpréter des informations présentées sous forme de diagrammes en barres.",
+					"scinde": true
+				},
+				{
+					"code": "5-111",
+					"libelle": "Lire et interpréter des informations présentées sous forme de diagrammes circulaires.",
+					"scinde": true
+				},
+				{
+					"code": "5-096",
+					"libelle": "Lire et interpréter un graphique cartésien donné par une courbe ou un nuage de points.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-077",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-077",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un graphique (quelle est la valeur en 2020 ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "5-110",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-110",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme en barres (combien d'élèves ont 12 ans ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "5-111",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-111",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme circulaire (quelle part des élèves vient à vélo ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "5-096",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-096",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un graphique cartésien, courbe ou nuage de points (quelle est l'ordonnée du point d'abscisse 2 ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "et vice-versa (des données au graphique)",
+					"point_propose": [
+						{
+							"code": "5-112",
+							"libelle": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un diagramme en barres.",
+							"deja_dans_la_liste_pour": []
+						},
+						{
+							"code": "5-113",
+							"libelle": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un diagramme circulaire.",
+							"deja_dans_la_liste_pour": []
+						},
+						{
+							"code": "5-114",
+							"libelle": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un graphique cartésien.",
+							"deja_dans_la_liste_pour": []
+						}
+					],
+					"justification": "« Représenter … des données sous la forme d'un diagramme en barres / d'un diagramme circulaire / d'un graphique cartésien » (5e, non scindés) : passer des données au graphique, c'est construire le graphique. Aucun n'est dans les listes de lycée."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Passer du graphique aux données (lire) et des données au graphique (construire). Le premier sens → rang 1 des quatre points de lecture ; le « vice-versa » n'a aucune référence : 5-112, 5-113, 5-114 proposés."
+		},
+		{
+			"id": "l47",
+			"texte": "Calculer et interpréter des indicateurs statistiques",
+			"source": "1re — partie Automatismes, mot pour mot en 1re spé, 1re ens. sci. et 1re techno (seed-1spe.md l.408, seed-1gen.md, seed-1techno.md)",
+			"grades": ["1_SPE", "1_GEN", "1_TECHNO", "T_COMP", "T_SPE"],
+			"refs_actuelles": [
+				{
+					"code": "2-382",
+					"libelle": "Décrire les différences entre deux séries statistiques, en s'appuyant sur des indicateurs ou couples d'indicateurs (moyenne–écart type, médiane–écart interquartile) ou sur des représentations graphiques données",
+					"scinde": false
+				},
+				{
+					"code": "2-370",
+					"libelle": "Indicateurs de dispersion : écart type",
+					"scinde": false
+				},
+				{
+					"code": "3-029",
+					"libelle": "Donner les quartiles d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres.",
+					"scinde": false
+				},
+				{
+					"code": "3-056",
+					"libelle": "Donner la médiane d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres.",
+					"scinde": false
+				},
+				{
+					"code": "4-039",
+					"libelle": "Calculer une moyenne pondérée dans le cas d'une série discrète de petits effectifs présentée sous forme de données brutes, d'un tableau ou d'un diagramme en barres.",
+					"scinde": false
+				},
+				{
+					"code": "4-040",
+					"libelle": "Déterminer une médiane et l'interpréter dans le cas d'une série de petit effectif présentée sous forme de données brutes.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "2-382",
+					"inchange": true
+				},
+				{
+					"code": "2-370",
+					"inchange": true
+				},
+				{
+					"code": "3-029",
+					"inchange": true
+				},
+				{
+					"code": "3-056",
+					"inchange": true
+				},
+				{
+					"code": "4-039",
+					"inchange": true
+				},
+				{
+					"code": "4-040",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "4-040",
+							"rang": 1,
+							"libelle": "Déterminer la médiane d'une série de petit effectif présentée sous forme de données brutes (3, 7, 8, 12, 15 → ?)."
+						},
+						{
+							"code": "4-040",
+							"rang": 2,
+							"libelle": "Interpréter la médiane d'une série de petit effectif (que dire des valeurs si la médiane vaut 8 ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« calculer et interpréter » : déterminer ET interpréter"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "interpréter (la moyenne)",
+					"point_propose": {
+						"code": "5-080",
+						"rang": 2,
+						"libelle": "Interpréter la moyenne simple d'une série de données (une moyenne de 12 veut-elle dire que chacun a 12 ?).",
+						"deja_dans_la_liste_pour": []
+					},
+					"justification": "Même raison que sur la ligne de 2de : 4-039 ne porte que le calcul ; l'interprétation de la moyenne est la 2e moitié de 5-080."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Calculer et interpréter des indicateurs statistiques. 4-040 : les deux moitiés (déterminer, interpréter la médiane). Interpréter la moyenne n'a pas de référence (5-080 rang 2 proposé)."
+		},
+		{
+			"id": "l48",
+			"texte": "Passer d'une formulation additive à une formulation multiplicative",
+			"source": "Tle techno — partie Automatismes du BO de Tle (seed-ttechno.md l.87)",
+			"grades": ["T_TECHNO"],
+			"refs_actuelles": [
+				{
+					"code": "4-057",
+					"libelle": "Rendre compte d'une augmentation ou une diminution exprimée en pourcentages au moyen d'un coefficient multiplicateur",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "4-057",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "4-057",
+							"rang": 1,
+							"libelle": "Traduire une augmentation de t % par un coefficient multiplicateur (+ 20 % → × 1,2)."
+						},
+						{
+							"code": "4-057",
+							"rang": 2,
+							"libelle": "Traduire une diminution de t % par un coefficient multiplicateur (− 20 % → × 0,8)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« augmenter de t % » → × : vaut pour hausse et baisse"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Passer d'une formulation additive à une formulation multiplicative (hausse et baisse) : les deux moitiés de 4-057."
+		},
+		{
+			"id": "l49",
+			"texte": "Effectuer des conversions d'unités",
+			"source": "Tle techno — partie Automatismes du BO de Tle (seed-ttechno.md l.98)",
+			"grades": ["T_TECHNO"],
+			"refs_actuelles": [
+				{
+					"code": "CM1-068",
+					"libelle": "Connaître les relations entre les unités de longueur",
+					"scinde": false
+				},
+				{
+					"code": "6-150",
+					"libelle": "Effectuer des conversions d'aire",
+					"scinde": false
+				},
+				{
+					"code": "5-051",
+					"libelle": "Connaitre et convertir des unités usuelles (volume et capacité).",
+					"scinde": true
+				},
+				{
+					"code": "CE2-052",
+					"libelle": "Connaitre et utiliser les unités litre, décilitre et centilitre et les symboles associés (L, dL et cL).",
+					"scinde": false
+				},
+				{
+					"code": "6-159",
+					"libelle": "Convertir des durées",
+					"scinde": false
+				},
+				{
+					"code": "4-052",
+					"libelle": "Utiliser des grandeurs quotients, avec ou sans unités.",
+					"scinde": false
+				},
+				{
+					"code": "CE2-047",
+					"libelle": "Connaitre les relations entre les unités de masse usuelles.",
+					"scinde": false
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "CM1-068",
+					"inchange": true
+				},
+				{
+					"code": "6-150",
+					"inchange": true
+				},
+				{
+					"code": "5-051",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-051",
+							"rang": 1,
+							"libelle": "Convertir des unités de volume (m³, dm³, cm³)."
+						},
+						{
+							"code": "5-051",
+							"rang": 2,
+							"libelle": "Convertir des unités de contenance et passer d'une unité de volume à une unité de contenance (1 L = 1 dm³)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« effectuer des conversions d'unités » : les deux"
+				},
+				{
+					"code": "CE2-052",
+					"inchange": true
+				},
+				{
+					"code": "6-159",
+					"inchange": true
+				},
+				{
+					"code": "4-052",
+					"inchange": true
+				},
+				{
+					"code": "CE2-047",
+					"inchange": true
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"remarque_hors_scission": "Mêmes cibles que la 2de ; même remarque hors scission sur CE2-047 → CM1-077 et CE2-052 → CM1-083.",
+			"explication": "Effectuer des conversions d'unités : 5-051, les deux moitiés (volumes, contenances)."
+		},
+		{
+			"id": "l50",
+			"texte": "Développer, factoriser, réduire une expression algébrique simple",
+			"source": "Tle techno — partie Automatismes du BO de Tle (seed-ttechno.md l.103)",
+			"grades": ["T_TECHNO"],
+			"refs_actuelles": [
+				{
+					"code": "3-016",
+					"libelle": "Manipuler les trois identités remarquables pour développer et factoriser : a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)² ; a² − b² = (a − b)(a + b).",
+					"scinde": true
+				},
+				{
+					"code": "4-022",
+					"libelle": "Connaitre et utiliser la distributivité simple pour développer une expression algébrique.",
+					"scinde": false
+				},
+				{
+					"code": "4-070",
+					"libelle": "Connaitre et utiliser la distributivité simple pour factoriser une expression algébrique.",
+					"scinde": false
+				},
+				{
+					"code": "5-039",
+					"libelle": "Réduire une expression littérale de la forme ax + b, où a et b sont des nombres décimaux.",
+					"scinde": false
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "3-016",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "3-016",
+							"rang": 1,
+							"libelle": "Développer avec les identités remarquables ((x + 3)² = ?)."
+						},
+						{
+							"code": "3-016",
+							"rang": 2,
+							"libelle": "Factoriser avec les identités remarquables (x² − 9 = ?)."
+						}
+					],
+					"reco_verif": "les deux",
+					"decision": "reco verif reprise",
+					"justification": "« développer, factoriser » : les deux gestes sont nommés"
+				},
+				{
+					"code": "4-022",
+					"inchange": true
+				},
+				{
+					"code": "4-070",
+					"inchange": true
+				},
+				{
+					"code": "5-039",
+					"inchange": true
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"explication": "Développer, factoriser, réduire : 3-016, les deux moitiés."
+		},
+		{
+			"id": "l51",
+			"texte": "Lire un graphique, un histogramme, un diagramme en barres ou circulaire, en boite…",
+			"source": "Tle techno — partie Automatismes du BO de Tle (seed-ttechno.md l.115)",
+			"grades": ["T_TECHNO"],
+			"refs_actuelles": [
+				{
+					"code": "5-077",
+					"libelle": "Lire et interpréter des informations présentées sous forme de graphiques.",
+					"scinde": true
+				},
+				{
+					"code": "5-110",
+					"libelle": "Lire et interpréter des informations présentées sous forme de diagrammes en barres.",
+					"scinde": true
+				},
+				{
+					"code": "5-111",
+					"libelle": "Lire et interpréter des informations présentées sous forme de diagrammes circulaires.",
+					"scinde": true
+				},
+				{
+					"code": "2-372",
+					"libelle": "Représentation graphique : histogramme, polygone des fréquences cumulées",
+					"scinde": false
+				},
+				{
+					"code": "3-030",
+					"libelle": "Construire et utiliser des boites à moustache pour représenter les valeurs de position d'une série statistique.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-077",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-077",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un graphique (quelle est la valeur en 2020 ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "5-110",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-110",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme en barres (combien d'élèves ont 12 ans ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "5-111",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-111",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme circulaire (quelle part des élèves vient à vélo ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "2-372",
+					"inchange": true
+				},
+				{
+					"code": "3-030",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "3-030",
+							"rang": 2,
+							"libelle": "Lire une boîte à moustaches (médiane, quartiles, étendue)."
+						}
+					],
+					"reco_verif": "2",
+					"decision": "reco verif reprise",
+					"justification": "« lire … une boite » : lire, pas construire"
+				}
+			],
+			"mots_sans_ref": [],
+			"a_trancher": false,
+			"remarque_hors_scission": "La Tle techno n'hérite d'aucune liste : ici les rangs 1 seuls s'appliquent vraiment (pas de ligne « Lire et commenter » pour apporter les rangs 2).",
+			"explication": "Lire graphiques, diagrammes, boîtes : rang 1 des trois points de lecture, rang 2 (lire) de 3-030."
+		},
+		{
+			"id": "l52",
+			"texte": "Passer du graphique aux données et vice versa",
+			"source": "Tle techno — partie Automatismes du BO de Tle (seed-ttechno.md l.116)",
+			"grades": ["T_TECHNO"],
+			"refs_actuelles": [
+				{
+					"code": "5-077",
+					"libelle": "Lire et interpréter des informations présentées sous forme de graphiques.",
+					"scinde": true
+				},
+				{
+					"code": "5-110",
+					"libelle": "Lire et interpréter des informations présentées sous forme de diagrammes en barres.",
+					"scinde": true
+				},
+				{
+					"code": "5-111",
+					"libelle": "Lire et interpréter des informations présentées sous forme de diagrammes circulaires.",
+					"scinde": true
+				},
+				{
+					"code": "5-096",
+					"libelle": "Lire et interpréter un graphique cartésien donné par une courbe ou un nuage de points.",
+					"scinde": true
+				}
+			],
+			"refs_apres": [
+				{
+					"code": "5-077",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-077",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un graphique (quelle est la valeur en 2020 ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "5-110",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-110",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme en barres (combien d'élèves ont 12 ans ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "5-111",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-111",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un diagramme circulaire (quelle part des élèves vient à vélo ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				},
+				{
+					"code": "5-096",
+					"inchange": false,
+					"cibles": [
+						{
+							"code": "5-096",
+							"rang": 1,
+							"libelle": "Lire une donnée sur un graphique cartésien, courbe ou nuage de points (quelle est l'ordonnée du point d'abscisse 2 ?)."
+						}
+					],
+					"reco_verif": "origine",
+					"decision": "reco verif reprise",
+					"justification": "« lire un graphique » / « passer du graphique aux données » : lire"
+				}
+			],
+			"mots_sans_ref": [
+				{
+					"mot": "et vice versa (des données au graphique)",
+					"point_propose": [
+						{
+							"code": "5-112",
+							"libelle": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un diagramme en barres.",
+							"deja_dans_la_liste_pour": []
+						},
+						{
+							"code": "5-113",
+							"libelle": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un diagramme circulaire.",
+							"deja_dans_la_liste_pour": []
+						},
+						{
+							"code": "5-114",
+							"libelle": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un graphique cartésien.",
+							"deja_dans_la_liste_pour": []
+						}
+					],
+					"justification": "Comme en 1re : construire un diagramme en barres, circulaire ou cartésien à partir des données."
+				}
+			],
+			"a_trancher": false,
+			"explication": "Passer du graphique aux données et inversement. Lire → rang 1 des quatre points ; le sens inverse (construire) n'a pas de référence : 5-112, 5-113, 5-114 proposés."
+		}
+	]
+}
