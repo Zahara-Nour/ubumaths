@@ -203,16 +203,17 @@ export function readSequenceDisplayPatch(
 // Points et courbes de la figure (lot 4b de la refonte)
 // =============================================================================
 
-/** Le trait d'une courbe de la figure : couleur, style, épaisseur. */
-export const strokeDisplaySchema = curveDisplaySchema.pick({
-	color: true,
-	lineStyle: true,
-	lineWidth: true
-});
+/**
+ * Le trait d'une courbe de la figure : style, épaisseur, et la couleur si
+ * l'élève en a choisi une (sinon celle de la figure, revue de #1504).
+ */
+export const strokeDisplaySchema = curveDisplaySchema
+	.pick({ lineStyle: true, lineWidth: true })
+	.extend({ color: z.enum(CURVE_COLORS).optional() });
 
-/** Couleur, taille et étiquette d'un point. */
+/** Taille et étiquette d'un point, et sa couleur si l'élève en a choisi une. */
 export const pointDisplaySchema = z.object({
-	color: z.enum(CURVE_COLORS),
+	color: z.enum(CURVE_COLORS).optional(),
 	size: z.enum(POINT_SIZES),
 	showLabel: z.boolean()
 });
@@ -225,19 +226,17 @@ export const pointDisplaySchema = z.object({
 const strokePatchSchema = strokeDisplaySchema.partial().strict();
 const pointPatchSchema = pointDisplaySchema.partial().strict();
 
-/** Le trait d'une courbe qu'on règle pour la première fois : sa couleur suit la règle du grapheur. */
-export function newStrokeDisplay(
-	others: readonly Pick<CurveDisplay, 'color' | 'lineStyle'>[]
-): StrokeDisplay {
-	const slot = getNextSlot(others);
-	return { color: slot.color, lineStyle: 'solid', lineWidth: DEFAULT_LINE_WIDTH };
+/**
+ * Le trait d'une courbe pas encore réglée : celui que la figure dessine. Sans
+ * couleur — un réglage partiel (l'épaisseur) n'en impose aucune (revue de #1504).
+ */
+export function defaultStrokeDisplay(): StrokeDisplay {
+	return { lineStyle: 'solid', lineWidth: DEFAULT_LINE_WIDTH };
 }
 
-/** Un point qu'on règle pour la première fois : taille moyenne, nom affiché. */
-export function newPointDisplay(
-	others: readonly Pick<CurveDisplay, 'color' | 'lineStyle'>[]
-): PointDisplay {
-	return { color: getNextSlot(others).color, size: 'medium', showLabel: true };
+/** Un point pas encore réglé : taille moyenne, nom affiché, sans couleur imposée. */
+export function defaultPointDisplay(): PointDisplay {
+	return { size: 'medium', showLabel: true };
 }
 
 /**
@@ -270,9 +269,10 @@ export function readFigureDisplayPatch(
 export function plainFigureDisplay(
 	display: PointDisplay | StrokeDisplay
 ): PointDisplay | StrokeDisplay {
+	const color = display.color === undefined ? {} : { color: display.color };
 	return 'size' in display
-		? { color: display.color, size: display.size, showLabel: display.showLabel }
-		: { color: display.color, lineStyle: display.lineStyle, lineWidth: display.lineWidth };
+		? { ...color, size: display.size, showLabel: display.showLabel }
+		: { ...color, lineStyle: display.lineStyle, lineWidth: display.lineWidth };
 }
 
 /** Une copie faite de valeurs ordinaires (clonable). */

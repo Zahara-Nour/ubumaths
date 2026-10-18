@@ -75,17 +75,46 @@ describe('régler un point et une courbe', () => {
 		expect(displayOf(atelier, 'A')).toEqual({ color: 'curve-3', size: 'medium', showLabel: true });
 	});
 
-	it('une courbe reçoit sa couleur et son trait', () => {
+	it('une courbe reçoit son trait, sans couleur imposée (revue de #1504)', () => {
 		const atelier = figure();
 
 		atelier.setFigureDisplay('d', { lineWidth: 4 });
 		atelier.setFigureDisplay('d', { lineStyle: 'dashed' });
 
-		expect(displayOf(atelier, 'd')).toEqual({
-			color: expect.any(String),
-			lineStyle: 'dashed',
-			lineWidth: 4
-		});
+		// Pas de couleur choisie : la figure garde la sienne
+		expect(displayOf(atelier, 'd')).toEqual({ lineStyle: 'dashed', lineWidth: 4 });
+	});
+
+	it('une taille réglée ne fixe pas la couleur du point', () => {
+		const atelier = figure();
+
+		atelier.setFigureDisplay('A', { size: 'large' });
+
+		expect(displayOf(atelier, 'A')).toEqual({ size: 'large', showLabel: true });
+	});
+
+	it('choisir ce qui est déjà le défaut ne range rien', () => {
+		const atelier = figure();
+		const before = atelier.revision;
+
+		expect(atelier.setFigureDisplay('A', { size: 'medium' })).toEqual({ ok: true });
+		expect(atelier.setFigureDisplay('A', { showLabel: true })).toEqual({ ok: true });
+		expect(atelier.setFigureDisplay('d', { lineWidth: 2 })).toEqual({ ok: true });
+		expect(atelier.setFigureDisplay('d', { lineStyle: 'solid' })).toEqual({ ok: true });
+
+		expect(displayOf(atelier, 'A')).toBeUndefined();
+		expect(displayOf(atelier, 'd')).toBeUndefined();
+		expect(atelier.revision).toBe(before);
+	});
+
+	it('re-choisir la valeur déjà réglée ne fait pas avancer la révision', () => {
+		const atelier = figure();
+		atelier.setFigureDisplay('A', { color: 'curve-2' });
+		const before = atelier.revision;
+
+		atelier.setFigureDisplay('A', { color: 'curve-2' });
+
+		expect(atelier.revision).toBe(before);
 	});
 
 	it('l’étiquette d’un point se masque', () => {
@@ -167,6 +196,23 @@ describe('réglages d’un point et d’une courbe — rangés avec l’objet', 
 		fresh.restore(loaded.state);
 		expect(displayOf(fresh, 'A')).toEqual(displayOf(atelier, 'A'));
 		expect(displayOf(fresh, 'd')).toEqual(displayOf(atelier, 'd'));
+	});
+
+	it('un réglage sans couleur est rangé et relu sans couleur', () => {
+		const atelier = figure();
+		atelier.setFigureDisplay('A', { size: 'small' });
+		atelier.setFigureDisplay('d', { lineWidth: 4 });
+		const storage = memoryStorage();
+
+		saveAtelier(storage, atelier.serialize());
+		const loaded = loadAtelier(storage);
+
+		expect(loaded.kind).toBe('loaded');
+		if (loaded.kind !== 'loaded') return;
+		const fresh = new Atelier();
+		fresh.restore(loaded.state);
+		expect(displayOf(fresh, 'A')).toEqual({ size: 'small', showLabel: true });
+		expect(displayOf(fresh, 'd')).toEqual({ lineStyle: 'solid', lineWidth: 4 });
 	});
 
 	it('un réglage abîmé est oublié, l’objet gardé', () => {
