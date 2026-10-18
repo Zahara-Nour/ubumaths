@@ -18,8 +18,11 @@ import type { Domain } from '$lib/mathAST/domain/types';
 // Types
 // =============================================================================
 
-/** Les quatre types du v1. La géométrie (v2) et Python (v3) en ajouteront. */
-export type ObjectKind = 'value' | 'function' | 'sequence' | 'list';
+/**
+ * Les quatre types du v1, et les deux de la géométrie (v2, lot 1 : `point`,
+ * `curve`). Python (v3) en ajoutera.
+ */
+export type ObjectKind = 'value' | 'function' | 'sequence' | 'list' | 'point' | 'curve';
 
 /**
  * L'état d'un objet. Décision D9.
@@ -249,7 +252,31 @@ export interface ListObject extends AtelierObjectBase {
 	readonly qualitativeBecause?: string;
 }
 
-export type AtelierObject = ValueObject | FunctionObject | SequenceObject | ListObject;
+/**
+ * Un point du plan (géométrie v2, décision G3) : `A = (1 ; 2)`.
+ *
+ * `definition` est le couple TEL QU'ÉCRIT, parenthèses comprises (`(a ; 2a)`) :
+ * ses coordonnées se calculent comme une valeur, exactes d'abord, et suivent
+ * les curseurs qu'elles citent. Pas de curseur à lui, pas de tracé dans Graphe
+ * (la vue Figure, PR 2, le montrera).
+ */
+export interface PointObject extends AtelierObjectBase {
+	readonly kind: 'point';
+}
+
+/**
+ * Une courbe définie par une équation (décision G0) : `d : y = 3x − 2`,
+ * `C : x² + y² = 1`, `v : x = 2`.
+ *
+ * `definition` est l'équation TELLE QU'ÉCRITE, sans le nom ni le « : » — jamais
+ * réécrite en forme réduite (C7). Une courbe ne va jamais dans Graphe (G0).
+ */
+export interface CurveObject extends AtelierObjectBase {
+	readonly kind: 'curve';
+}
+
+export type AtelierObject =
+	ValueObject | FunctionObject | SequenceObject | ListObject | PointObject | CurveObject;
 
 // =============================================================================
 // Constantes
@@ -274,6 +301,12 @@ export const MAX_DEFINITION_LENGTH = 4000;
 /** Longueur d'un ensemble écrit après « sur » (`interval.ts`) : saisie, sauvegarde, lien. */
 export const MAX_INTERVAL_LENGTH = 200;
 
+/**
+ * Plafond des objets de la figure, points et courbes réunis (M2, Q3 du
+ * 2026-10-18) : même esprit que D8, pour qu'un atelier tienne dans une URL.
+ */
+export const MAX_FIGURE_OBJECTS = 50;
+
 /** Liste qualitative (Q91) : modalités distinctes, longueur d'une modalité */
 export const MAX_CATEGORIES = 20;
 export const MAX_CATEGORY_LENGTH = 40;
@@ -296,6 +329,19 @@ export function isSequence(o: AtelierObject): o is SequenceObject {
 
 export function isList(o: AtelierObject): o is ListObject {
 	return o.kind === 'list';
+}
+
+export function isPoint(o: AtelierObject): o is PointObject {
+	return o.kind === 'point';
+}
+
+export function isCurve(o: AtelierObject): o is CurveObject {
+	return o.kind === 'curve';
+}
+
+/** Un objet de la figure : un point ou une courbe (plafond M2). */
+export function isFigureObject(o: AtelierObject): o is PointObject | CurveObject {
+	return o.kind === 'point' || o.kind === 'curve';
 }
 
 /** Une liste qualitative (Q84) : ses entrées sont des modalités, pas des nombres. */

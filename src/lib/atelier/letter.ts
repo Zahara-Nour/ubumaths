@@ -178,7 +178,9 @@ export function letterRejection(
 	if (!/^[A-Za-z]$/.test(letter)) {
 		return `La variable de ${functionName} doit être une seule lettre : écris par exemple ${functionName}(t) = …`;
 	}
-	if (RESERVED_NAMES.has(letter)) {
+	// `y` est réservé comme NOM (G5), pas comme variable : `f(y) = y^2` se range
+	// en x, et n'emprunte rien aux équations de courbe
+	if (RESERVED_NAMES.has(letter) && letter !== 'y') {
 		return `« ${letter} » est réservé (c'est une constante) : il ne peut pas être la variable de ${functionName}. Choisis une autre lettre, par exemple t.`;
 	}
 	if (letter === functionName) {

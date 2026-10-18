@@ -119,6 +119,26 @@ describe('recevoir', () => {
 		localStorage.removeItem(ATELIER_STORAGE_KEY);
 	});
 
+	it('Q2 : l’objet y de l’atelier personnel renommé en gardant : le message le dit', async () => {
+		localStorage.removeItem(ATELIER_STORAGE_KEY);
+		// Un atelier rangé en version 2, d'avant la géométrie
+		localStorage.setItem(
+			ATELIER_STORAGE_KEY,
+			JSON.stringify({ version: 2, objects: [{ name: 'y', kind: 'value', definition: '5' }] })
+		);
+		const { container } = await open({
+			received: { version: 3, objects: [{ name: 'b', kind: 'value', definition: '1' }] }
+		});
+
+		buttonNamed(container, 'Garder dans mon atelier')!.click();
+		await settle();
+
+		expect(container.querySelector('.retour-partage')?.textContent).toContain(
+			'« y » est désormais réservé aux équations : ton objet s’appelle maintenant a.'
+		);
+		localStorage.removeItem(ATELIER_STORAGE_KEY);
+	});
+
 	it('montre ce que la relecture a eu à dire', async () => {
 		const { container } = await open({ notice: 'Ce lien est incomplet ou abîmé.' });
 

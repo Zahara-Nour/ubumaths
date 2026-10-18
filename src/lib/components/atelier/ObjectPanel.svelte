@@ -33,7 +33,10 @@
 		{ kind: 'function', label: '+ Fonction' },
 		{ kind: 'value', label: '+ Valeur' },
 		{ kind: 'sequence', label: '+ Suite' },
-		{ kind: 'list', label: '+ Liste' }
+		{ kind: 'list', label: '+ Liste' },
+		// Géométrie (v2, lot 1) : la vue Figure les montrera (PR 2)
+		{ kind: 'point', label: '+ Point' },
+		{ kind: 'curve', label: '+ Courbe' }
 	];
 
 	function create(kind: ObjectKind) {

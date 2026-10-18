@@ -382,3 +382,19 @@ export function csvText(
 	);
 	return lines.map((line) => `${line}\r\n`).join('');
 }
+
+/**
+ * Un nom d'objet dans une formule : jamais une référence de cellule (`L2`,
+ * `L$2`), qu'une liste `L` renommée en `M` ne doit pas déplacer.
+ */
+const OBJECT_NAME_IN_FORMULA = /(?<![A-Za-z$])[A-Za-z]+(?:_\d+)?(?![A-Za-z\d$])/g;
+
+/**
+ * Une cellule après le renommage d'objets (`f` → `g`) : seule une FORMULE
+ * (`=f(3)`) est réécrite — une valeur tapée (`f`, une modalité) ne l'est jamais.
+ * Partagé par la fusion d'un atelier reçu et la migration des noms réservés.
+ */
+export function renameInFormula(text: string, renames: ReadonlyMap<string, string>): string {
+	if (!text.trimStart().startsWith('=')) return text;
+	return text.replace(OBJECT_NAME_IN_FORMULA, (name) => renames.get(name) ?? name);
+}

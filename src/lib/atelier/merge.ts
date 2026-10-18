@@ -13,7 +13,7 @@
  */
 
 import { Atelier, sequenceInputOf } from './atelier.svelte';
-import { loadAtelier, saveAtelier, type AtelierState } from './persistence';
+import { loadAtelier, migrateReservedNames, saveAtelier, type AtelierState } from './persistence';
 import { nextName, derivativeOf, displayName, reciprocalName, reciprocalOf } from './names';
 import {
 	cellTextFromStored,
@@ -22,9 +22,10 @@ import {
 	definitionFrom,
 	entriesOf,
 	readCellName,
+	renameInFormula,
 	type CellEdit
 } from './grid';
-import { isFormula, remapColumns } from './formula';
+import { remapColumns } from './formula';
 import { formatOf, normalizeFormats, type FormatZone } from './cell-format';
 
 // =============================================================================
@@ -44,17 +45,13 @@ export interface MergeReport {
 	 * leurs tirages sont donc refaits — à dire (phase 0 §4).
 	 */
 	readonly redrawn: boolean;
+	/**
+	 * Les objets de l'atelier PERSONNEL renommés à sa relecture (`y` devenu
+	 * réservé, Q2 de la géométrie) : enregistrés sous leur nouveau nom, donc à
+	 * dire — sans quoi l'élève retrouverait `a` à la place de son `y`, en silence.
+	 */
+	readonly migrated?: ReadonlyArray<{ readonly from: string; readonly to: string }>;
 }
-
-// =============================================================================
-// Constantes
-// =============================================================================
-
-/**
- * Un nom d'objet dans une formule : jamais une référence de cellule (`L2`,
- * `L$2`), qu'une liste `L` renommée en `M` ne doit pas déplacer.
- */
-const OBJECT_NAME = /(?<![A-Za-z$])[A-Za-z]+(?:_\d+)?(?![A-Za-z\d$])/g;
 
 // =============================================================================
 // Fonctions
@@ -136,7 +133,13 @@ export function mergeRefusal(atelier: Atelier, state: AtelierState): string | nu
 	return `Cet atelier a besoin de ${needed} colonnes libres dans ta grille, il en reste ${free} : rien n’a été versé.`;
 }
 
-export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
+export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport {
+	// Q2 de la géométrie : un objet `y` reçu (nom réservé depuis) prend une lettre
+	// libre ICI comme là-bas — sinon un second renommage laisserait ceux qui le
+	// citent sur l'ancien nom
+	const migration = migrateReservedNames(received, atelier.names);
+	const state = migration.state;
+	const migratedFrom = new Map(migration.renamed.map((r) => [r.to, r.from]));
 	const randomBefore = atelier.randomCells;
 	let added = 0;
 	// Chaque colonne reçue va dans une colonne libre, de gauche à droite (T7)
@@ -243,8 +246,9 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		if (column !== undefined) {
 			landedLists.push({ column, entries: entriesOf(input.definition) });
 		}
-		if (chosen === wanted) added++;
-		else renamed.push({ from: wanted, to: chosen });
+		const typed = migratedFrom.get(wanted) ?? wanted;
+		if (chosen === typed) added++;
+		else renamed.push({ from: typed, to: chosen });
 
 		// L'état d'affichage suit l'objet : un atelier reçu avec ses courbes
 		// tracées s'ouvre avec ses courbes tracées, et de leurs couleurs. Les
@@ -259,8 +263,7 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	// sous son nouveau nom, sinon `=f(3)` calculerait avec la f locale, sans rien
 	// dire (revue). Après la boucle : une liste peut arriver avant sa fonction.
 	const renames = new Map(renamed.map((r) => [r.from, r.to]));
-	const renameIn = (text: string) =>
-		!isFormula(text) ? text : text.replace(OBJECT_NAME, (name) => renames.get(name) ?? name);
+	const renameIn = (text: string) => renameInFormula(text, renames);
 	const cells: CellEdit[] = landedLists.flatMap(({ column, entries }) =>
 		entries.flatMap((text, i) => {
 			const after = renameIn(text);
@@ -330,7 +333,8 @@ export function keepReceived(
 ): { ok: true; report: MergeReport } | { ok: false; message: string } {
 	const personal = new Atelier();
 	const loaded = loadAtelier(storage);
-	if (loaded.kind === 'loaded') personal.restore(loaded.state);
+	let migrated: MergeReport['migrated'] = [];
+	if (loaded.kind === 'loaded') migrated = personal.restore(loaded.state).renamed;
 	else if (
 		loaded.kind === 'too-recent' ||
 		loaded.kind === 'corrupt' ||
@@ -348,5 +352,5 @@ export function keepReceived(
 	if (saved.kind !== 'saved') {
 		return { ok: false, message: 'Ton atelier n’a pas pu être enregistré : rien n’a été versé.' };
 	}
-	return { ok: true, report };
+	return { ok: true, report: migrated.length > 0 ? { ...report, migrated } : report };
 }

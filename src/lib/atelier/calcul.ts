@@ -39,6 +39,8 @@ import {
 } from './names';
 import {
 	astOf,
+	parseDefinition,
+	pointCoordinatesOf,
 	readingMode,
 	readNumber,
 	readListValue,
@@ -107,6 +109,15 @@ import {
 	plain
 } from './commands';
 import { renderResult } from './render';
+import {
+	POINT_TWO,
+	POINT_UNIT,
+	citesXOrY,
+	figureCitedMessage,
+	hasRelation,
+	looksLikePoint,
+	splitCoordinates
+} from './geometry';
 import { DEV_HELP_ARGUMENT, studentHelpText } from './help';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { tabulateCommand } from './tabulate';
@@ -499,8 +510,226 @@ function isNumberList(body: string): boolean {
 const KIND_WORDS: Readonly<Record<Exclude<ObjectKind, 'list'>, string>> = {
 	value: 'un nombre : supprime-le',
 	function: 'une fonction : supprime-la',
-	sequence: 'une suite : supprime-la'
+	sequence: 'une suite : supprime-la',
+	point: 'un point : supprime-le',
+	curve: 'une courbe : supprime-la'
 };
+
+/** Le type d'un objet, pour refuser de le changer (V62) : « « d » est déjà une valeur. » */
+const KIND_NAMES: Readonly<Record<ObjectKind, string>> = {
+	value: 'une valeur',
+	function: 'une fonction',
+	sequence: 'une suite',
+	list: 'une liste',
+	point: 'un point',
+	curve: 'une courbe'
+};
+
+function kindKeptRefusal(name: string, kind: ObjectKind): CalcResult {
+	return { kind: 'refus', message: `« ${name} » est déjà ${KIND_NAMES[kind]}.` };
+}
+
+// =============================================================================
+// Géométrie (v2, lot 1) : points et courbes
+// =============================================================================
+
+/**
+ * `d : y = 3x − 2` : un nom, « : » (`\colon` en LaTeX), puis le reste — qui
+ * n'est une courbe que s'il porte une relation (`a : b` reste la division, C15).
+ */
+const CURVE_DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?::|\\colon)\s*(.+)$/s;
+
+/**
+ * Créer — ou redéfinir — une courbe tapée dans Calcul (C1-C15), ou `null` si la
+ * saisie n'en a pas la forme (elle suit alors le chemin d'un calcul).
+ *
+ * ⚠️ Un refus de forme (C8-C11) ne crée rien : l'élève corrige sa ligne.
+ */
+function defineCurve(
+	session: CalcSession,
+	input: string,
+	provenance: Provenance
+): CalcResult | null {
+	const match = CURVE_DEFINITION.exec(input);
+	if (match === null) return null;
+	const [, name, typedBody] = match;
+	const body = typedBody.trim();
+	if (!hasRelation(body)) return null;
+	const { atelier } = session;
+	const existing = atelier.get(name);
+	const cites = equationCitesXOrY(atelier, body);
+	if (existing !== undefined && existing.kind !== 'curve') {
+		// `a : b = 2` avec deux valeurs reste une comparaison (C15) ; `d : y = 3x`
+		// sur une valeur d ne la change pas en courbe (C12, V62)
+		return cites ? kindKeptRefusal(name, existing.kind) : null;
+	}
+	// `x : 2 = 4` : un nom réservé, sans x ni y — un calcul, comme avant la géométrie
+	if (!cites && validateName(name, []) === 'reserved') return null;
+	const rejection = validateName(
+		name,
+		atelier.names.filter((n) => n !== name)
+	);
+	if (rejection !== null) {
+		return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
+	}
+	// Une courbe ne se restreint pas (seule une fonction se définit sur un intervalle)
+	if (splitInterval(body, readingMode(provenance)).written !== null) {
+		return { kind: 'refus', message: ONLY_FUNCTIONS };
+	}
+	const read = parseDefinition('curve', body, provenance, atelier.functionNames);
+	if (read.error !== undefined) return { kind: 'refus', message: read.error };
+	const done =
+		existing === undefined
+			? atelier.create({ kind: 'curve', name, definition: body }, provenance)
+			: atelier.update(name, body, provenance);
+	if (!done.ok) return { kind: 'refus', message: done.message };
+	return { kind: 'definition', name, object: atelier.get(name) ?? done.object };
+}
+
+/**
+ * Le corps cite-t-il x ou y ? Lu sur l'ARBRE quand il se lit (`2xy`, `axy`),
+ * sinon dans le texte (`y = 2x = 3`, que le parseur maison lit d'ailleurs).
+ */
+function equationCitesXOrY(atelier: Atelier, body: string): boolean {
+	const ast = astOf(body, 'text', atelier.functionNames);
+	if (ast === null) return citesXOrY(body);
+	const variables = getVariables(ast);
+	return variables.has('x') || variables.has('y');
+}
+
+/**
+ * Créer — ou redéfinir — un point tapé dans Calcul : `A = (1 ; 2)` (G3, P1-P8).
+ *
+ * Les refus de forme (P6, P7) et l'unité (P8) ne créent rien ; une coordonnée
+ * illisible crée le point en erreur, comme toute définition (§2 E1).
+ */
+function definePoint(
+	session: CalcSession,
+	name: string,
+	typedBody: string,
+	provenance: Provenance
+): CalcResult {
+	const { atelier } = session;
+	const body = typedBody.trim();
+	const existing = atelier.get(name);
+	if (existing !== undefined && existing.kind !== 'point') {
+		return kindKeptRefusal(name, existing.kind);
+	}
+	const split = splitCoordinates(body);
+	if (!split.ok) {
+		// P7 : trois nombres entre parenthèses, c'est peut-être une liste mal écrite
+		const list = bracketedListRefusal(name, body);
+		const message =
+			split.message === POINT_TWO && list !== null ? `${POINT_TWO} ${list}` : split.message;
+		return { kind: 'refus', message };
+	}
+	if (parseDefinition('point', body, provenance, atelier.functionNames).error === POINT_UNIT) {
+		return { kind: 'refus', message: POINT_UNIT };
+	}
+	if (existing === undefined) {
+		const rejection = validateName(name, atelier.names);
+		if (rejection !== null) {
+			return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
+		}
+	}
+	const done =
+		existing === undefined
+			? atelier.create({ kind: 'point', name, definition: body }, provenance)
+			: atelier.update(name, body, provenance);
+	if (!done.ok) return { kind: 'refus', message: done.message };
+	return { kind: 'definition', name, object: atelier.get(name) ?? done.object };
+}
+
+/** x écrit comme une lettre seule (pas celui de `max`). */
+const CITES_X = /(?<![A-Za-z\\])x(?![A-Za-z])/;
+
+/**
+ * Q1 (a) : `y = …` sans nom de courbe. `y` est réservé (G5) : le refus propose
+ * les deux écritures, avec des noms LIBRES et la saisie de l'élève.
+ */
+function reservedYDefinition(atelier: Atelier, typedBody: string): string {
+	const body = typedBody.trim();
+	const curveName = nextName('curve', atelier.names);
+	const ast = astOf(body, 'text', atelier.functionNames);
+	const degree = ast === null ? null : getPolynomialDegree(ast, 'x');
+	const shape = degree !== null && degree <= 1 ? 'une droite' : 'une courbe';
+	const asCurve = `pour ${shape}, nomme-la : ${curveName} : y = ${body}.`;
+	if (CITES_X.test(body)) {
+		return `Pour une fonction, écris ${nextName('function', atelier.names)}(x) = ${body} ; ${asCurve}`;
+	}
+	return `« y » est réservé aux équations. Pour une valeur, choisis une autre lettre : ${nextName('value', atelier.names)} = ${body} ; ${asCurve}`;
+}
+
+/** `A(1 ; 2)` : la notation des manuels, qui n'est pas acceptée au lot 1 (G3, P5). */
+const POINT_CALL = /^\s*([A-Za-z](?:_\d+)?)\s*\(([^()]*;[^()]*)\)\s*$/;
+
+function pointCallRefusal(atelier: Atelier, input: string): string | null {
+	const match = POINT_CALL.exec(input);
+	if (match === null) return null;
+	const called = atelier.get(match[1]);
+	if (called?.kind === 'function' || called?.kind === 'sequence') return null;
+	return `Pour définir un point, écris ${match[1]} = (${match[2].trim()}).`;
+}
+
+/**
+ * Une ligne qui nomme un point ou une courbe : `A` répond `A(1 ; 2)` (P4), `d`
+ * répond son équation ; un calcul qui en cite un est refusé (P9). `null` sinon.
+ */
+function figureLine(session: CalcSession, input: string): CalcResult | null {
+	const { atelier } = session;
+	const object = atelier.get(input.trim());
+	if (object !== undefined && (object.kind === 'point' || object.kind === 'curve')) {
+		if (object.status !== 'ok') {
+			return {
+				kind: 'refus',
+				message: object.message ?? `« ${object.name} » n’a pas encore de définition.`
+			};
+		}
+		return object.kind === 'point' ? pointLine(session, object) : curveLine(atelier, object);
+	}
+	const ast = astOf(input, 'text', atelier.functionNames);
+	if (ast === null) return null;
+	const cited = figureCitedMessage(atelier.objects, getVariables(ast));
+	return cited === null ? null : { kind: 'refus', message: cited };
+}
+
+/** `A(1 ; 2)` : chaque coordonnée calculée comme une ligne de Calcul, exacte d'abord (P3). */
+function pointLine(session: CalcSession, point: AtelierObject): CalcResult {
+	const shown = (pointCoordinatesOf(point.definition) ?? []).map((coordinate) =>
+		computeInput(session, coordinate, 'text')
+	);
+	const [x, y] = shown;
+	if (x?.kind !== 'calcul' || y?.kind !== 'calcul') {
+		const failed = shown.find((line) => line.kind === 'refus');
+		return {
+			kind: 'refus',
+			message:
+				failed?.kind === 'refus'
+					? failed.message
+					: `Les coordonnées de « ${point.name} » ne se calculent pas.`
+		};
+	}
+	return {
+		kind: 'calcul',
+		input: point.name,
+		output: `${point.name}(${x.output} ; ${y.output})`,
+		...(x.latex !== undefined &&
+			y.latex !== undefined && {
+				latex: `${latexName(point.name)}\\left(${x.latex};${y.latex}\\right)`
+			})
+	};
+}
+
+/** `d : y = 3x − 2` : l'équation telle qu'écrite (C7), jamais réécrite. */
+function curveLine(atelier: Atelier, curve: AtelierObject): CalcResult {
+	const ast = astOf(curve.definition, curve.provenance, atelier.functionNames);
+	return {
+		kind: 'calcul',
+		input: curve.name,
+		output: `${curve.name} : ${curve.definition}`,
+		...(ast !== null && { latex: `${latexName(curve.name)} : ${toLatex(ast)}` })
+	};
+}
 
 /**
  * `M = L`, `2L + 1` : une liste lue comme un nombre — la règle des cartes
@@ -1452,6 +1681,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	if (SIMULATIONS[known.name] === undefined) {
 		const broken = brokenObjectRefusal(session.atelier, typedArgument);
 		if (broken !== null) return { kind: 'refus', message: broken };
+		// P9 : `.dériver A` répondait `d/dA(A) = 1` — le refus d'un calcul. Lu dans
+		// le TEXTE : l'argument porte des mots-clés (`en x=1`, `; t`) qu'aucun
+		// parseur ne lit en entier
+		const figure = figureCitedMessage(
+			session.atelier.objects,
+			session.atelier.names.filter((n) => citesName(typedArgument, n))
+		);
+		if (figure !== null) return { kind: 'refus', message: figure };
 	}
 	const recurrence = session.atelier.objects.find(
 		(o) =>
@@ -3087,9 +3324,26 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 			: result;
 	}
 
+	// Géométrie : `d : y = 3x − 2` (G0, G5), avant d'y lire une division
+	const curve = defineCurve(session, input, provenance);
+	if (curve !== null) return curve;
+
 	const definition = DEFINITION.exec(input);
 	if (definition !== null) {
 		const [, name, parameter, typedBody] = definition;
+		const existingObject = session.atelier.get(name);
+		if (parameter === undefined) {
+			// Q1 (a) : `y` est réservé aux équations (G5) — sauf un couple, refusé comme tout nom réservé
+			if (name === 'y' && !looksLikePoint(typedBody)) {
+				return { kind: 'refus', message: reservedYDefinition(session.atelier, typedBody) };
+			}
+			// `A = (1 ; 2)` : un point (G3), plus le refus des couples (#983)
+			if (looksLikePoint(typedBody)) return definePoint(session, name, typedBody, provenance);
+			// Un point, une courbe gardent leur type (V62) : `A = 5` ne les change pas
+			if (existingObject?.kind === 'point' || existingObject?.kind === 'curve') {
+				return kindKeptRefusal(name, existingObject.kind);
+			}
+		}
 		// `f(x) = x^2 sur [0;+∞[` : l'ensemble est lu à part (`interval.ts`)
 		const { body, written } = splitInterval(typedBody, readingMode(provenance));
 		// Le type rangé ne change pas : `a = x^2 sur [0;1]` sur une valeur `a` perdait « sur » en silence
@@ -3132,6 +3386,13 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		return result;
 	}
 
+	// P5 : `A(1 ; 2)` — l'aide, au lieu de « Il manque « ) » »
+	const pointCall = pointCallRefusal(session.atelier, input);
+	if (pointCall !== null) return { kind: 'refus', message: pointCall };
+	// P4, P9 : `A` répond ses coordonnées, `A + 1` est refusé
+	const figure = figureLine(session, input);
+	if (figure !== null) return figure;
+
 	// V58 : un objet en erreur cité (`f(2)`, `f'(2)`, `a+1`) — le moteur ne le
 	// connaît pas et disait « Fonction inconnue : f — définis-la d'abord ».
 	// `g(x) = f⁻¹(x)` en erreur (f plus bijective) : la carte g porte la raison
@@ -3162,6 +3423,14 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// La règle de la virgule (décision de David, 2026-10-09) : `12,15,9`,
 	// `max(1,2)` et le couple `(1 ; 2)` sont refusés en français, plutôt que de
 	// montrer la réponse du moteur (« x\cdot .3 », une ligne jamais tapée)
+	// `(1 ; 2)` seul : un point à qui il manque un nom (G3) — un triplet, un
+	// couple dans un calcul gardent le refus des couples
+	if (looksLikePoint(input) && splitCoordinates(input).ok) {
+		return {
+			kind: 'refus',
+			message: `Pour définir un point, nomme-le : ${nextName('point', session.atelier.names)} = ${input.trim()}.`
+		};
+	}
 	const commaRefused = commaRefusal(withTerms.text, input, { couples: true });
 	if (commaRefused !== null) return { kind: 'refus', message: commaRefused };
 	const rank = decimalRankMessage(session.atelier, withTerms.text);

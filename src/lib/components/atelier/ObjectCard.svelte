@@ -11,7 +11,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { useAtelier } from '$lib/atelier/context';
 	import { isFunction, isSequence } from '$lib/atelier/types';
-	import { astOf } from '$lib/atelier/parse';
+	import { astOf, pointCoordinatesOf } from '$lib/atelier/parse';
 	import { toLatex } from '$lib/mathAST/latex-generator';
 	import { curveColorValue } from '$lib/grapheur/colors';
 	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
@@ -155,8 +155,25 @@
 		value: 'valeur',
 		function: 'fonction',
 		sequence: 'suite',
-		list: 'liste'
+		list: 'liste',
+		point: 'point',
+		curve: 'courbe'
 	};
+
+	/**
+	 * Le signe entre le nom et la définition d'un objet de la figure : la carte
+	 * se lit comme la saisie, « d : y = 3x − 2 », « A = (1 ; 2) » (G3, G5).
+	 */
+	const separator = $derived(object.kind === 'curve' ? ':' : object.kind === 'point' ? '=' : null);
+
+	/** Un point : ses deux coordonnées, chacune régénérée depuis son arbre. */
+	function pointLatex(o: AtelierObject): string | null {
+		const coordinates = pointCoordinatesOf(o.definition);
+		if (coordinates === null) return null;
+		const [x, y] = coordinates.map((c) => astOf(c, o.provenance ?? 'url', atelier.functionNames));
+		if (x === null || y === null) return null;
+		return `\\left(${toLatex(x)}\\,;\\,${toLatex(y)}\\right)`;
+	}
 
 	/** La fonction dont cette carte est la dérivée (`f′` → `f`), ou `null`. */
 	const derivative = $derived(derivativeOf(object.name));
@@ -174,6 +191,15 @@
 	 */
 	const rendered = $derived.by(() => {
 		if (object.definition.trim() === '' || object.kind === 'list') return null;
+		if (object.kind === 'point') {
+			const latex = pointLatex(object);
+			if (latex === null) return null;
+			const shownPoint = forMathlive(latex);
+			return {
+				markup: convertLatexToMarkup(shownPoint, { defaultMode: 'inline-math' }),
+				spoken: convertLatexToSpeakableText(shownPoint)
+			};
+		}
 		// La carte `f′` est définie par `f′(x)` : c'est sa FORMULE qu'on veut lire
 		// (`2x − 3`), recalculée depuis `f` à chaque modification — sur l'ARBRE,
 		// jamais relue depuis un texte (voir `derivativeAstOf`)
@@ -217,7 +243,11 @@
 	const editable = $derived(
 		derivative === null &&
 			reciprocal === null &&
-			(object.kind === 'function' || object.kind === 'value' || object.kind === 'sequence')
+			(object.kind === 'function' ||
+				object.kind === 'value' ||
+				object.kind === 'sequence' ||
+				object.kind === 'point' ||
+				object.kind === 'curve')
 	);
 
 	/** Ce que l'élève lit quand l'objet ne peut rien produire. */
@@ -246,6 +276,9 @@
 		{/if}
 		<button type="button" class="entete" onclick={handleHeaderClick}>
 			<span class="nom">{displayName(object.name)}</span>
+			{#if separator}
+				<span class="signe" aria-hidden="true">{separator}</span>
+			{/if}
 			<span class="definition">
 				{#if rendered}
 					<span aria-hidden="true">
@@ -564,6 +597,10 @@
 		font-style: italic;
 		font-weight: 600;
 		font-size: 1.0625rem;
+	}
+	.signe {
+		font-size: 0.875rem;
+		color: var(--color-muted-foreground);
 	}
 	.definition {
 		font-size: 0.875rem;

@@ -66,34 +66,35 @@ Ceux du code et de l'interface :
 
 ## Carte du code
 
-### Modèle — `src/lib/atelier/` (64 fichiers hors tests)
+### Modèle — `src/lib/atelier/` (65 fichiers hors tests)
 
-| Fichier                             | Rôle                                                                                                      |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `src/lib/atelier/types.ts`          | Les quatre types d'objets, `ObjectStatus`, `CurveDisplay`, `SequenceDisplay`, plafonds D8, gardes de type |
-| `src/lib/atelier/atelier.svelte.ts` | **La classe `Atelier`** : création, renommage, mise à jour, suppression, états, `serialize`/`restore`     |
-| `src/lib/atelier/formula.ts`        | Les formules de la grille : lecture des références (`ω_k`), ordre de calcul, cycles, repli ≈, refus       |
-| `src/lib/atelier/grid.ts`           | La grille de la vue Données : adresses (`B3`), entrées d'une colonne nommée, répartition P2, plafonds     |
-| `src/lib/atelier/grid-functions.ts` | Les fonctions du tableur (SOMME, ARRONDI…) : appels, plages, calcul en arbre équilibré, aide de la barre  |
-| `src/lib/atelier/cell-format.ts`    | La mise en forme des cases (reprise de V4) : zones, styles résolus, formats de nombre, rangement          |
-| `src/lib/atelier/cell-colors.ts`    | Les couleurs de la mise en forme : CSS du texte et du fond, réglages de contraste mesurés                 |
-| `src/lib/atelier/tabulate.ts`       | Tabuler une fonction dans la grille : le tableau en formules, ses refus, `.tabuler`, valeurs par défaut   |
-| `src/lib/atelier/names.ts`          | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)        |
-| `src/lib/atelier/parse.ts`          | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)     |
-| `src/lib/atelier/letter.ts`         | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                              |
-| `src/lib/atelier/interval.ts`       | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)          |
-| `src/lib/atelier/reciprocal.ts`     | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français     |
-| `src/lib/atelier/limit.ts`          | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule          |
-| `src/lib/atelier/limit-steps.ts`    | `.limite` : « Comment ? » (`limitSteps`), garde de concordance dans `limit-steps-check.ts`                |
-| `src/lib/atelier/constant.ts`       | La valeur d'une constante (curseurs, premier terme d'une suite)                                           |
-| `src/lib/atelier/list-cited.ts`     | Refus d'une liste citée comme un nombre (`listCitedMessage`)                                              |
-| `src/lib/atelier/actions.ts`        | Les actions d'une carte selon le type et l'état (`actionsFor`), listes partenaires                        |
-| `src/lib/atelier/context.ts`        | L'instance d'atelier passée par contexte (`provideAtelier`, `useAtelier`)                                 |
-| `src/lib/atelier/engine.ts`         | Remet `WebReplEngine` en accord avec les objets (`syncEngine`), expansion des noms dans une saisie        |
-| `src/lib/atelier/plot-sync.ts`      | Reporte les objets tracés vers le `GrapheurStore` (`syncPlots`), à sens unique                            |
-| `src/lib/atelier/display.ts`        | Schémas Zod des réglages de courbe et de suite (carte, sauvegarde, lien : une seule règle)                |
-| `src/lib/atelier/mathfield.ts`      | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                  |
-| `src/lib/atelier/paste.ts`          | Collage réécrit en LaTeX, annulable (`insertPasted`)                                                      |
+| Fichier                             | Rôle                                                                                                     |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `src/lib/atelier/types.ts`          | Les six types d'objets, `ObjectStatus`, `CurveDisplay`, `SequenceDisplay`, plafonds D8, gardes de type   |
+| `src/lib/atelier/geometry.ts`       | Points et courbes (v2) : couple découpé, forme d'une équation, messages, refus d'un point cité (P9)      |
+| `src/lib/atelier/atelier.svelte.ts` | **La classe `Atelier`** : création, renommage, mise à jour, suppression, états, `serialize`/`restore`    |
+| `src/lib/atelier/formula.ts`        | Les formules de la grille : lecture des références (`ω_k`), ordre de calcul, cycles, repli ≈, refus      |
+| `src/lib/atelier/grid.ts`           | La grille de la vue Données : adresses (`B3`), entrées d'une colonne nommée, répartition P2, plafonds    |
+| `src/lib/atelier/grid-functions.ts` | Les fonctions du tableur (SOMME, ARRONDI…) : appels, plages, calcul en arbre équilibré, aide de la barre |
+| `src/lib/atelier/cell-format.ts`    | La mise en forme des cases (reprise de V4) : zones, styles résolus, formats de nombre, rangement         |
+| `src/lib/atelier/cell-colors.ts`    | Les couleurs de la mise en forme : CSS du texte et du fond, réglages de contraste mesurés                |
+| `src/lib/atelier/tabulate.ts`       | Tabuler une fonction dans la grille : le tableau en formules, ses refus, `.tabuler`, valeurs par défaut  |
+| `src/lib/atelier/names.ts`          | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)       |
+| `src/lib/atelier/parse.ts`          | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)    |
+| `src/lib/atelier/letter.ts`         | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                             |
+| `src/lib/atelier/interval.ts`       | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)         |
+| `src/lib/atelier/reciprocal.ts`     | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français    |
+| `src/lib/atelier/limit.ts`          | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule         |
+| `src/lib/atelier/limit-steps.ts`    | `.limite` : « Comment ? » (`limitSteps`), garde de concordance dans `limit-steps-check.ts`               |
+| `src/lib/atelier/constant.ts`       | La valeur d'une constante (curseurs, premier terme d'une suite)                                          |
+| `src/lib/atelier/list-cited.ts`     | Refus d'une liste citée comme un nombre (`listCitedMessage`)                                             |
+| `src/lib/atelier/actions.ts`        | Les actions d'une carte selon le type et l'état (`actionsFor`), listes partenaires                       |
+| `src/lib/atelier/context.ts`        | L'instance d'atelier passée par contexte (`provideAtelier`, `useAtelier`)                                |
+| `src/lib/atelier/engine.ts`         | Remet `WebReplEngine` en accord avec les objets (`syncEngine`), expansion des noms dans une saisie       |
+| `src/lib/atelier/plot-sync.ts`      | Reporte les objets tracés vers le `GrapheurStore` (`syncPlots`), à sens unique                           |
+| `src/lib/atelier/display.ts`        | Schémas Zod des réglages de courbe et de suite (carte, sauvegarde, lien : une seule règle)               |
+| `src/lib/atelier/mathfield.ts`      | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                 |
+| `src/lib/atelier/paste.ts`          | Collage réécrit en LaTeX, annulable (`insertPasted`)                                                     |
 
 **Vue Calcul** (saisie, commandes, historique) :
 
@@ -179,15 +180,41 @@ cartes (décision G3).
 
 ### Objets
 
-`AtelierObject` = `ValueObject` | `FunctionObject` | `SequenceObject` | `ListObject`
-(`src/lib/atelier/types.ts`).
+`AtelierObject` = `ValueObject` | `FunctionObject` | `SequenceObject` | `ListObject` |
+`PointObject` | `CurveObject` (`src/lib/atelier/types.ts`). Les deux derniers sont ceux de la
+géométrie (v2, lot 1, PR 1 : le modèle, sans la vue Figure — phase 0
+[atelier-geometrie-phase0.md](../wip/atelier-geometrie-phase0.md)).
 
-| Type       | Exemple                    | Particularités                                                                                                                          |
-| ---------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`    | `a = 2`, `d = 12[km]`      | curseur (bornes `[-10 ; 10]` par défaut, D3) ; une grandeur à unité n'en a pas (D4)                                                     |
-| `function` | `f(x) = x^2`, `f(t) = t^2` | rangée **en x** ; `letter` garde la lettre de l'élève pour l'affichage ; `interval` l'ensemble écrit après « sur » ; `display` du tracé |
-| `sequence` | `u(n) = 2n+1`, `u = 2u+1`  | `mode` explicite / récurrence, `firstIndex`, `firstTerm` (nombre ou nom d'une valeur)                                                   |
-| `list`     | `L = 12 ; 15 ; 9`          | `values` numériques, ou `categories` (liste qualitative) ; `plottedWith` pour le nuage ; `column`, sa colonne dans la grille            |
+| Type       | Exemple                               | Particularités                                                                                                                                |
+| ---------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`    | `a = 2`, `d = 12[km]`                 | curseur (bornes `[-10 ; 10]` par défaut, D3) ; une grandeur à unité n'en a pas (D4)                                                           |
+| `function` | `f(x) = x^2`, `f(t) = t^2`            | rangée **en x** ; `letter` garde la lettre de l'élève pour l'affichage ; `interval` l'ensemble écrit après « sur » ; `display` du tracé       |
+| `sequence` | `u(n) = 2n+1`, `u = 2u+1`             | `mode` explicite / récurrence, `firstIndex`, `firstTerm` (nombre ou nom d'une valeur)                                                         |
+| `list`     | `L = 12 ; 15 ; 9`                     | `values` numériques, ou `categories` (liste qualitative) ; `plottedWith` pour le nuage ; `column`, sa colonne dans la grille                  |
+| `point`    | `A = (1 ; 2)`, `M = (a ; 2a)`         | `definition` = le couple tel qu'écrit, parenthèses comprises ; coordonnées calculées comme des valeurs, exactes d'abord ; ni curseur ni tracé |
+| `curve`    | `d : y = 3x - 2`, `C : x^2 + y^2 = 1` | `definition` = l'équation telle qu'écrite, sans le nom ni « : » (jamais réduite, C7) ; jamais dans Graphe (G0)                                |
+
+**Point et courbe** (géométrie v2, décisions G0-G7 et Q1-Q5 du 2026-10-18) : **la forme écrite
+donne le type** (G0) — `f(x) = 3x − 2` est une **fonction** (Graphe, dériver…), `d : y = 3x − 2`
+une **courbe** (la vue Figure, PR 2). Dans Calcul, `defineCurve` (`calcul.ts`) ne prend `<nom> :
+<reste>` pour une courbe que si le reste porte une relation (`hasRelation`) : `6 : 3` et `a : b`
+restent la division (C15) ; sur une valeur existante, `a : b = 2` reste une comparaison, `d : y =
+3x` est refusé (« « d » est déjà une valeur. », V62). La lecture (`parseCurve`, `parse.ts`) refuse
+une inégalité (C9), deux « = » (C10), une unité (C11, D4), une équation sans x ni y (C8) — dans
+Calcul ces refus ne créent rien. Un point se tape `A = (1 ; 2)` (G3) : `looksLikePoint` le trie
+(un « ; » de premier niveau, ou une virgule qui sépare : `(1, 2)` est refusé par P6, `(1,2)` reste
+le décimal 1,2 de #983) ; `parsePoint` lit chaque coordonnée comme une valeur (virgule décimale,
+fractions, P3), sans unité (P8), sans x ni y. `A(1 ; 2)` répond « Pour définir un point, écris
+A = (1 ; 2). » (P5). Taper `A` répond `A(1 ; 2)`, chaque coordonnée calculée comme une ligne de
+Calcul (`pointLine`) ; taper `d` répond son équation. Un point ou une courbe cité dans un calcul
+(`A + 1`, `2A`) ou une définition (`a = A + 1`) est refusé (« On ne calcule pas encore avec des
+points. », `figureCitedMessage`, P9), y compris en argument d'une commande de calcul (`.dériver A` répondait `d/dA(A) = 1` ; lu dans le texte par `citesName`, les commandes de données lisant des modalités ne sont pas touchées). `(1 ; 2)` tapé seul répond « Pour définir un point, nomme-le : A = (1 ; 2). » (nom libre) ; un triplet ou un couple dans un calcul (`(1;2)+(3;4)`) garde le refus des couples, et la carte d'une valeur aussi. Ils citent des valeurs et des fonctions comme tout objet :
+`M = (a ; 2a)` attend a avec l'offre de curseur (D9), `T : y = f'(2)(x − 2) + f(2)` suit f, et la
+suppression en cascade les emporte (M3). Ni le moteur (`syncEngine`) ni le grapheur ne les
+reçoivent ; `setPlotted` les ignore. Actions de carte : modifier (le champ, préfixe `d :`) et
+supprimer, rien d'autre au lot 1. Plafond `MAX_FIGURE_OBJECTS` (50, points et courbes, Q3). La
+**nature** d'une courbe (droite, cercle) et la courbe vide (C6) attendent la PR 2 :
+`geometry-core` ne l'expose pas encore hors de `courbe()`.
 
 **Quatre états** (D9) : `error` > `pending` > `incomplete` > `ok`. Un nom cité mais absent met
 l'objet **en attente** (`pending`, avec `missing`), pas en erreur ; l'attente se répare seule quand
@@ -207,7 +234,12 @@ une valeur, _Écris un de ses termes, comme u(2)…_ Les cartes `f′` et `f⁻�
 ⚠️ `referencesOf` lit tout nom indicé comme sa base (`a_1 x` attend `a`), défaut antérieur (V63).
 
 **Noms** (`src/lib/atelier/names.ts`) : une lettre latine, éventuellement indicée ; **un seul
-espace de noms** tous types confondus (D1). Les dérivées s'appellent `f′` (`derivativeName`,
+espace de noms** tous types confondus (D1). Réservés : `x`, `y`, `n`, `e`, `pi`, `i` — **`y` depuis
+la géométrie** (G5, 2026-10-18) : c'est la variable des équations de courbe. `y = 3x − 2` sans nom
+répond « Pour une fonction, écris f(x) = 3x − 2 ; pour une droite, nomme-la : d : y = 3x − 2. »
+(Q1 (a), noms libres proposés) ; `y` dans une fonction, une valeur ou une suite met la carte en
+erreur (« « y » est réservé aux équations de courbe… ») ; `f(y) = y^2` reste permis (une lettre de
+fonction, rangée en x). Lettres proposées aux points : A, B, C… ; aux courbes : d, C, D, T. Les dérivées s'appellent `f′` (`derivativeName`,
 `isDerivativeName`) ; la réciproque se range `f^-1` et s'affiche `f⁻¹` (`reciprocalName`,
 `reciprocalOf`) — une forme qu'aucun élève ne peut taper comme nom (`validateName` la refuse), donc
 sans collision possible ; elle n'est pas citable (absente de `functionNames`). Le nommage automatique évite les noms cités par la définition (#329).
@@ -1049,7 +1081,14 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   (`grid.cells`, sans « ; », triés un par un par
   `salvageGrid`, réunies par `salvageState`) ; une version 1 se relit, ses listes placées en A, B…
   dans l'ordre des cartes. Sans la version 2, un onglet resté sur l'ancien code relirait l'état en
-  jetant la grille, puis l'enregistrerait. Chaque issue est nommée (`LoadOutcome`,
+  jetant la grille, puis l'enregistrerait. **Version 3** (2026-10-18, géométrie) : les types
+  `point` et `curve`, et `y` réservé — `migrateReservedNames` renomme un objet `y` à la première
+  lettre libre de son type (ses cartes `y′`, `y⁻¹` avec lui), réécrit ce qui le cite (définitions
+  sauf celles des courbes, premier terme d'une suite, formules de la grille, `renameInFormula`) et
+  rend le renommage : `restore` le met dans son rapport (`renamed`), la session et `openLink` le
+  disent (« « y » est désormais réservé aux équations : ton objet s'appelle maintenant k. »), la
+  fusion le compte parmi les arrivants renommés en évitant aussi les noms de l'atelier qui reçoit. « Garder dans mon atelier » dit aussi le renommage d'un `y` de l'atelier personnel, relu à cette occasion (`MergeReport.migrated`, `ShareBar.svelte`).
+  Appliquée à toute relecture, quelle que soit la version. Chaque issue est nommée (`LoadOutcome`,
   `SaveOutcome` : stockage indisponible, quota, trop volumineux…).
 - **Session** (`session.ts`) : sauvegarde différée de 500 ms sur `revision`, écrite aussi au
   `pagehide` ; l'événement `storage` signale une écriture d'un autre onglet. Tout ce qui doit être
@@ -1595,6 +1634,7 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
    écrit ailleurs que dans l'`Atelier` (dans le grapheur, dans une carte) serait écrasé à la
    synchronisation suivante.
 2. **Ponts à sens unique** : atelier → moteur (`syncEngine`), atelier → grapheur (`syncPlots`).
+   Points et courbes n'entrent dans aucun des deux (la vue Figure aura le sien, PR 2).
 3. **Un seul espace de noms** (D1) ; jamais d'écrasement silencieux d'un nom (création, renommage,
    fusion d'un atelier reçu).
 4. **Tout contrôle sur une définition vit dans sa lecture** (`parseDefinition`), jamais dans
@@ -1607,7 +1647,8 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
    rangées (`loadCalcHistory`, formules par la liste blanche `isSafeLatex`), réglages
    (`curveDisplaySchema`).
 8. **Plafonds D8** : `MAX_LIST_VALUES` (200) par liste, `MAX_LISTS` (8) listes,
-   `MAX_DEFINITION_LENGTH` à la saisie — pour qu'un atelier tienne dans une URL. La grille :
+   `MAX_FIGURE_OBJECTS` (50 points et courbes, M2), `MAX_DEFINITION_LENGTH` à la saisie — pour
+   qu'un atelier tienne dans une URL. La grille :
    26 × 200, 200 caractères par cellule.
 9. **Visible et désactivé avec sa raison**, jamais caché : actions de carte et commandes.
 10. **On ne reparse jamais la sortie texte du moteur** (`render.ts`). Un **calcul** s'écrit depuis
@@ -1664,7 +1705,11 @@ vit dans l'`Atelier`, hors `serialize()` (comme `charts`) ; (2) l'ajouter au typ
 
 **Un type d'objet** — le plus coûteux : `ObjectKind` et l'union dans `types.ts`, lecture dans `parse.ts`, schéma de
 `persistence.ts` (et **incrémenter `ATELIER_STATE_VERSION`** si la forme rangée change), actions,
-carte, fusion. Prévu pour la v2 (géométrie) et la v3 (Python) ; aucune phase 0 n'existe.
+carte, fusion — et la migration si un nom devient réservé (`migrateReservedNames`). Fait pour la
+v2 (`point`, `curve`, 2026-10-18) : `types.ts`, `names.ts` (`PREFERRED_NAMES`), `parse.ts`
+(`parseDefinition`), `atelier.svelte.ts` (`build`, `#cited`, plafond), `actions.ts` (`BY_KIND`),
+`calcul.ts`, `persistence.ts`, `ObjectCard.svelte`, `ObjectPanel.svelte` ; les `Record` indexés
+par le type (`KIND_WORDS`, `KIND_NAMES`) sont signalés par le typecheck. Prévu pour la v3 (Python).
 
 ---
 
@@ -1729,7 +1774,10 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 
 - `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
-- **v2** géométrie à la souris, **v3** Python : non commencées, sans phase 0 ;
+- **v2** géométrie : phase 0 du lot 1 validée le 2026-10-18 ; PR 1 (le modèle : points, courbes,
+  `y` réservé, version 3) faite, sans vue Figure — suivi :
+  [atelier-geometrie-progress.md](../wip/atelier-geometrie-progress.md). **v3** Python : non
+  commencée, sans phase 0 ;
 - tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1), collage /
   copie / CSV / titres (PR 2), annulation (PR 3a), appariement par ligne (PR 3b) — lot 1 complet ;
   à venir : les formules (lot 2) ;
