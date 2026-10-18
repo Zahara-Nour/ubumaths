@@ -838,6 +838,8 @@ export class Atelier {
 			return { ok: false, message: `La dérivée de « ${displayName(name)} » ne se calcule pas.` };
 		}
 		if (base.plotted) this.setPlotted(derived, true);
+		// Comme le tracé : `f′` naît là où `f` est montrée (K3)
+		if (isFunction(base) && base.inFigure) this.setInFigure(derived, true);
 		return { ok: true, object: this.get(derived)! };
 	}
 
@@ -895,6 +897,7 @@ export class Atelier {
 		});
 		if (!created.ok) return created;
 		if (owner.plotted) this.setPlotted(name, true);
+		if (isFunction(owner) && owner.inFigure) this.setInFigure(name, true);
 		return { ok: true, object: this.get(name)!, outcome };
 	}
 
@@ -1259,6 +1262,7 @@ export class Atelier {
 			...rebuilt,
 			...keptSequence,
 			...(previous.plotted && { plotted: true }),
+			...(isFunction(previous) && isFunction(rebuilt) && previous.inFigure && { inFigure: true }),
 			...((isFunction(previous) || isSequence(previous)) &&
 				previous.display && { display: previous.display }),
 			...(keptSlider && { slider: keptSlider })
@@ -2114,6 +2118,8 @@ export class Atelier {
 			// Rangé seulement quand il est vrai : un atelier sans courbe tracée ne
 			// paie pas ce champ dans l'URL, qui est le mécanisme de partage.
 			...(o.plotted ? { plotted: true } : {}),
+			// 𝒞f dans la vue Géométrie (K1) : rangé seulement quand c'est vrai, comme `plotted`
+			...(isFunction(o) && o.inFigure ? { inFigure: true } : {}),
 			// Recopié champ par champ : `display` est un objet, donc un proxy
 			// `$state` — tel quel, `structuredClone` jetterait (voir plus haut).
 			...(isFunction(o) && o.display ? { display: compactDisplay(o.display) } : {}),
@@ -2266,10 +2272,26 @@ export class Atelier {
 			if (stored.sequenceDisplay) this.adoptSequenceDisplay(stored.name, stored.sequenceDisplay);
 			if (stored.slider) this.adoptSlider(stored.name, stored.slider);
 			if (stored.plotted) this.setPlotted(stored.name, true);
+			if (stored.inFigure) this.setInFigure(stored.name, true);
 		}
 
 		this.recomputeAll();
 		return { restored: this.items.length, skipped, renamed };
+	}
+
+	/**
+	 * Afficher — ou retirer — la courbe de cette fonction dans la vue Géométrie
+	 * (géométrie v2, K1). Comme `setPlotted`, le modèle ne juge pas : une
+	 * fonction en attente peut être marquée, la vue ne dessine que ce qui est `ok`.
+	 * Rien pour un autre type d'objet.
+	 */
+	setInFigure(name: string, shown: boolean): void {
+		const index = this.items.findIndex((o) => o.name === name);
+		if (index === -1) return;
+		const current = this.items[index];
+		if (!isFunction(current) || (current.inFigure === true) === shown) return;
+		this.items[index] = { ...current, inFigure: shown };
+		this.recomputeAll();
 	}
 
 	/**

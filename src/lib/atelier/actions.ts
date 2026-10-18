@@ -19,6 +19,7 @@ import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
 import {
 	dependsOnMessage,
+	isFunction,
 	isValue,
 	isList,
 	isQualitative,
@@ -79,6 +80,8 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 	value: [],
 	function: [
 		{ id: 'plot', label: 'Tracer' },
+		// Géométrie v2, K1 : 𝒞f dans la vue Géométrie (repère orthonormé)
+		{ id: 'figure', label: 'Afficher dans Géométrie' },
 		{ id: 'derive', label: 'Dériver' },
 		// Lot 3 de la réciproque (R1) : la carte `f⁻¹`, comme « Dériver » crée `f′`
 		{ id: 'reciprocal', label: 'Réciproque' },
@@ -421,6 +424,8 @@ export function actionsFor(
 		if (action.id === 'plot' && object.plotted) {
 			action = { ...action, label: 'Retirer du graphe' };
 		}
+		const shownInFigure = action.id === 'figure' && isFunction(object) && object.inFigure === true;
+		if (shownInFigure) action = { ...action, label: 'Retirer de Géométrie' };
 		// Même bascule pour le diagramme d'une liste (vue Données, Q36) : le bouton
 		// qui l'a affiché le retire
 		const [root, partner] = action.id.split(':');
@@ -446,7 +451,8 @@ export function actionsFor(
 			blocked !== undefined && parameters !== null
 				? parameterReason(parameters, action.id, blocked)
 				: blocked;
-		if (reason && !(action.id === 'plot' && object.plotted)) {
+		// Même règle pour « Retirer de Géométrie »
+		if (reason && !(action.id === 'plot' && object.plotted) && !shownInFigure) {
 			// ⚠️ Une raison déjà posée par `partnerActions` (« il faut deux listes »)
 			// est plus précise que « cet objet ne peut rien produire » : on la garde.
 			return { ...action, disabledReason: action.disabledReason ?? reason };

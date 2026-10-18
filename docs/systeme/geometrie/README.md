@@ -107,11 +107,12 @@ Les scripts sont stockés en base dans `constructions.dsl_script`. Routes :
 | `src/lib/ubumark/generators/figure-typst.ts`                                | Bloc ` ```figure ` au PDF : `exportToTypst`                                         |
 | `src/lib/components/markdown/nodes/FigureBlock*.svelte`                     | Composants du bloc (chargement à la demande)                                        |
 
-### La vue Figure de l'atelier
+### La vue Géométrie de l'atelier
 
 L'atelier (`src/lib/atelier/figure-sync.ts`, géométrie v2) alimente une `Figure` par l'**API
 `create*`**, sans le DSL : points (exacts sans curseur, `createComputedPoint` sinon), droites,
-courbes y = f(x), coniques, courbes implicites, et un curseur **caché** par valeur citée
+courbes y = f(x), coniques, courbes implicites, 𝒞f d'une fonction (`createFunction`, une par
+morceau de son ensemble, `domain` à bornes infinies permises), et un curseur **caché** par valeur citée
 (`createSlider({ visible: false })`, réglé par `moveSlider`). Deux ajouts de `Figure` pour lui :
 `createQuadraticCurve(…, { parameterRecipe })` (six coefficients compilés, réévalués et la
 conique reclassée à chaque recalcul) et `createImplicitCurve(…, { parameters })` (F liée aux

@@ -44,12 +44,77 @@ function labels(container: HTMLElement): string[] {
 // Tests
 // =============================================================================
 
-describe('la vue Figure', () => {
-	it('F1 : l’onglet Figure est entre Graphe et Données', async () => {
+describe('la vue Géométrie (FigureView)', () => {
+	it('F1, Q5 révisée : l’onglet Géométrie est entre Graphe et Données', async () => {
 		const { container } = await render(AtelierContainer, { ephemeral: true });
 
 		const tabs = [...container.querySelectorAll('.onglet')].map((b) => b.textContent?.trim());
-		expect(tabs).toEqual(['Calcul', 'Graphe', 'Figure', 'Données']);
+		expect(tabs).toEqual(['Calcul', 'Graphe', 'Géométrie', 'Données']);
+		expect(container.textContent).not.toContain('Figure');
+	});
+
+	it('Q5 révisée : la vue s’annonce « Géométrie » au lecteur d’écran', async () => {
+		const { container } = await render(WithFigure, { atelier: atelierOf([]) });
+
+		expect(container.querySelector('section[aria-label="Géométrie"]')).toBeTruthy();
+	});
+
+	it('K1 : une fonction affichée est tracée, et la vue n’est plus vide', async () => {
+		const atelier = atelierOf([['function', 'f', 'x^2']]);
+		atelier.setInFigure('f', true);
+		const { container } = await render(WithFigure, { atelier });
+
+		await vi.waitFor(() =>
+			expect(canvasOf(container).querySelector('path.function-curve')).toBeTruthy()
+		);
+		expect(labels(container)).toContain('f');
+		expect(container.textContent).not.toContain('Écris un point');
+		expect(container.textContent).toContain('Repère');
+	});
+
+	it('F1 : une fonction affichée mais en attente (b absent) ne rend pas la vue non vide', async () => {
+		const atelier = atelierOf([['function', 'f', 'b x']]);
+		atelier.setInFigure('f', true);
+		const { container } = await render(WithFigure, { atelier });
+
+		await vi.waitFor(() => expect(container.querySelector('svg.geometry-canvas')).toBeTruthy());
+		expect(container.textContent).toContain('Écris un point');
+		expect(canvasOf(container).querySelector('path.function-curve')).toBeNull();
+	});
+
+	it('K1 : « Afficher dans Géométrie » sur la carte trace 𝒞f, écrit sa ligne et ouvre Géométrie', async () => {
+		const atelier = atelierOf([['function', 'f', 'x^2']]);
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		const card = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'f'
+		) as HTMLElement;
+		await userEvent.click(card.querySelector('.entete') as HTMLElement);
+		const button = await vi.waitFor(() => {
+			const found = [...card.querySelectorAll('button')].find(
+				(b) => b.textContent?.trim() === 'Afficher dans Géométrie'
+			);
+			if (!found) throw new Error('pas de bouton');
+			return found;
+		});
+
+		await userEvent.click(button);
+
+		await vi.waitFor(() =>
+			expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe(
+				'Géométrie'
+			)
+		);
+		await vi.waitFor(() =>
+			expect(canvasOf(container).querySelector('path.function-curve')).toBeTruthy()
+		);
+		// G2 : le geste a écrit sa ligne dans Calcul
+		const calcul = [...container.querySelectorAll('.onglet')].find(
+			(b) => b.textContent?.trim() === 'Calcul'
+		) as HTMLElement;
+		await userEvent.click(calcul);
+		await vi.waitFor(() =>
+			expect(container.textContent).toContain('La courbe de f est affichée dans Géométrie.')
+		);
 	});
 
 	it('F1 : sans objet de figure, la vue dit quoi écrire', async () => {

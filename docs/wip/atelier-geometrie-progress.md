@@ -11,12 +11,12 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Lot 1 — découpage
 
-| PR  | Contenu                                                                                        | Branche                         | État     |
-| --- | ---------------------------------------------------------------------------------------------- | ------------------------------- | -------- |
-| 1   | Modèle : types `point` et `curve`, lecture, `y` réservé + migration, cartes, sauvegarde / lien | `feat/atelier-geometrie-modele` | ✅ #1474 |
-| 2   | Vue Figure et pont `syncFigure` (curseurs cachés réglés par `moveSlider`, repère)              | `feat/atelier-geometrie-figure` | ✅ #1478 |
-| 3   | 𝒞f dans la Figure (action de carte)                                                            | —                               | à faire  |
-| 4   | Grapheur à vrais paramètres (Q4 : sa propre PR, en dernier)                                    | —                               | à faire  |
+| PR  | Contenu                                                                                        | Branche                           | État     |
+| --- | ---------------------------------------------------------------------------------------------- | --------------------------------- | -------- |
+| 1   | Modèle : types `point` et `curve`, lecture, `y` réservé + migration, cartes, sauvegarde / lien | `feat/atelier-geometrie-modele`   | ✅ #1474 |
+| 2   | Vue Figure et pont `syncFigure` (curseurs cachés réglés par `moveSlider`, repère)              | `feat/atelier-geometrie-figure`   | ✅ #1478 |
+| 3   | 𝒞f dans la vue Géométrie (action de carte), onglet renommé « Géométrie »                       | `feat/atelier-geometrie-courbe-f` | en cours |
+| 4   | Grapheur à vrais paramètres (Q4 : sa propre PR, en dernier)                                    | —                                 | à faire  |
 
 ## PR 1 — journal
 
@@ -73,3 +73,25 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
   cache un curseur — aucun contenu n'en dépend.
 - 2026-10-18 : PR 2 vérifiée à l'écran (Chromium, 1280 et 390 px), CI verte, **mergée (#1478,
   `721c64e89`)**, branche et worktree retirés. Pas en production.
+
+## PR 3 — journal
+
+- 2026-10-18 : worktree `../ubumaths-wt-atelier-courbe-f`. Tests d'abord : 19 node
+  (`figure-fonctions.test.ts`, 16 rouges) et 4 navigateur (`FigureView.svelte.test.ts`, 4
+  rouges) — onglet « Géométrie » (Q5 révisée), action K1, rangement, tracé, K2, K3.
+- 2026-10-18 : implémenté — onglet et `aria-label` « Géométrie » (identifiants `Figure*`
+  gardés) ; action `figure` (« Afficher dans Géométrie » / « Retirer de Géométrie ») par
+  `BY_KIND` puis `runFromPanel`, ligne dans Calcul, rejouable, onglet Géométrie ouvert à
+  l'affichage (A5) ; `inFigure` rangé (sauvegarde, lien, fichier, fusion), **version 4** (une
+  version 3 se relit) ; 𝒞f par `createFunction`, curseurs liés par nom, une `GeoFunction` par
+  morceau de l'ensemble (K2), nom de la carte (`f`, `f′`, `f⁻¹`, K3).
+- **À trancher par David** : (1) afficher 𝒞f ouvre l'onglet Géométrie (comme « Tracer » ouvre
+  le Graphe, A5) ; (2) une carte `f′` / `f⁻¹` créée depuis une `f` affichée naît affichée, comme
+  pour le tracé ; (3) le message de la vue vide ajoute « ou affiche une fonction depuis sa
+  carte » ; (4) le nom de 𝒞f n'est écrit que sur le premier morceau d'un ensemble en plusieurs
+  morceaux.
+- 2026-10-18 : revue de la PR 3 — la vue Géométrie n'est « non vide » que si une fonction
+  affichée se dessine (`ok`), test navigateur rouge puis vert ; tests ajoutés, verts d'emblée
+  (comportement déjà juste) : `1/x` en deux sous-chemins, `ln x` rien à gauche de x = 0, rejeu
+  Afficher / Retirer / Afficher (même état, mêmes lignes), invariant 9 pour une fonction en
+  erreur et pour `f′` d'une f en erreur ; `passesNear` ne lit plus que les points d'arrivée.

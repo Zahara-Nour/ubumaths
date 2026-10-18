@@ -54,7 +54,7 @@ import {
 	type ExportFormat
 } from './history-export';
 import { termsOf } from './engine';
-import { isList, isQualitative, type AtelierObject, type ListObject } from './types';
+import { isFunction, isList, isQualitative, type AtelierObject, type ListObject } from './types';
 import { wordsReason } from './actions';
 import { lawFractions } from './simulate';
 import { nextName, displayName } from './names';
@@ -817,6 +817,26 @@ export class CalcDesk {
 		});
 	}
 
+	/** Montrer ou retirer 𝒞f de la vue Géométrie, et l'écrire (K1). */
+	#toggleInFigure(name: string): void {
+		const object = this.atelier.get(name);
+		if (object === undefined || !isFunction(object)) {
+			this.#push({ label: name, text: `« ${name} » n'est pas une fonction.`, failed: true });
+			return;
+		}
+		const shown = object.inFigure !== true;
+		this.atelier.setInFigure(name, shown);
+		const shownName = displayName(name);
+		this.#push({
+			label: `${shown ? 'Afficher dans Géométrie' : 'Retirer de Géométrie'} ${shownName}`,
+			text: shown
+				? `La courbe de ${shownName} est affichée dans Géométrie.`
+				: `La courbe de ${shownName} est retirée de Géométrie.`,
+			failed: false
+		});
+		this.notice = null;
+	}
+
 	/**
 	 * Exécuter une action cliquée dans le panneau.
 	 *
@@ -913,6 +933,14 @@ export class CalcDesk {
 		}
 		if (root === 'fit') {
 			this.#fit(name, partner);
+			return 'ok';
+		}
+
+		// « Afficher dans Géométrie » (géométrie v2, K1) : bascule l'état
+		// d'affichage, et le dit dans Calcul (G2) — la ligne porte le geste, que
+		// le rejeu refait par ce même chemin
+		if (actionId === 'figure') {
+			this.#toggleInFigure(name);
 			return 'ok';
 		}
 

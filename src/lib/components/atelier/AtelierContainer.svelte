@@ -17,7 +17,7 @@
 		type Session,
 		type SessionNotice
 	} from '$lib/atelier/session';
-	import type { AtelierObject } from '$lib/atelier/types';
+	import { isFunction, type AtelierObject } from '$lib/atelier/types';
 	import type { ImportedHistory } from '$lib/atelier/history-import';
 	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
 	import { derivativeName, displayName } from '$lib/atelier/names';
@@ -76,11 +76,14 @@
 
 	type ViewId = 'calcul' | 'graphe' | 'figure' | 'donnees';
 
-	/** Figure entre Graphe et Données (géométrie v2, Q5) : les deux vues graphiques côte à côte. */
+	/**
+	 * Géométrie entre Graphe et Données (géométrie v2, Q5 révisée) : les deux vues
+	 * graphiques côte à côte. L'identifiant reste `figure` (`FigureView`).
+	 */
 	const VIEWS: { id: ViewId; label: string }[] = [
 		{ id: 'calcul', label: 'Calcul' },
 		{ id: 'graphe', label: 'Graphe' },
-		{ id: 'figure', label: 'Figure' },
+		{ id: 'figure', label: 'Géométrie' },
 		{ id: 'donnees', label: 'Données' }
 	];
 
@@ -520,6 +523,12 @@
 		// A5 : ce qui se VOIT ailleurs (nuage, diagramme) y emmène, comme « Tracer »
 		if (root === 'scatter') showView('graphe');
 		else if (chartShown) showView('donnees');
+		// K1 : 𝒞f affichée se voit dans Géométrie, comme « Tracer » mène au Graphe ;
+		// la retirer ne mène nulle part
+		const after = atelier.get(object.name);
+		const shownInFigure =
+			root === 'figure' && after !== undefined && isFunction(after) && after.inFigure === true;
+		if (shownInFigure) showView('figure');
 
 		if (isChart) {
 			announce(
@@ -529,6 +538,12 @@
 			);
 		} else if (root === 'scatter') {
 			announce(`Nuage de ${object.name} affiché dans l’onglet Graphe.`);
+		} else if (root === 'figure') {
+			announce(
+				shownInFigure
+					? `Courbe de ${displayName(object.name)} affichée dans l’onglet Géométrie.`
+					: `Courbe de ${displayName(object.name)} retirée de l’onglet Géométrie.`
+			);
 		}
 	}
 

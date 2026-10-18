@@ -92,7 +92,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/context.ts`        | L'instance d'atelier passée par contexte (`provideAtelier`, `useAtelier`)                                |
 | `src/lib/atelier/engine.ts`         | Remet `WebReplEngine` en accord avec les objets (`syncEngine`), expansion des noms dans une saisie       |
 | `src/lib/atelier/plot-sync.ts`      | Reporte les objets tracés vers le `GrapheurStore` (`syncPlots`), à sens unique                           |
-| `src/lib/atelier/figure-sync.ts`    | Reporte points et courbes vers une `Figure` de `geometry-core` (`syncFigure`, `AtelierFigure`)           |
+| `src/lib/atelier/figure-sync.ts`    | Reporte points, courbes et 𝒞f affichées vers une `Figure` de `geometry-core` (`syncFigure`)              |
 | `src/lib/atelier/curve-nature.ts`   | La nature d'une courbe pour sa carte (« droite », « cercle »…) et le constat d'une courbe vide (C6)      |
 | `src/lib/atelier/display.ts`        | Schémas Zod des réglages de courbe et de suite (carte, sauvegarde, lien : une seule règle)               |
 | `src/lib/atelier/mathfield.ts`      | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                 |
@@ -171,7 +171,7 @@ Ceux du code et de l'interface :
 | `NaturalField.svelte`     | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel          |
 | `AtelierSettings.svelte`  | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                 |
 | `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)    |
-| `FigureView.svelte`       | Vue Figure : `GeometryCanvas` sur la figure de `syncFigure`, case « Repère », message d'un atelier sans figure             |
+| `FigureView.svelte`       | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, case « Repère », message d'un atelier sans figure          |
 | `DataView.svelte`         | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                |
 | `ShareBar.svelte`         | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier » |
 
@@ -188,7 +188,7 @@ cartes (décision G3).
 
 `AtelierObject` = `ValueObject` | `FunctionObject` | `SequenceObject` | `ListObject` |
 `PointObject` | `CurveObject` (`src/lib/atelier/types.ts`). Les deux derniers sont ceux de la
-géométrie (v2, lot 1 : le modèle en PR 1, la vue Figure en PR 2 — phase 0
+géométrie (v2, lot 1 : le modèle en PR 1, la vue Géométrie en PR 2, 𝒞f en PR 3 — phase 0
 [atelier-geometrie-phase0.md](../wip/atelier-geometrie-phase0.md)).
 
 | Type       | Exemple                               | Particularités                                                                                                                                |
@@ -202,7 +202,7 @@ géométrie (v2, lot 1 : le modèle en PR 1, la vue Figure en PR 2 — phase 0
 
 **Point et courbe** (géométrie v2, décisions G0-G7 et Q1-Q5 du 2026-10-18) : **la forme écrite
 donne le type** (G0) — `f(x) = 3x − 2` est une **fonction** (Graphe, dériver…), `d : y = 3x − 2`
-une **courbe** (vue Figure). Dans Calcul, `defineCurve` (`calcul.ts`) ne prend `<nom> :
+une **courbe** (vue Géométrie). Dans Calcul, `defineCurve` (`calcul.ts`) ne prend `<nom> :
 <reste>` pour une courbe que si le reste porte une relation (`hasRelation`) : `6 : 3` et `a : b`
 restent la division (C15) ; sur une valeur existante, `a : b = 2` reste une comparaison, `d : y =
 3x` est refusé (« « d » est déjà une valeur. », V62). La lecture (`parseCurve`, `parse.ts`) refuse
@@ -1003,7 +1003,7 @@ de David), Échap ferme jusqu'à la frappe suivante. Garde : chaque proposition,
 est acceptée par Calcul (`completion.test.ts`).
 
 **Actions de carte** : `actionsFor` (`src/lib/atelier/actions.ts`) donne par type les actions
-(fonction : Tracer, Dériver, Réciproque, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
+(fonction : Tracer, Afficher dans Géométrie, Dériver, Réciproque, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
 liste : Statistiques, diagrammes, nuage, ajustement, loi — par liste partenaire). Une action qui a
 un sens pour le type mais pas pour cet objet reste **visible, désactivée, avec sa raison**
 (`disabledReason`). Le clic passe par `CalcDesk.runFromPanel` : il **écrit une ligne dans
@@ -1011,12 +1011,12 @@ Calcul sans changer de vue** et crée **une carte par objet créé** (G7).
 
 ### Vues
 
-| Vue     | Composant                             | Ce qu'elle projette                                                                                                                 |
-| ------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Calcul  | `CalculView.svelte` + `CalcDesk`      | l'historique ; « Garder » promeut une ligne en objet nommé (`promote`, D5) ; « Comment ? » déplie les étapes, « Résumé / Détaillé » |
-| Graphe  | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                                 |
-| Figure  | `FigureView.svelte`                   | points et courbes dans un repère orthonormé (`GeometryCanvas`), via `syncFigure` ; rien ne s'y glisse au lot 1 (F4)                 |
-| Données | `DataView.svelte`                     | la grille (une liste = une colonne nommée), diagrammes en bâtons / barres / circulaire                                              |
+| Vue       | Composant                             | Ce qu'elle projette                                                                                                                 |
+| --------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Calcul    | `CalculView.svelte` + `CalcDesk`      | l'historique ; « Garder » promeut une ligne en objet nommé (`promote`, D5) ; « Comment ? » déplie les étapes, « Résumé / Détaillé » |
+| Graphe    | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                                 |
+| Géométrie | `FigureView.svelte`                   | points, courbes et 𝒞f affichées dans un repère orthonormé (`GeometryCanvas`), via `syncFigure` ; rien ne s'y glisse au lot 1 (F4)   |
+| Données   | `DataView.svelte`                     | la grille (une liste = une colonne nommée), diagrammes en bâtons / barres / circulaire                                              |
 
 Trois ponts à **sens unique**, tous idempotents (une empreinte évite de refaire le travail) :
 
@@ -1054,13 +1054,28 @@ Trois ponts à **sens unique**, tous idempotents (une empreinte évite de refair
   courbes dont 3 implicites, glisser `a` coûte ~11 ms par cran dans Chromium (toile 800 × 600,
   `slideTo` + synchronisation + rendu Svelte).
 
-**Vue Figure** (`FigureView.svelte`) : repère **orthonormé** par construction, `GeometryCanvas`
+**Vue Géométrie** (`FigureView.svelte` ; l'onglet s'appelle « Géométrie » depuis la Q5 révisée, le
+code garde ses identifiants `Figure*` et `ViewId` `'figure'`) : repère **orthonormé** par construction, `GeometryCanvas`
 n'ayant qu'un `pixelsPerUnit` (F2 ; 13 unités sur le plus petit côté à l'ouverture) ;
 `objectsMovable={false}` — zoom et déplacement de la vue seulement (F4) ; la toile suit la largeur
 de son conteneur (téléphone). La case « Repère » (`MyCheckbox`) montre ou masque grille, axes et
 graduations : l'état vit dans l'`Atelier` (`figureFrame`, `setFigureFrame`), **hors
 `serialize()`** comme `charts`, rendu à son défaut (affiché) par `restore()` (G4, F3). Sans point
-ni courbe, la vue dit « Écris un point A = (1 ; 2) ou une courbe d : y = 3x − 2. » (F1).
+ni courbe ni fonction affichée, la vue dit « Écris un point A = (1 ; 2) ou une courbe d : y = 3x − 2,
+ou affiche une fonction depuis sa carte. » (F1).
+
+**𝒞f dans la vue Géométrie** (PR 3, K1-K3) : l'action de carte « Afficher dans Géométrie » /
+« Retirer de Géométrie » (`figure` dans `BY_KIND`, bascule comme « Tracer ») pose `inFigure` sur
+la fonction (`setInFigure`, un état d'affichage **rangé** comme `plotted` : sauvegarde, lien,
+fichier `.atelier.json`, fusion ; version 4). Elle passe par `CalcDesk.runFromPanel` : une ligne
+dans Calcul (« La courbe de f est affichée dans Géométrie. »), rejouable ; `AtelierContainer`
+ouvre l'onglet Géométrie quand elle affiche (A5, comme « Tracer » ouvre le Graphe). Désactivée
+avec la raison de l'objet si la fonction n'est pas `ok` (invariant 9) ; « Retirer » reste
+possible. `syncFigure` trace la fonction par `createFunction` (l'arbre de `substitutedAstOf`,
+curseurs gardés en lettres et liés par nom : `f(x) = a x²` suit `a` sans reconstruire), une
+`GeoFunction` par morceau de son ensemble (`plotRestrictionOf`, hérité compris : K2), nommée
+comme sur sa carte (`f`, `f′`, `f⁻¹`). `f′` et `f⁻¹` ont la même action et suivent `f` (K3) ;
+une carte `f′` ou `f⁻¹` créée depuis une `f` affichée naît affichée, comme pour le tracé.
 
 **Nature d'une courbe** (`curve-nature.ts`, C1, C2, C6) : la carte remplace le type « courbe »
 par la nature, **recalculée** à chaque lecture (jamais rangée) avec les valeurs citées
@@ -1145,7 +1160,9 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   (`grid.cells`, sans « ; », triés un par un par
   `salvageGrid`, réunies par `salvageState`) ; une version 1 se relit, ses listes placées en A, B…
   dans l'ordre des cartes. Sans la version 2, un onglet resté sur l'ancien code relirait l'état en
-  jetant la grille, puis l'enregistrerait. **Version 3** (2026-10-18, géométrie) : les types
+  jetant la grille, puis l'enregistrerait. **Version 4** (2026-10-18, PR 3 de la géométrie) :
+  `inFigure` (𝒞f affichée dans la vue Géométrie) ; une version 3 se relit, rien n'y est
+  affiché. **Version 3** (2026-10-18, géométrie) : les types
   `point` et `curve`, et `y` réservé — `migrateReservedNames` renomme un objet `y` à la première
   lettre libre de son type (ses cartes `y′`, `y⁻¹` avec lui), réécrit ce qui le cite (définitions
   sauf celles des courbes, premier terme d'une suite, formules de la grille, `renameInFormula`) et
@@ -1730,7 +1747,8 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
    écrit ailleurs que dans l'`Atelier` (dans le grapheur, dans une carte) serait écrasé à la
    synchronisation suivante.
 2. **Ponts à sens unique** : atelier → moteur (`syncEngine`), atelier → grapheur (`syncPlots`),
-   atelier → figure (`syncFigure`). Points et courbes n'entrent que dans le troisième ; rien de
+   atelier → figure (`syncFigure`). Points et courbes n'entrent que dans le troisième (avec les
+   fonctions marquées `inFigure`) ; rien de
    la figure ne remonte (pas de glisser au lot 1).
 3. **Un seul espace de noms** (D1) ; jamais d'écrasement silencieux d'un nom (création, renommage,
    fusion d'un atelier reçu).
@@ -1797,8 +1815,8 @@ par objet créé. Le geste devient alors rejouable (`ReplayStep` `action`).
 
 **Une vue** — (1) un composant sous `src/lib/components/atelier/` qui lit l'atelier par `useAtelier()` et n'a
 **aucun état de modèle** à lui ; un état d'affichage qui doit survivre au changement de vue
-vit dans l'`Atelier`, hors `serialize()` (comme `charts`, ou `figureFrame` de la vue Figure) ; (2) l'ajouter au type `ViewId` et au rendu de `AtelierContainer.svelte` ; (3) s'il faut un nouveau moteur, un pont à sens unique sur le modèle de
-`syncPlots`, idempotent — fait pour la vue Figure (`syncFigure`, `figure-sync.ts`).
+vit dans l'`Atelier`, hors `serialize()` (comme `charts`, ou `figureFrame` de la vue Géométrie) ; (2) l'ajouter au type `ViewId` et au rendu de `AtelierContainer.svelte` ; (3) s'il faut un nouveau moteur, un pont à sens unique sur le modèle de
+`syncPlots`, idempotent — fait pour la vue Géométrie (`syncFigure`, `figure-sync.ts`).
 
 **Un type d'objet** — le plus coûteux : `ObjectKind` et l'union dans `types.ts`, lecture dans `parse.ts`, schéma de
 `persistence.ts` (et **incrémenter `ATELIER_STATE_VERSION`** si la forme rangée change), actions,
@@ -1821,7 +1839,7 @@ par le type (`KIND_WORDS`, `KIND_NAMES`) sont signalés par le typecheck. Prévu
   `commands.test.ts`, `syntaxe-mots-cles.test.ts`, `persistence.test.ts`, `url.svelte.test.ts`,
   `suppression-cascade.test.ts`, `rejeu-calcul.svelte.test.ts`, `solve-steps-oracle.test.ts`
   (oracle du garde-fou), `paste.svelte.test.ts` (la pile d'annulation dans Chromium),
-  `figure-sync.test.ts` (le pont de la vue Figure, assertions sur le dessin) et
+  `figure-sync.test.ts` (le pont de la vue Géométrie, assertions sur le dessin), `figure-fonctions.test.ts` (𝒞f, K1-K3) et
   `components/atelier/__tests__/FigureView.svelte.test.ts` (harnais `WithFigure.svelte`).
 
 Lancer : `pnpm test:server <fichier>.test.ts`, `pnpm test:client <fichier>.svelte.test.ts`. Aucun
@@ -1874,8 +1892,9 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 
 - `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
 - **v2** géométrie : phase 0 du lot 1 validée le 2026-10-18 ; PR 1 (le modèle : points, courbes,
-  `y` réservé, version 3) et PR 2 (vue Figure, `syncFigure`, curseurs cachés, nature des
-  courbes) faites ; restent 𝒞f dans la Figure (PR 3) et le grapheur à vrais paramètres (PR 4) — suivi :
+  `y` réservé, version 3), PR 2 (vue Géométrie, `syncFigure`, curseurs cachés, nature des
+  courbes) et PR 3 (𝒞f dans Géométrie, onglet renommé, version 4) faites ; reste le grapheur à
+  vrais paramètres (PR 4) — suivi :
   [atelier-geometrie-progress.md](../wip/atelier-geometrie-progress.md). **v3** Python : non
   commencée, sans phase 0 ;
 - tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1), collage /

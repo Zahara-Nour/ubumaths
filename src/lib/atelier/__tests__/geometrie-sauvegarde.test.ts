@@ -64,8 +64,9 @@ const MIGRATED = (to: string) =>
 
 describe('M1 : points et courbes se rangent et se relisent', () => {
 	it(`la version rangée est la ${ATELIER_STATE_VERSION}`, () => {
-		expect(ATELIER_STATE_VERSION).toBe(3);
-		expect(geometry().serialize().version).toBe(3);
+		// Version 3 pour les points et les courbes, 4 depuis `inFigure` (PR 3)
+		expect(ATELIER_STATE_VERSION).toBe(4);
+		expect(geometry().serialize().version).toBe(4);
 	});
 
 	it('stockage : aller-retour à l’identique', () => {
