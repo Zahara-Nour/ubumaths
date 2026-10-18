@@ -11,7 +11,10 @@
 
 ## Avancement
 
-- [ ] PR 1
+- [x] PR 1 — #1490 mergée le 2026-10-18 (pas en prod).
+- [x] PR 2 — #1489 (table `student_mathoux`) mergée et migrée en prod le 2026-10-18 (vérifié : RLS, lecture seule, anon sans droit).
+- [ ] PR 3 — mémoire (meilleur stade, étoiles) + export RGPD ; `db:types` d'abord.
+- [ ] Dessins : direction à choisir par David (A2, B2, AB), puis 19 races.
 
 ### Calcul, page, Palotin gardien (2026-10-18, non commité)
 
