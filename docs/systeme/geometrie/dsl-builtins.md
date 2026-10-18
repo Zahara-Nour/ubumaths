@@ -100,48 +100,48 @@ existant, rien n'est créé), **—** (effet seul).
 
 ### Lignes
 
-| Builtin           | Formes                                                                                                          | Retour   |
-| ----------------- | --------------------------------------------------------------------------------------------------------------- | -------- |
-| `segment`         | `segment(A, B)` · `segment(A, longueur=L, angle=θ \| direction=B \| vecteur=u)`                                 | ligne    |
-| `droite`          | `droite(A, B)`                                                                                                  | ligne    |
-| `demidroite`      | `demidroite(O, A)`                                                                                              | ligne    |
-| `mediatrice`      | `mediatrice(A, B)`                                                                                              | ligne    |
-| `perpendiculaire` | `perpendiculaire(P, A, B)` : par `P`, ⟂ `(AB)` · `perpendiculaire(P, d)` : ⟂ `d` (droite, segment, demi-droite) | ligne    |
-| `parallele`       | `parallele(P, A, B)` : par `P`, ∥ `(AB)` · `parallele(P, d)` : ∥ `d` (droite, segment, demi-droite)             | ligne    |
-| `mediane`         | `mediane(A, B, C)` : issue de `A`                                                                               | ligne    |
-| `hauteur`         | `hauteur(A, B, C)` : issue de `A`                                                                               | ligne    |
-| `bissectrice`     | `bissectrice(A, V, B)` · `bissectrice(α)`                                                                       | ligne    |
-| `droite_euler`    | `droite_euler(A, B, C)` (erreur si équilatéral)                                                                 | ligne    |
-| `corde`           | `corde(c, d)` : segment entre les 2 intersections                                                               | ligne    |
-| `tangente`        | `tangente(f, x0)` · `tangente(f, P)` · `tangente(courbe_param, t0)` (+ vecteur tangent)                         | ligne    |
-| `asymptotes`      | `asymptotes(h)` (hyperbole)                                                                                     | 2 lignes |
-| `axes`            | `axes(c)` (conique)                                                                                             | lignes   |
-| `directrice`      | `directrice(p)` (parabole)                                                                                      | ligne    |
-| `polaire`         | `polaire(M, c)`                                                                                                 | ligne    |
+| Builtin           | Formes                                                                                                                                   | Retour   |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `segment`         | `segment(A, B)` · `segment(A, longueur=L, angle=θ \| direction=B \| vecteur=u)`                                                          | ligne    |
+| `droite`          | `droite(A, B)`                                                                                                                           | ligne    |
+| `demidroite`      | `demidroite(O, A)`                                                                                                                       | ligne    |
+| `mediatrice`      | `mediatrice(A, B)`                                                                                                                       | ligne    |
+| `perpendiculaire` | `perpendiculaire(P, A, B)` : par `P`, ⟂ `(AB)` · `perpendiculaire(P, d)` : ⟂ `d` (droite, segment, demi-droite ; `P` doit être un point) | ligne    |
+| `parallele`       | `parallele(P, A, B)` : par `P`, ∥ `(AB)` · `parallele(P, d)` : ∥ `d` (droite, segment, demi-droite ; `P` doit être un point)             | ligne    |
+| `mediane`         | `mediane(A, B, C)` : issue de `A`                                                                                                        | ligne    |
+| `hauteur`         | `hauteur(A, B, C)` : issue de `A`                                                                                                        | ligne    |
+| `bissectrice`     | `bissectrice(A, V, B)` · `bissectrice(α)`                                                                                                | ligne    |
+| `droite_euler`    | `droite_euler(A, B, C)` (erreur si équilatéral)                                                                                          | ligne    |
+| `corde`           | `corde(c, d)` : segment entre les 2 intersections                                                                                        | ligne    |
+| `tangente`        | `tangente(f, x0)` · `tangente(f, P)` · `tangente(courbe_param, t0)` (+ vecteur tangent)                                                  | ligne    |
+| `asymptotes`      | `asymptotes(h)` (hyperbole)                                                                                                              | 2 lignes |
+| `axes`            | `axes(c)` (conique)                                                                                                                      | lignes   |
+| `directrice`      | `directrice(p)` (parabole)                                                                                                               | ligne    |
+| `polaire`         | `polaire(M, c)`                                                                                                                          | ligne    |
 
 ### Cercles, arcs, polygones
 
-| Builtin                | Formes                                                                                                                                                    |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cercle`               | `cercle(O, rayon=r)` · `cercle(O, r)` (nombre, valeur, curseur ; un point en second est refusé : `passant=`) · `cercle(O, passant=P)` · `cercle(A, B, C)` |
-| `arc`                  | `arc(A, O, B)` (sens trigonométrique) · `arc(O, rayon=r, debut=0, fin=90)`                                                                                |
-| `secteur`              | `secteur(O, A, B)` · `secteur(O, rayon=r, debut=0, fin=90)`                                                                                               |
-| `couronne`             | `couronne(O, r1=2, r2=3)`                                                                                                                                 |
-| `cercle_circonscrit`   | `cercle_circonscrit(A, B, C)`                                                                                                                             |
-| `cercle_inscrit`       | `cercle_inscrit(A, B, C)`                                                                                                                                 |
-| `cercle_euler`         | `cercle_euler(A, B, C)` (cercle des neuf points)                                                                                                          |
-| `cercle_osculateur`    | `cercle_osculateur(courbe_param, t0)`                                                                                                                     |
-| `polygone`             | `polygone(A, B, C, …)`                                                                                                                                    |
-| `triangle`             | `triangle(A, B, C)`                                                                                                                                       |
-| `triangle_equilateral` | `triangle_equilateral(A, B)`                                                                                                                              |
-| `triangle_isocele`     | `triangle_isocele(A, B, angle=40)` (défaut 40)                                                                                                            |
-| `triangle_rectangle`   | `triangle_rectangle(A, B, angle=45)` : rectangle en `A`                                                                                                   |
-| `parallelogramme`      | `parallelogramme(A, B, C)` : `D` calculé                                                                                                                  |
-| `rectangle`            | `rectangle(A, B, largeur=2)`                                                                                                                              |
-| `carre`                | `carre(A, B)`                                                                                                                                             |
-| `losange`              | `losange(A, B, angle=60)`                                                                                                                                 |
-| `polygone_regulier`    | `polygone_regulier(O, r, n)`                                                                                                                              |
-| `etoile`               | `etoile(O, r, n, saut=2)`                                                                                                                                 |
+| Builtin                | Formes                                                                                                                                                                                                                                                                                                |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cercle`               | `cercle(O, rayon=r)` · `cercle(O, r)` (nombre, valeur, curseur ; refusés : un point en second — `passant=` —, un centre qui n'est pas un point, un argument nommé en plus, un rayon fixé ≤ 0 ; `rayon=` accepte toujours 0, dont dépend `locus.test.ts`) · `cercle(O, passant=P)` · `cercle(A, B, C)` |
+| `arc`                  | `arc(A, O, B)` (sens trigonométrique) · `arc(O, rayon=r, debut=0, fin=90)`                                                                                                                                                                                                                            |
+| `secteur`              | `secteur(O, A, B)` · `secteur(O, rayon=r, debut=0, fin=90)`                                                                                                                                                                                                                                           |
+| `couronne`             | `couronne(O, r1=2, r2=3)`                                                                                                                                                                                                                                                                             |
+| `cercle_circonscrit`   | `cercle_circonscrit(A, B, C)`                                                                                                                                                                                                                                                                         |
+| `cercle_inscrit`       | `cercle_inscrit(A, B, C)`                                                                                                                                                                                                                                                                             |
+| `cercle_euler`         | `cercle_euler(A, B, C)` (cercle des neuf points)                                                                                                                                                                                                                                                      |
+| `cercle_osculateur`    | `cercle_osculateur(courbe_param, t0)`                                                                                                                                                                                                                                                                 |
+| `polygone`             | `polygone(A, B, C, …)`                                                                                                                                                                                                                                                                                |
+| `triangle`             | `triangle(A, B, C)`                                                                                                                                                                                                                                                                                   |
+| `triangle_equilateral` | `triangle_equilateral(A, B)`                                                                                                                                                                                                                                                                          |
+| `triangle_isocele`     | `triangle_isocele(A, B, angle=40)` (défaut 40)                                                                                                                                                                                                                                                        |
+| `triangle_rectangle`   | `triangle_rectangle(A, B, angle=45)` : rectangle en `A`                                                                                                                                                                                                                                               |
+| `parallelogramme`      | `parallelogramme(A, B, C)` : `D` calculé                                                                                                                                                                                                                                                              |
+| `rectangle`            | `rectangle(A, B, largeur=2)`                                                                                                                                                                                                                                                                          |
+| `carre`                | `carre(A, B)`                                                                                                                                                                                                                                                                                         |
+| `losange`              | `losange(A, B, angle=60)`                                                                                                                                                                                                                                                                             |
+| `polygone_regulier`    | `polygone_regulier(O, r, n)`                                                                                                                                                                                                                                                                          |
+| `etoile`               | `etoile(O, r, n, saut=2)`                                                                                                                                                                                                                                                                             |
 
 Convention « un builtin = un objet principal » : les points intermédiaires sont créés masqués ;
 on les récupère par les accesseurs (`centre(c)`, `sommet(p, i)`…) et on les montre par `montre()`.

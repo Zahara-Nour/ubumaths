@@ -153,9 +153,21 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   cartes (nature, construction écrite, valeur) ; projection `syncFigure` (types de figure existants,
   aucune nouvelle surface) ; DSL : `cercle(O, r)`, `parallele(P, d)`, `perpendiculaire(P, d)`. Pas de
   version d'état nouvelle (la définition suffit).
-- **À trancher par David** : (1) `d = (AB)` tapé AVANT A et B reste lu comme un produit A·B (en
-  attente de A et B) — seuls deux points existants en font une droite ; (2) le nom d'un cercle
+- **À trancher par David** : (1) ~~`d = (AB)` tapé avant A et B~~ — tranché le 2026-10-18,
+  option (a) : le type de A et B tranche (voir ci-dessous) ; (2) le nom d'un cercle
   dans la vue Géométrie est porté par un point sans marque à 45° (aucune surface de
   `geometry-core` n'écrit le nom d'un cercle) ; (3) un rayon ≤ 0 (curseur) met le cercle en erreur ;
   (4) la carte d'une droite ou d'un cercle montre aussi son équation, celle d'une demi-droite
   l'équation de sa droite ; (5) `cercle(O, 3)` tapé seul répond `cercle(O, 3) : x^2+y^2=9`.
+- 2026-10-18 : vérification à l'écran (coordinateur) : `\right`, `\text` perdus dans le LaTeX de
+  deux réponses (`milieu(A, B)`, `[AB]`) — corrigé, tests rouges puis verts (39c9b02ae).
+- 2026-10-18 : revue de code, corrections (tests d'abord : 13 rouges + 4 pour l'option a) — mémo
+  des constructions (une fois par passe ; chaîne de 12 niveaux < 200 ms, était 46 s) ; renommage
+  des raccourcis écrits en LaTeX ; nom hors forme refusé d'abord ; DSL : argument nommé de trop,
+  centre non point, rayon positionnel ≤ 0, `parallele(d, d)` refusés en français ; nom d'un
+  cercle en texte de la couleur du cercle (plus de point `r="0"` à l'export ni de survol).
+  **Décision de David (option a)** : `(AB)` avant A et B attend ; le type de A et B tranche
+  (droite, produit, ou refus si point et valeur), et le suit après coup.
+- Noté : `rayon=0` reste accepté par le DSL (`locus.test.ts` s'en sert) ; le refus ≤ 0 ne vaut que
+  pour le rayon positionnel et pour l'atelier. Une valeur `(AB)` devenue courbe par
+  `#shortcutKinds` échappe au plafond de 50 (cas rare, non traité).

@@ -255,8 +255,12 @@ l'atelier calcule, jamais la `Figure`. Règles :
 - **Séparateurs** : `;` toujours, `,` quand rien ne peut être un décimal (`milieu(A, B)`,
   `point(1, 2)`) ; `point(1,5, 2)` et `point(1,2)` sont refusés (« Sépare les arguments de point
   avec « ; » »), comme `max(1,2)`. **Accents** acceptés (`parallèle`, `demi-droite`).
-- **`(ab)` reste un produit** sauf entre deux points de l'atelier (ou pour redéfinir une
-  construction) ; `[AB]`, `[AB)` n'ont pas d'autre sens.
+- **`(AB)` : le TYPE de A et B tranche** (décision de David, 2026-10-18, option a) : deux points →
+  la droite ; deux valeurs → le produit, comme avant ; un point et une valeur → refus avec la
+  raison ; un nom encore absent → l'objet attend (D9). Le type suit après coup (A supprimé puis
+  recréé en valeur : `#shortcutKinds`, au début de `recomputeAll`, fait de d une valeur).
+  `[AB]`, `[AB)` n'ont pas d'autre sens qu'une construction (deux valeurs : « « a » n'est pas un
+  point. »).
 - **Refus** (rien n'est créé) : un mot du DSL hors catalogue (« « médiatrice » n'est pas encore
   dans l'atelier. », aussi dans un calcul : `2·aire(A, B, C)`) ; un objet du mauvais type
   (« « d » n'est pas un point. », « « A » n'est pas une droite. ») ; `cercle(O, A)` avec un point
@@ -267,7 +271,12 @@ l'atelier calcule, jamais la `Figure`. Règles :
   cascade (I, puis ce qui cite I) ; redéfinir A recalcule. Ce qui ne se construit pas **avec les
   valeurs du moment** — deux points confondus, trois points alignés, une parallèle à un cercle, un
   rayon ≤ 0 — est en **erreur** avec sa raison (`#constructions`, après la propagation de
-  `recomputeAll`, jusqu'au point fixe).
+  `recomputeAll`, jusqu'au point fixe). Chaque construction se calcule **une fois par passe** :
+  mémo par révision (`Atelier.constructionMemo`, partagé par le recalcul, les cartes et Calcul),
+  un mémo par passage pour la vue Géométrie (curseurs gardés en lettres) — sans lui, une chaîne
+  de 12 milieux coûtait 46 s. Renommer réécrit aussi les raccourcis écrits en LaTeX par la carte
+  (`\left(AB\right)`, `\left\lbrack AB\right\rbrack`, `A_{1}`). Un nom hors forme (`m2 = …`)
+  est refusé comme nom d'abord.
 - **Tapée seule, c'est un calcul** : `(AB)` répond `(AB) : y=2x+1` (équation réduite ; `x = …`
   verticale), `[AB]` `segment de longueur sqrt(5)`, `[AB)` `demi-droite portée par …`,
   `milieu(A, B)` `(1/2 ; 2)`, `cercle(O, 3)` son équation `x^2+y^2=9`. Rien n'est créé ;
@@ -280,7 +289,9 @@ l'atelier calcule, jamais la `Figure`. Règles :
   (`\operatorname{milieu}\left(A,B\right)`, `\left(AB\right)`) ; préfixe `d =`.
 - **Vue Géométrie** : `syncFigure` reçoit les arbres calculés (curseurs gardés en lettres) et pose
   des éléments existants (droite, segment, demi-droite, cercle par rayon) ; un curseur cité suit
-  par `moveSlider`, sans reconstruire.
+  par `moveSlider`, sans reconstruire. Le nom d'un cercle est un texte de la figure, de sa
+  couleur, accroché à un point caché du cercle (aucune surface de `geometry-core` n'écrit le nom
+  d'un cercle) : rien n'est désigné au survol, rien de plus à l'export.
 
 **Quatre états** (D9) : `error` > `pending` > `incomplete` > `ok`. Un nom cité mais absent met
 l'objet **en attente** (`pending`, avec `missing`), pas en erreur ; l'attente se répare seule quand
