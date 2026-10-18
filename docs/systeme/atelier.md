@@ -1013,14 +1013,20 @@ Trois ponts à **sens unique**, tous idempotents (une empreinte évite de refair
   cessait d'être idempotent, il bouclerait.
 - `syncFigure` (`figure-sync.ts`, géométrie v2, PR 2) : l'atelier → une `Figure` de
   `geometry-core`, tenue par `AtelierFigure` (une projection : `FigureView` la crée, un
-  `$derived` la resynchronise à chaque `revision`). Par l'**API `Figure.create*`**, pas par le DSL :
+  `$effect` la resynchronise à chaque `revision`, comme `syncPlots`). Par l'**API `Figure.create*`**, pas par le DSL :
   l'atelier a déjà les arbres (dérivées développées, fonctions remplacées par
   `substitutedAstOf` / `substitutedTextOf`), les réécrire en script reviendrait à relire une sortie
   texte (invariant 10). La forme d'une courbe est celle de `courbe()` (`curveShapeOf`,
-  `geometry-core/geometry/curve-nature.ts`), sur l'équation **développée** (`y = 4(x − 2) + 4` est
-  une droite, `(x − 1)² + (y − 2)² = 4` un cercle) : droite (exacte sans curseur), y = f(x),
-  conique, implicite ; deux droites (`x² = 4`) passent par le marching squares ; vide, point
-  isolé et droite double ne dessinent rien (la carte le dit). Un point sans curseur a ses
+  `geometry-core/geometry/curve-nature.ts`), lue d'abord sur l'équation **telle qu'écrite**
+  (`y = 1/x` reste y = f(x), comme dans `courbe()`), puis sur l'équation **développée** si
+  l'écrite ne donne qu'une implicite (`(x − 1)² + (y − 2)² = 4`, un cercle) ou si elle révèle une
+  droite (`y = 4(x − 2) + 4`) : droite (exacte sans curseur), y = f(x), conique, implicite. Ce
+  que l'équation décrit est **dessiné, même dégénéré** : point isolé (`x² + y² = 0`), droite
+  double (`x² = 0`, `x² + 2xy + y² = 0`), deux droites par le marching squares (`x² = 4`) ; seul
+  le vide ne dessine rien (la carte le dit). Une conique à curseur dont la sorte change au
+  glisser (`x² = a`) porte les quatre tracés possibles, un seul dessiné à la fois. Une pose qui
+  échoue retire ses aides cachées. Une valeur hors des bornes de sa carte (au-delà de ±10⁹) :
+  ce qui la cite n'est pas dessiné (la figure la ramènerait dans les bornes). Un point sans curseur a ses
   coordonnées **exactes** (`GeoValue`), dessinées non déplaçables. Un objet en erreur, en attente
   ou à compléter n'est pas dessiné (F5). **Curseurs partagés (S1, S2, S4)** : chaque valeur à
   curseur citée devient un curseur **caché** de la figure, aux bornes de sa carte (sans pas : la
@@ -1043,9 +1049,12 @@ ni courbe, la vue dit « Écris un point A = (1 ; 2) ou une courbe d : y = 3x �
 **Nature d'une courbe** (`curve-nature.ts`, C1, C2, C6) : la carte remplace le type « courbe »
 par la nature, **recalculée** à chaque lecture (jamais rangée) avec les valeurs citées
 remplacées — « droite », « cercle », « ellipse », « parabole », « hyperbole », « deux droites »,
-sinon « courbe ». Une courbe vide reste acceptée et la carte constate « Aucun point ne vérifie
-cette équation. » (C6) ; une conique réduite à un point, « Un seul point vérifie cette
-équation. ». Même classification que `courbe()` (`curveNatureOf`, `degenerateConicKind`).
+« point », sinon « courbe ». Une courbe vide reste acceptée et la carte constate « Aucun point
+ne vérifie cette équation. » (C6) ; une conique réduite à un point dit « point » et constate
+« Un seul point vérifie cette équation. ». Même classification que `courbe()`
+(`curveNatureOf`, `degenerateConic`). La tête d'une carte de point ou de courbe se lit comme
+celle d'une fonction : le nom, puis l'équation ou les coordonnées — le « : » ou le « = » n'est
+que lu (lecteur d'écran), pas affiché seul sur sa ligne.
 
 ### Copier une réponse
 

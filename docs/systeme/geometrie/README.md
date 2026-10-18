@@ -125,9 +125,10 @@ plus de réglette pour un curseur invisible (y compris après `masque(s)`). Doc 
 `curveShapeOf(F)` donne la forme dans l'ordre de `courbe()` (droite, y = f(x), conique,
 implicite) — `courbe()` l'appelle — ; `curveNatureOf(équation)` la nature (`line`, `circle`,
 `ellipse`, `parabola`, `hyperbola`, `point`, `lines`, `empty`, `curve`) sur l'équation développée
-(`expandedEquation`), `null` si une lettre autre que x, y reste ; `degenerateConicKind`
-(`conic-classify.ts`) sépare vide, point isolé, droite double et deux droites, que
-`classifyConic` disait seulement `degenerate`.
+(`expandedEquation`), `null` si une lettre autre que x, y reste ; `degenerateConic`
+(`conic-classify.ts`, et sa sorte seule `degenerateConicKind`) sépare vide, point isolé (son
+centre), droite double (son équation) et deux droites, que `classifyConic` disait seulement
+`degenerate`.
 
 ### Frontière avec le grapheur
 

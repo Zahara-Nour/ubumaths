@@ -55,7 +55,19 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
   800 × 600, Mac mini M6 : `slideTo` + `syncFigure` + rendu Svelte, sans la peinture). En node :
   `slideTo` 0,5 ms, `syncFigure` 0,9 ms, géométrie SVG des 10 courbes 13 ms (médianes). Sous une
   image à 60 Hz ; pas de seuil posé.
-- **À trancher par David** : (1) une conique réduite à un point (`x² + y² = 0`, ou a = 0 dans
-  `x² + y² = a²`) : la carte dit « courbe » + « Un seul point vérifie cette équation. » et la
-  figure ne dessine rien — faut-il dessiner le point ? (2) le type d'une courbe affiche
-  « deux droites » pour `x² = 4` : libellé à valider. (3) le message F1 finit par un point.
+- **À trancher par David** : (1) le libellé « deux droites » pour `x² = 4` ; (2) le message F1
+  finit par un point. (Tranché par la revue : un point isolé et une droite double se DESSINENT,
+  la carte d'un point isolé dit « point ».)
+- 2026-10-18 : revue de code + vérification visuelle (Chromium, mobile) ; corrections, tests
+  d'abord (12 rouges : 10 node, 2 navigateur) — conique à curseur reclassée dégénérée tracée
+  (`x² = a`, `x² − y² = a` à 0), forme lue d'abord sur l'équation écrite (`y = 1/x` reste
+  y = f(x)), point isolé et droite double dessinés (`degenerateConic`), valeur hors des bornes
+  de sa carte non dessinée (plus de `moved` à chaque révision), aides d'une pose ratée
+  retirées, `$effect` au lieu d'un `$derived` à effet de bord, tête de carte sans « : » / « = »
+  seul sur sa ligne, tracés vérifiés à a = 3.
+- Noté (non traité) : `planOf` relit tout l'atelier à chaque cran de curseur (substitution de
+  chaque objet de la figure) ; la mesure S2 (~11 ms par cran pour 10 courbes) suffit pour
+  l'instant.
+- `masque(curseur)` : `GeometryCanvas` ne montre plus la réglette d'un curseur masqué. Vérifié
+  en production (lecture seule, par la session principale) : aucune figure ni construction ne
+  cache un curseur — aucun contenu n'en dépend.
