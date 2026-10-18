@@ -18,41 +18,29 @@
 # le 2026-10-07, la CI de main étant verte : ni raté connu ni faux positif).
 # `--quiet` : les `warn` ne font pas échouer la CI, on ne montre que les erreurs.
 #
-# Usage : scripts/lint-fast.sh [ref]   (défaut : ce qui diffère d'origin/main)
+# Usage : scripts/lint-fast.sh [ref]   (défaut : ce qui diffère d'origin/main, non suivis compris)
 #         scripts/lint-fast.sh --staged
+#         scripts/lint-fast.sh --push  (pre-push : les commits qui partent, sans les non suivis)
+#
+# Le choix des fichiers vit dans `lint-fast-fichiers.sh` (testé à part).
 
 set -e
 
-if [ "$1" = "--staged" ]; then
-	FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|svelte)$' || true)
-	SOURCE="l'index"
-else
-	SINCE="${1:-origin/main}"
-	# `git diff` ignore les fichiers non suivis : un fichier tout neuf passerait
-	# entre les mailles en usage manuel (au push il est commité, donc vu).
-	FILES=$(
-		{
-			git diff --name-only --diff-filter=ACMR "$SINCE"
-			git ls-files --others --exclude-standard
-		} | grep -E '\.(ts|svelte)$' | sort -u || true
-	)
-	SOURCE="$SINCE"
-fi
+case "$1" in
+	--staged) SOURCE="l'index" ;;
+	--push) SOURCE="les commits poussés" ;;
+	*) SOURCE="${1:-origin/main}" ;;
+esac
 
-# Un fichier supprimé depuis reste dans le diff : eslint s'arrête net dessus.
-# Le `|| true` est indispensable : sous `set -e`, une boucle dont la dernière
-# itération est fausse (ligne vide) ferait sortir le script en silence.
-FILES=$(echo "$FILES" | while read -r f; do
-	if [ -n "$f" ] && [ -f "$f" ]; then echo "$f"; fi
-done || true)
+FILES=$(bash "$(dirname "$0")/lint-fast-fichiers.sh" "$@")
 
 if [ -z "$FILES" ]; then
-	echo "✅ Aucun fichier TS/Svelte modifié depuis $SOURCE"
+	echo "✅ Aucun fichier TS/Svelte à relire ($SOURCE)"
 	exit 0
 fi
 
 COUNT=$(echo "$FILES" | grep -c . || true)
-echo "🔍 Lint rapide sur $COUNT fichier(s) modifié(s) depuis $SOURCE"
+echo "🔍 Lint rapide sur $COUNT fichier(s) ($SOURCE)"
 
 EXIT=0
 

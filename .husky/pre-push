@@ -14,8 +14,11 @@ fi
 # rejoue en ~2,5 s TOUTES les règles de niveau erreur de la config complète,
 # sans le service TypeScript (élargi le 2026-10-07 après un échec CI sur
 # `no-fallthrough`) : il évite un aller-retour CI pour une erreur de lint.
+# `--push` : seulement les fichiers des commits qui partent, jamais un non
+# suivi — même raison que le formatage ci-dessus (dépôt principal partagé ;
+# le brouillon `.ts` d'une autre session a bloqué tous les push le 2026-10-18).
 echo "pre-push : lint rapide…"
-if ! pnpm lint:fast; then
+if ! pnpm lint:fast --push; then
 	exit 1
 fi
 

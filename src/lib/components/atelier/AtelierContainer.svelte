@@ -42,9 +42,10 @@
 	import { tabulationReport } from '$lib/atelier/tabulate';
 	import { FolderOpen, RotateCcw, Save, Share2 } from '@lucide/svelte';
 	import ToolButton from './ToolButton.svelte';
+	import { rovingToolbar } from './roving-toolbar';
 	import {
 		ATELIER_FILE_TOO_BIG,
-		MAX_ATELIER_FILE_LENGTH,
+		MAX_ATELIER_FILE_BYTES,
 		atelierFileName,
 		atelierFileToJson,
 		readAtelierFile
@@ -124,9 +125,12 @@
 	let confirmReset = $state(false);
 
 	/** Le fichier `.atelier.json` relu qui attend la confirmation de « Charger » (lot 1). */
-	let pendingLoad = $state<{ state: AtelierState; history: KeptHistory; dropped: number } | null>(
-		null
-	);
+	let pendingLoad = $state<{
+		state: AtelierState;
+		history: KeptHistory;
+		dropped: number;
+		consoleNotice: string | null;
+	} | null>(null);
 	let confirmLoad = $state(false);
 	let loadInput = $state<HTMLInputElement | null>(null);
 	let shareBar = $state<ShareBar | null>(null);
@@ -196,9 +200,10 @@
 		// Vidé tout de suite : rechoisir le même fichier doit relancer la lecture
 		input.value = '';
 		if (file === undefined) return;
-		// Trop gros : refusé avant d'être lu en mémoire
+		// Trop gros : refusé avant d'être lu en mémoire. En OCTETS, large : la
+		// limite exacte, en caractères, est celle de `readAtelierFile`
 		const read =
-			file.size > MAX_ATELIER_FILE_LENGTH
+			file.size > MAX_ATELIER_FILE_BYTES
 				? ({ kind: 'error', message: ATELIER_FILE_TOO_BIG } as const)
 				: readAtelierFile(await file.text());
 		if (read.kind === 'error') {
@@ -219,7 +224,7 @@
 	/** Remplacer l'atelier et sa console par le fichier relu. */
 	function loadNow() {
 		if (pendingLoad === null) return;
-		const { state, history, dropped } = pendingLoad;
+		const { state, history, dropped, consoleNotice } = pendingLoad;
 		pendingLoad = null;
 		const report = atelier.restore(state);
 		desk.clear();
@@ -231,7 +236,8 @@
 		const lost = [
 			...report.renamed.map(({ to }) => reservedYRenamedMessage(to)),
 			...report.skipped.map((s) => `« ${s.name} » n'a pas pu être chargé : ${s.reason}`),
-			...(dropped > 0 ? [`${dropped} élément(s) du fichier étaient illisibles.`] : [])
+			...(dropped > 0 ? [`${dropped} élément(s) du fichier étaient illisibles.`] : []),
+			...(consoleNotice !== null ? [consoleNotice] : [])
 		];
 		notices = [...notices, ...lost.map((message) => ({ kind: 'warning' as const, message }))];
 		toaster.success('Atelier chargé.');
@@ -614,7 +620,7 @@
 	<section class="zone" aria-labelledby="titre-atelier">
 		<h1 id="titre-atelier" class="sr-only">{heading}</h1>
 		<!-- La barre d'icônes (lot 1 de `atelier-refonte-interface-phase0.md`) -->
-		<div class="barre" role="toolbar" aria-label="Outils de l’atelier">
+		<div class="barre" role="toolbar" aria-label="Outils de l’atelier" {@attach rovingToolbar}>
 			<div class="outils">
 				{#if !ephemeral}
 					<!-- Des lignes de Calcul seules suffisent : elles survivent au rechargement -->

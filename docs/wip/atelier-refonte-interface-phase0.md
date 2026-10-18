@@ -115,6 +115,14 @@ Même grammaire pour tous : une ligne `● nom = [définition éditable]`, puis 
 
 → À discuter en séance : le curseur d'une valeur doit-il rester visible sans ouvrir de menu ?
 
+### Ajout du 2026-10-18 (session atelier-geometry, décisions de David)
+
+- Deux nouveaux types (#1474, #1478) : **point** `A = [(1 ; 2)]` (menu : modifier, supprimer) et **courbe** `d : [y = 3x − 2]` avec sa nature affichée (droite, cercle…) (menu : modifier, supprimer ; plus tard « Afficher dans Géométrie »). Le principe est validé par David, le détail reste à lui faire valider. Spécification : `atelier-geometrie-phase0.md`.
+- Paramètre (règle du curseur) : une valeur citée par un point ou une courbe EST un paramètre.
+- Onglets : **Graphe · Géométrie · Données** (l'onglet « Figure » de #1478 est renommé Géométrie par la session atelier-geometry).
+- Lot 2 : le message de la vue Géométrie vide renvoie à « Calcul » (`FigureView.svelte`) ; il devra suivre la console.
+- Charger : la copie de côté de « Remplacer mon atelier » (`atelier-remplacer-phase0.md`, R3, R5) est faite par la session atelier-geometry, après le merge du suivi de revue du lot 1.
+
 ## Lot 5 — Annuler / Rétablir (chantier à part)
 
 Sa phase 0 vient après les lots 1 à 3. Voici les questions qu'elle devra trancher :

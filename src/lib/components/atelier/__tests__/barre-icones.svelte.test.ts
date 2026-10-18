@@ -12,7 +12,11 @@ import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { CalcDesk } from '$lib/atelier/desk.svelte';
-import { atelierFileToJson } from '$lib/atelier/atelier-file';
+import {
+	MAX_ATELIER_FILE_BYTES,
+	MAX_ATELIER_FILE_LENGTH,
+	atelierFileToJson
+} from '$lib/atelier/atelier-file';
 import { CALC_HISTORY_STORAGE_KEY } from '$lib/atelier/history-storage';
 
 // =============================================================================
@@ -119,6 +123,33 @@ describe('la barre d’icônes', () => {
 			expect(button.textContent?.trim()).toBe('');
 			expect(button.getAttribute('title')).toContain(button.getAttribute('aria-label'));
 		}
+	});
+
+	it('motif « barre d’outils » : un seul arrêt de tabulation, les flèches pour s’y déplacer', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		const { container } = await render(AtelierContainer, { atelier });
+		const buttons = [...toolbar(container).querySelectorAll('button')];
+		const press = (key: string) =>
+			document.activeElement?.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+
+		// Un seul bouton dans l'ordre de tabulation : le premier
+		expect(buttons.filter((b) => b.tabIndex === 0)).toEqual([buttons[0]]);
+
+		buttons[0].focus();
+		press('ArrowRight');
+		expect(document.activeElement).toBe(buttons[1]);
+		// L'arrêt de tabulation suit le focus : Maj+Tab puis Tab revient ici
+		expect(buttons.filter((b) => b.tabIndex === 0)).toEqual([buttons[1]]);
+
+		press('End');
+		expect(document.activeElement).toBe(buttons.at(-1));
+		press('ArrowRight');
+		expect(document.activeElement).toBe(buttons[0]);
+		press('ArrowLeft');
+		expect(document.activeElement).toBe(buttons.at(-1));
+		press('Home');
+		expect(document.activeElement).toBe(buttons[0]);
 	});
 
 	it('ni Annuler ni Rétablir avant le lot 5', async () => {
@@ -287,11 +318,54 @@ describe('charger', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'g', definition: 'x+1' });
 		const { container } = await render(AtelierContainer, { atelier });
+		// Revue de #1479 : « avant d'être lu » se PROUVE, le contenu n'est jamais demandé
+		const read = vi.spyOn(File.prototype, 'text');
+		try {
+			await choose(container, new File([' '.repeat(MAX_ATELIER_FILE_BYTES + 1)], 'enorme.json'));
 
-		await choose(container, new File([' '.repeat(1_000_001)], 'enorme.json'));
+			expect(read).not.toHaveBeenCalled();
+			expect(atelier.names).toEqual(['g']);
+			expect(container.textContent).toContain('Ce fichier est trop gros pour être un atelier.');
+		} finally {
+			read.mockRestore();
+		}
+	});
 
-		expect(atelier.names).toEqual(['g']);
-		expect(container.textContent).toContain('Ce fichier est trop gros pour être un atelier.');
+	it('un atelier riche en accents, plus lourd en octets qu’en caractères, se charge', async () => {
+		const atelier = new Atelier();
+		const { container } = await render(AtelierContainer, { atelier });
+		// 1 800 cellules de 200 « € » (3 octets chacun) : sous la limite en
+		// caractères, au-dessus d'un million d'OCTETS (revue de #1479)
+		const text = '€'.repeat(200);
+		const file = atelierFile((a) => {
+			const edits = [];
+			for (let column = 0; column < 9; column++) {
+				for (let row = 1; row <= 200; row++) edits.push({ column, row, text });
+			}
+			expect(a.editCells(edits).ok).toBe(true);
+		});
+		const content = await file.text();
+		expect(content.length).toBeLessThanOrEqual(MAX_ATELIER_FILE_LENGTH);
+		expect(file.size).toBeGreaterThan(MAX_ATELIER_FILE_LENGTH);
+
+		await choose(container, file);
+
+		expect(atelier.cell(8, 200)).toBe(text);
+		expect(container.textContent).not.toContain('trop gros');
+	});
+
+	it('une console perdue se dit, l’atelier est chargé quand même', async () => {
+		const atelier = new Atelier();
+		const { container } = await render(AtelierContainer, { atelier });
+		const content = JSON.parse(await atelierFile((_, d) => d.submit('f(x)=x^2')).text());
+		content.history.version = 99;
+
+		await choose(container, new File([JSON.stringify(content)], 'recent.atelier.json'));
+
+		expect(atelier.names).toEqual(['f']);
+		expect(container.textContent).toContain(
+			'La console de ce fichier vient d’une version plus récente de Chiphre'
+		);
 	});
 
 	it('un objet illisible est écarté, et on le dit', async () => {

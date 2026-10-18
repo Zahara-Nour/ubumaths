@@ -159,6 +159,7 @@ Ceux du code et de l'interface :
 | Composant                 | Rôle                                                                                                                       |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `AtelierContainer.svelte` | Le conteneur : barre d'icônes, panneau + vues, session, `CalcDesk`, `GrapheurStore` propre, confirmations                  |
+| `roving-toolbar.ts`       | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                          |
 | `ToolButton.svelte`       | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable (`aria-disabled`)  |
 | `ObjectPanel.svelte`      | « Mes objets » : création, liste des cartes                                                                                |
 | `ObjectCard.svelte`       | Une carte : nom, définition, état, actions ; champs de l'image et de « Tabuler » (de / à / pas)                            |
@@ -1232,7 +1233,9 @@ David le 2026-10-18). Une seule barre (`role="toolbar"`) au-dessus des onglets, 
 l'atelier** ; à droite **Partager** et **Réglages**. Pas d'Annuler / Rétablir avant le lot 5.
 Un bouton indisponible garde le focus (`aria-disabled`, pas `disabled`) et dit pourquoi, dans son
 infobulle et à l'aide technique (« Ton atelier est vide : il n'y a rien à enregistrer. »). Sur un
-atelier reçu par lien : ni Repartir de zéro, ni Charger, ni Partager.
+atelier reçu par lien : ni Repartir de zéro, ni Charger, ni Partager. La barre suit le motif ARIA
+« barre d'outils » (`roving-toolbar.ts`, revue de #1479) : un seul arrêt de tabulation, flèches
+gauche / droite (en boucle), Début et Fin pour aller d'un bouton à l'autre.
 
 **Enregistrer n'est pas l'ancien export JSON.** Le JSON « pour rejouer » ne garde que les gestes
 de Calcul : une définition changée sur une carte, une couleur, le tableur s'y perdaient. Le
@@ -1240,12 +1243,15 @@ fichier `atelier-AAAA-MM-JJ.atelier.json` (`atelier-file.ts`, format `chiphre-at
 l'état complet (`Atelier.serialize()`, celui que `persistence.ts` range) et la console telle que
 `history-storage.ts` la range (`keptHistoryOf`).
 
-**Charger** lit le fichier choisi (`readAtelierFile`) : taille bornée avant lecture
-(`MAX_ATELIER_FILE_LENGTH`), puis les **mêmes** schémas que le navigateur — objets et cellules triés
-un par un (`salvageState`), console par `readKeptHistory` (liste blanche de `safe-latex.ts`). Un
-atelier non vide demande confirmation (« Charger remplace l'atelier actuel »). Un fichier refusé
-ne remplace rien, et la raison s'affiche dans les avis (« Ce fichier n'est pas un atelier
-Chiphre. ») ; un objet écarté ou un `y` renommé se dit aussi. Un **ancien historique JSON**
+**Charger** lit le fichier choisi (`readAtelierFile`). Taille bornée deux fois : la page refuse
+AVANT lecture au-delà de `MAX_ATELIER_FILE_BYTES` (en octets, 4 × la limite en caractères : un
+atelier riche en accents pèse plus d'octets que de caractères), puis `readAtelierFile` applique la
+limite exacte en caractères (`MAX_ATELIER_FILE_LENGTH`). Ensuite les **mêmes** schémas que le
+navigateur — objets et cellules triés un par un (`salvageState`), console par `readKeptHistory`
+(liste blanche de `safe-latex.ts`). Un atelier non vide demande confirmation (« Charger remplace
+l'atelier actuel »). Un fichier refusé ne remplace rien, et la raison s'affiche dans les avis
+(« Ce fichier n'est pas un atelier Chiphre. ») ; un objet écarté ou un `y` renommé se dit aussi,
+et ce que la console a perdu (illisible, version plus récente, lignes écartées : `consoleNotice`). Un **ancien historique JSON**
 (`chiphre-calcul`) est reconnu et rejoué comme avant (même confirmation).
 
 ### Export et rejeu de l'historique
