@@ -486,7 +486,16 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   ±15 (`MAX_ROUNDING_DIGITS` : `ARRONDI(1/3;1000000)` gelait l'onglet) ; sur un flottant (π, √2),
   un résultat de plus de 15 chiffres significatifs est approché, jamais présenté comme exact. Leurs arguments
   sont des nombres : une plage est refusée, et une case vide citée laisse la formule vide (T5), à
-  l'inverse des statistiques. `=racine(4)`, `=exp(1)` s'écrivent `=RACINE(4)`, `=EXP(1)` ; `sqrt`
+  l'inverse des statistiques. **RESTE(n ; d)** (repris de V4, phase 0 :
+  [atelier-tableur-reste-et-ou-csv-phase0.md](../wip/atelier-tableur-reste-et-ou-csv-phase0.md),
+  validée le 2026-10-18), du signe du diviseur comme LibreOffice (`RESTE(-7;3)` = 2, le reste
+  euclidien) : deux arguments exacts → en entiers longs (`remainder`, `RESTE(10^20+1;7)` = 3,
+  `RESTE(2/3;1/2)` = 1/6) ; sinon l'arbre `n − d × floor(n/d)`, approché, REFUSÉ quand le
+  quotient dépasse 2⁵³ (revue : `RESTE(EXP(50);3)` rendait du bruit). Un argument approché
+  (`ArgumentValue.approximate` : une case ≈, ou une écriture exacte trop longue entrée en décimal,
+  `MAX_EXACT_CITED`) ne passe jamais par les entiers longs : `RESTE(10^30+1;7)` est refusé, pas
+  « ≈ 5 ». `d = 0` refusé avant tout calcul ; l'aide dit que le quotient est `ENT(n/d)`. Pas de QUOTIENT
+  (Q-RE-6) : `ENT(n/d)` va avec RESTE (−3 et 2), QUOTIENT de LibreOffice non. `=racine(4)`, `=exp(1)` s'écrivent `=RACINE(4)`, `=EXP(1)` ; `sqrt`
   reste lu. **L'aide sous la barre** (`functionHint`) : pendant la frappe, la forme de la fonction
   dont on écrit les arguments (la plus intérieure), ou celles dont on écrit le nom (`=ECART`, trois
   lettres au moins, ou un nom entier de deux : LN, NB, PI — `=A1*ab` n'ouvre pas ABS) ;
@@ -498,7 +507,13 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   refus (`COMPARISON_ALONE_MESSAGE`, au lieu de « pas un nombre réel »). Un côté de la condition est
   un texte, une case (son mot se compare : `B2="fille"`) ou une expression ; un mot ne se compare
   qu'avec `=` ou `<>`, sans tenir compte des majuscules (`compare`). Une case vide dans la condition
-  laisse la formule vide (T5 : recopiée sous les données, elle n'écrit rien). Seule la branche
+  laisse la formule vide (T5 : recopiée sous les données, elle n'écrit rien). **ET, OU** (Q-RE-1 à
+  Q-RE-3) : la condition de SI peut être `ET(comparaison ; …)` ou `OU(…)` formant TOUT l'argument
+  (`logicCallOf`, `readLogic`, parenthèses englobantes ôtées) ; chaque argument est lu comme une condition (`readComparison`), au
+  moins un ; toutes les comparaisons sont calculées, une case vide ou une erreur arrête la formule
+  comme pour SI. Un seul niveau : ET dans OU (ou dans ET) refusé (« écris deux SI ») ; ET ou OU
+  ailleurs refusé avec la bonne écriture (`logicAloneMessage` : la grille n'a pas de valeur
+  VRAI/FAUX). Pas de NON (Q-RE-1). Seule la branche
   choisie est calculée ; un mot rendu par SI fait de la case une case de mots si la formule n'est
   que l'appel (`alone`), sinon refus. NB.SI compte les cases non vides d'une plage (ou d'une liste
   nommée) qui vérifient le critère : un mot, un nombre, ou une comparaison écrite en texte
