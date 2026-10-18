@@ -22,7 +22,12 @@ import { z } from 'zod';
 import type { Entry } from './desk.svelte';
 import { HISTORY_FORMAT } from './history-export';
 import { readHistory, type ImportedHistory } from './history-import';
-import { keptHistoryOf, readKeptHistory, type KeptHistory } from './history-storage';
+import {
+	keptHistoryOf,
+	offeredLineCount,
+	readKeptHistory,
+	type KeptHistory
+} from './history-storage';
 import {
 	ATELIER_STATE_VERSION,
 	atelierShellSchema,
@@ -46,6 +51,14 @@ export const ATELIER_FILE_VERSION = 1;
  */
 export const MAX_ATELIER_FILE_LENGTH = 1_000_000;
 
+/**
+ * Le garde-fou de la page, AVANT lecture : `File.size` compte des octets, la
+ * limite ci-dessus des caractères. Un caractère pèse jusqu'à 4 octets en UTF-8
+ * (accents, ′, « ») : un atelier légitime riche en accents dépasse 1 Mo. La
+ * limite exacte reste celle en caractères, dans `readAtelierFile` (revue de #1479).
+ */
+export const MAX_ATELIER_FILE_BYTES = 4 * MAX_ATELIER_FILE_LENGTH;
+
 const NOT_AN_ATELIER = 'Ce fichier n’est pas un atelier Chiphre.';
 const TOO_RECENT = 'Cet atelier vient d’une version plus récente de Chiphre.';
 /** Aussi dit par la page, qui refuse un fichier trop gros avant même de le lire. */
@@ -67,6 +80,15 @@ const fileSchema = headerSchema.extend({
 /** Le format seul : distinguer un ancien historique « pour rejouer » d'un atelier. */
 const formatSchema = z.object({ format: z.string() });
 
+/** La version de l'atelier seule : plus récente, elle est dite telle, pas « illisible ». */
+const atelierVersionSchema = z.object({ atelier: z.object({ version: z.number() }) });
+
+const CONSOLE_UNREADABLE = 'La console de ce fichier était illisible : elle n’a pas été chargée.';
+const CONSOLE_TOO_RECENT =
+	'La console de ce fichier vient d’une version plus récente de Chiphre : elle n’a pas été chargée.';
+
+const EMPTY_HISTORY: KeptHistory = { lines: [], typed: [] };
+
 // =============================================================================
 // Types
 // =============================================================================
@@ -87,6 +109,8 @@ export type ReadAtelierFile =
 			readonly history: KeptHistory;
 			/** Objets et cellules illisibles, écartés : à dire à l'élève. */
 			readonly dropped: number;
+			/** Ce qui s'est perdu de la console (illisible, trop récente, lignes écartées), sinon `null`. */
+			readonly consoleNotice: string | null;
 	  }
 	/** Un historique JSON d'avant la refonte : il sera rejoué, comme avant. */
 	| { readonly kind: 'replay'; readonly history: ImportedHistory }
@@ -153,8 +177,8 @@ export function readAtelierFile(text: string): ReadAtelierFile {
 	if (header.data.version > ATELIER_FILE_VERSION) return { kind: 'error', message: TOO_RECENT };
 
 	// L'atelier a sa propre version : plus récente, on ne le relit pas (§5 L2)
-	const atelierVersion = (raw as { atelier?: { version?: unknown } }).atelier?.version;
-	if (typeof atelierVersion === 'number' && atelierVersion > ATELIER_STATE_VERSION) {
+	const atelierVersion = atelierVersionSchema.safeParse(raw);
+	if (atelierVersion.success && atelierVersion.data.atelier.version > ATELIER_STATE_VERSION) {
 		return { kind: 'error', message: TOO_RECENT };
 	}
 
@@ -163,11 +187,24 @@ export function readAtelierFile(text: string): ReadAtelierFile {
 
 	// Un objet abîmé n'emporte pas les autres ; une console illisible part seule
 	const { state, dropped } = salvageState(file.data.atelier);
-	const history = readKeptHistory(file.data.history);
+	return { kind: 'atelier', state, dropped, ...readConsole(file.data.history) };
+}
+
+/** La console du fichier, et ce qui s'en est perdu, à dire à l'élève (revue de #1479). */
+function readConsole(raw: unknown): { history: KeptHistory; consoleNotice: string | null } {
+	// Un fichier sans console n'a rien perdu
+	if (raw === undefined) return { history: EMPTY_HISTORY, consoleNotice: null };
+
+	const read = readKeptHistory(raw);
+	if (read.kind === 'too-recent')
+		return { history: EMPTY_HISTORY, consoleNotice: CONSOLE_TOO_RECENT };
+
+	const offered = offeredLineCount(raw);
+	if (offered === null) return { history: EMPTY_HISTORY, consoleNotice: CONSOLE_UNREADABLE };
+
+	const lost = offered - read.history.lines.length;
 	return {
-		kind: 'atelier',
-		state,
-		history: history.kind === 'loaded' ? history.history : { lines: [], typed: [] },
-		dropped
+		history: read.history,
+		consoleNotice: lost > 0 ? `${lost} ligne(s) de la console étaient illisibles.` : null
 	};
 }
