@@ -6,12 +6,13 @@
  * Light pour le texte (Bold pour le gras) et Chiphre Math, police OpenType MATH
  * construite par `tools/chiphre-math`, pour les formules.
  *
- * Les polices sont posées par des règles Typst AJOUTÉES juste après le
- * `#set text(…)` du document (modèle ou mise en page par défaut) : aucun des
- * modèles n'est réécrit. Les règles sont encadrées de deux commentaires, pour
- * qu'un corrigé dont la compilation échoue avec ces polices puisse être
- * recompilé sans elles (`withoutCorrectionFonts`), y compris quand son Typst
- * vient du serveur.
+ * Seule la correction de chaque exercice prend ces polices : les règles
+ * ouvrent un bloc `#[ … ]` qui ne contient qu'elle (`render-exercise.ts`).
+ * Bandeau, titres d'exercice et de section, pied de page gardent la police du
+ * modèle (David, 2026-10-18). Les règles sont encadrées de deux commentaires,
+ * pour qu'un corrigé dont la compilation échoue avec ces polices puisse être
+ * recompilé sans elles (`withoutCorrectionFonts`, qui retire chaque bloc de
+ * règles), y compris quand son Typst vient du serveur.
  *
  * Module pur : générateurs (navigateur et serveur) et tests l'importent.
  *
@@ -73,7 +74,9 @@ function endOfTypstCall(typst: string, start: number): number | null {
 }
 
 /**
- * Le document avec les règles de police du Corrigé, posées deux fois :
+ * Le document ENTIER dans les polices du Corrigé : sert à `/test-font` seul,
+ * plus aux corrigés des fiches (leurs règles sont bornées à chaque
+ * correction). Les règles y sont posées deux fois :
  * - en tête, pour ce que Typst met en forme avec les réglages du `#set page`
  *   (pied de page, numéros de page) ;
  * - après le DERNIER `#set text(…)` de premier niveau, sinon la police du
