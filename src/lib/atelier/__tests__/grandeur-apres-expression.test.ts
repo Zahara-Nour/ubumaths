@@ -98,7 +98,11 @@ describe('dans Calcul', () => {
 		['sqrt(2) m', '\\sqrt{2}~\\mathrm{m}'],
 		['10/2^3 m', '1{,}25~\\mathrm{m}'],
 		['2^10 o', '1024~\\mathrm{o}'],
-		['2π m', '2 \\pi~\\mathrm{m}']
+		['2π m', '2 \\pi~\\mathrm{m}'],
+		['2π[m]', '2 \\pi~\\mathrm{m}'],
+		['sqrt(π) m', '\\sqrt{\\pi}~\\mathrm{m}'],
+		// Lue par le parseur maison : les crochets y restent (revue)
+		['sqrt(π)*3[m]', '3 \\sqrt{\\pi}~\\mathrm{m}']
 	])('%s', (input, latex) => {
 		expect(latexOf(runInput(session(), input))).toBe(latex);
 	});
@@ -115,6 +119,8 @@ describe('dans Calcul', () => {
 		expect(latexOf(runInput(s, 'd'))).toBe('1000~\\mathrm{m}');
 		runInput(s, 'c = 2π m');
 		expect(latexOf(runInput(s, 'c'))).toBe('2 \\pi~\\mathrm{m}');
+		runInput(s, 'k = 2π[m]');
+		expect(latexOf(runInput(s, 'k'))).toBe('2 \\pi~\\mathrm{m}');
 	});
 
 	it('p = 2πr m, avec r = 3 dans le panneau', () => {

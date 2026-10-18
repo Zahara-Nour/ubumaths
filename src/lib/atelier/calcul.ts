@@ -3452,7 +3452,11 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	if (line.kind === 'division-by-zero') {
 		return { kind: 'calcul', input, output: 'Erreur de calcul : Division par zéro' };
 	}
-	const result = session.engine.execute(latexUnitsWithPi(expandInput(session.atelier, line.text)));
+	const expanded = expandInput(session.atelier, line.text);
+	const first = session.engine.execute(expanded);
+	// `(2\pi )[m]` : lue en LaTeX, la ligne refuse ses crochets — relue en `\unit{m}`
+	const rewritten = first.success ? expanded : latexUnitsWithPi(expanded);
+	const result = rewritten === expanded ? first : session.engine.execute(rewritten);
 	// Une cellule de la grille (`B2+1`) : Calcul ne la lit pas (tableur, Q1). Dit
 	// seulement quand le calcul échoue — « Nombre 2 écrit après un facteur »
 	// faisait chercher une faute de frappe

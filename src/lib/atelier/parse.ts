@@ -136,10 +136,14 @@ export function withPiCommand(text: string): string {
  * `(2\pi )[m]` : un texte où `π` est devenu `\pi` est lu en LaTeX, qui ne
  * connaît pas les crochets d'une grandeur (« « [ » inattendu ici ») ; ses
  * unités y sont écrites `\unit{m}` (grandeur après une expression, 2026-10-18).
+ * `withPiCommand` laisse une espace : `2\pi [m]`.
+ *
+ * ⚠️ En repli seulement dans Calcul : une ligne en texte (`sqrt(\pi )*3[m]`)
+ * est lue par le parseur maison, qui connaît les crochets mais pas `\unit`.
  */
 export function latexUnitsWithPi(text: string): string {
 	if (!text.includes('\\pi')) return text;
-	return text.replace(/(?<=[\w)}])\[([^\]]+)\]/g, (whole, writing: string) =>
+	return text.replace(/(?<=[\w)}]\s*)\[([^\]]+)\]/g, (whole, writing: string) =>
 		parseUnit(writing) === null ? whole : `\\unit{${writing}}`
 	);
 }
