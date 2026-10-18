@@ -51,7 +51,13 @@ create table public.student_mathoux (
 	constraint student_mathoux_best_stage_check
 		check (best_stage in ('chaton', 'matou', 'grand_matou')),
 	constraint student_mathoux_starred_grades_check
-		check (cardinality(starred_grades) <= 20 and public.is_valid_grade_array(starred_grades))
+		-- array_position(…, NULL) : is_valid_grade_array ignore un élément NULL ; l'unicité des
+		-- niveaux est garantie par le serveur, seul à écrire (un CHECK ne peut pas compter les distincts).
+		check (
+			cardinality(starred_grades) <= 20
+			and array_position(starred_grades, null) is null
+			and public.is_valid_grade_array(starred_grades)
+		)
 );
 
 comment on table public.student_mathoux is
@@ -100,5 +106,5 @@ create policy "Students can view their own mathoux" on public.student_mathoux
 create policy "Teachers can view mathoux of their students" on public.student_mathoux
 	for select to authenticated using (public.is_my_student(student_id));
 
-create policy "Admins can view all mathoux" on public.student_mathoux
+create policy "Teachers and admins can view all mathoux" on public.student_mathoux
 	for select to authenticated using (public.is_teacher_or_admin());

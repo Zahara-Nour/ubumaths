@@ -278,6 +278,14 @@ describe('Mémoire des Mathoux (student_mathoux)', () => {
 			expect(error?.code).toBe(CHECK_VIOLATION);
 		});
 
+		it('une étoile vide (NULL) est refusée (23514)', async () => {
+			const { error } = await service
+				.from(TABLE)
+				.update({ starred_grades: ['5', null] as unknown as string[] })
+				.eq('student_id', studentAId);
+			expect(error?.code).toBe(CHECK_VIOLATION);
+		});
+
 		it('plus de 20 étoiles sont refusées (23514)', async () => {
 			const { error } = await service
 				.from(TABLE)
