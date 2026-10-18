@@ -173,6 +173,11 @@ le dire · **Q3** plafond de 50 objets de figure · **Q4** grapheur à vrais par
 PR, en dernier · **Q5** onglet Figure entre Graphe et Données. Les comportements du lot 1 (C, P, F,
 S, K, M) sont validés avec elles.
 
+**Q5 révisée** (David, 2026-10-18, « je suis tes recos », après lecture de la phase 0 de la refonte
+de l'interface, qui nommait l'onglet « Géométrie ») : l'onglet s'appelle **Géométrie** (et non
+Figure), et reste **entre Graphe et Données**. Le renommage passe dans la PR 3. Dans le code, la vue
+garde ses identifiants (`FigureView`, `syncFigure`).
+
 **Q6** (ajoutée par la revue de la PR 1, tranchée par David le 2026-10-18, « je te suis ») : `y`
 hors définition, dans un calcul ou une commande (`2y + a`, `.dériver y`), **reste une lettre
 libre**, comme avant. La réservation de `y` ne vaut que pour nommer un objet ; aucun objet ne

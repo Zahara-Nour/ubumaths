@@ -26,6 +26,7 @@ plus à ce qu'il voit.
 | R2  | « Remplacer » demande une **confirmation qui compte ce qui sera perdu** (« Tes 6 objets et ta grille seront remplacés. »). Un remplacement choisi et confirmé n'est pas un écrasement silencieux : la règle « jamais d'écrasement silencieux » tient.              |
 | R3  | **L'atelier précédent est mis de côté** (une seule copie, clé `localStorage` à part) ; « **Retrouver mon atelier précédent** » le rétablit tant qu'un autre remplacement ne l'a pas écrasé. Troisième exception à D6, du même genre que la suppression en cascade. |
 | R4  | **L'historique de la vue Calcul est gardé** (clé à part, `CALC_HISTORY_STORAGE_KEY`) : ce sont les calculs de l'élève, pas des objets de l'atelier.                                                                                                                |
+| R5  | **Charger un fichier `.atelier.json`** (barre d'icônes, refonte lot 1, #1479), qui remplace aussi l'atelier, **profite de la même copie de côté** que R3 (décision de David du 2026-10-18, « je suis tes recos »).                                                 |
 
 ## Comportements à préciser à l'ouverture du chantier
 
