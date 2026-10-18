@@ -97,20 +97,47 @@
 			: atelier.setSequence(object.name, { firstIndex: parsed });
 	}
 
+	/** Ce que le champ montre quand rien n'est en cours : la valeur RETENUE. */
+	function storedText(field: 'firstIndex' | 'firstTerm' | 'steps'): string {
+		return field === 'steps' ? String(object.display?.cobwebSteps ?? '') : String(object[field]);
+	}
+
+	/** Effacer le refus de ce champ, s'il est le sien. */
+	function clearRefusal(field: Field) {
+		if (refusal?.field === field) refusal = null;
+	}
+
 	/**
 	 * Le rang, le premier terme et les marches sont rangés à Entrée ou à la
 	 * sortie du champ (`change`), jamais à la frappe — comme la définition
-	 * (décision de David du 2026-10-18). Refusé ou vide : le refus se dit, et le
-	 * champ reprend la valeur RETENUE.
+	 * (décision de David du 2026-10-18). Refusé : le refus se dit, et le champ
+	 * reprend la valeur RETENUE. Vide, ou inchangé (après Échap) : rien n'est
+	 * rangé, et l'ancien refus s'efface (revue de #1504).
 	 */
 	function commit(field: 'firstIndex' | 'firstTerm' | 'steps') {
 		return (event: Event & { currentTarget: HTMLInputElement }) => {
-			const result = requested(field, event.currentTarget.value);
-			if (result !== null) report(field, result);
-			if (result === null || !result.ok) {
-				event.currentTarget.value =
-					field === 'steps' ? String(object.display?.cobwebSteps ?? '') : String(object[field]);
+			if (event.currentTarget.value.trim() === storedText(field)) {
+				clearRefusal(field);
+				return;
 			}
+			const result = requested(field, event.currentTarget.value);
+			if (result === null) clearRefusal(field);
+			else report(field, result);
+			if (result === null || !result.ok) event.currentTarget.value = storedText(field);
+		};
+	}
+
+	/**
+	 * Échap rétablit la valeur retenue et efface le refus — même contrat que la
+	 * définition (`DefinitionField`) : la sortie du champ qui suit ne range
+	 * plus la saisie annulée (revue de #1504).
+	 */
+	function cancel(field: 'firstIndex' | 'firstTerm' | 'steps') {
+		return (event: KeyboardEvent & { currentTarget: HTMLInputElement }) => {
+			if (event.key !== 'Escape') return;
+			event.preventDefault();
+			event.currentTarget.value = storedText(field);
+			clearRefusal(field);
 		};
 	}
 
@@ -239,6 +266,7 @@
 				min="0"
 				value={object.firstIndex}
 				onchange={commit('firstIndex')}
+				onkeydown={cancel('firstIndex')}
 				class="h-7 w-12 text-sm"
 				aria-label={`Rang du premier terme de ${name}`}
 				aria-invalid={refusal?.field === 'firstIndex'}
@@ -249,6 +277,7 @@
 				type="text"
 				value={object.firstTerm}
 				onchange={commit('firstTerm')}
+				onkeydown={cancel('firstTerm')}
 				class="h-7 w-20 text-sm"
 				placeholder="0 ou a"
 				aria-label={`${name}(${object.firstIndex}) =, premier terme de ${name}`}
@@ -263,6 +292,7 @@
 				min="0"
 				value={object.firstIndex}
 				onchange={commit('firstIndex')}
+				onkeydown={cancel('firstIndex')}
 				class="h-7 w-12 text-sm"
 				aria-label={`Rang du premier terme de ${name}`}
 				aria-invalid={refusal?.field === 'firstIndex'}
@@ -280,6 +310,7 @@
 				min="1"
 				value={display.cobwebSteps}
 				onchange={commit('steps')}
+				onkeydown={cancel('steps')}
 				class="h-7 w-16 text-sm"
 				aria-label={`marches de ${name}`}
 				aria-invalid={refusal?.field === 'steps'}
