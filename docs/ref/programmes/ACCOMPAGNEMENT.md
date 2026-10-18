@@ -1,5 +1,7 @@
 # Documents d'accompagnement des programmes de mathématiques (cycles 2 à 4) : carte de lecture
 
+> **Mise à jour du 2026-10-18** : à la demande de David, les documents **périmés** (ancien programme 2015/2019) et le **doublon** ont été retirés du dossier (section « Documents retirés » en fin de partie cycle 4). Il ne reste que des documents **en vigueur** ou **antérieurs mais utilisables** (guides).
+
 > **Dossier source** : `docs/ref/programmes/Accompagnement/`. Tous les chemins ci-dessous sont relatifs à ce dossier.
 > **Rédigé le 2026-10-18** à partir d'une lecture des textes extraits (`pdftotext -layout`, `textutil`, zip extraits hors dépôt).
 > **Pages** : « p. N » désigne toujours la **page du PDF** (celle du lecteur), pas le folio imprimé. Écarts connus : guide CP, folio = page PDF − 1 ; « Exemples de réussite » CM1/CM2/6e, guides fondamentaux CM et collège, exemples cycle 4 2026 : folio = page PDF − 1.
@@ -7,26 +9,18 @@
 
 ## Vue d'ensemble : statut des documents
 
-| Groupe                                                                                                                    | Documents                       | Statut                                                                                                                 |
-| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Livrets d'accompagnement 2025 (CP, CE1, CE2) et leurs annexes (zip CE1 et CE2, docx `ra25…` pour le CP)                   | 3 PDF, 2 zip (5 docx), 1 docx   | **En vigueur** (cycle 2, BO 2024)                                                                                      |
-| Livrets d'accompagnement 2026 (CM1, CM2, 6e) et leurs annexes zip                                                         | 3 PDF, 3 zip (9 docx)           | **En vigueur** (cycle 3, BO 2025)                                                                                      |
-| « Exemples de réussite » 2025 CM1, CM2, 6e et recommandations v2 2025 (calcul mental, fractions, résolution de problèmes) | 6 PDF                           | **En vigueur** (cycles 2 et 3)                                                                                         |
-| Exemples pour la mise en œuvre, cycle 4, 2026                                                                             | 1 PDF                           | **En vigueur** : le seul document aligné sur le nouveau programme du cycle 4                                           |
-| Guide CP (« nombres, calcul, résolution de problèmes au CP », ~2020-2021)                                                 | 1 PDF                           | **Antérieur** au programme 2024 (cite le BO du 30/07/2020), mais sa progression reste cohérente avec le livret CP 2025 |
-| Guides fondamentaux « résolution de problèmes » au cours moyen et au collège (2021-2022)                                  | 2 PDF (+ 1 doublon)             | **Antérieurs** aux programmes 2025 : banque de problèmes, pas une source de bornes                                     |
-| Attendus de fin d'année 5e, 4e, 3e et repères annuels de progression cycle 4 (eduscol, ~2019)                             | 4 PDF                           | **Périmés** : ancien programme du cycle 4 (2015 modifié 2018/2020)                                                     |
-| Ressources « ra16 » (mars 2016) : grandeurs et mesures cycle 2, 6 PDF « compétences », 14 dossiers zip cycle 4            | 7 PDF, 16 zip (dont 2 doublons) | **Périmés** : programmes 2015                                                                                          |
+| Groupe                                                                                                                    | Documents                     | Statut                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Livrets d'accompagnement 2025 (CP, CE1, CE2) et leurs annexes (zip CE1 et CE2, docx `ra25…` pour le CP)                   | 3 PDF, 2 zip (5 docx), 1 docx | **En vigueur** (cycle 2, BO 2024)                                                                                      |
+| Livrets d'accompagnement 2026 (CM1, CM2, 6e) et leurs annexes zip                                                         | 3 PDF, 3 zip (9 docx)         | **En vigueur** (cycle 3, BO 2025)                                                                                      |
+| « Exemples de réussite » 2025 CM1, CM2, 6e et recommandations v2 2025 (calcul mental, fractions, résolution de problèmes) | 6 PDF                         | **En vigueur** (cycles 2 et 3)                                                                                         |
+| Exemples pour la mise en œuvre, cycle 4, 2026                                                                             | 1 PDF                         | **En vigueur** : le seul document aligné sur le nouveau programme du cycle 4                                           |
+| Guide CP (« nombres, calcul, résolution de problèmes au CP », ~2020-2021)                                                 | 1 PDF                         | **Antérieur** au programme 2024 (cite le BO du 30/07/2020), mais sa progression reste cohérente avec le livret CP 2025 |
+| Guides fondamentaux « résolution de problèmes » au cours moyen et au collège (2021-2022)                                  | 2 PDF                         | **Antérieurs** aux programmes 2025 : banque de problèmes, pas une source de bornes                                     |
 
-**Doublons exacts (md5 identique)**
+**Doublon retiré** : `cycle 3/guide-resolution-de-problemes-mathematiques-au-college-73914.pdf` est désormais l'**unique exemplaire** (la copie de `cycle 4/` a été retirée). Le docx `ra25mathcpsequence…` n'est pas un doublon : ce sont les annexes de la séquence 3 du livret CP.
 
-- `cycle 3/guide-resolution-de-problemes-mathematiques-au-college-73914.pdf` = `cycle 4/guide-resolution-de-problemes-mathematiques-au-college-73914.pdf` (décrit une seule fois, sous cycle 3).
-- `cycle 4/ra16c4mathgeoplanedossiercomplet574639zip-77676.zip` = `… (1).zip` = `… (2).zip` (md5 `4b4d756d…` ; un seul décrit).
-- Aucun autre doublon. Le docx `ra25mathcpsequence…` n'est pas un doublon : ce sont les annexes de la séquence 3 du livret CP.
-
-**Ce qui fait foi pour borner un point, par ordre de priorité** : (1) le programme BO ; (2) les livrets 2025-2026 et les « Exemples de réussite » 2025 (cycle 3) / exemples 2026 (cycle 4) ; (3) les recommandations v2 (calcul mental, fractions, résolution de problèmes) ; (4) le guide CP ; le reste sert seulement de banque d'énoncés. **Au cycle 4, ne jamais borner avec les attendus / repères 2019 ni avec les ra16** : la répartition annuelle a changé (voir l'encadré « Divergences » de la partie cycle 4).
-
-**Non extraits** (sans intérêt pour borner) : vidéos `.mp4` du zip arithmétique, archive imbriquée de 70 Mo `geometrie-plane-initiative-tour.zip`, sous-zip Scratch / tableur, fichiers `.sb`/`.sb2`, `.ppt`, `Thumbs.db`.
+**Ce qui fait foi pour borner un point, par ordre de priorité** : (1) le programme BO ; (2) les livrets 2025-2026 et les « Exemples de réussite » 2025 (cycle 3) / exemples 2026 (cycle 4) ; (3) les recommandations v2 (calcul mental, fractions, résolution de problèmes) ; (4) le guide CP ; le reste sert seulement de banque d'énoncés.
 
 ---
 
@@ -170,29 +164,6 @@ Archive de 2 fichiers Word (annexes du livret CE2 2025 ; « accompagenment » es
 - Séquence de comparaison des nombres en période 3, quantités > 60 avant l'apprentissage de la comptine au-delà de 60 (p. 41-48).
 
 **Statut** : **antérieur au programme en vigueur** (écrit pour le programme cycle 2 de 2018/2020). La progression P1-P5 reste cohérente avec le livret CP 2025 (jusqu'à 20 en P1, jusqu'à 100 en P3) et le livret CE1 2025 le cite (p. 29). À utiliser comme source de détail, en vérifiant chaque borne contre le programme 2024. Pas de doublon.
-
-### ra16c2mathsgrandeuretmesuresdocmaitre587695pdf-76011.pdf
-
-- **Titre officiel** : « Grandeurs et mesures au cycle 2 » (ressources d'accompagnement, Cycles 2 3 4 Mathématiques, éduscol)
-- **Date** : mars 2016
-- **Niveau** : cycle 2 (avec perspectives cycles 3 et 4)
-- **Pages** : 8
-
-**De quoi il parle**
-
-- Document « maître » sur l'enseignement des grandeurs : longueur, masse, contenance, durée, monnaie (prix), p. 1-2.
-- Comparer des grandeurs sans mesure, puis découvrir les unités et mesurer (report, comptage d'unités, instruments), p. 4.
-- Estimation et repères de mesure, p. 3 ; système décimal des unités et conversions, système sexagésimal des durées, unités dans les calculs, p. 5.
-
-**Utile pour borner les points**
-
-- Repères d'estimation (p. 3) : feuille de papier 21 cm, stylo ≈ 15 cm, pack de six bouteilles d'eau 9 kg ; vers le km et la tonne en fin de cycle.
-- Conversions types (p. 5) : 100 cm = 10 × 1 dm = 1 m ; 14 cL = 140 mL. Problème type : ruban de 35 cm découpé en morceaux de 7 cm.
-- Pas de liste d'unités par année ni de bornes chiffrées par période.
-
-**Statut** : **périmé** (ressources 2016 du programme de 2015). Pas de doublon.
-
----
 
 ---
 
@@ -518,7 +489,7 @@ Archive de 2 fichiers Word (annexes du livret CE2 2025 ; « accompagenment » es
 - **Date** : 2021 (PDF créé en janvier 2022)
 - **Niveau** : collège (6e → 3e, cycles 3 et 4)
 - **Pages** : 213 (sommaire p. 3-6)
-- **Doublon** : `cycle 4/guide-resolution-de-problemes-mathematiques-au-college-73914.pdf` est **identique** (même md5). Décrit une seule fois ici.
+- **Doublon** : la copie de `cycle 4/` a été retirée ; ce fichier est l'unique exemplaire.
 
 **De quoi il parle**
 
@@ -538,37 +509,10 @@ Archive de 2 fichiers Word (annexes du livret CE2 2025 ; « accompagenment » es
 
 ---
 
----
-
 ## Cycle 4 — documents d'accompagnement (dossier `cycle 4/`)
 
 > Pages « p. N » = page du PDF (le numéro imprimé en pied de page vaut souvent N − 1 dans le document 2026).
 > Programme de référence : `docs/ref/programmes/Programme de mathématiques du cycle 4.txt` (« Annexe 2 », **nouveau programme rangé par année 5e / 4e / 3e**, rubriques « Automatismes » + « Objectifs d'apprentissage » + « Prolongements possibles », domaines : Nombres et calculs · Espace et géométrie · Organisation et gestion de données et probabilités · Proportionnalité, fonctions · Pensée informatique). Il n'y a plus de thème « Grandeurs et mesures » séparé : volumes, aires, unités sont répartis dans « Espace et géométrie ».
-
-## Statut d'ensemble (à lire avant tout)
-
-| Document                                                                                                            | Vise                                      | Statut vis-à-vis du programme présent dans le dépôt                                                                                             |
-| ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `exemple-mise-en-oeuvre-c4-mathematiques0pdf-126080.pdf` (2026)                                                     | nouveau programme                         | **EN VIGUEUR** — source principale                                                                                                              |
-| `14-/16-/18-maths-5e/4e/3e-attendus…` (eduscol ~2019)                                                               | ancien programme (2015 modifié 2018/2020) | **PÉRIMÉ** — utile seulement comme banque d'énoncés                                                                                             |
-| `26-maths-c4-reperes…` (eduscol ~2019)                                                                              | ancien programme                          | **PÉRIMÉ** (répartition annuelle différente)                                                                                                    |
-| 6 PDF `ra16c4math<compétence>` (mars 2016)                                                                          | programme 2015                            | **PÉRIMÉ** sur les contenus ; réflexion didactique transversale encore lisible                                                                  |
-| 14 zip `ra16c4math…` + `dossiercomplet564391` + `grandeursetmesures-sourcesv2` (2016, quelques fichiers v2 de 2024) | programme 2015                            | **PÉRIMÉS** — banques de questions flash / tâches                                                                                               |
-| `guide-resolution-de-problemes-mathematiques-au-college-73914.pdf`                                                  | —                                         | **DOUBLON** exact (md5 identique) de `cycle 3/guide-resolution-de-problemes-mathematiques-au-college-73914.pdf` ; décrit dans la partie cycle 3 |
-| 3 zip `ra16c4mathgeoplanedossiercomplet574639zip-77676*.zip` (sans suffixe, « (1) », « (2) »)                       | —                                         | **TRIPLON** : md5 identiques (`4b4d756d…`), un seul à garder                                                                                    |
-
-Divergences vérifiées entre l'ancien cadre (attendus/repères 2019, ra16) et le nouveau programme :
-
-- **Fractions en 5e** : ancien = dénominateurs « égaux ou multiples l'un de l'autre » (attendus 5e p. 2-3, repères p. 2) ; nouveau = « dénominateurs quelconques » dès la 5e (programme l. 508 ; exemples 2026 p. 13).
-- **Trigonométrie** : ancien = cosinus en 4e (attendus 4e p. 10), sinus/tangente 3e ; nouveau = cosinus, sinus, tangente **en 3e uniquement** (exemples 2026 p. 31).
-- **Thalès** : repères 2019 = triangles emboîtés en 4e, papillon en 3e (repères p. 11) ; ra16 géo plane = Thalès introduit en 3e ; nouveau = Thalès (emboîtés + papillon, réciproque, contraposée) **en 3e** (exemples 2026 p. 31).
-- **Transformations** : ancien = rotations et homothéties en 3e (repères p. 12, attendus 3e p. 7-8) ; nouveau = **aucune rotation ni homothétie** (0 occurrence dans le programme) ; à la place **vecteurs, somme de vecteurs, relation de Chasles en 3e** (exemples 2026 p. 32). Triangles semblables, cas d'égalité, inégalité triangulaire, repérage sur la sphère (latitude/longitude) : absents du nouveau programme.
-- **Statistiques** : ancien = médiane 4e, étendue 3e, histogrammes 3e ; nouveau = médiane + étendue en 4e, **quartiles et boîtes à moustache en 3e**, pas d'histogramme.
-- **Probabilités** : ancien = « la notion d'arbre ne figur[e] pas au programme » (repères p. 7) ; nouveau = arbres et tableaux pour deux épreuves (4e p. 38, 3e p. 39), langage ensembliste ∪ ∩, P(A∪B)+P(A∩B)=P(A)+P(B) en 3e.
-- **Arithmétique** : ancien = nombres premiers ≤ 30 (5e), ≤ 100 (4e), décomposition en facteurs premiers ; nouveau = critères de divisibilité par 3 et 9 en 5e, nombres premiers seulement en « prolongement possible » (p. 11), fraction irréductible en 3e, décomposition `60 = 2² × 3 × 5` en automatisme 3e (p. 21).
-- **Puissances** : repères 2019 = « la connaissance des formules générales sur les produits ou quotients de puissances n'est pas un attendu » (p. 4) ; nouveau = aᵐ × aⁿ = aᵐ⁺ⁿ et (ab)ⁿ = aⁿbⁿ en 4e, aᵐ/aⁿ = aᵐ⁻ⁿ et exposants négatifs en 3e (p. 18, 20).
-
----
 
 ### cycle 4/exemple-mise-en-oeuvre-c4-mathematiques0pdf-126080.pdf
 
@@ -608,181 +552,36 @@ Divergences vérifiées entre l'ancien cadre (attendus/repères 2019, ra16) et l
   - **Pensée informatique** (p. 47-51) : 5e = séquences, entrées/sorties, formule en blocs `(réponse + 10) × 2`, boucle « répéter n fois » ; 4e = conditions `<, >, =`, une seule variable (accumulation : nombre de 6 en 1000 lancers) ; 3e = plusieurs variables, conditions composées, boucle conditionnelle, blocs personnalisés.
 - **Statut** : **en vigueur**. Correspond exactement au programme du cycle 4 présent dans `docs/ref/programmes/` (objectifs identiques, cf. programme l. 508, 517, 631, 934, 1068-1069).
 
-### cycle 4/14-maths-5e-attendus-eduscol1114744pdf-74676.pdf
+## Documents retirés (2026-10-18)
 
-- **Titre officiel** : « 5e Mathématiques — Attendus de fin d'année » (eduscol, réf. 1114744)
-- **Date** : non imprimée ; série eduscol des attendus de fin d'année 2019 · **Niveau** : 5e · **Pages** : 13
-- **De quoi il parle**
-  - Pour chaque attendu de fin de cycle (Nombres, Calcul, Divisibilité, Calcul littéral, Données, Probabilités, Proportionnalité, Fonctions, Grandeurs, Transformations, Espace, Géométrie plane, Algorithmique) : « Ce que sait faire l'élève » + « Exemples de réussite ».
-  - Banque d'énoncés courts, souvent chiffrés.
-- **Utile pour borner les points** (dans l'ancien cadre)
-  - p. 2 : fractions égales `14/6, 28/6, 7/3, 140/60…`, simplifier `39/12`, ranger `1/3 ; 25/6 ; 2 ; 5/3`, droite graduée avec `9/4 ; 0,25 ; –0,75…`.
-  - p. 3 : calcul mental `5 + 3 × 4 ; –9 + 6 ; –12 – (–2)` ; fractions à dénominateurs égaux ou multiples `1/5 + 2/5 ; 5/4 – 1/12…` ; nombres premiers ≤ 30, critères par 2, 3, 5, 9, 10.
-  - p. 4 : décomposer 84, simplifier `153/85` ; calcul littéral `5,2x + 3,4x`, `4x × 2x × 3x`.
-  - p. 5 : diagrammes circulaires ≤ 180°, semi-circulaires ; moyenne simple ou pondérée.
-  - p. 6 : ratios `2:3`, `3:1`, `1:2:3` ; pourcentages simples 10 %, 25 %, 50 % ; échelles 1:2, 1:4, 1:10.
-  - p. 7 : conversions (`350 000 m³ en km³ ; 0,05 m² en cm² ; 2,8 h en h et min ; 33 cL en cm³`).
-  - p. 10 : constructions de triangles et parallélogrammes (ABC isocèle AB = 5 cm, angle 130°…).
-  - p. 12-13 : algorithmique niveau 1 attendu en fin de 5e.
-- **Statut** : **périmé** (ancien programme). Divergences : fractions limitées à des dénominateurs multiples (nouveau : quelconques) ; nombres premiers ≤ 30 attendus (nouveau : prolongement) ; reconnaissance pyramide/cône/boule en 5e (nouveau : pyramide/cône en 4e, boule en 3e).
+Retirés du dossier à la demande de David (corbeille) : plus aucun chemin ci-dessous n'existe dans `Accompagnement/`.
 
-### cycle 4/16-maths-4e-attendus-eduscol1114746pdf-74682.pdf
+| Document retiré                                                                                                                                                                                                                                                                                | Raison                                                                                          |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `ra16c2mathsgrandeuretmesures…pdf` (racine, mars 2016)                                                                                                                                                                                                                                         | Périmé : ressources 2016, programme 2015                                                        |
+| `cycle 4/14-maths-5e-attendus…`, `16-maths-4e-attendus…`, `18-maths-3e-attendus…` (eduscol ~2019)                                                                                                                                                                                              | Périmé : ancien programme du cycle 4 (2015 modifié 2018/2020)                                   |
+| `cycle 4/26-maths-c4-reperes…` (eduscol ~2019)                                                                                                                                                                                                                                                 | Périmé : répartition annuelle de l'ancien programme                                             |
+| 6 PDF `cycle 4/ra16c4math<compétence>…` (chercher, modéliser, représenter, raisonner, calculer, communiquer)                                                                                                                                                                                   | Périmé : programme 2015                                                                         |
+| Tous les zip `cycle 4/ra16…` (relatifs, calcul littéral, arithmétique, fonctions, fractions, décimaux, puissances, proportionnalité, probabilités, géométrie plane [3 exemplaires identiques], géométrie dans l'espace, algorithmique), `dossiercomplet564391`, `grandeursetmesures-sourcesv2` | Périmé : programme 2015 (questions flash et tâches de 2016) ; les 3 geoplane étaient identiques |
+| `cycle 4/guide-resolution-de-problemes-mathematiques-au-college-73914.pdf`                                                                                                                                                                                                                     | Doublon exact (md5) de la copie sous `cycle 3/`, désormais l'unique exemplaire                  |
 
-- **Titre officiel** : « 4e Mathématiques — Attendus de fin d'année » (réf. 1114746)
-- **Date** : ~2019 · **Niveau** : 4e · **Pages** : 12
-- **De quoi il parle** : même structure que la 5e ; puissances de 10, racine carrée, rationnels, nombres premiers < 100, équations du 1er degré, médiane, probabilités, quatrième proportionnelle, grandeurs composées, agrandissement-réduction, translation, Pythagore, cosinus.
-- **Utile pour borner les points** (ancien cadre)
-  - p. 2 : `10⁴ = 10 000`, `10⁻³ = 0,001`, `3 900 000 000 = 3,9 × 10⁹`, préfixes nano → giga, carrés parfaits 1 à 144, `√81 = 9`.
-  - p. 3 : calcul mental relatifs `–63 : (–0,7)` ; fractions `5/2 × 7/3 ; 14/5 : 9/2` ; `√7 ≈ 2,65` ; nombres premiers < 100.
-  - p. 4 : développer `3(4x – 2) ; 17x + 4x(5 – x)`, factoriser `15x² + 18x` ; équations `4x + 2 = 0 ; 2x + 5 = –x – 4`.
-  - p. 5 : médiane pour effectif total ≤ 30.
-  - p. 8 : conversions m³/s ↔ L/min, km/h ↔ m/s ; réduction au tiers d'un pavé 12 × 6 × 4.
-  - p. 10 : Pythagore (échelle 13 m, pied à 5 m) + **cosinus en 4e**, réciproque (42, 40, 58 cm).
-  - p. 11 : algorithmique niveaux 1 et 2 attendus.
-- **Statut** : **périmé**. Divergences : cosinus en 4e (nouveau : 3e) ; agrandissement-réduction et grandeurs composées en 4e (nouveau : pas de chapitre dédié) ; nombres premiers < 100.
+**Principaux écarts entre l'ancien cadre (attendus/repères 2019, ra16) et le programme en vigueur** : ne jamais borner un point du cycle 4 avec l'ancien cadre.
 
-### cycle 4/18-maths-3e-attendus-eduscol1114748pdf-74688.pdf
-
-- **Titre officiel** : « 3e Mathématiques — Attendus de fin d'année » (réf. 1114748)
-- **Date** : ~2019 · **Niveau** : 3e · **Pages** : 11
-- **De quoi il parle** : puissances, notation scientifique, racines carrées, fraction irréductible, identités (a² – b²), équations produit, histogrammes, étendue, probabilités par dénombrement, fonctions linéaires/affines, volume de la boule, homothéties, sphère, rotations, Thalès, trigonométrie.
-- **Utile pour borner les points** (ancien cadre)
-  - p. 3 : factoriser `x² – 64 ; 4x² – 49`, développer `(2x – 5)(2x + 5)` ; équations `4x – 8 = 7x + 4 ; (2,5x – 7)(8x – 9,6) = 0`.
-  - p. 4 : histogrammes à classes de même amplitude, étendue.
-  - p. 5-6 : notations `f : x ↦ 3x – 7`, `g(3) = 15`, coefficient multiplicateur 1,05 / 0,8.
-  - p. 7 : homothétie de rapport k (longueurs, aires, volumes).
-  - p. 8-9 : latitude/longitude, rotations, rosaces, Thalès, trigonométrie.
-  - p. 10-11 : algorithmique niveaux 1 à 3.
-- **Statut** : **périmé**. Divergences : homothéties, rotations, latitude/longitude, histogrammes absents du nouveau programme ; manquent les vecteurs, quartiles et boîtes à moustache du nouveau programme.
-
-### cycle 4/26-maths-c4-reperes-eduscol1114756pdf-74694.pdf
-
-- **Titre officiel** : « Cycle 4 Mathématiques — Repères annuels de progression » (réf. 1114756)
-- **Date** : ~2019 · **Niveau** : 5e / 4e / 3e en trois colonnes · **Pages** : 13
-- **De quoi il parle** : répartition annuelle de chaque thème de l'ancien programme du cycle 4 (relatifs, fractions, racine, puissances, divisibilité, calcul littéral, équations, stats, probas, proportionnalité, fonctions, grandeurs, transformations, espace, géométrie plane, algorithmique à 3 niveaux).
-- **Utile pour borner les points** (ancien cadre)
-  - p. 2 : 5e fractions à dénominateurs égaux ou multiples ; 4e rationnel, inverse, ×/÷ ; 3e irréductible.
-  - p. 4 : racine 4e (carrés parfaits 1 à 144), « aucune connaissance sur les propriétés algébriques des racines » ; puissances 4e (10ⁿ, préfixes, notation scientifique), 3e (exposants négatifs base quelconque) ; formules générales non attendues ; nombres premiers ≤ 30 (5e), ≤ 100 (4e).
-  - p. 6 : équations — 5e tests seulement, 4e 1er degré, 3e a² – b², `x² = a`.
-  - p. 7 : stats (médiane 4e, étendue et histogrammes 3e) ; probas (**pas d'arbre**, tableaux à double entrée).
-  - p. 9 : grandeurs (formules d'aires/volumes par année ; `1 m³ = 10⁶ cm³`).
-  - p. 11-12 : géométrie plane (Pythagore + Thalès emboîtés 4e, papillon + trigo + semblables 3e) ; transformations (5e symétrie centrale, 4e translation, 3e rotation + homothétie).
-  - p. 13 : algorithmique 3 niveaux.
-- **Statut** : **périmé** — sert à voir ce qui a bougé ; la répartition annuelle en vigueur se lit dans le programme lui-même et dans les exemples 2026.
-
-### cycle 4/guide-resolution-de-problemes-mathematiques-au-college-73914.pdf
-
-- **Doublon** exact de `cycle 3/guide-resolution-de-problemes-mathematiques-au-college-73914.pdf` (md5 `893e0a50…`, 213 p.) ; décrit dans la partie cycle 3.
-
-### cycle 4/ra16c4mathchercher552125pdf-77583.pdf · ra16c4mathmodelisernd566177pdf-77586.pdf · ra16c4mathrepresenternd566207pdf-77589.pdf · ra16c4mathraisonner547836pdf-77592.pdf · ra16c4mathcompcalculer554370pdf-77595.pdf · ra16c4mathcommecritoralpourmontage548548pdf-77598.pdf
-
-- **Titres officiels** : « Compétences travaillées en mathématiques — Chercher / Modéliser / Représenter / Raisonner / Calculer / Communiquer à l'écrit et à l'oral » (Ressources d'accompagnement eduscol, en-tête « Cycles 2 3 4 »)
-- **Date** : mars 2016 · **Niveau** : cycle 4 (exemples parfois cycles 2-3) · **Pages** : 5, 5, 5, 9, 7, 6
-- **De quoi il parle**
-  - Réflexion didactique sur chacune des six compétences du programme 2015 : définitions, types de raisonnement (inductif, abductif, déductif, par l'absurde — Raisonner p. 1-2), registres de représentation (Représenter p. 1-2), trois temps de la modélisation (Modéliser p. 1), langue et connecteurs logiques (Communiquer p. 1-2).
-  - « Calculer » : équilibre automatisation / raisonnement, calcul mental, calculatrice.
-- **Utile pour borner les points** : peu ; seul « Calculer » p. 2 liste des **automatismes** (changements de registre décimal/fractionnaire, « sept tiers de 12 », pourcentages, ×/÷ par 10, 100, 1000, 10 000, conversions, produits et quotients de puissances de 10, développer/simplifier) et p. 4 le rôle du calcul mental.
-- **Statut** : **périmé** sur les contenus (programme 2015) ; les six compétences restent nommées dans le nouveau programme, la réflexion reste lisible.
-
----
-
-## Archives zip (toutes « ra16 », programme 2015 → **périmées**)
-
-Convention commune : chaque dossier eduscol 2016 contient un **document maître** (« doc_maitre » : objectifs, progressivité, stratégies, différenciation, ressources), des **questions flash** (« flash »), des **tâches intermédiaires** (« inter ») et des **tâches avec prise d'initiative** (« initiative »). Les fichiers `*-SOURCE.doc(x)` sont les sources Word éditables des PDF (même contenu), les `.sb`/`.sb2` des projets Scratch, les `.ppt` un diaporama, les `Thumbs.db` des déchets Windows (ignorés).
-
-### cycle 4/ra16c4mathdossiercompletzippe553816zip-77616.zip — Nombres relatifs
-
-- `RA16_C4_MATH_doc_maitre_nombres_relatifs_comparer_calculer_resoudre_N.D.pdf` (7 p.) : « Utiliser les nombres pour comparer, calculer et résoudre des problèmes : les nombres relatifs ». Introduction des négatifs par équivalence de programmes de calcul (p. 2), notation op(7,1), trois sens du signe « – » (p. 3), addition/soustraction dès le début de cycle, multiplication par permanence et distributivité (p. 4).
-- `RA16_C4_MATH_flash_activites_mentales_N.D.pdf` (3 p.) : grille de calculs mentaux `(−11) + 3 ; (−4,7) + (−0,7) ; 3 × (−7) ; (−3) ÷ (−4)`, comparaisons `(−5,2)` / `(−5,4)`, droite graduée.
-- Autres : `jungle_math_speed` (2 p., tâche intermédiaire), `labyrinthe` (2 p.), `prise_initiative_jeu_concours` (1 p.) ; 4 sources .doc/.docx.
-- **Utile pour borner** : doc maître p. 4 (ordre add/sous → mult → div) ; flash p. 1-2 (taille des décimaux relatifs : 1 ou 2 décimales).
-
-### cycle 4/ra16c4mathdossiercompletzippe553818zip-77634.zip — Calcul littéral
-
-- `…calcul_litteral_doc_maitre.pdf` (9 p.) : « Utiliser le calcul littéral ». Progressivité (p. 2-3) : formules en 5e, notation fonctionnelle seulement en 3e, distributivité simple, `x − 2,7x = −1,7x`, programme « je pense à un nombre, ×3, −12 → 7,5 », méthode algébrique formalisée en 3e (p. 3).
-- `…flash_PLab.pdf` (4 p.) : questions flash de calcul littéral.
-- Autres : `initiative_calendrier` (3 p.), `initiative_carre_bordes` (2 p.), `inter_alice_bertrand` (2 p.), `inter_le_magicien` (1 p.) ; sources dans `SOURCES/`.
-
-### cycle 4/ra16c4mathdossiercompletzippearithmetiquev2-77628.zip — Arithmétique (v2 de 2024)
-
-- `doc maitre + Sat/RA16_C4_MATH_arithm_doc_maitre_comp_utiliser.pdf` (3 p.) : « Comprendre et utiliser les notions de divisibilité et de nombres premiers » ; fraction irréductible en 3e (p. 2), raisonnements par disjonction de cas / absurde (p. 1).
-- `RA16_C4_MATH_arithm_multiples_diviseurs_criteres.pdf` (2 p.) et `RA16_C4_MATH_arithm_nombres_premiers.pdf` (1 p.) : questions flash.
-- Autres tâches : `ca_roule_V2` (2 p., v2 2024), `conj_syracuse` (2 p.), `grande_lectrice`, `habile_partage`, `petit_nombre`, `qui_suis_je` (1 p. chacune), `syst_monetaire` (2 p.) ; `arithmetique-flash1.ppt` (en double : racine et `ppt/`), projets Scratch, 3 vidéos .mp4 (non extraites).
-
-### cycle 4/ra16c4mathfonctionsdossiercompletzipp553820zip-77658.zip — Fonctions
-
-- Noms de fichiers tronqués dans l'archive (sans extension) mais ce sont des PDF.
-- `RA16_C4_MATH_doc_maitre_comprendre_et_utili…` (4 p.) : « Comprendre et utiliser la notion de fonction » ; fonction absente du cycle 3, notation fonctionnelle préparée pour la 3e.
-- 4 flash (2, 2, 2, 1 p.) : fonctions affines, modélisation, lecture graphique, programmes de calcul.
-- Tâches : `freinage` (2 p.), `boite` (3 p.), `degre_celsius_fahrenheit` (2 p.), `essence_ou_diesel` (2 p.).
-
-### cycle 4/ra16c4mathfractionsdossiercompletzippe554458zip-77610.zip — Fractions
-
-- `RA16_C4_MATH_fractions_comp-cal_resoudre.pdf` (5 p., tient lieu de doc maître) : définition du quotient a/b (nombre dont le produit par b vaut a), progressivité (p. 2 : ×, ÷, inverse puis irréductible en 3e).
-- 4 flash : `part_fractions` (2 p.), `calcul_fractions` (2 p. : quart/deux tiers de 24, 3/4 d'heure, fractions d'année/journée ; à partir de la 4e `2/5 – 4 ; –3/2 × 5/2`), `sens_quotient` (3 p.), `travail_erreur` (1 p.).
-- Tâches : `age_moyen` (2 p.), `vitesse_moyenne` (2 p.) ; 6 sources .docx.
-
-### cycle 4/ra16c4mathnombresdecimauxdossiercomplet554682zip-77604.zip — Nombres décimaux
-
-- `RA_16_C4_MATH_doc_maitre_nombres_decimaux_comparer_calculer_resoudre_N.D.pdf` (7 p.) : division par un décimal dès la 5e, puissances de 10 dès la 4e (p. 2) ; conceptions erronées, priorités, droite graduée (p. 2-6).
-- `RA16_C4_MATH_flash_nombres_decimaux_calculs_decimaux_conversions_N.D.pdf` (2 p.) : `0,3 × 0,2 ; 1,1 × 0,4 ; 1,2 × 0,06` ; durées `0,2 h ; 0,25 h ; 1 h 45 min en heure`.
-- Tâches : `feuille_de_papier` (2 p.), `probleme_de_cout` (2 p.) ; 3 sources .doc.
-
-### cycle 4/ra16c4mathpuissancesdossiercomplet556154zip-77622.zip — Puissances
-
-- `RA16_C4_MATH_doc_maitre_puissances_N.D.pdf` (4 p.) : pas de puissances au cycle 3 ; 10ⁿ dès la 4e, exposants négatifs fin 4e / début 3e, base quelconque 4e ou 3e ; formalisation des règles non attendue (p. 1) ; introduction des exposants 0, 1, négatifs par divisions successives (p. 3).
-- `RA16_C4_MATH_puissances_flash_N.D.pdf` (2 p.) : questions **étiquetées par niveau** [4e], [4e-3e], [3e] (puissances de 10, de 2 jusqu'à 1024, masse du Soleil en notation scientifique).
-- Tâches : `arbre_fractal` (3 p.), `bacteries`, `homeopathie`, `l_octet`, `nombres_de_mersenne`, `tous_cousin` (2 p. chacune), `curiosites_numeriques` (1 p.) ; 8 sources.
-
-### cycle 4/ra16c4mathproportionnalitedossiercomplet555094zip-77652.zip — Proportionnalité
-
-- `RA16_C4_MATH_RESOU_PROPO.pdf` (6 p., doc maître) : « Résoudre des problèmes de proportionnalité » ; liens Thalès, homothéties, fonctions linéaires (p. 2-5).
-- `RA16_C4_MATH_PROPO_FLASH.pdf` (3 p.) : questions flash.
-- Tâches : `CHENE`, `MAISON`, `OVULE`, `PETROLE`, `TRIANGLES` (2 p. chacune).
-
-### cycle 4/ra16c4mathprobabilite563095zip-77646.zip — Probabilités
-
-- `RA16_C4_MATH_probabilite_doc_maitre.pdf` (3 p.) : équiprobabilité puis approche fréquentiste à partir de la 4e ; « la formalisation ensembliste n'est pas un attendu » (p. 2) — contraire au nouveau programme (4e p. 38).
-- `RA16_C4_MATH_probabilite_flash.pdf` (5 p.) : questions flash.
-- Tâches : `difference_deux_des` (2 p.), `inventer_regle` (4 p.), `jeu_equitable`, `strategie_jeu`, `galon` (2 p.), `franc_carreau` (3 p.), `loterie` (1 p.) ; 3 projets Scratch (planche de Galton).
-
-### cycle 4/ra16c4mathgeoplanedossiercomplet574639zip-77676.zip (= « (1) » = « (2) », identiques) — Géométrie plane
-
-- `RA16_C4_MATH_geo_plane_doc_maitre.pdf` (10 p.) : Pythagore en 4e, **Thalès introduit en 3e** (p. 2), configurations, symétrie centrale dès la 5e, translations/rotations/homothéties sans définition ponctuelle (p. 5).
-- `RA16_C4_MATH_geo_plane_flash.pdf` (3 p.) : énoncés étiquetés [3e] Thalès, [4e] Pythagore, [4e] agrandissement, [3e] trigonométrie sur quadrillage, (3e) rosace (symétries + rotations).
-- Tâches : `cross_college`, `inter_frise`, `inter_pavage`, `inter_tangram`, `rosace` (2 p.), `tour_charles` (1 p.) ; l'archive imbriquée `geometrie-plane-initiative-tour.zip` (70 Mo) n'a pas été extraite.
-
-### cycle 4/ra16c4mathdossiercomplet567493zip-77670.zip — Géométrie dans l'espace
-
-- `RA16_C4_MATH_geo_espace_doc_maitre.pdf` (4 p.) : « la définition des solides particuliers n'est pas un objectif » (p. 1) ; calculs via Pythagore, Thalès, trigonométrie (p. 2) ; distance à l'horizon (p. 3).
-- `RA16_C4_MATH_geo_espace_flash.pdf` (3 p.).
-- Tâches : `piece_bois` (2 p.), `parcours_terre` (1 p.), `pyramide_louvre` (2 p.), `voyage_meridien` (2 p., latitude/longitude — hors nouveau programme).
-
-### cycle 4/dossiercomplet564391zip-77640.zip — Traitement de données (statistiques)
-
-- `RA16_C4_MATH_doc_maitre.pdf` (7 p.) : regroupement en classes dès la 5e, étendue en 4e (p. 2 — l'ancien repère 2019 la met en 3e), lecture de graphiques, moyenne de vitesses (p. 5).
-- `RA16_C4_MATH_trait_don_quest_flash.pdf` (3 p.) : questions flash.
-- Tâches : `td_enq_cant` (enquête cantine), `gran_lect`, `prix_appart`, `sortie_cine`, `temps_reac`, `tirs_cadr`, `touri`, `result_sco`, `stat_cdi` (1-2 p.) ; 3 zip de tableurs (`traitement-cantine.zip`, etc., non extraits).
-
-### cycle 4/grandeursetmesures-sourcesv2zip-77664.zip — Grandeurs et mesures (v2, 2024)
-
-- `RA16_MATH_C4_doc_maitre_grand_mesu_N.D.pdf` (6 p.) : progressivité **fin CE2 / fin 6e / fin 3e** (p. 2 : cycle 2 = longueur, masse, capacité, durée, prix ; cycle 3 + aire, volume, angle ; cycle 4 + grandeurs produits/quotients, effet d'un agrandissement) ; unités dans les calculs, conversions, grandeurs quotients (p. 3-4).
-- 4 flash : `grand_calc` (3 p.), `agrand_reduc`, `grand_fonct`, `compar` (1 p.).
-- 13 tâches `initia_*` : char défilé, épicentre, isolation, lampes, Owens, Paris-Marseille, record de vitesse, régate, saut à ski, tasse de café (v2 2024), train, vanille, waterball (1-4 p.) ; 19 sources .doc/.docx.
-
-### cycle 4/ra16c4mathalgorithmiquedossiercompletzippe553822zip-77682.zip — Algorithmique et programmation
-
-- `RA16_C4_MATH_algorithmique_et_programmation_N.D.pdf` (22 p.) : programmation événementielle, scripts parallèles, variables informatiques vs mathématiques (p. 7), blocs-utilisateur (p. 10), exemples guidés (p. 11-15+).
-- 6 projets Scratch zippés (TicTacToe, Francs, PoissonChatChien, Pong, PremierLabyrinthe, PremiersDessins), non extraits.
-- **Statut** : périmé (Scratch événementiel, jeux à plusieurs lutins : niveau 3 de l'ancien cadre ; le nouveau programme vise variables, conditions, boucles conditionnelles, blocs personnalisés).
-
----
+- **Fractions en 5e** : ancien = dénominateurs égaux ou multiples ; nouveau = dénominateurs quelconques dès la 5e (programme l. 508 ; exemples 2026 p. 13).
+- **Trigonométrie** : ancien = cosinus en 4e ; nouveau = cosinus, sinus, tangente en 3e uniquement (exemples 2026 p. 31).
+- **Thalès** : ancien = emboîtés en 4e, papillon en 3e ; nouveau = Thalès (emboîtés, papillon, réciproque, contraposée) en 3e (p. 31).
+- **Transformations** : ancien = rotations et homothéties en 3e ; nouveau = aucune rotation ni homothétie, mais vecteurs, somme, relation de Chasles en 3e (p. 32). Absents aussi : triangles semblables, repérage sur la sphère.
+- **Statistiques** : ancien = médiane 4e, étendue 3e, histogrammes 3e ; nouveau = médiane et étendue en 4e, quartiles et boîtes à moustache en 3e, pas d'histogramme.
+- **Probabilités** : ancien = pas d'arbre ; nouveau = arbres et tableaux pour deux épreuves (4e p. 38, 3e p. 39), langage ensembliste, P(A∪B)+P(A∩B)=P(A)+P(B) en 3e.
+- **Arithmétique** : ancien = nombres premiers ≤ 30 (5e), ≤ 100 (4e) ; nouveau = critères par 3 et 9 en 5e, nombres premiers en prolongement (p. 11), fraction irréductible en 3e.
+- **Puissances** : ancien = formules générales non attendues ; nouveau = aᵐ×aⁿ et (ab)ⁿ en 4e, aᵐ/aⁿ et exposants négatifs en 3e (p. 18, 20).
+- **Algorithmique** : ancien = Scratch événementiel à 3 niveaux ; nouveau = variables, conditions, boucles conditionnelles, blocs personnalisés.
 
 ---
 
 # Index thématique
 
-Abréviations : **livret CP/CE1/CE2** = `2025livretaccompagnementmath<niveau>pdf-….pdf` ; **livret CM1/CM2/6e** = `cycle 3/2026…livret…` ; **ER CM1/CM2/6e** = `cycle 3/exemplesmiseenoeuvre<niveau>…pdf` (Exemples de réussite 2025) ; **CMv2** = `cycle 3/calcul-mentalv2pdf-111834.pdf` ; **FRv2** = `cycle 3/les-fractionsv2pdf-111831.pdf` ; **RPv2** = `cycle 3/la-resolution-de-problemesv2pdf-111837.pdf` ; **guide CP** = `guide-pour-enseigner-les-nombres-…-au-cp-68664.pdf` ; **guide CM** / **guide collège** = guides fondamentaux de résolution de problèmes ; **EX C4** = `cycle 4/exemple-mise-en-oeuvre-c4-mathematiques0pdf-126080.pdf` (2026) ; _(périmé)_ = attendus / repères 2019 ou ra16.
+Abréviations : **livret CP/CE1/CE2** = `2025livretaccompagnementmath<niveau>pdf-….pdf` ; **livret CM1/CM2/6e** = `cycle 3/2026…livret…` ; **ER CM1/CM2/6e** = `cycle 3/exemplesmiseenoeuvre<niveau>…pdf` (Exemples de réussite 2025) ; **CMv2** = `cycle 3/calcul-mentalv2pdf-111834.pdf` ; **FRv2** = `cycle 3/les-fractionsv2pdf-111831.pdf` ; **RPv2** = `cycle 3/la-resolution-de-problemesv2pdf-111837.pdf` ; **guide CP** = `guide-pour-enseigner-les-nombres-…-au-cp-68664.pdf` ; **guide CM** / **guide collège** = guides fondamentaux de résolution de problèmes ; **EX C4** = `cycle 4/exemple-mise-en-oeuvre-c4-mathematiques0pdf-126080.pdf` (2026) .
 
 ## Nombres entiers et numération
 
@@ -793,7 +592,7 @@ Abréviations : **livret CP/CE1/CE2** = `2025livretaccompagnementmath<niveau>pdf
 - **CM1 : jusqu'à 999 999** → ER CM1 p. 2-3 ; RPv2 p. 16.
 - **CM2 : jusqu'à 999 999 999** → ER CM2 p. 2-3. **6e : milliards** → ER 6e p. 2.
 - Unités de numération, décompositions (d/u) → livret CP p. 10, 12-14 ; guide CP p. 41-42.
-- Multiples, diviseurs, critères de divisibilité → ER CM1 p. 3 ; ER CM2 p. 3 ; EX C4 p. 10, 21 ; nombres premiers : EX C4 p. 11 (prolongement seulement) ; zip arithmétique v2 _(périmé)_.
+- Multiples, diviseurs, critères de divisibilité → ER CM1 p. 3 ; ER CM2 p. 3 ; EX C4 p. 10, 21 ; nombres premiers : EX C4 p. 11 (prolongement seulement) .
 
 ## Faits numériques et calcul mental
 
@@ -818,19 +617,19 @@ Abréviations : **livret CP/CE1/CE2** = `2025livretaccompagnementmath<niveau>pdf
 - Addition / soustraction de fractions → livret CM2 p. 6-15 + annexe CM2 séquence 1 ; ER CM1 p. 6 ; ER CM2 p. 5 ; ER 6e p. 8.
 - Fraction d'une quantité (opérateur unitaire au CM1, non unitaire au CM2) → ER CM1 p. 6 ; ER CM2 p. 5 ; ER 6e p. 7 ; FRv2 p. 7, 10.
 - Fraction-quotient, nombre mixte (6e) → ER 6e p. 3, 6-7.
-- **Rationnels au cycle 4 (dénominateurs quelconques dès la 5e)** → EX C4 p. 12-13 (5e), 16-17 (4e), 19-20 (3e) ; ancien cadre : attendus 5e p. 2-3, repères p. 2-3, zip fractions 554458 _(périmé)_.
+- **Rationnels au cycle 4 (dénominateurs quelconques dès la 5e)** → EX C4 p. 12-13 (5e), 16-17 (4e), 19-20 (3e) .
 
 ## Décimaux, relatifs, puissances, racines
 
 - Décimaux (nombre de décimales : centièmes au CM1, millièmes au CM2) → ER CM1 p. 6-8 ; ER CM2 p. 6-7 ; ER 6e p. 3-5 ; monnaie au CE1/CE2 : livret CE2 p. 29-30.
-- Nombres relatifs → EX C4 p. 11-12 (5e), 15-16 (4e) ; zip 553816 _(périmé)_.
+- Nombres relatifs → EX C4 p. 11-12 (5e), 15-16 (4e) .
 - Carrés parfaits, racine carrée → EX C4 p. 13, 17-18, 21.
-- Puissances, notation scientifique, préfixes → EX C4 p. 9, 13, 17-18 (4e : aᵐ×aⁿ), 20 (3e : quotients, exposants négatifs) ; zip puissances 556154 _(périmé)_.
+- Puissances, notation scientifique, préfixes → EX C4 p. 9, 13, 17-18 (4e : aᵐ×aⁿ), 20 (3e : quotients, exposants négatifs) .
 
 ## Algèbre, calcul littéral, équations
 
 - Initiation à l'algèbre, programmes de calcul (cycle 3) → livret CM1 p. 17-27 + annexe CM1 séquence 2 ; ER CM1 p. 13-15 ; ER CM2 p. 14-16 ; ER 6e p. 9-10.
-- Calcul littéral, distributivité, identités remarquables → EX C4 p. 14-15, 18-19, 21-22 ; zip 553818 _(périmé)_.
+- Calcul littéral, distributivité, identités remarquables → EX C4 p. 14-15, 18-19, 21-22 .
 - Équations, inéquations → EX C4 p. 14-15 (5e : ax = c, x + b = c), 19 (4e : ax + b = c, ax + b = cx + d), 21-22 (3e : produit nul, ax ≥ b).
 
 ## Résolution de problèmes
@@ -845,16 +644,15 @@ Abréviations : **livret CP/CE1/CE2** = `2025livretaccompagnementmath<niveau>pdf
 
 - Proportionnalité → livret CM2 p. 16-17 + annexe CM2 séquence 2 ; livret 6e p. 16-17 + annexe 6e séquence 2 ; ER CM1 p. 26 ; ER 6e p. 19-20 ; EX C4 p. 40-41 (5e), 43-44 (4e), 45 (3e).
 - Pourcentages (absents du cours moyen, 6e) → ER 6e p. 3, 8-9 ; livret 6e p. 7.
-- Fonctions → EX C4 p. 42-43 (5e), 44-45 (4e), 46 (3e) ; zip fonctions 553820 _(périmé)_.
+- Fonctions → EX C4 p. 42-43 (5e), 44-45 (4e), 46 (3e) .
 
 ## Grandeurs et mesures
 
-- Repères et conversions au cycle 2 → `ra16c2…grandeuretmesures…` p. 3-5 _(périmé)_.
 - Longueurs, masses, contenances (CM1) → ER CM1 p. 15-17.
 - Aires → ER CM1 p. 17 ; ER CM2 p. 16-17 ; ER 6e p. 11. Volumes → ER 6e p. 11 ; cycle 4 : EX C4 p. 23-24, 28, 30-31.
 - Angles → ER CM1 p. 18 ; ER CM2 p. 17-18 ; ER 6e p. 14-15.
 - Durées → ER CM1 p. 18-19 ; ER CM2 p. 18 ; ER 6e p. 11-12.
-- Grandeurs au cycle 4 (réparties en « Espace et géométrie ») → EX C4 p. 24 ; zip grandeurs v2 _(périmé)_.
+- Grandeurs au cycle 4 (réparties en « Espace et géométrie ») → EX C4 p. 24 .
 
 ## Géométrie
 
@@ -869,16 +667,12 @@ Abréviations : **livret CP/CE1/CE2** = `2025livretaccompagnementmath<niveau>pdf
 ## Données, statistiques, probabilités
 
 - Données et graphiques (cycle 3) → ER CM1 p. 23-24 ; ER 6e p. 17-18.
-- Statistiques au cycle 4 (moyenne, médiane, étendue, quartiles en 3e) → EX C4 p. 33-35 (5e), 36-37 (4e), 38-39 (3e) ; zip 564391 _(périmé)_.
-- Probabilités → livret CM1 p. 28 + annexe CM1 séquence 3 ; livret CM2 p. 27 + annexe CM2 séquence 3 ; livret 6e p. 6-8 + annexe 6e séquence 1 ; ER CM1 p. 24-25 ; ER 6e p. 18-19 ; EX C4 p. 35-36 (5e), 38 (4e : arbres), 39 (3e) ; zip probabilité 563095 _(périmé)_.
+- Statistiques au cycle 4 (moyenne, médiane, étendue, quartiles en 3e) → EX C4 p. 33-35 (5e), 36-37 (4e), 38-39 (3e) .
+- Probabilités → livret CM1 p. 28 + annexe CM1 séquence 3 ; livret CM2 p. 27 + annexe CM2 séquence 3 ; livret 6e p. 6-8 + annexe 6e séquence 1 ; ER CM1 p. 24-25 ; ER 6e p. 18-19 ; EX C4 p. 35-36 (5e), 38 (4e : arbres), 39 (3e) .
 
 ## Pensée informatique
 
-- Cycle 3 → ER CM1 p. 26-27 ; ER 6e p. 20-21. Cycle 4 → EX C4 p. 47-51 ; zip algorithmique 553822 _(périmé)_.
-
-## Compétences transversales
-
-- Chercher, modéliser, représenter, raisonner, calculer, communiquer → 6 PDF `cycle 4/ra16c4math<compétence>…` (2016, _périmés_ sur les contenus, réflexion didactique encore lisible).
+- Cycle 3 → ER CM1 p. 26-27 ; ER 6e p. 20-21. Cycle 4 → EX C4 p. 47-51 .
 
 ---
 
@@ -891,7 +685,6 @@ Abréviations : **livret CP/CE1/CE2** = `2025livretaccompagnementmath<niveau>pdf
 - **CM1** → ER CM1 (27 p., source principale) ; livret CM1 2026 + annexes ; CMv2 p. 13-15 ; FRv2 p. 7-9 ; RPv2 p. 16-18 ; guide CM ; renvois : livret CE2 p. 7 (fractions CM1).
 - **CM2** → ER CM2 (26 p., source principale) ; livret CM2 2026 + annexes ; CMv2 p. 16-19 ; FRv2 p. 10-12 ; RPv2 p. 19-21 ; guide CM p. 132-141 (liaison 6e).
 - **6e** → ER 6e (21 p., source principale) ; livret 6e 2026 + annexes ; tableaux de progressivité des livrets CM1 p. 7, 17, 28 et CM2 p. 6, 16, 27 ; guide collège.
-- **5e** → EX C4 p. 10-15 (nombres), 23-27 (géométrie), 33-36 (données), 40-43 (proportionnalité, fonctions), 47-48 (informatique) ; attendus 5e _(périmé)_.
-- **4e** → EX C4 p. 15-19, 28-30, 36-38, 43-45, 49 ; attendus 4e _(périmé)_.
-- **3e** → EX C4 p. 19-22, 30-33, 38-39, 45-46, 50-51 ; attendus 3e _(périmé)_.
-- **Cycle 4, comparaison annuelle** → repères annuels 2019 p. 2-13 _(périmé : répartition différente du programme actuel)_.
+- **5e** → EX C4 p. 10-15 (nombres), 23-27 (géométrie), 33-36 (données), 40-43 (proportionnalité, fonctions), 47-48 (informatique) .
+- **4e** → EX C4 p. 15-19, 28-30, 36-38, 43-45, 49 .
+- **3e** → EX C4 p. 19-22, 30-33, 38-39, 45-46, 50-51 .
