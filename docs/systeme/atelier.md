@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-15.
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-18.
 
 ## À quoi ça sert
 
@@ -76,6 +76,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/grid.ts`           | La grille de la vue Données : adresses (`B3`), entrées d'une colonne nommée, répartition P2, plafonds     |
 | `src/lib/atelier/grid-functions.ts` | Les fonctions du tableur (SOMME, ARRONDI…) : appels, plages, calcul en arbre équilibré, aide de la barre  |
 | `src/lib/atelier/cell-format.ts`    | La mise en forme des cases (reprise de V4) : zones, styles résolus, formats de nombre, rangement          |
+| `src/lib/atelier/cell-colors.ts`    | Les couleurs de la mise en forme : CSS du texte et du fond, réglages de contraste mesurés                 |
 | `src/lib/atelier/tabulate.ts`       | Tabuler une fonction dans la grille : le tableau en formules, ses refus, `.tabuler`, valeurs par défaut   |
 | `src/lib/atelier/names.ts`          | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)        |
 | `src/lib/atelier/parse.ts`          | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)     |
@@ -164,7 +165,7 @@ Ceux du code et de l'interface :
 | `NaturalField.svelte`     | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel       |
 | `AtelierSettings.svelte`  | Le bouton « Réglages » et sa fenêtre : la saisie dans Calcul                                                            |
 | `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`) |
-| `DataView.svelte`         | Vue Données : la grille (barre de cellule, clavier, nommer une colonne), aperçus des listes, diagrammes                 |
+| `DataView.svelte`         | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes             |
 | `ShareBar.svelte`         | Partager (lien `?a=`), recevoir, « Garder dans mon atelier »                                                            |
 
 La vue **Graphe** n'a pas de composant à elle : `AtelierContainer.svelte` monte
@@ -554,6 +555,23 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   arrive s'il reste des colonnes libres (rangée avec les autres, de gauche à droite), sans jamais
   faire refuser la fusion ; la fusion est un seul
   geste (`asOneGesture`). Plafond : 500 zones canoniques. Mesuré : un style sur toute la grille, 2 ms.
+  **À l'écran** (`DataView.svelte`, PR 2) : une barre « Mise en forme » sous la barre de formule
+  (`role="group"`, passe à la ligne sur téléphone) pose sur la ZONE sélectionnée gras, italique
+  (aussi Ctrl/⌘+B, +I), alignements (un bouton enfoncé ramène au défaut), couleurs du texte et du
+  fond, format de nombre et décimales (`MySelect`, nom annonçant la valeur choisie), « Effacer la
+  mise en forme ». Les boutons suivent la case active (`aria-pressed`) ; le focus revient à la
+  grille après chaque geste, pour que Ctrl+Z y agisse ; les choix sont liés par fonctions
+  (`bind:value={get, set}`) : un choix refusé au plafond n'est pas affiché comme posé. Rien n'est
+  posé pendant une frappe refusée (le refus reste). Ctrl+Maj+B et la touche maintenue sont ignorés. La case montre `formatShown` à la place de
+  l'écriture LaTeX ; sous la barre, « Valeur exacte » reste visible quand un format arrondit
+  vraiment (`formatRounds` : `0,33` → 1/3 ; pas pour `2,00`). Le style passe en variables CSS (`--texte`, `--fond`) : la teinte de la
+  sélection se pose PAR-DESSUS le fond. Couleurs (`cell-colors.ts`) : les `--color-fig-<nom>` du
+  thème, adoucies (texte tiré vers `--color-foreground`, fond en teinte de 14 %, en sombre sur
+  `#1f1f1f`) — telles quelles, rouge sur fond jaune tombait à 3,3 en sombre ; `cell-colors.test.ts`
+  mesure toutes les paires des couleurs de mise en forme (≥ 4,5, sélection comprise, clair et sombre ; le texte d'une erreur garde `--color-destructive`, hors de cette mesure). Le presse-papiers interne
+  (`application/x-chiphre-grille`) porte `styles` (le style résolu de chaque case, `{}` = défaut),
+  validé par `stylePatchSchema` et ignoré s'il n'a pas la forme du tableau ou pas d'origine valable
+  (une ligne de titres devinée les décalerait).
 - **Fonction à indice** (`=f_1(3)`) : depuis le 2026-10-15, les parseurs lisent `f_1(3)` comme
   un appel de f_1 quand `f_1` est déclarée (avant : `f₁ × 3`, et la grille calculait avec f, sans
   rien dire — revue du lot 3). La grille rend donc la valeur de f_1, et Calcul l'évalue aussi ;
@@ -1691,4 +1709,4 @@ les garanties `/grapheur` non faites : elles le sont (lots 2 à 6, #779 → #809
 
 ---
 
-Vérifié contre le code le 2026-10-15.
+Vérifié contre le code le 2026-10-18.

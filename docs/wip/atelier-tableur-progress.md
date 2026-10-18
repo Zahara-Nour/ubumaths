@@ -278,5 +278,16 @@ liste trouée en citant l'entrée).
 - [x] contre-revue (normalisation JUSTE sur 300 essais aléatoires) : ordre des colonnes à la fusion,
       relecture au-delà du plafond (plus longue partie + rapport), clés dans un ordre fixe, Effacer
       toujours permis, un seul refus « mise en forme »
-- [ ] PR, CI, merge
-- [ ] PR 2 : la barre d'outils et l'affichage dans les cases
+- [x] PR #1466, CI verte, mergée le 2026-10-18
+
+### PR 2 — la barre d'outils (`feat/atelier-barre-mise-en-forme`)
+
+- [x] tests : `mise-en-forme.svelte.test.ts` (8, navigateur), `cell-colors.test.ts` (2)
+- [x] barre « Mise en forme » (`DataView.svelte`) : G, I, alignements, couleurs, format et
+      décimales (`MySelect`), Effacer ; Ctrl/⌘+B et +I ; `aria-pressed` ; focus rendu à la grille
+- [x] affichage : `formatShown` dans la case, « Valeur exacte » gardée sous un format ; styles en
+      variables CSS (la sélection se teinte par-dessus le fond)
+- [x] couleurs : `cell-colors.ts`, contrastes mesurés (rouge sur jaune en sombre : 3,3 tel quel)
+- [x] presse-papiers interne : `styles` (Zod, forme du tableau)
+- [x] captures clair, sombre, 390 px
+- [ ] revue, PR, CI, merge

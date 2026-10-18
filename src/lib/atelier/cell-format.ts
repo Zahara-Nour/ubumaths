@@ -125,6 +125,9 @@ export const storedFormatSchema = z
 	})
 	.strict();
 
+/** Le style d'une case copiée dans la grille (presse-papiers interne, Q-MF-4), validé : il peut être forgé. */
+export const stylePatchSchema = storedFormatSchema.omit({ zone: true });
+
 // =============================================================================
 // Zones
 // =============================================================================
@@ -342,6 +345,15 @@ export function formatShown(value: CellValue, style: CellStyle): string | null {
 		}).format(shown);
 	}
 	return new Intl.NumberFormat('fr-FR', options).format(shown);
+}
+
+/** Le format arrondit-il cette valeur ? (`1/3` à 2 décimales : oui ; `2` : non.) */
+export function formatRounds(value: number, format: NumberFormat): boolean {
+	const scaled = format.kind === 'percent' ? value * 100 : value;
+	const factor = 10 ** format.decimals;
+	return (
+		Math.abs(Math.round(scaled * factor) / factor - scaled) > 1e-9 * Math.max(1, Math.abs(scaled))
+	);
 }
 
 // =============================================================================
