@@ -173,6 +173,11 @@ le dire · **Q3** plafond de 50 objets de figure · **Q4** grapheur à vrais par
 PR, en dernier · **Q5** onglet Figure entre Graphe et Données. Les comportements du lot 1 (C, P, F,
 S, K, M) sont validés avec elles.
 
+**Q6** (ajoutée par la revue de la PR 1, tranchée par David le 2026-10-18, « je te suis ») : `y`
+hors définition, dans un calcul ou une commande (`2y + a`, `.dériver y`), **reste une lettre
+libre**, comme avant. La réservation de `y` ne vaut que pour nommer un objet ; aucun objet ne
+s'appelle `y`, donc aucun calcul ne peut le confondre avec un objet.
+
 - **Q1 — `y = 3x - 2` tapé sans nom.** Aujourd'hui ça crée une fonction `y` tracée. Avec `y`
   réservé : (a) **refus qui propose les deux écritures** : « Pour une fonction, écris f(x) = 3x − 2 ;
   pour une droite, nomme-la : d : y = 3x − 2. » ; (b) créer une courbe nommée automatiquement.
