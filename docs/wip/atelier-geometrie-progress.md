@@ -290,3 +290,28 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   côtés) et 2 importants (angle d'un `point_sur` sur un cercle : degrés toujours, comme L5 ; racine
   fractionnaire mal écrite) corrigés. Mesuré dans Chromium : ~3 ms par cran (p90 ~5 ms) avec six
   intersections exactes sur un même curseur. Pas en production.
+
+### PR 4 — journal (`.relever`)
+
+- 2026-10-19 : worktree `../ubumaths-wt-atelier-relever`, branche `feat/atelier-geometrie-relever`.
+  Tests d'abord : `relever.test.ts` (28 tests, 26 rouges ; les 2 verts ne testaient que
+  l'absence d'effet d'une commande inconnue). Puis 2 rouges de plus pendant l'implémentation :
+  l'atelier n'était PAS rendu tel qu'il était (`$state.snapshot` rend, hors navigateur, le
+  tableau lui-même) → copie du tableau dans `Atelier.sweep`.
+- 2026-10-19 : implémenté — `survey.ts` (lecture `E1 ; E2 quand t va de a à b pas h`, pas exacts
+  en rationnels, ce qui varie : valeur à curseur ou `point_sur` à position écrite, cases à
+  10 chiffres significatifs, ligne vide dans les deux listes pour un pas sans valeur), branché
+  avec les commandes de données (`SIMULATIONS`, avant la substitution des noms) ;
+  `Atelier.sweep` (chaque pas par `update`, puis le tableau d'avant remis) ; catalogue, aide
+  (nouvelle rubrique « Géométrie : relever des mesures »), décor d'exemple `point:` / `value:`
+  (`stageExampleSetup`). Hors `COMMAND_KEYWORDS` / `COMMAND_LABELS` : ils servent la lecture du
+  moteur, que `.relever` n'emprunte pas (comme `.tabuler`). `persistence.ts` inchangé.
+- **À trancher par David** : (1) **noms des listes** : deux noms libres automatiques (L et L_1
+  dans le problème de l'aire, M et N étant des points), annoncés dans la ligne, la colonne titrée
+  par l'expression (« AM », « S ») — ou un mot-clé `dans X ; Y` ? (2) **le pas est obligatoire**
+  (pas de pas par défaut, contrairement à `.tabuler f`) ; (3) un angle relevé dans l'unité du
+  réglage, sans l'unité dans la case ; (4) **un rectangle aplati** (M en A ou en B) : `aire`
+  refuse (« deux sommets confondus », PR 2), donc les lignes AM = 0 et AM = 4 restent vides —
+  une aire nulle serait plus naturelle pour le nuage ; (5) le nuage est **proposé** par une
+  phrase (« Trace le nuage : sur la carte L, « Nuage avec L_1 ». »), comme `.simuler` propose la
+  suite — pas un bouton sur la ligne de Calcul.

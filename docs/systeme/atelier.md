@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (intersections et `point_sur`, lot 2, PR 3).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (`.relever`, lot 2, PR 4).
 
 ## À quoi ça sert
 
@@ -102,6 +102,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/construction-intersect.ts` | `intersection` et `point_sur` (PR 3) : calcul pur sur des supports résolus, numérotation `k`, attente et refus          |
 | `src/lib/atelier/measures.ts`               | Mesures (lot 2, PR 2) : `AM`, `distance`, `aire`, `perimetre`, `angle`, calculées exactes et remplacées par leur valeur |
 | `src/lib/atelier/measures-read.ts`          | Repérage des mesures dans un texte, sans atelier (pour `parse.ts`)                                                      |
+| `src/lib/atelier/survey.ts`                 | `.relever` (PR 4) : lecture, pas exacts, ce qui varie, relevé (`Atelier.sweep`), deux listes et la ligne de réponse     |
 | `src/lib/atelier/display.ts`                | Schémas Zod des réglages de courbe et de suite (carte, sauvegarde, lien : une seule règle)                              |
 | `src/lib/atelier/reading.ts`                | Lecture graphique : les `f(a)` de la console qui se lisent sur le graphe (`consoleReadings`)                            |
 | `src/lib/atelier/mathfield.ts`              | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                                |
@@ -406,6 +407,48 @@ plus dans le catalogue, mêmes arguments et même numérotation que lui
   la phase 0 (L5) : le réglage « Angles » ne gouverne que l'écriture des mesures (un lien relu
   en radians donne la même figure). Deux cercles qui deviennent égaux au glisser : le point
   ATTEND (« … une infinité de points communs. »), le refus reste à la saisie.
+
+**`.relever` en détail** (lot 2, PR 4 : L6 ; `survey.ts`). Le relevé ferme la boucle du problème
+de l'aire : `.relever AM ; S quand M va de 0 à 1 pas 0,05` fait varier M, calcule AM et S à chaque
+pas et crée **deux listes** (colonnes de Données) que l'élève trace en nuage. L'atelier ne valide
+rien : il relève, l'élève conjecture.
+
+- **Ce qui varie** : une **valeur à curseur** (définition constante, sans unité) ou un
+  **`point_sur` à position écrite** (sa position, comme le curseur de la carte). Refus avec la
+  raison, rien de créé : nom absent ; valeur calculée (« fais varier une valeur à curseur ») ;
+  grandeur ; point qui n'est pas posé sur un objet ; `point_sur(s ; t)` (« M suit la valeur « t » :
+  écris … quand t va de … ») ; fonction, liste.
+- **Les pas** : début, fin et pas lus EXACTS (décimaux ou fractions, `-1,5`, `0.05`, `1/3`) ;
+  pas > 0, fin ⩾ début ; au plus `MAX_LIST_VALUES` (200) pas, sinon « Ce relevé ferait 1001 pas :
+  200 au plus. Agrandis le pas. » Chaque pas est écrit comme l'élève l'écrirait (`0,05`, `1/3`) ; un
+  pas qui ne tombe pas juste s'arrête avant la fin, et la ligne le dit (« … s'arrête à 0,9. »).
+- **Le balayage** (`Atelier.sweep`) : chaque pas passe par `update` (la carte, la figure, les
+  mesures qui en dépendent sont recalculées), puis E1 et E2 sont lues comme une coordonnée
+  (`substitutedTextOf` : noms, fonctions, mesures) et évaluées en décimal. À la fin, le TABLEAU des
+  objets d'avant est remis en place, tous objets compris : `update` élargit le curseur d'une
+  valeur posée hors de ses bornes. ⚠️ Une copie du tableau (`[...items]`), pas
+  `$state.snapshot` : hors navigateur, ce dernier rend le tableau lui-même, que le premier pas
+  modifiait (mesuré, test rouge). ~5 ms par pas mesurés sur le problème de l'aire (node).
+- **Les cases** : 10 chiffres significatifs, virgule décimale, jamais de notation scientifique
+  (une valeur ⩾ 10¹⁵ compte comme sans valeur) ; un angle est relevé dans l'unité du réglage,
+  sans l'unité dans la case. Un pas où une expression n'a pas de valeur (point en attente,
+  polygone aplati, hors du domaine) laisse sa ligne **vide dans les deux listes** (`12 ; ; 15`),
+  pour que les lignes restent appariées (P1), et la ligne de réponse le compte (« 2 pas sans
+  valeur… »). Une expression sans valeur à AUCUN pas est refusée avec la raison (« « M » est un
+  point ; relève une mesure… », « « x » n'est pas défini… »).
+- **Les listes** : deux noms libres de `nextName('list')` (L, M, N, puis L_1…), jamais un nom pris ;
+  la colonne de chacune reçoit pour titre l'expression relevée (« AM », « S », 40 caractères au
+  plus). Refus si l'atelier n'a plus de place pour DEUX listes (`MAX_LISTS`) ou deux colonnes
+  libres ; une seconde création refusée retire la première (tout ou rien).
+- **La ligne de réponse** (texte, sans LaTeX) : « Relevé de AM et S quand M va de 0 à 1, pas 0,05 :
+  21 lignes, dans L et L_1. », les notes, puis « Trace le nuage : sur la carte L, « Nuage avec
+  L_1 ». » — le bouton de la carte (`scatter:L_1`), qui pose `plottedWith` comme aujourd'hui. Le
+  geste se rejoue comme toute saisie (`ReplayStep` `saisie`). Dans `.aide`, rubrique « Géométrie : relever
+  des mesures » (`HelpSection` `geometrie`, entre « Étudier une fonction » et « Statistiques »).
+- **Le problème de l'aire**, testé tel quel (`relever.test.ts`) : A(0 ; 0), B(4 ; 0),
+  `M = point_sur([AB] ; 0,5)`, `N = (AM ; MB)`, `P = (0 ; MB)`, `S = aire(A, M, N, P)` → 21 lignes,
+  maximum relevé en AM = 2 avec S = 4. En M = A et M = B, le rectangle est aplati et `aire`
+  refuse (« deux sommets confondus ») : ces deux lignes restent vides.
 
 **Quatre états** (D9) : `error` > `pending` > `incomplete` > `ok`. Un nom cité mais absent met
 l'objet **en attente** (`pending`, avec `missing`), pas en erreur ; l'attente se répare seule quand
@@ -1033,7 +1076,7 @@ lettres ») est refusé aussi. Test : `src/lib/atelier/__tests__/fonction-sans-p
 | -------------------------- | ----------------------------- | ------------------------------------------------------------------------------------ |
 | registre du moteur         | `WebReplEngine.getCommands()` | `.dériver`, `.résoudre`, `.intégrer`, `.variations`, `.taylor`                       |
 | branchées hors registre    | table `OFF_REGISTRY`          | `.convertir`, `.stats`, `.ajustement`, `.exact`, `.décimal`                          |
-| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.développer`, `.réciproque`, `.limite`, `.simuler`, `.croiser`, lois |
+| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.développer`, `.réciproque`, `.limite`, `.simuler`, `.relever`, lois |
 
 La table `TRANSLATIONS` donne pour chaque commande son nom français, sa description, son exemple
 et sa rubrique de `.aide` (`HelpSection`) ; **son ordre est l'ordre du catalogue**. Les commandes
@@ -2203,7 +2246,9 @@ max(2,5 ; x)` puis `f(1)` répond `5/2` (avant le 2026-10-13 : « Écriture non 
    [atelier-syntaxe.md](atelier-syntaxe.md) à jour.
 4. Les tests du catalogue rejouent **chaque exemple** (`commands.test.ts`, `aide-calcul.test.ts`) :
    un exemple qui refuse ou rend une ligne vide fait échouer la suite. Un exemple qui cite des
-   listes déclare son décor dans `exampleSetup`.
+   objets déclare son décor dans `exampleSetup` (`stageExampleSetup`) : `L` → une liste, `f(x)` →
+   une fonction, `point:A` et `value:S` → un point et une valeur écrits comme dans Calcul
+   (`.relever`, dont l'exemple est le problème de l'aire).
 
 **Une action de carte** — ajouter l'action au type dans `BY_KIND` (`actions.ts`), puis son traitement dans
 `CalcDesk.runFromPanel` (`desk.svelte.ts`) — elle doit écrire une ligne dans Calcul, et une carte
@@ -2244,7 +2289,8 @@ par le type (`KIND_WORDS`, `KIND_NAMES`) sont signalés par le typecheck. Prévu
   `figure-sync.test.ts` (le pont de la vue Géométrie, assertions sur le dessin), `figure-fonctions.test.ts` (𝒞f, K1-K3),
   `construction-lecture.test.ts` (la lecture, comparée au lecteur du DSL), `construction-modele.test.ts`
   (L2, L3, L8, sauvegarde), `figure-constructions.test.ts`, `point-sur-intersections.test.ts` et
-  `figure-point-sur.test.ts` (PR 3 : modèle, numérotation stable au glisser),
+  `figure-point-sur.test.ts` (PR 3 : modèle, numérotation stable au glisser), `relever.test.ts`
+  (PR 4 : `.relever`, le problème de l'aire de bout en bout),
   `components/atelier/__tests__/point-sur.svelte.test.ts`, `components/atelier/__tests__/construction.svelte.test.ts` et
   `components/atelier/__tests__/FigureView.svelte.test.ts` (harnais `WithFigure.svelte`).
 
@@ -2315,4 +2361,4 @@ les garanties `/grapheur` non faites : elles le sont (lots 2 à 6, #779 → #809
 
 ---
 
-Vérifié contre le code le 2026-10-19 (intersections et `point_sur`, lot 2, PR 3).
+Vérifié contre le code le 2026-10-19 (`.relever`, lot 2, PR 4).
