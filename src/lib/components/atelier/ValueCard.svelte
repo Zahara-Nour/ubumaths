@@ -30,6 +30,9 @@
 	import SliderSettings from './SliderSettings.svelte';
 	import CardActionItems from './CardActionItems.svelte';
 	import UnavailableItem from './UnavailableItem.svelte';
+	import { measureSummaryOf } from '$lib/atelier/measures';
+	import { forMathlive } from '$lib/atelier/mathfield';
+	import { convertLatexToMarkup } from 'mathlive';
 
 	interface Props {
 		object: ValueObject;
@@ -42,6 +45,14 @@
 	const atelier = useAtelier();
 
 	const name = $derived(displayName(object.name));
+
+	/** Une mesure nommée (géométrie, lot 2, L4 et L7) : ce qu'elle vaut, `S = aire(A, B, C)` → 6. */
+	const measure = $derived.by(() => {
+		const read = measureSummaryOf(atelier, object.name);
+		if (read === null) return null;
+		const latex = forMathlive(read.latex);
+		return { markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }), text: read.text };
+	});
 
 	/** Les objets qui la citent : elle est alors un paramètre, son curseur reste affiché. */
 	const citedBy = $derived(atelier.dependents(object.name));
@@ -165,6 +176,17 @@
 		</DropdownMenu.Root>
 	</div>
 
+	{#if measure}
+		<!-- L7 : la valeur d'une mesure ; la mise en page des cartes revient à la refonte -->
+		<p class="mesure">
+			<span aria-hidden="true">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré par toLatex (measureSummaryOf) -->
+				{@html measure.markup}
+			</span>
+			<span class="sr-only">{measure.text}</span>
+		</p>
+	{/if}
+
 	{#if sliderShown && object.slider}
 		<ValueSlider {object} slider={object.slider} />
 	{/if}
@@ -245,6 +267,7 @@
 		outline: 2px solid var(--color-ring, currentColor);
 		outline-offset: 2px;
 	}
+	.mesure,
 	.message {
 		margin: 0;
 		font-size: 0.75rem;

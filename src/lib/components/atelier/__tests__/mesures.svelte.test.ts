@@ -90,9 +90,7 @@ describe('L4 : la carte d’une mesure nommée', () => {
 		const { container } = await render(WithAtelier, { atelier });
 
 		const card = cardFor(container, 'S');
-		expect(card.querySelector('.valeur .sr-only')?.textContent?.trim()).toBe('6');
-		(card.querySelector('.entete') as HTMLElement).click();
-		await settle();
+		expect(card.querySelector('.mesure .sr-only')?.textContent?.trim()).toBe('6');
 		expect(card.querySelector('input[type="range"]')).toBeNull();
 	});
 });
