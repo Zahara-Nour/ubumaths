@@ -376,28 +376,45 @@ describe('les lois dans l’historique (manche 13, PR c)', () => {
 // =============================================================================
 
 describe('exporter l’historique', () => {
-	function exportButtons(container: HTMLElement): HTMLButtonElement[] {
-		return [...container.querySelectorAll('.export button')] as HTMLButtonElement[];
-	}
+	/**
+	 * Le lien ubumark, seul reste de la barre « Exporter l'historique » (lot 1 de
+	 * `atelier-refonte-interface-phase0.md`) : l'atelier s'enregistre par la barre d'icônes.
+	 */
+	const sheetLink = (container: HTMLElement) =>
+		[...container.querySelectorAll('button')].find((b) =>
+			b.textContent?.includes('pour une fiche (ubumark)')
+		) as HTMLButtonElement | undefined;
 
-	it('historique vide : boutons désactivés, avec leur raison (X1)', async () => {
-		const { container } = await open();
-
-		expect(exportButtons(container).map((b) => b.disabled)).toEqual([true, true]);
-		expect(container.querySelector('.export')?.textContent).toContain('Rien à exporter');
-	});
-
-	it('après une saisie, on peut exporter dans les deux formats', async () => {
+	it('plus de barre « Exporter l’historique » : ni JSON, ni rejeu dans la vue', async () => {
 		const { container, submit } = await open();
 
 		await submit('f(x)=x^2');
 
-		const buttons = exportButtons(container);
-		expect(buttons.map((b) => b.disabled)).toEqual([false, false]);
-		expect(buttons.map((b) => b.textContent?.trim())).toEqual([
-			'JSON (pour rejouer)',
-			'ubumark (pour lire)'
-		]);
+		expect(container.querySelector('.export')).toBeNull();
+		expect(container.textContent).not.toContain('JSON (pour rejouer)');
+		expect(container.textContent).not.toContain('Rejouer un historique');
+	});
+
+	it('historique vide : pas de lien ubumark', async () => {
+		const { container } = await open();
+
+		expect(sheetLink(container)).toBeUndefined();
+	});
+
+	it('après une saisie, le lien télécharge l’historique en ubumark', async () => {
+		const { container, submit } = await open();
+		const downloads = watchDownloads();
+		try {
+			await submit('2+3');
+
+			sheetLink(container)?.click();
+
+			expect(downloads.files).toHaveLength(1);
+			expect(downloads.files[0].name).toMatch(/^calcul-\d{4}-\d{2}-\d{2}\.md$/);
+			expect(await downloads.files[0].blob.text()).toContain('2+3');
+		} finally {
+			downloads.restore();
+		}
 	});
 
 	/** Les fichiers que la page a lancés en téléchargement, sans rien enregistrer. */
@@ -438,18 +455,13 @@ describe('exporter l’historique', () => {
 			const content = JSON.parse(await file.blob.text());
 			expect(content.format).toBe('chiphre-calcul');
 			expect(content.entries.map((e: { label: string }) => e.label)).toEqual(['2+3', 'a = 5']);
-			// Le bouton JSON donne le même contenu
-			exportButtons(container)[0].click();
-			expect(downloads.files).toHaveLength(2);
-			const fromButton = JSON.parse(await downloads.files[1].blob.text());
-			expect(fromButton.entries).toEqual(content.entries);
 			expect(container.querySelector('.retour')?.textContent).toContain('Historique exporté');
 		} finally {
 			downloads.restore();
 		}
 	});
 
-	it('`.exporter` sur un historique vide : la raison du bouton désactivé', async () => {
+	it('`.exporter` sur un historique vide : rien à exporter, et on le dit', async () => {
 		const { container, submit } = await open();
 		const downloads = watchDownloads();
 		try {

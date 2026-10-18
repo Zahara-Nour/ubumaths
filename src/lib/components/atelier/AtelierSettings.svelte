@@ -43,9 +43,9 @@
 <Dialog.Root>
 	<Dialog.Trigger>
 		{#snippet child({ props })}
-			<button type="button" class="reglages" {...props}>
-				<Settings class="size-4" aria-hidden="true" />
-				Réglages
+			<!-- Icône seule, comme le reste de la barre (lot 1 de `atelier-refonte-interface-phase0.md`) -->
+			<button type="button" class="reglages" aria-label="Réglages" title="Réglages" {...props}>
+				<Settings size={18} aria-hidden="true" />
 			</button>
 		{/snippet}
 	</Dialog.Trigger>
@@ -88,18 +88,22 @@
 </Dialog.Root>
 
 <style>
-	/* Comme « Repartir de zéro » : lisible et visable en projection */
+	/* Comme les boutons de la barre (`ToolButton`) : lisible et visable en projection */
 	.reglages {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.375rem;
+		justify-content: center;
+		min-width: 2.5rem;
 		min-height: 2.5rem;
-		padding: 0.125rem 0.625rem;
-		border: 1px solid var(--color-border);
+		border: 1px solid transparent;
 		border-radius: 0.375rem;
-		background: var(--color-background);
-		font-size: 0.8125rem;
+		background: none;
+		color: var(--color-foreground);
 		cursor: pointer;
+	}
+	.reglages:hover {
+		background: var(--color-muted);
+		border-color: var(--color-border);
 	}
 
 	.reglages:focus-visible {

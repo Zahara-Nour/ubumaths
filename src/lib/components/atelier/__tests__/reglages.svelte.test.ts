@@ -42,7 +42,9 @@ async function open(atelier = new Atelier()) {
 	const mathField = () =>
 		(container.querySelector('.calcul form math-field') as MathfieldElement | null) ?? null;
 	const settingsButton = () =>
-		[...container.querySelectorAll('button')].find((b) => b.textContent?.includes('Réglages'));
+		[...container.querySelectorAll('button')].find(
+			(b) => b.getAttribute('aria-label') === 'Réglages'
+		);
 	const history = () => container.querySelector('.historique')?.textContent ?? '';
 
 	/** Un VRAI clic : c'est lui qui donne le focus au bouton, que la fenêtre rendra. */
