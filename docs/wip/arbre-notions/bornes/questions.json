@@ -1,0 +1,684 @@
+[
+	{
+		"id": "c2-1",
+		"cycle": 2,
+		"niveaux": ["CE1"],
+		"points": ["CE1-039", "rubrique « La résolution de problèmes » du CE1"],
+		"titre": "Prix à virgule dans les problèmes de CE1",
+		"question": "Le texte du BO borne les problèmes de CE1 aux nombres entiers jusqu'à 1 000, mais ses propres exemples parlent de 1,20 €, 15,30 €, 9,60 €. Un problème CE1 « Lucie achète un pain à 1,20 € et un gâteau à 12 €, combien dépense-t-elle ? » est-il dans le point ?",
+		"sources": "BO c2 p.17 (texte d'introduction) : « les nombres entiers jusqu'à mille ». BO c2 p.17-18 (Exemples de réussite) : 1,20 € ; 90 centimes ; 15,30 €. BO c2 p.27-28 (La monnaie, CE1) : euros et centimes, écriture à virgule « de façon pratique et concrète » pour la monnaie, sans dixièmes ni centièmes nommés.",
+		"options": [
+			["prix", "Prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €)"],
+			["entiers", "Entiers seulement : les exemples à virgule sont hors borne"]
+		],
+		"reco": "prix",
+		"pourquoi": "Les deux textes sont le BO ; les exemples de réussite montrent ce que l'élève doit réussir, et la rubrique Monnaie du même niveau autorise l'écriture à virgule pour les prix. La virgule reste cantonnée à la monnaie (aucun autre décimal au CE1).",
+		"consequence": "Un modèle de problème CE1 avec des prix en euros et centimes est accepté ; un modèle qui met des décimaux hors monnaie (2,5 kg, 1,5 m) est refusé.",
+		"info": false
+	},
+	{
+		"id": "c2-2",
+		"cycle": 2,
+		"niveaux": ["CE1"],
+		"points": ["CE1-048"],
+		"titre": "Combien d'objets à comparer en masse",
+		"question": "Le libellé du point dit « parmi deux ou trois objets », l'exemple du BO dit « parmi trois ou quatre objets ». Une question CE1 « Lequel de ces quatre objets est le plus lourd ? » (balance dessinée) est-elle dans le point ?",
+		"sources": "BO c2 p.27, colonne Objectifs : « parmi deux ou trois objets de volumes proches ». BO c2 p.27, colonne Exemples de réussite : « parmi trois ou quatre objets ». Aucun livret ne tranche.",
+		"options": [
+			["deux-a-quatre", "De deux à quatre objets (les deux colonnes du BO)"],
+			["libelle", "Deux ou trois objets seulement (le libellé)"]
+		],
+		"reco": "deux-a-quatre",
+		"pourquoi": "Les deux colonnes sont le BO : l'exemple de réussite dit ce que l'élève réussit pour cet objectif, et le prendre ne crée aucune borne nouvelle. Restreindre à trois écarterait un exemple officiel.",
+		"consequence": "Presque aucun effet : le point se travaille en manipulant ; un modèle à quatre objets serait accepté, un modèle à cinq objets refusé.",
+		"info": false
+	},
+	{
+		"id": "c2-3",
+		"cycle": 2,
+		"niveaux": ["CE2"],
+		"points": ["CE2-019"],
+		"titre": "Produit d'une multiplication posée au CE2",
+		"question": "Le point demande de poser « un nombre à deux ou trois chiffres par un nombre à un ou deux chiffres », mais 999 × 99 = 98 901 dépasse 10 000. Une question CE2 « Pose et calcule 875 × 64 » (= 56 000) est-elle dans le point ?",
+		"sources": "BO c2 p.21 (Objectifs + Exemples) : « 16 × 548 » (= 8 768), rien sur la taille du produit. BO c2 p.19 (texte d'introduction du CE2) : « les connaissances et savoir-faire attendus concernent les nombres jusqu'à 10 000 ». BO c2 p.21 : additions et soustractions posées « inférieures ou égales à 10 000 ».",
+		"options": [
+			["general", "Produit ≤ 10 000 : borne générale du CE2"],
+			["libre", "Seule la taille des facteurs compte : produit libre"]
+		],
+		"reco": "general",
+		"pourquoi": "Ce n'est pas une borne déduite : la borne générale du CE2 (nombres jusqu'à 10 000) s'applique à tous les points du niveau, et l'exemple du BO la respecte. Le libellé fixe la taille des facteurs, la borne générale celle du résultat.",
+		"consequence": "Un modèle qui tire ses facteurs au hasard sans plafonner le produit (ex. 875 × 64) est refusé tant qu'il n'impose pas produit ≤ 10 000.",
+		"info": false
+	},
+	{
+		"id": "c2-4",
+		"cycle": 2,
+		"niveaux": ["CP"],
+		"points": ["CP-016"],
+		"titre": "Somme d'une addition posée au CP",
+		"question": "Trois nombres à deux chiffres peuvent dépasser 100 (45 + 37 + 56 = 138). Une question CP « Pose et calcule 45 + 37 + 56 » est-elle dans le point ?",
+		"sources": "BO c2 p.5 (Exemples de réussite) : « 45 + 37 ; 28 + 8 + 56 » (sommes 82 et 92). BO c2 p.3 (texte d'introduction du CP) : « les nombres entiers jusqu'à cent ». Guide CP (antérieur au programme 2024) p.146 : « nombres jusqu'à 100 », en appui seulement.",
+		"options": [
+			["general", "Somme ≤ 100 : borne générale du CP"],
+			["libre", "Seule la taille des termes compte : somme libre"]
+		],
+		"reco": "general",
+		"pourquoi": "La borne n'a pas besoin du guide : la borne générale du CP (nombres jusqu'à cent, BO p.3) s'applique au résultat, et les deux exemples du BO restent sous 100.",
+		"consequence": "Un modèle CP d'addition posée qui peut produire une somme > 100 est refusé tant qu'il ne plafonne pas la somme.",
+		"info": false
+	},
+	{
+		"id": "c2-5",
+		"cycle": 2,
+		"niveaux": ["CE1", "CE2"],
+		"points": ["CE1-029", "CE1-102", "CE1-084", "CE1-103", "CE2-027"],
+		"titre": "« Nombre entier de dizaines » : jusqu'où ?",
+		"question": "Les exemples du BO n'ajoutent que 20 à 90 (ou 200 à 500). Une question CE1 « 346 + 120 = ? » (120 = 12 dizaines) est-elle dans le point « ajouter un nombre entier de dizaines » ?",
+		"sources": "BO c2 p.15 (Exemples de réussite CE1) : 234 + 60 ; 541 − 20 ; 746 + 80 ; 354 + 500 ; 765 − 200. BO c2 p.23 (CE2) : 9 × 40. Aucun texte ne limite le nombre de dizaines à 9.",
+		"options": [
+			[
+				"general",
+				"Pas de borne propre : tout nombre entier de dizaines (ou de centaines), dans le champ du niveau"
+			],
+			["dix-a-90", "10 à 90 (resp. 100 à 900), comme les exemples"]
+		],
+		"reco": "general",
+		"pourquoi": "« 10 à 90 » ne découle pas du texte : 120 est un nombre entier de dizaines, et les exemples ne se donnent pas pour une liste. On n'invente pas la restriction ; le champ du niveau (≤ 1 000 au CE1, ≤ 10 000 au CE2) borne le calcul.",
+		"consequence": "Aucun modèle refusé pour 120 ou 250 ; seul le dépassement du champ du niveau fait refuser.",
+		"info": false
+	},
+	{
+		"id": "c2-6",
+		"cycle": 2,
+		"niveaux": ["CE1"],
+		"points": ["CE1-102"],
+		"titre": "Soustraire des dizaines avec retenue",
+		"question": "Le BO montre une retenue seulement pour l'addition (746 + 80). Une question CE1 « 523 − 40 = ? » (on passe sous la centaine) est-elle dans le point « soustraire un nombre entier de dizaines » ?",
+		"sources": "BO c2 p.15 (Exemples de réussite) : « calculs sans retenue comme les suivants : 234 + 60 ; 541 − 20 ; 354 + 500 ; 765 − 200 » puis « additions avec retenue comme 746 + 80 ». Le libellé (Objectifs) : « Ajouter ou soustraire un nombre entier de dizaines à un nombre », sans condition. Livret CE1 2025 : aucun exemple.",
+		"options": [
+			["admise", "Retenue admise : le libellé ne l'exclut pas"],
+			["sans", "Sans retenue seulement (aucun exemple de soustraction avec retenue)"]
+		],
+		"reco": "admise",
+		"pourquoi": "Le libellé couvre les deux cas et aucun texte n'écrit « sans retenue » comme une limite de l'objectif ; l'absence d'exemple ne suffit pas à poser une borne.",
+		"consequence": "Les modèles de soustraction de dizaines avec ou sans retenue sont acceptés ; si David choisit « sans », tout modèle qui tire 523 − 40 est refusé.",
+		"info": false
+	},
+	{
+		"id": "c2-7",
+		"cycle": 2,
+		"niveaux": ["CE2"],
+		"points": ["CE2-024", "CE2-025"],
+		"titre": "Taille du nombre de départ (+ 8, 9, 18… 39)",
+		"question": "Le BO borne ce qu'on ajoute (8, 9, 18, 19, 28, 29, 38, 39), pas le nombre de départ. Une question CE2 « 4 527 + 29 = ? » est-elle dans le point ?",
+		"sources": "BO c2 p.23 (Exemples de réussite) : liste des nombres ajoutés, « +38 = +40 − 2 ». BO c2 p.22 : calcul mental sur le champ du CE2, nombres en jeu et résultats ≤ 10 000. Livret CE2 2025 p.24 et p.30 : exemples < 100 (37 + 19, 47 + 29).",
+		"options": [
+			["general", "Pas de borne propre : nombre de départ et résultat ≤ 10 000"],
+			["moins-de-100", "Nombre de départ < 100, comme le livret"]
+		],
+		"reco": "general",
+		"pourquoi": "Le BO fixe explicitement le champ du calcul mental à 10 000 ; les nombres du livret sont un choix de séquence, pas une borne.",
+		"consequence": "Aucun modèle refusé pour un nombre de départ à 3 ou 4 chiffres tant que le résultat reste ≤ 10 000.",
+		"info": false
+	},
+	{
+		"id": "c2-8",
+		"cycle": 2,
+		"niveaux": ["CE2"],
+		"points": ["CE2-026", "CE2-093"],
+		"titre": "× 4 et × 8 : n ≤ 2 500 et n ≤ 1 250",
+		"question": "La borne « n ≤ 2 500 » pour × 4 (et « n ≤ 1 250 » pour × 8) vient du plafond 10 000 des résultats. Une question CE2 « 4 × 2 600 = ? » (= 10 400) sort-elle du point ?",
+		"sources": "BO c2 p.22 (texte d'introduction) : nombres en jeu et résultats cherchés ≤ 10 000. BO c2 p.23 : 4 × 37, 8 × 27. Livret CE2 2025 p.23 et p.25 : entraînement jusqu'à 2 500 × 4.",
+		"options": [
+			["confirme", "Confirmer : résultat ≤ 10 000, donc n ≤ 2 500 (× 4) et n ≤ 1 250 (× 8)"],
+			["moins-de-100", "Restreindre à n < 100 (séance de découverte du livret)"]
+		],
+		"reco": "confirme",
+		"pourquoi": "La borne découle nécessairement du BO (résultat ≤ 10 000) et le livret monte exactement jusqu'à 2 500 × 4 : aucune lecture n'est ajoutée.",
+		"consequence": "Un modèle qui laisse le produit dépasser 10 000 est refusé ; les modèles à grands n (jusqu'à 2 500) sont acceptés.",
+		"info": false
+	},
+	{
+		"id": "c2-9",
+		"cycle": 2,
+		"niveaux": ["CE2"],
+		"points": ["CE2-031"],
+		"titre": "« Champ numérique réduit » pour chercher le nombre de parts",
+		"question": "Pour les problèmes « combien de parts ? », le BO dit seulement que le champ reste « réduit ». Une question CE2 « 4 800 élèves sont répartis en équipes de 6. Combien d'équipes ? » est-elle dans le point ?",
+		"sources": "BO c2 p.24-25 (Exemples de réussite) : la valeur du tout a un champ étendu ; le nombre de parts « continue[nt] de porter sur un champ numérique réduit », sans chiffre. BO c2 p.24 (intro) : problèmes ≤ 10 000 ; les plus complexes (> 2 étapes, atypiques) < 100. Au CE1 (BO c2 p.18-19), exemples de recherche de parts : 189 photos par 10, 75 œufs par 6.",
+		"options": [
+			["champ-ce1", "Quantité totale ≤ 1 000 (« continue » : le champ du CE1)"],
+			["moins-de-100", "Quantité totale < 100 (comme les problèmes complexes)"],
+			["general", "Pas de borne chiffrée : ≤ 10 000 (borne générale)"],
+			[
+				"ouvert",
+				"Laisser ouvert : aucun modèle « nombre de parts » tagué tant que ce n'est pas tranché"
+			]
+		],
+		"reco": "champ-ce1",
+		"pourquoi": "Le BO pose bien une restriction (« réduit ») mais sans chiffre ; « continuent de » renvoie au champ de l'année précédente, que le BO fixe à 1 000. C'est la lecture la plus prudente qui ne soit pas inventée.",
+		"consequence": "Un modèle CE2 de recherche du nombre de parts dont la quantité totale dépasse 1 000 est refusé ; les modèles « valeur du tout » ne sont pas touchés.",
+		"info": false
+	},
+	{
+		"id": "c2-10",
+		"cycle": 2,
+		"niveaux": ["CP", "CE1", "CE2"],
+		"points": ["CP-075", "CE1-093", "CE2-087"],
+		"titre": "Précision d'un encadrement d'entier",
+		"question": "Aucun texte ne dit si l'on encadre à l'unité, à la dizaine ou à la centaine. Une question CE1 « Encadre 239 entre deux dizaines consécutives : … < 239 < … » est-elle dans le point ?",
+		"sources": "BO c2 p.4 (CP), p.11 (CE1), p.20 (CE2) : « Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles =, < et > », exemples d'ordre et d'intercalation seulement. Livrets CP/CE1/CE2 2025 : rien sur la précision.",
+		"options": [
+			[
+				"general",
+				"Pas de borne propre : toute précision (unité, dizaine, centaine…) dans le champ du niveau"
+			],
+			["unite", "Entiers consécutifs seulement"]
+		],
+		"reco": "general",
+		"pourquoi": "Aucun texte ne porte de restriction : en inventer une écarterait des encadrements que le libellé couvre.",
+		"consequence": "Aucun modèle refusé pour la précision de l'encadrement ; seuls les nombres hors du champ du niveau font refuser.",
+		"info": false
+	},
+	{
+		"id": "c2-11",
+		"cycle": 2,
+		"niveaux": ["CE2"],
+		"points": ["CE2-013"],
+		"titre": "« Inférieures à 1 » : strict ou non ?",
+		"question": "Le point dit « comparer des fractions inférieures à 1 », le texte général du CE2 dit « inférieures ou égales à un ». Une question CE2 « Compare 12/12 et 7/12 » est-elle dans le point ?",
+		"sources": "BO c2 p.20 (texte d'introduction) : fractions « inférieures ou égales à un », dénominateur ≤ 12. BO c2 p.21 (Objectifs) : « Comparer des fractions inférieures à 1 » ; Exemples : 5/12 et 7/12, 5/12 et 5/8, 7/12 et 5/6 (toutes < 1).",
+		"options": [
+			["strict", "Strictement inférieures à 1 (le libellé du point)"],
+			["large", "Inférieures ou égales à 1 (le texte général)"]
+		],
+		"reco": "strict",
+		"pourquoi": "Le libellé du point est lui-même le BO et il est plus précis que le texte général ; tous les exemples sont < 1. Ce n'est pas une restriction inventée.",
+		"consequence": "Un modèle de comparaison qui peut tirer n/n (= 1) est refusé tant qu'il ne l'exclut pas.",
+		"info": false
+	},
+	{
+		"id": "c2-12",
+		"cycle": 2,
+		"niveaux": ["CP"],
+		"points": ["CP-031"],
+		"titre": "Partage avec reste au CP",
+		"question": "Tous les exemples CP sont des partages exacts ; les partages avec reste n'apparaissent dans les exemples qu'au CE1. Une question CP « 25 élèves font des équipes de 4. Combien d'équipes complètes ? » est-elle dans le point ?",
+		"sources": "BO c2 p.9-10 (CP, Exemples de réussite) : 3 paquets de 7, 24 élèves en équipes de 4, 18 images pour 3 ; champ ≤ 30. Aucun texte ne dit « sans reste ». BO c2 p.18-19 (CE1) : 189 photos par 10 → 19 pages ; 75 œufs par 6.",
+		"options": [
+			["general", "Pas de borne propre : reste admis (champ ≤ 30)"],
+			["exact", "Partages exacts seulement au CP"]
+		],
+		"reco": "general",
+		"pourquoi": "« Sans reste » n'est écrit nulle part : c'est une lecture des exemples, pas une conséquence du texte. Le champ ≤ 30 du libellé reste la seule borne.",
+		"consequence": "Un modèle CP de partage avec reste est accepté s'il reste ≤ 30 ; si David choisit « exact », il est refusé.",
+		"info": false
+	},
+	{
+		"id": "c2-13",
+		"cycle": 2,
+		"niveaux": ["CE2"],
+		"points": ["CE2-030"],
+		"titre": "Problèmes en deux étapes : 1 000 (livret) ou 10 000 (BO)",
+		"question": "La séquence du livret CE2 reste sous 1 000 alors que le BO va jusqu'à 10 000. Une question CE2 « Léo a 4 250 €, il dépense 1 300 € puis 780 €. Combien lui reste-t-il ? » est-elle dans le point ?",
+		"sources": "BO c2 p.24 (Exemples de réussite) : entiers jusqu'à 10 000 (y compris > 1 000), prix à virgule, fractions de même dénominateur. Livret CE2 2025 p.30 : séquence choisie jusqu'à 1 000, données surtout < 100 au début.",
+		"options": [
+			["bo", "Borne du BO : ≤ 10 000"],
+			["livret", "Borne du livret : ≤ 1 000"]
+		],
+		"reco": "bo",
+		"pourquoi": "Le livret décrit une séquence d'enseignement, pas une limite du programme ; le BO fixe explicitement 10 000.",
+		"consequence": "Aucun modèle refusé entre 1 000 et 10 000 ; au-delà de 10 000, refus.",
+		"info": false
+	},
+	{
+		"id": "c3-1",
+		"cycle": 3,
+		"niveaux": ["CM2"],
+		"points": ["CM2-116"],
+		"titre": "Retour à l'unité en proportionnalité au CM2",
+		"question": "Le BO et le livret réservent le retour à l'unité à la 6e, mais un exemple de réussite CM2 l'utilise. Une question CM2 « 3 plaques de carton font 24 mm d'épaisseur. Quelle est l'épaisseur de 5 plaques ? » (aucun lien simple entre 3 et 5 : il faut passer par 1 plaque) est-elle dans le point ?",
+		"sources": "BO c3 p.27 : « Seuls des raisonnements fondés sur les propriétés de linéarité pour la multiplication et pour l'addition sont attendus » ; BO c3 p.27-28 (6e) : « linéarité multiplicative ou additive, retour à l'unité ». Livret CM2 2026 p.16 : « Le retour à l'unité n'est introduit qu'en 6e », réponse validée si l'élève l'utilise. Exemples de réussite CM2 2025 p.25 : l'élève « sait qu'il peut passer par l'unité » (3 plaques → 5 plaques).",
+		"options": [
+			[
+				"exclu",
+				"Hors CM2 : seuls les problèmes résolubles par linéarité (× ou +) sont dans le point"
+			],
+			["admis", "Admis : l'exemple de réussite l'autorise"]
+		],
+		"reco": "exclu",
+		"pourquoi": "Le BO limite explicitement les raisonnements attendus à la linéarité, et le livret 2026, plus récent, confirme que le retour à l'unité est de 6e. L'exemple de réussite reste valable pour la classe, mais un modèle qui l'impose sort de ce que le BO attend.",
+		"consequence": "Les modèles CM2 dont les nombres n'ont aucune relation multiplicative ou additive simple (3 → 5, 7 → 11) sont refusés ; ils restent taggables sur le point de 6e.",
+		"info": false
+	},
+	{
+		"id": "c3-2",
+		"cycle": 3,
+		"niveaux": ["CM2"],
+		"points": ["CM2-040", "CM2-041", "CM2-118"],
+		"titre": "« Ajouter un nombre entier à un décimal » : et 0,03 ?",
+		"question": "Le BO CM2 dit « un nombre entier », ses exemples de réussite ajoutent 0,03, 0,8 ou 3/1 000. Une question CM2 « 4,452 + 0,03 = ? » est-elle dans le point ?",
+		"sources": "BO c3 p.11 (CM2) : « Ajouter ou soustraire un nombre entier à un nombre décimal lorsqu'il n'y a pas de retenue ». BO c3 p.7 (CM1) : « un nombre entier inférieur à 10, d'unités, de dizaines, de centaines, de dixièmes ou de centièmes ». Exemples de réussite CM2 2025 p.8, sous ce même objectif : 4,452 + 0,03 ; 0,457 − 3/1 000 ; 21 462 + 3 000 ; 4,45 + 0,8.",
+		"options": [
+			[
+				"unites-numeration",
+				"k unités de numération (k de 1 à 9), dixièmes, centièmes et millièmes compris, comme au CM1"
+			],
+			["entiers", "Nombres entiers seulement (lecture littérale)"]
+		],
+		"reco": "unites-numeration",
+		"pourquoi": "Les exemples de réussite, cités par le BO, illustrent cet objectif précis avec 0,03 et 0,8, et l'objectif CM1 correspondant inclut déjà les dixièmes et centièmes : lire « entier » au pied de la lettre ferait reculer le CM2 derrière le CM1.",
+		"consequence": "Les modèles qui ajoutent 0,03 ou 7/1 000 sont acceptés ; un modèle qui ajoute un décimal quelconque (2,37) reste refusé, car ce n'est pas k unités d'un seul rang.",
+		"info": false
+	},
+	{
+		"id": "c3-3",
+		"cycle": 3,
+		"niveaux": ["CM1"],
+		"points": ["CM1-038"],
+		"titre": "Écriture décimale des fractions usuelles au CM1",
+		"question": "Les exemples de réussite CM1 ne donnent que 1/10 = 0,1 et 1/100 = 0,01 ; 1/2 = 0,5 et 3/4 = 0,75 n'apparaissent qu'au CM2. Une question CM1 « 1/2 = ? (écriture décimale) » est-elle dans le point ?",
+		"sources": "BO c3 p.7 (CM1) : « Connaître l'écriture décimale de fractions usuelles », sans liste. Exemples de réussite CM1 2025 p.8 : « pour les nombres suivants : 1/10 = 0,1 ; 1/100 = 0,01 ». Exemples de réussite CM2 2025 p.8 : 1/4, 1/2, 3/4, 3/2, 5/2. À noter : Exemples CM1 p.15 (longueurs) écrivent « 1/2 km = 0,5 km », dans un autre point.",
+		"options": [
+			["liste-cm1", "Seulement 1/10 et 1/100 (la liste des exemples CM1)"],
+			["usuelles", "Fractions usuelles au sens large (1/2, 1/4, 3/4 aussi)"]
+		],
+		"reco": "liste-cm1",
+		"pourquoi": "Le BO est muet sur la liste ; l'accompagnement la précise par une liste fermée (« pour les nombres suivants ») et renvoie les autres au CM2. Le 1/2 km des longueurs relève du point sur les unités de longueur, pas de celui-ci.",
+		"consequence": "Un modèle CM1 « écriture décimale de 1/2, 1/4, 3/4 » est refusé sur CM1-038 (il reste taggable au CM2).",
+		"info": false
+	},
+	{
+		"id": "c3-4",
+		"cycle": 3,
+		"niveaux": ["CM1", "CM2"],
+		"points": ["CM1-045", "CM1-164", "CM2-050", "CM2-151"],
+		"titre": "Taille des nombres pour × 4, × 8, ÷ 4, ÷ 8",
+		"question": "Aucun texte ne borne la taille du nombre ; les seuls exemples sont 8 × 27, 140 ÷ 4 et 260 ÷ 8 = 32,5. Une question CM1 « 4 × 135 = ? » (trois chiffres) ou CM2 « 1 250 ÷ 8 = ? » est-elle dans le point ?",
+		"sources": "BO c3 p.7 (CM1) : « Multiplier un nombre entier par 4 ou par 8 », sans borne. BO c3 p.11 (CM2) : « Diviser un nombre entier par 4 ou par 8 », sans borne. Exemples de réussite CM1 2025 p.10 : 8 × 27 ; CM2 2025 p.10 : 140 ÷ 4 = 35, 260 ÷ 8 = 32,5 (quotient décimal).",
+		"options": [
+			[
+				"general",
+				"Pas de borne propre : borne générale du niveau ; quotient décimal admis (÷ 4 et ÷ 8)"
+			],
+			[
+				"deduite",
+				"Borne déduite des exemples : entier à 2 chiffres (× 4, × 8), dividende à 3 chiffres (÷ 4, ÷ 8)"
+			]
+		],
+		"reco": "general",
+		"pourquoi": "« Deux chiffres » et « trois chiffres » sont des lectures d'un seul exemple chacun, pas des conséquences du texte. Le quotient décimal est écrit (260 ÷ 8 = 32,5) sous un objectif qui réunit ÷ 4 et ÷ 8.",
+		"consequence": "Aucun modèle refusé pour la taille tant qu'il reste dans le champ du niveau (≤ 999 999 au CM1 ; décimaux au plus au millième au CM2) ; un modèle ÷ 4 à quotient décimal est accepté.",
+		"info": false
+	},
+	{
+		"id": "c3-5",
+		"cycle": 3,
+		"niveaux": ["CM1", "CM2"],
+		"points": ["CM1-043", "CM1-163", "CM2-045", "CM2-150"],
+		"titre": "Taille du nombre de départ (+/− 8, 9, 18, 19…)",
+		"question": "Le BO borne ce qu'on ajoute (8, 9, 18, 19… 39 au CM1 ; jusqu'à 98, 99 au CM2), pas l'autre nombre. Une question CM1 « 4 527 + 29 = ? » est-elle dans le point ?",
+		"sources": "BO c3 p.7 (CM1) et p.11 (CM2) : liste des nombres ajoutés ou soustraits, rien sur l'autre nombre. Exemples de réussite CM1 2025 p.10 et CM2 2025 p.9 : exemples à deux ou trois chiffres (57 + 29, 157 + 39).",
+		"options": [
+			["general", "Pas de borne propre : borne générale du niveau"],
+			["deduite", "Borne déduite : 2 ou 3 chiffres (CM1), 2 à 4 chiffres (CM2)"]
+		],
+		"reco": "general",
+		"pourquoi": "La taille « 2 ou 3 chiffres » n'est qu'une lecture des exemples ; aucun texte ne la porte.",
+		"consequence": "Aucun modèle refusé pour un nombre de départ plus grand, dans le champ du niveau.",
+		"info": false
+	},
+	{
+		"id": "c3-6",
+		"cycle": 3,
+		"niveaux": ["CM1", "CM2"],
+		"points": [
+			"CM1-035",
+			"CM1-036",
+			"CM1-161",
+			"CM1-162",
+			"CM2-035",
+			"CM2-036",
+			"CM2-148",
+			"CM2-149"
+		],
+		"titre": "Tables d'addition et de multiplication au CM",
+		"question": "Les tables ne sont pas bornées dans le BO du cycle 3. Une question CM1 « 10 + 7 = ? » ou « 7 × 10 = ? » est-elle dans le point « répertoire additif / multiplicatif » ?",
+		"sources": "BO c3 p.7 et p.11 : « tables d'addition et de multiplication », sans bornes. BO c2 p.6 (CP) et p.14 (CE1) : les tables sont « A + B = C ou C = A + B » et « A × B = C », « où A et B sont des nombres entiers compris entre 0 et 10 ». Exemples de réussite CM1 2025 p.8 : « 70 = 7 × … ».",
+		"options": [
+			["bo-c2", "Termes et facteurs de 0 à 10 (définition des tables par le BO du cycle 2)"],
+			["zero-neuf", "Termes 0 à 9, facteurs 1 à 10 (lecture actuelle du fichier)"]
+		],
+		"reco": "bo-c2",
+		"pourquoi": "Ce n'est plus une borne déduite : le BO du cycle 2 définit les tables (A et B de 0 à 10), et le cycle 3 en poursuit la mémorisation. La définition vaut pour l'addition comme pour la multiplication.",
+		"consequence": "Les modèles qui tirent 10 + 7 ou 0 × 8 sont acceptés ; un modèle qui tire 12 × 7 ou 11 + 6 est refusé sur ces points.",
+		"info": false
+	},
+	{
+		"id": "c3-7",
+		"cycle": 3,
+		"niveaux": ["CM1"],
+		"points": ["CM1-132"],
+		"titre": "Encadrer un décimal au dixième près au CM1",
+		"question": "Le libellé en prod donne l'exemple « 3,7 < 3,74 < 3,8 », mais les exemples de réussite CM1 n'encadrent qu'entre deux entiers consécutifs. Une question CM1 « Encadre 3,74 au dixième près » est-elle dans le point ?",
+		"sources": "BO c3 p.6 (CM1) : « encadrer » des nombres décimaux, sans précision. Exemples de réussite CM1 2025 p.8 : encadrement de 17,48 entre deux entiers consécutifs. Exemples de réussite CM2 2025 p.7 : encadrement au dixième et au centième (17,995). L'exemple du libellé vient de la décision de scission, pas du BO.",
+		"options": [
+			["entiers", "Entre deux entiers consécutifs seulement (accompagnement CM1)"],
+			["dixieme", "Au dixième près aussi (exemple du libellé)"]
+		],
+		"reco": "entiers",
+		"pourquoi": "Le BO est muet sur la précision ; l'accompagnement la précise pour le CM1 et réserve le dixième au CM2. L'exemple du libellé n'est pas une source.",
+		"consequence": "Les modèles CM1 qui encadrent au dixième ou au centième sont refusés ; l'exemple du libellé CM1-132 serait à corriger (le point reste fidèle au BO, seul l'exemple change).",
+		"info": false
+	},
+	{
+		"id": "c3-8",
+		"cycle": 3,
+		"niveaux": ["CM1"],
+		"points": ["CM1-041"],
+		"titre": "× 10 d'un décimal : millièmes au CM1 ?",
+		"question": "L'exemple de réussite CM1 parle de millièmes, alors que le BO CM1 s'arrête aux centièmes. Une question CM1 « 10 × 3,457 = ? » est-elle dans le point ?",
+		"sources": "BO c3 p.6 (CM1) : décimaux « pas au-delà des centièmes ». Exemples de réussite CM1 2025 p.9 : 10 × 72,41 = 724,1, et une phrase qui cite le chiffre des millièmes.",
+		"options": [
+			["bo", "Au plus deux décimales (BO)"],
+			["exemple", "Jusqu'aux millièmes (phrase de l'exemple)"]
+		],
+		"reco": "bo",
+		"pourquoi": "Le BO fixe explicitement la borne du CM1 ; l'accompagnement ne peut pas l'élargir. L'exemple chiffré lui-même (72,41) la respecte.",
+		"consequence": "Un modèle CM1 × 10 qui tire un décimal à trois décimales est refusé.",
+		"info": false
+	},
+	{
+		"id": "c3-9",
+		"cycle": 3,
+		"niveaux": ["CM1"],
+		"points": ["CM1-049"],
+		"titre": "Combien de paires de parenthèses au CM1",
+		"question": "Le BO CM1 dit « des parenthèses », le BO CM2 précise « une ou deux paires ». Une question CM1 « (15 − 7) × (6 + 3) = ? » (deux paires) est-elle dans le point ?",
+		"sources": "BO c3 p.7 (CM1) : « Savoir effectuer un calcul contenant des parenthèses ». BO c3 p.11 (CM2) : « une ou deux paires de parenthèses ». Exemples de réussite CM1 2025 p.10 : « dans des cas simples », 3 × (10 − 6). Exemples CM2 2025 p.10 : (15 − 7) × (6 + 3) ; 37 − (3 × (14 − 6)).",
+		"options": [
+			["une-paire", "Une seule paire au CM1"],
+			["general", "Pas de borne propre : nombre de paires libre"]
+		],
+		"reco": "une-paire",
+		"pourquoi": "Le BO écrit « une ou deux paires » comme la nouveauté du CM2, et l'accompagnement CM1 précise « cas simples » avec une seule paire : les deux textes officiels vont dans le même sens.",
+		"consequence": "Un modèle CM1 à deux paires ou à parenthèses imbriquées est refusé (il reste taggable au CM2).",
+		"info": false
+	},
+	{
+		"id": "c3-10a",
+		"cycle": 3,
+		"niveaux": ["6e"],
+		"points": ["points « Les fractions » de 6e"],
+		"titre": "Fractions de 6e : borne de dénominateur ?",
+		"question": "Le BO 6e ne fixe aucune borne de dénominateur (le CM1 dit ≤ 20, le CM2 ≤ 60). Une question 6e « 7/24 + 5/36 = ? » est-elle dans le point « additionner des fractions de dénominateurs quelconques » ?",
+		"sources": "BO c3 p.6 (CM1) : dénominateur ≤ 20 ; BO c3 p.10 (CM2) : ≤ 60. BO c3 (6e) : aucune borne. Exemples de réussite 6e 2025 p.8 : « dénominateurs quelconques dans des cas simples », 5/4 + 2/3 ; 7/2 − 3/5.",
+		"options": [
+			["general", "Pas de borne chiffrée : « cas simples » seulement (pas de dénominateur imposé)"],
+			["soixante", "Garder ≤ 60 (borne du CM2)"]
+		],
+		"reco": "general",
+		"pourquoi": "Aucun texte de 6e ne donne de chiffre ; reprendre 60 serait inventer. « Cas simples » reste une borne de nature, vérifiée à la lecture du modèle.",
+		"consequence": "Les modèles 6e à petits dénominateurs sont acceptés ; un modèle à dénominateurs très grands ou à multiple commun lointain (7/24 + 5/36) se juge au cas par cas comme « non simple ».",
+		"info": false
+	},
+	{
+		"id": "c3-10b",
+		"cycle": 3,
+		"niveaux": ["6e"],
+		"points": ["6-133"],
+		"titre": "Comparer 3/4 et 5/6 en 6e",
+		"question": "Les exemples de réussite 6e ne montrent que même dénominateur, même numérateur, comparaison à 1 et à 1/2. Une question 6e « Compare 3/4 et 5/6 » (il faut un dénominateur commun) est-elle dans le point ?",
+		"sources": "BO c3 (6e) : « Comparer et encadrer des fractions », sans restriction. Exemples de réussite 6e 2025 p.7 : même dénominateur, même numérateur, comparaison à 1 (7/8 et 10/9) et à 1/2 (5/12 et 6/11). Exemples de réussite CM2 2025 p.5 : comparaison de dénominateurs différents « avec des dénominateurs ayant un multiple commun ≤ 60 » (7/4 et 17/10).",
+		"options": [
+			["general", "Pas de borne propre : dénominateur commun admis (acquis du CM2, cas simples)"],
+			[
+				"cas-listes",
+				"Seulement les cas des exemples 6e (même dénominateur, même numérateur, 1, 1/2)"
+			]
+		],
+		"reco": "general",
+		"pourquoi": "Le BO 6e ne restreint pas, et la comparaison par dénominateur commun est déjà attendue au CM2 : l'interdire en 6e créerait une restriction qu'aucun texte ne porte. L'exemple du libellé reste valide.",
+		"consequence": "Les modèles 6e de comparaison par dénominateur commun (3/4 et 5/6) sont acceptés.",
+		"info": false
+	},
+	{
+		"id": "c3-11",
+		"cycle": 3,
+		"niveaux": ["6e"],
+		"points": ["points « Les nombres entiers et décimaux » de 6e"],
+		"titre": "Nombre de décimales en 6e",
+		"question": "Aucune borne explicite du nombre de décimales en 6e ; le fichier propose « au plus trois ». Une question 6e « Compare 2,1045 et 2,105 » (quatre décimales) est-elle dans le point « comparer deux nombres décimaux » ?",
+		"sources": "BO c3 p.14 (6e) : unités de numération jusqu'au millième ; « Multiplier un nombre entier ou décimal par 0,1, 0,01, 0,001 » ; « Calculer le produit de deux nombres décimaux » (qui donnent plus de trois décimales). Exemples 6e 2025 : 0,1 × 0,01 = 0,001 ; 3,7 × 2,9 = 10,73. Aucun texte n'écrit « au plus trois décimales ».",
+		"options": [
+			[
+				"general",
+				"Pas de borne générale de décimales ; les points de numération restent bornés par leur libellé (jusqu'au millième)"
+			],
+			["trois", "Au plus trois décimales, sauf résultats de produits (lecture actuelle)"]
+		],
+		"reco": "general",
+		"pourquoi": "« Trois décimales » ne découle pas nécessairement du BO : ses propres objectifs (× 0,001, produit de décimaux) produisent plus de trois décimales. Les points qui nomment les unités de numération gardent leur limite au millième.",
+		"consequence": "Les modèles 6e de calcul sur décimaux ne sont pas refusés pour une quatrième décimale ; un modèle de numération qui demande le chiffre des dix-millièmes reste refusé (hors libellé).",
+		"info": false
+	},
+	{
+		"id": "c3-12",
+		"cycle": 3,
+		"niveaux": ["6e"],
+		"points": ["6-150"],
+		"titre": "Conversions d'aire en deux sauts",
+		"question": "Les exemples de réussite 6e limitent les conversions à m² ↔ dm² et dm² ↔ cm², et ajoutent « les autres conversions d'aire ne figurent pas au programme ». Une question 6e « 1 m² = … cm² » est-elle dans le point ?",
+		"sources": "BO c3 p.19 (6e) : « Effectuer des conversions d'aire », mm² et km² définis comme unités. Exemples de réussite 6e 2025 p.11 : conversions m² ↔ dm² et dm² ↔ cm² ; « Les autres conversions d'aire ne figurent pas au programme. »",
+		"options": [
+			["deux-seules", "Seulement m² ↔ dm² et dm² ↔ cm²"],
+			["enchainees", "Admettre m² ↔ cm² (deux sauts enchaînés)"]
+		],
+		"reco": "deux-seules",
+		"pourquoi": "Le BO est muet sur la liste ; l'accompagnement la précise et exclut en toutes lettres les autres conversions, dont m² ↔ cm².",
+		"consequence": "Les modèles 6e qui convertissent m² ↔ cm², mm², km² ou ha sont refusés sur 6-150.",
+		"info": false
+	},
+	{
+		"id": "c3-13",
+		"cycle": 3,
+		"niveaux": ["CM1", "CM2"],
+		"points": ["bornes générales CM1 et CM2"],
+		"titre": "Bornes par période au cours moyen",
+		"question": "Le BO limite les entiers à quatre chiffres (CM1) ou six chiffres (CM2) en périodes 1-2. Un modèle ne sait pas à quelle période il est joué. Une question CM1 « 45 307 … 45 370 » doit-elle être refusée parce qu'elle serait hors borne en période 1 ?",
+		"sources": "BO c3 p.5 (CM1) : quatre chiffres en périodes 1 et 2, cinq ou six ensuite. BO c3 p.9 (CM2) : six chiffres en périodes 1 et 2, puis jusqu'au milliard.",
+		"options": [
+			["fin-annee", "Borne de fin d'année seulement (la période n'est pas vérifiable)"],
+			["periode", "Borne la plus basse (période 1) pour tous les modèles"]
+		],
+		"reco": "fin-annee",
+		"pourquoi": "Une borne temporelle ne peut pas être vérifiée sur un modèle ; la borne de fin d'année est celle du point. La progression par période relève de l'affectation par le professeur.",
+		"consequence": "Aucun modèle refusé pour la progression par période ; seuls les dépassements de la borne de fin d'année font refuser.",
+		"info": false
+	},
+	{
+		"id": "c3-14",
+		"cycle": 3,
+		"niveaux": ["CM2"],
+		"points": ["CM2-085"],
+		"titre": "Durées : nombre d'étapes",
+		"question": "Le BO dit « une ou plusieurs étapes », les exemples de réussite ne montrent qu'une ou deux étapes. Un problème CM2 de durée en trois étapes est-il dans le point ?",
+		"sources": "BO c3 p.18 (CM2) : « Résoudre des problèmes à une ou plusieurs étapes impliquant des durées ». Exemples de réussite CM2 2025 p.18 : une ou deux étapes, calcul mental, pas d'algorithme posé en base soixante.",
+		"options": [
+			["bo", "Une ou plusieurs étapes (BO)"],
+			["deux", "Une ou deux étapes (exemples)"]
+		],
+		"reco": "bo",
+		"pourquoi": "Le BO n'est pas muet : il dit « plusieurs ». Les exemples l'illustrent sans le restreindre.",
+		"consequence": "Aucun modèle refusé pour trois étapes ou plus ; les autres bornes des exemples (pas de calcul posé en base 60) restent.",
+		"info": false
+	},
+	{
+		"id": "c3-15",
+		"cycle": 3,
+		"niveaux": ["CM1", "CM2", "6e"],
+		"points": ["101 points sans borne propre (dont 49 en 6e)"],
+		"titre": "Points sans borne propre (information)",
+		"question": "Pas de question : 101 points du cycle 3 (surtout géométrie, données, probabilités, pensée informatique) n'ont pas de borne chiffrée propre et héritent des bornes générales de leur niveau.",
+		"sources": "cycle3.md, section des incertitudes, point 15 ; tableau « Bilan » (27 en CM1, 25 en CM2, 49 en 6e).",
+		"options": [["ok", "Noté"]],
+		"reco": "ok",
+		"pourquoi": "Leur borne est de nature (vocabulaire, supports, instruments) et se vérifie à la lecture du modèle ; aucune n'a été inventée.",
+		"consequence": "Aucune.",
+		"info": true
+	},
+	{
+		"id": "c4-1",
+		"cycle": 4,
+		"niveaux": ["5e"],
+		"points": ["5-120"],
+		"titre": "Valeur absolue en 5e",
+		"question": "L'accompagnement dit que la valeur absolue « ne fait pas l'objet d'exercice » et que la notation n'est pas exigible, mais il dit aussi que l'élève « donne la valeur absolue » sur la droite graduée. Une question 5e « Quelle est la valeur absolue de −3 ? » est-elle dans le point ? Et « |−3| = ? » ?",
+		"sources": "BO c4 p.7 (5e) : « Définir l'opposé et la valeur absolue d'un nombre. » Exemples c4 2026 p.10 imprimée (p.11 du PDF) : « Le terme « valeur absolue » est introduit mais ne fait pas l'objet d'exercice. La notation n'est pas exigible » ; « En référence à la droite graduée, l'élève donne la valeur absolue et l'opposé d'un nombre relatif. »",
+		"options": [
+			[
+				"mots-sans-notation",
+				"Admis en mots (« valeur absolue de −3 », appui droite graduée), sans la notation |a| ni calcul sur |a|"
+			],
+			["aucun", "Aucun modèle tagué (« ne fait pas l'objet d'exercice »)"],
+			["notation", "Admis, notation |a| comprise"]
+		],
+		"reco": "mots-sans-notation",
+		"pourquoi": "Le point est dans le BO, qui est immuable ; le même paragraphe d'accompagnement dit que l'élève « donne la valeur absolue ». La notation non exigible et l'absence d'exercice dédié excluent |−3| et les calculs avec |a|.",
+		"consequence": "Les modèles « valeur absolue de −3 » en mots sont acceptés ; un modèle qui écrit |−3|, |x| = 3 ou |a − b| est refusé.",
+		"info": false
+	},
+	{
+		"id": "c4-2",
+		"cycle": 4,
+		"niveaux": ["3e"],
+		"points": ["3-029"],
+		"titre": "Quartiles : quelle convention ?",
+		"question": "Aucun texte lu ne définit les quartiles, et selon la convention Q1 change (ex. série 1, 2, 3, 4, 5, 6, 7, 8 : Q1 = 2 en lisant les effectifs cumulés, 2,5 avec d'autres méthodes). Quelle réponse le correcteur attend-il pour une question 3e « Donne Q1 » ?",
+		"sources": "BO c4 p.17 (3e) : « Donner les quartiles et la médiane d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres. » Exemples c4 2026 p.37 imprimée (p.38 du PDF) : « En utilisant les effectifs cumulés croissants, l'élève détermine la médiane et les premier et troisième quartiles ». Aucune définition écrite.",
+		"options": [
+			[
+				"ecc",
+				"Q1 (Q3) = plus petite valeur de la série dont l'effectif cumulé atteint 25 % (75 %) de l'effectif total"
+			],
+			["coincident", "Ne générer que des séries où toutes les conventions donnent la même valeur"],
+			["ouvert", "Laisser ouvert : aucun modèle de quartiles tagué pour l'instant"]
+		],
+		"reco": "ecc",
+		"pourquoi": "C'est la seule lecture directe de la méthode écrite dans l'accompagnement (lire les effectifs cumulés croissants sur un tableau d'effectifs), et c'est la convention usuelle du collège français. Elle n'ajoute aucun contenu au point.",
+		"consequence": "Un modèle qui calcule Q1 par interpolation ou par médiane de la demi-série, sans accepter la valeur ci-dessus, est refusé tant qu'il n'est pas corrigé.",
+		"info": false
+	},
+	{
+		"id": "c4-3",
+		"cycle": 4,
+		"niveaux": ["4e"],
+		"points": ["4-040"],
+		"titre": "Médiane d'un effectif pair",
+		"question": "Pour un effectif pair, l'accompagnement accepte toute valeur qui partage la série. Pour la série 3, 7, 8, 12, la réponse 9 doit-elle être acceptée, ou seulement 7,5 ?",
+		"sources": "BO c4 p.17 (4e) : médiane d'une série de petit effectif en données brutes. Exemples c4 2026 p.36 imprimée (p.37 du PDF) : « On appelle médiane toute valeur qui partage la série ordonnée en deux sous-séries de même effectif » ; « dans le cas d'une série d'effectif pair, la médiane n'est généralement pas unique ».",
+		"options": [
+			[
+				"intervalle",
+				"Accepter toute valeur entre les deux valeurs centrales (ou générer des effectifs impairs)"
+			],
+			["demi-somme", "N'accepter que la demi-somme des deux valeurs centrales"]
+		],
+		"reco": "intervalle",
+		"pourquoi": "La définition est écrite dans l'accompagnement du BO en vigueur ; refuser 9 compterait faux une réponse juste selon ce texte.",
+		"consequence": "Un modèle à effectif pair qui n'accepte que la demi-somme est refusé jusqu'à correction (accepter l'intervalle, ou ne tirer que des effectifs impairs).",
+		"info": false
+	},
+	{
+		"id": "c4-4",
+		"cycle": 4,
+		"niveaux": ["3e"],
+		"points": ["3-020"],
+		"titre": "Sections de solides au-delà du BO",
+		"question": "L'accompagnement ajoute les sections de pyramide et de cône parallèles à la base et la section du cube parallèle à une arête, que le BO ne cite pas. Une question 3e « Quelle est la nature de la section d'une pyramide à base carrée par un plan parallèle à sa base ? » est-elle dans le point ?",
+		"sources": "BO c4 p.15 (3e) : sections « de pavé parallèlement à une face, de cylindre parallèlement ou perpendiculairement à son axe, d'une boule ». Exemples c4 2026 p.30 imprimée (p.31 du PDF) : ajoute cube parallèle à une arête, pyramide et cône parallèles à la base.",
+		"options": [
+			["bo", "Liste du BO seulement (pavé, cylindre, boule)"],
+			["avec-acc", "Liste du BO + ajouts de l'accompagnement"]
+		],
+		"reco": "bo",
+		"pourquoi": "Le BO n'est pas muet : il donne une liste, qui est le libellé du point. L'accompagnement peut enrichir la classe, pas élargir le point.",
+		"consequence": "Les modèles de sections de pyramide, de cône ou de cube parallèlement à une arête ne sont pas tagués sur 3-020 (ils restent sur leur nœud, hors progression).",
+		"info": false
+	},
+	{
+		"id": "c4-5",
+		"cycle": 4,
+		"niveaux": ["3e"],
+		"points": ["3-014"],
+		"titre": "Inéquations : les quatre sens d'inégalité",
+		"question": "Le BO écrit seulement « ax ⩾ b ». Une question 3e « Résous −2x < 6 » est-elle dans le point ?",
+		"sources": "BO c4 p.11 (3e) : « Résoudre analytiquement et graphiquement une inéquation du premier degré du type ax ⩾ b. » Exemples c4 2026 p.21 imprimée (p.22) : « inéquations du type ax ⩾ b où a est non nul » ; p.45 imprimée (p.46) : « inéquations de type ax > b avec a ≠ 0 et b un nombre quelconque ».",
+		"options": [
+			["quatre", "Les quatre sens (⩾, >, ⩽, <), a ≠ 0 éventuellement négatif"],
+			["deux", "Seulement ⩾ et > (les deux écrits)"]
+		],
+		"reco": "quatre",
+		"pourquoi": "« Du type ax ⩾ b » désigne une forme : ax ⩽ b s'écrit (−a)x ⩾ −b, donc elle est du même type ; les deux textes officiels écrivent déjà ⩾ et >. La forme ax + b ⩾ cx + d reste exclue.",
+		"consequence": "Les modèles ax < b et ax ⩽ b sont acceptés ; un modèle 2x + 3 > 5x − 1 est refusé.",
+		"info": false
+	},
+	{
+		"id": "c4-6",
+		"cycle": 4,
+		"niveaux": ["4e"],
+		"points": ["4-062", "4-063", "4-064", "4-081"],
+		"titre": "Notations fonctionnelles en 4e",
+		"question": "Le BO dit que les notations comme P(A) ou p(t) sont « utilisées progressivement dans tous les chapitres » ; un document de 2019 (ancien programme) dit qu'elles ne sont pas formalisées en 4e. Une question 4e « A(c) = c². Calcule A(3) » est-elle dans le point ?",
+		"sources": "BO c4 p.18 : « Les notations fonctionnelles de type P(A), p(t) ainsi que la flèche → sont utilisées progressivement dans tous les chapitres du programme. » Exemples c4 2026 p.42 imprimée (p.43) : « le professeur peut introduire des notations fonctionnelles : par exemple A(c) = c² ». Repères 2019 p.8 : non formalisées en 4e (ancien programme). BO c4 p.19 (3e) : image, antécédent, f : x ↦.",
+		"options": [
+			[
+				"utilisable",
+				"Notation utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et f : x ↦ réservés à la 3e"
+			],
+			["interdite", "Aucune notation fonctionnelle en 4e (Repères 2019)"]
+		],
+		"reco": "utilisable",
+		"pourquoi": "Le BO en vigueur prime sur le document de 2019 et autorise ces notations dans tous les chapitres ; l'accompagnement 2026 en donne un exemple en 4e. Le vocabulaire des fonctions reste au BO de 3e.",
+		"consequence": "Un modèle 4e qui écrit A(3) dans l'énoncé est accepté ; un modèle 4e qui demande « l'image de 3 par f » ou « l'antécédent » est refusé.",
+		"info": false
+	},
+	{
+		"id": "c4-7",
+		"cycle": 4,
+		"niveaux": ["4e"],
+		"points": ["4-019"],
+		"titre": "Coquille « nombre entier positif » (racine carrée)",
+		"question": "L'accompagnement écrit « il existe un unique nombre entier positif dont le carré est a », ce qui ferait de √2 un objet hors du point. Faut-il lire « nombre positif » ?",
+		"sources": "BO c4 p.10 (4e) : « Comprendre et connaitre la définition de la racine carrée d'un nombre positif. » Exemples c4 2026 p.17 imprimée (p.18 du PDF) : « si a désigne un nombre positif, il existe un unique nombre entier positif dont le carré est a. On le note √a. »",
+		"options": [
+			["coquille", "Coquille : lire « nombre positif »"],
+			["lettre", "Lettre du texte : racines entières seulement"]
+		],
+		"reco": "coquille",
+		"pourquoi": "Le BO dit « nombre positif » et prévoit au point suivant d'encadrer √20 entre 4 et 5 : la lecture littérale contredirait le BO lui-même.",
+		"consequence": "Aucun modèle refusé pour une racine non entière (√2, √20) sur 4-019 ; la borne des carrés parfaits ≤ 144 pour le calcul mental reste.",
+		"info": false
+	},
+	{
+		"id": "c4-8",
+		"cycle": 4,
+		"niveaux": ["5e", "4e", "3e"],
+		"points": ["bornes de fractions citées du BO c4 p.8 et des Exemples 2026"],
+		"titre": "Fractions mal extraites des PDF",
+		"question": "Les fractions du BO et de l'accompagnement sortent du PDF en deux lignes (numérateurs, puis dénominateurs) et ont été recollées colonne par colonne. Faut-il un contrôle visuel des pages avant de s'en servir comme bornes ?",
+		"sources": "cycle4.md, incertitude 8 : extraction texte des PDF « BO c4 p.8 » et « Exemples 2026 » (automatismes de fractions et de pourcentages).",
+		"options": [
+			[
+				"controle-claude",
+				"Contrôle par Claude sur le rendu image des pages, écarts signalés à David"
+			],
+			["controle-david", "David contrôle lui-même les pages"],
+			["sans", "Pas de contrôle"]
+		],
+		"reco": "controle-claude",
+		"pourquoi": "Le risque est mécanique (une fraction mal recollée), pas un choix de produit : on peut le lever en comparant le rendu des pages, sans demander de jugement à David.",
+		"consequence": "Tant que le contrôle n'est pas fait, les bornes citant ces fractions ne servent pas à refuser un modèle.",
+		"info": false
+	}
+]
