@@ -160,9 +160,9 @@ describe('L3 : le catalogue', () => {
 		);
 	});
 
-	it('intersection et point_sur arrivent plus tard (PR 3)', () => {
-		expect(refusal('intersection(d, c, 1)')).toContain('pas encore dans l’atelier');
-		expect(refusal('point_sur(s, 0.3)')).toContain('pas encore dans l’atelier');
+	it('les autres mots du DSL arrivent plus tard (médiatrice, bissectrice)', () => {
+		expect(refusal('mediatrice(A, B)')).toContain('pas encore dans l’atelier');
+		expect(refusal('bissectrice(A, B, C)')).toContain('pas encore dans l’atelier');
 	});
 
 	it('un argument nommé inconnu est refusé', () => {

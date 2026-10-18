@@ -135,7 +135,7 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
 | --- | ----------------------------------------------------------------------------------- | -------------------------------------- | -------- |
 | 1   | Constructions : lecture, calcul exact, dépendances, cartes (contenu), vue Géométrie | `feat/atelier-geometrie-constructions` | en cours |
 | 2   | Mesures : `AM`, `distance`, `aire`, `perimetre`, `angle`                            | —                                      | à faire  |
-| 3   | `point_sur`, `intersection`                                                         | —                                      | à faire  |
+| 3   | `point_sur`, `intersection`                                                         | `feat/atelier-geometrie-point-sur`     | en cours |
 | 4   | `.relever`                                                                          | —                                      | à faire  |
 
 ### PR 1 — journal
@@ -246,3 +246,10 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   (`point_sur`, intersections), PR 4 (`.relever`), petite PR `60°` / `60^\circ` (corrige aussi
   `cos(90[°])` dans une fonction). Choix prudents livrés dans #1506, à confirmer par David : angle
   brut dans une fonction refusé ; puissance d'un angle refusée.
+
+### PR 3 — journal (`point_sur`, intersections)
+
+- 2026-10-19 : worktree `../ubumaths-wt-atelier-point-sur`, branche `feat/atelier-geometrie-point-sur`.
+  Tests d'abord : 81 node (`point-sur-intersections.test.ts`, `figure-point-sur.test.ts`,
+  `geometry-core/geometry/__tests__/intersect-lq-exact.test.ts`, 81 rouges) et 6 navigateur
+  (`point-sur.svelte.test.ts`, 6 rouges).
