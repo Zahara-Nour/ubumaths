@@ -335,3 +335,70 @@ describe('revue : une mise en forme rangée sous forme canonique', () => {
 		expect(formatShown(number(-0.001), { number: { kind: 'decimals', decimals: 2 } })).toBe('0,00');
 	});
 });
+
+describe('contre-revue', () => {
+	it('fusion : les colonnes gardent leur ordre, décoratives comprises', () => {
+		const personal = new Atelier();
+		const received: AtelierState = {
+			version: 2,
+			objects: [],
+			grid: { cells: { A1: '1', C1: '3' }, formats: [{ zone: 'B1:B5', fill: 'jaune' }] }
+		};
+
+		mergeInto(personal, received);
+
+		expect(personal.cell(A, 1)).toBe('1');
+		expect(personal.styleAt(B, 1)).toEqual({ fill: 'jaune' });
+		expect(personal.cell(C, 1)).toBe('3');
+	});
+
+	it('relecture : au-delà du plafond, la plus longue partie qui tient, et le rapport le dit', () => {
+		const formats: { zone: string; bold?: boolean; italic?: boolean }[] = [
+			{ zone: 'A1:Z200', bold: true }
+		];
+		for (let i = 0; formats.length < 500; i++) {
+			const column = String.fromCharCode(65 + (i % 26));
+			const row = 1 + 2 * Math.floor(i / 26) + (i % 2);
+			formats.push({ zone: `${column}${row}:${column}${row}`, italic: true });
+		}
+		const a = new Atelier();
+
+		const report = a.restore({ version: 2, objects: [], grid: { cells: { A1: '1' }, formats } });
+
+		expect(a.formats.length).toBeGreaterThan(0);
+		expect(a.formats.length).toBeLessThanOrEqual(500);
+		expect(a.styleAt(Z_COLUMN, 200)).toEqual({ bold: true });
+		expect(report.skipped.map((s) => s.name)).toContain('une partie de la mise en forme');
+	});
+
+	it('gras puis italique = italique puis gras : reposer le même style ne note rien', () => {
+		const a = new Atelier();
+		a.applyStyle({ left: A, right: A, top: 1, bottom: 1 }, { italic: true });
+		a.applyStyle({ left: A, right: A, top: 1, bottom: 1 }, { bold: true });
+		const before = a.gridHistory.undo;
+
+		a.applyStyle({ left: A, right: A, top: 1, bottom: 1 }, { bold: true, italic: true });
+
+		expect(a.gridHistory.undo).toBe(before);
+	});
+
+	it('Effacer passe toujours, même au plafond', () => {
+		const a = new Atelier();
+		// 499 cases en damier, puis la colonne G : 500 zones, le plafond
+		for (let column = 0; column < 5; column++) {
+			for (let row = 1 + (column % 2); row <= 200; row += 2) {
+				if (column === 4 && row === 199) continue;
+				a.applyStyle({ left: column, right: column, top: row, bottom: row }, { bold: true });
+			}
+		}
+		expect(a.applyStyle({ left: 6, right: 6, top: 1, bottom: 200 }, { italic: true })).toEqual({
+			ok: true
+		});
+		expect(a.formats.length).toBe(500);
+
+		expect(a.clearStyle({ left: 6, right: 6, top: 100, bottom: 100 })).toEqual({ ok: true });
+		expect(a.styleAt(6, 100)).toEqual({});
+	});
+});
+
+const Z_COLUMN = 25;

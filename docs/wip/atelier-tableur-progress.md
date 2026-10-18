@@ -275,5 +275,8 @@ liste trouée en citant l'entrée).
       plafond, 400 zones par collage, lien trop long, lien forgé qui fige) → forme canonique
       (`normalizeFormats`) ; collage/recopie tout ou rien ; relecture bornée ; fusion (en-tête large,
       un seul geste) ; `-0,00` ; gestes sans effet
+- [x] contre-revue (normalisation JUSTE sur 300 essais aléatoires) : ordre des colonnes à la fusion,
+      relecture au-delà du plafond (plus longue partie + rapport), clés dans un ordre fixe, Effacer
+      toujours permis, un seul refus « mise en forme »
 - [ ] PR, CI, merge
 - [ ] PR 2 : la barre d'outils et l'affichage dans les cases

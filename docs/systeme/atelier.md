@@ -546,9 +546,13 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   case vide se met en forme d'avance ; la vider garde sa mise en forme. Un geste de la grille
   (`GridGesture.formats`, Ctrl+Z) ; la recopie et le copier-coller interne l'emportent (`patchOf`,
   Q-MF-4), et sont refusés ENTIERS si elle dépasserait le plafond (jugé avant d'écrire). Rangée dans
-  `grid.formats` (Zod, une forgée écartée seule, au plus 500 relues) et dans le lien (Q-MF-5). Un
+  `grid.formats` (Zod, une forgée écartée seule, au plus 500 relues ; au-delà de 500 zones
+  canoniques, la plus longue partie qui tient, signalée dans le rapport) et dans le lien (Q-MF-5).
+  Un style s'écrit dans un ordre fixe (`canonicalStyle`) ; « Effacer » passe même au plafond
+  (`isRemoval`). Un
   atelier reçu : ses zones suivent leurs colonnes (T7) ; une colonne qui n'a QUE de la mise en forme
-  arrive s'il reste des colonnes libres, sans jamais faire refuser la fusion ; la fusion est un seul
+  arrive s'il reste des colonnes libres (rangée avec les autres, de gauche à droite), sans jamais
+  faire refuser la fusion ; la fusion est un seul
   geste (`asOneGesture`). Plafond : 500 zones canoniques. Mesuré : un style sur toute la grille, 2 ms.
 - **Fonction à indice** (`=f_1(3)`) : depuis le 2026-10-15, les parseurs lisent `f_1(3)` comme
   un appel de f_1 quand `f_1` est déclarée (avant : `f₁ × 3`, et la grille calculait avec f, sans

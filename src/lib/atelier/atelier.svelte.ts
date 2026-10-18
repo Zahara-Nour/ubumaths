@@ -124,6 +124,7 @@ import { transformAST } from '$lib/mathAST/visitor';
 import {
 	CLEAR_PATCH,
 	formatOf,
+	isRemoval,
 	normalizeFormats,
 	sameFormats,
 	MAX_FORMAT_ZONES,
@@ -135,6 +136,7 @@ import {
 	type CellStyle,
 	type FormatZone,
 	type GridZone,
+	type StoredFormat,
 	type StylePatch
 } from './cell-format';
 import { planTabulation, type TabulationRequest } from './tabulate';
@@ -1636,6 +1638,9 @@ export class Atelier {
 	#formatsWith(added: readonly FormatZone[]): FormatZone[] | null {
 		if (added.length === 0) return [...this.#formats];
 		const after = normalizeFormats([...this.#formats, ...added]);
+		// « Effacer » passe toujours : effacer une case découpe un rectangle et peut
+		// dépasser le plafond, et l'élève doit pouvoir s'en sortir (contre-revue)
+		if (added.every((zone) => isRemoval(zone.patch))) return after;
 		return after.length > MAX_FORMAT_ZONES ? null : after;
 	}
 
@@ -2102,12 +2107,8 @@ export class Atelier {
 	 */
 	restore(state: AtelierState): RestoreReport {
 		this.#seed = state.grid?.seed ?? newGridSeed();
-		const relu = (state.grid?.formats ?? []).slice(0, MAX_FORMAT_ZONES).flatMap((stored) => {
-			const format = formatOf(stored);
-			return format === null ? [] : [format];
-		});
-		const canonical = normalizeFormats(relu);
-		this.#formats = canonical.length > MAX_FORMAT_ZONES ? [] : canonical;
+		const read = restoredFormats(state.grid?.formats ?? []);
+		this.#formats = read.formats;
 		this.items = [];
 		this.charts.clear();
 		this.partnerChoices.clear();
@@ -2116,6 +2117,14 @@ export class Atelier {
 		this.#forgetGridHistory();
 		this.#laws.clear();
 		const skipped: SkippedObject[] = [];
+		// Une mise en forme trop riche (lien forgé ou ancien) : la plus longue partie
+		// qui tient, et on le dit (contre-revue : elle disparaissait en silence)
+		if (read.lost) {
+			skipped.push({
+				name: 'une partie de la mise en forme',
+				reason: `Au-delà de ${MAX_FORMAT_ZONES} zones de mise en forme.`
+			});
+		}
 
 		// Les titres d'abord : ils appartiennent à leur colonne, nommée ou non
 		for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
@@ -2953,6 +2962,30 @@ export class Atelier {
 			}
 		}
 	}
+}
+
+/**
+ * La mise en forme relue, canonique et sous le plafond : la plus longue suite de
+ * zones rangées qui y tient (par dichotomie), et si une partie a été perdue.
+ */
+function restoredFormats(stored: readonly StoredFormat[]): {
+	formats: FormatZone[];
+	lost: boolean;
+} {
+	const zones = stored.flatMap((one) => {
+		const format = formatOf(one);
+		return format === null ? [] : [format];
+	});
+	const whole = normalizeFormats(zones);
+	if (whole.length <= MAX_FORMAT_ZONES) return { formats: whole, lost: false };
+	let fits = 0;
+	let tooMany = zones.length;
+	while (tooMany - fits > 1) {
+		const middle = Math.floor((fits + tooMany) / 2);
+		if (normalizeFormats(zones.slice(0, middle)).length <= MAX_FORMAT_ZONES) fits = middle;
+		else tooMany = middle;
+	}
+	return { formats: normalizeFormats(zones.slice(0, fits)), lost: true };
 }
 
 /** Le refus d'une mise en forme au-delà du plafond. */

@@ -273,15 +273,36 @@ export function normalizeFormats(formats: readonly FormatZone[]): FormatZone[] {
 		open.set(join, fresh);
 		rectangles.push(fresh);
 	}
-	return rectangles.map(({ style, ...zone }) => ({ zone, patch: { ...style } }));
+	return rectangles.map(({ style, ...zone }) => ({ zone, patch: canonicalStyle(style) }));
 }
 
 /** Une écriture stable d'un style, pour comparer deux cases. */
 function styleId(style: CellStyle): string {
-	return JSON.stringify(
-		Object.keys(style)
-			.sort()
-			.map((k) => [k, style[k as keyof CellStyle]])
+	return JSON.stringify(canonicalStyle(style));
+}
+
+/**
+ * Un style écrit dans un ordre FIXE (et `number` en `{ kind, decimals }`) : la
+ * forme canonique est unique, et « gras puis italique » égale « italique puis
+ * gras » (contre-revue : un geste sans effet entrait dans l'historique).
+ */
+function canonicalStyle(style: CellStyle): CellStyle {
+	return {
+		...(style.bold !== undefined && { bold: style.bold }),
+		...(style.italic !== undefined && { italic: style.italic }),
+		...(style.align !== undefined && { align: style.align }),
+		...(style.color !== undefined && { color: style.color }),
+		...(style.fill !== undefined && { fill: style.fill }),
+		...(style.number !== undefined && {
+			number: { kind: style.number.kind, decimals: style.number.decimals }
+		})
+	};
+}
+
+/** Un patch qui ne fait que RETIRER (« Effacer ») : il passe même au plafond. */
+export function isRemoval(patch: StylePatch): boolean {
+	return Object.values(patch).every(
+		(value) => value === false || value === null || value === undefined
 	);
 }
 

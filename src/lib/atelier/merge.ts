@@ -142,13 +142,13 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	// Chaque colonne reçue va dans une colonne libre, de gauche à droite (T7)
 	const free = atelier.freeColumns;
 	const arriving = arrivingColumns(state);
-	const placed = new Map(arriving.map((slot, index) => [slot, free[index]]));
-	// Puis, dans les colonnes libres qui restent, celles qui n'ont que de la mise en forme
-	const decorative = formatOnlyColumns(state, arriving);
-	decorative.forEach((letter, index) => {
-		const column = free[arriving.length + index];
-		if (column !== undefined) placed.set(letter, column);
-	});
+	// Les colonnes qui n'ont que de la mise en forme : autant qu'il reste de place
+	// (les plus à droite cèdent d'abord), puis TOUTES rangées ensemble de gauche à
+	// droite — la grille reçue garde son ordre (contre-revue)
+	const room = Math.max(0, free.length - arriving.length);
+	const decorative = formatOnlyColumns(state, arriving).slice(0, room);
+	const columns = [...arriving, ...decorative].sort((a, b) => columnRank(a) - columnRank(b));
+	const placed = new Map(columns.map((slot, index) => [slot, free[index]]));
 	// Les colonnes reçues → leur place : les références des formules les suivent (T7)
 	const moved = new Map<number, number>();
 	for (const [slot, column] of placed) {
@@ -305,7 +305,9 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		const written = cells.length > 0 ? atelier.editCells(cells) : null;
 		if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });
 		const styled = atelier.adoptFormats(formats);
-		if (!styled.ok) refused.push({ name: 'mise en forme', reason: styled.message });
+		// Un seul refus « mise en forme » dans le rapport (contre-revue)
+		if (!styled.ok && unplaced === 0)
+			refused.push({ name: 'mise en forme', reason: styled.message });
 	});
 
 	// Tout ce qui est arrivé : cases sans nom ET entrées des listes nommées
