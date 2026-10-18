@@ -20,7 +20,7 @@ import { Atelier } from '$lib/atelier/atelier.svelte';
 
 type Entry = [kind: 'value' | 'point' | 'curve', name: string, definition: string];
 
-/** A(0 ; 1), B(1 ; 3), O(0 ; 0), C(2 ; 0), e = (OC), c = cercle(O ; 1), puis le reste. */
+/** A(0 ; 1), B(1 ; 3), O(0 ; 0), C(2 ; 0), u = (OC), c = cercle(O ; 1), puis le reste. */
 function atelierWith(more: Entry[]): Atelier {
 	const atelier = new Atelier();
 	const entries: Entry[] = [
@@ -28,7 +28,7 @@ function atelierWith(more: Entry[]): Atelier {
 		['point', 'B', '(1 ; 3)'],
 		['point', 'O', '(0 ; 0)'],
 		['point', 'C', '(2 ; 0)'],
-		['curve', 'e', '(OC)'],
+		['curve', 'u', '(OC)'],
 		['curve', 'c', 'cercle(O ; 1)'],
 		...more
 	];
@@ -68,8 +68,8 @@ function labels(container: HTMLElement): string[] {
 // =============================================================================
 
 describe('la carte d’une intersection', () => {
-	it('E = intersection(e, c, 1) : nature « point », coordonnées en gris', async () => {
-		const atelier = atelierWith([['point', 'E', 'intersection(e, c, 1)']]);
+	it('E = intersection(u, c, 1) : nature « point », coordonnées en gris', async () => {
+		const atelier = atelierWith([['point', 'E', 'intersection(u, c, 1)']]);
 		const { container } = await render(WithAtelier, { atelier });
 
 		const card = cardFor(container, 'E');
@@ -144,7 +144,7 @@ describe('la carte d’un point_sur : le curseur de position', () => {
 describe('la vue Géométrie dessine les intersections et les points sur un objet', () => {
 	it('E et M sont dessinés, avec leurs noms', async () => {
 		const atelier = atelierWith([
-			['point', 'E', 'intersection(e, c, 2)'],
+			['point', 'E', 'intersection(u, c, 2)'],
 			['curve', 's', '[AB]'],
 			['point', 'M', 'point_sur(s ; 0,5)']
 		]);
