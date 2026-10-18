@@ -1,0 +1,182 @@
+# Mathoux et motivation des élèves — phase 0
+
+> Analyse du 2026-10-18 (session « mathoux »). **Rien n'est décidé ni codé.** Les quatre questions
+> du § 6 attendent la réponse de David ; les recommandations du § 7 ne valent pas décision.
+
+## 1. Demande (David, 2026-10-18)
+
+David commence des cours particuliers avec Chiphre et cherche des moyens de motiver l'élève à
+continuer de travailler. Trois demandes :
+
+- analyser la gamification existante, en **distinguant les élèves en classe et les élèves en cours
+  particulier** ;
+- poursuivre le buddy system (les Palotins) ;
+- concevoir les **Mathoux** (nom officiel) : des chats à collectionner, avec des pouvoirs et des
+  actions possibles (combat à la Navadra ?). À ne pas confondre avec les cartes VIP.
+
+## 2. L'existant, et ce qui sert vraiment
+
+Mesures en production, en lecture seule, le 2026-10-18 :
+
+| Dispositif                                | En code                                       | Activité réelle                                                     |
+| ----------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------- |
+| Gidouilles (monnaie)                      | jeux, bonus de la semaine, gestes du prof     | 5 mouvements sur les 30 derniers jours                              |
+| Cartes VIP (49 modèles) + Marché Polonais | tirage, achat, activation validée par le prof | 158 échanges au total, 0 sur les 30 derniers jours                  |
+| Palotins (buddy system)                   | MVP complet, phases 1 à 9                     | **57 élèves en ont choisi un ; tous à 0 XP, niveau 1, série 0**     |
+| Succès (23 définitions)                   | infrastructure prête                          | 0 succès débloqué ; widget commenté (`StudentDashboard.svelte:361`) |
+| Énigmes                                   | énigme du jour par cron                       | 0 tentative                                                         |
+| Démineur, 2048, Mathémo                   | classements, tournois                         | 13 909 parties au total, 0 sur les 30 derniers jours                |
+| Navadra (combats)                         | 464 défis, monstres, sorts                    | en pause (2026-10-13), retiré du catalogue                          |
+
+Références : `docs/systeme/jeux-et-economie.md`, `docs/systeme/buddy-palotins.md`.
+
+**Palotins.**
+
+- **Les gains d'XP ne se produisent pas.** Ils sont branchés sur `api/tests/save`,
+  `api/riddles/[id]/submit` et `src/lib/server/evaluation-attempts.ts`. Le branchement sur le quiz
+  de chapitre est tombé avec la suppression de ce quiz (2026-09-15). Aucun Palotin n'a progressé.
+- **Les images n'existent pas.** `BuddyAvatar` cherche `/images/buddies/<palotin>-<expression>.png`,
+  absent de `static/` : l'affichage se rabat sur un cercle coloré.
+- La suite de la spec (v1.1 à v3 : skins, indices, mini-quêtes) n'est pas commencée.
+- `student/+layout.server.ts` remet la série à 0 sans `.select()` : un refus RLS passerait en
+  silence.
+
+**Cartes VIP.** Leur nom de lore est « Carte Pataphysique » (`src/lib/config/lore.ts`, clé
+`learning.vipCard`), mais ce nom n'est utilisé nulle part : le code et `CONTEXT.md` disent « carte
+VIP ».
+
+**Diagnostic.** Il y a six systèmes de récompense, et **aucun n'est relié au travail mathématique** :
+les gidouilles viennent des jeux, les cartes VIP du comportement en classe, et la boucle des Palotins
+est cassée. Avant d'ajouter les Mathoux, il faut une boucle unique : _je fais des maths → quelque
+chose de visible progresse_.
+
+## 3. En classe et en cours particulier, la situation n'est pas la même
+
+|                       | En classe                                                   | En cours particulier                                                                           |
+| --------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Présence du prof      | tous les jours                                              | 1 à 2 séances par semaine. **Le vrai enjeu, c'est le temps entre les séances**                 |
+| Social                | camarades, amis, Marché, classements                        | **aucun pair** : l'école est la frontière sociale, l'élève particulier est seul dans la sienne |
+| Leviers forts         | le groupe, le statut, les privilèges en classe (cartes VIP) | la relation avec le prof, **les parents** (ils paient, veulent voir des progrès), soi-même     |
+| Ce qui ne marche plus | —                                                           | classements, Marché, cartes VIP de privilège en classe, tournois de classe                     |
+
+Conséquence : tout ce qui vise les élèves particuliers doit fonctionner **seul et en asynchrone**.
+
+## 4. Les Mathoux
+
+### Ancrage dans le lore (déjà présent dans le Compendium)
+
+- Le Docteur Faustroll, gouverneur de Patatovie, « vouvoie tout le monde, y compris ses chats »
+  (`docs/Chiphres/lore-pataphysique.md:440`). Les Mathoux peuvent être **les chats de Faustroll**.
+- Le **Chat Noir de Steinlen** est l'emblème visuel canonique (§ XI, palette `--chat-noir-*`), et
+  une « mascotte secondaire muette » qui « n'interagit jamais avec le Galopin » (ligne 1837).
+  Jamais codé.
+- Nom : _matou_ + _maths_. Pluriel « Mathoux », singulier « un Mathou ».
+
+### Principe : la collection est la carte de ce que l'élève maîtrise
+
+Un Mathou s'obtient **en travaillant une notion**, pas au hasard (règle d'or du Compendium : pas de
+pay-to-win mathématique). Branchements sur l'existant :
+
+- **Arbre des notions** : 19 branches, 137 notions, 543 sous-notions (prod, 2026-10-18) → **19 races**
+  (une par branche) et **jusqu'à 137 Mathoux** (un par notion).
+- **Acquisition des points** (`student_point_state` : ◯ / 🟠 / 🟢 / ✨) pilote la croissance :
+  première réussite sur la notion → **chaton** ; points acquis → **matou** ; notion maîtrisée →
+  **grand matou**, pelage rare.
+- **Révision espacée** : une notion « à revoir » (calculée depuis `last_success_at`, décision 70)
+  met son Mathou **en sieste**. Il n'est jamais perdu ; une révision le réveille. Entre deux
+  séances, c'est une raison de revenir.
+
+RGPD : la collection peut être **calculée** depuis l'acquisition déjà stockée. Seuls les choix
+cosmétiques (nom donné, pelage choisi) demandent une table.
+
+### Pouvoirs et combats : la réécriture de Navadra
+
+Décision déjà prise : Navadra sera réécrit sur le système de questions de Chiphre. Les Mathoux en
+sont le support :
+
+- **Chaque attaque est une question de la notion du Mathou.** Équipe de 3 Mathoux.
+- **Les monstres sont des erreurs typiques** (« le Carré Fourbe » : (a+b)² = a²+b²). Les battre
+  demande des questions qui ciblent l'erreur : de la remédiation déguisée.
+- **Pouvoirs = confort, jamais avantage pédagogique** : indice, second essai, passer une question,
+  en Entraînement seulement, **jamais en contrôle ni en évaluation** ; ou pouvoirs propres au combat.
+- **Solo contre l'IA d'abord** (jouable par l'élève particulier) ; duel entre élèves plus tard, dans
+  l'école seulement.
+
+### Ce qui reste distinct
+
+- **Palotin ≠ Mathou** : un compagnon qui parle, contre une collection. Voir § 6, question 1.
+- **Carte VIP ≠ Mathou** : les cartes VIP restent des privilèges de classe, tirés et échangeables.
+  Les Mathoux de notion ne s'échangent pas ; les accessoires (colliers, pelages) s'achètent en
+  gidouilles.
+- **Vocabulaire affiché** : le Compendium (§ IX, lignes 840 et 1648) interdit les anglicismes
+  _affichés aux élèves_ (XP, level, boss, streak, score, leaderboard). Il garde les mécaniques et
+  les renomme (« Constance Royale », « Tableau des Honneurs Royaux »). Il faudra un lexique propre
+  aux Mathoux : grandir, sieste, pelage, Chatterie…
+
+### Coût : les illustrations
+
+19 races × 3 stades = 57 visuels minimum, avant pelages et monstres. Option économe : une silhouette
+par race façon Steinlen (domaine public), déclinée en couleurs. Usage décoratif sans souci ; la
+recherche INPI n'est exigée que pour un élément de marque (Compendium § IV).
+
+### Suite de livraison proposée
+
+1. Réparer la boucle des Palotins : XP sur Entraînement, fiches et révisions ; images.
+2. Mathoux v1 : collection et sieste, calculées depuis l'acquisition ; page « Chatterie », sans combat.
+3. Pelages et accessoires en gidouilles.
+4. Combats contre les erreurs typiques (= réécriture de Navadra).
+
+## 5. Autres idées
+
+### Élèves en cours particulier
+
+- **Mission de la semaine** : fixée en fin de séance (2-3 objectifs), jauge jusqu'à la suivante.
+- **Bilan pour les parents** : temps passé, Mathoux, mission tenue. Question d'accès à trancher.
+- **Progresser contre soi-même** : records personnels (Course aux nombres), « il y a un mois… ».
+- **Défi du prof** : l'élève essaie de battre le temps du prof sur une série, en asynchrone.
+- **Constance Royale douce** : objectif hebdomadaire (« 4 jours sur 7 ») avec un jour de grâce.
+- **Grades de l'Ordre de la Grande Passoire** (7 grades écrits, jamais codés) avec un diplôme PDF.
+- **Récit débloqué par le travail** : Dépêches du Czar, articles du Shtam, page `/chat-noir`.
+
+### Élèves en classe
+
+- **Chatterie de classe** : objectif collectif, sans opposer les élèves.
+- **Tournois sur la Course aux nombres** (la mécanique des tournois existe pour le démineur).
+- **Cartes VIP inchangées**, avec éventuellement des cartes « Mathou » (pelage rare, chaton bonus).
+
+### Transversal
+
+- **Raccorder les gidouilles au travail mathématique** : aujourd'hui on gagne plus au démineur qu'en
+  faisant des maths.
+
+## 6. Questions pour David
+
+1. **Palotins et Mathoux** : côte à côte, Palotin gardien de la Chatterie, ou fusion ?
+2. **Obtention d'un Mathou** : uniquement par le travail, ou aussi par le hasard ou l'achat pour
+   certains rares ?
+3. **Élèves particuliers** : seuls dans leur « école », ou une école commune des particuliers
+   (safeguarding entre mineurs qui ne se connaissent pas) ?
+4. **Parents** : voient-ils un bilan, et lequel ?
+
+## 7. Recommandations (non tranchées)
+
+1. **Palotin gardien de la Chatterie, pas de fusion.** Le Compendium sépare déjà les rôles : le
+   Palotin parle, le Chat Noir est « muet ». Les Mathoux muets, le Palotin les commente et signale
+   les siestes : une seule voix, pas de concurrence. La fusion jetterait un MVP fait et le choix des
+   57 élèves.
+2. **Les Mathoux de notion uniquement par le travail ; quelques rares par des efforts non notés**
+   (énigmes, Dépêches du Czar, fêtes provinciales) ; **aucun tirage, aucun achat.** Un tirage au
+   hasard payable en monnaie est une loot box : risque réglementaire avec des mineurs (interdites en
+   Belgique, encadrées ailleurs) dès que la monétisation arrive, et contraire à la règle d'or. Le
+   hasard reste aux cartes VIP ; l'achat aux accessoires.
+3. **Seuls, sans école commune.** Le social n'est pas le levier des particuliers (prof, parents,
+   soi-même le sont), et mettre en contact des mineurs inconnus les uns des autres est le risque
+   maximal de safeguarding pour un gain faible. Au plus, plus tard, un compteur collectif anonyme
+   (« les Galopins du Royaume ont réveillé 1 000 Mathoux »), sans identité ni contact. À vérifier
+   dans le code : si plusieurs particuliers partagent une même école, les amis et le Marché les
+   relieraient ; il faudra pouvoir les couper.
+4. **Oui, un bilan d'effort et de progrès, sans nouvelle donnée au départ.** Contenu : temps de
+   travail, mission tenue, notions acquises, Mathoux réveillés ; jamais le détail des erreurs, ni le
+   chat. Première étape : un bilan que le prof génère (PDF) et envoie lui-même, ou que l'élève
+   montre : aucune adresse de parent stockée. Un compte parent viendra avec le modèle de
+   consentement parental.
