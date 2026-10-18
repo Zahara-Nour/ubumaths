@@ -157,6 +157,27 @@ describe('carte d’une valeur — le curseur', () => {
 		);
 	});
 
+	// Décision de David du 2026-10-18 : retenu avec l'atelier, il survit au
+	// rechargement (une carte remontée depuis l'état rangé)
+	it('le curseur affiché depuis le menu est retenu : une carte remontée le montre', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '2' }, 'text');
+		const first = await render(WithAtelier, { atelier });
+		const menu = await openCardMenu(first.container, 'a');
+		menuItemOf(menu, 'Curseur').click();
+		await vi.waitFor(() => {
+			const a = atelier.get('a');
+			expect(a && isValue(a) && a.sliderShown).toBe(true);
+		});
+		first.unmount();
+
+		const fresh = new Atelier();
+		fresh.restore(atelier.serialize());
+		const { container } = await render(WithAtelier, { atelier: fresh });
+
+		expect(cardOf(container, 'a').querySelector('[role="slider"]')).toBeTruthy();
+	});
+
 	it('un paramètre garde son curseur : l’élément du menu le dit, coché', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'value', name: 'a', definition: '2' }, 'text');

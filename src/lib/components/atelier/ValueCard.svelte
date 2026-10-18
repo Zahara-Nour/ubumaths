@@ -49,8 +49,12 @@
 	/** Les objets qui la citent : elle est alors un paramètre, son curseur reste affiché. */
 	const citedBy = $derived(atelier.dependents(object.name));
 
-	/** Le curseur que l'élève a affiché depuis le menu (valeur qui n'est pas un paramètre). */
-	let shownByMenu = $state(false);
+	/**
+	 * Le curseur que l'élève a affiché depuis le menu (valeur qui n'est pas un
+	 * paramètre) : retenu avec l'atelier, il survit au rechargement et au
+	 * renommage (décision de David du 2026-10-18).
+	 */
+	const shownByMenu = $derived(object.sliderShown === true);
 
 	/**
 	 * Pourquoi cette valeur n'a pas de curseur, ou `null` si elle en a un.
@@ -153,7 +157,7 @@
 					{:else}
 						<DropdownMenu.CheckboxItem
 							checked={shownByMenu}
-							onCheckedChange={(on) => (shownByMenu = on)}
+							onCheckedChange={(on) => atelier.setSliderShown(object.name, on)}
 						>
 							Curseur
 						</DropdownMenu.CheckboxItem>

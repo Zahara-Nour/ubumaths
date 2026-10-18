@@ -257,6 +257,7 @@ export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport
 		if (stored.sequenceDisplay) atelier.adoptSequenceDisplay(chosen, stored.sequenceDisplay);
 		if (stored.figureDisplay) atelier.adoptFigureDisplay(chosen, stored.figureDisplay);
 		if (stored.slider) atelier.adoptSlider(chosen, stored.slider);
+		if (stored.sliderShown) atelier.setSliderShown(chosen, true);
 		if (stored.plotted) atelier.setPlotted(chosen, true);
 		if (stored.inFigure) atelier.setInFigure(chosen, true);
 	}

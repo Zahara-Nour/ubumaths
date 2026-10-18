@@ -1301,7 +1301,9 @@ export class Atelier {
 			// Un point ou une courbe garde son dessin (lot 4b) : la définition change, pas la couleur
 			...((isFunction(previous) || isSequence(previous) || isFigureObject(previous)) &&
 				previous.display && { display: previous.display }),
-			...(keptSlider && { slider: keptSlider })
+			...(keptSlider && { slider: keptSlider }),
+			// Le curseur affiché à la main reste affiché, tant que la valeur en a un
+			...(isValue(previous) && previous.sliderShown && keptSlider && { sliderShown: true })
 		} as AtelierObject;
 		this.#dropImpossibleCobweb(index);
 		this.recomputeAll();
@@ -2156,6 +2158,8 @@ export class Atelier {
 			...(isValue(o) && o.slider && !isDefaultSlider(o.slider)
 				? { slider: { min: o.slider.min, max: o.slider.max, step: o.slider.step } }
 				: {}),
+			// Le curseur affiché depuis le menu : seulement quand il l'est (pas de version neuve)
+			...(isValue(o) && o.sliderShown ? { sliderShown: true } : {}),
 			// Le mode toujours (une récurrence constante ne se devine pas), le rang
 			// et le premier terme seulement s'ils diffèrent du défaut
 			...(isSequence(o) && o.display ? { sequenceDisplay: plainSequenceDisplay(o.display) } : {}),
@@ -2289,6 +2293,7 @@ export class Atelier {
 			if (stored.sequenceDisplay) this.adoptSequenceDisplay(stored.name, stored.sequenceDisplay);
 			if (stored.figureDisplay) this.adoptFigureDisplay(stored.name, stored.figureDisplay);
 			if (stored.slider) this.adoptSlider(stored.name, stored.slider);
+			if (stored.sliderShown) this.setSliderShown(stored.name, true);
 			if (stored.plotted) this.setPlotted(stored.name, true);
 			if (stored.inFigure) this.setInFigure(stored.name, true);
 		}
@@ -2377,6 +2382,25 @@ export class Atelier {
 		// ⚠️ Pas de `recomputeAll` : un réglage ne change aucun statut, et le
 		// curseur de la tangente en enverrait un par mouvement. Seul le compteur
 		// bouge — c'est lui que la sauvegarde et le tracé écoutent.
+		this.revision++;
+		return { ok: true };
+	}
+
+	/**
+	 * Afficher — ou cacher — le curseur d'une valeur qui n'est pas un paramètre
+	 * (Affichage → Curseur, lot 4a). Retenu avec l'atelier (décision de David du
+	 * 2026-10-18). Refusé pour une valeur sans curseur (grandeur, mesure).
+	 */
+	setSliderShown(name: string, shown: boolean): { ok: true } | Refused {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isValue(current) || current.slider === undefined) {
+			return { ok: false, message: `« ${name} » n'a pas de curseur.` };
+		}
+		if ((current.sliderShown === true) === shown) return { ok: true };
+		const { sliderShown: _, ...rest } = current;
+		this.items[index] = shown ? { ...rest, sliderShown: true } : rest;
+		// Un affichage : aucun statut ne change, seul le compteur (la sauvegarde l'écoute)
 		this.revision++;
 		return { ok: true };
 	}

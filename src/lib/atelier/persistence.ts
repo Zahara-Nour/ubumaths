@@ -126,6 +126,13 @@ const storedObjectSchema = z.object({
 		.optional()
 		.catch(undefined),
 	/**
+	 * Curseur d'une valeur affiché depuis le menu (lot 4a, décision de David du
+	 * 2026-10-18). Rangé seulement quand il est affiché : pas de nouvelle version,
+	 * même contrepartie que `figureDisplay` (un onglet resté sur l'ancien code
+	 * l'oublie — un affichage, jamais un objet).
+	 */
+	sliderShown: z.literal(true).optional().catch(undefined),
+	/**
 	 * Mode, rang et premier terme d'une suite (lot 5). Absents des suites rangées
 	 * avant : le mode se retrouve à la relecture (S4). Validés à la création.
 	 */
@@ -206,6 +213,8 @@ export interface StoredObject {
 	readonly reciprocalOn?: string;
 	readonly display?: StoredDisplay;
 	readonly slider?: { readonly min: number; readonly max: number; readonly step: number };
+	/** Curseur d'une valeur affiché depuis le menu, absent quand il est caché. */
+	readonly sliderShown?: true;
 	readonly mode?: 'explicit' | 'recurrence';
 	readonly firstIndex?: number;
 	readonly firstTerm?: string;

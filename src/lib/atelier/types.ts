@@ -106,6 +106,12 @@ export interface ValueObject extends AtelierObjectBase {
 	/** Unité, quand la valeur est une grandeur. Décision D4 : pas de curseur. */
 	readonly unit?: string;
 	readonly slider?: Slider;
+	/**
+	 * Curseur affiché depuis le menu de la carte alors que la valeur n'est pas un
+	 * paramètre (lot 4a de la refonte). Retenu avec l'atelier, comme la couleur
+	 * d'une courbe (décision de David du 2026-10-18). Absent quand il est caché.
+	 */
+	readonly sliderShown?: true;
 }
 
 /**
