@@ -7,6 +7,7 @@ couvre:
   - 'src/lib/server/buddy-*.ts'
   - src/lib/server/validation/buddy.ts
   - src/lib/types/buddy.ts
+  - src/lib/utils/buddy-constance.ts
   - src/lib/utils/buddy-xp.ts
   - 'src/routes/api/student/buddy/**'
 ---
@@ -100,12 +101,18 @@ L'XP buddy est le **reflet de l'investissement de l'eleve dans la duree**. Pas d
 | Exercice complete (mauvaise reponse)             | 3   | L'effort compte, pas que le resultat |
 | Exercice corrige apres erreur                    | 7   | Encourage a reessayer                |
 | Premier exercice du jour                         | 5   | Juste se connecter et commencer      |
-| Streak journalier (connexion + 1 exo minimum)    | 15  | Regularite                           |
-| Bonus streak x7 jours                            | 50  | Milestone hebdomadaire (hors cap)    |
-| Bonus streak x14 jours                           | 100 | Milestone bi-hebdomadaire (hors cap) |
-| Bonus streak x30 jours                           | 300 | Milestone mensuel (hors cap)         |
+| Semaine tenue (3e jour travaille de la semaine)  | 30  | Regularite (dans le cap)             |
+| Palier Constance 4 semaines                      | 50  | A la place des 30 (hors cap)         |
+| Palier Constance 8 semaines                      | 100 | A la place des 30 (hors cap)         |
+| Palier Constance 16 semaines                     | 300 | A la place des 30 (hors cap)         |
 | Nouvelle thematique exploree                     | 25  | Curiosite                            |
 | Revision espacee du jour (1/jour, voir plus bas) | 20  | L'effort (cartes auto-evaluees)      |
+
+Le bonus quotidien de serie (+15) et les paliers 7 / 14 / 30 jours ont disparu le 2026-10-18
+(Constance Royale hebdomadaire, voir [Systeme de streak](#systeme-de-streak)). Le « premier exercice
+du jour » (+5) reste reserve aux reponses (Entrainement, Course, evaluation, enigme) : il tombe si le
+jour n'est pas encore compte dans la Constance (`last_activity_date`), donc plus apres un forfait de
+revision le meme jour.
 
 **Thematique** = le theme du programme (`curriculum_themes.id`) du point que valide la question
 (`question_template_points` → `curriculum_points` → `curriculum_objectives`), lu par
@@ -132,7 +139,7 @@ vide un paquet (plus aucune carte due) apres au moins 3 cartes. Detail dans [srs
 
 ### Anti-gaming
 
-- **Cap d'XP journalier : 100 XP** (les bonus streak milestone ne comptent PAS dans le cap)
+- **Cap d'XP journalier : 100 XP** (les paliers de Constance 4 / 8 / 16 semaines ne comptent PAS dans le cap ; les +30 de la semaine tenue, si)
 - **Pas d'XP pour les exercices repetes** identiques dans la meme session
 - **L'XP ne s'achete pas** avec des gidouilles
 - **Pas de perte d'XP** possible : evite la frustration et les hacks defensifs
@@ -210,12 +217,54 @@ vide un paquet (plus aucune carte due) apres au moins 3 cartes. Detail dans [srs
 
 ## Systeme de streak
 
+### Constance Royale hebdomadaire (specification validee par David le 2026-10-18)
+
+Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`). Elle se compte en
+**semaines**, pas en jours.
+
+- **Semaine** : du lundi au dimanche, jour UTC (celui du plafond de `add_buddy_xp`).
+- **Jour travaille** : un jour ou l'eleve a gagne des pansees par le travail, c'est-a-dire ou un
+  credit de pansees > 0 a eu lieu par `addBuddyXpFromTest` (Entrainement, Course aux nombres,
+  evaluation), `addBuddyXpFromExercise` (enigme) ou `addBuddyXpFromReviewSession` (forfait de
+  revision espacee). Une carte revisee seule ne credite rien (seul le forfait le fait), une seance
+  flash non plus : elles ne comptent pas. Un credit nul (plafond du jour deja atteint) ne compte pas
+  le jour.
+- **Semaine tenue** au 3e jour travaille (`CONSTANCE_DAYS_PER_WEEK`). Ce jour-la : +30 dans le
+  plafond, ou, si la Constance atteint 4 / 8 / 16 semaines, le palier +50 / +100 / +300 hors plafond
+  a la place (`calculateConstanceBonus`). Les 4e a 7e jours se comptent sans nouvelle recompense.
+- **Constance** = semaines tenues d'affilee (`current_streak`, record `longest_streak`). La semaine
+  en cours ne casse rien avant sa fin ; une semaine finie sous 3 jours (ou sautee) remet la
+  Constance a 0, avec une replique (`streak_lost`, « la semaine n'a pas eu ses trois jours »).
+- **Affichage** (`BuddyStatusPanel`) : « Constance Royale : N semaines », « Cette semaine : x jours
+  sur 3 » (x plafonne a 3) et « Record : N semaines ». Le badge du widget montre N. La valeur
+  affichee est recalculee pour le jour courant (`displayedConstance`) : une Constance perdue mais
+  pas encore remise a zero s'affiche 0. Le tableau de bord prof affiche la meme valeur (`displayedConstance`), en « sem. ».
+
 ### Mecanisme
 
-- **Condition** : connexion + au moins 1 exercice complete dans la journee
-- **Le Palotin porte le streak** visuellement (compteur, flamme, etc.)
-- **Perte du streak** : le Palotin est triste 1 jour, puis repart. Pas de punition mecanique, juste emotionnelle. Le compteur streak remet a zero mais l'XP acquise reste.
-- **Le streak est un bonus d'XP**, pas une condition. Un eleve sans streak progresse quand meme, juste moins vite.
+- Logique pure : `src/lib/utils/buddy-constance.ts` (`weekStartOf`, `applyWorkedDay`,
+  `constanceReset`, `displayedConstance`, `displayedDaysThisWeek`), testee dans
+  `src/lib/utils/__tests__/buddy-constance.test.ts` (changement d'annee, semaine sautee, semaine en
+  cours non finie, dimanche → lundi, 3e jour le meme jour que deux credits).
+- Apres un credit > 0, si la ligne lue ne dit pas le jour deja compte, `recordWorkedDay`
+  (`buddy-queries.ts`) ecrit en UNE fois `constance_week_start`, `constance_days_this_week`,
+  `current_streak`, `longest_streak` et `last_activity_date` (dernier jour compte), sous verrou
+  optimiste : de deux credits simultanes, un seul compte le jour et touche la recompense.
+- Au chargement du tableau de bord eleve, `resetLostConstance` remet la Constance a 0 si la derniere
+  semaine enregistree est finie sans etre tenue (`streakLost` → replique).
+- **Ancienne serie en jours** (ligne sans `constance_week_start`, tout Palotin d'avant le
+  2026-10-18) : `current_streak` et `longest_streak` comptaient des jours. Ils sont remis a 0 (record
+  compris) au premier chargement du tableau de bord ou au premier jour travaille, sans replique ; le
+  jour meme est compte meme si l'ancienne serie l'avait deja marque.
+- Une panne de la Constance APRES le credit (`recordWorkedDay`, ou credit de la recompense) est
+  journalisee et ne remonte jamais : le gain rendu est celui du credit, sans recompense. Sinon le
+  forfait de revision relacherait sa seance et deviendrait repayable.
+- Gain renvoye aux routes (`buddy_xp`, meme forme qu'avant) : `streakUpdated` = ce credit a compte
+  le jour ; `newStreak` = la Constance apres lui ; `streakBonusXp` = la recompense de la semaine
+  tenue ; `constanceWeekStart` / `constanceDaysThisWeek` en plus, quand le jour a ete compte, pour
+  mettre le widget a jour sans rechargement (`updateBuddyConstanceOptimistic`).
+- **Perte** : le Palotin est triste, puis repart. Pas de punition mecanique : l'XP acquise reste.
+- **La Constance est un bonus d'XP**, pas une condition.
 
 ### Protection du streak
 
@@ -408,12 +457,12 @@ student_buddies
 ├── palotin_type (enum: giron, pile, cotice)
 ├── xp (integer, never decreases)
 ├── level (integer, cached from xp)
-├── current_streak (integer, days)
-├── longest_streak (integer, record)
-├── last_activity_date (date, for streak calc)
+├── current_streak (integer, Constance Royale en semaines tenues d'affilee)
+├── longest_streak (integer, record, en semaines)
+├── last_activity_date (date, dernier jour travaille compte)
 ├── equipped_skin_id (FK buddy_skins, nullable)
-├── constance_week_start (date, nullable : lundi de la semaine en cours, NULL tant qu'aucune activite)
-├── constance_days_this_week (smallint, defaut 0, contrainte 0..7)
+├── constance_week_start (date, nullable : lundi de la derniere semaine comptee, NULL = ancienne serie en jours)
+├── constance_days_this_week (smallint, defaut 0, contrainte 0..7 : jours travailles de cette semaine)
 ├── created_at (timestamptz)
 └── updated_at (timestamptz)
 ```
@@ -422,10 +471,10 @@ student_buddies
 
 Toutes les ecritures de `student_buddies` passent par le client service (`src/lib/server/buddy-queries.ts`),
 avec l'identifiant de l'eleve tire de la SESSION, jamais du corps de la requete : choix
-(`createStudentBuddy`), changement (`changeStudentPalotin`), serie (`updateStreak`,
-`resetLostStreak` depuis le layout du tableau de bord eleve), themes (`addExploredThemes`,
+(`createStudentBuddy`), changement (`changeStudentPalotin`), Constance Royale (`recordWorkedDay`,
+`resetLostConstance` depuis le layout du tableau de bord eleve), themes (`addExploredThemes`,
 `removeExploredThemes`), XP (`add_buddy_xp`). Les fonctions d'ecriture ne recoivent pas le client de
-l'eleve ; les lectures (`getStudentBuddy`, `getClassBuddies`) restent sur son client (sa RLS).
+l'eleve ; la lecture (`getStudentBuddy`) reste sur son client (sa RLS).
 
 RLS (migration `20261017090100_palotin_constance_et_ecritures_serveur.sql`) : l'eleve n'a plus
 AUCUNE policy d'ecriture sur `student_buddies` (« Students can create their own buddy » et
@@ -435,16 +484,16 @@ Une ecriture faite au client de l'eleve rend donc 42501 (INSERT) ou 0 ligne sans
 toute nouvelle ecriture passe par le client service. Preuve :
 `tests/integration/palotin-ecritures-eleve.test.ts`.
 
-Constance Royale hebdomadaire : `constance_week_start` et `constance_days_this_week` existent en base
-(meme migration), le code qui les remplit vient ensuite. Regle : au moins 3 jours de travail dans la
-semaine.
+Constance Royale hebdomadaire : `constance_week_start` et `constance_days_this_week` (meme
+migration), remplies par `recordWorkedDay` (voir [Systeme de streak](#systeme-de-streak)).
 
 Lire-modifier-ecrire sans transaction : verrou optimiste sur `updated_at` (trigger
 `student_buddies_updated_at_trigger`). L'ecriture porte `.eq('updated_at', lu)` et `.select()` ;
 0 ligne → relecture et nouvel essai, 3 au plus (`MAX_WRITE_ATTEMPTS`), puis abandon journalise
-(jamais un succes silencieux). Deux envois simultanes ne perdent donc aucun theme, ne font avancer la
-serie qu'une fois (un seul bonus de serie), et la remise a zero d'une serie perdue est reevaluee sur
-la ligne relue (une activite arrivee entre-temps n'est pas effacee). Jour « aujourd'hui » : jour UTC,
+(jamais un succes silencieux). Deux envois simultanes ne perdent donc aucun theme, ne comptent le
+jour travaille qu'une fois (une seule recompense de semaine tenue), et la remise a zero d'une
+Constance perdue est reevaluee sur la ligne relue (un jour travaille arrive entre-temps n'est pas
+efface). Jour « aujourd'hui » : jour UTC,
 celui du plafond.
 
 ### Table `buddy_skins`

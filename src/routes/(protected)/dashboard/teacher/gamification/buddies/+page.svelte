@@ -77,7 +77,7 @@
 								</span>
 								<span class="flex items-center gap-1">
 									<Flame class="h-3 w-3" />
-									Streak moy. {cls.stats.avgStreak}j
+									Constance moy. {cls.stats.avgStreak} sem.
 								</span>
 								{#each Object.entries(cls.stats.palotinDistribution) as [palotin, count] (palotin)}
 									{#if count > 0}
@@ -127,10 +127,10 @@
 											/>
 										</div>
 
-										<!-- Streak -->
+										<!-- Constance Royale, en semaines tenues d'affilée -->
 										<div class="flex items-center gap-1 text-xs text-muted-foreground">
 											<Flame class="h-3 w-3 {student.currentStreak > 0 ? 'text-orange-500' : ''}" />
-											{student.currentStreak}j
+											{student.currentStreak} sem.
 										</div>
 
 										<!-- Last activity -->

@@ -89,6 +89,8 @@ function buddy(overrides: Partial<BuddyState> = {}): BuddyState {
 		themes_explored: [],
 		change_count: 0,
 		equipped_skin_id: null,
+		constance_week_start: null,
+		constance_days_this_week: 0,
 		...overrides
 	};
 }

@@ -48,9 +48,31 @@ gidouilles). Correction prévue en PR 2.
       touche le forfait dès sa première carte de révision. Borné par le plafond de 100 pansées par jour.
       Reportés à la PR 2 : course lire-modifier-écrire de `addExploredThemes` (ajout à faire en SQL),
       policy UPDATE « own » de `srs_review_sessions` (`completed_at` remis à vide).
-- [ ] PR 2
-- [ ] PR 3 — migration `20261017090100_palotin_constance_et_ecritures_serveur.sql` et
-      `tests/integration/palotin-ecritures-eleve.test.ts` écrits (rouge sans la migration, vert avec).
-      ⛔ `db:migrate` seulement APRÈS le `deploy:prod` qui livre la PR #1475 (le 2026-10-18, la
-      branche `production` écrit encore `student_buddies` et `srs_review_sessions` au client de
-      l'élève) et après l'explication des `DROP POLICY` à David.
+- [x] PR 2 — #1475, écritures au client service, verrou optimiste sur `updated_at`, route
+      `api/student/buddy/xp` retirée.
+- [x] PR 3 — #1476. Livrée en prod par `deploy:prod` v0.39.0 (2026-10-18, demandé par David), puis
+      `db:migrate` le même jour avec l'accord de David sur les `DROP POLICY`. Vérifié en prod : seules
+      les policies SELECT restent sur les deux tables ; 57 Palotins et la séance existante intacts ;
+      colonnes `constance_*` à leurs valeurs par défaut. `db:types` dans la PR 4.
+- [ ] PR 4 — Constance Royale hebdomadaire. **Spécification validée par David le 2026-10-18** :
+      semaine du lundi au dimanche (jour UTC) ; jour travaillé = jour où l'élève a gagné des pansées
+      par le travail (Entraînement, Course, révision, énigme, évaluation) ; semaine tenue au 3e jour
+      travaillé ; Constance = semaines tenues d'affilée (`current_streak` / `longest_streak`
+      réutilisées, en semaines) ; la semaine en cours ne casse rien avant sa fin ; semaine finie
+      sous 3 jours → 0, avec une réplique. Récompenses : +30 le jour où la semaine est tenue ;
+      paliers 4 / 8 / 16 semaines → +50 / +100 / +300 hors plafond ; « premier travail du jour » +5
+      inchangé ; le bonus quotidien de série (+15) et les paliers 7 / 14 / 30 jours disparaissent.
+      Affichage : « Constance Royale : N semaines » et « Cette semaine : x jours sur 3 ».
+      Points non spécifiés, validés par David le 2026-10-18 : +30 dans le plafond du jour ; un
+      palier remplace les +30 de sa semaine (rien au-delà de 16) ; après une révision, un
+      Entraînement le même jour ne reçoit plus le +5 « premier travail du jour ».
+      Aussi : anciennes séries en jours remises à 0 sans réplique (toutes à 0 en prod le 2026-10-18,
+      rien perdu) ; « x jours sur 3 » plafonné à 3 ; un palier est redonné si la Constance retombe
+      puis remonte (comme l'ancien code pour 7 / 14 / 30 jours).
+      **Code fait le 2026-10-18, corrigé après revue et audit** : logique pure
+      `src/lib/utils/buddy-constance.ts`, `recordWorkedDay` / `resetLostConstance` (une écriture
+      sous verrou), bonus `calculateConstanceBonus` (une panne après le crédit ne remonte jamais :
+      le forfait de révision n'est pas relâché), layout élève, panneau et widget, répliques
+      `streak_lost`, tableau prof sur la Constance affichée (`displayedConstance`),
+      `getClassBuddies` (sans appelant) retirée, docs `buddy-palotins.md` et
+      `coquille-et-caches.md`, motif du layout ajouté au filtre `nightly-integration.yml`.

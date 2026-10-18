@@ -36,7 +36,8 @@ import type { StudentProfile, ClassMembership, StudentRewards } from '$lib/types
 import { asStudentVipCards } from '$lib/types/vip-card';
 import { error } from '@sveltejs/kit';
 import { toBuddyState } from '$lib/types/buddy';
-import { isStreakLost, resetLostStreak } from '$lib/server/buddy-queries';
+import { resetLostConstance } from '$lib/server/buddy-queries';
+import { constanceReset, utcDay } from '$lib/utils/buddy-constance';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('(protected)/dashboard/student/+layout.server');
@@ -137,17 +138,23 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			logger.error('Contexte illisible :', buddyDataError);
 		}
 
-		// Série perdue (dernière activité il y a plus d'un jour) : remise à zéro au
-		// client service, règle réévaluée sur la ligne relue, écriture vérifiée
+		// Constance Royale perdue (dernière semaine enregistrée finie sous 3 jours
+		// travaillés, ou semaine sautée) : remise à zéro au client service, règle
+		// réévaluée sur la ligne relue, écriture vérifiée. Une ancienne série en
+		// jours est remise à zéro sans réplique (ce n'est pas une semaine manquée).
 		let streakLost = false;
-		if (buddyData && isStreakLost(buddyData)) {
+		let buddyRow = buddyData;
+		if (buddyData && constanceReset(buddyData, utcDay())) {
 			try {
-				streakLost = await resetLostStreak(user.id);
+				const reset = await resetLostConstance(user.id);
+				if (reset) {
+					buddyRow = reset.buddy;
+					streakLost = reset.kind === 'lost';
+				}
 			} catch (resetError) {
-				// Non bloquant : la série sera remise à zéro au prochain chargement
-				logger.error('[Layout] Série perdue non remise à zéro :', resetError);
+				// Non bloquant : la Constance sera remise à zéro au prochain chargement
+				logger.error('[Layout] Constance perdue non remise à zéro :', resetError);
 			}
-			if (streakLost) buddyData.current_streak = 0;
 		}
 
 		// Return data for cache hydration on client
@@ -157,7 +164,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			rewards,
 			// `palotin_type` est du texte simple en base : le rétrécir ici évite que
 			// chaque consommateur ait à le faire, et garantit un compagnon parlant.
-			buddy: buddyData ? toBuddyState(buddyData) : null,
+			buddy: buddyRow ? toBuddyState(buddyRow) : null,
 			streakLost
 		};
 	} catch (err) {

@@ -14,7 +14,12 @@
  *   quand le paquet est vidé après au moins 3 cartes ; jamais deux fois par jour ;
  * - écritures au client service sous verrou optimiste (PR 2) : deux ajouts de
  *   thèmes simultanés n'en perdent aucun, et le bonus « nouveau thème » n'est
- *   payé qu'une fois.
+ *   payé qu'une fois ;
+ * - Constance Royale hebdomadaire (PR 4) : le 3e jour travaillé de la semaine
+ *   (Entraînement ou forfait de révision) tient la semaine, +30 une seule fois ;
+ *   une semaine finie à 2 jours remet la Constance à 0 au chargement suivant du
+ *   tableau de bord (avec la réplique). Les dates passées sont posées sur la
+ *   ligne `student_buddies` au client service.
  *
  * @vitest-environment node
  */
@@ -45,6 +50,8 @@ import { POST as testsSaveRoute } from '../../src/routes/api/tests/save/+server'
 import { POST as reviewSubmitRoute } from '../../src/routes/api/srs/review/submit/+server';
 import { addExploredThemes } from '$lib/server/buddy-queries';
 import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
+import { load as studentLayoutLoad } from '../../src/routes/(protected)/dashboard/student/+layout.server';
+import { utcDay, weekStartOf } from '$lib/utils/buddy-constance';
 
 // Types
 type Person = { id: string; client: SupabaseClient<Database> };
@@ -109,6 +116,42 @@ async function insertRow(table: string, row: Record<string, unknown>): Promise<s
 		.single();
 	if (error) throw new Error(`décor ${table} : ${error.message}`);
 	return (data as { id: string }).id;
+}
+
+/** Jour UTC décalé de `days` jours. */
+function dayOffset(day: string, days: number): string {
+	return utcDay(new Date(Date.parse(`${day}T00:00:00Z`) + days * 86_400_000));
+}
+
+/** Pose la Constance sur la ligne du Palotin (client service, dates passées). */
+async function setConstance(
+	p: Person,
+	fields: {
+		current_streak: number;
+		longest_streak: number;
+		last_activity_date: string;
+		constance_week_start: string;
+		constance_days_this_week: number;
+	}
+) {
+	const { data, error } = await service
+		.from('student_buddies')
+		.update(fields)
+		.eq('student_id', p.id)
+		.select('student_id');
+	expect(error).toBeNull();
+	expect(data).toHaveLength(1);
+}
+
+/** La Constance de l'élève, relue HORS RLS. */
+async function constanceOf(p: Person) {
+	const { data, error } = await service
+		.from('student_buddies')
+		.select('xp, current_streak, longest_streak, constance_week_start, constance_days_this_week')
+		.eq('student_id', p.id)
+		.single();
+	expect(error).toBeNull();
+	return data;
 }
 
 /** Le Palotin de l'élève, relu HORS RLS. */
@@ -436,5 +479,125 @@ describe('la boucle du Palotin tourne', () => {
 		const second = await deckOf(p, REVIEW_REWARD_CARDS_EMPTIED_DECK);
 		expect(await reviewAll(p, second)).toEqual([null, null, null]);
 		expect((await buddyOf(p))?.xp).toBe(XP_SOURCES.review_session);
+	});
+
+	describe('Constance Royale hebdomadaire', () => {
+		const today = utcDay();
+		const thisWeek = weekStartOf(today);
+		const lastWeek = dayOffset(thisWeek, -7);
+
+		it('3e jour travaillé de la semaine (Entraînement) : semaine tenue, +30 une seule fois', async () => {
+			// Décor cohérent quel que soit le jour d'exécution : un lundi ou un mardi,
+			// deux jours déjà travaillés « cette semaine » n'existent pas encore. Le
+			// serveur est donc placé au mercredi de la semaine dernière (horloge JS
+			// seule ; la base garde la sienne), après le lundi et le mardi travaillés.
+			const monday = lastWeek;
+			const wednesday = dayOffset(monday, 2);
+			vi.useFakeTimers({ toFake: ['Date'], shouldAdvanceTime: true });
+			vi.setSystemTime(new Date(`${wednesday}T12:00:00Z`));
+			try {
+				const p = await studentWithBuddy();
+				await setConstance(p, {
+					current_streak: 0,
+					longest_streak: 0,
+					last_activity_date: dayOffset(monday, 1),
+					constance_week_start: monday,
+					constance_days_this_week: 2
+				});
+
+				const body = (await save(p, 'interactive')) as {
+					buddy_xp: { streakUpdated: boolean; newStreak: number; streakBonusXp: number } | null;
+				};
+				expect(body.buddy_xp).toMatchObject({
+					streakUpdated: true,
+					newStreak: 1,
+					streakBonusXp: XP_SOURCES.week_held
+				});
+				const held = await constanceOf(p);
+				expect(held).toMatchObject({
+					current_streak: 1,
+					longest_streak: 1,
+					constance_week_start: monday,
+					constance_days_this_week: 3
+				});
+
+				// Deuxième séance le même jour : jour déjà compté, pas de second +30
+				const again = (await save(p, 'interactive')) as {
+					buddy_xp: { streakUpdated: boolean; streakBonusXp: number } | null;
+				};
+				expect(again.buddy_xp).toMatchObject({ streakUpdated: false, streakBonusXp: 0 });
+				const after = await constanceOf(p);
+				expect(after?.constance_days_this_week).toBe(3);
+				expect(after?.current_streak).toBe(1);
+				expect((after?.xp ?? 0) - (held?.xp ?? 0)).toBe(XP_SOURCES.correct);
+			} finally {
+				vi.useRealTimers();
+			}
+		});
+
+		it('3e jour travaillé par le forfait de révision : semaine tenue, +30 avec le forfait', async () => {
+			const p = await studentWithBuddy();
+			await setConstance(p, {
+				current_streak: 2,
+				longest_streak: 2,
+				last_activity_date: dayOffset(today, -1),
+				constance_week_start: thisWeek,
+				constance_days_this_week: 2
+			});
+
+			const gains = await reviewAll(p, await deckOf(p, REVIEW_REWARD_CARDS_EMPTIED_DECK));
+
+			expect(gains).toEqual([null, null, XP_SOURCES.review_session + XP_SOURCES.week_held]);
+			expect(await constanceOf(p)).toMatchObject({
+				xp: XP_SOURCES.review_session + XP_SOURCES.week_held,
+				current_streak: 3,
+				constance_days_this_week: 3
+			});
+		});
+
+		it('semaine finie à 2 jours : Constance à 0 au chargement suivant du tableau de bord', async () => {
+			const p = await studentWithBuddy();
+			await setConstance(p, {
+				current_streak: 3,
+				longest_streak: 5,
+				last_activity_date: dayOffset(lastWeek, 1),
+				constance_week_start: lastWeek,
+				constance_days_this_week: 2
+			});
+			const { data: profile, error } = await service
+				.from('profiles')
+				.select('*')
+				.eq('id', p.id)
+				.single();
+			expect(error).toBeNull();
+
+			const data = (await studentLayoutLoad({
+				locals: { ...buildLocals(p), profile }
+			} as never)) as { buddy: { current_streak: number } | null; streakLost: boolean };
+
+			expect(data.streakLost).toBe(true);
+			expect(data.buddy?.current_streak).toBe(0);
+			expect(await constanceOf(p)).toMatchObject({ current_streak: 0, longest_streak: 5 });
+		});
+
+		it('semaine d’avant tenue, semaine en cours pas finie : rien ne casse au chargement', async () => {
+			const p = await studentWithBuddy();
+			await setConstance(p, {
+				current_streak: 3,
+				longest_streak: 3,
+				last_activity_date: dayOffset(lastWeek, 2),
+				constance_week_start: lastWeek,
+				constance_days_this_week: 3
+			});
+			const { data: profile } = await service.from('profiles').select('*').eq('id', p.id).single();
+
+			const data = (await studentLayoutLoad({
+				locals: { ...buildLocals(p), profile }
+			} as never)) as { buddy: { current_streak: number } | null; streakLost: boolean };
+
+			expect(data.streakLost).toBe(false);
+			expect(data.buddy?.current_streak).toBe(3);
+			expect((await constanceOf(p))?.current_streak).toBe(3);
+		});
 	});
 });

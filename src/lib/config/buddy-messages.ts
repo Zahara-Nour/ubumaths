@@ -37,6 +37,8 @@ export type BuddyMessageContext =
 
 /** Mot du lore pour le niveau du Palotin (« Tour de panse »), jamais « Niveau » */
 const LEVEL = lore.buddy.level;
+/** Mot du lore pour la série de semaines tenues (« Constance Royale ») */
+const CONSTANCE = lore.learning.streak;
 
 export type PalotinType = 'giron' | 'pile' | 'cotice';
 
@@ -137,10 +139,10 @@ const giron: BuddyMessages = {
 		'Cornegidouille, t’es intouchable !'
 	],
 	streak_lost: [
-		'Ah, la série tombe ! On relance !',
-		'Pas grave, nouvelle série direct !',
-		'Ça casse, mais on repart plus fort !',
-		'Le combat continue ! Rien n’est fini !'
+		`La semaine n’a pas eu ses trois jours : la ${CONSTANCE} retombe ! On relance !`,
+		'Semaine ratée, pas grave ! Trois jours cette semaine et on repart !',
+		`La ${CONSTANCE} casse, mais on la reconstruit dès cette semaine !`,
+		'Le combat continue ! Une nouvelle semaine, trois jours, on attaque !'
 	],
 	level_up: [
 		`${LEVEL} 1 ! On commence tranquille !`,
@@ -304,10 +306,10 @@ const pile: BuddyMessages = {
 		'Cornegidouille, même le temps semble suivre ton rythme.'
 	],
 	streak_lost: [
-		'La série s’interrompt, comme une respiration, puis on repart.',
-		'Tout s’arrête un instant, et ça laisse place à autre chose.',
-		'Ce n’est qu’une pause dans le mouvement.',
-		'On recommence doucement, sans perdre le fil.'
+		`La semaine s’est fermée avant ses trois jours… la ${CONSTANCE} s’interrompt, comme une respiration.`,
+		'Une semaine qui passe sans trois jours, ce n’est qu’une pause dans le mouvement.',
+		`La ${CONSTANCE} recommence à zéro, doucement, avec cette nouvelle semaine.`,
+		'Trois jours cette semaine, et le fil se renoue sans bruit.'
 	],
 	level_up: [
 		`${LEVEL} 1, une porte s’ouvre doucement.`,
@@ -492,10 +494,10 @@ const cotice: BuddyMessages = {
 		'Cornegidouille, c’est du jamais vu !'
 	],
 	streak_lost: [
-		'Ah, la série s’arrête, mais on repart direct !',
-		'Pas grave, nouvelle série en vue !',
-		'On perd la série, mais pas la motivation !',
-		'Allez, on relance la machine !'
+		`Ah, la semaine n’a pas eu ses trois jours : la ${CONSTANCE} s’arrête, mais on repart direct !`,
+		'Pas grave, nouvelle semaine, nouveaux trois jours en vue !',
+		`On perd la ${CONSTANCE}, mais pas la motivation !`,
+		'Allez, trois jours cette semaine et on relance la machine !'
 	],
 	level_up: [
 		`${LEVEL} 1 ! On démarre tranquille !`,

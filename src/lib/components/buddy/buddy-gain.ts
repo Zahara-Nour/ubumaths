@@ -27,8 +27,11 @@ export interface BuddyGain {
 	newLevel: number;
 	leveledUp: boolean;
 	dailyCapReached: boolean;
-	/** Constance Royale mise à jour par la séance (absente si inchangée) */
+	/** Constance Royale (semaines) mise à jour par la séance (absente si le jour n'a pas été compté) */
 	newStreak?: number;
+	/** Semaine et jours travaillés de la Constance, présents avec `newStreak` */
+	constanceWeekStart?: string;
+	constanceDaysThisWeek?: number;
 }
 
 /** Ce que `BuddyGainCard` affiche : le gain, le Palotin et sa réplique. */
@@ -47,7 +50,9 @@ const buddyXpSchema = z.object({
 		daily_cap_reached: z.boolean()
 	}),
 	streakUpdated: z.boolean().optional(),
-	newStreak: z.number().int().min(0).max(100_000).optional()
+	newStreak: z.number().int().min(0).max(100_000).optional(),
+	constanceWeekStart: z.iso.date().optional(),
+	constanceDaysThisWeek: z.number().int().min(0).max(7).optional()
 });
 
 /** `GET /api/student/buddy` : `{ buddy }` (ligne `student_buddies` ou `null`). */
@@ -65,7 +70,9 @@ const buddyRowSchema = z.object({
 			last_xp_date: z.string().nullable(),
 			themes_explored: z.array(z.string()),
 			change_count: z.number(),
-			equipped_skin_id: z.string().nullable()
+			equipped_skin_id: z.string().nullable(),
+			constance_week_start: z.iso.date().nullable(),
+			constance_days_this_week: z.number().int().min(0).max(7)
 		})
 		.nullable()
 });
@@ -88,14 +95,17 @@ export function parseBuddyGain(payload: unknown): BuddyGain | null {
 	if (typeof payload !== 'object' || payload === null || !('buddy_xp' in payload)) return null;
 	const parsed = buddyXpSchema.safeParse(payload.buddy_xp);
 	if (!parsed.success) return null;
-	const { xpResult, streakUpdated, newStreak } = parsed.data;
+	const { xpResult, streakUpdated, newStreak, constanceWeekStart, constanceDaysThisWeek } =
+		parsed.data;
 	if (xpResult.xp_gained <= 0 && !xpResult.daily_cap_reached) return null;
 	return {
 		xpGained: xpResult.xp_gained,
 		newLevel: xpResult.new_level,
 		leveledUp: xpResult.leveled_up,
 		dailyCapReached: xpResult.daily_cap_reached,
-		newStreak: streakUpdated ? newStreak : undefined
+		newStreak: streakUpdated ? newStreak : undefined,
+		constanceWeekStart: streakUpdated ? constanceWeekStart : undefined,
+		constanceDaysThisWeek: streakUpdated ? constanceDaysThisWeek : undefined
 	};
 }
 
@@ -153,6 +163,12 @@ async function applyBuddyGain(payload: unknown): Promise<BuddyGainView | null> {
 		if (gain.xpGained > 0) {
 			const newLevel = gain.leveledUp ? gain.newLevel : undefined;
 			studentCache.updateBuddyXpOptimistic(gain.xpGained, newLevel, gain.newStreak);
+			if (gain.constanceWeekStart !== undefined && gain.constanceDaysThisWeek !== undefined) {
+				studentCache.updateBuddyConstanceOptimistic(
+					gain.constanceWeekStart,
+					gain.constanceDaysThisWeek
+				);
+			}
 		}
 		return toBuddyGainView(gain, cached.palotin_type);
 	}

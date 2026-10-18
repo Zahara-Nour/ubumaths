@@ -142,7 +142,8 @@ les lit dans un `$derived` se met à jour quand le cache change.
    `studentDashboardCache-echecs.test.ts`.
 
 3. **Mise à jour optimiste** : `update{Gidouilles,Bonus,VipCards,Warnings}Optimistic`,
-   `updateBuddyXpOptimistic`. Elles modifient l'entrée sans toucher à son horodatage.
+   `updateBuddyXpOptimistic`, `updateBuddyConstanceOptimistic` (semaine et jours travaillés de la
+   Constance Royale). Elles modifient l'entrée sans toucher à son horodatage.
 
 **Lecture synchrone** pour l'affichage : `get*Sync()` rend l'entrée si elle est encore fraîche,
 sinon `null` (ou `[]`). `getRewardsMapReactive(classId)` rend la `SvelteMap` sans contrôle de TTL.
@@ -274,10 +275,13 @@ annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`)
 - **Profil élève en cache jamais lu** : `hydrateProfile` le remplit à chaque montage, mais ni
   `getProfile` ni `getProfileSync` n'ont d'appelant hors de `cache-sync.ts`, et `refetchProfile`,
   `refetchRewards`, `refetchWarnings`, `syncWarnings` ne servent qu'aux tests.
-- **Écriture dans un `load`** : `student/+layout.server.ts` remet la série du Palotin à 0 quand
-  elle est perdue. Depuis le 2026-10-18, l'écriture passe par `resetLostStreak`
-  (`src/lib/server/buddy-queries.ts`) : client service, verrou sur `updated_at`, règle réévaluée
-  sur la ligne relue ; `streakLost` n'est annoncé que si l'écriture a rendu sa ligne
+- **Écriture dans un `load`** : `student/+layout.server.ts` remet la Constance Royale du Palotin
+  à 0 quand la dernière semaine enregistrée est finie sous 3 jours travaillés, ou sautée (règle
+  pure `constanceReset`, `src/lib/utils/buddy-constance.ts`). L'écriture passe par
+  `resetLostConstance` (`src/lib/server/buddy-queries.ts`) : client service, verrou sur
+  `updated_at`, règle réévaluée sur la ligne relue ; le layout rend la ligne écrite, et
+  `streakLost` (réplique de Constance perdue) n'est annoncé que pour une semaine manquée dont
+  l'écriture a rendu sa ligne — pas pour la remise à zéro d'une ancienne série en jours
   ([rls-echecs-silencieux.md](../pratiques/rls-echecs-silencieux.md)). Reste une écriture dans un
   `load`, rejouée à chaque chargement du tableau de bord.
 - **Pile de modales peu accessible** : le dialogue est rendu **dans** un `<button>` (le fond,

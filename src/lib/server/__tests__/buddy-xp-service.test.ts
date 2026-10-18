@@ -15,6 +15,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { BuddyState, BuddyXpGainResult } from '$lib/types/buddy';
 import { XP_SOURCES } from '$lib/utils/buddy-xp';
+import type { WorkedDayResult } from '../buddy-queries';
+import { weekStartOf } from '$lib/utils/buddy-constance';
 
 const getStudentBuddy = vi.hoisted(() =>
 	vi.fn<(supabase: unknown, studentId: string) => Promise<BuddyState | null>>()
@@ -22,7 +24,9 @@ const getStudentBuddy = vi.hoisted(() =>
 const addBuddyXp = vi.hoisted(() =>
 	vi.fn<(studentId: string, xp: number, isMilestone?: boolean) => Promise<BuddyXpGainResult>>()
 );
-const updateStreak = vi.hoisted(() => vi.fn());
+const recordWorkedDay = vi.hoisted(() =>
+	vi.fn<(studentId: string) => Promise<WorkedDayResult>>(async () => ({ status: 'already' }))
+);
 const addExploredTheme = vi.hoisted(() => vi.fn());
 const addExploredThemes = vi.hoisted(() =>
 	vi.fn<(studentId: string, themes: string[]) => Promise<Set<string>>>()
@@ -34,7 +38,7 @@ const removeExploredThemes = vi.hoisted(() =>
 vi.mock('../buddy-queries', () => ({
 	getStudentBuddy,
 	addBuddyXp,
-	updateStreak,
+	recordWorkedDay,
 	addExploredTheme,
 	addExploredThemes,
 	removeExploredThemes
@@ -51,6 +55,7 @@ const STUDENT = '11111111-1111-4111-8111-111111111111';
 const THEME_1 = 'theme-1';
 const THEME_2 = 'theme-2';
 const TODAY = new Date().toISOString().split('T')[0];
+const WEEK = weekStartOf(TODAY);
 const supabase = {} as SupabaseClient<Database>;
 
 // Functions
@@ -69,6 +74,8 @@ function buddy(overrides: Partial<BuddyState> = {}): BuddyState {
 		themes_explored: [],
 		change_count: 0,
 		equipped_skin_id: null,
+		constance_week_start: WEEK,
+		constance_days_this_week: 1,
 		...overrides
 	};
 }
@@ -91,7 +98,7 @@ describe('addBuddyXpFromTest — bonus « nouveau thème »', () => {
 		// Réservation acceptée : rend tous les thèmes demandés
 		addExploredThemes.mockReset().mockImplementation(async (_id, themes) => new Set(themes));
 		removeExploredThemes.mockReset().mockResolvedValue(undefined);
-		updateStreak.mockReset();
+		recordWorkedDay.mockReset().mockResolvedValue({ status: 'already' });
 	});
 
 	it('un bonus par thème NOUVEAU, une fois, thème RÉSERVÉ avant le crédit', async () => {
@@ -181,11 +188,10 @@ describe('addBuddyXpFromTest — bonus « nouveau thème »', () => {
 		expect(removeExploredThemes).not.toHaveBeenCalled();
 	});
 
-	it('série : écrite avec l’identité de la session seule (client service)', async () => {
+	it('Constance : écrite avec l’identité de la session seule (client service)', async () => {
 		getStudentBuddy.mockResolvedValue(buddy({ last_activity_date: '2000-01-01' }));
-		updateStreak.mockResolvedValue({ newStreak: 4, wasUpdated: true });
 		await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
-		expect(updateStreak.mock.calls).toEqual([[STUDENT]]);
+		expect(recordWorkedDay.mock.calls).toEqual([[STUDENT]]);
 	});
 });
 
@@ -194,7 +200,7 @@ describe('addBuddyXpFromTest — thème perdu au profit d’un envoi simultané'
 		addBuddyXp.mockReset().mockImplementation(async (_id, xp) => gain(xp));
 		addExploredThemes.mockReset();
 		removeExploredThemes.mockReset().mockResolvedValue(undefined);
-		updateStreak.mockReset();
+		recordWorkedDay.mockReset().mockResolvedValue({ status: 'already' });
 	});
 
 	it('second calcul : seul un thème RÉSERVÉ porte le bonus (un thème tronqué au 1er calcul ne le devient pas)', async () => {
@@ -220,7 +226,7 @@ describe('addBuddyXpFromExercise — thème réservé mais non payé', () => {
 		addBuddyXp.mockReset().mockImplementation(async (_id, xp) => gain(xp));
 		addExploredTheme.mockReset().mockResolvedValue(true);
 		removeExploredThemes.mockReset().mockResolvedValue(undefined);
-		updateStreak.mockReset();
+		recordWorkedDay.mockReset().mockResolvedValue({ status: 'already' });
 	});
 
 	it('crédit entier : le thème reste marqué', async () => {
@@ -263,7 +269,7 @@ describe('addBuddyXpFromReviewSession — forfait de révision', () => {
 	beforeEach(() => {
 		getStudentBuddy.mockReset().mockResolvedValue(buddy());
 		addBuddyXp.mockReset().mockImplementation(async (_id, xp) => gain(xp));
-		updateStreak.mockReset();
+		recordWorkedDay.mockReset().mockResolvedValue({ status: 'already' });
 	});
 
 	it('le forfait vaut 20, soumis au plafond du jour (pas un palier)', () => {
@@ -281,13 +287,152 @@ describe('addBuddyXpFromReviewSession — forfait de révision', () => {
 			streakBonusXp: 0,
 			isNewTheme: false
 		});
-		// La série n'est pas touchée ici (refaite dans une PR suivante)
-		expect(updateStreak).not.toHaveBeenCalled();
+		// Jour déjà compté aujourd'hui (lu sur la ligne) : Constance non touchée
+		expect(recordWorkedDay).not.toHaveBeenCalled();
 	});
 
 	it('élève sans Palotin : rien', async () => {
 		getStudentBuddy.mockResolvedValue(null);
 		expect(await addBuddyXpFromReviewSession(supabase, STUDENT)).toBeNull();
 		expect(addBuddyXp).not.toHaveBeenCalled();
+	});
+});
+
+/** Jour compté par `recordWorkedDay`. */
+function counted(weekHeld: boolean, newStreak: number, days: number): WorkedDayResult {
+	return {
+		status: 'counted',
+		weekHeld,
+		newStreak,
+		constanceWeekStart: WEEK,
+		constanceDaysThisWeek: days
+	};
+}
+
+describe('Constance Royale — un jour travaillé', () => {
+	beforeEach(() => {
+		// Premier travail du jour (hier déjà compté)
+		getStudentBuddy.mockReset().mockResolvedValue(buddy({ last_activity_date: '2000-01-01' }));
+		addBuddyXp.mockReset().mockImplementation(async (_id, xp) => gain(xp));
+		addExploredTheme.mockReset().mockResolvedValue(false);
+		addExploredThemes.mockReset().mockImplementation(async () => new Set());
+		removeExploredThemes.mockReset().mockResolvedValue(undefined);
+		recordWorkedDay.mockReset();
+	});
+
+	it('jour compté, semaine pas encore tenue : +5 du premier travail du jour, aucun bonus de série', async () => {
+		recordWorkedDay.mockResolvedValue(counted(false, 2, 2));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+
+		expect(addBuddyXp.mock.calls).toEqual([
+			[STUDENT, XP_SOURCES.correct + XP_SOURCES.first_of_day, false]
+		]);
+		expect(result).toMatchObject({
+			streakUpdated: true,
+			newStreak: 2,
+			streakBonusXp: 0,
+			constanceWeekStart: WEEK,
+			constanceDaysThisWeek: 2
+		});
+		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.correct + XP_SOURCES.first_of_day);
+	});
+
+	it('3e jour : semaine tenue, +30 dans le plafond du jour, dans le gain rendu', async () => {
+		recordWorkedDay.mockResolvedValue(counted(true, 3, 3));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+
+		expect(addBuddyXp.mock.calls[1]).toEqual([STUDENT, XP_SOURCES.week_held, false]);
+		expect(result?.streakBonusXp).toBe(XP_SOURCES.week_held);
+		expect(result?.xpResult.xp_gained).toBe(
+			XP_SOURCES.correct + XP_SOURCES.first_of_day + XP_SOURCES.week_held
+		);
+	});
+
+	it('4e semaine tenue : palier +50 hors plafond, à la place des +30', async () => {
+		recordWorkedDay.mockResolvedValue(counted(true, 4, 3));
+		await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(addBuddyXp.mock.calls[1]).toEqual([STUDENT, XP_SOURCES.constance_4, true]);
+		expect(addBuddyXp).toHaveBeenCalledTimes(2);
+	});
+
+	it('aucune pansée gagnée (plafond du jour) : le jour n’est pas compté', async () => {
+		addBuddyXp.mockImplementation(async () => ({ ...gain(0), daily_cap_reached: true }));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(recordWorkedDay).not.toHaveBeenCalled();
+		expect(result?.streakUpdated).toBe(false);
+	});
+
+	it('jour déjà compté (lu sur la ligne) : aucune écriture de Constance', async () => {
+		getStudentBuddy.mockResolvedValue(buddy());
+		await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(recordWorkedDay).not.toHaveBeenCalled();
+	});
+
+	it('jour compté par un envoi simultané : rien d’annoncé, aucun bonus', async () => {
+		recordWorkedDay.mockResolvedValue({ status: 'already' });
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(result).toMatchObject({ streakUpdated: false, newStreak: 3, streakBonusXp: 0 });
+		expect(addBuddyXp).toHaveBeenCalledTimes(1);
+	});
+
+	it('énigme : une réponse qui rapporte compte le jour', async () => {
+		recordWorkedDay.mockResolvedValue(counted(true, 1, 3));
+		const result = await addBuddyXpFromExercise(supabase, STUDENT, { isCorrect: false });
+		expect(recordWorkedDay.mock.calls).toEqual([[STUDENT]]);
+		expect(addBuddyXp.mock.calls[1]).toEqual([STUDENT, XP_SOURCES.week_held, false]);
+		expect(result?.xpResult.xp_gained).toBe(
+			XP_SOURCES.incorrect + XP_SOURCES.first_of_day + XP_SOURCES.week_held
+		);
+	});
+
+	it('forfait de révision : compte le jour, sans +5 du premier travail', async () => {
+		recordWorkedDay.mockResolvedValue(counted(true, 2, 3));
+		const result = await addBuddyXpFromReviewSession(supabase, STUDENT);
+		expect(addBuddyXp.mock.calls).toEqual([
+			[STUDENT, XP_SOURCES.review_session, false],
+			[STUDENT, XP_SOURCES.week_held, false]
+		]);
+		expect(result).toMatchObject({ streakUpdated: true, newStreak: 2 });
+		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.review_session + XP_SOURCES.week_held);
+	});
+
+	it('ancienne série en jours marquée aujourd’hui : le jour est tout de même compté', async () => {
+		getStudentBuddy.mockResolvedValue(buddy({ constance_week_start: null }));
+		recordWorkedDay.mockResolvedValue(counted(false, 0, 1));
+		await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(recordWorkedDay.mock.calls).toEqual([[STUDENT]]);
+	});
+});
+
+describe('Constance Royale — une panne après le crédit ne remonte pas', () => {
+	beforeEach(() => {
+		getStudentBuddy.mockReset().mockResolvedValue(buddy({ last_activity_date: '2000-01-01' }));
+		addBuddyXp.mockReset().mockImplementation(async (_id, xp) => gain(xp));
+		addExploredThemes.mockReset().mockImplementation(async () => new Set());
+		removeExploredThemes.mockReset().mockResolvedValue(undefined);
+		recordWorkedDay.mockReset();
+	});
+
+	it('forfait de révision : Constance en panne → gain du forfait rendu, sans exception (pas de relâche)', async () => {
+		recordWorkedDay.mockRejectedValue(new Error('panne'));
+		const result = await addBuddyXpFromReviewSession(supabase, STUDENT);
+		expect(result).toMatchObject({ streakUpdated: false, streakBonusXp: 0 });
+		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.review_session);
+	});
+
+	it('séance : +30 en panne après le jour compté → gain de base rendu, sans exception', async () => {
+		recordWorkedDay.mockResolvedValue(counted(true, 1, 3));
+		addBuddyXp
+			.mockImplementationOnce(async (_id, xp) => gain(xp))
+			.mockRejectedValueOnce(new Error('panne'));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.correct + XP_SOURCES.first_of_day);
+		expect(result?.streakBonusXp).toBe(0);
+	});
+
+	it('énigme : Constance en panne → gain de base rendu, sans exception', async () => {
+		recordWorkedDay.mockRejectedValue(new Error('panne'));
+		const result = await addBuddyXpFromExercise(supabase, STUDENT, { isCorrect: true });
+		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.correct + XP_SOURCES.first_of_day);
 	});
 });
