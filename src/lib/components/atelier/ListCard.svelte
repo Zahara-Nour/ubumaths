@@ -35,6 +35,10 @@
 	const entries = $derived(listEntriesOf(object, (column, row) => atelier.cellValue(column, row)));
 	const preview = $derived(listPreview(entries));
 	const count = $derived(listCountLabel(entries, object.categories));
+	/** Une colonne de formules (tableur, lot 2) : l'aperçu montre leurs valeurs, on le dit. */
+	const calculated = $derived(
+		object.definition.split(';').some((entry) => entry.trim().startsWith('='))
+	);
 
 	/** Renommer et Supprimer, toujours en fin de menu (lot 4). */
 	const LAST = new Set(['rename', 'remove']);
@@ -59,18 +63,39 @@
 
 	/** L'élément choisi emmène le focus ailleurs : le menu ne le ramène pas sur son bouton. */
 	let focusLeaves = false;
+	/**
+	 * Une commande PRÉPARÉE (tableau croisé, simuler) se termine au clavier dans
+	 * la console : elle part une fois le menu fermé ET retiré
+	 * (`onOpenChangeComplete`). Lancée avant, le champ mathématique de la
+	 * console n'obtenait pas le focus, que le menu gardait pendant sa
+	 * disparition (mesuré en écriture mathématique).
+	 */
+	let prepared: ObjectAction | null = null;
+	const PREPARED = new Set(['cross', 'simulate']);
 
 	function handleCloseAutoFocus(event: Event) {
-		if (!focusLeaves) return;
+		if (prepared === null && !focusLeaves) return;
 		focusLeaves = false;
 		event.preventDefault();
+	}
+
+	function handleOpenChangeComplete(open: boolean) {
+		if (open || prepared === null) return;
+		const action = prepared;
+		prepared = null;
+		onAction?.(action, object);
 	}
 
 	function handleSelect(action: ObjectAction) {
 		// Une partenaire choisie est retenue (Q46, Q48 : elle suit un renommage)
 		if (action.partner !== undefined) atelier.choosePartner(object.name, action.partner);
+		const root = action.id.split(':')[0];
+		if (PREPARED.has(root)) {
+			prepared = action;
+			return;
+		}
 		// Supprimer confie le focus au panneau ; Données le prend dans la grille
-		if (action.id === 'remove' || action.id === EDIT_IN_DATA.id) focusLeaves = true;
+		if (root === 'remove' || root === EDIT_IN_DATA.id) focusLeaves = true;
 		onAction?.(action, object);
 	}
 </script>
@@ -81,9 +106,9 @@
 		<span class="egal" aria-hidden="true">=</span>
 		<span class="apercu">
 			<span class="valeurs">{preview}</span>
-			<span class="compte">({count})</span>
+			<span class="compte">({count}{calculated ? ', calculée dans la grille' : ''})</span>
 		</span>
-		<DropdownMenu.Root>
+		<DropdownMenu.Root onOpenChangeComplete={handleOpenChangeComplete}>
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
 					<button

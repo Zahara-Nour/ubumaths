@@ -13,6 +13,7 @@ import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { INPUT_MODE_KEY } from '$lib/atelier/input-mode';
+import { chooseObjectAction } from './harness/function-card';
 
 // =============================================================================
 // Décor
@@ -315,18 +316,11 @@ describe('la ligne venue du dehors, en écriture mathématique', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '1;2;3;4;5;6' });
 		atelier.create({ kind: 'list', name: 'M', definition: '1/6;1/6;1/6;1/6;1/6;1/6' });
-		const { choose, card, mathField, typeMath, history, container } = await open(atelier);
+		const { choose, mathField, typeMath, history, container } = await open(atelier);
 		await choose('Écriture mathématique');
 
-		(card('L').querySelector('.entete') as HTMLButtonElement).click();
-		const action = await vi.waitFor(() => {
-			const found = [...card('L').querySelectorAll('.action')].find(
-				(b) => b.textContent?.trim() === 'Simuler avec probabilités M'
-			) as HTMLButtonElement | undefined;
-			expect(found).toBeTruthy();
-			return found as HTMLButtonElement;
-		});
-		action.click();
+		// Lot 4a de la refonte : l'action est dans le sous-menu « Avec une autre liste »
+		await chooseObjectAction(container, 'L', 'Simuler avec probabilités M');
 		// Les arguments séparés par `\,` : une espace simple ne se voit pas en
 		// mathématiques, l'élève lisait « simuler LM100 » (revue du 2026-10-14)
 		await vi.waitFor(() => expect(mathField()?.value).toContain(String.raw`L\,M\,100`));

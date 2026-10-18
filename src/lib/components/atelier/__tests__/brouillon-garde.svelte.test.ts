@@ -10,6 +10,7 @@ import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { INPUT_MODE_KEY } from '$lib/atelier/input-mode';
+import { chooseObjectAction } from './harness/function-card';
 
 // =============================================================================
 // Décor
@@ -42,20 +43,9 @@ async function openDie() {
 		await vi.waitFor(() => expect(document.querySelector('[role="dialog"]')).toBeNull());
 	}
 
-	/** « Simuler avec probabilités M » sur la carte de L. */
+	/** « Simuler avec probabilités M » sur la carte de L (sous-menu, lot 4a de la refonte). */
 	async function simulate() {
-		const card = [...container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'L'
-		) as HTMLElement;
-		(card.querySelector('.entete') as HTMLButtonElement).click();
-		const action = await vi.waitFor(() => {
-			const found = [...card.querySelectorAll('.action')].find(
-				(b) => b.textContent?.trim() === 'Simuler avec probabilités M'
-			) as HTMLButtonElement | undefined;
-			expect(found).toBeTruthy();
-			return found as HTMLButtonElement;
-		});
-		action.click();
+		await chooseObjectAction(container, 'L', 'Simuler avec probabilités M');
 	}
 
 	return { textField, mathField, chooseMath, simulate };
