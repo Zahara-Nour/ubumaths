@@ -1647,14 +1647,14 @@ const STUDENT_STYLE_CORRECTION_BANNER = `#place(top + center, scope: "parent", f
 `;
 
 /**
- * La partie de fin d'une fiche + corrections : sur une nouvelle page, les
- * polices du corrigé, le bandeau vert, puis les réponses ou le corrigé. Écrite
+ * La partie de fin d'une fiche + corrections : sur une nouvelle page, le
+ * bandeau vert, puis les réponses ou le corrigé (chaque correction dans la
+ * police du corrigé, posée par le rendu des exercices). Écrite
  * une fois : « Fiche élève » la place dans sa forme, et un style qui n'a que sa
  * fiche la reçoit après elle (`resolveTemplate`).
  */
 export const CORRECTIONS_PART = `{{#if corrections}}
 #pagebreak()
-{{correction_fonts}}
 ${STUDENT_STYLE_CORRECTION_BANNER}
 {{corrections}}
 {{/if}}`;

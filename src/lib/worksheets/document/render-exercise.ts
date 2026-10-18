@@ -60,7 +60,8 @@ export type ExerciseLayout = (typeof EXERCISE_LAYOUTS)[number];
  * - `inlineCorrections` : « Fiche + corrigé » du prof (demande de David,
  *   2026-10-14) — sur la fiche, la correction de chaque exercice juste sous son
  *   énoncé, sans cadre de réponse ;
- * - `correctionFonts` : ces corrections en police du corrigé (vrai par défaut).
+ * - `correctionFonts` : les corrections (corrigé ou fiche + corrigé) en police
+ *   du corrigé, chacune dans son bloc (vrai par défaut).
  */
 export interface RenderOptions {
 	inlineCorrections?: boolean;
@@ -286,7 +287,10 @@ function renderTemplateExercise(
 	}
 	content += `\n]\n`;
 
-	if (form !== 'worksheet') return content + renderTeacherCorrection(exercise, doc, form);
+	// Réponses : la police du document ; corrigé : sa correction seule en police
+	// du corrigé, en-tête et titres de section dans celle du document
+	if (form === 'answers') return content + renderTeacherCorrection(exercise, doc, form);
+	if (form === 'correction') return content + correctionInFonts(exercise, doc, options);
 
 	// Bloc sécable de l'énoncé, collé à son titre au lieu d'hériter de
 	// l'espacement entre blocs du gabarit (souvent 1,8em). Exercice
@@ -297,7 +301,7 @@ function renderTemplateExercise(
 	// Fiche + corrigé : la correction remplace les cadres de réponse
 	if (options.inlineCorrections) {
 		content += indent(markdownTypst(exercise.statement, exercise, doc)) + '\n';
-		return content + '\n]\n' + inlineCorrection(exercise, doc, options);
+		return content + '\n]\n' + correctionInFonts(exercise, doc, options);
 	}
 	const frames = answerFrames(exercise, doc);
 	// Cadre unique à la fin : la fin de l'énoncé reste collée à lui (jamais seul
@@ -350,10 +354,11 @@ function answerFrames(
 }
 
 /**
- * La correction d'un exercice sous son énoncé (« Fiche + corrigé »), en
- * police du corrigé dans son seul bloc : les énoncés gardent la leur.
+ * La correction d'un exercice (corrigé, partie corrigé d'une fiche, « Fiche +
+ * corrigé »), en police du corrigé dans son seul bloc : titres, sections,
+ * bandeau et énoncés gardent celle du document (David, 2026-10-18).
  */
-function inlineCorrection(
+function correctionInFonts(
 	exercise: DocumentExercise,
 	doc: WorksheetDocument,
 	options: RenderOptions

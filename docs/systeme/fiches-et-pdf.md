@@ -370,8 +370,9 @@ gabarit prend la fiche « Fiche élève ». Le bandeau vert des corrigés (« CO
 « SOLUTIONS » / « ANSWERS », placeholder `{{form_title}}`) et l'avertissement de la copie
 individuelle (`{{individual_copy_notice}}`) sont **écrits dans le gabarit**, dans le bloc
 d'en-tête pleine largeur, plus injectés. Fiche + corrections (`withCorrections: 'answers' |
-'correction'`) : la fiche, puis `{{corrections}}` sur une nouvelle page, polices du Corrigé
-(`{{correction_fonts}}`) sur cette partie seulement. Les opérateurs à limites
+'correction'`) : la fiche, puis `{{corrections}}` sur une nouvelle page, chaque correction dans
+les polices du Corrigé (bandeau et titres dans la police du document ; `{{correction_fonts}}`, vide,
+reste servi pour un gabarit enregistré qui le porterait). Les opérateurs à limites
 (`MATH_LIMITS_SETUP`) sont posés en tête de tout document produit par un gabarit. Un gabarit qui
 contient `{{exercises_badge}}` reçoit la numérotation en carré ambre (charte élève) ; sinon
 `{{exercises}}` en titres gras. Format : A4 partout, même en anglais (ADR 0030).
@@ -463,7 +464,7 @@ Seulement ce que le PDF imprime (`resolveAnswerFrames`, audit S1) : les lignes p
 question, le cadre unique en mode exercice ou sans question ; entiers 0..25, au plus 200 (tronqué,
 jamais d'erreur ; schéma de réponse `.strict()`). Tests : `copie.test.ts` (API élève) et `preview/__tests__/cadres-de-reponse.test.ts`, correction masquée. Partie de fin (réponses ou corrigé) : forme « fiche + corrections » ; un style qui
 n'a que sa fiche garde sa fiche et reçoit après elle `CORRECTIONS_PART` (nouvelle page, bandeau
-vert, polices du corrigé ; décision de David). Seules les corrections visibles sont imprimées
+vert, polices du corrigé sur chaque correction ; décision de David). Seules les corrections visibles sont imprimées
 (`renderExercises` écarte `correction === null` hors fiche). Ce que seul l'élève reçoit
 (`renderDocumentPreamble`) : avertissement de la copie individuelle, consignes de l'affectation
 (dans la case `{{instructions}}` d'un gabarit qui en a une), légende ★ ; ★ et filet orange des
@@ -577,19 +578,22 @@ la lecture publique `variant="reader"` reste sur la fiche) :
   avec repli français) ; vide : « Réponses non rédigées : voir le corrigé. » en italique. Police
   standard ;
 - `correction` : numéro et titre puis la correction, toujours détaillée (`correctionForPrint`,
-  ADR 0017 et 0030), en
-  **Shantell Sans** (Light, Bold pour le gras) et **Chiphre Math** pour les formules.
+  ADR 0017 et 0030) ; **la correction seule** en **Shantell Sans** (Light, Bold pour le gras) et
+  **Chiphre Math** pour les formules — bandeau, titres d'exercice, titres de section, pied de page
+  dans la police du document (David, 2026-10-18).
 
 Réponses et Corrigé ne répètent **jamais l'énoncé** (ni consigne d'exercice, ni consigne de
 section, ni consignes d'épreuve). Noms de fichier distincts : `worksheetPdfFileName`
 (« … - Réponses.pdf », « … - Corrigé.pdf »). Côté élève, la boîte de téléchargement propose « avec
-réponses » (partie « Réponses ») ou « avec corrigé » (partie « Corrections », seule en Shantell /
-Chiphre Math), pour les seuls exercices dont la correction est visible : l'API élève sert
+réponses » (partie « Réponses ») ou « avec corrigé » (partie « Corrections », dont seules les corrections sont en
+Shantell / Chiphre Math), pour les seuls exercices dont la correction est visible : l'API élève sert
 `answers` **exactement** sous la condition de `correction` (`correction_visible`).
 
 **Polices du Corrigé** (`src/lib/typst/correction-fonts.ts`) : des règles Typst encadrées de
-`// <polices-du-corrige>`, posées en tête (pied de page) et après le dernier `#set text(…)` du
-document (`withCorrectionFonts`) ; aucun gabarit n'est réécrit. `withoutCorrectionFonts` les retire.
+`// <polices-du-corrige>`, posées en tête de chaque correction dans un bloc `#[ … ]` qui les borne
+(`correctionInFonts` de `render-exercise.ts`, pour le Corrigé, la partie corrigé d'une fiche et la
+fiche + corrigé) ; aucun gabarit n'est réécrit. `withoutCorrectionFonts` les retire.
+`withCorrectionFonts` (tout le document) ne sert plus qu'à `/test-font`.
 Les trois fichiers (`static/fonts/chiphre-math-typst/`, 870 ko) ne sont chargés que par un
 compilateur à part (`src/lib/typst/compiler/correction-fonts-compiler.ts`, construit au premier
 Corrigé, partagé avec `/test-font`) : la fiche et les Réponses ne les téléchargent pas.

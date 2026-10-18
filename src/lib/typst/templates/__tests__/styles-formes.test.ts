@@ -21,6 +21,10 @@ import {
 	STUDENT_STYLE_TEMPLATE
 } from '../default-templates';
 import { generateWorksheetTypst } from '../../generators/worksheet-generator';
+import {
+	correctionFontBlocks,
+	outsideCorrectionFontBlocks
+} from '../../__tests__/correction-font-blocks';
 import type {
 	InstanceData,
 	WorksheetConfig,
@@ -294,6 +298,13 @@ describe('fiche + corrections', () => {
 		const typst = generate('worksheet', { withCorrections: 'correction' });
 		const shantell = typst.indexOf('Shantell Sans');
 		expect(shantell).toBeGreaterThan(typst.indexOf('#pagebreak()'));
+		// La correction seule : bandeau et titres des exercices en police habituelle
+		const blocks = correctionFontBlocks(typst);
+		expect(blocks.length).toBeGreaterThan(0);
+		expect(blocks.some((block) => block.includes('CORRECTION1'))).toBe(true);
+		const corrections = outsideCorrectionFontBlocks(typst.slice(typst.indexOf('#pagebreak()')));
+		expect(corrections).not.toContain('CORRECTION1');
+		expect(corrections).toContain('[CORRECTION]');
 		expect(generate('worksheet', { withCorrections: 'answers' })).not.toContain('Shantell Sans');
 		expect(
 			generate('worksheet', { withCorrections: 'correction', correctionFonts: false })
