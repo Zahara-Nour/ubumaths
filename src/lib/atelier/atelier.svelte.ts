@@ -121,6 +121,24 @@ import {
 	type CellEdit
 } from './grid';
 import { transformAST } from '$lib/mathAST/visitor';
+import {
+	CLEAR_PATCH,
+	formatOf,
+	isRemoval,
+	normalizeFormats,
+	sameFormats,
+	MAX_FORMAT_ZONES,
+	patchOf,
+	patchRefusal,
+	storedOf,
+	styleAt as cellStyleAt,
+	zoneInGrid,
+	type CellStyle,
+	type FormatZone,
+	type GridZone,
+	type StoredFormat,
+	type StylePatch
+} from './cell-format';
 import { planTabulation, type TabulationRequest } from './tabulate';
 
 // =============================================================================
@@ -390,6 +408,11 @@ interface GridGesture {
 	readonly titles: readonly { column: number; before: string; after: string }[];
 	/** « Relancer » (lot 5, Q-L5-3) : la graine d'avant et d'après. */
 	readonly seed?: { readonly before: number; readonly after: number };
+	/** Une mise en forme (reprise de V4) : les zones d'avant et d'après. */
+	readonly formats?: {
+		readonly before: readonly FormatZone[];
+		readonly after: readonly FormatZone[];
+	};
 }
 
 /**
@@ -526,7 +549,14 @@ export class Atelier {
 		cells: GridGesture['cells'][number][];
 		titles: GridGesture['titles'][number][];
 		seed?: { before: number; after: number };
+		formats?: { before: readonly FormatZone[]; after: readonly FormatZone[] };
 	} | null = null;
+	/**
+	 * La mise en forme de la grille (reprise de V4, 2026-10-18) : des zones, dans
+	 * l'ordre où elles ont été posées — la dernière qui touche une case l'emporte.
+	 * Elle ne change que l'affichage (`cell-format.ts`).
+	 */
+	#formats = $state.raw<readonly FormatZone[]>([]);
 	/** Annuler ou rétablir écrit sans s'enregistrer comme un nouveau geste. */
 	#replaying = false;
 	gridHistory = $state({ undo: 0, redo: 0 });
@@ -1439,7 +1469,9 @@ export class Atelier {
 		 * Copié DANS la grille, depuis cette case : les formules se décalent comme
 		 * une recopie (Q-L2-4), et aucune ligne de titres n'est devinée.
 		 */
-		origin?: { readonly column: number; readonly row: number }
+		origin?: { readonly column: number; readonly row: number },
+		/** Copié DANS la grille : la mise en forme de chaque case copiée (Q-MF-4). */
+		styles?: readonly (readonly CellStyle[])[]
 	): { ok: true } | Refused {
 		if (origin !== undefined) {
 			table = table.map((cells) =>
@@ -1492,14 +1524,24 @@ export class Atelier {
 				text: text.replace(/\s*\n\s*/g, ' ').trim()
 			}))
 		);
-		// Cases et titres : UN geste, qu'une seule annulation défait (T6)
+		// La mise en forme copiée suit le collage (Q-MF-4) ; le plafond se juge
+		// AVANT d'écrire : tout ou rien (revue)
+		const pasted: FormatZone[] = [];
+		styles?.forEach((line, i) =>
+			line.forEach((style, j) => {
+				const target = { left: column + j, right: column + j, top: row + i, bottom: row + i };
+				pasted.push({ zone: target, patch: patchOf(style) });
+			})
+		);
+		if (this.#formatsWith(pasted) === null) return { ok: false, message: FORMATS_FULL };
+		// Cases, titres, mise en forme : UN geste, qu'une seule annulation défait (T6)
 		return this.#grouped(() => {
 			const written = this.editCells(edits);
 			if (!written.ok) return written;
 			titles?.forEach((title, j) => {
 				if (title.trim() !== '') this.setTitle(column + j, title);
 			});
-			return { ok: true };
+			return this.#addFormats(pasted);
 		});
 	}
 
@@ -1527,7 +1569,92 @@ export class Atelier {
 				edits.push({ column, row, text: shiftFormula(source, 0, row - zone.top) });
 			}
 		}
-		return edits.length === 0 ? { ok: true } : this.editCells(edits);
+		if (edits.length === 0) return { ok: true };
+		// La mise en forme de la première ligne suit la recopie (Q-MF-4), dans le même geste
+		const styles: FormatZone[] = [];
+		for (let column = zone.left; column <= zone.right; column++) {
+			const target = { left: column, right: column, top: zone.top + 1, bottom: zone.bottom };
+			styles.push({ zone: target, patch: patchOf(this.styleAt(column, zone.top)) });
+		}
+		// Tout ou rien : le plafond de mise en forme se juge AVANT d'écrire (revue)
+		if (this.#formatsWith(styles) === null) return { ok: false, message: FORMATS_FULL };
+		return this.#grouped(() => {
+			const written = this.editCells(edits);
+			if (!written.ok) return written;
+			return this.#addFormats(styles);
+		});
+	}
+
+	// ---------------------------------------------------------------------------
+	// Mise en forme (reprise de V4, 2026-10-18)
+	// ---------------------------------------------------------------------------
+
+	/** Le style d'une case (`{}` sans mise en forme). */
+	styleAt(column: number, row: number): CellStyle {
+		return cellStyleAt(this.#formats, column, row);
+	}
+
+	/** Les zones de mise en forme, dans l'ordre (lues par la vue et par la fusion). */
+	get formats(): readonly FormatZone[] {
+		return this.#formats;
+	}
+
+	/** Mettre en forme une zone (Q-MF-2) : un geste de la grille, annulable (T6). */
+	applyStyle(zone: GridZone, patch: StylePatch): { ok: true } | Refused {
+		if (!zoneInGrid(zone)) return { ok: false, message: 'Cette zone sort de la grille.' };
+		const refusal = patchRefusal(patch);
+		if (refusal !== null) return { ok: false, message: refusal };
+		return this.#addFormats([{ zone, patch }]);
+	}
+
+	/** « Effacer la mise en forme » de la zone. */
+	clearStyle(zone: GridZone): { ok: true } | Refused {
+		return this.applyStyle(zone, CLEAR_PATCH);
+	}
+
+	/**
+	 * Des zones reçues d'un autre atelier (T7, `mergeInto`) : posées comme un geste,
+	 * sans contrôle du patch déjà validé au rangement.
+	 */
+	adoptFormats(formats: readonly FormatZone[]): { ok: true } | Refused {
+		return formats.length === 0 ? { ok: true } : this.#addFormats(formats);
+	}
+
+	/**
+	 * Ajouter des zones, puis ranger la mise en forme sous sa forme CANONIQUE
+	 * (`normalizeFormats`) : effacer retire vraiment, un bloc collé redevient un
+	 * rectangle, un geste sans effet n'est pas noté (revue de la PR 1).
+	 */
+	#addFormats(added: readonly FormatZone[]): { ok: true } | Refused {
+		const after = this.#formatsWith(added);
+		if (after === null) return { ok: false, message: FORMATS_FULL };
+		if (sameFormats(after, this.#formats)) return { ok: true };
+		this.#record({ cells: [], titles: [], formats: { before: this.#formats, after } });
+		this.#setFormats(after);
+		return { ok: true };
+	}
+
+	/** La mise en forme canonique avec ces zones en plus, ou `null` au-delà du plafond. */
+	#formatsWith(added: readonly FormatZone[]): FormatZone[] | null {
+		if (added.length === 0) return [...this.#formats];
+		const after = normalizeFormats([...this.#formats, ...added]);
+		// « Effacer » passe toujours : effacer une case découpe un rectangle et peut
+		// dépasser le plafond, et l'élève doit pouvoir s'en sortir (contre-revue)
+		if (added.every((zone) => isRemoval(zone.patch))) return after;
+		return after.length > MAX_FORMAT_ZONES ? null : after;
+	}
+
+	/**
+	 * Faire de `run` UN geste de la grille (une seule annulation) : la fusion d'un
+	 * atelier reçu écrit cases et mise en forme ensemble (revue).
+	 */
+	asOneGesture<T>(run: () => T): T {
+		return this.#grouped(run);
+	}
+
+	#setFormats(formats: readonly FormatZone[]): void {
+		this.#formats = formats;
+		this.revision++;
 	}
 
 	/**
@@ -1597,7 +1724,8 @@ export class Atelier {
 		const untouched =
 			gesture.cells.every((c) => this.cell(c.column, c.row) === c[current]) &&
 			gesture.titles.every((t) => this.titleOf(t.column) === t[current]) &&
-			(gesture.seed === undefined || this.#seed === gesture.seed[current]);
+			(gesture.seed === undefined || this.#seed === gesture.seed[current]) &&
+			(gesture.formats === undefined || this.#formats === gesture.formats[current]);
 		if (!untouched) {
 			this.#forgetGridHistory();
 			return { ok: false, message: GRID_CHANGED_SINCE };
@@ -1613,6 +1741,7 @@ export class Atelier {
 			}
 			for (const t of gesture.titles) this.setTitle(t.column, t[target]);
 			if (gesture.seed !== undefined) this.#setSeed(gesture.seed[target]);
+			if (gesture.formats !== undefined) this.#setFormats(gesture.formats[target]);
 		} finally {
 			this.#replaying = false;
 		}
@@ -1623,7 +1752,11 @@ export class Atelier {
 
 	/** Noter un geste : dans celui en cours de composition, sinon comme un nouveau. */
 	#record(part: GridGesture): void {
-		const empty = part.cells.length === 0 && part.titles.length === 0 && part.seed === undefined;
+		const empty =
+			part.cells.length === 0 &&
+			part.titles.length === 0 &&
+			part.seed === undefined &&
+			part.formats === undefined;
 		if (this.#replaying || empty) return;
 		if (this.#gesture !== null) {
 			this.#gesture.cells.push(...part.cells);
@@ -1633,6 +1766,12 @@ export class Atelier {
 				this.#gesture.seed = {
 					before: this.#gesture.seed?.before ?? part.seed.before,
 					after: part.seed.after
+				};
+			}
+			if (part.formats !== undefined) {
+				this.#gesture.formats = {
+					before: this.#gesture.formats?.before ?? part.formats.before,
+					after: part.formats.after
 				};
 			}
 			return;
@@ -1946,7 +2085,8 @@ export class Atelier {
 		const grid = {
 			...(this.cells.size > 0 && { cells }),
 			...(this.titles.size > 0 && { titles }),
-			...(random && { seed: this.#seed })
+			...(random && { seed: this.#seed }),
+			...(this.#formats.length > 0 && { formats: this.#formats.map(storedOf) })
 		};
 		return {
 			version: ATELIER_STATE_VERSION,
@@ -1967,6 +2107,8 @@ export class Atelier {
 	 */
 	restore(state: AtelierState): RestoreReport {
 		this.#seed = state.grid?.seed ?? newGridSeed();
+		const read = restoredFormats(state.grid?.formats ?? []);
+		this.#formats = read.formats;
 		this.items = [];
 		this.charts.clear();
 		this.partnerChoices.clear();
@@ -1975,6 +2117,14 @@ export class Atelier {
 		this.#forgetGridHistory();
 		this.#laws.clear();
 		const skipped: SkippedObject[] = [];
+		// Une mise en forme trop riche (lien forgé ou ancien) : la plus longue partie
+		// qui tient, et on le dit (contre-revue : elle disparaissait en silence)
+		if (read.lost) {
+			skipped.push({
+				name: 'une partie de la mise en forme',
+				reason: `Au-delà de ${MAX_FORMAT_ZONES} zones de mise en forme.`
+			});
+		}
 
 		// Les titres d'abord : ils appartiennent à leur colonne, nommée ou non
 		for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
@@ -2813,6 +2963,33 @@ export class Atelier {
 		}
 	}
 }
+
+/**
+ * La mise en forme relue, canonique et sous le plafond : la plus longue suite de
+ * zones rangées qui y tient (par dichotomie), et si une partie a été perdue.
+ */
+function restoredFormats(stored: readonly StoredFormat[]): {
+	formats: FormatZone[];
+	lost: boolean;
+} {
+	const zones = stored.flatMap((one) => {
+		const format = formatOf(one);
+		return format === null ? [] : [format];
+	});
+	const whole = normalizeFormats(zones);
+	if (whole.length <= MAX_FORMAT_ZONES) return { formats: whole, lost: false };
+	let fits = 0;
+	let tooMany = zones.length;
+	while (tooMany - fits > 1) {
+		const middle = Math.floor((fits + tooMany) / 2);
+		if (normalizeFormats(zones.slice(0, middle)).length <= MAX_FORMAT_ZONES) fits = middle;
+		else tooMany = middle;
+	}
+	return { formats: normalizeFormats(zones.slice(0, fits)), lost: true };
+}
+
+/** Le refus d'une mise en forme au-delà du plafond. */
+const FORMATS_FULL = `La grille garde ${MAX_FORMAT_ZONES} zones de mise en forme : efface-en avant d’en poser d’autres.`;
 
 /** Une graine de tirages : un entier de 32 bits. */
 function newGridSeed(): number {

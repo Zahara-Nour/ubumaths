@@ -25,6 +25,7 @@ import {
 	type CellEdit
 } from './grid';
 import { isFormula, remapColumns } from './formula';
+import { formatOf, normalizeFormats, type FormatZone } from './cell-format';
 
 // =============================================================================
 // Types
@@ -91,6 +92,32 @@ function arrivingColumns(state: AtelierState): string[] {
 	return slots.sort((a, b) => columnRank(a) - columnRank(b));
 }
 
+/** La mise en forme reçue, sous sa forme canonique (seulement ce qui se voit). */
+function receivedFormats(state: AtelierState): FormatZone[] {
+	return normalizeFormats(
+		(state.grid?.formats ?? []).flatMap((stored) => {
+			const format = formatOf(stored);
+			return format === null ? [] : [format];
+		})
+	);
+}
+
+/**
+ * Les colonnes reçues qui n'ont QUE de la mise en forme (une colonne « Monnaie »
+ * préparée, une ligne d'en-tête en gras qui déborde) : elles arrivent s'il reste
+ * des colonnes libres, sans jamais faire refuser l'atelier reçu (revue).
+ */
+function formatOnlyColumns(state: AtelierState, arriving: readonly string[]): string[] {
+	const letters = new Set<string>();
+	for (const { zone } of receivedFormats(state)) {
+		for (let column = zone.left; column <= zone.right; column++) {
+			const letter = columnLetter(column);
+			if (!arriving.includes(letter)) letters.add(letter);
+		}
+	}
+	return [...letters].sort();
+}
+
 /** Une lettre de colonne, puis les listes de version 1 dans leur ordre. */
 function columnRank(slot: string): number {
 	const letter = columnOfLetter(slot);
@@ -114,7 +141,14 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	let added = 0;
 	// Chaque colonne reçue va dans une colonne libre, de gauche à droite (T7)
 	const free = atelier.freeColumns;
-	const placed = new Map(arrivingColumns(state).map((slot, index) => [slot, free[index]]));
+	const arriving = arrivingColumns(state);
+	// Les colonnes qui n'ont que de la mise en forme : autant qu'il reste de place
+	// (les plus à droite cèdent d'abord), puis TOUTES rangées ensemble de gauche à
+	// droite — la grille reçue garde son ordre (contre-revue)
+	const room = Math.max(0, free.length - arriving.length);
+	const decorative = formatOnlyColumns(state, arriving).slice(0, room);
+	const columns = [...arriving, ...decorative].sort((a, b) => columnRank(a) - columnRank(b));
+	const placed = new Map(columns.map((slot, index) => [slot, free[index]]));
 	// Les colonnes reçues → leur place : les références des formules les suivent (T7)
 	const moved = new Map<number, number>();
 	for (const [slot, column] of placed) {
@@ -242,14 +276,39 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 			cells.push({ column, row: at.row, text: renameIn(follow(cellTextFromStored(text))) });
 		}
 	}
-	for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
-		const column = placed.get(letter);
-		if (column !== undefined) atelier.setTitle(column, title);
+	// La mise en forme reçue suit ses colonnes, comme ses cases (T7) : chaque zone,
+	// colonne par colonne, va là où sa colonne a été placée
+	let unplaced = 0;
+	const formats: FormatZone[] = receivedFormats(state).flatMap(({ zone, patch }) => {
+		const moved: FormatZone[] = [];
+		for (let column = zone.left; column <= zone.right; column++) {
+			const target = placed.get(columnLetter(column));
+			if (target === undefined) unplaced++;
+			else moved.push({ zone: { ...zone, left: target, right: target }, patch });
+		}
+		return moved;
+	});
+	if (unplaced > 0) {
+		refused.push({
+			name: 'mise en forme',
+			reason: 'Une partie de la mise en forme n’a pas trouvé de colonne libre.'
+		});
 	}
 
-	// Un refus se dit dans le rapport, jamais en silence (revue)
-	const written = cells.length > 0 ? atelier.editCells(cells) : null;
-	if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });
+	// Titres, cases et mise en forme : UN geste, qu'un seul Ctrl+Z défait (revue)
+	atelier.asOneGesture(() => {
+		for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
+			const column = placed.get(letter);
+			if (column !== undefined) atelier.setTitle(column, title);
+		}
+		// Un refus se dit dans le rapport, jamais en silence (revue)
+		const written = cells.length > 0 ? atelier.editCells(cells) : null;
+		if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });
+		const styled = atelier.adoptFormats(formats);
+		// Un seul refus « mise en forme » dans le rapport (contre-revue)
+		if (!styled.ok && unplaced === 0)
+			refused.push({ name: 'mise en forme', reason: styled.message });
+	});
 
 	// Tout ce qui est arrivé : cases sans nom ET entrées des listes nommées
 	// Ce qui a vraiment été écrit (une grille refusée n'a rien tiré : revue)
