@@ -73,7 +73,8 @@ Lettres et caractères `€ $ ° μ Ω`, en respectant la **casse** : `2[CM]` es
 | Physique    | `N` `J` `W` `kWh` `Pa` `Hz` `Ω` `mol`            |
 
 Information (2026-10-13) : multiples décimaux `ko` = 1 000 o et binaires `Kio` = 1 024 o, le bit
-vaut 1/8 d'octet ; aucun sous-multiple (`mo` n'est pas une unité). Liste complète :
+vaut 1/8 d'octet ; aucun sous-multiple (`mo` n'est pas une unité). `Ko`, l'écriture courante des
+élèves, est accepté pour le `ko` (2026-10-18) ; la réponse garde l'écriture tapée. Liste complète :
 `src/lib/mathAST/units/definitions.ts`. `%` n'est **pas** une unité.
 
 ### Opérateurs

@@ -828,6 +828,8 @@ export const UNIT_ALIASES: ReadonlyMap<string, string> = new Map([
 	['octet', 'o'],
 	['octets', 'o'],
 	['bits', 'bit'],
+	// « Ko », l'écriture courante des élèves (décision de David, 2026-10-18)
+	['Ko', 'ko'],
 
 	// Volume
 	['litre', 'L'],
