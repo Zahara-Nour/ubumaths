@@ -1,7 +1,7 @@
 ---
 title: Atelier — tableur intégré : NBVAL et NB.VIDE (phase 0)
 date: 2026-10-18
-status: phase 0 À VALIDER
+status: phase 0 VALIDÉE (2026-10-18, « je te suis ») ; Q-NV-1 à Q-NV-4 = les recos
 ---
 
 # Atelier — tableur intégré : NBVAL et NB.VIDE
@@ -64,7 +64,7 @@ A6 `=A1*2`, A7 `=SI(1>0;"oui";1)` (rend un mot) :
 
 ---
 
-## Questions
+## Questions — tranchées par David (2026-10-18 : les quatre recos)
 
 **Q-NV-1 — Une formule qui rend une case vide (`=SI(A2>=10;"admis";"")`) : vide ou pas ?**
 
