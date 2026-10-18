@@ -76,6 +76,9 @@ import {
 	type StoredObject
 } from './persistence';
 import { expressionOf, graphLatexOf, termsOf } from './engine';
+import { quantityProblem } from '$lib/mathAST/cli/quantities';
+import { isUnit } from '$lib/mathAST/guards';
+import { findNodes } from '$lib/mathAST/transforms';
 import {
 	compactDisplay,
 	fullDisplay,
@@ -466,6 +469,9 @@ function functionAsNumberMessage(cited: AtelierObject, user: AtelierObject): str
 			: `Écris ${cited.name}(${variable})`;
 	return `« ${cited.name} » est une ${what} : « ${user.name} » ne peut pas s'en servir comme d'un nombre. ${hint}, ou donne un autre nom à la lettre.`;
 }
+
+/** Une unité écrite dans une définition : `5[km]`, `\unit{km}`, celle que montre le champ. */
+const UNIT_WRITTEN = /\[|\\unit\{|\\operatorname\{\\mathrm\{/;
 
 const brokenMessage = (culprits: readonly string[]) =>
 	culprits.length === 1
@@ -2897,6 +2903,7 @@ export class Atelier {
 
 		this.#inheritIntervals(intervals.inherited);
 		this.#constructions();
+		this.#quantityChecks(deps);
 		this.#underivable();
 		this.#sequenceChecks();
 		this.#reciprocals();
@@ -3170,6 +3177,57 @@ export class Atelier {
 				changed = true;
 			});
 		}
+	}
+
+	/**
+	 * Une valeur dont les grandeurs ne se combinent pas (`3[min] + 2[km]`, ou
+	 * `r + 2[m]` avec r = 3 s) est en erreur dès sa définition, avec le refus de
+	 * Calcul ; ce qui la cite aussi, jusqu'au point fixe (demande de David du
+	 * 2026-10-18 : avant, elle était « ok » et le refus attendait qu'on la cite).
+	 */
+	#quantityChecks(deps: ReadonlyMap<string, readonly string[]>): void {
+		const cites = (name: string, names: ReadonlySet<string>) =>
+			(deps.get(name) ?? []).some((d) => names.has(d));
+		// Seules les valeurs qui portent une unité, écrite ou citée, sont relues :
+		// relire toutes les valeurs à chaque recalcul coûtait ~65 ms pour 50 valeurs
+		// (revue), à chaque cran d'un curseur
+		const carrying = new Set(
+			this.items
+				.filter((o) => o.kind === 'value' && UNIT_WRITTEN.test(o.definition))
+				.map((o) => o.name)
+		);
+		this.spread((n) => this.get(n)?.kind === 'value' && cites(n, carrying), carrying);
+
+		const own = new Map<string, string>();
+		for (const o of this.items) {
+			if (o.status !== 'ok' || !carrying.has(o.name)) continue;
+			const message = this.#quantityMessage(o.name);
+			if (message !== null) own.set(o.name, message);
+		}
+		if (own.size === 0) return;
+
+		// Ce qui cite une valeur en erreur, quel qu'en soit le type ; une valeur
+		// fautive qui en cite une autre la désigne, quel que soit l'ordre de création
+		const failing = new Set(own.keys());
+		this.spread((n) => this.get(n)?.status === 'ok' && cites(n, failing), failing);
+		this.items.forEach((o, i) => {
+			if (!failing.has(o.name)) return;
+			const culprits = (deps.get(o.name) ?? []).filter((d) => failing.has(d));
+			const message = culprits.length > 0 ? brokenMessage(culprits) : own.get(o.name)!;
+			this.items[i] = { ...o, status: 'error', message } as AtelierObject;
+		});
+	}
+
+	/** Le refus de dimension d'une valeur, en français, ou `null`. */
+	#quantityMessage(name: string): string | null {
+		const substituted = expressionOf(this, name);
+		if (!substituted.ok) return null;
+		// Relue depuis le texte : sur l'arbre substitué, `quantityProblem` levait « components is not iterable » (mesuré)
+		const ast = astOfDefinition(substituted.expression, 'url');
+		// Une lettre libre (un curseur, une inconnue) : rien à juger ici
+		if (ast === null || findNodes(ast, isUnit).length === 0) return null;
+		if (getVariables(ast).size > 0) return null;
+		return quantityProblem(ast);
 	}
 
 	/**

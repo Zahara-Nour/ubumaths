@@ -67,13 +67,17 @@ Règles de la lecture naturelle (décisions de David du 2026-10-11) :
 - une unité suivie d'une lettre (`3 a b`) ou d'une parenthèse (`2 h(3)`) reste de l'algèbre ;
 - une grandeur combinée à une lettre libre est refusée : « Une grandeur ne se combine pas avec une
   lettre. » (`atelier/calcul.ts`).
+- une **valeur** mal dimensionnée est en erreur dès sa définition, avec le refus de Calcul
+  (`b = 3[min] + 2[km]`, ou `d = r + 2[m]` avec `r = 3[s]`) ; ce qui la cite aussi, et elle se
+  répare quand la valeur citée change (`#quantityChecks`, `atelier.svelte.ts`, 2026-10-18 — avant,
+  elle était « ok » et le refus attendait qu'on la cite).
 
 Dans la carte, MathLive écrit l'espace tapée `\,` et « min » toujours en opérateur `\min` :
 `definitionFromField` les ramène au texte de Calcul avant `readNaturalQuantities`, et ne garde la
 lecture que si la saisie n'est QU'une grandeur (`\min\left(2,3\right)` reste la fonction). Une durée
 composée rangée revient dans le champ écrite `2 h 30 min`, sans le `+` du rangement
 (`fieldLatexOf`) : elle se relit après retouche (restes du lot C, 2026-10-13), seule ou prise dans
-un calcul (`(1 h + 30 min) × 2`). Le champ écrit la virgule de l'élève (`2{,}5 km`, pas `2.5`) ; une unité qu'il montre (`\operatorname{\mathrm{m}}`) se relit en unité, même après une puissance (`10^3 m`).
+un calcul (`(1 h + 30 min) × 2`, dont le × reste un × après retouche). Le champ écrit la virgule de l'élève (`2{,}5 km`, pas `2.5`) ; une unité qu'il montre (`\operatorname{\mathrm{m}}`) se relit en unité, même après une puissance (`10^3 m`).
 
 ### Calculer — `tidy`, unité écrite d'abord
 

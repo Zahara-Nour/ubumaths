@@ -166,8 +166,11 @@ function naturalQuantityLatex(latex: string): string | null {
 	const read = readNaturalQuantities(text, [], { afterTerms: false }).text;
 	const outside = read.replace(/\[[^\]]*\]|\\(?:d?frac|cdot)(?![A-Za-z])/g, '');
 	if (!read.includes('[') || /[A-Za-z\\]/.test(outside)) return null;
+	// Le × de l'élève, lu `\cdot` ci-dessus, lui est rendu : il revenait en ·
+	// après retouche (restes des grandeurs, 2026-10-18)
+	const times = /\\times(?![A-Za-z])/.test(latex) && !/\\cdot(?![A-Za-z])/.test(latex);
 	return (
-		read
+		(times ? read.replace(/\\cdot(?![A-Za-z])\s*/g, '\\times ') : read)
 			.replace(/\((\d+)\/(\d+)\)\[/g, '\\frac{$1}{$2}[')
 			.replace(/\[([^\]]*)\]/g, '\\unit{$1}')
 			// La virgule redevient celle de MathLive (`2{,}5`) : nue, le LaTeX la refuse
