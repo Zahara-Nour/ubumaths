@@ -37,6 +37,11 @@ describe('les unités d’information', () => {
 		expect(resolveUnit(alias)?.dimension).toBe('information');
 	});
 
+	// Décision de David (2026-10-18) : « Ko », l'écriture courante des élèves, est le ko
+	it('Ko est le kilo-octet', () => {
+		expect(resolveUnit('Ko')).toMatchObject({ dimension: 'information', coefficient: 1e3 });
+	});
+
 	// Aucun sous-multiple : un milli-octet n'existe pas
 	it.each(['mo', 'do', 'co', 'μo'])('%s n’est pas une unité', (symbol) => {
 		expect(resolveUnit(symbol)).toBeNull();
