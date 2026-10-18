@@ -33,6 +33,7 @@
 	import SequenceSettings from './SequenceSettings.svelte';
 	import { constantOf } from '$lib/atelier/atelier.svelte';
 	import { tabulationDefaults } from '$lib/atelier/tabulate';
+	import { curveNatureOf } from '$lib/atelier/curve-nature';
 
 	interface Props {
 		object: AtelierObject;
@@ -159,6 +160,12 @@
 		point: 'point',
 		curve: 'courbe'
 	};
+
+	/**
+	 * La nature d'une courbe (« droite », « cercle »…, C1 et C2) et le constat
+	 * d'une courbe vide (C6), recalculés à chaque changement — jamais rangés.
+	 */
+	const nature = $derived(object.kind === 'curve' ? curveNatureOf(atelier, object.name) : null);
 
 	/**
 	 * Le signe entre le nom et la définition d'un objet de la figure : la carte
@@ -293,7 +300,7 @@
 					<span class="intervalle">sur {intervalLabel}</span>
 				{/if}
 			</span>
-			<span class="type">{KIND_LABELS[object.kind]}</span>
+			<span class="type">{nature?.label ?? KIND_LABELS[object.kind]}</span>
 			{#if stateLabel}
 				<span class="etat">{stateLabel}</span>
 			{/if}
@@ -316,6 +323,11 @@
 			</button>
 		{/if}
 	</div>
+
+	{#if nature?.note}
+		<!-- C6 : on ne valide pas, on constate — la courbe reste acceptée -->
+		<p class="constat">{nature.note}</p>
+	{/if}
 
 	{#if selected && editable}
 		<DefinitionField {object} />
@@ -675,6 +687,12 @@
 	}
 	[data-status='error'] .message {
 		color: var(--color-destructive);
+	}
+	/* Un constat, pas une erreur : la couleur du texte courant atténué */
+	.constat {
+		margin: 0;
+		font-size: 0.75rem;
+		color: var(--color-muted-foreground);
 	}
 
 	.actions {

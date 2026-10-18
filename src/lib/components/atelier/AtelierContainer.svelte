@@ -26,6 +26,7 @@
 	import ObjectPanel from './ObjectPanel.svelte';
 	import CalculView from './CalculView.svelte';
 	import DataView from './DataView.svelte';
+	import FigureView from './FigureView.svelte';
 	import ShareBar from './ShareBar.svelte';
 	import AtelierSettings from './AtelierSettings.svelte';
 	import { readInputMode, writeInputMode, type InputMode } from '$lib/atelier/input-mode';
@@ -60,11 +61,13 @@
 		heading?: string;
 	}
 
-	type ViewId = 'calcul' | 'graphe' | 'donnees';
+	type ViewId = 'calcul' | 'graphe' | 'figure' | 'donnees';
 
+	/** Figure entre Graphe et Données (géométrie v2, Q5) : les deux vues graphiques côte à côte. */
 	const VIEWS: { id: ViewId; label: string }[] = [
 		{ id: 'calcul', label: 'Calcul' },
 		{ id: 'graphe', label: 'Graphe' },
+		{ id: 'figure', label: 'Figure' },
 		{ id: 'donnees', label: 'Données' }
 	];
 
@@ -588,7 +591,7 @@
 			{/each}
 		</ul>
 
-		<section class="vue" class:pleine={activeView === 'graphe'}>
+		<section class="vue" class:pleine={activeView === 'graphe' || activeView === 'figure'}>
 			{#if activeView === 'calcul'}
 				<CalculView
 					{desk}
@@ -604,6 +607,9 @@
 					la synchronisation réécrit aussitôt avec la définition de l'objet.
 				-->
 				<GrapheurContainer store={graph} panel={false} />
+			{:else if activeView === 'figure'}
+				<!-- Une projection de l'atelier, comme les autres : elle lit l'atelier, ne garde rien -->
+				<FigureView />
 			{:else}
 				{#key dataKey}
 					<DataView initialZone={dataZone} />

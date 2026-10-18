@@ -542,6 +542,14 @@ export class Atelier {
 	private partnerChoices = new SvelteMap<string, string>();
 
 	/**
+	 * Le repère de la vue Figure (géométrie v2, G4 et F3) : affiché par défaut —
+	 * au lot 1, tout objet de la figure a des coordonnées ou une équation.
+	 * Même statut que `charts` : affichage seulement, hors de `serialize()` et
+	 * de `revision` ; `restore()` le rend à son défaut.
+	 */
+	#figureFrame = $state(true);
+
+	/**
 	 * Les cellules des colonnes SANS nom de la grille (vue Données), par adresse
 	 * (`C3`). Celles d'une colonne nommée sont les entrées de la définition de
 	 * sa liste (`grid.ts`) : chaque cellule a un seul propriétaire. Rangées avec
@@ -1389,6 +1397,16 @@ export class Atelier {
 	// ---------------------------------------------------------------------------
 
 	/** Le diagramme affiché sous cette liste, s'il y en a un. */
+	/** Le repère de la vue Figure est-il affiché ? (F3) */
+	get figureFrame(): boolean {
+		return this.#figureFrame;
+	}
+
+	/** Afficher ou masquer le repère de la vue Figure (F3) — sans rien enregistrer. */
+	setFigureFrame(shown: boolean): void {
+		this.#figureFrame = shown;
+	}
+
 	chartOf(name: string): ListChartState | undefined {
 		const chart = this.charts.get(name);
 		if (chart?.kind === undefined) return chart;
@@ -2170,6 +2188,7 @@ export class Atelier {
 		this.items = [];
 		this.charts.clear();
 		this.partnerChoices.clear();
+		this.#figureFrame = true;
 		this.cells.clear();
 		this.titles.clear();
 		this.#forgetGridHistory();
