@@ -32,7 +32,9 @@ Une unité **se déclare**, elle ne se devine pas : `~12 km~` sans crochets est 
 **Exception : l'atelier** (lot C des grandeurs, décisions de David du 2026-10-11) — dans un calcul
 ou une valeur de l'atelier, **« un nombre, une espace, une unité » est une grandeur** : `5 km`,
 `12 km + 300 m`, `90 km/h`, `1/2 m` = (1/2) m, `2 h 30 min` (deux grandeurs collées s'ajoutent, et
-la réponse garde l'écriture en h et min). Collé (`5m`) ou avec `*`, c'est un produit ; une aide le
+la réponse garde l'écriture en h et min). L'unité porte sur tout le terme de nombres qui la précède (`10^3 m`,
+`(1+2) m`, `2π m`) ; une lettre, même une valeur du panneau, reste de l'algèbre (`x m`, `m g`) :
+`2πr[m]` impose l'unité. Collé (`5m`) ou avec `*`, c'est un produit ; une aide le
 dit quand les lettres collées forment une unité (`5km`). Jamais dans une définition de fonction ni
 dans une commande. Lecteur : `src/lib/atelier/natural-quantities.ts` ; cartes : l'espace tapée
 arrive `\,` (`mathModeSpace`).

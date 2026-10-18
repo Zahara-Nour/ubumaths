@@ -153,7 +153,7 @@ function naturalQuantityLatex(latex: string): string | null {
 		.replace(/\\[,;: ]|~/g, ' ')
 		// `(1/2) m`, la forme que le champ montre pour `(1/2)[m]` : `1/2 m`
 		.replace(/\(\s*(\d+\/\d+)\s*\)(?=\s+[^\s\d(])/g, '$1');
-	const read = readNaturalQuantities(text, []).text;
+	const read = readNaturalQuantities(text, [], { afterTerms: false }).text;
 	const outside = read.replace(/\[[^\]]*\]|\\(?:d?frac|cdot)(?![A-Za-z])/g, '');
 	if (!read.includes('[') || /[A-Za-z\\]/.test(outside)) return null;
 	return (

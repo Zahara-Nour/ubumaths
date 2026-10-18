@@ -9,6 +9,12 @@
  *
  * - l'unité porte sur la fraction de nombres qui la précède : `1/2 m` se lit
  *   `(1/2)[m]` (décision de David) — pas `x/2 m`, qui reste de l'algèbre ;
+ * - au-delà d'un nombre, l'unité porte sur TOUT le terme qui la précède
+ *   (décision de David du 2026-10-18) : `10^3 m` → `(10^3)[m]`, `(1+2) m`,
+ *   `sqrt(2) m`, `2π m`. Des NOMBRES seulement (décision de David du même
+ *   jour : une unité ne s'emploie qu'avec une grandeur numérique) : une lettre,
+ *   même une valeur du panneau, reste de l'algèbre (`x m`, `m g`, `2πr m`) ;
+ *   `2πr[m]` impose l'unité ;
  * - deux grandeurs collées s'ajoutent : `2 h 30 min` → `2[h]+30[min]` ;
  * - une unité suivie d'une lettre (`3 a b`) ou d'une parenthèse (`2 h(3)`) reste
  *   de l'algèbre.
@@ -53,14 +59,39 @@ const SYMBOL = String.raw`[A-Za-zµμΩ°€$]+(?:\^-?\d+)?`;
 /**
  * Un nombre (ou une fraction de nombres), AU MOINS UNE ESPACE, une écriture
  * d'unité (`km`, `km/h`, `m/s^2`, `kg.m`). Avant le nombre : rien qui l'attache
- * à un facteur (lettre, chiffre, `*`, `/`, `^`, crochet, antislash) ; après
+ * à un facteur (lettre, chiffre, `*`, `/`, `^`, `^-`, crochet, antislash) ; après
  * l'unité : ni lettre, ni chiffre, ni parenthèse, ni crochet — et pas une
  * lettre après des espaces (`3 a b` est un produit).
  */
 const SPACED_QUANTITY = new RegExp(
-	String.raw`(?<![\w.,\]\\*/^])(${NUMBER})(?:/(${NUMBER}))?([ \t]+)(${SYMBOL}(?:[./]${SYMBOL})*)(?![\w(\[])(?![ \t]+[A-Za-z(])`,
+	String.raw`(?<![\w.,\]\\*/^])(?<!\^[-+])(${NUMBER})(?:/(${NUMBER}))?([ \t]+)(${SYMBOL}(?:[./]${SYMBOL})*)(?![\w(\[])(?![ \t]+[A-Za-z(])`,
 	'g'
 );
+
+/**
+ * Une écriture d'unité précédée d'au moins une espace, après la fin d'un terme
+ * (chiffre, lettre, parenthèse fermante, π) ; les mêmes refus après l'unité
+ * que `SPACED_QUANTITY`. Le terme lui-même est lu par `termStart`.
+ */
+const UNIT_AFTER_TERM = new RegExp(
+	String.raw`(?<=[\w)}π²³])[ \t]+(${SYMBOL}(?:[./]${SYMBOL})*)(?![\w(\[])(?![ \t]+[A-Za-z(])`,
+	'g'
+);
+
+/** Les fonctions qu'un terme numérique peut appeler : `sqrt(2) m`. */
+const NUMERIC_FUNCTIONS: ReadonlySet<string> = new Set([
+	'sqrt',
+	'cos',
+	'sin',
+	'tan',
+	'ln',
+	'log',
+	'exp',
+	'abs'
+]);
+
+/** Les opérateurs à côté desquels une espace ne coupe pas le terme : `3 * 10^8`. */
+const TERM_OPERATORS = '*/^×÷·';
 
 /** Un nombre collé à des lettres (`5km`), pour l'aide. */
 const GLUED_QUANTITY = new RegExp(
@@ -88,10 +119,13 @@ const JUXTAPOSED = new RegExp(`${QUANTITY_TOKEN}(?:[ \\t]+${QUANTITY_TOKEN})+`, 
  *
  * @param objectNames - les noms des objets du panneau (une unité qui en est un
  *   reçoit une aide : `5 m` avec une valeur `m`)
+ * @param afterTerms - lire aussi une unité après un terme (`10^3 m`) ; le champ
+ *   de la carte s'en passe, il a ses propres lectures (`mathfield.ts`)
  */
 export function readNaturalQuantities(
 	text: string,
-	objectNames: readonly string[]
+	objectNames: readonly string[],
+	{ afterTerms = true }: { readonly afterTerms?: boolean } = {}
 ): NaturalReading {
 	const notes = new Set<string>();
 	const singleLetters: SingleLetterUnit[] = [];
@@ -113,8 +147,12 @@ export function readNaturalQuantities(
 		}
 	);
 
+	const extended = afterTerms
+		? quantitiesAfterTerms(spaced, objectNames, notes, singleLetters)
+		: spaced;
+
 	const glued = new Set<string>();
-	for (const [, number, letters] of spaced.matchAll(GLUED_QUANTITY)) {
+	for (const [, number, letters] of extended.matchAll(GLUED_QUANTITY)) {
 		if (parseUnit(letters) === null) continue;
 		// Une aide par unité : `5km + 3km` ne la répète pas (revue)
 		if (glued.has(letters)) continue;
@@ -124,8 +162,109 @@ export function readNaturalQuantities(
 		notes.add(`Pour une grandeur, écris ${number} ${letters} (avec une espace).`);
 	}
 
-	const summed = spaced.replace(JUXTAPOSED, (run) => `(${run.split(/[ \t]+/).join('+')})`);
+	const summed = extended.replace(JUXTAPOSED, (run) => `(${run.split(/[ \t]+/).join('+')})`);
 	return { text: summed, notes: [...notes], singleLetters };
+}
+
+/**
+ * Chaque unité écrite après une espace derrière un terme numérique : `10^3 m`
+ * → `(10^3)[m]`. Après la lecture des nombres (`spaced`) : ce qu'elle a déjà
+ * mis entre crochets n'est plus lu ici.
+ */
+function quantitiesAfterTerms(
+	text: string,
+	objectNames: readonly string[],
+	notes: Set<string>,
+	singleLetters: SingleLetterUnit[]
+): string {
+	let result = text;
+	let from = 0;
+	for (;;) {
+		UNIT_AFTER_TERM.lastIndex = from;
+		const match = UNIT_AFTER_TERM.exec(result);
+		if (match === null) return result;
+		const [whole, writing] = match;
+		const end = match.index;
+		const start = termStart(result, end);
+		const term = result.slice(start, end);
+		if (parseUnit(writing) === null || !isNumericTerm(term)) {
+			from = end + whole.length;
+			continue;
+		}
+		// Comme `5 m` : l'unité l'emporte sur le nom du panneau, une note le dit
+		if (objectNames.includes(writing)) {
+			notes.add(
+				`${writing} est aussi un nom du panneau : pour ${term} × ${writing}, écris ${term}${writing}.`
+			);
+		}
+		if (/^[A-Za-z]$/.test(writing)) {
+			singleLetters.push({ written: `${term} ${writing}`, letter: writing });
+		}
+		const value = isWrapped(term) ? term : `(${term})`;
+		const quantity = `${value}[${writing}]`;
+		result = result.slice(0, start) + quantity + result.slice(end + whole.length);
+		from = start + quantity.length;
+	}
+}
+
+/**
+ * Le début du terme qui finit en `end` : on remonte jusqu'à un `+`, un `-`, un
+ * `=`, un séparateur ou une parenthèse ouvrante du niveau du terme. Une espace
+ * entre deux facteurs sans opérateur (`3 a 10^3`) le coupe aussi.
+ */
+function termStart(text: string, end: number): number {
+	let depth = 0;
+	let i = end;
+	for (; i > 0; i--) {
+		const char = text[i - 1];
+		if (char === ')' || char === '}') depth++;
+		else if (char === '(' || char === '{') {
+			if (depth === 0) break;
+			depth--;
+		} else if (depth > 0) continue;
+		// `10^-3` : le signe d'un exposant appartient au terme
+		else if (char === '+' || char === '-') {
+			if (text[i - 2] !== '^') break;
+		}
+		// `2,5` : une virgule entre deux chiffres est décimale
+		else if (char === ',') {
+			if (!/\d/.test(text[i - 2] ?? '') || !/\d/.test(text[i] ?? '')) break;
+		} else if ('=;<>'.includes(char)) break;
+		else if (/\s/.test(char)) {
+			const before = text.slice(0, i).trimEnd().at(-1) ?? '';
+			const after = text.slice(i).trimStart()[0] ?? '';
+			if (!TERM_OPERATORS.includes(before) && !TERM_OPERATORS.includes(after)) break;
+		}
+	}
+	while (/\s/.test(text[i] ?? '')) i++;
+	return i;
+}
+
+/**
+ * Un terme de nombres : chiffres, opérateurs, parenthèses, π, des fonctions
+ * usuelles (`sqrt(2)`). Toute autre lettre, même une valeur du panneau, en
+ * fait de l'algèbre : `m g` avec m = 70 est m × g, pas 70 grammes (revue).
+ */
+function isNumericTerm(term: string): boolean {
+	if (term === '' || /[[\]\\]/.test(term)) return false;
+	for (const identifier of term.matchAll(/[A-Za-z]+/g)) {
+		const [name] = identifier;
+		const isCall = /^\s*\(/.test(term.slice(identifier.index + name.length));
+		if (!isCall || !NUMERIC_FUNCTIONS.has(name)) return false;
+	}
+	return true;
+}
+
+/** `(1+2)` : un terme déjà entre parenthèses, d'un bout à l'autre. */
+function isWrapped(term: string): boolean {
+	if (!term.startsWith('(') || !term.endsWith(')')) return false;
+	let depth = 0;
+	for (let i = 0; i < term.length; i++) {
+		if (term[i] === '(') depth++;
+		else if (term[i] === ')') depth--;
+		if (depth === 0 && i < term.length - 1) return false;
+	}
+	return true;
 }
 
 /** L'aide d'un refus de dimension où une lettre a été lue comme unité. */
