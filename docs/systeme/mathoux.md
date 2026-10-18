@@ -107,15 +107,15 @@ Programme, dont les sessions ne proposent que les cartes dues.
 
 ## Code
 
-| Fichier                                                | Rôle                                                                      |
-| ------------------------------------------------------ | ------------------------------------------------------------------------- |
-| `src/lib/mathoux/collection-logic.ts`                  | logique pure : stades, noms, regroupement, phrases (importable au client) |
-| `src/lib/mathoux/summary.ts`                           | schéma Zod du résumé `{ born, napping, toDiscover }`                      |
-| `src/lib/server/mathoux/collection.ts`                 | `loadMathouCollection` : les lectures, la logique pure, puis la mémoire   |
-| `src/lib/server/mathoux/memory.ts`                     | lecture (élève) et écriture (service) de `student_mathoux`                |
-| `src/lib/components/mathoux/`                          | `MathouAvatar` (SVG paramétré : race, stade, sieste, silhouette)          |
-| `dashboard/student/chatterie/+page.{server.ts,svelte}` | la page ; `unavailable` si une lecture échoue                             |
-| `api/student/mathoux/+server.ts`                       | `GET` élève : les compteurs, pour le Palotin                              |
+| Fichier                                                | Rôle                                                                                                                        |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/mathoux/collection-logic.ts`                  | logique pure : stades, noms, regroupement, phrases (importable au client)                                                   |
+| `src/lib/mathoux/summary.ts`                           | schéma Zod du résumé `{ born, napping, toDiscover }`                                                                        |
+| `src/lib/server/mathoux/collection.ts`                 | `loadMathouCollection` : les lectures, la logique pure, puis la mémoire                                                     |
+| `src/lib/server/mathoux/memory.ts`                     | lecture (élève) et écriture (service) de `student_mathoux`                                                                  |
+| `src/lib/components/mathoux/`                          | `MathouAvatar` (SVG paramétré : race, stade, sieste, silhouette), le dessin `mathou-dessin.ts`, les races `mathou-races.ts` |
+| `dashboard/student/chatterie/+page.{server.ts,svelte}` | la page ; `unavailable` si une lecture échoue                                                                               |
+| `api/student/mathoux/+server.ts`                       | `GET` élève : les compteurs, pour le Palotin                                                                                |
 
 ### Lectures et RLS
 
@@ -160,6 +160,32 @@ partagé avec le tableau de bord, et n'est pas corrigé ici.
 C'est trop pour `dashboard/student/+layout.server.ts`, qui tourne à chaque page de l'espace élève :
 le Palotin demande donc le résumé **après l'affichage**, une fois par montage du widget
 (`GET /api/student/mathoux`).
+
+## Les dessins
+
+Direction **AB3**, choisie par David le 2026-10-18 dans l'exploration graphique : le **chat-poire
+bonhomme-digne**, gidouille sur la panse, trait souple et aplats, posé sur une **affiche jaune**
+(pastille arrondie, viewBox 200 × 200) avec une **auréole** derrière la tête. Le dessin porte son
+propre fond : il se lit pareil en clair et en sombre.
+
+- **Visage « juste milieu »** : yeux en amande à pupille fendue, paupière posée à plat, l'œil droit
+  un rien plus couvert, sourcils courts (le droit à peine levé), bouche neutre au coin à peine
+  relevé.
+- **Stades** (`pearGeometry`) : le **chaton** attendrit par ses proportions (grosse tête, petite
+  panse, grands yeux, pieds en dedans et dépareillés) ; le **matou** ; le **grand matou**, panse
+  royale, solennel (paupières mi-closes), couronne, fraise et bâton dans une **gloire** rayonnante.
+- **Sieste** : yeux fermés, bonnet de nuit rayé, lune, « Zzz » en traits ; le grand matou garde sa
+  fraise, le bonnet remplace la couronne.
+- **Silhouette** (« à découvrir ») : forme unie sable éteint, gidouille en pointillé, auréole en
+  tirets ; aucune couleur de race (ni pelage, ni motif, ni auréole).
+- **Races** (`mathou-races.ts`, noms provisoires) : 19 couples pelage + motif distincts — uni noir,
+  tigré roux, smoking, pointes siamoises, gidouille rouge épaisse, chartreux uni, écaille, tacheté,
+  tricolore, arlequin (losanges), masque de bandit, marbré, fumé, van, chaussettes, bicolore,
+  croissant de lune autour de la gidouille, étoile au front, tigré argent. L'auréole varie (rouge
+  de Steinlen, bleu nuit, vert bouteille, violet) pour le contraste avec le pelage.
+- `mathou-dessin.ts` est pur (chemins et couleurs) ; `MathouAvatar.svelte` assemble. Les ids
+  internes (découpes, dégradé du fumé) sont préfixés par `$props.id()`. Environ 8 Ko de SVG par
+  instance au plus chargé.
 
 ## Le Palotin, gardien de la Chatterie
 

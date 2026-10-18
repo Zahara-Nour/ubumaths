@@ -7,7 +7,8 @@
  * complétée de teintes de pelage crédibles.
  *
  * Chaque race combine une couleur et un motif distincts : elle doit rester reconnaissable
- * à 48 px, quand le motif se réduit à quelques taches de couleur.
+ * à 64 px, quand le motif se réduit à quelques taches de couleur. Le dessin (direction « AB3 »,
+ * chat-poire à gidouille sur une affiche jaune) est dans mathou-dessin.ts.
  */
 
 export type MathouStage = 'chaton' | 'matou' | 'grand_matou';
@@ -40,11 +41,13 @@ export interface MathouRace {
 	primary: string;
 	/** Couleur du motif */
 	secondary: string;
-	/** Troisième couleur (écaille, tricolore), sinon absente */
+	/** Troisième couleur (écaille, tricolore, arlequin), sinon absente */
 	tertiary?: string;
 	pattern: MathouPattern;
 	/** Couleur de l'iris */
 	eyes: string;
+	/** Auréole derrière la tête (et gloire du grand matou, lune de la sieste) */
+	halo: string;
 }
 
 // Palette du Chat Noir de Steinlen
@@ -57,26 +60,38 @@ export const CHAT_NOIR = {
 
 // Teintes de pelage complémentaires
 const FUR = {
-	noir: 'hsl(220, 25%, 17%)',
-	blanc: 'hsl(40, 35%, 96%)',
-	roux: 'hsl(24, 78%, 54%)',
-	rouxFonce: 'hsl(15, 75%, 40%)',
-	gris: 'hsl(215, 14%, 58%)',
-	grisFonce: 'hsl(215, 18%, 36%)',
-	chocolat: 'hsl(20, 38%, 30%)',
-	cannelle: 'hsl(26, 48%, 47%)',
-	sable: 'hsl(36, 45%, 66%)',
-	lilas: 'hsl(265, 10%, 72%)',
-	fauve: 'hsl(34, 62%, 56%)'
+	noir: 'hsl(220, 28%, 12%)',
+	blanc: 'hsl(40, 40%, 96%)',
+	roux: 'hsl(24, 80%, 54%)',
+	rouxFonce: 'hsl(14, 70%, 30%)',
+	gris: 'hsl(212, 16%, 62%)',
+	grisBleu: 'hsl(210, 16%, 50%)',
+	grisFonce: 'hsl(215, 20%, 30%)',
+	argent: 'hsl(210, 12%, 78%)',
+	chocolat: 'hsl(20, 40%, 28%)',
+	cannelle: 'hsl(26, 52%, 48%)',
+	sable: 'hsl(34, 48%, 68%)',
+	fume: 'hsl(222, 14%, 30%)',
+	fauve: 'hsl(30, 62%, 54%)',
+	lilas: 'hsl(268, 12%, 60%)',
+	creme: 'hsl(38, 45%, 86%)'
 } as const;
 
 // Couleurs d'yeux
 const EYES = {
-	ambre: 'hsl(42, 95%, 55%)',
-	vert: 'hsl(95, 55%, 50%)',
-	bleu: 'hsl(205, 80%, 60%)',
-	cuivre: 'hsl(25, 85%, 52%)',
-	noisette: 'hsl(60, 60%, 48%)'
+	ambre: 'hsl(46, 95%, 58%)',
+	vert: 'hsl(80, 60%, 52%)',
+	bleu: 'hsl(200, 80%, 62%)',
+	cuivre: 'hsl(28, 90%, 55%)',
+	noisette: 'hsl(58, 60%, 50%)'
+} as const;
+
+// Auréoles : rouge de Steinlen, bleu nuit, vert bouteille, violet d'évêque
+const HALO = {
+	rouge: CHAT_NOIR.rouge,
+	bleu: 'hsl(215, 50%, 30%)',
+	vert: 'hsl(165, 40%, 30%)',
+	violet: 'hsl(285, 30%, 36%)'
 } as const;
 
 export const MATHOU_RACES: readonly MathouRace[] = [
@@ -85,57 +100,65 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		primary: FUR.noir,
 		secondary: CHAT_NOIR.noir,
 		pattern: 'uni',
-		eyes: EYES.ambre
+		eyes: EYES.ambre,
+		halo: HALO.rouge
 	},
 	{
 		name: 'Roux du Clinamen',
 		primary: FUR.roux,
 		secondary: FUR.rouxFonce,
 		pattern: 'tigre',
-		eyes: EYES.vert
+		eyes: EYES.vert,
+		halo: HALO.bleu
 	},
 	{
 		name: 'Smoking de Faustroll',
 		primary: FUR.noir,
 		secondary: FUR.blanc,
 		pattern: 'smoking',
-		eyes: EYES.vert
+		eyes: EYES.vert,
+		halo: HALO.rouge
 	},
 	{
 		name: 'Siamois de la Chandelle Verte',
-		primary: CHAT_NOIR.creme,
+		primary: FUR.creme,
 		secondary: FUR.chocolat,
 		pattern: 'pointes',
-		eyes: EYES.bleu
+		eyes: EYES.bleu,
+		halo: HALO.vert
 	},
 	{
 		name: 'Gidouillard de Patatovie',
-		primary: CHAT_NOIR.jaune,
+		primary: FUR.blanc,
 		secondary: CHAT_NOIR.rouge,
 		pattern: 'gidouille',
-		eyes: EYES.cuivre
+		eyes: EYES.cuivre,
+		halo: HALO.bleu
 	},
 	{
 		name: 'Chartreux Absolu',
-		primary: FUR.gris,
+		primary: FUR.grisBleu,
 		secondary: FUR.grisFonce,
 		pattern: 'uni',
-		eyes: EYES.cuivre
+		eyes: EYES.cuivre,
+		halo: HALO.rouge
 	},
 	{
 		name: 'Écaille des Phynances',
-		primary: FUR.chocolat,
+		primary: FUR.noir,
 		secondary: FUR.roux,
-		tertiary: CHAT_NOIR.jaune,
+		tertiary: FUR.sable,
 		pattern: 'ecaille',
-		eyes: EYES.ambre
+		eyes: EYES.ambre,
+		halo: HALO.vert
 	},
 	{
 		name: 'Moucheté du Cymbalum',
 		primary: FUR.sable,
 		secondary: FUR.chocolat,
 		pattern: 'tachete',
-		eyes: EYES.noisette
+		eyes: EYES.noisette,
+		halo: HALO.rouge
 	},
 	{
 		name: 'Tricolore Trismégiste',
@@ -143,78 +166,89 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		secondary: FUR.roux,
 		tertiary: FUR.noir,
 		pattern: 'tricolore',
-		eyes: EYES.vert
+		eyes: EYES.vert,
+		halo: HALO.bleu
 	},
 	{
 		name: 'Arlequin du Cabaret',
-		primary: CHAT_NOIR.creme,
+		primary: FUR.creme,
 		secondary: CHAT_NOIR.rouge,
 		tertiary: FUR.noir,
 		pattern: 'arlequin',
-		eyes: EYES.ambre
+		eyes: EYES.ambre,
+		halo: HALO.vert
 	},
 	{
 		name: 'Masqué du Palotin',
 		primary: FUR.gris,
 		secondary: FUR.noir,
 		pattern: 'masque',
-		eyes: EYES.ambre
+		eyes: EYES.ambre,
+		halo: HALO.rouge
 	},
 	{
 		name: 'Marbré de Haldern',
 		primary: FUR.cannelle,
 		secondary: FUR.chocolat,
 		pattern: 'marbre',
-		eyes: EYES.vert
+		eyes: EYES.vert,
+		halo: HALO.bleu
 	},
 	{
 		name: 'Fumé de la Gidouille',
-		primary: FUR.lilas,
-		secondary: FUR.grisFonce,
+		primary: FUR.fume,
+		secondary: FUR.argent,
 		pattern: 'fume',
-		eyes: EYES.cuivre
+		eyes: EYES.cuivre,
+		halo: HALO.violet
 	},
 	{
 		name: 'Van du Cap Clinamen',
 		primary: FUR.blanc,
 		secondary: FUR.roux,
 		pattern: 'van',
-		eyes: EYES.bleu
+		eyes: EYES.bleu,
+		halo: HALO.vert
 	},
 	{
 		name: 'Chaussé de la Phynance',
 		primary: FUR.chocolat,
 		secondary: FUR.blanc,
 		pattern: 'chaussettes',
-		eyes: EYES.ambre
+		eyes: EYES.ambre,
+		halo: HALO.rouge
 	},
 	{
 		name: 'Bicolore de Bosse-de-Nage',
 		primary: FUR.fauve,
 		secondary: FUR.blanc,
 		pattern: 'bicolore',
-		eyes: EYES.vert
+		eyes: EYES.vert,
+		halo: HALO.bleu
 	},
 	{
 		name: 'Plastron Lunaire',
 		primary: FUR.noir,
 		secondary: CHAT_NOIR.jaune,
 		pattern: 'plastron',
-		eyes: EYES.vert
+		eyes: EYES.vert,
+		halo: HALO.violet
 	},
 	{
 		name: 'Étoilé Ubuesque',
-		primary: CHAT_NOIR.rouge,
-		secondary: CHAT_NOIR.creme,
+		primary: FUR.lilas,
+		secondary: FUR.blanc,
 		pattern: 'etoile',
-		eyes: EYES.noisette
+		eyes: EYES.noisette,
+		halo: HALO.rouge
 	},
 	{
 		name: 'Tigré de l’Absolu',
-		primary: FUR.gris,
+		primary: FUR.argent,
 		secondary: FUR.noir,
 		pattern: 'tigre',
-		eyes: EYES.noisette
+		eyes: EYES.noisette,
+		halo: HALO.violet
 	}
 ];
 
