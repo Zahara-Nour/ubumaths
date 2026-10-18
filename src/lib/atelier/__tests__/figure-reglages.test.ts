@@ -247,6 +247,114 @@ describe('les courbes : couleur, style de trait, épaisseur', () => {
 	});
 });
 
+describe('le premier réglage part de ce qui est dessiné', () => {
+	it('régler la taille d’un point garde la couleur peinte', () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const target = synced(atelier);
+		const before = painted(target.figure, 'A').color;
+
+		set(atelier, 'A', { size: 'large' });
+
+		expect(syncFigure(atelier, target)).toBe('restyled');
+		expect(painted(target.figure, 'A').color).toBe(before);
+		expect(painted(target.figure, 'A').pointSize).toBe(7);
+		const a = atelier.get('A');
+		expect(a?.kind === 'point' && a.display?.color).toBeUndefined();
+	});
+
+	it('masquer le nom d’un point garde sa couleur peinte', () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const before = painted(synced(atelier).figure, 'A').color;
+		set(atelier, 'A', { showLabel: false });
+		expect(painted(synced(atelier).figure, 'A').color).toBe(before);
+	});
+
+	it('régler le trait ou l’épaisseur d’une courbe garde sa couleur peinte', () => {
+		const atelier = atelierOf([
+			['point', 'O', '(0 ; 0)'],
+			['curve', 'd', 'y = 3x - 2'],
+			['curve', 'c', 'cercle(O ; 3)']
+		]);
+		const target = synced(atelier);
+		const line = painted(target.figure, 'd').color;
+		const circle = painted(target.figure, 'c').color;
+		const name = resolveScreenStyle(circleName(target.figure), target.figure.defaults).color;
+
+		set(atelier, 'd', { lineStyle: 'dashed' });
+		set(atelier, 'c', { lineWidth: 4 });
+
+		expect(syncFigure(atelier, target)).toBe('restyled');
+		expect(painted(target.figure, 'd').color).toBe(line);
+		expect(painted(target.figure, 'c').color).toBe(circle);
+		expect(resolveScreenStyle(circleName(target.figure), target.figure.defaults).color).toBe(name);
+	});
+
+	it('choisir la taille déjà active (moyenne) sur un point sans réglage n’enregistre rien', () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const target = synced(atelier);
+		const revision = atelier.revision;
+
+		set(atelier, 'A', { size: 'medium' });
+		set(atelier, 'A', { showLabel: true });
+
+		const a = atelier.get('A');
+		expect(a?.kind === 'point' && a.display).toBeUndefined();
+		expect(atelier.revision).toBe(revision);
+		expect(atelier.serialize().objects.some((o) => 'figureDisplay' in o)).toBe(false);
+		expect(syncFigure(atelier, target)).toBe('unchanged');
+	});
+
+	it('choisir le trait ou l’épaisseur déjà actifs sur une courbe sans réglage n’enregistre rien', () => {
+		const atelier = atelierOf([['curve', 'd', 'y = 3x - 2']]);
+		const target = synced(atelier);
+		const revision = atelier.revision;
+
+		set(atelier, 'd', { lineStyle: 'solid' });
+		set(atelier, 'd', { lineWidth: 2 });
+
+		const d = atelier.get('d');
+		expect(d?.kind === 'curve' && d.display).toBeUndefined();
+		expect(atelier.revision).toBe(revision);
+		expect(atelier.serialize().objects.some((o) => 'figureDisplay' in o)).toBe(false);
+		expect(syncFigure(atelier, target)).toBe('unchanged');
+	});
+
+	it('un réglage sans couleur se range et se relit tel quel', () => {
+		const atelier = atelierOf([
+			['point', 'A', '(1 ; 2)'],
+			['curve', 'd', 'y = 3x - 2']
+		]);
+		set(atelier, 'A', { size: 'large' });
+		set(atelier, 'd', { lineWidth: 4 });
+
+		const fresh = new Atelier();
+		fresh.restore(atelier.serialize());
+
+		const a = fresh.get('A');
+		const d = fresh.get('d');
+		expect(a?.kind === 'point' && a.display).toEqual({ size: 'large', showLabel: true });
+		expect(d?.kind === 'curve' && d.display).toEqual({ lineStyle: 'solid', lineWidth: 4 });
+	});
+
+	it('un réglage qui disparaît (sauvegarde relue sans lui) refait la figure, au dessin par défaut', () => {
+		const entries: Entry[] = [
+			['point', 'A', '(1 ; 2)'],
+			['curve', 'd', 'y = 3x - 2']
+		];
+		const plain = synced(atelierOf(entries)).figure;
+		const atelier = atelierOf(entries);
+		set(atelier, 'A', { color: 'curve-2', size: 'large', showLabel: false });
+		set(atelier, 'd', { color: 'curve-3', lineStyle: 'dotted', lineWidth: 4 });
+		const target = synced(atelier);
+
+		expect(syncFigure(atelierOf(entries), target)).toBe('rebuilt');
+
+		expect(painted(target.figure, 'A')).toEqual(painted(plain, 'A'));
+		expect(shown(target.figure, 'A').labelHidden).toBeFalsy();
+		expect(painted(target.figure, 'd')).toEqual(painted(plain, 'd'));
+	});
+});
+
 describe('l’étiquette masquée dans les exports (labelHidden)', () => {
 	function hiddenA(): Figure {
 		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);

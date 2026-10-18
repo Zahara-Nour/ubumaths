@@ -186,3 +186,10 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   Effet de bord voulu : un point `etiquette="aucune"` du DSL perd enfin son nom dans
   `GeometryCanvas` (il ne le perdait qu'en Typst et dans le bloc figure). Les autres types
   (droites, segments, cercles) ignorent toujours `labelHidden` à l'écran — sans usage aujourd'hui.
+- 2026-10-19, revue : le premier réglage d'un point ou d'une courbe partait d'une couleur libre
+  du grapheur (`getNextSlot`) — régler la taille seule repeignait le point en `curve-1`. Il part
+  désormais de ce qui est dessiné : `color` devient facultative dans `PointDisplay` /
+  `StrokeDisplay` (absente = couleur de la figure), un réglage sans effet n'enregistre rien, et
+  le point de couleur de la carte montre la couleur peinte (`figureDefaultColor`). Tests ajoutés :
+  réglage qui disparaît → `rebuilt`, exports SVG / TikZ d'un point DSL `etiquette="aucune"`
+  (rond et croix).

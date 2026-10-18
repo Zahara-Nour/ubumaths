@@ -73,6 +73,7 @@ import type {
 import type { CurvePiece, Restriction } from '$lib/grapheur/restriction';
 import { exact, numeric, type ScalarParam } from '$lib/geometry-core/types/geo-value';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { resolveScreenStyle } from '$lib/geometry-core/rendering/svg-primitives';
 import {
 	classifyConic,
 	degenerateConic,
@@ -386,6 +387,23 @@ export function syncFigure(atelier: Atelier, target: AtelierFigure): FigureSyncO
 	return target.apply(planOf(atelier));
 }
 
+let defaultColor: string | null = null;
+
+/**
+ * La couleur ÉCRAN d'un point ou d'une courbe sans réglage, telle que la vue
+ * Géométrie la peint (`resolveScreenStyle` d'un élément neuf) : le point de
+ * couleur d'une carte sans réglage la montre, pour dire ce qui est dessiné.
+ */
+export function figureDefaultColor(): string {
+	if (defaultColor === null) {
+		const figure = new Figure();
+		const id = figure.createFreePoint({ x: numeric(0), y: numeric(0) });
+		const el = figure.getElementById(id);
+		defaultColor = el === undefined ? '' : resolveScreenStyle(el, figure.defaults).color;
+	}
+	return defaultColor;
+}
+
 // =============================================================================
 // Ce que l'atelier demande
 // =============================================================================
@@ -473,13 +491,21 @@ function wantedFunctionOf(
  */
 function strokeOf(display: CurveDisplay | StrokeDisplay): GeoStyle {
 	const dash: GeoStyle['dash'] = display.lineStyle === 'dashdot' ? 'dashed' : display.lineStyle;
-	return { color: display.color, dash, strokeWidth: display.lineWidth };
+	// Couleur absente : celle de la figure, déjà peinte — rien à poser
+	return {
+		...(display.color !== undefined && { color: display.color }),
+		dash,
+		strokeWidth: display.lineWidth
+	};
 }
 
 /** Le réglage d'un point en style de la figure : couleur, rayon, nom masqué ou non. */
 function pointLookOf(display: PointDisplay): Look {
 	return {
-		style: { color: display.color, pointSize: POINT_RADII[display.size] },
+		style: {
+			...(display.color !== undefined && { color: display.color }),
+			pointSize: POINT_RADII[display.size]
+		},
 		labelHidden: !display.showLabel
 	};
 }

@@ -7,6 +7,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import WithFigure from './harness/WithFigure.svelte';
+import WithAtelier from './harness/WithAtelier.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 
 // =============================================================================
@@ -88,6 +89,41 @@ describe('la vue Géométrie peint les réglages des cartes', () => {
 		await vi.waitFor(() => expect(line().style.stroke).toBe('var(--color-curve-3)'));
 		expect(line().getAttribute('stroke-width')).toBe('4');
 		expect(line().getAttribute('stroke-dasharray')).toBe('12 8');
+	});
+
+	it('régler la taille seule ne change pas la couleur peinte', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const { container } = await render(WithFigure, { atelier });
+		const point = () => one<SVGCircleElement>(container, 'circle.point');
+		await vi.waitFor(() => expect(point()).toBeTruthy());
+		const before = point().style.fill;
+
+		set(atelier, 'A', { size: 'large' });
+
+		await vi.waitFor(() => expect(point().getAttribute('r')).toBe('7'));
+		expect(point().style.fill).toBe(before);
+	});
+
+	it('le point de couleur d’une carte sans réglage montre la couleur de la figure', async () => {
+		const atelier = atelierOf([
+			['point', 'A', '(1 ; 2)'],
+			['curve', 'd', 'y = 3x - 2']
+		]);
+		const figure = await render(WithFigure, { atelier });
+		const panel = await render(WithAtelier, { atelier });
+		const point = () => one<SVGCircleElement>(figure.container, 'circle.point');
+		const line = () => one<SVGLineElement>(figure.container, 'line.geo-line');
+		await vi.waitFor(() => expect(point()).toBeTruthy());
+		const trigger = (label: string) => {
+			const button = panel.container.querySelector<HTMLButtonElement>(
+				`button[aria-label="${label}"]`
+			);
+			if (button === null) throw new Error(`pas de bouton ${label}`);
+			return button;
+		};
+
+		expect(trigger('Couleur et taille de A').style.backgroundColor).toBe(point().style.fill);
+		expect(trigger('Couleur et trait de d').style.backgroundColor).toBe(line().style.stroke);
 	});
 
 	it('un cercle construit et son nom prennent la couleur de la carte', async () => {
