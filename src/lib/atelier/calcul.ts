@@ -44,6 +44,7 @@ import {
 	readingMode,
 	readNumber,
 	readListValue,
+	referencesOf,
 	individualEntries,
 	withPiCommand,
 	latexUnitsWithPi,
@@ -123,6 +124,28 @@ import { DEV_HELP_ARGUMENT, studentHelpText } from './help';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { tabulateCommand } from './tabulate';
 import { gridFunctionCalledIn, gridFunctionInCalcul } from './grid-functions';
+import {
+	bareLineShortcut,
+	constructionWordIn,
+	laterWordIn,
+	laterWordMessage,
+	readConstruction,
+	type ReadOutcome
+} from './construction-read';
+import { objectKindOf, partsOf, specOfCall } from './construction-spec';
+import {
+	circleEquation,
+	constructionFromText,
+	constructionLatex,
+	constructionOf,
+	isConstruction,
+	kindsOf,
+	lineEquation,
+	nodeOf,
+	plainLatex,
+	segmentLength,
+	type BuiltOutcome
+} from './construction';
 import { PI_IN_LETTERS, PI_IN_LETTERS_MESSAGE } from './names';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
@@ -236,6 +259,15 @@ export type CalcResult =
 			readonly alternative?: Alternative;
 			/** Une aide sur l'écriture (`5km` collé, lot C des grandeurs) */
 			readonly note?: string;
+			/**
+			 * Une construction tapée seule (`(AB)`, géométrie lot 2, L2) : ce que
+			 * « Garder » crée — la définition TELLE QU'ÉCRITE, pas le résultat.
+			 */
+			readonly construction?: {
+				readonly kind: 'point' | 'curve';
+				readonly definition: string;
+				readonly provenance: Provenance;
+			};
 	  }
 	| {
 			readonly kind: 'commande';
@@ -641,6 +673,184 @@ function definePoint(
 	return { kind: 'definition', name, object: atelier.get(name) ?? done.object };
 }
 
+/** `I = milieu(A, B)` : un nom, « = », puis la construction. */
+const NAMED_CONSTRUCTION = /^\s*([A-Za-z](?:_\d+)?)\s*=(?!=)\s*([\s\S]+)$/;
+
+/**
+ * Une ligne de construction (géométrie, lot 2 : L2, L3) — nommée, elle crée ou
+ * redéfinit l'objet ; tapée seule, c'est un calcul. `null` : ce n'en est pas
+ * une, la ligne suit le chemin d'un calcul.
+ */
+function constructionLine(
+	session: CalcSession,
+	input: string,
+	provenance: Provenance
+): CalcResult | null {
+	const { atelier } = session;
+	const named = NAMED_CONSTRUCTION.exec(input);
+	if (named !== null) {
+		const [, name, body] = named;
+		const read = readConstruction(body, provenance);
+		if (read === null || !countsAsConstruction(atelier, read, body, name)) return null;
+		return defineConstruction(session, name, body.trim(), provenance, read);
+	}
+	const read = readConstruction(input, provenance);
+	if (read === null || !countsAsConstruction(atelier, read, input)) return null;
+	return builtLine(session, null, constructionFromText(atelier, input, provenance), {
+		definition: input.trim(),
+		provenance
+	});
+}
+
+/**
+ * Est-ce bien une construction ? Deux écritures ont un autre sens :
+ * - `(ab)` est un PRODUIT, sauf entre deux points de l'atelier (L4 : la
+ *   lecture ne change pas ailleurs) — ou pour redéfinir une construction ;
+ * - une fonction de la grille (`médiane(L)`) a son propre refus.
+ */
+function countsAsConstruction(
+	atelier: Atelier,
+	read: ReadOutcome,
+	text: string,
+	target?: string
+): boolean {
+	if (gridFunctionCalledIn(text) !== null) return false;
+	if (!read.ok) return true;
+	const pair = bareLineShortcut(read.call);
+	if (pair === null) return true;
+	const existing = target === undefined ? undefined : atelier.get(target);
+	if (existing !== undefined && existing.kind === 'curve' && isConstruction(existing)) return true;
+	return pair.every((name) => atelier.get(name)?.kind === 'point');
+}
+
+/** Créer — ou redéfinir — une construction nommée (L2, L8). Un refus ne crée rien. */
+function defineConstruction(
+	session: CalcSession,
+	name: string,
+	body: string,
+	provenance: Provenance,
+	read: ReadOutcome
+): CalcResult {
+	const { atelier } = session;
+	if (!read.ok) return { kind: 'refus', message: read.message };
+	const typed = specOfCall(read.call, kindsOf(atelier));
+	if (!typed.ok) return { kind: 'refus', message: typed.message };
+	const kind = objectKindOf(typed.spec);
+	const existing = atelier.get(name);
+	if (existing !== undefined && existing.kind !== kind) return kindKeptRefusal(name, existing.kind);
+	// L8 : une construction circulaire est refusée
+	const { names, scalars } = partsOf(typed.spec);
+	const cited = new Set([
+		...names,
+		...scalars.flatMap((scalar) =>
+			referencesOf(scalar, 'text', atelier.functionNames).map((r) => r.name)
+		)
+	]);
+	if (cited.has(name)) {
+		return {
+			kind: 'refus',
+			message: `« ${name} » ne peut pas se construire à partir de lui-même.`
+		};
+	}
+	if (existing !== undefined) {
+		const dependents = atelier.removalOf(name);
+		const loop = [...cited].find((c) => dependents.includes(c));
+		if (loop !== undefined) {
+			return {
+				kind: 'refus',
+				message: `Construction circulaire : « ${loop} » dépend déjà de « ${name} ».`
+			};
+		}
+	} else {
+		const rejection = validateName(name, atelier.names);
+		if (rejection !== null) {
+			return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
+		}
+	}
+	const shape = parseDefinition(kind, body, provenance, atelier.functionNames).error;
+	if (shape !== undefined) return { kind: 'refus', message: shape };
+	const done =
+		existing === undefined
+			? atelier.create({ kind, name, definition: body }, provenance)
+			: atelier.update(name, body, provenance);
+	if (!done.ok) return { kind: 'refus', message: done.message };
+	syncEngine(atelier, session.engine);
+	return { kind: 'definition', name, object: atelier.get(name) ?? done.object };
+}
+
+/** Un nombre de la figure, écrit comme une ligne de Calcul l'écrirait (exact d'abord). */
+function shownNumber(
+	session: CalcSession,
+	node: MathNode
+): { readonly text: string; readonly latex: string } {
+	const line = computeInput(session, toCustom(node), 'text');
+	if (line.kind === 'calcul') return { text: line.output, latex: line.latex ?? line.output };
+	return { text: toCustom(node), latex: plainLatex(node) };
+}
+
+/** Une équation en texte : `y=2x+1`, les fractions entre parenthèses (`(1/2)x`). */
+function equationText(node: MathNode): string {
+	return toCustom(node).replace(/\{([^{}]*)\}/g, '($1)');
+}
+
+/**
+ * Ce que répond une construction (L2) : ses coordonnées, son équation réduite,
+ * sa longueur. `name` : l'objet nommé (`d : y=2x+1`), sinon la construction
+ * tapée seule (`(AB) : y=2x+1`), que « Garder » peut nommer.
+ */
+function builtLine(
+	session: CalcSession,
+	name: string | null,
+	outcome: BuiltOutcome,
+	typed: { readonly definition: string; readonly provenance: Provenance } | null
+): CalcResult {
+	if (!outcome.ok) return { kind: 'refus', message: outcome.message };
+	const { built, call } = outcome;
+	const label = name ?? call.text;
+	const labelLatex = name === null ? constructionLatex(call) : latexName(name);
+	const keep =
+		typed === null
+			? {}
+			: {
+					construction: {
+						kind: built.shape === 'point' ? ('point' as const) : ('curve' as const),
+						...typed
+					}
+				};
+	if (built.shape === 'point') {
+		const [x, y] = [built.at.x, built.at.y].map((v) => shownNumber(session, nodeOf(v)));
+		return {
+			kind: 'calcul',
+			input: label,
+			output: `${name ?? ''}(${x.text} ; ${y.text})`,
+			latex: `${name === null ? '' : latexName(name)}left(${x.latex};${y.latex}\right)`,
+			...keep
+		};
+	}
+	if (built.shape === 'segment') {
+		const length = shownNumber(session, nodeOf(segmentLength(built.from, built.to)));
+		return {
+			kind: 'calcul',
+			input: label,
+			output: `${label} : segment de longueur ${length.text}`,
+			latex: `${labelLatex} : \text{segment de longueur } ${length.latex}`,
+			...keep
+		};
+	}
+	const equation =
+		built.shape === 'circle'
+			? circleEquation(built.center, built.radius)
+			: lineEquation(built.from, built.to);
+	const ray = built.shape === 'ray';
+	return {
+		kind: 'calcul',
+		input: label,
+		output: `${label} : ${ray ? 'demi-droite portée par ' : ''}${equationText(equation)}`,
+		latex: `${labelLatex} : ${ray ? '\text{demi-droite portée par } ' : ''}${plainLatex(equation)}`,
+		...keep
+	};
+}
+
 /** x écrit comme une lettre seule (pas celui de `max`). */
 const CITES_X = /(?<![A-Za-z\\])x(?![A-Za-z])/;
 
@@ -685,6 +895,9 @@ function figureLine(session: CalcSession, input: string): CalcResult | null {
 				kind: 'refus',
 				message: object.message ?? `« ${object.name} » n’a pas encore de définition.`
 			};
+		}
+		if (isConstruction(object)) {
+			return builtLine(session, object.name, constructionOf(atelier, object.name), null);
 		}
 		return object.kind === 'point' ? pointLine(session, object) : curveLine(atelier, object);
 	}
@@ -3263,6 +3476,10 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// de lettres, sans erreur. Une commande le vérifie sur son argument de
 	// CALCUL (`runCommand`) : les commandes de données lisent des modalités.
 	if (!input.startsWith('.')) {
+		// Géométrie, lot 2 : `d = (AB)`, `milieu(A, B)` — avant toute lecture de
+		// calcul, qui y voyait une fonction inconnue (`droite`) ou un produit A·B
+		const construction = constructionLine(session, input, provenance);
+		if (construction !== null) return construction;
 		// V59 : `ln x`, `sin x` se lisaient l·n·x, s·i·n·x, sans erreur — ligne
 		// de calcul comme définition. Une commande le vérifie sur son argument
 		// Sauf une liste de mots (`L = sin; cos; ln`), que la carte accepte aussi
@@ -3278,6 +3495,17 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		// moteur la recopiait sans la calculer, ou lisait « diane » (2026-10-15)
 		const gridCall = gridFunctionCalledIn(input);
 		if (gridCall !== null) return { kind: 'refus', message: gridCall };
+		// L3 : un mot du DSL hors catalogue (`2·aire(A, B, C)`), une construction
+		// prise dans un calcul (`2·milieu(A, B)`)
+		const later = laterWordIn(input);
+		if (later !== null) return { kind: 'refus', message: laterWordMessage(later) };
+		const inCalculation = constructionWordIn(input);
+		if (inCalculation !== null) {
+			return {
+				kind: 'refus',
+				message: `« ${inCalculation} » construit un objet de la figure : écris-le seul, ou nomme-le (I = milieu(A, B)).`
+			};
+		}
 		const unknown = findUnknownFunctionCall(input);
 		if (unknown !== null) {
 			// Une fonction de la grille (SOMME, RACINE…) : dire où elle vit (Q-L4-6)
@@ -3527,6 +3755,17 @@ export function promote(
 	name?: string
 ): Created | Refused {
 	const { atelier } = session;
+
+	// Une construction tapée seule (L2, D5) : gardée par sa définition, telle qu'écrite
+	if (result.kind === 'calcul' && result.construction !== undefined) {
+		const { kind, definition, provenance } = result.construction;
+		const chosen = name ?? nextName(kind, atelier.names);
+		const rejection = validateName(chosen, atelier.names);
+		if (rejection !== null) {
+			return { ok: false, message: nameRejectionMessage(rejection, chosen) };
+		}
+		return atelier.create({ kind, name: chosen, definition }, provenance);
+	}
 
 	// ⚠️ **Seul un calcul se garde, et seulement par son ARBRE.**
 	//

@@ -27,6 +27,7 @@ import type { MissingReference, ObjectKind } from './types';
 import { readListValue, readNumber } from '$lib/statistics/read-value';
 import { hasObjectNameShape } from './names';
 import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from './decimal-comma';
+import { objectKindOf, partsOf, specOf } from './construction-spec';
 import {
 	CURVE_NEEDS_XY,
 	CURVE_UNIT,
@@ -478,6 +479,11 @@ export function parseDefinition(
 		return { values, skipped, rows };
 	}
 
+	if (kind === 'point' || kind === 'curve') {
+		// Géométrie, lot 2 : `milieu(A, B)`, `(AB)`… une construction (L2, L3)
+		const construction = parseConstruction(kind, definition, provenance, functionNames);
+		if (construction !== null) return construction;
+	}
 	if (kind === 'point') return parsePoint(definition, provenance, functionNames);
 	if (kind === 'curve') return parseCurve(definition, provenance, functionNames);
 
@@ -507,6 +513,43 @@ export function parseDefinition(
 		// curseur — c'est au modèle d'en décider, pas ici.
 		const symbol = unitSymbolOf(result.ast);
 		if (symbol) return { unit: symbol };
+	}
+	return {};
+}
+
+/**
+ * Une construction (géométrie, lot 2) : sa forme (`construction-read.ts`), le
+ * type qu'elle crée — un point ou une courbe, selon le mot —, et ses nombres
+ * (coordonnées, rayon) lus comme des valeurs, sans unité, sans x ni y. Les
+ * TYPES des objets cités se contrôlent avec l'atelier (`recomputeAll`).
+ * `null` si la définition n'est pas une construction.
+ */
+function parseConstruction(
+	kind: 'point' | 'curve',
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[] | undefined
+): ParsedDefinition | null {
+	const read = specOf(definition, provenance);
+	if (read === null) return null;
+	if (!read.ok) return { error: read.message };
+	const made = objectKindOf(read.spec);
+	if (made !== kind) {
+		const what = made === 'point' ? 'un point' : 'une ligne ou un cercle';
+		const wanted = kind === 'point' ? 'pas un point' : 'pas une courbe';
+		return { error: `${read.call.text} construit ${what}, ${wanted}.` };
+	}
+	for (const scalar of partsOf(read.spec).scalars) {
+		const ast = astOf(scalar, 'text', functionNames);
+		const variables = ast === null ? new Set<string>() : getVariables(ast);
+		if (variables.has('x') || variables.has('y')) {
+			return { error: `« ${scalar} » : les nombres d’une construction ne contiennent ni x ni y.` };
+		}
+		const value = parseDefinition('value', scalar, 'text', functionNames);
+		if (value.error !== undefined) return { error: value.error };
+		if (value.unit !== undefined) {
+			return { error: `« ${scalar} » : les nombres d’une construction sont sans unité.` };
+		}
 	}
 	return {};
 }

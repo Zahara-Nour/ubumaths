@@ -16,6 +16,7 @@ import type { Atelier } from './atelier.svelte';
 import { curveNatureOf as natureOfEquation } from '$lib/geometry-core/geometry/curve-nature';
 import type { CurveNature } from '$lib/geometry-core/geometry/curve-nature';
 import { substitutedAstOf } from './engine';
+import { constructionNatureOf } from './construction';
 
 // =============================================================================
 // Types
@@ -60,6 +61,9 @@ const LABELS: Record<CurveNature, CurveNatureReading> = {
 export function curveNatureOf(atelier: Atelier, name: string): CurveNatureReading | null {
 	const object = atelier.get(name);
 	if (object?.kind !== 'curve' || object.status !== 'ok') return null;
+	// Une construction (lot 2) : sa nature se lit sur son mot (`[AB]` est un segment)
+	const construction = constructionNatureOf(object);
+	if (construction !== null) return { label: construction };
 	const substituted = substitutedAstOf(atelier, name);
 	if (!substituted.ok) return null;
 	const nature = natureOfEquation(substituted.ast);

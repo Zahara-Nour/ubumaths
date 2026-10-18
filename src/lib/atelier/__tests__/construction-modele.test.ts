@@ -125,8 +125,8 @@ describe('L2 : une construction nommée crée un objet de la figure', () => {
 
 	it('L3 : parallèle à une droite donnée par son équation (lot 1)', () => {
 		const s = plane();
-		runInput(s, 'e : y = 3x - 2');
-		defined(s, 'p = parallele(O, e)');
+		runInput(s, 'D : y = 3x - 2');
+		defined(s, 'p = parallele(O, D)');
 		expect(answer(runInput(s, 'p'))).toBe('p : y=3x');
 	});
 
