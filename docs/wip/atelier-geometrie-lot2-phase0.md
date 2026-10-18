@@ -149,6 +149,16 @@ Une mesure est une **valeur** calculée (G1), sans curseur, citable partout. Mot
 
 **À valider : ces mesures.**
 
+**`angle` et l'unité des angles** (David, 2026-10-18, après la PR 2 des mesures) :
+`angle(A, B, C)` désigne l'angle ABC (même notion que le DSL, qui le dessine) ; dans un calcul,
+c'est une **grandeur** dans l'unité du réglage — `36,87[°]` ou `0,6435[rad]` (unité `°` de
+`mathAST`, π/180 rad) —, donc `cos(angle(…))` est juste sans règle spéciale. Un **réglage
+« Angles : degrés / radians »** (degrés par défaut, comme `unite_angle` du DSL) gouverne
+seulement l'unité d'une mesure d'angle (et plus tard celle des angles donnés à une
+construction) ; il **ne change pas `cos(60)`**, qui reste en radians (dérivées, tracés,
+résolutions). Écrire en degrés : `cos(60[°])` aujourd'hui ; `60°` et `60^\circ` acceptés par une
+petite PR à part, après les mesures.
+
 ### L5 — Point sur un objet, et intersections à plusieurs solutions
 
 - `M = point_sur(s, 0.3)` (DSL ; `point_sur(s ; 0,3)` dans l'atelier) : M sur s, à la **position** 0,3 (0 = A, 1 = B pour un segment ; pour
