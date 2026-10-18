@@ -178,3 +178,20 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   Restent : `cercle(O, rayon=0)` laissé tel quel dans le DSL (un lieu de test en dépend) ; une
   valeur `(AB)` devenue droite après coup n'est pas comptée dans le plafond de 50 (PR 2).
   Pas en production.
+
+### PR 2 — journal (mesures)
+
+- 2026-10-18 : worktree `../ubumaths-wt-atelier-mesures`, branche `feat/atelier-geometrie-mesures`.
+  Tests d'abord : 25 node (`mesures.test.ts`, 23 rouges) et 4 navigateur
+  (`mesures.svelte.test.ts`, 4 rouges). Implémenté : `AM`, `distance`, `aire`, `perimetre`
+  (`périmètre`), `angle` en degrés, exacts (angle non remarquable `≈`, 4 décimales) ; mesure
+  nommée = valeur sans curseur, qui suit ses points (curseurs compris), D9, cascade ; mesure dans
+  une fonction (`f(x) = AE*x`) ; carte : la valeur. Corrigé : une valeur `(AB)` devenue droite
+  compte dans le plafond de 50.
+- **À trancher par David** : (1) `angle` n'est PAS ajouté au DSL : `angle(A, V, B)` y existe déjà
+  et DESSINE l'angle (objet) ; lui faire rendre des degrés changerait son sens — la mesure en
+  degrés y est `mesure(A, V, B, unite="deg")` ; (2) « Garder » une ligne de mesure garde le NOMBRE
+  (`sqrt(5)`), pas la mesure qui suit ses points ; (3) un angle non remarquable est arrondi à
+  4 décimales, y compris quand il entre dans un calcul ; (4) une courbe (`d : y = AM x`) ne lit
+  pas les mesures (refus P9) ; (5) une mesure citée par un point (`P = (AM ; 0)`) suit dans la
+  figure en la reconstruisant, pas par un curseur.
