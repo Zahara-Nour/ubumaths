@@ -11,7 +11,10 @@
  * - un élève sans Palotin enregistre sa séance, aucune ligne Palotin n'est créée ;
  * - révision espacée (règle du 2026-10-18) : forfait à la 10e carte du jour même
  *   sans carte due (révision forcée) ; pas pour un paquet d'une carte ; forfait
- *   quand le paquet est vidé après au moins 3 cartes ; jamais deux fois par jour.
+ *   quand le paquet est vidé après au moins 3 cartes ; jamais deux fois par jour ;
+ * - écritures au client service sous verrou optimiste (PR 2) : deux ajouts de
+ *   thèmes simultanés n'en perdent aucun, et le bonus « nouveau thème » n'est
+ *   payé qu'une fois.
  *
  * @vitest-environment node
  */
@@ -40,6 +43,8 @@ vi.mock('$lib/server/serviceRoleClient', async () => {
 
 import { POST as testsSaveRoute } from '../../src/routes/api/tests/save/+server';
 import { POST as reviewSubmitRoute } from '../../src/routes/api/srs/review/submit/+server';
+import { addExploredThemes } from '$lib/server/buddy-queries';
+import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
 
 // Types
 type Person = { id: string; client: SupabaseClient<Database> };
@@ -370,6 +375,45 @@ describe('la boucle du Palotin tourne', () => {
 
 		expect(gains).toEqual([null]);
 		expect((await buddyOf(p))?.xp).toBe(0);
+	});
+
+	it('deux ajouts de thèmes simultanés : aucun thème perdu, chaque thème « nouveau » une seule fois', async () => {
+		const p = await studentWithBuddy();
+
+		const [first, second] = await Promise.all([
+			addExploredThemes(p.id, ['A', 'B']),
+			addExploredThemes(p.id, ['B', 'C'])
+		]);
+
+		const after = await buddyOf(p);
+		expect([...(after?.themes_explored ?? [])].sort()).toEqual(['A', 'B', 'C']);
+		// B n'est rendu nouveau qu'à un seul des deux envois
+		expect(Number(first.has('B')) + Number(second.has('B'))).toBe(1);
+		expect(first.has('A')).toBe(true);
+		expect(second.has('C')).toBe(true);
+	});
+
+	it('deux séances simultanées sur un même thème neuf : bonus « nouveau thème » payé une fois', async () => {
+		const p = await studentWithBuddy();
+		// Déjà actif aujourd'hui (jour UTC) : ni bonus du premier exercice, ni série
+		const today = new Date().toISOString().split('T')[0];
+		const { error } = await service
+			.from('student_buddies')
+			.update({ last_activity_date: today })
+			.eq('student_id', p.id)
+			.select('student_id');
+		expect(error).toBeNull();
+
+		const answers = [{ isCorrect: true, theme: 'Thème neuf' }];
+		const results = await Promise.all([
+			addBuddyXpFromTest(p.client, p.id, answers),
+			addBuddyXpFromTest(p.client, p.id, answers)
+		]);
+
+		expect(results.filter((r) => r?.isNewTheme)).toHaveLength(1);
+		const after = await buddyOf(p);
+		expect(after?.themes_explored).toEqual(['Thème neuf']);
+		expect(after?.xp).toBe(2 * XP_SOURCES.correct + XP_SOURCES.new_theme);
 	});
 
 	it('paquet vidé après 3 cartes : forfait à la dernière, une seule fois ; autre paquet fini ensuite : rien', async () => {

@@ -80,6 +80,7 @@ on:
       - 'src/lib/types/evaluation.ts'
       - 'src/lib/types/question-template.ts'
       - 'src/lib/validation/series.ts'
+      - 'src/lib/types/buddy.ts'
       - 'src/lib/types/chapter-templates.ts'
       - 'src/lib/types/chapters.ts'
       - 'src/lib/types/database-helpers.ts'

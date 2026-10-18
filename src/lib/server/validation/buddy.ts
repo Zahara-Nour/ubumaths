@@ -23,15 +23,3 @@ export const buddyQuizAnswerSchema = z.object({
 export const buddyQuizSchema = z.object({
 	answers: z.array(buddyQuizAnswerSchema).length(4)
 });
-
-export const addBuddyXpSchema = z.object({
-	source: z.enum([
-		'correct',
-		'incorrect',
-		'corrected_retry',
-		'first_of_day',
-		'new_theme',
-		'streak'
-	]),
-	theme: z.string().optional()
-});

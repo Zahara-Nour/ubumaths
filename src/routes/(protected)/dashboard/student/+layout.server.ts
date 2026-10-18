@@ -36,6 +36,7 @@ import type { StudentProfile, ClassMembership, StudentRewards } from '$lib/types
 import { asStudentVipCards } from '$lib/types/vip-card';
 import { error } from '@sveltejs/kit';
 import { toBuddyState } from '$lib/types/buddy';
+import { isStreakLost, resetLostStreak } from '$lib/server/buddy-queries';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('(protected)/dashboard/student/+layout.server');
@@ -136,24 +137,17 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			logger.error('Contexte illisible :', buddyDataError);
 		}
 
-		// Check for streak loss (last activity > 1 day ago with active streak)
+		// Série perdue (dernière activité il y a plus d'un jour) : remise à zéro au
+		// client service, règle réévaluée sur la ligne relue, écriture vérifiée
 		let streakLost = false;
-		if (buddyData && buddyData.current_streak > 0 && buddyData.last_activity_date) {
-			const lastActivity = new Date(buddyData.last_activity_date);
-			const today = new Date();
-			// Reset time parts for clean day comparison
-			lastActivity.setHours(0, 0, 0, 0);
-			today.setHours(0, 0, 0, 0);
-			const daysDiff = Math.floor((today.getTime() - lastActivity.getTime()) / 86400000);
-			if (daysDiff > 1) {
-				// Reset streak server-side
-				await supabase
-					.from('student_buddies')
-					.update({ current_streak: 0 })
-					.eq('student_id', user.id);
-				buddyData.current_streak = 0;
-				streakLost = true;
+		if (buddyData && isStreakLost(buddyData)) {
+			try {
+				streakLost = await resetLostStreak(user.id);
+			} catch (resetError) {
+				// Non bloquant : la série sera remise à zéro au prochain chargement
+				logger.error('[Layout] Série perdue non remise à zéro :', resetError);
 			}
+			if (streakLost) buddyData.current_streak = 0;
 		}
 
 		// Return data for cache hydration on client

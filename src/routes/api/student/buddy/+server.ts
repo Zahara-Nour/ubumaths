@@ -54,7 +54,11 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			throw error(409, 'Un Palotin a deja ete choisi');
 		}
 
-		const buddy = await createStudentBuddy(locals.supabase, user.id, palotinType);
+		// Écriture au client service, identité de la session
+		const buddy = await createStudentBuddy(user.id, palotinType);
+		if (!buddy) {
+			throw error(409, 'Un Palotin a deja ete choisi');
+		}
 		return json({ buddy }, { status: 201 });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) throw err;

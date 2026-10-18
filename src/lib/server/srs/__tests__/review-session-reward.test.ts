@@ -34,6 +34,11 @@ const getStudentBuddy = vi.hoisted(() =>
 );
 vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromReviewSession }));
 vi.mock('$lib/server/buddy-queries', () => ({ getStudentBuddy }));
+// Réclamation et relâche au client SERVICE (l'élève n'écrit pas `completed_at`)
+const service = vi.hoisted(() => ({ current: null as unknown }));
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => service.current
+}));
 
 import { rewardFinishedReviewSession } from '../review-session-reward';
 
@@ -65,6 +70,8 @@ const REWARD: BuddyXpFromExerciseResult = {
 let results: Record<string, Result[]>;
 let dueCards: Result;
 let calls: Call[];
+/** Requêtes reçues par le client de l'élève seul. */
+let studentCalls: Call[];
 let rpcCalls: [string, unknown][];
 
 // Functions
@@ -102,7 +109,7 @@ function chain(call: Call) {
 	return builder;
 }
 
-function fakeSupabase(): SupabaseClient<Database> {
+function fakeSupabase(own: () => Call[]): SupabaseClient<Database> {
 	return {
 		rpc: async (name: string, args: unknown) => {
 			rpcCalls.push([name, args]);
@@ -112,6 +119,7 @@ function fakeSupabase(): SupabaseClient<Database> {
 			const start = (op: string, args: unknown[]) => {
 				const call: Call = { table, op, chain: [[op, args]] };
 				calls.push(call);
+				own().push(call);
 				return chain(call);
 			};
 			return {
@@ -131,7 +139,13 @@ function updates(): Call[] {
 }
 
 function reward() {
-	return rewardFinishedReviewSession(fakeSupabase(), STUDENT, DECK, DAY_START);
+	service.current = fakeSupabase(() => []);
+	return rewardFinishedReviewSession(
+		fakeSupabase(() => studentCalls),
+		STUDENT,
+		DECK,
+		DAY_START
+	);
 }
 
 describe('rewardFinishedReviewSession', () => {
@@ -151,6 +165,7 @@ describe('rewardFinishedReviewSession', () => {
 		reviewedToday(REVIEW_REWARD_CARDS_EMPTIED_DECK);
 		dueCards = { data: [], error: null };
 		calls = [];
+		studentCalls = [];
 		rpcCalls = [];
 		getStudentBuddy.mockReset().mockResolvedValue(buddy());
 		addBuddyXpFromReviewSession.mockReset().mockResolvedValue(REWARD);
@@ -166,6 +181,8 @@ describe('rewardFinishedReviewSession', () => {
 		expect(rpcCalls).toEqual([
 			['get_due_cards_for_deck', { p_user_id: STUDENT, p_deck_id: DECK, p_all: false }]
 		]);
+		// Aucune écriture au client de l'élève
+		expect(studentCalls.filter((c) => c.op === 'update')).toEqual([]);
 		const [claim] = updates();
 		expect(claim.chain).toEqual(
 			expect.arrayContaining([
@@ -244,8 +261,10 @@ describe('rewardFinishedReviewSession', () => {
 		expect(await reward()).toBeNull();
 		const [, release] = updates();
 		expect(release.chain[0]).toEqual(['update', [{ completed_at: null }]]);
+		expect(studentCalls.filter((c) => c.op === 'update')).toEqual([]);
 		expect(release.chain).toEqual(
 			expect.arrayContaining([
+				['eq', ['user_id', STUDENT]],
 				['in', ['id', ['session-1']]],
 				['select', ['id']]
 			])
