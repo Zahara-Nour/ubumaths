@@ -16,6 +16,8 @@
 	import BuddyStatusPanel from './BuddyStatusPanel.svelte';
 	import { onMount } from 'svelte';
 	import { displayedConstance, utcDay } from '$lib/utils/buddy-constance';
+	import { nappingPhrase } from '$lib/mathoux/collection-logic';
+	import { mathouxSummarySchema } from '$lib/mathoux/summary';
 
 	interface Props {
 		streakLost?: boolean;
@@ -32,7 +34,12 @@
 	let currentMessage = $state('');
 	let bubbleVisible = $state(false);
 	let currentExpression = $state<BuddyExpression>('neutral');
+	// Lien sous la réplique : seulement pour l'annonce des Mathoux en sieste
+	let currentLink = $state<{ href: string; label: string } | null>(null);
 	let bubbleTimer: ReturnType<typeof setTimeout> | null = null;
+	// Les Mathoux en sieste ont été annoncés : la salutation au hasard se tait
+	let nappingAnnounced = false;
+	let nappingTimer: ReturnType<typeof setTimeout> | null = null;
 
 	// Status panel
 	let showStatus = $state(false);
@@ -42,6 +49,9 @@
 	const IDLE_INTERVAL_MIN = 45_000; // 45s
 	const IDLE_INTERVAL_MAX = 90_000; // 90s
 	const BUBBLE_DURATION = 5_000; // 5s
+	// Une réplique avec un lien reste plus longtemps : le temps de le suivre
+	const LINK_BUBBLE_DURATION = 10_000;
+	const CHATTERIE_HREF = '/dashboard/student/chatterie';
 
 	/**
 	 * Show a message in the speech bubble.
@@ -59,19 +69,63 @@
 
 		if (!message) return;
 
+		speak(message, buddyMessageEngine.getExpression(context), null);
+	}
+
+	/** Affiche une réplique, avec un lien éventuel, puis la masque. */
+	function speak(
+		message: string,
+		expression: BuddyExpression,
+		link: { href: string; label: string } | null
+	) {
 		currentMessage = message;
-		currentExpression = buddyMessageEngine.getExpression(context);
+		currentExpression = expression;
+		currentLink = link;
 		bubbleVisible = true;
 
 		// Auto-hide after duration
 		if (bubbleTimer) clearTimeout(bubbleTimer);
-		bubbleTimer = setTimeout(() => {
-			bubbleVisible = false;
-			currentExpression = 'neutral';
-		}, BUBBLE_DURATION);
+		bubbleTimer = setTimeout(
+			() => {
+				bubbleVisible = false;
+				currentExpression = 'neutral';
+				currentLink = null;
+			},
+			link ? LINK_BUBBLE_DURATION : BUBBLE_DURATION
+		);
 
 		// Reset idle timer
 		scheduleIdleMessage();
+	}
+
+	/**
+	 * Le Palotin, gardien de la Chatterie : annonce les Mathoux en sieste.
+	 *
+	 * Demandé APRÈS l'affichage, une fois par montage du widget : le calcul de
+	 * la collection (~6 requêtes) n'alourdit pas le layout de chaque page. Une
+	 * réponse en échec ou inattendue ne fait rien dire au Palotin.
+	 */
+	async function announceNappingMathoux(delay: number) {
+		let napping = 0;
+		try {
+			const response = await fetch('/api/student/mathoux');
+			if (!response.ok) return;
+			const parsed = mathouxSummarySchema.safeParse(await response.json());
+			if (!parsed.success) return;
+			napping = parsed.data.napping;
+		} catch {
+			return;
+		}
+		if (napping === 0) return;
+
+		nappingAnnounced = true;
+		nappingTimer = setTimeout(() => {
+			if (!buddy) return;
+			speak(`${nappingPhrase(napping)}.`, 'thinking', {
+				href: CHATTERIE_HREF,
+				label: 'Aller à la Chatterie'
+			});
+		}, delay);
 	}
 
 	function scheduleIdleMessage() {
@@ -106,9 +160,13 @@
 			if (streakLost) {
 				setTimeout(() => showMessage('streak_lost'), 1000);
 			} else {
-				// Random chance of greeting on mount
-				setTimeout(() => showMessage('idle'), 2000);
+				// Random chance of greeting on mount (sauf si les Mathoux en sieste sont annoncés)
+				setTimeout(() => {
+					if (!nappingAnnounced) showMessage('idle');
+				}, 2000);
 			}
+			// La Constance perdue parle d'abord ; les Mathoux après sa bulle
+			void announceNappingMathoux(streakLost ? 1000 + BUBBLE_DURATION : 500);
 		}
 
 		scheduleIdleMessage();
@@ -116,6 +174,7 @@
 		return () => {
 			if (bubbleTimer) clearTimeout(bubbleTimer);
 			if (idleTimer) clearTimeout(idleTimer);
+			if (nappingTimer) clearTimeout(nappingTimer);
 		};
 	});
 </script>
@@ -123,7 +182,11 @@
 {#if buddy}
 	<div class="fixed right-6 bottom-20 z-40">
 		<!-- Speech bubble -->
-		<BuddySpeechBubble message={currentMessage} visible={bubbleVisible && !showStatus} />
+		<BuddySpeechBubble
+			message={currentMessage}
+			visible={bubbleVisible && !showStatus}
+			link={currentLink}
+		/>
 
 		<!-- Status panel -->
 		{#if showStatus}

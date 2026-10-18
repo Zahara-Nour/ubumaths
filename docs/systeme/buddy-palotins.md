@@ -342,6 +342,13 @@ Le Compendium interdit d'afficher « XP » et « niveau ». Mots choisis par Dav
 (« 1 pansee » au singulier) et **Tour de panse** pour le niveau. Les identifiants de code restent
 `xp` et `level`.
 
+### Gardien de la Chatterie
+
+Au montage, `BuddyWidget` demande `GET /api/student/mathoux` (après l'affichage, pas dans le
+layout : le calcul coûte six requêtes). Si au moins un Mathou fait la sieste, la bulle dit « 2
+Mathoux font la sieste. » avec le lien « Aller à la Chatterie » (`BuddySpeechBubble`, prop `link`),
+pendant 10 s ; elle remplace la salutation au hasard. Détail : [mathoux.md](mathoux.md).
+
 ### Images
 
 `BuddyAvatar` charge `/images/buddies/<palotin>-<expression>.svg` (6 expressions par Palotin,

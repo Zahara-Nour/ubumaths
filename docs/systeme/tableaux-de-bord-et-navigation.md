@@ -61,7 +61,8 @@ Couleur de fond selon le rôle du profil (élève, prof, admin).
 - **Les liens dépendent du rôle de navigation** : `admin` si le profil est admin ou si une
   élévation admin est active (`adminElevation`, voir [auth.md](auth.md)), sinon le rôle du profil.
 - **Élève** : accueil, Mes cours, Ma progression, Mon travail, Cahier de textes, amis, Chat, le
-  marché s'il est ouvert, inventaire, Mes Signalements.
+  marché s'il est ouvert, la Chatterie (Mathoux, [mathoux.md](mathoux.md)), inventaire, Mes
+  Signalements.
 - **Prof** : accueil, Classes, Mes cours, Cahier de textes, Programme, Avancement, Mes contenus,
   Recherche, observations, export des compétences, Séries, Contrôles en ligne, Mes exercices
   Python, Figures (figures géométriques stockées), Gamification (badge : demandes de cartes VIP en attente), Modération, amis, Chat,

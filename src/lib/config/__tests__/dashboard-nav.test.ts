@@ -45,6 +45,12 @@ describe('getNavLinks', () => {
 			expect(cahier?.href).toBe('/dashboard/student/cahier-texte');
 		});
 
+		it('mène à la Chatterie de Faustroll (Mathoux)', () => {
+			const chatterie = getNavLinks('student').find((l) => l.label === 'La Chatterie');
+			expect(chatterie?.href).toBe('/dashboard/student/chatterie');
+			expect(labels(getNavLinks('teacher'))).not.toContain('La Chatterie');
+		});
+
 		it('expose Boutique uniquement quand marketplaceEnabled=true', () => {
 			expect(labels(getNavLinks('student', 0, false))).not.toContain(lore.nav.shop);
 			expect(labels(getNavLinks('student', 0, true))).toContain(lore.nav.shop);

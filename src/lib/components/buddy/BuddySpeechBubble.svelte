@@ -11,9 +11,11 @@
 	interface Props {
 		message: string;
 		visible: boolean;
+		/** Lien sous la réplique (ex. « Aller à la Chatterie »). */
+		link?: { href: string; label: string } | null;
 	}
 
-	let { message, visible }: Props = $props();
+	let { message, visible, link = null }: Props = $props();
 </script>
 
 {#if visible && message}
@@ -22,6 +24,11 @@
 		transition:fade={{ duration: 200 }}
 	>
 		<p class="leading-snug">{message}</p>
+		{#if link}
+			<a href={link.href} class="mt-1 inline-block font-medium text-primary underline">
+				{link.label}
+			</a>
+		{/if}
 		<!-- Triangle pointer -->
 		<div
 			class="absolute right-4 -bottom-1.5 h-3 w-3 rotate-45 bg-popover ring-1 ring-border"

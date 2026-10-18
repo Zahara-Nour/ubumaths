@@ -38,7 +38,8 @@ import {
 	User as UserIcon,
 	LogOut,
 	LibraryBig,
-	Shapes
+	Shapes,
+	Cat
 } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
 import { lore } from '$lib/config/lore';
@@ -107,6 +108,8 @@ export function getNavLinks(
 		}
 
 		links.push(
+			// Les Mathoux : la collection née du travail de l'élève (Mathoux v1)
+			{ href: '/dashboard/student/chatterie', label: 'La Chatterie', icon: Cat },
 			{ href: '/dashboard/student/inventory', label: lore.nav.inventory, icon: Package },
 			{ href: '/dashboard/bug-reports', label: 'Mes Signalements', icon: Bug },
 			...footerLinks
