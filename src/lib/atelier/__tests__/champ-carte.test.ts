@@ -241,8 +241,8 @@ describe('virgule et durée composée dans un calcul', () => {
 	});
 
 	it.each([
-		['(1[h]+30[min])*2', '(1\\unit{h}+30\\unit{min})\\cdot2'],
-		['2*(1[h]+30[min])', '2\\cdot(1\\unit{h}+30\\unit{min})'],
+		['(1[h]+30[min])*2', '(1\\unit{h}+30\\unit{min})\\times2'],
+		['2*(1[h]+30[min])', '2\\times(1\\unit{h}+30\\unit{min})'],
 		['(1[h]+30[min])/3', '\\frac{(1\\unit{h}+30\\unit{min})}{3}']
 	])('%s se relit après retouche', (definition, expected) => {
 		const { back } = roundTrip(definition);
@@ -269,6 +269,22 @@ describe('puissance de dix et virgule des fonctions', () => {
 		);
 		expect(parseDefinition('value', back, 'keyboard')).toEqual({ unit: 'm' });
 		expect(toLatex(astOf(back, 'keyboard', [])!)).toBe(toLatex(astOf(expected, 'keyboard', [])!));
+	});
+
+	// Restes des grandeurs (2026-10-18) : le × du champ revenait en ·
+	it.each(['10^3*2[m]', '2*3[m]'])('%s garde son × après retouche', (definition) => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'd', definition }, 'text');
+		const back = definitionFromField(
+			'value',
+			fieldLatexOf(atelier.get('d')!, atelier.functionNames)
+		);
+		expect(back).toContain('\\times');
+		expect(back).not.toContain('\\cdot');
+	});
+
+	it('un · tapé dans le champ reste un ·', () => {
+		expect(definitionFromField('value', '2\\cdot3\\,m')).not.toContain('\\times');
 	});
 
 	// Revue : le dernier recours ne fait une unité que si la relecture en rend une
