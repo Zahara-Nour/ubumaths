@@ -126,3 +126,36 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
   ≈ 0,5 ms, le rendu restant à refaire à chaque valeur. S3 n'est donc pas faite ; la
   substitution complète reste (le commentaire de `wantedFor`, `plot-sync.ts`, qui annonce ce
   changement, est à corriger à la prochaine PR qui touche ce fichier). Worktree retiré.
+
+## Lot 2 — constructions au clavier et mesures
+
+Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-geometrie-lot2-phase0.md).
+
+| PR  | Contenu                                                                             | Branche                                | État     |
+| --- | ----------------------------------------------------------------------------------- | -------------------------------------- | -------- |
+| 1   | Constructions : lecture, calcul exact, dépendances, cartes (contenu), vue Géométrie | `feat/atelier-geometrie-constructions` | en cours |
+| 2   | Mesures : `AM`, `distance`, `aire`, `perimetre`, `angle`                            | —                                      | à faire  |
+| 3   | `point_sur`, `intersection`                                                         | —                                      | à faire  |
+| 4   | `.relever`                                                                          | —                                      | à faire  |
+
+### PR 1 — journal
+
+- 2026-10-18 : worktree `../ubumaths-wt-atelier-constructions`. Tests d'abord : 32 node de lecture
+  (`construction-lecture.test.ts`, rouges : module absent), 38 node du modèle
+  (`construction-modele.test.ts`, 37 rouges), 7 node de projection (`figure-constructions.test.ts`,
+  5 rouges), 15 node du DSL (`dsl/__tests__/atelier-ajouts.test.ts`, 10 rouges), 6 navigateur
+  (`construction.svelte.test.ts`).
+- 2026-10-18 : **lecteur du DSL non réutilisé**, mesuré : il refuse `2a`, `√2`, `a²`,
+  `\frac{1}{2}`, `parallèle`, lit `(AB)` comme l'identifiant AB. Lecteur dédié
+  (`construction-read.ts`) testé contre le lecteur du DSL sur ses lignes. Implémenté : catalogue
+  L3 sauf `intersection` et `point_sur` ; raccourcis ; `;` / `,` ; accents ; refus hors catalogue ;
+  calcul exact (`construction.ts`) ; D9, cascade, cycle refusé, type refusé ; tapé seul + « Garder » ;
+  cartes (nature, construction écrite, valeur) ; projection `syncFigure` (types de figure existants,
+  aucune nouvelle surface) ; DSL : `cercle(O, r)`, `parallele(P, d)`, `perpendiculaire(P, d)`. Pas de
+  version d'état nouvelle (la définition suffit).
+- **À trancher par David** : (1) `d = (AB)` tapé AVANT A et B reste lu comme un produit A·B (en
+  attente de A et B) — seuls deux points existants en font une droite ; (2) le nom d'un cercle
+  dans la vue Géométrie est porté par un point sans marque à 45° (aucune surface de
+  `geometry-core` n'écrit le nom d'un cercle) ; (3) un rayon ≤ 0 (curseur) met le cercle en erreur ;
+  (4) la carte d'une droite ou d'un cercle montre aussi son équation, celle d'une demi-droite
+  l'équation de sa droite ; (5) `cercle(O, 3)` tapé seul répond `cercle(O, 3) : x^2+y^2=9`.
