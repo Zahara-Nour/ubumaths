@@ -3363,7 +3363,7 @@ function citesMeasureOrAngle(atelier: Atelier, text: string): boolean {
  */
 function measureLine(atelier: Atelier, text: string, result: CalcResult): CalcResult {
 	if (result.kind !== 'calcul' || !citesMeasureOrAngle(atelier, text)) return result;
-	if (/(?:°|rad)\s*\^/.test(result.output)) {
+	if (result.ast !== undefined && hasAnglePower(result.ast)) {
 		return {
 			kind: 'refus',
 			message:
@@ -3376,6 +3376,17 @@ function measureLine(atelier: Atelier, text: string, result: CalcResult): CalcRe
 		return { ...result, output: word, latex: `\\text{${word}}` };
 	}
 	return { ...result, output: result.output.replace(/\\pi(?![A-Za-z])/g, 'π') };
+}
+
+/** Une puissance d'un angle dans l'arbre d'un résultat (`°^2`, `rad^2`) : décidé sur l'ARBRE. */
+function hasAnglePower(ast: MathNode): boolean {
+	return findNodes(ast, isUnit).some((node) => {
+		const unit = (node as Extract<MathNode, { type: 'unit' }>).unit;
+		return [...unit.components].some(
+			([symbol, exponent]) =>
+				(symbol === '°' || symbol === 'rad' || symbol === 'deg') && exponent !== 1
+		);
+	});
 }
 
 /** Une session de calcul par atelier, pour les cartes (`valueAnswerOf`). */
@@ -3395,6 +3406,8 @@ export function valueAnswerOf(
 		session = { atelier, engine: new WebReplEngine(), seed: () => 1 };
 		cardSessions.set(atelier, session);
 	}
+	// Le mode de la console (exact / décimal) : la carte dit ce que dit Calcul
+	session.engine.getState().mode = atelier.calcMode;
 	const result = runInput(session, name);
 	return result.kind === 'calcul'
 		? { text: result.output, latex: result.latex ?? result.output }

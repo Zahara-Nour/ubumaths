@@ -29,6 +29,7 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { tidyTerms } from './tidy-terms';
+import { radiansInTrigonometry } from './angle-radians';
 import { derivativeOf } from './names';
 import { INTERNAL_LETTER } from './letter';
 import { astOf, readNumber, type Provenance } from './parse';
@@ -570,7 +571,9 @@ function substitutedTree(
 				: Object.fromEntries(Object.entries(variables).filter(([n]) => !keep.has(n)));
 	const substituted = substituteAll(withCalls, values, substituteFunction, { functions: cited });
 
-	return { ok: true, ast: substituted };
+	// Un angle mesuré pris par un cos, un sin : un nombre de radians (le moteur
+	// n'évalue pas le cos d'une grandeur dans une fonction — revue de la PR 2)
+	return { ok: true, ast: radiansInTrigonometry(substituted) };
 }
 
 /**

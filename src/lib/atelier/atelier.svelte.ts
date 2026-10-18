@@ -1497,6 +1497,21 @@ export class Atelier {
 		return this.#angleUnit;
 	}
 
+	/**
+	 * Le mode de la console (exact / décimal), que la carte d'une mesure recopie
+	 * pour dire ce que dit Calcul (`valueAnswerOf`, revue de la PR 2). Posé par le
+	 * pupitre après chaque saisie ; hors `serialize()`.
+	 */
+	#calcMode = $state<'exact' | 'decimal'>('exact');
+
+	get calcMode(): 'exact' | 'decimal' {
+		return this.#calcMode;
+	}
+
+	setCalcMode(mode: 'exact' | 'decimal'): void {
+		this.#calcMode = mode;
+	}
+
 	/** Changer l'unité des angles recalcule les mesures d'angle (`T = angle(…)`). */
 	setAngleUnit(unit: AngleUnit): void {
 		if (unit === this.#angleUnit) return;
@@ -3590,7 +3605,6 @@ export class Atelier {
 			// Un statut vient de changer : ce qui a été calculé avec l'ancien ne vaut plus
 			this.#constructionMemo = null;
 			this.#measureMemo = null;
-			this.#astMemo = null;
 			this.#astMemo = null;
 			this.items.forEach((o, i) => {
 				if (o.status !== 'ok' || !isConstruction(o)) return;

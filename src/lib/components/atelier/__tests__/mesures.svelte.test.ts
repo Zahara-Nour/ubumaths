@@ -149,8 +149,9 @@ describe('revue : la carte d’une mesure nommée, à l’écran', () => {
 		const { container } = await render(WithAtelier, { atelier });
 		const field = cardFor(container, 'S').querySelector('math-field') as MathfieldElement;
 		expect(field.value).toContain('\\operatorname{aire}');
-		// Le focus direct : le texte de la carte change pendant la frappe (la ligne de la
-		// mesure), le localisateur de `userEvent.click` ne la retrouvait plus
+		// Le focus direct : `userEvent.click(field)` passe par un sélecteur que vitest
+		// génère (`article >> has-text="S = 6" >> math-field`), qui ne se retrouve pas
+		// ici — la mise en page, elle, est saine (vérifié par la revue)
 		field.focus();
 		await vi.waitFor(() => expect(document.activeElement).toBe(field));
 		await userEvent.keyboard('{End}+1{Enter}');
