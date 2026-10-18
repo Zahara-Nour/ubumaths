@@ -25,6 +25,7 @@ import {
 	type CellEdit
 } from './grid';
 import { isFormula, remapColumns } from './formula';
+import { formatOf, type FormatZone } from './cell-format';
 
 // =============================================================================
 // Types
@@ -86,6 +87,12 @@ function arrivingColumns(state: AtelierState): string[] {
 	// Une colonne qui n'a qu'un titre est une colonne aussi (T4)
 	for (const letter of Object.keys(state.grid?.titles ?? {})) {
 		if (columnOfLetter(letter) !== null) add(letter);
+	}
+	// …et une colonne qui n'a qu'une mise en forme (une colonne « Monnaie » préparée)
+	for (const stored of state.grid?.formats ?? []) {
+		const zone = formatOf(stored)?.zone;
+		if (zone === undefined) continue;
+		for (let column = zone.left; column <= zone.right; column++) add(columnLetter(column));
 	}
 	// De gauche à droite, pour que la grille reçue garde son ordre
 	return slots.sort((a, b) => columnRank(a) - columnRank(b));
@@ -250,6 +257,22 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	// Un refus se dit dans le rapport, jamais en silence (revue)
 	const written = cells.length > 0 ? atelier.editCells(cells) : null;
 	if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });
+
+	// La mise en forme reçue suit ses colonnes, comme ses cases (T7) : chaque zone,
+	// colonne par colonne, va là où sa colonne a été placée
+	const formats: FormatZone[] = (state.grid?.formats ?? []).flatMap((stored) => {
+		const format = formatOf(stored);
+		if (format === null) return [];
+		const moved: FormatZone[] = [];
+		for (let column = format.zone.left; column <= format.zone.right; column++) {
+			const target = placed.get(columnLetter(column));
+			if (target === undefined) continue;
+			moved.push({ zone: { ...format.zone, left: target, right: target }, patch: format.patch });
+		}
+		return moved;
+	});
+	const styled = atelier.adoptFormats(formats);
+	if (!styled.ok) refused.push({ name: 'mise en forme', reason: styled.message });
 
 	// Tout ce qui est arrivé : cases sans nom ET entrées des listes nommées
 	// Ce qui a vraiment été écrit (une grille refusée n'a rien tiré : revue)

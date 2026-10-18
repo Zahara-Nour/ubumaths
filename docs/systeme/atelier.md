@@ -75,6 +75,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/formula.ts`        | Les formules de la grille : lecture des références (`ω_k`), ordre de calcul, cycles, repli ≈, refus       |
 | `src/lib/atelier/grid.ts`           | La grille de la vue Données : adresses (`B3`), entrées d'une colonne nommée, répartition P2, plafonds     |
 | `src/lib/atelier/grid-functions.ts` | Les fonctions du tableur (SOMME, ARRONDI…) : appels, plages, calcul en arbre équilibré, aide de la barre  |
+| `src/lib/atelier/cell-format.ts`    | La mise en forme des cases (reprise de V4) : zones, styles résolus, formats de nombre, rangement          |
 | `src/lib/atelier/tabulate.ts`       | Tabuler une fonction dans la grille : le tableau en formules, ses refus, `.tabuler`, valeurs par défaut   |
 | `src/lib/atelier/names.ts`          | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)        |
 | `src/lib/atelier/parse.ts`          | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)     |
@@ -532,6 +533,18 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   se vide pas de tirages. Garder un atelier reçu qui tirait au hasard refait ses tirages (la graine
   reste la nôtre) : le rapport le dit si des cases à hasard ont vraiment été écrites
   (`MergeReport.redrawn`, d'après `randomCells` avant et après).
+- **Mise en forme** (reprise de V4, phase 0 :
+  [atelier-tableur-mise-en-forme-phase0.md](../wip/atelier-tableur-mise-en-forme-phase0.md), validée le
+  2026-10-18) : gras, italique, alignement, couleur du texte et du fond (6 couleurs du thème), format
+  de nombre (décimales 0 à 6, pourcentage, monnaie). Rangée PAR ZONE (`FormatZone`, `#formats` de
+  l'`Atelier`), dans l'ordre où elle a été posée : la dernière zone qui touche une case l'emporte,
+  propriété par propriété (`styleAt`) ; `false`/`null` ramène au défaut (« Effacer la mise en forme »,
+  `CLEAR_PATCH`). Elle ne change que l'AFFICHAGE (`formatShown`, `Intl.NumberFormat` fr-FR, moitié
+  loin de zéro) : une formule cite la valeur. Une case vide se met en forme d'avance ; la vider garde
+  sa mise en forme. Un geste de la grille (`GridGesture.formats`, Ctrl+Z) ; la recopie et le
+  copier-coller interne l'emportent (`patchOf`, Q-MF-4) ; rangée dans `grid.formats` (validée par
+  Zod, une forgée est écartée seule) et dans le lien (Q-MF-5) ; un atelier reçu la voit suivre ses
+  colonnes, une colonne qui n'a qu'une mise en forme arrive aussi (T7). Plafond : 500 zones.
 - **Fonction à indice** (`=f_1(3)`) : depuis le 2026-10-15, les parseurs lisent `f_1(3)` comme
   un appel de f_1 quand `f_1` est déclarée (avant : `f₁ × 3`, et la grille calculait avec f, sans
   rien dire — revue du lot 3). La grille rend donc la valeur de f_1, et Calcul l'évalue aussi ;

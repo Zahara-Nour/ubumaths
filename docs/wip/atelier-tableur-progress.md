@@ -265,4 +265,11 @@ liste trouée en citant l'entrée).
 - [x] demande de David après l'inventaire de `/spreadsheet` (V4) : reprendre sa mise en forme
 - [x] phase 0 rédigée : Q-MF-1 à Q-MF-5
 - [x] validation de David (« ok vas-y »)
-- [ ] PR 1 : le modèle (`feat/atelier-mise-en-forme`)
+
+### PR 1 — le modèle (`feat/atelier-mise-en-forme`)
+
+- [x] tests : `mise-en-forme.test.ts` (24)
+- [x] `cell-format.ts` (zones, `styleAt`, `formatShown`, Zod) ; `Atelier.applyStyle`/`clearStyle`/
+      `styleAt`/`adoptFormats`, geste `formats`, recopie et collage ; `grid.formats` ; fusion
+- [ ] revue, PR, CI, merge
+- [ ] PR 2 : la barre d'outils et l'affichage dans les cases

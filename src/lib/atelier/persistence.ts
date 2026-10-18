@@ -13,6 +13,7 @@
  */
 
 import { z } from 'zod';
+import { storedFormatSchema, type StoredFormat } from './cell-format';
 import type { ObjectKind } from './types';
 import { MAX_DEFINITION_LENGTH, MAX_INTERVAL_LENGTH } from './types';
 import { MAX_CELL_LENGTH, MAX_TITLE_LENGTH, readCellName } from './grid';
@@ -187,6 +188,8 @@ export interface StoredGrid {
 	readonly relative?: boolean;
 	/** La graine des tirages (ALEA, lot 5) : mêmes tirages au rechargement et dans le lien. */
 	readonly seed?: number;
+	/** La mise en forme (reprise de V4), par zone, dans l'ordre où elle a été posée. */
+	readonly formats?: readonly StoredFormat[];
 }
 
 export interface AtelierState {
@@ -306,7 +309,8 @@ export function salvageGrid(candidate: unknown): { grid: StoredGrid; dropped: nu
 		}
 		return result;
 	};
-	const raw = candidate as { cells?: unknown; titles?: unknown; seed?: unknown } | null | undefined;
+	const raw = candidate as
+		{ cells?: unknown; titles?: unknown; seed?: unknown; formats?: unknown } | null | undefined;
 	const cells = kept(raw?.cells, storedCellSchema, (text) => text.trim() === '');
 	const titles = kept(raw?.titles, storedTitleSchema, () => false);
 	// Une graine illisible est écartée : les tirages seront neufs, la grille reste
@@ -314,9 +318,25 @@ export function salvageGrid(candidate: unknown): { grid: StoredGrid; dropped: nu
 	const grid: StoredGrid = {
 		...(Object.keys(cells).length > 0 && { cells }),
 		...(Object.keys(titles).length > 0 && { titles }),
-		...(seed.success && { seed: seed.data })
+		...(seed.success && { seed: seed.data }),
+		...salvageFormats(raw?.formats)
 	};
-	return { grid, dropped };
+	return { grid, dropped: dropped + formatsDropped(raw?.formats) };
+}
+
+/** Les mises en forme lisibles, une par une : une seule forgée n'emporte pas les autres. */
+function salvageFormats(candidate: unknown): { formats?: StoredFormat[] } {
+	if (!Array.isArray(candidate)) return {};
+	const kept = candidate.flatMap((entry) => {
+		const one = storedFormatSchema.safeParse(entry);
+		return one.success ? [one.data as StoredFormat] : [];
+	});
+	return kept.length > 0 ? { formats: kept } : {};
+}
+
+function formatsDropped(candidate: unknown): number {
+	if (!Array.isArray(candidate)) return 0;
+	return candidate.filter((entry) => !storedFormatSchema.safeParse(entry).success).length;
 }
 
 /** L'état relu d'une enveloppe validée : objets puis cellules, chacun trié à part. */
