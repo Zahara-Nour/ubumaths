@@ -24,6 +24,10 @@
 ol[class*='scheme-'] {
 	list-style: none;
 	padding-left: 0;
+	/* Numéro de départ moins 1 (« 3. » → 2), posé en ligne par ListNode : le
+	   compteur CSS ignore l'attribut `start`. Redéclaré à 0 sur chaque liste
+	   pour qu'une sous-liste n'hérite pas du départ de sa mère. */
+	--list-start: 0;
 }
 
 ol[class*='scheme-'] > li {
@@ -46,7 +50,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 1: 1) 2) 3) */
 .scheme-1-a-i.enumerate-depth-1 {
-	counter-reset: enum1;
+	counter-reset: enum1 var(--list-start);
 }
 
 .scheme-1-a-i.enumerate-depth-1 > li::before {
@@ -56,7 +60,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 2: a) b) c) */
 .scheme-1-a-i .enumerate-depth-2 {
-	counter-reset: enum2;
+	counter-reset: enum2 var(--list-start);
 }
 
 .scheme-1-a-i .enumerate-depth-2 > li::before {
@@ -66,7 +70,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 3: i) ii) iii) */
 .scheme-1-a-i .enumerate-depth-3 {
-	counter-reset: enum3;
+	counter-reset: enum3 var(--list-start);
 }
 
 .scheme-1-a-i .enumerate-depth-3 > li::before {
@@ -74,18 +78,18 @@ ol[class*='scheme-'] > li::before {
 	content: counter(enum3, lower-roman) ') ';
 }
 
-/* Depth 4+: fallback to decimal */
+/* Depth 4+: i) ii) iii) encore, comme le PDF (ubumark/generators/typst-generator.ts) */
 .scheme-1-a-i .enumerate-depth-4,
 .scheme-1-a-i .enumerate-depth-5,
 .scheme-1-a-i .enumerate-depth-6 {
-	counter-reset: enum4;
+	counter-reset: enum4 var(--list-start);
 }
 
 .scheme-1-a-i .enumerate-depth-4 > li::before,
 .scheme-1-a-i .enumerate-depth-5 > li::before,
 .scheme-1-a-i .enumerate-depth-6 > li::before {
 	counter-increment: enum4;
-	content: counter(enum4) ') ';
+	content: counter(enum4, lower-roman) ') ';
 }
 
 /* ============================================================================
@@ -95,7 +99,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 1: a) b) c) */
 .scheme-a-1-i.enumerate-depth-1 {
-	counter-reset: enum1;
+	counter-reset: enum1 var(--list-start);
 }
 
 .scheme-a-1-i.enumerate-depth-1 > li::before {
@@ -105,7 +109,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 2: 1) 2) 3) */
 .scheme-a-1-i .enumerate-depth-2 {
-	counter-reset: enum2;
+	counter-reset: enum2 var(--list-start);
 }
 
 .scheme-a-1-i .enumerate-depth-2 > li::before {
@@ -118,7 +122,7 @@ ol[class*='scheme-'] > li::before {
 .scheme-a-1-i .enumerate-depth-4,
 .scheme-a-1-i .enumerate-depth-5,
 .scheme-a-1-i .enumerate-depth-6 {
-	counter-reset: enum3;
+	counter-reset: enum3 var(--list-start);
 }
 
 .scheme-a-1-i .enumerate-depth-3 > li::before,
@@ -136,7 +140,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 1: a) b) c) */
 .scheme-a-i.enumerate-depth-1 {
-	counter-reset: enum1;
+	counter-reset: enum1 var(--list-start);
 }
 
 .scheme-a-i.enumerate-depth-1 > li::before {
@@ -146,7 +150,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 2: i) ii) iii) */
 .scheme-a-i .enumerate-depth-2 {
-	counter-reset: enum2;
+	counter-reset: enum2 var(--list-start);
 }
 
 .scheme-a-i .enumerate-depth-2 > li::before {
@@ -159,7 +163,7 @@ ol[class*='scheme-'] > li::before {
 .scheme-a-i .enumerate-depth-4,
 .scheme-a-i .enumerate-depth-5,
 .scheme-a-i .enumerate-depth-6 {
-	counter-reset: enum3;
+	counter-reset: enum3 var(--list-start);
 }
 
 .scheme-a-i .enumerate-depth-3 > li::before,
@@ -177,7 +181,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 1: 1. 2. 3. */
 .scheme-1\.a\.i.enumerate-depth-1 {
-	counter-reset: enum1;
+	counter-reset: enum1 var(--list-start);
 }
 
 .scheme-1\.a\.i.enumerate-depth-1 > li::before {
@@ -187,7 +191,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 2: a. b. c. */
 .scheme-1\.a\.i .enumerate-depth-2 {
-	counter-reset: enum2;
+	counter-reset: enum2 var(--list-start);
 }
 
 .scheme-1\.a\.i .enumerate-depth-2 > li::before {
@@ -197,7 +201,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 3: i. ii. iii. */
 .scheme-1\.a\.i .enumerate-depth-3 {
-	counter-reset: enum3;
+	counter-reset: enum3 var(--list-start);
 }
 
 .scheme-1\.a\.i .enumerate-depth-3 > li::before {
@@ -209,7 +213,7 @@ ol[class*='scheme-'] > li::before {
 .scheme-1\.a\.i .enumerate-depth-4,
 .scheme-1\.a\.i .enumerate-depth-5,
 .scheme-1\.a\.i .enumerate-depth-6 {
-	counter-reset: enum4;
+	counter-reset: enum4 var(--list-start);
 }
 
 .scheme-1\.a\.i .enumerate-depth-4 > li::before,
@@ -226,7 +230,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 1: I. II. III. */
 .scheme-I\.A\.1.enumerate-depth-1 {
-	counter-reset: enum1;
+	counter-reset: enum1 var(--list-start);
 }
 
 .scheme-I\.A\.1.enumerate-depth-1 > li::before {
@@ -236,7 +240,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 2: A. B. C. */
 .scheme-I\.A\.1 .enumerate-depth-2 {
-	counter-reset: enum2;
+	counter-reset: enum2 var(--list-start);
 }
 
 .scheme-I\.A\.1 .enumerate-depth-2 > li::before {
@@ -246,7 +250,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 3: 1. 2. 3. */
 .scheme-I\.A\.1 .enumerate-depth-3 {
-	counter-reset: enum3;
+	counter-reset: enum3 var(--list-start);
 }
 
 .scheme-I\.A\.1 .enumerate-depth-3 > li::before {
@@ -258,7 +262,7 @@ ol[class*='scheme-'] > li::before {
 .scheme-I\.A\.1 .enumerate-depth-4,
 .scheme-I\.A\.1 .enumerate-depth-5,
 .scheme-I\.A\.1 .enumerate-depth-6 {
-	counter-reset: enum4;
+	counter-reset: enum4 var(--list-start);
 }
 
 .scheme-I\.A\.1 .enumerate-depth-4 > li::before,
@@ -275,7 +279,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 1: 1. 2. 3. */
 .scheme-decimal.enumerate-depth-1 {
-	counter-reset: d1;
+	counter-reset: d1 var(--list-start);
 }
 
 .scheme-decimal.enumerate-depth-1 > li::before {
@@ -285,7 +289,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 2: 1.1. 1.2. etc. */
 .scheme-decimal .enumerate-depth-2 {
-	counter-reset: d2;
+	counter-reset: d2 var(--list-start);
 }
 
 .scheme-decimal .enumerate-depth-2 > li::before {
@@ -295,7 +299,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 3: 1.1.1. 1.1.2. etc. */
 .scheme-decimal .enumerate-depth-3 {
-	counter-reset: d3;
+	counter-reset: d3 var(--list-start);
 }
 
 .scheme-decimal .enumerate-depth-3 > li::before {
@@ -305,7 +309,7 @@ ol[class*='scheme-'] > li::before {
 
 /* Depth 4: 1.1.1.1. etc. */
 .scheme-decimal .enumerate-depth-4 {
-	counter-reset: d4;
+	counter-reset: d4 var(--list-start);
 }
 
 .scheme-decimal .enumerate-depth-4 > li::before {
@@ -316,7 +320,7 @@ ol[class*='scheme-'] > li::before {
 /* Depth 5+: just continue the pattern */
 .scheme-decimal .enumerate-depth-5,
 .scheme-decimal .enumerate-depth-6 {
-	counter-reset: d5;
+	counter-reset: d5 var(--list-start);
 }
 
 .scheme-decimal .enumerate-depth-5 > li::before,
