@@ -101,12 +101,12 @@ const NAME = /^[A-Za-z](?:_\d+)?$/;
 
 /**
  * Un raccourci : deux noms entre `(…)`, `[…]` ou `[…)`, que rien ne précède
- * qui en ferait un appel (`f(AB)`) ou un indice. `\u0000` n'apparaît jamais
+ * qui en ferait un appel (`f(AB)`) ou un indice. `\uE000` (usage privé) n’apparaît jamais
  * dans une saisie : il marque ici la place d'un raccourci déjà lu.
  */
 const SHORTCUT =
 	/(?<![A-Za-z0-9_À-ɏ])([([])\s*([A-Za-z](?:_\d+)?)\s*([A-Za-z](?:_\d+)?)\s*([)\]])/g;
-const MARK = /^\u0000(\d+)\u0000$/;
+const MARK = /^\uE000(\d+)\uE000$/;
 
 /** Un mot suivi d'une parenthèse : `milieu(`, `parallèle (`, `demi-droite(`. */
 const CALL_HEAD = /^([A-Za-zÀ-ɏ_]+(?:-[A-Za-zÀ-ɏ_]+)*)\s*\(/;
@@ -191,14 +191,14 @@ function masked(text: string): Masked {
 		// `(AB]` : pas une écriture de manuel, laissée telle quelle
 		if (kind === null) return whole;
 		shortcuts.push({ kind, a, b, written: `${open}${a}${b}${close}` });
-		return `\u0000${shortcuts.length - 1}\u0000`;
+		return `\uE000${shortcuts.length - 1}\uE000`;
 	});
 	return { text: replaced, shortcuts };
 }
 
 /** Le texte d'origine d'un morceau masqué (un raccourci lu comme un nombre : `(ab)`). */
 function unmasked(text: string, mask: Masked): string {
-	return text.replace(/\u0000(\d+)\u0000/g, (_, i: string) => mask.shortcuts[Number(i)].written);
+	return text.replace(/\uE000(\d+)\uE000/g, (_, i: string) => mask.shortcuts[Number(i)].written);
 }
 
 /** Lecture interne : un refus remonte par exception, attrapée par `readConstruction`. */

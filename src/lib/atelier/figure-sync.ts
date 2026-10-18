@@ -597,7 +597,7 @@ function poseConstruction(
 		// ajouter montrerait le nom de chaque cercle de toutes les figures de cours.
 		// Le nom est porté ici par un point SANS MARQUE, sur le cercle à 45° — il
 		// suit le rayon et le centre comme le cercle, curseurs compris.
-		const along = multiply(wanted.radius, mathNumber(String(Math.SQRT1_2)));
+		const along = multiply(wanted.radius, mathNumber(String(Math.SQRT1_2)), 'dot');
 		pointAt(figure, add(wanted.center[0], along), add(wanted.center[1], along), sliders, {
 			label,
 			style: { pointSize: 0 }
