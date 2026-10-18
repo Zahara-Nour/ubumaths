@@ -149,9 +149,9 @@
 			void openTabulate();
 			return;
 		}
-		// La console préparée prend le focus ; une carte supprimée le confie au
-		// panneau (WCAG 2.4.3) : le bouton du menu, lui, n'existe plus
-		if (action.id === 'image' || action.id === 'remove') focusLeaves = true;
+		// Une carte supprimée confie le focus au panneau (WCAG 2.4.3) : le bouton
+		// du menu, lui, n'existe plus
+		if (action.id === 'remove') focusLeaves = true;
 		onAction?.(action, object);
 	}
 

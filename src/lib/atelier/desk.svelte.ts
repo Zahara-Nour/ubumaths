@@ -290,6 +290,9 @@ export class CalcDesk {
 	/**
 	 * L'image d'un nombre, calculée depuis la CARTE (phase 0 `/grapheur` §3 A4).
 	 *
+	 * La carte ne la propose plus (2026-10-18) : ce chemin sert au rejeu des
+	 * historiques exportés avant, qui contiennent le geste `image`.
+	 *
 	 * ⚠️ Ne passe PAS par `submit`, qui vide le brouillon de Calcul : l'élève
 	 * pouvait y être en train de taper autre chose. La ligne va dans
 	 * l'historique comme toute action (G7) ; la carte affiche le résultat.
@@ -840,8 +843,8 @@ export class CalcDesk {
 	/**
 	 * Exécuter une action cliquée dans le panneau.
 	 *
-	 * « Image d'un nombre » n'en est plus une : c'est un champ de la carte
-	 * (`image`, phase 0 `/grapheur` §3 A4).
+	 * « Image d'un nombre » n'en est plus une : `f(2)` s'écrit dans la console
+	 * (décision de David du 2026-10-18). `image` ne sert plus qu'au rejeu.
 	 */
 	runFromPanel(actionId: string, name: string, graph?: GrapheurStore): PanelOutcome {
 		// Posé avant tout : « Comparer » passe par `submit`, qui le remplace par
@@ -861,12 +864,6 @@ export class CalcDesk {
 		// ajouter `lignes`, `colonnes` ou `fréquences` avant de valider
 		if (actionId.startsWith('cross:')) {
 			this.draft = `.croiser ${name} ${actionId.slice('cross:'.length)}`;
-			return 'needs-argument';
-		}
-		// « Image d'un nombre » (lot 3 de la refonte) : `f(` est préparé, l'élève
-		// tape x et valide — le calcul est celui de `f(3)` tapé à la main
-		if (actionId === 'image') {
-			this.draft = `${name}(`;
 			return 'needs-argument';
 		}
 		// « Simuler » a besoin de n : la commande est préparée, 100 par défaut

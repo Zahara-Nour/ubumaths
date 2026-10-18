@@ -1071,8 +1071,9 @@ les autres objets gardent leur vue repliée / développée (lot 4).
   dans l'élément (jamais `disabled` : il reste atteignable au clavier ; marqueur
   `data-indisponible`). Ce qui se LIT (point de tangence, bornes, aire, longueur) reste sous la
   ligne, seulement allumé (`CurveSettings compact`).
-- **« Image d'un nombre »** (action `image`) : `runFromPanel` prépare `f(` dans la console
-  (`needs-argument`), qui s'ouvre — plus de petit champ dans la carte.
+- **Pas d'« Image d'un nombre »** (décision de David du 2026-10-18) : `f(2)` s'écrit tout seul
+  dans la console, la carte ne propose ni action ni champ. `CalcDesk.image` reste, pour rejouer
+  les historiques exportés avant, qui contiennent le geste `image`.
 - **« Tabuler »** : une fenêtre « de / à / pas » pré-remplie ; un refus s'y dit, un succès la
   ferme (focus dans la grille) et sa phrase s'écrit sous la carte.
 - **Les cartes qui suivent** (`f′`, `f⁻¹`) : formule calculée (jamais éditable), une icône de
