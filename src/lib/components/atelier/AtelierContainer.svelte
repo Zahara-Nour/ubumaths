@@ -17,7 +17,7 @@
 		type Session,
 		type SessionNotice
 	} from '$lib/atelier/session';
-	import { isFunction, type AtelierObject } from '$lib/atelier/types';
+	import { isFunction, isList, type AtelierObject } from '$lib/atelier/types';
 	import type { ImportedHistory } from '$lib/atelier/history-import';
 	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
 	import { derivativeName, displayName } from '$lib/atelier/names';
@@ -521,6 +521,15 @@
 		if (action.id === 'plot') {
 			atelier.setPlotted(object.name, !object.plotted);
 			revealView('graphe');
+			return;
+		}
+		// « Modifier dans Données » (lot 4a) : une liste se modifie dans la grille,
+		// sa colonne choisie en arrivant — comme Tabuler y emmène
+		if (action.id === 'data' && isList(object)) {
+			revealView('donnees');
+			const bottom = Math.max(1, object.definition.split(';').length);
+			dataZone = { left: object.column, right: object.column, top: 1, bottom };
+			dataKey++;
 			return;
 		}
 

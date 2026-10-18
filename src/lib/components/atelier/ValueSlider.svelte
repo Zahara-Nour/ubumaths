@@ -1,16 +1,16 @@
 <script lang="ts">
 	/**
-	 * Le curseur d'une valeur, dans sa carte — phase 0 `/grapheur` §4.
+	 * Le curseur d'une valeur, sous la ligne de sa carte — phase 0 `/grapheur` §4.
 	 *
-	 * Bouger le pouce change la valeur (K2) ; les bornes et le pas se règlent ici
-	 * (K1), refusés avec leur raison (E1). Tout passe par l'atelier
-	 * (`slideTo`, `setSlider`) : le curseur n'a pas d'état à lui.
+	 * Bouger le pouce change la valeur (K2). Les bornes et le pas se règlent dans
+	 * une petite fenêtre ouverte depuis le menu de la carte (`SliderSettings`,
+	 * lot 4a de la refonte). Tout passe par l'atelier (`slideTo`) : le curseur
+	 * n'a pas d'état à lui.
 	 */
 	import { useAtelier } from '$lib/atelier/context';
 	import { constantOf } from '$lib/atelier/atelier.svelte';
 	import type { Slider as SliderSettings, ValueObject } from '$lib/atelier/types';
 	import { Slider } from '$lib/components/ui/slider';
-	import { Input } from '$lib/components/ui/input';
 
 	interface Props {
 		object: ValueObject;
@@ -71,96 +71,24 @@
 		thumb.setAttribute('aria-valuetext', valueText);
 		thumb.setAttribute('aria-label', `Curseur de ${object.name}`);
 	});
-
-	/** Pourquoi le dernier réglage n'a pas été retenu. */
-	let refusal = $state<{ field: keyof SliderSettings; message: string } | null>(null);
-
-	function handleSettingInput(field: keyof SliderSettings) {
-		return (event: Event & { currentTarget: HTMLInputElement }) => {
-			const parsed = Number.parseFloat(event.currentTarget.value.replace(',', '.'));
-			if (!Number.isFinite(parsed)) return;
-			const result = atelier.setSlider(object.name, { [field]: parsed });
-			refusal = result.ok ? null : { field, message: result.message };
-		};
-	}
-
-	/**
-	 * En quittant le champ, il reprend la valeur RETENUE (saisie vide ou refusée).
-	 * Le message de refus, lui, reste : effacé au départ du champ, un élève au
-	 * lecteur d'écran n'avait pas le temps de le lire (revue a11y du lot 4).
-	 */
-	function handleSettingChange(field: keyof SliderSettings) {
-		return (event: Event & { currentTarget: HTMLInputElement }) => {
-			event.currentTarget.value = String(slider[field]);
-		};
-	}
-
-	/** Le nom de chaque champ COMMENCE par le mot visible (WCAG 2.5.3). */
-	const FIELDS = $derived<{ field: keyof SliderSettings; name: string; short: string }[]>([
-		{ field: 'min', name: `de, minimum du curseur de ${object.name}`, short: 'de' },
-		{ field: 'max', name: `à, maximum du curseur de ${object.name}`, short: 'à' },
-		{ field: 'step', name: `pas du curseur de ${object.name}`, short: 'pas' }
-	]);
-
-	const refusalId = $derived(`refus-curseur-${object.name}`);
 </script>
 
-<div class="curseur">
-	<div class="ligne" bind:this={zone}>
-		<Slider
-			class="flex-1"
-			type="single"
-			bind:value={() => toNotch(value), handleSlide}
-			min={0}
-			max={notches}
-			step={1}
-		/>
-	</div>
-	<div class="ligne" role="group" aria-label={`Réglages du curseur de ${object.name}`}>
-		{#each FIELDS as item (item.field)}
-			<span class="mot" aria-hidden="true">{item.short}</span>
-			<Input
-				type="number"
-				step="any"
-				value={slider[item.field]}
-				oninput={handleSettingInput(item.field)}
-				onchange={handleSettingChange(item.field)}
-				class="h-8 w-20 text-sm"
-				aria-label={item.name}
-				aria-invalid={refusal?.field === item.field}
-				aria-describedby={refusal?.field === item.field ? refusalId : undefined}
-			/>
-		{/each}
-	</div>
-	<!-- Toujours dans l'arbre (pas de `display: none`) : une alerte qui apparaît
-	     avec son contenu n'est pas annoncée de façon fiable (revue a11y) -->
-	<p class="refus" id={refusalId} role="alert">{refusal?.message ?? ''}</p>
+<div class="curseur" bind:this={zone}>
+	<Slider
+		class="flex-1"
+		type="single"
+		bind:value={() => toNotch(value), handleSlide}
+		min={0}
+		max={notches}
+		step={1}
+	/>
 </div>
 
 <style>
 	.curseur {
 		display: flex;
-		flex-direction: column;
-		gap: 0.375rem;
-	}
-	.ligne {
-		display: flex;
-		flex-wrap: wrap;
 		align-items: center;
-		gap: 0.25rem 0.5rem;
-		font-size: 0.8125rem;
-	}
-	.mot {
-		font-family: var(--font-serif, serif);
-		color: var(--color-muted-foreground);
-	}
-	.refus {
-		margin: 0;
-		font-size: 0.75rem;
-		font-weight: 600;
-	}
-	.refus:empty {
-		visibility: hidden;
-		height: 0;
+		/* Aligné sur le champ de la ligne : le point et le nom le précèdent */
+		padding: 0.25rem 0.25rem 0.25rem 1.75rem;
 	}
 </style>
