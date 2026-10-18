@@ -134,6 +134,30 @@ Même grammaire pour tous : une ligne `● nom = [définition éditable]`, puis 
   - Plus tard : la lecture d'un antécédent (de `k` sur l'axe des ordonnées vers la courbe).
 - **Croiser / simuler** (actions des listes qui préparent une commande dans la console) : ajoutent leur texte à la suite du brouillon de l'élève au lieu de l'écraser (recommandation de Claude validée par David le 2026-10-18).
 
+### Lot 4 — proposition détaillée (2026-10-18), à valider
+
+Même grammaire que la carte de fonction (lot 3) : une ligne `● nom = [définition éditable]`, l'œil si l'objet se trace, un bouton menu ; même règle de menu (lot 3 bis). Le contenu des cartes point et courbe (nature, construction, coordonnées) appartient à la session atelier-geometry ; ce lot n'en fait que la mise en page.
+
+| Type              | Sur la ligne                                                                  | Point de couleur → fenêtre | Menu : Affichage                    | Menu : Actions                                                                                                                                                           |
+| ----------------- | ----------------------------------------------------------------------------- | -------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| valeur            | `a = [3]` ; avec unité `v = [3 m/s]` ; **curseur sous la ligne si paramètre** | —                          | Curseur (bornes, pas)               | Convertir (si unité)                                                                                                                                                     |
+| suite explicite   | `u(n) = [2n+1]`                                                               | couleur, trait             | Nuage / escalier, nombre de marches | Premiers termes                                                                                                                                                          |
+| suite récurrente  | `u(n+1) = [2u(n)+1]` puis `u(0) = [3]` en petit                               | idem                       | idem                                | idem                                                                                                                                                                     |
+| liste             | `L = {3 ; 5 ; 8 ; …}` (12 valeurs), **non éditable sur la ligne**             | —                          | —                                   | Statistiques, Diagramme ; sous-menu **« Avec une autre liste »** (effectifs, probabilités, simuler, comparer, nuage, ajustement, tableau croisé) ; Modifier dans Données |
+| liste qualitative | `C = {rouge ; vert ; …}` (8 modalités)                                        | —                          | —                                   | Effectifs, Diagramme en barres, Diagramme circulaire, Tableau croisé avec…                                                                                               |
+| point             | `A = [(1 ; 2)]` ; construit : `M = [milieu(A, B)]` puis `(2 ; 3)` en gris     | couleur, taille            | Étiquette                           | (contenu : atelier-geometry)                                                                                                                                             |
+| courbe            | `d : [y = 3x − 2]` + nature en étiquette discrète (« droite »)                | couleur, trait             | —                                   | (contenu : atelier-geometry)                                                                                                                                             |
+
+Partout : Renommer et Supprimer en fin de menu ; un objet qui dépend d'un autre (dérivée, point construit) porte l'icône de lien + infobulle (lot 3).
+
+**Questions pour David (recommandation en premier) :**
+
+1. **Liste : modifier où ?** (a) dans Données (le tableur), la ligne montre un aperçu tronqué ← recommandé : une liste de 30 valeurs ne s'édite pas dans un champ d'une ligne ; (b) champ éditable sur la ligne aussi.
+2. **Actions à deux listes : un sous-menu « Avec une autre liste » → choix de la liste → action** ← recommandé (aujourd'hui un MySelect « avec… » dans la carte) ; ou une entrée par couple (liste longue).
+3. **Valeur qui n'est pas un paramètre : curseur caché, à afficher depuis le menu** ← recommandé ; ou toujours visible.
+4. **Suite récurrente : premier terme sur la même ligne** (`u(n+1) = … ; u(0) = 3`) ou **sous la ligne en petit** ← recommandé (deux champs éditables, lisibles sur téléphone).
+5. **Point construit : coordonnées en gris à droite, non éditables**, la construction étant ce qu'on modifie ← recommandé ; à confirmer avec atelier-geometry.
+
 ## Lot 5 — Annuler / Rétablir (chantier à part)
 
 Sa phase 0 vient après les lots 1 à 3. Voici les questions qu'elle devra trancher :
