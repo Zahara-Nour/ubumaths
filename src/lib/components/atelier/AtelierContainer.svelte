@@ -40,8 +40,19 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { cascadeMessage, citingCellsNote, removedMessage } from '$lib/atelier/removal';
 	import { tabulationReport } from '$lib/atelier/tabulate';
-	import { FolderOpen, RotateCcw, Save, Share2 } from '@lucide/svelte';
+	import {
+		EllipsisVertical,
+		FolderOpen,
+		RotateCcw,
+		Save,
+		Share2,
+		SquareTerminal,
+		X
+	} from '@lucide/svelte';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import ToolButton from './ToolButton.svelte';
+	import { FIELD_SELECTOR, consoleShortcut, isMacPlatform } from '$lib/atelier/console-key';
+	import { downloadHistory, historyToUbumark } from '$lib/atelier/history-export';
 	import { rovingToolbar } from './roving-toolbar';
 	import {
 		ATELIER_FILE_TOO_BIG,
@@ -57,8 +68,13 @@
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
 		atelier?: Atelier;
-		/** Vue ouverte au démarrage. */
+		/**
+		 * Vue ouverte au démarrage (le Graphe par défaut). Une vue DEMANDÉE
+		 * (`/grapheur`) s'ouvre console fermée ; sinon la console est ouverte.
+		 */
 		view?: ViewId;
+		/** La console ouverte au démarrage ; par défaut, seulement sans vue demandée. */
+		consoleAtStart?: boolean;
 		/** Ne rien charger ni ranger — mode éphémère (§6, §7 N2). */
 		ephemeral?: boolean;
 		/** L'atelier reçu par l'URL. Sa présence fait le mode éphémère. */
@@ -74,22 +90,32 @@
 		heading?: string;
 	}
 
-	type ViewId = 'calcul' | 'graphe' | 'figure' | 'donnees';
+	type ViewId = 'graphe' | 'figure' | 'donnees';
 
 	/**
 	 * Géométrie entre Graphe et Données (géométrie v2, Q5 révisée) : les deux vues
 	 * graphiques côte à côte. L'identifiant reste `figure` (`FigureView`).
+	 *
+	 * Plus d'onglet Calcul (lot 2 de `atelier-refonte-interface-phase0.md`) : la
+	 * console est un volet qui descend PAR-DESSUS la vue.
 	 */
 	const VIEWS: { id: ViewId; label: string }[] = [
-		{ id: 'calcul', label: 'Calcul' },
 		{ id: 'graphe', label: 'Graphe' },
 		{ id: 'figure', label: 'Géométrie' },
 		{ id: 'donnees', label: 'Données' }
 	];
 
+	/** Hauteur de la console, en % de la scène : par défaut, et ses bornes à la poignée. */
+	const CONSOLE_HEIGHT = 40;
+	const CONSOLE_MIN = 20;
+	const CONSOLE_MAX = 90;
+	/** En dessous, la console prend toute la scène (phase 0, lot 2 : sur téléphone). */
+	const NARROW_QUERY = '(max-width: 640px)';
+
 	let {
 		atelier = new Atelier(),
-		view = 'calcul',
+		view,
+		consoleAtStart,
 		ephemeral = false,
 		received = null,
 		notice = null,
@@ -264,7 +290,15 @@
 	// que la prop le ramène en arrière : capture volontaire, pattern documenté
 	// dans `docs/pratiques/warning-svelte.md` §1.
 	// svelte-ignore state_referenced_locally
-	let activeView = $state<ViewId>(view);
+	let activeView = $state<ViewId>(view ?? 'graphe');
+	/** La console est-elle ouverte ? Même capture : la prop ne donne que le départ. */
+	// svelte-ignore state_referenced_locally
+	let consoleOpen = $state(consoleAtStart ?? view === undefined);
+	let consoleHeight = $state(CONSOLE_HEIGHT);
+	let calculView = $state<CalculView | null>(null);
+	let consoleButton = $state<ToolButton | null>(null);
+	let consolePanel = $state<HTMLElement | null>(null);
+	let scene = $state<HTMLElement | null>(null);
 	let selected = $state<string | null>(null);
 	let notices = $state<SessionNotice[]>([]);
 
@@ -481,7 +515,7 @@
 		}
 		if (action.id === 'plot') {
 			atelier.setPlotted(object.name, !object.plotted);
-			showView('graphe');
+			revealView('graphe');
 			return;
 		}
 
@@ -489,9 +523,10 @@
 		const derivative = derivativeName(object.name);
 		const derivativeExisted = action.id === 'derive' && atelier.get(derivative) !== undefined;
 
-		// ⚠️ Décision G7 de David : une action écrit sa ligne dans Calcul SANS y
-		// emmener l'élève — il y va quand il le décide ; l'onglet signale le
-		// nouveau résultat. `graph` suit, parce que « Nuage de points » écrit dedans.
+		// ⚠️ Décision G7 de David : une action écrit sa ligne dans la console SANS
+		// l'ouvrir — l'élève l'ouvre quand il le décide ; le bouton de la console
+		// compte le nouveau résultat (A3). `graph` suit, parce que « Nuage de
+		// points » écrit dedans.
 		const before = desk.entries.length;
 		const outcome = desk.runFromPanel(action.id, object.name, graph);
 		if (outcome === 'unsupported') return;
@@ -499,15 +534,15 @@
 		if (derivativeExisted && atelier.get(derivative)?.status === 'ok') selected = derivative;
 
 		// Une commande PRÉPARÉE (« Tableau croisé », « Simuler ») se termine au
-		// clavier, dans Calcul : y aller est le geste lui-même, pas une bascule.
+		// clavier, dans la console : l'ouvrir est le geste lui-même, pas une bascule.
 		// ⚠️ Écart avec A1, qui range `.simuler` parmi les actions sans bascule :
 		// signalé à David (le geste ne produit rien tant que n n'est pas validé)
 		if (outcome === 'needs-argument') {
-			showView('calcul');
+			openConsole();
 			return;
 		}
-		if (desk.entries.length > before && activeView !== 'calcul') {
-			announce('Nouvelle ligne dans l’onglet Calcul.');
+		if (desk.entries.length > before && !consoleOpen) {
+			announce('Nouvelle ligne dans la console.');
 		}
 
 		// Un nuage se voit dans le Graphe, un diagramme dans les Données : c'est là
@@ -521,14 +556,14 @@
 		// Retirer un diagramme ne mène nulle part : on reste où l'on est
 		const chartShown = isChart && atelier.chartOf(object.name) !== undefined;
 		// A5 : ce qui se VOIT ailleurs (nuage, diagramme) y emmène, comme « Tracer »
-		if (root === 'scatter') showView('graphe');
-		else if (chartShown) showView('donnees');
+		if (root === 'scatter') revealView('graphe');
+		else if (chartShown) revealView('donnees');
 		// K1 : 𝒞f affichée se voit dans Géométrie, comme « Tracer » mène au Graphe ;
 		// la retirer ne mène nulle part
 		const after = atelier.get(object.name);
 		const shownInFigure =
 			root === 'figure' && after !== undefined && isFunction(after) && after.inFigure === true;
-		if (shownInFigure) showView('figure');
+		if (shownInFigure) revealView('figure');
 
 		if (isChart) {
 			announce(
@@ -548,22 +583,130 @@
 	}
 
 	/**
-	 * Les lignes de Calcul que l'élève a déjà eues sous les yeux.
+	 * Les lignes de la console que l'élève a déjà eues sous les yeux.
 	 *
-	 * Mis à jour en ENTRANT dans Calcul et en en SORTANT : ce qu'on calcule
-	 * sous ses yeux n'est pas « nouveau » quand on part vers le Graphe.
+	 * Mis à jour en OUVRANT la console et en la FERMANT : ce qu'on calcule sous
+	 * ses yeux n'est pas « nouveau » quand on la referme.
 	 */
 	let seen = $state(0);
 
-	/** Les résultats arrivés dans Calcul pendant qu'on regardait ailleurs (A3). */
-	const unseen = $derived(activeView === 'calcul' ? 0 : Math.max(0, desk.entries.length - seen));
+	/** Les résultats arrivés dans la console pendant qu'elle était fermée (A3). */
+	const unseen = $derived(consoleOpen ? 0 : Math.max(0, desk.entries.length - seen));
 
 	function showView(next: ViewId) {
-		if (activeView === 'calcul' || next === 'calcul') seen = desk.entries.length;
 		activeView = next;
 		// La zone de Tabuler ne vaut qu'à l'arrivée : un retour par l'onglet ne la
 		// resélectionne pas (revue — sur une grille annulée, 20 cases restaient choisies)
 		dataZone = null;
+	}
+
+	/**
+	 * Une action qui MONTRE quelque chose dans une vue (A5 : tracer, nuage,
+	 * diagramme, Tabuler, Géométrie) y emmène. Sur téléphone, la console couvre
+	 * toute la scène : on la referme, sinon l'élève ne verrait rien.
+	 */
+	function revealView(next: ViewId) {
+		showView(next);
+		if (consoleOpen && window.matchMedia?.(NARROW_QUERY).matches) closeConsole();
+	}
+
+	// =========================================================================
+	// La console déroulante (lot 2 de `atelier-refonte-interface-phase0.md`)
+	// =========================================================================
+
+	/** L'ouvrir : le focus dans son champ, comme on vient y taper. */
+	async function openConsole() {
+		seen = desk.entries.length;
+		consoleOpen = true;
+		await tick();
+		calculView?.focusInput();
+	}
+
+	/** La fermer : un focus resté dedans revient au bouton (il ne tombe pas sur la page). */
+	function closeConsole() {
+		seen = desk.entries.length;
+		const focusInside = consolePanel?.contains(document.activeElement) ?? false;
+		consoleOpen = false;
+		if (focusInside) consoleButton?.focus();
+	}
+
+	function toggleConsole() {
+		if (consoleOpen) closeConsole();
+		else openConsole();
+	}
+
+	/**
+	 * Les raccourcis (`console-key.ts`) : la touche sous Échap hors d'un champ,
+	 * Ctrl+Entrée partout. En CAPTURE : le champ mathématique ne doit pas
+	 * prendre Ctrl+Entrée pour un calcul.
+	 */
+	function handleConsoleShortcut(event: KeyboardEvent) {
+		if (event.defaultPrevented || event.isComposing) return;
+		const target = event.target instanceof Element ? event.target : null;
+		const inField = target !== null && target.closest(FIELD_SELECTOR) !== null;
+		const nav = navigator as Navigator & { userAgentData?: { platform?: string } };
+		if (!consoleShortcut(event, { isMac: isMacPlatform(nav), inField })) return;
+		// Une fenêtre de confirmation ouverte garde la main
+		if (document.querySelector('[role="alertdialog"], [role="dialog"][data-state="open"]')) return;
+		event.preventDefault();
+		event.stopPropagation();
+		toggleConsole();
+	}
+
+	/**
+	 * Échap dans la console la ferme — sauf si quelqu'un dedans l'a déjà pris
+	 * (liste de commandes ouverte du champ texte). ⚠️ Le champ mathématique
+	 * prend TOUJOURS Échap (`preventDefault`, sinon MathLive passe en saisie
+	 * LaTeX) : sa liste ouverte arrête Échap (`stopPropagation`), et un Échap
+	 * qui arrive ici depuis lui ferme donc bien la console.
+	 */
+	function handleConsoleKeydown(event: KeyboardEvent) {
+		if (event.key !== 'Escape') return;
+		const fromMathField = event.target instanceof Element && event.target.closest('math-field');
+		if (event.defaultPrevented && !fromMathField) return;
+		event.preventDefault();
+		closeConsole();
+	}
+
+	/** La poignée : glisser pour changer la hauteur, en % de la scène. */
+	function handleResizeStart(event: PointerEvent) {
+		if (scene === null) return;
+		event.preventDefault();
+		const handle = event.currentTarget as HTMLElement;
+		handle.setPointerCapture(event.pointerId);
+		const box = scene.getBoundingClientRect();
+		const move = (moved: PointerEvent) => {
+			const percent = ((moved.clientY - box.top) / box.height) * 100;
+			consoleHeight = Math.round(Math.min(CONSOLE_MAX, Math.max(CONSOLE_MIN, percent)));
+		};
+		const stop = () => {
+			handle.removeEventListener('pointermove', move);
+			handle.removeEventListener('pointerup', stop);
+			handle.removeEventListener('pointercancel', stop);
+		};
+		handle.addEventListener('pointermove', move);
+		handle.addEventListener('pointerup', stop);
+		handle.addEventListener('pointercancel', stop);
+	}
+
+	/** La poignée au clavier : flèches haut / bas, de 5 en 5. */
+	function handleResizeKey(event: KeyboardEvent) {
+		const step = event.key === 'ArrowDown' ? 5 : event.key === 'ArrowUp' ? -5 : 0;
+		if (step === 0) return;
+		event.preventDefault();
+		consoleHeight = Math.min(CONSOLE_MAX, Math.max(CONSOLE_MIN, consoleHeight + step));
+	}
+
+	/** L'historique en ubumark, à recopier dans une fiche : copié ou téléchargé. */
+	async function copyForSheet() {
+		try {
+			await navigator.clipboard.writeText(historyToUbumark(desk.entries, new Date()));
+			toaster.success('Historique copié : colle-le dans une fiche.');
+		} catch {
+			toaster.error(
+				'La copie a été refusée par le navigateur. Télécharge l’historique à la place.'
+			);
+		}
 	}
 
 	/** La zone que la vue Données sélectionne en arrivant, et sa clé (Tabuler : la vue est recréée). */
@@ -578,7 +721,7 @@
 		const done = atelier.tabulate({ name, ...bounds });
 		if (!done.ok) return { text: done.message, failed: true };
 		const [x, image] = done.columns;
-		showView('donnees');
+		revealView('donnees');
 		// Deux colonnes voisines : la zone entière ; sinon la zone engloberait une
 		// colonne de l'élève entre les deux, et seule la première case est choisie
 		dataZone =
@@ -605,7 +748,7 @@
 	}
 </script>
 
-<svelte:window onkeydown={handleUndoKey} />
+<svelte:window onkeydown={handleUndoKey} onkeydowncapture={handleConsoleShortcut} />
 
 <div class="atelier">
 	<ObjectPanel
@@ -654,6 +797,18 @@
 				/>
 			</div>
 			<div class="outils">
+				<!-- La console (lot 2) : son compteur dit qu'un résultat attend dedans (A3) -->
+				<ToolButton
+					bind:this={consoleButton}
+					label="Console"
+					icon={SquareTerminal}
+					hint="touche sous Échap, ou Ctrl+Entrée"
+					expanded={consoleOpen}
+					controls="atelier-console"
+					badge={unseen}
+					badgeLabel="{unseen} nouveau{unseen > 1 ? 'x' : ''} résultat{unseen > 1 ? 's' : ''}"
+					onclick={toggleConsole}
+				/>
 				{#if received === null}
 					<ToolButton
 						label="Partager"
@@ -712,14 +867,6 @@
 					onclick={() => showView(item.id)}
 				>
 					{item.label}
-					{#if item.id === 'calcul' && unseen > 0}
-						<!-- A3 : un résultat attend dans Calcul -->
-						<!-- Un NOMBRE contrasté, pas un point orange (revue a11y : 2,2:1) -->
-						<span class="nouveau" aria-hidden="true">{unseen}</span>
-						<span class="sr-only">
-							— {unseen} nouveau{unseen > 1 ? 'x' : ''} résultat{unseen > 1 ? 's' : ''}
-						</span>
-					{/if}
 				</button>
 			{/each}
 		</nav>
@@ -736,26 +883,109 @@
 			{/each}
 		</ul>
 
-		<section class="vue" class:pleine={activeView === 'graphe' || activeView === 'figure'}>
-			{#if activeView === 'calcul'}
-				<CalculView {desk} {inputMode} bind:mathLatex />
-			{:else if activeView === 'graphe'}
-				<!--
+		<div class="scene" bind:this={scene}>
+			<section class="vue" class:pleine={activeView === 'graphe' || activeView === 'figure'}>
+				{#if activeView === 'graphe'}
+					<!--
 					`panel={false}` : dans l'atelier, c'est « Mes objets » qui tient ce
 					rôle. Deux listes de fonctions côte à côte ne posent pas seulement la
 					question de savoir laquelle fait foi — l'élève y PERD sa saisie, que
 					la synchronisation réécrit aussitôt avec la définition de l'objet.
 				-->
-				<GrapheurContainer store={graph} panel={false} />
-			{:else if activeView === 'figure'}
-				<!-- Une projection de l'atelier, comme les autres : elle lit l'atelier, ne garde rien -->
-				<FigureView />
-			{:else}
-				{#key dataKey}
-					<DataView initialZone={dataZone} />
-				{/key}
-			{/if}
-		</section>
+					<GrapheurContainer store={graph} panel={false} />
+				{:else if activeView === 'figure'}
+					<!-- Une projection de l'atelier, comme les autres : elle lit l'atelier, ne garde rien -->
+					<FigureView />
+				{:else}
+					{#key dataKey}
+						<DataView initialZone={dataZone} />
+					{/key}
+				{/if}
+			</section>
+
+			<!--
+			La console déroulante (lot 2) : elle descend PAR-DESSUS la vue, qu'on
+			voit dessous. Une RÉGION nommée et non une `dialog` : elle n'est pas
+			modale — la vue et « Mes objets » restent utilisables pendant qu'elle
+			est ouverte, et le focus n'y est pas piégé. Montée en permanence :
+			l'historique, le brouillon et les étapes dépliées survivent à la
+			fermeture ; `inert` la sort du parcours clavier quand elle est fermée.
+			Le `keydown` n'y fait qu'écouter Échap remonté de ses champs (fermer) :
+			la région n'est pas elle-même un contrôle.
+		-->
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<div
+				bind:this={consolePanel}
+				id="atelier-console"
+				class="console"
+				class:ouverte={consoleOpen}
+				role="region"
+				aria-label="Console"
+				inert={!consoleOpen}
+				style:--hauteur="{consoleHeight}%"
+				onkeydown={handleConsoleKeydown}
+			>
+				<div class="console-tete">
+					<span class="console-titre" aria-hidden="true">Console</span>
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger>
+							{#snippet child({ props })}
+								<button
+									{...props}
+									type="button"
+									class="console-bouton"
+									aria-label="Menu de la console"
+									title="Menu de la console"
+								>
+									<EllipsisVertical size={16} aria-hidden="true" />
+								</button>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content align="end">
+							<DropdownMenu.Item disabled={desk.entries.length === 0} onclick={copyForSheet}>
+								Copier l’historique pour une fiche
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								disabled={desk.entries.length === 0}
+								onclick={() => downloadHistory(desk.entries, 'ubumark')}
+							>
+								Télécharger l’historique (ubumark)
+							</DropdownMenu.Item>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+					<button
+						type="button"
+						class="console-bouton"
+						aria-label="Fermer la console"
+						title="Fermer la console (Échap)"
+						onclick={closeConsole}
+					>
+						<X size={16} aria-hidden="true" />
+					</button>
+				</div>
+				<div class="console-corps">
+					<CalculView bind:this={calculView} {desk} {inputMode} bind:mathLatex />
+				</div>
+				<!--
+				La poignée : glisser, ou flèches haut / bas au clavier. Un `separator`
+				FOCALISABLE est le motif ARIA du séparateur de fenêtres (window
+				splitter) : un contrôle, avec sa valeur — Svelte ne le connaît pas.
+			-->
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
+				<div
+					class="poignee"
+					role="separator"
+					aria-orientation="horizontal"
+					aria-label="Hauteur de la console"
+					aria-valuemin={CONSOLE_MIN}
+					aria-valuemax={CONSOLE_MAX}
+					aria-valuenow={consoleHeight}
+					tabindex="0"
+					onpointerdown={handleResizeStart}
+					onkeydown={handleResizeKey}
+				></div>
+			</div>
+		</div>
 	</section>
 </div>
 
@@ -804,20 +1034,6 @@
 		cursor: pointer;
 		white-space: nowrap;
 	}
-	.nouveau {
-		display: inline-block;
-		min-width: 1.125rem;
-		margin-left: 0.375rem;
-		padding: 0 0.3125rem;
-		border-radius: 9999px;
-		font-size: 0.75rem;
-		font-weight: 700;
-		line-height: 1.125rem;
-		text-align: center;
-		/* Inversé : le contraste du texte courant, dans les deux thèmes */
-		background: var(--color-foreground);
-		color: var(--color-background);
-	}
 	.onglet[aria-current='page'] {
 		background: var(--color-background);
 		color: var(--color-foreground);
@@ -847,14 +1063,114 @@
 		color: var(--color-destructive);
 	}
 
+	/* La scène : la vue, et la console posée par-dessus (lot 2) */
+	.scene {
+		position: relative;
+		flex: 1;
+		min-height: 0;
+		display: flex;
+		overflow: hidden;
+	}
 	.vue {
 		flex: 1;
+		min-width: 0;
 		min-height: 0;
 		padding: 1rem;
 	}
 	.vue.pleine {
 		padding: 0;
 		display: flex;
+	}
+
+	/* Le volet descend du haut, façon Quake ; fermé, il remonte hors de la scène */
+	.console {
+		position: absolute;
+		inset: 0 0 auto;
+		z-index: 20;
+		height: var(--hauteur, 40%);
+		display: flex;
+		flex-direction: column;
+		background: var(--color-background);
+		border-bottom: 1px solid var(--color-border);
+		box-shadow: 0 8px 20px -12px rgb(0 0 0 / 0.35);
+		transform: translateY(-100%);
+		visibility: hidden;
+		transition:
+			transform 180ms ease,
+			visibility 0s linear 180ms;
+	}
+	.console.ouverte {
+		transform: none;
+		visibility: visible;
+		transition:
+			transform 180ms ease,
+			visibility 0s;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.console,
+		.console.ouverte {
+			transition: none;
+		}
+	}
+	.console-tete {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.25rem 0.5rem 0 0.75rem;
+	}
+	.console-titre {
+		flex: 1;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: var(--color-muted-foreground);
+	}
+	.console-bouton {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 2rem;
+		min-height: 2rem;
+		border: 1px solid transparent;
+		border-radius: 0.375rem;
+		background: none;
+		color: var(--color-foreground);
+		cursor: pointer;
+	}
+	.console-bouton:hover {
+		background: var(--color-muted);
+	}
+	.console-bouton:focus-visible,
+	.poignee:focus-visible {
+		outline: 2px solid var(--color-ring, currentColor);
+		outline-offset: 2px;
+	}
+	.console-corps {
+		flex: 1;
+		min-height: 0;
+	}
+	.poignee {
+		flex: none;
+		height: 0.625rem;
+		cursor: ns-resize;
+		touch-action: none;
+		background: linear-gradient(var(--color-border), var(--color-border)) center / 2.5rem 3px
+			no-repeat;
+	}
+	@media (pointer: coarse) {
+		.poignee {
+			height: 1.25rem;
+		}
+	}
+	/* Sur téléphone, la console prend toute la scène, sans poignée */
+	@media (max-width: 640px) {
+		.console {
+			height: 100%;
+		}
+		.poignee {
+			display: none;
+		}
 	}
 
 	@media (max-width: 720px) {

@@ -49,7 +49,8 @@ describe('la vue Géométrie (FigureView)', () => {
 		const { container } = await render(AtelierContainer, { ephemeral: true });
 
 		const tabs = [...container.querySelectorAll('.onglet')].map((b) => b.textContent?.trim());
-		expect(tabs).toEqual(['Calcul', 'Graphe', 'Géométrie', 'Données']);
+		// Plus d'onglet Calcul : la console est un volet (lot 2 de la refonte)
+		expect(tabs).toEqual(['Graphe', 'Géométrie', 'Données']);
 		expect(container.textContent).not.toContain('Figure');
 	});
 
@@ -68,7 +69,7 @@ describe('la vue Géométrie (FigureView)', () => {
 			expect(canvasOf(container).querySelector('path.function-curve')).toBeTruthy()
 		);
 		expect(labels(container)).toContain('f');
-		expect(container.textContent).not.toContain('Écris un point');
+		expect(container.textContent).not.toContain('écris un point');
 		expect(container.textContent).toContain('Repère');
 	});
 
@@ -78,7 +79,7 @@ describe('la vue Géométrie (FigureView)', () => {
 		const { container } = await render(WithFigure, { atelier });
 
 		await vi.waitFor(() => expect(container.querySelector('svg.geometry-canvas')).toBeTruthy());
-		expect(container.textContent).toContain('Écris un point');
+		expect(container.textContent).toContain('écris un point');
 		expect(canvasOf(container).querySelector('path.function-curve')).toBeNull();
 	});
 
@@ -107,13 +108,11 @@ describe('la vue Géométrie (FigureView)', () => {
 		await vi.waitFor(() =>
 			expect(canvasOf(container).querySelector('path.function-curve')).toBeTruthy()
 		);
-		// G2 : le geste a écrit sa ligne dans Calcul
-		const calcul = [...container.querySelectorAll('.onglet')].find(
-			(b) => b.textContent?.trim() === 'Calcul'
-		) as HTMLElement;
-		await userEvent.click(calcul);
+		// G2 : le geste a écrit sa ligne dans la console
 		await vi.waitFor(() =>
-			expect(container.textContent).toContain('La courbe de f est affichée dans Géométrie.')
+			expect(container.querySelector('.historique')?.textContent).toContain(
+				'La courbe de f est affichée dans Géométrie.'
+			)
 		);
 	});
 
@@ -125,7 +124,7 @@ describe('la vue Géométrie (FigureView)', () => {
 		});
 
 		expect(container.textContent).toContain(
-			'Écris un point A = (1 ; 2) ou une courbe d : y = 3x − 2'
+			'Dans la console, écris un point A = (1 ; 2) ou une courbe d : y = 3x − 2'
 		);
 	});
 
@@ -142,7 +141,7 @@ describe('la vue Géométrie (FigureView)', () => {
 		await vi.waitFor(() => expect(canvasOf(container).querySelector('circle.point')).toBeTruthy());
 		expect(canvasOf(container).querySelector('line.geo-line')).toBeTruthy();
 		expect(labels(container)).toEqual(expect.arrayContaining(['A', 'd']));
-		expect(container.textContent).not.toContain('Écris un point');
+		expect(container.textContent).not.toContain('écris un point');
 	});
 
 	it('F2 : repère orthonormé — le cercle x² + y² = 4 est rond à l’écran', async () => {

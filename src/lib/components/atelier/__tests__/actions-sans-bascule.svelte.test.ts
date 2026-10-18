@@ -26,24 +26,20 @@ function cardFor(container: HTMLElement, name: string): HTMLElement {
 	return card as HTMLElement;
 }
 
-function tab(container: HTMLElement, label: string): HTMLButtonElement {
-	const found = [...container.querySelectorAll('.onglet')].find((t) =>
-		t.textContent?.trim().startsWith(label)
-	);
-	if (!found) throw new Error(`pas d'onglet ${label}`);
-	return found as HTMLButtonElement;
-}
-
 function currentView(container: HTMLElement): string {
 	return container.querySelector('.onglet[aria-current="page"]')?.textContent?.trim() ?? '';
 }
 
-/** `f` dans un atelier ouvert sur la vue Graphe, sa carte ouverte. */
+/** `f` dans un atelier ouvert sur la vue Graphe, console FERMÉE, sa carte ouverte. */
 async function onGraph(definition = 'x^2') {
 	const atelier = new Atelier();
 	atelier.create({ kind: 'function', name: 'f', definition }, 'text');
-	const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
-	tab(container, 'Graphe').click();
+	// Une vue demandée s'ouvre console fermée (lot 2 de la refonte de l'atelier)
+	const { container } = await render(AtelierContainer, {
+		atelier,
+		ephemeral: true,
+		view: 'graphe'
+	});
 	await vi.waitFor(() => expect(currentView(container)).toBe('Graphe'));
 	(cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement).click();
 	await vi.waitFor(() => expect(cardFor(container, 'f').querySelector('.action')).toBeTruthy());
@@ -61,8 +57,18 @@ async function clickAction(container: HTMLElement, name: string, label: string) 
 	button.click();
 }
 
+/** Le bouton de la console, dans la barre d'icônes (l'onglet Calcul n'existe plus). */
+function consoleButton(container: HTMLElement): HTMLButtonElement {
+	return container.querySelector('button[aria-label="Console"]') as HTMLButtonElement;
+}
+
+/** Le compteur A3, posé sur le bouton de la console. */
+function marker(container: HTMLElement): Element | null {
+	return consoleButton(container).parentElement?.querySelector('.nouveau') ?? null;
+}
+
 function hasMarker(container: HTMLElement): boolean {
-	return tab(container, 'Calcul').querySelector('.nouveau') !== null;
+	return marker(container) !== null;
 }
 
 // =============================================================================
@@ -91,7 +97,7 @@ describe('une action ne change pas de vue', () => {
 	});
 
 	// A3
-	it('l’onglet Calcul signale le nouveau résultat, et l’annonce', async () => {
+	it('le bouton de la console signale le nouveau résultat, et l’annonce', async () => {
 		const { container } = await onGraph();
 		expect(hasMarker(container)).toBe(false);
 
@@ -100,16 +106,16 @@ describe('une action ne change pas de vue', () => {
 		await vi.waitFor(() => expect(hasMarker(container)).toBe(true));
 		// L'annonce est écrite au tour suivant (`announce` vide puis réécrit)
 		await vi.waitFor(() =>
-			expect(container.querySelector('[data-annonce]')?.textContent ?? '').toContain('Calcul')
+			expect(container.querySelector('[data-annonce]')?.textContent ?? '').toContain('console')
 		);
 	});
 
-	it('le repère s’efface quand on va dans Calcul', async () => {
+	it('le repère s’efface quand on ouvre la console', async () => {
 		const { container } = await onGraph();
 		await clickAction(container, 'f', 'Dériver');
 		await vi.waitFor(() => expect(hasMarker(container)).toBe(true));
 
-		tab(container, 'Calcul').click();
+		consoleButton(container).click();
 
 		await vi.waitFor(() => expect(hasMarker(container)).toBe(false));
 		expect(container.querySelectorAll('.historique li').length).toBeGreaterThan(0);
@@ -127,17 +133,24 @@ describe('une action ne change pas de vue', () => {
 		await userEvent.keyboard('f(3){Enter}');
 		await vi.waitFor(() => expect(container.querySelectorAll('.historique li').length).toBe(1));
 
-		tab(container, 'Graphe').click();
+		// Refermer la console : ce qu'on y a calculé n'est pas « nouveau »
+		consoleButton(container).click();
 
-		await vi.waitFor(() => expect(currentView(container)).toBe('Graphe'));
+		await vi.waitFor(() =>
+			expect(consoleButton(container).getAttribute('aria-expanded')).toBe('false')
+		);
 		expect(hasMarker(container)).toBe(false);
 	});
 
 	// A5 : « Tracer » montre ce qu'il trace
-	it('« Tracer » depuis Calcul bascule toujours vers le Graphe', async () => {
+	it('« Tracer » depuis une autre vue bascule toujours vers le Graphe', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
-		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		const { container } = await render(AtelierContainer, {
+			atelier,
+			ephemeral: true,
+			view: 'donnees'
+		});
 		(cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement).click();
 
 		await clickAction(container, 'f', 'Tracer');
@@ -295,14 +308,15 @@ describe('revue a11y du lot 3b', () => {
 	});
 
 	// Contraste : le repère porte un NOMBRE lisible, pas seulement un point orange
-	it('le repère de l’onglet Calcul montre le nombre de résultats', async () => {
+	it('le repère du bouton de la console montre le nombre de résultats', async () => {
 		const { container } = await onGraph();
 
 		await clickAction(container, 'f', 'Dériver');
 
-		await vi.waitFor(() =>
-			expect(tab(container, 'Calcul').querySelector('.nouveau')?.textContent?.trim()).toBe('1')
-		);
+		await vi.waitFor(() => expect(marker(container)?.textContent?.trim()).toBe('1'));
+		// Le nombre est dit aux lecteurs d'écran, relié au bouton
+		const described = consoleButton(container).getAttribute('aria-describedby') ?? '';
+		expect(document.getElementById(described)?.textContent).toContain('1 nouveau résultat');
 	});
 });
 
@@ -337,8 +351,12 @@ describe('revue de code du lot 3b', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 2 ; 3' });
 		atelier.create({ kind: 'list', name: 'M', definition: '4 ; 5 ; 6' });
-		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
-		tab(container, 'Données').click();
+		// Console fermée : sinon un repère ne pourrait de toute façon pas apparaître
+		const { container } = await render(AtelierContainer, {
+			atelier,
+			ephemeral: true,
+			view: 'donnees'
+		});
 		(cardFor(container, 'L').querySelector('.entete') as HTMLButtonElement).click();
 
 		await clickAction(container, 'L', 'Nuage avec M');

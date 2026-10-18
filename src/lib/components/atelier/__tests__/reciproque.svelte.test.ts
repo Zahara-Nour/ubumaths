@@ -70,10 +70,10 @@ describe('le bouton « Réciproque »', () => {
 		expect(card.querySelector('.intervalle')?.textContent).toBe('sur [0 ; +∞[');
 	});
 
-	it('refus (x² sur ℝ) : pas de carte, les formules composées dans Calcul', async () => {
+	it('refus (x² sur ℝ) : pas de carte, les formules composées dans la console', async () => {
 		const { atelier, container } = await clickReciprocal('x^2');
-		// La ligne attend dans Calcul (G7) : on y va
-		tab(container, 'Calcul').click();
+		// La ligne attend dans la console (G7) : on l'ouvre
+		(container.querySelector('button[aria-label="Console"]') as HTMLButtonElement).click();
 
 		await vi.waitFor(() => expect(container.querySelector('.historique li.refus')).toBeTruthy());
 		expect(atelier.get('f^-1')).toBeUndefined();

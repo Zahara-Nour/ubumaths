@@ -36,10 +36,10 @@ jamais à l'élève si sa conjecture est juste.
 
 Deux adresses, un seul outil :
 
-| Route       | Fichier                                     | Ouvre                                                                               |
-| ----------- | ------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `/atelier`  | `src/routes/(public)/atelier/+page.svelte`  | l'atelier personnel, vue Calcul                                                     |
-| `/grapheur` | `src/routes/(public)/grapheur/+page.svelte` | le même atelier, vue Graphe, « Mes objets » ouvert ; atelier vide → carte `f` prête |
+| Route       | Fichier                                     | Ouvre                                                                        |
+| ----------- | ------------------------------------------- | ---------------------------------------------------------------------------- |
+| `/atelier`  | `src/routes/(public)/atelier/+page.svelte`  | l'atelier personnel, vue Graphe, console ouverte par-dessus                  |
+| `/grapheur` | `src/routes/(public)/grapheur/+page.svelte` | le même atelier, vue Graphe, console fermée ; atelier vide → carte `f` prête |
 
 L'atelier est l'**entrée unique** : la barre latérale (`src/lib/components/Sidebar.svelte`) n'a
 plus d'entrée « Grapheur », `/grapheur` survit pour les favoris et les liens de projection
@@ -51,8 +51,10 @@ Ceux du code et de l'interface :
 - **objet** : un nom + une définition, de quatre types (valeur, fonction, suite, liste) ;
 - **carte** : la présentation d'un objet dans « Mes objets » (`ObjectCard.svelte`). ⚠️ Rien à
   voir avec la **Carte de cours** de CONTEXT.md ni avec les cartes du SRS ;
-- **vue** : Calcul, Graphe ou Données — une _projection_ des objets, sans état propre ;
-- **historique** : les lignes de la vue Calcul (saisies et réponses) ;
+- **vue** : Graphe, Géométrie ou Données — une _projection_ des objets, sans état propre ;
+- **console** : le volet déroulant où l'on tape (l'ancienne vue Calcul, `CalculView.svelte`) ;
+  dans le code et les messages, « Calcul » la désigne encore souvent ;
+- **historique** : les lignes de la console (saisies et réponses) ;
 - **mode éphémère** : un atelier reçu par lien, qui ne lit ni n'écrit l'atelier personnel.
 - voisin hors atelier : `/calc` (`src/routes/(public)/calc/+page.svelte`, grapheur singleton).
   Sa saisie (`UnifiedInput.svelte`) a un **mode commande** : un « . » dans le champ vide ouvre une
@@ -119,6 +121,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                          |
 | `src/lib/atelier/copy-text.ts`          | « Copier » d'une ligne : la réponse en texte lisible depuis son LaTeX (`readableText`, `answerToCopy`)     |
 | `src/lib/atelier/input-mode.ts`         | Réglage « Saisie dans Calcul » (texte / écriture mathématique), retenu dans le navigateur                  |
+| `src/lib/atelier/console-key.ts`        | Raccourcis de la console : touche sous Échap (par `event.code`, hors d'un champ), Ctrl+Entrée              |
 | `src/lib/atelier/natural-input.ts`      | Écriture mathématique : règles des mots, complétion, LaTeX du champ ↔ texte de Calcul (`calcTextOf`)       |
 | `src/lib/atelier/virtual-keyboard.ts`   | Clavier virtuel de l'écriture mathématique : onglets « Calcul » et « Commandes »                           |
 | `src/lib/atelier/domain-steps.ts`       | `.domaine` : réponse `D = …` et « Comment ? » (`domainLine`)                                               |
@@ -158,16 +161,16 @@ Ceux du code et de l'interface :
 
 | Composant                 | Rôle                                                                                                                       |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `AtelierContainer.svelte` | Le conteneur : barre d'icônes, panneau + vues, session, `CalcDesk`, `GrapheurStore` propre, confirmations                  |
+| `AtelierContainer.svelte` | Le conteneur : barre d'icônes, panneau + vues, console déroulante, session, `CalcDesk`, `GrapheurStore` propre             |
 | `roving-toolbar.ts`       | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                          |
-| `ToolButton.svelte`       | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable (`aria-disabled`)  |
+| `ToolButton.svelte`       | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)    |
 | `ObjectPanel.svelte`      | « Mes objets » : création, liste des cartes                                                                                |
 | `ObjectCard.svelte`       | Une carte : nom, définition, état, actions ; champs de l'image et de « Tabuler » (de / à / pas)                            |
 | `DefinitionField.svelte`  | `f(x) =` + champ MathLive ; la frappe met l'objet à jour 0,3 s après la dernière touche                                    |
 | `ValueSlider.svelte`      | Curseur d'une valeur (bornes et pas réglables)                                                                             |
 | `CurveSettings.svelte`    | « Sur le graphique » : couleur, trait, tangente, aire, cercle osculateur, longueur                                         |
 | `SequenceSettings.svelte` | Mode, rang initial, premier terme ; nuage ou escalier                                                                      |
-| `CalculView.svelte`       | Vue Calcul : champ (texte ou écriture mathématique), historique, « Garder », lien ubumark                                  |
+| `CalculView.svelte`       | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                    |
 | `NaturalField.svelte`     | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel          |
 | `AtelierSettings.svelte`  | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                 |
 | `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)    |
@@ -1006,17 +1009,44 @@ est acceptée par Calcul (`completion.test.ts`).
 (fonction : Tracer, Afficher dans Géométrie, Dériver, Réciproque, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
 liste : Statistiques, diagrammes, nuage, ajustement, loi — par liste partenaire). Une action qui a
 un sens pour le type mais pas pour cet objet reste **visible, désactivée, avec sa raison**
-(`disabledReason`). Le clic passe par `CalcDesk.runFromPanel` : il **écrit une ligne dans
-Calcul sans changer de vue** et crée **une carte par objet créé** (G7).
+(`disabledReason`). Le clic passe par `CalcDesk.runFromPanel` : il **écrit une ligne dans la
+console sans l'ouvrir ni changer de vue** et crée **une carte par objet créé** (G7).
+
+### La console déroulante
+
+Lot 2 de [atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)
+(décisions de David du 2026-10-18). Plus d'onglet Calcul : `CalculView.svelte` (+ `CalcDesk`)
+vit dans un volet qui descend **par-dessus** la vue (`AtelierContainer.svelte`), environ 40 %
+de la hauteur, réglable à la poignée (souris, ou flèches haut / bas), toute la scène sous
+640 px. Une **région** nommée « Console », pas une `dialog` : rien n'est modal, la vue et
+« Mes objets » restent utilisables. Montée en permanence (l'historique, le brouillon, les étapes
+dépliées survivent à la fermeture), `inert` quand elle est fermée.
+
+- **Ouvrir / fermer** : le bouton « Console » de la barre (`aria-expanded`) ; la **touche
+  physique sous Échap** hors d'un champ ; **Ctrl+Entrée** partout, champs compris
+  (`console-key.ts` : sur Mac, `IntlBackslash` ou `Backquote` — mesure du 2026-10-18 sur un Mac
+  AZERTY, la touche sous Échap rend `IntlBackslash` ; ailleurs `Backquote`). Échap dans la
+  console la ferme, sauf s'il ferme d'abord une liste de propositions. À l'ouverture, le focus
+  va au champ ; à la fermeture, un focus resté dedans revient au bouton.
+- **A3** : le bouton porte le nombre de lignes arrivées pendant que la console était fermée ;
+  l'annonce dit « Nouvelle ligne dans la console ». Une commande préparée par une carte
+  (`needs-argument` : « Simuler », « Tableau croisé ») OUVRE la console.
+- **A5** : une action qui montre quelque chose ailleurs (Tracer, nuage, diagramme, Tabuler,
+  Afficher dans Géométrie) change de vue ; sous 640 px, elle referme la console (`revealView`).
+- **Lisibilité** : invite `>` devant l'instruction (en couleur normale), réponse préfixée `-->`
+  (décoratifs, `aria-hidden`) ; une commande en texte (`.dériver f`) en chasse fixe ; une
+  définition réussie dit « f est correctement défini », le nom en couleur (`definedName`) ; les
+  boutons d'une ligne n'apparaissent qu'au survol ou au focus (toujours au toucher).
+- **Menu de la console** : « Copier l'historique pour une fiche » et « Télécharger l'historique
+  (ubumark) ». L'atelier s'enregistre par la barre d'icônes.
 
 ### Vues
 
-| Vue       | Composant                             | Ce qu'elle projette                                                                                                                 |
-| --------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Calcul    | `CalculView.svelte` + `CalcDesk`      | l'historique ; « Garder » promeut une ligne en objet nommé (`promote`, D5) ; « Comment ? » déplie les étapes, « Résumé / Détaillé » |
-| Graphe    | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                                 |
-| Géométrie | `FigureView.svelte`                   | points, courbes et 𝒞f affichées dans un repère orthonormé (`GeometryCanvas`), via `syncFigure` ; rien ne s'y glisse au lot 1 (F4)   |
-| Données   | `DataView.svelte`                     | la grille (une liste = une colonne nommée), diagrammes en bâtons / barres / circulaire                                              |
+| Vue       | Composant                             | Ce qu'elle projette                                                                                                               |
+| --------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Graphe    | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                               |
+| Géométrie | `FigureView.svelte`                   | points, courbes et 𝒞f affichées dans un repère orthonormé (`GeometryCanvas`), via `syncFigure` ; rien ne s'y glisse au lot 1 (F4) |
+| Données   | `DataView.svelte`                     | la grille (une liste = une colonne nommée), diagrammes en bâtons / barres / circulaire                                            |
 
 Trois ponts à **sens unique**, tous idempotents (une empreinte évite de refaire le travail) :
 

@@ -100,7 +100,7 @@ describe('Tabuler depuis la carte', () => {
 		await vi.waitFor(() => expect(atelier.cell(0, 1)).toBe('-5'));
 	});
 
-	it('un refus se dit dans la carte : rien n’est écrit, on reste dans Calcul', async () => {
+	it('un refus se dit dans la carte : rien n’est écrit, on reste sur la vue de départ', async () => {
 		const { atelier, container, card } = await openForm();
 
 		await userEvent.fill(field(card, 'Pas'), '0');
@@ -112,19 +112,16 @@ describe('Tabuler depuis la carte', () => {
 			)
 		);
 		expect(atelier.cell(0, 1)).toBe('');
-		expect(currentView(container)).toBe('Calcul');
+		expect(currentView(container)).toBe('Graphe');
 	});
 
-	it('Tabuler n’écrit aucune ligne dans Calcul', async () => {
+	it('Tabuler n’écrit aucune ligne dans la console', async () => {
 		const { container, card } = await openForm();
 
 		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
 
 		await vi.waitFor(() => expect(currentView(container)).toBe('Données'));
-		const calcul = [...container.querySelectorAll('.onglet')].find((t) =>
-			t.textContent?.trim().startsWith('Calcul')
-		);
-		expect(calcul?.textContent?.trim()).toBe('Calcul');
+		expect(container.querySelectorAll('.historique li')).toHaveLength(0);
 	});
 
 	// Revue de la PR 2
@@ -139,7 +136,7 @@ describe('Tabuler depuis la carte', () => {
 		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
 		await vi.waitFor(() => expect(currentView(container)).toBe('Données'));
 
-		await userEvent.click(tab(container, 'Calcul'));
+		await userEvent.click(tab(container, 'Graphe'));
 		await userEvent.click(tab(container, 'Données'));
 
 		await vi.waitFor(() => expect(currentView(container)).toBe('Données'));

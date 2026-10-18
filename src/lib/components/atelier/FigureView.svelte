@@ -69,8 +69,8 @@
 	</div>
 	{#if empty}
 		<p class="vide">
-			Écris un point A = (1 ; 2) ou une courbe d : y = 3x − 2, ou affiche une fonction depuis sa
-			carte.
+			Dans la console, écris un point A = (1 ; 2) ou une courbe d : y = 3x − 2, ou affiche une
+			fonction depuis sa carte.
 		</p>
 	{/if}
 	<div class="toile" bind:clientWidth={width} bind:clientHeight={height}>

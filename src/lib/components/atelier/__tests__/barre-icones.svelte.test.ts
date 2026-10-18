@@ -106,7 +106,7 @@ function atelierFile(build: (atelier: Atelier, desk: CalcDesk) => void): File {
 // =============================================================================
 
 describe('la barre d’icônes', () => {
-	it('des icônes seules, nommées : à gauche les fichiers, à droite partager et régler', async () => {
+	it('des icônes seules, nommées : à gauche les fichiers, à droite la console, partager et régler', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
 		const { container } = await render(AtelierContainer, { atelier });
@@ -116,7 +116,7 @@ describe('la barre d’icônes', () => {
 		);
 		expect(groups).toEqual([
 			['Repartir de zéro', 'Charger un atelier', 'Enregistrer l’atelier'],
-			['Partager', 'Réglages']
+			['Console', 'Partager', 'Réglages']
 		]);
 		// Icône seule : aucun texte visible, l'infobulle porte le nom
 		for (const button of toolbar(container).querySelectorAll('button')) {
@@ -209,7 +209,7 @@ describe('la barre d’icônes', () => {
 		const labels = [...toolbar(container).querySelectorAll('button')].map((b) =>
 			b.getAttribute('aria-label')
 		);
-		expect(labels).toEqual(['Enregistrer l’atelier', 'Réglages']);
+		expect(labels).toEqual(['Enregistrer l’atelier', 'Console', 'Réglages']);
 		// Le bandeau et « Garder dans mon atelier » restent
 		expect(container.textContent).toContain('Le tien n’a pas été modifié.');
 		expect(container.textContent).toContain('Garder dans mon atelier');

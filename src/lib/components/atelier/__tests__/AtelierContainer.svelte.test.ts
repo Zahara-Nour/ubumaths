@@ -8,13 +8,14 @@ import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 
 describe('conteneur', () => {
-	it('monte le panneau et les trois vues du v1', async () => {
+	it('monte le panneau, les onglets des vues et la console', async () => {
 		const { container } = await render(AtelierContainer, { ephemeral: true });
 
 		expect(container.textContent).toContain('Mes objets');
-		for (const label of ['Calcul', 'Graphe', 'Données']) {
-			expect(container.textContent).toContain(label);
-		}
+		const tabs = [...container.querySelectorAll('.onglet')].map((t) => t.textContent?.trim());
+		expect(tabs).toEqual(['Graphe', 'Géométrie', 'Données']);
+		// Le calcul est dans la console, un volet (lot 2 de la refonte de l'atelier)
+		expect(container.querySelector('[role="region"][aria-label="Console"] .calcul')).toBeTruthy();
 	});
 
 	it('ouvre sur la vue demandée', async () => {

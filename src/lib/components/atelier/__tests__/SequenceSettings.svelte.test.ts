@@ -150,15 +150,16 @@ describe('la suite sur le graphique (U2)', () => {
 });
 
 describe('premiers termes (U3)', () => {
-	it('écrit les termes dans Calcul, sans changer de vue', async () => {
+	it('écrit les termes dans la console, sans changer de vue', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'sequence', name: 'u', definition: '2u_n' }, 'text');
 		atelier.setSequence('u', { firstTerm: '1' });
-		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
-		const graphTab = [...container.querySelectorAll('.onglet')].find((t) =>
-			t.textContent?.trim().startsWith('Graphe')
-		) as HTMLButtonElement;
-		graphTab.click();
+		// Sur le Graphe, console fermée : le bouton de la console compte la ligne
+		const { container } = await render(AtelierContainer, {
+			atelier,
+			ephemeral: true,
+			view: 'graphe'
+		});
 		(cardFor(container, 'u').querySelector('.entete') as HTMLButtonElement).click();
 
 		const button = await vi.waitFor(() => {

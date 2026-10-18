@@ -276,6 +276,9 @@
 		// Échap ferme la liste ; liste fermée, MathLive passerait en saisie LaTeX
 		// (mesuré : la frappe suivante part dans un « \… », les « é » sont perdus)
 		if (event.key === 'Escape') {
+			// Une liste ouverte se ferme et Échap s'arrête là ; sans liste, il remonte
+			// jusqu'à la console, qui se ferme (lot 2 de la refonte de l'atelier)
+			if (count > 0) event.stopPropagation();
 			dismissed = true;
 			proposals = [];
 			return take();
