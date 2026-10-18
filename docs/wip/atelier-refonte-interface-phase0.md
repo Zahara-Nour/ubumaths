@@ -123,6 +123,16 @@ Même grammaire pour tous : une ligne `● nom = [définition éditable]`, puis 
 - Lot 2 : le message de la vue Géométrie vide renvoie à « Calcul » (`FigureView.svelte`) ; il devra suivre la console.
 - Charger : la copie de côté de « Remplacer mon atelier » (`atelier-remplacer-phase0.md`, R3, R5) est faite par la session atelier-geometry, après le merge du suivi de revue du lot 1.
 
+### Lot 3 bis — tranché par David le 2026-10-18 (après #1488)
+
+- **Règle du menu de carte** : la carte garde ce qui agit sur l'objet ou son affichage (Tracer, Afficher dans Géométrie), ce qui crée un objet relié (Dériver, Réciproque), la vie de l'objet (Renommer, Supprimer) et les commandes difficiles à deviner (Variations, Résoudre f(x) = 0, Tabuler). Les calculs qui s'écrivent en une ligne évidente vont dans la console.
+- **« Image d'un nombre » retirée du menu** : `f(2)` s'écrit dans la console. Cela revient en partie sur §3 de la conception d'origine (actions attachées à l'objet pour la progressivité 6ᵉ → terminale) : David l'a choisi en connaissance de cause.
+- **Lecture graphique de l'image : option d'Affichage, en deux modes (choix c)** :
+  - (a) chaque `f(a)` calculé dans la console dessine sa lecture en pointillés : de `a` sur l'axe des abscisses au point de la courbe, puis du point à `f(a)` sur l'axe des ordonnées, valeurs écrites aux extrémités ;
+  - (b) un point qu'on fait glisser sur l'axe des abscisses, avec une lecture qui suit en direct (souris, toucher, clavier).
+  - Détails proposés, **à valider** : les 3 dernières lectures de la console restent affichées ; valeurs écrites comme dans la console (exactes si courtes, sinon arrondies au centième) ; un `a` hors de l'ensemble de définition ne dessine rien et la console le dit déjà ; le point glissant s'aimante aux entiers et aux demis ; au clavier, flèches ← → par pas de la grille.
+  - Plus tard : la lecture d'un antécédent (de `k` sur l'axe des ordonnées vers la courbe).
+
 ## Lot 5 — Annuler / Rétablir (chantier à part)
 
 Sa phase 0 vient après les lots 1 à 3. Voici les questions qu'elle devra trancher :
