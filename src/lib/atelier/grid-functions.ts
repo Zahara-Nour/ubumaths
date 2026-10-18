@@ -76,6 +76,8 @@ export interface GridRange {
 export interface ArgumentValue {
 	readonly node: MathNode;
 	readonly value: number;
+	/** Approché (une case ≈, une écriture exacte trop longue entrée en décimal) : RESTE s'en garde. */
+	readonly approximate?: boolean;
 }
 
 export type Computed =
@@ -154,7 +156,7 @@ const SIGNATURES: Readonly<Record<GridFunction, string>> = {
 	LN: 'LN(x) — le logarithme népérien',
 	EXP: 'EXP(x) — l’exponentielle',
 	PI: 'PI() — le nombre π',
-	RESTE: 'RESTE(n ; d) — le reste de la division de n par d',
+	RESTE: 'RESTE(n ; d) — le reste de la division de n par d (le quotient : ENT(n/d))',
 	SI: 'SI(condition ; si vrai ; si faux) — l’un ou l’autre selon la condition',
 	'NB.SI': 'NB.SI(plage ; critère) — combien de cases vérifient le critère',
 	ET: 'ET(comparaison ; …) — vrai si toutes le sont, dans la condition de SI',
@@ -521,41 +523,91 @@ export function computeCalculation(
 			...(result.inexact && { inexact: true })
 		};
 	}
-	if (name === 'RESTE') {
-		const [n, d] = values;
-		if (d.value === 0) return { ok: false, message: 'RESTE : on ne divise pas par 0.' };
-		// n − d × ENT(n/d) : le reste a le signe du diviseur (LibreOffice) — celui
-		// de la division euclidienne pour d > 0 ; exact quand n et d le sont
-		const quotient: MathNode = {
-			type: 'function',
-			name: 'floor',
-			args: [
-				{
-					type: 'division',
-					numerator: grouped(n.node),
-					denominator: grouped(d.node),
-					displayStyle: 'fraction'
-				}
-			]
-		};
-		return {
-			ok: true,
-			node: {
-				type: 'subtraction',
-				left: grouped(n.node),
-				right: {
-					type: 'multiplication',
-					left: grouped(d.node),
-					right: quotient,
-					displayStyle: 'dot'
-				}
-			}
-		};
-	}
+	if (name === 'RESTE') return remainder(values[0], values[1]);
 	return {
 		ok: true,
 		node: { type: 'function', name: ENGINE_NAMES[name], args: [grouped(values[0].node)] }
 	};
+}
+
+/** Au-delà de 2⁵³, un flottant ne distingue plus deux entiers voisins : plus de reste juste. */
+const MAX_SAFE_QUOTIENT = 2 ** 53;
+
+/**
+ * RESTE(n ; d) = n − d × ENT(n/d) : du signe du diviseur (LibreOffice) — celui
+ * de la division euclidienne pour d > 0. Deux nombres exacts (entiers,
+ * fractions) : en entiers longs, juste pour `RESTE(10^30+1 ; 7)` (revue : en
+ * flottants, 5·10¹³). Sinon l'arbre approché, refusé quand le quotient dépasse
+ * 2⁵³ (le reste ne serait que du bruit).
+ */
+function remainder(n: ArgumentValue, d: ArgumentValue): Computed {
+	if (d.value === 0) return { ok: false, message: 'RESTE : on ne divise pas par 0.' };
+	// Un argument approché n'a pas d'écriture exacte, même si son nœud en a l'air
+	// (`10^30+1`, trop long, entre en décimal 1e30 : son +1 est déjà perdu)
+	const [a, b] =
+		n.approximate || d.approximate ? [null, null] : [exactFraction(n), exactFraction(d)];
+	if (a !== null && b !== null) {
+		if (b.p === 0n) return { ok: false, message: 'RESTE : on ne divise pas par 0.' };
+		// n/d = (a.p × b.q) / (a.q × b.p), arrondi vers le bas
+		const num = a.p * b.q;
+		const den = a.q * b.p;
+		const quotient = floorDivision(num, den);
+		// r = a.p/a.q − (b.p/b.q) × quotient = (a.p × b.q − b.p × a.q × quotient) / (a.q × b.q)
+		return { ok: true, node: fractionNode(a.p * b.q - b.p * a.q * quotient, a.q * b.q) };
+	}
+	if (!Number.isFinite(n.value / d.value) || Math.abs(n.value / d.value) > MAX_SAFE_QUOTIENT) {
+		return { ok: false, message: 'RESTE : nombres trop grands pour un reste juste.' };
+	}
+	const quotient: MathNode = {
+		type: 'function',
+		name: 'floor',
+		args: [
+			{
+				type: 'division',
+				numerator: grouped(n.node),
+				denominator: grouped(d.node),
+				displayStyle: 'fraction'
+			}
+		]
+	};
+	return {
+		ok: true,
+		node: {
+			type: 'subtraction',
+			left: grouped(n.node),
+			right: { type: 'multiplication', left: grouped(d.node), right: quotient, displayStyle: 'dot' }
+		}
+	};
+}
+
+/** La fraction exacte d'un argument (`7`, `1/3`, `10^30+1`), sinon `null` (√2, π). */
+function exactFraction(x: ArgumentValue): { p: bigint; q: bigint } | null {
+	const exact = evaluate(x.node, { mode: 'exact' });
+	return exact.status === 'value' && exact.exact ? fractionOf(toCustom(exact.node)) : null;
+}
+
+/** ⌊num / den⌋ en entiers longs (la division de BigInt tronque vers zéro). */
+function floorDivision(num: bigint, den: bigint): bigint {
+	const quotient = num / den;
+	return quotient * den !== num && num < 0n !== den < 0n ? quotient - 1n : quotient;
+}
+
+/** p/q réduite, en nœud : un entier, ou une fraction (signe au numérateur). */
+function fractionNode(p: bigint, q: bigint): MathNode {
+	const [top, bottom] = q < 0n ? [-p, -q] : [p, q];
+	const divisor = gcd(top < 0n ? -top : top, bottom);
+	const [num, den] = divisor === 0n ? [0n, 1n] : [top / divisor, bottom / divisor];
+	if (den === 1n) return { type: 'number', value: num.toString() };
+	return {
+		type: 'division',
+		numerator: { type: 'number', value: num.toString() },
+		denominator: { type: 'number', value: den.toString() },
+		displayStyle: 'fraction'
+	};
+}
+
+function gcd(a: bigint, b: bigint): bigint {
+	return b === 0n ? a : gcd(b, a % b);
 }
 
 /** `p/q`, `-p/q`, `p`, `-p` (entiers) : la fraction exacte d'une écriture, sinon `null`. */

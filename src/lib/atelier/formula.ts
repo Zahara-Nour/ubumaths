@@ -507,7 +507,10 @@ function readCall(
 		const cell = rangeLike ? LONE_CELL.exec(raw) : null;
 		const range = cell === null ? readRange(raw) : readRange(`${cell[1]}:${cell[1]}`);
 		if (range !== null && !rangeLike) {
-			return { ok: false, message: `${name} attend un nombre, pas une plage : ${name}(A1).` };
+			return {
+				ok: false,
+				message: `${name} attend un nombre, pas une plage : ${numberExample(name)}.`
+			};
 		}
 		if (range !== null) {
 			if (range.bottom > GRID_ROWS) {
@@ -525,7 +528,7 @@ function readCall(
 				ok: false,
 				message: rangeLike
 					? RANGE_MIXED_MESSAGE
-					: `${name} attend un nombre, pas une plage : ${name}(A1).`
+					: `${name} attend un nombre, pas une plage : ${numberExample(name)}.`
 			};
 		}
 		if (!read.ok) return read;
@@ -592,9 +595,40 @@ function readComparison(
 	};
 }
 
-/** `ET(…)` ou `OU(…)` qui forme TOUT l'argument, sinon `null`. */
+/** L'exemple d'appel d'une fonction à nombres : `RACINE(A1)`, `RESTE(A1 ; 2)` (revue). */
+function numberExample(name: GridFunction): string {
+	if (name === 'ARRONDI' || name === 'RESTE' || name === 'ALEA.ENTRE.BORNES') {
+		return `${name}(A1 ; 2)`;
+	}
+	return `${name}(A1)`;
+}
+
+/** Le texte sans les parenthèses qui l'entourent TOUT entier : `((ET(…)))` → `ET(…)`. */
+function withoutOuterParentheses(raw: string): string {
+	let text = raw.trim();
+	while (text.startsWith('(') && text.endsWith(')')) {
+		let depth = 0;
+		let quoted = false;
+		let closesAtEnd = true;
+		for (let i = 0; i < text.length; i++) {
+			if (text[i] === '"') quoted = !quoted;
+			if (quoted) continue;
+			if (text[i] === '(') depth++;
+			else if (text[i] === ')') depth--;
+			if (depth === 0 && i < text.length - 1) {
+				closesAtEnd = false;
+				break;
+			}
+		}
+		if (!closesAtEnd) break;
+		text = text.slice(1, -1).trim();
+	}
+	return text;
+}
+
+/** `ET(…)` ou `OU(…)` qui forme TOUT l'argument (entre parenthèses ou non), sinon `null`. */
 function logicCallOf(raw: string): { name: LogicFunction; args: readonly string[] } | null {
-	const text = raw.trim();
+	const text = withoutOuterParentheses(raw);
 	const calls = findCalls(text);
 	if (calls === null || calls.length !== 1) return null;
 	const [call] = calls;
@@ -1305,9 +1339,14 @@ function callValue(
 		if (value.kind === 'empty' || value.kind === 'word') return null;
 		if (value.kind === 'error') return cell === null ? value : error(`${cell} est en erreur.`);
 		const long = value.exact && toCustom(value.node).length > MAX_EXACT_CITED;
-		if (!value.exact || long || (cell !== null && approximate.has(cell))) inexact = true;
+		const approached = !value.exact || long || (cell !== null && approximate.has(cell));
+		if (approached) inexact = true;
 		if (value.divided === true) argumentsDivided = true;
-		numbers.push({ node: long ? decimalNode(value.value) : value.node, value: value.value });
+		numbers.push({
+			node: long ? decimalNode(value.value) : value.node,
+			value: value.value,
+			approximate: approached
+		});
 		return null;
 	};
 	const cellValueAt = (cell: string) => values.get(cell) ?? plainValue(texts.get(cell) ?? '');

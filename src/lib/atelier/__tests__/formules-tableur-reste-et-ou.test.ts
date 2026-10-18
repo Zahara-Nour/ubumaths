@@ -78,8 +78,36 @@ describe('§1 RESTE', () => {
 		expect(value('=RESTE(A9;2)')).toBe('vide : A9 est vide.');
 	});
 
+	it('de grands entiers : un reste JUSTE (revue : en flottants, 5·10¹³)', () => {
+		expect(value('=RESTE(10^20+1;7)')).toBe('3');
+		expect(value('=RESTE(2^60;7)')).toBe('1');
+		expect(value('=RESTE(-(10^20);3)')).toBe('2');
+		expect(value('=RESTE(2/3;1/2)')).toBe('1/6');
+	});
+
+	it('de grands nombres approchés : refusés, jamais du bruit', () => {
+		expect(value('=RESTE(EXP(50);3)')).toBe(
+			'erreur : RESTE : nombres trop grands pour un reste juste.'
+		);
+		// Trop long pour rester exact quand on le cite (MAX_EXACT_CITED) : 1e30, le +1
+		// est perdu — refusé plutôt qu'un « ≈ 5 » faux (le vrai reste est 2)
+		expect(value('=RESTE(10^30+1;7)')).toBe(
+			'erreur : RESTE : nombres trop grands pour un reste juste.'
+		);
+		expect(value('=RESTE(EXP(5);3)')).toMatch(/^≈ 1,41/);
+	});
+
+	it('une plage : l’exemple a les deux arguments', () => {
+		expect(value('=RESTE(A1:A2;2)')).toBe(
+			'erreur : RESTE attend un nombre, pas une plage : RESTE(A1 ; 2).'
+		);
+	});
+
 	it('l’aide sous la barre', () => {
-		expect(functionHint('=RESTE(')).toBe('RESTE(n ; d) — le reste de la division de n par d');
+		// Q-RE-6 : l'aide de RESTE dit où est le quotient
+		expect(functionHint('=RESTE(')).toBe(
+			'RESTE(n ; d) — le reste de la division de n par d (le quotient : ENT(n/d))'
+		);
 		expect(functionHint('=RES')).toContain('RESTE(n ; d)');
 	});
 
@@ -150,6 +178,10 @@ describe('§2 ET et OU, dans la condition de SI', () => {
 		);
 	});
 
+	it('ET entre parenthèses se lit aussi', () => {
+		expect(value('=SI((ET(A1>=10;A3>=10));1;0)')).toBe('1');
+	});
+
 	it('Q-RE-3 : un seul niveau', () => {
 		expect(value('=SI(OU(ET(A1>0;A2>0);A3=1);1;0)')).toBe(
 			'erreur : Un ET dans un OU n’est pas pris en charge : écris deux SI.'
@@ -187,6 +219,8 @@ describe('§2 ET et OU, dans la condition de SI', () => {
 	it('Calcul : et(…) et ou(…) restent des produits, comme nb et si', () => {
 		const s = { atelier: new Atelier(), engine: new WebReplEngine() };
 		const result = runInput(s, 'et(2)');
-		expect(result.kind === 'refus' ? result.message : '').not.toContain('fonction de la grille');
+		// Le produit e·t·(2), pas un renvoi vers la grille
+		expect(result.kind).toBe('calcul');
+		expect(result.kind === 'calcul' ? result.ast?.type : null).toBe('multiplication');
 	});
 });
