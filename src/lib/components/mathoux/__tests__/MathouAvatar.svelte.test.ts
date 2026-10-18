@@ -5,12 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import MathouAvatar from '../MathouAvatar.svelte';
-import {
-	MATHOU_RACES,
-	MATHOU_RACE_COUNT,
-	getMathouRace,
-	normalizeRaceIndex
-} from '../mathou-races';
+import { MATHOU_RACES, MATHOU_RACE_COUNT, normalizeRaceIndex } from '../mathou-races';
 
 function svgOf(container: HTMLElement): SVGSVGElement {
 	const svg = container.querySelector('svg');
@@ -71,6 +66,8 @@ describe('MathouAvatar', () => {
 		});
 		const svg = svgOf(container);
 		expect(svg.querySelector('[data-part="silhouette"]')).not.toBeNull();
+		// une silhouette ne fait pas la sieste
+		expect(svg.hasAttribute('data-asleep')).toBe(false);
 		expect(svg.querySelector('[data-part="motif"]')).toBeNull();
 		expect(svg.querySelector('[data-part="yeux"]')).toBeNull();
 		expect(svg.querySelector('[data-part="collerette"]')).toBeNull();
@@ -111,7 +108,7 @@ describe('MathouAvatar', () => {
 		expect(asleep.querySelector('[data-part="collerette"]')).not.toBeNull();
 	});
 
-	it('chaque race peint son pelage et son motif (couleur du motif présente)', async () => {
+	it('chaque race dessine son motif, peint de la couleur du motif ; une race unie, aucun', async () => {
 		for (let i = 0; i < MATHOU_RACE_COUNT; i++) {
 			const race = MATHOU_RACES[i];
 			const { container } = await render(MathouAvatar, {
@@ -119,10 +116,37 @@ describe('MathouAvatar', () => {
 				stage: 'matou',
 				label: 'x'
 			});
-			const html = svgOf(container).innerHTML;
-			expect(html).toContain(race.primary);
-			// une race unie n'a pas de motif ; les autres le dessinent
-			if (race.pattern !== 'uni') expect(html).toContain(race.secondary);
+			const svg = svgOf(container);
+			const motif = svg.querySelector('[data-part="motif"]');
+			if (!motif) throw new Error(`race ${i} : aucune partie motif`);
+			// calques du motif (l'ombre propre, toujours là, est mise à part)
+			const layers = [...motif.querySelectorAll('path:not([data-part="ombre"])')];
+			if (race.pattern === 'uni') {
+				expect(layers, race.name).toEqual([]);
+				continue;
+			}
+			if (race.pattern === 'gidouille') {
+				// le motif EST la gidouille : épaisse, de la couleur du motif
+				const gid = svg.querySelector('[data-part="gidouille"]');
+				expect(gid?.getAttribute('stroke'), race.name).toBe(race.secondary);
+				continue;
+			}
+			expect(layers.length, race.name).toBeGreaterThan(0);
+			// couleur du motif : en aplat, en trait, ou via le dégradé du fumé
+			const gradientIds = [...svg.querySelectorAll('radialGradient')]
+				.filter((grad) =>
+					[...grad.querySelectorAll('stop')].some(
+						(stop) => stop.getAttribute('stop-color') === race.secondary
+					)
+				)
+				.map((grad) => `url(#${grad.id})`);
+			const painted = layers.filter(
+				(el) =>
+					el.getAttribute('fill') === race.secondary ||
+					el.getAttribute('stroke') === race.secondary ||
+					gradientIds.includes(el.getAttribute('fill') ?? '')
+			);
+			expect(painted.length, race.name).toBeGreaterThan(0);
 		}
 	});
 
@@ -141,10 +165,18 @@ describe('MathouAvatar', () => {
 	});
 
 	it('raceIndex hors bornes : rendu sans erreur, race ramenée par modulo', async () => {
-		for (const raceIndex of [19, 42, -1, 3.7, Number.NaN]) {
+		const expected: [number, number][] = [
+			[19, 0],
+			[42, 4],
+			[-1, 18],
+			[3.7, 3],
+			[20.7, 1],
+			[Number.NaN, 0]
+		];
+		for (const [raceIndex, index] of expected) {
 			const { container } = await render(MathouAvatar, { raceIndex, stage: 'chaton', label: 'x' });
 			const svg = svgOf(container);
-			expect(svg.innerHTML).toContain(getMathouRace(raceIndex).primary);
+			expect(svg.innerHTML, String(raceIndex)).toContain(MATHOU_RACES[index].primary);
 		}
 	});
 });

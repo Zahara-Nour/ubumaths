@@ -93,7 +93,7 @@
 	viewBox="0 0 200 200"
 	class="mathou-avatar"
 	data-stage={stage}
-	data-asleep={asleep ? 'true' : undefined}
+	data-asleep={sleeping ? 'true' : undefined}
 	data-silhouette={silhouette ? 'true' : undefined}
 >
 	<defs>
@@ -260,7 +260,7 @@
 						stroke-linecap="round"
 					/>
 				{/each}
-				<path d={geo.shade} fill={dr.shadeFill} opacity={dr.shadeOpacity} />
+				<path d={geo.shade} fill={dr.shadeFill} opacity={dr.shadeOpacity} data-part="ombre" />
 			</g>
 			<path d={geo.body} fill="none" stroke={INK} stroke-width={STROKE} />
 
