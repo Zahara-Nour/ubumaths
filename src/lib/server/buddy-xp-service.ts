@@ -9,8 +9,14 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { BuddyXpGainResult } from '$lib/types/buddy';
-import { calculateXpGain, calculateStreakBonus } from './buddy-xp';
-import { getStudentBuddy, addBuddyXp, updateStreak, addExploredTheme } from './buddy-queries';
+import { calculateXpGain, calculateStreakBonus, XP_SOURCES } from './buddy-xp';
+import {
+	getStudentBuddy,
+	addBuddyXp,
+	updateStreak,
+	addExploredTheme,
+	addExploredThemes
+} from './buddy-queries';
 
 export interface ExerciseXpParams {
 	isCorrect: boolean;
@@ -125,14 +131,15 @@ export async function addBuddyXpFromTest(
 		daily_cap_reached: false
 	};
 
-	// Check new themes
-	const newThemes = new Set<string>();
-	for (const answer of answers) {
-		if (answer.theme) {
-			const isNew = await addExploredTheme(supabase, studentId, answer.theme);
-			if (isNew) newThemes.add(answer.theme);
-		}
-	}
+	// Thèmes nouveaux de la séance, enregistrés en une seule écriture vérifiée
+	const sessionThemes = [
+		...new Set(answers.flatMap((answer) => (answer.theme ? [answer.theme] : [])))
+	];
+	const newThemes =
+		sessionThemes.length > 0
+			? await addExploredThemes(supabase, buddy, sessionThemes)
+			: new Set<string>();
+	const hadNewTheme = newThemes.size > 0;
 
 	// Calculate total XP for all answers
 	let totalBaseXp = 0;
@@ -187,6 +194,36 @@ export async function addBuddyXpFromTest(
 		streakUpdated,
 		newStreak,
 		streakBonusXp,
-		isNewTheme: newThemes.size > 0
+		// Les thèmes sont retirés de `newThemes` au fil du calcul : lire l'état d'avant
+		isNewTheme: hadNewTheme
+	};
+}
+
+/**
+ * Forfait d'une séance de révision espacée TERMINÉE (décision de David,
+ * 2026-10-18 : l'effort, pas la réussite — les cartes sont auto-évaluées).
+ *
+ * L'appelant a déjà établi que la séance est terminée et que le forfait du jour
+ * n'a pas été donné (`rewardFinishedReviewSession`). Soumis au plafond du jour
+ * (`add_buddy_xp`). La série n'est pas touchée ici.
+ *
+ * Rend la même forme que `addBuddyXpFromTest` (`buddy_xp` des deux routes).
+ * Rend null si l'élève n'a pas de Palotin.
+ */
+export async function addBuddyXpFromReviewSession(
+	supabase: SupabaseClient<Database>,
+	studentId: string
+): Promise<BuddyXpFromExerciseResult | null> {
+	const buddy = await getStudentBuddy(supabase, studentId);
+	if (!buddy) return null;
+
+	const xpResult = await addBuddyXp(studentId, XP_SOURCES.review_session, false);
+
+	return {
+		xpResult,
+		streakUpdated: false,
+		newStreak: buddy.current_streak,
+		streakBonusXp: 0,
+		isNewTheme: false
 	};
 }

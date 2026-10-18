@@ -234,6 +234,45 @@ export async function addExploredTheme(
 }
 
 /**
+ * Ajoute à la liste des thèmes explorés ceux d'une séance, en UNE écriture.
+ *
+ * `buddy` est l'état déjà lu par l'appelant (pas de relecture). Rend les thèmes
+ * réellement ajoutés : la RLS échoue en silence (0 ligne, sans erreur), donc un
+ * thème n'est « nouveau » — et ne rapporte son bonus — que si la ligne relue
+ * le contient (cf. docs/pratiques/rls-echecs-silencieux.md).
+ */
+export async function addExploredThemes(
+	supabase: SupabaseClient<Database>,
+	buddy: BuddyState,
+	themes: string[]
+): Promise<Set<string>> {
+	const known = new Set(buddy.themes_explored);
+	const fresh = [...new Set(themes)].filter((theme) => !known.has(theme));
+	if (fresh.length === 0) return new Set();
+
+	const { data, error } = await supabase
+		.from('student_buddies')
+		.update({ themes_explored: [...buddy.themes_explored, ...fresh] })
+		.eq('student_id', buddy.student_id)
+		.select('themes_explored');
+
+	if (error) {
+		logger.error('❌ [buddy-queries] Error adding explored themes:', error);
+		throw error;
+	}
+
+	const written = data?.[0]?.themes_explored;
+	if (!written) {
+		logger.error('[buddy-queries] Thèmes explorés non écrits (0 ligne)', {
+			studentId: buddy.student_id
+		});
+		return new Set();
+	}
+
+	return new Set(fresh.filter((theme) => written.includes(theme)));
+}
+
+/**
  * Get all buddies for students in a given class (teacher dashboard).
  */
 export async function getClassBuddies(

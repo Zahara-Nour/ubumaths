@@ -43,6 +43,10 @@ export const XP_SOURCES = {
 	corrected_retry: 7,
 	first_of_day: 5,
 	new_theme: 25,
+	// Forfait d'une séance de révision espacée terminée, une fois par jour
+	// (décision de David, 2026-10-18 : l'effort, pas la réussite — les cartes
+	// sont auto-évaluées). Soumis au plafond du jour.
+	review_session: 20,
 	daily_streak: 15,
 	streak_7: 50,
 	streak_14: 100,

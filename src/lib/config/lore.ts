@@ -68,6 +68,17 @@ export const lore = {
 		correct: 'Coup de Maître',
 		errorPrefix: 'Cornegidouille'
 	},
+	/**
+	 * Progression du Palotin : le Compendium interdit d'afficher « XP » et
+	 * « Niveau ». Mots choisis par David le 2026-10-18 ; double sens panse /
+	 * pensée. Pluriel pour l'XP (« 120 / 200 pansées »), singulier pour le
+	 * niveau (« Tour de panse 4 »).
+	 */
+	buddy: {
+		xp: 'Pansées',
+		xpSingular: 'Pansée',
+		level: 'Tour de panse'
+	},
 	/** Difficulty levels */
 	difficulty: {
 		easy: 'Polonais',

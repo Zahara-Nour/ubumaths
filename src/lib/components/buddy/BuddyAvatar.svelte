@@ -9,6 +9,10 @@
 	import type { PalotinType } from '$lib/config/buddy-messages';
 	import type { BuddyExpression } from '$lib/types/buddy';
 
+	// Extension des images des Palotins : SVG provisoires dessinés à la main ;
+	// on passera aux images faites par IA (PNG ou WebP) en changeant cette seule constante.
+	const IMAGE_EXTENSION = 'svg';
+
 	interface Props {
 		palotin: PalotinType;
 		expression?: BuddyExpression;
@@ -20,7 +24,7 @@
 	const sizeClass = $derived(
 		size === 'sm' ? 'h-[60px] w-[60px]' : 'h-[80px] w-[80px] md:h-[100px] md:w-[100px]'
 	);
-	const imagePath = $derived(`/images/buddies/${palotin}-${expression}.png`);
+	const imagePath = $derived(`/images/buddies/${palotin}-${expression}.${IMAGE_EXTENSION}`);
 	let imageError = $state(false);
 
 	const palotinColors: Record<PalotinType, string> = {

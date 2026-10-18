@@ -76,3 +76,67 @@ describe('ReviewSession — états de chargement', () => {
 		expect(texte(container)).not.toContain("Rien à revoir aujourd'hui");
 	});
 });
+
+describe('ReviewSession — gain du Palotin en fin de séance', () => {
+	const deck = { kind: 'deck', deckId: 'd1' } as const;
+	const dueBody = {
+		cards: [{ cardId: 'k1', cardType: 'custom', frontContent: 'Recto', backContent: 'Verso' }],
+		skipped: 0
+	};
+	const buddy = {
+		student_id: '00000000-0000-4000-8000-000000000001',
+		palotin_type: 'cotice',
+		xp: 40,
+		level: 2,
+		current_streak: 1,
+		longest_streak: 1,
+		last_activity_date: null,
+		xp_earned_today: 5,
+		last_xp_date: null,
+		themes_explored: [],
+		change_count: 0,
+		equipped_skin_id: null
+	};
+
+	async function finishSession(submitBody: unknown) {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (url: string) => {
+				if (url.startsWith('/api/srs/review/due')) return respond(200, dueBody);
+				if (url === '/api/srs/review/submit') return respond(200, submitBody);
+				if (url === '/api/student/buddy') return respond(200, { buddy });
+				return respond(404, {});
+			})
+		);
+		const { container } = await render(ReviewSession, { source: deck });
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await page.getByRole('button', { name: /Bien/ }).click();
+		await expect.poll(() => texte(container)).toContain('Session terminée');
+		return container;
+	}
+
+	it('le serveur joint un gain : le Palotin le montre', async () => {
+		const container = await finishSession({
+			success: true,
+			buddy_xp: {
+				xpResult: {
+					xp_gained: 5,
+					new_xp: 45,
+					new_level: 2,
+					leveled_up: false,
+					daily_cap_reached: false
+				},
+				streakUpdated: false,
+				newStreak: 1,
+				streakBonusXp: 0,
+				isNewTheme: false
+			}
+		});
+		await expect.poll(() => texte(container)).toContain('Cotice a gagné 5 pansées');
+	});
+
+	it('réponse sans buddy_xp : la séance se termine, sans gain affiché', async () => {
+		const container = await finishSession({ success: true });
+		expect(texte(container)).not.toContain('a gagné');
+	});
+});

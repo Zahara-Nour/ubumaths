@@ -24,6 +24,8 @@ import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { recordSrsReviewAttempt } from '$lib/server/srs/srs-attempt';
+import { rewardFinishedReviewSession } from '$lib/server/srs/review-session-reward';
+import type { BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/srs/review/submit/+server');
@@ -185,8 +187,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			if (sessionInsertError) logger.error('Séance non créée :', sessionInsertError);
 		}
 
+		// ----- Forfait du Palotin (décision de David, 2026-10-18) -----
+		// Séance terminée (plus aucune carte due), au plus une fois par jour.
+		// Même forme que `buddy_xp` de `/api/tests/save`. Non bloquant : la
+		// révision est déjà enregistrée.
+		let buddyXp: BuddyXpFromExerciseResult | null = null;
+		try {
+			buddyXp = await rewardFinishedReviewSession(supabase, user.id, body.deckId, todayStr);
+		} catch (buddyError) {
+			logger.error('Forfait du Palotin non crédité :', buddyError);
+		}
+
 		return json({
 			success: true,
+			buddy_xp: buddyXp,
 			stats: {
 				difficulty: updatedStats.difficulty,
 				stability: updatedStats.stability,

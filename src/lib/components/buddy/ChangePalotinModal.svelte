@@ -13,6 +13,7 @@
 	import { PALOTIN_INFO } from '$lib/config/buddy-quiz';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import BuddyAvatar from './BuddyAvatar.svelte';
+	import { formatXpAmount } from './buddy-gain';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
@@ -86,9 +87,9 @@
 			<Dialog.Title>Changer de Palotin</Dialog.Title>
 			<Dialog.Description>
 				{#if isFree}
-					Premier changement gratuit ! Ton XP est conservee.
+					Premier changement gratuit ! Tes {lore.buddy.xp.toLowerCase()} sont conservées.
 				{:else}
-					Cout : {CHANGE_COST} gidouilles. Ton XP est conservee.
+					Coût : {CHANGE_COST} gidouilles. Tes {lore.buddy.xp.toLowerCase()} sont conservées.
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -102,7 +103,10 @@
 						{PALOTIN_INFO[buddy.palotin_type].name}
 						<Badge variant="secondary" class="ml-2">Actuel</Badge>
 					</div>
-					<div class="text-xs text-muted-foreground">Niveau {buddy.level} — {buddy.xp} XP</div>
+					<div class="text-xs text-muted-foreground">
+						{lore.buddy.level}
+						{buddy.level} — {formatXpAmount(buddy.xp)}
+					</div>
 				</div>
 			</div>
 
