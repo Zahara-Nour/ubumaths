@@ -7,6 +7,7 @@ couvre:
   - 'src/lib/server/buddy-*.ts'
   - src/lib/server/validation/buddy.ts
   - src/lib/types/buddy.ts
+  - src/lib/utils/buddy-constance.ts
   - src/lib/utils/buddy-xp.ts
   - 'src/routes/api/student/buddy/**'
 ---
