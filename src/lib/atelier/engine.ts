@@ -348,7 +348,12 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 	// ce qui ne se LIT pas est écarté.
 	const raw: Record<string, FunctionDefinition> = {};
 	for (const object of derivable(atelier)) {
-		const plain = astOf(object.definition, object.provenance, atelier.functionNames);
+		// Une mesure (`aire(A, B, C)`, `AM`) remplacée par sa valeur exacte (lot 2, L4)
+		const plain = astOf(
+			atelier.readableDefinition(object),
+			object.provenance,
+			atelier.functionNames
+		);
 		// `g(x) = f⁻¹(x)` : la réciproque développée AVANT toute dérivée (`g'`)
 		const ast = plain === null ? null : expandedOrSkipped(plain, {}, reciprocals);
 		if (ast === null) continue;
@@ -362,7 +367,7 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 		// La réciproque déjà développée au premier passage, quand il y en a un
 		const plain =
 			raw[object.name]?.expression ??
-			astOf(object.definition, object.provenance, atelier.functionNames);
+			astOf(atelier.readableDefinition(object), object.provenance, atelier.functionNames);
 		// ⚠️ Développé ICI aussi : sans quoi une fonction qui cite `g` recevrait
 		// `f'` par substitution, et le développement du niveau supérieur — déjà
 		// passé — ne le verrait jamais.
@@ -481,7 +486,7 @@ export function substitutedAstOf(
 		};
 	}
 
-	const ast = astOf(object.definition, object.provenance, atelier.functionNames);
+	const ast = astOf(atelier.readableDefinition(object), object.provenance, atelier.functionNames);
 	if (ast === null) {
 		return { ok: false, message: `« ${object.definition} » ne se lit pas.` };
 	}

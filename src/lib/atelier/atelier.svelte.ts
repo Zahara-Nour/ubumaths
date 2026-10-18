@@ -101,6 +101,15 @@ import { getVariables } from '$lib/mathAST/eval/substitute';
 import { listCitedMessage } from './list-cited';
 import { figureCitedMessage, figureFullMessage } from './geometry';
 import { partsOf, specOf, type ConstructionSpec } from './construction-spec';
+import {
+	citesMeasure,
+	hasMeasureCall,
+	measureCallNames,
+	measuredText,
+	withoutMeasureCalls,
+	withoutMeasures,
+	type MeasuredText
+} from './measures';
 import { bareLineShortcut, readConstruction, renameInConstruction } from './construction-read';
 import { constructionOf, isConstruction, kindsOf, type ConstructionMemo } from './construction';
 import {
@@ -1043,6 +1052,20 @@ export class Atelier {
 		// lit pas comme une expression
 		if (kind === 'point')
 			return this.#inCoordinates(definition, (c) => this.#cited('value', c, provenance));
+		// Une mesure (lot 2, L4) : les noms de ses appels, et le reste lu comme un calcul
+		if (hasMeasureCall(definition, provenance ?? 'url')) {
+			const found = new Map<string, MissingReference>(
+				referencesOf(
+					withoutMeasureCalls(definition, provenance ?? 'url'),
+					provenance,
+					this.functionNames
+				).map((r) => [r.name, r])
+			);
+			for (const name of measureCallNames(definition, provenance ?? 'url')) {
+				if (!found.has(name)) found.set(name, { name, as: 'value' });
+			}
+			return [...found.values()];
+		}
 		return referencesOf(definition, provenance, this.functionNames);
 	}
 
@@ -1086,7 +1109,11 @@ export class Atelier {
 		}
 		return o.kind === 'point'
 			? this.#inCoordinates(o.definition, (c) => bareNamesOf(c, o.provenance, this.functionNames))
-			: bareNamesOf(o.definition, o.provenance, this.functionNames);
+			: bareNamesOf(
+					withoutMeasureCalls(o.definition, o.provenance ?? 'url'),
+					o.provenance,
+					this.functionNames
+				);
 	}
 
 	/**
@@ -2638,14 +2665,18 @@ export class Atelier {
 				const value: ValueObject = {
 					...base,
 					kind: 'value',
+					// Une MESURE (`aire(A, B, C)`, `AM`, lot 2) n'a pas de curseur non plus : elle
+					// suit ses points (critère convenu avec la refonte : `slider` absent)
 					...(parsed.unit
 						? { unit: parsed.unit }
-						: {
-								slider: widenedSlider(
-									DEFAULT_SLIDER,
-									constantOf(definition, provenance, this.functionNames)
-								)
-							})
+						: this.#citesMeasure(definition, provenance)
+							? {}
+							: {
+									slider: widenedSlider(
+										DEFAULT_SLIDER,
+										constantOf(definition, provenance, this.functionNames)
+									)
+								})
 				};
 				return value;
 			}
@@ -2703,6 +2734,7 @@ export class Atelier {
 	 * pas lire ne peut rien promettre, donc l'erreur prime sur l'attente.
 	 */
 	private recomputeAll(): void {
+		this.#overFigureCap.clear();
 		this.#shortcutKinds();
 		const living = new Set(this.names);
 		// Un objet encore vide ne peut rien fournir à ceux qui le citent : ils
@@ -2733,6 +2765,10 @@ export class Atelier {
 				this.functionNames
 			).error;
 			ownError.set(o.name, unreadable);
+			if (!unreadable && this.#overFigureCap.has(o.name)) {
+				ownError.set(o.name, figureFullMessage(MAX_FIGURE_OBJECTS));
+				miswritten.add(o.name);
+			}
 			if (unreadable) miswritten.add(o.name);
 
 			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
@@ -2743,7 +2779,7 @@ export class Atelier {
 			const construction = this.#constructionSpec(o.kind, o.definition, o.provenance);
 			const asNumbers =
 				construction === null
-					? refs
+					? this.#numberRefs(o, refs)
 					: partsOf(construction).scalars.flatMap((scalar) =>
 							referencesOf(scalar, 'text', this.functionNames)
 						);
@@ -2897,6 +2933,7 @@ export class Atelier {
 
 		this.#inheritIntervals(intervals.inherited);
 		this.#constructions();
+		this.#measures();
 		this.#underivable();
 		this.#sequenceChecks();
 		this.#reciprocals();
@@ -2926,7 +2963,116 @@ export class Atelier {
 					? 'curve'
 					: o.kind;
 			if (wanted === o.kind) return;
+			// M2 : devenue droite, elle compte parmi les 50 objets de la figure (revue
+			// de la PR 1). Au-delà, elle reste une valeur, en erreur avec le plafond
+			if (wanted === 'curve' && this.items.filter(isFigureObject).length >= MAX_FIGURE_OBJECTS) {
+				this.#overFigureCap.add(o.name);
+				return;
+			}
 			this.items[i] = this.build(o.name, wanted, o.definition, o.provenance);
+		});
+	}
+
+	/** Les valeurs `(AB)` restées valeurs faute de place dans la figure (M2). */
+	#overFigureCap = new Set<string>();
+
+	/** Les mesures relues pour la révision courante (`readableDefinition`). */
+	#measureMemo: { readonly revision: number; readonly byName: Map<string, MeasuredText> } | null =
+		null;
+	/** Les objets dont on calcule les mesures : un objet qui s'y cite lui-même n'y entre pas. */
+	#measuring = new Set<string>();
+
+	/** Le nom est-il celui d'un point de l'atelier ? */
+	#isPoint = (name: string): boolean => this.get(name)?.kind === 'point';
+
+	/** La définition cite-t-elle une mesure (appel, ou `AM` de deux points) ? */
+	#citesMeasure(definition: string, provenance: Provenance | undefined): boolean {
+		return citesMeasure(definition, provenance ?? 'url', this.#isPoint);
+	}
+
+	/**
+	 * Les noms qu'un objet cite comme des NOMBRES (le refus P9 d'un point) : ceux
+	 * d'une mesure n'en sont pas — `S = AM`, `aire(A, M, N)` citent des points.
+	 */
+	#numberRefs(o: AtelierObject, refs: MissingReference[]): MissingReference[] {
+		if (o.kind !== 'value' && o.kind !== 'function' && o.kind !== 'sequence') return refs;
+		const provenance = o.provenance ?? 'url';
+		if (!citesMeasure(o.definition, provenance, this.#isPoint)) return refs;
+		const left = new Set(
+			referencesOf(
+				withoutMeasures(o.definition, provenance, this.#isPoint),
+				provenance,
+				this.functionNames
+			).map((r) => r.name)
+		);
+		return refs.filter((r) => left.has(r.name));
+	}
+
+	/**
+	 * Une mesure relue (lot 2, L4) : sa définition, chaque mesure remplacée par sa
+	 * valeur exacte — `null` pour un objet qui n'en cite pas. Une fois par
+	 * révision ; un objet qui se cite lui-même en cours de calcul n'en a pas.
+	 */
+	measuredOf(object: AtelierObject): MeasuredText | null {
+		if (object.kind !== 'value' && object.kind !== 'function' && object.kind !== 'sequence') {
+			return null;
+		}
+		const provenance = object.provenance ?? 'url';
+		if (!citesMeasure(object.definition, provenance, this.#isPoint)) return null;
+		if (this.#measureMemo === null || this.#measureMemo.revision !== this.revision) {
+			this.#measureMemo = { revision: this.revision, byName: new Map() };
+		}
+		const memo = this.#measureMemo.byName;
+		const known = memo.get(object.name);
+		if (known !== undefined) return known;
+		if (this.#measuring.has(object.name)) return null;
+		this.#measuring.add(object.name);
+		try {
+			const read = measuredText(this, object.definition, provenance);
+			memo.set(object.name, read);
+			return read;
+		} finally {
+			this.#measuring.delete(object.name);
+		}
+	}
+
+	/** Ce que lit le moteur : la définition, mesures remplacées par leur valeur (`engine.ts`). */
+	readableDefinition(object: AtelierObject): string {
+		const read = this.measuredOf(object);
+		return read !== null && read.ok && read.changed ? read.text : object.definition;
+	}
+
+	/**
+	 * Les mesures (lot 2, L4) : une mesure qui ne se calcule pas avec les valeurs
+	 * du moment (polygone croisé, sommet confondu) met l'objet en erreur, avec la
+	 * raison. Le curseur suit : une valeur devenue mesure le perd, une valeur qui
+	 * cesse de l'être (ses points supprimés) le retrouve.
+	 */
+	#measures(): void {
+		this.#measureMemo = null;
+		this.items.forEach((o, i) => {
+			if (isValue(o) && o.unit === undefined) {
+				const measured = this.#citesMeasure(o.definition, o.provenance);
+				if (measured && o.slider !== undefined) {
+					const { slider: _dropped, ...rest } = o;
+					void _dropped;
+					this.items[i] = rest;
+				} else if (!measured && o.slider === undefined) {
+					this.items[i] = {
+						...o,
+						slider: widenedSlider(
+							DEFAULT_SLIDER,
+							constantOf(o.definition, o.provenance, this.functionNames)
+						)
+					};
+				}
+			}
+			const current = this.items[i];
+			if (current.status !== 'ok') return;
+			const read = this.measuredOf(current);
+			if (read !== null && !read.ok) {
+				this.items[i] = { ...current, status: 'error', message: read.message } as AtelierObject;
+			}
 		});
 	}
 
@@ -3162,6 +3308,7 @@ export class Atelier {
 			changed = false;
 			// Un statut vient de changer : ce qui a été calculé avec l'ancien ne vaut plus
 			this.#constructionMemo = null;
+			this.#measureMemo = null;
 			this.items.forEach((o, i) => {
 				if (o.status !== 'ok' || !isConstruction(o)) return;
 				const built = constructionOf(this, o.name);

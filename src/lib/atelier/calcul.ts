@@ -124,6 +124,8 @@ import { DEV_HELP_ARGUMENT, studentHelpText } from './help';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { tabulateCommand } from './tabulate';
 import { gridFunctionCalledIn, gridFunctionInCalcul } from './grid-functions';
+import { measuredText, withoutMeasureCalls } from './measures';
+import { evaluate } from '$lib/mathAST/eval';
 import {
 	bareLineShortcut,
 	constructionWordIn,
@@ -3515,7 +3517,8 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 				message: `« ${inCalculation} » construit un objet de la figure : écris-le seul, ou nomme-le (I = milieu(A, B)).`
 			};
 		}
-		const unknown = findUnknownFunctionCall(input);
+		// Une mesure (`aire(…)`, lot 2) n'est pas une fonction inconnue
+		const unknown = findUnknownFunctionCall(withoutMeasureCalls(input, provenance));
 		if (unknown !== null) {
 			// Une fonction de la grille (SOMME, RACINE…) : dire où elle vit (Q-L4-6)
 			const grid = gridFunctionInCalcul(unknown);
@@ -3626,6 +3629,30 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		// L'objet a changé : le moteur doit le savoir pour le calcul suivant.
 		syncEngine(session.atelier, session.engine);
 		return result;
+	}
+
+	// Lot 2, L4 : une mesure dans un calcul (`AM`, `aire(A, B, C)`, `2AE + 1`) est
+	// remplacée par sa valeur exacte, puis la ligne se calcule ; l'écho reste ce
+	// qui a été tapé. Une valeur approchée (un angle non remarquable) se dit « ≈ »
+	const measured = measuredText(session.atelier, input, provenance);
+	if (!measured.ok) return { kind: 'refus', message: measured.message };
+	if (measured.changed) {
+		const line = computeInput(session, measured.text, provenance);
+		if (line.kind !== 'calcul') return line;
+		if (!measured.approximate) return { ...line, input };
+		// Un angle non remarquable : le moteur en ferait une fraction (368699/10000) —
+		// on montre le décimal, 4 décimales comme le mode décimal (`≈ 0,7071`)
+		const value = line.ast === undefined ? null : evaluate(line.ast, { mode: 'decimal' });
+		const approximation =
+			value !== null && value.status === 'value' && typeof value.value === 'number'
+				? String(Number(value.value.toFixed(4)))
+				: null;
+		return {
+			...line,
+			input,
+			output: `≈ ${approximation ?? line.output}`,
+			latex: `\\approx ${approximation ?? line.latex ?? line.output}`
+		};
 	}
 
 	// P5 : `A(1 ; 2)` — l'aide, au lieu de « Il manque « ) » »

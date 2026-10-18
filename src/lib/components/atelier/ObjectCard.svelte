@@ -36,6 +36,7 @@
 		constructionSummaryOf
 	} from '$lib/atelier/construction';
 	import { readConstruction } from '$lib/atelier/construction-read';
+	import { measureSummaryOf } from '$lib/atelier/measures';
 
 	interface Props {
 		object: AtelierObject;
@@ -115,7 +116,9 @@
 	);
 
 	const summary = $derived.by(() => {
-		const read = constructionSummaryOf(atelier, object.name);
+		// Une construction (lot 2, PR 1), ou une mesure nommée (PR 2) : ce qu'elle vaut
+		const read =
+			constructionSummaryOf(atelier, object.name) ?? measureSummaryOf(atelier, object.name);
 		if (read === null) return null;
 		const latex = forMathlive(read.latex);
 		return { markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }), text: read.text };

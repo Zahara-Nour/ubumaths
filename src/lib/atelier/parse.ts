@@ -28,6 +28,7 @@ import { readListValue, readNumber } from '$lib/statistics/read-value';
 import { hasObjectNameShape } from './names';
 import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from './decimal-comma';
 import { objectKindOf, partsOf, specOf } from './construction-spec';
+import { hasMeasureCall, measureShapeRefusal, withoutMeasureCalls } from './measures-read';
 import {
 	CURVE_NEEDS_XY,
 	CURVE_UNIT,
@@ -486,6 +487,22 @@ export function parseDefinition(
 	}
 	if (kind === 'point') return parsePoint(definition, provenance, functionNames);
 	if (kind === 'curve') return parseCurve(definition, provenance, functionNames);
+
+	// Une mesure (`aire(A, B, C)`, lot 2, L4) se lit comme un nombre : sa forme
+	// ici, sa valeur avec l'atelier (`measures.ts`)
+	if (
+		(kind === 'value' || kind === 'function' || kind === 'sequence') &&
+		hasMeasureCall(definition, provenance)
+	) {
+		const shape = measureShapeRefusal(definition, provenance);
+		if (shape !== null) return { error: shape };
+		return parseDefinition(
+			kind,
+			withoutMeasureCalls(definition, provenance),
+			provenance,
+			functionNames
+		);
+	}
 
 	if (kind === 'value' && PLAIN_NUMBER.test(definition)) return {};
 
