@@ -244,3 +244,63 @@ bouton « j'ai fini » auto-déclaré).
    120 / 200 d'embonpoint »). Ou d'autres mots ?
 4. **Images** : qui les dessine ? Toi ou un illustrateur ; ou moi, en SVG à silhouette simple façon
    Steinlen (même style que les futurs Mathoux), remplaçables plus tard.
+
+## 9. Mathoux v1 — la Chatterie (phase 0, à valider)
+
+> Rédigé le 2026-10-18, après la première étape (Palotins, #1471 → #1484).
+
+### Constats en prod (2026-10-18)
+
+- Chaque point du programme est rattaché à un nœud de l'arbre (`curriculum_points.node_id`, notion
+  ou sous-notion) : 2 124 points sur 3 131, 130 notions touchées sur 137.
+- Deux signaux existent déjà : l'**acquisition** d'un point (`student_point_state.is_acquired`,
+  nourrie par les réponses aux questions taguées) et l'état **« à revoir »** (badges FSRS
+  `a_renforcer` / `a_remedier` de `src/lib/server/srs/capacity-badge.ts` : une question taguée sur
+  le point est due).
+- ⚠️ **Seuls les niveaux du lycée ont des questions taguées.** Points travaillables (au moins une
+  question taguée) / points, et notions travaillables :
+
+  | Niveau   | Points travaillables | Notions travaillables |
+  | -------- | -------------------- | --------------------- |
+  | 2de      | 27 / 201             | 14 / 39               |
+  | 1re spé  | 78 / 165             | 19 / 27               |
+  | Tle spé  | 90 / 239             | 28 / 35               |
+  | Tle exp  | 49 / 153             | 17 / 17               |
+  | Tle comp | 57 / 129             | 21 / 29               |
+
+  Du CP à la 3e et en voie technologique : **aucune** question taguée, donc aucun Mathou ne peut
+  naître tant que le tagage n'est pas fait.
+
+### Comportements proposés
+
+- **Un Mathou par notion** de l'arbre, de la **race de sa branche** (19 races). Seuls comptent les
+  points **du niveau de l'élève** (`profiles.grade`) **qui ont au moins une question taguée**.
+- **Croissance** :
+  - **chaton** : première réussite sur un point de la notion ;
+  - **matou** : la moitié des points travaillables de la notion acquis ;
+  - **grand matou** : tous acquis.
+- **Sieste** : au moins un point de la notion « à revoir » (badge FSRS dû). Le Mathou n'est jamais
+  perdu ; une révision le réveille.
+- **À découvrir** : les notions travaillables pas encore commencées apparaissent en **silhouette**,
+  pour donner un but.
+- **Page « la Chatterie de Faustroll »** (`/dashboard/student/chatterie`) : les Mathoux rangés par
+  race, avec le stade, la sieste, et un lien « Réveiller » vers la révision.
+- **Le Palotin, gardien** : dans le widget, « 3 Mathoux font la sieste » quand c'est le cas.
+- **Calculé, pas stocké** : aucune table, aucune migration ; la collection se déduit de
+  l'acquisition et des badges, à chaque affichage.
+- **Dessins** : un composant SVG paramétré (couleur et motif par race, taille et détails par stade,
+  yeux fermés et « Zzz » pour la sieste) ; images IA plus tard.
+- **Noms** : « le Mathou des Fractions » (nom de la notion). Pas de nom donné par l'élève en v1
+  (texte libre d'un mineur : modération).
+
+**Hors v1** : annonce d'un nouveau chaton en fin de séance, combats, accessoires, vue de la
+Chatterie par le prof.
+
+### Questions pour David
+
+1. **Seuils** : chaton à la 1re réussite, matou à la moitié, grand matou à tous les points
+   travaillables acquis. D'accord ?
+2. **Niveaux** : tes élèves particuliers sont-ils au lycée ? Sinon, la Chatterie restera vide pour
+   eux tant que les questions du collège ne sont pas taguées : faut-il le faire d'abord ?
+3. **Silhouettes à découvrir** visibles : oui ?
+4. **Noms** : « le Mathou des Fractions » en v1, des noms pataphysiques plus tard ?
