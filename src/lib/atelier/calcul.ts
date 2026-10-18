@@ -823,7 +823,7 @@ function builtLine(
 			kind: 'calcul',
 			input: label,
 			output: `${name ?? ''}(${x.text} ; ${y.text})`,
-			latex: `${name === null ? '' : latexName(name)}left(${x.latex};${y.latex}\right)`,
+			latex: `${name === null ? '' : latexName(name)}\\left(${x.latex};${y.latex}\\right)`,
 			...keep
 		};
 	}
@@ -833,7 +833,7 @@ function builtLine(
 			kind: 'calcul',
 			input: label,
 			output: `${label} : segment de longueur ${length.text}`,
-			latex: `${labelLatex} : \text{segment de longueur } ${length.latex}`,
+			latex: `${labelLatex} : \\text{segment de longueur } ${length.latex}`,
 			...keep
 		};
 	}
@@ -846,7 +846,7 @@ function builtLine(
 		kind: 'calcul',
 		input: label,
 		output: `${label} : ${ray ? 'demi-droite portée par ' : ''}${equationText(equation)}`,
-		latex: `${labelLatex} : ${ray ? '\text{demi-droite portée par } ' : ''}${plainLatex(equation)}`,
+		latex: `${labelLatex} : ${ray ? '\\text{demi-droite portée par } ' : ''}${plainLatex(equation)}`,
 		...keep
 	};
 }

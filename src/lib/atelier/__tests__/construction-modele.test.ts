@@ -410,3 +410,40 @@ describe('M1 : une construction se range et se relit par sa définition', () => 
 		expect(back.get('I')?.definition).toBe('milieu(A, B)');
 	});
 });
+
+// =============================================================================
+// Le LaTeX des réponses : aucun antislash perdu (`\r`, `\t` lus comme caractères)
+// =============================================================================
+
+describe('L2 : le LaTeX des réponses de construction est intact', () => {
+	/** Un caractère de contrôle (`\r`, `\t`, saut de page) : un antislash perdu. */
+	const hasControl = (text: string) => [...text].some((char) => char.charCodeAt(0) < 32);
+
+	it('`milieu(A, B)` : \\left( … \\right)', () => {
+		const s = plane();
+		const formula = latex(runInput(s, 'milieu(A, B)'));
+		expect(hasControl(formula)).toBe(false);
+		expect(formula).toContain('\\left(');
+		expect(formula).toContain('\\right)');
+	});
+
+	it('`[AB]` et `[AB)` : \\text{…}', () => {
+		const s = plane();
+		for (const [line, words] of [
+			['[AB]', '\\text{segment de longueur'],
+			['[AB)', '\\text{demi-droite portée par']
+		]) {
+			const formula = latex(runInput(s, line));
+			expect(hasControl(formula)).toBe(false);
+			expect(formula).toContain(words);
+		}
+	});
+
+	it('un point construit nommé : I\\left( … \\right)', () => {
+		const s = plane();
+		defined(s, 'I = milieu(A, B)');
+		const formula = latex(runInput(s, 'I'));
+		expect(hasControl(formula)).toBe(false);
+		expect(formula).toMatch(/^I\\left\(.*\\right\)$/);
+	});
+});

@@ -8,6 +8,8 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import { tick } from 'svelte';
+import AtelierContainer from '../AtelierContainer.svelte';
 import WithAtelier from './harness/WithAtelier.svelte';
 import WithFigure from './harness/WithFigure.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
@@ -128,5 +130,44 @@ describe('L1 : la vue Géométrie dessine les constructions', () => {
 		expect(svg.querySelector('.ray')).toBeTruthy();
 		expect(svg.querySelector('.circle')).toBeTruthy();
 		expect(labels(container)).toEqual(expect.arrayContaining(['I', 's', 'd', 'r', 'c']));
+	});
+});
+
+// =============================================================================
+// La console : la formule d'une réponse se compose sans antislash perdu
+// =============================================================================
+
+describe('L2 : la ligne de console d’une construction tapée seule', () => {
+	async function settle() {
+		await tick();
+		await new Promise((r) => setTimeout(r, 0));
+		await tick();
+	}
+
+	async function answerOf(line: string): Promise<string> {
+		const atelier = atelierWith([]);
+		const view = await render(AtelierContainer, { atelier, ephemeral: true });
+		const field = view.container.querySelector('input[type="text"]') as HTMLInputElement;
+		const form = view.container.querySelector('form') as HTMLFormElement;
+		field.value = line;
+		field.dispatchEvent(new Event('input', { bubbles: true }));
+		await settle();
+		form.dispatchEvent(new SubmitEvent('submit', { bubbles: true, cancelable: true }));
+		await settle();
+		const history = view.container.querySelector('.historique');
+		await vi.waitFor(() => expect(history?.querySelector('.math')).toBeTruthy());
+		return history?.textContent ?? '';
+	}
+
+	it('`milieu(A, B)` : ni « ight » ni « left » lus en lettres', async () => {
+		const text = await answerOf('milieu(A, B)');
+		expect(text).not.toContain('ight');
+		expect(text).not.toMatch(/left\(/);
+	});
+
+	it('`[AB]` : « segment de longueur » sans « ext »', async () => {
+		const text = await answerOf('[AB]');
+		expect(text).toContain('segment de longueur');
+		expect(text).not.toContain('ext');
 	});
 });
