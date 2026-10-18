@@ -8,6 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
+import { isFunction } from '../types';
 
 // =============================================================================
 // Décor
@@ -24,9 +25,10 @@ function withPlottedF(): Atelier {
 	return atelier;
 }
 
+/** Les réglages d'une fonction (les points et courbes ont les leurs, lot 4b). */
 function displayOf(atelier: Atelier, name: string) {
 	const object = atelier.get(name);
-	return object !== undefined && 'display' in object ? object.display : undefined;
+	return object !== undefined && isFunction(object) ? object.display : undefined;
 }
 
 // =============================================================================

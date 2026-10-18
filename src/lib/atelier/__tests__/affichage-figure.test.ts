@@ -101,7 +101,8 @@ describe('régler un point et une courbe', () => {
 
 		const forPoint = atelier.setFigureDisplay('A', { lineWidth: 4 });
 		const forCurve = atelier.setFigureDisplay('d', { size: 'large' });
-		const badColor = atelier.setFigureDisplay('A', { color: 'rouge' });
+		// Une couleur hors palette, venue d'ailleurs que de la carte (un lien forgé)
+		const badColor = atelier.setFigureDisplay('A', { color: 'rouge' } as never);
 
 		expect(forPoint.ok).toBe(false);
 		expect(forCurve.ok).toBe(false);
