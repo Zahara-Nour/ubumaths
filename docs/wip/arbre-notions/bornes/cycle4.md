@@ -12,7 +12,7 @@ Objectif : pour chaque point de programme neuf (`curriculum_points`, `node_id` n
 | **Repères c4 2019**        | Repères annuels de progression (eduscol 2019)                                                                                  | page du PDF                                       |
 | **ressource 2016**         | Ressources d'accompagnement « ra16 » (zips : puissances, fractions, relatifs, calcul littéral, probabilités, géométrie plane…) | nom du thème                                      |
 
-**Force** : `BO` = écrit dans le programme ; `acc.` = écrit dans un document d'accompagnement qui ne contredit pas le BO ; `déduite` = ma lecture d'un texte implicite (toujours expliquée dans la remarque ⚠ du point).
+**Force** : `BO` = écrit dans le programme ; `acc.` = écrit dans un document d'accompagnement qui ne contredit pas le BO ; `déduite` = ma lecture d'un texte implicite (toujours expliquée dans la remarque ⚠ du point). ; `décision` = choix de David du 2026-10-18 entre plusieurs lectures (la source cite la question de `questions.json`, puis le texte d'origine).
 
 Hiérarchie suivie : BO, puis Exemples 2026 (écrit pour ce BO), puis 2019/2016 seulement en appui. Un document de 2019 ou 2016 qui contredit le BO n'a jamais servi de borne : la contradiction est signalée.
 
@@ -46,16 +46,18 @@ Ces documents datent du programme précédent. Là où ils contredisent le BO, c
 13. **Absents du BO en vigueur** mais présents dans les Attendus 3e 2019 : rotation, homothétie, triangles semblables, histogrammes, latitude et longitude. **Aucun point ne doit les générer.**
 14. **Test d'égalité en 5e** : « une ou deux indéterminées » en 2019 ; « une variable » dans le BO.
 
-## Incertitudes (à trancher par David)
+## Décisions de David (2026-10-18)
 
-- **Valeur absolue (5-120)** : les Exemples 2026 disent que le terme « ne fait pas l'objet d'exercice » et que la notation n'est pas exigible. Pourtant, un point en prod demande de « donner la valeur absolue ».
-- **Quartiles (3-029)** : aucun des textes lus ne fixe leur définition. La convention de correction reste à choisir.
-- **Médiane d'effectif pair (4-040)** : les Exemples 2026 acceptent toute valeur qui partage la série ; le correcteur doit donc accepter plusieurs réponses.
-- **Sections de solides (3-020)** : les Exemples 2026 vont au-delà du BO (sections de pyramide et de cône parallèles à la base, section du cube parallèle à une arête). La borne retenue est la liste du BO.
-- **Inéquations (3-014)** : le BO écrit seulement « ax ⩾ b » ; j'en ai déduit que les quatre sens d'inégalité sont admis, puisque les Exemples écrivent aussi ax > b.
-- **Notations fonctionnelles en 4e** : le BO dit qu'elles sont « utilisées progressivement » ; les Repères 2019 disent qu'elles ne sont pas formalisées. Je les ai retenues comme utilisables mais non exigibles.
-- **Exemples 2026 p.17 (racine carrée)** : le texte dit « il existe un unique nombre _entier_ positif dont le carré est a ». C'est une coquille manifeste : la borne retenue est « nombre positif ».
-- **Fractions mal extraites du PDF** : les fractions du BO et des Exemples sont extraites du PDF en deux lignes (numérateurs, puis dénominateurs) ; je les ai réassemblées colonne par colonne. Un contrôle visuel sur les PDF p.8 (BO) est conseillé.
+Les incertitudes du cycle 4 sont tranchées (détail : `questions.json`, champ `decision`).
+
+- **Valeur absolue (5-120)** (c4-1) : admise en mots (« valeur absolue de −3 », appui sur la droite graduée), sans la notation |a| ni calcul sur |a|.
+- **Quartiles (3-029)** (c4-2) : Q1 (Q3) = plus petite valeur de la série dont l'effectif cumulé atteint 25 % (75 %) de l'effectif total.
+- **Médiane d'effectif pair (4-040)** (c4-3) : le correcteur accepte toute valeur entre les deux valeurs centrales (ou le modèle ne tire que des effectifs impairs).
+- **Sections de solides (3-020)** (c4-4) : liste du BO seulement (pavé, cylindre, boule).
+- **Inéquations (3-014)** (c4-5) : les quatre sens (⩾, >, ⩽, <), a ≠ 0 éventuellement négatif.
+- **Notations fonctionnelles en 4e** (c4-6 ; 4-062, 4-063, 4-064, 4-081 et borne générale de 4e) : utilisables dans l'énoncé, jamais exigées dans la réponse ; vocabulaire image/antécédent et f : x ↦ réservés à la 3e.
+- **Exemples 2026 p.17 (racine carrée)** (c4-7 ; 4-019) : coquille, on lit « nombre positif ».
+- **Fractions mal extraites du PDF** (c4-8) : les fractions du BO et des Exemples sont extraites du PDF en deux lignes (numérateurs, puis dénominateurs) et réassemblées colonne par colonne. Contrôle par Claude sur le rendu image des pages, écarts signalés à David ; **contrôle pas encore fait** : d'ici là, ces exemples (5-025, 5-026, 5-123) ne servent pas à refuser un modèle.
 
 ## Cinquième (143 points, 108 avec une borne propre)
 
@@ -236,12 +238,12 @@ Ces documents datent du programme précédent. Là où ils contredisent le BO, c
 - **5-025** — Comparer des fractions.
   - Fractions positives (rationnels relatifs : 4e). — _BO c4 p.9_ (déduite)
   - Dénominateurs quelconques ; méthode la plus adaptée (fractions égales, comparaison à 1, à 0,5). Automatismes : 2/7 et 5/7 ; 8/12 et 8/21 ; 3/4 et 7/18 ; 8/3 et 6/7. — _BO c4 p.8 ; Exemples 2026 p.12_ (BO)
-  - ⚠ Contradiction : Attendus 5e 2019 (p.2) et Repères 2019 (p.2) limitent aux dénominateurs « égaux ou multiples l'un de l'autre » ; le BO en vigueur ne pose pas cette limite (ex. 3/4 et 7/18). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e).
+  - ⚠ Contradiction : Attendus 5e 2019 (p.2) et Repères 2019 (p.2) limitent aux dénominateurs « égaux ou multiples l'un de l'autre » ; le BO en vigueur ne pose pas cette limite (ex. 3/4 et 7/18). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). Fractions recollées depuis le PDF (BO c4 p.8, Exemples 2026 p.12) : contrôle visuel par Claude décidé le 2026-10-18 (question c4-8), écarts signalés à David ; tant qu'il n'est pas fait, ces exemples ne servent pas à refuser un modèle.
 - **5-026** — Additionner des fractions de dénominateurs quelconques (2/3 + 1/4 = ?).
   - Fractions positives (rationnels relatifs : 4e). — _BO c4 p.9_ (déduite)
   - Dénominateurs quelconques ; dénominateur commun cherché parmi les multiples (3/8 + 7/6 ; 5/12 − 2/9). Automatismes : 3/5 + 4/5 ; 1 − 2/3 ; 4/7 − 2/21 ; 3 + 2/5 ; 2/5 + 1/4. — _BO c4 p.8 ; Exemples 2026 p.12_ (BO)
   - La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e). — _BO c4 p.9-10_ (déduite)
-  - ⚠ Contradiction : Attendus 5e 2019 (p.3) et Repères 2019 (p.2) limitent aux dénominateurs égaux ou multiples ; le BO en vigueur dit « dénominateurs quelconques » (et le libellé en prod aussi). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). | La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e).
+  - ⚠ Contradiction : Attendus 5e 2019 (p.3) et Repères 2019 (p.2) limitent aux dénominateurs égaux ou multiples ; le BO en vigueur dit « dénominateurs quelconques » (et le libellé en prod aussi). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). | La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e). Fractions recollées depuis le PDF (BO c4 p.8, Exemples 2026 p.12) : contrôle visuel par Claude décidé le 2026-10-18 (question c4-8), écarts signalés à David ; tant qu'il n'est pas fait, ces exemples ne servent pas à refuser un modèle.
 - **5-027** — Résoudre des problèmes avec des additions et soustractions de fractions.
   - Fractions positives (rationnels relatifs : 4e). — _BO c4 p.9_ (déduite)
   - Additions et soustractions de fractions seulement (multiplication et division : 4e). — _BO c4 p.8-9_ (BO)
@@ -250,7 +252,7 @@ Ces documents datent du programme précédent. Là où ils contredisent le BO, c
   - Fractions positives (rationnels relatifs : 4e). — _BO c4 p.9_ (déduite)
   - Dénominateurs quelconques ; dénominateur commun cherché parmi les multiples (3/8 + 7/6 ; 5/12 − 2/9). Automatismes : 3/5 + 4/5 ; 1 − 2/3 ; 4/7 − 2/21 ; 3 + 2/5 ; 2/5 + 1/4. — _BO c4 p.8 ; Exemples 2026 p.12_ (BO)
   - La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e). — _BO c4 p.9-10_ (déduite)
-  - ⚠ Contradiction : Attendus 5e 2019 (p.3) et Repères 2019 (p.2) limitent aux dénominateurs égaux ou multiples ; le BO en vigueur dit « dénominateurs quelconques » (et le libellé en prod aussi). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). | La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e).
+  - ⚠ Contradiction : Attendus 5e 2019 (p.3) et Repères 2019 (p.2) limitent aux dénominateurs égaux ou multiples ; le BO en vigueur dit « dénominateurs quelconques » (et le libellé en prod aussi). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). | La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e). Fractions recollées depuis le PDF (BO c4 p.8, Exemples 2026 p.12) : contrôle visuel par Claude décidé le 2026-10-18 (question c4-8), écarts signalés à David ; tant qu'il n'est pas fait, ces exemples ne servent pas à refuser un modèle.
 
 ### Nombres et calculs > Nombres relatifs
 
@@ -290,8 +292,8 @@ Ces documents datent du programme précédent. Là où ils contredisent le BO, c
 - **5-024** — Résoudre des problèmes mobilisant addition et soustraction de nombres décimaux relatifs.
   - Addition et soustraction de décimaux relatifs seulement. — _BO c4 p.8_ (BO)
 - **5-120** — Donner la valeur absolue d'un nombre relatif (valeur absolue de −3 = ?).
-  - Valeur absolue introduite par la droite graduée ; le terme est introduit mais « ne fait pas l'objet d'exercice » et la notation |a| n'est pas exigible. — _Exemples 2026 p.10_ (acc.)
-  - ⚠ Attention : l'accompagnement 2026 dit que la valeur absolue « ne fait pas l'objet d'exercice » ; un modèle d'exercice dédié serait en tension avec ce texte.
+  - Valeur absolue admise en mots (« valeur absolue de −3 »), appui sur la droite graduée ; ni la notation |a| ni calcul sur |a| (|−3|, |x| = 3, |a − b| hors point). — _Décision de David, 2026-10-18 (question c4-1) ; d'après Exemples 2026 p.10_ (**décision**)
+  - ⚠ Les Exemples 2026 disent que le terme « ne fait pas l'objet d'exercice » et que la notation n'est pas exigible, mais aussi que l'élève « donne la valeur absolue ».
 - **5-121** — Placer sur une droite graduée un point d'abscisse relative donnée.
   - Abscisses décimales relatives « simples » ; graduations en dixièmes, moitiés, quarts, tiers possibles. — _Exemples 2026 p.10 ; BO c4 p.8_ (acc.)
 - **5-122** — Ranger des nombres décimaux relatifs dans l'ordre croissant ou décroissant.
@@ -451,7 +453,7 @@ Ces documents datent du programme précédent. Là où ils contredisent le BO, c
 - Distributivité simple seulement ; double distributivité et identités remarquables en 3e. — _BO c4 p.10-11_ (BO)
 - Racine carrée : définition et encadrement ; aucune propriété algébrique des racines (√a × √b…). — _BO c4 p.10 ; Repères c4 2019 p.4_ (acc.)
 - Pas de théorème de Thalès ni de trigonométrie (3e) ; translation sans définition ponctuelle. — _BO c4 p.14-15 ; Exemples 2026 p.28_ (BO)
-- Notations fonctionnelles non formalisées (fonctions : 3e). — _Repères c4 2019 p.8_ (acc.)
+- Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e. — _Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18_ (**décision**)
 
 ### Espace et géométrie > Parallélogrammes et translations
 
@@ -594,6 +596,8 @@ Ces documents datent du programme précédent. Là où ils contredisent le BO, c
 
 - **4-019** — Comprendre et connaitre la définition de la racine carrée d'un nombre positif.
   - Côté d'un carré d'aire carré parfait ≤ 144, mentalement ; carrés des entiers de 0 à 12. — _Exemples 2026 p.17 ; BO c4 p.10_ (acc.)
+  - Racine carrée d'un nombre positif quelconque (√2, √20 dans le point) : « nombre entier positif » (Exemples 2026 p.17) est une coquille. — _Décision de David, 2026-10-18 (question c4-7) ; d'après BO c4 p.10_ (**décision**)
+  - ⚠ La borne des carrés parfaits ≤ 144 vaut pour le calcul mental.
 - **4-020** — Encadrer la racine carrée d'un entier par deux nombres entiers consécutifs.
   - Racine d'un entier encadrée par deux entiers consécutifs (aire 20 cm² → entre 4 et 5). — _BO c4 p.10 ; Exemples 2026 p.17_ (BO)
 
@@ -622,7 +626,8 @@ Ces documents datent du programme précédent. Là où ils contredisent le BO, c
 - **4-040** — Déterminer la médiane d'une série de petit effectif présentée sous forme de données brutes (3, 7, 8, 12, 15 → ?).
   - Série de petit effectif en données brutes (effectif total ≤ 30, pair ou impair). — _BO c4 p.17 ; Attendus 4e 2019 p.5_ (BO)
   - Médiane = toute valeur qui partage la série ordonnée en deux sous-séries de même effectif ; pour un effectif pair, elle n'est pas unique. — _Exemples 2026 p.36_ (acc.)
-  - ⚠ Pour la correction : avec un effectif pair, l'accompagnement 2026 accepte toute valeur entre les deux valeurs centrales.
+  - Effectif pair : le correcteur accepte toute valeur comprise entre les deux valeurs centrales (ou le modèle ne tire que des effectifs impairs). — _Décision de David, 2026-10-18 (question c4-3) ; d'après Exemples 2026 p.36_ (**décision**)
+  - ⚠ Un modèle à effectif pair qui n'accepte que la demi-somme est à corriger.
 - **4-041** — Calculer l'étendue d'une série présentée sous forme de données brutes, d'un tableau ou d'un diagramme.
   - Données brutes, tableau, diagramme en barres, diagramme circulaire. — _BO c4 p.17_ (BO)
 - **4-042** — Comprendre l'évolution de la médiane et de la moyenne quand on ajoute une valeur extrême. — _hérite des bornes générales_
@@ -643,14 +648,17 @@ Ces documents datent du programme précédent. Là où ils contredisent le BO, c
 - **4-061** — Savoir retrouver le nombre de départ après avoir remonté un programme de calcul simple.
   - Programme de calcul simple. — _BO c4 p.19_ (BO)
 - **4-062** — Produire une formule littérale représentant la dépendance d'une grandeur en fonction d'une autre.
-  - Notation fonctionnelle f(x) non formalisée en 4e. — _Repères c4 2019 p.8_ (acc.)
-  - ⚠ Écart : le BO (p.18) dit que les notations fonctionnelles P(A), p(t) sont « utilisées progressivement dans tous les chapitres » ; les Repères 2019 disent qu'elles ne sont pas formalisées en 4e. Lecture retenue : utilisables, non exigibles.
+  - Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e. — _Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18_ (**décision**)
+  - ⚠ Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »).
 - **4-063** — Représenter l'expression d'une grandeur en fonction d'une autre par un graphique.
-  - Notation fonctionnelle f(x) non formalisée en 4e. — _Repères c4 2019 p.8_ (acc.)
+  - Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e. — _Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18_ (**décision**)
+  - ⚠ Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »).
 - **4-064** — Comprendre qu'une formule, un graphique ou un tableau de valeurs traduisent la dépendance d'une grandeur en fonction d'une autre.
-  - Notation fonctionnelle f(x) non formalisée en 4e. — _Repères c4 2019 p.8_ (acc.)
+  - Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e. — _Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18_ (**décision**)
+  - ⚠ Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »).
 - **4-081** — Appliquer un programme de calcul à plusieurs étapes à une variable (écrire l'expression obtenue en fonction de x).
-  - Notation fonctionnelle f(x) non formalisée en 4e. — _Repères c4 2019 p.8_ (acc.)
+  - Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e. — _Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18_ (**décision**)
+  - ⚠ Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »).
 
 ### Proportionnalité, fonctions > Proportionnalité
 
@@ -686,7 +694,7 @@ Ces documents datent du programme précédent. Là où ils contredisent le BO, c
 - **3-019** — Définir les grands cercles et le diamètre d'une sphère. — _hérite des bornes générales_
 - **3-020** — Visualiser et réaliser des sections de pavé parallèlement à une face, de cylindre parallèlement ou perpendiculairement à son axe, d'une boule.
   - Pavé parallèlement à une face, cylindre parallèlement ou perpendiculairement à son axe, boule. — _BO c4 p.15_ (BO)
-  - ⚠ L'accompagnement 2026 (p.30) étend aux sections du cube parallèles à une arête et aux sections de pyramide et de cône parallèles à la base : au-delà du BO (le BO fait foi).
+  - ⚠ Les ajouts des Exemples 2026 p.30 (cube parallèlement à une arête, pyramide et cône parallèlement à la base) sont hors point : liste du BO seulement.
 - **3-021** — Connaitre et utiliser la formule du volume d'une boule de rayon donné.
   - V = 4/3 πr³ (formule admise). — _Exemples 2026 p.30_ (acc.)
 
@@ -737,9 +745,10 @@ Ces documents datent du programme précédent. Là où ils contredisent le BO, c
 - **3-013** — Utiliser la double distributivité pour développer des expressions.
   - (a + b)(c + d), lien avec la distributivité simple ; ex. (2x − 3)(5x + 7). — _Exemples 2026 p.21 ; Attendus 3e 2019 p.3_ (acc.)
 - **3-014** — Résoudre par le calcul une inéquation du premier degré du type ax ⩾ b (3x ⩾ 12).
-  - Type ax ⩾ b seulement (a non nul, éventuellement négatif), pas ax + b ⩾ cx + d. — _BO c4 p.11 ; Exemples 2026 p.21_ (BO)
+  - Type ax ⩾ b (a non nul), pas ax + b ⩾ cx + d. — _BO c4 p.11 ; Exemples 2026 p.21_ (BO)
+  - Les quatre sens d'inégalité (⩾, >, ⩽, <), a ≠ 0 éventuellement négatif (−2x < 6 dans le point). — _Décision de David, 2026-10-18 (question c4-5) ; d'après BO c4 p.11 ; Exemples 2026 p.21_ (**décision**)
   - Solutions représentées sur la droite graduée avec un crochet ; notation des intervalles « pas un enjeu ». — _Exemples 2026 p.21_ (acc.)
-  - ⚠ Les quatre sens d'inégalité sont déduits : le BO écrit ⩾, l'accompagnement 2026 (fonctions) écrit ax > b.
+  - ⚠ Le BO écrit ax ⩾ b, l'accompagnement 2026 écrit aussi ax > b ; ax ⩽ b s'écrit (−a)x ⩾ −b.
 - **3-015** — Résoudre une équation produit nul.
   - (ax + b)(cx + d) = 0, coefficients décimaux possibles ((2,5x − 7)(8x − 9,6) = 0). — _Exemples 2026 p.21 ; Attendus 3e 2019 p.3_ (acc.)
 - **3-016** — Développer avec les identités remarquables ((x + 3)² = ?).
@@ -816,7 +825,8 @@ Ces documents datent du programme précédent. Là où ils contredisent le BO, c
   - À partir d'un tableau d'effectifs. — _Exemples 2026 p.37_ (acc.)
 - **3-029** — Donner les quartiles d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres.
   - Série donnée par un tableau d'effectifs ou un diagramme en barres ; médiane, Q1, Q3 via les effectifs cumulés croissants. — _BO c4 p.17 ; Exemples 2026 p.37_ (BO)
-  - ⚠ La définition des quartiles n'est donnée par aucun des textes lus : la convention de correction est à fixer (déduite).
+  - Convention : Q1 (Q3) = plus petite valeur de la série dont l'effectif cumulé atteint 25 % (75 %) de l'effectif total (série 1 à 8 : Q1 = 2). — _Décision de David, 2026-10-18 (question c4-2) ; d'après BO c4 p.17 ; Exemples 2026 p.37_ (**décision**)
+  - ⚠ Un modèle qui calcule Q1 par interpolation ou par médiane de la demi-série, sans accepter cette valeur, est à corriger.
 - **3-030** — Construire la boîte à moustaches d'une série statistique.
   - Minimum, Q1, médiane, Q3, maximum, avec échelle. — _Exemples 2026 p.37_ (acc.)
 - **3-032** — Utiliser le tableur pour calculer une moyenne, une médiane et l'étendue d'une série statistique. — _hérite des bornes générales_

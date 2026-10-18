@@ -24,6 +24,15 @@
 				"force": "BO"
 			},
 			{
+				"borne": "La progression par période n'est pas vérifiable sur un modèle : seule la borne de fin d'année fait refuser.",
+				"detail": {
+					"borne_retenue": "fin d'année",
+					"max": 999999
+				},
+				"source": "Décision de David, 2026-10-18 (question c3-13) ; d'après BO c3 p.5",
+				"force": "décision"
+			},
+			{
 				"borne": "Décimaux : pas au-delà des centièmes (au plus deux chiffres après la virgule).",
 				"detail": {
 					"ensemble": "décimaux",
@@ -612,16 +621,16 @@
 				"bornes": [
 					{
 						"aspect": "faits",
-						"borne": "Tables d'addition (faits du cycle 2) : termes à un chiffre.",
+						"borne": "Tables d'addition : termes de 0 à 10 (définition du BO du cycle 2) ; 10 + 7 dans le point, 11 + 6 non.",
 						"detail": {
 							"min": 0,
-							"max": 9
+							"max": 10
 						},
-						"source": "Exemples de réussite CM1 2025 p.8",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-6) ; d'après BO c2 p.6 et p.14 (définition des tables : A et B de 0 à 10) ; Exemples de réussite CM1 2025 p.8",
+						"force": "décision"
 					}
 				],
-				"remarque": "Le BO ne borne pas les tables ; « tables d'addition » = sommes de deux nombres à un chiffre (lecture usuelle du cycle 2)."
+				"remarque": "Le BO du cycle 3 poursuit la mémorisation des tables définies au cycle 2."
 			},
 			"CM1-036": {
 				"libelle": "Connaître le répertoire multiplicatif : donner le produit de deux nombres (7 × 8 = ?).",
@@ -629,16 +638,16 @@
 				"bornes": [
 					{
 						"aspect": "faits",
-						"borne": "Tables de multiplication ; l'exemple « 70 = 7 × … » inclut le facteur 10.",
+						"borne": "Tables de multiplication : facteurs de 0 à 10 (définition du BO du cycle 2) ; 0 × 8 et 7 × 10 dans le point, 12 × 7 non.",
 						"detail": {
-							"min": 1,
+							"min": 0,
 							"max": 10
 						},
-						"source": "Exemples de réussite CM1 2025 p.8",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-6) ; d'après BO c2 p.6 et p.14 (définition des tables : A et B de 0 à 10) ; Exemples de réussite CM1 2025 p.8",
+						"force": "décision"
 					}
 				],
-				"remarque": "Facteur 10 déduit de l'exemple 70 = 7 × … ; sinon facteurs 1 à 9."
+				"remarque": "Le BO du cycle 3 poursuit la mémorisation des tables définies au cycle 2."
 			},
 			"CM1-037": {
 				"libelle": "Connaître quelques relations entre des fractions usuelles",
@@ -665,11 +674,11 @@
 						"detail": {
 							"liste": ["1/10 = 0,1", "1/100 = 0,01"]
 						},
-						"source": "Exemples de réussite CM1 2025 p.8",
-						"force": "accompagnement"
+						"source": "Décision de David, 2026-10-18 (question c3-3) ; d'après Exemples de réussite CM1 2025 p.8",
+						"force": "décision"
 					}
 				],
-				"remarque": "1/2 = 0,5, 1/4 = 0,25… n'apparaissent qu'en CM2 dans les exemples de réussite."
+				"remarque": "1/2 = 0,5, 1/4 = 0,25, 3/4 = 0,75 relèvent du CM2 (CM2-039)."
 			},
 			"CM1-039": {
 				"libelle": "Ajouter un nombre entier inférieur à 10, d'unités, de dizaines, de centaines, de dixièmes ou de centièmes à un nombre décimal, lorsqu'il n'y a pas de retenue",
@@ -724,11 +733,11 @@
 						"detail": {
 							"decimales": 2
 						},
-						"source": "Exemples de réussite CM1 2025 p.9",
-						"force": "accompagnement"
+						"source": "BO c3 p.6 ; Exemples de réussite CM1 2025 p.9",
+						"force": "BO"
 					}
 				],
-				"remarque": "L'exemple de réussite cite le millième, absent du CM1 : on garde deux décimales (BO)."
+				"remarque": "La phrase de l'exemple de réussite qui cite le millième est hors CM1 : 10 × 3,457 est hors point."
 			},
 			"CM1-042": {
 				"libelle": "Diviser un nombre décimal par 10",
@@ -760,15 +769,16 @@
 					},
 					{
 						"aspect": "nombres",
-						"borne": "Aucune taille écrite pour l'autre nombre ; on retient un entier de deux ou trois chiffres.",
+						"borne": "Autre nombre : entier de deux ou trois chiffres (10 à 999).",
 						"detail": {
 							"min": 10,
 							"max": 999
 						},
-						"source": "Exemples de réussite CM1 2025 p.10",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-5) ; d'après Exemples de réussite CM1 2025 p.10",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "La taille de l'autre nombre n'est écrite nulle part : lecture des exemples, retenue par décision."
 			},
 			"CM1-044": {
 				"libelle": "Multiplier un nombre entier inférieur à 10 par un nombre entier de dizaines ou de centaines",
@@ -790,19 +800,8 @@
 			"CM1-045": {
 				"libelle": "Multiplier un nombre entier par 4 (4 × 45 = ?).",
 				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
-				"bornes": [
-					{
-						"aspect": "nombres",
-						"borne": "Aucune borne écrite ; exemples d'entiers à deux chiffres (8 × 27). Procédure : double du double.",
-						"detail": {
-							"min": 10,
-							"max": 99
-						},
-						"source": "Exemples de réussite CM1 2025 p.10",
-						"force": "déduite"
-					}
-				],
-				"remarque": "Le BO dit « par 4 ou par 8 » sans borne ; l'entier à deux chiffres est une lecture des exemples."
+				"bornes": [],
+				"remarque": "Aucune borne propre : hérite de « general » (champ du CM1)."
 			},
 			"CM1-046": {
 				"libelle": "Multiplier un nombre entier par 5",
@@ -859,15 +858,15 @@
 				"bornes": [
 					{
 						"aspect": "format",
-						"borne": "Cas simples, une paire de parenthèses (ex. 3 × (10 − 6)).",
+						"borne": "Cas simples, une seule paire de parenthèses (ex. 3 × (10 − 6)) ; deux paires ou parenthèses imbriquées hors point.",
 						"detail": {
 							"max": 1
 						},
-						"source": "Exemples de réussite CM1 2025 p.10",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-9) ; d'après Exemples de réussite CM1 2025 p.10",
+						"force": "décision"
 					}
 				],
-				"remarque": "« Une ou deux paires » n'arrive qu'au CM2 : on lit une seule paire au CM1."
+				"remarque": "« Une ou deux paires » arrive au CM2."
 			},
 			"CM1-050": {
 				"libelle": "Poser en colonnes et effectuer une addition de nombres décimaux.",
@@ -1859,15 +1858,16 @@
 				"bornes": [
 					{
 						"aspect": "nombres",
-						"borne": "Entre deux entiers consécutifs (ex. 17,48) ; au plus deux décimales.",
+						"borne": "Entre deux entiers consécutifs seulement (ex. 17,48) ; au plus deux décimales.",
 						"detail": {
+							"precision": "unité",
 							"decimales": 2
 						},
-						"source": "Exemples de réussite CM1 2025 p.8",
-						"force": "accompagnement"
+						"source": "Décision de David, 2026-10-18 (question c3-7) ; d'après Exemples de réussite CM1 2025 p.8",
+						"force": "décision"
 					}
 				],
-				"remarque": "L'encadrement au dixième près (exemple du libellé) n'est pas dans les exemples de réussite CM1 ; il l'est au CM2."
+				"remarque": "L'exemple du libellé en prod (au dixième près : 3,7 < 3,74 < 3,8) est hors borne et serait à corriger ; l'encadrement au dixième relève du CM2."
 			},
 			"CM1-133": {
 				"libelle": "Soustraire un nombre entier inférieur à 10, d'unités, de dizaines, de centaines, de dixièmes ou de centièmes à un nombre décimal, lorsqu'il n'y a pas de retenue",
@@ -2259,15 +2259,16 @@
 				"bornes": [
 					{
 						"aspect": "faits",
-						"borne": "Tables d'addition (termes à un chiffre) ; ex. 4 + … = 12 ; 10 = 7 + ….",
+						"borne": "Tables d'addition : termes de 0 à 10 (définition du BO du cycle 2) ; 10 + 7 dans le point, 11 + 6 non.",
 						"detail": {
 							"min": 0,
-							"max": 9
+							"max": 10
 						},
-						"source": "Exemples de réussite CM1 2025 p.8",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-6) ; d'après BO c2 p.6 et p.14 (définition des tables : A et B de 0 à 10) ; Exemples de réussite CM1 2025 p.8",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "Le BO du cycle 3 poursuit la mémorisation des tables définies au cycle 2."
 			},
 			"CM1-162": {
 				"libelle": "Connaître le répertoire multiplicatif : compléter une multiplication à trou (7 × ? = 56).",
@@ -2275,15 +2276,16 @@
 				"bornes": [
 					{
 						"aspect": "faits",
-						"borne": "Tables de multiplication ; ex. 7 × … = 42 ; 70 = 7 × … (facteur 10 inclus).",
+						"borne": "Tables de multiplication : facteurs de 0 à 10 (définition du BO du cycle 2) ; 0 × 8 et 7 × 10 dans le point, 12 × 7 non.",
 						"detail": {
-							"min": 1,
+							"min": 0,
 							"max": 10
 						},
-						"source": "Exemples de réussite CM1 2025 p.8",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-6) ; d'après BO c2 p.6 et p.14 (définition des tables : A et B de 0 à 10) ; Exemples de réussite CM1 2025 p.8",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "Le BO du cycle 3 poursuit la mémorisation des tables définies au cycle 2."
 			},
 			"CM1-163": {
 				"libelle": "Soustraire 8, 9, 18, 19, 28, 29, 38 ou 39 à un nombre (57 − 29 = ?).",
@@ -2300,31 +2302,22 @@
 					},
 					{
 						"aspect": "nombres",
-						"borne": "Pas de taille écrite pour le premier nombre ; entier de deux ou trois chiffres.",
+						"borne": "Premier nombre : entier de deux ou trois chiffres (10 à 999).",
 						"detail": {
 							"min": 10,
 							"max": 999
 						},
-						"source": "Exemples de réussite CM1 2025 p.10",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-5) ; d'après Exemples de réussite CM1 2025 p.10",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "La taille de l'autre nombre n'est écrite nulle part : lecture des exemples, retenue par décision."
 			},
 			"CM1-164": {
 				"libelle": "Multiplier un nombre entier par 8 (8 × 45 = ?).",
 				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
-				"bornes": [
-					{
-						"aspect": "nombres",
-						"borne": "Aucune borne écrite ; exemple 8 × 27 (entier à deux chiffres), trois doublements successifs.",
-						"detail": {
-							"min": 10,
-							"max": 99
-						},
-						"source": "Exemples de réussite CM1 2025 p.10",
-						"force": "déduite"
-					}
-				]
+				"bornes": [],
+				"remarque": "Aucune borne propre : hérite de « general » (champ du CM1)."
 			},
 			"CM1-165": {
 				"libelle": "Poser en colonnes et effectuer une soustraction de nombres décimaux.",
@@ -2428,6 +2421,15 @@
 				},
 				"source": "BO c3 p.9",
 				"force": "BO"
+			},
+			{
+				"borne": "La progression par période n'est pas vérifiable sur un modèle : seule la borne de fin d'année fait refuser.",
+				"detail": {
+					"borne_retenue": "fin d'année",
+					"max": 999999999
+				},
+				"source": "Décision de David, 2026-10-18 (question c3-13) ; d'après BO c3 p.9",
+				"force": "décision"
 			},
 			{
 				"borne": "Décimaux : jusqu'aux millièmes (au plus trois chiffres après la virgule).",
@@ -3024,15 +3026,16 @@
 				"bornes": [
 					{
 						"aspect": "faits",
-						"borne": "Tables d'addition (termes à un chiffre).",
+						"borne": "Tables d'addition : termes de 0 à 10 (définition du BO du cycle 2) ; 10 + 7 dans le point, 11 + 6 non.",
 						"detail": {
 							"min": 0,
-							"max": 9
+							"max": 10
 						},
-						"source": "Exemples de réussite CM2 2025 p.7",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-6) ; d'après BO c2 p.6 et p.14 (définition des tables : A et B de 0 à 10) ; Exemples de réussite CM2 2025 p.7",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "Le BO du cycle 3 poursuit la mémorisation des tables définies au cycle 2."
 			},
 			"CM2-036": {
 				"libelle": "Connaître le répertoire multiplicatif : donner le produit de deux nombres (7 × 8 = ?).",
@@ -3040,15 +3043,16 @@
 				"bornes": [
 					{
 						"aspect": "faits",
-						"borne": "Tables de multiplication (70 = 7 × … : facteur 10 inclus).",
+						"borne": "Tables de multiplication : facteurs de 0 à 10 (définition du BO du cycle 2) ; 0 × 8 et 7 × 10 dans le point, 12 × 7 non.",
 						"detail": {
-							"min": 1,
+							"min": 0,
 							"max": 10
 						},
-						"source": "Exemples de réussite CM2 2025 p.7",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-6) ; d'après BO c2 p.6 et p.14 (définition des tables : A et B de 0 à 10) ; Exemples de réussite CM2 2025 p.7",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "Le BO du cycle 3 poursuit la mémorisation des tables définies au cycle 2."
 			},
 			"CM2-037": {
 				"libelle": "Connaître la moitié des nombres impairs jusqu'à 15",
@@ -3101,17 +3105,19 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Les exemples ajoutent k unités de numération (k de 1 à 9), y compris des dixièmes/centièmes/millièmes (4,452 + 0,03 ; 21 462 + 3 000) ; sans retenue.",
+						"borne": "Nombre ajouté = k unités de numération (k de 1 à 9), dixièmes, centièmes et millièmes compris, comme au CM1 (4,452 + 0,03 ; 21 462 + 3 000) ; pas un décimal quelconque (2,37) ; sans retenue.",
 						"detail": {
 							"min": 1,
 							"max": 9,
-							"decimales": 3
+							"decimales": 3,
+							"liste": ["k × 10ⁿ", "k/10", "k/100", "k/1000"],
+							"retenue": false
 						},
-						"source": "Exemples de réussite CM2 2025 p.8",
-						"force": "accompagnement"
+						"source": "Décision de David, 2026-10-18 (question c3-2) ; d'après Exemples de réussite CM2 2025 p.8",
+						"force": "décision"
 					}
 				],
-				"remarque": "Contradiction : le BO dit « un nombre entier », les exemples de réussite ajoutent 0,03."
+				"remarque": "Le BO dit « un nombre entier » ; ses exemples de réussite (0,03 ; 0,8 ; 3/1 000) sont suivis."
 			},
 			"CM2-041": {
 				"libelle": "Ajouter un nombre entier à un nombre décimal lorsqu'il y a une retenue",
@@ -3119,17 +3125,19 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Une retenue ; k unités de numération ajoutées (4,45 + 0,8 ; 0,457 + 7/1 000 ; 47 530 + 6 000).",
+						"borne": "Une retenue ; nombre ajouté = k unités de numération (k de 1 à 9), dixièmes, centièmes et millièmes compris (4,45 + 0,8 ; 0,457 + 7/1 000 ; 47 530 + 6 000) ; pas un décimal quelconque.",
 						"detail": {
 							"min": 1,
 							"max": 9,
-							"decimales": 3
+							"decimales": 3,
+							"liste": ["k × 10ⁿ", "k/10", "k/100", "k/1000"],
+							"retenue": true
 						},
-						"source": "Exemples de réussite CM2 2025 p.8",
-						"force": "accompagnement"
+						"source": "Décision de David, 2026-10-18 (question c3-2) ; d'après Exemples de réussite CM2 2025 p.8",
+						"force": "décision"
 					}
 				],
-				"remarque": "Même écart BO (« nombre entier ») / exemples de réussite (0,8) que CM2-040."
+				"remarque": "Même lecture que CM2-040 : k unités d'un seul rang."
 			},
 			"CM2-042": {
 				"libelle": "Multiplier un nombre décimal par 10, 100 ou 1 000",
@@ -3197,15 +3205,16 @@
 					},
 					{
 						"aspect": "nombres",
-						"borne": "Pas de taille écrite pour l'autre nombre ; entier de deux à quatre chiffres.",
+						"borne": "Autre nombre : entier de deux à quatre chiffres (10 à 9 999).",
 						"detail": {
 							"min": 10,
 							"max": 9999
 						},
-						"source": "Exemples de réussite CM2 2025 p.9",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-5) ; d'après Exemples de réussite CM2 2025 p.9",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "La taille de l'autre nombre n'est écrite nulle part : lecture des exemples, retenue par décision."
 			},
 			"CM2-046": {
 				"libelle": "Multiplier un nombre entier, inférieur à 10, de dizaines, de centaines ou de milliers par un nombre entier, inférieur à 10, de dizaines, de centaines ou de milliers",
@@ -3273,15 +3282,15 @@
 				"bornes": [
 					{
 						"aspect": "nombres",
-						"borne": "Entier ; procédure « moitié de la moitié » (ex. 140 ÷ 4 = 35) ; aucune taille écrite (entier à trois chiffres dans l'exemple).",
+						"borne": "Pas de taille propre du dividende (champ du CM2) ; quotient décimal admis, comme pour ÷ 8 (260 ÷ 8 = 32,5).",
 						"detail": {
-							"max": 999
+							"quotient": ["entier", "décimal"]
 						},
-						"source": "Exemples de réussite CM2 2025 p.10",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-4) ; d'après Exemples de réussite CM2 2025 p.10",
+						"force": "décision"
 					}
 				],
-				"remarque": "Le quotient peut-il être décimal ? Exemple ÷ 4 entier ; l'exemple ÷ 8 donne 32,5."
+				"remarque": "Procédure « moitié de la moitié » (ex. 140 ÷ 4 = 35)."
 			},
 			"CM2-051": {
 				"libelle": "Multiplier un nombre décimal par 5",
@@ -3725,11 +3734,24 @@
 				"bornes": [
 					{
 						"aspect": "format",
-						"borne": "Une ou deux étapes dans les exemples (le BO dit « une ou plusieurs ») ; calcul mental, pas d'algorithme posé en base soixante ; unités jour, h, min, s.",
+						"borne": "Une ou plusieurs étapes (trois étapes ou plus admises).",
+						"detail": {
+							"etapes_min": 1
+						},
+						"source": "BO c3, libellé du point",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Calcul mental, pas d'algorithme posé en base soixante ; unités jour, h, min, s.",
+						"detail": {
+							"liste": ["jour", "h", "min", "s"]
+						},
 						"source": "Exemples de réussite CM2 2025 p.18",
 						"force": "accompagnement"
 					}
-				]
+				],
+				"remarque": "Les exemples de réussite ne montrent qu'une ou deux étapes : ils illustrent le BO sans le restreindre."
 			},
 			"CM2-087": {
 				"libelle": "Utiliser les outils géométriques usuels : règle, règle graduée, équerre et compas",
@@ -4028,12 +4050,16 @@
 					},
 					{
 						"aspect": "autre",
-						"borne": "Retour à l'unité : « introduit en 6e » (livret), mais accepté s'il est utilisé ; les exemples de réussite le citent pourtant (« passer par l'unité »).",
-						"source": "Livret CM2 2026 p.16",
-						"force": "accompagnement"
+						"borne": "Retour à l'unité hors du point : seuls les problèmes résolubles par linéarité (× ou +) ; un problème sans relation simple entre les nombres (3 plaques → 5 plaques) relève de la 6e.",
+						"detail": {
+							"retour_unite": false,
+							"procedures": ["linéarité multiplicative", "linéarité additive"]
+						},
+						"source": "Décision de David, 2026-10-18 (question c3-1) ; d'après BO c3 p.27 et Livret CM2 2026 p.16",
+						"force": "décision"
 					}
 				],
-				"remarque": "Contradiction : Exemples de réussite CM2 p.25 montrent le passage par l'unité (3 plaques → 5 plaques) ; le livret CM2 p.16 le réserve à la 6e."
+				"remarque": "L'exemple de réussite CM2 p.25 (« passer par l'unité ») reste un exemple de classe : un modèle qui impose le retour à l'unité se tague sur le point de 6e."
 			},
 			"CM2-117": {
 				"libelle": "Encadrer un nombre décimal (entre deux entiers consécutifs : 3 < 3,7 < 4 ; au dixième près : 3,7 < 3,74 < 3,8).",
@@ -4056,17 +4082,19 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Nombre soustrait = k unités de numération (exemple 0,457 − 3/1 000) ; sans retenue.",
+						"borne": "Nombre soustrait = k unités de numération (k de 1 à 9), dixièmes, centièmes et millièmes compris (0,457 − 3/1 000) ; pas un décimal quelconque ; sans retenue.",
 						"detail": {
 							"min": 1,
 							"max": 9,
-							"decimales": 3
+							"decimales": 3,
+							"liste": ["k × 10ⁿ", "k/10", "k/100", "k/1000"],
+							"retenue": false
 						},
-						"source": "Exemples de réussite CM2 2025 p.8",
-						"force": "accompagnement"
+						"source": "Décision de David, 2026-10-18 (question c3-2) ; d'après Exemples de réussite CM2 2025 p.8",
+						"force": "décision"
 					}
 				],
-				"remarque": "Même écart BO (« nombre entier ») / exemples de réussite que CM2-040."
+				"remarque": "Même lecture que CM2-040 : k unités d'un seul rang."
 			},
 			"CM2-119": {
 				"libelle": "Résoudre des problèmes additifs en plusieurs étapes",
@@ -4477,15 +4505,16 @@
 				"bornes": [
 					{
 						"aspect": "faits",
-						"borne": "Tables d'addition.",
+						"borne": "Tables d'addition : termes de 0 à 10 (définition du BO du cycle 2) ; 10 + 7 dans le point, 11 + 6 non.",
 						"detail": {
 							"min": 0,
-							"max": 9
+							"max": 10
 						},
-						"source": "Exemples de réussite CM2 2025 p.7",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-6) ; d'après BO c2 p.6 et p.14 (définition des tables : A et B de 0 à 10) ; Exemples de réussite CM2 2025 p.7",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "Le BO du cycle 3 poursuit la mémorisation des tables définies au cycle 2."
 			},
 			"CM2-149": {
 				"libelle": "Connaître le répertoire multiplicatif : compléter une multiplication à trou (7 × ? = 56).",
@@ -4493,15 +4522,16 @@
 				"bornes": [
 					{
 						"aspect": "faits",
-						"borne": "Tables de multiplication (facteur 10 inclus).",
+						"borne": "Tables de multiplication : facteurs de 0 à 10 (définition du BO du cycle 2) ; 0 × 8 et 7 × 10 dans le point, 12 × 7 non.",
 						"detail": {
-							"min": 1,
+							"min": 0,
 							"max": 10
 						},
-						"source": "Exemples de réussite CM2 2025 p.7",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-6) ; d'après BO c2 p.6 et p.14 (définition des tables : A et B de 0 à 10) ; Exemples de réussite CM2 2025 p.7",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "Le BO du cycle 3 poursuit la mémorisation des tables définies au cycle 2."
 			},
 			"CM2-150": {
 				"libelle": "Soustraire 8, 9, 18, 19, …, 98 ou 99 à un nombre (157 − 39 = ?).",
@@ -4520,15 +4550,16 @@
 					},
 					{
 						"aspect": "nombres",
-						"borne": "Premier nombre entier de deux à quatre chiffres.",
+						"borne": "Premier nombre : entier de deux à quatre chiffres (10 à 9 999).",
 						"detail": {
 							"min": 10,
 							"max": 9999
 						},
-						"source": "Exemples de réussite CM2 2025 p.9",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c3-5) ; d'après Exemples de réussite CM2 2025 p.9",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "La taille de l'autre nombre n'est écrite nulle part : lecture des exemples, retenue par décision."
 			},
 			"CM2-151": {
 				"libelle": "Diviser un nombre entier par 8 (128 ÷ 8 = ?).",
@@ -4539,18 +4570,9 @@
 						"borne": "Entier ; trois moitiés successives ; le quotient peut être décimal (260 ÷ 8 = 32,5).",
 						"source": "Exemples de réussite CM2 2025 p.10",
 						"force": "accompagnement"
-					},
-					{
-						"aspect": "nombres",
-						"borne": "Aucune taille écrite ; dividende à trois chiffres et quotient à au plus une ou deux décimales.",
-						"detail": {
-							"max": 999,
-							"decimales": 2
-						},
-						"source": "Exemples de réussite CM2 2025 p.10",
-						"force": "déduite"
 					}
-				]
+				],
+				"remarque": "Pas de taille propre du dividende : champ du CM2."
 			},
 			"CM2-152": {
 				"libelle": "Produire un programme de calcul pour obtenir un résultat donné.",
@@ -4632,17 +4654,24 @@
 				"force": "BO"
 			},
 			{
-				"borne": "Décimaux : unités de numération jusqu'au millième ; sans borne écrite, on retient au plus trois décimales hors produits de décimaux.",
+				"borne": "Décimaux : pas de borne générale du nombre de décimales ; les points de numération restent bornés par leur libellé (unités de numération jusqu'au millième).",
 				"detail": {
-					"decimales": 3
+					"ensemble": "décimaux",
+					"decimales": null,
+					"numeration_rang_min": "millième"
 				},
-				"source": "BO c3 p.14",
-				"force": "déduite"
+				"source": "Décision de David, 2026-10-18 (question c3-11) ; d'après BO c3 p.14",
+				"force": "décision"
 			},
 			{
-				"borne": "Fractions : aucune borne de dénominateur écrite dans le BO de 6e (« cas simples »).",
-				"source": "BO c3 p.15",
-				"force": "déduite"
+				"borne": "Fractions : pas de borne chiffrée de dénominateur ; « cas simples » seulement (borne de nature, jugée à la lecture du modèle).",
+				"source": "Décision de David, 2026-10-18 (question c3-10a) ; d'après BO c3 p.15",
+				"force": "décision",
+				"detail": {
+					"ensemble": "fractions",
+					"denominateur_max": null,
+					"nature": "cas simples"
+				}
 			},
 			{
 				"borne": "Pourcentages compris entre 0 % et 100 % (proportions et probabilités).",
@@ -5075,12 +5104,21 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Même dénominateur ; même numérateur ; comparaison à 1 et à 1/2 (ex. 7/8 et 10/9 ; 5/12 et 6/11).",
-						"source": "Exemples de réussite 6e 2025 p.7",
-						"force": "accompagnement"
+						"borne": "Dénominateur commun admis (ex. 3/4 et 5/6, acquis du CM2), en plus des cas des exemples (même dénominateur, même numérateur, comparaison à 1 et à 1/2) ; cas simples.",
+						"detail": {
+							"liste": [
+								"même dénominateur",
+								"même numérateur",
+								"comparaison à 1",
+								"comparaison à 1/2",
+								"dénominateur commun"
+							]
+						},
+						"source": "Décision de David, 2026-10-18 (question c3-10b) ; d'après Exemples de réussite 6e 2025 p.7",
+						"force": "décision"
 					}
 				],
-				"remarque": "L'exemple du libellé (3/4 … 5/6) demande un dénominateur commun non multiple : non couvert explicitement par les exemples de réussite."
+				"remarque": "L'exemple du libellé (3/4 … 5/6) est valide."
 			},
 			"6-134": {
 				"libelle": "Ordonner une liste de fractions (range 3/4 ; 2/3 ; 5/6).",
@@ -5242,14 +5280,16 @@
 				"bornes": [
 					{
 						"aspect": "unites",
-						"borne": "Seulement m² ↔ dm² et dm² ↔ cm² ; « les autres conversions d'aire ne figurent pas au programme ».",
+						"borne": "Seulement m² ↔ dm² et dm² ↔ cm² ; m² ↔ cm² (deux sauts), mm², km², ha hors point.",
 						"detail": {
-							"liste": ["m²", "dm²", "cm²"]
+							"liste": ["m²", "dm²", "cm²"],
+							"conversions": ["m² ↔ dm²", "dm² ↔ cm²"]
 						},
-						"source": "Exemples de réussite 6e 2025 p.11",
-						"force": "accompagnement"
+						"source": "Décision de David, 2026-10-18 (question c3-12) ; d'après Exemples de réussite 6e 2025 p.11",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "« Les autres conversions d'aire ne figurent pas au programme » (exemples de réussite 6e)."
 			},
 			"6-151": {
 				"libelle": "Connaître la formule de l'aire d'un carré",

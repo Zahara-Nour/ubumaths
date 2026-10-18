@@ -372,15 +372,15 @@
 					},
 					{
 						"aspect": "nombres",
-						"borne": "Résultat ≤ 100 (champ numérique du CP ; guide : « addition posée, nombres jusqu'à 100 »).",
+						"borne": "Somme ≤ 100 (borne générale du CP) : 45 + 37 + 56 est hors point.",
 						"detail": {
 							"max_resultat": 100
 						},
-						"source": "Guide CP « nombres, calcul, résolution de problèmes » (antérieur au programme 2024) p.146 ; BO c2 p.3, texte d'introduction de la rubrique",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c2-4) ; d'après BO c2 p.3, texte d'introduction de la rubrique ; guide CP p.146 en appui",
+						"force": "décision"
 					}
 				],
-				"remarque": "Trois nombres à deux chiffres peuvent dépasser 100 ; le BO ne le dit pas explicitement pour le calcul posé. Addition posée introduite en période 4 ou 5."
+				"remarque": "Les deux exemples du BO restent sous 100. Addition posée introduite en période 4 ou 5."
 			},
 			"CP-017": {
 				"libelle": "Comprendre le sens de la multiplication.",
@@ -653,13 +653,15 @@
 					},
 					{
 						"aspect": "autre",
-						"borne": "Partages exacts (sans reste).",
-						"detail": {},
-						"source": "BO c2 p.10, colonne Exemples de réussite",
-						"force": "déduite"
+						"borne": "Partages exacts seulement (sans reste) : 25 élèves en équipes de 4 est hors point.",
+						"detail": {
+							"reste": 0
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-12) ; d'après BO c2 p.10, colonne Exemples de réussite",
+						"force": "décision"
 					}
 				],
-				"remarque": "Tous les exemples CP sont des partages exacts ; les partages avec reste apparaissent au CE1 (75 œufs par boîtes de 6)."
+				"remarque": "Les partages avec reste arrivent au CE1 (75 œufs par boîtes de 6)."
 			},
 			"CP-032": {
 				"libelle": "Utiliser le lexique spécifique associé aux longueurs : long, court, près, loin.",
@@ -1401,7 +1403,7 @@
 				"libelle": "Encadrer un nombre entier avec les symboles < et > (… < 47 < …).",
 				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 				"bornes": [],
-				"remarque": "Ni le BO ni le livret ne fixent la précision de l'encadrement (à l'unité ? à la dizaine ?). Incertain."
+				"remarque": "Pas de borne propre : toute précision d'encadrement (unité, dizaine, centaine…) dans le champ du niveau."
 			},
 			"CP-076": {
 				"libelle": "Intercaler un nombre entier entre deux nombres donnés (47 < … < 52).",
@@ -1537,13 +1539,20 @@
 				"source": "BO c2 p.14, texte d'introduction de la rubrique « Le calcul mental »"
 			},
 			{
-				"borne": "Résolution de problèmes : données numériques entières jusqu'à 1 000 (mais les exemples du BO contiennent des prix à virgule, cf. remarques).",
+				"borne": "Résolution de problèmes : données numériques entières jusqu'à 1 000 ; prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €).",
 				"portee": "La résolution de problèmes",
 				"detail": {
 					"max": 1000,
-					"ensemble": "entiers naturels (+ prix en euros à virgule dans les exemples)"
+					"ensemble": "entiers naturels",
+					"prix_a_virgule": {
+						"unite": "€",
+						"decimales": 2,
+						"max": 1000
+					},
+					"decimaux_hors_monnaie": false
 				},
-				"source": "BO c2 p.17, texte d'introduction de la rubrique"
+				"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, texte d'introduction de la rubrique et colonne Exemples de réussite p.17-19",
+				"force": "décision"
 			},
 			{
 				"borne": "Fractions : fractions d'un tout, toutes ≤ 1, de dénominateur 2, 3, 4, 5, 6, 8 ou 10.",
@@ -2074,15 +2083,15 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Nombre entier de dizaines (ex. 60, 80) ; sans retenue (234 + 60) et avec retenue (746 + 80).",
+						"borne": "Nombre entier de dizaines de 10 à 90 seulement (ex. 60, 80 ; 120 exclu) ; sans retenue (234 + 60) et avec retenue (746 + 80).",
 						"detail": {
 							"liste": [10, 20, 30, 40, 50, 60, 70, 80, 90]
 						},
-						"source": "BO c2 p.15, colonne Exemples de réussite",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c2-5) ; d'après BO c2 p.15, colonne Exemples de réussite",
+						"force": "décision"
 					}
 				],
-				"remarque": "« Nombre entier de dizaines » : les exemples ne dépassent pas 90 (10 à 90 déduit) ; résultat ≤ 1 000."
+				"remarque": "Résultat ≤ 1 000."
 			},
 			"CE1-030": {
 				"libelle": "Multiplier par 10 un nombre inférieur à 100.",
@@ -2199,15 +2208,30 @@
 				"bornes": [
 					{
 						"aspect": "nombres",
-						"borne": "Entiers ≤ 1 000 ; les exemples incluent des prix à virgule (1,20 € ; 15,30 € ; 9,60 €).",
+						"borne": "Données entières ≤ 1 000.",
 						"detail": {
-							"max": 1000
+							"max": 1000,
+							"ensemble": "entiers naturels"
 						},
-						"source": "BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"source": "BO c2 p.17, texte d'introduction de la rubrique",
 						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €) ; aucun décimal hors monnaie (ni 2,5 kg, ni 1,5 m).",
+						"detail": {
+							"prix_a_virgule": {
+								"unite": "€",
+								"decimales": 2,
+								"max": 1000
+							},
+							"decimaux_hors_monnaie": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"force": "décision"
 					}
 				],
-				"remarque": "Transformations traitées comme parties-tout ; schéma en barre."
+				"remarque": "Transformations traitées comme parties-tout ; schéma en barre. Prix à virgule des exemples du BO (1,20 € ; 15,30 € ; 9,60 €) admis, cantonnés à la monnaie."
 			},
 			"CE1-037": {
 				"libelle": "Résoudre des problèmes additifs de comparaison en une étape.",
@@ -2215,12 +2239,27 @@
 				"bornes": [
 					{
 						"aspect": "nombres",
-						"borne": "Entiers ≤ 1 000 ; les exemples incluent des prix à virgule (1,20 € ; 15,30 € ; 9,60 €).",
+						"borne": "Données entières ≤ 1 000.",
 						"detail": {
-							"max": 1000
+							"max": 1000,
+							"ensemble": "entiers naturels"
 						},
-						"source": "BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"source": "BO c2 p.17, texte d'introduction de la rubrique",
 						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €) ; aucun décimal hors monnaie (ni 2,5 kg, ni 1,5 m).",
+						"detail": {
+							"prix_a_virgule": {
+								"unite": "€",
+								"decimales": 2,
+								"max": 1000
+							},
+							"decimaux_hors_monnaie": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"force": "décision"
 					},
 					{
 						"aspect": "format",
@@ -2230,7 +2269,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": ""
+				"remarque": "Prix à virgule des exemples du BO (1,20 € ; 15,30 € ; 9,60 €) admis, cantonnés à la monnaie."
 			},
 			"CE1-038": {
 				"libelle": "Résoudre des problèmes additifs en deux étapes.",
@@ -2238,15 +2277,30 @@
 				"bornes": [
 					{
 						"aspect": "nombres",
-						"borne": "Entiers ≤ 1 000 ; les exemples incluent des prix à virgule (1,20 € ; 15,30 € ; 9,60 €).",
+						"borne": "Données entières ≤ 1 000.",
 						"detail": {
-							"max": 1000
+							"max": 1000,
+							"ensemble": "entiers naturels"
 						},
-						"source": "BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"source": "BO c2 p.17, texte d'introduction de la rubrique",
 						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €) ; aucun décimal hors monnaie (ni 2,5 kg, ni 1,5 m).",
+						"detail": {
+							"prix_a_virgule": {
+								"unite": "€",
+								"decimales": 2,
+								"max": 1000
+							},
+							"decimaux_hors_monnaie": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"force": "décision"
 					}
 				],
-				"remarque": ""
+				"remarque": "Prix à virgule des exemples du BO (1,20 € ; 15,30 € ; 9,60 €) admis, cantonnés à la monnaie."
 			},
 			"CE1-039": {
 				"libelle": "Résoudre des problèmes multiplicatifs en une étape.",
@@ -2254,12 +2308,27 @@
 				"bornes": [
 					{
 						"aspect": "nombres",
-						"borne": "Entiers ≤ 1 000 ; les exemples incluent des prix à virgule (1,20 € ; 15,30 € ; 9,60 €).",
+						"borne": "Données entières ≤ 1 000.",
 						"detail": {
-							"max": 1000
+							"max": 1000,
+							"ensemble": "entiers naturels"
 						},
-						"source": "BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"source": "BO c2 p.17, texte d'introduction de la rubrique",
 						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €) ; aucun décimal hors monnaie (ni 2,5 kg, ni 1,5 m).",
+						"detail": {
+							"prix_a_virgule": {
+								"unite": "€",
+								"decimales": 2,
+								"max": 1000
+							},
+							"decimaux_hors_monnaie": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"force": "décision"
 					},
 					{
 						"aspect": "format",
@@ -2269,7 +2338,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": ""
+				"remarque": "Prix à virgule des exemples du BO (1,20 € ; 15,30 € ; 9,60 €) admis, cantonnés à la monnaie."
 			},
 			"CE1-040": {
 				"libelle": "Résoudre des problèmes mixtes en deux étapes (une étape additive et une étape multiplicative).",
@@ -2277,12 +2346,27 @@
 				"bornes": [
 					{
 						"aspect": "nombres",
-						"borne": "Entiers ≤ 1 000 ; les exemples incluent des prix à virgule (1,20 € ; 15,30 € ; 9,60 €).",
+						"borne": "Données entières ≤ 1 000.",
 						"detail": {
-							"max": 1000
+							"max": 1000,
+							"ensemble": "entiers naturels"
 						},
-						"source": "BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"source": "BO c2 p.17, texte d'introduction de la rubrique",
 						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €) ; aucun décimal hors monnaie (ni 2,5 kg, ni 1,5 m).",
+						"detail": {
+							"prix_a_virgule": {
+								"unite": "€",
+								"decimales": 2,
+								"max": 1000
+							},
+							"decimaux_hors_monnaie": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"force": "décision"
 					},
 					{
 						"aspect": "format",
@@ -2292,7 +2376,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": ""
+				"remarque": "Prix à virgule des exemples du BO (1,20 € ; 15,30 € ; 9,60 €) admis, cantonnés à la monnaie."
 			},
 			"CE1-041": {
 				"libelle": "Connaitre et utiliser les unités mètre, centimètre, kilomètre et les symboles associés (m, cm et km).",
@@ -2399,15 +2483,16 @@
 				"bornes": [
 					{
 						"aspect": "format",
-						"borne": "Libellé : deux ou trois objets de volumes proches ; exemple du BO : trois ou quatre objets.",
+						"borne": "De deux à quatre objets de volumes proches (libellé : deux ou trois ; exemple du BO : trois ou quatre).",
 						"detail": {
+							"min_effectif": 2,
 							"max_effectif": 4
 						},
-						"source": "BO c2 p.27, colonne Objectifs d'apprentissage / BO c2 p.27, colonne Exemples de réussite",
-						"force": "BO"
+						"source": "Décision de David, 2026-10-18 (question c2-2) ; d'après BO c2 p.27, colonne Objectifs d'apprentissage / BO c2 p.27, colonne Exemples de réussite",
+						"force": "décision"
 					}
 				],
-				"remarque": "CONTRADICTION interne au BO : la colonne Objectifs dit « deux ou trois objets », la colonne Exemples « trois ou quatre »."
+				"remarque": "Les deux colonnes du BO sont réunies : libellé « deux ou trois objets », exemple « trois ou quatre objets »."
 			},
 			"CE1-049": {
 				"libelle": "Connaitre et utiliser les unités gramme et kilogramme et les symboles associés (g, kg).",
@@ -2986,12 +3071,13 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Nombre entier de centaines (ex. 354 + 500) ; résultat ≤ 1 000.",
+						"borne": "Nombre entier de centaines de 100 à 900 seulement (ex. 354 + 500) ; résultat ≤ 1 000.",
 						"detail": {
-							"liste": [100, 200, 300, 400, 500, 600, 700, 800, 900]
+							"liste": [100, 200, 300, 400, 500, 600, 700, 800, 900],
+							"max_resultat": 1000
 						},
-						"source": "BO c2 p.15, colonne Exemples de réussite",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c2-5) ; d'après BO c2 p.15, colonne Exemples de réussite",
+						"force": "décision"
 					}
 				],
 				"remarque": ""
@@ -3141,7 +3227,7 @@
 				"libelle": "Encadrer un nombre entier avec les symboles < et > (… < 239 < …).",
 				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 				"bornes": [],
-				"remarque": "Précision de l'encadrement non fixée (cf. CP-075)."
+				"remarque": "Pas de borne propre : toute précision d'encadrement (unité, dizaine, centaine…) dans le champ du niveau."
 			},
 			"CE1-094": {
 				"libelle": "Intercaler un nombre entier entre deux nombres donnés (391 < … < 396).",
@@ -3318,15 +3404,24 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Nombre entier de dizaines (ex. 541 − 20) ; exemples sans retenue.",
+						"borne": "Nombre entier de dizaines de 10 à 90 seulement (ex. 541 − 20).",
 						"detail": {
 							"liste": [10, 20, 30, 40, 50, 60, 70, 80, 90]
 						},
-						"source": "BO c2 p.15, colonne Exemples de réussite",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c2-5) ; d'après BO c2 p.15, colonne Exemples de réussite",
+						"force": "décision"
+					},
+					{
+						"aspect": "format",
+						"borne": "Sans retenue seulement : 523 − 40 (passage sous la centaine) est hors point.",
+						"detail": {
+							"retenue": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-6) ; d'après BO c2 p.15, colonne Exemples de réussite",
+						"force": "décision"
 					}
 				],
-				"remarque": "Le BO ne donne une retenue que pour l'addition (746 + 80) : la soustraction avec retenue est incertaine."
+				"remarque": "Le BO ne montre une retenue que pour l'addition (746 + 80)."
 			},
 			"CE1-103": {
 				"libelle": "Soustraire un nombre entier de centaines à un nombre (346 − 200 = ?).",
@@ -3334,12 +3429,12 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Nombre entier de centaines (ex. 765 − 200).",
+						"borne": "Nombre entier de centaines de 100 à 900 seulement (ex. 765 − 200).",
 						"detail": {
 							"liste": [100, 200, 300, 400, 500, 600, 700, 800, 900]
 						},
-						"source": "BO c2 p.15, colonne Exemples de réussite",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c2-5) ; d'après BO c2 p.15, colonne Exemples de réussite",
+						"force": "décision"
 					}
 				],
 				"remarque": ""
@@ -3693,13 +3788,22 @@
 				"bornes": [
 					{
 						"aspect": "nombres",
-						"borne": "Fractions ≤ 1 de dénominateur ≤ 12.",
+						"borne": "Fractions de dénominateur ≤ 12.",
 						"detail": {
-							"denominateur_max": 12,
-							"max": 1
+							"denominateur_max": 12
 						},
 						"source": "BO c2 p.20, texte d'introduction de la rubrique",
 						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Fractions strictement inférieures à 1 (le libellé du point) : n/n exclu (12/12 et 7/12 hors point).",
+						"detail": {
+							"max": 1,
+							"max_inclus": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-11) ; d'après libellé du point (BO c2 p.20-21)",
+						"force": "décision"
 					},
 					{
 						"aspect": "format",
@@ -3711,7 +3815,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Le libellé dit « inférieures à 1 » (strict) alors que le texte général dit « ≤ 1 »."
+				"remarque": "Le texte général du CE2 dit « inférieures ou égales à un » ; le libellé du point, plus précis, l'emporte."
 			},
 			"CE2-014": {
 				"libelle": "Additionner des fractions (3/4 + 1/4 = ?).",
@@ -3810,9 +3914,18 @@
 						},
 						"source": "BO c2 p.21, colonne Objectifs d'apprentissage ; BO c2 p.21, colonne Exemples de réussite",
 						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Produit ≤ 10 000 (borne générale du CE2) : 999 × 99 ou 875 × 64 sont hors point.",
+						"detail": {
+							"max_resultat": 10000
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-3) ; d'après BO c2 p.19, texte d'introduction de la rubrique « Les nombres entiers »",
+						"force": "décision"
 					}
 				],
-				"remarque": "INCERTAIN : 999 × 99 dépasse 10 000 ; le BO ne dit pas si le produit doit rester dans le champ du CE2. L'exemple donne 8 768."
+				"remarque": "Le libellé fixe la taille des facteurs, la borne générale du CE2 celle du produit. L'exemple du BO donne 8 768."
 			},
 			"CE2-020": {
 				"libelle": "Connaître les tables d'addition : donner la somme de deux nombres (3 + 4 = ?).",
@@ -3899,9 +4012,18 @@
 						},
 						"source": "BO c2 p.23, colonne Exemples de réussite",
 						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Nombre de départ < 100, comme le livret (ex. 37 + 19, 47 + 29) : 4 527 + 29 est hors point.",
+						"detail": {
+							"depart_max": 99
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-7) ; d'après Livret CE2 2025 p.24 et p.30",
+						"force": "décision"
 					}
 				],
-				"remarque": "Nombre de départ : aucune borne propre ; champ du CE2 (résultat ≤ 10 000). Les exemples du livret CE2 (p.24, p.30) restent sur des nombres < 100 (37 + 19, 47 + 29)."
+				"remarque": "Le BO borne ce qu'on ajoute ; la taille du nombre de départ vient du livret CE2."
 			},
 			"CE2-025": {
 				"libelle": "Soustraire 9, 19, 29 ou 39 à un nombre.",
@@ -3915,9 +4037,18 @@
 						},
 						"source": "BO c2 p.23, colonne Exemples de réussite",
 						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Nombre de départ < 100, comme le livret (ex. 37 + 19, 47 + 29) : 4 527 + 29 est hors point.",
+						"detail": {
+							"depart_max": 99
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-7) ; d'après Livret CE2 2025 p.24 et p.30",
+						"force": "décision"
 					}
 				],
-				"remarque": "Départ ≤ 10 000 (général)."
+				"remarque": "Le BO borne ce qu'on soustrait ; la taille du nombre de départ vient du livret CE2."
 			},
 			"CE2-026": {
 				"libelle": "Multiplier un nombre entier par 4 (4 × 37 = ?).",
@@ -3925,28 +4056,15 @@
 				"bornes": [
 					{
 						"aspect": "nombres",
-						"borne": "n × 4 avec résultat ≤ 10 000, donc n ≤ 2 500 (ex. 4 × 37).",
+						"borne": "n × 4 avec n < 100 (séance de découverte du livret ; ex. 4 × 37).",
 						"detail": {
-							"max": 2500,
-							"max_resultat": 10000
+							"max": 99
 						},
-						"source": "BO c2 p.22, texte d'introduction de la rubrique ; BO c2 p.23, colonne Exemples de réussite",
-						"force": "déduite"
-					},
-					{
-						"aspect": "nombres",
-						"borne": "Séance de découverte : n < 100 ; entraînement : 11, 12, 16, 17, 30, 35, 40, 45, 50, 60, 75, 110, 120, 150, 160, 170, 250, 300, 350, 400, 450, 500, 600, 750, 1 500, 2 500, puis unités de 1 à 5.",
-						"detail": {
-							"liste": [
-								11, 12, 16, 17, 30, 35, 40, 45, 50, 60, 75, 110, 120, 150, 160, 170, 250, 300, 350,
-								400, 450, 500, 600, 750, 1500, 2500
-							]
-						},
-						"source": "Livret CE2 2025 p.23 et p.25",
-						"force": "accompagnement"
+						"source": "Décision de David, 2026-10-18 (question c2-8) ; d'après Livret CE2 2025 p.23 ; BO c2 p.23, colonne Exemples de réussite",
+						"force": "décision"
 					}
 				],
-				"remarque": "Livret cohérent avec la borne déduite (2 500 × 4 = 10 000)."
+				"remarque": "L'entraînement du livret (p.25) monte jusqu'à 2 500 × 4 : hors point, la borne retenue est celle de la séance de découverte."
 			},
 			"CE2-027": {
 				"libelle": "Multiplier un nombre inférieur à 10 par un nombre entier de dizaines.",
@@ -3954,7 +4072,7 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Un facteur < 10, l'autre un nombre entier de dizaines (ex. 9 × 40 = 360).",
+						"borne": "Un facteur < 10, l'autre un nombre entier de dizaines de 10 à 90 seulement (ex. 9 × 40 = 360 ; 120 exclu).",
 						"detail": {
 							"facteur1": {
 								"min": 0,
@@ -3962,11 +4080,11 @@
 							},
 							"facteur2": [10, 20, 30, 40, 50, 60, 70, 80, 90]
 						},
-						"source": "BO c2 p.23, colonne Exemples de réussite",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c2-5) ; d'après BO c2 p.23, colonne Exemples de réussite",
+						"force": "décision"
 					}
 				],
-				"remarque": "Dizaines de 10 à 90 déduites de l'exemple ; « nombre entier de dizaines » pourrait inclure 120, 250… Incertain."
+				"remarque": ""
 			},
 			"CE2-028": {
 				"libelle": "Calculer le produit d'un nombre compris entre 11 et 99 par un nombre inférieur à 10 en décomposant le plus grand des deux facteurs en la somme de deux nombres (propriété de distributivité de la multiplication par rapport à l'addition).",
@@ -4028,7 +4146,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Livret CE2 p.30 : la séquence choisit des entiers jusqu'à 1 000 et une majorité de données < 100 au début (choix de séquence, pas borne)."
+				"remarque": "Le livret CE2 p.30 reste sous 1 000 (majorité de données < 100 au début) : choix de séquence, pas une borne ; la borne est celle du BO (≤ 10 000)."
 			},
 			"CE2-031": {
 				"libelle": "Résoudre des problèmes multiplicatifs en une étape.",
@@ -4040,9 +4158,20 @@
 						"detail": {},
 						"source": "BO c2 p.24, colonne Exemples de réussite et p.25",
 						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Recherche du nombre de parts : quantité totale ≤ 1 000 (« continuent de » : le champ du CE1).",
+						"detail": {
+							"nombre_de_parts": {
+								"max_total": 1000
+							}
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-9) ; d'après BO c2 p.24, colonne Exemples de réussite et p.25",
+						"force": "décision"
 					}
 				],
-				"remarque": "« Champ numérique réduit » pour la recherche du nombre de parts : non quantifié. Incertain."
+				"remarque": "Le « champ réduit » du BO est chiffré au champ du CE1 ; les problèmes « valeur du tout » et « valeur d'une part » gardent le champ du CE2."
 			},
 			"CE2-032": {
 				"libelle": "Résoudre des problèmes mixtes en deux ou trois étapes.",
@@ -4856,7 +4985,7 @@
 				"libelle": "Encadrer un nombre entier avec les symboles < et > (… < 6 239 < …).",
 				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
 				"bornes": [],
-				"remarque": "Précision de l'encadrement non fixée (cf. CP-075)."
+				"remarque": "Pas de borne propre : toute précision d'encadrement (unité, dizaine, centaine…) dans le champ du niveau."
 			},
 			"CE2-088": {
 				"libelle": "Intercaler un nombre entier entre deux nombres donnés (2 393 < … < 2 396).",
@@ -4953,13 +5082,12 @@
 				"bornes": [
 					{
 						"aspect": "nombres",
-						"borne": "n × 8 avec résultat ≤ 10 000, donc n ≤ 1 250 (ex. 8 × 27).",
+						"borne": "n × 8 avec n < 100 (comme la séance de découverte du livret pour × 4 ; ex. 8 × 27).",
 						"detail": {
-							"max": 1250,
-							"max_resultat": 10000
+							"max": 99
 						},
-						"source": "BO c2 p.22, texte d'introduction de la rubrique ; BO c2 p.23, colonne Exemples de réussite",
-						"force": "déduite"
+						"source": "Décision de David, 2026-10-18 (question c2-8) ; d'après Livret CE2 2025 p.23 ; BO c2 p.23, colonne Exemples de réussite",
+						"force": "décision"
 					}
 				],
 				"remarque": ""

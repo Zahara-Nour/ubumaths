@@ -501,7 +501,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Contradiction : Attendus 5e 2019 (p.2) et Repères 2019 (p.2) limitent aux dénominateurs « égaux ou multiples l'un de l'autre » ; le BO en vigueur ne pose pas cette limite (ex. 3/4 et 7/18). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e)."
+				"remarque": "Contradiction : Attendus 5e 2019 (p.2) et Repères 2019 (p.2) limitent aux dénominateurs « égaux ou multiples l'un de l'autre » ; le BO en vigueur ne pose pas cette limite (ex. 3/4 et 7/18). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). Fractions recollées depuis le PDF (BO c4 p.8, Exemples 2026 p.12) : contrôle visuel par Claude décidé le 2026-10-18 (question c4-8), écarts signalés à David ; tant qu'il n'est pas fait, ces exemples ne servent pas à refuser un modèle."
 			},
 			"5-026": {
 				"libelle": "Additionner des fractions de dénominateurs quelconques (2/3 + 1/4 = ?).",
@@ -532,7 +532,7 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "Contradiction : Attendus 5e 2019 (p.3) et Repères 2019 (p.2) limitent aux dénominateurs égaux ou multiples ; le BO en vigueur dit « dénominateurs quelconques » (et le libellé en prod aussi). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). | La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e)."
+				"remarque": "Contradiction : Attendus 5e 2019 (p.3) et Repères 2019 (p.2) limitent aux dénominateurs égaux ou multiples ; le BO en vigueur dit « dénominateurs quelconques » (et le libellé en prod aussi). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). | La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e). Fractions recollées depuis le PDF (BO c4 p.8, Exemples 2026 p.12) : contrôle visuel par Claude décidé le 2026-10-18 (question c4-8), écarts signalés à David ; tant qu'il n'est pas fait, ces exemples ne servent pas à refuser un modèle."
 			},
 			"5-027": {
 				"libelle": "Résoudre des problèmes avec des additions et soustractions de fractions.",
@@ -1686,12 +1686,17 @@
 				"bornes": [
 					{
 						"aspect": "format",
-						"borne": "Valeur absolue introduite par la droite graduée ; le terme est introduit mais « ne fait pas l'objet d'exercice » et la notation |a| n'est pas exigible.",
-						"source": "Exemples 2026 p.10",
-						"force": "accompagnement"
+						"borne": "Valeur absolue admise en mots (« valeur absolue de −3 »), appui sur la droite graduée ; ni la notation |a| ni calcul sur |a| (|−3|, |x| = 3, |a − b| hors point).",
+						"detail": {
+							"formulation": "en mots",
+							"notation_barres": false,
+							"calcul_sur_valeur_absolue": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-1) ; d'après Exemples 2026 p.10",
+						"force": "décision"
 					}
 				],
-				"remarque": "Attention : l'accompagnement 2026 dit que la valeur absolue « ne fait pas l'objet d'exercice » ; un modèle d'exercice dédié serait en tension avec ce texte."
+				"remarque": "Les Exemples 2026 disent que le terme « ne fait pas l'objet d'exercice » et que la notation n'est pas exigible, mais aussi que l'élève « donne la valeur absolue »."
 			},
 			"5-121": {
 				"libelle": "Placer sur une droite graduée un point d'abscisse relative donnée.",
@@ -1749,7 +1754,7 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "Contradiction : Attendus 5e 2019 (p.3) et Repères 2019 (p.2) limitent aux dénominateurs égaux ou multiples ; le BO en vigueur dit « dénominateurs quelconques » (et le libellé en prod aussi). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). | La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e)."
+				"remarque": "Contradiction : Attendus 5e 2019 (p.3) et Repères 2019 (p.2) limitent aux dénominateurs égaux ou multiples ; le BO en vigueur dit « dénominateurs quelconques » (et le libellé en prod aussi). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). | La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e). Fractions recollées depuis le PDF (BO c4 p.8, Exemples 2026 p.12) : contrôle visuel par Claude décidé le 2026-10-18 (question c4-8), écarts signalés à David ; tant qu'il n'est pas fait, ces exemples ne servent pas à refuser un modèle."
 			},
 			"5-124": {
 				"libelle": "Produire des formules de grandeurs : aire, périmètre (aire d'un rectangle de longueur L et de largeur l : L × l).",
@@ -2077,9 +2082,14 @@
 			},
 			{
 				"aspect": "autre",
-				"borne": "Notations fonctionnelles non formalisées (fonctions : 3e).",
-				"source": "Repères c4 2019 p.8",
-				"force": "accompagnement"
+				"borne": "Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e.",
+				"source": "Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18",
+				"force": "décision",
+				"detail": {
+					"notation_enonce": true,
+					"notation_reponse": false,
+					"exclus": ["image", "antécédent", "f : x ↦"]
+				}
 			}
 		],
 		"points": {
@@ -2384,8 +2394,18 @@
 						},
 						"source": "Exemples 2026 p.17 ; BO c4 p.10",
 						"force": "accompagnement"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Racine carrée d'un nombre positif quelconque (√2, √20 dans le point) : « nombre entier positif » (Exemples 2026 p.17) est une coquille.",
+						"detail": {
+							"ensemble": "nombres positifs"
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-7) ; d'après BO c4 p.10",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "La borne des carrés parfaits ≤ 144 vaut pour le calcul mental."
 			},
 			"4-020": {
 				"libelle": "Encadrer la racine carrée d'un entier par deux nombres entiers consécutifs.",
@@ -2657,9 +2677,19 @@
 						"borne": "Médiane = toute valeur qui partage la série ordonnée en deux sous-séries de même effectif ; pour un effectif pair, elle n'est pas unique.",
 						"source": "Exemples 2026 p.36",
 						"force": "accompagnement"
+					},
+					{
+						"aspect": "format",
+						"borne": "Effectif pair : le correcteur accepte toute valeur comprise entre les deux valeurs centrales (ou le modèle ne tire que des effectifs impairs).",
+						"detail": {
+							"effectif_pair": "toute valeur entre les deux valeurs centrales",
+							"alternative": "effectifs impairs seulement"
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-3) ; d'après Exemples 2026 p.36",
+						"force": "décision"
 					}
 				],
-				"remarque": "Pour la correction : avec un effectif pair, l'accompagnement 2026 accepte toute valeur entre les deux valeurs centrales."
+				"remarque": "Un modèle à effectif pair qui n'accepte que la demi-somme est à corriger."
 			},
 			"4-041": {
 				"libelle": "Calculer l'étendue d'une série présentée sous forme de données brutes, d'un tableau ou d'un diagramme.",
@@ -2875,12 +2905,17 @@
 				"bornes": [
 					{
 						"aspect": "format",
-						"borne": "Notation fonctionnelle f(x) non formalisée en 4e.",
-						"source": "Repères c4 2019 p.8",
-						"force": "accompagnement"
+						"borne": "Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e.",
+						"detail": {
+							"notation_enonce": true,
+							"notation_reponse": false,
+							"exclus": ["image", "antécédent", "f : x ↦"]
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18",
+						"force": "décision"
 					}
 				],
-				"remarque": "Écart : le BO (p.18) dit que les notations fonctionnelles P(A), p(t) sont « utilisées progressivement dans tous les chapitres » ; les Repères 2019 disent qu'elles ne sont pas formalisées en 4e. Lecture retenue : utilisables, non exigibles."
+				"remarque": "Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »)."
 			},
 			"4-063": {
 				"libelle": "Représenter l'expression d'une grandeur en fonction d'une autre par un graphique.",
@@ -2888,11 +2923,17 @@
 				"bornes": [
 					{
 						"aspect": "format",
-						"borne": "Notation fonctionnelle f(x) non formalisée en 4e.",
-						"source": "Repères c4 2019 p.8",
-						"force": "accompagnement"
+						"borne": "Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e.",
+						"detail": {
+							"notation_enonce": true,
+							"notation_reponse": false,
+							"exclus": ["image", "antécédent", "f : x ↦"]
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »)."
 			},
 			"4-064": {
 				"libelle": "Comprendre qu'une formule, un graphique ou un tableau de valeurs traduisent la dépendance d'une grandeur en fonction d'une autre.",
@@ -2900,11 +2941,17 @@
 				"bornes": [
 					{
 						"aspect": "format",
-						"borne": "Notation fonctionnelle f(x) non formalisée en 4e.",
-						"source": "Repères c4 2019 p.8",
-						"force": "accompagnement"
+						"borne": "Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e.",
+						"detail": {
+							"notation_enonce": true,
+							"notation_reponse": false,
+							"exclus": ["image", "antécédent", "f : x ↦"]
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »)."
 			},
 			"4-065": {
 				"libelle": "Représenter des conditions simples.",
@@ -3123,11 +3170,17 @@
 				"bornes": [
 					{
 						"aspect": "format",
-						"borne": "Notation fonctionnelle f(x) non formalisée en 4e.",
-						"source": "Repères c4 2019 p.8",
-						"force": "accompagnement"
+						"borne": "Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e.",
+						"detail": {
+							"notation_enonce": true,
+							"notation_reponse": false,
+							"exclus": ["image", "antécédent", "f : x ↦"]
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18",
+						"force": "décision"
 					}
-				]
+				],
+				"remarque": "Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »)."
 			},
 			"4-082": {
 				"libelle": "Somme des opposés : savoir que la somme de deux nombres opposés est nulle (−7,5 + 7,5 = 0).",
@@ -3358,12 +3411,20 @@
 				"bornes": [
 					{
 						"aspect": "autre",
-						"borne": "Type ax ⩾ b seulement (a non nul, éventuellement négatif), pas ax + b ⩾ cx + d.",
-						"detail": {
-							"liste": ["ax ⩾ b", "ax ⩽ b", "ax > b", "ax < b"]
-						},
+						"borne": "Type ax ⩾ b (a non nul), pas ax + b ⩾ cx + d.",
+						"detail": {},
 						"source": "BO c4 p.11 ; Exemples 2026 p.21",
 						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Les quatre sens d'inégalité (⩾, >, ⩽, <), a ≠ 0 éventuellement négatif (−2x < 6 dans le point).",
+						"detail": {
+							"liste": ["ax ⩾ b", "ax ⩽ b", "ax > b", "ax < b"],
+							"a_negatif": true
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-5) ; d'après BO c4 p.11 ; Exemples 2026 p.21",
+						"force": "décision"
 					},
 					{
 						"aspect": "format",
@@ -3372,7 +3433,7 @@
 						"force": "accompagnement"
 					}
 				],
-				"remarque": "Les quatre sens d'inégalité sont déduits : le BO écrit ⩾, l'accompagnement 2026 (fonctions) écrit ax > b."
+				"remarque": "Le BO écrit ax ⩾ b, l'accompagnement 2026 écrit aussi ax > b ; ax ⩽ b s'écrit (−a)x ⩾ −b."
 			},
 			"3-015": {
 				"libelle": "Résoudre une équation produit nul.",
@@ -3443,7 +3504,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "L'accompagnement 2026 (p.30) étend aux sections du cube parallèles à une arête et aux sections de pyramide et de cône parallèles à la base : au-delà du BO (le BO fait foi)."
+				"remarque": "Les ajouts des Exemples 2026 p.30 (cube parallèlement à une arête, pyramide et cône parallèlement à la base) sont hors point : liste du BO seulement."
 			},
 			"3-021": {
 				"libelle": "Connaitre et utiliser la formule du volume d'une boule de rayon donné.",
@@ -3546,9 +3607,20 @@
 						"borne": "Série donnée par un tableau d'effectifs ou un diagramme en barres ; médiane, Q1, Q3 via les effectifs cumulés croissants.",
 						"source": "BO c4 p.17 ; Exemples 2026 p.37",
 						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Convention : Q1 (Q3) = plus petite valeur de la série dont l'effectif cumulé atteint 25 % (75 %) de l'effectif total (série 1 à 8 : Q1 = 2).",
+						"detail": {
+							"convention": "effectifs cumulés croissants",
+							"Q1_seuil": 0.25,
+							"Q3_seuil": 0.75
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-2) ; d'après BO c4 p.17 ; Exemples 2026 p.37",
+						"force": "décision"
 					}
 				],
-				"remarque": "La définition des quartiles n'est donnée par aucun des textes lus : la convention de correction est à fixer (déduite)."
+				"remarque": "Un modèle qui calcule Q1 par interpolation ou par médiane de la demi-série, sans accepter cette valeur, est à corriger."
 			},
 			"3-030": {
 				"libelle": "Construire la boîte à moustaches d'une série statistique.",
