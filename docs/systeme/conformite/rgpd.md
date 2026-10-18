@@ -671,7 +671,7 @@ Fonctionnalites implementees :
 | `activite`       | `exercise_completions`, `student_exercise_mastery`, `srs_decks`, `test_sessions` (+ reponses)   |
 | `communications` | `messages`, `private_messages`, `notifications`                                                 |
 | `social`         | `friendships`                                                                                   |
-| `gaming`         | `game_players`                                                                                  |
+| `gaming`         | `game_players`, `student_mathoux` et `student_buddies` (**ajoutes le 2026-10-18**)              |
 | `rewards`        | `reward_events`                                                                                 |
 | `classes`        | `class_members`                                                                                 |
 | `tuteur`         | `tutor_conversations` + `tutor_messages` (**ajoute le 2026-10-11**)                             |

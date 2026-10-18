@@ -27,6 +27,7 @@ const COLLECTION: MathouCollection = {
 					raceIndex: 0,
 					growth: 'matou',
 					asleep: true,
+					stars: [],
 					workablePoints: 4,
 					acquiredPoints: 2,
 					byGrade: []
@@ -38,6 +39,7 @@ const COLLECTION: MathouCollection = {
 					raceIndex: 0,
 					growth: 'a_decouvrir',
 					asleep: false,
+					stars: [],
 					workablePoints: 2,
 					acquiredPoints: 0,
 					byGrade: []
@@ -56,6 +58,7 @@ const COLLECTION: MathouCollection = {
 					raceIndex: 8,
 					growth: 'grand_matou',
 					asleep: false,
+					stars: ['2', '1_SPE'],
 					workablePoints: 3,
 					acquiredPoints: 3,
 					byGrade: []
@@ -104,6 +107,22 @@ describe('La Chatterie de Faustroll', () => {
 		expect(links).toHaveLength(1);
 		expect(links[0].getAttribute('href')).toBe(REVISION_HREF);
 		expect(links[0].getAttribute('aria-label')).toBe('Réveiller le Mathou des Fractions');
+	});
+
+	it('les étoiles portent le nom de la classe, du plus ancien au plus récent', async () => {
+		await renderPage(COLLECTION);
+		const lists = page.getByRole('list', { name: 'Étoiles' }).elements();
+		// Seul le grand matou en a : pas de liste vide pour les autres
+		expect(lists).toHaveLength(1);
+		const items = [...lists[0].querySelectorAll('li')].map((li) =>
+			li.textContent?.replace(/\s+/g, ' ').trim()
+		);
+		expect(items).toEqual(['★ 2nde', '★ 1ère Spé']);
+		// Le symbole n'est pas lu (« étoile noire ») ; le nom de la classe, si
+		const hidden = [...lists[0].querySelectorAll('[aria-hidden="true"]')].map((e) =>
+			e.textContent?.trim()
+		);
+		expect(hidden).toEqual(['★', '★']);
 	});
 
 	it('une notion pas encore commencée apparaît en silhouette « à découvrir », sans son nom', async () => {

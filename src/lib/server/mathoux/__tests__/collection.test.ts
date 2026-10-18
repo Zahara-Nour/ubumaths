@@ -13,7 +13,20 @@ vi.mock('$lib/server/srs/capacity-badge', () => ({
 	computePointBadges: vi.fn()
 }));
 
+// Écriture de la mémoire : le client service et `rememberMathoux` sont simulés ; la
+// lecture (`readMathouMemory`) reste la vraie, au client de l'élève simulé ci-dessous.
+const SERVICE_CLIENT = { service: true };
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: vi.fn(() => SERVICE_CLIENT)
+}));
+vi.mock('../memory', async (importOriginal) => ({
+	...(await importOriginal<typeof import('../memory')>()),
+	rememberMathoux: vi.fn()
+}));
+
 import { computePointBadges } from '$lib/server/srs/capacity-badge';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { rememberMathoux } from '../memory';
 import { loadMathouCollection } from '../collection';
 
 // =============================================================================
@@ -81,6 +94,7 @@ function nominalHandlers(over: Partial<Record<string, Handler>> = {}): Record<st
 					]),
 		student_point_state: () =>
 			ok([{ point_id: 'p1', is_acquired: true, total_successes: 2, last_success_at: null }]),
+		student_mathoux: () => ok([]),
 		...over
 	} as Record<string, Handler>;
 }
@@ -88,7 +102,12 @@ function nominalHandlers(over: Partial<Record<string, Handler>> = {}): Record<st
 beforeEach(() => {
 	vi.mocked(computePointBadges).mockReset();
 	vi.mocked(computePointBadges).mockResolvedValue(new Map());
+	vi.mocked(rememberMathoux).mockReset();
+	vi.mocked(rememberMathoux).mockResolvedValue(undefined);
+	vi.mocked(createServiceRoleClient).mockClear();
 });
+
+const T0 = '2026-10-18T10:00:00.000001+00:00';
 
 // =============================================================================
 // Tests
@@ -262,8 +281,98 @@ describe('loadMathouCollection', () => {
 
 	it('une lecture des points en échec lève', async () => {
 		const { supabase } = buildMock({
-			curriculum_points: () => ({ data: null, error: { message: 'refus' } })
+			curriculum_points: () => ({ data: null, error: { message: 'refus' } }),
+			student_mathoux: () => ok([])
 		});
 		await expect(loadMathouCollection(supabase, STUDENT, '1_SPE')).rejects.toThrow(/refus/);
+	});
+	// ---------------------------------------------------------------------------
+	// Mémoire (§ 9, « Changement d'année et oubli »)
+	// ---------------------------------------------------------------------------
+
+	it('mémoire : lit les lignes `student_mathoux` de L’ÉLÈVE, au client de l’élève', async () => {
+		const { supabase, queries } = buildMock(nominalHandlers());
+		await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		const memory = queries.find((q) => q.table === 'student_mathoux');
+		expect(memory).toBeDefined();
+		expect(has(memory!.calls, 'eq', 'student_id', STUDENT)).toBe(true);
+	});
+
+	it('mémoire : un matou mémorisé dont le calcul redescend reste matou et dort', async () => {
+		const { supabase } = buildMock(
+			nominalHandlers({
+				// p1 n'est plus acquis : le calcul dit chaton
+				student_point_state: () =>
+					ok([{ point_id: 'p1', is_acquired: false, total_successes: 2, last_success_at: null }]),
+				student_mathoux: () =>
+					ok([{ notion_id: 'n1', best_stage: 'matou', starred_grades: [], updated_at: T0 }])
+			})
+		);
+		const collection = await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		expect(collection.races[0].mathoux[0]).toMatchObject({ growth: 'matou', asleep: true });
+		// Un oubli n'apprend rien à la mémoire : aucune écriture
+		expect(createServiceRoleClient).not.toHaveBeenCalled();
+		expect(rememberMathoux).not.toHaveBeenCalled();
+	});
+
+	it('mémoire : un Mathou né sans ligne est retenu, au client service, pour l’élève de la session', async () => {
+		const { supabase } = buildMock(nominalHandlers());
+		await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		expect(rememberMathoux).toHaveBeenCalledTimes(1);
+		expect(rememberMathoux).toHaveBeenCalledWith(
+			SERVICE_CLIENT,
+			STUDENT,
+			[{ notionId: 'n1', bestStage: 'matou', starredGrades: [] }],
+			new Map()
+		);
+	});
+
+	it('mémoire : rien de nouveau → aucune écriture', async () => {
+		const { supabase } = buildMock(
+			nominalHandlers({
+				student_mathoux: () =>
+					ok([{ notion_id: 'n1', best_stage: 'matou', starred_grades: [], updated_at: T0 }])
+			})
+		);
+		await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		expect(createServiceRoleClient).not.toHaveBeenCalled();
+		expect(rememberMathoux).not.toHaveBeenCalled();
+	});
+
+	it('mémoire : une écriture en échec ne casse pas l’affichage', async () => {
+		vi.mocked(rememberMathoux).mockRejectedValue(new Error('écriture refusée'));
+		const { supabase } = buildMock(nominalHandlers());
+		const collection = await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		expect(collection.races[0].mathoux[0].growth).toBe('matou');
+	});
+
+	it('mémoire : une lecture de la mémoire en échec lève', async () => {
+		const { supabase } = buildMock(
+			nominalHandlers({ student_mathoux: () => ({ data: null, error: { message: 'mémoire' } }) })
+		);
+		await expect(loadMathouCollection(supabase, STUDENT, '1_SPE')).rejects.toThrow(/mémoire/);
+	});
+
+	it('mémoire : un Mathou mémorisé sans point travaillable reste affiché, sans lire d’états', async () => {
+		const { supabase, queries } = buildMock(
+			nominalHandlers({
+				question_template_points: () => ok([]),
+				student_mathoux: () =>
+					ok([
+						{ notion_id: 'n2', best_stage: 'grand_matou', starred_grades: ['2'], updated_at: T0 }
+					])
+			})
+		);
+		const collection = await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		expect(collection.races[0].mathoux).toEqual([
+			expect.objectContaining({
+				notionId: 'n2',
+				growth: 'grand_matou',
+				stars: ['2'],
+				asleep: false
+			})
+		]);
+		expect(queries.some((q) => q.table === 'student_point_state')).toBe(false);
+		expect(computePointBadges).not.toHaveBeenCalled();
 	});
 });

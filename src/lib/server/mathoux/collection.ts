@@ -2,7 +2,7 @@
  * Chatterie de Faustroll — chargement de la collection (Mathoux v1)
  * =================================================================
  *
- * Aucune table : la collection se CALCULE à chaque affichage depuis
+ * La collection se CALCULE à chaque affichage depuis
  *   - le PARCOURS de l'élève : son niveau et ses niveaux antérieurs
  *     (`grade_ancestors`, clôture transitive de `grade_predecessors`),
  *   - `curriculum_points` de ces niveaux (non archivés, rattachés à un nœud),
@@ -11,7 +11,13 @@
  *   - `classification_nodes` (branches et notions non archivées, sous-notions
  *     référencées),
  *   - `student_point_state` (acquisition, réussites),
- *   - les badges FSRS (`computePointBadges`) pour la sieste.
+ *   - les badges FSRS (`computePointBadges`) pour la sieste,
+ *   - la MÉMOIRE `student_mathoux` (meilleur stade, étoiles : `./memory.ts`),
+ *     lue au client de l'élève ; un Mathou ne rapetisse jamais.
+ *
+ * Puis, s'il y a du nouveau (un Mathou né ou grandi, une étoile), la mémoire est
+ * écrite au client SERVICE (`rememberMathoux`, écriture qui ne redescend jamais).
+ * Une panne d'écriture est journalisée et ne change pas la collection rendue.
  *
  * Tout est lu avec le client de L'ÉLÈVE (RLS) : `grade_predecessors` (via la
  * fonction, SECURITY INVOKER) et les trois tables suivantes sont lisibles par
@@ -20,7 +26,7 @@
  * donc une Chatterie vide, sans erreur : le cas suspect (des points, aucun nœud)
  * est tracé. Prouvé en intégration : `tests/integration/mathoux-collection.test.ts`.
  *
- * Coût, en 5 allers-retours : 1 appel (parcours) ; une requête de points PAR
+ * Coût, en 5 allers-retours : 1 appel (parcours) et la mémoire, en parallèle ; une requête de points PAR
  * NIVEAU en parallèle (chacune sous le plafond de 1 000 lignes de PostgREST, que
  * le parcours entier d'une Terminale dépasserait) ; tags (par lots de 100
  * points, chaque lot lu par pages de 1 000 lignes), branches et notions,
@@ -32,11 +38,15 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { computePointBadges } from '$lib/server/srs/capacity-badge';
 import { fetchInChunks } from '$lib/server/utils/chunked-in';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { readMathouMemory, rememberMathoux, type StoredMathouMemory } from './memory';
 import {
 	buildMathouCollection,
+	memoryUpdates,
 	type CollectionNodeKind,
 	type CollectionTreeNode,
 	type MathouCollection,
+	type MathouMemoryUpdate,
 	type PointProgress,
 	type WorkablePoint
 } from '$lib/mathoux/collection-logic';
@@ -61,9 +71,11 @@ function isNodeKind(kind: string): kind is CollectionNodeKind {
 }
 
 /**
- * Collection de Mathoux de l'élève pour son niveau.
+ * Collection de Mathoux de l'élève pour son niveau, mémoire comprise, et mise à
+ * jour de la mémoire s'il y a du nouveau.
  *
- * @param studentId l'élève de la SESSION (jamais une entrée client).
+ * @param studentId l'élève de la SESSION (jamais une entrée client) : la mémoire
+ *   de cet élève est écrite au client service.
  * @param grade `profiles.grade`. NULL → collection vide, aucune requête.
  * @throws si une lecture échoue : une panne ne doit pas se lire « Chatterie vide ».
  */
@@ -74,8 +86,11 @@ export async function loadMathouCollection(
 ): Promise<MathouCollection> {
 	if (!grade) return EMPTY_COLLECTION;
 
-	// 1. Parcours : le niveau et ses niveaux antérieurs
-	const grades = await loadPathGrades(supabase, grade);
+	// 1. Parcours (le niveau et ses niveaux antérieurs) et mémoire, en parallèle
+	const [grades, memory] = await Promise.all([
+		loadPathGrades(supabase, grade),
+		readMathouMemory(supabase, studentId)
+	]);
 
 	// 2. Points de chaque niveau rattachés à un nœud (une requête par niveau)
 	const pointResults = await Promise.all(
@@ -98,7 +113,7 @@ export async function loadMathouCollection(
 			}
 		}
 	}
-	if (gradePoints.length === 0) return EMPTY_COLLECTION;
+	if (gradePoints.length === 0 && memory.size === 0) return EMPTY_COLLECTION;
 
 	const pointIds = gradePoints.map((p) => p.id);
 	const subnotionCandidateIds = [...new Set(gradePoints.map((p) => p.nodeId))];
@@ -129,7 +144,8 @@ export async function loadMathouCollection(
 
 	const taggedPointIds = new Set((tagsResult.data ?? []).map((row) => row.point_id));
 	const workablePoints = gradePoints.filter((p) => taggedPointIds.has(p.id));
-	if (workablePoints.length === 0) return EMPTY_COLLECTION;
+	// Un Mathou mémorisé reste même quand plus aucun de ses points n'est travaillable
+	if (workablePoints.length === 0 && memory.size === 0) return EMPTY_COLLECTION;
 
 	const nodes: CollectionTreeNode[] = [];
 	for (const row of [...(treeResult.data ?? []), ...(referencedResult.data ?? [])]) {
@@ -145,7 +161,7 @@ export async function loadMathouCollection(
 
 	// ⚠️ Des points travaillables mais aucun nœud : l'arbre est lisible par tout
 	// connecté, donc c'est un refus RLS ou un arbre vidé — pas une Chatterie vide.
-	if (nodes.length === 0) {
+	if (nodes.length === 0 && workablePoints.length > 0) {
 		logger.warn(
 			`[mathoux] ${workablePoints.length} points travaillables pour "${grade}" (parcours) mais aucun nœud lu — RLS ?`
 		);
@@ -153,6 +169,45 @@ export async function loadMathouCollection(
 
 	// 4. États et sieste, sur les seuls points travaillables (≈ 30 en Tle spé, pas 1 600)
 	const workableIds = workablePoints.map((p) => p.id);
+	const { progress, nappingPointIds } =
+		workableIds.length > 0
+			? await loadProgress(supabase, studentId, workableIds)
+			: { progress: new Map<string, PointProgress>(), nappingPointIds: new Set<string>() };
+
+	const collection = buildMathouCollection({
+		points: workablePoints,
+		nodes,
+		progress,
+		nappingPointIds,
+		memory
+	});
+
+	// 5. Mémoire : n'écrit que s'il y a du nouveau ; une panne n'empêche pas l'affichage
+	await rememberSafely(studentId, memoryUpdates(collection, memory), memory);
+
+	return collection;
+}
+
+/** Écrit la mémoire au client service ; journalise une panne au lieu de la propager. */
+async function rememberSafely(
+	studentId: string,
+	updates: MathouMemoryUpdate[],
+	memory: Map<string, StoredMathouMemory>
+): Promise<void> {
+	if (updates.length === 0) return;
+	try {
+		await rememberMathoux(createServiceRoleClient(), studentId, updates, memory);
+	} catch (err) {
+		logger.error(`[mathoux] mémoire non écrite (${updates.length} Mathoux) :`, err);
+	}
+}
+
+/** États de l'élève et points en sieste (badge FSRS « à revoir »). */
+async function loadProgress(
+	supabase: SB,
+	studentId: string,
+	workableIds: string[]
+): Promise<{ progress: Map<string, PointProgress>; nappingPointIds: Set<string> }> {
 	const [statesResult, badges] = await Promise.all([
 		fetchInChunks(workableIds, (batch) =>
 			supabase
@@ -178,8 +233,7 @@ export async function loadMathouCollection(
 	for (const [pointId, badge] of badges) {
 		if (badge === 'a_renforcer' || badge === 'a_remedier') nappingPointIds.add(pointId);
 	}
-
-	return buildMathouCollection({ points: workablePoints, nodes, progress, nappingPointIds });
+	return { progress, nappingPointIds };
 }
 
 /**

@@ -103,6 +103,29 @@ const mockCompletions = [
 	}
 ];
 
+// Mémoire des Mathoux (une ligne par notion)
+const mockMathoux = [
+	{
+		notion_id: 'notion-1',
+		best_stage: 'grand_matou',
+		starred_grades: ['2', '1_SPE'],
+		first_seen_at: '2026-10-01T10:00:00Z',
+		updated_at: '2026-10-18T10:00:00Z'
+	}
+];
+
+// Palotin de l'élève (une ligne par élève)
+const mockBuddy = {
+	palotin_type: 'giron',
+	level: 3,
+	xp: 120,
+	current_streak: 2,
+	longest_streak: 5,
+	themes_explored: ['fractions'],
+	created_at: '2026-09-01T10:00:00Z',
+	updated_at: '2026-10-18T10:00:00Z'
+};
+
 // Session automaths et ses réponses (jointure `test_answers(...)`)
 const mockTestSessions = [
 	{
@@ -162,6 +185,10 @@ function setupMockSupabase() {
 						return mockTestSessions;
 					case 'tutor_conversations':
 						return mockTutorConversations;
+					case 'student_mathoux':
+						return mockMathoux;
+					case 'student_buddies':
+						return mockBuddy;
 					case 'game_players':
 						return null; // maybeSingle returns null if no data
 					default:
@@ -353,6 +380,43 @@ describe('GET /api/account/export', () => {
 			// Les inférences sur l'élève font partie de l'accès (art. 15).
 			expect(chaine.select.mock.calls[0][0]).toContain('cheat_detected');
 			expect(chaine.select.mock.calls[0][0]).toContain('effort_score');
+		});
+
+		// Mémoire des Mathoux (Chatterie, 2026-10-18) : meilleur stade et étoiles par notion
+		test('contient la mémoire des Mathoux de l’appelant (catégorie gaming)', async () => {
+			const response = await GET(createMockEvent() as never);
+			const data = await response.json();
+
+			expect(data.gaming.mathoux).toEqual(mockMathoux);
+			const appel = mockSupabase.from.mock.calls.findIndex(
+				(c: unknown[]) => c[0] === 'student_mathoux'
+			);
+			expect(appel).toBeGreaterThanOrEqual(0);
+			const chaine = mockSupabase.from.mock.results[appel].value;
+			expect(chaine.select.mock.calls[0][0]).toBe(
+				'notion_id, best_stage, starred_grades, first_seen_at, updated_at'
+			);
+			const eq = chaine.select.mock.results[0].value.eq;
+			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
+		});
+
+		// Palotin de l'élève (décision de David, 2026-10-18)
+		test('contient le Palotin de l’appelant (catégorie gaming)', async () => {
+			const response = await GET(createMockEvent() as never);
+			const data = await response.json();
+
+			expect(data.gaming.palotin).toEqual(mockBuddy);
+			const appel = mockSupabase.from.mock.calls.findIndex(
+				(c: unknown[]) => c[0] === 'student_buddies'
+			);
+			expect(appel).toBeGreaterThanOrEqual(0);
+			const chaine = mockSupabase.from.mock.results[appel].value;
+			const colonnes = chaine.select.mock.calls[0][0] as string;
+			for (const colonne of ['palotin_type', 'xp', 'themes_explored', 'constance_days_this_week']) {
+				expect(colonnes).toContain(colonne);
+			}
+			const eq = chaine.select.mock.results[0].value.eq;
+			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
 		});
 
 		test('le profil exporte le consentement parental et la déclaration d’âge', async () => {
