@@ -13,6 +13,9 @@
 	 * - G : Toggle grid
 	 * - 0 : Center on origin
 	 *
+	 * Ignorés : une touche déjà prise (`defaultPrevented`), une frappe dans un
+	 * champ, et toute touche venue d'une zone marquée `data-own-keys`.
+	 *
 	 * @component
 	 */
 
@@ -52,8 +55,16 @@
 	 * Handle keydown events for shortcuts
 	 */
 	function handleKeydown(event: KeyboardEvent): void {
+		// Une touche déjà prise ailleurs (poignée, Échap de la console…) n'est
+		// pas pour le graphe
+		if (event.defaultPrevented) return;
+
 		// Ignore if user is typing in an input field
 		const target = event.target as HTMLElement;
+		// Une zone posée PAR-DESSUS le graphe garde ses touches (`data-own-keys`,
+		// la console de l'atelier) : sans cela, une flèche sur l'un de ses boutons
+		// déplaçait le graphe caché dessous
+		if (target instanceof Element && target.closest('[data-own-keys]') !== null) return;
 		if (
 			target.tagName === 'INPUT' ||
 			target.tagName === 'TEXTAREA' ||

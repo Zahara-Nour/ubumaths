@@ -73,18 +73,18 @@ couleur + style de trait ; la **fenêtre** (`Viewport`) est le rectangle `xMin�
 
 ### Composants — `src/lib/components/grapheur/`
 
-| Composant                                                                                                               | Rôle                                                                                            |
-| ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `GrapheurContainer.svelte`                                                                                              | Conteneur ; props `store` (fournie par contexte) et `panel`                                     |
-| `GraphSVG.svelte`                                                                                                       | Le SVG : taille, glisser (`pan`, `scale-x`, `scale-y`), couches, survol et clics                |
-| `GridLines.svelte`, `AxisLines.svelte`                                                                                  | Grille et axes gradués, pas tiré de `computeGridStep` (geometry-core)                           |
-| `FunctionCurve.svelte`, `IntegralArea.svelte`                                                                           | Courbe d'une fonction (300 points, 100 pendant un geste) ; aire sous la courbe                  |
-| `SequencePlot.svelte`, `ScatterPlot.svelte`                                                                             | Suite (rangs ou escalier) ; nuage de points                                                     |
-| `AsymptoteLines.svelte`, `SpecialPoints.svelte`, `IntersectionPoints.svelte`                                            | Couches d'analyse                                                                               |
-| `CurveHover.svelte`, `GraphLabel.svelte`                                                                                | Survol aimanté et étiquettes (exacte au survol, cycle au clic)                                  |
-| `FunctionPanel.svelte`, `FunctionInput.svelte`, `SequenceInput.svelte`, `SequenceTable.svelte`, `ParameterInput.svelte` | Panneau de saisie — **monté seulement par `/calc`**                                             |
-| `ColorPicker.svelte`, `LineWidthPicker.svelte`, `LineStylePicker.svelte`                                                | Réglages de trait, réutilisés par les cartes de l'atelier (`CurveSettings`, `SequenceSettings`) |
-| `ViewportControls.svelte`, `ExportButton.svelte`, `CoordinatesDisplay.svelte`, `KeyboardHandler.svelte`                 | Zoom, export, coordonnées, raccourcis clavier (`+ - flèches Échap g 0`)                         |
+| Composant                                                                                                               | Rôle                                                                                                                    |
+| ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `GrapheurContainer.svelte`                                                                                              | Conteneur ; props `store` (fournie par contexte) et `panel`                                                             |
+| `GraphSVG.svelte`                                                                                                       | Le SVG : taille, glisser (`pan`, `scale-x`, `scale-y`), couches, survol et clics                                        |
+| `GridLines.svelte`, `AxisLines.svelte`                                                                                  | Grille et axes gradués, pas tiré de `computeGridStep` (geometry-core)                                                   |
+| `FunctionCurve.svelte`, `IntegralArea.svelte`                                                                           | Courbe d'une fonction (300 points, 100 pendant un geste) ; aire sous la courbe                                          |
+| `SequencePlot.svelte`, `ScatterPlot.svelte`                                                                             | Suite (rangs ou escalier) ; nuage de points                                                                             |
+| `AsymptoteLines.svelte`, `SpecialPoints.svelte`, `IntersectionPoints.svelte`                                            | Couches d'analyse                                                                                                       |
+| `CurveHover.svelte`, `GraphLabel.svelte`                                                                                | Survol aimanté et étiquettes (exacte au survol, cycle au clic)                                                          |
+| `FunctionPanel.svelte`, `FunctionInput.svelte`, `SequenceInput.svelte`, `SequenceTable.svelte`, `ParameterInput.svelte` | Panneau de saisie — **monté seulement par `/calc`**                                                                     |
+| `ColorPicker.svelte`, `LineWidthPicker.svelte`, `LineStylePicker.svelte`                                                | Réglages de trait, réutilisés par les cartes de l'atelier (`CurveSettings`, `SequenceSettings`)                         |
+| `ViewportControls.svelte`, `ExportButton.svelte`, `CoordinatesDisplay.svelte`, `KeyboardHandler.svelte`                 | Zoom, export, coordonnées, raccourcis clavier (`+ - flèches Échap g 0`), sauf touche déjà prise ou zone `data-own-keys` |
 
 Branchement avec l'atelier : `src/lib/atelier/plot-sync.ts` (`syncPlots`) et
 `src/lib/components/atelier/AtelierContainer.svelte` — décrits dans [atelier.md](atelier.md).
