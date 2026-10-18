@@ -1,7 +1,7 @@
 ---
 title: Atelier — tableur intégré : la mise en forme des cases (phase 0)
 date: 2026-10-18
-status: phase 0 PROPOSÉE, à valider par David (Q-MF-1 à Q-MF-5)
+status: phase 0 VALIDÉE (2026-10-18, « ok vas-y ») ; Q-MF-1 à Q-MF-5 décidées (les cinq recos)
 ---
 
 # Atelier — tableur intégré : la mise en forme des cases
@@ -81,7 +81,7 @@ de V4. Phase 0 du tableur : [atelier-tableur-phase0.md](atelier-tableur-phase0.m
 
 ---
 
-## Questions — à trancher par David
+## Questions — tranchées par David (2026-10-18, « ok vas-y » : les cinq recos)
 
 **Q-MF-1 — Quels formats de nombre ?**
 
