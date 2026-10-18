@@ -52,6 +52,7 @@ on:
       - 'src/lib/dictionary/**'
       - 'src/lib/math/**'
       - 'src/lib/mathAST/**'
+      - 'src/lib/mathoux/**'
       - 'src/lib/migration/**'
       - 'src/lib/questions/**'
       - 'src/lib/resources/**'
