@@ -441,6 +441,10 @@ Jeux (démineur, 2048, Mathémo, combats), énigmes, succès, compagnons et éco
 VIP, récompenses hebdomadaires). Détail : [jeux-et-economie.md](jeux-et-economie.md),
 [buddy-palotins.md](buddy-palotins.md). Pivots : `minesweeper_games`, `riddles` → `riddle_attempts`,
 `achievements` → `student_achievements`, `student_buddies`, `reward_events`, `gidouilles_activity`.
+`student_buddies` (le Palotin) et `srs_review_sessions` (séances de révision, qui portent le
+forfait du Palotin) ne s'écrivent que par le serveur (client service) : l'élève n'y a plus que la
+lecture (migration `20261017090100`, qui ajoute aussi les colonnes de la Constance Royale
+hebdomadaire `constance_week_start` et `constance_days_this_week`, 0 à 7).
 Le solde vit dans `profiles.gidouilles` / `vip_cards`. L'élève lit ses propres traces, le professeur
 celles de tous les élèves ; les classements passent par `game_leaderboard`, borné à l'école
 (énigmes : `riddle_school_leaderboard`, prénom et score seulement, migration `20261015090800`).

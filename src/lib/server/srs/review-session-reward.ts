@@ -32,10 +32,9 @@
  * - Crédit en erreur ou nul → réclamation relâchée (`completed_at` remis à null).
  *
  * Écritures (réclamation, relâche) au client service, `userId` de la session ;
- * les lectures restent au client de l'élève. Limite connue jusqu'à la PR de
- * migration : la policy « Users can update their own review sessions » laisse
- * encore l'élève réécrire `completed_at` par un appel direct ; le gain reste
- * borné par le plafond du jour.
+ * les lectures restent au client de l'élève. La migration 20261017090100
+ * retire à l'élève l'écriture directe de ses séances : il ne peut plus remettre
+ * `completed_at` à vide pour toucher deux fois le forfait.
  *
  * Toute panne rend null : on ne conclut jamais sur une lecture manquée.
  */

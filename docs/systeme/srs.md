@@ -224,10 +224,12 @@ Palotin → pas de réclamation. Réclamation conditionnelle (`completed_at is n
 service, filtrées sur le `userId` de la session. Deux paquets réclamés au même instant :
 chacun voit l'autre, aucun forfait ce jour-là (côté sûr). `api/srs/review/submit` rend le gain sous
 `buddy_xp`, même forme que `api/tests/save` ; toute panne rend `null` sans toucher la révision.
-Limite connue, jusqu'à la PR de migration qui retire la policy UPDATE « own » : l'élève peut encore
-réécrire `completed_at` par un appel direct ; le gain reste borné par le plafond du jour. Le code
-n'écrit plus rien au client de l'élève, la policy peut donc être retirée sans rien casser. Le paquet de chapitre (`api/srs/chapters/[id]/submit`) ne
-donne pas de forfait.
+RLS (migration `20261017090100_palotin_constance_et_ecritures_serveur.sql`) : l'élève n'a plus de
+policy INSERT ni UPDATE sur `srs_review_sessions` (seule reste « Users can view their own review
+sessions ») ; il ne peut donc plus remettre `completed_at` à vide pour toucher deux fois le forfait.
+Une écriture faite à son client rend 42501 (INSERT) ou 0 ligne sans erreur (UPDATE). Preuve :
+`tests/integration/palotin-ecritures-eleve.test.ts`. Le paquet de chapitre
+(`api/srs/chapters/[id]/submit`) ne donne pas de forfait.
 
 « Quitter », en tête de séance (`BackLink kind="quit"`, [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)), ramène là
 où elle a commencé : la page du paquet, ou le Programme si elle en part (`?depuis=programme`, posé par
