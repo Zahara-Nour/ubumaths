@@ -94,3 +94,30 @@ describe('L4 : la carte d’une mesure nommée', () => {
 		expect(card.querySelector('input[type="range"]')).toBeNull();
 	});
 });
+
+describe('réglage « Angles » : degrés ou radians', () => {
+	it('degrés par défaut ; Radians recalcule la mesure nommée', async () => {
+		const atelier = rectangle();
+		atelier.create({ kind: 'value', name: 'T', definition: 'angle(B, A, C)' }, 'text');
+		const view = await render(AtelierContainer, { atelier, ephemeral: true });
+		(view.container.querySelector('button[aria-label="Réglages"]') as HTMLElement).click();
+		await settle();
+		const radians = await vi.waitFor(() => {
+			const found = [...document.querySelectorAll('label')].find(
+				(l) => l.textContent?.trim() === 'Radians'
+			);
+			if (!found) throw new Error('pas de choix Radians');
+			return found;
+		});
+		const degrees = [...document.querySelectorAll('label')].find(
+			(l) => l.textContent?.trim() === 'Degrés'
+		);
+		expect(degrees).toBeTruthy();
+		expect(atelier.angleUnit).toBe('deg');
+		radians.click();
+		await settle();
+		expect(atelier.angleUnit).toBe('rad');
+		const card = cardFor(view.container, 'T');
+		expect(card.querySelector('.mesure .sr-only')?.textContent?.trim()).toBe('≈ 0,6435 rad');
+	});
+});

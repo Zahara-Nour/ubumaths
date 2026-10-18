@@ -7,7 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { runInput, type CalcResult, type CalcSession } from '../calcul';
+import { promote, runInput, type CalcResult, type CalcSession } from '../calcul';
 
 // =============================================================================
 // Outils
@@ -99,27 +99,30 @@ describe('revue 2 : une mesure approchée ne devient pas une fraction exacte', (
 	it('T = angle(B, A, C) puis T, 2T : ≈ décimal', () => {
 		const s = plane();
 		runInput(s, 'T = angle(B, A, C)');
-		expect(answer(runInput(s, 'T'))).toBe('≈ 36,8699');
-		expect(answer(runInput(s, '2T'))).toBe('≈ 73,7398');
+		expect(answer(runInput(s, 'T'))).toBe('≈ 36,8699 °');
+		expect(answer(runInput(s, '2T'))).toBe('≈ 73,7398 °');
 	});
 
-	it('g(x) = angle(B, A, C)·x puis g(1) : ≈ décimal', () => {
+	it('g(x) = cos(angle(B, A, C))·x puis g(1) : ≈ décimal', () => {
+		// Décision de David (2026-10-18) : un angle est une grandeur ; une fonction n'en
+		// prend pas (choix prudent, `mesures-angle.test.ts`) — on passe par son cosinus
 		const s = plane();
-		runInput(s, 'g(x) = angle(B, A, C)*x');
-		expect(answer(runInput(s, 'g(1)'))).toBe('≈ 36,8699');
+		runInput(s, 'T = angle(B, A, C)');
+		runInput(s, 'k = cos(T)');
+		expect(answer(runInput(s, 'k'))).toBe('≈ 0,8');
 	});
 
 	it('J = angle(B, A, C) + 0 puis J : ≈ décimal', () => {
 		const s = plane();
-		runInput(s, 'J = angle(B, A, C) + 0');
-		expect(answer(runInput(s, 'J'))).toBe('≈ 36,8699');
+		runInput(s, 'J = angle(B, A, C) + 0[°]');
+		expect(answer(runInput(s, 'J'))).toBe('≈ 36,8699 °');
 	});
 });
 
 describe('revue 3 : pleine précision dans le calcul, arrondi à l’affichage', () => {
 	it('100·angle(B, A, C) vaut ≈ 3686,9898', () => {
 		const s = plane();
-		expect(answer(runInput(s, '100*angle(B, A, C)'))).toBe('≈ 3686,9898');
+		expect(answer(runInput(s, '100*angle(B, A, C)'))).toBe('≈ 3686,9898 °');
 	});
 });
 
@@ -191,5 +194,50 @@ describe('revue 7 : une mesure qui ne se calcule pas le dit', () => {
 		runInput(s, 'R = (1/z ; 0)');
 		const result = runInput(s, 'AR');
 		expect(result.kind).toBe('refus');
+	});
+});
+
+// =============================================================================
+// Décisions de David (2026-10-18) : « Garder » une mesure, distance à un segment
+// =============================================================================
+
+describe('A : « Garder » une ligne de mesure garde la MESURE, qui suit ses points', () => {
+	it('`AE` gardé suit E', () => {
+		const s = plane();
+		const kept = promote(s, runInput(s, 'AE'));
+		expect(kept.ok).toBe(true);
+		const name = kept.ok ? kept.object.name : '';
+		const object = s.atelier.get(name);
+		expect([object?.kind, object?.definition]).toEqual(['value', 'AE']);
+		expect(object !== undefined && 'slider' in object && object.slider).toBeFalsy();
+		runInput(s, 'E = (4 ; 3)');
+		expect(answer(runInput(s, name))).toBe('5');
+	});
+
+	it('`aire(A, B, C)` et `angle(B, A, C)` gardés : leur définition est la mesure tapée', () => {
+		const s = plane();
+		const area = promote(s, runInput(s, 'aire(A, B, C)'));
+		const angle = promote(s, runInput(s, 'angle(B, A, C)'));
+		expect(area.ok && area.object.definition).toBe('aire(A, B, C)');
+		expect(angle.ok && angle.object.definition).toBe('angle(B, A, C)');
+	});
+});
+
+describe('B : la distance à un segment ou à une demi-droite est refusée, avec l’aide', () => {
+	it('`distance(E, [AB])`, `distance(E, [AB))` : écris distance(E, (AB))', () => {
+		const s = plane();
+		expect(refusal(runInput(s, 'distance(E, [AB])'))).toContain('distance(E, (AB))');
+		expect(refusal(runInput(s, 'distance(E, [AB))'))).toContain('distance(E, (AB))');
+	});
+
+	it('un segment, une demi-droite NOMMÉS aussi ; une droite reste acceptée', () => {
+		const s = plane();
+		runInput(s, 's = [AB]');
+		runInput(s, 'r = [AB)');
+		runInput(s, 'd = (AB)');
+		expect(refusal(runInput(s, 'distance(E, s)'))).toContain('distance(E, (AB))');
+		expect(refusal(runInput(s, 'distance(E, r)'))).toContain('distance(E, (AB))');
+		expect(answer(runInput(s, 'distance(E, d)'))).toBe('2');
+		expect(answer(runInput(s, 'distance(E, (AB))'))).toBe('2');
 	});
 });
