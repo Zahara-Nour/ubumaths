@@ -22,12 +22,21 @@
  * (règle tranchée par David le 2026-10-18, option 2). `memoryUpdates` dit ce que
  * la mémoire doit apprendre.
  *
+ * « FAIRE GRANDIR » (v1.1, spec de David du 2026-10-18) : chaque Mathou né porte
+ * les catégories d'un Entraînement (`trainingCategories`) : les modèles PUBLIÉS qui taguent
+ * les points de sa notion, sur tout le parcours : d'abord les points perdus,
+ * puis les non acquis, puis les autres ; au plus 10 questions, une par modèle
+ * (`selectTrainingTemplates`). Un Mathou endormi sans carte due
+ * (`dueForRevision` faux) se réveille par ce même Entraînement. Le lien se
+ * construit au rendu (`trainingQuery`) : un lien encodé pèse ≈ 4 Ko par Mathou.
+ *
  * Importable côté client (phrases du Palotin, page) : aucune dépendance serveur.
  *
  * Spec validée par David : docs/wip/mathoux-conception.md § 9.
  */
 
 import { GRADE_CODES, GRADES, isGradeCode } from '$lib/types/grades';
+import { buildSeriesLink, cartItemSchema, type SeriesCategories } from '$lib/validation/series';
 
 // ============================================================================
 // Types
@@ -71,6 +80,28 @@ export interface WorkablePoint {
 }
 
 /** État d'un point pour l'élève. Absent de la carte = jamais travaillé. */
+/** Catégorie de questions d'une série (thème, domaine, sous-domaine, niveau du modèle). */
+export type TrainingCategory = SeriesCategories[number]['category'];
+
+/** Modèle PUBLIÉ qui tague un point : de quoi en faire une catégorie d'Entraînement. */
+export interface TrainingTemplate {
+	id: string;
+	category: TrainingCategory;
+	/** Durée par question (secondes), celle du modèle sinon le défaut du panier. */
+	delay: number;
+}
+
+/** Ligne lue d'un modèle (`question_templates`), avant validation. */
+export interface TrainingTemplateRow {
+	id: string;
+	theme: string;
+	domain: string;
+	subdomain: string | null;
+	level: number;
+	delay: number | null;
+	status: string;
+}
+
 export interface PointProgress {
 	isAcquired: boolean;
 	/** Au moins une réussite (`total_successes > 0` ou `last_success_at` non nul). */
@@ -109,6 +140,18 @@ export interface Mathou {
 	 * perdu (cf. `isPointLost`). Jamais vrai pour une silhouette.
 	 */
 	asleep: boolean;
+	/**
+	 * Au moins un point de la notion a une carte due (badge « à revoir ») :
+	 * « Réveiller » mène alors aux révisions. Faux pour un Mathou endormi par un
+	 * point perdu seulement : il se réveille par son Entraînement.
+	 */
+	dueForRevision: boolean;
+	/**
+	 * « Faire grandir » : catégories de l'Entraînement sur la notion (une question
+	 * par modèle), dont `trainingQuery` fait le lien au rendu. `null` pour une
+	 * silhouette ou une notion sans modèle publié.
+	 */
+	trainingCategories: SeriesCategories | null;
 	/** Niveaux étoilés (calculés ∪ mémorisés), du plus ancien au plus récent. */
 	stars: string[];
 	/** Totaux sur tout le parcours. */
@@ -148,6 +191,8 @@ export interface BuildCollectionInput {
 	nappingPointIds: Set<string>;
 	/** Mémoire de l'élève par notion (`student_mathoux`). Absente = aucune ligne. */
 	memory?: Map<string, MathouMemory>;
+	/** Modèles PUBLIÉS qui taguent chaque point. Absent = aucun lien « Faire grandir ». */
+	templatesByPoint?: Map<string, TrainingTemplate[]>;
 }
 
 // ============================================================================
@@ -280,6 +325,7 @@ function byPosition(a: CollectionTreeNode, b: CollectionTreeNode): number {
 export function buildMathouCollection(input: BuildCollectionInput): MathouCollection {
 	const { points, nodes, progress, nappingPointIds } = input;
 	const memory = input.memory ?? new Map<string, MathouMemory>();
+	const templatesByPoint = input.templatesByPoint ?? new Map<string, TrainingTemplate[]>();
 
 	const nodeById = new Map(nodes.map((node) => [node.id, node]));
 	const branches = nodes.filter((node) => node.kind === 'branch').sort(byPosition);
@@ -328,7 +374,10 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 		let acquiredTotal = 0;
 		let hasNappingPoint = false;
 		let hasLostPoint = false;
+		// Points de la notion dans l'ordre du parcours (plus ancien niveau d'abord)
+		const notionPointIds: string[] = [];
 		for (const [grade, pointSet] of gradeEntries) {
+			notionPointIds.push(...[...pointSet].sort());
 			let acquired = 0;
 			let hasSuccess = false;
 			for (const pointId of pointSet) {
@@ -365,7 +414,11 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 		}
 
 		// Une silhouette n'est pas encore un Mathou : elle ne dort pas.
-		const asleep = growth !== 'a_decouvrir' && (hasNappingPoint || hasLostPoint);
+		const born = growth !== 'a_decouvrir';
+		const asleep = born && (hasNappingPoint || hasLostPoint);
+		const trainingTemplates = born
+			? selectTrainingTemplates(notionPointIds, progress, templatesByPoint)
+			: [];
 
 		if (growth === 'a_decouvrir') counts.toDiscover += 1;
 		else counts.born += 1;
@@ -384,6 +437,8 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 			raceIndex,
 			growth,
 			asleep,
+			dueForRevision: asleep && hasNappingPoint,
+			trainingCategories: trainingCategories(trainingTemplates),
 			stars,
 			workablePoints: workableTotal,
 			acquiredPoints: acquiredTotal,
@@ -415,6 +470,123 @@ export function memoryUpdates(
 		updates.push({ notionId: mathou.notionId, ...want });
 	}
 	return updates;
+}
+
+// ============================================================================
+// « Faire grandir » : l'Entraînement sur la notion
+// ============================================================================
+
+/** Questions d'un Entraînement « Faire grandir » : une par modèle, au plus 10. */
+export const MAX_TRAINING_QUESTIONS = 10;
+
+/** Durée par question quand le modèle n'en donne pas (défaut du panier). */
+const DEFAULT_TRAINING_DELAY = 20;
+
+/** Durée la plus longue qu'accepte une série (`cartItemSchema`). */
+const MAX_TRAINING_DELAY = 600;
+
+/** Priorité d'un point : 0 perdu, 1 non acquis (ou jamais travaillé), 2 acquis. */
+function trainingPriority(state: PointProgress | undefined): number {
+	if (state?.lost) return 0;
+	return state?.isAcquired ? 2 : 1;
+}
+
+/**
+ * Ligne de modèle → modèle d'Entraînement, ou `null` si elle ne doit pas y
+ * entrer : un brouillon (garde en plus du filtre de la requête), ou une
+ * catégorie que le lien de série refuserait (mêmes bornes que `cartItemSchema`).
+ */
+export function trainingTemplateFrom(row: TrainingTemplateRow): TrainingTemplate | null {
+	if (row.status !== 'published') return null;
+	const delay =
+		row.delay === null || !Number.isFinite(row.delay) || row.delay < 0
+			? DEFAULT_TRAINING_DELAY
+			: Math.min(MAX_TRAINING_DELAY, Math.round(row.delay));
+	const item = cartItemSchema.safeParse({
+		category: {
+			theme: row.theme,
+			domain: row.domain,
+			subdomain: row.subdomain,
+			level: row.level
+		},
+		quantity: 1,
+		delay
+	});
+	if (!item.success) return null;
+	return { id: row.id, category: item.data.category, delay: item.data.delay };
+}
+
+/**
+ * Modèles de l'Entraînement d'une notion, dans l'ordre demandé par David :
+ * d'abord ceux des points PERDUS, puis des points non acquis, puis des autres.
+ * Au plus `MAX_TRAINING_QUESTIONS`, chaque modèle une seule fois (au rang du
+ * plus prioritaire de ses points). À priorité égale, les points sont servis
+ * tour à tour, dans l'ordre reçu (un modèle chacun, puis le suivant), pour
+ * couvrir la notion plutôt qu'un seul point ; les modèles d'un point, par id.
+ *
+ * @param pointIds points de la notion, dans l'ordre du parcours.
+ */
+export function selectTrainingTemplates(
+	pointIds: string[],
+	progress: Map<string, PointProgress>,
+	templatesByPoint: Map<string, TrainingTemplate[]>,
+	max: number = MAX_TRAINING_QUESTIONS
+): TrainingTemplate[] {
+	const groups: string[][] = [[], [], []];
+	for (const pointId of new Set(pointIds)) {
+		groups[trainingPriority(progress.get(pointId))].push(pointId);
+	}
+
+	const chosen: TrainingTemplate[] = [];
+	const seen = new Set<string>();
+	for (const group of groups) {
+		const queues = group.map((pointId) =>
+			[...(templatesByPoint.get(pointId) ?? [])].sort((a, b) => a.id.localeCompare(b.id))
+		);
+		// Tour à tour : à chaque tour, chaque point donne son prochain modèle pas encore pris
+		let remaining = true;
+		while (remaining && chosen.length < max) {
+			remaining = false;
+			for (const queue of queues) {
+				if (chosen.length >= max) break;
+				let next = queue.shift();
+				while (next && seen.has(next.id)) next = queue.shift();
+				if (!next) continue;
+				seen.add(next.id);
+				chosen.push(next);
+				if (queue.length > 0) remaining = true;
+			}
+		}
+	}
+	return chosen;
+}
+
+/**
+ * Catégories de l'Entraînement : une question par modèle, rien d'autre (ce que
+ * demande `buildSeriesLink`). Aucun modèle → `null` (pas de bouton).
+ */
+export function trainingCategories(templates: TrainingTemplate[]): SeriesCategories | null {
+	if (templates.length === 0) return null;
+	return templates.map((template) => ({
+		category: template.category,
+		quantity: 1,
+		delay: template.delay
+	}));
+}
+
+/** Chemin des liens de série qui démarrent directement (`buildSeriesLink` avec une forme). */
+const TEST_PATH_PREFIX = '/automaths/test?';
+
+/**
+ * Paramètres (`categories=…&mode=interactive`) du lien de l'Entraînement, à
+ * placer après `resolve('/automaths/test')` + `?`. Encodés par
+ * `buildSeriesLink` lui-même (relus par `resolveTestLaunch`) : on n'en garde
+ * que la partie après `?`. Pas de catégories → `null`.
+ */
+export function trainingQuery(categories: SeriesCategories | null): string | null {
+	if (!categories || categories.length === 0) return null;
+	const link = buildSeriesLink('', categories, { mode: 'interactive' });
+	return link.startsWith(TEST_PATH_PREFIX) ? link.slice(TEST_PATH_PREFIX.length) : null;
 }
 
 /** Notion d'un nœud : lui-même (notion) ou son parent (sous-notion). */

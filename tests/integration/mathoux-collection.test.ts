@@ -41,6 +41,8 @@ import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
 import { loadMathouCollection } from '$lib/server/mathoux/collection';
 import { readMathouMemory, rememberMathoux } from '$lib/server/mathoux/memory';
 import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
+import { resolveTestLaunch } from '$lib/utils/test-launch';
+import { trainingQuery } from '$lib/mathoux/collection-logic';
 
 // ============================================================================
 // TYPES
@@ -328,6 +330,69 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 			growth: 'chaton',
 			name: `le Mathou « ${TAG} Fractions »`
 		});
+	});
+
+	it('« Faire grandir » : modèles PUBLIÉS de la notion, perdus puis non acquis puis acquis, aucun brouillon', async () => {
+		// Notion à elle : trois points, un modèle publié chacun, plus un brouillon sur le point perdu
+		const parent = await service
+			.from('classification_nodes')
+			.select('parent_id')
+			.eq('id', notionFractions)
+			.single();
+		if (parent.error || !parent.data?.parent_id) {
+			throw new Error(`décor : branche : ${parent.error?.message}`);
+		}
+		const notionOrdre = await insertNode('notion', 'Ordre', parent.data.parent_id);
+		const ordre: Record<string, string> = {};
+		for (const label of ['o-perdu', 'o-neuf', 'o-acquis']) {
+			const pointId = await insertPoint(label, notionOrdre);
+			ordre[label] = pointId;
+			templates[label] = await createFakeTemplate(service, eleveAId);
+			await tag(templates[label], pointId, notionOrdre);
+		}
+		templates.brouillonOrdre = await createFakeTemplate(service, eleveAId);
+		await tag(templates.brouillonOrdre, ordre['o-perdu'], notionOrdre);
+		const draft = await service
+			.from('question_templates')
+			.update({ status: 'draft' })
+			.eq('id', templates.brouillonOrdre)
+			.select('id');
+		if (draft.error || draft.data?.length !== 1) {
+			throw new Error(`décor : brouillon : ${draft.error?.message}`);
+		}
+
+		const { id, client } = await newStudent(GRADE);
+		// Perdu (régime diversité par défaut : 2 modèles réussis, plus acquis), acquis ; o-neuf jamais tenté
+		await setState(id, ordre['o-perdu'], {
+			is_acquired: false,
+			total_successes: 2,
+			distinct_template_successes: 2
+		});
+		await setState(id, ordre['o-acquis'], { is_acquired: true, total_successes: 3 });
+
+		const collection = await loadMathouCollection(client, id, GRADE);
+		const mathou = mathouOf(collection, notionOrdre);
+		expect(mathou).toMatchObject({ asleep: true, dueForRevision: false });
+		const query = trainingQuery(mathou?.trainingCategories ?? null);
+		expect(query).toBeTruthy();
+		const launch = resolveTestLaunch(new URLSearchParams(query ?? ''));
+		expect(launch.kind).toBe('start');
+		if (launch.kind !== 'start') return;
+		expect(launch.mode).toBe('interactive');
+
+		// L'ordre attendu, relu dans la base : perdu, puis non acquis, puis acquis
+		const expected = await service
+			.from('question_templates')
+			.select('id, theme')
+			.in('id', [templates['o-perdu'], templates['o-neuf'], templates['o-acquis']]);
+		expect(expected.error).toBeNull();
+		const themeOf = new Map((expected.data ?? []).map((t) => [t.id, t.theme]));
+		expect(launch.categories.map((c) => c.category.theme)).toEqual([
+			themeOf.get(templates['o-perdu']),
+			themeOf.get(templates['o-neuf']),
+			themeOf.get(templates['o-acquis'])
+		]);
+		expect(launch.categories.every((c) => c.quantity === 1)).toBe(true);
 	});
 
 	it('tous les points d’une notion acquis → grand matou', async () => {

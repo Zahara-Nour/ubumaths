@@ -9,7 +9,7 @@ couvre:
 
 # Mathoux — la Chatterie de Faustroll
 
-> Vérifié contre le code le 2026-10-18 (Mathoux v1, mémoire comprise). Spécification validée par David :
+> Vérifié contre le code le 2026-10-18 (Mathoux v1, mémoire comprise, « Faire grandir » v1.1). Spécification validée par David :
 > [mathoux-conception.md § 9](../wip/mathoux-conception.md).
 
 ## À quoi ça sert
@@ -61,7 +61,23 @@ Points travaillables par niveau en prod (2026-10-18, modèles publiés / tous le
   **jamais acquis** (neuf, ou en apprentissage sous le seuil) n'endort pas : il empêche seulement
   l'étoile de sa classe. Un stade calculé sous le stade mémorisé n'endort pas à lui seul (un point
   nouvellement tagué le fait baisser sans oubli). Une silhouette ne dort jamais : elle n'est pas
-  encore un Mathou. Le Mathou n'est jamais perdu ; une révision le réveille.
+  encore un Mathou. Le Mathou n'est jamais perdu ; une révision le réveille. `Mathou.dueForRevision`
+  dit si une carte due est en cause (sinon, seul un point perdu l'endort).
+- **Faire grandir** (v1.1, spec de David du 2026-10-18) : chaque Mathou **né** porte les catégories d'un
+  **Entraînement** sur sa notion (`Mathou.trainingCategories`) ; la page en fait le lien au rendu
+  (`resolve('/automaths/test')` + `?` + `trainingQuery`, encodé par `buildSeriesLink`, relu par
+  `resolveTestLaunch` ; mode interactif). Il est fait des modèles **publiés**
+  qui taguent les points de la notion, sur tout le parcours (`selectTrainingTemplates`) : d'abord
+  ceux des points **perdus**, puis des points **non acquis** (jamais travaillés compris), puis des
+  autres ; **au plus 10**, **une question par modèle** (un modèle qui tague plusieurs points vient
+  une fois, au rang du plus prioritaire). À priorité égale, les points sont servis tour à tour
+  (ordre du parcours, puis id), les modèles d'un point par id. Un modèle dont la catégorie
+  dépasserait les bornes d'un lien de série (`cartItemSchema`) est écarté
+  (`trainingTemplateFrom`) ; durée = celle du modèle, 20 s sinon, 600 s au plus. Silhouette, ou
+  notion sans modèle publié : `null`, pas de bouton. Avec 10 modèles aux noms longs et accentués, le
+  lien fait environ 4 Ko (test : moins de 6 000 caractères) ; c'est pourquoi les données de la page
+  portent les catégories (≈ 1,5 Ko par Mathou) et non le lien : pour 40 Mathoux de 10 modèles,
+  172 Ko de données avec les liens, 80 Ko avec les catégories (mesuré le 2026-10-18).
 - **Nom** (`mathouName`) : premier mot terminé par -s ou -x → « le Mathou des Fractions : calculs » ;
   sinon, le genre ne se devine pas (« de la Dérivation », « du Second degré ») → « le Mathou
   « Dérivation » ». Cas grammaticaux mais maladroits : « le Mathou des Autres lois », « le Mathou
@@ -101,15 +117,17 @@ Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou),
 - **Export RGPD** : catégorie `gaming` de `/api/account/export`
   ([rgpd.md § 7.3](conformite/rgpd.md)). Effacement : cascade depuis `profiles`.
 
-Limite connue (acceptée par David le 2026-10-18) : un Mathou endormi par un point perdu **sans
-carte due** ne se réveille qu'à la prochaine révision due — « Réveiller » mène au paquet
-Programme, dont les sessions ne proposent que les cartes dues.
+Réveil d'un Mathou endormi par un point perdu **sans carte due** : le paquet Programme ne propose
+que les cartes dues, donc « Réveiller » mène alors à l'**Entraînement** de la notion (« Faire
+grandir »), dont les premières questions sont celles des points perdus (v1.1 ; avant, il attendait la
+prochaine révision due). Sans Entraînement possible (aucun modèle publié lisible), pas de
+« Réveiller » : le Mathou dort, une révision vide n'aurait rien à proposer.
 
 ## Code
 
 | Fichier                                                | Rôle                                                                                                                        |
 | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/mathoux/collection-logic.ts`                  | logique pure : stades, noms, regroupement, phrases (importable au client)                                                   |
+| `src/lib/mathoux/collection-logic.ts`                  | logique pure : stades, noms, regroupement, Entraînement « Faire grandir », phrases (importable au client)                   |
 | `src/lib/mathoux/summary.ts`                           | schéma Zod du résumé `{ born, napping, toDiscover }`                                                                        |
 | `src/lib/server/mathoux/collection.ts`                 | `loadMathouCollection` : les lectures, la logique pure, puis la mémoire                                                     |
 | `src/lib/server/mathoux/memory.ts`                     | lecture (élève) et écriture (service) de `student_mathoux`                                                                  |
@@ -141,7 +159,8 @@ Cinq allers-retours (six s'il y a du nouveau à retenir) :
    alors que le parcours entier d'une Terminale dépasserait le plafond de 1 000 lignes de
    PostgREST) ;
 3. en parallèle : les tags par un modèle publié (lots de 100 points, chaque lot lu par pages de
-   1 000 lignes avec `.range()`), l'arbre (branches et notions, environ 160 lignes) et les
+   1 000 lignes avec `.range()` ; la jointure rapporte aussi la catégorie et la durée du modèle,
+   d'où « Faire grandir » sans requête de plus), l'arbre (branches et notions, environ 160 lignes) et les
    sous-notions référencées (lots de 100 nœuds) ;
 4. sur les seuls points **travaillables** : les états de l'élève, et les tags de
    `computePointBadges` ;
@@ -203,8 +222,11 @@ et le lien mènerait à elle-même. Réponse en échec ou mal formée (Zod) → 
 retour : page de la navigation). Titre « La Chatterie de Faustroll », compteurs (« 7 Mathoux, 2 en
 sieste, 12 à découvrir »), une section titrée par race, une liste de Mathoux : dessin, nom, stade,
 étoiles (« ★ 2nde ★ 1ère Spé », le symbole masqué aux lecteurs d'écran), « Fait la sieste » et
-« Réveiller » (un Mathou endormi par un point perdu comme un autre) vers la révision du programme
-(`/dashboard/revisions/decks/programme`, là où tombent les cartes dues). Les silhouettes montrent
+« Réveiller » : vers la révision du programme (`/dashboard/revisions/decks/programme`, là où
+tombent les cartes dues) s'il y a une carte due, sinon vers l'Entraînement de la notion (aucun bouton s'il n'y en a pas). Chaque
+Mathou né porte aussi « Faire grandir » (nom accessible « Faire grandir le Mathou des … ») vers
+cet Entraînement, s'il existe ; jamais sur une silhouette, ni sur un Mathou endormi sans carte due
+(son « Réveiller » y mène déjà : un seul bouton). Liens passés par `resolve()`, la requête ajoutée après `?`. Les silhouettes montrent
 le nom de la notion, pas celui du Mathou. Aucun mot interdit par le Compendium (XP, niveau, score).
 
 ## Hors v1

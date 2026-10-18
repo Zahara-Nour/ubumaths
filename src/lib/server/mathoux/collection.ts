@@ -7,7 +7,9 @@
  *     (`grade_ancestors`, clôture transitive de `grade_predecessors`),
  *   - `curriculum_points` de ces niveaux (non archivés, rattachés à un nœud),
  *   - `question_template_points` (un point est travaillable s'il est tagué par
- *     au moins un modèle PUBLIÉ : un brouillon ne fait jamais naître un Mathou),
+ *     au moins un modèle PUBLIÉ : un brouillon ne fait jamais naître un Mathou) ;
+ *     la même lecture rapporte la catégorie de chaque modèle publié, d'où le lien
+ *     « Faire grandir » (Entraînement sur la notion) sans requête de plus,
  *   - `classification_nodes` (branches et notions non archivées, sous-notions
  *     référencées),
  *   - `student_point_state` (acquisition, réussites),
@@ -51,11 +53,13 @@ import {
 	buildMathouCollection,
 	isPointLost,
 	memoryUpdates,
+	trainingTemplateFrom,
 	type CollectionNodeKind,
 	type CollectionTreeNode,
 	type MathouCollection,
 	type MathouMemoryUpdate,
 	type PointProgress,
+	type TrainingTemplate,
 	type WorkablePoint
 } from '$lib/mathoux/collection-logic';
 import { createServerLogger } from '$lib/utils/logger';
@@ -155,6 +159,7 @@ export async function loadMathouCollection(
 	}
 
 	const taggedPointIds = new Set((tagsResult.data ?? []).map((row) => row.point_id));
+	const templatesByPoint = templatesByPointFrom(tagsResult.data ?? []);
 	const workablePoints = gradePoints.filter((p) => taggedPointIds.has(p.id));
 	// Un Mathou mémorisé reste même quand plus aucun de ses points n'est travaillable
 	if (workablePoints.length === 0 && memory.size === 0) return EMPTY_COLLECTION;
@@ -191,7 +196,8 @@ export async function loadMathouCollection(
 		nodes,
 		progress,
 		nappingPointIds,
-		memory
+		memory,
+		templatesByPoint
 	});
 
 	// 5. Mémoire : n'écrit que s'il y a du nouveau ; une panne n'empêche pas l'affichage
@@ -287,6 +293,39 @@ async function loadPathGrades(supabase: SB, grade: string): Promise<string[]> {
 	return [...new Set([grade, ...ancestors])];
 }
 
+/** Ligne de tag lue : le point, le modèle et, par la jointure, sa catégorie. */
+interface PublishedTagRow {
+	point_id: string;
+	template_id?: string;
+	question_templates?: {
+		status: string;
+		theme: string;
+		domain: string;
+		subdomain: string | null;
+		level: number;
+		delay: number | null;
+	} | null;
+}
+
+/**
+ * Modèles publiés par point, pour « Faire grandir ». Une ligne sans modèle
+ * joint lisible (forme inattendue) ne donne qu'un point travaillable, sans
+ * modèle : la notion n'aura pas de lien plutôt qu'un lien faux.
+ */
+function templatesByPointFrom(rows: PublishedTagRow[]): Map<string, TrainingTemplate[]> {
+	const byPoint = new Map<string, TrainingTemplate[]>();
+	for (const row of rows) {
+		const joined = row.question_templates;
+		if (!row.template_id || !joined) continue;
+		const template = trainingTemplateFrom({ id: row.template_id, ...joined });
+		if (!template) continue;
+		const list = byPoint.get(row.point_id) ?? [];
+		list.push(template);
+		byPoint.set(row.point_id, list);
+	}
+	return byPoint;
+}
+
 /**
  * Tags d'un lot de points par un modèle PUBLIÉ, lus par pages de 1 000 lignes.
  *
@@ -301,12 +340,14 @@ async function loadPathGrades(supabase: SB, grade: string): Promise<string[]> {
 async function fetchPublishedTagPages(
 	supabase: SB,
 	pointIds: string[]
-): Promise<{ data: { point_id: string }[]; error: { message: string } | null }> {
-	const rows: { point_id: string }[] = [];
+): Promise<{ data: PublishedTagRow[]; error: { message: string } | null }> {
+	const rows: PublishedTagRow[] = [];
 	for (let from = 0; ; from += TAG_PAGE_SIZE) {
 		const { data, error } = await supabase
 			.from('question_template_points')
-			.select('point_id, template_id, question_templates!inner(status)')
+			.select(
+				'point_id, template_id, question_templates!inner(status, theme, domain, subdomain, level, delay)'
+			)
 			.eq('question_templates.status', 'published')
 			.in('point_id', pointIds)
 			.order('point_id')

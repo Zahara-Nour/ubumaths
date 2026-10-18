@@ -6,15 +6,22 @@
 	 * uniquement (chaton, matou, sieste…), jamais XP, niveau ni score
 	 * (Compendium § IX).
 	 *
+	 * « Faire grandir » (v1.1) : chaque Mathou né mène à un Entraînement sur sa
+	 * notion (catégories calculées au serveur, lien construit ici) ; un Mathou endormi sans
+	 * carte due se réveille par ce même Entraînement (« Réveiller » seul, sans
+	 * « Faire grandir »), sinon par les révisions.
+	 *
 	 * Spec : docs/wip/mathoux-conception.md § 9 · doc : docs/systeme/mathoux.md
 	 */
 
+	import { resolve } from '$app/paths';
 	import { Cat } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import MathouAvatar from '$lib/components/mathoux/MathouAvatar.svelte';
 	import {
 		collectionCountsPhrase,
 		starGradeLabel,
+		trainingQuery,
 		type Mathou,
 		type MathouGrowth
 	} from '$lib/mathoux/collection-logic';
@@ -34,6 +41,23 @@
 
 	const collection = $derived(data.collection);
 	const isEmpty = $derived(collection.races.length === 0);
+
+	/** Lien de l'Entraînement d'un Mathou, construit au rendu (`trainingQuery`). */
+	function trainingLink(mathou: Mathou): string | null {
+		const query = trainingQuery(mathou.trainingCategories);
+		return query ? `${resolve('/automaths/test')}?${query}` : null;
+	}
+
+	/**
+	 * « Réveiller » : les révisions s'il y a une carte due ; sinon (endormi par un
+	 * point perdu seul) l'Entraînement de la notion, dont les sessions ne
+	 * dépendent pas des cartes dues ; sans Entraînement possible, aucun lien (une
+	 * révision n'aurait rien à proposer).
+	 */
+	function wakeLink(mathou: Mathou): string | null {
+		if (mathou.dueForRevision) return resolve(REVISION_HREF);
+		return trainingLink(mathou);
+	}
 
 	/** Texte du dessin : le stade, sans répéter le nom affiché à côté. */
 	function avatarLabel(mathou: Mathou): string {
@@ -115,15 +139,36 @@
 									{/if}
 									{#if mathou.asleep}
 										<p class="text-sm">Fait la sieste</p>
-										<Button
-											href={REVISION_HREF}
-											size="sm"
-											variant="outline"
-											class="mt-1"
-											aria-label="Réveiller {mathou.name}"
-										>
-											Réveiller
-										</Button>
+									{/if}
+									{#if !toDiscover}
+										{@const wake = mathou.asleep ? wakeLink(mathou) : null}
+										<!-- Endormi sans carte due : « Réveiller » mène déjà à l'Entraînement, un seul bouton -->
+										{@const grow =
+											mathou.asleep && !mathou.dueForRevision ? null : trainingLink(mathou)}
+										{#if wake || grow}
+											<div class="mt-1 flex flex-wrap gap-2">
+												{#if wake}
+													<Button
+														href={wake}
+														size="sm"
+														variant="outline"
+														aria-label="Réveiller {mathou.name}"
+													>
+														Réveiller
+													</Button>
+												{/if}
+												{#if grow}
+													<Button
+														href={grow}
+														size="sm"
+														variant="outline"
+														aria-label="Faire grandir {mathou.name}"
+													>
+														Faire grandir
+													</Button>
+												{/if}
+											</div>
+										{/if}
 									{/if}
 								</div>
 							</li>

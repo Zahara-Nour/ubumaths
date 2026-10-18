@@ -28,6 +28,8 @@ import { computePointBadges } from '$lib/server/srs/capacity-badge';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { rememberMathoux } from '../memory';
 import { loadMathouCollection } from '../collection';
+import { resolveTestLaunch } from '$lib/utils/test-launch';
+import { trainingQuery } from '$lib/mathoux/collection-logic';
 
 // =============================================================================
 // Mock Supabase : chaque requête enregistre ses filtres, le handler y répond
@@ -254,9 +256,52 @@ describe('loadMathouCollection', () => {
 		expect(tags.length).toBeGreaterThan(0);
 		for (const q of tags) {
 			const select = q.calls.find(([m]) => m === 'select')?.[1];
-			expect(select).toMatch(/question_templates!inner\(status\)/);
+			expect(select).toMatch(/question_templates!inner\(status[,)]/);
 			expect(has(q.calls, 'eq', 'question_templates.status', 'published')).toBe(true);
 		}
+	});
+
+	it('« Faire grandir » : les modèles viennent de la MÊME lecture des tags (aucune requête en plus)', async () => {
+		const tpl = (id: string, domain: string) => ({
+			status: 'published',
+			theme: 'Nombres',
+			domain,
+			subdomain: null,
+			level: 1,
+			delay: null
+		});
+		const { supabase, queries } = buildMock(
+			nominalHandlers({
+				question_template_points: () =>
+					ok([
+						{ point_id: 'p1', template_id: 't1', question_templates: tpl('t1', 'Acquis') },
+						{ point_id: 'p2', template_id: 't2', question_templates: tpl('t2', 'Non acquis') }
+					])
+			})
+		);
+		const collection = await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		const select = queries
+			.find((q) => q.table === 'question_template_points')
+			?.calls.find(([m]) => m === 'select')?.[1];
+		expect(select).toMatch(
+			/question_templates!inner\(status, theme, domain, subdomain, level, delay\)/
+		);
+		expect(queries.filter((q) => q.table === 'question_template_points')).toHaveLength(1);
+
+		const [mathou] = collection.races[0].mathoux;
+		const launch = resolveTestLaunch(
+			new URLSearchParams(trainingQuery(mathou.trainingCategories) ?? '')
+		);
+		expect(launch.kind).toBe('start');
+		if (launch.kind !== 'start') return;
+		// p2 (non acquis) avant p1 (acquis)
+		expect(launch.categories.map((c) => c.category.domain)).toEqual(['Non acquis', 'Acquis']);
+	});
+
+	it('une ligne de tag sans modèle lisible ne casse rien : pas de lien « Faire grandir »', async () => {
+		const { supabase } = buildMock(nominalHandlers());
+		const collection = await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		expect(collection.races[0].mathoux[0].trainingCategories).toBeNull();
 	});
 
 	it('les états ne sont lus que pour les points travaillables', async () => {
