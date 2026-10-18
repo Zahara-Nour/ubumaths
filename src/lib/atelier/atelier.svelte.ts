@@ -76,6 +76,9 @@ import {
 	type StoredObject
 } from './persistence';
 import { expressionOf, graphLatexOf, termsOf } from './engine';
+import { quantityProblem } from '$lib/mathAST/cli/quantities';
+import { isUnit } from '$lib/mathAST/guards';
+import { findNodes } from '$lib/mathAST/transforms';
 import {
 	compactDisplay,
 	fullDisplay,
@@ -2897,6 +2900,7 @@ export class Atelier {
 
 		this.#inheritIntervals(intervals.inherited);
 		this.#constructions();
+		this.#quantityChecks();
 		this.#underivable();
 		this.#sequenceChecks();
 		this.#reciprocals();
@@ -3170,6 +3174,47 @@ export class Atelier {
 				changed = true;
 			});
 		}
+	}
+
+	/**
+	 * Une valeur dont les grandeurs ne se combinent pas (`3[min] + 2[km]`, ou
+	 * `r + 2[m]` avec r = 3 s) est en erreur dès sa définition, avec le refus de
+	 * Calcul ; ce qui la cite aussi, jusqu'au point fixe (demande de David du
+	 * 2026-10-18 : avant, elle était « ok » et le refus attendait qu'on la cite).
+	 */
+	#quantityChecks(): void {
+		const flagged = new Set<string>();
+		let changed = true;
+		while (changed) {
+			changed = false;
+			this.items.forEach((o, i) => {
+				if (o.status !== 'ok') return;
+				const message = this.#quantityMessage(o, flagged);
+				if (message === null) return;
+				this.items[i] = { ...o, status: 'error', message } as AtelierObject;
+				flagged.add(o.name);
+				changed = true;
+			});
+		}
+	}
+
+	/** Le refus de dimension d'un objet, ou celui d'un objet cité que ce passage a mis en erreur. */
+	#quantityMessage(o: AtelierObject, flagged: ReadonlySet<string>): string | null {
+		if (flagged.size > 0) {
+			const culprits = this.#cited(o.kind, o.definition, o.provenance)
+				.map((r) => r.name)
+				.filter((name) => flagged.has(name));
+			if (culprits.length > 0) return brokenMessage(culprits);
+		}
+		if (o.kind !== 'value') return null;
+		const substituted = expressionOf(this, o.name);
+		if (!substituted.ok) return null;
+		// Relue depuis le texte : sur l'arbre substitué, `quantityProblem` levait « components is not iterable » (mesuré)
+		const ast = astOfDefinition(substituted.expression, 'url');
+		// Une lettre libre (un curseur, une inconnue) : rien à juger ici
+		if (ast === null || findNodes(ast, isUnit).length === 0) return null;
+		if (getVariables(ast).size > 0) return null;
+		return quantityProblem(ast);
 	}
 
 	/**
