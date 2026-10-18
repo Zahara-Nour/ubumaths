@@ -277,3 +277,11 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   sont cherchées dans [−10 ; 10] (fenêtre du DSL).
 - Écarts code ↔ DSL documentés dans `atelier.md` (segment coupé comme sa droite et position
   ramenée au bord dans le DSL ; exact d'abord dans l'atelier ; `point_sur` d'une conique refusé).
+- 2026-10-19 : revue de la PR 3, corrections (tests d'abord : 10 rouges) — la vue Géométrie
+  dessine EXACTEMENT le point de la carte (une seule méthode : valeurs des curseurs substituées,
+  `intersectionPoint` exact, racines hors de [−10 ; 10] comprises) ; `point_sur` sur un cercle en
+  DEGRÉS toujours (L5, comme le DSL ; curseur [0 ; 360] ; l'À trancher (1) ci-dessus tombe) ;
+  racine exacte en fraction (`√2/2`, `\dfrac`) ; deux cercles devenus égaux au glisser :
+  attente, pas erreur ; `1/3` glissé réécrit `0,33` ; une position en LaTeX n'a pas de curseur ;
+  casts retirés ; le refus « Sépare les arguments… » cite le nombre de l'élève (`0,3`, message
+  commun de `construction-read.ts`).

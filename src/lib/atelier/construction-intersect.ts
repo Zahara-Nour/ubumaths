@@ -5,8 +5,10 @@
  * sur des supports déjà résolus (`Support` : une ligne par deux points, un
  * cercle, une conique par ses six coefficients, une courbe y = f(x)). Sans
  * atelier : `construction.ts` résout les supports et appelle ce module ; la vue
- * Géométrie (`figure-sync.ts`) l'appelle aussi, en nombres, à chaque cran d'un
- * curseur — LE MÊME calcul, donc la même numérotation.
+ * Géométrie (`figure-sync.ts`) l'appelle aussi, à chaque cran d'un curseur, sur
+ * les supports où les valeurs des curseurs sont substituées — LE MÊME calcul
+ * (racines exactes comprises), donc le même point et la même numérotation que
+ * la carte (revue de la PR 3 : deux méthodes dessinaient un autre point).
  *
  * L1 (décision de David, 2026-10-18) : les fonctions PURES de `geometry-core`
  * (`intersectLL`, `intersectLC`, `intersectCC`, `intersectLQExact`,
@@ -57,7 +59,7 @@ import {
 } from '$lib/geometry-core/geometry/intersections';
 import { compile } from '$lib/mathAST/eval/compile';
 import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
-import { findNodes } from '$lib/mathAST/transforms';
+import { findNodes, mapNode } from '$lib/mathAST/transforms';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { exactZeros } from '$lib/mathAST/domain/exact-roots';
 import { containsValue } from '$lib/mathAST/domain/algebra';
@@ -72,7 +74,6 @@ import {
 	variable
 } from '$lib/mathAST/factory';
 import { numericNode } from '$lib/mathAST/common/numeric';
-import type { AngleUnit } from './angle-unit';
 import type { LineShape } from './construction-spec';
 
 // =============================================================================
@@ -115,11 +116,6 @@ export class GeometryFailure extends Error {
 	) {
 		super(message);
 	}
-}
-
-interface Options {
-	/** En nombres seulement (la vue Géométrie, à chaque cran) : pas de racines exactes. */
-	readonly numericOnly?: boolean;
 }
 
 // =============================================================================
@@ -170,21 +166,27 @@ export function settled(value: GeoValue): GeoValue {
 	if (!isExact(value)) return value;
 	const trigonometric = findNodes(
 		value.node,
-		(n) => n.type === 'function' && TRIGONOMETRY.has((n as { name?: string }).name ?? '')
+		(n) => n.type === 'function' && TRIGONOMETRY.has(n.name)
 	);
 	if (trigonometric.length === 0 || getVariables(value.node).size > 0) return value;
 	return numeric(geoToNumber(value));
 }
 
+/**
+ * Une racine de `exactZeros` s'écrit `√2 ÷ 2` (division en ligne) : en fraction,
+ * comme Calcul (`\\dfrac{\\sqrt{2}}{2}`, `√2/2`), avant tout calcul et tout rendu.
+ */
+function asFraction(node: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		n.type === 'division' && n.displayStyle !== 'fraction' ? { ...n, displayStyle: 'fraction' } : n
+	);
+}
+
 /** La valeur d'une courbe y = f(x) en x0, exacte si x0 l'est ; `null` hors de son ensemble. */
-function graphValue(
-	graph: Support & { type: 'graph' },
-	x0: GeoValue,
-	options: Options
-): GeoValue | null {
+function graphValue(graph: Support & { type: 'graph' }, x0: GeoValue): GeoValue | null {
 	const x = geoToNumber(x0);
 	if (Number.isFinite(x) && graph.domain !== null && !containsValue(graph.domain, x)) return null;
-	if (isExact(x0) && options.numericOnly !== true) {
+	if (isExact(x0)) {
 		const y = exact(simplifyExact(substitute(graph.expression, { x: x0.node })));
 		// Une lettre libre (un curseur gardé par la vue Géométrie) : rien à juger
 		if (getVariables(y.node).size > 0) return y;
@@ -263,17 +265,17 @@ function graphPoints(
 	h: MathNode,
 	graph: Support & { type: 'graph' },
 	other: (Support & { type: 'graph' }) | null,
-	numericFallback: () => GeoPoint[] | null,
-	options: Options
+	numericFallback: () => GeoPoint[] | null
 ): Solutions {
-	const exactInputs = options.numericOnly !== true && getVariables(h).size <= 1;
+	const exactInputs = getVariables(h).size <= 1;
 	if (exactInputs && isZeroExpression(h)) return { kind: 'infinite' };
 	const roots = exactInputs ? exactZeros(h, 'x') : null;
 	const candidates: GeoPoint[] =
 		roots !== null
 			? roots.flatMap((root) => {
-					const y = graphValue(graph, exact(root.node), options);
-					return y === null ? [] : [{ x: exact(root.node), y }];
+					const x = exact(asFraction(root.node));
+					const y = graphValue(graph, x);
+					return y === null ? [] : [{ x, y }];
 				})
 			: (numericFallback() ?? []);
 	const points = candidates.filter((p) => {
@@ -287,54 +289,40 @@ function graphPoints(
 
 function lineGraph(
 	line: Support & { type: 'line' },
-	graph: Support & { type: 'graph' },
-	options: Options
+	graph: Support & { type: 'graph' }
 ): Solutions {
 	const equation = lineEquationOf(line);
 	if (equation.vertical) {
-		const y = graphValue(graph, equation.k, options);
+		const y = graphValue(graph, equation.k);
 		return { kind: 'points', points: y === null ? [] : [{ x: equation.k, y }], max: null };
 	}
 	const h = subtract(
 		graph.expression,
 		add(multiply(nodeOf(equation.m), variable('x'), 'implicit'), nodeOf(equation.p))
 	);
-	return graphPoints(
-		h,
-		graph,
-		null,
-		() =>
-			intersectLF(
-				line.from,
-				line.to,
-				graph.expression,
-				compile(graph.expression),
-				SEARCH.min,
-				SEARCH.max
-			),
-		options
+	return graphPoints(h, graph, null, () =>
+		intersectLF(
+			line.from,
+			line.to,
+			graph.expression,
+			compile(graph.expression),
+			SEARCH.min,
+			SEARCH.max
+		)
 	);
 }
 
-function graphGraph(
-	f: Support & { type: 'graph' },
-	g: Support & { type: 'graph' },
-	options: Options
-): Solutions {
-	return graphPoints(
-		subtract(f.expression, g.expression),
-		f,
-		g,
-		() => intersectFF(f.expression, compile(f.expression), g.expression, SEARCH.min, SEARCH.max),
-		options
+function graphGraph(f: Support & { type: 'graph' }, g: Support & { type: 'graph' }): Solutions {
+	return graphPoints(subtract(f.expression, g.expression), f, g, () =>
+		intersectFF(f.expression, compile(f.expression), g.expression, SEARCH.min, SEARCH.max)
 	);
 }
 
 /** Les solutions, numérotées comme `geometry-core` (voir l'en-tête). */
-function solutionsOf(a: Support, b: Support, options: Options): Solutions {
+function solutionsOf(a: Support, b: Support): Solutions {
 	if (a.type === 'line' && b.type === 'line') return lineLine(a, b);
 	// Une droite d'abord, comme le DSL (`createIntersectionLC(droite, cercle)`)
-	if (b.type === 'line') return solutionsOf(b, a, options);
+	if (b.type === 'line') return solutionsOf(b, a);
 	if (a.type === 'line') {
 		if (b.type === 'circle') {
 			return {
@@ -349,10 +337,10 @@ function solutionsOf(a: Support, b: Support, options: Options): Solutions {
 				? result
 				: { kind: 'points', points: result.points.map(settledPoint), max: 2 };
 		}
-		return lineGraph(a, b, options);
+		return lineGraph(a, b);
 	}
 	if (a.type === 'graph' || b.type === 'graph') {
-		if (a.type === 'graph' && b.type === 'graph') return graphGraph(a, b, options);
+		if (a.type === 'graph' && b.type === 'graph') return graphGraph(a, b);
 		const other = a.type === 'graph' ? b : a;
 		throw new GeometryFailure(
 			NONE_FOR_GRAPHS[other.type === 'circle' ? 'circle' : 'conic'],
@@ -419,11 +407,10 @@ export function intersectionPoint(
 	a: Support,
 	b: Support,
 	k: number | null,
-	labels: readonly [string, string],
-	options: Options = {}
+	labels: readonly [string, string]
 ): GeoPoint {
 	const [la, lb] = labels;
-	const solutions = solutionsOf(a, b, options);
+	const solutions = solutionsOf(a, b);
 	if (solutions.kind === 'infinite') {
 		throw new GeometryFailure(`${la} et ${lb} ont une infinité de points communs.`, 'infinite');
 	}
@@ -441,15 +428,9 @@ export function intersectionPoint(
 						: `${la} et ${lb} n’ont que ${points.length} points communs.`;
 			throw new GeometryFailure(message, 'pending');
 		}
-		const off = [
-			[a, la],
-			[b, lb]
-		].find(([s]) => !onPortion(point, s as Support));
-		if (off !== undefined) {
-			throw new GeometryFailure(
-				`Le point ${k} de ${la} et ${lb} n’est pas sur ${off[1] as string}.`,
-				'pending'
-			);
+		const off = !onPortion(point, a) ? la : !onPortion(point, b) ? lb : null;
+		if (off !== null) {
+			throw new GeometryFailure(`Le point ${k} de ${la} et ${lb} n’est pas sur ${off}.`, 'pending');
 		}
 		return point;
 	}
@@ -477,8 +458,9 @@ export function intersectionPoint(
  * segment, de 0 (premier point) à 1 (second), 0,5 par défaut ; droite et
  * demi-droite, l'abscisse le long de (AB) (0 en A, 1 en B, 0 par défaut ; une
  * demi-droite ne va pas sous 0) ; cercle, l'angle depuis l'horizontale, 0 par
- * défaut, dans l'unité du réglage « Angles » (le DSL : `unite_angle`, degrés par
- * défaut) ; courbe y = f(x), l'abscisse x0, 0 par défaut.
+ * défaut, en DEGRÉS toujours (L5 ; le DSL : `unite_angle`, degrés par défaut —
+ * le réglage « Angles » de l'atelier ne gouverne que l'écriture des mesures) ;
+ * courbe y = f(x), l'abscisse x0, 0 par défaut.
  *
  * ⚠️ Écart avec le DSL, voulu : une position hors du segment (ou sous 0 sur une
  * demi-droite) n'est pas ramenée au bord, elle met le point en attente — le
@@ -490,9 +472,7 @@ export function pointOn(
 	support: Support,
 	position: GeoValue | null,
 	written: string | null,
-	label: string,
-	unit: AngleUnit,
-	options: Options = {}
+	label: string
 ): GeoPoint {
 	switch (support.type) {
 		case 'line': {
@@ -524,17 +504,18 @@ export function pointOn(
 			const angle = position ?? geoFromNumber(0);
 			const { center, radius } = support;
 			if (!isExact(angle) || !isExact(radius) || !isExact(center.x) || !isExact(center.y)) {
-				const theta = unit === 'deg' ? (geoToNumber(angle) * Math.PI) / 180 : geoToNumber(angle);
+				const theta = (geoToNumber(angle) * Math.PI) / 180;
 				const r = geoToNumber(radius);
 				return {
 					x: numeric(geoToNumber(center.x) + r * Math.cos(theta)),
 					y: numeric(geoToNumber(center.y) + r * Math.sin(theta))
 				};
 			}
-			const theta =
-				unit === 'deg'
-					? divide(multiply(angle.node, piConstant(), 'implicit'), numericNode(180), 'fraction')
-					: angle.node;
+			const theta = divide(
+				multiply(angle.node, piConstant(), 'implicit'),
+				numericNode(180),
+				'fraction'
+			);
 			const along = (trig: typeof cos): GeoValue =>
 				exact(simplifyExact(multiply(radius.node, trig(theta), 'implicit')));
 			return {
@@ -544,7 +525,7 @@ export function pointOn(
 		}
 		case 'graph': {
 			const x0 = position ?? geoFromNumber(0);
-			const y = graphValue(support, x0, options);
+			const y = graphValue(support, x0);
 			if (y === null) {
 				throw new GeometryFailure(`${label} n’est pas définie en ${written ?? '0'}.`, 'pending');
 			}

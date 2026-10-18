@@ -280,7 +280,9 @@ function argumentsOf(content: string, word: string): string[] {
 	const level = firstLevelOf(content);
 	const separatingComma = /,(?!\d)|(?<!\d),/.test(level);
 	const decimalComma = /\d,\d/.test(level);
-	const ambiguous = `Sépare les arguments de ${word} avec « ; » : une virgule entre deux chiffres est décimale (1,5).`;
+	// Le nombre de l'élève (`0,3`), sinon l'exemple (revue de la PR 3)
+	const shown = /\d+,\d+/.exec(level)?.[0] ?? '1,5';
+	const ambiguous = `Sépare les arguments de ${word} avec « ; » : une virgule entre deux chiffres est décimale (${shown}).`;
 	let parts: string[];
 	if (level.includes(';')) {
 		if (separatingComma) throw new Refusal(ambiguous);

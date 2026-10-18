@@ -504,7 +504,7 @@ function pointOnOf(
 ): GeoPoint {
 	const support = supportOf(spec.support, ctx);
 	const at = position ?? (spec.position === null ? null : scalarOf(spec.position, ctx));
-	return pointOn(support, at, spec.position, spec.label, ctx.atelier.angleUnit);
+	return pointOn(support, at, spec.position, spec.label);
 }
 
 /** La nature du support d'un `point_sur`, lue sans calcul : pour les bornes du curseur. */
@@ -533,14 +533,18 @@ function supportNature(
 	return 'line';
 }
 
+/** Une position écrite en nombre : `0,3`, `-2`, `0.5`, `1/3` (pas de LaTeX, pas de lettre). */
+const WRITTEN_NUMBER = /^-?\d+(?:[.,]\d+)?(?:\/\d+)?$/;
+
 /** Les bornes par défaut d'une valeur (D3), celles d'une position sur une droite ou une courbe. */
 const FREE_POSITION: Slider = { min: -10, max: 10, step: 0.1 };
 
 /**
  * Le curseur de position d'un `point_sur` (L5) : quand la position est un
- * NOMBRE écrit — un nom de valeur porte déjà le sien ; sans position, rien.
- * Bornes de l'objet : [0 ; 1] sur un segment, [0 ; 360] (ou [0 ; 2π] en
- * radians) sur un cercle, celles d'une valeur ailleurs. Lu sur la définition,
+ * NOMBRE écrit (`0,3`, `1/3`) — un nom de valeur porte déjà le sien ; sans
+ * position, ou écrite en LaTeX (`\\frac{1}{2}`), rien : le curseur la réécrirait.
+ * Bornes de l'objet : [0 ; 1] sur un segment, [0 ; 360] sur un cercle (degrés),
+ * celles d'une valeur ailleurs. Lu sur la définition,
  * jamais rangé : rien de nouveau dans la sauvegarde.
  */
 export function positionSliderFor(atelier: Atelier, name: string): Slider | null {
@@ -550,16 +554,15 @@ export function positionSliderFor(atelier: Atelier, name: string): Slider | null
 	if (read === null || !read.ok || read.spec.result !== 'point') return null;
 	const point = read.spec.point;
 	if (point.kind !== 'on' || point.position === null) return null;
-	if (constantOf(point.position, 'text', atelier.functionNames) === null) return null;
+	if (!WRITTEN_NUMBER.test(point.position.trim())) return null;
 	switch (supportNature(atelier, point.support)) {
 		case 'segment':
 			return { min: 0, max: 1, step: 0.01 };
 		case 'ray':
 			return { min: 0, max: 10, step: 0.1 };
 		case 'circle':
-			return atelier.angleUnit === 'deg'
-				? { min: 0, max: 360, step: 1 }
-				: { min: 0, max: 2 * Math.PI, step: 0.01 };
+			// En degrés toujours (L5) : le réglage « Angles » n'écrit que les mesures
+			return { min: 0, max: 360, step: 1 };
 		case 'line':
 		case 'graph':
 			return { ...FREE_POSITION };
@@ -568,15 +571,20 @@ export function positionSliderFor(atelier: Atelier, name: string): Slider | null
 	}
 }
 
-/** La position écrite d'un `point_sur`, en nombre, ou `null`. */
-export function positionValueOf(atelier: Atelier, name: string): number | null {
+/** La position écrite d'un `point_sur` (`0,3`, `1/3`), telle qu'écrite, ou `null`. */
+export function positionTextOf(atelier: Atelier, name: string): string | null {
 	const object = atelier.get(name);
 	if (object === undefined || object.kind !== 'point') return null;
 	const read = specOf(object.definition, object.provenance ?? 'url', kindsOf(atelier));
 	if (read === null || !read.ok || read.spec.result !== 'point') return null;
 	const point = read.spec.point;
-	if (point.kind !== 'on' || point.position === null) return null;
-	return constantOf(point.position, 'text', atelier.functionNames);
+	return point.kind === 'on' && point.position !== null ? point.position.trim() : null;
+}
+
+/** La position écrite d'un `point_sur`, en nombre, ou `null`. */
+export function positionValueOf(atelier: Atelier, name: string): number | null {
+	const text = positionTextOf(atelier, name);
+	return text === null ? null : constantOf(text, 'text', atelier.functionNames);
 }
 
 /**

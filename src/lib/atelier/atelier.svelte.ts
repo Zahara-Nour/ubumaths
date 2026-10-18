@@ -135,6 +135,7 @@ import {
 	isConstruction,
 	kindsOf,
 	positionSliderFor,
+	positionTextOf,
 	positionValueOf,
 	withPosition,
 	type ConstructionMemo
@@ -1045,7 +1046,8 @@ export class Atelier {
 		if (!Number.isFinite(value)) return { ok: false, message: 'Cette valeur n’est pas un nombre.' };
 		const clamped = Math.min(slider.max, Math.max(slider.min, value));
 		const written = formatSliderValue(clamped, slider.step);
-		if (written === formatSliderValue(this.positionOf(name) ?? NaN, slider.step)) {
+		// Un cran qui ne change pas le nombre ÉCRIT ne réécrit rien ; `1/3` glissé à 0,33, si
+		if (written === positionTextOf(this, name)) {
 			return { ok: true, object: current, recomputed: [] };
 		}
 		const definition = withPosition(current.definition, current.provenance ?? 'url', written);
@@ -3659,7 +3661,10 @@ export class Atelier {
 				if (built.ok) return;
 				// PR 3 : deux lignes qui ne se coupent pas (avec les valeurs du moment)
 				// ATTENDENT — un curseur peut les faire se couper ; le reste est une erreur
-				const status = built.reason === 'pending' ? 'pending' : 'error';
+				// Une infinité de points communs (deux cercles devenus égaux au glisser) aussi :
+				// refusée à la saisie, elle ATTEND pendant le recalcul (revue de la PR 3)
+				const status =
+					built.reason === 'pending' || built.reason === 'infinite' ? 'pending' : 'error';
 				this.items[i] = { ...o, status, message: built.message } as AtelierObject;
 				changed = true;
 			});

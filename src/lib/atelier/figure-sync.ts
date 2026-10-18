@@ -104,6 +104,7 @@ import {
 } from './construction';
 import { intersectionPoint, type Support } from './construction-intersect';
 import { isExact, type GeoValue } from '$lib/geometry-core/types/geo-value';
+import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
 import { substitute } from '$lib/mathAST/eval/substitute';
 import type { GeoPoint } from '$lib/geometry-core/types/primitives';
 import { displayName } from './names';
@@ -531,8 +532,8 @@ function supportTrees(derived: DeferredIntersection): MathNode[] {
 
 /**
  * Les deux coordonnées d'une intersection à curseur, en fonctions des curseurs :
- * les supports évalués en nombres, puis `intersectionPoint` — le calcul de
- * l'atelier, donc sa numérotation. Une seule résolution par jeu de valeurs (les
+ * les valeurs des curseurs substituées dans les supports, puis `intersectionPoint`
+ * — le calcul de la carte, donc son point et sa numérotation. Une seule résolution par jeu de valeurs (les
  * deux coordonnées la partagent) ; pas de point : NaN, la figure ne le dessine pas.
  */
 function derivedCoordinates(
@@ -552,10 +553,9 @@ function derivedCoordinates(
 		const key = parameters.map(({ name }) => env[name]).join('|');
 		if (key === lastKey) return last;
 		lastKey = key;
+		if (parameters.some(({ name }) => !Number.isFinite(env[name]))) return (last = null);
 		try {
-			last = intersectionPoint(numericSupport(), otherSupport(), derived.k, derived.labels, {
-				numericOnly: true
-			});
+			last = intersectionPoint(numericSupport(), otherSupport(), derived.k, derived.labels);
 		} catch {
 			last = null;
 		}
@@ -573,16 +573,23 @@ function derivedCoordinates(
 	};
 }
 
-/** Un support en NOMBRES pour les valeurs courantes des curseurs (`env`, partagé). */
+/** Un support aux valeurs courantes des curseurs (`env`, partagé), exact comme la carte. */
 function numericSupportOf(
 	support: Support,
 	env: Record<string, number>,
 	parameters: readonly CurveParameter[]
 ): () => Support {
+	// Les valeurs des curseurs SUBSTITUÉES dans les arbres exacts : le calcul de la
+	// carte, racines exactes comprises (revue de la PR 3 : un Newton sur [−10 ; 10]
+	// dessinait un autre point que la carte)
+	const bindings = (): Record<string, number> => {
+		const values: Record<string, number> = {};
+		for (const { name } of parameters) values[name] = env[name];
+		return values;
+	};
 	const valueOf = (v: GeoValue): (() => GeoValue) => {
-		if (!isExact(v)) return () => v;
-		const compiled = compile(v.node);
-		return () => numeric(compiled(env));
+		if (!isExact(v) || getVariables(v.node).size === 0) return () => v;
+		return () => exact(simplifyExact(substitute(v.node, bindings())));
 	};
 	const pointOf = (p: GeoPoint) => {
 		const [x, y] = [valueOf(p.x), valueOf(p.y)];
@@ -602,11 +609,7 @@ function numericSupportOf(
 			return () => ({ ...support, coefficients: coefficients.map((c) => c()) });
 		}
 		case 'graph':
-			return () => {
-				const bindings: Record<string, number> = {};
-				for (const { name } of parameters) bindings[name] = env[name];
-				return { ...support, expression: substitute(support.expression, bindings) };
-			};
+			return () => ({ ...support, expression: substitute(support.expression, bindings()) });
 	}
 }
 

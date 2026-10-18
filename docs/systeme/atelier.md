@@ -358,7 +358,7 @@ plus dans le catalogue, mêmes arguments et même numérotation que lui
 | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `E = intersection(d ; c)`, `intersection(d ; c ; 2)` | le point commun (`k` facultatif s'il n'y en a qu'un) ; `d`, `c` : noms ou constructions (`(AB)`, `cercle(O ; 2)`)    |
 | `M = point_sur(s ; 0,3)`, `point_sur(s)`             | M sur s : segment de 0 (A) à 1 (B), 0,5 par défaut ; droite ou demi-droite, l'abscisse le long de (AB), 0 par défaut |
-| `point_sur(c ; 90)`, `point_sur(f ; 2)`              | sur un cercle, l'angle depuis l'horizontale (unité du réglage « Angles ») ; sur 𝒞f, (x0 ; f(x0))                     |
+| `point_sur(c ; 90)`, `point_sur(f ; 2)`              | sur un cercle, l'angle depuis l'horizontale, en degrés toujours ; sur 𝒞f, (x0 ; f(x0))                               |
 
 - **Couples** : droite × droite, × cercle, × courbe par équation (conique : `intersectLQExact`,
   exacte ; y = f(x)), × fonction ; cercle × cercle ; conique × conique (ou × cercle) en nombres
@@ -390,9 +390,10 @@ plus dans le catalogue, mêmes arguments et même numérotation que lui
   entier à partir de 1. Un support qui n'est ni ligne, ni cercle, ni courbe : « « A » n'est pas une
   ligne, un cercle ou une courbe. ».
 - **Le curseur de position** : `point_sur(s ; 0,3)` — un NOMBRE écrit — a un curseur dans sa
-  carte (`positionSliderOf`, bornes [0 ; 1] sur un segment, [0 ; 360] ou [0 ; 2π] sur un cercle
-  selon le réglage, [0 ; 10] sur une demi-droite, celles d'une valeur ailleurs) ; le glisser
-  réécrit le nombre de la définition (`slidePosition`, arrondi au pas, comme `slideTo`). Rien de
+  carte (`positionSliderOf`, bornes [0 ; 1] sur un segment, [0 ; 360] sur un cercle, [0 ; 10]
+  sur une demi-droite, celles d'une valeur ailleurs) ; le glisser réécrit le nombre de la
+  définition (`slidePosition`, arrondi au pas, comme `slideTo` : `1/3` glissé devient `0,33`). Une
+  position écrite en LaTeX (`\frac{1}{2}`) n'a pas de curseur (il la réécrirait). Rien de
   rangé en plus : bornes lues sur la définition, ni schéma ni `ATELIER_STATE_VERSION` changés.
   `point_sur(s ; t)` suit le curseur de la valeur t ; `point_sur(s)` n'a pas de curseur.
 - **Tapé seul** : un calcul (`intersection(u, c, 1)` → `(-1 ; 0)`), « Garder » le nomme (D5).
@@ -400,9 +401,11 @@ plus dans le catalogue, mêmes arguments et même numérotation que lui
   `\operatorname{point\_sur}` ; MathLive tape `point_{sur}`, relu comme `point_sur`).
 - **Écarts avec le DSL** (voulus) : le DSL coupe un segment comme sa droite et ramène la position
   d'un `point_sur` au bord du segment — l'atelier met le point en attente ; le DSL calcule droite ×
-  conique et droite × fonction en nombres — l'atelier en exact d'abord ; l'angle d'un `point_sur`
-  sur un cercle suit le réglage « Angles » de l'atelier (le DSL : `unite_angle`, degrés par
-  défaut) ; `point_sur` d'une conique est refusé.
+  conique et droite × fonction en nombres — l'atelier en exact d'abord ; `point_sur` d'une conique
+  est refusé. L'angle d'un `point_sur` sur un cercle est en **degrés toujours**, comme le DSL et
+  la phase 0 (L5) : le réglage « Angles » ne gouverne que l'écriture des mesures (un lien relu
+  en radians donne la même figure). Deux cercles qui deviennent égaux au glisser : le point
+  ATTEND (« … une infinité de points communs. »), le refus reste à la saisie.
 
 **Quatre états** (D9) : `error` > `pending` > `incomplete` > `ok`. Un nom cité mais absent met
 l'objet **en attente** (`pending`, avec `missing`), pas en erreur ; l'attente se répare seule quand
@@ -1423,8 +1426,10 @@ Trois ponts à **sens unique**, tous idempotents (une empreinte évite de refair
   courbes dont 3 implicites, glisser `a` coûte ~11 ms par cran dans Chromium (toile 800 × 600,
   `slideTo` + synchronisation + rendu Svelte). **Intersections et `point_sur`** (lot 2, PR 3) : une
   intersection qui cite un curseur a pour coordonnées deux lettres (`intersection_1_x`), posées
-  par deux `createScalarExpression` dont le calcul est `intersectionPoint` en nombres — le calcul
-  même de l'atelier, donc sa numérotation (`FigurePlan.derived`, `FigureRecipes`) ; une position
+  par deux `createScalarExpression` dont le calcul est `intersectionPoint` sur les supports où
+  les valeurs des curseurs sont substituées — le calcul même de la carte, racines exactes
+  comprises (revue : un Newton sur [−10 ; 10] dessinait un autre point), donc son point et sa
+  numérotation (`FigurePlan.derived`, `FigureRecipes`) ; une position
   écrite de `point_sur` est un curseur caché (`position_M`) réglé par `moveSlider`. Ni l'un ni
   l'autre ne refait la figure ; un point sans solution n'est pas dessiné (NaN), et l'atelier,
   qui le met en attente, refait la figure à l'entrée et à la sortie de l'attente.
