@@ -245,7 +245,7 @@ bouton « j'ai fini » auto-déclaré).
 4. **Images** : qui les dessine ? Toi ou un illustrateur ; ou moi, en SVG à silhouette simple façon
    Steinlen (même style que les futurs Mathoux), remplaçables plus tard.
 
-## 9. Mathoux v1 — la Chatterie (phase 0, à valider)
+## 9. Mathoux v1 — la Chatterie (phase 0 validée le 2026-10-18)
 
 > Rédigé le 2026-10-18, après la première étape (Palotins, #1471 → #1484).
 
@@ -296,7 +296,13 @@ bouton « j'ai fini » auto-déclaré).
 **Hors v1** : annonce d'un nouveau chaton en fin de séance, combats, accessoires, vue de la
 Chatterie par le prof.
 
-### Questions pour David
+### Décisions de David (2026-10-18)
+
+Recommandations validées telles quelles : seuils chaton / moitié / tous ; silhouettes visibles ;
+« le Mathou des <notion> » en v1, d'autres noms à chercher plus tard. Niveaux : un autre chantier
+complète et tague tous les modèles, la Chatterie se remplira avec lui ; on ne l'attend pas.
+
+### Questions posées
 
 1. **Seuils** : chaton à la 1re réussite, matou à la moitié, grand matou à tous les points
    travaillables acquis. D'accord ?
