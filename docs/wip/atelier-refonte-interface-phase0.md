@@ -150,6 +150,8 @@ Même grammaire que la carte de fonction (lot 3) : une ligne `● nom = [défini
 
 Partout : Renommer et Supprimer en fin de menu ; un objet qui dépend d'un autre (dérivée, point construit) porte l'icône de lien + infobulle (lot 3).
 
+**Décision de David (2026-10-18, après #1501)** : le curseur affiché à la main sur une valeur qui n'est pas un paramètre est rangé avec l'atelier (rechargement, changement d'onglet, renommage).
+
 **Précisions de la session atelier-geometry (2026-10-18), d'accord sur l'ensemble :**
 
 - Point par coordonnées `A = [(1 ; 2)]` : éditable, sans ligne grise. Point CONSTRUIT `I = [milieu(A, B)]` : coordonnées exactes en gris dessous, non éditables (Q5 : oui).
