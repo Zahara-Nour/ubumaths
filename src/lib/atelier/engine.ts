@@ -31,7 +31,7 @@ import { differentiate } from '$lib/mathAST/differentiation';
 import { tidyTerms } from './tidy-terms';
 import { derivativeOf } from './names';
 import { INTERNAL_LETTER } from './letter';
-import { astOf, readNumber } from './parse';
+import { astOf, readNumber, type Provenance } from './parse';
 import { constantOf } from './constant';
 import { transformAST } from '$lib/mathAST/visitor';
 import {
@@ -452,6 +452,11 @@ export function substitutedAstOf(
 		 * sont remplacées. La carte `f⁻¹` garde ainsi ses curseurs (`reciprocal.ts`).
 		 */
 		readonly keepValues?: boolean;
+		/**
+		 * Garder en lettres CES valeurs seulement : les curseurs de la vue Figure
+		 * (`figure-sync.ts`). `b = 2a` avec `a` gardé devient `2a`.
+		 */
+		readonly keepNames?: ReadonlySet<string>;
 	}
 ):
 	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
@@ -480,7 +485,37 @@ export function substitutedAstOf(
 	if (ast === null) {
 		return { ok: false, message: `« ${object.definition} » ne se lit pas.` };
 	}
+	return substitutedTree(atelier, ast, name, options);
+}
 
+/**
+ * L'arbre d'un TEXTE écrit dans l'atelier (une coordonnée de point), substitué
+ * comme une définition d'objet — voir `substitutedAstOf`.
+ */
+export function substitutedTextOf(
+	atelier: Atelier,
+	text: string,
+	provenance: Provenance | undefined,
+	options?: { readonly keepNames?: ReadonlySet<string> }
+):
+	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
+	const ast = astOf(text, provenance, atelier.functionNames);
+	if (ast === null) return { ok: false, message: `« ${text} » ne se lit pas.` };
+	return substitutedTree(atelier, ast, '', options);
+}
+
+/** Le cœur de `substitutedAstOf` : dérivées développées, puis noms remplacés. */
+function substitutedTree(
+	atelier: Atelier,
+	ast: MathNode,
+	name: string,
+	options?: {
+		readonly forDerivation?: boolean;
+		readonly keepValues?: boolean;
+		readonly keepNames?: ReadonlySet<string>;
+	}
+):
+	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
 	const { variables, functions, derivableFunctions, reciprocals } = bindingsOf(atelier, name);
 	// Les dérivées AVANT le reste : `f'` doit devenir une expression avant que
 	// `substituteAll` cherche à y remplacer des noms. Et on les développe avec
@@ -518,12 +553,14 @@ export function substitutedAstOf(
 					...functions
 				}
 			: functions;
-	const substituted = substituteAll(
-		withCalls,
-		options?.keepValues === true ? {} : variables,
-		substituteFunction,
-		{ functions: cited }
-	);
+	const keep = options?.keepNames;
+	const values =
+		options?.keepValues === true
+			? {}
+			: keep === undefined
+				? variables
+				: Object.fromEntries(Object.entries(variables).filter(([n]) => !keep.has(n)));
+	const substituted = substituteAll(withCalls, values, substituteFunction, { functions: cited });
 
 	return { ok: true, ast: substituted };
 }

@@ -24,7 +24,7 @@ Vue d'ensemble du moteur de géométrie de Chiphre. Référence du langage :
 [dsl-builtins.md](dsl-builtins.md). Règles courtes pour un agent qui code dans le module :
 [`src/lib/geometry-core/CLAUDE.md`](../../../src/lib/geometry-core/CLAUDE.md).
 
-> Vérifié contre le code le 2026-10-10. Chaque fichier, fonction et builtin cité existe à cette
+> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18). Chaque fichier, fonction et builtin cité existe à cette
 > date (`git ls-files`, `git grep -w`). Ce qui n'est pas dans cette page ni dans
 > `dsl-builtins.md` n'est pas garanti : lire le code.
 
@@ -66,7 +66,7 @@ sinon (déplacement à la souris, transcendantes, échantillonnage), avec des so
 | `graph/`       | La figure : objets, dépendances, recalcul, solveurs           | `figure.ts` (classe `Figure`, ~5 000 lignes), `dependency-graph.ts`, `compute-position.ts`, `compute-locus.ts`, `parametric-*.ts`, `undo-redo.ts`                                             |
 | `types/`       | Les ~90 types `Geo*` et leurs gardes `isXxx`                  | `elements.ts`, `geo-value.ts` (`GeoValue` exact/numérique), `primitives.ts`, `schemas.ts` (Zod)                                                                                               |
 | `compute/`     | Arithmétique sur `GeoValue`                                   | `geo-arithmetic.ts`, `to-number.ts` (`geoToNumber`), `compare.ts`                                                                                                                             |
-| `geometry/`    | Formules analytiques                                          | `intersections.ts`, `transformations.ts`, `affine-transform.ts`, `conic-classify.ts`, `conic-properties.ts`, `circumcircle.ts`                                                                |
+| `geometry/`    | Formules analytiques                                          | `intersections.ts`, `transformations.ts`, `affine-transform.ts`, `conic-classify.ts`, `conic-properties.ts`, `circumcircle.ts`, `curve-nature.ts`                                             |
 | `rendering/`   | Dessin et exports                                             | `svg-primitives.ts`, `export-svg.ts`, `export-typst.ts`, `export-tikz.ts`, `marching-squares.ts`, `bezier.ts`, `rough-geometry.ts`, `colors.ts`, `label-placement.ts`, `viewport-clipping.ts` |
 | `viewport/`    | Repère écran ↔ maths, grille, échantillonnage                 | `viewport.ts` (`panViewport`, `zoomViewport`), `grid.ts` (`computeGridStep`), `sampler.ts`                                                                                                    |
 | `interaction/` | Souris                                                        | `hit-testing.ts` (`findPointNear`, `findElementNear`), `snap.ts` (`snapToGrid`)                                                                                                               |
@@ -106,6 +106,29 @@ Les scripts sont stockés en base dans `constructions.dsl_script`. Routes :
 | `src/lib/ubumark/utils/figure-svg.ts`                                       | Bloc ` ```figure ` à l'écran : SVG statique (`figureToSvg`), sans `GeometryCanvas`  |
 | `src/lib/ubumark/generators/figure-typst.ts`                                | Bloc ` ```figure ` au PDF : `exportToTypst`                                         |
 | `src/lib/components/markdown/nodes/FigureBlock*.svelte`                     | Composants du bloc (chargement à la demande)                                        |
+
+### La vue Figure de l'atelier
+
+L'atelier (`src/lib/atelier/figure-sync.ts`, géométrie v2) alimente une `Figure` par l'**API
+`create*`**, sans le DSL : points (exacts sans curseur, `createComputedPoint` sinon), droites,
+courbes y = f(x), coniques, courbes implicites, et un curseur **caché** par valeur citée
+(`createSlider({ visible: false })`, réglé par `moveSlider`). Deux ajouts de `Figure` pour lui :
+`createQuadraticCurve(…, { parameterRecipe })` (six coefficients compilés, réévalués et la
+conique reclassée à chaque recalcul) et `createImplicitCurve(…, { parameters })` (F liée aux
+valeurs courantes des curseurs par une nouvelle fermeture à chaque recalcul : le cache de
+`marchingSquares`, par fonction, ne rend jamais un ancien tracé). Ni l'un ni l'autre n'est un
+nouveau type : les quatre surfaces de rendu lisent les mêmes champs. `GeometryCanvas` n'affiche
+plus de réglette pour un curseur invisible (y compris après `masque(s)`). Doc :
+[atelier.md](../atelier.md#vues).
+
+**Classification d'une courbe** (`geometry/curve-nature.ts`, pure, sans `Figure`) :
+`curveShapeOf(F)` donne la forme dans l'ordre de `courbe()` (droite, y = f(x), conique,
+implicite) — `courbe()` l'appelle — ; `curveNatureOf(équation)` la nature (`line`, `circle`,
+`ellipse`, `parabola`, `hyperbola`, `point`, `lines`, `empty`, `curve`) sur l'équation développée
+(`expandedEquation`), `null` si une lettre autre que x, y reste ; `degenerateConic`
+(`conic-classify.ts`, et sa sorte seule `degenerateConicKind`) sépare vide, point isolé (son
+centre), droite double (son équation) et deux droites, que `classifyConic` disait seulement
+`degenerate`.
 
 ### Frontière avec le grapheur
 
@@ -404,6 +427,14 @@ RBush, `validation/` branché sur des exercices.
 - `figure.ts` (~5 000 lignes) et `builtins.ts` (~7 400 lignes) sont les deux plus gros fichiers.
 - Trois interfaces de configuration Newton divergentes : `NewtonConfig`, `IntersectionConfig`,
   `IntersectionConfig1D`.
+- `courbe("x^2 + y^2 = a^2")` avec `a = slider(…)` rend une conique **dégénérée** : les
+  coefficients sont évalués sans le curseur (`a` y vaut 0) et ne le suivent pas (constaté le
+  2026-10-18). La vue Figure de l'atelier contourne par `parameterRecipe` ; le DSL ne s'en sert
+  pas encore.
+- `courbe("x^2 = 4")` est refusée (« la variable y est absente ») au lieu de deux droites ;
+  l'atelier, lui, la dessine (marching squares).
+- `GeometryCanvas` écrit l'étiquette d'une courbe implicite avec `svg.label`, que
+  `implicitCurveToSVG` ne rend pas : le nom ne s'affiche pas (et le `<text>` n'a pas de `y`).
 - Messages d'erreur périmés : la forme `point(s.value, 0)` (seuls `.x` / `.y` existent) et
   l'exemple `style(P, couleur="red", taille=4)` (`taille` n'est pas un argument de style).
 

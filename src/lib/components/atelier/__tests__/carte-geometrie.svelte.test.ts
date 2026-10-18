@@ -33,23 +33,60 @@ function headerText(card: HTMLElement): string {
 	return `${name} ${sign} ${spoken}`;
 }
 
+/**
+ * Les « : » ou « = » VISIBLES seuls dans la tête de la carte (une ligne à eux) :
+ * revue de la PR 2, la carte se lit comme celle d'une fonction — le nom, puis
+ * l'équation ou les coordonnées. La lecture d'écran garde le signe.
+ */
+function isolatedSigns(card: HTMLElement): string[] {
+	return (
+		[...card.querySelectorAll('.entete *')]
+			// Le « = » d'une équation composée par MathLive n'est pas un signe isolé
+			.filter((el) => el.children.length === 0 && el.closest('.ML__latex') === null)
+			.map((el) => ({ text: el.textContent?.trim() ?? '', box: el.getBoundingClientRect() }))
+			.filter(({ text, box }) => (text === ':' || text === '=') && box.width > 1 && box.height > 1)
+			.map(({ text }) => text)
+	);
+}
+
 // =============================================================================
 // Tests
 // =============================================================================
 
 describe('la carte d’un objet de la figure', () => {
-	it('C1 : la courbe se lit « d : y = … », en écriture mathématique, type « courbe »', async () => {
+	it('C1 : la courbe se lit « d : y = … », en écriture mathématique, nature « droite »', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'curve', name: 'd', definition: 'y = 3x - 2' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
 
 		const card = cardFor(container, 'd');
 
-		expect(card.querySelector('.signe')?.textContent?.trim()).toBe(':');
+		expect(isolatedSigns(card)).toEqual([]);
 		expect(card.querySelector('.definition .ML__latex')).toBeTruthy();
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('courbe');
+		// PR 2 : la nature remplace le type « courbe » (C1)
+		expect(card.querySelector('.type')?.textContent?.trim()).toBe('droite');
 		// La lecture d'écran (MathLive) : « d : 'Y' equals 3 'X' minus 2 »
 		expect(headerText(card)).toMatch(/^d : 'Y' equals/);
+	});
+
+	it('C2 : C : x² + y² = 1 a la nature « cercle »', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'curve', name: 'C', definition: 'x^2 + y^2 = 1' }, 'text');
+		const { container } = await render(WithAtelier, { atelier });
+
+		expect(cardFor(container, 'C').querySelector('.type')?.textContent?.trim()).toBe('cercle');
+	});
+
+	it('C6 : la carte d’une courbe vide constate « Aucun point ne vérifie cette équation. »', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'curve', name: 'C', definition: 'x^2 + y^2 = -1' }, 'text');
+		const { container } = await render(WithAtelier, { atelier });
+
+		const card = cardFor(container, 'C');
+		// Constaté, pas refusé : la courbe reste acceptée, sans badge d'erreur
+		expect(card.textContent).toContain('Aucun point ne vérifie cette équation.');
+		expect(card.querySelector('.etat')).toBeNull();
+		expect(card.querySelector('.type')?.textContent?.trim()).toBe('courbe');
 	});
 
 	it('P1 : le point se lit « A = (1 ; 2) », type « point », sans œil de tracé', async () => {
@@ -59,6 +96,8 @@ describe('la carte d’un objet de la figure', () => {
 
 		const card = cardFor(container, 'A');
 
+		expect(isolatedSigns(card)).toEqual([]);
+		// La lecture d'écran garde « A = (1 ; 2) »
 		expect(card.querySelector('.signe')?.textContent?.trim()).toBe('=');
 		expect(card.querySelector('.definition .ML__latex')).toBeTruthy();
 		expect(card.querySelector('.type')?.textContent?.trim()).toBe('point');
@@ -92,6 +131,10 @@ describe('la carte d’un objet de la figure', () => {
 		const field = card.querySelector('math-field') as MathfieldElement;
 
 		expect(card.querySelector('.prefixe')?.textContent?.replace(/\s+/g, '')).toBe('d:');
+		// En édition, « d : » et le champ sont sur la même ligne
+		const prefix = card.querySelector('.prefixe')!.getBoundingClientRect();
+		const box = field.getBoundingClientRect();
+		expect(prefix.bottom > box.top && prefix.top < box.bottom).toBe(true);
 		await userEvent.click(field);
 		await vi.waitFor(() => expect(document.activeElement).toBe(field));
 		await userEvent.keyboard('y=2x');

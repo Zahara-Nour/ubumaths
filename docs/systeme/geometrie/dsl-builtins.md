@@ -153,6 +153,12 @@ on les récupère par les accesseurs (`centre(c)`, `sommet(p, i)`…) et on les 
 | `lieu`    | `lieu(M, P)` : trace de `M` quand `P` (un `point_sur`) parcourt son support                                                                                                                                                          | courbe |
 | `trace`   | `trace(M)` : trace dynamique qui s'allonge quand `M` bouge                                                                                                                                                                           | objet  |
 
+La forme d'une courbe cartésienne ou implicite se lit par `curveShapeOf`
+(`geometry/curve-nature.ts`), partagée avec la vue Figure de l'atelier : affine en x et y →
+droite ; affine en y → y = f(x) ; du second degré → conique ; sinon implicite. `courbe()` la
+lit sur l'équation telle qu'écrite (`y = 3(x − 2) + 1` reste une courbe y = f(x),
+`(x − 1)² + (y − 2)² = 4` une implicite) ; l'atelier sur l'équation développée.
+
 Domaine et morceaux (cartésien) : `courbe("y = x^2 sur ]-1 ; 2]")`, `… avec 0 < x <= 2`
 (`dsl/domain-parser.ts`) ; `courbe("y = { -x si x < 0, x^2 si x >= 0 }")` ou forme `sur` — on
 ne mélange pas `si` et `sur` (`dsl/piecewise-parser.ts`). Bornes : nombres, curseurs, `±infini`.
