@@ -30,6 +30,7 @@
 	import ShareBar from './ShareBar.svelte';
 	import AtelierSettings from './AtelierSettings.svelte';
 	import { readInputMode, writeInputMode, type InputMode } from '$lib/atelier/input-mode';
+	import { readAngleUnit, writeAngleUnit, type AngleUnit } from '$lib/atelier/angle-unit';
 	import { CalcDesk } from '$lib/atelier/desk.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -176,6 +177,18 @@
 	function chooseInputMode(mode: InputMode) {
 		inputMode = mode;
 		writeInputMode(readStorage(), mode);
+	}
+
+	/**
+	 * Le réglage « Angles » (degrés par défaut, 2026-10-18) : une préférence de ce
+	 * navigateur, posée sur l'atelier — qui recalcule ses mesures d'angle.
+	 */
+	// svelte-ignore state_referenced_locally
+	atelier.setAngleUnit(readAngleUnit(readStorage()));
+
+	function chooseAngleUnit(unit: AngleUnit) {
+		atelier.setAngleUnit(unit);
+		writeAngleUnit(readStorage(), unit);
 	}
 
 	/** Un historique relu : confirmer s'il y a de quoi perdre, sinon rejouer (R1, R2). */
@@ -820,7 +833,10 @@
 						onclick={() => shareBar?.share()}
 					/>
 				{/if}
-				<AtelierSettings bind:inputMode={() => inputMode, chooseInputMode} />
+				<AtelierSettings
+					bind:inputMode={() => inputMode, chooseInputMode}
+					bind:angleUnit={() => atelier.angleUnit, chooseAngleUnit}
+				/>
 			</div>
 		</div>
 		<ShareBar bind:this={shareBar} {received} {notice} />

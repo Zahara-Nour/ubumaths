@@ -1688,6 +1688,10 @@ function unitRefusal(names: readonly string[], atelier: Atelier): string | null 
 				.trim();
 			return `${name} est une grandeur (${written}) : une cellule calcule sans unités.`;
 		}
+		// Une mesure d'angle (géométrie, lot 2) : une grandeur, en ° ou en rad
+		if (object?.kind === 'value' && atelier.angleQuantities().has(name)) {
+			return `${name} est une grandeur (un angle) : une cellule calcule sans unités.`;
+		}
 	}
 	return null;
 }

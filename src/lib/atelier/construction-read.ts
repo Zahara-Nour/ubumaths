@@ -127,12 +127,26 @@ export function plainWord(word: string): string {
 	return word.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/-/g, '');
 }
 
-/** Un mot du DSL hors catalogue (`médiatrice`, `aire`, `intersection`) ? */
+/**
+ * Les MESURES (lot 2, PR 2, L4) : des valeurs, lues par `measures.ts` — ni des
+ * constructions, ni des mots « pas encore dans l'atelier ».
+ */
+export const MEASURE_WORDS = ['distance', 'aire', 'perimetre', 'angle'] as const;
+export type MeasureWord = (typeof MEASURE_WORDS)[number];
+
+/** `périmètre` → `perimetre` ; `null` si ce n'est pas un mot de mesure. */
+export function measureWordOf(word: string): MeasureWord | null {
+	const plain = plainWord(word);
+	return (MEASURE_WORDS as readonly string[]).includes(plain) ? (plain as MeasureWord) : null;
+}
+
+/** Un mot du DSL hors catalogue (`médiatrice`, `intersection`) ? */
 export function isLaterWord(word: string): boolean {
 	const plain = plainWord(word);
 	return (
 		BUILTIN_NAMES.has(plain) &&
 		!MATH_WORDS.has(plain) &&
+		measureWordOf(plain) === null &&
 		!(CONSTRUCTION_WORDS as readonly string[]).includes(plain)
 	);
 }
@@ -267,6 +281,26 @@ function argumentsOf(content: string, word: string): string[] {
 		throw new Refusal(`Il manque un argument dans ${word}(…).`);
 	}
 	return parts.map((part) => part.trim());
+}
+
+/**
+ * Les arguments d'un appel quelconque (une mesure : `aire(A ; M ; N)`), lus
+ * comme ceux d'une construction : mêmes séparateurs, mêmes raccourcis. `content`
+ * est le texte ENTRE les parenthèses, LaTeX déjà retiré (`constructionText`).
+ */
+export function readArguments(
+	content: string,
+	word: string
+):
+	| { readonly ok: true; readonly args: readonly ReadArgument[] }
+	| { readonly ok: false; readonly message: string } {
+	const mask = masked(content);
+	try {
+		return { ok: true, args: argumentsOf(mask.text, word).map((part) => readArgument(part, mask)) };
+	} catch (error) {
+		if (error instanceof Refusal) return { ok: false, message: error.message };
+		throw error;
+	}
 }
 
 /** Lire un argument (ou le tout) : raccourci, appel, nom ou nombre. */

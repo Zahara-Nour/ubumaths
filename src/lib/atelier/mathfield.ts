@@ -18,13 +18,21 @@
 
 import type { MathNode } from '$lib/mathAST/types';
 import type { AtelierObject, ObjectKind } from './types';
-import { astOf, parseDefinition, pointCoordinatesOf, readingMode, readNumber } from './parse';
+import {
+	astOf,
+	parseDefinition,
+	pointCoordinatesOf,
+	readingMode,
+	readNumber,
+	type Provenance
+} from './parse';
 import { INTERNAL_LETTER, renameVariable } from './letter';
 import { intervalFieldLatex } from './interval';
 import { readNaturalQuantities } from './natural-quantities';
 import { argumentSeparatorsShown } from './decimal-comma';
-import { readConstruction } from './construction-read';
-import { constructionLatex } from './construction';
+import { readArguments, readConstruction } from './construction-read';
+import { argumentLatex, constructionLatex } from './construction';
+import { hasMeasureCall, measureCalls } from './measures-read';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { isAddition, isDelimiter, isNumber, isUnit } from '$lib/mathAST/guards';
@@ -84,6 +92,15 @@ function expressionFieldLatex(
 			return forMathlive(constructionLatex(construction.call));
 		}
 	}
+	// Une mesure (`aire(A, B, C)`, lot 2) : `\operatorname{aire}`, pas a·i·r·e en
+	// italique — et une modification dans le champ relit bien la mesure (revue PR 2)
+	if (
+		(object.kind === 'value' || object.kind === 'function' || object.kind === 'sequence') &&
+		hasMeasureCall(definition, provenance)
+	) {
+		const shown = measureFieldLatex(definition, provenance, functionNames);
+		if (shown !== null) return shown;
+	}
 	// Un point par coordonnées (`(sqrt(2) ; 1)`) : chaque coordonnée en écriture
 	// mathématique, comme la carte repliée d'avant le lot 4b — sous la forme que
 	// MathLive écrit quand on tape `(1;2)`, que le champ relit tel quel
@@ -113,6 +130,39 @@ function expressionFieldLatex(
 function coordinateLatex(ast: MathNode): string {
 	return argumentSeparatorsShown(forMathlive(toLatex(ast))).replace(/(\d)\.(\d)/g, '$1{,}$2');
 }
+
+/**
+ * Le LaTeX d'une définition qui cite des mesures : chaque appel devient
+ * `\operatorname{aire}\left(A,B,C\right)` (régénéré depuis sa lecture), le
+ * reste est lu et réécrit comme toute définition. `null` si elle ne se lit pas.
+ */
+function measureFieldLatex(
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[]
+): string | null {
+	const calls = measureCalls(definition, provenance);
+	const written: string[] = [];
+	let text = definition;
+	for (const call of [...calls].reverse()) {
+		const read = readArguments(call.content, call.word);
+		if (!read.ok) return null;
+		written.unshift(
+			`\\operatorname{${call.word}}\\left(${read.args.map(argumentLatex).join(',')}\\right)`
+		);
+		text = `${text.slice(0, call.start)} m_{${MARK + calls.indexOf(call)}} ${text.slice(call.end)}`;
+	}
+	const ast = astOf(text, provenance, functionNames);
+	if (ast === null) return null;
+	let latex = toLatex(ast);
+	written.forEach((call, i) => {
+		latex = latex.replace(`m_{${MARK + i}}`, call);
+	});
+	return forMathlive(latex);
+}
+
+/** La marque d'un appel de mesure dans `measureFieldLatex`. */
+const MARK = 90000;
 
 /**
  * Du LaTeX que MathLive sait afficher.

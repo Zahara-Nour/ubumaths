@@ -393,6 +393,10 @@ export class CalcDesk {
 			return;
 		}
 		const result = runInput(this.session, text, 'text');
+		// La carte d'une mesure dit ce que dit la console : elle en recopie le mode
+		this.session.atelier.setCalcMode(
+			this.session.engine.getState().mode === 'decimal' ? 'decimal' : 'exact'
+		);
 		if (result.kind === 'vide') return;
 		this.#gesture = { kind: 'saisie', input: text };
 		// Seule une saisie tapée clôt le rappel : « Comparer » rend le brouillon

@@ -173,7 +173,10 @@ describe('L2 : une construction nommée crée un objet de la figure', () => {
 		expect(refusal(runInput(s, 'm = médiatrice(A, B)'))).toBe(
 			'« médiatrice » n’est pas encore dans l’atelier.'
 		);
-		expect(refusal(runInput(s, 'aire(A, B, C)'))).toBe('« aire » n’est pas encore dans l’atelier.');
+		// `aire` est devenue une mesure (PR 2, L4) : l'exemple hors catalogue est `bissectrice`
+		expect(refusal(runInput(s, 'bissectrice(A, B, C)'))).toBe(
+			'« bissectrice » n’est pas encore dans l’atelier.'
+		);
 		expect(s.atelier.get('m')).toBeUndefined();
 	});
 
