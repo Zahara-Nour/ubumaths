@@ -204,16 +204,25 @@ modèle), envoie la note par `submitRequest`. Côté paquet, `srs_review_session
 cartes revues, bonnes réponses (note ≥ 3) et temps ; une panne de ces statistiques n'annule pas
 la révision.
 
-**Forfait du Palotin** (décision de David, 2026-10-18 : l'effort, pas la réussite) : quand une
-réponse laisse le paquet sans aucune carte due (`get_due_cards_for_deck`, échéance respectée), la
-séance du jour est marquée terminée (`srs_review_sessions.completed_at`, écriture conditionnelle
-`completed_at is null` vérifiée par `.select()`) et, si aucune autre séance n'a été terminée ce jour-là,
-le Palotin reçoit `XP_SOURCES.review_session` (20, sous le plafond du jour) —
-`rewardFinishedReviewSession`, `src/lib/server/srs/review-session-reward.ts`. `api/srs/review/submit`
-le rend sous `buddy_xp`, même forme que `api/tests/save` ; toute panne rend `null` sans toucher la
-révision. Limite connue : l'élève peut réécrire `completed_at` par un appel direct (policy UPDATE
-« own ») ; le gain reste borné par le plafond du jour. Le paquet de chapitre
-(`api/srs/chapters/[id]/submit`) ne donne pas de forfait.
+**Forfait du Palotin** (décision de David, 2026-10-18 : l'effort, pas la réussite) :
+`rewardFinishedReviewSession` (`src/lib/server/srs/review-session-reward.ts`), appelé après chaque
+carte notée. Le Palotin reçoit `XP_SOURCES.review_session` (20, sous le plafond du jour), au plus une
+fois par jour, si (a) l'élève a révisé au moins 10 cartes aujourd'hui, tous paquets confondus, ou (b)
+le paquet n'a plus aucune carte due (`get_due_cards_for_deck`, échéance respectée) et il a révisé au
+moins 3 cartes aujourd'hui (`REVIEW_REWARD_CARDS_ANY_DECK`, `REVIEW_REWARD_CARDS_EMPTIED_DECK`). Le
+compte du jour = cartes distinctes dont `srs_card_stats.last_review` tombe aujourd'hui (table écrite
+par le serveur seul, Q171 ; elle inclut aussi les réponses d'Entraînement et de flash, qui passent par
+FSRS). Une révision forcée d'un paquet sans carte due rapporte donc le forfait dès la 3e carte.
+
+« Une fois par jour » : `srs_review_sessions.completed_at` marque la séance qui a rapporté le forfait.
+Une séance déjà marquée aujourd'hui → rien, sans autre lecture. Plafond déjà atteint ou élève sans
+Palotin → pas de réclamation. Réclamation conditionnelle (`completed_at is null`, vérifiée par
+`.select()`), relâchée si le crédit échoue ou rapporte 0. Deux paquets réclamés au même instant :
+chacun voit l'autre, aucun forfait ce jour-là (côté sûr). `api/srs/review/submit` rend le gain sous
+`buddy_xp`, même forme que `api/tests/save` ; toute panne rend `null` sans toucher la révision.
+Limite connue : l'élève peut réécrire `completed_at` par un appel direct (policy UPDATE « own ») ; le
+gain reste borné par le plafond du jour. Le paquet de chapitre (`api/srs/chapters/[id]/submit`) ne
+donne pas de forfait.
 
 « Quitter », en tête de séance (`BackLink kind="quit"`, [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)), ramène là
 où elle a commencé : la page du paquet, ou le Programme si elle en part (`?depuis=programme`, posé par

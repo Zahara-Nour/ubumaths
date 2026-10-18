@@ -204,16 +204,18 @@
 	/**
 	 * Gain du Palotin joint à une réponse. Champ absent, corps illisible ou
 	 * adresse qui n'en renvoie pas (paquet de chapitre) : rien, sans erreur.
+	 * La révision est déjà enregistrée : aucune panne du Palotin (lecture du
+	 * corps, cache, relecture) ne doit remonter comme un échec de soumission,
+	 * sinon l'élève renoterait la carte.
 	 */
 	async function readBuddyGain(response: Response) {
-		let payload: unknown = null;
 		try {
-			payload = await response.json();
-		} catch {
-			return;
+			const payload: unknown = await response.json();
+			const gain = await receiveBuddyGain(payload);
+			if (gain) buddyGain = gain;
+		} catch (error) {
+			console.error('Gain du Palotin illisible (révision enregistrée) :', error);
 		}
-		const gain = await receiveBuddyGain(payload);
-		if (gain) buddyGain = gain;
 	}
 
 	/**

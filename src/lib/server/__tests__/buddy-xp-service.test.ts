@@ -82,7 +82,7 @@ describe('addBuddyXpFromTest — bonus « nouveau thème »', () => {
 		updateStreak.mockReset();
 	});
 
-	it('un bonus par thème NOUVEAU, une seule fois, thèmes enregistrés en une écriture', async () => {
+	it('un bonus par thème NOUVEAU, une fois, thèmes écrits APRÈS le crédit, payés seulement', async () => {
 		const result = await addBuddyXpFromTest(supabase, STUDENT, [
 			{ isCorrect: true, theme: THEME_1 },
 			{ isCorrect: true, theme: THEME_1 },
@@ -96,7 +96,11 @@ describe('addBuddyXpFromTest — bonus « nouveau thème »', () => {
 		expect(result?.isNewTheme).toBe(true);
 
 		expect(addExploredThemes).toHaveBeenCalledTimes(1);
-		expect([...addExploredThemes.mock.calls[0][2]].sort()).toEqual([THEME_1, THEME_2]);
+		expect(addExploredThemes.mock.calls[0][2]).toEqual([THEME_1]);
+		// Crédit d'abord, écriture des thèmes ensuite
+		expect(addExploredThemes.mock.invocationCallOrder[0]).toBeGreaterThan(
+			addBuddyXp.mock.invocationCallOrder[0]
+		);
 		expect(addExploredTheme).not.toHaveBeenCalled();
 	});
 
@@ -108,13 +112,45 @@ describe('addBuddyXpFromTest — bonus « nouveau thème »', () => {
 		expect(result?.isNewTheme).toBe(false);
 	});
 
-	it('thème non enregistré (écriture refusée) : pas de bonus', async () => {
+	it('bonus tronqué par le plafond (calcul local) : thème NON marqué, il restera nouveau', async () => {
+		// 70 déjà gagnés : 10 + 25 = 35 > 30 restants
+		getStudentBuddy.mockResolvedValue(buddy({ xp_earned_today: 70 }));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [
+			{ isCorrect: true, theme: THEME_1 }
+		]);
+
+		expect(addBuddyXp.mock.calls[0][1]).toBe(30);
+		expect(addExploredThemes).not.toHaveBeenCalled();
+		expect(result?.isNewTheme).toBe(false);
+	});
+
+	it('crédit tronqué par la base : seuls les thèmes dont la réponse est couverte sont marqués', async () => {
+		// 35 + 35 demandés, 50 crédités : la 1re réponse (THEME_1) est payée, pas la 2de
+		addBuddyXp.mockImplementation(async () => ({ ...gain(50), daily_cap_reached: true }));
+		await addBuddyXpFromTest(supabase, STUDENT, [
+			{ isCorrect: true, theme: THEME_1 },
+			{ isCorrect: true, theme: 'theme-3' }
+		]);
+
+		expect(addBuddyXp.mock.calls[0][1]).toBe(70);
+		expect(addExploredThemes.mock.calls[0][2]).toEqual([THEME_1]);
+	});
+
+	it('crédit en échec : aucun thème marqué', async () => {
+		addBuddyXp.mockRejectedValue(new Error('panne'));
+		await expect(
+			addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true, theme: THEME_1 }])
+		).rejects.toThrow('panne');
+		expect(addExploredThemes).not.toHaveBeenCalled();
+	});
+
+	it('thème payé mais non écrit (écriture refusée) : pas annoncé comme nouveau', async () => {
 		addExploredThemes.mockResolvedValue(new Set());
 		const result = await addBuddyXpFromTest(supabase, STUDENT, [
 			{ isCorrect: true, theme: THEME_1 }
 		]);
 
-		expect(addBuddyXp.mock.calls[0][1]).toBe(XP_SOURCES.correct);
+		expect(addBuddyXp.mock.calls[0][1]).toBe(XP_SOURCES.correct + XP_SOURCES.new_theme);
 		expect(result?.isNewTheme).toBe(false);
 	});
 });

@@ -71,6 +71,7 @@ function viewOf(payload: unknown) {
 afterEach(() => {
 	studentCache.hydrateBuddy(null);
 	vi.unstubAllGlobals();
+	vi.restoreAllMocks();
 });
 
 describe('BuddyGainCard — ce que l’élève lit', () => {
@@ -110,6 +111,17 @@ describe('BuddyGainCard — ce que l’élève lit', () => {
 		const shown = texte(container);
 		expect(shown).toContain('Sa panse est pleine pour aujourd’hui');
 		expect(buddyMessages.giron.daily_cap.some((m) => shown.includes(m))).toBe(true);
+	});
+
+	it('plafond DÉJÀ atteint (0 pansée gagnée) : panse pleine, sans « a gagné 0 »', async () => {
+		const { container } = await render(BuddyGainCard, {
+			gain: viewOf(saveResponse({ xp_gained: 0, daily_cap_reached: true }))
+		});
+		const shown = texte(container);
+		expect(shown).toContain('Sa panse est pleine pour aujourd’hui');
+		expect(buddyMessages.giron.daily_cap.some((m) => shown.includes(m))).toBe(true);
+		expect(shown).not.toContain('a gagné');
+		expect(shown).not.toContain('0 pansée');
 	});
 
 	it('sans plafond : pas de mention de panse pleine', async () => {
@@ -162,6 +174,21 @@ describe('receiveBuddyGain — widget à jour sans recharger', () => {
 		expect(view?.palotin).toBe('pile');
 		expect(view?.expression).toBe('happy');
 		expect(studentCache.getBuddySync()?.xp).toBe(112);
+	});
+
+	it('panne du cache : jamais d’exception (la séance est déjà enregistrée)', async () => {
+		studentCache.hydrateBuddy({ ...buddy });
+		vi.spyOn(studentCache, 'updateBuddyXpOptimistic').mockImplementation(() => {
+			throw new Error('cache en panne');
+		});
+		await expect(receiveBuddyGain(saveResponse())).resolves.toBeNull();
+	});
+
+	it('plafond déjà atteint : le widget n’est pas touché', async () => {
+		studentCache.hydrateBuddy({ ...buddy });
+		const view = await receiveBuddyGain(saveResponse({ xp_gained: 0, daily_cap_reached: true }));
+		expect(view?.dailyCapReached).toBe(true);
+		expect(studentCache.getBuddySync()?.xp).toBe(100);
 	});
 
 	it('pas de gain : ni relecture ni mise à jour', async () => {

@@ -10,6 +10,8 @@
 2. Constance Royale comptée en semaines : au moins 3 jours de travail dans la semaine.
 3. Mots affichés : **Pansées** (l'XP) et **Tour de panse** (le niveau), validés le 2026-10-18.
 4. Images : SVG d'abord, remplacées plus tard par des images faites par IA.
+5. Forfait de révision précisé après revue (validé le 2026-10-18) : il tombe quand l'élève a révisé
+   au moins 10 cartes dans la journée, ou quand il vide un paquet après en avoir révisé au moins 3.
 
 ## Découpage
 
@@ -37,6 +39,11 @@ gidouilles). Correction prévue en PR 2.
 
 ## Avancement
 
-- [ ] PR 1
+- [x] PR 1 — revue de code et audit de sécurité passés (aucun bloquant), corrections faites.
+      Limite connue : le compte des 10 cartes lit `srs_card_stats.last_review`, que remplissent aussi
+      les réponses d'Entraînement et de flash ; un élève qui a fait un Entraînement de 10 questions
+      touche le forfait dès sa première carte de révision. Borné par le plafond de 100 pansées par jour.
+      Reportés à la PR 2 : course lire-modifier-écrire de `addExploredThemes` (ajout à faire en SQL),
+      policy UPDATE « own » de `srs_review_sessions` (`completed_at` remis à vide).
 - [ ] PR 2
 - [ ] PR 3

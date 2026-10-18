@@ -131,25 +131,22 @@ export async function addBuddyXpFromTest(
 		daily_cap_reached: false
 	};
 
-	// Thèmes nouveaux de la séance, enregistrés en une seule écriture vérifiée
-	const sessionThemes = [
-		...new Set(answers.flatMap((answer) => (answer.theme ? [answer.theme] : [])))
-	];
-	const newThemes =
-		sessionThemes.length > 0
-			? await addExploredThemes(supabase, buddy, sessionThemes)
-			: new Set<string>();
-	const hadNewTheme = newThemes.size > 0;
+	// Bonus « nouveau thème » : calculé sur les thèmes déjà explorés, CRÉDITÉ, puis
+	// seuls les thèmes payés sont marqués (un thème non payé restera « nouveau »).
+	const explored = new Set(buddy.themes_explored);
+	const bonusThemes = new Set<string>();
+	/** Thème dont la réponse porte le bonus → XP cumulée à la fin de cette réponse. */
+	const themeDueAt = new Map<string, number>();
 
-	// Calculate total XP for all answers
 	let totalBaseXp = 0;
 	for (let i = 0; i < answers.length; i++) {
 		const answer = answers[i];
-		const isNewTheme = answer.theme ? newThemes.has(answer.theme) : false;
-		// Only count theme bonus once per theme
-		if (isNewTheme && answer.theme) newThemes.delete(answer.theme);
+		// Un seul bonus par thème : la première réponse qui le porte
+		const isNewTheme =
+			!!answer.theme && !explored.has(answer.theme) && !bonusThemes.has(answer.theme);
+		if (isNewTheme && answer.theme) bonusThemes.add(answer.theme);
 
-		const { xp } = calculateXpGain({
+		const { xp, capped } = calculateXpGain({
 			isCorrect: answer.isCorrect,
 			isFirstOfDay: i === 0 && isFirstOfDay,
 			isNewTheme,
@@ -157,6 +154,8 @@ export async function addBuddyXpFromTest(
 			xpEarnedToday: xpEarnedToday + totalBaseXp
 		});
 		totalBaseXp += xp;
+		// Bonus tronqué par le plafond (calcul local) : pas payé, thème non marqué
+		if (isNewTheme && answer.theme && !capped) themeDueAt.set(answer.theme, totalBaseXp);
 	}
 
 	// Add all XP in one RPC call
@@ -164,6 +163,17 @@ export async function addBuddyXpFromTest(
 		lastXpResult = await addBuddyXp(studentId, totalBaseXp, false);
 		totalXpGained += lastXpResult.xp_gained;
 	}
+
+	// Crédit partiel (plafond appliqué par la base) : le crédit couvre les réponses
+	// dans l'ordre ; un thème est payé si l'XP cumulée jusqu'à SA réponse l'est.
+	const creditedBaseXp = lastXpResult.xp_gained;
+	const paidThemes = [...themeDueAt]
+		.filter(([, dueAt]) => dueAt <= creditedBaseXp)
+		.map(([theme]) => theme);
+	const newThemes =
+		paidThemes.length > 0
+			? await addExploredThemes(supabase, buddy, paidThemes)
+			: new Set<string>();
 
 	// Handle streak
 	let streakUpdated = false;
@@ -194,8 +204,7 @@ export async function addBuddyXpFromTest(
 		streakUpdated,
 		newStreak,
 		streakBonusXp,
-		// Les thèmes sont retirés de `newThemes` au fil du calcul : lire l'état d'avant
-		isNewTheme: hadNewTheme
+		isNewTheme: newThemes.size > 0
 	};
 }
 

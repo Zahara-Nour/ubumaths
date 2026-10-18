@@ -12,6 +12,9 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import ReviewSession from '../ReviewSession.svelte';
+import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+import { toaster } from '$lib/stores/toaster.svelte';
+import type { BuddyState } from '$lib/types/buddy';
 
 const source = { kind: 'chapter', chapterId: 'c1' } as const;
 const texte = (container: HTMLElement) => container.textContent!.replace(/\s+/g, ' ').trim();
@@ -25,6 +28,8 @@ function respond(status: number, body: unknown) {
 
 afterEach(() => {
 	vi.unstubAllGlobals();
+	vi.restoreAllMocks();
+	studentCache.hydrateBuddy(null);
 });
 
 describe('ReviewSession — états de chargement', () => {
@@ -133,6 +138,28 @@ describe('ReviewSession — gain du Palotin en fin de séance', () => {
 			}
 		});
 		await expect.poll(() => texte(container)).toContain('Cotice a gagné 5 pansées');
+	});
+
+	it('panne du côté du Palotin : la révision reste enregistrée, aucune erreur de soumission', async () => {
+		studentCache.hydrateBuddy({ ...buddy, palotin_type: 'cotice' } as BuddyState);
+		vi.spyOn(studentCache, 'updateBuddyXpOptimistic').mockImplementation(() => {
+			throw new Error('cache en panne');
+		});
+		const toastError = vi.spyOn(toaster, 'error');
+		const container = await finishSession({
+			success: true,
+			buddy_xp: {
+				xpResult: {
+					xp_gained: 5,
+					new_xp: 45,
+					new_level: 2,
+					leveled_up: false,
+					daily_cap_reached: false
+				}
+			}
+		});
+		expect(texte(container)).toContain('Session terminée');
+		expect(toastError).not.toHaveBeenCalled();
 	});
 
 	it('réponse sans buddy_xp : la séance se termine, sans gain affiché', async () => {

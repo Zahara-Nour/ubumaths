@@ -80,14 +80,16 @@ const PALOTIN_NAMES: Record<PalotinType, string> = {
 
 /**
  * Gain contenu dans une réponse du serveur. `null` si le champ `buddy_xp`
- * manque, vaut `null`, est mal formé, ou si rien n'a été gagné.
+ * manque, vaut `null`, est mal formé, ou si rien n'a été gagné SANS plafond.
+ * Plafond du jour déjà atteint (0 gagné) : rendu quand même, pour que la
+ * carte dise « panse pleine » plutôt que de se taire.
  */
 export function parseBuddyGain(payload: unknown): BuddyGain | null {
 	if (typeof payload !== 'object' || payload === null || !('buddy_xp' in payload)) return null;
 	const parsed = buddyXpSchema.safeParse(payload.buddy_xp);
 	if (!parsed.success) return null;
 	const { xpResult, streakUpdated, newStreak } = parsed.data;
-	if (xpResult.xp_gained <= 0) return null;
+	if (xpResult.xp_gained <= 0 && !xpResult.daily_cap_reached) return null;
 	return {
 		xpGained: xpResult.xp_gained,
 		newLevel: xpResult.new_level,
@@ -131,13 +133,27 @@ export function toBuddyGainView(gain: BuddyGain, palotin: PalotinType): BuddyGai
  * pas d'ajout optimiste, il serait compté deux fois.
  */
 export async function receiveBuddyGain(payload: unknown): Promise<BuddyGainView | null> {
+	// La séance est déjà enregistrée quand on arrive ici : une panne du Palotin
+	// ne doit jamais remonter à l'appelant comme un échec d'enregistrement
+	try {
+		return await applyBuddyGain(payload);
+	} catch (error) {
+		console.error('Gain du Palotin ignoré :', error);
+		return null;
+	}
+}
+
+async function applyBuddyGain(payload: unknown): Promise<BuddyGainView | null> {
 	const gain = parseBuddyGain(payload);
 	if (!gain) return null;
 
 	const cached = studentCache.getBuddySync();
 	if (cached) {
-		const newLevel = gain.leveledUp ? gain.newLevel : undefined;
-		studentCache.updateBuddyXpOptimistic(gain.xpGained, newLevel, gain.newStreak);
+		// Plafond déjà atteint : rien à ajouter au widget
+		if (gain.xpGained > 0) {
+			const newLevel = gain.leveledUp ? gain.newLevel : undefined;
+			studentCache.updateBuddyXpOptimistic(gain.xpGained, newLevel, gain.newStreak);
+		}
 		return toBuddyGainView(gain, cached.palotin_type);
 	}
 

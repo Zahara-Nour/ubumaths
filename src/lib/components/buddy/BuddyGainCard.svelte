@@ -6,7 +6,8 @@
 	Course aux nombres (`/automaths/test`) et la séance de révision espacée.
 
 	Props :
-	- gain : préparé par `receiveBuddyGain` ; `null` → rien n'est affiché.
+	- gain : préparé par `receiveBuddyGain` ; `null`, ou 0 gagné sans plafond → rien
+	  n'est affiché. Plafond déjà atteint (0 gagné) : seulement « panse pleine ».
 -->
 
 <script lang="ts">
@@ -21,7 +22,7 @@
 	let { gain }: Props = $props();
 </script>
 
-{#if gain && gain.xpGained > 0}
+{#if gain && (gain.xpGained > 0 || gain.dailyCapReached)}
 	<section
 		class="flex items-start gap-3 rounded-lg border bg-muted/40 p-3"
 		aria-label="Gain de ton Palotin"
@@ -29,9 +30,11 @@
 	>
 		<BuddyAvatar palotin={gain.palotin} expression={gain.expression} size="sm" />
 		<div class="min-w-0 flex-1 space-y-1">
-			<p class="text-sm font-medium">
-				{palotinName(gain.palotin)} a gagné {formatXpAmount(gain.xpGained)}
-			</p>
+			{#if gain.xpGained > 0}
+				<p class="text-sm font-medium">
+					{palotinName(gain.palotin)} a gagné {formatXpAmount(gain.xpGained)}
+				</p>
+			{/if}
 			{#if gain.message}
 				<p class="text-sm text-muted-foreground italic">« {gain.message} »</p>
 			{/if}

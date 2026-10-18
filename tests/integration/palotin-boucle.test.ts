@@ -9,8 +9,9 @@
  *   question rejoint `themes_explored` (bonus « nouveau thème ») ;
  * - une séance flash ne rapporte rien (auto-évaluée) ;
  * - un élève sans Palotin enregistre sa séance, aucune ligne Palotin n'est créée ;
- * - une séance de révision espacée rapporte son forfait quand la DERNIÈRE carte
- *   due est passée, et une seule fois dans la journée.
+ * - révision espacée (règle du 2026-10-18) : forfait à la 10e carte du jour même
+ *   sans carte due (révision forcée) ; pas pour un paquet d'une carte ; forfait
+ *   quand le paquet est vidé après au moins 3 cartes ; jamais deux fois par jour.
  *
  * @vitest-environment node
  */
@@ -24,7 +25,11 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import type { Database } from '$lib/types/database';
-import { XP_SOURCES } from '$lib/utils/buddy-xp';
+import {
+	REVIEW_REWARD_CARDS_ANY_DECK,
+	REVIEW_REWARD_CARDS_EMPTIED_DECK,
+	XP_SOURCES
+} from '$lib/utils/buddy-xp';
 
 // `add_buddy_xp` et la lecture des cartes de cours partent au client service :
 // le brancher sur la base LOCALE.
@@ -54,8 +59,6 @@ let teacher: Person;
 let withBuddy: Person;
 let withoutBuddy: Person;
 let themeId: string;
-let deckId: string;
-let cardIds: string[];
 
 // Functions
 async function clientFor(email: string): Promise<SupabaseClient<Database>> {
@@ -160,7 +163,7 @@ async function save(p: Person, mode: 'interactive' | 'flash') {
 	return (await response.json()) as { sessionId: string; buddy_xp: unknown };
 }
 
-async function review(p: Person, cardId: string) {
+async function review(p: Person, deckId: string, cardId: string) {
 	const response = await reviewSubmitRoute({
 		locals: buildLocals(p),
 		request: postRequest({ cardId, deckId, grade: 3 })
@@ -170,6 +173,63 @@ async function review(p: Person, cardId: string) {
 		success: boolean;
 		buddy_xp: { xpResult: { xp_gained: number } } | null;
 	};
+}
+
+/** Un élève qui a déjà son Palotin (posé au service, comme après le quiz). */
+async function studentWithBuddy(): Promise<Person> {
+	const p = await person('student');
+	const { error } = await service
+		.from('student_buddies')
+		.insert({ student_id: p.id, palotin_type: 'pile' });
+	if (error) throw new Error(`décor student_buddies : ${error.message}`);
+	return p;
+}
+
+/**
+ * Paquet de `count` cartes libres. `notDue` : chaque carte a déjà été révisée
+ * hier et n'est due que dans un mois (seule une révision forcée la propose).
+ */
+async function deckOf(owner: Person, count: number, notDue = false) {
+	const deckId = await insertRow('srs_decks', {
+		owner_id: owner.id,
+		name: `Paquet Palotin ${crypto.randomUUID().slice(0, 8)}`,
+		deck_type: 'personal'
+	});
+	const cardIds: string[] = [];
+	for (let i = 0; i < count; i++) {
+		const cardId = await insertRow('srs_cards', {
+			deck_id: deckId,
+			card_type: 'custom',
+			front_content: `Recto ${i + 1}`,
+			back_content: 'Verso'
+		});
+		cardIds.push(cardId);
+		if (notDue) {
+			await insertRow('srs_card_stats', {
+				user_id: owner.id,
+				card_reference_type: 'custom',
+				card_reference_id: cardId,
+				difficulty: 5,
+				stability: 30,
+				state: 'review',
+				last_review: new Date(Date.now() - 86_400_000).toISOString(),
+				next_review: new Date(Date.now() + 30 * 86_400_000).toISOString(),
+				total_reviews: 1,
+				review_history: []
+			});
+		}
+	}
+	return { deckId, cardIds };
+}
+
+/** Révise les cartes dans l'ordre ; rend l'XP gagnée par le forfait à chaque carte. */
+async function reviewAll(p: Person, deck: { deckId: string; cardIds: string[] }) {
+	const gains: (number | null)[] = [];
+	for (const cardId of deck.cardIds) {
+		const body = await review(p, deck.deckId, cardId);
+		gains.push(body.buddy_xp?.xpResult.xp_gained ?? null);
+	}
+	return gains;
 }
 
 async function removeDecor() {
@@ -237,24 +297,6 @@ describe('la boucle du Palotin tourne', () => {
 			.from('student_buddies')
 			.insert({ student_id: withBuddy.id, palotin_type: 'giron' });
 		if (buddyError) throw new Error(`décor student_buddies : ${buddyError.message}`);
-
-		// Paquet de révision de l'élève : deux cartes libres, jamais vues (donc dues)
-		deckId = await insertRow('srs_decks', {
-			owner_id: withBuddy.id,
-			name: 'Paquet Palotin boucle',
-			deck_type: 'personal'
-		});
-		cardIds = [];
-		for (const recto of ['Recto 1', 'Recto 2']) {
-			cardIds.push(
-				await insertRow('srs_cards', {
-					deck_id: deckId,
-					card_type: 'custom',
-					front_content: recto,
-					back_content: 'Verso'
-				})
-			);
-		}
 	}, 120_000);
 
 	afterAll(async () => {
@@ -297,30 +339,58 @@ describe('la boucle du Palotin tourne', () => {
 		expect(await buddyOf(withoutBuddy)).toBeNull();
 	});
 
-	it('révision : rien tant qu’il reste une carte due, le forfait à la dernière, une fois', async () => {
-		const start = (await buddyOf(withBuddy))?.xp ?? 0;
+	it('révision forcée, une carte due jamais passée (écartée) : forfait à la 10e carte', async () => {
+		const p = await studentWithBuddy();
+		// 10 cartes non dues, repassées en révision forcée ; une carte due restera
+		// due (comme une carte que `review/due` écarte) : la règle (b) ne joue pas.
+		const forced = await deckOf(p, REVIEW_REWARD_CARDS_ANY_DECK, true);
+		await insertRow('srs_cards', {
+			deck_id: forced.deckId,
+			card_type: 'custom',
+			front_content: 'Carte écartée',
+			back_content: 'Verso'
+		});
 
-		// Première carte : il en reste une due
-		const first = await review(withBuddy, cardIds[0]);
-		expect(first.buddy_xp).toBeNull();
-		expect((await buddyOf(withBuddy))?.xp).toBe(start);
+		const gains = await reviewAll(p, forced);
 
-		// Dernière carte due : la séance est terminée → forfait
-		const last = await review(withBuddy, cardIds[1]);
-		expect(last.buddy_xp?.xpResult.xp_gained).toBe(XP_SOURCES.review_session);
-		expect((await buddyOf(withBuddy))?.xp).toBe(start + XP_SOURCES.review_session);
+		expect(gains.slice(0, -1)).toEqual(Array(REVIEW_REWARD_CARDS_ANY_DECK - 1).fill(null));
+		expect(gains.at(-1)).toBe(XP_SOURCES.review_session);
+		expect((await buddyOf(p))?.xp).toBe(XP_SOURCES.review_session);
+	});
+
+	it('révision forcée d’un paquet sans carte due : forfait dès la 3e carte (règle b)', async () => {
+		const p = await studentWithBuddy();
+		const gains = await reviewAll(p, await deckOf(p, 4, true));
+		expect(gains).toEqual([null, null, XP_SOURCES.review_session, null]);
+	});
+
+	it('paquet d’une seule carte : pas de forfait pour un clic', async () => {
+		const p = await studentWithBuddy();
+		const gains = await reviewAll(p, await deckOf(p, 1));
+
+		expect(gains).toEqual([null]);
+		expect((await buddyOf(p))?.xp).toBe(0);
+	});
+
+	it('paquet vidé après 3 cartes : forfait à la dernière, une seule fois ; autre paquet fini ensuite : rien', async () => {
+		const p = await studentWithBuddy();
+		const first = await deckOf(p, REVIEW_REWARD_CARDS_EMPTIED_DECK);
+
+		expect(await reviewAll(p, first)).toEqual([null, null, XP_SOURCES.review_session]);
+		expect((await buddyOf(p))?.xp).toBe(XP_SOURCES.review_session);
 
 		const { data: sessions } = await service
 			.from('srs_review_sessions')
 			.select('completed_at')
-			.eq('user_id', withBuddy.id)
-			.eq('deck_id', deckId);
+			.eq('user_id', p.id)
+			.eq('deck_id', first.deckId);
 		expect(sessions).toHaveLength(1);
 		expect(sessions?.[0]?.completed_at).not.toBeNull();
 
-		// Une nouvelle révision le même jour : plus de forfait
-		const again = await review(withBuddy, cardIds[0]);
-		expect(again.buddy_xp).toBeNull();
-		expect((await buddyOf(withBuddy))?.xp).toBe(start + XP_SOURCES.review_session);
+		// Même paquet repassé, puis un autre paquet vidé le même jour : plus de forfait
+		expect(await reviewAll(p, first)).toEqual([null, null, null]);
+		const second = await deckOf(p, REVIEW_REWARD_CARDS_EMPTIED_DECK);
+		expect(await reviewAll(p, second)).toEqual([null, null, null]);
+		expect((await buddyOf(p))?.xp).toBe(XP_SOURCES.review_session);
 	});
 });

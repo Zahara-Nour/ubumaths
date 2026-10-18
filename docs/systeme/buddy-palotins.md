@@ -94,29 +94,32 @@ L'XP buddy est le **reflet de l'investissement de l'eleve dans la duree**. Pas d
 
 ### Sources d'XP
 
-| Action                                        | XP  | Pourquoi                             |
-| --------------------------------------------- | --- | ------------------------------------ |
-| Exercice complete (bonne reponse)             | 10  | Recompense de base                   |
-| Exercice complete (mauvaise reponse)          | 3   | L'effort compte, pas que le resultat |
-| Exercice corrige apres erreur                 | 7   | Encourage a reessayer                |
-| Premier exercice du jour                      | 5   | Juste se connecter et commencer      |
-| Streak journalier (connexion + 1 exo minimum) | 15  | Regularite                           |
-| Bonus streak x7 jours                         | 50  | Milestone hebdomadaire (hors cap)    |
-| Bonus streak x14 jours                        | 100 | Milestone bi-hebdomadaire (hors cap) |
-| Bonus streak x30 jours                        | 300 | Milestone mensuel (hors cap)         |
-| Nouvelle thematique exploree                  | 25  | Curiosite                            |
-| Seance de revision espacee terminee (1/jour)  | 20  | L'effort (cartes auto-evaluees)      |
+| Action                                           | XP  | Pourquoi                             |
+| ------------------------------------------------ | --- | ------------------------------------ |
+| Exercice complete (bonne reponse)                | 10  | Recompense de base                   |
+| Exercice complete (mauvaise reponse)             | 3   | L'effort compte, pas que le resultat |
+| Exercice corrige apres erreur                    | 7   | Encourage a reessayer                |
+| Premier exercice du jour                         | 5   | Juste se connecter et commencer      |
+| Streak journalier (connexion + 1 exo minimum)    | 15  | Regularite                           |
+| Bonus streak x7 jours                            | 50  | Milestone hebdomadaire (hors cap)    |
+| Bonus streak x14 jours                           | 100 | Milestone bi-hebdomadaire (hors cap) |
+| Bonus streak x30 jours                           | 300 | Milestone mensuel (hors cap)         |
+| Nouvelle thematique exploree                     | 25  | Curiosite                            |
+| Revision espacee du jour (1/jour, voir plus bas) | 20  | L'effort (cartes auto-evaluees)      |
 
 **Thematique** = le theme du programme (`curriculum_themes.id`) du point que valide la question
 (`question_template_points` → `curriculum_points` → `curriculum_objectives`), lu par
 `fetchTemplateThemeIds` (`src/lib/server/buddy-themes.ts`) en une requete par seance. Une question
 sans point n'a pas de theme ; une question rattachee a plusieurs themes recoit toujours le plus petit
-identifiant. Les themes d'une seance sont ajoutes a `themes_explored` en une ecriture verifiee
-(`addExploredThemes`) : un theme non ecrit ne rapporte pas de bonus.
+identifiant. Le bonus est calcule sur `themes_explored`, credite, puis seuls les themes PAYES sont
+ecrits (`addExploredThemes`, une ecriture verifiee). Credit partiel : le credit couvre les reponses
+dans l'ordre ; un theme est paye si l'XP cumulee jusqu'a la reponse qui porte son bonus est creditee
+en entier (bonus tronque par le plafond, ou credit en echec → theme non marque, il restera nouveau).
 
-**Revision espacee** (decision de David, 2026-10-18) : forfait `XP_SOURCES.review_session` quand la
-derniere carte due d'un paquet est passee, au plus une fois par jour (`rewardFinishedReviewSession`,
-detail dans [srs.md](srs.md)). Une seance flash et une carte de cours ne rapportent rien.
+**Revision espacee** (decision de David, 2026-10-18) : forfait `XP_SOURCES.review_session`, au plus
+une fois par jour, quand l'eleve a revise au moins 10 cartes dans la journee (tous paquets), ou qu'il
+vide un paquet (plus aucune carte due) apres au moins 3 cartes. Detail dans [srs.md](srs.md)
+(`rewardFinishedReviewSession`). Une seance flash et une carte de cours ne rapportent rien.
 
 **Principe fondamental** : l'XP ne s'achete PAS avec des gidouilles. Elle se merite par le travail.
 

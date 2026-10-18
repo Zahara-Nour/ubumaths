@@ -36,6 +36,15 @@ export const XP_TABLE = [
 export const MAX_LEVEL = 20;
 export const DAILY_XP_CAP = 100;
 
+/**
+ * Forfait de révision espacée (revue du 2026-10-18) : il tombe quand l'élève a
+ * révisé au moins `REVIEW_REWARD_CARDS_ANY_DECK` cartes dans la journée, tous
+ * paquets confondus, ou qu'il a vidé le paquet (plus aucune carte due) après au
+ * moins `REVIEW_REWARD_CARDS_EMPTIED_DECK` cartes.
+ */
+export const REVIEW_REWARD_CARDS_ANY_DECK = 10;
+export const REVIEW_REWARD_CARDS_EMPTIED_DECK = 3;
+
 /** XP awarded per action */
 export const XP_SOURCES = {
 	correct: 10,
