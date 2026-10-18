@@ -200,3 +200,11 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   (`2T`, `g(1)`, `J`), pleine précision avant l'affichage ; mesures dans les constructions et les
   coordonnées, `A = (AM ; 0)` refusé ; `distance(A, milieu(B, C))` ; polygone dégénéré refusé ;
   valeur non finie refusée. `angle` non touché (question à David).
+- 2026-10-18 : décisions de David — `angle` rend une grandeur (°, rad) selon un nouveau réglage
+  « Angles » (degrés par défaut, rangé dans ce navigateur, pas dans l'état : `persistence.ts`
+  inchangé) ; « Garder » une mesure garde la mesure ; `distance(N, [AB])`, `distance(N, [AB))`
+  et un segment ou une demi-droite nommés sont refusés avec l'aide `distance(N, (AB))`. La ligne
+  de la carte d'une mesure passe dans `ValueCard` (lot 4a de la refonte). Tests d'abord
+  (`mesures-angle.test.ts`, 4 de revue et 1 navigateur) ; attentes changées par la décision : `90`
+  → `90 °`, `≈ 36,8699` → `≈ 36,8699 °`, `g(x) = angle(…)·x` désormais refusée, `J = angle(…) + 0`
+  écrit `+ 0[°]`. **À trancher** : une fonction qui cite un angle est refusée (même `cos(angle(…))·x`).

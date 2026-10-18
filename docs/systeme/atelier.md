@@ -304,13 +304,13 @@ l'atelier calcule, jamais la `Figure`. Règles :
 d'abord, citables partout où une valeur l'est (Calcul, définition d'une valeur ou d'une fonction,
 moteur, Graphe par la substitution) :
 
-| Écrit                                   | Vaut                                                                                                                          |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `AM` (deux points de l'atelier, collés) | la longueur AM (`AE` → `sqrt(5)`) ; `ab` de deux valeurs reste a·b                                                            |
-| `distance(A, B)`, `distance(A, d)`      | longueur, ou distance à la droite qui porte d (droite, segment, demi-droite, `(AB)`), comme le DSL                            |
-| `aire(A, M, N, P)`                      | aire du polygone (≥ 3 points) ; croisé → refus « … est croisé »                                                               |
-| `perimetre(…)`, `périmètre(…)`          | périmètre du polygone fermé (≥ 3 points)                                                                                      |
-| `angle(A, B, C)`                        | l'angle en B, en degrés : exact s'il est remarquable (0, 30, 45, 60, 90, 120, 135, 150, 180), sinon `≈ 36,8699` (4 décimales) |
+| Écrit                                   | Vaut                                                                                                                                                                                                                                                        |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AM` (deux points de l'atelier, collés) | la longueur AM (`AE` → `sqrt(5)`) ; `ab` de deux valeurs reste a·b                                                                                                                                                                                          |
+| `distance(A, B)`, `distance(A, d)`      | longueur, ou distance à une DROITE (`d` droite, `(AB)`) ; à un segment ou une demi-droite (`[AB]`, `[AB)`, `s = [AB]`) : refus « … écris distance(N, (AB)) » (décision de David, 2026-10-18 — le DSL, lui, mesure `distance(A, s)` à la droite qui porte s) |
+| `aire(A, M, N, P)`                      | aire du polygone (≥ 3 points) ; croisé → refus « … est croisé »                                                                                                                                                                                             |
+| `perimetre(…)`, `périmètre(…)`          | périmètre du polygone fermé (≥ 3 points)                                                                                                                                                                                                                    |
+| `angle(A, B, C)`                        | l'angle en B, une **grandeur** dans l'unité du réglage « Angles » : `90 °`, `45 °`, sinon `≈ 36,8699 °` (4 décimales à l'affichage, pleine précision au calcul) ; en radians `π/2 rad`, `≈ 0,6435 rad`                                                      |
 
 Lecture : `measures-read.ts` repère les appels (texte ou LaTeX de MathLive, `\operatorname{aire}`,
 accents, séparateurs de `construction-read.ts`) ; `parseDefinition` lit le reste comme un nombre.
@@ -322,7 +322,12 @@ est une valeur **sans `slider`** (comme une grandeur, D4 — critère de la cart
 (fin de `recomputeAll`) retire ou rend le curseur quand une valeur devient ou cesse d'être une
 mesure (`S = AM` tapé avant A et M), et met en erreur ce qui ne se calcule pas (polygone croisé,
 sommet confondu). Elle cite ses points (D9, cascade) ; un point cité HORS d'une mesure reste
-refusé (P9). La carte en montre la valeur (`.valeur`, `measureSummaryOf`). Revue (2026-10-18) : une mesure se cite aussi
+refusé (P9). La carte de valeur en montre la valeur (`ValueCard`, ligne `.mesure`, `measureSummaryOf`).
+Décisions de David (2026-10-18) : **un angle est une grandeur** (`(60[°])`, `((\pi/3)[rad])`
+dans le texte lu par le moteur) — `cos(angle(…))` se calcule, `angle(…) + 1` est refusé par la
+règle des grandeurs, une fonction ou une suite qui cite une mesure d'angle est en erreur (choix
+prudent : « une mesure d'angle est une grandeur… ») ; **« Garder »** une ligne de mesure crée une
+valeur de cette définition (`CalcResult.measure`), qui suit ses points. Revue (2026-10-18) : une mesure se cite aussi
 dans les nombres d'une construction (`cercle(A ; AM)`) et dans des coordonnées (`G = (aire(B, C, D) ;
 0)`, `engine.substitutedTextOf` → `Atelier.measuredTextOf`) ; `A = (AM ; 0)` est refusé (circulaire) ;
 renommer un point réécrit les `AM` (`renamePairs`, texte et LaTeX) ; un polygone à sommets confondus
@@ -1350,7 +1355,11 @@ une définition ; une ligne sans formule (`.stats`) copie son texte.
 ### Réglages et écriture mathématique
 
 Le bouton **« Réglages »** de la barre du haut (`AtelierSettings.svelte`, 2026-10-14) ouvre une
-fenêtre au réglage unique, **« Saisie dans Calcul »** : **Texte** (le champ de toujours, un point
+fenêtre à deux réglages. **« Angles »** (2026-10-18, `angle-unit.ts`) : **Degrés** (le défaut,
+comme `unite_angle` du DSL) ou **Radians** — l'unité des seules mesures d'angle (`angle(A, B, C)`) ;
+un nombre seul reste en radians (`cos(60)`, dérivées, tracés inchangés). Retenu dans ce navigateur
+(`chiphre-atelier-angles`), posé sur l'atelier par `setAngleUnit` (hors `serialize()`, qui
+recalcule), jamais dans un lien. **« Saisie dans Calcul »** : **Texte** (le champ de toujours, un point
 devant les commandes ; le défaut) ou **Écriture mathématique** (MathLive, sans point, marquée « en
 essai »). Le choix prend effet tout de suite et reste dans le navigateur (`chiphre-atelier-saisie`,
 à part de l'atelier) : ni dans un lien, ni dans un export ; présent aussi sur un atelier reçu.
