@@ -16,8 +16,12 @@ import { parseBuddyGain, receiveBuddyGain, toBuddyGainView } from '../buddy-gain
 import { buddyMessages } from '$lib/config/buddy-messages';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 import type { BuddyState } from '$lib/types/buddy';
+import { utcDay, weekStartOf } from '$lib/utils/buddy-constance';
 
 // Constantes
+/** Lundi de la semaine en cours (UTC) et celui d'il y a deux semaines. */
+const THIS_WEEK = weekStartOf(utcDay());
+const TWO_WEEKS_AGO = utcDay(new Date(Date.parse(`${THIS_WEEK}T00:00:00Z`) - 14 * 86_400_000));
 const texte = (container: HTMLElement) => container.textContent!.replace(/\s+/g, ' ').trim();
 
 const buddy: BuddyState = {
@@ -32,7 +36,9 @@ const buddy: BuddyState = {
 	last_xp_date: null,
 	themes_explored: [],
 	change_count: 0,
-	equipped_skin_id: null
+	equipped_skin_id: null,
+	constance_week_start: THIS_WEEK,
+	constance_days_this_week: 1
 };
 
 /** Réponse de `POST /api/tests/save` portant un gain. */
@@ -213,5 +219,96 @@ describe('BuddyStatusPanel — mots du lore', () => {
 		expect(shown).toMatch(/\d+ \/ \d+ pansées/);
 		expect(shown).not.toContain('XP');
 		expect(shown).not.toContain('Niveau');
+	});
+});
+
+describe('BuddyStatusPanel — Constance Royale en semaines', () => {
+	async function shownFor(overrides: Partial<BuddyState>) {
+		const { container } = await render(BuddyStatusPanel, {
+			buddy: { ...buddy, ...overrides },
+			onClose: () => {},
+			onChangePalotin: () => {}
+		});
+		return texte(container);
+	}
+
+	it('Constance, jours de la semaine en cours et record, en semaines', async () => {
+		const shown = await shownFor({
+			current_streak: 3,
+			longest_streak: 5,
+			constance_days_this_week: 2
+		});
+		expect(shown).toContain('Constance Royale : 3 semaines');
+		expect(shown).toContain('Cette semaine : 2 jours sur 3');
+		expect(shown).toContain('Record : 5 semaines');
+		expect(shown).not.toContain('jour de suite');
+		expect(shown).not.toMatch(/Serie|Série/);
+	});
+
+	it('singulier : 1 semaine, 1 jour sur 3', async () => {
+		const shown = await shownFor({
+			current_streak: 1,
+			longest_streak: 1,
+			constance_days_this_week: 1
+		});
+		expect(shown).toContain('Constance Royale : 1 semaine');
+		expect(shown).toContain('Cette semaine : 1 jour sur 3');
+		expect(shown).toContain('Record : 1 semaine');
+	});
+
+	it('semaine tenue au-delà de 3 jours : « 3 jours sur 3 »', async () => {
+		expect(await shownFor({ constance_days_this_week: 5 })).toContain(
+			'Cette semaine : 3 jours sur 3'
+		);
+	});
+
+	it('dernière semaine enregistrée il y a deux semaines : Constance 0, 0 jour cette semaine', async () => {
+		const shown = await shownFor({
+			current_streak: 4,
+			constance_week_start: TWO_WEEKS_AGO,
+			constance_days_this_week: 3
+		});
+		expect(shown).toContain('Constance Royale : 0 semaine');
+		expect(shown).toContain('Cette semaine : 0 jour sur 3');
+	});
+});
+
+describe('receiveBuddyGain — Constance Royale à jour sans recharger', () => {
+	it('jour compté : Constance et jours de la semaine mis à jour dans le widget', async () => {
+		studentCache.hydrateBuddy({ ...buddy, current_streak: 2, constance_days_this_week: 2 });
+		const payload = saveResponse();
+		await receiveBuddyGain({
+			...payload,
+			buddy_xp: {
+				...payload.buddy_xp,
+				streakUpdated: true,
+				newStreak: 3,
+				streakBonusXp: 30,
+				constanceWeekStart: THIS_WEEK,
+				constanceDaysThisWeek: 3
+			}
+		});
+		const updated = studentCache.getBuddySync();
+		expect(updated?.current_streak).toBe(3);
+		expect(updated?.constance_week_start).toBe(THIS_WEEK);
+		expect(updated?.constance_days_this_week).toBe(3);
+	});
+
+	it('jour non compté : la Constance du widget ne bouge pas', async () => {
+		studentCache.hydrateBuddy({ ...buddy, current_streak: 2, constance_days_this_week: 2 });
+		await receiveBuddyGain(saveResponse());
+		const updated = studentCache.getBuddySync();
+		expect(updated?.current_streak).toBe(2);
+		expect(updated?.constance_days_this_week).toBe(2);
+	});
+});
+
+describe('répliques de Constance perdue — en semaines', () => {
+	it('chaque Palotin parle de la semaine manquée, jamais d’une série de jours', () => {
+		for (const palotin of ['giron', 'pile', 'cotice'] as const) {
+			const lines = buddyMessages[palotin].streak_lost;
+			expect(lines.length).toBeGreaterThan(0);
+			for (const line of lines) expect(line).toMatch(/semaine|Constance/i);
+		}
 	});
 });

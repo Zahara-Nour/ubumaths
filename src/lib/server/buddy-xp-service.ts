@@ -8,12 +8,13 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import type { BuddyXpGainResult } from '$lib/types/buddy';
-import { calculateXpGain, calculateStreakBonus, XP_SOURCES } from './buddy-xp';
+import type { BuddyState, BuddyXpGainResult } from '$lib/types/buddy';
+import { calculateXpGain, calculateConstanceBonus, XP_SOURCES } from './buddy-xp';
+import { isDayCounted, utcDay } from '$lib/utils/buddy-constance';
 import {
 	getStudentBuddy,
 	addBuddyXp,
-	updateStreak,
+	recordWorkedDay,
 	addExploredTheme,
 	addExploredThemes,
 	removeExploredThemes
@@ -24,12 +25,32 @@ export interface ExerciseXpParams {
 	theme?: string;
 }
 
+/**
+ * Gain renvoyé aux routes (`buddy_xp`). Constance Royale (en semaines) :
+ * `streakUpdated` = ce crédit a compté le jour travaillé ; `newStreak` = la
+ * Constance après lui ; `streakBonusXp` = récompense de la semaine tenue (+30
+ * ou palier). `constanceWeekStart` / `constanceDaysThisWeek` : présents quand
+ * le jour a été compté (affichage « Cette semaine : x jours sur 3 »).
+ */
 export interface BuddyXpFromExerciseResult {
 	xpResult: BuddyXpGainResult;
 	streakUpdated: boolean;
 	newStreak: number;
 	streakBonusXp: number;
 	isNewTheme: boolean;
+	constanceWeekStart?: string;
+	constanceDaysThisWeek?: number;
+}
+
+/** Effet d'un crédit sur la Constance Royale. */
+interface WorkedDayReward {
+	streakUpdated: boolean;
+	newStreak: number;
+	streakBonusXp: number;
+	/** Dernier crédit fait ici (récompense de la semaine), sinon null */
+	bonusResult: BuddyXpGainResult | null;
+	constanceWeekStart?: string;
+	constanceDaysThisWeek?: number;
 }
 
 /** XP de base d'une séance et réponse qui porte le bonus de chaque thème. */
@@ -39,6 +60,64 @@ interface TestXpPlan {
 	themeDueAt: Map<string, number>;
 }
 
+// Functions
+
+/**
+ * Constance Royale après un crédit (spécification du 2026-10-18) : un jour
+ * travaillé = un jour où l'élève a gagné des pansées. Le jour n'est compté que
+ * si CE crédit a rapporté (`creditedXp` > 0) et que la ligne lue ne le dit pas
+ * déjà compté. Le 3e jour de la semaine, la semaine est tenue : +30 dans le
+ * plafond, ou le palier de 4 / 8 / 16 semaines hors plafond.
+ */
+async function rewardWorkedDay(
+	studentId: string,
+	buddy: BuddyState,
+	creditedXp: number
+): Promise<WorkedDayReward> {
+	const unchanged: WorkedDayReward = {
+		streakUpdated: false,
+		newStreak: buddy.current_streak,
+		streakBonusXp: 0,
+		bonusResult: null
+	};
+	if (creditedXp <= 0 || isDayCounted(buddy, utcDay())) return unchanged;
+
+	const day = await recordWorkedDay(studentId);
+	if (day.status !== 'counted') return unchanged;
+
+	let streakBonusXp = 0;
+	let bonusResult: BuddyXpGainResult | null = null;
+	if (day.weekHeld) {
+		const bonus = calculateConstanceBonus(day.newStreak);
+		bonusResult = await addBuddyXp(studentId, bonus.xp, bonus.isMilestone);
+		streakBonusXp = bonusResult.xp_gained;
+	}
+
+	return {
+		streakUpdated: true,
+		newStreak: day.newStreak,
+		streakBonusXp,
+		bonusResult,
+		constanceWeekStart: day.constanceWeekStart,
+		constanceDaysThisWeek: day.constanceDaysThisWeek
+	};
+}
+
+/** Champs Constance du gain rendu. */
+function constanceFields(reward: WorkedDayReward) {
+	return {
+		streakUpdated: reward.streakUpdated,
+		newStreak: reward.newStreak,
+		streakBonusXp: reward.streakBonusXp,
+		...(reward.streakUpdated
+			? {
+					constanceWeekStart: reward.constanceWeekStart,
+					constanceDaysThisWeek: reward.constanceDaysThisWeek
+				}
+			: {})
+	};
+}
+
 /**
  * Award XP to a student's buddy from a single exercise/question answer.
  *
@@ -46,7 +125,7 @@ interface TestXpPlan {
  * - Base XP (correct/incorrect)
  * - First exercise of the day bonus
  * - New theme bonus
- * - Streak update + milestone bonuses
+ * - Constance Royale (jour travaillé, semaine tenue, paliers)
  *
  * `supabase` (client de l'élève) ne sert qu'aux lectures ; les écritures
  * passent par le client service, `studentId` venant de la SESSION.
@@ -97,33 +176,16 @@ export async function addBuddyXpFromExercise(
 		isNewTheme = false;
 	}
 
-	// Handle streak (only on first activity of the day)
-	let streakUpdated = false;
-	let newStreak = buddy.current_streak;
-	let streakBonusXp = 0;
-
-	if (isFirstOfDay) {
-		const streakResult = await updateStreak(studentId);
-		streakUpdated = streakResult.wasUpdated;
-		newStreak = streakResult.wasUpdated ? streakResult.newStreak : buddy.current_streak;
-
-		if (streakUpdated) {
-			const bonus = calculateStreakBonus(newStreak);
-			if (bonus.xp > 0) {
-				streakBonusXp = bonus.xp;
-				await addBuddyXp(studentId, bonus.xp, bonus.isMilestone);
-			}
-		}
-	}
+	// Constance Royale : ce crédit compte-t-il le jour travaillé ?
+	const reward = await rewardWorkedDay(studentId, buddy, xpResult.xp_gained);
+	const finalResult = reward.bonusResult ?? xpResult;
 
 	return {
 		xpResult: {
-			...xpResult,
-			xp_gained: xpResult.xp_gained + streakBonusXp
+			...finalResult,
+			xp_gained: xpResult.xp_gained + reward.streakBonusXp
 		},
-		streakUpdated,
-		newStreak,
-		streakBonusXp,
+		...constanceFields(reward),
 		isNewTheme
 	};
 }
@@ -167,7 +229,7 @@ function planTestXp(
  * Award XP from a completed test (batch of questions).
  *
  * Processes each answer individually for XP, but only triggers
- * streak/first-of-day once for the whole test.
+ * Constance/first-of-day once for the whole test.
  *
  * Bonus « nouveau thème » payé une seule fois, même pour deux envois
  * simultanés : les thèmes sont RÉSERVÉS (écrits sous verrou optimiste) avant le
@@ -234,25 +296,11 @@ export async function addBuddyXpFromTest(
 	const unpaid = [...reserved].filter((theme) => !newThemes.has(theme));
 	if (unpaid.length > 0) await removeExploredThemes(studentId, unpaid);
 
-	// Handle streak
-	let streakUpdated = false;
-	let newStreak = buddy.current_streak;
-	let streakBonusXp = 0;
-
-	if (isFirstOfDay) {
-		const streakResult = await updateStreak(studentId);
-		streakUpdated = streakResult.wasUpdated;
-		newStreak = streakResult.wasUpdated ? streakResult.newStreak : buddy.current_streak;
-
-		if (streakUpdated) {
-			const bonus = calculateStreakBonus(newStreak);
-			if (bonus.xp > 0) {
-				streakBonusXp = bonus.xp;
-				const bonusResult = await addBuddyXp(studentId, bonus.xp, bonus.isMilestone);
-				totalXpGained += bonusResult.xp_gained;
-				lastXpResult = bonusResult;
-			}
-		}
+	// Constance Royale : ce crédit compte-t-il le jour travaillé ?
+	const reward = await rewardWorkedDay(studentId, buddy, totalXpGained);
+	if (reward.bonusResult) {
+		totalXpGained += reward.bonusResult.xp_gained;
+		lastXpResult = reward.bonusResult;
 	}
 
 	return {
@@ -260,9 +308,7 @@ export async function addBuddyXpFromTest(
 			...lastXpResult,
 			xp_gained: totalXpGained
 		},
-		streakUpdated,
-		newStreak,
-		streakBonusXp,
+		...constanceFields(reward),
 		isNewTheme: newThemes.size > 0
 	};
 }
@@ -273,7 +319,8 @@ export async function addBuddyXpFromTest(
  *
  * L'appelant a déjà établi que la séance est terminée et que le forfait du jour
  * n'a pas été donné (`rewardFinishedReviewSession`). Soumis au plafond du jour
- * (`add_buddy_xp`). La série n'est pas touchée ici.
+ * (`add_buddy_xp`). Il compte le jour travaillé de la Constance Royale (sans
+ * le +5 du premier travail du jour, réservé aux réponses).
  *
  * Rend la même forme que `addBuddyXpFromTest` (`buddy_xp` des deux routes).
  * Rend null si l'élève n'a pas de Palotin.
@@ -287,11 +334,13 @@ export async function addBuddyXpFromReviewSession(
 
 	const xpResult = await addBuddyXp(studentId, XP_SOURCES.review_session, false);
 
+	// Constance Royale : le forfait est du travail, il compte le jour
+	const reward = await rewardWorkedDay(studentId, buddy, xpResult.xp_gained);
+	const finalResult = reward.bonusResult ?? xpResult;
+
 	return {
-		xpResult,
-		streakUpdated: false,
-		newStreak: buddy.current_streak,
-		streakBonusXp: 0,
+		xpResult: { ...finalResult, xp_gained: xpResult.xp_gained + reward.streakBonusXp },
+		...constanceFields(reward),
 		isNewTheme: false
 	};
 }

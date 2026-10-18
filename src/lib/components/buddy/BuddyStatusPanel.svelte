@@ -2,7 +2,7 @@
 	BuddyStatusPanel
 	==================
 	Panel shown when clicking/tapping the buddy.
-	Displays: XP progress bar, level, streak, change button.
+	Displays: XP progress bar, level, Constance Royale (semaines tenues), change button.
 	Mots affichés : ceux du lore (« Tour de panse », « pansées »), jamais « XP » ni « Niveau ».
 -->
 
@@ -14,6 +14,12 @@
 	import { Flame, Star, ArrowRightLeft, X } from '@lucide/svelte';
 	import { fade } from 'svelte/transition';
 	import { lore } from '$lib/config/lore';
+	import {
+		CONSTANCE_DAYS_PER_WEEK,
+		displayedConstance,
+		displayedDaysThisWeek,
+		utcDay
+	} from '$lib/utils/buddy-constance';
 
 	interface Props {
 		buddy: BuddyState;
@@ -34,6 +40,15 @@
 		progress.needed > 0 ? Math.round((progress.current / progress.needed) * 100) : 100
 	);
 	const isMaxLevel = $derived(buddy.level >= MAX_LEVEL);
+	// Constance Royale : semaines tenues d'affilée, et jours travaillés de la semaine en cours
+	const today = utcDay();
+	const constanceWeeks = $derived(displayedConstance(buddy, today));
+	const daysThisWeek = $derived(displayedDaysThisWeek(buddy, today));
+
+	/** « 1 semaine », « 3 semaines » (0 au singulier, comme 1). */
+	function weeks(count: number): string {
+		return `${count} semaine${count > 1 ? 's' : ''}`;
+	}
 </script>
 
 <div
@@ -69,21 +84,18 @@
 		<Progress value={progressPercent} class="h-2" />
 	</div>
 
-	<!-- Streak -->
-	<div class="mb-3 flex items-center gap-2 text-sm">
+	<!-- Constance Royale -->
+	<div class="mb-1 flex items-center gap-2 text-sm">
 		<Flame class="h-4 w-4 text-orange-500" />
-		<span>
-			{#if buddy.current_streak > 0}
-				Serie de {buddy.current_streak} jour{buddy.current_streak > 1 ? 's' : ''}
-			{:else}
-				Pas de serie en cours
-			{/if}
-		</span>
+		<span>{lore.learning.streak} : {weeks(constanceWeeks)}</span>
+	</div>
+	<div class="mb-3 text-xs text-muted-foreground">
+		Cette semaine : {daysThisWeek} jour{daysThisWeek > 1 ? 's' : ''} sur {CONSTANCE_DAYS_PER_WEEK}
 	</div>
 
 	{#if buddy.longest_streak > 0}
 		<div class="mb-3 text-xs text-muted-foreground">
-			Record : {buddy.longest_streak} jour{buddy.longest_streak > 1 ? 's' : ''}
+			Record : {weeks(buddy.longest_streak)}
 		</div>
 	{/if}
 

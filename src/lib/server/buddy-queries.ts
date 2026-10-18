@@ -25,6 +25,13 @@ import type { PalotinType } from '$lib/config/buddy-messages';
 import { toBuddyState, type BuddyState, type BuddyXpGainResult } from '$lib/types/buddy';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createServerLogger } from '$lib/utils/logger';
+import {
+	applyWorkedDay,
+	constanceReset,
+	utcDay,
+	weekStartOf,
+	type ConstanceReset
+} from '$lib/utils/buddy-constance';
 
 // Types
 type ServiceClient = SupabaseClient<Database>;
@@ -34,6 +41,21 @@ type GuardedWrite =
 	| { status: 'missing' }
 	| { status: 'unchanged'; row: StudentBuddy }
 	| { status: 'written'; before: StudentBuddy; after: StudentBuddy }
+	| { status: 'conflict' };
+
+/** Issue d'un jour travaillé (`recordWorkedDay`). */
+export type WorkedDayResult =
+	| {
+			status: 'counted';
+			/** Vrai le jour où la semaine devient tenue (3e jour travaillé) */
+			weekHeld: boolean;
+			/** Constance Royale après ce jour, en semaines */
+			newStreak: number;
+			constanceWeekStart: string;
+			constanceDaysThisWeek: number;
+	  }
+	| { status: 'already' }
+	| { status: 'missing' }
 	| { status: 'conflict' };
 
 /** Issue d'un changement de Palotin. */
@@ -60,7 +82,7 @@ const UNIQUE_VIOLATION = '23505';
 
 /** Jour UTC courant (`YYYY-MM-DD`), celui du plafond de `add_buddy_xp`. */
 function todayUtc(): string {
-	return new Date().toISOString().split('T')[0];
+	return utcDay(new Date());
 }
 
 /** Ligne complète (avec `updated_at`) lue au client service ; null si absente. */
@@ -358,71 +380,67 @@ export async function addBuddyXp(
 }
 
 /**
- * Série : première activité du jour (jour UTC). Client service, verrou
- * optimiste : de deux envois simultanés, un seul fait avancer la série (et
- * donc un seul touche le bonus de série). `wasUpdated` est faux si rien n'a été
- * écrit, y compris après des conflits répétés (journalisés).
+ * Compte aujourd'hui (jour UTC) comme jour travaillé de la Constance Royale :
+ * UNE écriture de `constance_week_start`, `constance_days_this_week`,
+ * `current_streak`, `longest_streak` et `last_activity_date` (règle :
+ * `applyWorkedDay`). Client service, verrou optimiste : de deux crédits
+ * simultanés, un seul compte le jour, donc un seul touche la récompense de la
+ * semaine tenue. L'appelant ne l'appelle qu'après un crédit de pansées > 0.
+ *
+ * `already` : jour déjà compté (y compris par un envoi simultané). `conflict`
+ * (journalisé) : la ligne a bougé à chaque essai, rien n'est annoncé.
  */
-export async function updateStreak(
-	studentId: string
-): Promise<{ newStreak: number; wasUpdated: boolean }> {
+export async function recordWorkedDay(studentId: string): Promise<WorkedDayResult> {
 	const today = todayUtc();
 	const result = await guardedBuddyWrite(
 		studentId,
-		(row) => {
-			// Déjà actif aujourd'hui : la série ne bouge pas
-			if (row.last_activity_date === today) return null;
-			const newStreak = row.current_streak + 1;
-			return {
-				current_streak: newStreak,
-				longest_streak: Math.max(row.longest_streak, newStreak),
-				last_activity_date: today
-			};
-		},
-		'série'
+		(row) => applyWorkedDay(row, today)?.patch ?? null,
+		'Constance Royale'
 	);
 
 	switch (result.status) {
-		case 'written':
-			return { newStreak: result.after.current_streak, wasUpdated: true };
+		case 'written': {
+			// La règle est rejouée sur la ligne effectivement écrite (déterministe)
+			const weekHeld = applyWorkedDay(result.before, today)?.weekHeld ?? false;
+			return {
+				status: 'counted',
+				weekHeld,
+				newStreak: result.after.current_streak,
+				constanceWeekStart: result.after.constance_week_start ?? weekStartOf(today),
+				constanceDaysThisWeek: result.after.constance_days_this_week
+			};
+		}
 		case 'unchanged':
-			return { newStreak: result.row.current_streak, wasUpdated: false };
+			return { status: 'already' };
 		case 'missing':
 		case 'conflict':
-			return { newStreak: 0, wasUpdated: false };
+			return { status: result.status };
 	}
 }
 
 /**
- * La série est-elle perdue (dernière activité il y a plus d'un jour, série en
- * cours) ? Règle d'origine du tableau de bord élève, inchangée.
+ * Remet la Constance à 0 si la dernière semaine enregistrée est finie sans
+ * être tenue (règle : `constanceReset`), ou si la ligne porte encore une
+ * ancienne série en jours. Client service ; la règle est réévaluée sur la
+ * ligne relue : un jour travaillé arrivé entre-temps n'est pas effacé. Rend la
+ * remise à zéro ÉCRITE (et la ligne écrite), ou null.
  */
-export function isStreakLost(
-	buddy: { current_streak: number; last_activity_date: string | null },
-	now: Date = new Date()
-): boolean {
-	if (buddy.current_streak <= 0 || !buddy.last_activity_date) return false;
-	const lastActivity = new Date(buddy.last_activity_date);
-	const today = new Date(now);
-	// Comparaison au jour près
-	lastActivity.setHours(0, 0, 0, 0);
-	today.setHours(0, 0, 0, 0);
-	const daysDiff = Math.floor((today.getTime() - lastActivity.getTime()) / 86400000);
-	return daysDiff > 1;
-}
-
-/**
- * Remet la série à 0 si elle est perdue (client service). La règle est
- * réévaluée sur la ligne relue : une activité arrivée entre-temps n'est pas
- * effacée. Rend vrai si la remise à zéro a été ÉCRITE.
- */
-export async function resetLostStreak(studentId: string): Promise<boolean> {
+export async function resetLostConstance(
+	studentId: string
+): Promise<{ kind: ConstanceReset['kind']; buddy: StudentBuddy } | null> {
+	const today = todayUtc();
+	let kind: ConstanceReset['kind'] = 'lost';
 	const result = await guardedBuddyWrite(
 		studentId,
-		(row) => (isStreakLost(row) ? { current_streak: 0 } : null),
-		'série perdue'
+		(row) => {
+			const reset = constanceReset(row, today);
+			if (!reset) return null;
+			kind = reset.kind;
+			return reset.patch;
+		},
+		'Constance perdue'
 	);
-	return result.status === 'written';
+	return result.status === 'written' ? { kind, buddy: result.after } : null;
 }
 
 /**

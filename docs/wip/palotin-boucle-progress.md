@@ -54,4 +54,21 @@ gidouilles). Correction prévue en PR 2.
       `db:migrate` le même jour avec l'accord de David sur les `DROP POLICY`. Vérifié en prod : seules
       les policies SELECT restent sur les deux tables ; 57 Palotins et la séance existante intacts ;
       colonnes `constance_*` à leurs valeurs par défaut. `db:types` dans la PR 4.
-- [ ] PR 4 — Constance Royale hebdomadaire : phase 0 à valider par David.
+- [ ] PR 4 — Constance Royale hebdomadaire. **Spécification validée par David le 2026-10-18** :
+      semaine du lundi au dimanche (jour UTC) ; jour travaillé = jour où l'élève a gagné des pansées
+      par le travail (Entraînement, Course, révision, énigme, évaluation) ; semaine tenue au 3e jour
+      travaillé ; Constance = semaines tenues d'affilée (`current_streak` / `longest_streak`
+      réutilisées, en semaines) ; la semaine en cours ne casse rien avant sa fin ; semaine finie
+      sous 3 jours → 0, avec une réplique. Récompenses : +30 le jour où la semaine est tenue ;
+      paliers 4 / 8 / 16 semaines → +50 / +100 / +300 hors plafond ; « premier travail du jour » +5
+      inchangé ; le bonus quotidien de série (+15) et les paliers 7 / 14 / 30 jours disparaissent.
+      Affichage : « Constance Royale : N semaines » et « Cette semaine : x jours sur 3 ».
+      **Code fait le 2026-10-18 (non commité, en attente de revue)** : logique pure
+      `src/lib/utils/buddy-constance.ts`, `recordWorkedDay` / `resetLostConstance` (une écriture
+      sous verrou), bonus `calculateConstanceBonus`, layout élève, panneau et widget, répliques
+      `streak_lost`, tableau prof en « sem. », docs `buddy-palotins.md` et `coquille-et-caches.md`,
+      motif du layout ajouté au filtre `nightly-integration.yml`. Points tranchés sans la spec, à
+      faire confirmer par David : +30 dans le plafond ; palier À LA PLACE des +30 ; rien après
+      16 semaines ; +5 du premier travail perdu après un forfait de révision le même jour ;
+      anciennes séries en jours (record compris) remises à 0 sans réplique ; « x jours sur 3 »
+      plafonné à 3. Reste : `code-reviewer`, commit, PR.

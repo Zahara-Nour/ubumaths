@@ -12,6 +12,6 @@ export {
 	xpForNextLevel,
 	xpProgress,
 	calculateXpGain,
-	calculateStreakBonus,
+	calculateConstanceBonus,
 	scoreQuiz
 } from '$lib/utils/buddy-xp';

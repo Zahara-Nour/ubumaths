@@ -100,7 +100,9 @@ describe('ReviewSession — gain du Palotin en fin de séance', () => {
 		last_xp_date: null,
 		themes_explored: [],
 		change_count: 0,
-		equipped_skin_id: null
+		equipped_skin_id: null,
+		constance_week_start: null,
+		constance_days_this_week: 0
 	};
 
 	async function finishSession(submitBody: unknown) {
