@@ -135,6 +135,11 @@ export interface CurveDisplay {
 
 export interface FunctionObject extends AtelierObjectBase {
 	readonly kind: 'function';
+	/**
+	 * 𝒞f est-elle affichée dans la vue Géométrie ? (géométrie v2, K1) — un état
+	 * d'affichage, comme `plotted`, rangé avec l'objet. Absent = non affichée.
+	 */
+	readonly inFigure?: boolean;
 	/** Décision D2 : `x` seulement en v1 — `createEvaluator` la code en dur. */
 	readonly variable: 'x';
 	/**

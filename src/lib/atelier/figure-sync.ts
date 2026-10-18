@@ -49,7 +49,8 @@ import { add, compile, divide, getVariables, number as mathNumber, opposite } fr
 import { differentiate } from '$lib/mathAST/differentiation';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { Figure } from '$lib/geometry-core/graph/figure';
-import type { CurveParameter } from '$lib/geometry-core/types/elements';
+import type { CurveParameter, GeoFunctionDomain } from '$lib/geometry-core/types/elements';
+import type { CurvePiece, Restriction } from '$lib/grapheur/restriction';
 import { exact, numeric, type ScalarParam } from '$lib/geometry-core/types/geo-value';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import {
@@ -67,7 +68,8 @@ import {
 	type CurveShape,
 	type QuadraticShape
 } from '$lib/geometry-core/geometry/curve-nature';
-import { isFigureObject, isValue } from './types';
+import { isFigureObject, isFunction, isValue, type FunctionObject } from './types';
+import { plotRestrictionOf } from './interval';
 import { constantOf } from './constant';
 import { pointCoordinatesOf } from './parse';
 import { substitutedAstOf, substitutedTextOf } from './engine';
@@ -114,10 +116,24 @@ interface WantedCurve {
 	readonly F: MathNode;
 }
 
+/**
+ * 𝒞f à dessiner (géométrie v2, K1-K3) : une fonction marquée `inFigure`, son
+ * expression en x — dérivées et fonctions citées développées, curseurs gardés
+ * en lettres —, et son ensemble (K2) en morceaux, comme pour le Graphe.
+ */
+interface WantedFunction {
+	readonly kind: 'function';
+	readonly name: string;
+	readonly expression: MathNode;
+	readonly pieces?: Restriction;
+}
+
+type Wanted = WantedPoint | WantedCurve | WantedFunction;
+
 /** Ce que l'atelier demande à la figure. */
 export interface FigurePlan {
 	readonly sliders: readonly WantedSlider[];
-	readonly objects: readonly (WantedPoint | WantedCurve)[];
+	readonly objects: readonly Wanted[];
 }
 
 // =============================================================================
@@ -208,7 +224,9 @@ export class AtelierFigure {
 				const id =
 					object.kind === 'point'
 						? posePoint(figure, object, sliders)
-						: poseCurve(figure, object, sliders);
+						: object.kind === 'curve'
+							? poseCurve(figure, object, sliders)
+							: posePlottedFunction(figure, object, sliders);
 				if (id !== null) elements.set(object.name, id);
 			} catch {
 				// Les aides déjà posées (calculs cachés, points d'une droite) s'en vont
@@ -262,14 +280,23 @@ function slidersOf(atelier: Atelier): Map<string, WantedSlider> {
 function planOf(atelier: Atelier): FigurePlan {
 	const sliders = slidersOf(atelier);
 	const keep = new Set(sliders.keys());
-	const objects: (WantedPoint | WantedCurve)[] = [];
+	const objects: Wanted[] = [];
 	const cited = new Set<string>();
 	for (const object of atelier.objects) {
 		// F5 : en erreur, en attente ou à compléter, l'objet n'est pas dessiné
-		if (!isFigureObject(object) || object.status !== 'ok') continue;
-		const wanted = wantedOf(atelier, object, keep);
+		if (object.status !== 'ok') continue;
+		const wanted = isFigureObject(object)
+			? wantedOf(atelier, object, keep)
+			: isFunction(object) && object.inFigure === true
+				? wantedFunctionOf(atelier, object, keep)
+				: null;
 		if (wanted === null) continue;
-		const trees = wanted.kind === 'point' ? [wanted.x, wanted.y] : [wanted.raw, wanted.F];
+		const trees =
+			wanted.kind === 'point'
+				? [wanted.x, wanted.y]
+				: wanted.kind === 'curve'
+					? [wanted.raw, wanted.F]
+					: [wanted.expression];
 		const names = new Set(trees.flatMap((tree) => [...getVariables(tree)]));
 		if ([...names].some((name) => sliders.get(name)?.outOfRange === true)) continue;
 		objects.push(wanted);
@@ -277,6 +304,27 @@ function planOf(atelier: Atelier): FigurePlan {
 	}
 	// Seuls les curseurs CITÉS entrent dans la figure (et dans son empreinte)
 	return { sliders: [...sliders.values()].filter((s) => cited.has(s.name)), objects };
+}
+
+/**
+ * 𝒞f : l'arbre que le Graphe reçoit aussi (`substitutedAstOf`, qui sait lire la
+ * carte `f′` et la carte `f⁻¹`), les curseurs gardés en lettres ; l'ensemble de
+ * la fonction, celui que le Graphe respecte (`plotRestrictionOf`, hérité compris).
+ */
+function wantedFunctionOf(
+	atelier: Atelier,
+	object: FunctionObject,
+	keep: ReadonlySet<string>
+): WantedFunction | null {
+	const substituted = substitutedAstOf(atelier, object.name, { keepNames: keep });
+	if (!substituted.ok) return null;
+	const pieces = plotRestrictionOf(object);
+	return {
+		kind: 'function',
+		name: object.name,
+		expression: substituted.ast,
+		...(pieces !== undefined && { pieces })
+	};
 }
 
 function wantedOf(
@@ -380,6 +428,66 @@ function posePoint(
 		};
 	};
 	return figure.createComputedPoint(coordinate(point.x), coordinate(point.y), { label });
+}
+
+/**
+ * 𝒞f : une `GeoFunction` par morceau de son ensemble (K2 ; `GeoFunctionDomain`
+ * n'a qu'un intervalle), nommée comme sur sa carte (`f`, `f′`, `f⁻¹`) — le nom
+ * sur le premier morceau seulement. Les curseurs se lient par leur nom, comme
+ * une courbe `y = f(x)`. Rend l'id du premier morceau.
+ */
+function posePlottedFunction(
+	figure: Figure,
+	wanted: WantedFunction,
+	sliders: ReadonlyMap<string, string>
+): string | null {
+	const { expression } = wanted;
+	let derivative: MathNode;
+	try {
+		derivative = differentiate(expression, { variable: 'x', simplify: true });
+	} catch {
+		// La dérivée ne sert qu'aux tangentes : la courbe se dessine sans
+		derivative = mathNumber('0');
+	}
+	const compiled = compile(expression);
+	const compiledDerivative = compile(derivative);
+	const dependencies = sliderIds(parametersOf([expression], sliders));
+	const label = displayName(wanted.name);
+	const equation = `y = ${displayName(wanted.name)}(x)`;
+	const pieces = wanted.pieces ?? [null];
+	let first: string | null = null;
+	for (const piece of pieces) {
+		const id = figure.createFunction(
+			expression,
+			derivative,
+			compiled,
+			compiledDerivative,
+			equation,
+			{
+				...(first === null && { label }),
+				dependencies,
+				...(piece !== null && { domain: domainOf(piece) })
+			}
+		);
+		first ??= id;
+	}
+	return first;
+}
+
+/** Un morceau de l'ensemble (nombres, ±∞) en domaine de `GeoFunction`. */
+function domainOf(piece: CurvePiece): GeoFunctionDomain {
+	const bound = (value: number): ScalarParam =>
+		value === Infinity
+			? { infinity: '+' }
+			: value === -Infinity
+				? { infinity: '-' }
+				: numeric(value);
+	return {
+		lower: bound(piece.from),
+		upper: bound(piece.to),
+		lowerType: piece.fromClosed ? 'closed' : 'open',
+		upperType: piece.toClosed ? 'closed' : 'open'
+	};
 }
 
 /** Une courbe : la forme de `courbe()` (`curveShapeOf`), curseurs câblés. */

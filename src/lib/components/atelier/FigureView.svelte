@@ -1,7 +1,9 @@
 <script lang="ts">
 	/**
-	 * La vue Figure (géométrie v2, lot 1, PR 2) : les points et les courbes de
-	 * l'atelier dans un repère orthonormé (`GeometryCanvas` de `geometry-core`).
+	 * La vue Géométrie (géométrie v2, lot 1 ; onglet « Géométrie » depuis la Q5
+	 * révisée, identifiants `Figure*` gardés) : les points, les courbes et les
+	 * fonctions affichées (𝒞f, K1) de l'atelier dans un repère orthonormé
+	 * (`GeometryCanvas` de `geometry-core`).
 	 *
 	 * ⚠️ Une PROJECTION (invariant 1) : la vue ne détient aucun état de modèle.
 	 * Elle lit l'atelier par `useAtelier()` et le reflète par `syncFigure`, à
@@ -14,7 +16,7 @@
 	 */
 	import { useAtelier } from '$lib/atelier/context';
 	import { AtelierFigure, syncFigure } from '$lib/atelier/figure-sync';
-	import { isFigureObject } from '$lib/atelier/types';
+	import { isFigureObject, isFunction } from '$lib/atelier/types';
 	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 
@@ -46,11 +48,13 @@
 	let width = $state(0);
 	let height = $state(0);
 
-	/** F1 : un atelier sans point ni courbe — la vue dit quoi écrire. */
-	const empty = $derived(!atelier.objects.some(isFigureObject));
+	/** F1 : un atelier sans point, ni courbe, ni fonction affichée — la vue dit quoi écrire. */
+	const empty = $derived(
+		!atelier.objects.some((o) => isFigureObject(o) || (isFunction(o) && o.inFigure === true))
+	);
 </script>
 
-<section class="figure" aria-label="Figure">
+<section class="figure" aria-label="Géométrie">
 	<div class="barre-figure">
 		<MyCheckbox
 			bind:checked={() => atelier.figureFrame, (shown) => atelier.setFigureFrame(shown)}
@@ -58,7 +62,10 @@
 		/>
 	</div>
 	{#if empty}
-		<p class="vide">Écris un point A = (1 ; 2) ou une courbe d : y = 3x − 2.</p>
+		<p class="vide">
+			Écris un point A = (1 ; 2) ou une courbe d : y = 3x − 2, ou affiche une fonction depuis sa
+			carte.
+		</p>
 	{/if}
 	<div class="toile" bind:clientWidth={width} bind:clientHeight={height}>
 		{#if width > 0 && height > 0}

@@ -97,8 +97,14 @@ describe('la vue Géométrie (FigureView)', () => {
 		await vi.waitFor(() =>
 			expect(canvasOf(container).querySelector('path.function-curve')).toBeTruthy()
 		);
-		// La ligne attend dans Calcul (pastille de l'onglet)
-		expect(container.querySelector('.onglet .nouveau')?.textContent?.trim()).toBe('1');
+		// G2 : le geste a écrit sa ligne dans Calcul
+		const calcul = [...container.querySelectorAll('.onglet')].find(
+			(b) => b.textContent?.trim() === 'Calcul'
+		) as HTMLElement;
+		await userEvent.click(calcul);
+		await vi.waitFor(() =>
+			expect(container.textContent).toContain('La courbe de f est affichée dans Géométrie.')
+		);
 	});
 
 	it('F1 : sans objet de figure, la vue dit quoi écrire', async () => {

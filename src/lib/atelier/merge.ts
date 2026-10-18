@@ -257,6 +257,7 @@ export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport
 		if (stored.sequenceDisplay) atelier.adoptSequenceDisplay(chosen, stored.sequenceDisplay);
 		if (stored.slider) atelier.adoptSlider(chosen, stored.slider);
 		if (stored.plotted) atelier.setPlotted(chosen, true);
+		if (stored.inFigure) atelier.setInFigure(chosen, true);
 	}
 
 	// Un objet renommé à l'arrivée (`f` → `g`) : les formules reçues l'appellent

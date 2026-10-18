@@ -53,8 +53,13 @@ export const ATELIER_STORAGE_KEY = 'chiphre-atelier';
  * renommé à la relecture (`migrateReservedNames`, Q2). Sans elle, un onglet
  * resté sur l'ancien code écarterait les points et les courbes, puis
  * enregistrerait l'atelier sans eux.
+ *
+ * Version 4 (2026-10-18, géométrie v2, PR 3) : `inFigure`, la courbe d'une
+ * fonction montrée dans la vue Géométrie (K1). Sans elle, un onglet resté sur
+ * la version 3 relirait l'atelier en retirant le champ (Zod), puis
+ * l'enregistrerait sans lui. Une version 3 se relit : rien n'y est affiché.
  */
-export const ATELIER_STATE_VERSION = 3;
+export const ATELIER_STATE_VERSION = 4;
 
 /**
  * Au-delà, on refuse d'enregistrer plutôt que d'écrire un état qu'on ne saura
@@ -80,6 +85,8 @@ const storedObjectSchema = z.object({
 	definition: z.string().max(MAX_DEFINITION_LENGTH),
 	/** Affiché dans la vue Graphe. Absent = non tracé. */
 	plotted: z.boolean().optional(),
+	/** 𝒞f affichée dans la vue Géométrie (K1, version 4). Absent = non affichée. */
+	inFigure: z.boolean().optional().catch(undefined),
 	/**
 	 * La lettre d'une fonction (`f(t)`). Abîmée : oubliée, la fonction gardée et
 	 * montrée en x — sa définition rangée l'est déjà.
@@ -178,6 +185,8 @@ export interface StoredObject {
 	readonly kind: ObjectKind;
 	readonly definition: string;
 	readonly plotted?: boolean;
+	/** 𝒞f affichée dans la vue Géométrie (K1). */
+	readonly inFigure?: boolean;
 	/** La lettre de l'élève d'une fonction (`f(t)`), absente pour x. */
 	readonly letter?: string;
 	/** L'ensemble d'une fonction (`[0;+∞[`), absent sans « sur ». */
