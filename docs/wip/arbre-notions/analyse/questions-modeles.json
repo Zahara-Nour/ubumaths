@@ -1,0 +1,467 @@
+[
+	{
+		"id": "m-cycle2-1",
+		"lot": "cycle2",
+		"info": false,
+		"titre": "« 2 × 26 × 5 » astucieux au CE1 : sur le point de commutativité ?",
+		"question": "Le modèle CE1 « Calculer astucieusement un produit » (sous-titre « Utiliser 2 facteurs dont le produit est 10 ») fait calculer 2 × a × 5, 5 × a × 2, a × 5 × 2 ou a × 2 × 5, avec a de 19 à 40 (résultats de 190 à 400). Exemple généré : « Calcule de manière astucieuse. 2 × 26 × 5 = ? » → 260 ; la correction écrit 2 × 26 × 5 = 10 × 26 = 260. Le seul point du CE1 qui parle de cette idée est CE1-024 « Comprendre et savoir que la multiplication est commutative ». Faut-il y taguer le modèle ?",
+		"citations": "CE1-024, borne (BO c2 p.13, colonne Exemples de réussite) : « potager 8 × 4 = 4 × 8 ». Le BO du CE1 ne nomme pas l'associativité (regrouper 2 × 5) ; multiplier un nombre < 100 par 10, c'est CE1-030. Règle R1 de David (2026-10-11) : « un tag seulement si le point décrit ce que le modèle fait faire ; point de vocabulaire ou de technique voisine = pas de tag ». Au CE2, le jumeau fbd02016 (50 × 2 × 99 = 9 900) n'a aucun point de commutativité : HORS_PROGRAMME quelle que soit la réponse ; de même les trois produits astucieux du CM2 (4b543657, 918598f5, 9826af8b).",
+		"options": [
+			["tag", "Taguer CE1-024"],
+			["hors", "Pas de tag : le modèle reste sur son nœud, hors programme"]
+		],
+		"reco": "tag",
+		"pourquoi": "Réordonner les facteurs pour faire apparaître 2 × 5, c'est « savoir que la multiplication est commutative » mis en œuvre ; les nombres restent dans le champ du CE1 (≤ 1 000) et aucun autre point du CE1 ne décrit mieux la tâche. Le ressort du calcul est bien l'échange des facteurs, que la correction montre.",
+		"consequence": "tag : 1 modèle tagué CE1-024 (ce serait le seul modèle de ce point). hors : 1 modèle de plus sans tag au CE1, et CE1-024 reste sans modèle. Aucun effet sur fbd02016 (CE2) ni sur les produits astucieux du CM2, sans point dans les deux cas.",
+		"modeles": ["e94c03b6-604f-4074-8763-0744b97cb7dd"],
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG CE1-024)."
+	},
+	{
+		"id": "m-cm-1",
+		"lot": "cm",
+		"info": false,
+		"titre": "Critères de divisibilité par 3 et par 9 au CM2",
+		"question": "Deux QCM du CM2, « Utiliser un critère de divisibilité — Par 9 » et « — Par 3 », posent : « Le nombre 999 est-il divisible par 9 ? A. Oui B. Non » (nombres à trois chiffres). La correction applique le critère : « 999 est divisible par 9 car la somme de ses chiffres est divisible par 9 : 9 + 9 + 9 = 27 ». La question elle-même entre dans CM2-008 « Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné (7 est-il un diviseur de 56 ?) ». Peut-on les taguer CM2-008 ?",
+		"citations": "CM2-008, borne (BO c3 p.9) : diviseur candidat ≤ 10. Borne générale du cycle 3 (BO c3 p.5) : « Seuls les critères de divisibilité par 2, 5 et 10 sont au programme ; les autres cas passent par les tables ou une division. » Au CM1, les QCM « par 2 », « par 5 », « par 10 » sont tagués CM1-011 (16056d25, 58cf29a1, d6e49340). Au cycle 4, le BO a deux points propres : 5-010 « Connaître le critère de divisibilité par 3 (4 518 est-il divisible par 3 ?) » et 5-119, le même par 9 (5e).",
+		"options": [
+			["tag", "Taguer CM2-008 tel quel : on juge la question posée, pas la correction"],
+			[
+				"modifier",
+				"Modifier puis taguer CM2-008 : retitrer « Déterminer si 9 est un diviseur » et corriger par une division ou les tables, sans la somme des chiffres"
+			],
+			[
+				"hors",
+				"Pas de tag au CM2 : le modèle enseigne un critère hors programme (sa place est en 5e, 5-010 / 5-119)"
+			]
+		],
+		"reco": "modifier",
+		"pourquoi": "La question posée est dans CM2-008, mais le titre et la correction enseignent la somme des chiffres, que le BO exclut nommément au cycle 3. Retitrer et corriger par la division garde un modèle utile sur CM2-008 sans rien enseigner d'interdit ; taguer tel quel ferait apprendre un critère hors programme sous un tag du programme.",
+		"consequence": "tag : 2 modèles tagués CM2-008 (3 avec 71621ba5), correction inchangée. modifier : 2 modèles à retoucher (titre, sous-titre, correction), puis tagués CM2-008. hors : 2 modèles sans tag au CM2 ; leur place naturelle est en 5e (5-010, 5-119), ce qui est un changement de niveau, à décider à part (règle R3).",
+		"modeles": ["9c03423a-38ce-44e3-ab44-20b4e90659b7", "e81493f7-38fe-4028-a265-872329534ae3"],
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait « déplacer puis tag CM2-008 »)."
+	},
+	{
+		"id": "m-cm-2",
+		"lot": "cm",
+		"info": false,
+		"titre": "« 1,5 + 8,4 » est-il « ajouter un nombre entier d'unités, de dixièmes… » ?",
+		"question": "Quatre modèles CM1 de calcul en ligne sans retenue ajoutent ou soustraient un décimal à deux ou trois rangs non nuls : « Calcule. 1,5 + 8,4 = ? » → 9,9 (3bbe92f2), « 8,3 + 1,66 » (f1a392f5), « 8,8 − 2,7 » (b100ddb2), « 9,95 − 7,4 » (b9a9048a). Les points candidats sont CM1-039 « Ajouter un nombre entier inférieur à 10, d'unités, de dizaines, de centaines, de dixièmes ou de centièmes à un nombre décimal, lorsqu'il n'y a pas de retenue » et CM1-133 (le même pour soustraire). Le nombre ajouté doit-il n'avoir qu'un seul rang non nul (0,3 ; 4 ; 0,07) ?",
+		"citations": "Borne de CM1-039 (BO c3 p.7) : « Le nombre ajouté est k unités, dizaines, centaines, dixièmes ou centièmes, avec k entier de 1 à 9 » ; exemples 4,45 + 0,3 ; 1 462 + 300. CM1-133 : même borne pour soustraire. Ta décision c3-2 (2026-10-18), au CM2, sur la même formule : « un modèle qui ajoute un décimal quelconque (2,37) reste refusé, car ce n'est pas k unités d'un seul rang ».",
+		"options": [
+			[
+				"modifier",
+				"Modifier : un seul rang non nul dans le nombre ajouté ou soustrait (k unités, k dixièmes ou k centièmes), puis tag"
+			],
+			["hors", "Pas de tag : les modèles restent tels quels, hors progression"],
+			["large", "Lecture large : « sans retenue » suffit, tag tel quel"]
+		],
+		"reco": "modifier",
+		"pourquoi": "La borne du BO est explicite (k unités d'un seul rang) et c3-2 l'a déjà appliquée au CM2 ; la lecture large la contredirait. La modification est légère (deux variations : k unités, k dixièmes) et donne enfin des modèles à CM1-039 et CM1-133.",
+		"consequence": "modifier : 4 modèles retouchés, puis 2 tagués CM1-039 et 2 tagués CM1-133 (ce sont les seuls modèles de ces deux points). hors : 4 modèles sans tag, CM1-039 et CM1-133 restent sans modèle. large : 4 tags immédiats, en contradiction avec c3-2.",
+		"modeles": [
+			"3bbe92f2-84f0-487f-9ca1-2077248a313b",
+			"f1a392f5-060d-4e1c-b7a5-2920a054b83b",
+			"b100ddb2-e91d-402c-9940-012da8236d1d",
+			"b9a9048a-d973-47a3-ad5b-acbde2d80a66"
+		],
+		"verdict_provisoire": "MODIFIER (CM1-039 ou CM1-133), ce que propose le CSV."
+	},
+	{
+		"id": "m-sixieme-1",
+		"lot": "sixieme",
+		"info": false,
+		"titre": "Échelle écrite en fraction (1/100 000) en 6e",
+		"question": "Quatre modèles de 6e écrivent l'échelle comme une fraction 1/n (n de 10 à 9 000 000). Exemples générés : « Sur une carte à l'échelle 1/1 000 000, on mesure une longueur de 2 cm. Calcule la longueur réelle. » → 20 km (52bf3fb9) ; « Sur une carte, 1 cm représente 9 km en réalité. Donne l'échelle de cette carte. » → 1/900 000 (c1a54695). Deux d'entre eux (24a8e2b1, c1a54695) n'ont pas d'autre but que d'écrire cette fraction. Le point 6-193 « S'initier à la résolution de problèmes d'échelles » accepte-t-il l'échelle écrite en fraction ?",
+		"citations": "Borne de 6-193 (Exemples de réussite 6e 2025 p.20) : « Échelles graphiques (1 cm ↔ 10 m) ; initiation. » Borne générale de 6e (BO c3 p.27) : proportionnalité « uniquement dans le cadre des grandeurs […] ; le coefficient n'est pas défini ». En 5e : 5-088 « Utiliser un coefficient de proportionnalité dans des contextes concrets (prix unitaire, vitesse moyenne, échelle, etc.) ».",
+		"options": [
+			[
+				"accepter",
+				"Accepter : la fraction 1/n reste une « initiation », les 4 modèles sont tagués 6-193"
+			],
+			[
+				"refuser",
+				"Refuser la notation 1/n en 6e : réécrire les deux calculs de longueur en « 1 cm représente 1 000 m », les deux modèles « trouver l'échelle » restent sans tag en 6e"
+			]
+		],
+		"reco": "refuser",
+		"pourquoi": "La borne validée dit « échelles graphiques » ; l'échelle 1/n est un coefficient, que la 6e ne définit pas, et le BO la place en 5e (5-088). Deux modèles ont pour seul but de produire la fraction ; les deux autres se réécrivent facilement en échelle graphique.",
+		"consequence": "accepter : 4 modèles tagués 6-193. refuser : 52bf3fb9 et 5e4e5e9d passent en MODIFIER (échelle donnée en « 1 cm représente … »), puis tagués 6-193 ; 24a8e2b1 et c1a54695 restent sans tag en 6e, candidats 5-088 (changement de niveau, à décider à part). L'ancien CSV taguait les quatre.",
+		"modeles": [
+			"52bf3fb9-a815-4a94-9425-f524278fbbc1",
+			"5e4e5e9d-68df-43b4-ac6f-08c4ffd37325",
+			"24a8e2b1-446f-4df9-84f6-eba54599c035",
+			"c1a54695-3914-4990-85cd-fc6ede9c6a35"
+		],
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG 6-193 pour les quatre)."
+	},
+	{
+		"id": "m-sixieme-2",
+		"lot": "sixieme",
+		"info": false,
+		"titre": "Augmentation et diminution en pourcentage en 6e",
+		"question": "Deux modèles de 6e : « Un article qui coûtait initialement 80 Qr voit son prix augmenter de 10 %. Calcule son nouveau prix. » → 88 (290dcf6f : + 10, + 20, + 50, + 100 ou + 200 %) et la même chose en diminution (24f7a007 : − 10, − 20, − 30, − 50, − 100 %), prix de 20 à 200. Le point 6-141 « Appliquer un pourcentage à une grandeur ou à un nombre » couvre la première étape (10 % de 80 = 8) ; la seconde (ajouter ou retrancher au prix de départ) fait de la question une variation en pourcentage. Ces modèles sont-ils de 6e ?",
+		"citations": "Borne de 6-141 (Exemples de réussite 6e 2025 p.9) : « a % de c = a/100 × c (ex. 20 % de 60 €) ; pourcentages entre 0 et 100 % ». Borne générale de 6e (Exemples de réussite 6e 2025 p.3) : pourcentages entre 0 % et 100 %. Point de 3e, créé lors des scissions du 2026-10-17 (BO c4 p.19, automatisme) : 3-068 « Appliquer, dans des cas simples, une augmentation exprimée en pourcentage sans utiliser le coefficient multiplicateur (120 € augmenté de 20 % : 120 + 24 = 144 €) ».",
+		"options": [
+			[
+				"tag",
+				"Tag 6-141 : problème en deux étapes autour d'un pourcentage appliqué ; retirer la variation + 200 % de 290dcf6f"
+			],
+			["hors", "Pas de tag en 6e : la variation en pourcentage est une notion de 3e (3-068)"]
+		],
+		"reco": "hors",
+		"pourquoi": "Le BO a un point propre pour cette tâche, trois ans plus tard, avec un exemple du même type que le modèle. Taguer 6-141 ferait passer pour du programme de 6e ce que le BO réserve à la 3e. De plus, la variation + 200 % sort de la borne 0-100 %.",
+		"consequence": "tag : 290dcf6f modifié (variation 5 retirée) puis tagué 6-141 ; 24f7a007 tagué 6-141 tel quel (taux de 10 à 100 %). hors : 2 modèles sans tag en 6e ; l'augmentation est candidate à 3-068 (changement de niveau, à décider à part) ; la diminution n'a aucun point de cycle 4 qui la nomme. 6-141 garde ses 6 autres modèles (« 10 % de … », « 25 % de … »).",
+		"modeles": ["290dcf6f-02ee-4c2b-a38f-fa4e860e601c", "24f7a007-bb6a-42a4-b1b0-de257308b375"],
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG 6-141)."
+	},
+	{
+		"id": "m-cycle4-1",
+		"lot": "cycle4",
+		"info": false,
+		"titre": "Équations « 18 − x = 9 » et « 81 / x = 9 » en 5e : du type x + b = c / ax = c ?",
+		"question": "Quatre modèles de 5e : « Résous cette équation. 18 − x = 9 » → 9 (6bc8108f, entiers ; d80e2e02, relatifs : « −7 − x = 2 » → −9 ; a73f55ba, fractions : « 18/6 − x = 9/6 » → 3/2) et « Résous cette équation. 81/x = 9 » → 9 (c0c8920a). Les points disent « type x + b = c seulement » (5-045) et « type ax = c seulement » (5-126). L'inconnue soustraite ou au dénominateur n'est pas littéralement de ce type, mais se résout par la même opération inverse (18 − x = 9 ⇔ 9 + x = 18 ; 81/x = 9 ⇔ 9x = 81). Faut-il les taguer ?",
+		"citations": "5-045 (BO c4 p.9) : « Résoudre une équation du type x + b = c par l'opération inverse (x + 7 = 12 : x = 12 − 7) », borne « Type x + b = c seulement ». 5-126 : « Résoudre une équation du type ax = c par l'opération inverse », bornes « Type ax = c seulement » et « Cas particuliers 2x = 0 et x/2 = 0 explicités » (Exemples 2026 p.13). 5-044 (BO c4 p.9) : « Modéliser des problèmes relevant des opérations à trous par des équations du type ax = c ou x + b = c ». Déjà tagués dans le CSV : x − a = b (2c695c23, 60274461, 8ad66c77) sur 5-045, lu comme x + b = c avec b négatif ; x/a = b (1a6ff542) sur 5-126, d'après l'exemple x/2 = 0.",
+		"options": [
+			["famille", "Taguer 5-045 / 5-126 : « type » = la famille additive / multiplicative"],
+			["litteral", "Pas de tag : lecture littérale de la forme écrite"],
+			["niveau", "Retirer le niveau 5e de ces modèles (changement de niveau, à décider à part)"]
+		],
+		"reco": "famille",
+		"pourquoi": "Le BO parle de problèmes « relevant d'une addition (multiplication) à trou », ce que ces formes sont ; aucune technique nouvelle n'est demandée. Les agents ont déjà accepté x − a = b et x/a = b par la même lecture : refuser a − x = b et a/x = b serait incohérent.",
+		"consequence": "famille : 3 modèles tagués 5-045, 1 tagué 5-126 ; la même lecture fait entrer a/x = b en 4e (b0ef6947, voir m-cycle4-3) et les trous « a − ? = b » de 5e (voir m-transversal-2). litteral : 4 modèles sans tag en 5e. niveau : 4 modèles sans tag en 5e, et la question de leur niveau rejoint la décision « niveaux ».",
+		"modeles": [
+			"a73f55ba-fa9d-4946-ac94-a2606be8013c",
+			"6bc8108f-f558-4218-9a50-f0bb254af5f5",
+			"d80e2e02-b4eb-4170-84f3-ce4fcbe94875",
+			"c0c8920a-3a94-4d0c-8f39-b34f636d7f50"
+		],
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG 5-045 / 5-126)."
+	},
+	{
+		"id": "m-cycle4-2",
+		"lot": "cycle4",
+		"info": false,
+		"titre": "« Traduire une phrase en expression » (somme, différence, produit, quotient) : 5e ou 4e ?",
+		"question": "Le modèle « Traduire une phrase en expression mathématique » (78feafed), niveau 5e, demande par exemple : « Traduis cette phrase par une expression mathématique : le produit de 2 par la différence entre 9 et 6 » → 2*(9-6) ; « la différence entre 2 et le quotient de 9 par 6 » → 2 − 9 : 6. C'est mot pour mot la tâche du point de 4e 4-073 « Écrire l'enchaînement d'opérations décrit par une phrase (« le quotient de 12 par la somme de 2 et 4 » = ?) ». Le point de 5e proposé, 5-116, traduit une suite d'actions (« ajoute 3 à 5, puis multiplie le résultat par 2 »). Où le ranger ?",
+		"citations": "4-073 (BO c4 p.9), borne : « Vocabulaire somme, différence, produit, quotient ». 5-116 (BO c4 p.7) : « Traduire une succession donnée d'opérations en une seule expression (ajoute 3 à 5, puis multiplie le résultat par 2 : écris le calcul) ». 5-006, borne déduite : « somme ou produit seulement (le vocabulaire complet — différence, quotient — est l'objet du point 4-004) ». Incohérence entre lots : le modèle voisin de 6e 5d515eb1 (« la somme de 9 et de 6 » → 9 + 6, une seule opération), HORS_PROGRAMME en 6e, est renvoyé par l'agent 6e à 5-005 « Traduire un problème en une seule expression », alors que l'agent cycle 4 renvoie la même tâche à 4-073.",
+		"options": [
+			["5-116", "Taguer 5-116 : une phrase est une succession donnée d'opérations"],
+			["4-073", "Reclasser le modèle en 4e et le taguer 4-073"],
+			["var1", "En 5e, ne garder que la variation 1 (somme et produit seulement) et taguer 5-116"]
+		],
+		"reco": "4-073",
+		"pourquoi": "La consigne et les mots (« le produit de … par la différence entre … ») sont ceux de 4-073 ; 5-006 réserve « différence » et « quotient » à la 4e. Même la variation 1 (« la somme du produit de 2 par 6 et de 9 ») reste une phrase de vocabulaire, plus proche de 4-073 que d'une suite d'actions.",
+		"consequence": "5-116 : 1 modèle tagué (seul modèle de ce point). 4-073 : le modèle change de niveau (5e → 4e) et devient le seul modèle de 4-073 ; 5-116 reste sans modèle ; le modèle de 6e 5d515eb1 aurait la même cible (4-073) s'il est reclassé un jour. var1 : variations 2 à 4 retirées, 1 modèle tagué 5-116, au prix d'une lecture discutable.",
+		"modeles": ["78feafed-650f-44e0-a2c3-1e677809722b", "5d515eb1-c8f8-4678-b4bd-f9ab3f34713f"],
+		"verdict_provisoire": "78feafed : A_TRANCHER, sans tag (l'ancien CSV disait TAG 5-116). 5d515eb1 (6e) : HORS_PROGRAMME, inchangé quelle que soit la réponse."
+	},
+	{
+		"id": "m-cycle4-3",
+		"lot": "cycle4",
+		"info": false,
+		"titre": "Équations de 4e hors « a, b, c entiers relatifs » (x/(−9) = 2, 9/x = 2/9, 9x = 81/4)",
+		"question": "Cinq modèles de 4e résolvent des équations multiplicatives qui ne sont pas littéralement « ax + b = c avec a, b, c entiers relatifs ». Exemples générés : « Résous x/(−9) = 9 » → −81 (4466d293) ; « 81/x = −9 » → −9 (b0ef6947) ; « x/9 = 9/7 » → 81/7 (07a51f8f) ; « 9/x = 2/9 » → 81/2 (419887ff, et « 9/x = 2 » en variation 2) ; « 9x = 81/4 » → 9/4 (6a60ed10, variations 1-4 ; ses variations 5-6, « 2x = 9 », sont dans le point). En 5e le même type n'admet que des positifs : ces modèles n'ont de place qu'en 4e. Lesquels taguer 4-024 ?",
+		"citations": "4-024, borne (Exemples 2026 p.18 ; Attendus 4e 2019 p.4) : « ax + b = c avec a, b, c entiers relatifs (4x + 2 = 0 ; 5x − 7 = 3) ». 5-126 (5e) compte « x/2 = 0 » dans le type ax = c (Exemples 2026 p.13). Déjà tagué 4-024 : 53b5e68d (« −9x = 81 », ax = c en relatifs). L'ancien CSV refusait les cinq (« contenu de 5e »).",
+		"options": [
+			["tous", "Taguer 4-024 les cinq : « type » lu largement"],
+			[
+				"entiers",
+				"Taguer 4-024 seulement quand tous les nombres écrits sont des entiers relatifs (x/a = b, et a/x = b si m-cycle4-1 est « famille ») ; le reste sans tag ou modifié"
+			],
+			["aucun", "Aucun tag : lecture littérale de « a, b, c entiers relatifs »"]
+		],
+		"reco": "entiers",
+		"pourquoi": "x/a = b est le cas que l'accompagnement cite déjà en 5e (x/2 = 0), transposé aux relatifs ; a/x = b suit la même lecture que m-cycle4-1. Les seconds membres fractionnaires (9/7, 2/9, 81/4) sortent en revanche de « entiers relatifs », écrit en toutes lettres.",
+		"consequence": "entiers : 4466d293 et b0ef6947 tagués 4-024 ; 07a51f8f sans tag ; 419887ff en MODIFIER (retirer la variation 1, garder b/x = a) ; 6a60ed10 en MODIFIER (retirer les variations 1-4, garder ax = b). tous : 5 tags 4-024. aucun : 5 modèles sans tag.",
+		"modeles": [
+			"07a51f8f-dcce-495d-a388-0596567c2015",
+			"4466d293-33fd-4a47-b707-2e56297ed527",
+			"419887ff-ab39-43fb-8e5c-953822088459",
+			"b0ef6947-e4b9-478e-825b-bc7a2756e222",
+			"6a60ed10-3090-4278-b39a-292a6601c5c6"
+		],
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV : pas de tag, règle R3)."
+	},
+	{
+		"id": "m-cycle4-4",
+		"lot": "cycle4",
+		"info": false,
+		"titre": "« Réduire un produit » en 3e (a × (−6) × 9 = −54a) : point 3-012 ?",
+		"question": "Le modèle de 3e « Réduire un produit — Coefficients relatifs » (93a5f7a9, 18 variations) demande par exemple : « Réduis : a × (−6) × 9 = ? » → −54a ; « (−a) × (−9) × 7 » → 63a. Le point candidat 3-012 « Simplifier des expressions produits ou des rapports comportant des facteurs communs » a pour exemples (a²b) × (bc), ab²/(a²b), πR²/(2πR). Le modèle simplifie bien un produit, mais sans facteur littéral commun : c'est la réduction de base que ces exemples supposent acquise. Faut-il le taguer 3-012 ?",
+		"citations": "3-012, borne (Exemples 2026 p.21) : « Produits et rapports à facteurs communs : (a²b) × (bc) ; ab²/(a²b) ; πR²/(2πR) ». Le modèle voisin de 5e « Réduire un produit — Coefficients positifs » (08a3f943, a × 5 × 2 = 10a) est HORS_PROGRAMME : aucun point de 5e ne réduit un produit, et ses variations a × 9 × a = 9a² mettent un x² que la 5e exclut. L'ancien CSV refusait 93a5f7a9 (« règle des signes en 4e »).",
+		"options": [
+			["tag", "Taguer 3-012 : « expressions produits » au sens large"],
+			["hors", "Pas de tag"],
+			[
+				"modifier",
+				"Modifier : ajouter un facteur littéral commun (a × (−6) × a = −6a²) pour coller aux exemples de 3-012, puis tag"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "En 3e tous les nombres du cycle sont permis, et le geste « regrouper les nombres, puis les lettres » est celui de 3-012 ; ses exemples montrent des cas plus riches, sans exclure le cas simple.",
+		"consequence": "tag : 1 modèle tagué 3-012 (seul modèle de ce point). hors : 1 modèle sans tag. modifier : variations à réécrire (facteur littéral répété), puis tag 3-012. Aucun effet sur 08a3f943 (5e), sans point dans tous les cas.",
+		"modeles": ["93a5f7a9-61f2-4553-a529-6f89c37b569c"],
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV : pas de tag, règle R3)."
+	},
+	{
+		"id": "m-cycle4-5",
+		"lot": "cycle4",
+		"info": false,
+		"titre": "Factoriser en 4e : « expressions à une variable » interdit-il 81y + 18x ?",
+		"question": "Six modèles de factorisation de 4e ont des variations à deux lettres. Exemples générés : « Factorise le plus possible : 81y + 18x » → 9(9y + 2x) (11607586) ; « 7x + 63z » → 7(x + 9z) (d7f2568a) ; « Trouve le plus grand facteur commun de 9x + 81z » → 9 (3abfcd7b). La borne de 4-070 dit « expressions à une variable pouvant contenir x² ». Appliquée strictement, elle met ces six modèles en MODIFIER ; si elle ne visait qu'à autoriser le x², ils passent en TAG.",
+		"citations": "4-070 « Connaitre et utiliser la distributivité simple pour factoriser une expression algébrique », borne (Exemples 2026 p.18) : « Distributivité simple dans les quatre sens k(a + b), (a + b)k ; rôle du facteur −1 ; expressions à une variable pouvant contenir x² (x² − x = x(x − 1)) ». La même borne porte sur 4-022 (développer), dont les deux modèles tagués n'ont qu'une lettre (32a81f6f, d4679e2d). Déjà tagués 4-070, une seule lettre : 2120ce5f, dac2e771. Note de l'agent cycle 4 : « Si cette borne ne visait que le x², ces modèles passeraient en TAG. »",
+		"options": [
+			[
+				"stricte",
+				"Lecture stricte : une seule lettre ; MODIFIER les 6 (remplacer la seconde lettre par une constante ou retirer les variations à deux lettres)"
+			],
+			["x2", "La borne ne vise que le x² : deux lettres admises, TAG les 6 tels quels"]
+		],
+		"reco": "stricte",
+		"pourquoi": "L'accompagnement écrit « à une variable » en toutes lettres, et la règle d'inclusion stricte (2026-10-18) demande de suivre la borne telle qu'elle est écrite. Les modifications proposées sont petites (7x + 63z → 7x + 63) et les variations à une lettre de ces modèles restent.",
+		"consequence": "stricte : 6 modèles à modifier (11607586, 9231b54b, d7f2568a, 39c5bcfa, 3abfcd7b, e66089e0), puis tagués 4-070. x2 : 6 tags 4-070 immédiats ; il faudrait alors relire la même borne sur 4-022 (aucun modèle concerné aujourd'hui).",
+		"modeles": [
+			"11607586-7b7b-404f-8e62-91ddefa75efa",
+			"9231b54b-4e3d-4eef-9382-f27f18544c66",
+			"d7f2568a-d8c5-44ef-9746-2a1c6e22e8f7",
+			"39c5bcfa-6d2d-4b5b-9aab-a1b6edd6e558",
+			"3abfcd7b-cd0a-4035-970a-609b3e447369",
+			"e66089e0-b7bd-49fe-a968-9a8df3d325fd"
+		],
+		"verdict_provisoire": "MODIFIER (lecture stricte), ce que proposent les CSV."
+	},
+	{
+		"id": "m-transversal-1",
+		"lot": "transversal",
+		"info": false,
+		"titre": "Opérations à trou : la décision Q1 vaut-elle là où le BO a un point « égalité à trous » ?",
+		"question": "Le 2026-10-17 tu as décidé « pas de tag » pour les opérations à trou hors des tables ; les agents l'ont appliquée à 60 modèles, de tous les lots. Mais au CM1 et au CM2, le BO a un point qui décrit exactement cette tâche : CM1-061 et CM2-065 « Trouver le nombre manquant dans une égalité à trous ». Exemples générés au CM : « Complète. 586 + ? = 999 » → 413 (CM2, 6661b9ae) ; « Complète. ? × 9 = 810 » → 90 (CM1, e4e3b16e) ; « 2,9 + ? = 9,8 » (CM1, 421e9fc9). Faut-il taguer CM1-061 / CM2-065 ces 23 modèles du CM, quand leurs nombres restent dans le champ du niveau ?",
+		"citations": "Décision Q1 d'origine (page « Scissions des points », 2026-10-17), mot pour mot : « Q1. Les modèles « à trou » hors des tables (34 + ? = 64) — Sur CP-022 et CE1-084, deux modèles sont des opérations à trou. Après la scission « ajouter / soustraire », ils ne vont ni d'un côté ni de l'autre. » Options : « Pas de tag (R1) » / « Côté « ajouter » » / « Créer un point « à trou » » ; reco « Pas de tag (R1) », motif : « Le BO ne dit rien de l'opération à trou hors des tables. Créer un point ajouterait au BO. » Ta réponse, consignée dans arbre-notions-progress.md (2026-10-17, « Scissions : réponses de David ») : « Q1 : opérations à trou hors tables → pas de tag (R1). » — Ce que dit le BO au cycle 3 : borne de CM1-061 (Exemples de réussite CM1 2025 p.13) : « Égalités à trou du type 347 = 20 + … ; 5 760 − … = 5 360 ; 24 × 5 = … × 10 ; 142 − 14 = … − 17 ; à l'écrit 748 + … = 1 200 ; « 178 − … = 6 × 8 » » ; borne de CM2-065 (Exemples de réussite CM2 2025 p.14) : « Chaque membre contient au plus deux opérations (ex. (2 × …) − 5 = 23 ; 18 = 10 + (… ÷ 5)) ». En 6e, 6-127 « Compléter des égalités à trous multiplicatives » (b × … = a, a et b entiers) est appliqué : c415d81d (« 19 × ? = 3 » → 3/19) est tagué. Autres trous déjà tagués parce qu'un point les décrit : 0e5372a4 (CP, « ? + 3 = 10 », CP-023 complément à la dizaine), 5aa1d44c (6e, « 2/3 = ?/9 », 6-132), 5edc1514 (5e, « ?² = 144 », 5-031), et l'exception du lot cycle 4 pour les QCM « signe du facteur manquant » ace89247 (« (−92) × ? = 99 : signe de ? », 4-001) et 4b07cd65 (quotient, 4-002), parce qu'« aucun nombre n'y est calculé, seule la règle des signes sert ».",
+		"options": [
+			[
+				"q1-partout",
+				"Garder Q1 partout : aucun trou hors tables n'est tagué, même au CM ; CM1-061 et CM2-065 restent sans modèle"
+			],
+			[
+				"point-trou",
+				"Q1 ne vaut que là où aucun point ne décrit l'égalité à trou : au CM, taguer CM1-061 / CM2-065 les trous dont les nombres restent dans le champ du niveau"
+			],
+			[
+				"non-reciproque",
+				"CM1-061 / CM2-065 seulement pour les trous qui ne sont pas la simple réciproque d'un calcul déjà au programme"
+			]
+		],
+		"reco": "point-trou",
+		"pourquoi": "Q1 a été posée pour deux modèles de cycle 2, sur la prémisse « le BO ne dit rien de l'opération à trou hors des tables ». C'est vrai au CP-CE2, faux au CM : CM1-061 donne des exemples de ce type exact (« 748 + … = 1 200 »). Les agents raisonnent déjà ainsi en 6e (6-127) et en 4e (QCM de signe). Les trous dont les nombres sortent du niveau restent refusés, mais sur leurs nombres, pas sur le trou.",
+		"consequence": "60 modèles classés par Q1 : cycle 2 : 19, CM : 23, 6e : 8, cycle 4 : 10. q1-partout : rien ne change. point-trou : cycle 2 inchangé (19 sans tag : aucun point d'égalité à trou au CP-CE2 hors tables) ; CM : environ 20 des 23 passent en TAG (12 sur CM1-061, 8 sur CM2-065, chiffres à revérifier modèle par modèle), 3 restent refusés sur leurs nombres (aa788ca7 et ac2dae38 : ? × 100 et ? × 1 000 d'un décimal, programme de CM2 ; a5d5a7a0 : 90 × ? = 8 100, dizaines × dizaines, CM2-046) ; ces 20 modèles changent de nœud, vers « Algèbre > Premiers pas algébriques > égalités à trous » où sont CM1-061 et CM2-065 (règle R2) ; 6e inchangé (8 sans tag : facteur 0,1, 0,01, 0,001 ou 0,5, ou division par un décimal, hors des bornes de 6-127) ; cycle 4 : voir m-transversal-2. non-reciproque : presque aucun des 23 (tous sont la réciproque d'un calcul du programme : + décimal, × 10, : 1 000…), effet proche de q1-partout.",
+		"modeles": [
+			"1507465f-8fd9-4442-ae43-156662758d12",
+			"4372eb03-6281-470f-817d-fa1a0de7b799",
+			"8a843682-a849-47ac-8762-cfb098c4a4c3",
+			"1e93a463-38a4-411b-8c35-31ce93b42d43",
+			"e7e7662d-74c2-456f-a409-f7130c86c608",
+			"48cac183-9ab0-442c-80dd-afbc11f29c66",
+			"777dc505-7be7-4675-97f4-7c1f4fbd8c41",
+			"de71495c-b88c-4b42-9cd7-3562847aedfc",
+			"27bf3101-faf4-4d55-8233-ef8bb3548179",
+			"3d6def48-eefd-4015-9090-ec2396ec3483",
+			"7d2d412b-843c-446f-8394-2a31856556d5",
+			"caa02a8c-2af1-4e19-94f0-8df06e8467e0",
+			"6ca01910-6b66-4dce-91f2-7a22154282b6",
+			"8d6d79a2-0b99-4dcb-a751-2105bbb8b441",
+			"18b7cc5c-65ed-491d-9fbc-ce217e528bd4",
+			"22b8da83-a8ea-4d8e-b500-ff24e08cf260",
+			"9f4cbd66-4fab-460b-8872-4a2b36d94267",
+			"31c3963e-e1e2-4fe2-bce1-83379f93b867",
+			"9c32b3cc-f8d8-4fe8-808b-e2e021fbb146",
+			"421e9fc9-b141-48b8-aed8-bb3a6c35bf7a",
+			"b4b5cf8b-32bc-4273-8c5a-20dc0e7550db",
+			"c9c1966e-f644-412c-807e-b0620489a1e6",
+			"e49b0cf8-3b48-4f0b-90ab-9687f8e37b1e",
+			"b19167c8-49f8-427f-b493-2e2e14fb8508",
+			"668b1fe6-12e2-4c51-899e-646556e69675",
+			"aa788ca7-bb32-45a3-9566-cc2d70a11d29",
+			"ac2dae38-425e-4f10-ba6a-045c285355d0",
+			"f8e5c256-9522-4232-8e65-dadba885dba9",
+			"32beec3b-7d78-4d07-808b-0b0091ce89cf",
+			"45e9fa53-1c61-40e8-88a4-183fcb162ce5",
+			"a5d5a7a0-2b7f-4174-a487-4c673fee5eeb",
+			"e4e3b16e-76f9-471a-966c-cca9a3cea9e4",
+			"ee0ae544-946a-4c5a-a1cf-4761c4288cb2",
+			"1af7263e-bb3a-4e81-8503-a08b7c31db25",
+			"45e06ece-246e-4182-ae1f-8d04a98e6aae",
+			"4b1968b9-2210-4f08-a1b8-69eae735d714",
+			"651836d4-4caf-4318-8a19-31c193349683",
+			"6661b9ae-ece2-4d5c-8bcf-91f6825cf56f",
+			"ae96d7af-e1f6-4390-8100-c779260e4152",
+			"7ac0e898-2063-4321-82e9-c8ab1ad534a4",
+			"883fbf29-693b-45b0-8d83-4882fa7fdde4",
+			"d22731c2-d6bd-4aca-8aac-f90d4aaa3d8f",
+			"6632e5c2-45eb-4b6f-afff-c162bcb382e8",
+			"59ac62a2-3539-44f4-af7f-7c03cb4617f0",
+			"99c4ab73-9824-46e6-9c55-98cf8250fca3",
+			"9cc8cd82-371c-4d7d-ab1f-40f45766ae5a",
+			"c5607804-f31f-49ab-b71a-fa1379ec794a",
+			"def797c6-4841-43ca-977f-020deb4c36d7",
+			"f3bf4c64-5de9-4728-adb7-c86ab79e94e5",
+			"f9a3333d-94ad-4a9b-b5d4-22325d67f6d9",
+			"7d12a172-405d-4281-af44-f02c265ad174",
+			"24331791-3177-437f-bfc9-8e727e270293",
+			"84755a7b-fe7d-4be7-b306-40d38dd07aef",
+			"372d4f79-d0d9-4016-bd07-56fd782b5b95",
+			"b1550840-5b8f-4a36-8581-5a8aa1267778",
+			"86b80159-8395-4546-8d0e-2828693b6d97",
+			"23b29a15-e08d-4c9c-bccf-97e589587578",
+			"e8de8b81-3466-4b47-820d-50bc8b5f484f",
+			"a5d4c3ee-4e84-4dde-ac7e-aeb557e56a45",
+			"0b6d749f-95fc-4cfe-a83d-4e2c84bc0e38"
+		],
+		"verdict_provisoire": "HORS_PROGRAMME pour les 60 (décision Q1)."
+	},
+	{
+		"id": "m-transversal-2",
+		"lot": "transversal",
+		"info": false,
+		"titre": "Cycle 4 : « (−2) + ? = 7 » sans tag, « x + 2 = −7 » tagué — même tâche ?",
+		"question": "Incohérence relevée en comparant les verdicts. En 5e, « Résous cette équation. x + 2 = −7 » (b5fb27b0) est tagué 5-045, mais « Complète l'égalité avec le nombre manquant. (−2) + ? = 7 » (372d4f79) est sans tag par Q1. En 4e, « Résous −9x = 81 » (53b5e68d) est tagué 4-024, mais « Complète. (−2) × ? = −18 » (a5d4c3ee) est sans tag. Même calcul, même méthode (l'opération inverse) ; seule l'écriture change : une lettre x ou une case ?. Les 10 opérations à trou du cycle 4 doivent-elles suivre les équations ?",
+		"citations": "5-044 (BO c4 p.9) : « Modéliser des problèmes relevant des opérations à trous par des équations du type ax = c ou x + b = c » : le BO présente l'équation comme la mise en lettres de l'opération à trou. 5-045 : « Résoudre une équation du type x + b = c par l'opération inverse (x + 7 = 12 : x = 12 − 7) » ; 5-126 : idem pour ax = c ; 4-024 : « ax + b = c avec a, b, c entiers relatifs ». Note de l'agent cycle 4 : « la décision de David du 2026-10-17 (pas de tag) a été appliquée à toutes les opérations à trou du lot (fractions, relatifs) ». Décision Q1 : voir m-transversal-1.",
+		"options": [
+			[
+				"separes",
+				"Garder la séparation : une case « ? » n'est pas une équation, les 10 trous restent sans tag"
+			],
+			[
+				"comme-equations",
+				"Taguer comme les équations les trous dont la forme et les nombres entrent dans 5-045, 5-126 ou 4-024"
+			]
+		],
+		"reco": "comme-equations",
+		"pourquoi": "Rien ne distingue la tâche de l'élève entre « x + 2 = −7 » et « ? + 2 = −7 » ; c'est le rapprochement que fait 5-044. À accorder avec m-transversal-1 : si tu gardes Q1 partout, garde aussi la séparation ici.",
+		"consequence": "separes : 10 sans tag. comme-equations : 2 trous passent en TAG à coup sûr (372d4f79 → 5-045 ; a5d4c3ee → 4-024) ; 3 suivent m-cycle4-1, car ils mêlent « ? + b = c » et « a − ? = b » (24331791, 84755a7b, b1550840 → 5-045 si « famille ») ; 0b6d749f (« (−18) : ? = −2 », « ? : 9 = −2 ») suit m-cycle4-3 ; 4 restent sans tag (7d12a172, 86b80159, 23b29a15, e8de8b81 : la case est un numérateur ou un dénominateur de fraction, hors des types d'équation). Les modèles tagués changent de nœud (de « Relatifs : calculs » vers « Algèbre > Équations : premier degré », règle R2).",
+		"modeles": [
+			"7d12a172-405d-4281-af44-f02c265ad174",
+			"24331791-3177-437f-bfc9-8e727e270293",
+			"84755a7b-fe7d-4be7-b306-40d38dd07aef",
+			"372d4f79-d0d9-4016-bd07-56fd782b5b95",
+			"b1550840-5b8f-4a36-8581-5a8aa1267778",
+			"86b80159-8395-4546-8d0e-2828693b6d97",
+			"23b29a15-e08d-4c9c-bccf-97e589587578",
+			"e8de8b81-3466-4b47-820d-50bc8b5f484f",
+			"a5d4c3ee-4e84-4dde-ac7e-aeb557e56a45",
+			"0b6d749f-95fc-4cfe-a83d-4e2c84bc0e38",
+			"b5fb27b0-dd83-4d19-bb23-fec0f51c82bb",
+			"53b5e68d-28ae-4bd8-9cb0-a4335ca689a7"
+		],
+		"verdict_provisoire": "HORS_PROGRAMME pour les 10 trous (Q1) ; TAG pour les équations b5fb27b0 (5-045) et 53b5e68d (4-024)."
+	},
+	{
+		"id": "m-transversal-3",
+		"lot": "transversal",
+		"info": false,
+		"titre": "QCM « Quel est le plus petit ? » sur un point « comparer avec les symboles »",
+		"question": "Incohérence entre lots. « Quel est le plus petit de ces 2 nombres ? A. 99 B. 5 » (QCM, CP, 943151d0) : le point visé, CP-006, dit « Comparer deux nombres entiers avec les symboles =, < et > (47 … 52) », et le modèle n'affiche aucun symbole. Le lot cycle 2 tague ce type de QCM (CP-006, CE1-007, CE2-007) ; le lot CM met le même type en MODIFIER (CM1-008 entiers, CM1-034 décimaux). Lequel est juste ?",
+		"citations": "Libellés : CP-006, CE1-007 (239 … 243), CE2-007 (6 239 … 6 243), CM1-008 (45 307 … 45 370) et CM1-034 (3,7 … 3,25) disent tous « avec les symboles =, < et > ». Journal du 2026-10-18 (relecture du lot 2 bis jugée insuffisante), parmi tes exemples : « 943151d0 (QCM « le plus petit » proposé sur « comparer avec les symboles », sans symbole) », suivi de ta décision : « Inclusion stricte : un tag n'est accepté que si TOUTES les questions générées […] restent dans le point (forme, notations, bornes). » Justification du CSV cycle 2 : « Le symbole n'est pas utilisé, mais le point décrit la comparaison. » Points sans symbole dans leur libellé, où un QCM reste tagué dans les deux lots : CM1-020 « Comparer des fractions » (9089828a), 5-017 « Comparer deux nombres décimaux relatifs » (12e27dba, e0b6d00a). Même lecture littérale déjà appliquée au CE2 : e6ddf5d7 (« 81 : 9 » au lieu de « 81 ÷ 9 ») en MODIFIER sur CE2-018 « utiliser le symbole ÷ ».",
+		"options": [
+			[
+				"symboles",
+				"Lecture stricte : le QCM doit faire choisir <, = ou > ; MODIFIER les 5 modèles"
+			],
+			["comparer", "Lecture large : comparer suffit ; TAG les 5 modèles"]
+		],
+		"reco": "symboles",
+		"pourquoi": "Tu as cité 943151d0 le 2026-10-18 comme une erreur de l'analyse précédente, et le libellé nomme les symboles. La modification est légère (remplacer « le plus petit » par « 99 … 5 » avec les choix <, =, >). Le CSV cycle 2 ne l'a pas appliquée : c'est à corriger.",
+		"consequence": "symboles : les 3 modèles du cycle 2 passent de TAG à MODIFIER ; les 2 du CM restent en MODIFIER ; CP-006, CE1-007, CE2-007, CM1-008 et CM1-034 n'ont aucun modèle tagué tant que les modifications ne sont pas faites (ce sont leurs seuls modèles). comparer : les 2 modèles du CM passent de MODIFIER à TAG, le cycle 2 ne change pas ; e6ddf5d7 (« : » au lieu de « ÷ ») devrait alors suivre et passer en TAG.",
+		"modeles": [
+			"943151d0-0af5-46f0-bce8-e4acbd5f1029",
+			"d4245f88-26a7-4608-991b-bfac03f996a5",
+			"68775a97-3dd5-4bc6-8af0-1ec9544e9a19",
+			"0021eee7-2b1d-4228-ada9-6c759c01d0ec",
+			"9c0c47ef-72b0-4333-870d-06cdf0f4a2de"
+		],
+		"verdict_provisoire": "Cycle 2 : TAG (CP-006, CE1-007, CE2-007). CM : MODIFIER (CM1-008, CM1-034)."
+	},
+	{
+		"id": "m-transversal-4",
+		"lot": "transversal",
+		"info": false,
+		"titre": "Modèles dont les variations relèvent de deux points : scinder ou retirer ?",
+		"question": "Sept modèles ont des variations qui relèvent de deux points différents, alors qu'un modèle ne porte qu'un tag par programme. Exemples : « Additionner ou soustraire des fractions » (5e, ae988cc8) : variation 1 « 13/3 + 13/3 » → 5-026 (additionner), variation 2 « 3/25 − 2/25 » → 5-123 (soustraire) ; « Calculer une somme » (CP, 716d5c68) : variations 1-4 « 56 + 43 » → CP-026, variations 5-8 « 75 + 4 » → CP-024 ; « Simplifier les signes » (4e, b2af6f39) : « (−1)/9 = −1/9 » → 4-007, « (−1)/(−9) = 1/9 » → 4-002. Que fait-on de ces modèles ?",
+		"citations": "ADR 0020 §7 (précisions du 2026-10-17) : « un modèle porte un tag par programme (déjà la règle en base : au plus un point par programme) ». Journal du 2026-10-11 : « Les 13 modèles dont les variations relèvent de plusieurs points sont sortis des parties 1 à 3 de la page à cocher : choix « Scinder » / « Un seul tag » en partie 4 » ; aucune réponse n'est consignée. Depuis l'inclusion stricte (2026-10-18), « un seul tag » qui laisserait une variation hors du point n'est plus possible. Le modèle f92d63a6 (5e, MODIFIER pour la simplification exigée) mêle lui aussi addition et soustraction ; le CSV propose déjà de le scinder.",
+		"options": [
+			["scinder", "Scinder tous les modèles : un modèle par point, variations réparties"],
+			["retirer", "Retirer ou réécrire les variations minoritaires pour garder un seul point"],
+			[
+				"regle",
+				"Retirer quand le point de la variation retirée a déjà d'autres modèles, scinder sinon"
+			]
+		],
+		"reco": "regle",
+		"pourquoi": "Retirer est plus simple et ne perd rien quand d'autres modèles couvrent déjà le point ; scinder n'est utile que si le point perdrait son seul modèle (5-123 n'a aucun autre modèle que ces fractions).",
+		"consequence": "regle : 5 modèles retouchés pour un seul point (716d5c68 → CP-026 en retirant les variations 5-8, CP-024 gardant 5fea90e6 ; 347eb0d0, 5b53b1be, db4f1dde → 5-020 en écrivant la variation 1 en écriture simplifiée −1 + 8, 5-018 gardant 6 modèles ; b2af6f39 → 4-007 en retirant la variation 3, 4-002 gardant 3 modèles) ; 3 modèles scindés en 6 (71ee6212, ae988cc8, f92d63a6 → 5-026 et 5-123). scinder : 8 modèles deviennent 16, tous tagués. retirer : 8 modèles tagués sur un seul point ; 5-123 n'a plus aucun modèle.",
+		"modeles": [
+			"716d5c68-4b13-4cdb-b063-bdfa07ead4db",
+			"71ee6212-6739-4b1c-adf9-358cfda13cea",
+			"ae988cc8-040a-4cff-9080-b99a05d7acfa",
+			"347eb0d0-4607-4fdb-8f0f-2ecc42ff40b8",
+			"5b53b1be-f9e7-4fc1-bbeb-be84e180a4fd",
+			"db4f1dde-503b-4fad-8b02-96a5124221d5",
+			"b2af6f39-9f24-4491-95ba-7d25d53813fe",
+			"f92d63a6-407d-4887-b263-f708f5904075"
+		],
+		"verdict_provisoire": "TAG_PAR_VARIATION, aucun tag posé (f92d63a6 : MODIFIER, proposition « scinder »)."
+	},
+	{
+		"id": "m-transversal-5",
+		"lot": "transversal",
+		"info": true,
+		"titre": "Jumeaux « double » et « moitié » au CP et au CE2 : rangement vérifié (information)",
+		"question": "Pas de question. Au CP et au CE2, chaque modèle « Trouver le double » / « Trouver la moitié » existe en deux exemplaires : un sur le nœud « addition et soustraction > double et moitié », un sur « multiplication > double et moitié ». Le point du niveau n'est que sur un des deux nœuds (CP : addition ; CE2 : multiplication) ; l'autre jumeau reste sans tag même quand ses valeurs sont dans les bornes, par ta décision R4. Vérification faite dans les modèles eux-mêmes : l'énoncé est identique dans chaque paire (« Quel est le double de 9 ? », « Quelle est la moitié de 16 ? », sans opération écrite) ; seule la correction diffère, et elle correspond toujours au nœud. Le rangement actuel est donc conforme à R4 : pas de question à poser.",
+		"citations": "Décision R4 (2026-10-11, recadrée par David) : « les deux sous-notions « double et moitié » (sous Addition et sous Multiplication) restent. Elles distinguent un modèle dont l'énoncé ou la correction passe par une somme de celui qui passe par un produit : chaque modèle se range en lisant son contenu en détail ». Corrections relevées (releves/templates.json) : CP, sur multiplication, 25285413 et a3ef26ab « Le double de 9 est 18 car 2 × 9 = 18 », 89bef942 « La moitié de 16 est 8 car 2 × 8 = 16 » ; sur addition, bcd7e907 et 9710ae96 « car 9 + 9 = 18 », 55b0f4b7 « car 8 + 8 = 16 ». CE2, sur addition, 44c46578 et 427c735c « a + a » ; sur multiplication, 61093b4f et 824a8b26 « 2 × a ». Au CE1, les deux nœuds ont un point : c96ecf4d (addition, « a + a ») → CE1-034, e4c70b53 (multiplication, « 2 × a ») → CE1-101 ; 022130ca, rangé sur addition mais corrigé par « 2 × a = 2 × dizaines + 2 × unités », est déplacé sur multiplication (CE1-028), conformément à R4.",
+		"options": [],
+		"reco": "",
+		"pourquoi": "Information demandée : le rangement de chaque jumeau a été contrôlé contre son contenu réel.",
+		"consequence": "Aucune. 5 modèles restent sans tag : au CP 89bef942 (moitiés de 0 à 20), 25285413 (doubles de 0 à 9), a3ef26ab (doubles de 10 à 50, tous dans la liste de CP-019) ; au CE2 427c735c et 44c46578 (valeurs toutes dans les listes de CE2-092 et CE2-022). Pour l'élève, chacun est la copie exacte de son jumeau tagué, à la phrase de correction près.",
+		"modeles": [
+			"89bef942-2e3f-4f76-8712-4bf7e6f226cf",
+			"25285413-ba15-401d-a0e8-fd0a84770f3a",
+			"a3ef26ab-2334-4061-86f4-295f5e4e0bc4",
+			"427c735c-aaa5-4ddd-9da6-40e3c46997bd",
+			"44c46578-b2fd-43d9-b672-498219ef229c",
+			"55b0f4b7-e9eb-4f43-9307-ad8d0193cab5",
+			"bcd7e907-22f5-4f0f-a8bd-8e3ea60132e0",
+			"9710ae96-13eb-4347-948f-9c84866f9c4e",
+			"824a8b26-ec03-4c52-9a6d-1c54b1d32506",
+			"61093b4f-9b77-4d2e-a937-5d7fca632107"
+		],
+		"verdict_provisoire": "HORS_PROGRAMME pour les 5 jumeaux sans point ; leurs jumeaux : 9710ae96 TAG CP-019, bcd7e907 MODIFIER CP-019 (double de 0), 55b0f4b7 MODIFIER CP-080 (moitié de 0), 61093b4f TAG CE2-022, 824a8b26 TAG CE2-092."
+	},
+	{
+		"id": "m-transversal-6",
+		"lot": "transversal",
+		"info": true,
+		"titre": "Modèles qu'un autre niveau accueillerait (information, décision « niveaux » à part)",
+		"question": "Pas de question ici. Quatorze modèles sont HORS_PROGRAMME à leur niveau déclaré, mais l'agent note qu'un point d'un autre niveau les décrirait. Exemples : « Écrire un nombre décimal à l'aide de la notation scientifique » (4e, 953574d4) → 3-006 en 3e ; « Factoriser — facteur commun apparent » numérique (4e, 2de1b93d) → 5-008 en 5e ; « Trouver le complément à la dizaine supérieure » (CE1, c381596f) → CP-023 au CP. Conformément à R3, aucun niveau n'a été changé.",
+		"citations": "Règle R3 (2026-10-11) : « niveau déclaré douteux → pas de tag pour ce niveau, niveaux non modifiés (décision « niveaux » à part) ; liste à part sur la page ». Note de l'agent cycle 4 : « changer le niveau d'un modèle n'est pas une modification de plage, c'est à décider à part ». Les questions m-cm-1 (critères par 3 et 9 → 5e), m-sixieme-1 (trouver l'échelle → 5-088), m-sixieme-2 (augmentation → 3-068) et m-cycle4-2 (option 4-073) peuvent ajouter des modèles à cette liste.",
+		"options": [],
+		"reco": "",
+		"pourquoi": "Information : la liste nourrit la décision « niveaux », que R3 renvoie à plus tard.",
+		"consequence": "Aucune maintenant : ces modèles restent jouables sur leur nœud, sans tag.",
+		"modeles": [
+			"c381596f-f278-4f29-a205-5c60f748b590",
+			"819df2a9-5dd9-40c5-9525-c68e626c04b6",
+			"554496dd-506a-4110-8132-81fb9c494378",
+			"0be55013-6c7d-447b-98f4-bdfa574ad506",
+			"4f4a5c94-b162-4250-bc7c-255f9951c365",
+			"15368b02-73cc-4f0d-b978-fa0d0848eb03",
+			"2de1b93d-925e-40f7-a074-f8d7de584d04",
+			"294c4316-d2c9-4894-9c3c-c2b24fdffc99",
+			"65110463-afc0-4dfd-91b3-977fd7402de7",
+			"bb9cff7b-f2c7-40ce-af3c-249970ad0a9e",
+			"953574d4-e345-4a5d-9435-7faecc3ff7ac",
+			"54107079-218f-48dd-8df4-3cb4d1f5a801",
+			"2bdb3db6-8ef7-43af-aa7a-2332e34d2a01",
+			"ac5d0413-2eee-4bed-998b-d540701667a0"
+		],
+		"verdict_provisoire": "HORS_PROGRAMME, avec « reclassement possible » dans la justification."
+	}
+]
