@@ -50,6 +50,11 @@ function setInput(field: HTMLInputElement, value: string) {
 	field.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
+/** Valider un champ (Entrée ou sortie du champ : l'événement `change`). */
+function commitInput(field: HTMLInputElement) {
+	field.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
 /** Les libellés des éléments d'un menu ouvert (le libellé, sans la raison). */
 function labelsOf(menu: HTMLElement): string[] {
 	return [...menu.querySelectorAll<HTMLElement>('[role^="menuitem"]')].map((el) =>
@@ -152,6 +157,27 @@ describe('carte d’une valeur — le curseur', () => {
 		);
 	});
 
+	// Décision de David du 2026-10-18 : retenu avec l'atelier, il survit au
+	// rechargement (une carte remontée depuis l'état rangé)
+	it('le curseur affiché depuis le menu est retenu : une carte remontée le montre', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '2' }, 'text');
+		const first = await render(WithAtelier, { atelier });
+		const menu = await openCardMenu(first.container, 'a');
+		menuItemOf(menu, 'Curseur').click();
+		await vi.waitFor(() => {
+			const a = atelier.get('a');
+			expect(a && isValue(a) && a.sliderShown).toBe(true);
+		});
+		await first.unmount();
+
+		const fresh = new Atelier();
+		fresh.restore(atelier.serialize());
+		const { container } = await render(WithAtelier, { atelier: fresh });
+
+		expect(cardOf(container, 'a').querySelector('[role="slider"]')).toBeTruthy();
+	});
+
 	it('un paramètre garde son curseur : l’élément du menu le dit, coché', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'value', name: 'a', definition: '2' }, 'text');
@@ -239,12 +265,19 @@ describe('carte d’une suite', () => {
 
 		const card = cardOf(container, 'u');
 		expect(card.textContent?.replace(/\s+/g, '')).toContain('u(n+1)=');
+		// Comme la définition : rangé à Entrée ou à la sortie du champ, jamais à la
+		// frappe (décision de David du 2026-10-18)
 		setInput(input(card, 'u(0) =, premier terme de u'), '3');
+		await new Promise((resolve) => setTimeout(resolve, 400));
+		const before = atelier.get('u');
+		expect(before && isSequence(before) && before.firstTerm).toBe('0');
+		commitInput(input(card, 'u(0) =, premier terme de u'));
 		await vi.waitFor(() => {
 			const u = atelier.get('u');
 			expect(u && isSequence(u) && u.firstTerm).toBe('3');
 		});
 		setInput(input(card, 'Rang du premier terme de u'), '1');
+		commitInput(input(card, 'Rang du premier terme de u'));
 		await vi.waitFor(() => {
 			const u = atelier.get('u');
 			expect(u && isSequence(u) && u.firstIndex).toBe(1);
@@ -262,6 +295,7 @@ describe('carte d’une suite', () => {
 		const { container } = await render(WithAtelier, { atelier });
 
 		setInput(input(cardOf(container, 'u'), 'u(0) =, premier terme de u'), 'a');
+		commitInput(input(cardOf(container, 'u'), 'u(0) =, premier terme de u'));
 
 		await vi.waitFor(() => {
 			const u = atelier.get('u');
@@ -335,6 +369,7 @@ describe('carte d’une suite', () => {
 
 		const steps = await vi.waitFor(() => input(cardOf(container, 'u'), 'marches de u'));
 		setInput(steps, '4');
+		commitInput(steps);
 		await vi.waitFor(() => {
 			const u = atelier.get('u');
 			expect(u && isSequence(u) && u.display?.cobwebSteps).toBe(4);
@@ -493,6 +528,27 @@ describe('carte d’une liste', () => {
 		);
 	});
 
+	// Revue de #1501 : la colonne de la liste est SÉLECTIONNÉE en arrivant, pas
+	// seulement l'onglet ouvert
+	it('« Modifier dans Données » sélectionne la colonne de la liste', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1;2;3' });
+		atelier.create({ kind: 'list', name: 'M', definition: '4;5;6;7' });
+		const { container } = await render(AtelierContainer, {
+			atelier,
+			ephemeral: true,
+			view: 'graphe'
+		});
+		const cellAt = (name: string) =>
+			container.querySelector(`td[role="gridcell"][data-cell="${name}"]`);
+
+		await chooseObjectAction(container, 'M', 'Modifier dans Données');
+
+		await vi.waitFor(() => expect(cellAt('B1')?.getAttribute('aria-selected')).toBe('true'));
+		expect(cellAt('B4')?.getAttribute('aria-selected')).toBe('true');
+		expect(cellAt('A1')?.getAttribute('aria-selected')).toBe('false');
+	});
+
 	it('une action à deux listes se choisit dans le sous-menu', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '1;2;3' });
@@ -513,6 +569,42 @@ describe('carte d’une liste', () => {
 // Aucune action perdue
 // =============================================================================
 
+// =============================================================================
+// L'état d'une carte (revue de #1501)
+// =============================================================================
+
+describe('une carte dit son état', () => {
+	it.each([
+		['valeur', 'value'],
+		['suite', 'sequence'],
+		['liste', 'list']
+	] as const)('une %s vide annonce « à compléter »', async (_, kind) => {
+		const atelier = new Atelier();
+		const created = atelier.create({ kind });
+		if (!created.ok) throw new Error(created.message);
+		const { container } = await render(WithAtelier, { atelier });
+
+		const card = cardOf(container, created.object.name);
+		expect(card.querySelector('.etat')?.textContent?.trim()).toBe('à compléter');
+	});
+
+	it('une valeur qui cite un objet absent annonce « en attente »', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'b', definition: 'c + 1' }, 'text');
+		const { container } = await render(WithAtelier, { atelier });
+
+		expect(cardOf(container, 'b').querySelector('.etat')?.textContent?.trim()).toBe('en attente');
+	});
+
+	it('une valeur prête n’annonce rien', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '2' }, 'text');
+		const { container } = await render(WithAtelier, { atelier });
+
+		expect(cardOf(container, 'a').querySelector('.etat')).toBeNull();
+	});
+});
+
 describe('aucune action perdue', () => {
 	it('chaque action de `actionsFor` est dans le menu (valeur, suite, listes)', async () => {
 		const atelier = new Atelier();
@@ -522,9 +614,19 @@ describe('aucune action perdue', () => {
 		atelier.create({ kind: 'list', name: 'L', definition: '1;2;3' });
 		atelier.create({ kind: 'list', name: 'M', definition: '0,2;0,3;0,5' });
 		atelier.create({ kind: 'list', name: 'C', definition: 'rouge;vert;rouge' });
+		// Revue de #1501 : une qualitative partenaire (« Tableau croisé avec D ») et
+		// un diagramme affiché (« Retirer le diagramme »)
+		atelier.create({ kind: 'list', name: 'D', definition: 'grand;petit;grand' });
+		atelier.toggleChart('L', null);
 		const { container } = await render(WithAtelier, { atelier });
 
-		for (const name of ['v', 'a', 'u', 'L', 'M', 'C']) {
+		expect(actionsFor(atelier.get('L')!, atelier).map((a) => a.label)).toContain(
+			'Retirer le diagramme'
+		);
+		expect(actionsFor(atelier.get('C')!, atelier, 'D').map((a) => a.label)).toContain(
+			'Tableau croisé avec D'
+		);
+		for (const name of ['v', 'a', 'u', 'L', 'M', 'C', 'D']) {
 			const object = atelier.get(name)!;
 			const expected = new Set(actionsFor(object, atelier).map((a) => a.label));
 			for (const partner of partnersOf(object, atelier)) {

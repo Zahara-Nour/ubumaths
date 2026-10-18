@@ -165,31 +165,33 @@ Ceux du code et de l'interface :
 
 ### Composants — `src/lib/components/atelier/`
 
-| Composant                  | Rôle                                                                                                                       |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `AtelierContainer.svelte`  | Le conteneur : barre d'icônes, panneau + vues, console déroulante, session, `CalcDesk`, `GrapheurStore` propre             |
-| `roving-toolbar.ts`        | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                          |
-| `ToolButton.svelte`        | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)    |
-| `ObjectPanel.svelte`       | « Mes objets » : création, liste des cartes                                                                                |
-| `ObjectCard.svelte`        | Une carte : confie fonction, valeur, suite et liste à leur carte ; point et courbe : nom, définition, état, actions        |
-| `ValueCard.svelte`         | La carte d'une valeur, sur une ligne : `a = [champ]`, menu ; curseur sous la ligne d'un paramètre ; fenêtre des bornes     |
-| `SequenceCard.svelte`      | La carte d'une suite, sur une ligne : point, `u(n) = [champ]`, œil, menu ; premier terme et marches sous la ligne          |
-| `ListCard.svelte`          | La carte d'une liste : aperçu non éditable, nombre de valeurs ; menu avec le sous-menu « Avec une autre liste »            |
-| `CardActionItems.svelte`   | Les actions d'un menu de carte, indisponibles annoncées (`aria-disabled`, raison décrite), jamais `disabled`               |
-| `UnavailableItem.svelte`   | Un réglage de menu qui ne s'applique pas ici (« Curseur » d'une grandeur, « Escalier » d'une suite explicite)              |
-| `FunctionCard.svelte`      | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]`, œil, menu Affichage / Actions ; fenêtre de « Tabuler »   |
-| `CurveStylePopover.svelte` | Le point de couleur d'une fonction ou d'une suite : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)    |
-| `DefinitionField.svelte`   | Champ MathLive d'une définition ; rangée 0,3 s après la frappe, ou à Entrée / sortie du champ (`commit="validate"`)        |
-| `ValueSlider.svelte`       | Le curseur d'une valeur, sous la ligne de sa carte                                                                         |
-| `SliderSettings.svelte`    | Les bornes et le pas du curseur, refusés avec leur raison (fenêtre ouverte depuis le menu de la valeur)                    |
-| `CurveSettings.svelte`     | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls  |
-| `CalculView.svelte`        | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                    |
-| `NaturalField.svelte`      | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel          |
-| `AtelierSettings.svelte`   | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                 |
-| `FormulaText.svelte`       | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)    |
-| `FigureView.svelte`        | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, case « Repère », message d'un atelier sans figure          |
-| `DataView.svelte`          | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                |
-| `ShareBar.svelte`          | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier » |
+| Composant                   | Rôle                                                                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `AtelierContainer.svelte`   | Le conteneur : barre d'icônes, panneau + vues, console déroulante, session, `CalcDesk`, `GrapheurStore` propre             |
+| `roving-toolbar.ts`         | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                          |
+| `ToolButton.svelte`         | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)    |
+| `ObjectPanel.svelte`        | « Mes objets » : création, liste des cartes                                                                                |
+| `ObjectCard.svelte`         | L'aiguillage : confie chaque objet à la carte de son type                                                                  |
+| `FigureCard.svelte`         | La carte d'un point ou d'une courbe, sur une ligne : `A = [champ]`, `d : [champ]` ; nature, construction en gris, menu     |
+| `FigureStylePopover.svelte` | Le point de couleur d'un point (couleur, taille) ou d'une courbe de la figure (couleur, trait) : `setFigureDisplay`        |
+| `ValueCard.svelte`          | La carte d'une valeur, sur une ligne : `a = [champ]`, menu ; curseur sous la ligne d'un paramètre ; fenêtre des bornes     |
+| `SequenceCard.svelte`       | La carte d'une suite, sur une ligne : point, `u(n) = [champ]`, œil, menu ; premier terme et marches sous la ligne          |
+| `ListCard.svelte`           | La carte d'une liste : aperçu non éditable, nombre de valeurs ; menu avec le sous-menu « Avec une autre liste »            |
+| `CardActionItems.svelte`    | Les actions d'un menu de carte, indisponibles annoncées (`aria-disabled`, raison décrite), jamais `disabled`               |
+| `UnavailableItem.svelte`    | Un réglage de menu qui ne s'applique pas ici (« Curseur » d'une grandeur, « Escalier » d'une suite explicite)              |
+| `FunctionCard.svelte`       | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]`, œil, menu Affichage / Actions ; fenêtre de « Tabuler »   |
+| `CurveStylePopover.svelte`  | Le point de couleur d'une fonction ou d'une suite : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)    |
+| `DefinitionField.svelte`    | Champ MathLive d'une définition ; toutes les cartes le rangent à Entrée / sortie du champ (`commit="validate"`)            |
+| `ValueSlider.svelte`        | Le curseur d'une valeur, sous la ligne de sa carte                                                                         |
+| `SliderSettings.svelte`     | Les bornes et le pas du curseur, refusés avec leur raison (fenêtre ouverte depuis le menu de la valeur)                    |
+| `CurveSettings.svelte`      | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls  |
+| `CalculView.svelte`         | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                    |
+| `NaturalField.svelte`       | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel          |
+| `AtelierSettings.svelte`    | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                 |
+| `FormulaText.svelte`        | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)    |
+| `FigureView.svelte`         | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, case « Repère », message d'un atelier sans figure          |
+| `DataView.svelte`           | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                |
+| `ShareBar.svelte`           | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier » |
 
 La vue **Graphe** n'a pas de composant à elle : `AtelierContainer.svelte` monte
 `src/lib/components/grapheur/GrapheurContainer.svelte` avec `panel={false}` sur un
@@ -278,7 +280,8 @@ l'atelier calcule, jamais la `Figure`. Règles :
   cascade (I, puis ce qui cite I) ; redéfinir A recalcule. Ce qui ne se construit pas **avec les
   valeurs du moment** — deux points confondus, trois points alignés, une parallèle à un cercle, un
   rayon ≤ 0 — est en **erreur** avec sa raison (`#constructions`, après la propagation de
-  `recomputeAll`, jusqu'au point fixe). Chaque construction se calcule **une fois par passe** :
+  `recomputeAll`, jusqu'au point fixe). Même principe pour une valeur dont les grandeurs ne se
+  combinent pas (`3[min] + 2[km]`) : `#quantityChecks`, juste après. Chaque construction se calcule **une fois par passe** :
   mémo par révision (`Atelier.constructionMemo`, partagé par le recalcul, les cartes et Calcul),
   un mémo par passage pour la vue Géométrie (curseurs gardés en lettres) — sans lui, une chaîne
   de 12 milieux coûtait 46 s. Renommer réécrit aussi les raccourcis écrits en LaTeX par la carte
@@ -490,8 +493,15 @@ définition (champ MathLive, clavier, URL, collage, Calcul…) qui choisit le pa
 contenu. Elle est rangée sur l'objet, parce que `recomputeAll` relit toujours la définition.
 
 **État d'affichage hors sauvegarde** : les diagrammes de la vue Données (`chartOf`,
-`toggleChart`), la liste partenaire choisie (`choosePartner`) et les lois retenues
-(`rememberLaw`, `lawOf`) vivent dans l'`Atelier` mais pas dans `serialize()`.
+`toggleChart`) et les lois retenues (`rememberLaw`, `lawOf`) vivent dans l'`Atelier` mais pas
+dans `serialize()`. (La partenaire choisie, `choosePartner`, est retirée depuis le lot 4b : le
+sous-menu « Avec une autre liste » propose chaque partenaire par son nom.)
+
+**Affichage rangé sans nouvelle version** (lot 4b) : le dessin d'un point ou d'une courbe
+(`figureDisplay`) et le curseur affiché depuis le menu (`sliderShown`) ne sont rangés que
+lorsqu'ils s'écartent du défaut ; un ancien état se relit tel quel. Contrepartie, la même que la
+lecture graphique (#1497) : un onglet resté sur l'ancien code les oublie (Zod retire la clé) —
+un affichage, jamais un objet.
 
 ### La grille (vue Données)
 
@@ -1173,8 +1183,8 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
 
 Lot 3 de [atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)
 (décisions de David du 2026-10-18). `ObjectCard` confie toute fonction à `FunctionCard.svelte` ;
-valeurs, suites et listes ont la leur depuis le lot 4a (ci-dessous) ; points et courbes gardent
-leur vue repliée / développée (lot 4b).
+valeurs, suites et listes ont la leur depuis le lot 4a, points et courbes depuis le lot 4b
+(ci-dessous) : plus aucune carte n'a de vue repliée / développée.
 
 - **Une seule ligne, plus de vue développée** : `● f(x) = [champ MathLive]`, l'œil (tracer),
   le bouton « Options de f ». Plus de libellé « fonction », plus de second `f(x) =`.
@@ -1223,12 +1233,15 @@ Lot 4a de [atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface
 ligne `● nom = [définition]`, l'œil si l'objet se trace, un menu (`CardActionItems`,
 `UnavailableItem`), Renommer et Supprimer en fin de menu. Le champ est celui des fonctions
 (`DefinitionField`, `commit="validate"`) : une valeur et une suite sont rangées à **Entrée** ou à
-la **sortie du champ**, plus 0,3 s après la frappe.
+la **sortie du champ**, et non plus 0,3 s après la frappe. Chaque carte dit son état sur sa ligne
+(« à compléter », « en attente », « erreur » : `stateLabelOf`, `card-state.ts`).
 
 - **Valeur** (`ValueCard.svelte`) : `a = [3]`, une grandeur avec son unité (`v = [12 km]`). Le
   **curseur est sous la ligne** quand la valeur est un **paramètre** — un autre objet la cite
   (`Atelier.dependents`), point, courbe ou premier terme d'une suite compris. Sinon il est caché,
-  et « Affichage → Curseur » l'affiche (état de la carte, non rangé). ⚠️ La règle lit
+  et « Affichage → Curseur » l'affiche — **retenu avec l'atelier** (`sliderShown`,
+  `setSliderShown`, décision de David du 2026-10-18) : il survit au rechargement, au renommage,
+  au fichier et au lien. ⚠️ La règle lit
   `object.slider` : le modèle l'omet pour une grandeur (D4, `build()`) et l'omettra pour une
   mesure de la géométrie (`aire(…)`, `distance(…)`) — la carte ne juge jamais la forme de la
   définition. Seule exception, d'avant ce lot : une valeur **calculée** (`b + 1`, `constantOf`
@@ -1238,8 +1251,11 @@ la **sortie du champ**, plus 0,3 s après la frappe.
   (`SliderSettings`). Actions : Convertir (unité).
 - **Suite** (`SequenceCard.svelte`) : `● u(n) = [2n+1]` ou `● u(n+1) = [2u(n)+1]`. Sous la
   ligne, en petit : `u([0]) = [3]` (rang et premier terme, deux champs) pour une récurrence,
-  « à partir du rang [0] » pour une suite explicite ; un refus se dit en quittant le champ,
-  relié à lui seul (`refus-suite-u`). Le point de couleur (`CurveStylePopover`, `setSequenceDisplay`)
+  « à partir du rang [0] » pour une suite explicite ; rang, premier terme et marches sont rangés à
+  Entrée ou à la sortie du champ (`change`), jamais à la frappe ; un refus se dit alors, relié au
+  seul champ fautif (`refus-suite-u`), et le champ reprend la valeur retenue. Une suite en
+  escalier qui ne peut plus l'être (passée en explicite, ou qui dépend désormais de n) revient au
+  nuage (`#dropImpossibleCobweb`, revue de #1501). Le point de couleur (`CurveStylePopover`, `setSequenceDisplay`)
   ouvre couleur et trait. Menu : **Affichage** — Nuage / Escalier (choix exclusif ;
   indisponibles tant que la suite n'est pas tracée, l'escalier d'une suite explicite avec la
   raison de `cobwebRefusal`), les **marches** se réglant sous la ligne quand l'escalier est
@@ -1252,11 +1268,40 @@ la **sortie du champ**, plus 0,3 s après la frappe.
   (action `data`, traitée par le conteneur, hors de `actionsFor`). Les actions à deux listes
   passent par le sous-menu **« Avec une autre liste »**, un groupe par partenaire
   (`actionsFor(liste, atelier, partenaire)`), à la place du choix de la partenaire sur la carte
-  (Q46) ; la partenaire choisie reste retenue (`choosePartner`, Q48). Une commande **préparée**
+  (Q46) ; une partenaire renommée y paraît sous son nouveau nom (Q48). Une commande **préparée**
   (tableau croisé, simuler) part une fois le menu fermé ET retiré (`onOpenChangeComplete`) :
   lancée avant, le champ mathématique de la console n'obtenait pas le focus.
 - Aucune de ces cartes n'en suit une autre (pas de lien de dépendance, à la différence de `f′`) ;
   `selected` ne sert qu'à la mise en évidence et au focus d'une carte neuve.
+
+### Les cartes d'un point et d'une courbe
+
+Lot 4b de [atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)
+(validé par David le 2026-10-18, précisé avec la session de la géométrie). Une seule carte pour
+les deux, `FigureCard.svelte`, avec la grammaire des autres :
+
+- **Une ligne** : `● A = [(1 ; 2)]`, `● d : [y = 3x − 2]` (équation : « : »), `● d = [(AB)]`
+  (construction : « = », L2). Le champ (`DefinitionField`, `commit="validate"`) est rangé à
+  Entrée ou à la sortie du champ — il l'était 0,3 s après la frappe. Le champ d'un point montre
+  ses coordonnées en LaTeX (`\left(\sqrt{2};1\right)`, `fieldLatexOf`), relisibles.
+- **La nature** en étiquette discrète au bout de la ligne (« point », « droite », « segment »,
+  « cercle »… : `figureNatureOf`, `card-state.ts`) ; le constat d'une courbe vide (C6) sous la
+  ligne.
+- **Une construction** (`I = [milieu(A, B)]`, `s = [[AB]]`) : ce qu'elle vaut en gris sous la
+  ligne, non éditable — coordonnées exactes, équation réduite, longueur (`constructionSummaryOf`,
+  L7) ; c'est la construction qu'on modifie. Un point par coordonnées n'a pas de ligne grise.
+  L'icône de lien dit ce qu'elle suit (« I se construit à partir de A et B, et suit leurs
+  changements », `followsOf`). En attente : « en attente » et sa raison.
+- **Le point de couleur** (`FigureStylePopover`) : couleur et taille d'un point, couleur,
+  épaisseur et style d'une courbe (`setFigureDisplay`). Vide tant que rien n'est réglé (dessin
+  par défaut de la figure). **Menu** : Affichage → Étiquette (point seulement), puis Renommer
+  et Supprimer.
+- **Le modèle** : `PointDisplay { color, size: 'small' | 'medium' | 'large', showLabel }` et
+  `StrokeDisplay { color, lineStyle, lineWidth }` (sous-ensemble de `CurveDisplay`), sur l'objet,
+  absents par défaut ; rangés en `figureDisplay` (sauvegarde, lien, fichier, fusion :
+  `adoptFigureDisplay`, `.strict()` — le réglage d'un point posé sur une courbe est oublié) ;
+  gardés quand la définition change. ⚠️ La vue Géométrie ne les lit pas encore : `syncFigure`
+  est câblé par la session de la géométrie.
 
 ### Vues
 
@@ -1339,9 +1384,8 @@ remplacées — « droite », « cercle », « ellipse », « parabole », « hy
 « point », sinon « courbe ». Une courbe vide reste acceptée et la carte constate « Aucun point
 ne vérifie cette équation. » (C6) ; une conique réduite à un point dit « point » et constate
 « Un seul point vérifie cette équation. ». Même classification que `courbe()`
-(`curveNatureOf`, `degenerateConic`). La tête d'une carte de point ou de courbe se lit comme
-celle d'une fonction : le nom, puis l'équation ou les coordonnées — le « : » ou le « = » n'est
-que lu (lecteur d'écran), pas affiché seul sur sa ligne.
+(`curveNatureOf`, `degenerateConic`). La carte d'un point ou d'une courbe se lit comme celle
+d'une fonction, sur une ligne : le nom, le « : » ou le « = », puis le champ (lot 4b).
 
 ### Copier une réponse
 
@@ -1569,7 +1613,7 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | calculs, commandes du registre          | `WebReplEngine` (`src/lib/mathAST/cli/web/web-repl-engine.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | écrire une grandeur (`5 km`)            | `readNaturalQuantities` (`src/lib/atelier/natural-quantities.ts`) : « un nombre, une espace, une unité », puis tout terme de nombres (`10^3 m`, `2π m` ; une lettre reste de l'algèbre), calculs et valeurs seulement                                                                                                                                                                                                                                                                     |
-| grandeur dans le champ d'une carte      | `definitionFromField` / `fieldLatexOf` (`src/lib/atelier/mathfield.ts`) : la même lecture sur le LaTeX de MathLive (`2\,h\,30\,\min`) ; une durée composée revient `2 h 30 min` (dans un calcul : `(1 h + 30 min) × 2`, relu aussi) ; virgule de l'élève (`2{,}5`, valeurs et fonctions) ; une unité montrée par le champ reste une unité (`10^3 m`)                                                                                                                                      |
+| grandeur dans le champ d'une carte      | `definitionFromField` / `fieldLatexOf` (`src/lib/atelier/mathfield.ts`) : la même lecture sur le LaTeX de MathLive (`2\,h\,30\,\min`) ; une durée composée revient `2 h 30 min` (dans un calcul : `(1 h + 30 min) × 2`, relu aussi, le × gardé) ; virgule de l'élève (`2{,}5`, valeurs et fonctions) ; une unité montrée par le champ reste une unité (`10^3 m`)                                                                                                                          |
 | conversion d'un trait (`2,5 h en min`)  | `naturalConversion` / `convertNaturally` (`calcul.ts`) : un calcul sans `=`, « en », une unité du module → la grandeur calculée puis `.convertir`, même réponse ; la gauche est d'abord ESSAYÉE sur un moteur à part (`probeEngine`) : une ligne refusée ne change pas la dernière grandeur de l'élève ; gauche en erreur → son erreur, pas une grandeur → refus qui la cite. Avant le 2026-10-14 : un produit de lettres (« 2,5 h e n m i n »). Pas dans une définition (`d = … en min`) |
 | calcul avec des grandeurs, `.convertir` | `computeQuantity` / `convertQuantity` (`src/lib/mathAST/cli/quantities.ts`) : `tidy`, unité écrite d'abord — comme `{{eval}}` ; contrat : [grandeurs.md](grandeurs.md)                                                                                                                                                                                                                                                                                                                    |
 | `.simplifier`                           | `generatePedagogicalSimplifySteps`, intention `auto` (ADR 0007)                                                                                                                                                                                                                                                                                                                                                                                                                           |

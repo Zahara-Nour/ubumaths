@@ -95,7 +95,7 @@ Branche `feat/atelier-cartes-valeur-suite-liste` (recommandations validées par 
 
 Choix faits en codant (à signaler à David) :
 
-- **Curseur : la règle lit `object.slider`** (précision de la coordination, 2026-10-18) — aucun critère sur la forme de la définition, aucun nouveau drapeau ; le modèle omettra `slider` pour les mesures de la géométrie. Gardée, d'avant ce lot : une valeur CALCULÉE (`b + 1`) n'a pas de curseur. Le curseur affiché depuis le menu pour une valeur non paramètre est un état de la carte, non rangé.
+- **Curseur : la règle lit `object.slider`** (précision de la coordination, 2026-10-18) — aucun critère sur la forme de la définition, aucun nouveau drapeau ; le modèle omettra `slider` pour les mesures de la géométrie. Gardée, d'avant ce lot : une valeur CALCULÉE (`b + 1`) n'a pas de curseur. Le curseur affiché depuis le menu pour une valeur non paramètre était un état de la carte, non rangé — **retenu depuis le lot 4b** (décision de David).
 - Une valeur se range maintenant à Entrée ou à la sortie du champ (plus 0,3 s après la frappe), comme une fonction.
 - Une liste de mots compte ses valeurs ET ses modalités : « (5 valeurs, 3 modalités) » ; une colonne de formules ajoute « calculée dans la grille ».
 - Une suite explicite montre son premier rang sous la ligne (« à partir du rang [0] ») : il compte pour ses termes.
@@ -103,6 +103,28 @@ Choix faits en codant (à signaler à David) :
 - Le choix de la partenaire (Q46) n'est plus sur la carte : chaque partenaire a son groupe dans le sous-menu ; la partenaire choisie reste retenue (`choosePartner`), pour Q48.
 - Tableau croisé et Simuler partent une fois le menu fermé et retiré (`onOpenChangeComplete`) : lancés avant, le champ mathématique de la console n'obtenait pas le focus (mesuré).
 
+## Lot 4b — cartes d'un point et d'une courbe (+ suivi de la revue de #1501)
+
+Branche `feat/atelier-cartes-point-courbe`, partie d'origin/main après #1500 (constructions) et #1501 (lot 4a).
+
+- [x] `FigureCard.svelte` (une carte pour les deux, ils ne diffèrent que par la fenêtre du point de couleur et l'étiquette) : ligne `● A = [champ]` / `● d : [champ]` / `● d = [(AB)]`, champ `commit="validate"` (il était rangé 0,3 s après la frappe), nature en étiquette, construction en gris (contenu de #1500 repris tel quel), lien « se construit à partir de A et B », état. `ObjectCard` ne garde que l'aiguillage ; `ObjectPanel` ne passe plus `onSelect` aux cartes (plus de vue à replier).
+- [x] `FigureStylePopover.svelte` : couleur + taille (point), couleur + épaisseur + style (courbe) ; Affichage → Étiquette (point).
+- [x] Champ d'un point : coordonnées en LaTeX (`fieldLatexOf`), relisibles.
+- [x] Suivi de la revue de #1501 (commit à part) : escalier impossible → nuage (`#dropImpossibleCobweb`, après `setSequence` et `update`) ; état « à compléter » / « en attente » rétabli sur les cartes valeur, suite, liste (`stateLabelOf`, `card-state.ts`) ; `choosePartner` / `partnerChoiceOf` retirés (écrits, jamais lus ; ni rangés ni rejoués) ; tests : zone sélectionnée par « Modifier dans Données », aucune action perdue avec diagramme et qualitative partenaire, « Tableau croisé » → console + focus. Rang, premier terme et marches d'une suite : rangés à Entrée / sortie du champ.
+- [x] Curseur affiché depuis le menu **retenu** (décision de David du 2026-10-18) : `ValueObject.sliderShown`, `setSliderShown`, rangé seulement quand il est affiché.
+
+**Pour la session atelier-geometry — champs à câbler dans `syncFigure`** (rien de câblé ici) :
+
+- point : `object.display?: PointDisplay` = `{ color: CurveColor ('curve-1' … 'curve-4'), size: 'small' | 'medium' | 'large', showLabel: boolean }` ; absent = dessin par défaut de la figure, étiquette affichée ;
+- courbe : `object.display?: StrokeDisplay` = `{ color: CurveColor, lineStyle: LineStyle, lineWidth: number }` (même forme que les trois champs de `CurveDisplay` : `strokeOf` de `figure-sync.ts` s'applique tel quel) ;
+- modifiés par `atelier.setFigureDisplay(name, patch)` (fait avancer `revision`) ; rangés en `figureDisplay` ; **pas de nouvelle `ATELIER_STATE_VERSION`** (absents par défaut).
+
+Choix faits en codant (à signaler à David) :
+
+- Pas de version d'état neuve : réglage du dessin et curseur retenu sont absents quand ils valent le défaut. Contrepartie (la même que la lecture graphique) : un onglet resté sur l'ancien code les oublie.
+- Une couleur choisie la première fois prend la première couleur libre de la figure ; une taille par défaut « moyenne », l'étiquette affichée.
+- « Refermer une carte » (retour de David du 2026-10-04) n'a plus d'objet : plus aucune carte n'a de vue développée.
+
 ## Lots suivants
 
-Lot 4b (points et courbes, avec la session atelier-geometry), lot 5 (annuler / rétablir) : pas commencés.
+Lot 5 (annuler / rétablir) : pas commencé.

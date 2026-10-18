@@ -255,7 +255,9 @@ export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport
 		// réglages AVANT le tracé, sinon `setPlotted` en attribuerait de neufs.
 		if (stored.display) atelier.adoptDisplay(chosen, stored.display);
 		if (stored.sequenceDisplay) atelier.adoptSequenceDisplay(chosen, stored.sequenceDisplay);
+		if (stored.figureDisplay) atelier.adoptFigureDisplay(chosen, stored.figureDisplay);
 		if (stored.slider) atelier.adoptSlider(chosen, stored.slider);
+		if (stored.sliderShown) atelier.setSliderShown(chosen, true);
 		if (stored.plotted) atelier.setPlotted(chosen, true);
 		if (stored.inFigure) atelier.setInFigure(chosen, true);
 	}

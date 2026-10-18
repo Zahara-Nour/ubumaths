@@ -18,7 +18,14 @@
 
 import type { MathNode } from '$lib/mathAST/types';
 import type { AtelierObject, ObjectKind } from './types';
-import { astOf, parseDefinition, readingMode, readNumber, type Provenance } from './parse';
+import {
+	astOf,
+	parseDefinition,
+	pointCoordinatesOf,
+	readingMode,
+	readNumber,
+	type Provenance
+} from './parse';
 import { INTERNAL_LETTER, renameVariable } from './letter';
 import { intervalFieldLatex } from './interval';
 import { readNaturalQuantities } from './natural-quantities';
@@ -94,14 +101,33 @@ function expressionFieldLatex(
 		const shown = measureFieldLatex(definition, provenance, functionNames);
 		if (shown !== null) return shown;
 	}
+	// Un point par coordonnées (`(sqrt(2) ; 1)`) : chaque coordonnée en écriture
+	// mathématique, comme la carte repliée d'avant le lot 4b — sous la forme que
+	// MathLive écrit quand on tape `(1;2)`, que le champ relit tel quel
+	if (object.kind === 'point') {
+		const coordinates = pointCoordinatesOf(definition);
+		if (coordinates !== null) {
+			const [x, y] = coordinates.map((c) => astOf(c, provenance, functionNames));
+			if (x !== null && y !== null) {
+				return `\\left(${coordinateLatex(x)};${coordinateLatex(y)}\\right)`;
+			}
+		}
+	}
 	// Un nombre s'affiche comme l'élève l'écrit : `2,5`, pas le `2.5` que rendrait
 	// `toLatex` (revue du lot 4 : le curseur écrit `2,5`, le champ montrait `2.5`)
 	if (readNumber(definition) !== null) return definition.trim();
 
 	const ast = astOf(definition, provenance, functionNames);
 	if (ast === null) return definition;
-	// La virgule de l'élève : `2,5 km`, `2,5x`, pas le `2.5` de `toLatex` ; ses
-	// arguments séparés par « ; » : `max(2,5 ; x)`, pas `2,5, x`
+	return coordinateLatex(ast);
+}
+
+/**
+ * Une expression en LaTeX pour le champ. La virgule de l'élève : `2,5 km`,
+ * `2,5x`, pas le `2.5` de `toLatex` ; ses arguments séparés par « ; » :
+ * `max(2,5 ; x)`, pas `2,5, x`.
+ */
+function coordinateLatex(ast: MathNode): string {
 	return argumentSeparatorsShown(forMathlive(toLatex(ast))).replace(/(\d)\.(\d)/g, '$1{,}$2');
 }
 
@@ -209,8 +235,11 @@ function naturalQuantityLatex(latex: string): string | null {
 	const read = readNaturalQuantities(text, [], { afterTerms: false }).text;
 	const outside = read.replace(/\[[^\]]*\]|\\(?:d?frac|cdot)(?![A-Za-z])/g, '');
 	if (!read.includes('[') || /[A-Za-z\\]/.test(outside)) return null;
+	// Le × de l'élève, lu `\cdot` ci-dessus, lui est rendu : il revenait en ·
+	// après retouche (restes des grandeurs, 2026-10-18)
+	const times = /\\times(?![A-Za-z])/.test(latex) && !/\\cdot(?![A-Za-z])/.test(latex);
 	return (
-		read
+		(times ? read.replace(/\\cdot(?![A-Za-z])\s*/g, '\\times ') : read)
 			.replace(/\((\d+)\/(\d+)\)\[/g, '\\frac{$1}{$2}[')
 			.replace(/\[([^\]]*)\]/g, '\\unit{$1}')
 			// La virgule redevient celle de MathLive (`2{,}5`) : nue, le LaTeX la refuse

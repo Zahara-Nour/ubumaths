@@ -44,15 +44,6 @@
 			onSelect?.(result.object.name);
 		}
 	}
-
-	/**
-	 * Ouvrir une carte, ou la REFERMER si elle l'est déjà (retour de David :
-	 * re-cliquer ne faisait rien, il fallait ouvrir une autre carte).
-	 */
-	function select(name: string) {
-		selected = selected === name ? null : name;
-		if (selected !== null) onSelect?.(name);
-	}
 </script>
 
 <aside class="panneau">
@@ -67,13 +58,7 @@
 
 	<div class="liste">
 		{#each atelier.objects as object (object.name)}
-			<ObjectCard
-				{object}
-				selected={object.name === selected}
-				onSelect={select}
-				{onAction}
-				{onTabulate}
-			/>
+			<ObjectCard {object} selected={object.name === selected} {onAction} {onTabulate} />
 		{:else}
 			<p class="vide">Rien encore. Crée un objet pour commencer à chercher.</p>
 		{/each}

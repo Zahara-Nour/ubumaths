@@ -20,9 +20,11 @@ import {
 	MAX_DEFINITION_LENGTH,
 	MAX_FIGURE_OBJECTS,
 	MAX_LISTS,
+	isCurve,
 	isFigureObject,
 	isFunction,
 	isList,
+	isPoint,
 	isSequence,
 	isValue,
 	parametersOf
@@ -35,9 +37,11 @@ import type {
 	ObjectKind,
 	ObjectStatus,
 	ListObject,
+	PointDisplay,
 	SequenceDisplay,
 	SequenceObject,
 	Slider,
+	StrokeDisplay,
 	ValueObject
 } from './types';
 import {
@@ -76,15 +80,23 @@ import {
 	type StoredObject
 } from './persistence';
 import { expressionOf, graphLatexOf, substitutedAstOf, termsOf } from './engine';
+import { isUnit } from '$lib/mathAST/guards';
+import { findNodes } from '$lib/mathAST/transforms';
 import {
 	compactDisplay,
 	fullDisplay,
 	newDisplay,
+	newPointDisplay,
 	newSequenceDisplay,
+	newStrokeDisplay,
+	plainFigureDisplay,
 	plainSequenceDisplay,
+	pointDisplaySchema,
 	readDisplayPatch,
+	readFigureDisplayPatch,
 	readSequenceDisplayPatch,
 	sequenceDisplaySchema,
+	strokeDisplaySchema,
 	type StoredDisplay
 } from './display';
 import { astOf as astOfDefinition } from './parse';
@@ -214,7 +226,6 @@ interface RemovalUndo {
 	readonly revision: number;
 	readonly items: AtelierObject[];
 	readonly charts: [string, ListChartState][];
-	readonly partnerChoices: [string, string][];
 	/** Les cellules sans nom d'avant : retirer un nom y verse la colonne (T3). */
 	readonly cells: [string, string][];
 	/** Les titres d'avant : supprimer une liste vide sa colonne, titre compris. */
@@ -486,6 +497,9 @@ function functionAsNumberMessage(cited: AtelierObject, user: AtelierObject): str
 	return `« ${cited.name} » est une ${what} : « ${user.name} » ne peut pas s'en servir comme d'un nombre. ${hint}, ou donne un autre nom à la lettre.`;
 }
 
+/** Une unité écrite dans une définition : `5[km]`, `\unit{km}`, celle que montre le champ. */
+const UNIT_WRITTEN = /\[|\\unit\{|\\operatorname\{\\mathrm\{/;
+
 const brokenMessage = (culprits: readonly string[]) =>
 	culprits.length === 1
 		? `Dépend de « ${culprits[0]} », qui est en erreur.`
@@ -553,15 +567,6 @@ export class Atelier {
 	 * par `revision`, qui déclencherait un enregistrement pour rien.
 	 */
 	private charts = new SvelteMap<string, ListChartState>();
-
-	/**
-	 * Liste partenaire choisie sur la carte d'une liste (Q46) : liste → partenaire.
-	 *
-	 * ⚠️ Ici plutôt que dans la carte (Q48) : retenue par son NOM dans la carte,
-	 * elle revenait en silence à celle par défaut après un renommage. Même
-	 * statut que `charts` : affichage seulement, hors de `serialize()`.
-	 */
-	private partnerChoices = new SvelteMap<string, string>();
 
 	/**
 	 * Le repère de la vue Figure (géométrie v2, G4 et F3) : affiché par défaut —
@@ -1243,10 +1248,6 @@ export class Atelier {
 			this.charts.delete(list);
 			this.charts.set(list === from ? to : list, { ...chart, partner });
 		}
-		for (const [list, partner] of [...this.partnerChoices]) {
-			this.partnerChoices.delete(list);
-			this.partnerChoices.set(list === from ? to : list, partner === from ? to : partner);
-		}
 
 		this.recomputeAll();
 		return { ok: true, updated };
@@ -1347,10 +1348,14 @@ export class Atelier {
 			...keptSequence,
 			...(previous.plotted && { plotted: true }),
 			...(isFunction(previous) && isFunction(rebuilt) && previous.inFigure && { inFigure: true }),
-			...((isFunction(previous) || isSequence(previous)) &&
+			// Un point ou une courbe garde son dessin (lot 4b) : la définition change, pas la couleur
+			...((isFunction(previous) || isSequence(previous) || isFigureObject(previous)) &&
 				previous.display && { display: previous.display }),
-			...(keptSlider && { slider: keptSlider })
+			...(keptSlider && { slider: keptSlider }),
+			// Le curseur affiché à la main reste affiché, tant que la valeur en a un
+			...(isValue(previous) && previous.sliderShown && keptSlider && { sliderShown: true })
 		} as AtelierObject;
+		this.#dropImpossibleCobweb(index);
 		this.recomputeAll();
 
 		return { ok: true, object: this.get(name)!, recomputed: dependents };
@@ -1372,10 +1377,6 @@ export class Atelier {
 		// sinon, une liste recréée sous ce nom s'y rattacherait en silence
 		for (const [list, chart] of [...this.charts]) {
 			if (chart.partner === name) this.charts.delete(list);
-		}
-		this.partnerChoices.delete(name);
-		for (const [list, partner] of [...this.partnerChoices]) {
-			if (partner === name) this.partnerChoices.delete(list);
 		}
 		this.recomputeAll();
 
@@ -1422,16 +1423,12 @@ export class Atelier {
 		const charts = [...this.charts].filter(
 			([list, c]) => gone.has(list) || gone.has(c.partner ?? '')
 		);
-		const partnerChoices = [...this.partnerChoices].filter(
-			([list, partner]) => gone.has(list) || gone.has(partner)
-		);
 		const cells = [...this.cells];
 		const titles = [...this.titles];
 		const columns = this.items.flatMap((o) => (isList(o) && gone.has(o.name) ? [o.column] : []));
 
 		this.items = this.items.filter((o) => !gone.has(o.name));
 		for (const [list] of charts) this.charts.delete(list);
-		for (const [list] of partnerChoices) this.partnerChoices.delete(list);
 		this.recomputeAll();
 		if (unnamed !== undefined) unnamed();
 		else for (const column of columns) this.titles.delete(column);
@@ -1446,7 +1443,6 @@ export class Atelier {
 			revision: this.revision,
 			items,
 			charts: $state.snapshot(charts) as [string, ListChartState][],
-			partnerChoices,
 			cells,
 			titles
 		};
@@ -1472,9 +1468,6 @@ export class Atelier {
 		// Un diagramme remis entre-temps (hors `revision`, Q37) prime sur l'ancien
 		for (const [list, chart] of undo.charts) {
 			if (!this.charts.has(list)) this.charts.set(list, chart);
-		}
-		for (const [list, partner] of undo.partnerChoices) {
-			if (!this.partnerChoices.has(list)) this.partnerChoices.set(list, partner);
 		}
 		this.recomputeAll();
 		return true;
@@ -1541,15 +1534,6 @@ export class Atelier {
 		// Le genre n'est noté que pour un circulaire : les bâtons gardent leur forme v1
 		this.charts.set(name, { partner, ...(kind !== 'barres' && { kind }) });
 		return true;
-	}
-
-	/** La partenaire choisie sur la carte de cette liste, s'il y en a une. */
-	partnerChoiceOf(name: string): string | undefined {
-		return this.partnerChoices.get(name);
-	}
-
-	choosePartner(name: string, partner: string): void {
-		this.partnerChoices.set(name, partner);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -2241,9 +2225,13 @@ export class Atelier {
 			...(isValue(o) && o.slider && !isDefaultSlider(o.slider)
 				? { slider: { min: o.slider.min, max: o.slider.max, step: o.slider.step } }
 				: {}),
+			// Le curseur affiché depuis le menu : seulement quand il l'est (pas de version neuve)
+			...(isValue(o) && o.sliderShown ? { sliderShown: true } : {}),
 			// Le mode toujours (une récurrence constante ne se devine pas), le rang
 			// et le premier terme seulement s'ils diffèrent du défaut
 			...(isSequence(o) && o.display ? { sequenceDisplay: plainSequenceDisplay(o.display) } : {}),
+			// Point ou courbe de la figure (lot 4b) : absent tant que rien n'est réglé
+			...(isFigureObject(o) && o.display ? { figureDisplay: plainFigureDisplay(o.display) } : {}),
 			...(isSequence(o)
 				? {
 						mode: o.mode,
@@ -2298,7 +2286,6 @@ export class Atelier {
 		this.#formats = read.formats;
 		this.items = [];
 		this.charts.clear();
-		this.partnerChoices.clear();
 		this.#figureFrame = true;
 		this.cells.clear();
 		this.titles.clear();
@@ -2371,7 +2358,9 @@ export class Atelier {
 			// couleur neuve à une courbe qui avait déjà la sienne.
 			if (stored.display) this.adoptDisplay(stored.name, stored.display);
 			if (stored.sequenceDisplay) this.adoptSequenceDisplay(stored.name, stored.sequenceDisplay);
+			if (stored.figureDisplay) this.adoptFigureDisplay(stored.name, stored.figureDisplay);
 			if (stored.slider) this.adoptSlider(stored.name, stored.slider);
+			if (stored.sliderShown) this.setSliderShown(stored.name, true);
 			if (stored.plotted) this.setPlotted(stored.name, true);
 			if (stored.inFigure) this.setInFigure(stored.name, true);
 		}
@@ -2460,6 +2449,25 @@ export class Atelier {
 		// ⚠️ Pas de `recomputeAll` : un réglage ne change aucun statut, et le
 		// curseur de la tangente en enverrait un par mouvement. Seul le compteur
 		// bouge — c'est lui que la sauvegarde et le tracé écoutent.
+		this.revision++;
+		return { ok: true };
+	}
+
+	/**
+	 * Afficher — ou cacher — le curseur d'une valeur qui n'est pas un paramètre
+	 * (Affichage → Curseur, lot 4a). Retenu avec l'atelier (décision de David du
+	 * 2026-10-18). Refusé pour une valeur sans curseur (grandeur, mesure).
+	 */
+	setSliderShown(name: string, shown: boolean): { ok: true } | Refused {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isValue(current) || current.slider === undefined) {
+			return { ok: false, message: `« ${name} » n'a pas de curseur.` };
+		}
+		if ((current.sliderShown === true) === shown) return { ok: true };
+		const { sliderShown: _, ...rest } = current;
+		this.items[index] = shown ? { ...rest, sliderShown: true } : rest;
+		// Un affichage : aucun statut ne change, seul le compteur (la sauvegarde l'écoute)
 		this.revision++;
 		return { ok: true };
 	}
@@ -2562,6 +2570,63 @@ export class Atelier {
 		this.items[index] = { ...current, display: read.data };
 	}
 
+	/**
+	 * Régler le dessin d'un point (couleur, taille, étiquette) ou d'une courbe de
+	 * la figure (couleur, trait) — lot 4b de la refonte.
+	 *
+	 * Même porte que `setDisplay` : le patch est validé ici, un réglage qui n'est
+	 * pas celui de l'objet est refusé. Le premier réglage part des défauts (une
+	 * couleur encore libre parmi celles de la figure). La vue Géométrie le lit
+	 * par `syncFigure` (câblé par la session de la géométrie).
+	 */
+	setFigureDisplay(
+		name: string,
+		patch: Partial<PointDisplay> | Partial<StrokeDisplay>
+	): { ok: true } | Refused {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isFigureObject(current)) {
+			return { ok: false, message: `« ${name} » n'est ni un point ni une courbe.` };
+		}
+		const read = readFigureDisplayPatch(current.kind, patch);
+		if (!read.ok) return { ok: false, message: read.message };
+		if (Object.keys(read.patch).length === 0) return { ok: true };
+		if (isPoint(current)) {
+			const base = current.display ?? newPointDisplay(this.#figureDisplays());
+			this.items[index] = { ...current, display: { ...base, ...read.patch } as PointDisplay };
+		} else {
+			const base = current.display ?? newStrokeDisplay(this.#figureDisplays());
+			this.items[index] = { ...current, display: { ...base, ...read.patch } as StrokeDisplay };
+		}
+		// Comme `setDisplay` : un réglage ne change aucun statut, seul le compteur bouge
+		this.revision++;
+		return { ok: true };
+	}
+
+	/** Poser un réglage de point ou de courbe relu (sauvegarde, lien), validé : abîmé, oublié. */
+	adoptFigureDisplay(name: string, stored: unknown): void {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined) return;
+		if (isPoint(current)) {
+			const read = pointDisplaySchema.safeParse(stored);
+			if (read.success) this.items[index] = { ...current, display: read.data };
+		} else if (isCurve(current)) {
+			// `.strict()` : le réglage d'un point posé sur une courbe n'est pas le sien
+			const read = strokeDisplaySchema.strict().safeParse(stored);
+			if (read.success) this.items[index] = { ...current, display: read.data };
+		}
+	}
+
+	/** Les couleurs déjà prises dans la figure — pour proposer une couleur libre. */
+	#figureDisplays(): Pick<CurveDisplay, 'color' | 'lineStyle'>[] {
+		return this.items.flatMap((o) =>
+			isFigureObject(o) && o.display
+				? [{ color: o.display.color, lineStyle: 'solid' as const }]
+				: []
+		);
+	}
+
 	/** Les objets dont la définition cite `name`, directement. */
 	dependents(name: string): readonly string[] {
 		return this.items
@@ -2632,8 +2697,22 @@ export class Atelier {
 			};
 		}
 		this.items[index] = next;
+		this.#dropImpossibleCobweb(index);
 		this.recomputeAll();
 		return { ok: true };
+	}
+
+	/**
+	 * Une suite en escalier qui ne peut plus l'être — passée en explicite, ou
+	 * récurrence qui dépend désormais de n — revient au nuage (revue de #1501 :
+	 * le menu ne cochait plus rien, les marches restaient affichées, et le graphe
+	 * dessinait un nuage). Même règle que le refus de `setSequenceDisplay`.
+	 */
+	#dropImpossibleCobweb(index: number): void {
+		const current = this.items[index];
+		if (!isSequence(current) || current.display?.representation !== 'cobweb') return;
+		if (cobwebRefusal(current, this.functionNames) === null) return;
+		this.items[index] = { ...current, display: { ...current.display, representation: 'ranks' } };
 	}
 
 	/**
@@ -2973,6 +3052,7 @@ export class Atelier {
 		this.#inheritIntervals(intervals.inherited);
 		this.#constructions();
 		this.#measures();
+		this.#quantityChecks(deps);
 		this.#underivable();
 		this.#sequenceChecks();
 		this.#reciprocals();
@@ -3520,6 +3600,57 @@ export class Atelier {
 				changed = true;
 			});
 		}
+	}
+
+	/**
+	 * Une valeur dont les grandeurs ne se combinent pas (`3[min] + 2[km]`, ou
+	 * `r + 2[m]` avec r = 3 s) est en erreur dès sa définition, avec le refus de
+	 * Calcul ; ce qui la cite aussi, jusqu'au point fixe (demande de David du
+	 * 2026-10-18 : avant, elle était « ok » et le refus attendait qu'on la cite).
+	 */
+	#quantityChecks(deps: ReadonlyMap<string, readonly string[]>): void {
+		const cites = (name: string, names: ReadonlySet<string>) =>
+			(deps.get(name) ?? []).some((d) => names.has(d));
+		// Seules les valeurs qui portent une unité, écrite ou citée, sont relues :
+		// relire toutes les valeurs à chaque recalcul coûtait ~65 ms pour 50 valeurs
+		// (revue), à chaque cran d'un curseur
+		const carrying = new Set(
+			this.items
+				.filter((o) => o.kind === 'value' && UNIT_WRITTEN.test(o.definition))
+				.map((o) => o.name)
+		);
+		this.spread((n) => this.get(n)?.kind === 'value' && cites(n, carrying), carrying);
+
+		const own = new Map<string, string>();
+		for (const o of this.items) {
+			if (o.status !== 'ok' || !carrying.has(o.name)) continue;
+			const message = this.#quantityMessage(o.name);
+			if (message !== null) own.set(o.name, message);
+		}
+		if (own.size === 0) return;
+
+		// Ce qui cite une valeur en erreur, quel qu'en soit le type ; une valeur
+		// fautive qui en cite une autre la désigne, quel que soit l'ordre de création
+		const failing = new Set(own.keys());
+		this.spread((n) => this.get(n)?.status === 'ok' && cites(n, failing), failing);
+		this.items.forEach((o, i) => {
+			if (!failing.has(o.name)) return;
+			const culprits = (deps.get(o.name) ?? []).filter((d) => failing.has(d));
+			const message = culprits.length > 0 ? brokenMessage(culprits) : own.get(o.name)!;
+			this.items[i] = { ...o, status: 'error', message } as AtelierObject;
+		});
+	}
+
+	/** Le refus de dimension d'une valeur, en français, ou `null`. */
+	#quantityMessage(name: string): string | null {
+		const substituted = expressionOf(this, name);
+		if (!substituted.ok) return null;
+		// Relue depuis le texte : sur l'arbre substitué, `quantityProblem` levait « components is not iterable » (mesuré)
+		const ast = astOfDefinition(substituted.expression, 'url');
+		// Une lettre libre (un curseur, une inconnue) : rien à juger ici
+		if (ast === null || findNodes(ast, isUnit).length === 0) return null;
+		if (getVariables(ast).size > 0) return null;
+		return quantityProblem(ast);
 	}
 
 	/**

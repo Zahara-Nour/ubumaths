@@ -22,48 +22,26 @@ function atelierWith(lists: Record<string, string>) {
 	return atelier;
 }
 
-describe('Q48 — la partenaire choisie suit un renommage', () => {
-	it('choisir N puis renommer N en P : la partenaire est P', () => {
+// Q48 : la partenaire suivait mal un renommage. Depuis le lot 4a, plus de choix
+// retenu : chaque partenaire a ses actions (« Avec une autre liste »), par son nom
+describe('Q48 — les actions avec une partenaire suivent son renommage', () => {
+	it('renommer N en P : les actions avec P remplacent celles avec N', () => {
 		const atelier = atelierWith({ L: '1 ; 2', M: '1 ; 2', N: '1 ; 2' });
-		atelier.choosePartner('L', 'N');
 
 		atelier.rename('N', 'P');
 
-		expect(atelier.partnerChoiceOf('L')).toBe('P');
-		const ids = actionsFor(atelier.get('L')!, atelier, atelier.partnerChoiceOf('L')).map(
-			(a) => a.id
-		);
+		const ids = actionsFor(atelier.get('L')!, atelier, 'P').map((a) => a.id);
 		expect(ids).toContain('scatter:P');
+		expect(ids).not.toContain('scatter:N');
 	});
 
-	it('renommer la liste elle-même : son choix est gardé sous le nouveau nom', () => {
+	it('supprimer la partenaire : plus d’action avec elle', () => {
 		const atelier = atelierWith({ L: '1 ; 2', M: '1 ; 2', N: '1 ; 2' });
-		atelier.choosePartner('L', 'N');
-
-		atelier.rename('L', 'K');
-
-		expect(atelier.partnerChoiceOf('K')).toBe('N');
-		expect(atelier.partnerChoiceOf('L')).toBeUndefined();
-	});
-
-	it('supprimer la partenaire choisie : plus de choix, retour à celle par défaut', () => {
-		const atelier = atelierWith({ L: '1 ; 2', M: '1 ; 2', N: '1 ; 2' });
-		atelier.choosePartner('L', 'N');
 
 		atelier.remove('N');
 
-		expect(atelier.partnerChoiceOf('L')).toBeUndefined();
-	});
-
-	it('le choix n’est pas sauvegardé : relu, l’atelier revient à la partenaire par défaut', () => {
-		const atelier = atelierWith({ L: '1 ; 2', M: '1 ; 2', N: '1 ; 2' });
-		atelier.choosePartner('L', 'N');
-
-		const reread = new Atelier();
-		reread.restore(atelier.serialize());
-
-		expect(reread.partnerChoiceOf('L')).toBeUndefined();
-		expect(JSON.stringify(atelier.serialize())).not.toContain('partner');
+		const ids = actionsFor(atelier.get('L')!, atelier, 'M').map((a) => a.id);
+		expect(ids.some((id) => id.endsWith(':N'))).toBe(false);
 	});
 });
 

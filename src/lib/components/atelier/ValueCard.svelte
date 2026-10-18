@@ -22,6 +22,7 @@
 	import { useAtelier } from '$lib/atelier/context';
 	import { constantOf } from '$lib/atelier/atelier.svelte';
 	import { displayName } from '$lib/atelier/names';
+	import { stateLabelOf } from '$lib/atelier/card-state';
 	import { EllipsisVertical } from '@lucide/svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -45,6 +46,8 @@
 	const atelier = useAtelier();
 
 	const name = $derived(displayName(object.name));
+	/** « à compléter », « en attente »… : une valeur vide sans message le dit quand même. */
+	const stateLabel = $derived(stateLabelOf(object.status));
 
 	/**
 	 * Une mesure nommée (géométrie, lot 2, L4 et L7) : ce qu'elle vaut — ce que
@@ -62,8 +65,12 @@
 	/** Les objets qui la citent : elle est alors un paramètre, son curseur reste affiché. */
 	const citedBy = $derived(atelier.dependents(object.name));
 
-	/** Le curseur que l'élève a affiché depuis le menu (valeur qui n'est pas un paramètre). */
-	let shownByMenu = $state(false);
+	/**
+	 * Le curseur que l'élève a affiché depuis le menu (valeur qui n'est pas un
+	 * paramètre) : retenu avec l'atelier, il survit au rechargement et au
+	 * renommage (décision de David du 2026-10-18).
+	 */
+	const shownByMenu = $derived(object.sliderShown === true);
 
 	/**
 	 * Pourquoi cette valeur n'a pas de curseur, ou `null` si elle en a un.
@@ -134,6 +141,9 @@
 				autofocus={selected && object.definition === ''}
 			/>
 		</div>
+		{#if stateLabel}
+			<span class="etat">{stateLabel}</span>
+		{/if}
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
@@ -163,7 +173,7 @@
 					{:else}
 						<DropdownMenu.CheckboxItem
 							checked={shownByMenu}
-							onCheckedChange={(on) => (shownByMenu = on)}
+							onCheckedChange={(on) => atelier.setSliderShown(object.name, on)}
 						>
 							Curseur
 						</DropdownMenu.CheckboxItem>
@@ -250,6 +260,11 @@
 	.membre {
 		flex: 1;
 		min-width: 0;
+	}
+	.etat {
+		flex-shrink: 0;
+		font-size: 0.6875rem;
+		color: var(--color-muted-foreground);
 	}
 	.icone {
 		flex-shrink: 0;

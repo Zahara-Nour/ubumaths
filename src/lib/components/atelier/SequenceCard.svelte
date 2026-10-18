@@ -20,6 +20,7 @@
 	import { useAtelier } from '$lib/atelier/context';
 	import { cobwebRefusal } from '$lib/atelier/atelier.svelte';
 	import { displayName } from '$lib/atelier/names';
+	import { stateLabelOf } from '$lib/atelier/card-state';
 	import { EllipsisVertical, Eye, EyeOff } from '@lucide/svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Input } from '$lib/components/ui/input';
@@ -39,6 +40,8 @@
 	const atelier = useAtelier();
 
 	const name = $derived(displayName(object.name));
+	/** « à compléter », « en attente »… (revue de #1501). */
+	const stateLabel = $derived(stateLabelOf(object.status));
 	/** Une récurrence donne le terme SUIVANT (décision S3). */
 	const variable = $derived(object.mode === 'recurrence' ? '(n+1) =' : '(n) =');
 
@@ -63,23 +66,11 @@
 	 */
 	let refusal = $state<{ field: Field; message: string } | null>(null);
 
-	/**
-	 * Un refus né pendant la FRAPPE n'est montré qu'en quittant le champ : taper
-	 * `-0,5` refusait le `-` et l'alerte parlait à chaque touche (revue).
-	 */
-	let pending = $state<{ field: Field; message: string } | null>(null);
-
 	const refusalId = $derived(`refus-suite-${object.name}`);
 
-	/** Un geste ponctuel (mode, nuage, escalier) : le refus se dit tout de suite. */
+	/** Un geste (mode, nuage, escalier, champ validé) : le refus se dit tout de suite. */
 	function report(field: Field, result: { ok: true } | { ok: false; message: string }) {
 		refusal = result.ok ? null : { field, message: result.message };
-	}
-
-	/** Pendant la frappe : retenu si valable, refus gardé pour la sortie du champ. */
-	function typing(field: Field, result: { ok: true } | { ok: false; message: string }) {
-		pending = result.ok ? null : { field, message: result.message };
-		if (result.ok && refusal?.field === field) refusal = null;
 	}
 
 	function handleMode(value: string) {
@@ -94,31 +85,32 @@
 		}
 	}
 
-	function handleFirstIndex(event: Event & { currentTarget: HTMLInputElement }) {
-		const parsed = Number(event.currentTarget.value);
-		if (event.currentTarget.value.trim() === '' || !Number.isFinite(parsed)) return;
-		typing('firstIndex', atelier.setSequence(object.name, { firstIndex: parsed }));
+	/** Ce que le champ demande, ou `null` s'il est vide ou illisible (rien n'est rangé). */
+	function requested(field: 'firstIndex' | 'firstTerm' | 'steps', typed: string) {
+		const text = typed.trim();
+		if (text === '') return null;
+		if (field === 'firstTerm') return atelier.setSequence(object.name, { firstTerm: text });
+		const parsed = Number(text);
+		if (!Number.isFinite(parsed)) return null;
+		return field === 'steps'
+			? atelier.setSequenceDisplay(object.name, { cobwebSteps: parsed })
+			: atelier.setSequence(object.name, { firstIndex: parsed });
 	}
 
-	function handleFirstTerm(event: Event & { currentTarget: HTMLInputElement }) {
-		const typed = event.currentTarget.value.trim();
-		if (typed === '') return;
-		typing('firstTerm', atelier.setSequence(object.name, { firstTerm: typed }));
-	}
-
-	function handleSteps(event: Event & { currentTarget: HTMLInputElement }) {
-		const parsed = Number(event.currentTarget.value);
-		if (event.currentTarget.value.trim() === '' || !Number.isFinite(parsed)) return;
-		typing('steps', atelier.setSequenceDisplay(object.name, { cobwebSteps: parsed }));
-	}
-
-	/** En quittant un champ : le refus en attente se dit, et le champ reprend la valeur RETENUE. */
-	function leave(field: 'firstIndex' | 'firstTerm' | 'steps') {
+	/**
+	 * Le rang, le premier terme et les marches sont rangés à Entrée ou à la
+	 * sortie du champ (`change`), jamais à la frappe — comme la définition
+	 * (décision de David du 2026-10-18). Refusé ou vide : le refus se dit, et le
+	 * champ reprend la valeur RETENUE.
+	 */
+	function commit(field: 'firstIndex' | 'firstTerm' | 'steps') {
 		return (event: Event & { currentTarget: HTMLInputElement }) => {
-			if (pending?.field === field) refusal = pending;
-			pending = null;
-			event.currentTarget.value =
-				field === 'steps' ? String(object.display?.cobwebSteps ?? '') : String(object[field]);
+			const result = requested(field, event.currentTarget.value);
+			if (result !== null) report(field, result);
+			if (result === null || !result.ok) {
+				event.currentTarget.value =
+					field === 'steps' ? String(object.display?.cobwebSteps ?? '') : String(object[field]);
+			}
 		};
 	}
 
@@ -160,6 +152,9 @@
 				autofocus={selected && object.definition === ''}
 			/>
 		</div>
+		{#if stateLabel}
+			<span class="etat">{stateLabel}</span>
+		{/if}
 		<!-- C3 : tracer en un clic, sans changer de vue -->
 		<button
 			type="button"
@@ -243,8 +238,7 @@
 				step="1"
 				min="0"
 				value={object.firstIndex}
-				oninput={handleFirstIndex}
-				onchange={leave('firstIndex')}
+				onchange={commit('firstIndex')}
 				class="h-7 w-12 text-sm"
 				aria-label={`Rang du premier terme de ${name}`}
 				aria-invalid={refusal?.field === 'firstIndex'}
@@ -254,8 +248,7 @@
 			<Input
 				type="text"
 				value={object.firstTerm}
-				oninput={handleFirstTerm}
-				onchange={leave('firstTerm')}
+				onchange={commit('firstTerm')}
 				class="h-7 w-20 text-sm"
 				placeholder="0 ou a"
 				aria-label={`${name}(${object.firstIndex}) =, premier terme de ${name}`}
@@ -269,8 +262,7 @@
 				step="1"
 				min="0"
 				value={object.firstIndex}
-				oninput={handleFirstIndex}
-				onchange={leave('firstIndex')}
+				onchange={commit('firstIndex')}
 				class="h-7 w-12 text-sm"
 				aria-label={`Rang du premier terme de ${name}`}
 				aria-invalid={refusal?.field === 'firstIndex'}
@@ -287,8 +279,7 @@
 				step="1"
 				min="1"
 				value={display.cobwebSteps}
-				oninput={handleSteps}
-				onchange={leave('steps')}
+				onchange={commit('steps')}
 				class="h-7 w-16 text-sm"
 				aria-label={`marches de ${name}`}
 				aria-invalid={refusal?.field === 'steps'}
@@ -342,6 +333,11 @@
 	.membre {
 		flex: 1;
 		min-width: 0;
+	}
+	.etat {
+		flex-shrink: 0;
+		font-size: 0.6875rem;
+		color: var(--color-muted-foreground);
 	}
 	.depart {
 		display: flex;

@@ -106,6 +106,12 @@ export interface ValueObject extends AtelierObjectBase {
 	/** Unité, quand la valeur est une grandeur. Décision D4 : pas de curseur. */
 	readonly unit?: string;
 	readonly slider?: Slider;
+	/**
+	 * Curseur affiché depuis le menu de la carte alors que la valeur n'est pas un
+	 * paramètre (lot 4a de la refonte). Retenu avec l'atelier, comme la couleur
+	 * d'une courbe (décision de David du 2026-10-18). Absent quand il est caché.
+	 */
+	readonly sliderShown?: true;
 }
 
 /**
@@ -220,6 +226,28 @@ export interface SequenceDisplay {
 	readonly cobwebSteps: number;
 }
 
+/**
+ * Le trait d'une courbe de la figure (lot 4b de la refonte) : les trois champs
+ * de `CurveDisplay` qu'une courbe peut porter — ni tangente ni aire, elle ne va
+ * jamais dans Graphe (G0). Absent tant que l'élève n'a rien réglé.
+ */
+export type StrokeDisplay = Pick<CurveDisplay, 'color' | 'lineStyle' | 'lineWidth'>;
+
+/** La taille d'un point de la figure. */
+export const POINT_SIZES = ['small', 'medium', 'large'] as const;
+export type PointSize = (typeof POINT_SIZES)[number];
+
+/**
+ * Comment un point de la figure est dessiné (lot 4b de la refonte) : couleur,
+ * taille, et son étiquette (son nom écrit près de lui). Absent tant que
+ * l'élève n'a rien réglé.
+ */
+export interface PointDisplay {
+	readonly color: CurveColor;
+	readonly size: PointSize;
+	readonly showLabel: boolean;
+}
+
 export interface ListObject extends AtelierObjectBase {
 	readonly kind: 'list';
 	/**
@@ -272,6 +300,8 @@ export interface ListObject extends AtelierObjectBase {
  */
 export interface PointObject extends AtelierObjectBase {
 	readonly kind: 'point';
+	/** Couleur, taille, étiquette (lot 4b). Absent : le dessin par défaut de la figure. */
+	readonly display?: PointDisplay;
 }
 
 /**
@@ -283,6 +313,8 @@ export interface PointObject extends AtelierObjectBase {
  */
 export interface CurveObject extends AtelierObjectBase {
 	readonly kind: 'curve';
+	/** Couleur et trait (lot 4b). Absent : le dessin par défaut de la figure. */
+	readonly display?: StrokeDisplay;
 }
 
 export type AtelierObject =
