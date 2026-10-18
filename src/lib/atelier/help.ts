@@ -122,7 +122,7 @@ const COMMAND_SETUP: Readonly<Record<string, readonly string[]>> = {
 
 /** Les mots-clés et les séparateurs, rappelés une fois en pied d'aide. */
 const SYNTAX_REMINDER: readonly string[] = [
-	'Mots-clés : de … à, pour, en, ordre, dans, et.',
+	'Mots-clés : de … à, pas, pour, en, ordre, dans, et, quand … va.',
 	'Virgule décimale (1,5) ; « ; » sépare les valeurs.',
 	'Les accents sont facultatifs : .deriver comme .dériver.'
 ];

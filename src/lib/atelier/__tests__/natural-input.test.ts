@@ -101,7 +101,8 @@ describe('un mot devient texte quand il est fini, et seulement à sa place', () 
 describe('la complétion', () => {
 	it('commandes dès 2 lettres en tête de ligne', () => {
 		const labels = proposalsFor(wordAtCaret('ré', false), 'calculation', words).map((p) => p.label);
-		expect(labels).toEqual(['résoudre', 'réciproque']);
+		// Les accents sont facultatifs : « ré » propose aussi `relever` (lot 2, PR 4)
+		expect(labels).toEqual(['résoudre', 'relever', 'réciproque']);
 		expect(proposalsFor(wordAtCaret('r', false), 'calculation', words)).toEqual([]);
 	});
 

@@ -73,8 +73,9 @@ function savedObjects(atelier: Atelier): string {
 	return JSON.stringify(atelier.serialize().objects.filter((o) => o.kind !== 'list'));
 }
 
-/** Aucun caractère de contrôle, hors retour à la ligne. */
-const CONTROL = /[\u0000-\u0009\u000b-\u001f\u007f]/;
+/** Un caractère de contrôle (`\r`, `\t`…) hors retour à la ligne : un antislash perdu. */
+const hasControl = (text: string) =>
+	[...text].some((char) => char !== '\n' && char.charCodeAt(0) < 32);
 
 // =============================================================================
 // Le but du lot : le problème de l'aire, de bout en bout
@@ -147,7 +148,7 @@ describe('le problème de l’aire, de bout en bout', () => {
 		expect(entry.failed).toBe(false);
 		expect(entry.text).toContain('Trace le nuage : sur la carte L, « Nuage avec L_1 ».');
 		expect(entry.latex).toBeUndefined();
-		expect(entry.text).not.toMatch(CONTROL);
+		expect(hasControl(entry.text)).toBe(false);
 		// Le bouton annoncé existe sur la carte, et il est actif
 		const scatter = actionsFor(desk.atelier.get('L')!, desk.atelier).find(
 			(a) => a.id === 'scatter:L_1'
@@ -156,7 +157,8 @@ describe('le problème de l’aire, de bout en bout', () => {
 
 		desk.runFromPanel('scatter:L_1', 'L', graph);
 
-		expect(desk.atelier.get('L')?.plottedWith).toBe('L_1');
+		const plotted = desk.atelier.get('L');
+		expect(plotted !== undefined && isList(plotted) && plotted.plottedWith).toBe('L_1');
 		const cloud = graph.functions.find(isScatter);
 		expect(cloud?.xs).toHaveLength(19);
 		expect(cloud?.ys[cloud.xs.indexOf(2)]).toBe(4);
