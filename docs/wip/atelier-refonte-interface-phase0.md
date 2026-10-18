@@ -150,6 +150,14 @@ Même grammaire que la carte de fonction (lot 3) : une ligne `● nom = [défini
 
 Partout : Renommer et Supprimer en fin de menu ; un objet qui dépend d'un autre (dérivée, point construit) porte l'icône de lien + infobulle (lot 3).
 
+**Précisions de la session atelier-geometry (2026-10-18), d'accord sur l'ensemble :**
+
+- Point par coordonnées `A = [(1 ; 2)]` : éditable, sans ligne grise. Point CONSTRUIT `I = [milieu(A, B)]` : coordonnées exactes en gris dessous, non éditables (Q5 : oui).
+- Courbe construite avec `=` : `d = [(AB)]`, `c = [cercle(O, 3)]`, `s = [[BC]]`, `r = [[CA)]` ; `:` reste aux équations (`d : [y = 3x − 2]`). Sous la ligne : la nature (droite, segment, demi-droite, cercle) et une donnée en gris (équation réduite, ou longueur d'un segment). Contenu livré par #1500 (`ObjectCard` : ligne `.valeur`, préfixe `=`/`:`, nature) ; le lot 4 le reprend tel quel et le place.
+- À prévoir dans la grammaire : les mesures `S = aire(…)`, `L = distance(A, B)` sont des valeurs calculées **sans curseur**, même citées (G1) ; `M = point_sur(s, 0.3)` a un **curseur de position** (0 à 1) sous la ligne quand le 2ᵉ argument est un nombre ; une intersection sans solution est « en attente » avec sa raison.
+- Couleur / taille / trait des points et courbes : la vue Géométrie ne les lit pas encore ; si le lot 4 ajoute les réglages (proposition : `CurveDisplay` comme les fonctions pour les courbes, `PointDisplay` couleur + taille pour les points, rangés avec l'état), atelier-geometry câble `syncFigure` derrière. Règle de version : le second qui merge prend version + 1.
+- Points et courbes : aucune action propre au lot 2 de la géométrie au-delà de Renommer / Supprimer.
+
 **Questions pour David (recommandation en premier) :**
 
 1. **Liste : modifier où ?** (a) dans Données (le tableur), la ligne montre un aperçu tronqué ← recommandé : une liste de 30 valeurs ne s'édite pas dans un champ d'une ligne ; (b) champ éditable sur la ligne aussi.
