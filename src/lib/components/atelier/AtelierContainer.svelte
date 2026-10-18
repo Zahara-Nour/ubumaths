@@ -39,6 +39,18 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { cascadeMessage, citingCellsNote, removedMessage } from '$lib/atelier/removal';
 	import { tabulationReport } from '$lib/atelier/tabulate';
+	import { FolderOpen, RotateCcw, Save, Share2 } from '@lucide/svelte';
+	import ToolButton from './ToolButton.svelte';
+	import {
+		ATELIER_FILE_TOO_BIG,
+		MAX_ATELIER_FILE_LENGTH,
+		atelierFileName,
+		atelierFileToJson,
+		readAtelierFile
+	} from '$lib/atelier/atelier-file';
+	import type { KeptHistory } from '$lib/atelier/history-storage';
+	import { downloadText } from '$lib/atelier/history-export';
+	import { reservedYRenamedMessage } from '$lib/atelier/geometry';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
@@ -105,6 +117,14 @@
 	/** « Repartir de zéro » : la confirmation est-elle ouverte ? (B7) */
 	let confirmReset = $state(false);
 
+	/** Le fichier `.atelier.json` relu qui attend la confirmation de « Charger » (lot 1). */
+	let pendingLoad = $state<{ state: AtelierState; history: KeptHistory; dropped: number } | null>(
+		null
+	);
+	let confirmLoad = $state(false);
+	let loadInput = $state<HTMLInputElement | null>(null);
+	let shareBar = $state<ShareBar | null>(null);
+
 	/**
 	 * Le champ de Calcul : texte ou écriture mathématique (phase 0
 	 * `atelier-reglages-phase0.md`). Une préférence de l'élève, retenue dans ce
@@ -150,6 +170,66 @@
 		const objects =
 			count === 1 ? 'ton objet sera remplacé' : `tes ${count} objets seront remplacés`;
 		return `${objects}, et l’historique effacé. Un lien de partage déjà copié les garde.`;
+	}
+
+	/** « Enregistrer » : l'atelier entier et sa console dans un fichier (lot 1). */
+	function handleSave() {
+		const now = new Date();
+		downloadText(
+			atelierFileToJson(atelier.serialize(), desk.entries, desk.typedInputs, now),
+			'application/json',
+			atelierFileName(now)
+		);
+		toaster.success('Atelier enregistré.');
+	}
+
+	/** Un fichier choisi par « Charger » : un atelier, un ancien historique, ou un refus. */
+	async function handleLoadFile(event: Event) {
+		const input = event.currentTarget as HTMLInputElement;
+		const file = input.files?.[0];
+		// Vidé tout de suite : rechoisir le même fichier doit relancer la lecture
+		input.value = '';
+		if (file === undefined) return;
+		// Trop gros : refusé avant d'être lu en mémoire
+		const read =
+			file.size > MAX_ATELIER_FILE_LENGTH
+				? ({ kind: 'error', message: ATELIER_FILE_TOO_BIG } as const)
+				: readAtelierFile(await file.text());
+		if (read.kind === 'error') {
+			// Rien n'est remplacé, et on dit pourquoi (dans la zone des avis, lue à voix haute)
+			notices = [...notices, { kind: 'warning', message: read.message }];
+			return;
+		}
+		// Un historique d'avant la refonte : le rejeu de toujours, sa confirmation comprise
+		if (read.kind === 'replay') {
+			handleReplayRequest(read.history);
+			return;
+		}
+		pendingLoad = read;
+		if (!isEmpty) confirmLoad = true;
+		else loadNow();
+	}
+
+	/** Remplacer l'atelier et sa console par le fichier relu. */
+	function loadNow() {
+		if (pendingLoad === null) return;
+		const { state, history, dropped } = pendingLoad;
+		pendingLoad = null;
+		const report = atelier.restore(state);
+		desk.clear();
+		desk.restoreHistory(history);
+		// Les lignes chargées sont sous les yeux : pas de pastille « nouveau »
+		seen = desk.entries.length;
+		selected = null;
+		// Ce qui n'a pas pu être relu se dit, jamais en silence (§5)
+		const lost = [
+			...report.renamed.map(({ to }) => reservedYRenamedMessage(to)),
+			...report.skipped.map((s) => `« ${s.name} » n'a pas pu être chargé : ${s.reason}`),
+			...(dropped > 0 ? [`${dropped} élément(s) du fichier étaient illisibles.`] : [])
+		];
+		notices = [...notices, ...lost.map((message) => ({ kind: 'warning' as const, message }))];
+		toaster.success('Atelier chargé.');
+		announce('Atelier chargé.');
 	}
 
 	/** Vider l'atelier — seulement après confirmation, jamais sur un lien reçu. */
@@ -257,6 +337,9 @@
 	// la vie du conteneur, comme le grapheur ci-dessus.
 	// svelte-ignore state_referenced_locally
 	const desk = new CalcDesk(atelier);
+
+	/** L'atelier est-il vide ? Des lignes de Calcul seules suffisent à ne pas l'être. */
+	const isEmpty = $derived(atelier.objects.length === 0 && desk.entries.length === 0);
 
 	let lastSeenRevision = $state(-1);
 
@@ -512,23 +595,64 @@
 	     et deux repères `main` perturbent la navigation (revue a11y du lot 6) -->
 	<section class="zone" aria-labelledby="titre-atelier">
 		<h1 id="titre-atelier" class="sr-only">{heading}</h1>
-		<div class="barre">
-			<ShareBar {received} {notice} />
+		<!-- La barre d'icônes (lot 1 de `atelier-refonte-interface-phase0.md`) -->
+		<div class="barre" role="toolbar" aria-label="Outils de l’atelier">
 			<div class="outils">
-				<AtelierSettings bind:inputMode={() => inputMode, chooseInputMode} />
 				{#if !ephemeral}
 					<!-- Des lignes de Calcul seules suffisent : elles survivent au rechargement -->
-					<button
-						type="button"
-						class="vider"
-						disabled={atelier.objects.length === 0 && desk.entries.length === 0}
+					<ToolButton
+						label="Repartir de zéro"
+						icon={RotateCcw}
+						disabledReason={isEmpty ? 'L’atelier est déjà vide.' : null}
 						onclick={() => (confirmReset = true)}
-					>
-						Repartir de zéro
-					</button>
+					/>
+					<!-- Pas sur un lien reçu : on y regarde l'atelier d'un autre, sans le remplacer -->
+					<ToolButton
+						label="Charger un atelier"
+						icon={FolderOpen}
+						onclick={() => loadInput?.click()}
+					/>
+					<input
+						bind:this={loadInput}
+						class="sr-only"
+						type="file"
+						accept="application/json,.json"
+						tabindex="-1"
+						aria-hidden="true"
+						onchange={handleLoadFile}
+					/>
 				{/if}
+				<ToolButton
+					label="Enregistrer l’atelier"
+					icon={Save}
+					disabledReason={isEmpty ? 'Ton atelier est vide : il n’y a rien à enregistrer.' : null}
+					onclick={handleSave}
+				/>
+			</div>
+			<div class="outils">
+				{#if received === null}
+					<ToolButton
+						label="Partager"
+						icon={Share2}
+						disabledReason={atelier.objects.length === 0
+							? 'Ton atelier est vide : il n’y a rien à partager.'
+							: null}
+						onclick={() => shareBar?.share()}
+					/>
+				{/if}
+				<AtelierSettings bind:inputMode={() => inputMode, chooseInputMode} />
 			</div>
 		</div>
+		<ShareBar bind:this={shareBar} {received} {notice} />
+		<ConfirmDialog
+			bind:open={confirmLoad}
+			title="Charger cet atelier ?"
+			description="Charger remplace l’atelier actuel : {replayLoss()}"
+			confirmLabel="Charger"
+			variant="destructive"
+			onConfirm={loadNow}
+			onCancel={() => (pendingLoad = null)}
+		/>
 		<ConfirmDialog
 			bind:open={confirmReset}
 			title="Repartir de zéro ?"
@@ -590,12 +714,7 @@
 
 		<section class="vue" class:pleine={activeView === 'graphe'}>
 			{#if activeView === 'calcul'}
-				<CalculView
-					{desk}
-					{inputMode}
-					bind:mathLatex
-					onreplay={ephemeral ? undefined : handleReplayRequest}
-				/>
+				<CalculView {desk} {inputMode} bind:mathLatex />
 			{:else if activeView === 'graphe'}
 				<!--
 					`panel={false}` : dans l'atelier, c'est « Mes objets » qui tient ce
@@ -629,35 +748,16 @@
 
 	.barre {
 		display: flex;
-		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
 		gap: 0.5rem;
-	}
-	.vider:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
+		padding: 0.25rem 0.625rem;
+		border-bottom: 1px solid var(--color-border);
 	}
 	.outils {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		margin-right: 0.625rem;
-	}
-
-	.vider {
-		/* Lisible et visable en projection (revue a11y du lot 6) */
-		min-height: 2.5rem;
-		padding: 0.125rem 0.625rem;
-		border: 1px solid var(--color-border);
-		border-radius: 0.375rem;
-		background: var(--color-background);
-		font-size: 0.8125rem;
-		cursor: pointer;
-	}
-	.vider:focus-visible {
-		outline: 2px solid var(--color-ring, currentColor);
-		outline-offset: 2px;
+		gap: 0.25rem;
 	}
 	.onglets {
 		display: flex;

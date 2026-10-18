@@ -31,16 +31,7 @@
 	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 	import FormulaText from './FormulaText.svelte';
-	import {
-		NOTHING_TO_EXPORT,
-		downloadHistory,
-		type ExportFormat
-	} from '$lib/atelier/history-export';
-	import {
-		MAX_HISTORY_BYTES,
-		readHistory,
-		type ImportedHistory
-	} from '$lib/atelier/history-import';
+	import { downloadHistory } from '$lib/atelier/history-export';
 	import {
 		readStepsVerbosity,
 		writeStepsVerbosity,
@@ -63,16 +54,10 @@
 	 */
 	let {
 		desk,
-		onreplay,
 		inputMode = 'text',
 		mathLatex = $bindable('')
 	}: {
 		desk: CalcDesk;
-		/**
-		 * Un historique relu et valide : au conteneur de confirmer, de vider
-		 * l'atelier puis de rejouer (R2) — ce n'est pas l'affaire de cette vue.
-		 */
-		onreplay?: (history: ImportedHistory) => void;
 		/** Le champ : texte, ou écriture mathématique (réglage de l'atelier). */
 		inputMode?: InputMode;
 		/**
@@ -82,27 +67,6 @@
 		 */
 		mathLatex?: string;
 	} = $props();
-
-	let fileInput = $state<HTMLInputElement | null>(null);
-
-	/** Lire le fichier choisi ; un refus est dit dans la ligne de retour (E1 à E3). */
-	async function handleFile(event: Event) {
-		const input = event.currentTarget as HTMLInputElement;
-		const file = input.files?.[0];
-		// Vidé tout de suite : rechoisir le même fichier doit relancer la lecture
-		input.value = '';
-		if (file === undefined) return;
-		if (file.size > MAX_HISTORY_BYTES) {
-			desk.notice = 'Cet historique est trop long pour être rejoué.';
-			return;
-		}
-		const read = readHistory(await file.text());
-		if (!read.ok) {
-			desk.notice = read.message;
-			return;
-		}
-		onreplay?.(read.history);
-	}
 
 	let field = $state<HTMLInputElement | null>(null);
 
@@ -556,55 +520,26 @@
 		return entry.result?.kind === 'calcul' && entry.result.ast !== undefined;
 	}
 
-	/** Rien à exporter : les boutons restent visibles, désactivés, avec leur raison (X1). */
-	const empty = $derived(desk.entries.length === 0);
-
-	/** Enregistrer l'historique dans un fichier : le même chemin que `.exporter` tapé. */
-	function download(format: ExportFormat) {
-		downloadHistory(desk.entries, format);
+	/**
+	 * L'historique en ubumark, pour le recopier dans une fiche. Provisoire (lot 1
+	 * de `atelier-refonte-interface-phase0.md`) : le lot 2 le range dans le menu
+	 * de la console. Enregistrer l'atelier passe par la barre d'icônes.
+	 */
+	function downloadForSheet() {
+		downloadHistory(desk.entries, 'ubumark');
 	}
 </script>
 
 <svelte:document onselectionchange={handleSelectionChange} />
 
 <div class="calcul">
-	<div class="export" role="group" aria-label="Exporter l’historique">
-		<span>Exporter l’historique :</span>
-		<!-- La raison est reliée aux boutons : désactivés, ils ne prennent pas le focus (a11y) -->
-		<Button
-			variant="outline"
-			size="sm"
-			disabled={empty}
-			aria-describedby={empty ? 'export-raison' : undefined}
-			onclick={() => download('json')}
-		>
-			JSON (pour rejouer)
-		</Button>
-		<Button
-			variant="outline"
-			size="sm"
-			disabled={empty}
-			aria-describedby={empty ? 'export-raison' : undefined}
-			onclick={() => download('ubumark')}
-		>
-			ubumark (pour lire)
-		</Button>
-		{#if empty}<span id="export-raison" class="raison">{NOTHING_TO_EXPORT}</span>{/if}
-		{#if onreplay}
-			<Button variant="outline" size="sm" onclick={() => fileInput?.click()}>
-				Rejouer un historique…
-			</Button>
-			<input
-				bind:this={fileInput}
-				class="sr-only"
-				type="file"
-				accept="application/json,.json"
-				tabindex="-1"
-				aria-hidden="true"
-				onchange={handleFile}
-			/>
-		{/if}
-	</div>
+	{#if desk.entries.length > 0}
+		<p class="pour-fiche">
+			<button type="button" class="lien-discret" onclick={downloadForSheet}>
+				Télécharger l’historique pour une fiche (ubumark)
+			</button>
+		</p>
+	{/if}
 	<ol class="historique">
 		{#each desk.entries as entry, index (entry.id)}
 			{@const markup = markupOf(entry)}
@@ -872,16 +807,25 @@
 		padding: 0.75rem;
 	}
 
-	.export {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.875rem;
+	.pour-fiche {
+		margin: 0;
+		text-align: right;
 	}
-
-	.raison {
+	.lien-discret {
+		border: none;
+		background: none;
+		padding: 0.25rem;
+		font-size: 0.8125rem;
 		color: var(--color-muted-foreground);
+		text-decoration: underline;
+		cursor: pointer;
+	}
+	.lien-discret:hover {
+		color: var(--color-foreground);
+	}
+	.lien-discret:focus-visible {
+		outline: 2px solid var(--color-ring, currentColor);
+		outline-offset: 2px;
 	}
 
 	.historique {

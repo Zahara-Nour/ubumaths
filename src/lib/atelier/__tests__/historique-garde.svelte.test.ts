@@ -118,7 +118,7 @@ describe('au rechargement, les lignes de Calcul reviennent', () => {
 		await vi.waitFor(() => expect(localStorage.getItem(CALC_HISTORY_STORAGE_KEY)).not.toBeNull());
 		(
 			[...first.container.querySelectorAll('button')].find(
-				(b) => b.textContent?.trim() === 'Repartir de zéro'
+				(b) => b.getAttribute('aria-label') === 'Repartir de zéro'
 			) as HTMLButtonElement
 		).click();
 		const confirm = await vi.waitFor(() => {

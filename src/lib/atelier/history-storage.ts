@@ -152,6 +152,14 @@ export function loadCalcHistory(storage: Storage | null): LoadedHistory {
 	} catch {
 		return EMPTY;
 	}
+	return readKeptHistory(parsed);
+}
+
+/**
+ * Relire un historique déjà décodé : celui du navigateur, ou celui d'un fichier
+ * `.atelier.json` (`atelier-file.ts`). Même tri, même liste blanche.
+ */
+export function readKeptHistory(parsed: unknown): LoadedHistory {
 	const version = (parsed as { version?: unknown } | null)?.version;
 	if (typeof version === 'number' && version > CALC_HISTORY_VERSION) return { kind: 'too-recent' };
 
@@ -240,6 +248,29 @@ function recentTyped(typed: readonly string[]): string[] {
 	return recent.slice(start);
 }
 
+/** La place des lignes : le plafond, moins les saisies et une marge pour l'enveloppe. */
+function linesBudget(typed: readonly string[]): number {
+	// La marge couvre l'enveloppe (`version`, clés, crochets)
+	return MAX_KEPT_HISTORY_LENGTH - JSON.stringify(typed).length - 1_000;
+}
+
+/**
+ * L'historique tel qu'on le range, sans le ranger : celui que porte un fichier
+ * `.atelier.json` (`atelier-file.ts`). Mêmes bornes que le navigateur, donc
+ * toujours relisible par `readKeptHistory`.
+ */
+export function keptHistoryOf(
+	entries: readonly Entry[],
+	typed: readonly string[]
+): { version: typeof CALC_HISTORY_VERSION; lines: KeptLine[]; typed: string[] } {
+	const kept = recentTyped(typed);
+	return {
+		version: CALC_HISTORY_VERSION,
+		lines: recentLines(entries, linesBudget(kept), MAX_KEPT_LINES),
+		typed: kept
+	};
+}
+
 /**
  * Ranger l'historique ; vide (« Repartir de zéro ») : la clé est retirée. Stockage
  * plein : les lignes les plus récentes, par moitiés, puis rien — jamais d'exception.
@@ -256,8 +287,7 @@ export function saveCalcHistory(
 			return 'removed';
 		}
 		const kept = recentTyped(typed);
-		// La marge couvre l'enveloppe (`version`, clés, crochets)
-		const budget = MAX_KEPT_HISTORY_LENGTH - JSON.stringify(kept).length - 1_000;
+		const budget = linesBudget(kept);
 		let lines = recentLines(entries, budget, MAX_KEPT_LINES);
 		for (;;) {
 			try {

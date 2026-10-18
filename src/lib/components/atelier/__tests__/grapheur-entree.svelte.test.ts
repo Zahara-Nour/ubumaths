@@ -69,7 +69,7 @@ describe('repartir de zéro (B7)', () => {
 		const { container } = await render(AtelierContainer, { atelier });
 
 		const reset = [...container.querySelectorAll('button')].find(
-			(b) => b.textContent?.trim() === 'Repartir de zéro'
+			(b) => b.getAttribute('aria-label') === 'Repartir de zéro'
 		) as HTMLButtonElement;
 		reset.click();
 		// Rien n'est vidé avant la confirmation
@@ -94,7 +94,7 @@ describe('repartir de zéro (B7)', () => {
 		});
 
 		const reset = [...container.querySelectorAll('button')].find(
-			(b) => b.textContent?.trim() === 'Repartir de zéro'
+			(b) => b.getAttribute('aria-label') === 'Repartir de zéro'
 		);
 		expect(reset).toBeUndefined();
 	});
@@ -129,7 +129,7 @@ describe('revues du lot 6', () => {
 
 		(
 			[...container.querySelectorAll('button')].find(
-				(b) => b.textContent?.trim() === 'Repartir de zéro'
+				(b) => b.getAttribute('aria-label') === 'Repartir de zéro'
 			) as HTMLButtonElement
 		).click();
 		const confirm = await vi.waitFor(() => {
@@ -159,8 +159,8 @@ describe('revues du lot 6', () => {
 		const { container } = await render(AtelierContainer, { atelier: new Atelier() });
 
 		const reset = [...container.querySelectorAll('button')].find(
-			(b) => b.textContent?.trim() === 'Repartir de zéro'
+			(b) => b.getAttribute('aria-label') === 'Repartir de zéro'
 		) as HTMLButtonElement;
-		expect(reset.disabled).toBe(true);
+		expect(reset.getAttribute('aria-disabled')).toBe('true');
 	});
 });
