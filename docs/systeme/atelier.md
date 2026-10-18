@@ -317,7 +317,13 @@ est une valeur **sans `slider`** (comme une grandeur, D4 — critère de la cart
 (fin de `recomputeAll`) retire ou rend le curseur quand une valeur devient ou cesse d'être une
 mesure (`S = AM` tapé avant A et M), et met en erreur ce qui ne se calcule pas (polygone croisé,
 sommet confondu). Elle cite ses points (D9, cascade) ; un point cité HORS d'une mesure reste
-refusé (P9). La carte en montre la valeur (`.valeur`, `measureSummaryOf`).
+refusé (P9). La carte en montre la valeur (`.valeur`, `measureSummaryOf`). Revue (2026-10-18) : une mesure se cite aussi
+dans les nombres d'une construction (`cercle(A ; AM)`) et dans des coordonnées (`G = (aire(B, C, D) ;
+0)`, `engine.substitutedTextOf` → `Atelier.measuredTextOf`) ; `A = (AM ; 0)` est refusé (circulaire) ;
+renommer un point réécrit les `AM` (`renamePairs`, texte et LaTeX) ; un polygone à sommets confondus
+ou à côtés qui se touchent est refusé ; une valeur APPROCHÉE (angle non remarquable) entre au moteur
+en pleine précision et toute ligne qui la cite, même par un autre objet (`approximateNames`), se dit
+`≈`, 4 décimales, jamais en fraction.
 
 **Quatre états** (D9) : `error` > `pending` > `incomplete` > `ok`. Un nom cité mais absent met
 l'objet **en attente** (`pending`, avec `missing`), pas en erreur ; l'attente se répare seule quand

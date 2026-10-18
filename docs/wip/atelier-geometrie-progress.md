@@ -195,3 +195,8 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   4 décimales, y compris quand il entre dans un calcul ; (4) une courbe (`d : y = AM x`) ne lit
   pas les mesures (refus P9) ; (5) une mesure citée par un point (`P = (AM ; 0)`) suit dans la
   figure en la reconstruisant, pas par un curseur.
+- 2026-10-18 : revue de la PR 2, corrections (tests d'abord : 14 rouges sur 15,
+  `mesures-revue.test.ts`) — renommage des `AM` (texte, LaTeX) ; valeur approchée jamais en fraction
+  (`2T`, `g(1)`, `J`), pleine précision avant l'affichage ; mesures dans les constructions et les
+  coordonnées, `A = (AM ; 0)` refusé ; `distance(A, milieu(B, C))` ; polygone dégénéré refusé ;
+  valeur non finie refusée. `angle` non touché (question à David).
