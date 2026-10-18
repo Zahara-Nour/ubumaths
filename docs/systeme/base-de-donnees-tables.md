@@ -1044,7 +1044,7 @@ Liens : `achievement_id` → `achievements` · `student_id` → `profiles` · `u
 
 ### `student_buddies`
 
-`change_count` · `created_at` · `current_streak` · `equipped_skin_id?` · `last_activity_date?` · `last_xp_date?` · `level` · `longest_streak` · `palotin_type` · `student_id` · `themes_explored` · `updated_at` · `xp` · `xp_earned_today`
+`change_count` · `constance_days_this_week` · `constance_week_start?` · `created_at` · `current_streak` · `equipped_skin_id?` · `last_activity_date?` · `last_xp_date?` · `level` · `longest_streak` · `palotin_type` · `student_id` · `themes_explored` · `updated_at` · `xp` · `xp_earned_today`
 
 Liens : `equipped_skin_id` → `buddy_skins` · `student_id` → `profiles`
 

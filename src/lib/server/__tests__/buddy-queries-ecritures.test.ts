@@ -15,6 +15,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { buddyRow, createFakeBuddyDb, type FakeBuddyDb } from './helpers/fake-buddy-db';
 import { called, type RecordedQuery } from './helpers/fake-supabase';
+import { weekStartOf } from '$lib/utils/buddy-constance';
 
 const service = vi.hoisted(() => ({ current: null as unknown }));
 vi.mock('$lib/server/serviceRoleClient', () => ({
@@ -24,9 +25,8 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 import {
 	createStudentBuddy,
 	changeStudentPalotin,
-	updateStreak,
-	resetLostStreak,
-	isStreakLost,
+	recordWorkedDay,
+	resetLostConstance,
 	MAX_WRITE_ATTEMPTS,
 	PALOTIN_CHANGE_COST
 } from '../buddy-queries';
@@ -36,6 +36,11 @@ const STUDENT = '11111111-1111-4111-8111-111111111111';
 const TODAY = new Date().toISOString().split('T')[0];
 const YESTERDAY = new Date(Date.now() - 86_400_000).toISOString().split('T')[0];
 const LONG_AGO = '2026-01-01';
+/** Lundi de la semaine en cours (UTC) et celui de la semaine d'avant. */
+const THIS_WEEK = weekStartOf(TODAY);
+const LAST_WEEK = new Date(Date.parse(`${THIS_WEEK}T00:00:00Z`) - 7 * 86_400_000)
+	.toISOString()
+	.split('T')[0];
 
 // Variables
 let db: FakeBuddyDb;
@@ -183,92 +188,160 @@ describe('changeStudentPalotin', () => {
 	});
 });
 
-describe('updateStreak', () => {
-	it('première activité du jour : série + 1, au client service, verrou sur updated_at', async () => {
+describe('recordWorkedDay — un jour travaillé (Constance Royale)', () => {
+	it('3e jour de la semaine : UNE écriture des cinq colonnes, client service, verrou sur updated_at', async () => {
 		setup(
-			buddyRow(STUDENT, { current_streak: 4, longest_streak: 4, last_activity_date: YESTERDAY })
+			buddyRow(STUDENT, {
+				current_streak: 4,
+				longest_streak: 4,
+				last_activity_date: YESTERDAY,
+				constance_week_start: THIS_WEEK,
+				constance_days_this_week: 2
+			})
 		);
-		expect(await updateStreak(STUDENT)).toEqual({ newStreak: 5, wasUpdated: true });
+		// Hier peut tomber la semaine d'avant (lundi) : la ligne dit la semaine en cours
+		expect(await recordWorkedDay(STUDENT)).toEqual({
+			status: 'counted',
+			weekHeld: true,
+			newStreak: 5,
+			constanceWeekStart: THIS_WEEK,
+			constanceDaysThisWeek: 3
+		});
 
-		const [write] = writesOn('student_buddies');
-		expect(write.calls[0].args[0]).toEqual({
+		const writes = writesOn('student_buddies');
+		expect(writes).toHaveLength(1);
+		expect(writes[0].calls[0].args[0]).toEqual({
+			constance_week_start: THIS_WEEK,
+			constance_days_this_week: 3,
 			current_streak: 5,
 			longest_streak: 5,
 			last_activity_date: TODAY
 		});
-		expect(called(write, 'eq', 'student_id', STUDENT)).toBe(true);
-		expect(hasUpdatedAtLock(write)).toBe(true);
+		expect(called(writes[0], 'eq', 'student_id', STUDENT)).toBe(true);
+		expect(hasUpdatedAtLock(writes[0])).toBe(true);
 	});
 
-	it('deux envois simultanés : la série n’avance qu’une fois', async () => {
+	it('deux envois simultanés le 3e jour : le jour n’est compté qu’une fois, la semaine tenue une fois', async () => {
 		setup(
-			buddyRow(STUDENT, { current_streak: 4, longest_streak: 9, last_activity_date: YESTERDAY })
+			buddyRow(STUDENT, {
+				current_streak: 4,
+				longest_streak: 9,
+				last_activity_date: LAST_WEEK,
+				constance_week_start: THIS_WEEK,
+				constance_days_this_week: 2
+			})
 		);
-		// L'autre envoi fait avancer la série avant notre écriture
+		// L'autre envoi compte le jour avant notre écriture
 		db.beforeWrite = (table, index) => {
 			if (table === 'student_buddies' && index === 1 && db.buddy) {
 				db.buddy.current_streak = 5;
+				db.buddy.constance_days_this_week = 3;
 				db.buddy.last_activity_date = TODAY;
 				db.buddy.updated_at = 'modifiée-par-l-autre-envoi';
 			}
 		};
-		expect(await updateStreak(STUDENT)).toEqual({ newStreak: 5, wasUpdated: false });
+		expect(await recordWorkedDay(STUDENT)).toEqual({ status: 'already' });
+		expect(db.buddy?.constance_days_this_week).toBe(3);
 		expect(db.buddy?.current_streak).toBe(5);
 	});
 
-	it('ligne modifiée à chaque essai : pas de série annoncée, journalisé', async () => {
-		setup(buddyRow(STUDENT, { last_activity_date: YESTERDAY }));
+	it('ligne modifiée à chaque essai : rien d’annoncé, journalisé', async () => {
+		setup(buddyRow(STUDENT, { last_activity_date: YESTERDAY, constance_week_start: THIS_WEEK }));
 		db.beforeWrite = (table, index) => {
 			if (table === 'student_buddies' && db.buddy) db.buddy.updated_at = `autre-${index}`;
 		};
-		expect((await updateStreak(STUDENT)).wasUpdated).toBe(false);
+		expect(await recordWorkedDay(STUDENT)).toEqual({ status: 'conflict' });
 		expect(console.error).toHaveBeenCalled();
 	});
 
-	it('déjà actif aujourd’hui : aucune écriture', async () => {
-		setup(buddyRow(STUDENT, { current_streak: 2, last_activity_date: TODAY }));
-		expect(await updateStreak(STUDENT)).toEqual({ newStreak: 2, wasUpdated: false });
+	it('jour déjà compté : aucune écriture', async () => {
+		setup(
+			buddyRow(STUDENT, {
+				current_streak: 2,
+				last_activity_date: TODAY,
+				constance_week_start: THIS_WEEK,
+				constance_days_this_week: 1
+			})
+		);
+		expect(await recordWorkedDay(STUDENT)).toEqual({ status: 'already' });
 		expect(writesOn('student_buddies')).toEqual([]);
+	});
+
+	it('élève sans Palotin : rien', async () => {
+		setup(null);
+		expect(await recordWorkedDay(STUDENT)).toEqual({ status: 'missing' });
 	});
 });
 
-describe('resetLostStreak', () => {
-	it('série perdue : remise à 0 au client service, verrou sur updated_at', async () => {
-		setup(buddyRow(STUDENT, { current_streak: 6, last_activity_date: LONG_AGO }));
-		expect(await resetLostStreak(STUDENT)).toBe(true);
+describe('resetLostConstance — au chargement du tableau de bord', () => {
+	it('semaine d’avant finie à 2 jours : Constance à 0, au client service, verrou sur updated_at', async () => {
+		setup(
+			buddyRow(STUDENT, {
+				current_streak: 6,
+				longest_streak: 6,
+				last_activity_date: LAST_WEEK,
+				constance_week_start: LAST_WEEK,
+				constance_days_this_week: 2
+			})
+		);
+		const result = await resetLostConstance(STUDENT);
+		expect(result?.kind).toBe('lost');
+		expect(result?.buddy.current_streak).toBe(0);
 		expect(db.buddy?.current_streak).toBe(0);
+		expect(db.buddy?.longest_streak).toBe(6);
 		const [write] = writesOn('student_buddies');
 		expect(write.calls[0].args[0]).toEqual({ current_streak: 0 });
 		expect(called(write, 'eq', 'student_id', STUDENT)).toBe(true);
 		expect(hasUpdatedAtLock(write)).toBe(true);
 	});
 
-	it('activité arrivée entre-temps : la série n’est pas effacée', async () => {
-		setup(buddyRow(STUDENT, { current_streak: 6, last_activity_date: LONG_AGO }));
+	it('semaine d’avant tenue, semaine en cours pas finie : rien n’est écrit', async () => {
+		setup(
+			buddyRow(STUDENT, {
+				current_streak: 6,
+				last_activity_date: LAST_WEEK,
+				constance_week_start: LAST_WEEK,
+				constance_days_this_week: 3
+			})
+		);
+		expect(await resetLostConstance(STUDENT)).toBeNull();
+		expect(writesOn('student_buddies')).toEqual([]);
+	});
+
+	it('travail arrivé entre-temps (semaine en cours comptée) : la Constance n’est pas effacée', async () => {
+		setup(
+			buddyRow(STUDENT, {
+				current_streak: 6,
+				constance_week_start: LONG_AGO,
+				constance_days_this_week: 3
+			})
+		);
 		db.beforeWrite = (table, index) => {
 			if (table === 'student_buddies' && index === 1 && db.buddy) {
 				db.buddy.current_streak = 1;
+				db.buddy.constance_week_start = THIS_WEEK;
+				db.buddy.constance_days_this_week = 3;
 				db.buddy.last_activity_date = TODAY;
 				db.buddy.updated_at = 'modifiée-par-l-autre-envoi';
 			}
 		};
-		expect(await resetLostStreak(STUDENT)).toBe(false);
+		expect(await resetLostConstance(STUDENT)).toBeNull();
 		expect(db.buddy?.current_streak).toBe(1);
 	});
 
 	it('écriture à 0 ligne à chaque essai : pas annoncée comme faite', async () => {
-		setup(buddyRow(STUDENT, { current_streak: 6, last_activity_date: LONG_AGO }));
+		setup(buddyRow(STUDENT, { current_streak: 6, constance_week_start: LONG_AGO }));
 		db.beforeWrite = (table, index) => {
 			if (table === 'student_buddies' && db.buddy) db.buddy.updated_at = `autre-${index}`;
 		};
-		expect(await resetLostStreak(STUDENT)).toBe(false);
+		expect(await resetLostConstance(STUDENT)).toBeNull();
 	});
 
-	it('règle inchangée : perdue au-delà d’un jour d’écart, série en cours', () => {
-		const now = new Date();
-		expect(isStreakLost({ current_streak: 3, last_activity_date: YESTERDAY }, now)).toBe(false);
-		expect(isStreakLost({ current_streak: 3, last_activity_date: LONG_AGO }, now)).toBe(true);
-		expect(isStreakLost({ current_streak: 0, last_activity_date: LONG_AGO }, now)).toBe(false);
-		expect(isStreakLost({ current_streak: 3, last_activity_date: null }, now)).toBe(false);
+	it('ancienne série en jours : remise à 0, record compris, sans réplique', async () => {
+		setup(buddyRow(STUDENT, { current_streak: 6, longest_streak: 20, last_activity_date: TODAY }));
+		const result = await resetLostConstance(STUDENT);
+		expect(result?.kind).toBe('legacy');
+		expect(db.buddy?.current_streak).toBe(0);
+		expect(db.buddy?.longest_streak).toBe(0);
 	});
 });

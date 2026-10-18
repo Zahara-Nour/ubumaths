@@ -9,6 +9,7 @@
 import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { createServerLogger } from '$lib/utils/logger';
+import { displayedConstance, utcDay } from '$lib/utils/buddy-constance';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/gamification/buddies/+page.server'
@@ -33,6 +34,7 @@ export interface StudentBuddyInfo {
 	palotinType: string | null;
 	level: number;
 	xp: number;
+	/** Constance Royale affichée (semaines tenues d'affilée ; 0 si perdue ou ancienne série) */
 	currentStreak: number;
 	longestStreak: number;
 	lastActivityDate: string | null;
@@ -55,6 +57,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	const classesData: ClassBuddyData[] = [];
+	const today = utcDay();
 
 	for (const cls of classes) {
 		// Get students with their buddy data
@@ -74,7 +77,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 					level,
 					current_streak,
 					longest_streak,
-					last_activity_date
+					last_activity_date,
+					constance_week_start,
+					constance_days_this_week
 				)
 			`
 			)
@@ -98,7 +103,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 				palotinType: buddy?.palotin_type ?? null,
 				level: buddy?.level ?? 0,
 				xp: buddy?.xp ?? 0,
-				currentStreak: buddy?.current_streak ?? 0,
+				// Comme l'élève la voit : 0 pour une Constance perdue pas encore remise
+				// à zéro, ou pour une ancienne série en jours
+				currentStreak: buddy ? displayedConstance(buddy, today) : 0,
 				longestStreak: buddy?.longest_streak ?? 0,
 				lastActivityDate: buddy?.last_activity_date ?? null
 			};

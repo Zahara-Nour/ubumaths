@@ -11307,6 +11307,8 @@ export type Database = {
       student_buddies: {
         Row: {
           change_count: number
+          constance_days_this_week: number
+          constance_week_start: string | null
           created_at: string
           current_streak: number
           equipped_skin_id: string | null
@@ -11323,6 +11325,8 @@ export type Database = {
         }
         Insert: {
           change_count?: number
+          constance_days_this_week?: number
+          constance_week_start?: string | null
           created_at?: string
           current_streak?: number
           equipped_skin_id?: string | null
@@ -11339,6 +11343,8 @@ export type Database = {
         }
         Update: {
           change_count?: number
+          constance_days_this_week?: number
+          constance_week_start?: string | null
           created_at?: string
           current_streak?: number
           equipped_skin_id?: string | null

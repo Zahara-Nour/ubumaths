@@ -616,7 +616,7 @@ export class StudentDashboardCache {
 	 *
 	 * @param xpGained - XP gained in this action
 	 * @param newLevel - New level if leveled up (optional)
-	 * @param newStreak - Updated streak value (optional)
+	 * @param newStreak - Constance Royale mise à jour, en semaines (optional)
 	 */
 	updateBuddyXpOptimistic(xpGained: number, newLevel?: number, newStreak?: number): void {
 		if (!this.buddyCache) return;
@@ -633,6 +633,23 @@ export class StudentDashboardCache {
 		};
 
 		this.log('trace', `[Cache] Optimistic buddy XP update: +${xpGained}`);
+	}
+
+	/**
+	 * Constance Royale : semaine et jours travaillés comptés par le serveur
+	 * (« Cette semaine : x jours sur 3 » à jour sans recharger).
+	 */
+	updateBuddyConstanceOptimistic(weekStart: string, daysThisWeek: number): void {
+		if (!this.buddyCache) return;
+
+		this.buddyCache = {
+			buddy: {
+				...this.buddyCache.buddy,
+				constance_week_start: weekStart,
+				constance_days_this_week: daysThisWeek
+			},
+			fetchedAt: this.buddyCache.fetchedAt
+		};
 	}
 
 	// ========================================================================

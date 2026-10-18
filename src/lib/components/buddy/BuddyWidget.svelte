@@ -15,6 +15,7 @@
 	import BuddySpeechBubble from './BuddySpeechBubble.svelte';
 	import BuddyStatusPanel from './BuddyStatusPanel.svelte';
 	import { onMount } from 'svelte';
+	import { displayedConstance, utcDay } from '$lib/utils/buddy-constance';
 
 	interface Props {
 		streakLost?: boolean;
@@ -24,6 +25,8 @@
 	let { streakLost = false, onChangePalotin }: Props = $props();
 
 	const buddy = $derived(studentCache.getBuddySync());
+	// Constance Royale (semaines tenues d'affilée), 0 si elle est perdue
+	const constanceWeeks = $derived(buddy ? displayedConstance(buddy, utcDay()) : 0);
 
 	// Speech bubble state
 	let currentMessage = $state('');
@@ -141,12 +144,12 @@
 			<BuddyAvatar palotin={buddy.palotin_type} expression={currentExpression} />
 		</button>
 
-		<!-- Streak badge -->
-		{#if buddy.current_streak > 0}
+		<!-- Badge de la Constance Royale -->
+		{#if constanceWeeks > 0}
 			<div
 				class="absolute -top-1 -left-1 flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white shadow"
 			>
-				{buddy.current_streak}
+				{constanceWeeks}
 			</div>
 		{/if}
 	</div>

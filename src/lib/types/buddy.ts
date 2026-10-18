@@ -22,6 +22,10 @@ export interface BuddyState {
 	themes_explored: string[];
 	change_count: number;
 	equipped_skin_id: string | null;
+	/** Constance Royale : lundi de la semaine enregistrée (null = ancienne série en jours) */
+	constance_week_start: string | null;
+	/** Constance Royale : jours travaillés de cette semaine (0 à 7) */
+	constance_days_this_week: number;
 }
 
 /**
@@ -48,6 +52,10 @@ export function toBuddyState(row: {
 	themes_explored: string[];
 	change_count: number;
 	equipped_skin_id: string | null;
+	/** Constance Royale : lundi de la semaine enregistrée (null = ancienne série en jours) */
+	constance_week_start: string | null;
+	/** Constance Royale : jours travaillés de cette semaine (0 à 7) */
+	constance_days_this_week: number;
 }): BuddyState {
 	return {
 		...row,

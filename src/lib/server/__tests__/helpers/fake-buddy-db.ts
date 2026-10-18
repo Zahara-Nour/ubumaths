@@ -49,6 +49,8 @@ export function buddyRow(studentId: string, overrides: Partial<StudentBuddy> = {
 		themes_explored: [],
 		change_count: 0,
 		equipped_skin_id: null,
+		constance_week_start: null,
+		constance_days_this_week: 0,
 		created_at: '2026-10-01T00:00:00.000Z',
 		updated_at: nextUpdatedAt(),
 		...overrides

@@ -46,6 +46,7 @@ import {
 	readListValue,
 	individualEntries,
 	withPiCommand,
+	latexUnitsWithPi,
 	mixedNotationMessage,
 	withLatexFunctionNames
 } from './parse';
@@ -811,7 +812,8 @@ function naturalReadingRefusal(atelier: Atelier, reading: NaturalReading): CalcR
 	const ast = astOf(reading.text, 'url', atelier.functionNames);
 	if (ast === null) return null;
 	const hint = singleLetterHint(reading.singleLetters);
-	const free = [...getVariables(ast)].filter((v) => !atelier.names.includes(v));
+	const variables = [...getVariables(ast)];
+	const free = variables.filter((v) => !atelier.names.includes(v));
 	if (free.length > 0) {
 		return {
 			kind: 'refus',
@@ -819,6 +821,9 @@ function naturalReadingRefusal(atelier: Atelier, reading: NaturalReading): CalcR
 			...notesOf(hint)
 		};
 	}
+	// `2πr m` : r est une valeur du panneau, inconnue de cet arbre — le moteur,
+	// qui la connaît, juge les dimensions (grandeur après une expression)
+	if (variables.length > 0) return null;
 	const problem = quantityProblem(ast);
 	if (problem === null) return null;
 	return { kind: 'refus', message: problem, ...notesOf(problem.includes(UNITLESS) ? hint : null) };
@@ -3447,7 +3452,11 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	if (line.kind === 'division-by-zero') {
 		return { kind: 'calcul', input, output: 'Erreur de calcul : Division par zéro' };
 	}
-	const result = session.engine.execute(expandInput(session.atelier, line.text));
+	const expanded = expandInput(session.atelier, line.text);
+	const first = session.engine.execute(expanded);
+	// `(2\pi )[m]` : lue en LaTeX, la ligne refuse ses crochets — relue en `\unit{m}`
+	const rewritten = first.success ? expanded : latexUnitsWithPi(expanded);
+	const result = rewritten === expanded ? first : session.engine.execute(rewritten);
 	// Une cellule de la grille (`B2+1`) : Calcul ne la lit pas (tableur, Q1). Dit
 	// seulement quand le calcul échoue — « Nombre 2 écrit après un facteur »
 	// faisait chercher une faute de frappe

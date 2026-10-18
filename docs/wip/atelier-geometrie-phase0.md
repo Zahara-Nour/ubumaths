@@ -202,6 +202,16 @@ s'appelle `y`, donc aucun calcul ne peut le confondre avec un objet.
   pour ne pas déplacer Données que les élèves connaissent. **Reco : entre Graphe et Données**, les
   deux vues graphiques côte à côte.
 
+**Choix de la PR 3, confirmés par David (2026-10-18, « ok je te suis »)** :
+
+- afficher 𝒞f **ouvre l'onglet Géométrie**, comme « Tracer » ouvre le Graphe ;
+- une carte `f′` ou `f⁻¹` créée depuis une `f` affichée **naît affichée** ;
+- le message de la vue vide ajoute « ou affiche une fonction depuis sa carte » ;
+- pour un ensemble en plusieurs morceaux, **le nom n'est écrit que sur le premier** ;
+- **K4 (nouveau)** : 𝒞f prend dans la vue Géométrie **la couleur de sa carte**, comme dans le
+  Graphe. Petite PR à part, après la PR 4. La couleur des points et des courbes par équation
+  (qui n'en ont pas encore) reste un sujet à part.
+
 ## Découpage en PR proposé (lot 1)
 
 1. **Modèle** : types `point` et `curve`, lecture (`<lettre> : <équation>`, couples), `y` réservé
