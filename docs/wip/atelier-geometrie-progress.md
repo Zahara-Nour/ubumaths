@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 — PR 1 (modèle) mergée (#1474) ; PR 2 (vue Figure) implémentée, à relire
+status: lot 1 — PR 1 (#1474) et PR 2 (#1478) mergées ; PR 3 (𝒞f dans la Figure) à faire
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -14,7 +14,7 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 | PR  | Contenu                                                                                        | Branche                         | État     |
 | --- | ---------------------------------------------------------------------------------------------- | ------------------------------- | -------- |
 | 1   | Modèle : types `point` et `curve`, lecture, `y` réservé + migration, cartes, sauvegarde / lien | `feat/atelier-geometrie-modele` | ✅ #1474 |
-| 2   | Vue Figure et pont `syncFigure` (curseurs cachés réglés par `moveSlider`, repère)              | `feat/atelier-geometrie-figure` | en cours |
+| 2   | Vue Figure et pont `syncFigure` (curseurs cachés réglés par `moveSlider`, repère)              | `feat/atelier-geometrie-figure` | ✅ #1478 |
 | 3   | 𝒞f dans la Figure (action de carte)                                                            | —                               | à faire  |
 | 4   | Grapheur à vrais paramètres (Q4 : sa propre PR, en dernier)                                    | —                               | à faire  |
 
@@ -71,3 +71,5 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 - `masque(curseur)` : `GeometryCanvas` ne montre plus la réglette d'un curseur masqué. Vérifié
   en production (lecture seule, par la session principale) : aucune figure ni construction ne
   cache un curseur — aucun contenu n'en dépend.
+- 2026-10-18 : PR 2 vérifiée à l'écran (Chromium, 1280 et 390 px), CI verte, **mergée (#1478,
+  `721c64e89`)**, branche et worktree retirés. Pas en production.
