@@ -288,3 +288,18 @@ describe('puissance de dix et virgule des fonctions', () => {
 		sameReading(definitionFromField('function', latex), '2,5x+0,5', 'text');
 	});
 });
+
+// Lot 4b de la refonte : la carte d'un point n'a plus de vue repliée, son champ
+// montre donc ses coordonnées en écriture mathématique — et se relit
+describe('le champ d’un point', () => {
+	it('(sqrt(2) ; 1,5) tapé dans la console se montre en LaTeX, et se relit', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'point', name: 'A', definition: '(sqrt(2) ; 1,5)' }, 'text');
+
+		const latex = fieldLatexOf(atelier.get('A')!, atelier.functionNames);
+
+		expect(latex).toBe('\\left(\\sqrt{2};1{,}5\\right)');
+		const back = definitionFromField('point', latex);
+		expect(parseDefinition('point', back, 'keyboard', []).error).toBeUndefined();
+	});
+});

@@ -20,9 +20,11 @@ import {
 	MAX_DEFINITION_LENGTH,
 	MAX_FIGURE_OBJECTS,
 	MAX_LISTS,
+	isCurve,
 	isFigureObject,
 	isFunction,
 	isList,
+	isPoint,
 	isSequence,
 	isValue,
 	parametersOf
@@ -35,9 +37,11 @@ import type {
 	ObjectKind,
 	ObjectStatus,
 	ListObject,
+	PointDisplay,
 	SequenceDisplay,
 	SequenceObject,
 	Slider,
+	StrokeDisplay,
 	ValueObject
 } from './types';
 import {
@@ -80,11 +84,17 @@ import {
 	compactDisplay,
 	fullDisplay,
 	newDisplay,
+	newPointDisplay,
 	newSequenceDisplay,
+	newStrokeDisplay,
+	plainFigureDisplay,
 	plainSequenceDisplay,
+	pointDisplaySchema,
 	readDisplayPatch,
+	readFigureDisplayPatch,
 	readSequenceDisplayPatch,
 	sequenceDisplaySchema,
+	strokeDisplaySchema,
 	type StoredDisplay
 } from './display';
 import { astOf as astOfDefinition } from './parse';
@@ -2182,6 +2192,8 @@ export class Atelier {
 			// Le mode toujours (une récurrence constante ne se devine pas), le rang
 			// et le premier terme seulement s'ils diffèrent du défaut
 			...(isSequence(o) && o.display ? { sequenceDisplay: plainSequenceDisplay(o.display) } : {}),
+			// Point ou courbe de la figure (lot 4b) : absent tant que rien n'est réglé
+			...(isFigureObject(o) && o.display ? { figureDisplay: plainFigureDisplay(o.display) } : {}),
 			...(isSequence(o)
 				? {
 						mode: o.mode,
@@ -2309,6 +2321,7 @@ export class Atelier {
 			// couleur neuve à une courbe qui avait déjà la sienne.
 			if (stored.display) this.adoptDisplay(stored.name, stored.display);
 			if (stored.sequenceDisplay) this.adoptSequenceDisplay(stored.name, stored.sequenceDisplay);
+			if (stored.figureDisplay) this.adoptFigureDisplay(stored.name, stored.figureDisplay);
 			if (stored.slider) this.adoptSlider(stored.name, stored.slider);
 			if (stored.plotted) this.setPlotted(stored.name, true);
 			if (stored.inFigure) this.setInFigure(stored.name, true);
@@ -2498,6 +2511,63 @@ export class Atelier {
 		const read = sequenceDisplaySchema.safeParse(stored);
 		if (!read.success) return;
 		this.items[index] = { ...current, display: read.data };
+	}
+
+	/**
+	 * Régler le dessin d'un point (couleur, taille, étiquette) ou d'une courbe de
+	 * la figure (couleur, trait) — lot 4b de la refonte.
+	 *
+	 * Même porte que `setDisplay` : le patch est validé ici, un réglage qui n'est
+	 * pas celui de l'objet est refusé. Le premier réglage part des défauts (une
+	 * couleur encore libre parmi celles de la figure). La vue Géométrie le lit
+	 * par `syncFigure` (câblé par la session de la géométrie).
+	 */
+	setFigureDisplay(
+		name: string,
+		patch: Partial<PointDisplay> | Partial<StrokeDisplay>
+	): { ok: true } | Refused {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isFigureObject(current)) {
+			return { ok: false, message: `« ${name} » n'est ni un point ni une courbe.` };
+		}
+		const read = readFigureDisplayPatch(current.kind, patch);
+		if (!read.ok) return { ok: false, message: read.message };
+		if (Object.keys(read.patch).length === 0) return { ok: true };
+		if (isPoint(current)) {
+			const base = current.display ?? newPointDisplay(this.#figureDisplays());
+			this.items[index] = { ...current, display: { ...base, ...read.patch } as PointDisplay };
+		} else {
+			const base = current.display ?? newStrokeDisplay(this.#figureDisplays());
+			this.items[index] = { ...current, display: { ...base, ...read.patch } as StrokeDisplay };
+		}
+		// Comme `setDisplay` : un réglage ne change aucun statut, seul le compteur bouge
+		this.revision++;
+		return { ok: true };
+	}
+
+	/** Poser un réglage de point ou de courbe relu (sauvegarde, lien), validé : abîmé, oublié. */
+	adoptFigureDisplay(name: string, stored: unknown): void {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined) return;
+		if (isPoint(current)) {
+			const read = pointDisplaySchema.safeParse(stored);
+			if (read.success) this.items[index] = { ...current, display: read.data };
+		} else if (isCurve(current)) {
+			// `.strict()` : le réglage d'un point posé sur une courbe n'est pas le sien
+			const read = strokeDisplaySchema.strict().safeParse(stored);
+			if (read.success) this.items[index] = { ...current, display: read.data };
+		}
+	}
+
+	/** Les couleurs déjà prises dans la figure — pour proposer une couleur libre. */
+	#figureDisplays(): Pick<CurveDisplay, 'color' | 'lineStyle'>[] {
+		return this.items.flatMap((o) =>
+			isFigureObject(o) && o.display
+				? [{ color: o.display.color, lineStyle: 'solid' as const }]
+				: []
+		);
 	}
 
 	/** Les objets dont la définition cite `name`, directement. */

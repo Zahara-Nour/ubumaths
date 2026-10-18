@@ -135,6 +135,17 @@ const storedObjectSchema = z.object({
 	/** Réglages du tracé d'une suite (lot 5b). Abîmés : oubliés, l'objet gardé. */
 	sequenceDisplay: sequenceDisplaySchema.optional().catch(undefined),
 	/**
+	 * Le dessin d'un point (couleur, taille, étiquette) ou d'une courbe de la
+	 * figure (couleur, trait) — lot 4b de la refonte. Jugé par l'objet à la
+	 * relecture (`adoptFigureDisplay`), selon son type : ici, seulement sa forme.
+	 *
+	 * ⚠️ Pas de nouvelle version d'état : absent tant que rien n'est réglé, un
+	 * ancien état se relit tel quel. Contrepartie, la même que la lecture
+	 * graphique (#1497) : un onglet resté sur l'ancien code l'oublie (Zod retire
+	 * la clé) — un réglage de couleur, jamais un objet.
+	 */
+	figureDisplay: z.record(z.string(), z.unknown()).optional().catch(undefined),
+	/**
 	 * La colonne d'une liste dans la grille (`A` à `Z`, version 2). Absente ou
 	 * abîmée : la liste prend la première colonne libre.
 	 */
@@ -199,6 +210,8 @@ export interface StoredObject {
 	readonly firstIndex?: number;
 	readonly firstTerm?: string;
 	readonly sequenceDisplay?: unknown;
+	/** Le dessin d'un point ou d'une courbe de la figure (lot 4b), validé à la relecture. */
+	readonly figureDisplay?: unknown;
 	/** La colonne d'une liste (`A` à `Z`). */
 	readonly column?: string;
 }

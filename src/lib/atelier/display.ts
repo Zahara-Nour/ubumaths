@@ -14,7 +14,13 @@
 import { z } from 'zod';
 import { CURVE_COLORS, getNextSlot } from '$lib/grapheur/colors';
 import { COORDINATE_LIMIT, LINE_STYLES, LINE_WIDTHS } from '$lib/grapheur/types';
-import type { CurveDisplay, SequenceDisplay } from './types';
+import {
+	POINT_SIZES,
+	type CurveDisplay,
+	type PointDisplay,
+	type SequenceDisplay,
+	type StrokeDisplay
+} from './types';
 import { DEFAULT_COBWEB_STEPS } from '$lib/grapheur/sequence';
 
 // =============================================================================
@@ -191,6 +197,82 @@ export function readSequenceDisplayPatch(
 		Object.entries(parsed.data).filter(([, value]) => value !== undefined)
 	) as Partial<SequenceDisplay>;
 	return { ok: true, patch: patchOut };
+}
+
+// =============================================================================
+// Points et courbes de la figure (lot 4b de la refonte)
+// =============================================================================
+
+/** Le trait d'une courbe de la figure : couleur, style, épaisseur. */
+export const strokeDisplaySchema = curveDisplaySchema.pick({
+	color: true,
+	lineStyle: true,
+	lineWidth: true
+});
+
+/** Couleur, taille et étiquette d'un point. */
+export const pointDisplaySchema = z.object({
+	color: z.enum(CURVE_COLORS),
+	size: z.enum(POINT_SIZES),
+	showLabel: z.boolean()
+});
+
+/**
+ * Ce qu'un réglage de la figure peut changer. `.strict()` : un réglage qui
+ * n'est pas celui de l'objet (`size` pour une courbe) est REFUSÉ, pas ignoré —
+ * l'élève saurait sinon que son geste n'a rien fait.
+ */
+const strokePatchSchema = strokeDisplaySchema.partial().strict();
+const pointPatchSchema = pointDisplaySchema.partial().strict();
+
+/** Le trait d'une courbe qu'on règle pour la première fois : sa couleur suit la règle du grapheur. */
+export function newStrokeDisplay(
+	others: readonly Pick<CurveDisplay, 'color' | 'lineStyle'>[]
+): StrokeDisplay {
+	const slot = getNextSlot(others);
+	return { color: slot.color, lineStyle: 'solid', lineWidth: DEFAULT_LINE_WIDTH };
+}
+
+/** Un point qu'on règle pour la première fois : taille moyenne, nom affiché. */
+export function newPointDisplay(
+	others: readonly Pick<CurveDisplay, 'color' | 'lineStyle'>[]
+): PointDisplay {
+	return { color: getNextSlot(others).color, size: 'medium', showLabel: true };
+}
+
+/**
+ * Lire une modification du réglage d'un point ou d'une courbe (même règle que
+ * `readDisplayPatch` : `undefined` veut dire « pas de changement »).
+ */
+export function readFigureDisplayPatch(
+	kind: 'point' | 'curve',
+	patch: unknown
+):
+	| { ok: true; patch: Partial<PointDisplay> | Partial<StrokeDisplay> }
+	| { ok: false; message: string } {
+	const parsed = (kind === 'point' ? pointPatchSchema : strokePatchSchema).safeParse(patch);
+	if (!parsed.success) {
+		return {
+			ok: false,
+			message:
+				kind === 'point'
+					? 'Ce réglage du point n’est pas valable.'
+					: 'Ce réglage de la courbe n’est pas valable.'
+		};
+	}
+	const patchOut = Object.fromEntries(
+		Object.entries(parsed.data).filter(([, value]) => value !== undefined)
+	);
+	return { ok: true, patch: patchOut };
+}
+
+/** Une copie faite de valeurs ordinaires (clonable), pour ranger le réglage. */
+export function plainFigureDisplay(
+	display: PointDisplay | StrokeDisplay
+): PointDisplay | StrokeDisplay {
+	return 'size' in display
+		? { color: display.color, size: display.size, showLabel: display.showLabel }
+		: { color: display.color, lineStyle: display.lineStyle, lineWidth: display.lineWidth };
 }
 
 /** Une copie faite de valeurs ordinaires (clonable). */
