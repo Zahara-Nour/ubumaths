@@ -104,7 +104,7 @@ describe('export JSON', () => {
 		expect(file.entries[0]).toMatchObject({
 			kind: 'saisie',
 			input: 'f(x)=x^2',
-			text: '« f » est dans tes objets.',
+			text: 'f est correctement défini.',
 			failed: false
 		});
 		expect(file.entries[1]).toMatchObject({
@@ -142,7 +142,7 @@ describe('export ubumark', () => {
 
 		expect(text).toContain('# Historique de calcul — 5 octobre 2026');
 		expect(text).toContain('`f(x)=x^2`');
-		expect(text).toContain('« f » est dans tes objets.');
+		expect(text).toContain('f est correctement défini.');
 		expect(text).toContain('### Dériver f');
 		expect(text).toContain("$f'(x) = 2 x$");
 	});

@@ -195,10 +195,12 @@ describe('les actions du panneau répondent vraiment', () => {
 		expect(ligne?.querySelector('.math')).toBeTruthy();
 	});
 
-	it('et bascule sur la vue Calcul pour qu’on voie la réponse', async () => {
+	it('et la réponse reste sous les yeux : la console ouverte ne se ferme pas', async () => {
 		const { container } = await clickAction('Dériver');
 
-		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Calcul');
+		const console = container.querySelector('[role="region"][aria-label="Console"]');
+		expect(console?.hasAttribute('inert')).toBe(false);
+		expect(console?.querySelectorAll('.historique li').length).toBeGreaterThan(0);
 	});
 
 	it('« Variations » parle de la fonction, pas de son nom', async () => {
@@ -377,13 +379,23 @@ describe('les lois dans l’historique (manche 13, PR c)', () => {
 
 describe('exporter l’historique', () => {
 	/**
-	 * Le lien ubumark, seul reste de la barre « Exporter l'historique » (lot 1 de
-	 * `atelier-refonte-interface-phase0.md`) : l'atelier s'enregistre par la barre d'icônes.
+	 * L'historique en ubumark, seul reste de la barre « Exporter l'historique »,
+	 * est dans le menu de la console (lot 2 de `atelier-refonte-interface-phase0.md`) :
+	 * l'atelier s'enregistre par la barre d'icônes.
 	 */
-	const sheetLink = (container: HTMLElement) =>
-		[...container.querySelectorAll('button')].find((b) =>
-			b.textContent?.includes('pour une fiche (ubumark)')
-		) as HTMLButtonElement | undefined;
+	async function sheetLink(container: HTMLElement): Promise<HTMLElement> {
+		const trigger = container.querySelector(
+			'button[aria-label="Menu de la console"]'
+		) as HTMLButtonElement;
+		await userEvent.click(trigger);
+		return vi.waitFor(() => {
+			const item = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find((i) =>
+				i.textContent?.includes('Télécharger l’historique (ubumark)')
+			);
+			expect(item).toBeTruthy();
+			return item!;
+		});
+	}
 
 	it('plus de barre « Exporter l’historique » : ni JSON, ni rejeu dans la vue', async () => {
 		const { container, submit } = await open();
@@ -395,21 +407,22 @@ describe('exporter l’historique', () => {
 		expect(container.textContent).not.toContain('Rejouer un historique');
 	});
 
-	it('historique vide : pas de lien ubumark', async () => {
+	it('historique vide : l’historique ubumark est indisponible dans le menu', async () => {
 		const { container } = await open();
 
-		expect(sheetLink(container)).toBeUndefined();
+		const item = await sheetLink(container);
+		expect(item.getAttribute('aria-disabled') ?? item.getAttribute('data-disabled')).not.toBeNull();
 	});
 
-	it('après une saisie, le lien télécharge l’historique en ubumark', async () => {
+	it('après une saisie, le menu télécharge l’historique en ubumark', async () => {
 		const { container, submit } = await open();
 		const downloads = watchDownloads();
 		try {
 			await submit('2+3');
 
-			sheetLink(container)?.click();
+			(await sheetLink(container)).click();
 
-			expect(downloads.files).toHaveLength(1);
+			await vi.waitFor(() => expect(downloads.files).toHaveLength(1));
 			expect(downloads.files[0].name).toMatch(/^calcul-\d{4}-\d{2}-\d{2}\.md$/);
 			expect(await downloads.files[0].blob.text()).toContain('2+3');
 		} finally {

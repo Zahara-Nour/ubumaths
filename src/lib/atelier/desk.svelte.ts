@@ -1034,11 +1034,28 @@ function textOf(result: CalcResult): string {
  * message de la carte au lieu d'annoncer un objet prêt.
  */
 function definitionText(name: string, object: AtelierObject): string {
+	// Réussie : « f est correctement défini » (demande de David, 2026-10-18 :
+	// « est dans tes objets » ne disait pas si tout allait bien). La console
+	// colore le nom (`definedName`).
+	const defined = `${name}${DEFINED_SUFFIX}`;
 	const placed = `« ${name} » est dans tes objets`;
-	if (object.message === undefined) return `${placed}.`;
+	if (object.message === undefined) return defined;
 	if (object.status === 'error') return `${placed}, mais elle est en erreur : ${object.message}`;
 	if (object.status === 'pending') {
 		return `${placed}, ${object.message.charAt(0).toLowerCase()}${object.message.slice(1)}`;
 	}
-	return `${placed}.`;
+	return defined;
+}
+
+/** La fin de la ligne d'une définition réussie, après le nom. */
+const DEFINED_SUFFIX = ' est correctement défini.';
+
+/**
+ * Le nom d'une ligne « f est correctement défini », pour que la console le
+ * colore — ou `null` : une autre ligne.
+ */
+export function definedName(entry: Pick<Entry, 'result' | 'text' | 'failed'>): string | null {
+	if (entry.failed || entry.result?.kind !== 'definition') return null;
+	const name = entry.result.name;
+	return entry.text === `${name}${DEFINED_SUFFIX}` ? name : null;
 }

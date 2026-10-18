@@ -1,7 +1,10 @@
 <script lang="ts">
 	import '$lib/utils/mathlive-styles';
 	/**
-	 * La vue Calcul de l'atelier.
+	 * La console de l'atelier (l'ancienne vue Calcul).
+	 *
+	 * Depuis le lot 2 de `docs/wip/atelier-refonte-interface-phase0.md`, elle vit
+	 * dans le volet déroulant du conteneur, montée en permanence : plus d'onglet.
 	 *
 	 * Un seul champ : l'élève y écrit des définitions, des calculs ou des
 	 * commandes, et chaque ligne d'historique peut être **gardée** sous un nom
@@ -31,7 +34,7 @@
 	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 	import FormulaText from './FormulaText.svelte';
-	import { downloadHistory } from '$lib/atelier/history-export';
+	import { definedName } from '$lib/atelier/desk.svelte';
 	import {
 		readStepsVerbosity,
 		writeStepsVerbosity,
@@ -69,6 +72,18 @@
 	} = $props();
 
 	let field = $state<HTMLInputElement | null>(null);
+	let root = $state<HTMLDivElement | null>(null);
+
+	/** Le focus dans le champ, à l'ouverture de la console (lot 2). */
+	export function focusInput() {
+		if (field !== null) field.focus();
+		else root?.querySelector<HTMLElement>('math-field')?.focus();
+	}
+
+	/** Une commande en texte (`.dériver f`) : en chasse fixe, à la différence des maths. */
+	function isTypedCommand(entry: Entry): boolean {
+		return entry.label.trimStart().startsWith('.');
+	}
 
 	/**
 	 * Les lignes dont les étapes sont dépliées (décision Q1).
@@ -519,51 +534,53 @@
 	function canKeep(entry: Entry): boolean {
 		return entry.result?.kind === 'calcul' && entry.result.ast !== undefined;
 	}
-
-	/**
-	 * L'historique en ubumark, pour le recopier dans une fiche. Provisoire (lot 1
-	 * de `atelier-refonte-interface-phase0.md`) : le lot 2 le range dans le menu
-	 * de la console. Enregistrer l'atelier passe par la barre d'icônes.
-	 */
-	function downloadForSheet() {
-		downloadHistory(desk.entries, 'ubumark');
-	}
 </script>
 
 <svelte:document onselectionchange={handleSelectionChange} />
 
-<div class="calcul">
-	{#if desk.entries.length > 0}
-		<p class="pour-fiche">
-			<button type="button" class="lien-discret" onclick={downloadForSheet}>
-				Télécharger l’historique pour une fiche (ubumark)
-			</button>
-		</p>
-	{/if}
+<!-- L'historique pour une fiche (ubumark) est dans le menu de la console (conteneur) -->
+<div class="calcul" bind:this={root}>
 	<ol class="historique">
 		{#each desk.entries as entry, index (entry.id)}
 			{@const markup = markupOf(entry)}
 			{@const copied = answerToCopy(entry, toggled.includes(entry.id))}
 			{@const written = inputMarkupOf(entry)}
+			{@const defined = definedName(entry)}
 			<li class:refus={entry.failed}>
-				<p class="saisie" id="{uid}-saisie-{entry.id}">
-					{#if written !== null}
-						<!-- La saisie écrite en mathématiques : composée pour les yeux,
+				<!-- L'invite de la console : décorative, HORS du paragraphe de la saisie,
+				     qui sert de description aux étapes (`aria-describedby`) -->
+				<div class="ligne-saisie">
+					<span class="invite" aria-hidden="true">&gt;</span>
+					<p
+						class="saisie"
+						class:commande={written === null && isTypedCommand(entry)}
+						id="{uid}-saisie-{entry.id}"
+					>
+						{#if written !== null}
+							<!-- La saisie écrite en mathématiques : composée pour les yeux,
 						     dite en texte aux lecteurs d'écran (lecture de MathLive en anglais) -->
-						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-						<span aria-hidden="true">{@html written}</span>
-						<span class="sr-only">{spokenInput(entry)}</span>
-					{:else}
-						{entry.label}
-					{/if}
-				</p>
+							<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+							<span aria-hidden="true">{@html written}</span>
+							<span class="sr-only">{spokenInput(entry)}</span>
+						{:else}
+							{entry.label}
+						{/if}
+					</p>
+				</div>
 				<div class="reponse">
+					<!-- La réponse, repérable d'un coup d'œil (demande de David, 2026-10-18) -->
+					<span class="fleche" aria-hidden="true">--&gt;</span>
 					{#if markup !== null}
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 						<span class="math">{@html markup}</span>
 					{:else if entry.formulas}
 						<!-- Refus de `.réciproque` : ses formules `$…$` composées -->
 						<span class="texte"><FormulaText text={entry.text} /></span>
+					{:else if defined !== null}
+						<!-- « f est correctement défini », le nom en couleur -->
+						<span class="texte"
+							><span class="nom-defini">{defined}</span>{entry.text.slice(defined.length)}</span
+						>
 					{:else}
 						<span class="texte">{entry.text}</span>
 					{/if}
@@ -571,74 +588,77 @@
 						<!-- Montrée même quand la réponse est composée en mathématiques -->
 						<span class="note">{entry.note}</span>
 					{/if}
-					{#if entry.alternative !== undefined && !entry.failed}
-						<Button
-							variant="ghost"
-							size="sm"
-							class="bascule"
-							onclick={() => toggleAlternative(entry.id)}
-						>
-							{toggleLabel(entry)}
-						</Button>
-					{/if}
-					{#if canKeep(entry)}
-						<Button variant="ghost" size="sm" class="garder" onclick={() => desk.keep(entry)}>
-							Garder…
-						</Button>
-					{/if}
-					{#if copied !== null}
-						<!-- La réponse seule, en texte lisible ; le LaTeX au menu (David, 2026-10-15) -->
-						<span class="copier">
+					<!-- Les boutons de la ligne : au survol ou au focus, toujours au toucher -->
+					<span class="outils-ligne">
+						{#if entry.alternative !== undefined && !entry.failed}
 							<Button
 								variant="ghost"
 								size="sm"
-								onclick={() =>
-									copyAnswer(
-										copied.text,
-										copied.asLatex === true
-											? 'Copié en LaTeX : cette réponse ne s’écrit pas en texte.'
-											: 'Copié.'
-									)}
+								class="bascule"
+								onclick={() => toggleAlternative(entry.id)}
 							>
-								Copier
+								{toggleLabel(entry)}
 							</Button>
-							{#if copied.latex !== undefined && copied.asLatex !== true}
-								{@const latex = copied.latex}
-								<DropdownMenu.Root>
-									<DropdownMenu.Trigger>
-										{#snippet child({ props })}
-											<Button
-												{...props}
-												variant="ghost"
-												size="sm"
-												class="px-1"
-												aria-label="Autres façons de copier"
-											>
-												<ChevronDown class="size-4" aria-hidden="true" />
-											</Button>
-										{/snippet}
-									</DropdownMenu.Trigger>
-									<DropdownMenu.Content align="end">
-										<DropdownMenu.Item onclick={() => copyAnswer(latex, 'Copié en LaTeX.')}>
-											Copier en LaTeX
-										</DropdownMenu.Item>
-									</DropdownMenu.Content>
-								</DropdownMenu.Root>
-							{/if}
-						</span>
-					{/if}
-					{#if entry.steps !== undefined}
-						<Button
-							variant="ghost"
-							size="sm"
-							class="comment"
-							aria-expanded={unfolded.includes(entry.id)}
-							aria-controls="{uid}-etapes-{entry.id}"
-							onclick={() => toggleSteps(entry.id)}
-						>
-							{unfolded.includes(entry.id) ? 'Masquer le détail' : 'Comment ?'}
-						</Button>
-					{/if}
+						{/if}
+						{#if canKeep(entry)}
+							<Button variant="ghost" size="sm" class="garder" onclick={() => desk.keep(entry)}>
+								Garder…
+							</Button>
+						{/if}
+						{#if copied !== null}
+							<!-- La réponse seule, en texte lisible ; le LaTeX au menu (David, 2026-10-15) -->
+							<span class="copier">
+								<Button
+									variant="ghost"
+									size="sm"
+									onclick={() =>
+										copyAnswer(
+											copied.text,
+											copied.asLatex === true
+												? 'Copié en LaTeX : cette réponse ne s’écrit pas en texte.'
+												: 'Copié.'
+										)}
+								>
+									Copier
+								</Button>
+								{#if copied.latex !== undefined && copied.asLatex !== true}
+									{@const latex = copied.latex}
+									<DropdownMenu.Root>
+										<DropdownMenu.Trigger>
+											{#snippet child({ props })}
+												<Button
+													{...props}
+													variant="ghost"
+													size="sm"
+													class="px-1"
+													aria-label="Autres façons de copier"
+												>
+													<ChevronDown class="size-4" aria-hidden="true" />
+												</Button>
+											{/snippet}
+										</DropdownMenu.Trigger>
+										<DropdownMenu.Content align="end">
+											<DropdownMenu.Item onclick={() => copyAnswer(latex, 'Copié en LaTeX.')}>
+												Copier en LaTeX
+											</DropdownMenu.Item>
+										</DropdownMenu.Content>
+									</DropdownMenu.Root>
+								{/if}
+							</span>
+						{/if}
+						{#if entry.steps !== undefined}
+							<Button
+								variant="ghost"
+								size="sm"
+								class="comment"
+								aria-expanded={unfolded.includes(entry.id)}
+								aria-controls="{uid}-etapes-{entry.id}"
+								onclick={() => toggleSteps(entry.id)}
+							>
+								{unfolded.includes(entry.id) ? 'Masquer le détail' : 'Comment ?'}
+							</Button>
+						{/if}
+					</span>
 				</div>
 				{#if entry.steps !== undefined && unfolded.includes(entry.id)}
 					<div class="etapes" id="{uid}-etapes-{entry.id}">
@@ -807,27 +827,6 @@
 		padding: 0.75rem;
 	}
 
-	.pour-fiche {
-		margin: 0;
-		text-align: right;
-	}
-	.lien-discret {
-		border: none;
-		background: none;
-		padding: 0.25rem;
-		font-size: 0.8125rem;
-		color: var(--color-muted-foreground);
-		text-decoration: underline;
-		cursor: pointer;
-	}
-	.lien-discret:hover {
-		color: var(--color-foreground);
-	}
-	.lien-discret:focus-visible {
-		outline: 2px solid var(--color-ring, currentColor);
-		outline-offset: 2px;
-	}
-
 	.historique {
 		flex: 1;
 		min-height: 0;
@@ -850,12 +849,32 @@
 	/* Une longue saisie écrite en mathématiques défile dans son cadre (§3 N5).
 	   Sur le paragraphe, pas sur la formule : une zone qui défile prend le focus
 	   au clavier (Chrome 130), et la formule est cachée aux lecteurs d'écran */
+	/* L'instruction en couleur NORMALE, pas plus sombre que la réponse (demande
+	   de David, 2026-10-18) : c'est la taille et l'invite qui la distinguent */
 	.saisie {
 		margin: 0;
-		font-size: 0.8125rem;
-		color: var(--color-muted-foreground);
+		font-size: 0.875rem;
+		color: var(--color-foreground);
 		max-width: 100%;
 		overflow-x: auto;
+	}
+	.ligne-saisie {
+		display: flex;
+		align-items: baseline;
+		gap: 0.375rem;
+		min-width: 0;
+	}
+	.ligne-saisie .saisie {
+		min-width: 0;
+	}
+	.invite {
+		flex: none;
+		font-family: var(--font-mono, monospace);
+		color: var(--color-muted-foreground);
+	}
+	/* Une commande en texte (`.dériver f`) en chasse fixe ; les maths restent composées */
+	.saisie.commande {
+		font-family: var(--font-mono, monospace);
 	}
 
 	.reponse {
@@ -863,6 +882,47 @@
 		align-items: center;
 		gap: 0.5rem;
 		flex-wrap: wrap;
+	}
+	/* `-->` et le nom défini en couleur d'accent : la réponse se repère d'un coup
+	   d'œil. ⚠️ Pas `--color-primary` (#fc8f1b : 2,3:1 sur blanc) : l'orange
+	   foncé de l'anneau de focus en clair (4,6:1), le jaune du site en sombre */
+	.calcul {
+		--accent-console: light-dark(#b25f00, #ffc400);
+	}
+	.fleche {
+		font-family: var(--font-mono, monospace);
+		font-weight: 700;
+		color: var(--accent-console);
+	}
+	.nom-defini {
+		font-weight: 700;
+		color: var(--accent-console);
+	}
+
+	/* Les boutons de ligne ne gênent plus la lecture : visibles au survol ou
+	   quand la ligne a le focus ; toujours atteignables au clavier (opacité, pas
+	   `display`), et toujours visibles au toucher, où rien ne survole */
+	.outils-ligne {
+		display: inline-flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+		opacity: 0;
+		transition: opacity 120ms ease;
+	}
+	.historique li:hover .outils-ligne,
+	.historique li:focus-within .outils-ligne {
+		opacity: 1;
+	}
+	@media (hover: none) {
+		.outils-ligne {
+			opacity: 1;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.outils-ligne {
+			transition: none;
+		}
 	}
 	/* Un résultat long défile dans son cadre plutôt que de pousser le panneau
 	   d'objets hors de l'écran (§3 N5). */

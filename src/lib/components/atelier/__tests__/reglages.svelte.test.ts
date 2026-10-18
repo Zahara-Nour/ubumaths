@@ -336,19 +336,23 @@ describe('la ligne venue du dehors, en écriture mathématique', () => {
 		expect(container.querySelector('.historique li.refus')).toBeNull();
 	});
 
-	it('changer d’onglet garde la ligne en cours, cases du modèle comprises', async () => {
-		const { choose, typeMath, mathField, tab } = await open();
+	it('fermer et rouvrir la console garde la ligne en cours, cases du modèle comprises', async () => {
+		const { choose, typeMath, mathField, container } = await open();
 		await choose('Écriture mathématique');
 
 		await typeMath('intégrer');
 		await userEvent.keyboard('{Tab}');
 		await vi.waitFor(() => expect(mathField()?.value).toContain('placeholder'));
 		const before = mathField()?.value;
-		tab('Graphe').click();
-		await vi.waitFor(() => expect(mathField()).toBeNull());
-		tab('Calcul').click();
+		const consoleButton = container.querySelector(
+			'button[aria-label="Console"]'
+		) as HTMLButtonElement;
+		consoleButton.click();
+		await vi.waitFor(() => expect(consoleButton.getAttribute('aria-expanded')).toBe('false'));
+		consoleButton.click();
 
-		await vi.waitFor(() => expect(mathField()?.value).toBe(before));
+		await vi.waitFor(() => expect(consoleButton.getAttribute('aria-expanded')).toBe('true'));
+		expect(mathField()?.value).toBe(before);
 	});
 });
 
@@ -394,7 +398,8 @@ describe('l’accessibilité du champ mathématique et de la fenêtre', () => {
 		const { settingsButton, openSettings } = await open();
 
 		await openSettings();
-		await page.getByRole('button', { name: 'Fermer' }).click();
+		// `exact` : « Fermer la console » est aussi un bouton de la page
+		await page.getByRole('button', { name: 'Fermer', exact: true }).click();
 
 		await vi.waitFor(() => expect(document.querySelector('[role="dialog"]')).toBeNull());
 		await vi.waitFor(() => expect(document.activeElement).toBe(settingsButton()));
