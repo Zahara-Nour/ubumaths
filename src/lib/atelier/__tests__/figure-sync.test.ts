@@ -67,6 +67,36 @@ function drawing(figure: Figure, el: GeoElement | undefined): string | null {
 	return svg === null ? null : JSON.stringify(svg);
 }
 
+/**
+ * Le dessin d'un objet (tous ses éléments visibles nommés `name`) passe-t-il
+ * à `tolerance` pixels du point (x ; y) ? Lu sur les coordonnées SVG rendues.
+ */
+function passesNear(figure: Figure, name: string, x: number, y: number, tolerance = 2): boolean {
+	const target = TRANSFORMER.mathToSvg(x, y);
+	return figure
+		.getAllElements()
+		.filter((el) => el.visible && el.label === name)
+		.some((el) => {
+			const text = drawing(figure, el);
+			if (text === null) return false;
+			const svg: unknown = JSON.parse(text);
+			if (svg !== null && typeof svg === 'object' && 'cx' in svg && 'cy' in svg) {
+				return Math.hypot(Number(svg.cx) - target.x, Number(svg.cy) - target.y) <= tolerance;
+			}
+			const pairs = [...text.matchAll(/(-?\d+(?:\.\d+)?)[ ,]+(-?\d+(?:\.\d+)?)/g)];
+			return pairs.some(
+				([, px, py]) => Math.hypot(Number(px) - target.x, Number(py) - target.y) <= tolerance
+			);
+		});
+}
+
+/** Tous les éléments visibles de la figure nommés `name` dessinent-ils quelque chose ? */
+function drawnAtAll(figure: Figure, name: string): boolean {
+	return figure
+		.getAllElements()
+		.some((el) => el.visible && el.label === name && drawing(figure, el) !== null);
+}
+
 /** Les coordonnées NUMÉRIQUES d'un point de la figure. */
 function coordinates(figure: Figure, el: GeoElement | undefined): [number, number] | null {
 	if (el === undefined) return null;
@@ -384,9 +414,11 @@ describe('syncFigure — les curseurs partagés', () => {
 		expect(syncFigure(atelier, target)).toBe('moved');
 
 		expect(lineThrough(figure, shown(figure, 'd'), 1, 4)).toBe(true);
-		const after = ['P', 'K'].map((name) => drawing(figure, shown(figure, name)));
-		expect(after[0]).not.toBe(before[0]);
-		expect(after[1]).not.toBe(before[1]);
+		// Le tracé est JUSTE pour a = 3 : y = 3x² passe par (1 ; 3) ; y² = x³ − 3x par (2 ; √2)
+		expect(passesNear(figure, 'P', 1, 3)).toBe(true);
+		expect(passesNear(figure, 'P', 1, 2)).toBe(false);
+		expect(passesNear(figure, 'K', 2, Math.SQRT2)).toBe(true);
+		expect(passesNear(figure, 'K', 2, 0, 4)).toBe(false);
 	});
 
 	it('S1 : glisser a change en même temps la parabole du Graphe et le cercle de la Figure', () => {
@@ -440,5 +472,120 @@ describe('le réglage « Repère »', () => {
 
 		expect(atelier.figureFrame).toBe(false);
 		expect(JSON.stringify(atelier.serialize())).toBe(stored);
+	});
+});
+
+// =============================================================================
+// Revue de la PR 2
+// =============================================================================
+
+describe('syncFigure — retours de revue', () => {
+	it('une conique à curseur reclassée en deux droites se dessine : x² = a, a = 4', () => {
+		const target = synced(
+			atelierOf([
+				['value', 'a', '4'],
+				['curve', 'K', 'x^2 = a']
+			])
+		);
+
+		expect(passesNear(target.figure, 'K', 2, 0)).toBe(true);
+		expect(passesNear(target.figure, 'K', -2, 3)).toBe(true);
+	});
+
+	it('x² − y² = a glissé à 0 dessine les deux droites y = ±x', () => {
+		const atelier = atelierOf([
+			['value', 'a', '1'],
+			['curve', 'H', 'x^2 - y^2 = a']
+		]);
+		const target = synced(atelier);
+		expect(drawnAtAll(target.figure, 'H')).toBe(true);
+
+		atelier.slideTo('a', 0);
+		syncFigure(atelier, target);
+
+		expect(passesNear(target.figure, 'H', 3, 3)).toBe(true);
+		expect(passesNear(target.figure, 'H', 3, -3)).toBe(true);
+	});
+
+	it('y = 1/x, y = (x + 1)/(x − 1), y = 1/x + a restent des courbes y = f(x), comme dans courbe()', () => {
+		const target = synced(
+			atelierOf([
+				['value', 'a', '1'],
+				['curve', 'f', 'y = 1/x'],
+				['curve', 'g', 'y = (x+1)/(x-1)'],
+				['curve', 'h', 'y = 1/x + a']
+			])
+		);
+
+		for (const name of ['f', 'g', 'h']) expect(shown(target.figure, name)?.type).toBe('function');
+		expect(passesNear(target.figure, 'f', 2, 0.5)).toBe(true);
+		expect(passesNear(target.figure, 'h', 2, 1.5)).toBe(true);
+	});
+
+	it('la tangente développée reste une droite (C5 : y = 4(x − 2) + 4)', () => {
+		const target = synced(atelierOf([['curve', 'T', 'y = 4(x - 2) + 4']]));
+
+		expect(shown(target.figure, 'T')?.type).toBe('line');
+	});
+
+	it('point isolé : x² + y² = 0 dessine le point (0 ; 0)', () => {
+		const target = synced(atelierOf([['curve', 'C', 'x^2 + y^2 = 0']]));
+
+		expect(passesNear(target.figure, 'C', 0, 0)).toBe(true);
+		expect(passesNear(target.figure, 'C', 1, 0)).toBe(false);
+	});
+
+	it('droite double : x² + 2xy + y² = 0 et x² = 0 dessinent leur droite', () => {
+		const target = synced(
+			atelierOf([
+				['curve', 'D', 'x^2 + 2x y + y^2 = 0'],
+				['curve', 'E', 'x^2 = 0']
+			])
+		);
+
+		expect(lineThrough(target.figure, shown(target.figure, 'D'), 1, -1)).toBe(true);
+		expect(lineThrough(target.figure, shown(target.figure, 'D'), -3, 3)).toBe(true);
+		expect(lineThrough(target.figure, shown(target.figure, 'E'), 0, 5)).toBe(true);
+	});
+
+	it('x² + y² = a² glissé à 0 dessine le point (0 ; 0), puis le cercle à a = 2', () => {
+		const atelier = atelierOf([
+			['value', 'a', '1'],
+			['curve', 'C', 'x^2 + y^2 = a^2']
+		]);
+		const target = synced(atelier);
+
+		atelier.slideTo('a', 0);
+		syncFigure(atelier, target);
+		expect(passesNear(target.figure, 'C', 0, 0)).toBe(true);
+
+		atelier.slideTo('a', 2);
+		syncFigure(atelier, target);
+		expect(passesNear(target.figure, 'C', 0, 0)).toBe(false);
+		expect(passesNear(target.figure, 'C', 2, 0)).toBe(true);
+	});
+
+	it('une valeur hors des bornes de son curseur (a = 10¹⁰) : rien de dessiné, et pas de boucle', () => {
+		const atelier = atelierOf([
+			['value', 'a', '10000000000'],
+			['point', 'M', '(a ; 0)']
+		]);
+		const target = new AtelierFigure();
+		syncFigure(atelier, target);
+
+		expect(shown(target.figure, 'M')).toBeUndefined();
+		expect(syncFigure(atelier, target)).toBe('unchanged');
+	});
+
+	it('une pose qui échoue à mi-chemin ne laisse aucune aide cachée dans la figure', () => {
+		const atelier = atelierOf([
+			['value', 'a', '2'],
+			['point', 'M', '(2a ; a!)']
+		]);
+		const target = synced(atelier);
+
+		expect(target.elementOf('M')).toBeUndefined();
+		// Seul reste le curseur caché de a
+		expect(target.figure.getAllElements().map((el) => el.type)).toEqual(['slider']);
 	});
 });

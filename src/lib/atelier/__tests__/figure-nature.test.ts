@@ -53,7 +53,7 @@ describe('la nature d’une courbe de l’atelier', () => {
 		atelier.slideTo('a', 0);
 
 		expect(curveNatureOf(atelier, 'C')).toEqual({
-			label: 'courbe',
+			label: 'point',
 			note: 'Un seul point vérifie cette équation.'
 		});
 	});

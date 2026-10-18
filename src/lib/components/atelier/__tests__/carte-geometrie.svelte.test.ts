@@ -33,6 +33,22 @@ function headerText(card: HTMLElement): string {
 	return `${name} ${sign} ${spoken}`;
 }
 
+/**
+ * Les « : » ou « = » VISIBLES seuls dans la tête de la carte (une ligne à eux) :
+ * revue de la PR 2, la carte se lit comme celle d'une fonction — le nom, puis
+ * l'équation ou les coordonnées. La lecture d'écran garde le signe.
+ */
+function isolatedSigns(card: HTMLElement): string[] {
+	return (
+		[...card.querySelectorAll('.entete *')]
+			// Le « = » d'une équation composée par MathLive n'est pas un signe isolé
+			.filter((el) => el.children.length === 0 && el.closest('.ML__latex') === null)
+			.map((el) => ({ text: el.textContent?.trim() ?? '', box: el.getBoundingClientRect() }))
+			.filter(({ text, box }) => (text === ':' || text === '=') && box.width > 1 && box.height > 1)
+			.map(({ text }) => text)
+	);
+}
+
 // =============================================================================
 // Tests
 // =============================================================================
@@ -45,7 +61,7 @@ describe('la carte d’un objet de la figure', () => {
 
 		const card = cardFor(container, 'd');
 
-		expect(card.querySelector('.signe')?.textContent?.trim()).toBe(':');
+		expect(isolatedSigns(card)).toEqual([]);
 		expect(card.querySelector('.definition .ML__latex')).toBeTruthy();
 		// PR 2 : la nature remplace le type « courbe » (C1)
 		expect(card.querySelector('.type')?.textContent?.trim()).toBe('droite');
@@ -80,6 +96,8 @@ describe('la carte d’un objet de la figure', () => {
 
 		const card = cardFor(container, 'A');
 
+		expect(isolatedSigns(card)).toEqual([]);
+		// La lecture d'écran garde « A = (1 ; 2) »
 		expect(card.querySelector('.signe')?.textContent?.trim()).toBe('=');
 		expect(card.querySelector('.definition .ML__latex')).toBeTruthy();
 		expect(card.querySelector('.type')?.textContent?.trim()).toBe('point');
@@ -113,6 +131,10 @@ describe('la carte d’un objet de la figure', () => {
 		const field = card.querySelector('math-field') as MathfieldElement;
 
 		expect(card.querySelector('.prefixe')?.textContent?.replace(/\s+/g, '')).toBe('d:');
+		// En édition, « d : » et le champ sont sur la même ligne
+		const prefix = card.querySelector('.prefixe')!.getBoundingClientRect();
+		const box = field.getBoundingClientRect();
+		expect(prefix.bottom > box.top && prefix.top < box.bottom).toBe(true);
 		await userEvent.click(field);
 		await vi.waitFor(() => expect(document.activeElement).toBe(field));
 		await userEvent.keyboard('y=2x');
