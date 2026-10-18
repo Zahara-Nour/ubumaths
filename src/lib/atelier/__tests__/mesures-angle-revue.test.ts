@@ -191,3 +191,53 @@ describe('revue 8 : comparaisons et puissances d’un angle', () => {
 		expect(refusal(runInput(s, 'angle(B, A, D)^2'))).toContain('puissance');
 	});
 });
+
+// =============================================================================
+// Revue (moteur lu par l'arbre) : un angle REMARQUABLE dans le cos d'une fonction
+// =============================================================================
+
+describe('revue : cos, sin d’un angle mesuré dans une fonction ou une suite', () => {
+	for (const unit of ['deg', 'rad'] as const) {
+		it(`[${unit}] R = angle(B, A, D) : g(1) = 0, v(1) = 2, u(3) = 0, q(1) = 0`, () => {
+			const s = plane(unit);
+			runInput(s, 'R = angle(B, A, D)');
+			runInput(s, 'g(x) = cos(R)*x');
+			runInput(s, 'v(x) = sin(R) + x');
+			runInput(s, 'u(n) = cos(R)*n');
+			runInput(s, 'q(x) = cos(angle(B, A, D))*x');
+			expect(answer(runInput(s, 'g(1)'))).toBe('0');
+			expect(answer(runInput(s, 'v(1)'))).toBe('2');
+			expect(answer(runInput(s, 'u(3)'))).toBe('0');
+			expect(answer(runInput(s, 'q(1)'))).toBe('0');
+		});
+
+		it(`[${unit}] .variations g : constante`, () => {
+			const s = plane(unit);
+			runInput(s, 'R = angle(B, A, D)');
+			runInput(s, 'g(x) = cos(R)*x');
+			const result = runInput(s, '.variations g');
+			expect(JSON.stringify(result)).toContain('constante');
+			expect(JSON.stringify(result)).not.toContain('décroissante');
+		});
+	}
+});
+
+describe('revue : la carte suit le mode décimal de la console', () => {
+	it('M = AC/3 en mode décimal : la carte dit ce que dit la console', () => {
+		const s = plane();
+		runInput(s, 'M = AC/3');
+		runInput(s, '.décimal');
+		s.atelier.setCalcMode('decimal');
+		const console = answer(runInput(s, 'M'));
+		expect(console).toBe('≈ 1,6667');
+		expect(valueAnswerOf(s.atelier, 'M')?.text).toBe(console);
+	});
+});
+
+describe('revue : la puissance d’un angle se juge sur l’arbre', () => {
+	it('angle(B, A, D)^2 est refusé ; aire(A, B, C)^2 ne l’est pas', () => {
+		const s = plane();
+		expect(refusal(runInput(s, 'angle(B, A, D)^2'))).toContain('puissance');
+		expect(answer(runInput(s, 'aire(A, B, C)^2'))).toBe('36');
+	});
+});
