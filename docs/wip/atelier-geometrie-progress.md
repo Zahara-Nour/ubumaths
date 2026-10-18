@@ -11,12 +11,12 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Lot 1 — découpage
 
-| PR  | Contenu                                                                                        | Branche                           | État     |
-| --- | ---------------------------------------------------------------------------------------------- | --------------------------------- | -------- |
-| 1   | Modèle : types `point` et `curve`, lecture, `y` réservé + migration, cartes, sauvegarde / lien | `feat/atelier-geometrie-modele`   | ✅ #1474 |
-| 2   | Vue Figure et pont `syncFigure` (curseurs cachés réglés par `moveSlider`, repère)              | `feat/atelier-geometrie-figure`   | ✅ #1478 |
-| 3   | 𝒞f dans la vue Géométrie (action de carte), onglet renommé « Géométrie »                       | `feat/atelier-geometrie-courbe-f` | ✅ #1482 |
-| 4   | Grapheur à vrais paramètres (Q4 : sa propre PR, en dernier)                                    | —                                 | à faire  |
+| PR  | Contenu                                                                                        | Branche                           | État                   |
+| --- | ---------------------------------------------------------------------------------------------- | --------------------------------- | ---------------------- |
+| 1   | Modèle : types `point` et `curve`, lecture, `y` réservé + migration, cartes, sauvegarde / lien | `feat/atelier-geometrie-modele`   | ✅ #1474               |
+| 2   | Vue Figure et pont `syncFigure` (curseurs cachés réglés par `moveSlider`, repère)              | `feat/atelier-geometrie-figure`   | ✅ #1478               |
+| 3   | 𝒞f dans la vue Géométrie (action de carte), onglet renommé « Géométrie »                       | `feat/atelier-geometrie-courbe-f` | ✅ #1482               |
+| 4   | Grapheur à vrais paramètres (Q4 : sa propre PR, en dernier)                                    | —                                 | ❌ abandonnée (mesure) |
 
 ## PR 1 — journal
 
