@@ -9,6 +9,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import WithAtelier from './harness/WithAtelier.svelte';
+import { menuItemOf, openFunctionMenu } from './harness/function-card';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 
@@ -32,11 +33,14 @@ describe('panneau d’objets', () => {
 	it('montre les objets avec leur nom et leur définition', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		atelier.create({ kind: 'value', name: 'k', definition: '3' });
 		const { container } = await render(WithAtelier, { atelier });
 
 		expect(cardFor(container, 'f')).toBeTruthy();
-		// Rendue en écriture mathématique depuis le lot 2a (`/grapheur` §1 C1)
-		expect(cardFor(container, 'f')?.querySelector('.definition .ML__latex')).toBeTruthy();
+		// Une fonction montre sa définition dans son champ (lot 3 de la refonte)…
+		expect(cardFor(container, 'f')?.querySelector('math-field')).toBeTruthy();
+		// …les autres objets, en écriture mathématique (`/grapheur` §1 C1)
+		expect(cardFor(container, 'k')?.querySelector('.definition .ML__latex')).toBeTruthy();
 	});
 
 	// §3 N1 — la progressivité doit SE VOIR, pas seulement se calculer
@@ -50,17 +54,16 @@ describe('panneau d’objets', () => {
 		expect(actionLabels(container)).not.toContain('Tracer');
 	});
 
-	// §3 N2 — les actions arrivent avec l'objet
-	it('affiche les actions d’une fonction quand on la sélectionne', async () => {
+	// §3 N2 — les actions arrivent avec l'objet (dans son menu, lot 3 de la refonte)
+	it('affiche les actions d’une fonction dans le menu de sa carte', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		const { container } = await render(WithAtelier, { atelier });
 
-		cardFor(container, 'f')?.querySelector('button')?.click();
-		await new Promise((r) => setTimeout(r, 0));
+		const menu = await openFunctionMenu(container, 'f');
 
-		expect(actionLabels(container)).toContain('Tracer');
-		expect(actionLabels(container)).toContain('Dériver');
+		expect(menuItemOf(menu, 'Tracer')).toBeTruthy();
+		expect(menuItemOf(menu, 'Dériver')).toBeTruthy();
 	});
 
 	// §3 L2 — visible ET désactivée, avec la raison lisible au survol
@@ -69,21 +72,16 @@ describe('panneau d’objets', () => {
 		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' });
 		const { container } = await render(WithAtelier, { atelier });
 
-		cardFor(container, 'f')?.querySelector('button')?.click();
-		await new Promise((r) => setTimeout(r, 0));
+		const menu = await openFunctionMenu(container, 'f');
+		const tracer = menuItemOf(menu, 'Tracer');
 
-		const tracer = [...container.querySelectorAll('.action')].find(
-			(b) => b.textContent?.trim() === 'Tracer'
-		) as HTMLButtonElement | undefined;
-
-		// `aria-disabled` et non `disabled` : le bouton reste atteignable au
+		// Indisponible, mais pas `disabled` : l'élément reste atteignable au
 		// clavier, donc sa raison peut être lue.
-		expect(tracer?.getAttribute('aria-disabled')).toBe('true');
+		expect(tracer.hasAttribute('data-indisponible')).toBe(true);
+		expect(tracer.hasAttribute('data-disabled')).toBe(false);
 
-		// Et la raison est ÉCRITE, pas seulement en infobulle : une infobulle ne
-		// se lit ni au clavier, ni au doigt, ni au lecteur d'écran.
-		const raison = container.querySelector(`#${tracer?.getAttribute('aria-describedby')}`);
-		expect(raison?.textContent).toContain('a');
+		// Et la raison est ÉCRITE dans l'élément, pas seulement en infobulle
+		expect(tracer.querySelector('.raison')?.textContent).toContain('a');
 	});
 
 	it('laisse toujours renommer et supprimer, même en erreur', async () => {
@@ -91,12 +89,8 @@ describe('panneau d’objets', () => {
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^^2' });
 		const { container } = await render(WithAtelier, { atelier });
 
-		cardFor(container, 'f')?.querySelector('button')?.click();
-		await new Promise((r) => setTimeout(r, 0));
-
-		const boutons = [...container.querySelectorAll('.action')] as HTMLButtonElement[];
-		const supprimer = boutons.find((b) => b.textContent?.trim() === 'Supprimer');
-		expect(supprimer?.getAttribute('aria-disabled')).toBe('false');
+		const menu = await openFunctionMenu(container, 'f');
+		expect(menuItemOf(menu, 'Supprimer').hasAttribute('data-indisponible')).toBe(false);
 	});
 
 	// §2.1 N3 — « + Fonction » crée un objet nommé, vide, et le sélectionne

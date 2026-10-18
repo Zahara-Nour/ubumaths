@@ -82,6 +82,9 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 		{ id: 'plot', label: 'Tracer' },
 		// Géométrie v2, K1 : 𝒞f dans la vue Géométrie (repère orthonormé)
 		{ id: 'figure', label: 'Afficher dans Géométrie' },
+		// Lot 3 de la refonte : l'image se calcule dans la console, préparée `f(`
+		// (décision de David du 2026-10-18) — plus de petit champ dans la carte
+		{ id: 'image', label: 'Image d’un nombre' },
 		{ id: 'derive', label: 'Dériver' },
 		// Lot 3 de la réciproque (R1) : la carte `f⁻¹`, comme « Dériver » crée `f′`
 		{ id: 'reciprocal', label: 'Réciproque' },
@@ -90,8 +93,6 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 		{ id: 'table', label: 'Tabuler' },
 		{ id: 'solve', label: 'Résoudre f(x) = 0' },
 		{ id: 'variations', label: 'Variations' }
-		// « Image d'un nombre » n'est plus un bouton : c'est un petit champ de la
-		// carte, qui calcule sans envoyer dans Calcul (phase 0 `/grapheur` §3 A4)
 	],
 	sequence: [
 		// « Tracer en nuage / en escalier » ne sont plus des boutons : 👁 trace, et

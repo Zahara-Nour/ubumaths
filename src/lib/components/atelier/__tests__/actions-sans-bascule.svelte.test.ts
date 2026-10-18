@@ -13,6 +13,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { chooseCardAction } from './harness/function-card';
 
 // =============================================================================
 // Décor
@@ -30,7 +31,7 @@ function currentView(container: HTMLElement): string {
 	return container.querySelector('.onglet[aria-current="page"]')?.textContent?.trim() ?? '';
 }
 
-/** `f` dans un atelier ouvert sur la vue Graphe, console FERMÉE, sa carte ouverte. */
+/** `f` dans un atelier ouvert sur la vue Graphe, console FERMÉE. */
 async function onGraph(definition = 'x^2') {
 	const atelier = new Atelier();
 	atelier.create({ kind: 'function', name: 'f', definition }, 'text');
@@ -41,12 +42,19 @@ async function onGraph(definition = 'x^2') {
 		view: 'graphe'
 	});
 	await vi.waitFor(() => expect(currentView(container)).toBe('Graphe'));
-	(cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement).click();
-	await vi.waitFor(() => expect(cardFor(container, 'f').querySelector('.action')).toBeTruthy());
 	return { atelier, container };
 }
 
+/**
+ * Une action de carte : par le menu pour une fonction (lot 3 de la refonte),
+ * par le bouton de la carte ouverte pour les autres objets.
+ */
 async function clickAction(container: HTMLElement, name: string, label: string) {
+	const card = cardFor(container, name);
+	if (card.querySelector(`button[aria-label="Options de ${name}"]`)) {
+		await chooseCardAction(container, name, label);
+		return;
+	}
 	const button = await vi.waitFor(() => {
 		const found = [...cardFor(container, name).querySelectorAll('.action')].find(
 			(b) => b.textContent?.trim() === label
@@ -151,8 +159,6 @@ describe('une action ne change pas de vue', () => {
 			ephemeral: true,
 			view: 'donnees'
 		});
-		(cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement).click();
-
 		await clickAction(container, 'f', 'Tracer');
 
 		await vi.waitFor(() => expect(currentView(container)).toBe('Graphe'));
@@ -179,60 +185,37 @@ describe('dériver une seconde fois', () => {
 });
 
 // =============================================================================
-// A4 : l'image d'un nombre, dans la carte
+// A4 revu (lot 3 de la refonte) : l'image d'un nombre se calcule dans la console
 // =============================================================================
 
 describe('l’image d’un nombre', () => {
-	function imageField(container: HTMLElement): HTMLInputElement {
-		const input = cardFor(container, 'f').querySelector(
-			'input[aria-label="Image par f : valeur de x"]'
-		) as HTMLInputElement | null;
-		if (!input) throw new Error('pas de champ image');
-		return input;
-	}
-
-	it('se calcule dans la carte, et la ligne va aussi dans Calcul', async () => {
-		const { container } = await onGraph('x^2');
-
-		await userEvent.click(imageField(container));
-		await userEvent.keyboard('3{Enter}');
-
-		await vi.waitFor(() =>
-			expect(cardFor(container, 'f').querySelector('.image-resultat')?.textContent).toContain('9')
-		);
-		expect(currentView(container)).toBe('Graphe');
-		expect(hasMarker(container)).toBe(true);
-	});
-
-	it('ne touche pas à ce que l’élève tapait dans Calcul', async () => {
-		const atelier = new Atelier();
-		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
-		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
-		const calc = container.querySelector(
+	function consoleField(container: HTMLElement): HTMLInputElement {
+		return container.querySelector(
 			'input[aria-label="Calcul, définition ou commande"]'
 		) as HTMLInputElement;
-		await userEvent.click(calc);
-		await userEvent.keyboard('2+');
-		(cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement).click();
+	}
 
-		await vi.waitFor(() => expect(imageField(container)).toBeTruthy());
-		await userEvent.click(imageField(container));
-		await userEvent.keyboard('3{Enter}');
+	it('« Image d’un nombre » prépare f( dans la console, et f(3) donne 9', async () => {
+		const { container } = await onGraph('x^2');
+
+		await clickAction(container, 'f', 'Image d’un nombre');
+
+		await vi.waitFor(() => expect(consoleField(container).value).toBe('f('));
+		await vi.waitFor(() => expect(document.activeElement).toBe(consoleField(container)));
+		await userEvent.keyboard('{End}3){Enter}');
 
 		await vi.waitFor(() =>
-			expect(cardFor(container, 'f').querySelector('.image-resultat')?.textContent).toContain('9')
+			expect(container.querySelector('.historique')?.textContent).toContain('9')
 		);
-		expect(calc.value).toBe('2+');
+		expect(currentView(container)).toBe('Graphe');
 	});
 
-	it('n’est plus un bouton qui envoie dans Calcul', async () => {
+	it('la carte n’a plus de petit champ pour l’image', async () => {
 		const { container } = await onGraph();
 
-		const labels = [...cardFor(container, 'f').querySelectorAll('.action')].map((b) =>
-			b.textContent?.trim()
-		);
-
-		expect(labels).not.toContain('Image d’un nombre');
+		expect(
+			cardFor(container, 'f').querySelector('input[aria-label="Image par f : valeur de x"]')
+		).toBeNull();
 	});
 });
 
@@ -241,72 +224,6 @@ describe('l’image d’un nombre', () => {
 // =============================================================================
 
 describe('revue a11y du lot 3b', () => {
-	function imageField(container: HTMLElement): HTMLInputElement {
-		return cardFor(container, 'f').querySelector(
-			'input[aria-label="Image par f : valeur de x"]'
-		) as HTMLInputElement;
-	}
-
-	// Bloquant : sur tablette, le clavier décimal n'a pas de touche Entrée
-	it('l’image se calcule avec un bouton, sans touche Entrée', async () => {
-		const { container } = await onGraph('x^2');
-		await userEvent.click(imageField(container));
-		await userEvent.keyboard('-2');
-
-		(
-			cardFor(container, 'f').querySelector(
-				'button[aria-label="Calculer l’image par f"]'
-			) as HTMLButtonElement
-		).click();
-
-		await vi.waitFor(() =>
-			expect(cardFor(container, 'f').querySelector('.image-resultat')?.textContent).toContain('4')
-		);
-		expect(imageField(container).getAttribute('inputmode')).toBeNull();
-	});
-
-	// Le résultat se lit AVEC son contexte : « f(3) = 9 », pas « 9 »
-	it('le résultat annoncé dit de quoi il est le résultat', async () => {
-		const { container } = await onGraph('x^2');
-		await userEvent.click(imageField(container));
-		await userEvent.keyboard('3{Enter}');
-
-		await vi.waitFor(() => {
-			const status = cardFor(container, 'f').querySelector('[role="status"]');
-			expect(status?.textContent?.replace(/\s+/g, '')).toContain('f(3)=9');
-		});
-	});
-
-	// Un résultat ne doit pas rester à côté d'une autre valeur de x
-	it('le résultat s’efface quand on change x', async () => {
-		const { container } = await onGraph('x^2');
-		await userEvent.click(imageField(container));
-		await userEvent.keyboard('3{Enter}');
-		await vi.waitFor(() =>
-			expect(cardFor(container, 'f').querySelector('.image-resultat')?.textContent).toContain('9')
-		);
-
-		await userEvent.keyboard('{Backspace}5');
-
-		await vi.waitFor(() =>
-			expect(
-				cardFor(container, 'f').querySelector('.image-resultat')?.textContent ?? ''
-			).not.toContain('9')
-		);
-	});
-
-	it('une erreur se dit en toutes lettres, pas seulement en couleur', async () => {
-		const { container } = await onGraph('x^2');
-		await userEvent.click(imageField(container));
-		await userEvent.keyboard('bonjour{Enter}');
-
-		await vi.waitFor(() =>
-			expect(cardFor(container, 'f').querySelector('.image-resultat')?.textContent).toContain(
-				'Erreur'
-			)
-		);
-	});
-
 	// Contraste : le repère porte un NOMBRE lisible, pas seulement un point orange
 	it('le repère du bouton de la console montre le nombre de résultats', async () => {
 		const { container } = await onGraph();
@@ -325,27 +242,6 @@ describe('revue a11y du lot 3b', () => {
 // =============================================================================
 
 describe('revue de code du lot 3b', () => {
-	// C1 : le résultat de l'image ne survit pas à un changement de définition
-	it('le résultat de l’image s’efface quand f change', async () => {
-		const { atelier, container } = await onGraph('x^2');
-		const field = cardFor(container, 'f').querySelector(
-			'input[aria-label="Image par f : valeur de x"]'
-		) as HTMLInputElement;
-		await userEvent.click(field);
-		await userEvent.keyboard('2{Enter}');
-		await vi.waitFor(() =>
-			expect(cardFor(container, 'f').querySelector('.image-resultat')?.textContent).toContain('4')
-		);
-
-		atelier.update('f', 'x^3', 'text');
-
-		await vi.waitFor(() =>
-			expect(
-				cardFor(container, 'f').querySelector('.image-resultat')?.textContent ?? ''
-			).not.toContain('4')
-		);
-	});
-
 	// C3 / A5 : « Nuage » se VOIT dans le Graphe, il n'écrit pas dans Calcul
 	it('« Nuage » n’écrit pas dans Calcul quand il n’a rien à dire', async () => {
 		const atelier = new Atelier();

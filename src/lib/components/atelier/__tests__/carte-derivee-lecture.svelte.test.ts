@@ -31,7 +31,7 @@ async function spokenDerivativeOf(definition: string): Promise<string> {
 	atelier.createDerivative('f');
 	const { container } = await render(WithAtelier, { atelier });
 
-	const definitionEl = cardFor(container, 'f′').querySelector('.definition') as HTMLElement;
+	const definitionEl = cardFor(container, 'f′').querySelector('.formule') as HTMLElement;
 	return (
 		definitionEl.querySelector('.sr-only')?.textContent ?? `(texte) ${definitionEl.textContent}`
 	);
@@ -76,7 +76,7 @@ describe('la carte f′ montre la dérivée rangée, calculée sur l’arbre', (
 		atelier.create({ kind: 'function', name: 'f', definition }, 'text');
 		atelier.createDerivative('f');
 		const { container } = await render(WithAtelier, { atelier });
-		const definitionEl = cardFor(container, 'f′').querySelector('.definition') as HTMLElement;
+		const definitionEl = cardFor(container, 'f′').querySelector('.formule') as HTMLElement;
 		return (
 			definitionEl.querySelector('.sr-only')?.textContent ?? `(texte) ${definitionEl.textContent}`
 		);

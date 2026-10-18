@@ -45,7 +45,7 @@ describe('pas de menu MathLive dans l’atelier', () => {
 		const card = [...container.querySelectorAll('.objet')].find(
 			(el) => el.querySelector('.nom')?.textContent?.trim() === 'f'
 		) as HTMLElement;
-		(card.querySelector('.entete') as HTMLButtonElement).click();
+		// Le champ d'une fonction est sur sa ligne, sans rien ouvrir (lot 3 de la refonte)
 		const field = await vi.waitFor(() => {
 			const found = card.querySelector('math-field') as MathfieldElement;
 			expect(found?.shadowRoot).toBeTruthy();

@@ -7,6 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { menuItemOf, openFunctionMenu } from './harness/function-card';
 
 // =============================================================================
 // Décor
@@ -20,9 +21,20 @@ function cardFor(container: HTMLElement, name: string): HTMLElement | undefined 
 
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
-/** Ouvrir la carte de `name` et cliquer « Supprimer ». */
+/**
+ * « Supprimer » : par le menu d'une carte de fonction (lot 3 de la refonte),
+ * par le bouton de la carte ouverte pour les autres objets.
+ */
 async function clickRemove(container: HTMLElement, name: string) {
-	cardFor(container, name)?.querySelector('button')?.click();
+	const card = cardFor(container, name);
+	if (card?.querySelector(`button[aria-label="Options de ${name}"]`)) {
+		const menu = await openFunctionMenu(container, name);
+		menuItemOf(menu, 'Supprimer').click();
+		await tick();
+		await tick();
+		return;
+	}
+	card?.querySelector('button')?.click();
 	await tick();
 	const boutons = [...container.querySelectorAll('.action')] as HTMLButtonElement[];
 	boutons.find((b) => b.textContent?.trim() === 'Supprimer')?.click();

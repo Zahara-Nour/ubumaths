@@ -2,10 +2,11 @@
  * Le conteneur — l'atelier vu comme un tout.
  */
 
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { chooseCardAction, menuItemOf, openFunctionMenu } from './harness/function-card';
 
 describe('conteneur', () => {
 	it('monte le panneau, les onglets des vues et la console', async () => {
@@ -120,32 +121,15 @@ describe('tout changement est enregistré', () => {
 // =============================================================================
 
 describe('vue Graphe', () => {
-	/** Clique l'action nommée sur l'objet sélectionné. */
-	function clickAction(container: HTMLElement, label: string) {
-		const bouton = [...container.querySelectorAll('.action')].find(
-			(b) => b.textContent?.trim() === label
-		) as HTMLButtonElement | undefined;
-		bouton?.click();
-	}
-
-	function selectCard(container: HTMLElement, name: string) {
-		const carte = [...container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === name
-		);
-		(carte?.querySelector('button') as HTMLButtonElement | undefined)?.click();
-	}
-
 	it('bascule sur le graphe quand on trace', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
 
-		selectCard(container, 'f');
-		await new Promise((r) => setTimeout(r, 0));
-		clickAction(container, 'Tracer');
-		await new Promise((r) => setTimeout(r, 0));
+		// Lot 3 de la refonte : les actions d'une fonction sont dans son menu
+		await chooseCardAction(container, 'f', 'Tracer');
 
-		expect(atelier.get('f')?.plotted).toBe(true);
+		await vi.waitFor(() => expect(atelier.get('f')?.plotted).toBe(true));
 		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Graphe');
 	});
 
@@ -155,11 +139,8 @@ describe('vue Graphe', () => {
 		atelier.setPlotted('f', true);
 		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
 
-		selectCard(container, 'f');
-		await new Promise((r) => setTimeout(r, 0));
-
-		const labels = [...container.querySelectorAll('.action')].map((b) => b.textContent?.trim());
-		expect(labels).toContain('Retirer du graphe');
+		const menu = await openFunctionMenu(container, 'f');
+		expect(menuItemOf(menu, 'Retirer du graphe')).toBeTruthy();
 	});
 
 	// ⚠️ Le grapheur de l'atelier ne range RIEN : sans clé propre, il chargerait

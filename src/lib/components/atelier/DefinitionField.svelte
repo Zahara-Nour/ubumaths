@@ -16,13 +16,31 @@
 	import { definitionFromField, fieldLatexOf } from '$lib/atelier/mathfield';
 	import { internalDefinition, typedLetterOf } from '$lib/atelier/letter';
 	import { intervalWord, ONLY_FUNCTIONS, readInterval, splitInterval } from '$lib/atelier/interval';
+	import { parseDefinition } from '$lib/atelier/parse';
 	import type { AtelierObject } from '$lib/atelier/types';
 
 	interface Props {
 		object: AtelierObject;
+		/**
+		 * Quand la frappe est rangée : 0,3 s après la dernière touche (`typing`),
+		 * ou seulement à Entrée et à la sortie du champ (`validate`, carte d'une
+		 * fonction, lot 3 de la refonte : décision de David du 2026-10-18).
+		 */
+		commit?: 'typing' | 'validate';
+		/** Le préfixe `f(x) =` : la carte d'une fonction l'écrit elle-même, nom compris. */
+		showPrefix?: boolean;
+		/** Prendre le focus au montage : par défaut, une carte neuve (C9). */
+		autofocus?: boolean;
 	}
 
-	let { object }: Props = $props();
+	let {
+		object,
+		commit = 'typing',
+		showPrefix = true,
+		autofocus = object.definition === ''
+	}: Props = $props();
+
+	const uid = $props.id();
 
 	/** Délai après la dernière touche — celui du grapheur (`FunctionInput`). */
 	const TYPING_DELAY_MS = 300;
@@ -139,6 +157,20 @@
 		refusal = internal.ok ? null : internal.message;
 		if (!internal.ok) return;
 		const definition = internal.definition;
+		// À la validation, une saisie illisible ne remplace pas la définition qui
+		// marche : l'erreur se dit sur le champ, Échap revient à l'ancienne (lot 3)
+		if (commit === 'validate') {
+			const unreadable = parseDefinition(
+				object.kind,
+				definition,
+				'keyboard',
+				atelier.functionNames
+			).error;
+			if (unreadable !== undefined) {
+				refusal = unreadable;
+				return;
+			}
+		}
 		// `sur ℝ` ne range rien : sans cette lecture, chaque frappe relançait un update
 		const wanted =
 			written !== null && isWholeLine(written, letter) ? undefined : (written ?? undefined);
@@ -162,8 +194,50 @@
 
 	function handleInput() {
 		dirty = true;
+		if (commit === 'validate') return;
 		if (timer !== null) clearTimeout(timer);
 		timer = setTimeout(flush, TYPING_DELAY_MS);
+	}
+
+	/** Revenir à la définition rangée : la frappe en cours est oubliée. */
+	function restore() {
+		dirty = false;
+		refusal = null;
+		latex = fieldLatexOf(object, atelier.functionNames, letter);
+		if (element) element.value = latex;
+		updateSmartFence();
+	}
+
+	/**
+	 * Échap, en mode `validate` : rétablir. Arrêté ICI quand il y a quelque
+	 * chose à rétablir — sinon il fermerait aussi la console (lot 2) ; sans
+	 * frappe en cours, il continue son chemin.
+	 */
+	/**
+	 * Ranger ce que le champ montre À CET INSTANT. ⚠️ Lu sur l'élément : à une
+	 * frappe rapide suivie d'Entrée, la valeur liée (`latex`) et `dirty`
+	 * peuvent ne pas avoir encore suivi (mesuré dans les tests au vrai clavier).
+	 */
+	function commitNow() {
+		if (element && element.value !== latex) {
+			latex = element.value;
+			dirty = true;
+		}
+		flush();
+	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (commit !== 'validate') return;
+		// Entrée range ; Ctrl+Entrée reste le raccourci de la console (lot 2)
+		if (event.key === 'Enter' && !event.ctrlKey && !event.metaKey) {
+			commitNow();
+			return;
+		}
+		if (event.key !== 'Escape') return;
+		if (!dirty && refusal === null) return;
+		event.preventDefault();
+		event.stopPropagation();
+		restore();
 	}
 
 	// C8 : modifiée ailleurs, la définition est recopiée dans le champ
@@ -206,9 +280,16 @@
 					on(element!, type, updateSmartFence, { capture: true })
 				)
 			: [];
+		// Mode `validate` : Entrée et la sortie du champ rangent (lot 3). Lus sur
+		// la touche et sur `blur` plutôt que sur le `change` de MathLive, qui ne
+		// part pas toujours (champ vide au départ : mesuré)
+		if (element && commit === 'validate') {
+			stops.push(on(element, 'keydown', handleKeydown, { capture: true }));
+			stops.push(on(element, 'blur', commitNow));
+		}
 		const stopWatching = () => stops.forEach((stop) => stop());
 		// C9 : une carte neuve est prête à taper
-		if (object.definition === '') element?.focus();
+		if (autofocus) element?.focus();
 		// ⚠️ Ce qui a été tapé juste avant de fermer la carte n'est pas perdu
 		return () => {
 			stopWatching();
@@ -218,18 +299,22 @@
 </script>
 
 <div class="champ">
-	<span class="prefixe" aria-hidden="true">{prefix}</span>
+	{#if showPrefix}
+		<span class="prefixe" aria-hidden="true">{prefix}</span>
+	{/if}
 	<MathField
 		bind:value={latex}
 		bind:element
 		oninput={handleInput}
 		aria-label={`Définition de ${object.name}`}
+		aria-invalid={refusal !== null}
+		aria-describedby={refusal !== null ? `${uid}-refus` : undefined}
 		virtual-keyboard-mode="manual"
 		class="saisie"
 	/>
 </div>
 {#if refusal}
-	<p class="refus" role="alert">{refusal}</p>
+	<p class="refus" id="{uid}-refus" role="alert">{refusal}</p>
 {/if}
 
 <style>

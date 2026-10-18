@@ -56,9 +56,9 @@ describe('une action du panneau produit quelque chose', () => {
 		expect(d.entries[0].text).toMatch(/5/);
 	});
 
-	// « Image d'un nombre » n'est plus une action du panneau : c'est un champ de
-	// la carte (phase 0 `/grapheur` §3 A4), qui ne touche pas au brouillon
-	it('image calcule depuis la carte sans toucher au brouillon de Calcul', () => {
+	// `image` (le chemin du rejeu des anciens historiques, A4) calcule sans
+	// toucher au brouillon de la console
+	it('image calcule sans toucher au brouillon de la console', () => {
 		const d = desk();
 		d.draft = '2+';
 
@@ -67,7 +67,15 @@ describe('une action du panneau produit quelque chose', () => {
 		expect(result.failed).toBe(false);
 		expect(d.draft).toBe('2+');
 		expect(d.entries).toHaveLength(1);
-		expect(d.runFromPanel('image', 'f')).toBe('unsupported');
+	});
+
+	// Lot 3 de la refonte : « Image d'un nombre » redevient une action du
+	// panneau, qui prépare `f(` dans la console (`image-console.test.ts`)
+	it('« Image d’un nombre » depuis le panneau prépare f( dans la console', () => {
+		const d = desk();
+
+		expect(d.runFromPanel('image', 'f')).toBe('needs-argument');
+		expect(d.draft).toBe('f(');
 	});
 
 	// En attente d'une FONCTION : `a*x`, à paramètre, se dérive depuis Q4

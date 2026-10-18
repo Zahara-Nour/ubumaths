@@ -11,6 +11,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { chooseCardAction } from './harness/function-card';
 
 // =============================================================================
 // Décor
@@ -34,22 +35,15 @@ function currentView(container: HTMLElement): string {
 	return container.querySelector('.onglet[aria-current="page"]')?.textContent?.trim() ?? '';
 }
 
-/** `f` dans un atelier ouvert sur la vue Graphe, sa carte ouverte, puis « Réciproque ». */
+/** `f` dans un atelier ouvert sur la vue Graphe, puis « Réciproque » dans le menu de sa carte. */
 async function clickReciprocal(definition: string) {
 	const atelier = new Atelier();
 	atelier.create({ kind: 'function', name: 'f', definition }, 'text');
 	const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
 	tab(container, 'Graphe').click();
 	await vi.waitFor(() => expect(currentView(container)).toBe('Graphe'));
-	(cardFor(container, 'f')!.querySelector('.entete') as HTMLButtonElement).click();
-	const button = await vi.waitFor(() => {
-		const found = [...cardFor(container, 'f')!.querySelectorAll('.action')].find(
-			(b) => b.textContent?.trim() === 'Réciproque'
-		) as HTMLButtonElement | undefined;
-		expect(found).toBeTruthy();
-		return found!;
-	});
-	button.click();
+	// Lot 3 de la refonte : les actions d'une fonction sont dans le menu de sa carte
+	await chooseCardAction(container, 'f', 'Réciproque');
 	return { atelier, container };
 }
 
@@ -66,7 +60,7 @@ describe('le bouton « Réciproque »', () => {
 		expect(currentView(container)).toBe('Graphe');
 		// La carte dit sa formule en mathématiques, et son ensemble (Q5)
 		const card = cardFor(container, 'f⁻¹')!;
-		expect(card.querySelector('.definition .ML__latex, .definition [aria-hidden]')).toBeTruthy();
+		expect(card.querySelector('.formule .ML__latex, .formule [aria-hidden]')).toBeTruthy();
 		expect(card.querySelector('.intervalle')?.textContent).toBe('sur [0 ; +∞[');
 	});
 
