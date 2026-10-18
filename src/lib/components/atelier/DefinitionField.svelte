@@ -209,11 +209,6 @@
 	}
 
 	/**
-	 * Échap, en mode `validate` : rétablir. Arrêté ICI quand il y a quelque
-	 * chose à rétablir — sinon il fermerait aussi la console (lot 2) ; sans
-	 * frappe en cours, il continue son chemin.
-	 */
-	/**
 	 * Ranger ce que le champ montre À CET INSTANT. ⚠️ Lu sur l'élément : à une
 	 * frappe rapide suivie d'Entrée, la valeur liée (`latex`) et `dirty`
 	 * peuvent ne pas avoir encore suivi (mesuré dans les tests au vrai clavier).
@@ -226,6 +221,13 @@
 		flush();
 	}
 
+	/**
+	 * Entrée range ; Échap, en mode `validate`, rétablit. Échap est TOUJOURS
+	 * pris au champ (`preventDefault`) : sinon MathLive passe en saisie LaTeX
+	 * (revue de #1488). Il n'est arrêté (`stopPropagation`) que quand il y a
+	 * quelque chose à rétablir — sinon il fermerait aussi la console (lot 2) ;
+	 * sans frappe en cours, il continue son chemin.
+	 */
 	function handleKeydown(event: KeyboardEvent) {
 		if (commit !== 'validate') return;
 		// Entrée range ; Ctrl+Entrée reste le raccourci de la console (lot 2)
@@ -234,8 +236,8 @@
 			return;
 		}
 		if (event.key !== 'Escape') return;
-		if (!dirty && refusal === null) return;
 		event.preventDefault();
+		if (!dirty && refusal === null) return;
 		event.stopPropagation();
 		restore();
 	}
@@ -290,10 +292,11 @@
 		const stopWatching = () => stops.forEach((stop) => stop());
 		// C9 : une carte neuve est prête à taper
 		if (autofocus) element?.focus();
-		// ⚠️ Ce qui a été tapé juste avant de fermer la carte n'est pas perdu
+		// ⚠️ Ce qui a été tapé juste avant de fermer la carte n'est pas perdu : lu
+		// sur l'élément, comme à Entrée — la valeur liée peut avoir une frappe de retard
 		return () => {
 			stopWatching();
-			flush();
+			commitNow();
 		};
 	});
 </script>

@@ -84,7 +84,8 @@ describe('« Sur le graphique »', () => {
 		expect(cardFor(container, 'f').querySelector('.reglages')).toBeNull();
 		// Le menu dit pourquoi tangente et aire ne s'allument pas encore
 		const menu = await openFunctionMenu(container, 'f');
-		expect(menuItemOf(menu, 'Tangente').hasAttribute('data-disabled')).toBe(true);
+		// Indisponible mais atteignable au clavier (revue de #1488)
+		expect(menuItemOf(menu, 'Tangente').getAttribute('aria-disabled')).toBe('true');
 		expect(menu.textContent).toContain('Trace d’abord la courbe');
 	});
 
