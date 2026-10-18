@@ -91,6 +91,12 @@
 			? `display: grid; grid-template-columns: repeat(${columns}, minmax(0, 1fr)); column-gap: 1.5rem; row-gap: 1.5rem;`
 			: undefined
 	);
+	// Départ d'une liste numérotée (« 3. ») : le compteur CSS du schéma ignore
+	// l'attribut `start`, il reçoit le départ par `--list-start` (list-numbering.css)
+	const orderedStyle = $derived(
+		[gridStyle, start > 1 ? `--list-start: ${start - 1};` : undefined].filter(Boolean).join(' ') ||
+			undefined
+	);
 	const itemClass = $derived(isGrid ? 'text-foreground' : 'mt-6 text-foreground first:mt-0');
 
 	// Compute depth for this list (only ordered lists increment depth)
@@ -298,7 +304,7 @@
 	<ol
 		class="{listClasses} my-1 text-foreground {className}"
 		start={start > 1 ? start : undefined}
-		style={gridStyle}
+		style={orderedStyle}
 	>
 		{#each items as item, itemIndex (itemIndex)}
 			{@const processedChildren = removeBlockBoundaryHardbreaks(item.children)}
