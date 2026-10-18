@@ -59,7 +59,7 @@ loi des grands nombres, intervalles de fluctuation « asymptotiques ».
   fiches ensemble), en texte brut (pas de `[`, pas de LaTeX).
 - Fiche technique : variation unique `guided` par exercice. Fiche d'applications : `guided`, plus
   `autonomous` là où le plan le demande (mêmes données, 2-3 questions ouvertes, corrigé complet mais direct).
-- Listes : `1.` seul sur sa ligne puis `   a. …` ; affichage a) 1) i) ; renvois « question b) 2) »
+- Listes : `1.` seul sur sa ligne puis `   a. …` ; affichage 1) a) i) (depuis le 2026-10-18) ; renvois « question 2) b) »
   cohérents avec l'affichage — RELIRE chaque renvoi.
 - JAMAIS de `$$…$$` dans une sous-liste si le modèle ne le fait pas ; `align*` au-delà de ~35
   caractères ou 2 « = » ; jamais `\quad`.

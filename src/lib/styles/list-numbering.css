@@ -6,8 +6,8 @@
  * Each scheme uses CSS counters with ::before pseudo-elements.
  *
  * Schemes:
- * - 1-a-i: 1) a) i) (French academic style)
- * - a-1-i: a) 1) i) (default for nested lists, same as the PDF)
+ * - 1-a-i: 1) a) i) (French academic style, default for all lists, same as the PDF)
+ * - a-1-i: a) 1) i) (letters first)
  * - a-i: a) i) (flat exercises)
  * - 1.a.i: 1. a. i. (dot separator)
  * - I.A.1: I. A. 1. (Roman numerals first)
@@ -90,7 +90,7 @@ ol[class*='scheme-'] > li::before {
 
 /* ============================================================================
    SCHEME: a) 1) i) (a-1-i)
-   Letters first, then numbers: default for nested lists, same as the PDF
+   Letters first, then numbers
    ============================================================================ */
 
 /* Depth 1: a) b) c) */
