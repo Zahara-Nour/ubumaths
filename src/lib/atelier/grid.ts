@@ -41,6 +41,10 @@ export const MAX_CELL_LENGTH = 200;
 /** Le titre d'une colonne (T4) : un libellé, pas une phrase. */
 export const MAX_TITLE_LENGTH = 40;
 
+/** Un fichier CSV ouvert : 1 Mo au plus (la grille pleine en tient bien moins), refusé avant lecture. */
+export const MAX_CSV_BYTES = 1_000_000;
+export const CSV_TOO_BIG = 'Ce fichier est trop gros pour la grille (1 Mo au plus).';
+
 /**
  * Le « ; » d'une FORMULE (`=max(1 ; A1)`) tel qu'il est rangé dans la
  * définition d'une liste, dont « ; » sépare les entrées : sans lui, la formule
@@ -189,6 +193,68 @@ export function readTable(text: string): string[][] {
 	while (rows.length > 0 && blank(rows[0])) rows.shift();
 	while (rows.length > 0 && blank(rows[rows.length - 1])) rows.pop();
 	return rows.map((cells) => cells.map((cell) => (separator === null ? cell : cell.trim())));
+}
+
+/**
+ * Un fichier CSV ouvert dans la grille (repris de V4, phase 0 §3) : décodé
+ * (UTF-8, sinon Windows-1252, celui d'Excel sous Windows), coupé en lignes et en
+ * cases. Le fichier reste dans le navigateur. Le tableau se pose ensuite comme
+ * un collage (`pasteTable`, Q-RE-4).
+ */
+export function readCsvFile(
+	bytes: Uint8Array
+): { ok: true; table: string[][] } | { ok: false; message: string } {
+	if (bytes.length > MAX_CSV_BYTES) {
+		return { ok: false, message: CSV_TOO_BIG };
+	}
+	const text = decodedText(bytes);
+	// Un octet nul : une image, un classeur .xlsx, pas un texte
+	if (text.includes('\0')) {
+		return {
+			ok: false,
+			message: 'Ce fichier n’est pas un tableau CSV : enregistre ton tableau au format CSV.'
+		};
+	}
+	const lines = text.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+	if (lines.trim() === '') return { ok: false, message: 'Ce fichier est vide.' };
+	const separator = csvSeparator(lines);
+	const rows = splitTable(lines, separator, true) ?? splitTable(lines, separator, false)!;
+	const blank = (row: string[]) => row.every((cell) => cell.trim() === '');
+	while (rows.length > 0 && blank(rows[0])) rows.shift();
+	while (rows.length > 0 && blank(rows[rows.length - 1])) rows.pop();
+	return { ok: true, table: rows.map((cells) => cells.map(importedText)) };
+}
+
+/** UTF-8 s'il en est, sinon Windows-1252 (Excel sous Windows) : `é` reste `é`. */
+function decodedText(bytes: Uint8Array): string {
+	try {
+		return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+	} catch {
+		return new TextDecoder('windows-1252').decode(bytes);
+	}
+}
+
+/**
+ * Le séparateur d'un fichier : la tabulation, sinon `;` (Excel et LibreOffice
+ * en français, et le téléchargement de l'atelier). La virgule seulement quand
+ * elle ne peut pas être décimale (Q-RE-5) : une ligne à virgule qui n'est pas
+ * un nombre à la française (`1.52,45.5`, `Alice,12`) ; `1,5` reste 1,5.
+ */
+function csvSeparator(lines: string): string | null {
+	if (lines.includes('\t')) return '\t';
+	if (lines.includes(';')) return ';';
+	const withComma = lines.split('\n').filter((line) => line.includes(','));
+	return withComma.some((line) => readListValue(line.trim()) === null) ? ',' : null;
+}
+
+/**
+ * Une case lue d'un fichier : sans espaces autour ; l'apostrophe que pose notre
+ * téléchargement devant `-`, `+` ou `@` (`exportText`) est retirée. Devant `=`,
+ * elle reste : la case serait lue comme une formule.
+ */
+function importedText(cell: string): string {
+	const text = cell.trim();
+	return /^'[+\-@]/.test(text) ? text.slice(1) : text;
 }
 
 /** Découper en lignes et en cases ; `null` si un guillemet ouvert n'est jamais fermé. */

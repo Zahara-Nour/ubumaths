@@ -20,9 +20,13 @@
 		cellName,
 		columnLetter,
 		csvText,
+		CSV_TOO_BIG,
 		GRID_COLUMNS,
 		GRID_ROWS,
+		hasTitleRow,
+		MAX_CSV_BYTES,
 		MAX_TITLE_LENGTH,
+		readCsvFile,
 		readTable,
 		tableText
 	} from '$lib/atelier/grid';
@@ -773,6 +777,53 @@
 		backToCell();
 	}
 
+	/** Le champ de fichier, caché : « Ouvrir un CSV… » le déclenche. */
+	let csvInput: HTMLInputElement | undefined = $state();
+
+	/**
+	 * « Ouvrir un CSV… » (phase 0 §3, Q-RE-4) : le fichier, lu dans le navigateur
+	 * (rien n'est envoyé), se pose comme un collage à partir de la case choisie —
+	 * tout ou rien, titres devinés, un geste que Ctrl+Z défait.
+	 */
+	async function openCsv(event: Event & { currentTarget: HTMLInputElement }) {
+		const input = event.currentTarget;
+		const file = input.files?.[0];
+		// Vidé : rouvrir le même fichier redonne un `change`
+		input.value = '';
+		if (file === undefined) return;
+		// La taille d'abord : un fichier énorme n'est jamais lu en mémoire
+		if (file.size > MAX_CSV_BYTES) {
+			refusal = CSV_TOO_BIG;
+			return;
+		}
+		const read = readCsvFile(new Uint8Array(await file.arrayBuffer()));
+		if (!read.ok) {
+			refusal = read.message;
+			return;
+		}
+		editing = null;
+		draft = '';
+		const at = cellName(zone.left, zone.top);
+		const pasted = atelier.pasteTable(zone.left, zone.top, read.table);
+		if (!pasted.ok) {
+			refusal = pasted.message;
+			return;
+		}
+		refusal = '';
+		toaster.success(openedMessage(read.table, at));
+		focusSelected();
+	}
+
+	/** « 12 lignes et 3 colonnes posées à partir de A1. » */
+	function openedMessage(table: readonly (readonly string[])[], at: string): string {
+		const titled = hasTitleRow(table);
+		const rowCount = table.length - (titled ? 1 : 0);
+		const columnCount = Math.max(...table.map((line) => line.length));
+		const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
+		const titles = titled ? ', avec leurs titres,' : '';
+		return `${plural(rowCount, 'ligne')} et ${plural(columnCount, 'colonne')}${titles} posées à partir de ${at}.`;
+	}
+
 	/** Les cellules de la zone utilisée, et la ligne des titres s'il y en a un. */
 	function downloadCsv() {
 		const columnsUsed = Array.from({ length: extent.columns }, (_, i) => i);
@@ -1282,6 +1333,21 @@
 			title={empty ? EMPTY_GRID : ''}
 			onclick={downloadCsv}>Télécharger en CSV</button
 		>
+		<button
+			type="button"
+			class="telecharger"
+			title="Poser un fichier CSV à partir de la case {cellName(zone.left, zone.top)}"
+			onclick={() => csvInput?.click()}>Ouvrir un CSV…</button
+		>
+		<input
+			bind:this={csvInput}
+			type="file"
+			accept=".csv,.txt,text/csv,text/plain"
+			class="fichier-csv"
+			tabindex="-1"
+			aria-hidden="true"
+			onchange={openCsv}
+		/>
 	</div>
 
 	<p class="aide">
@@ -1664,6 +1730,10 @@
 		color: var(--color-foreground);
 		font-size: 0.8125rem;
 		cursor: pointer;
+	}
+
+	.fichier-csv {
+		display: none;
 	}
 
 	.telecharger:disabled {
