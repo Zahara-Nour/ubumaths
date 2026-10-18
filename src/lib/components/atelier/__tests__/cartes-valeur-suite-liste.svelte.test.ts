@@ -169,7 +169,7 @@ describe('carte d’une valeur — le curseur', () => {
 			const a = atelier.get('a');
 			expect(a && isValue(a) && a.sliderShown).toBe(true);
 		});
-		first.unmount();
+		await first.unmount();
 
 		const fresh = new Atelier();
 		fresh.restore(atelier.serialize());
