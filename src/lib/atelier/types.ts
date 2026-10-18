@@ -131,6 +131,11 @@ export interface CurveDisplay {
 	readonly showOsculating: boolean;
 	/** Longueur de la courbe, sur les bornes de l'aire. */
 	readonly showArcLength: boolean;
+	/**
+	 * Lecture graphique de l'image : les calculs `f(a)` de la console et un
+	 * point glissant se lisent en pointillés (lot 3 bis de la refonte).
+	 */
+	readonly showReading: boolean;
 }
 
 export interface FunctionObject extends AtelierObjectBase {

@@ -39,7 +39,8 @@ export const curveDisplaySchema = z.object({
 	tangentAt: finite.nullable(),
 	integral: z.object({ from: finite, to: finite }).nullable(),
 	showOsculating: z.boolean(),
-	showArcLength: z.boolean()
+	showArcLength: z.boolean(),
+	showReading: z.boolean()
 });
 
 /** Ce qu'une modification peut changer : n'importe quel sous-ensemble. */
@@ -66,7 +67,8 @@ const DEFAULTS: Omit<CurveDisplay, 'color' | 'lineStyle'> = {
 	tangentAt: null,
 	integral: null,
 	showOsculating: false,
-	showArcLength: false
+	showArcLength: false,
+	showReading: false
 };
 
 // =============================================================================
@@ -142,7 +144,8 @@ export function plainDisplay(display: CurveDisplay): CurveDisplay {
 		integral:
 			display.integral === null ? null : { from: display.integral.from, to: display.integral.to },
 		showOsculating: display.showOsculating,
-		showArcLength: display.showArcLength
+		showArcLength: display.showArcLength,
+		showReading: display.showReading
 	};
 }
 

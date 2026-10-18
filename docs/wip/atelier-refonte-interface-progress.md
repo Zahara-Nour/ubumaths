@@ -67,6 +67,22 @@ Choix faits en codant (à signaler à David) :
 - « Image d'un nombre » remplace le brouillon de la console par `f(` (comme « Simuler » ou « Tableau croisé ») : le test « ne touche pas à ce que l'élève tapait dans Calcul » est retiré.
 - Une action indisponible du menu n'est pas `aria-disabled` (bits-ui le pose lui-même d'après `disabled`) : sa raison est dans le nom de l'élément, le choisir ne fait rien.
 
+## Lot 3 bis — lecture graphique de l'image
+
+Branche `feat/atelier-lecture-graphique` (choix c de David + réglages recommandés, 2026-10-18).
+
+- [x] Réglage de courbe `showReading` (`display.ts`, compact, ancien état relu sans lui : pas de nouvelle `ATELIER_STATE_VERSION`) ; « Lecture graphique » dans le menu Affichage de `FunctionCard` (indisponible courbe non tracée).
+- [x] Console : `reading.ts` (`readingCallOf` par le parseur de l'atelier, `consoleReadings` : 3 dernières par courbe, 100 dernières lignes relues) ; `syncPlots(atelier, graph, readings)` pose `reading` sur la courbe ; l'effet d'`AtelierContainer` suit aussi `desk.entries`.
+- [x] Grapheur : `ExplicitFunction.reading` (jamais sauvegardé) + clé dans `updateFunction` ; `image-reading.ts` (pur) ; couches `ImageReadings` (SVG) et `ReadingSliders` (curseur ARIA HTML hors de `role="img"`, cadre `.graph-frame` dans `GraphSVG`).
+- [x] Tests : `lecture-graphique.test.ts` (8), `lecture-graphique-reglage.test.ts` (10, 6 rouges d'abord), `image-reading.test.ts` (15), `grapheur/…/lecture-graphique.svelte.test.ts` (5), `atelier/…/lecture-graphique.svelte.test.ts` (5 ; sans le branchement console, 2 rouges — mesuré).
+
+Choix faits en codant (à signaler à David) :
+
+- Le point glissant n'est pas rangé : rechargé, il revient au milieu de la fenêtre (comme le zoom). Tant qu'il n'a pas été déplacé, il suit le milieu de la fenêtre.
+- Plusieurs courbes lues : un point glissant chacune, posés au même endroit au départ.
+- `aria-label` fixe (« Lecture graphique de f »), la phrase « Lecture de f en x = 2 : f(2) = 4 » en `aria-valuetext` (lue à chaque flèche) et annoncée au relâchement d'un glissé.
+- `pi` tapé en lettres dans la console n'est pas relu comme π par la lecture (le parseur en mode texte y voit `p·i`) : `f(π)` se lit, `f(pi)` non.
+
 ## Lots suivants
 
 Lot 4 (autres objets), lot 5 (annuler / rétablir) : pas commencés.

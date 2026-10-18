@@ -130,8 +130,9 @@ Même grammaire pour tous : une ligne `● nom = [définition éditable]`, puis 
 - **Lecture graphique de l'image : option d'Affichage, en deux modes (choix c)** :
   - (a) chaque `f(a)` calculé dans la console dessine sa lecture en pointillés : de `a` sur l'axe des abscisses au point de la courbe, puis du point à `f(a)` sur l'axe des ordonnées, valeurs écrites aux extrémités ;
   - (b) un point qu'on fait glisser sur l'axe des abscisses, avec une lecture qui suit en direct (souris, toucher, clavier).
-  - Détails proposés, **à valider** : les 3 dernières lectures de la console restent affichées ; valeurs écrites comme dans la console (exactes si courtes, sinon arrondies au centième) ; un `a` hors de l'ensemble de définition ne dessine rien et la console le dit déjà ; le point glissant s'aimante aux entiers et aux demis ; au clavier, flèches ← → par pas de la grille.
+  - Détails (recommandations de Claude, **validées par David le 2026-10-18 : « je suis tes recos »**) : réglage par courbe dans le menu Affichage ; les 3 dernières lectures de la console restent affichées ; valeurs écrites comme dans la console (exactes si courtes, sinon arrondies au centième) ; un `a` hors de l'ensemble de définition ne dessine rien et la console le dit déjà ; le point glissant s'aimante aux entiers et aux demis ; au clavier, flèches ← → par pas de la grille.
   - Plus tard : la lecture d'un antécédent (de `k` sur l'axe des ordonnées vers la courbe).
+- **Croiser / simuler** (actions des listes qui préparent une commande dans la console) : ajoutent leur texte à la suite du brouillon de l'élève au lieu de l'écraser (recommandation de Claude validée par David le 2026-10-18).
 
 ## Lot 5 — Annuler / Rétablir (chantier à part)
 

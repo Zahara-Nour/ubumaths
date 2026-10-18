@@ -100,6 +100,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/construction-spec.ts` | Typage d'une construction lue : point, droite ou nombre attendu ; refus du mauvais type (L8)             |
 | `src/lib/atelier/construction.ts`      | Calcul EXACT d'une construction (fonctions pures de `geometry-core`), équations, longueur, carte         |
 | `src/lib/atelier/display.ts`           | Schémas Zod des réglages de courbe et de suite (carte, sauvegarde, lien : une seule règle)               |
+| `src/lib/atelier/reading.ts`           | Lecture graphique : les `f(a)` de la console qui se lisent sur le graphe (`consoleReadings`)             |
 | `src/lib/atelier/mathfield.ts`         | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                 |
 | `src/lib/atelier/paste.ts`             | Collage réécrit en LaTeX, annulable (`insertPasted`)                                                     |
 
@@ -1091,7 +1092,11 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
   remet pas la vue à zéro (revue de #1485).
 - **A3** : le bouton porte le nombre de lignes arrivées pendant que la console était fermée ;
   l'annonce dit « Nouvelle ligne dans la console ». Une commande préparée par une carte
-  (`needs-argument` : « Simuler », « Tableau croisé ») OUVRE la console.
+  (`needs-argument` : « Simuler », « Tableau croisé ») OUVRE la console. Elle s'AJOUTE au
+  brouillon de l'élève, jamais à sa place (`#prepare`, décision de David du 2026-10-18), et le
+  curseur se place en fin de ligne (`focusInput`), en texte comme en écriture mathématique. Limite
+  connue : un brouillon mathématique suivi d'une commande ne se compose pas en une seule écriture
+  (rien n'est perdu).
 - **A5** : une action qui montre quelque chose ailleurs (Tracer, nuage, diagramme, Tabuler,
   Afficher dans Géométrie) change de vue ; sous 640 px, elle referme la console (`revealView`).
 - **Lisibilité** : invite `>` devant l'instruction (en couleur normale), réponse préfixée `-->`
@@ -1120,8 +1125,8 @@ les autres objets gardent leur vue repliée / développée (lot 4).
 - **Le point de couleur** (`CurveStylePopover.svelte`) ouvre couleur, épaisseur et style du
   trait (`setDisplay`) ; une fonction jamais tracée propose « Tracer f ».
 - **Le menu** (`DropdownMenu`) : **Affichage** — « Tangente », « Aire sous la courbe »
-  (`curve-toggles.ts`, la même règle que les cases de `CurveSettings`), indisponibles tant que
-  la courbe n'est pas tracée ; **Actions** — `actionsFor`, une raison d'indisponibilité écrite
+  (`curve-toggles.ts`, la même règle que les cases de `CurveSettings`), « Lecture graphique »
+  (lot 3 bis, ci-dessous), indisponibles tant que la courbe n'est pas tracée ; **Actions** — `actionsFor`, une raison d'indisponibilité écrite
   dans l'élément (jamais `disabled` : il reste atteignable au clavier ; marqueur
   `data-indisponible`). Ce qui se LIT (point de tangence, bornes, aire, longueur) reste sous la
   ligne, seulement allumé (`CurveSettings compact`).
@@ -1134,6 +1139,18 @@ les autres objets gardent leur vue repliée / développée (lot 4).
   lien à côté du nom dit « dérivée de f — elle suit f » (infobulle, et note dépliée au toucher).
 - `selected` (panneau) ne sert plus, pour une fonction, qu'à la mettre en évidence et à donner
   le focus au champ d'une carte neuve.
+- **La lecture graphique de l'image** (lot 3 bis, choix de David du 2026-10-18) : réglage de
+  la courbe `showReading` (rangé compact, absent quand éteint ; un état d'avant se relit sans
+  lui, pas de nouvelle `ATELIER_STATE_VERSION`). Allumée, deux sources de pointillés :
+  - **la console** : chaque ligne réussie qui est un appel NU d'une fonction sur un nombre
+    (`f(2)`, `f(-1/2)`, `f(√2)`, `f'(2)` sur la carte de `f′` ; pas `f(2)+1` ni `f(a)`) — relue
+    par le parseur de l'atelier (`readingCallOf`, jamais une expression régulière). Les **3
+    dernières** par courbe (`MAX_READINGS`), une abscisse relue ne comptant qu'une fois ; seules
+    les 100 dernières lignes sont relues. Elles suivent la définition courante de `f` ;
+  - **le point glissant** : un par courbe lue, posé au milieu de la fenêtre puis là où l'élève
+    le laisse (non rangé : rechargé, il revient au milieu). Aimanté aux entiers et aux demis au
+    glissé ; ← → par pas de la sous-grille, Page ↑ / ↓ par pas de la grille.
+    Le dessin vit dans le grapheur (voir [grapheur.md](grapheur.md#lecture-graphique-de-limage)).
 
 ### Vues
 
@@ -1151,7 +1168,10 @@ Trois ponts à **sens unique**, tous idempotents (une empreinte évite de refair
   seuls f, g, h, u, v, w l'étaient) : le moteur passe son état à chaque lecture ;
 - `syncPlots` (`plot-sync.ts`) : l'atelier détient l'état, le grapheur le reflète. Rien de ce qui
   se passe dans le grapheur ne remonte. ⚠️ L'effet qui l'appelle lit et écrit le store : s'il
-  cessait d'être idempotent, il bouclerait.
+  cessait d'être idempotent, il bouclerait. Il reçoit aussi les abscisses lues dans la console
+  (`consoleReadings(desk.entries, …)`), posées sur la courbe en `reading` quand `showReading` est
+  allumé ; l'effet suit donc aussi les lignes de la console. Appelé sans elles (nuage depuis le
+  pupitre), il garde celles déjà posées.
 - `syncFigure` (`figure-sync.ts`, géométrie v2, PR 2) : l'atelier → une `Figure` de
   `geometry-core`, tenue par `AtelierFigure` (une projection : `FigureView` la crée, un
   `$effect` la resynchronise à chaque `revision`, comme `syncPlots`). Par l'**API `Figure.create*`**, pas par le DSL :

@@ -35,6 +35,7 @@
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
 	import { provideGrapheurStore } from '$lib/stores/grapheur-context';
 	import { syncPlots } from '$lib/atelier/plot-sync';
+	import { consoleReadings } from '$lib/atelier/reading';
 	import { ATELIER_STATE_VERSION } from '$lib/atelier/persistence';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -414,9 +415,13 @@
 	// parce que `syncPlots` est **idempotent** — la seconde passe ne réécrit
 	// rien. Toute modification qui rendrait `syncPlots` inconditionnel donnerait
 	// un `effect_update_depth_exceeded`.
+	//
+	// Les calculs `f(a)` de la console vont avec : la lecture graphique de
+	// l'image les dessine (lot 3 bis de la refonte) — l'effet suit donc aussi
+	// les lignes de la console.
 	$effect(() => {
 		void atelier.revision;
-		syncPlots(atelier, graph);
+		syncPlots(atelier, graph, consoleReadings(desk.entries, atelier.functionNames));
 	});
 
 	/** Un navigateur peut refuser `localStorage` — ce n'est pas une erreur (§5 E1). */

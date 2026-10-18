@@ -15,7 +15,7 @@
 	 * est en texte ou en écriture mathématique, au choix de l'élève dans les
 	 * réglages (`docs/wip/atelier-reglages-phase0.md`).
 	 */
-	import { convertLatexToMarkup } from 'mathlive';
+	import { convertLatexToMarkup, type MathfieldElement } from 'mathlive';
 	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';
 	import {
 		commandBeingWritten,
@@ -76,8 +76,17 @@
 
 	/** Le focus dans le champ, à l'ouverture de la console (lot 2). */
 	export function focusInput() {
-		if (field !== null) field.focus();
-		else root?.querySelector<HTMLElement>('math-field')?.focus();
+		// Le curseur en fin de ligne : une commande préparée s'ajoute au brouillon,
+		// l'élève reprend là où elle finit
+		if (field !== null) {
+			field.focus();
+			field.setSelectionRange(field.value.length, field.value.length);
+			return;
+		}
+		const mathField = root?.querySelector<MathfieldElement>('math-field');
+		if (!mathField) return;
+		mathField.focus();
+		mathField.position = mathField.lastOffset;
 	}
 
 	/** Une commande en texte (`.dériver f`) : en chasse fixe, à la différence des maths. */
