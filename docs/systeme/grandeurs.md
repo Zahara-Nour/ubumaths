@@ -49,16 +49,16 @@ Règles de la lecture naturelle (décisions de David du 2026-10-11) :
 - un nom du panneau suivi d'une espace reste lu comme unité (`5 m` avec une valeur `m` = 5 mètres),
   avec une note : « m est aussi un nom du panneau : pour 5 × m, écris 5m. » ;
 - l'unité porte sur la fraction de nombres qui la précède : `1/2 m` = (1/2) m ;
-- au-delà d'un nombre, l'unité porte sur **tout le terme** qui la précède quand il vaut un nombre
-  (décision de David du 2026-10-18) : `10^3 m` = 1000 m, `2,5*10^3 m`, `3*10^8 m/s`, `(1+2) m`,
-  `sqrt(2) m`, `2π m`, `10/2^3 m` = (10/2³) m, `2^10 o` = 1024 o. Le terme s'arrête à un `+`, un
-  `-` (pas celui d'un exposant : `10^-3 m`), un `=`, un `;`, une parenthèse ouvrante, ou une espace
-  sans opérateur à côté. Une valeur du panneau compte comme un nombre (`2πr m` avec `r = 3` →
-  6π m) ; une lettre libre reste de l'algèbre (`x m`, `x^2 m`), et `x[m]` reste la seule façon
-  d'imposer l'unité. Une unité qui est un nom du panneau reste ce nom (`s t` avec deux valeurs `s`
-  et `t` : un produit). Lecteur : `quantitiesAfterTerms` ; le champ de la carte ne l'applique pas
-  (`afterTerms: false`), il a ses propres lectures. Une ligne avec `π` est lue en LaTeX : ses
-  crochets d'unité y sont écrits `\unit{m}` (`latexUnitsWithPi`, `atelier/parse.ts`) ;
+- au-delà d'un nombre, l'unité porte sur **tout le terme de nombres** qui la précède (décision de
+  David du 2026-10-18) : `10^3 m` = 1000 m, `2,5*10^3 m`, `3*10^8 m/s`, `(1+2) m`, `sqrt(2) m`,
+  `2π m`, `10/2^3 m` = (10/2³) m, `2^10 o` = 1024 o. Le terme s'arrête à un `+`, un `-` (pas celui
+  d'un exposant : `10^-3 m`), un `=`, un `;`, une parenthèse ouvrante, ou une espace sans opérateur
+  à côté. **Des nombres seulement** — « l'utilisation des unités est censée se faire uniquement avec
+  des grandeurs numériques » (David) : une lettre, même une valeur du panneau, reste de l'algèbre
+  (`x m`, `2πr m`, et surtout `m g` avec `m = 70`, qui ne doit pas répondre 70 grammes) ;
+  `2πr[m]` impose l'unité. Lecteur : `quantitiesAfterTerms` ; le champ de la carte ne l'applique
+  pas (`afterTerms: false`), il a ses propres lectures. Une ligne avec `π` lue en LaTeX refuse les
+  crochets : Calcul la relit, en repli, avec `\unit{m}` (`latexUnitsWithPi`, `atelier/parse.ts`) ;
 - deux grandeurs juxtaposées s'ajoutent : `2 h 30 min` = 2 h + 30 min ;
 - `5km` collé reste un produit, avec une note « Pour une grandeur, écris 5 km (avec une espace). »
   (sauf si toutes ses lettres sont des valeurs du panneau : produit voulu) ;

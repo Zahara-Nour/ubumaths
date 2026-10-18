@@ -11,9 +11,10 @@
  *   `(1/2)[m]` (décision de David) — pas `x/2 m`, qui reste de l'algèbre ;
  * - au-delà d'un nombre, l'unité porte sur TOUT le terme qui la précède
  *   (décision de David du 2026-10-18) : `10^3 m` → `(10^3)[m]`, `(1+2) m`,
- *   `sqrt(2) m`, `2π m` ; une valeur du panneau compte comme un nombre
- *   (`2πr m`), une lettre libre reste de l'algèbre (`x m`, `x^2 m`), et une
- *   unité qui est un nom du panneau reste ce nom (`s t`) ;
+ *   `sqrt(2) m`, `2π m`. Des NOMBRES seulement (décision de David du même
+ *   jour : une unité ne s'emploie qu'avec une grandeur numérique) : une lettre,
+ *   même une valeur du panneau, reste de l'algèbre (`x m`, `m g`, `2πr m`) ;
+ *   `2πr[m]` impose l'unité ;
  * - deux grandeurs collées s'ajoutent : `2 h 30 min` → `2[h]+30[min]` ;
  * - une unité suivie d'une lettre (`3 a b`) ou d'une parenthèse (`2 h(3)`) reste
  *   de l'algèbre.
@@ -146,7 +147,9 @@ export function readNaturalQuantities(
 		}
 	);
 
-	const extended = afterTerms ? quantitiesAfterTerms(spaced, objectNames, singleLetters) : spaced;
+	const extended = afterTerms
+		? quantitiesAfterTerms(spaced, objectNames, notes, singleLetters)
+		: spaced;
 
 	const glued = new Set<string>();
 	for (const [, number, letters] of extended.matchAll(GLUED_QUANTITY)) {
@@ -166,12 +169,12 @@ export function readNaturalQuantities(
 /**
  * Chaque unité écrite après une espace derrière un terme numérique : `10^3 m`
  * → `(10^3)[m]`. Après la lecture des nombres (`spaced`) : ce qu'elle a déjà
- * mis entre crochets n'est plus lu ici. Une unité qui est un nom du panneau
- * reste ce nom (`s t`, deux valeurs : un produit, pas des tonnes).
+ * mis entre crochets n'est plus lu ici.
  */
 function quantitiesAfterTerms(
 	text: string,
 	objectNames: readonly string[],
+	notes: Set<string>,
 	singleLetters: SingleLetterUnit[]
 ): string {
 	let result = text;
@@ -184,14 +187,15 @@ function quantitiesAfterTerms(
 		const end = match.index;
 		const start = termStart(result, end);
 		const term = result.slice(start, end);
-		// `s t` avec s et t du panneau : t est la valeur, pas la tonne (un produit)
-		if (
-			parseUnit(writing) === null ||
-			objectNames.includes(writing) ||
-			!isNumericTerm(term, objectNames)
-		) {
+		if (parseUnit(writing) === null || !isNumericTerm(term)) {
 			from = end + whole.length;
 			continue;
+		}
+		// Comme `5 m` : l'unité l'emporte sur le nom du panneau, une note le dit
+		if (objectNames.includes(writing)) {
+			notes.add(
+				`${writing} est aussi un nom du panneau : pour ${term} × ${writing}, écris ${term}${writing}.`
+			);
 		}
 		if (/^[A-Za-z]$/.test(writing)) {
 			singleLetters.push({ written: `${term} ${writing}`, letter: writing });
@@ -237,20 +241,16 @@ function termStart(text: string, end: number): number {
 }
 
 /**
- * Un terme qui vaut un nombre : chiffres, opérateurs, parenthèses, π, des
- * fonctions connues ou du panneau, des valeurs du panneau. Une lettre libre
- * (`x`) en fait de l'algèbre.
+ * Un terme de nombres : chiffres, opérateurs, parenthèses, π, des fonctions
+ * usuelles (`sqrt(2)`). Toute autre lettre, même une valeur du panneau, en
+ * fait de l'algèbre : `m g` avec m = 70 est m × g, pas 70 grammes (revue).
  */
-function isNumericTerm(term: string, objectNames: readonly string[]): boolean {
+function isNumericTerm(term: string): boolean {
 	if (term === '' || /[[\]\\]/.test(term)) return false;
 	for (const identifier of term.matchAll(/[A-Za-z]+/g)) {
 		const [name] = identifier;
 		const isCall = /^\s*\(/.test(term.slice(identifier.index + name.length));
-		if (isCall) {
-			if (!NUMERIC_FUNCTIONS.has(name) && !objectNames.includes(name)) return false;
-		} else if (!objectNames.includes(name) && ![...name].every((l) => objectNames.includes(l))) {
-			return false;
-		}
+		if (!isCall || !NUMERIC_FUNCTIONS.has(name)) return false;
 	}
 	return true;
 }
