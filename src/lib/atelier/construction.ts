@@ -556,7 +556,7 @@ export function constructionLatex(call: ReadCall): string {
 	return `\\operatorname{${call.word}}\\left(${parts.join(separator)}\\right)`;
 }
 
-function argumentLatex(argument: ReadArgument): string {
+export function argumentLatex(argument: ReadArgument): string {
 	if (argument.kind === 'name') return argument.name.replace(/_(\d+)/, '_{$1}');
 	if (argument.kind === 'call') return constructionLatex(argument.call);
 	const ast = astOf(argument.text, 'text');
@@ -598,4 +598,41 @@ export function constructionSummaryOf(
 			? circleEquation(built.center, built.radius)
 			: lineEquation(built.from, built.to);
 	return { latex: plainLatex(equation), text: plainText(equation) };
+}
+
+// =============================================================================
+// Pour les mesures (lot 2, PR 2)
+// =============================================================================
+
+/** Un point décrit (`A`, `milieu(A, B)`), calculé exact — pour `measures.ts`. */
+export function pointOutcome(
+	atelier: Atelier,
+	spec: PointSpec
+):
+	| { readonly ok: true; readonly point: GeoPoint }
+	| { readonly ok: false; readonly message: string } {
+	const ctx = contextOf(atelier, {});
+	try {
+		return { ok: true, point: pointOf(spec, ctx) };
+	} catch (error) {
+		if (error instanceof Failure) return { ok: false, message: error.message };
+		throw error;
+	}
+}
+
+/** Une droite décrite (`d`, `(AB)`, `[AB]`), par deux de ses points — pour `measures.ts`. */
+export function lineOutcome(
+	atelier: Atelier,
+	spec: LineSpec
+):
+	| { readonly ok: true; readonly from: GeoPoint; readonly to: GeoPoint }
+	| { readonly ok: false; readonly message: string } {
+	const ctx = contextOf(atelier, {});
+	try {
+		const line = lineOf(spec, ctx);
+		return { ok: true, from: line.from, to: line.to };
+	} catch (error) {
+		if (error instanceof Failure) return { ok: false, message: error.message };
+		throw error;
+	}
 }

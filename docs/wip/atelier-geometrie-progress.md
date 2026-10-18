@@ -178,3 +178,48 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   Restent : `cercle(O, rayon=0)` laissé tel quel dans le DSL (un lieu de test en dépend) ; une
   valeur `(AB)` devenue droite après coup n'est pas comptée dans le plafond de 50 (PR 2).
   Pas en production.
+
+### PR 2 — journal (mesures)
+
+- 2026-10-18 : worktree `../ubumaths-wt-atelier-mesures`, branche `feat/atelier-geometrie-mesures`.
+  Tests d'abord : 25 node (`mesures.test.ts`, 23 rouges) et 4 navigateur
+  (`mesures.svelte.test.ts`, 4 rouges). Implémenté : `AM`, `distance`, `aire`, `perimetre`
+  (`périmètre`), `angle` en degrés, exacts (angle non remarquable `≈`, 4 décimales) ; mesure
+  nommée = valeur sans curseur, qui suit ses points (curseurs compris), D9, cascade ; mesure dans
+  une fonction (`f(x) = AE*x`) ; carte : la valeur. Corrigé : une valeur `(AB)` devenue droite
+  compte dans le plafond de 50.
+- **À trancher par David** : (1) `angle` n'est PAS ajouté au DSL : `angle(A, V, B)` y existe déjà
+  et DESSINE l'angle (objet) ; lui faire rendre des degrés changerait son sens — la mesure en
+  degrés y est `mesure(A, V, B, unite="deg")` ; (2) « Garder » une ligne de mesure garde le NOMBRE
+  (`sqrt(5)`), pas la mesure qui suit ses points ; (3) un angle non remarquable est arrondi à
+  4 décimales, y compris quand il entre dans un calcul ; (4) une courbe (`d : y = AM x`) ne lit
+  pas les mesures (refus P9) ; (5) une mesure citée par un point (`P = (AM ; 0)`) suit dans la
+  figure en la reconstruisant, pas par un curseur.
+- 2026-10-18 : revue de la PR 2, corrections (tests d'abord : 14 rouges sur 15,
+  `mesures-revue.test.ts`) — renommage des `AM` (texte, LaTeX) ; valeur approchée jamais en fraction
+  (`2T`, `g(1)`, `J`), pleine précision avant l'affichage ; mesures dans les constructions et les
+  coordonnées, `A = (AM ; 0)` refusé ; `distance(A, milieu(B, C))` ; polygone dégénéré refusé ;
+  valeur non finie refusée. `angle` non touché (question à David).
+- 2026-10-18 : décisions de David — `angle` rend une grandeur (°, rad) selon un nouveau réglage
+  « Angles » (degrés par défaut, rangé dans ce navigateur, pas dans l'état : `persistence.ts`
+  inchangé) ; « Garder » une mesure garde la mesure ; `distance(N, [AB])`, `distance(N, [AB))`
+  et un segment ou une demi-droite nommés sont refusés avec l'aide `distance(N, (AB))`. La ligne
+  de la carte d'une mesure passe dans `ValueCard` (lot 4a de la refonte). Tests d'abord
+  (`mesures-angle.test.ts`, 4 de revue et 1 navigateur) ; attentes changées par la décision : `90`
+  → `90 °`, `≈ 36,8699` → `≈ 36,8699 °`, `g(x) = angle(…)·x` désormais refusée, `J = angle(…) + 0`
+  écrit `+ 0[°]`. **À trancher** : une fonction qui cite un angle est refusée (même `cos(angle(…))·x`).
+- 2026-10-18 : revue de la 2ᵉ passe (angle grandeur), corrections — tests d'abord
+  (`mesures-angle-revue.test.ts`, 27 rouges ; 2 navigateur) : angle exact nommé en radians lu par
+  l'ARBRE (plus par le texte), carte = réponse de Calcul, `W = T + 1` en erreur, refus d'un angle
+  BRUT seulement dans une fonction, grille, `π` lisible, `vrai`/`faux`, puissance d'un angle
+  refusée (choix prudent), aide de `distance` avec le premier argument écrit, ligne de la carte
+  alignée, `\operatorname{aire}` dans le champ. Corrigé au passage : `expandDerivatives`
+  (`engine.ts`) copiait la Map d'unité d'une grandeur en `{}`.
+- 2026-10-19 : revue du moteur lu par l'arbre (aucune régression hors géométrie sur 120 saisies) —
+  corrigé, tests d'abord (4 rouges) : un angle mesuré pris par un sin, cos, tan devient un NOMBRE de
+  radians dans l'arbre d'un objet (`angle-radians.ts`, `engine.substitutedTree`) : `g(x) = cos(R)·x`
+  avec R = 90° donne g(1) = 0, `.variations g` constante, dans les deux réglages ; la carte d'une
+  mesure recopie le mode de la console (`Atelier.calcMode`, posé par le pupitre) ; la puissance
+  d'un angle se juge sur l'arbre. **Limite laissée** (celle de main, pour la PR `60°`) :
+  `cos(90[°])` tapé à la main dans une fonction n'est pas évalué. **Coût noté** : une carte de
+  mesure relance `runInput` à chaque révision (~1,7 ms par carte en node).

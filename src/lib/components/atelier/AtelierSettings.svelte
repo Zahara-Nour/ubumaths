@@ -11,6 +11,7 @@
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import { Label } from '$lib/components/ui/label';
 	import type { InputMode } from '$lib/atelier/input-mode';
+	import type { AngleUnit } from '$lib/atelier/angle-unit';
 
 	interface Choice {
 		value: InputMode;
@@ -20,7 +21,21 @@
 		badge?: string;
 	}
 
-	let { inputMode = $bindable('text') }: { inputMode?: InputMode } = $props();
+	let {
+		inputMode = $bindable('text'),
+		angleUnit = $bindable('deg')
+	}: { inputMode?: InputMode; angleUnit?: AngleUnit } = $props();
+
+	/** Le réglage « Angles » (2026-10-18) : l'unité des mesures d'angle, seulement. */
+	const ANGLE_CHOICES: readonly { value: AngleUnit; label: string; detail: string }[] = [
+		{ value: 'deg', label: 'Degrés', detail: 'angle(A ; B ; C) répond 60 °.' },
+		{
+			value: 'rad',
+			label: 'Radians',
+			detail:
+				'angle(A ; B ; C) répond π/3 rad. Un nombre seul reste en radians : cos(60) ne change pas.'
+		}
+	];
 
 	const CHOICES: readonly Choice[] = [
 		{
@@ -77,6 +92,30 @@
 								{/if}
 							</Label>
 							<p id="{uid}-{choice.value}-detail" class="mt-1 text-sm text-muted-foreground">
+								{choice.detail}
+							</p>
+						</div>
+					</div>
+				{/each}
+			</RadioGroup.Root>
+		</fieldset>
+		<fieldset class="space-y-3">
+			<legend class="mb-2 font-medium">Angles</legend>
+			<RadioGroup.Root
+				value={angleUnit}
+				onValueChange={(value) => (angleUnit = value === 'rad' ? 'rad' : 'deg')}
+			>
+				{#each ANGLE_CHOICES as choice (choice.value)}
+					<div class="flex items-start gap-3">
+						<RadioGroup.Item
+							value={choice.value}
+							id="{uid}-angle-{choice.value}"
+							aria-describedby="{uid}-angle-{choice.value}-detail"
+							class="mt-1"
+						/>
+						<div class="flex-1">
+							<Label for="{uid}-angle-{choice.value}" class="cursor-pointer">{choice.label}</Label>
+							<p id="{uid}-angle-{choice.value}-detail" class="mt-1 text-sm text-muted-foreground">
 								{choice.detail}
 							</p>
 						</div>

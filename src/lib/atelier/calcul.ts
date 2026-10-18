@@ -125,6 +125,15 @@ import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { tabulateCommand } from './tabulate';
 import { gridFunctionCalledIn, gridFunctionInCalcul } from './grid-functions';
 import {
+	citesMeasure,
+	measureCallNames,
+	measuredText,
+	pairNames,
+	withoutMeasureCalls
+} from './measures';
+import { evaluate } from '$lib/mathAST/eval';
+import { format as formatUnit } from '$lib/mathAST/units';
+import {
 	bareLineShortcut,
 	constructionWordIn,
 	laterWordIn,
@@ -268,6 +277,11 @@ export type CalcResult =
 				readonly definition: string;
 				readonly provenance: Provenance;
 			};
+			/**
+			 * Une ligne qui mesure (`AE`, `aire(A, B, C)`, lot 2, L4) : « Garder » crée une
+			 * VALEUR de cette définition, qui suit ses points (décision de David, 2026-10-18).
+			 */
+			readonly measure?: { readonly definition: string; readonly provenance: Provenance };
 	  }
 	| {
 			readonly kind: 'commande';
@@ -655,6 +669,18 @@ function definePoint(
 		const message =
 			split.message === POINT_TWO && list !== null ? `${POINT_TWO} ${list}` : split.message;
 		return { kind: 'refus', message };
+	}
+	// Une coordonnée qui mesure le point lui-même (`A = (AM ; 0)`) : circulaire (revue de la PR 2)
+	const selfMeasured = split.coordinates.some(
+		(c) =>
+			measureCallNames(c, provenance).includes(name) ||
+			pairNames(c, provenance, (n) => n === name || atelier.get(n)?.kind === 'point').includes(name)
+	);
+	if (selfMeasured) {
+		return {
+			kind: 'refus',
+			message: `« ${name} » ne peut pas se mesurer à partir de lui-même : une coordonnée de ${name} cite ${name}.`
+		};
 	}
 	if (parseDefinition('point', body, provenance, atelier.functionNames).error === POINT_UNIT) {
 		return { kind: 'refus', message: POINT_UNIT };
@@ -3311,7 +3337,135 @@ export function runInput(
 	text: string,
 	provenance: Provenance = 'text'
 ): CalcResult {
-	return resultWithDecimalComma(computeInput(session, text, provenance));
+	return resultWithDecimalComma(
+		measureLine(
+			session.atelier,
+			text,
+			approximatedResult(session.atelier, text, computeInput(session, text, provenance))
+		)
+	);
+}
+
+/** Une ligne qui cite une mesure (`AM`, `angle(…)`) ou une grandeur d'angle nommée. */
+function citesMeasureOrAngle(atelier: Atelier, text: string): boolean {
+	const isPoint = (name: string) => atelier.get(name)?.kind === 'point';
+	if (citesMeasure(text, 'text', isPoint)) return true;
+	const angles = atelier.angleQuantities();
+	if (angles.size === 0) return false;
+	const ast = astOf(withoutMeasureCalls(text, 'text'), 'text', atelier.functionNames);
+	return ast !== null && [...getVariables(ast)].some((name) => angles.has(name));
+}
+
+/**
+ * La réponse d'une ligne de mesure, lisible (revue de la PR 2) : `π/2 rad`, pas
+ * `\pi/2 rad` ; une comparaison dit vrai ou faux, sans « ≈ » ; une PUISSANCE
+ * d'un angle (`angle(…)^2` → `8100 °^2`) est refusée — choix prudent, noté.
+ */
+function measureLine(atelier: Atelier, text: string, result: CalcResult): CalcResult {
+	if (result.kind !== 'calcul' || !citesMeasureOrAngle(atelier, text)) return result;
+	if (result.ast !== undefined && hasAnglePower(result.ast)) {
+		return {
+			kind: 'refus',
+			message:
+				'Une puissance d’un angle n’est pas une mesure : élève plutôt son cosinus, son sinus, ou une valeur sans unité.'
+		};
+	}
+	const bare = result.output.replace(/^≈ /, '');
+	if (bare === 'true' || bare === 'false') {
+		const word = bare === 'true' ? 'vrai' : 'faux';
+		return { ...result, output: word, latex: `\\text{${word}}` };
+	}
+	return { ...result, output: result.output.replace(/\\pi(?![A-Za-z])/g, 'π') };
+}
+
+/** Une puissance d'un angle dans l'arbre d'un résultat (`°^2`, `rad^2`) : décidé sur l'ARBRE. */
+function hasAnglePower(ast: MathNode): boolean {
+	return findNodes(ast, isUnit).some((node) => {
+		const unit = (node as Extract<MathNode, { type: 'unit' }>).unit;
+		return [...unit.components].some(
+			([symbol, exponent]) =>
+				(symbol === '°' || symbol === 'rad' || symbol === 'deg') && exponent !== 1
+		);
+	});
+}
+
+/** Une session de calcul par atelier, pour les cartes (`valueAnswerOf`). */
+const cardSessions = new WeakMap<Atelier, CalcSession>();
+
+/**
+ * Ce que Calcul répond quand on tape le nom de cette valeur — la carte d'une
+ * mesure l'affiche tel quel : une seule source de vérité (revue de la PR 2).
+ * `null` si Calcul refuse.
+ */
+export function valueAnswerOf(
+	atelier: Atelier,
+	name: string
+): { readonly text: string; readonly latex: string } | null {
+	let session = cardSessions.get(atelier);
+	if (session === undefined) {
+		session = { atelier, engine: new WebReplEngine(), seed: () => 1 };
+		cardSessions.set(atelier, session);
+	}
+	// Le mode de la console (exact / décimal) : la carte dit ce que dit Calcul
+	session.engine.getState().mode = atelier.calcMode;
+	const result = runInput(session, name);
+	return result.kind === 'calcul'
+		? { text: result.output, latex: result.latex ?? result.output }
+		: null;
+}
+
+/** Le LaTeX de l'unité d'une grandeur approchée : `°`, `rad` comme le moteur les écrit. */
+const APPROXIMATE_UNIT_LATEX: Readonly<Record<string, string>> = {
+	'°': '{}^{\\circ}',
+	rad: '\\mathrm{rad}'
+};
+
+/**
+ * La valeur décimale d'un résultat, 4 décimales (`≈ 0,7071` du mode décimal),
+ * unité comprise (`36.8699 °`, un angle — décision de David, 2026-10-18), ou `null`.
+ */
+function approximationOf(
+	ast: MathNode | undefined
+): { readonly text: string; readonly latex: string } | null {
+	if (ast === undefined) return null;
+	if (isUnit(ast)) {
+		const inner = approximationOf(ast.expression);
+		if (inner === null) return null;
+		const symbol = formatUnit(ast.unit, 'original');
+		const unitLatex = APPROXIMATE_UNIT_LATEX[symbol] ?? `\\text{${symbol}}`;
+		return { text: `${inner.text} ${symbol}`, latex: `${inner.latex}~${unitLatex}` };
+	}
+	const value = evaluate(ast, { mode: 'decimal' });
+	if (
+		value.status !== 'value' ||
+		typeof value.value !== 'number' ||
+		!Number.isFinite(value.value)
+	) {
+		return null;
+	}
+	const shown = String(Number(value.value.toFixed(4)));
+	return { text: shown, latex: shown };
+}
+
+/**
+ * Une ligne qui cite un objet de valeur APPROCHÉE (`T = angle(B, A, C)`, puis
+ * `2T`, `g(1)`) : le moteur rendait une fraction exacte (368699/10000) d'une
+ * valeur qui ne l'est pas — elle se dit « ≈ », en décimal (revue de la PR 2).
+ */
+function approximatedResult(atelier: Atelier, text: string, result: CalcResult): CalcResult {
+	if (result.kind !== 'calcul' || result.output.startsWith('≈ ')) return result;
+	const approximate = atelier.approximateNames();
+	if (approximate.size === 0) return result;
+	const ast = astOf(withoutMeasureCalls(text, 'text'), 'text', atelier.functionNames);
+	if (ast === null) return result;
+	const cited = [
+		...getVariables(ast),
+		...findNodes(ast, (n) => n.type === 'function').map((n) => (n as { name?: string }).name ?? '')
+	];
+	if (!cited.some((name) => approximate.has(name))) return result;
+	const shown = approximationOf(result.ast);
+	if (shown === null) return result;
+	return { ...result, output: `≈ ${shown.text}`, latex: `\\approx ${shown.latex}` };
 }
 
 /**
@@ -3508,14 +3662,16 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		// prise dans un calcul (`2·milieu(A, B)`)
 		const later = laterWordIn(input);
 		if (later !== null) return { kind: 'refus', message: laterWordMessage(later) };
-		const inCalculation = constructionWordIn(input);
+		// Un argument d'une mesure peut être construit : `distance(A, milieu(B, C))`
+		const inCalculation = constructionWordIn(withoutMeasureCalls(input, provenance));
 		if (inCalculation !== null) {
 			return {
 				kind: 'refus',
 				message: `« ${inCalculation} » construit un objet de la figure : écris-le seul, ou nomme-le (I = milieu(A, B)).`
 			};
 		}
-		const unknown = findUnknownFunctionCall(input);
+		// Une mesure (`aire(…)`, lot 2) n'est pas une fonction inconnue
+		const unknown = findUnknownFunctionCall(withoutMeasureCalls(input, provenance));
 		if (unknown !== null) {
 			// Une fonction de la grille (SOMME, RACINE…) : dire où elle vit (Q-L4-6)
 			const grid = gridFunctionInCalcul(unknown);
@@ -3626,6 +3782,30 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		// L'objet a changé : le moteur doit le savoir pour le calcul suivant.
 		syncEngine(session.atelier, session.engine);
 		return result;
+	}
+
+	// Lot 2, L4 : une mesure dans un calcul (`AM`, `aire(A, B, C)`, `2AE + 1`) est
+	// remplacée par sa valeur exacte, puis la ligne se calcule ; l'écho reste ce
+	// qui a été tapé. Une valeur approchée (un angle non remarquable) se dit « ≈ »
+	const measured = measuredText(session.atelier, input, provenance);
+	if (!measured.ok) return { kind: 'refus', message: measured.message };
+	if (measured.changed) {
+		const line = computeInput(session, measured.text, provenance);
+		if (line.kind !== 'calcul') return line;
+		if (!measured.approximate) {
+			return { ...line, input, measure: { definition: input.trim(), provenance } };
+		}
+		// Un angle non remarquable : le moteur en ferait une fraction (368699/10000) —
+		// on montre le décimal, 4 décimales comme le mode décimal (`≈ 0,7071`)
+		const approximation = approximationOf(line.ast);
+		return {
+			...line,
+			input,
+			output: `≈ ${approximation?.text ?? line.output}`,
+			latex: `\\approx ${approximation?.latex ?? line.latex ?? line.output}`,
+			// « Garder » garde la MESURE, qui suit ses points (décision de David, 2026-10-18)
+			measure: { definition: input.trim(), provenance }
+		};
 	}
 
 	// P5 : `A(1 ; 2)` — l'aide, au lieu de « Il manque « ) » »
@@ -3764,6 +3944,21 @@ export function promote(
 	name?: string
 ): Created | Refused {
 	const { atelier } = session;
+
+	// Une mesure tapée seule (L4) : gardée par sa définition, elle suit ses points
+	if (result.kind === 'calcul' && result.measure !== undefined) {
+		const chosen = name ?? nextName('value', atelier.names);
+		const rejection = validateName(chosen, atelier.names);
+		if (rejection !== null) {
+			return { ok: false, message: nameRejectionMessage(rejection, chosen) };
+		}
+		const created = atelier.create(
+			{ kind: 'value', name: chosen, definition: result.measure.definition },
+			result.measure.provenance
+		);
+		if (created.ok) syncEngine(atelier, session.engine);
+		return created.ok ? { ...created, object: atelier.get(chosen) ?? created.object } : created;
+	}
 
 	// Une construction tapée seule (L2, D5) : gardée par sa définition, telle qu'écrite
 	if (result.kind === 'calcul' && result.construction !== undefined) {
