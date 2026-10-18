@@ -2171,6 +2171,7 @@ const CERCLE_FORMS = [
 		syntax: 'cercle(centre, passant=P)',
 		description: 'cercle de centre `centre` passant par le point `P`'
 	},
+	{ syntax: 'cercle(centre, r)', description: 'cercle de centre `centre` et de rayon `r`' },
 	{ syntax: 'cercle(A, B, C)', description: 'cercle circonscrit aux 3 points A, B, C' }
 ];
 
@@ -2204,14 +2205,33 @@ function handleCercle(ctx: BuiltinCtx): BuiltinResult {
 		return { figureId: id, symbolType: 'cercle' };
 	}
 	if (pos.length === 2) {
-		throw new DslRuntimeError(
-			{
-				summary: '`cercle()` ne peut pas être appelé avec 2 arguments positionnels.',
-				hint: 'Pour un cercle de centre `A` passant par `B`, utilisez la syntaxe nommée : `cercle(A, passant=B)`.',
-				forms: CERCLE_FORMS
-			},
-			line
-		);
+		// `cercle(O, 3)` (atelier, lot 2 de la géométrie) : le rayon en second — un
+		// nombre, une valeur ou un curseur. Un POINT en second reste refusé : centre
+		// O passant par A, ou diamètre [OA] ? L'auteur le dit (`passant=`).
+		const second = pos[1];
+		if (second.type === 'element' && second.elementType === 'point') {
+			throw new DslRuntimeError(
+				{
+					summary: '`cercle()` ne peut pas recevoir deux points en arguments positionnels.',
+					hint: 'Pour un cercle de centre `A` passant par `B`, utilisez la syntaxe nommée : `cercle(A, passant=B)`.',
+					forms: CERCLE_FORMS
+				},
+				line
+			);
+		}
+		if (second.type === 'element' && second.elementType !== 'scalar') {
+			throw new DslRuntimeError(
+				{
+					summary: `\`cercle(O, r)\` : le second argument est le rayon, un nombre (reçu : ${second.elementType}).`,
+					forms: CERCLE_FORMS
+				},
+				line
+			);
+		}
+		const centerId = requireElement(pos[0], 'centre', line);
+		const radius = toScalarParam(second, toGeoValue, line);
+		const id = figure.createCircleByRadius(centerId, radius, { label });
+		return { figureId: id, symbolType: 'cercle' };
 	}
 	if (pos.length === 0) {
 		throw new DslRuntimeError(
@@ -2225,7 +2245,7 @@ function handleCercle(ctx: BuiltinCtx): BuiltinResult {
 	if (pos.length !== 1) {
 		throw new DslRuntimeError(
 			{
-				summary: `\`cercle()\` a reçu ${pos.length} arguments positionnels, attendu 1 (centre) ou 3 (A, B, C).`,
+				summary: `\`cercle()\` a reçu ${pos.length} arguments positionnels, attendu 1 (centre), 2 (centre, rayon) ou 3 (A, B, C).`,
 				forms: CERCLE_FORMS
 			},
 			line
@@ -5521,10 +5541,60 @@ function handleMediatrice(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('mediatrice', handleMediatrice);
 
+/**
+ * `parallele(P, d)`, `perpendiculaire(P, d)` (atelier, lot 2 de la géométrie) :
+ * deux arguments, le point P puis une droite, un segment ou une demi-droite —
+ * dont on prend les deux points qui la portent. `null` pour toute autre arité
+ * (la forme `(P, A, B)` suit son chemin, inchangée).
+ */
+function lineArgument(
+	ctx: BuiltinCtx,
+	macroName: 'parallele' | 'perpendiculaire'
+): { through: string; p1: string; p2: string } | null {
+	const { pos, figure, line } = ctx;
+	if (pos.length !== 2) return null;
+	const through = requireElement(pos[0], 'P', line);
+	const target = pos[1];
+	const isLineLike =
+		target.type === 'element' &&
+		(target.elementType === 'droite' ||
+			target.elementType === 'segment' ||
+			target.elementType === 'demidroite');
+	if (!isLineLike) {
+		throw new DslRuntimeError(
+			{
+				summary: `\`${macroName}(P, d)\` : le second argument doit être une droite, un segment ou une demi-droite.`,
+				forms: [
+					{ syntax: `${macroName}(P, d)`, description: 'par `P`, relativement à la droite `d`' },
+					{ syntax: `${macroName}(P, A, B)`, description: 'par `P`, relativement à `(AB)`' }
+				]
+			},
+			line
+		);
+	}
+	const el = figure.getElementById(target.figureId);
+	const points = el === undefined ? null : resolveLinePoints(el);
+	if (points === null) {
+		throw new DslRuntimeError(
+			{ summary: `\`${macroName}(P, d)\` : impossible de résoudre les points de la droite.` },
+			line
+		);
+	}
+	return { through, ...points };
+}
+
 // ─── 2. perpendiculaire(P, A, B) → droite ───────────────────────────
 
 function handlePerpendiculaire(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, line, label } = ctx;
+	// `perpendiculaire(P, d)` (atelier, lot 2) : par P, perpendiculaire à la droite d
+	const toLine = lineArgument(ctx, 'perpendiculaire');
+	if (toLine !== null) {
+		const Q = createHiddenTranslatedPoint(figure, toLine.through, toLine.p1, toLine.p2);
+		const R = createHiddenRotatedPoint(figure, Q, toLine.through, PI_OVER_2);
+		const id = figure.createLine(toLine.through, R, { label });
+		return { figureId: id, symbolType: 'droite' };
+	}
 	const { ids, coords } = requireNPoints(ctx, 3, ['P', 'A', 'B'], 'perpendiculaire', {
 		syntax: 'perpendiculaire(P, A, B)',
 		description: 'droite passant par `P`, perpendiculaire à la droite `(AB)`'
@@ -5550,6 +5620,13 @@ HANDLERS.set('perpendiculaire', handlePerpendiculaire);
 
 function handleParallele(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, line, label } = ctx;
+	// `parallele(P, d)` (atelier, lot 2) : par P, parallèle à la droite d
+	const toLine = lineArgument(ctx, 'parallele');
+	if (toLine !== null) {
+		const Q = createHiddenTranslatedPoint(figure, toLine.through, toLine.p1, toLine.p2);
+		const id = figure.createLine(toLine.through, Q, { label });
+		return { figureId: id, symbolType: 'droite' };
+	}
 	const { ids, coords } = requireNPoints(ctx, 3, ['P', 'A', 'B'], 'parallele', {
 		syntax: 'parallele(P, A, B)',
 		description: 'droite passant par `P`, parallèle à la droite `(AB)`'
