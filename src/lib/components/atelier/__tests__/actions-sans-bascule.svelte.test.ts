@@ -189,27 +189,8 @@ describe('dériver une seconde fois', () => {
 // =============================================================================
 
 describe('l’image d’un nombre', () => {
-	function consoleField(container: HTMLElement): HTMLInputElement {
-		return container.querySelector(
-			'input[aria-label="Calcul, définition ou commande"]'
-		) as HTMLInputElement;
-	}
-
-	it('« Image d’un nombre » prépare f( dans la console, et f(3) donne 9', async () => {
-		const { container } = await onGraph('x^2');
-
-		await clickAction(container, 'f', 'Image d’un nombre');
-
-		await vi.waitFor(() => expect(consoleField(container).value).toBe('f('));
-		await vi.waitFor(() => expect(document.activeElement).toBe(consoleField(container)));
-		await userEvent.keyboard('{End}3){Enter}');
-
-		await vi.waitFor(() =>
-			expect(container.querySelector('.historique')?.textContent).toContain('9')
-		);
-		expect(currentView(container)).toBe('Graphe');
-	});
-
+	// L'image s'écrit dans la console : ni champ ni action sur la carte
+	// (décision de David du 2026-10-18, `carte-sans-image.test.ts`)
 	it('la carte n’a plus de petit champ pour l’image', async () => {
 		const { container } = await onGraph();
 

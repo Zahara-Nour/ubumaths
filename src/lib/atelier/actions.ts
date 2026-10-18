@@ -82,9 +82,8 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 		{ id: 'plot', label: 'Tracer' },
 		// Géométrie v2, K1 : 𝒞f dans la vue Géométrie (repère orthonormé)
 		{ id: 'figure', label: 'Afficher dans Géométrie' },
-		// Lot 3 de la refonte : l'image se calcule dans la console, préparée `f(`
-		// (décision de David du 2026-10-18) — plus de petit champ dans la carte
-		{ id: 'image', label: 'Image d’un nombre' },
+		// Pas d'« Image d'un nombre » : `f(2)` s'écrit tout seul dans la console
+		// (décision de David du 2026-10-18). Le geste `image` reste rejouable.
 		{ id: 'derive', label: 'Dériver' },
 		// Lot 3 de la réciproque (R1) : la carte `f⁻¹`, comme « Dériver » crée `f′`
 		{ id: 'reciprocal', label: 'Réciproque' },
@@ -123,8 +122,8 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
  */
 const NOT_YET: ReadonlySet<string> = new Set([
 	// 'plot' est câblé depuis le lot « vue Graphe ».
-	// 'derive', 'solve' et 'variations' le sont depuis la vue Calcul ('image' est
-	// devenu un champ de la carte, lot 3b).
+	// 'derive', 'solve' et 'variations' le sont depuis la vue Calcul ('image' a
+	// quitté la carte : elle s'écrit dans la console).
 	// 'stats', 'scatter' et 'fit' sont câblés depuis la vue Données, 'chart'
 	// depuis le lot 5 des outils statistiques, 'table' (le formulaire de la
 	// carte) depuis le lot 3 du tableur.

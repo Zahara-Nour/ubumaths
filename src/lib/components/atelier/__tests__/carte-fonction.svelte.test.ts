@@ -224,7 +224,6 @@ describe('carte de fonction — le menu', () => {
 		expect(menuItem(menu, 'Tangente')).toBeTruthy();
 		expect(menuItem(menu, 'Aire sous la courbe')).toBeTruthy();
 		expect(menuItem(menu, 'Dériver')).toBeTruthy();
-		expect(menuItem(menu, 'Image d’un nombre')).toBeTruthy();
 	});
 
 	it('« Aire sous la courbe » coche l’aire et montre sa valeur sous la carte', async () => {
@@ -251,24 +250,16 @@ describe('carte de fonction — le menu', () => {
 		await vi.waitFor(() => expect(cardFor(container, 'f′')).toBeTruthy());
 	});
 
-	it('« Image d’un nombre » ouvre la console préremplie avec f(', async () => {
+	// Décision de David (2026-10-18) : `f(2)` s'écrit dans la console
+	it('le menu ne propose plus « Image d’un nombre »', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
-		const { container } = await render(AtelierContainer, {
-			atelier,
-			ephemeral: true,
-			view: 'graphe'
-		});
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
 
 		const menu = await openMenu(cardFor(container, 'f'), 'f');
-		menuItem(menu, 'Image d’un nombre').click();
 
-		const panel = container.querySelector<HTMLElement>('[role="region"][aria-label="Console"]')!;
-		await vi.waitFor(() => expect(panel.hasAttribute('inert')).toBe(false));
-		const input = container.querySelector<HTMLInputElement>(
-			'input[aria-label="Calcul, définition ou commande"]'
-		);
-		await vi.waitFor(() => expect(input?.value).toBe('f('));
+		expect(() => menuItem(menu, 'Image d’un nombre')).toThrow();
+		expect(menuItem(menu, 'Dériver')).toBeTruthy();
 	});
 
 	it('« Tabuler » ouvre une petite fenêtre « de / à / pas »', async () => {

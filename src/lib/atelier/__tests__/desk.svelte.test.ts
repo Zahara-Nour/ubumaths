@@ -69,13 +69,15 @@ describe('une action du panneau produit quelque chose', () => {
 		expect(d.entries).toHaveLength(1);
 	});
 
-	// Lot 3 de la refonte : « Image d'un nombre » redevient une action du
-	// panneau, qui prépare `f(` dans la console (`image-console.test.ts`)
-	it('« Image d’un nombre » depuis le panneau prépare f( dans la console', () => {
+	// « Image d'un nombre » a quitté le panneau (David, 2026-10-18) : le brouillon
+	// n'est plus touché (`carte-sans-image.test.ts`)
+	it('« image » depuis le panneau ne touche plus au brouillon', () => {
 		const d = desk();
+		d.draft = 'g(2)+';
 
-		expect(d.runFromPanel('image', 'f')).toBe('needs-argument');
-		expect(d.draft).toBe('f(');
+		d.runFromPanel('image', 'f');
+
+		expect(d.draft).toBe('g(2)+');
 	});
 
 	// En attente d'une FONCTION : `a*x`, à paramètre, se dérive depuis Q4
