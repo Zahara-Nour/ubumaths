@@ -338,7 +338,10 @@ lisait plus. La carte de valeur affiche ce que Calcul répond quand on tape son 
 erreur avec son message (`quantityProblem`) ; une fonction ne refuse qu'un angle BRUT
 (`hasBareAngle` : `cos(angle(…))·x` passe, `T·x` non) ; la grille dit « T est une grandeur (un
 angle) » ; une ligne de mesure écrit `π`, `vrai`/`faux` sans « ≈ », et refuse une puissance d'un
-angle (choix prudent) ; le champ de la carte montre `\operatorname{aire}` (`measureFieldLatex`). Revue (2026-10-18) : une mesure se cite aussi
+angle (choix prudent) ; le champ de la carte montre `\operatorname{aire}` (`measureFieldLatex`). Dans l'arbre substitué d'un objet, un angle mesuré pris
+par un sin, cos, tan devient un nombre de radians (`angle-radians.ts`) : le moteur n'évalue pas le
+cosinus d'une grandeur dans une fonction (`g(x) = cos(R)·x`, R = 90°). La carte recopie le mode
+de la console (`Atelier.calcMode`, posé par le pupitre après chaque saisie). Revue (2026-10-18) : une mesure se cite aussi
 dans les nombres d'une construction (`cercle(A ; AM)`) et dans des coordonnées (`G = (aire(B, C, D) ;
 0)`, `engine.substitutedTextOf` → `Atelier.measuredTextOf`) ; `A = (AM ; 0)` est refusé (circulaire) ;
 renommer un point réécrit les `AM` (`renamePairs`, texte et LaTeX) ; un polygone à sommets confondus

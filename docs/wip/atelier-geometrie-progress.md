@@ -215,3 +215,11 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   refusée (choix prudent), aide de `distance` avec le premier argument écrit, ligne de la carte
   alignée, `\operatorname{aire}` dans le champ. Corrigé au passage : `expandDerivatives`
   (`engine.ts`) copiait la Map d'unité d'une grandeur en `{}`.
+- 2026-10-19 : revue du moteur lu par l'arbre (aucune régression hors géométrie sur 120 saisies) —
+  corrigé, tests d'abord (4 rouges) : un angle mesuré pris par un sin, cos, tan devient un NOMBRE de
+  radians dans l'arbre d'un objet (`angle-radians.ts`, `engine.substitutedTree`) : `g(x) = cos(R)·x`
+  avec R = 90° donne g(1) = 0, `.variations g` constante, dans les deux réglages ; la carte d'une
+  mesure recopie le mode de la console (`Atelier.calcMode`, posé par le pupitre) ; la puissance
+  d'un angle se juge sur l'arbre. **Limite laissée** (celle de main, pour la PR `60°`) :
+  `cos(90[°])` tapé à la main dans une fonction n'est pas évalué. **Coût noté** : une carte de
+  mesure relance `runInput` à chaque révision (~1,7 ms par carte en node).
