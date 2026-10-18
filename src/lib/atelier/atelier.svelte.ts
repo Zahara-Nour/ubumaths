@@ -106,6 +106,7 @@ import {
 	hasMeasureCall,
 	measureCallNames,
 	measuredText,
+	renamePairs,
 	withoutMeasureCalls,
 	withoutMeasures,
 	type MeasuredText
@@ -1041,8 +1042,9 @@ export class Atelier {
 			const found = new Map<string, MissingReference>(
 				names.map((name) => [name, { name, as: 'value' }])
 			);
+			// Un nombre d'une construction peut être une mesure (`cercle(A ; AM)`, revue PR 2)
 			for (const scalar of scalars) {
-				for (const ref of referencesOf(scalar, 'text', this.functionNames)) {
+				for (const ref of this.#cited('value', scalar, 'text')) {
 					if (!found.has(ref.name)) found.set(ref.name, ref);
 				}
 			}
@@ -1128,7 +1130,14 @@ export class Atelier {
 			object.kind === 'point' || object.kind === 'curve' || object.kind === 'value'
 				? renameInConstruction(object.definition, object.provenance ?? 'url', from, to)
 				: null;
-		return construction ?? renameInDefinition(object.definition, from, to);
+		const renamed = construction ?? renameInDefinition(object.definition, from, to);
+		// `AM` (lot 2, L4) : une longueur entre deux points, qu'une expression régulière
+		// de mots lit comme l'identifiant AM. Appelé APRÈS que `from` s'appelle `to`
+		if (object.kind !== 'value' && object.kind !== 'function' && object.kind !== 'sequence') {
+			return renamed;
+		}
+		const isPoint = (name: string) => this.get(name === from ? to : name)?.kind === 'point';
+		return renamePairs(renamed, from, to, isPoint);
 	}
 
 	rename(from: string, to: string): Renamed | Refused {
@@ -2781,7 +2790,11 @@ export class Atelier {
 				construction === null
 					? this.#numberRefs(o, refs)
 					: partsOf(construction).scalars.flatMap((scalar) =>
-							referencesOf(scalar, 'text', this.functionNames)
+							referencesOf(
+								withoutMeasures(scalar, 'text', this.#isPoint),
+								'text',
+								this.functionNames
+							)
 						);
 			if (!ownError.get(o.name) && construction !== null) {
 				const typed = specOf(o.definition, o.provenance ?? 'url', kindsOf(this));
@@ -2995,8 +3008,21 @@ export class Atelier {
 	 * d'une mesure n'en sont pas — `S = AM`, `aire(A, M, N)` citent des points.
 	 */
 	#numberRefs(o: AtelierObject, refs: MissingReference[]): MissingReference[] {
-		if (o.kind !== 'value' && o.kind !== 'function' && o.kind !== 'sequence') return refs;
 		const provenance = o.provenance ?? 'url';
+		// Un point par ses coordonnées (`G = (aire(B, C, D) ; 0)`, revue de la PR 2)
+		if (o.kind === 'point') {
+			const left = new Set(
+				(pointCoordinatesOf(o.definition) ?? []).flatMap((c) =>
+					referencesOf(
+						withoutMeasures(c, provenance, this.#isPoint),
+						provenance,
+						this.functionNames
+					).map((r) => r.name)
+				)
+			);
+			return refs.filter((r) => left.has(r.name));
+		}
+		if (o.kind !== 'value' && o.kind !== 'function' && o.kind !== 'sequence') return refs;
 		if (!citesMeasure(o.definition, provenance, this.#isPoint)) return refs;
 		const left = new Set(
 			referencesOf(
@@ -3034,6 +3060,55 @@ export class Atelier {
 		} finally {
 			this.#measuring.delete(object.name);
 		}
+	}
+
+	/** Les textes dont on calcule les mesures : `A = (AM ; 0)` ne boucle pas. */
+	#measuringTexts = new Set<string>();
+
+	/**
+	 * Un TEXTE (une coordonnée, le rayon d'un cercle), mesures remplacées par leur
+	 * valeur — `engine.substitutedTextOf`. Un texte qui se mesure à partir de
+	 * lui-même (une coordonnée de A qui cite AM) est refusé.
+	 */
+	measuredTextOf(text: string, provenance: Provenance): MeasuredText {
+		const key = `${provenance}\u0000${text}`;
+		if (!citesMeasure(text, provenance, this.#isPoint)) {
+			return { ok: true, text, changed: false, approximate: false };
+		}
+		if (this.#measuringTexts.has(key)) {
+			return { ok: false, message: CIRCULAR };
+		}
+		this.#measuringTexts.add(key);
+		try {
+			return measuredText(this, text, provenance);
+		} finally {
+			this.#measuringTexts.delete(key);
+		}
+	}
+
+	/** Les objets dont la valeur n'est qu'approchée (revue de la PR 2), pour la révision courante. */
+	#approximate: { readonly revision: number; readonly names: ReadonlySet<string> } | null = null;
+
+	/**
+	 * Les objets qui citent — eux-mêmes ou par un autre objet — une mesure
+	 * APPROCHÉE (un angle non remarquable) : leur valeur se dit « ≈ », jamais en
+	 * fraction exacte (`368699/10000`).
+	 */
+	approximateNames(): ReadonlySet<string> {
+		if (this.#approximate !== null && this.#approximate.revision === this.revision) {
+			return this.#approximate.names;
+		}
+		const names = new Set<string>();
+		for (const o of this.items) {
+			const read = this.measuredOf(o);
+			if (read !== null && read.ok && read.approximate) names.add(o.name);
+		}
+		this.spread((name) => {
+			const o = this.get(name);
+			return o !== undefined && this.#refsOf(o).some((r) => names.has(r.name));
+		}, names);
+		this.#approximate = { revision: this.revision, names };
+		return names;
 	}
 
 	/** Ce que lit le moteur : la définition, mesures remplacées par leur valeur (`engine.ts`). */

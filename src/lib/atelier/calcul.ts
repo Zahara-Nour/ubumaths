@@ -124,7 +124,7 @@ import { DEV_HELP_ARGUMENT, studentHelpText } from './help';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { tabulateCommand } from './tabulate';
 import { gridFunctionCalledIn, gridFunctionInCalcul } from './grid-functions';
-import { measuredText, withoutMeasureCalls } from './measures';
+import { measureCallNames, measuredText, pairNames, withoutMeasureCalls } from './measures';
 import { evaluate } from '$lib/mathAST/eval';
 import {
 	bareLineShortcut,
@@ -657,6 +657,18 @@ function definePoint(
 		const message =
 			split.message === POINT_TWO && list !== null ? `${POINT_TWO} ${list}` : split.message;
 		return { kind: 'refus', message };
+	}
+	// Une coordonnée qui mesure le point lui-même (`A = (AM ; 0)`) : circulaire (revue de la PR 2)
+	const selfMeasured = split.coordinates.some(
+		(c) =>
+			measureCallNames(c, provenance).includes(name) ||
+			pairNames(c, provenance, (n) => n === name || atelier.get(n)?.kind === 'point').includes(name)
+	);
+	if (selfMeasured) {
+		return {
+			kind: 'refus',
+			message: `« ${name} » ne peut pas se mesurer à partir de lui-même : une coordonnée de ${name} cite ${name}.`
+		};
 	}
 	if (parseDefinition('point', body, provenance, atelier.functionNames).error === POINT_UNIT) {
 		return { kind: 'refus', message: POINT_UNIT };
@@ -3313,7 +3325,39 @@ export function runInput(
 	text: string,
 	provenance: Provenance = 'text'
 ): CalcResult {
-	return resultWithDecimalComma(computeInput(session, text, provenance));
+	return resultWithDecimalComma(
+		approximatedResult(session.atelier, text, computeInput(session, text, provenance))
+	);
+}
+
+/** La valeur décimale d'un résultat, 4 décimales (`≈ 0,7071` du mode décimal), ou `null`. */
+function approximationOf(ast: MathNode | undefined): string | null {
+	if (ast === undefined) return null;
+	const value = evaluate(ast, { mode: 'decimal' });
+	return value.status === 'value' && typeof value.value === 'number' && Number.isFinite(value.value)
+		? String(Number(value.value.toFixed(4)))
+		: null;
+}
+
+/**
+ * Une ligne qui cite un objet de valeur APPROCHÉE (`T = angle(B, A, C)`, puis
+ * `2T`, `g(1)`) : le moteur rendait une fraction exacte (368699/10000) d'une
+ * valeur qui ne l'est pas — elle se dit « ≈ », en décimal (revue de la PR 2).
+ */
+function approximatedResult(atelier: Atelier, text: string, result: CalcResult): CalcResult {
+	if (result.kind !== 'calcul' || result.output.startsWith('≈ ')) return result;
+	const approximate = atelier.approximateNames();
+	if (approximate.size === 0) return result;
+	const ast = astOf(withoutMeasureCalls(text, 'text'), 'text', atelier.functionNames);
+	if (ast === null) return result;
+	const cited = [
+		...getVariables(ast),
+		...findNodes(ast, (n) => n.type === 'function').map((n) => (n as { name?: string }).name ?? '')
+	];
+	if (!cited.some((name) => approximate.has(name))) return result;
+	const shown = approximationOf(result.ast);
+	if (shown === null) return result;
+	return { ...result, output: `≈ ${shown}`, latex: `\\approx ${shown}` };
 }
 
 /**
@@ -3510,7 +3554,8 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		// prise dans un calcul (`2·milieu(A, B)`)
 		const later = laterWordIn(input);
 		if (later !== null) return { kind: 'refus', message: laterWordMessage(later) };
-		const inCalculation = constructionWordIn(input);
+		// Un argument d'une mesure peut être construit : `distance(A, milieu(B, C))`
+		const inCalculation = constructionWordIn(withoutMeasureCalls(input, provenance));
 		if (inCalculation !== null) {
 			return {
 				kind: 'refus',
@@ -3642,11 +3687,7 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		if (!measured.approximate) return { ...line, input };
 		// Un angle non remarquable : le moteur en ferait une fraction (368699/10000) —
 		// on montre le décimal, 4 décimales comme le mode décimal (`≈ 0,7071`)
-		const value = line.ast === undefined ? null : evaluate(line.ast, { mode: 'decimal' });
-		const approximation =
-			value !== null && value.status === 'value' && typeof value.value === 'number'
-				? String(Number(value.value.toFixed(4)))
-				: null;
+		const approximation = approximationOf(line.ast);
 		return {
 			...line,
 			input,

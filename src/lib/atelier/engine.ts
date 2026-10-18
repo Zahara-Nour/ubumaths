@@ -504,7 +504,10 @@ export function substitutedTextOf(
 	options?: { readonly keepNames?: ReadonlySet<string> }
 ):
 	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
-	const ast = astOf(text, provenance, atelier.functionNames);
+	// Une mesure dans ce texte (`(AM ; 0)`, `cercle(A ; AM)`, revue de la PR 2)
+	const measured = atelier.measuredTextOf(text, provenance ?? 'url');
+	if (!measured.ok) return measured;
+	const ast = astOf(measured.text, provenance, atelier.functionNames);
 	if (ast === null) return { ok: false, message: `« ${text} » ne se lit pas.` };
 	return substitutedTree(atelier, ast, '', options);
 }

@@ -185,3 +185,21 @@ export function citesMeasure(
 ): boolean {
 	return hasMeasureCall(text, provenance) || pairNames(text, provenance, isPoint).length > 0;
 }
+
+/**
+ * Renommer `from` en `to` dans chaque `AM` de deux points (`AM` → `AK`), texte
+ * ou LaTeX (`A_{1}M`) : le renommage par mots y voit l'identifiant `AM`.
+ */
+export function renamePairs(
+	text: string,
+	from: string,
+	to: string,
+	isPoint: (name: string) => boolean
+): string {
+	const written = (id: string) => (id.includes('{') ? to.replace(/_(\d+)/, '_{$1}') : to);
+	return text.replace(PAIR, (whole, a: string, b: string) => {
+		const [p, q] = [plainName(a), plainName(b)];
+		if ((p !== from && q !== from) || !isPoint(p) || !isPoint(q)) return whole;
+		return `${p === from ? written(a) : a}${q === from ? written(b) : b}`;
+	});
+}

@@ -56,6 +56,7 @@ export {
 	measureCallNames,
 	measureShapeRefusal,
 	pairNames,
+	renamePairs,
 	withoutMeasureCalls,
 	withoutMeasures
 } from './measures-read';
@@ -163,31 +164,54 @@ function points(atelier: Atelier, args: readonly ReadArgument[]): GeoPoint[] {
 	return args.map((argument) => pointOfArgument(atelier, argument));
 }
 
-/** Le polygone se croise-t-il (deux côtés non voisins qui se coupent) ? En nombres. */
-function isCrossed(vertices: readonly GeoPoint[]): boolean {
+/**
+ * Ce qui empêche un polygone d'avoir une aire : deux côtés non voisins qui se
+ * coupent (`crossed`), ou qui se touchent hors de leurs extrémités communes,
+ * deux côtés voisins qui se recouvrent (`touching`). En nombres, à 10⁻¹² près.
+ */
+function polygonDefect(vertices: readonly GeoPoint[]): 'crossed' | 'touching' | null {
 	const p = vertices.map((v) => [geoToNumber(v.x), geoToNumber(v.y)] as const);
 	const n = p.length;
+	const EPS = 1e-12;
 	const cross = (o: readonly number[], a: readonly number[], b: readonly number[]) =>
 		(a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
-	const EPS = 1e-12;
+	const sign = (v: number) => (v > EPS ? 1 : v < -EPS ? -1 : 0);
+	/** `q` sur le segment [a ; b], extrémités comprises (q aligné avec a et b). */
+	const within = (a: readonly number[], b: readonly number[], q: readonly number[]) =>
+		Math.min(a[0], b[0]) - EPS <= q[0] &&
+		q[0] <= Math.max(a[0], b[0]) + EPS &&
+		Math.min(a[1], b[1]) - EPS <= q[1] &&
+		q[1] <= Math.max(a[1], b[1]) + EPS;
+	let touching = false;
 	for (let i = 0; i < n; i++) {
 		for (let j = i + 1; j < n; j++) {
-			// Côtés voisins : ils partagent un sommet
-			if (j === i + 1 || (i === 0 && j === n - 1)) continue;
 			const [a, b, c, d] = [p[i], p[(i + 1) % n], p[j], p[(j + 1) % n]];
-			const d1 = cross(c, d, a);
-			const d2 = cross(c, d, b);
-			const d3 = cross(a, b, c);
-			const d4 = cross(a, b, d);
+			const neighbours = j === i + 1 || (i === 0 && j === n - 1);
+			if (neighbours) {
+				// Deux côtés voisins alignés qui reviennent en arrière : ils se recouvrent
+				const [shared, first, second] = j === i + 1 ? [b, a, d] : [a, b, c];
+				const u = [first[0] - shared[0], first[1] - shared[1]];
+				const v = [second[0] - shared[0], second[1] - shared[1]];
+				if (sign(u[0] * v[1] - u[1] * v[0]) === 0 && u[0] * v[0] + u[1] * v[1] > EPS) {
+					touching = true;
+				}
+				continue;
+			}
+			const [d1, d2, d3, d4] = [cross(c, d, a), cross(c, d, b), cross(a, b, c), cross(a, b, d)].map(
+				sign
+			);
+			if (d1 * d2 < 0 && d3 * d4 < 0) return 'crossed';
 			if (
-				((d1 > EPS && d2 < -EPS) || (d1 < -EPS && d2 > EPS)) &&
-				((d3 > EPS && d4 < -EPS) || (d3 < -EPS && d4 > EPS))
+				(d1 === 0 && within(c, d, a)) ||
+				(d2 === 0 && within(c, d, b)) ||
+				(d3 === 0 && within(a, b, c)) ||
+				(d4 === 0 && within(a, b, d))
 			) {
-				return true;
+				touching = true;
 			}
 		}
 	}
-	return false;
+	return touching ? 'touching' : null;
 }
 
 function measure(atelier: Atelier, word: MeasureWord, args: readonly ReadArgument[]): Measured {
@@ -219,8 +243,21 @@ function measure(atelier: Atelier, word: MeasureWord, args: readonly ReadArgumen
 			}
 			const vertices = points(atelier, args);
 			const names = args.map((a) => (a.kind === 'name' ? a.name : '…')).join('');
-			if (isCrossed(vertices)) {
+			for (let i = 0; i < vertices.length; i++) {
+				for (let j = i + 1; j < vertices.length; j++) {
+					if (geoEqual(vertices[i].x, vertices[j].x) && geoEqual(vertices[i].y, vertices[j].y)) {
+						throw new Failure(`Le polygone ${names} a deux sommets confondus.`);
+					}
+				}
+			}
+			const defect = polygonDefect(vertices);
+			if (defect === 'crossed') {
 				throw new Failure(`Le polygone ${names} est croisé : ses côtés se coupent.`);
+			}
+			if (defect === 'touching') {
+				throw new Failure(
+					`Le polygone ${names} a des côtés qui se touchent ou se recouvrent : il n’a pas d’aire.`
+				);
 			}
 			let sum: GeoValue = geoFromNumber(0);
 			for (let i = 0; i < vertices.length; i++) {
@@ -253,15 +290,19 @@ function measure(atelier: Atelier, word: MeasureWord, args: readonly ReadArgumen
 				}
 			}
 			const degrees = (Math.acos(Math.max(-1, Math.min(1, geoToNumber(cosine)))) * 180) / Math.PI;
-			const rounded = Number(degrees.toFixed(ANGLE_DECIMALS));
-			return { value: numeric(rounded), approximate: true };
+			// Pleine précision : l'arrondi est celui de l'AFFICHAGE (revue de la PR 2)
+			return { value: numeric(degrees), approximate: true };
 		}
 	}
 }
 
 /** L'écriture d'une valeur dans le texte, LaTeX ou non, entre parenthèses. */
 function written(value: GeoValue, latex: boolean): string {
-	const node = isNaNValue(value) ? numericNode(0) : nodeOf(value);
+	if (isNaNValue(value))
+		throw new Failure(
+			'Cette mesure ne se calcule pas : un des points n’a pas de coordonnées finies.'
+		);
+	const node = nodeOf(value);
 	return latex ? `\\left(${toLatex(node)}\\right)` : `(${toCustom(node)})`;
 }
 

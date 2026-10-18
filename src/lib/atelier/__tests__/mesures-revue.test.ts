@@ -73,7 +73,7 @@ describe('revue 1 : renommer un point cité par une longueur `AM`', () => {
 
 	it('la carte (LaTeX) : AN+\\operatorname{aire}\\left(A,N,C\\right), N → P', () => {
 		const s = plane();
-		runInput(s, 'N = (4 ; 3)');
+		runInput(s, 'N = (2 ; 0)');
 		s.atelier.create({ kind: 'value', name: 'S', definition: '' });
 		s.atelier.update('S', 'AN+\\operatorname{aire}\\left(A,N,C\\right)', 'keyboard');
 		expect(s.atelier.rename('N', 'P').ok).toBe(true);
