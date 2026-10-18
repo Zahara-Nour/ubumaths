@@ -10,6 +10,9 @@ import { baseTestConfig } from './vitest.base.config';
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 const APP_VERSION = pkg.version;
 
+/** Fichiers de police : jamais inlinés en `data:` (cf. `build.assetsInlineLimit`) */
+const FONT_FILE = /\.(woff2?|ttf|otf)$/i;
+
 /**
  * Vite Configuration with Performance Optimizations
  * ==================================================
@@ -152,7 +155,12 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 			// Skip the "computing gzip size" pass over every output chunk. We already
 			// get bundle sizes from the ANALYZE=1 visualizer, and the Safari-TDZ chunk
 			// guard reads RAW bytes — so the gzip report is dead weight on the prod build.
-			reportCompressedSize: false
+			reportCompressedSize: false,
+			// Jamais de police inlinée en `data:` : la CSP (`font-src` de
+			// hooks.server.ts) la bloquerait. KaTeX_Size3 (3,6 Ko, sous le seuil de
+			// 4 Ko) l'était depuis `mathlive/static.css`, sur toute page à maths.
+			// `undefined` : la règle par défaut de Vite pour les autres fichiers.
+			assetsInlineLimit: (filePath) => (FONT_FILE.test(filePath) ? false : undefined)
 		},
 
 		test: {
