@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 — PR 1 (#1474) et PR 2 (#1478) mergées ; PR 3 (𝒞f dans la Figure) à faire
+status: lot 1 — PR 1 (#1474), PR 2 (#1478), PR 3 (#1482) mergées ; PR 4 (grapheur à vrais paramètres) à faire
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -15,7 +15,7 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 | --- | ---------------------------------------------------------------------------------------------- | --------------------------------- | -------- |
 | 1   | Modèle : types `point` et `curve`, lecture, `y` réservé + migration, cartes, sauvegarde / lien | `feat/atelier-geometrie-modele`   | ✅ #1474 |
 | 2   | Vue Figure et pont `syncFigure` (curseurs cachés réglés par `moveSlider`, repère)              | `feat/atelier-geometrie-figure`   | ✅ #1478 |
-| 3   | 𝒞f dans la vue Géométrie (action de carte), onglet renommé « Géométrie »                       | `feat/atelier-geometrie-courbe-f` | en cours |
+| 3   | 𝒞f dans la vue Géométrie (action de carte), onglet renommé « Géométrie »                       | `feat/atelier-geometrie-courbe-f` | ✅ #1482 |
 | 4   | Grapheur à vrais paramètres (Q4 : sa propre PR, en dernier)                                    | —                                 | à faire  |
 
 ## PR 1 — journal
@@ -95,3 +95,6 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
   (comportement déjà juste) : `1/x` en deux sous-chemins, `ln x` rien à gauche de x = 0, rejeu
   Afficher / Retirer / Afficher (même état, mêmes lignes), invariant 9 pour une fonction en
   erreur et pour `f′` d'une f en erreur ; `passesNear` ne lit plus que les points d'arrivée.
+- 2026-10-18 : PR 3 vérifiée à l'écran, revue sans point bloquant, CI verte, **mergée (#1482,
+  `dc18cb72e`)**. Pas en production. À trancher par David : couleur de 𝒞f dans la vue Géométrie
+  (toutes bleues, alors que la carte et le Graphe ont leur couleur).
