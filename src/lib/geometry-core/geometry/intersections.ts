@@ -288,6 +288,76 @@ export function intersectLQ(
 }
 
 /**
+ * Droite × conique en valeurs EXACTES (`GeoValue`) : l'atelier (lot 2, PR 3)
+ * calcule `intersection(d, q, k)` exact quand la droite et les coefficients le
+ * sont (`(√2 ; √2)` pour y = x et x² + y² = 4).
+ *
+ * ⚠️ MÊME FORMULE et MÊME ORDRE que `intersectLQ` (le paramètre t de la droite
+ * x = x1 + t·dx, y = y1 + t·dy, puis (−b − √Δ)/(2a) avant (−b + √Δ)/(2a)) : la
+ * numérotation `k` ne dépend pas de l'exactitude des données. Les branchements
+ * (a nul, signe de Δ) se décident en nombres, avec les tolérances de
+ * `solveQuadratic`.
+ *
+ * @returns les points (0, 1 ou 2), ou `infinite` quand la droite est contenue
+ *   dans la conique (a, b et c nuls : x² = 0 et x = 0).
+ */
+export function intersectLQExact(
+	lineP1: GeoPoint,
+	lineP2: GeoPoint,
+	coefficients: readonly GeoValue[]
+): { readonly kind: 'points'; readonly points: GeoPoint[] } | { readonly kind: 'infinite' } {
+	const [A, B, C, D, E, F] = coefficients;
+	const two = geoFromNumber(2);
+	const { x: x1, y: y1 } = lineP1;
+	const dx = geoSub(lineP2.x, x1);
+	const dy = geoSub(lineP2.y, y1);
+	const sum = (...terms: GeoValue[]) => terms.reduce((acc, t) => geoAdd(acc, t));
+	const mul = (...factors: GeoValue[]) => factors.reduce((acc, f) => geoMul(acc, f));
+
+	const a = sum(mul(A, dx, dx), mul(B, dx, dy), mul(C, dy, dy));
+	const b = sum(
+		mul(two, A, x1, dx),
+		mul(B, geoAdd(geoMul(x1, dy), geoMul(y1, dx))),
+		mul(two, C, y1, dy),
+		geoMul(D, dx),
+		geoMul(E, dy)
+	);
+	const c = sum(mul(A, x1, x1), mul(B, x1, y1), mul(C, y1, y1), geoMul(D, x1), geoMul(E, y1), F);
+
+	const at = (t: GeoValue): GeoPoint => ({
+		x: geoAdd(x1, geoMul(t, dx)),
+		y: geoAdd(y1, geoMul(t, dy))
+	});
+	const [an, bn, cn] = [a, b, c].map(geoToNumber);
+
+	if (Math.abs(an) < 1e-12) {
+		if (Math.abs(bn) < 1e-12) {
+			return Math.abs(cn) < 1e-12 ? { kind: 'infinite' } : { kind: 'points', points: [] };
+		}
+		const t = geoDiv(geoOpposite(c), b);
+		return { kind: 'points', points: t === null ? [] : [at(t)] };
+	}
+
+	const disc = geoSub(geoMul(b, b), mul(geoFromNumber(4), a, c));
+	const discNum = geoToNumber(disc);
+	const tol = Math.max(1e-10, 1e-10 * bn * bn);
+	if (discNum < -tol) return { kind: 'points', points: [] };
+	const twoA = geoMul(two, a);
+	if (Math.abs(discNum) < tol) {
+		const t = geoDiv(geoOpposite(b), twoA);
+		return { kind: 'points', points: t === null ? [] : [at(t)] };
+	}
+	const root = geoSqrt(disc);
+	if (root === null) return { kind: 'points', points: [] };
+	const points: GeoPoint[] = [];
+	for (const signed of [geoOpposite(root), root]) {
+		const t = geoDiv(geoAdd(geoOpposite(b), signed), twoA);
+		if (t !== null) points.push(at(t));
+	}
+	return { kind: 'points', points };
+}
+
+/**
  * Intersect two quadratic curves (conic sections).
  * Each conic defined by 6 coefficients [A,B,C,D,E,F].
  * Returns 0 to 4 intersection points, or null if none.

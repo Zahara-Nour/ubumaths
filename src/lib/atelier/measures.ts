@@ -90,7 +90,7 @@ export type MeasuredText =
 			/** Une mesure n'a qu'une valeur approchée (« ≈ ») */
 			readonly approximate: boolean;
 	  }
-	| { readonly ok: false; readonly message: string };
+	| { readonly ok: false; readonly message: string; readonly pending?: boolean };
 
 // =============================================================================
 // Constantes
@@ -109,7 +109,20 @@ const REMARKABLE: readonly (readonly [MathNode, number])[] = [
 	[opposite(mathNumber('1')), 180]
 ];
 
-class Failure extends Error {}
+/** `pending` : un point cité attend (PR 3 : une intersection vide) — la mesure attend avec lui. */
+class Failure extends Error {
+	constructor(
+		message: string,
+		readonly pending = false
+	) {
+		super(message);
+	}
+}
+
+/** Une mesure approchée : un angle non remarquable, ou un point qui n'est qu'approché (PR 3). */
+function isApproximate(result: Measured): boolean {
+	return result.approximate || !isExact(result.value);
+}
 
 // =============================================================================
 // Calculer
@@ -121,7 +134,7 @@ function pointOfArgument(atelier: Atelier, argument: ReadArgument): GeoPoint {
 		if (object === undefined) throw new Failure(`« ${argument.name} » n’est pas encore défini.`);
 		if (object.kind !== 'point') throw new Failure(`« ${argument.name} » n’est pas un point.`);
 		const read = pointOutcome(atelier, { kind: 'ref', name: argument.name });
-		if (!read.ok) throw new Failure(read.message);
+		if (!read.ok) throw new Failure(read.message, read.reason === 'pending');
 		return read.point;
 	}
 	if (argument.kind === 'call') {
@@ -129,7 +142,7 @@ function pointOfArgument(atelier: Atelier, argument: ReadArgument): GeoPoint {
 		if (!typed.ok) throw new Failure(typed.message);
 		if (typed.spec.result === 'point') {
 			const read = pointOutcome(atelier, typed.spec.point);
-			if (!read.ok) throw new Failure(read.message);
+			if (!read.ok) throw new Failure(read.message, read.reason === 'pending');
 			return read.point;
 		}
 		throw new Failure(`« ${argument.call.text} » n’est pas un point.`);
@@ -158,7 +171,9 @@ function pointOrLine(
 		(argument.kind === 'call' &&
 			argument.call.word !== 'milieu' &&
 			argument.call.word !== 'point' &&
-			argument.call.word !== 'projection');
+			argument.call.word !== 'projection' &&
+			argument.call.word !== 'intersection' &&
+			argument.call.word !== 'point_sur');
 	if (!isLine) return { point: pointOfArgument(atelier, argument) };
 	const spec =
 		argument.kind === 'name'
@@ -173,7 +188,7 @@ function pointOrLine(
 					return typed.spec.line;
 				})();
 	const read = lineOutcome(atelier, spec);
-	if (!read.ok) throw new Failure(read.message);
+	if (!read.ok) throw new Failure(read.message, read.reason === 'pending');
 	return read;
 }
 
@@ -403,7 +418,7 @@ export function measuredText(atelier: Atelier, text: string, provenance: Provena
 			const read = readArguments(call.content, call.word);
 			if (!read.ok) throw new Failure(read.message);
 			const result = measure(atelier, call.word, read.args);
-			approximate ||= result.approximate;
+			approximate ||= isApproximate(result);
 			// Un angle est une GRANDEUR, dans l'unité du réglage (décision de David, 2026-10-18)
 			const value =
 				call.word === 'angle'
@@ -420,10 +435,15 @@ export function measuredText(atelier: Atelier, text: string, provenance: Provena
 				{ kind: 'name', name: q }
 			]);
 			changed = true;
+			approximate ||= isApproximate(result);
 			return written(result.value, latex);
 		});
 	} catch (error) {
-		if (error instanceof Failure) return { ok: false, message: error.message };
+		if (error instanceof Failure) {
+			return error.pending
+				? { ok: false, message: error.message, pending: true }
+				: { ok: false, message: error.message };
+		}
 		throw error;
 	}
 	return { ok: true, text: out, changed, approximate };
@@ -478,7 +498,7 @@ export function measuredAst(
 	functionNames?: readonly string[]
 ):
 	| { readonly ok: true; readonly ast: MathNode | null; readonly approximate: boolean }
-	| { readonly ok: false; readonly message: string } {
+	| { readonly ok: false; readonly message: string; readonly pending?: boolean } {
 	const latex = isLatex(provenance);
 	const isPoint = (name: string) => atelier.get(name)?.kind === 'point';
 	const nodes: MathNode[] = [];
@@ -494,7 +514,7 @@ export function measuredAst(
 			const read = readArguments(call.content, call.word);
 			if (!read.ok) throw new Failure(read.message);
 			const result = measure(atelier, call.word, read.args);
-			approximate ||= result.approximate;
+			approximate ||= isApproximate(result);
 			const node =
 				call.word === 'angle'
 					? angleNode(result.value, atelier.angleUnit)
@@ -508,10 +528,15 @@ export function measuredAst(
 				{ kind: 'name', name: p },
 				{ kind: 'name', name: q }
 			]);
+			approximate ||= isApproximate(result);
 			return mark(valueNode(result.value));
 		});
 	} catch (error) {
-		if (error instanceof Failure) return { ok: false, message: error.message };
+		if (error instanceof Failure) {
+			return error.pending
+				? { ok: false, message: error.message, pending: true }
+				: { ok: false, message: error.message };
+		}
 		throw error;
 	}
 	const read = astOf(out, provenance, functionNames);

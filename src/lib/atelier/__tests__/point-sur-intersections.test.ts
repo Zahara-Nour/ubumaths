@@ -27,7 +27,7 @@ function session(): CalcSession {
 
 /**
  * A(0 ; 1), B(1 ; 3) : (AB) a pour équation y = 2x + 1. O(0 ; 0), C(2 ; 0),
- * D(1 ; 1), Q(1 ; 0). e = (OC) est l'axe des abscisses, c le cercle de centre O
+ * D(1 ; 1), Q(1 ; 0). u = (OC) est l'axe des abscisses, c le cercle de centre O
  * de rayon 1.
  */
 function plane(...more: string[]): CalcSession {
@@ -40,7 +40,7 @@ function plane(...more: string[]): CalcSession {
 		'D = (1 ; 1)',
 		'Q = (1 ; 0)',
 		'd = (AB)',
-		'e = (OC)',
+		'u = (OC)',
 		'c = cercle(O ; 1)',
 		...more
 	];
@@ -85,16 +85,16 @@ function state(s: CalcSession, name: string): [string | undefined, string | unde
 // =============================================================================
 
 describe('intersection(a, b, k) : droite et droite', () => {
-	it('E = intersection(d, e) : un seul point, k facultatif, exact', () => {
+	it('E = intersection(d, u) : un seul point, k facultatif, exact', () => {
 		const s = plane();
-		define(s, 'E = intersection(d, e)');
+		define(s, 'E = intersection(d, u)');
 		expect(card(s, 'E')).toBe('E(-1/2 ; 0)');
 		expect(answer(runInput(s, 'E'))).toBe('E(-1/2 ; 0)');
 	});
 
-	it('intersection(d, e, 1) : le même point', () => {
+	it('intersection(d, u, 1) : le même point', () => {
 		const s = plane();
-		define(s, 'E = intersection(d ; e ; 1)');
+		define(s, 'E = intersection(d ; u ; 1)');
 		expect(card(s, 'E')).toBe('E(-1/2 ; 0)');
 	});
 
@@ -119,10 +119,10 @@ describe('intersection(a, b, k) : droite et droite', () => {
 
 	it('k = 2 pour deux droites : en erreur, deux droites ont un point commun au plus', () => {
 		const s = plane();
-		define(s, 'E = intersection(d, e, 2)');
+		define(s, 'E = intersection(d, u, 2)');
 		expect(state(s, 'E')).toEqual([
 			'error',
-			'Deux droites ont au plus un point commun : écris intersection(d, e).'
+			'Deux droites ont au plus un point commun : écris intersection(d, u).'
 		]);
 	});
 });
@@ -130,16 +130,16 @@ describe('intersection(a, b, k) : droite et droite', () => {
 describe('intersection(a, b, k) : droite et cercle', () => {
 	it('deux points sans k : refus, avec l’aide des deux écritures', () => {
 		const s = plane();
-		expect(refusal(runInput(s, 'E = intersection(e, c)'))).toBe(
-			'e et c se coupent en deux points : écris intersection(e, c, 1) ou intersection(e, c, 2).'
+		expect(refusal(runInput(s, 'E = intersection(u, c)'))).toBe(
+			'u et c se coupent en deux points : écris intersection(u, c, 1) ou intersection(u, c, 2).'
 		);
 		expect(s.atelier.get('E')).toBeUndefined();
 	});
 
 	it('k = 1, k = 2 : la numérotation de geometry-core (sens de la droite)', () => {
 		const s = plane();
-		define(s, 'E = intersection(e, c, 1)');
-		define(s, 'F = intersection(e, c, 2)');
+		define(s, 'E = intersection(u, c, 1)');
+		define(s, 'F = intersection(u, c, 2)');
 		expect(card(s, 'E')).toBe('E(-1 ; 0)');
 		expect(card(s, 'F')).toBe('F(1 ; 0)');
 	});
@@ -147,38 +147,38 @@ describe('intersection(a, b, k) : droite et cercle', () => {
 	it('exact avec des racines : (OD) et c', () => {
 		const s = plane('h = (OD)');
 		define(s, 'E = intersection(h, c, 2)');
-		expect(card(s, 'E')).toBe('E(√2/2 ; √2/2)');
+		expect(card(s, 'E')).toBe('E((1/2)√2 ; (1/2)√2)');
 	});
 
-	it('le cercle d’abord : intersection(c, e, 2) numérote comme intersection(e, c, 2)', () => {
+	it('le cercle d’abord : intersection(c, u, 2) numérote comme intersection(u, c, 2)', () => {
 		const s = plane();
-		define(s, 'F = intersection(c ; e ; 2)');
+		define(s, 'F = intersection(c ; u ; 2)');
 		expect(card(s, 'F')).toBe('F(1 ; 0)');
 	});
 
 	it('une tangente : un seul point, k facultatif', () => {
-		const s = plane('t = parallele(A, e)');
+		const s = plane('t = parallele(A, u)');
 		define(s, 'T = intersection(t, c)');
 		expect(card(s, 'T')).toBe('T(0 ; 1)');
 	});
 
 	it('une tangente et k = 2 : il n’y a pas de second point (en attente)', () => {
-		const s = plane('t = parallele(A, e)');
+		const s = plane('t = parallele(A, u)');
 		define(s, 'T = intersection(t, c, 2)');
 		expect(state(s, 'T')).toEqual(['pending', 't et c n’ont qu’un point commun.']);
 	});
 
 	it('aucun point : en attente, la raison ; un curseur les fait se couper, le point revient', () => {
-		const s = plane('a = 2', 'P = (0 ; a)', 'h = parallele(P, e)');
+		const s = plane('a = 2', 'P = (0 ; a)', 'h = parallele(P, u)');
 		define(s, 'E = intersection(h, c, 1)');
 		expect(state(s, 'E')).toEqual(['pending', 'h et c ne se coupent pas.']);
 		s.atelier.slideTo('a', 0.5);
 		expect(state(s, 'E')[0]).toBe('ok');
-		expect(card(s, 'E')).toBe('E(-√3/2 ; 1/2)');
+		expect(card(s, 'E')).toBe('E(-(1/2)√3 ; 1/2)');
 	});
 
 	it('ce qui cite un point en attente attend aussi (pas une erreur)', () => {
-		const s = plane('a = 2', 'P = (0 ; a)', 'h = parallele(P, e)');
+		const s = plane('a = 2', 'P = (0 ; a)', 'h = parallele(P, u)');
 		define(s, 'E = intersection(h, c, 1)');
 		define(s, 'I = milieu(E, O)');
 		define(s, 'L = OE');
@@ -195,8 +195,8 @@ describe('intersection(a, b, k) : cercle et cercle', () => {
 		const s = plane('k = cercle(Q ; 1)');
 		define(s, 'E = intersection(c, k, 1)');
 		define(s, 'F = intersection(c, k, 2)');
-		expect(card(s, 'E')).toBe('E(1/2 ; √3/2)');
-		expect(card(s, 'F')).toBe('F(1/2 ; -√3/2)');
+		expect(card(s, 'E')).toBe('E(1/2 ; (1/2)√3)');
+		expect(card(s, 'F')).toBe('F(1/2 ; -(1/2)√3)');
 	});
 
 	it('deux cercles égaux : refus, une infinité de points communs', () => {
@@ -239,10 +239,10 @@ describe('intersection(a, b, k) : courbes par équation et fonctions', () => {
 
 	it('droite et fonction sans forme exacte : approché, numéroté de gauche à droite', () => {
 		const s = plane('f(x) = cos(x)');
-		expect(refusal(runInput(s, 'E = intersection(e, f)'))).toContain(
-			'e et f se coupent en 6 points'
+		expect(refusal(runInput(s, 'E = intersection(u, f)'))).toContain(
+			'u et f se coupent en 6 points'
 		);
-		define(s, 'E = intersection(e, f, 4)');
+		define(s, 'E = intersection(u, f, 4)');
 		expect(card(s, 'E')).toBe('E ≈ (1,5708 ; 0)');
 	});
 
@@ -292,10 +292,10 @@ describe('intersection(a, b, k) : courbes par équation et fonctions', () => {
 
 	it('k doit être un entier à partir de 1', () => {
 		const s = plane();
-		expect(refusal(runInput(s, 'E = intersection(e ; c ; 0)'))).toBe(
+		expect(refusal(runInput(s, 'E = intersection(u ; c ; 0)'))).toBe(
 			'Dans intersection(…), le numéro du point est un entier à partir de 1 (1, 2…).'
 		);
-		expect(refusal(runInput(s, 'E = intersection(e ; c ; 1,5)'))).toBe(
+		expect(refusal(runInput(s, 'E = intersection(u ; c ; 1,5)'))).toBe(
 			'Dans intersection(…), le numéro du point est un entier à partir de 1 (1, 2…).'
 		);
 	});
@@ -437,7 +437,7 @@ describe('point_sur : le curseur de position', () => {
 		expect(moved.ok).toBe(true);
 		expect(s.atelier.positionOf('M')).toBe(0.5);
 		expect(card(s, 'M')).toBe('M(1/2 ; 2)');
-		expect(answer(runInput(s, 'L'))).toBe('√5/2');
+		expect(answer(runInput(s, 'L'))).toBe('sqrt(5)/2');
 	});
 
 	it('la position glissée reste dans les bornes', () => {
@@ -447,14 +447,21 @@ describe('point_sur : le curseur de position', () => {
 		expect(s.atelier.positionOf('M')).toBe(1);
 	});
 
-	it('le curseur de position ne change pas la forme rangée : sauvegarde et lien relisent M', () => {
+	it('le curseur de position ne change pas la forme rangée : sauvegarde et lien relisent M', async () => {
 		const s = plane('s = [AB]');
 		define(s, 'M = point_sur(s ; 0,3)');
 		s.atelier.slidePosition('M', 0.6);
 		const stored = s.atelier.serialize();
-		expect(stored.objects.find((o) => o.name === 'M')).not.toHaveProperty('positionSlider');
+		expect(stored.objects.find((o) => o.name === 'M')).toEqual({
+			name: 'M',
+			kind: 'point',
+			definition: 'point_sur(s ; 0,6)'
+		});
+		const encoded = await encodeAtelier(stored);
+		const decoded = await decodeAtelier(encoded.payload);
+		expect(decoded.ok).toBe(true);
 		const back = new Atelier();
-		back.restore(decodeAtelier(encodeAtelier(stored))!);
+		if (decoded.ok) back.restore(decoded.state);
 		expect(constructionSummaryOf(back, 'M')?.text).toBe('M(3/5 ; 11/5)');
 	});
 });
@@ -464,14 +471,14 @@ describe('point_sur : le curseur de position', () => {
 // =============================================================================
 
 describe('tapé seul = calcul ; « Garder » en fait un objet', () => {
-	it('intersection(e, c, 1) tapé seul : ses coordonnées, rien de créé', () => {
+	it('intersection(u, c, 1) tapé seul : ses coordonnées, rien de créé', () => {
 		const s = plane();
-		const result = runInput(s, 'intersection(e, c, 1)');
+		const result = runInput(s, 'intersection(u, c, 1)');
 		expect(answer(result)).toBe('(-1 ; 0)');
 		expect(s.atelier.objects.some((o) => o.definition.startsWith('intersection'))).toBe(false);
 		const kept = promote(s, result);
 		expect(kept.ok).toBe(true);
-		const created = s.atelier.objects.find((o) => o.definition === 'intersection(e, c, 1)');
+		const created = s.atelier.objects.find((o) => o.definition === 'intersection(u, c, 1)');
 		expect(created?.kind).toBe('point');
 	});
 
@@ -489,7 +496,7 @@ describe('tapé seul = calcul ; « Garder » en fait un objet', () => {
 describe('dépendances : attente, cascade, renommage, circularité', () => {
 	it('supprimer le cercle : E attend ; la cascade propose E et ce qui le cite', () => {
 		const s = plane();
-		define(s, 'E = intersection(e, c, 1)');
+		define(s, 'E = intersection(u, c, 1)');
 		define(s, 'L = AE');
 		expect(s.atelier.removalOf('c')).toEqual(expect.arrayContaining(['E', 'L']));
 		s.atelier.remove('c');
@@ -498,9 +505,9 @@ describe('dépendances : attente, cascade, renommage, circularité', () => {
 
 	it('renommer le cercle réécrit l’intersection (texte)', () => {
 		const s = plane();
-		define(s, 'E = intersection(e, c, 1)');
+		define(s, 'E = intersection(u, c, 1)');
 		s.atelier.rename('c', 'w');
-		expect(s.atelier.get('E')?.definition).toBe('intersection(e, w, 1)');
+		expect(s.atelier.get('E')?.definition).toBe('intersection(u, w, 1)');
 		expect(card(s, 'E')).toBe('E(-1 ; 0)');
 	});
 
@@ -525,22 +532,22 @@ describe('dépendances : attente, cascade, renommage, circularité', () => {
 
 	it('une construction circulaire est refusée', () => {
 		const s = plane();
-		define(s, 'E = intersection(e, c, 1)');
-		expect(refusal(runInput(s, 'e = (EA)'))).toContain('circulaire');
+		define(s, 'E = intersection(u, c, 1)');
+		expect(refusal(runInput(s, 'u = (EA)'))).toContain('circulaire');
 	});
 
 	it('une mesure qui cite un point d’intersection suit son curseur', () => {
-		const s = plane('a = 0', 'P = (0 ; a)', 'h = parallele(P, e)');
+		const s = plane('a = 0', 'P = (0 ; a)', 'h = parallele(P, u)');
 		define(s, 'E = intersection(h, c, 2)');
 		define(s, 'L = AE');
-		expect(answer(runInput(s, 'L'))).toBe('√2');
+		expect(answer(runInput(s, 'L'))).toBe('sqrt(2)');
 		s.atelier.slideTo('a', 0.5);
 		expect(answer(runInput(s, 'L'))).toBe('1');
 	});
 
 	it('une mesure qui cite un point APPROCHÉ se dit « ≈ »', () => {
 		const s = plane('f(x) = cos(x)');
-		define(s, 'E = intersection(e, f, 4)');
+		define(s, 'E = intersection(u, f, 4)');
 		define(s, 'L = OE');
 		expect(answer(runInput(s, 'L'))).toBe('≈ 1,5708');
 	});

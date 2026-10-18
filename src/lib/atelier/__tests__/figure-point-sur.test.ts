@@ -33,7 +33,7 @@ const PLANE: Entry[] = [
 	['point', 'B', '(1 ; 3)'],
 	['point', 'O', '(0 ; 0)'],
 	['point', 'C', '(2 ; 0)'],
-	['curve', 'e', '(OC)'],
+	['curve', 'u', '(OC)'],
 	['curve', 'c', 'cercle(O ; 1)']
 ];
 
@@ -62,7 +62,7 @@ function close(actual: [number, number] | null, expected: [number, number]): voi
 
 describe('intersection dans la vue Géométrie', () => {
 	it('un point d’intersection est dessiné à ses coordonnées', () => {
-		const atelier = atelierOf([...PLANE, ['point', 'E', 'intersection(e, c, 1)']]);
+		const atelier = atelierOf([...PLANE, ['point', 'E', 'intersection(u, c, 1)']]);
 		const target = new AtelierFigure();
 		syncFigure(atelier, target);
 		close(drawn(target, 'E'), [-1, 0]);
@@ -73,7 +73,7 @@ describe('intersection dans la vue Géométrie', () => {
 			...PLANE,
 			['value', 'a', '0,5'],
 			['point', 'P', '(0 ; a)'],
-			['curve', 'h', 'parallele(P, e)'],
+			['curve', 'h', 'parallele(P, u)'],
 			['point', 'E', 'intersection(h, c, 1)']
 		]);
 		const target = new AtelierFigure();
@@ -89,7 +89,7 @@ describe('intersection dans la vue Géométrie', () => {
 			...PLANE,
 			['value', 'a', '-0,9'],
 			['point', 'P', '(0 ; a)'],
-			['curve', 'h', 'parallele(P, e)'],
+			['curve', 'h', 'parallele(P, u)'],
 			['point', 'E', 'intersection(h, c, 1)'],
 			['point', 'F', 'intersection(h, c, 2)']
 		]);
@@ -98,12 +98,12 @@ describe('intersection dans la vue Géométrie', () => {
 			const a = -0.9 + i * 0.1;
 			atelier.slideTo('a', a);
 			syncFigure(atelier, target);
-			const e = drawn(target, 'E');
+			const u = drawn(target, 'E');
 			const f = drawn(target, 'F');
 			// E toujours à gauche, F toujours à droite : aucun saut de branche
-			expect(e![0]).toBeLessThan(0);
+			expect(u![0]).toBeLessThan(0);
 			expect(f![0]).toBeGreaterThan(0);
-			expect(e![1]).toBeCloseTo(a, 6);
+			expect(u![1]).toBeCloseTo(a, 6);
 		}
 	});
 
@@ -129,7 +129,7 @@ describe('intersection dans la vue Géométrie', () => {
 			...PLANE,
 			['value', 'a', '0,5'],
 			['point', 'P', '(0 ; a)'],
-			['curve', 'h', 'parallele(P, e)'],
+			['curve', 'h', 'parallele(P, u)'],
 			['point', 'E', 'intersection(h, c, 1)']
 		]);
 		const target = new AtelierFigure();
@@ -147,7 +147,7 @@ describe('intersection dans la vue Géométrie', () => {
 			...PLANE,
 			['value', 'a', '2'],
 			['function', 'f', 'x^2 - a'],
-			['point', 'E', 'intersection(e, f, 2)']
+			['point', 'E', 'intersection(u, f, 2)']
 		]);
 		const target = new AtelierFigure();
 		syncFigure(atelier, target);
@@ -162,7 +162,7 @@ describe('intersection dans la vue Géométrie', () => {
 			...PLANE,
 			['value', 'a', '0'],
 			['point', 'P', '(0 ; a)'],
-			['curve', 'h', 'parallele(P, e)'],
+			['curve', 'h', 'parallele(P, u)'],
 			['point', 'E', 'intersection(h, c, 2)'],
 			['point', 'I', 'milieu(E, O)']
 		]);
@@ -237,7 +237,7 @@ describe('point_sur dans la vue Géométrie', () => {
 			...PLANE,
 			['curve', 's', '[AB]'],
 			['point', 'M', 'point_sur(s ; 0)'],
-			['curve', 'h', 'parallele(M, e)'],
+			['curve', 'h', 'parallele(M, u)'],
 			['point', 'E', 'intersection(h, c)']
 		]);
 		const target = new AtelierFigure();
