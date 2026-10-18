@@ -565,3 +565,43 @@ describe('5. commandes et couple tapé seul', () => {
 		);
 	});
 });
+
+// =============================================================================
+// 6. Le tri d'une saisie « nom : … » (revue de code)
+// =============================================================================
+
+describe('6. ce qui n’est pas une courbe reste un calcul', () => {
+	it('nom réservé, sans x ni y : x : 2 = 4 est un calcul', () => {
+		expect(runInput(session(), 'x : 2 = 4').kind).toBe('calcul');
+	});
+
+	it('nom d’une valeur, sans x ni y : a : b = 3 est un calcul', () => {
+		const s = session();
+		runInput(s, 'a = 6');
+		runInput(s, 'b = 2');
+
+		expect(runInput(s, 'a : b = 3').kind).toBe('calcul');
+	});
+
+	it('nom libre, sans x ni y : k : 2 = 3 est le refus C8', () => {
+		expect(refusal(runInput(session(), 'k : 2 = 3'))).toBe(
+			'Une équation de courbe contient x ou y.'
+		);
+	});
+
+	it('xy est lu comme x et y : d : xy = 1 sur une valeur d → refus V62', () => {
+		const s = session();
+		runInput(s, 'd = 1');
+
+		expect(refusal(runInput(s, 'd : xy = 1'))).toBe('« d » est déjà une valeur.');
+	});
+
+	it('H : xy = 1 crée une courbe', () => {
+		const s = session();
+
+		runInput(s, 'H : xy = 1');
+
+		expect(s.atelier.get('H')?.kind).toBe('curve');
+		expect(s.atelier.get('H')?.status).toBe('ok');
+	});
+});

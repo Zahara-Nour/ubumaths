@@ -45,6 +45,12 @@ export interface MergeReport {
 	 * leurs tirages sont donc refaits — à dire (phase 0 §4).
 	 */
 	readonly redrawn: boolean;
+	/**
+	 * Les objets de l'atelier PERSONNEL renommés à sa relecture (`y` devenu
+	 * réservé, Q2 de la géométrie) : enregistrés sous leur nouveau nom, donc à
+	 * dire — sans quoi l'élève retrouverait `a` à la place de son `y`, en silence.
+	 */
+	readonly migrated?: ReadonlyArray<{ readonly from: string; readonly to: string }>;
 }
 
 // =============================================================================
@@ -327,7 +333,8 @@ export function keepReceived(
 ): { ok: true; report: MergeReport } | { ok: false; message: string } {
 	const personal = new Atelier();
 	const loaded = loadAtelier(storage);
-	if (loaded.kind === 'loaded') personal.restore(loaded.state);
+	let migrated: MergeReport['migrated'] = [];
+	if (loaded.kind === 'loaded') migrated = personal.restore(loaded.state).renamed;
 	else if (
 		loaded.kind === 'too-recent' ||
 		loaded.kind === 'corrupt' ||
@@ -345,5 +352,5 @@ export function keepReceived(
 	if (saved.kind !== 'saved') {
 		return { ok: false, message: 'Ton atelier n’a pas pu être enregistré : rien n’a été versé.' };
 	}
-	return { ok: true, report };
+	return { ok: true, report: migrated.length > 0 ? { ...report, migrated } : report };
 }

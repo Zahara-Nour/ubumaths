@@ -10,6 +10,8 @@ import { userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
 import WithAtelier from './harness/WithAtelier.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { runInput } from '$lib/atelier/calcul';
 
 // =============================================================================
 // Décor
@@ -96,5 +98,45 @@ describe('la carte d’un objet de la figure', () => {
 
 		await vi.waitFor(() => expect(atelier.get('d')?.status).toBe('ok'));
 		expect(atelier.get('d')?.kind).toBe('curve');
+	});
+
+	it('P1 : le rendu du point se lit (1 ; 2)', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'point', name: 'A', definition: '(1 ; 2)' }, 'text');
+		const { container } = await render(WithAtelier, { atelier });
+
+		const card = cardFor(container, 'A');
+
+		// Mesuré (MathLive 0.111) : « Open paren. 1 semi-colon 2 Close paren. »
+		expect(card.querySelector('.definition .sr-only')?.textContent?.trim()).toBe(
+			'Open paren. 1 semi-colon 2 Close paren.'
+		);
+	});
+
+	it('P3 : la carte d’un point se tape, (1;2) puis (1,5;2) → A(3/2 ; 2)', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'point', name: 'A' });
+		const { container } = await render(WithAtelier, { atelier });
+		(cardFor(container, 'A').querySelector('.entete') as HTMLButtonElement).click();
+		await vi.waitFor(() =>
+			expect(cardFor(container, 'A').querySelector('math-field')).toBeTruthy()
+		);
+		const field = cardFor(container, 'A').querySelector('math-field') as MathfieldElement;
+		await userEvent.click(field);
+		await vi.waitFor(() => expect(document.activeElement).toBe(field));
+
+		await userEvent.keyboard('(1;2)');
+		await vi.waitFor(() => expect(atelier.get('A')?.status).toBe('ok'));
+		// Mesuré : MathLive écrit `\left(1;2\right)` pour `(1;2)` tapé
+		expect(atelier.get('A')?.definition).toBe('\\left(1;2\\right)');
+
+		await userEvent.keyboard('{Backspace}'.repeat(12));
+		await userEvent.keyboard('(1,5;2)');
+		// Mesuré : la virgule arrive nue, `\left(1,5;2\right)`
+		await vi.waitFor(() => expect(atelier.get('A')?.definition).toBe('\\left(1,5;2\\right)'));
+		expect(atelier.get('A')?.status).toBe('ok');
+		const s = { atelier, engine: new WebReplEngine(), seed: () => 1 };
+		const line = runInput(s, 'A');
+		expect(line.kind === 'calcul' && line.output).toBe('A(3/2 ; 2)');
 	});
 });

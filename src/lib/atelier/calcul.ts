@@ -557,11 +557,14 @@ function defineCurve(
 	if (!hasRelation(body)) return null;
 	const { atelier } = session;
 	const existing = atelier.get(name);
+	const cites = equationCitesXOrY(atelier, body);
 	if (existing !== undefined && existing.kind !== 'curve') {
 		// `a : b = 2` avec deux valeurs reste une comparaison (C15) ; `d : y = 3x`
 		// sur une valeur d ne la change pas en courbe (C12, V62)
-		return citesXOrY(body) ? kindKeptRefusal(name, existing.kind) : null;
+		return cites ? kindKeptRefusal(name, existing.kind) : null;
 	}
+	// `x : 2 = 4` : un nom réservé, sans x ni y — un calcul, comme avant la géométrie
+	if (!cites && validateName(name, []) === 'reserved') return null;
 	const rejection = validateName(
 		name,
 		atelier.names.filter((n) => n !== name)
@@ -581,6 +584,17 @@ function defineCurve(
 			: atelier.update(name, body, provenance);
 	if (!done.ok) return { kind: 'refus', message: done.message };
 	return { kind: 'definition', name, object: atelier.get(name) ?? done.object };
+}
+
+/**
+ * Le corps cite-t-il x ou y ? Lu sur l'ARBRE quand il se lit (`2xy`, `axy`),
+ * sinon dans le texte (`y = 2x = 3`, que le parseur maison lit d'ailleurs).
+ */
+function equationCitesXOrY(atelier: Atelier, body: string): boolean {
+	const ast = astOf(body, 'text', atelier.functionNames);
+	if (ast === null) return citesXOrY(body);
+	const variables = getVariables(ast);
+	return variables.has('x') || variables.has('y');
 }
 
 /**

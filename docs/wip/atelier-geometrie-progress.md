@@ -27,3 +27,9 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
   migration d'un objet `y` (Q2), plafond de 50 (Q3), cartes « d : … » et « A = … », boutons
   « + Point » et « + Courbe ». Reportés en PR 2 : la nature d'une courbe (C1 « droite », C2
   « cercle ») et la courbe vide (C6), faute d'une classification pure dans `geometry-core`.
+- 2026-10-18 : corrections de la revue — un `y` de l'atelier personnel renommé en gardant un lien
+  reçu est dit (`MergeReport.migrated`, ShareBar) ; `x : 2 = 4` redevient un calcul (nom réservé
+  sans x ni y), `k : 2 = 3` reste le refus C8 ; `xy` est lu comme x et y ; la carte d'un point
+  testée à la frappe (MathLive écrit `\left(1;2\right)`, `\left(1,5;2\right)`).
+- **À trancher par David** : `y` hors définitions dans Calcul (`2y + a`, `.dériver y`) n'est pas
+  contrôlé.

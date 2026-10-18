@@ -1054,7 +1054,7 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   sauf celles des courbes, premier terme d'une suite, formules de la grille, `renameInFormula`) et
   rend le renommage : `restore` le met dans son rapport (`renamed`), la session et `openLink` le
   disent (« « y » est désormais réservé aux équations : ton objet s'appelle maintenant k. »), la
-  fusion le compte parmi les arrivants renommés en évitant aussi les noms de l'atelier qui reçoit.
+  fusion le compte parmi les arrivants renommés en évitant aussi les noms de l'atelier qui reçoit. « Garder dans mon atelier » dit aussi le renommage d'un `y` de l'atelier personnel, relu à cette occasion (`MergeReport.migrated`, `ShareBar.svelte`).
   Appliquée à toute relecture, quelle que soit la version. Chaque issue est nommée (`LoadOutcome`,
   `SaveOutcome` : stockage indisponible, quota, trop volumineux…).
 - **Session** (`session.ts`) : sauvegarde différée de 500 ms sur `revision`, écrite aussi au

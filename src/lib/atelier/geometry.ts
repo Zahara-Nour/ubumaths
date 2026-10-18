@@ -94,7 +94,8 @@ export function equationShapeRefusal(text: string): string | null {
  * `max` est collé à une lettre, celui de `exp(x)` non.
  */
 export function citesXOrY(text: string): boolean {
-	return /(?<![A-Za-z\\])[xy](?![A-Za-z])/.test(text);
+	// `xy` (x·y) compte : une suite de x et de y, collée à aucune autre lettre
+	return /(?<![A-Za-z\\])[xy]+(?![A-Za-z])/.test(text);
 }
 
 // =============================================================================
