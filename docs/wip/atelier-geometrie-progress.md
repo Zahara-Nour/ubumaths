@@ -135,7 +135,7 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
 | --- | ----------------------------------------------------------------------------------- | -------------------------------------- | -------- |
 | 1   | Constructions : lecture, calcul exact, dépendances, cartes (contenu), vue Géométrie | `feat/atelier-geometrie-constructions` | en cours |
 | 2   | Mesures : `AM`, `distance`, `aire`, `perimetre`, `angle`                            | —                                      | à faire  |
-| 3   | `point_sur`, `intersection`                                                         | —                                      | à faire  |
+| 3   | `point_sur`, `intersection`                                                         | `feat/atelier-geometrie-point-sur`     | en cours |
 | 4   | `.relever`                                                                          | —                                      | à faire  |
 
 ### PR 1 — journal
@@ -246,3 +246,42 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   (`point_sur`, intersections), PR 4 (`.relever`), petite PR `60°` / `60^\circ` (corrige aussi
   `cos(90[°])` dans une fonction). Choix prudents livrés dans #1506, à confirmer par David : angle
   brut dans une fonction refusé ; puissance d'un angle refusée.
+
+### PR 3 — journal (`point_sur`, intersections)
+
+- 2026-10-19 : worktree `../ubumaths-wt-atelier-point-sur`, branche `feat/atelier-geometrie-point-sur`.
+  Tests d'abord : 81 node (`point-sur-intersections.test.ts`, `figure-point-sur.test.ts`,
+  `geometry-core/geometry/__tests__/intersect-lq-exact.test.ts`, 81 rouges) et 6 navigateur
+  (`point-sur.svelte.test.ts`, 6 rouges).
+- 2026-10-19 : implémenté — `intersection(a ; b ; k)` (droite, segment, demi-droite, cercle,
+  courbe par équation : droite, y = f(x), conique ; fonction de l'atelier) et
+  `point_sur(objet ; position)` (segment, droite, demi-droite, cercle, fonction), calcul pur dans
+  `construction-intersect.ts`, exact d'abord (`intersectLL/LC/CC`, `intersectLQExact` ajoutée à
+  `geometry-core` — même formule et même ordre qu'`intersectLQ` —, `exactZeros` pour y = f(x)),
+  sinon « ≈ » 4 décimales ; numérotation `k` de geometry-core ; attente (`pending` sans
+  `missing`) quand rien ne se coupe, propagée (`usableObject`, mesures, `#geometryWaits`) ; refus à
+  la saisie : plusieurs points sans k, infinité, couple non pris en charge ; curseur de position
+  lu sur la définition (`positionSliderOf`, `slidePosition`), `ValueSlider` réutilisé dans
+  `FigureCard` (seule retouche : le curseur sous la ligne) ; vue Géométrie : intersections à
+  curseur par `createScalarExpression` (calcul de l'atelier), position = curseur caché, sans
+  reconstruire. `persistence.ts` inchangé. Tous les tests verts (60 + 12 + 10 node, 6 navigateur).
+- **À trancher par David** : (1) l'angle d'un `point_sur` sur un cercle suit le réglage « Angles »
+  (demandé), mais ce réglage est rangé dans le NAVIGATEUR, pas dans l'état : un lien
+  `point_sur(c ; 90)` ouvert chez quelqu'un réglé en radians place M à 90 rad — reco : degrés
+  toujours (comme le DSL), ou ranger l'unité dans l'état ; (2) une position hors du segment
+  (`point_sur(s ; 1,5)`) met M en attente au lieu de le ramener au bord (le DSL le ramène) ;
+  (3) bornes du curseur de position : [0 ; 10] sur une demi-droite, [−10 ; 10] sur une droite ou
+  une fonction, non réglables (pas de champ rangé) ; (4) `point_sur(s)` sans position n'a pas de
+  curseur ; (5) sans `k`, le seul point commun AUX PORTIONS est pris (un segment qui coupe un
+  cercle une fois n'exige pas k) ; (6) les intersections d'une courbe y = f(x) sans racine exacte
+  sont cherchées dans [−10 ; 10] (fenêtre du DSL).
+- Écarts code ↔ DSL documentés dans `atelier.md` (segment coupé comme sa droite et position
+  ramenée au bord dans le DSL ; exact d'abord dans l'atelier ; `point_sur` d'une conique refusé).
+- 2026-10-19 : revue de la PR 3, corrections (tests d'abord : 10 rouges) — la vue Géométrie
+  dessine EXACTEMENT le point de la carte (une seule méthode : valeurs des curseurs substituées,
+  `intersectionPoint` exact, racines hors de [−10 ; 10] comprises) ; `point_sur` sur un cercle en
+  DEGRÉS toujours (L5, comme le DSL ; curseur [0 ; 360] ; l'À trancher (1) ci-dessus tombe) ;
+  racine exacte en fraction (`√2/2`, `\dfrac`) ; deux cercles devenus égaux au glisser :
+  attente, pas erreur ; `1/3` glissé réécrit `0,33` ; une position en LaTeX n'a pas de curseur ;
+  casts retirés ; le refus « Sépare les arguments… » cite le nombre de l'élève (`0,3`, message
+  commun de `construction-read.ts`).

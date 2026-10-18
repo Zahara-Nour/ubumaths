@@ -6,14 +6,18 @@
 	 * une petite fenêtre ouverte depuis le menu de la carte (`SliderSettings`,
 	 * lot 4a de la refonte). Tout passe par l'atelier (`slideTo`) : le curseur
 	 * n'a pas d'état à lui.
+	 *
+	 * Le même curseur règle la POSITION d'un `point_sur` (géométrie, lot 2, PR 3) :
+	 * bornes de l'objet (`positionSliderOf`), le nombre écrit dans la définition
+	 * réécrit par `slidePosition`.
 	 */
 	import { useAtelier } from '$lib/atelier/context';
 	import { constantOf } from '$lib/atelier/atelier.svelte';
-	import type { Slider as SliderSettings, ValueObject } from '$lib/atelier/types';
+	import type { PointObject, Slider as SliderSettings, ValueObject } from '$lib/atelier/types';
 	import { Slider } from '$lib/components/ui/slider';
 
 	interface Props {
-		object: ValueObject;
+		object: ValueObject | PointObject;
 		slider: SliderSettings;
 	}
 
@@ -38,8 +42,12 @@
 	);
 	const notchSize = $derived((slider.max - slider.min) / notches);
 
+	const isPosition = $derived(object.kind === 'point');
+
 	const value = $derived(
-		constantOf(object.definition, object.provenance, atelier.functionNames) ?? slider.min
+		(isPosition
+			? atelier.positionOf(object.name)
+			: constantOf(object.definition, object.provenance, atelier.functionNames)) ?? slider.min
 	);
 
 	function toNotch(v: number): number {
@@ -47,7 +55,9 @@
 	}
 
 	function handleSlide(notch: number) {
-		atelier.slideTo(object.name, slider.min + notch * notchSize);
+		const next = slider.min + notch * notchSize;
+		if (isPosition) atelier.slidePosition(object.name, next);
+		else atelier.slideTo(object.name, next);
 	}
 
 	/** Six chiffres significatifs, la virgule, jamais de notation « 1e-7 ». */
@@ -57,7 +67,10 @@
 	});
 
 	/** Ce que le curseur annonce : la valeur, pas un numéro de cran. */
-	const valueText = $derived(`${object.name} = ${NUMBER_FORMAT.format(value)}`);
+	const valueText = $derived(
+		`${isPosition ? 'position de ' : ''}${object.name} = ${NUMBER_FORMAT.format(value)}`
+	);
+	const label = $derived(isPosition ? `Position de ${object.name}` : `Curseur de ${object.name}`);
 
 	let zone = $state<HTMLElement>();
 
@@ -69,7 +82,7 @@
 		const thumb = zone?.querySelector('[role="slider"]');
 		if (!thumb) return;
 		thumb.setAttribute('aria-valuetext', valueText);
-		thumb.setAttribute('aria-label', `Curseur de ${object.name}`);
+		thumb.setAttribute('aria-label', label);
 	});
 </script>
 

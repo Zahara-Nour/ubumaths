@@ -130,7 +130,16 @@ import {
 	type MeasuredText
 } from './measures';
 import { bareLineShortcut, readConstruction, renameInConstruction } from './construction-read';
-import { constructionOf, isConstruction, kindsOf, type ConstructionMemo } from './construction';
+import {
+	constructionOf,
+	isConstruction,
+	kindsOf,
+	positionSliderFor,
+	positionTextOf,
+	positionValueOf,
+	withPosition,
+	type ConstructionMemo
+} from './construction';
 import {
 	computeGrid,
 	gridTexts,
@@ -1007,6 +1016,45 @@ export class Atelier {
 			return { ok: true, object: current, recomputed: [] };
 		}
 		return this.update(name, written, 'text');
+	}
+
+	/**
+	 * Le curseur de position d'un `point_sur` à position écrite (PR 3, L5), ou
+	 * `null` : bornes de l'objet ([0 ; 1] sur un segment, [0 ; 360] sur un cercle).
+	 * Lu sur la définition, jamais rangé — la sauvegarde ne change pas.
+	 */
+	positionSliderOf(name: string): Slider | null {
+		return positionSliderFor(this, name);
+	}
+
+	/** La position écrite d'un `point_sur`, en nombre, ou `null`. */
+	positionOf(name: string): number | null {
+		return positionValueOf(this, name);
+	}
+
+	/**
+	 * Glisser la position d'un `point_sur` : le nombre écrit devient celui-ci,
+	 * arrondi au pas et gardé dans les bornes — comme `slideTo` pour une valeur.
+	 * Ce qui cite le point suit.
+	 */
+	slidePosition(name: string, value: number): Updated | Refused {
+		const current = this.get(name);
+		const slider = this.positionSliderOf(name);
+		if (current === undefined || slider === null) {
+			return { ok: false, message: `« ${name} » n’a pas de curseur de position.` };
+		}
+		if (!Number.isFinite(value)) return { ok: false, message: 'Cette valeur n’est pas un nombre.' };
+		const clamped = Math.min(slider.max, Math.max(slider.min, value));
+		const written = formatSliderValue(clamped, slider.step);
+		// Un cran qui ne change pas le nombre ÉCRIT ne réécrit rien ; `1/3` glissé à 0,33, si
+		if (written === positionTextOf(this, name)) {
+			return { ok: true, object: current, recomputed: [] };
+		}
+		const definition = withPosition(current.definition, current.provenance ?? 'url', written);
+		if (definition === null) {
+			return { ok: false, message: `« ${name} » n’a pas de curseur de position.` };
+		}
+		return this.update(name, definition, 'text');
 	}
 
 	// ---------------------------------------------------------------------------
@@ -3065,6 +3113,7 @@ export class Atelier {
 		this.#inheritIntervals(intervals.inherited);
 		this.#constructions();
 		this.#measures();
+		this.#geometryWaits(deps);
 		this.#quantityChecks(deps);
 		this.#underivable();
 		this.#sequenceChecks();
@@ -3337,7 +3386,9 @@ export class Atelier {
 			if (current.status !== 'ok') return;
 			const read = this.measuredOf(current);
 			if (read !== null && !read.ok) {
-				this.items[i] = { ...current, status: 'error', message: read.message } as AtelierObject;
+				// Un point cité qui attend (PR 3) : la mesure attend avec lui
+				const status = read.pending === true ? 'pending' : 'error';
+				this.items[i] = { ...current, status, message: read.message } as AtelierObject;
 			}
 		});
 		// Avec les statuts de ce passage : une grandeur d'angle, ce que Calcul refuserait
@@ -3608,10 +3659,44 @@ export class Atelier {
 				if (o.status !== 'ok' || !isConstruction(o)) return;
 				const built = constructionOf(this, o.name);
 				if (built.ok) return;
-				this.items[i] = { ...o, status: 'error', message: built.message } as AtelierObject;
+				// PR 3 : deux lignes qui ne se coupent pas (avec les valeurs du moment)
+				// ATTENDENT — un curseur peut les faire se couper ; le reste est une erreur
+				// Une infinité de points communs (deux cercles devenus égaux au glisser) aussi :
+				// refusée à la saisie, elle ATTEND pendant le recalcul (revue de la PR 3)
+				const status =
+					built.reason === 'pending' || built.reason === 'infinite' ? 'pending' : 'error';
+				this.items[i] = { ...o, status, message: built.message } as AtelierObject;
 				changed = true;
 			});
 		}
+	}
+
+	/**
+	 * Ce qui cite un objet mis en attente APRÈS la propagation de `recomputeAll`
+	 * (PR 3 : une intersection vide, un point hors de son segment) attend avec
+	 * lui, jusqu'au point fixe — une mesure `L = AE`, une fonction qui cite L.
+	 * Sans `missing` : rien ne manque, il n'y a pas de curseur à offrir.
+	 */
+	#geometryWaits(deps: ReadonlyMap<string, readonly string[]>): void {
+		const waiting = new Set(
+			this.items.filter((o) => o.status === 'pending' && o.missing === undefined).map((o) => o.name)
+		);
+		if (waiting.size === 0) return;
+		const before = new Set(waiting);
+		this.spread(
+			(name) =>
+				this.get(name)?.status === 'ok' && (deps.get(name) ?? []).some((d) => waiting.has(d)),
+			waiting
+		);
+		this.items.forEach((o, i) => {
+			if (!waiting.has(o.name) || before.has(o.name)) return;
+			const cause = (deps.get(o.name) ?? []).find((d) => waiting.has(d)) ?? '';
+			this.items[i] = {
+				...o,
+				status: 'pending',
+				message: `En attente de « ${cause} ».`
+			} as AtelierObject;
+		});
 	}
 
 	/**

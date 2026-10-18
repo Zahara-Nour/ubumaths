@@ -34,6 +34,7 @@
 	import DefinitionField from './DefinitionField.svelte';
 	import FigureStylePopover from './FigureStylePopover.svelte';
 	import CardActionItems from './CardActionItems.svelte';
+	import ValueSlider from './ValueSlider.svelte';
 
 	interface Props {
 		object: PointObject | CurveObject;
@@ -66,6 +67,11 @@
 	});
 
 	const actions = $derived(actionsFor(object, atelier));
+
+	/** Le curseur de position d'un `point_sur` à position écrite (lot 2, PR 3), ou `null`. */
+	const positionSlider = $derived(
+		isPoint(object) && object.status !== 'error' ? atelier.positionSliderOf(object.name) : null
+	);
 
 	/** L'élément choisi emmène le focus ailleurs : le menu ne le ramène pas sur son bouton. */
 	let focusLeaves = false;
@@ -147,6 +153,11 @@
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</div>
+
+	{#if positionSlider && isPoint(object)}
+		<!-- L5 : la position de M sur son objet, réglée comme une valeur -->
+		<ValueSlider {object} slider={positionSlider} />
+	{/if}
 
 	{#if follows && showFollows}
 		<p class="note" id="{uid}-suit">{follows}</p>

@@ -35,8 +35,10 @@ import type { Provenance } from './parse';
 // Types
 // =============================================================================
 
-/** Les mots du DSL que l'atelier sait construire (catalogue L3, sauf PR 3). */
+/** Les mots du DSL que l'atelier sait construire (catalogue L3 ; PR 3 : intersection, point_sur). */
 export type ConstructionWord =
+	| 'intersection'
+	| 'point_sur'
 	| 'point'
 	| 'milieu'
 	| 'projection'
@@ -72,6 +74,8 @@ export type ReadOutcome =
 // =============================================================================
 
 export const CONSTRUCTION_WORDS: readonly ConstructionWord[] = [
+	'intersection',
+	'point_sur',
 	'point',
 	'milieu',
 	'projection',
@@ -85,6 +89,8 @@ export const CONSTRUCTION_WORDS: readonly ConstructionWord[] = [
 
 /** Les arguments nommés que chaque mot accepte (ceux du DSL, catalogue L3). */
 const NAMED_KEYS: Readonly<Record<ConstructionWord, readonly string[]>> = {
+	intersection: [],
+	point_sur: [],
 	point: [],
 	milieu: [],
 	projection: ['axe'],
@@ -167,21 +173,27 @@ export function constructionText(definition: string, provenance: Provenance = 't
 	// constructions par ce module, l'importer ici ferait une boucle d'imports
 	const latex = provenance === 'mathfield' || provenance === 'keyboard' || provenance === 'storage';
 	if (!latex) return definition.trim();
-	return definition
-		.replace(/\\left\s*(?:\\lbrack|\[)/g, '[')
-		.replace(/\\right\s*(?:\\rbrack|\])/g, ']')
-		.replace(/\\left\s*\(/g, '(')
-		.replace(/\\right\s*\)/g, ')')
-		.replace(/\\left\s*\.|\\right\s*\./g, '')
-		.replace(/\\lbrack/g, '[')
-		.replace(/\\rbrack/g, ']')
-		.replace(/\\(?:operatorname|mathrm|text|mathit)\{([^{}]*)\}/g, '$1')
-		.replace(/\\(?:acute|grave|hat)\{([A-Za-z])\}/g, '$1')
-		.replace(/\{,\}/g, ',')
-		.replace(/_\{(\d+)\}/g, '_$1')
-		.replace(/\\[,;: !]|~/g, ' ')
-		.replace(/\s+/g, ' ')
-		.trim();
+	return (
+		definition
+			.replace(/\\left\s*(?:\\lbrack|\[)/g, '[')
+			.replace(/\\right\s*(?:\\rbrack|\])/g, ']')
+			.replace(/\\left\s*\(/g, '(')
+			.replace(/\\right\s*\)/g, ')')
+			.replace(/\\left\s*\.|\\right\s*\./g, '')
+			.replace(/\\lbrack/g, '[')
+			.replace(/\\rbrack/g, ']')
+			// `point\_sur` : le tiret bas du mot, échappé par la carte (`constructionLatex`)
+			.replace(/\\_/g, '_')
+			.replace(/\\(?:operatorname|mathrm|text|mathit)\{([^{}]*)\}/g, '$1')
+			// MathLive fait de `_` un indice : `point_{sur}` est le mot du DSL
+			.replace(/point\s*_\s*\{\s*s\s*u\s*r\s*\}/g, 'point_sur')
+			.replace(/\\(?:acute|grave|hat)\{([A-Za-z])\}/g, '$1')
+			.replace(/\{,\}/g, ',')
+			.replace(/_\{(\d+)\}/g, '_$1')
+			.replace(/\\[,;: !]|~/g, ' ')
+			.replace(/\s+/g, ' ')
+			.trim()
+	);
 }
 
 /** Les raccourcis remplacés par une marque, et ce qu'ils étaient. */
@@ -268,7 +280,9 @@ function argumentsOf(content: string, word: string): string[] {
 	const level = firstLevelOf(content);
 	const separatingComma = /,(?!\d)|(?<!\d),/.test(level);
 	const decimalComma = /\d,\d/.test(level);
-	const ambiguous = `Sépare les arguments de ${word} avec « ; » : une virgule entre deux chiffres est décimale (1,5).`;
+	// Le nombre de l'élève (`0,3`), sinon l'exemple (revue de la PR 3)
+	const shown = /\d+,\d+/.exec(level)?.[0] ?? '1,5';
+	const ambiguous = `Sépare les arguments de ${word} avec « ; » : une virgule entre deux chiffres est décimale (${shown}).`;
 	let parts: string[];
 	if (level.includes(';')) {
 		if (separatingComma) throw new Refusal(ambiguous);

@@ -94,7 +94,18 @@ import { plotRestrictionOf } from './interval';
 import { constantOf } from './constant';
 import { pointCoordinatesOf } from './parse';
 import { substitutedAstOf, substitutedTextOf } from './engine';
-import { constructionOf, isConstruction, nodeOf, type ConstructionMemo } from './construction';
+import {
+	constructionOf,
+	isConstruction,
+	nodeOf,
+	type ConstructionMemo,
+	type DeferredIntersection,
+	type FigureRecipes
+} from './construction';
+import { intersectionPoint, type Support } from './construction-intersect';
+import { isExact, type GeoValue } from '$lib/geometry-core/types/geo-value';
+import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
+import { substitute } from '$lib/mathAST/eval/substitute';
 import type { GeoPoint } from '$lib/geometry-core/types/primitives';
 import { displayName } from './names';
 
@@ -195,6 +206,12 @@ type Wanted = WantedPoint | WantedCurve | WantedFunction | WantedConstruction;
 /** Ce que l'atelier demande à la figure. */
 export interface FigurePlan {
 	readonly sliders: readonly WantedSlider[];
+	/**
+	 * Les points d'intersection qui suivent un curseur (PR 3) : deux nombres de la
+	 * figure chacun, recalculés à chaque cran par le calcul même de l'atelier
+	 * (`intersectionPoint`) — dans l'ordre, un point peut en citer un autre.
+	 */
+	readonly derived: readonly DeferredIntersection[];
 	readonly objects: readonly Wanted[];
 }
 
@@ -311,6 +328,19 @@ export class AtelierFigure {
 			// avant que la valeur arrive ici (`slideTo`). Le réappliquer arrondirait
 			// une valeur tapée (2,37 au pas de 0,1) et la figure mentirait.
 			sliders.set(name, figure.createSlider(min, max, value, { visible: false, label: name }));
+		}
+		// Les intersections à curseur : leurs coordonnées, deux nombres de la figure
+		// que les objets citent par leurs lettres (`intersection_1_x`)
+		for (const derived of plan.derived) {
+			try {
+				const parameters = parametersOf(supportTrees(derived), sliders);
+				const { x, y } = derivedCoordinates(derived, parameters);
+				const ids = sliderIds(parameters);
+				sliders.set(derived.x, figure.createScalarExpression(x, ids));
+				sliders.set(derived.y, figure.createScalarExpression(y, ids));
+			} catch {
+				// Rien de posé : les objets qui le citent ne se poseront pas (F5)
+			}
 		}
 		const elements = new Map<string, string>();
 		const looks = new Map<string, Drawn>();
@@ -432,13 +462,15 @@ function planOf(atelier: Atelier): FigurePlan {
 	const keep = new Set(sliders.keys());
 	// Un mémo pour tout le passage : curseurs gardés en lettres, celui de l'atelier ne sert pas
 	const memo: ConstructionMemo = new Map();
+	// PR 3 : les curseurs de position des `point_sur`, les intersections à curseur
+	const recipes: FigureRecipes = { positions: new Map(), intersections: [] };
 	const objects: Wanted[] = [];
 	const cited = new Set<string>();
 	for (const object of atelier.objects) {
 		// F5 : en erreur, en attente ou à compléter, l'objet n'est pas dessiné
 		if (object.status !== 'ok') continue;
 		const wanted = isFigureObject(object)
-			? wantedOf(atelier, object, keep, memo)
+			? wantedOf(atelier, object, keep, memo, recipes)
 			: isFunction(object) && object.inFigure === true
 				? wantedFunctionOf(atelier, object, keep)
 				: null;
@@ -456,8 +488,129 @@ function planOf(atelier: Atelier): FigurePlan {
 		objects.push(wanted);
 		for (const name of names) cited.add(name);
 	}
+	for (const derived of recipes.intersections) {
+		for (const tree of supportTrees(derived)) {
+			for (const name of getVariables(tree)) cited.add(name);
+		}
+	}
+	// Une position écrite est un curseur caché, aux bornes de son curseur de carte
+	// (élargies à la valeur tapée : la figure la ramènerait dans les bornes)
+	for (const [name, { value, slider }] of recipes.positions) {
+		sliders.set(name, {
+			name,
+			value,
+			min: Math.min(slider.min, value),
+			max: Math.max(slider.max, value),
+			outOfRange: false
+		});
+	}
 	// Seuls les curseurs CITÉS entrent dans la figure (et dans son empreinte)
-	return { sliders: [...sliders.values()].filter((s) => cited.has(s.name)), objects };
+	return {
+		sliders: [...sliders.values()].filter((s) => cited.has(s.name)),
+		derived: recipes.intersections,
+		objects
+	};
+}
+
+/** Les arbres d'un support : ses coordonnées, son rayon, ses coefficients, son expression. */
+function treesOfSupport(support: Support): MathNode[] {
+	const values: GeoValue[] =
+		support.type === 'line'
+			? [support.from.x, support.from.y, support.to.x, support.to.y]
+			: support.type === 'circle'
+				? [support.center.x, support.center.y, support.radius]
+				: support.type === 'conic'
+					? [...support.coefficients]
+					: [];
+	const trees = values.map((v) => nodeOf(v));
+	return support.type === 'graph' ? [...trees, support.expression] : trees;
+}
+
+function supportTrees(derived: DeferredIntersection): MathNode[] {
+	return [...treesOfSupport(derived.a), ...treesOfSupport(derived.b)];
+}
+
+/**
+ * Les deux coordonnées d'une intersection à curseur, en fonctions des curseurs :
+ * les valeurs des curseurs substituées dans les supports, puis `intersectionPoint`
+ * — le calcul de la carte, donc son point et sa numérotation. Une seule résolution par jeu de valeurs (les
+ * deux coordonnées la partagent) ; pas de point : NaN, la figure ne le dessine pas.
+ */
+function derivedCoordinates(
+	derived: DeferredIntersection,
+	parameters: readonly CurveParameter[]
+): {
+	readonly x: (values: ReadonlyMap<string, number>) => number;
+	readonly y: (values: ReadonlyMap<string, number>) => number;
+} {
+	const env: Record<string, number> = {};
+	const numericSupport = numericSupportOf(derived.a, env, parameters);
+	const otherSupport = numericSupportOf(derived.b, env, parameters);
+	let lastKey: string | null = null;
+	let last: GeoPoint | null = null;
+	const solve = (values: ReadonlyMap<string, number>): GeoPoint | null => {
+		for (const { sliderId, name } of parameters) env[name] = values.get(sliderId) ?? NaN;
+		const key = parameters.map(({ name }) => env[name]).join('|');
+		if (key === lastKey) return last;
+		lastKey = key;
+		if (parameters.some(({ name }) => !Number.isFinite(env[name]))) return (last = null);
+		try {
+			last = intersectionPoint(numericSupport(), otherSupport(), derived.k, derived.labels);
+		} catch {
+			last = null;
+		}
+		return last;
+	};
+	return {
+		x: (values) => {
+			const p = solve(values);
+			return p === null ? NaN : geoToNumber(p.x);
+		},
+		y: (values) => {
+			const p = solve(values);
+			return p === null ? NaN : geoToNumber(p.y);
+		}
+	};
+}
+
+/** Un support aux valeurs courantes des curseurs (`env`, partagé), exact comme la carte. */
+function numericSupportOf(
+	support: Support,
+	env: Record<string, number>,
+	parameters: readonly CurveParameter[]
+): () => Support {
+	// Les valeurs des curseurs SUBSTITUÉES dans les arbres exacts : le calcul de la
+	// carte, racines exactes comprises (revue de la PR 3 : un Newton sur [−10 ; 10]
+	// dessinait un autre point que la carte)
+	const bindings = (): Record<string, number> => {
+		const values: Record<string, number> = {};
+		for (const { name } of parameters) values[name] = env[name];
+		return values;
+	};
+	const valueOf = (v: GeoValue): (() => GeoValue) => {
+		if (!isExact(v) || getVariables(v.node).size === 0) return () => v;
+		return () => exact(simplifyExact(substitute(v.node, bindings())));
+	};
+	const pointOf = (p: GeoPoint) => {
+		const [x, y] = [valueOf(p.x), valueOf(p.y)];
+		return () => ({ x: x(), y: y() });
+	};
+	switch (support.type) {
+		case 'line': {
+			const [from, to] = [pointOf(support.from), pointOf(support.to)];
+			return () => ({ ...support, from: from(), to: to() });
+		}
+		case 'circle': {
+			const [center, radius] = [pointOf(support.center), valueOf(support.radius)];
+			return () => ({ ...support, center: center(), radius: radius() });
+		}
+		case 'conic': {
+			const coefficients = support.coefficients.map(valueOf);
+			return () => ({ ...support, coefficients: coefficients.map((c) => c()) });
+		}
+		case 'graph':
+			return () => ({ ...support, expression: substitute(support.expression, bindings()) });
+	}
 }
 
 /**
@@ -532,9 +685,10 @@ function wantedConstructionOf(
 	atelier: Atelier,
 	object: AtelierObject,
 	keep: ReadonlySet<string>,
-	memo: ConstructionMemo
+	memo: ConstructionMemo,
+	recipes: FigureRecipes
 ): WantedPoint | WantedConstruction | null {
-	const outcome = constructionOf(atelier, object.name, { keepNames: keep, memo });
+	const outcome = constructionOf(atelier, object.name, { keepNames: keep, memo, recipes });
 	if (!outcome.ok) return null;
 	const { built } = outcome;
 	const pair = (p: GeoPoint): readonly [MathNode, MathNode] => [nodeOf(p.x), nodeOf(p.y)];
@@ -563,9 +717,10 @@ function wantedOf(
 	atelier: Atelier,
 	object: PointObject | CurveObject,
 	keep: ReadonlySet<string>,
-	memo: ConstructionMemo
+	memo: ConstructionMemo,
+	recipes: FigureRecipes
 ): WantedPoint | WantedCurve | WantedConstruction | null {
-	const wanted = wantedShapeOf(atelier, object, keep, memo);
+	const wanted = wantedShapeOf(atelier, object, keep, memo, recipes);
 	const look = figureLookOf(object);
 	return wanted === null || look === undefined ? wanted : { ...wanted, look };
 }
@@ -574,9 +729,12 @@ function wantedShapeOf(
 	atelier: Atelier,
 	object: PointObject | CurveObject,
 	keep: ReadonlySet<string>,
-	memo: ConstructionMemo
+	memo: ConstructionMemo,
+	recipes: FigureRecipes
 ): WantedPoint | WantedCurve | WantedConstruction | null {
-	if (isConstruction(object)) return wantedConstructionOf(atelier, object, keep, memo);
+	if (isConstruction(object)) {
+		return wantedConstructionOf(atelier, object, keep, memo, recipes);
+	}
 	if (object.kind === 'point') {
 		const coordinates = pointCoordinatesOf(object.definition);
 		if (coordinates === null) return null;
@@ -605,6 +763,7 @@ function wantedShapeOf(
 function fingerprintOf(plan: FigurePlan): string {
 	return JSON.stringify({
 		sliders: plan.sliders.map(({ name, min, max }) => [name, min, max]),
+		derived: plan.derived,
 		// Le réglage d'un objet n'est pas de la structure : `#restyle` le pose
 		objects: plan.objects.map((o) => ({ ...o, look: undefined }))
 	});

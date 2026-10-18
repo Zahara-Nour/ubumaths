@@ -30,6 +30,22 @@ import type { Provenance } from './parse';
 
 export type PointSpec =
 	| { readonly kind: 'ref'; readonly name: string }
+	| {
+			readonly kind: 'intersection';
+			readonly a: SupportSpec;
+			readonly b: SupportSpec;
+			/** Le numéro de la solution (`k` du DSL, à partir de 1), ou `null` s'il n'est pas écrit. */
+			readonly k: number | null;
+			/** Les deux supports TELS QU'ÉCRITS (`d`, `(AB)`), pour les messages. */
+			readonly labels: readonly [string, string];
+	  }
+	| {
+			readonly kind: 'on';
+			readonly support: SupportSpec;
+			/** La position écrite (un nombre, ou le nom d'une valeur), `null` : celle du DSL par défaut. */
+			readonly position: string | null;
+			readonly label: string;
+	  }
 	| { readonly kind: 'coordinates'; readonly x: string; readonly y: string }
 	| { readonly kind: 'midpoint'; readonly a: PointSpec; readonly b: PointSpec }
 	| { readonly kind: 'segment-midpoint'; readonly segment: LineSpec }
@@ -56,6 +72,16 @@ export type CircleSpec =
 	| { readonly kind: 'passing'; readonly center: PointSpec; readonly through: PointSpec }
 	| { readonly kind: 'three'; readonly a: PointSpec; readonly b: PointSpec; readonly c: PointSpec };
 
+/**
+ * Ce que coupe une intersection, ou ce qui porte un `point_sur` (PR 3) : une
+ * ligne ou un cercle écrits dans l'appel, ou un objet NOMMÉ — droite, segment,
+ * cercle, courbe par équation, fonction —, dont la nature se lit au calcul.
+ */
+export type SupportSpec =
+	| { readonly kind: 'ref'; readonly name: string }
+	| { readonly kind: 'line'; readonly line: LineSpec }
+	| { readonly kind: 'circle'; readonly circle: CircleSpec };
+
 export type ConstructionSpec =
 	| { readonly result: 'point'; readonly point: PointSpec }
 	| { readonly result: 'line'; readonly line: LineSpec }
@@ -77,6 +103,8 @@ export type ConstructionNature = 'point' | 'droite' | 'segment' | 'demi-droite' 
 
 /** Les écritures de chaque mot, pour l'aide d'un appel mal formé. */
 const FORMS: Readonly<Record<ConstructionWord, string>> = {
+	intersection: 'intersection(d ; c) ou intersection(d ; c ; 1)',
+	point_sur: 'point_sur(s), point_sur(s ; 0,3), point_sur(c ; 90) ou point_sur(f ; 2)',
 	point: 'point(1 ; 2)',
 	milieu: 'milieu(A ; B) ou milieu(s)',
 	projection: 'projection(A ; axe=d)',
@@ -106,7 +134,15 @@ function formsMessage(word: ConstructionWord): string {
 
 /** Ce que construit un appel, sans rien typer : point, droite (et ses parts) ou cercle. */
 function resultOf(call: ReadCall): ConstructionSpec['result'] {
-	if (call.word === 'point' || call.word === 'milieu' || call.word === 'projection') return 'point';
+	if (
+		call.word === 'point' ||
+		call.word === 'milieu' ||
+		call.word === 'projection' ||
+		call.word === 'intersection' ||
+		call.word === 'point_sur'
+	) {
+		return 'point';
+	}
 	if (call.word === 'cercle') return 'circle';
 	return 'line';
 }
@@ -147,6 +183,39 @@ function asLine(argument: ReadArgument, kindOf: KindOf): LineSpec {
 		if (spec.result === 'line') return spec.line;
 	}
 	throw new TypeRefusal(`« ${shown(argument)} » n’est pas une droite.`);
+}
+
+/** Une ligne, un cercle ou une courbe : ce que coupe une intersection, ce qui porte un point. */
+function asSupport(argument: ReadArgument, kindOf: KindOf): SupportSpec {
+	const refusal = `« ${shown(argument)} » n’est pas une ligne, un cercle ou une courbe.`;
+	if (argument.kind === 'name') {
+		const kind = kindOf(argument.name);
+		if (kind !== undefined && kind !== 'curve' && kind !== 'function') {
+			throw new TypeRefusal(refusal);
+		}
+		return { kind: 'ref', name: argument.name };
+	}
+	if (argument.kind === 'call') {
+		const result = resultOf(argument.call);
+		if (result === 'line' || result === 'circle') {
+			const spec = typed(argument.call, kindOf);
+			if (spec.result === 'line') return { kind: 'line', line: spec.line };
+			if (spec.result === 'circle') return { kind: 'circle', circle: spec.circle };
+		}
+	}
+	throw new TypeRefusal(refusal);
+}
+
+/** Le `k` d'une intersection : un entier écrit, à partir de 1 (comme le DSL). */
+function solutionNumber(argument: ReadArgument): number {
+	const written = argument.kind === 'scalar' ? argument.text.trim() : '';
+	const k = /^\d+$/.test(written) ? Number(written) : NaN;
+	if (!Number.isInteger(k) || k < 1) {
+		throw new TypeRefusal(
+			'Dans intersection(…), le numéro du point est un entier à partir de 1 (1, 2…).'
+		);
+	}
+	return k;
 }
 
 /** Un nombre : son TEXTE, lu plus tard comme une valeur de l'atelier. */
@@ -229,6 +298,29 @@ function typed(call: ReadCall, kindOf: KindOf): ConstructionSpec {
 		}
 		case 'cercle':
 			return { result: 'circle', circle: typedCircle(call, kindOf) };
+		case 'intersection':
+			expectArity(call, [2, 3]);
+			return {
+				result: 'point',
+				point: {
+					kind: 'intersection',
+					a: asSupport(p0, kindOf),
+					b: asSupport(p1, kindOf),
+					k: p2 === undefined ? null : solutionNumber(p2),
+					labels: [shown(p0), shown(p1)]
+				}
+			};
+		case 'point_sur':
+			expectArity(call, [1, 2]);
+			return {
+				result: 'point',
+				point: {
+					kind: 'on',
+					support: asSupport(p0, kindOf),
+					position: p1 === undefined ? null : asScalar(p1, kindOf),
+					label: shown(p0)
+				}
+			};
 	}
 }
 
@@ -318,6 +410,8 @@ export function natureOf(call: ReadCall): ConstructionNature {
 		case 'point':
 		case 'milieu':
 		case 'projection':
+		case 'intersection':
+		case 'point_sur':
 			return 'point';
 		case 'segment':
 			return 'segment';
@@ -356,7 +450,20 @@ export function partsOf(spec: ConstructionSpec): {
 				point(p.point);
 				line(p.axis);
 				return;
+			case 'intersection':
+				support(p.a);
+				support(p.b);
+				return;
+			case 'on':
+				support(p.support);
+				if (p.position !== null) scalars.push(p.position);
+				return;
 		}
+	};
+	const support = (s: SupportSpec): void => {
+		if (s.kind === 'ref') names.push(s.name);
+		else if (s.kind === 'line') line(s.line);
+		else circle(s.circle);
 	};
 	const line = (l: LineSpec): void => {
 		switch (l.kind) {
@@ -372,10 +479,7 @@ export function partsOf(spec: ConstructionSpec): {
 				line(l.to);
 		}
 	};
-	if (spec.result === 'point') point(spec.point);
-	else if (spec.result === 'line') line(spec.line);
-	else {
-		const c = spec.circle;
+	function circle(c: CircleSpec): void {
 		if (c.kind === 'radius') {
 			point(c.center);
 			scalars.push(c.radius);
@@ -388,5 +492,8 @@ export function partsOf(spec: ConstructionSpec): {
 			point(c.c);
 		}
 	}
+	if (spec.result === 'point') point(spec.point);
+	else if (spec.result === 'line') line(spec.line);
+	else circle(spec.circle);
 	return { names: [...new Set(names)], scalars };
 }

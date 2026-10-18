@@ -144,6 +144,7 @@ import {
 import { objectKindOf, partsOf, specOfCall } from './construction-spec';
 import {
 	circleEquation,
+	approximatePoint,
 	constructionFromText,
 	constructionLatex,
 	constructionOf,
@@ -804,6 +805,16 @@ function defineConstruction(
 	}
 	const shape = parseDefinition(kind, body, provenance, atelier.functionNames).error;
 	if (shape !== undefined) return { kind: 'refus', message: shape };
+	// PR 3 (L5) : plusieurs points sans k, une infinité de points communs, un couple
+	// pas encore coupé — rien n'est créé, la réponse dit quoi écrire (une ATTENTE,
+	// elle, crée l'objet)
+	const trial = constructionFromText(atelier, body, provenance);
+	if (
+		!trial.ok &&
+		(trial.reason === 'ambiguous' || trial.reason === 'infinite' || trial.reason === 'unsupported')
+	) {
+		return { kind: 'refus', message: trial.message };
+	}
 	const done =
 		existing === undefined
 			? atelier.create({ kind, name, definition: body }, provenance)
@@ -853,6 +864,19 @@ function builtLine(
 					}
 				};
 	if (built.shape === 'point') {
+		// PR 3 : une coordonnée seulement approchée (conique, fonction sans racine
+		// exacte, angle non remarquable) se dit « ≈ », 4 décimales — jamais en fraction
+		const approximate = approximatePoint(built.at);
+		if (approximate !== null) {
+			const prefix = name === null ? '' : `${name} `;
+			return {
+				kind: 'calcul',
+				input: label,
+				output: `${prefix}≈ (${approximate.text})`,
+				latex: `${name === null ? '' : latexName(name)}\\approx\\left(${approximate.latex}\\right)`,
+				...keep
+			};
+		}
 		const [x, y] = [built.at.x, built.at.y].map((v) => shownNumber(session, nodeOf(v)));
 		return {
 			kind: 'calcul',
