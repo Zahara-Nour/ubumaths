@@ -5,7 +5,9 @@
  *    refus que dans Calcul (#985), « L est une liste : utilise .stats L »,
  *    posé en statut d'erreur de la carte — jamais L lu comme une lettre libre.
  * 2. Une définition `A = (1 ; 2)` ou `A = {1 ; 2}` : le refus français des
- *    couples et des ensembles (#983), dans Calcul comme sur la carte.
+ *    couples et des ensembles (#983), dans Calcul comme sur la carte. Depuis la
+ *    géométrie (v2, lot 1, G3), `A = (1 ; 2)` tapé dans Calcul crée un POINT ; la
+ *    carte d'une valeur garde le refus.
  * 3. `.résoudre <inéquation> dans [a ; b]` : l'ensemble solution restreint à
  *    l'intervalle, crochets justes aux bornes.
  */
@@ -111,16 +113,21 @@ describe('1. une carte qui cite une liste comme un nombre', () => {
 });
 
 describe('2. une définition qui est un couple ou un ensemble', () => {
-	it.each([
-		['A=(1;2)', COUPLE_MESSAGE],
-		['A = (1 ; 2)', COUPLE_MESSAGE],
-		['A = {1 ; 2}', SET_MESSAGE]
-	])('Calcul : %s est refusé en français, rien n’est créé', (input, message) => {
+	it.each(['A=(1;2)', 'A = (1 ; 2)'])('Calcul : %s crée un point (géométrie, G3)', (input) => {
 		const s = session();
 
 		const result = runInput(s, input);
 
-		expect(result).toEqual({ kind: 'refus', message });
+		expect(result.kind).toBe('definition');
+		expect(s.atelier.get('A')?.kind).toBe('point');
+	});
+
+	it('Calcul : A = {1 ; 2} est refusé en français, rien n’est créé', () => {
+		const s = session();
+
+		const result = runInput(s, 'A = {1 ; 2}');
+
+		expect(result).toEqual({ kind: 'refus', message: SET_MESSAGE });
 		expect(s.atelier.get('A')).toBeUndefined();
 	});
 
@@ -147,7 +154,8 @@ describe('2. une définition qui est un couple ou un ensemble', () => {
 
 		expect(result).toEqual({
 			kind: 'refus',
-			message: `Pour créer une liste, écris les valeurs sans parenthèses : ${fixed}`
+			// Trois valeurs entre parenthèses : pas un point (P7), peut-être une liste
+			message: `Un point du plan a deux coordonnées. Pour créer une liste, écris les valeurs sans parenthèses : ${fixed}`
 		});
 		expect(s.atelier.get('L')).toBeUndefined();
 		runInput(s, fixed);

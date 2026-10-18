@@ -311,7 +311,8 @@ describe('§7 — sauvegarde, lien, conversion', () => {
 		b.restore(state);
 
 		expect(state.version).toBe(ATELIER_STATE_VERSION);
-		expect(ATELIER_STATE_VERSION).toBe(2);
+		// La colonne est rangée depuis la version 2 (la 3 a ajouté la géométrie)
+		expect(ATELIER_STATE_VERSION).toBeGreaterThanOrEqual(2);
 		expect(b.columnOf('L')).toBe(B);
 		expect(b.cell(A, 1)).toBe('brouillon');
 		expect(b.cell(D, 2)).toBe('4');

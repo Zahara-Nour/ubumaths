@@ -103,7 +103,11 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 		{ id: 'chart', label: 'Diagramme en bâtons' },
 		{ id: 'scatter', label: 'Nuage de points' },
 		{ id: 'fit', label: 'Ajustement affine' }
-	]
+	],
+	// Géométrie, lot 1 : la carte se modifie et se supprime, rien de plus — les
+	// constructions et les mesures viendront au lot 2
+	point: [],
+	curve: []
 };
 
 /**

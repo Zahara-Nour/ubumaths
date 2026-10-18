@@ -16,7 +16,16 @@ import { z } from 'zod';
 import { MAX_FORMAT_ZONES, storedFormatSchema, type StoredFormat } from './cell-format';
 import type { ObjectKind } from './types';
 import { MAX_DEFINITION_LENGTH, MAX_INTERVAL_LENGTH } from './types';
-import { MAX_CELL_LENGTH, MAX_TITLE_LENGTH, readCellName } from './grid';
+import {
+	MAX_CELL_LENGTH,
+	MAX_TITLE_LENGTH,
+	definitionFrom,
+	entriesOf,
+	readCellName,
+	renameInFormula
+} from './grid';
+import { nextName } from './names';
+import { renameInDefinition } from './parse';
 import { sequenceDisplaySchema, storedDisplaySchema, type StoredDisplay } from './display';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 
@@ -38,8 +47,14 @@ export const ATELIER_STORAGE_KEY = 'chiphre-atelier';
  * code relirait l'état en jetant la grille (Zod retire les clés inconnues),
  * puis l'enregistrerait. Une version 1 se relit : ses listes sont placées en
  * A, B… dans l'ordre des cartes.
+ *
+ * Version 3 (2026-10-18, géométrie v2) : les points et les courbes (`kind`
+ * `point`, `curve`), et `y` devenu réservé — un objet `y` rangé avant est
+ * renommé à la relecture (`migrateReservedNames`, Q2). Sans elle, un onglet
+ * resté sur l'ancien code écarterait les points et les courbes, puis
+ * enregistrerait l'atelier sans eux.
  */
-export const ATELIER_STATE_VERSION = 2;
+export const ATELIER_STATE_VERSION = 3;
 
 /**
  * Au-delà, on refuse d'enregistrer plutôt que d'écrire un état qu'on ne saura
@@ -61,7 +76,7 @@ const MAX_SERIALIZED_LENGTH = 500_000;
 const storedObjectSchema = z.object({
 	// 12 : la carte `f⁻¹` s'appelle `f^-1`, `u_12^-1` (lot 3 de la réciproque)
 	name: z.string().min(1).max(12),
-	kind: z.enum(['value', 'function', 'sequence', 'list']),
+	kind: z.enum(['value', 'function', 'sequence', 'list', 'point', 'curve']),
 	definition: z.string().max(MAX_DEFINITION_LENGTH),
 	/** Affiché dans la vue Graphe. Absent = non tracé. */
 	plotted: z.boolean().optional(),
@@ -352,6 +367,75 @@ export function salvageState(shell: z.infer<typeof atelierShellSchema>): {
 	// Sans cellule ni titre, pas de grille : l'état relu est celui qui a été rangé
 	const kept = Object.keys(grid).length > 0 ? { grid } : {};
 	return { state: { version: shell.version, objects, ...kept }, dropped: dropped + lostCells };
+}
+
+// =============================================================================
+// Migrer
+// =============================================================================
+
+/** `y` et les cartes qui le suivent : `y′`, `y″`, `y⁻¹` (rangés `y'`, `y''`, `y^-1`). */
+const RESERVED_Y = /^y('*|\^-1)$/;
+
+/**
+ * Renommer l'objet `y` d'un atelier rangé avant que `y` soit réservé (G5 de la
+ * géométrie, Q2 (a) du 2026-10-18) : à la première lettre libre de son type,
+ * ses cartes `y′`, `y⁻¹` avec lui, et tout ce qui le cite réécrit — définitions,
+ * premier terme d'une suite, formules de la grille. Jamais de perte : l'appelant
+ * dit à l'élève ce qui a changé (`renamed`).
+ *
+ * Appliquée à toute relecture, quelle que soit la version : un état récent n'a
+ * jamais d'objet `y`, et un lien forgé qui en porte un est relu de même.
+ *
+ * @param taken - Les noms déjà pris ailleurs (fusion dans l'atelier personnel)
+ */
+export function migrateReservedNames(
+	state: AtelierState,
+	taken: readonly string[] = []
+): { state: AtelierState; renamed: ReadonlyArray<{ from: string; to: string }> } {
+	const owner = state.objects.find((o) => o.name === 'y');
+	if (owner === undefined && !state.objects.some((o) => RESERVED_Y.test(o.name))) {
+		return { state, renamed: [] };
+	}
+	const to = nextName(owner?.kind ?? 'function', [...state.objects.map((o) => o.name), ...taken]);
+	const renames = new Map([['y', to]]);
+	const objects = state.objects.map((o): StoredObject => {
+		const match = RESERVED_Y.exec(o.name);
+		const name = match === null ? o.name : `${to}${match[1]}`;
+		// Une courbe n'est jamais réécrite : son y est la variable de l'équation
+		const definition =
+			o.kind === 'curve'
+				? o.definition
+				: o.kind === 'list'
+					? definitionFrom(entriesOf(o.definition).map((text) => renameInFormula(text, renames)))
+					: renameInDefinition(o.definition, 'y', to);
+		return {
+			...o,
+			name,
+			definition,
+			...(o.firstTerm === 'y' && { firstTerm: to })
+		};
+	});
+	const cells = state.grid?.cells;
+	const grid =
+		state.grid === undefined
+			? {}
+			: {
+					grid: {
+						...state.grid,
+						...(cells !== undefined && {
+							cells: Object.fromEntries(
+								Object.entries(cells).map(([address, text]) => [
+									address,
+									renameInFormula(text, renames)
+								])
+							)
+						})
+					}
+				};
+	return {
+		state: { ...state, objects, ...grid },
+		renamed: [{ from: 'y', to }]
+	};
 }
 
 // =============================================================================

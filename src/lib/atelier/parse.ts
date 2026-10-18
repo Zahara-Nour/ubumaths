@@ -26,6 +26,15 @@ import type { MissingReference, ObjectKind } from './types';
 import { readListValue, readNumber } from '$lib/statistics/read-value';
 import { hasObjectNameShape } from './names';
 import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from './decimal-comma';
+import {
+	CURVE_NEEDS_XY,
+	CURVE_UNIT,
+	POINT_NO_XY,
+	POINT_UNIT,
+	equationShapeRefusal,
+	reservedYMessage,
+	splitCoordinates
+} from './geometry';
 
 /**
  * D'où vient une définition. Décision D10 : c'est la provenance qui décide du
@@ -452,6 +461,9 @@ export function parseDefinition(
 		return { values, skipped, rows };
 	}
 
+	if (kind === 'point') return parsePoint(definition, provenance, functionNames);
+	if (kind === 'curve') return parseCurve(definition, provenance, functionNames);
+
 	if (kind === 'value' && PLAIN_NUMBER.test(definition)) return {};
 
 	// V59 : la carte refuse `ln x` comme la ligne de calcul — sans quoi un
@@ -469,6 +481,10 @@ export function parseDefinition(
 		};
 	}
 
+	// G5 : `y` est la variable des équations de courbe. Ailleurs, aucun objet ne
+	// peut s'appeler ainsi : sans ce refus, `f(x) = x + y` attendait un `y` à jamais
+	if (getVariables(result.ast).has('y')) return { error: reservedYMessage(kind) };
+
 	if (kind === 'value') {
 		// Décision D4 : la grandeur est acceptée, mais elle ne prendra pas de
 		// curseur — c'est au modèle d'en décider, pas ici.
@@ -476,6 +492,65 @@ export function parseDefinition(
 		if (symbol) return { unit: symbol };
 	}
 	return {};
+}
+
+/**
+ * Un point (`(a ; 2a)`, G3) : deux coordonnées, chacune lue comme une valeur —
+ * virgule décimale et fractions comprises (P3) —, sans unité (P8), sans x ni y.
+ */
+function parsePoint(
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[] | undefined
+): ParsedDefinition {
+	const split = splitCoordinates(definition);
+	if (!split.ok) return { error: split.message };
+	for (const coordinate of split.coordinates) {
+		// x et y d'abord : la lecture d'une valeur refuserait y avec un autre message
+		const ast = astOf(coordinate, provenance, functionNames);
+		const variables = ast === null ? new Set<string>() : getVariables(ast);
+		if (variables.has('x') || variables.has('y')) return { error: POINT_NO_XY };
+		const read = parseDefinition('value', coordinate, provenance, functionNames);
+		if (read.error !== undefined) return { error: read.error };
+		if (read.unit !== undefined) return { error: POINT_UNIT };
+	}
+	return {};
+}
+
+/**
+ * Une courbe (`y = 3x - 2`, G0) : une équation à un seul « = » (C9, C10), qui
+ * contient x ou y (C8), sans unité (C11, D4). Gardée telle qu'écrite (C7).
+ */
+function parseCurve(
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[] | undefined
+): ParsedDefinition {
+	const shape = equationShapeRefusal(definition);
+	if (shape !== null) return { error: shape };
+	const bare = bareFunctionRefusal(definition);
+	if (bare !== null) return { error: bare };
+	const result = parseByProvenance(definition, provenance, functionNames);
+	if (!result.ast) {
+		return {
+			error:
+				mixedNotationMessage(definition) ??
+				`« ${definition.trim()} » n'est pas une équation valide.`
+		};
+	}
+	if (unitSymbolOf(result.ast) !== null) return { error: CURVE_UNIT };
+	const variables = getVariables(result.ast);
+	if (!variables.has('x') && !variables.has('y')) return { error: CURVE_NEEDS_XY };
+	return {};
+}
+
+/**
+ * Les deux coordonnées d'un point telles qu'écrites, ou `null` si la définition
+ * n'a pas la forme d'un point (`(1 ; 2)`).
+ */
+export function pointCoordinatesOf(definition: string): readonly [string, string] | null {
+	const split = splitCoordinates(definition);
+	return split.ok ? split.coordinates : null;
 }
 
 /**

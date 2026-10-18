@@ -21,15 +21,22 @@ import type { ObjectKind } from './types';
  * `x` et `n` sont les variables des fonctions et des suites ; `e`, `pi` et `i`
  * sont des constantes. Repris de `RESERVED_PARAMETER_NAMES` du grapheur, qui
  * porte déjà exactement cet ensemble.
+ *
+ * `y` depuis la géométrie (G5, 2026-10-18) : c'est la seconde variable des
+ * équations de courbe (`d : y = 3x − 2`). Un atelier rangé avant, qui avait un
+ * objet `y`, le voit renommé à la relecture (Q2, `migrateReservedNames`).
  */
-export const RESERVED_NAMES: ReadonlySet<string> = new Set(['x', 'n', 'e', 'pi', 'i']);
+export const RESERVED_NAMES: ReadonlySet<string> = new Set(['x', 'y', 'n', 'e', 'pi', 'i']);
 
 /** Lettres proposées d'abord, par type, dans l'ordre des usages scolaires. */
 export const PREFERRED_NAMES: Readonly<Record<ObjectKind, readonly string[]>> = {
 	value: ['a', 'b', 'c', 'k', 'm', 'p', 'q', 'r'],
 	function: ['f', 'g', 'h'],
 	sequence: ['u', 'v', 'w'],
-	list: ['L', 'M', 'N']
+	list: ['L', 'M', 'N'],
+	// Géométrie (v2) : les lettres des manuels, majuscules pour les points
+	point: ['A', 'B', 'C', 'D', 'E', 'M', 'N', 'P'],
+	curve: ['d', 'C', 'D', 'T']
 };
 
 // =============================================================================

@@ -126,7 +126,13 @@ function refused(message: string, formulas = false): ReciprocalOutcome {
 }
 
 /** Le type d'un objet, dans la phrase de refus (« a est une valeur »). */
-const KIND_NAMES = { value: 'une valeur', sequence: 'une suite', list: 'une liste' } as const;
+const KIND_NAMES = {
+	value: 'une valeur',
+	sequence: 'une suite',
+	list: 'une liste',
+	point: 'un point',
+	curve: 'une courbe'
+} as const;
 
 /**
  * La réciproque de la fonction `base` de l'atelier, sur `on` (tapé après

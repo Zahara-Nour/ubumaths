@@ -18,7 +18,9 @@
 import { SvelteMap } from 'svelte/reactivity';
 import {
 	MAX_DEFINITION_LENGTH,
+	MAX_FIGURE_OBJECTS,
 	MAX_LISTS,
+	isFigureObject,
 	isFunction,
 	isList,
 	isSequence,
@@ -59,6 +61,7 @@ import type { Provenance } from './parse';
 import {
 	bareNamesOf,
 	parseDefinition,
+	pointCoordinatesOf,
 	readNumber,
 	referencesOf,
 	renameInDefinition
@@ -66,7 +69,12 @@ import {
 import { z } from 'zod';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 import type { ListChartKind } from './chart';
-import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
+import {
+	ATELIER_STATE_VERSION,
+	migrateReservedNames,
+	type AtelierState,
+	type StoredObject
+} from './persistence';
 import { expressionOf, graphLatexOf, termsOf } from './engine';
 import {
 	compactDisplay,
@@ -91,6 +99,7 @@ import {
 import type { Domain } from '$lib/mathAST/domain/types';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { listCitedMessage } from './list-cited';
+import { figureCitedMessage, figureFullMessage } from './geometry';
 import {
 	computeGrid,
 	gridTexts,
@@ -216,6 +225,11 @@ export interface SkippedObject {
 export interface RestoreReport {
 	readonly restored: number;
 	readonly skipped: readonly SkippedObject[];
+	/**
+	 * Les objets renommés à la relecture parce que leur nom est devenu réservé
+	 * (`y`, G5 et Q2 de la géométrie) — à dire à l'élève, jamais à taire.
+	 */
+	readonly renamed: ReadonlyArray<{ readonly from: string; readonly to: string }>;
 }
 
 /** La carte `f⁻¹` créée ou mise à jour, avec ce que le calcul a donné (la ligne de Calcul). */
@@ -668,6 +682,13 @@ export class Atelier {
 				message: `Un atelier ne peut pas contenir plus de ${MAX_LISTS} listes.`
 			};
 		}
+		// M2 (Q3) : points et courbes réunis, même esprit que D8
+		if (
+			(input.kind === 'point' || input.kind === 'curve') &&
+			this.items.filter(isFigureObject).length >= MAX_FIGURE_OBJECTS
+		) {
+			return { ok: false, message: figureFullMessage(MAX_FIGURE_OBJECTS) };
+		}
 		// Une liste EST une colonne de la grille (T1) : la voulue si elle est libre,
 		// sinon la première libre
 		let column: number | undefined;
@@ -984,8 +1005,42 @@ export class Atelier {
 	 * du texte brut. Lue comme une expression, `fille ; garçon` citait `fille`
 	 * et `garçon`, et la liste restait « en attente » d'objets inexistants (Q84).
 	 */
-	#cited(kind: AtelierObject['kind'], definition: string, provenance?: Provenance) {
-		return kind === 'list' ? [] : referencesOf(definition, provenance, this.functionNames);
+	#cited(
+		kind: AtelierObject['kind'],
+		definition: string,
+		provenance?: Provenance
+	): MissingReference[] {
+		if (kind === 'list') return [];
+		// Un point cite ce que citent ses deux coordonnées : le couple, lui, ne se
+		// lit pas comme une expression
+		if (kind === 'point')
+			return this.#inCoordinates(definition, (c) => this.#cited('value', c, provenance));
+		return referencesOf(definition, provenance, this.functionNames);
+	}
+
+	/** Ce que rend `read` sur chaque coordonnée d'un point, sans doublon de nom. */
+	#inCoordinates<T extends string | MissingReference>(
+		definition: string,
+		read: (coordinate: string) => readonly T[]
+	): T[] {
+		const found = new Map<string, T>();
+		for (const coordinate of pointCoordinatesOf(definition) ?? []) {
+			for (const item of read(coordinate)) {
+				const key = typeof item === 'string' ? item : item.name;
+				// Un appel l'emporte sur la lecture « valeur », comme dans `referencesOf`
+				if (!found.has(key) || (typeof item !== 'string' && item.as === 'function')) {
+					found.set(key, item);
+				}
+			}
+		}
+		return [...found.values()];
+	}
+
+	/** Les noms qu'une définition emploie comme un nombre (V58), coordonnées d'un point comprises. */
+	#bareNamesOf(o: AtelierObject): string[] {
+		return o.kind === 'point'
+			? this.#inCoordinates(o.definition, (c) => bareNamesOf(c, o.provenance, this.functionNames))
+			: bareNamesOf(o.definition, o.provenance, this.functionNames);
 	}
 
 	/**
@@ -2105,7 +2160,10 @@ export class Atelier {
 	 *
 	 * Les états sont recalculés, jamais relus.
 	 */
-	restore(state: AtelierState): RestoreReport {
+	restore(stored: AtelierState): RestoreReport {
+		// Q2 de la géométrie : un objet `y` (nom réservé depuis) est renommé, et
+		// les définitions qui le citent suivent — l'appelant le dit à l'élève
+		const { state, renamed } = migrateReservedNames(stored);
 		this.#seed = state.grid?.seed ?? newGridSeed();
 		const read = restoredFormats(state.grid?.formats ?? []);
 		this.#formats = read.formats;
@@ -2188,7 +2246,7 @@ export class Atelier {
 		}
 
 		this.recomputeAll();
-		return { restored: this.items.length, skipped };
+		return { restored: this.items.length, skipped, renamed };
 	}
 
 	/**
@@ -2201,6 +2259,8 @@ export class Atelier {
 	setPlotted(name: string, plotted: boolean, withList?: string): void {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return;
+		// Un point, une courbe ne vont jamais dans Graphe (G0) : la vue Figure les montrera
+		if (isFigureObject(this.items[index])) return;
 		// `plottedWith` ne vaut que pour une liste ; posé ici pour que la
 		// synchronisation n'ait rien à redeviner.
 		const current = this.items[index];
@@ -2523,6 +2583,11 @@ export class Atelier {
 					firstIndex: 0,
 					firstTerm: '0'
 				} satisfies SequenceObject;
+			// Géométrie (v2) : rien de plus que la définition, lue par `parseDefinition`
+			case 'point':
+				return { ...base, kind: 'point' };
+			case 'curve':
+				return { ...base, kind: 'curve' };
 		}
 	}
 
@@ -2597,6 +2662,18 @@ export class Atelier {
 				);
 				if (cited !== null) ownError.set(o.name, cited);
 			}
+			// Un point ou une courbe cité dans un calcul (`a = A + 1`) : le refus de
+			// Calcul (P9), jamais A lu comme une lettre libre
+			if (!ownError.get(o.name)) {
+				const figure = figureCitedMessage(
+					this.items,
+					refs.map((r) => r.name)
+				);
+				if (figure !== null) {
+					ownError.set(o.name, figure);
+					miswritten.add(o.name);
+				}
+			}
 			// V58 : `a` lettre de f, puis `a(x) = x^2` — quel que soit l'ordre de
 			// saisie, f ne vaut rien. Les cartes `f′`, `f⁻¹` suivent f, elles ne
 			// citent rien de leur propre chef
@@ -2606,7 +2683,7 @@ export class Atelier {
 				derivativeOf(o.name) === null &&
 				reciprocalOf(o.name) === null
 			) {
-				const asNumber = bareNamesOf(o.definition, o.provenance, this.functionNames)
+				const asNumber = this.#bareNamesOf(o)
 					.filter((n) => n !== o.name)
 					.map((n) => this.get(n))
 					.find((c) => c !== undefined && (c.kind === 'function' || c.kind === 'sequence'));
