@@ -45,7 +45,15 @@
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject, CurveDisplay } from './types';
 import type { CompiledFn, MathNode } from '$lib/mathAST';
-import { add, compile, divide, getVariables, number as mathNumber, opposite } from '$lib/mathAST';
+import {
+	add,
+	compile,
+	divide,
+	getVariables,
+	multiply,
+	number as mathNumber,
+	opposite
+} from '$lib/mathAST';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { Figure } from '$lib/geometry-core/graph/figure';
@@ -552,7 +560,7 @@ function pointAt(
 	x: MathNode,
 	y: MathNode,
 	sliders: ReadonlyMap<string, string>,
-	options: { readonly label?: string; readonly visible?: false }
+	options: { readonly label?: string; readonly visible?: false; readonly style?: GeoStyle }
 ): string | null {
 	if (parametersOf([x, y], sliders).length === 0) {
 		if (!isFiniteExact(x) || !isFiniteExact(y)) return null;
@@ -582,9 +590,19 @@ function poseConstruction(
 	if (wanted.shape === 'circle') {
 		const center = hidden(wanted.center);
 		if (center === null) return null;
-		return figure.createCircleByRadius(center, scalarOf(figure, wanted.radius, sliders), {
+		const id = figure.createCircleByRadius(center, scalarOf(figure, wanted.radius, sliders), {
 			label
 		});
+		// ⚠️ Aucune surface de `geometry-core` n'écrit le nom d'un cercle : l'y
+		// ajouter montrerait le nom de chaque cercle de toutes les figures de cours.
+		// Le nom est porté ici par un point SANS MARQUE, sur le cercle à 45° — il
+		// suit le rayon et le centre comme le cercle, curseurs compris.
+		const along = multiply(wanted.radius, mathNumber(String(Math.SQRT1_2)));
+		pointAt(figure, add(wanted.center[0], along), add(wanted.center[1], along), sliders, {
+			label,
+			style: { pointSize: 0 }
+		});
+		return id;
 	}
 	const from = hidden(wanted.from);
 	const to = hidden(wanted.to);

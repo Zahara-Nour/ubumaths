@@ -30,6 +30,12 @@
 	import SequenceSettings from './SequenceSettings.svelte';
 	import { constantOf } from '$lib/atelier/atelier.svelte';
 	import { curveNatureOf } from '$lib/atelier/curve-nature';
+	import {
+		constructionLatex,
+		constructionNatureOf,
+		constructionSummaryOf
+	} from '$lib/atelier/construction';
+	import { readConstruction } from '$lib/atelier/construction-read';
 
 	interface Props {
 		object: AtelierObject;
@@ -91,16 +97,41 @@
 	};
 
 	/**
+	 * Une construction (géométrie, lot 2, L7) : sa nature (« point », « segment »…),
+	 * lue sur sa définition, et ce qu'elle vaut — coordonnées, longueur, équation.
+	 */
+	const constructionNature = $derived(constructionNatureOf(object));
+
+	/**
 	 * La nature d'une courbe (« droite », « cercle »…, C1 et C2) et le constat
 	 * d'une courbe vide (C6), recalculés à chaque changement — jamais rangés.
 	 */
-	const nature = $derived(object.kind === 'curve' ? curveNatureOf(atelier, object.name) : null);
+	const nature = $derived(
+		object.kind === 'curve'
+			? curveNatureOf(atelier, object.name)
+			: constructionNature !== null
+				? { label: constructionNature }
+				: null
+	);
+
+	const summary = $derived.by(() => {
+		const read = constructionSummaryOf(atelier, object.name);
+		if (read === null) return null;
+		const latex = forMathlive(read.latex);
+		return { markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }), text: read.text };
+	});
 
 	/**
 	 * Le signe entre le nom et la définition d'un objet de la figure : la carte
 	 * se lit comme la saisie, « d : y = 3x − 2 », « A = (1 ; 2) » (G3, G5).
 	 */
-	const separator = $derived(object.kind === 'curve' ? ':' : object.kind === 'point' ? '=' : null);
+	const separator = $derived(
+		object.kind === 'curve' && constructionNature === null
+			? ':'
+			: object.kind === 'point' || object.kind === 'curve'
+				? '='
+				: null
+	);
 
 	/** Un point : ses deux coordonnées, chacune régénérée depuis son arbre. */
 	function pointLatex(o: AtelierObject): string | null {
@@ -121,6 +152,16 @@
 	 */
 	const rendered = $derived.by(() => {
 		if (object.definition.trim() === '' || object.kind === 'list') return null;
+		// Une construction, telle qu'écrite : régénérée depuis sa lecture (`constructionLatex`)
+		if (constructionNature !== null) {
+			const read = readConstruction(object.definition, object.provenance ?? 'url');
+			if (read === null || !read.ok) return null;
+			const shownConstruction = forMathlive(constructionLatex(read.call));
+			return {
+				markup: convertLatexToMarkup(shownConstruction, { defaultMode: 'inline-math' }),
+				spoken: read.call.text
+			};
+		}
 		if (object.kind === 'point') {
 			const latex = pointLatex(object);
 			if (latex === null) return null;
@@ -237,6 +278,17 @@
 		{#if nature?.note}
 			<!-- C6 : on ne valide pas, on constate — la courbe reste acceptée -->
 			<p class="constat">{nature.note}</p>
+		{/if}
+
+		{#if summary}
+			<!-- L7 : ce que vaut la construction ; la mise en page des cartes revient au lot 4 de la refonte -->
+			<p class="valeur">
+				<span aria-hidden="true">
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré par toLatex (constructionSummaryOf) -->
+					{@html summary.markup}
+				</span>
+				<span class="sr-only">{summary.text}</span>
+			</p>
 		{/if}
 
 		{#if selected && editable}
@@ -466,7 +518,8 @@
 		color: var(--color-destructive);
 	}
 	/* Un constat, pas une erreur : la couleur du texte courant atténué */
-	.constat {
+	.constat,
+	.valeur {
 		margin: 0;
 		font-size: 0.75rem;
 		color: var(--color-muted-foreground);

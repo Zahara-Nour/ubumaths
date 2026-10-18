@@ -523,3 +523,40 @@ function argumentLatex(argument: ReadArgument): string {
 	const ast = astOf(argument.text, 'text');
 	return ast === null ? '?' : plainLatex(ast);
 }
+
+/**
+ * Ce que la carte dit de la construction `name` (L7) : ses coordonnées exactes
+ * (`I(1/2 ; 2)`), la longueur d'un segment, l'équation d'une droite ou d'un
+ * cercle — en LaTeX pour l'écran, en texte pour la lecture d'écran. `null` si
+ * elle ne se calcule pas (en attente, en erreur).
+ */
+export function constructionSummaryOf(
+	atelier: Atelier,
+	name: string
+): { readonly latex: string; readonly text: string } | null {
+	const object = atelier.get(name);
+	if (object === undefined || object.status !== 'ok' || !isConstruction(object)) return null;
+	const outcome = constructionOf(atelier, name);
+	if (!outcome.ok) return null;
+	const { built } = outcome;
+	if (built.shape === 'point') {
+		const [x, y] = [built.at.x, built.at.y].map(nodeOf);
+		const latexName = name.replace(/_(\d+)/, '_{$1}');
+		return {
+			latex: `${latexName}\\left(${plainLatex(x)}\\,;\\,${plainLatex(y)}\\right)`,
+			text: `${name}(${plainText(x)} ; ${plainText(y)})`
+		};
+	}
+	if (built.shape === 'segment') {
+		const length = nodeOf(segmentLength(built.from, built.to));
+		return {
+			latex: `\\text{longueur } ${plainLatex(length)}`,
+			text: `longueur ${plainText(length)}`
+		};
+	}
+	const equation =
+		built.shape === 'circle'
+			? circleEquation(built.center, built.radius)
+			: lineEquation(built.from, built.to);
+	return { latex: plainLatex(equation), text: plainText(equation) };
+}
