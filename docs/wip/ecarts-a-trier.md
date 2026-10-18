@@ -20,6 +20,45 @@ Mise à jour du 2026-10-10 : K2 fait (V7, L5, L6, C8 retirés) ; V13 et L15 ajou
 le faisant). 2026-10-11 : L20 ajouté (revue de la PR « LaTeX sans notation scientifique », #1085) ; V14, V15,
 C16, C17, D12-D15 ajoutés et K19 ouvert (inventaire de la [carte des fonctionnalités](../systeme/carte-des-fonctionnalites.md)) ; V16, V17, V18 ajoutés (chantier écriture des primitives, #1098) ; L21-L23 ajoutés et K20 ouvert (suite du moteur mathAST) ; L24-L25 (revue #1108) ; V19, V20, L26, L27, C18-C20 ajoutés et K21 ouvert (état des lieux de la factorisation, ADR 0024). V21, V22, L28, M21 ajoutés (relevés au lot 3a de l'ADR 0024). M21 retiré et M10 réduit (lot 3b de l'ADR 0024 : `isRootAt` et `transform/` supprimés). V18 retiré et V17 réduit (lot 4 de l'ADR 0024 : l'exponentielle commune d'une primitive mise en facteur).
 
+## Revérification du 2026-10-18 (main `ab1aeb7b2`)
+
+Chaque entrée encore ouverte a été revérifiée (sondes vitest hors dépôt pour mathAST et l'atelier, grep et lecture pour le reste). Les tableaux plus bas ne sont pas encore réécrits : **cette section fait foi** en cas de désaccord.
+
+**Corrigés depuis, à retirer** : V16, V33 (l'`it.todo` « V33 » de `limits/__tests__/valeur-ecrite.test.ts:44` est à passer en `it`), V54, V56, V57 (#1367), V58, V59, V60, L4 (#1405), L14 (page d'admin du dictionnaire), L24, L29, M17, C18. **Sans objet** : C2 (le singleton sert à l'atelier), V55 (`/calc` à supprimer).
+
+**Ont bougé** :
+
+- V13 : la console résout `x_1+1=3`, mais l'API `solve()` répond encore `no-solution`.
+- V40 : \|u\| = c a désormais ses étapes.
+- V41 : `Solution.condition` est rempli pour `ax^2=1`, `ae^x=1` et `\ln(ax)=1`, qui sont maintenant résolues. Il manque encore la condition pour `ax=1` et `a\ln x=1`.
+- V64 : `(x+1)^a` est désormais calculé.
+- L8 : il reste 19 appels dans 8 fichiers.
+- L12 : les références de ligne ont bougé.
+- L15 : plus de boucle visible, mais l'arrêt est toujours silencieux.
+- C19 : seul `questions/types.ts:1407` reste à corriger.
+- M4 : les routes `pdf*` ont disparu.
+- C10 : `programme-deck.ts` a disparu.
+- T12 : le code applique 30 jours glissants, alors que `conformite/README.md` annonce encore une date fixe.
+
+**Nouveaux ou aggravés** :
+
+- **V62 aggravé** : `a=3`, `f(x)=a x`, `a(x)=x^2` puis `.dériver f` affiche `3x^2`, une **dérivée fausse**.
+- **V65** : l'API `solve` répond `no-solution` (∅) au lieu d'un refus pour `|x|=a`, `|x^2-1|=3` et `a\cos x=1`. La console, elle, refuse correctement.
+
+### A. Faisables seul (technique, attendu clair)
+
+- **Réponses fausses** : V62, V65, V13 (API) + L22, V45 (vérifier la solution contre la contrainte non résolue), V42, L27.
+- **Écriture vue par l'élève** : V32, V34, V27, V17 (eˣ sin x), V52, V51, V46, V44, V39 (`toLatex` seul), V64 (coefficient de la règle arctan).
+- **Latents** : L15, L25, L17, L19, L18, L10, L23, L21, L28, L31, L16 (aucun cas en prod).
+- **Code mort** : M1, M3, M9, M10, M7, M15, M16 (exports), M18, M19, M4 (composant, 2 routes, générateur ; pas la table), M2 (composant seul).
+- **Commentaires et doc** : C1, C3, C4, C5, C9, C11, C12, C15, C19, C20, l'`it.todo` V33, L12 (provenance D10, mesure de `recomputeAll`), L8 (avec la doc des zones).
+
+### B. À David
+
+- **Décision ou spécification** : V4 (sort du tableur prof face à celui de l'atelier), V8 (ADR 0007, planning), V35 (`\dfrac{\sqrt3}{2}i` ou `i\dfrac{\sqrt3}{2}`), V39 (lecture de `\ln 5^2` par le parseur), V40 (périmètre), V41 (conditions), V48 (a), V49, V63 (ce que citent `u_n`, `u_0`), L9 (police STIX), L13 (palette d'unités), L20 (précision), M8 (sommeil ou mort), M22 (règles trigo à garder ?), M2 (retirer `'graphical'` du format), D6, D8 + V55 (supprimer `/calc`), D11 + C10 (renommage « capacité »), C14 (renommer `lexicon/`), D20, D21 (+ V31, L32, L33), D10 + L11 (Navadra), C13 (relecture des récits).
+- **Destructif** : M4 (table), M11, M20.
+- **RGPD / juridique** : T1, T2, T3, T6, T7, T8, T9, T12, T13, T14, T15 — jamais repris par `rgpd-securite-constats.md`.
+
 ## Chantiers proposés
 
 Priorité : **1** = touche les copies ou les résultats des élèves · **2** = gêne le prof ·
