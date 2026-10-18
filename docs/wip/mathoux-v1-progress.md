@@ -15,7 +15,7 @@
 - [x] PR 2 — #1489 (table `student_mathoux`) mergée et migrée en prod le 2026-10-18 (vérifié : RLS, lecture seule, anon sans droit).
 - [x] PR 3 — #1493 mergée le 2026-10-18 : mémoire (meilleur stade, étoiles), sieste de l'oubli, export RGPD (Mathoux et Palotin).
 - [x] Dessins : AB3 choisi par David le 2026-10-18 (après trois itérations), décliné en 19 races, #1494 mergée.
-- [ ] v1.1 : « S'entraîner sur cette notion » ; vrais noms des Mathoux (à chercher avec David) ; noms des races à valider.
+- [ ] v1.1 : « Faire grandir » (Entraînement sur la notion), branche `feat/mathoux-faire-grandir`, non commité ; vrais noms des Mathoux (à chercher avec David) ; noms des races à valider.
 
 ### Calcul, page, Palotin gardien (2026-10-18, non commité)
 
@@ -79,3 +79,28 @@ Choix faits faute de spécification (à faire valider) :
 Réveil : un Mathou endormi par un point perdu sans carte due ne se réveille qu'à la prochaine
 révision due (cas rare, accepté par David le 2026-10-18) ; v1.1 : bouton S'entraîner sur cette
 notion (révision forcée limitée aux questions de la notion).
+
+### v1.1 — « Faire grandir » (2026-10-18, branche `feat/mathoux-faire-grandir`, non commité)
+
+Spec validée par David le 2026-10-18 : bouton « Faire grandir » sur chaque Mathou né, vers un
+Entraînement (`/automaths/test?…&mode=interactive`) des modèles publiés de la notion, sur tout le
+parcours : points perdus, puis non acquis, puis autres ; 10 au plus, une question par modèle.
+« Réveiller » d'un Mathou endormi sans carte due mène à ce même Entraînement.
+
+Fait, tests verts (rouge d'abord) :
+
+- `collection-logic.ts` : `trainingTemplateFrom` (brouillon et catégorie hors bornes écartés),
+  `selectTrainingTemplates` (priorité, plafond, un par modèle, points servis tour à tour),
+  `trainingHref` (`buildSeriesLink`) ; `Mathou.trainingHref` et `Mathou.dueForRevision` ;
+- `server/mathoux/collection.ts` : la jointure des tags lit aussi `theme, domain, subdomain, level,
+delay` du modèle — **aucune requête en plus** ;
+- page : « Faire grandir » (`aria-label` « Faire grandir le Mathou des … »), « Réveiller » vers
+  l'Entraînement sans carte due, `resolve()` ;
+- intégration (`mathoux-collection.test.ts`) : le lien relu par `resolveTestLaunch` porte les
+  modèles publiés de la notion, pas le brouillon ajouté.
+
+Choix faits faute de spécification (à faire valider) : à priorité égale, points servis tour à tour
+(ordre du parcours, plus ancien niveau d'abord, puis id) ; « Faire grandir » reste aussi sur un
+grand matou ; un Mathou endormi sans carte due n'a que « Réveiller » (vers l'Entraînement),
+correction demandée le 2026-10-18 ;
+durée = celle du modèle, 20 s sinon.

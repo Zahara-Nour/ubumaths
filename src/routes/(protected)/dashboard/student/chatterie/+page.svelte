@@ -6,9 +6,15 @@
 	 * uniquement (chaton, matou, sieste…), jamais XP, niveau ni score
 	 * (Compendium § IX).
 	 *
+	 * « Faire grandir » (v1.1) : chaque Mathou né mène à un Entraînement sur sa
+	 * notion (`mathou.trainingHref`, calculé au serveur) ; un Mathou endormi sans
+	 * carte due se réveille par ce même Entraînement (« Réveiller » seul, sans
+	 * « Faire grandir »), sinon par les révisions.
+	 *
 	 * Spec : docs/wip/mathoux-conception.md § 9 · doc : docs/systeme/mathoux.md
 	 */
 
+	import { resolve } from '$app/paths';
 	import { Cat } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import MathouAvatar from '$lib/components/mathoux/MathouAvatar.svelte';
@@ -34,6 +40,21 @@
 
 	const collection = $derived(data.collection);
 	const isEmpty = $derived(collection.races.length === 0);
+
+	/**
+	 * « Réveiller » : les révisions s'il y a une carte due ; sinon (endormi par un
+	 * point perdu seul) l'Entraînement de la notion, dont les sessions ne
+	 * dépendent pas des cartes dues.
+	 */
+	function wakeHref(mathou: Mathou): string {
+		if (mathou.dueForRevision || !mathou.trainingHref) return resolve(REVISION_HREF);
+		return trainingLink(mathou.trainingHref);
+	}
+
+	/** Lien relatif `/automaths/test?…` construit au serveur (`trainingHref`). */
+	function trainingLink(href: string): string {
+		return resolve(href as '/automaths/test');
+	}
 
 	/** Texte du dessin : le stade, sans répéter le nom affiché à côté. */
 	function avatarLabel(mathou: Mathou): string {
@@ -115,15 +136,31 @@
 									{/if}
 									{#if mathou.asleep}
 										<p class="text-sm">Fait la sieste</p>
-										<Button
-											href={REVISION_HREF}
-											size="sm"
-											variant="outline"
-											class="mt-1"
-											aria-label="Réveiller {mathou.name}"
-										>
-											Réveiller
-										</Button>
+									{/if}
+									{#if !toDiscover && (mathou.asleep || mathou.trainingHref)}
+										<div class="mt-1 flex flex-wrap gap-2">
+											{#if mathou.asleep}
+												<Button
+													href={wakeHref(mathou)}
+													size="sm"
+													variant="outline"
+													aria-label="Réveiller {mathou.name}"
+												>
+													Réveiller
+												</Button>
+											{/if}
+											<!-- Endormi sans carte due : « Réveiller » mène déjà à l'Entraînement, un seul bouton -->
+											{#if mathou.trainingHref && !(mathou.asleep && !mathou.dueForRevision)}
+												<Button
+													href={trainingLink(mathou.trainingHref)}
+													size="sm"
+													variant="outline"
+													aria-label="Faire grandir {mathou.name}"
+												>
+													Faire grandir
+												</Button>
+											{/if}
+										</div>
 									{/if}
 								</div>
 							</li>

@@ -41,6 +41,7 @@ import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
 import { loadMathouCollection } from '$lib/server/mathoux/collection';
 import { readMathouMemory, rememberMathoux } from '$lib/server/mathoux/memory';
 import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
+import { resolveTestLaunch } from '$lib/utils/test-launch';
 
 // ============================================================================
 // TYPES
@@ -328,6 +329,37 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 			growth: 'chaton',
 			name: `le Mathou « ${TAG} Fractions »`
 		});
+	});
+
+	it('« Faire grandir » : l’Entraînement reprend les modèles PUBLIÉS de la notion, aucun brouillon', async () => {
+		// Un brouillon de plus sur p1 : visible du décor, jamais de l'Entraînement
+		templates.brouillonFractions = await createFakeTemplate(service, eleveAId);
+		await tag(templates.brouillonFractions, pointIds.p1, notionFractions);
+		const draft = await service
+			.from('question_templates')
+			.update({ status: 'draft' })
+			.eq('id', templates.brouillonFractions)
+			.select('id');
+		if (draft.error || draft.data?.length !== 1) {
+			throw new Error(`décor : brouillon : ${draft.error?.message}`);
+		}
+
+		const collection = await loadMathouCollection(eleveA, eleveAId, GRADE);
+		const href = mathouOf(collection, notionFractions)?.trainingHref;
+		expect(href).toBeTruthy();
+		const launch = resolveTestLaunch(new URL(href as string, 'https://chiph.re').searchParams);
+		expect(launch.kind).toBe('start');
+		if (launch.kind !== 'start') return;
+		expect(launch.mode).toBe('interactive');
+
+		const expected = await service
+			.from('question_templates')
+			.select('theme')
+			.in('id', [templates.p1, templates.p2]);
+		expect(launch.categories.map((c) => c.category.theme).sort()).toEqual(
+			(expected.data ?? []).map((t) => t.theme).sort()
+		);
+		expect(launch.categories.every((c) => c.quantity === 1)).toBe(true);
 	});
 
 	it('tous les points d’une notion acquis → grand matou', async () => {
