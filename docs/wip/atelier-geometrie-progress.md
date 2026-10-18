@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 — PR 1 (#1474), PR 2 (#1478), PR 3 (#1482), K4 (#1491) mergées ; PR 4 (grapheur à vrais paramètres) EN PAUSE, décision de David attendue (A mesurer / B faire / C abandonner)
+status: lot 1 CLOS — PR 1 (#1474), PR 2 (#1478), PR 3 (#1482), K4 (#1491) mergées ; PR 4 ABANDONNÉE sur mesure (2026-10-18)
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -117,3 +117,12 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
   `parameterBindings` ; une valeur exacte (`1/3`, `√2`) passerait en décimal. Gain non mesuré
   (le curseur reste dans « Mes objets »). Options soumises à David : A mesurer d'abord (reco),
   B faire, C abandonner. Worktree `../ubumaths-wt-grapheur-parametres` gardé, sans commit.
+- 2026-10-18 : **PR 4 abandonnée sur mesure** (option A de David : mesurer, abandonner sous 16 ms).
+  Chromium, `AtelierContainer` réel sur le Graphe (823 × 617 px), 5 fonctions citant `a` (dont
+  tangente + aire, `1/(x−a)`, `sin(a x)`), 40 crans après préchauffe : médiane 10,9 à 12,3 ms,
+  p90 11,3 à 13,3 ms, max 14,1 ms ; 1 fonction : ~5,5 ms. Le coût est le rendu du grapheur
+  (≈ 10-12 ms : rééchantillonnage, analyse, tangente, aire) ; `slideTo` ≈ 0,5 ms, `syncPlots`
+  0,3-0,4 ms (substitution + relecture comprises) : de vrais paramètres n'économiseraient que
+  ≈ 0,5 ms, le rendu restant à refaire à chaque valeur. S3 n'est donc pas faite ; la
+  substitution complète reste (le commentaire de `wantedFor`, `plot-sync.ts`, qui annonce ce
+  changement, est à corriger à la prochaine PR qui touche ce fichier). Worktree retiré.
