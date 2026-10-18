@@ -18,6 +18,7 @@
 	import { intervalWord, ONLY_FUNCTIONS, readInterval, splitInterval } from '$lib/atelier/interval';
 	import { parseDefinition } from '$lib/atelier/parse';
 	import type { AtelierObject } from '$lib/atelier/types';
+	import { isConstruction } from '$lib/atelier/construction';
 
 	interface Props {
 		object: AtelierObject;
@@ -104,8 +105,9 @@
 					object.mode === 'recurrence'
 					? `${object.name}(n+1) =`
 					: `${object.name}(n) =`
-				: // Une courbe se nomme avec « : » (G5) : le champ porte l'équation entière
-					object.kind === 'curve'
+				: // Une courbe se nomme avec « : » (G5) : le champ porte l'équation entière ;
+					// une construction (`d = (AB)`, lot 2) avec « = »
+					object.kind === 'curve' && !isConstruction(object)
 					? `${object.name} :`
 					: `${object.name} =`
 	);

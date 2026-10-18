@@ -45,7 +45,15 @@
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject, CurveDisplay } from './types';
 import type { CompiledFn, MathNode } from '$lib/mathAST';
-import { add, compile, divide, getVariables, number as mathNumber, opposite } from '$lib/mathAST';
+import {
+	add,
+	compile,
+	divide,
+	getVariables,
+	multiply,
+	number as mathNumber,
+	opposite
+} from '$lib/mathAST';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { Figure } from '$lib/geometry-core/graph/figure';
@@ -77,6 +85,8 @@ import { plotRestrictionOf } from './interval';
 import { constantOf } from './constant';
 import { pointCoordinatesOf } from './parse';
 import { substitutedAstOf, substitutedTextOf } from './engine';
+import { constructionOf, isConstruction, nodeOf, type ConstructionMemo } from './construction';
+import type { GeoPoint } from '$lib/geometry-core/types/primitives';
 import { displayName } from './names';
 
 // =============================================================================
@@ -138,7 +148,29 @@ interface WantedFunction {
 	readonly style?: GeoStyle;
 }
 
-type Wanted = WantedPoint | WantedCurve | WantedFunction;
+/**
+ * Une construction (lot 2, L1) : droite, segment, demi-droite portés par deux
+ * points, ou cercle par son centre et son rayon — CALCULÉS par l'atelier
+ * (`construction.ts`), curseurs gardés en lettres. La figure n'en reçoit que
+ * les arbres : elle ne refait aucune construction.
+ */
+type WantedConstruction =
+	| {
+			readonly kind: 'construction';
+			readonly name: string;
+			readonly shape: 'line' | 'segment' | 'ray';
+			readonly from: readonly [MathNode, MathNode];
+			readonly to: readonly [MathNode, MathNode];
+	  }
+	| {
+			readonly kind: 'construction';
+			readonly name: string;
+			readonly shape: 'circle';
+			readonly center: readonly [MathNode, MathNode];
+			readonly radius: MathNode;
+	  };
+
+type Wanted = WantedPoint | WantedCurve | WantedFunction | WantedConstruction;
 
 /** Ce que l'atelier demande à la figure. */
 export interface FigurePlan {
@@ -259,7 +291,9 @@ export class AtelierFigure {
 				const id =
 					object.kind === 'point'
 						? posePoint(figure, object, sliders)
-						: poseCurve(figure, object, sliders);
+						: object.kind === 'construction'
+							? poseConstruction(figure, object, sliders)
+							: poseCurve(figure, object, sliders);
 				if (id !== null) elements.set(object.name, id);
 			} catch {
 				// Les aides déjà posées (calculs cachés, points d'une droite) s'en vont
@@ -314,13 +348,15 @@ function slidersOf(atelier: Atelier): Map<string, WantedSlider> {
 function planOf(atelier: Atelier): FigurePlan {
 	const sliders = slidersOf(atelier);
 	const keep = new Set(sliders.keys());
+	// Un mémo pour tout le passage : curseurs gardés en lettres, celui de l'atelier ne sert pas
+	const memo: ConstructionMemo = new Map();
 	const objects: Wanted[] = [];
 	const cited = new Set<string>();
 	for (const object of atelier.objects) {
 		// F5 : en erreur, en attente ou à compléter, l'objet n'est pas dessiné
 		if (object.status !== 'ok') continue;
 		const wanted = isFigureObject(object)
-			? wantedOf(atelier, object, keep)
+			? wantedOf(atelier, object, keep, memo)
 			: isFunction(object) && object.inFigure === true
 				? wantedFunctionOf(atelier, object, keep)
 				: null;
@@ -330,7 +366,9 @@ function planOf(atelier: Atelier): FigurePlan {
 				? [wanted.x, wanted.y]
 				: wanted.kind === 'curve'
 					? [wanted.raw, wanted.F]
-					: [wanted.expression];
+					: wanted.kind === 'construction'
+						? constructionTrees(wanted)
+						: [wanted.expression];
 		const names = new Set(trees.flatMap((tree) => [...getVariables(tree)]));
 		if ([...names].some((name) => sliders.get(name)?.outOfRange === true)) continue;
 		objects.push(wanted);
@@ -375,11 +413,51 @@ function strokeOf(display: CurveDisplay): GeoStyle {
 	return { color: display.color, dash, strokeWidth: display.lineWidth };
 }
 
+function constructionTrees(wanted: WantedConstruction): MathNode[] {
+	return wanted.shape === 'circle'
+		? [...wanted.center, wanted.radius]
+		: [...wanted.from, ...wanted.to];
+}
+
+/** Une construction calculée par l'atelier, curseurs gardés en lettres (L1). */
+function wantedConstructionOf(
+	atelier: Atelier,
+	object: AtelierObject,
+	keep: ReadonlySet<string>,
+	memo: ConstructionMemo
+): WantedPoint | WantedConstruction | null {
+	const outcome = constructionOf(atelier, object.name, { keepNames: keep, memo });
+	if (!outcome.ok) return null;
+	const { built } = outcome;
+	const pair = (p: GeoPoint): readonly [MathNode, MathNode] => [nodeOf(p.x), nodeOf(p.y)];
+	if (built.shape === 'point') {
+		return { kind: 'point', name: object.name, x: nodeOf(built.at.x), y: nodeOf(built.at.y) };
+	}
+	if (built.shape === 'circle') {
+		return {
+			kind: 'construction',
+			name: object.name,
+			shape: 'circle',
+			center: pair(built.center),
+			radius: nodeOf(built.radius)
+		};
+	}
+	return {
+		kind: 'construction',
+		name: object.name,
+		shape: built.shape,
+		from: pair(built.from),
+		to: pair(built.to)
+	};
+}
+
 function wantedOf(
 	atelier: Atelier,
 	object: AtelierObject,
-	keep: ReadonlySet<string>
-): WantedPoint | WantedCurve | null {
+	keep: ReadonlySet<string>,
+	memo: ConstructionMemo
+): WantedPoint | WantedCurve | WantedConstruction | null {
+	if (isConstruction(object)) return wantedConstructionOf(atelier, object, keep, memo);
 	if (object.kind === 'point') {
 		const coordinates = pointCoordinatesOf(object.definition);
 		if (coordinates === null) return null;
@@ -459,24 +537,97 @@ function posePoint(
 	point: WantedPoint,
 	sliders: ReadonlyMap<string, string>
 ): string | null {
-	const label = displayName(point.name);
-	if (parametersOf([point.x, point.y], sliders).length === 0) {
-		if (!isFiniteExact(point.x) || !isFiniteExact(point.y)) return null;
-		return figure.createFreePoint(
-			{ x: exact(point.x), y: exact(point.y) },
-			{ label, draggable: false }
-		);
-	}
-	const coordinate = (tree: MathNode): ScalarParam => {
-		const own = parametersOf([tree], sliders);
-		if (own.length === 0) return exact(tree);
-		if (tree.type === 'variable' && own.length === 1) return { scalarRef: own[0].sliderId };
-		const compiled = compile(tree);
-		return {
-			scalarRef: figure.createScalarExpression(scalarCompute(compiled, own), sliderIds(own))
-		};
+	return pointAt(figure, point.x, point.y, sliders, { label: displayName(point.name) });
+}
+
+/**
+ * Un nombre de la figure : exact sans curseur, le curseur lui-même s'il est seul,
+ * sinon une expression des curseurs (`createScalarExpression`).
+ */
+function scalarOf(
+	figure: Figure,
+	tree: MathNode,
+	sliders: ReadonlyMap<string, string>
+): ScalarParam {
+	const own = parametersOf([tree], sliders);
+	if (own.length === 0) return exact(tree);
+	if (tree.type === 'variable' && own.length === 1) return { scalarRef: own[0].sliderId };
+	const compiled = compile(tree);
+	return {
+		scalarRef: figure.createScalarExpression(scalarCompute(compiled, own), sliderIds(own))
 	};
-	return figure.createComputedPoint(coordinate(point.x), coordinate(point.y), { label });
+}
+
+/** Poser un point (visible et nommé, ou caché : un appui de construction). */
+function pointAt(
+	figure: Figure,
+	x: MathNode,
+	y: MathNode,
+	sliders: ReadonlyMap<string, string>,
+	options: { readonly label?: string; readonly visible?: false }
+): string | null {
+	if (parametersOf([x, y], sliders).length === 0) {
+		if (!isFiniteExact(x) || !isFiniteExact(y)) return null;
+		return figure.createFreePoint({ x: exact(x), y: exact(y) }, { ...options, draggable: false });
+	}
+	return figure.createComputedPoint(
+		scalarOf(figure, x, sliders),
+		scalarOf(figure, y, sliders),
+		options
+	);
+}
+
+/**
+ * Une construction : ses appuis (points cachés), puis l'élément de la figure qui
+ * existe déjà pour elle — droite, segment, demi-droite, cercle par rayon. Aucun
+ * type nouveau, donc aucune surface de rendu à ajouter (geometry-core/CLAUDE.md,
+ * règle 5). Un rayon qui suit un curseur le suit sans reconstruire (`scalarRef`).
+ */
+function poseConstruction(
+	figure: Figure,
+	wanted: WantedConstruction,
+	sliders: ReadonlyMap<string, string>
+): string | null {
+	const label = displayName(wanted.name);
+	const hidden = (p: readonly [MathNode, MathNode]) =>
+		pointAt(figure, p[0], p[1], sliders, { visible: false });
+	if (wanted.shape === 'circle') {
+		const center = hidden(wanted.center);
+		if (center === null) return null;
+		const id = figure.createCircleByRadius(center, scalarOf(figure, wanted.radius, sliders), {
+			label
+		});
+		// ⚠️ Aucune surface de `geometry-core` n'écrit le nom d'un cercle : l'y
+		// ajouter montrerait le nom de chaque cercle de toutes les figures de cours.
+		// Le nom est un TEXTE de la figure, de la couleur du cercle, accroché à un
+		// point CACHÉ du cercle (à 45°) — il suit rayon et centre, curseurs compris.
+		// Un texte n'est pas désigné au survol (`findElementNear`) et s'exporte en
+		// texte ; le point caché ne s'exporte pas.
+		const along = multiply(wanted.radius, mathNumber(String(Math.SQRT1_2)), 'dot');
+		const anchor = pointAt(
+			figure,
+			add(wanted.center[0], along),
+			add(wanted.center[1], along),
+			sliders,
+			{ visible: false }
+		);
+		if (anchor !== null) {
+			const color = figure.getElementById(id)?.color;
+			figure.createText(
+				label,
+				[],
+				{ anchorId: anchor, anchorOffset: { dx: 0.2, dy: 0.2 } },
+				color === undefined ? {} : { color }
+			);
+		}
+		return id;
+	}
+	const from = hidden(wanted.from);
+	const to = hidden(wanted.to);
+	if (from === null || to === null) return null;
+	if (wanted.shape === 'segment') return figure.createSegment(from, to, { label });
+	if (wanted.shape === 'ray') return figure.createRay(from, to, { label });
+	return figure.createLine(from, to, { label });
 }
 
 /**

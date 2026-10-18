@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 CLOS — PR 1 (#1474), PR 2 (#1478), PR 3 (#1482), K4 (#1491) mergées ; PR 4 ABANDONNÉE sur mesure (2026-10-18)
+status: lot 1 CLOS ; lot 2 — PR 1 constructions mergée (#1500), PR 2 mesures à faire
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -126,3 +126,55 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
   ≈ 0,5 ms, le rendu restant à refaire à chaque valeur. S3 n'est donc pas faite ; la
   substitution complète reste (le commentaire de `wantedFor`, `plot-sync.ts`, qui annonce ce
   changement, est à corriger à la prochaine PR qui touche ce fichier). Worktree retiré.
+
+## Lot 2 — constructions au clavier et mesures
+
+Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-geometrie-lot2-phase0.md).
+
+| PR  | Contenu                                                                             | Branche                                | État     |
+| --- | ----------------------------------------------------------------------------------- | -------------------------------------- | -------- |
+| 1   | Constructions : lecture, calcul exact, dépendances, cartes (contenu), vue Géométrie | `feat/atelier-geometrie-constructions` | en cours |
+| 2   | Mesures : `AM`, `distance`, `aire`, `perimetre`, `angle`                            | —                                      | à faire  |
+| 3   | `point_sur`, `intersection`                                                         | —                                      | à faire  |
+| 4   | `.relever`                                                                          | —                                      | à faire  |
+
+### PR 1 — journal
+
+- 2026-10-18 : worktree `../ubumaths-wt-atelier-constructions`. Tests d'abord : 32 node de lecture
+  (`construction-lecture.test.ts`, rouges : module absent), 38 node du modèle
+  (`construction-modele.test.ts`, 37 rouges), 7 node de projection (`figure-constructions.test.ts`,
+  5 rouges), 15 node du DSL (`dsl/__tests__/atelier-ajouts.test.ts`, 10 rouges), 6 navigateur
+  (`construction.svelte.test.ts`).
+- 2026-10-18 : **lecteur du DSL non réutilisé**, mesuré : il refuse `2a`, `√2`, `a²`,
+  `\frac{1}{2}`, `parallèle`, lit `(AB)` comme l'identifiant AB. Lecteur dédié
+  (`construction-read.ts`) testé contre le lecteur du DSL sur ses lignes. Implémenté : catalogue
+  L3 sauf `intersection` et `point_sur` ; raccourcis ; `;` / `,` ; accents ; refus hors catalogue ;
+  calcul exact (`construction.ts`) ; D9, cascade, cycle refusé, type refusé ; tapé seul + « Garder » ;
+  cartes (nature, construction écrite, valeur) ; projection `syncFigure` (types de figure existants,
+  aucune nouvelle surface) ; DSL : `cercle(O, r)`, `parallele(P, d)`, `perpendiculaire(P, d)`. Pas de
+  version d'état nouvelle (la définition suffit).
+- **À trancher par David** : (1) ~~`d = (AB)` tapé avant A et B~~ — tranché le 2026-10-18,
+  option (a) : le type de A et B tranche (voir ci-dessous) ; (2) le nom d'un cercle
+  dans la vue Géométrie est porté par un point sans marque à 45° (aucune surface de
+  `geometry-core` n'écrit le nom d'un cercle) ; (3) un rayon ≤ 0 (curseur) met le cercle en erreur ;
+  (4) la carte d'une droite ou d'un cercle montre aussi son équation, celle d'une demi-droite
+  l'équation de sa droite ; (5) `cercle(O, 3)` tapé seul répond `cercle(O, 3) : x^2+y^2=9`.
+- 2026-10-18 : vérification à l'écran (coordinateur) : `\right`, `\text` perdus dans le LaTeX de
+  deux réponses (`milieu(A, B)`, `[AB]`) — corrigé, tests rouges puis verts (39c9b02ae).
+- 2026-10-18 : revue de code, corrections (tests d'abord : 13 rouges + 4 pour l'option a) — mémo
+  des constructions (une fois par passe ; chaîne de 12 niveaux < 200 ms, était 46 s) ; renommage
+  des raccourcis écrits en LaTeX ; nom hors forme refusé d'abord ; DSL : argument nommé de trop,
+  centre non point, rayon positionnel ≤ 0, `parallele(d, d)` refusés en français ; nom d'un
+  cercle en texte de la couleur du cercle (plus de point `r="0"` à l'export ni de survol).
+  **Décision de David (option a)** : `(AB)` avant A et B attend ; le type de A et B tranche
+  (droite, produit, ou refus si point et valeur), et le suit après coup.
+- Noté : `rayon=0` reste accepté par le DSL (`locus.test.ts` s'en sert) ; le refus ≤ 0 ne vaut que
+  pour le rayon positionnel et pour l'atelier. Une valeur `(AB)` devenue courbe par
+  `#shortcutKinds` échappe au plafond de 50 (cas rare, non traité).
+- 2026-10-18 : **lot 2, PR 1 (constructions) mergée (#1500, `c80526b37`)**. Vérifiée à l'écran ;
+  revue : 1 bloquant (LaTeX des réponses `\r`/`\t`) + 3 importants (perf exponentielle → mémo,
+  renommage en LaTeX, `(AB)` avant A et B → attente, décision de David) corrigés. CI : un test
+  navigateur prenait `cercle(A, 2)` (devenu valide) comme exemple d'erreur → `cercle(A, A)`.
+  Restent : `cercle(O, rayon=0)` laissé tel quel dans le DSL (un lieu de test en dépend) ; une
+  valeur `(AB)` devenue droite après coup n'est pas comptée dans le plafond de 50 (PR 2).
+  Pas en production.

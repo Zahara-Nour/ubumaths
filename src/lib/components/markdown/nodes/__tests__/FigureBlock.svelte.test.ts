@@ -25,10 +25,12 @@ v = vecteur(B, C)
 c = cercle(A, rayon=1)
 texte(2, 3, "hypoténuse")`;
 
+// `cercle(A, 2)` est devenu valide (rayon positionnel, lot 2 de la géométrie, L2 b) :
+// deux POINTS en arguments positionnels restent une erreur d'exécution
 const ERREUR_DSL = `fenetre: -1 ; 8 ; -1 ; 6
 ---
 A = point(0, 0)
-c = cercle(A, 2)`;
+c = cercle(A, A)`;
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

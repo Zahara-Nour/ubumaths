@@ -100,6 +100,9 @@ import type { Domain } from '$lib/mathAST/domain/types';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { listCitedMessage } from './list-cited';
 import { figureCitedMessage, figureFullMessage } from './geometry';
+import { partsOf, specOf, type ConstructionSpec } from './construction-spec';
+import { bareLineShortcut, readConstruction, renameInConstruction } from './construction-read';
+import { constructionOf, isConstruction, kindsOf, type ConstructionMemo } from './construction';
 import {
 	computeGrid,
 	gridTexts,
@@ -1022,11 +1025,36 @@ export class Atelier {
 		provenance?: Provenance
 	): MissingReference[] {
 		if (kind === 'list') return [];
+		// Une construction (lot 2) : les objets qu'elle nomme, et ce que citent ses nombres
+		const construction = this.#constructionSpec(kind, definition, provenance);
+		if (construction !== null) {
+			const { names, scalars } = partsOf(construction);
+			const found = new Map<string, MissingReference>(
+				names.map((name) => [name, { name, as: 'value' }])
+			);
+			for (const scalar of scalars) {
+				for (const ref of referencesOf(scalar, 'text', this.functionNames)) {
+					if (!found.has(ref.name)) found.set(ref.name, ref);
+				}
+			}
+			return [...found.values()];
+		}
 		// Un point cite ce que citent ses deux coordonnées : le couple, lui, ne se
 		// lit pas comme une expression
 		if (kind === 'point')
 			return this.#inCoordinates(definition, (c) => this.#cited('value', c, provenance));
 		return referencesOf(definition, provenance, this.functionNames);
+	}
+
+	/** La construction que décrit cette définition (sans contrôle de type), ou `null`. */
+	#constructionSpec(
+		kind: AtelierObject['kind'],
+		definition: string,
+		provenance: Provenance | undefined
+	): ConstructionSpec | null {
+		if (kind !== 'point' && kind !== 'curve') return null;
+		const read = specOf(definition, provenance ?? 'url');
+		return read !== null && read.ok ? read.spec : null;
 	}
 
 	/** Ce que rend `read` sur chaque coordonnée d'un point, sans doublon de nom. */
@@ -1049,6 +1077,13 @@ export class Atelier {
 
 	/** Les noms qu'une définition emploie comme un nombre (V58), coordonnées d'un point comprises. */
 	#bareNamesOf(o: AtelierObject): string[] {
+		// Une construction : seuls ses NOMBRES emploient un nom comme un nombre
+		const construction = this.#constructionSpec(o.kind, o.definition, o.provenance);
+		if (construction !== null) {
+			return partsOf(construction).scalars.flatMap((scalar) =>
+				bareNamesOf(scalar, 'text', this.functionNames)
+			);
+		}
 		return o.kind === 'point'
 			? this.#inCoordinates(o.definition, (c) => bareNamesOf(c, o.provenance, this.functionNames))
 			: bareNamesOf(o.definition, o.provenance, this.functionNames);
@@ -1060,9 +1095,13 @@ export class Atelier {
 	 * sanguins.
 	 */
 	#renamedIn(object: AtelierObject, from: string, to: string): string {
-		return object.kind === 'list'
-			? object.definition
-			: renameInDefinition(object.definition, from, to);
+		if (object.kind === 'list') return object.definition;
+		// `(AB)` : une expression régulière de mots n'y voit pas l'identifiant A
+		const construction =
+			object.kind === 'point' || object.kind === 'curve' || object.kind === 'value'
+				? renameInConstruction(object.definition, object.provenance ?? 'url', from, to)
+				: null;
+		return construction ?? renameInDefinition(object.definition, from, to);
 	}
 
 	rename(from: string, to: string): Renamed | Refused {
@@ -2664,6 +2703,7 @@ export class Atelier {
 	 * pas lire ne peut rien promettre, donc l'erreur prime sur l'attente.
 	 */
 	private recomputeAll(): void {
+		this.#shortcutKinds();
 		const living = new Set(this.names);
 		// Un objet encore vide ne peut rien fournir à ceux qui le citent : ils
 		// l'attendent, exactement comme un nom absent. Sans ça, « g = f(x)+1 »
@@ -2698,12 +2738,28 @@ export class Atelier {
 			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
 			// `u(n+1) = 0,5·u(n) + 3` est une définition parfaitement saine.
 			const refs = this.#refsOf(o).filter((r) => !(r.name === o.name && o.kind === 'sequence'));
+			// Une construction NOMME des points et des droites : seuls ses nombres
+			// se contrôlent comme un calcul (P9, #985) ; ses noms, par leur type (L8)
+			const construction = this.#constructionSpec(o.kind, o.definition, o.provenance);
+			const asNumbers =
+				construction === null
+					? refs
+					: partsOf(construction).scalars.flatMap((scalar) =>
+							referencesOf(scalar, 'text', this.functionNames)
+						);
+			if (!ownError.get(o.name) && construction !== null) {
+				const typed = specOf(o.definition, o.provenance ?? 'url', kindsOf(this));
+				if (typed !== null && !typed.ok) {
+					ownError.set(o.name, typed.message);
+					miswritten.add(o.name);
+				}
+			}
 			// Une liste citée comme un nombre (`a = L + 1`) : le refus de Calcul
 			// (#985), jamais L lu comme une lettre libre
 			if (!ownError.get(o.name)) {
 				const cited = listCitedMessage(
 					this.items,
-					refs.map((r) => r.name)
+					asNumbers.map((r) => r.name)
 				);
 				if (cited !== null) ownError.set(o.name, cited);
 			}
@@ -2712,7 +2768,7 @@ export class Atelier {
 			if (!ownError.get(o.name)) {
 				const figure = figureCitedMessage(
 					this.items,
-					refs.map((r) => r.name)
+					asNumbers.map((r) => r.name)
 				);
 				if (figure !== null) {
 					ownError.set(o.name, figure);
@@ -2840,10 +2896,53 @@ export class Atelier {
 		});
 
 		this.#inheritIntervals(intervals.inherited);
+		this.#constructions();
 		this.#underivable();
 		this.#sequenceChecks();
 		this.#reciprocals();
 		this.#recomputeGrid();
+	}
+
+	/**
+	 * `(AB)` seul : une droite entre deux points, un produit entre deux valeurs —
+	 * le TYPE de A et B tranche (décision de David, 2026-10-18, option a), et il
+	 * peut changer après coup (`(AB)` tapé avant A et B, A supprimé puis recréé en
+	 * valeur). L'objet suit : courbe pour deux points, ou un point et une valeur
+	 * (la construction dit alors pourquoi elle refuse) ; valeur pour deux valeurs.
+	 * Un nom encore absent ne tranche rien : l'objet garde son type et attend.
+	 */
+	#shortcutKinds(): void {
+		this.items.forEach((o, i) => {
+			if (o.kind !== 'curve' && o.kind !== 'value') return;
+			const read = readConstruction(o.definition, o.provenance ?? 'url');
+			if (read === null || !read.ok) return;
+			const pair = bareLineShortcut(read.call);
+			if (pair === null) return;
+			const kinds = pair.map((name) => this.get(name)?.kind);
+			if (kinds.some((kind) => kind === undefined)) return;
+			const wanted = kinds.every((kind) => kind === 'value')
+				? 'value'
+				: kinds.every((kind) => kind === 'point' || kind === 'value')
+					? 'curve'
+					: o.kind;
+			if (wanted === o.kind) return;
+			this.items[i] = this.build(o.name, wanted, o.definition, o.provenance);
+		});
+	}
+
+	/** Les constructions calculées pour la révision courante (`construction.ts`). */
+	#constructionMemo: { readonly revision: number; readonly memo: ConstructionMemo } | null = null;
+
+	/**
+	 * Le mémo des constructions de CETTE révision : chaque construction se calcule
+	 * une fois par passe, quel que soit le nombre d'objets qui la citent (revue de
+	 * la PR 1 du lot 2) — recalcul, cartes, ligne de Calcul le partagent.
+	 */
+	constructionMemo(): ConstructionMemo {
+		if (this.#constructionMemo === null || this.#constructionMemo.revision !== this.revision) {
+			this.#constructionMemo = { revision: this.revision, memo: new Map() };
+		}
+		return this.#constructionMemo.memo;
 	}
 
 	/** La graine des tirages (lot 5), lue par le calcul de la grille. */
@@ -3048,6 +3147,29 @@ export class Atelier {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Les constructions (lot 2, L1) : calculées par l'atelier, exactes. Ce qui ne
+	 * se construit pas avec les valeurs du moment (deux points confondus, trois
+	 * points alignés, une parallèle à un cercle) est en erreur et dit pourquoi ;
+	 * ce qui en dépend aussi, jusqu'au point fixe (la propagation de
+	 * `recomputeAll` est déjà passée).
+	 */
+	#constructions(): void {
+		let changed = true;
+		while (changed) {
+			changed = false;
+			// Un statut vient de changer : ce qui a été calculé avec l'ancien ne vaut plus
+			this.#constructionMemo = null;
+			this.items.forEach((o, i) => {
+				if (o.status !== 'ok' || !isConstruction(o)) return;
+				const built = constructionOf(this, o.name);
+				if (built.ok) return;
+				this.items[i] = { ...o, status: 'error', message: built.message } as AtelierObject;
+				changed = true;
+			});
+		}
 	}
 
 	/**

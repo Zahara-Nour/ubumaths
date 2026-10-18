@@ -3,31 +3,34 @@
 > Proposée le 2026-10-18 (session « mathoux »). Choix de David : des noms propres (option a),
 > affichés « **Tangentin**, Chartreux de Yoyolande ». Remplacements déjà demandés par David : Sire
 > Dénominateur, X l'Inconnu, l'Infini-Pas-Tout-à-Fait, Hérédité (→ **Domino**, son idée), Sachant-Que
-> (→ autour de Bayes), Parmi-Tous. Rien n'est encore dans le code.
+> (→ autour de Bayes), Parmi-Tous. Rien n'est encore dans le code. Les Mathoux restent à relire.
 
-## Races (une par branche)
+## Races (une par branche) — **validées par David le 2026-10-18**
 
-| Branche                   | Pelage            | Race                      |
-| ------------------------- | ----------------- | ------------------------- |
-| Nombres et calculs        | noir uni          | le Noir de Nombrilie      |
-| Arithmétique              | tigré roux        | le Roux Premier           |
-| Nombres complexes         | smoking           | l'Imaginaire en Smoking   |
-| Proportionnalité          | siamois           | le Siamois au Pourcent    |
-| Algèbre                   | gidouille rouge   | le Gidouillard Littéral   |
-| Fonctions                 | chartreux         | le Chartreux de Yoyolande |
-| Intégration               | écaille           | l'Écaille Sous-la-Courbe  |
-| Équations différentielles | tacheté           | le Moucheté Différentiel  |
-| Suites                    | tricolore         | le Tricolore Récurrent    |
-| Matrices                  | arlequin          | l'Arlequin Matriciel      |
-| Graphes                   | masque            | le Masqué des Sommets     |
-| Géométrie                 | marbré            | le Marbré de Bedonstan    |
-| Grandeurs et mesures      | fumé              | le Fumé à la Toise        |
-| Probabilités              | van               | le Van de Pifométrie      |
-| Dénombrement              | chaussettes       | le Chaussé Permuté        |
-| Statistiques              | bicolore          | le Bicolore Médian        |
-| Logique                   | croissant de lune | le Lunaire de Patatovie   |
-| Ensembles                 | étoile au front   | l'Étoilé Inclus           |
-| Algorithmique             | tigré argent      | le Tigré de Glitchistan   |
+Relues sur la page à cocher « Le baptême des Mathoux » (19/19 réponses). Corrections d'orthographe
+acceptées : « Bigarré », « l'Écumeur d'Arêtes » ; « Al Jabr » devenu « le Al Jabr Oriental ».
+
+| Branche                   | Pelage            | Race                       |
+| ------------------------- | ----------------- | -------------------------- |
+| Nombres et calculs        | noir uni          | le Noir de Nombrilie       |
+| Arithmétique              | tigré roux        | le Divisionnaire Euclidien |
+| Nombres complexes         | smoking           | l'Imaginaire Eulérien      |
+| Proportionnalité          | siamois           | le Linéen                  |
+| Algèbre                   | gidouille rouge   | le Al Jabr Oriental        |
+| Fonctions                 | chartreux         | le Chartreux de Yoyolande  |
+| Intégration               | écaille           | le Mesuré Riemannien       |
+| Équations différentielles | tacheté           | le Moucheté Newtonien      |
+| Suites                    | tricolore         | le Discret Bigarré         |
+| Matrices                  | arlequin          | le Matouriciel             |
+| Graphes                   | masque            | l'Écumeur d'Arêtes         |
+| Géométrie                 | marbré            | le Marbré de Bedonstan     |
+| Grandeurs et mesures      | fumé              | l'Unitaire Napoléonien     |
+| Probabilités              | van               | le Hasardeux de Pifométrie |
+| Dénombrement              | chaussettes       | le Chaussé Combinatoire    |
+| Statistiques              | bicolore          | le Médian Moyen            |
+| Logique                   | croissant de lune | le Lunaire de Patatovie    |
+| Ensembles                 | étoile au front   | le Patapouf                |
+| Algorithmique             | tigré argent      | le Tigré de Glitchistan    |
 
 ## Mathoux (un par notion)
 
