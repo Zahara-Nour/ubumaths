@@ -36,7 +36,8 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
    le retrait de la page. `/calc` existe aussi (et figure dans le sitemap) ; le cadrage visait la fusion
    `/calc` + `/cas`. **Inventaire fait le 2026-10-11** : [atelier-cas-phase0.md](atelier-cas-phase0.md)
    (↑/↓, bouton exact ⇄ décimal, complétion — PR 1 à 3 livrées le 2026-10-11, PR 4 le 2026-10-13).
-2. **v2, puis v3** : phase 0 à écrire.
+2. **v2, puis v3** : phase 0 de la v2 validée le 2026-10-18 ([atelier-geometrie-phase0.md](atelier-geometrie-phase0.md)) ; v3 à écrire.
+   Après la PR 1 de la géométrie : « Remplacer mon atelier » par un atelier reçu ([atelier-remplacer-phase0.md](atelier-remplacer-phase0.md), validée le 2026-10-18).
 3. **Étapes rédigées : plan décidé par David le 2026-10-13** (ses réponses Q1-Q4 = mes recommandations).
    - **2a. Sélecteur « résumé / détaillé »** — **fait (PR à venir)** (`steps-summary.ts`, tests
      `etapes-resume.test.ts` et `etapes-resume.svelte.test.ts`) : interrupteur DANS chaque « Comment ? » déplié (pas de
