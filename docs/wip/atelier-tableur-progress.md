@@ -303,8 +303,16 @@ validée le 2026-10-18 (Q-RE-1 à Q-RE-6 = les recos).
 - [x] RESTE = `n − d × floor(n/d)` (exact, signe du diviseur, `d = 0` refusé)
 - [x] ET/OU dans la condition de SI (`logicCallOf`, `readLogic`, `readComparison`), un seul
       niveau, refus hors de SI
-- [ ] revue, PR, CI, merge
+- [x] revue : RESTE faux sur les grands nombres (bruit des flottants) → entiers longs, refus
+      au-delà de 2⁵³ ; aide, exemple de plage, ET entre parenthèses
+- [x] PR #1472, CI verte, mergée le 2026-10-18
 
-### PR 2 — ouvrir un CSV
+### PR 2 — ouvrir un CSV (`feat/atelier-ouvrir-csv`)
 
-- [ ] à faire
+- [x] tests : `ouvrir-csv.test.ts` (27), `ouvrir-csv.svelte.test.ts` (6, navigateur)
+- [x] `readCsvFile` (taille, octet nul, UTF-16/UTF-8/Windows-1252, séparateur), `csvCellRefusal`,
+      bouton « Ouvrir un CSV… », pose par `pasteTable`
+- [x] revue : séparateur cherché sans tenir compte des guillemets, virgule au-delà de Q-RE-5 (a),
+      aller-retour annoncé à tort, refus « ; » hors sujet, UTF-16, tests de focus et de taille →
+      corrigés (8 tests rouges d'abord)
+- [ ] PR, CI, merge
