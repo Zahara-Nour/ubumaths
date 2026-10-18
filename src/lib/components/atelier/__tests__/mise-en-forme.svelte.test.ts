@@ -135,6 +135,16 @@ describe('la barre de mise en forme', () => {
 		await userEvent.click(cellAt(container, 'A1'));
 
 		await choose(container, 'Couleur du texte', 'Bleu');
+		// Le focus revient à la case : Ctrl+Z y défait le choix (et pas une suppression de carte)
+		expect(document.activeElement).toBe(cellAt(container, 'A1'));
+		await userEvent.keyboard('{Control>}z{/Control}');
+		await settle();
+		expect(atelier.styleAt(0, 1)).toEqual({});
+		expect(trigger(container, 'Couleur du texte').getAttribute('aria-label')).toBe(
+			'Couleur du texte : aucune'
+		);
+
+		await choose(container, 'Couleur du texte', 'Bleu');
 		await choose(container, 'Couleur du fond', 'Jaune');
 
 		const cell = cellAt(container, 'A1');
@@ -239,7 +249,10 @@ describe('copier-coller dans la grille (Q-MF-4)', () => {
 		await userEvent.click(cellAt(container, 'C3'));
 		clipboard(cellAt(container, 'C3'), 'paste', outside);
 		await settle();
+		expect(atelier.cell(2, 3)).toBe('7');
 		expect(atelier.cell(3, 3)).toBe('8');
+		// C3 garde SA mise en forme ; D3 n'en reçoit aucune (revue : D3 seul ne prouvait rien)
+		expect(atelier.styleAt(2, 3)).toEqual({ bold: true, fill: 'vert' });
 		expect(atelier.styleAt(3, 3)).toEqual({});
 	});
 
@@ -264,5 +277,97 @@ describe('copier-coller dans la grille (Q-MF-4)', () => {
 		expect(atelier.cell(1, 2)).toBe('5');
 		expect(atelier.styleAt(1, 2)).toEqual({});
 		expect(cellAt(container, 'B2').getAttribute('style')).toBeNull();
+	});
+});
+
+describe('les cas limites de la barre (revue)', () => {
+	it('au plafond, un choix refusé n’est pas affiché comme posé', async () => {
+		const atelier = new Atelier();
+		// 500 cases en damier : 500 zones canoniques, le plafond
+		for (let n = 0; n < 500; n++) {
+			const row = Math.floor(n / 13) + 1;
+			const column = (n % 13) * 2 + (row % 2);
+			atelier.applyStyle({ left: column, right: column, top: row, bottom: row }, { bold: true });
+		}
+		expect(atelier.formats.length).toBe(500);
+		const { container } = await openData(atelier);
+		await userEvent.click(cellAt(container, 'A1'));
+
+		await choose(container, 'Couleur du texte', 'Bleu');
+
+		expect(atelier.styleAt(0, 1).color).toBeUndefined();
+		expect(container.querySelector('.refus')?.textContent).not.toBe('');
+		const shownChoice = trigger(container, 'Couleur du texte');
+		expect(shownChoice.getAttribute('aria-label')).toBe('Couleur du texte : aucune');
+		expect(shownChoice.textContent?.trim()).toBe('Aucune');
+	});
+
+	it('une frappe refusée garde son refus : le clic sur Gras ne pose rien', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+		await userEvent.dblClick(cellAt(container, 'A1'));
+		await settle();
+		const input = cellAt(container, 'A1').querySelector('input') as HTMLInputElement;
+		await userEvent.fill(input, 'x'.repeat(201));
+
+		await userEvent.click(button(container, 'Gras'));
+		await settle();
+
+		expect(container.querySelector('.refus')?.textContent).not.toBe('');
+		expect(atelier.styleAt(0, 1)).toEqual({});
+	});
+
+	it('Ctrl+Maj+B reste au navigateur ; Ctrl+B maintenu ne bascule qu’une fois', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 0, row: 1, text: '4' }]);
+		const { container } = await openData(atelier);
+		await userEvent.click(cellAt(container, 'A1'));
+
+		await userEvent.keyboard('{Control>}{Shift>}b{/Shift}{/Control}');
+		await settle();
+		expect(atelier.styleAt(0, 1)).toEqual({});
+
+		const cell = cellAt(container, 'A1');
+		for (const repeat of [false, true, true]) {
+			cell.dispatchEvent(
+				new KeyboardEvent('keydown', { key: 'b', ctrlKey: true, repeat, bubbles: true })
+			);
+		}
+		await settle();
+		expect(atelier.styleAt(0, 1)).toEqual({ bold: true });
+		expect(atelier.gridHistory.undo).toBe(2);
+	});
+
+	it('« Valeur exacte » ne paraît sous un format que si l’arrondi perd quelque chose', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 0, row: 1, text: '=2' }]);
+		atelier.applyStyle(
+			{ left: 0, right: 0, top: 1, bottom: 1 },
+			{ number: { kind: 'decimals', decimals: 2 } }
+		);
+		const { container } = await openData(atelier);
+		await userEvent.click(cellAt(container, 'A1'));
+
+		expect(shown(container, 'A1')).toBe('2,00');
+		expect(container.querySelector('.valeur-exacte')).toBeNull();
+	});
+
+	it('des styles sans origine valable sont ignorés (ils se décaleraient sous une ligne de titres)', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+		await userEvent.click(cellAt(container, 'A1'));
+
+		const data = new DataTransfer();
+		data.setData('text/plain', 'x\n1');
+		data.setData(
+			'application/x-chiphre-grille',
+			JSON.stringify({ cells: [['x'], ['1']], styles: [[{ bold: true }], [{}]] })
+		);
+		cellAt(container, 'A1').dispatchEvent(
+			new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true })
+		);
+		await settle();
+
+		expect(atelier.formats).toEqual([]);
 	});
 });

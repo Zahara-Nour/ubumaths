@@ -560,15 +560,18 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   (aussi Ctrl/⌘+B, +I), alignements (un bouton enfoncé ramène au défaut), couleurs du texte et du
   fond, format de nombre et décimales (`MySelect`, nom annonçant la valeur choisie), « Effacer la
   mise en forme ». Les boutons suivent la case active (`aria-pressed`) ; le focus revient à la
-  grille après chaque geste, pour que Ctrl+Z y agisse. La case montre `formatShown` à la place de
+  grille après chaque geste, pour que Ctrl+Z y agisse ; les choix sont liés par fonctions
+  (`bind:value={get, set}`) : un choix refusé au plafond n'est pas affiché comme posé. Rien n'est
+  posé pendant une frappe refusée (le refus reste). Ctrl+Maj+B et la touche maintenue sont ignorés. La case montre `formatShown` à la place de
   l'écriture LaTeX ; sous la barre, « Valeur exacte » reste visible quand un format arrondit
-  (`0,33` → 1/3). Le style passe en variables CSS (`--texte`, `--fond`) : la teinte de la
+  vraiment (`formatRounds` : `0,33` → 1/3 ; pas pour `2,00`). Le style passe en variables CSS (`--texte`, `--fond`) : la teinte de la
   sélection se pose PAR-DESSUS le fond. Couleurs (`cell-colors.ts`) : les `--color-fig-<nom>` du
   thème, adoucies (texte tiré vers `--color-foreground`, fond en teinte de 14 %, en sombre sur
   `#1f1f1f`) — telles quelles, rouge sur fond jaune tombait à 3,3 en sombre ; `cell-colors.test.ts`
-  mesure toutes les paires (≥ 4,5, sélection comprise, clair et sombre). Le presse-papiers interne
+  mesure toutes les paires des couleurs de mise en forme (≥ 4,5, sélection comprise, clair et sombre ; le texte d'une erreur garde `--color-destructive`, hors de cette mesure). Le presse-papiers interne
   (`application/x-chiphre-grille`) porte `styles` (le style résolu de chaque case, `{}` = défaut),
-  validé par `stylePatchSchema` et ignoré s'il n'a pas la forme du tableau.
+  validé par `stylePatchSchema` et ignoré s'il n'a pas la forme du tableau ou pas d'origine valable
+  (une ligne de titres devinée les décalerait).
 - **Fonction à indice** (`=f_1(3)`) : depuis le 2026-10-15, les parseurs lisent `f_1(3)` comme
   un appel de f_1 quand `f_1` est déclarée (avant : `f₁ × 3`, et la grille calculait avec f, sans
   rien dire — revue du lot 3). La grille rend donc la valeur de f_1, et Calcul l'évalue aussi ;

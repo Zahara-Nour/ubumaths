@@ -9,7 +9,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { formatShown } from '../cell-format';
+import { formatShown, formatRounds } from '../cell-format';
 import { mergeInto } from '../merge';
 import { decodeAtelier, encodeAtelier } from '../url';
 import type { AtelierState } from '../persistence';
@@ -402,3 +402,14 @@ describe('contre-revue', () => {
 });
 
 const Z_COLUMN = 25;
+
+describe('formatRounds (revue de la PR 2)', () => {
+	it('dit si le format perd quelque chose de la valeur', () => {
+		expect(formatRounds(1 / 3, { kind: 'decimals', decimals: 2 })).toBe(true);
+		expect(formatRounds(2, { kind: 'decimals', decimals: 2 })).toBe(false);
+		expect(formatRounds(0.125, { kind: 'percent', decimals: 1 })).toBe(false);
+		expect(formatRounds(0.125, { kind: 'percent', decimals: 0 })).toBe(true);
+		expect(formatRounds(12.5, { kind: 'currency', decimals: 2 })).toBe(false);
+		expect(formatRounds(0.1 + 0.2, { kind: 'decimals', decimals: 1 })).toBe(false);
+	});
+});

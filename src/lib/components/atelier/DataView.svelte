@@ -44,6 +44,7 @@
 		MAX_FORMAT_DECIMALS,
 		THEME_COLORS,
 		applyPatch,
+		formatRounds,
 		formatShown,
 		stylePatchSchema,
 		type Alignment,
@@ -258,8 +259,11 @@
 		// d'écran) est `≈ 1,4142` — la valeur exacte doit pouvoir se lire (revue).
 		// Et pour `509/128`, que la case écrit `3,9765625` (Q-L3-2, lot 3). Pas pour
 		// ce que la case écrit déjà exact (`1/3`, `0,25`, `2`) — sauf sous un format
-		// de nombre, qui l'arrondit : `0,33` garde « Valeur exacte : 1/3 » (Q-MF-1)
-		if (value.shownExact === true && formatShown(value, activeStyle) === null) return null;
+		// de nombre qui l'arrondit : `0,33` garde « Valeur exacte : 1/3 » (Q-MF-1)
+		// — et seulement si l'arrondi perd quelque chose (`2` → `2,00` : rien à dire, revue)
+		const rounds =
+			activeStyle.number !== undefined && formatRounds(value.value, activeStyle.number);
+		if (value.shownExact === true && !rounds) return null;
 		return composed(value.exactLatex);
 	});
 
@@ -287,14 +291,20 @@
 	/**
 	 * Mettre en forme la zone sélectionnée : un geste de la grille (T6). Le focus
 	 * revient à la grille, pour que Ctrl+Z y défasse le geste (leçon de « Relancer »).
+	 * Les choix de la barre sont liés par fonctions (`bind:value={get, set}`) : un
+	 * geste refusé (plafond) ne laisse pas un choix affiché qui n'a pas été posé (revue).
 	 */
 	function restyle(patch: StylePatch) {
+		// Une frappe refusée reste en cours (le clic a validé, sans succès) : on ne
+		// pose rien et le refus reste affiché (revue)
+		if (editing !== null) return;
 		const done = atelier.applyStyle(zone, patch);
 		refusal = done.ok ? '' : done.message;
 		focusSelected();
 	}
 
 	function clearFormatting() {
+		if (editing !== null) return;
 		const done = atelier.clearStyle(zone);
 		refusal = done.ok ? '' : done.message;
 		focusSelected();
@@ -554,8 +564,16 @@
 			return;
 		}
 		// Ctrl/⌘+B et +I : gras, italique (Q-MF-2), sur toute la zone
-		if ((event.ctrlKey || event.metaKey) && !event.altKey && (key === 'b' || key === 'i')) {
+		// (ni Maj : Ctrl+Maj+B reste au navigateur ; ni répétition : maintenue, la
+		// touche alternait et remplissait l'historique, comme F9 — revue)
+		if (
+			(event.ctrlKey || event.metaKey) &&
+			!event.altKey &&
+			!event.shiftKey &&
+			(key === 'b' || key === 'i')
+		) {
 			event.preventDefault();
+			if (event.repeat) return;
 			if (key === 'b') toggleBold();
 			else toggleItalic();
 			return;
@@ -720,7 +738,12 @@
 					return {
 						table: table as string[][],
 						...(from.success && { origin: from.data }),
-						...(fits && { styles: shaped.data.map((line) => line.map((p) => applyPatch({}, p))) })
+						// Sans origine valable, une ligne de titres peut être devinée : les
+						// styles se décaleraient d'une ligne (revue) — on les laisse
+						...(fits &&
+							from.success && {
+								styles: shaped.data.map((line) => line.map((p) => applyPatch({}, p)))
+							})
 					};
 				}
 			} catch {
@@ -962,9 +985,10 @@
 				fitContent
 				triggerClass={COMPACT_TRIGGER}
 				items={COLOR_ITEMS}
-				value={activeStyle.color ?? NO_COLOR}
+				bind:value={
+					() => activeStyle.color ?? NO_COLOR, (value) => restyle({ color: colorOf(value) })
+				}
 				triggerAriaLabel="Couleur du texte : {colorLabel(activeStyle.color)}"
-				onValueChange={(value) => restyle({ color: colorOf(value) })}
 			/>
 		</span>
 		<span class="choix">
@@ -974,9 +998,10 @@
 				fitContent
 				triggerClass={COMPACT_TRIGGER}
 				items={COLOR_ITEMS}
-				value={activeStyle.fill ?? NO_COLOR}
+				bind:value={
+					() => activeStyle.fill ?? NO_COLOR, (value) => restyle({ fill: colorOf(value) })
+				}
 				triggerAriaLabel="Couleur du fond : {colorLabel(activeStyle.fill)}"
-				onValueChange={(value) => restyle({ fill: colorOf(value) })}
 			/>
 		</span>
 		<span class="choix">
@@ -986,9 +1011,8 @@
 				fitContent
 				triggerClass={COMPACT_TRIGGER}
 				items={NUMBER_KIND_ITEMS}
-				value={activeNumberKind}
+				bind:value={() => activeNumberKind, chooseNumberKind}
 				triggerAriaLabel="Format de nombre : {NUMBER_KIND_LABELS[activeNumberKind].toLowerCase()}"
-				onValueChange={chooseNumberKind}
 			/>
 			{#if activeStyle.number}
 				<MySelect
@@ -996,9 +1020,8 @@
 					fitContent
 					triggerClass={COMPACT_TRIGGER}
 					items={DECIMALS_ITEMS}
-					value={String(activeStyle.number.decimals)}
+					bind:value={() => String(activeStyle.number?.decimals ?? 0), chooseDecimals}
 					triggerAriaLabel="Décimales : {activeStyle.number.decimals}"
-					onValueChange={chooseDecimals}
 				/>
 			{/if}
 		</span>
