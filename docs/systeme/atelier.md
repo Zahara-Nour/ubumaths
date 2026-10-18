@@ -169,13 +169,18 @@ Ceux du code et de l'interface :
 | `roving-toolbar.ts`        | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                          |
 | `ToolButton.svelte`        | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)    |
 | `ObjectPanel.svelte`       | « Mes objets » : création, liste des cartes                                                                                |
-| `ObjectCard.svelte`        | Une carte : nom, définition, état, actions — sauf une fonction, confiée à `FunctionCard`                                   |
+| `ObjectCard.svelte`        | Une carte : confie fonction, valeur, suite et liste à leur carte ; point et courbe : nom, définition, état, actions        |
+| `ValueCard.svelte`         | La carte d'une valeur, sur une ligne : `a = [champ]`, menu ; curseur sous la ligne d'un paramètre ; fenêtre des bornes     |
+| `SequenceCard.svelte`      | La carte d'une suite, sur une ligne : point, `u(n) = [champ]`, œil, menu ; premier terme et marches sous la ligne          |
+| `ListCard.svelte`          | La carte d'une liste : aperçu non éditable, nombre de valeurs ; menu avec le sous-menu « Avec une autre liste »            |
+| `CardActionItems.svelte`   | Les actions d'un menu de carte, indisponibles annoncées (`aria-disabled`, raison décrite), jamais `disabled`               |
+| `UnavailableItem.svelte`   | Un réglage de menu qui ne s'applique pas ici (« Curseur » d'une grandeur, « Escalier » d'une suite explicite)              |
 | `FunctionCard.svelte`      | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]`, œil, menu Affichage / Actions ; fenêtre de « Tabuler »   |
-| `CurveStylePopover.svelte` | Le point de couleur d'une fonction et sa fenêtre : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)     |
+| `CurveStylePopover.svelte` | Le point de couleur d'une fonction ou d'une suite : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)    |
 | `DefinitionField.svelte`   | Champ MathLive d'une définition ; rangée 0,3 s après la frappe, ou à Entrée / sortie du champ (`commit="validate"`)        |
-| `ValueSlider.svelte`       | Curseur d'une valeur (bornes et pas réglables)                                                                             |
+| `ValueSlider.svelte`       | Le curseur d'une valeur, sous la ligne de sa carte                                                                         |
+| `SliderSettings.svelte`    | Les bornes et le pas du curseur, refusés avec leur raison (fenêtre ouverte depuis le menu de la valeur)                    |
 | `CurveSettings.svelte`     | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls  |
-| `SequenceSettings.svelte`  | Mode, rang initial, premier terme ; nuage ou escalier                                                                      |
 | `CalculView.svelte`        | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                    |
 | `NaturalField.svelte`      | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel          |
 | `AtelierSettings.svelte`   | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                 |
@@ -1123,7 +1128,8 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
 
 Lot 3 de [atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)
 (décisions de David du 2026-10-18). `ObjectCard` confie toute fonction à `FunctionCard.svelte` ;
-les autres objets gardent leur vue repliée / développée (lot 4).
+valeurs, suites et listes ont la leur depuis le lot 4a (ci-dessous) ; points et courbes gardent
+leur vue repliée / développée (lot 4b).
 
 - **Une seule ligne, plus de vue développée** : `● f(x) = [champ MathLive]`, l'œil (tracer),
   le bouton « Options de f ». Plus de libellé « fonction », plus de second `f(x) =`.
@@ -1164,6 +1170,48 @@ les autres objets gardent leur vue repliée / développée (lot 4).
     le laisse (non rangé : rechargé, il revient au milieu). Aimanté aux entiers et aux demis au
     glissé ; ← → par pas de la sous-grille, Page ↑ / ↓ par pas de la grille.
     Le dessin vit dans le grapheur (voir [grapheur.md](grapheur.md#lecture-graphique-de-limage)).
+
+### Les cartes d'une valeur, d'une suite, d'une liste
+
+Lot 4a de [atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)
+(recommandations validées par David le 2026-10-18). La grammaire de la carte de fonction : une
+ligne `● nom = [définition]`, l'œil si l'objet se trace, un menu (`CardActionItems`,
+`UnavailableItem`), Renommer et Supprimer en fin de menu. Le champ est celui des fonctions
+(`DefinitionField`, `commit="validate"`) : une valeur et une suite sont rangées à **Entrée** ou à
+la **sortie du champ**, plus 0,3 s après la frappe.
+
+- **Valeur** (`ValueCard.svelte`) : `a = [3]`, une grandeur avec son unité (`v = [12 km]`). Le
+  **curseur est sous la ligne** quand la valeur est un **paramètre** — un autre objet la cite
+  (`Atelier.dependents`), point, courbe ou premier terme d'une suite compris. Sinon il est caché,
+  et « Affichage → Curseur » l'affiche (état de la carte, non rangé). ⚠️ La règle lit
+  `object.slider` : le modèle l'omet pour une grandeur (D4, `build()`) et l'omettra pour une
+  mesure de la géométrie (`aire(…)`, `distance(…)`) — la carte ne juge jamais la forme de la
+  définition. Seule exception, d'avant ce lot : une valeur **calculée** (`b + 1`, `constantOf`
+  nul) n'a pas de curseur, il effacerait sa formule. Ces deux absences sont dites par
+  « Curseur », indisponible avec sa raison ; un paramètre a « Curseur » coché et indisponible
+  (« a est un paramètre (f la cite) »). « Bornes et pas du curseur… » ouvre une fenêtre
+  (`SliderSettings`). Actions : Convertir (unité).
+- **Suite** (`SequenceCard.svelte`) : `● u(n) = [2n+1]` ou `● u(n+1) = [2u(n)+1]`. Sous la
+  ligne, en petit : `u([0]) = [3]` (rang et premier terme, deux champs) pour une récurrence,
+  « à partir du rang [0] » pour une suite explicite ; un refus se dit en quittant le champ,
+  relié à lui seul (`refus-suite-u`). Le point de couleur (`CurveStylePopover`, `setSequenceDisplay`)
+  ouvre couleur et trait. Menu : **Affichage** — Nuage / Escalier (choix exclusif ;
+  indisponibles tant que la suite n'est pas tracée, l'escalier d'une suite explicite avec la
+  raison de `cobwebRefusal`), les **marches** se réglant sous la ligne quand l'escalier est
+  tracé ; **Définition** — Explicite / Récurrence (`setSequence`) ; **Actions** — Premiers
+  termes. `SequenceSettings.svelte` est retiré.
+- **Liste** (`ListCard.svelte`) : `L = {3 ; 5 ; 8 ; …} (12 valeurs)`, une liste de mots
+  `(5 valeurs, 3 modalités)`, une colonne de formules « calculée dans la grille »
+  (`list-preview.ts` : les entrées telles que la grille les montre, jamais `=A1*2`). Elle **ne
+  s'édite pas sur la ligne** : « Modifier dans Données » ouvre la vue Données sur sa colonne
+  (action `data`, traitée par le conteneur, hors de `actionsFor`). Les actions à deux listes
+  passent par le sous-menu **« Avec une autre liste »**, un groupe par partenaire
+  (`actionsFor(liste, atelier, partenaire)`), à la place du choix de la partenaire sur la carte
+  (Q46) ; la partenaire choisie reste retenue (`choosePartner`, Q48). Une commande **préparée**
+  (tableau croisé, simuler) part une fois le menu fermé ET retiré (`onOpenChangeComplete`) :
+  lancée avant, le champ mathématique de la console n'obtenait pas le focus.
+- Aucune de ces cartes n'en suit une autre (pas de lien de dépendance, à la différence de `f′`) ;
+  `selected` ne sert qu'à la mise en évidence et au focus d'une carte neuve.
 
 ### Vues
 
@@ -1515,7 +1563,7 @@ gouverne que l'`explanation` de chaque étape — le résumé garde toutes les �
 comprise), titres et calculs, sans le « pourquoi ». `summary` suit `steps` partout (virgule
 décimale, `Entry`) ; l'export de l'historique ne garde que `steps`. `.variations` a sa propre
 rédaction, sans verbosité : pas de `summary`. Dans `CalculView`, l'interrupteur est DANS le
-« Comment ? » déplié (choix segmenté de `SequenceSettings`, `aria-pressed` et coche ✓), réglé
+« Comment ? » déplié (choix segmenté, `aria-pressed` et coche ✓, comme l'ancien nuage / escalier des suites), réglé
 **ligne par ligne** (décision de David, 2026-10-13) : basculer une ligne ne change pas les autres
 lignes dépliées. Le dernier choix fait, sur n'importe quelle ligne, est retenu sous
 `chiphre-atelier-etapes` dans `localStorage` (lecture et écriture dans un `try` : la vue marche
