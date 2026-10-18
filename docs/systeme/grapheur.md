@@ -244,7 +244,9 @@ garantie dans un attribut de présentation SVG).
 
 **4 couleurs × 2 styles = 8 places** (`CURVE_SLOTS`, `getNextSlot`) : au-delà de quatre, des
 couleurs ne restent plus distinctes pour un élève daltonien sous la contrainte de contraste
-≥ 4,5. La dérivée est en `dotted` (en `dashed`, elle imitait la 5ᵉ courbe). Les anciennes
+≥ 4,5. La dérivée est en `dotted` (en `dashed`, elle imitait la 5ᵉ courbe). Les points et les
+courbes de la vue Géométrie de l'atelier n'y puisent pas : leur premier réglage garde la couleur
+de la figure (`newPointDisplay`, `newStrokeDisplay` sans couleur). Les anciennes
 sauvegardes en hex sont traduites **par rang** (`migrateLegacyColor`). Règles générales des
 tokens : [css-color-tokens.md](../pratiques/css-color-tokens.md).
 
