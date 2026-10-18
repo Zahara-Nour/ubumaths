@@ -135,7 +135,8 @@ describe('revue : la carte d’une mesure nommée, à l’écran', () => {
 		atelier.create({ kind: 'value', name: 'S', definition: 'aire(A, B, C)' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
 		const card = cardFor(container, 'S');
-		const line = card.querySelector('.mesure') as HTMLElement;
+		// Le texte de la ligne (son contenu, padding compris) : pas la boîte du paragraphe
+		const line = card.querySelector('.mesure [aria-hidden="true"]') as HTMLElement;
 		const name = card.querySelector('.nom') as HTMLElement;
 		expect(line.getBoundingClientRect().left).toBeGreaterThanOrEqual(
 			name.getBoundingClientRect().left

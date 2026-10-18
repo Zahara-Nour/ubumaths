@@ -124,7 +124,13 @@ import { DEV_HELP_ARGUMENT, studentHelpText } from './help';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { tabulateCommand } from './tabulate';
 import { gridFunctionCalledIn, gridFunctionInCalcul } from './grid-functions';
-import { measureCallNames, measuredText, pairNames, withoutMeasureCalls } from './measures';
+import {
+	citesMeasure,
+	measureCallNames,
+	measuredText,
+	pairNames,
+	withoutMeasureCalls
+} from './measures';
 import { evaluate } from '$lib/mathAST/eval';
 import { format as formatUnit } from '$lib/mathAST/units';
 import {
@@ -3332,8 +3338,67 @@ export function runInput(
 	provenance: Provenance = 'text'
 ): CalcResult {
 	return resultWithDecimalComma(
-		approximatedResult(session.atelier, text, computeInput(session, text, provenance))
+		measureLine(
+			session.atelier,
+			text,
+			approximatedResult(session.atelier, text, computeInput(session, text, provenance))
+		)
 	);
+}
+
+/** Une ligne qui cite une mesure (`AM`, `angle(…)`) ou une grandeur d'angle nommée. */
+function citesMeasureOrAngle(atelier: Atelier, text: string): boolean {
+	const isPoint = (name: string) => atelier.get(name)?.kind === 'point';
+	if (citesMeasure(text, 'text', isPoint)) return true;
+	const angles = atelier.angleQuantities();
+	if (angles.size === 0) return false;
+	const ast = astOf(withoutMeasureCalls(text, 'text'), 'text', atelier.functionNames);
+	return ast !== null && [...getVariables(ast)].some((name) => angles.has(name));
+}
+
+/**
+ * La réponse d'une ligne de mesure, lisible (revue de la PR 2) : `π/2 rad`, pas
+ * `\pi/2 rad` ; une comparaison dit vrai ou faux, sans « ≈ » ; une PUISSANCE
+ * d'un angle (`angle(…)^2` → `8100 °^2`) est refusée — choix prudent, noté.
+ */
+function measureLine(atelier: Atelier, text: string, result: CalcResult): CalcResult {
+	if (result.kind !== 'calcul' || !citesMeasureOrAngle(atelier, text)) return result;
+	if (/(?:°|rad)\s*\^/.test(result.output)) {
+		return {
+			kind: 'refus',
+			message:
+				'Une puissance d’un angle n’est pas une mesure : élève plutôt son cosinus, son sinus, ou une valeur sans unité.'
+		};
+	}
+	const bare = result.output.replace(/^≈ /, '');
+	if (bare === 'true' || bare === 'false') {
+		const word = bare === 'true' ? 'vrai' : 'faux';
+		return { ...result, output: word, latex: `\\text{${word}}` };
+	}
+	return { ...result, output: result.output.replace(/\\pi(?![A-Za-z])/g, 'π') };
+}
+
+/** Une session de calcul par atelier, pour les cartes (`valueAnswerOf`). */
+const cardSessions = new WeakMap<Atelier, CalcSession>();
+
+/**
+ * Ce que Calcul répond quand on tape le nom de cette valeur — la carte d'une
+ * mesure l'affiche tel quel : une seule source de vérité (revue de la PR 2).
+ * `null` si Calcul refuse.
+ */
+export function valueAnswerOf(
+	atelier: Atelier,
+	name: string
+): { readonly text: string; readonly latex: string } | null {
+	let session = cardSessions.get(atelier);
+	if (session === undefined) {
+		session = { atelier, engine: new WebReplEngine(), seed: () => 1 };
+		cardSessions.set(atelier, session);
+	}
+	const result = runInput(session, name);
+	return result.kind === 'calcul'
+		? { text: result.output, latex: result.latex ?? result.output }
+		: null;
 }
 
 /** Le LaTeX de l'unité d'une grandeur approchée : `°`, `rad` comme le moteur les écrit. */

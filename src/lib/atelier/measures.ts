@@ -40,11 +40,13 @@ import {
 	sqrt
 } from '$lib/mathAST/factory';
 import type { AngleUnit } from './angle-unit';
-import { isDelimiter, isUnit } from '$lib/mathAST/guards';
+import { isUnit } from '$lib/mathAST/guards';
+import { transformAST } from '$lib/mathAST/visitor';
+import { parentheses } from '$lib/mathAST/factory';
+import { astOf } from './parse';
 import { format as formatUnit } from '$lib/mathAST/units';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
-import { numericNode } from '$lib/mathAST/common/numeric';
 import {
 	readArguments,
 	readConstruction,
@@ -54,16 +56,7 @@ import {
 } from './construction-read';
 import { PAIR, isLatex, measureCalls, plainName } from './measures-read';
 import { specOfCall } from './construction-spec';
-import {
-	kindsOf,
-	lineOutcome,
-	nodeOf,
-	plainLatex,
-	plainText,
-	pointOutcome,
-	segmentLength
-} from './construction';
-import { substitutedAstOf } from './engine';
+import { kindsOf, lineOutcome, nodeOf, pointOutcome, segmentLength } from './construction';
 import type { Provenance } from './parse';
 
 export {
@@ -115,9 +108,6 @@ const REMARKABLE: readonly (readonly [MathNode, number])[] = [
 	[opposite(divide(sqrt(mathNumber('3')), mathNumber('2'), 'fraction')), 150],
 	[opposite(mathNumber('1')), 180]
 ];
-
-/** Décimales d'un angle approché : celles du mode décimal de l'atelier (`≈ 0,7071`). */
-const ANGLE_DECIMALS = 4;
 
 class Failure extends Error {}
 
@@ -272,7 +262,13 @@ function measure(atelier: Atelier, word: MeasureWord, args: readonly ReadArgumen
 			if (args.length !== 2)
 				throw new Failure('distance s’écrit distance(A ; B) ou distance(A ; d).');
 			const [from] = points(atelier, [args[0]]);
-			const first = args[0].kind === 'name' ? args[0].name : 'A';
+			// Le premier argument tel qu'écrit (`milieu(A, B)`), pour l'aide
+			const first =
+				args[0].kind === 'name'
+					? args[0].name
+					: args[0].kind === 'call'
+						? args[0].call.text
+						: args[0].text;
 			const to = pointOrLine(atelier, args[1], first);
 			if ('point' in to) return { value: segmentLength(from, to.point), approximate: false };
 			// |AB × AP| / AB : la distance de P à la droite (AB), comme le DSL
@@ -433,38 +429,141 @@ export function measuredText(atelier: Atelier, text: string, provenance: Provena
 	return { ok: true, text: out, changed, approximate };
 }
 
-/**
- * Ce que la carte d'une mesure nommée dit de sa valeur (L7) : `6`, `√5`,
- * `≈ 36,8699` — en LaTeX pour l'écran, en texte pour la lecture d'écran. `null`
- * pour un objet qui n'est pas une mesure prête.
- */
-export function measureSummaryOf(
-	atelier: Atelier,
-	name: string
-): { readonly latex: string; readonly text: string } | null {
-	const object = atelier.get(name);
-	if (object === undefined || object.kind !== 'value' || object.status !== 'ok') return null;
-	const read = atelier.measuredOf(object);
-	if (read === null || !read.ok || !read.changed) return null;
-	const substituted = substitutedAstOf(atelier, name);
-	if (!substituted.ok) return null;
-	let whole = simplifyExact(substituted.ast);
-	// `((60)[°])` : les parenthèses de la substitution ne cachent pas l'unité
-	while (isDelimiter(whole)) whole = whole.content;
-	// Un angle est une grandeur : son nombre, puis son unité (`36,8699 °`, `π/3 rad`)
-	const node = isUnit(whole) ? whole.expression : whole;
-	const symbol = isUnit(whole) ? formatUnit(whole.unit, 'original') : null;
-	const unitText = symbol === null ? '' : ` ${symbol}`;
-	const unitLatex =
-		symbol === null ? '' : `~${symbol === '°' ? '{}^{\\circ}' : `\\mathrm{${symbol}}`}`;
-	if (read.approximate) {
-		const value = geoToNumber(exact(simplifyExact(node)));
-		if (!Number.isFinite(value)) return null;
-		const shown = numericNode(Number(value.toFixed(ANGLE_DECIMALS)));
-		return {
-			latex: `\\approx ${plainLatex(shown)}${unitLatex}`,
-			text: `≈ ${plainText(shown)}${unitText}`
-		};
+/** Le nœud d'une grandeur d'angle : `90` → `(90)[°]`, ou `π/2` → `(π/2)[rad]`. */
+function angleNode(degrees: GeoValue, unit: AngleUnit): MathNode {
+	if (isNaNValue(degrees)) throw new Failure('Cet angle ne se calcule pas.');
+	const value =
+		unit === 'deg'
+			? degrees
+			: isExact(degrees)
+				? exact(
+						simplifyExact(
+							divide(
+								multiply(degrees.node, piConstant(), 'implicit'),
+								mathNumber('180'),
+								'fraction'
+							)
+						)
+					)
+				: numeric((geoToNumber(degrees) * Math.PI) / 180);
+	const template = astOf(unit === 'deg' ? '1[°]' : '1[rad]', 'text');
+	if (template === null || !isUnit(template)) throw new Failure('Cet angle ne se calcule pas.');
+	return { ...template, expression: nodeOf(value) };
+}
+
+/** Le nœud d'une longueur, d'une aire, d'un périmètre. */
+function valueNode(value: GeoValue): MathNode {
+	if (isNaNValue(value)) {
+		throw new Failure(
+			'Cette mesure ne se calcule pas : un des points n’a pas de coordonnées finies.'
+		);
 	}
-	return { latex: `${plainLatex(node)}${unitLatex}`, text: `${plainText(node)}${unitText}` };
+	return nodeOf(value);
+}
+
+/** La marque d'une mesure dans le texte relu : un nom indicé que personne n'écrit. */
+const MARK_BASE = 90000;
+
+/**
+ * L'ARBRE d'un texte, chaque mesure remplacée par son nœud exact — angles en
+ * grandeur (`(π/2)[rad]`). ⚠️ Pas par le texte : `(({1/2}\pi)[rad])` relu en
+ * détection devient du LaTeX et ne se lit plus (revue de la PR 2). Chaque mesure
+ * est d'abord une marque (`m_90000`), lue par le parseur de la provenance, puis
+ * remplacée dans l'arbre.
+ */
+export function measuredAst(
+	atelier: Atelier,
+	text: string,
+	provenance: Provenance,
+	functionNames?: readonly string[]
+):
+	| { readonly ok: true; readonly ast: MathNode | null; readonly approximate: boolean }
+	| { readonly ok: false; readonly message: string } {
+	const latex = isLatex(provenance);
+	const isPoint = (name: string) => atelier.get(name)?.kind === 'point';
+	const nodes: MathNode[] = [];
+	const mark = (node: MathNode) => {
+		nodes.push(node);
+		const index = MARK_BASE + nodes.length - 1;
+		return latex ? ` m_{${index}} ` : ` m_${index} `;
+	};
+	let out = text;
+	let approximate = false;
+	try {
+		for (const call of measureCalls(text, provenance).reverse()) {
+			const read = readArguments(call.content, call.word);
+			if (!read.ok) throw new Failure(read.message);
+			const result = measure(atelier, call.word, read.args);
+			approximate ||= result.approximate;
+			const node =
+				call.word === 'angle'
+					? angleNode(result.value, atelier.angleUnit)
+					: valueNode(result.value);
+			out = `${out.slice(0, call.start)}${mark(node)}${out.slice(call.end)}`;
+		}
+		out = out.replace(PAIR, (whole, a: string, b: string) => {
+			const [p, q] = [plainName(a), plainName(b)];
+			if (!isPoint(p) || !isPoint(q)) return whole;
+			const result = measure(atelier, 'distance', [
+				{ kind: 'name', name: p },
+				{ kind: 'name', name: q }
+			]);
+			return mark(valueNode(result.value));
+		});
+	} catch (error) {
+		if (error instanceof Failure) return { ok: false, message: error.message };
+		throw error;
+	}
+	const read = astOf(out, provenance, functionNames);
+	if (read === null) return { ok: true, ast: null, approximate };
+	const markOf = (node: MathNode): number | null => {
+		if (node.type === 'variable') {
+			const match = /^m_\{?(\d+)\}?$/.exec(node.name);
+			return match === null ? null : Number(match[1]);
+		}
+		if (node.type === 'subscript' && node.base.type === 'variable' && node.base.name === 'm') {
+			const sub = node.subscript;
+			return sub.type === 'number' ? Number(sub.value) : null;
+		}
+		return null;
+	};
+	const replaced = transformAST(read, {
+		enterVariable: (node) => replacement(markOf(node)),
+		enterSubscript: (node) => replacement(markOf(node))
+	});
+	function replacement(index: number | null): { node: MathNode; skip: true } | undefined {
+		if (index === null) return undefined;
+		const node = nodes[index - MARK_BASE];
+		return node === undefined ? undefined : { node: parentheses(node), skip: true };
+	}
+	return { ok: true, ast: replaced, approximate };
+}
+
+/** Les fonctions qui prennent un angle et rendent un NOMBRE : l'angle n'y est plus une grandeur. */
+const TRIGONOMETRIC = new Set(['sin', 'cos', 'tan']);
+
+/**
+ * L'arbre contient-il une grandeur d'angle (° ou rad) HORS d'un sin, cos, tan ?
+ * `cos(angle(…))·x` n'en contient pas ; `angle(…)·x` si (revue de la PR 2).
+ */
+export function hasBareAngle(ast: MathNode): boolean {
+	let found = false;
+	const visit = (node: unknown): void => {
+		if (found || node === null || typeof node !== 'object') return;
+		const current = node as MathNode;
+		if (current.type === 'function' && TRIGONOMETRIC.has(current.name)) return;
+		if (isUnit(current)) {
+			const symbol = formatUnit(current.unit, 'original');
+			if (symbol === '°' || symbol === 'rad') {
+				found = true;
+				return;
+			}
+		}
+		for (const value of Object.values(current as unknown as Record<string, unknown>)) {
+			if (Array.isArray(value)) value.forEach(visit);
+			else visit(value);
+		}
+	};
+	visit(ast);
+	return found;
 }

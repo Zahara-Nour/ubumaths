@@ -75,7 +75,7 @@ import {
 	type AtelierState,
 	type StoredObject
 } from './persistence';
-import { expressionOf, graphLatexOf, termsOf } from './engine';
+import { expressionOf, graphLatexOf, substitutedAstOf, termsOf } from './engine';
 import {
 	compactDisplay,
 	fullDisplay,
@@ -102,11 +102,14 @@ import { listCitedMessage } from './list-cited';
 import { figureCitedMessage, figureFullMessage } from './geometry';
 import { partsOf, specOf, type ConstructionSpec } from './construction-spec';
 import { DEFAULT_ANGLE_UNIT, type AngleUnit } from './angle-unit';
+import type { MathNode } from '$lib/mathAST/types';
+import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import {
 	citesMeasure,
-	hasAngleCall,
+	hasBareAngle,
 	hasMeasureCall,
 	measureCallNames,
+	measuredAst,
 	measuredText,
 	renamePairs,
 	withoutMeasureCalls,
@@ -2787,7 +2790,6 @@ export class Atelier {
 		// fonction citée comme un nombre) — pas ceux qui suivent un autre objet
 		const miswritten = new Set<string>();
 
-		const angles = this.#angleValues();
 		for (const o of this.items) {
 			// La provenance de l'objet, pas un défaut : sinon une définition LaTeX
 			// serait relue en texte à chaque recalcul.
@@ -2798,17 +2800,6 @@ export class Atelier {
 				this.functionNames
 			).error;
 			ownError.set(o.name, unreadable);
-			// Choix prudent (décision de David du 2026-10-18 : un angle est une grandeur) :
-			// une fonction, une suite ne prennent pas de mesure d'angle
-			if (
-				!unreadable &&
-				(o.kind === 'function' || o.kind === 'sequence') &&
-				(hasAngleCall(o.definition, o.provenance ?? 'url') ||
-					this.#refsOf(o).some((r) => angles.has(r.name)))
-			) {
-				ownError.set(o.name, ANGLE_IN_FUNCTION);
-				miswritten.add(o.name);
-			}
 			if (!unreadable && this.#overFigureCap.has(o.name)) {
 				ownError.set(o.name, figureFullMessage(MAX_FIGURE_OBJECTS));
 				miswritten.add(o.name);
@@ -3021,17 +3012,22 @@ export class Atelier {
 		});
 	}
 
-	/** Les valeurs qui sont — ou citent — une mesure d'angle (une grandeur). */
-	#angleValues(): Set<string> {
-		const names = new Set(
-			this.items
-				.filter((o) => isValue(o) && hasAngleCall(o.definition, o.provenance ?? 'url'))
-				.map((o) => o.name)
-		);
-		this.spread((name) => {
-			const o = this.get(name);
-			return o !== undefined && isValue(o) && this.#refsOf(o).some((r) => names.has(r.name));
-		}, names);
+	/** Les valeurs qui SONT une grandeur d'angle, pour la révision courante. */
+	#angles: { readonly revision: number; readonly names: ReadonlySet<string> } | null = null;
+
+	/**
+	 * Les valeurs qui SONT une grandeur d'angle (`T = angle(…)`, `2T`) — pas celles
+	 * qui la prennent dans un cos, un sin, une tan (revue de la PR 2).
+	 */
+	angleQuantities(): ReadonlySet<string> {
+		if (this.#angles !== null && this.#angles.revision === this.revision) return this.#angles.names;
+		const names = new Set<string>();
+		for (const o of this.items) {
+			if (!isValue(o) || o.status !== 'ok') continue;
+			const read = substitutedAstOf(this, o.name);
+			if (read.ok && hasBareAngle(read.ast)) names.add(o.name);
+		}
+		this.#angles = { revision: this.revision, names };
 		return names;
 	}
 
@@ -3166,6 +3162,58 @@ export class Atelier {
 		return read !== null && read.ok && read.changed ? read.text : object.definition;
 	}
 
+	/** Les arbres relus pour la révision courante (`definitionAst`). */
+	#astMemo: { readonly revision: number; readonly byName: Map<string, MathNode | null> } | null =
+		null;
+
+	/**
+	 * L'ARBRE d'une définition, chaque mesure remplacée par son nœud exact — angles
+	 * en grandeur (revue de la PR 2 : relu par le texte, `(({1/2}\pi)[rad])` ne se
+	 * lisait plus). C'est ce que lit le moteur (`engine.ts`).
+	 */
+	definitionAst(object: AtelierObject): MathNode | null {
+		const provenance = object.provenance ?? 'url';
+		const read = this.measuredOf(object);
+		if (read === null || !read.ok || !read.changed) {
+			return astOfDefinition(object.definition, provenance, this.functionNames);
+		}
+		if (this.#astMemo === null || this.#astMemo.revision !== this.revision) {
+			this.#astMemo = { revision: this.revision, byName: new Map() };
+		}
+		const known = this.#astMemo.byName.get(object.name);
+		if (known !== undefined) return known;
+		if (this.#measuring.has(object.name)) return null;
+		this.#measuring.add(object.name);
+		try {
+			const tree = measuredAst(this, object.definition, provenance, this.functionNames);
+			const ast = tree.ok ? tree.ast : null;
+			this.#astMemo.byName.set(object.name, ast);
+			return ast;
+		} finally {
+			this.#measuring.delete(object.name);
+		}
+	}
+
+	/** L'arbre d'un TEXTE (coordonnée, rayon), mesures remplacées — `engine.substitutedTextOf`. */
+	textAst(
+		text: string,
+		provenance: Provenance
+	):
+		| { readonly ok: true; readonly ast: MathNode | null }
+		| { readonly ok: false; readonly message: string } {
+		if (!citesMeasure(text, provenance, this.#isPoint)) {
+			return { ok: true, ast: astOfDefinition(text, provenance, this.functionNames) };
+		}
+		const key = `${provenance}\u0000${text}`;
+		if (this.#measuringTexts.has(key)) return { ok: false, message: CIRCULAR };
+		this.#measuringTexts.add(key);
+		try {
+			return measuredAst(this, text, provenance, this.functionNames);
+		} finally {
+			this.#measuringTexts.delete(key);
+		}
+	}
+
 	/**
 	 * Les mesures (lot 2, L4) : une mesure qui ne se calcule pas avec les valeurs
 	 * du moment (polygone croisé, sommet confondu) met l'objet en erreur, avec la
@@ -3174,6 +3222,7 @@ export class Atelier {
 	 */
 	#measures(): void {
 		this.#measureMemo = null;
+		this.#astMemo = null;
 		this.items.forEach((o, i) => {
 			if (isValue(o) && o.unit === undefined) {
 				const measured = this.#citesMeasure(o.definition, o.provenance);
@@ -3196,6 +3245,34 @@ export class Atelier {
 			const read = this.measuredOf(current);
 			if (read !== null && !read.ok) {
 				this.items[i] = { ...current, status: 'error', message: read.message } as AtelierObject;
+			}
+		});
+		// Avec les statuts de ce passage : une grandeur d'angle, ce que Calcul refuserait
+		this.#angles = null;
+		this.items.forEach((o, i) => {
+			if (
+				o.status !== 'ok' ||
+				(o.kind !== 'value' && o.kind !== 'function' && o.kind !== 'sequence')
+			) {
+				return;
+			}
+			const cites =
+				this.measuredOf(o) !== null ||
+				this.#refsOf(o).some((r) => this.angleQuantities().has(r.name));
+			if (!cites) return;
+			const tree = substitutedAstOf(this, o.name);
+			if (!tree.ok) return;
+			// Choix prudent (David, 2026-10-18 : un angle est une grandeur) : une fonction,
+			// une suite ne prennent pas un angle BRUT — son cosinus, si
+			const problem =
+				o.kind !== 'value'
+					? hasBareAngle(tree.ast)
+						? ANGLE_IN_FUNCTION
+						: null
+					: quantityProblem(tree.ast);
+			if (problem !== null) {
+				this.items[i] = { ...o, status: 'error', message: problem } as AtelierObject;
+				this.#angles = null;
 			}
 		});
 	}
@@ -3433,6 +3510,8 @@ export class Atelier {
 			// Un statut vient de changer : ce qui a été calculé avec l'ancien ne vaut plus
 			this.#constructionMemo = null;
 			this.#measureMemo = null;
+			this.#astMemo = null;
+			this.#astMemo = null;
 			this.items.forEach((o, i) => {
 				if (o.status !== 'ok' || !isConstruction(o)) return;
 				const built = constructionOf(this, o.name);

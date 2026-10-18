@@ -30,7 +30,7 @@
 	import SliderSettings from './SliderSettings.svelte';
 	import CardActionItems from './CardActionItems.svelte';
 	import UnavailableItem from './UnavailableItem.svelte';
-	import { measureSummaryOf } from '$lib/atelier/measures';
+	import { valueAnswerOf } from '$lib/atelier/calcul';
 	import { forMathlive } from '$lib/atelier/mathfield';
 	import { convertLatexToMarkup } from 'mathlive';
 
@@ -46,9 +46,14 @@
 
 	const name = $derived(displayName(object.name));
 
-	/** Une mesure nommée (géométrie, lot 2, L4 et L7) : ce qu'elle vaut, `S = aire(A, B, C)` → 6. */
+	/**
+	 * Une mesure nommée (géométrie, lot 2, L4 et L7) : ce qu'elle vaut — ce que
+	 * Calcul répond quand on tape son nom (`valueAnswerOf`), une seule source de
+	 * vérité (revue de la PR 2). `S = aire(A, B, C)` → 6.
+	 */
 	const measure = $derived.by(() => {
-		const read = measureSummaryOf(atelier, object.name);
+		if (object.status !== 'ok' || atelier.measuredOf(object) === null) return null;
+		const read = valueAnswerOf(atelier, object.name);
 		if (read === null) return null;
 		const latex = forMathlive(read.latex);
 		return { markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }), text: read.text };
@@ -180,7 +185,7 @@
 		<!-- L7 : la valeur d'une mesure ; la mise en page des cartes revient à la refonte -->
 		<p class="mesure">
 			<span aria-hidden="true">
-				<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré par toLatex (measureSummaryOf) -->
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de la réponse de Calcul, regénéré par toLatex (valueAnswerOf) -->
 				{@html measure.markup}
 			</span>
 			<span class="sr-only">{measure.text}</span>
@@ -267,7 +272,13 @@
 		outline: 2px solid var(--color-ring, currentColor);
 		outline-offset: 2px;
 	}
-	.mesure,
+	.mesure {
+		margin: 0;
+		/* Sous le nom, comme la ligne grise des autres cartes (`SequenceCard`) */
+		padding-left: 1.75rem;
+		font-size: 0.8125rem;
+		color: var(--color-muted-foreground);
+	}
 	.message {
 		margin: 0;
 		font-size: 0.75rem;

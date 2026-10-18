@@ -282,6 +282,10 @@ function expandDerivatives(
 					? expandDerivatives(item as MathNode, functions, reciprocals)
 					: item
 			);
+		} else if (value instanceof Map) {
+			// L'unité d'une grandeur (`components`, une Map) n'est pas un nœud : copiée
+			// clé à clé, elle devenait {} et la grandeur ne se lisait plus (angles, lot 2)
+			copy[key] = value;
 		} else if (value !== null && typeof value === 'object') {
 			copy[key] = expandDerivatives(value as MathNode, functions, reciprocals);
 		}
@@ -351,11 +355,7 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 	const raw: Record<string, FunctionDefinition> = {};
 	for (const object of derivable(atelier)) {
 		// Une mesure (`aire(A, B, C)`, `AM`) remplacée par sa valeur exacte (lot 2, L4)
-		const plain = astOf(
-			atelier.readableDefinition(object),
-			object.provenance,
-			atelier.functionNames
-		);
+		const plain = atelier.definitionAst(object);
 		// `g(x) = f⁻¹(x)` : la réciproque développée AVANT toute dérivée (`g'`)
 		const ast = plain === null ? null : expandedOrSkipped(plain, {}, reciprocals);
 		if (ast === null) continue;
@@ -367,9 +367,7 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 	for (const object of usable(atelier)) {
 		if (object.name === exclude) continue;
 		// La réciproque déjà développée au premier passage, quand il y en a un
-		const plain =
-			raw[object.name]?.expression ??
-			astOf(atelier.readableDefinition(object), object.provenance, atelier.functionNames);
+		const plain = raw[object.name]?.expression ?? atelier.definitionAst(object);
 		// ⚠️ Développé ICI aussi : sans quoi une fonction qui cite `g` recevrait
 		// `f'` par substitution, et le développement du niveau supérieur — déjà
 		// passé — ne le verrait jamais.
@@ -488,7 +486,7 @@ export function substitutedAstOf(
 		};
 	}
 
-	const ast = astOf(atelier.readableDefinition(object), object.provenance, atelier.functionNames);
+	const ast = atelier.definitionAst(object);
 	if (ast === null) {
 		return { ok: false, message: `« ${object.definition} » ne se lit pas.` };
 	}
@@ -507,9 +505,9 @@ export function substitutedTextOf(
 ):
 	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
 	// Une mesure dans ce texte (`(AM ; 0)`, `cercle(A ; AM)`, revue de la PR 2)
-	const measured = atelier.measuredTextOf(text, provenance ?? 'url');
+	const measured = atelier.textAst(text, provenance ?? 'url');
 	if (!measured.ok) return measured;
-	const ast = astOf(measured.text, provenance, atelier.functionNames);
+	const ast = measured.ast;
 	if (ast === null) return { ok: false, message: `« ${text} » ne se lit pas.` };
 	return substitutedTree(atelier, ast, '', options);
 }

@@ -556,7 +556,7 @@ export function constructionLatex(call: ReadCall): string {
 	return `\\operatorname{${call.word}}\\left(${parts.join(separator)}\\right)`;
 }
 
-function argumentLatex(argument: ReadArgument): string {
+export function argumentLatex(argument: ReadArgument): string {
 	if (argument.kind === 'name') return argument.name.replace(/_(\d+)/, '_{$1}');
 	if (argument.kind === 'call') return constructionLatex(argument.call);
 	const ast = astOf(argument.text, 'text');
