@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2, phase 0)
 date: 2026-10-18
-status: orientations G1-G7 décidées (2026-10-18) ; comportements du lot 1 et questions Q1-Q5 À VALIDER
+status: phase 0 du lot 1 VALIDÉE (2026-10-18) ; G0-G7, comportements du lot 1 et Q1-Q5 décidés
 ---
 
 # Atelier — la géométrie (v2)
@@ -166,7 +166,12 @@ avant l'implémentation.
   `C : x² + y² = a²`, comme aujourd'hui pour une fonction.
 - **M4** Ancien atelier qui contient un objet nommé `y` : voir **Q2**.
 
-## Questions du lot 1 — à trancher par David
+## Questions du lot 1 — tranchées par David (2026-10-18, « je valide tes recos »)
+
+Décisions : **Q1 (a)** refus qui propose les deux écritures · **Q2 (a)** renommer à la migration et
+le dire · **Q3** plafond de 50 objets de figure · **Q4** grapheur à vrais paramètres dans sa propre
+PR, en dernier · **Q5** onglet Figure entre Graphe et Données. Les comportements du lot 1 (C, P, F,
+S, K, M) sont validés avec elles.
 
 - **Q1 — `y = 3x - 2` tapé sans nom.** Aujourd'hui ça crée une fonction `y` tracée. Avec `y`
   réservé : (a) **refus qui propose les deux écritures** : « Pour une fonction, écris f(x) = 3x − 2 ;
