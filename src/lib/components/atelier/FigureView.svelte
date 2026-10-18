@@ -48,9 +48,15 @@
 	let width = $state(0);
 	let height = $state(0);
 
-	/** F1 : un atelier sans point, ni courbe, ni fonction affichée — la vue dit quoi écrire. */
+	/**
+	 * F1 : un atelier sans point, ni courbe, ni fonction affichée — la vue dit quoi
+	 * écrire. Une fonction affichée ne compte que si elle se dessine (`ok`) : en
+	 * attente ou en erreur, la vue resterait vide sans le dire (revue de la PR 3).
+	 */
 	const empty = $derived(
-		!atelier.objects.some((o) => isFigureObject(o) || (isFunction(o) && o.inFigure === true))
+		!atelier.objects.some(
+			(o) => isFigureObject(o) || (isFunction(o) && o.inFigure === true && o.status === 'ok')
+		)
 	);
 </script>
 

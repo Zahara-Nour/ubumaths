@@ -72,6 +72,16 @@ describe('la vue Géométrie (FigureView)', () => {
 		expect(container.textContent).toContain('Repère');
 	});
 
+	it('F1 : une fonction affichée mais en attente (b absent) ne rend pas la vue non vide', async () => {
+		const atelier = atelierOf([['function', 'f', 'b x']]);
+		atelier.setInFigure('f', true);
+		const { container } = await render(WithFigure, { atelier });
+
+		await vi.waitFor(() => expect(container.querySelector('svg.geometry-canvas')).toBeTruthy());
+		expect(container.textContent).toContain('Écris un point');
+		expect(canvasOf(container).querySelector('path.function-curve')).toBeNull();
+	});
+
 	it('K1 : « Afficher dans Géométrie » sur la carte trace 𝒞f, écrit sa ligne et ouvre Géométrie', async () => {
 		const atelier = atelierOf([['function', 'f', 'x^2']]);
 		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });

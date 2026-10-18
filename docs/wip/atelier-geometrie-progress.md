@@ -90,3 +90,8 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
   pour le tracé ; (3) le message de la vue vide ajoute « ou affiche une fonction depuis sa
   carte » ; (4) le nom de 𝒞f n'est écrit que sur le premier morceau d'un ensemble en plusieurs
   morceaux.
+- 2026-10-18 : revue de la PR 3 — la vue Géométrie n'est « non vide » que si une fonction
+  affichée se dessine (`ok`), test navigateur rouge puis vert ; tests ajoutés, verts d'emblée
+  (comportement déjà juste) : `1/x` en deux sous-chemins, `ln x` rien à gauche de x = 0, rejeu
+  Afficher / Retirer / Afficher (même état, mêmes lignes), invariant 9 pour une fonction en
+  erreur et pour `f′` d'une f en erreur ; `passesNear` ne lit plus que les points d'arrivée.

@@ -59,14 +59,64 @@ function paths(figure: Figure, label: string): string[] {
 		});
 }
 
+/**
+ * Les points PAR OÙ passe un chemin SVG : les points d'arrivée de `M`, `L` et le
+ * dernier couple de chaque `C` — jamais les points de contrôle d'une courbe de
+ * Bézier, qui ne sont pas sur le tracé.
+ */
+function onPath(path: string): [number, number][][] {
+	const subpaths: [number, number][][] = [];
+	for (const [, command, args] of path.matchAll(/([MLC])([^MLCZ]*)/gi)) {
+		const numbers = [...args.matchAll(/-?\d+(?:\.\d+)?(?:e-?\d+)?/g)].map((m) => Number(m[0]));
+		const pairs: [number, number][] = [];
+		for (let i = 0; i + 1 < numbers.length; i += 2) pairs.push([numbers[i], numbers[i + 1]]);
+		if (command.toUpperCase() === 'M') subpaths.push([]);
+		const current = subpaths.at(-1);
+		if (current === undefined) continue;
+		if (command.toUpperCase() === 'C') {
+			// Par groupes de trois couples : le troisième est le point d'arrivée
+			for (let i = 2; i < pairs.length; i += 3) current.push(pairs[i]);
+		} else current.push(...pairs);
+	}
+	return subpaths;
+}
+
+/** Distance du point p au segment [a ; b]. */
+function toSegment(p: [number, number], a: [number, number], b: [number, number]): number {
+	const [dx, dy] = [b[0] - a[0], b[1] - a[1]];
+	const length = dx * dx + dy * dy;
+	const t =
+		length === 0 ? 0 : Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / length));
+	return Math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy));
+}
+
+/** Le nombre de sous-chemins (`M`) du tracé de `label`. */
+function subpaths(figure: Figure, label: string): number {
+	return paths(figure, label).reduce((n, path) => n + (path.match(/M/gi)?.length ?? 0), 0);
+}
+
 /** Le tracé de `label` passe-t-il à 2 px du point (x ; y) ? */
 function passesNear(figure: Figure, label: string, x: number, y: number): boolean {
 	const target = TRANSFORMER.mathToSvg(x, y);
+	const p: [number, number] = [target.x, target.y];
+	// La ligne brisée des points d'arrivée, sous-chemin par sous-chemin
 	return paths(figure, label).some((path) =>
-		[...path.matchAll(/(-?\d+(?:\.\d+)?)[ ,]+(-?\d+(?:\.\d+)?)/g)].some(
-			([, px, py]) => Math.hypot(Number(px) - target.x, Number(py) - target.y) <= 2
+		onPath(path).some((points) =>
+			points.some((point, i) =>
+				i === 0 ? toSegment(p, point, point) <= 2 : toSegment(p, points[i - 1], point) <= 2
+			)
 		)
 	);
+}
+
+/** La plus petite abscisse (mathématique) atteinte par le tracé de `label`. */
+function leftmost(figure: Figure, label: string): number {
+	const xs = paths(figure, label).flatMap((path) =>
+		onPath(path)
+			.flat()
+			.map(([px, py]) => TRANSFORMER.svgToMath(px, py).x)
+	);
+	return Math.min(...xs);
 }
 
 function synced(atelier: Atelier): AtelierFigure {
@@ -295,5 +345,72 @@ describe('𝒞f dans la vue Géométrie', () => {
 		syncFigure(d.atelier, target);
 
 		expect(passesNear(target.figure, 'f⁻¹', 5, 1)).toBe(true);
+	});
+});
+
+// =============================================================================
+// Revue de la PR 3
+// =============================================================================
+
+describe('revue de la PR 3', () => {
+	it('1/x : deux morceaux de tracé, aucun trait à travers l’asymptote', () => {
+		const d = desk('f(x) = 1/x');
+		d.atelier.setInFigure('f', true);
+
+		const { figure } = synced(d.atelier);
+
+		expect(subpaths(figure, 'f')).toBe(2);
+		expect(passesNear(figure, 'f', 2, 0.5)).toBe(true);
+		expect(passesNear(figure, 'f', -2, -0.5)).toBe(true);
+	});
+
+	it('ln x : le tracé part de x > 0', () => {
+		const d = desk('f(x) = ln(x)');
+		d.atelier.setInFigure('f', true);
+
+		const { figure } = synced(d.atelier);
+
+		expect(passesNear(figure, 'f', Math.E, 1)).toBe(true);
+		// Rien à gauche de l'axe des ordonnées (au pixel près : x = e⁻¹⁰ s'écrit 0)
+		expect(leftmost(figure, 'f')).toBeGreaterThanOrEqual(0);
+		expect(passesNear(figure, 'f', -1, 0)).toBe(false);
+	});
+
+	it('rejeu : Afficher, Retirer, Afficher — même état final et mêmes lignes', () => {
+		const d = desk('f(x) = x^2');
+		d.runFromPanel('figure', 'f');
+		d.runFromPanel('figure', 'f');
+		d.runFromPanel('figure', 'f');
+		const read = readHistory(historyToJson(d.entries, NOW));
+		if (!read.ok) throw new Error(read.message);
+
+		const fresh = new CalcDesk(new Atelier());
+		fresh.replay(read.history);
+
+		expect(inFigure(fresh.atelier, 'f')).toBe(true);
+		const lines = (x: CalcDesk) => x.entries.map((e) => [e.label, e.text]);
+		expect(lines(fresh)).toEqual(lines(d));
+	});
+
+	it('invariant 9 : une fonction en ERREUR garde l’action, désactivée avec sa raison', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x +' }, 'text');
+		expect(atelier.get('f')?.status).toBe('error');
+
+		const action = figureAction(atelier, 'f');
+		expect(action?.label).toBe('Afficher dans Géométrie');
+		expect(action?.disabledReason).toBe(atelier.get('f')?.message);
+	});
+
+	it('invariant 9 : f′ dont f est passée en erreur garde l’action, désactivée avec sa raison', () => {
+		const d = desk('f(x) = x^2');
+		d.runFromPanel('derive', 'f');
+		d.atelier.update('f', 'x +', 'text');
+		expect(d.atelier.get("f'")?.status).not.toBe('ok');
+
+		const action = figureAction(d.atelier, "f'");
+		expect(action?.label).toBe('Afficher dans Géométrie');
+		expect(action?.disabledReason).toBeTruthy();
+		expect(action?.disabledReason).toBe(d.atelier.get("f'")?.message);
 	});
 });
