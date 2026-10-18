@@ -208,7 +208,7 @@ fractions, P3), sans unité (P8), sans x ni y. `A(1 ; 2)` répond « Pour défin
 A = (1 ; 2). » (P5). Taper `A` répond `A(1 ; 2)`, chaque coordonnée calculée comme une ligne de
 Calcul (`pointLine`) ; taper `d` répond son équation. Un point ou une courbe cité dans un calcul
 (`A + 1`, `2A`) ou une définition (`a = A + 1`) est refusé (« On ne calcule pas encore avec des
-points. », `figureCitedMessage`, P9). Ils citent des valeurs et des fonctions comme tout objet :
+points. », `figureCitedMessage`, P9), y compris en argument d'une commande de calcul (`.dériver A` répondait `d/dA(A) = 1` ; lu dans le texte par `citesName`, les commandes de données lisant des modalités ne sont pas touchées). `(1 ; 2)` tapé seul répond « Pour définir un point, nomme-le : A = (1 ; 2). » (nom libre) ; un triplet ou un couple dans un calcul (`(1;2)+(3;4)`) garde le refus des couples, et la carte d'une valeur aussi. Ils citent des valeurs et des fonctions comme tout objet :
 `M = (a ; 2a)` attend a avec l'offre de curseur (D9), `T : y = f'(2)(x − 2) + f(2)` suit f, et la
 suppression en cascade les emporte (M3). Ni le moteur (`syncEngine`) ni le grapheur ne les
 reçoivent ; `setPlotted` les ignore. Actions de carte : modifier (le champ, préfixe `d :`) et

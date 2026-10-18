@@ -465,7 +465,8 @@ describe('la règle de la virgule dans la saisie (décision de David)', () => {
 		expect(said(result)).toBe(message);
 	});
 
-	it.each(['(1 ; 2)', '(1;2)+(3;4)'])('un couple est refusé : %s', (input) => {
+	// `(1 ; 2)` seul : l'aide du point depuis la géométrie (`geometrie-modele.test.ts`)
+	it.each(['(1;2)+(3;4)', '(1 ; 2 ; 3)'])('un couple est refusé : %s', (input) => {
 		expect(said(runInput(session(), input))).toBe(
 			"Les couples (a ; b) ne sont pas encore pris en charge dans l'atelier."
 		);

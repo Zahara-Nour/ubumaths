@@ -514,3 +514,54 @@ describe('4. plafond et suppression', () => {
 		expect(s.atelier.names).toEqual([]);
 	});
 });
+
+// =============================================================================
+// 5. Les commandes et le couple seul (retours de la revue)
+// =============================================================================
+
+describe('5. commandes et couple tapé seul', () => {
+	it.each(['.dériver A', '.résoudre A = 2', '.simplifier 2A + A', '.évaluer A + x en x=1'])(
+		'P9 : %s est refusé comme un calcul',
+		(input) => {
+			const s = session();
+			runInput(s, 'A = (1 ; 2)');
+
+			expect(refusal(runInput(s, input))).toBe('On ne calcule pas encore avec des points.');
+		}
+	);
+
+	it.each(['.dériver d', '.simplifier d + 1'])('P9 : %s (une courbe) est refusé', (input) => {
+		const s = session();
+		runInput(s, 'd : y = 3x - 2');
+
+		expect(refusal(runInput(s, input))).toBe('On ne calcule pas avec une courbe.');
+	});
+
+	it('une commande de données lit toujours ses modalités : .filtrer n’est pas touché', () => {
+		const s = session();
+		runInput(s, 'A = (1 ; 2)');
+		s.atelier.create({ kind: 'list', name: 'G', definition: 'A ; B ; A' });
+
+		expect(runInput(s, '.filtrer G = A').kind).toBe('commande');
+	});
+
+	it.each([
+		['(1 ; 2)', 'Pour définir un point, nomme-le : A = (1 ; 2).'],
+		['(1,5;a)', 'Pour définir un point, nomme-le : A = (1,5;a).']
+	])('%s tapé seul : l’aide du point', (input, message) => {
+		expect(refusal(runInput(session(), input))).toBe(message);
+	});
+
+	it('la proposition prend un nom libre', () => {
+		const s = session();
+		runInput(s, 'A = (0 ; 0)');
+
+		expect(refusal(runInput(s, '(1 ; 2)'))).toBe('Pour définir un point, nomme-le : B = (1 ; 2).');
+	});
+
+	it.each(['(1 ; 2 ; 3)', '(1;2)+(3;4)'])('%s garde le refus des couples', (input) => {
+		expect(refusal(runInput(session(), input))).toBe(
+			"Les couples (a ; b) ne sont pas encore pris en charge dans l'atelier."
+		);
+	});
+});

@@ -1667,6 +1667,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	if (SIMULATIONS[known.name] === undefined) {
 		const broken = brokenObjectRefusal(session.atelier, typedArgument);
 		if (broken !== null) return { kind: 'refus', message: broken };
+		// P9 : `.dériver A` répondait `d/dA(A) = 1` — le refus d'un calcul. Lu dans
+		// le TEXTE : l'argument porte des mots-clés (`en x=1`, `; t`) qu'aucun
+		// parseur ne lit en entier
+		const figure = figureCitedMessage(
+			session.atelier.objects,
+			session.atelier.names.filter((n) => citesName(typedArgument, n))
+		);
+		if (figure !== null) return { kind: 'refus', message: figure };
 	}
 	const recurrence = session.atelier.objects.find(
 		(o) =>
@@ -3401,6 +3409,14 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// La règle de la virgule (décision de David, 2026-10-09) : `12,15,9`,
 	// `max(1,2)` et le couple `(1 ; 2)` sont refusés en français, plutôt que de
 	// montrer la réponse du moteur (« x\cdot .3 », une ligne jamais tapée)
+	// `(1 ; 2)` seul : un point à qui il manque un nom (G3) — un triplet, un
+	// couple dans un calcul gardent le refus des couples
+	if (looksLikePoint(input) && splitCoordinates(input).ok) {
+		return {
+			kind: 'refus',
+			message: `Pour définir un point, nomme-le : ${nextName('point', session.atelier.names)} = ${input.trim()}.`
+		};
+	}
 	const commaRefused = commaRefusal(withTerms.text, input, { couples: true });
 	if (commaRefused !== null) return { kind: 'refus', message: commaRefused };
 	const rank = decimalRankMessage(session.atelier, withTerms.text);
