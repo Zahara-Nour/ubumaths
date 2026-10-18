@@ -234,8 +234,6 @@ describe('revue de code du lot 3b', () => {
 			ephemeral: true,
 			view: 'donnees'
 		});
-		(cardFor(container, 'L').querySelector('.entete') as HTMLButtonElement).click();
-
 		await clickAction(container, 'L', 'Nuage avec M');
 
 		await vi.waitFor(() => expect(currentView(container)).toBe('Graphe'));

@@ -85,7 +85,7 @@ couleur + style de trait ; la **fenêtre** (`Viewport`) est le rectangle `xMin�
 | `CurveHover.svelte`, `GraphLabel.svelte`                                                                                | Survol aimanté et étiquettes (exacte au survol, cycle au clic)                                                          |
 | `ImageReadings.svelte`, `ReadingSliders.svelte`                                                                         | Lecture graphique de l'image : pointillés (couche SVG) ; point glissant (curseur ARIA en HTML, hors de l'image)         |
 | `FunctionPanel.svelte`, `FunctionInput.svelte`, `SequenceInput.svelte`, `SequenceTable.svelte`, `ParameterInput.svelte` | Panneau de saisie — **monté seulement par `/calc`**                                                                     |
-| `ColorPicker.svelte`, `LineWidthPicker.svelte`, `LineStylePicker.svelte`                                                | Réglages de trait, réutilisés par les cartes de l'atelier (`CurveSettings`, `SequenceSettings`)                         |
+| `ColorPicker.svelte`, `LineWidthPicker.svelte`, `LineStylePicker.svelte`                                                | Réglages de trait, réutilisés par une carte de l'atelier (`CurveSettings`)                                              |
 | `ViewportControls.svelte`, `ExportButton.svelte`, `CoordinatesDisplay.svelte`, `KeyboardHandler.svelte`                 | Zoom, export, coordonnées, raccourcis clavier (`+ - flèches Échap g 0`), sauf touche déjà prise ou zone `data-own-keys` |
 
 Branchement avec l'atelier : `src/lib/atelier/plot-sync.ts` (`syncPlots`) et

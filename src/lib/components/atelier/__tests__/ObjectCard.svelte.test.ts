@@ -5,9 +5,10 @@
  * RÉELLE (`userEvent.keyboard` dans le champ MathLive) : un `setValue` ne passe
  * ni par les raccourcis de MathLive ni par l'événement `input` (mesuré).
  *
- * Lot 3 de la refonte de l'atelier : la carte d'une FONCTION est sur une ligne,
- * son champ toujours là, rangé à Entrée (`carte-fonction.svelte.test.ts`). Les
- * autres objets s'ouvrent encore par leur en-tête.
+ * Lots 3 et 4a de la refonte de l'atelier : fonctions, valeurs, suites et
+ * listes sont sur une ligne, leur champ toujours là, rangé à Entrée
+ * (`carte-fonction.svelte.test.ts`, `cartes-valeur-suite-liste.svelte.test.ts`).
+ * Points et courbes s'ouvrent encore par leur en-tête.
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -31,7 +32,7 @@ function cardFor(container: HTMLElement, name: string): HTMLElement {
 	return card as HTMLElement;
 }
 
-/** Le champ d'une carte : celle d'une fonction l'a d'emblée, les autres s'ouvrent. */
+/** Le champ d'une carte : sur la ligne, ou dans la carte ouverte (point, courbe). */
 async function open(container: HTMLElement, name: string): Promise<HTMLElement> {
 	const card = cardFor(container, name);
 	if (card.querySelector('math-field')) return card;
@@ -136,7 +137,7 @@ describe('carte ouverte — le champ', () => {
 
 		const card = await open(container, 'a');
 
-		expect(card.querySelector('.prefixe')?.textContent?.replace(/\s+/g, '')).toBe('a=');
+		expect(card.querySelector('.ligne')?.textContent?.replace(/\s+/g, '')).toContain('a=');
 	});
 
 	it('une grandeur tapée avec son unité est comprise', async () => {
@@ -145,7 +146,8 @@ describe('carte ouverte — le champ', () => {
 		const { container } = await render(WithAtelier, { atelier });
 		const card = await open(container, 'a');
 
-		await typeInto(fieldOf(card), '12 km');
+		// Lot 4a : une valeur est rangée à Entrée, comme une fonction
+		await typeInto(fieldOf(card), '12 km{Enter}');
 
 		await vi.waitFor(() => expect(atelier.get('a')?.status).toBe('ok'));
 		expect(atelier.get('a')).toMatchObject({ unit: 'km' });
@@ -159,7 +161,7 @@ describe('carte ouverte — le champ', () => {
 		const { container } = await render(WithAtelier, { atelier });
 		const card = await open(container, 'a');
 
-		await typeInto(fieldOf(card), '5 m');
+		await typeInto(fieldOf(card), '5 m{Enter}');
 
 		await vi.waitFor(() => expect(atelier.get('a')).toMatchObject({ unit: 'm' }));
 	});
@@ -170,9 +172,6 @@ describe('carte ouverte — le champ', () => {
 		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 2' });
 		const { container } = await render(WithAtelier, { atelier });
 
-		(cardFor(container, 'L').querySelector('.entete') as HTMLButtonElement).click();
-		await new Promise((r) => setTimeout(r, 0));
-
 		expect(cardFor(container, 'L').querySelector('math-field')).toBeNull();
 	});
 });
@@ -182,14 +181,14 @@ describe('carte ouverte — le champ', () => {
 // =============================================================================
 
 describe('carte fermée', () => {
-	// C1 : rendu mathématique, plus de texte brut (une valeur : la carte d'une
-	// fonction montre toujours son champ, lot 3 de la refonte)
+	// C1 : rendu mathématique, plus de texte brut (un point : fonctions, valeurs,
+	// suites et listes montrent leur ligne, lots 3 et 4a de la refonte)
 	it('rend la définition en écriture mathématique', async () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'value', name: 'a', definition: 'sqrt(2)' }, 'text');
+		atelier.create({ kind: 'point', name: 'A', definition: '(sqrt(2) ; 1)' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
 
-		const definition = cardFor(container, 'a').querySelector('.definition') as HTMLElement;
+		const definition = cardFor(container, 'A').querySelector('.definition') as HTMLElement;
 
 		expect(definition.textContent).not.toContain('sqrt');
 		expect(definition.querySelector('.ML__latex, math')).toBeTruthy();
@@ -197,10 +196,10 @@ describe('carte fermée', () => {
 
 	it('une définition illisible reste lisible en texte', async () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'value', name: 'a', definition: '2 + * 3' }, 'text');
+		atelier.create({ kind: 'point', name: 'A', definition: '(2 + * 3 ; 1)' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
 
-		expect(cardFor(container, 'a').querySelector('.definition')?.textContent).toContain('2 + * 3');
+		expect(cardFor(container, 'A').querySelector('.definition')?.textContent).toContain('2 + * 3');
 	});
 
 	// C1 / C2 : la pastille dit la couleur de la courbe
@@ -257,8 +256,8 @@ describe('carte fermée', () => {
 		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 2' });
 		const { container } = await render(WithAtelier, { atelier });
 
-		expect(cardFor(container, 'a').querySelector('.oeil')).toBeNull();
-		expect(cardFor(container, 'L').querySelector('.oeil')).toBeNull();
+		expect(cardFor(container, 'a').querySelector('button[aria-label^="Tracer"]')).toBeNull();
+		expect(cardFor(container, 'L').querySelector('button[aria-label^="Tracer"]')).toBeNull();
 	});
 });
 
@@ -297,25 +296,25 @@ describe('revue du lot 2a', () => {
 		await vi.waitFor(() => expect(fieldOf(card).value).toBe(''));
 	});
 
-	// B : la carte fermée affichait « 12 \unitkm »
+	// B : la carte fermée affichait « 12 \unitkm » ; lot 4a, son champ est sur la ligne
 	it('une grandeur s’affiche sans commande \\unit', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'value', name: 'a', definition: '12[km]' }, 'url');
 		const { container } = await render(WithAtelier, { atelier });
 
-		const text = cardFor(container, 'a').querySelector('.definition')?.textContent ?? '';
+		const value = fieldOf(cardFor(container, 'a')).value;
 
-		expect(text).not.toContain('unit');
-		expect(text).toContain('km');
+		expect(value).not.toContain('\\unit');
+		expect(value).toContain('km');
 	});
 
 	// A11y 1 : le rendu MathLive est fait de glyphes ; le bouton doit porter un
 	// texte lisible par un lecteur d'écran
 	it('la définition rendue a un équivalent lisible', async () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'value', name: 'a', definition: '2^3+1' }, 'text');
+		atelier.create({ kind: 'point', name: 'A', definition: '(2^3+1 ; 1)' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
-		const definition = cardFor(container, 'a').querySelector('.definition') as HTMLElement;
+		const definition = cardFor(container, 'A').querySelector('.definition') as HTMLElement;
 
 		const visual = definition.querySelector('.ML__latex')?.closest('[aria-hidden="true"]');
 		const spoken = definition.querySelector('.sr-only')?.textContent?.trim() ?? '';
@@ -396,31 +395,31 @@ describe('la carte f′', () => {
 	});
 });
 
-// Retour de David (2026-10-04) : re-cliquer une carte ouverte la referme (les
-// objets autres que les fonctions, qui n'ont plus de vue développée)
+// Retour de David (2026-10-04) : re-cliquer une carte ouverte la referme (points
+// et courbes : les autres objets n'ont plus de vue développée, lots 3 et 4a)
 describe('refermer une carte', () => {
 	it('re-cliquer l’en-tête d’une carte ouverte la referme', async () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'value', name: 'a', definition: '2' }, 'text');
+		atelier.create({ kind: 'point', name: 'A', definition: '(1 ; 2)' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
 
-		const card = await open(container, 'a');
+		const card = await open(container, 'A');
 		(card.querySelector('.entete') as HTMLButtonElement).click();
 
-		await vi.waitFor(() => expect(cardFor(container, 'a').querySelector('math-field')).toBeNull());
-		expect(cardFor(container, 'a').classList.contains('selected')).toBe(false);
+		await vi.waitFor(() => expect(cardFor(container, 'A').querySelector('math-field')).toBeNull());
+		expect(cardFor(container, 'A').classList.contains('selected')).toBe(false);
 	});
 
 	it('et un nouveau clic la rouvre', async () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'value', name: 'a', definition: '2' }, 'text');
+		atelier.create({ kind: 'point', name: 'A', definition: '(1 ; 2)' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
-		const card = await open(container, 'a');
+		const card = await open(container, 'A');
 		(card.querySelector('.entete') as HTMLButtonElement).click();
-		await vi.waitFor(() => expect(cardFor(container, 'a').querySelector('math-field')).toBeNull());
+		await vi.waitFor(() => expect(cardFor(container, 'A').querySelector('math-field')).toBeNull());
 
-		await open(container, 'a');
+		await open(container, 'A');
 
-		expect(cardFor(container, 'a').querySelector('math-field')).toBeTruthy();
+		expect(cardFor(container, 'A').querySelector('math-field')).toBeTruthy();
 	});
 });

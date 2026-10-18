@@ -208,17 +208,8 @@ describe('les actions du panneau répondent vraiment', () => {
 		atelier.create({ kind: 'list', name: 'L', definition: '12 ; 15 ; 9' });
 		const view = await open(atelier);
 
-		const carte = [...view.container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'L'
-		) as HTMLElement;
-		carte.querySelector('button')?.click();
-		await settle();
-		const bouton = [...carte.querySelectorAll('button')].find((b) =>
-			b.textContent?.trim().startsWith('Statistiques')
-		) as HTMLButtonElement;
-		expect(bouton, 'bouton Statistiques').toBeTruthy();
-		expect(bouton.disabled).toBe(false);
-		bouton.click();
+		// Lot 4a de la refonte : l'action est dans le menu de la carte
+		await chooseCardAction(view.container, 'L', 'Statistiques');
 		await settle();
 
 		expect(view.container.querySelector('.historique')?.textContent).toMatch(/Médiane/);

@@ -169,7 +169,8 @@ describe('carte : f(x) = x² sur [0 ; +∞[', () => {
 		const { container } = await render(WithAtelier, { atelier });
 		const card = await open(container, 'a');
 
-		await typeAtEnd(fieldOf(card), ' sur [[0;1]');
+		// Lot 4a : une valeur est rangée à Entrée, comme une fonction
+		await typeAtEnd(fieldOf(card), ' sur [[0;1]{Enter}');
 
 		await vi.waitFor(() =>
 			expect(cardFor(container, 'a').querySelector('[role="alert"]')?.textContent).toBe(

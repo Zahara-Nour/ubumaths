@@ -1,8 +1,9 @@
 /**
- * Harnais : agir sur la carte d'une fonction (lot 3 de la refonte de l'atelier).
+ * Harnais : agir sur la carte d'un objet (lots 3 et 4a de la refonte de l'atelier).
  *
  * La carte n'a plus de vue développée : ses actions et ses réglages d'affichage
  * sont dans un menu (« Options de f »), rendu hors de la carte, dans le document.
+ * Les actions à deux listes sont dans le sous-menu « Avec une autre liste ».
  */
 
 import { expect, vi } from 'vitest';
@@ -17,8 +18,8 @@ export function cardOf(container: HTMLElement, name: string): HTMLElement {
 	return card as HTMLElement;
 }
 
-/** Ouvrir le menu d'une carte de fonction ; rend le menu ouvert. */
-export async function openFunctionMenu(container: HTMLElement, name: string): Promise<HTMLElement> {
+/** Ouvrir le menu d'une carte ; rend le menu ouvert. */
+export async function openCardMenu(container: HTMLElement, name: string): Promise<HTMLElement> {
 	const button = cardOf(container, name).querySelector<HTMLButtonElement>(
 		`button[aria-label="Options de ${name}"]`
 	);
@@ -43,13 +44,36 @@ export function menuItemOf(menu: HTMLElement, label: string): HTMLElement {
 	return item;
 }
 
-/** Choisir une action d'une carte de fonction, par son menu. */
-export async function chooseCardAction(
+/** Le nom des lots 3 : la carte d'une fonction a le même menu que les autres. */
+export const openFunctionMenu = openCardMenu;
+
+/**
+ * Choisir une action d'une carte, par son menu — dans le sous-menu « Avec une
+ * autre liste » quand elle n'est pas au premier niveau.
+ */
+export async function chooseObjectAction(
 	container: HTMLElement,
 	name: string,
 	label: string
 ): Promise<void> {
-	const menu = await openFunctionMenu(container, name);
-	menuItemOf(menu, label).click();
+	const menu = await openCardMenu(container, name);
+	let item: HTMLElement;
+	try {
+		item = menuItemOf(menu, label);
+	} catch {
+		const trigger = menuItemOf(menu, 'Avec une autre liste');
+		trigger.focus();
+		await userEvent.keyboard('{ArrowRight}');
+		const sub = await vi.waitFor(() => {
+			const menus = document.querySelectorAll<HTMLElement>('[role="menu"]');
+			expect(menus.length).toBe(2);
+			return menus[1];
+		});
+		item = menuItemOf(sub, label);
+	}
+	item.click();
 	await vi.waitFor(() => expect(document.querySelector('[role="menu"]')).toBeNull());
 }
+
+/** Choisir une action d'une carte de fonction, par son menu. */
+export const chooseCardAction = chooseObjectAction;

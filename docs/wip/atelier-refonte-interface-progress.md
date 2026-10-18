@@ -83,6 +83,26 @@ Choix faits en codant (à signaler à David) :
 - `aria-label` fixe (« Lecture graphique de f »), la phrase « Lecture de f en x = 2 : f(2) = 4 » en `aria-valuetext` (lue à chaque flèche) et annoncée au relâchement d'un glissé.
 - `pi` tapé en lettres dans la console n'est pas relu comme π par la lecture (le parseur en mode texte y voit `p·i`) : `f(π)` se lit, `f(pi)` non.
 
+## Lot 4a — cartes d'une valeur, d'une suite, d'une liste
+
+Branche `feat/atelier-cartes-valeur-suite-liste` (recommandations validées par David le 2026-10-18, « je suis tes recos »). Points et courbes : lot 4b, après #1500 (session atelier-geometry).
+
+- [x] `ValueCard.svelte` : `a = [champ]` (Entrée / sortie du champ), menu ; curseur sous la ligne d'un paramètre (`Atelier.dependents`), caché sinon, affichable par « Affichage → Curseur » ; bornes et pas dans une fenêtre (`SliderSettings.svelte`, séparé de `ValueSlider.svelte`).
+- [x] `SequenceCard.svelte` : point de couleur (`CurveStylePopover` généralisé aux suites), `u(n) =` / `u(n+1) =`, œil, menu Affichage (Nuage / Escalier), Définition (Explicite / Récurrence), Actions ; premier terme et rang sous la ligne, marches sous la ligne quand l'escalier est tracé. `SequenceSettings.svelte` et son test retirés, leurs cas repris.
+- [x] `ListCard.svelte` : aperçu `{3 ; 5 ; 8 ; …}` (12 valeurs) non éditable (`list-preview.ts`, `listEntriesOf` partagé avec `studentDefinitionOf`), « Modifier dans Données » (action `data` du conteneur), sous-menu « Avec une autre liste » (un groupe par partenaire), Renommer / Supprimer en fin.
+- [x] `CardActionItems.svelte` (actions de menu, aussi utilisé par `FunctionCard`) et `UnavailableItem.svelte` (réglage indisponible).
+- [x] Tests : `cartes-valeur-suite-liste.svelte.test.ts` (28 + 1, les 27 premiers rouges d'abord : 27/27), `list-preview.test.ts` (7) ; adaptés : `ObjectCard`, `ObjectPanel`, `ValueSlider`, `DataView`, `CalculView`, `reglages`, `brouillon-garde`, `actions-sans-bascule`, `intervalle-champ`, `liste-dans-calcul`.
+
+Choix faits en codant (à signaler à David) :
+
+- **Curseur : la règle lit `object.slider`** (précision de la coordination, 2026-10-18) — aucun critère sur la forme de la définition, aucun nouveau drapeau ; le modèle omettra `slider` pour les mesures de la géométrie. Gardée, d'avant ce lot : une valeur CALCULÉE (`b + 1`) n'a pas de curseur. Le curseur affiché depuis le menu pour une valeur non paramètre est un état de la carte, non rangé.
+- Une valeur se range maintenant à Entrée ou à la sortie du champ (plus 0,3 s après la frappe), comme une fonction.
+- Une liste de mots compte ses valeurs ET ses modalités : « (5 valeurs, 3 modalités) » ; une colonne de formules ajoute « calculée dans la grille ».
+- Une suite explicite montre son premier rang sous la ligne (« à partir du rang [0] ») : il compte pour ses termes.
+- Le mode (explicite / récurrence) est dans le menu, groupe « Définition » (il était une liste déroulante de la carte).
+- Le choix de la partenaire (Q46) n'est plus sur la carte : chaque partenaire a son groupe dans le sous-menu ; la partenaire choisie reste retenue (`choosePartner`), pour Q48.
+- Tableau croisé et Simuler partent une fois le menu fermé et retiré (`onOpenChangeComplete`) : lancés avant, le champ mathématique de la console n'obtenait pas le focus (mesuré).
+
 ## Lots suivants
 
-Lot 4 (autres objets), lot 5 (annuler / rétablir) : pas commencés.
+Lot 4b (points et courbes, avec la session atelier-geometry), lot 5 (annuler / rétablir) : pas commencés.
