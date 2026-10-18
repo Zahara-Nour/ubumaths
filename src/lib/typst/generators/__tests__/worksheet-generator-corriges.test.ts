@@ -217,6 +217,36 @@ describe('Corrigé : Shantell Sans et Chiphre Math', () => {
 		}
 	);
 
+	it('deux exercices : deux corrections bornées, titres hors blocs, repli identique', () => {
+		const first = instance(ANSWERS).exercises[0];
+		const second = {
+			...first,
+			exercise_id: 'ex-2',
+			title: 'Produit',
+			position: 2,
+			solution: 'SECONDECORRECTION on multiplie'
+		};
+		const input = {
+			worksheet: worksheet(),
+			instance: { exercises: [first, second] },
+			config: {},
+			mode: 'correction' as const
+		};
+		const typst = generateWorksheetTypst(input);
+		const blocks = correctionFontBlocks(typst);
+		expect(blocks).toHaveLength(2);
+		expect(blocks[0]).toContain('CORRECTIONDETAILLEE');
+		expect(blocks[1]).toContain('SECONDECORRECTION');
+		const outside = outsideCorrectionFontBlocks(typst);
+		expect(outside).toContain('Somme');
+		expect(outside).toContain('Produit');
+		expect(outside).not.toContain('CORRECTIONDETAILLEE');
+		expect(outside).not.toContain('SECONDECORRECTION');
+		// Le repli retire les deux blocs de règles : même document que sans polices
+		const plain = generateWorksheetTypst({ ...input, correctionFonts: false });
+		expect(withoutCorrectionFonts(typst)).toBe(plain);
+	});
+
 	it('correction non écrite : le message aussi dans la police du corrigé', () => {
 		const typst = generateWorksheetTypst({
 			worksheet: worksheet(),
