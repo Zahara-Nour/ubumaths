@@ -308,7 +308,7 @@ describe('loadMathouCollection', () => {
 		expect(has(memory!.calls, 'eq', 'student_id', STUDENT)).toBe(true);
 	});
 
-	it('mémoire : un matou mémorisé dont le calcul redescend reste matou et dort', async () => {
+	it('mémoire : un matou mémorisé dont le calcul redescend reste matou (sans point perdu, il ne dort pas)', async () => {
 		const { supabase } = buildMock(
 			nominalHandlers({
 				// p1 n'est plus acquis : le calcul dit chaton
@@ -319,8 +319,8 @@ describe('loadMathouCollection', () => {
 			})
 		);
 		const collection = await loadMathouCollection(supabase, STUDENT, '1_SPE');
-		expect(collection.races[0].mathoux[0]).toMatchObject({ growth: 'matou', asleep: true });
-		// Un oubli n'apprend rien à la mémoire : aucune écriture
+		expect(collection.races[0].mathoux[0]).toMatchObject({ growth: 'matou', asleep: false });
+		// Un stade en baisse n'apprend rien à la mémoire : aucune écriture
 		expect(createServiceRoleClient).not.toHaveBeenCalled();
 		expect(rememberMathoux).not.toHaveBeenCalled();
 	});
@@ -411,5 +411,58 @@ describe('loadMathouCollection', () => {
 			/n’est pas l’utilisateur de la session/
 		);
 		expect(rememberMathoux).not.toHaveBeenCalled();
+	});
+	// ---------------------------------------------------------------------------
+	// Point perdu (règle d'oubli, David 2026-10-18) : seuil du régime atteint, non acquis
+	// ---------------------------------------------------------------------------
+
+	function lostCase(regime: string, state: Record<string, unknown>) {
+		return buildMock(
+			nominalHandlers({
+				curriculum_points: (calls) =>
+					has(calls, 'eq', 'grade', '1_SPE')
+						? ok([{ id: 'p1', node_id: 'n1', grade: '1_SPE', regime_acquisition: regime }])
+						: ok([]),
+				question_template_points: () => ok([{ point_id: 'p1' }]),
+				student_point_state: () =>
+					ok([
+						{
+							point_id: 'p1',
+							is_acquired: false,
+							total_successes: 0,
+							distinct_template_successes: 0,
+							last_success_at: '2026-10-01T00:00:00Z',
+							...state
+						}
+					])
+			})
+		);
+	}
+
+	it('point perdu : lit le régime du point et les réussites distinctes', async () => {
+		const { supabase, queries } = lostCase('diversite', {});
+		await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		const points = queries.find((q) => q.table === 'curriculum_points');
+		expect(points!.calls.find(([m]) => m === 'select')?.[1]).toMatch(/regime_acquisition/);
+		const states = queries.find((q) => q.table === 'student_point_state');
+		expect(states!.calls.find(([m]) => m === 'select')?.[1]).toMatch(/distinct_template_successes/);
+	});
+
+	it('point perdu, régime diversité (2 modèles réussis, non acquis) → sieste', async () => {
+		const { supabase } = lostCase('diversite', {
+			distinct_template_successes: 2,
+			total_successes: 2
+		});
+		const collection = await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		expect(collection.races[0].mathoux[0]).toMatchObject({ growth: 'chaton', asleep: true });
+	});
+
+	it('point perdu, régime répétition (5 réussites, non acquis) → sieste ; 4 → pas de sieste', async () => {
+		const perdu = lostCase('fluence', { total_successes: 5, distinct_template_successes: 1 });
+		const c1 = await loadMathouCollection(perdu.supabase, STUDENT, '1_SPE');
+		expect(c1.races[0].mathoux[0].asleep).toBe(true);
+		const enCours = lostCase('fluence', { total_successes: 4, distinct_template_successes: 4 });
+		const c2 = await loadMathouCollection(enCours.supabase, STUDENT, '1_SPE');
+		expect(c2.races[0].mathoux[0].asleep).toBe(false);
 	});
 });

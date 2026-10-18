@@ -70,8 +70,12 @@ Fait, tests verts (unitaires, rendu, intégration avec preuves du rouge) :
 
 Choix faits faute de spécification (à faire valider) :
 
-- oubli = stade mémorisé > stade calculé (s'il reste des points au parcours), ou niveau étoilé
-  encore au parcours qui n'est plus entièrement acquis ; un point nouvellement publié produit le
-  même effet (limite notée dans `docs/systeme/mathoux.md`) ;
+- ~~oubli = stade mémorisé > stade calculé~~ → **tranché par David le 2026-10-18 (option 2)** :
+  seul un point « déjà réussi puis perdu » (seuil du régime atteint, non acquis) endort ; un point
+  jamais acquis empêche seulement l'étoile (`isPointLost`) ;
 - un Mathou mémorisé sans point travaillable reste affiché, sans sieste ;
 - `first_seen_at` = date de la première écriture (défaut de la table), pas de la première réussite.
+
+Réveil : un Mathou endormi par un point perdu sans carte due ne se réveille qu'à la prochaine
+révision due (cas rare, accepté par David le 2026-10-18) ; v1.1 : bouton S'entraîner sur cette
+notion (révision forcée limitée aux questions de la notion).

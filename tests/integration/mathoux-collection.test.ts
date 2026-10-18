@@ -149,7 +149,7 @@ async function tag(templateId: string, pointId: string, nodeId: string): Promise
 async function setState(
 	studentId: string,
 	pointId: string,
-	state: { is_acquired: boolean; total_successes: number }
+	state: { is_acquired: boolean; total_successes: number; distinct_template_successes?: number }
 ): Promise<void> {
 	const { data, error } = await service
 		.from('student_point_state')
@@ -429,8 +429,12 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 			starred_grades: []
 		});
 
-		// p1 n'est plus acquis : le calcul seul dirait chaton
-		await setState(id, pointIds.p1, { is_acquired: false, total_successes: 2 });
+		// p1 n'est plus acquis, seuil du régime diversité atteint (2 modèles) : PERDU
+		await setState(id, pointIds.p1, {
+			is_acquired: false,
+			total_successes: 2,
+			distinct_template_successes: 2
+		});
 		const oublie = await loadMathouCollection(client, id, GRADE);
 		expect(mathouOf(oublie, notionFractions)).toMatchObject({
 			growth: 'matou',
@@ -465,8 +469,12 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 			workablePoints: 2
 		});
 
-		// Et même le point de 1re spé oublié : grand matou ★ 1re spé, endormi
-		await setState(id, pointIds.p3, { is_acquired: false, total_successes: 2 });
+		// Et même le point de 1re spé perdu : grand matou ★ 1re spé, endormi
+		await setState(id, pointIds.p3, {
+			is_acquired: false,
+			total_successes: 2,
+			distinct_template_successes: 2
+		});
 		const oublie = await loadMathouCollection(client, id, GRADE_TLE);
 		expect(mathouOf(oublie, notionVecteurs)).toMatchObject({
 			growth: 'grand_matou',
@@ -568,5 +576,40 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		);
 		// … et la mémoire de A n'a pas bougé
 		expect(await storedMemory(a.id, notionVecteurs)).toEqual(avant);
+	});
+	it('règle d’oubli : un point nouvellement tagué n’endort pas un grand matou ★ (David, 2026-10-18)', async () => {
+		const { id, client } = await newStudent(GRADE);
+		const branche = await insertNode('branch', 'branche neuve', null);
+		const notion = await insertNode('notion', 'Suites', branche);
+		const ancien = await insertPoint('p-suites-1', notion);
+		templates.suites1 = await createFakeTemplate(service, id);
+		await tag(templates.suites1, ancien, notion);
+		await setState(id, ancien, { is_acquired: true, total_successes: 3 });
+
+		const avant = await loadMathouCollection(client, id, GRADE);
+		expect(mathouOf(avant, notion)).toMatchObject({
+			growth: 'grand_matou',
+			stars: [GRADE],
+			asleep: false
+		});
+
+		// Un modèle publié tague un point neuf de la même classe : jamais tenté
+		const neuf = await insertPoint('p-suites-2', notion);
+		templates.suites2 = await createFakeTemplate(service, id);
+		await tag(templates.suites2, neuf, notion);
+
+		const apres = await loadMathouCollection(client, id, GRADE);
+		expect(mathouOf(apres, notion)).toMatchObject({
+			growth: 'grand_matou',
+			stars: [GRADE],
+			asleep: false,
+			workablePoints: 2,
+			acquiredPoints: 1
+		});
+		// Calcul seul : matou (1 sur 2) ; la mémoire garde grand matou et l'étoile
+		expect(await storedMemory(id, notion)).toMatchObject({
+			best_stage: 'grand_matou',
+			starred_grades: [GRADE]
+		});
 	});
 });

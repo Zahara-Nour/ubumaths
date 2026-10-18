@@ -16,9 +16,11 @@
  * MÉMOIRE (`student_mathoux`, § 9 « Changement d'année et oubli ») : un Mathou
  * ne rapetisse jamais. Stade affiché = max(stade calculé, meilleur stade
  * mémorisé) ; étoiles = niveaux entièrement acquis (calcul) ∪ étoiles
- * mémorisées. Un point oublié (stade calculé sous la mémoire, ou niveau étoilé
- * qui n'est plus entièrement acquis) ENDORT le Mathou au lieu de le faire
- * rapetisser. `memoryUpdates` dit ce que la mémoire doit apprendre.
+ * mémorisées. Un point PERDU (déjà réussi au seuil, plus acquis : `isPointLost`)
+ * ENDORT le Mathou au lieu de le faire rapetisser ; un point jamais acquis (neuf,
+ * ou en apprentissage) ne l'endort pas, il empêche seulement l'étoile de sa classe
+ * (règle tranchée par David le 2026-10-18, option 2). `memoryUpdates` dit ce que
+ * la mémoire doit apprendre.
  *
  * Importable côté client (phrases du Palotin, page) : aucune dépendance serveur.
  *
@@ -73,6 +75,15 @@ export interface PointProgress {
 	isAcquired: boolean;
 	/** Au moins une réussite (`total_successes > 0` ou `last_success_at` non nul). */
 	hasSuccess: boolean;
+	/** Point perdu : seuil de réussites atteint mais plus acquis (`isPointLost`). */
+	lost: boolean;
+}
+
+/** Ce qu'il faut de `student_point_state` pour savoir si un point est perdu. */
+export interface PointLossInput {
+	isAcquired: boolean;
+	totalSuccesses: number;
+	distinctTemplateSuccesses: number;
 }
 
 /** Une notion vue depuis UN niveau du parcours. */
@@ -95,7 +106,7 @@ export interface Mathou {
 	growth: MathouGrowth;
 	/**
 	 * Au moins un point « à revoir » (de n'importe quel niveau) ou un point
-	 * oublié (cf. en-tête). Jamais vrai pour une silhouette.
+	 * perdu (cf. `isPointLost`). Jamais vrai pour une silhouette.
 	 */
 	asleep: boolean;
 	/** Niveaux étoilés (calculés ∪ mémorisés), du plus ancien au plus récent. */
@@ -211,6 +222,18 @@ export function memoryCovers(have: MathouMemory, want: MathouMemory): boolean {
 	);
 }
 
+/**
+ * Un point est-il PERDU : déjà réussi au seuil de son régime d'acquisition, mais
+ * plus acquis (échecs récents) ? Seuils de `recalc_point_state`
+ * (migration 20260928160000) : régime `diversite` → au moins 2 modèles distincts
+ * réussis ; sinon (`fluence`, répétition) → au moins 5 réussites. Un point jamais
+ * acquis sous le seuil (neuf, en apprentissage) n'est pas perdu.
+ */
+export function isPointLost(regime: string, state: PointLossInput): boolean {
+	if (state.isAcquired) return false;
+	return regime === 'diversite' ? state.distinctTemplateSuccesses >= 2 : state.totalSuccesses >= 5;
+}
+
 /** Nom de la classe sur une étoile : libellé court du projet (« 1ère Spé »), sinon le code. */
 export function starGradeLabel(grade: string): string {
 	return isGradeCode(grade) ? GRADES[grade].shortName : grade;
@@ -304,6 +327,7 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 		let workableTotal = 0;
 		let acquiredTotal = 0;
 		let hasNappingPoint = false;
+		let hasLostPoint = false;
 		for (const [grade, pointSet] of gradeEntries) {
 			let acquired = 0;
 			let hasSuccess = false;
@@ -311,6 +335,7 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 				const state = progress.get(pointId);
 				if (state?.isAcquired) acquired += 1;
 				if (state?.hasSuccess) hasSuccess = true;
+				if (state?.lost) hasLostPoint = true;
 				if (nappingPointIds.has(pointId)) hasNappingPoint = true;
 			}
 			const gradeGrowth = mathouGrowth({ workable: pointSet.size, acquired, hasSuccess });
@@ -331,24 +356,16 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 			.filter((detail) => detail.growth === 'grand_matou' && isGradeCode(detail.grade))
 			.map((detail) => detail.grade);
 		const remembered = memory.get(notion.id);
-		const computedGrowth = growth;
-		let forgotten = false;
 		let stars = computedStars;
 		if (remembered) {
-			growth = bestGrowth(computedGrowth, remembered.bestStage);
+			// Stade affiché = max(calcul, mémoire) ; les étoiles mémorisées restent. Un
+			// stade calculé plus bas n'endort PAS à lui seul (un point neuf le fait baisser)
+			growth = bestGrowth(growth, remembered.bestStage);
 			stars = sortGrades([...computedStars, ...remembered.starredGrades]);
-			// Oubli : la mémoire dépasse le calcul, ou un niveau étoilé encore au parcours
-			// n'est plus entièrement acquis. Un Mathou de la seule mémoire (aucun point
-			// travaillable au parcours) n'a rien à revoir : il ne dort pas.
-			forgotten =
-				(byGrade.length > 0 && GROWTH_RANK[remembered.bestStage] > GROWTH_RANK[computedGrowth]) ||
-				remembered.starredGrades.some((grade) =>
-					byGrade.some((detail) => detail.grade === grade && detail.growth !== 'grand_matou')
-				);
 		}
 
 		// Une silhouette n'est pas encore un Mathou : elle ne dort pas.
-		const asleep = growth !== 'a_decouvrir' && (hasNappingPoint || forgotten);
+		const asleep = growth !== 'a_decouvrir' && (hasNappingPoint || hasLostPoint);
 
 		if (growth === 'a_decouvrir') counts.toDiscover += 1;
 		else counts.born += 1;

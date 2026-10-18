@@ -11,7 +11,8 @@
  *   - `classification_nodes` (branches et notions non archivées, sous-notions
  *     référencées),
  *   - `student_point_state` (acquisition, réussites),
- *   - les badges FSRS (`computePointBadges`) pour la sieste,
+ *   - les badges FSRS (`computePointBadges`) et les points PERDUS (seuil du régime
+ *     `regime_acquisition` atteint, non acquis : `isPointLost`) pour la sieste,
  *   - la MÉMOIRE `student_mathoux` (meilleur stade, étoiles : `./memory.ts`),
  *     lue au client de l'élève ; un Mathou ne rapetisse jamais.
  *
@@ -48,6 +49,7 @@ import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { readMathouMemory, rememberMathoux, type StoredMathouMemory } from './memory';
 import {
 	buildMathouCollection,
+	isPointLost,
 	memoryUpdates,
 	type CollectionNodeKind,
 	type CollectionTreeNode,
@@ -104,7 +106,7 @@ export async function loadMathouCollection(
 		grades.map((g) =>
 			supabase
 				.from('curriculum_points')
-				.select('id, node_id, grade')
+				.select('id, node_id, grade, regime_acquisition')
 				.eq('grade', g)
 				.is('archived_at', null)
 				.not('node_id', 'is', null)
@@ -112,11 +114,14 @@ export async function loadMathouCollection(
 	);
 
 	const gradePoints: WorkablePoint[] = [];
+	// Régime d'acquisition par point : fixe le seuil d'un point « perdu » (`isPointLost`)
+	const regimeByPoint = new Map<string, string>();
 	for (const result of pointResults) {
 		if (result.error) throw new Error(`Points du parcours illisibles : ${result.error.message}`);
 		for (const row of result.data ?? []) {
 			if (row.node_id && row.grade) {
 				gradePoints.push({ id: row.id, nodeId: row.node_id, grade: row.grade });
+				regimeByPoint.set(row.id, row.regime_acquisition);
 			}
 		}
 	}
@@ -178,7 +183,7 @@ export async function loadMathouCollection(
 	const workableIds = workablePoints.map((p) => p.id);
 	const { progress, nappingPointIds } =
 		workableIds.length > 0
-			? await loadProgress(supabase, studentId, workableIds)
+			? await loadProgress(supabase, studentId, workableIds, regimeByPoint)
 			: { progress: new Map<string, PointProgress>(), nappingPointIds: new Set<string>() };
 
 	const collection = buildMathouCollection({
@@ -226,13 +231,16 @@ async function rememberSafely(
 async function loadProgress(
 	supabase: SB,
 	studentId: string,
-	workableIds: string[]
+	workableIds: string[],
+	regimeByPoint: Map<string, string>
 ): Promise<{ progress: Map<string, PointProgress>; nappingPointIds: Set<string> }> {
 	const [statesResult, badges] = await Promise.all([
 		fetchInChunks(workableIds, (batch) =>
 			supabase
 				.from('student_point_state')
-				.select('point_id, is_acquired, total_successes, last_success_at')
+				.select(
+					'point_id, is_acquired, total_successes, distinct_template_successes, last_success_at'
+				)
 				.eq('student_id', studentId)
 				.in('point_id', batch)
 		),
@@ -245,7 +253,13 @@ async function loadProgress(
 	for (const row of statesResult.data ?? []) {
 		progress.set(row.point_id, {
 			isAcquired: row.is_acquired,
-			hasSuccess: row.total_successes > 0 || row.last_success_at !== null
+			hasSuccess: row.total_successes > 0 || row.last_success_at !== null,
+			// Régime absent (impossible : NOT NULL) → `diversite`, le défaut de la colonne
+			lost: isPointLost(regimeByPoint.get(row.point_id) ?? 'diversite', {
+				isAcquired: row.is_acquired,
+				totalSuccesses: row.total_successes,
+				distinctTemplateSuccesses: row.distinct_template_successes
+			})
 		});
 	}
 

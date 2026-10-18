@@ -14,6 +14,7 @@ import {
 	mathouName,
 	nappingPhrase,
 	collectionCountsPhrase,
+	isPointLost,
 	memoryUpdates,
 	mergeMemory,
 	starGradeLabel,
@@ -41,7 +42,7 @@ const NONE = new Map<string, PointProgress>();
 function progress(entries: Record<string, Partial<PointProgress>>): Map<string, PointProgress> {
 	const map = new Map<string, PointProgress>();
 	for (const [id, p] of Object.entries(entries)) {
-		map.set(id, { isAcquired: false, hasSuccess: false, ...p });
+		map.set(id, { isAcquired: false, hasSuccess: false, lost: false, ...p });
 	}
 	return map;
 }
@@ -325,14 +326,14 @@ function memory(entries: Record<string, MathouMemory>): Map<string, MathouMemory
 
 describe('buildMathouCollection avec la mémoire', () => {
 	it('un point acquis puis perdu : le Mathou reste matou et s’endort (oubli)', () => {
-		// 2 points, plus aucun acquis (calcul : chaton), mémoire : matou
+		// 2 points, plus aucun acquis (calcul : chaton), p1 perdu (seuil atteint, non acquis)
 		const collection = buildMathouCollection({
 			points: [
 				{ id: 'p1', nodeId: 'n-ent', grade: '2' },
 				{ id: 'p2', nodeId: 'n-ent', grade: '2' }
 			],
 			nodes: NODES,
-			progress: progress({ p1: { hasSuccess: true } }),
+			progress: progress({ p1: { hasSuccess: true, lost: true } }),
 			nappingPointIds: new Set(),
 			memory: memory({ 'n-ent': { bestStage: 'matou', starredGrades: [] } })
 		});
@@ -390,8 +391,10 @@ describe('buildMathouCollection avec la mémoire', () => {
 		});
 	});
 
-	it('une étoile mémorisée dont le niveau n’est plus entièrement acquis endort le Mathou', () => {
-		const collection = buildMathouCollection({
+	// Règle d'oubli tranchée par David le 2026-10-18 (option 2) : seul un point déjà
+	// réussi puis perdu endort ; un point jamais acquis empêche seulement l'étoile.
+	function starredNotion(p2: Partial<PointProgress> | undefined) {
+		return buildMathouCollection({
 			points: [
 				{ id: 'p1', nodeId: 'n-ent', grade: '2' },
 				{ id: 'p2', nodeId: 'n-ent', grade: '2' },
@@ -400,16 +403,60 @@ describe('buildMathouCollection avec la mémoire', () => {
 			nodes: NODES,
 			progress: progress({
 				p1: { hasSuccess: true, isAcquired: true },
-				p3: { hasSuccess: true, isAcquired: true }
+				p3: { hasSuccess: true, isAcquired: true },
+				...(p2 ? { p2 } : {})
 			}),
 			nappingPointIds: new Set(),
 			memory: memory({ 'n-ent': { bestStage: 'grand_matou', starredGrades: ['2', '1_SPE'] } })
+		}).races[0].mathoux[0];
+	}
+
+	it('nouveau point tagué jamais tenté (grand matou ★) → reste grand matou, réveillé, étoile gardée', () => {
+		expect(starredNotion(undefined)).toMatchObject({
+			growth: 'grand_matou',
+			stars: ['2', '1_SPE'],
+			asleep: false
 		});
-		expect(collection.races[0].mathoux[0]).toMatchObject({
+	});
+
+	it('point en cours d’apprentissage (1 réussite, pas perdu) → pas de sieste', () => {
+		expect(starredNotion({ hasSuccess: true })).toMatchObject({
+			growth: 'grand_matou',
+			asleep: false
+		});
+	});
+
+	it('point au seuil atteint mais non acquis (perdu) → sieste', () => {
+		expect(starredNotion({ hasSuccess: true, lost: true })).toMatchObject({
 			growth: 'grand_matou',
 			stars: ['2', '1_SPE'],
 			asleep: true
 		});
+	});
+
+	it('stade mémorisé au-dessus du calcul sans point perdu → pas de sieste', () => {
+		const collection = buildMathouCollection({
+			points: [
+				{ id: 'p1', nodeId: 'n-ent', grade: '2' },
+				{ id: 'p2', nodeId: 'n-ent', grade: '2' },
+				{ id: 'p3', nodeId: 'n-ent', grade: '2' }
+			],
+			nodes: NODES,
+			progress: progress({ p1: { hasSuccess: true, isAcquired: true } }),
+			nappingPointIds: new Set(),
+			memory: memory({ 'n-ent': { bestStage: 'grand_matou', starredGrades: [] } })
+		});
+		expect(collection.races[0].mathoux[0]).toMatchObject({ growth: 'grand_matou', asleep: false });
+	});
+
+	it('un point perdu endort aussi un Mathou sans mémoire', () => {
+		const collection = buildMathouCollection({
+			points: [{ id: 'p1', nodeId: 'n-ent', grade: '2' }],
+			nodes: NODES,
+			progress: progress({ p1: { hasSuccess: true, lost: true } }),
+			nappingPointIds: new Set()
+		});
+		expect(collection.races[0].mathoux[0]).toMatchObject({ growth: 'chaton', asleep: true });
 	});
 
 	it('un Mathou mémorisé sans point travaillable dans le parcours reste dans la Chatterie', () => {
@@ -450,6 +497,33 @@ describe('buildMathouCollection avec la mémoire', () => {
 			nappingPointIds: new Set()
 		});
 		expect(collection.races[0].mathoux[0].stars).toEqual(['2']);
+	});
+});
+
+describe('isPointLost (seuil de réussites atteint, mais pas acquis)', () => {
+	const base = { isAcquired: false, totalSuccesses: 0, distinctTemplateSuccesses: 0 };
+
+	it('régime diversité : au moins 2 modèles réussis et non acquis → perdu', () => {
+		expect(isPointLost('diversite', { ...base, distinctTemplateSuccesses: 2 })).toBe(true);
+		expect(
+			isPointLost('diversite', { ...base, distinctTemplateSuccesses: 1, totalSuccesses: 9 })
+		).toBe(false);
+		expect(
+			isPointLost('diversite', { ...base, distinctTemplateSuccesses: 3, isAcquired: true })
+		).toBe(false);
+	});
+
+	it('régime répétition (fluence) : au moins 5 réussites et non acquis → perdu', () => {
+		expect(isPointLost('fluence', { ...base, totalSuccesses: 5 })).toBe(true);
+		expect(
+			isPointLost('fluence', { ...base, totalSuccesses: 4, distinctTemplateSuccesses: 4 })
+		).toBe(false);
+		expect(isPointLost('fluence', { ...base, totalSuccesses: 7, isAcquired: true })).toBe(false);
+	});
+
+	it('jamais tenté → jamais perdu', () => {
+		expect(isPointLost('diversite', base)).toBe(false);
+		expect(isPointLost('fluence', base)).toBe(false);
 	});
 });
 

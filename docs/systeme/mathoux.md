@@ -54,10 +54,14 @@ Points travaillables par niveau en prod (2026-10-18, modèles publiés / tous le
   `GRADES[…].shortName`) : « ★ 2nde ★ 1ère Spé ».
 - **Sieste** : au moins un point de la notion, **de n'importe quel niveau du parcours**, a le badge
   FSRS `a_renforcer` ou `a_remedier` (`computePointBadges`, une question taguée est due), **ou** un
-  point est **oublié** : le stade mémorisé dépasse le stade calculé (s'il reste des points
-  travaillables), ou un niveau étoilé encore au parcours n'est plus entièrement acquis. Une
-  silhouette ne dort jamais : elle n'est pas encore un Mathou. Le Mathou n'est jamais perdu ; une
-  révision le réveille.
+  point de la notion est **perdu** (`isPointLost`, règle tranchée par David le 2026-10-18) : le
+  seuil de réussites de son régime est atteint mais il n'est plus acquis (échecs récents) —
+  régime `diversite` (`curriculum_points.regime_acquisition`) : `distinct_template_successes ≥ 2` ;
+  régime `fluence` (répétition) : `total_successes ≥ 5` (seuils de `recalc_point_state`). Un point
+  **jamais acquis** (neuf, ou en apprentissage sous le seuil) n'endort pas : il empêche seulement
+  l'étoile de sa classe. Un stade calculé sous le stade mémorisé n'endort pas à lui seul (un point
+  nouvellement tagué le fait baisser sans oubli). Une silhouette ne dort jamais : elle n'est pas
+  encore un Mathou. Le Mathou n'est jamais perdu ; une révision le réveille.
 - **Nom** (`mathouName`) : premier mot terminé par -s ou -x → « le Mathou des Fractions : calculs » ;
   sinon, le genre ne se devine pas (« de la Dérivation », « du Second degré ») → « le Mathou
   « Dérivation » ». Cas grammaticaux mais maladroits : « le Mathou des Autres lois », « le Mathou
@@ -97,9 +101,9 @@ Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou),
 - **Export RGPD** : catégorie `gaming` de `/api/account/export`
   ([rgpd.md § 7.3](conformite/rgpd.md)). Effacement : cascade depuis `profiles`.
 
-Limite connue : l'oubli se déduit par comparaison avec la mémoire, pas point par point. Un point
-**nouvellement** travaillable (modèle publié) dans un niveau étoilé, ou qui fait baisser la part
-acquise, endort le Mathou comme un oubli, jusqu'à ce qu'il soit acquis.
+Limite connue (acceptée par David le 2026-10-18) : un Mathou endormi par un point perdu **sans
+carte due** ne se réveille qu'à la prochaine révision due — « Réveiller » mène au paquet
+Programme, dont les sessions ne proposent que les cartes dues.
 
 ## Code
 
@@ -173,7 +177,7 @@ et le lien mènerait à elle-même. Réponse en échec ou mal formée (Zod) → 
 retour : page de la navigation). Titre « La Chatterie de Faustroll », compteurs (« 7 Mathoux, 2 en
 sieste, 12 à découvrir »), une section titrée par race, une liste de Mathoux : dessin, nom, stade,
 étoiles (« ★ 2nde ★ 1ère Spé », le symbole masqué aux lecteurs d'écran), « Fait la sieste » et
-« Réveiller » (un Mathou endormi par oubli comme un autre) vers la révision du programme
+« Réveiller » (un Mathou endormi par un point perdu comme un autre) vers la révision du programme
 (`/dashboard/revisions/decks/programme`, là où tombent les cartes dues). Les silhouettes montrent
 le nom de la notion, pas celui du Mathou. Aucun mot interdit par le Compendium (XP, niveau, score).
 
