@@ -13,7 +13,7 @@
  */
 
 import { z } from 'zod';
-import { storedFormatSchema, type StoredFormat } from './cell-format';
+import { MAX_FORMAT_ZONES, storedFormatSchema, type StoredFormat } from './cell-format';
 import type { ObjectKind } from './types';
 import { MAX_DEFINITION_LENGTH, MAX_INTERVAL_LENGTH } from './types';
 import { MAX_CELL_LENGTH, MAX_TITLE_LENGTH, readCellName } from './grid';
@@ -327,7 +327,8 @@ export function salvageGrid(candidate: unknown): { grid: StoredGrid; dropped: nu
 /** Les mises en forme lisibles, une par une : une seule forgée n'emporte pas les autres. */
 function salvageFormats(candidate: unknown): { formats?: StoredFormat[] } {
 	if (!Array.isArray(candidate)) return {};
-	const kept = candidate.flatMap((entry) => {
+	// Bornées (règle 1) : un lien forgé de 15 000 zones figeait l'onglet (revue)
+	const kept = candidate.slice(0, MAX_FORMAT_ZONES).flatMap((entry) => {
 		const one = storedFormatSchema.safeParse(entry);
 		return one.success ? [one.data as StoredFormat] : [];
 	});
@@ -336,7 +337,9 @@ function salvageFormats(candidate: unknown): { formats?: StoredFormat[] } {
 
 function formatsDropped(candidate: unknown): number {
 	if (!Array.isArray(candidate)) return 0;
-	return candidate.filter((entry) => !storedFormatSchema.safeParse(entry).success).length;
+	const read = candidate.slice(0, MAX_FORMAT_ZONES);
+	const unread = candidate.length - read.length;
+	return unread + read.filter((entry) => !storedFormatSchema.safeParse(entry).success).length;
 }
 
 /** L'état relu d'une enveloppe validée : objets puis cellules, chacun trié à part. */

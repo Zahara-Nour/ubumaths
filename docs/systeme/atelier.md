@@ -537,14 +537,19 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   [atelier-tableur-mise-en-forme-phase0.md](../wip/atelier-tableur-mise-en-forme-phase0.md), validée le
   2026-10-18) : gras, italique, alignement, couleur du texte et du fond (6 couleurs du thème), format
   de nombre (décimales 0 à 6, pourcentage, monnaie). Rangée PAR ZONE (`FormatZone`, `#formats` de
-  l'`Atelier`), dans l'ordre où elle a été posée : la dernière zone qui touche une case l'emporte,
-  propriété par propriété (`styleAt`) ; `false`/`null` ramène au défaut (« Effacer la mise en forme »,
-  `CLEAR_PATCH`). Elle ne change que l'AFFICHAGE (`formatShown`, `Intl.NumberFormat` fr-FR, moitié
-  loin de zéro) : une formule cite la valeur. Une case vide se met en forme d'avance ; la vider garde
-  sa mise en forme. Un geste de la grille (`GridGesture.formats`, Ctrl+Z) ; la recopie et le
-  copier-coller interne l'emportent (`patchOf`, Q-MF-4) ; rangée dans `grid.formats` (validée par
-  Zod, une forgée est écartée seule) et dans le lien (Q-MF-5) ; un atelier reçu la voit suivre ses
-  colonnes, une colonne qui n'a qu'une mise en forme arrive aussi (T7). Plafond : 500 zones.
+  l'`Atelier`) sous forme CANONIQUE après chaque geste (`normalizeFormats`) : des rectangles qui ne
+  se chevauchent pas, chacun d'un style résolu non vide — effacer toute la grille laisse `[]`, un bloc
+  collé redevient un rectangle, un geste sans effet n'est pas noté (`sameFormats`). Revue de la PR 1 :
+  les zones s'empilaient (400 par collage, « Effacer » refusé au plafond, lien trop long). `false`/
+  `null` d'un patch ramène au défaut (`CLEAR_PATCH`). Elle ne change que l'AFFICHAGE (`formatShown`,
+  `Intl.NumberFormat` fr-FR, moitié loin de zéro, jamais `-0,00`) : une formule cite la valeur. Une
+  case vide se met en forme d'avance ; la vider garde sa mise en forme. Un geste de la grille
+  (`GridGesture.formats`, Ctrl+Z) ; la recopie et le copier-coller interne l'emportent (`patchOf`,
+  Q-MF-4), et sont refusés ENTIERS si elle dépasserait le plafond (jugé avant d'écrire). Rangée dans
+  `grid.formats` (Zod, une forgée écartée seule, au plus 500 relues) et dans le lien (Q-MF-5). Un
+  atelier reçu : ses zones suivent leurs colonnes (T7) ; une colonne qui n'a QUE de la mise en forme
+  arrive s'il reste des colonnes libres, sans jamais faire refuser la fusion ; la fusion est un seul
+  geste (`asOneGesture`). Plafond : 500 zones canoniques. Mesuré : un style sur toute la grille, 2 ms.
 - **Fonction à indice** (`=f_1(3)`) : depuis le 2026-10-15, les parseurs lisent `f_1(3)` comme
   un appel de f_1 quand `f_1` est déclarée (avant : `f₁ × 3`, et la grille calculait avec f, sans
   rien dire — revue du lot 3). La grille rend donc la valeur de f_1, et Calcul l'évalue aussi ;

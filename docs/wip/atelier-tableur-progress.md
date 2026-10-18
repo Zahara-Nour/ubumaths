@@ -271,5 +271,9 @@ liste trouée en citant l'entrée).
 - [x] tests : `mise-en-forme.test.ts` (24)
 - [x] `cell-format.ts` (zones, `styleAt`, `formatShown`, Zod) ; `Atelier.applyStyle`/`clearStyle`/
       `styleAt`/`adoptFormats`, geste `formats`, recopie et collage ; `grid.formats` ; fusion
-- [ ] revue, PR, CI, merge
+- [x] revue (1 bloquant, 4 importants, 4 mineurs) : les zones s'EMPILAIENT (« Effacer » refusé au
+      plafond, 400 zones par collage, lien trop long, lien forgé qui fige) → forme canonique
+      (`normalizeFormats`) ; collage/recopie tout ou rien ; relecture bornée ; fusion (en-tête large,
+      un seul geste) ; `-0,00` ; gestes sans effet
+- [ ] PR, CI, merge
 - [ ] PR 2 : la barre d'outils et l'affichage dans les cases

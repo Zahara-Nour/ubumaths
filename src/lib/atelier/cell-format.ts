@@ -208,6 +208,88 @@ export function patchRefusal(patch: StylePatch): string | null {
 	return null;
 }
 
+/**
+ * La forme CANONIQUE d'une mise en forme : des rectangles qui ne se chevauchent
+ * pas, chacun d'un style résolu non vide — ce que voit la grille, rien de plus.
+ * Effacer toute la grille donne `[]` ; un bloc collé redevient un rectangle
+ * (revue : les zones s'empilaient, 400 par collage, et « Effacer » en ajoutait).
+ *
+ * Par colonne, les suites de cases au même style ; puis les suites voisines de
+ * mêmes lignes et même style réunies en un rectangle.
+ */
+export function normalizeFormats(formats: readonly FormatZone[]): FormatZone[] {
+	if (formats.length === 0) return [];
+	const styles = new Map<number, CellStyle>();
+	const key = (column: number, row: number) => column * (GRID_ROWS + 1) + row;
+	for (const { zone, patch } of formats) {
+		for (let column = zone.left; column <= zone.right; column++) {
+			for (let row = zone.top; row <= zone.bottom; row++) {
+				const next = applyPatch(styles.get(key(column, row)) ?? {}, patch);
+				if (Object.keys(next).length === 0) styles.delete(key(column, row));
+				else styles.set(key(column, row), next);
+			}
+		}
+	}
+	// Les suites verticales, colonne par colonne
+	const runs: { column: number; top: number; bottom: number; style: CellStyle; id: string }[] = [];
+	for (let column = 0; column < GRID_COLUMNS; column++) {
+		let current: (typeof runs)[number] | null = null;
+		for (let row = 1; row <= GRID_ROWS; row++) {
+			const style = styles.get(key(column, row));
+			const id = style === undefined ? null : styleId(style);
+			if (current !== null && id === current.id && row === current.bottom + 1) {
+				current.bottom = row;
+				continue;
+			}
+			if (current !== null) runs.push(current);
+			current =
+				style === undefined || id === null ? null : { column, top: row, bottom: row, style, id };
+		}
+		if (current !== null) runs.push(current);
+	}
+	// Réunies d'une colonne à la suivante quand lignes et style concordent
+	const rectangles: {
+		left: number;
+		right: number;
+		top: number;
+		bottom: number;
+		style: CellStyle;
+	}[] = [];
+	const open = new Map<string, (typeof rectangles)[number]>();
+	for (const run of runs) {
+		const join = `${run.top}:${run.bottom}:${run.id}`;
+		const previous = open.get(join);
+		if (previous !== undefined && previous.right === run.column - 1) {
+			previous.right = run.column;
+			continue;
+		}
+		const fresh = {
+			left: run.column,
+			right: run.column,
+			top: run.top,
+			bottom: run.bottom,
+			style: run.style
+		};
+		open.set(join, fresh);
+		rectangles.push(fresh);
+	}
+	return rectangles.map(({ style, ...zone }) => ({ zone, patch: { ...style } }));
+}
+
+/** Une écriture stable d'un style, pour comparer deux cases. */
+function styleId(style: CellStyle): string {
+	return JSON.stringify(
+		Object.keys(style)
+			.sort()
+			.map((k) => [k, style[k as keyof CellStyle]])
+	);
+}
+
+/** Deux mises en forme canoniques identiques (un geste sans effet n'est pas noté). */
+export function sameFormats(a: readonly FormatZone[], b: readonly FormatZone[]): boolean {
+	return JSON.stringify(a) === JSON.stringify(b);
+}
+
 // =============================================================================
 // Afficher
 // =============================================================================
@@ -220,22 +302,25 @@ export function patchRefusal(patch: StylePatch): string | null {
 export function formatShown(value: CellValue, style: CellStyle): string | null {
 	if (value.kind !== 'number' || style.number === undefined) return null;
 	const { kind, decimals } = style.number;
+	// Ce qui s'arrondit à zéro s'écrit sans signe : `0,00`, jamais `-0,00` (revue)
+	const scaled = kind === 'percent' ? value.value * 100 : value.value;
+	const shown = Math.abs(scaled) < 0.5 * 10 ** -decimals ? 0 : value.value;
 	const options: Intl.NumberFormatOptions = {
 		minimumFractionDigits: decimals,
 		maximumFractionDigits: decimals,
 		roundingMode: 'halfExpand'
 	};
 	if (kind === 'percent') {
-		return new Intl.NumberFormat('fr-FR', { ...options, style: 'percent' }).format(value.value);
+		return new Intl.NumberFormat('fr-FR', { ...options, style: 'percent' }).format(shown);
 	}
 	if (kind === 'currency') {
 		return new Intl.NumberFormat('fr-FR', {
 			...options,
 			style: 'currency',
 			currency: 'EUR'
-		}).format(value.value);
+		}).format(shown);
 	}
-	return new Intl.NumberFormat('fr-FR', options).format(value.value);
+	return new Intl.NumberFormat('fr-FR', options).format(shown);
 }
 
 // =============================================================================

@@ -124,6 +124,8 @@ import { transformAST } from '$lib/mathAST/visitor';
 import {
 	CLEAR_PATCH,
 	formatOf,
+	normalizeFormats,
+	sameFormats,
 	MAX_FORMAT_ZONES,
 	patchOf,
 	patchRefusal,
@@ -1520,24 +1522,24 @@ export class Atelier {
 				text: text.replace(/\s*\n\s*/g, ' ').trim()
 			}))
 		);
-		// Cases et titres : UN geste, qu'une seule annulation défait (T6)
+		// La mise en forme copiée suit le collage (Q-MF-4) ; le plafond se juge
+		// AVANT d'écrire : tout ou rien (revue)
+		const pasted: FormatZone[] = [];
+		styles?.forEach((line, i) =>
+			line.forEach((style, j) => {
+				const target = { left: column + j, right: column + j, top: row + i, bottom: row + i };
+				pasted.push({ zone: target, patch: patchOf(style) });
+			})
+		);
+		if (this.#formatsWith(pasted) === null) return { ok: false, message: FORMATS_FULL };
+		// Cases, titres, mise en forme : UN geste, qu'une seule annulation défait (T6)
 		return this.#grouped(() => {
 			const written = this.editCells(edits);
 			if (!written.ok) return written;
 			titles?.forEach((title, j) => {
 				if (title.trim() !== '') this.setTitle(column + j, title);
 			});
-			// La mise en forme copiée suit le collage, dans le même geste (Q-MF-4)
-			const pasted: FormatZone[] = [];
-			styles?.forEach((line, i) =>
-				line.forEach((style, j) => {
-					const target = { left: column + j, right: column + j, top: row + i, bottom: row + i };
-					if (Object.keys(style).length > 0 || this.#touchesFormats(target)) {
-						pasted.push({ zone: target, patch: patchOf(style) });
-					}
-				})
-			);
-			return pasted.length === 0 ? { ok: true } : this.#addFormats(pasted);
+			return this.#addFormats(pasted);
 		});
 	}
 
@@ -1567,18 +1569,17 @@ export class Atelier {
 		}
 		if (edits.length === 0) return { ok: true };
 		// La mise en forme de la première ligne suit la recopie (Q-MF-4), dans le même geste
+		const styles: FormatZone[] = [];
+		for (let column = zone.left; column <= zone.right; column++) {
+			const target = { left: column, right: column, top: zone.top + 1, bottom: zone.bottom };
+			styles.push({ zone: target, patch: patchOf(this.styleAt(column, zone.top)) });
+		}
+		// Tout ou rien : le plafond de mise en forme se juge AVANT d'écrire (revue)
+		if (this.#formatsWith(styles) === null) return { ok: false, message: FORMATS_FULL };
 		return this.#grouped(() => {
 			const written = this.editCells(edits);
 			if (!written.ok) return written;
-			const styles: FormatZone[] = [];
-			for (let column = zone.left; column <= zone.right; column++) {
-				const target = { left: column, right: column, top: zone.top + 1, bottom: zone.bottom };
-				const style = this.styleAt(column, zone.top);
-				if (Object.keys(style).length > 0 || this.#touchesFormats(target)) {
-					styles.push({ zone: target, patch: patchOf(style) });
-				}
-			}
-			return styles.length === 0 ? written : this.#addFormats(styles);
+			return this.#addFormats(styles);
 		});
 	}
 
@@ -1617,33 +1618,38 @@ export class Atelier {
 		return formats.length === 0 ? { ok: true } : this.#addFormats(formats);
 	}
 
+	/**
+	 * Ajouter des zones, puis ranger la mise en forme sous sa forme CANONIQUE
+	 * (`normalizeFormats`) : effacer retire vraiment, un bloc collé redevient un
+	 * rectangle, un geste sans effet n'est pas noté (revue de la PR 1).
+	 */
 	#addFormats(added: readonly FormatZone[]): { ok: true } | Refused {
-		if (this.#formats.length + added.length > MAX_FORMAT_ZONES) {
-			return {
-				ok: false,
-				message: `La grille garde ${MAX_FORMAT_ZONES} mises en forme : efface-en avant d’en poser d’autres.`
-			};
-		}
-		const after = [...this.#formats, ...added];
+		const after = this.#formatsWith(added);
+		if (after === null) return { ok: false, message: FORMATS_FULL };
+		if (sameFormats(after, this.#formats)) return { ok: true };
 		this.#record({ cells: [], titles: [], formats: { before: this.#formats, after } });
 		this.#setFormats(after);
 		return { ok: true };
 	}
 
+	/** La mise en forme canonique avec ces zones en plus, ou `null` au-delà du plafond. */
+	#formatsWith(added: readonly FormatZone[]): FormatZone[] | null {
+		if (added.length === 0) return [...this.#formats];
+		const after = normalizeFormats([...this.#formats, ...added]);
+		return after.length > MAX_FORMAT_ZONES ? null : after;
+	}
+
+	/**
+	 * Faire de `run` UN geste de la grille (une seule annulation) : la fusion d'un
+	 * atelier reçu écrit cases et mise en forme ensemble (revue).
+	 */
+	asOneGesture<T>(run: () => T): T {
+		return this.#grouped(run);
+	}
+
 	#setFormats(formats: readonly FormatZone[]): void {
 		this.#formats = formats;
 		this.revision++;
-	}
-
-	/** Une zone déjà touchée par une mise en forme (la recopie doit alors la remplacer). */
-	#touchesFormats(zone: GridZone): boolean {
-		return this.#formats.some(
-			(f) =>
-				f.zone.left <= zone.right &&
-				f.zone.right >= zone.left &&
-				f.zone.top <= zone.bottom &&
-				f.zone.bottom >= zone.top
-		);
 	}
 
 	/**
@@ -2096,10 +2102,12 @@ export class Atelier {
 	 */
 	restore(state: AtelierState): RestoreReport {
 		this.#seed = state.grid?.seed ?? newGridSeed();
-		this.#formats = (state.grid?.formats ?? []).flatMap((stored) => {
+		const relu = (state.grid?.formats ?? []).slice(0, MAX_FORMAT_ZONES).flatMap((stored) => {
 			const format = formatOf(stored);
 			return format === null ? [] : [format];
 		});
+		const canonical = normalizeFormats(relu);
+		this.#formats = canonical.length > MAX_FORMAT_ZONES ? [] : canonical;
 		this.items = [];
 		this.charts.clear();
 		this.partnerChoices.clear();
@@ -2946,6 +2954,9 @@ export class Atelier {
 		}
 	}
 }
+
+/** Le refus d'une mise en forme au-delà du plafond. */
+const FORMATS_FULL = `La grille garde ${MAX_FORMAT_ZONES} zones de mise en forme : efface-en avant d’en poser d’autres.`;
 
 /** Une graine de tirages : un entier de 32 bits. */
 function newGridSeed(): number {

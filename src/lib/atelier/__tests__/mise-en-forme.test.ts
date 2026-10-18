@@ -235,3 +235,103 @@ describe('§4 sauvegarde, lien, atelier reçu (Q-MF-5)', () => {
 		expect(personal.styleAt(B, 10)).toEqual({ number: { kind: 'currency', decimals: 2 } });
 	});
 });
+
+// Revue de la PR 1 : la mise en forme s'empilait (500 zones vite atteintes,
+// « Effacer » refusé au plafond, lien trop long après un collage)
+describe('revue : une mise en forme rangée sous forme canonique', () => {
+	const grid20 = () => Array.from({ length: 20 }, () => Array.from({ length: 20 }, () => '0'));
+
+	it('mille gestes sur une case : une zone ; Effacer toute la grille : aucune', () => {
+		const a = new Atelier();
+		for (let i = 0; i < 1000; i++) {
+			a.applyStyle({ left: A, right: A, top: 1, bottom: 1 }, { bold: i % 2 === 0 });
+			a.applyStyle({ left: A, right: A, top: 1, bottom: 1 }, { color: 'rouge' });
+		}
+		expect(a.formats.length).toBe(1);
+
+		expect(a.clearStyle({ left: 0, right: 25, top: 1, bottom: 200 })).toEqual({ ok: true });
+		expect(a.formats.length).toBe(0);
+	});
+
+	it('un bloc 20×20 collé avec sa mise en forme reste un rectangle, et le lien part', async () => {
+		const a = new Atelier();
+		a.applyStyle({ left: 0, right: 19, top: 1, bottom: 20 }, { bold: true });
+		const styles = Array.from({ length: 20 }, () =>
+			Array.from({ length: 20 }, () => ({ bold: true }))
+		);
+
+		a.pasteTable(0, 30, grid20(), { column: 0, row: 1 }, styles);
+
+		expect(a.formats.length).toBeLessThanOrEqual(2);
+		expect((await encodeAtelier(a.serialize())).withinLimit).toBe(true);
+	});
+
+	it('effacer une zone jamais mise en forme ne note aucun geste', () => {
+		const a = new Atelier();
+		const before = a.gridHistory.undo;
+
+		a.clearStyle({ left: A, right: B, top: 1, bottom: 5 });
+
+		expect(a.gridHistory.undo).toBe(before);
+	});
+
+	it('au plafond, un collage est refusé ENTIER : aucune case écrite', () => {
+		const a = new Atelier();
+		// Un damier en gras sur 5 colonnes : 500 cases qu'aucun rectangle ne réunit
+		for (let column = 0; column < 5; column++) {
+			for (let row = 1 + (column % 2); row <= 200; row += 2) {
+				a.applyStyle({ left: column, right: column, top: row, bottom: row }, { bold: true });
+			}
+		}
+		expect(a.formats.length).toBe(500);
+
+		const pasted = a.pasteTable(7, 1, [['9']], { column: 0, row: 1 }, [[{ italic: true }]]);
+
+		expect(pasted.ok).toBe(false);
+		expect(a.cell(7, 1)).toBe('');
+	});
+
+	it('un lien forgé de 15 000 zones : bornées à la relecture', async () => {
+		const { salvageGrid } = await import('../persistence');
+		const formats = Array.from({ length: 15000 }, () => ({ zone: 'A1:Z200', bold: true }));
+
+		const { grid, dropped } = salvageGrid({ cells: { A1: '1' }, formats });
+
+		expect((grid.formats ?? []).length).toBeLessThanOrEqual(500);
+		expect(dropped).toBeGreaterThanOrEqual(14500);
+	});
+
+	it('fusion : une ligne d’en-tête en gras sur 26 colonnes ne fait pas tout refuser', async () => {
+		const { mergeRefusal } = await import('../merge');
+		const personal = new Atelier();
+		personal.editCells([{ column: A, row: 1, text: 'à moi' }]);
+		const received: AtelierState = {
+			version: 2,
+			objects: [],
+			grid: { cells: { A1: '1', B1: '2' }, formats: [{ zone: 'A1:Z1', bold: true }] }
+		};
+
+		expect(mergeRefusal(personal, received)).toBeNull();
+		mergeInto(personal, received);
+		expect(personal.styleAt(B, 1)).toEqual({ bold: true });
+	});
+
+	it('fusion : un seul Ctrl+Z retire cases et mise en forme', () => {
+		const personal = new Atelier();
+		const received: AtelierState = {
+			version: 2,
+			objects: [],
+			grid: { cells: { A1: '1' }, formats: [{ zone: 'A1:A1', bold: true }] }
+		};
+		mergeInto(personal, received);
+
+		personal.undoGrid();
+
+		expect(personal.cell(A, 1)).toBe('');
+		expect(personal.styleAt(A, 1)).toEqual({});
+	});
+
+	it('-0,001 à 2 décimales : 0,00, pas -0,00', () => {
+		expect(formatShown(number(-0.001), { number: { kind: 'decimals', decimals: 2 } })).toBe('0,00');
+	});
+});
