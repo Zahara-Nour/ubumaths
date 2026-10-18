@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 CLOS — PR 1 (#1474), PR 2 (#1478), PR 3 (#1482), K4 (#1491) mergées ; PR 4 ABANDONNÉE sur mesure (2026-10-18)
+status: lot 1 CLOS ; lot 2 — PR 1 constructions mergée (#1500), PR 2 mesures à faire
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -171,3 +171,10 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
 - Noté : `rayon=0` reste accepté par le DSL (`locus.test.ts` s'en sert) ; le refus ≤ 0 ne vaut que
   pour le rayon positionnel et pour l'atelier. Une valeur `(AB)` devenue courbe par
   `#shortcutKinds` échappe au plafond de 50 (cas rare, non traité).
+- 2026-10-18 : **lot 2, PR 1 (constructions) mergée (#1500, `c80526b37`)**. Vérifiée à l'écran ;
+  revue : 1 bloquant (LaTeX des réponses `\r`/`\t`) + 3 importants (perf exponentielle → mémo,
+  renommage en LaTeX, `(AB)` avant A et B → attente, décision de David) corrigés. CI : un test
+  navigateur prenait `cercle(A, 2)` (devenu valide) comme exemple d'erreur → `cercle(A, A)`.
+  Restent : `cercle(O, rayon=0)` laissé tel quel dans le DSL (un lieu de test en dépend) ; une
+  valeur `(AB)` devenue droite après coup n'est pas comptée dans le plafond de 50 (PR 2).
+  Pas en production.
