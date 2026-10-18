@@ -3,7 +3,7 @@
  * `f(a)` de la console et le point glissant (lot 3 bis de la refonte de
  * l'Atelier). On lit le RENDU : traits, point, étiquettes, curseur.
  */
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import GraphSVG from '../GraphSVG.svelte';
@@ -113,5 +113,116 @@ describe('lecture graphique — le point glissant', () => {
 		expect(text).toContain(`f(${String(at).replace('.', ',')})`);
 		// Consommée : le KeyboardHandler du grapheur l'ignore (`defaultPrevented`, #1487)
 		expect(seen.at(-1)?.defaultPrevented).toBe(true);
+	});
+
+	it('Début et Fin : les bornes de la fenêtre, aimantées vers l’intérieur', async () => {
+		grapheurStore.setViewport({ xMin: -4.3, xMax: 4.8, yMin: -5, yMax: 5 });
+		plotted('x^2', []);
+		const { container } = await render(GraphSVG, {});
+		await settle();
+
+		const slider = container.querySelector('[role="slider"]') as HTMLElement;
+		slider.focus();
+		await userEvent.keyboard('{End}');
+		await settle();
+		expect(slider.getAttribute('aria-valuenow')).toBe('4.5');
+		await userEvent.keyboard('{Home}');
+		await settle();
+		expect(slider.getAttribute('aria-valuenow')).toBe('-4');
+	});
+
+	it('fenêtre déplacée : la vraie abscisse reste dans les bornes annoncées', async () => {
+		plotted('x^2', []);
+		const { container } = await render(GraphSVG, {});
+		await settle();
+		const slider = container.querySelector('[role="slider"]') as HTMLElement;
+		slider.focus();
+		await userEvent.keyboard('{ArrowRight}');
+		await settle();
+
+		grapheurStore.setViewport({ xMin: 10, xMax: 20, yMin: -5, yMax: 5 });
+		await settle();
+		const now = attr(slider, 'aria-valuenow');
+		expect(now).toBeGreaterThanOrEqual(attr(slider, 'aria-valuemin'));
+		expect(now).toBeLessThanOrEqual(attr(slider, 'aria-valuemax'));
+	});
+});
+
+describe('lecture graphique — le point glissant au pointeur', () => {
+	beforeEach(() => {
+		grapheurStore.fullReset();
+		grapheurStore.setInteracting(false);
+		grapheurStore.setViewport({ xMin: -5, xMax: 5, yMin: -5, yMax: 5 });
+	});
+
+	/** Le SVG a pris la taille de son cadre (ResizeObserver) : pixels et repère s'accordent. */
+	async function sized(container: HTMLElement) {
+		await vi.waitFor(() => {
+			const svg = container.querySelector('svg[viewBox]')!;
+			const frame = container.querySelector('.reading-sliders')!.getBoundingClientRect();
+			expect(Number(svg.getAttribute('viewBox')!.split(' ')[2])).toBeCloseTo(frame.width, 0);
+		});
+	}
+
+	/** Un évènement pointeur au-dessus de l'abscisse `x` du repère. */
+	function pointer(type: string, slider: HTMLElement, x: number): PointerEvent {
+		const frame = slider.parentElement!.getBoundingClientRect();
+		const { xMin, xMax } = grapheurStore.viewport;
+		const clientX = frame.left + ((x - xMin) / (xMax - xMin)) * frame.width;
+		return new PointerEvent(type, { bubbles: true, button: 0, pointerId: 1, clientX });
+	}
+
+	it('glisser puis relâcher : le point suit, la lecture est annoncée', async () => {
+		plotted('x^2', []);
+		const { container } = await render(GraphSVG, {});
+		await sized(container);
+		const slider = container.querySelector('[role="slider"]') as HTMLElement;
+
+		slider.dispatchEvent(pointer('pointerdown', slider, 0));
+		slider.dispatchEvent(pointer('pointermove', slider, 2));
+		await settle();
+		expect(slider.getAttribute('aria-valuenow')).toBe('2');
+		slider.dispatchEvent(pointer('pointerup', slider, 2));
+		await settle();
+
+		expect(container.querySelector('.reading-sliders [aria-live]')?.textContent).toContain(
+			'f(2) = 4'
+		);
+	});
+
+	it('un geste annulé arrête le glissé : un simple survol ne déplace plus le point', async () => {
+		plotted('x^2', []);
+		const { container } = await render(GraphSVG, {});
+		await sized(container);
+		const slider = container.querySelector('[role="slider"]') as HTMLElement;
+
+		slider.dispatchEvent(pointer('pointerdown', slider, 0));
+		slider.dispatchEvent(pointer('pointermove', slider, 1));
+		slider.dispatchEvent(pointer('pointercancel', slider, 1));
+		slider.dispatchEvent(pointer('pointermove', slider, 3));
+		await settle();
+
+		expect(slider.getAttribute('aria-valuenow')).toBe('1');
+	});
+
+	it('la même lecture annoncée deux fois est relue', async () => {
+		plotted('x^2', []);
+		const { container } = await render(GraphSVG, {});
+		await sized(container);
+		const slider = container.querySelector('[role="slider"]') as HTMLElement;
+		const live = () => container.querySelector('.reading-sliders [aria-live]')?.textContent;
+
+		for (const _ of [1, 2]) {
+			slider.dispatchEvent(pointer('pointerdown', slider, 2));
+			slider.dispatchEvent(pointer('pointerup', slider, 2));
+			await settle();
+		}
+		const second = live();
+		slider.dispatchEvent(pointer('pointerdown', slider, 2));
+		slider.dispatchEvent(pointer('pointerup', slider, 2));
+		await settle();
+
+		expect(live()).not.toBe(second);
+		expect(live()?.trim()).toBe(second?.trim());
 	});
 });

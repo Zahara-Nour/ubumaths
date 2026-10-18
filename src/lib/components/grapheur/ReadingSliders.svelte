@@ -73,6 +73,15 @@
 	/** Ce qu'on annonce au relâchement d'un glissé (les flèches, elles, font lire la valeur). */
 	let announcement = $state('');
 
+	/**
+	 * Une région `aria-live` ne relit pas un texte inchangé : une même lecture
+	 * annoncée deux fois de suite reçoit une espace insécable de plus, en
+	 * alternance (revue de #1497).
+	 */
+	function announce(text: string) {
+		announcement = announcement === text ? `${text}\u00a0` : text;
+	}
+
 	/** La courbe dont on fait glisser le point. */
 	let dragging: string | null = null;
 
@@ -92,11 +101,18 @@
 			PageUp: [major, major],
 			PageDown: [-major, major]
 		};
+		// Début / Fin : les bornes de la fenêtre, aimantées vers l'intérieur
+		const { xMin, xMax } = grapheurStore.viewport;
+		const ends: Record<string, number> = {
+			Home: Math.ceil(xMin * 2) / 2 + 0,
+			End: Math.floor(xMax * 2) / 2 + 0
+		};
 		const move = moves[event.key];
-		if (move === undefined) return;
+		const end = ends[event.key];
+		if (move === undefined && end === undefined) return;
 		// Consommée : le KeyboardHandler du grapheur l'ignore (`defaultPrevented`, #1487)
 		event.preventDefault();
-		onmove(id, stepped(at, move[0], move[1]));
+		onmove(id, end ?? stepped(at, move[0], move[1]));
 	}
 
 	/** L'abscisse sous le pointeur, aimantée aux entiers et aux demis. */
@@ -124,12 +140,24 @@
 	function handlePointerUp(event: PointerEvent, id: string, text: string) {
 		if (dragging !== id) return;
 		dragging = null;
-		(event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
-		announcement = text;
+		const handle = event.currentTarget as HTMLElement;
+		if (handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId);
+		announce(text);
+	}
+
+	/**
+	 * Le geste interrompu (appel système, défilement repris par le navigateur,
+	 * capture perdue) : le glissé s'arrête là, sinon le point suivrait ensuite
+	 * un simple survol (revue de #1497).
+	 */
+	function handlePointerEnd(id: string) {
+		if (dragging === id) dragging = null;
 	}
 </script>
 
 <div class="reading-sliders">
+	<!-- Fenêtre déplacée : le losange reste au bord, et les bornes annoncées
+	     s'élargissent pour garder la vraie abscisse dans l'intervalle (revue de #1497) -->
 	{#each handles as handle (handle.id)}
 		<div
 			role="slider"
@@ -140,8 +168,8 @@
 			style:--handle-color={handle.color}
 			aria-label="Lecture graphique de {handle.name}"
 			aria-orientation="horizontal"
-			aria-valuemin={grapheurStore.viewport.xMin}
-			aria-valuemax={grapheurStore.viewport.xMax}
+			aria-valuemin={Math.min(grapheurStore.viewport.xMin, handle.at)}
+			aria-valuemax={Math.max(grapheurStore.viewport.xMax, handle.at)}
 			aria-valuenow={handle.at}
 			aria-valuetext={handle.text}
 			title={handle.text}
@@ -149,6 +177,8 @@
 			onpointerdown={(event) => handlePointerDown(event, handle.id)}
 			onpointermove={(event) => handlePointerMove(event, handle.id)}
 			onpointerup={(event) => handlePointerUp(event, handle.id, handle.text)}
+			onpointercancel={() => handlePointerEnd(handle.id)}
+			onlostpointercapture={() => handlePointerEnd(handle.id)}
 		></div>
 	{/each}
 	<p class="sr-only" aria-live="polite">{announcement}</p>
