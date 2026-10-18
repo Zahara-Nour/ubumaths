@@ -9,7 +9,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { MAX_CSV_BYTES, csvText, exportText, readCsvFile } from '../grid';
+import { MAX_CSV_BYTES, csvCellRefusal, csvText, exportText, readCsvFile } from '../grid';
 
 const utf8 = (text: string) => new TextEncoder().encode(text);
 
@@ -82,6 +82,39 @@ describe('§3 lire un fichier CSV', () => {
 		expect(table(utf8('\n\n 1 ; 2 \n\n'))).toEqual([['1', '2']]);
 	});
 
+	it('une ligne de cases vides (`;;`) en tête est gardée : les données restent à leur place', () => {
+		expect(table(utf8(';;\n;;\n1;2;3'))).toEqual([
+			['', '', ''],
+			['', '', ''],
+			['1', '2', '3']
+		]);
+	});
+
+	it('le séparateur se cherche hors des guillemets (revue)', () => {
+		expect(table(utf8('Nom,Remarque,Taille\nAlice,"bien; à revoir",1.52'))).toEqual([
+			['Nom', 'Remarque', 'Taille'],
+			['Alice', 'bien; à revoir', '1.52']
+		]);
+		expect(table(utf8('a;"b\tc"\n1;2'))).toEqual([
+			['a', 'b\tc'],
+			['1', '2']
+		]);
+	});
+
+	it('le « Texte Unicode » d’Excel (UTF-16 avec sa marque)', () => {
+		const text = 'Élève\tNote\r\nZoé\t12\r\n';
+		const bytes = new Uint8Array(2 + text.length * 2);
+		bytes.set([0xff, 0xfe]);
+		Array.from(text).forEach((char, i) => {
+			bytes[2 + i * 2] = char.charCodeAt(0) & 0xff;
+			bytes[3 + i * 2] = char.charCodeAt(0) >> 8;
+		});
+		expect(table(bytes)).toEqual([
+			['Élève', 'Note'],
+			['Zoé', '12']
+		]);
+	});
+
 	it('l’apostrophe de protection de notre téléchargement est retirée (-, +, @)', () => {
 		expect(table(utf8("'-a;'+b;'@c\n1;2;3"))[0]).toEqual(['-a', '+b', '@c']);
 	});
@@ -101,12 +134,17 @@ describe('Q-RE-5 : la virgule', () => {
 		]);
 	});
 
-	it('des mots séparés par des virgules aussi', () => {
-		expect(table(utf8('name,age\nAlice,12\n"Smith, Bob",13'))).toEqual([
-			['name', 'age'],
-			['Alice', '12'],
-			['Smith, Bob', '13']
+	it('des mots et des décimaux à point : coupé, guillemets compris', () => {
+		expect(table(utf8('name,height\nAlice,1.52\n"Smith, Bob",1.48'))).toEqual([
+			['name', 'height'],
+			['Alice', '1.52'],
+			['Smith, Bob', '1.48']
 		]);
+	});
+
+	it('sans décimal à point, la virgule n’est jamais coupée (Q-RE-5 (a), revue)', () => {
+		// Une colonne de notes avec un commentaire ne voit pas ses décimaux coupés
+		expect(table(utf8('12,5\nabs, malade\n1,5'))).toEqual([['12,5'], ['abs, malade'], ['1,5']]);
 	});
 
 	it('avec un « ; », la virgule reste décimale', () => {
@@ -137,6 +175,35 @@ describe('§3 refus', () => {
 	});
 });
 
+describe('§3 ce qu’une case du fichier ne peut pas être (revue)', () => {
+	it('un « ; » hors d’une formule, dit avec sa ligne', () => {
+		expect(
+			csvCellRefusal([
+				['Nom', 'Remarque'],
+				['Alice', 'bien; à revoir']
+			])
+		).toBe(
+			'La case « bien; à revoir » (ligne 2 du fichier) contient un « ; » : une case de la grille n’en garde pas. Rien n’a été posé.'
+		);
+		expect(csvCellRefusal([['=MAX(1;2)']])).toBeNull();
+	});
+
+	it('plus de 200 caractères, dit avec sa ligne', () => {
+		expect(csvCellRefusal([['1'], ['x'.repeat(201)]])).toBe(
+			`La case « ${'x'.repeat(30)}… » (ligne 2 du fichier) dépasse 200 caractères. Rien n’a été posé.`
+		);
+	});
+
+	it('un tableau ordinaire passe', () => {
+		expect(
+			csvCellRefusal([
+				['Taille', 'Masse'],
+				['1,5', '40']
+			])
+		).toBeNull();
+	});
+});
+
 describe('§3 poser le fichier comme un collage (Q-RE-4)', () => {
 	it('notre propre téléchargement se rouvre à l’identique', () => {
 		const source = new Atelier();
@@ -163,6 +230,18 @@ describe('§3 poser le fichier comme un collage (Q-RE-4)', () => {
 				expect(exportText(opened.cell(column, row + 1))).toBe(exportText(text));
 			}
 		}
+	});
+
+	it('une grille qui commence en A3, sans titres : rouverte à la même place', () => {
+		const file = csvText(null, [
+			['', ''],
+			['', ''],
+			['4', '5']
+		]);
+		const opened = new Atelier();
+		expect(opened.pasteTable(0, 1, table(utf8('\uFEFF' + file))).ok).toBe(true);
+		expect(opened.cell(0, 3)).toBe('4');
+		expect(opened.cell(1, 3)).toBe('5');
 	});
 
 	it('trop grand pour la grille : refusé ENTIER, rien n’est posé (Q3)', () => {

@@ -21,6 +21,7 @@
 		columnLetter,
 		csvText,
 		CSV_TOO_BIG,
+		csvCellRefusal,
 		GRID_COLUMNS,
 		GRID_ROWS,
 		hasTitleRow,
@@ -801,6 +802,12 @@
 			refusal = read.message;
 			return;
 		}
+		// Ce qu'une case du fichier ne peut pas être, dit avec sa ligne (revue)
+		const unfit = csvCellRefusal(read.table);
+		if (unfit !== null) {
+			refusal = unfit;
+			return;
+		}
 		editing = null;
 		draft = '';
 		const at = cellName(zone.left, zone.top);
@@ -818,7 +825,10 @@
 	function openedMessage(table: readonly (readonly string[])[], at: string): string {
 		const titled = hasTitleRow(table);
 		const rowCount = table.length - (titled ? 1 : 0);
-		const columnCount = Math.max(...table.map((line) => line.length));
+		// Les cases vides en fin de ligne (`1,5;40;;`) ne font pas des colonnes (revue)
+		const columnCount = Math.max(
+			...table.map((line) => line.findLastIndex((cell) => cell.trim() !== '') + 1)
+		);
 		const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
 		const titles = titled ? ', avec leurs titres,' : '';
 		return `${plural(rowCount, 'ligne')} et ${plural(columnCount, 'colonne')}${titles} posées à partir de ${at}.`;

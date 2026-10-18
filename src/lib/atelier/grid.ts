@@ -220,13 +220,43 @@ export function readCsvFile(
 	const separator = csvSeparator(lines);
 	const rows = splitTable(lines, separator, true) ?? splitTable(lines, separator, false)!;
 	const blank = (row: string[]) => row.every((cell) => cell.trim() === '');
-	while (rows.length > 0 && blank(rows[0])) rows.shift();
+	// En tête, seules les lignes VRAIMENT vides tombent : `;;` est une ligne de
+	// cases vides (le téléchargement d'une grille qui commence en A3), gardée
+	// pour que les données retrouvent leur place (revue)
+	while (rows.length > 0 && rows[0].length === 1 && rows[0][0].trim() === '') rows.shift();
 	while (rows.length > 0 && blank(rows[rows.length - 1])) rows.pop();
 	return { ok: true, table: rows.map((cells) => cells.map(importedText)) };
 }
 
-/** UTF-8 s'il en est, sinon Windows-1252 (Excel sous Windows) : `é` reste `é`. */
+/**
+ * Ce qu'une case d'un fichier ne peut pas être dans la grille, dit avec sa
+ * ligne (revue : le refus du collage parlait de « copie depuis un tableur ») :
+ * un « ; » hors d'une formule (taper `12 ; 15` répartit vers le bas), plus de
+ * `MAX_CELL_LENGTH` caractères. `null` : le tableau peut être posé.
+ */
+export function csvCellRefusal(table: readonly (readonly string[])[]): string | null {
+	for (const [index, cells] of table.entries()) {
+		const line = `ligne ${index + 1} du fichier`;
+		for (const cell of cells) {
+			const shown = cell.length > 30 ? `${cell.slice(0, 30)}…` : cell;
+			if (cell.length > MAX_CELL_LENGTH) {
+				return `La case « ${shown} » (${line}) dépasse ${MAX_CELL_LENGTH} caractères. Rien n’a été posé.`;
+			}
+			if (cell.includes(';') && !cell.trimStart().startsWith('=')) {
+				return `La case « ${shown} » (${line}) contient un « ; » : une case de la grille n’en garde pas. Rien n’a été posé.`;
+			}
+		}
+	}
+	return null;
+}
+
+/**
+ * UTF-16 avec sa marque (le « Texte Unicode » d'Excel), sinon UTF-8, sinon
+ * Windows-1252 (Excel sous Windows) : `é` reste `é`.
+ */
 function decodedText(bytes: Uint8Array): string {
+	if (bytes[0] === 0xff && bytes[1] === 0xfe) return new TextDecoder('utf-16le').decode(bytes);
+	if (bytes[0] === 0xfe && bytes[1] === 0xff) return new TextDecoder('utf-16be').decode(bytes);
 	try {
 		return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
 	} catch {
@@ -235,16 +265,21 @@ function decodedText(bytes: Uint8Array): string {
 }
 
 /**
- * Le séparateur d'un fichier : la tabulation, sinon `;` (Excel et LibreOffice
- * en français, et le téléchargement de l'atelier). La virgule seulement quand
- * elle ne peut pas être décimale (Q-RE-5) : une ligne à virgule qui n'est pas
- * un nombre à la française (`1.52,45.5`, `Alice,12`) ; `1,5` reste 1,5.
+ * Le séparateur d'un fichier, cherché HORS des guillemets (revue : `"bien; à
+ * revoir"` dans un fichier à virgules faisait choisir `;`) : la tabulation,
+ * sinon `;` (Excel et LibreOffice en français, et le téléchargement de
+ * l'atelier). La virgule seulement quand le fichier écrit ses décimaux avec un
+ * point (Q-RE-5 (a)) : `1.52,45.5` est coupé, `1,5` reste 1,5.
  */
 function csvSeparator(lines: string): string | null {
-	if (lines.includes('\t')) return '\t';
-	if (lines.includes(';')) return ';';
-	const withComma = lines.split('\n').filter((line) => line.includes(','));
-	return withComma.some((line) => readListValue(line.trim()) === null) ? ',' : null;
+	// Un guillemet jamais fermé (nombre impair) : relu sans guillemets, comme `splitTable`
+	const parts = lines.split('"');
+	const bare = parts.length % 2 === 0 ? lines : parts.filter((_, i) => i % 2 === 0).join('');
+	if (bare.includes('\t')) return '\t';
+	if (bare.includes(';')) return ';';
+	if (!bare.includes(',')) return null;
+	const fields = bare.split(/[,\n]/).map((field) => field.trim());
+	return fields.some((field) => /^-?\d*\.\d+$/.test(field)) ? ',' : null;
 }
 
 /**

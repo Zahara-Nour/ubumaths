@@ -6,7 +6,7 @@
  * La lecture du fichier (encodage, séparateurs) : `src/lib/atelier/__tests__/ouvrir-csv.test.ts`.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
@@ -67,8 +67,14 @@ describe('Ouvrir un CSV…', () => {
 		const atelier = new Atelier();
 		const { container } = await openData(atelier);
 		await userEvent.click(cellAt(container, 'B2'));
+		// Le focus sur le bouton, comme après un clic : il doit revenir à la grille (revue)
+		const button = Array.from(container.querySelectorAll('button')).find(
+			(b) => b.textContent?.trim() === 'Ouvrir un CSV…'
+		) as HTMLButtonElement;
+		button.focus();
 
 		await chooseFile(container, csv('Prénom;Taille\r\nÉlodie;1,52\r\nNoé;1,48\r\n'));
+		expect(document.activeElement).toBe(cellAt(container, 'B2'));
 
 		expect(refusal(container)).toBe('');
 		expect(atelier.titleOf(1)).toBe('Prénom');
@@ -97,8 +103,22 @@ describe('Ouvrir un CSV…', () => {
 
 	it('un fichier de plus de 1 Mo n’est pas lu', async () => {
 		const { container } = await openData();
+		const read = vi.spyOn(File.prototype, 'arrayBuffer');
 		await chooseFile(container, new File([new Uint8Array(MAX_CSV_BYTES + 1)], 'gros.csv'));
 		expect(refusal(container)).toBe('Ce fichier est trop gros pour la grille (1 Mo au plus).');
+		// Jamais chargé en mémoire (revue : le même message ne le prouvait pas)
+		expect(read).not.toHaveBeenCalled();
+		read.mockRestore();
+	});
+
+	it('une case avec « ; » : refus qui dit la case et la ligne, rien n’est posé', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+
+		await chooseFile(container, csv('Nom;Remarque\nAlice;"bien; à revoir"\n'));
+
+		expect(refusal(container)).toContain('(ligne 2 du fichier)');
+		expect(atelier.cell(0, 1)).toBe('');
 	});
 
 	it('un fichier qui n’est pas un CSV (un classeur .xlsx)', async () => {
