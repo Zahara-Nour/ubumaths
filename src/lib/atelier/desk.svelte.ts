@@ -859,17 +859,27 @@ export class CalcDesk {
 		}
 	}
 
+	/**
+	 * Préparer une commande dans la console : elle s'AJOUTE à ce que l'élève a
+	 * déjà tapé, jamais à sa place (décision de David du 2026-10-18).
+	 */
+	#prepare(command: string) {
+		const draft = this.draft;
+		if (draft.trim() === '') this.draft = command;
+		else this.draft = draft.endsWith(' ') ? draft + command : `${draft} ${command}`;
+	}
+
 	#runFromPanel(actionId: string, name: string, graph?: GrapheurStore): PanelOutcome {
 		// « Tableau croisé avec M » (Q89) : la commande est préparée, l'élève peut
 		// ajouter `lignes`, `colonnes` ou `fréquences` avant de valider
 		if (actionId.startsWith('cross:')) {
-			this.draft = `.croiser ${name} ${actionId.slice('cross:'.length)}`;
+			this.#prepare(`.croiser ${name} ${actionId.slice('cross:'.length)}`);
 			return 'needs-argument';
 		}
 		// « Simuler » a besoin de n : la commande est préparée, 100 par défaut
 		// (Q77), l'élève valide ou change le nombre
 		if (actionId.startsWith('simulate:')) {
-			this.draft = `.simuler ${name} ${actionId.slice('simulate:'.length)} 100`;
+			this.#prepare(`.simuler ${name} ${actionId.slice('simulate:'.length)} 100`);
 			return 'needs-argument';
 		}
 
