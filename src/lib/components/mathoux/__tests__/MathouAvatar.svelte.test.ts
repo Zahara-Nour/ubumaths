@@ -75,8 +75,12 @@ describe('MathouAvatar', () => {
 		expect(svg.querySelector('[data-part="yeux"]')).toBeNull();
 		expect(svg.querySelector('[data-part="collerette"]')).toBeNull();
 		expect(svg.querySelector('[data-part="zzz"]')).toBeNull();
+		expect(svg.querySelector('[data-part="couronne"]')).toBeNull();
+		expect(svg.querySelector('[data-part="bonnet"]')).toBeNull();
 		expect(svg.innerHTML).not.toContain(race.primary);
 		expect(svg.innerHTML).not.toContain(race.secondary);
+		// l'auréole non plus ne trahit pas la race
+		expect(svg.innerHTML).not.toContain(race.halo);
 	});
 
 	it('grand matou : porte la collerette, le matou non', async () => {
@@ -86,8 +90,44 @@ describe('MathouAvatar', () => {
 		expect(svgOf(matou.container).querySelector('[data-part="collerette"]')).toBeNull();
 	});
 
+	it('grand matou éveillé : couronne ; en sieste : bonnet de nuit à la place', async () => {
+		const awake = svgOf(
+			(await render(MathouAvatar, { raceIndex: 5, stage: 'grand_matou', label: 'x' })).container
+		);
+		expect(awake.querySelector('[data-part="couronne"]')).not.toBeNull();
+		expect(awake.querySelector('[data-part="bonnet"]')).toBeNull();
+		const asleep = svgOf(
+			(
+				await render(MathouAvatar, {
+					raceIndex: 5,
+					stage: 'grand_matou',
+					asleep: true,
+					label: 'y'
+				})
+			).container
+		);
+		expect(asleep.querySelector('[data-part="couronne"]')).toBeNull();
+		expect(asleep.querySelector('[data-part="bonnet"]')).not.toBeNull();
+		expect(asleep.querySelector('[data-part="collerette"]')).not.toBeNull();
+	});
+
+	it('chaque race peint son pelage et son motif (couleur du motif présente)', async () => {
+		for (let i = 0; i < MATHOU_RACE_COUNT; i++) {
+			const race = MATHOU_RACES[i];
+			const { container } = await render(MathouAvatar, {
+				raceIndex: i,
+				stage: 'matou',
+				label: 'x'
+			});
+			const html = svgOf(container).innerHTML;
+			expect(html).toContain(race.primary);
+			// une race unie n'a pas de motif ; les autres le dessinent
+			if (race.pattern !== 'uni') expect(html).toContain(race.secondary);
+		}
+	});
+
 	it('deux instances sur la page : ids distincts, références internes à soi', async () => {
-		// Race fumée : clipPath + dégradé, le cas le plus chargé en ids
+		// Race fumée : clipPaths (carte, corps, yeux) + dégradé, le cas le plus chargé en ids
 		const a = await render(MathouAvatar, { raceIndex: 12, stage: 'matou', label: 'a' });
 		const b = await render(MathouAvatar, { raceIndex: 12, stage: 'matou', label: 'b' });
 		const idsA = [...svgOf(a.container).querySelectorAll('[id]')].map((el) => el.id);
@@ -114,6 +154,8 @@ describe('mathou-races', () => {
 		expect(MATHOU_RACE_COUNT).toBe(19);
 		const keys = MATHOU_RACES.map((r) => `${r.primary}|${r.secondary}|${r.pattern}`);
 		expect(new Set(keys).size).toBe(19);
+		// ce qui se voit : pelage + motif, distincts d'une race à l'autre
+		expect(new Set(MATHOU_RACES.map((r) => `${r.primary}|${r.pattern}`)).size).toBe(19);
 		expect(new Set(MATHOU_RACES.map((r) => r.name)).size).toBe(19);
 	});
 
