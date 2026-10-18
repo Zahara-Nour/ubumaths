@@ -78,6 +78,8 @@ import {
 	type ArgumentValue,
 	type GridFunction,
 	isLogic,
+	isCount,
+	isColumnRange,
 	logicAloneMessage,
 	type LogicFunction
 } from './grid-functions';
@@ -442,15 +444,24 @@ function readCall(
 	// Lu ici, ET ou OU n'est pas la condition de SI (lue plus bas) : refusé (Q-RE-2)
 	if (isLogic(name)) return { ok: false, message: logicAloneMessage(name) };
 	const statistic = isStatistic(name);
+	// NBVAL prend des plages comme NB ; NB.VIDE, une seule (phase 0 NBVAL)
+	const counting = isCount(name);
+	if (name === 'NB.VIDE' && rawArgs.length !== 1) {
+		return { ok: false, message: 'NB.VIDE attend une plage : NB.VIDE(B2:B31).' };
+	}
+	// Q-NV-3 : une colonne entière n'a pas de sens pour NB.VIDE (200 lignes de grille)
+	if (name === 'NB.VIDE' && isColumnRange(rawArgs[0])) {
+		return { ok: false, message: EMPTY_COUNT_RANGE_MESSAGE };
+	}
 	const occurrence = isRandom(name) ? randomOccurrence++ : -1;
 	let random = isRandom(name);
-	if (statistic && rawArgs.length === 0) {
+	if ((statistic || name === 'NBVAL') && rawArgs.length === 0) {
 		return {
 			ok: false,
 			message: `${name} attend au moins un argument, par exemple ${name}(A2:A21).`
 		};
 	}
-	if (!statistic && rawArgs.length !== arityOf(name)) {
+	if (!statistic && !counting && rawArgs.length !== arityOf(name)) {
 		return { ok: false, message: arityMessage(name) };
 	}
 	const args: ReadArgument[] = [];
@@ -503,7 +514,7 @@ function readCall(
 		// Une plage : les statistiques, et la plage de NB.SI. Une case citée seule
 		// s'y lit comme une plage d'une case (vide ou mot ignoré, comme LibreOffice)
 		// — ailleurs elle garde T5 (`RACINE(A5)`, A5 vide → vide)
-		const rangeLike = statistic || (name === 'NB.SI' && index === 0);
+		const rangeLike = statistic || counting || (name === 'NB.SI' && index === 0);
 		const cell = rangeLike ? LONE_CELL.exec(raw) : null;
 		const range = cell === null ? readRange(raw) : readRange(`${cell[1]}:${cell[1]}`);
 		if (range !== null && !rangeLike) {
@@ -1252,6 +1263,69 @@ function randomValue(
  */
 const MAX_RANDOM_RANGE = 1e6;
 
+const EMPTY_COUNT_RANGE_MESSAGE = 'NB.VIDE compte dans une plage : NB.VIDE(A2:A31).';
+
+/**
+ * NBVAL(plage ; …) : les cases non vides ; NB.VIDE(plage) : les vides (phase 0
+ * NBVAL). Une case est vide si elle MONTRE du vide, formule qui rend `""`
+ * comprise (Q-NV-1 : NBVAL + NB.VIDE = la taille de la plage) ; une case en
+ * erreur arrête le compte (Q-NV-2). Une liste nommée : sa colonne pour NBVAL,
+ * ses entrées jusqu'à la dernière non vide pour NB.VIDE (Q-NV-4).
+ */
+function countCells(
+	call: ReadCall,
+	address: string,
+	texts: ReadonlyMap<string, string>,
+	values: ReadonlyMap<string, CellValue>,
+	approximate: ReadonlySet<string>,
+	atelier: Atelier,
+	context: GridContext
+): CallResult {
+	const valueAt = (cell: string) => values.get(cell) ?? plainValue(texts.get(cell) ?? '');
+	const empties = call.name === 'NB.VIDE';
+	let count = 0;
+	const tally = (value: CellValue, cell: string | null): CellValue | null => {
+		if (value.kind === 'error') return cell === null ? value : error(`${cell} est en erreur.`);
+		if ((value.kind === 'empty') === empties) count++;
+		return null;
+	};
+	for (const arg of call.args) {
+		const column =
+			arg.kind === 'expression' && arg.name !== null && atelier.get(arg.name)?.kind === 'list'
+				? atelier.columnOf(arg.name)
+				: undefined;
+		let cells: readonly string[] | null = arg.kind === 'range' ? arg.cells : null;
+		if (column !== undefined) {
+			const all = Array.from({ length: GRID_ROWS }, (_, i) => cellName(column, i + 1));
+			// NB.VIDE d'une liste : ses trous, pas les lignes de grille sous elle
+			const last = all.findLastIndex((cell) => valueAt(cell).kind !== 'empty');
+			cells = empties ? all.slice(0, last + 1) : all;
+		}
+		if (cells !== null) {
+			for (const cell of cells) {
+				const refused = tally(valueAt(cell), cell);
+				if (refused !== null) return { ok: false, value: refused };
+			}
+			continue;
+		}
+		if (empties || arg.kind !== 'expression') {
+			return { ok: false, value: error(EMPTY_COUNT_RANGE_MESSAGE) };
+		}
+		// NBVAL(3), NBVAL(A1*2) : une valeur, qui compte si elle n'est pas vide
+		const refused = tally(
+			computeCell(address, arg.read, texts, values, new Set(approximate), atelier, context),
+			null
+		);
+		if (refused !== null) return { ok: false, value: refused };
+	}
+	return {
+		ok: true,
+		node: { type: 'number', value: String(count) },
+		inexact: false,
+		divided: false
+	};
+}
+
 /** NB.SI(plage ; critère) : les cases (vides ignorées) qui vérifient le critère. */
 function countIf(
 	call: ReadCall,
@@ -1329,6 +1403,8 @@ function callValue(
 		return conditionValue(call, address, texts, values, approximate, atelier, context);
 	if (call.name === 'NB.SI')
 		return countIf(call, address, texts, values, approximate, atelier, context);
+	if (isCount(call.name))
+		return countCells(call, address, texts, values, approximate, atelier, context);
 	const numbers: ArgumentValue[] = [];
 	let inexact = false;
 	const statistic = isStatistic(call.name);

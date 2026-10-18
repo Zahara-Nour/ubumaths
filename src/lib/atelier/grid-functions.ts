@@ -43,8 +43,16 @@ export type RandomFunction = 'ALEA' | 'ALEA.ENTRE.BORNES';
 /** ET, OU : seulement dans la condition de SI (Q-RE-2), sur des comparaisons. */
 export type LogicFunction = 'ET' | 'OU';
 
+/** Compter les cases non vides, les vides (phase 0 NBVAL). */
+export type CountFunction = 'NBVAL' | 'NB.VIDE';
+
 export type GridFunction =
-	StatisticFunction | CalculationFunction | ConditionFunction | RandomFunction | LogicFunction;
+	| StatisticFunction
+	| CountFunction
+	| CalculationFunction
+	| ConditionFunction
+	| RandomFunction
+	| LogicFunction;
 
 /** Une comparaison : `<`, `>`, `<=`, `>=`, `=`, `<>` (comme LibreOffice). */
 export type Comparison = '<' | '>' | '<=' | '>=' | '=' | '<>';
@@ -125,8 +133,11 @@ export const RANDOM_ARITY: Readonly<Record<RandomFunction, number>> = {
 
 export const LOGIC_FUNCTIONS: readonly LogicFunction[] = ['ET', 'OU'];
 
+export const COUNT_FUNCTIONS: readonly CountFunction[] = ['NBVAL', 'NB.VIDE'];
+
 export const GRID_FUNCTIONS: readonly GridFunction[] = [
 	...STATISTIC_FUNCTIONS,
+	...COUNT_FUNCTIONS,
 	...(Object.keys(CALCULATION_ARITY) as CalculationFunction[]),
 	...(Object.keys(CONDITION_ARITY) as ConditionFunction[]),
 	...LOGIC_FUNCTIONS,
@@ -147,6 +158,8 @@ const SIGNATURES: Readonly<Record<GridFunction, string>> = {
 	MIN: 'MIN(plage ; …) — le plus petit nombre',
 	MAX: 'MAX(plage ; …) — le plus grand nombre',
 	NB: 'NB(plage ; …) — combien de cases contiennent un nombre',
+	NBVAL: 'NBVAL(plage ; …) — combien de cases ne sont pas vides',
+	'NB.VIDE': 'NB.VIDE(plage) — combien de cases sont vides',
 	ECARTYPE: 'ECARTYPE(plage ; …) — l’écart type (divise par n − 1)',
 	ECARTYPEP: 'ECARTYPEP(plage ; …) — l’écart type (divise par n), le σ de .stats',
 	ARRONDI: 'ARRONDI(x ; n) — x arrondi à n décimales',
@@ -229,6 +242,15 @@ export function drawOf(seed: number, address: string, occurrence: number): numbe
 		hash = Math.imul(hash ^ char.charCodeAt(0), 0x01000193) >>> 0;
 	}
 	return createRandomSource(hash)();
+}
+
+export function isCount(name: GridFunction): name is CountFunction {
+	return name === 'NBVAL' || name === 'NB.VIDE';
+}
+
+/** `A:A`, `$B:$B` : une colonne entière (NB.VIDE la refuse, Q-NV-3). */
+export function isColumnRange(text: string): boolean {
+	return COLUMN_RANGE.test(text);
 }
 
 export function isLogic(name: GridFunction): name is LogicFunction {
@@ -837,5 +859,7 @@ export function gridFunctionInCalcul(name: string): string | null {
 		PI: 'π'
 	};
 	if (written[known] !== undefined) return `${here} : dans Calcul, écris ${written[known]}.`;
-	return isStatistic(known) ? `${here}. Pour une liste, tape .stats L.` : `${here}.`;
+	return isStatistic(known) || isCount(known)
+		? `${here}. Pour une liste, tape .stats L.`
+		: `${here}.`;
 }
