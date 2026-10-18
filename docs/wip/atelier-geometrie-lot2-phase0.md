@@ -107,6 +107,11 @@ sans accent.
 lecteur même du DSL (`dsl/parser.ts`), après la traduction de la virgule décimale — garantie de lire
 exactement comme lui. Le calcul reste celui de L1.
 
+**`d = (AB)` tapé avant A et B** (David, 2026-10-18, option a, après la revue de la PR 1) : d
+est **en attente** de ce qui manque ; quand A et B existent, le **type** tranche — deux points :
+la droite (AB) ; deux valeurs : le produit ; un de chaque : refus avec la raison. Comme `[AB]`
+(L8).
+
 ### L3 — Le catalogue du lot 2
 
 Les mots du DSL pris en charge au lot 2 (et leurs raccourcis, L2) :
