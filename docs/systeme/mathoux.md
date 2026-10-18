@@ -82,6 +82,8 @@ Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou),
 - **Mathou de la seule mémoire** : une notion mémorisée sans aucun point travaillable au parcours
   (modèles dépubliés, changement de voie) reste affichée à son stade, avec ses étoiles, sans
   sieste ; une notion ou une branche archivée la fait disparaître, comme pour les points.
+- **Identité** : `loadMathouCollection` vérifie que l'élève demandé est l'utilisateur du client
+  passé (`auth.getUser`) ; sinon il lève, avant toute écriture (audit de la PR 3).
 - **Écriture** au client **service** seulement (`authenticated` n'a que SELECT), pour l'élève de la
   session, à la fin de chaque calcul (page et `GET /api/student/mathoux`), **seulement s'il y a du
   nouveau** (`memoryUpdates` : Mathou né sans ligne, stade ou étoile gagnés). Une panne
@@ -130,7 +132,7 @@ une collection vide.
 
 Cinq allers-retours (six s'il y a du nouveau à retenir) :
 
-1. `grade_ancestors` et la mémoire, en parallèle ;
+1. `grade_ancestors`, la mémoire et l'identité (`auth.getUser`), en parallèle ;
 2. une requête de points **par niveau** du parcours, en parallèle (239 points au plus par niveau,
    alors que le parcours entier d'une Terminale dépasserait le plafond de 1 000 lignes de
    PostgREST) ;

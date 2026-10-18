@@ -360,13 +360,20 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		const sienne = await loadMathouCollection(eleveB, eleveBId, GRADE);
 		expect(mathouOf(sienne, notionVecteurs)?.growth).toBe('a_decouvrir');
 
-		// Le client de B, l'identifiant de A : la RLS ne rend aucun état de A.
-		const volee = await loadMathouCollection(eleveB, eleveAId, GRADE);
-		expect(mathouOf(volee, notionFractions)?.growth).toBe('a_decouvrir');
-		expect(mathouOf(volee, notionVecteurs)).toMatchObject({
-			growth: 'a_decouvrir',
-			asleep: false
-		});
+		// Le client de B, l'identifiant de A : refusé d'emblée (garde d'identité)…
+		await expect(loadMathouCollection(eleveB, eleveAId, GRADE)).rejects.toThrow(
+			/n’est pas l’utilisateur de la session/
+		);
+		// … et, derrière, la RLS ne rend aucun état ni aucune carte de A (en silence).
+		const etats = await eleveB
+			.from('student_point_state')
+			.select('point_id')
+			.eq('student_id', eleveAId);
+		expect(etats.error).toBeNull();
+		expect(etats.data).toEqual([]);
+		const cartes = await eleveB.from('srs_card_stats').select('id').eq('user_id', eleveAId);
+		expect(cartes.error).toBeNull();
+		expect(cartes.data).toEqual([]);
 
 		// Témoin : A, lui, voit toujours son grand matou endormi.
 		const sienneA = await loadMathouCollection(eleveA, eleveAId, GRADE);
@@ -555,9 +562,10 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		expect(direct.error).toBeNull();
 		expect(direct.data).toEqual([]);
 
-		// La collection calculée par B avec l'identifiant de A ne montre rien de A
-		const volee = await loadMathouCollection(b.client, a.id, GRADE);
-		expect(mathouOf(volee, notionVecteurs)).toMatchObject({ growth: 'a_decouvrir', stars: [] });
+		// Le calcul par B avec l'identifiant de A est refusé avant toute écriture…
+		await expect(loadMathouCollection(b.client, a.id, GRADE)).rejects.toThrow(
+			/n’est pas l’utilisateur de la session/
+		);
 		// … et la mémoire de A n'a pas bougé
 		expect(await storedMemory(a.id, notionVecteurs)).toEqual(avant);
 	});

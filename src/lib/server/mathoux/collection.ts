@@ -26,12 +26,18 @@
  * donc une Chatterie vide, sans erreur : le cas suspect (des points, aucun nœud)
  * est tracé. Prouvé en intégration : `tests/integration/mathoux-collection.test.ts`.
  *
- * Coût, en 5 allers-retours : 1 appel (parcours) et la mémoire, en parallèle ; une requête de points PAR
+ * Coût, en 5 allers-retours : 1 appel (parcours), la mémoire et l'identité
+ * (`auth.getUser`), en parallèle ; une requête de points PAR
  * NIVEAU en parallèle (chacune sous le plafond de 1 000 lignes de PostgREST, que
  * le parcours entier d'une Terminale dépasserait) ; tags (par lots de 100
  * points, chaque lot lu par pages de 1 000 lignes), branches et notions,
  * sous-notions référencées ; puis, sur les seuls points travaillables, les états
- * et les 2 lectures de `computePointBadges`. Chiffres mesurés : docs/systeme/mathoux.md.
+ * et les 2 lectures de `computePointBadges`. Puis l'écriture éventuelle de la
+ * mémoire, au client service : 0 requête s'il n'y a rien de nouveau (le cas
+ * courant) ; sinon 1 insert groupé pour les naissances (+ 1 relecture si une
+ * ligne a été créée entre-temps) et, par Mathou qui grandit, 1 mise à jour
+ * conditionnelle (jusqu'à 3 essais, chacun suivi d'une relecture en cas de
+ * conflit). Chiffres mesurés : docs/systeme/mathoux.md.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -86,8 +92,9 @@ export async function loadMathouCollection(
 ): Promise<MathouCollection> {
 	if (!grade) return EMPTY_COLLECTION;
 
-	// 1. Parcours (le niveau et ses niveaux antérieurs) et mémoire, en parallèle
-	const [grades, memory] = await Promise.all([
+	// 1. Identité, parcours (le niveau et ses niveaux antérieurs) et mémoire, en parallèle
+	const [, grades, memory] = await Promise.all([
+		assertSessionStudent(supabase, studentId),
 		loadPathGrades(supabase, grade),
 		readMathouMemory(supabase, studentId)
 	]);
@@ -186,6 +193,19 @@ export async function loadMathouCollection(
 	await rememberSafely(studentId, memoryUpdates(collection, memory), memory);
 
 	return collection;
+}
+
+/**
+ * La mémoire de `studentId` est écrite au client service : il DOIT être
+ * l'utilisateur du client passé (audit de la PR 3). Sinon on lève, avant toute
+ * écriture : un appel futur avec un identifiant venu d'ailleurs (un prof, une
+ * entrée client) n'écrira jamais dans la mémoire d'un autre élève.
+ */
+async function assertSessionStudent(supabase: SB, studentId: string): Promise<void> {
+	const { data, error } = await supabase.auth.getUser();
+	if (error || data.user?.id !== studentId) {
+		throw new Error('Chatterie : l’élève demandé n’est pas l’utilisateur de la session');
+	}
 }
 
 /** Écrit la mémoire au client service ; journalise une panne au lieu de la propager. */

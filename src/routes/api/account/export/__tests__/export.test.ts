@@ -164,11 +164,21 @@ function createMockEvent() {
  * - .select().eq() -> for student_progress, inventory, etc.
  * - .select().or() -> for friendships
  */
+/** Tables dont la lecture échoue dans le test en cours (vidé avant chaque test). */
+let failingTables: Set<string> = new Set();
+
 function setupMockSupabase() {
-	// Create a thenable that resolves to { data, error: null }
-	const createThenable = (data: unknown) => ({
-		then: (resolve: (value: { data: unknown; error: null }) => void) => {
-			return Promise.resolve(resolve({ data, error: null }));
+	failingTables = new Set();
+	// Create a thenable that resolves to { data, error } ; `error` seulement pour une table en panne
+	const createThenableFor = (table: string) => (data: unknown) => ({
+		then: (resolve: (value: { data: unknown; error: { message: string } | null }) => void) => {
+			return Promise.resolve(
+				resolve(
+					failingTables.has(table)
+						? { data: null, error: { message: `${table} en panne` } }
+						: { data, error: null }
+				)
+			);
 		}
 	});
 
@@ -197,6 +207,7 @@ function setupMockSupabase() {
 			};
 
 			const data = getData();
+			const createThenable = createThenableFor(table);
 
 			// Create chain that works for all patterns
 			const terminalResult = createThenable(data);
@@ -513,6 +524,14 @@ describe('GET /api/account/export', () => {
 	// =========================================================================
 	// SECURITY TESTS
 	// =========================================================================
+
+	// Un export qui omettrait une table sur une panne serait faux : 500, l'élève réessaie
+	describe('Lecture en échec', () => {
+		test.each(['student_mathoux', 'student_buddies'])('%s illisible → 500', async (table) => {
+			failingTables.add(table);
+			await expect(GET(createMockEvent() as never)).rejects.toMatchObject({ status: 500 });
+		});
+	});
 
 	describe('Security', () => {
 		test('does not include sensitive OAuth tokens', async () => {

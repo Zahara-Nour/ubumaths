@@ -39,7 +39,14 @@ type Handler = (calls: Call[]) => QueryResult;
 
 const STUDENT = 'eleve-1';
 
-function buildMock(handlers: Record<string, Handler>, ancestors: () => QueryResult = () => ok([])) {
+function buildMock(
+	handlers: Record<string, Handler>,
+	ancestors: () => QueryResult = () => ok([]),
+	authUser: () => { data: { user: { id: string } | null }; error: unknown } = () => ({
+		data: { user: { id: STUDENT } },
+		error: null
+	})
+) {
 	const queries: { table: string; calls: Call[] }[] = [];
 	const from = vi.fn().mockImplementation((table: string) => {
 		const handler = handlers[table];
@@ -58,8 +65,11 @@ function buildMock(handlers: Record<string, Handler>, ancestors: () => QueryResu
 		return qb;
 	});
 	const rpc = vi.fn().mockImplementation(() => Promise.resolve(ancestors()));
-	const supabase = { from, rpc } as unknown as Parameters<typeof loadMathouCollection>[0];
-	return { supabase, from, rpc, queries };
+	const getUser = vi.fn().mockImplementation(() => Promise.resolve(authUser()));
+	const supabase = { from, rpc, auth: { getUser } } as unknown as Parameters<
+		typeof loadMathouCollection
+	>[0];
+	return { supabase, from, rpc, queries, getUser };
 }
 
 function has(calls: Call[], method: string, ...args: unknown[]): boolean {
@@ -374,5 +384,32 @@ describe('loadMathouCollection', () => {
 		]);
 		expect(queries.some((q) => q.table === 'student_point_state')).toBe(false);
 		expect(computePointBadges).not.toHaveBeenCalled();
+	});
+	// ---------------------------------------------------------------------------
+	// Identité (audit) : l'élève passé est l'utilisateur du client, sinon rien n'est écrit
+	// ---------------------------------------------------------------------------
+
+	it('identité : un studentId qui n’est pas l’utilisateur du client lève, sans écrire', async () => {
+		const { supabase, getUser } = buildMock(nominalHandlers(), undefined, () => ({
+			data: { user: { id: 'un-autre-eleve' } },
+			error: null
+		}));
+		await expect(loadMathouCollection(supabase, STUDENT, '1_SPE')).rejects.toThrow(
+			/n’est pas l’utilisateur de la session/
+		);
+		expect(getUser).toHaveBeenCalled();
+		expect(createServiceRoleClient).not.toHaveBeenCalled();
+		expect(rememberMathoux).not.toHaveBeenCalled();
+	});
+
+	it('identité : un client sans utilisateur (ou en erreur) lève, sans écrire', async () => {
+		const { supabase } = buildMock(nominalHandlers(), undefined, () => ({
+			data: { user: null },
+			error: { message: 'jeton expiré' }
+		}));
+		await expect(loadMathouCollection(supabase, STUDENT, '1_SPE')).rejects.toThrow(
+			/n’est pas l’utilisateur de la session/
+		);
+		expect(rememberMathoux).not.toHaveBeenCalled();
 	});
 });
