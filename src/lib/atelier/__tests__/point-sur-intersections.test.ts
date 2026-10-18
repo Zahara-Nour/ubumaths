@@ -206,6 +206,15 @@ describe('intersection(a, b, k) : cercle et cercle', () => {
 		);
 	});
 
+	it('deux cercles qui deviennent égaux en glissant un curseur : en ATTENTE, pas en erreur', () => {
+		const s = plane('a = 1', 'P = (a ; 0)', 'k = cercle(P ; 1)');
+		define(s, 'E = intersection(c, k, 1)');
+		s.atelier.slideTo('a', 0);
+		expect(state(s, 'E')).toEqual(['pending', 'c et k ont une infinité de points communs.']);
+		s.atelier.slideTo('a', 1);
+		expect(state(s, 'E')[0]).toBe('ok');
+	});
+
 	it('deux cercles concentriques : en attente', () => {
 		const s = plane('k = cercle(O ; 2)');
 		define(s, 'E = intersection(c, k, 1)');
@@ -244,6 +253,22 @@ describe('intersection(a, b, k) : courbes par équation et fonctions', () => {
 		);
 		define(s, 'E = intersection(u, f, 4)');
 		expect(card(s, 'E')).toBe('E ≈ (1,5708 ; 0)');
+	});
+
+	it('une racine exacte avec dénominateur s’écrit en fraction, comme Calcul', () => {
+		const s = plane('f(x) = 2x^2 - 1');
+		define(s, 'E = intersection(u, f, 2)');
+		expect(card(s, 'E')).toBe('E(√2/2 ; 0)');
+		expect(constructionSummaryOf(s.atelier, 'E')?.latex).toContain('\\dfrac{\\sqrt{2}}{2}');
+	});
+
+	it('une racine 1/2 avec curseur, en fraction, qui suit le curseur', () => {
+		const s = plane('a = 1', 'f(x) = 4x^2 - a');
+		define(s, 'E = intersection(u, f, 2)');
+		expect(card(s, 'E')).toBe('E(1/2 ; 0)');
+		expect(constructionSummaryOf(s.atelier, 'E')?.latex).toContain('\\dfrac{1}{2}');
+		s.atelier.slideTo('a', 4);
+		expect(card(s, 'E')).toBe('E(1 ; 0)');
 	});
 
 	it('fonction et fonction', () => {
@@ -374,12 +399,23 @@ describe('point_sur(objet, position)', () => {
 		expect(card(s, 'M')).toBe('M ≈ (1,8794 ; 0,684)');
 	});
 
-	it('sur un cercle, réglage « Angles : radians » : la position est en radians', () => {
+	it('sur un cercle, réglage « Angles : radians » : la position reste en DEGRÉS (L5, comme le DSL)', () => {
 		const s = plane('k = cercle(O ; 2)');
 		s.atelier.setAngleUnit('rad');
-		define(s, 'M = point_sur(k ; 0)');
-		expect(card(s, 'M')).toBe('M(2 ; 0)');
-		expect(s.atelier.positionSliderOf('M')).toEqual({ min: 0, max: 2 * Math.PI, step: 0.01 });
+		define(s, 'M = point_sur(k ; 90)');
+		expect(card(s, 'M')).toBe('M(0 ; 2)');
+		expect(s.atelier.positionSliderOf('M')).toEqual({ min: 0, max: 360, step: 1 });
+	});
+
+	it('un lien relu dans un atelier réglé en radians donne la même figure', async () => {
+		const s = plane('k = cercle(O ; 2)');
+		define(s, 'M = point_sur(k ; 30)');
+		const encoded = await encodeAtelier(s.atelier.serialize());
+		const decoded = await decodeAtelier(encoded.payload);
+		const back = new Atelier();
+		back.setAngleUnit('rad');
+		if (decoded.ok) back.restore(decoded.state);
+		expect(constructionSummaryOf(back, 'M')?.text).toBe('M(√3 ; 1)');
 	});
 
 	it('sur la courbe d’une fonction : point_sur(f ; 3) = (3 ; f(3))', () => {
@@ -413,6 +449,25 @@ describe('point_sur(objet, position)', () => {
 });
 
 describe('point_sur : le curseur de position', () => {
+	it('une position écrite 1/3 : le premier cran réécrit le nombre (0,33)', () => {
+		const s = plane('s = [AB]');
+		define(s, 'M = point_sur(s ; 1/3)');
+		expect(s.atelier.positionSliderOf('M')).toEqual({ min: 0, max: 1, step: 0.01 });
+		s.atelier.slidePosition('M', 0.33);
+		expect(s.atelier.get('M')?.definition).toBe('point_sur(s ; 0,33)');
+		expect(card(s, 'M')).toBe('M(33/100 ; 83/50)');
+	});
+
+	it('une position écrite en LaTeX (\\frac{1}{2}) n’a pas de curseur (voulu)', () => {
+		const s = plane('s = [AB]');
+		s.atelier.create(
+			{ kind: 'point', name: 'M', definition: 'point_sur(s ; \\frac{1}{2})' },
+			'text'
+		);
+		expect(card(s, 'M')).toBe('M(1/2 ; 2)');
+		expect(s.atelier.positionSliderOf('M')).toBeNull();
+	});
+
 	it('un nombre écrit : un curseur, aux bornes de l’objet', () => {
 		const s = plane('s = [AB]', 'k = cercle(O ; 2)');
 		define(s, 'M = point_sur(s ; 0,3)');
@@ -597,5 +652,14 @@ describe('le LaTeX des réponses est intact (aucun antislash perdu)', () => {
 			expect(hasControl(latex), latex).toBe(false);
 		}
 		expect(lines[1]).toContain('\\approx');
+	});
+});
+
+describe('séparateurs : le refus cite le nombre de l’élève', () => {
+	it('point_sur([AB], 0,3) : « 0,3 », pas l’exemple 1,5', () => {
+		const s = plane();
+		expect(refusal(runInput(s, 'M = point_sur([AB], 0,3)'))).toBe(
+			'Sépare les arguments de point_sur avec « ; » : une virgule entre deux chiffres est décimale (0,3).'
+		);
 	});
 });

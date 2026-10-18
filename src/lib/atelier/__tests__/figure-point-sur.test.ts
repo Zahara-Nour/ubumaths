@@ -157,6 +157,35 @@ describe('intersection dans la vue Géométrie', () => {
 		close(drawn(target, 'E'), [2, 0]);
 	});
 
+	it('la figure dessine EXACTEMENT le point de la carte, racine hors de [−10 ; 10] comprise', () => {
+		const atelier = atelierOf([
+			...PLANE,
+			['value', 'a', '15'],
+			['function', 'f', '(x + a)(x - 1)'],
+			['point', 'E', 'intersection(u, f, 1)'],
+			['point', 'G', 'intersection(u, f, 2)']
+		]);
+		const target = new AtelierFigure();
+		syncFigure(atelier, target);
+		close(drawn(target, 'E'), [-15, 0]);
+		close(drawn(target, 'G'), [1, 0]);
+		atelier.slideTo('a', 12);
+		expect(syncFigure(atelier, target)).toBe('moved');
+		close(drawn(target, 'E'), [-12, 0]);
+	});
+
+	it('x² − a avec a = 150 : la carte dit 5√6, la figure dessine 5√6', () => {
+		const atelier = atelierOf([
+			...PLANE,
+			['value', 'a', '150'],
+			['function', 'f', 'x^2 - a'],
+			['point', 'E', 'intersection(u, f, 2)']
+		]);
+		const target = new AtelierFigure();
+		syncFigure(atelier, target);
+		close(drawn(target, 'E'), [5 * Math.sqrt(6), 0]);
+	});
+
 	it('une construction qui cite un point d’intersection à curseur le suit', () => {
 		const atelier = atelierOf([
 			...PLANE,
