@@ -387,6 +387,7 @@ class GrapheurStore {
 				| 'showOsculating'
 				| 'showArcLength'
 				| 'restriction'
+				| 'reading'
 			>
 		>
 	): void {

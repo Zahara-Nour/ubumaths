@@ -37,6 +37,11 @@
 	import AsymptoteLines from './AsymptoteLines.svelte';
 	import SpecialPoints from './SpecialPoints.svelte';
 	import { curveColorValue } from '$lib/grapheur/colors';
+	import { SvelteMap } from 'svelte/reactivity';
+	import { isExplicitFunction } from '$lib/grapheur/types';
+	import { snapReading } from '$lib/grapheur/image-reading';
+	import ImageReadings from './ImageReadings.svelte';
+	import ReadingSliders from './ReadingSliders.svelte';
 
 	// Props
 	let {
@@ -112,6 +117,27 @@
 	 * This is memoized to avoid recreating the transformer on every render.
 	 */
 	const transformer = $derived(createTransformer(grapheurStore.viewport, width, height));
+
+	// ==========================================================================
+	// Lecture graphique de l'image (atelier, lot 3 bis de la refonte)
+	// ==========================================================================
+
+	/** Où l'élève a posé le point glissant de chaque courbe lue. */
+	const movedSliders = new SvelteMap<string, number>();
+
+	/**
+	 * Le point glissant de chaque courbe dont la lecture est allumée : là où
+	 * l'élève l'a posé, sinon au milieu de la fenêtre, aimanté.
+	 */
+	const sliders: ReadonlyMap<string, number> = $derived.by(() => {
+		const { xMin, xMax } = grapheurStore.viewport;
+		return new Map(
+			grapheurStore.visibleFunctions
+				.filter(isExplicitFunction)
+				.filter((func) => func.reading !== undefined)
+				.map((func) => [func.id, movedSliders.get(func.id) ?? snapReading((xMin + xMax) / 2)])
+		);
+	});
 
 	// ==========================================================================
 	// Interaction State
@@ -407,167 +433,187 @@
 	});
 </script>
 
-<div
-	bind:this={containerRef}
-	class="graph-container {className}"
-	role="img"
-	aria-label={graphDescription}
->
-	<svg
-		bind:this={svgRef}
-		viewBox="0 0 {width} {height}"
-		class="graph-svg"
-		preserveAspectRatio="xMidYMid meet"
-		aria-hidden="true"
-		onpointerdown={handlePointerDown}
-		onpointermove={handlePointerMove}
-		onpointerup={handlePointerUp}
-		onpointerleave={handlePointerLeave}
-		onwheel={handleWheel}
-		style="touch-action: none; cursor: {cursorStyle}"
+<!-- Le cadre porte, à côté de l'image du graphe, les curseurs de la lecture
+     graphique : dans `role="img"`, ils ne seraient pas atteignables. -->
+<div class="graph-frame">
+	<div
+		bind:this={containerRef}
+		class="graph-container {className}"
+		role="img"
+		aria-label={graphDescription}
 	>
-		<!-- Background grid (conditional) -->
-		{#if grapheurStore.showGrid}
-			<GridLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
-		{/if}
+		<svg
+			bind:this={svgRef}
+			viewBox="0 0 {width} {height}"
+			class="graph-svg"
+			preserveAspectRatio="xMidYMid meet"
+			aria-hidden="true"
+			onpointerdown={handlePointerDown}
+			onpointermove={handlePointerMove}
+			onpointerup={handlePointerUp}
+			onpointerleave={handlePointerLeave}
+			onwheel={handleWheel}
+			style="touch-action: none; cursor: {cursorStyle}"
+		>
+			<!-- Background grid (conditional) -->
+			{#if grapheurStore.showGrid}
+				<GridLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
+			{/if}
 
-		<!-- Coordinate axes -->
-		<AxisLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
+			<!-- Coordinate axes -->
+			<AxisLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
 
-		<!-- Asymptotes : AU-DESSUS des axes, en dessous des courbes.
+			<!-- Asymptotes : AU-DESSUS des axes, en dessous des courbes.
 		     Dessinées sous les axes, celles de 1/x étaient invisibles : x = 0 et
 		     y = 0 SONT les axes, et un pointillé à 50 % d'opacité disparaît sous
 		     un trait plein. C'est pourtant l'exemple d'asymptotes par excellence. -->
-		<AsymptoteLines {transformer} {width} {height} />
+			<AsymptoteLines {transformer} {width} {height} />
 
-		<!-- Function curves and sequence plots -->
-		<g class="function-curves">
-			{#each grapheurStore.visibleFunctions as plottable (plottable.id)}
-				{#if plottable.type === 'explicit'}
-					<FunctionCurve
-						func={plottable}
-						viewport={grapheurStore.viewport}
-						{transformer}
-						isInteracting={grapheurStore.isInteracting}
-						bindings={grapheurStore.parameterBindings}
-					/>
-					<!--
+			<!-- Function curves and sequence plots -->
+			<g class="function-curves">
+				{#each grapheurStore.visibleFunctions as plottable (plottable.id)}
+					{#if plottable.type === 'explicit'}
+						<FunctionCurve
+							func={plottable}
+							viewport={grapheurStore.viewport}
+							{transformer}
+							isInteracting={grapheurStore.isInteracting}
+							bindings={grapheurStore.parameterBindings}
+						/>
+						<!--
 						L'aire sous la courbe, tracée avant elle pour rester derrière.
 					-->
-					{#if plottable.integral}
-						{@const area = integralUnder(
-							plottable,
-							plottable.integral.from,
-							plottable.integral.to,
-							grapheurStore.parameterBindings
-						)}
-						{#if area}
-							<IntegralArea integral={area} {transformer} color={plottable.color} />
+						{#if plottable.integral}
+							{@const area = integralUnder(
+								plottable,
+								plottable.integral.from,
+								plottable.integral.to,
+								grapheurStore.parameterBindings
+							)}
+							{#if area}
+								<IntegralArea integral={area} {transformer} color={plottable.color} />
+							{/if}
 						{/if}
-					{/if}
 
-					<!--
+						<!--
 						La tangente et son point de contact : le nombre dérivé se lit
 						alors comme une pente, pas comme une valeur dans un tableau.
 					-->
-					{#if plottable.tangentAt !== null}
-						{@const tangent = tangentAt(
-							plottable,
-							plottable.tangentAt,
-							grapheurStore.parameterBindings
-						)}
-						{#if tangent}
-							<FunctionCurve
-								func={tangent.line}
-								viewport={grapheurStore.viewport}
-								{transformer}
-								isInteracting={grapheurStore.isInteracting}
-							/>
-							{#if plottable.showOsculating}
-								{@const circle = osculatingCircleAt(
-									plottable,
-									plottable.tangentAt,
-									grapheurStore.parameterBindings
-								)}
-								{#if circle}
-									{@const centre = transformer.mathToSvg(circle.centerX, circle.centerY)}
-									<ellipse
-										cx={centre.x}
-										cy={centre.y}
-										rx={circle.radius * transformer.scaleX}
-										ry={circle.radius * transformer.scaleY}
-										fill="none"
-										style:stroke={curveColorValue(plottable.color)}
-										stroke-width={1}
-										stroke-dasharray="2 3"
-										class="osculating-circle"
-										aria-hidden="true"
-									/>
+						{#if plottable.tangentAt !== null}
+							{@const tangent = tangentAt(
+								plottable,
+								plottable.tangentAt,
+								grapheurStore.parameterBindings
+							)}
+							{#if tangent}
+								<FunctionCurve
+									func={tangent.line}
+									viewport={grapheurStore.viewport}
+									{transformer}
+									isInteracting={grapheurStore.isInteracting}
+								/>
+								{#if plottable.showOsculating}
+									{@const circle = osculatingCircleAt(
+										plottable,
+										plottable.tangentAt,
+										grapheurStore.parameterBindings
+									)}
+									{#if circle}
+										{@const centre = transformer.mathToSvg(circle.centerX, circle.centerY)}
+										<ellipse
+											cx={centre.x}
+											cy={centre.y}
+											rx={circle.radius * transformer.scaleX}
+											ry={circle.radius * transformer.scaleY}
+											fill="none"
+											style:stroke={curveColorValue(plottable.color)}
+											stroke-width={1}
+											stroke-dasharray="2 3"
+											class="osculating-circle"
+											aria-hidden="true"
+										/>
+									{/if}
 								{/if}
+								{@const contact = transformer.mathToSvg(tangent.x, tangent.y)}
+								<circle
+									cx={contact.x}
+									cy={contact.y}
+									r={5}
+									style:fill={curveColorValue(plottable.color)}
+									stroke="white"
+									stroke-width={2}
+									class="tangent-point"
+									aria-hidden="true"
+								/>
 							{/if}
-							{@const contact = transformer.mathToSvg(tangent.x, tangent.y)}
-							<circle
-								cx={contact.x}
-								cy={contact.y}
-								r={5}
-								style:fill={curveColorValue(plottable.color)}
-								stroke="white"
-								stroke-width={2}
-								class="tangent-point"
-								aria-hidden="true"
-							/>
 						{/if}
-					{/if}
 
-					<!-- La dérivée suit la fonction : elle se recalcule à chaque édition. -->
-					{#if plottable.showDerivative}
-						{@const derivative = derivativeCurve(plottable, grapheurStore.parameterBindings)}
-						{#if derivative}
-							<FunctionCurve
-								func={derivative}
-								viewport={grapheurStore.viewport}
-								{transformer}
-								isInteracting={grapheurStore.isInteracting}
-							/>
+						<!-- La dérivée suit la fonction : elle se recalcule à chaque édition. -->
+						{#if plottable.showDerivative}
+							{@const derivative = derivativeCurve(plottable, grapheurStore.parameterBindings)}
+							{#if derivative}
+								<FunctionCurve
+									func={derivative}
+									viewport={grapheurStore.viewport}
+									{transformer}
+									isInteracting={grapheurStore.isInteracting}
+								/>
+							{/if}
 						{/if}
-					{/if}
-				{:else if plottable.type === 'sequence'}
-					<!--
+					{:else if plottable.type === 'sequence'}
+						<!--
 						⚠️ Le type est testé EXPLICITEMENT, et non laissé à un `{:else}` :
 						un nuage de points tomberait sinon dans cette branche et serait
 						dessiné comme une suite, dont il n'a ni le `mode`, ni l'`ast`, ni
 						le `firstIndex`.
 					-->
-					<SequencePlot
-						sequence={plottable}
-						viewport={grapheurStore.viewport}
-						{transformer}
-						bindings={grapheurStore.parameterBindings}
-						isInteracting={grapheurStore.isInteracting}
-					/>
-				{:else}
-					<ScatterPlot scatter={plottable} {transformer} />
-				{/if}
-			{/each}
-		</g>
+						<SequencePlot
+							sequence={plottable}
+							viewport={grapheurStore.viewport}
+							{transformer}
+							bindings={grapheurStore.parameterBindings}
+							isInteracting={grapheurStore.isInteracting}
+						/>
+					{:else}
+						<ScatterPlot scatter={plottable} {transformer} />
+					{/if}
+				{/each}
+			</g>
 
-		<!-- Special points (roots, extrema) -->
-		<SpecialPoints {transformer} />
+			<!-- Lecture graphique de l'image : au-dessus des courbes, sous les points -->
+			<ImageReadings {transformer} {width} {height} {sliders} />
 
-		<!-- Curve hover point -->
-		<CurveHover
-			{transformer}
-			{width}
-			{height}
-			onhoveredtargetchange={(target) => (hoveredTarget = target)}
-		/>
+			<!-- Special points (roots, extrema) -->
+			<SpecialPoints {transformer} />
 
-		<!-- Intersection points -->
-		<IntersectionPoints {transformer} />
-	</svg>
+			<!-- Curve hover point -->
+			<CurveHover
+				{transformer}
+				{width}
+				{height}
+				onhoveredtargetchange={(target) => (hoveredTarget = target)}
+			/>
+
+			<!-- Intersection points -->
+			<IntersectionPoints {transformer} />
+		</svg>
+	</div>
+	<ReadingSliders
+		{transformer}
+		{width}
+		{height}
+		{sliders}
+		onmove={(id, at) => movedSliders.set(id, at)}
+	/>
 </div>
 
 <style>
+	.graph-frame {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+
 	.graph-container {
 		width: 100%;
 		height: 100%;

@@ -99,6 +99,20 @@ export interface ExplicitFunction extends PlottableBase {
 	 * Jamais sauvegardé par le grapheur : l'atelier le repose à chaque synchronisation.
 	 */
 	readonly restriction?: Restriction;
+	/**
+	 * La lecture graphique de l'image (atelier, lot 3 bis de la refonte) :
+	 * présente = option allumée. `at` : les abscisses lues dans la console
+	 * (3 au plus), en plus du point glissant. Comme `restriction`, jamais
+	 * sauvegardée par le grapheur : l'atelier la repose à chaque synchronisation.
+	 */
+	readonly reading?: CurveReading;
+}
+
+/** Ce que la lecture graphique d'une courbe montre. */
+export interface CurveReading {
+	/** Le nom écrit dans les phrases lues (`f`, `f′`). */
+	readonly name: string;
+	readonly at: readonly number[];
 }
 
 /**

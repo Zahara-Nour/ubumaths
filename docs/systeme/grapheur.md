@@ -56,6 +56,7 @@ couleur + style de trait ; la **fenêtre** (`Viewport`) est le rectangle `xMin�
 | `src/lib/grapheur/asymptote-labels.ts`                                                     | Placement des étiquettes d'asymptotes dans le cadre (`placeAsymptoteLabels`)                                                             |
 | `src/lib/grapheur/intersections.ts`                                                        | Intersections entre courbes visibles (`findAllIntersections`), via `findRoots` de mathAST                                                |
 | `src/lib/grapheur/restriction.ts`                                                          | Courbe restreinte à un ensemble : morceaux à tracer (`pieceViewports`), points de bord (`endpointMarkers`), analyses filtrées            |
+| `src/lib/grapheur/image-reading.ts`                                                        | Lecture graphique de l'image : point lu (`readingAt`), pointillés (`readingGeometry`), nombres écrits, aimantation, phrase lue           |
 | `src/lib/grapheur/sequence.ts`                                                             | Suites explicites et récurrentes (`parseSequence`, `computeSequenceTerms`, `computeCobwebPath`)                                          |
 | `src/lib/grapheur/exact.ts`                                                                | Valeur exacte d'un terme de suite (`exactTermValue`), ou `null`                                                                          |
 | `src/lib/grapheur/pinned-labels.ts`                                                        | Étiquettes figées par un clic (`cyclePinnedLabels`) — non persistées                                                                     |
@@ -82,6 +83,7 @@ couleur + style de trait ; la **fenêtre** (`Viewport`) est le rectangle `xMin�
 | `SequencePlot.svelte`, `ScatterPlot.svelte`                                                                             | Suite (rangs ou escalier) ; nuage de points                                                                             |
 | `AsymptoteLines.svelte`, `SpecialPoints.svelte`, `IntersectionPoints.svelte`                                            | Couches d'analyse                                                                                                       |
 | `CurveHover.svelte`, `GraphLabel.svelte`                                                                                | Survol aimanté et étiquettes (exacte au survol, cycle au clic)                                                          |
+| `ImageReadings.svelte`, `ReadingSliders.svelte`                                                                         | Lecture graphique de l'image : pointillés (couche SVG) ; point glissant (curseur ARIA en HTML, hors de l'image)         |
 | `FunctionPanel.svelte`, `FunctionInput.svelte`, `SequenceInput.svelte`, `SequenceTable.svelte`, `ParameterInput.svelte` | Panneau de saisie — **monté seulement par `/calc`**                                                                     |
 | `ColorPicker.svelte`, `LineWidthPicker.svelte`, `LineStylePicker.svelte`                                                | Réglages de trait, réutilisés par les cartes de l'atelier (`CurveSettings`, `SequenceSettings`)                         |
 | `ViewportControls.svelte`, `ExportButton.svelte`, `CoordinatesDisplay.svelte`, `KeyboardHandler.svelte`                 | Zoom, export, coordonnées, raccourcis clavier (`+ - flèches Échap g 0`), sauf touche déjà prise ou zone `data-own-keys` |
@@ -122,6 +124,28 @@ atteint. La dérivée du grapheur hérite de la restriction, la tangente non. Se
 jamais sérialisée (il la repose à chaque synchronisation). Sans restriction, rien ne change.
 Le grapheur ne juge pas la tangente ni l'aire : c'est l'atelier qui ne les lui passe pas quand
 elles sortent de l'ensemble (`allowedDisplay`, décision f du 2026-10-13, voir [atelier.md](atelier.md)).
+
+### Lecture graphique de l'image
+
+**Lecture** (optionnelle, `ExplicitFunction.reading`, lot 3 bis de
+[atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)) : présente =
+option allumée. `reading.at` porte les abscisses lues dans la console de l'atelier (3 au plus),
+`reading.name` le nom écrit dans les phrases (`f`, `f′`). Seul l'atelier la pose, et, comme la
+restriction, elle n'est jamais sérialisée. Pour chaque abscisse, et pour le point glissant de la
+courbe, `ImageReadings` (au-dessus des courbes, sous les points remarquables) dessine en
+pointillés de la couleur de la courbe le trait de `(a ; 0)` au point puis du point à `(0 ; f(a))`
+— un axe hors de la fenêtre se lit sur le bord —, le point, et `a` / `f(a)` dans deux
+`GraphLabel` (exact s'il tient en deux décimales, sinon `≈` arrondi au centième). Rien hors de
+l'ensemble de définition ni hors de la restriction (`readingAt`).
+
+Le point glissant (`ReadingSliders`) est un `role="slider"` en **HTML, à côté du SVG** : le SVG est
+`aria-hidden` et enveloppé dans `role="img"`, dont les enfants ne sont pas atteignables. `GraphSVG`
+a donc un cadre (`.graph-frame`) autour de l'image. Sa position vit dans `GraphSVG`
+(`SvelteMap`, non sauvegardée) : au milieu de la fenêtre, aimantée, jusqu'au premier geste. Glissé
+(souris, doigt : `touch-action: none`, propagation arrêtée pour ne pas déplacer le graphe),
+aimanté aux entiers et aux demis ; ← → ↑ ↓ par la sous-grille, Page ↑ / ↓ par la grille, touches
+consommées (`preventDefault`) pour que `KeyboardHandler` les laisse. `aria-valuetext` : « Lecture
+de f en x = 2 : f(2) = 4 » ; une région polie l'annonce au relâchement d'un glissé.
 
 **Paramètres** : une lettre libre (`PARAMETER_NAMES`, hors `RESERVED_PARAMETER_NAMES` = `x n e
 pi i`), une valeur et des bornes. `bindParameters` substitue les valeurs dans l'AST avant
