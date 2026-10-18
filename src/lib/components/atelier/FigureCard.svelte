@@ -7,10 +7,10 @@
 	 * Lot 4b de `docs/wip/atelier-refonte-interface-phase0.md` (validé par David
 	 * le 2026-10-18, précisé avec la session de la géométrie). La grammaire de la
 	 * carte de fonction (lot 3) : la définition s'édite sur place et vaut à
-	 * Entrée ou à la sortie du champ ; la nature en étiquette discrète ; ce que
-	 * vaut une CONSTRUCTION (coordonnées exactes, équation réduite, longueur) en
-	 * gris dessous, non éditable — c'est la construction qu'on modifie. Un point
-	 * par coordonnées n'a pas de ligne grise : il montre déjà ce qu'il vaut.
+	 * Entrée ou à la sortie du champ. Sous la ligne, en gris : la nature, puis ce
+	 * que vaut une CONSTRUCTION (coordonnées exactes, équation réduite, longueur),
+	 * non éditable — c'est la construction qu'on modifie. Un point par
+	 * coordonnées n'a que sa nature : il montre déjà ce qu'il vaut.
 	 *
 	 * Une seule carte pour les deux : ils ne diffèrent que par la fenêtre du
 	 * point de couleur (taille ou trait) et l'étiquette d'un point.
@@ -115,7 +115,6 @@
 				autofocus={selected && object.definition === ''}
 			/>
 		</div>
-		<span class="type">{nature.label}</span>
 		{#if stateLabel}
 			<span class="etat">{stateLabel}</span>
 		{/if}
@@ -164,16 +163,23 @@
 		<p class="note" id="{uid}-suit">{follows}</p>
 	{/if}
 
-	{#if summary}
-		<!-- L7 : ce que vaut la construction, en gris, non éditable -->
-		<p class="valeur">
-			<span aria-hidden="true">
-				<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré (constructionSummaryOf) -->
-				{@html summary.markup}
+	<!-- La nature sous la ligne, puis ce que vaut une construction (L7) : la
+	     ligne de tête garde sa largeur pour le champ (constat du 2026-10-19,
+	     « cercle(O ; 3) » réduit à « cer » dans le panneau) -->
+	<p class="dessous">
+		<span class="type">{nature.label}</span>
+		{#if summary}
+			<!-- En gris, non éditable : c'est la construction qu'on modifie -->
+			<span class="valeur">
+				<span class="point-median" aria-hidden="true">·</span>
+				<span aria-hidden="true">
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré (constructionSummaryOf) -->
+					{@html summary.markup}
+				</span>
+				<span class="sr-only">{summary.text}</span>
 			</span>
-			<span class="sr-only">{summary.text}</span>
-		</p>
-	{/if}
+		{/if}
+	</p>
 
 	{#if nature.note}
 		<!-- C6 : on ne valide pas, on constate — la courbe reste acceptée -->
@@ -201,8 +207,11 @@
 		border-color: var(--color-primary);
 		background: var(--color-card);
 	}
+	/* Une définition trop longue pour la ligne passe dessous, en entier : le
+	   champ prend toute la largeur restante, jamais moins que son contenu */
 	.ligne {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.25rem;
 		min-width: 0;
@@ -218,16 +227,17 @@
 		margin-right: 0.125rem;
 	}
 	.membre {
-		flex: 1;
+		flex: 1 1 auto;
 		min-width: 0;
 	}
 	/* La nature, discrète : elle se lit, elle ne se clique pas */
 	.type {
-		flex-shrink: 0;
 		font-size: 0.625rem;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: var(--color-muted-foreground);
+	}
+	.point-median {
+		margin: 0 0.25rem;
 	}
 	.etat {
 		flex-shrink: 0;
@@ -265,7 +275,7 @@
 		outline-offset: 2px;
 	}
 	/* Sous la ligne, alignées sur le nom (après le point de couleur) */
-	.valeur,
+	.dessous,
 	.constat,
 	.note,
 	.message {

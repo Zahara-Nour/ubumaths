@@ -239,8 +239,11 @@
 		border-color: var(--color-primary);
 		background: var(--color-card);
 	}
+	/* Une définition trop longue pour la ligne passe dessous, en entier : le
+	   champ prend toute la largeur restante, jamais moins que son contenu */
 	.ligne {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.25rem;
 		min-width: 0;
@@ -258,7 +261,7 @@
 		margin-right: 0.125rem;
 	}
 	.membre {
-		flex: 1;
+		flex: 1 1 auto;
 		min-width: 0;
 	}
 	.etat {
