@@ -141,10 +141,13 @@
 	let hoveredId: string | null = $state(null);
 	let version = $state(0);
 
-	// Slider elements (reactive to version changes)
+	// Slider elements (reactive to version changes). Un curseur CACHÉ n'a pas de
+	// réglette : la vue Figure de l'atelier pilote les siens depuis les cartes
+	// (géométrie v2, S4), et `masque(s)` cache désormais aussi la réglette.
 	const sliders = $derived.by(() => {
 		void version; // depend on version so sliders update when figure changes
-		return figure.getElementsByType('slider') as GeoSlider[];
+		void externalVersion;
+		return figure.getElementsByType('slider').filter((s: GeoSlider) => s.visible);
 	});
 
 	function handleSliderChange(sliderId: string, newValue: number) {

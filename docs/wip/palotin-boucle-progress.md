@@ -49,4 +49,8 @@ gidouilles). Correction prévue en PR 2.
       Reportés à la PR 2 : course lire-modifier-écrire de `addExploredThemes` (ajout à faire en SQL),
       policy UPDATE « own » de `srs_review_sessions` (`completed_at` remis à vide).
 - [ ] PR 2
-- [ ] PR 3
+- [ ] PR 3 — migration `20261017090100_palotin_constance_et_ecritures_serveur.sql` et
+      `tests/integration/palotin-ecritures-eleve.test.ts` écrits (rouge sans la migration, vert avec).
+      ⛔ `db:migrate` seulement APRÈS le `deploy:prod` qui livre la PR #1475 (le 2026-10-18, la
+      branche `production` écrit encore `student_buddies` et `srs_review_sessions` au client de
+      l'élève) et après l'explication des `DROP POLICY` à David.

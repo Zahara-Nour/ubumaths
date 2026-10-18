@@ -35,13 +35,12 @@ import {
 } from '$lib/mathAST';
 import type { MathNode, CompiledFn } from '$lib/mathAST';
 import {
-	extractAffineCombination,
-	extractQuadraticCombination,
 	findCriticalZeros,
 	findCriticalExtrema,
 	findCriticalInflections
 } from '$lib/mathAST/analysis';
 import { classifyConic } from '../geometry/conic-classify';
+import { curveShapeOf } from '../geometry/curve-nature';
 import {
 	asymptoteLines,
 	axisLines as computeAxisLines,
@@ -6547,41 +6546,31 @@ function createCurveFromEquation(
 		F = parsed;
 	}
 
+	// La forme se lit par `curveShapeOf` (`geometry/curve-nature.ts`), partagée
+	// avec l'atelier : droite, puis y = f(x), puis conique, puis implicite.
+	// Pas de droite avec une restriction de domaine : `y = 2x sur [-1 ; 1]` est
+	// une courbe y = f(x) restreinte, pas une droite entière.
+	const shape = curveShapeOf(F, { allowLine: !domainResult });
+
 	// --- Try 1: Line (affine in both x and y) ---
-	// Skip when a domain restriction is present: an affine function with a
-	// restricted domain (e.g. `y = 2x sur [-1 ; 1]`) should be plotted as a
-	// function curve, not a full line — let it fall through to Try 2.
-	if (!domainResult) {
-		const affineXY = extractAffineCombination(F, ['x', 'y']);
-		if (affineXY.isAffine) {
-			const a = affineXY.coefficients.get('x')!;
-			const b = affineXY.coefficients.get('y')!;
-			const c = affineXY.constant;
-
-			if (isZeroExpression(a) && isZeroExpression(b)) {
-				throw new DslRuntimeError(
-					'courbe(): équation dégénérée (0 = 0 ou constante non nulle)',
-					line
-				);
-			}
-
-			return createLineFromCoefficients(a, b, c, equation, figure, label);
+	if (shape.kind === 'line') {
+		if (isZeroExpression(shape.a) && isZeroExpression(shape.b)) {
+			throw new DslRuntimeError(
+				'courbe(): équation dégénérée (0 = 0 ou constante non nulle)',
+				line
+			);
 		}
+		return createLineFromCoefficients(shape.a, shape.b, shape.c, equation, figure, label);
 	}
 
 	// --- Try 2: y = f(x) (affine in y alone) ---
-	const affineY = extractAffineCombination(F, ['y']);
-	if (affineY.isAffine) {
-		const g = affineY.coefficients.get('y')!; // coefficient of y
-		const h = affineY.constant; // constant term (function of x)
-
-		if (isZeroExpression(g)) {
+	if (shape.kind === 'function') {
+		if (isZeroExpression(shape.g)) {
 			throw new DslRuntimeError("courbe(): la variable y est absente de l'expression", line);
 		}
-
 		return createFunctionFromCoefficients(
-			g,
-			h,
+			shape.g,
+			shape.h,
 			equation,
 			figure,
 			line,
@@ -6599,9 +6588,8 @@ function createCurveFromEquation(
 	}
 
 	// --- Try 3: Quadratic curve (conic section) ---
-	const quadratic = extractQuadraticCombination(F, ['x', 'y']);
-	if (quadratic.isQuadratic) {
-		return createQuadraticCurveFromCoefficients(F, quadratic, equation, figure, line, label);
+	if (shape.kind === 'quadratic') {
+		return createQuadraticCurveFromCoefficients(F, shape, equation, figure, line, label);
 	}
 
 	// --- Try 4: General implicit curve F(x,y) = 0 ---
