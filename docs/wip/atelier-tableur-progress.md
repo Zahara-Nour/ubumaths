@@ -259,3 +259,9 @@ liste trouée en citant l'entrée).
       rien (focus sur le bouton ; mon test cliquait d'abord une case) ; F9 maintenu vidait
       l'historique ; annonce non relue ; phrase de fusion à la fausse raison ; graine d'un geste groupé
 - [x] PR 2 mergée : #1439 — **lot 5 complet ; le tableur intégré est complet (lots 1 à 5)**, pas en prod
+
+## Mise en forme des cases (phase 0 : `atelier-tableur-mise-en-forme-phase0.md`, PROPOSÉE le 2026-10-18)
+
+- [x] demande de David après l'inventaire de `/spreadsheet` (V4) : reprendre sa mise en forme
+- [x] phase 0 rédigée : Q-MF-1 à Q-MF-5
+- [ ] validation de David
