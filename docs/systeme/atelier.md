@@ -1037,7 +1037,11 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
   remet pas la vue à zéro (revue de #1485).
 - **A3** : le bouton porte le nombre de lignes arrivées pendant que la console était fermée ;
   l'annonce dit « Nouvelle ligne dans la console ». Une commande préparée par une carte
-  (`needs-argument` : « Simuler », « Tableau croisé ») OUVRE la console.
+  (`needs-argument` : « Simuler », « Tableau croisé ») OUVRE la console. Elle s'AJOUTE au
+  brouillon de l'élève, jamais à sa place (`#prepare`, décision de David du 2026-10-18), et le
+  curseur se place en fin de ligne (`focusInput`), en texte comme en écriture mathématique. Limite
+  connue : un brouillon mathématique suivi d'une commande ne se compose pas en une seule écriture
+  (rien n'est perdu).
 - **A5** : une action qui montre quelque chose ailleurs (Tracer, nuage, diagramme, Tabuler,
   Afficher dans Géométrie) change de vue ; sous 640 px, elle referme la console (`revealView`).
 - **Lisibilité** : invite `>` devant l'instruction (en couleur normale), réponse préfixée `-->`
