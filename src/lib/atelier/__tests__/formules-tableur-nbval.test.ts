@@ -72,6 +72,21 @@ describe('§1 NBVAL : les cases non vides', () => {
 		);
 	});
 
+	it('une valeur compte si elle n’est pas vide', () => {
+		expect(value('=NBVAL(3)')).toBe('1');
+		// A3 vide : A3*1 est vide (T5), il ne compte pas
+		expect(value('=NBVAL(A3*1)')).toBe('0');
+		expect(value('=NBVAL(1/0)')).toMatch(/^erreur/);
+	});
+
+	it('recalculé quand une case de la plage change', () => {
+		const a = grid('=NBVAL(A1:A3)');
+		a.editCells([{ column: D, row: 2, text: '=NB.VIDE(A1:A3)' }]);
+		expect([shown(a, D, 1), shown(a, D, 2)]).toEqual(['2', '1']);
+		a.editCells([{ column: 0, row: 3, text: '5' }]);
+		expect([shown(a, D, 1), shown(a, D, 2)]).toEqual(['3', '0']);
+	});
+
 	it('NB compte toujours les nombres seuls', () => {
 		expect(value('=NB(A1:A7)')).toBe('3');
 	});
@@ -101,10 +116,27 @@ describe('§2 NB.VIDE : les cases vides', () => {
 		expect(value('=NB.VIDE(A1:C3)')).toBe('erreur : C1 est en erreur.');
 	});
 
-	it('Q-NV-3 : une colonne entière est refusée', () => {
-		expect(value('=NB.VIDE(A:A)')).toBe(
-			'erreur : NB.VIDE compte dans une plage : NB.VIDE(A2:A31).'
-		);
+	it('Q-NV-3 : une colonne entière est refusée, sous toutes ses écritures', () => {
+		for (const range of ['A:A', '$A:$A', 'a:b', ' A : A ']) {
+			expect(value(`=NB.VIDE(${range})`)).toBe(
+				'erreur : NB.VIDE compte dans une plage : NB.VIDE(A2:A31).'
+			);
+		}
+	});
+
+	it('Q-NV-4 : un trou en tête de liste compte, pas les lignes sous sa dernière valeur', () => {
+		const a = new Atelier();
+		a.create({ kind: 'list', name: 'L', definition: ' ; 12 ; ; 15' });
+		a.editCells([{ column: D, row: 1, text: '=NB.VIDE(L)' }]);
+		expect(shown(a, D, 1)).toBe('2');
+		// La liste change : le compte suit
+		a.update('L', '12 ; ; ; ; 15', 'text');
+		expect(shown(a, D, 1)).toBe('3');
+	});
+
+	it('un nom qui n’est pas une liste : le refus le nomme (revue)', () => {
+		expect(value('=NB.VIDE(M)')).toMatch(/^erreur : .*M/);
+		expect(value('=NB.VIDE(M)')).not.toContain('compte dans une plage');
 	});
 
 	it('une seule plage', () => {
@@ -137,6 +169,11 @@ describe('§3 aide et Calcul', () => {
 		const result = runInput(s, 'nbval(L)');
 		expect(result.kind === 'refus' ? result.message : result.kind).toBe(
 			'NBVAL est une fonction de la grille (onglet Données). Pour une liste, tape .stats L.'
+		);
+		// NB.VIDE : pas de conseil .stats, qui ne compte pas de trous (revue)
+		const empties = runInput(s, 'nb.vide(L)');
+		expect(empties.kind === 'refus' ? empties.message : empties.kind).toBe(
+			'NB.VIDE est une fonction de la grille (onglet Données).'
 		);
 	});
 });

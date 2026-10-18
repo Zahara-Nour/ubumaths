@@ -1308,6 +1308,19 @@ function countCells(
 			}
 			continue;
 		}
+		// Un nom qui n'est pas une liste (`NB.VIDE(M)`, M inconnu) : son refus le nomme (revue)
+		if (empties && arg.kind === 'expression' && arg.name !== null) {
+			const named = computeCell(
+				address,
+				arg.read,
+				texts,
+				values,
+				new Set(approximate),
+				atelier,
+				context
+			);
+			if (named.kind === 'error') return { ok: false, value: named };
+		}
 		if (empties || arg.kind !== 'expression') {
 			return { ok: false, value: error(EMPTY_COUNT_RANGE_MESSAGE) };
 		}

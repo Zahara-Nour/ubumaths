@@ -859,7 +859,8 @@ export function gridFunctionInCalcul(name: string): string | null {
 		PI: 'π'
 	};
 	if (written[known] !== undefined) return `${here} : dans Calcul, écris ${written[known]}.`;
-	return isStatistic(known) || isCount(known)
+	// NB.VIDE : une liste de Calcul n'a pas de trou, `.stats` n'y répond pas (revue)
+	return isStatistic(known) || known === 'NBVAL'
 		? `${here}. Pour une liste, tape .stats L.`
 		: `${here}.`;
 }

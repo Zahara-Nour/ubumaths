@@ -519,8 +519,9 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   arrête le compte (Q-NV-2, comme NB). NBVAL lit comme NB : plusieurs plages, case seule, liste
   nommée (sa colonne), colonne entière, valeur (`NBVAL(3)` = 1). NB.VIDE prend UNE plage ; une
   colonne entière est refusée (Q-NV-3 : le résultat dépendrait des 200 lignes de la grille) ; une
-  liste nommée compte ses trous jusqu'à sa dernière entrée (Q-NV-4 : `12 ; ; 15` → 1). Dans
-  Calcul, `nbval(L)` renvoie vers `.stats L`. `NB.SI(plage;"")` vaut toujours 0 (NB.SI ignore les
+  liste nommée compte ses trous de sa première ligne à sa dernière valeur (Q-NV-4 : `12 ; ; 15`
+  → 1, ` ; 12 ; ; 15` → 2) ; un nom qui n'est pas une liste est nommé dans le refus. Dans Calcul,
+  `nbval(L)` renvoie vers `.stats L`, `nb.vide(L)` vers la grille seulement. `NB.SI(plage;"")` vaut toujours 0 (NB.SI ignore les
   vides, lot 4) : NB.VIDE y répond.
 - **Fonctions de calcul** (lot 4, PR 2) : ARRONDI, ENT, RACINE, ABS, LN, EXP, PI (`CALCULATION_ARITY`,
   nombre d'arguments fixe, refus nommé). RACINE, ABS, LN, EXP et ENT deviennent l'appel de mathAST
