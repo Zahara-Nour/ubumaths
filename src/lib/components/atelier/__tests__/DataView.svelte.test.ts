@@ -453,7 +453,9 @@ describe('coller et copier (§4)', () => {
 		// La formule exacte, et la case d'où elle part (Q-L2-4 : le collage la décale)
 		expect(JSON.parse(data.getData('application/x-chiphre-grille'))).toEqual({
 			origin: { column: 0, row: 2 },
-			cells: [['=A1/4']]
+			cells: [['=A1/4']],
+			// Q-MF-4 : la mise en forme de chaque case, `{}` sans mise en forme
+			styles: [[{}]]
 		});
 	});
 

@@ -125,6 +125,9 @@ export const storedFormatSchema = z
 	})
 	.strict();
 
+/** Le style d'une case copiée dans la grille (presse-papiers interne, Q-MF-4), validé : il peut être forgé. */
+export const stylePatchSchema = storedFormatSchema.omit({ zone: true });
+
 // =============================================================================
 // Zones
 // =============================================================================
