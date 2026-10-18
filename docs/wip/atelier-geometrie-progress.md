@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1, PR 1 (modèle) en cours
+status: lot 1 — PR 1 (modèle) mergée (#1474) ; PR 2 (vue Figure) en cours
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -11,12 +11,12 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Lot 1 — découpage
 
-| PR  | Contenu                                                                                        | Branche                         | État        |
-| --- | ---------------------------------------------------------------------------------------------- | ------------------------------- | ----------- |
-| 1   | Modèle : types `point` et `curve`, lecture, `y` réservé + migration, cartes, sauvegarde / lien | `feat/atelier-geometrie-modele` | 🚧 en cours |
-| 2   | Vue Figure et pont `syncFigure` (curseurs cachés réglés par `moveSlider`, repère)              | —                               | à faire     |
-| 3   | 𝒞f dans la Figure (action de carte)                                                            | —                               | à faire     |
-| 4   | Grapheur à vrais paramètres (Q4 : sa propre PR, en dernier)                                    | —                               | à faire     |
+| PR  | Contenu                                                                                        | Branche                         | État     |
+| --- | ---------------------------------------------------------------------------------------------- | ------------------------------- | -------- |
+| 1   | Modèle : types `point` et `curve`, lecture, `y` réservé + migration, cartes, sauvegarde / lien | `feat/atelier-geometrie-modele` | ✅ #1474 |
+| 2   | Vue Figure et pont `syncFigure` (curseurs cachés réglés par `moveSlider`, repère)              | —                               | à faire  |
+| 3   | 𝒞f dans la Figure (action de carte)                                                            | —                               | à faire  |
+| 4   | Grapheur à vrais paramètres (Q4 : sa propre PR, en dernier)                                    | —                               | à faire  |
 
 ## PR 1 — journal
 
@@ -32,4 +32,6 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
   sans x ni y), `k : 2 = 3` reste le refus C8 ; `xy` est lu comme x et y ; la carte d'un point
   testée à la frappe (MathLive écrit `\left(1;2\right)`, `\left(1,5;2\right)`).
 - **À trancher par David** : `y` hors définitions dans Calcul (`2y + a`, `.dériver y`) n'est pas
-  contrôlé.
+  contrôlé. Reco : le laisser lettre libre dans un calcul (aucun objet ne s'appelle y).
+- 2026-10-18 : CI verte, **mergée (#1474, `9a4c5fb2c`)**, branche et worktree retirés. Pas en
+  production (aucun `deploy:prod`).
