@@ -290,3 +290,15 @@ function normalizeAngle(angle: number): number {
 	while (angle < -Math.PI / 2) angle += Math.PI;
 	return angle;
 }
+
+// Ébauche (TDD)
+export function degenerateConicKind(
+	_A: number,
+	_B: number,
+	_C: number,
+	_D: number,
+	_E: number,
+	_F: number
+): 'empty' | 'point' | 'line' | 'lines' | null {
+	throw new Error('à faire');
+}
