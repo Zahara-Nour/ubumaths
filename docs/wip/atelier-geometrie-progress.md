@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 — PR 1 (#1474), PR 2 (#1478), PR 3 (#1482) mergées ; PR 4 (grapheur à vrais paramètres) à faire
+status: lot 1 — PR 1 (#1474), PR 2 (#1478), PR 3 (#1482), K4 (#1491) mergées ; PR 4 (grapheur à vrais paramètres) EN PAUSE, décision de David attendue (A mesurer / B faire / C abandonner)
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -108,3 +108,12 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
   `syncFigure` pose couleur, pointillés et épaisseur de la carte et les repeint par
   `updateStyle` sans reconstruire (`restyled`). `dashdot` → tirets (pas d'équivalent dans la
   figure). Points et courbes par équation inchangés.
+- 2026-10-18 : K4 vérifiée à l'écran (clair et sombre), revue « prêt pour PR » (mineurs latents :
+  exports TikZ / Typst / SVG ignorent `curve-N` ; pas de test de `restyled` sur une courbe en
+  morceaux ni sur f⁻¹), CI verte, **mergée (#1491, `650b71594`)**. Pas en production.
+- 2026-10-18 : **PR 4 en pause.** L'agent s'est arrêté avant tout code : 5 tests existants
+  (plot-sync, plot-drawable, derivative-everywhere, figure-sync S1) vérifient la substitution
+  elle-même et casseraient ; `CurveSettings` calcule pente / aire / courbure / longueur sans
+  `parameterBindings` ; une valeur exacte (`1/3`, `√2`) passerait en décimal. Gain non mesuré
+  (le curseur reste dans « Mes objets »). Options soumises à David : A mesurer d'abord (reco),
+  B faire, C abandonner. Worktree `../ubumaths-wt-grapheur-parametres` gardé, sans commit.
