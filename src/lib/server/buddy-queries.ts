@@ -255,10 +255,13 @@ async function revertPalotinChange(
  * `updated_at`, donc deux changements simultanés ne passent pas tous deux au
  * prix du premier, gratuit.
  *
- * Débit et changement ne peuvent pas se désynchroniser : le changement est
- * écrit d'abord, le débit ensuite ; si le débit échoue (solde insuffisant,
- * solde modifié à chaque essai, erreur), le changement est annulé. Aucun débit
- * n'a lieu sans changement écrit.
+ * Ordre : le changement d'abord, le débit ensuite ; si le débit échoue (solde
+ * insuffisant, solde modifié à chaque essai, erreur), le changement est
+ * annulé. Il n'y a jamais de débit sans changement. Ce n'est pas une
+ * transaction : une coupure entre l'écriture et le débit, ou une annulation
+ * qui échoue (requête concurrente qui a relu et réécrit la ligne changée),
+ * peut laisser UN changement non payé, journalisé. C'est le côté le moins
+ * grave : un changement gratuit plutôt qu'un élève débité sans changement.
  */
 export async function changeStudentPalotin(
 	studentId: string,

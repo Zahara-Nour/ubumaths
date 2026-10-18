@@ -13,6 +13,9 @@
 5. Forfait de révision précisé après revue (validé le 2026-10-18) : il tombe quand l'élève a révisé
    au moins 10 cartes dans la journée, ou quand il vide un paquet après en avoir révisé au moins 3.
 
+6. Question d'accès n° 2 (2026-10-18) : oui, la PR 3 retire aussi à l'élève le droit de modifier
+   directement ses séances de révision (`srs_review_sessions`) ; seul le serveur les écrit.
+
 ## Découpage
 
 - **PR 1 (sans migration)** : gain visible en fin de séance, bonus de thème, forfait de révision,

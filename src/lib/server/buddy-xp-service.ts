@@ -73,7 +73,7 @@ export async function addBuddyXpFromExercise(
 
 	// Calculate base XP
 	const xpEarnedToday = buddy.last_xp_date === today ? buddy.xp_earned_today : 0;
-	const { xp: baseXp } = calculateXpGain({
+	const { xp: baseXp, capped } = calculateXpGain({
 		isCorrect: params.isCorrect,
 		isFirstOfDay,
 		isNewTheme,
@@ -81,8 +81,21 @@ export async function addBuddyXpFromExercise(
 		xpEarnedToday
 	});
 
-	// Add base XP (subject to daily cap)
-	const xpResult = await addBuddyXp(studentId, baseXp, false);
+	// Add base XP (subject to daily cap) ; en échec, rendre le thème réservé
+	let xpResult: BuddyXpGainResult;
+	try {
+		xpResult = await addBuddyXp(studentId, baseXp, false);
+	} catch (creditError) {
+		if (isNewTheme && params.theme) await removeExploredThemes(studentId, [params.theme]);
+		throw creditError;
+	}
+
+	// Bonus non payé en entier (plafond local ou crédit tronqué par la base) :
+	// thème retiré, il restera nouveau (même règle que la séance)
+	if (isNewTheme && params.theme && (capped || xpResult.xp_gained < baseXp)) {
+		await removeExploredThemes(studentId, [params.theme]);
+		isNewTheme = false;
+	}
 
 	// Handle streak (only on first activity of the day)
 	let streakUpdated = false;
@@ -194,12 +207,10 @@ export async function addBuddyXpFromTest(
 		candidates.length > 0 ? await addExploredThemes(studentId, candidates) : new Set<string>();
 	const lost = new Set(candidates.filter((theme) => !reserved.has(theme)));
 	if (lost.size > 0) {
-		plan = planTestXp(
-			answers,
-			isFirstOfDay,
-			xpEarnedToday,
-			(theme) => !explored.has(theme) && !lost.has(theme)
-		);
+		// Seul un thème réservé peut porter le bonus : un thème tronqué au premier
+		// calcul (donc non réservé) passerait sinon sous le plafond, payé sans
+		// être écrit, et serait repayé plus tard
+		plan = planTestXp(answers, isFirstOfDay, xpEarnedToday, (theme) => reserved.has(theme));
 	}
 
 	// 3. Créditer ; en échec, rendre les thèmes réservés

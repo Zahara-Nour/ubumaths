@@ -117,8 +117,11 @@ verrou optimiste) : seul un theme reserve par CET envoi porte le bonus, donc de 
 simultanees une seule le touche. Credit partiel : le credit couvre les reponses dans l'ordre ; un
 theme est paye si l'XP cumulee jusqu'a la reponse qui porte son bonus est creditee en entier. Theme
 reserve mais non paye (credit tronque par la base, ou credit en echec) → retire
-(`removeExploredThemes`), il restera nouveau. Une reponse isolee (`addBuddyXpFromExercise`) reserve
-son theme de la meme facon avant le credit.
+(`removeExploredThemes`), il restera nouveau. Si un theme candidat a ete reserve par un envoi
+simultane, l'XP est recalculee et seuls les themes reserves par CET envoi portent un bonus. Une
+reponse isolee (`addBuddyXpFromExercise`, enigmes) suit la meme regle : theme reserve avant le
+credit, retire si le bonus n'est pas paye en entier (plafond local, credit tronque, credit en
+echec).
 
 **Revision espacee** (decision de David, 2026-10-18) : forfait `XP_SOURCES.review_session`, au plus
 une fois par jour, quand l'eleve a revise au moins 10 cartes dans la journee (tous paquets), ou qu'il
@@ -607,8 +610,11 @@ effectivement ecrite. Le changement (type + `change_count` + 1, en une ecriture)
 optimiste sur `updated_at` : deux changements simultanes ne passent pas tous deux au prix du premier,
 gratuit. Le debit vient ensuite, verrou optimiste sur le solde lu (`.eq('gidouilles', lu)`). Si le
 debit echoue (solde insuffisant ou modifie a chaque essai, erreur), le changement est annule
-(ecriture conditionnee sur le type et le compteur qu'il a poses) : aucun debit sans changement, aucun
-changement payant sans debit. Reponses de `POST /api/student/buddy/change` : 404 sans Palotin, 400
+(ecriture conditionnee sur le type et le compteur qu'il a poses) : jamais de debit sans changement.
+Ce n'est pas une transaction : une coupure entre l'ecriture et le debit, ou une annulation qui
+echoue (requete concurrente qui a relu et reecrit la ligne changee), peut laisser UN changement non
+paye, journalise. Choix assume : un changement gratuit est moins grave qu'un eleve debite sans
+changement. Reponses de `POST /api/student/buddy/change` : 404 sans Palotin, 400
 meme Palotin ou solde insuffisant, 409 conflit repete.
 
 ---

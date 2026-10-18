@@ -40,7 +40,11 @@ vi.mock('../buddy-queries', () => ({
 	removeExploredThemes
 }));
 
-import { addBuddyXpFromTest, addBuddyXpFromReviewSession } from '../buddy-xp-service';
+import {
+	addBuddyXpFromTest,
+	addBuddyXpFromExercise,
+	addBuddyXpFromReviewSession
+} from '../buddy-xp-service';
 
 // Constantes
 const STUDENT = '11111111-1111-4111-8111-111111111111';
@@ -182,6 +186,76 @@ describe('addBuddyXpFromTest — bonus « nouveau thème »', () => {
 		updateStreak.mockResolvedValue({ newStreak: 4, wasUpdated: true });
 		await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
 		expect(updateStreak.mock.calls).toEqual([[STUDENT]]);
+	});
+});
+
+describe('addBuddyXpFromTest — thème perdu au profit d’un envoi simultané', () => {
+	beforeEach(() => {
+		addBuddyXp.mockReset().mockImplementation(async (_id, xp) => gain(xp));
+		addExploredThemes.mockReset();
+		removeExploredThemes.mockReset().mockResolvedValue(undefined);
+		updateStreak.mockReset();
+	});
+
+	it('second calcul : seul un thème RÉSERVÉ porte le bonus (un thème tronqué au 1er calcul ne le devient pas)', async () => {
+		// 50 déjà gagnés (reste 50) : 1er calcul T1 = 35, T2 tronqué (70 > 50) → seul T1 candidat.
+		// T1 perdu (réservé ailleurs) : sans bonus T1, T2 passerait sous le plafond (10 + 35 = 45),
+		// payé sans être réservé, donc jamais écrit et repayé plus tard.
+		getStudentBuddy.mockReset().mockResolvedValue(buddy({ xp_earned_today: 50 }));
+		addExploredThemes.mockResolvedValue(new Set());
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [
+			{ isCorrect: true, theme: THEME_1 },
+			{ isCorrect: true, theme: 'theme-3' }
+		]);
+
+		expect(addExploredThemes.mock.calls[0]).toEqual([STUDENT, [THEME_1]]);
+		expect(addBuddyXp.mock.calls[0][1]).toBe(2 * XP_SOURCES.correct);
+		expect(result?.isNewTheme).toBe(false);
+	});
+});
+
+describe('addBuddyXpFromExercise — thème réservé mais non payé', () => {
+	beforeEach(() => {
+		getStudentBuddy.mockReset().mockResolvedValue(buddy());
+		addBuddyXp.mockReset().mockImplementation(async (_id, xp) => gain(xp));
+		addExploredTheme.mockReset().mockResolvedValue(true);
+		removeExploredThemes.mockReset().mockResolvedValue(undefined);
+		updateStreak.mockReset();
+	});
+
+	it('crédit entier : le thème reste marqué', async () => {
+		const result = await addBuddyXpFromExercise(supabase, STUDENT, {
+			isCorrect: true,
+			theme: THEME_1
+		});
+		expect(addExploredTheme.mock.calls[0]).toEqual([STUDENT, THEME_1]);
+		expect(addBuddyXp.mock.calls[0][1]).toBe(XP_SOURCES.correct + XP_SOURCES.new_theme);
+		expect(removeExploredThemes).not.toHaveBeenCalled();
+		expect(result?.isNewTheme).toBe(true);
+	});
+
+	it('crédit en échec : le thème réservé est retiré, l’erreur remonte', async () => {
+		addBuddyXp.mockRejectedValue(new Error('panne'));
+		await expect(
+			addBuddyXpFromExercise(supabase, STUDENT, { isCorrect: true, theme: THEME_1 })
+		).rejects.toThrow('panne');
+		expect(removeExploredThemes.mock.calls).toEqual([[STUDENT, [THEME_1]]]);
+	});
+
+	it('crédit tronqué par la base : le thème réservé est retiré, pas annoncé nouveau', async () => {
+		addBuddyXp.mockImplementation(async () => ({ ...gain(12), daily_cap_reached: true }));
+		const result = await addBuddyXpFromExercise(supabase, STUDENT, {
+			isCorrect: true,
+			theme: THEME_1
+		});
+		expect(removeExploredThemes.mock.calls).toEqual([[STUDENT, [THEME_1]]]);
+		expect(result?.isNewTheme).toBe(false);
+	});
+
+	it('bonus tronqué par le plafond (calcul local) : le thème réservé est retiré', async () => {
+		getStudentBuddy.mockResolvedValue(buddy({ xp_earned_today: 70 }));
+		await addBuddyXpFromExercise(supabase, STUDENT, { isCorrect: true, theme: THEME_1 });
+		expect(removeExploredThemes.mock.calls).toEqual([[STUDENT, [THEME_1]]]);
 	});
 });
 

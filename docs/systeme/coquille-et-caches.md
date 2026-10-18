@@ -274,9 +274,12 @@ annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`)
 - **Profil élève en cache jamais lu** : `hydrateProfile` le remplit à chaque montage, mais ni
   `getProfile` ni `getProfileSync` n'ont d'appelant hors de `cache-sync.ts`, et `refetchProfile`,
   `refetchRewards`, `refetchWarnings`, `syncWarnings` ne servent qu'aux tests.
-- **Écriture dans un `load`, résultat non vérifié** : `student/+layout.server.ts:145-153` remet la
-  série du Palotin à 0 par `.update()` sans `.select()` ni contrôle d'erreur, puis annonce
-  `streakLost`. Un refus RLS passerait en silence ([rls-echecs-silencieux.md](../pratiques/rls-echecs-silencieux.md)).
+- **Écriture dans un `load`** : `student/+layout.server.ts` remet la série du Palotin à 0 quand
+  elle est perdue. Depuis le 2026-10-18, l'écriture passe par `resetLostStreak`
+  (`src/lib/server/buddy-queries.ts`) : client service, verrou sur `updated_at`, règle réévaluée
+  sur la ligne relue ; `streakLost` n'est annoncé que si l'écriture a rendu sa ligne
+  ([rls-echecs-silencieux.md](../pratiques/rls-echecs-silencieux.md)). Reste une écriture dans un
+  `load`, rejouée à chaque chargement du tableau de bord.
 - **Pile de modales peu accessible** : le dialogue est rendu **dans** un `<button>` (le fond,
   `ModalStackRenderer.svelte:73-93`), donc des boutons dans un bouton (HTML invalide) ; le focus
   n'est ni déplacé dans la modale ni piégé. Le conteneur arrête la propagation des touches
