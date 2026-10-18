@@ -1034,3 +1034,18 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   2-402), 3-002 et 3-038 archivés, références d'automatismes 814 → 969. Vérifié en prod : comptes par niveau (CP 84,
   CE1 107, CE2 97, CM1 171, CM2 158, 6e 111, 5e 143, 4e 82, 3e 68, 2de 201), ordre 1..N sans trou, archivages.
   Suite : refaire le lot de tags du primaire et du collège (étape 2 bis) sur les points scindés, puis la page à cocher.
+- **2026-10-18 — Relecture du lot 2 bis : analyse jugée insuffisante par David, méthode revue.** Exemples : 9710ae96 /
+  bcd7e907 (« Trouver le double », sous-titres « dizaines jusqu'à 50 » / « nombre inférieur à 10 », bornes du CP non
+  vérifiées) ; 943151d0 (QCM « le plus petit » proposé sur « comparer avec les symboles », sans symbole) ; 73258d60
+  (+ 9 et + 19 seulement, proposé sur CE2-024 « 8, 9, 18, 19, 28, 29, 38 ou 39 »). Décisions de David (« je suis tes
+  recos ») :
+  - **Inclusion stricte** : un tag n'est accepté que si TOUTES les questions générées (toutes variations, plages
+    réelles) restent dans le point (forme, notations, bornes). Sinon : pas de tag, modification du modèle proposée, ou
+    modèle hors programme.
+  - **Couverture partielle acceptée** : un modèle peut ne couvrir qu'une partie du point ; la couverture de chaque point
+    par l'ensemble de ses modèles est suivie à part (liste de modèles à créer ou à élargir).
+  - **Document de référence des bornes, par point** (bornes générales par programme, héritées), sourcé BO et documents
+    d'accompagnement — la « passe des bornes » du chantier. Validé par David avant l'analyse des modèles.
+  - Lecture des documents d'accompagnement autorisée ; un index de référence de ces documents est produit
+    (le dossier, 332 Mo, reste hors git).
+  - Page à cocher : afficher titre, sous-titre (`description`), consigne, exemples générés, plages réelles, verdict.
