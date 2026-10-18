@@ -341,7 +341,8 @@ function toToken(
 function extractNumbers(text: string): NumberToken[] {
 	const s = scrub(text);
 	const out: NumberToken[] = [];
-	const re = /(\d{1,3}(?:(?:\\,|\\ |~| | |\\;|\{\s\})\d{3})+|\d+)(?:(?:\{,\}|\.|,(?=\d))(\d+))?/g;
+	const re =
+		/(\d{1,3}(?:(?:\\,|\\ |~|\u00a0|\u202f|\\;|\{\s\})\d{3})+|\d+)(?:(?:\{,\}|\.|,(?=\d))(\d+))?/g;
 	let m: RegExpExecArray | null;
 	while ((m = re.exec(s))) {
 		const before = s.slice(Math.max(0, m.index - 12), m.index);
