@@ -138,36 +138,38 @@ Ceux du code et de l'interface :
 
 **Session, partage, export** :
 
-| Fichier                              | Rôle                                                                                               |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| `src/lib/atelier/persistence.ts`     | Ranger / relire le `localStorage` (`loadAtelier`, `saveAtelier`, `readForeignWrite`), schéma Zod   |
-| `src/lib/atelier/session.ts`         | Cycle de vie (`openSession`) : chargement, sauvegarde différée, autres onglets ; `keepCalcHistory` |
-| `src/lib/atelier/history-storage.ts` | Les lignes de Calcul gardées au rechargement (`loadCalcHistory`, `saveCalcHistory`), Zod, plafonds |
-| `src/lib/atelier/safe-latex.ts`      | Liste blanche des commandes LaTeX d'une formule relue du stockage (`isSafeLatex`)                  |
-| `src/lib/atelier/url.ts`             | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                               |
-| `src/lib/atelier/grapheur-link.ts`   | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`                 |
-| `src/lib/atelier/merge.ts`           | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                          |
-| `src/lib/atelier/history-export.ts`  | Export de l'historique de Calcul : JSON rejouable, ubumark lisible, `downloadHistory`              |
-| `src/lib/atelier/history-import.ts`  | Relecture d'un JSON exporté, validée par Zod et bornée (`readHistory`)                             |
-| `src/lib/atelier/removal.ts`         | Les phrases de la suppression en cascade (`cascadeMessage`, `removedMessage`)                      |
+| Fichier                              | Rôle                                                                                                    |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `src/lib/atelier/persistence.ts`     | Ranger / relire le `localStorage` (`loadAtelier`, `saveAtelier`, `readForeignWrite`), schéma Zod        |
+| `src/lib/atelier/session.ts`         | Cycle de vie (`openSession`) : chargement, sauvegarde différée, autres onglets ; `keepCalcHistory`      |
+| `src/lib/atelier/history-storage.ts` | Les lignes de Calcul gardées au rechargement (`loadCalcHistory`, `saveCalcHistory`), Zod, plafonds      |
+| `src/lib/atelier/safe-latex.ts`      | Liste blanche des commandes LaTeX d'une formule relue du stockage (`isSafeLatex`)                       |
+| `src/lib/atelier/url.ts`             | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                                    |
+| `src/lib/atelier/grapheur-link.ts`   | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`                      |
+| `src/lib/atelier/merge.ts`           | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                               |
+| `src/lib/atelier/history-export.ts`  | Export de l'historique de Calcul : JSON rejouable, ubumark lisible, `downloadHistory`                   |
+| `src/lib/atelier/history-import.ts`  | Relecture d'un JSON exporté, validée par Zod et bornée (`readHistory`)                                  |
+| `src/lib/atelier/atelier-file.ts`    | Enregistrer / Charger l'atelier entier dans un `.atelier.json` (`atelierFileToJson`, `readAtelierFile`) |
+| `src/lib/atelier/removal.ts`         | Les phrases de la suppression en cascade (`cascadeMessage`, `removedMessage`)                           |
 
 ### Composants — `src/lib/components/atelier/`
 
-| Composant                 | Rôle                                                                                                                    |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `AtelierContainer.svelte` | Le conteneur : panneau + vues, session, `CalcDesk`, `GrapheurStore` propre, confirmations                               |
-| `ObjectPanel.svelte`      | « Mes objets » : création, liste des cartes                                                                             |
-| `ObjectCard.svelte`       | Une carte : nom, définition, état, actions ; champs de l'image et de « Tabuler » (de / à / pas)                         |
-| `DefinitionField.svelte`  | `f(x) =` + champ MathLive ; la frappe met l'objet à jour 0,3 s après la dernière touche                                 |
-| `ValueSlider.svelte`      | Curseur d'une valeur (bornes et pas réglables)                                                                          |
-| `CurveSettings.svelte`    | « Sur le graphique » : couleur, trait, tangente, aire, cercle osculateur, longueur                                      |
-| `SequenceSettings.svelte` | Mode, rang initial, premier terme ; nuage ou escalier                                                                   |
-| `CalculView.svelte`       | Vue Calcul : champ (texte ou écriture mathématique), historique, « Garder », export / import                            |
-| `NaturalField.svelte`     | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel       |
-| `AtelierSettings.svelte`  | Le bouton « Réglages » et sa fenêtre : la saisie dans Calcul                                                            |
-| `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`) |
-| `DataView.svelte`         | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes             |
-| `ShareBar.svelte`         | Partager (lien `?a=`), recevoir, « Garder dans mon atelier »                                                            |
+| Composant                 | Rôle                                                                                                                       |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `AtelierContainer.svelte` | Le conteneur : barre d'icônes, panneau + vues, session, `CalcDesk`, `GrapheurStore` propre, confirmations                  |
+| `ToolButton.svelte`       | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable (`aria-disabled`)  |
+| `ObjectPanel.svelte`      | « Mes objets » : création, liste des cartes                                                                                |
+| `ObjectCard.svelte`       | Une carte : nom, définition, état, actions ; champs de l'image et de « Tabuler » (de / à / pas)                            |
+| `DefinitionField.svelte`  | `f(x) =` + champ MathLive ; la frappe met l'objet à jour 0,3 s après la dernière touche                                    |
+| `ValueSlider.svelte`      | Curseur d'une valeur (bornes et pas réglables)                                                                             |
+| `CurveSettings.svelte`    | « Sur le graphique » : couleur, trait, tangente, aire, cercle osculateur, longueur                                         |
+| `SequenceSettings.svelte` | Mode, rang initial, premier terme ; nuage ou escalier                                                                      |
+| `CalculView.svelte`       | Vue Calcul : champ (texte ou écriture mathématique), historique, « Garder », lien ubumark                                  |
+| `NaturalField.svelte`     | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel          |
+| `AtelierSettings.svelte`  | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                 |
+| `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)    |
+| `DataView.svelte`         | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                |
+| `ShareBar.svelte`         | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier » |
 
 La vue **Graphe** n'a pas de composant à elle : `AtelierContainer.svelte` monte
 `src/lib/components/grapheur/GrapheurContainer.svelte` avec `panel={false}` sur un
@@ -1144,23 +1146,50 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   actif dès qu'il y a un objet OU une ligne de Calcul (les lignes survivent au rechargement) ;
   absent d'un atelier reçu.
 
+### La barre d'icônes, Enregistrer et Charger
+
+Lot 1 de la refonte de l'interface (`docs/wip/atelier-refonte-interface-phase0.md`, validé par
+David le 2026-10-18). Une seule barre (`role="toolbar"`) au-dessus des onglets, en icônes seules
+(`ToolButton.svelte`) : à gauche **Repartir de zéro**, **Charger un atelier**, **Enregistrer
+l'atelier** ; à droite **Partager** et **Réglages**. Pas d'Annuler / Rétablir avant le lot 5.
+Un bouton indisponible garde le focus (`aria-disabled`, pas `disabled`) et dit pourquoi, dans son
+infobulle et à l'aide technique (« Ton atelier est vide : il n'y a rien à enregistrer. »). Sur un
+atelier reçu par lien : ni Repartir de zéro, ni Charger, ni Partager.
+
+**Enregistrer n'est pas l'ancien export JSON.** Le JSON « pour rejouer » ne garde que les gestes
+de Calcul : une définition changée sur une carte, une couleur, le tableur s'y perdaient. Le
+fichier `atelier-AAAA-MM-JJ.atelier.json` (`atelier-file.ts`, format `chiphre-atelier`) porte
+l'état complet (`Atelier.serialize()`, celui que `persistence.ts` range) et la console telle que
+`history-storage.ts` la range (`keptHistoryOf`).
+
+**Charger** lit le fichier choisi (`readAtelierFile`) : taille bornée avant lecture
+(`MAX_ATELIER_FILE_LENGTH`), puis les **mêmes** schémas que le navigateur — objets et cellules triés
+un par un (`salvageState`), console par `readKeptHistory` (liste blanche de `safe-latex.ts`). Un
+atelier non vide demande confirmation (« Charger remplace l'atelier actuel »). Un fichier refusé
+ne remplace rien, et la raison s'affiche dans les avis (« Ce fichier n'est pas un atelier
+Chiphre. ») ; un objet écarté ou un `y` renommé se dit aussi. Un **ancien historique JSON**
+(`chiphre-calcul`) est reconnu et rejoué comme avant (même confirmation).
+
 ### Export et rejeu de l'historique
 
-Bouton « Exporter » de la vue Calcul (`history-export.ts`) :
+Le JSON « pour rejouer » ne se télécharge plus que par `.exporter` tapé ; la barre « Exporter
+l'historique » a quitté la vue Calcul (lot 1), et il se relit par **Charger**. Les deux formats
+(`history-export.ts`) :
 
 - **JSON** (`historyToJson`, format `HISTORY_FORMAT` = `chiphre-calcul`) pour rejouer : chaque
   entrée garde son **geste** (`ReplayStep` : `saisie`, `action`, `supprimer`, `annuler`, `garder`)
   et sa réponse ;
-- **ubumark** (`historyToUbumark`) pour recopier dans une fiche, formules en `$…$` LaTeX. Le
+- **ubumark** (`historyToUbumark`), par le lien discret « Télécharger l'historique pour une fiche »
+  de la vue Calcul (provisoire : le lot 2 le range dans le menu de la console), pour recopier
+  dans une fiche, formules en `$…$` LaTeX. Le
   titre d'une étape garde ses formules `$…$` (V25 : les pipelines pédagogiques y écrivent leurs
   maths) ; le texte autour est neutralisé (`*` → `×`, `\$`, `\~`).
 
 **`.exporter` tapé dans Calcul** (retrait de `/cas`, 2026-10-13) : le pupitre l'intercepte
-(`isExportCommand`, avant `runInput` — le moteur n'a jamais eu l'historique) et lance le **même**
-téléchargement que le bouton JSON (`downloadHistory`, appelé par `CalcDesk.download`). Aucune ligne
+(`isExportCommand`, avant `runInput` — le moteur n'a jamais eu l'historique) et lance le
+téléchargement JSON (`downloadHistory`, appelé par `CalcDesk.download`). Aucune ligne
 n'est ajoutée ; la réponse va dans la zone de retour (« Historique exporté : calcul-….json. »).
-Historique vide : rien ne part, et la réponse est la raison des boutons désactivés
-(`NOTHING_TO_EXPORT`, « Rien à exporter pour l'instant. »). Un argument (`.exporter ubumark`) est
+Historique vide : rien ne part (`NOTHING_TO_EXPORT`, « Rien à exporter pour l'instant. »). Un argument (`.exporter ubumark`) est
 refusé. Un rejeu saute une saisie `.exporter` et ne télécharge rien.
 
 Rejeu (`CalcDesk.replay`) : le fichier vient de dehors, donc `readHistory` le valide (Zod) et le
