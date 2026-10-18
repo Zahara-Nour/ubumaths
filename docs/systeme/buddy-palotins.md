@@ -237,7 +237,7 @@ Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`)
 - **Affichage** (`BuddyStatusPanel`) : « Constance Royale : N semaines », « Cette semaine : x jours
   sur 3 » (x plafonne a 3) et « Record : N semaines ». Le badge du widget montre N. La valeur
   affichee est recalculee pour le jour courant (`displayedConstance`) : une Constance perdue mais
-  pas encore remise a zero s'affiche 0. Le tableau de bord prof affiche la Constance en « sem. ».
+  pas encore remise a zero s'affiche 0. Le tableau de bord prof affiche la meme valeur (`displayedConstance`), en « sem. ».
 
 ### Mecanisme
 
@@ -255,6 +255,9 @@ Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`)
   2026-10-18) : `current_streak` et `longest_streak` comptaient des jours. Ils sont remis a 0 (record
   compris) au premier chargement du tableau de bord ou au premier jour travaille, sans replique ; le
   jour meme est compte meme si l'ancienne serie l'avait deja marque.
+- Une panne de la Constance APRES le credit (`recordWorkedDay`, ou credit de la recompense) est
+  journalisee et ne remonte jamais : le gain rendu est celui du credit, sans recompense. Sinon le
+  forfait de revision relacherait sa seance et deviendrait repayable.
 - Gain renvoye aux routes (`buddy_xp`, meme forme qu'avant) : `streakUpdated` = ce credit a compte
   le jour ; `newStreak` = la Constance apres lui ; `streakBonusXp` = la recompense de la semaine
   tenue ; `constanceWeekStart` / `constanceDaysThisWeek` en plus, quand le jour a ete compte, pour
@@ -470,7 +473,7 @@ avec l'identifiant de l'eleve tire de la SESSION, jamais du corps de la requete 
 (`createStudentBuddy`), changement (`changeStudentPalotin`), Constance Royale (`recordWorkedDay`,
 `resetLostConstance` depuis le layout du tableau de bord eleve), themes (`addExploredThemes`,
 `removeExploredThemes`), XP (`add_buddy_xp`). Les fonctions d'ecriture ne recoivent pas le client de
-l'eleve ; les lectures (`getStudentBuddy`, `getClassBuddies`) restent sur son client (sa RLS).
+l'eleve ; la lecture (`getStudentBuddy`) reste sur son client (sa RLS).
 
 RLS (migration `20261017090100_palotin_constance_et_ecritures_serveur.sql`) : l'eleve n'a plus
 AUCUNE policy d'ecriture sur `student_buddies` (« Students can create their own buddy » et

@@ -11,6 +11,7 @@ import type { Database } from '$lib/types/database';
 import type { BuddyState, BuddyXpGainResult } from '$lib/types/buddy';
 import { calculateXpGain, calculateConstanceBonus, XP_SOURCES } from './buddy-xp';
 import { isDayCounted, utcDay } from '$lib/utils/buddy-constance';
+import { createServerLogger } from '$lib/utils/logger';
 import {
 	getStudentBuddy,
 	addBuddyXp,
@@ -60,6 +61,9 @@ interface TestXpPlan {
 	themeDueAt: Map<string, number>;
 }
 
+// Constantes
+const logger = createServerLogger('server/buddy-xp-service');
+
 // Functions
 
 /**
@@ -82,25 +86,36 @@ async function rewardWorkedDay(
 	};
 	if (creditedXp <= 0 || isDayCounted(buddy, utcDay())) return unchanged;
 
-	const day = await recordWorkedDay(studentId);
+	// Le crédit est déjà fait : aucune panne de la Constance ne doit remonter à
+	// l'appelant (le forfait de révision relâcherait sa séance, donc serait
+	// repayable). Journalisée, elle rend le gain sans récompense de semaine.
+	let day: Awaited<ReturnType<typeof recordWorkedDay>>;
+	try {
+		day = await recordWorkedDay(studentId);
+	} catch (constanceError) {
+		logger.error('[buddy-xp-service] Jour travaillé non compté :', constanceError);
+		return unchanged;
+	}
 	if (day.status !== 'counted') return unchanged;
 
-	let streakBonusXp = 0;
-	let bonusResult: BuddyXpGainResult | null = null;
-	if (day.weekHeld) {
-		const bonus = calculateConstanceBonus(day.newStreak);
-		bonusResult = await addBuddyXp(studentId, bonus.xp, bonus.isMilestone);
-		streakBonusXp = bonusResult.xp_gained;
-	}
-
-	return {
+	const counted: WorkedDayReward = {
 		streakUpdated: true,
 		newStreak: day.newStreak,
-		streakBonusXp,
-		bonusResult,
+		streakBonusXp: 0,
+		bonusResult: null,
 		constanceWeekStart: day.constanceWeekStart,
 		constanceDaysThisWeek: day.constanceDaysThisWeek
 	};
+	if (!day.weekHeld) return counted;
+
+	try {
+		const bonus = calculateConstanceBonus(day.newStreak);
+		const bonusResult = await addBuddyXp(studentId, bonus.xp, bonus.isMilestone);
+		return { ...counted, streakBonusXp: bonusResult.xp_gained, bonusResult };
+	} catch (bonusError) {
+		logger.error('[buddy-xp-service] Récompense de la semaine tenue non créditée :', bonusError);
+		return counted;
+	}
 }
 
 /** Champs Constance du gain rendu. */

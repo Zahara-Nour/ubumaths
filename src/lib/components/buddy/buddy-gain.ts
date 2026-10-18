@@ -71,8 +71,8 @@ const buddyRowSchema = z.object({
 			themes_explored: z.array(z.string()),
 			change_count: z.number(),
 			equipped_skin_id: z.string().nullable(),
-			constance_week_start: z.string().nullable(),
-			constance_days_this_week: z.number()
+			constance_week_start: z.iso.date().nullable(),
+			constance_days_this_week: z.number().int().min(0).max(7)
 		})
 		.nullable()
 });

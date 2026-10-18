@@ -403,3 +403,36 @@ describe('Constance Royale — un jour travaillé', () => {
 		expect(recordWorkedDay.mock.calls).toEqual([[STUDENT]]);
 	});
 });
+
+describe('Constance Royale — une panne après le crédit ne remonte pas', () => {
+	beforeEach(() => {
+		getStudentBuddy.mockReset().mockResolvedValue(buddy({ last_activity_date: '2000-01-01' }));
+		addBuddyXp.mockReset().mockImplementation(async (_id, xp) => gain(xp));
+		addExploredThemes.mockReset().mockImplementation(async () => new Set());
+		removeExploredThemes.mockReset().mockResolvedValue(undefined);
+		recordWorkedDay.mockReset();
+	});
+
+	it('forfait de révision : Constance en panne → gain du forfait rendu, sans exception (pas de relâche)', async () => {
+		recordWorkedDay.mockRejectedValue(new Error('panne'));
+		const result = await addBuddyXpFromReviewSession(supabase, STUDENT);
+		expect(result).toMatchObject({ streakUpdated: false, streakBonusXp: 0 });
+		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.review_session);
+	});
+
+	it('séance : +30 en panne après le jour compté → gain de base rendu, sans exception', async () => {
+		recordWorkedDay.mockResolvedValue(counted(true, 1, 3));
+		addBuddyXp
+			.mockImplementationOnce(async (_id, xp) => gain(xp))
+			.mockRejectedValueOnce(new Error('panne'));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.correct + XP_SOURCES.first_of_day);
+		expect(result?.streakBonusXp).toBe(0);
+	});
+
+	it('énigme : Constance en panne → gain de base rendu, sans exception', async () => {
+		recordWorkedDay.mockRejectedValue(new Error('panne'));
+		const result = await addBuddyXpFromExercise(supabase, STUDENT, { isCorrect: true });
+		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.correct + XP_SOURCES.first_of_day);
+	});
+});

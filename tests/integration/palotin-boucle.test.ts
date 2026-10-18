@@ -487,41 +487,52 @@ describe('la boucle du Palotin tourne', () => {
 		const lastWeek = dayOffset(thisWeek, -7);
 
 		it('3e jour travaillé de la semaine (Entraînement) : semaine tenue, +30 une seule fois', async () => {
-			const p = await studentWithBuddy();
-			// Deux jours déjà travaillés cette semaine ; le dernier compté est passé
-			await setConstance(p, {
-				current_streak: 0,
-				longest_streak: 0,
-				last_activity_date: dayOffset(today, -1),
-				constance_week_start: thisWeek,
-				constance_days_this_week: 2
-			});
+			// Décor cohérent quel que soit le jour d'exécution : un lundi ou un mardi,
+			// deux jours déjà travaillés « cette semaine » n'existent pas encore. Le
+			// serveur est donc placé au mercredi de la semaine dernière (horloge JS
+			// seule ; la base garde la sienne), après le lundi et le mardi travaillés.
+			const monday = lastWeek;
+			const wednesday = dayOffset(monday, 2);
+			vi.useFakeTimers({ toFake: ['Date'], shouldAdvanceTime: true });
+			vi.setSystemTime(new Date(`${wednesday}T12:00:00Z`));
+			try {
+				const p = await studentWithBuddy();
+				await setConstance(p, {
+					current_streak: 0,
+					longest_streak: 0,
+					last_activity_date: dayOffset(monday, 1),
+					constance_week_start: monday,
+					constance_days_this_week: 2
+				});
 
-			const body = (await save(p, 'interactive')) as {
-				buddy_xp: { streakUpdated: boolean; newStreak: number; streakBonusXp: number } | null;
-			};
-			expect(body.buddy_xp).toMatchObject({
-				streakUpdated: true,
-				newStreak: 1,
-				streakBonusXp: XP_SOURCES.week_held
-			});
-			const held = await constanceOf(p);
-			expect(held).toMatchObject({
-				current_streak: 1,
-				longest_streak: 1,
-				constance_week_start: thisWeek,
-				constance_days_this_week: 3
-			});
+				const body = (await save(p, 'interactive')) as {
+					buddy_xp: { streakUpdated: boolean; newStreak: number; streakBonusXp: number } | null;
+				};
+				expect(body.buddy_xp).toMatchObject({
+					streakUpdated: true,
+					newStreak: 1,
+					streakBonusXp: XP_SOURCES.week_held
+				});
+				const held = await constanceOf(p);
+				expect(held).toMatchObject({
+					current_streak: 1,
+					longest_streak: 1,
+					constance_week_start: monday,
+					constance_days_this_week: 3
+				});
 
-			// Deuxième séance le même jour : jour déjà compté, pas de second +30
-			const again = (await save(p, 'interactive')) as {
-				buddy_xp: { streakUpdated: boolean; streakBonusXp: number } | null;
-			};
-			expect(again.buddy_xp).toMatchObject({ streakUpdated: false, streakBonusXp: 0 });
-			const after = await constanceOf(p);
-			expect(after?.constance_days_this_week).toBe(3);
-			expect(after?.current_streak).toBe(1);
-			expect((after?.xp ?? 0) - (held?.xp ?? 0)).toBe(XP_SOURCES.correct);
+				// Deuxième séance le même jour : jour déjà compté, pas de second +30
+				const again = (await save(p, 'interactive')) as {
+					buddy_xp: { streakUpdated: boolean; streakBonusXp: number } | null;
+				};
+				expect(again.buddy_xp).toMatchObject({ streakUpdated: false, streakBonusXp: 0 });
+				const after = await constanceOf(p);
+				expect(after?.constance_days_this_week).toBe(3);
+				expect(after?.current_streak).toBe(1);
+				expect((after?.xp ?? 0) - (held?.xp ?? 0)).toBe(XP_SOURCES.correct);
+			} finally {
+				vi.useRealTimers();
+			}
 		});
 
 		it('3e jour travaillé par le forfait de révision : semaine tenue, +30 avec le forfait', async () => {

@@ -10,7 +10,7 @@
  * l'appelant. Aucune fonction d'écriture ne reçoit le client de l'élève : la
  * PR suivante lui retire le droit d'écrire sa ligne, et une écriture restée sur
  * son client échouerait alors en silence (0 ligne). Les lectures exposées
- * (`getStudentBuddy`, `getClassBuddies`) restent sur le client de l'appelant.
+ * (`getStudentBuddy`) restent sur le client de l'appelant.
  *
  * Lire-modifier-écrire sans transaction : verrou optimiste sur `updated_at`
  * (mis à jour par le trigger `student_buddies_updated_at_trigger`). L'écriture
@@ -498,63 +498,4 @@ export async function removeExploredThemes(studentId: string, themes: string[]):
  */
 export async function addExploredTheme(studentId: string, theme: string): Promise<boolean> {
 	return (await addExploredThemes(studentId, [theme])).has(theme);
-}
-
-/**
- * Get all buddies for students in a given class (teacher dashboard).
- */
-export async function getClassBuddies(
-	supabase: SupabaseClient<Database>,
-	classId: string
-): Promise<
-	(BuddyState & { full_name: string | null; firstname: string | null; lastname: string | null })[]
-> {
-	const { data, error } = await supabase
-		.from('class_members')
-		.select(
-			`
-			student_id,
-			profiles:student_id (
-				full_name,
-				firstname,
-				lastname
-			),
-			student_buddies:student_id (
-				student_id,
-				palotin_type,
-				xp,
-				level,
-				current_streak,
-				longest_streak,
-				last_activity_date,
-				xp_earned_today,
-				themes_explored,
-				change_count
-			)
-		`
-		)
-		.eq('class_id', classId)
-		.eq('status', 'active');
-
-	if (error) {
-		logger.error('❌ [buddy-queries] Error fetching class buddies:', error);
-		throw error;
-	}
-
-	return (data || [])
-		.filter((m) => m.student_buddies)
-		.map((m) => {
-			const profile = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
-			const buddy = Array.isArray(m.student_buddies) ? m.student_buddies[0] : m.student_buddies;
-			return {
-				...buddy,
-				full_name: profile?.full_name ?? null,
-				firstname: profile?.firstname ?? null,
-				lastname: profile?.lastname ?? null
-			};
-		}) as (BuddyState & {
-		full_name: string | null;
-		firstname: string | null;
-		lastname: string | null;
-	})[];
 }

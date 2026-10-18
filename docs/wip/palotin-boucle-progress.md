@@ -63,12 +63,16 @@ gidouilles). Correction prévue en PR 2.
       paliers 4 / 8 / 16 semaines → +50 / +100 / +300 hors plafond ; « premier travail du jour » +5
       inchangé ; le bonus quotidien de série (+15) et les paliers 7 / 14 / 30 jours disparaissent.
       Affichage : « Constance Royale : N semaines » et « Cette semaine : x jours sur 3 ».
-      **Code fait le 2026-10-18 (non commité, en attente de revue)** : logique pure
+      Points non spécifiés, validés par David le 2026-10-18 : +30 dans le plafond du jour ; un
+      palier remplace les +30 de sa semaine (rien au-delà de 16) ; après une révision, un
+      Entraînement le même jour ne reçoit plus le +5 « premier travail du jour ».
+      Aussi : anciennes séries en jours remises à 0 sans réplique (toutes à 0 en prod le 2026-10-18,
+      rien perdu) ; « x jours sur 3 » plafonné à 3 ; un palier est redonné si la Constance retombe
+      puis remonte (comme l'ancien code pour 7 / 14 / 30 jours).
+      **Code fait le 2026-10-18, corrigé après revue et audit** : logique pure
       `src/lib/utils/buddy-constance.ts`, `recordWorkedDay` / `resetLostConstance` (une écriture
-      sous verrou), bonus `calculateConstanceBonus`, layout élève, panneau et widget, répliques
-      `streak_lost`, tableau prof en « sem. », docs `buddy-palotins.md` et `coquille-et-caches.md`,
-      motif du layout ajouté au filtre `nightly-integration.yml`. Points tranchés sans la spec, à
-      faire confirmer par David : +30 dans le plafond ; palier À LA PLACE des +30 ; rien après
-      16 semaines ; +5 du premier travail perdu après un forfait de révision le même jour ;
-      anciennes séries en jours (record compris) remises à 0 sans réplique ; « x jours sur 3 »
-      plafonné à 3. Reste : `code-reviewer`, commit, PR.
+      sous verrou), bonus `calculateConstanceBonus` (une panne après le crédit ne remonte jamais :
+      le forfait de révision n'est pas relâché), layout élève, panneau et widget, répliques
+      `streak_lost`, tableau prof sur la Constance affichée (`displayedConstance`),
+      `getClassBuddies` (sans appelant) retirée, docs `buddy-palotins.md` et
+      `coquille-et-caches.md`, motif du layout ajouté au filtre `nightly-integration.yml`.

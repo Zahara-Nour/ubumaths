@@ -182,6 +182,21 @@ describe('receiveBuddyGain — widget à jour sans recharger', () => {
 		expect(studentCache.getBuddySync()?.xp).toBe(112);
 	});
 
+	it('Palotin relu aux colonnes de Constance hors bornes : rejeté, rien n’est hydraté', async () => {
+		for (const bad of [
+			{ constance_days_this_week: 9 },
+			{ constance_days_this_week: 1.5 },
+			{ constance_week_start: 'lundi' }
+		]) {
+			vi.stubGlobal(
+				'fetch',
+				vi.fn(async () => new Response(JSON.stringify({ buddy: { ...buddy, ...bad } })))
+			);
+			expect(await receiveBuddyGain(saveResponse())).toBeNull();
+			expect(studentCache.getBuddySync()).toBeNull();
+		}
+	});
+
 	it('panne du cache : jamais d’exception (la séance est déjà enregistrée)', async () => {
 		studentCache.hydrateBuddy({ ...buddy });
 		vi.spyOn(studentCache, 'updateBuddyXpOptimistic').mockImplementation(() => {
