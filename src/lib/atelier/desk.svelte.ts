@@ -863,6 +863,12 @@ export class CalcDesk {
 			this.draft = `.croiser ${name} ${actionId.slice('cross:'.length)}`;
 			return 'needs-argument';
 		}
+		// « Image d'un nombre » (lot 3 de la refonte) : `f(` est préparé, l'élève
+		// tape x et valide — le calcul est celui de `f(3)` tapé à la main
+		if (actionId === 'image') {
+			this.draft = `${name}(`;
+			return 'needs-argument';
+		}
 		// « Simuler » a besoin de n : la commande est préparée, 100 par défaut
 		// (Q77), l'élève valide ou change le nombre
 		if (actionId.startsWith('simulate:')) {

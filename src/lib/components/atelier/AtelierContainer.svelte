@@ -733,14 +733,6 @@
 		return { text: tabulationReport(name, done), failed: false };
 	}
 
-	/**
-	 * L'image d'un nombre, demandée depuis une carte (A4). Pas d'annonce ici :
-	 * la carte annonce déjà « f(3) = 9 » ; deux annonces se bousculeraient.
-	 */
-	function handleImage(name: string, value: string) {
-		return desk.image(name, value);
-	}
-
 	/** Vider puis écrire : le même message deux fois de suite est annoncé deux fois. */
 	function announce(message: string) {
 		announcement = '';
@@ -751,12 +743,7 @@
 <svelte:window onkeydown={handleUndoKey} onkeydowncapture={handleConsoleShortcut} />
 
 <div class="atelier">
-	<ObjectPanel
-		bind:selected
-		onAction={handleAction}
-		onImage={handleImage}
-		onTabulate={handleTabulate}
-	/>
+	<ObjectPanel bind:selected onAction={handleAction} onTabulate={handleTabulate} />
 
 	<!-- `section` et non `main` : la page est déjà dans le `<main>` du layout,
 	     et deux repères `main` perturbent la navigation (revue a11y du lot 6) -->

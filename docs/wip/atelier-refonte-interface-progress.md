@@ -43,6 +43,30 @@ Choix faits en codant (à signaler à David) :
 - Le bouton Console est dans le groupe de DROITE (Console, Partager, Réglages) : ce n'est pas une action sur le fichier.
 - Les tests qui cliquaient l'onglet Calcul ouvrent maintenant la console (ou lisent son historique, monté en permanence) ; ceux qui voulaient « sur le Graphe, console fermée » montent l'atelier avec `view: 'graphe'`.
 
+## Lot 3 — cartes de fonction
+
+Branche `feat/atelier-cartes-fonction`.
+
+- [x] `FunctionCard.svelte` : une ligne `● f(x) = [champ]` + œil + menu « Options de f » ; plus de vue développée ni de libellé de type. `ObjectCard` lui confie les fonctions (code de l'image, de Tabuler et de « Sur le graphique » retiré d'`ObjectCard`).
+- [x] `DefinitionField` : `commit="validate"` (Entrée / sortie du champ, valeur lue sur l'élément ; saisie illisible refusée, erreur reliée au champ ; Échap rétablit), `showPrefix`, `autofocus`.
+- [x] `CurveStylePopover.svelte` : couleur, épaisseur, style en une fenêtre ; « Tracer f » si jamais tracée.
+- [x] Menu : Affichage (Tangente, Aire — `curve-toggles.ts`, partagé avec `CurveSettings`) ; Actions (`actionsFor`, raisons écrites, `data-indisponible`). `CurveSettings compact` sous la ligne quand tangente ou aire sont allumées.
+- [x] Action `image` (« Image d'un nombre ») : `f(` préparé dans la console (`needs-argument`). Tabuler : fenêtre `Dialog`.
+- [x] `f′` / `f⁻¹` : formule non éditable, icône `Link2` (infobulle + note au toucher).
+- [x] Tests : `carte-fonction.svelte.test.ts` (12 rouges d'abord), `image-console.test.ts` (4 rouges d'abord) ; 15 fichiers de tests adaptés (harnais commun `harness/function-card.ts`). 417 tests client de l'atelier, 4509 serveur verts.
+
+Ce qui dépendait de `selected` (relu) :
+
+- `ObjectPanel` : ouvrir / refermer une carte au clic sur l'en-tête — reste pour les objets autres que les fonctions.
+- `AtelierContainer` : sélection après « + Fonction », après une seconde « Dériver » (L1 : la carte `f′` existante), désélection après suppression — gardées ; pour une fonction, `selected` ne fait plus que la mettre en évidence et donner le focus au champ d'une carte neuve (C9).
+
+Choix faits en codant (à signaler à David) :
+
+- L'œil reste sur la ligne ET « Tracer / Retirer du graphe » reste dans le menu (l'action change de vue vers le Graphe, l'œil non — comme avant).
+- Tangente et Aire sont dans le menu ; le cercle osculateur et la longueur restent des cases sous la ligne, dans le bloc de la tangente ou de l'aire (ils n'ont de sens qu'avec eux).
+- « Image d'un nombre » remplace le brouillon de la console par `f(` (comme « Simuler » ou « Tableau croisé ») : le test « ne touche pas à ce que l'élève tapait dans Calcul » est retiré.
+- Une action indisponible du menu n'est pas `aria-disabled` (bits-ui le pose lui-même d'après `disabled`) : sa raison est dans le nom de l'élément, le choisir ne fait rien.
+
 ## Lots suivants
 
-Lot 3 (cartes de fonction), lot 4 (autres objets), lot 5 (annuler / rétablir) : pas commencés.
+Lot 4 (autres objets), lot 5 (annuler / rétablir) : pas commencés.

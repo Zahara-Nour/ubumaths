@@ -12,6 +12,7 @@ import { userEvent } from 'vitest/browser';
 import AtelierContainer from '../AtelierContainer.svelte';
 import WithFigure from './harness/WithFigure.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { chooseCardAction } from './harness/function-card';
 
 // =============================================================================
 // Décor
@@ -86,19 +87,8 @@ describe('la vue Géométrie (FigureView)', () => {
 	it('K1 : « Afficher dans Géométrie » sur la carte trace 𝒞f, écrit sa ligne et ouvre Géométrie', async () => {
 		const atelier = atelierOf([['function', 'f', 'x^2']]);
 		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
-		const card = [...container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'f'
-		) as HTMLElement;
-		await userEvent.click(card.querySelector('.entete') as HTMLElement);
-		const button = await vi.waitFor(() => {
-			const found = [...card.querySelectorAll('button')].find(
-				(b) => b.textContent?.trim() === 'Afficher dans Géométrie'
-			);
-			if (!found) throw new Error('pas de bouton');
-			return found;
-		});
-
-		await userEvent.click(button);
+		// Lot 3 de la refonte : l'action est dans le menu de la carte
+		await chooseCardAction(container, 'f', 'Afficher dans Géométrie');
 
 		await vi.waitFor(() =>
 			expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe(

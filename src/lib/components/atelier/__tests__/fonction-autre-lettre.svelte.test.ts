@@ -24,8 +24,10 @@ function cardFor(container: HTMLElement, name: string): HTMLElement {
 	return card as HTMLElement;
 }
 
+/** Le champ d'une carte de fonction : toujours là (lot 3 de la refonte). */
 async function open(container: HTMLElement, name: string): Promise<HTMLElement> {
 	const card = cardFor(container, name);
+	if (card.querySelector('math-field')) return card;
 	(card.querySelector('.entete') as HTMLButtonElement).click();
 	await vi.waitFor(() => expect(cardFor(container, name).querySelector('math-field')).toBeTruthy());
 	return cardFor(container, name);
@@ -54,13 +56,12 @@ async function typeInto(field: MathfieldElement, keys: string) {
 // =============================================================================
 
 describe('carte de f(t) = t²', () => {
-	it('l’en-tête montre la formule en t', async () => {
+	it('la ligne de la carte annonce la variable t', async () => {
 		const { container } = await render(WithAtelier, { atelier: atelierWithT() });
 
-		const spoken = cardFor(container, 'f').querySelector('.definition .sr-only')?.textContent;
-		// Lu par MathLive : « 'T' squared »
-		expect(spoken).toMatch(/\bt\b/i);
-		expect(spoken).not.toMatch(/\bx\b/i);
+		expect(
+			cardFor(container, 'f').querySelector('.variable')?.textContent?.replace(/\s+/g, '')
+		).toBe('(t)=');
 	});
 
 	it('le champ est précédé de f(t) = et montre t', async () => {
@@ -68,7 +69,7 @@ describe('carte de f(t) = t²', () => {
 
 		const card = await open(container, 'f');
 
-		expect(card.querySelector('.prefixe')?.textContent?.replace(/\s+/g, '')).toBe('f(t)=');
+		expect(card.querySelector('.ligne')?.textContent?.replace(/\s+/g, '')).toContain('f(t)=');
 		expect(fieldOf(card).value).toContain('t^2');
 		expect(fieldOf(card).value).not.toContain('x');
 	});
@@ -78,7 +79,7 @@ describe('carte de f(t) = t²', () => {
 		const { container } = await render(WithAtelier, { atelier });
 		const card = await open(container, 'f');
 
-		await typeInto(fieldOf(card), 't^2{ArrowRight}+3t');
+		await typeInto(fieldOf(card), 't^2{ArrowRight}+3t{Enter}');
 
 		await vi.waitFor(() => expect(atelier.get('f')?.definition).toBe('x^2+3x'));
 		expect(atelier.get('f')?.definition).not.toContain('t');
@@ -90,19 +91,14 @@ describe('carte de f(t) = t²', () => {
 		const { container } = await render(WithAtelier, { atelier });
 		const card = await open(container, 'f');
 
-		// La carte range la frappe 300 ms après la dernière touche : une pause
-		// avant le x (fréquente sur la CI) range d'abord « t+ », illisible donc
-		// gardé tel quel (`renameVariable`). La pause est voulue : sans elle, le
-		// test dépendait de la vitesse de frappe (« expected 't+' to be '' »).
-		await typeInto(fieldOf(card), 't+');
-		await vi.waitFor(() => expect(atelier.get('f')?.definition).toBe('t+'));
-		await userEvent.keyboard('x');
+		// Lot 3 de la refonte : rien n'est rangé avant Entrée
+		await typeInto(fieldOf(card), 't+x{Enter}');
 
 		await vi.waitFor(() =>
 			expect(cardFor(container, 'f').querySelector('[role="alert"]')?.textContent).toContain('f(t)')
 		);
 		// Le x n'est jamais rangé : la définition reste celle d'avant le refus
-		expect(atelier.get('f')?.definition).toBe('t+');
+		expect(atelier.get('f')?.definition).toBe('');
 	});
 
 	// Revue de #905 : Calcul `f(s) = s^2` après `f(t) = t^2` ne change pas la
@@ -116,19 +112,20 @@ describe('carte de f(t) = t²', () => {
 
 		await vi.waitFor(() => {
 			const now = cardFor(container, 'f');
-			expect(now.querySelector('.prefixe')?.textContent?.replace(/\s+/g, '')).toBe('f(s)=');
+			expect(now.querySelector('.ligne')?.textContent?.replace(/\s+/g, '')).toContain('f(s)=');
 			expect(fieldOf(now).value).toContain('s^2');
 		});
 		expect(fieldOf(card).value).not.toContain('t');
 	});
 
-	it('x_1 n’est pas montré t_1 dans l’en-tête', async () => {
+	it('x_1 n’est pas montré t_1 dans le champ', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'value', name: 'x_1', definition: '4' }, 'text');
 		atelier.create({ kind: 'function', name: 'f', definition: 'x_1+x', letter: 't' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
 
-		const spoken = cardFor(container, 'f').querySelector('.definition .sr-only')?.textContent;
-		expect(spoken).toMatch(/'X' sub 1/i);
+		const value = fieldOf(cardFor(container, 'f')).value;
+		expect(value).toContain('x_1');
+		expect(value).not.toContain('t_1');
 	});
 });

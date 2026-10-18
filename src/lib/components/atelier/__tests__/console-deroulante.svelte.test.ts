@@ -12,6 +12,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { chooseCardAction } from './harness/function-card';
 
 // =============================================================================
 // Décor
@@ -45,14 +46,6 @@ function field(container: HTMLElement): HTMLInputElement {
 
 function press(target: EventTarget, init: KeyboardEventInit) {
 	target.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init }));
-}
-
-function cardFor(container: HTMLElement, name: string): HTMLElement {
-	const card = [...container.querySelectorAll('.objet')].find(
-		(el) => el.querySelector('.nom')?.textContent?.trim() === name
-	);
-	if (!card) throw new Error(`pas de carte ${name}`);
-	return card as HTMLElement;
 }
 
 async function submit(container: HTMLElement, text: string) {
@@ -161,16 +154,8 @@ describe('le compteur des nouveaux résultats (A3)', () => {
 			ephemeral: true,
 			view: 'graphe'
 		});
-		(cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement).click();
-		const derive = await vi.waitFor(() => {
-			const found = [...cardFor(container, 'f').querySelectorAll('.action')].find(
-				(b) => b.textContent?.trim() === 'Dériver'
-			) as HTMLButtonElement | undefined;
-			expect(found).toBeTruthy();
-			return found!;
-		});
-
-		derive.click();
+		// Lot 3 de la refonte : l'action est dans le menu de la carte
+		await chooseCardAction(container, 'f', 'Dériver');
 
 		await vi.waitFor(() =>
 			expect(consoleButton(container).parentElement?.querySelector('.nouveau')?.textContent).toBe(

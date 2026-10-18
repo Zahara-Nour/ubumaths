@@ -159,24 +159,26 @@ Ceux du code et de l'interface :
 
 ### Composants — `src/lib/components/atelier/`
 
-| Composant                 | Rôle                                                                                                                       |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `AtelierContainer.svelte` | Le conteneur : barre d'icônes, panneau + vues, console déroulante, session, `CalcDesk`, `GrapheurStore` propre             |
-| `roving-toolbar.ts`       | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                          |
-| `ToolButton.svelte`       | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)    |
-| `ObjectPanel.svelte`      | « Mes objets » : création, liste des cartes                                                                                |
-| `ObjectCard.svelte`       | Une carte : nom, définition, état, actions ; champs de l'image et de « Tabuler » (de / à / pas)                            |
-| `DefinitionField.svelte`  | `f(x) =` + champ MathLive ; la frappe met l'objet à jour 0,3 s après la dernière touche                                    |
-| `ValueSlider.svelte`      | Curseur d'une valeur (bornes et pas réglables)                                                                             |
-| `CurveSettings.svelte`    | « Sur le graphique » : couleur, trait, tangente, aire, cercle osculateur, longueur                                         |
-| `SequenceSettings.svelte` | Mode, rang initial, premier terme ; nuage ou escalier                                                                      |
-| `CalculView.svelte`       | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                    |
-| `NaturalField.svelte`     | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel          |
-| `AtelierSettings.svelte`  | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                 |
-| `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)    |
-| `FigureView.svelte`       | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, case « Repère », message d'un atelier sans figure          |
-| `DataView.svelte`         | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                |
-| `ShareBar.svelte`         | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier » |
+| Composant                  | Rôle                                                                                                                       |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `AtelierContainer.svelte`  | Le conteneur : barre d'icônes, panneau + vues, console déroulante, session, `CalcDesk`, `GrapheurStore` propre             |
+| `roving-toolbar.ts`        | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                          |
+| `ToolButton.svelte`        | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)    |
+| `ObjectPanel.svelte`       | « Mes objets » : création, liste des cartes                                                                                |
+| `ObjectCard.svelte`        | Une carte : nom, définition, état, actions — sauf une fonction, confiée à `FunctionCard`                                   |
+| `FunctionCard.svelte`      | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]`, œil, menu Affichage / Actions ; fenêtre de « Tabuler »   |
+| `CurveStylePopover.svelte` | Le point de couleur d'une fonction et sa fenêtre : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)     |
+| `DefinitionField.svelte`   | Champ MathLive d'une définition ; rangée 0,3 s après la frappe, ou à Entrée / sortie du champ (`commit="validate"`)        |
+| `ValueSlider.svelte`       | Curseur d'une valeur (bornes et pas réglables)                                                                             |
+| `CurveSettings.svelte`     | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls  |
+| `SequenceSettings.svelte`  | Mode, rang initial, premier terme ; nuage ou escalier                                                                      |
+| `CalculView.svelte`        | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                    |
+| `NaturalField.svelte`      | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel          |
+| `AtelierSettings.svelte`   | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                 |
+| `FormulaText.svelte`       | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)    |
+| `FigureView.svelte`        | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, case « Repère », message d'un atelier sans figure          |
+| `DataView.svelte`          | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                |
+| `ShareBar.svelte`          | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier » |
 
 La vue **Graphe** n'a pas de composant à elle : `AtelierContainer.svelte` monte
 `src/lib/components/grapheur/GrapheurContainer.svelte` avec `panel={false}` sur un
@@ -1039,6 +1041,37 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
   boutons d'une ligne n'apparaissent qu'au survol ou au focus (toujours au toucher).
 - **Menu de la console** : « Copier l'historique pour une fiche » et « Télécharger l'historique
   (ubumark) ». L'atelier s'enregistre par la barre d'icônes.
+
+### La carte d'une fonction
+
+Lot 3 de [atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)
+(décisions de David du 2026-10-18). `ObjectCard` confie toute fonction à `FunctionCard.svelte` ;
+les autres objets gardent leur vue repliée / développée (lot 4).
+
+- **Une seule ligne, plus de vue développée** : `● f(x) = [champ MathLive]`, l'œil (tracer),
+  le bouton « Options de f ». Plus de libellé « fonction », plus de second `f(x) =`.
+- **Le champ** (`DefinitionField`, `commit="validate"`) : rien n'est rangé pendant la frappe ;
+  **Entrée** ou la **sortie du champ** rangent (valeur lue sur l'élément MathLive à cet
+  instant). Une saisie illisible (`parseDefinition` en erreur) garde l'ancienne définition :
+  l'erreur est sur le champ (`aria-invalid`, message relié par `aria-describedby`) ; **Échap**
+  rétablit l'ancienne valeur (et ne ferme alors pas la console). La lettre (`f(t)`) et
+  l'intervalle (`sur [0 ; 1]`) se règlent toujours dans le champ.
+- **Le point de couleur** (`CurveStylePopover.svelte`) ouvre couleur, épaisseur et style du
+  trait (`setDisplay`) ; une fonction jamais tracée propose « Tracer f ».
+- **Le menu** (`DropdownMenu`) : **Affichage** — « Tangente », « Aire sous la courbe »
+  (`curve-toggles.ts`, la même règle que les cases de `CurveSettings`), indisponibles tant que
+  la courbe n'est pas tracée ; **Actions** — `actionsFor`, une raison d'indisponibilité écrite
+  dans l'élément (jamais `disabled` : il reste atteignable au clavier ; marqueur
+  `data-indisponible`). Ce qui se LIT (point de tangence, bornes, aire, longueur) reste sous la
+  ligne, seulement allumé (`CurveSettings compact`).
+- **« Image d'un nombre »** (action `image`) : `runFromPanel` prépare `f(` dans la console
+  (`needs-argument`), qui s'ouvre — plus de petit champ dans la carte.
+- **« Tabuler »** : une fenêtre « de / à / pas » pré-remplie ; un refus s'y dit, un succès la
+  ferme (focus dans la grille) et sa phrase s'écrit sous la carte.
+- **Les cartes qui suivent** (`f′`, `f⁻¹`) : formule calculée (jamais éditable), une icône de
+  lien à côté du nom dit « dérivée de f — elle suit f » (infobulle, et note dépliée au toucher).
+- `selected` (panneau) ne sert plus, pour une fonction, qu'à la mettre en évidence et à donner
+  le focus au champ d'une carte neuve.
 
 ### Vues
 

@@ -12,6 +12,7 @@ import { tick } from 'svelte';
 import { userEvent } from 'vitest/browser';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { chooseCardAction } from './harness/function-card';
 import { commandCatalog } from '$lib/atelier/commands';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 
@@ -151,20 +152,8 @@ describe('les actions du panneau répondent vraiment', () => {
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2-3x+1' });
 		const view = await open(atelier);
 
-		// Les actions n'apparaissent que sur l'objet SÉLECTIONNÉ : il faut donc
-		// d'abord cliquer la carte, comme le ferait l'élève.
-		const carte = [...view.container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'f'
-		) as HTMLElement | undefined;
-		expect(carte, 'carte de f').toBeTruthy();
-		carte!.querySelector('button')?.click();
-		await settle();
-
-		const bouton = [...carte!.querySelectorAll('button')].find((b) =>
-			b.textContent?.trim().startsWith(label)
-		) as HTMLButtonElement | undefined;
-		expect(bouton, `bouton « ${label} »`).toBeTruthy();
-		bouton!.click();
+		// Lot 3 de la refonte : les actions d'une fonction sont dans le menu de sa carte
+		await chooseCardAction(view.container, 'f', label);
 		await settle();
 		return view;
 	}
@@ -178,15 +167,8 @@ describe('les actions du panneau répondent vraiment', () => {
 	// Même défaut par le bouton : la note était collée au texte, invisible
 	it('« Dériver » une seconde fois dit, à l’écran, que f′ existe déjà', async () => {
 		const { container } = await clickAction('Dériver');
-		const carte = [...container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'f'
-		) as HTMLElement;
-		// La carte de f est restée sélectionnée : son bouton est toujours là
-		const bouton = [...carte.querySelectorAll('button')].find((b) =>
-			b.textContent?.trim().startsWith('Dériver')
-		) as HTMLButtonElement | undefined;
-		expect(bouton, 'bouton « Dériver »').toBeTruthy();
-		bouton!.click();
+		// Une seconde fois, par le même menu
+		await chooseCardAction(container, 'f', 'Dériver');
 		await settle();
 
 		const lignes = [...container.querySelectorAll('.historique li .reponse')];
