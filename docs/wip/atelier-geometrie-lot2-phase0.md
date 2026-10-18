@@ -77,6 +77,11 @@ se réutilise). Une construction peut aussi s'écrire **sans nom, dans une autre
 permet déjà (`pente(segment(A, B))`) — raccourcis compris : `intersection((AB), c, 1)`. `=` pour
 une construction, `:` pour une équation (lot 1, G5).
 
+**Tapé seul, sans nom** (David, 2026-10-18) : c'est un **calcul**, comme `x² = 4` au lot 1 —
+rien n'est créé ni dessiné, la console répond ce qu'elle sait : `(AB)` → `(AB) : y = 2x + 1`
+(équation réduite), `[AB]` → `[AB] : segment de longueur √5`, `AM` → `√5`, `milieu(A, B)` →
+`(2 ; 1)`. Pour garder : le nommer (`d = (AB)`) ou « Garder » sur la ligne (D5, nom automatique).
+
 **(b) Quatre formes ajoutées au DSL lui-même** (oui), pour que tout ce qui se tape dans l'atelier
 marche aussi dans une figure de cours ; rien de ce qui existe ne change de sens :
 
