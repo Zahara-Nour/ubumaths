@@ -176,6 +176,16 @@ export function readKeptHistory(parsed: unknown): LoadedHistory {
 	return { kind: 'loaded', history: { lines, typed } };
 }
 
+/**
+ * Combien de lignes `readKeptHistory` examinerait (les plus récentes, au plus
+ * `MAX_KEPT_LINES`), ou `null` si l'enveloppe elle-même est illisible. Sert au
+ * fichier `.atelier.json` à dire ce qui s'est perdu, jamais en silence.
+ */
+export function offeredLineCount(parsed: unknown): number | null {
+	const shell = shellSchema.safeParse(parsed);
+	return shell.success ? Math.min(shell.data.lines.length, MAX_KEPT_LINES) : null;
+}
+
 // =============================================================================
 // Ranger
 // =============================================================================
