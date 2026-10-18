@@ -1,6 +1,10 @@
 /**
- * Le curseur d'une valeur, dans sa carte — lot 4 du passage de `/grapheur`
- * par l'atelier (phase 0 `docs/archive/wip/atelier-grapheur-phase0.md` §4).
+ * Le curseur d'une valeur — lot 4 du passage de `/grapheur` par l'atelier
+ * (phase 0 `docs/archive/wip/atelier-grapheur-phase0.md` §4).
+ *
+ * Depuis le lot 4a de la refonte de l'atelier : le curseur d'un paramètre est
+ * sous la ligne de sa carte, ses bornes et son pas dans une petite fenêtre
+ * ouverte depuis le menu, et l'absence de curseur se dit dans le menu.
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -9,15 +13,9 @@ import { userEvent } from 'vitest/browser';
 import WithAtelier from './harness/WithAtelier.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { isValue } from '$lib/atelier/types';
+import { cardOf, menuItemOf, openCardMenu } from './harness/function-card';
 
-function cardFor(container: HTMLElement, name: string): HTMLElement {
-	const card = [...container.querySelectorAll('.objet')].find(
-		(el) => el.querySelector('.nom')?.textContent?.trim() === name
-	);
-	if (!card) throw new Error(`pas de carte ${name}`);
-	return card as HTMLElement;
-}
-
+/** `a`, paramètre de f : son curseur est sous sa ligne. */
 async function openValue(definition: string, extra?: (a: Atelier) => void) {
 	const atelier = new Atelier();
 	atelier.create({ kind: 'value', name: 'b', definition: '1' }, 'text');
@@ -25,13 +23,22 @@ async function openValue(definition: string, extra?: (a: Atelier) => void) {
 	atelier.create({ kind: 'function', name: 'f', definition: 'a*x' }, 'text');
 	extra?.(atelier);
 	const { container } = await render(WithAtelier, { atelier });
-	(cardFor(container, 'a').querySelector('.entete') as HTMLButtonElement).click();
-	await vi.waitFor(() => expect(cardFor(container, 'a').querySelector('math-field')).toBeTruthy());
-	return { atelier, container, card: () => cardFor(container, 'a') };
+	return { atelier, container, card: () => cardOf(container, 'a') };
 }
 
-function input(card: HTMLElement, label: string): HTMLInputElement {
-	const found = card.querySelector(`input[aria-label="${label}"]`) as HTMLInputElement | null;
+/** La fenêtre des bornes et du pas de `a`, ouverte depuis le menu. */
+async function openSettings(container: HTMLElement): Promise<HTMLElement> {
+	const menu = await openCardMenu(container, 'a');
+	menuItemOf(menu, 'Bornes et pas du curseur').click();
+	return vi.waitFor(() => {
+		const dialog = document.querySelector<HTMLElement>('[role="dialog"]');
+		expect(dialog).toBeTruthy();
+		return dialog!;
+	});
+}
+
+function input(root: ParentNode, label: string): HTMLInputElement {
+	const found = root.querySelector(`input[aria-label="${label}"]`) as HTMLInputElement | null;
 	if (!found) throw new Error(`pas de champ « ${label} »`);
 	return found;
 }
@@ -41,17 +48,24 @@ function setInput(field: HTMLInputElement, value: string) {
 	field.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
+/** La raison que donne l'élément « Curseur » du menu de `name`. */
+async function sliderReason(container: HTMLElement, name: string): Promise<HTMLElement> {
+	const menu = await openCardMenu(container, name);
+	return menuItemOf(menu, 'Curseur');
+}
+
 describe('le curseur dans la carte', () => {
 	// K1
-	it('montre le curseur avec sa valeur, ses bornes et son pas', async () => {
-		const { card } = await openValue('2');
+	it('montre le curseur avec sa valeur, et ses bornes et son pas dans la fenêtre', async () => {
+		const { card, container } = await openValue('2');
 
 		const thumb = card().querySelector('[role="slider"]');
 		expect(thumb).toBeTruthy();
 		await vi.waitFor(() => expect(thumb?.getAttribute('aria-valuetext')).toBe('a = 2'));
-		expect(input(card(), 'de, minimum du curseur de a').value).toBe('-10');
-		expect(input(card(), 'à, maximum du curseur de a').value).toBe('10');
-		expect(input(card(), 'pas du curseur de a').value).toBe('0.1');
+		const dialog = await openSettings(container);
+		expect(input(dialog, 'de, minimum du curseur de a').value).toBe('-10');
+		expect(input(dialog, 'à, maximum du curseur de a').value).toBe('10');
+		expect(input(dialog, 'pas du curseur de a').value).toBe('0.1');
 	});
 
 	// K2 : une flèche avance d'un pas, et la fonction suit
@@ -66,9 +80,10 @@ describe('le curseur dans la carte', () => {
 	});
 
 	it('régler les bornes passe par l’atelier', async () => {
-		const { atelier, card } = await openValue('2');
+		const { atelier, container } = await openValue('2');
+		const dialog = await openSettings(container);
 
-		setInput(input(card(), 'à, maximum du curseur de a'), '5');
+		setInput(input(dialog, 'à, maximum du curseur de a'), '5');
 
 		await vi.waitFor(() => {
 			const a = atelier.get('a');
@@ -78,13 +93,14 @@ describe('le curseur dans la carte', () => {
 
 	// E1
 	it('dit qu’un réglage est refusé, puis remet la valeur retenue', async () => {
-		const { card } = await openValue('2');
-		const min = input(card(), 'de, minimum du curseur de a');
+		const { container } = await openValue('2');
+		const dialog = await openSettings(container);
+		const min = input(dialog, 'de, minimum du curseur de a');
 
 		setInput(min, '50');
 
 		await vi.waitFor(() =>
-			expect(card().querySelector('.refus')?.textContent).toContain('minimum')
+			expect(dialog.querySelector('.refus')?.textContent).toContain('minimum')
 		);
 		expect(min.getAttribute('aria-invalid')).toBe('true');
 		min.dispatchEvent(new Event('change', { bubbles: true }));
@@ -93,23 +109,21 @@ describe('le curseur dans la carte', () => {
 
 	// Une valeur calculée n'a pas de curseur à bouger : on le dit
 	it('pas de curseur sur une valeur calculée, et on dit pourquoi', async () => {
-		const { card } = await openValue('b+1');
+		const { card, container } = await openValue('b+1');
 
 		expect(card().querySelector('[role="slider"]')).toBeNull();
-		expect(card().querySelector('.sans-curseur')?.textContent).toContain('calculée');
+		expect((await sliderReason(container, 'a')).textContent).toContain('calculée');
 	});
 
 	// D4
 	it('pas de curseur sur une grandeur, et on dit pourquoi', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'value', name: 'a', definition: '12[km]' }, 'url');
+		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
-		(cardFor(container, 'a').querySelector('.entete') as HTMLButtonElement).click();
 
-		await vi.waitFor(() =>
-			expect(cardFor(container, 'a').querySelector('.sans-curseur')?.textContent).toContain('km')
-		);
-		expect(cardFor(container, 'a').querySelector('[role="slider"]')).toBeNull();
+		expect(cardOf(container, 'a').querySelector('[role="slider"]')).toBeNull();
+		expect((await sliderReason(container, 'a')).textContent).toContain('km');
 	});
 });
 
@@ -127,41 +141,43 @@ describe('revue a11y du lot 4', () => {
 
 	// WCAG 2.5.3 : le nom commence par le mot visible
 	it('les champs commencent par le mot qu’on voit', async () => {
-		const { card } = await openValue('2');
+		const { container } = await openValue('2');
+		const dialog = await openSettings(container);
 
-		expect(input(card(), 'de, minimum du curseur de a')).toBeTruthy();
-		expect(input(card(), 'à, maximum du curseur de a')).toBeTruthy();
-		expect(input(card(), 'pas du curseur de a')).toBeTruthy();
+		expect(input(dialog, 'de, minimum du curseur de a')).toBeTruthy();
+		expect(input(dialog, 'à, maximum du curseur de a')).toBeTruthy();
+		expect(input(dialog, 'pas du curseur de a')).toBeTruthy();
 	});
 
 	// Le refus reste lisible après avoir quitté le champ, et il est relié au champ
 	it('le refus reste affiché et relié au champ fautif', async () => {
-		const { card } = await openValue('2');
-		const min = input(card(), 'de, minimum du curseur de a');
+		const { container } = await openValue('2');
+		const dialog = await openSettings(container);
+		const min = input(dialog, 'de, minimum du curseur de a');
 
 		setInput(min, '50');
 		await vi.waitFor(() =>
-			expect(card().querySelector('.refus')?.textContent).toContain('minimum')
+			expect(dialog.querySelector('.refus')?.textContent).toContain('minimum')
 		);
-		const id = card().querySelector('.refus')?.id;
+		const id = dialog.querySelector('.refus')?.id;
 		expect(id).toBeTruthy();
 		expect(min.getAttribute('aria-describedby')).toBe(id);
 
 		min.dispatchEvent(new Event('change', { bubbles: true }));
 		await vi.waitFor(() => expect(min.value).toBe('-10'));
-		expect(card().querySelector('.refus')?.textContent).toContain('minimum');
+		expect(dialog.querySelector('.refus')?.textContent).toContain('minimum');
 	});
 
 	// A1 vu depuis la carte : une fraction n'est pas « calculée »
 	it('une fraction tapée garde son curseur, sans message faux', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'value', name: 'a', definition: '\\frac{1}{2}' }, 'keyboard');
+		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
-		(cardFor(container, 'a').querySelector('.entete') as HTMLButtonElement).click();
 
 		await vi.waitFor(() =>
-			expect(cardFor(container, 'a').querySelector('[role="slider"]')).toBeTruthy()
+			expect(cardOf(container, 'a').querySelector('[role="slider"]')).toBeTruthy()
 		);
-		expect(cardFor(container, 'a').querySelector('.sans-curseur')).toBeNull();
+		expect((await sliderReason(container, 'a')).textContent).not.toContain('calculée');
 	});
 });

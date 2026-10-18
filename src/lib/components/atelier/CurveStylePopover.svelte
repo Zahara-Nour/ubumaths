@@ -1,12 +1,13 @@
 <script lang="ts">
 	/**
-	 * Le point de couleur d'une carte de fonction, et ce qu'il ouvre : couleur,
-	 * épaisseur et style du trait (lot 3 de `docs/wip/atelier-refonte-interface-phase0.md`).
+	 * Le point de couleur d'une carte de fonction ou de suite, et ce qu'il
+	 * ouvre : couleur, épaisseur et style du trait (lots 3 et 4a de
+	 * `docs/wip/atelier-refonte-interface-phase0.md`).
 	 *
 	 * Le contenu est celui de « Sur le graphique » (`CurveSettings`) ; seule la
 	 * présentation change : trois groupes de boutons dans UNE petite fenêtre,
 	 * au lieu de trois fenêtres. Comme là-bas, tout s'écrit dans l'ATELIER
-	 * (`setDisplay`), jamais dans le grapheur.
+	 * (`setDisplay`, `setSequenceDisplay`), jamais dans le grapheur.
 	 *
 	 * Une courbe jamais tracée n'a pas encore de couleur : la fenêtre propose
 	 * de la tracer, plutôt que des réglages qui ne se verraient nulle part.
@@ -14,7 +15,12 @@
 	import { tick } from 'svelte';
 	import * as Popover from '$lib/components/ui/popover';
 	import { useAtelier } from '$lib/atelier/context';
-	import type { FunctionObject } from '$lib/atelier/types';
+	import {
+		isSequence,
+		type CurveDisplay,
+		type FunctionObject,
+		type SequenceObject
+	} from '$lib/atelier/types';
 	import { displayName } from '$lib/atelier/names';
 	import {
 		CURVE_COLORS,
@@ -31,7 +37,7 @@
 	import { rovingRadioGroup } from './roving-radio-group';
 
 	interface Props {
-		object: FunctionObject;
+		object: FunctionObject | SequenceObject;
 	}
 
 	let { object }: Props = $props();
@@ -51,6 +57,14 @@
 	const display = $derived(object.display);
 	/** Pleine quand la courbe est tracée, vide sinon (C2) : la forme, pas que la couleur. */
 	const filled = $derived(object.plotted === true && display !== undefined);
+
+	/** Couleur et trait s'écrivent dans l'atelier, chacun avec son réglage. */
+	type StylePatch = Partial<Pick<CurveDisplay, 'color' | 'lineWidth' | 'lineStyle'>>;
+
+	function setStyle(patch: StylePatch) {
+		if (isSequence(object)) atelier.setSequenceDisplay(object.name, patch);
+		else atelier.setDisplay(object.name, patch);
+	}
 
 	function dasharrayOf(style: LineStyle): string | undefined {
 		const value = LINE_STYLE_DASHARRAY[style];
@@ -94,7 +108,7 @@
 	<Popover.Content class="w-auto p-3" align="start">
 		{#if display === undefined}
 			<div class="vide">
-				<p>{name} n’est pas encore tracée : sa couleur se choisit une fois la courbe tracée.</p>
+				<p>{name} n’est pas encore tracée : sa couleur se choisit une fois tracée.</p>
 				<button type="button" class="tracer" onclick={plotNow}>Tracer {name}</button>
 			</div>
 		{:else}
@@ -115,7 +129,7 @@
 							title={CURVE_COLOR_LABELS[color]}
 							style:background-color={curveColorValue(color)}
 							onclick={() => {
-								if (isCurveColor(color)) atelier.setDisplay(object.name, { color });
+								if (isCurveColor(color)) setStyle({ color });
 							}}
 						></button>
 					{/each}
@@ -134,7 +148,7 @@
 							aria-checked={display.lineWidth === width}
 							aria-label={`Épaisseur ${width} px`}
 							title={`${width} px`}
-							onclick={() => atelier.setDisplay(object.name, { lineWidth: width })}
+							onclick={() => setStyle({ lineWidth: width })}
 						>
 							<svg width="32" height="16" viewBox="0 0 32 16" aria-hidden="true">
 								<line
@@ -164,7 +178,7 @@
 							aria-checked={display.lineStyle === style}
 							aria-label={STYLE_LABELS[style]}
 							title={STYLE_LABELS[style]}
-							onclick={() => atelier.setDisplay(object.name, { lineStyle: style })}
+							onclick={() => setStyle({ lineStyle: style })}
 						>
 							<svg width="32" height="16" viewBox="0 0 32 16" aria-hidden="true">
 								<line

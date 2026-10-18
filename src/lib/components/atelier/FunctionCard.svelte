@@ -35,6 +35,7 @@
 	import CurveSettings from './CurveSettings.svelte';
 	import CurveStylePopover from './CurveStylePopover.svelte';
 	import FormulaText from './FormulaText.svelte';
+	import CardActionItems from './CardActionItems.svelte';
 
 	interface Props {
 		object: FunctionObject;
@@ -138,12 +139,8 @@
 		event.preventDefault();
 	}
 
-	function handleSelect(action: ObjectAction, event: Event) {
-		// Indisponible : le menu reste ouvert, la raison est lue avec l'élément
-		if (action.disabledReason !== undefined) {
-			event.preventDefault();
-			return;
-		}
+	/** Une action disponible (`CardActionItems` garde le menu ouvert sur une indisponible). */
+	function handleSelect(action: ObjectAction) {
 		if (action.id === 'table' && onTabulate) {
 			focusLeaves = true;
 			void openTabulate();
@@ -325,39 +322,7 @@
 				<DropdownMenu.Separator />
 				<DropdownMenu.Group>
 					<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
-					{#each actions as action (action.id)}
-						<!--
-							Jamais `disabled` : un élément désactivé est sauté par le clavier,
-							et sa raison ne serait jamais lue — or c'est elle qui dit à l'élève
-							ce qui lui manque. L'élément reste atteignable, s'annonce
-							indisponible (`aria-disabled`, posé APRÈS les props de bits-ui, qui
-							l'écraseraient) et sa raison est sa description ; le choisir ne fait
-							rien.
-						-->
-						{@const unavailable = action.disabledReason !== undefined}
-						{@const reasonId = `${uid}-raison-${action.id.replace(/[^\w-]/g, '-')}`}
-						<DropdownMenu.Item
-							class={unavailable ? 'indisponible' : undefined}
-							variant={action.id === 'remove' ? 'destructive' : 'default'}
-							onSelect={(event) => handleSelect(action, event)}
-						>
-							{#snippet child({ props })}
-								<div
-									{...props}
-									aria-disabled={unavailable ? 'true' : undefined}
-									aria-label={unavailable ? action.label : undefined}
-									aria-describedby={unavailable ? reasonId : undefined}
-								>
-									<span class="item">
-										<span>{action.label}</span>
-										{#if action.disabledReason}
-											<span class="raison" id={reasonId}>{action.disabledReason}</span>
-										{/if}
-									</span>
-								</div>
-							{/snippet}
-						</DropdownMenu.Item>
-					{/each}
+					<CardActionItems {actions} onselect={handleSelect} />
 				</DropdownMenu.Group>
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>

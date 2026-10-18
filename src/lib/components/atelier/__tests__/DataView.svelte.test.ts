@@ -13,6 +13,7 @@ import { tick } from 'svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { isList } from '$lib/atelier/types';
+import { chooseObjectAction } from './harness/function-card';
 
 async function settle() {
 	await tick();
@@ -638,15 +639,8 @@ describe('coller et copier (§4)', () => {
 		atelier.create({ kind: 'list', name: 'L', definition: '3 ; 4' });
 		atelier.editCells([{ column: 1, row: 1, text: '=A1*2' }]);
 		const { container } = await openData(atelier);
-		const carte = [...container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'L'
-		);
-		(carte?.querySelector('button') as HTMLButtonElement).click();
-		await settle();
-		const supprimer = [...container.querySelectorAll('.action')].find(
-			(b) => b.textContent?.trim() === 'Supprimer'
-		) as HTMLButtonElement;
-		supprimer.click();
+		// Lot 4a de la refonte : l'action est dans le menu de la carte
+		await chooseObjectAction(container, 'L', 'Supprimer');
 		await settle();
 
 		expect(atelier.get('L')).toBeDefined();
@@ -697,15 +691,8 @@ describe('annuler dans la grille (T6)', () => {
 		atelier.create({ kind: 'value', name: 'a', definition: '2' });
 		atelier.editCells([{ column: 1, row: 1, text: '5' }]);
 		const { container } = await openData(atelier);
-		const carte = [...container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'a'
-		);
-		(carte?.querySelector('button') as HTMLButtonElement).click();
-		await settle();
-		const supprimer = [...container.querySelectorAll('.action')].find(
-			(b) => b.textContent?.trim() === 'Supprimer'
-		) as HTMLButtonElement;
-		supprimer.click();
+		// Lot 4a de la refonte : l'action est dans le menu de la carte
+		await chooseObjectAction(container, 'a', 'Supprimer');
 		await settle();
 		expect(atelier.get('a')).toBeUndefined();
 
@@ -724,15 +711,8 @@ describe('annuler dans la grille (T6)', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'value', name: 'a', definition: '2' });
 		const { container } = await openData(atelier);
-		const carte = [...container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'a'
-		);
-		(carte?.querySelector('button') as HTMLButtonElement).click();
-		await settle();
-		const supprimer = [...container.querySelectorAll('.action')].find(
-			(b) => b.textContent?.trim() === 'Supprimer'
-		) as HTMLButtonElement;
-		supprimer.click();
+		// Lot 4a de la refonte : l'action est dans le menu de la carte
+		await chooseObjectAction(container, 'a', 'Supprimer');
 		await settle();
 		const undoRemoval = vi.spyOn(atelier, 'undoRemoval');
 
@@ -754,15 +734,8 @@ describe('annuler dans la grille (T6)', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'value', name: 'a', definition: '2' });
 		const { container } = await openData(atelier);
-		const carte = [...container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'a'
-		);
-		(carte?.querySelector('button') as HTMLButtonElement).click();
-		await settle();
-		const supprimer = [...container.querySelectorAll('.action')].find(
-			(b) => b.textContent?.trim() === 'Supprimer'
-		) as HTMLButtonElement;
-		supprimer.click();
+		// Lot 4a de la refonte : l'action est dans le menu de la carte
+		await chooseObjectAction(container, 'a', 'Supprimer');
 		await settle();
 
 		await userEvent.click(cellAt(container, 'B1')!);
@@ -1069,18 +1042,9 @@ describe('recopier (§5)', () => {
 // =============================================================================
 
 describe('diagramme d’une liste', () => {
-	function selectCard(container: HTMLElement, name: string) {
-		const carte = [...container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === name
-		);
-		(carte?.querySelector('button') as HTMLButtonElement | undefined)?.click();
-	}
-
-	function clickAction(container: HTMLElement, label: string) {
-		const bouton = [...container.querySelectorAll('.action')].find(
-			(b) => b.textContent?.trim() === label
-		) as HTMLButtonElement | undefined;
-		bouton?.click();
+	/** Une action de la carte de L, par son menu (lot 4a de la refonte). */
+	async function clickAction(container: HTMLElement, label: string) {
+		await chooseObjectAction(container, 'L', label);
 	}
 
 	it('« Diagramme en bâtons » : bascule sur Données, barres de la bonne liste', async () => {
@@ -1090,9 +1054,7 @@ describe('diagramme d’une liste', () => {
 		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
 		await settle();
 
-		selectCard(container, 'L');
-		await settle();
-		clickAction(container, 'Diagramme en bâtons');
+		await clickAction(container, 'Diagramme en bâtons');
 		await settle();
 
 		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Données');
@@ -1109,9 +1071,7 @@ describe('diagramme d’une liste', () => {
 		await settle();
 		const live = () => container.querySelector('[data-annonce]')?.textContent?.trim();
 
-		selectCard(container, 'L');
-		await settle();
-		clickAction(container, 'Diagramme circulaire');
+		await clickAction(container, 'Diagramme circulaire');
 		await settle();
 		await new Promise((r) => setTimeout(r, 50));
 
@@ -1128,14 +1088,12 @@ describe('diagramme d’une liste', () => {
 		await settle();
 		const live = () => container.querySelector('[data-annonce]')?.textContent?.trim();
 
-		selectCard(container, 'L');
-		await settle();
-		clickAction(container, 'Diagramme en bâtons');
+		await clickAction(container, 'Diagramme en bâtons');
 		await settle();
 		await new Promise((r) => setTimeout(r, 50));
 		expect(live()).toBe('Diagramme de L affiché dans l’onglet Données.');
 
-		clickAction(container, 'Retirer le diagramme');
+		await clickAction(container, 'Retirer le diagramme');
 		await settle();
 		await new Promise((r) => setTimeout(r, 50));
 		expect(live()).toBe('Diagramme de L retiré.');
@@ -1215,15 +1173,8 @@ describe('nuage avec une partenaire', () => {
 		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
 		await settle();
 
-		const carte = [...container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'L'
-		);
-		(carte?.querySelector('button') as HTMLButtonElement).click();
-		await settle();
-		const bouton = [...container.querySelectorAll('.action')].find(
-			(b) => b.textContent?.trim() === 'Nuage avec M'
-		) as HTMLButtonElement;
-		bouton.click();
+		// Lot 4a de la refonte : l'action est dans le menu de la carte
+		await chooseObjectAction(container, 'L', 'Nuage avec M');
 		await settle();
 
 		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Graphe');
