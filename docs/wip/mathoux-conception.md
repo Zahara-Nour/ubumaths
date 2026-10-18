@@ -1,7 +1,7 @@
 # Mathoux et motivation des élèves — phase 0
 
-> Analyse du 2026-10-18 (session « mathoux »). **Rien n'est décidé ni codé.** Les quatre questions
-> du § 6 attendent la réponse de David ; les recommandations du § 7 ne valent pas décision.
+> Analyse du 2026-10-18 (session « mathoux »). **Les recommandations du § 7 ont été validées par
+> David le 2026-10-18** ; elles sont décisions. Rien n'est codé. Étape 1 en phase 0 : § 8.
 
 ## 1. Demande (David, 2026-10-18)
 
@@ -32,9 +32,15 @@ Références : `docs/systeme/jeux-et-economie.md`, `docs/systeme/buddy-palotins.
 
 **Palotins.**
 
-- **Les gains d'XP ne se produisent pas.** Ils sont branchés sur `api/tests/save`,
-  `api/riddles/[id]/submit` et `src/lib/server/evaluation-attempts.ts`. Le branchement sur le quiz
-  de chapitre est tombé avec la suppression de ce quiz (2026-09-15). Aucun Palotin n'a progressé.
+- **Les gains d'XP sont branchés, mais personne ne les a déclenchés.** Ils sont appelés par
+  `api/tests/save` (Entraînement, Course aux nombres ; pas les séances flash ni les cartes de cours,
+  décision du 2026-09-28), `api/riddles/[id]/submit` et `src/lib/server/evaluation-attempts.ts`.
+  _Correction du 2026-10-18 : la première version de cette analyse parlait de « boucle cassée ». La
+  mesure dit autre chose : aucun élève ne s'est connecté depuis le 2026-09-11, et les 3 séances en
+  base sont celles d'un professeur. Le 0 XP montre l'absence d'usage, pas une panne prouvée._
+- Le bonus « nouveau thème » n'est jamais donné : `api/tests/save` passe `theme: undefined` (TODO).
+- Ni la révision espacée (`api/srs/review/submit`) ni les fiches (consultation seule) ne donnent
+  d'XP.
 - **Les images n'existent pas.** `BuddyAvatar` cherche `/images/buddies/<palotin>-<expression>.png`,
   absent de `static/` : l'affichage se rabat sur un cercle coloré.
 - La suite de la spec (v1.1 à v3 : skins, indices, mini-quêtes) n'est pas commencée.
@@ -47,7 +53,7 @@ VIP ».
 
 **Diagnostic.** Il y a six systèmes de récompense, et **aucun n'est relié au travail mathématique** :
 les gidouilles viennent des jeux, les cartes VIP du comportement en classe, et la boucle des Palotins
-est cassée. Avant d'ajouter les Mathoux, il faut une boucle unique : _je fais des maths → quelque
+n'a jamais tourné. Avant d'ajouter les Mathoux, il faut une boucle unique : _je fais des maths → quelque
 chose de visible progresse_.
 
 ## 3. En classe et en cours particulier, la situation n'est pas la même
@@ -158,7 +164,7 @@ recherche INPI n'est exigée que pour un élément de marque (Compendium § IV).
    (safeguarding entre mineurs qui ne se connaissent pas) ?
 4. **Parents** : voient-ils un bilan, et lequel ?
 
-## 7. Recommandations (non tranchées)
+## 7. Décisions (recommandations validées par David le 2026-10-18)
 
 1. **Palotin gardien de la Chatterie, pas de fusion.** Le Compendium sépare déjà les rôles : le
    Palotin parle, le Chat Noir est « muet ». Les Mathoux muets, le Palotin les commente et signale
@@ -180,3 +186,61 @@ recherche INPI n'est exigée que pour un élément de marque (Compendium § IV).
    chat. Première étape : un bilan que le prof génère (PDF) et envoie lui-même, ou que l'élève
    montre : aucune adresse de parent stockée. Un compte parent viendra avec le modèle de
    consentement parental.
+
+## 8. Étape 1 — la boucle du Palotin tourne (phase 0, à valider)
+
+Constats du 2026-10-18, en plus du § 2 :
+
+- le serveur renvoie le gain (`buddy_xp` dans la réponse de `api/tests/save`), mais **aucun écran ne
+  le lit** et `updateBuddyXpOptimistic` n'est jamais appelé : l'élève ne voit pas son Palotin
+  progresser à la fin d'une séance ;
+- l'affichage dit « XP » et « Niveau » (`BuddyStatusPanel.svelte`, `ChangePalotinModal.svelte`),
+  mots que le Compendium interdit à l'écran ;
+- la Constance Royale est perdue dès qu'un jour passe sans activité (`student/+layout.server.ts`),
+  remise à zéro sans `.select()`.
+
+### Comportements proposés
+
+**A. Gagner en travaillant (preuve de la boucle).**
+
+- Nominal : un élève avec Palotin envoie un Entraînement ou une Course aux nombres → son Palotin
+  gagne, et la base le montre (test d'intégration, vérifié rouge sans le branchement).
+- Limite : séance flash et cartes de cours → rien (décision du 2026-09-28) ; plafond du jour atteint
+  → rien de plus, sans erreur.
+- Erreur : élève sans Palotin → la séance s'enregistre normalement, aucun gain.
+
+**B. Voir son gain à la fin de la séance.** L'écran de résultat montre ce que le Palotin a gagné,
+une phrase du Palotin, et la montée de niveau quand elle a lieu. Le widget se met à jour sans
+recharger.
+
+**C. Nouveau thème.** Le bonus « nouveau thème » est réellement donné : le thème d'une question est
+le thème du programme du point qu'elle valide (`question_template_points` → `curriculum_points` →
+`curriculum_themes`, à vérifier). Une question sans point validé → pas de bonus, sans erreur.
+
+**D. Révision espacée.** Voir question 1.
+
+**E. Constance Royale.** Voir question 2. Dans tous les cas, la remise à zéro vérifie la ligne
+modifiée (`.select()`).
+
+**F. Mots affichés.** « XP » et « Niveau » remplacés par des mots du lore. Voir question 3.
+
+**G. Images.** 3 Palotins × 6 expressions = 18 images (`/images/buddies/<palotin>-<expression>.png`).
+Voir question 4.
+
+**Hors étape 1** : les fiches (consultation seule, aucun signal de travail à récompenser sans un
+bouton « j'ai fini » auto-déclaré).
+
+### Questions pour David
+
+1. **Révision espacée** : les cartes sont auto-évaluées, d'où « sans XP » le 2026-09-28. Proposition :
+   récompenser l'**effort** et non la réussite : un forfait par séance de révision terminée (toutes
+   les cartes dues passées), une fois par jour. Oui / non ?
+2. **Constance Royale** : aujourd'hui perdue après un jour sans travail. Un élève particulier qui a
+   cours une ou deux fois par semaine la perdra sans cesse. Proposition : compter en **semaines**
+   (« au moins 3 jours de travail dans la semaine »). Ou garder les jours avec 1 jour de grâce par
+   semaine ?
+3. **Mots** : l'XP du Palotin le fait grossir, comme la gidouille d'Ubu. Proposition :
+   « **Embonpoint** » pour l'XP et « **Tour de taille** » pour le niveau (« Tour de taille 4 —
+   120 / 200 d'embonpoint »). Ou d'autres mots ?
+4. **Images** : qui les dessine ? Toi ou un illustrateur ; ou moi, en SVG à silhouette simple façon
+   Steinlen (même style que les futurs Mathoux), remplaçables plus tard.
