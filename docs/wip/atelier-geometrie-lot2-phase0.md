@@ -159,6 +159,11 @@ construction) ; il **ne change pas `cos(60)`**, qui reste en radians (dérivées
 résolutions). Écrire en degrés : `cos(60[°])` aujourd'hui ; `60°` et `60^\circ` acceptés par une
 petite PR à part, après les mesures.
 
+**Deux précisions de L4** (David, 2026-10-18, « oui ») : « Garder » sur une ligne de mesure garde
+la **mesure** (elle suit ses points), pas le nombre ; `distance(N, [AB])` et `distance(N, [AB))`
+(segment, demi-droite, nommés ou non) sont **refusés** avec l'aide « distance à la droite : écris
+distance(N, (AB)) » — dans le DSL, `distance(A, s)` garde son sens (distance à la droite portée).
+
 ### L5 — Point sur un objet, et intersections à plusieurs solutions
 
 - `M = point_sur(s, 0.3)` (DSL ; `point_sur(s ; 0,3)` dans l'atelier) : M sur s, à la **position** 0,3 (0 = A, 1 = B pour un segment ; pour
