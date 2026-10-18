@@ -9,6 +9,15 @@ Demande de David du 2026-10-18 (session « modifs-fixes »). Rien n'est codé : 
 - **Annuler / Rétablir : un vrai chantier**, avec sa propre phase 0 (lot 5). Toute action devient annulable.
 - Onglets : Graphe, Données, puis plus tard Géométrie et Python. La « Console » n'est plus un onglet : c'est le volet.
 
+## Tranché par David, deuxième passe (2026-10-18) — fait foi sur les « À valider » ci-dessous
+
+- **Lot 1** : Partager dans la barre, à droite de Réglages. Annuler / Rétablir **absents** jusqu'au lot 5 (Ctrl+Z annule toujours une suppression).
+- **Lot 2, raccourci** : la **touche physique sous Échap** (`²` PC AZERTY, `@` Mac AZERTY, `` ` `` QWERTY), lue par sa position et non par son caractère ; sans effet quand le focus est dans un champ. ⚠️ À MESURER sur le Mac de David avant de coder (le `event.code` de cette touche est parfois mal nommé sur les claviers Apple). Secours : **Ctrl+Entrée** (Ctrl, pas Cmd, sur Mac), qui marche aussi depuis un champ. Infobulle du bouton : les deux raccourcis.
+- **Lot 2, aspect** : fond clair de l'atelier ; invite `>` devant l'instruction, réponse préfixée `-->` en couleur ; chasse fixe pour les seules commandes en texte (`.dériver f`), les saisies mathématiques restent rendues par MathLive.
+- **Lot 3** : les actions à saisie (tabuler de/à/pas) s'ouvrent dans une petite fenêtre depuis le menu, résultat dans la console ; exception : l'image ouvre la console préremplie avec `f(`. Ce qu'est une carte (dérivée, réciproque) : infobulle sur le nom **et** une petite icône de lien à côté du nom (téléphone).
+- **Lot 4** : le curseur d'une valeur est visible sur la ligne quand la valeur est un **paramètre** (utilisée par une autre carte) ; ses bornes et son pas restent dans le menu.
+- **Lot 5** : une étape = une validation (Entrée, sortie du champ, choix dans un menu) ; un changement de couleur = une étape ; tout un glissé de curseur = une seule étape. Tableur dans la même pile. Annuler une ligne de console = annuler son effet, ligne barrée. Pile perdue au rechargement.
+
 ## Constat qui change la barre : « Exporter » n'est pas « Enregistrer »
 
 Le JSON « pour rejouer » (`history-export.ts`) ne contient que les **gestes de Calcul** (`ReplayStep` : saisie, action, supprimer, annuler, garder). Il ne contient **pas** une définition modifiée dans une carte, une couleur, une épaisseur, une courbe masquée, le tableur ou ses formats. Recharger ce fichier ne rend donc pas l'atelier qu'on avait.
@@ -126,4 +135,4 @@ Sa phase 0 vient après les lots 1 à 3. Voici les questions qu'elle devra tranc
 4. Lot 4 (réflexion, puis code).
 5. Lot 5 (undo/redo).
 
-⚠️ La mise en forme des cases du tableur (`atelier-tableur-mise-en-forme-phase0.md`) touche aussi `persistence.ts`. Le lot 1 (Enregistrer) doit partir de sa version, ou attendre son merge.
+La mise en forme des cases du tableur, qui touche aussi `persistence.ts`, est mergée (#1466, #1469) : le lot 1 part de cette version.
