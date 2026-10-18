@@ -644,14 +644,20 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   [atelier-tableur-reste-et-ou-csv-phase0.md](../wip/atelier-tableur-reste-et-ou-csv-phase0.md)
   §3, validée le 2026-10-18) : bouton « Ouvrir un CSV… » (champ de fichier caché). Le fichier est
   lu DANS le navigateur, rien n'est envoyé (`readCsvFile`, `grid.ts`) : plus de 1 Mo
-  (`MAX_CSV_BYTES`) refusé avant lecture ; un octet nul (image, `.xlsx`) refusé ; UTF-8 (BOM
-  retiré), sinon Windows-1252 (Excel sous Windows : `é` reste `é`). Séparateur : tabulation, sinon
-  `;`, sinon la virgule SEULEMENT si une ligne à virgule n'est pas un nombre à la française
-  (Q-RE-5 : `1.52,45.5` ou `Alice,12` coupés, `1,5` reste 1,5). Guillemets comme au collage ;
-  l'apostrophe de `exportText` devant `-`, `+`, `@` est retirée (devant `=`, gardée). Le tableau se
-  pose comme un COLLAGE à partir de la case choisie (Q-RE-4, `pasteTable`) : tout ou rien, titres
-  devinés, un geste ; le téléchargement de l'atelier se rouvre à l'identique (testé). V4 remplaçait
-  la feuille et tronquait en silence à 20 × 20.
+  (`MAX_CSV_BYTES`) refusé AVANT lecture (la taille du `File`) ; un octet nul (image, `.xlsx`)
+  refusé ; UTF-16 avec sa marque (« Texte Unicode » d'Excel), sinon UTF-8 (BOM retiré), sinon
+  Windows-1252 (Excel sous Windows : `é` reste `é`). Séparateur, cherché HORS des guillemets :
+  tabulation, sinon `;`, sinon la virgule SEULEMENT si le fichier écrit des décimaux avec un point
+  (Q-RE-5 (a) : `1.52,45.5` coupé ; `1,5` ou `abs, malade` jamais). Guillemets comme au collage ;
+  l'apostrophe de `exportText` devant `-`, `+`, `@` est retirée (devant `=`, gardée). En tête,
+  seules les lignes vraiment vides tombent : `;;` (cases vides) reste, et une grille téléchargée
+  qui commence en A3 se rouvre en A3. Avant de poser, `csvCellRefusal` dit la case et sa ligne
+  dans le fichier : un « ; » hors d'une formule (il répartirait la case), plus de 200 caractères.
+  Le tableau se pose comme un COLLAGE à partir de la case choisie (Q-RE-4, `pasteTable`) : tout
+  ou rien, un geste, le focus rendu à la grille. Les titres se devinent comme au collage (T4) :
+  des titres au-dessus de NOMBRES redeviennent des titres ; au-dessus de mots seuls, ou un titre
+  qui est un nombre (`2024`), ils reviennent comme une ligne de cases — l'aller-retour n'est
+  exact que dans le premier cas. V4 remplaçait la feuille et tronquait en silence à 20 × 20.
 - **Annuler dans la grille** (T6, exception à D6 limitée à la grille) : `undoGrid` / `redoGrid`,
   Ctrl/⌘+Z et Ctrl/⌘+Maj+Z (ou Ctrl+Y) sur une cellule, boutons « Annuler » / « Rétablir »
   (désactivés avec leur raison). Un geste = une saisie, un collage (cases et titres ensemble), un
