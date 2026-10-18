@@ -290,4 +290,4 @@ liste trouée en citant l'entrée).
 - [x] couleurs : `cell-colors.ts`, contrastes mesurés (rouge sur jaune en sombre : 3,3 tel quel)
 - [x] presse-papiers interne : `styles` (Zod, forme du tableau)
 - [x] captures clair, sombre, 390 px
-- [ ] revue, PR, CI, merge
+- [x] revue (9 points corrigés), PR #1469, CI verte, mergée le 2026-10-18
