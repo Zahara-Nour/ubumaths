@@ -26,6 +26,7 @@
 	} from '$lib/types/evaluation-attempt';
 	import { toSubmission, type Submission } from '$lib/questions/submission';
 	import { toDisplayInstance, unitKeysOf } from '$lib/questions/public-question';
+	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
 
 	let { data }: { data: PageData } = $props();
 
@@ -51,6 +52,8 @@
 	let pendingSubmission = $state<Submission | null>(null);
 	let submitError = $state<string | null>(null);
 	let isSubmitting = $state(false);
+	/** Gain du Palotin de la dernière séance enregistrée (null : rien à montrer) */
+	let buddyGain = $state<BuddyGainView | null>(null);
 
 	/**
 	 * Parse URL parameters and initialize test session
@@ -217,6 +220,7 @@
 	 */
 	function handleSeriesRestart() {
 		if (!testSession) return;
+		buddyGain = null;
 		try {
 			seriesItems = generateSeriesItems(testSession.categories, {
 				excludeCourseCards: !!assignmentId
@@ -328,6 +332,8 @@
 	 * Handle test completion - save results to database
 	 */
 	async function handleTestComplete(result: TestResult) {
+		// Nouvelle fin de séance : le gain précédent ne vaut plus
+		buddyGain = null;
 		// Évaluation notée : rien n'est corrigé ici, la copie part au serveur
 		if (attemptId) {
 			pendingSubmission = toSubmission(attemptPositions, result.answers);
@@ -357,6 +363,8 @@
 					const data = await response.json();
 					// Update result with session ID
 					result.sessionId = data.sessionId;
+					// Gain du Palotin : montré sur l'écran de résultats, widget mis à jour
+					buddyGain = await receiveBuddyGain(data);
 				} else {
 					console.error('Failed to save test results:', await response.text());
 					// 401 = visiteur non connecté : rien à enregistrer, rien à signaler
@@ -484,6 +492,7 @@
 					inEvaluation={!!assignmentId}
 					collectOnly={!!attemptId}
 					showResults={!attemptId}
+					{buddyGain}
 				/>
 			{/key}
 		{:else if testSession.mode === 'course'}
@@ -496,6 +505,7 @@
 				collectOnly={!!attemptId}
 				showResults={!attemptId}
 				unitKeys={attemptUnitKeys}
+				{buddyGain}
 			/>
 		{:else if testSession.mode === 'flash' && !assignmentId}
 			<!-- Forme « Flash-cards » : nouvelles questions = nouveau composant -->

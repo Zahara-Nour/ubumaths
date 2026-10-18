@@ -3,6 +3,7 @@
 	==================
 	Panel shown when clicking/tapping the buddy.
 	Displays: XP progress bar, level, streak, change button.
+	Mots affichés : ceux du lore (« Tour de panse », « pansées »), jamais « XP » ni « Niveau ».
 -->
 
 <script lang="ts">
@@ -12,6 +13,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Flame, Star, ArrowRightLeft, X } from '@lucide/svelte';
 	import { fade } from 'svelte/transition';
+	import { lore } from '$lib/config/lore';
 
 	interface Props {
 		buddy: BuddyState;
@@ -55,12 +57,13 @@
 		<div class="mb-1 flex items-center justify-between text-xs text-muted-foreground">
 			<span class="flex items-center gap-1">
 				<Star class="h-3 w-3" />
-				Niveau {buddy.level}
+				{lore.buddy.level}
+				{buddy.level}
 			</span>
 			{#if !isMaxLevel}
-				<span>{progress.current} / {progress.needed} XP</span>
+				<span>{progress.current} / {progress.needed} {lore.buddy.xp.toLowerCase()}</span>
 			{:else}
-				<span>Niveau max !</span>
+				<span>{lore.buddy.level} maximal !</span>
 			{/if}
 		</div>
 		<Progress value={progressPercent} class="h-2" />

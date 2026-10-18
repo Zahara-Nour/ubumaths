@@ -89,17 +89,17 @@ Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, 
 
 ### Routes API
 
-| Route                                          | Méthodes                     | Rôle                                                                                                  |
-| ---------------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `api/skill-attempts`                           | POST                         | Réponse à une question interactive : FSRS **puis** trace (`auto` ou `student_self`), puis Programme.  |
-| `api/srs/review/due`                           | GET                          | Cartes dues d'un paquet (RPC `get_due_cards_for_deck`), filtres `states` et `all` (révision forcée).  |
-| `api/srs/review/submit`                        | POST                         | Révision d'une carte de paquet : FSRS, trace `srs`, Programme, statistiques `srs_review_sessions`.    |
-| `api/srs/chapters/[chapterId]/due`             | GET                          | Séance du paquet calculé d'un chapitre (élève seul).                                                  |
-| `api/srs/chapters/[chapterId]/submit`          | POST                         | Réponse dans ce paquet : recalcul du paquet (modèle hors paquet → 403), FSRS meilleur-du-jour, trace. |
-| `api/srs/decks`, `api/srs/decks/[id]`          | GET, POST / GET, PUT, DELETE | Paquets ; un paquet assigné ne se modifie ni ne se supprime. Statistiques par RPC `get_deck_stats`.   |
-| `api/srs/decks/[id]/assign`                    | POST                         | Prof : copie le paquet pour chaque élève (cartes, sections, mémoire), au client service.              |
-| `api/srs/decks/[id]/sections`, `…/[sectionId]` | GET, POST / PATCH, DELETE    | Sections manuelles d'un paquet personnel.                                                             |
-| `api/srs/cards`, `api/srs/cards/[id]`          | GET, POST / GET, PUT, DELETE | Cartes ; 403 sur un paquet assigné (création et modification : aussi sur le Programme).               |
+| Route                                          | Méthodes                     | Rôle                                                                                                                   |
+| ---------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `api/skill-attempts`                           | POST                         | Réponse à une question interactive : FSRS **puis** trace (`auto` ou `student_self`), puis Programme.                   |
+| `api/srs/review/due`                           | GET                          | Cartes dues d'un paquet (RPC `get_due_cards_for_deck`), filtres `states` et `all` (révision forcée).                   |
+| `api/srs/review/submit`                        | POST                         | Révision d'une carte de paquet : FSRS, trace `srs`, Programme, statistiques `srs_review_sessions`, forfait du Palotin. |
+| `api/srs/chapters/[chapterId]/due`             | GET                          | Séance du paquet calculé d'un chapitre (élève seul).                                                                   |
+| `api/srs/chapters/[chapterId]/submit`          | POST                         | Réponse dans ce paquet : recalcul du paquet (modèle hors paquet → 403), FSRS meilleur-du-jour, trace.                  |
+| `api/srs/decks`, `api/srs/decks/[id]`          | GET, POST / GET, PUT, DELETE | Paquets ; un paquet assigné ne se modifie ni ne se supprime. Statistiques par RPC `get_deck_stats`.                    |
+| `api/srs/decks/[id]/assign`                    | POST                         | Prof : copie le paquet pour chaque élève (cartes, sections, mémoire), au client service.                               |
+| `api/srs/decks/[id]/sections`, `…/[sectionId]` | GET, POST / PATCH, DELETE    | Sections manuelles d'un paquet personnel.                                                                              |
+| `api/srs/cards`, `api/srs/cards/[id]`          | GET, POST / GET, PUT, DELETE | Cartes ; 403 sur un paquet assigné (création et modification : aussi sur le Programme).                                |
 
 ### Pages
 
@@ -203,6 +203,26 @@ dans la requête.
 modèle), envoie la note par `submitRequest`. Côté paquet, `srs_review_sessions` cumule par jour
 cartes revues, bonnes réponses (note ≥ 3) et temps ; une panne de ces statistiques n'annule pas
 la révision.
+
+**Forfait du Palotin** (décision de David, 2026-10-18 : l'effort, pas la réussite) :
+`rewardFinishedReviewSession` (`src/lib/server/srs/review-session-reward.ts`), appelé après chaque
+carte notée. Le Palotin reçoit `XP_SOURCES.review_session` (20, sous le plafond du jour), au plus une
+fois par jour, si (a) l'élève a révisé au moins 10 cartes aujourd'hui, tous paquets confondus, ou (b)
+le paquet n'a plus aucune carte due (`get_due_cards_for_deck`, échéance respectée) et il a révisé au
+moins 3 cartes aujourd'hui (`REVIEW_REWARD_CARDS_ANY_DECK`, `REVIEW_REWARD_CARDS_EMPTIED_DECK`). Le
+compte du jour = cartes distinctes dont `srs_card_stats.last_review` tombe aujourd'hui (table écrite
+par le serveur seul, Q171 ; elle inclut aussi les réponses d'Entraînement et de flash, qui passent par
+FSRS). Une révision forcée d'un paquet sans carte due rapporte donc le forfait dès la 3e carte.
+
+« Une fois par jour » : `srs_review_sessions.completed_at` marque la séance qui a rapporté le forfait.
+Une séance déjà marquée aujourd'hui → rien, sans autre lecture. Plafond déjà atteint ou élève sans
+Palotin → pas de réclamation. Réclamation conditionnelle (`completed_at is null`, vérifiée par
+`.select()`), relâchée si le crédit échoue ou rapporte 0. Deux paquets réclamés au même instant :
+chacun voit l'autre, aucun forfait ce jour-là (côté sûr). `api/srs/review/submit` rend le gain sous
+`buddy_xp`, même forme que `api/tests/save` ; toute panne rend `null` sans toucher la révision.
+Limite connue : l'élève peut réécrire `completed_at` par un appel direct (policy UPDATE « own ») ; le
+gain reste borné par le plafond du jour. Le paquet de chapitre (`api/srs/chapters/[id]/submit`) ne
+donne pas de forfait.
 
 « Quitter », en tête de séance (`BackLink kind="quit"`, [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)), ramène là
 où elle a commencé : la page du paquet, ou le Programme si elle en part (`?depuis=programme`, posé par

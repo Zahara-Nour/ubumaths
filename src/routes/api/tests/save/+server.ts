@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { validateSaveTest } from '$lib/server/validation/tests';
 import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
+import { fetchTemplateThemeIds } from '$lib/server/buddy-themes';
 import { recordSeriesReviews } from '$lib/server/srs/record-series-reviews';
 import {
 	CourseCardLookupError,
@@ -166,12 +167,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (!isFlash) {
 			try {
 				// Pas d'XP pour une carte de cours (décision 2026-09-28)
-				const answers = result.answers
-					.filter((answer) => !isCardAnswer(answer))
-					.map((answer: { isCorrect: boolean; instance: { templateId?: string | null } }) => ({
-						isCorrect: answer.isCorrect,
-						theme: undefined as string | undefined // TODO: extract theme from categories if available
-					}));
+				const xpAnswers = result.answers.filter((answer) => !isCardAnswer(answer));
+				// Thème d'une réponse = thème du programme du point que valide la
+				// question (bonus « nouveau thème ») : une lecture pour la séance.
+				const themeByTemplate = await fetchTemplateThemeIds(supabase, [
+					...new Set(
+						xpAnswers.flatMap((answer) =>
+							answer.instance.templateId ? [answer.instance.templateId] : []
+						)
+					)
+				]);
+				const answers = xpAnswers.map((answer) => ({
+					isCorrect: answer.isCorrect,
+					theme: answer.instance.templateId
+						? themeByTemplate.get(answer.instance.templateId)
+						: undefined
+				}));
 				buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);
 			} catch (buddyError) {
 				// Non-critical: buddy XP failure should not fail the test save

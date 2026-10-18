@@ -9,8 +9,14 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { BuddyXpGainResult } from '$lib/types/buddy';
-import { calculateXpGain, calculateStreakBonus } from './buddy-xp';
-import { getStudentBuddy, addBuddyXp, updateStreak, addExploredTheme } from './buddy-queries';
+import { calculateXpGain, calculateStreakBonus, XP_SOURCES } from './buddy-xp';
+import {
+	getStudentBuddy,
+	addBuddyXp,
+	updateStreak,
+	addExploredTheme,
+	addExploredThemes
+} from './buddy-queries';
 
 export interface ExerciseXpParams {
 	isCorrect: boolean;
@@ -125,24 +131,22 @@ export async function addBuddyXpFromTest(
 		daily_cap_reached: false
 	};
 
-	// Check new themes
-	const newThemes = new Set<string>();
-	for (const answer of answers) {
-		if (answer.theme) {
-			const isNew = await addExploredTheme(supabase, studentId, answer.theme);
-			if (isNew) newThemes.add(answer.theme);
-		}
-	}
+	// Bonus « nouveau thème » : calculé sur les thèmes déjà explorés, CRÉDITÉ, puis
+	// seuls les thèmes payés sont marqués (un thème non payé restera « nouveau »).
+	const explored = new Set(buddy.themes_explored);
+	const bonusThemes = new Set<string>();
+	/** Thème dont la réponse porte le bonus → XP cumulée à la fin de cette réponse. */
+	const themeDueAt = new Map<string, number>();
 
-	// Calculate total XP for all answers
 	let totalBaseXp = 0;
 	for (let i = 0; i < answers.length; i++) {
 		const answer = answers[i];
-		const isNewTheme = answer.theme ? newThemes.has(answer.theme) : false;
-		// Only count theme bonus once per theme
-		if (isNewTheme && answer.theme) newThemes.delete(answer.theme);
+		// Un seul bonus par thème : la première réponse qui le porte
+		const isNewTheme =
+			!!answer.theme && !explored.has(answer.theme) && !bonusThemes.has(answer.theme);
+		if (isNewTheme && answer.theme) bonusThemes.add(answer.theme);
 
-		const { xp } = calculateXpGain({
+		const { xp, capped } = calculateXpGain({
 			isCorrect: answer.isCorrect,
 			isFirstOfDay: i === 0 && isFirstOfDay,
 			isNewTheme,
@@ -150,6 +154,8 @@ export async function addBuddyXpFromTest(
 			xpEarnedToday: xpEarnedToday + totalBaseXp
 		});
 		totalBaseXp += xp;
+		// Bonus tronqué par le plafond (calcul local) : pas payé, thème non marqué
+		if (isNewTheme && answer.theme && !capped) themeDueAt.set(answer.theme, totalBaseXp);
 	}
 
 	// Add all XP in one RPC call
@@ -157,6 +163,17 @@ export async function addBuddyXpFromTest(
 		lastXpResult = await addBuddyXp(studentId, totalBaseXp, false);
 		totalXpGained += lastXpResult.xp_gained;
 	}
+
+	// Crédit partiel (plafond appliqué par la base) : le crédit couvre les réponses
+	// dans l'ordre ; un thème est payé si l'XP cumulée jusqu'à SA réponse l'est.
+	const creditedBaseXp = lastXpResult.xp_gained;
+	const paidThemes = [...themeDueAt]
+		.filter(([, dueAt]) => dueAt <= creditedBaseXp)
+		.map(([theme]) => theme);
+	const newThemes =
+		paidThemes.length > 0
+			? await addExploredThemes(supabase, buddy, paidThemes)
+			: new Set<string>();
 
 	// Handle streak
 	let streakUpdated = false;
@@ -188,5 +205,34 @@ export async function addBuddyXpFromTest(
 		newStreak,
 		streakBonusXp,
 		isNewTheme: newThemes.size > 0
+	};
+}
+
+/**
+ * Forfait d'une séance de révision espacée TERMINÉE (décision de David,
+ * 2026-10-18 : l'effort, pas la réussite — les cartes sont auto-évaluées).
+ *
+ * L'appelant a déjà établi que la séance est terminée et que le forfait du jour
+ * n'a pas été donné (`rewardFinishedReviewSession`). Soumis au plafond du jour
+ * (`add_buddy_xp`). La série n'est pas touchée ici.
+ *
+ * Rend la même forme que `addBuddyXpFromTest` (`buddy_xp` des deux routes).
+ * Rend null si l'élève n'a pas de Palotin.
+ */
+export async function addBuddyXpFromReviewSession(
+	supabase: SupabaseClient<Database>,
+	studentId: string
+): Promise<BuddyXpFromExerciseResult | null> {
+	const buddy = await getStudentBuddy(supabase, studentId);
+	if (!buddy) return null;
+
+	const xpResult = await addBuddyXp(studentId, XP_SOURCES.review_session, false);
+
+	return {
+		xpResult,
+		streakUpdated: false,
+		newStreak: buddy.current_streak,
+		streakBonusXp: 0,
+		isNewTheme: false
 	};
 }

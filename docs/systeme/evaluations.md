@@ -120,7 +120,10 @@ en contrôle) quittent vers le panier. Les boutons de l'écran de fin gardent `o
 Séance libre enregistrée : `POST /api/tests/save` écrit `test_sessions` puis `test_answers` et appelle
 `recordSeriesReviews` (`src/lib/server/srs/record-series-reviews.ts`) avec le **verdict du navigateur**.
 Le score envoyé par le client est gardé, sauf s'il y a des cartes de cours : il est alors recalculé
-hors cartes.
+hors cartes. Hors flash et hors cartes de cours, chaque réponse rapporte au Palotin
+(`addBuddyXpFromTest`, réponse `buddy_xp`) ; son thème, pour le bonus « nouveau thème », est celui du
+programme du point que valide la question (`fetchTemplateThemeIds`, `src/lib/server/buddy-themes.ts`,
+une lecture pour la séance).
 
 **Série de chapitre** (`chapter_series`, `chapter-series.ts`) : un chapitre de « Mon cours » pointe une
 série du prof sous la forme `flash` (défaut) ou `interactive` ; l'élève la lance comme une séance libre.

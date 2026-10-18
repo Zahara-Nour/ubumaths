@@ -39,7 +39,9 @@ const CONTEXT_EXPRESSION_MAP: Record<BuddyMessageContext, BuddyExpression> = {
 	vip_card_rare: 'happy',
 	vip_card_epic: 'excited',
 	vip_card_legendary: 'excited',
-	onboarding: 'encouraging'
+	onboarding: 'encouraging',
+	session_gain: 'happy',
+	daily_cap: 'happy'
 };
 
 class BuddyMessageEngine {

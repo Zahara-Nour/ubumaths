@@ -65,3 +65,30 @@ describe('TestResults — évaluation', () => {
 		expect(link?.textContent).toContain('Mes contrôles');
 	});
 });
+
+/** Fin d'Entraînement / de Course aux nombres : le gain du Palotin (mathoux § 8 B). */
+describe('TestResults — gain du Palotin', () => {
+	it('gain reçu : affiché sur l’écran de résultats', async () => {
+		const { container } = await render(TestResults, {
+			result: result(),
+			...noop,
+			buddyGain: {
+				xpGained: 8,
+				newLevel: 2,
+				leveledUp: false,
+				dailyCapReached: false,
+				palotin: 'giron',
+				expression: 'happy',
+				message: 'Miam ! Ça, c’est de la bonne réflexion !'
+			}
+		});
+		const shown = container.textContent!.replace(/\s+/g, ' ');
+		expect(shown).toContain('Giron a gagné 8 pansées');
+		expect(shown).toContain('Miam ! Ça, c’est de la bonne réflexion !');
+	});
+
+	it('aucun gain : rien sur le Palotin', async () => {
+		const { container } = await render(TestResults, { result: result(), ...noop });
+		expect(container.textContent).not.toContain('a gagné');
+	});
+});

@@ -21,6 +21,7 @@
 	- showResults: false → pas d'écran de résultats (la page affiche la correction
 	  du serveur) ; « Envoi de ta copie… » en attendant
 	- unitKeys: touches d'unités de chaque question (évaluation)
+	- buddyGain: gain du Palotin, affiché sur l'écran de résultats (`null` → rien)
 -->
 
 <script lang="ts">
@@ -30,6 +31,7 @@
 	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
 	import TestTimer from './TestTimer.svelte';
 	import TestResults from './TestResults.svelte';
+	import type { BuddyGainView } from '$lib/components/buddy/buddy-gain';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { automathsQuitLink } from '$lib/navigation/return-links';
@@ -45,6 +47,7 @@
 		collectOnly?: boolean;
 		showResults?: boolean;
 		unitKeys?: (string[] | undefined)[];
+		buddyGain?: BuddyGainView | null;
 	}
 
 	let {
@@ -54,7 +57,8 @@
 		inEvaluation = false,
 		collectOnly = false,
 		showResults = true,
-		unitKeys = []
+		unitKeys = [],
+		buddyGain = null
 	}: Props = $props();
 
 	// « Quitter » : « Mes contrôles » (avec confirmation) en contrôle, le panier sinon
@@ -295,5 +299,11 @@
 	</Card.Root>
 {:else if testResult}
 	<!-- Show results -->
-	<TestResults result={testResult} onRestart={handleRestart} onBackToCart={onBack} {inEvaluation} />
+	<TestResults
+		result={testResult}
+		onRestart={handleRestart}
+		onBackToCart={onBack}
+		{inEvaluation}
+		{buddyGain}
+	/>
 {/if}

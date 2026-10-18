@@ -37,6 +37,8 @@
 		type ReviewSource,
 		type SessionCard
 	} from '$lib/srs/review-source';
+	import BuddyGainCard from '$lib/components/buddy/BuddyGainCard.svelte';
+	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
 
 	interface Props {
 		/**
@@ -80,6 +82,8 @@
 	let loadError = $state(false);
 	/** Cartes que le serveur (ou la traduction) a écartées à ce chargement */
 	let skippedCount = $state(0);
+	/** Gain du Palotin renvoyé par le serveur en fin de séance (null : rien à montrer) */
+	let buddyGain = $state<BuddyGainView | null>(null);
 
 	// Session stats
 	let correctCount = $state(0);
@@ -185,12 +189,32 @@
 				throw new Error('Impossible d’enregistrer la révision');
 			}
 
+			// Fin de séance : le serveur peut joindre le gain du Palotin (`buddy_xp`)
+			await readBuddyGain(response);
+
 			// Move to next card
 			await moveToNextCard();
 		} catch (error) {
 			console.error('Error submitting review:', error);
 			toaster.error('Erreur lors de la soumission');
 			isSubmitting = false;
+		}
+	}
+
+	/**
+	 * Gain du Palotin joint à une réponse. Champ absent, corps illisible ou
+	 * adresse qui n'en renvoie pas (paquet de chapitre) : rien, sans erreur.
+	 * La révision est déjà enregistrée : aucune panne du Palotin (lecture du
+	 * corps, cache, relecture) ne doit remonter comme un échec de soumission,
+	 * sinon l'élève renoterait la carte.
+	 */
+	async function readBuddyGain(response: Response) {
+		try {
+			const payload: unknown = await response.json();
+			const gain = await receiveBuddyGain(payload);
+			if (gain) buddyGain = gain;
+		} catch (error) {
+			console.error('Gain du Palotin illisible (révision enregistrée) :', error);
 		}
 	}
 
@@ -362,6 +386,13 @@
 				</div>
 				<Progress value={totalCards > 0 ? (correctCount / totalCards) * 100 : 0} class="h-3" />
 			</div>
+
+			<!-- Gain du Palotin -->
+			{#if buddyGain}
+				<div class="mt-6">
+					<BuddyGainCard gain={buddyGain} />
+				</div>
+			{/if}
 
 			<!-- Actions -->
 			<div class="mt-6 flex gap-3">

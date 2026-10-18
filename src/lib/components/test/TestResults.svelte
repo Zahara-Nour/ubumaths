@@ -17,6 +17,7 @@
 	- inEvaluation: évaluation assignée → ni « Recommencer » ni « Retour au panier »,
 	  seulement « Mes évaluations » (une nouvelle tentative passe par la vérification
 	  des tentatives et de la date limite)
+	- buddyGain: gain du Palotin pour cette séance (`null` / absent → rien)
 -->
 
 <script lang="ts">
@@ -26,15 +27,18 @@
 	import { Button } from '$lib/components/ui/button';
 	import { ArrowLeft, RotateCw, Clock, TrendingUp } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
+	import BuddyGainCard from '$lib/components/buddy/BuddyGainCard.svelte';
+	import type { BuddyGainView } from '$lib/components/buddy/buddy-gain';
 
 	interface Props {
 		result: TestResult;
 		onRestart: () => void;
 		onBackToCart: () => void;
 		inEvaluation?: boolean;
+		buddyGain?: BuddyGainView | null;
 	}
 
-	let { result, onRestart, onBackToCart, inEvaluation = false }: Props = $props();
+	let { result, onRestart, onBackToCart, inEvaluation = false, buddyGain = null }: Props = $props();
 
 	// Cartes de cours (#617) : comptées à part, hors score
 	const reviewedCards = $derived(result.reviewedCards ?? 0);
@@ -98,6 +102,9 @@
 			</div>
 		</Card.Content>
 	</Card.Root>
+
+	<!-- Gain du Palotin (élève connecté, séance qui rapporte) -->
+	<BuddyGainCard gain={buddyGain} />
 
 	<!-- Statistics -->
 	<div class="grid gap-4 sm:grid-cols-2">
