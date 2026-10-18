@@ -85,7 +85,7 @@ import { plotRestrictionOf } from './interval';
 import { constantOf } from './constant';
 import { pointCoordinatesOf } from './parse';
 import { substitutedAstOf, substitutedTextOf } from './engine';
-import { constructionOf, isConstruction, nodeOf } from './construction';
+import { constructionOf, isConstruction, nodeOf, type ConstructionMemo } from './construction';
 import type { GeoPoint } from '$lib/geometry-core/types/primitives';
 import { displayName } from './names';
 
@@ -348,13 +348,15 @@ function slidersOf(atelier: Atelier): Map<string, WantedSlider> {
 function planOf(atelier: Atelier): FigurePlan {
 	const sliders = slidersOf(atelier);
 	const keep = new Set(sliders.keys());
+	// Un mémo pour tout le passage : curseurs gardés en lettres, celui de l'atelier ne sert pas
+	const memo: ConstructionMemo = new Map();
 	const objects: Wanted[] = [];
 	const cited = new Set<string>();
 	for (const object of atelier.objects) {
 		// F5 : en erreur, en attente ou à compléter, l'objet n'est pas dessiné
 		if (object.status !== 'ok') continue;
 		const wanted = isFigureObject(object)
-			? wantedOf(atelier, object, keep)
+			? wantedOf(atelier, object, keep, memo)
 			: isFunction(object) && object.inFigure === true
 				? wantedFunctionOf(atelier, object, keep)
 				: null;
@@ -421,9 +423,10 @@ function constructionTrees(wanted: WantedConstruction): MathNode[] {
 function wantedConstructionOf(
 	atelier: Atelier,
 	object: AtelierObject,
-	keep: ReadonlySet<string>
+	keep: ReadonlySet<string>,
+	memo: ConstructionMemo
 ): WantedPoint | WantedConstruction | null {
-	const outcome = constructionOf(atelier, object.name, { keepNames: keep });
+	const outcome = constructionOf(atelier, object.name, { keepNames: keep, memo });
 	if (!outcome.ok) return null;
 	const { built } = outcome;
 	const pair = (p: GeoPoint): readonly [MathNode, MathNode] => [nodeOf(p.x), nodeOf(p.y)];
@@ -451,9 +454,10 @@ function wantedConstructionOf(
 function wantedOf(
 	atelier: Atelier,
 	object: AtelierObject,
-	keep: ReadonlySet<string>
+	keep: ReadonlySet<string>,
+	memo: ConstructionMemo
 ): WantedPoint | WantedCurve | WantedConstruction | null {
-	if (isConstruction(object)) return wantedConstructionOf(atelier, object, keep);
+	if (isConstruction(object)) return wantedConstructionOf(atelier, object, keep, memo);
 	if (object.kind === 'point') {
 		const coordinates = pointCoordinatesOf(object.definition);
 		if (coordinates === null) return null;
@@ -560,7 +564,7 @@ function pointAt(
 	x: MathNode,
 	y: MathNode,
 	sliders: ReadonlyMap<string, string>,
-	options: { readonly label?: string; readonly visible?: false; readonly style?: GeoStyle }
+	options: { readonly label?: string; readonly visible?: false }
 ): string | null {
 	if (parametersOf([x, y], sliders).length === 0) {
 		if (!isFiniteExact(x) || !isFiniteExact(y)) return null;
@@ -595,13 +599,27 @@ function poseConstruction(
 		});
 		// ⚠️ Aucune surface de `geometry-core` n'écrit le nom d'un cercle : l'y
 		// ajouter montrerait le nom de chaque cercle de toutes les figures de cours.
-		// Le nom est porté ici par un point SANS MARQUE, sur le cercle à 45° — il
-		// suit le rayon et le centre comme le cercle, curseurs compris.
+		// Le nom est un TEXTE de la figure, de la couleur du cercle, accroché à un
+		// point CACHÉ du cercle (à 45°) — il suit rayon et centre, curseurs compris.
+		// Un texte n'est pas désigné au survol (`findElementNear`) et s'exporte en
+		// texte ; le point caché ne s'exporte pas.
 		const along = multiply(wanted.radius, mathNumber(String(Math.SQRT1_2)), 'dot');
-		pointAt(figure, add(wanted.center[0], along), add(wanted.center[1], along), sliders, {
-			label,
-			style: { pointSize: 0 }
-		});
+		const anchor = pointAt(
+			figure,
+			add(wanted.center[0], along),
+			add(wanted.center[1], along),
+			sliders,
+			{ visible: false }
+		);
+		if (anchor !== null) {
+			const color = figure.getElementById(id)?.color;
+			figure.createText(
+				label,
+				[],
+				{ anchorId: anchor, anchorOffset: { dx: 0.2, dy: 0.2 } },
+				color === undefined ? {} : { color }
+			);
+		}
 		return id;
 	}
 	const from = hidden(wanted.from);

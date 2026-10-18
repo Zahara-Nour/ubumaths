@@ -51,7 +51,8 @@ function canvasOf(container: HTMLElement): SVGSVGElement {
 }
 
 function labels(container: HTMLElement): string[] {
-	return [...canvasOf(container).querySelectorAll('text.label')].map(
+	// Le nom d'un cercle est un texte de la figure (`geo-text`), pas une étiquette de point
+	return [...canvasOf(container).querySelectorAll('text.label, text.geo-text')].map(
 		(t) => t.textContent?.trim() ?? ''
 	);
 }

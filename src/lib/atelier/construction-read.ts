@@ -108,6 +108,10 @@ const SHORTCUT =
 	/(?<![A-Za-z0-9_À-ɏ])([([])\s*([A-Za-z](?:_\d+)?)\s*([A-Za-z](?:_\d+)?)\s*([)\]])/g;
 const MARK = /^\uE000(\d+)\uE000$/;
 
+/** Un raccourci tel qu'ÉCRIT, texte ou LaTeX de MathLive, pour le renommage. */
+const WRITTEN_SHORTCUT =
+	/((?:\\left\s*)?(?:\(|\[|\\lbrack))(\s*)([A-Za-z](?:_\d+|_\{\d+\})?)(\s*)([A-Za-z](?:_\d+|_\{\d+\})?)(\s*)((?:\\right\s*)?(?:\)|\]|\\rbrack))/g;
+
 /** Un mot suivi d'une parenthèse : `milieu(`, `parallèle (`, `demi-droite(`. */
 const CALL_HEAD = /^([A-Za-zÀ-ɏ_]+(?:-[A-Za-zÀ-ɏ_]+)*)\s*\(/;
 
@@ -399,14 +403,30 @@ export function renameInConstruction(
 	to: string
 ): string | null {
 	if (readConstruction(definition, provenance) === null) return null;
-	// Les raccourcis d'abord : `(AB)` ne contient pas l'identifiant `A` pour une
-	// expression régulière de mots
-	const renamed = definition.replace(
-		SHORTCUT,
-		(whole, open: string, a: string, b: string, close) =>
-			`${open}${a === from ? to : a}${b === from ? to : b}${close}`
+	// `A_{1}` (MathLive) et `A_1` sont le même nom ; on réécrit dans l'écriture trouvée
+	const same = (id: string) => id.replace(/_\{(\d+)\}/, '_$1') === from;
+	const written = (id: string) => (id.includes('{') ? to.replace(/_(\d+)/, '_{$1}') : to);
+	const renamed = (id: string) => (same(id) ? written(id) : id);
+	// Les raccourcis d'abord, LaTeX compris (`\left(AB\right)`, `\left\lbrack AB\right\rbrack`) :
+	// `(AB)` ne contient pas l'identifiant `A` pour une expression régulière de mots
+	const shortcuts = definition.replace(
+		WRITTEN_SHORTCUT,
+		(
+			whole: string,
+			open: string,
+			s1: string,
+			a: string,
+			s2: string,
+			b: string,
+			s3: string,
+			close: string,
+			at: number
+		) => {
+			// `f(AB)` : un appel, pas un raccourci (comme `SHORTCUT`)
+			const bare = open === '(' || open === '[';
+			if (bare && /[A-Za-z0-9_À-ɏ]/.test(definition[at - 1] ?? '')) return whole;
+			return `${open}${s1}${renamed(a)}${s2}${renamed(b)}${s3}${close}`;
+		}
 	);
-	return renamed.replace(/(?<![A-Za-z\\])[A-Za-z](?:_\d+|_\{\d+\})?(?![A-Za-z])/g, (id) =>
-		id === from ? to : id
-	);
+	return shortcuts.replace(/(?<![A-Za-z\\])[A-Za-z](?:_\d+|_\{\d+\})?(?![A-Za-z])/g, renamed);
 }

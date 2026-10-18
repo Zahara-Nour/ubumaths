@@ -11,6 +11,8 @@ import { AtelierFigure, syncFigure } from '../figure-sync';
 import type { Figure } from '$lib/geometry-core/graph/figure';
 import type { GeoElement } from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { exportToSVG } from '$lib/geometry-core/rendering/export-svg';
+import { findElementNear } from '$lib/geometry-core/interaction/hit-testing';
 
 // =============================================================================
 // Outils
@@ -125,5 +127,34 @@ describe('L1 : syncFigure projette les constructions', () => {
 		const target = new AtelierFigure();
 		syncFigure(atelier, target);
 		expect(syncFigure(atelier, target)).toBe('unchanged');
+	});
+});
+
+describe('revue : le nom d’un cercle', () => {
+	function circle() {
+		const atelier = atelierOf([...POINTS, ['curve', 'c', 'cercle(O ; 3)']]);
+		const target = new AtelierFigure();
+		syncFigure(atelier, target);
+		return target.figure;
+	}
+
+	it('est écrit, de la couleur du cercle', () => {
+		const figure = circle();
+		const c = shown(figure, 'c');
+		const name = figure.getAllElements().find((el) => el.type === 'text' && el.visible);
+		expect(name?.type === 'text' && name.template).toBe('c');
+		expect(name?.color).toBe(c?.color);
+	});
+
+	it('aucun point de la figure ne le porte : rien à désigner au survol', () => {
+		const figure = circle();
+		const r = 3 * Math.SQRT1_2;
+		const near = findElementNear(figure, r, r, 0.3);
+		expect(near === null ? null : figure.getElementById(near)?.type).not.toMatch(/Point$/);
+	});
+
+	it('l’export SVG ne contient pas de point de rayon nul', () => {
+		const svg = exportToSVG(circle(), { xMin: -5, xMax: 5, yMin: -5, yMax: 5 });
+		expect(svg).not.toContain('r="0"');
 	});
 });

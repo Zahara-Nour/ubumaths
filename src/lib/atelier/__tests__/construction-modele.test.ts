@@ -16,6 +16,8 @@ import { curveNatureOf } from '../curve-nature';
 import { figureFullMessage } from '../geometry';
 import { MAX_FIGURE_OBJECTS } from '../types';
 import { encodeAtelier, decodeAtelier } from '../url';
+import { constructionStats } from '../construction';
+import { nameRejectionMessage } from '../names';
 
 // =============================================================================
 // Outils
@@ -445,5 +447,153 @@ describe('L2 : le LaTeX des réponses de construction est intact', () => {
 		const formula = latex(runInput(s, 'I'));
 		expect(hasControl(formula)).toBe(false);
 		expect(formula).toMatch(/^I\\left\(.*\\right\)$/);
+	});
+});
+
+// =============================================================================
+// Revue de la PR 1 : coût, renommage d'un raccourci écrit en LaTeX, nom hors forme
+// =============================================================================
+
+describe('revue : une construction se calcule une fois par passe', () => {
+	/** P_k = milieu(P_{k−1}, Q_{k−1}), Q_k = milieu(Q_{k−1}, P_{k−1}) : chaque niveau cite deux fois le précédent. */
+	function chain(levels: number): Atelier {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'point', name: 'P_0', definition: '(0 ; 0)' }, 'text');
+		atelier.create({ kind: 'point', name: 'Q_0', definition: '(8 ; 4)' }, 'text');
+		for (let k = 1; k <= levels; k++) {
+			const [p, q] = [`P_${k - 1}`, `Q_${k - 1}`];
+			atelier.create({ kind: 'point', name: `P_${k}`, definition: `milieu(${p}, ${q})` }, 'text');
+			atelier.create({ kind: 'point', name: `Q_${k}`, definition: `milieu(${q}, ${p})` }, 'text');
+		}
+		return atelier;
+	}
+
+	it('une chaîne de 12 niveaux se recalcule en moins de 200 ms', () => {
+		const atelier = chain(12);
+		const start = performance.now();
+		atelier.update('P_0', '(2 ; 0)', 'text');
+		expect(performance.now() - start).toBeLessThan(200);
+		expect(atelier.get('Q_12')?.status).toBe('ok');
+	});
+
+	it('un calcul par construction et par passe', () => {
+		const atelier = chain(6);
+		constructionStats.computed = 0;
+		atelier.update('P_0', '(2 ; 0)', 'text');
+		// 12 constructions, chacune calculée une seule fois par le recalcul
+		expect(constructionStats.computed).toBe(12);
+	});
+});
+
+describe('revue : renommer un point cité par un raccourci tapé dans la carte (LaTeX)', () => {
+	for (const [written, renamed] of [
+		['\\left(AB\\right)', '\\left(KB\\right)'],
+		['\\left\\lbrack AB\\right\\rbrack', '\\left\\lbrack KB\\right\\rbrack'],
+		['\\operatorname{milieu}\\left(A,B\\right)', '\\operatorname{milieu}\\left(K,B\\right)']
+	]) {
+		it(`${written} suit le renommage de A en K`, () => {
+			const s = plane();
+			const kind = written.includes('milieu') ? 'point' : 'curve';
+			s.atelier.create({ kind, name: 'Z', definition: '' });
+			s.atelier.update('Z', written, 'keyboard');
+			expect(s.atelier.rename('A', 'K').ok).toBe(true);
+			expect(s.atelier.get('Z')?.definition).toBe(renamed);
+			expect(s.atelier.get('Z')?.status).toBe('ok');
+		});
+	}
+
+	it('un indice en LaTeX : \\left(A_{1}B\\right)', () => {
+		const s = plane();
+		runInput(s, 'A_1 = (5 ; 5)');
+		s.atelier.create({ kind: 'curve', name: 'd', definition: '' });
+		s.atelier.update('d', '\\left(A_{1}B\\right)', 'keyboard');
+		expect(s.atelier.get('d')?.status).toBe('ok');
+		expect(s.atelier.rename('A_1', 'K').ok).toBe(true);
+		expect(s.atelier.get('d')?.definition).toBe('\\left(KB\\right)');
+		expect(s.atelier.get('d')?.status).toBe('ok');
+	});
+});
+
+describe('revue : un nom hors forme est refusé comme tel', () => {
+	it('`m2 = milieu(A, B)` dit pourquoi le nom ne va pas', () => {
+		const s = plane();
+		expect(refusal(runInput(s, 'm2 = milieu(A, B)'))).toBe(nameRejectionMessage('malformed', 'm2'));
+	});
+});
+
+// =============================================================================
+// Décision de David (2026-10-18, option a) : `(AB)` tapé avant A et B
+// =============================================================================
+
+describe('(a) : `d = (AB)` avant A et B attend, puis le TYPE de A et B tranche', () => {
+	it('deux points créés après : d est la droite (AB)', () => {
+		const s = session();
+		const d = defined(s, 'd = (AB)');
+		expect(d.status).toBe('pending');
+		expect(d.message).toContain('« A »');
+		expect(d.message).toContain('« B »');
+		runInput(s, 'A = (0 ; 1)');
+		runInput(s, 'B = (1 ; 3)');
+		expect(s.atelier.get('d')?.kind).toBe('curve');
+		expect(answer(runInput(s, 'd'))).toBe('d : y=2x+1');
+	});
+
+	it('deux valeurs créées après : d est le produit, comme avant', () => {
+		const s = session();
+		defined(s, 'd = (ab)');
+		runInput(s, 'a = 2');
+		runInput(s, 'b = 3');
+		expect(s.atelier.get('d')?.kind).toBe('value');
+		expect(s.atelier.get('d')?.status).toBe('ok');
+		expect(answer(runInput(s, 'd'))).toBe('6');
+	});
+
+	it('un point et une valeur, à la saisie : refus avec la raison', () => {
+		const s = session();
+		runInput(s, 'A = (0 ; 1)');
+		runInput(s, 'b = 3');
+		const message = refusal(runInput(s, 'd = (Ab)'));
+		expect(message).toContain('point');
+		expect(message).toContain('valeur');
+		expect(s.atelier.get('d')).toBeUndefined();
+	});
+
+	it('un point et une valeur, arrivés après : d est en erreur et dit pourquoi', () => {
+		const s = session();
+		defined(s, 'd = (AB)');
+		runInput(s, 'A = (0 ; 1)');
+		runInput(s, 'B = 2');
+		const d = s.atelier.get('d');
+		expect(d?.status).toBe('error');
+		expect(d?.message).toContain('valeur');
+	});
+
+	it('la carte, en LaTeX : \\left(A_{1}B\\right) attend A_1 et B, puis se construit', () => {
+		const s = session();
+		s.atelier.create({ kind: 'curve', name: 'd', definition: '' });
+		s.atelier.update('d', '\\left(A_{1}B\\right)', 'keyboard');
+		expect(s.atelier.get('d')?.status).toBe('pending');
+		runInput(s, 'A_1 = (0 ; 1)');
+		runInput(s, 'B = (1 ; 3)');
+		expect(s.atelier.get('d')?.status).toBe('ok');
+	});
+
+	it('A et B redéfinis en valeurs (supprimés puis recréés) : d suit et devient le produit', () => {
+		const s = plane();
+		defined(s, 'd = (AB)');
+		s.atelier.remove('A');
+		s.atelier.remove('B');
+		runInput(s, 'A = 3');
+		runInput(s, 'B = 4');
+		expect(s.atelier.get('d')?.kind).toBe('value');
+		expect(answer(runInput(s, 'd'))).toBe('12');
+	});
+
+	it('[AB] et [AB) avant A et B attendent aussi ; avec deux valeurs, refus (« n’est pas un point »)', () => {
+		const s = session();
+		expect(defined(s, 's = [AB]').status).toBe('pending');
+		runInput(s, 'a = 1');
+		runInput(s, 'b = 2');
+		expect(refusal(runInput(s, 'r = [ab)'))).toBe('« a » n’est pas un point.');
 	});
 });

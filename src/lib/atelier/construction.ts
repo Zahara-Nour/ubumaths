@@ -84,8 +84,20 @@ export type BuiltOutcome =
 	| { readonly ok: true; readonly built: Built; readonly call: ReadCall }
 	| { readonly ok: false; readonly message: string };
 
+/**
+ * Les constructions déjà calculées, par nom. ⚠️ Sans lui, une construction qui
+ * en cite deux autres les recalculait chacune, et ainsi de suite : le coût
+ * doublait à chaque niveau (revue de la PR 1 : 46 s pour une chaîne de 12
+ * milieux). Valable tant que l'atelier ne change pas : `Atelier.constructionMemo`
+ * en tient un par révision ; la vue Géométrie, qui garde les curseurs en
+ * lettres, en tient un par passage (`figure-sync.ts`).
+ */
+export type ConstructionMemo = Map<string, BuiltOutcome>;
+
 interface BuildOptions {
 	readonly keepNames?: ReadonlySet<string>;
+	/** Un mémo partagé ; par défaut celui de l'atelier (sans `keepNames`), sinon un neuf. */
+	readonly memo?: ConstructionMemo;
 }
 
 interface Context {
@@ -93,6 +105,7 @@ interface Context {
 	readonly keep: ReadonlySet<string> | undefined;
 	/** Les objets en cours de calcul : un cycle s'arrête là. */
 	readonly visiting: Set<string>;
+	readonly memo: ConstructionMemo;
 }
 
 // =============================================================================
@@ -100,6 +113,9 @@ interface Context {
 // =============================================================================
 
 const TWO = geoFromNumber(2);
+
+/** Combien de constructions ont été réellement calculées (hors mémo) : pour les tests du coût. */
+export const constructionStats = { computed: 0 };
 
 /** Un refus de calcul, remonté en message par `constructionOf`. */
 class Failure extends Error {}
@@ -138,7 +154,7 @@ export function constructionOf(
 	name: string,
 	options: BuildOptions = {}
 ): BuiltOutcome {
-	const ctx: Context = { atelier, keep: options.keepNames, visiting: new Set() };
+	const ctx = contextOf(atelier, options);
 	try {
 		return objectBuilt(name, ctx);
 	} catch (error) {
@@ -157,7 +173,7 @@ export function constructionFromText(
 	const read = specOf(text, provenance, kindsOf(atelier));
 	if (read === null) return { ok: false, message: `« ${text} » n’est pas une construction.` };
 	if (!read.ok) return read;
-	const ctx: Context = { atelier, keep: options.keepNames, visiting: new Set() };
+	const ctx = contextOf(atelier, options);
 	try {
 		return { ok: true, built: built(read.spec, ctx), call: read.call };
 	} catch (error) {
@@ -166,13 +182,36 @@ export function constructionFromText(
 	}
 }
 
+function contextOf(atelier: Atelier, options: BuildOptions): Context {
+	const memo =
+		options.memo ?? (options.keepNames === undefined ? atelier.constructionMemo() : new Map());
+	return { atelier, keep: options.keepNames, visiting: new Set(), memo };
+}
+
 function objectBuilt(name: string, ctx: Context): BuiltOutcome & { ok: true } {
+	const known = ctx.memo.get(name);
+	if (known !== undefined) {
+		if (known.ok) return known;
+		throw new Failure(known.message);
+	}
+	if (ctx.visiting.has(name)) throw new Failure(`« ${name} » se construit à partir de lui-même.`);
+	try {
+		const outcome = computedObject(name, ctx);
+		ctx.memo.set(name, outcome);
+		return outcome;
+	} catch (error) {
+		if (error instanceof Failure) ctx.memo.set(name, { ok: false, message: error.message });
+		throw error;
+	}
+}
+
+function computedObject(name: string, ctx: Context): BuiltOutcome & { ok: true } {
 	const object = ctx.atelier.get(name);
 	if (object === undefined) throw new Failure(`« ${name} » n’est pas encore défini.`);
-	if (ctx.visiting.has(name)) throw new Failure(`« ${name} » se construit à partir de lui-même.`);
 	const read = specOf(object.definition, object.provenance ?? 'url', kindsOf(ctx.atelier));
 	if (read === null) throw new Failure(`« ${name} » n’est pas une construction.`);
 	if (!read.ok) throw new Failure(read.message);
+	constructionStats.computed++;
 	ctx.visiting.add(name);
 	try {
 		return { ok: true, built: built(read.spec, ctx), call: read.call };

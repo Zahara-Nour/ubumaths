@@ -674,7 +674,8 @@ function definePoint(
 }
 
 /** `I = milieu(A, B)` : un nom, « = », puis la construction. */
-const NAMED_CONSTRUCTION = /^\s*([A-Za-z](?:_\d+)?)\s*=(?!=)\s*([\s\S]+)$/;
+// Tout mot avant « = » : un nom hors forme (`m2`) est refusé COMME nom, pas lu en calcul (revue)
+const NAMED_CONSTRUCTION = /^\s*([A-Za-z][A-Za-z0-9_]*)\s*=(?!=)\s*([\s\S]+)$/;
 
 /**
  * Une ligne de construction (géométrie, lot 2 : L2, L3) — nommée, elle crée ou
@@ -720,7 +721,13 @@ function countsAsConstruction(
 	if (pair === null) return true;
 	const existing = target === undefined ? undefined : atelier.get(target);
 	if (existing !== undefined && existing.kind === 'curve' && isConstruction(existing)) return true;
-	return pair.every((name) => atelier.get(name)?.kind === 'point');
+	// Décision de David (2026-10-18, option a) : le TYPE de A et B tranche. Deux
+	// valeurs : le produit, comme avant ; un nom encore absent : la construction
+	// attend (D9) et le type tranchera à l'arrivée (`#shortcutKinds`) ; un point
+	// et une valeur : la construction refuse, avec la raison
+	const kinds = pair.map((name) => atelier.get(name)?.kind);
+	if (kinds.every((kind) => kind === 'value')) return false;
+	return kinds.every((kind) => kind === undefined || kind === 'point' || kind === 'value');
 }
 
 /** Créer — ou redéfinir — une construction nommée (L2, L8). Un refus ne crée rien. */
@@ -732,11 +739,18 @@ function defineConstruction(
 	read: ReadOutcome
 ): CalcResult {
 	const { atelier } = session;
+	// Le nom d'abord : `m2 = milieu(A, B)` doit dire ce qui ne va pas dans `m2`
+	const existing = atelier.get(name);
+	if (existing === undefined) {
+		const rejection = validateName(name, atelier.names);
+		if (rejection !== null) {
+			return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
+		}
+	}
 	if (!read.ok) return { kind: 'refus', message: read.message };
 	const typed = specOfCall(read.call, kindsOf(atelier));
 	if (!typed.ok) return { kind: 'refus', message: typed.message };
 	const kind = objectKindOf(typed.spec);
-	const existing = atelier.get(name);
 	if (existing !== undefined && existing.kind !== kind) return kindKeptRefusal(name, existing.kind);
 	// L8 : une construction circulaire est refusée
 	const { names, scalars } = partsOf(typed.spec);
@@ -760,11 +774,6 @@ function defineConstruction(
 				kind: 'refus',
 				message: `Construction circulaire : « ${loop} » dépend déjà de « ${name} ».`
 			};
-		}
-	} else {
-		const rejection = validateName(name, atelier.names);
-		if (rejection !== null) {
-			return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
 		}
 	}
 	const shape = parseDefinition(kind, body, provenance, atelier.functionNames).error;

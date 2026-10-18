@@ -207,6 +207,7 @@ function typed(call: ReadCall, kindOf: KindOf): ConstructionSpec {
 		case 'segment':
 		case 'demidroite':
 			expectArity(call, [2]);
+			mixedShortcutRefusal(call, kindOf);
 			return {
 				result: 'line',
 				line: {
@@ -229,6 +230,21 @@ function typed(call: ReadCall, kindOf: KindOf): ConstructionSpec {
 		case 'cercle':
 			return { result: 'circle', circle: typedCircle(call, kindOf) };
 	}
+}
+
+/**
+ * `(Ab)` avec un point et une valeur (décision de David, 2026-10-18) : ni une
+ * droite, ni un produit — on le dit, plutôt que « « b » n'est pas un point ».
+ */
+function mixedShortcutRefusal(call: ReadCall, kindOf: KindOf): void {
+	if (call.shortcut !== 'line') return;
+	const names = call.positional.flatMap((a) => (a.kind === 'name' ? [a.name] : []));
+	const point = names.find((name) => kindOf(name) === 'point');
+	const value = names.find((name) => kindOf(name) === 'value');
+	if (point === undefined || value === undefined) return;
+	throw new TypeRefusal(
+		`${call.text} : « ${point} » est un point et « ${value} » une valeur — ce n’est ni une droite, ni un produit.`
+	);
 }
 
 function typedCircle(call: ReadCall, kindOf: KindOf): CircleSpec {
