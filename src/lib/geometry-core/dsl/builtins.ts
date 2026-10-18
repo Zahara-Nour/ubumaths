@@ -2228,9 +2228,36 @@ function handleCercle(ctx: BuiltinCtx): BuiltinResult {
 				line
 			);
 		}
-		const centerId = requireElement(pos[0], 'centre', line);
+		if (named.size > 0) {
+			throw new DslRuntimeError(
+				{
+					summary: `\`cercle(O, r)\` : le rayon est déjà donné, l'argument nommé \`${[...named.keys()][0]}=\` est de trop.`,
+					forms: CERCLE_FORMS
+				},
+				line
+			);
+		}
+		const center = pos[0];
+		if (center.type !== 'element' || center.elementType !== 'point') {
+			throw new DslRuntimeError(
+				{ summary: '`cercle(O, r)` : le centre `O` doit être un point.', forms: CERCLE_FORMS },
+				line
+			);
+		}
 		const radius = toScalarParam(second, toGeoValue, line);
-		const id = figure.createCircleByRadius(centerId, radius, { label });
+		// Un rayon FIXÉ nul ou négatif n'a pas de sens ; un curseur, lui, est jugé
+		// par la figure à chaque valeur. `rayon=` garde son comportement (une figure
+		// de test s'appuie sur `rayon=0`, locus.test.ts)
+		if (!('scalarRef' in radius) && !(geoToNumber(radius) > 0)) {
+			throw new DslRuntimeError(
+				{
+					summary: '`cercle(O, r)` : le rayon doit être strictement positif.',
+					forms: CERCLE_FORMS
+				},
+				line
+			);
+		}
+		const id = figure.createCircleByRadius(center.figureId, radius, { label });
 		return { figureId: id, symbolType: 'cercle' };
 	}
 	if (pos.length === 0) {
@@ -5553,7 +5580,16 @@ function lineArgument(
 ): { through: string; p1: string; p2: string } | null {
 	const { pos, figure, line } = ctx;
 	if (pos.length !== 2) return null;
-	const through = requireElement(pos[0], 'P', line);
+	const first = pos[0];
+	if (first.type !== 'element' || first.elementType !== 'point') {
+		throw new DslRuntimeError(
+			{
+				summary: `\`${macroName}(P, d)\` : le premier argument doit être un point (la droite passe par lui).`
+			},
+			line
+		);
+	}
+	const through = first.figureId;
 	const target = pos[1];
 	const isLineLike =
 		target.type === 'element' &&

@@ -8,6 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { runDsl } from '../index';
+import { DslRuntimeError } from '../errors';
 import { geoToNumber } from '../../compute/to-number';
 import type { Figure } from '../../graph/figure';
 import { numeric } from '../../types/geo-value';
@@ -123,5 +124,35 @@ describe('L2 b : parallele(P, d) et perpendiculaire(P, d)', () => {
 		const { figure, symbols } = runDsl(`${base}\np = parallele(P, A, B)`);
 		const u = directionOf(figure, symbols, 'p');
 		expect(u.x * 2 - u.y * 1).toBeCloseTo(0, 10);
+	});
+});
+
+// =============================================================================
+// Revue de la PR 1
+// =============================================================================
+
+describe('revue : les refus des formes ajoutées, en français', () => {
+	const base = 'O = point(0, 0)\nA = point(2, 0)\nd = droite(O, A)';
+
+	it('cercle(O, 2, passant=A), cercle(O, 2, rayon=5) : un argument nommé de trop', () => {
+		expect(() => runDsl(`${base}\nc = cercle(O, 2, passant=A)`)).toThrow(/nommé/);
+		expect(() => runDsl(`${base}\nc = cercle(O, 2, rayon=5)`)).toThrow(/nommé/);
+	});
+
+	it('cercle(d, 3) : le centre est un point', () => {
+		expect(() => runDsl(`${base}\nc = cercle(d, 3)`)).toThrow(/centre/);
+	});
+
+	it('cercle(O, r) : un rayon nul ou négatif est refusé', () => {
+		expect(() => runDsl(`${base}\nc = cercle(O, -2)`)).toThrow(/positif/);
+		expect(() => runDsl(`${base}\nc = cercle(O, 0)`)).toThrow(/positif/);
+	});
+
+	it('parallele(d, d), perpendiculaire(d, d) : le premier argument est un point', () => {
+		expect(() => runDsl(`${base}\np = parallele(d, d)`)).toThrow(/point/);
+		expect(() => runDsl(`${base}\np = perpendiculaire(d, d)`)).toThrow(/point/);
+		// Une erreur du DSL, en français, avec sa ligne — pas une erreur interne
+		expect(() => runDsl(`${base}\np = parallele(d, d)`)).toThrow(DslRuntimeError);
+		expect(() => runDsl(`${base}\np = parallele(d, d)`)).toThrow(/doit être un point/);
 	});
 });
