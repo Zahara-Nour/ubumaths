@@ -54,7 +54,7 @@ gidouilles). Correction prévue en PR 2.
       `db:migrate` le même jour avec l'accord de David sur les `DROP POLICY`. Vérifié en prod : seules
       les policies SELECT restent sur les deux tables ; 57 Palotins et la séance existante intacts ;
       colonnes `constance_*` à leurs valeurs par défaut. `db:types` dans la PR 4.
-- [ ] PR 4 — Constance Royale hebdomadaire. **Spécification validée par David le 2026-10-18** :
+- [x] PR 4 — #1484, mergée le 2026-10-18, pas encore en prod. Constance Royale hebdomadaire. **Spécification validée par David le 2026-10-18** :
       semaine du lundi au dimanche (jour UTC) ; jour travaillé = jour où l'élève a gagné des pansées
       par le travail (Entraînement, Course, révision, énigme, évaluation) ; semaine tenue au 3e jour
       travaillé ; Constance = semaines tenues d'affilée (`current_streak` / `longest_streak`
