@@ -26,7 +26,8 @@ import type { Atelier } from './atelier.svelte';
  * Absente = commande de développeur : listée par `.aide dev` seulement
  * (décision de David, 2026-10-09).
  */
-export type HelpSection = 'calculer' | 'analyser' | 'statistiques' | 'probabilites' | 'reglages';
+export type HelpSection =
+	'calculer' | 'analyser' | 'geometrie' | 'statistiques' | 'probabilites' | 'reglages';
 
 /** Une commande telle que l'atelier la présente. */
 export interface AtelierCommand {
@@ -267,6 +268,26 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		}
 	],
 	[
+		// Servie par l'atelier (`survey.ts`, géométrie lot 2, PR 4)
+		'survey',
+		{
+			french: 'relever',
+			section: 'geometrie',
+			description:
+				'Faire varier une valeur ou un point_sur et relever deux mesures dans deux listes (quand … va de … à … pas …)',
+			example: '.relever AM ; S quand M va de 0 à 1 pas 0,05',
+			// L'exemple est le problème de l'aire : il se joue dans cet atelier (Q79)
+			exampleSetup: {
+				'point:A': '(0 ; 0)',
+				'point:B': '(4 ; 0)',
+				'point:M': 'point_sur([AB] ; 0,5)',
+				'point:N': '(AM ; MB)',
+				'point:P': '(0 ; MB)',
+				'value:S': 'aire(A, M, N, P)'
+			}
+		}
+	],
+	[
 		'reciprocal',
 		{
 			french: 'réciproque',
@@ -427,7 +448,8 @@ export const ENGINE_COMMANDS_LEFT_OUT: ReadonlySet<string> = new Set([
  */
 /**
  * Poser dans un atelier le décor d'un exemple (Q79) : `L` → une liste, `f(x)`
- * → une fonction (`.tabuler f`, lot 3 du tableur).
+ * → une fonction (`.tabuler f`, lot 3 du tableur), `point:A` → un point et
+ * `value:S` → une valeur, écrits comme dans Calcul (`.relever`, géométrie lot 2).
  */
 export function stageExampleSetup(
 	atelier: Atelier,
@@ -435,8 +457,12 @@ export function stageExampleSetup(
 ): void {
 	for (const [key, definition] of Object.entries(setup ?? {})) {
 		const call = /^([A-Za-z])\(x\)$/.exec(key);
-		if (call === null) atelier.create({ kind: 'list', name: key, definition });
-		else atelier.create({ kind: 'function', name: call[1], definition });
+		const kinded = /^(point|value):(.+)$/.exec(key);
+		if (call !== null) atelier.create({ kind: 'function', name: call[1], definition });
+		else if (kinded !== null) {
+			const kind = kinded[1] === 'point' ? 'point' : 'value';
+			atelier.create({ kind, name: kinded[2], definition }, 'text');
+		} else atelier.create({ kind: 'list', name: key, definition });
 	}
 }
 
@@ -449,6 +475,8 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'reciprocal',
 	// `.tabuler` : le tableau de valeurs, écrit dans la grille (tableur, lot 3)
 	'tabulate',
+	// `.relever` : deux listes relevées en faisant varier une valeur (`survey.ts`)
+	'survey',
 	// `.limite` : `evaluateLimit` (`mathAST/limits`), la réponse en formule (`limit.ts`)
 	'limit',
 	'simulate',

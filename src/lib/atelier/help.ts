@@ -58,6 +58,7 @@ const TITLE = 'Commandes disponibles';
 const SECTIONS: readonly { readonly id: HelpSection; readonly title: string }[] = [
 	{ id: 'calculer', title: 'Calculer' },
 	{ id: 'analyser', title: 'Étudier une fonction, résoudre' },
+	{ id: 'geometrie', title: 'Géométrie : relever des mesures' },
 	{ id: 'statistiques', title: 'Statistiques' },
 	{ id: 'probabilites', title: 'Probabilités et simulations' },
 	{ id: 'reglages', title: 'Réglages' }
