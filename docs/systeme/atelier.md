@@ -510,6 +510,19 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   formule). Une exception du moteur pendant le calcul d'une case devient l'erreur de cette case
   (`safely`), jamais celle de la grille. Mesuré : 600 formules à plages, 285 ms ; changer la case
   dont elles dépendent toutes, 250 ms.
+- **Compter les cases** (phase 0 :
+  [atelier-tableur-nbval-phase0.md](../wip/atelier-tableur-nbval-phase0.md), validée le
+  2026-10-18) : `NBVAL(plage ; …)` compte les cases non vides (nombres et mots, tapés ou rendus par
+  une formule), `NB.VIDE(plage)` les vides (`COUNT_FUNCTIONS`, `countCells`, `formula.ts`). Une
+  case est vide si elle MONTRE du vide : une formule qui rend `""` compte comme vide pour les deux
+  (Q-NV-1, à l'inverse d'Excel : NBVAL + NB.VIDE = la taille de la plage). Une case en erreur
+  arrête le compte (Q-NV-2, comme NB). NBVAL lit comme NB : plusieurs plages, case seule, liste
+  nommée (sa colonne), colonne entière, valeur (`NBVAL(3)` = 1). NB.VIDE prend UNE plage ; une
+  colonne entière est refusée (Q-NV-3 : le résultat dépendrait des 200 lignes de la grille) ; une
+  liste nommée compte ses trous de sa première ligne à sa dernière valeur (Q-NV-4 : `12 ; ; 15`
+  → 1, ` ; 12 ; ; 15` → 2) ; un nom qui n'est pas une liste est nommé dans le refus. Dans Calcul,
+  `nbval(L)` renvoie vers `.stats L`, `nb.vide(L)` vers la grille seulement. `NB.SI(plage;"")` vaut toujours 0 (NB.SI ignore les
+  vides, lot 4) : NB.VIDE y répond.
 - **Fonctions de calcul** (lot 4, PR 2) : ARRONDI, ENT, RACINE, ABS, LN, EXP, PI (`CALCULATION_ARITY`,
   nombre d'arguments fixe, refus nommé). RACINE, ABS, LN, EXP et ENT deviennent l'appel de mathAST
   (`sqrt`, `abs`, `ln`, `exp`, `floor`) : mêmes refus que Calcul. ARRONDI arrondit la moitié LOIN
