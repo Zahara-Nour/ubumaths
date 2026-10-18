@@ -310,3 +310,20 @@ complète et tague tous les modèles, la Chatterie se remplira avec lui ; on ne 
    eux tant que les questions du collège ne sont pas taguées : faut-il le faire d'abord ?
 3. **Silhouettes à découvrir** visibles : oui ?
 4. **Noms** : « le Mathou des Fractions » en v1, des noms pataphysiques plus tard ?
+
+### Changement d'année et oubli (décisions de David, 2026-10-18)
+
+Constat : un point acquis peut redevenir non acquis (échecs récents), et le niveau change chaque
+année. Règles validées :
+
+- **Un Mathou ne rapetisse jamais** : on garde le meilleur stade atteint ; un point oublié (plus
+  acquis ou dû en révision) **endort** le Mathou au lieu de le faire rapetisser.
+- **La Chatterie couvre tout le parcours** : niveau actuel et niveaux antérieurs (`grade_ancestors`).
+  À la rentrée, les Mathoux de l'an dernier restent, à leur stade.
+- **Une étoile par niveau** où la notion a été entièrement acquise (« grand matou ★ 5e ★ 4e »).
+- **Les anciens Mathoux font aussi la sieste** quand des points des années passées sont dus.
+- **Table de mémoire** (élève, notion, meilleur stade, étoiles) : question d'accès tranchée — l'élève
+  lit les siens, le prof ceux de ses élèves ; seul le serveur écrit.
+
+Découpage : PR 1 = calcul sur tout le parcours (meilleur stade par niveau, sans mémoire) ; PR 2 =
+migration de la table ; PR 3 = code qui s'en sert (après `db:migrate` et `db:types`).
