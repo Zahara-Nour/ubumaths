@@ -209,7 +209,6 @@ interface RemovalUndo {
 	readonly revision: number;
 	readonly items: AtelierObject[];
 	readonly charts: [string, ListChartState][];
-	readonly partnerChoices: [string, string][];
 	/** Les cellules sans nom d'avant : retirer un nom y verse la colonne (T3). */
 	readonly cells: [string, string][];
 	/** Les titres d'avant : supprimer une liste vide sa colonne, titre compris. */
@@ -544,15 +543,6 @@ export class Atelier {
 	 * par `revision`, qui déclencherait un enregistrement pour rien.
 	 */
 	private charts = new SvelteMap<string, ListChartState>();
-
-	/**
-	 * Liste partenaire choisie sur la carte d'une liste (Q46) : liste → partenaire.
-	 *
-	 * ⚠️ Ici plutôt que dans la carte (Q48) : retenue par son NOM dans la carte,
-	 * elle revenait en silence à celle par défaut après un renommage. Même
-	 * statut que `charts` : affichage seulement, hors de `serialize()`.
-	 */
-	private partnerChoices = new SvelteMap<string, string>();
 
 	/**
 	 * Le repère de la vue Figure (géométrie v2, G4 et F3) : affiché par défaut —
@@ -1208,10 +1198,6 @@ export class Atelier {
 			this.charts.delete(list);
 			this.charts.set(list === from ? to : list, { ...chart, partner });
 		}
-		for (const [list, partner] of [...this.partnerChoices]) {
-			this.partnerChoices.delete(list);
-			this.partnerChoices.set(list === from ? to : list, partner === from ? to : partner);
-		}
 
 		this.recomputeAll();
 		return { ok: true, updated };
@@ -1312,10 +1298,12 @@ export class Atelier {
 			...keptSequence,
 			...(previous.plotted && { plotted: true }),
 			...(isFunction(previous) && isFunction(rebuilt) && previous.inFigure && { inFigure: true }),
-			...((isFunction(previous) || isSequence(previous)) &&
+			// Un point ou une courbe garde son dessin (lot 4b) : la définition change, pas la couleur
+			...((isFunction(previous) || isSequence(previous) || isFigureObject(previous)) &&
 				previous.display && { display: previous.display }),
 			...(keptSlider && { slider: keptSlider })
 		} as AtelierObject;
+		this.#dropImpossibleCobweb(index);
 		this.recomputeAll();
 
 		return { ok: true, object: this.get(name)!, recomputed: dependents };
@@ -1337,10 +1325,6 @@ export class Atelier {
 		// sinon, une liste recréée sous ce nom s'y rattacherait en silence
 		for (const [list, chart] of [...this.charts]) {
 			if (chart.partner === name) this.charts.delete(list);
-		}
-		this.partnerChoices.delete(name);
-		for (const [list, partner] of [...this.partnerChoices]) {
-			if (partner === name) this.partnerChoices.delete(list);
 		}
 		this.recomputeAll();
 
@@ -1387,16 +1371,12 @@ export class Atelier {
 		const charts = [...this.charts].filter(
 			([list, c]) => gone.has(list) || gone.has(c.partner ?? '')
 		);
-		const partnerChoices = [...this.partnerChoices].filter(
-			([list, partner]) => gone.has(list) || gone.has(partner)
-		);
 		const cells = [...this.cells];
 		const titles = [...this.titles];
 		const columns = this.items.flatMap((o) => (isList(o) && gone.has(o.name) ? [o.column] : []));
 
 		this.items = this.items.filter((o) => !gone.has(o.name));
 		for (const [list] of charts) this.charts.delete(list);
-		for (const [list] of partnerChoices) this.partnerChoices.delete(list);
 		this.recomputeAll();
 		if (unnamed !== undefined) unnamed();
 		else for (const column of columns) this.titles.delete(column);
@@ -1411,7 +1391,6 @@ export class Atelier {
 			revision: this.revision,
 			items,
 			charts: $state.snapshot(charts) as [string, ListChartState][],
-			partnerChoices,
 			cells,
 			titles
 		};
@@ -1437,9 +1416,6 @@ export class Atelier {
 		// Un diagramme remis entre-temps (hors `revision`, Q37) prime sur l'ancien
 		for (const [list, chart] of undo.charts) {
 			if (!this.charts.has(list)) this.charts.set(list, chart);
-		}
-		for (const [list, partner] of undo.partnerChoices) {
-			if (!this.partnerChoices.has(list)) this.partnerChoices.set(list, partner);
 		}
 		this.recomputeAll();
 		return true;
@@ -1489,15 +1465,6 @@ export class Atelier {
 		// Le genre n'est noté que pour un circulaire : les bâtons gardent leur forme v1
 		this.charts.set(name, { partner, ...(kind !== 'barres' && { kind }) });
 		return true;
-	}
-
-	/** La partenaire choisie sur la carte de cette liste, s'il y en a une. */
-	partnerChoiceOf(name: string): string | undefined {
-		return this.partnerChoices.get(name);
-	}
-
-	choosePartner(name: string, partner: string): void {
-		this.partnerChoices.set(name, partner);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -2248,7 +2215,6 @@ export class Atelier {
 		this.#formats = read.formats;
 		this.items = [];
 		this.charts.clear();
-		this.partnerChoices.clear();
 		this.#figureFrame = true;
 		this.cells.clear();
 		this.titles.clear();
@@ -2640,8 +2606,22 @@ export class Atelier {
 			};
 		}
 		this.items[index] = next;
+		this.#dropImpossibleCobweb(index);
 		this.recomputeAll();
 		return { ok: true };
+	}
+
+	/**
+	 * Une suite en escalier qui ne peut plus l'être — passée en explicite, ou
+	 * récurrence qui dépend désormais de n — revient au nuage (revue de #1501 :
+	 * le menu ne cochait plus rien, les marches restaient affichées, et le graphe
+	 * dessinait un nuage). Même règle que le refus de `setSequenceDisplay`.
+	 */
+	#dropImpossibleCobweb(index: number): void {
+		const current = this.items[index];
+		if (!isSequence(current) || current.display?.representation !== 'cobweb') return;
+		if (cobwebRefusal(current, this.functionNames) === null) return;
+		this.items[index] = { ...current, display: { ...current.display, representation: 'ranks' } };
 	}
 
 	/**

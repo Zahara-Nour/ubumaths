@@ -15,6 +15,7 @@
 	import { actionsFor, partnersOf, type ObjectAction } from '$lib/atelier/actions';
 	import { useAtelier } from '$lib/atelier/context';
 	import { displayName } from '$lib/atelier/names';
+	import { stateLabelOf } from '$lib/atelier/card-state';
 	import { listCountLabel, listEntriesOf, listPreview } from '$lib/atelier/list-preview';
 	import { EllipsisVertical } from '@lucide/svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -31,6 +32,8 @@
 	const atelier = useAtelier();
 
 	const name = $derived(displayName(object.name));
+	/** « à compléter », « en attente »… (revue de #1501). */
+	const stateLabel = $derived(stateLabelOf(object.status));
 
 	const entries = $derived(listEntriesOf(object, (column, row) => atelier.cellValue(column, row)));
 	const preview = $derived(listPreview(entries));
@@ -87,8 +90,6 @@
 	}
 
 	function handleSelect(action: ObjectAction) {
-		// Une partenaire choisie est retenue (Q46, Q48 : elle suit un renommage)
-		if (action.partner !== undefined) atelier.choosePartner(object.name, action.partner);
 		const root = action.id.split(':')[0];
 		if (PREPARED.has(root)) {
 			prepared = action;
@@ -108,6 +109,9 @@
 			<span class="valeurs">{preview}</span>
 			<span class="compte">({count}{calculated ? ', calculée dans la grille' : ''})</span>
 		</span>
+		{#if stateLabel}
+			<span class="etat">{stateLabel}</span>
+		{/if}
 		<DropdownMenu.Root onOpenChangeComplete={handleOpenChangeComplete}>
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
@@ -204,6 +208,11 @@
 		font-size: 0.75rem;
 		color: var(--color-muted-foreground);
 		font-variant-numeric: tabular-nums;
+	}
+	.etat {
+		flex-shrink: 0;
+		font-size: 0.6875rem;
+		color: var(--color-muted-foreground);
 	}
 	.icone {
 		flex-shrink: 0;

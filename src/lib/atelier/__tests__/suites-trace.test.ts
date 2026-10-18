@@ -85,6 +85,31 @@ describe('réglages d’une suite', () => {
 		expect(atelier.setSequenceDisplay('u', patch as never).ok).toBe(false);
 	});
 
+	// Revue de #1501 : passée en explicite, la suite gardait un escalier
+	// impossible — menu sans rien de coché, marches affichées, nuage dessiné
+	it('passée en explicite, une suite en escalier revient au nuage', () => {
+		// `3` se lit explicite à la création (S4) : l'élève l'a passée en récurrence
+		const atelier = recurrence('3');
+		expect(atelier.setSequence('u', { mode: 'recurrence' }).ok).toBe(true);
+		atelier.setPlotted('u', true);
+		expect(atelier.setSequenceDisplay('u', { representation: 'cobweb' }).ok).toBe(true);
+		expect(displayOf(atelier)?.representation).toBe('cobweb');
+
+		expect(atelier.setSequence('u', { mode: 'explicit' }).ok).toBe(true);
+
+		expect(displayOf(atelier)?.representation).toBe('ranks');
+	});
+
+	it('une récurrence qui se met à dépendre de n revient au nuage', () => {
+		const atelier = recurrence();
+		atelier.setPlotted('u', true);
+		atelier.setSequenceDisplay('u', { representation: 'cobweb' });
+
+		expect(atelier.update('u', 'u_n + n', 'text').ok).toBe(true);
+
+		expect(displayOf(atelier)?.representation).toBe('ranks');
+	});
+
 	it('se range et se relit', () => {
 		const atelier = recurrence();
 		atelier.setPlotted('u', true);

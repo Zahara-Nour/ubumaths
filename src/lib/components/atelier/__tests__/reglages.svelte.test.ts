@@ -330,6 +330,21 @@ describe('la ligne venue du dehors, en écriture mathématique', () => {
 		expect(container.querySelector('.historique li.refus')).toBeNull();
 	});
 
+	// Revue de #1501 : « Tableau croisé » part, comme « Simuler », une fois le menu
+	// fermé (`onOpenChangeComplete`) — sinon la console n'obtient pas le focus
+	it('« Tableau croisé » prépare sa commande dans la console, qui a le focus', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'C', definition: 'rouge;vert;rouge' });
+		atelier.create({ kind: 'list', name: 'D', definition: 'grand;petit;grand' });
+		const { choose, mathField, container } = await open(atelier);
+		await choose('Écriture mathématique');
+
+		await chooseObjectAction(container, 'C', 'Tableau croisé avec D');
+
+		await vi.waitFor(() => expect(mathField()?.value).toContain('croiser'));
+		await vi.waitFor(() => expect(document.activeElement).toBe(mathField()));
+	});
+
 	it('fermer et rouvrir la console garde la ligne en cours, cases du modèle comprises', async () => {
 		const { choose, typeMath, mathField, container } = await open();
 		await choose('Écriture mathématique');

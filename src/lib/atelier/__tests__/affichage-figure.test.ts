@@ -117,6 +117,18 @@ describe('régler un point et une courbe', () => {
 		expect(atelier.setFigureDisplay('f', { color: 'curve-2' }).ok).toBe(false);
 	});
 
+	it('modifier la définition garde le dessin', () => {
+		const atelier = figure();
+		atelier.setFigureDisplay('A', { color: 'curve-2' });
+		atelier.setFigureDisplay('d', { lineWidth: 4 });
+
+		atelier.update('A', '(3 ; 4)', 'text');
+		atelier.update('d', 'y = x', 'text');
+
+		expect(displayOf(atelier, 'A')).toMatchObject({ color: 'curve-2' });
+		expect(displayOf(atelier, 'd')).toMatchObject({ lineWidth: 4 });
+	});
+
 	it('un réglage fait avancer la révision (sauvegarde, vue Géométrie)', () => {
 		const atelier = figure();
 		const before = atelier.revision;
