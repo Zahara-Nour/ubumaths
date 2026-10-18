@@ -1,0 +1,1351 @@
+{
+	"luLe": "2026-10-18",
+	"exercices": [
+		{
+			"id": "c3925ca6-9148-42b5-a3c4-0d8e79c0a64d",
+			"titre": "Calculer avec une loi",
+			"updatedAt": "2026-10-13T08:11:29.231875+00:00"
+		},
+		{
+			"id": "27a09b11-0b0f-4636-afda-3957144106bb",
+			"titre": "Équiprobabilité",
+			"updatedAt": "2026-10-13T08:11:29.783983+00:00"
+		},
+		{
+			"id": "7241ef28-e197-4136-900a-048cde2a48e8",
+			"titre": "Vocabulaire des probabilités",
+			"updatedAt": "2026-10-13T08:11:30.633211+00:00"
+		},
+		{
+			"id": "8150030b-66a3-4f77-a818-8541eaafcd91",
+			"titre": "Le jeu du produit",
+			"updatedAt": "2026-10-13T08:11:30.164848+00:00"
+		},
+		{
+			"id": "c88f712e-7b52-4946-8a3e-d0588eb4fa95",
+			"titre": "Linéarité de l'espérance (2)",
+			"updatedAt": "2026-10-13T08:11:30.2784+00:00"
+		},
+		{
+			"id": "02e3e985-7904-401e-8b36-0291f6a53fe0",
+			"titre": "Compléter un arbre pondéré",
+			"updatedAt": "2026-09-25T21:06:22.226027+00:00"
+		},
+		{
+			"id": "c64b004f-e3d4-49c8-b594-8c27873389bf",
+			"titre": "Bilan technique",
+			"updatedAt": "2026-09-25T21:06:22.726151+00:00"
+		},
+		{
+			"id": "582ddfb8-306b-496a-b629-6676d4cc223a",
+			"titre": "Du tableau à l'arbre et retour",
+			"updatedAt": "2026-09-25T21:06:22.304069+00:00"
+		},
+		{
+			"id": "8ecb100a-bf0f-490d-86f8-1b8c6f948c4c",
+			"titre": "Test de dépistage",
+			"updatedAt": "2026-09-25T21:06:22.77555+00:00"
+		},
+		{
+			"id": "8ccf6dbb-c516-479c-acb6-473deac1efee",
+			"titre": "Arbre d'un schéma de Bernoulli",
+			"updatedAt": "2026-10-16T08:35:41.411654+00:00"
+		},
+		{
+			"id": "21942974-808a-4e39-b70e-1ac9803fc7c5",
+			"titre": "Propriétés des coefficients binomiaux",
+			"updatedAt": "2026-10-16T08:35:41.602244+00:00"
+		},
+		{
+			"id": "09d816b4-9b1f-48ed-a769-efbb21c81ecd",
+			"titre": "Combien de croissants commander ?",
+			"updatedAt": "2026-10-13T08:11:29.307817+00:00"
+		},
+		{
+			"id": "74169a9c-650e-4097-908d-0c15980de296",
+			"titre": "Déterminer une loi",
+			"updatedAt": "2026-10-13T08:11:29.524522+00:00"
+		},
+		{
+			"id": "0c88d161-2c7d-46d9-935b-ebde6c24e5c6",
+			"titre": "Linéarité de l'espérance",
+			"updatedAt": "2026-10-13T08:11:30.311078+00:00"
+		},
+		{
+			"id": "67635878-8489-4db1-bdd6-b4590f937d48",
+			"titre": "Variance et écart type",
+			"updatedAt": "2026-10-13T08:11:30.595725+00:00"
+		},
+		{
+			"id": "be5c50d3-1aff-45d8-9baa-e1125cca5f28",
+			"titre": "Échantillons et règle des 2σ/√n",
+			"updatedAt": "2026-10-13T08:11:29.728964+00:00"
+		},
+		{
+			"id": "3a05ad58-7c11-43b1-aaa6-81ce1887bda3",
+			"titre": "Fréquence des lettres",
+			"updatedAt": "2026-10-13T08:11:29.894234+00:00"
+		},
+		{
+			"id": "135429d8-41d1-44b5-8bf9-c350e044f032",
+			"titre": "La meilleure prévision",
+			"updatedAt": "2026-10-13T08:11:30.058328+00:00"
+		},
+		{
+			"id": "2edc6ba3-3bc2-43dc-8a02-2a618f083258",
+			"titre": "Traduire un évènement",
+			"updatedAt": "2026-10-16T08:35:41.75976+00:00"
+		},
+		{
+			"id": "d626138a-770e-4a45-bbe9-5d29f53594ed",
+			"titre": "Vecteur normal à une droite",
+			"updatedAt": "2026-09-26T07:17:39.343542+00:00"
+		},
+		{
+			"id": "42850cf2-5883-48ac-86d9-da94e687eae1",
+			"titre": "Projeté orthogonal d'un point sur une droite",
+			"updatedAt": "2026-09-26T07:17:39.755817+00:00"
+		},
+		{
+			"id": "d360f71a-306b-4236-b633-923c12434b64",
+			"titre": "Équation d'une droite par un point et un vecteur normal",
+			"updatedAt": "2026-09-26T07:17:39.524787+00:00"
+		},
+		{
+			"id": "8945969e-e90c-47e5-bb6f-df644efc275c",
+			"titre": "Le phare et le bateau",
+			"updatedAt": "2026-09-26T07:17:40.311391+00:00"
+		},
+		{
+			"id": "c49ed26f-c764-40e1-bcf4-f8481f1ed461",
+			"titre": "Le symétrique d'un point et le plus court chemin",
+			"updatedAt": "2026-09-26T07:17:40.531255+00:00"
+		},
+		{
+			"id": "5ad059f8-54e6-41e7-ac57-53a5946f9075",
+			"titre": "Droites perpendiculaires, droites parallèles",
+			"updatedAt": "2026-09-26T07:17:39.599332+00:00"
+		},
+		{
+			"id": "a536d084-229a-41cb-84d6-d228a3c5be06",
+			"titre": "Reconnaître une équation de cercle",
+			"updatedAt": "2026-09-26T07:17:39.892387+00:00"
+		},
+		{
+			"id": "119b88a6-c1fb-4d79-9820-cf32df13745c",
+			"titre": "Les hauteurs d'un triangle",
+			"updatedAt": "2026-09-26T07:17:40.143794+00:00"
+		},
+		{
+			"id": "b62dd4f4-4269-47ee-b324-d080f987c0fa",
+			"titre": "Zone de couverture d'une antenne",
+			"updatedAt": "2026-09-26T07:17:40.364685+00:00"
+		},
+		{
+			"id": "e20d90ce-707c-462d-bfa5-1536e56d3400",
+			"titre": "Médiatrice d'un segment",
+			"updatedAt": "2026-09-26T07:17:39.67327+00:00"
+		},
+		{
+			"id": "a0fa87dd-0369-4662-833c-b2c612a06557",
+			"titre": "Cercle défini par un diamètre",
+			"updatedAt": "2026-09-26T07:17:39.957855+00:00"
+		},
+		{
+			"id": "7a85b5de-97a9-4292-aff4-95a00e3aba1d",
+			"titre": "À égale distance d'un point et d'une droite",
+			"updatedAt": "2026-09-26T07:17:40.413641+00:00"
+		},
+		{
+			"id": "39b4ad77-a502-4e05-91b9-6ffbab36f2ff",
+			"titre": "Un cercle et une parabole",
+			"updatedAt": "2026-09-26T07:17:40.479623+00:00"
+		},
+		{
+			"id": "852b3762-cb04-46b8-ad61-46c8e1ce3f8b",
+			"titre": "Espérance et écart type",
+			"updatedAt": "2026-10-16T08:35:41.853132+00:00"
+		},
+		{
+			"id": "fade62b2-56be-4d2e-a14d-e8ad873199ee",
+			"titre": "La roue de loterie",
+			"updatedAt": "2026-10-13T08:11:30.099901+00:00"
+		},
+		{
+			"id": "d1725136-24a1-44b7-8c81-239207b68a7b",
+			"titre": "Probabilités cumulées",
+			"updatedAt": "2026-10-16T09:16:18.641483+00:00"
+		},
+		{
+			"id": "ec059dfb-26ff-4bc3-abb7-74dc62b096a6",
+			"titre": "Espérance d'une loi géométrique",
+			"updatedAt": "2026-10-16T09:16:18.780097+00:00"
+		},
+		{
+			"id": "6567ee61-f587-4ad2-87bc-d52d5943ecba",
+			"titre": "Le trousseau de clés",
+			"updatedAt": "2026-10-16T09:16:19.049342+00:00"
+		},
+		{
+			"id": "3e98ce01-92a4-4e94-b5b2-e4ca566f755e",
+			"titre": "Démontrer l'absence de mémoire",
+			"updatedAt": "2026-10-16T09:16:18.826149+00:00"
+		},
+		{
+			"id": "654d924d-2d1e-478c-acd4-66357dc918e2",
+			"titre": "Seuil avec le logarithme",
+			"updatedAt": "2026-10-16T09:16:18.925044+00:00"
+		},
+		{
+			"id": "f8721c1b-d91c-421a-8661-4d4c9808f489",
+			"titre": "Le jeu du six",
+			"updatedAt": "2026-10-16T09:16:19.225969+00:00"
+		},
+		{
+			"id": "a98b4e17-beac-4c39-b0e4-9ffe5f036e2b",
+			"titre": "La lampe de l'aquarium",
+			"updatedAt": "2026-10-16T09:16:19.283215+00:00"
+		},
+		{
+			"id": "7a0865c0-f194-4951-98d2-7ec6beb740b3",
+			"titre": "Les crêpes au plafond",
+			"updatedAt": "2026-10-16T10:27:50.62939+00:00"
+		}
+	],
+	"propositions": [
+		{
+			"exerciseId": "c3925ca6-9148-42b5-a3c4-0d8e79c0a64d",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "b. « $X$ prend au plus la valeur $1$ » s'écrit $\\{X\\leqslant 1\\}$, et $P(X\\leqslant 1)=1-P(X>1)$, soit $P(X\\leqslant 1)=1-0.3=0.7$ d'après la question a) 2).",
+			"apres": "b. « $X$ prend au plus la valeur $1$ » s'écrit $\\{X\\leqslant 1\\}$, et $P(X\\leqslant 1)=1-P(X>1)$, soit $P(X\\leqslant 1)=1-0.3=0.7$ d'après la question 1) b).",
+			"renvoi_avant": "a) 2)",
+			"renvoi_apres": "1) b)"
+		},
+		{
+			"exerciseId": "c3925ca6-9148-42b5-a3c4-0d8e79c0a64d",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "b. \"$X$ takes the value $1$ at most\" is written $\\{X\\leqslant 1\\}$, and $P(X\\leqslant 1)=1-P(X>1)$, that is $P(X\\leqslant 1)=1-0.3=0.7$ by question a) 2).",
+			"apres": "b. \"$X$ takes the value $1$ at most\" is written $\\{X\\leqslant 1\\}$, and $P(X\\leqslant 1)=1-P(X>1)$, that is $P(X\\leqslant 1)=1-0.3=0.7$ by question 1) b).",
+			"renvoi_avant": "a) 2)",
+			"renvoi_apres": "1) b)"
+		},
+		{
+			"exerciseId": "27a09b11-0b0f-4636-afda-3957144106bb",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "b. Comparer avec la question b) 2) et expliquer le résultat.",
+			"apres": "b. Comparer avec la question 2) b) et expliquer le résultat.",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "27a09b11-0b0f-4636-afda-3957144106bb",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "b. Compare with question b) 2) and explain the result.",
+			"apres": "b. Compare with question 2) b) and explain the result.",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "7241ef28-e197-4136-900a-048cde2a48e8",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "d. A-t-on $P(A\\cup B)=P(A)+P(B)$ ? Expliquer pourquoi à l'aide des ensembles écrits à la question a) 2).",
+			"apres": "d. A-t-on $P(A\\cup B)=P(A)+P(B)$ ? Expliquer pourquoi à l'aide des ensembles écrits à la question 1) b).",
+			"renvoi_avant": "a) 2)",
+			"renvoi_apres": "1) b)"
+		},
+		{
+			"exerciseId": "7241ef28-e197-4136-900a-048cde2a48e8",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "d. Is it true that $P(A\\cup B)=P(A)+P(B)$? Explain why using the sets written in question a) 2).",
+			"apres": "d. Is it true that $P(A\\cup B)=P(A)+P(B)$? Explain why using the sets written in question 1) b).",
+			"renvoi_avant": "a) 2)",
+			"renvoi_apres": "1) b)"
+		},
+		{
+			"exerciseId": "8150030b-66a3-4f77-a818-8541eaafcd91",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "**$E(R)=2$.** Par linéarité de l'espérance, $E(G)=E(R-m)=E(R)-m$, donc **$E(G)=2-m$**. Avec ~m=3~, on retrouve $E(G)=-1$, le résultat de la question b) 2).",
+			"apres": "**$E(R)=2$.** Par linéarité de l'espérance, $E(G)=E(R-m)=E(R)-m$, donc **$E(G)=2-m$**. Avec ~m=3~, on retrouve $E(G)=-1$, le résultat de la question 2) b).",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "8150030b-66a3-4f77-a818-8541eaafcd91",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "**$E(R)=2$.** By linearity of expectation, $E(G)=E(R-m)=E(R)-m$, so **$E(G)=2-m$**. With ~m=3~, we find $E(G)=-1$ again, the result of question b) 2).",
+			"apres": "**$E(R)=2$.** By linearity of expectation, $E(G)=E(R-m)=E(R)-m$, so **$E(G)=2-m$**. With ~m=3~, we find $E(G)=-1$ again, the result of question 2) b).",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "c88f712e-7b52-4946-8a3e-d0588eb4fa95",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "Les questions a) et b) sont indépendantes ; la question c) utilise les deux.",
+			"apres": "Les questions 1) et 2) sont indépendantes ; la question 3) utilise les deux.",
+			"renvoi_avant": "a) | b) | c)",
+			"renvoi_apres": "1) | 2) | 3)"
+		},
+		{
+			"exerciseId": "c88f712e-7b52-4946-8a3e-d0588eb4fa95",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "a. On modifie le jeu de la question a) : le gain net devient $G'=3X-c$, où $c$ est un réel. Déterminer $c$ pour que le jeu soit équitable, c'est-à-dire pour que $E(G')=0$.",
+			"apres": "a. On modifie le jeu de la question 1) : le gain net devient $G'=3X-c$, où $c$ est un réel. Déterminer $c$ pour que le jeu soit équitable, c'est-à-dire pour que $E(G')=0$.",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "c88f712e-7b52-4946-8a3e-d0588eb4fa95",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "b. Le stand de la question b) garde les mêmes coûts, mais vend ses crêpes $x$ euros pièce. Exprimer $B$ en fonction de $N$ et de $x$, puis déterminer le prix $x$ pour que le bénéfice moyen sur la journée soit de $34$ €.",
+			"apres": "b. Le stand de la question 2) garde les mêmes coûts, mais vend ses crêpes $x$ euros pièce. Exprimer $B$ en fonction de $N$ et de $x$, puis déterminer le prix $x$ pour que le bénéfice moyen sur la journée soit de $34$ €.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "c88f712e-7b52-4946-8a3e-d0588eb4fa95",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "Questions a) and b) are independent; question c) uses both.",
+			"apres": "Questions 1) and 2) are independent; question 3) uses both.",
+			"renvoi_avant": "a) | b) | c)",
+			"renvoi_apres": "1) | 2) | 3)"
+		},
+		{
+			"exerciseId": "c88f712e-7b52-4946-8a3e-d0588eb4fa95",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "a. The game of question a) is changed: the net gain becomes $G'=3X-c$, where $c$ is a real number. Find $c$ so that the game is fair, that is so that $E(G')=0$.",
+			"apres": "a. The game of question 1) is changed: the net gain becomes $G'=3X-c$, where $c$ is a real number. Find $c$ so that the game is fair, that is so that $E(G')=0$.",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "c88f712e-7b52-4946-8a3e-d0588eb4fa95",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "b. The stall of question b) keeps the same costs, but sells its pancakes for $x$ euros each. Express $B$ in terms of $N$ and $x$, then find the price $x$ for which the mean profit for the day is $34$ €.",
+			"apres": "b. The stall of question 2) keeps the same costs, but sells its pancakes for $x$ euros each. Express $B$ in terms of $N$ and $x$, then find the price $x$ for which the mean profit for the day is $34$ €.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "02e3e985-7904-401e-8b36-0291f6a53fe0",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "4. Vérifier que la somme des quatre probabilités de la question c) est égale à 1. Pourquoi était-ce prévisible ?",
+			"apres": "4. Vérifier que la somme des quatre probabilités de la question 3) est égale à 1. Pourquoi était-ce prévisible ?",
+			"renvoi_avant": "c)",
+			"renvoi_apres": "3)"
+		},
+		{
+			"exerciseId": "02e3e985-7904-401e-8b36-0291f6a53fe0",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "4. Check that the sum of the four probabilities in question c) is equal to 1. Why could this be expected?",
+			"apres": "4. Check that the sum of the four probabilities in question 3) is equal to 1. Why could this be expected?",
+			"renvoi_avant": "c)",
+			"renvoi_apres": "3)"
+		},
+		{
+			"exerciseId": "c64b004f-e3d4-49c8-b594-8c27873389bf",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "Pour la question a), un musée a interrogé 250 visiteurs. On note $E$ l'évènement « le visiteur est un enfant » et $G$ l'évènement « le visiteur a pris un audioguide ».",
+			"apres": "Pour la question 1), un musée a interrogé 250 visiteurs. On note $E$ l'évènement « le visiteur est un enfant » et $G$ l'évènement « le visiteur a pris un audioguide ».",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "c64b004f-e3d4-49c8-b594-8c27873389bf",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "For question a), a museum surveyed 250 visitors. Let $E$ be the event \"the visitor is a child\" and $G$ the event \"the visitor took an audio guide\".",
+			"apres": "For question 1), a museum surveyed 250 visitors. Let $E$ be the event \"the visitor is a child\" and $G$ the event \"the visitor took an audio guide\".",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "582ddfb8-306b-496a-b629-6676d4cc223a",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "3. Les probabilités du premier niveau sont $P(F)$ et $P(\\overline{F})$, celles du second niveau sont les probabilités conditionnelles de la question b).",
+			"apres": "3. Les probabilités du premier niveau sont $P(F)$ et $P(\\overline{F})$, celles du second niveau sont les probabilités conditionnelles de la question 2).",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "582ddfb8-306b-496a-b629-6676d4cc223a",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "3. The first-level probabilities are $P(F)$ and $P(\\overline{F})$; the second-level ones are the conditional probabilities of question b).",
+			"apres": "3. The first-level probabilities are $P(F)$ and $P(\\overline{F})$; the second-level ones are the conditional probabilities of question 2).",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "8ecb100a-bf0f-490d-86f8-1b8c6f948c4c",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "b. Calculer la probabilité qu'un patient dont le test est positif soit malade, arrondie au millième. Comparer avec la question c) 1) et conclure.",
+			"apres": "b. Calculer la probabilité qu'un patient dont le test est positif soit malade, arrondie au millième. Comparer avec la question 3) a) et conclure.",
+			"renvoi_avant": "c) 1)",
+			"renvoi_apres": "3) a)"
+		},
+		{
+			"exerciseId": "8ecb100a-bf0f-490d-86f8-1b8c6f948c4c",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "b. Work out the probability that a patient whose test is positive has the disease, to the nearest thousandth. Compare with question c) 1) and draw a conclusion.",
+			"apres": "b. Work out the probability that a patient whose test is positive has the disease, to the nearest thousandth. Compare with question 3) a) and draw a conclusion.",
+			"renvoi_avant": "c) 1)",
+			"renvoi_apres": "3) a)"
+		},
+		{
+			"exerciseId": "8ccf6dbb-c516-479c-acb6-473deac1efee",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "b. D'après les questions b) et c), $P(X=3)=0.064$, $P(X=0)=0.216$ et $P(X=1)=0.432$. De même, il y a $3$ chemins à deux succès (selon la place de l'échec), chacun de probabilité $0.4^2\\times0.6=0.096$, donc $P(X=2)=3\\times0.096=0.288$.",
+			"apres": "b. D'après les questions 2) et 3), $P(X=3)=0.064$, $P(X=0)=0.216$ et $P(X=1)=0.432$. De même, il y a $3$ chemins à deux succès (selon la place de l'échec), chacun de probabilité $0.4^2\\times0.6=0.096$, donc $P(X=2)=3\\times0.096=0.288$.",
+			"renvoi_avant": "b) | c)",
+			"renvoi_apres": "2) | 3)"
+		},
+		{
+			"exerciseId": "8ccf6dbb-c516-479c-acb6-473deac1efee",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "b. From questions b) and c), $P(X=3)=0.064$, $P(X=0)=0.216$ and $P(X=1)=0.432$. Likewise, there are $3$ paths with two successes (depending on where the failure is), each with probability $0.4^2\\times0.6=0.096$, so $P(X=2)=3\\times0.096=0.288$.",
+			"apres": "b. From questions 2) and 3), $P(X=3)=0.064$, $P(X=0)=0.216$ and $P(X=1)=0.432$. Likewise, there are $3$ paths with two successes (depending on where the failure is), each with probability $0.4^2\\times0.6=0.096$, so $P(X=2)=3\\times0.096=0.288$.",
+			"renvoi_avant": "b) | c)",
+			"renvoi_apres": "2) | 3)"
+		},
+		{
+			"exerciseId": "21942974-808a-4e39-b70e-1ac9803fc7c5",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "Donc $\\binom{10}{2}=45$, et $\\binom{10}{8}=45$ d'après la question b) 3).",
+			"apres": "Donc $\\binom{10}{2}=45$, et $\\binom{10}{8}=45$ d'après la question 2) c).",
+			"renvoi_avant": "b) 3)",
+			"renvoi_apres": "2) c)"
+		},
+		{
+			"exerciseId": "21942974-808a-4e39-b70e-1ac9803fc7c5",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "So $\\binom{10}{2}=45$, and $\\binom{10}{8}=45$ by question b) 3).",
+			"apres": "So $\\binom{10}{2}=45$, and $\\binom{10}{8}=45$ by question 2) c).",
+			"renvoi_avant": "b) 3)",
+			"renvoi_apres": "2) c)"
+		},
+		{
+			"exerciseId": "09d816b4-9b1f-48ed-a769-efbb21c81ecd",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "b. Comparer $B_{60}$ et $B_{70}$ selon la valeur de la demande. Avec quelle probabilité la commande de 70 croissants rapporte-t-elle plus que celle de 60 ? Cela confirme-t-il la réponse à la question e) 1) ?",
+			"apres": "b. Comparer $B_{60}$ et $B_{70}$ selon la valeur de la demande. Avec quelle probabilité la commande de 70 croissants rapporte-t-elle plus que celle de 60 ? Cela confirme-t-il la réponse à la question 5) a) ?",
+			"renvoi_avant": "e) 1)",
+			"renvoi_apres": "5) a)"
+		},
+		{
+			"exerciseId": "09d816b4-9b1f-48ed-a769-efbb21c81ecd",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "b. Si $D\\leqslant60$, les 10 croissants supplémentaires de la commande de 70 ne sont pas vendus : ils coûtent ~0.4*10=4~ € de plus, donc $B_{70}=B_{60}-4$ (on le vérifie sur les tableaux : 20 et 24, 32 et 36, 44 et 48). Si ~D=70~, ces 10 croissants sont vendus et rapportent ~1.2*10-4=8~ € de plus : $B_{70}=B_{60}+8$ (56 et 48). **La commande de 70 croissants rapporte plus que celle de 60 seulement si ~D=70~, c'est-à-dire avec une probabilité de $0.2$.** En moyenne, elle rapporte ~-4*0.8+8*0.2=-1.6~ € de moins, ce qui correspond bien à ~40.4-42=-1.6~ : cela confirme le choix de la question e) 1).",
+			"apres": "b. Si $D\\leqslant60$, les 10 croissants supplémentaires de la commande de 70 ne sont pas vendus : ils coûtent ~0.4*10=4~ € de plus, donc $B_{70}=B_{60}-4$ (on le vérifie sur les tableaux : 20 et 24, 32 et 36, 44 et 48). Si ~D=70~, ces 10 croissants sont vendus et rapportent ~1.2*10-4=8~ € de plus : $B_{70}=B_{60}+8$ (56 et 48). **La commande de 70 croissants rapporte plus que celle de 60 seulement si ~D=70~, c'est-à-dire avec une probabilité de $0.2$.** En moyenne, elle rapporte ~-4*0.8+8*0.2=-1.6~ € de moins, ce qui correspond bien à ~40.4-42=-1.6~ : cela confirme le choix de la question 5) a).",
+			"renvoi_avant": "e) 1)",
+			"renvoi_apres": "5) a)"
+		},
+		{
+			"exerciseId": "09d816b4-9b1f-48ed-a769-efbb21c81ecd",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "b. Compare $B_{60}$ and $B_{70}$ according to the value of the demand. With what probability does the order of 70 croissants bring in more than the order of 60? Does this confirm the answer to question e) 1)?",
+			"apres": "b. Compare $B_{60}$ and $B_{70}$ according to the value of the demand. With what probability does the order of 70 croissants bring in more than the order of 60? Does this confirm the answer to question 5) a)?",
+			"renvoi_avant": "e) 1)",
+			"renvoi_apres": "5) a)"
+		},
+		{
+			"exerciseId": "09d816b4-9b1f-48ed-a769-efbb21c81ecd",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "b. If $D\\leqslant60$, the 10 extra croissants of the order of 70 are not sold: they cost ~0.4*10=4~ euros more, so $B_{70}=B_{60}-4$ (we check this on the tables: 20 and 24, 32 and 36, 44 and 48). If ~D=70~, these 10 croissants are sold and bring in ~1.2*10-4=8~ euros more: $B_{70}=B_{60}+8$ (56 and 48). **The order of 70 croissants brings in more than the order of 60 only if ~D=70~, that is with probability $0.2$.** On average, it brings in ~-4*0.8+8*0.2=-1.6~ euros less, which matches ~40.4-42=-1.6~: this confirms the choice made in question e) 1).",
+			"apres": "b. If $D\\leqslant60$, the 10 extra croissants of the order of 70 are not sold: they cost ~0.4*10=4~ euros more, so $B_{70}=B_{60}-4$ (we check this on the tables: 20 and 24, 32 and 36, 44 and 48). If ~D=70~, these 10 croissants are sold and bring in ~1.2*10-4=8~ euros more: $B_{70}=B_{60}+8$ (56 and 48). **The order of 70 croissants brings in more than the order of 60 only if ~D=70~, that is with probability $0.2$.** On average, it brings in ~-4*0.8+8*0.2=-1.6~ euros less, which matches ~40.4-42=-1.6~: this confirms the choice made in question 5) a).",
+			"renvoi_avant": "e) 1)",
+			"renvoi_apres": "5) a)"
+		},
+		{
+			"exerciseId": "74169a9c-650e-4097-908d-0c15980de296",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "b. Déterminer la loi de $G$ à l'aide de la question a).",
+			"apres": "b. Déterminer la loi de $G$ à l'aide de la question 1).",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "74169a9c-650e-4097-908d-0c15980de296",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "b. Find the probability distribution of $G$ using question a).",
+			"apres": "b. Find the probability distribution of $G$ using question 1).",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "0c88d161-2c7d-46d9-935b-ebde6c24e5c6",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "c. Déterminer la loi de $G$ et vérifier le résultat de la question b) par un calcul direct.",
+			"apres": "c. Déterminer la loi de $G$ et vérifier le résultat de la question 2) par un calcul direct.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "0c88d161-2c7d-46d9-935b-ebde6c24e5c6",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "5. On revient au jeu de la question a).",
+			"apres": "5. On revient au jeu de la question 1).",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "0c88d161-2c7d-46d9-935b-ebde6c24e5c6",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "On retrouve le résultat de la question b).",
+			"apres": "On retrouve le résultat de la question 2).",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "0c88d161-2c7d-46d9-935b-ebde6c24e5c6",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "c. Find the probability distribution of $G$ and check the result of question b) by a direct calculation.",
+			"apres": "c. Find the probability distribution of $G$ and check the result of question 2) by a direct calculation.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "0c88d161-2c7d-46d9-935b-ebde6c24e5c6",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "5. We go back to the game of question a).",
+			"apres": "5. We go back to the game of question 1).",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "0c88d161-2c7d-46d9-935b-ebde6c24e5c6",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "We get the result of question b) again.",
+			"apres": "We get the result of question 2) again.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "67635878-8489-4db1-bdd6-b4590f937d48",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "4. On revient à la variable $X$ de la question a). Pour tout réel $x$, on note $f(x)=E\\left((X-x)^2\\right)$ : c'est l'espérance de la variable aléatoire $(X-x)^2$, qui prend les valeurs $(x_i-x)^2$ avec les probabilités $p_i$.",
+			"apres": "4. On revient à la variable $X$ de la question 1). Pour tout réel $x$, on note $f(x)=E\\left((X-x)^2\\right)$ : c'est l'espérance de la variable aléatoire $(X-x)^2$, qui prend les valeurs $(x_i-x)^2$ avec les probabilités $p_i$.",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "67635878-8489-4db1-bdd6-b4590f937d48",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "4. We go back to the variable $X$ of question a). For every real number $x$, let $f(x)=E\\left((X-x)^2\\right)$: it is the expected value of the random variable $(X-x)^2$, which takes the values $(x_i-x)^2$ with probabilities $p_i$.",
+			"apres": "4. We go back to the variable $X$ of question 1). For every real number $x$, let $f(x)=E\\left((X-x)^2\\right)$: it is the expected value of the random variable $(X-x)^2$, which takes the values $(x_i-x)^2$ with probabilities $p_i$.",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "be5c50d3-1aff-45d8-9baa-e1125cca5f28",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "a. Pour ~n=25~, calculer $\\dfrac{2\\sigma}{\\sqrt{n}}$, arrondi au millième. Les trois moyennes de la question b) 2) vérifient-elles $|m-\\mu|\\leqslant\\dfrac{2\\sigma}{\\sqrt{n}}$ ?",
+			"apres": "a. Pour ~n=25~, calculer $\\dfrac{2\\sigma}{\\sqrt{n}}$, arrondi au millième. Les trois moyennes de la question 2) b) vérifient-elles $|m-\\mu|\\leqslant\\dfrac{2\\sigma}{\\sqrt{n}}$ ?",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "be5c50d3-1aff-45d8-9baa-e1125cca5f28",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "a. For ~n=25~, work out $\\dfrac{2\\sigma}{\\sqrt{n}}$, to three decimal places. Do the three means of question b) 2) satisfy $|m-\\mu|\\leqslant\\dfrac{2\\sigma}{\\sqrt{n}}$?",
+			"apres": "a. For ~n=25~, work out $\\dfrac{2\\sigma}{\\sqrt{n}}$, to three decimal places. Do the three means of question 2) b) satisfy $|m-\\mu|\\leqslant\\dfrac{2\\sigma}{\\sqrt{n}}$?",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "3a05ad58-7c11-43b1-aaa6-81ce1887bda3",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "4. Écrire une fonction Python `esperance(valeurs, probas)` qui reçoit la liste des valeurs d'une variable aléatoire et la liste des probabilités correspondantes, et renvoie son espérance. Quel appel permet de vérifier le résultat de la question c) 2) pour le texte français ?",
+			"apres": "4. Écrire une fonction Python `esperance(valeurs, probas)` qui reçoit la liste des valeurs d'une variable aléatoire et la liste des probabilités correspondantes, et renvoie son espérance. Quel appel permet de vérifier le résultat de la question 3) b) pour le texte français ?",
+			"renvoi_avant": "c) 2)",
+			"renvoi_apres": "3) b)"
+		},
+		{
+			"exerciseId": "3a05ad58-7c11-43b1-aaa6-81ce1887bda3",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "**L'appel `esperance([-2, 1, 5], [0.558, 0.271, 0.171])` renvoie environ $0.01$**, ce qui confirme le résultat de la question c) 2) pour le texte français.",
+			"apres": "**L'appel `esperance([-2, 1, 5], [0.558, 0.271, 0.171])` renvoie environ $0.01$**, ce qui confirme le résultat de la question 3) b) pour le texte français.",
+			"renvoi_avant": "c) 2)",
+			"renvoi_apres": "3) b)"
+		},
+		{
+			"exerciseId": "3a05ad58-7c11-43b1-aaa6-81ce1887bda3",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "4. Write a Python function `expectation(values, probs)` which takes the list of the values of a random variable and the list of the corresponding probabilities, and returns its expectation. Which call checks the result of question c) 2) for the French text?",
+			"apres": "4. Write a Python function `expectation(values, probs)` which takes the list of the values of a random variable and the list of the corresponding probabilities, and returns its expectation. Which call checks the result of question 3) b) for the French text?",
+			"renvoi_avant": "c) 2)",
+			"renvoi_apres": "3) b)"
+		},
+		{
+			"exerciseId": "3a05ad58-7c11-43b1-aaa6-81ce1887bda3",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "**The call `expectation([-2, 1, 5], [0.558, 0.271, 0.171])` returns about $0.01$**, which confirms the result of question c) 2) for the French text.",
+			"apres": "**The call `expectation([-2, 1, 5], [0.558, 0.271, 0.171])` returns about $0.01$**, which confirms the result of question 3) b) for the French text.",
+			"renvoi_avant": "c) 2)",
+			"renvoi_apres": "3) b)"
+		},
+		{
+			"exerciseId": "135429d8-41d1-44b5-8bf9-c350e044f032",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "b. Comparer avec les résultats de la question a).",
+			"apres": "b. Comparer avec les résultats de la question 1).",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "135429d8-41d1-44b5-8bf9-c350e044f032",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "c. D'après la question b), $2E(X)=2\\times1.7=3.4$ et $E(X^2)=3.7$, donc **$f(x)=x^2-2E(X)\\,x+E(X^2)$**.",
+			"apres": "c. D'après la question 2), $2E(X)=2\\times1.7=3.4$ et $E(X^2)=3.7$, donc **$f(x)=x^2-2E(X)\\,x+E(X^2)$**.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "135429d8-41d1-44b5-8bf9-c350e044f032",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "b. On a bien $f(1.7)=0.81$, plus petit que $f(1.5)=0.85$, $f(2)=0.9$ et $f(1)=1.3$ : **aucune des prévisions essayées à la question a) ne faisait mieux que $E(X)$.**",
+			"apres": "b. On a bien $f(1.7)=0.81$, plus petit que $f(1.5)=0.85$, $f(2)=0.9$ et $f(1)=1.3$ : **aucune des prévisions essayées à la question 1) ne faisait mieux que $E(X)$.**",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "135429d8-41d1-44b5-8bf9-c350e044f032",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "Sur la figure ci-dessous, les points ~A~, ~B~ et ~C~ de la courbe de ~f~ correspondent aux trois essais de la question a) ; le point ~M~ est le sommet de la parabole, où ~f~ atteint son minimum.",
+			"apres": "Sur la figure ci-dessous, les points ~A~, ~B~ et ~C~ de la courbe de ~f~ correspondent aux trois essais de la question 1) ; le point ~M~ est le sommet de la parabole, où ~f~ atteint son minimum.",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "135429d8-41d1-44b5-8bf9-c350e044f032",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "b. Compare with the results of question a).",
+			"apres": "b. Compare with the results of question 1).",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "135429d8-41d1-44b5-8bf9-c350e044f032",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "c. From question b), $2E(X)=2\\times1.7=3.4$ and $E(X^2)=3.7$, so **$f(x)=x^2-2E(X)\\,x+E(X^2)$**.",
+			"apres": "c. From question 2), $2E(X)=2\\times1.7=3.4$ and $E(X^2)=3.7$, so **$f(x)=x^2-2E(X)\\,x+E(X^2)$**.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "135429d8-41d1-44b5-8bf9-c350e044f032",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "b. Indeed $f(1.7)=0.81$, smaller than $f(1.5)=0.85$, $f(2)=0.9$ and $f(1)=1.3$: **none of the predictions tried in question a) did better than $E(X)$.**",
+			"apres": "b. Indeed $f(1.7)=0.81$, smaller than $f(1.5)=0.85$, $f(2)=0.9$ and $f(1)=1.3$: **none of the predictions tried in question 1) did better than $E(X)$.**",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "135429d8-41d1-44b5-8bf9-c350e044f032",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "In the figure below, the points ~A~, ~B~ and ~C~ on the curve of ~f~ correspond to the three trials of question a); the point ~M~ is the vertex of the parabola, where ~f~ reaches its minimum.",
+			"apres": "In the figure below, the points ~A~, ~B~ and ~C~ on the curve of ~f~ correspond to the three trials of question 1); the point ~M~ is the vertex of the parabola, where ~f~ reaches its minimum.",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "2edc6ba3-3bc2-43dc-8a02-2a618f083258",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "6. Calculer à la calculatrice les probabilités des questions c) et e), arrondies à $10^{-4}$.",
+			"apres": "6. Calculer à la calculatrice les probabilités des questions 3) et 5), arrondies à $10^{-4}$.",
+			"renvoi_avant": "c) | e)",
+			"renvoi_apres": "3) | 5)"
+		},
+		{
+			"exerciseId": "2edc6ba3-3bc2-43dc-8a02-2a618f083258",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "3. $X$ est un entier, donc $X\\geqslant 4$ équivaut à $X>3$ : c'est l'évènement de la question b), et $P(X\\geqslant 4)=1-P(X\\leqslant 3)$.",
+			"apres": "3. $X$ est un entier, donc $X\\geqslant 4$ équivaut à $X>3$ : c'est l'évènement de la question 2), et $P(X\\geqslant 4)=1-P(X\\leqslant 3)$.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "2edc6ba3-3bc2-43dc-8a02-2a618f083258",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "6. Using a calculator, work out the probabilities in questions c) and e), rounded to $10^{-4}$.",
+			"apres": "6. Using a calculator, work out the probabilities in questions 3) and 5), rounded to $10^{-4}$.",
+			"renvoi_avant": "c) | e)",
+			"renvoi_apres": "3) | 5)"
+		},
+		{
+			"exerciseId": "2edc6ba3-3bc2-43dc-8a02-2a618f083258",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "3. $X$ is a whole number, so $X\\geqslant 4$ is equivalent to $X>3$: it is the event of question b), and $P(X\\geqslant 4)=1-P(X\\leqslant 3)$.",
+			"apres": "3. $X$ is a whole number, so $X\\geqslant 4$ is equivalent to $X>3$: it is the event of question 2), and $P(X\\geqslant 4)=1-P(X\\leqslant 3)$.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "d626138a-770e-4a45-bbe9-5d29f53594ed",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "a. Vérifier, à l'aide d'un produit scalaire, que les deux vecteurs obtenus pour ~d_1~ à la question a) 1) sont orthogonaux.",
+			"apres": "a. Vérifier, à l'aide d'un produit scalaire, que les deux vecteurs obtenus pour ~d_1~ à la question 1) a) sont orthogonaux.",
+			"renvoi_avant": "a) 1)",
+			"renvoi_apres": "1) a)"
+		},
+		{
+			"exerciseId": "d626138a-770e-4a45-bbe9-5d29f53594ed",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "a. Using a scalar product, check that the two vectors found for ~d_1~ in question a) 1) are orthogonal.",
+			"apres": "a. Using a scalar product, check that the two vectors found for ~d_1~ in question 1) a) are orthogonal.",
+			"renvoi_avant": "a) 1)",
+			"renvoi_apres": "1) a)"
+		},
+		{
+			"exerciseId": "42850cf2-5883-48ac-86d9-da94e687eae1",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "6. Reprendre les questions b), c) et e) 1) avec la droite ~d_1~ d'équation ~3x-y+1=0~ et le point $B(5\\,;-2)$ : déterminer les coordonnées du projeté orthogonal ~K~ de ~B~ sur ~d_1~, puis la distance du point ~B~ à la droite ~d_1~.",
+			"apres": "6. Reprendre les questions 2), 3) et 5) a) avec la droite ~d_1~ d'équation ~3x-y+1=0~ et le point $B(5\\,;-2)$ : déterminer les coordonnées du projeté orthogonal ~K~ de ~B~ sur ~d_1~, puis la distance du point ~B~ à la droite ~d_1~.",
+			"renvoi_avant": "b) | c) | e) 1)",
+			"renvoi_apres": "2) | 3) | 5) a)"
+		},
+		{
+			"exerciseId": "42850cf2-5883-48ac-86d9-da94e687eae1",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "6. Repeat questions b), c) and e) 1) with the line ~d_1~ with equation ~3x-y+1=0~ and the point $B(5\\,;-2)$: find the coordinates of the orthogonal projection ~K~ of ~B~ onto ~d_1~, then the distance from the point ~B~ to the line ~d_1~.",
+			"apres": "6. Repeat questions 2), 3) and 5) a) with the line ~d_1~ with equation ~3x-y+1=0~ and the point $B(5\\,;-2)$: find the coordinates of the orthogonal projection ~K~ of ~B~ onto ~d_1~, then the distance from the point ~B~ to the line ~d_1~.",
+			"renvoi_avant": "b) | c) | e) 1)",
+			"renvoi_apres": "2) | 3) | 5) a)"
+		},
+		{
+			"exerciseId": "d360f71a-306b-4236-b633-923c12434b64",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "5. On reprend la droite ~d~ de la question a).",
+			"apres": "5. On reprend la droite ~d~ de la question 1).",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "d360f71a-306b-4236-b633-923c12434b64",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "5. Consider again the line ~d~ from question a).",
+			"apres": "5. Consider again the line ~d~ from question 1).",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "8945969e-e90c-47e5-bb6f-df644efc275c",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "c. $PH'^2=(5-2)^2+(-3-3)^2=9+36=45$ et ~45>25~. Comme $H'$ est le point de $d'$ le plus proche du phare (même raisonnement qu'à la question b) 3)), tous les points de la route sont à plus de 5 km du phare : **le second bateau n'entre pas dans la zone de danger** (il en passe à $3\\sqrt{5}\\approx6.71$ km du phare au plus près).",
+			"apres": "c. $PH'^2=(5-2)^2+(-3-3)^2=9+36=45$ et ~45>25~. Comme $H'$ est le point de $d'$ le plus proche du phare (même raisonnement qu'à la question 2) c)), tous les points de la route sont à plus de 5 km du phare : **le second bateau n'entre pas dans la zone de danger** (il en passe à $3\\sqrt{5}\\approx6.71$ km du phare au plus près).",
+			"renvoi_avant": "b) 3)",
+			"renvoi_apres": "2) c)"
+		},
+		{
+			"exerciseId": "8945969e-e90c-47e5-bb6f-df644efc275c",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "c. $PH'^2=(5-2)^2+(-3-3)^2=9+36=45$ and ~45>25~. Since $H'$ is the point of $d'$ closest to the lighthouse (same reasoning as in question b) 3)), every point of the course is more than 5 km from the lighthouse: **the second boat does not enter the danger zone** (at its closest it passes $3\\sqrt{5}\\approx6.71$ km from the lighthouse).",
+			"apres": "c. $PH'^2=(5-2)^2+(-3-3)^2=9+36=45$ and ~45>25~. Since $H'$ is the point of $d'$ closest to the lighthouse (same reasoning as in question 2) c)), every point of the course is more than 5 km from the lighthouse: **the second boat does not enter the danger zone** (at its closest it passes $3\\sqrt{5}\\approx6.71$ km from the lighthouse).",
+			"renvoi_avant": "b) 3)",
+			"renvoi_apres": "2) c)"
+		},
+		{
+			"exerciseId": "c49ed26f-c764-40e1-bcf4-f8481f1ed461",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "4. Vérification. Calculer la longueur du trajet lorsque la randonneuse passe par le point ~H~, puis par le point $J(0\\,;1)$ de ~d~. Comparer avec le résultat de la question c) 4).",
+			"apres": "4. Vérification. Calculer la longueur du trajet lorsque la randonneuse passe par le point ~H~, puis par le point $J(0\\,;1)$ de ~d~. Comparer avec le résultat de la question 3) d).",
+			"renvoi_avant": "c) 4)",
+			"renvoi_apres": "3) d)"
+		},
+		{
+			"exerciseId": "c49ed26f-c764-40e1-bcf4-f8481f1ed461",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "d. Soit ~M~ un point de ~d~. D'après l'inégalité triangulaire dans le triangle $A'MB$ (éventuellement aplati), $A'M+MB\\geqslant A'B$. Donc, d'après les questions b) 2) et c) 3) :",
+			"apres": "d. Soit ~M~ un point de ~d~. D'après l'inégalité triangulaire dans le triangle $A'MB$ (éventuellement aplati), $A'M+MB\\geqslant A'B$. Donc, d'après les questions 2) b) et 3) c) :",
+			"renvoi_avant": "b) 2) | c) 3)",
+			"renvoi_apres": "2) b) | 3) c)"
+		},
+		{
+			"exerciseId": "c49ed26f-c764-40e1-bcf4-f8481f1ed461",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "Ces deux trajets sont plus longs que le trajet de 1 000 m passant par ~I~, comme le prévoit la question c) 4).",
+			"apres": "Ces deux trajets sont plus longs que le trajet de 1 000 m passant par ~I~, comme le prévoit la question 3) d).",
+			"renvoi_avant": "c) 4)",
+			"renvoi_apres": "3) d)"
+		},
+		{
+			"exerciseId": "c49ed26f-c764-40e1-bcf4-f8481f1ed461",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "4. Check. Work out the length of the journey when the hiker goes via the point ~H~, then via the point $J(0\\,;1)$ of ~d~. Compare with the result of question c) 4).",
+			"apres": "4. Check. Work out the length of the journey when the hiker goes via the point ~H~, then via the point $J(0\\,;1)$ of ~d~. Compare with the result of question 3) d).",
+			"renvoi_avant": "c) 4)",
+			"renvoi_apres": "3) d)"
+		},
+		{
+			"exerciseId": "c49ed26f-c764-40e1-bcf4-f8481f1ed461",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "d. Let ~M~ be a point of ~d~. By the triangle inequality in triangle $A'MB$ (possibly degenerate), $A'M+MB\\geqslant A'B$. So, by questions b) 2) and c) 3):",
+			"apres": "d. Let ~M~ be a point of ~d~. By the triangle inequality in triangle $A'MB$ (possibly degenerate), $A'M+MB\\geqslant A'B$. So, by questions 2) b) and 3) c):",
+			"renvoi_avant": "b) 2) | c) 3)",
+			"renvoi_apres": "2) b) | 3) c)"
+		},
+		{
+			"exerciseId": "c49ed26f-c764-40e1-bcf4-f8481f1ed461",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "Both journeys are longer than the 1,000 m journey via ~I~, as predicted by question c) 4).",
+			"apres": "Both journeys are longer than the 1,000 m journey via ~I~, as predicted by question 3) d).",
+			"renvoi_avant": "c) 4)",
+			"renvoi_apres": "3) d)"
+		},
+		{
+			"exerciseId": "5ad059f8-54e6-41e7-ac57-53a5946f9075",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "Vérification : pour ~m={11}/{4}~, $\\vec{n_m}\\begin{pmatrix}\\dfrac{15}{4}\\\\\\dfrac{5}{2}\\end{pmatrix}$ et $\\vec{n_m}\\cdot\\vec{n}=\\dfrac{15}{2}-\\dfrac{15}{2}=0$. On remarque que $\\vec{n_m}=\\dfrac{5}{4}\\vec{u}$ : ~d_m~ est parallèle à la droite $\\Delta$ de la question b).",
+			"apres": "Vérification : pour ~m={11}/{4}~, $\\vec{n_m}\\begin{pmatrix}\\dfrac{15}{4}\\\\\\dfrac{5}{2}\\end{pmatrix}$ et $\\vec{n_m}\\cdot\\vec{n}=\\dfrac{15}{2}-\\dfrac{15}{2}=0$. On remarque que $\\vec{n_m}=\\dfrac{5}{4}\\vec{u}$ : ~d_m~ est parallèle à la droite $\\Delta$ de la question 2).",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "5ad059f8-54e6-41e7-ac57-53a5946f9075",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "Check: for ~m={11}/{4}~, $\\vec{n_m}\\begin{pmatrix}\\dfrac{15}{4}\\\\\\dfrac{5}{2}\\end{pmatrix}$ and $\\vec{n_m}\\cdot\\vec{n}=\\dfrac{15}{2}-\\dfrac{15}{2}=0$. Notice that $\\vec{n_m}=\\dfrac{5}{4}\\vec{u}$: ~d_m~ is parallel to the line $\\Delta$ from question b).",
+			"apres": "Check: for ~m={11}/{4}~, $\\vec{n_m}\\begin{pmatrix}\\dfrac{15}{4}\\\\\\dfrac{5}{2}\\end{pmatrix}$ and $\\vec{n_m}\\cdot\\vec{n}=\\dfrac{15}{2}-\\dfrac{15}{2}=0$. Notice that $\\vec{n_m}=\\dfrac{5}{4}\\vec{u}$: ~d_m~ is parallel to the line $\\Delta$ from question 2).",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "a536d084-229a-41cb-84d6-d228a3c5be06",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "4. Déterminer la valeur de ~k~ pour laquelle l'équation de la question c) est celle d'un cercle de rayon ~5~.",
+			"apres": "4. Déterminer la valeur de ~k~ pour laquelle l'équation de la question 3) est celle d'un cercle de rayon ~5~.",
+			"renvoi_avant": "c)",
+			"renvoi_apres": "3)"
+		},
+		{
+			"exerciseId": "a536d084-229a-41cb-84d6-d228a3c5be06",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "5. On reprend le cercle de la question a) 1). Vérifier qu'il passe par l'origine ~O~ du repère, puis déterminer les coordonnées du point de ce cercle diamétralement opposé à ~O~.",
+			"apres": "5. On reprend le cercle de la question 1) a). Vérifier qu'il passe par l'origine ~O~ du repère, puis déterminer les coordonnées du point de ce cercle diamétralement opposé à ~O~.",
+			"renvoi_avant": "a) 1)",
+			"renvoi_apres": "1) a)"
+		},
+		{
+			"exerciseId": "a536d084-229a-41cb-84d6-d228a3c5be06",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "4. Find the value of ~k~ for which the equation in question c) is the equation of a circle with radius ~5~.",
+			"apres": "4. Find the value of ~k~ for which the equation in question 3) is the equation of a circle with radius ~5~.",
+			"renvoi_avant": "c)",
+			"renvoi_apres": "3)"
+		},
+		{
+			"exerciseId": "a536d084-229a-41cb-84d6-d228a3c5be06",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "5. Consider again the circle from question a) 1). Check that it passes through the origin ~O~ of the coordinate system, then find the coordinates of the point of this circle diametrically opposite ~O~.",
+			"apres": "5. Consider again the circle from question 1) a). Check that it passes through the origin ~O~ of the coordinate system, then find the coordinates of the point of this circle diametrically opposite ~O~.",
+			"renvoi_avant": "a) 1)",
+			"renvoi_apres": "1) a)"
+		},
+		{
+			"exerciseId": "119b88a6-c1fb-4d79-9820-cf32df13745c",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "d. Retrouver le résultat de la question c) 3) en calculant le produit scalaire $\\overrightarrow{CH}\\cdot\\overrightarrow{AB}$.",
+			"apres": "d. Retrouver le résultat de la question 3) c) en calculant le produit scalaire $\\overrightarrow{CH}\\cdot\\overrightarrow{AB}$.",
+			"renvoi_avant": "c) 3)",
+			"renvoi_apres": "3) c)"
+		},
+		{
+			"exerciseId": "119b88a6-c1fb-4d79-9820-cf32df13745c",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "d. Recover the result of question c) 3) by working out the scalar product $\\overrightarrow{CH}\\cdot\\overrightarrow{AB}$.",
+			"apres": "d. Recover the result of question 3) c) by working out the scalar product $\\overrightarrow{CH}\\cdot\\overrightarrow{AB}$.",
+			"renvoi_avant": "c) 3)",
+			"renvoi_apres": "3) c)"
+		},
+		{
+			"exerciseId": "b62dd4f4-4269-47ee-b324-d080f987c0fa",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "b. En déduire les points de la route qui sont couverts. Préciser les coordonnées des points ~E_1~ et ~E_2~ où la route coupe le cercle de la question a) 2).",
+			"apres": "b. En déduire les points de la route qui sont couverts. Préciser les coordonnées des points ~E_1~ et ~E_2~ où la route coupe le cercle de la question 1) b).",
+			"renvoi_avant": "a) 2)",
+			"renvoi_apres": "1) b)"
+		},
+		{
+			"exerciseId": "b62dd4f4-4269-47ee-b324-d080f987c0fa",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "b. Deduce which points of the road are covered. Give the coordinates of the points ~E_1~ and ~E_2~ where the road meets the circle of question a) 2).",
+			"apres": "b. Deduce which points of the road are covered. Give the coordinates of the points ~E_1~ and ~E_2~ where the road meets the circle of question 1) b).",
+			"renvoi_avant": "a) 2)",
+			"renvoi_apres": "1) b)"
+		},
+		{
+			"exerciseId": "e20d90ce-707c-462d-bfa5-1536e56d3400",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "On retrouve l'équation de $\\Delta$ obtenue à la question b) 2).",
+			"apres": "On retrouve l'équation de $\\Delta$ obtenue à la question 2) b).",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "e20d90ce-707c-462d-bfa5-1536e56d3400",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "We obtain the equation of $\\Delta$ found in question b) 2).",
+			"apres": "We obtain the equation of $\\Delta$ found in question 2) b).",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "a0fa87dd-0369-4662-833c-b2c612a06557",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "b. Écrire l'équation de la question b) sous la forme ~(x-a)^2+(y-b)^2=r^2~ et vérifier que l'on retrouve le centre ~I~ et le rayon ~{AB}/{2}~.",
+			"apres": "b. Écrire l'équation de la question 2) sous la forme ~(x-a)^2+(y-b)^2=r^2~ et vérifier que l'on retrouve le centre ~I~ et le rayon ~{AB}/{2}~.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "a0fa87dd-0369-4662-833c-b2c612a06557",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "c. Pour ~x=3~ et ~y=-1~, l'expression vaut ~9+1-6+4-5=3~ : on trouve la même valeur. C'est normal : le calcul de la question b) montre que, pour tout point $M(x\\,;y)$, $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=x^2+y^2-2x-4y-5$. Comme ce nombre n'est pas nul pour ~D~, le point ~D~ n'est pas sur $\\mathcal{C}$.",
+			"apres": "c. Pour ~x=3~ et ~y=-1~, l'expression vaut ~9+1-6+4-5=3~ : on trouve la même valeur. C'est normal : le calcul de la question 2) montre que, pour tout point $M(x\\,;y)$, $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=x^2+y^2-2x-4y-5$. Comme ce nombre n'est pas nul pour ~D~, le point ~D~ n'est pas sur $\\mathcal{C}$.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "a0fa87dd-0369-4662-833c-b2c612a06557",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "b. Write the equation from question b) in the form ~(x-a)^2+(y-b)^2=r^2~ and check that you obtain the centre ~I~ and the radius ~{AB}/{2}~.",
+			"apres": "b. Write the equation from question 2) in the form ~(x-a)^2+(y-b)^2=r^2~ and check that you obtain the centre ~I~ and the radius ~{AB}/{2}~.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "a0fa87dd-0369-4662-833c-b2c612a06557",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "c. For ~x=3~ and ~y=-1~, the expression equals ~9+1-6+4-5=3~: we get the same value. This is to be expected: the calculation in question b) shows that, for every point $M(x\\,;y)$, $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=x^2+y^2-2x-4y-5$. Since this number is not zero for ~D~, the point ~D~ does not lie on $\\mathcal{C}$.",
+			"apres": "c. For ~x=3~ and ~y=-1~, the expression equals ~9+1-6+4-5=3~: we get the same value. This is to be expected: the calculation in question 2) shows that, for every point $M(x\\,;y)$, $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=x^2+y^2-2x-4y-5$. Since this number is not zero for ~D~, the point ~D~ does not lie on $\\mathcal{C}$.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "7a85b5de-97a9-4292-aff4-95a00e3aba1d",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "c. Un point de ~P~ a une ordonnée positive (~y>={1}/{2}~), donc il est à la distance 5 de l'axe si et seulement si ~y=5~. Avec ~k=5~ : ~x^2=9~, donc ~x=-3~ ou ~x=3~. **Ce sont les points $(-3\\,;5)$ et $(3\\,;5)$**, qui sont aussi à la distance 5 de ~F~ (voir la question b) 3)).",
+			"apres": "c. Un point de ~P~ a une ordonnée positive (~y>={1}/{2}~), donc il est à la distance 5 de l'axe si et seulement si ~y=5~. Avec ~k=5~ : ~x^2=9~, donc ~x=-3~ ou ~x=3~. **Ce sont les points $(-3\\,;5)$ et $(3\\,;5)$**, qui sont aussi à la distance 5 de ~F~ (voir la question 2) c)).",
+			"renvoi_avant": "b) 3)",
+			"renvoi_apres": "2) c)"
+		},
+		{
+			"exerciseId": "7a85b5de-97a9-4292-aff4-95a00e3aba1d",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "a. Comme à la question b) 1), ~M~ convient si et seulement si ~MF^2=y^2~ :",
+			"apres": "a. Comme à la question 2) a), ~M~ convient si et seulement si ~MF^2=y^2~ :",
+			"renvoi_avant": "b) 1)",
+			"renvoi_apres": "2) a)"
+		},
+		{
+			"exerciseId": "7a85b5de-97a9-4292-aff4-95a00e3aba1d",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "c. A point of ~P~ has a positive ~y~-coordinate (~y>={1}/{2}~), so it is at distance 5 from the axis if and only if ~y=5~. With ~k=5~: ~x^2=9~, so ~x=-3~ or ~x=3~. **These are the points $(-3\\,;5)$ and $(3\\,;5)$**, which are also at distance 5 from ~F~ (see question b) 3)).",
+			"apres": "c. A point of ~P~ has a positive ~y~-coordinate (~y>={1}/{2}~), so it is at distance 5 from the axis if and only if ~y=5~. With ~k=5~: ~x^2=9~, so ~x=-3~ or ~x=3~. **These are the points $(-3\\,;5)$ and $(3\\,;5)$**, which are also at distance 5 from ~F~ (see question 2) c)).",
+			"renvoi_avant": "b) 3)",
+			"renvoi_apres": "2) c)"
+		},
+		{
+			"exerciseId": "7a85b5de-97a9-4292-aff4-95a00e3aba1d",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "a. As in question b) 1), ~M~ is suitable if and only if ~MF^2=y^2~:",
+			"apres": "a. As in question 2) a), ~M~ is suitable if and only if ~MF^2=y^2~:",
+			"renvoi_avant": "b) 1)",
+			"renvoi_apres": "2) a)"
+		},
+		{
+			"exerciseId": "39b4ad77-a502-4e05-91b9-6ffbab36f2ff",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "c. Pour ~k=5~ : ~(x-1)^2=16~, donc ~x=5~ ou ~x=-3~ : **les points $(-3\\,;5)$ et $(5\\,;5)$**. Ce sont les mêmes qu'à la question b) 3) : **ces deux points appartiennent à la fois au cercle et à la parabole.**",
+			"apres": "c. Pour ~k=5~ : ~(x-1)^2=16~, donc ~x=5~ ou ~x=-3~ : **les points $(-3\\,;5)$ et $(5\\,;5)$**. Ce sont les mêmes qu'à la question 2) c) : **ces deux points appartiennent à la fois au cercle et à la parabole.**",
+			"renvoi_avant": "b) 3)",
+			"renvoi_apres": "2) c)"
+		},
+		{
+			"exerciseId": "39b4ad77-a502-4e05-91b9-6ffbab36f2ff",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "b. $M(h\\,;y)$ appartient à $\\Gamma$ si et seulement si ~(y-2)^2=25-(h-1)^2~. Comme à la question b) 2), en échangeant les rôles de ~x~ et ~y~ :",
+			"apres": "b. $M(h\\,;y)$ appartient à $\\Gamma$ si et seulement si ~(y-2)^2=25-(h-1)^2~. Comme à la question 2) b), en échangeant les rôles de ~x~ et ~y~ :",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "39b4ad77-a502-4e05-91b9-6ffbab36f2ff",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "c. For ~k=5~: ~(x-1)^2=16~, so ~x=5~ or ~x=-3~: **the points $(-3\\,;5)$ and $(5\\,;5)$**. They are the same as in question b) 3): **these two points lie on both the circle and the parabola.**",
+			"apres": "c. For ~k=5~: ~(x-1)^2=16~, so ~x=5~ or ~x=-3~: **the points $(-3\\,;5)$ and $(5\\,;5)$**. They are the same as in question 2) c): **these two points lie on both the circle and the parabola.**",
+			"renvoi_avant": "b) 3)",
+			"renvoi_apres": "2) c)"
+		},
+		{
+			"exerciseId": "39b4ad77-a502-4e05-91b9-6ffbab36f2ff",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "b. $M(h\\,;y)$ lies on $\\Gamma$ if and only if ~(y-2)^2=25-(h-1)^2~. As in question b) 2), swapping the roles of ~x~ and ~y~:",
+			"apres": "b. $M(h\\,;y)$ lies on $\\Gamma$ if and only if ~(y-2)^2=25-(h-1)^2~. As in question 2) b), swapping the roles of ~x~ and ~y~:",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "852b3762-cb04-46b8-ad61-46c8e1ce3f8b",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "4. Interpréter le résultat $E(X)=10$ obtenu à la question a).",
+			"apres": "4. Interpréter le résultat $E(X)=10$ obtenu à la question 1).",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "852b3762-cb04-46b8-ad61-46c8e1ce3f8b",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "4. Interpret the result $E(X)=10$ obtained in question a).",
+			"apres": "4. Interpret the result $E(X)=10$ obtained in question 1).",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "fade62b2-56be-4d2e-a14d-e8ad873199ee",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "a. ~X~ prend les valeurs 0, 2, 5 et 10 avec les probabilités de la question a) 1) :",
+			"apres": "a. ~X~ prend les valeurs 0, 2, 5 et 10 avec les probabilités de la question 1) a) :",
+			"renvoi_avant": "a) 1)",
+			"renvoi_apres": "1) a)"
+		},
+		{
+			"exerciseId": "fade62b2-56be-4d2e-a14d-e8ad873199ee",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "**$E(X)=2$.** Le gain net est la somme reçue moins la mise : **$G=X-2.5$**. Par linéarité de l'espérance, $E(G)=E(X)-2.5=2-2.5=-0.5$ : on retrouve le résultat de la question b) 1).",
+			"apres": "**$E(X)=2$.** Le gain net est la somme reçue moins la mise : **$G=X-2.5$**. Par linéarité de l'espérance, $E(G)=E(X)-2.5=2-2.5=-0.5$ : on retrouve le résultat de la question 2) a).",
+			"renvoi_avant": "b) 1)",
+			"renvoi_apres": "2) a)"
+		},
+		{
+			"exerciseId": "fade62b2-56be-4d2e-a14d-e8ad873199ee",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "a. ~X~ takes the values 0, 2, 5 and 10 with the probabilities of question a) 1):",
+			"apres": "a. ~X~ takes the values 0, 2, 5 and 10 with the probabilities of question 1) a):",
+			"renvoi_avant": "a) 1)",
+			"renvoi_apres": "1) a)"
+		},
+		{
+			"exerciseId": "fade62b2-56be-4d2e-a14d-e8ad873199ee",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "**$E(X)=2$.** The net gain is the amount received minus the stake: **$G=X-2.5$**. By linearity of expectation, $E(G)=E(X)-2.5=2-2.5=-0.5$: we find the result of question b) 1) again.",
+			"apres": "**$E(X)=2$.** The net gain is the amount received minus the stake: **$G=X-2.5$**. By linearity of expectation, $E(G)=E(X)-2.5=2-2.5=-0.5$: we find the result of question 2) a) again.",
+			"renvoi_avant": "b) 1)",
+			"renvoi_apres": "2) a)"
+		},
+		{
+			"exerciseId": "d1725136-24a1-44b7-8c81-239207b68a7b",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "b. $P(X=1)=\\dfrac{1}{4}$ et $P(X=2)=\\dfrac{3}{4}\\times\\dfrac{1}{4}=\\dfrac{3}{16}$, donc $P(X\\leqslant 2)=\\dfrac{4}{16}+\\dfrac{3}{16}=\\dfrac{7}{16}$. On retrouve le résultat de la question b) 1).",
+			"apres": "b. $P(X=1)=\\dfrac{1}{4}$ et $P(X=2)=\\dfrac{3}{4}\\times\\dfrac{1}{4}=\\dfrac{3}{16}$, donc $P(X\\leqslant 2)=\\dfrac{4}{16}+\\dfrac{3}{16}=\\dfrac{7}{16}$. On retrouve le résultat de la question 2) a).",
+			"renvoi_avant": "b) 1)",
+			"renvoi_apres": "2) a)"
+		},
+		{
+			"exerciseId": "d1725136-24a1-44b7-8c81-239207b68a7b",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "3. On applique la question a) 2) avec $k=5$ :",
+			"apres": "3. On applique la question 1) b) avec $k=5$ :",
+			"renvoi_avant": "a) 2)",
+			"renvoi_apres": "1) b)"
+		},
+		{
+			"exerciseId": "d1725136-24a1-44b7-8c81-239207b68a7b",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "b. $P(X=1)=\\dfrac{1}{4}$ and $P(X=2)=\\dfrac{3}{4}\\times\\dfrac{1}{4}=\\dfrac{3}{16}$, so $P(X\\leqslant 2)=\\dfrac{4}{16}+\\dfrac{3}{16}=\\dfrac{7}{16}$. This is the result of question b) 1) again.",
+			"apres": "b. $P(X=1)=\\dfrac{1}{4}$ and $P(X=2)=\\dfrac{3}{4}\\times\\dfrac{1}{4}=\\dfrac{3}{16}$, so $P(X\\leqslant 2)=\\dfrac{4}{16}+\\dfrac{3}{16}=\\dfrac{7}{16}$. This is the result of question 2) a) again.",
+			"renvoi_avant": "b) 1)",
+			"renvoi_apres": "2) a)"
+		},
+		{
+			"exerciseId": "d1725136-24a1-44b7-8c81-239207b68a7b",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "3. Apply question a) 2) with $k=5$:",
+			"apres": "3. Apply question 1) b) with $k=5$:",
+			"renvoi_avant": "a) 2)",
+			"renvoi_apres": "1) b)"
+		},
+		{
+			"exerciseId": "ec059dfb-26ff-4bc3-abb7-74dc62b096a6",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "2. On lance un dé équilibré à six faces jusqu'à obtenir un 6. Interpréter l'espérance obtenue à la question a) 2).",
+			"apres": "2. On lance un dé équilibré à six faces jusqu'à obtenir un 6. Interpréter l'espérance obtenue à la question 1) b).",
+			"renvoi_avant": "a) 2)",
+			"renvoi_apres": "1) b)"
+		},
+		{
+			"exerciseId": "ec059dfb-26ff-4bc3-abb7-74dc62b096a6",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "2. A fair six-sided dice is rolled until a 6 is obtained. Interpret the expectation obtained in question a) 2).",
+			"apres": "2. A fair six-sided dice is rolled until a 6 is obtained. Interpret the expectation obtained in question 1) b).",
+			"renvoi_avant": "a) 2)",
+			"renvoi_apres": "1) b)"
+		},
+		{
+			"exerciseId": "6567ee61-f587-4ad2-87bc-d52d5943ecba",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "b. La collègue fait en moyenne 3 essais, contre 5 pour le gardien : **sa méthode fait gagner 2 essais en moyenne.** De plus, elle n'a jamais besoin de plus de 5 essais, alors que le gardien en fait plus de 5 avec une probabilité d'environ $0.3277$ (question c)).",
+			"apres": "b. La collègue fait en moyenne 3 essais, contre 5 pour le gardien : **sa méthode fait gagner 2 essais en moyenne.** De plus, elle n'a jamais besoin de plus de 5 essais, alors que le gardien en fait plus de 5 avec une probabilité d'environ $0.3277$ (question 3)).",
+			"renvoi_avant": "c)",
+			"renvoi_apres": "3)"
+		},
+		{
+			"exerciseId": "6567ee61-f587-4ad2-87bc-d52d5943ecba",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "b. The colleague makes 3 attempts on average, compared with 5 for the caretaker: **her method saves 2 attempts on average.** Moreover, she never needs more than 5 attempts, whereas the caretaker needs more than 5 with a probability of about $0.3277$ (question c)).",
+			"apres": "b. The colleague makes 3 attempts on average, compared with 5 for the caretaker: **her method saves 2 attempts on average.** Moreover, she never needs more than 5 attempts, whereas the caretaker needs more than 5 with a probability of about $0.3277$ (question 3)).",
+			"renvoi_avant": "c)",
+			"renvoi_apres": "3)"
+		},
+		{
+			"exerciseId": "3e98ce01-92a4-4e94-b5b2-e4ca566f755e",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "3. Interpréter en une phrase le résultat de la question b) 3).",
+			"apres": "3. Interpréter en une phrase le résultat de la question 2) c).",
+			"renvoi_avant": "b) 3)",
+			"renvoi_apres": "2) c)"
+		},
+		{
+			"exerciseId": "3e98ce01-92a4-4e94-b5b2-e4ca566f755e",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "3. Interpret in one sentence the result of question b) 3).",
+			"apres": "3. Interpret in one sentence the result of question 2) c).",
+			"renvoi_avant": "b) 3)",
+			"renvoi_apres": "2) c)"
+		},
+		{
+			"exerciseId": "654d924d-2d1e-478c-acd4-66357dc918e2",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "a. En procédant comme à la question a), déterminer le plus petit entier $n$ tel que $P(Y\\leqslant n)\\geqslant 0.5$.",
+			"apres": "a. En procédant comme à la question 1), déterminer le plus petit entier $n$ tel que $P(Y\\leqslant n)\\geqslant 0.5$.",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "654d924d-2d1e-478c-acd4-66357dc918e2",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "b. Interpréter le résultat de la question b) 1), puis le comparer à $E(Y)$.",
+			"apres": "b. Interpréter le résultat de la question 2) a), puis le comparer à $E(Y)$.",
+			"renvoi_avant": "b) 1)",
+			"renvoi_apres": "2) a)"
+		},
+		{
+			"exerciseId": "654d924d-2d1e-478c-acd4-66357dc918e2",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "a. Proceeding as in question a), find the smallest integer $n$ such that $P(Y\\leqslant n)\\geqslant 0.5$.",
+			"apres": "a. Proceeding as in question 1), find the smallest integer $n$ such that $P(Y\\leqslant n)\\geqslant 0.5$.",
+			"renvoi_avant": "a)",
+			"renvoi_apres": "1)"
+		},
+		{
+			"exerciseId": "654d924d-2d1e-478c-acd4-66357dc918e2",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "b. Interpret the result of question b) 1), then compare it with $E(Y)$.",
+			"apres": "b. Interpret the result of question 2) a), then compare it with $E(Y)$.",
+			"renvoi_avant": "b) 1)",
+			"renvoi_apres": "2) a)"
+		},
+		{
+			"exerciseId": "f8721c1b-d91c-421a-8661-4d4c9808f489",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "c. Comparer avec le résultat de la question b) 2). Comment expliquer ce paradoxe apparent ?",
+			"apres": "c. Comparer avec le résultat de la question 2) b). Comment expliquer ce paradoxe apparent ?",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "f8721c1b-d91c-421a-8661-4d4c9808f489",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "c. Compare with the result of question b) 2). How can this apparent paradox be explained?",
+			"apres": "c. Compare with the result of question 2) b). How can this apparent paradox be explained?",
+			"renvoi_avant": "b) 2)",
+			"renvoi_apres": "2) b)"
+		},
+		{
+			"exerciseId": "a98b4e17-beac-4c39-b0e4-9ffe5f036e2b",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "c. Comparer avec le résultat de la question b). Quelle propriété de la loi géométrique retrouve-t-on ?",
+			"apres": "c. Comparer avec le résultat de la question 2). Quelle propriété de la loi géométrique retrouve-t-on ?",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "a98b4e17-beac-4c39-b0e4-9ffe5f036e2b",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "c. On trouve le même résultat qu'à la question b) : $P_{J>50}(J>50+30)=P(J>30)$. Une lampe qui a déjà fonctionné 50 jours a la même probabilité de tenir encore 30 jours qu'une lampe neuve : **c'est l'absence de mémoire de la loi géométrique.**",
+			"apres": "c. On trouve le même résultat qu'à la question 2) : $P_{J>50}(J>50+30)=P(J>30)$. Une lampe qui a déjà fonctionné 50 jours a la même probabilité de tenir encore 30 jours qu'une lampe neuve : **c'est l'absence de mémoire de la loi géométrique.**",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "a98b4e17-beac-4c39-b0e4-9ffe5f036e2b",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "c. Compare with the result of question b). Which property of the geometric distribution do we find again?",
+			"apres": "c. Compare with the result of question 2). Which property of the geometric distribution do we find again?",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "a98b4e17-beac-4c39-b0e4-9ffe5f036e2b",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "c. We find the same result as in question b): $P_{J>50}(J>50+30)=P(J>30)$. A lamp that has already worked for 50 days has the same probability of lasting another 30 days as a new lamp: **this is the memoryless property of the geometric distribution.**",
+			"apres": "c. We find the same result as in question 2): $P_{J>50}(J>50+30)=P(J>30)$. A lamp that has already worked for 50 days has the same probability of lasting another 30 days as a new lamp: **this is the memoryless property of the geometric distribution.**",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "7a0865c0-f194-4951-98d2-7ec6beb740b3",
+			"field": "variations[0].statement_md",
+			"lang": "fr",
+			"avant": "4. Reprendre la question b) pour Mme Bougouin. Commenter.",
+			"apres": "4. Reprendre la question 2) pour Mme Bougouin. Commenter.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "7a0865c0-f194-4951-98d2-7ec6beb740b3",
+			"field": "variations[0].solution_md",
+			"lang": "fr",
+			"avant": "1. Même raisonnement qu'en A a) 1) : **$Z$ suit la loi binomiale $\\mathcal{B}(32\\,;0.5)$** et **$E(Z)=32\\times0.5=16$.** **Les deux cuisiniers réussissent en moyenne le même nombre de crêpes.**",
+			"apres": "1. Même raisonnement qu'en A 1) a) : **$Z$ suit la loi binomiale $\\mathcal{B}(32\\,;0.5)$** et **$E(Z)=32\\times0.5=16$.** **Les deux cuisiniers réussissent en moyenne le même nombre de crêpes.**",
+			"renvoi_avant": "A a) 1)",
+			"renvoi_apres": "A 1) a)"
+		},
+		{
+			"exerciseId": "7a0865c0-f194-4951-98d2-7ec6beb740b3",
+			"field": "variations[0].translations.en.statement_md",
+			"lang": "en",
+			"avant": "4. Answer question b) again for Mrs Bougouin. Comment.",
+			"apres": "4. Answer question 2) again for Mrs Bougouin. Comment.",
+			"renvoi_avant": "b)",
+			"renvoi_apres": "2)"
+		},
+		{
+			"exerciseId": "7a0865c0-f194-4951-98d2-7ec6beb740b3",
+			"field": "variations[0].translations.en.solution_md",
+			"lang": "en",
+			"avant": "1. Same reasoning as in A a) 1): **$Z$ follows the binomial distribution $\\mathcal{B}(32\\,;0.5)$** and **$E(Z)=32\\times0.5=16$.** **Both cooks get the same number of crêpes right on average.**",
+			"apres": "1. Same reasoning as in A 1) a): **$Z$ follows the binomial distribution $\\mathcal{B}(32\\,;0.5)$** and **$E(Z)=32\\times0.5=16$.** **Both cooks get the same number of crêpes right on average.**",
+			"renvoi_avant": "A a) 1)",
+			"renvoi_apres": "A 1) a)"
+		}
+	]
+}

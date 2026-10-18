@@ -908,6 +908,7 @@
 				class:ouverte={consoleOpen}
 				role="region"
 				aria-label="Console"
+				data-own-keys
 				inert={!consoleOpen}
 				style:--hauteur="{consoleHeight}%"
 				onkeydown={handleConsoleKeydown}

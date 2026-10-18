@@ -884,10 +884,13 @@
 		flex-wrap: wrap;
 	}
 	/* `-->` et le nom défini en couleur d'accent : la réponse se repère d'un coup
-	   d'œil. ⚠️ Pas `--color-primary` (#fc8f1b : 2,3:1 sur blanc) : l'orange
-	   foncé de l'anneau de focus en clair (4,6:1), le jaune du site en sombre */
+	   d'œil. ⚠️ Pas `--color-primary` (#fc8f1b : 2,3:1 sur blanc). Le fond de
+	   la console est `--color-background` : en clair #a65800 y fait 5,0:1 sur
+	   #fafafa (5,2:1 sur blanc) — #b25f00 n'y faisait que 4,44:1, sous le seuil
+	   AA de 4,5:1 qu'exige le nom défini, du vrai texte ; en sombre, le jaune du
+	   site #ffc400 fait 9,5:1 sur #262624 */
 	.calcul {
-		--accent-console: light-dark(#b25f00, #ffc400);
+		--accent-console: light-dark(#a65800, #ffc400);
 	}
 	.fleche {
 		font-family: var(--font-mono, monospace);
@@ -901,7 +904,9 @@
 
 	/* Les boutons de ligne ne gênent plus la lecture : visibles au survol ou
 	   quand la ligne a le focus ; toujours atteignables au clavier (opacité, pas
-	   `display`), et toujours visibles au toucher, où rien ne survole */
+	   `display`), et toujours visibles au toucher, où rien ne survole —
+	   `any-*` : un portable tactile à souris déclare `hover: hover`, mais le
+	   doigt n'y survole rien non plus */
 	.outils-ligne {
 		display: inline-flex;
 		align-items: center;
@@ -914,7 +919,7 @@
 	.historique li:focus-within .outils-ligne {
 		opacity: 1;
 	}
-	@media (hover: none) {
+	@media (any-hover: none), (any-pointer: coarse) {
 		.outils-ligne {
 			opacity: 1;
 		}

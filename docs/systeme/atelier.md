@@ -1030,6 +1030,11 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
   AZERTY, la touche sous Échap rend `IntlBackslash` ; ailleurs `Backquote`). Échap dans la
   console la ferme, sauf s'il ferme d'abord une liste de propositions. À l'ouverture, le focus
   va au champ ; à la fermeture, un focus resté dedans revient au bouton.
+- **Les touches restent dans la console** : le Graphe reste monté dessous, et ses raccourcis
+  (`KeyboardHandler`, `+ - flèches Échap g 0`) écoutent toute la fenêtre. La région porte
+  `data-own-keys`, que `KeyboardHandler` respecte, comme une touche déjà prise
+  (`defaultPrevented`) : ↓ sur la poignée ne décale pas le graphe, Échap sur « Fermer » ne
+  remet pas la vue à zéro (revue de #1485).
 - **A3** : le bouton porte le nombre de lignes arrivées pendant que la console était fermée ;
   l'annonce dit « Nouvelle ligne dans la console ». Une commande préparée par une carte
   (`needs-argument` : « Simuler », « Tableau croisé ») OUVRE la console.
@@ -1038,7 +1043,9 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
 - **Lisibilité** : invite `>` devant l'instruction (en couleur normale), réponse préfixée `-->`
   (décoratifs, `aria-hidden`) ; une commande en texte (`.dériver f`) en chasse fixe ; une
   définition réussie dit « f est correctement défini », le nom en couleur (`definedName`) ; les
-  boutons d'une ligne n'apparaissent qu'au survol ou au focus (toujours au toucher).
+  boutons d'une ligne n'apparaissent qu'au survol ou au focus (toujours au toucher :
+  `any-hover: none` ou `any-pointer: coarse`, pour un portable tactile à souris). Couleur
+  d'accent `#a65800` en clair (5,0:1 sur le fond `#fafafa` de la console), `#ffc400` en sombre.
 - **Menu de la console** : « Copier l'historique pour une fiche » et « Télécharger l'historique
   (ubumark) ». L'atelier s'enregistre par la barre d'icônes.
 
