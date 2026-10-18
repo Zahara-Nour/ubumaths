@@ -29,6 +29,7 @@ import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { rememberMathoux } from '../memory';
 import { loadMathouCollection } from '../collection';
 import { resolveTestLaunch } from '$lib/utils/test-launch';
+import { trainingQuery } from '$lib/mathoux/collection-logic';
 
 // =============================================================================
 // Mock Supabase : chaque requête enregistre ses filtres, le handler y répond
@@ -289,7 +290,7 @@ describe('loadMathouCollection', () => {
 
 		const [mathou] = collection.races[0].mathoux;
 		const launch = resolveTestLaunch(
-			new URL(mathou.trainingHref as string, 'https://chiph.re').searchParams
+			new URLSearchParams(trainingQuery(mathou.trainingCategories) ?? '')
 		);
 		expect(launch.kind).toBe('start');
 		if (launch.kind !== 'start') return;
@@ -300,7 +301,7 @@ describe('loadMathouCollection', () => {
 	it('une ligne de tag sans modèle lisible ne casse rien : pas de lien « Faire grandir »', async () => {
 		const { supabase } = buildMock(nominalHandlers());
 		const collection = await loadMathouCollection(supabase, STUDENT, '1_SPE');
-		expect(collection.races[0].mathoux[0].trainingHref).toBeNull();
+		expect(collection.races[0].mathoux[0].trainingCategories).toBeNull();
 	});
 
 	it('les états ne sont lus que pour les points travaillables', async () => {

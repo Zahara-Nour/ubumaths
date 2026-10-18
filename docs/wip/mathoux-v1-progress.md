@@ -91,7 +91,10 @@ Fait, tests verts (rouge d'abord) :
 
 - `collection-logic.ts` : `trainingTemplateFrom` (brouillon et catégorie hors bornes écartés),
   `selectTrainingTemplates` (priorité, plafond, un par modèle, points servis tour à tour),
-  `trainingHref` (`buildSeriesLink`) ; `Mathou.trainingHref` et `Mathou.dueForRevision` ;
+  `trainingCategories`, `trainingQuery` (`buildSeriesLink`) ; `Mathou.trainingCategories` et
+  `Mathou.dueForRevision` ; après revue : le lien se construit au rendu (données de la page pour 40
+  Mathoux : 172 Ko → 80 Ko), plus de « Réveiller » sans carte due ni Entraînement, plus de cast
+  dans `resolve()`, ordre des catégories prouvé en intégration ;
 - `server/mathoux/collection.ts` : la jointure des tags lit aussi `theme, domain, subdomain, level,
 delay` du modèle — **aucune requête en plus** ;
 - page : « Faire grandir » (`aria-label` « Faire grandir le Mathou des … »), « Réveiller » vers

@@ -23,11 +23,12 @@
  * la mémoire doit apprendre.
  *
  * « FAIRE GRANDIR » (v1.1, spec de David du 2026-10-18) : chaque Mathou né porte
- * le lien d'un Entraînement (`trainingHref`) fait des modèles PUBLIÉS qui taguent
+ * les catégories d'un Entraînement (`trainingCategories`) : les modèles PUBLIÉS qui taguent
  * les points de sa notion, sur tout le parcours : d'abord les points perdus,
  * puis les non acquis, puis les autres ; au plus 10 questions, une par modèle
  * (`selectTrainingTemplates`). Un Mathou endormi sans carte due
- * (`dueForRevision` faux) se réveille par ce même Entraînement.
+ * (`dueForRevision` faux) se réveille par ce même Entraînement. Le lien se
+ * construit au rendu (`trainingQuery`) : un lien encodé pèse ≈ 4 Ko par Mathou.
  *
  * Importable côté client (phrases du Palotin, page) : aucune dépendance serveur.
  *
@@ -146,10 +147,11 @@ export interface Mathou {
 	 */
 	dueForRevision: boolean;
 	/**
-	 * Lien « Faire grandir » : Entraînement sur la notion (`/automaths/test`,
-	 * mode interactif). `null` pour une silhouette ou une notion sans modèle publié.
+	 * « Faire grandir » : catégories de l'Entraînement sur la notion (une question
+	 * par modèle), dont `trainingQuery` fait le lien au rendu. `null` pour une
+	 * silhouette ou une notion sans modèle publié.
 	 */
-	trainingHref: string | null;
+	trainingCategories: SeriesCategories | null;
 	/** Niveaux étoilés (calculés ∪ mémorisés), du plus ancien au plus récent. */
 	stars: string[];
 	/** Totaux sur tout le parcours. */
@@ -436,7 +438,7 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 			growth,
 			asleep,
 			dueForRevision: asleep && hasNappingPoint,
-			trainingHref: trainingHref(trainingTemplates),
+			trainingCategories: trainingCategories(trainingTemplates),
 			stars,
 			workablePoints: workableTotal,
 			acquiredPoints: acquiredTotal,
@@ -560,18 +562,31 @@ export function selectTrainingTemplates(
 }
 
 /**
- * Lien relatif de l'Entraînement : `/automaths/test?categories=…&mode=interactive`,
- * une question par modèle (encodeur des liens de série, relu par
- * `resolveTestLaunch`). Aucun modèle → `null` (pas de bouton).
+ * Catégories de l'Entraînement : une question par modèle, rien d'autre (ce que
+ * demande `buildSeriesLink`). Aucun modèle → `null` (pas de bouton).
  */
-export function trainingHref(templates: TrainingTemplate[]): string | null {
+export function trainingCategories(templates: TrainingTemplate[]): SeriesCategories | null {
 	if (templates.length === 0) return null;
-	const categories: SeriesCategories = templates.map((template) => ({
+	return templates.map((template) => ({
 		category: template.category,
 		quantity: 1,
 		delay: template.delay
 	}));
-	return buildSeriesLink('', categories, { mode: 'interactive' });
+}
+
+/** Chemin des liens de série qui démarrent directement (`buildSeriesLink` avec une forme). */
+const TEST_PATH_PREFIX = '/automaths/test?';
+
+/**
+ * Paramètres (`categories=…&mode=interactive`) du lien de l'Entraînement, à
+ * placer après `resolve('/automaths/test')` + `?`. Encodés par
+ * `buildSeriesLink` lui-même (relus par `resolveTestLaunch`) : on n'en garde
+ * que la partie après `?`. Pas de catégories → `null`.
+ */
+export function trainingQuery(categories: SeriesCategories | null): string | null {
+	if (!categories || categories.length === 0) return null;
+	const link = buildSeriesLink('', categories, { mode: 'interactive' });
+	return link.startsWith(TEST_PATH_PREFIX) ? link.slice(TEST_PATH_PREFIX.length) : null;
 }
 
 /** Notion d'un nœud : lui-même (notion) ou son parent (sous-notion). */

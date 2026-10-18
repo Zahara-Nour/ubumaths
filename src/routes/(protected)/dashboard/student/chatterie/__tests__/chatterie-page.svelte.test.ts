@@ -8,25 +8,31 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import { trainingHref, type Mathou, type MathouCollection } from '$lib/mathoux/collection-logic';
+import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
+import { buildSeriesLink, type SeriesCategories } from '$lib/validation/series';
 import ChatteriePage from '../+page.svelte';
 
 const REVISION_HREF = '/dashboard/revisions/decks/programme';
 
-/** Lien d'Entraînement d'une notion : un modèle fictif par domaine. */
-function trainingFor(...domains: string[]): string {
-	return trainingHref(
-		domains.map((domain, i) => ({
-			id: `t-${domain}`,
-			category: { theme: 'Nombres', domain, subdomain: null, level: i + 1 },
-			delay: 20
-		}))
-	) as string;
+/** Catégories d'Entraînement d'une notion : une par domaine fictif. */
+function categoriesFor(...domains: string[]): SeriesCategories {
+	return domains.map((domain, i) => ({
+		category: { theme: 'Nombres', domain, subdomain: null, level: i + 1 },
+		quantity: 1,
+		delay: 20
+	}));
 }
 
-const TRAIN_FRAC = trainingFor('Fractions', 'Somme');
-const TRAIN_ENT = trainingFor('Entiers');
-const TRAIN_VEC = trainingFor('Vecteurs');
+/** Le lien attendu, par l'encodeur des liens de série. */
+function linkOf(categories: SeriesCategories): string {
+	return buildSeriesLink('', categories, { mode: 'interactive' });
+}
+
+const CAT_FRAC = categoriesFor('Fractions', 'Somme');
+const CAT_ENT = categoriesFor('Entiers');
+const CAT_VEC = categoriesFor('Vecteurs');
+const TRAIN_FRAC = linkOf(CAT_FRAC);
+const TRAIN_VEC = linkOf(CAT_VEC);
 
 const COLLECTION: MathouCollection = {
 	races: [
@@ -43,7 +49,7 @@ const COLLECTION: MathouCollection = {
 					growth: 'matou',
 					asleep: true,
 					dueForRevision: true,
-					trainingHref: TRAIN_FRAC,
+					trainingCategories: CAT_FRAC,
 					stars: [],
 					workablePoints: 4,
 					acquiredPoints: 2,
@@ -58,7 +64,7 @@ const COLLECTION: MathouCollection = {
 					asleep: false,
 					dueForRevision: false,
 					// La logique n'en donne pas à une silhouette : la page ne doit pas le montrer non plus
-					trainingHref: TRAIN_ENT,
+					trainingCategories: CAT_ENT,
 					stars: [],
 					workablePoints: 2,
 					acquiredPoints: 0,
@@ -79,7 +85,7 @@ const COLLECTION: MathouCollection = {
 					growth: 'grand_matou',
 					asleep: false,
 					dueForRevision: false,
-					trainingHref: TRAIN_VEC,
+					trainingCategories: CAT_VEC,
 					stars: ['2', '1_SPE'],
 					workablePoints: 3,
 					acquiredPoints: 3,
@@ -155,7 +161,7 @@ describe('La Chatterie de Faustroll', () => {
 	});
 
 	it('une notion sans modèle publié : pas de « Faire grandir »', async () => {
-		await renderPage(single({ asleep: false, dueForRevision: false, trainingHref: null }));
+		await renderPage(single({ asleep: false, dueForRevision: false, trainingCategories: null }));
 		expect(page.getByRole('link', { name: /Faire grandir/ }).elements()).toHaveLength(0);
 	});
 
@@ -166,6 +172,12 @@ describe('La Chatterie de Faustroll', () => {
 		expect(links[0].getAttribute('href')).toBe(TRAIN_FRAC);
 		// Un seul bouton : « Faire grandir » mènerait au même endroit
 		expect(page.getByRole('link', { name: /Faire grandir/ }).elements()).toHaveLength(0);
+	});
+
+	it('endormi sans carte due ni Entraînement possible : il dort, aucun bouton', async () => {
+		await renderPage(single({ asleep: true, dueForRevision: false, trainingCategories: null }));
+		await expect.element(page.getByText('Fait la sieste', { exact: true })).toBeVisible();
+		expect(page.getByRole('link', { name: /Réveiller|Faire grandir/ }).elements()).toHaveLength(0);
 	});
 
 	it('endormi avec carte due : « Réveiller » vers les révisions ET « Faire grandir »', async () => {

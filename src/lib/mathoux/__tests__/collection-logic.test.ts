@@ -19,7 +19,8 @@ import {
 	mergeMemory,
 	starGradeLabel,
 	selectTrainingTemplates,
-	trainingHref,
+	trainingCategories,
+	trainingQuery,
 	trainingTemplateFrom,
 	MAX_TRAINING_QUESTIONS,
 	type CollectionTreeNode,
@@ -28,6 +29,7 @@ import {
 	type PointProgress
 } from '../collection-logic';
 import { resolveTestLaunch } from '$lib/utils/test-launch';
+import { buildSeriesLink } from '$lib/validation/series';
 
 // =============================================================================
 // Décor : deux branches, trois notions, une sous-notion
@@ -740,9 +742,16 @@ describe('trainingTemplateFrom (ligne lue → modèle d’Entraînement)', () =>
 	});
 });
 
-describe('trainingHref', () => {
-	it('aucun modèle : pas de lien', () => {
-		expect(trainingHref([])).toBeNull();
+describe('trainingCategories et trainingQuery', () => {
+	it('aucun modèle : pas de catégories, pas de lien', () => {
+		expect(trainingCategories([])).toBeNull();
+		expect(trainingQuery(null)).toBeNull();
+	});
+
+	it('catégories minimales : catégorie, une question, durée (rien d’autre, pas l’id du modèle)', () => {
+		expect(trainingCategories([template('t1')])).toEqual([
+			{ category: template('t1').category, quantity: 1, delay: 20 }
+		]);
 	});
 
 	it('un Entraînement (mode interactif) d’une question par modèle, que resolveTestLaunch accepte', () => {
@@ -757,10 +766,14 @@ describe('trainingHref', () => {
 				status: 'published'
 			})
 		).filter((t): t is TrainingTemplate => t !== null);
-		const href = trainingHref(templates);
-		expect(href).not.toBeNull();
-		const url = new URL(href as string, 'https://chiph.re');
-		expect(url.pathname).toBe('/automaths/test');
+		const categories = trainingCategories(templates);
+		const query = trainingQuery(categories);
+		expect(query).not.toBeNull();
+		// Même encodage que les liens de série (`buildSeriesLink`)
+		expect(`/automaths/test?${query}`).toBe(
+			buildSeriesLink('', categories ?? [], { mode: 'interactive' })
+		);
+		const url = new URL(`/automaths/test?${query}`, 'https://chiph.re');
 
 		const launch = resolveTestLaunch(url.searchParams);
 		expect(launch.kind).toBe('start');
@@ -770,7 +783,7 @@ describe('trainingHref', () => {
 		expect(launch.categories.every((c) => c.quantity === 1)).toBe(true);
 		expect(launch.categories[0].category).toEqual(templates[0].category);
 		// Longueur raisonnable avec 10 modèles aux noms accentués et longs
-		expect((href as string).length).toBeLessThan(6000);
+		expect((query as string).length).toBeLessThan(6000);
 	});
 });
 
@@ -790,7 +803,7 @@ describe('buildMathouCollection : Entraînement et réveil', () => {
 		});
 		const [mathou] = collection.races[0].mathoux;
 		const launch = resolveTestLaunch(
-			new URL(mathou.trainingHref as string, 'https://chiph.re').searchParams
+			new URLSearchParams(trainingQuery(mathou.trainingCategories) ?? '')
 		);
 		expect(launch.kind).toBe('start');
 		if (launch.kind !== 'start') return;
@@ -814,9 +827,24 @@ describe('buildMathouCollection : Entraînement et réveil', () => {
 		});
 		const byId = new Map(collection.races.flatMap((r) => r.mathoux).map((m) => [m.notionId, m]));
 		expect(byId.get('n-frac')?.growth).toBe('a_decouvrir');
-		expect(byId.get('n-frac')?.trainingHref).toBeNull();
+		expect(byId.get('n-frac')?.trainingCategories).toBeNull();
 		expect(byId.get('n-ent')?.growth).toBe('chaton');
-		expect(byId.get('n-ent')?.trainingHref).toBeNull();
+		expect(byId.get('n-ent')?.trainingCategories).toBeNull();
+	});
+
+	it('poids : la collection porte les catégories, jamais un lien encodé', () => {
+		const ids = Array.from({ length: 12 }, (_, i) => `t-${i}`);
+		const collection = buildMathouCollection({
+			points: POINTS,
+			nodes: NODES,
+			progress: progress({ p1: { hasSuccess: true } }),
+			nappingPointIds: new Set(),
+			templatesByPoint: templatesMap({ p1: ids })
+		});
+		const [mathou] = collection.races[0].mathoux;
+		expect(mathou.trainingCategories).toHaveLength(10);
+		const json = JSON.stringify(collection);
+		expect(json).not.toMatch(/automaths|%7B|%257B/);
 	});
 
 	it('endormi par une carte due : dueForRevision ; par un point perdu seul : non', () => {
