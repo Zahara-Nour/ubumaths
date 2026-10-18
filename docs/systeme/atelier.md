@@ -1296,15 +1296,27 @@ les deux, `FigureCard.svelte`, avec la grammaire des autres :
   L'icône de lien dit ce qu'elle suit (« I se construit à partir de A et B, et suit leurs
   changements », `followsOf`). En attente : « en attente » et sa raison.
 - **Le point de couleur** (`FigureStylePopover`) : couleur et taille d'un point, couleur,
-  épaisseur et style d'une courbe (`setFigureDisplay`). Vide tant que rien n'est réglé (dessin
-  par défaut de la figure). **Menu** : Affichage → Étiquette (point seulement), puis Renommer
+  épaisseur et style d'une courbe (`setFigureDisplay`). Il montre la couleur PEINTE : sans
+  couleur réglée, celle de la figure (`figureDefaultColor`), aucune pastille cochée. **Menu** : Affichage → Étiquette (point seulement), puis Renommer
   et Supprimer.
-- **Le modèle** : `PointDisplay { color, size: 'small' | 'medium' | 'large', showLabel }` et
-  `StrokeDisplay { color, lineStyle, lineWidth }` (sous-ensemble de `CurveDisplay`), sur l'objet,
-  absents par défaut ; rangés en `figureDisplay` (sauvegarde, lien, fichier, fusion :
+- **Le modèle** : `PointDisplay { color?, size: 'small' | 'medium' | 'large', showLabel }` et
+  `StrokeDisplay { color?, lineStyle, lineWidth }` (sous-ensemble de `CurveDisplay`), sur l'objet,
+  absents par défaut. **Le premier réglage part de ce qui est dessiné** (2026-10-19) : taille
+  moyenne, nom affiché, trait continu d'épaisseur 2, couleur ABSENTE (celle de la figure) —
+  régler la taille ou le trait seul ne repeint pas l'objet ; un réglage qui ne change rien (la
+  taille déjà active) n'enregistre rien (`sameFigureDisplay` : pas de `display`, pas de
+  révision) ; rangés en `figureDisplay` (sauvegarde, lien, fichier, fusion :
   `adoptFigureDisplay`, `.strict()` — le réglage d'un point posé sur une courbe est oublié) ;
-  gardés quand la définition change. ⚠️ La vue Géométrie ne les lit pas encore : `syncFigure`
-  est câblé par la session de la géométrie.
+  gardés quand la définition change. La vue Géométrie les **peint** (`syncFigure`, 2026-10-19) :
+  un point prend sa couleur (jeton `var(--color-curve-N)`, comme K4), son rayon (petit 3 px,
+  moyen 5 px — le dessin d'avant —, grand 7 px : `POINT_RADII`) et son nom masqué
+  (`Figure.setLabelHidden` ; `GeometryCanvas`, exports SVG et TikZ lisent `labelHidden` pour les
+  points, Typst le lisait déjà) ; une courbe — équation ou construction, y compris chaque sorte
+  d'une conique à curseur — sa couleur, son trait et son épaisseur (`dashdot` → tirets). Le nom
+  d'un cercle construit suit sa couleur et reste écrit (une courbe n'a pas de `showLabel`). Un
+  réglage repeint sans reconstruire (`restyled`, `Figure.updateStyle`) ; sans réglage, le
+  dessin reste celui d'avant ; un réglage qui disparaît refait la figure (`updateStyle`
+  fusionne et ne sait pas rendre le défaut).
 
 ### Vues
 
@@ -1377,7 +1389,9 @@ comme sur sa carte (`f`, `f′`, `f⁻¹`), et **peinte du trait de sa carte** (
 couleur (`display.color`, la `CurveColor` du Graphe, peinte par son jeton `var(--color-curve-N)`,
 le même en clair et en sombre), pointillés et épaisseur (`dashdot` devient des tirets, la figure
 n'en a pas) ; un changement dans la carte repeint par `Figure.updateStyle`, sans reconstruire
-(`syncFigure` rend `restyled`) ; une fonction jamais tracée garde la couleur par défaut.
+(`syncFigure` rend `restyled`) ; une fonction jamais tracée garde la couleur par défaut. Le
+même chemin (`Look`, hors empreinte, posé par `paint` sur tout ce qui est visible et posé pour
+l'objet) sert aux points et aux courbes depuis le lot 4b.
 `f′` et `f⁻¹` ont la même action, leur propre couleur de carte, et suivent `f` (K3) ;
 une carte `f′` ou `f⁻¹` créée depuis une `f` affichée naît affichée, comme pour le tracé.
 

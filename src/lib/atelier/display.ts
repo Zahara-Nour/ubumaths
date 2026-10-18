@@ -204,15 +204,13 @@ export function readSequenceDisplayPatch(
 // =============================================================================
 
 /** Le trait d'une courbe de la figure : couleur, style, épaisseur. */
-export const strokeDisplaySchema = curveDisplaySchema.pick({
-	color: true,
-	lineStyle: true,
-	lineWidth: true
-});
+export const strokeDisplaySchema = curveDisplaySchema
+	.pick({ color: true, lineStyle: true, lineWidth: true })
+	.partial({ color: true });
 
 /** Couleur, taille et étiquette d'un point. */
 export const pointDisplaySchema = z.object({
-	color: z.enum(CURVE_COLORS),
+	color: z.enum(CURVE_COLORS).optional(),
 	size: z.enum(POINT_SIZES),
 	showLabel: z.boolean()
 });
@@ -225,19 +223,27 @@ export const pointDisplaySchema = z.object({
 const strokePatchSchema = strokeDisplaySchema.partial().strict();
 const pointPatchSchema = pointDisplaySchema.partial().strict();
 
-/** Le trait d'une courbe qu'on règle pour la première fois : sa couleur suit la règle du grapheur. */
-export function newStrokeDisplay(
-	others: readonly Pick<CurveDisplay, 'color' | 'lineStyle'>[]
-): StrokeDisplay {
-	const slot = getNextSlot(others);
-	return { color: slot.color, lineStyle: 'solid', lineWidth: DEFAULT_LINE_WIDTH };
+/**
+ * Ce qu'une courbe jamais réglée montre : le premier réglage part de ce qui est
+ * DESSINÉ — trait continu, épaisseur par défaut, couleur de la figure (absente).
+ */
+export function newStrokeDisplay(): StrokeDisplay {
+	return { lineStyle: 'solid', lineWidth: DEFAULT_LINE_WIDTH };
 }
 
-/** Un point qu'on règle pour la première fois : taille moyenne, nom affiché. */
-export function newPointDisplay(
-	others: readonly Pick<CurveDisplay, 'color' | 'lineStyle'>[]
-): PointDisplay {
-	return { color: getNextSlot(others).color, size: 'medium', showLabel: true };
+/** Ce qu'un point jamais réglé montre : taille moyenne, nom affiché, couleur de la figure. */
+export function newPointDisplay(): PointDisplay {
+	return { size: 'medium', showLabel: true };
+}
+
+/** Deux réglages de la figure identiques, champ par champ (couleur absente comprise). */
+export function sameFigureDisplay(
+	a: PointDisplay | StrokeDisplay,
+	b: PointDisplay | StrokeDisplay
+): boolean {
+	if (a.color !== b.color) return false;
+	if ('size' in a) return 'size' in b && a.size === b.size && a.showLabel === b.showLabel;
+	return !('size' in b) && a.lineStyle === b.lineStyle && a.lineWidth === b.lineWidth;
 }
 
 /**
@@ -270,9 +276,10 @@ export function readFigureDisplayPatch(
 export function plainFigureDisplay(
 	display: PointDisplay | StrokeDisplay
 ): PointDisplay | StrokeDisplay {
+	const color = display.color === undefined ? {} : { color: display.color };
 	return 'size' in display
-		? { color: display.color, size: display.size, showLabel: display.showLabel }
-		: { color: display.color, lineStyle: display.lineStyle, lineWidth: display.lineWidth };
+		? { ...color, size: display.size, showLabel: display.showLabel }
+		: { ...color, lineStyle: display.lineStyle, lineWidth: display.lineWidth };
 }
 
 /** Une copie faite de valeurs ordinaires (clonable). */

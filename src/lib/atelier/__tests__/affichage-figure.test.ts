@@ -81,11 +81,9 @@ describe('régler un point et une courbe', () => {
 		atelier.setFigureDisplay('d', { lineWidth: 4 });
 		atelier.setFigureDisplay('d', { lineStyle: 'dashed' });
 
-		expect(displayOf(atelier, 'd')).toEqual({
-			color: expect.any(String),
-			lineStyle: 'dashed',
-			lineWidth: 4
-		});
+		// Pas de couleur : le premier réglage part de ce qui est dessiné (la couleur
+		// de la figure), régler le trait ne repeint pas la courbe
+		expect(displayOf(atelier, 'd')).toEqual({ lineStyle: 'dashed', lineWidth: 4 });
 	});
 
 	it('l’étiquette d’un point se masque', () => {

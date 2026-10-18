@@ -230,8 +230,13 @@ export interface SequenceDisplay {
  * Le trait d'une courbe de la figure (lot 4b de la refonte) : les trois champs
  * de `CurveDisplay` qu'une courbe peut porter — ni tangente ni aire, elle ne va
  * jamais dans Graphe (G0). Absent tant que l'élève n'a rien réglé.
+ *
+ * `color` absente : la couleur par défaut de la figure, celle qui est peinte —
+ * régler le trait seul ne repeint pas la courbe d'une autre couleur.
  */
-export type StrokeDisplay = Pick<CurveDisplay, 'color' | 'lineStyle' | 'lineWidth'>;
+export interface StrokeDisplay extends Pick<CurveDisplay, 'lineStyle' | 'lineWidth'> {
+	readonly color?: CurveColor;
+}
 
 /** La taille d'un point de la figure. */
 export const POINT_SIZES = ['small', 'medium', 'large'] as const;
@@ -243,7 +248,8 @@ export type PointSize = (typeof POINT_SIZES)[number];
  * l'élève n'a rien réglé.
  */
 export interface PointDisplay {
-	readonly color: CurveColor;
+	/** Absente : la couleur par défaut de la figure (comme `StrokeDisplay`). */
+	readonly color?: CurveColor;
 	readonly size: PointSize;
 	readonly showLabel: boolean;
 }

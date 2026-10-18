@@ -407,7 +407,7 @@ export function exportToSVG(
 			);
 		}
 
-		if (showLabels && el.label) {
+		if (showLabels && el.label && !el.labelHidden) {
 			const lx = svg.cx + (el.labelOffset?.dx ?? sty.pointSize + 4);
 			const ly = svg.cy + (el.labelOffset?.dy ?? -(sty.pointSize + 2));
 			lines.push(

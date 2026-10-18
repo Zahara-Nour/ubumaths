@@ -6,8 +6,9 @@
 	 *
 	 * La présentation de `CurveStylePopover` (fonctions, suites). Tout s'écrit
 	 * dans l'ATELIER (`setFigureDisplay`) ; la vue Géométrie le lit de là. Sans
-	 * réglage, l'objet garde le dessin par défaut de la figure : le point de
-	 * couleur reste vide, et rien n'est coché dans les couleurs.
+	 * couleur réglée, l'objet garde la couleur par défaut de la figure : le point
+	 * de couleur la montre (`figureDefaultColor`, celle qui est peinte), et rien
+	 * n'est coché dans les couleurs.
 	 */
 	import * as Popover from '$lib/components/ui/popover';
 	import { useAtelier } from '$lib/atelier/context';
@@ -19,6 +20,7 @@
 		type PointSize
 	} from '$lib/atelier/types';
 	import { displayName } from '$lib/atelier/names';
+	import { figureDefaultColor } from '$lib/atelier/figure-sync';
 	import { CURVE_COLORS, CURVE_COLOR_LABELS, curveColorValue } from '$lib/grapheur/colors';
 	import {
 		LINE_STYLES,
@@ -58,6 +60,8 @@
 	const name = $derived(displayName(object.name));
 	const point = $derived(isPoint(object));
 	const color = $derived(object.display?.color);
+	/** Ce que la figure peint : la couleur réglée, sinon celle de la figure. */
+	const painted = $derived(color === undefined ? figureDefaultColor() : curveColorValue(color));
 	const size = $derived(isPoint(object) ? (object.display?.size ?? 'medium') : null);
 	const stroke = $derived(
 		!isPoint(object) && object.display
@@ -78,10 +82,8 @@
 				{...props}
 				type="button"
 				class="point"
-				class:plein={color !== undefined}
-				style={color !== undefined
-					? `background: ${curveColorValue(color)}; border-color: ${curveColorValue(color)}`
-					: undefined}
+				style:background-color={painted}
+				style:border-color={painted}
 				aria-label={point ? `Couleur et taille de ${name}` : `Couleur et trait de ${name}`}
 				title={point ? 'Couleur et taille' : 'Couleur et trait'}
 			></button>
@@ -212,26 +214,21 @@
 		cursor: pointer;
 		position: relative;
 	}
-	/* Le point lui-même : cercle VIDE tant que rien n'est réglé (dessin par défaut) */
+	/* Le point lui-même : de la couleur peinte dans la figure, réglée ou non */
 	.point::after {
 		content: '';
 		position: absolute;
 		inset: 0.4375rem;
 		border-radius: 9999px;
-		border: 1.5px solid var(--color-muted-foreground);
-		background: inherit;
-	}
-	.point.plein::after {
+		border: 1.5px solid;
 		border-color: inherit;
+		background: inherit;
 	}
 	.point:focus-visible {
 		outline: 2px solid var(--color-ring, currentColor);
 		outline-offset: 1px;
 	}
 	.point:hover {
-		background-color: var(--color-muted);
-	}
-	.point.plein:hover {
 		filter: brightness(0.95);
 	}
 	.reglages {

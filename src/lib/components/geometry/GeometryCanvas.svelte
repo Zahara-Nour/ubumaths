@@ -1881,7 +1881,8 @@
 								class:dragging={draggingId === el.id}
 							/>
 						{/if}
-						{#if el.label}
+						<!-- Nom masqué (`labelHidden`, DSL `etiquette="aucune"`, carte de l'atelier) : le point reste -->
+						{#if el.label && !el.labelHidden}
 							{@const lx = svg.cx + (el.labelOffset?.dx ?? sty.pointSize + 4)}
 							{@const ly = svg.cy + (el.labelOffset?.dy ?? -(sty.pointSize + 2))}
 							<!-- svelte-ignore a11y_no_static_element_interactions -->

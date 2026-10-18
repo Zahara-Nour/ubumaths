@@ -252,7 +252,10 @@ possible.
 - **PDF découpé** : `exportToTypst({ clipToViewport: true, underlay })` met traits et remplissages
   dans une boîte découpée à la fenêtre ; noms et textes restent au-dessus, jamais coupés.
 - **Noms de points** : `etiquette=` → `rendering/label-placement.ts` (bloc ` ```figure `, écran et
-  PDF) ; `GeometryCanvas` et les exports SVG/TikZ écrivent toujours en haut à droite.
+  PDF) ; `GeometryCanvas` et les exports SVG/TikZ écrivent toujours en haut à droite. Le nom
+  masqué (`etiquette="aucune"`, `labelHidden`, `Figure.setLabelHidden`) est respecté pour les
+  POINTS sur les quatre surfaces (écran, SVG, TikZ, Typst — croix comprise, depuis le
+  2026-10-19) ; droites, segments et cercles l'ignorent encore à l'écran.
 
 ### Thème clair / sombre
 
