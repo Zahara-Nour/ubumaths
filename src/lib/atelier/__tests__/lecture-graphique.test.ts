@@ -41,6 +41,14 @@ describe('readingCallOf : une ligne `f(a)` se lit sur le graphe', () => {
 		expect(readingCallOf('3+4', NAMES)).toBeNull();
 		expect(readingCallOf('', NAMES)).toBeNull();
 	});
+
+	it('f⁻¹(5) ne se lit pas sur f : c’est une image de la réciproque (revue de #1497)', () => {
+		expect(readingCallOf('f^{-1}(5)', NAMES)).toBeNull();
+	});
+
+	it('une composée f(g(2)) ne se lit pas', () => {
+		expect(readingCallOf('f(g(2))', NAMES)).toBeNull();
+	});
 });
 
 describe('consoleReadings : les dernières lectures de chaque courbe', () => {

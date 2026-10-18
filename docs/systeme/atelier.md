@@ -1089,8 +1089,10 @@ les autres objets gardent leur vue repliée / développée (lot 4).
   la courbe `showReading` (rangé compact, absent quand éteint ; un état d'avant se relit sans
   lui, pas de nouvelle `ATELIER_STATE_VERSION`). Allumée, deux sources de pointillés :
   - **la console** : chaque ligne réussie qui est un appel NU d'une fonction sur un nombre
-    (`f(2)`, `f(-1/2)`, `f(√2)`, `f'(2)` sur la carte de `f′` ; pas `f(2)+1` ni `f(a)`) — relue
-    par le parseur de l'atelier (`readingCallOf`, jamais une expression régulière). Les **3
+    (`f(2)`, `f(-1/2)`, `f(√2)`, `f'(2)` sur la carte de `f′` ; pas `f(2)+1`, `f(a)`, `f(g(2))`
+    ni `f⁻¹(5)`, image de la réciproque) — relue par le parseur de l'atelier (`readingCallOf`,
+    jamais une expression régulière), une ligne n'étant relue qu'une fois pour les mêmes noms
+    de fonctions (cache, la synchronisation relisant la console à chaque révision). Les **3
     dernières** par courbe (`MAX_READINGS`), une abscisse relue ne comptant qu'une fois ; seules
     les 100 dernières lignes sont relues. Elles suivent la définition courante de `f` ;
   - **le point glissant** : un par courbe lue, posé au milieu de la fenêtre puis là où l'élève

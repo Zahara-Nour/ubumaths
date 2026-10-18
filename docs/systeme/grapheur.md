@@ -135,7 +135,8 @@ restriction, elle n'est jamais sérialisée. Pour chaque abscisse, et pour le po
 courbe, `ImageReadings` (au-dessus des courbes, sous les points remarquables) dessine en
 pointillés de la couleur de la courbe le trait de `(a ; 0)` au point puis du point à `(0 ; f(a))`
 — un axe hors de la fenêtre se lit sur le bord —, le point, et `a` / `f(a)` dans deux
-`GraphLabel` (exact s'il tient en deux décimales, sinon `≈` arrondi au centième). Rien hors de
+`GraphLabel` (exact s'il tient en deux décimales, sinon `≈` arrondi au centième ; à partir de
+10¹⁵, toujours `≈` en écriture scientifique, `1 × 10²¹`, les centièmes n'y étant plus sûrs). Rien hors de
 l'ensemble de définition ni hors de la restriction (`readingAt`).
 
 Le point glissant (`ReadingSliders`) est un `role="slider"` en **HTML, à côté du SVG** : le SVG est
@@ -143,9 +144,13 @@ Le point glissant (`ReadingSliders`) est un `role="slider"` en **HTML, à côté
 a donc un cadre (`.graph-frame`) autour de l'image. Sa position vit dans `GraphSVG`
 (`SvelteMap`, non sauvegardée) : au milieu de la fenêtre, aimantée, jusqu'au premier geste. Glissé
 (souris, doigt : `touch-action: none`, propagation arrêtée pour ne pas déplacer le graphe),
-aimanté aux entiers et aux demis ; ← → ↑ ↓ par la sous-grille, Page ↑ / ↓ par la grille, touches
-consommées (`preventDefault`) pour que `KeyboardHandler` les laisse. `aria-valuetext` : « Lecture
-de f en x = 2 : f(2) = 4 » ; une région polie l'annonce au relâchement d'un glissé.
+aimanté aux entiers et aux demis ; ← → ↑ ↓ par la sous-grille, Page ↑ / ↓ par la grille, Début /
+Fin aux bornes de la fenêtre (aimantées vers l'intérieur), touches consommées (`preventDefault`)
+pour que `KeyboardHandler` les laisse. Un geste interrompu (`pointercancel`, capture perdue) arrête
+le glissé. Fenêtre déplacée : le losange reste au bord et `aria-valuemin` / `aria-valuemax`
+s'élargissent pour contenir la vraie abscisse. `aria-valuetext` : « Lecture de f en x = 2 : f(2) =
+4 » ; une région polie l'annonce au relâchement d'un glissé, une même annonce répétée étant relue
+(espace insécable en alternance).
 
 **Paramètres** : une lettre libre (`PARAMETER_NAMES`, hors `RESERVED_PARAMETER_NAMES` = `x n e
 pi i`), une valeur et des bornes. `bindParameters` substitue les valeurs dans l'AST avant

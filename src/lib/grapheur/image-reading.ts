@@ -75,8 +75,25 @@ export function readingAt(
 	return y === null ? null : { at, y };
 }
 
+/** Au-delà, les centièmes d'un flottant ne sont plus des chiffres sûrs. */
+const LARGEST_EXACT = 1e15;
+
+const SUPERSCRIPTS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+
+/** `1,23 × 10²¹` : un très grand nombre, toujours dit approché. */
+function scientific(value: number): ReadingNumber {
+	const [mantissa, exponent] = value.toExponential(2).split('e');
+	const power = String(Number(exponent))
+		.replace('-', '⁻')
+		.replace(/\d/g, (digit) => SUPERSCRIPTS[Number(digit)]);
+	const digits = String(Number(mantissa)).replace('.', ',');
+	return { text: `${digits} × 10${power}`, approx: true };
+}
+
 /** Écrire un nombre comme la console : `2,25` exact, `≈ 1,41` sinon. */
 export function readingNumber(value: number): ReadingNumber {
+	// Revue de #1497 : 1e21 s'écrivait « 999999999999999900000 », dit exact
+	if (Math.abs(value) >= LARGEST_EXACT) return scientific(value);
 	const hundredths = Math.round(value * 100);
 	const approx =
 		Math.abs(value * 100 - hundredths) > EXACT_TOLERANCE * Math.max(1, Math.abs(value));

@@ -49,6 +49,13 @@ describe('readingNumber : un nombre écrit comme la console', () => {
 		expect(readingNumber(1 / 3)).toEqual({ text: '0,33', approx: true });
 	});
 
+	it('un très grand nombre n’est jamais annoncé exact à tort (revue de #1497)', () => {
+		const huge = readingNumber(1e21);
+		expect(huge.approx).toBe(true);
+		expect(huge.text).not.toContain('99999');
+		expect(readingNumber(-3e17).approx).toBe(true);
+	});
+
 	it('jamais « -0 »', () => {
 		expect(readingNumber(-0)).toEqual({ text: '0', approx: false });
 		expect(readingNumber(-0.001)).toEqual({ text: '0', approx: true });

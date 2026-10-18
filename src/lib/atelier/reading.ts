@@ -36,6 +36,15 @@ const SCANNED_LINES = 100;
 /** Les seuls noms permis dans l'argument : des constantes. */
 const CONSTANTS = new Set(['pi', 'e']);
 
+/**
+ * Les lignes déjà relues, par noms de fonctions et texte : la synchronisation
+ * relit la console à chaque révision de l'atelier, un glissé de curseur
+ * compris, et une ligne ne change jamais (revue de #1497). Vidé au-delà de
+ * `CACHE_LIMIT` entrées, pour ne pas grossir sans fin.
+ */
+const callCache = new Map<string, ReturnType<typeof readingCallOf>>();
+const CACHE_LIMIT = 1000;
+
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -58,10 +67,22 @@ export function readingCallOf(
 ): { readonly name: string; readonly at: number } | null {
 	const ast = astOf(text, 'text', functionNames);
 	if (ast === null || ast.type !== 'function' || ast.args.length !== 1) return null;
+	// `f^{-1}(5)` est une image de la réciproque, pas de f (revue de #1497)
+	if (ast.isInverse) return null;
 	const name = ast.name + "'".repeat(ast.derivativeOrder ?? 0);
 	if (!functionNames.includes(name)) return null;
 	const at = constantValue(ast.args[0]);
 	return at === null ? null : { name, at };
+}
+
+/** `readingCallOf`, sans relire une ligne déjà lue avec les mêmes noms. */
+function cachedCall(text: string, functionNames: readonly string[]) {
+	const key = `${functionNames.join('\u0000')}\u0001${text}`;
+	if (callCache.has(key)) return callCache.get(key) ?? null;
+	if (callCache.size >= CACHE_LIMIT) callCache.clear();
+	const call = readingCallOf(text, functionNames);
+	callCache.set(key, call);
+	return call;
 }
 
 /** Ce que la lecture regarde d'une ligne de console. */
@@ -85,7 +106,7 @@ export function consoleReadings(
 	for (let i = entries.length - 1; i >= oldest; i--) {
 		const entry = entries[i];
 		if (entry.failed || entry.result?.kind !== 'calcul') continue;
-		const call = readingCallOf(entry.label, functionNames);
+		const call = cachedCall(entry.label, functionNames);
 		if (call === null) continue;
 		const list = readings.get(call.name) ?? [];
 		if (list.length >= MAX_READINGS || list.includes(call.at)) continue;
