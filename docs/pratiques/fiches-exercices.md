@@ -702,7 +702,9 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   décide du séparateur décimal : point en anglais, virgule en français (#448).
 - **Lisibilité PDF** (« variante E ») : fraction et vecteur en colonne de premier niveau d'une
   formule du texte en taille normale (#436, #451).
-- Numérotation affichée : **a) 1) i)** (le markdown s'écrit `1.` puis `   a.`).
+- Numérotation affichée : **1) a) i)** (le markdown s'écrit `1.` puis `   a.`) ; une liste plate : 1) 2) 3)
+  (2026-10-18 ; a) 1) i) du 2026-09-23 au 2026-10-18 : les renvois « question b) 2) » écrits
+  dans cette période se lisent désormais « question 2) b) »).
 
 ---
 
