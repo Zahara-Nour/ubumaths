@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 — PR 1 (#1474), PR 2 (#1478), PR 3 (#1482) mergées ; PR 4 (grapheur à vrais paramètres) à faire
+status: lot 1 CLOS — PR 1 (#1474), PR 2 (#1478), PR 3 (#1482), K4 (#1491) mergées ; PR 4 ABANDONNÉE sur mesure (2026-10-18)
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -11,12 +11,12 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Lot 1 — découpage
 
-| PR  | Contenu                                                                                        | Branche                           | État     |
-| --- | ---------------------------------------------------------------------------------------------- | --------------------------------- | -------- |
-| 1   | Modèle : types `point` et `curve`, lecture, `y` réservé + migration, cartes, sauvegarde / lien | `feat/atelier-geometrie-modele`   | ✅ #1474 |
-| 2   | Vue Figure et pont `syncFigure` (curseurs cachés réglés par `moveSlider`, repère)              | `feat/atelier-geometrie-figure`   | ✅ #1478 |
-| 3   | 𝒞f dans la vue Géométrie (action de carte), onglet renommé « Géométrie »                       | `feat/atelier-geometrie-courbe-f` | ✅ #1482 |
-| 4   | Grapheur à vrais paramètres (Q4 : sa propre PR, en dernier)                                    | —                                 | à faire  |
+| PR  | Contenu                                                                                        | Branche                           | État                   |
+| --- | ---------------------------------------------------------------------------------------------- | --------------------------------- | ---------------------- |
+| 1   | Modèle : types `point` et `curve`, lecture, `y` réservé + migration, cartes, sauvegarde / lien | `feat/atelier-geometrie-modele`   | ✅ #1474               |
+| 2   | Vue Figure et pont `syncFigure` (curseurs cachés réglés par `moveSlider`, repère)              | `feat/atelier-geometrie-figure`   | ✅ #1478               |
+| 3   | 𝒞f dans la vue Géométrie (action de carte), onglet renommé « Géométrie »                       | `feat/atelier-geometrie-courbe-f` | ✅ #1482               |
+| 4   | Grapheur à vrais paramètres (Q4 : sa propre PR, en dernier)                                    | —                                 | ❌ abandonnée (mesure) |
 
 ## PR 1 — journal
 
@@ -98,3 +98,31 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 - 2026-10-18 : PR 3 vérifiée à l'écran, revue sans point bloquant, CI verte, **mergée (#1482,
   `dc18cb72e`)**. Pas en production. À trancher par David : couleur de 𝒞f dans la vue Géométrie
   (toutes bleues, alors que la carte et le Graphe ont leur couleur).
+
+## K4 — couleur de 𝒞f (2026-10-18)
+
+- Décision de David : 𝒞f prend en Géométrie la couleur de sa carte, comme dans le Graphe.
+  Worktree `../ubumaths-wt-atelier-couleur`. Tests d'abord : 5 node (`figure-couleur.test.ts`,
+  4 rouges) et 1 navigateur (`FigureView.svelte.test.ts`, rouge : `var(--color-fig-bleu)` au
+  lieu de `var(--color-curve-2)`). Fait : `screenColor` peint une `CurveColor` de son jeton ;
+  `syncFigure` pose couleur, pointillés et épaisseur de la carte et les repeint par
+  `updateStyle` sans reconstruire (`restyled`). `dashdot` → tirets (pas d'équivalent dans la
+  figure). Points et courbes par équation inchangés.
+- 2026-10-18 : K4 vérifiée à l'écran (clair et sombre), revue « prêt pour PR » (mineurs latents :
+  exports TikZ / Typst / SVG ignorent `curve-N` ; pas de test de `restyled` sur une courbe en
+  morceaux ni sur f⁻¹), CI verte, **mergée (#1491, `650b71594`)**. Pas en production.
+- 2026-10-18 : **PR 4 en pause.** L'agent s'est arrêté avant tout code : 5 tests existants
+  (plot-sync, plot-drawable, derivative-everywhere, figure-sync S1) vérifient la substitution
+  elle-même et casseraient ; `CurveSettings` calcule pente / aire / courbure / longueur sans
+  `parameterBindings` ; une valeur exacte (`1/3`, `√2`) passerait en décimal. Gain non mesuré
+  (le curseur reste dans « Mes objets »). Options soumises à David : A mesurer d'abord (reco),
+  B faire, C abandonner. Worktree `../ubumaths-wt-grapheur-parametres` gardé, sans commit.
+- 2026-10-18 : **PR 4 abandonnée sur mesure** (option A de David : mesurer, abandonner sous 16 ms).
+  Chromium, `AtelierContainer` réel sur le Graphe (823 × 617 px), 5 fonctions citant `a` (dont
+  tangente + aire, `1/(x−a)`, `sin(a x)`), 40 crans après préchauffe : médiane 10,9 à 12,3 ms,
+  p90 11,3 à 13,3 ms, max 14,1 ms ; 1 fonction : ~5,5 ms. Le coût est le rendu du grapheur
+  (≈ 10-12 ms : rééchantillonnage, analyse, tangente, aire) ; `slideTo` ≈ 0,5 ms, `syncPlots`
+  0,3-0,4 ms (substitution + relecture comprises) : de vrais paramètres n'économiseraient que
+  ≈ 0,5 ms, le rendu restant à refaire à chaque valeur. S3 n'est donc pas faite ; la
+  substitution complète reste (le commentaire de `wantedFor`, `plot-sync.ts`, qui annonce ce
+  changement, est à corriger à la prochaine PR qui touche ce fichier). Worktree retiré.

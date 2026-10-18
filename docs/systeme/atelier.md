@@ -1144,7 +1144,12 @@ avec la raison de l'objet si la fonction n'est pas `ok` (invariant 9) ; « Retir
 possible. `syncFigure` trace la fonction par `createFunction` (l'arbre de `substitutedAstOf`,
 curseurs gardés en lettres et liés par nom : `f(x) = a x²` suit `a` sans reconstruire), une
 `GeoFunction` par morceau de son ensemble (`plotRestrictionOf`, hérité compris : K2), nommée
-comme sur sa carte (`f`, `f′`, `f⁻¹`). `f′` et `f⁻¹` ont la même action et suivent `f` (K3) ;
+comme sur sa carte (`f`, `f′`, `f⁻¹`), et **peinte du trait de sa carte** (K4, 2026-10-18) :
+couleur (`display.color`, la `CurveColor` du Graphe, peinte par son jeton `var(--color-curve-N)`,
+le même en clair et en sombre), pointillés et épaisseur (`dashdot` devient des tirets, la figure
+n'en a pas) ; un changement dans la carte repeint par `Figure.updateStyle`, sans reconstruire
+(`syncFigure` rend `restyled`) ; une fonction jamais tracée garde la couleur par défaut.
+`f′` et `f⁻¹` ont la même action, leur propre couleur de carte, et suivent `f` (K3) ;
 une carte `f′` ou `f⁻¹` créée depuis une `f` affichée naît affichée, comme pour le tracé.
 
 **Nature d'une courbe** (`curve-nature.ts`, C1, C2, C6) : la carte remplace le type « courbe »

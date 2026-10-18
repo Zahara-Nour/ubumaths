@@ -212,6 +212,12 @@ s'appelle `y`, donc aucun calcul ne peut le confondre avec un objet.
   Graphe. Petite PR à part, après la PR 4. La couleur des points et des courbes par équation
   (qui n'en ont pas encore) reste un sujet à part.
 
+**S3 / Q4 abandonnées sur mesure** (David, 2026-10-18, option A) : un cran de curseur dans le
+Graphe prend 11 à 13 ms avec 5 fonctions (p90 ≤ 13,3 ms), presque tout dans le rendu du grapheur ;
+de vrais paramètres n'économiseraient qu'environ 0,5 ms. Le grapheur garde la substitution
+complète ; le curseur reste commun à toutes les vues par l'atelier (S1, S4 tenues). Détail :
+journal du 2026-10-18.
+
 ## Découpage en PR proposé (lot 1)
 
 1. **Modèle** : types `point` et `curve`, lecture (`<lettre> : <équation>`, couples), `y` réservé
