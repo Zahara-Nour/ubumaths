@@ -291,14 +291,63 @@ function normalizeAngle(angle: number): number {
 	return angle;
 }
 
-// Ébauche (TDD)
+// =============================================================================
+// Degenerate kinds (vide, point, droite(s))
+// =============================================================================
+
+/** Ce qu'est une conique dégénérée : rien, un point, une droite (double), deux droites. */
+export type DegenerateConicKind = 'empty' | 'point' | 'line' | 'lines';
+
+/**
+ * Séparer les coniques que `classifyConic` dit seulement « dégénérées »
+ * (géométrie v2 de l'atelier, C6 : `x² + y² = −1` est VIDE, et la carte le
+ * constate). `null` si la conique ne l'est pas.
+ *
+ * - discriminant < 0 (forme définie) : valeur au centre de même signe que A →
+ *   vide, nulle → point isolé ;
+ * - discriminant > 0 et det(M) = 0 : deux droites sécantes ;
+ * - discriminant = 0 et det(M) = 0 : après rotation, a·u² + d·u + f = 0 —
+ *   vide, une droite (double) ou deux droites parallèles selon d² − 4af.
+ *
+ * Les coefficients tout du premier degré (A = B = C = 0) ne sont pas une
+ * conique : à l'appelant de lire une droite.
+ */
 export function degenerateConicKind(
-	_A: number,
-	_B: number,
-	_C: number,
-	_D: number,
-	_E: number,
-	_F: number
-): 'empty' | 'point' | 'line' | 'lines' | null {
-	throw new Error('à faire');
+	A: number,
+	B: number,
+	C: number,
+	D: number,
+	E: number,
+	F: number
+): DegenerateConicKind | null {
+	if (classifyConic(A, B, C, D, E, F).type !== 'degenerate') return null;
+	const disc = B * B - 4 * A * C;
+
+	if (!near0(disc) && disc < 0) {
+		// Centre : gradient nul ; valeur de F au centre = F + (D·cx + E·cy) / 2
+		const denom = 4 * A * C - B * B;
+		const cx = (B * E - 2 * C * D) / denom;
+		const cy = (B * D - 2 * A * E) / denom;
+		const atCenter = F + (D * cx + E * cy) / 2;
+		if (near0(atCenter)) return 'point';
+		// La forme a le signe de A : de même signe au centre, elle ne s'annule jamais
+		return Math.sign(atCenter) === Math.sign(A) ? 'empty' : 'point';
+	}
+	if (!near0(disc)) return 'lines';
+
+	// Parabolique : une seule direction quadratique, u le long de l'axe de la forme
+	let theta: number;
+	if (near0(B)) theta = 0;
+	else if (near0(A - C)) theta = Math.PI / 4;
+	else theta = Math.atan2(B, A - C) / 2;
+	const cos = Math.cos(theta);
+	const sin = Math.sin(theta);
+	const A2 = A * cos * cos + B * cos * sin + C * sin * sin;
+	const C2 = A * sin * sin - B * cos * sin + C * cos * cos;
+	const D2 = D * cos + E * sin;
+	const E2 = -D * sin + E * cos;
+	const [a, d] = near0(C2) ? [A2, D2] : [C2, E2];
+	const delta = d * d - 4 * a * F;
+	if (near0(delta)) return 'line';
+	return delta > 0 ? 'lines' : 'empty';
 }
