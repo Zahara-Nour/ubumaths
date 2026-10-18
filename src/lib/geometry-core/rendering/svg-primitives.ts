@@ -7,7 +7,7 @@
  */
 
 import { colorForPrint, colorForScreen, namedColorScreen } from '$lib/theme/named-colors';
-import { isValidColor } from './colors';
+import { curveColorValue, isCurveColor, isValidColor } from './colors';
 import type { Figure, FigureDefaults } from '../graph/figure';
 import type { CoordinateTransformer } from '../viewport/viewport';
 import { geoToNumber } from '../compute/to-number';
@@ -142,6 +142,9 @@ export function resolvePrintStyle(
  * `isValidColor` n'admet qu'un identifiant alphabétique, un hex ou rgb()/hsl().
  */
 function screenColor(raw: string): string | null {
+	// Une couleur de courbe du grapheur (`curve-2`) : son jeton, qui suit le thème
+	// — la vue Géométrie de l'atelier peint 𝒞f de la couleur de sa carte (K4)
+	if (isCurveColor(raw)) return curveColorValue(raw);
 	const themed = colorForScreen(raw);
 	if (themed !== null) return themed;
 	const value = raw.trim();

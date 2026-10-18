@@ -43,13 +43,17 @@
  */
 
 import type { Atelier } from './atelier.svelte';
-import type { AtelierObject } from './types';
+import type { AtelierObject, CurveDisplay } from './types';
 import type { CompiledFn, MathNode } from '$lib/mathAST';
 import { add, compile, divide, getVariables, number as mathNumber, opposite } from '$lib/mathAST';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { Figure } from '$lib/geometry-core/graph/figure';
-import type { CurveParameter, GeoFunctionDomain } from '$lib/geometry-core/types/elements';
+import type {
+	CurveParameter,
+	GeoFunctionDomain,
+	GeoStyle
+} from '$lib/geometry-core/types/elements';
 import type { CurvePiece, Restriction } from '$lib/grapheur/restriction';
 import { exact, numeric, type ScalarParam } from '$lib/geometry-core/types/geo-value';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
@@ -80,7 +84,7 @@ import { displayName } from './names';
 // =============================================================================
 
 /** Ce que la synchronisation a fait : rien, bouger des curseurs, ou refaire la figure. */
-export type FigureSyncOutcome = 'unchanged' | 'moved' | 'rebuilt';
+export type FigureSyncOutcome = 'unchanged' | 'moved' | 'restyled' | 'rebuilt';
 
 /** Un curseur de l'atelier tel que la figure doit le porter. */
 interface WantedSlider {
@@ -126,6 +130,12 @@ interface WantedFunction {
 	readonly name: string;
 	readonly expression: MathNode;
 	readonly pieces?: Restriction;
+	/**
+	 * Le trait de sa carte (K4 : couleur, pointillés, épaisseur), absent pour une
+	 * fonction jamais tracée — couleur par défaut de la figure. Hors empreinte :
+	 * il se règle par `Figure.updateStyle`, sans refaire la figure.
+	 */
+	readonly style?: GeoStyle;
 }
 
 type Wanted = WantedPoint | WantedCurve | WantedFunction;
@@ -160,6 +170,8 @@ export class AtelierFigure {
 	#sliders = new Map<string, string>();
 	/** Nom du point ou de la courbe → id de l'élément visible. */
 	#elements = new Map<string, string>();
+	/** Nom d'une fonction affichée → ids de ses morceaux, et le trait qu'ils portent (K4). */
+	#strokes = new Map<string, { readonly ids: readonly string[]; style: string }>();
 	#changes = 0;
 
 	get figure(): Figure {
@@ -193,6 +205,7 @@ export class AtelierFigure {
 			this.#changes++;
 			return 'rebuilt';
 		}
+		const restyled = this.#restyle(plan);
 		let moved = false;
 		for (const slider of plan.sliders) {
 			const id = this.#sliders.get(slider.name);
@@ -200,10 +213,25 @@ export class AtelierFigure {
 			this.#figure.moveSlider(id, slider.value);
 			moved = true;
 		}
-		if (!moved) return 'unchanged';
-		this.#figure.recompute();
+		if (!moved && !restyled) return 'unchanged';
+		if (moved) this.#figure.recompute();
 		this.#changes++;
-		return 'moved';
+		return moved ? 'moved' : 'restyled';
+	}
+
+	/** Repeindre les 𝒞f dont la carte a changé de trait (K4) ; vrai si l'une l'a été. */
+	#restyle(plan: FigurePlan): boolean {
+		let changed = false;
+		for (const object of plan.objects) {
+			if (object.kind !== 'function') continue;
+			const stroke = this.#strokes.get(object.name);
+			const style = JSON.stringify(object.style ?? null);
+			if (stroke === undefined || stroke.style === style || object.style === undefined) continue;
+			for (const id of stroke.ids) this.#figure.updateStyle(id, object.style);
+			stroke.style = style;
+			changed = true;
+		}
+		return changed;
 	}
 
 	#rebuild(plan: FigurePlan): void {
@@ -216,17 +244,22 @@ export class AtelierFigure {
 			sliders.set(name, figure.createSlider(min, max, value, { visible: false, label: name }));
 		}
 		const elements = new Map<string, string>();
+		const strokes = new Map<string, { readonly ids: readonly string[]; style: string }>();
 		for (const object of plan.objects) {
 			// Une courbe que la figure refuse (compilation impossible) n'est pas
 			// dessinée : sa carte, elle, reste ce qu'elle est (F5)
 			const before = new Set(figure.getAllElements().map((el) => el.id));
 			try {
+				if (object.kind === 'function') {
+					const ids = posePlottedFunction(figure, object, sliders);
+					if (ids.length > 0) elements.set(object.name, ids[0]);
+					strokes.set(object.name, { ids, style: JSON.stringify(object.style ?? null) });
+					continue;
+				}
 				const id =
 					object.kind === 'point'
 						? posePoint(figure, object, sliders)
-						: object.kind === 'curve'
-							? poseCurve(figure, object, sliders)
-							: posePlottedFunction(figure, object, sliders);
+						: poseCurve(figure, object, sliders);
 				if (id !== null) elements.set(object.name, id);
 			} catch {
 				// Les aides déjà posées (calculs cachés, points d'une droite) s'en vont
@@ -241,6 +274,7 @@ export class AtelierFigure {
 		this.#figure = figure;
 		this.#sliders = sliders;
 		this.#elements = elements;
+		this.#strokes = strokes;
 	}
 }
 
@@ -319,12 +353,26 @@ function wantedFunctionOf(
 	const substituted = substitutedAstOf(atelier, object.name, { keepNames: keep });
 	if (!substituted.ok) return null;
 	const pieces = plotRestrictionOf(object);
+	const style = object.display === undefined ? undefined : strokeOf(object.display);
 	return {
 		kind: 'function',
 		name: object.name,
 		expression: substituted.ast,
-		...(pieces !== undefined && { pieces })
+		...(pieces !== undefined && { pieces }),
+		...(style !== undefined && { style })
 	};
+}
+
+/**
+ * Le trait de la carte en style de la figure (K4) : la couleur du grapheur
+ * (`curve-2`), que la toile peint de son jeton `var(--color-curve-2)` — le même
+ * que le Graphe, clair ou sombre (`screenColor` de `svg-primitives.ts`) ;
+ * pointillés et épaisseur. `dashdot` n'a pas d'équivalent dans la figure :
+ * des tirets.
+ */
+function strokeOf(display: CurveDisplay): GeoStyle {
+	const dash: GeoStyle['dash'] = display.lineStyle === 'dashdot' ? 'dashed' : display.lineStyle;
+	return { color: display.color, dash, strokeWidth: display.lineWidth };
 }
 
 function wantedOf(
@@ -360,7 +408,8 @@ function wantedOf(
 function fingerprintOf(plan: FigurePlan): string {
 	return JSON.stringify({
 		sliders: plan.sliders.map(({ name, min, max }) => [name, min, max]),
-		objects: plan.objects
+		// Le trait d'une 𝒞f n'est pas de la structure : `#restyle` le règle
+		objects: plan.objects.map((o) => (o.kind === 'function' ? { ...o, style: undefined } : o))
 	});
 }
 
@@ -434,13 +483,14 @@ function posePoint(
  * 𝒞f : une `GeoFunction` par morceau de son ensemble (K2 ; `GeoFunctionDomain`
  * n'a qu'un intervalle), nommée comme sur sa carte (`f`, `f′`, `f⁻¹`) — le nom
  * sur le premier morceau seulement. Les curseurs se lient par leur nom, comme
- * une courbe `y = f(x)`. Rend l'id du premier morceau.
+ * une courbe `y = f(x)`. Le trait est celui de la carte (K4). Rend les ids des
+ * morceaux, le nommé d'abord.
  */
 function posePlottedFunction(
 	figure: Figure,
 	wanted: WantedFunction,
 	sliders: ReadonlyMap<string, string>
-): string | null {
+): string[] {
 	const { expression } = wanted;
 	let derivative: MathNode;
 	try {
@@ -455,7 +505,7 @@ function posePlottedFunction(
 	const label = displayName(wanted.name);
 	const equation = `y = ${displayName(wanted.name)}(x)`;
 	const pieces = wanted.pieces ?? [null];
-	let first: string | null = null;
+	const ids: string[] = [];
 	for (const piece of pieces) {
 		const id = figure.createFunction(
 			expression,
@@ -464,14 +514,15 @@ function posePlottedFunction(
 			compiledDerivative,
 			equation,
 			{
-				...(first === null && { label }),
+				...(ids.length === 0 && { label }),
 				dependencies,
-				...(piece !== null && { domain: domainOf(piece) })
+				...(piece !== null && { domain: domainOf(piece) }),
+				...(wanted.style !== undefined && { style: wanted.style })
 			}
 		);
-		first ??= id;
+		ids.push(id);
 	}
-	return first;
+	return ids;
 }
 
 /** Un morceau de l'ensemble (nombres, ±∞) en domaine de `GeoFunction`. */

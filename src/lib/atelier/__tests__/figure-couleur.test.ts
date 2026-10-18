@@ -90,10 +90,14 @@ describe('K4 : la couleur de 𝒞f est celle de sa carte', () => {
 	});
 
 	it('une fonction jamais tracée (sans réglages) garde la couleur par défaut', () => {
-		const d = desk('f(x) = x^2');
-		d.atelier.setInFigure('f', true);
+		// Créée par la carte, jamais tracée : pas de `display` (Calcul, lui, trace d'office)
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		const created = atelier.get('f');
+		expect(created?.kind === 'function' && created.display).toBeFalsy();
+		atelier.setInFigure('f', true);
 
-		const { figure } = synced(d.atelier);
+		const { figure } = synced(atelier);
 		const fresh = synced(desk('d : y = x').atelier).figure;
 		const line = fresh.getAllElements().find((e) => e.visible && e.label === 'd')!;
 
