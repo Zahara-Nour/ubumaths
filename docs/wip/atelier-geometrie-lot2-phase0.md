@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie, lot 2 (constructions au clavier et mesures), phase 0
 date: 2026-10-18
-status: L2 tranchée (2026-10-18) ; L1, L3-L8 À VALIDER ; rien n'est codé
+status: phase 0 du lot 2 VALIDÉE (2026-10-18) — L1-L8 tranchées (L2 en détail, les autres « je valide tes recos »)
 ---
 
 # Atelier — la géométrie, lot 2 : constructions au clavier et mesures
@@ -40,7 +40,7 @@ transformations, vecteurs, lieux (G7).
 - Un point n'existe qu'avec des **coordonnées** : pas de point libre sans repère avant la souris
   (lot 3). Le repère reste donc affiché au lot 2.
 
-## Questions à trancher
+## Questions — toutes tranchées par David le 2026-10-18 (L1, L3-L8 : « je valide tes recos »)
 
 ### L1 — Qui calcule une construction ? (architecture)
 
