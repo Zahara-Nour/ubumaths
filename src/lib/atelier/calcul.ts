@@ -126,6 +126,7 @@ import { tabulateCommand } from './tabulate';
 import { gridFunctionCalledIn, gridFunctionInCalcul } from './grid-functions';
 import { measureCallNames, measuredText, pairNames, withoutMeasureCalls } from './measures';
 import { evaluate } from '$lib/mathAST/eval';
+import { format as formatUnit } from '$lib/mathAST/units';
 import {
 	bareLineShortcut,
 	constructionWordIn,
@@ -270,6 +271,11 @@ export type CalcResult =
 				readonly definition: string;
 				readonly provenance: Provenance;
 			};
+			/**
+			 * Une ligne qui mesure (`AE`, `aire(A, B, C)`, lot 2, L4) : « Garder » crée une
+			 * VALEUR de cette définition, qui suit ses points (décision de David, 2026-10-18).
+			 */
+			readonly measure?: { readonly definition: string; readonly provenance: Provenance };
 	  }
 	| {
 			readonly kind: 'commande';
@@ -3330,13 +3336,37 @@ export function runInput(
 	);
 }
 
-/** La valeur décimale d'un résultat, 4 décimales (`≈ 0,7071` du mode décimal), ou `null`. */
-function approximationOf(ast: MathNode | undefined): string | null {
+/** Le LaTeX de l'unité d'une grandeur approchée : `°`, `rad` comme le moteur les écrit. */
+const APPROXIMATE_UNIT_LATEX: Readonly<Record<string, string>> = {
+	'°': '{}^{\\circ}',
+	rad: '\\mathrm{rad}'
+};
+
+/**
+ * La valeur décimale d'un résultat, 4 décimales (`≈ 0,7071` du mode décimal),
+ * unité comprise (`36.8699 °`, un angle — décision de David, 2026-10-18), ou `null`.
+ */
+function approximationOf(
+	ast: MathNode | undefined
+): { readonly text: string; readonly latex: string } | null {
 	if (ast === undefined) return null;
+	if (isUnit(ast)) {
+		const inner = approximationOf(ast.expression);
+		if (inner === null) return null;
+		const symbol = formatUnit(ast.unit, 'original');
+		const unitLatex = APPROXIMATE_UNIT_LATEX[symbol] ?? `\\text{${symbol}}`;
+		return { text: `${inner.text} ${symbol}`, latex: `${inner.latex}~${unitLatex}` };
+	}
 	const value = evaluate(ast, { mode: 'decimal' });
-	return value.status === 'value' && typeof value.value === 'number' && Number.isFinite(value.value)
-		? String(Number(value.value.toFixed(4)))
-		: null;
+	if (
+		value.status !== 'value' ||
+		typeof value.value !== 'number' ||
+		!Number.isFinite(value.value)
+	) {
+		return null;
+	}
+	const shown = String(Number(value.value.toFixed(4)));
+	return { text: shown, latex: shown };
 }
 
 /**
@@ -3357,7 +3387,7 @@ function approximatedResult(atelier: Atelier, text: string, result: CalcResult):
 	if (!cited.some((name) => approximate.has(name))) return result;
 	const shown = approximationOf(result.ast);
 	if (shown === null) return result;
-	return { ...result, output: `≈ ${shown}`, latex: `\\approx ${shown}` };
+	return { ...result, output: `≈ ${shown.text}`, latex: `\\approx ${shown.latex}` };
 }
 
 /**
@@ -3684,15 +3714,19 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	if (measured.changed) {
 		const line = computeInput(session, measured.text, provenance);
 		if (line.kind !== 'calcul') return line;
-		if (!measured.approximate) return { ...line, input };
+		if (!measured.approximate) {
+			return { ...line, input, measure: { definition: input.trim(), provenance } };
+		}
 		// Un angle non remarquable : le moteur en ferait une fraction (368699/10000) —
 		// on montre le décimal, 4 décimales comme le mode décimal (`≈ 0,7071`)
 		const approximation = approximationOf(line.ast);
 		return {
 			...line,
 			input,
-			output: `≈ ${approximation ?? line.output}`,
-			latex: `\\approx ${approximation ?? line.latex ?? line.output}`
+			output: `≈ ${approximation?.text ?? line.output}`,
+			latex: `\\approx ${approximation?.latex ?? line.latex ?? line.output}`,
+			// « Garder » garde la MESURE, qui suit ses points (décision de David, 2026-10-18)
+			measure: { definition: input.trim(), provenance }
 		};
 	}
 
@@ -3832,6 +3866,21 @@ export function promote(
 	name?: string
 ): Created | Refused {
 	const { atelier } = session;
+
+	// Une mesure tapée seule (L4) : gardée par sa définition, elle suit ses points
+	if (result.kind === 'calcul' && result.measure !== undefined) {
+		const chosen = name ?? nextName('value', atelier.names);
+		const rejection = validateName(chosen, atelier.names);
+		if (rejection !== null) {
+			return { ok: false, message: nameRejectionMessage(rejection, chosen) };
+		}
+		const created = atelier.create(
+			{ kind: 'value', name: chosen, definition: result.measure.definition },
+			result.measure.provenance
+		);
+		if (created.ok) syncEngine(atelier, session.engine);
+		return created.ok ? { ...created, object: atelier.get(chosen) ?? created.object } : created;
+	}
 
 	// Une construction tapée seule (L2, D5) : gardée par sa définition, telle qu'écrite
 	if (result.kind === 'calcul' && result.construction !== undefined) {

@@ -19,7 +19,7 @@
 import type { Atelier } from './atelier.svelte';
 import type { MathNode } from '$lib/mathAST/types';
 import type { GeoPoint } from '$lib/geometry-core/types/primitives';
-import { numeric, exact, type GeoValue } from '$lib/geometry-core/types/geo-value';
+import { numeric, exact, isExact, type GeoValue } from '$lib/geometry-core/types/geo-value';
 import {
 	geoAdd,
 	geoDiv,
@@ -31,11 +31,27 @@ import {
 } from '$lib/geometry-core/compute/geo-arithmetic';
 import { geoEqual, geoIsZero } from '$lib/geometry-core/compute/compare';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { divide, number as mathNumber, opposite, sqrt } from '$lib/mathAST/factory';
+import {
+	divide,
+	multiply,
+	number as mathNumber,
+	opposite,
+	piConstant,
+	sqrt
+} from '$lib/mathAST/factory';
+import type { AngleUnit } from './angle-unit';
+import { isDelimiter, isUnit } from '$lib/mathAST/guards';
+import { format as formatUnit } from '$lib/mathAST/units';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { numericNode } from '$lib/mathAST/common/numeric';
-import { readArguments, type MeasureWord, type ReadArgument } from './construction-read';
+import {
+	readArguments,
+	readConstruction,
+	type MeasureWord,
+	type ReadArgument,
+	type ReadCall
+} from './construction-read';
 import { PAIR, isLatex, measureCalls, plainName } from './measures-read';
 import { specOfCall } from './construction-spec';
 import {
@@ -52,6 +68,7 @@ import type { Provenance } from './parse';
 
 export {
 	citesMeasure,
+	hasAngleCall,
 	hasMeasureCall,
 	measureCallNames,
 	measureShapeRefusal,
@@ -133,9 +150,19 @@ function pointOfArgument(atelier: Atelier, argument: ReadArgument): GeoPoint {
 /** Le second argument de `distance` : un point, ou une droite (droite, segment, demi-droite). */
 function pointOrLine(
 	atelier: Atelier,
-	argument: ReadArgument
+	argument: ReadArgument,
+	from: string
 ): { readonly point: GeoPoint } | { readonly from: GeoPoint; readonly to: GeoPoint } {
 	const kind = argument.kind === 'name' ? atelier.get(argument.name)?.kind : undefined;
+	// Décision de David (2026-10-18) : la distance à un SEGMENT ou à une DEMI-DROITE
+	// n'est pas celle de sa droite (le DSL, lui, mesure à la droite) — refusée, avec l'aide
+	const portion = portionOf(atelier, argument);
+	if (portion !== null) {
+		const line = portion.ends === null ? 'd' : `(${portion.ends.join('')})`;
+		throw new Failure(
+			`${portion.word} : la distance se mesure à une droite. Pour la distance à la droite, écris distance(${from}, ${line}).`
+		);
+	}
 	const isLine =
 		(argument.kind === 'name' && kind === 'curve') ||
 		(argument.kind === 'call' &&
@@ -158,6 +185,31 @@ function pointOrLine(
 	const read = lineOutcome(atelier, spec);
 	if (!read.ok) throw new Failure(read.message);
 	return read;
+}
+
+/**
+ * Un segment ou une demi-droite (écrit, `[AB]`, ou nommé, `s = [AB]`) : sa nature
+ * et les deux points qui le portent quand ils sont nommés — sinon `null`.
+ */
+function portionOf(
+	atelier: Atelier,
+	argument: ReadArgument
+): { readonly word: string; readonly ends: readonly [string, string] | null } | null {
+	let call: ReadCall | null = null;
+	if (argument.kind === 'call') call = argument.call;
+	else if (argument.kind === 'name') {
+		const object = atelier.get(argument.name);
+		if (object?.kind === 'curve') {
+			const read = readConstruction(object.definition, object.provenance ?? 'url');
+			call = read !== null && read.ok ? read.call : null;
+		}
+	}
+	if (call === null || (call.word !== 'segment' && call.word !== 'demidroite')) return null;
+	const [a, b] = call.positional;
+	const ends: readonly [string, string] | null =
+		a?.kind === 'name' && b?.kind === 'name' ? [a.name, b.name] : null;
+	const word = call.word === 'segment' ? 'Un segment' : 'Une demi-droite';
+	return { word, ends };
 }
 
 function points(atelier: Atelier, args: readonly ReadArgument[]): GeoPoint[] {
@@ -220,7 +272,8 @@ function measure(atelier: Atelier, word: MeasureWord, args: readonly ReadArgumen
 			if (args.length !== 2)
 				throw new Failure('distance s’écrit distance(A ; B) ou distance(A ; d).');
 			const [from] = points(atelier, [args[0]]);
-			const to = pointOrLine(atelier, args[1]);
+			const first = args[0].kind === 'name' ? args[0].name : 'A';
+			const to = pointOrLine(atelier, args[1], first);
 			if ('point' in to) return { value: segmentLength(from, to.point), approximate: false };
 			// |AB × AP| / AB : la distance de P à la droite (AB), comme le DSL
 			const ux = geoSub(to.to.x, to.from.x);
@@ -296,6 +349,34 @@ function measure(atelier: Atelier, word: MeasureWord, args: readonly ReadArgumen
 	}
 }
 
+/**
+ * Un angle en degrés, écrit en grandeur dans l'unité du réglage : `(60[°])`,
+ * `((\pi/3)[rad])` — LaTeX : `\left(60\unit{°}\right)`. Exact s'il l'est, en
+ * pleine précision sinon. La trigonométrie du moteur lit l'unité (`cos(60[°])` = 1/2).
+ */
+function writtenAngle(degrees: GeoValue, unit: AngleUnit, latex: boolean): string {
+	if (isNaNValue(degrees)) throw new Failure('Cet angle ne se calcule pas.');
+	const symbol = unit === 'deg' ? '°' : 'rad';
+	const value =
+		unit === 'deg'
+			? degrees
+			: isExact(degrees)
+				? exact(
+						simplifyExact(
+							divide(
+								multiply(degrees.node, piConstant(), 'implicit'),
+								mathNumber('180'),
+								'fraction'
+							)
+						)
+					)
+				: numeric((geoToNumber(degrees) * Math.PI) / 180);
+	const node = nodeOf(value);
+	return latex
+		? `\\left(${toLatex(node)}\\unit{${symbol}}\\right)`
+		: `((${toCustom(node)})[${symbol}])`;
+}
+
 /** L'écriture d'une valeur dans le texte, LaTeX ou non, entre parenthèses. */
 function written(value: GeoValue, latex: boolean): string {
 	if (isNaNValue(value))
@@ -327,7 +408,12 @@ export function measuredText(atelier: Atelier, text: string, provenance: Provena
 			if (!read.ok) throw new Failure(read.message);
 			const result = measure(atelier, call.word, read.args);
 			approximate ||= result.approximate;
-			out = `${out.slice(0, call.start)}${written(result.value, latex)}${out.slice(call.end)}`;
+			// Un angle est une GRANDEUR, dans l'unité du réglage (décision de David, 2026-10-18)
+			const value =
+				call.word === 'angle'
+					? writtenAngle(result.value, atelier.angleUnit, latex)
+					: written(result.value, latex);
+			out = `${out.slice(0, call.start)}${value}${out.slice(call.end)}`;
 			changed = true;
 		}
 		out = out.replace(PAIR, (whole, a: string, b: string) => {
@@ -362,12 +448,23 @@ export function measureSummaryOf(
 	if (read === null || !read.ok || !read.changed) return null;
 	const substituted = substitutedAstOf(atelier, name);
 	if (!substituted.ok) return null;
-	const node = simplifyExact(substituted.ast);
+	let whole = simplifyExact(substituted.ast);
+	// `((60)[°])` : les parenthèses de la substitution ne cachent pas l'unité
+	while (isDelimiter(whole)) whole = whole.content;
+	// Un angle est une grandeur : son nombre, puis son unité (`36,8699 °`, `π/3 rad`)
+	const node = isUnit(whole) ? whole.expression : whole;
+	const symbol = isUnit(whole) ? formatUnit(whole.unit, 'original') : null;
+	const unitText = symbol === null ? '' : ` ${symbol}`;
+	const unitLatex =
+		symbol === null ? '' : `~${symbol === '°' ? '{}^{\\circ}' : `\\mathrm{${symbol}}`}`;
 	if (read.approximate) {
-		const value = geoToNumber(exact(node));
+		const value = geoToNumber(exact(simplifyExact(node)));
 		if (!Number.isFinite(value)) return null;
 		const shown = numericNode(Number(value.toFixed(ANGLE_DECIMALS)));
-		return { latex: `\\approx ${plainLatex(shown)}`, text: `≈ ${plainText(shown)}` };
+		return {
+			latex: `\\approx ${plainLatex(shown)}${unitLatex}`,
+			text: `≈ ${plainText(shown)}${unitText}`
+		};
 	}
-	return { latex: plainLatex(node), text: plainText(node) };
+	return { latex: `${plainLatex(node)}${unitLatex}`, text: `${plainText(node)}${unitText}` };
 }

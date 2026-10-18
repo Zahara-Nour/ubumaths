@@ -119,5 +119,10 @@ describe('réglage « Angles » : degrés ou radians', () => {
 		expect(atelier.angleUnit).toBe('rad');
 		const card = cardFor(view.container, 'T');
 		expect(card.querySelector('.mesure .sr-only')?.textContent?.trim()).toBe('≈ 0,6435 rad');
+		// Le choix est retenu dans ce navigateur : on le remet, pour les tests qui suivent
+		expect(localStorage.getItem('chiphre-atelier-angles')).toBe('rad');
+		degrees?.click();
+		await settle();
+		expect(localStorage.getItem('chiphre-atelier-angles')).toBe('deg');
 	});
 });

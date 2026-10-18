@@ -91,8 +91,10 @@ const formulas = new WeakMap<
 
 /** Tout ce dont dépend une réciproque (et le moteur) : définitions, statuts, ensembles. */
 function atelierMark(atelier: Atelier): string {
-	return JSON.stringify(
-		atelier.objects.map((o) => [
+	return JSON.stringify([
+		// Une mesure d'angle change d'unité avec le réglage (2026-10-18)
+		atelier.angleUnit,
+		...atelier.objects.map((o) => [
 			o.name,
 			o.kind,
 			o.definition,
@@ -102,7 +104,7 @@ function atelierMark(atelier: Atelier): string {
 			'reciprocalOn' in o ? o.reciprocalOn : null,
 			'inheritedInterval' in o ? o.inheritedInterval : null
 		])
-	);
+	]);
 }
 
 /** `f⁻¹` citée sans réciproque possible (f non bijective…) ; le message est le refus. */

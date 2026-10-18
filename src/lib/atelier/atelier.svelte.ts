@@ -101,8 +101,10 @@ import { getVariables } from '$lib/mathAST/eval/substitute';
 import { listCitedMessage } from './list-cited';
 import { figureCitedMessage, figureFullMessage } from './geometry';
 import { partsOf, specOf, type ConstructionSpec } from './construction-spec';
+import { DEFAULT_ANGLE_UNIT, type AngleUnit } from './angle-unit';
 import {
 	citesMeasure,
+	hasAngleCall,
 	hasMeasureCall,
 	measureCallNames,
 	measuredText,
@@ -417,6 +419,10 @@ function formatSliderValue(value: number, step: number): string {
 }
 
 const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-même.';
+
+/** Un angle est une grandeur (° ou rad) : une fonction ne s'en sert pas encore. */
+const ANGLE_IN_FUNCTION =
+	'Une mesure d’angle est une grandeur (en ° ou en rad) : une fonction ne s’en sert pas. Utilise son cosinus ou son sinus, ou une valeur sans unité.';
 
 const GRID_FULL = 'La grille est pleine : vide une colonne pour créer une liste.';
 
@@ -1483,6 +1489,23 @@ export class Atelier {
 	/** Afficher ou masquer le repère de la vue Figure (F3) — sans rien enregistrer. */
 	setFigureFrame(shown: boolean): void {
 		this.#figureFrame = shown;
+	}
+
+	/**
+	 * L'unité des mesures d'angle (réglage « Angles », 2026-10-18) : un réglage de
+	 * ce navigateur, hors `serialize()`, comme le repère de la vue Figure.
+	 */
+	#angleUnit = $state<AngleUnit>(DEFAULT_ANGLE_UNIT);
+
+	get angleUnit(): AngleUnit {
+		return this.#angleUnit;
+	}
+
+	/** Changer l'unité des angles recalcule les mesures d'angle (`T = angle(…)`). */
+	setAngleUnit(unit: AngleUnit): void {
+		if (unit === this.#angleUnit) return;
+		this.#angleUnit = unit;
+		this.recomputeAll();
 	}
 
 	// ---------------------------------------------------------------------------
@@ -2764,6 +2787,7 @@ export class Atelier {
 		// fonction citée comme un nombre) — pas ceux qui suivent un autre objet
 		const miswritten = new Set<string>();
 
+		const angles = this.#angleValues();
 		for (const o of this.items) {
 			// La provenance de l'objet, pas un défaut : sinon une définition LaTeX
 			// serait relue en texte à chaque recalcul.
@@ -2774,6 +2798,17 @@ export class Atelier {
 				this.functionNames
 			).error;
 			ownError.set(o.name, unreadable);
+			// Choix prudent (décision de David du 2026-10-18 : un angle est une grandeur) :
+			// une fonction, une suite ne prennent pas de mesure d'angle
+			if (
+				!unreadable &&
+				(o.kind === 'function' || o.kind === 'sequence') &&
+				(hasAngleCall(o.definition, o.provenance ?? 'url') ||
+					this.#refsOf(o).some((r) => angles.has(r.name)))
+			) {
+				ownError.set(o.name, ANGLE_IN_FUNCTION);
+				miswritten.add(o.name);
+			}
 			if (!unreadable && this.#overFigureCap.has(o.name)) {
 				ownError.set(o.name, figureFullMessage(MAX_FIGURE_OBJECTS));
 				miswritten.add(o.name);
@@ -2984,6 +3019,20 @@ export class Atelier {
 			}
 			this.items[i] = this.build(o.name, wanted, o.definition, o.provenance);
 		});
+	}
+
+	/** Les valeurs qui sont — ou citent — une mesure d'angle (une grandeur). */
+	#angleValues(): Set<string> {
+		const names = new Set(
+			this.items
+				.filter((o) => isValue(o) && hasAngleCall(o.definition, o.provenance ?? 'url'))
+				.map((o) => o.name)
+		);
+		this.spread((name) => {
+			const o = this.get(name);
+			return o !== undefined && isValue(o) && this.#refsOf(o).some((r) => names.has(r.name));
+		}, names);
+		return names;
 	}
 
 	/** Les valeurs `(AB)` restées valeurs faute de place dans la figure (M2). */

@@ -68,10 +68,14 @@ function callEnd(text: string, open: number, latex: boolean): number {
 		}
 		return -1;
 	}
+	// `[AB)` (une demi-droite) ferme une parenthèse qu'il n'a pas ouverte : masqué
+	const scan = text.replace(/\[\s*[A-Za-z](?:_\d+)?\s*[A-Za-z](?:_\d+)?\s*\)/g, (m) =>
+		'#'.repeat(m.length)
+	);
 	let depth = 0;
-	for (let i = open; i < text.length; i++) {
-		if (text[i] === '(') depth++;
-		else if (text[i] === ')' && --depth === 0) return i + 1;
+	for (let i = open; i < scan.length; i++) {
+		if (scan[i] === '(') depth++;
+		else if (scan[i] === ')' && --depth === 0) return i + 1;
 	}
 	return -1;
 }
@@ -202,4 +206,9 @@ export function renamePairs(
 		if ((p !== from && q !== from) || !isPoint(p) || !isPoint(q)) return whole;
 		return `${p === from ? written(a) : a}${q === from ? written(b) : b}`;
 	});
+}
+
+/** Le texte appelle-t-il `angle(…)` (une grandeur, décision de David du 2026-10-18) ? */
+export function hasAngleCall(text: string, provenance: Provenance): boolean {
+	return measureCalls(text, provenance).some((call) => call.word === 'angle');
 }
