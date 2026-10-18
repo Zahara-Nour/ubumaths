@@ -208,3 +208,10 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   (`mesures-angle.test.ts`, 4 de revue et 1 navigateur) ; attentes changées par la décision : `90`
   → `90 °`, `≈ 36,8699` → `≈ 36,8699 °`, `g(x) = angle(…)·x` désormais refusée, `J = angle(…) + 0`
   écrit `+ 0[°]`. **À trancher** : une fonction qui cite un angle est refusée (même `cos(angle(…))·x`).
+- 2026-10-18 : revue de la 2ᵉ passe (angle grandeur), corrections — tests d'abord
+  (`mesures-angle-revue.test.ts`, 27 rouges ; 2 navigateur) : angle exact nommé en radians lu par
+  l'ARBRE (plus par le texte), carte = réponse de Calcul, `W = T + 1` en erreur, refus d'un angle
+  BRUT seulement dans une fonction, grille, `π` lisible, `vrai`/`faux`, puissance d'un angle
+  refusée (choix prudent), aide de `distance` avec le premier argument écrit, ligne de la carte
+  alignée, `\operatorname{aire}` dans le champ. Corrigé au passage : `expandDerivatives`
+  (`engine.ts`) copiait la Map d'unité d'une grandeur en `{}`.

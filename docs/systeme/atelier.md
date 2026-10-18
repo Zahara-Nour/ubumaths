@@ -327,7 +327,15 @@ Décisions de David (2026-10-18) : **un angle est une grandeur** (`(60[°])`, `(
 dans le texte lu par le moteur) — `cos(angle(…))` se calcule, `angle(…) + 1` est refusé par la
 règle des grandeurs, une fonction ou une suite qui cite une mesure d'angle est en erreur (choix
 prudent : « une mesure d'angle est une grandeur… ») ; **« Garder »** une ligne de mesure crée une
-valeur de cette définition (`CalcResult.measure`), qui suit ses points. Revue (2026-10-18) : une mesure se cite aussi
+valeur de cette définition (`CalcResult.measure`), qui suit ses points. Revue (2026-10-18) : le moteur lit l'ARBRE d'une
+définition à mesures (`Atelier.definitionAst`, `measuredAst` : marques `m_90000` remplacées par le
+nœud exact, angles en grandeur) — relue en texte, `(({1/2}\pi)[rad])` passait en LaTeX et ne se
+lisait plus. La carte de valeur affiche ce que Calcul répond quand on tape son nom
+(`valueAnswerOf`, une seule source de vérité) ; une valeur que Calcul refuse (`W = T + 1`) est en
+erreur avec son message (`quantityProblem`) ; une fonction ne refuse qu'un angle BRUT
+(`hasBareAngle` : `cos(angle(…))·x` passe, `T·x` non) ; la grille dit « T est une grandeur (un
+angle) » ; une ligne de mesure écrit `π`, `vrai`/`faux` sans « ≈ », et refuse une puissance d'un
+angle (choix prudent) ; le champ de la carte montre `\operatorname{aire}` (`measureFieldLatex`). Revue (2026-10-18) : une mesure se cite aussi
 dans les nombres d'une construction (`cercle(A ; AM)`) et dans des coordonnées (`G = (aire(B, C, D) ;
 0)`, `engine.substitutedTextOf` → `Atelier.measuredTextOf`) ; `A = (AM ; 0)` est refusé (circulaire) ;
 renommer un point réécrit les `AM` (`renamePairs`, texte et LaTeX) ; un polygone à sommets confondus
