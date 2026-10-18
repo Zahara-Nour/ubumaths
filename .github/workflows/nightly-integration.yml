@@ -133,6 +133,8 @@ on:
       - 'src/routes/api/srs/decks/*/sections/*/*server.ts'
       - 'src/routes/api/srs/review/submit/*server.ts'
       - 'src/routes/api/tests/save/*server.ts'
+      - 'src/routes/api/student/buddy/*server.ts'
+      - 'src/routes/api/student/buddy/change/*server.ts'
       - 'src/routes/api/student/reports/*server.ts'
       - 'src/routes/api/student/worksheets/*server.ts'
       - 'src/routes/api/student/worksheets/*/*server.ts'

@@ -412,6 +412,8 @@ student_buddies
 ├── longest_streak (integer, record)
 ├── last_activity_date (date, for streak calc)
 ├── equipped_skin_id (FK buddy_skins, nullable)
+├── constance_week_start (date, nullable : lundi de la semaine en cours, NULL tant qu'aucune activite)
+├── constance_days_this_week (smallint, defaut 0, contrainte 0..7)
 ├── created_at (timestamptz)
 └── updated_at (timestamptz)
 ```
@@ -423,9 +425,19 @@ avec l'identifiant de l'eleve tire de la SESSION, jamais du corps de la requete 
 (`createStudentBuddy`), changement (`changeStudentPalotin`), serie (`updateStreak`,
 `resetLostStreak` depuis le layout du tableau de bord eleve), themes (`addExploredThemes`,
 `removeExploredThemes`), XP (`add_buddy_xp`). Les fonctions d'ecriture ne recoivent pas le client de
-l'eleve ; les lectures (`getStudentBuddy`, `getClassBuddies`) restent sur son client (sa RLS). Cela
-prepare le retrait des policies INSERT/UPDATE de l'eleve (PR de migration suivante) : apres lui,
-une ecriture restee sur son client rendrait 0 ligne sans erreur.
+l'eleve ; les lectures (`getStudentBuddy`, `getClassBuddies`) restent sur son client (sa RLS).
+
+RLS (migration `20261017090100_palotin_constance_et_ecritures_serveur.sql`) : l'eleve n'a plus
+AUCUNE policy d'ecriture sur `student_buddies` (« Students can create their own buddy » et
+« Students can update their own buddy » retirees ; il n'y a jamais eu de DELETE). Restent les trois
+SELECT : l'eleve sa ligne, le prof ses eleves (`is_my_student`), l'admin (`is_teacher_or_admin`).
+Une ecriture faite au client de l'eleve rend donc 42501 (INSERT) ou 0 ligne sans erreur (UPDATE) :
+toute nouvelle ecriture passe par le client service. Preuve :
+`tests/integration/palotin-ecritures-eleve.test.ts`.
+
+Constance Royale hebdomadaire : `constance_week_start` et `constance_days_this_week` existent en base
+(meme migration), le code qui les remplit vient ensuite. Regle : au moins 3 jours de travail dans la
+semaine.
 
 Lire-modifier-ecrire sans transaction : verrou optimiste sur `updated_at` (trigger
 `student_buddies_updated_at_trigger`). L'ecriture porte `.eq('updated_at', lu)` et `.select()` ;
