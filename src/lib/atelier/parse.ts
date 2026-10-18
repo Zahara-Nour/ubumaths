@@ -15,6 +15,7 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { format as formatUnit } from '$lib/mathAST/units';
+import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import type { MathNode } from '$lib/mathAST/types';
 import {
 	MAX_CATEGORIES,
@@ -132,6 +133,18 @@ export function withPiCommand(text: string): string {
 }
 
 /**
+ * `(2\pi )[m]` : un texte où `π` est devenu `\pi` est lu en LaTeX, qui ne
+ * connaît pas les crochets d'une grandeur (« « [ » inattendu ici ») ; ses
+ * unités y sont écrites `\unit{m}` (grandeur après une expression, 2026-10-18).
+ */
+export function latexUnitsWithPi(text: string): string {
+	if (!text.includes('\\pi')) return text;
+	return text.replace(/(?<=[\w)}])\[([^\]]+)\]/g, (whole, writing: string) =>
+		parseUnit(writing) === null ? whole : `\\unit{${writing}}`
+	);
+}
+
+/**
  * `ln\left(x\right)` → `\ln\left(x\right)`. MathLive écrit ainsi un `ln` tapé
  * lettre à lettre puis une parenthèse : sans l'antislash, le parseur LaTeX lit
  * l·n·(x). L'élève a mis les parenthèses : c'est bien ln de x (revue de V59).
@@ -193,7 +206,7 @@ function parseByProvenance(
 
 	const detected = detectInputFormat(definition);
 	if (detected.format === 'latex' && detected.confidence > 0.5) {
-		return parseLatexSafe(definition, { genericFunctions });
+		return parseLatexSafe(latexUnitsWithPi(definition), { genericFunctions });
 	}
 	const read = parseCustomSafe(definition, { genericFunctions });
 	// `x^-1`, `f(x)^-1`, `e^-x` : le parseur maison exige `x^{-1}`, alors qu'une
