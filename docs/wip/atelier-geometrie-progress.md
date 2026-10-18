@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 CLOS ; lot 2 — PR 1 constructions (#1500), PR 2 mesures (#1506), styles (#1507) mergées ; PR 3 (point_sur, intersections) et PR 4 (.relever) à faire
+status: lot 1 CLOS ; lot 2 — constructions (#1500), mesures (#1506), styles (#1507), point_sur et intersections (#1509) mergés ; PR 4 (.relever) à faire
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -285,3 +285,8 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   attente, pas erreur ; `1/3` glissé réécrit `0,33` ; une position en LaTeX n'a pas de curseur ;
   casts retirés ; le refus « Sépare les arguments… » cite le nombre de l'élève (`0,3`, message
   commun de `construction-read.ts`).
+- 2026-10-19 : **PR 3 (point_sur, intersections) mergée (#1509, `05b2a1aba`)**. Revue : 1 bloquant
+  (figure ≠ carte pour une racine hors de [−10 ; 10] avec un curseur → un seul calcul exact des deux
+  côtés) et 2 importants (angle d'un `point_sur` sur un cercle : degrés toujours, comme L5 ; racine
+  fractionnaire mal écrite) corrigés. Mesuré dans Chromium : ~3 ms par cran (p90 ~5 ms) avec six
+  intersections exactes sur un même curseur. Pas en production.
