@@ -109,8 +109,8 @@
 
 	/** Pourquoi tangente et aire ne s'allument pas encore. */
 	const NOT_PLOTTED = 'Trace d’abord la courbe (👁).';
-	/** Les deux réglages d'affichage du menu, dans leur ordre. */
-	const TOGGLES = ['Tangente', 'Aire sous la courbe'] as const;
+	/** Les réglages d'affichage du menu, dans leur ordre. */
+	const TOGGLES = ['Tangente', 'Aire sous la courbe', 'Lecture graphique'] as const;
 
 	function toggleTangent(on: boolean) {
 		atelier.setDisplay(object.name, tangentToggle(on, graph.viewport));
@@ -312,6 +312,13 @@
 							onCheckedChange={toggleIntegral}
 						>
 							Aire sous la courbe
+						</DropdownMenu.CheckboxItem>
+						<!-- Lot 3 bis : les f(a) de la console et un point glissant, en pointillés -->
+						<DropdownMenu.CheckboxItem
+							checked={display.showReading}
+							onCheckedChange={(on) => atelier.setDisplay(object.name, { showReading: on })}
+						>
+							Lecture graphique
 						</DropdownMenu.CheckboxItem>
 					{/if}
 				</DropdownMenu.Group>

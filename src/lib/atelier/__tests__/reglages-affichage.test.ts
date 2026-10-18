@@ -126,7 +126,8 @@ describe('réglages d’affichage — modification', () => {
 			tangentAt: -1,
 			integral: { from: -2, to: 3 },
 			showOsculating: true,
-			showArcLength: true
+			showArcLength: true,
+			showReading: true
 		});
 
 		expect(result.ok).toBe(true);
@@ -137,7 +138,8 @@ describe('réglages d’affichage — modification', () => {
 			tangentAt: -1,
 			integral: { from: -2, to: 3 },
 			showOsculating: true,
-			showArcLength: true
+			showArcLength: true,
+			showReading: true
 		});
 	});
 
