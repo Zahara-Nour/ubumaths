@@ -11,6 +11,7 @@
 	 * Une courbe jamais tracée n'a pas encore de couleur : la fenêtre propose
 	 * de la tracer, plutôt que des réglages qui ne se verraient nulle part.
 	 */
+	import { tick } from 'svelte';
 	import * as Popover from '$lib/components/ui/popover';
 	import { useAtelier } from '$lib/atelier/context';
 	import type { FunctionObject } from '$lib/atelier/types';
@@ -27,6 +28,7 @@
 		LINE_WIDTHS,
 		type LineStyle
 	} from '$lib/grapheur/types';
+	import { rovingRadioGroup } from './roving-radio-group';
 
 	interface Props {
 		object: FunctionObject;
@@ -55,8 +57,20 @@
 		return value === 'none' ? undefined : value;
 	}
 
-	function plotNow() {
+	/** Les réglages, une fois la courbe tracée : le focus y va après « Tracer ». */
+	let settings = $state<HTMLElement | null>(null);
+
+	async function plotNow() {
 		atelier.setPlotted(object.name, true);
+		// Le bouton « Tracer » disparaît avec sa branche : sans cela, le focus
+		// tomberait sur `body` dans la fenêtre ouverte (revue de #1488). Il va
+		// à la couleur cochée, l'arrêt de tabulation de son groupe.
+		await tick();
+		const colors = settings?.querySelector('[aria-label="Couleur de la courbe"]');
+		const radio =
+			colors?.querySelector<HTMLButtonElement>('button[role="radio"][aria-checked="true"]') ??
+			colors?.querySelector<HTMLButtonElement>('button[role="radio"]');
+		radio?.focus();
 	}
 </script>
 
@@ -84,8 +98,13 @@
 				<button type="button" class="tracer" onclick={plotNow}>Tracer {name}</button>
 			</div>
 		{:else}
-			<div class="reglages">
-				<div class="groupe" role="radiogroup" aria-label="Couleur de la courbe">
+			<div class="reglages" bind:this={settings}>
+				<div
+					class="groupe"
+					role="radiogroup"
+					aria-label="Couleur de la courbe"
+					{@attach rovingRadioGroup}
+				>
 					{#each CURVE_COLORS as color (color)}
 						<button
 							type="button"
@@ -101,7 +120,12 @@
 						></button>
 					{/each}
 				</div>
-				<div class="groupe" role="radiogroup" aria-label="Épaisseur du trait">
+				<div
+					class="groupe"
+					role="radiogroup"
+					aria-label="Épaisseur du trait"
+					{@attach rovingRadioGroup}
+				>
 					{#each LINE_WIDTHS as width (width)}
 						<button
 							type="button"
@@ -126,7 +150,12 @@
 						</button>
 					{/each}
 				</div>
-				<div class="groupe" role="radiogroup" aria-label="Style du trait">
+				<div
+					class="groupe"
+					role="radiogroup"
+					aria-label="Style du trait"
+					{@attach rovingRadioGroup}
+				>
 					{#each LINE_STYLES as style (style)}
 						<button
 							type="button"

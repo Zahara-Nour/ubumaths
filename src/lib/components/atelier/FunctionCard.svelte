@@ -109,6 +109,8 @@
 
 	/** Pourquoi tangente et aire ne s'allument pas encore. */
 	const NOT_PLOTTED = 'Trace d’abord la courbe (👁).';
+	/** Les deux réglages d'affichage du menu, dans leur ordre. */
+	const TOGGLES = ['Tangente', 'Aire sous la courbe'] as const;
 
 	function toggleTangent(on: boolean) {
 		atelier.setDisplay(object.name, tangentToggle(on, graph.viewport));
@@ -271,24 +273,46 @@
 			<DropdownMenu.Content align="end" class="w-60" onCloseAutoFocus={handleCloseAutoFocus}>
 				<DropdownMenu.Group>
 					<DropdownMenu.GroupHeading>Affichage</DropdownMenu.GroupHeading>
-					<DropdownMenu.CheckboxItem
-						checked={display?.tangentAt != null}
-						onCheckedChange={toggleTangent}
-						disabled={display === undefined}
-						title={display === undefined ? NOT_PLOTTED : undefined}
-					>
-						Tangente
-					</DropdownMenu.CheckboxItem>
-					<DropdownMenu.CheckboxItem
-						checked={display?.integral != null}
-						onCheckedChange={toggleIntegral}
-						disabled={display === undefined}
-						title={display === undefined ? NOT_PLOTTED : undefined}
-					>
-						Aire sous la courbe
-					</DropdownMenu.CheckboxItem>
 					{#if display === undefined}
-						<p class="raison-menu">{NOT_PLOTTED}</p>
+						<!--
+							Courbe non tracée : tangente et aire restent dans le menu, atteignables
+							au clavier, annoncées indisponibles avec leur raison (revue de #1488 :
+							un élément `disabled` est sauté, et une raison hors des éléments du
+							menu n'est jamais lue).
+						-->
+						{#each TOGGLES as label (label)}
+							<DropdownMenu.Item class="indisponible" onSelect={(event) => event.preventDefault()}>
+								{#snippet child({ props })}
+									<div
+										{...props}
+										role="menuitemcheckbox"
+										aria-checked="false"
+										aria-disabled="true"
+										aria-label={label}
+										aria-describedby="{uid}-trace-dabord"
+									>
+										<span class="item">
+											<span>{label}</span>
+											<span class="raison">{NOT_PLOTTED}</span>
+										</span>
+									</div>
+								{/snippet}
+							</DropdownMenu.Item>
+						{/each}
+						<span class="sr-only" id="{uid}-trace-dabord">{NOT_PLOTTED}</span>
+					{:else}
+						<DropdownMenu.CheckboxItem
+							checked={display.tangentAt != null}
+							onCheckedChange={toggleTangent}
+						>
+							Tangente
+						</DropdownMenu.CheckboxItem>
+						<DropdownMenu.CheckboxItem
+							checked={display.integral != null}
+							onCheckedChange={toggleIntegral}
+						>
+							Aire sous la courbe
+						</DropdownMenu.CheckboxItem>
 					{/if}
 				</DropdownMenu.Group>
 				<DropdownMenu.Separator />
@@ -298,22 +322,33 @@
 						<!--
 							Jamais `disabled` : un élément désactivé est sauté par le clavier,
 							et sa raison ne serait jamais lue — or c'est elle qui dit à l'élève
-							ce qui lui manque. La raison est DANS l'élément (son nom la
-							contient) ; le choisir ne fait rien. `aria-disabled` est posé par
-							bits-ui lui-même, d'où le marqueur `data-indisponible`.
+							ce qui lui manque. L'élément reste atteignable, s'annonce
+							indisponible (`aria-disabled`, posé APRÈS les props de bits-ui, qui
+							l'écraseraient) et sa raison est sa description ; le choisir ne fait
+							rien.
 						-->
+						{@const unavailable = action.disabledReason !== undefined}
+						{@const reasonId = `${uid}-raison-${action.id.replace(/[^\w-]/g, '-')}`}
 						<DropdownMenu.Item
-							data-indisponible={action.disabledReason !== undefined ? '' : undefined}
-							class={action.disabledReason !== undefined ? 'indisponible' : undefined}
+							class={unavailable ? 'indisponible' : undefined}
 							variant={action.id === 'remove' ? 'destructive' : 'default'}
 							onSelect={(event) => handleSelect(action, event)}
 						>
-							<span class="item">
-								<span>{action.label}</span>
-								{#if action.disabledReason}
-									<span class="raison">{action.disabledReason}</span>
-								{/if}
-							</span>
+							{#snippet child({ props })}
+								<div
+									{...props}
+									aria-disabled={unavailable ? 'true' : undefined}
+									aria-label={unavailable ? action.label : undefined}
+									aria-describedby={unavailable ? reasonId : undefined}
+								>
+									<span class="item">
+										<span>{action.label}</span>
+										{#if action.disabledReason}
+											<span class="raison" id={reasonId}>{action.disabledReason}</span>
+										{/if}
+									</span>
+								</div>
+							{/snippet}
 						</DropdownMenu.Item>
 					{/each}
 				</DropdownMenu.Group>
@@ -486,14 +521,9 @@
 		flex-direction: column;
 		gap: 0.125rem;
 	}
-	.raison,
-	.raison-menu {
+	.raison {
 		font-size: 0.6875rem;
 		color: var(--color-muted-foreground);
-	}
-	.raison-menu {
-		margin: 0;
-		padding: 0 0.75rem 0.375rem 2rem;
 	}
 	:global([data-slot='dropdown-menu-item'].indisponible) {
 		cursor: not-allowed;

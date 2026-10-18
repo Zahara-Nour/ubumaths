@@ -76,8 +76,8 @@ describe('panneau d’objets', () => {
 		const tracer = menuItemOf(menu, 'Tracer');
 
 		// Indisponible, mais pas `disabled` : l'élément reste atteignable au
-		// clavier, donc sa raison peut être lue.
-		expect(tracer.hasAttribute('data-indisponible')).toBe(true);
+		// clavier, s'annonce indisponible, et sa raison peut être lue.
+		expect(tracer.getAttribute('aria-disabled')).toBe('true');
 		expect(tracer.hasAttribute('data-disabled')).toBe(false);
 
 		// Et la raison est ÉCRITE dans l'élément, pas seulement en infobulle
@@ -90,7 +90,7 @@ describe('panneau d’objets', () => {
 		const { container } = await render(WithAtelier, { atelier });
 
 		const menu = await openFunctionMenu(container, 'f');
-		expect(menuItemOf(menu, 'Supprimer').hasAttribute('data-indisponible')).toBe(false);
+		expect(menuItemOf(menu, 'Supprimer').getAttribute('aria-disabled')).not.toBe('true');
 	});
 
 	// §2.1 N3 — « + Fonction » crée un objet nommé, vide, et le sélectionne
