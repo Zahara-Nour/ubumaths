@@ -235,4 +235,21 @@ describe('la vue Géométrie (FigureView)', () => {
 		const view = container.querySelector('.figure') as HTMLElement;
 		expect(view.scrollWidth).toBeLessThanOrEqual(360);
 	});
+
+	it('K4 : 𝒞f est peinte de la couleur de sa carte, et la suit', async () => {
+		const atelier = atelierOf([['function', 'f', 'x^2']]);
+		atelier.setDisplay('f', { color: 'curve-2' });
+		atelier.setInFigure('f', true);
+		const { container } = await render(WithFigure, { atelier });
+		const curve = () => canvasOf(container).querySelector('path.function-curve') as SVGPathElement;
+		await vi.waitFor(() => expect(curve()).toBeTruthy());
+		// Le jeton du Graphe, résolu par le thème (clair ou sombre)
+		expect(curve().style.stroke).toBe('var(--color-curve-2)');
+		const token = getComputedStyle(document.documentElement).getPropertyValue('--color-curve-2');
+		expect(token.trim()).not.toBe('');
+
+		atelier.setDisplay('f', { color: 'curve-3' });
+
+		await vi.waitFor(() => expect(curve().style.stroke).toBe('var(--color-curve-3)'));
+	});
 });

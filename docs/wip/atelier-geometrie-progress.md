@@ -98,3 +98,13 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 - 2026-10-18 : PR 3 vérifiée à l'écran, revue sans point bloquant, CI verte, **mergée (#1482,
   `dc18cb72e`)**. Pas en production. À trancher par David : couleur de 𝒞f dans la vue Géométrie
   (toutes bleues, alors que la carte et le Graphe ont leur couleur).
+
+## K4 — couleur de 𝒞f (2026-10-18)
+
+- Décision de David : 𝒞f prend en Géométrie la couleur de sa carte, comme dans le Graphe.
+  Worktree `../ubumaths-wt-atelier-couleur`. Tests d'abord : 5 node (`figure-couleur.test.ts`,
+  4 rouges) et 1 navigateur (`FigureView.svelte.test.ts`, rouge : `var(--color-fig-bleu)` au
+  lieu de `var(--color-curve-2)`). Fait : `screenColor` peint une `CurveColor` de son jeton ;
+  `syncFigure` pose couleur, pointillés et épaisseur de la carte et les repeint par
+  `updateStyle` sans reconstruire (`restyled`). `dashdot` → tirets (pas d'équivalent dans la
+  figure). Points et courbes par équation inchangés.

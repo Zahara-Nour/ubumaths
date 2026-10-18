@@ -118,7 +118,11 @@ morceau de son ensemble, `domain` à bornes infinies permises), et un curseur **
 conique reclassée à chaque recalcul) et `createImplicitCurve(…, { parameters })` (F liée aux
 valeurs courantes des curseurs par une nouvelle fermeture à chaque recalcul : le cache de
 `marchingSquares`, par fonction, ne rend jamais un ancien tracé). Ni l'un ni l'autre n'est un
-nouveau type : les quatre surfaces de rendu lisent les mêmes champs. `GeometryCanvas` n'affiche
+nouveau type : les quatre surfaces de rendu lisent les mêmes champs. À l'écran, une couleur de
+courbe du grapheur (`curve-1`…`curve-4`) posée en `style.color` se peint de son jeton
+`var(--color-curve-N)` (`screenColor` de `svg-primitives.ts`) : 𝒞f de l'atelier prend ainsi la
+couleur de sa carte (K4) ; les exports TikZ et Typst ne la connaissent pas (couleur par défaut),
+l'atelier n'exporte pas ses figures. `GeometryCanvas` n'affiche
 plus de réglette pour un curseur invisible (y compris après `masque(s)`). Doc :
 [atelier.md](../atelier.md#vues).
 
