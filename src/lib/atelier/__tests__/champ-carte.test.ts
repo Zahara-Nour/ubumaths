@@ -283,8 +283,12 @@ describe('puissance de dix et virgule des fonctions', () => {
 		expect(back).not.toContain('\\cdot');
 	});
 
+	// Une saisie lue en grandeur (`unit` rendu) : sans quoi le test ne prouvait rien (revue)
 	it('un · tapé dans le champ reste un ·', () => {
-		expect(definitionFromField('value', '2\\cdot3\\,m')).not.toContain('\\times');
+		const back = definitionFromField('value', '2\\cdot 3\\,m');
+		expect(parseDefinition('value', back, 'keyboard')).toEqual({ unit: 'm' });
+		expect(back).toContain('\\cdot');
+		expect(back).not.toContain('\\times');
 	});
 
 	// Revue : le dernier recours ne fait une unité que si la relecture en rend une

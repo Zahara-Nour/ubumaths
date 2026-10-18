@@ -47,6 +47,23 @@ describe('une valeur mal dimensionnée est en erreur', () => {
 		expect(statusOf(s, 'c').status).toBe('error');
 	});
 
+	// Revue : le message dépendait de l'ordre de création
+	it('ce qui en dépend désigne la valeur fautive, quel que soit l’ordre', () => {
+		const before = session('b = 3[min] + 2[km]', 'c = 2b');
+		const after = session('c = 2b', 'b = 3[min] + 2[km]');
+		for (const s of [before, after]) {
+			expect(statusOf(s, 'c')).toEqual({
+				status: 'error',
+				message: 'Dépend de « b », qui est en erreur.'
+			});
+		}
+	});
+
+	it('une fonction qui cite la valeur fautive est en erreur', () => {
+		const s = session('b = 3[min] + 2[km]', 'f(x) = b x');
+		expect(statusOf(s, 'f').status).toBe('error');
+	});
+
 	it('se répare quand la valeur citée change', () => {
 		const s = session('r = 3[s]', 'd = r + 2[m]');
 		runInput(s, 'r = 3[m]');
