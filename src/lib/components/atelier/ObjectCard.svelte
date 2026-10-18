@@ -284,7 +284,9 @@
 		<button type="button" class="entete" onclick={handleHeaderClick}>
 			<span class="nom">{displayName(object.name)}</span>
 			{#if separator}
-				<span class="signe" aria-hidden="true">{separator}</span>
+				<!-- Lu, pas affiché : la carte se lit comme celle d'une fonction — le nom,
+				     puis l'équation ou les coordonnées (revue de la PR 2 de la géométrie) -->
+				<span class="signe sr-only">{separator}</span>
 			{/if}
 			<span class="definition">
 				{#if rendered}

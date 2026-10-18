@@ -1393,10 +1393,9 @@ export class Atelier {
 	}
 
 	// ---------------------------------------------------------------------------
-	// Diagrammes des listes (vue Données)
+	// Repère de la vue Figure
 	// ---------------------------------------------------------------------------
 
-	/** Le diagramme affiché sous cette liste, s'il y en a un. */
 	/** Le repère de la vue Figure est-il affiché ? (F3) */
 	get figureFrame(): boolean {
 		return this.#figureFrame;
@@ -1407,6 +1406,11 @@ export class Atelier {
 		this.#figureFrame = shown;
 	}
 
+	// ---------------------------------------------------------------------------
+	// Diagrammes des listes (vue Données)
+	// ---------------------------------------------------------------------------
+
+	/** Le diagramme affiché sous cette liste, s'il y en a un. */
 	chartOf(name: string): ListChartState | undefined {
 		const chart = this.charts.get(name);
 		if (chart?.kind === undefined) return chart;

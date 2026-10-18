@@ -299,27 +299,39 @@ function normalizeAngle(angle: number): number {
 export type DegenerateConicKind = 'empty' | 'point' | 'line' | 'lines';
 
 /**
+ * L'ensemble des points d'une conique dégénérée, de quoi le DESSINER : le point
+ * isolé, la droite double `a·x + b·y = c` ; deux droites et le vide n'ont pas
+ * de géométrie ici (deux droites se tracent par le marching squares).
+ */
+export type DegenerateConic =
+	| { readonly kind: 'empty' }
+	| { readonly kind: 'point'; readonly x: number; readonly y: number }
+	| { readonly kind: 'line'; readonly a: number; readonly b: number; readonly c: number }
+	| { readonly kind: 'lines' };
+
+/**
  * Séparer les coniques que `classifyConic` dit seulement « dégénérées »
  * (géométrie v2 de l'atelier, C6 : `x² + y² = −1` est VIDE, et la carte le
  * constate). `null` si la conique ne l'est pas.
  *
  * - discriminant < 0 (forme définie) : valeur au centre de même signe que A →
- *   vide, nulle → point isolé ;
+ *   vide, nulle → point isolé (le centre) ;
  * - discriminant > 0 et det(M) = 0 : deux droites sécantes ;
  * - discriminant = 0 et det(M) = 0 : après rotation, a·u² + d·u + f = 0 —
- *   vide, une droite (double) ou deux droites parallèles selon d² − 4af.
+ *   vide, une droite double (u = −d / 2a) ou deux droites parallèles selon
+ *   d² − 4af.
  *
  * Les coefficients tout du premier degré (A = B = C = 0) ne sont pas une
  * conique : à l'appelant de lire une droite.
  */
-export function degenerateConicKind(
+export function degenerateConic(
 	A: number,
 	B: number,
 	C: number,
 	D: number,
 	E: number,
 	F: number
-): DegenerateConicKind | null {
+): DegenerateConic | null {
 	if (classifyConic(A, B, C, D, E, F).type !== 'degenerate') return null;
 	const disc = B * B - 4 * A * C;
 
@@ -329,11 +341,11 @@ export function degenerateConicKind(
 		const cx = (B * E - 2 * C * D) / denom;
 		const cy = (B * D - 2 * A * E) / denom;
 		const atCenter = F + (D * cx + E * cy) / 2;
-		if (near0(atCenter)) return 'point';
 		// La forme a le signe de A : de même signe au centre, elle ne s'annule jamais
-		return Math.sign(atCenter) === Math.sign(A) ? 'empty' : 'point';
+		if (!near0(atCenter) && Math.sign(atCenter) === Math.sign(A)) return { kind: 'empty' };
+		return { kind: 'point', x: cx, y: cy };
 	}
-	if (!near0(disc)) return 'lines';
+	if (!near0(disc)) return { kind: 'lines' };
 
 	// Parabolique : une seule direction quadratique, u le long de l'axe de la forme
 	let theta: number;
@@ -346,8 +358,27 @@ export function degenerateConicKind(
 	const C2 = A * sin * sin - B * cos * sin + C * cos * cos;
 	const D2 = D * cos + E * sin;
 	const E2 = -D * sin + E * cos;
-	const [a, d] = near0(C2) ? [A2, D2] : [C2, E2];
+	// u = x·cos + y·sin quand la direction quadratique est la première, sinon −x·sin + y·cos
+	const alongFirst = near0(C2);
+	const [a, d] = alongFirst ? [A2, D2] : [C2, E2];
 	const delta = d * d - 4 * a * F;
-	if (near0(delta)) return 'line';
-	return delta > 0 ? 'lines' : 'empty';
+	if (near0(delta)) {
+		const u0 = -d / (2 * a);
+		return alongFirst
+			? { kind: 'line', a: cos, b: sin, c: u0 }
+			: { kind: 'line', a: -sin, b: cos, c: u0 };
+	}
+	return delta > 0 ? { kind: 'lines' } : { kind: 'empty' };
+}
+
+/** La seule SORTE de `degenerateConic` (vide, point, droite double, deux droites), ou `null`. */
+export function degenerateConicKind(
+	A: number,
+	B: number,
+	C: number,
+	D: number,
+	E: number,
+	F: number
+): DegenerateConicKind | null {
+	return degenerateConic(A, B, C, D, E, F)?.kind ?? null;
 }

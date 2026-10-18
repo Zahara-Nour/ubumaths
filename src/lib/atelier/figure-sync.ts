@@ -17,7 +17,15 @@
  * tels quels à la figure. Et `courbe()` ne sait pas suivre un curseur dans une
  * conique (mesuré : `courbe("x^2 + y^2 = a^2")` rend une conique dégénérée,
  * `a` y vaut 0) ; l'API, si (`parameterRecipe`). La CLASSIFICATION, elle, est
- * la même que celle de `courbe()` : `curveShapeOf` (`geometry/curve-nature.ts`).
+ * celle de `courbe()` : `curveShapeOf` (`geometry/curve-nature.ts`), lue d'abord
+ * sur l'équation TELLE QU'ÉCRITE (`y = 1/x` reste une courbe y = f(x)) ; l'équation
+ * développée ne sert que si l'écrite ne donne qu'une courbe implicite
+ * (`(x − 1)² + (y − 2)² = 4`, un cercle) ou si elle révèle une droite (la tangente
+ * `y = 4(x − 2) + 4`).
+ *
+ * Ce que l'équation décrit est DESSINÉ, même dégénéré (l'atelier constate, il
+ * montre l'ensemble des solutions) : le point isolé de `x² + y² = 0`, la droite
+ * double de `x² = 0`, les deux droites de `x² = 4` ; seul le vide ne dessine rien.
  *
  * ## Les curseurs partagés (S1, S2, S4)
  *
@@ -42,9 +50,13 @@ import { differentiate } from '$lib/mathAST/differentiation';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { Figure } from '$lib/geometry-core/graph/figure';
 import type { CurveParameter } from '$lib/geometry-core/types/elements';
-import { exact, type ScalarParam } from '$lib/geometry-core/types/geo-value';
+import { exact, numeric, type ScalarParam } from '$lib/geometry-core/types/geo-value';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { classifyConic, degenerateConicKind } from '$lib/geometry-core/geometry/conic-classify';
+import {
+	classifyConic,
+	degenerateConic,
+	type DegenerateConic
+} from '$lib/geometry-core/geometry/conic-classify';
 import {
 	conicCoefficientNodes,
 	conicCoefficients,
@@ -74,6 +86,13 @@ interface WantedSlider {
 	readonly value: number;
 	readonly min: number;
 	readonly max: number;
+	/**
+	 * La valeur sort des bornes de la carte (au-delà de ±10⁹, que la carte ne
+	 * dépasse pas : `widenedSlider`). La figure la ramènerait dans les bornes —
+	 * elle montrerait 10⁹ pour 10¹⁰ — et chaque passage la « bougerait » encore :
+	 * ce qui la cite n'est pas dessiné, comme un objet en attente.
+	 */
+	readonly outOfRange: boolean;
 }
 
 /** Un point à dessiner : ses deux coordonnées, curseurs gardés en lettres. */
@@ -84,11 +103,14 @@ interface WantedPoint {
 	readonly y: MathNode;
 }
 
-/** Une courbe à dessiner : F(x, y) = 0, développée, curseurs gardés en lettres. */
+/** Une courbe à dessiner : F(x, y) = 0, écrite et développée, curseurs gardés en lettres. */
 interface WantedCurve {
 	readonly kind: 'curve';
 	readonly name: string;
 	readonly equation: string;
+	/** F telle qu'écrite (gauche − droite) : la forme se lit d'abord sur elle. */
+	readonly raw: MathNode;
+	/** F développée et réduite. */
 	readonly F: MathNode;
 }
 
@@ -181,6 +203,7 @@ export class AtelierFigure {
 		for (const object of plan.objects) {
 			// Une courbe que la figure refuse (compilation impossible) n'est pas
 			// dessinée : sa carte, elle, reste ce qu'elle est (F5)
+			const before = new Set(figure.getAllElements().map((el) => el.id));
 			try {
 				const id =
 					object.kind === 'point'
@@ -188,7 +211,13 @@ export class AtelierFigure {
 						: poseCurve(figure, object, sliders);
 				if (id !== null) elements.set(object.name, id);
 			} catch {
-				continue;
+				// Les aides déjà posées (calculs cachés, points d'une droite) s'en vont
+				// avec l'objet : rien de lui ne reste dans la figure
+				for (const el of figure.getAllElements()) {
+					if (!before.has(el.id) && figure.getElementById(el.id) !== undefined) {
+						figure.remove(el.id);
+					}
+				}
 			}
 		}
 		this.#figure = figure;
@@ -224,7 +253,8 @@ function slidersOf(atelier: Atelier): Map<string, WantedSlider> {
 		}
 		const value = constantOf(o.definition, o.provenance, atelier.functionNames);
 		if (value === null) continue;
-		sliders.set(o.name, { name: o.name, value, min: o.slider.min, max: o.slider.max });
+		const { min, max } = o.slider;
+		sliders.set(o.name, { name: o.name, value, min, max, outOfRange: value < min || value > max });
 	}
 	return sliders;
 }
@@ -239,9 +269,11 @@ function planOf(atelier: Atelier): FigurePlan {
 		if (!isFigureObject(object) || object.status !== 'ok') continue;
 		const wanted = wantedOf(atelier, object, keep);
 		if (wanted === null) continue;
+		const trees = wanted.kind === 'point' ? [wanted.x, wanted.y] : [wanted.raw, wanted.F];
+		const names = new Set(trees.flatMap((tree) => [...getVariables(tree)]));
+		if ([...names].some((name) => sliders.get(name)?.outOfRange === true)) continue;
 		objects.push(wanted);
-		const trees = wanted.kind === 'point' ? [wanted.x, wanted.y] : [wanted.F];
-		for (const tree of trees) for (const name of getVariables(tree)) cited.add(name);
+		for (const name of names) cited.add(name);
 	}
 	// Seuls les curseurs CITÉS entrent dans la figure (et dans son empreinte)
 	return { sliders: [...sliders.values()].filter((s) => cited.has(s.name)), objects };
@@ -263,12 +295,13 @@ function wantedOf(
 	}
 	const substituted = substitutedAstOf(atelier, object.name, { keepNames: keep });
 	if (!substituted.ok) return null;
+	const raw = equationExpression(substituted.ast);
 	return {
 		kind: 'curve',
 		name: object.name,
 		equation: object.definition,
-		// Développée : `y = 4(x − 2) + 4` est une droite, `(x − 1)² + (y − 2)² = 4` un cercle
-		F: expandedEquation(equationExpression(substituted.ast))
+		raw,
+		F: expandedEquation(raw)
 	};
 }
 
@@ -355,7 +388,12 @@ function poseCurve(
 	curve: WantedCurve,
 	sliders: ReadonlyMap<string, string>
 ): string | null {
-	const shape = curveShapeOf(curve.F);
+	// L'écrite d'abord, comme `courbe()` : développée, `y = 1/x` devenait implicite
+	const written = curveShapeOf(curve.raw);
+	const expanded = curveShapeOf(curve.F);
+	const useExpanded =
+		written.kind === 'implicit' || (written.kind === 'function' && expanded.kind === 'line');
+	const shape = useExpanded ? expanded : written;
 	if (shape.kind === 'line') return poseLine(figure, curve, shape, sliders);
 	if (shape.kind === 'function') {
 		// g = 0 : y n'est pas dans l'équation (`x² = 4`) — ce n'est pas y = f(x)
@@ -465,29 +503,118 @@ function poseOther(
 	const label = displayName(curve.name);
 	const parameters = parametersOf([curve.F], sliders);
 	if (shape.kind === 'quadratic') {
-		if (parameters.length > 0) {
-			const compiled: CompiledFn[] = conicCoefficientNodes(shape).map((node) =>
-				node === undefined ? () => 0 : compile(node)
-			);
-			// Une conique de départ quelconque : `createQuadraticCurve` la recalcule aussitôt
-			const zero: [number, number, number, number, number, number] = [0, 0, 0, 0, 0, 0];
-			return figure.createQuadraticCurve(curve.F, curve.equation, zero, classifyConic(...zero), {
-				label,
-				parameterRecipe: { coefficients: compiled, parameters }
-			});
-		}
+		if (parameters.length > 0) return poseParametricConic(figure, curve, shape, parameters);
 		const coefficients = conicCoefficients(shape);
 		if (coefficients === null) return null;
 		const conic = classifyConic(...coefficients);
 		if (conic.type !== 'degenerate') {
 			return figure.createQuadraticCurve(curve.F, curve.equation, coefficients, conic, { label });
 		}
+		const set = degenerateConic(...coefficients);
+		if (set?.kind === 'point') {
+			return figure.createFreePoint(
+				{ x: numeric(set.x), y: numeric(set.y) },
+				{ label, draggable: false }
+			);
+		}
+		if (set?.kind === 'line') {
+			const [p, q] = pointsOfLine(set.a, set.b, set.c);
+			const first = figure.createFreePoint(
+				{ x: numeric(p[0]), y: numeric(p[1]) },
+				{ visible: false, draggable: false }
+			);
+			const second = figure.createFreePoint(
+				{ x: numeric(q[0]), y: numeric(q[1]) },
+				{ visible: false, draggable: false }
+			);
+			return figure.createLine(first, second, { label });
+		}
 		// Deux droites (x² = 4) : la conique dégénérée ne se dessine pas, le
-		// marching squares si. Vide, point isolé, droite double : rien (la carte le dit)
-		if (degenerateConicKind(...coefficients) !== 'lines') return null;
+		// marching squares si. Le vide ne dessine rien (la carte le dit)
+		if (set?.kind !== 'lines') return null;
 	}
 	return figure.createImplicitCurve(curve.F, compile(curve.F), curve.equation, {
 		label,
 		parameters
 	});
+}
+
+/** Deux points de la droite a·x + b·y = c : le pied de la perpendiculaire depuis O, et un pas le long. */
+function pointsOfLine(a: number, b: number, c: number): [[number, number], [number, number]] {
+	const norm = a * a + b * b;
+	const foot: [number, number] = [(a * c) / norm, (b * c) / norm];
+	return [foot, [foot[0] - b, foot[1] + a]];
+}
+
+/**
+ * Une conique dont les coefficients suivent des curseurs : sa SORTE peut changer
+ * au glisser (`x² = a` : deux droites, une droite double à a = 0, rien pour
+ * a < 0). Quatre éléments, au plus un dessiné à la fois : la conique
+ * (`parameterRecipe`), le point isolé, la droite double, et deux droites par
+ * une courbe implicite — chacun rend NaN (ou n'a pas de zéro) hors de sa sorte.
+ * Rend l'id de la conique.
+ */
+function poseParametricConic(
+	figure: Figure,
+	curve: WantedCurve,
+	shape: QuadraticShape,
+	parameters: readonly CurveParameter[]
+): string {
+	const label = displayName(curve.name);
+	const compiled: CompiledFn[] = conicCoefficientNodes(shape).map((node) =>
+		node === undefined ? () => 0 : compile(node)
+	);
+	const degenerateAt = (env: Record<string, number>): DegenerateConic | null => {
+		const values = compiled.map((fn) => fn(env));
+		if (values.some((v) => !Number.isFinite(v))) return null;
+		const [A, B, C, D, E, F] = values;
+		return degenerateConic(A, B, C, D, E, F);
+	};
+	// Une conique de départ quelconque : `createQuadraticCurve` la recalcule aussitôt
+	const zero: [number, number, number, number, number, number] = [0, 0, 0, 0, 0, 0];
+	const conicId = figure.createQuadraticCurve(
+		curve.F,
+		curve.equation,
+		zero,
+		classifyConic(...zero),
+		{
+			label,
+			parameterRecipe: { coefficients: compiled, parameters }
+		}
+	);
+
+	const scalar = (pick: (set: DegenerateConic | null) => number): ScalarParam => ({
+		scalarRef: figure.createScalarExpression(
+			scalarCompute((env) => pick(degenerateAt(env)), parameters),
+			sliderIds(parameters)
+		)
+	});
+	// Le point isolé
+	figure.createComputedPoint(
+		scalar((set) => (set?.kind === 'point' ? set.x : NaN)),
+		scalar((set) => (set?.kind === 'point' ? set.y : NaN)),
+		{ label }
+	);
+	// La droite double
+	const along = (index: 0 | 1, axis: 0 | 1) =>
+		scalar((set) => (set?.kind === 'line' ? pointsOfLine(set.a, set.b, set.c)[index][axis] : NaN));
+	const first = figure.createComputedPoint(along(0, 0), along(0, 1), { visible: false });
+	const second = figure.createComputedPoint(along(1, 0), along(1, 1), { visible: false });
+	figure.createLine(first, second, { label });
+	// Deux droites : F seulement quand la conique en est deux, sinon une
+	// constante sans zéro (le marching squares ne trace rien). La sorte se
+	// recalcule quand les curseurs changent, pas à chaque point de la grille
+	const F = compile(curve.F);
+	let lastKey = '';
+	let lines = false;
+	const gated: CompiledFn = (env) => {
+		const key = parameters.map(({ name }) => env[name]).join(';');
+		if (key !== lastKey) {
+			lastKey = key;
+			lines = degenerateAt(env)?.kind === 'lines';
+		}
+		return lines ? F(env) : 1;
+	};
+	figure.createImplicitCurve(curve.F, gated, curve.equation, { label, parameters });
+	return conicId;
 }

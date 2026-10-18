@@ -26,17 +26,20 @@
 	// La figure se refait depuis l'atelier : elle appartient à la vue, pas au modèle
 	const projection = new AtelierFigure();
 
-	/**
-	 * La figure en accord avec l'atelier, à chaque révision. `syncFigure` est
-	 * idempotente et n'écrit dans aucun état réactif (seulement dans
-	 * `projection`, un objet ordinaire) : un `$derived` suffit, sans effet.
-	 * Glisser un curseur ne refait pas la figure (`moveSlider`) : `changes`
-	 * avance, et la toile se redessine.
-	 */
-	const synced = $derived.by(() => {
+	syncFigure(atelier, projection);
+
+	/** La figure montrée, et son numéro de version pour la toile. */
+	let synced = $state.raw({ figure: projection.figure, version: projection.changes });
+
+	// Comme `syncPlots` dans `AtelierContainer` : l'effet synchronise à chaque
+	// révision. Il n'écrit `synced` que si la figure a changé, et ne lit pas ce
+	// qu'il écrit ; `syncFigure` est idempotente — l'effet ne boucle pas. Glisser
+	// un curseur ne refait pas la figure (`moveSlider`) : `changes` avance, et la
+	// toile se redessine
+	$effect(() => {
 		void atelier.revision;
-		syncFigure(atelier, projection);
-		return { figure: projection.figure, version: projection.changes };
+		if (syncFigure(atelier, projection) === 'unchanged') return;
+		synced = { figure: projection.figure, version: projection.changes };
 	});
 
 	/** La taille de la toile, mesurée : elle suit la largeur de l'écran (téléphone). */

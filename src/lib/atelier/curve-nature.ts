@@ -44,8 +44,7 @@ const LABELS: Record<CurveNature, CurveNatureReading> = {
 	parabola: { label: 'parabole' },
 	hyperbola: { label: 'hyperbole' },
 	lines: { label: 'deux droites' },
-	// Le type reste « courbe » : « point » se lirait comme un objet point
-	point: { label: 'courbe', note: SINGLE_POINT_CURVE },
+	point: { label: 'point', note: SINGLE_POINT_CURVE },
 	empty: { label: 'courbe', note: EMPTY_CURVE },
 	curve: { label: 'courbe' }
 };
