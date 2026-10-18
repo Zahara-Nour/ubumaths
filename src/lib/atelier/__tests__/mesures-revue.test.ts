@@ -104,12 +104,9 @@ describe('revue 2 : une mesure approchée ne devient pas une fraction exacte', (
 	});
 
 	it('g(x) = cos(angle(B, A, C))·x puis g(1) : ≈ décimal', () => {
-		// Décision de David (2026-10-18) : un angle est une grandeur ; une fonction n'en
-		// prend pas (choix prudent, `mesures-angle.test.ts`) — on passe par son cosinus
 		const s = plane();
-		runInput(s, 'T = angle(B, A, C)');
-		runInput(s, 'k = cos(T)');
-		expect(answer(runInput(s, 'k'))).toBe('≈ 0,8');
+		runInput(s, 'g(x) = cos(angle(B, A, C))*x');
+		expect(answer(runInput(s, 'g(1)'))).toBe('≈ 0,8');
 	});
 
 	it('J = angle(B, A, C) + 0 puis J : ≈ décimal', () => {

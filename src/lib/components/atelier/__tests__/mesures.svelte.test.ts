@@ -7,6 +7,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { tick } from 'svelte';
+import { userEvent } from 'vitest/browser';
+import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
 import WithAtelier from './harness/WithAtelier.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
@@ -124,5 +126,37 @@ describe('réglage « Angles » : degrés ou radians', () => {
 		degrees?.click();
 		await settle();
 		expect(localStorage.getItem('chiphre-atelier-angles')).toBe('deg');
+	});
+});
+
+describe('revue : la carte d’une mesure nommée, à l’écran', () => {
+	it('la ligne de la valeur est alignée sous le nom, pas collée au bord', async () => {
+		const atelier = rectangle();
+		atelier.create({ kind: 'value', name: 'S', definition: 'aire(A, B, C)' }, 'text');
+		const { container } = await render(WithAtelier, { atelier });
+		const card = cardFor(container, 'S');
+		const line = card.querySelector('.mesure') as HTMLElement;
+		const name = card.querySelector('.nom') as HTMLElement;
+		expect(line.getBoundingClientRect().left).toBeGreaterThanOrEqual(
+			name.getBoundingClientRect().left
+		);
+	});
+
+	it('le champ montre \\operatorname{aire} ; une modification relit la mesure', async () => {
+		const atelier = rectangle();
+		atelier.create({ kind: 'value', name: 'S', definition: 'aire(A, B, C)' }, 'text');
+		const { container } = await render(WithAtelier, { atelier });
+		const field = cardFor(container, 'S').querySelector('math-field') as MathfieldElement;
+		expect(field.value).toContain('\\operatorname{aire}');
+		await userEvent.click(field);
+		await vi.waitFor(() => expect(document.activeElement).toBe(field));
+		await userEvent.keyboard('{End}+1{Enter}');
+		await vi.waitFor(() => expect(atelier.get('S')?.definition).toContain('+1'));
+		expect(atelier.get('S')?.status).toBe('ok');
+		await vi.waitFor(() =>
+			expect(cardFor(container, 'S').querySelector('.mesure .sr-only')?.textContent?.trim()).toBe(
+				'7'
+			)
+		);
 	});
 });

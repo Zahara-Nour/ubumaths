@@ -84,7 +84,7 @@ describe('angle : une grandeur en degrés, par défaut', () => {
 		const s = plane();
 		expect(answer(runInput(s, '2*angle(B, A, D)'))).toBe('180 °');
 		expect(answer(runInput(s, 'angle(B, A, F) + angle(B, A, F)'))).toBe('90 °');
-		expect(answer(runInput(s, 'angle(B, A, F) < 90[°]'))).toBe('true');
+		expect(answer(runInput(s, 'angle(B, A, F) < 90[°]'))).toBe('vrai');
 	});
 
 	it('angle + 1 est refusé par la règle des grandeurs', () => {
