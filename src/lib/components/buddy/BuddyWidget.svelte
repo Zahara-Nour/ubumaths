@@ -18,6 +18,9 @@
 	import { displayedConstance, utcDay } from '$lib/utils/buddy-constance';
 	import { nappingPhrase } from '$lib/mathoux/collection-logic';
 	import { mathouxSummarySchema } from '$lib/mathoux/summary';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
+	import { BUBBLE_DURATION, GREETING_DELAY, LINK_BUBBLE_DURATION } from './buddy-timing';
 
 	interface Props {
 		streakLost?: boolean;
@@ -37,8 +40,7 @@
 	// Lien sous la réplique : seulement pour l'annonce des Mathoux en sieste
 	let currentLink = $state<{ href: string; label: string } | null>(null);
 	let bubbleTimer: ReturnType<typeof setTimeout> | null = null;
-	// Les Mathoux en sieste ont été annoncés : la salutation au hasard se tait
-	let nappingAnnounced = false;
+	let greetingTimer: ReturnType<typeof setTimeout> | null = null;
 	let nappingTimer: ReturnType<typeof setTimeout> | null = null;
 
 	// Status panel
@@ -48,10 +50,7 @@
 	let idleTimer: ReturnType<typeof setTimeout> | null = null;
 	const IDLE_INTERVAL_MIN = 45_000; // 45s
 	const IDLE_INTERVAL_MAX = 90_000; // 90s
-	const BUBBLE_DURATION = 5_000; // 5s
-	// Une réplique avec un lien reste plus longtemps : le temps de le suivre
-	const LINK_BUBBLE_DURATION = 10_000;
-	const CHATTERIE_HREF = '/dashboard/student/chatterie';
+	const CHATTERIE_HREF = resolve('/dashboard/student/chatterie');
 
 	/**
 	 * Show a message in the speech bubble.
@@ -83,7 +82,7 @@
 		currentLink = link;
 		bubbleVisible = true;
 
-		// Auto-hide after duration
+		// Masquage automatique après la durée de la bulle
 		if (bubbleTimer) clearTimeout(bubbleTimer);
 		bubbleTimer = setTimeout(
 			() => {
@@ -94,38 +93,54 @@
 			link ? LINK_BUBBLE_DURATION : BUBBLE_DURATION
 		);
 
-		// Reset idle timer
+		// Relance le minuteur de la réplique au hasard
 		scheduleIdleMessage();
 	}
 
 	/**
-	 * Le Palotin, gardien de la Chatterie : annonce les Mathoux en sieste.
+	 * Nombre de Mathoux en sieste, 0 si la réponse est en échec ou inattendue.
 	 *
 	 * Demandé APRÈS l'affichage, une fois par montage du widget : le calcul de
-	 * la collection (~6 requêtes) n'alourdit pas le layout de chaque page. Une
-	 * réponse en échec ou inattendue ne fait rien dire au Palotin.
+	 * la collection n'alourdit pas le layout de chaque page.
 	 */
-	async function announceNappingMathoux(delay: number) {
-		let napping = 0;
+	async function fetchNappingCount(): Promise<number> {
 		try {
 			const response = await fetch('/api/student/mathoux');
-			if (!response.ok) return;
+			if (!response.ok) return 0;
 			const parsed = mathouxSummarySchema.safeParse(await response.json());
-			if (!parsed.success) return;
-			napping = parsed.data.napping;
+			return parsed.success ? parsed.data.napping : 0;
 		} catch {
+			return 0;
+		}
+	}
+
+	/**
+	 * Le Palotin, gardien de la Chatterie : annonce les Mathoux en sieste, sinon
+	 * salue. La salutation attend la réponse : arrivée tard, l'annonce aurait
+	 * sinon été précédée d'une salutation qu'elle aurait coupée.
+	 */
+	async function greetOrAnnounceNapping(mountedAt: number, afterStreakLost: boolean) {
+		const napping = await fetchNappingCount();
+		if (!buddy) return;
+		// Après une Constance perdue, sa bulle passe d'abord, et pas de salutation
+		const minDelay = afterStreakLost ? 1000 + BUBBLE_DURATION : GREETING_DELAY;
+		const wait = Math.max(0, minDelay - (Date.now() - mountedAt));
+		if (napping === 0) {
+			if (afterStreakLost) return;
+			greetingTimer = setTimeout(() => showMessage('idle'), wait);
 			return;
 		}
-		if (napping === 0) return;
-
-		nappingAnnounced = true;
 		nappingTimer = setTimeout(() => {
-			if (!buddy) return;
 			speak(`${nappingPhrase(napping)}.`, 'thinking', {
 				href: CHATTERIE_HREF,
 				label: 'Aller à la Chatterie'
 			});
-		}, delay);
+		}, wait);
+	}
+
+	/** Sur la Chatterie elle-même, l'annonce n'a pas lieu d'être (et la page a déjà calculé). */
+	function isOnChatterie(): boolean {
+		return page.url.pathname.startsWith(CHATTERIE_HREF);
 	}
 
 	function scheduleIdleMessage() {
@@ -155,18 +170,14 @@
 	}
 
 	onMount(() => {
-		// Show onboarding or streak lost message on mount
+		// Au montage : la Constance perdue, sinon les Mathoux en sieste, sinon une salutation
 		if (buddy) {
-			if (streakLost) {
-				setTimeout(() => showMessage('streak_lost'), 1000);
-			} else {
-				// Random chance of greeting on mount (sauf si les Mathoux en sieste sont annoncés)
-				setTimeout(() => {
-					if (!nappingAnnounced) showMessage('idle');
-				}, 2000);
+			if (streakLost) setTimeout(() => showMessage('streak_lost'), 1000);
+			if (!isOnChatterie()) {
+				void greetOrAnnounceNapping(Date.now(), streakLost);
+			} else if (!streakLost) {
+				greetingTimer = setTimeout(() => showMessage('idle'), GREETING_DELAY);
 			}
-			// La Constance perdue parle d'abord ; les Mathoux après sa bulle
-			void announceNappingMathoux(streakLost ? 1000 + BUBBLE_DURATION : 500);
 		}
 
 		scheduleIdleMessage();
@@ -175,6 +186,7 @@
 			if (bubbleTimer) clearTimeout(bubbleTimer);
 			if (idleTimer) clearTimeout(idleTimer);
 			if (nappingTimer) clearTimeout(nappingTimer);
+			if (greetingTimer) clearTimeout(greetingTimer);
 		};
 	});
 </script>

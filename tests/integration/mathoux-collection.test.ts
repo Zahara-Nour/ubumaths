@@ -77,6 +77,8 @@ let eleveTleId: string;
 let notionFractions: string;
 /** Notion « Vecteurs » : p3 seul. */
 let notionVecteurs: string;
+/** Notion « Brouillons » : p5, tagué par un modèle en brouillon seulement. */
+let notionBrouillons: string;
 const templates: Record<string, string> = {};
 const pointIds: Record<string, string> = {};
 
@@ -193,22 +195,34 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		notionFractions = await insertNode('notion', 'Fractions', branche);
 		notionVecteurs = await insertNode('notion', 'Vecteurs', branche);
 		const sousNotion = await insertNode('subnotion', 'Somme', notionFractions);
+		notionBrouillons = await insertNode('notion', 'Brouillons', branche);
 
 		pointIds.p1 = await insertPoint('p1', notionFractions);
 		pointIds.p2 = await insertPoint('p2', sousNotion);
 		pointIds.p3 = await insertPoint('p3', notionVecteurs);
 		// Point de Tle spé sur la même notion : hors parcours d'un élève de 1re spé
 		pointIds.p4 = await insertPoint('p4', notionVecteurs, GRADE_TLE);
+		pointIds.p5 = await insertPoint('p5', notionBrouillons);
 
 		const nodeOf: Record<string, string> = {
 			p1: notionFractions,
 			p2: sousNotion,
 			p3: notionVecteurs,
-			p4: notionVecteurs
+			p4: notionVecteurs,
+			p5: notionBrouillons
 		};
-		for (const label of ['p1', 'p2', 'p3', 'p4']) {
+		for (const label of ['p1', 'p2', 'p3', 'p4', 'p5']) {
 			templates[label] = await createFakeTemplate(service, eleveAId);
 			await tag(templates[label], pointIds[label], nodeOf[label]);
+		}
+		// Le modèle de p5 repasse en brouillon : p5 n'est plus travaillable
+		const brouillon = await service
+			.from('question_templates')
+			.update({ status: 'draft' })
+			.eq('id', templates.p5)
+			.select('id');
+		if (brouillon.error || brouillon.data?.length !== 1) {
+			throw new Error(`décor : brouillon : ${brouillon.error?.message}`);
 		}
 	});
 
@@ -255,6 +269,11 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		expect(mathouOf(collection, notionVecteurs)?.growth).toBe('a_decouvrir');
 		// La sous-notion compte pour sa notion
 		expect(mathouOf(collection, notionFractions)?.workablePoints).toBe(2);
+	});
+
+	it('un point tagué seulement par un brouillon n’est pas travaillable : aucune silhouette', async () => {
+		const collection = await loadMathouCollection(eleveA, eleveAId, GRADE);
+		expect(mathouOf(collection, notionBrouillons)).toBeUndefined();
 	});
 
 	it('une réussite sur un point → un chaton', async () => {

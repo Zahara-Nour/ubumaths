@@ -5,8 +5,9 @@
  * Compteurs de la Chatterie de l'élève de la session (nés, en sieste, à
  * découvrir), pour le Palotin gardien.
  *
- * Pourquoi un endpoint et pas le layout élève : le calcul coûte ~6 requêtes
- * (cf. `loadMathouCollection`), et `dashboard/student/+layout.server.ts` tourne
+ * Pourquoi un endpoint et pas le layout élève : le calcul coûte, pour un
+ * parcours de Tle spé, environ 39 requêtes en 5 allers-retours (mesure du
+ * 2026-10-18, détail dans docs/systeme/mathoux.md), et `dashboard/student/+layout.server.ts` tourne
  * à chaque page de l'espace élève. Le widget le demande donc une fois, après
  * l'affichage.
  *

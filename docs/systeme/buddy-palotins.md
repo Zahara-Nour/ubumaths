@@ -345,9 +345,11 @@ Le Compendium interdit d'afficher « XP » et « niveau ». Mots choisis par Dav
 ### Gardien de la Chatterie
 
 Au montage, `BuddyWidget` demande `GET /api/student/mathoux` (après l'affichage, pas dans le
-layout : le calcul coûte six requêtes). Si au moins un Mathou fait la sieste, la bulle dit « 2
-Mathoux font la sieste. » avec le lien « Aller à la Chatterie » (`BuddySpeechBubble`, prop `link`),
-pendant 10 s ; elle remplace la salutation au hasard. Détail : [mathoux.md](mathoux.md).
+layout : environ 39 requêtes pour un parcours de Tle spé). Si au moins un Mathou fait la sieste,
+la bulle dit « 2 Mathoux font la sieste. » avec le lien « Aller à la Chatterie »
+(`BuddySpeechBubble`, prop `link`), pendant 20 s, dans une zone `aria-live="polite"` ; sinon le
+Palotin salue. La salutation attend la réponse, pour ne jamais précéder l'annonce. Sur la Chatterie
+elle-même, ni appel ni annonce. Durées : `buddy-timing.ts`. Détail : [mathoux.md](mathoux.md).
 
 ### Images
 

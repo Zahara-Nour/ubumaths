@@ -113,10 +113,21 @@ describe('La Chatterie de Faustroll', () => {
 		expect(page.getByText('le Mathou des Entiers : division').elements()).toHaveLength(0);
 	});
 
-	it('aucun mot interdit par le Compendium (XP, niveau, score)', async () => {
+	it('aucun mot interdit par le Compendium (XP, niveau, score), ni plein ni vide', async () => {
+		for (const collection of [COLLECTION, EMPTY]) {
+			const { unmount } = await renderPage(collection);
+			const text = document.body.textContent ?? '';
+			expect(text).not.toMatch(/\bXP\b|\bniveaux?\b|\bscore\b|\blevel\b/i);
+			await unmount();
+		}
+	});
+
+	it('pas de <main> imbriqué : le layout porte déjà le sien', async () => {
 		await renderPage(COLLECTION);
-		const text = document.body.textContent ?? '';
-		expect(text).not.toMatch(/\bXP\b|niveau \d|\bscore\b|\blevel\b/i);
+		expect(document.querySelectorAll('main')).toHaveLength(0);
+		await expect
+			.element(page.getByRole('heading', { level: 1, name: 'La Chatterie de Faustroll' }))
+			.toBeVisible();
 	});
 
 	it('pas de bouton retour : page de la navigation', async () => {
@@ -127,7 +138,7 @@ describe('La Chatterie de Faustroll', () => {
 	it('niveau sans notion travaillable : un état explicite, pas une page vide', async () => {
 		await renderPage(EMPTY);
 		await expect
-			.element(page.getByText(/aucune notion travaillable pour ton niveau pour l’instant/i))
+			.element(page.getByText(/aucune notion travaillable pour ta classe pour l’instant/i))
 			.toBeVisible();
 		expect(page.getByText(/0 Mathoux/).elements()).toHaveLength(0);
 	});

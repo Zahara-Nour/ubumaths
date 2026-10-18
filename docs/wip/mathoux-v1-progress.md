@@ -40,3 +40,11 @@ Choix faits faute de spécification (à faire valider) :
 Reste : `code-reviewer`, `security-auditor` (endpoint élève, lectures RLS), commit + PR ; au commit,
 `Doc-inchangée:` pour `docs/pratiques/environnement-de-dev.md` (filtre `paths` étendu d'un motif)
 si la garde la réclame.
+
+### Corrections après revue et audit (2026-10-18, non commité)
+
+Travaillable = tagué par un modèle publié ; états lus sur les seuls points travaillables ; tags lus
+par pages de 1 000 ; widget muet sur la Chatterie, salutation après la réponse, bulle à lien 20 s
+en `aria-live="polite"`, `resolve()` ; « pour ta classe » ; plus de `<main>` imbriqué ; doc : coût
+réel (39 requêtes en Tle spé), rapetissement sans table de mémoire. Signalé, non corrigé : le
+plafond de 1 000 lignes latent dans `computePointBadges` (code partagé avec le tableau de bord).

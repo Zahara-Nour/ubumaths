@@ -6,8 +6,8 @@
  *   - le PARCOURS de l'élève : son niveau et ses niveaux antérieurs
  *     (`grade_ancestors`, clôture transitive de `grade_predecessors`),
  *   - `curriculum_points` de ces niveaux (non archivés, rattachés à un nœud),
- *   - `question_template_points` (un point est travaillable s'il a au moins une
- *     question taguée),
+ *   - `question_template_points` (un point est travaillable s'il est tagué par
+ *     au moins un modèle PUBLIÉ : un brouillon ne fait jamais naître un Mathou),
  *   - `classification_nodes` (branches et notions non archivées, sous-notions
  *     référencées),
  *   - `student_point_state` (acquisition, réussites),
@@ -20,11 +20,12 @@
  * donc une Chatterie vide, sans erreur : le cas suspect (des points, aucun nœud)
  * est tracé. Prouvé en intégration : `tests/integration/mathoux-collection.test.ts`.
  *
- * Coût : 1 appel (parcours), puis une requête de points PAR NIVEAU en parallèle
- * (chacune sous le plafond de 1 000 lignes de PostgREST, que le parcours entier
- * d'une Terminale dépasserait), puis 3 lectures en parallèle (tags, nœuds,
- * états), puis les 2 de `computePointBadges`. Les listes `.in()` passent par
- * `fetchInChunks`.
+ * Coût, en 5 allers-retours : 1 appel (parcours) ; une requête de points PAR
+ * NIVEAU en parallèle (chacune sous le plafond de 1 000 lignes de PostgREST, que
+ * le parcours entier d'une Terminale dépasserait) ; tags (par lots de 100
+ * points, chaque lot lu par pages de 1 000 lignes), branches et notions,
+ * sous-notions référencées ; puis, sur les seuls points travaillables, les états
+ * et les 2 lectures de `computePointBadges`. Chiffres mesurés : docs/systeme/mathoux.md.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -49,6 +50,9 @@ const EMPTY_COLLECTION: MathouCollection = {
 	races: [],
 	counts: { born: 0, napping: 0, toDiscover: 0 }
 };
+
+/** Plafond `max_rows` de PostgREST (supabase/config.toml). */
+const TAG_PAGE_SIZE = 1000;
 
 const NODE_KINDS: readonly CollectionNodeKind[] = ['branch', 'notion', 'subnotion'];
 
@@ -99,11 +103,9 @@ export async function loadMathouCollection(
 	const pointIds = gradePoints.map((p) => p.id);
 	const subnotionCandidateIds = [...new Set(gradePoints.map((p) => p.nodeId))];
 
-	// 3. Tags, arbre (branches + notions, puis nœuds référencés) et états, en parallèle
-	const [tagsResult, treeResult, referencedResult, statesResult] = await Promise.all([
-		fetchInChunks(pointIds, (batch) =>
-			supabase.from('question_template_points').select('point_id').in('point_id', batch)
-		),
+	// 3. Tags par un modèle publié, arbre (branches + notions, puis nœuds référencés), en parallèle
+	const [tagsResult, treeResult, referencedResult] = await Promise.all([
+		fetchInChunks(pointIds, (batch) => fetchPublishedTagPages(supabase, batch)),
 		supabase
 			.from('classification_nodes')
 			.select('id, kind, parent_id, name, position')
@@ -116,13 +118,6 @@ export async function loadMathouCollection(
 				.eq('kind', 'subnotion')
 				.is('archived_at', null)
 				.in('id', batch)
-		),
-		fetchInChunks(pointIds, (batch) =>
-			supabase
-				.from('student_point_state')
-				.select('point_id, is_acquired, total_successes, last_success_at')
-				.eq('student_id', studentId)
-				.in('point_id', batch)
 		)
 	]);
 
@@ -131,7 +126,6 @@ export async function loadMathouCollection(
 	if (referencedResult.error) {
 		throw new Error(`Sous-notions illisibles : ${referencedResult.error.message}`);
 	}
-	if (statesResult.error) throw new Error(`États illisibles : ${statesResult.error.message}`);
 
 	const taggedPointIds = new Set((tagsResult.data ?? []).map((row) => row.point_id));
 	const workablePoints = gradePoints.filter((p) => taggedPointIds.has(p.id));
@@ -157,6 +151,21 @@ export async function loadMathouCollection(
 		);
 	}
 
+	// 4. États et sieste, sur les seuls points travaillables (≈ 30 en Tle spé, pas 1 600)
+	const workableIds = workablePoints.map((p) => p.id);
+	const [statesResult, badges] = await Promise.all([
+		fetchInChunks(workableIds, (batch) =>
+			supabase
+				.from('student_point_state')
+				.select('point_id, is_acquired, total_successes, last_success_at')
+				.eq('student_id', studentId)
+				.in('point_id', batch)
+		),
+		// Sieste : badge FSRS « à revoir », sur un point de n'importe quel niveau
+		computePointBadges(supabase, studentId, workableIds)
+	]);
+	if (statesResult.error) throw new Error(`États illisibles : ${statesResult.error.message}`);
+
 	const progress = new Map<string, PointProgress>();
 	for (const row of statesResult.data ?? []) {
 		progress.set(row.point_id, {
@@ -165,12 +174,6 @@ export async function loadMathouCollection(
 		});
 	}
 
-	// 4. Sieste : badge FSRS « à revoir », sur un point de n'importe quel niveau
-	const badges = await computePointBadges(
-		supabase,
-		studentId,
-		workablePoints.map((p) => p.id)
-	);
 	const nappingPointIds = new Set<string>();
 	for (const [pointId, badge] of badges) {
 		if (badge === 'a_renforcer' || badge === 'a_remedier') nappingPointIds.add(pointId);
@@ -194,4 +197,36 @@ async function loadPathGrades(supabase: SB, grade: string): Promise<string[]> {
 		throw new Error('Parcours illisible : réponse inattendue de grade_ancestors');
 	}
 	return [...new Set([grade, ...ancestors])];
+}
+
+/**
+ * Tags d'un lot de points par un modèle PUBLIÉ, lus par pages de 1 000 lignes.
+ *
+ * Un lot de 100 points peut porter plus de 1 000 tags (14 au plus par point en
+ * prod, le 2026-10-18) : PostgREST tronquerait alors en silence au plafond
+ * `max_rows`. L'ordre (point, modèle) rend les pages stables.
+ *
+ * Jointure `!inner` voulue : un modèle invisible à l'élève est un brouillon
+ * (« Students can view published templates »), et un brouillon ne rend pas un
+ * point travaillable.
+ */
+async function fetchPublishedTagPages(
+	supabase: SB,
+	pointIds: string[]
+): Promise<{ data: { point_id: string }[]; error: { message: string } | null }> {
+	const rows: { point_id: string }[] = [];
+	for (let from = 0; ; from += TAG_PAGE_SIZE) {
+		const { data, error } = await supabase
+			.from('question_template_points')
+			.select('point_id, template_id, question_templates!inner(status)')
+			.eq('question_templates.status', 'published')
+			.in('point_id', pointIds)
+			.order('point_id')
+			.order('template_id')
+			.range(from, from + TAG_PAGE_SIZE - 1);
+		if (error) return { data: [], error };
+		const page = data ?? [];
+		rows.push(...page);
+		if (page.length < TAG_PAGE_SIZE) return { data: rows, error: null };
+	}
 }

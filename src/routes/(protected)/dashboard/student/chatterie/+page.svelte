@@ -46,7 +46,7 @@
 	<title>La Chatterie de Faustroll | Chiphre</title>
 </svelte:head>
 
-<main class="container mx-auto max-w-5xl px-4 py-6">
+<div class="container mx-auto max-w-5xl px-4 py-6">
 	<div class="mb-6 flex items-center gap-3">
 		<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
 			<Cat class="h-6 w-6 text-primary" aria-hidden="true" />
@@ -66,7 +66,7 @@
 		</p>
 	{:else if isEmpty}
 		<p class="rounded-lg border border-border bg-muted/40 p-4" role="status">
-			Aucune notion travaillable pour ton niveau pour l’instant. Les Mathoux arriveront avec les
+			Aucune notion travaillable pour ta classe pour l’instant. Les Mathoux arriveront avec les
 			prochaines questions.
 		</p>
 	{:else}
@@ -121,4 +121,4 @@
 			{/each}
 		</div>
 	{/if}
-</main>
+</div>

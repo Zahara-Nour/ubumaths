@@ -34,7 +34,7 @@ function buildMock(handlers: Record<string, Handler>, ancestors: () => QueryResu
 		const calls: Call[] = [];
 		queries.push({ table, calls });
 		const qb: Record<string, unknown> = {};
-		for (const method of ['select', 'eq', 'in', 'is', 'not', 'order']) {
+		for (const method of ['select', 'eq', 'in', 'is', 'not', 'order', 'range']) {
 			qb[method] = (...args: unknown[]) => {
 				calls.push([method, ...args]);
 				return qb;
@@ -216,6 +216,48 @@ describe('loadMathouCollection', () => {
 			error: { message: 'rpc refusée' }
 		}));
 		await expect(loadMathouCollection(supabase, STUDENT, '1_SPE')).rejects.toThrow(/rpc refusée/);
+	});
+
+	it('travaillable = tagué par un modèle PUBLIÉ (un brouillon ne suffit pas)', async () => {
+		const { supabase, queries } = buildMock(nominalHandlers());
+		await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		const tags = queries.filter((q) => q.table === 'question_template_points');
+		expect(tags.length).toBeGreaterThan(0);
+		for (const q of tags) {
+			const select = q.calls.find(([m]) => m === 'select')?.[1];
+			expect(select).toMatch(/question_templates!inner\(status\)/);
+			expect(has(q.calls, 'eq', 'question_templates.status', 'published')).toBe(true);
+		}
+	});
+
+	it('les états ne sont lus que pour les points travaillables', async () => {
+		const { supabase, queries } = buildMock(nominalHandlers());
+		await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		const states = queries.filter((q) => q.table === 'student_point_state');
+		const ids = states.flatMap(
+			(q) => (q.calls.find(([m, col]) => m === 'in' && col === 'point_id')?.[2] as string[]) ?? []
+		);
+		expect(ids.sort()).toEqual(['p1', 'p2']);
+	});
+
+	it('tags lus par pages de 1 000 : un lot de plus de 1 000 lignes n’est pas tronqué', async () => {
+		const page1 = Array.from({ length: 1000 }, () => ({ point_id: 'p1' }));
+		const { supabase, queries } = buildMock(
+			nominalHandlers({
+				question_template_points: (calls) =>
+					has(calls, 'range', 0, 999) ? ok(page1) : ok([{ point_id: 'p2' }])
+			})
+		);
+		const collection = await loadMathouCollection(supabase, STUDENT, '1_SPE');
+		// p2 n'apparaît qu'en 2e page : sans pagination, il ne serait pas travaillable
+		expect(collection.races[0].mathoux[0].workablePoints).toBe(2);
+		const ranges = queries
+			.filter((q) => q.table === 'question_template_points')
+			.map((q) => q.calls.find(([m]) => m === 'range')?.slice(1));
+		expect(ranges).toEqual([
+			[0, 999],
+			[1000, 1999]
+		]);
 	});
 
 	it('une lecture des points en échec lève', async () => {
