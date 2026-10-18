@@ -231,10 +231,7 @@ export interface SequenceDisplay {
  * de `CurveDisplay` qu'une courbe peut porter — ni tangente ni aire, elle ne va
  * jamais dans Graphe (G0). Absent tant que l'élève n'a rien réglé.
  */
-export type StrokeDisplay = Pick<CurveDisplay, 'lineStyle' | 'lineWidth'> & {
-	/** Absente tant que l'élève n'en a pas choisi : la couleur de la figure (revue de #1504). */
-	readonly color?: CurveColor;
-};
+export type StrokeDisplay = Pick<CurveDisplay, 'color' | 'lineStyle' | 'lineWidth'>;
 
 /** La taille d'un point de la figure. */
 export const POINT_SIZES = ['small', 'medium', 'large'] as const;
@@ -246,8 +243,7 @@ export type PointSize = (typeof POINT_SIZES)[number];
  * l'élève n'a rien réglé.
  */
 export interface PointDisplay {
-	/** Absente tant que l'élève n'en a pas choisi : la couleur de la figure (revue de #1504). */
-	readonly color?: CurveColor;
+	readonly color: CurveColor;
 	readonly size: PointSize;
 	readonly showLabel: boolean;
 }

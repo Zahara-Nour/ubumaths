@@ -115,8 +115,8 @@ Branche `feat/atelier-cartes-point-courbe`, partie d'origin/main après #1500 (c
 
 **Pour la session atelier-geometry — champs à câbler dans `syncFigure`** (rien de câblé ici) :
 
-- point : `object.display?: PointDisplay` = `{ color?: CurveColor ('curve-1' … 'curve-4', absente tant que l'élève n'a pas choisi de couleur — revue de #1504), size: 'small' | 'medium' | 'large', showLabel: boolean }` ; absent = dessin par défaut de la figure, étiquette affichée ;
-- courbe : `object.display?: StrokeDisplay` = `{ color?: CurveColor, lineStyle: LineStyle, lineWidth: number }` (couleur absente = couleur de la figure, revue de #1504 ; `strokeOf` de `figure-sync.ts` demande alors un repli de couleur) ;
+- point : `object.display?: PointDisplay` = `{ color: CurveColor ('curve-1' … 'curve-4'), size: 'small' | 'medium' | 'large', showLabel: boolean }` ; absent = dessin par défaut de la figure, étiquette affichée ;
+- courbe : `object.display?: StrokeDisplay` = `{ color: CurveColor, lineStyle: LineStyle, lineWidth: number }` (même forme que les trois champs de `CurveDisplay` : `strokeOf` de `figure-sync.ts` s'applique tel quel) ;
 - modifiés par `atelier.setFigureDisplay(name, patch)` (fait avancer `revision`) ; rangés en `figureDisplay` ; **pas de nouvelle `ATELIER_STATE_VERSION`** (absents par défaut).
 
 Choix faits en codant (à signaler à David) :

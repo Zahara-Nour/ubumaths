@@ -5,8 +5,6 @@
  * sans que la sortie qui suit range la saisie annulée.
  *
  * Au vrai clavier (`userEvent`) : c'est le geste de l'élève qui rangeait « 05 ».
- * Plus le point de couleur d'une figure : choisir ce qui est déjà le défaut ne
- * range rien, et un réglage partiel n'impose pas de couleur.
  *
  * Asserte le RENDU et ce que l'atelier a rangé.
  */
@@ -16,7 +14,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import WithAtelier from './harness/WithAtelier.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
-import { isPoint, isSequence, type SequenceObject } from '$lib/atelier/types';
+import { isSequence, type SequenceObject } from '$lib/atelier/types';
 import { cardOf } from './harness/function-card';
 
 // =============================================================================
@@ -144,35 +142,5 @@ describe('un champ de suite vidé', () => {
 		await vi.waitFor(() => expect(first.getAttribute('aria-invalid')).toBe('false'));
 		expect(first.value).toBe('0');
 		expect(card.querySelector('.refus-suite')?.textContent ?? '').toBe('');
-	});
-});
-
-// =============================================================================
-// Le point de couleur d'une figure
-// =============================================================================
-
-describe('le point de couleur d’un point', () => {
-	it('re-choisir la taille par défaut (« Moyenne ») ne range rien, pas même une couleur', async () => {
-		const atelier = new Atelier();
-		atelier.create({ kind: 'point', name: 'A', definition: '(1 ; 2)' }, 'text');
-		const { container } = await render(WithAtelier, { atelier });
-		const button = cardOf(container, 'A').querySelector<HTMLButtonElement>(
-			'button[aria-label="Couleur et taille de A"]'
-		);
-		await userEvent.click(button!);
-		const medium = await vi.waitFor(() => {
-			const found = document.querySelector<HTMLButtonElement>('button[aria-label="Moyenne"]');
-			expect(found).toBeTruthy();
-			return found!;
-		});
-		expect(medium.getAttribute('aria-checked')).toBe('true');
-
-		medium.click();
-		await new Promise((resolve) => setTimeout(resolve, 100));
-
-		const a = atelier.get('A');
-		expect(a && isPoint(a) && a.display).toBeUndefined();
-		// Le point de couleur reste vide : aucune couleur n'a été choisie
-		expect(button!.style.background).toBe('');
 	});
 });

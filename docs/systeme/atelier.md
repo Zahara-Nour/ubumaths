@@ -1251,10 +1251,9 @@ les deux, `FigureCard.svelte`, avec la grammaire des autres :
   épaisseur et style d'une courbe (`setFigureDisplay`). Vide tant que rien n'est réglé (dessin
   par défaut de la figure). **Menu** : Affichage → Étiquette (point seulement), puis Renommer
   et Supprimer.
-- **Le modèle** : `PointDisplay { color?, size: 'small' | 'medium' | 'large', showLabel }` et
-  `StrokeDisplay { color?, lineStyle, lineWidth }` (sous-ensemble de `CurveDisplay`), sur l'objet,
-  absents par défaut. `color` n'existe que si l'élève l'a choisie : un réglage partiel (taille,
-  épaisseur) n'impose aucune couleur, et choisir ce qui est déjà affiché ne range rien ; rangés en `figureDisplay` (sauvegarde, lien, fichier, fusion :
+- **Le modèle** : `PointDisplay { color, size: 'small' | 'medium' | 'large', showLabel }` et
+  `StrokeDisplay { color, lineStyle, lineWidth }` (sous-ensemble de `CurveDisplay`), sur l'objet,
+  absents par défaut ; rangés en `figureDisplay` (sauvegarde, lien, fichier, fusion :
   `adoptFigureDisplay`, `.strict()` — le réglage d'un point posé sur une courbe est oublié) ;
   gardés quand la définition change. ⚠️ La vue Géométrie ne les lit pas encore : `syncFigure`
   est câblé par la session de la géométrie.

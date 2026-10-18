@@ -87,9 +87,9 @@ import {
 	compactDisplay,
 	fullDisplay,
 	newDisplay,
-	defaultPointDisplay,
-	defaultStrokeDisplay,
+	newPointDisplay,
 	newSequenceDisplay,
+	newStrokeDisplay,
 	plainFigureDisplay,
 	plainSequenceDisplay,
 	pointDisplaySchema,
@@ -2514,9 +2514,8 @@ export class Atelier {
 	 * la figure (couleur, trait) — lot 4b de la refonte.
 	 *
 	 * Même porte que `setDisplay` : le patch est validé ici, un réglage qui n'est
-	 * pas celui de l'objet est refusé. Le premier réglage part du dessin par
-	 * défaut, SANS couleur : la couleur n'est rangée que si l'élève l'a choisie
-	 * (revue de #1504). La vue Géométrie le lit
+	 * pas celui de l'objet est refusé. Le premier réglage part des défauts (une
+	 * couleur encore libre parmi celles de la figure). La vue Géométrie le lit
 	 * par `syncFigure` (câblé par la session de la géométrie).
 	 */
 	setFigureDisplay(
@@ -2531,19 +2530,12 @@ export class Atelier {
 		const read = readFigureDisplayPatch(current.kind, patch);
 		if (!read.ok) return { ok: false, message: read.message };
 		if (Object.keys(read.patch).length === 0) return { ok: true };
-		// Un réglage partiel ne fixe que le champ touché : sans couleur choisie, la
-		// figure garde la sienne ; et choisir ce qui est déjà affiché (« Moyenne »
-		// cochée par défaut) ne range rien (revue de #1504)
-		const base =
-			current.display ?? (isPoint(current) ? defaultPointDisplay() : defaultStrokeDisplay());
-		const next = { ...base, ...read.patch };
-		if (JSON.stringify(plainFigureDisplay(next)) === JSON.stringify(plainFigureDisplay(base))) {
-			return { ok: true };
-		}
 		if (isPoint(current)) {
-			this.items[index] = { ...current, display: next as PointDisplay };
+			const base = current.display ?? newPointDisplay(this.#figureDisplays());
+			this.items[index] = { ...current, display: { ...base, ...read.patch } as PointDisplay };
 		} else {
-			this.items[index] = { ...current, display: next as StrokeDisplay };
+			const base = current.display ?? newStrokeDisplay(this.#figureDisplays());
+			this.items[index] = { ...current, display: { ...base, ...read.patch } as StrokeDisplay };
 		}
 		// Comme `setDisplay` : un réglage ne change aucun statut, seul le compteur bouge
 		this.revision++;
@@ -2563,6 +2555,15 @@ export class Atelier {
 			const read = strokeDisplaySchema.strict().safeParse(stored);
 			if (read.success) this.items[index] = { ...current, display: read.data };
 		}
+	}
+
+	/** Les couleurs déjà prises dans la figure — pour proposer une couleur libre. */
+	#figureDisplays(): Pick<CurveDisplay, 'color' | 'lineStyle'>[] {
+		return this.items.flatMap((o) =>
+			isFigureObject(o) && o.display
+				? [{ color: o.display.color, lineStyle: 'solid' as const }]
+				: []
+		);
 	}
 
 	/** Les objets dont la définition cite `name`, directement. */
