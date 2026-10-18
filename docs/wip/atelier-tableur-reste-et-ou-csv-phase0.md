@@ -1,7 +1,7 @@
 ---
 title: Atelier — tableur intégré : RESTE, ET/OU, ouvrir un fichier CSV (phase 0)
 date: 2026-10-18
-status: phase 0 À VALIDER
+status: phase 0 VALIDÉE (2026-10-18, « je valide tes recos ») ; Q-RE-1 à Q-RE-6 = les recos
 ---
 
 # Atelier — tableur intégré : RESTE, ET/OU, ouvrir un fichier CSV
@@ -86,7 +86,7 @@ de l'atelier — **RESTE**, **ET/OU** et **l'ouverture d'un fichier CSV**. Le ta
 
 ---
 
-## Questions
+## Questions — tranchées par David (2026-10-18 : les six recos)
 
 **Q-RE-1 — NON aussi ?** V4 a NON. Dans la grille, `NON(A1>3)` s'écrit déjà `A1<=3`.
 
