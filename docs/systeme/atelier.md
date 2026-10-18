@@ -1255,8 +1255,16 @@ les deux, `FigureCard.svelte`, avec la grammaire des autres :
   `StrokeDisplay { color, lineStyle, lineWidth }` (sous-ensemble de `CurveDisplay`), sur l'objet,
   absents par défaut ; rangés en `figureDisplay` (sauvegarde, lien, fichier, fusion :
   `adoptFigureDisplay`, `.strict()` — le réglage d'un point posé sur une courbe est oublié) ;
-  gardés quand la définition change. ⚠️ La vue Géométrie ne les lit pas encore : `syncFigure`
-  est câblé par la session de la géométrie.
+  gardés quand la définition change. La vue Géométrie les **peint** (`syncFigure`, 2026-10-19) :
+  un point prend sa couleur (jeton `var(--color-curve-N)`, comme K4), son rayon (petit 3 px,
+  moyen 5 px — le dessin d'avant —, grand 7 px : `POINT_RADII`) et son nom masqué
+  (`Figure.setLabelHidden` ; `GeometryCanvas`, exports SVG et TikZ lisent `labelHidden` pour les
+  points, Typst le lisait déjà) ; une courbe — équation ou construction, y compris chaque sorte
+  d'une conique à curseur — sa couleur, son trait et son épaisseur (`dashdot` → tirets). Le nom
+  d'un cercle construit suit sa couleur et reste écrit (une courbe n'a pas de `showLabel`). Un
+  réglage repeint sans reconstruire (`restyled`, `Figure.updateStyle`) ; sans réglage, le
+  dessin reste celui d'avant ; un réglage qui disparaît refait la figure (`updateStyle`
+  fusionne et ne sait pas rendre le défaut).
 
 ### Vues
 
@@ -1329,7 +1337,9 @@ comme sur sa carte (`f`, `f′`, `f⁻¹`), et **peinte du trait de sa carte** (
 couleur (`display.color`, la `CurveColor` du Graphe, peinte par son jeton `var(--color-curve-N)`,
 le même en clair et en sombre), pointillés et épaisseur (`dashdot` devient des tirets, la figure
 n'en a pas) ; un changement dans la carte repeint par `Figure.updateStyle`, sans reconstruire
-(`syncFigure` rend `restyled`) ; une fonction jamais tracée garde la couleur par défaut.
+(`syncFigure` rend `restyled`) ; une fonction jamais tracée garde la couleur par défaut. Le
+même chemin (`Look`, hors empreinte, posé par `paint` sur tout ce qui est visible et posé pour
+l'objet) sert aux points et aux courbes depuis le lot 4b.
 `f′` et `f⁻¹` ont la même action, leur propre couleur de carte, et suivent `f` (K3) ;
 une carte `f′` ou `f⁻¹` créée depuis une `f` affichée naît affichée, comme pour le tracé.
 

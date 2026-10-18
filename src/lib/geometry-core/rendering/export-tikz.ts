@@ -494,8 +494,9 @@ export function exportToTikZ(
 		const { name } = hexToTikZColor(sty.color);
 		const c = coord(x, y);
 
-		const labelPart =
-			showLabels && el.label ? ` node[above right, font=\\small] {$${el.label}$}` : '';
+		// Nom masqué (`labelHidden`) : le point reste dessiné, comme à l'écran
+		const named = showLabels && el.label !== undefined && el.label !== '' && !el.labelHidden;
+		const labelPart = named ? ` node[above right, font=\\small] {$${el.label}$}` : '';
 
 		if (sty.pointShape === 'dot') {
 			lines.push(`  \\fill[${name}] ${c} circle (2pt)${labelPart};`);
@@ -503,7 +504,7 @@ export function exportToTikZ(
 			lines.push(`  \\draw[${name}] ${c} circle (2pt)${labelPart};`);
 		} else if (sty.pointShape === 'cross') {
 			lines.push(`  \\node[${name}, cross out, draw, inner sep=2pt] at ${c} {};`);
-			if (showLabels && el.label) {
+			if (named) {
 				lines.push(`  \\node[${name}, above right, font=\\small] at ${c} {$${el.label}$};`);
 			}
 		} else if (sty.pointShape === 'square') {

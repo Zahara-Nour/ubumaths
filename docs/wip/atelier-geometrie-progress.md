@@ -178,3 +178,11 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   Restent : `cercle(O, rayon=0)` laissé tel quel dans le DSL (un lieu de test en dépend) ; une
   valeur `(AB)` devenue droite après coup n'est pas comptée dans le plafond de 50 (PR 2).
   Pas en production.
+- 2026-10-19 : **la vue Géométrie lit les réglages des points et des courbes** (lot 4b de la
+  refonte, #1504). `syncFigure` : couleur, taille (3 / 5 / 7 px), nom masqué d'un point ;
+  couleur, trait, épaisseur d'une courbe (équations et constructions) ; nom d'un cercle de la
+  couleur du cercle. `restyled` sans reconstruire, comme K4. `labelHidden` des points lu par
+  `GeometryCanvas` et les exports SVG / TikZ (il ne l'était que par Typst et le bloc figure).
+  Effet de bord voulu : un point `etiquette="aucune"` du DSL perd enfin son nom dans
+  `GeometryCanvas` (il ne le perdait qu'en Typst et dans le bloc figure). Les autres types
+  (droites, segments, cercles) ignorent toujours `labelHidden` à l'écran — sans usage aujourd'hui.

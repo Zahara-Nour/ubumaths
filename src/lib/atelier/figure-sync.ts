@@ -43,7 +43,15 @@
  */
 
 import type { Atelier } from './atelier.svelte';
-import type { AtelierObject, CurveDisplay } from './types';
+import type {
+	AtelierObject,
+	CurveDisplay,
+	CurveObject,
+	PointDisplay,
+	PointObject,
+	PointSize,
+	StrokeDisplay
+} from './types';
 import type { CompiledFn, MathNode } from '$lib/mathAST';
 import {
 	add,
@@ -111,12 +119,24 @@ interface WantedSlider {
 	readonly outOfRange: boolean;
 }
 
+/**
+ * Le dessin réglé dans la carte (K4 pour 𝒞f, lot 4b pour points et courbes) :
+ * un style de la figure, et pour un point son nom masqué ou non. Absent tant que
+ * rien n'est réglé — le dessin par défaut de la figure. Hors empreinte : il se
+ * pose par `Figure.updateStyle` / `setLabelHidden`, sans refaire la figure.
+ */
+interface Look {
+	readonly style: GeoStyle;
+	readonly labelHidden?: boolean;
+}
+
 /** Un point à dessiner : ses deux coordonnées, curseurs gardés en lettres. */
 interface WantedPoint {
 	readonly kind: 'point';
 	readonly name: string;
 	readonly x: MathNode;
 	readonly y: MathNode;
+	readonly look?: Look;
 }
 
 /** Une courbe à dessiner : F(x, y) = 0, écrite et développée, curseurs gardés en lettres. */
@@ -128,6 +148,7 @@ interface WantedCurve {
 	readonly raw: MathNode;
 	/** F développée et réduite. */
 	readonly F: MathNode;
+	readonly look?: Look;
 }
 
 /**
@@ -140,12 +161,8 @@ interface WantedFunction {
 	readonly name: string;
 	readonly expression: MathNode;
 	readonly pieces?: Restriction;
-	/**
-	 * Le trait de sa carte (K4 : couleur, pointillés, épaisseur), absent pour une
-	 * fonction jamais tracée — couleur par défaut de la figure. Hors empreinte :
-	 * il se règle par `Figure.updateStyle`, sans refaire la figure.
-	 */
-	readonly style?: GeoStyle;
+	/** Le trait de sa carte (K4 : couleur, pointillés, épaisseur), absent pour une fonction jamais tracée. */
+	readonly look?: Look;
 }
 
 /**
@@ -161,6 +178,7 @@ type WantedConstruction =
 			readonly shape: 'line' | 'segment' | 'ray';
 			readonly from: readonly [MathNode, MathNode];
 			readonly to: readonly [MathNode, MathNode];
+			readonly look?: Look;
 	  }
 	| {
 			readonly kind: 'construction';
@@ -168,6 +186,7 @@ type WantedConstruction =
 			readonly shape: 'circle';
 			readonly center: readonly [MathNode, MathNode];
 			readonly radius: MathNode;
+			readonly look?: Look;
 	  };
 
 type Wanted = WantedPoint | WantedCurve | WantedFunction | WantedConstruction;
@@ -184,6 +203,13 @@ export interface FigurePlan {
 
 /** En deçà, un coefficient de droite qui suit un curseur est tenu pour nul. */
 const ZERO_EPSILON = 1e-12;
+
+/**
+ * Le rayon (px) d'un point par taille de sa carte : « moyen » est le dessin
+ * d'avant (`defaultPointSize` absent : 5), « petit » reste visible, « grand »
+ * ne mange pas le nom (posé à `pointSize + 4`).
+ */
+const POINT_RADII: Record<PointSize, number> = { small: 3, medium: 5, large: 7 };
 
 // =============================================================================
 // La figure de l'atelier
@@ -202,8 +228,8 @@ export class AtelierFigure {
 	#sliders = new Map<string, string>();
 	/** Nom du point ou de la courbe → id de l'élément visible. */
 	#elements = new Map<string, string>();
-	/** Nom d'une fonction affichée → ids de ses morceaux, et le trait qu'ils portent (K4). */
-	#strokes = new Map<string, { readonly ids: readonly string[]; style: string }>();
+	/** Nom d'un objet → ce qu'on a dessiné pour lui, et le réglage qu'on y a posé. */
+	#looks = new Map<string, Drawn>();
 	#changes = 0;
 
 	get figure(): Figure {
@@ -231,7 +257,7 @@ export class AtelierFigure {
 	/** Réservé à `syncFigure`. */
 	apply(plan: FigurePlan): FigureSyncOutcome {
 		const fingerprint = fingerprintOf(plan);
-		if (fingerprint !== this.#fingerprint) {
+		if (fingerprint !== this.#fingerprint || this.#lookDropped(plan)) {
 			this.#rebuild(plan);
 			this.#fingerprint = fingerprint;
 			this.#changes++;
@@ -251,16 +277,26 @@ export class AtelierFigure {
 		return moved ? 'moved' : 'restyled';
 	}
 
-	/** Repeindre les 𝒞f dont la carte a changé de trait (K4) ; vrai si l'une l'a été. */
+	/**
+	 * Un réglage posé qui disparaît (une sauvegarde relue peut le perdre) :
+	 * `updateStyle` fusionne et ne sait pas rendre le défaut — on refait la figure.
+	 */
+	#lookDropped(plan: FigurePlan): boolean {
+		return plan.objects.some((o) => {
+			const drawn = this.#looks.get(o.name);
+			return drawn !== undefined && drawn.key !== lookKey(undefined) && o.look === undefined;
+		});
+	}
+
+	/** Repeindre les objets dont la carte a changé de réglage ; vrai si l'un l'a été. */
 	#restyle(plan: FigurePlan): boolean {
 		let changed = false;
 		for (const object of plan.objects) {
-			if (object.kind !== 'function') continue;
-			const stroke = this.#strokes.get(object.name);
-			const style = JSON.stringify(object.style ?? null);
-			if (stroke === undefined || stroke.style === style || object.style === undefined) continue;
-			for (const id of stroke.ids) this.#figure.updateStyle(id, object.style);
-			stroke.style = style;
+			const drawn = this.#looks.get(object.name);
+			const key = lookKey(object.look);
+			if (drawn === undefined || drawn.key === key || object.look === undefined) continue;
+			paint(this.#figure, drawn, object.look);
+			drawn.key = key;
 			changed = true;
 		}
 		return changed;
@@ -276,25 +312,31 @@ export class AtelierFigure {
 			sliders.set(name, figure.createSlider(min, max, value, { visible: false, label: name }));
 		}
 		const elements = new Map<string, string>();
-		const strokes = new Map<string, { readonly ids: readonly string[]; style: string }>();
+		const looks = new Map<string, Drawn>();
 		for (const object of plan.objects) {
 			// Une courbe que la figure refuse (compilation impossible) n'est pas
 			// dessinée : sa carte, elle, reste ce qu'elle est (F5)
 			const before = new Set(figure.getAllElements().map((el) => el.id));
 			try {
-				if (object.kind === 'function') {
-					const ids = posePlottedFunction(figure, object, sliders);
-					if (ids.length > 0) elements.set(object.name, ids[0]);
-					strokes.set(object.name, { ids, style: JSON.stringify(object.style ?? null) });
-					continue;
-				}
 				const id =
-					object.kind === 'point'
-						? posePoint(figure, object, sliders)
-						: object.kind === 'construction'
-							? poseConstruction(figure, object, sliders)
-							: poseCurve(figure, object, sliders);
+					object.kind === 'function'
+						? (posePlottedFunction(figure, object, sliders)[0] ?? null)
+						: object.kind === 'point'
+							? posePoint(figure, object, sliders)
+							: object.kind === 'construction'
+								? poseConstruction(figure, object, sliders)
+								: poseCurve(figure, object, sliders);
 				if (id !== null) elements.set(object.name, id);
+				// Tout ce qui est VISIBLE et vient d'être posé pour l'objet porte son
+				// réglage — les morceaux de 𝒞f, les sortes d'une conique à curseur ;
+				// un texte (le nom d'un cercle) n'en prend que la couleur
+				const drawn: Drawn = { ids: [], texts: [], key: lookKey(object.look) };
+				for (const el of figure.getAllElements()) {
+					if (before.has(el.id) || !el.visible) continue;
+					(el.type === 'text' ? drawn.texts : drawn.ids).push(el.id);
+				}
+				if (object.look !== undefined) paint(figure, drawn, object.look);
+				looks.set(object.name, drawn);
 			} catch {
 				// Les aides déjà posées (calculs cachés, points d'une droite) s'en vont
 				// avec l'objet : rien de lui ne reste dans la figure
@@ -308,8 +350,30 @@ export class AtelierFigure {
 		this.#figure = figure;
 		this.#sliders = sliders;
 		this.#elements = elements;
-		this.#strokes = strokes;
+		this.#looks = looks;
 	}
+}
+
+/** Ce qu'on a dessiné pour un objet : ses éléments visibles, ses textes, le réglage posé. */
+interface Drawn {
+	readonly ids: string[];
+	readonly texts: string[];
+	key: string;
+}
+
+function lookKey(look: Look | undefined): string {
+	return JSON.stringify(look ?? null);
+}
+
+/** Poser un réglage sur ce qu'on a dessiné pour un objet. */
+function paint(figure: Figure, drawn: Drawn, look: Look): void {
+	for (const id of drawn.ids) {
+		figure.updateStyle(id, look.style);
+		if (look.labelHidden !== undefined) figure.setLabelHidden(id, look.labelHidden);
+	}
+	const { color } = look.style;
+	if (color === undefined) return;
+	for (const id of drawn.texts) figure.updateStyle(id, { color });
 }
 
 /**
@@ -391,13 +455,12 @@ function wantedFunctionOf(
 	const substituted = substitutedAstOf(atelier, object.name, { keepNames: keep });
 	if (!substituted.ok) return null;
 	const pieces = plotRestrictionOf(object);
-	const style = object.display === undefined ? undefined : strokeOf(object.display);
 	return {
 		kind: 'function',
 		name: object.name,
 		expression: substituted.ast,
 		...(pieces !== undefined && { pieces }),
-		...(style !== undefined && { style })
+		...(object.display !== undefined && { look: { style: strokeOf(object.display) } })
 	};
 }
 
@@ -408,9 +471,28 @@ function wantedFunctionOf(
  * pointillés et épaisseur. `dashdot` n'a pas d'équivalent dans la figure :
  * des tirets.
  */
-function strokeOf(display: CurveDisplay): GeoStyle {
+function strokeOf(display: CurveDisplay | StrokeDisplay): GeoStyle {
 	const dash: GeoStyle['dash'] = display.lineStyle === 'dashdot' ? 'dashed' : display.lineStyle;
 	return { color: display.color, dash, strokeWidth: display.lineWidth };
+}
+
+/** Le réglage d'un point en style de la figure : couleur, rayon, nom masqué ou non. */
+function pointLookOf(display: PointDisplay): Look {
+	return {
+		style: { color: display.color, pointSize: POINT_RADII[display.size] },
+		labelHidden: !display.showLabel
+	};
+}
+
+/**
+ * Le réglage de la carte d'un point ou d'une courbe (lot 4b), absent sans réglage.
+ * Une courbe n'a pas de `showLabel` : son nom (celui d'un cercle compris) reste écrit.
+ */
+function figureLookOf(object: PointObject | CurveObject): Look | undefined {
+	if (object.kind === 'point') {
+		return object.display === undefined ? undefined : pointLookOf(object.display);
+	}
+	return object.display === undefined ? undefined : { style: strokeOf(object.display) };
 }
 
 function constructionTrees(wanted: WantedConstruction): MathNode[] {
@@ -453,7 +535,18 @@ function wantedConstructionOf(
 
 function wantedOf(
 	atelier: Atelier,
-	object: AtelierObject,
+	object: PointObject | CurveObject,
+	keep: ReadonlySet<string>,
+	memo: ConstructionMemo
+): WantedPoint | WantedCurve | WantedConstruction | null {
+	const wanted = wantedShapeOf(atelier, object, keep, memo);
+	const look = figureLookOf(object);
+	return wanted === null || look === undefined ? wanted : { ...wanted, look };
+}
+
+function wantedShapeOf(
+	atelier: Atelier,
+	object: PointObject | CurveObject,
 	keep: ReadonlySet<string>,
 	memo: ConstructionMemo
 ): WantedPoint | WantedCurve | WantedConstruction | null {
@@ -486,8 +579,8 @@ function wantedOf(
 function fingerprintOf(plan: FigurePlan): string {
 	return JSON.stringify({
 		sliders: plan.sliders.map(({ name, min, max }) => [name, min, max]),
-		// Le trait d'une 𝒞f n'est pas de la structure : `#restyle` le règle
-		objects: plan.objects.map((o) => (o.kind === 'function' ? { ...o, style: undefined } : o))
+		// Le réglage d'un objet n'est pas de la structure : `#restyle` le pose
+		objects: plan.objects.map((o) => ({ ...o, look: undefined }))
 	});
 }
 
@@ -634,8 +727,8 @@ function poseConstruction(
  * 𝒞f : une `GeoFunction` par morceau de son ensemble (K2 ; `GeoFunctionDomain`
  * n'a qu'un intervalle), nommée comme sur sa carte (`f`, `f′`, `f⁻¹`) — le nom
  * sur le premier morceau seulement. Les curseurs se lient par leur nom, comme
- * une courbe `y = f(x)`. Le trait est celui de la carte (K4). Rend les ids des
- * morceaux, le nommé d'abord.
+ * une courbe `y = f(x)`. Le trait de la carte (K4) se pose après, comme pour
+ * tout objet (`paint`). Rend les ids des morceaux, le nommé d'abord.
  */
 function posePlottedFunction(
 	figure: Figure,
@@ -667,8 +760,7 @@ function posePlottedFunction(
 			{
 				...(ids.length === 0 && { label }),
 				dependencies,
-				...(piece !== null && { domain: domainOf(piece) }),
-				...(wanted.style !== undefined && { style: wanted.style })
+				...(piece !== null && { domain: domainOf(piece) })
 			}
 		);
 		ids.push(id);
