@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 CLOS ; lot 2 — PR 1 constructions mergée (#1500), PR 2 mesures à faire
+status: lot 1 CLOS ; lot 2 — PR 1 constructions (#1500), PR 2 mesures (#1506), styles (#1507) mergées ; PR 3 (point_sur, intersections) et PR 4 (.relever) à faire
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -241,3 +241,8 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   le point de couleur de la carte montre la couleur peinte (`figureDefaultColor`). Tests ajoutés :
   réglage qui disparaît → `rebuilt`, exports SVG / TikZ d'un point DSL `etiquette="aucune"`
   (rond et croix).
+- 2026-10-19 : **mesures mergées (#1506, `ae1c91ea8`)** puis **styles mergés (#1507, `3b52afeb1`)**,
+  CI verte, branches et worktrees retirés. Pas en production. Restent au lot 2 : PR 3
+  (`point_sur`, intersections), PR 4 (`.relever`), petite PR `60°` / `60^\circ` (corrige aussi
+  `cos(90[°])` dans une fonction). Choix prudents livrés dans #1506, à confirmer par David : angle
+  brut dans une fonction refusé ; puissance d'un angle refusée.
