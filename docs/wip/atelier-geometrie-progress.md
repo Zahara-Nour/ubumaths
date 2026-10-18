@@ -253,3 +253,27 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   Tests d'abord : 81 node (`point-sur-intersections.test.ts`, `figure-point-sur.test.ts`,
   `geometry-core/geometry/__tests__/intersect-lq-exact.test.ts`, 81 rouges) et 6 navigateur
   (`point-sur.svelte.test.ts`, 6 rouges).
+- 2026-10-19 : implémenté — `intersection(a ; b ; k)` (droite, segment, demi-droite, cercle,
+  courbe par équation : droite, y = f(x), conique ; fonction de l'atelier) et
+  `point_sur(objet ; position)` (segment, droite, demi-droite, cercle, fonction), calcul pur dans
+  `construction-intersect.ts`, exact d'abord (`intersectLL/LC/CC`, `intersectLQExact` ajoutée à
+  `geometry-core` — même formule et même ordre qu'`intersectLQ` —, `exactZeros` pour y = f(x)),
+  sinon « ≈ » 4 décimales ; numérotation `k` de geometry-core ; attente (`pending` sans
+  `missing`) quand rien ne se coupe, propagée (`usableObject`, mesures, `#geometryWaits`) ; refus à
+  la saisie : plusieurs points sans k, infinité, couple non pris en charge ; curseur de position
+  lu sur la définition (`positionSliderOf`, `slidePosition`), `ValueSlider` réutilisé dans
+  `FigureCard` (seule retouche : le curseur sous la ligne) ; vue Géométrie : intersections à
+  curseur par `createScalarExpression` (calcul de l'atelier), position = curseur caché, sans
+  reconstruire. `persistence.ts` inchangé. Tous les tests verts (60 + 12 + 10 node, 6 navigateur).
+- **À trancher par David** : (1) l'angle d'un `point_sur` sur un cercle suit le réglage « Angles »
+  (demandé), mais ce réglage est rangé dans le NAVIGATEUR, pas dans l'état : un lien
+  `point_sur(c ; 90)` ouvert chez quelqu'un réglé en radians place M à 90 rad — reco : degrés
+  toujours (comme le DSL), ou ranger l'unité dans l'état ; (2) une position hors du segment
+  (`point_sur(s ; 1,5)`) met M en attente au lieu de le ramener au bord (le DSL le ramène) ;
+  (3) bornes du curseur de position : [0 ; 10] sur une demi-droite, [−10 ; 10] sur une droite ou
+  une fonction, non réglables (pas de champ rangé) ; (4) `point_sur(s)` sans position n'a pas de
+  curseur ; (5) sans `k`, le seul point commun AUX PORTIONS est pris (un segment qui coupe un
+  cercle une fois n'exige pas k) ; (6) les intersections d'une courbe y = f(x) sans racine exacte
+  sont cherchées dans [−10 ; 10] (fenêtre du DSL).
+- Écarts code ↔ DSL documentés dans `atelier.md` (segment coupé comme sa droite et position
+  ramenée au bord dans le DSL ; exact d'abord dans l'atelier ; `point_sur` d'une conique refusé).

@@ -576,3 +576,26 @@ describe('lecture : intersection et point_sur sont des mots du catalogue', () =>
 		}
 	});
 });
+
+describe('le LaTeX des réponses est intact (aucun antislash perdu)', () => {
+	const hasControl = (text: string) => [...text].some((char) => char.charCodeAt(0) < 32);
+	const latexOf = (result: CalcResult) => (result.kind === 'calcul' ? (result.latex ?? '') : '');
+
+	it('intersection tapée seule, point approché, point_sur, carte', () => {
+		const s = plane('K : x^2 + y^2 = 4', 'H : x^2 - y^2 = 1', 's = [AB]');
+		define(s, 'E = intersection(K, H, 1)');
+		define(s, 'M = point_sur(s ; 0,3)');
+		const lines = [
+			latexOf(runInput(s, 'intersection(u, c, 1)')),
+			latexOf(runInput(s, 'E')),
+			latexOf(runInput(s, 'M')),
+			constructionSummaryOf(s.atelier, 'E')?.latex ?? '',
+			constructionSummaryOf(s.atelier, 'M')?.latex ?? ''
+		];
+		for (const latex of lines) {
+			expect(latex).not.toBe('');
+			expect(hasControl(latex), latex).toBe(false);
+		}
+		expect(lines[1]).toContain('\\approx');
+	});
+});

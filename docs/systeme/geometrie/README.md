@@ -24,7 +24,7 @@ Vue d'ensemble du moteur de géométrie de Chiphre. Référence du langage :
 [dsl-builtins.md](dsl-builtins.md). Règles courtes pour un agent qui code dans le module :
 [`src/lib/geometry-core/CLAUDE.md`](../../../src/lib/geometry-core/CLAUDE.md).
 
-> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18). Chaque fichier, fonction et builtin cité existe à cette
+> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18 ; `intersectLQExact` : 2026-10-19). Chaque fichier, fonction et builtin cité existe à cette
 > date (`git ls-files`, `git grep -w`). Ce qui n'est pas dans cette page ni dans
 > `dsl-builtins.md` n'est pas garanti : lire le code.
 
@@ -130,6 +130,13 @@ l'atelier n'exporte pas ses figures. Les **constructions** de l'atelier (lot 2 :
 `scalarRef` : un curseur cité suit sans reconstruire). Aucun type nouveau. Aucune surface n'écrit le
 nom d'un cercle : l'atelier le porte par un texte (`createText`) de la couleur du cercle, accroché
 à un point caché posé sur le cercle.
+Les **intersections** et **points sur un objet** de l'atelier (lot 2, PR 3 : `intersection(d, c, k)`,
+`point_sur(s, t)`) passent par les fonctions pures de `geometry/intersections.ts`
+(`atelier/construction-intersect.ts`), exactes quand leurs données le sont, avec la
+numérotation `k` du DSL ; `intersectLQExact` (droite × conique en `GeoValue`, MÊME formule et
+MÊME ordre qu'`intersectLQ`) a été ajoutée pour elles. Une intersection qui cite un curseur est
+posée par deux `createScalarExpression` dont le calcul est celui de l'atelier ; une position
+écrite de `point_sur` est un curseur caché : ni l'un ni l'autre ne refait la figure.
 L'atelier lit ces lignes avec son propre lecteur (`atelier/construction-read.ts`) : celui du DSL
 refuse ses nombres (`2a`, `√2`, `\frac{1}{2}`, `parallèle`). `GeometryCanvas` n'affiche
 plus de réglette pour un curseur invisible (y compris après `masque(s)`). Doc :
