@@ -16,6 +16,7 @@ couvre:
   - scripts/deploy-prod.sh
   - scripts/release.ts
   - scripts/lint-fast.sh
+  - scripts/lint-fast-fichiers.sh
   - scripts/with-db-lock.sh
   - scripts/ci-version-seule.sh
   - scripts/vercel-ignore-build.sh
@@ -75,13 +76,19 @@ Un fichier qui perd des erreurs fait aussi échouer : `pnpm types:cliquet --maj`
 TypeScript (`eslint.fast.config.js`), plus oxlint, la parité des variables d'environnement avec
 `.github/ci.env` et la garde des `render` attendus. Eslint complet : 530 s, en CI.
 
+Ses fichiers (`scripts/lint-fast-fichiers.sh`) : à la main, ce qui diffère d'`origin/main` **plus
+les fichiers non suivis** (un fichier tout neuf est relu avant son premier commit) ; au pre-push
+(`--push`), **seulement les fichiers des commits qui partent**. Le dépôt principal est partagé : le
+brouillon `.ts` non suivi d'une session y bloquait le push de doc de toutes les autres
+(2026-10-18), alors qu'un fichier non suivi ne part pas et que la CI ne le voit pas.
+
 **Hooks husky** (`.husky/`) :
 
 | Hook         | Ce qu'il fait                                                                                                                                                                                                                                                                                                                                                              |
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `pre-commit` | `scripts/garde-main-a-jour.sh` : sur `main`, refuse le commit si `origin/main` a des commits que le `main` local n'a pas (`git fetch` d'abord, laisse passer hors ligne). Puis `pnpm lint-staged` (`.lintstagedrc.js`) : oxlint (`--fix` sur JS/TS, sans `--fix` sur `.svelte`) + prettier ; prettier seul sur json/md/css/html. Bloque sur une _erreur_ oxlint seulement. |
 | `commit-msg` | commitlint, sur **toutes** les branches (les commits de branche arrivent tels quels sur main).                                                                                                                                                                                                                                                                             |
-| `pre-push`   | `pnpm format:check` (fichiers suivis seulement) → `lint:fast` → `docs:check-links` → `docs:check-refs --strict` → `docs:check-a-jour --couverture` (bloquants), puis `docs:check-a-jour --depuis origin/main` (avertissement).                                                                                                                                             |
+| `pre-push`   | `pnpm format:check` (fichiers suivis seulement) → `lint:fast --push` (fichiers des commits poussés seulement) → `docs:check-links` → `docs:check-refs --strict` → `docs:check-a-jour --couverture` (bloquants), puis `docs:check-a-jour --depuis origin/main` (avertissement).                                                                                             |
 
 Le pre-push est le seul filet des commits de doc poussés directement sur `main`, que la CI de push
 ignore. `--no-verify` n'a plus de raison d'être (le hook Claude le refuse).
