@@ -28,6 +28,13 @@ plus à ce qu'il voit.
 | R4  | **L'historique de la vue Calcul est gardé** (clé à part, `CALC_HISTORY_STORAGE_KEY`) : ce sont les calculs de l'élève, pas des objets de l'atelier.                                                                                                                |
 | R5  | **Charger un fichier `.atelier.json`** (barre d'icônes, refonte lot 1, #1479), qui remplace aussi l'atelier, **profite de la même copie de côté** que R3 (décision de David du 2026-10-18, « je suis tes recos »).                                                 |
 
+## Coordination avec la refonte de l'interface (2026-10-18)
+
+La session « modifs-fixes » a mergé le suivi de revue de Charger (#1480, `104b8937b` :
+`handleLoadFile` vérifie `MAX_ATELIER_FILE_BYTES` avant lecture, `consoleNotice` /
+`offeredLineCount` dans `atelier-file.ts`, barre d'outils au clavier `roving-toolbar.ts`). **Ce
+chantier part de là ; Charger est à lui** (modifs-fixes n'y touche plus).
+
 ## Comportements à préciser à l'ouverture du chantier
 
 Cas nominal / limite / erreur à écrire et à faire valider avant le code, notamment :
