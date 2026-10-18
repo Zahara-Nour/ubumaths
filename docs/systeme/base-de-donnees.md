@@ -445,6 +445,15 @@ VIP, récompenses hebdomadaires). Détail : [jeux-et-economie.md](jeux-et-econom
 forfait du Palotin) ne s'écrivent que par le serveur (client service) : l'élève n'y a plus que la
 lecture (migration `20261017090100`, qui ajoute aussi les colonnes de la Constance Royale
 hebdomadaire `constance_week_start` et `constance_days_this_week`, 0 à 7).
+`student_mathoux` (migration `20261017090200`) est la mémoire des Mathoux de la Chatterie : par
+élève et par notion de l'arbre, le meilleur stade atteint (`chaton`, `matou`, `grand_matou`, qui
+ne redescend jamais) et les niveaux étoilés (`starred_grades`, codes de grade, 20 au plus). Lecture
+calquée sur `student_buddies` (l'élève les siennes, prof et admin tout) ; aucune policy d'écriture
+et `authenticated` n'a que SELECT : seul le serveur écrit (client service), `anon` n'a aucun droit.
+Cascade depuis `profiles` (effacement RGPD), RESTRICT vers `classification_nodes`. Piège d'écriture :
+un lot d'insertions où une ligne omet `starred_grades` y envoie NULL (union des clés de PostgREST) —
+passer `defaultToNull: false` ou toujours fournir la colonne. Test :
+`tests/integration/mathoux-memoire.test.ts`.
 Le solde vit dans `profiles.gidouilles` / `vip_cards`. L'élève lit ses propres traces, le professeur
 celles de tous les élèves ; les classements passent par `game_leaderboard`, borné à l'école
 (énigmes : `riddle_school_leaderboard`, prénom et score seulement, migration `20261015090800`).

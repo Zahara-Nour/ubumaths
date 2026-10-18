@@ -153,7 +153,8 @@ export const DOMAINS: Domain[] = [
 			'weekly_',
 			'reward_events',
 			'buddy_skins',
-			'student_buddies'
+			'student_buddies',
+			'student_mathoux'
 		]
 	},
 	{

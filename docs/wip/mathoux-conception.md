@@ -327,3 +327,10 @@ année. Règles validées :
 
 Découpage : PR 1 = calcul sur tout le parcours (meilleur stade par niveau, sans mémoire) ; PR 2 =
 migration de la table ; PR 3 = code qui s'en sert (après `db:migrate` et `db:types`).
+
+PR 2 (migration `20261017090200_mathoux_memoire.sql`, table `student_mathoux`) : la PR 3 doit
+aussi ajouter la table à l'export RGPD (`src/routes/api/account/export/+server.ts`, catégorie
+`gaming`, et le tableau de `docs/systeme/conformite/rgpd.md` § 7.3) — impossible avant
+`db:types`, le client typé ne connaît pas la table ; aucune ligne n'existe avant la PR 3, donc
+pas de trou d'export entre les deux. Écritures au client service avec `defaultToNull: false`
+(ou `starred_grades` toujours fourni).
