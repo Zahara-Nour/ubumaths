@@ -1287,12 +1287,17 @@ les deux, `FigureCard.svelte`, avec la grammaire des autres :
   (construction : « = », L2). Le champ (`DefinitionField`, `commit="validate"`) est rangé à
   Entrée ou à la sortie du champ — il l'était 0,3 s après la frappe. Le champ d'un point montre
   ses coordonnées en LaTeX (`\left(\sqrt{2};1\right)`, `fieldLatexOf`), relisibles.
-- **La nature** en étiquette discrète au bout de la ligne (« point », « droite », « segment »,
-  « cercle »… : `figureNatureOf`, `card-state.ts`) ; le constat d'une courbe vide (C6) sous la
-  ligne.
-- **Une construction** (`I = [milieu(A, B)]`, `s = [[AB]]`) : ce qu'elle vaut en gris sous la
-  ligne, non éditable — coordonnées exactes, équation réduite, longueur (`constructionSummaryOf`,
-  L7) ; c'est la construction qu'on modifie. Un point par coordonnées n'a pas de ligne grise.
+- **La nature** en gris SOUS la ligne, en tête de la ligne grise (« point », « droite »,
+  « segment », « cercle »… : `figureNatureOf`, `card-state.ts`) ; le constat d'une courbe vide
+  (C6) sous la ligne. Elle était au bout de la ligne : dans le panneau à sa largeur par défaut,
+  le champ d'une construction ne montrait plus que « cer » pour `cercle(O ; 3)` (2026-10-19).
+- **Une définition trop longue pour la ligne passe dessous, en entier** (`flex-wrap`, champ en
+  `flex: 1 1 auto`) — même règle pour les cartes de fonction, de valeur et de suite
+  (`carte-champ-largeur.svelte.test.ts`).
+- **Une construction** (`I = [milieu(A, B)]`, `s = [[AB]]`) : ce qu'elle vaut en gris après sa
+  nature (« cercle · … »), non éditable — coordonnées exactes, équation réduite, longueur
+  (`constructionSummaryOf`, L7) ; c'est la construction qu'on modifie. Un point par coordonnées
+  n'a que sa nature sous la ligne.
   L'icône de lien dit ce qu'elle suit (« I se construit à partir de A et B, et suit leurs
   changements », `followsOf`). En attente : « en attente » et sa raison.
 - **Le point de couleur** (`FigureStylePopover`) : couleur et taille d'un point, couleur,
