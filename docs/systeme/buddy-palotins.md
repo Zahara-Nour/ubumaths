@@ -111,10 +111,14 @@ L'XP buddy est le **reflet de l'investissement de l'eleve dans la duree**. Pas d
 (`question_template_points` → `curriculum_points` → `curriculum_objectives`), lu par
 `fetchTemplateThemeIds` (`src/lib/server/buddy-themes.ts`) en une requete par seance. Une question
 sans point n'a pas de theme ; une question rattachee a plusieurs themes recoit toujours le plus petit
-identifiant. Le bonus est calcule sur `themes_explored`, credite, puis seuls les themes PAYES sont
-ecrits (`addExploredThemes`, une ecriture verifiee). Credit partiel : le credit couvre les reponses
-dans l'ordre ; un theme est paye si l'XP cumulee jusqu'a la reponse qui porte son bonus est creditee
-en entier (bonus tronque par le plafond, ou credit en echec → theme non marque, il restera nouveau).
+identifiant. Les themes candidats au bonus (absents de `themes_explored`, bonus non tronque par le
+plafond dans le calcul local) sont RESERVES avant le credit (`addExploredThemes`, une ecriture sous
+verrou optimiste) : seul un theme reserve par CET envoi porte le bonus, donc de deux seances
+simultanees une seule le touche. Credit partiel : le credit couvre les reponses dans l'ordre ; un
+theme est paye si l'XP cumulee jusqu'a la reponse qui porte son bonus est creditee en entier. Theme
+reserve mais non paye (credit tronque par la base, ou credit en echec) → retire
+(`removeExploredThemes`), il restera nouveau. Une reponse isolee (`addBuddyXpFromExercise`) reserve
+son theme de la meme facon avant le credit.
 
 **Revision espacee** (decision de David, 2026-10-18) : forfait `XP_SOURCES.review_session`, au plus
 une fois par jour, quand l'eleve a revise au moins 10 cartes dans la journee (tous paquets), ou qu'il
@@ -409,6 +413,25 @@ student_buddies
 └── updated_at (timestamptz)
 ```
 
+### Ecritures : serveur seul (2026-10-18)
+
+Toutes les ecritures de `student_buddies` passent par le client service (`src/lib/server/buddy-queries.ts`),
+avec l'identifiant de l'eleve tire de la SESSION, jamais du corps de la requete : choix
+(`createStudentBuddy`), changement (`changeStudentPalotin`), serie (`updateStreak`,
+`resetLostStreak` depuis le layout du tableau de bord eleve), themes (`addExploredThemes`,
+`removeExploredThemes`), XP (`add_buddy_xp`). Les fonctions d'ecriture ne recoivent pas le client de
+l'eleve ; les lectures (`getStudentBuddy`, `getClassBuddies`) restent sur son client (sa RLS). Cela
+prepare le retrait des policies INSERT/UPDATE de l'eleve (PR de migration suivante) : apres lui,
+une ecriture restee sur son client rendrait 0 ligne sans erreur.
+
+Lire-modifier-ecrire sans transaction : verrou optimiste sur `updated_at` (trigger
+`student_buddies_updated_at_trigger`). L'ecriture porte `.eq('updated_at', lu)` et `.select()` ;
+0 ligne → relecture et nouvel essai, 3 au plus (`MAX_WRITE_ATTEMPTS`), puis abandon journalise
+(jamais un succes silencieux). Deux envois simultanes ne perdent donc aucun theme, ne font avancer la
+serie qu'une fois (un seul bonus de serie), et la remise a zero d'une serie perdue est reevaluee sur
+la ligne relue (une activite arrivee entre-temps n'est pas effacee). Jour « aujourd'hui » : jour UTC,
+celui du plafond.
+
 ### Table `buddy_skins`
 
 ```
@@ -576,8 +599,17 @@ A la **premiere connexion**, avant d'acceder au dashboard. Le choix du buddy est
 ### Changement de Palotin
 
 - **Premier changement gratuit** (droit a l'erreur)
-- Ensuite : coute des gidouilles (ex: 50)
+- Ensuite : coute 50 gidouilles (`PALOTIN_CHANGE_COST`)
 - **L'XP est toujours conservee** — on ne punit pas la progression
+
+Mise en oeuvre (`changeStudentPalotin`, client service) : le prix est celui de la ligne
+effectivement ecrite. Le changement (type + `change_count` + 1, en une ecriture) porte le verrou
+optimiste sur `updated_at` : deux changements simultanes ne passent pas tous deux au prix du premier,
+gratuit. Le debit vient ensuite, verrou optimiste sur le solde lu (`.eq('gidouilles', lu)`). Si le
+debit echoue (solde insuffisant ou modifie a chaque essai, erreur), le changement est annule
+(ecriture conditionnee sur le type et le compteur qu'il a poses) : aucun debit sans changement, aucun
+changement payant sans debit. Reponses de `POST /api/student/buddy/change` : 404 sans Palotin, 400
+meme Palotin ou solde insuffisant, 409 conflit repete.
 
 ---
 

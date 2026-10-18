@@ -25,6 +25,7 @@ import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { recordSrsReviewAttempt } from '$lib/server/srs/srs-attempt';
 import { rewardFinishedReviewSession } from '$lib/server/srs/review-session-reward';
+import { recordReviewSessionCard } from '$lib/server/srs/review-session-stats';
 import type { BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -165,27 +166,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const timeSpent = body.timeSpent || 0;
 
 		// Statistiques de séance : secondaires, une panne ne doit pas faire échouer une
-		// révision déjà enregistrée ; on la journalise.
-		if (existingSession) {
-			const { error: sessionUpdateError } = await supabase
-				.from('srs_review_sessions')
-				.update({
-					cards_reviewed: existingSession.cards_reviewed + 1,
-					correct_count: existingSession.correct_count + (isCorrect ? 1 : 0),
-					total_time: existingSession.total_time + timeSpent
-				})
-				.eq('id', existingSession.id);
-			if (sessionUpdateError) logger.error('Séance non mise à jour :', sessionUpdateError);
-		} else {
-			const { error: sessionInsertError } = await supabase.from('srs_review_sessions').insert({
-				user_id: user.id,
-				deck_id: body.deckId,
-				cards_reviewed: 1,
-				correct_count: isCorrect ? 1 : 0,
-				total_time: timeSpent
-			});
-			if (sessionInsertError) logger.error('Séance non créée :', sessionInsertError);
-		}
+		// révision déjà enregistrée (journalisée). Écriture au client service.
+		await recordReviewSessionCard(user.id, body.deckId, existingSession, {
+			isCorrect,
+			timeSpent
+		});
 
 		// ----- Forfait du Palotin (décision de David, 2026-10-18) -----
 		// Séance terminée (plus aucune carte due), au plus une fois par jour.

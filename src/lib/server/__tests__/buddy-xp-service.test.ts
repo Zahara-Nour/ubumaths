@@ -4,7 +4,9 @@
  *
  * - Une séance d'Entraînement : le bonus « nouveau thème » est donné UNE fois
  *   par thème encore jamais exploré, et les thèmes sont enregistrés en une seule
- *   écriture (plus une écriture par réponse).
+ *   écriture (plus une écriture par réponse). Les thèmes sont RÉSERVÉS avant le
+ *   crédit (écriture verrouillée, client service) : de deux envois simultanés,
+ *   un seul touche le bonus ; un thème réservé mais non payé est retiré.
  * - Une séance de révision espacée terminée : un forfait (l'effort, pas la
  *   réussite : les cartes sont auto-évaluées), soumis au plafond du jour.
  */
@@ -23,7 +25,10 @@ const addBuddyXp = vi.hoisted(() =>
 const updateStreak = vi.hoisted(() => vi.fn());
 const addExploredTheme = vi.hoisted(() => vi.fn());
 const addExploredThemes = vi.hoisted(() =>
-	vi.fn<(supabase: unknown, buddy: BuddyState, themes: string[]) => Promise<Set<string>>>()
+	vi.fn<(studentId: string, themes: string[]) => Promise<Set<string>>>()
+);
+const removeExploredThemes = vi.hoisted(() =>
+	vi.fn<(studentId: string, themes: string[]) => Promise<void>>()
 );
 
 vi.mock('../buddy-queries', () => ({
@@ -31,7 +36,8 @@ vi.mock('../buddy-queries', () => ({
 	addBuddyXp,
 	updateStreak,
 	addExploredTheme,
-	addExploredThemes
+	addExploredThemes,
+	removeExploredThemes
 }));
 
 import { addBuddyXpFromTest, addBuddyXpFromReviewSession } from '../buddy-xp-service';
@@ -78,11 +84,13 @@ describe('addBuddyXpFromTest — bonus « nouveau thème »', () => {
 		getStudentBuddy.mockReset().mockResolvedValue(buddy({ themes_explored: [THEME_2] }));
 		addBuddyXp.mockReset().mockImplementation(async (_id, xp) => gain(xp));
 		addExploredTheme.mockReset();
-		addExploredThemes.mockReset().mockResolvedValue(new Set([THEME_1]));
+		// Réservation acceptée : rend tous les thèmes demandés
+		addExploredThemes.mockReset().mockImplementation(async (_id, themes) => new Set(themes));
+		removeExploredThemes.mockReset().mockResolvedValue(undefined);
 		updateStreak.mockReset();
 	});
 
-	it('un bonus par thème NOUVEAU, une fois, thèmes écrits APRÈS le crédit, payés seulement', async () => {
+	it('un bonus par thème NOUVEAU, une fois, thème RÉSERVÉ avant le crédit', async () => {
 		const result = await addBuddyXpFromTest(supabase, STUDENT, [
 			{ isCorrect: true, theme: THEME_1 },
 			{ isCorrect: true, theme: THEME_1 },
@@ -95,12 +103,13 @@ describe('addBuddyXpFromTest — bonus « nouveau thème »', () => {
 		expect(addBuddyXp.mock.calls[0][1]).toBe(4 * XP_SOURCES.correct + XP_SOURCES.new_theme);
 		expect(result?.isNewTheme).toBe(true);
 
+		// Identité de la session, une seule écriture, AVANT le crédit
 		expect(addExploredThemes).toHaveBeenCalledTimes(1);
-		expect(addExploredThemes.mock.calls[0][2]).toEqual([THEME_1]);
-		// Crédit d'abord, écriture des thèmes ensuite
-		expect(addExploredThemes.mock.invocationCallOrder[0]).toBeGreaterThan(
+		expect(addExploredThemes.mock.calls[0]).toEqual([STUDENT, [THEME_1]]);
+		expect(addExploredThemes.mock.invocationCallOrder[0]).toBeLessThan(
 			addBuddyXp.mock.invocationCallOrder[0]
 		);
+		expect(removeExploredThemes).not.toHaveBeenCalled();
 		expect(addExploredTheme).not.toHaveBeenCalled();
 	});
 
@@ -124,34 +133,55 @@ describe('addBuddyXpFromTest — bonus « nouveau thème »', () => {
 		expect(result?.isNewTheme).toBe(false);
 	});
 
-	it('crédit tronqué par la base : seuls les thèmes dont la réponse est couverte sont marqués', async () => {
+	it('crédit tronqué par la base : le thème réservé dont la réponse n’est pas couverte est retiré', async () => {
 		// 35 + 35 demandés, 50 crédités : la 1re réponse (THEME_1) est payée, pas la 2de
 		addBuddyXp.mockImplementation(async () => ({ ...gain(50), daily_cap_reached: true }));
-		await addBuddyXpFromTest(supabase, STUDENT, [
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [
 			{ isCorrect: true, theme: THEME_1 },
 			{ isCorrect: true, theme: 'theme-3' }
 		]);
 
 		expect(addBuddyXp.mock.calls[0][1]).toBe(70);
-		expect(addExploredThemes.mock.calls[0][2]).toEqual([THEME_1]);
+		expect(addExploredThemes.mock.calls[0]).toEqual([STUDENT, [THEME_1, 'theme-3']]);
+		expect(removeExploredThemes.mock.calls).toEqual([[STUDENT, ['theme-3']]]);
+		expect(result?.isNewTheme).toBe(true);
 	});
 
-	it('crédit en échec : aucun thème marqué', async () => {
+	it('crédit en échec : les thèmes réservés sont retirés, l’erreur remonte', async () => {
 		addBuddyXp.mockRejectedValue(new Error('panne'));
 		await expect(
 			addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true, theme: THEME_1 }])
 		).rejects.toThrow('panne');
-		expect(addExploredThemes).not.toHaveBeenCalled();
+		expect(removeExploredThemes.mock.calls).toEqual([[STUDENT, [THEME_1]]]);
 	});
 
-	it('thème payé mais non écrit (écriture refusée) : pas annoncé comme nouveau', async () => {
+	it('thème non réservé (envoi simultané ou écriture refusée) : PAS de bonus payé', async () => {
 		addExploredThemes.mockResolvedValue(new Set());
 		const result = await addBuddyXpFromTest(supabase, STUDENT, [
 			{ isCorrect: true, theme: THEME_1 }
 		]);
 
-		expect(addBuddyXp.mock.calls[0][1]).toBe(XP_SOURCES.correct + XP_SOURCES.new_theme);
+		expect(addBuddyXp.mock.calls[0][1]).toBe(XP_SOURCES.correct);
 		expect(result?.isNewTheme).toBe(false);
+		expect(removeExploredThemes).not.toHaveBeenCalled();
+	});
+
+	it('réservation partielle : bonus pour le seul thème réservé par CET envoi', async () => {
+		addExploredThemes.mockResolvedValue(new Set(['theme-3']));
+		await addBuddyXpFromTest(supabase, STUDENT, [
+			{ isCorrect: true, theme: THEME_1 },
+			{ isCorrect: true, theme: 'theme-3' }
+		]);
+
+		expect(addBuddyXp.mock.calls[0][1]).toBe(2 * XP_SOURCES.correct + XP_SOURCES.new_theme);
+		expect(removeExploredThemes).not.toHaveBeenCalled();
+	});
+
+	it('série : écrite avec l’identité de la session seule (client service)', async () => {
+		getStudentBuddy.mockResolvedValue(buddy({ last_activity_date: '2000-01-01' }));
+		updateStreak.mockResolvedValue({ newStreak: 4, wasUpdated: true });
+		await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(updateStreak.mock.calls).toEqual([[STUDENT]]);
 	});
 });
 

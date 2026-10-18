@@ -31,9 +31,11 @@
  *   ce jour-là (côté sûr).
  * - Crédit en erreur ou nul → réclamation relâchée (`completed_at` remis à null).
  *
- * Limite connue : la policy « Users can update their own review sessions »
- * laisse l'élève réécrire `completed_at` par un appel direct ; le gain reste
- * borné par le plafond du jour (fermeture prévue dans une PR suivante).
+ * Écritures (réclamation, relâche) au client service, `userId` de la session ;
+ * les lectures restent au client de l'élève. Limite connue jusqu'à la PR de
+ * migration : la policy « Users can update their own review sessions » laisse
+ * encore l'élève réécrire `completed_at` par un appel direct ; le gain reste
+ * borné par le plafond du jour.
  *
  * Toute panne rend null : on ne conclut jamais sur une lecture manquée.
  */
@@ -45,6 +47,7 @@ import {
 	type BuddyXpFromExerciseResult
 } from '$lib/server/buddy-xp-service';
 import { getStudentBuddy } from '$lib/server/buddy-queries';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import {
 	DAILY_XP_CAP,
 	REVIEW_REWARD_CARDS_ANY_DECK,
@@ -105,11 +108,12 @@ async function isEffortEnough(
 	return dueCards.length === 0;
 }
 
-/** Relâche une réclamation (crédit en échec ou nul), écriture vérifiée. */
-async function releaseClaim(supabase: SB, claimedIds: string[]): Promise<void> {
-	const { data, error } = await supabase
+/** Relâche une réclamation (crédit en échec ou nul), client service, écriture vérifiée. */
+async function releaseClaim(userId: string, claimedIds: string[]): Promise<void> {
+	const { data, error } = await createServiceRoleClient()
 		.from('srs_review_sessions')
 		.update({ completed_at: null })
+		.eq('user_id', userId)
 		.in('id', claimedIds)
 		.select('id');
 	if (error || (data?.length ?? 0) !== claimedIds.length) {
@@ -143,8 +147,9 @@ export async function rewardFinishedReviewSession(
 		// 3. L'effort du jour
 		if (!(await isEffortEnough(supabase, userId, deckId, dayStartIso))) return null;
 
-		// 4. Réclamer la séance du jour de ce paquet — une seule fois
-		const { data: claimed, error: claimError } = await supabase
+		// 4. Réclamer la séance du jour de ce paquet — une seule fois (client
+		//    service : l'élève n'écrit pas `completed_at` lui-même)
+		const { data: claimed, error: claimError } = await createServiceRoleClient()
 			.from('srs_review_sessions')
 			.update({ completed_at: new Date().toISOString() })
 			.eq('user_id', userId)
@@ -173,7 +178,7 @@ export async function rewardFinishedReviewSession(
 			logger.error('Forfait de révision non crédité :', creditError);
 		}
 		if (!result || result.xpResult.xp_gained <= 0) {
-			await releaseClaim(supabase, claimedIds);
+			await releaseClaim(userId, claimedIds);
 			return null;
 		}
 		return result;

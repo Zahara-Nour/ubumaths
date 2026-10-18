@@ -15,7 +15,8 @@ import {
 	addBuddyXp,
 	updateStreak,
 	addExploredTheme,
-	addExploredThemes
+	addExploredThemes,
+	removeExploredThemes
 } from './buddy-queries';
 
 export interface ExerciseXpParams {
@@ -31,6 +32,13 @@ export interface BuddyXpFromExerciseResult {
 	isNewTheme: boolean;
 }
 
+/** XP de base d'une séance et réponse qui porte le bonus de chaque thème. */
+interface TestXpPlan {
+	totalBaseXp: number;
+	/** Thème dont la réponse porte le bonus → XP cumulée à la fin de cette réponse. */
+	themeDueAt: Map<string, number>;
+}
+
 /**
  * Award XP to a student's buddy from a single exercise/question answer.
  *
@@ -39,6 +47,9 @@ export interface BuddyXpFromExerciseResult {
  * - First exercise of the day bonus
  * - New theme bonus
  * - Streak update + milestone bonuses
+ *
+ * `supabase` (client de l'élève) ne sert qu'aux lectures ; les écritures
+ * passent par le client service, `studentId` venant de la SESSION.
  *
  * Returns null if student has no buddy.
  */
@@ -53,10 +64,11 @@ export async function addBuddyXpFromExercise(
 	const today = new Date().toISOString().split('T')[0];
 	const isFirstOfDay = buddy.last_activity_date !== today;
 
-	// Check if theme is new
+	// Thème réservé AVANT le crédit : de deux envois simultanés, un seul le
+	// réserve, donc un seul touche le bonus
 	let isNewTheme = false;
 	if (params.theme) {
-		isNewTheme = await addExploredTheme(supabase, studentId, params.theme);
+		isNewTheme = await addExploredTheme(studentId, params.theme);
 	}
 
 	// Calculate base XP
@@ -78,9 +90,9 @@ export async function addBuddyXpFromExercise(
 	let streakBonusXp = 0;
 
 	if (isFirstOfDay) {
-		const streakResult = await updateStreak(supabase, studentId);
+		const streakResult = await updateStreak(studentId);
 		streakUpdated = streakResult.wasUpdated;
-		newStreak = streakResult.newStreak;
+		newStreak = streakResult.wasUpdated ? streakResult.newStreak : buddy.current_streak;
 
 		if (streakUpdated) {
 			const bonus = calculateStreakBonus(newStreak);
@@ -104,10 +116,51 @@ export async function addBuddyXpFromExercise(
 }
 
 /**
+ * XP d'une séance, réponse par réponse. `isEligible` dit si un thème peut
+ * encore porter le bonus ; un seul bonus par thème (sa première réponse). Un
+ * bonus tronqué par le plafond (calcul local) n'est pas retenu dans
+ * `themeDueAt` : son thème restera « nouveau ».
+ */
+function planTestXp(
+	answers: { isCorrect: boolean; theme?: string }[],
+	isFirstOfDay: boolean,
+	xpEarnedToday: number,
+	isEligible: (theme: string) => boolean
+): TestXpPlan {
+	const bonusThemes = new Set<string>();
+	const themeDueAt = new Map<string, number>();
+	let totalBaseXp = 0;
+
+	for (let i = 0; i < answers.length; i++) {
+		const answer = answers[i];
+		const isNewTheme = !!answer.theme && isEligible(answer.theme) && !bonusThemes.has(answer.theme);
+		if (isNewTheme && answer.theme) bonusThemes.add(answer.theme);
+
+		const { xp, capped } = calculateXpGain({
+			isCorrect: answer.isCorrect,
+			isFirstOfDay: i === 0 && isFirstOfDay,
+			isNewTheme,
+			isCorrectedRetry: false,
+			xpEarnedToday: xpEarnedToday + totalBaseXp
+		});
+		totalBaseXp += xp;
+		if (isNewTheme && answer.theme && !capped) themeDueAt.set(answer.theme, totalBaseXp);
+	}
+
+	return { totalBaseXp, themeDueAt };
+}
+
+/**
  * Award XP from a completed test (batch of questions).
  *
  * Processes each answer individually for XP, but only triggers
  * streak/first-of-day once for the whole test.
+ *
+ * Bonus « nouveau thème » payé une seule fois, même pour deux envois
+ * simultanés : les thèmes sont RÉSERVÉS (écrits sous verrou optimiste) avant le
+ * crédit, et seul un thème réservé par CET appel porte le bonus. Un thème
+ * réservé dont le bonus n'est finalement pas crédité (crédit en échec, crédit
+ * tronqué par la base) est retiré : il restera « nouveau ».
  */
 export async function addBuddyXpFromTest(
 	supabase: SupabaseClient<Database>,
@@ -131,49 +184,44 @@ export async function addBuddyXpFromTest(
 		daily_cap_reached: false
 	};
 
-	// Bonus « nouveau thème » : calculé sur les thèmes déjà explorés, CRÉDITÉ, puis
-	// seuls les thèmes payés sont marqués (un thème non payé restera « nouveau »).
+	// 1. Thèmes candidats au bonus, d'après les thèmes déjà explorés
 	const explored = new Set(buddy.themes_explored);
-	const bonusThemes = new Set<string>();
-	/** Thème dont la réponse porte le bonus → XP cumulée à la fin de cette réponse. */
-	const themeDueAt = new Map<string, number>();
+	let plan = planTestXp(answers, isFirstOfDay, xpEarnedToday, (theme) => !explored.has(theme));
+	const candidates = [...plan.themeDueAt.keys()];
 
-	let totalBaseXp = 0;
-	for (let i = 0; i < answers.length; i++) {
-		const answer = answers[i];
-		// Un seul bonus par thème : la première réponse qui le porte
-		const isNewTheme =
-			!!answer.theme && !explored.has(answer.theme) && !bonusThemes.has(answer.theme);
-		if (isNewTheme && answer.theme) bonusThemes.add(answer.theme);
-
-		const { xp, capped } = calculateXpGain({
-			isCorrect: answer.isCorrect,
-			isFirstOfDay: i === 0 && isFirstOfDay,
-			isNewTheme,
-			isCorrectedRetry: false,
-			xpEarnedToday: xpEarnedToday + totalBaseXp
-		});
-		totalBaseXp += xp;
-		// Bonus tronqué par le plafond (calcul local) : pas payé, thème non marqué
-		if (isNewTheme && answer.theme && !capped) themeDueAt.set(answer.theme, totalBaseXp);
+	// 2. Les réserver ; un thème réservé ailleurs entre-temps perd le bonus
+	const reserved =
+		candidates.length > 0 ? await addExploredThemes(studentId, candidates) : new Set<string>();
+	const lost = new Set(candidates.filter((theme) => !reserved.has(theme)));
+	if (lost.size > 0) {
+		plan = planTestXp(
+			answers,
+			isFirstOfDay,
+			xpEarnedToday,
+			(theme) => !explored.has(theme) && !lost.has(theme)
+		);
 	}
 
-	// Add all XP in one RPC call
-	if (totalBaseXp > 0) {
-		lastXpResult = await addBuddyXp(studentId, totalBaseXp, false);
+	// 3. Créditer ; en échec, rendre les thèmes réservés
+	if (plan.totalBaseXp > 0) {
+		try {
+			lastXpResult = await addBuddyXp(studentId, plan.totalBaseXp, false);
+		} catch (creditError) {
+			await removeExploredThemes(studentId, [...reserved]);
+			throw creditError;
+		}
 		totalXpGained += lastXpResult.xp_gained;
 	}
 
-	// Crédit partiel (plafond appliqué par la base) : le crédit couvre les réponses
-	// dans l'ordre ; un thème est payé si l'XP cumulée jusqu'à SA réponse l'est.
+	// 4. Crédit partiel (plafond appliqué par la base) : le crédit couvre les
+	// réponses dans l'ordre ; un thème est payé si l'XP cumulée jusqu'à SA
+	// réponse l'est. Les thèmes réservés non payés sont retirés.
 	const creditedBaseXp = lastXpResult.xp_gained;
-	const paidThemes = [...themeDueAt]
-		.filter(([, dueAt]) => dueAt <= creditedBaseXp)
-		.map(([theme]) => theme);
-	const newThemes =
-		paidThemes.length > 0
-			? await addExploredThemes(supabase, buddy, paidThemes)
-			: new Set<string>();
+	const newThemes = new Set(
+		[...reserved].filter((theme) => (plan.themeDueAt.get(theme) ?? Infinity) <= creditedBaseXp)
+	);
+	const unpaid = [...reserved].filter((theme) => !newThemes.has(theme));
+	if (unpaid.length > 0) await removeExploredThemes(studentId, unpaid);
 
 	// Handle streak
 	let streakUpdated = false;
@@ -181,9 +229,9 @@ export async function addBuddyXpFromTest(
 	let streakBonusXp = 0;
 
 	if (isFirstOfDay) {
-		const streakResult = await updateStreak(supabase, studentId);
+		const streakResult = await updateStreak(studentId);
 		streakUpdated = streakResult.wasUpdated;
-		newStreak = streakResult.newStreak;
+		newStreak = streakResult.wasUpdated ? streakResult.newStreak : buddy.current_streak;
 
 		if (streakUpdated) {
 			const bonus = calculateStreakBonus(newStreak);

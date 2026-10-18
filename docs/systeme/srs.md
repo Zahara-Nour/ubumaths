@@ -202,7 +202,10 @@ dans la requête.
 `ReviewSession.svelte` lit `dueUrl(source)`, présente chaque carte (instance neuve pour un
 modèle), envoie la note par `submitRequest`. Côté paquet, `srs_review_sessions` cumule par jour
 cartes revues, bonnes réponses (note ≥ 3) et temps ; une panne de ces statistiques n'annule pas
-la révision.
+la révision. Écriture au client service (`recordReviewSessionCard`,
+`src/lib/server/srs/review-session-stats.ts`), `userId` de la session, après vérification du paquet
+par la RLS de l'élève ; 0 ligne écrite est journalisé. La lecture de la séance du jour reste au client
+de l'élève.
 
 **Forfait du Palotin** (décision de David, 2026-10-18 : l'effort, pas la réussite) :
 `rewardFinishedReviewSession` (`src/lib/server/srs/review-session-reward.ts`), appelé après chaque
@@ -217,11 +220,13 @@ FSRS). Une révision forcée d'un paquet sans carte due rapporte donc le forfait
 « Une fois par jour » : `srs_review_sessions.completed_at` marque la séance qui a rapporté le forfait.
 Une séance déjà marquée aujourd'hui → rien, sans autre lecture. Plafond déjà atteint ou élève sans
 Palotin → pas de réclamation. Réclamation conditionnelle (`completed_at is null`, vérifiée par
-`.select()`), relâchée si le crédit échoue ou rapporte 0. Deux paquets réclamés au même instant :
+`.select()`), relâchée si le crédit échoue ou rapporte 0 ; réclamation et relâche au client
+service, filtrées sur le `userId` de la session. Deux paquets réclamés au même instant :
 chacun voit l'autre, aucun forfait ce jour-là (côté sûr). `api/srs/review/submit` rend le gain sous
 `buddy_xp`, même forme que `api/tests/save` ; toute panne rend `null` sans toucher la révision.
-Limite connue : l'élève peut réécrire `completed_at` par un appel direct (policy UPDATE « own ») ; le
-gain reste borné par le plafond du jour. Le paquet de chapitre (`api/srs/chapters/[id]/submit`) ne
+Limite connue, jusqu'à la PR de migration qui retire la policy UPDATE « own » : l'élève peut encore
+réécrire `completed_at` par un appel direct ; le gain reste borné par le plafond du jour. Le code
+n'écrit plus rien au client de l'élève, la policy peut donc être retirée sans rien casser. Le paquet de chapitre (`api/srs/chapters/[id]/submit`) ne
 donne pas de forfait.
 
 « Quitter », en tête de séance (`BackLink kind="quit"`, [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)), ramène là

@@ -63,7 +63,7 @@
  * - The type would otherwise be lost on `pnpm db:types` regeneration
  */
 
-import type { Database, Json, Tables } from './database';
+import type { Database, Json, Tables, TablesUpdate } from './database';
 import type { QuestionTemplate } from '$lib/questions/types';
 import type { GradeCode } from '$lib/types/grades';
 
@@ -91,6 +91,9 @@ export type AgeDeclaration = '15_plus' | 'under_15';
 
 /** Student buddy table row type alias */
 export type StudentBuddy = Tables<'student_buddies'>;
+
+/** Champs modifiables d'une ligne `student_buddies` (écritures du serveur) */
+export type StudentBuddyUpdate = TablesUpdate<'student_buddies'>;
 
 /** Buddy skin table row type alias */
 export type BuddySkin = Tables<'buddy_skins'>;

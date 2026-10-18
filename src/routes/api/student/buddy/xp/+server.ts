@@ -33,7 +33,7 @@ const logger = createServerLogger('api/student/buddy/xp/+server');
 
 const bodySchema = z.object({
 	isCorrect: z.boolean(),
-	theme: z.string().optional()
+	theme: z.string().min(1).max(200).optional()
 });
 
 export const POST: RequestHandler = async ({ locals, request }) => {
