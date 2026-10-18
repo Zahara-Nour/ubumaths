@@ -22,3 +22,8 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 - 2026-10-18 : worktree `../ubumaths-wt-atelier-geometrie` créé ; comportements visés : C1-C15
   (sauf l'affichage dans la Figure), P1-P9, M1-M4, Q1, Q2.
+- 2026-10-18 : PR 1 implémentée (tests d'abord : 64 tests node, 58 rouges avant le code) —
+  types `point` et `curve`, lecture dans Calcul et les cartes, `y` réservé (Q1), version 3 et
+  migration d'un objet `y` (Q2), plafond de 50 (Q3), cartes « d : … » et « A = … », boutons
+  « + Point » et « + Courbe ». Reportés en PR 2 : la nature d'une courbe (C1 « droite », C2
+  « cercle ») et la courbe vide (C6), faute d'une classification pure dans `geometry-core`.
