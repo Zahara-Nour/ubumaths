@@ -334,3 +334,12 @@ aussi ajouter la table à l'export RGPD (`src/routes/api/account/export/+server.
 `db:types`, le client typé ne connaît pas la table ; aucune ligne n'existe avant la PR 3, donc
 pas de trou d'export entre les deux. Écritures au client service avec `defaultToNull: false`
 (ou `starred_grades` toujours fourni).
+
+### Sieste et réveil (décisions de David, 2026-10-18)
+
+- **Sieste** : seul un point **déjà réussi puis perdu** endort le Mathou (seuil de réussites atteint,
+  mais plus acquis à cause d'échecs récents), ou un point dû en révision. Un point nouvellement tagué,
+  jamais tenté, ne l'endort pas : il empêche seulement de gagner l'étoile de la classe.
+- **Réveil** : « Réveiller » mène aux révisions dues. Un Mathou endormi par un point perdu sans carte
+  due ne se réveille qu'à la prochaine révision due (cas rare, accepté). **v1.1** : un bouton
+  « S'entraîner sur cette notion » (révision forcée limitée aux questions de la notion).
