@@ -9,6 +9,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { tick } from 'svelte';
+import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
 import WithAtelier from './harness/WithAtelier.svelte';
 import WithFigure from './harness/WithFigure.svelte';
@@ -68,8 +69,9 @@ describe('L7 : la carte d’une construction', () => {
 
 		const card = cardFor(container, 'I');
 		expect(card.querySelector('.type')?.textContent?.trim()).toBe('point');
-		expect(card.querySelector('.definition')?.textContent).toContain('milieu');
-		expect(card.querySelector('.signe')?.textContent?.trim()).toBe('=');
+		// Lot 4b de la refonte : la construction est dans le champ de la ligne
+		expect(card.querySelector<MathfieldElement>('math-field')?.value).toContain('milieu');
+		expect(card.querySelector('.egal')?.textContent?.trim()).toBe('=');
 		expect(valueText(card)).toBe('I(1/2 ; 2)');
 	});
 
@@ -80,7 +82,7 @@ describe('L7 : la carte d’une construction', () => {
 		const card = cardFor(container, 's');
 		expect(card.querySelector('.type')?.textContent?.trim()).toBe('segment');
 		// Une construction se nomme avec « = », pas « : »
-		expect(card.querySelector('.signe')?.textContent?.trim()).toBe('=');
+		expect(card.querySelector('.egal')?.textContent?.trim()).toBe('=');
 		expect(valueText(card)).toBe('longueur √5');
 	});
 

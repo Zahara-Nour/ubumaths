@@ -126,6 +126,13 @@ const storedObjectSchema = z.object({
 		.optional()
 		.catch(undefined),
 	/**
+	 * Curseur d'une valeur affiché depuis le menu (lot 4a, décision de David du
+	 * 2026-10-18). Rangé seulement quand il est affiché : pas de nouvelle version,
+	 * même contrepartie que `figureDisplay` (un onglet resté sur l'ancien code
+	 * l'oublie — un affichage, jamais un objet).
+	 */
+	sliderShown: z.literal(true).optional().catch(undefined),
+	/**
 	 * Mode, rang et premier terme d'une suite (lot 5). Absents des suites rangées
 	 * avant : le mode se retrouve à la relecture (S4). Validés à la création.
 	 */
@@ -134,6 +141,17 @@ const storedObjectSchema = z.object({
 	firstTerm: z.string().max(20).optional().catch(undefined),
 	/** Réglages du tracé d'une suite (lot 5b). Abîmés : oubliés, l'objet gardé. */
 	sequenceDisplay: sequenceDisplaySchema.optional().catch(undefined),
+	/**
+	 * Le dessin d'un point (couleur, taille, étiquette) ou d'une courbe de la
+	 * figure (couleur, trait) — lot 4b de la refonte. Jugé par l'objet à la
+	 * relecture (`adoptFigureDisplay`), selon son type : ici, seulement sa forme.
+	 *
+	 * ⚠️ Pas de nouvelle version d'état : absent tant que rien n'est réglé, un
+	 * ancien état se relit tel quel. Contrepartie, la même que la lecture
+	 * graphique (#1497) : un onglet resté sur l'ancien code l'oublie (Zod retire
+	 * la clé) — un réglage de couleur, jamais un objet.
+	 */
+	figureDisplay: z.record(z.string(), z.unknown()).optional().catch(undefined),
 	/**
 	 * La colonne d'une liste dans la grille (`A` à `Z`, version 2). Absente ou
 	 * abîmée : la liste prend la première colonne libre.
@@ -195,10 +213,14 @@ export interface StoredObject {
 	readonly reciprocalOn?: string;
 	readonly display?: StoredDisplay;
 	readonly slider?: { readonly min: number; readonly max: number; readonly step: number };
+	/** Curseur d'une valeur affiché depuis le menu, absent quand il est caché. */
+	readonly sliderShown?: true;
 	readonly mode?: 'explicit' | 'recurrence';
 	readonly firstIndex?: number;
 	readonly firstTerm?: string;
 	readonly sequenceDisplay?: unknown;
+	/** Le dessin d'un point ou d'une courbe de la figure (lot 4b), validé à la relecture. */
+	readonly figureDisplay?: unknown;
 	/** La colonne d'une liste (`A` à `Z`). */
 	readonly column?: string;
 }

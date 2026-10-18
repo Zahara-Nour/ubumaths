@@ -25,28 +25,29 @@ function cardFor(container: HTMLElement, name: string): HTMLElement {
 	return card as HTMLElement;
 }
 
-/** Ce que la tête de la carte donne à lire : nom, signe, définition (lecture d'écran). */
-function headerText(card: HTMLElement): string {
-	const name = card.querySelector('.nom')?.textContent?.trim() ?? '';
-	const sign = card.querySelector('.signe')?.textContent?.trim() ?? '';
-	const spoken = card.querySelector('.definition .sr-only')?.textContent?.trim() ?? '';
-	return `${name} ${sign} ${spoken}`;
+function fieldOf(card: HTMLElement): MathfieldElement {
+	const field = card.querySelector('math-field');
+	if (!field) throw new Error('pas de champ');
+	return field as MathfieldElement;
 }
 
 /**
- * Les « : » ou « = » VISIBLES seuls dans la tête de la carte (une ligne à eux) :
- * revue de la PR 2, la carte se lit comme celle d'une fonction — le nom, puis
- * l'équation ou les coordonnées. La lecture d'écran garde le signe.
+ * Le nom, le signe et le champ sont-ils sur la même ligne ? (revue de la PR 2 :
+ * la carte se lit comme celle d'une fonction — le nom, puis l'équation ou les
+ * coordonnées ; lot 4b de la refonte : une seule ligne).
  */
-function isolatedSigns(card: HTMLElement): string[] {
-	return (
-		[...card.querySelectorAll('.entete *')]
-			// Le « = » d'une équation composée par MathLive n'est pas un signe isolé
-			.filter((el) => el.children.length === 0 && el.closest('.ML__latex') === null)
-			.map((el) => ({ text: el.textContent?.trim() ?? '', box: el.getBoundingClientRect() }))
-			.filter(({ text, box }) => (text === ':' || text === '=') && box.width > 1 && box.height > 1)
-			.map(({ text }) => text)
+function onOneLine(card: HTMLElement): boolean {
+	const boxes = ['.nom', '.egal', 'math-field'].map((selector) =>
+		card.querySelector(selector)!.getBoundingClientRect()
 	);
+	const [first, ...others] = boxes;
+	return others.every((box) => box.bottom > first.top && box.top < first.bottom);
+}
+
+/** Le premier clic de la session est parfois perdu par MathLive (mesuré). */
+async function focusField(field: MathfieldElement) {
+	await userEvent.click(field);
+	await vi.waitFor(() => expect(document.activeElement).toBe(field));
 }
 
 // =============================================================================
@@ -61,12 +62,11 @@ describe('la carte d’un objet de la figure', () => {
 
 		const card = cardFor(container, 'd');
 
-		expect(isolatedSigns(card)).toEqual([]);
-		expect(card.querySelector('.definition .ML__latex')).toBeTruthy();
+		expect(onOneLine(card)).toBe(true);
+		expect(card.querySelector('.egal')?.textContent?.trim()).toBe(':');
+		expect(fieldOf(card).value.replace(/\s+/g, '')).toBe('y=3x-2');
 		// PR 2 : la nature remplace le type « courbe » (C1)
 		expect(card.querySelector('.type')?.textContent?.trim()).toBe('droite');
-		// La lecture d'écran (MathLive) : « d : 'Y' equals 3 'X' minus 2 »
-		expect(headerText(card)).toMatch(/^d : 'Y' equals/);
 	});
 
 	it('C2 : C : x² + y² = 1 a la nature « cercle »', async () => {
@@ -96,13 +96,11 @@ describe('la carte d’un objet de la figure', () => {
 
 		const card = cardFor(container, 'A');
 
-		expect(isolatedSigns(card)).toEqual([]);
-		// La lecture d'écran garde « A = (1 ; 2) »
-		expect(card.querySelector('.signe')?.textContent?.trim()).toBe('=');
-		expect(card.querySelector('.definition .ML__latex')).toBeTruthy();
+		expect(onOneLine(card)).toBe(true);
+		expect(card.querySelector('.egal')?.textContent?.trim()).toBe('=');
 		expect(card.querySelector('.type')?.textContent?.trim()).toBe('point');
 		// Un point ne va pas dans Graphe (G0) : pas de bouton « Tracer »
-		expect(card.querySelector('.oeil')).toBeNull();
+		expect(card.querySelector('button[aria-label^="Tracer"]')).toBeNull();
 	});
 
 	it('« + Point » et « + Courbe » créent les cartes A et d, à compléter', async () => {
@@ -119,62 +117,44 @@ describe('la carte d’un objet de la figure', () => {
 		expect(atelier.get('d')?.status).toBe('incomplete');
 	});
 
-	it('la carte d’une courbe se modifie : préfixe « d : », la frappe met à jour', async () => {
+	it('la carte d’une courbe se modifie : « d : » puis le champ, Entrée range', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'curve', name: 'd' });
 		const { container } = await render(WithAtelier, { atelier });
-		(cardFor(container, 'd').querySelector('.entete') as HTMLButtonElement).click();
-		await vi.waitFor(() =>
-			expect(cardFor(container, 'd').querySelector('math-field')).toBeTruthy()
-		);
 		const card = cardFor(container, 'd');
-		const field = card.querySelector('math-field') as MathfieldElement;
+		const field = fieldOf(card);
 
-		expect(card.querySelector('.prefixe')?.textContent?.replace(/\s+/g, '')).toBe('d:');
-		// En édition, « d : » et le champ sont sur la même ligne
-		const prefix = card.querySelector('.prefixe')!.getBoundingClientRect();
-		const box = field.getBoundingClientRect();
-		expect(prefix.bottom > box.top && prefix.top < box.bottom).toBe(true);
-		await userEvent.click(field);
-		await vi.waitFor(() => expect(document.activeElement).toBe(field));
-		await userEvent.keyboard('y=2x');
+		expect(card.querySelector('.egal')?.textContent?.trim()).toBe(':');
+		expect(onOneLine(card)).toBe(true);
+		await focusField(field);
+		await userEvent.keyboard('y=2x{Enter}');
 
 		await vi.waitFor(() => expect(atelier.get('d')?.status).toBe('ok'));
 		expect(atelier.get('d')?.kind).toBe('curve');
 	});
 
-	it('P1 : le rendu du point se lit (1 ; 2)', async () => {
+	it('P1 : le champ du point montre (1 ; 2)', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'point', name: 'A', definition: '(1 ; 2)' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
 
-		const card = cardFor(container, 'A');
-
-		// Mesuré (MathLive 0.111) : « Open paren. 1 semi-colon 2 Close paren. »
-		expect(card.querySelector('.definition .sr-only')?.textContent?.trim()).toBe(
-			'Open paren. 1 semi-colon 2 Close paren.'
-		);
+		expect(fieldOf(cardFor(container, 'A')).value.replace(/\s+/g, '')).toMatch(/1;2/);
 	});
 
 	it('P3 : la carte d’un point se tape, (1;2) puis (1,5;2) → A(3/2 ; 2)', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'point', name: 'A' });
 		const { container } = await render(WithAtelier, { atelier });
-		(cardFor(container, 'A').querySelector('.entete') as HTMLButtonElement).click();
-		await vi.waitFor(() =>
-			expect(cardFor(container, 'A').querySelector('math-field')).toBeTruthy()
-		);
-		const field = cardFor(container, 'A').querySelector('math-field') as MathfieldElement;
-		await userEvent.click(field);
-		await vi.waitFor(() => expect(document.activeElement).toBe(field));
+		const field = fieldOf(cardFor(container, 'A'));
+		await focusField(field);
 
-		await userEvent.keyboard('(1;2)');
+		await userEvent.keyboard('(1;2){Enter}');
 		await vi.waitFor(() => expect(atelier.get('A')?.status).toBe('ok'));
 		// Mesuré : MathLive écrit `\left(1;2\right)` pour `(1;2)` tapé
 		expect(atelier.get('A')?.definition).toBe('\\left(1;2\\right)');
 
-		await userEvent.keyboard('{Backspace}'.repeat(12));
-		await userEvent.keyboard('(1,5;2)');
+		field.executeCommand('selectAll');
+		await userEvent.keyboard('(1,5;2){Enter}');
 		// Mesuré : la virgule arrive nue, `\left(1,5;2\right)`
 		await vi.waitFor(() => expect(atelier.get('A')?.definition).toBe('\\left(1,5;2\\right)'));
 		expect(atelier.get('A')?.status).toBe('ok');

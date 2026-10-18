@@ -179,15 +179,14 @@ describe('actions avec une autre liste', () => {
 		});
 	});
 
-	// Q48 : la partenaire retenue suit son renommage
-	it('la partenaire choisie suit son renommage', async () => {
+	// Q48 : une partenaire renommée garde ses actions, sous son nouveau nom
+	it('une partenaire renommée apparaît sous son nouveau nom', async () => {
 		const { container, atelier } = await openLists(['L', 'M', 'N']);
 
-		await chooseObjectAction(container, 'L', 'Nuage avec N');
-		await vi.waitFor(() => expect(atelier.partnerChoiceOf('L')).toBe('N'));
 		atelier.rename('N', 'Z');
 
-		await vi.waitFor(() => expect(atelier.partnerChoiceOf('L')).toBe('Z'));
-		expect(menuLabels(await partnerSubmenu(container, 'L'))).toContain('Nuage avec Z');
+		const labels = menuLabels(await partnerSubmenu(container, 'L'));
+		expect(labels).toContain('Nuage avec Z');
+		expect(labels).not.toContain('Nuage avec N');
 	});
 });
