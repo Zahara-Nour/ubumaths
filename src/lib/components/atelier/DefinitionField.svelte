@@ -86,7 +86,10 @@
 					object.mode === 'recurrence'
 					? `${object.name}(n+1) =`
 					: `${object.name}(n) =`
-				: `${object.name} =`
+				: // Une courbe se nomme avec « : » (G5) : le champ porte l'équation entière
+					object.kind === 'curve'
+					? `${object.name} :`
+					: `${object.name} =`
 	);
 
 	/** `sur ℝ` : un ensemble qui ne restreint rien. */
