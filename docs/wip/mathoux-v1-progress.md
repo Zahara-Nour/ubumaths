@@ -13,9 +13,9 @@
 
 - [x] PR 1 — #1490 mergée le 2026-10-18 (pas en prod).
 - [x] PR 2 — #1489 (table `student_mathoux`) mergée et migrée en prod le 2026-10-18 (vérifié : RLS, lecture seule, anon sans droit).
-- [ ] PR 3 — #1493 : mémoire (meilleur stade, étoiles), sieste de l'oubli (point déjà réussi puis
-      perdu), export RGPD (Mathoux et Palotin) ; revue et audit passés, CI en cours.
-- [ ] Dessins : **AB3 choisi par David le 2026-10-18** (chat-poire sur l'affiche, expression « juste milieu » : ni méchant, ni béat, ni kawaii ; explorations v1-v3 dans le scratchpad de la session). Déclinaison en 19 races en cours (branche `feat/mathoux-dessins-ab3`).
+- [x] PR 3 — #1493 mergée le 2026-10-18 : mémoire (meilleur stade, étoiles), sieste de l'oubli, export RGPD (Mathoux et Palotin).
+- [x] Dessins : AB3 choisi par David le 2026-10-18 (après trois itérations), décliné en 19 races, #1494 mergée.
+- [ ] v1.1 : « S'entraîner sur cette notion » ; vrais noms des Mathoux (à chercher avec David) ; noms des races à valider.
 
 ### Calcul, page, Palotin gardien (2026-10-18, non commité)
 
