@@ -158,7 +158,7 @@ Partout : Renommer et Supprimer en fin de menu ; un objet qui dépend d'un autre
 - Couleur / taille / trait des points et courbes : la vue Géométrie ne les lit pas encore ; si le lot 4 ajoute les réglages (proposition : `CurveDisplay` comme les fonctions pour les courbes, `PointDisplay` couleur + taille pour les points, rangés avec l'état), atelier-geometry câble `syncFigure` derrière. Règle de version : le second qui merge prend version + 1.
 - Points et courbes : aucune action propre au lot 2 de la géométrie au-delà de Renommer / Supprimer.
 
-**Questions pour David (recommandation en premier) :**
+**Questions pour David (recommandation en premier) — les 5 recommandations validées par David le 2026-10-18 (« je suis tes recos ») :**
 
 1. **Liste : modifier où ?** (a) dans Données (le tableur), la ligne montre un aperçu tronqué ← recommandé : une liste de 30 valeurs ne s'édite pas dans un champ d'une ligne ; (b) champ éditable sur la ligne aussi.
 2. **Actions à deux listes : un sous-menu « Avec une autre liste » → choix de la liste → action** ← recommandé (aujourd'hui un MySelect « avec… » dans la carte) ; ou une entrée par couple (liste longue).
