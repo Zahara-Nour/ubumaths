@@ -11561,6 +11561,62 @@ export type Database = {
           },
         ]
       }
+      student_mathoux: {
+        Row: {
+          best_stage: string
+          first_seen_at: string
+          notion_id: string
+          starred_grades: string[]
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          best_stage: string
+          first_seen_at?: string
+          notion_id: string
+          starred_grades?: string[]
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          best_stage?: string
+          first_seen_at?: string
+          notion_id?: string
+          starred_grades?: string[]
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_mathoux_notion_id_fkey"
+            columns: ["notion_id"]
+            isOneToOne: false
+            referencedRelation: "classification_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_mathoux_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_mathoux_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_mathoux_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       student_observable_state: {
         Row: {
           count_minus: number
