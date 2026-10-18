@@ -171,7 +171,6 @@ liste trouée en citant l'entrée).
       `stageExampleSetup`, gardé : l'aide transmet ce décor) : `=f_1(3)` donnait une valeur FAUSSE
       dans la grille (défaut du lot 2, `f₁ × 3`) → refus ; réciproque et fonction en attente
       refusées ; pas par défaut entier ; note écrite comme la case ; conseil qui garde le pas
-- [ ] PR, CI, merge
 - [x] PR 1 mergée : #1426
 
 ### PR 2 — la carte (`feat/atelier-tabuler-carte`)
@@ -315,4 +314,4 @@ validée le 2026-10-18 (Q-RE-1 à Q-RE-6 = les recos).
 - [x] revue : séparateur cherché sans tenir compte des guillemets, virgule au-delà de Q-RE-5 (a),
       aller-retour annoncé à tort, refus « ; » hors sujet, UTF-16, tests de focus et de taille →
       corrigés (8 tests rouges d'abord)
-- [ ] PR, CI, merge
+- [x] PR #1473, CI verte, mergée le 2026-10-18
