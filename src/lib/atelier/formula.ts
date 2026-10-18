@@ -76,7 +76,10 @@ import {
 	RANGE_MIXED_MESSAGE,
 	readRange,
 	type ArgumentValue,
-	type GridFunction
+	type GridFunction,
+	isLogic,
+	logicAloneMessage,
+	type LogicFunction
 } from './grid-functions';
 import { findUnknownFunctionCall, SHOWN_FUNCTIONS } from '$lib/mathAST/parser/custom/tokenizer';
 
@@ -181,12 +184,21 @@ type ReadArgument =
 	/** Une case citée en critère de NB.SI : son mot ou son nombre (`NB.SI(B2:B30;B2)`). */
 	| { readonly kind: 'cell'; readonly address: string }
 	/** La condition de SI : `A1>=10`, `B2="fille"`. */
+	| ConditionArgument
+	/** La condition de SI en ET ou OU de comparaisons (Q-RE-2, Q-RE-3 : un seul niveau). */
 	| {
-			readonly kind: 'condition';
-			readonly left: Operand;
-			readonly op: Comparison;
-			readonly right: Operand;
+			readonly kind: 'logic';
+			readonly name: LogicFunction;
+			readonly conditions: readonly ConditionArgument[];
 	  };
+
+/** Une comparaison : `A1>=10`, `B2="fille"`. */
+interface ConditionArgument {
+	readonly kind: 'condition';
+	readonly left: Operand;
+	readonly op: Comparison;
+	readonly right: Operand;
+}
 
 /** Un côté d'une comparaison : un texte, une case (qui peut contenir un mot), ou une expression. */
 type Operand =
@@ -427,6 +439,8 @@ function readCall(
 			random: boolean;
 	  }
 	| { ok: false; message: string } {
+	// Lu ici, ET ou OU n'est pas la condition de SI (lue plus bas) : refusé (Q-RE-2)
+	if (isLogic(name)) return { ok: false, message: logicAloneMessage(name) };
 	const statistic = isStatistic(name);
 	const occurrence = isRandom(name) ? randomOccurrence++ : -1;
 	let random = isRandom(name);
@@ -466,40 +480,24 @@ function readCall(
 			deps.push(address);
 			continue;
 		}
-		// La condition de SI : deux côtés et leur comparaison
+		// La condition de SI : deux côtés et leur comparaison, ou ET/OU de comparaisons
 		if (name === 'SI' && index === 0) {
+			const logic = logicCallOf(raw);
+			if (logic !== null) {
+				const read = readLogic(logic.name, logic.args, functionNames);
+				if (!read.ok) return read;
+				read.reads.forEach(addExpression);
+				deps.push(...read.deps);
+				args.push({ kind: 'logic', name: logic.name, conditions: read.conditions });
+				continue;
+			}
 			const parts = splitComparison(raw);
 			if (parts === null) return { ok: false, message: CONDITION_MESSAGE };
-			const operands: Operand[] = [];
-			for (const side of [parts.left, parts.right]) {
-				const sideText = textLiteral(side);
-				if (sideText !== null) {
-					operands.push({ kind: 'text', text: sideText });
-					continue;
-				}
-				// Une case seule : son mot se compare (`B2="fille"`)
-				const sideCell = LONE_CELL.exec(side);
-				if (sideCell !== null) {
-					const address = sideCell[1].replaceAll('$', '').toUpperCase();
-					const at = readCellName(address);
-					if (at === null) return { ok: false, message: outsideGrid(address) };
-					operands.push({ kind: 'cell', address });
-					deps.push(address);
-					continue;
-				}
-				const read = readBody(side, functionNames);
-				// `A1<B1<C1` : le second côté garde une comparaison
-				if (!read.ok && read.message === COMPARISON_ALONE_MESSAGE) {
-					return {
-						ok: false,
-						message: 'La condition de SI ne compare que deux choses : A1<B1, pas A1<B1<C1.'
-					};
-				}
-				if (!read.ok) return read;
-				operands.push({ kind: 'expression', read });
-				addExpression(read);
-			}
-			args.push({ kind: 'condition', left: operands[0], op: parts.op, right: operands[1] });
+			const read = readComparison(parts, functionNames);
+			if (!read.ok) return read;
+			read.reads.forEach(addExpression);
+			deps.push(...read.deps);
+			args.push(read.condition);
 			continue;
 		}
 		// Une plage : les statistiques, et la plage de NB.SI. Une case citée seule
@@ -540,6 +538,115 @@ function readCall(
 	return { ok: true, call: { name, args, label, occurrence }, deps, lists, names, random };
 }
 
+/** Une comparaison lue : ses deux côtés, les cases citées, les expressions lues. */
+type ReadComparison =
+	| {
+			ok: true;
+			condition: ConditionArgument;
+			deps: readonly string[];
+			reads: readonly (ReadFormula & { ok: true })[];
+	  }
+	| { ok: false; message: string };
+
+/** Les deux côtés d'une comparaison de la condition de SI (`A1>=10`, `B2="fille"`). */
+function readComparison(
+	parts: { left: string; op: Comparison; right: string },
+	functionNames: readonly string[]
+): ReadComparison {
+	const deps: string[] = [];
+	const reads: (ReadFormula & { ok: true })[] = [];
+	const operands: Operand[] = [];
+	for (const side of [parts.left, parts.right]) {
+		const sideText = textLiteral(side);
+		if (sideText !== null) {
+			operands.push({ kind: 'text', text: sideText });
+			continue;
+		}
+		// Une case seule : son mot se compare (`B2="fille"`)
+		const sideCell = LONE_CELL.exec(side);
+		if (sideCell !== null) {
+			const address = sideCell[1].replaceAll('$', '').toUpperCase();
+			const at = readCellName(address);
+			if (at === null) return { ok: false, message: outsideGrid(address) };
+			operands.push({ kind: 'cell', address });
+			deps.push(address);
+			continue;
+		}
+		const read = readBody(side, functionNames);
+		// `A1<B1<C1` : le second côté garde une comparaison
+		if (!read.ok && read.message === COMPARISON_ALONE_MESSAGE) {
+			return {
+				ok: false,
+				message: 'La condition de SI ne compare que deux choses : A1<B1, pas A1<B1<C1.'
+			};
+		}
+		if (!read.ok) return read;
+		operands.push({ kind: 'expression', read });
+		reads.push(read);
+	}
+	return {
+		ok: true,
+		condition: { kind: 'condition', left: operands[0], op: parts.op, right: operands[1] },
+		deps,
+		reads
+	};
+}
+
+/** `ET(…)` ou `OU(…)` qui forme TOUT l'argument, sinon `null`. */
+function logicCallOf(raw: string): { name: LogicFunction; args: readonly string[] } | null {
+	const text = raw.trim();
+	const calls = findCalls(text);
+	if (calls === null || calls.length !== 1) return null;
+	const [call] = calls;
+	if (call.start !== 0 || call.end !== text.length || !isLogic(call.name)) return null;
+	return { name: call.name, args: call.args };
+}
+
+/** ET(…) ou OU(…) : au moins une comparaison, chacune lue comme la condition de SI. */
+function readLogic(
+	name: LogicFunction,
+	rawArgs: readonly string[],
+	functionNames: readonly string[]
+):
+	| {
+			ok: true;
+			conditions: readonly ConditionArgument[];
+			deps: readonly string[];
+			reads: readonly (ReadFormula & { ok: true })[];
+	  }
+	| { ok: false; message: string } {
+	const example = `${name}(A1>=10 ; B1="fille")`;
+	if (rawArgs.length === 0) {
+		return { ok: false, message: `${name} attend au moins une comparaison : ${example}.` };
+	}
+	const conditions: ConditionArgument[] = [];
+	const deps: string[] = [];
+	const reads: (ReadFormula & { ok: true })[] = [];
+	for (const raw of rawArgs) {
+		// Q-RE-3 : un seul niveau
+		const nested = logicCallOf(raw);
+		if (nested !== null) {
+			return {
+				ok: false,
+				message: `Un ${nested.name} dans un ${name} n’est pas pris en charge : écris deux SI.`
+			};
+		}
+		const parts = splitComparison(raw);
+		if (parts === null) {
+			return {
+				ok: false,
+				message: `Dans ${name}, chaque argument compare deux choses : ${example}.`
+			};
+		}
+		const read = readComparison(parts, functionNames);
+		if (!read.ok) return read;
+		conditions.push(read.condition);
+		deps.push(...read.deps);
+		reads.push(...read.reads);
+	}
+	return { ok: true, conditions, deps, reads };
+}
+
 /** Le nombre d'arguments d'une fonction qui n'est pas de statistiques. */
 function arityOf(name: CalculationFunction | ConditionFunction | RandomFunction): number {
 	if (name === 'ALEA' || name === 'ALEA.ENTRE.BORNES') return RANDOM_ARITY[name];
@@ -558,6 +665,7 @@ function arityMessage(name: CalculationFunction | ConditionFunction | RandomFunc
 	if (name === 'NB.SI') return 'NB.SI attend deux arguments : NB.SI(plage ; critère).';
 	if (name === 'PI') return 'PI s’écrit sans argument : PI().';
 	if (name === 'ARRONDI') return 'ARRONDI attend deux arguments : ARRONDI(x ; n).';
+	if (name === 'RESTE') return 'RESTE attend deux arguments : RESTE(nombre ; diviseur).';
 	return `${name} attend un argument : ${name}(x).`;
 }
 
@@ -1012,18 +1120,31 @@ function conditionValue(
 	context: GridContext
 ): CallResult {
 	const [condition, yes, no] = call.args;
-	if (condition.kind !== 'condition') return { ok: false, value: error(UNREADABLE) };
-	const sides: Compared[] = [];
-	for (const side of [condition.left, condition.right]) {
-		const value = argumentValue(side, address, texts, values, approximate, atelier, context);
-		const compared = comparedOf(value);
-		if (compared === null) return { ok: false, value };
-		sides.push(compared);
+	if (condition.kind !== 'condition' && condition.kind !== 'logic') {
+		return { ok: false, value: error(UNREADABLE) };
 	}
-	const verdict = compare(sides[0], condition.op, sides[1]);
-	if (verdict === null) {
-		return { ok: false, value: error('Un mot se compare avec = ou <> seulement.') };
+	// ET : toutes vraies ; OU : au moins une. Chaque comparaison est calculée : une
+	// case vide ou une erreur, où qu'elle soit, arrête la formule comme pour SI (T5)
+	const conditions = condition.kind === 'logic' ? condition.conditions : [condition];
+	const verdicts: boolean[] = [];
+	for (const one of conditions) {
+		const sides: Compared[] = [];
+		for (const side of [one.left, one.right]) {
+			const value = argumentValue(side, address, texts, values, approximate, atelier, context);
+			const compared = comparedOf(value);
+			if (compared === null) return { ok: false, value };
+			sides.push(compared);
+		}
+		const verdictOfOne = compare(sides[0], one.op, sides[1]);
+		if (verdictOfOne === null) {
+			return { ok: false, value: error('Un mot se compare avec = ou <> seulement.') };
+		}
+		verdicts.push(verdictOfOne);
 	}
+	const verdict =
+		condition.kind === 'logic' && condition.name === 'OU'
+			? verdicts.some((v) => v)
+			: verdicts.every((v) => v);
 	const chosen = argumentValue(
 		verdict ? yes : no,
 		address,
@@ -1220,6 +1341,8 @@ function callValue(
 		if (refused !== null) return { ok: false, value: refused };
 	}
 
+	// ET, OU : refusés à la lecture hors de la condition de SI (Q-RE-2)
+	if (isLogic(call.name)) return { ok: false, value: error(logicAloneMessage(call.name)) };
 	const computed = isStatistic(call.name)
 		? computeFunction(call.name, numbers, call.label)
 		: computeCalculation(call.name, numbers);

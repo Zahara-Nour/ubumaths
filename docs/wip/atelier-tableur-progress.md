@@ -291,3 +291,20 @@ liste trouée en citant l'entrée).
 - [x] presse-papiers interne : `styles` (Zod, forme du tableau)
 - [x] captures clair, sombre, 390 px
 - [x] revue (9 points corrigés), PR #1469, CI verte, mergée le 2026-10-18
+
+## RESTE, ET/OU, ouvrir un CSV (repris de V4)
+
+Phase 0 : [atelier-tableur-reste-et-ou-csv-phase0.md](atelier-tableur-reste-et-ou-csv-phase0.md),
+validée le 2026-10-18 (Q-RE-1 à Q-RE-6 = les recos).
+
+### PR 1 — RESTE, ET, OU (`feat/atelier-reste-et-ou`)
+
+- [x] tests : `formules-tableur-reste-et-ou.test.ts` (44, rouges d'abord sauf 4 gardes)
+- [x] RESTE = `n − d × floor(n/d)` (exact, signe du diviseur, `d = 0` refusé)
+- [x] ET/OU dans la condition de SI (`logicCallOf`, `readLogic`, `readComparison`), un seul
+      niveau, refus hors de SI
+- [ ] revue, PR, CI, merge
+
+### PR 2 — ouvrir un CSV
+
+- [ ] à faire

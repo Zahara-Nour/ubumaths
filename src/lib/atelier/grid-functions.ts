@@ -31,7 +31,8 @@ export type StatisticFunction =
 	'SOMME' | 'MOYENNE' | 'MEDIANE' | 'MIN' | 'MAX' | 'NB' | 'ECARTYPE' | 'ECARTYPEP';
 
 /** Les fonctions de calcul : des nombres, en nombre fixe (PR 2). */
-export type CalculationFunction = 'ARRONDI' | 'ENT' | 'RACINE' | 'ABS' | 'LN' | 'EXP' | 'PI';
+export type CalculationFunction =
+	'ARRONDI' | 'ENT' | 'RACINE' | 'ABS' | 'LN' | 'EXP' | 'PI' | 'RESTE';
 
 /** Les conditions : SI et NB.SI, avec du texte et des comparaisons (PR 3). */
 export type ConditionFunction = 'SI' | 'NB.SI';
@@ -39,8 +40,11 @@ export type ConditionFunction = 'SI' | 'NB.SI';
 /** Le hasard : ALEA et ALEA.ENTRE.BORNES (lot 5). */
 export type RandomFunction = 'ALEA' | 'ALEA.ENTRE.BORNES';
 
+/** ET, OU : seulement dans la condition de SI (Q-RE-2), sur des comparaisons. */
+export type LogicFunction = 'ET' | 'OU';
+
 export type GridFunction =
-	StatisticFunction | CalculationFunction | ConditionFunction | RandomFunction;
+	StatisticFunction | CalculationFunction | ConditionFunction | RandomFunction | LogicFunction;
 
 /** Une comparaison : `<`, `>`, `<=`, `>=`, `=`, `<>` (comme LibreOffice). */
 export type Comparison = '<' | '>' | '<=' | '>=' | '=' | '<>';
@@ -106,7 +110,8 @@ export const CALCULATION_ARITY: Readonly<Record<CalculationFunction, number>> = 
 	ABS: 1,
 	LN: 1,
 	EXP: 1,
-	PI: 0
+	PI: 0,
+	RESTE: 2
 };
 
 export const CONDITION_ARITY: Readonly<Record<ConditionFunction, number>> = { SI: 3, 'NB.SI': 2 };
@@ -116,10 +121,13 @@ export const RANDOM_ARITY: Readonly<Record<RandomFunction, number>> = {
 	'ALEA.ENTRE.BORNES': 2
 };
 
+export const LOGIC_FUNCTIONS: readonly LogicFunction[] = ['ET', 'OU'];
+
 export const GRID_FUNCTIONS: readonly GridFunction[] = [
 	...STATISTIC_FUNCTIONS,
 	...(Object.keys(CALCULATION_ARITY) as CalculationFunction[]),
 	...(Object.keys(CONDITION_ARITY) as ConditionFunction[]),
+	...LOGIC_FUNCTIONS,
 	...(Object.keys(RANDOM_ARITY) as RandomFunction[])
 ];
 
@@ -146,8 +154,11 @@ const SIGNATURES: Readonly<Record<GridFunction, string>> = {
 	LN: 'LN(x) — le logarithme népérien',
 	EXP: 'EXP(x) — l’exponentielle',
 	PI: 'PI() — le nombre π',
+	RESTE: 'RESTE(n ; d) — le reste de la division de n par d',
 	SI: 'SI(condition ; si vrai ; si faux) — l’un ou l’autre selon la condition',
 	'NB.SI': 'NB.SI(plage ; critère) — combien de cases vérifient le critère',
+	ET: 'ET(comparaison ; …) — vrai si toutes le sont, dans la condition de SI',
+	OU: 'OU(comparaison ; …) — vrai si l’une l’est, dans la condition de SI',
 	ALEA: 'ALEA() — un nombre au hasard entre 0 et 1',
 	'ALEA.ENTRE.BORNES': 'ALEA.ENTRE.BORNES(a ; b) — un entier au hasard de a à b'
 };
@@ -162,7 +173,9 @@ const FLOAT_DIGITS = 15;
 const MAX_HINTS = 3;
 
 /** Les fonctions de calcul, et leur nom pour mathAST. */
-const ENGINE_NAMES: Readonly<Record<Exclude<CalculationFunction, 'ARRONDI' | 'PI'>, string>> = {
+const ENGINE_NAMES: Readonly<
+	Record<Exclude<CalculationFunction, 'ARRONDI' | 'PI' | 'RESTE'>, string>
+> = {
 	ENT: 'floor',
 	RACINE: 'sqrt',
 	ABS: 'abs',
@@ -214,6 +227,15 @@ export function drawOf(seed: number, address: string, occurrence: number): numbe
 		hash = Math.imul(hash ^ char.charCodeAt(0), 0x01000193) >>> 0;
 	}
 	return createRandomSource(hash)();
+}
+
+export function isLogic(name: GridFunction): name is LogicFunction {
+	return name === 'ET' || name === 'OU';
+}
+
+/** ET ou OU écrit hors de la condition de SI (Q-RE-2) : la bonne écriture. */
+export function logicAloneMessage(name: LogicFunction): string {
+	return `${name} s’écrit dans la condition de SI : =SI(${name}(A1>=10;B1>=10);"oui";"non").`;
 }
 
 export function isStatistic(name: GridFunction): name is StatisticFunction {
@@ -497,6 +519,37 @@ export function computeCalculation(
 			ok: true,
 			node: { type: 'number', value: result.written },
 			...(result.inexact && { inexact: true })
+		};
+	}
+	if (name === 'RESTE') {
+		const [n, d] = values;
+		if (d.value === 0) return { ok: false, message: 'RESTE : on ne divise pas par 0.' };
+		// n − d × ENT(n/d) : le reste a le signe du diviseur (LibreOffice) — celui
+		// de la division euclidienne pour d > 0 ; exact quand n et d le sont
+		const quotient: MathNode = {
+			type: 'function',
+			name: 'floor',
+			args: [
+				{
+					type: 'division',
+					numerator: grouped(n.node),
+					denominator: grouped(d.node),
+					displayStyle: 'fraction'
+				}
+			]
+		};
+		return {
+			ok: true,
+			node: {
+				type: 'subtraction',
+				left: grouped(n.node),
+				right: {
+					type: 'multiplication',
+					left: grouped(d.node),
+					right: quotient,
+					displayStyle: 'dot'
+				}
+			}
 		};
 	}
 	return {
