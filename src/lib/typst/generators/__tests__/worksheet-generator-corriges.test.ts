@@ -17,6 +17,10 @@ import {
 	hasCorrectionFonts,
 	withoutCorrectionFonts
 } from '../../correction-fonts';
+import {
+	correctionFontBlocks,
+	outsideCorrectionFontBlocks
+} from '../../__tests__/correction-font-blocks';
 import type {
 	WorksheetRow,
 	InstanceData,
@@ -195,21 +199,35 @@ describe('Corrigé : Shantell Sans et Chiphre Math', () => {
 	});
 
 	it.each(LAYOUTS)(
-		'« %s » : les règles de police suivent le #set text du document',
+		'« %s » : la correction seule en Shantell, titres et bandeau en police habituelle',
 		(_n, content) => {
 			const typst = generate('correction', { templateContent: content });
 			expect(typst).toContain('#set text(font: "Shantell Sans", weight: "light")');
 			expect(typst).toContain('#show math.equation: set text(font: "Chiphre Math")');
-			// Après la police du modèle, sinon elle l'emporterait
-			const rules = typst.lastIndexOf(CORRECTION_FONT_RULES);
-			// Et en tête : pied de page et numéros de page suivent aussi
-			expect(typst.startsWith(CORRECTION_FONT_RULES)).toBe(true);
-			const standardFont = typst.lastIndexOf('New Computer Modern');
-			expect(rules).toBeGreaterThan(standardFont);
-			// Le bandeau prend la police du Corrigé : il vient après les règles
-			expect(typst.indexOf('CORRECTION')).toBeGreaterThan(rules);
+			// Ni en tête ni au niveau du document : pied de page, bandeau, titres
+			// et numéros gardent la police du modèle (David, 2026-10-18)
+			expect(typst.startsWith(CORRECTION_FONT_RULES)).toBe(false);
+			const blocks = correctionFontBlocks(typst);
+			expect(blocks).toHaveLength(1);
+			expect(blocks[0]).toContain('CORRECTIONDETAILLEE');
+			const outside = outsideCorrectionFontBlocks(typst);
+			expect(outside).toContain('Somme');
+			expect(outside).not.toContain('CORRECTIONDETAILLEE');
+			expect(blocks[0]).not.toContain('Somme');
 		}
 	);
+
+	it('correction non écrite : le message aussi dans la police du corrigé', () => {
+		const typst = generateWorksheetTypst({
+			worksheet: worksheet(),
+			instance: { exercises: [{ ...instance().exercises[0], solution: '' }] },
+			config: {},
+			mode: 'correction'
+		});
+		const blocks = correctionFontBlocks(typst);
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0]).toContain('Correction non écrite.');
+	});
 
 	it('option sans polices : le même corrigé dans la police standard', () => {
 		const withFonts = generate('correction');

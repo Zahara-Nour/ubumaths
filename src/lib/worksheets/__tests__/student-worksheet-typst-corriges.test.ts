@@ -3,12 +3,16 @@
  * ======================================================
  *
  * La partie de fin s'appelle « Réponses » (résultats seuls) ou « Corrections »
- * (le corrigé, en Shantell Sans et Chiphre Math). Dans les deux cas, seulement
+ * (le corrigé : la correction seule en Shantell Sans et Chiphre Math). Dans les deux cas, seulement
  * les exercices dont la correction est visible.
  */
 import { describe, it, expect } from 'vitest';
 import { generateStudentWorksheetTypst } from '../student-worksheet-typst';
 import { hasCorrectionFonts, withoutCorrectionFonts } from '$lib/typst/correction-fonts';
+import {
+	correctionFontBlocks,
+	outsideCorrectionFontBlocks
+} from '$lib/typst/__tests__/correction-font-blocks';
 import type { StudentWorksheetView } from '$lib/types/worksheets';
 
 function exercise(id: string, visible: boolean, answers: string | null) {
@@ -82,7 +86,15 @@ describe('PDF élève avec corrigé', () => {
 		expect(typst).not.toContain('REPONSE1');
 		const rules = typst.indexOf('#set text(font: "Shantell Sans", weight: "light")');
 		expect(rules).toBeGreaterThan(typst.indexOf('ENONCE2'));
-		expect(rules).toBeLessThan(part);
+		// La correction seule : bandeau et titres des exercices en police habituelle
+		expect(rules).toBeGreaterThan(part);
+		const blocks = correctionFontBlocks(typst);
+		expect(blocks).toHaveLength(2);
+		expect(blocks[0]).toContain('CORRECTION1');
+		expect(blocks[1]).toContain('CORRECTION2');
+		const outside = outsideCorrectionFontBlocks(typst);
+		expect(outside).toContain('Titre 1');
+		expect(outside).toContain('[CORRECTION]');
 	});
 
 	it('option sans polices : le même PDF, police standard', () => {

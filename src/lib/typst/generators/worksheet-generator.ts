@@ -51,7 +51,6 @@ import {
 import { documentLabels, labelPlaceholders, type DocumentLabels } from '../labels';
 import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
 import { localizedText, worksheetLocale } from '$lib/types/worksheets';
-import { CORRECTION_FONT_RULES, withCorrectionFonts } from '../correction-fonts';
 import { withTextSize, type TextSize } from '../text-size';
 import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
 import {
@@ -89,7 +88,8 @@ export interface WorksheetGeneratorInput {
  * - `worksheet` : la fiche, énoncés seuls ;
  * - `answers` : les résultats seuls (`answers`), sans l'énoncé ;
  * - `correction` : le corrigé, toujours détaillé (ADR 0030), sans l'énoncé,
- *   en Shantell Sans et Chiphre Math (`correction-fonts.ts`).
+ *   chaque correction en Shantell Sans et Chiphre Math (`correction-fonts.ts`),
+ *   titres et bandeau dans la police du document.
  */
 export type WorksheetPdfMode = DocumentForm;
 
@@ -286,12 +286,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			custom
 		);
 		const resolved = resolveTemplate(styleId, this.form, custom);
-		let typstContent = this.generateFromTemplate(input, resolved);
-
-		// Corrigé : Shantell Sans et Chiphre Math, posées après la police du document
-		if (this.pdfMode === 'correction' && this.options.correctionFonts !== false) {
-			typstContent = withCorrectionFonts(typstContent);
-		}
+		// Corrigé : Shantell Sans et Chiphre Math sur chaque correction seulement,
+		// posées par le rendu des exercices (`render-exercise.ts`)
+		const typstContent = this.generateFromTemplate(input, resolved);
 
 		return {
 			typstContent,
@@ -402,11 +399,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			form_title: titled === 'worksheet' ? '' : this.correctionTitle(titled).toUpperCase(),
 			individual_copy_notice: this.individualCopyNotice(mode),
 			corrections,
-			// Polices du corrigé sur la partie corrigé seulement : les énoncés gardent la leur
-			correction_fonts:
-				ending === 'correction' && this.options.correctionFonts !== false
-					? CORRECTION_FONT_RULES
-					: '',
+			// Les polices du corrigé sont posées sur chaque correction (`render-exercise.ts`) ;
+			// la clé reste, vide, pour un gabarit enregistré qui la porterait encore
+			correction_fonts: '',
 			// Additional placeholders for specific templates
 			due_date: dueDate ? this.formattedDueDate(dueDate) : fillLine('3cm'),
 			exam_session: '',
