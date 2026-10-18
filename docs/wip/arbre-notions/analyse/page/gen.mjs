@@ -12,38 +12,61 @@ const VERDICTS = ['A_TRANCHER', 'MODIFIER', 'TAG_PAR_VARIATION', 'TAG', 'HORS_PR
 // Lecture d'un CSV « ; » avec guillemets
 function parseCsv(txt) {
 	const rows = [];
-	let row = [], cell = '', q = false;
+	let row = [],
+		cell = '',
+		q = false;
 	for (let i = 0; i < txt.length; i++) {
 		const ch = txt[i];
 		if (q) {
-			if (ch === '"' && txt[i + 1] === '"') { cell += '"'; i++; }
-			else if (ch === '"') q = false;
+			if (ch === '"' && txt[i + 1] === '"') {
+				cell += '"';
+				i++;
+			} else if (ch === '"') q = false;
 			else cell += ch;
 		} else if (ch === '"') q = true;
-		else if (ch === ';') { row.push(cell); cell = ''; }
-		else if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
-		else if (ch !== '\r') cell += ch;
+		else if (ch === ';') {
+			row.push(cell);
+			cell = '';
+		} else if (ch === '\n') {
+			row.push(cell);
+			rows.push(row);
+			row = [];
+			cell = '';
+		} else if (ch !== '\r') cell += ch;
 	}
-	if (cell || row.length) { row.push(cell); rows.push(row); }
+	if (cell || row.length) {
+		row.push(cell);
+		rows.push(row);
+	}
 	const [head, ...body] = rows;
-	return body.filter((r) => r.length > 1).map((r) => Object.fromEntries(head.map((h, i) => [h, r[i] ?? ''])));
+	return body
+		.filter((r) => r.length > 1)
+		.map((r) => Object.fromEntries(head.map((h, i) => [h, r[i] ?? ''])));
 }
 
 // Bornes : point → bornes propres + générales du niveau
 const bornes = {};
-for (const f of ['cycle2', 'cycle3', 'cycle4']) Object.assign(bornes, JSON.parse(fs.readFileSync(B + f + '.json', 'utf8')));
+for (const f of ['cycle2', 'cycle3', 'cycle4'])
+	Object.assign(bornes, JSON.parse(fs.readFileSync(B + f + '.json', 'utf8')));
 function bornesPoint(g, code) {
 	const p = bornes[g]?.points?.[code];
 	if (!p) return null;
-	return { l: p.libelle, b: (p.bornes || []).map((x) => [x.force, x.borne]), rem: p.remarque || '' };
+	return {
+		l: p.libelle,
+		b: (p.bornes || []).map((x) => [x.force, x.borne]),
+		rem: p.remarque || ''
+	};
 }
 
 // Résumé d'une plage relevée
 function plage(v) {
 	if (!v) return '';
-	if (v.nature === 'texte ou expression') return v.nombres_contenus ? plage(v.nombres_contenus) : 'expression';
-	let s = v.valeurs && v.nb_distinctes <= 12 ? '{' + v.valeurs.join(' ; ') + '}' : `${v.min} … ${v.max}`;
-	if (v.nature && v.nature !== 'entier') s += ` (${v.nature}${v.decimales_max ? ', ' + v.decimales_max + ' déc.' : ''})`;
+	if (v.nature === 'texte ou expression')
+		return v.nombres_contenus ? plage(v.nombres_contenus) : 'expression';
+	let s =
+		v.valeurs && v.nb_distinctes <= 12 ? '{' + v.valeurs.join(' ; ') + '}' : `${v.min} … ${v.max}`;
+	if (v.nature && v.nature !== 'entier')
+		s += ` (${v.nature}${v.decimales_max ? ', ' + v.decimales_max + ' déc.' : ''})`;
 	if (v.negatif_possible) s += ', négatifs';
 	return s;
 }
@@ -59,33 +82,58 @@ function resumeVariation(v) {
 		vars: vars.join(' · '),
 		enonce: plage(v.nombres_enonce),
 		rep: rep.join(' | '),
-		fmt: [f.type_reponse, sym && 'symboles ' + sym, (f.unites || []).length ? 'unités ' + f.unites.join(' ') : '', f.contexte_probable ? 'problème en contexte' : ''].filter(Boolean).join(' · '),
+		fmt: [
+			f.type_reponse,
+			sym && 'symboles ' + sym,
+			(f.unites || []).length ? 'unités ' + f.unites.join(' ') : '',
+			f.contexte_probable ? 'problème en contexte' : ''
+		]
+			.filter(Boolean)
+			.join(' · '),
 		distincts: v.enonces_distincts,
 		ex: (v.exemples || []).slice(0, 2).map((e) => ({ r: e.role, q: e.enonce, a: e.reponse }))
 	};
 }
 
-const releveFiles = Object.fromEntries(fs.readdirSync(R).filter((f) => /^[0-9a-f-]{36}\.json$/.test(f)).map((f) => [f.slice(0, 36), f]));
+const releveFiles = Object.fromEntries(
+	fs
+		.readdirSync(R)
+		.filter((f) => /^[0-9a-f-]{36}\.json$/.test(f))
+		.map((f) => [f.slice(0, 36), f])
+);
 const MODELES = [];
 for (const lot of LOTS) {
 	for (const x of parseCsv(fs.readFileSync(A + lot + '.csv', 'utf8'))) {
 		const d = JSON.parse(fs.readFileSync(R + releveFiles[x.template_id], 'utf8'));
 		const codes = x.code.split(/[,+/ ]+/).filter((c) => /^(CP|CE1|CE2|CM1|CM2|\d)-\d+$/.test(c));
 		MODELES.push({
-			id: x.template_id, g: x.grade, t: x.titre, st: x.sous_titre, cons: d.consigne || '', v: x.verdict,
-			code: x.code, lib: x.libelle_point, hors: x.variations_hors, mod: x.modification, just: x.justification, anc: x.ancien_csv,
+			id: x.template_id,
+			g: x.grade,
+			t: x.titre,
+			st: x.sous_titre,
+			cons: d.consigne || '',
+			v: x.verdict,
+			code: x.code,
+			lib: x.libelle_point,
+			hors: x.variations_hors,
+			mod: x.modification,
+			just: x.justification,
+			anc: x.ancien_csv,
 			pts: codes.map((c) => [c, bornesPoint(x.grade, c)]).filter(([, p]) => p),
 			vars: d.variations.map(resumeVariation)
 		});
 	}
 }
 let QUESTIONS = [];
-if (fs.existsSync(A + 'questions-modeles.json')) QUESTIONS = JSON.parse(fs.readFileSync(A + 'questions-modeles.json', 'utf8'));
+if (fs.existsSync(A + 'questions-modeles.json'))
+	QUESTIONS = JSON.parse(fs.readFileSync(A + 'questions-modeles.json', 'utf8'));
 const qParModele = {};
 for (const q of QUESTIONS) for (const m of q.modeles || []) (qParModele[m] ||= []).push(q.id);
 for (const m of MODELES) m.qs = qParModele[m.id] || [];
 
-const NIVEAUX = ORDRE_NIVEAUX.map((g) => ({ g, m: MODELES.filter((m) => m.g === g) })).filter((n) => n.m.length);
+const NIVEAUX = ORDRE_NIVEAUX.map((g) => ({ g, m: MODELES.filter((m) => m.g === g) })).filter(
+	(n) => n.m.length
+);
 const style = fs.readFileSync('style.html', 'utf8');
 const j = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 
@@ -286,4 +334,13 @@ window.addEventListener('load', () => render());
 </script>
 `;
 fs.writeFileSync(process.env.OUT || 'verdicts-modeles.html', html);
-console.log((html.length / 1e6).toFixed(2), 'Mo ·', MODELES.length, 'modèles ·', QUESTIONS.length, 'questions ·', MODELES.filter((m) => !m.pts.length && m.code).length, 'codes sans bornes trouvées');
+console.log(
+	(html.length / 1e6).toFixed(2),
+	'Mo ·',
+	MODELES.length,
+	'modèles ·',
+	QUESTIONS.length,
+	'questions ·',
+	MODELES.filter((m) => !m.pts.length && m.code).length,
+	'codes sans bornes trouvées'
+);
