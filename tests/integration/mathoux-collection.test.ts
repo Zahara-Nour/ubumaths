@@ -13,7 +13,12 @@
  *     identifiant (la RLS de `student_point_state` et `srs_card_stats` tient) ;
  *   - le PARCOURS compte (`grade_ancestors` appelé par l'élève) : un élève de
  *     Tle spé dont la notion est entièrement acquise en 1re spé a un grand
- *     matou, et un point de 1re spé dû l'endort.
+ *     matou, et un point de 1re spé dû l'endort ;
+ *   - la MÉMOIRE (`student_mathoux`, écrite au client service par le calcul) :
+ *     un point acquis puis perdu laisse le Mathou matou, endormi ; une notion
+ *     entièrement acquise en 1re spé reste grand matou ★ 1re spé après le passage
+ *     en Tle spé, même oubliée ; deux écritures concurrentes ne font jamais
+ *     redescendre la mémoire ; l'élève B ne lit pas la mémoire de A.
  *
  * Spec : docs/wip/mathoux-conception.md § 9.
  *
@@ -34,6 +39,7 @@ import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
 import { loadMathouCollection } from '$lib/server/mathoux/collection';
+import { readMathouMemory, rememberMathoux } from '$lib/server/mathoux/memory';
 import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
 
 // ============================================================================
@@ -143,7 +149,7 @@ async function tag(templateId: string, pointId: string, nodeId: string): Promise
 async function setState(
 	studentId: string,
 	pointId: string,
-	state: { is_acquired: boolean; total_successes: number }
+	state: { is_acquired: boolean; total_successes: number; distinct_template_successes?: number }
 ): Promise<void> {
 	const { data, error } = await service
 		.from('student_point_state')
@@ -155,6 +161,38 @@ async function setState(
 		})
 		.select('point_id');
 	if (error || data?.length !== 1) throw new Error(`décor : état : ${error?.message}`);
+}
+
+/** Mémoire relue HORS RLS (client service) : ce que la base contient vraiment. */
+async function storedMemory(studentId: string, notionId: string) {
+	const { data, error } = await service
+		.from('student_mathoux')
+		.select('best_stage, starred_grades, updated_at')
+		.eq('student_id', studentId)
+		.eq('notion_id', notionId)
+		.maybeSingle();
+	if (error) throw new Error(`relecture mémoire : ${error.message}`);
+	return data;
+}
+
+async function newStudent(grade: string): Promise<{ id: string; client: Client }> {
+	const profil = await TestData.profile().withRole('student').create();
+	const { data, error } = await service
+		.from('profiles')
+		.update({ grade })
+		.eq('id', profil.id)
+		.select('id');
+	if (error || data?.length !== 1) throw new Error(`décor : niveau : ${error?.message}`);
+	return { id: profil.id, client: await clientFor(profil.email) };
+}
+
+async function setGrade(studentId: string, grade: string): Promise<void> {
+	const { data, error } = await service
+		.from('profiles')
+		.update({ grade })
+		.eq('id', studentId)
+		.select('id');
+	if (error || data?.length !== 1) throw new Error(`décor : niveau : ${error?.message}`);
 }
 
 function mathouOf(collection: MathouCollection, notionId: string): Mathou | undefined {
@@ -228,6 +266,13 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 
 	afterAll(async () => {
 		const pg = await getPostgresClient();
+		// Mémoire d'abord : sa clé vers l'arbre est en RESTRICT
+		await pg
+			.query(
+				'delete from public.student_mathoux where notion_id in (select id from public.classification_nodes where name like $1)',
+				[`${TAG}%`]
+			)
+			.catch(() => undefined);
 		await pg
 			.query('delete from public.srs_card_stats where card_reference_id = any($1::uuid[])', [
 				Object.values(templates)
@@ -315,13 +360,20 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		const sienne = await loadMathouCollection(eleveB, eleveBId, GRADE);
 		expect(mathouOf(sienne, notionVecteurs)?.growth).toBe('a_decouvrir');
 
-		// Le client de B, l'identifiant de A : la RLS ne rend aucun état de A.
-		const volee = await loadMathouCollection(eleveB, eleveAId, GRADE);
-		expect(mathouOf(volee, notionFractions)?.growth).toBe('a_decouvrir');
-		expect(mathouOf(volee, notionVecteurs)).toMatchObject({
-			growth: 'a_decouvrir',
-			asleep: false
-		});
+		// Le client de B, l'identifiant de A : refusé d'emblée (garde d'identité)…
+		await expect(loadMathouCollection(eleveB, eleveAId, GRADE)).rejects.toThrow(
+			/n’est pas l’utilisateur de la session/
+		);
+		// … et, derrière, la RLS ne rend aucun état ni aucune carte de A (en silence).
+		const etats = await eleveB
+			.from('student_point_state')
+			.select('point_id')
+			.eq('student_id', eleveAId);
+		expect(etats.error).toBeNull();
+		expect(etats.data).toEqual([]);
+		const cartes = await eleveB.from('srs_card_stats').select('id').eq('user_id', eleveAId);
+		expect(cartes.error).toBeNull();
+		expect(cartes.data).toEqual([]);
 
 		// Témoin : A, lui, voit toujours son grand matou endormi.
 		const sienneA = await loadMathouCollection(eleveA, eleveAId, GRADE);
@@ -360,5 +412,204 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		if (error) throw new Error(`décor : carte : ${error.message}`);
 		const due = await loadMathouCollection(eleveTle, eleveTleId, GRADE_TLE);
 		expect(mathouOf(due, notionVecteurs)?.asleep).toBe(true);
+	});
+	// ---------------------------------------------------------------------------
+	// Mémoire : un Mathou ne rapetisse jamais (§ 9, « Changement d'année et oubli »)
+	// ---------------------------------------------------------------------------
+
+	it('mémoire : un point acquis puis perdu → le Mathou reste matou et dort', async () => {
+		const { id, client } = await newStudent(GRADE);
+		// Fractions : p1 et p2 ; 1 acquis sur 2 → matou
+		await setState(id, pointIds.p1, { is_acquired: true, total_successes: 2 });
+		const acquis = await loadMathouCollection(client, id, GRADE);
+		expect(mathouOf(acquis, notionFractions)).toMatchObject({ growth: 'matou', asleep: false });
+		// Le calcul a écrit la mémoire (client service)
+		expect(await storedMemory(id, notionFractions)).toMatchObject({
+			best_stage: 'matou',
+			starred_grades: []
+		});
+
+		// p1 n'est plus acquis, seuil du régime diversité atteint (2 modèles) : PERDU
+		await setState(id, pointIds.p1, {
+			is_acquired: false,
+			total_successes: 2,
+			distinct_template_successes: 2
+		});
+		const oublie = await loadMathouCollection(client, id, GRADE);
+		expect(mathouOf(oublie, notionFractions)).toMatchObject({
+			growth: 'matou',
+			asleep: true,
+			acquiredPoints: 0
+		});
+		// La mémoire n'a pas redescendu
+		expect((await storedMemory(id, notionFractions))?.best_stage).toBe('matou');
+	});
+
+	it('mémoire : notion acquise en 1re spé, élève passé en Tle spé → grand matou ★ 1re spé', async () => {
+		const { id, client } = await newStudent(GRADE);
+		// Vecteurs : p3 (1re spé), p4 (Tle spé, hors parcours en 1re spé)
+		await setState(id, pointIds.p3, { is_acquired: true, total_successes: 2 });
+		const premiere = await loadMathouCollection(client, id, GRADE);
+		expect(mathouOf(premiere, notionVecteurs)).toMatchObject({
+			growth: 'grand_matou',
+			stars: [GRADE]
+		});
+		expect(await storedMemory(id, notionVecteurs)).toMatchObject({
+			best_stage: 'grand_matou',
+			starred_grades: [GRADE]
+		});
+
+		// Rentrée : passage en Tle spé, p4 pas acquis
+		await setGrade(id, GRADE_TLE);
+		const terminale = await loadMathouCollection(client, id, GRADE_TLE);
+		expect(mathouOf(terminale, notionVecteurs)).toMatchObject({
+			growth: 'grand_matou',
+			stars: [GRADE],
+			asleep: false,
+			workablePoints: 2
+		});
+
+		// Et même le point de 1re spé perdu : grand matou ★ 1re spé, endormi
+		await setState(id, pointIds.p3, {
+			is_acquired: false,
+			total_successes: 2,
+			distinct_template_successes: 2
+		});
+		const oublie = await loadMathouCollection(client, id, GRADE_TLE);
+		expect(mathouOf(oublie, notionVecteurs)).toMatchObject({
+			growth: 'grand_matou',
+			stars: [GRADE],
+			asleep: true
+		});
+		expect(await storedMemory(id, notionVecteurs)).toMatchObject({
+			best_stage: 'grand_matou',
+			starred_grades: [GRADE]
+		});
+	});
+
+	it('mémoire : deux écritures concurrentes ne font jamais redescendre le stade ni perdre une étoile', async () => {
+		const { id } = await newStudent(GRADE);
+		const vide = new Map();
+		// Deux calculs partis de la même lecture (aucune ligne) : l'un a vu grand matou ★ 1re spé,
+		// l'autre seulement un chaton ★ 2nde. Plusieurs tours, pour croiser les ordres d'arrivée.
+		for (let round = 0; round < 5; round += 1) {
+			await service.from('student_mathoux').delete().eq('student_id', id).select('notion_id');
+			await Promise.all([
+				rememberMathoux(
+					service,
+					id,
+					[{ notionId: notionVecteurs, bestStage: 'grand_matou', starredGrades: [GRADE] }],
+					vide
+				),
+				rememberMathoux(
+					service,
+					id,
+					[{ notionId: notionVecteurs, bestStage: 'chaton', starredGrades: ['2'] }],
+					vide
+				)
+			]);
+			expect(await storedMemory(id, notionVecteurs)).toMatchObject({
+				best_stage: 'grand_matou',
+				starred_grades: ['2', GRADE]
+			});
+		}
+
+		// Lecture périmée : un calcul qui a lu la ligne AVANT qu'elle grandisse écrit un
+		// stade plus bas sur cette vieille lecture → relue, fusionnée, pas de baisse.
+		const perimee = await readMathouMemory(service, id);
+		await rememberMathoux(
+			service,
+			id,
+			[
+				{
+					notionId: notionVecteurs,
+					bestStage: 'grand_matou',
+					starredGrades: ['2', GRADE, GRADE_TLE]
+				}
+			],
+			perimee
+		);
+		await rememberMathoux(
+			service,
+			id,
+			[{ notionId: notionVecteurs, bestStage: 'matou', starredGrades: ['2', GRADE, '6'] }],
+			perimee
+		);
+		expect(await storedMemory(id, notionVecteurs)).toMatchObject({
+			best_stage: 'grand_matou',
+			starred_grades: ['6', '2', GRADE, GRADE_TLE]
+		});
+
+		// Et deux calculs complets en parallèle, de bout en bout
+		const { id: id2, client: client2 } = await newStudent(GRADE);
+		await setState(id2, pointIds.p3, { is_acquired: true, total_successes: 1 });
+		const [c1, c2] = await Promise.all([
+			loadMathouCollection(client2, id2, GRADE),
+			loadMathouCollection(client2, id2, GRADE)
+		]);
+		expect(mathouOf(c1, notionVecteurs)?.growth).toBe('grand_matou');
+		expect(mathouOf(c2, notionVecteurs)?.growth).toBe('grand_matou');
+		expect((await storedMemory(id2, notionVecteurs))?.best_stage).toBe('grand_matou');
+	});
+
+	it('mémoire : l’élève B ne lit pas la mémoire de A, ni ne l’écrit en passant son identifiant', async () => {
+		const a = await newStudent(GRADE);
+		const b = await newStudent(GRADE);
+		await setState(a.id, pointIds.p3, { is_acquired: true, total_successes: 1 });
+		await loadMathouCollection(a.client, a.id, GRADE);
+		const avant = await storedMemory(a.id, notionVecteurs);
+		expect(avant?.best_stage).toBe('grand_matou');
+
+		// Le client de B, l'identifiant de A : la RLS ne rend aucune ligne (en silence)
+		const lue = await readMathouMemory(b.client, a.id);
+		expect(lue.size).toBe(0);
+		const direct = await b.client
+			.from('student_mathoux')
+			.select('notion_id')
+			.eq('student_id', a.id);
+		expect(direct.error).toBeNull();
+		expect(direct.data).toEqual([]);
+
+		// Le calcul par B avec l'identifiant de A est refusé avant toute écriture…
+		await expect(loadMathouCollection(b.client, a.id, GRADE)).rejects.toThrow(
+			/n’est pas l’utilisateur de la session/
+		);
+		// … et la mémoire de A n'a pas bougé
+		expect(await storedMemory(a.id, notionVecteurs)).toEqual(avant);
+	});
+	it('règle d’oubli : un point nouvellement tagué n’endort pas un grand matou ★ (David, 2026-10-18)', async () => {
+		const { id, client } = await newStudent(GRADE);
+		const branche = await insertNode('branch', 'branche neuve', null);
+		const notion = await insertNode('notion', 'Suites', branche);
+		const ancien = await insertPoint('p-suites-1', notion);
+		templates.suites1 = await createFakeTemplate(service, id);
+		await tag(templates.suites1, ancien, notion);
+		await setState(id, ancien, { is_acquired: true, total_successes: 3 });
+
+		const avant = await loadMathouCollection(client, id, GRADE);
+		expect(mathouOf(avant, notion)).toMatchObject({
+			growth: 'grand_matou',
+			stars: [GRADE],
+			asleep: false
+		});
+
+		// Un modèle publié tague un point neuf de la même classe : jamais tenté
+		const neuf = await insertPoint('p-suites-2', notion);
+		templates.suites2 = await createFakeTemplate(service, id);
+		await tag(templates.suites2, neuf, notion);
+
+		const apres = await loadMathouCollection(client, id, GRADE);
+		expect(mathouOf(apres, notion)).toMatchObject({
+			growth: 'grand_matou',
+			stars: [GRADE],
+			asleep: false,
+			workablePoints: 2,
+			acquiredPoints: 1
+		});
+		// Calcul seul : matou (1 sur 2) ; la mémoire garde grand matou et l'étoile
+		expect(await storedMemory(id, notion)).toMatchObject({
+			best_stage: 'grand_matou',
+			starred_grades: [GRADE]
+		});
 	});
 });

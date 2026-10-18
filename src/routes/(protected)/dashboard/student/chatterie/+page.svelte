@@ -14,6 +14,7 @@
 	import MathouAvatar from '$lib/components/mathoux/MathouAvatar.svelte';
 	import {
 		collectionCountsPhrase,
+		starGradeLabel,
 		type Mathou,
 		type MathouGrowth
 	} from '$lib/mathoux/collection-logic';
@@ -101,6 +102,17 @@
 										<p class="font-medium break-words">{mathou.name}</p>
 									{/if}
 									<p class="text-sm text-muted-foreground">{GROWTH_LABEL[mathou.growth]}</p>
+									{#if mathou.stars.length > 0}
+										<!-- Une étoile par classe où la notion a été entièrement acquise (mémoire) -->
+										<ul class="flex flex-wrap gap-x-2 text-sm" aria-label="Étoiles">
+											{#each mathou.stars as grade (grade)}
+												<li class="whitespace-nowrap">
+													<span aria-hidden="true" class="text-amber-500">★</span>
+													{starGradeLabel(grade)}
+												</li>
+											{/each}
+										</ul>
+									{/if}
 									{#if mathou.asleep}
 										<p class="text-sm">Fait la sieste</p>
 										<Button

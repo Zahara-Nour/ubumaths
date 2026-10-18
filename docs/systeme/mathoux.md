@@ -9,7 +9,7 @@ couvre:
 
 # Mathoux — la Chatterie de Faustroll
 
-> Vérifié contre le code le 2026-10-18 (Mathoux v1). Spécification validée par David :
+> Vérifié contre le code le 2026-10-18 (Mathoux v1, mémoire comprise). Spécification validée par David :
 > [mathoux-conception.md § 9](../wip/mathoux-conception.md).
 
 ## À quoi ça sert
@@ -18,8 +18,9 @@ Les **Mathoux** sont les chats du Docteur Faustroll : une collection que l'élè
 travaillant**. Un Mathou par **notion** de l'arbre des notions, de la **race** de sa **branche**
 (19 races). Ils sont muets ; le Palotin les commente (voir [buddy-palotins.md](buddy-palotins.md)).
 
-La collection n'est **pas stockée** : aucune table, aucune migration. Elle se calcule à chaque
-affichage depuis l'acquisition des points et les badges de révision espacée.
+La collection se **calcule** à chaque affichage depuis l'acquisition des points et les badges de
+révision espacée ; une **mémoire** (`student_mathoux`) retient ce que le calcul ne peut pas
+retrouver : le meilleur stade atteint et les étoiles. **Un Mathou ne rapetisse jamais.**
 
 ## Règles
 
@@ -39,20 +40,28 @@ Points travaillables par niveau en prod (2026-10-18, modèles publiés / tous le
 - **Race** : rang de la branche dans l'ordre `position` des branches non archivées (0 à 18) ; le
   dessin (`MathouAvatar`, `mathou-races.ts`) en tire la couleur et le motif, modulo 19.
 - **Stade** (`mathouGrowth`), calculé **niveau par niveau** sur les seuls points de ce niveau ; le
-  stade affiché est **le meilleur** d'entre eux (`bestGrowth`) : un grand matou de 5e reste grand
-  matou en 4e même si les points de 4e ne sont pas acquis. Le détail est gardé dans
-  `Mathou.byGrade` (points, acquis, stade par niveau, du plus ancien au plus récent) pour la
-  mémoire des stades à venir (meilleur stade jamais atteint, une étoile par niveau acquis) :
+  stade calculé est **le meilleur** d'entre eux (`bestGrowth`) : un grand matou de 5e reste grand
+  matou en 4e même si les points de 4e ne sont pas acquis. Le détail est dans `Mathou.byGrade`
+  (points, acquis, stade par niveau, du plus ancien au plus récent). Le stade **affiché** est le
+  meilleur du stade calculé et du stade mémorisé (voir « Mémoire ») :
   - aucune réussite → **à découvrir** (silhouette, pour donner un but) ;
   - au moins une réussite (`total_successes > 0` ou `last_success_at` non nul) → **chaton** ;
   - acquis ≥ la moitié des points travaillables, **arrondie au supérieur** (3 sur 5) → **matou** ;
   - tous acquis → **grand matou**. Une notion d'un seul point passe de chaton à grand matou.
-- **Sieste** : au moins un point de la notion, **de n'importe quel niveau du parcours**, a le badge FSRS `a_renforcer` ou `a_remedier`
-  (`computePointBadges`, une question taguée est due). Une silhouette ne dort jamais : elle n'est
-  pas encore un Mathou. Le Mathou n'est jamais perdu ; une révision le réveille.
-- **Pas de mémoire en v1** : le stade se recalcule à chaque affichage. En l'absence de la table de
-  mémoire (meilleur stade jamais atteint, prévue pour la PR suivante), un point acquis puis perdu
-  (`is_acquired` repassé à faux) fait encore **rapetisser** le Mathou.
+- **Étoiles** : une par niveau du parcours où la notion est **entièrement acquise** (stade du
+  niveau = grand matou), unies aux étoiles mémorisées, du plus ancien au plus récent
+  (`Mathou.stars`). La page les montre avec le nom court de la classe (`starGradeLabel`,
+  `GRADES[…].shortName`) : « ★ 2nde ★ 1ère Spé ».
+- **Sieste** : au moins un point de la notion, **de n'importe quel niveau du parcours**, a le badge
+  FSRS `a_renforcer` ou `a_remedier` (`computePointBadges`, une question taguée est due), **ou** un
+  point de la notion est **perdu** (`isPointLost`, règle tranchée par David le 2026-10-18) : le
+  seuil de réussites de son régime est atteint mais il n'est plus acquis (échecs récents) —
+  régime `diversite` (`curriculum_points.regime_acquisition`) : `distinct_template_successes ≥ 2` ;
+  régime `fluence` (répétition) : `total_successes ≥ 5` (seuils de `recalc_point_state`). Un point
+  **jamais acquis** (neuf, ou en apprentissage sous le seuil) n'endort pas : il empêche seulement
+  l'étoile de sa classe. Un stade calculé sous le stade mémorisé n'endort pas à lui seul (un point
+  nouvellement tagué le fait baisser sans oubli). Une silhouette ne dort jamais : elle n'est pas
+  encore un Mathou. Le Mathou n'est jamais perdu ; une révision le réveille.
 - **Nom** (`mathouName`) : premier mot terminé par -s ou -x → « le Mathou des Fractions : calculs » ;
   sinon, le genre ne se devine pas (« de la Dérivation », « du Second degré ») → « le Mathou
   « Dérivation » ». Cas grammaticaux mais maladroits : « le Mathou des Autres lois », « le Mathou
@@ -64,20 +73,54 @@ Chatterie dit « Aucune notion travaillable pour ta classe pour l'instant » (le
 « niveau » à l'écran) ; elle se remplira avec
 le tagage, sans changement de code.
 
+## Mémoire (`student_mathoux`)
+
+Spécification : [mathoux-conception.md § 9, « Changement d'année et oubli »](../wip/mathoux-conception.md).
+Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou), `starred_grades`
+(codes de niveau valides, 20 au plus, sans doublon : à la charge du serveur), `first_seen_at`,
+`updated_at` (trigger). Migration `20261017090200_mathoux_memoire.sql`.
+
+- **Lecture** au client de l'élève, en parallèle du parcours (`readMathouMemory`) : l'élève lit ses
+  lignes, le prof celles de ses élèves. Une lecture en échec lève (la page dit « fermée »), sinon un
+  Mathou rapetisserait à l'écran.
+- **Mathou de la seule mémoire** : une notion mémorisée sans aucun point travaillable au parcours
+  (modèles dépubliés, changement de voie) reste affichée à son stade, avec ses étoiles, sans
+  sieste ; une notion ou une branche archivée la fait disparaître, comme pour les points.
+- **Identité** : `loadMathouCollection` vérifie que l'élève demandé est l'utilisateur du client
+  passé (`auth.getUser`) ; sinon il lève, avant toute écriture (audit de la PR 3).
+- **Écriture** au client **service** seulement (`authenticated` n'a que SELECT), pour l'élève de la
+  session, à la fin de chaque calcul (page et `GET /api/student/mathoux`), **seulement s'il y a du
+  nouveau** (`memoryUpdates` : Mathou né sans ligne, stade ou étoile gagnés). Une panne
+  d'écriture est journalisée et ne change pas l'affichage.
+- **Jamais en baisse, même en concurrence** (`rememberMathoux`, `src/lib/server/mathoux/memory.ts`) :
+  les lignes neuves partent en **un** insert groupé `ON CONFLICT DO NOTHING` (toutes les colonnes
+  dans chaque ligne) ; une ligne existante — ou perdue au conflit, relue — se met à jour
+  **conditionnellement** (`WHERE updated_at = <lu>`, comparer-et-échanger). Zéro ligne rendue :
+  relecture, fusion (meilleur stade, union des étoiles), nouvel essai (3 au plus). Sans fonction
+  SQL, c'est l'écriture sûre par PostgREST ; un Mathou qui grandit coûte une requête.
+- **Export RGPD** : catégorie `gaming` de `/api/account/export`
+  ([rgpd.md § 7.3](conformite/rgpd.md)). Effacement : cascade depuis `profiles`.
+
+Limite connue (acceptée par David le 2026-10-18) : un Mathou endormi par un point perdu **sans
+carte due** ne se réveille qu'à la prochaine révision due — « Réveiller » mène au paquet
+Programme, dont les sessions ne proposent que les cartes dues.
+
 ## Code
 
 | Fichier                                                | Rôle                                                                                                                        |
 | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | `src/lib/mathoux/collection-logic.ts`                  | logique pure : stades, noms, regroupement, phrases (importable au client)                                                   |
 | `src/lib/mathoux/summary.ts`                           | schéma Zod du résumé `{ born, napping, toDiscover }`                                                                        |
-| `src/lib/server/mathoux/collection.ts`                 | `loadMathouCollection` : les lectures, puis la logique pure                                                                 |
+| `src/lib/server/mathoux/collection.ts`                 | `loadMathouCollection` : les lectures, la logique pure, puis la mémoire                                                     |
+| `src/lib/server/mathoux/memory.ts`                     | lecture (élève) et écriture (service) de `student_mathoux`                                                                  |
 | `src/lib/components/mathoux/`                          | `MathouAvatar` (SVG paramétré : race, stade, sieste, silhouette), le dessin `mathou-dessin.ts`, les races `mathou-races.ts` |
 | `dashboard/student/chatterie/+page.{server.ts,svelte}` | la page ; `unavailable` si une lecture échoue                                                                               |
 | `api/student/mathoux/+server.ts`                       | `GET` élève : les compteurs, pour le Palotin                                                                                |
 
 ### Lectures et RLS
 
-Tout est lu avec le **client de l'élève**. `grade_ancestors` est SECURITY INVOKER et lit
+Tout est lu avec le **client de l'élève** (la mémoire comprise ; seule son écriture passe par le
+client service). `grade_ancestors` est SECURITY INVOKER et lit
 `grade_predecessors`, lisible par tous ; `curriculum_points`, `question_template_points` et
 `classification_nodes` sont lisibles par tout utilisateur connecté ; `student_point_state` et
 `srs_card_stats` par l'élève lui-même (et le professeur). ⚠️ Un refus RLS rendrait une Chatterie
@@ -91,9 +134,9 @@ une collection vide.
 
 ### Coût
 
-Cinq allers-retours :
+Cinq allers-retours (six s'il y a du nouveau à retenir) :
 
-1. `grade_ancestors` ;
+1. `grade_ancestors`, la mémoire et l'identité (`auth.getUser`), en parallèle ;
 2. une requête de points **par niveau** du parcours, en parallèle (239 points au plus par niveau,
    alors que le parcours entier d'une Terminale dépasserait le plafond de 1 000 lignes de
    PostgREST) ;
@@ -105,7 +148,9 @@ Cinq allers-retours :
 5. les états FSRS de `computePointBadges`.
 
 Pour un parcours de Tle spé, mesuré en prod le 2026-10-18 : 12 niveaux, 1 624 points rattachés,
-440 nœuds, 31 points travaillables. Soit 1 + 12 + (17 + 1 + 5) + (1 + 1) + 1 = **39 requêtes**.
+440 nœuds, 31 points travaillables. Soit 1 + 12 + (17 + 1 + 5) + (1 + 1) + 1 = **39 requêtes**, plus 1 pour la mémoire ; l'écriture
+n'ajoute rien quand rien n'a changé (le cas courant), 1 requête pour les naissances et 1 par
+Mathou qui grandit.
 
 Les tags sont lus par pages : un lot de 100 points peut dépasser 1 000 tags (14 au plus par point,
 1 499 en tout en prod), et PostgREST tronquerait en silence. ⚠️ `computePointBadges`
@@ -157,7 +202,8 @@ et le lien mènerait à elle-même. Réponse en échec ou mal formée (Zod) → 
 `/dashboard/student/chatterie`, entrée « La Chatterie » de la navigation élève (pas de bouton
 retour : page de la navigation). Titre « La Chatterie de Faustroll », compteurs (« 7 Mathoux, 2 en
 sieste, 12 à découvrir »), une section titrée par race, une liste de Mathoux : dessin, nom, stade,
-« Fait la sieste » et « Réveiller » vers la révision du programme
+étoiles (« ★ 2nde ★ 1ère Spé », le symbole masqué aux lecteurs d'écran), « Fait la sieste » et
+« Réveiller » (un Mathou endormi par un point perdu comme un autre) vers la révision du programme
 (`/dashboard/revisions/decks/programme`, là où tombent les cartes dues). Les silhouettes montrent
 le nom de la notion, pas celui du Mathou. Aucun mot interdit par le Compendium (XP, niveau, score).
 

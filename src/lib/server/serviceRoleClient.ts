@@ -110,7 +110,10 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Récompenses (lot 3, Q141) : XP du compagnon et succès réservés au serveur,
 	// appelés APRÈS le contrôle d'identité de la route
 	'lib/server/buddy-queries.ts',
-	'lib/server/achievements/service.ts'
+	'lib/server/achievements/service.ts',
+	// Mémoire des Mathoux (Chatterie) : `authenticated` n'a que SELECT sur
+	// `student_mathoux` ; écrite par le serveur pour l'élève de la session, après le calcul
+	'lib/server/mathoux/collection.ts'
 ] as const;
 
 /**

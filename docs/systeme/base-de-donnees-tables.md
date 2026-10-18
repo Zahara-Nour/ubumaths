@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-223 tables · 25 vues · 314 fonctions. Colonne suivie de `?` : peut être nulle.
+224 tables · 25 vues · 314 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (20)
 
@@ -810,7 +810,7 @@ Liens : `offered_by` → `profiles` · `trade_id` → `marketplace_trades`
 
 Liens : `initiator_id` → `profiles` · `last_offer_by` → `profiles` · `listing_id` → `marketplace_listings` · `partner_id` → `profiles` · `proposal_id` → `marketplace_proposals`
 
-## Jeux, défis et récompenses (49)
+## Jeux, défis et récompenses (50)
 
 ### `achievement_events`
 
@@ -1047,6 +1047,12 @@ Liens : `achievement_id` → `achievements` · `student_id` → `profiles` · `u
 `change_count` · `constance_days_this_week` · `constance_week_start?` · `created_at` · `current_streak` · `equipped_skin_id?` · `last_activity_date?` · `last_xp_date?` · `level` · `longest_streak` · `palotin_type` · `student_id` · `themes_explored` · `updated_at` · `xp` · `xp_earned_today`
 
 Liens : `equipped_skin_id` → `buddy_skins` · `student_id` → `profiles`
+
+### `student_mathoux`
+
+`best_stage` · `first_seen_at` · `notion_id` · `starred_grades` · `student_id` · `updated_at`
+
+Liens : `notion_id` → `classification_nodes` · `student_id` → `profiles`
 
 ### `vip_card_config`
 

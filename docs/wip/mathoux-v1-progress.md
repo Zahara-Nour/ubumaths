@@ -13,7 +13,8 @@
 
 - [x] PR 1 — #1490 mergée le 2026-10-18 (pas en prod).
 - [x] PR 2 — #1489 (table `student_mathoux`) mergée et migrée en prod le 2026-10-18 (vérifié : RLS, lecture seule, anon sans droit).
-- [ ] PR 3 — mémoire (meilleur stade, étoiles) + export RGPD ; `db:types` d'abord.
+- [ ] PR 3 — #1493 : mémoire (meilleur stade, étoiles), sieste de l'oubli (point déjà réussi puis
+      perdu), export RGPD (Mathoux et Palotin) ; revue et audit passés, CI en cours.
 - [ ] Dessins : **AB3 choisi par David le 2026-10-18** (chat-poire sur l'affiche, expression « juste milieu » : ni méchant, ni béat, ni kawaii ; explorations v1-v3 dans le scratchpad de la session). Déclinaison en 19 races en cours (branche `feat/mathoux-dessins-ab3`).
 
 ### Calcul, page, Palotin gardien (2026-10-18, non commité)
@@ -51,3 +52,30 @@ par pages de 1 000 ; widget muet sur la Chatterie, salutation après la réponse
 en `aria-live="polite"`, `resolve()` ; « pour ta classe » ; plus de `<main>` imbriqué ; doc : coût
 réel (39 requêtes en Tle spé), rapetissement sans table de mémoire. Signalé, non corrigé : le
 plafond de 1 000 lignes latent dans `computePointBadges` (code partagé avec le tableau de bord).
+
+### PR 3 — mémoire et export (2026-10-18, non commité)
+
+Fait, tests verts (unitaires, rendu, intégration avec preuves du rouge) :
+
+- `collection-logic.ts` : `memory` en entrée ; stade affiché = max(calcul, mémoire) ; `stars` =
+  niveaux entièrement acquis ∪ étoiles mémorisées ; oubli → sieste ; `memoryUpdates`,
+  `mergeMemory`, `starGradeLabel` ;
+- `server/mathoux/memory.ts` : lecture au client de l'élève, écriture au client service (insert
+  groupé `ON CONFLICT DO NOTHING`, puis mises à jour conditionnées à `updated_at`, relecture et
+  fusion sur conflit) ; `collection.ts` l'appelle à chaque calcul, seulement s'il y a du nouveau ;
+  `lib/server/mathoux/collection.ts` ajouté à la liste blanche du client service ;
+- page : étoiles « ★ 2nde ★ 1ère Spé » ;
+- export RGPD : `gaming.mathoux` (`student_mathoux`) et `gaming.palotin` (`student_buddies`,
+  décision de David du 2026-10-18), tableau de `rgpd.md` § 7.3. `format_version` laissé à 1.4.
+
+Choix faits faute de spécification (à faire valider) :
+
+- ~~oubli = stade mémorisé > stade calculé~~ → **tranché par David le 2026-10-18 (option 2)** :
+  seul un point « déjà réussi puis perdu » (seuil du régime atteint, non acquis) endort ; un point
+  jamais acquis empêche seulement l'étoile (`isPointLost`) ;
+- un Mathou mémorisé sans point travaillable reste affiché, sans sieste ;
+- `first_seen_at` = date de la première écriture (défaut de la table), pas de la première réussite.
+
+Réveil : un Mathou endormi par un point perdu sans carte due ne se réveille qu'à la prochaine
+révision due (cas rare, accepté par David le 2026-10-18) ; v1.1 : bouton S'entraîner sur cette
+notion (révision forcée limitée aux questions de la notion).

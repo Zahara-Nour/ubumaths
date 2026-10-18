@@ -59,7 +59,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 			rewardEventsResult,
 			classMembershipsResult,
 			testSessionsResult,
-			tutorConversationsResult
+			tutorConversationsResult,
+			mathouxResult,
+			buddyResult
 		] = await Promise.all([
 			// Profile data
 			supabase.from('profiles').select('*').eq('id', userId).single(),
@@ -185,7 +187,23 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.eq('student_id', userId)
 				.order('created_at', { ascending: false })
 				.limit(1000)
-				.limit(5000, { referencedTable: 'tutor_messages' })
+				.limit(5000, { referencedTable: 'tutor_messages' }),
+
+			// Jeux — mémoire des Mathoux (Chatterie) : meilleur stade et étoiles par notion.
+			// Une ligne par notion (440 au plus) : sous le plafond de 1 000 lignes.
+			supabase
+				.from('student_mathoux')
+				.select('notion_id, best_stage, starred_grades, first_seen_at, updated_at')
+				.eq('student_id', userId),
+
+			// Jeux — le Palotin de l'élève (une ligne par élève ; décision de David, 2026-10-18)
+			supabase
+				.from('student_buddies')
+				.select(
+					'palotin_type, level, xp, xp_earned_today, last_xp_date, current_streak, longest_streak, last_activity_date, constance_days_this_week, constance_week_start, themes_explored, equipped_skin_id, change_count, created_at, updated_at'
+				)
+				.eq('student_id', userId)
+				.maybeSingle()
 		]);
 
 		// Un export RGPD qui annonce « aucune session » sur une panne de lecture
@@ -197,6 +215,15 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Même règle : un export qui omettrait le tuteur sur une panne serait faux.
 		if (tutorConversationsResult.error) {
 			throw new Error(`tutor_conversations illisible : ${tutorConversationsResult.error.message}`);
+		}
+
+		// Même règle pour la mémoire des Mathoux.
+		if (mathouxResult.error) {
+			throw new Error(`student_mathoux illisible : ${mathouxResult.error.message}`);
+		}
+
+		if (buddyResult.error) {
+			throw new Error(`student_buddies illisible : ${buddyResult.error.message}`);
 		}
 
 		// Step 4: Build export object
@@ -280,7 +307,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 			// Gaming
 			gaming: {
-				player_stats: gamePlayerResult.data || null
+				player_stats: gamePlayerResult.data || null,
+				mathoux: mathouxResult.data || [],
+				palotin: buddyResult.data || null
 			},
 
 			// Rewards & Economy

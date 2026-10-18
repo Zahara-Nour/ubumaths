@@ -10,16 +10,24 @@
  *
  * Tout le PARCOURS compte (complément de David, 2026-10-18) : les points du
  * niveau de l'élève ET ceux de ses niveaux antérieurs. Le stade se calcule
- * niveau par niveau ; le stade affiché est le meilleur d'entre eux (un grand
- * matou de 5e reste grand matou en 4e). Le détail par niveau est gardé pour la
- * mémoire des stades (PR suivante : meilleur stade jamais atteint, étoiles).
+ * niveau par niveau ; le stade calculé est le meilleur d'entre eux (un grand
+ * matou de 5e reste grand matou en 4e).
+ *
+ * MÉMOIRE (`student_mathoux`, § 9 « Changement d'année et oubli ») : un Mathou
+ * ne rapetisse jamais. Stade affiché = max(stade calculé, meilleur stade
+ * mémorisé) ; étoiles = niveaux entièrement acquis (calcul) ∪ étoiles
+ * mémorisées. Un point PERDU (déjà réussi au seuil, plus acquis : `isPointLost`)
+ * ENDORT le Mathou au lieu de le faire rapetisser ; un point jamais acquis (neuf,
+ * ou en apprentissage) ne l'endort pas, il empêche seulement l'étoile de sa classe
+ * (règle tranchée par David le 2026-10-18, option 2). `memoryUpdates` dit ce que
+ * la mémoire doit apprendre.
  *
  * Importable côté client (phrases du Palotin, page) : aucune dépendance serveur.
  *
  * Spec validée par David : docs/wip/mathoux-conception.md § 9.
  */
 
-import { GRADE_CODES } from '$lib/types/grades';
+import { GRADE_CODES, GRADES, isGradeCode } from '$lib/types/grades';
 
 // ============================================================================
 // Types
@@ -27,6 +35,21 @@ import { GRADE_CODES } from '$lib/types/grades';
 
 /** Stade d'un Mathou. `a_decouvrir` = notion travaillable pas encore réussie (silhouette). */
 export type MathouGrowth = 'a_decouvrir' | 'chaton' | 'matou' | 'grand_matou';
+
+/** Stade d'un Mathou NÉ : ce que retient la mémoire (`student_mathoux.best_stage`). */
+export type MathouStage = Exclude<MathouGrowth, 'a_decouvrir'>;
+
+/** Ce que la mémoire retient d'un Mathou (une ligne de `student_mathoux`). */
+export interface MathouMemory {
+	bestStage: MathouStage;
+	/** Codes de niveau étoilés (valides, sans doublon). */
+	starredGrades: string[];
+}
+
+/** Ce que la mémoire doit apprendre d'un Mathou : sa ligne complète, jamais en baisse. */
+export interface MathouMemoryUpdate extends MathouMemory {
+	notionId: string;
+}
 
 export type CollectionNodeKind = 'branch' | 'notion' | 'subnotion';
 
@@ -52,6 +75,15 @@ export interface PointProgress {
 	isAcquired: boolean;
 	/** Au moins une réussite (`total_successes > 0` ou `last_success_at` non nul). */
 	hasSuccess: boolean;
+	/** Point perdu : seuil de réussites atteint mais plus acquis (`isPointLost`). */
+	lost: boolean;
+}
+
+/** Ce qu'il faut de `student_point_state` pour savoir si un point est perdu. */
+export interface PointLossInput {
+	isAcquired: boolean;
+	totalSuccesses: number;
+	distinctTemplateSuccesses: number;
 }
 
 /** Une notion vue depuis UN niveau du parcours. */
@@ -70,14 +102,19 @@ export interface Mathou {
 	name: string;
 	/** Rang de la branche (0..). La couleur et le motif en découlent. */
 	raceIndex: number;
-	/** Meilleur des stades calculés niveau par niveau. */
+	/** Meilleur des stades calculés niveau par niveau et du stade mémorisé. */
 	growth: MathouGrowth;
-	/** Au moins un point « à revoir », de n'importe quel niveau. Jamais vrai pour une silhouette. */
+	/**
+	 * Au moins un point « à revoir » (de n'importe quel niveau) ou un point
+	 * perdu (cf. `isPointLost`). Jamais vrai pour une silhouette.
+	 */
 	asleep: boolean;
+	/** Niveaux étoilés (calculés ∪ mémorisés), du plus ancien au plus récent. */
+	stars: string[];
 	/** Totaux sur tout le parcours. */
 	workablePoints: number;
 	acquiredPoints: number;
-	/** Détail par niveau, du plus ancien au plus récent. */
+	/** Détail par niveau, du plus ancien au plus récent. Vide pour un Mathou de la seule mémoire. */
 	byGrade: MathouGradeDetail[];
 }
 
@@ -109,6 +146,8 @@ export interface BuildCollectionInput {
 	progress: Map<string, PointProgress>;
 	/** Points dont le badge FSRS est `a_renforcer` ou `a_remedier`. */
 	nappingPointIds: Set<string>;
+	/** Mémoire de l'élève par notion (`student_mathoux`). Absente = aucune ligne. */
+	memory?: Map<string, MathouMemory>;
 }
 
 // ============================================================================
@@ -145,14 +184,59 @@ const GROWTH_RANK: Record<MathouGrowth, number> = {
 };
 
 /** Le plus avancé de deux stades. */
-export function bestGrowth(a: MathouGrowth, b: MathouGrowth): MathouGrowth {
+export function bestGrowth<G extends MathouGrowth>(a: G, b: G): G {
 	return GROWTH_RANK[b] > GROWTH_RANK[a] ? b : a;
+}
+
+const STAGES: readonly MathouStage[] = ['chaton', 'matou', 'grand_matou'];
+
+/** Garde de type : une valeur lue en base est-elle un stade de la mémoire ? */
+export function isMathouStage(value: unknown): value is MathouStage {
+	return typeof value === 'string' && (STAGES as readonly string[]).includes(value);
 }
 
 /** Rang d'un niveau dans la scolarité (CP d'abord) ; un code inconnu passe en dernier. */
 function gradeRank(grade: string): number {
 	const index = (GRADE_CODES as readonly string[]).indexOf(grade);
 	return index === -1 ? GRADE_CODES.length : index;
+}
+
+/** Niveaux sans doublon, du plus ancien au plus récent. */
+function sortGrades(grades: Iterable<string>): string[] {
+	return [...new Set(grades)].sort((a, b) => gradeRank(a) - gradeRank(b) || a.localeCompare(b));
+}
+
+/** Union de deux mémoires : le meilleur stade, toutes les étoiles. Jamais en baisse. */
+export function mergeMemory(a: MathouMemory, b: MathouMemory): MathouMemory {
+	return {
+		bestStage: bestGrowth(a.bestStage, b.bestStage),
+		starredGrades: sortGrades([...a.starredGrades, ...b.starredGrades])
+	};
+}
+
+/** `have` contient-elle déjà tout ce que dit `want` (stade au moins égal, toutes les étoiles) ? */
+export function memoryCovers(have: MathouMemory, want: MathouMemory): boolean {
+	return (
+		GROWTH_RANK[have.bestStage] >= GROWTH_RANK[want.bestStage] &&
+		want.starredGrades.every((grade) => have.starredGrades.includes(grade))
+	);
+}
+
+/**
+ * Un point est-il PERDU : déjà réussi au seuil de son régime d'acquisition, mais
+ * plus acquis (échecs récents) ? Seuils de `recalc_point_state`
+ * (migration 20260928160000) : régime `diversite` → au moins 2 modèles distincts
+ * réussis ; sinon (`fluence`, répétition) → au moins 5 réussites. Un point jamais
+ * acquis sous le seuil (neuf, en apprentissage) n'est pas perdu.
+ */
+export function isPointLost(regime: string, state: PointLossInput): boolean {
+	if (state.isAcquired) return false;
+	return regime === 'diversite' ? state.distinctTemplateSuccesses >= 2 : state.totalSuccesses >= 5;
+}
+
+/** Nom de la classe sur une étoile : libellé court du projet (« 1ère Spé »), sinon le code. */
+export function starGradeLabel(grade: string): string {
+	return isGradeCode(grade) ? GRADES[grade].shortName : grade;
 }
 
 // ============================================================================
@@ -195,6 +279,7 @@ function byPosition(a: CollectionTreeNode, b: CollectionTreeNode): number {
  */
 export function buildMathouCollection(input: BuildCollectionInput): MathouCollection {
 	const { points, nodes, progress, nappingPointIds } = input;
+	const memory = input.memory ?? new Map<string, MathouMemory>();
 
 	const nodeById = new Map(nodes.map((node) => [node.id, node]));
 	const branches = nodes.filter((node) => node.kind === 'branch').sort(byPosition);
@@ -215,7 +300,16 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 	const counts: MathouCounts = { born: 0, napping: 0, toDiscover: 0 };
 	const groups = new Map<string, MathouRaceGroup>();
 
-	const notions = [...pointsByNotion.keys()]
+	// Notions du calcul, plus celles de la seule mémoire (un Mathou né ne disparaît pas
+	// quand ses points quittent le parcours) si la notion et sa branche sont encore là
+	const notionIds = new Set(pointsByNotion.keys());
+	for (const notionId of memory.keys()) {
+		const node = nodeById.get(notionId);
+		if (node?.kind === 'notion' && node.parentId && raceIndexByBranch.has(node.parentId)) {
+			notionIds.add(notionId);
+		}
+	}
+	const notions = [...notionIds]
 		.map((id) => nodeById.get(id))
 		.filter((node): node is CollectionTreeNode => node !== undefined)
 		.sort(byPosition);
@@ -233,6 +327,7 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 		let workableTotal = 0;
 		let acquiredTotal = 0;
 		let hasNappingPoint = false;
+		let hasLostPoint = false;
 		for (const [grade, pointSet] of gradeEntries) {
 			let acquired = 0;
 			let hasSuccess = false;
@@ -240,6 +335,7 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 				const state = progress.get(pointId);
 				if (state?.isAcquired) acquired += 1;
 				if (state?.hasSuccess) hasSuccess = true;
+				if (state?.lost) hasLostPoint = true;
 				if (nappingPointIds.has(pointId)) hasNappingPoint = true;
 			}
 			const gradeGrowth = mathouGrowth({ workable: pointSet.size, acquired, hasSuccess });
@@ -254,8 +350,22 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 			acquiredTotal += acquired;
 		}
 
+		// Étoiles du calcul : niveaux entièrement acquis (codes valides seulement, la base
+		// refuserait les autres), puis union avec la mémoire
+		const computedStars = byGrade
+			.filter((detail) => detail.growth === 'grand_matou' && isGradeCode(detail.grade))
+			.map((detail) => detail.grade);
+		const remembered = memory.get(notion.id);
+		let stars = computedStars;
+		if (remembered) {
+			// Stade affiché = max(calcul, mémoire) ; les étoiles mémorisées restent. Un
+			// stade calculé plus bas n'endort PAS à lui seul (un point neuf le fait baisser)
+			growth = bestGrowth(growth, remembered.bestStage);
+			stars = sortGrades([...computedStars, ...remembered.starredGrades]);
+		}
+
 		// Une silhouette n'est pas encore un Mathou : elle ne dort pas.
-		const asleep = growth !== 'a_decouvrir' && hasNappingPoint;
+		const asleep = growth !== 'a_decouvrir' && (hasNappingPoint || hasLostPoint);
 
 		if (growth === 'a_decouvrir') counts.toDiscover += 1;
 		else counts.born += 1;
@@ -274,6 +384,7 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 			raceIndex,
 			growth,
 			asleep,
+			stars,
 			workablePoints: workableTotal,
 			acquiredPoints: acquiredTotal,
 			byGrade
@@ -283,6 +394,27 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 
 	const races = [...groups.values()].sort((a, b) => a.raceIndex - b.raceIndex);
 	return { races, counts };
+}
+
+/**
+ * Ce que la mémoire doit apprendre : la ligne complète (stade affiché, toutes les
+ * étoiles) de chaque Mathou né qui n'a pas de ligne, ou dont le stade ou les
+ * étoiles dépassent sa ligne. Le stade affiché étant déjà le max du calcul et de
+ * la mémoire, une ligne écrite ne redescend jamais. Rien de nouveau → liste vide.
+ */
+export function memoryUpdates(
+	collection: MathouCollection,
+	memory: Map<string, MathouMemory>
+): MathouMemoryUpdate[] {
+	const updates: MathouMemoryUpdate[] = [];
+	for (const mathou of collection.races.flatMap((race) => race.mathoux)) {
+		if (mathou.growth === 'a_decouvrir') continue;
+		const want: MathouMemory = { bestStage: mathou.growth, starredGrades: mathou.stars };
+		const have = memory.get(mathou.notionId);
+		if (have && memoryCovers(have, want)) continue;
+		updates.push({ notionId: mathou.notionId, ...want });
+	}
+	return updates;
 }
 
 /** Notion d'un nœud : lui-même (notion) ou son parent (sous-notion). */
