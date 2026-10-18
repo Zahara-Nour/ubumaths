@@ -48,9 +48,10 @@ gidouilles). Correction prévue en PR 2.
       touche le forfait dès sa première carte de révision. Borné par le plafond de 100 pansées par jour.
       Reportés à la PR 2 : course lire-modifier-écrire de `addExploredThemes` (ajout à faire en SQL),
       policy UPDATE « own » de `srs_review_sessions` (`completed_at` remis à vide).
-- [ ] PR 2
-- [ ] PR 3 — migration `20261017090100_palotin_constance_et_ecritures_serveur.sql` et
-      `tests/integration/palotin-ecritures-eleve.test.ts` écrits (rouge sans la migration, vert avec).
-      ⛔ `db:migrate` seulement APRÈS le `deploy:prod` qui livre la PR #1475 (le 2026-10-18, la
-      branche `production` écrit encore `student_buddies` et `srs_review_sessions` au client de
-      l'élève) et après l'explication des `DROP POLICY` à David.
+- [x] PR 2 — #1475, écritures au client service, verrou optimiste sur `updated_at`, route
+      `api/student/buddy/xp` retirée.
+- [x] PR 3 — #1476. Livrée en prod par `deploy:prod` v0.39.0 (2026-10-18, demandé par David), puis
+      `db:migrate` le même jour avec l'accord de David sur les `DROP POLICY`. Vérifié en prod : seules
+      les policies SELECT restent sur les deux tables ; 57 Palotins et la séance existante intacts ;
+      colonnes `constance_*` à leurs valeurs par défaut. `db:types` dans la PR 4.
+- [ ] PR 4 — Constance Royale hebdomadaire : phase 0 à valider par David.
