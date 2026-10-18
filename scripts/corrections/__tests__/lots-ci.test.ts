@@ -41,9 +41,11 @@ const MINIMUM_PROPOSALS = 230;
  * - `retouches` : instantané des retouches ciblées (retouches.test.ts) ;
  * - `vague3-publies` : lot vide (RESUME.md seul) ;
  * - `vague4-cloture` : propositions sans instantané `_modeles.json`, reprises
- *   par les lots `cloture-*`.
+ *   par les lots `cloture-*` ;
+ * - `renvois-numerotation` : renvois des EXERCICES (pas des modèles de questions),
+ *   appliqués par `scripts/fix-renvois-numerotation.ts`.
  */
-const NOT_LOTS = new Set(['retouches', 'vague3-publies', 'vague4-cloture']);
+const NOT_LOTS = new Set(['retouches', 'vague3-publies', 'vague4-cloture', 'renvois-numerotation']);
 
 // ============================================================================
 // FIXTURES
