@@ -122,7 +122,16 @@ nouveau type : les quatre surfaces de rendu lisent les mêmes champs. À l'écra
 courbe du grapheur (`curve-1`…`curve-4`) posée en `style.color` se peint de son jeton
 `var(--color-curve-N)` (`screenColor` de `svg-primitives.ts`) : 𝒞f de l'atelier prend ainsi la
 couleur de sa carte (K4) ; les exports TikZ et Typst ne la connaissent pas (couleur par défaut),
-l'atelier n'exporte pas ses figures. `GeometryCanvas` n'affiche
+l'atelier n'exporte pas ses figures. Les **constructions** de l'atelier (lot 2 : `milieu(A, B)`,
+`(AB)`, `[AB]`, `[AB)`, `parallele(P, d)`, `cercle(O, r)`…) sont **calculées par l'atelier**
+(`atelier/construction.ts`, fonctions pures et exactes de `compute/geo-arithmetic.ts` et
+`projectOnLine`), jamais par la `Figure` : elle ne reçoit que des points (cachés, appuis) et des
+éléments existants — `createLine`, `createSegment`, `createRay`, `createCircleByRadius` (rayon
+`scalarRef` : un curseur cité suit sans reconstruire). Aucun type nouveau. Aucune surface n'écrit le
+nom d'un cercle : l'atelier le porte par un texte (`createText`) de la couleur du cercle, accroché
+à un point caché posé sur le cercle.
+L'atelier lit ces lignes avec son propre lecteur (`atelier/construction-read.ts`) : celui du DSL
+refuse ses nombres (`2a`, `√2`, `\frac{1}{2}`, `parallèle`). `GeometryCanvas` n'affiche
 plus de réglette pour un curseur invisible (y compris après `masque(s)`). Doc :
 [atelier.md](../atelier.md#vues).
 

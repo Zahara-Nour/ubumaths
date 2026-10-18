@@ -541,7 +541,11 @@
 	 * un objet mathématique.
 	 */
 	function canKeep(entry: Entry): boolean {
-		return entry.result?.kind === 'calcul' && entry.result.ast !== undefined;
+		// Une construction tapée seule (`(AB)`, lot 2) se garde par sa définition
+		return (
+			entry.result?.kind === 'calcul' &&
+			(entry.result.ast !== undefined || entry.result.construction !== undefined)
+		);
 	}
 </script>
 

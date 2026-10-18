@@ -23,6 +23,8 @@ import { INTERNAL_LETTER, renameVariable } from './letter';
 import { intervalFieldLatex } from './interval';
 import { readNaturalQuantities } from './natural-quantities';
 import { argumentSeparatorsShown } from './decimal-comma';
+import { readConstruction } from './construction-read';
+import { constructionLatex } from './construction';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { isAddition, isDelimiter, isNumber, isUnit } from '$lib/mathAST/guards';
@@ -74,6 +76,14 @@ function expressionFieldLatex(
 		if (composite !== null) return composite;
 	}
 	if (readingMode(provenance) === 'latex') return forMathlive(definition);
+	// Une construction tapée dans Calcul (`milieu(A, B)`, `(AB)`, lot 2) : en LaTeX
+	// que le champ montre et que la lecture des constructions relit
+	if (object.kind === 'point' || object.kind === 'curve') {
+		const construction = readConstruction(definition, provenance);
+		if (construction !== null && construction.ok) {
+			return forMathlive(constructionLatex(construction.call));
+		}
+	}
 	// Un nombre s'affiche comme l'élève l'écrit : `2,5`, pas le `2.5` que rendrait
 	// `toLatex` (revue du lot 4 : le curseur écrit `2,5`, le champ montrait `2.5`)
 	if (readNumber(definition) !== null) return definition.trim();

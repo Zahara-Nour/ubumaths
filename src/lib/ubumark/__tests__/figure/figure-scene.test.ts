@@ -142,11 +142,13 @@ describe('figure — comportement 13 : hors liste blanche → erreur située', (
 
 describe('figure — comportement 14 : erreur DSL → message et ligne pour le prof', () => {
 	it('erreur d’exécution : résumé (`summary`) et ligne du BLOC', () => {
-		const result = scene('A = point(0, 0)\nc = cercle(A, 2)');
+		// `cercle(A, 2)` est devenu valide (rayon positionnel, lot 2 de la géométrie,
+		// L2 b) : deux POINTS en arguments positionnels restent une erreur d'exécution
+		const result = scene('A = point(0, 0)\nc = cercle(A, A)');
 		expect(result.scene).toBeNull();
 		expect(result.errors[0].line).toBe(4);
 		expect(result.errors[0].message).toMatch(
-			/^Ligne 4 : `cercle\(\)` ne peut pas être appelé avec 2 arguments/
+			/^Ligne 4 : `cercle\(\)` ne peut pas recevoir deux points/
 		);
 		// Le message ne répète pas « Ligne 2 » (ligne du script, fausse pour l'auteur)
 		expect(result.errors[0].message).not.toMatch(/Ligne 2/);
