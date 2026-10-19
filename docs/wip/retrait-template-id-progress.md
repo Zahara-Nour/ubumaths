@@ -1,17 +1,17 @@
 ---
 title: Retrait de worksheets.template_id — journal
 date: 2026-10-19
-status: PR 1 (#1532) et PR 2 (#1542) mergées ; #1544 (scripts) ; PR 3 (drop) préparée, après deploy:prod
+status: PR 1 (#1532) et PR 2 (#1542) mergées, en prod v0.41.0 ; #1544 (scripts) ; PR 3 (drop) ouverte
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1544 ; PR 3 préparée, branche poussée sans PR._
+_Mis à jour le 2026-10-19, PR 3 ouverte (deploy v0.41.0 fait : #1542 en prod, vérifié sur `origin/production`)._
 
-- **État** : #1532 (migrée) et #1542 (code) mergées. Les scripts de fiches (`scripts/create-*.ts`, `regen-depuis-base.ts`) cassés depuis #1542 → corrigés par #1544 (`style_id`, mergée). PR 3 prête sur `refactor/retrait-template-id-drop` : migration `20261019221542_retrait_worksheets_template_id.sql` (RPC de partage sans `template_id`, puis `drop column`), tests adaptés (5 rouges sans la migration ; suite d'intégration complète verte avec, 3295 tests), test de recopie retiré, doc système à jour.
-- **Prochaine action** : après le `deploy:prod` qui livre #1542 → rebaser, ouvrir la PR 3, CI verte, merger, `db:migrate` (destructive : feu vert de David), puis PR 4 : `db:types`, nettoyage des tests unitaires qui portent encore `template_id` dans `WorksheetRow` (`style-de-la-fiche.test.ts`, `.svelte.test.ts`), `db:doc` (`base-de-donnees-tables.md`), puis versement du journal.
-- **En attente de David** : `pnpm deploy:prod`, puis feu vert pour la PR 3 destructive (grep des usages et réconciliation : voir PR).
-- **Pièges en cours** : ⛔ ne PAS merger la PR 3 avant le deploy (un `db:migrate` d'une autre session jouerait le drop sous la v0.40.0, qui lit encore la colonne). Réconciliation prod du 2026-10-19 : 28/36 fiches avec `template_id`, toutes `style_id = template_id`.
+- **État** : #1532 (migrée), #1542 (code, en prod v0.41.0), #1544 (scripts) mergées. PR 3 (`refactor/retrait-template-id-drop`, rebasée sur main) ouverte : migration `20261019221542_retrait_worksheets_template_id.sql` (RPC de partage sans `template_id`, puis `drop column`), tests adaptés, doc système à jour.
+- **Prochaine action** : CI verte → merger la PR 3 ; `db:migrate` (destructive : feu vert de David, grep des usages et réconciliation collés) ; puis PR 4 : `db:types`, nettoyage des tests unitaires qui portent encore `template_id` dans `WorksheetRow` (`style-de-la-fiche.test.ts`, `.svelte.test.ts`), `db:doc` (`base-de-donnees-tables.md`), puis versement du journal.
+- **En attente de David** : feu vert pour le `db:migrate` destructif.
+- **Pièges en cours** : la migration est destructive → pas de `db:migrate` sans feu vert. Réconciliation prod du 2026-10-19 : 28/36 fiches avec `template_id`, toutes `style_id = template_id`.
 - **Worktree / branche** : `../ubumaths-wt-retrait-template-id` · `refactor/retrait-template-id-drop`.
 
 ## Contexte
