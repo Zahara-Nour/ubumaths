@@ -319,6 +319,8 @@ export function calcTextOf(latex: string, words: readonly CommandWord[]): CalcTe
 		.replace(/\\exponentialE(?![A-Za-z])/g, 'e')
 		.replace(/\\imaginaryI(?![A-Za-z])/g, 'i')
 		.replace(/\\(?:cdot|times)(?![A-Za-z])/g, '*')
+		// Le ° tapé (`60\degree`, mesuré dans Chromium) : `60°`, comme en texte (`degrees.ts`)
+		.replace(/\\degree(?![A-Za-z])|(?:\{\})?\^\{\\circ\}/g, '°')
 		.replace(/\{,\}/g, ',')
 		// Une fraction de nombres, comme la lecture des cartes (`mathfield.ts`) :
 		// `\frac12\,m` est un demi-mètre, `\frac14+\frac13` une somme

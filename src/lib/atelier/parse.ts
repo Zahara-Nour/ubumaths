@@ -30,6 +30,7 @@ import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from '
 import { objectKindOf, partsOf, specOf } from './construction-spec';
 import { hasMeasureCall, measureShapeRefusal, withoutMeasureCalls } from './measures-read';
 import { perfSwitches } from './perf-switches';
+import { strayDegreeRefusal, withDegreeUnits } from './degrees';
 import {
 	CURVE_NEEDS_XY,
 	CURVE_UNIT,
@@ -240,7 +241,13 @@ function readByProvenance(
 	provenance: Provenance,
 	functionNames?: readonly string[]
 ) {
-	const typed = withPiCommand(withLatexFunctionNames(rawDefinition));
+	// `60°`, `60^{\circ}`, `60\degree` (MathLive) : l'unité degré (`degrees.ts`)
+	const typed = withPiCommand(
+		withDegreeUnits(
+			withLatexFunctionNames(rawDefinition),
+			readingMode(provenance) === 'latex' ? 'latex' : 'detect'
+		)
+	);
 	// Les mêmes noms de fonctions dans les deux lectures : en LaTeX, l'atelier ne
 	// les transmettait pas, et `k(x)` tapé dans la carte se lisait k·x
 	const genericFunctions = genericFunctionsFor(functionNames);
@@ -554,6 +561,11 @@ export function parseDefinition(
 	// `ln x` sans antislash venu de MathLive se lisait l·n·x
 	const bare = bareFunctionRefusal(definition);
 	if (bare !== null) return { error: bare };
+	// Un ° qui ne suit rien (`a = ° + 1`) : lu, ce serait une lettre « ° »
+	const stray = strayDegreeRefusal(
+		withDegreeUnits(definition, readingMode(provenance) === 'latex' ? 'latex' : 'detect')
+	);
+	if (stray !== null) return { error: stray };
 
 	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) {
