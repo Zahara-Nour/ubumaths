@@ -273,10 +273,13 @@ function quarticsWithKnownRoots(count: number): { coefficients: number[]; roots:
 	const cases: { coefficients: number[]; roots: number[] }[] = [];
 	while (cases.length < count) {
 		const shape = cases.length % 6;
-		const [r1, r2, r3, r4] = [pick(), pick(), pick(), pick()];
+		// Grande amplitude (jusqu'à ±2·10⁴) un lot sur deux : le bruit de calcul
+		// doit suivre la borne de Horner, pas Σ|coefficients|·|x|⁴
+		const magnitude = [1, 1000, 1, 4000][Math.floor(cases.length / 24) % 4];
+		const [r1, r2, r3, r4] = [pick(), pick(), pick(), pick()].map((r) => r * magnitude);
 		// Racines proches : écart de 1e-3 à 3e-3 (fusionnées à tort par une
 		// tolérance sur le discriminant)
-		const close = r1 + (1 + Math.floor(random() * 3)) / 1000;
+		const close = r1 + ((1 + Math.floor(random() * 3)) / 1000) * Math.max(1, Math.abs(r1));
 		const factors: number[][] = [
 			[
 				[1, -r1],
@@ -325,7 +328,7 @@ function quarticsWithKnownRoots(count: number): { coefficients: number[]; roots:
 		const real = [[r1, r2, r3, r4], [r1, r2, r3], [r1, r2], [r1], [r1, r2], [r1, close]][shape];
 		cases.push({
 			coefficients,
-			roots: [...new Set(real.map((r) => Math.round(r * 1e5) / 1e5))].sort((a, b) => a - b)
+			roots: [...new Set(real)].sort((a, b) => a - b)
 		});
 	}
 	return cases;
@@ -360,15 +363,30 @@ describe('findZeros : racine double à côté de racines simples', () => {
 		expect(zeros.map((z) => Math.round(z * 1e4) / 1e4).sort((a, b) => a - b)).toEqual([-1, 1.6667]);
 	});
 
+	it('(x − 3)(x − 5000)(x − 10000)(x + 20000) : quatre zéros, pas de racine fausse en 7500', () => {
+		// x⁴ + 4997x³ − 250015000x² + 1000750000000x − 3000000000000
+		const zeros = findZeros(
+			parseLatex('x^4+4997x^3-250015000x^2+1000750000000x-3000000000000'),
+			'x'
+		).sort((a, b) => a - b);
+		expect(sameRoots(zeros, [-20000, 3, 5000, 10000])).toBe(true);
+	});
+
+	it('(x − 1)(x − 10)(x − 1000)(x − 1001) : 1000 et 1001, pas 1000,5', () => {
+		// x⁴ − 2012x³ + 1023021x² − 11031010x + 10010000
+		const zeros = findZeros(parseLatex('x^4-2012x^3+1023021x^2-11031010x+10010000'), 'x').sort(
+			(a, b) => a - b
+		);
+		expect(sameRoots(zeros, [1, 10, 1000, 1001])).toBe(true);
+	});
+
 	it('200 quartiques tirées (graine fixe) : toutes les racines réelles, aucune de trop', () => {
 		const wrong: string[] = [];
 		for (const { coefficients, roots } of quarticsWithKnownRoots(200)) {
 			const [a, b, c, d, e] = coefficients;
 			const latex = `${a}x^4+${b}x^3+${c}x^2+${d}x+${e}`.replace(/\+-/g, '-');
-			const zeros = findZeros(parseLatex(latex), 'x')
-				.sort((p, q) => p - q)
-				.map((z) => Math.round(z * 1e5) / 1e5);
-			if (JSON.stringify(zeros) !== JSON.stringify(roots)) {
+			const zeros = findZeros(parseLatex(latex), 'x').sort((p, q) => p - q);
+			if (!sameRoots(zeros, roots)) {
 				wrong.push(`${latex} : ${zeros.join(' ; ')} au lieu de ${roots.join(' ; ')}`);
 			}
 		}
@@ -516,3 +534,11 @@ describe('solveQuarticInequality', () => {
 		});
 	});
 });
+
+/** Mêmes racines, à 1e-6 près en valeur relative. */
+function sameRoots(found: readonly number[], expected: readonly number[]): boolean {
+	return (
+		found.length === expected.length &&
+		found.every((r, i) => Math.abs(r - expected[i]) <= 1e-6 * Math.max(1, Math.abs(expected[i])))
+	);
+}

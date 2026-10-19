@@ -179,9 +179,9 @@ describe('Quartic Solver', () => {
 				const [a, b, c, d, e] = coefficients;
 				const latex = `${a}x^4+${b}x^3+${c}x^2+${d}x+${e}=0`.replace(/\+-/g, '-');
 				const found = solve(parseEquation(latex))
-					.solutions.map((s) => Math.round((s.approximate ?? Number.NaN) * 1e5) / 1e5)
+					.solutions.map((s) => s.approximate ?? Number.NaN)
 					.sort((p, q) => p - q);
-				if (JSON.stringify(found) !== JSON.stringify(roots)) {
+				if (!sameRoots(found, roots)) {
 					wrong.push(`${latex} : ${found.join(' ; ')} au lieu de ${roots.join(' ; ')}`);
 				}
 			}
@@ -295,10 +295,13 @@ function quarticsWithKnownRoots(count: number): { coefficients: number[]; roots:
 	const cases: { coefficients: number[]; roots: number[] }[] = [];
 	while (cases.length < count) {
 		const shape = cases.length % 6;
-		const [r1, r2, r3, r4] = [pick(), pick(), pick(), pick()];
+		// Grande amplitude (jusqu'à ±2·10⁴) un lot sur deux : le bruit de calcul
+		// doit suivre la borne de Horner, pas Σ|coefficients|·|x|⁴
+		const magnitude = [1, 1000, 1, 4000][Math.floor(cases.length / 24) % 4];
+		const [r1, r2, r3, r4] = [pick(), pick(), pick(), pick()].map((r) => r * magnitude);
 		// Racines proches : écart de 1e-3 à 3e-3 (fusionnées à tort par une
 		// tolérance sur le discriminant)
-		const close = r1 + (1 + Math.floor(random() * 3)) / 1000;
+		const close = r1 + ((1 + Math.floor(random() * 3)) / 1000) * Math.max(1, Math.abs(r1));
 		const factors: number[][] = [
 			[
 				[1, -r1],
@@ -347,8 +350,16 @@ function quarticsWithKnownRoots(count: number): { coefficients: number[]; roots:
 		const real = [[r1, r2, r3, r4], [r1, r2, r3], [r1, r2], [r1], [r1, r2], [r1, close]][shape];
 		cases.push({
 			coefficients,
-			roots: [...new Set(real.map((r) => Math.round(r * 1e5) / 1e5))].sort((a, b) => a - b)
+			roots: [...new Set(real)].sort((a, b) => a - b)
 		});
 	}
 	return cases;
+}
+
+/** Mêmes racines, à 1e-6 près en valeur relative. */
+function sameRoots(found: readonly number[], expected: readonly number[]): boolean {
+	return (
+		found.length === expected.length &&
+		found.every((r, i) => Math.abs(r - expected[i]) <= 1e-6 * Math.max(1, Math.abs(expected[i])))
+	);
 }

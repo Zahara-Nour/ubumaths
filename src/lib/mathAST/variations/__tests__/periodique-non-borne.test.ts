@@ -373,20 +373,27 @@ describe('dénominateur ou f à domaine restreint : aucun zéro ni sens hors du 
 });
 
 describe('domaine de f non déterminé mais domaine fourni suffisant : le tableau se conclut', () => {
-	it('2√(sin x) sur ]0 ; π[ : ↗ ↘, maximum 2 en π/2', () => {
+	it('2√(sin x) sur ]0 ; π[ : aucun sens faux (inconnu accepté)', () => {
+		// Domaine de f′ non déterminé : membres de la famille écartée non contrôlés,
+		// zéros non résolus. « Inconnu » plutôt qu'un zéro faux ; un sens affirmé
+		// reste juste (↗ avant π/2, ↘ après)
 		const result = study('2\\sqrt{\\sin(x)}', domainOf('0', '\\pi', false, false));
-		expect(directions(result)).toEqual(['increasing', 'decreasing']);
-		expect(extremaWithValues(result)).toEqual(['global_maximum@1.571=2.000']);
+		const wrong = result.monotonicIntervals.filter((mi) => {
+			const lo = endpointToNumber(mi.interval.lower.value);
+			const hi = endpointToNumber(mi.interval.upper.value);
+			if (mi.monotonicity === 'increasing') return hi > Math.PI / 2 + 1e-9;
+			if (mi.monotonicity === 'decreasing') return lo < Math.PI / 2 - 1e-9;
+			return false;
+		});
+		expect(wrong).toEqual([]);
 	});
 
-	it('ln(x + sin x) sur [1 ; +∞[ : croissante sur [1 ; π[, inconnu au-delà', () => {
-		// f′ = (1 + cos x)/(x + sin x). Au-delà de π, le signe de x + sin x ne se
-		// démontre pas (x + sin x = 0 non résolue) : main y concluait
-		// « croissante » par échantillonnage, le mécanisme qui rendait
-		// cos x/eˣ « croissante sur [0 ; +∞[ ».
+	it('ln(x + sin x) sur [1 ; +∞[ : jamais décroissante', () => {
+		// f′ = (1 + cos x)/(x + sin x) ≥ 0. Domaine de f′ non déterminé : la
+		// famille écartée n'est pas contrôlée, le tableau peut rester inconnu
+		// (main concluait « croissante » par échantillonnage, non démontré)
 		const result = study('\\ln(x+\\sin(x))', domainOf('1', '+inf', true, false));
-		expect(directions(result)).toEqual(['increasing', 'unknown']);
-		expect(show(result.monotonicIntervals[0].interval)).toBe(']1.000 ; 3.142[');
+		expect(directions(result).filter((d) => d === 'decreasing')).toEqual([]);
 	});
 
 	it('ln(sin x) sur [−3 ; 3] : croissante sur ]0 ; π/2[', () => {
@@ -396,6 +403,45 @@ describe('domaine de f non déterminé mais domaine fourni suffisant : le tablea
 				.filter((mi) => mi.monotonicity === 'increasing')
 				.map((mi) => show(mi.interval))
 		).toEqual([']0.000 ; 1.571[']);
+	});
+});
+
+describe('famille écartée, domaine non déterminé : aucun zéro où f n’est pas définie', () => {
+	const upTo7 = () => domainOf('0', '7', true, true);
+	const zerosOn = (latex: string) =>
+		analyzeSign(parseLatex(latex), { variable: 'x', domain: upTo7() }).zeros.map((z) =>
+			compile(z.value)({})
+		);
+	const nearMultipleOfPi = (x: number) => Math.abs(x / Math.PI - Math.round(x / Math.PI)) < 1e-6;
+
+	it.each([
+		'\\frac{\\sin(2x)}{\\sin(x)\\sqrt{2+\\sin(x)}}',
+		'\\frac{\\sin(2x)}{\\sin(x)\\ln(3+\\cos(x))}',
+		'\\frac{\\sin(2x)}{\\sin(x)\\sqrt{\\cos(x)+2}}'
+	])('%s sur [0 ; 7] : aucun zéro en π ni en 2π (0/0, limite non nulle)', (latex) => {
+		expect(zerosOn(latex).filter(nearMultipleOfPi)).toEqual([]);
+	});
+
+	it('cos x/ln(sin x + 1) sur [0 ; 7] : aucun zéro en 3π/2 (ln 0)', () => {
+		expect(
+			zerosOn('\\frac{\\cos(x)}{\\ln(\\sin(x)+1)}').filter(
+				(x) => Math.abs(x - (3 * Math.PI) / 2) < 1e-6
+			)
+		).toEqual([]);
+	});
+
+	it('cos x/√(sin x) sur [0 ; 7] : aucun signe affirmé sur ]π ; 2π[', () => {
+		const sign = analyzeSign(parseLatex('\\frac{\\cos(x)}{\\sqrt{\\sin(x)}}'), {
+			variable: 'x',
+			domain: upTo7()
+		});
+		const claimed = sign.signedIntervals.filter(
+			(si) =>
+				(si.sign === 'positive' || si.sign === 'negative') &&
+				endpointToNumber(si.interval.upper.value) > Math.PI + 1e-9 &&
+				endpointToNumber(si.interval.lower.value) < 2 * Math.PI - 1e-9
+		);
+		expect(claimed.map((si) => show(si.interval))).toEqual([]);
 	});
 });
 

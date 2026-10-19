@@ -24,11 +24,33 @@
 /** Discriminant négatif, en valeur relative, encore tenu pour une racine double possible. */
 const NEGATIVE_DISCRIMINANT_EPS = 1e-6;
 
-/** Bruit de calcul relatif de P(x) (Σ|coefficients|·max(1, |x|)⁴ × ceci). */
-const RELATIVE_NOISE = 1e-12;
+/**
+ * Borne de l'erreur d'arrondi de Horner, à un facteur ε près : Σ|c_k|·|x|^k.
+ * ⚠️ Pas Σ|c_k|·max(1, |x|)⁴ : pour des racines de l'ordre de 10⁴, cette
+ * majoration grossière rendait « plat » (racine multiple) l'intervalle entre
+ * deux racines distinctes — (x − 1000)(x − 1001)… fondues en 1000,5 — et
+ * acceptait des racines fausses (7500 pour (x − 3)(x − 5000)(x − 10⁴)(x + 2·10⁴)).
+ */
+function hornerBound(coefficients: readonly number[], x: number): number {
+	const ax = Math.abs(x);
+	return coefficients.reduce((acc, k) => acc * ax + Math.abs(k), 0);
+}
 
-/** Résidu relatif |P(r)| / Σ|coefficients|·max(1, |r|)⁴ accepté pour une racine. */
-const RELATIVE_RESIDUAL_EPS = 1e-9;
+/**
+ * Résidu accepté pour une racine polie, en multiples de la borne d'erreur de
+ * Horner (une racine double ou triple polie sur P n'atteint pas le bruit).
+ */
+const ACCEPTED_RESIDUAL = 1e3 * Number.EPSILON;
+
+/**
+ * Ou : pas de Newton |P/P′| plus petit que ceci (relatif). Une racine multiple
+ * en 0 (2x²(x − 2500)(x + 2000)) garde |P| du même ordre que la borne de
+ * Horner, quel que soit le polissage — mais le pas, lui, tend vers 0.
+ */
+const ACCEPTED_STEP = 1e-7;
+
+/** Bruit de calcul de P(x) : quelques ε fois la borne de Horner. */
+const NOISE_FACTOR = 16 * Number.EPSILON;
 
 /** Une racine aussi proche d'un entier y est ramenée (si le résidu ne grandit pas). */
 const SNAP_EPS = 1e-9;
@@ -39,20 +61,27 @@ const SNAP_EPS = 1e-9;
  */
 export function realQuarticRoots(a: number, b: number, c: number, d: number, e: number): number[] {
 	const coefficients = [a, b, c, d, e];
-	const scale = coefficients.reduce((sum, k) => sum + Math.abs(k), 0);
 	const evaluate = (x: number) => (((a * x + b) * x + c) * x + d) * x + e;
 	const slope = (x: number) => ((4 * a * x + 3 * b) * x + 2 * c) * x + d;
 
 	const candidates = ferrariCandidates(b / a, c / a, d / a, e / a);
 
-	const polished = candidates.map((root) => polish(root, evaluate, slope));
+	// Erreur de Ferrari proportionnelle à l'échelle des racines : une racine
+	// double en 0 à côté de racines de l'ordre de 10⁴ sort à ~10⁻⁴ près
+	const rootScale = candidates.reduce((m, r) => Math.max(m, Math.abs(r)), 0);
+	const polished = candidates.map((root) => polish(root, evaluate, slope, rootScale));
 	const accepted = polished.filter(
 		(root) =>
 			Number.isFinite(root) &&
-			Math.abs(evaluate(root)) <= RELATIVE_RESIDUAL_EPS * scale * Math.max(1, Math.abs(root)) ** 4
+			(Math.abs(evaluate(root)) <= ACCEPTED_RESIDUAL * hornerBound(coefficients, root) ||
+				Math.abs(evaluate(root)) <=
+					ACCEPTED_STEP * Math.max(1, Math.abs(root)) * Math.abs(slope(root)))
 	);
-	const noise = (x: number) => RELATIVE_NOISE * scale * Math.max(1, Math.abs(x)) ** 4;
-	return mergeMultiple(accepted, coefficients, noise).map((root) => snapToInteger(root, evaluate));
+	const noise = (x: number) => NOISE_FACTOR * hornerBound(coefficients, x);
+	const merged = mergeMultiple(accepted, coefficients, noise).map((root) =>
+		snapToInteger(root, evaluate)
+	);
+	return merged.filter((root, i) => i === 0 || root !== merged[i - 1]);
 }
 
 /**
@@ -126,6 +155,9 @@ function monicCubicRoots(p: number, q: number, r: number): number[] {
 /** Écart relatif maximal entre une racine polie et son candidat. */
 const POLISH_RADIUS = 1e-4;
 
+/** Plus cet écart rapporté à l'échelle des racines (erreur de Ferrari). */
+const SCALE_RADIUS = 1e-5;
+
 /**
  * Newton sur le polynôme d'origine ; garde le meilleur point rencontré, sans
  * s'éloigner du candidat : près d'une racine double P′ ≈ 0, et un pas pouvait
@@ -135,11 +167,12 @@ const POLISH_RADIUS = 1e-4;
 function polish(
 	start: number,
 	evaluate: (x: number) => number,
-	slope: (x: number) => number
+	slope: (x: number) => number,
+	rootScale = 0
 ): number {
 	let best = start;
 	let bestValue = Math.abs(evaluate(start));
-	const radius = POLISH_RADIUS * Math.max(1, Math.abs(start));
+	const radius = POLISH_RADIUS * Math.max(1, Math.abs(start)) + SCALE_RADIUS * rootScale;
 	let x = start;
 	for (let i = 0; i < 60 && bestValue > 0; i++) {
 		const derivative = slope(x);
@@ -186,7 +219,8 @@ function mergeMultiple(
 			const flat = [0.25, 0.5, 0.75].every(
 				(t) => Math.abs(evaluate(last + (root - last) * t)) <= noise(middle)
 			);
-			if (root === last || flat) {
+			const same = Math.abs(root - last) <= 1e-12 * Math.max(1, Math.abs(root));
+			if (same || flat) {
 				cluster.push(root);
 				continue;
 			}
@@ -221,11 +255,8 @@ function refineMultiple(
 			(x) => horner(target, x),
 			(x) => horner(derivatives[k + 1], x)
 		);
-		const targetScale = target.reduce((sum, c) => sum + Math.abs(c), 0);
-		const targetNoise =
-			RELATIVE_NOISE * targetScale * Math.max(1, Math.abs(refined)) ** (target.length - 1);
 		if (
-			Math.abs(horner(target, refined)) <= targetNoise &&
+			Math.abs(horner(target, refined)) <= NOISE_FACTOR * hornerBound(target, refined) &&
 			Math.abs(evaluate(refined)) <= noise(refined)
 		) {
 			return refined;

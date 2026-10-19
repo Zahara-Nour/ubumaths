@@ -456,9 +456,11 @@ cause :
    `droppedPeriodicSolutions` — jamais affichée comme ensemble de solutions — et le tableau de
    signes l'énumère membre à membre en ne gardant que ceux où l'expression est définie
    (`definedMemberFilter`, `sign/helpers/zeros.ts`) : `sin x/x` sur [0 ; 2π] a pour zéros π et
-   2π (pas 0), `cos x/√x` sur [−5 ; 5] π/2 et 3π/2. Domaine de l'expression non déterminé (f′ de
-   `2√(sin x)`) : contrôle numérique, l'expression doit être finie au membre et de part et
-   d'autre — un membre où elle n'est pas définie (3π/2) n'est jamais un zéro ;
+   2π (pas 0), `cos x/√x` sur [−5 ; 5] π/2 et 3π/2. Domaine de l'expression non déterminé : zéros
+   non résolus, rien ne se conclut. Un contrôle numérique (« finie au membre et de part et
+   d'autre ») a été essayé puis retiré : il gardait des membres où f n'est pas définie (0/0 de
+   `sin 2x/(sin x·√(2 + sin x))` en π et 2π, `cos x/ln(sin x + 1)` en 3π/2). `2√(sin x)` sur
+   ]0 ; π[ reste donc inconnu ;
 2. **le premier membre de la famille au-delà d'une borne finie compte** (`familyBetweenKnownZeros`,
    `sign/helpers/zeros.ts`) : `ln(2 + sin x)` sur [0 ; +∞[ était « positif » sans aucun zéro (le
    solveur rend −π/2, hors du domaine), au lieu de 0 en 3π/2 ; `cos x/eˣ` sur [0 ; +∞[ se lit
@@ -474,16 +476,16 @@ cause :
    discriminant légèrement négatif (racine double à ~1e-8 près) donne deux candidats de part et
    d'autre du sommet ; chacun est poli par Newton sans s'éloigner (un pas pouvait sauter sur une
    autre racine) ; on ne fusionne qu'après, deux racines entre lesquelles P reste au niveau du
-   bruit de calcul, et une racine multiple est affinée comme racine simple d'une dérivée (5/3,
+   bruit de calcul — la borne de Horner Σ|cₖ|·|x|ᵏ·ε, pas Σ|cₖ|·max(1, |x|)⁴, qui fondait
+   1000 et 1001 et acceptait 7500 pour (x − 3)(x − 5000)(x − 10⁴)(x + 2·10⁴) — et une racine multiple est affinée comme racine simple d'une dérivée (5/3,
    triple, sortait doublée). Testé sur 200 quartiques tirées à graine fixe (racines simples,
-   doubles, triples, proches, facteur x² + 1) ;
+   doubles, triples, proches en valeur relative, jusqu'à ±2·10⁴, facteur x² + 1) ;
 4. **domaine de f non déterminé** (`ln(sin x)` : le domaine fourni est gardé tel quel) : un sens
    n'est affirmé que là où f est numériquement définie (`withoutClaimsWhereUndefined`,
    `variations/compute.ts`), et le signe de f′ s'étudie sur le domaine de f′ quand il est
    déterminé (`withinDerivativeDomain` : coupure en 0 pour cos x/sin x) ; `ln(sin x)` sur
    [0 ; 2π] était « décroissante sur ]3π/2 ; 2π] », où f n'existe pas. `ln(x + sin x)` sur
-   [1 ; +∞[ n'est croissante que sur [1 ; π[ : au-delà, le signe de x + sin x ne se démontre pas
-   (main concluait par échantillonnage, le mécanisme qui rendait `cos x/eˣ` croissante).
+   [1 ; +∞[ reste inconnu : main concluait « croissante » par échantillonnage, non démontré.
 
 Reste connu : `ln(2 + sin x)`, `1/(2 + cos x)`, `√(2 + cos x)` sur ℝ sont refusées (domaine
 2 + sin x > 0 non déterminé) ; `1/sin x` sur ℝ a un signe « inconnu » partout (pôles périodiques non
