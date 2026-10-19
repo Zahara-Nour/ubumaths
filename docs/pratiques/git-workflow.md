@@ -119,6 +119,17 @@ Pour un changement de schéma **non rétro-compatible** ou un gros cutover :
 
 Même flux, expédié : `fix/<slug>` depuis `main` → fix **+ test de non-régression** → PR → CI verte → merge → deploy. Maintenance mode si le bug impacte les données.
 
+**Retour arrière Vercel (Instant Rollback) : jamais vers une version dont le code dépend de ce qu'une migration a retiré depuis.** Le retour arrière ne ramène que le code ; la base garde son schéma. Une table, une colonne, une policy ou un droit retirés après cette version la cassent, souvent en silence (une écriture refusée par la RLS rend zéro ligne).
+
+- **Plancher au 2026-10-19 : v0.39.0.** Migration `20261017090100` : l'élève n'écrit plus lui-même `student_buddies` ni `srs_review_sessions` ; le code d'avant v0.39.0 le faisait (choix du Palotin, XP, série, séances de révision). Plancher précédent : v0.35.0 (migration `20261016103800`, ancien système de versions des modèles de chapitre).
+- **Vérifier avant tout retour arrière vers `vX`** : lister les migrations ajoutées depuis `vX` qui retirent quelque chose :
+  ```bash
+  git diff --name-only --diff-filter=A vX origin/production -- supabase/migrations \
+    | xargs grep -liE '^[^-]*(drop (table|column|policy|function)|revoke|rename)'
+  ```
+  Un résultat → lire son en-tête : si le code de `vX` utilise ce qui a été retiré, pas de retour arrière vers `vX` ; corriger en avant (§ 9).
+- Une migration qui retire quelque chose relève le plancher : mettre à jour la ligne ci-dessus dans la même PR.
+
 ## 10. Interdits (leçons gravées — sessions 2026-06-16/17)
 
 - ❌ Smoke-test d'une fonction `SECURITY DEFINER` avec `auth.uid()` NULL.
