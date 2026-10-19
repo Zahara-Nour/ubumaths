@@ -13,6 +13,7 @@ import { solveInequality, InequalityNotSolvable } from '../index';
 import { parseLatex } from '../../../parser';
 import { formatInterval } from '../../../domain/format';
 import { closedEndpoint, interval, intervalSet } from '../../../domain/factory';
+import { posInfinityEndpoint } from '$lib/math/intervals/factory';
 import { number, opposite } from '../../../factory';
 import { WebReplEngine } from '../../../cli/web/web-repl-engine';
 import { INEQUALITY_UNSOLVED_MESSAGE } from '../../../cli/commands/solve.command';
@@ -63,7 +64,7 @@ describe('les valeurs interdites sont exclues de l’ensemble solution', () => {
 	});
 });
 
-describe('exclusion périodique et domaine imposé : partiel seulement si un pôle y tombe', () => {
+describe('exclusion périodique et domaine imposé BORNÉ : les pôles sont énumérés, statut complet', () => {
 	const between = (lo: string, hi: string) =>
 		intervalSet([interval(closedEndpoint(parseLatex(lo)), closedEndpoint(parseLatex(hi)))]);
 	// -1 écrit opposite(1) par le parseur, jamais number('-1')
@@ -85,18 +86,39 @@ describe('exclusion périodique et domaine imposé : partiel seulement si un pô
 		expect(result.status).toBe('all-real');
 	});
 
-	it('\\tan(x)\\geq 0 sur [1 ; 2] : π/2 dans l’intervalle, partiel', () => {
+	// Depuis le 2026-10-19, `intersect` énumère les pôles d'un domaine borné :
+	// le découpage du signe les voit, le résultat n'est plus partiel
+	it('\\tan(x)\\geq 0 sur [1 ; 2] : π/2 exclu, S = [1 ; π/2[, complet', () => {
 		const result = solveInequality(relationOf('2\\tan(x)\\geq 0'), {
 			variable: 'x',
 			domain: between('1', '2')
 		});
-		expect(result.status).toBe('partial');
+		expect(result.status).toBe('complete');
+		expect(formatInterval(result.solution)).toBe('[1 ; π/2[');
 	});
 
-	it('\\frac{3\\sin x}{3\\sin x}\\geq 1 sur [-1 ; 3] : 0 dans l’intervalle, partiel', () => {
+	it('\\tan(x)>0 sur [0 ; π] : S = ]0 ; π/2[, complet', () => {
+		const result = solveInequality(relationOf('3\\tan(x)>0'), {
+			variable: 'x',
+			domain: between('0', '\\pi')
+		});
+		expect(result.status).toBe('complete');
+		expect(formatInterval(result.solution)).toBe(']0 ; π/2[');
+	});
+
+	it('\\frac{3\\sin x}{3\\sin x}\\geq 1 sur [-1 ; 3] : 0 exclu, complet', () => {
 		const result = solveInequality(relationOf('\\frac{3\\sin x}{3\\sin x}\\geq 1'), {
 			variable: 'x',
 			domain: between('-1', '3')
+		});
+		expect(result.status).not.toBe('partial');
+		expect(formatInterval(result.solution)).toBe('[-1 ; 0[ ∪ ]0 ; 3]');
+	});
+
+	it('\\tan(x)\\geq 0 sur [0 ; +∞[ : pôles non énumérables, partiel', () => {
+		const result = solveInequality(relationOf('2\\tan(x)\\geq 0'), {
+			variable: 'x',
+			domain: intervalSet([interval(closedEndpoint(parseLatex('0')), posInfinityEndpoint())])
 		});
 		expect(result.status).toBe('partial');
 	});

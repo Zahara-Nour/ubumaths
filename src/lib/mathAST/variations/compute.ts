@@ -18,7 +18,7 @@
 
 import { reservedVariableRefusal } from '../common/reserved-letters';
 import type { MathNode } from '../types';
-import type { Domain } from '../domain/types';
+import type { Domain, PeriodicExclusion } from '../domain/types';
 import type {
 	VariationResult,
 	VariationStep,
@@ -33,6 +33,7 @@ import { differentiate } from '../differentiation';
 import { expandOddRootPowers } from '../common/odd-root-power';
 import { tidyTerms } from '../tidy/terms';
 import { computeDomain, normalizeExcludedPoints } from '../domain/compute';
+import { formatCondition } from '../domain/format';
 import { containsValue, excludePoints, intersect, isEmpty } from '../domain/algebra';
 import { assertDomainResolved, DomainUnresolvedError } from '../domain/errors';
 import { analyzeSign } from '../sign';
@@ -42,7 +43,6 @@ import {
 	cutAtPeriodicExclusions,
 	mergeMonotonicIntervals
 } from './monotonicity';
-import type { PeriodicCuts } from './monotonicity';
 import { findExtrema, classifyGlobalExtrema } from './extrema';
 import { computeBoundaryLimits } from './boundary-limits';
 import { toCustom } from '../custom-generator';
@@ -116,7 +116,7 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 	let domain: Domain;
 	// Les valeurs interdites périodiques de f (tan x : π/2 + kπ), où le sens de
 	// variation se coupe (voir `cutAtPeriodicExclusions`)
-	let periodicCuts: PeriodicCuts | undefined;
+	let periodicCuts: PeriodicExclusion | undefined;
 	if (opts.domain) {
 		const restricted = restrictToNaturalDomain(opts.domain, expr, variable);
 		domain = restricted.domain;
@@ -284,8 +284,8 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 	const monotonicIntervals = cut.intervals;
 	if (cut.truncated && periodicCuts !== undefined) {
 		warnings.push(
-			`Valeurs interdites ${toCustom(periodicCuts.basePoint)} + k*${toCustom(periodicCuts.period)} : ` +
-				'le sens de variation ne se conclut que sur chaque intervalle de définition, jamais sur leur réunion'
+			`Valeurs interdites (${formatCondition(periodicCuts, variable)}) : le sens de ` +
+				'variation ne se conclut que sur chaque intervalle de définition, jamais sur leur réunion'
 		);
 	}
 	stepId = recordStep(
@@ -499,7 +499,7 @@ function restrictToNaturalDomain(
 	given: Domain,
 	expr: MathNode,
 	variable: string
-): { readonly domain: Domain; readonly periodicCuts?: PeriodicCuts } {
+): { readonly domain: Domain; readonly periodicCuts?: PeriodicExclusion } {
 	let natural: Domain;
 	try {
 		const result = computeDomain(expr, variable);
@@ -511,9 +511,17 @@ function restrictToNaturalDomain(
 	if (natural.kind === 'condition_domain' || natural.kind === 'universal') {
 		return { domain: given };
 	}
-	const restricted = normalizeExcludedPoints(intersect(given, natural));
-	// Une intersection vide d'un domaine non vide : on ne conclut pas sur rien
-	const domain = isEmpty(restricted) && !isEmpty(given) ? given : restricted;
+	const domain = normalizeExcludedPoints(intersect(given, natural));
+	// Intersection vide (ln x sur [−3 ; −1]) : f n'est définie nulle part sur
+	// l'intervalle, aucune étude ne s'y fait
+	if (isEmpty(domain) && !isEmpty(given)) {
+		throw new VariationError(
+			"f n'est pas définie sur l'intervalle d'étude",
+			expr,
+			'derivative',
+			"L'intervalle fourni ne rencontre pas le domaine de définition"
+		);
+	}
 	return natural.kind === 'periodic_exclusion' ? { domain, periodicCuts: natural } : { domain };
 }
 

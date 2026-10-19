@@ -3,8 +3,9 @@
  *
  * Lu par `parseStudentDomain`, le parseur des ensembles d'élève (intervalles,
  * bornes infinies, réunions, `ℝ \ {0}`), puis restreint au domaine de
- * l'expression quand il se calcule : `computeVariations` prend le domaine
- * fourni TEL QUEL, sans le croiser avec celui de la fonction.
+ * l'expression quand il se calcule. `computeVariations` fait aussi ce
+ * croisement (depuis le 2026-10-19) ; ici, il sert au message de refus d'un
+ * ensemble vide et aux autres lecteurs de `dans`.
  *
  * C'est aussi par ce mot que l'atelier transmet l'ensemble d'une fonction
  * définie sur un intervalle (lot 2 de `docs/wip/atelier-intervalle-phase0.md`).

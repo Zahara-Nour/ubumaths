@@ -13,10 +13,12 @@
 import type { MathNode } from '../types';
 import { add, multiply, number, opposite } from '../factory';
 import { denormalize, normalize } from '../normal';
+import { tidy } from '../tidy';
 
 /**
  * Le membre base + k·période, réduit (`normalize`) ; la somme brute si la
- * réduction échoue.
+ * réduction échoue. Écriture des zéros du solveur (`\\dfrac{2}{3}\\pi`), que
+ * `.résoudre` affiche telle quelle.
  */
 export function periodicMember(base: MathNode, k: number, period: MathNode): MathNode {
 	if (k === 0) return base;
@@ -39,5 +41,23 @@ export function periodicMember(base: MathNode, k: number, period: MathNode): Mat
 		return denormalize(normalize(raw));
 	} catch {
 		return raw;
+	}
+}
+
+/**
+ * Le membre, mis au propre (`tidy`) : écrit comme une borne du tableau de
+ * variations (`variationValueLatex`) — 3π/2, pas 3/2·π ; π/2, pas π / 2. Pour
+ * les valeurs interdites d'un domaine et les bornes coupées à ces valeurs.
+ */
+export function tidyPeriodicMember(base: MathNode, k: number, period: MathNode): MathNode {
+	return tidySafe(periodicMember(base, k, period));
+}
+
+/** `tidy` peut lever une exception imprévue : la forme reçue reste alors. */
+function tidySafe(node: MathNode): MathNode {
+	try {
+		return tidy(node);
+	} catch {
+		return node;
 	}
 }

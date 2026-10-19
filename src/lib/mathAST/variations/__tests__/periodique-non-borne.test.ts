@@ -25,6 +25,9 @@ import { analyzeSign } from '../../sign/analyze';
 import { parseLatex } from '../../parser';
 import { compile } from '../../eval/compile';
 import { computeDomain, normalizeExcludedPoints } from '../../domain/compute';
+import { formatInterval } from '../../domain/format';
+import { toLatex } from '../../latex-generator';
+import { tidy } from '../../tidy';
 import { containsValue, intersect } from '../../domain/algebra';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import {
@@ -189,6 +192,44 @@ describe('valeurs interdites : le sens ne les traverse pas', () => {
 		const result = study('\\frac{1}{x}', POLE_DOMAINS['[−2 ; 3]']);
 		expect(directions(result)).toEqual(['decreasing', 'decreasing']);
 		expect(result.extrema).toEqual([]);
+	});
+});
+
+describe('domaine fourni hors du domaine de f', () => {
+	it('ln x sur [−3 ; −1] : refus « pas définie », jamais une étude sur [−3 ; −1]', () => {
+		expect(() => study('\\ln(x)', domainOf('-3', '-1', true, true))).toThrow(
+			/n'est pas définie sur l'intervalle/
+		);
+	});
+});
+
+describe('valeurs interdites : écrites comme les points critiques', () => {
+	const tanDomain = () => computeDomain(parseLatex('\\tan(x)'), 'x').domain;
+
+	it('tan x ∩ ]0 ; 10[ : points exclus écrits 3π/2, pas 3/2*π', () => {
+		const shown = formatInterval(intersect(domainOf('0', '10', false, false), tanDomain()));
+		expect(shown).toBe(']0 ; 10[ \\ {π/2 ; 3π/2 ; 5π/2}');
+	});
+
+	it('tan x ∩ ]−π/2 ; π/2[ : aucun point exclu sur une borne ouverte', () => {
+		const shown = formatInterval(intersect(POLE_DOMAINS[']−π/2 ; π/2[']!, tanDomain()));
+		expect(shown).toBe(']-π/2 ; π/2[');
+	});
+
+	it('tan x sur [0 ; 2π] : bornes coupées sous forme mise au propre', () => {
+		const result = study('\\tan(x)', DOMAINS['[0 ; 2π]']);
+		const bounds = result.monotonicIntervals.flatMap((mi) => [
+			mi.interval.lower.value,
+			mi.interval.upper.value
+		]);
+		for (const bound of bounds) expect(toLatex(bound)).toBe(toLatex(tidy(bound)));
+		expect(bounds.map((b) => toLatex(b))).toContain('\\dfrac{3 \\pi}{2}');
+	});
+
+	it("tan x sur ℝ : l'avertissement écrit la condition lisiblement", () => {
+		const warning = study('\\tan(x)').warnings?.find((w) => w.includes('intervalle de définition'));
+		expect(warning).toContain('π/2 + k·π');
+		expect(warning).not.toMatch(/\\pi|\*/);
 	});
 });
 

@@ -407,11 +407,16 @@ corrigés à la cause :
 2. **le domaine fourni est restreint au domaine de f** (`restrictToNaturalDomain`, comme
    `studyDomain`) : `tan x` sur [0 ; π] était étudiée sur [0 ; π] entier, « croissante » à travers
    π/2 ; `\frac{2x-1}{x+3}` sur [−10 ; 10] annonçait des extrema globaux ; `ln x` sur [−3 ; 3] un
-   « minimum local en 0 ». Domaine de f non résolu ou conditionnel : le domaine fourni est gardé ;
+   « minimum local en 0 ». Intersection vide (`ln x` sur [−3 ; −1]) : `VariationError` « f n'est pas
+   définie sur l'intervalle d'étude ». Domaine de f non résolu ou conditionnel : le domaine fourni
+   est gardé ;
 3. **`intersect` garde les valeurs interdites périodiques sur un ensemble borné**
-   (`restrictPeriodicExclusion`, `domain/algebra.ts`) : il rendait l'ensemble tel quel. Sur un
-   ensemble non borné il le rend encore tel quel (une infinité de points, que `interval_set` ne
-   sait pas écrire) ;
+   (`restrictPeriodicExclusion`, `domain/algebra.ts`) : il rendait l'ensemble tel quel. Une valeur
+   sur une borne l'ouvre (`tan ∩ ]−π/2 ; π/2[` reste `]−π/2 ; π/2[`), les autres sont exclues, écrites
+   mises au propre (`tidyPeriodicMember` : 3π/2, pas 3/2·π). Sur un ensemble non borné il le rend
+   encore tel quel (une infinité de points, que `interval_set` ne sait pas écrire). Conséquence :
+   une inéquation à exclusion périodique sur un domaine imposé BORNÉ est `complete`
+   (`\tan x > 0` sur [0 ; π] → ]0 ; π/2[), `partial` seulement sur un domaine non borné ;
 4. **le sens ne traverse pas une valeur interdite périodique** (`cutAtPeriodicExclusions`,
    `variations/monotonicity.ts`) : 1/cos²x est positive partout où elle est définie, et `tan x` était
    « croissante sur ℝ ». Un intervalle borné est coupé en chaque valeur interdite ; un intervalle non
@@ -419,11 +424,18 @@ corrigés à la cause :
    `tan x` croissante sur ]−π/2 ; π/2[), **inconnu** au-delà, avec un avertissement (« le sens de
    variation ne se conclut que sur chaque intervalle de définition, jamais sur leur réunion »).
 
+Côté réciproque (`reciprocal/index.ts`, décision (5) de David) : quand aucun morceau listé n'a de
+formule et que la commande proposée échouerait (`tan` sur ]−1 ; 4[, `sin` sur ]−1 ; 4[), aucune
+commande n'est proposée — refus périodique honnête (« Sa réciproque y est la fonction arctan… »)
+si f est périodique, conseil sans commande sinon.
+
 Et : **un sens inconnu quelque part interdit tout extremum global** (`e^{−x} sin x` sur [0 ; +∞[
 annonçait f(0) = 0 minimum ET maximum global). Le membre a + kT s'écrit par `periodicMember`
 (`common/periodic-member.ts`, partagé avec l'énumération des zéros). Reste connu : un maximum
 global atteint à la fois en un point intérieur et en une borne n'est donné qu'au point intérieur
-(`3 cos 2x` sur [0 ; 2π] : π, pas 0 ni 2π). Tests : `variations/__tests__/periodique-non-borne.test.ts`
+(`3 cos 2x` sur [0 ; 2π] : π, pas 0 ni 2π). Défauts déjà présents, hors de ce correctif : les zéros
+périodiques du NUMÉRATEUR d'un quotient ne sont pas énumérés (`cos x/(x²+1)`, `1/sin x`,
+`ln(2 + sin x)`) ; les points critiques numériques de `(x−1)²(x+2)³` sont faux. Tests : `variations/__tests__/periodique-non-borne.test.ts`
 — oracle numérique, 50 fonctions × 7 domaines plus 4 domaines contenant une valeur interdite : tout
 signe et tout sens affirmés vérifiés sur une grille, aucun sens à travers une valeur interdite,
 chaque extremum vérifié (valeur, position, nature locale et globale), aucun extremum de la grille

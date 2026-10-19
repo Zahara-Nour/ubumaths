@@ -17,8 +17,8 @@ import type {
 import { ZERO_TOLERANCE } from '../common';
 import { subtract, divide } from '$lib/mathAST/factory';
 import { numericNode } from '../common/numeric';
-import { periodicMember } from '../common/periodic-member';
-import type { IntervalDomain } from '$lib/math/intervals/types';
+import { tidyPeriodicMember } from '../common/periodic-member';
+import type { Endpoint, IntervalDomain } from '$lib/math/intervals/types';
 import {
 	isEmptyInterval as intervalsIsEmpty,
 	isUniversalInterval as intervalsIsUniversal,
@@ -567,17 +567,30 @@ function restrictPeriodicExclusion(pe: PeriodicExclusion, other: Domain): Domain
 	const period = evaluateNodeToApproximatedNumber(pe.period);
 	if (!isFinite(base) || !isFinite(period) || period <= 0) return other;
 
+	// Un membre sur une borne l'OUVRE (tan ∩ ]−π/2 ; π/2[ reste ]−π/2 ; π/2[,
+	// pas « \\ {−π/2 ; π/2} ») ; seuls les membres intérieurs sont exclus.
 	const members: MathNode[] = [];
+	const intervals: Interval[] = [];
+	const onMember = (x: number) => {
+		const k = (x - base) / period;
+		return Math.abs(k - Math.round(k)) < ZERO_TOLERANCE;
+	};
 	for (const int of other.intervals) {
 		const lo = endpointToNumber(int.lower.value);
 		const hi = endpointToNumber(int.upper.value);
 		if (!isFinite(lo) || !isFinite(hi)) return other;
-		const kMin = Math.ceil((lo - base) / period - ZERO_TOLERANCE);
-		const kMax = Math.floor((hi - base) / period + ZERO_TOLERANCE);
+		const kMin = Math.floor((lo - base) / period + ZERO_TOLERANCE) + 1;
+		const kMax = Math.ceil((hi - base) / period - ZERO_TOLERANCE) - 1;
 		if (kMax - kMin > MAX_PERIODIC_EXCLUSIONS) return other;
-		for (let k = kMin; k <= kMax; k++) members.push(periodicMember(pe.basePoint, k, pe.period));
+		for (let k = kMin; k <= kMax; k++) members.push(tidyPeriodicMember(pe.basePoint, k, pe.period));
+		const lower: Endpoint = onMember(lo) ? { ...int.lower, type: 'open' } : int.lower;
+		const upper: Endpoint = onMember(hi) ? { ...int.upper, type: 'open' } : int.upper;
+		if (lo === hi && (lower.type === 'open' || upper.type === 'open')) continue;
+		intervals.push({ ...int, lower, upper });
 	}
-	return members.length === 0 ? other : excludePoints(other, members);
+	if (intervals.length === 0) return EMPTY_SET;
+	const restricted = intervalSet(intervals, other.excludedPoints ?? []);
+	return members.length === 0 ? restricted : excludePoints(restricted, members);
 }
 
 // =============================================================================

@@ -19,7 +19,7 @@ import type { MathNode } from '../types';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { interval as makeInterval } from '$lib/math/intervals/factory';
 import { tidyCriticalAbscissa } from './critical-points';
-import { periodicMember } from '../common/periodic-member';
+import { tidyPeriodicMember } from '../common/periodic-member';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
 // =============================================================================
@@ -230,7 +230,7 @@ export function cutAtPeriodicExclusions(
 		return { intervals: [...intervals], truncated: false };
 	}
 	const at = (k: number) => ({
-		node: periodicMember(cuts.basePoint, k, cuts.period),
+		node: tidyPeriodicMember(cuts.basePoint, k, cuts.period),
 		value: base + k * period
 	});
 	const eps = 1e-9;
