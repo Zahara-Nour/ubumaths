@@ -74,3 +74,9 @@ Avec (A), la pile propre du tableur et l'annulation de suppression disparaissent
 1. **La pile et les photos.** Le modèle, les étapes de la console, des cartes, des menus et du tableur, les raccourcis et les boutons de la barre. Les piles du tableur et de la suppression sont retirées.
 2. **Le curseur** (fin de glissé) et **les lignes barrées** de la console (avec les lectures graphiques).
 3. **Repartir de zéro et Charger** annulables ; le toast relié à la pile.
+
+## Décision de David (2026-10-19) — la console au chargement d'un fichier
+
+Charger un `.atelier.json` remplace les objets (après la confirmation existante) mais **garde la console actuelle** : les lignes du fichier s'ajoutent à la suite, précédées d'une ligne « Atelier chargé depuis <nom du fichier> ». Même règle que « Remplacer mon atelier » (R4) : la console, ce sont les calculs de l'élève. Annuler le chargement rend les objets d'avant ; les lignes ajoutées restent, la ligne « Atelier chargé… » est barrée.
+
+PR 3 : Charger et Repartir de zéro passent par `Atelier.replaceWith(state, label, { onLeave })` (`src/lib/atelier/replace.ts`, session atelier-geometry) au lieu de `restore`.
