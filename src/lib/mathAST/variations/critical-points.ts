@@ -8,13 +8,12 @@
  * @module mathAST/variations/critical-points
  */
 
-import type { MathNode, RelationNode } from '../types';
+import type { MathNode } from '../types';
 import type { Domain } from '../domain/types';
 import type { CriticalPointInfo, CriticalPointNature } from './types';
-import type { Solution } from '../solve/types';
-import { solve } from '../solve/solve';
-import { equals, euler, number, superscript } from '../factory';
-import { isFunction, isRelation } from '../guards';
+import { findZerosWithStatus } from '../sign/helpers/zeros';
+import { euler, superscript } from '../factory';
+import { isFunction } from '../guards';
 import { findFirst, mapNode } from '../transforms';
 import { normalize, denormalize } from '../normal';
 import { computeDomain } from '../domain/compute';
@@ -337,6 +336,14 @@ export function sortCriticalPoints(points: readonly CriticalPointInfo[]): Critic
 
 /**
  * Find zeros of the derivative (stationary points).
+ *
+ * ⚠️ Les zéros de f′ sont ceux du tableau de SIGNES de f′ (`findZerosWithStatus`),
+ * pas une résolution à part : le solveur ne rend que les zéros d'UNE période
+ * (`cos x = 0` → π/2), et c'est le module de signe qui énumère la famille sur
+ * un domaine borné (π/2, 3π/2 sur [0 ; 2π]). Résolue à part, f′ = cos x
+ * n'avait qu'un point critique : sin x sur [0 ; 2π] perdait son minimum −1 en
+ * 3π/2 et annonçait 0 et 2π « minimum global » (valeur 0 > −1). Le tableau,
+ * lui, coupait bien en 3π/2 : les deux listes ne se contredisent plus.
  */
 function findDerivativeZeros(
 	derivative: MathNode,
@@ -347,46 +354,11 @@ function findDerivativeZeros(
 	/** `false` quand le solveur n'a pas su résoudre f'(x) = 0 — ce n'est pas « aucun zéro ». */
 	readonly resolved: boolean;
 } {
-	try {
-		// Create equation f'(x) = 0
-		const equation: RelationNode = equals(derivative, number('0'));
-
-		if (!isRelation(equation)) {
-			return { zeros: [], resolved: false };
-		}
-
-		// Solve the equation
-		const result = solve(equation, { variable });
-
-		// Le solveur signale un échec par `error` (« Type d'equation … non
-		// supporte ») avec un statut `no-solution` : ce n'est PAS une absence
-		// de zéro — sauf quand l'erreur explique une absence DÉMONTRÉE
-		// (`conclusive`, ex. racines étrangères de 1/(2√x) = 0).
-		if (result.error !== undefined && !result.conclusive && result.solutions.length === 0) {
-			return { zeros: [], resolved: false };
-		}
-
-		// Handle cases where solving failed or no solutions
-		if (
-			result.status === 'no-solution' ||
-			result.status === 'no-real-solution' ||
-			result.solutions.length === 0
-		) {
-			return { zeros: [], resolved: true };
-		}
-
-		// Handle infinite solutions
-		if (result.status === 'infinite') {
-			// Derivative is identically zero - constant function
-			return { zeros: [], resolved: true };
-		}
-
-		// Filter solutions within the domain
-		return { zeros: filterSolutionsInDomain(result.solutions, domain), resolved: true };
-	} catch {
-		// Le solveur a levé une exception : f'(x) = 0 n'est pas résolue.
-		return { zeros: [], resolved: false };
-	}
+	const { zeros, resolved } = findZerosWithStatus(derivative, variable, domain);
+	return {
+		zeros: zeros.map((zero) => ({ ...zero, value: tidyCriticalAbscissa(zero.value) })),
+		resolved
+	};
 }
 
 /**
@@ -435,30 +407,6 @@ function findDerivativeUndefinedPoints(
 	}
 
 	return [];
-}
-
-/**
- * Filter solutions to only those within the specified domain.
- */
-function filterSolutionsInDomain(
-	solutions: readonly Solution[],
-	domain: Domain
-): Array<{ value: MathNode; approximate?: number; exact: boolean }> {
-	const result: Array<{ value: MathNode; approximate?: number; exact: boolean }> = [];
-
-	for (const solution of solutions) {
-		if (!containsNode(domain, solution.value)) {
-			continue;
-		}
-
-		result.push({
-			value: tidyCriticalAbscissa(solution.value),
-			approximate: solution.approximate,
-			exact: solution.exact
-		});
-	}
-
-	return result;
 }
 
 /**

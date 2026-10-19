@@ -35,12 +35,12 @@ import type { Domain } from '../../domain/types';
 import type { ZeroInfo } from '../types';
 import type { Solution, PeriodicSolutionFamily } from '../../solve/types';
 import { solve } from '../../solve/solve';
-import { equals, number, add, multiply, opposite } from '../../factory';
+import { equals, number } from '../../factory';
+import { periodicMember } from '../../common/periodic-member';
 import { isRelation } from '../../guards';
 import { containsNode } from '../../domain/algebra';
 import { getEndpoints } from '$lib/math/intervals';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
-import { denormalize, normalize } from '../../normal';
 
 // =============================================================================
 // Zero Finding
@@ -299,7 +299,7 @@ function enumeratePeriodicZeros(
 			if (atUpper && !bounds.upperInclusive) continue;
 
 			// Build symbolic value
-			const symbolicValue = buildPeriodicZeroSymbolic(baseSolution.value, k, period);
+			const symbolicValue = periodicMember(baseSolution.value, k, period);
 
 			// For non-contiguous domains (interval unions), check membership
 			if (!atLower && !atUpper && !containsNode(domain, symbolicValue)) continue;
@@ -352,41 +352,6 @@ function familyBetweenKnownZeros(
 		},
 		domain
 	);
-}
-
-/**
- * Build symbolic MathNode for base + k * period.
- *
- * Optimizes common cases:
- * - k = 0: returns base directly
- * - k = 1: base + period
- * - k = -1: base - period
- * - general: base + k * period
- *
- * Then normalizes to get a clean symbolic form.
- */
-function buildPeriodicZeroSymbolic(base: MathNode, k: number, period: MathNode): MathNode {
-	if (k === 0) return base;
-
-	let kTimesT: MathNode;
-	if (k === 1) {
-		kTimesT = period;
-	} else if (k === -1) {
-		kTimesT = opposite(period);
-	} else if (k > 0) {
-		kTimesT = multiply(number(k.toString()), period, 'implicit');
-	} else {
-		kTimesT = opposite(multiply(number((-k).toString()), period, 'implicit'));
-	}
-
-	const raw = add(base, kTimesT);
-
-	// Normalize to simplify (e.g. 0 + 2π → 2π, π/2 + 2π → 5π/2)
-	try {
-		return denormalize(normalize(raw));
-	} catch {
-		return raw;
-	}
 }
 
 // =============================================================================

@@ -1261,11 +1261,15 @@ describe('computeRange()', () => {
 	// =========================================================================
 
 	describe('periodic function optimization', () => {
-		it('sin(x) on [0, 10] returns null (multiple periods, sanity check fails)', () => {
+		it('sin(x) on [0, 10] returns [-1, 1] (every critical point of the periodic family)', () => {
 			const expr = func('sin', [variable('x')]);
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 10) });
-			// Critical point method may miss some critical points of sin on wide intervals
-			expect(result.range).toBeNull();
+			// Les points critiques sont ceux du tableau de signes de f′ : π/2,
+			// 3π/2, 5π/2 (avant, π/2 seul, et le contrôle de cohérence refusait)
+			expect(result.range).not.toBeNull();
+			expect(containsValue(rangeOf(result), -1)).toBe(true);
+			expect(containsValue(rangeOf(result), 1)).toBe(true);
+			expect(containsValue(rangeOf(result), 1.01)).toBe(false);
 		});
 
 		it('cos(x) on [-5, 5] (> 2π) returns full range [-1, 1]', () => {

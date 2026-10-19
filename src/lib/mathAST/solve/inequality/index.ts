@@ -35,6 +35,7 @@ import { denormalize, normalize } from '../../normal';
 import { getVariables } from '../../eval/substitute';
 import { isEmpty as isDomainEmpty, union, difference, intersect } from '../../domain/algebra';
 import { computeDomain, normalizeExcludedPoints } from '../../domain/compute';
+import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { emptyDomain, intervalSet } from '../../domain/factory';
 
 const INEQUALITY_OPS: ReadonlySet<InequalityOp> = new Set(['<', '>', '<=', '>=', '!=']);
@@ -105,19 +106,22 @@ export function solveInequality(
 			definition.unresolved.join(' ; ')
 		);
 	}
-	// Exclusion périodique (\frac{\sin x}{\sin x}) : le découpage du signe ne la
-	// suit pas (il la lit comme ℝ), le résultat ne peut être que partiel — sauf
-	// si aucun pôle ne tombe dans le domaine imposé (\tan x ≥ 0 sur [-1 ; 1])
-	const periodicDomain =
-		definition.domain.kind === 'condition_domain' ||
-		(definition.domain.kind === 'periodic_exclusion' &&
-			(options.domain === undefined || periodicPoleInside(definition.domain, options.domain)));
 	// Points interdits écrits en intervalles (ℝ \ {0} → ]-∞ ; 0[ ∪ ]0 ; +∞[), sans
 	// quoi `difference` ne reconnaît pas « tout le domaine » ; sur une borne du
 	// domaine imposé, le point l'ouvre : [0 ; 1] \ {0} → ]0 ; 1]
 	const domain = normalizeExcludedPoints(
 		options.domain ? intersect(definition.domain, options.domain) : definition.domain
 	);
+	// Exclusion périodique (\frac{\sin x}{\sin x}) : le découpage du signe ne la
+	// suit pas (il la lit comme ℝ), le résultat ne peut être que partiel — sauf
+	// si aucun pôle ne tombe dans le domaine imposé (\tan x ≥ 0 sur [-1 ; 1]), ou
+	// si le domaine imposé est BORNÉ : `intersect` y énumère alors les pôles
+	// (\tan x > 0 sur [0 ; π] → ]0 ; π/2[, complet)
+	const periodicDomain =
+		definition.domain.kind === 'condition_domain' ||
+		(definition.domain.kind === 'periodic_exclusion' &&
+			(options.domain === undefined ||
+				(periodicPoleInside(definition.domain, options.domain) && !isBoundedSet(domain))));
 
 	const signResult = analyzeSign(expression, {
 		variable,
@@ -205,6 +209,18 @@ function resolveConstantInequality(expression: MathNode, op: InequalityOp): Solv
 		status,
 		signTable: signResult
 	};
+}
+
+/** Un ensemble d'intervalles aux bornes toutes finies. */
+function isBoundedSet(domain: Domain): boolean {
+	return (
+		domain.kind === 'interval_set' &&
+		domain.intervals.every(
+			(int) =>
+				Number.isFinite(endpointToNumber(int.lower.value)) &&
+				Number.isFinite(endpointToNumber(int.upper.value))
+		)
+	);
 }
 
 /**

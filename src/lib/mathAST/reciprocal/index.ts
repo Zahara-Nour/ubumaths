@@ -247,7 +247,22 @@ function refuseNotBijective(
 	const fromPieces =
 		withFormula ?? (several && last ? intervalSet([tidyInterval(last.piece)]) : undefined);
 	const candidate = periodic ? (periodic.suggestion ?? undefined) : fromPieces;
-	const suggestion = candidate && readable(candidate) ? candidate : undefined;
+	let suggestion = candidate && readable(candidate) ? candidate : undefined;
+	// Décision (5) de David : jamais proposer une commande qui échouerait. Aucun
+	// morceau listé n'a de formule (tan sur ]−1 ; 4[ : arctan) et la commande
+	// proposée échoue : f périodique → le refus périodique, honnête (« Sa
+	// réciproque y est la fonction arctan… ») ; sinon, pas de commande.
+	if (
+		!periodic &&
+		withFormula === undefined &&
+		suggestion &&
+		!reciprocalOn(context.f, { ...context, interval: suggestion }, false).ok
+	) {
+		const family = periodicFamily(context.f, context.variable, domain);
+		const honest = family ? refusePeriodic(context, family) : null;
+		if (honest) return honest;
+		suggestion = undefined;
+	}
 	// Décision (5) de David (2026-10-13) : sin sur ℝ — jamais proposer une
 	// commande qui échouerait (le solveur n'écrit pas arcsin)
 	if (

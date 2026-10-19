@@ -326,7 +326,8 @@ Elle rend maintenant le domaine de `solve` intersecté avec l'intervalle, mis en
 `normalizeExcludedPoints` (exporté de `domain/compute.ts` : point hors de l'intervalle effacé,
 point sur une borne qui l'ouvre — `\frac{2x}{2x}=1 dans [0;1]` → `]0 ; 1]`), et refuse
 (« Je ne sais pas encore résoudre ») un domaine à exclusion périodique, qu'`intersect` perdait
-(`\frac{\sin x}{\sin x}=1 dans [-1;3]` gardait 0). Tests :
+(`\frac{\sin x}{\sin x}=1 dans [-1;3]` gardait 0 ; depuis le 2026-10-19, `intersect` garde ces
+valeurs interdites sur un ensemble borné, voir « Variations et valeurs interdites » plus bas). Tests :
 `cli/commands/__tests__/identite-dans-intervalle.test.ts`.
 
 **Zéros transcendants d'un dénominateur** (2026-10-15). `nonZeroSet` (`domain/compute.ts`) lit
@@ -370,7 +371,7 @@ l'appelant (atelier, `correction-generator`) se replie sur la réponse du moteur
 intervalle borné à la française, `solveInInterval` (`readSolvingDomain`) et `.variations` lisent
 l'ensemble par `parseStudentDomain` — borne infinie (`[0 ; +∞[`), réunion, `ℝ \ {0}`. Pour
 `.variations`, `studyDomain` (`domain/study.ts`) le croise avec le domaine de l'expression avant
-`computeVariations`, qui prend le domaine fourni tel quel. `writeCommandArguments` écrit `dans` en
+`computeVariations`, qui depuis le 2026-10-19 fait aussi ce croisement lui-même. `writeCommandArguments` écrit `dans` en
 dernier : un intervalle semi-ouvert ne referme pas ses crochets, et un `pour t` placé après y
 restait collé (et `dans [0;+∞[ pour t` tapé se relit). Une famille périodique sur un ensemble non borné est refusée (« Une infinité de solutions »), `findZeros` n'en rendant que les premiers termes. Tests : `atelier/__tests__/intervalle-calculs.test.ts`.
 **Signe d'une fonction à zéros périodiques** (2026-10-19, PR « 60° » de l'atelier). Sur un domaine
@@ -391,10 +392,54 @@ signe constant faux. Trois règles (`sign/analyze.ts`, `sign/helpers/zeros.ts`,
 3. une énumération tronquée (plafond de 500 zéros, ou plus de 1000 périodes) rend
    `resolved: false` au lieu d'une liste incomplète tenue pour complète (`sin 2x` sur [0 ; 360]).
 
-Les domaines bornés ne changent pas. Reste connu : `tan x` sur ℝ est « croissante » d'un seul tenant,
-à travers ses asymptotes (`it.fails`). Tests : `sign/__tests__/periodique-non-borne.test.ts`,
-`variations/__tests__/periodique-non-borne.test.ts` (oracle numérique : 38 fonctions × 7 domaines,
-tout signe et tout sens affirmés vérifiés sur une grille).
+Les domaines bornés ne changent pas. Tests : `sign/__tests__/periodique-non-borne.test.ts`,
+`variations/__tests__/periodique-non-borne.test.ts`.
+
+**Extrema périodiques et valeurs interdites** (2026-10-19). Quatre défauts de `computeVariations`,
+corrigés à la cause :
+
+1. **les points critiques sont les zéros du tableau de signes de f′** (`findZerosWithStatus`),
+   plus une résolution à part : le solveur ne rend que les zéros d'une période (`cos x = 0` → π/2),
+   et `critical-points.ts` s'en contentait. `sin x` sur [0 ; 2π] perdait son minimum −1 en 3π/2 et
+   annonçait 0 et 2π « minimum global » (valeur 0) ; même chose pour `sin 2x`, `3 cos 2x`,
+   `sin x + cos x`, `eˣ cos x`… Le tableau, lui, coupait bien en 3π/2. Effet de bord voulu :
+   `computeRange` de `sin x` sur [0 ; 10] rend [−1 ; 1] (il rendait `null`) ;
+2. **le domaine fourni est restreint au domaine de f** (`restrictToNaturalDomain`, comme
+   `studyDomain`) : `tan x` sur [0 ; π] était étudiée sur [0 ; π] entier, « croissante » à travers
+   π/2 ; `\frac{2x-1}{x+3}` sur [−10 ; 10] annonçait des extrema globaux ; `ln x` sur [−3 ; 3] un
+   « minimum local en 0 ». Intersection vide (`ln x` sur [−3 ; −1]) : `VariationError` « f n'est pas
+   définie sur l'intervalle d'étude ». Domaine de f non résolu ou conditionnel : le domaine fourni
+   est gardé ;
+3. **`intersect` garde les valeurs interdites périodiques sur un ensemble borné**
+   (`restrictPeriodicExclusion`, `domain/algebra.ts`) : il rendait l'ensemble tel quel. Une valeur
+   sur une borne l'ouvre (`tan ∩ ]−π/2 ; π/2[` reste `]−π/2 ; π/2[`), les autres sont exclues, écrites
+   mises au propre (`tidyPeriodicMember` : 3π/2, pas 3/2·π). Sur un ensemble non borné il le rend
+   encore tel quel (une infinité de points, que `interval_set` ne sait pas écrire). Conséquence :
+   une inéquation à exclusion périodique sur un domaine imposé BORNÉ est `complete`
+   (`\tan x > 0` sur [0 ; π] → ]0 ; π/2[), `partial` seulement sur un domaine non borné ;
+4. **le sens ne traverse pas une valeur interdite périodique** (`cutAtPeriodicExclusions`,
+   `variations/monotonicity.ts`) : 1/cos²x est positive partout où elle est définie, et `tan x` était
+   « croissante sur ℝ ». Un intervalle borné est coupé en chaque valeur interdite ; un intervalle non
+   borné garde son sens sur l'intervalle de définition voisin de sa borne finie (ou de 0 sur ℝ :
+   `tan x` croissante sur ]−π/2 ; π/2[), **inconnu** au-delà, avec un avertissement (« le sens de
+   variation ne se conclut que sur chaque intervalle de définition, jamais sur leur réunion »).
+
+Côté réciproque (`reciprocal/index.ts`, décision (5) de David) : quand aucun morceau listé n'a de
+formule et que la commande proposée échouerait (`tan` sur ]−1 ; 4[, `sin` sur ]−1 ; 4[), aucune
+commande n'est proposée — refus périodique honnête (« Sa réciproque y est la fonction arctan… »)
+si f est périodique, conseil sans commande sinon.
+
+Et : **un sens inconnu quelque part interdit tout extremum global** (`e^{−x} sin x` sur [0 ; +∞[
+annonçait f(0) = 0 minimum ET maximum global). Le membre a + kT s'écrit par `periodicMember`
+(`common/periodic-member.ts`, partagé avec l'énumération des zéros). Reste connu : un maximum
+global atteint à la fois en un point intérieur et en une borne n'est donné qu'au point intérieur
+(`3 cos 2x` sur [0 ; 2π] : π, pas 0 ni 2π). Défauts déjà présents, hors de ce correctif : les zéros
+périodiques du NUMÉRATEUR d'un quotient ne sont pas énumérés (`cos x/(x²+1)`, `1/sin x`,
+`ln(2 + sin x)`) ; les points critiques numériques de `(x−1)²(x+2)³` sont faux. Tests : `variations/__tests__/periodique-non-borne.test.ts`
+— oracle numérique, 50 fonctions × 7 domaines plus 4 domaines contenant une valeur interdite : tout
+signe et tout sens affirmés vérifiés sur une grille, aucun sens à travers une valeur interdite,
+chaque extremum vérifié (valeur, position, nature locale et globale), aucun extremum de la grille
+manquant quand le tableau se conclut sur un domaine borné.
 
 ### Carte du code
 
