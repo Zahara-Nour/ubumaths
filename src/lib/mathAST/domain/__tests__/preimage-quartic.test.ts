@@ -272,36 +272,48 @@ function quarticsWithKnownRoots(count: number): { coefficients: number[]; roots:
 	const pick = () => Math.round(random() * 20 - 10) / 2;
 	const cases: { coefficients: number[]; roots: number[] }[] = [];
 	while (cases.length < count) {
-		const shape = cases.length % 4;
+		const shape = cases.length % 6;
 		const [r1, r2, r3, r4] = [pick(), pick(), pick(), pick()];
-		const factors: number[][] =
-			shape === 0
-				? [
-						[1, -r1],
-						[1, -r2],
-						[1, -r3],
-						[1, -r4]
-					]
-				: shape === 1
-					? [
-							[1, -r1],
-							[1, -r1],
-							[1, -r2],
-							[1, -r3]
-						]
-					: shape === 2
-						? [
-								[1, -r1],
-								[1, -r1],
-								[1, -r2],
-								[1, -r2]
-							]
-						: [
-								[1, -r1],
-								[1, -r1],
-								[1, 0, 1]
-							];
-		const lead = [2, 3, -2, 4][Math.floor(cases.length / 4) % 4];
+		// Racines proches : écart de 1e-3 à 3e-3 (fusionnées à tort par une
+		// tolérance sur le discriminant)
+		const close = r1 + (1 + Math.floor(random() * 3)) / 1000;
+		const factors: number[][] = [
+			[
+				[1, -r1],
+				[1, -r2],
+				[1, -r3],
+				[1, -r4]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, -r2],
+				[1, -r3]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, -r2],
+				[1, -r2]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, 0, 1]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, -r1],
+				[1, -r2]
+			],
+			[
+				[1, -r1],
+				[1, -close],
+				[1, 0, 1]
+			]
+		][shape];
+		const lead = [2, 3, -2, 4][Math.floor(cases.length / 6) % 4];
 		const coefficients = factors.reduce(
 			(acc, f) => {
 				const out: number[] = Array.from({ length: acc.length + f.length - 1 }, () => 0);
@@ -310,9 +322,11 @@ function quarticsWithKnownRoots(count: number): { coefficients: number[]; roots:
 			},
 			[lead]
 		);
-		const real =
-			shape === 3 ? [r1] : shape === 2 ? [r1, r2] : shape === 1 ? [r1, r2, r3] : [r1, r2, r3, r4];
-		cases.push({ coefficients, roots: [...new Set(real)].sort((a, b) => a - b) });
+		const real = [[r1, r2, r3, r4], [r1, r2, r3], [r1, r2], [r1], [r1, r2], [r1, close]][shape];
+		cases.push({
+			coefficients,
+			roots: [...new Set(real.map((r) => Math.round(r * 1e5) / 1e5))].sort((a, b) => a - b)
+		});
 	}
 	return cases;
 }
@@ -329,6 +343,21 @@ describe('findZeros : racine double à côté de racines simples', () => {
 	it('4x⁴ + 6x³ − 19x² − 43,5x − 22,5 : zéros −1,5 (double), −1, 2,5', () => {
 		const zeros = findZeros(parseLatex('4x^4+6x^3-19x^2-43.5x-22.5'), 'x').sort((a, b) => a - b);
 		expect(zeros.map((z) => Math.round(z * 1e6) / 1e6)).toEqual([-1.5, -1, 2.5]);
+	});
+
+	it('2(x − 3)(x − 3,002)(x² + 1) : deux zéros proches, pas aucun', () => {
+		const zeros = findZeros(parseLatex('2x^4-12.004x^3+20.012x^2-12.004x+18.012'), 'x');
+		expect(zeros.map((z) => Math.round(z * 1e6) / 1e6).sort((a, b) => a - b)).toEqual([3, 3.002]);
+	});
+
+	it('(x − 10)(x − 10,001)(x² + 1) : deux zéros, pas une racine double en 10,0005', () => {
+		const zeros = findZeros(parseLatex('x^4-20.001x^3+101.01x^2-20.001x+100.01'), 'x');
+		expect(zeros.map((z) => Math.round(z * 1e6) / 1e6).sort((a, b) => a - b)).toEqual([10, 10.001]);
+	});
+
+	it('(3x − 5)³(x + 1) : racine triple 5/3 rendue une seule fois', () => {
+		const zeros = findZeros(parseLatex('27x^4-108x^3+90x^2+100x-125'), 'x');
+		expect(zeros.map((z) => Math.round(z * 1e4) / 1e4).sort((a, b) => a - b)).toEqual([-1, 1.6667]);
 	});
 
 	it('200 quartiques tirées (graine fixe) : toutes les racines réelles, aucune de trop', () => {

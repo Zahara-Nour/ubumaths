@@ -372,6 +372,48 @@ describe('dénominateur ou f à domaine restreint : aucun zéro ni sens hors du 
 	});
 });
 
+describe('domaine de f non déterminé mais domaine fourni suffisant : le tableau se conclut', () => {
+	it('2√(sin x) sur ]0 ; π[ : ↗ ↘, maximum 2 en π/2', () => {
+		const result = study('2\\sqrt{\\sin(x)}', domainOf('0', '\\pi', false, false));
+		expect(directions(result)).toEqual(['increasing', 'decreasing']);
+		expect(extremaWithValues(result)).toEqual(['global_maximum@1.571=2.000']);
+	});
+
+	it('ln(x + sin x) sur [1 ; +∞[ : croissante sur [1 ; π[, inconnu au-delà', () => {
+		// f′ = (1 + cos x)/(x + sin x). Au-delà de π, le signe de x + sin x ne se
+		// démontre pas (x + sin x = 0 non résolue) : main y concluait
+		// « croissante » par échantillonnage, le mécanisme qui rendait
+		// cos x/eˣ « croissante sur [0 ; +∞[ ».
+		const result = study('\\ln(x+\\sin(x))', domainOf('1', '+inf', true, false));
+		expect(directions(result)).toEqual(['increasing', 'unknown']);
+		expect(show(result.monotonicIntervals[0].interval)).toBe(']1.000 ; 3.142[');
+	});
+
+	it('ln(sin x) sur [−3 ; 3] : croissante sur ]0 ; π/2[', () => {
+		const result = study('\\ln(\\sin(x))', domainOf('-3', '3', true, true));
+		expect(
+			result.monotonicIntervals
+				.filter((mi) => mi.monotonicity === 'increasing')
+				.map((mi) => show(mi.interval))
+		).toEqual([']0.000 ; 1.571[']);
+	});
+});
+
+describe('quartique à racines proches : signe juste entre elles', () => {
+	it('2(x − 3)(x − 3,002)(x² + 1) : négatif sur ]3 ; 3,002[', () => {
+		const sign = analyzeSign(parseLatex('2x^4-12.004x^3+20.012x^2-12.004x+18.012'), {
+			variable: 'x'
+		});
+		expect(sign.signedIntervals.map((si) => si.sign)).toEqual([
+			'positive',
+			'zero',
+			'negative',
+			'zero',
+			'positive'
+		]);
+	});
+});
+
 describe('(x − 1)²(x + 2)³ : f′ = (x − 1)(x + 2)²(5x + 1)', () => {
 	// La quartique f′ = 5x⁴ + 16x³ + 3x² − 20x − 4 passait par une factorisation de
 	// Ferrari fausse : points critiques −2,45 ; −1,03 ; −0,85 ; 1,12.

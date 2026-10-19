@@ -456,8 +456,9 @@ cause :
    `droppedPeriodicSolutions` — jamais affichée comme ensemble de solutions — et le tableau de
    signes l'énumère membre à membre en ne gardant que ceux où l'expression est définie
    (`definedMemberFilter`, `sign/helpers/zeros.ts`) : `sin x/x` sur [0 ; 2π] a pour zéros π et
-   2π (pas 0), `cos x/√x` sur [−5 ; 5] π/2 et 3π/2. Domaine de l'expression non déterminé : zéros
-   non résolus, rien ne se conclut ;
+   2π (pas 0), `cos x/√x` sur [−5 ; 5] π/2 et 3π/2. Domaine de l'expression non déterminé (f′ de
+   `2√(sin x)`) : contrôle numérique, l'expression doit être finie au membre et de part et
+   d'autre — un membre où elle n'est pas définie (3π/2) n'est jamais un zéro ;
 2. **le premier membre de la famille au-delà d'une borne finie compte** (`familyBetweenKnownZeros`,
    `sign/helpers/zeros.ts`) : `ln(2 + sin x)` sur [0 ; +∞[ était « positif » sans aucun zéro (le
    solveur rend −π/2, hors du domaine), au lieu de 0 en 3π/2 ; `cos x/eˣ` sur [0 ; +∞[ se lit
@@ -465,18 +466,24 @@ cause :
 3. **Ferrari** (`common/quartic-roots.ts`, `realQuarticRoots`, désormais partagé par
    `solve/solvers/quartic.ts` et `domain/preimage.ts`, qui en avaient chacun une copie) : la
    résolvante est écrite pour y = m/2, la factorisation employait y au lieu de m = 2y. Toute
-   quartique non bicarrée une fois dépréciée (B ≠ 0) avait des racines fausses : x⁴ + x³ − 7x² − x
-   - 6 = 0 rendait −3,13 ; −0,29 ; 0,15 ; 2,26. D'où les points critiques faux de `(x−1)²(x+2)³`
-     (f′ = 5x⁴ + 16x³ + 3x² − 20x − 4 → −2,45 ; −1,03 ; −0,85 ; 1,12) : le tableau a maintenant un
-     maximum en −1/5, un minimum en 1, rien en −2 (zéro double de f′). Une racine double ne sort de
-     Ferrari qu'à ~1e-8 près (discriminant du facteur légèrement négatif) : tolérance relative sur
-     le discriminant, polissage de Newton borné au voisinage du candidat (un pas pouvait sauter sur
-     une autre racine), résidu contrôlé. Testé sur 200 quartiques tirées à graine fixe (racines
-     simples, doubles, facteur x² + 1) ;
+   quartique non bicarrée une fois dépréciée (B ≠ 0) avait des racines fausses
+   (x⁴ + x³ − 7x² − x + 6 = 0 rendait −3,13 ; −0,29 ; 0,15 ; 2,26), d'où les points critiques faux
+   de `(x−1)²(x+2)³` : le tableau a maintenant un maximum en −1/5, un minimum en 1, rien en −2
+   (zéro double de f′). Aucun discriminant n'est arrondi à zéro : une tolérance relative fondait
+   deux racines proches (3 et 3,002) en une seule, ensuite écartée — « aucune racine réelle ». Un
+   discriminant légèrement négatif (racine double à ~1e-8 près) donne deux candidats de part et
+   d'autre du sommet ; chacun est poli par Newton sans s'éloigner (un pas pouvait sauter sur une
+   autre racine) ; on ne fusionne qu'après, deux racines entre lesquelles P reste au niveau du
+   bruit de calcul, et une racine multiple est affinée comme racine simple d'une dérivée (5/3,
+   triple, sortait doublée). Testé sur 200 quartiques tirées à graine fixe (racines simples,
+   doubles, triples, proches, facteur x² + 1) ;
 4. **domaine de f non déterminé** (`ln(sin x)` : le domaine fourni est gardé tel quel) : un sens
    n'est affirmé que là où f est numériquement définie (`withoutClaimsWhereUndefined`,
-   `variations/compute.ts`) ; `ln(sin x)` sur [0 ; 2π] était « décroissante sur ]3π/2 ; 2π] »,
-   où f n'existe pas. Contrôle numérique : il retire des affirmations, n'en ajoute jamais.
+   `variations/compute.ts`), et le signe de f′ s'étudie sur le domaine de f′ quand il est
+   déterminé (`withinDerivativeDomain` : coupure en 0 pour cos x/sin x) ; `ln(sin x)` sur
+   [0 ; 2π] était « décroissante sur ]3π/2 ; 2π] », où f n'existe pas. `ln(x + sin x)` sur
+   [1 ; +∞[ n'est croissante que sur [1 ; π[ : au-delà, le signe de x + sin x ne se démontre pas
+   (main concluait par échantillonnage, le mécanisme qui rendait `cos x/eˣ` croissante).
 
 Reste connu : `ln(2 + sin x)`, `1/(2 + cos x)`, `√(2 + cos x)` sur ℝ sont refusées (domaine
 2 + sin x > 0 non déterminé) ; `1/sin x` sur ℝ a un signe « inconnu » partout (pôles périodiques non

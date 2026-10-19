@@ -166,6 +166,13 @@ describe('Quartic Solver', () => {
 			expect(result.solutions.map((s) => toLatex(s.value))).toEqual(['-2', '\\dfrac{5}{3}', '2']);
 		});
 
+		it('2(x − 3)(x − 3,002)(x² + 1) = 0 : x = 3 ou x = 3,002, pas « aucune solution »', () => {
+			const result = solve(parseEquation('2x^4-12.004x^3+20.012x^2-12.004x+18.012=0'));
+			expect(result.solutions.map((s) => Math.round((s.approximate ?? 0) * 1e6) / 1e6)).toEqual([
+				3, 3.002
+			]);
+		});
+
 		it('200 quartiques tirées (graine fixe) : solve rend leurs racines réelles', () => {
 			const wrong: string[] = [];
 			for (const { coefficients, roots } of quarticsWithKnownRoots(200)) {
@@ -287,36 +294,48 @@ function quarticsWithKnownRoots(count: number): { coefficients: number[]; roots:
 	const pick = () => Math.round(random() * 20 - 10) / 2;
 	const cases: { coefficients: number[]; roots: number[] }[] = [];
 	while (cases.length < count) {
-		const shape = cases.length % 4;
+		const shape = cases.length % 6;
 		const [r1, r2, r3, r4] = [pick(), pick(), pick(), pick()];
-		const factors: number[][] =
-			shape === 0
-				? [
-						[1, -r1],
-						[1, -r2],
-						[1, -r3],
-						[1, -r4]
-					]
-				: shape === 1
-					? [
-							[1, -r1],
-							[1, -r1],
-							[1, -r2],
-							[1, -r3]
-						]
-					: shape === 2
-						? [
-								[1, -r1],
-								[1, -r1],
-								[1, -r2],
-								[1, -r2]
-							]
-						: [
-								[1, -r1],
-								[1, -r1],
-								[1, 0, 1]
-							];
-		const lead = [2, 3, -2, 4][Math.floor(cases.length / 4) % 4];
+		// Racines proches : écart de 1e-3 à 3e-3 (fusionnées à tort par une
+		// tolérance sur le discriminant)
+		const close = r1 + (1 + Math.floor(random() * 3)) / 1000;
+		const factors: number[][] = [
+			[
+				[1, -r1],
+				[1, -r2],
+				[1, -r3],
+				[1, -r4]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, -r2],
+				[1, -r3]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, -r2],
+				[1, -r2]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, 0, 1]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, -r1],
+				[1, -r2]
+			],
+			[
+				[1, -r1],
+				[1, -close],
+				[1, 0, 1]
+			]
+		][shape];
+		const lead = [2, 3, -2, 4][Math.floor(cases.length / 6) % 4];
 		const coefficients = factors.reduce(
 			(acc, f) => {
 				const out: number[] = Array.from({ length: acc.length + f.length - 1 }, () => 0);
@@ -325,9 +344,11 @@ function quarticsWithKnownRoots(count: number): { coefficients: number[]; roots:
 			},
 			[lead]
 		);
-		const real =
-			shape === 3 ? [r1] : shape === 2 ? [r1, r2] : shape === 1 ? [r1, r2, r3] : [r1, r2, r3, r4];
-		cases.push({ coefficients, roots: [...new Set(real)].sort((a, b) => a - b) });
+		const real = [[r1, r2, r3, r4], [r1, r2, r3], [r1, r2], [r1], [r1, r2], [r1, close]][shape];
+		cases.push({
+			coefficients,
+			roots: [...new Set(real.map((r) => Math.round(r * 1e5) / 1e5))].sort((a, b) => a - b)
+		});
 	}
 	return cases;
 }

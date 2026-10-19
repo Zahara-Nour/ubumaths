@@ -237,9 +237,12 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 		const undefinedAt = sortedCriticalPoints
 			.filter((p) => p.nature === 'derivative_undefined')
 			.map((p) => p.x);
+		const signDomain = naturalDomainUndetermined
+			? withinDerivativeDomain(domain, derivative, variable)
+			: domain;
 		derivativeSign = analyzeSign(derivative, {
 			variable,
-			domain: undefinedAt.length > 0 ? excludePoints(domain, undefinedAt) : domain,
+			domain: undefinedAt.length > 0 ? excludePoints(signDomain, undefinedAt) : signDomain,
 			numericFallback: opts.numericFallback,
 			verbosity: opts.verbosity
 		});
@@ -535,6 +538,23 @@ function restrictToNaturalDomain(
 		);
 	}
 	return natural.kind === 'periodic_exclusion' ? { domain, periodicCuts: natural } : { domain };
+}
+
+/**
+ * Domaine de f non déterminé : le signe de f′ s'étudie au moins sur le domaine
+ * de f′, quand lui est déterminé. `ln(sin x)` sur [−3 ; 3] : f′ = cos x/sin x
+ * n'est pas définie en 0, et ]−π/2 ; π/2[ d'un seul tenant restait de signe
+ * inconnu (« croissante sur ]0 ; π/2[ » perdu).
+ */
+function withinDerivativeDomain(domain: Domain, derivative: MathNode, variable: string): Domain {
+	try {
+		const result = computeDomain(derivative, variable);
+		if (result.unresolved !== undefined || result.domain.kind === 'condition_domain') return domain;
+		const restricted = normalizeExcludedPoints(intersect(domain, result.domain));
+		return isEmpty(restricted) ? domain : restricted;
+	} catch {
+		return domain;
+	}
 }
 
 /** Points de contrôle de la définition de f par intervalle (bornes infinies : ±200 autour). */

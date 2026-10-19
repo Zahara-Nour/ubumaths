@@ -416,26 +416,48 @@ function firstMemberBeyond(
 /** Garde un membre d'une famille (valeur exacte, valeur approchée) ? */
 type MemberFilter = (value: MathNode, approximate: number) => boolean;
 
+/** Demi-largeur relative du voisinage où l'expression doit être définie. */
+const NEIGHBOURHOOD = 1e-6;
+
 /**
- * Les membres d'une famille écartée qui sont de vrais zéros : dans le domaine
- * de l'expression (`√x` : x > 0 ; `x` : x ≠ 0 ; `tan x` : x ≠ π/2 + kπ) et où
- * elle prend une valeur finie. `null` quand ce domaine n'est pas déterminé.
+ * Les membres d'une famille écartée qui sont de vrais zéros.
+ *
+ * - Domaine de l'expression déterminé : membre dans ce domaine (`√x` : x > 0 ;
+ *   `x` : x ≠ 0 ; `tan x` : x ≠ π/2 + kπ) où elle prend une valeur finie.
+ * - Domaine NON déterminé (f′ de `2√(sin x)` : cos x/√(sin x)) : contrôle
+ *   numérique — l'expression est finie au membre ET de part et d'autre (un
+ *   membre où elle n'est pas définie, 3π/2 ici, n'est jamais un zéro). Le
+ *   domaine d'étude, lui, est déjà vérifié par l'énumération.
+ *
+ * `null` seulement quand l'expression ne se compile pas.
  *
  * @internal
  */
 function definedMemberFilter(expr: MathNode, variable: string): MemberFilter | null {
-	let exprDomain: Domain;
 	let f: (scope: Record<string, number>) => number;
 	try {
-		const result = computeDomain(expr, variable);
-		if (result.unresolved !== undefined || result.domain.kind === 'condition_domain') return null;
-		exprDomain = result.domain;
 		f = compile(expr);
 	} catch {
 		return null;
 	}
-	return (value, approximate) =>
-		containsNode(exprDomain, value) && Number.isFinite(f({ [variable]: approximate }));
+	const finiteAt = (x: number) => Number.isFinite(f({ [variable]: x }));
+	let exprDomain: Domain | undefined;
+	try {
+		const result = computeDomain(expr, variable);
+		if (result.unresolved === undefined && result.domain.kind !== 'condition_domain') {
+			exprDomain = result.domain;
+		}
+	} catch {
+		exprDomain = undefined;
+	}
+	if (exprDomain !== undefined) {
+		const known = exprDomain;
+		return (value, approximate) => containsNode(known, value) && finiteAt(approximate);
+	}
+	return (_value, approximate) => {
+		const h = NEIGHBOURHOOD * Math.max(1, Math.abs(approximate));
+		return finiteAt(approximate) && finiteAt(approximate - h) && finiteAt(approximate + h);
+	};
 }
 
 // =============================================================================
