@@ -11,13 +11,12 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, ouverture du lot 3 PR 2._
+_Mis à jour le 2026-10-19, après #1536._
 
-- **État** : lots 1 et 2 livrés (#1474 → #1528) ; lot 3 PR 1 « le glisser » mergée (#1533). Lot 3 PR 2 « barre d'outils, outils de base » EN COURS. Rien en prod.
-- **Prochaine action** : PR 2 — tests d'abord (`figure-tools`, `FigureView`), puis implémentation, revue, PR.
-- **En attente de David** : rien.
-- **Pièges** : banc A (24 objets) médiane 15,9 ms, p90 17,6 ms (M1 < 16 ms tenu de justesse). Prévenir avant la session « atelier-refonte-interface ». PR qui touche `mathAST` → `mathast-expert`. M3 donne `s = [AB]` en exemple, M4 nomme les segments `d, d_1…` : M4 suivi.
-- **Worktree / branche** : `../ubumaths-wt-atelier-geometrie` · `feat/atelier-geometrie-outils`.
+- **État** : lots 1 et 2 livrés (#1474 → #1528) ; lot 3 PR 1 « le glisser » (#1533) et PR 2 « barre d'outils, outils de base » (#1536) mergées. Rien en prod. Pas de worktree ouvert.
+- **Prochaine action** : lot 3 PR 3 — outils de construction (Milieu, Intersection, Point sur un objet, Parallèle, Perpendiculaire ; M5 complet), à ajouter à `FIGURE_TOOLS` / `FigureToolbox` (`figure-tools.svelte.ts`), dans un nouveau worktree `../ubumaths-wt-atelier-geometrie`.
+- **En attente de David** : rien (vérification manuelle #1536 notée).
+- **Pièges** : banc A (24 objets) médiane 15,9 ms (M1 < 16 ms de justesse). Prévenir avant la session « atelier-refonte-interface ». PR qui touche `mathAST` → `mathast-expert`. Sur téléphone la toile dépasse l'écran (PR 4, M6). Un segment entre deux clics dans le vide = 3 étapes d'annulation (M7, gardé).
 
 ## Lot 1 — découpage
 
