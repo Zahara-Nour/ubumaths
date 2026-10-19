@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1522._
+_Mis à jour le 2026-10-19, lot 3 (QR stylés) en phase 0._
 
-- **État** : lot 1 (bouton « QR code » sur les partages, #1515) et lot 2 (bloc ubumark ` ```qr `, #1522) livrés. Rien en prod.
-- **Prochaine action** : aucune engagée. Option proposée à David : charger `uqr` seulement quand un bloc ` ```qr ` est présent (aujourd'hui ~8 Ko gzip sur toutes les pages Markdown).
-- **En attente de David** : cette optimisation (oui / non) ; un lien court côté serveur pour les séries trop longues et un atelier sauvegardé public (chantiers non ouverts).
-- **Pièges** : adresse toujours `https://www.chiph.re` (`chiph.re` redirige en 308) ; `http://` extérieur refusé ; QR limité à la version 15.
-- **Worktree / branche** : aucun.
+- **État** : lots 1 (#1515) et 2 (#1522) livrés, pas en prod. Lot 3 : QR stylés (gidouille, cases et yeux arrondis), variante **B** choisie par David ; phase 0 écrite : [qr-codes-style-phase0.md](qr-codes-style-phase0.md).
+- **Prochaine action** : après les réponses de David, tests rouges puis `qrSvg` stylé en correction H.
+- **En attente de David** : Q1 où s'applique le style (recommandé : partout) ; Q2 PDF par SVG en image (recommandé) ou tracés Typst ; Q3 taille mini du bloc 2 → 2,5 cm.
+- **Tranché** : limite de longueur en baisse acceptée, on fera des liens courts (chantier à part). Optimisation du chargement de `uqr` abandonnée : mesuré le 2026-10-19, 4,4 Ko gzip sur 16 pages sur 330 (PDF et bouton), déjà chargé à la demande pour le bloc à l'écran.
+- **Pièges** : adresse toujours `https://www.chiph.re` ; le moteur SVG d'ImageMagick oublie la spirale (rendre par QuickLook ou un navigateur pour tester) ; prototype dans le scratchpad de la session, non suivi.
+- **Worktree / branche** : `../ubumaths-wt-qr-codes`, `feat/qr-codes-style`.
 
 Phase 0 : [qr-codes-phase0.md](qr-codes-phase0.md), tranchée par David le 2026-10-19.
 
