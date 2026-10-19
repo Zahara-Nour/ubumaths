@@ -22,8 +22,12 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
   notation scientifique, fractions de nombres, virgule, groupement : mêmes valeurs des deux côtés.
 - Températures : `tidy` ne sait pas (`valueIn` → `null`) ; l'actuel les gère (`convertAffine`),
   arrondi °C ↔ K compris.
-- ComputeEngine n'est appelé que si `extractValue` rend une chaîne (`5\times3`, `0.1+0.2`) :
-  rare côté élève (`normalizeStudentQuantity` ne garde qu'une tête numérique).
+- **Pas de ComputeEngine** malgré le nom `ce-integration.ts` et ses commentaires (ainsi que l'ADR
+  0026 et `grandeurs.md`) : `evaluateQuantityValue` appelle `evaluateExpression` (`$lib/math`) =
+  `parseLatex` + `evaluate` de mathAST en mode décimal. Il n'est appelé que si `extractValue` rend
+  une chaîne (`5\times3`) : rare côté élève. Le vrai écart avec `tidy` : lecture de la valeur par
+  regex maison (`extractValue`), calcul en flottants, unité lue à part (`\unit{}` + parseur d'unité)
+  au lieu d'un arbre avec nœud `unit`.
 - **Faux juste mesuré** : attendu `2\sqrt{2}\unit{m}`, élève `2 m` → JUSTE (`extractValue` prend
   le premier nombre). Attendu `\pi\unit{m}` → « Erreur de configuration ». À vérifier sur les vraies
   données : existe-t-il des cases à unité dont l'attendu n'est pas un nombre décimal ?
