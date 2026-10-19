@@ -92,13 +92,17 @@ describe('le problème de l’aire, de bout en bout', () => {
 		expect([x?.name, y?.name]).toEqual(['L', 'L_1']);
 		expect(cells(x)).toHaveLength(21);
 		expect(cells(y)).toHaveLength(21);
-		// M en A (position 0) ou en B (position 1) : le rectangle est aplati, et
-		// `aire` refuse un polygone à sommets confondus — la ligne reste vide
-		// dans les DEUX listes, pour que les lignes restent appariées
-		expect(cells(x)[0]).toBe('');
-		expect(cells(y)[0]).toBe('');
-		expect(cells(x)[20]).toBe('');
-		expect(cells(y)[20]).toBe('');
+		// M en A (position 0) ou en B (position 1) : le rectangle est aplati, son
+		// aire vaut 0 (décision de David du 2026-10-19) — 21 lignes PLEINES
+		expect(cells(x)[0]).toBe('0');
+		expect(cells(y)[0]).toBe('0');
+		expect(cells(x)[20]).toBe('4');
+		expect(cells(y)[20]).toBe('0');
+		expect(
+			cells(x)
+				.concat(cells(y))
+				.filter((cell) => cell === '')
+		).toEqual([]);
 		expect(cells(x).slice(1, 6)).toEqual(['0,2', '0,4', '0,6', '0,8', '1']);
 		expect(cells(y).slice(1, 6)).toEqual(['0,76', '1,44', '2,04', '2,56', '3']);
 		// Le maximum relevé
@@ -106,9 +110,9 @@ describe('le problème de l’aire, de bout en bout', () => {
 		expect(x.values[best]).toBe(2);
 		expect(y.values[best]).toBe(4);
 		expect(y.rows[best]).toBe(11);
-		expect(x.values).toHaveLength(19);
+		expect(x.values).toHaveLength(21);
 		expect(text).toContain('21 lignes');
-		expect(text).toContain('2 pas sans valeur');
+		expect(text).not.toContain('sans valeur');
 		expect(text).toMatch(/L\b.*L_1/);
 	});
 
@@ -160,7 +164,7 @@ describe('le problème de l’aire, de bout en bout', () => {
 		const plotted = desk.atelier.get('L');
 		expect(plotted !== undefined && isList(plotted) && plotted.plottedWith).toBe('L_1');
 		const cloud = graph.functions.find(isScatter);
-		expect(cloud?.xs).toHaveLength(19);
+		expect(cloud?.xs).toHaveLength(21);
 		expect(cloud?.ys[cloud.xs.indexOf(2)]).toBe(4);
 	});
 
@@ -266,6 +270,88 @@ describe('faire varier une valeur à curseur', () => {
 
 		expect(cells(lists(s.atelier)[0])).toEqual(['0', '90', '180']);
 	});
+
+	it('l’unité d’un angle relevé est dans le TITRE de la colonne', () => {
+		const s = session('O = (0 ; 0)', 'I = (1 ; 0)', 'c = cercle(O ; 1)', 'M = point_sur(c ; 0)');
+
+		output(runInput(s, '.relever angle(I, O, M) ; IM quand M va de 0 à 180 pas 90'));
+
+		const [angles, lengths] = lists(s.atelier);
+		expect(s.atelier.titleOf(angles.column)).toBe('angle(I, O, M) (°)');
+		expect(s.atelier.titleOf(lengths.column)).toBe('IM');
+	});
+
+	it('en radians : le nombre en radians, « (rad) » dans le titre', () => {
+		const s = session(
+			'O = (0 ; 0)',
+			'I = (1 ; 0)',
+			'c = cercle(O ; 1)',
+			'M = point_sur(c ; 0)',
+			'T = angle(I, O, M)'
+		);
+		s.atelier.setAngleUnit('rad');
+
+		output(runInput(s, '.relever T ; IM quand M va de 0 à 180 pas 180'));
+
+		const [angles] = lists(s.atelier);
+		expect(cells(angles)).toEqual(['0', '3,141592654']);
+		expect(s.atelier.titleOf(angles.column)).toBe('T (rad)');
+	});
+});
+
+// =============================================================================
+// Décisions de David du 2026-10-19 : `dans X ; Y`, le pas manquant
+// =============================================================================
+
+describe('nommer les listes : dans X ; Y', () => {
+	it('les deux listes portent les noms donnés', () => {
+		const s = session(...AREA_PROBLEM);
+
+		const text = output(runInput(s, '.relever AM ; S quand M va de 0 à 1 pas 0,05 dans X ; Y'));
+
+		expect(lists(s.atelier).map((l) => l.name)).toEqual(['X', 'Y']);
+		expect(cells(lists(s.atelier)[1])[10]).toBe('4');
+		expect(text).toContain('dans X et Y');
+		expect(text).toContain('Trace le nuage : sur la carte X, « Nuage avec Y ».');
+	});
+
+	it('un nom pris, réservé, invalide, ou deux fois le même : refus, rien n’est créé', () => {
+		const lines = [...AREA_PROBLEM];
+		const relever = (names: string) => `.relever AM ; S quand M va de 0 à 1 pas 0,05 dans ${names}`;
+		const cases: [string, string][] = [
+			['N ; Y', "« N » est déjà utilisé par un autre objet de l'atelier."],
+			[
+				'X ; e',
+				"« e » est réservé : c'est le nom d'une variable ou d'une constante. Choisis une autre lettre."
+			],
+			[
+				'X ; 2a',
+				"« 2a » n'est pas un nom valide : une lettre, éventuellement suivie d'un indice (a, f, L, u_1)."
+			],
+			['X ; X', 'Les deux listes doivent porter deux noms différents : « X » est donné deux fois.']
+		];
+		for (const [names, message] of cases) {
+			const s = session(...lines);
+			expect(refusal(runInput(s, relever(names))), names).toBe(message);
+			expect(lists(s.atelier)).toEqual([]);
+		}
+	});
+
+	it('« dans » sans deux noms : la forme attendue', () => {
+		const s = session('t = 0');
+		expect(refusal(runInput(s, '.relever t ; t quand t va de 0 à 1 pas 1 dans X'))).toBe(
+			'Écris les deux noms après « dans », séparés par « ; » : … pas 0,05 dans X ; Y.'
+		);
+	});
+});
+
+describe('le pas reste obligatoire', () => {
+	it('sans pas, le refus donne un exemple complet, avec les expressions de l’élève', () => {
+		const s = session('t = 0');
+		expect(refusal(runInput(s, '.relever t ; 2t quand t va de 0 à 1'))).toBe(
+			'Il manque le pas : écris par exemple .relever t ; 2t quand t va de 0 à 1 pas 0,1.'
+		);
+	});
 });
 
 // =============================================================================
@@ -316,7 +402,6 @@ describe('les refus disent pourquoi, et ne créent rien', () => {
 			'Écris par exemple .relever AM ; S quand M va de 0 à 1 pas 0,05 (deux expressions séparées par « ; »).';
 		expect(refused(['t = 0'], '.relever t quand t va de 0 à 1 pas 0,5')).toBe(usage);
 		expect(refused(['t = 0'], '.relever t ; t')).toBe(usage);
-		expect(refused(['t = 0'], '.relever t ; t quand t va de 0 à 1')).toBe(usage);
 	});
 
 	it('ce qui varie doit exister', () => {
