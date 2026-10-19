@@ -39,6 +39,7 @@ octobre). Le symptôme le plus visible : Calcul et `/cas` répondaient `10[km]/1
 | Atelier : calculs et valeurs                  | **« un nombre, une espace, une unité »** (`5 km`, `10^3 m`) ; collé (`5m`) ou `*` = produit ; crochets toujours acceptés | `readNaturalQuantities` (`atelier/natural-quantities.ts`)          |
 | Atelier : champ MathLive d'une carte (valeur) | la même règle, sur le LaTeX du champ (`2\,h\,30\,\min`, `\frac{1}{2}\,m`)                                                | `definitionFromField` (`atelier/mathfield.ts`)                     |
 | Atelier : définitions de fonctions, commandes | jamais d'unité naturelle (`.résoudre 2 a = 4` ne lit pas des ares)                                                       | —                                                                  |
+| Atelier : le degré, partout                   | `60°`, `a°`, `(30+30)°` = `[°]` ; `60^\circ`, `60\degree` (MathLive) = `\unit{°}` ; `°` seul refusé                      | `withDegreeUnits`, `strayDegreeRefusal` (`atelier/degrees.ts`)     |
 | Case à unité d'une question                   | tout ce qui suit le nombre est l'unité (`5km`, `5 km`, MathLive)                                                         | `normalizeStudentQuantity` (`questions/units/student-input.ts`)    |
 | Case à unité : durée composée                 | « 2 h 15 min », « 1 h 5 min 30 s »                                                                                       | `questions/units/composite-duration.ts`                            |
 

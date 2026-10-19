@@ -317,7 +317,7 @@ moteur, Graphe par la substitution) :
 | `distance(A, B)`, `distance(A, d)`      | longueur, ou distance à une DROITE (`d` droite, `(AB)`) ; à un segment ou une demi-droite (`[AB]`, `[AB)`, `s = [AB]`) : refus « … écris distance(N, (AB)) » (décision de David, 2026-10-18 — le DSL, lui, mesure `distance(A, s)` à la droite qui porte s) |
 | `aire(A, M, N, P)`                      | aire du polygone (≥ 3 points) ; croisé → refus « … est croisé »                                                                                                                                                                                             |
 | `perimetre(…)`, `périmètre(…)`          | périmètre du polygone fermé (≥ 3 points)                                                                                                                                                                                                                    |
-| `angle(A, B, C)`                        | l'angle en B, une **grandeur** dans l'unité du réglage « Angles » : `90 °`, `45 °`, sinon `≈ 36,8699 °` (4 décimales à l'affichage, pleine précision au calcul) ; en radians `π/2 rad`, `≈ 0,6435 rad`                                                      |
+| `angle(A, B, C)`                        | l'angle en B, une **grandeur** dans l'unité du réglage « Angles » : `90°`, `45°`, sinon `≈ 36,8699°` (4 décimales à l'affichage, pleine précision au calcul) ; en radians `π/2 rad`, `≈ 0,6435 rad`                                                         |
 
 Lecture : `measures-read.ts` repère les appels (texte ou LaTeX de MathLive, `\operatorname{aire}`,
 accents, séparateurs de `construction-read.ts`) ; `parseDefinition` lit le reste comme un nombre.
@@ -358,6 +358,30 @@ décision de David du 2026-10-19) — on compare ce qui est ÉCRIT, pas les posi
 ne s'arrête pas quand deux sommets se rejoignent au glisser ; une valeur APPROCHÉE (angle non remarquable) entre au moteur
 en pleine précision et toute ligne qui la cite, même par un autre objet (`approximateNames`), se dit
 `≈`, 4 décimales, jamais en fraction.
+
+**Écrire un angle en degrés** (`degrees.ts`, 2026-10-19) : comme sur la copie. Un `°` collé
+après un nombre, un nom ou une parenthèse fermante est l'unité degré (`60[°]`, π/180 rad) —
+`cos(60°)` → `1/2`, `a = 60°`, `cos(a°)` avec a = 60, `cos((30+30)°)`, `60 °` aussi. En LaTeX,
+`60^\circ`, `60^{\circ}`, `60{}^{\circ}` et `60\degree` (ce que MathLive écrit quand on tape `°`,
+mesuré dans Chromium, `mathlive-degres.svelte.test.ts`) deviennent `60\unit{°}` : carte, champ
+mathématique de la console (`calcTextOf` écrit `°`), ligne de Calcul, cellule de la grille (`=cos(60°)`
+vaut `=cos(60[°])`), argument d'une commande de calcul (pas celui d'une commande de données, qui
+lit des modalités). Lecture : `withDegreeUnits` dans `readByProvenance` (`parse.ts`), en tête de
+`computeInput` et sur la ligne d'une commande (`runCommand`). Un `°` qui ne suit rien (`°`,
+`cos(°60)`, `2 + °`, `^\circ` seul) est refusé : « Le signe ° s'écrit juste après un nombre ou un
+nom : 60°, cos(60°), a°. » (`strayDegreeRefusal`) — plus de « Unsupported symbol … circ », en
+anglais. `20 °C`, `°F` restent des températures. La réponse écrit `60°`, sans espace (règle
+typographique des angles), et `60{}^{\circ}` en LaTeX (`degreeSignWritten`, appliqué à la sortie de
+`runInput` : mesures d'angle comprises, `≈ 36,8699°`, la valeur approchée aussi). Un angle écrit
+en degrés pris par un sin, cos, tan devient un nombre de radians exact dans l'arbre substitué
+(`h(x) = cos(90°)·x` → `h(1) = 0`, `.variations h` constante, `f(x) = sin(30°) + x` → `f(0) = 1/2`)
+et dans l'argument d'une commande (`radiansInText` : `.résoudre h(x)=1` → `x = 2`, `.évaluer
+cos(60°)*x en x=2` → 1). **Une variable en degrés** (choix prudent, à trancher par David) :
+`f(x) = cos(x°)` est acceptée — exacte, `cos(πx/180)`, et c'est l'arbre que trace le Graphe ; un
+angle BRUT écrit dans une fonction ou une suite (`f(x) = 2x°`, `x[°]`, `u(n) = n°`) est en erreur
+avec le message des mesures (« Une mesure d'angle est une grandeur… », `WRITTEN_ANGLE`,
+`atelier.svelte.ts`) — avant, `f(x) = x[°]` passait et `f(1)` répondait `(π/180) rad`.
+`cos(60)` reste en radians ; le réglage « Angles » ne change pas.
 
 **Intersections et points sur un objet** (géométrie, lot 2, PR 3 — L5) : deux mots du DSL de
 plus dans le catalogue, mêmes arguments et même numérotation que lui

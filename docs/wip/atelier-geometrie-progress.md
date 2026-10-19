@@ -426,3 +426,12 @@ de contrôles. Définitions liées par cran : 5 808 → 3.
   un polygone qui repasse par un sommet écrit deux fois à des places non voisines est refusé
   (`revisitedVertex`, comparaison de l'écrit et non des positions) ; branche
   `fix/atelier-polygone-sommet-repete`.
+- 2026-10-19 : **petite PR `60°` / `60^\circ`** (branche `feat/atelier-degres`, `degrees.ts`), tests
+  d'abord (41 rouges sur 45, puis 2 sur 3 dans Chromium). `°` collé après un nombre, un nom, une `)`
+  = `[°]` ; `^\circ`, `^{\circ}`, `\degree` (ce que MathLive écrit quand on tape `°`, mesuré) =
+  `\unit{°}` ; `°` seul refusé en français. Réponse écrite `60°` / `60{}^{\circ}` (mesures d'angle
+  comprises : `90 °` → `90°`, 11 assertions mises à jour). La « limite de main » notée plus haut
+  n'existait plus pour les objets (`substitutedTree` passait déjà par `angle-radians.ts`) ; elle
+  restait dans l'argument d'une commande (`.résoudre h(x)=1` → `x = 1/cos(π/3 rad)`) : corrigée par
+  `radiansInText`. **À trancher par David** : `f(x) = cos(x°)` accepté (exact, tracé juste) ; un
+  angle brut écrit dans une fonction ou une suite (`2x°`, `x[°]`) en erreur, comme une mesure.
