@@ -288,7 +288,9 @@ export function withSingleLettersGlued(text: string): string | null {
 		const number = written.slice(0, written.lastIndexOf(letter)).trim();
 		// `10^3 s` → `(10^3)s`, pas `10^3s` (= 10^(3s))
 		const factor = /^[\d.,]+$/.test(number) ? number : `(${number})`;
-		glued = glued.replace(written, `${factor}${letter}`);
+		// L'occurrence qui commence un terme : le `5 s` de `2^5 s + 5 s` est le second (revue)
+		const escaped = written.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		glued = glued.replace(new RegExp(`(?<![\\w^.,/)])${escaped}`), `${factor}${letter}`);
 	}
 	return glued;
 }

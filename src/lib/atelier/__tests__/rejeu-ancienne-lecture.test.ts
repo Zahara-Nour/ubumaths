@@ -65,6 +65,13 @@ describe('une ligne réussie, refusée par la lecture des grandeurs', () => {
 		expect(desk.entries.at(-1)!.label).toBe('3a + 2 b');
 	});
 
+	// Revue : le premier `5 s` du texte était celui de l'exposant
+	it('la même écriture dans un exposant', () => {
+		const { desk, report } = replay(oldFile(['2^5 s + 5 s + 1', false]));
+		expect(report).toEqual({ ok: true, replayed: 1 });
+		expect(desk.entries.at(-1)!.label).toBe('(2^5)s + 5s + 1');
+	});
+
 	it('après une puissance de dix', () => {
 		const { desk, report } = replay(oldFile(['10^3 s + 1', false]));
 		expect(report).toEqual({ ok: true, replayed: 1 });
