@@ -248,6 +248,7 @@
 				onkeydowncapture={tangentGesture.keydown}
 				onkeyup={tangentGesture.keyup}
 				onfocusout={tangentGesture.focusout}
+				onpointercancel={tangentGesture.pointercancel}
 			>
 				<span class="symbole">x₀</span>
 				<!--

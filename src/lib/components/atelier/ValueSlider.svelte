@@ -100,6 +100,7 @@
 	onkeydowncapture={gesture.keydown}
 	onkeyup={gesture.keyup}
 	onfocusout={gesture.focusout}
+	onpointercancel={gesture.pointercancel}
 >
 	<Slider
 		class="flex-1"

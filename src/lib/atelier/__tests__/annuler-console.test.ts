@@ -48,7 +48,7 @@ describe('Annuler barre la ligne, Rétablir la débarre', () => {
 		expect(desk.atelier.get('a')?.definition).toBe('2');
 	});
 
-	it('une étape sans ligne (une carte) n’en barre aucune, mais Annuler s’écrit', () => {
+	it('une étape sans ligne (une carte) n’en barre aucune ; Annuler s’affiche sans se rejouer', () => {
 		const desk = new CalcDesk(new Atelier());
 		desk.submit('a = 2');
 		desk.atelier.step('définir a', () => desk.atelier.update('a', '3', 'text'));
@@ -56,6 +56,12 @@ describe('Annuler barre la ligne, Rétablir la débarre', () => {
 		desk.undo();
 		expect(line(desk, 'a = 2').undone).toBeUndefined();
 		expect(desk.atelier.get('a')?.definition).toBe('2');
+		// L'étape de la carte n'est pas dans un rejeu : son « annuler » y
+		// déferait `a = 2` (revue de #1518)
+		const last = desk.entries.at(-1)!;
+		expect(last.text).toMatch(/^Annulé/);
+		expect(last.replay).toBeUndefined();
+		expect(replayed(desk).atelier.get('a')?.definition).toBe('2');
 	});
 
 	it('après une nouvelle étape, les lignes barrées restent barrées', () => {
