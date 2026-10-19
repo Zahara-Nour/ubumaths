@@ -222,53 +222,51 @@ function points(atelier: Atelier, args: readonly ReadArgument[]): GeoPoint[] {
 }
 
 /**
- * Ce qui empêche un polygone d'avoir une aire : deux côtés non voisins qui se
- * coupent (`crossed`), ou qui se touchent hors de leurs extrémités communes,
- * deux côtés voisins qui se recouvrent (`touching`). En nombres, à 10⁻¹² près.
+ * Un polygone CROISÉ : deux côtés non voisins qui se coupent en un point
+ * intérieur à chacun. C'est le seul refus (décision de David du 2026-10-19) :
+ * un polygone aplati (sommets confondus, tous alignés, côtés qui se touchent ou
+ * se recouvrent) a une aire, nulle s'il est plat. En nombres, à 10⁻¹² près.
  */
-function polygonDefect(vertices: readonly GeoPoint[]): 'crossed' | 'touching' | null {
+function isCrossed(vertices: readonly GeoPoint[]): boolean {
 	const p = vertices.map((v) => [geoToNumber(v.x), geoToNumber(v.y)] as const);
 	const n = p.length;
 	const EPS = 1e-12;
 	const cross = (o: readonly number[], a: readonly number[], b: readonly number[]) =>
 		(a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
 	const sign = (v: number) => (v > EPS ? 1 : v < -EPS ? -1 : 0);
-	/** `q` sur le segment [a ; b], extrémités comprises (q aligné avec a et b). */
-	const within = (a: readonly number[], b: readonly number[], q: readonly number[]) =>
-		Math.min(a[0], b[0]) - EPS <= q[0] &&
-		q[0] <= Math.max(a[0], b[0]) + EPS &&
-		Math.min(a[1], b[1]) - EPS <= q[1] &&
-		q[1] <= Math.max(a[1], b[1]) + EPS;
-	let touching = false;
 	for (let i = 0; i < n; i++) {
 		for (let j = i + 1; j < n; j++) {
+			if (j === i + 1 || (i === 0 && j === n - 1)) continue;
 			const [a, b, c, d] = [p[i], p[(i + 1) % n], p[j], p[(j + 1) % n]];
-			const neighbours = j === i + 1 || (i === 0 && j === n - 1);
-			if (neighbours) {
-				// Deux côtés voisins alignés qui reviennent en arrière : ils se recouvrent
-				const [shared, first, second] = j === i + 1 ? [b, a, d] : [a, b, c];
-				const u = [first[0] - shared[0], first[1] - shared[1]];
-				const v = [second[0] - shared[0], second[1] - shared[1]];
-				if (sign(u[0] * v[1] - u[1] * v[0]) === 0 && u[0] * v[0] + u[1] * v[1] > EPS) {
-					touching = true;
-				}
-				continue;
-			}
 			const [d1, d2, d3, d4] = [cross(c, d, a), cross(c, d, b), cross(a, b, c), cross(a, b, d)].map(
 				sign
 			);
-			if (d1 * d2 < 0 && d3 * d4 < 0) return 'crossed';
-			if (
-				(d1 === 0 && within(c, d, a)) ||
-				(d2 === 0 && within(c, d, b)) ||
-				(d3 === 0 && within(a, b, c)) ||
-				(d4 === 0 && within(a, b, d))
-			) {
-				touching = true;
-			}
+			if (d1 * d2 < 0 && d3 * d4 < 0) return true;
 		}
 	}
-	return touching ? 'touching' : null;
+	return false;
+}
+
+/**
+ * Le sommet ÉCRIT deux fois à des places non voisines (`aire(A, B, C, D, B)`), ou
+ * `null`. Décision de David du 2026-10-19 : un tel polygone repasse par un sommet,
+ * l'élève n'a pas voulu ce tracé — refusé. Écrit deux fois à la suite (`A, A, B`,
+ * ou le dernier et le premier, voisins sur le tour) : polygone aplati, accepté.
+ * ⚠️ On compare ce qui est ÉCRIT, pas les positions : deux sommets qui se
+ * rejoignent un instant au glisser d'un curseur ne font pas échouer un relevé.
+ */
+function revisitedVertex(args: readonly ReadArgument[]): string | null {
+	const written = args.map((a) =>
+		a.kind === 'name' ? a.name : a.kind === 'call' ? a.call.text : a.text
+	);
+	const n = written.length;
+	for (let i = 0; i < n; i++) {
+		for (let j = i + 2; j < n; j++) {
+			if (i === 0 && j === n - 1) continue;
+			if (written[i] === written[j]) return written[i];
+		}
+	}
+	return null;
 }
 
 function measure(atelier: Atelier, word: MeasureWord, args: readonly ReadArgument[]): Measured {
@@ -305,23 +303,16 @@ function measure(atelier: Atelier, word: MeasureWord, args: readonly ReadArgumen
 					`${word === 'aire' ? 'aire' : 'perimetre'} demande au moins trois points.`
 				);
 			}
+			const revisited = revisitedVertex(args);
+			if (revisited !== null) {
+				throw new Failure(
+					`Le polygone repasse par ${revisited} : écris chaque sommet une seule fois, dans l’ordre du tour.`
+				);
+			}
 			const vertices = points(atelier, args);
 			const names = args.map((a) => (a.kind === 'name' ? a.name : '…')).join('');
-			for (let i = 0; i < vertices.length; i++) {
-				for (let j = i + 1; j < vertices.length; j++) {
-					if (geoEqual(vertices[i].x, vertices[j].x) && geoEqual(vertices[i].y, vertices[j].y)) {
-						throw new Failure(`Le polygone ${names} a deux sommets confondus.`);
-					}
-				}
-			}
-			const defect = polygonDefect(vertices);
-			if (defect === 'crossed') {
+			if (isCrossed(vertices)) {
 				throw new Failure(`Le polygone ${names} est croisé : ses côtés se coupent.`);
-			}
-			if (defect === 'touching') {
-				throw new Failure(
-					`Le polygone ${names} a des côtés qui se touchent ou se recouvrent : il n’a pas d’aire.`
-				);
 			}
 			let sum: GeoValue = geoFromNumber(0);
 			for (let i = 0; i < vertices.length; i++) {

@@ -225,6 +225,10 @@ circulaire (`A = milieu(A, B)`) est refusée.
   confondus ou alignés) **a une aire de 0** — revient sur le refus posé à la revue de la PR 2 ;
   seul un polygone croisé reste refusé ; (5) le nuage est proposé par une phrase, comme `.simuler`.
 
+**Polygone qui repasse par un même sommet** (David, 2026-10-19, « je suis tes recos ») :
+`aire(A, B, C, D, B)` (un sommet revisité, non consécutif) est **refusé** avec sa raison ; un
+sommet répété consécutif (`A, A, B`) reste un polygone aplati, d'aire 0. Petite PR après #1514.
+
 ## Découpage proposé (après validation)
 
 1. **Modèle des constructions** (L1, L2, L3, L8) : lecture, calcul exact par les fonctions pures,

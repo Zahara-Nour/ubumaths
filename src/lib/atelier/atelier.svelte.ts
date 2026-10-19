@@ -1081,6 +1081,31 @@ export class Atelier {
 		return this.update(name, definition, 'text');
 	}
 
+	/**
+	 * Relever (`.relever`, géométrie lot 2, PR 4) : poser tour à tour chaque
+	 * définition de `name` (une valeur, la position d'un `point_sur`), tout
+	 * recalculer et lire ce qu'il faut — `null` pour un pas que l'atelier refuse.
+	 *
+	 * ⚠️ L'atelier est ensuite rendu EXACTEMENT tel qu'il était, tous les objets
+	 * et pas seulement `name` : `update` élargit le curseur d'une valeur posée
+	 * hors de ses bornes, et la rendre par `update` le laisserait élargi.
+	 */
+	sweep<T>(name: string, definitions: readonly string[], read: () => T): (T | null)[] {
+		if (this.get(name) === undefined) return [];
+		// Une copie du TABLEAU suffit : un objet n'est jamais modifié en place,
+		// `update` le remplace. ⚠️ Pas `$state.snapshot` : hors navigateur, il
+		// rend le tableau lui-même, que le premier pas modifiait (mesuré)
+		const saved = [...this.items];
+		try {
+			return definitions.map((definition) =>
+				this.update(name, definition, 'text').ok ? read() : null
+			);
+		} finally {
+			this.items = saved;
+			this.recomputeAll();
+		}
+	}
+
 	// ---------------------------------------------------------------------------
 	// Renommage
 	// ---------------------------------------------------------------------------
@@ -1806,8 +1831,15 @@ export class Atelier {
 		return this.titles.get(column) ?? '';
 	}
 
-	/** Poser le titre d'une colonne ; vide, le retirer. */
-	setTitle(column: number, text: string): { ok: true } | Refused {
+	/**
+	 * Poser le titre d'une colonne ; vide, le retirer. `recorded: false` : sans
+	 * étape propre (`.relever`, dont la ligne de console est l'étape).
+	 */
+	setTitle(
+		column: number,
+		text: string,
+		options: { readonly recorded?: boolean } = {}
+	): { ok: true } | Refused {
 		if (!isInGrid(column, 1)) {
 			return { ok: false, message: 'Cette colonne est hors de la grille (A à Z).' };
 		}
@@ -1816,11 +1848,15 @@ export class Atelier {
 			return { ok: false, message: `Un titre garde au plus ${MAX_TITLE_LENGTH} caractères.` };
 		}
 		if (title === this.titleOf(column)) return { ok: true };
-		this.step(`titre de la colonne ${columnLetter(column)}`, () => {
+		const write = () => {
 			if (title === '') this.titles.delete(column);
 			else this.titles.set(column, title);
 			this.revision++;
-		});
+		};
+		// `recorded: false` (`.relever`) : pas d'étape à lui — la ligne de console
+		// qui l'appelle en est une, qui l'emporte (lot 5)
+		if (options.recorded === false) write();
+		else this.step(`titre de la colonne ${columnLetter(column)}`, write);
 		return { ok: true };
 	}
 

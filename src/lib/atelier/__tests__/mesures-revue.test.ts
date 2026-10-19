@@ -168,19 +168,51 @@ describe('revue 5 : une mesure d’un point construit', () => {
 	});
 });
 
-describe('revue 6 : un polygone dégénéré n’a pas d’aire', () => {
-	it('un sommet répété est refusé', () => {
+describe('revue 6, revue par David le 2026-10-19 : un polygone aplati a une aire de 0', () => {
+	// Avant : sommets confondus et côtés qui se touchent étaient REFUSÉS. Seul un
+	// polygone croisé l'est encore (`mesures.test.ts`)
+	it('un sommet répété à la suite : polygone aplati, aire 0', () => {
 		const s = plane();
-		expect(refusal(runInput(s, 'aire(A, B, C, B)'))).toContain('confondus');
-		expect(refusal(runInput(s, 'aire(A, B, C, D, B)'))).toContain('confondus');
+		expect(answer(runInput(s, 'aire(A, A, B)'))).toBe('0');
+		// Le dernier et le premier sont voisins : A, B, C, A est un triangle aplati
+		expect(answer(runInput(s, 'aire(A, B, C, A)'))).toBe(answer(runInput(s, 'aire(A, B, C)')));
 	});
 
-	it('des côtés qui se touchent hors de leurs extrémités communes sont refusés', () => {
+	// Décision de David du 2026-10-19 : un polygone qui REPASSE par un sommet écrit
+	// deux fois à des places non voisines est refusé (l'élève n'a pas voulu ce tracé)
+	it('un sommet écrit deux fois à des places non voisines : refusé', () => {
+		const s = plane();
+		for (const input of ['aire(A, B, C, D, B)', 'aire(A, B, C, B)', 'perimetre(A, B, C, D, B)']) {
+			const result = runInput(s, input);
+			expect(result.kind, input).toBe('refus');
+			if (result.kind === 'refus') expect(result.message).toMatch(/repasse par B/);
+		}
+	});
+
+	it('trois sommets alignés : aire 0, périmètre calculé normalement', () => {
+		const s = plane();
+		runInput(s, 'H = (2 ; 0)');
+		expect(answer(runInput(s, 'aire(A, B, H)'))).toBe('0');
+		expect(answer(runInput(s, 'perimetre(A, B, H)'))).toBe('8');
+		expect(answer(runInput(s, 'perimetre(A, A, B)'))).toBe('8');
+	});
+
+	it('des côtés qui se touchent hors de leurs extrémités communes : l’aire se calcule', () => {
 		const s = plane();
 		runInput(s, 'H = (2 ; 0)');
 		runInput(s, 'K = (2 ; 3)');
-		// A, B, K, H, D : le côté [KH] touche [AB] en H
-		expect(refusal(runInput(s, 'aire(A, B, K, H, D)'))).toContain('se touchent');
+		// A, B, K, H, D : le côté [KH] touche [AB] en H, sans le croiser
+		expect(answer(runInput(s, 'aire(A, B, K, H, D)'))).toBe('6');
+	});
+
+	it('une mesure qui devient aplatie au glisser vaut 0, sans erreur', () => {
+		const s = plane();
+		runInput(s, 'k = 3');
+		runInput(s, 'F = (4 ; k)');
+		runInput(s, 'S = aire(A, B, F)');
+		runInput(s, 'k = 0');
+		expect(s.atelier.get('S')?.status).toBe('ok');
+		expect(answer(runInput(s, 'S'))).toBe('0');
 	});
 });
 
