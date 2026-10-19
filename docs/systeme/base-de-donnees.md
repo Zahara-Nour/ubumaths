@@ -515,6 +515,13 @@ fichiers, et `storage_removed_at` (`20261016101000`) dit s'ils ont été retiré
 captures de signalement, que les chemins rangés chez l'élève (`20261016101200`) : il en écrit
 lui-même le chemin.
 
+**Liens courts des QR codes** (`short_links`, `20261019170000`) : un code de 8 caractères vers un
+chemin **interne** du site, en ASCII imprimable (jamais un autre domaine : la contrainte refuse `//`,
+`\`, les espaces, les caractères de contrôle et l'Unicode). RLS sans policy et aucun droit direct : un prof ou l'admin crée par
+`create_short_link` (même cible → même code, unicité sur l'empreinte `target_hash`), et quiconque a
+le code, `anon` compris, lit la cible par `resolve_short_link`. Personne ne liste la table. Les liens
+n'expirent pas : un QR imprimé ne se reprend pas. Phase 0 : `docs/wip/liens-courts-phase0.md`.
+
 ---
 
 ## 3. Fonctions `SECURITY DEFINER`
