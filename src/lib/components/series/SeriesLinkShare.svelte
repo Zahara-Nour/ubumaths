@@ -14,6 +14,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
 	import { Link } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { buildSeriesLink, type SeriesCategories } from '$lib/validation/series';
@@ -50,14 +51,18 @@
 	let courseMinutes = $state(String(DEFAULT_COURSE_MINUTES));
 
 	let isCourse = $derived(selectedForm === 'course');
+	/** Le lien du QR code (chemin seul), ou la raison de son absence */
+	let qrLink = $derived(linkToCopy(''));
 
 	function isTestMode(value: string): value is TestMode {
 		return TEST_MODES.includes(value);
 	}
 
-	/** Lien à copier, ou message si le temps limite est hors bornes */
-	function linkToCopy(): { link: string } | { error: string } {
-		const origin = window.location.origin;
+	/**
+	 * Lien à copier, ou message si le temps limite est hors bornes. Le QR code
+	 * le demande sans origine : il prend toujours celle du domaine canonique.
+	 */
+	function linkToCopy(origin = window.location.origin): { link: string } | { error: string } {
 		if (!isTestMode(selectedForm)) {
 			return { link: buildSeriesLink(origin, categories) };
 		}
@@ -124,4 +129,10 @@
 		<Link class="mr-2 h-4 w-4" />
 		Copier le lien
 	</Button>
+	<QrCodeButton
+		url={'link' in qrLink ? qrLink.link : null}
+		label="la série"
+		unavailableReason={'error' in qrLink ? qrLink.error : undefined}
+		size={compact ? 'sm' : 'default'}
+	/>
 </div>

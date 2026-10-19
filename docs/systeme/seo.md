@@ -31,6 +31,9 @@ description, son adresse canonique, une image de partage. Trois fichiers portent
   `DEFAULT_OG_IMAGE = '/og-image.png'` (1200 × 630, dans `static/`).
 - `absoluteUrl(path)` : préfixe un chemin par `SITE_URL`. **Toujours le domaine de prod**, même
   servi depuis une préproduction : sinon Google indexerait l'adresse d'un déploiement de test.
+- `canonicalUrl(pathOrUrl)` : la même adresse sur `SITE_URL`, quelle que soit son origine (serveur
+  local, aperçu Vercel, `chiph.re` qui redirige en 308 vers `www`) ; chemin, requête et fragment
+  gardés. Sert aux QR codes ([qr-codes.md](qr-codes.md)).
 - `toJsonLdScript(data)` : `JSON.stringify` puis `<`, `>`, `&` échappés en `<`… Le JSON relu
   est identique, mais un titre d'article ne peut ni fermer la balise ni ouvrir un commentaire.
 - `toPlainText(text)` : texte ubumark → texte brut (formules `~…~` et `$…$` aplaties, `\pi` → π,

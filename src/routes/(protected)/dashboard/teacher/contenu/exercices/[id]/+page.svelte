@@ -40,6 +40,7 @@
 	} from '$lib/ubumark/generators/typst-generator';
 	import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
 	import CodeViewer from '$lib/components/CodeViewer.svelte';
+	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -824,15 +825,18 @@
 					<div class="overflow-hidden rounded-lg border bg-muted/50 p-3">
 						<code class="block truncate text-sm">{buildPublicUrl()}</code>
 					</div>
-					<Button variant="outline" size="sm" class="w-full" onclick={copyPublicUrl}>
-						{#if copiedPublicLink}
-							<Check class="mr-1 h-4 w-4 text-green-500" />
-							Copié
-						{:else}
-							<Copy class="mr-1 h-4 w-4" />
-							Copier le lien
-						{/if}
-					</Button>
+					<div class="flex gap-2">
+						<Button variant="outline" size="sm" class="flex-1" onclick={copyPublicUrl}>
+							{#if copiedPublicLink}
+								<Check class="mr-1 h-4 w-4 text-green-500" />
+								Copié
+							{:else}
+								<Copy class="mr-1 h-4 w-4" />
+								Copier le lien
+							{/if}
+						</Button>
+						<QrCodeButton url={buildPublicUrl()} label={data.exercise.title ?? 'l’exercice'} />
+					</div>
 				</div>
 				<p class="text-xs text-muted-foreground">
 					Pas besoin de creer un token. Vous pouvez aussi creer des liens avec expiration ci-dessous
@@ -919,6 +923,13 @@
 										<Copy class="h-4 w-4" />
 									{/if}
 								</Button>
+								<QrCodeButton
+									url={expired || inactive ? null : buildShareUrl(token)}
+									label={data.exercise.title ?? 'l’exercice'}
+									unavailableReason={expired ? 'lien expiré' : 'lien révoqué'}
+									containsToken
+									variant="icon"
+								/>
 								<Button
 									variant="ghost"
 									size="icon"

@@ -39,6 +39,17 @@ export function absoluteUrl(path: string): string {
 }
 
 /**
+ * La même adresse sur le domaine canonique, quelle que soit l'origine reçue
+ * (serveur local, aperçu Vercel, `chiph.re` qui redirige en 308 vers `www`) :
+ * un QR code imprimé depuis un aperçu ne doit pas pointer vers un site qui
+ * disparaîtra. Chemin, requête (jetons compris) et fragment sont gardés tels quels.
+ */
+export function canonicalUrl(pathOrUrl: string): string {
+	const url = new URL(pathOrUrl, `${SITE_URL}/`);
+	return `${SITE_URL}${url.pathname}${url.search}${url.hash}`;
+}
+
+/**
  * Balise `<script type="application/ld+json">` prête à injecter. `<`, `>` et `&`
  * sont échappés en `\u00XX` : le JSON reste identique une fois relu, mais aucun
  * texte (un titre d'article…) ne peut fermer la balise ni ouvrir un commentaire.
