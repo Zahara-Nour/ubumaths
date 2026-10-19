@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1537._
+_Mis à jour le 2026-10-19, PR 2 en cours._
 
-- **État** : PR 1 mergée (#1537) et migration `20261019170000_liens_courts` jouée en prod (vérifié : RLS sans policy, aucun droit direct, création réservée à authenticated, lecture à anon). Rien côté code.
-- **Prochaine action** : PR 2, dans un worktree `liens-courts` neuf : `pnpm db:types`, route `/l/[code]` (Zod sur `params.code`, même 404 pour un code inconnu ou mal formé, `noindex`), endpoint de création (Zod + borne de taille, prof/admin), QR de série par l'adresse courte (`SeriesLinkShare`, `QrCodeButton`), puis la doc. Revue `code-reviewer` + `security-auditor`.
+- **État** : PR 2 en cours sur `feat/liens-courts-route`. Faits : `db:types`, `src/lib/validation/short-link.ts`, `src/lib/server/short-links.ts`, `POST /api/short-links`, route `/l/[code]` (302 + `X-Robots-Tag: noindex`, 404 « Ce lien n’existe pas »), tests serveur (28, mutations vérifiées rouges).
+- **Prochaine action** : `QrCodeButton` (adresse résolue à l'ouverture) + `SeriesLinkShare` (prof/admin seulement), tests client, doc, revues `code-reviewer` + `security-auditor`, PR.
 - **En attente de David** : rien.
-- **Pièges** : une colonne générée exige une expression IMMUTABLE : `target_hash` est une colonne simple recoupée par une contrainte. Cible en ASCII imprimable seulement (les liens du site sont encodés). `supabase db push` ne marche que depuis le dépôt principal (worktree non lié).
-- **Worktree / branche** : aucun.
+- **Pièges** : une colonne générée exige une expression IMMUTABLE. Cible en ASCII imprimable seulement. `supabase db push` ne marche que depuis le dépôt principal.
+- **Worktree / branche** : `../ubumaths-wt-liens-courts` · `feat/liens-courts-route`.
 
 ## Historique
 

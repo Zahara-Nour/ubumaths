@@ -10557,6 +10557,52 @@ export type Database = {
           },
         ]
       }
+      short_links: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          target: string
+          target_hash: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          target: string
+          target_hash: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          target?: string
+          target_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "short_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "short_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "short_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       skill_attempts: {
         Row: {
           code: string | null
@@ -14978,6 +15024,7 @@ export type Database = {
         Args: { p_user1_id: string; p_user2_id: string }
         Returns: string
       }
+      create_short_link: { Args: { p_target: string }; Returns: string }
       create_tournament: {
         Args: {
           p_class_ids?: string[]
@@ -16235,6 +16282,7 @@ export type Database = {
         }[]
       }
       resolve_open_class_by_code: { Args: { p_code: string }; Returns: string }
+      resolve_short_link: { Args: { p_code: string }; Returns: string }
       resolve_tag_ids: {
         Args: { p_names: string[] }
         Returns: {

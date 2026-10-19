@@ -168,14 +168,16 @@ export const DOMAINS: Domain[] = [
 		]
 	},
 	{
-		title: 'Outils du professeur (kanban, tableau blanc, tableur, constructions, figures)',
+		title:
+			'Outils du professeur (kanban, tableau blanc, tableur, constructions, figures, liens courts)',
 		match: [
 			'kanban_',
 			'whiteboard_',
 			'user_whiteboard_template_favorites',
 			'spreadsheets',
 			'construction',
-			'geometry_figures'
+			'geometry_figures',
+			'short_links'
 		]
 	},
 	{ title: 'Tuteur et recherche documentaire (RAG)', match: ['tutor_', 'rag_'] },
