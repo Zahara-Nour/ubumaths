@@ -275,8 +275,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const { worksheet, template } = input;
 
 		// Le gabarit de la forme demandée, dans le style retenu pour la fiche
-		// (`style_id`, sinon `template_id`) ; le gabarit lu en base ne sert qu'à la
-		// fiche d'un style du prof.
+		// (`style_id`) ; le gabarit lu en base ne sert qu'à la fiche d'un style du
+		// prof.
 		const custom = template?.template_content;
 		// « Fiche élève » en grande taille du texte : en paysage, sauf les Réponses
 		const styleId = printedStyleId(

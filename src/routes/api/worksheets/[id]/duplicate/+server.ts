@@ -90,7 +90,6 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 			config: original.config,
 			status: 'draft',
 			version: 1,
-			template_id: original.template_id,
 			// Le style suit la copie (le trigger laisse l'admin prendre le style du prof)
 			style_id: original.style_id,
 			estimated_duration_minutes: original.estimated_duration_minutes,

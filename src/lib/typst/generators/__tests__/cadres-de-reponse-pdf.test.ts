@@ -81,7 +81,6 @@ function row(type: WorksheetType, config: WorksheetConfig): WorksheetRow {
 		description: null,
 		type,
 		config,
-		template_id: null,
 		style_id: null,
 		estimated_duration_minutes: null,
 		total_points: null

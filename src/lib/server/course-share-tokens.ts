@@ -151,7 +151,6 @@ const publicWorksheetSchema = z.object({
 	exercises: z.array(z.unknown()),
 	// Le style de la fiche (lot 4a/4b, D11) : sans ces clés, le schéma les retire
 	style_id: z.string().uuid().nullable().optional(),
-	template_id: z.string().uuid().nullable().optional(),
 	template: z
 		.object({
 			id: z.string().uuid(),

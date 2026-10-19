@@ -135,12 +135,12 @@ est en consultation seule, `read_only` — [composants-ui.md § BackLink](../pra
 ## Le modèle d'une fiche
 
 ```
-worksheets (type, status, config jsonb, translations, template_id, style_id, school_id)
+worksheets (type, status, config jsonb, translations, style_id, school_id)
  ├── worksheet_sections (title, instructions, position, translations)
  ├── worksheet_exercises (exercise_id → exercises, section_id?, position, points,
  │                        custom_instructions, variation_index?, variant_mode/config (plus lus),
  │                        correction_visible, is_essential, translations)
- ├── worksheet_templates (template_content Typst, placeholders, style_id, form)   ← via template_id
+ ├── worksheet_templates (template_content Typst, placeholders, style_id, form)   ← via le style
  ├── worksheet_styles (name, description, owner_id vide = Chiphre, common_typst) ← via style_id
  ├── worksheet_assignments (status, available_from, closes_at, show_corrections,
  │    │                     correction_release_mode / _at, individualized, guidance_level)
@@ -363,7 +363,7 @@ compris, est en A4 paysage. Les onze autres n'ont que leur fiche et prennent les
 style par défaut. Le style ne décide plus des **points** : le type de la fiche s'en charge,
 quel que soit le style (ADR 0030, qui remplace D8 : « Fiche élève » imprime les points d'une
 évaluation écrite qui les demande). `resolveTemplate(style, forme, gabarit lu en base)` : le style
-retenu est `styleIdOf(fiche)` = `style_id`, sinon `template_id` (fiches d'avant le lot 3), inconnu
+retenu est `styleIdOf(fiche)` = `style_id` (l'ancien `template_id` ne compte plus, #1529), inconnu
 ou vide → « Fiche élève » ; le gabarit lu en base ne sert qu'à la forme « fiche » d'un style du
 prof (ignoré pour un style de Chiphre : son Typst vient du code). **Plus de mise en page écrite dans le code** : une fiche sans
 gabarit prend la fiche « Fiche élève ». Le bandeau vert des corrigés (« CORRECTION », « RÉPONSES »,
@@ -421,8 +421,10 @@ Tests : `typst/generators/__tests__/en-tete-par-type.test.ts` (chaque type, FR e
 **Styles en base** (lot 3a, migration `20261016103200_worksheet_styles`) : table
 `worksheet_styles`, une ligne par style de Chiphre (mêmes identifiants que leur gabarit, propriétaire
 vide ; leur Typst reste dans le code, D9) et une par style d'un prof. `worksheet_templates` porte
-`style_id` et `form` (un gabarit par couple) ; `worksheets.style_id` (vide = le style se déduit de
-`template_id`, comme avant ; style supprimé → vide). Accès (D9) : le prof et l'admin lisent les
+`style_id` et `form` (un gabarit par couple) ; `worksheets.style_id` (vide = « Fiche élève » ;
+style supprimé → vide). L'ancienne colonne `worksheets.template_id` a été recopiée dans `style_id`
+(`20261017090300`, #1529) ; le code ne la lit ni ne l'écrit plus, et son retrait viendra après le
+déploiement (`docs/wip/retrait-template-id-progress.md`). Accès (D9) : le prof et l'admin lisent les
 styles de Chiphre et les leurs, ne modifient que les leurs (l'admin, tous) ; ni élève ni visiteur
 n'y accède (`tests/integration/styles-de-fiche.test.ts`).
 
@@ -431,9 +433,8 @@ n'y accède (`tests/integration/styles-de-fiche.test.ts`).
 (`BUILT_IN_STYLE_OPTIONS` : sans « Contrôle », « Examen », « Devoirs », « Quiz », qui imitaient
 un type ; retirés du menu, toujours résolus pour une fiche qui en désigne un — ADR 0030, lot 2)
 dans l'ordre du code, puis ceux du prof (`listWorksheetStyles`, client du prof). Fiche sans style
-→ « Fiche élève (par défaut) » ; style illisible → idem. Choisir écrit `style_id` (Zod uuid) ;
-pour un style de Chiphre, `template_id` prend le même identifiant (repli si le code revenait en
-arrière) ; un style d'un autre auteur est refusé par le trigger (`42501` → 403). Dupliquer recopie
+→ « Fiche élève (par défaut) » ; style illisible → idem. Choisir écrit `style_id` (Zod uuid), et
+lui seul : `POST`/`PUT /api/worksheets` refusent une clé `template_id` (400) ; un style d'un autre auteur est refusé par le trigger (`42501` → 403). Dupliquer recopie
 le style (sauf l'admin qui duplique la fiche du prof avec un style du prof : vide). `GET /api/worksheets/[id]` rend dans `template`
 la fiche d'un style du prof (`loadStyleTemplate`, avec son Typst) pour le PDF ; changer de style
 recharge la page. Le panneau « Options d'affichage » n'existe plus (ADR 0030) : la carte
@@ -441,11 +442,11 @@ recharge la page. Le panneau « Options d'affichage » n'existe plus (ADR 0030) 
 les exercices » ; à la création, seules les options du type choisi partent (`configForType`). **Gabarit et style liés** (D10) : la page « Gabarits » ne change pas à l'écran,
 mais créer un gabarit (nouveau, depuis un gabarit de Chiphre, duplication, API) crée son style au
 même identifiant et au même nom ; le renommer le renomme ; le supprimer supprime le style (cascade
-vers le gabarit), refusé tant qu'une fiche désigne le gabarit ou le style
+vers le gabarit), refusé tant qu'une fiche désigne son style (`style_id`)
 (`tests/integration/fiche-choix-du-style.test.ts`). Liens partagés
 (lot 4a, D11, migration `20261016103500_style_fiche_liens_partages`) : `get_worksheet_by_share_token`
-et `get_course_worksheet_by_share_token` rendent aussi `style_id`, `template_id` et `template`, la
-fiche du style retenu **seulement si ce style appartient à l'auteur de la fiche** (style de
+et `get_course_worksheet_by_share_token` rendent aussi `style_id`, `template_id` (que le code
+ignore ; retiré des fonctions avec la colonne) et `template`, la fiche du style retenu **seulement si ce style appartient à l'auteur de la fiche** (style de
 Chiphre : `null`, Typst dans le code ; style d'un autre compte : jamais)
 (`tests/integration/style-fiche-liens-partages.test.ts`). Les pages publiques les passent au PDF
 (`PdfPreview` → `generateWorksheetTypst`, lot 4b).
@@ -453,7 +454,7 @@ Chiphre : `null`, Typst dans le code ; style d'un autre compte : jamais)
 **PDF de l'élève par le générateur unique** (lot 4b) : `generateStudentWorksheetTypst` construit le
 document de la vue (`documentFromStudentView`) et le donne à `WorksheetGenerator` (entrée
 `document`), avec le gabarit du style retenu (`styleIdOf`). L'API élève et l'aperçu « vue élève »
-renvoient `style_id`, `template_id`, `template` (le Typst seul de la fiche d'un style de
+renvoient `style_id`, `template` (le Typst seul de la fiche d'un style de
 l'**auteur** de la fiche, lu en service-role après le contrôle d'accès,
 `loadAuthorStyleTemplate`), `total_points`, `estimated_duration_minutes` et les options du type
 (`viewTypeOptions` : `show_student_name`, `show_points`, `calculator`, `answers_on_sheet`,

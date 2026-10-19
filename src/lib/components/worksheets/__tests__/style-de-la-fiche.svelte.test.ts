@@ -57,9 +57,9 @@ describe('le style affiché', () => {
 		await expect.element(page.getByText('Fiche élève (par défaut)')).toBeInTheDocument();
 	});
 
-	it('fiche d’avant le lot 3 : le style de son `template_id`', async () => {
+	it('`template_id` seul ne désigne plus le style : « Fiche élève (par défaut) »', async () => {
 		await renderCards({ template_id: DEFAULT_TEMPLATE_IDS.modern });
-		await expect.element(page.getByRole('button', { name: 'Moderne' })).toBeInTheDocument();
+		await expect.element(page.getByText('Fiche élève (par défaut)')).toBeInTheDocument();
 	});
 
 	it('style illisible : « Fiche élève (par défaut) », sans planter', async () => {

@@ -7,7 +7,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { isBuiltInStyle } from '$lib/typst/templates/styles';
 import { syncResourceTags, fetchTagNamesForResources } from '$lib/server/resource-tags';
 import {
 	validateListWorksheetsQuery,
@@ -167,9 +166,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			translations: data.translations ?? null,
 			status: 'draft',
 			version: 1,
-			// Un style de Chiphre a le même identifiant que son gabarit (voir le PUT)
-			template_id:
-				data.style_id && isBuiltInStyle(data.style_id) ? data.style_id : (data.template_id ?? null),
 			style_id: data.style_id ?? null,
 			estimated_duration_minutes: data.estimated_duration_minutes ?? null,
 			total_points: data.total_points ?? null,

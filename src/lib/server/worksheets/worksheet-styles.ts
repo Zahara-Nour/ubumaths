@@ -62,7 +62,7 @@ export async function listWorksheetStyles(
  */
 export async function loadStyleTemplate(
 	supabase: SupabaseClient<Database>,
-	worksheet: { style_id?: string | null; template_id?: string | null }
+	worksheet: { style_id?: string | null }
 ): Promise<WorksheetTemplateRow | null> {
 	const styleId = styleIdOf(worksheet);
 	if (!styleId || isBuiltInStyle(styleId)) return null;
@@ -79,7 +79,6 @@ export async function loadStyleTemplate(
  */
 export async function loadAuthorStyleTemplate(worksheet: {
 	style_id?: string | null;
-	template_id?: string | null;
 	created_by: string;
 }): Promise<{ template_content: string } | null> {
 	const styleId = styleIdOf(worksheet);
@@ -206,22 +205,20 @@ export async function syncTemplateStyle(
 }
 
 /**
- * Le nombre de fiches qui désignent ce gabarit ou son style : la suppression
- * leur retirerait leur mise en page sans le dire.
+ * Le nombre de fiches qui désignent le style de ce gabarit : la suppression
+ * leur retirerait leur mise en page sans le dire. Un gabarit sans style propre
+ * n'est désigné par aucune fiche (`style_id` ne vise que `worksheet_styles`).
  */
 export async function countWorksheetsUsingTemplate(
 	supabase: SupabaseClient<Database>,
 	template: { id: string; style_id: string | null }
 ): Promise<{ count: number; error: unknown }> {
 	const styleId = ownStyleId(template);
+	if (!styleId) return { count: 0, error: null };
 	const { count, error } = await supabase
 		.from('worksheets')
 		.select('id', { count: 'exact', head: true })
-		.or(
-			styleId
-				? `template_id.eq.${template.id},style_id.eq.${styleId}`
-				: `template_id.eq.${template.id}`
-		);
+		.eq('style_id', styleId);
 	return { count: count ?? 0, error };
 }
 

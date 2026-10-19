@@ -405,13 +405,12 @@ describe('Styles de fiche : rattachement par le prof', () => {
 		}
 	});
 
-	it('sa fiche prend « 2 colonnes - paysage », par son style et par son gabarit', async () => {
-		// L'API remplit `template_id` avec l'identifiant d'un style de Chiphre
+	it('sa fiche prend « 2 colonnes - paysage », par son style', async () => {
 		const worksheetId = await teacherWorksheet();
 		const styleId = DEFAULT_TEMPLATE_IDS.studentStyleLandscape;
 		const { data, error } = await teacherClient
 			.from('worksheets')
-			.update({ style_id: styleId, template_id: styleId })
+			.update({ style_id: styleId })
 			.eq('id', worksheetId)
 			.select('id');
 		expect(error).toBeNull();

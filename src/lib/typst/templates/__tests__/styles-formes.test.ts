@@ -57,14 +57,14 @@ const INSTANCE: InstanceData = {
 	]
 };
 
-function worksheet(templateId: string | null): WorksheetRow {
+function worksheet(styleId: string | null): WorksheetRow {
 	return {
 		id: 'w-1',
 		title: 'Fiche test',
 		description: null,
 		type: 'worksheet',
 		config: {},
-		template_id: templateId,
+		style_id: styleId,
 		estimated_duration_minutes: null,
 		total_points: null
 	} as unknown as WorksheetRow;

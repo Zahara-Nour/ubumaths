@@ -188,10 +188,11 @@ describe('la fiche de l’élève destinataire', () => {
 		});
 	});
 
-	it('fiche d’avant le lot 3 : le style se lit dans `template_id`', async () => {
+	it('`template_id` seul ne désigne plus le style : « Fiche élève » (#1529)', async () => {
 		const { body } = await viewOf(student, await assigned({ template_id: profStyleId }));
-		expect(body?.template_id).toBe(profStyleId);
-		expect(body?.template?.template_content).toContain('MISE-EN-PAGE-DU-PROF');
+		expect(body?.style_id).toBeNull();
+		expect(body?.template).toBeNull();
+		expect(body).not.toHaveProperty('template_id');
 	});
 
 	it('style de Chiphre : l’identifiant, aucune mise en page (elle est dans le code)', async () => {

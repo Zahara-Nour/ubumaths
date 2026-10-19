@@ -5,8 +5,9 @@
  * ADR 0028, décisions de David (docs/wip/generateur-pdf-fiches-progress.md) :
  *   - D9 : la fiche désigne un style ; le prof lit les styles de Chiphre et
  *     les siens, jamais ceux d'un autre ;
- *   - D10 : choisir un style écrit `style_id` (et `template_id` pour un style
- *     de Chiphre, qui porte le même identifiant) ; dupliquer recopie le style ;
+ *   - D10 : choisir un style écrit `style_id`, et lui seul — l'ancienne
+ *     colonne `template_id` n'est plus écrite, et l'envoyer est refusé (400,
+ *     #1529, David 2026-10-19) ; dupliquer recopie le style ;
  *     un gabarit créé sur la page « Gabarits » crée son style (même
  *     identifiant, même nom), le renommer le renomme, le supprimer le supprime.
  *
@@ -255,23 +256,45 @@ describe('l’admin sur la fiche du prof', () => {
 });
 
 describe('enregistrer le style d’une fiche', () => {
-	it('un style de Chiphre écrit `style_id` et `template_id` (même identifiant)', async () => {
+	it('un style de Chiphre n’écrit que `style_id`', async () => {
 		const id = await seedWorksheet('Chiphre');
 		const response = await put(id, { style_id: STANDARD });
 
 		expect(response.status).toBe(200);
 		expect((await response.json()).worksheet.style_id).toBe(STANDARD);
-		expect(await worksheetInDb(id)).toEqual({ style_id: STANDARD, template_id: STANDARD });
+		expect(await worksheetInDb(id)).toEqual({ style_id: STANDARD, template_id: null });
 	});
 
-	it('un style du prof écrit `style_id` et ne touche pas `template_id`', async () => {
+	it('un style du prof n’écrit que `style_id`', async () => {
 		const ownId = await seedStyle(teacherId, 'choisi');
 		const id = await seedWorksheet('style du prof');
 		await put(id, { style_id: STANDARD });
 
 		const response = await put(id, { style_id: ownId });
 		expect(response.status).toBe(200);
-		expect(await worksheetInDb(id)).toEqual({ style_id: ownId, template_id: STANDARD });
+		expect(await worksheetInDb(id)).toEqual({ style_id: ownId, template_id: null });
+	});
+
+	it('`template_id` envoyé à la modification : refusé (400), la fiche ne change pas', async () => {
+		const id = await seedWorksheet('template_id modifié');
+		expect(await statusOf(() => put(id, { template_id: STANDARD }))).toBe(400);
+		expect(await statusOf(() => put(id, { template_id: null }))).toBe(400);
+		expect(await statusOf(() => put(id, { style_id: STANDARD, template_id: STANDARD }))).toBe(400);
+		expect(await worksheetInDb(id)).toEqual({ style_id: null, template_id: null });
+	});
+
+	it('`template_id` envoyé à la création : refusé (400), aucune fiche créée', async () => {
+		const title = `${RUN} créée avec template_id`;
+		const status = await statusOf(() =>
+			createWorksheet({
+				locals,
+				request: jsonRequest({ title, style_id: STANDARD, template_id: STANDARD })
+			} as never)
+		);
+		expect(status).toBe(400);
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query('select id from public.worksheets where title = $1', [title]);
+		expect(rows).toEqual([]);
 	});
 
 	it('un identifiant mal formé est refusé (400)', async () => {
@@ -303,18 +326,20 @@ describe('enregistrer le style d’une fiche', () => {
 		expect(worksheet.style_id).toBe(STANDARD);
 		expect(await worksheetInDb(worksheet.id)).toEqual({
 			style_id: STANDARD,
-			template_id: STANDARD
+			template_id: null
 		});
 	});
 
-	it('dupliquer une fiche recopie son style', async () => {
+	it('dupliquer une fiche recopie son style, pas son ancien `template_id`', async () => {
 		const ownId = await seedStyle(teacherId, 'à dupliquer');
 		const id = await seedWorksheet('à dupliquer', ownId);
+		const pg = await getPostgresClient();
+		await pg.query('update public.worksheets set template_id = $2 where id = $1', [id, STANDARD]);
 		const response = await duplicateWorksheet({ locals, params: { id } } as never);
 		const { worksheet } = await response.json();
 
 		// Titre « … (copie) » : il garde le préfixe du run, le nettoyage le trouve
-		expect((await worksheetInDb(worksheet.id)).style_id).toBe(ownId);
+		expect(await worksheetInDb(worksheet.id)).toEqual({ style_id: ownId, template_id: null });
 	});
 });
 
@@ -329,7 +354,6 @@ describe('le gabarit du style d’une fiche', () => {
 
 	it('style de Chiphre : rien à lire, le Typst vient du code', async () => {
 		expect(await loadStyleTemplate(teacherClient as never, { style_id: STANDARD })).toBeNull();
-		expect(await loadStyleTemplate(teacherClient as never, { template_id: STANDARD })).toBeNull();
 	});
 
 	it('style d’un autre (illisible) : rien, la fiche retombe sur le style par défaut', async () => {
@@ -482,6 +506,16 @@ describe('la page « Gabarits » (ses actions) : un gabarit et son style vont en
 	it('supprimer le gabarit supprime son style', async () => {
 		const id = await createdFromForm('à jeter');
 		expect(await styleInDb(id)).toBeDefined();
+		await listActions.delete({ locals, request: formRequest({ template_id: id }) } as never);
+		expect(await templateInDb(id)).toBeUndefined();
+		expect(await styleInDb(id)).toBeUndefined();
+	});
+
+	it('une fiche qui ne le désigne que par l’ancien `template_id` ne le retient plus', async () => {
+		const id = await createdFromForm('ancien lien');
+		const fiche = await seedWorksheet('ancien lien seul');
+		const pg = await getPostgresClient();
+		await pg.query('update public.worksheets set template_id = $2 where id = $1', [fiche, id]);
 		await listActions.delete({ locals, request: formRequest({ template_id: id }) } as never);
 		expect(await templateInDb(id)).toBeUndefined();
 		expect(await styleInDb(id)).toBeUndefined();

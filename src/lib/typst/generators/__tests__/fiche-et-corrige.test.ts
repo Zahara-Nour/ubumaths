@@ -57,7 +57,6 @@ function worksheet(styleId: string | null, type = 'worksheet'): WorksheetRow {
 		description: null,
 		type,
 		config: {},
-		template_id: styleId,
 		style_id: styleId,
 		estimated_duration_minutes: null,
 		total_points: null
