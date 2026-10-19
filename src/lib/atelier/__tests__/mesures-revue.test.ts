@@ -171,12 +171,22 @@ describe('revue 5 : une mesure d’un point construit', () => {
 describe('revue 6, revue par David le 2026-10-19 : un polygone aplati a une aire de 0', () => {
 	// Avant : sommets confondus et côtés qui se touchent étaient REFUSÉS. Seul un
 	// polygone croisé l'est encore (`mesures.test.ts`)
-	it('un sommet répété : l’aire se calcule (0 si le polygone est aplati)', () => {
+	it('un sommet répété à la suite : polygone aplati, aire 0', () => {
 		const s = plane();
-		expect(answer(runInput(s, 'aire(A, B, C, B)'))).toBe('0');
 		expect(answer(runInput(s, 'aire(A, A, B)'))).toBe('0');
-		// A, B, C, D, B : le triangle BCD, parcouru une fois
-		expect(answer(runInput(s, 'aire(A, B, C, D, B)'))).toBe('6');
+		// Le dernier et le premier sont voisins : A, B, C, A est un triangle aplati
+		expect(answer(runInput(s, 'aire(A, B, C, A)'))).toBe(answer(runInput(s, 'aire(A, B, C)')));
+	});
+
+	// Décision de David du 2026-10-19 : un polygone qui REPASSE par un sommet écrit
+	// deux fois à des places non voisines est refusé (l'élève n'a pas voulu ce tracé)
+	it('un sommet écrit deux fois à des places non voisines : refusé', () => {
+		const s = plane();
+		for (const input of ['aire(A, B, C, D, B)', 'aire(A, B, C, B)', 'perimetre(A, B, C, D, B)']) {
+			const result = runInput(s, input);
+			expect(result.kind, input).toBe('refus');
+			if (result.kind === 'refus') expect(result.message).toMatch(/repasse par B/);
+		}
 	});
 
 	it('trois sommets alignés : aire 0, périmètre calculé normalement', () => {

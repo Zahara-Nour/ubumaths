@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 CLOS ; lot 2 — constructions (#1500), mesures (#1506), styles (#1507), point_sur et intersections (#1509) mergés ; PR 4 (.relever) à faire
+status: lot 1 CLOS ; lot 2 CLOS (#1500, #1506, #1507, #1509, #1513 perf, #1514 .relever) ; suivi : polygone qui repasse par un sommet
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -421,3 +421,8 @@ Ce qui reste (Chromium, ~7,5 ms hors modèle) : les effets et le rendu de 24 car
 `valueAnswerOf`, 0,8 ms en node) et `syncFigure` (0,6 ms en node) ; non profilé plus finement.
 La peinture du SVG n'est pas comptée. Le banc est en mode développement : la production a moins
 de contrôles. Définitions liées par cran : 5 808 → 3.
+
+- 2026-10-19 : **`.relever` mergée (#1514, `d454c9fe4`) : lot 2 complet.** Suivi (décision de David) :
+  un polygone qui repasse par un sommet écrit deux fois à des places non voisines est refusé
+  (`revisitedVertex`, comparaison de l'écrit et non des positions) ; branche
+  `fix/atelier-polygone-sommet-repete`.

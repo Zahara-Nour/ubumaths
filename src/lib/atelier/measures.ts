@@ -247,6 +247,28 @@ function isCrossed(vertices: readonly GeoPoint[]): boolean {
 	return false;
 }
 
+/**
+ * Le sommet ÉCRIT deux fois à des places non voisines (`aire(A, B, C, D, B)`), ou
+ * `null`. Décision de David du 2026-10-19 : un tel polygone repasse par un sommet,
+ * l'élève n'a pas voulu ce tracé — refusé. Écrit deux fois à la suite (`A, A, B`,
+ * ou le dernier et le premier, voisins sur le tour) : polygone aplati, accepté.
+ * ⚠️ On compare ce qui est ÉCRIT, pas les positions : deux sommets qui se
+ * rejoignent un instant au glisser d'un curseur ne font pas échouer un relevé.
+ */
+function revisitedVertex(args: readonly ReadArgument[]): string | null {
+	const written = args.map((a) =>
+		a.kind === 'name' ? a.name : a.kind === 'call' ? a.call.text : a.text
+	);
+	const n = written.length;
+	for (let i = 0; i < n; i++) {
+		for (let j = i + 2; j < n; j++) {
+			if (i === 0 && j === n - 1) continue;
+			if (written[i] === written[j]) return written[i];
+		}
+	}
+	return null;
+}
+
 function measure(atelier: Atelier, word: MeasureWord, args: readonly ReadArgument[]): Measured {
 	switch (word) {
 		case 'distance': {
@@ -279,6 +301,12 @@ function measure(atelier: Atelier, word: MeasureWord, args: readonly ReadArgumen
 			if (args.length < 3) {
 				throw new Failure(
 					`${word === 'aire' ? 'aire' : 'perimetre'} demande au moins trois points.`
+				);
+			}
+			const revisited = revisitedVertex(args);
+			if (revisited !== null) {
+				throw new Failure(
+					`Le polygone repasse par ${revisited} : écris chaque sommet une seule fois, dans l’ordre du tour.`
 				);
 			}
 			const vertices = points(atelier, args);
