@@ -595,10 +595,15 @@ describe('computeReciprocal — non bijective : explication et réciproques par 
 		expect(refusal.message).not.toContain('.réciproque');
 	});
 
-	// Revue de #1342 : la fenêtre fermée [−π/2 ; π/2] gardait π/2, où tan n'existe pas
-	it('tan sur ]−1 ; 4[ : l’intervalle proposé est ouvert en π/2', () => {
+	// Revue de #1342 : la fenêtre fermée [−π/2 ; π/2] gardait π/2, où tan n'existe pas.
+	// Depuis que l'étude des variations coupe en π/2, ]−1 ; 4[ a DEUX morceaux
+	// (avant : « une infinité d'intervalles », faux sur ]−1 ; 4[).
+	it('tan sur ]−1 ; 4[ : les deux morceaux, ouverts en π/2', () => {
 		const refusal = notBijectiveOf('\\tan(x)', ']-1;4[');
-		expect(refusal.suggestion && formatInterval(refusal.suggestion)).toBe(']-1 ; π/2[');
+		expect(refusal.message).toContain('sur ]-1 ; π/2[');
+		expect(refusal.message).toContain('sur ]π/2 ; 4[');
+		expect(refusal.message).not.toContain('infinité');
+		expect(refusal.suggestion && formatInterval(refusal.suggestion)).toBe(']π/2 ; 4[');
 	});
 
 	it('sin sur [0 ; 1] (pas une période entière) : reste un refus honnête, jamais « non bijective »', () => {
