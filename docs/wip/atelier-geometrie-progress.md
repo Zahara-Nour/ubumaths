@@ -586,3 +586,10 @@ le réutilise), M7, M8.
   consigne, Échap, flèches sur le point choisi.
 - Lignes écrites : `A = (1,5 ; 2)`, `d = [AB]`, `d_1 = (AB)`, `d_2 = [AB)`,
   `c = cercle(A ; passant=B)`.
+- Tests d'abord : `outils-figure.test.ts` (24, node, chemin complet par le pupitre) et
+  `outils-figure.svelte.test.ts` (10, Chromium) — vérifiés rouges (10/10) sur l'ancienne
+  `FigureView`. Atelier entier vert : 5216 node, 587 navigateur.
+- Vérifié à l'écran (Playwright, bureau 1280 × 800 et iPhone 13 au toucher) : segment, cercle
+  centré sur un point réutilisé, demi-droite, fantôme, anneau du point choisi. Corrigé au passage :
+  la consigne qui passait à la ligne sur téléphone faisait sauter la toile (ligne réservée).
+  Constat pour la PR 4 (M6) : sur téléphone, la toile dépasse l'écran sous le panneau.
