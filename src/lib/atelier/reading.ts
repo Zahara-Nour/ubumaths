@@ -4,7 +4,7 @@
  * Une ligne `f(2)` réussie dans la console se LIT aussi sur le graphe : des
  * pointillés de 2 sur l'axe des abscisses jusqu'à la courbe, puis jusqu'à f(2)
  * sur l'axe des ordonnées (lot 3 bis de
- * `docs/wip/atelier-refonte-interface-phase0.md`, choix de David du 2026-10-18).
+ * `docs/archive/wip/atelier-refonte-interface-phase0.md`, choix de David du 2026-10-18).
  *
  * La ligne est relue par le parseur de l'atelier (`astOf`), la même lecture que
  * le moteur : jamais une expression régulière sur le texte tapé. Seul un appel

@@ -2,7 +2,7 @@
 	/**
 	 * La carte d'une liste : une ligne, `L = {3 ; 5 ; 8 ; …}` et son nombre de valeurs.
 	 *
-	 * Lot 4a de `docs/wip/atelier-refonte-interface-phase0.md` (décisions de David
+	 * Lot 4a de `docs/archive/wip/atelier-refonte-interface-phase0.md` (décisions de David
 	 * du 2026-10-18) :
 	 * - une liste NE s'édite PAS sur sa ligne (trente valeurs ne tiennent pas
 	 *   dans un champ d'une ligne) : elle s'y lit, et se modifie dans Données

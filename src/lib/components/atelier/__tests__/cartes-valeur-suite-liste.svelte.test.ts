@@ -1,6 +1,6 @@
 /**
  * Les cartes d'une valeur, d'une suite et d'une liste — lot 4a de
- * `docs/wip/atelier-refonte-interface-phase0.md`.
+ * `docs/archive/wip/atelier-refonte-interface-phase0.md`.
  *
  * Décisions de David (2026-10-18, « je suis tes recos ») : la grammaire de la
  * carte de fonction (lot 3) pour tous — une ligne `● nom = [définition]`,

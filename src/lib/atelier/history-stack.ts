@@ -2,7 +2,7 @@
  * Atelier — la pile Annuler / Rétablir (lot 5 de la refonte)
  *
  * Une étape garde deux PHOTOS de l'atelier, avant et après le geste (phase 0
- * `docs/wip/atelier-annuler-retablir-phase0.md`, Q1 : des photos, pas des
+ * `docs/archive/wip/atelier-annuler-retablir-phase0.md`, Q1 : des photos, pas des
  * opérations inverses). Ce module ne sait rien de l'atelier : une photo est
  * une chaîne, comparée telle quelle.
  *

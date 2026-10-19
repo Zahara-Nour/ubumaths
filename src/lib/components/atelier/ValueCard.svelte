@@ -3,7 +3,7 @@
 	/**
 	 * La carte d'une valeur : une seule ligne, `a = [champ]`.
 	 *
-	 * Lot 4a de `docs/wip/atelier-refonte-interface-phase0.md` (décision de David
+	 * Lot 4a de `docs/archive/wip/atelier-refonte-interface-phase0.md` (décision de David
 	 * du 2026-10-18) : la grammaire de la carte de fonction (lot 3). La
 	 * définition s'édite sur place et vaut à Entrée ou à la sortie du champ ;
 	 * une grandeur s'écrit avec son unité (`v = 3 m/s`).

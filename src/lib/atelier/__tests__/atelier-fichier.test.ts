@@ -1,6 +1,6 @@
 /**
  * Enregistrer et charger l'atelier dans un fichier — lot 1 de
- * `docs/wip/atelier-refonte-interface-phase0.md` (`atelier-file.ts`).
+ * `docs/archive/wip/atelier-refonte-interface-phase0.md` (`atelier-file.ts`).
  *
  * Par le vrai chemin : un atelier et un pupitre remplis, le fichier écrit, puis
  * relu par un atelier et un pupitre NEUFS — et ce qu'ils contiennent.

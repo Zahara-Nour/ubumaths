@@ -1,5 +1,5 @@
 /**
- * La carte d'une fonction — lot 3 de `docs/wip/atelier-refonte-interface-phase0.md`.
+ * La carte d'une fonction — lot 3 de `docs/archive/wip/atelier-refonte-interface-phase0.md`.
  *
  * Décisions de David (2026-10-18) : une seule ligne `● f(x) = [champ]`, le membre
  * de droite éditable et pris en compte à Entrée ou à la sortie du champ ; le

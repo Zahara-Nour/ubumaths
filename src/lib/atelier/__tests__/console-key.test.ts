@@ -1,6 +1,6 @@
 /**
  * Le raccourci de la console déroulante (lot 2 de
- * `docs/wip/atelier-refonte-interface-phase0.md`).
+ * `docs/archive/wip/atelier-refonte-interface-phase0.md`).
  *
  * Mesure du 2026-10-18 sur le Mac AZERTY de David (Chrome) : la touche sous
  * Échap rend `IntlBackslash`, la touche `<` rend `Backquote` (inversion des

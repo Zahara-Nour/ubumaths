@@ -3,7 +3,7 @@
 	/**
 	 * La console de l'atelier (l'ancienne vue Calcul).
 	 *
-	 * Depuis le lot 2 de `docs/wip/atelier-refonte-interface-phase0.md`, elle vit
+	 * Depuis le lot 2 de `docs/archive/wip/atelier-refonte-interface-phase0.md`, elle vit
 	 * dans le volet déroulant du conteneur, montée en permanence : plus d'onglet.
 	 *
 	 * Un seul champ : l'élève y écrit des définitions, des calculs ou des

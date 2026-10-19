@@ -2,7 +2,7 @@
 	/**
 	 * Le point de couleur d'une carte de fonction ou de suite, et ce qu'il
 	 * ouvre : couleur, épaisseur et style du trait (lots 3 et 4a de
-	 * `docs/wip/atelier-refonte-interface-phase0.md`).
+	 * `docs/archive/wip/atelier-refonte-interface-phase0.md`).
 	 *
 	 * Le contenu est celui de « Sur le graphique » (`CurveSettings`) ; seule la
 	 * présentation change : trois groupes de boutons dans UNE petite fenêtre,

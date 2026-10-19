@@ -4,7 +4,7 @@
 	 * La carte d'un point ou d'une courbe de la figure : une seule ligne,
 	 * `● A = [(1 ; 2)]`, `● d : [y = 3x − 2]`, `● d = [(AB)]`.
 	 *
-	 * Lot 4b de `docs/wip/atelier-refonte-interface-phase0.md` (validé par David
+	 * Lot 4b de `docs/archive/wip/atelier-refonte-interface-phase0.md` (validé par David
 	 * le 2026-10-18, précisé avec la session de la géométrie). La grammaire de la
 	 * carte de fonction (lot 3) : la définition s'édite sur place et vaut à
 	 * Entrée ou à la sortie du champ. Sous la ligne, en gris : la nature, puis ce

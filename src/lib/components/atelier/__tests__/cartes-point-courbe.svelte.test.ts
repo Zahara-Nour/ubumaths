@@ -1,6 +1,6 @@
 /**
  * Lot 4b de la refonte de l'atelier : les cartes d'un POINT et d'une COURBE
- * (`docs/wip/atelier-refonte-interface-phase0.md`, lot 4, validé par David le
+ * (`docs/archive/wip/atelier-refonte-interface-phase0.md`, lot 4, validé par David le
  * 2026-10-18, précisé avec la session de la géométrie).
  *
  * La grammaire de la carte de fonction (lot 3) : une ligne `● nom = [champ]`

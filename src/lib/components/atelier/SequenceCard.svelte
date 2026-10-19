@@ -3,7 +3,7 @@
 	/**
 	 * La carte d'une suite : une ligne, `● u(n) = [champ]` ou `● u(n+1) = [champ]`.
 	 *
-	 * Lot 4a de `docs/wip/atelier-refonte-interface-phase0.md` (décision de David
+	 * Lot 4a de `docs/archive/wip/atelier-refonte-interface-phase0.md` (décision de David
 	 * du 2026-10-18) : la grammaire de la carte de fonction (lot 3). Sous la
 	 * ligne, en petit, le départ de la suite : le premier terme d'une récurrence
 	 * (`u(0) = [3]`, deux champs) ou le premier rang d'une suite explicite. Le

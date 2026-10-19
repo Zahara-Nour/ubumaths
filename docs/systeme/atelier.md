@@ -1406,7 +1406,7 @@ console sans l'ouvrir ni changer de vue** et crée **une carte par objet créé*
 
 ### La console déroulante
 
-Lot 2 de [atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)
+Lot 2 de [atelier-refonte-interface-phase0.md](../archive/wip/atelier-refonte-interface-phase0.md)
 (décisions de David du 2026-10-18). Plus d'onglet Calcul : `CalculView.svelte` (+ `CalcDesk`)
 vit dans un volet qui descend **par-dessus** la vue (`AtelierContainer.svelte`), environ 40 %
 de la hauteur, réglable à la poignée (souris, ou flèches haut / bas), toute la scène sous
@@ -1417,7 +1417,8 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
 - **Ouvrir / fermer** : le bouton « Console » de la barre (`aria-expanded`) ; la **touche
   physique sous Échap** hors d'un champ ; **Ctrl+Entrée** partout, champs compris
   (`console-key.ts` : sur Mac, `IntlBackslash` ou `Backquote` — mesure du 2026-10-18 sur un Mac
-  AZERTY, la touche sous Échap rend `IntlBackslash` ; ailleurs `Backquote`). Échap dans la
+  AZERTY, la touche sous Échap rend `IntlBackslash` ; ailleurs `Backquote` ; mesuré sur Chrome
+  seulement, pas sur Safari). Échap dans la
   console la ferme, sauf s'il ferme d'abord une liste de propositions. À l'ouverture, le focus
   va au champ ; à la fermeture, un focus resté dedans revient au bouton.
 - **Les touches restent dans la console** : le Graphe reste monté dessous, et ses raccourcis
@@ -1445,7 +1446,7 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
 
 ### La carte d'une fonction
 
-Lot 3 de [atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)
+Lot 3 de [atelier-refonte-interface-phase0.md](../archive/wip/atelier-refonte-interface-phase0.md)
 (décisions de David du 2026-10-18). `ObjectCard` confie toute fonction à `FunctionCard.svelte` ;
 valeurs, suites et listes ont la leur depuis le lot 4a, points et courbes depuis le lot 4b
 (ci-dessous) : plus aucune carte n'a de vue repliée / développée.
@@ -1484,7 +1485,9 @@ valeurs, suites et listes ont la leur depuis le lot 4a, points et courbes depuis
     jamais une expression régulière), une ligne n'étant relue qu'une fois pour les mêmes noms
     de fonctions (cache, la synchronisation relisant la console à chaque révision). Les **3
     dernières** par courbe (`MAX_READINGS`), une abscisse relue ne comptant qu'une fois ; seules
-    les 100 dernières lignes sont relues. Elles suivent la définition courante de `f` ;
+    les 100 dernières lignes sont relues. Elles suivent la définition courante de `f`.
+    ⚠️ `f(π)` et `f(\pi)` se lisent, pas `f(pi)` tapé en lettres : le parseur en mode texte y voit
+    `p·i` (mesuré le 2026-10-19, malgré `pi` dans `CONSTANTS`) ;
   - **le point glissant** : un par courbe lue, posé au milieu de la fenêtre puis là où l'élève
     le laisse (non rangé : rechargé, il revient au milieu). Aimanté aux entiers et aux demis au
     glissé ; ← → par pas de la sous-grille, Page ↑ / ↓ par pas de la grille.
@@ -1492,7 +1495,7 @@ valeurs, suites et listes ont la leur depuis le lot 4a, points et courbes depuis
 
 ### Les cartes d'une valeur, d'une suite, d'une liste
 
-Lot 4a de [atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)
+Lot 4a de [atelier-refonte-interface-phase0.md](../archive/wip/atelier-refonte-interface-phase0.md)
 (recommandations validées par David le 2026-10-18). La grammaire de la carte de fonction : une
 ligne `● nom = [définition]`, l'œil si l'objet se trace, un menu (`CardActionItems`,
 `UnavailableItem`), Renommer et Supprimer en fin de menu. Le champ est celui des fonctions
@@ -1540,7 +1543,7 @@ la **sortie du champ**, et non plus 0,3 s après la frappe. Chaque carte dit son
 
 ### Les cartes d'un point et d'une courbe
 
-Lot 4b de [atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)
+Lot 4b de [atelier-refonte-interface-phase0.md](../archive/wip/atelier-refonte-interface-phase0.md)
 (validé par David le 2026-10-18, précisé avec la session de la géométrie). Une seule carte pour
 les deux, `FigureCard.svelte`, avec la grammaire des autres :
 
@@ -1868,7 +1871,7 @@ SET_ASIDE_STORAGE_KEY)`) et les migrations à sa relecture par l'atelier (`y` re
 
 ### Annuler / Rétablir (lot 5)
 
-Phase 0 : `docs/wip/atelier-annuler-retablir-phase0.md` (validée par David le 2026-10-19). Une
+Phase 0 : `docs/archive/wip/atelier-annuler-retablir-phase0.md` (validée par David le 2026-10-19). Une
 **pile de photos** (`history-stack.ts`, pur) : avant et après chaque étape, l'atelier tel que
 `serialize()` le range, plus les diagrammes affichés et la graine des tirages. Annuler remet la
 photo d'avant, Rétablir celle d'après, par la même voie que la relecture (`restore`) — sauf ce
@@ -1971,7 +1974,7 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
 
 ### La barre d'icônes, Enregistrer et Charger
 
-Lot 1 de la refonte de l'interface (`docs/wip/atelier-refonte-interface-phase0.md`, validé par
+Lot 1 de la refonte de l'interface (`docs/archive/wip/atelier-refonte-interface-phase0.md`, validé par
 David le 2026-10-18). Une seule barre (`role="toolbar"`) au-dessus des onglets, en icônes seules
 (`ToolButton.svelte`) : à gauche **Repartir de zéro**, **Charger un atelier**, **Enregistrer
 l'atelier**, précédés d'**Annuler** et **Rétablir** (lot 5, voir « Annuler / Rétablir ») ; à
@@ -2012,8 +2015,8 @@ l'historique » a quitté la vue Calcul (lot 1), et il se relit par **Charger**.
 - **JSON** (`historyToJson`, format `HISTORY_FORMAT` = `chiphre-calcul`) pour rejouer : chaque
   entrée garde son **geste** (`ReplayStep` : `saisie`, `action`, `supprimer`, `annuler`, `rétablir`, `garder`)
   et sa réponse ;
-- **ubumark** (`historyToUbumark`), par le lien discret « Télécharger l'historique pour une fiche »
-  de la vue Calcul (provisoire : le lot 2 le range dans le menu de la console), pour recopier
+- **ubumark** (`historyToUbumark`), par le menu « ⋮ » de la console (copier ou télécharger
+  l'historique pour une fiche ; le lien sous l'historique est retiré au lot 2), pour recopier
   dans une fiche, formules en `$…$` LaTeX. Le
   titre d'une étape garde ses formules `$…$` (V25 : les pipelines pédagogiques y écrivent leurs
   maths) ; le texte autour est neutralisé (`*` → `×`, `\$`, `\~`).

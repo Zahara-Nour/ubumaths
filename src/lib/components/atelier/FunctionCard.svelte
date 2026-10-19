@@ -3,7 +3,7 @@
 	/**
 	 * La carte d'une fonction : une seule ligne, `● f(x) = [champ]`.
 	 *
-	 * Lot 3 de `docs/wip/atelier-refonte-interface-phase0.md` (demande de David du
+	 * Lot 3 de `docs/archive/wip/atelier-refonte-interface-phase0.md` (demande de David du
 	 * 2026-10-18) : plus de vue développée. Le membre de droite s'édite sur place
 	 * et vaut à Entrée ou à la sortie du champ ; le point de couleur ouvre
 	 * couleur et trait ; un menu rassemble l'affichage (tangente, aire) et les
