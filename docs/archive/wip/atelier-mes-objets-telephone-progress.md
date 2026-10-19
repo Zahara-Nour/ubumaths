@@ -11,8 +11,8 @@ _Mis à jour le 2026-10-19, après #1546._
 
 ## Phase 0 (validée le 2026-10-19)
 
-Décision : [atelier.md § À venir](../systeme/atelier.md), journal
-[atelier-geometrie-progress.md](../archive/wip/atelier-geometrie-progress.md). Avec deux objets,
+Décision : [atelier.md § À venir](../../systeme/atelier.md), journal
+[atelier-geometrie-progress.md](atelier-geometrie-progress.md). Avec deux objets,
 « Mes objets » ramenait la toile de Géométrie à 160 px ; Graphe aussi.
 
 Réponses de David (recos) : **A** seuil 720 px (passage en une colonne) · **B** boutons « + »
