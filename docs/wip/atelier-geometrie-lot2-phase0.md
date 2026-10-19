@@ -213,6 +213,18 @@ circulaire (`A = milieu(A, B)`) est refusée.
 
 **Reco : les règles existantes, étendues.**
 
+## Décisions de David du 2026-10-19 (« je te suis »)
+
+- **Angles (livrés dans #1506, confirmés)** : un angle BRUT dans une fonction (`f(x) = T·x`) est
+  refusé avec une aide (utiliser cos / sin, ou écrire la mesure en nombre) ; une puissance d'un
+  angle est refusée.
+- **`.relever` (PR 4)** : (1) mot-clé facultatif `dans X ; Y` pour nommer les deux listes ; sans
+  lui, deux noms libres automatiques, colonnes titrées par les expressions ; (2) le pas reste
+  obligatoire (message avec un exemple) ; (3) un angle est relevé en nombre dans l'unité du réglage,
+  l'unité dans le TITRE de la colonne (« angle (°) ») ; (4) **un polygone aplati** (sommets
+  confondus ou alignés) **a une aire de 0** — revient sur le refus posé à la revue de la PR 2 ;
+  seul un polygone croisé reste refusé ; (5) le nuage est proposé par une phrase, comme `.simuler`.
+
 ## Découpage proposé (après validation)
 
 1. **Modèle des constructions** (L1, L2, L3, L8) : lecture, calcul exact par les fonctions pures,
