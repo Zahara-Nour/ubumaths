@@ -2,15 +2,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, PR 2 en cours._
+_Mis à jour le 2026-10-19, PR 2 ouverte._
 
-- **État** : PR 2 en cours sur `feat/liens-courts-route`. Faits : `db:types`, `src/lib/validation/short-link.ts`, `src/lib/server/short-links.ts`, `POST /api/short-links`, route `/l/[code]` (302 + `X-Robots-Tag: noindex`, 404 « Ce lien n’existe pas »), tests serveur (28, mutations vérifiées rouges).
-- **Prochaine action** : `QrCodeButton` (adresse résolue à l'ouverture) + `SeriesLinkShare` (prof/admin seulement), tests client, doc, revues `code-reviewer` + `security-auditor`, PR.
-- **En attente de David** : rien.
-- **Pièges** : une colonne générée exige une expression IMMUTABLE. Cible en ASCII imprimable seulement. `supabase db push` ne marche que depuis le dépôt principal.
+- **État** : PR 2 (`feat/liens-courts-route`) ouverte : route `/l/[code]`, `POST /api/short-links`, QR de série par lien court (prof/admin), doc `qr-codes.md`. Revues faites (aucun bloquant).
+- **Prochaine action** : CI verte → merge ; puis vérification manuelle (QR scanné au téléphone) et versement du chantier (journal → archive).
+- **En attente de David** : faut-il restreindre les cibles aux préfixes `/automaths/` (note de l'audit) ? Aujourd'hui tout chemin interne est accepté.
+- **Pièges** : cible en ASCII imprimable seulement. Port 5176/5177 souvent pris par d'autres worktrees : vérifier avec `lsof`.
 - **Worktree / branche** : `../ubumaths-wt-liens-courts` · `feat/liens-courts-route`.
 
 ## Historique
+
+### 2026-10-19 — PR 2, route et QR
+
+- `db:types` ; `short_links` classée dans « Outils du professeur » (`generate-db-doc.ts`).
+- Serveur : validation Zod partagée (`src/lib/validation/short-link.ts`), `POST /api/short-links`, `/l/[code]` (302, `X-Robots-Tag: noindex`, 404 identique inconnu / mal formé, cible relue revalidée). Code écrit avant les tests : rouge prouvé par mutation (garde `//`/`\` et revalidation retirées → 5 rouges).
+- Client : `QrCodeButton` `resolveUrl` (adresse fabriquée à l'ouverture, réponse périmée ignorée — rouge prouvé sans la garde), `SeriesLinkShare` réservé prof/admin.
+- Vérifié sur serveur local (5178) : 302 + noindex, 404 « Ce lien n’existe pas », POST anonyme 401. Parcours prof non joué en local (pas de session prof sans toucher aux mots de passe partagés) → vérification manuelle.
+- Revues : `code-reviewer` (3 mineurs : 2 corrigés, 1 noté — en échec, le lien long se copie après fermeture de la fenêtre) ; `security-auditor` (0 bloquant ; notes : cibles vers toute route interne, pas de limite de débit sur `/l/`, corps sans plafond applicatif).
 
 ### 2026-10-19 — PR 1, migration
 
