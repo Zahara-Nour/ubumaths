@@ -32,3 +32,6 @@ cachés une fois replié · **C** pas de souvenir du choix · **D** toutes les v
 11. Pas de flash : repli en CSS, sans `matchMedia`.
 12. Sans media queries : déplié (comportement d'avant).
 13. Pas de `localStorage`.
+14. **Ajouté en cours de route** (relevé par le test B3 de `/grapheur`) : une carte qui prend la
+    main (`selected` non nul : carte prête à taper de `/grapheur`, f′ après « Dériver ») déplie le
+    panneau — sinon le champ qui a le focus était caché. À signaler à David dans la PR.
