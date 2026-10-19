@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, phase 0 de la PR 1 (aucune PR ouverte)._
+_Mis à jour le 2026-10-19, PR 1 en cours (pas encore ouverte)._
 
-- **État** : option 2 validée par David (3 PR : nettoyage → lecture en arbre → comparaison `tidy`) ; oracle figé (1 724 verdicts) ; phase 0 de la PR 1 soumise.
-- **Prochaine action** : PR 1 — code mort de `ce-integration.ts`, renommage `quantity-comparison.ts`, « ComputeEngine » retiré des docs, message `wrongMagnitude`.
-- **En attente de David** : validation des comportements de la PR 1 ; message `wrongMagnitude` (le conseil « m·s » vient du cas `5ms`, cf. 2cf607e20).
-- **Pièges en cours** : `valueIn` → `null` sur les températures ; `extractValue` lit `2\sqrt{2}` comme 2 ; `ORACLE_MAJ=1` réécrit l'oracle ; messages d'unité validés par David le 2026-09-24 (ne pas reformuler sans accord).
+- **État** : PR 1 codée (message c, `quantity-comparison.ts`, code mort retiré, docs sans ComputeEngine, oracle en CI) ; tests unités + validateur verts, `check:incremental` 0, `lint:fast` ok.
+- **Prochaine action** : `types:cliquet`, revue `code-reviewer` (Sonnet), push, PR, CI, merge ; puis PR 2 (valeur lue en arbre, phase 0 d'abord).
+- **En attente de David** : rien.
+- **Pièges en cours** : `valueIn` → `null` sur les températures ; `extractValue` lit `2\sqrt{2}` comme 2 (PR 2) ; `ORACLE_MAJ=1` réécrit l'oracle ; messages d'unité validés par David (ne pas reformuler sans accord).
 - **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite`.
 
 ## Historique
@@ -73,3 +73,15 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
 - Revue : `code-reviewer` Sonnet pour la PR 1, Opus pour les PR 2 et 3.
 - Option B (enregistrer les réponses des élèves) : pas maintenant (mémoire
   `project_enregistrer-reponses-eleves`).
+
+### 2026-10-19 — PR 1 (nettoyage)
+
+- Message c validé par David : le conseil « Pour un produit d'unités, écris m·s. » ne s'ajoute
+  au refus de grandeur que si les lettres collées, lues comme un produit, mesurent la grandeur
+  attendue (`gluedProductMatches`, `validator.ts`). Oracle : 200 messages « autre grandeur »
+  changés, 0 verdict.
+- `ce-integration.ts` → `quantity-comparison.ts` ; `convertQuantity`, `normalizeToBaseUnits`,
+  `isValidQuantity`, `getUnitFromQuantity`, `getValueFromQuantity` retirés avec leurs tests.
+- ADR 0026, `grandeurs.md`, `questions.md`, commentaires : plus de « ComputeEngine ».
+- Hors périmètre, vu en passant : « Compute Engine » reste dans les commentaires de
+  `answer-validator.ts`, `validation-rule-evaluator.ts`, `questions/index.ts`, `feedback.ts`.
