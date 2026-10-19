@@ -1742,7 +1742,7 @@ continue de déplacer la vue. Mesuré sur iPhone 13 (390 × 664) : toile de 234 
 pixels y casse.
 
 **« Mes objets » sur téléphone** (décision du 2026-10-19, journal
-[atelier-mes-objets-telephone-progress.md](../wip/atelier-mes-objets-telephone-progress.md)) : en
+[atelier-mes-objets-telephone-progress.md](../archive/wip/atelier-mes-objets-telephone-progress.md)) : en
 une colonne (≤ 720 px), le panneau ouvert ramenait la vue à son plancher (toile de 160 px avec deux
 points). Il s'ouvre donc **replié** : une barre « Mes objets · N objets » et un bouton
 (nommé par le titre, `aria-expanded`, `aria-controls` ; absent quand l'atelier est vide) qui

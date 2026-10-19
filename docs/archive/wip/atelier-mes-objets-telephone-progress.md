@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, avant la PR._
+_Mis à jour le 2026-10-19, après #1546._
 
-- **État** : phase 0 validée (recos A-D), code et tests écrits · **Prochaine action** : PR, revue
-  `code-reviewer` (Sonnet), merge · **En attente de David** : rien · **Pièges en cours** : la page
-  des tests navigateur fait 414 px (disposition téléphone) : les tests existants voient le panneau
-  replié · **Worktree / branche** : `../ubumaths-wt-atelier-mes-objets-telephone`,
-  `feat/atelier-mes-objets-telephone`
+- **État** : chantier **clos** — #1546 mergée (pas en prod) ; durable versé dans
+  `docs/systeme/atelier.md` (« Mes objets » sur téléphone) ; vérification manuelle notée
+  (`docs/wip/verifications-manuelles.md`) · **Prochaine action** : aucune · **En attente de
+  David** : vérification au vrai téléphone · **Worktree / branche** : retirés
 
 ## Phase 0 (validée le 2026-10-19)
 
