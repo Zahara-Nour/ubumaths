@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, PR 3 en cours._
+_Mis à jour le 2026-10-19, après #1547._
 
-- **État** : PR 1 (#1543) et PR 2 (#1545) mergées ; PR 3 (comparaison exacte) en cours, phase 0 validée (méthode A). Rien en prod.
-- **Prochaine action** : tests rouges → `compareQuantities` exacte par `exactConversion` → oracle → revue `code-reviewer` opus → PR.
-- **En attente de David** : rien.
-- **Pièges en cours** : tolérance et arrondis (`precision`) restent en flottants ; `readExactValue` (parser.ts) non exporté ; messages d'unité validés (ne pas reformuler) ; pas de `timeout` sur ce Mac.
-- **Plus tard (PR 2 bis)** : découpage « nombre | unité » de `student-input.ts` — `2\sqrt{2} m`, `3+2 m` → « Unité inconnue » ; `\sqrt{2} m`, `(-3) m`, `.5 m` → « Réponse invalide ».
-- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-exacte`.
+- **État** : PR 1 (#1543), PR 2 (#1545) et PR 3 (#1547, égalité exacte par `exactConversion`) mergées. Oracle à 0 changement. Rien en prod (pas de `deploy:prod`).
+- **Prochaine action** : selon David — PR 2 bis (découpage « nombre | unité ») ou fin de chantier (versement dans `docs/systeme/grandeurs.md`, journal archivé).
+- **En attente de David** : PR 2 bis maintenant, plus tard, ou jamais ?
+- **Pièges en cours** : tolérance et arrondis (`precision`) restent en flottants ; messages d'unité validés (ne pas reformuler) ; pas de `timeout` sur ce Mac.
+- **PR 2 bis (proposée)** : découpage « nombre | unité » de `student-input.ts` — `2\sqrt{2} m`, `3+2 m` → « Unité inconnue » ; `\sqrt{2} m`, `(-3) m`, `.5 m` → « Réponse invalide ».
+- **Worktree / branche** : aucun (à recréer depuis `origin/main`).
 
 ## Historique
 
@@ -128,3 +128,10 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
   affichées en nombres décimaux ; `180°` contre `\pi` rad → « Erreur de configuration ».
 - Unité sans conversion exacte (inatteignable) : test d'invariant + refus visible (comme des unités
   incompatibles), pas de repli en flottants.
+
+### 2026-10-19 — #1547 mergée (PR 3)
+
+- `exactBaseValue` (parser.ts) + `exactlyEqual` (quantity-comparison.ts) ; `FLOAT_NOISE` retiré.
+- Revue opus : aucun bloquant. Appliqué : invariant renforcé (coefficient et décalage exacts =
+  ceux des flottants, sur toutes les unités simples lisibles) ; commentaire de l'étiquette
+  `incompatible_units` du refus sans conversion exacte (seul `isEqual` est lu).
