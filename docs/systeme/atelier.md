@@ -381,7 +381,21 @@ cos(60°)*x en x=2` → 1). **Une variable en degrés** (choix prudent, à tranc
 angle BRUT écrit dans une fonction ou une suite (`f(x) = 2x°`, `x[°]`, `u(n) = n°`) est en erreur
 avec le message des mesures (« Une mesure d'angle est une grandeur… », `WRITTEN_ANGLE`,
 `atelier.svelte.ts`) — avant, `f(x) = x[°]` passait et `f(1)` répondait `(π/180) rad`.
-`cos(60)` reste en radians ; le réglage « Angles » ne change pas.
+`cos(60)` reste en radians ; le réglage « Angles » ne change pas. Revue (2026-10-19) : le `°` CIBLE
+d'une conversion ne se réécrit pas (`1[rad] en °` → `1 rad = (180/π)°`, `.convertir °`) ; une
+fraction de nombres le prend entière (`1/2°` = `(1/2)[°]`, comme `1/2 m`) ; la réponse met entre
+parenthèses une valeur qui n'est pas un nombre seul (`(100/3)°`, `\left(\dfrac{100}{3}\right){}^{\circ}`)
+et colle `\pi°` ; les commandes d'ÉCRITURE (`.latex`, `.texte`, `.analyser`, `.arbre`, `.empreinte`,
+`.forme-normale` : `WRITING_COMMANDS`) gardent l'angle en grandeur ; `.évaluer sin(x) en x=30°` →
+`1/2` (`radiansInLatex` sur la réponse du moteur) ; une puissance d'un angle est refusée sur toute
+ligne, comme pour une mesure (`(60°)^2`, `60°^2`) ; la grille écrit `60°` (`inDegrees`,
+`formula.ts` : la case vaut le nombre de degrés, une formule écrite en `rad` reste en radians).
+`.variations cos(x°)` annonçait « croissante sur ]-∞ ; 0[ » (déjà faux sur main pour
+`cos(πx/180)`) : les zéros périodiques d'un domaine non borné ne sont que ceux d'une période, et
+l'échantillonnage ([-100 ; 100]) ne voyait pas ±180 ; il est coupé sur un intervalle non borné
+dans ce cas (`periodicUnbounded`, `mathAST/sign/helpers/zeros.ts`, `analyze.ts`) — « sens
+indéterminé », comme pour `cos(x)`, dont le tableau ne change pas. `20°C` (collé) reste lu comme
+avant (sans effet).
 
 **Intersections et points sur un objet** (géométrie, lot 2, PR 3 — L5) : deux mots du DSL de
 plus dans le catalogue, mêmes arguments et même numérotation que lui

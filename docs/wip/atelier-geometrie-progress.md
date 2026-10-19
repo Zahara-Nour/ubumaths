@@ -435,3 +435,9 @@ de contrôles. Définitions liées par cran : 5 808 → 3.
   restait dans l'argument d'une commande (`.résoudre h(x)=1` → `x = 1/cos(π/3 rad)`) : corrigée par
   `radiansInText`. **À trancher par David** : `f(x) = cos(x°)` accepté (exact, tracé juste) ; un
   angle brut écrit dans une fonction ou une suite (`2x°`, `x[°]`) en erreur, comme une mesure.
+- 2026-10-19, revue de la PR `60°` : 19 tests rouges d'abord (valeurs de main en référence),
+  verts. Conversion VERS les degrés rétablie (`en °`, `.convertir °`), `.latex`/`.texte` montrent
+  l'écriture, grille en degrés, `1/2°` = demi-degré, `(100/3)°`, `.évaluer … en x=30°` → 1/2,
+  puissance d'un angle refusée partout. `.variations cos(x°)` : cause trouvée dans `mathAST/sign`
+  (échantillons dans [-100 ; 100] avec des zéros périodiques incomplets sur ℝ), corrigée (sens
+  indéterminé sur les intervalles non bornés) ; `cos(x)` inchangé.
