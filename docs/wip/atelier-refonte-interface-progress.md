@@ -174,3 +174,26 @@ Branche `feat/atelier-annuler-curseurs-console`, avec les correctifs de la revue
 - Points de lecture graphique (`ReadingSliders`) : état local au graphe, jamais une étape.
 
 Reste : PR 3 (Repartir de zéro et Charger annulables).
+
+## Lot 5 — Annuler / Rétablir, PR 3 (2026-10-19)
+
+Branche `feat/atelier-charger-repartir-annulables`, sur `Atelier.replaceWith` (#1523).
+
+- **Charger** : `replaceWith(state, 'charger un atelier', { onLeave: keepLeftAside })` (le
+  `onLeave` seulement si l'atelier a été mis de côté). La console reste (décision de David du
+  2026-10-19) : `desk.loaded(nom, console)` écrit « Atelier chargé depuis <nom>. », qui porte
+  l'étape (barrée si on annule), puis les lignes du fichier à la suite (`garder` décalés, saisies
+  rappelables). La confirmation ne compte plus la console (elle n'est pas remplacée).
+- **Repartir de zéro** : la console est vidée comme avant (C3, **non retranché** : la règle R4
+  pousserait à la garder, à demander à David), puis `desk.reset()` → `replaceWith(vide)` et la
+  ligne « Atelier vidé. ». **Sans copie mise de côté ni `onLeave`** : l'atelier vide quitté par
+  Annuler ferait oublier la copie (`keepAside` d'un atelier vide l'efface, B1) — écart avec la
+  consigne, voulu.
+- **Rejeu** : deux gestes nouveaux. `vider` se rejoue (`desk.reset`). `rupture { reason }` arrête
+  le rejeu en disant pourquoi : la ligne d'un chargement, et l'annuler / rétablir de « Repartir
+  de zéro » (l'atelier d'avant a quitté la console). Schémas : `history-import.ts`,
+  `history-storage.ts`.
+- **Toasts** « Atelier chargé. » et « Atelier vidé. » avec « Annuler » (`offerUndo`), qui ne
+  défait que leur étape si elle est la dernière (`atelier.topStepId`).
+- Le rejeu d'un ancien historique (`replayNow`) vide encore la pile : il contient lui-même des
+  annulations.

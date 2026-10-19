@@ -102,6 +102,8 @@ const replaySchema = z.discriminatedUnion('kind', [
 	z.object({ kind: z.literal('supprimer'), name }),
 	z.object({ kind: z.literal('annuler') }),
 	z.object({ kind: z.literal('rétablir') }),
+	z.object({ kind: z.literal('vider') }),
+	z.object({ kind: z.literal('rupture'), reason: z.string().min(1).max(MAX_TEXT_LENGTH) }),
 	z.object({ kind: z.literal('garder'), line: z.number().int().min(0).max(MAX_KEPT_LINES) })
 ]);
 
