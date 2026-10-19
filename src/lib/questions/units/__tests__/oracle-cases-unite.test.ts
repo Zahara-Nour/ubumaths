@@ -15,8 +15,9 @@
  * l'oracle repose sur les vraies questions, pas sur de vraies réponses.
  */
 import { describe, expect, it } from 'vitest';
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { validateAnswer } from '$lib/utils/answer-validator';
@@ -39,7 +40,11 @@ interface OracleEntry {
 // CONSTANTES
 // ============================================================================
 
-const FIXTURES = 'tests/fixtures/correction-cases-unite';
+/** Résolu depuis ce fichier : le test ne dépend pas du dossier où vitest est lancé */
+const FIXTURES = join(
+	dirname(fileURLToPath(import.meta.url)),
+	'../../../../../tests/fixtures/correction-cases-unite'
+);
 const MODELES = join(FIXTURES, 'modeles');
 const ORACLE = join(FIXTURES, 'oracle.json');
 const GRAINES = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -240,7 +245,8 @@ function computeOracle(): OracleEntry[] {
 describe('oracle de la correction des cases à unité', () => {
 	it('chaque réponse garde son verdict', () => {
 		const actual = computeOracle();
-		if (process.env.ORACLE_MAJ === '1' || !existsSync(ORACLE)) {
+		// Réécrit SEULEMENT sur demande : un oracle absent doit faire échouer le test
+		if (process.env.ORACLE_MAJ === '1') {
 			writeFileSync(ORACLE, `${JSON.stringify(actual, null, '\t')}\n`);
 		}
 		const frozen = JSON.parse(readFileSync(ORACLE, 'utf8')) as OracleEntry[];

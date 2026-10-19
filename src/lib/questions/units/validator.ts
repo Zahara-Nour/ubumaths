@@ -519,8 +519,12 @@ function unitWritingFeedback(normalizedUser: string): string | null {
 	return null;
 }
 
-/** Symboles collés : des lettres seulement (`ms`, pas `m.s` ni `m^2`) */
-const GLUED_LETTERS = /^[A-Za-z]{2,}$/;
+/**
+ * Symboles collés : des lettres seulement (`ms`, pas `m.s` ni `m^2`), 8 au plus.
+ * Défense : seule une écriture déjà lue comme UNE unité arrive ici (la plus
+ * longue, `semaine`, a 7 lettres), mais les découpes croissent exponentiellement.
+ */
+const GLUED_LETTERS = /^[A-Za-z]{2,8}$/;
 
 /**
  * Vrai quand l'écriture de l'élève est faite de symboles d'unités collés qui,
