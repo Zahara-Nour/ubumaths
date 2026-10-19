@@ -547,7 +547,12 @@ function show(int: Interval): string {
 	return `]${endpointToNumber(int.lower.value).toFixed(3)} ; ${endpointToNumber(int.upper.value).toFixed(3)}[`;
 }
 
-describe('oracle : ce que le tableau affirme est vrai', () => {
+// 30 s par cas et non 5 s (défaut), pour les trois blocs de l'oracle : sur [0 ; 360], `2 sin(3x)` a plusieurs centaines
+// de points critiques, et l'oracle en vérifie chacun sur une grille fine — 6,4 s
+// mesurées sur la CI (0,8 s pour le moteur seul en local), sans rien de faux
+const ORACLE_TIMEOUT_MS = 30_000;
+
+describe('oracle : ce que le tableau affirme est vrai', { timeout: ORACLE_TIMEOUT_MS }, () => {
 	for (const latex of EXPRESSIONS) {
 		for (const name of domainsFor(latex)) {
 			it(`${latex} sur ${name}`, () => {
@@ -557,7 +562,7 @@ describe('oracle : ce que le tableau affirme est vrai', () => {
 	}
 });
 
-describe('oracle : ce qui se démontre se conclut', () => {
+describe('oracle : ce qui se démontre se conclut', { timeout: ORACLE_TIMEOUT_MS }, () => {
 	for (const latex of EXPRESSIONS) {
 		for (const name of domainsFor(latex)) {
 			const mustConclude = NON_PERIODIC.has(latex) || BOUNDED_DOMAINS.includes(name);
@@ -579,7 +584,7 @@ describe('oracle : ce qui se démontre se conclut', () => {
 	}
 });
 
-describe('oracle : un sens qui se démontre se conclut', () => {
+describe('oracle : un sens qui se démontre se conclut', { timeout: ORACLE_TIMEOUT_MS }, () => {
 	for (const latex of EXPRESSIONS) {
 		for (const name of domainsFor(latex)) {
 			const mustConclude = NON_PERIODIC.has(latex) || BOUNDED_DOMAINS.includes(name);
