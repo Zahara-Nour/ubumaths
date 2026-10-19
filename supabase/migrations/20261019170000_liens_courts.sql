@@ -19,7 +19,10 @@
 -- ⚠️ La cible est un chemin INTERNE (`/…`). Une cible libre ferait de
 -- `chiph.re/l/…` une redirection ouverte : un lien à notre nom qui mène à un
 -- site piégé. `//hote` et `/\hote` sont refusés : les navigateurs les lisent
--- comme un autre domaine.
+-- comme un autre domaine. La cible est en ASCII imprimable (`!` à `~`) : ni
+-- espace ni caractère de contrôle (pas d'injection d'en-tête), ni Unicode, qui
+-- ferait planter l'en-tête `Location` et permettrait des chemins trompeurs
+-- (U+2215 « ∕ » ressemble à `/`). Les liens que fabrique le site sont encodés.
 --
 -- Les liens ne meurent pas : un QR imprimé sur une fiche ne se reprend pas.
 --
@@ -47,7 +50,9 @@ create table if not exists public.short_links (
 	constraint short_links_code_shape check (code ~ '^[a-km-np-zA-HJ-NP-Z2-9]{8}$'),
 	constraint short_links_target_internal check (
 		char_length(target) <= 16384
-		and target ~ '^/([^/\\[:space:][:cntrl:]][^\\[:space:][:cntrl:]]*)?$'
+		and target ~ '^/[!-~]*$'
+		and target !~ '^//'
+		and strpos(target, '\') = 0
 	),
 	constraint short_links_target_hash_matches check (target_hash = sha256(textsend(target))),
 	constraint short_links_target_hash_unique unique (target_hash)
@@ -90,7 +95,9 @@ begin
 
 	if p_target is null
 		or char_length(p_target) > 16384
-		or p_target !~ '^/([^/\\[:space:][:cntrl:]][^\\[:space:][:cntrl:]]*)?$'
+		or p_target !~ '^/[!-~]*$'
+		or p_target ~ '^//'
+		or strpos(p_target, '\') > 0
 	then
 		raise exception 'Un lien court mène à une adresse du site' using errcode = '22023';
 	end if;
@@ -107,6 +114,8 @@ begin
 	for v_attempt in 1..5 loop
 		v_bytes := extensions.gen_random_bytes(8);
 		v_code := '';
+		-- Biais du modulo (256 = 4 × 56 + 32) : 32 caractères sortent un peu plus
+		-- souvent. Il reste ~46 bits d'entropie, bien assez pour un lien public.
 		for i in 0..7 loop
 			v_code := v_code || substr(v_alphabet, (get_byte(v_bytes, i) % 56) + 1, 1);
 		end loop;

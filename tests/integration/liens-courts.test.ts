@@ -70,6 +70,8 @@ const CODE_SHAPE = /^[a-km-np-zA-HJ-NP-Z2-9]{8}$/;
 const SERIES_TARGET =
 	'/automaths/test?categories=%255B%257B%2522category%2522%253A%257B%7D%257D%255D&mode=course&time=300';
 const OTHER_TARGET = '/automaths/panier?categories=%255B%255D';
+const STUDENT_TARGET = '/glossaire?eleve=1';
+const ANON_TARGET = '/glossaire?anonyme=1';
 
 /** Cibles qui doivent toutes être refusées sans rien enregistrer */
 const REFUSED_TARGETS = [
@@ -81,6 +83,10 @@ const REFUSED_TARGETS = [
 	'automaths/panier',
 	'/a b',
 	'/a\nb',
+	'/a\tb',
+	'/\u2215piege.example',
+	'/a\u200bb',
+	'/glossaire\u00e9',
 	'',
 	'/' + 'a'.repeat(16_384)
 ];
@@ -114,10 +120,33 @@ describe('liens courts des QR codes', () => {
 	let teacher: SupabaseClient<Database>;
 	let student: SupabaseClient<Database>;
 
-	async function targetsInTable(): Promise<string[]> {
-		const { data, error } = await loose(service).from('short_links').select('target').limit(1000);
+	/** Nombre de lignes de la table pour cette cible, lu par le client service */
+	async function rowsFor(target: string): Promise<number> {
+		const { data, error } = await loose(service)
+			.from('short_links')
+			.select('code')
+			.eq('target', target);
 		expect(error).toBeNull();
-		return (data ?? []).map((row) => String(row.target));
+		return (data ?? []).length;
+	}
+
+	/** Nombre total de lignes de la table */
+	async function totalRows(): Promise<number> {
+		const { count, error } = await (
+			service as unknown as {
+				from: (t: string) => {
+					select: (
+						c: string,
+						o: { count: 'exact'; head: true }
+					) => PromiseLike<{ count: number | null; error: unknown }>;
+				};
+			}
+		)
+			.from('short_links')
+			.select('code', { count: 'exact', head: true });
+		expect(error).toBeNull();
+		expect(count).not.toBeNull();
+		return count ?? -1;
 	}
 
 	beforeAll(async () => {
@@ -130,7 +159,10 @@ describe('liens courts des QR codes', () => {
 	});
 
 	afterAll(async () => {
-		await loose(service).from('short_links').delete().in('target', [SERIES_TARGET, OTHER_TARGET]);
+		await loose(service)
+			.from('short_links')
+			.delete()
+			.in('target', [SERIES_TARGET, OTHER_TARGET, STUDENT_TARGET, ANON_TARGET]);
 		await cleanupAllTestData();
 	});
 
@@ -159,39 +191,59 @@ describe('liens courts des QR codes', () => {
 			expect(other.data).toMatch(CODE_SHAPE);
 			expect(other.data).not.toBe(first.data);
 
-			const targets = await targetsInTable();
-			expect(targets.filter((t) => t === SERIES_TARGET)).toHaveLength(1);
+			expect(await rowsFor(SERIES_TARGET)).toBe(1);
 		});
 
 		it('un élève ne crée rien (42501)', async () => {
-			const target = '/glossaire?eleve=1';
+			const target = STUDENT_TARGET;
 			const { data, error } = await loose(student).rpc('create_short_link', { p_target: target });
 			expect(data).toBeNull();
 			expect(error?.code).toBe('42501');
-			expect(await targetsInTable()).not.toContain(target);
+			expect(await rowsFor(target)).toBe(0);
 		});
 
 		it('un anonyme ne peut pas appeler la création', async () => {
-			const target = '/glossaire?anonyme=1';
+			const target = ANON_TARGET;
 			const { data, error } = await loose(anonClient()).rpc('create_short_link', {
 				p_target: target
 			});
 			expect(data).toBeNull();
-			expect(error).not.toBeNull();
-			expect(await targetsInTable()).not.toContain(target);
+			expect(error?.code).toBe('42501');
+			expect(await rowsFor(target)).toBe(0);
 		});
 
 		it.each(REFUSED_TARGETS.map((t) => [JSON.stringify(t).slice(0, 40), t]))(
 			'cible refusée (%s), rien enregistré',
 			async (_label, target) => {
+				const before = await totalRows();
 				const { data, error } = await loose(teacher).rpc('create_short_link', {
 					p_target: target
 				});
 				expect(data).toBeNull();
 				expect(error?.code).toBe('22023');
-				expect(await targetsInTable()).not.toContain(target);
+				// Total plutôt que filtre par cible : 16 Ko ne tiennent pas dans une URL
+				expect(await totalRows()).toBe(before);
 			}
 		);
+	});
+
+	describe('filet de la table', () => {
+		it.each([
+			['cible externe', { code: 'Zz23Zz23', target: '//piege.example', target_hash: '\\x00' }],
+			['code ambigu', { code: 'O0l1I0O0', target: '/glossaire', target_hash: '\\x00' }],
+			['empreinte fausse', { code: 'Zz23Zz24', target: '/glossaire', target_hash: '\\x00' }]
+		])('même le client service n’insère pas une ligne invalide (%s)', async (_label, row) => {
+			const { error } = await (
+				service as unknown as {
+					from: (t: string) => {
+						insert: (r: unknown) => PromiseLike<{ error: { code?: string } | null }>;
+					};
+				}
+			)
+				.from('short_links')
+				.insert(row);
+			expect(error?.code).toBe('23514');
+		});
 	});
 
 	describe('lecture', () => {
