@@ -132,6 +132,13 @@
 		 */
 		canvasTool?: CanvasTool;
 		/**
+		 * Les gestes de la vue au doigt et sur le fond (vue Géométrie de
+		 * l'atelier, M6) : deux doigts déplacent et zooment la vue, quel que soit
+		 * l'outil ; sans outil, un glisser sur le fond (souris ou doigt) la
+		 * déplace. Défaut false : les autres toiles gardent leurs gestes.
+		 */
+		viewGestures?: boolean;
+		/**
 		 * Calque dessiné SOUS les objets (repère d'une figure stockée), recalculé à
 		 * chaque déplacement ou zoom de la vue. Son contenu doit être du SVG
 		 * (composant en `<svelte:options namespace="svg" />`).
@@ -159,6 +166,7 @@
 		objectsMovable = true,
 		pointDrag,
 		canvasTool,
+		viewGestures = false,
 		underlay,
 		overlay
 	}: Props = $props();
@@ -239,6 +247,13 @@
 	let ppu = $state(initialPpu);
 	let isPanning = $state(false);
 	let spaceHeld = $state(false);
+	/** Le pointeur qui déplace la vue, et où il était (pixels de l'écran). */
+	let panPointer: { pointerId: number; lastX: number; lastY: number } | null = null;
+	/** Les doigts posés sur la toile (`viewGestures`), et où ils sont (pixels de l'écran). */
+	const touches = new Map<number, { x: number; y: number }>();
+	/** Deux doigts : la vue suit leur milieu et zoome comme leur écart (M6). */
+	let pinch: { ids: [number, number]; lastMid: { x: number; y: number }; lastDist: number } | null =
+		null;
 
 	// Zoom limits
 	// Bornes élargies autour de l'échelle initiale : une fenêtre d'en-tête de
@@ -446,6 +461,85 @@
 		return transformer.svgToMath(svgX, svgY);
 	}
 
+	/**
+	 * Capturer le pointeur. Un pointeur déjà levé (ou synthétique) lève une
+	 * erreur : le geste continue sans capture.
+	 */
+	function capture(e: PointerEvent) {
+		try {
+			svgRef?.setPointerCapture(e.pointerId);
+		} catch {
+			// Le pointeur n'est plus actif : rien à capturer
+		}
+	}
+
+	/** Commencer à déplacer la vue avec ce pointeur. */
+	function startPan(e: PointerEvent) {
+		isPanning = true;
+		panPointer = { pointerId: e.pointerId, lastX: e.clientX, lastY: e.clientY };
+		capture(e);
+		e.preventDefault();
+	}
+
+	function endPan() {
+		isPanning = false;
+		panPointer = null;
+	}
+
+	/** Le milieu (pixels de la toile) et l'écart des deux doigts du pincement. */
+	function pinchFrame(
+		ids: [number, number]
+	): { mid: { x: number; y: number }; dist: number } | null {
+		const a = touches.get(ids[0]);
+		const b = touches.get(ids[1]);
+		if (!a || !b || !svgRef) return null;
+		const rect = svgRef.getBoundingClientRect();
+		return {
+			mid: { x: (a.x + b.x) / 2 - rect.left, y: (a.y + b.y) / 2 - rect.top },
+			dist: Math.hypot(a.x - b.x, a.y - b.y)
+		};
+	}
+
+	/** Un second doigt se pose : le geste en cours tombe, la vue suit les deux doigts. */
+	function startPinch() {
+		const [first, second] = touches.keys();
+		const ids: [number, number] = [first, second];
+		const frame = pinchFrame(ids);
+		if (frame === null) return;
+		// Un appui d'outil devient un geste de vue : aucun clic au relâcher
+		if (toolPress !== null) toolPress.moved = true;
+		endPan();
+		hoveredId = null;
+		canvasTool?.hover(null);
+		pinch = { ids, lastMid: frame.mid, lastDist: frame.dist };
+	}
+
+	/**
+	 * Les doigts ont bougé : le point du repère sous leur ancien milieu passe
+	 * sous le nouveau, l'échelle suit le rapport des écarts.
+	 */
+	function movePinch() {
+		if (pinch === null) return;
+		const frame = pinchFrame(pinch.ids);
+		if (frame === null) return;
+		const factor = pinch.lastDist > 0 ? frame.dist / pinch.lastDist : 1;
+		const newPpu = Math.max(MIN_PPU, Math.min(MAX_PPU, ppu * factor));
+		const anchor = transformer.svgToMath(pinch.lastMid.x, pinch.lastMid.y);
+		viewCenter = {
+			x: anchor.x - (frame.mid.x - width / 2) / newPpu,
+			y: anchor.y + (frame.mid.y - height / 2) / newPpu
+		};
+		ppu = newPpu;
+		pinch.lastMid = frame.mid;
+		pinch.lastDist = frame.dist;
+	}
+
+	/** Un pointeur se lève (ou est perdu) : il quitte les doigts posés, le pincement tombe. */
+	function releaseTouch(e: PointerEvent) {
+		touches.delete(e.pointerId);
+		if (pinch !== null && pinch.ids.includes(e.pointerId)) pinch = null;
+	}
+
 	function onPointerDown(e: PointerEvent) {
 		if (!interactive) return;
 		// Un second doigt pendant un glisser délégué : ignoré, pas de re-saisie
@@ -454,11 +548,20 @@
 			return;
 		}
 
+		// Deux doigts déplacent et zooment la vue (M6) ; un troisième ne fait rien
+		if (viewGestures && e.pointerType === 'touch') {
+			touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+			if (touches.size >= 2) {
+				if (pinch === null && touches.size === 2) startPinch();
+				capture(e);
+				e.preventDefault();
+				return;
+			}
+		}
+
 		// Middle button or space held = start panning
 		if (e.button === 1 || spaceHeld) {
-			isPanning = true;
-			svgRef?.setPointerCapture(e.pointerId);
-			e.preventDefault();
+			startPan(e);
 			return;
 		}
 
@@ -472,13 +575,19 @@
 			// Un appui d'outil : le clic part au relâcher, s'il n'a pas bougé
 			if (e.button === 0) {
 				toolPress = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, moved: false };
-				svgRef?.setPointerCapture(e.pointerId);
+				capture(e);
 				e.preventDefault();
 			}
 			return;
 		}
 
 		if (pointDrag && startDelegatedDrag(e, pointDrag)) return;
+
+		// Un glisser sur le fond déplace la vue (M6)
+		if (viewGestures && e.button === 0) {
+			startPan(e);
+			return;
+		}
 
 		// Objets figés (`deplacable: non`) : seule la vue se déplace
 		if (!objectsMovable) return;
@@ -495,7 +604,7 @@
 				draggingId = pointId;
 				dragOffset = null;
 				figure.beginTransaction();
-				svgRef?.setPointerCapture(e.pointerId);
+				capture(e);
 				e.preventDefault();
 			} else if (
 				(el?.type === 'pointOnCurve' ||
@@ -510,7 +619,7 @@
 				draggingId = pointId;
 				dragOffset = null;
 				figure.beginTransaction();
-				svgRef?.setPointerCapture(e.pointerId);
+				capture(e);
 				e.preventDefault();
 			}
 		} else {
@@ -524,7 +633,7 @@
 					draggingId = elementId;
 					dragOffset = { dx: ax - math.x, dy: ay - math.y };
 					figure.beginTransaction();
-					svgRef?.setPointerCapture(e.pointerId);
+					capture(e);
 					e.preventDefault();
 				}
 			}
@@ -552,7 +661,7 @@
 				moved: false
 			};
 			delegated = true;
-			svgRef?.setPointerCapture(e.pointerId);
+			capture(e);
 		}
 		e.preventDefault();
 		return true;
@@ -603,11 +712,23 @@
 	function onPointerMove(e: PointerEvent) {
 		if (!interactive) return;
 
-		// Panning: move center by pointer delta
+		if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+		if (pinch !== null) {
+			if (pinch.ids.includes(e.pointerId)) movePinch();
+			return;
+		}
+
+		// Panning: move center by pointer delta (suivi à la main : `movementX`
+		// manque aux doigts de certains navigateurs)
 		if (isPanning) {
+			if (panPointer === null || e.pointerId !== panPointer.pointerId) return;
+			const dx = e.clientX - panPointer.lastX;
+			const dy = e.clientY - panPointer.lastY;
+			panPointer.lastX = e.clientX;
+			panPointer.lastY = e.clientY;
 			viewCenter = {
-				x: viewCenter.x - e.movementX / ppu,
-				y: viewCenter.y + e.movementY / ppu // y inverted
+				x: viewCenter.x - dx / ppu,
+				y: viewCenter.y + dy / ppu // y inverted
 			};
 			return;
 		}
@@ -781,12 +902,13 @@
 	}
 
 	function onPointerCancel(e: PointerEvent) {
+		releaseTouch(e);
 		if (toolPress?.pointerId === e.pointerId) toolPress = null;
 		if (foreignPointer(e)) return;
 		// Le point délégué reste où il est arrivé : le geste se ferme (M7)
 		endDelegatedDrag();
 		if (draggingId) figure.discard();
-		isPanning = false;
+		endPan();
 		draggingId = null;
 		dragOffset = null;
 		draggingLabelId = null;
@@ -794,8 +916,9 @@
 	}
 
 	function onPointerUp(e: PointerEvent) {
+		releaseTouch(e);
 		if (isPanning) {
-			isPanning = false;
+			if (panPointer === null || e.pointerId === panPointer.pointerId) endPan();
 			return;
 		}
 
@@ -977,7 +1100,7 @@
 		draggingLabelId = elementId;
 		labelDragStart = { mx: e.clientX, my: e.clientY, dx: currentDx, dy: currentDy };
 		figure.beginTransaction();
-		svgRef?.setPointerCapture(e.pointerId);
+		capture(e);
 	}
 
 	function formatGrad(n: number): string {
@@ -992,7 +1115,9 @@
 		if (draggingId) figure.discard();
 		if (draggingLabelId) figure.discard();
 		spaceHeld = false;
-		isPanning = false;
+		endPan();
+		touches.clear();
+		pinch = null;
 		draggingId = null;
 		dragOffset = null;
 		draggingLabelId = null;
@@ -1110,7 +1235,7 @@
 											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
 											: null;
 										figure.beginTransaction();
-										svgRef?.setPointerCapture(e.pointerId);
+										capture(e);
 										e.preventDefault();
 										e.stopPropagation();
 									}
@@ -2195,7 +2320,7 @@
 											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
 											: null;
 										figure.beginTransaction();
-										svgRef?.setPointerCapture(e.pointerId);
+										capture(e);
 										e.preventDefault();
 										e.stopPropagation();
 									}
@@ -2248,7 +2373,7 @@
 											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
 											: null;
 										figure.beginTransaction();
-										svgRef?.setPointerCapture(e.pointerId);
+										capture(e);
 										e.preventDefault();
 										e.stopPropagation();
 									}
@@ -2288,7 +2413,7 @@
 											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
 											: null;
 										figure.beginTransaction();
-										svgRef?.setPointerCapture(e.pointerId);
+										capture(e);
 										e.preventDefault();
 										e.stopPropagation();
 									}
@@ -2327,7 +2452,7 @@
 											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
 											: null;
 										figure.beginTransaction();
-										svgRef?.setPointerCapture(e.pointerId);
+										capture(e);
 										e.preventDefault();
 										e.stopPropagation();
 									}

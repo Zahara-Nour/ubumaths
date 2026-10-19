@@ -354,7 +354,13 @@ geste ; `holds` dit quel élément porte la classe `dragging` ; la prop `canvasT
 (`components/geometry/canvas-tool.ts`, barre d'outils de l'atelier) passe avant tout : un appui
 relâché sans bouger de 4 px est un clic transmis avec le point visé — 8 px à la souris, 20 px au
 doigt —, rien ne se glisse, le survol met ce point en évidence et va à `hover` ; le calque
-`overlay`, au-dessus des objets, porte le fantôme d'une construction) et
+`overlay`, au-dessus des objets, porte le fantôme d'une construction ; la prop `viewGestures`
+(vue Géométrie de l'atelier, défaut false) ajoute les gestes de la vue : deux doigts la déplacent
+(leur milieu) et la zooment (leur écart), quel que soit l'outil — un appui d'outil en cours ne
+clique plus, un glisser délégué en cours ignore le second doigt ; sans outil, un glisser sur le
+fond, souris ou doigt, la déplace ; le déplacement suit `clientX`/`clientY`, pas `movementX`,
+absent au doigt sur certains navigateurs ; `setPointerCapture` passe par `capture`, qui tolère un
+pointeur déjà levé) et
 `rendu: normal|croquis|mixte` (`renderMode` normal / rough / mixed). Mêmes mesures que le bloc
 statique : largeur de la fenêtre selon la taille (280 / 400 / 560 px), hauteur isotrope, marge de
 26 px pour les axes ; sur un écran plus étroit, la toile se réduit et garde la fenêtre entière.

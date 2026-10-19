@@ -1723,8 +1723,18 @@ existant puis la droite : `d_1 = parallele(C ; d)`, `d_1 = perpendiculaire(C ; d
 donne pas de direction (« Clique sur une droite, un segment ou une demi-droite. »). Fantômes : le
 milieu (segment et point) ; la parallèle ou la perpendiculaire par le pointeur, une fois la droite
 choisie. Limite connue : seul le premier morceau d'une fonction à plusieurs morceaux porte son nom
-dans la figure, les autres ne se visent pas. Reste au lot 3 : téléphone (PR 4, M6 : sur un
-téléphone la toile dépasse l'écran).
+dans la figure, les autres ne se visent pas.
+
+**Téléphone et tablette** (lot 3, PR 4, M6). La vue se déplace et se zoome sans rien écrire (ni
+ligne, ni étape) : deux doigts la déplacent et la zooment, quel que soit l'outil (un appui d'outil
+interrompu par un second doigt ne pose rien) ; avec Déplacer, un glisser sur le fond, au doigt ou
+à la souris, la déplace — un point se glisse toujours, le second doigt d'un glisser est ignoré
+(prop `viewGestures` de `GeometryCanvas`). Au doigt (`pointer: coarse`), boutons d'outils de
+44 px. Sous 640 px (le seuil de la console pleine page), la toile prend la vue (plancher de
+10rem), la barre d'outils passe **dessous**, sur une rangée qui défile de côté (ombre du côté où
+il reste des outils, case Repère au bout), consigne et invite de la vue vide se posent sur le haut
+de la toile (fond translucide, sans capter le doigt). Mesuré sur iPhone 13 (390 × 664) : toile de
+234 px de haut, « Mes objets » vide au-dessus.
 
 **𝒞f dans la vue Géométrie** (PR 3, K1-K3) : l'action de carte « Afficher dans Géométrie » /
 « Retirer de Géométrie » (`figure` dans `BY_KIND`, bascule comme « Tracer ») pose `inFigure` sur
