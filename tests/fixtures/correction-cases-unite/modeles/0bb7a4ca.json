@@ -1,0 +1,168 @@
+{
+	"id": "0bb7a4ca-9c8c-4d37-a7d9-889aa7ed152a",
+	"title": "Soustraire des durées (2)",
+	"description": "en HMS",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Calculer",
+	"level": 8,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"unit": "off",
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:b[h]+d[min]}}"
+				}
+			],
+			"statement": "J'ai commencé à regarder un film à ${{a}}~\\unit{h}~{{c}}~\\unit{min}$, et je l'ai terminé à ${{q}}~\\unit{h}~{{r}}~\\unit{min}$. Quelle était la durée de ce film ? (n'oublie pas l'unité)\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..2"
+				},
+				{
+					"name": "c",
+					"expression": "1..59"
+				},
+				{
+					"name": "d",
+					"expression": "1..59!{{eval:60-c}}"
+				},
+				{
+					"name": "q",
+					"expression": "eval:a+b+floor((c+d)/60)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:c+d-60*floor((c+d)/60)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:{{c}}+{{d}}<60|${{a}}~\\unit{h}~{{c}}~\\unit{min} + {{b}}~\\unit{h}~{{d}}~\\unit{min} = {{q}}~\\unit{h}~{{r}}~\\unit{min}$|$$\\begin{align}{{q}}~\\unit{h}~{{r}}~\\unit{min} &= {{a}}~\\unit{h}~{{c}}~\\unit{min} + {{eval:60-c}}~\\unit{min} + {{b}}~\\unit{h} + {{eval:c+d-60}}~\\unit{min}\\\\ &= {{a}}~\\unit{h}~{{c}}~\\unit{min} + {{b}}~\\unit{h}~{{d}}~\\unit{min}\\end{align}$$}}",
+					"Le film a duré ${{b}}~\\unit{h}~{{d}}~\\unit{min}$."
+				],
+				"feedback": {
+					"correct": "La durée du film est de {{answer}}."
+				}
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2\\,h\\,38\\,\\min"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "59",
+				"d": "38"
+			},
+			"description": "2 h 38 min",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["158\\unit{min}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "59",
+				"d": "38"
+			},
+			"description": "158 min",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,h\\,98\\,\\min"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "59",
+				"d": "38"
+			},
+			"description": "1 h 98 min non normalisé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["158"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "59",
+				"d": "38"
+			},
+			"description": "sans unité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\,h\\,38\\,\\min"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "59",
+				"d": "38"
+			},
+			"description": "heure de trop",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2\\,h\\,38\\,mn"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "59",
+				"d": "38"
+			},
+			"description": "mn au lieu de min",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,h\\,30\\,\\min"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "1",
+				"c": "12",
+				"d": "30"
+			},
+			"description": "sans retenue : 1 h 30 min",
+			"variationIndex": 0
+		}
+	]
+}

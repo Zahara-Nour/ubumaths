@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-19, phase 0 en cours (aucune PR)._
 
 - **État** : phase 0 — mesure synthétique faite (sonde `src/lib/questions/units/__tests__/mesure-phase0.test.ts`, 79 cas) ; aucune donnée de prod lue.
-- **Prochaine action** : selon le choix de David, construire l'oracle autrement (la prod n'a pas de réponses aux cases à unité).
-- **En attente de David** : source de l'oracle (cf. 2026-10-19, lecture prod).
+- **Prochaine action** : oracle option A (choix de David) — tirages à graines fixes des 25 modèles exportés (`tests/fixtures/correction-cases-unite/modeles/`) × batterie de réponses typiques → verdicts actuels figés.
+- **En attente de David** : rien (il a demandé si l'option B — enregistrer les réponses — vaut pour plus tard : répondu).
 - **Pièges en cours** : la route `tidy` (`valueIn`) rend `null` sur toute température (°C, K, °F) ; `extractValue` (parser.ts) lit `2\sqrt{2}` comme 2.
 - **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite`.
 
@@ -43,3 +43,11 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
   dans le navigateur sans rien garder. **Aucune réponse réelle d'élève à une case à unité en base.**
 - `question_templates` : ~25 modèles publiés mentionnent `"unit"` (filtre texte grossier).
 - Aucun contenu lu, rien d'écrit dans le dépôt.
+
+### 2026-10-19 — oracle : option A choisie par David
+
+- 25 modèles publiés à case à unité exportés de la prod (`scripts/export-question-templates.ts`,
+  lecture seule) dans `tests/fixtures/correction-cases-unite/modeles/`.
+- Périmètre réel : 6e-4e — longueurs, aires (cm² à hm²), durées (h + min), vitesse (km.h⁻¹), L,
+  €, kg. **Aucune** température, **aucune** précision (`precision`), **aucune** unité imposée.
+  Attendus : `{{eval:…;[unité]}}`, `{{eval:a[h]+b[min]}}`, `{{d}}` (variable à unité).
