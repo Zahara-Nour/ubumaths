@@ -11,12 +11,12 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1536._
+_Mis à jour le 2026-10-19, après #1538._
 
-- **État** : lots 1 et 2 livrés (#1474 → #1528) ; lot 3 PR 1 « le glisser » (#1533) et PR 2 « barre d'outils, outils de base » (#1536) mergées. Rien en prod. Pas de worktree ouvert.
-- **Prochaine action** : lot 3 PR 3 — outils de construction (Milieu, Intersection, Point sur un objet, Parallèle, Perpendiculaire ; M5 complet), à ajouter à `FIGURE_TOOLS` / `FigureToolbox` (`figure-tools.svelte.ts`), dans un nouveau worktree `../ubumaths-wt-atelier-geometrie`.
-- **En attente de David** : rien (vérification manuelle #1536 notée).
-- **Pièges** : banc A (24 objets) médiane 15,9 ms (M1 < 16 ms de justesse). Prévenir avant la session « atelier-refonte-interface ». PR qui touche `mathAST` → `mathast-expert`. Sur téléphone la toile dépasse l'écran (PR 4, M6). Un segment entre deux clics dans le vide = 3 étapes d'annulation (M7, gardé).
+- **État** : lots 1 et 2 livrés (#1474 → #1528) ; lot 3 PR 1 « le glisser » (#1533), PR 2 « outils de base » (#1536), PR 3 « outils de construction » (#1538 : Milieu, Intersection, Point sur un objet, Parallèle, Perpendiculaire, M5 complet) mergées. Rien en prod. Pas de worktree ouvert.
+- **Prochaine action** : lot 3 PR 4 — téléphone et tablette (M6 de `atelier-geometrie-lot3-phase0.md`), dans un nouveau worktree `../ubumaths-wt-atelier-geometrie`.
+- **En attente de David** : rien (vérification manuelle #1538 notée).
+- **Pièges** : au téléphone la toile est sous l'écran et petite (22 px/unité : les 20 px du doigt ≈ 1 unité) et la consigne passe sur deux lignes (PR 4). Banc A (24 objets) médiane 15,9 ms (M1 < 16 ms de justesse). Prévenir avant la session « atelier-refonte-interface ». PR qui touche `mathAST` → `mathast-expert`. Un segment entre deux clics dans le vide = 3 étapes d'annulation (M7, gardé).
 
 ## Lot 1 — découpage
 
