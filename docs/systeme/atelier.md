@@ -1816,9 +1816,10 @@ SET_ASIDE_STORAGE_KEY)`) et les migrations à sa relecture par l'atelier (`y` re
   `historique-garde-sonde.test.ts` (chaque commande permise composée par MathLive avec des
   arguments piégés : aucun ne finit dans un attribut), `historique-garde.svelte.test.ts` (le DOM
   rendu).
-- **Repartir de zéro** : confirmation, vide aussi l'historique **et ce qui en est rangé** ;
-  actif dès qu'il y a un objet OU une ligne de Calcul (les lignes survivent au rechargement) ;
-  absent d'un atelier reçu.
+- **Repartir de zéro** : confirmation, vide aussi l'historique **et ce qui en est rangé** (C3),
+  puis écrit la ligne « Atelier vidé. » ; actif dès qu'il y a un objet OU une ligne de Calcul
+  (les lignes survivent au rechargement) ; absent d'un atelier reçu. Annulable depuis le lot 5
+  (voir « Annuler / Rétablir »).
 
 ### Annuler / Rétablir (lot 5)
 
@@ -1898,8 +1899,23 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
 - **Le toast d'une suppression** reste (il fait découvrir le geste) ; son bouton défait cette
   suppression si elle est encore la dernière étape, et barre sa ligne « Supprimer ». Il se ferme au
   bout de 10 s, la suppression reste annulable par la barre.
-- **Pas encore** (PR 3) : Repartir de zéro et Charger vident la pile au lieu d'être annulables ;
-  ils passeront par `replaceWith` (point d'accroche commenté dans `loadNow`).
+- **Charger et Repartir de zéro** (PR 3) passent par `replaceWith` : UNE étape, pile gardée, que
+  Ctrl+Z défait (objets, grille, réglages). Leur toast propose « Annuler », qui ne défait que
+  leur étape si elle est encore la dernière (`atelier.topStepId`), comme celui d'une suppression.
+  - **Charger** ne remplace pas la console (décision de David du 2026-10-19, comme R4) : la ligne
+    « Atelier chargé depuis <fichier>. » s'ajoute (`desk.loaded`), elle porte l'étape et se barre
+    si on annule, puis les lignes du fichier, à la suite (les `garder` décalés). La copie mise de
+    côté suit Annuler / Rétablir (`onLeave: keepLeftAside`), seulement si l'atelier a été mis de
+    côté.
+  - **Repartir de zéro** vide la console comme avant (C3), puis `desk.reset()` écrit « Atelier
+    vidé. », qui porte l'étape. **Pas de copie mise de côté**, ni de `onLeave` : l'atelier vide
+    quitté par Annuler effacerait la copie (`keepAside` d'un atelier vide l'oublie, B1).
+  - **Au rejeu** : la ligne d'un chargement porte `{ kind: 'rupture', reason }` — le rejeu
+    s'arrête là et dit pourquoi (le contenu du fichier n'est pas dans l'historique). « Repartir de
+    zéro » porte `{ kind: 'vider' }` et se rejoue ; mais l'annuler ou le rétablir écrit une
+    `rupture` : l'atelier d'avant a quitté la console, le rejeu ne peut pas le rendre.
+- **Le rejeu d'un ancien historique** (`replayNow`) vide encore la pile (`restore`) : il contient
+  lui-même des annulations, qu'une étape englobante ne saurait pas refaire.
 
 ### La barre d'icônes, Enregistrer et Charger
 
@@ -1925,8 +1941,9 @@ AVANT lecture au-delà de `MAX_ATELIER_FILE_BYTES` (en octets, 4 × la limite en
 atelier riche en accents pèse plus d'octets que de caractères), puis `readAtelierFile` applique la
 limite exacte en caractères (`MAX_ATELIER_FILE_LENGTH`). Ensuite les **mêmes** schémas que le
 navigateur — objets et cellules triés un par un (`salvageState`), console par `readKeptHistory`
-(liste blanche de `safe-latex.ts`). Un atelier non vide demande confirmation (« Charger remplace
-l'atelier actuel »). Comme « Remplacer mon atelier » (R5, B8), l'atelier remplacé est **mis de
+(liste blanche de `safe-latex.ts`). Un atelier qui a des objets ou une grille demande
+confirmation (« Charger remplace l'atelier actuel ») ; la console seule ne compte pas, elle n'est
+pas remplacée (2026-10-19). Comme « Remplacer mon atelier » (R5, B8), l'atelier remplacé est **mis de
 côté** avant (`keepAside`), la confirmation le dit, et l'avis propose « Retrouver mon atelier
 précédent » ; s'il ne peut pas l'être, rien n'est chargé (B5). Sans stockage (navigateur qui
 n'enregistre rien), Charger reste ce qu'il était, sans copie. Un fichier refusé ne remplace rien, et la raison s'affiche dans les avis

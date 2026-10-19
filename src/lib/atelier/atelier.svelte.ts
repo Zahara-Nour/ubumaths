@@ -1620,6 +1620,14 @@ export class Atelier {
 		return this.#lastStepId;
 	}
 
+	/**
+	 * L'étape qu'Annuler défera maintenant, `null` sans étape : le toast d'un
+	 * chargement ou de « Repartir de zéro » ne défait que la sienne (lot 5, PR 3).
+	 */
+	get topStepId(): number | null {
+		return this.#history.topId;
+	}
+
 	/** Une étape est-elle ouverte ? Une `step` appelée dedans s'y fond. */
 	get inStep(): boolean {
 		return this.#stepDepth > 0;

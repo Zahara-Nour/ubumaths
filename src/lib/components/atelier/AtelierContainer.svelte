@@ -154,6 +154,7 @@
 	/** Les noms des étapes d'Annuler qui remplacent l'atelier (`atelier.replaceWith`). */
 	const REPLACE_STEP = 'remplacer mon atelier';
 	const RETRIEVE_STEP = 'retrouver mon atelier précédent';
+	const LOAD_STEP = 'charger un atelier';
 
 	/**
 	 * Sur un lien reçu (mode éphémère) ? Au départ, ce que dit la page ; « Remplacer
@@ -203,6 +204,8 @@
 		history: KeptHistory;
 		dropped: number;
 		consoleNotice: string | null;
+		/** Le nom du fichier : la console dit d'où vient l'atelier chargé */
+		fileName: string;
 	} | null>(null);
 	let confirmLoad = $state(false);
 	let loadInput = $state<HTMLInputElement | null>(null);
@@ -301,15 +304,20 @@
 			handleReplayRequest(read.history);
 			return;
 		}
-		pendingLoad = read;
-		if (!isEmpty) confirmLoad = true;
+		pendingLoad = { ...read, fileName: file.name };
+		// Seuls les objets et la grille sont remplacés : la console reste (2026-10-19)
+		if (!isBlankAtelier(atelier.serialize())) confirmLoad = true;
 		else loadNow();
 	}
 
-	/** Remplacer l'atelier et sa console par le fichier relu. */
+	/**
+	 * Remplacer l'atelier par le fichier relu, en UNE étape que Ctrl+Z défait
+	 * (lot 5, PR 3). La console n'est pas remplacée : les lignes du fichier
+	 * s'ajoutent à la suite (décision de David du 2026-10-19, comme R4).
+	 */
 	function loadNow() {
 		if (pendingLoad === null) return;
-		const { state, history, dropped, consoleNotice } = pendingLoad;
+		const { state, history, dropped, consoleNotice, fileName } = pendingLoad;
 		pendingLoad = null;
 		// R5, B8 : l'atelier remplacé est mis de côté AVANT, comme pour un lien reçu ;
 		// s'il ne peut pas l'être, rien n'est chargé (B5)
@@ -323,12 +331,15 @@
 				return;
 			}
 		}
-		// ⚠️ Point d'accroche de la PR 3 du lot 5 : `restore` VIDE la pile (Charger ne
-		// s'annule pas encore). Pour l'annuler, `atelier.replaceWith(state, 'charger un
-		// atelier', { onLeave: keepLeftAside })` — la copie suivra Annuler / Rétablir
-		const report = atelier.restore(state);
-		desk.clear();
-		desk.restoreHistory(history);
+		// La pile est gardée ; la copie mise de côté suit Annuler / Rétablir (B3) — si
+		// l'atelier a été mis de côté : sans copie, il n'y a rien à tenir à jour
+		const report = atelier.replaceWith(
+			state,
+			LOAD_STEP,
+			setAside ? { onLeave: keepLeftAside } : {}
+		);
+		const stepId = atelier.lastStepId;
+		desk.loaded(fileName, history);
 		// Les lignes chargées sont sous les yeux : pas de pastille « nouveau »
 		seen = desk.entries.length;
 		selected = null;
@@ -344,8 +355,36 @@
 			setAsideExists = true;
 			notices = [...notices, { kind: 'info', message: SET_ASIDE_NOTICE, action: retrieveAction() }];
 		}
-		toaster.success('Atelier chargé.');
+		offerUndo('Atelier chargé.', stepId);
 		announce('Atelier chargé.');
+	}
+
+	/**
+	 * Le toast d'un remplacement (Charger, Repartir de zéro), avec « Annuler » :
+	 * il ne défait que SON étape, si elle est encore la dernière — comme celui
+	 * d'une suppression (lot 5, Q4). Le toast part, Ctrl+Z reste.
+	 */
+	function offerUndo(message: string, stepId: number | null) {
+		if (stepId === null) {
+			toaster.success(message);
+			return;
+		}
+		toaster.success(message, {
+			description: 'Ctrl+Z (⌘Z) pour annuler',
+			duration: UNDO_DURATION_MS,
+			action: {
+				label: 'Annuler',
+				onClick: () => {
+					if (atelier.topStepId === stepId) {
+						undoStep();
+						return;
+					}
+					toaster.warning(
+						'D’autres changements ont suivi : utilise Annuler dans la barre pour remonter jusqu’à cette étape.'
+					);
+				}
+			}
+		});
 	}
 
 	/**
@@ -506,15 +545,22 @@
 		keepFocus();
 	}
 
-	/** Vider l'atelier — seulement après confirmation, jamais sur un lien reçu. */
+	/**
+	 * Vider l'atelier — seulement après confirmation (Q5), jamais sur un lien
+	 * reçu. En UNE étape que Ctrl+Z défait (lot 5, PR 3). Pas de copie mise de
+	 * côté : l'atelier vide quitté par Annuler l'effacerait (`keepAside`, B1).
+	 */
 	function handleReset() {
-		atelier.restore({ version: ATELIER_STATE_VERSION, objects: [] });
-		// L'historique aussi : il parlait d'objets supprimés (revue du lot 6, C3)
+		// L'historique aussi : il parlait d'objets supprimés (revue du lot 6, C3).
+		// Inchangé au lot 5 — à trancher par David si la console doit rester
 		desk.clear();
-		seen = 0;
+		desk.reset();
+		const stepId = atelier.lastStepId;
+		seen = desk.entries.length;
 		selected = null;
 		// Sur `/grapheur`, on retrouve l'écran d'arrivée : une carte prête à taper
 		startIfEmpty();
+		offerUndo('Atelier vidé.', stepId);
 		announce('L’atelier est vide.');
 	}
 

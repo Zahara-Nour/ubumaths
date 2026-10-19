@@ -47,6 +47,7 @@ import { syncPlots } from './plot-sync';
 import { removedLine, restoredLine } from './removal';
 import { stepOf, type ImportedHistory } from './history-import';
 import type { KeptHistory } from './history-storage';
+import { ATELIER_STATE_VERSION } from './persistence';
 import {
 	NOTHING_TO_EXPORT,
 	downloadHistory,
@@ -163,7 +164,15 @@ export type ReplayStep =
 	/** Rétablir la dernière étape annulée (lot 5, PR 2) */
 	| { readonly kind: 'rétablir' }
 	/** `line` : l'indice, dans l'historique, de la ligne gardée */
-	| { readonly kind: 'garder'; readonly line: number };
+	| { readonly kind: 'garder'; readonly line: number }
+	/** « Repartir de zéro » (lot 5, PR 3) : l'atelier vidé, la suite rejouée dessus */
+	| { readonly kind: 'vider' }
+	/**
+	 * Ce que l'historique ne sait pas refaire (lot 5, PR 3) : un fichier chargé,
+	 * dont le contenu n'y est pas, ou « Repartir de zéro » annulé, dont l'atelier
+	 * d'avant a quitté la console. Le rejeu s'arrête là et dit `reason`.
+	 */
+	| { readonly kind: 'rupture'; readonly reason: string };
 
 /** Ce qu'un rejeu a donné : tout, ou l'arrêt à une ligne (R3). */
 export type ReplayReport =
@@ -247,6 +256,13 @@ const TERMS_SHOWN = 10;
 
 /** Le nom d'une ligne de console dans l'infobulle d'Annuler : sa saisie, raccourcie. */
 const STEP_LABEL_LENGTH = 40;
+
+/** Le nom de l'étape de « Repartir de zéro » (infobulle d'Annuler, annonces). */
+export const RESET_STEP = 'repartir de zéro';
+
+/** Pourquoi le rejeu s'arrête sur l'annulation de « Repartir de zéro ». */
+const RESET_MOVED_REASON =
+	'« Repartir de zéro » a été annulé ici : l’atelier d’avant n’est pas dans cet historique.';
 
 /** « Annuler : « f(x)=x^2 » » — la saisie telle que tapée, raccourcie au besoin. */
 function lineStepLabel(text: string): string {
@@ -380,7 +396,23 @@ export class CalcDesk {
 	 * des objets (revue de #1518 : `a`, puis `f`, disparaissaient du rejeu).
 	 */
 	#replayable(stepId: number): boolean {
-		return this.entries.some((e) => e.stepId === stepId && e.replay !== undefined);
+		return this.entries.some(
+			(e) => e.stepId === stepId && e.replay !== undefined && e.replay.kind !== 'rupture'
+		);
+	}
+
+	/**
+	 * Le geste de la ligne « Annuler » ou « Rétablir » de l'étape `stepId`.
+	 *
+	 * ⚠️ « Repartir de zéro » vide la console : défaire son étape rend un atelier
+	 * que l'historique ne contient plus. Un `annuler` rejoué rendrait l'atelier
+	 * vide du rejeu, pas celui de l'écran : le rejeu s'arrête plutôt (lot 5, PR 3).
+	 */
+	#moveGesture(stepId: number, kind: 'annuler' | 'rétablir'): ReplayStep | null {
+		if (this.entries.some((e) => e.stepId === stepId && e.replay?.kind === 'vider')) {
+			return { kind: 'rupture', reason: RESET_MOVED_REASON };
+		}
+		return this.#replayable(stepId) ? { kind } : null;
 	}
 
 	/**
@@ -393,7 +425,7 @@ export class CalcDesk {
 		const moved = this.atelier.undoStep();
 		if (moved === null) return null;
 		this.#strike(moved.id, true);
-		this.#gesture = this.#replayable(moved.id) ? { kind: 'annuler' } : null;
+		this.#gesture = this.#moveGesture(moved.id, 'annuler');
 		this.#pendingStep = null;
 		this.#push({ label: 'Annuler', text: `Annulé : ${moved.label}.`, failed: false });
 		return moved;
@@ -404,7 +436,7 @@ export class CalcDesk {
 		const moved = this.atelier.redoStep();
 		if (moved === null) return null;
 		this.#strike(moved.id, false);
-		this.#gesture = this.#replayable(moved.id) ? { kind: 'rétablir' } : null;
+		this.#gesture = this.#moveGesture(moved.id, 'rétablir');
 		this.#pendingStep = null;
 		this.#push({ label: 'Rétablir', text: `Rétabli : ${moved.label}.`, failed: false });
 		return moved;
@@ -465,6 +497,49 @@ export class CalcDesk {
 		this.notice = null;
 		this.#typed = [];
 		this.#recalled = null;
+	}
+
+	/**
+	 * Un fichier vient d'être chargé (`atelier.replaceWith`, juste avant) : le
+	 * dire, puis ajouter ses lignes À LA SUITE — la console n'est pas remplacée,
+	 * ce sont les calculs de l'élève (décision de David du 2026-10-19, comme R4).
+	 *
+	 * La ligne « Atelier chargé depuis … » porte l'étape du chargement : Annuler
+	 * la barre. Au rejeu, elle arrête tout : le contenu du fichier n'est pas dans
+	 * l'historique. Rien des lignes ajoutées n'est refait.
+	 */
+	loaded(fileName: string, history: KeptHistory): void {
+		this.#gesture = {
+			kind: 'rupture',
+			reason: `l’atelier a été chargé depuis « ${fileName} », dont cet historique ne contient pas le contenu.`
+		};
+		this.#pendingStep = this.atelier.lastStepId;
+		this.#push({ label: 'Charger', text: `Atelier chargé depuis ${fileName}.`, failed: false });
+		// « Garder » vise une ligne du fichier : son indice suit le décalage
+		const offset = this.entries.length;
+		const appended = history.lines.map(({ replay, ...line }): Entry => ({
+			id: this.#nextId++,
+			...line,
+			...(replay !== undefined && {
+				replay: replay.kind === 'garder' ? { ...replay, line: replay.line + offset } : replay
+			})
+		}));
+		this.entries = [...this.entries, ...appended];
+		this.#typed = [...this.#typed, ...history.typed];
+		this.#recalled = null;
+	}
+
+	/**
+	 * « Repartir de zéro » : l'atelier vidé en UNE étape, que Ctrl+Z défait
+	 * (lot 5, PR 3), et sa ligne. La console, la vue la vide avant (revue du
+	 * lot 6, C3) ; au rejeu, elle ne l'est pas — seul l'atelier repart de zéro.
+	 */
+	reset(): void {
+		this.#gesture = { kind: 'vider' };
+		this.#step(RESET_STEP, () =>
+			this.atelier.replaceWith({ version: ATELIER_STATE_VERSION, objects: [] }, RESET_STEP)
+		);
+		this.#push({ label: 'Repartir de zéro', text: 'Atelier vidé.', failed: false });
 	}
 
 	/**
@@ -653,6 +728,12 @@ export class CalcDesk {
 				return this.undo() !== null ? null : 'il n’y avait rien à annuler.';
 			case 'rétablir':
 				return this.redo() !== null ? null : 'il n’y avait rien à rétablir.';
+			case 'vider':
+				this.reset();
+				return null;
+			// Le rejeu ne sait pas refaire ce qui suit : il s'arrête, et dit pourquoi
+			case 'rupture':
+				return step.reason;
 			case 'garder': {
 				const row = rows[step.line];
 				const kept = row === undefined ? undefined : this.entries[row];
