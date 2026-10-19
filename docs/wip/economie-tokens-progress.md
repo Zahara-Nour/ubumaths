@@ -8,11 +8,11 @@ status: ménage fait ; reste le tri de la mémoire (projets clos) et une vérifi
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1527._
+_Mis à jour le 2026-10-19, après la skill `menage-contexte`._
 
-- **État** : `/reprendre` tourne en Sonnet (`model: sonnet`, vaut pour le tour seulement) et attend toujours le go (#1527). Les autres skills restent sur le modèle de la session (choix de David : `doc-a-jour` compris).
-- **Prochaine action** : trier l'index mémoire (`~/.claude/projects/-Users-david-Coding-js-ubumaths/memory/MEMORY.md`, 12,8 Ko) — section « Projets — en cours » : passer les projets clos dans `archives.md`.
-- **En attente de David** : la liste des projets clos.
+- **État** : `/reprendre` tourne en Sonnet et attend toujours le go (#1527). Skill `/menage-contexte` créée : `CLAUDE.md` + mémoire traités ensemble (doublons croisés), plafonds 15 Ko / 10 Ko, Sonnet, propose puis applique ce que David valide.
+- **Prochaine action** : premier passage de `/menage-contexte` (il couvre le tri des projets clos de `MEMORY.md`, 12,8 Ko).
+- **En attente de David** : son go pour ce passage, puis ses choix dans la liste proposée.
 - **Worktree / branche** : aucun — commits de doc directs sur `main`.
 
 ## Journal (2026-10-19)

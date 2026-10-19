@@ -117,3 +117,14 @@ devait revenir.
 ---
 
 Vérifié contre le code le 2026-10-10.
+
+## `menage-contexte` — alléger `CLAUDE.md` et la mémoire
+
+`/menage-contexte` (ou « fais le ménage dans CLAUDE.md / la mémoire ») : la session traite
+**toujours les deux ensemble**, pour voir aussi les doublons entre eux. Elle mesure (plafonds :
+`CLAUDE.md` 15 Ko, `MEMORY.md` 10 Ko), repère les liens morts, les mémoires non indexées, les
+projets marqués clos, les chemins cités qui ont disparu, puis lit les deux fichiers et te propose
+une liste numérotée : archiver, fusionner, raccourcir, déplacer. **Elle ne touche à rien avant ta
+réponse**, ne supprime jamais une mémoire sans ton « oui » sur ce fichier, et ne retire jamais une
+règle de `CLAUDE.md` (elle en déplace seulement le détail ou le pourquoi). Comme `reprendre`, elle
+tourne en **Sonnet** pour ce tour ; l'application se fait au tour suivant.
