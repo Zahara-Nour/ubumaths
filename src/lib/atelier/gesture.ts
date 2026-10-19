@@ -10,6 +10,9 @@
  *   automatique) est un seul geste, deux appuis sont deux étapes. bits-ui
  *   appelle `onValueCommit` à chaque `keydown`, répétitions comprises : tant
  *   qu'une touche est enfoncée, il ne ferme rien ;
+ * - quand le navigateur reprend le geste (`pointercancel` : défilement au doigt,
+ *   geste du système) — bits-ui ne ferme rien dans ce cas, et le glissé suivant
+ *   du même curseur se fondait dans la même étape (revue de #1518) ;
  * - quand le curseur perd le focus, par sûreté.
  *
  * ⚠️ `keydown` se branche en CAPTURE (`onkeydowncapture`) sur le conteneur du
@@ -26,6 +29,8 @@ export interface GestureHandlers {
 	readonly keydown: () => void;
 	readonly keyup: () => void;
 	readonly focusout: () => void;
+	/** `pointercancel` sur le conteneur du curseur */
+	readonly pointercancel: () => void;
 }
 
 /** Les gestionnaires d'un curseur : `end` ferme le geste (`atelier.endGesture`). */
@@ -44,6 +49,9 @@ export function gestureHandlers(end: () => void): GestureHandlers {
 		},
 		focusout: () => {
 			keyHeld = false;
+			end();
+		},
+		pointercancel: () => {
 			end();
 		}
 	};
