@@ -71,7 +71,12 @@ Règles de la lecture naturelle (décisions de David du 2026-10-11) :
 - une **valeur** mal dimensionnée est en erreur dès sa définition, avec le refus de Calcul
   (`b = 3[min] + 2[km]`, ou `d = r + 2[m]` avec `r = 3[s]`) ; ce qui la cite aussi, et elle se
   répare quand la valeur citée change (`#quantityChecks`, `atelier.svelte.ts`, 2026-10-18 — avant,
-  elle était « ok » et le refus attendait qu'on la cite).
+  elle était « ok » et le refus attendait qu'on la cite). Le jugement porte sur l'arbre substitué,
+  pas sur son texte : `toCustom` écrit `3[m]*π/2` en `\pi:/2`, que rien ne relit (2026-10-19) ;
+- au **rejeu** d'un historique exporté avant cette lecture, une ligne réussie dans le fichier et
+  refusée parce qu'une lettre y est lue comme unité (`5 s + 1`) est refaite avec son ancien sens,
+  comme le dit l'aide : `5s + 1` (`withSingleLettersGlued`, `CalcDesk.replay`). Une ligne valide
+  dans les deux lectures (`2 h + 5 s`) se rejoue avec la nouvelle.
 
 Dans la carte, MathLive écrit l'espace tapée `\,` et « min » toujours en opérateur `\min` :
 `definitionFromField` les ramène au texte de Calcul avant `readNaturalQuantities`, et ne garde la

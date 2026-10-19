@@ -64,6 +64,23 @@ describe('une valeur mal dimensionnée est en erreur', () => {
 		expect(statusOf(s, 'f').status).toBe('error');
 	});
 
+	// Le texte relu de l'arbre (`\pi:/2`) ne se relisait pas : la faute échappait au contrôle
+	it.each([['b = 3[m]*π/2 + 1[s]'], ['b = π/2*3[m] + 1[s]'], ['b = 3[m]*π + 1[s]']])(
+		'avec π : %s',
+		(line) => {
+			const s = session(line);
+			expect(statusOf(s, 'b')).toEqual({
+				status: 'error',
+				message: 'On ne peut pas ajouter une longueur et une durée.'
+			});
+		}
+	);
+
+	it('avec π, par une valeur du panneau', () => {
+		const s = session('r = 3[s]', 'd = r*π/2 + 2[m]');
+		expect(statusOf(s, 'd').status).toBe('error');
+	});
+
 	it('se répare quand la valeur citée change', () => {
 		const s = session('r = 3[s]', 'd = r + 2[m]');
 		runInput(s, 'r = 3[m]');
@@ -78,7 +95,8 @@ describe('ce qui reste juste', () => {
 		['t = 2 h 30 min'],
 		['p = 5[km] + 300[m]'],
 		['w = 3'],
-		['q = 10[km]/1[km]']
+		['q = 10[km]/1[km]'],
+		['c = 3[m]*π/2 + 1[m]']
 	])('%s', (line) => {
 		const s = session(line);
 		const name = line.split(' ')[0];

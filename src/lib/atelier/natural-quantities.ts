@@ -274,3 +274,23 @@ export function singleLetterHint(units: readonly SingleLetterUnit[]): string | n
 	const number = written.slice(0, written.lastIndexOf(letter)).trim();
 	return `« ${written} » se lit comme une grandeur (${letter} est une unité) : pour ${number} × ${letter}, écris ${number}${letter}.`;
 }
+
+/**
+ * Le texte avec son ancien sens, d'avant la lecture des grandeurs : chaque
+ * lettre lue comme unité collée à son nombre, comme le dit l'aide (`5 s + 1` →
+ * `5s + 1`), ou `null` s'il n'y en a pas. Sert au rejeu d'un vieil historique.
+ */
+export function withSingleLettersGlued(text: string): string | null {
+	const { singleLetters } = readNaturalQuantities(text, []);
+	if (singleLetters.length === 0) return null;
+	let glued = text;
+	for (const { written, letter } of singleLetters) {
+		const number = written.slice(0, written.lastIndexOf(letter)).trim();
+		// `10^3 s` → `(10^3)s`, pas `10^3s` (= 10^(3s))
+		const factor = /^[\d.,]+$/.test(number) ? number : `(${number})`;
+		// L'occurrence qui commence un terme : le `5 s` de `2^5 s + 5 s` est le second (revue)
+		const escaped = written.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		glued = glued.replace(new RegExp(`(?<![\\w^.,/)])${escaped}`), `${factor}${letter}`);
+	}
+	return glued;
+}

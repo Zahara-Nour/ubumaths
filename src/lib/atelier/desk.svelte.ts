@@ -46,6 +46,7 @@ import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 import { syncPlots } from './plot-sync';
 import { removedLine, restoredLine } from './removal';
 import { stepOf, type ImportedHistory } from './history-import';
+import { withSingleLettersGlued } from './natural-quantities';
 import type { KeptHistory } from './history-storage';
 import { ATELIER_STATE_VERSION } from './persistence';
 import {
@@ -688,6 +689,7 @@ export class CalcDesk {
 			this.notice = null;
 			const missed = this.#replayStep(step, rows, graph, previous);
 			previous = step;
+			if (missed === null && !entry.failed) this.#replayWithOldReading(step, before);
 			const first = this.entries[before];
 			if (first !== undefined) rows[index] = before;
 			// R3 : on ne s'arrête que si la ligne AVAIT réussi. Une définition
@@ -715,6 +717,22 @@ export class CalcDesk {
 		}
 		this.notice = `Historique rejoué : ${replayed} ${replayed > 1 ? 'lignes' : 'ligne'}.`;
 		return { ok: true, replayed };
+	}
+
+	/**
+	 * Une saisie réussie dans le fichier, refusée parce qu'une lettre y est
+	 * désormais lue comme unité (`5 s + 1`, historique d'avant le lot C), est
+	 * refaite avec son ancien sens (`5s + 1`) : le refus ne reste pas à l'écran.
+	 */
+	#replayWithOldReading(step: ReplayStep, before: number): void {
+		if (step.kind !== 'saisie') return;
+		const refused = this.entries[before];
+		if (refused === undefined || !refused.failed || refused.result?.kind !== 'refus') return;
+		const glued = withSingleLettersGlued(step.input);
+		if (glued === null) return;
+		this.entries.splice(before);
+		this.notice = null;
+		this.#submit(glued, false);
 	}
 
 	/** Refaire un geste ; rend la raison d'un échec que la ligne ne dirait pas, sinon null. */
