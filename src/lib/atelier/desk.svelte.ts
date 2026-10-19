@@ -592,6 +592,20 @@ export class CalcDesk {
 		this.#submit(text, true, inputLatex);
 	}
 
+	/**
+	 * Une ligne ÉCRITE par un outil de la vue Géométrie (lot 3, PR 2, G2) : la
+	 * même ligne que si l'élève l'avait tapée — une étape, rejouable —, mais
+	 * jamais rappelée par ↑, et le brouillon de la console reste intact. Rend
+	 * la ligne écrite, ou `null` si rien ne s'est écrit.
+	 */
+	write(text: string): Entry | null {
+		const draft = this.draft;
+		const before = this.entries.length;
+		this.#submit(text, false);
+		this.draft = draft;
+		return this.entries.length > before ? (this.entries.at(-1) ?? null) : null;
+	}
+
 	/** `typed` : tapée par l'élève (rappelable par ↑), ou écrite par un bouton. */
 	#submit(text: string, typed: boolean, inputLatex?: string): void {
 		// `.exporter` : le pupitre tient l'historique, le moteur ne l'a jamais eu.

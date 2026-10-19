@@ -73,6 +73,7 @@
 		roughVectorHTML
 	} from '$lib/geometry-core/rendering/rough-geometry';
 	import type { PointDrag } from './point-drag';
+	import type { CanvasTool } from './canvas-tool';
 
 	/** L'aimantation d'un glisser délégué, en pixels (lot 3 de l'atelier, M2). */
 	const SNAP_PIXELS = 8;
@@ -81,6 +82,9 @@
 	 * qui tremble ne réécrit pas `(1/3 ; 2,25)` en `(0,3 ; 2,3)`.
 	 */
 	const DRAG_THRESHOLD_PIXELS = 4;
+
+	/** La tolérance d'un clic d'outil autour d'un point, en pixels (lot 3 de l'atelier, M5). */
+	const TOOL_PICK_PIXELS = { mouse: 8, touch: 20 } as const;
 
 	interface Props {
 		figure: Figure;
@@ -119,11 +123,18 @@
 		 */
 		pointDrag?: PointDrag;
 		/**
+		 * Outil de construction DÉLÉGUÉ (barre d'outils de l'atelier) : un clic
+		 * va à l'outil, rien ne se glisse. Absent : la toile glisse comme avant.
+		 */
+		canvasTool?: CanvasTool;
+		/**
 		 * Calque dessiné SOUS les objets (repère d'une figure stockée), recalculé à
 		 * chaque déplacement ou zoom de la vue. Son contenu doit être du SVG
 		 * (composant en `<svelte:options namespace="svg" />`).
 		 */
 		underlay?: Snippet<[{ viewport: Viewport; width: number; height: number }]>;
+		/** Calque dessiné AU-DESSUS des objets (fantôme d'une construction en cours), en SVG. */
+		overlay?: Snippet<[{ viewport: Viewport; width: number; height: number }]>;
 	}
 
 	let {
@@ -143,7 +154,9 @@
 		onViewportChange,
 		objectsMovable = true,
 		pointDrag,
-		underlay
+		canvasTool,
+		underlay,
+		overlay
 	}: Props = $props();
 
 	// Langue du contenu (séparateur décimal des étiquettes), posée par MarkdownRenderer
@@ -174,6 +187,9 @@
 	/** Le dernier mouvement d'un glisser délégué, pas encore transmis (une fois par image). */
 	let pendingMove: { x: number; y: number } | null = null;
 	let moveFrame: number | null = null;
+	/** Un appui avec un outil (`canvasTool`) : un clic s'il ne bouge pas avant le relâcher. */
+	let toolPress: { pointerId: number; startX: number; startY: number; moved: boolean } | null =
+		null;
 
 	// Slider elements (reactive to version changes). Un curseur CACHÉ n'a pas de
 	// réglette : la vue Figure de l'atelier pilote les siens depuis les cartes
@@ -442,6 +458,22 @@
 			return;
 		}
 
+		if (canvasTool) {
+			// Un second doigt invalide l'appui en cours (pincement, paume) : aucun clic
+			if (toolPress !== null && toolPress.pointerId !== e.pointerId) {
+				toolPress.moved = true;
+				e.preventDefault();
+				return;
+			}
+			// Un appui d'outil : le clic part au relâcher, s'il n'a pas bougé
+			if (e.button === 0) {
+				toolPress = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, moved: false };
+				svgRef?.setPointerCapture(e.pointerId);
+				e.preventDefault();
+			}
+			return;
+		}
+
 		if (pointDrag && startDelegatedDrag(e, pointDrag)) return;
 
 		// Objets figés (`deplacable: non`) : seule la vue se déplace
@@ -524,7 +556,7 @@
 
 	/** Le point se glisse-t-il (la main au survol) : par la figure, ou par `pointDrag`. */
 	function canDragPoint(el: GeoElement): boolean {
-		if (!interactive) return false;
+		if (!interactive || canvasTool) return false;
 		if (pointDrag?.canGrab(el.id)) return true;
 		return objectsMovable && 'draggable' in el && el.draggable === true;
 	}
@@ -578,6 +610,18 @@
 
 		const math = getMathCoords(e);
 		if (!math) return;
+
+		if (canvasTool) {
+			const press = toolPress;
+			if (press !== null && press.pointerId === e.pointerId && !press.moved) {
+				const path = Math.hypot(e.clientX - press.startX, e.clientY - press.startY);
+				if (path >= DRAG_THRESHOLD_PIXELS) press.moved = true;
+			}
+			// Le point qu'un clic choisirait, mis en évidence (M5)
+			hoveredId = findPointNear(figure, math.x, math.y, toolPickRadius(e) / ppu);
+			canvasTool.hover(math);
+			return;
+		}
 
 		// Au plus un mouvement par image : chacun recalcule tout l'atelier
 		if (delegated) {
@@ -704,7 +748,31 @@
 		}
 	}
 
+	/** La tolérance d'un clic d'outil, en pixels : plus large au doigt (M5). */
+	function toolPickRadius(e: PointerEvent): number {
+		return e.pointerType === 'touch' ? TOOL_PICK_PIXELS.touch : TOOL_PICK_PIXELS.mouse;
+	}
+
+	/** Le relâcher d'un appui d'outil : un clic, s'il n'a pas bougé. */
+	function endToolPress(e: PointerEvent, tool: CanvasTool) {
+		const press = toolPress;
+		if (press === null || press.pointerId !== e.pointerId) return;
+		toolPress = null;
+		if (press.moved) return;
+		const math = getMathCoords(e);
+		if (!math) return;
+		const pointId = findPointNear(figure, math.x, math.y, toolPickRadius(e) / ppu);
+		tool.click(math.x, math.y, pointId, SNAP_PIXELS / ppu);
+	}
+
+	function onPointerLeave() {
+		if (!canvasTool) return;
+		hoveredId = null;
+		canvasTool.hover(null);
+	}
+
 	function onPointerCancel(e: PointerEvent) {
+		if (toolPress?.pointerId === e.pointerId) toolPress = null;
 		if (foreignPointer(e)) return;
 		// Le point délégué reste où il est arrivé : le geste se ferme (M7)
 		endDelegatedDrag();
@@ -726,6 +794,11 @@
 			figure.commit();
 			draggingLabelId = null;
 			labelDragStart = null;
+			return;
+		}
+
+		if (canvasTool) {
+			endToolPress(e, canvasTool);
 			return;
 		}
 
@@ -905,6 +978,7 @@
 	}
 
 	function onWindowBlur() {
+		toolPress = null;
 		endDelegatedDrag();
 		if (draggingId) figure.discard();
 		if (draggingLabelId) figure.discard();
@@ -935,10 +1009,12 @@
 		class:interactive
 		class:dragging={draggingId !== null || delegated}
 		class:panning={isPanning || spaceHeld}
+		class:tool={canvasTool !== undefined}
 		onpointerdown={onPointerDown}
 		onpointermove={onPointerMove}
 		onpointerup={onPointerUp}
 		onpointercancel={onPointerCancel}
+		onpointerleave={onPointerLeave}
 		onwheel={onWheel}
 		ondblclick={onDblClick}
 	>
@@ -2265,6 +2341,11 @@
 				{/if}
 			{/each}
 		</g>
+
+		<!-- Calque au-dessus des objets (fantôme d'une construction en cours) -->
+		{#if overlay}
+			<g class="overlay">{@render overlay({ viewport, width, height })}</g>
+		{/if}
 	</svg>
 
 	{#if sliders.length > 0}
@@ -2335,6 +2416,11 @@
 
 	.geometry-canvas.interactive {
 		cursor: default;
+	}
+
+	/* Un outil de construction (atelier) : on vise, on ne saisit pas */
+	.geometry-canvas.interactive.tool {
+		cursor: crosshair;
 	}
 
 	.geometry-canvas.dragging {

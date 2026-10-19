@@ -11,12 +11,13 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1533._
+_Mis à jour le 2026-10-19, ouverture du lot 3 PR 2._
 
-- **État** : lots 1 et 2 livrés (#1474 → #1528) ; lot 3 PR 1 « le glisser » mergée (#1533, revue corrigée). Rien en prod. Pas de worktree ouvert.
-- **Prochaine action** : lot 3 PR 2 (voir `atelier-geometrie-lot3-phase0.md`), dans un nouveau worktree `../ubumaths-wt-atelier-geometrie`.
+- **État** : lots 1 et 2 livrés (#1474 → #1528) ; lot 3 PR 1 « le glisser » mergée (#1533). Lot 3 PR 2 « barre d'outils, outils de base » EN COURS. Rien en prod.
+- **Prochaine action** : PR 2 — tests d'abord (`figure-tools`, `FigureView`), puis implémentation, revue, PR.
 - **En attente de David** : rien.
-- **Pièges** : banc A (24 objets) médiane 15,9 ms, p90 17,6 ms (M1 < 16 ms tenu de justesse). Prévenir avant la session « atelier-refonte-interface ». PR qui touche `mathAST` → `mathast-expert`.
+- **Pièges** : banc A (24 objets) médiane 15,9 ms, p90 17,6 ms (M1 < 16 ms tenu de justesse). Prévenir avant la session « atelier-refonte-interface ». PR qui touche `mathAST` → `mathast-expert`. M3 donne `s = [AB]` en exemple, M4 nomme les segments `d, d_1…` : M4 suivi.
+- **Worktree / branche** : `../ubumaths-wt-atelier-geometrie` · `feat/atelier-geometrie-outils`.
 
 ## Lot 1 — découpage
 
@@ -571,3 +572,31 @@ déterminés »). Hors périmètre, noté : le grec indicé reste un `subscript`
   renumérote (`pt_4` → `pt_1`) ; un refus dit en plein geste s'efface au relâcher. Tests de
   couverture : direction (+x, −y), une image par mouvement et relâcher qui envoie le dernier,
   `point_sur` sur droite et demi-droite, A glissé avec M sur [AB].
+
+## Lot 3, PR 2 — la barre d'outils, outils de base (2026-10-19)
+
+Branche `feat/atelier-geometrie-outils`. Périmètre (découpage de la phase 0) : M3 (Déplacer,
+Point, Segment, Droite, Demi-droite, Cercle), M4, M5 partiel (un clic près d'un point existant
+le réutilise), M7, M8.
+
+- Plan : logique pure `src/lib/atelier/figure-tools.svelte.ts` (outil, construction en cours,
+  noms automatiques, lignes écrites) ; `desk.write(ligne)` — une ligne de console rejouable, une
+  étape, jamais rappelée par ↑ ; `GeometryCanvas` : clic délégué `canvasTool` (8 px souris,
+  20 px doigt) et calque `overlay` (fantôme) ; `FigureView` : barre d'outils (motif ARIA),
+  consigne, Échap, flèches sur le point choisi.
+- Lignes écrites : `A = (1,5 ; 2)`, `d = [AB]`, `d_1 = (AB)`, `d_2 = [AB)`,
+  `c = cercle(A ; passant=B)`.
+- Tests d'abord : `outils-figure.test.ts` (24, node, chemin complet par le pupitre) et
+  `outils-figure.svelte.test.ts` (10, Chromium) — vérifiés rouges (10/10) sur l'ancienne
+  `FigureView`. Atelier entier vert : 5216 node, 587 navigateur.
+- Vérifié à l'écran (Playwright, bureau 1280 × 800 et iPhone 13 au toucher) : segment, cercle
+  centré sur un point réutilisé, demi-droite, fantôme, anneau du point choisi. Corrigé au passage :
+  la consigne qui passait à la ligne sur téléphone faisait sauter la toile (ligne réservée).
+  Constat pour la PR 4 (M6) : sur téléphone, la toile dépasse l'écran sous le panneau.
+- Revue `code-reviewer` (Sonnet, 7 findings, aucun bloquant), corrigée — tests d'abord vérifiés
+  rouges (7 : 2 node, 5 navigateur) : premier point annulé ou supprimé → construction abandonnée
+  (`forgetVanished`, au clic et à chaque révision) ; geste des flèches fermé au relâcher où qu'il
+  arrive et à la perte du focus ; un second doigt invalide l'appui d'outil ; Échap déjà pris (la
+  console qu'il ferme, un champ, une fenêtre) n'abandonne rien ; un point construit visé n'est pas
+  le point des flèches, et un refus s'efface au clic d'outil. Gardé tel quel (M7 validé) : un
+  segment entre deux clics dans le vide fait trois étapes (A, B, le segment).

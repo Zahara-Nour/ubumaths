@@ -1083,6 +1083,17 @@
 		return { text: tabulationReport(name, done), failed: false };
 	}
 
+	/**
+	 * Une ligne écrite par un outil de la vue Géométrie (lot 3, PR 2) : dans la
+	 * console sans l'ouvrir (G7), et annoncée — la ligne et sa réponse (M8).
+	 */
+	function writeFromFigure(line: string): boolean {
+		const entry = desk.write(line);
+		if (entry === null) return false;
+		announce(`${entry.label} : ${entry.text}`);
+		return !entry.failed;
+	}
+
 	/** Vider puis écrire : le même message deux fois de suite est annoncé deux fois. */
 	function announce(message: string) {
 		announcement = '';
@@ -1271,7 +1282,7 @@
 					<GrapheurContainer store={graph} panel={false} />
 				{:else if activeView === 'figure'}
 					<!-- Une projection de l'atelier, comme les autres : elle lit l'atelier, ne garde rien -->
-					<FigureView />
+					<FigureView write={writeFromFigure} />
 				{:else}
 					{#key dataKey}
 						<DataView initialZone={dataZone} />

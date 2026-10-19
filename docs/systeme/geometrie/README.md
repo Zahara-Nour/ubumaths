@@ -24,7 +24,7 @@ Vue d'ensemble du moteur de géométrie de Chiphre. Référence du langage :
 [dsl-builtins.md](dsl-builtins.md). Règles courtes pour un agent qui code dans le module :
 [`src/lib/geometry-core/CLAUDE.md`](../../../src/lib/geometry-core/CLAUDE.md).
 
-> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18 ; `intersectLQExact` et `pointDrag` : 2026-10-19). Chaque fichier, fonction et builtin cité existe à cette
+> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18 ; `intersectLQExact`, `pointDrag` et `canvasTool` : 2026-10-19). Chaque fichier, fonction et builtin cité existe à cette
 > date (`git ls-files`, `git grep -w`). Ce qui n'est pas dans cette page ni dans
 > `dsl-builtins.md` n'est pas garanti : lire le code.
 
@@ -350,7 +350,11 @@ zoom et le déplacement de la vue restent actifs — prop `objectsMovable` de `G
 prop `pointDrag` (`components/geometry/point-drag.ts`, vue Géométrie de l'atelier) passe avant :
 la toile ne modifie plus la figure, elle transmet le point saisi et ses positions, une fois par
 image, à qui la possède, après un seuil de 4 px et avec l'écart de la saisie ; un seul pointeur par
-geste ; `holds` dit quel élément porte la classe `dragging`) et
+geste ; `holds` dit quel élément porte la classe `dragging` ; la prop `canvasTool`
+(`components/geometry/canvas-tool.ts`, barre d'outils de l'atelier) passe avant tout : un appui
+relâché sans bouger de 4 px est un clic transmis avec le point visé — 8 px à la souris, 20 px au
+doigt —, rien ne se glisse, le survol met ce point en évidence et va à `hover` ; le calque
+`overlay`, au-dessus des objets, porte le fantôme d'une construction) et
 `rendu: normal|croquis|mixte` (`renderMode` normal / rough / mixed). Mêmes mesures que le bloc
 statique : largeur de la fenêtre selon la taille (280 / 400 / 560 px), hauteur isotrope, marge de
 26 px pour les axes ; sur un écran plus étroit, la toile se réduit et garde la fenêtre entière.
