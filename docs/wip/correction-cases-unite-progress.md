@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, phase 0 en cours (aucune PR)._
+_Mis à jour le 2026-10-19, phase 0 (aucune PR)._
 
-- **État** : phase 0 — mesure synthétique faite (sonde `src/lib/questions/units/__tests__/mesure-phase0.test.ts`, 79 cas) ; aucune donnée de prod lue.
-- **Prochaine action** : oracle option A (choix de David) — tirages à graines fixes des 25 modèles exportés (`tests/fixtures/correction-cases-unite/modeles/`) × batterie de réponses typiques → verdicts actuels figés.
-- **En attente de David** : rien (il a demandé si l'option B — enregistrer les réponses — vaut pour plus tard : répondu).
-- **Pièges en cours** : la route `tidy` (`valueIn`) rend `null` sur toute température (°C, K, °F) ; `extractValue` (parser.ts) lit `2\sqrt{2}` comme 2.
+- **État** : oracle figé (`tests/fixtures/correction-cases-unite/oracle.json`, 1 724 réponses, test `oracle-cases-unite.test.ts`) ; route `tidy` mesurée dessus : 0 verdict changé sur 1 324 comparables.
+- **Prochaine action** : David tranche entre les options (cf. 2026-10-19, options) ; puis phase 0 comportements → tests → code.
+- **En attente de David** : choix d'option ; message « Pour un produit d'unités, écris m·s. » sur « 5 kg » (garder ?).
+- **Pièges en cours** : `valueIn` rend `null` sur les températures ; `extractValue` lit `2\sqrt{2}` comme 2 (aucun modèle publié ne l'atteint) ; `ORACLE_MAJ=1` réécrit l'oracle.
 - **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite`.
 
 ## Historique
@@ -51,3 +51,17 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
 - Périmètre réel : 6e-4e — longueurs, aires (cm² à hm²), durées (h + min), vitesse (km.h⁻¹), L,
   €, kg. **Aucune** température, **aucune** précision (`precision`), **aucune** unité imposée.
   Attendus : `{{eval:…;[unité]}}`, `{{eval:a[h]+b[min]}}`, `{{d}}` (variable à unité).
+
+### 2026-10-19 — oracle figé, route `tidy` mesurée
+
+- `oracle-cases-unite.test.ts` : 25 modèles × graines 1-8 × batterie (juste MathLive / clavier /
+  collé, point décimal, sans unité, valeur fausse, autre grandeur, convertie, convertie arrondie,
+  non convertie, facteur 10 pour une aire, durée composée, heures décimales, « 2,5 h = 2 h 50 »).
+  Verdicts via `validateAnswer` (le parcours de l'élève). 1 724 entrées.
+- Route `tidy` (`valueIn`, rationnels exacts) sur les mêmes réponses : **0 verdict différent**
+  sur 1 324 comparables ; les 400 autres (sans unité, autre grandeur) sont jugées avant la valeur.
+- `ce-integration.ts` : seul `compareQuantities` sert hors tests ; `evaluateQuantityValue` (via
+  lui), `convertQuantity`, `normalizeToBaseUnits`, `isValidQuantity`, `getUnitFromQuantity`,
+  `getValueFromQuantity` : morts.
+- Message `wrongMagnitude` : « … Pour un produit d'unités, écris m·s. » affiché aussi pour « 5 kg »
+  quand une longueur est attendue (200 entrées).

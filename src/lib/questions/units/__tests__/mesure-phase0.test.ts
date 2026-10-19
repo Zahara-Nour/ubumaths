@@ -4,7 +4,7 @@
  * Sonde temporaire : imprime un tableau, n'asserte rien.
  */
 import { describe, expect, it } from 'vitest';
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { validateQuantityAnswer } from '../validator';
 import { normalizeStudentQuantity } from '../student-input';
 import { readCompositeDuration } from '../composite-duration';
@@ -265,6 +265,56 @@ describe('mesure phase 0', () => {
 		writeFileSync(
 			process.env.MESURE_OUT ?? '/dev/null',
 			['| cas | saisie | attendu | actuel | tidy |', ...rows].join('\n')
+		);
+	});
+});
+
+/** Valeur de l'attendu maison `4[dam]` en LaTeX lisible par parseLatex */
+function houseToLatex(expected: string): { latex: string; unit: string } {
+	const m = /^\(?\+?(-?\d+(?:\.\d+)?)\[([^[\]]+)\]\)?$/.exec(expected.trim());
+	if (!m) throw new Error(expected);
+	return { latex: `${m[1]}~\\unit{${m[2]}}`, unit: m[2] };
+}
+
+describe('mesure phase 0 — route tidy sur l oracle', () => {
+	it('compare', () => {
+		const oracle = JSON.parse(
+			readFileSync('tests/fixtures/correction-cases-unite/oracle.json', 'utf8')
+		) as {
+			modele: string;
+			attendu: string;
+			famille: string;
+			saisie: string;
+			juste: boolean;
+			message: string | null;
+		}[];
+		const diffs: string[] = [];
+		let compared = 0;
+		for (const e of oracle) {
+			const { latex, unit } = houseToLatex(e.attendu);
+			const verdict = tidyVerdict({
+				user: e.saisie,
+				expected: latex.replace('~', ''),
+				unit,
+				note: ''
+			});
+			if (!verdict.startsWith('ÉGAL') && !verdict.startsWith('diff')) {
+				// tidy ne lit pas : seulement noté si l'actuel juge sur la valeur
+				if (e.juste)
+					diffs.push(`${e.modele} ${e.famille} ${e.saisie} actuel=JUSTE tidy=${verdict}`);
+				continue;
+			}
+			compared++;
+			const tidyJuste = verdict.startsWith('ÉGAL');
+			const unitFault = e.message !== null && !e.message.startsWith('Les blancs');
+			if (!unitFault && tidyJuste !== e.juste) {
+				diffs.push(`${e.modele} ${e.famille} ${e.saisie} actuel=${e.juste} tidy=${verdict}`);
+			}
+		}
+		expect(oracle.length).toBeGreaterThan(0);
+		writeFileSync(
+			process.env.MESURE_OUT ?? '/dev/null',
+			[`comparées : ${compared}`, ...diffs].join('\n')
 		);
 	});
 });
