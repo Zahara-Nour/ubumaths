@@ -581,13 +581,22 @@ describe('les textes de la commande', () => {
 });
 
 describe('l’historique de la grille et les créations', () => {
-	it('un relevé n’ajoute aucun geste à annuler dans Données (comme une liste créée dans Calcul)', () => {
+	// Lot 5 de la refonte : la ligne de console est UNE étape de la pile commune
+	// (le pupitre l'ouvre, comme ici) ; Annuler retire les listes ET leurs titres
+	it('un relevé est une seule étape : Annuler retire les listes et leurs titres', () => {
 		const s = session('t = 0');
+		const before = s.atelier.history.steps;
 
-		output(runInput(s, '.relever t ; t quand t va de 0 à 1 pas 1'));
+		s.atelier.step('relever', () =>
+			output(runInput(s, '.relever t ; t quand t va de 0 à 1 pas 1'))
+		);
+		const column = lists(s.atelier)[0].column;
+		expect(s.atelier.titleOf(column)).toBe('t');
+		expect(s.atelier.history.steps).toBe(before + 1);
 
-		expect(s.atelier.gridHistory).toEqual({ undo: 0, redo: 0 });
-		expect(s.atelier.titleOf(lists(s.atelier)[0].column)).toBe('t');
+		expect(s.atelier.undo()).toBe('relever');
+		expect(lists(s.atelier)).toEqual([]);
+		expect(s.atelier.titleOf(column)).toBe('');
 	});
 
 	it('la seconde liste refusée : la première est retirée, sa colonne sans titre', () => {

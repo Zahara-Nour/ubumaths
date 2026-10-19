@@ -232,6 +232,31 @@ const PANEL_ACTIONS: Readonly<Record<string, string>> = {
 /** Combien de termes « Premiers termes » écrit. */
 const TERMS_SHOWN = 10;
 
+/** Le nom d'une ligne de console dans l'infobulle d'Annuler : sa saisie, raccourcie. */
+const STEP_LABEL_LENGTH = 40;
+
+/** « Annuler : « f(x)=x^2 » » — la saisie telle que tapée, raccourcie au besoin. */
+function lineStepLabel(text: string): string {
+	const shown = text.length > STEP_LABEL_LENGTH ? `${text.slice(0, STEP_LABEL_LENGTH - 1)}…` : text;
+	return `« ${shown} »`;
+}
+
+/** « dériver f », « tracer g »… : le nom d'une action de carte comme étape (lot 5). */
+function actionStepLabel(actionId: string, name: string): string {
+	const shown = displayName(name);
+	const verbs: Readonly<Record<string, string>> = {
+		plot: 'tracer',
+		figure: 'Géométrie :',
+		derive: 'dériver',
+		reciprocal: 'réciproque de',
+		table: 'tabuler',
+		terms: 'premiers termes de',
+		data: 'données de'
+	};
+	const root = actionId.split(':')[0];
+	return `${verbs[root] ?? 'action sur'} ${shown}`;
+}
+
 /** Six chiffres significatifs, la virgule (comme le reste de l'atelier). */
 const TERM_FORMAT = new Intl.NumberFormat('fr-FR', {
 	maximumSignificantDigits: 6,
@@ -299,7 +324,9 @@ export class CalcDesk {
 	 */
 	image(name: string, value: string): { readonly text: string; readonly failed: boolean } {
 		this.#gesture = { kind: 'action', action: 'image', name, value: value.trim() };
-		const outcome = runAction(this.session, 'image', name, value.trim());
+		const outcome = this.atelier.step(`image par ${displayName(name)}`, () =>
+			runAction(this.session, 'image', name, value.trim())
+		);
 		const text = outcome.ok ? outcome.output : outcome.message;
 		this.#push({
 			label: `${displayName(name)}(${value.trim()})`,
@@ -392,7 +419,10 @@ export class CalcDesk {
 			if (typed) this.#exportTyped(text);
 			return;
 		}
-		const result = runInput(this.session, text, 'text');
+		// Une ligne = une étape (lot 5) ; un calcul qui ne change rien n'en fait pas
+		const result = this.atelier.step(lineStepLabel(text), () =>
+			runInput(this.session, text, 'text')
+		);
 		// La carte d'une mesure dit ce que dit la console : elle en recopie le mode
 		this.session.atelier.setCalcMode(
 			this.session.engine.getState().mode === 'decimal' ? 'decimal' : 'exact'
@@ -560,7 +590,8 @@ export class CalcDesk {
 			this.notice = "Il n'y a rien à garder dans cette ligne.";
 			return;
 		}
-		const kept = promote(this.session, entry.result);
+		const result = entry.result;
+		const kept = this.atelier.step('garder une ligne', () => promote(this.session, result));
 		this.notice = kept.ok ? `Gardé sous le nom « ${kept.object.name} ».` : kept.message;
 		// Une ligne aussi (toute action laisse sa trace dans Calcul, G7) : sans
 		// elle, le rejeu perdrait l'objet gardé et les lignes qui le citent
@@ -855,7 +886,11 @@ export class CalcDesk {
 		// la commande tapée — c'est elle qu'on rejouera
 		this.#gesture = { kind: 'action', action: actionId, name };
 		try {
-			return this.#runFromPanel(actionId, name, graph);
+			// Une action de carte = une étape (lot 5) ; « Comparer » passe par une
+			// ligne de console, étape emboîtée qui se fond dans celle-ci
+			return this.atelier.step(actionStepLabel(actionId, name), () =>
+				this.#runFromPanel(actionId, name, graph)
+			);
 		} finally {
 			// Une action sans ligne (diagramme, commande préparée) ne doit pas
 			// léguer son geste à la ligne d'un autre (revue du lot C1)

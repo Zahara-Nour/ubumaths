@@ -333,3 +333,130 @@ describe('t = [BC] réduit à un point : M = point_sur(t ; a) dit « Dépend de 
 		});
 	}
 });
+
+// =============================================================================
+// 6. Annuler / Rétablir (lot 5) : undo × N = l'atelier d'avant, redo × N = celui d'après
+// =============================================================================
+
+describe('Annuler / Rétablir rendent exactement les ateliers d’avant et d’après', () => {
+	for (const seed of [4, 19]) {
+		it(`graine ${seed} : figure de 24 objets, 15 étapes`, { timeout: 60_000 }, () => {
+			const atelier = figure24();
+			const built = atelier.history.steps;
+			const start = snapshot(atelier);
+			const steps = stepsOf(seed, 15, false);
+			for (const [i, step] of steps.entries()) atelier.step(`pas ${i + 1}`, () => step(atelier));
+			const end = snapshot(atelier);
+
+			// Les créations de la figure sont des étapes aussi : on ne défait que les
+			// gestes (un geste sans effet n'en est pas une)
+			while (atelier.history.steps > built) atelier.undo();
+			expect(snapshot(atelier)).toEqual(start);
+			while (atelier.redo() !== null);
+			expect(snapshot(atelier)).toEqual(end);
+		});
+	}
+
+	it('fonctions, grille, couleur, diagramme et suppression : chaque étape se défait', () => {
+		const atelier = figureFonctions();
+		const built = atelier.history.steps;
+		const states = [snapshot(atelier, FUNCTION_LINES)];
+		const chartShown = () => atelier.chartOf('N') !== undefined;
+		const charts = [chartShown()];
+		const gestures: [string, (a: Atelier) => void][] = [
+			['définir f', (a) => void a.update('f', 'x^2 + 1', 'text')],
+			[
+				'modifier la grille',
+				(a) =>
+					void a.editCells([
+						{ column: 20, row: 1, text: '3' },
+						{ column: 20, row: 2, text: '=T1*2' }
+					])
+			],
+			['titre', (a) => void a.setTitle(20, 'mesures')],
+			['montrer ou masquer k', (a) => a.setPlotted('k', !a.get('k')?.plotted)],
+			['trait de k', (a) => void a.setDisplay('k', { lineStyle: 'dashed' })],
+			[
+				'liste',
+				(a) => void a.create({ kind: 'list', name: 'N', definition: '1 ; 2 ; 2 ; 5' }, 'text')
+			],
+			['diagramme de N', (a) => void a.toggleChart('N', null)],
+			['supprimer k', (a) => void a.removeWithDependents('k')]
+		];
+		for (const [i, [label, gesture]] of gestures.entries()) {
+			atelier.step(label, () => gesture(atelier));
+			expect(atelier.history.steps, `« ${label} » est une étape`).toBe(built + i + 1);
+			states.push(snapshot(atelier, FUNCTION_LINES));
+			charts.push(chartShown());
+		}
+
+		for (let i = gestures.length; i > 0; i--) {
+			expect(atelier.undo(), `annuler ${gestures[i - 1][0]}`).toBe(gestures[i - 1][0]);
+			expect(snapshot(atelier, FUNCTION_LINES), `après avoir annulé le pas ${i}`).toEqual(
+				states[i - 1]
+			);
+			expect(chartShown()).toBe(charts[i - 1]);
+		}
+		expect(atelier.history.steps).toBe(built);
+		for (let i = 1; i <= gestures.length; i++) {
+			expect(atelier.redo()).toBe(gestures[i - 1][0]);
+			expect(snapshot(atelier, FUNCTION_LINES), `après avoir rétabli le pas ${i}`).toEqual(
+				states[i]
+			);
+		}
+	});
+
+	it('une étape emboîtée dans une autre ne compte pas : N mises à jour puis des créations = UNE étape', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '1' }, 'text');
+		const before = atelier.serialize();
+		atelier.step('relever', () => {
+			for (let i = 2; i < 50; i++) {
+				atelier.step('interne', () => atelier.update('a', String(i), 'text'));
+			}
+			atelier.update('a', '1', 'text');
+			atelier.create({ kind: 'list', name: 'X', definition: '{1 ; 2}' }, 'text');
+			atelier.create({ kind: 'list', name: 'Y', definition: '{3 ; 4}' }, 'text');
+			atelier.setTitle(0, 'abscisses');
+		});
+
+		expect(atelier.history.undo).toBe('relever');
+		expect(atelier.history.steps).toBe(2);
+		expect(atelier.undo()).toBe('relever');
+		expect(atelier.serialize()).toEqual(before);
+		expect(atelier.history.undo).toBe('ajouter a');
+	});
+
+	it('une étape qui ne change rien (un calcul) n’est pas gardée', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '1' }, 'text');
+		atelier.step('calculer', () => atelier.get('a'));
+		expect(atelier.history.undo).toBe('ajouter a');
+		expect(atelier.history.steps).toBe(1);
+	});
+
+	it('restore() (chargement, autre onglet, lien reçu) vide la pile', () => {
+		const atelier = new Atelier();
+		atelier.step('ajouter a', () =>
+			atelier.create({ kind: 'value', name: 'a', definition: '1' }, 'text')
+		);
+		atelier.restore({ version: atelier.serialize().version, objects: [] });
+		expect(atelier.history).toEqual({ undo: null, redo: null, steps: 0 });
+	});
+
+	it('un changement hors étape n’est jamais perdu par Annuler : il devient sa propre étape', () => {
+		const atelier = new Atelier();
+		atelier.step('ajouter a', () =>
+			atelier.create({ kind: 'value', name: 'a', definition: '1' }, 'text')
+		);
+		// Un curseur glissé (pas encore une étape à la PR 1) : hors de toute étape
+		atelier.slideTo('a', 5);
+		expect(atelier.undo()).toBe('modifier l’atelier');
+		expect(atelier.get('a')?.definition).toBe('1');
+		expect(atelier.undo()).toBe('ajouter a');
+		expect(atelier.get('a')).toBeUndefined();
+		expect(atelier.redo()).toBe('ajouter a');
+		expect(atelier.redo()).toBe('modifier l’atelier');
+		expect(atelier.get('a')?.definition).toBe('5');
+	});
+});

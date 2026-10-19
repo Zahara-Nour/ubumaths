@@ -1,13 +1,14 @@
 /**
  * Annuler dans la grille (tableur intégré, lot 1, PR 3a — décision T6).
  *
- * Exception à D6 (« pas d'annulation globale »), limitée à la grille : saisie,
- * collage, effacement et titres s'annulent ; nommer ou supprimer une liste
- * reste un geste d'objet, avec son propre « Annuler ».
+ * Depuis le lot 5 de la refonte (2026-10-19), la grille n'a plus sa propre
+ * pile : ses gestes sont des étapes de la pile commune de l'atelier
+ * (`atelier-annuler-retablir-phase0.md`). Un geste reste UNE étape.
  */
 
 import { describe, it, expect } from 'vitest';
-import { Atelier, MAX_GRID_UNDO } from '../atelier.svelte';
+import { Atelier, OUTSIDE_STEP_LABEL } from '../atelier.svelte';
+import { DEFAULT_HISTORY_LIMITS } from '../history-stack';
 
 const A = 0;
 const B = 1;
@@ -18,12 +19,12 @@ describe('annuler, rétablir', () => {
 		a.editCells([{ column: A, row: 1, text: '12' }]);
 		a.editCells([{ column: A, row: 1, text: '15' }]);
 
-		expect(a.undoGrid().ok).toBe(true);
+		expect(a.undo()).toBe('modifier la grille');
 		expect(a.cell(A, 1)).toBe('12');
-		expect(a.undoGrid().ok).toBe(true);
+		expect(a.undo()).not.toBeNull();
 		expect(a.cell(A, 1)).toBe('');
 
-		expect(a.redoGrid().ok).toBe(true);
+		expect(a.redo()).not.toBeNull();
 		expect(a.cell(A, 1)).toBe('12');
 	});
 
@@ -35,12 +36,12 @@ describe('annuler, rétablir', () => {
 			['160', '48']
 		]);
 
-		a.undoGrid();
+		expect(a.undo()).toBe('coller dans la grille');
 
 		expect(a.cell(A, 1)).toBe('');
 		expect(a.cell(B, 2)).toBe('');
 		expect(a.titleOf(A)).toBe('');
-		expect(a.gridHistory.undo).toBe(0);
+		expect(a.history.steps).toBe(0);
 	});
 
 	it('dans une colonne nommée, la liste revient', () => {
@@ -48,7 +49,7 @@ describe('annuler, rétablir', () => {
 		a.create({ kind: 'list', name: 'L', definition: '1 ; 2' });
 		a.editCells([{ column: A, row: 2, text: '7' }]);
 
-		a.undoGrid();
+		a.undo();
 
 		expect(a.get('L')?.definition).toBe('1 ; 2');
 	});
@@ -57,41 +58,41 @@ describe('annuler, rétablir', () => {
 		const a = new Atelier();
 		a.editCells([{ column: A, row: 1, text: '1 ; 2 ; 3' }]);
 
-		a.undoGrid();
+		a.undo();
 
 		expect(a.cell(A, 3)).toBe('');
+		expect(a.history.steps).toBe(0);
 	});
 
 	it('un nouveau geste efface ce qui pouvait être rétabli', () => {
 		const a = new Atelier();
 		a.editCells([{ column: A, row: 1, text: '1' }]);
-		a.undoGrid();
+		a.undo();
 		a.editCells([{ column: A, row: 1, text: '2' }]);
 
-		expect(a.redoGrid().ok).toBe(false);
-		expect(a.gridHistory.redo).toBe(0);
+		expect(a.redo()).toBeNull();
+		expect(a.history.redo).toBeNull();
 	});
 
-	it('rien à annuler : refus, rien ne bouge', () => {
+	it('rien à annuler : null, rien ne bouge', () => {
 		const a = new Atelier();
 
-		const undone = a.undoGrid();
-
-		expect(undone.ok).toBe(false);
-		if (!undone.ok) expect(undone.message).toContain('Rien à annuler');
+		expect(a.undo()).toBeNull();
 	});
 
-	it('une case changée ailleurs depuis (carte, Calcul) : refus, jamais par-dessus', () => {
+	// Avant le lot 5, la grille refusait d'annuler par-dessus un changement venu
+	// d'ailleurs. Avec des photos, ce changement devient sa propre étape :
+	// Annuler le défait d'abord, rien n'est jamais écrasé ni perdu
+	it('une case changée ailleurs depuis (carte, Calcul) : défaite d’abord, puis la saisie', () => {
 		const a = new Atelier();
 		a.create({ kind: 'list', name: 'L', definition: '1' });
 		a.editCells([{ column: A, row: 1, text: '5' }]);
 		a.update('L', '9');
 
-		const undone = a.undoGrid();
-
-		expect(undone.ok).toBe(false);
-		expect(a.cell(A, 1)).toBe('9');
-		expect(a.gridHistory.undo).toBe(0);
+		expect(a.undo()).toBe(OUTSIDE_STEP_LABEL);
+		expect(a.cell(A, 1)).toBe('5');
+		expect(a.undo()).toBe('modifier la grille');
+		expect(a.cell(A, 1)).toBe('1');
 	});
 
 	it('un geste sans effet n’entre pas dans l’historique', () => {
@@ -99,14 +100,16 @@ describe('annuler, rétablir', () => {
 		a.editCells([{ column: A, row: 1, text: '' }]);
 		a.setTitle(A, '');
 
-		expect(a.gridHistory.undo).toBe(0);
+		expect(a.history.steps).toBe(0);
 	});
 
-	it(`l’historique garde ${MAX_GRID_UNDO} gestes au plus`, () => {
+	it(`l’historique garde ${DEFAULT_HISTORY_LIMITS.maxSteps} étapes au plus`, () => {
 		const a = new Atelier();
-		for (let i = 1; i <= MAX_GRID_UNDO + 5; i++) a.editCells([{ column: A, row: 1, text: `${i}` }]);
+		for (let i = 1; i <= DEFAULT_HISTORY_LIMITS.maxSteps + 5; i++) {
+			a.editCells([{ column: A, row: 1, text: `${i}` }]);
+		}
 
-		expect(a.gridHistory.undo).toBe(MAX_GRID_UNDO);
+		expect(a.history.steps).toBe(DEFAULT_HISTORY_LIMITS.maxSteps);
 	});
 
 	it('relire un atelier (lien, sauvegarde, zéro) vide l’historique', () => {
@@ -115,13 +118,13 @@ describe('annuler, rétablir', () => {
 
 		a.restore({ version: 2, objects: [] });
 
-		expect(a.gridHistory.undo).toBe(0);
-		expect(a.undoGrid().ok).toBe(false);
+		expect(a.history.steps).toBe(0);
+		expect(a.undo()).toBeNull();
 	});
 
-	// Revue de la PR 3a : la grille annulait un geste PLUS ANCIEN qu'une
-	// suppression, et la suppression ne pouvait plus s'annuler (objets perdus)
-	it('une suppression de carte ferme l’historique de la grille ; son « Annuler » marche', () => {
+	// Revue de la PR 3a : une suppression devait rester annulable après des
+	// gestes de grille. Une seule pile désormais : elle est la dernière étape
+	it('une suppression de carte après une saisie : son « Annuler » marche', () => {
 		const a = new Atelier();
 		a.create({ kind: 'list', name: 'L', definition: '1 ; 2 ; 3' });
 		a.create({ kind: 'value', name: 'k', definition: '2' });
@@ -130,14 +133,14 @@ describe('annuler, rétablir', () => {
 		const removed = a.removeWithDependents('k');
 		if (!removed.ok) throw new Error(removed.message);
 
-		expect(a.gridHistory.undo).toBe(0);
-		expect(a.undoGrid().ok).toBe(false);
+		expect(a.history.undo).toBe('supprimer k');
 		expect(a.undoRemoval(removed)).toBe(true);
 		expect(a.get('k')).toBeDefined();
+		expect(a.undo()).toBe('modifier la grille');
+		expect(a.get('L')?.definition).toBe('1 ; 2 ; 3');
 	});
 
-	// Revue : une même case écrite deux fois dans un geste faisait croire à un
-	// changement venu d'ailleurs, et l'historique était effacé
+	// Revue : une même case écrite deux fois dans un geste
 	it('une case écrite deux fois dans un même geste s’annule', () => {
 		const a = new Atelier();
 		a.editCells([
@@ -145,20 +148,18 @@ describe('annuler, rétablir', () => {
 			{ column: A, row: 2, text: '9' }
 		]);
 
-		expect(a.undoGrid().ok).toBe(true);
+		expect(a.undo()).not.toBeNull();
 		expect(a.cell(A, 1)).toBe('');
 		expect(a.cell(A, 2)).toBe('');
 	});
 
-	it('nommer une colonne n’est pas un geste de la grille', () => {
+	it('nommer une colonne est sa propre étape', () => {
 		const a = new Atelier();
 		a.editCells([{ column: A, row: 1, text: '1' }]);
 		a.nameColumn(A, 'L');
 
-		a.undoGrid();
-
-		// L'annulation défait la SAISIE ; la liste reste, vide
-		expect(a.get('L')).toBeDefined();
-		expect(a.cell(A, 1)).toBe('');
+		expect(a.undo()).toBe('nommer la colonne A');
+		expect(a.get('L')).toBeUndefined();
+		expect(a.cell(A, 1)).toBe('1');
 	});
 });

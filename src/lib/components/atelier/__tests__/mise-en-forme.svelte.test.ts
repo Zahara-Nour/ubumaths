@@ -335,7 +335,7 @@ describe('les cas limites de la barre (revue)', () => {
 		}
 		await settle();
 		expect(atelier.styleAt(0, 1)).toEqual({ bold: true });
-		expect(atelier.gridHistory.undo).toBe(2);
+		expect(atelier.history.steps).toBe(2);
 	});
 
 	it('« Valeur exacte » ne paraît sous un format que si l’arrondi perd quelque chose', async () => {

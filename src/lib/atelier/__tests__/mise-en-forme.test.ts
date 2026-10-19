@@ -122,9 +122,9 @@ describe('§3 annuler, recopier, copier-coller (T6, Q-MF-4)', () => {
 		const a = new Atelier();
 		a.applyStyle({ left: A, right: A, top: 1, bottom: 1 }, { bold: true });
 
-		a.undoGrid();
+		a.undo();
 		expect(a.styleAt(A, 1)).toEqual({});
-		a.redoGrid();
+		a.redo();
 		expect(a.styleAt(A, 1)).toEqual({ bold: true });
 	});
 
@@ -268,11 +268,11 @@ describe('revue : une mise en forme rangée sous forme canonique', () => {
 
 	it('effacer une zone jamais mise en forme ne note aucun geste', () => {
 		const a = new Atelier();
-		const before = a.gridHistory.undo;
+		const before = a.history.steps;
 
 		a.clearStyle({ left: A, right: B, top: 1, bottom: 5 });
 
-		expect(a.gridHistory.undo).toBe(before);
+		expect(a.history.steps).toBe(before);
 	});
 
 	it('au plafond, un collage est refusé ENTIER : aucune case écrite', () => {
@@ -325,7 +325,7 @@ describe('revue : une mise en forme rangée sous forme canonique', () => {
 		};
 		mergeInto(personal, received);
 
-		personal.undoGrid();
+		personal.undo();
 
 		expect(personal.cell(A, 1)).toBe('');
 		expect(personal.styleAt(A, 1)).toEqual({});
@@ -375,11 +375,11 @@ describe('contre-revue', () => {
 		const a = new Atelier();
 		a.applyStyle({ left: A, right: A, top: 1, bottom: 1 }, { italic: true });
 		a.applyStyle({ left: A, right: A, top: 1, bottom: 1 }, { bold: true });
-		const before = a.gridHistory.undo;
+		const before = a.history.steps;
 
 		a.applyStyle({ left: A, right: A, top: 1, bottom: 1 }, { bold: true, italic: true });
 
-		expect(a.gridHistory.undo).toBe(before);
+		expect(a.history.steps).toBe(before);
 	});
 
 	it('Effacer passe toujours, même au plafond', () => {

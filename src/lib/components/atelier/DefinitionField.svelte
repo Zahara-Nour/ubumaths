@@ -17,6 +17,7 @@
 	import { internalDefinition, typedLetterOf } from '$lib/atelier/letter';
 	import { intervalWord, ONLY_FUNCTIONS, readInterval, splitInterval } from '$lib/atelier/interval';
 	import { parseDefinition } from '$lib/atelier/parse';
+	import { displayName } from '$lib/atelier/names';
 	import type { AtelierObject } from '$lib/atelier/types';
 	import { isConstruction } from '$lib/atelier/construction';
 
@@ -177,13 +178,16 @@
 		const wanted =
 			written !== null && isWholeLine(written, letter) ? undefined : (written ?? undefined);
 		if (definition === object.definition && wanted === intervalOf(object)) return;
-		// I6 : effacer « sur … » retire l'intervalle (`null`)
-		const updated = atelier.update(
-			object.name,
-			definition,
-			'keyboard',
-			undefined,
-			object.kind === 'function' ? written : undefined
+		// I6 : effacer « sur … » retire l'intervalle (`null`). Une validation = une
+		// étape d'Annuler / Rétablir (lot 5)
+		const updated = atelier.step(`modifier ${displayName(object.name)}`, () =>
+			atelier.update(
+				object.name,
+				definition,
+				'keyboard',
+				undefined,
+				object.kind === 'function' ? written : undefined
+			)
 		);
 		// Ensemble illisible, vide, hors du domaine (I3) : rien n'est rangé
 		if (!updated.ok) {

@@ -135,7 +135,7 @@ describe('§1 tabuler une fonction', () => {
 		const a = withF();
 		a.tabulate({ name: 'f', from: '0', to: '4', step: '1' });
 
-		a.undoGrid();
+		a.undo();
 
 		expect(a.cell(A, 1)).toBe('');
 		expect(a.cell(B, 5)).toBe('');

@@ -2,7 +2,8 @@
  * La barre d'icônes de l'atelier — lot 1 de
  * `docs/wip/atelier-refonte-interface-phase0.md` (validé par David le 2026-10-18).
  *
- * À gauche Repartir de zéro, Charger, Enregistrer ; à droite Partager, Réglages.
+ * À gauche Annuler, Rétablir (lot 5), Repartir de zéro, Charger, Enregistrer ;
+ * à droite Console, Partager, Réglages.
  * Icônes seules : le nom est dans `aria-label` et dans l'infobulle. Un bouton
  * indisponible reste focalisable, et dit pourquoi.
  */
@@ -106,7 +107,7 @@ function atelierFile(build: (atelier: Atelier, desk: CalcDesk) => void): File {
 // =============================================================================
 
 describe('la barre d’icônes', () => {
-	it('des icônes seules, nommées : à gauche les fichiers, à droite la console, partager et régler', async () => {
+	it('des icônes seules, nommées : à gauche annuler et les fichiers, à droite la console, partager et régler', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
 		const { container } = await render(AtelierContainer, { atelier });
@@ -115,7 +116,13 @@ describe('la barre d’icônes', () => {
 			[...group.querySelectorAll('button')].map((b) => b.getAttribute('aria-label'))
 		);
 		expect(groups).toEqual([
-			['Repartir de zéro', 'Charger un atelier', 'Enregistrer l’atelier'],
+			[
+				'Annuler : ajouter f',
+				'Rétablir',
+				'Repartir de zéro',
+				'Charger un atelier',
+				'Enregistrer l’atelier'
+			],
 			['Console', 'Partager', 'Réglages']
 		]);
 		// Icône seule : aucun texte visible, l'infobulle porte le nom
@@ -152,14 +159,15 @@ describe('la barre d’icônes', () => {
 		expect(document.activeElement).toBe(buttons[0]);
 	});
 
-	it('ni Annuler ni Rétablir avant le lot 5', async () => {
+	it('Annuler et Rétablir indisponibles, avec leur raison, quand la pile est vide (lot 5)', async () => {
 		const { container } = await render(AtelierContainer, { atelier: new Atelier() });
 
-		const labels = [...toolbar(container).querySelectorAll('button')].map((b) =>
-			b.getAttribute('aria-label')
-		);
-		expect(labels).not.toContain('Annuler');
-		expect(labels).not.toContain('Rétablir');
+		const undo = tool(container, 'Annuler')!;
+		const redo = tool(container, 'Rétablir')!;
+		expect(undo.getAttribute('aria-disabled')).toBe('true');
+		expect(redo.getAttribute('aria-disabled')).toBe('true');
+		expect(reasonOf(undo)).toBe('Rien à annuler.');
+		expect(reasonOf(redo)).toBe('Rien à rétablir.');
 	});
 
 	it('atelier vide : Repartir de zéro, Enregistrer et Partager indisponibles, avec leur raison', async () => {
@@ -209,7 +217,13 @@ describe('la barre d’icônes', () => {
 		const labels = [...toolbar(container).querySelectorAll('button')].map((b) =>
 			b.getAttribute('aria-label')
 		);
-		expect(labels).toEqual(['Enregistrer l’atelier', 'Console', 'Réglages']);
+		expect(labels).toEqual([
+			'Annuler : ajouter f',
+			'Rétablir',
+			'Enregistrer l’atelier',
+			'Console',
+			'Réglages'
+		]);
 		// Le bandeau et « Garder dans mon atelier » restent
 		expect(container.textContent).toContain('Le tien n’a pas été modifié.');
 		expect(container.textContent).toContain('Garder dans mon atelier');

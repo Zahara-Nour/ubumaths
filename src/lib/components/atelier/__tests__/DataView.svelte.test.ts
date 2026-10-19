@@ -745,24 +745,27 @@ describe('annuler dans la grille (T6)', () => {
 		expect(atelier.get('a')).toBeDefined();
 	});
 
-	it('les boutons « Annuler » et « Rétablir » : désactivés avec leur raison quand il n’y a rien', async () => {
+	// Lot 5 (Q3) : la grille n'a plus ses propres boutons, la barre de l'atelier
+	// annule ses gestes comme les autres
+	it('plus de boutons « Annuler » / « Rétablir » propres à la grille : ceux de la barre la défont', async () => {
 		const atelier = new Atelier();
 		const { container } = await openData(atelier);
-		const button = (label: string) =>
-			[...container.querySelectorAll('.outils button')].find(
-				(b) => b.textContent?.trim() === label
-			) as HTMLButtonElement;
-
-		expect(button('Annuler').disabled).toBe(true);
-		expect(button('Annuler').title).toContain('Rien à annuler');
+		const own = [...container.querySelectorAll('.donnees button')].map((b) =>
+			b.textContent?.trim()
+		);
+		expect(own).not.toContain('Annuler');
+		expect(own).not.toContain('Rétablir');
 
 		atelier.editCells([{ column: 0, row: 1, text: '3' }]);
 		await settle();
-		button('Annuler').click();
+		const undo = container.querySelector(
+			'[role="toolbar"] button[aria-label="Annuler : modifier la grille"]'
+		) as HTMLButtonElement;
+		undo.click();
 		await settle();
 
 		expect(atelier.cell(0, 1)).toBe('');
-		expect(button('Rétablir').disabled).toBe(false);
+		expect(atelier.history.redo).toBe('modifier la grille');
 	});
 });
 
@@ -844,7 +847,7 @@ describe('Relancer', () => {
 		press({ ctrlKey: true });
 		await settle();
 
-		expect(atelier.gridHistory.undo).toBe(2);
+		expect(atelier.history.steps).toBe(2);
 	});
 
 	it('F9 relance aussi, depuis une case', async () => {

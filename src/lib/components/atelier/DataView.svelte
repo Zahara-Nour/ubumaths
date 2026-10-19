@@ -544,21 +544,9 @@
 			focusSelected();
 			return;
 		}
-		// Ctrl/⌘+Z annule, Ctrl/⌘+Maj+Z (ou Ctrl+Y) rétablit, dans la grille (T6).
-		// ⚠️ Arrêté ici : l'atelier écoute Ctrl+Z sur la fenêtre pour annuler une
-		// suppression de carte, qui n'est pas un geste de la grille
-		// Seulement s'il y a de quoi : sinon le geste remonte, et Ctrl+Z annule la
-		// dernière suppression de carte, comme avant la grille (revue de la PR 3a)
+		// Ctrl/⌘+Z et Ctrl+Y ne sont pas traités ici : ils remontent à l'atelier,
+		// dont la pile commune contient les gestes de la grille (lot 5, Q3)
 		const key = event.key.toLowerCase();
-		if ((event.ctrlKey || event.metaKey) && (key === 'z' || key === 'y')) {
-			const direction = key === 'y' || event.shiftKey ? 'redo' : 'undo';
-			if (atelier.gridHistory[direction] > 0) {
-				event.preventDefault();
-				event.stopPropagation();
-				replayGrid(direction);
-			}
-			return;
-		}
 		// Ctrl/⌘+D recopie la première ligne de la zone vers le bas (§5) ; une case
 		// seule reçoit celle du dessus, comme dans un tableur
 		if ((event.ctrlKey || event.metaKey) && key === 'd') {
@@ -906,12 +894,6 @@
 		fill({ ...zone, bottom });
 		fillAsk = false;
 		focusSelected();
-	}
-
-	/** Annuler ou rétablir un geste de la grille ; un refus se dit. */
-	function replayGrid(direction: 'undo' | 'redo') {
-		const done = direction === 'undo' ? atelier.undoGrid() : atelier.redoGrid();
-		refusal = done.ok ? '' : done.message;
 	}
 
 	/** Un champ qui apparaît prend le focus, curseur en fin de texte. */
@@ -1318,24 +1300,6 @@
 				}}>Recopier vers le bas…</button
 			>
 		{/if}
-		<button
-			type="button"
-			class="telecharger"
-			disabled={atelier.gridHistory.undo === 0}
-			title={atelier.gridHistory.undo === 0
-				? 'Rien à annuler dans la grille.'
-				: 'Annuler le dernier geste de la grille (Ctrl/⌘+Z)'}
-			onclick={() => replayGrid('undo')}>Annuler</button
-		>
-		<button
-			type="button"
-			class="telecharger"
-			disabled={atelier.gridHistory.redo === 0}
-			title={atelier.gridHistory.redo === 0
-				? 'Rien à rétablir dans la grille.'
-				: 'Rétablir le geste annulé (Ctrl/⌘+Maj+Z)'}
-			onclick={() => replayGrid('redo')}>Rétablir</button
-		>
 		<button
 			type="button"
 			class="telecharger"

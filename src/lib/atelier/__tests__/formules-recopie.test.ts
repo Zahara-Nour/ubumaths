@@ -92,7 +92,7 @@ describe('§5 recopier vers le bas', () => {
 		]);
 
 		a.fillDown({ left: A, right: A, top: 2, bottom: 10 });
-		a.undoGrid();
+		a.undo();
 
 		expect(a.cell(A, 3)).toBe('');
 		expect(a.cell(A, 10)).toBe('');

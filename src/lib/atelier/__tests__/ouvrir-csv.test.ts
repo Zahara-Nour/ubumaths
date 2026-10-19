@@ -256,7 +256,7 @@ describe('§3 poser le fichier comme un collage (Q-RE-4)', () => {
 		const opened = new Atelier();
 		opened.pasteTable(0, 1, table(utf8('Taille;Masse\n1,5;40\n1,6;45')));
 		expect(opened.cell(1, 2)).toBe('45');
-		opened.undoGrid();
+		opened.undo();
 		expect(opened.cell(1, 2)).toBe('');
 		expect(opened.titleOf(0)).toBe('');
 	});

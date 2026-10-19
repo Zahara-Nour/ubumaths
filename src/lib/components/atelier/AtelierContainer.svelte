@@ -45,10 +45,12 @@
 	import {
 		EllipsisVertical,
 		FolderOpen,
+		Redo2,
 		RotateCcw,
 		Save,
 		Share2,
 		SquareTerminal,
+		Undo2,
 		X
 	} from '@lucide/svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -125,7 +127,10 @@
 		heading = 'Atelier'
 	}: Props = $props();
 
-	/** Durée pendant laquelle « Annuler » reste proposé après une suppression (E2). */
+	/**
+	 * Durée du toast « Annuler » après une suppression (E2). Le toast part, la
+	 * suppression reste annulable : c'est une étape de la pile (lot 5, Q4).
+	 */
 	const UNDO_DURATION_MS = 10_000;
 
 	/** L'objet dont la suppression attend confirmation, avec ce qu'elle emporterait (N2). */
@@ -139,10 +144,7 @@
 	/** La suppression vient-elle d'être confirmée ? Sinon, renoncer rend le focus au bouton. */
 	let removalConfirmed = false;
 
-	/**
-	 * La dernière suppression annulable, pour Ctrl/Cmd+Z : le bouton « Annuler »
-	 * du toast est hors du parcours clavier (a11y, WCAG 2.1.1 et 2.2.1).
-	 */
+	/** Le toast de la dernière suppression, fermé dès qu'on annule (bouton ou Ctrl+Z). */
 	let undoable: { result: RemovedWithDependents; toastId: string | number } | null = null;
 
 	/** L'historique relu qui attend la confirmation du rejeu (lot C2, R2). */
@@ -339,9 +341,10 @@
 	 */
 	function startIfEmpty() {
 		if (startWith === undefined || atelier.objects.length > 0) return;
-		const created = atelier.create({ kind: startWith });
+		// Pas une étape : Annuler ne doit pas retirer la carte qu'on n'a pas créée
+		const created = atelier.untracked(() => atelier.create({ kind: startWith }));
 		if (!created.ok) return;
-		atelier.setPlotted(created.object.name, true);
+		atelier.untracked(() => atelier.setPlotted(created.object.name, true));
 		selected = created.object.name;
 	}
 
@@ -473,24 +476,53 @@
 		tick().then(() => document.getElementById('atelier-mes-objets')?.focus());
 	}
 
+	/** Le bouton « Annuler » du toast : cette suppression, si elle est encore la dernière étape. */
 	function undo(result: RemovedWithDependents) {
 		if (undoable?.result === result) undoable = null;
-		// L4 : l'atelier a changé depuis — on le dit plutôt que de restaurer par-dessus
-		if (!desk.undoRemoval(result)) {
-			toaster.warning('L’atelier a changé depuis : la suppression ne peut plus être annulée.');
+		if (desk.undoRemoval(result)) {
+			announce(`Annulé : ${removedMessage(result.removed)}`);
+			return;
 		}
+		// L4 : d'autres étapes l'ont suivie — Annuler (barre, Ctrl+Z) remonte jusqu'à elle
+		toaster.warning(
+			'D’autres changements ont suivi : utilise Annuler dans la barre pour remonter jusqu’à cette suppression.'
+		);
 	}
 
-	/** Ctrl/Cmd+Z annule la dernière suppression — jamais dans un champ, où il annule la frappe. */
+	/** Annuler la dernière étape (barre, Ctrl/Cmd+Z) — lot 5. */
+	function undoStep() {
+		dismissRemovalToast();
+		const label = atelier.undo();
+		announce(label === null ? 'Rien à annuler.' : `Annulé : ${label}.`);
+	}
+
+	/** Rétablir la dernière étape annulée (barre, Ctrl+Y, Ctrl/Cmd+Maj+Z). */
+	function redoStep() {
+		const label = atelier.redo();
+		announce(label === null ? 'Rien à rétablir.' : `Rétabli : ${label}.`);
+	}
+
+	function dismissRemovalToast() {
+		if (undoable === null) return;
+		toast.dismiss(undoable.toastId);
+		undoable = null;
+	}
+
+	/**
+	 * Ctrl/Cmd+Z annule, Ctrl+Y ou Ctrl/Cmd+Maj+Z rétablit — jamais dans un champ
+	 * en cours de frappe (il y annule la frappe) ni dans une fenêtre ouverte.
+	 */
 	function handleUndoKey(event: KeyboardEvent) {
-		if (undoable === null || event.shiftKey || event.altKey) return;
-		if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 'z') return;
+		if (event.defaultPrevented || event.altKey || !(event.ctrlKey || event.metaKey)) return;
+		const key = event.key.toLowerCase();
+		const redo =
+			(key === 'y' && event.ctrlKey && !event.shiftKey) || (key === 'z' && event.shiftKey);
+		if (!redo && key !== 'z') return;
 		const target = event.target as HTMLElement | null;
-		if (target?.closest('input, textarea, [contenteditable], math-field')) return;
+		if (target?.closest(`${FIELD_SELECTOR}, [role="dialog"], [role="alertdialog"]`)) return;
 		event.preventDefault();
-		const { result, toastId } = undoable;
-		toast.dismiss(toastId);
-		undo(result);
+		if (redo) redoStep();
+		else undoStep();
 	}
 
 	/** La confirmation : les objets emportés, et les cellules qui deviendront vides. */
@@ -779,6 +811,21 @@
 		<!-- La barre d'icônes (lot 1 de `atelier-refonte-interface-phase0.md`) -->
 		<div class="barre" role="toolbar" aria-label="Outils de l’atelier" {@attach rovingToolbar}>
 			<div class="outils">
+				<!-- Annuler / Rétablir (lot 5) : l'infobulle nomme l'étape -->
+				<ToolButton
+					label={atelier.history.undo === null ? 'Annuler' : `Annuler : ${atelier.history.undo}`}
+					icon={Undo2}
+					hint="Ctrl+Z"
+					disabledReason={atelier.history.undo === null ? 'Rien à annuler.' : null}
+					onclick={undoStep}
+				/>
+				<ToolButton
+					label={atelier.history.redo === null ? 'Rétablir' : `Rétablir : ${atelier.history.redo}`}
+					icon={Redo2}
+					hint="Ctrl+Y"
+					disabledReason={atelier.history.redo === null ? 'Rien à rétablir.' : null}
+					onclick={redoStep}
+				/>
 				{#if !ephemeral}
 					<!-- Des lignes de Calcul seules suffisent : elles survivent au rechargement -->
 					<ToolButton
