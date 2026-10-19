@@ -11,13 +11,12 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1523._
+_Mis à jour le 2026-10-19, après #1526._
 
-- **État** : lots 1 et 2 de la géométrie livrés (#1474 → #1516), `60°` (#1519), noms indicés (#1520), « Remplacer mon atelier » (#1523). Rien en production.
-- **En cours** (2 worktrees, agents en correction après revue) : `fix/mathast-extrema-periodiques` (`../ubumaths-wt-extrema` : extrema de `sin`, `tan` aux asymptotes ; reste la réciproque de `tan` qui propose une commande qui échoue) ; `fix/atelier-indices-suite` (`../ubumaths-wt-indices2` : `u_3` calculé, clash suite / valeur, `x_1` ≠ x ; conflit avec main à résoudre dans `planNames`).
-- **Prochaine action** : merger ces deux PR ; puis petite PR mathAST (zéros périodiques d'un numérateur de quotient ; points critiques faux de `(x−1)²(x+2)³`) ; puis lot 3 (la souris, phase 0 validée : `atelier-geometrie-lot3-phase0.md`), PR 1 = le glisser.
-- **En attente de David** : 4 choix des noms indicés (recommandés : garder) ; la PR mathAST de suivi.
-- **Pièges** : une PR qui touche `mathAST` (`sign/`, `substitute`, `intersect`, pipeline) se fait relire par `mathast-expert` avec comparaison main / branche ; la session « modifs-fixes » (lot 5 annuler / rétablir, PR 3 : Charger et Repartir via `replaceWith`) touche le même modèle — se prévenir avant de toucher `AtelierContainer`, `FigureCard`, `desk.svelte.ts`.
+- **État** : lots 1 et 2 de la géométrie livrés (#1474 → #1516) ; `60°` (#1519) ; noms indicés (#1520, #1525 : `u_3` = terme, `x_1` ≠ x) ; « Remplacer mon atelier » (#1523) ; extrema périodiques et `tan` aux asymptotes dans mathAST (#1526). Rien en production. Aucun worktree ouvert.
+- **Prochaine action** : (1) si David valide : petite PR mathAST — zéros périodiques d'un NUMÉRATEUR de quotient (`cos x/(x²+1)`, `1/sin x`, `ln(2+sin x)`) et points critiques faux de `(x−1)²(x+2)³` (oracle numérique comme `variations/__tests__/periodique-non-borne.test.ts`) ; (2) lot 3, la souris (phase 0 validée : `atelier-geometrie-lot3-phase0.md`), PR 1 = le glisser (fin de geste `atelier.step(…, clé)` + `endGesture()`, #1518).
+- **En attente de David** : la PR mathAST de suivi ; 4 choix des noms indicés (recommandés : garder — `f_1` interdit avec `f`, pas de réécriture à la relecture, `c = v_3` refusé en récurrence, `2xx_1`).
+- **Pièges** : toute PR qui touche `mathAST` (`sign/`, `variations/`, `substitute`, `intersect`, pipeline CLI) → revue `mathast-expert` avec comparaison main / branche sur un échantillon. La session « modifs-fixes » (lot 5 annuler / rétablir, PR 3 : Charger et Repartir via `replaceWith`) touche le même modèle : se prévenir avant `AtelierContainer`, `FigureCard`, `desk.svelte.ts`. Agents : `general-purpose` en sonnet (opus pour géométrie / mathAST via leurs agents dédiés).
 
 ## Lot 1 — découpage
 
