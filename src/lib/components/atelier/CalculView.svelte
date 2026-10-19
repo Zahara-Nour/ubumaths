@@ -559,11 +559,13 @@
 			{@const copied = answerToCopy(entry, toggled.includes(entry.id))}
 			{@const written = inputMarkupOf(entry)}
 			{@const defined = definedName(entry)}
-			<li class:refus={entry.failed}>
+			<li class:refus={entry.failed} class:annulee={entry.undone}>
 				<!-- L'invite de la console : décorative, HORS du paragraphe de la saisie,
 				     qui sert de description aux étapes (`aria-describedby`) -->
 				<div class="ligne-saisie">
 					<span class="invite" aria-hidden="true">&gt;</span>
+					<!-- Barrée : son étape est annulée (lot 5, PR 2) — dit, pas seulement montré -->
+					{#if entry.undone}<span class="sr-only">Annulée :</span>{/if}
 					<p
 						class="saisie"
 						class:commande={written === null && isTypedCommand(entry)}
@@ -857,6 +859,12 @@
 	}
 	.historique li.refus .texte {
 		color: var(--color-destructive);
+	}
+	/* Une ligne dont l'étape est annulée : barrée, atténuée, toujours lisible */
+	.historique li.annulee .ligne-saisie,
+	.historique li.annulee .reponse {
+		text-decoration: line-through;
+		opacity: 0.6;
 	}
 
 	/* Une longue saisie écrite en mathématiques défile dans son cadre (§3 N5).

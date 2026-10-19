@@ -152,20 +152,21 @@ Ceux du code et de l'interface :
 
 **Session, partage, export** :
 
-| Fichier                              | Rôle                                                                                                    |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| `src/lib/atelier/persistence.ts`     | Ranger / relire le `localStorage` (`loadAtelier`, `saveAtelier`, `readForeignWrite`), schéma Zod        |
-| `src/lib/atelier/session.ts`         | Cycle de vie (`openSession`) : chargement, sauvegarde différée, autres onglets ; `keepCalcHistory`      |
-| `src/lib/atelier/history-storage.ts` | Les lignes de Calcul gardées au rechargement (`loadCalcHistory`, `saveCalcHistory`), Zod, plafonds      |
-| `src/lib/atelier/safe-latex.ts`      | Liste blanche des commandes LaTeX d'une formule relue du stockage (`isSafeLatex`)                       |
-| `src/lib/atelier/url.ts`             | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                                    |
-| `src/lib/atelier/grapheur-link.ts`   | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`                      |
-| `src/lib/atelier/merge.ts`           | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                               |
-| `src/lib/atelier/history-export.ts`  | Export de l'historique de Calcul : JSON rejouable, ubumark lisible, `downloadHistory`                   |
-| `src/lib/atelier/history-stack.ts`   | Pile Annuler / Rétablir (lot 5) : étapes à photos avant / après, plafond 100 étapes et 5 Mo             |
-| `src/lib/atelier/history-import.ts`  | Relecture d'un JSON exporté, validée par Zod et bornée (`readHistory`)                                  |
-| `src/lib/atelier/atelier-file.ts`    | Enregistrer / Charger l'atelier entier dans un `.atelier.json` (`atelierFileToJson`, `readAtelierFile`) |
-| `src/lib/atelier/removal.ts`         | Les phrases de la suppression en cascade (`cascadeMessage`, `removedMessage`)                           |
+| Fichier                              | Rôle                                                                                                                              |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/atelier/persistence.ts`     | Ranger / relire le `localStorage` (`loadAtelier`, `saveAtelier`, `readForeignWrite`), schéma Zod                                  |
+| `src/lib/atelier/session.ts`         | Cycle de vie (`openSession`) : chargement, sauvegarde différée, autres onglets ; `keepCalcHistory`                                |
+| `src/lib/atelier/history-storage.ts` | Les lignes de Calcul gardées au rechargement (`loadCalcHistory`, `saveCalcHistory`), Zod, plafonds                                |
+| `src/lib/atelier/safe-latex.ts`      | Liste blanche des commandes LaTeX d'une formule relue du stockage (`isSafeLatex`)                                                 |
+| `src/lib/atelier/url.ts`             | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                                                              |
+| `src/lib/atelier/grapheur-link.ts`   | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`                                                |
+| `src/lib/atelier/merge.ts`           | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                                                         |
+| `src/lib/atelier/history-export.ts`  | Export de l'historique de Calcul : JSON rejouable, ubumark lisible, `downloadHistory`                                             |
+| `src/lib/atelier/history-stack.ts`   | Pile Annuler / Rétablir (lot 5) : étapes à photos avant / après, plafond 100 étapes et 5 Mo ; un geste continu fondu en une étape |
+| `src/lib/atelier/gesture.ts`         | Fin d'un geste de curseur (relâchement, touche relâchée, focus perdu) : une étape d'Annuler par geste                             |
+| `src/lib/atelier/history-import.ts`  | Relecture d'un JSON exporté, validée par Zod et bornée (`readHistory`)                                                            |
+| `src/lib/atelier/atelier-file.ts`    | Enregistrer / Charger l'atelier entier dans un `.atelier.json` (`atelierFileToJson`, `readAtelierFile`)                           |
+| `src/lib/atelier/removal.ts`         | Les phrases de la suppression en cascade (`cascadeMessage`, `removedMessage`)                                                     |
 
 ### Composants — `src/lib/components/atelier/`
 
@@ -1047,7 +1048,8 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
 - **modifier** : `update`, `rename` (réécrit les définitions qui citent l'ancien nom),
   `setSlider`, `slideTo`, `setSequence`, `setDisplay`, `setSequenceDisplay`, `setPlotted` ;
 - **supprimer** : `remove`, `removalOf`, `removeWithDependents`, `undoRemoval` ;
-- **annuler** (lot 5) : `step`, `undo`, `redo`, `history`, `untracked` ;
+- **annuler** (lot 5) : `step`, `undo`, `redo`, `undoStep`, `redoStep`, `endGesture`,
+  `lastStepId`, `inStep`, `history`, `untracked` ;
 - **dépendances** : `dependents`, `citedNames` (ce que cite un objet) ; toute mutation finit par
   `recomputeAll` (relit tout — voir « Ce qui se recalcule, et ce qui est gardé ») ;
 - **grille** : `cell`, `editCells`, `pasteTable`, `titleOf`, `setTitle`, `nameColumn`,
@@ -1792,26 +1794,55 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
   du modèle qui sont toujours un geste : `create`, `createDerivative`, `createReciprocal`,
   `createFromOffer`, `rename`, `removeWithDependents`, `setPlotted`, `setInFigure`, `setDisplay`,
   `setSequenceDisplay`, `setFigureDisplay`, `setSequence`, `setSlider`, `setSliderShown`,
-  `toggleChart`, et tous les gestes de la grille. `update` n'en ouvre PAS (un curseur glissé
-  l'appelle à chaque cran ; la fin de glissé arrive à la PR 2).
-- **Un changement fait hors étape** (un curseur glissé, aujourd'hui) n'est jamais perdu : à la
-  prochaine étape ou annulation, l'écart avec la dernière photo devient sa propre étape,
-  « modifier l'atelier » (`OUTSIDE_STEP_LABEL`).
+  `toggleChart`, `slideTo`, `slidePosition`, et tous les gestes de la grille. `update` n'en ouvre
+  PAS.
+- **Un geste continu = UNE étape** (PR 2, décision de David : « tout un glissé = une étape » ;
+  revue de #1517 : 150 crans de tangente faisaient 100 étapes et chassaient une suppression).
+  `step(nom, geste, clé)` : tant que le geste n'est pas fermé (`endGesture()`), ses écritures se
+  fondent dans une seule étape, dont la photo d'avant reste celle du début ; un geste revenu à son
+  point de départ ne laisse rien ; un autre geste, Annuler ou Rétablir le ferment aussi
+  (`HistoryStack.push(…, clé)` / `seal`). Clés : `curseur:a` (`slideTo`), `position:M`
+  (`slidePosition`, le curseur d'un `point_sur`), `tangente:f` (`CurveSettings`),
+  `borne-from:f` / `borne-to:f` (bornes de l'aire), `curseur-min:a`… (`SliderSettings`).
+  **Fin du geste** (`gesture.ts`) : souris ou doigt → au relâchement (`onValueCommit` de bits-ui) ;
+  clavier → au relâchement de la touche, donc **un appui = une étape et une flèche tenue = une
+  étape** (bits-ui rappelle `onValueCommit` à chaque `keydown`, répétitions comprises : le
+  conteneur écoute `keydown` en capture pour ne pas fermer à la première répétition) ; perte du
+  focus, par sûreté. Un champ tapé à chaque frappe (bornes, réglages du curseur) se ferme quand on
+  le quitte (`change`). Les points de lecture graphique (`ReadingSliders`) ne sont pas rangés : ils
+  ne font aucune étape.
+- **Un changement fait hors étape** n'est jamais perdu : à la prochaine étape ou annulation,
+  l'écart avec la dernière photo devient sa propre étape, « modifier l'atelier »
+  (`OUTSIDE_STEP_LABEL`). La barre le dit tout de suite (le setter de `revision` publie « Annuler :
+  modifier l'atelier ») ; si l'écart s'est annulé de lui-même, le libellé ment jusqu'au clic.
+- **La provenance** de chaque définition est dans la photo : Annuler relit une définition comme
+  elle avait été écrite (`keyboard`, `text`…), pas comme un lien (`url`) — le curseur d'une
+  valeur lit sa constante selon la provenance.
 - **Jamais une étape** : une relecture (`restore` : chargement, autre onglet, lien reçu, qui
-  **vide la pile**), et ce qu'on passe à `untracked` (la carte prête à taper d'un atelier vide, B3).
+  **vide la pile**), un atelier ouvert par un lien `?f=` (`atelierFromCurves`, sous `untracked`),
+  et ce qu'on passe à `untracked` (la carte prête à taper d'un atelier vide, B3).
 - **Plafond** : 100 étapes et 5 Mo de photos, la plus ancienne oubliée au-delà. Perdue au
   rechargement.
 - **La barre** : Annuler (`Undo2`) et Rétablir (`Redo2`) à gauche ; le nom du bouton dit l'étape
   (« Annuler : supprimer f »), indisponible avec sa raison quand la pile est vide. Ctrl/⌘+Z annule,
   Ctrl+Y ou Ctrl/⌘+Maj+Z rétablit — **jamais dans un champ** (`FIELD_SELECTOR` : le champ annule sa
-  frappe) ni dans une fenêtre ouverte ; le raccourci consommé (`preventDefault`) ne remonte pas au
-  graphe. Chaque geste est annoncé (« Annulé : supprimer f. »).
+  frappe), ni dans une fenêtre, un menu ou une liste ouverts (`dialog`, `alertdialog`, `menu`,
+  `menubar`, `listbox`) ; le raccourci consommé (`preventDefault`) ne remonte pas au graphe.
+  Chaque geste est annoncé (« Annulé : supprimer f. »).
+- **La console garde la trace** (PR 2) : la barre et Ctrl+Z passent par le pupitre
+  (`desk.undo` / `desk.redo`), qui écrit une ligne **rejouable** « Annuler » / « Rétablir »
+  (`ReplayStep` `annuler` / `rétablir`) — sinon le rejeu d'un export refaisait ce qui avait été
+  annulé (revue de #1517). Chaque ligne garde l'étape qu'elle a produite (`Entry.stepId`, jamais
+  rangé) : **annuler l'étape barre la ligne** (`Entry.undone`, classe `annulee`, « Annulée : » dit
+  aux lecteurs d'écran), Rétablir la débarre ; une ligne « Annuler » ou « Rétablir » ne se barre
+  jamais ; après une nouvelle étape, les lignes barrées le restent, et le restent au rechargement
+  (`undone` est rangé). Une ligne barrée ne dessine plus de lecture graphique (`consoleReadings`).
+  Au rejeu, `annuler` défait d'abord la suppression qui le précède (ligne « Annuler la
+  suppression », comme le toast et les fichiers d'avant), sinon la dernière étape.
 - **Le toast d'une suppression** reste (il fait découvrir le geste) ; son bouton défait cette
-  suppression si elle est encore la dernière étape. Il se ferme au bout de 10 s, la suppression
-  reste annulable par la barre.
-- **Pas encore** (PR 2 et 3) : la ligne de console d'une étape annulée n'est pas barrée, et une
-  annulation par la barre n'écrit pas de ligne (le rejeu d'un historique exporté ne la refait
-  donc pas) ; Repartir de zéro et Charger vident la pile au lieu d'être annulables.
+  suppression si elle est encore la dernière étape, et barre sa ligne « Supprimer ». Il se ferme au
+  bout de 10 s, la suppression reste annulable par la barre.
+- **Pas encore** (PR 3) : Repartir de zéro et Charger vident la pile au lieu d'être annulables.
 
 ### La barre d'icônes, Enregistrer et Charger
 
@@ -1850,7 +1881,7 @@ l'historique » a quitté la vue Calcul (lot 1), et il se relit par **Charger**.
 (`history-export.ts`) :
 
 - **JSON** (`historyToJson`, format `HISTORY_FORMAT` = `chiphre-calcul`) pour rejouer : chaque
-  entrée garde son **geste** (`ReplayStep` : `saisie`, `action`, `supprimer`, `annuler`, `garder`)
+  entrée garde son **geste** (`ReplayStep` : `saisie`, `action`, `supprimer`, `annuler`, `rétablir`, `garder`)
   et sa réponse ;
 - **ubumark** (`historyToUbumark`), par le lien discret « Télécharger l'historique pour une fiche »
   de la vue Calcul (provisoire : le lot 2 le range dans le menu de la console), pour recopier

@@ -216,6 +216,18 @@ interface AtelierPhoto {
 	readonly state: AtelierState;
 	readonly charts: [string, ListChartState][];
 	readonly seed: number;
+	/**
+	 * Comment chaque définition a été écrite (revue de #1517) : une restauration
+	 * ordinaire relit tout comme un lien (`url`), et le curseur d'une valeur lit
+	 * sa constante selon la provenance.
+	 */
+	readonly provenances: [string, Provenance][];
+}
+
+/** Ce qu'Annuler / Rétablir rendent : l'étape défaite ou refaite. */
+export interface MovedStep {
+	readonly id: number;
+	readonly label: string;
 }
 
 /** « couleur de g », « affichage de f » : le nom d'un réglage d'affichage comme étape. */
@@ -567,7 +579,16 @@ export class Atelier {
 	 * sauvegarde. Un `$effect` qui lit `revision` couvre tout, y compris les
 	 * actions qui n'existent pas encore.
 	 */
-	revision = $state(0);
+	#revision = $state(0);
+
+	get revision(): number {
+		return this.#revision;
+	}
+
+	set revision(value: number) {
+		this.#revision = value;
+		this.#touchedOutsideStep();
+	}
 
 	/**
 	 * Diagrammes affichés sous les listes, vue Données (outils statistiques,
@@ -649,6 +670,8 @@ export class Atelier {
 	#baseline: string | null = null;
 	/** Annuler ou rétablir remet une photo : rien de ce qu'il écrit n'est une étape. */
 	#restoring = false;
+	/** L'étape gardée par la dernière `step` (voir `lastStepId`). */
+	#lastStepId: number | null = null;
 	/** La suppression d'un reçu → son étape : le toast « Annuler » ne défait qu'elle. */
 	#receipts = new WeakMap<RemovedWithDependents, StepToken>();
 	/** Ce que la barre affiche : l'étape qu'Annuler défera, celle que Rétablir refera. */
@@ -971,9 +994,11 @@ export class Atelier {
 	 * réglage de curseur ne change aucune valeur — seul le compteur bouge, pour
 	 * la sauvegarde.
 	 */
-	setSlider(name: string, patch: Partial<Slider>): { ok: true } | Refused {
-		return this.step(`réglages du curseur de ${displayName(name)}`, () =>
-			this.#setSlider(name, patch)
+	setSlider(name: string, patch: Partial<Slider>, gesture?: string): { ok: true } | Refused {
+		return this.step(
+			`réglages du curseur de ${displayName(name)}`,
+			() => this.#setSlider(name, patch),
+			gesture
 		);
 	}
 
@@ -1043,7 +1068,12 @@ export class Atelier {
 		if (written === current.definition) {
 			return { ok: true, object: current, recomputed: [] };
 		}
-		return this.update(name, written, 'text');
+		// Tout un glissé = UNE étape (lot 5, PR 2) : fermée au relâchement (`endGesture`)
+		return this.step(
+			`curseur de ${displayName(name)}`,
+			() => this.update(name, written, 'text'),
+			`curseur:${name}`
+		);
 	}
 
 	/**
@@ -1082,7 +1112,11 @@ export class Atelier {
 		if (definition === null) {
 			return { ok: false, message: `« ${name} » n’a pas de curseur de position.` };
 		}
-		return this.update(name, definition, 'text');
+		return this.step(
+			`position de ${displayName(name)}`,
+			() => this.update(name, definition, 'text'),
+			`position:${name}`
+		);
 	}
 
 	/**
@@ -1567,8 +1601,12 @@ export class Atelier {
 	 * f »). Emboîtée dans une autre, elle se fond dans la plus externe : une ligne
 	 * de console qui fait cent mises à jour puis crée deux listes est une étape.
 	 * Une étape qui ne change rien (un calcul) n'est pas gardée.
+	 *
+	 * `gesture` : la clé d'un geste CONTINU (un curseur glissé, un champ tapé à
+	 * chaque frappe, PR 2). Ses écritures se fondent dans une seule étape jusqu'à
+	 * `endGesture()` — décision de David : « tout un glissé = une étape ».
 	 */
-	step<T>(label: string, run: () => T): T {
+	step<T>(label: string, run: () => T, gesture?: string): T {
 		if (this.#stepDepth > 0 || this.#restoring) return run();
 		const before = this.#photo();
 		this.#capture(before);
@@ -1581,10 +1619,30 @@ export class Atelier {
 			this.#stepDepth--;
 			this.#openStep = null;
 			const after = this.#photo();
-			token.id = this.#history.push({ label, before, after });
+			token.id = this.#history.push({ label, before, after }, gesture);
+			this.#lastStepId = token.id;
 			this.#baseline = after;
 			this.#publish();
 		}
+	}
+
+	/**
+	 * L'identifiant de l'étape que la dernière `step` a gardée (ou dans laquelle
+	 * elle s'est fondue), `null` si elle n'a rien changé : la console l'attache à
+	 * sa ligne, pour la barrer quand l'étape est annulée.
+	 */
+	get lastStepId(): number | null {
+		return this.#lastStepId;
+	}
+
+	/** Une étape est-elle ouverte ? Une `step` appelée dedans s'y fond. */
+	get inStep(): boolean {
+		return this.#stepDepth > 0;
+	}
+
+	/** Fermer le geste continu en cours : le prochain fera une nouvelle étape. */
+	endGesture(): void {
+		this.#history.seal();
 	}
 
 	/**
@@ -1605,23 +1663,33 @@ export class Atelier {
 
 	/** Défaire la dernière étape ; rend son nom, ou `null` s'il n'y a rien à annuler. */
 	undo(): string | null {
+		return this.undoStep()?.label ?? null;
+	}
+
+	/** Refaire la dernière étape annulée ; rend son nom, ou `null`. */
+	redo(): string | null {
+		return this.redoStep()?.label ?? null;
+	}
+
+	/** Comme `undo`, avec l'identifiant de l'étape : la console barre sa ligne. */
+	undoStep(): MovedStep | null {
 		if (this.#stepDepth > 0) return null;
 		this.#capture(this.#photo());
 		const step = this.#history.undo();
 		if (step !== null) this.#apply(step.before);
 		this.#publish();
-		return step?.label ?? null;
+		return step === null ? null : { id: step.id, label: step.label };
 	}
 
-	/** Refaire la dernière étape annulée ; rend son nom, ou `null`. */
-	redo(): string | null {
+	/** Comme `redo`, avec l'identifiant de l'étape : la console débarre sa ligne. */
+	redoStep(): MovedStep | null {
 		if (this.#stepDepth > 0) return null;
 		// Un changement fait après l'annulation a déjà oublié ce qui restait à rétablir
 		this.#capture(this.#photo());
 		const step = this.#history.redo();
 		if (step !== null) this.#apply(step.after);
 		this.#publish();
-		return step?.label ?? null;
+		return step === null ? null : { id: step.id, label: step.label };
 	}
 
 	/**
@@ -1635,7 +1703,10 @@ export class Atelier {
 		const photo: AtelierPhoto = {
 			state: this.serialize(),
 			charts: [...this.charts].map(([list, chart]) => [list, { ...chart }]),
-			seed: this.#seed
+			seed: this.#seed,
+			provenances: this.items.flatMap((o): [string, Provenance][] =>
+				o.provenance === undefined ? [] : [[o.name, o.provenance]]
+			)
 		};
 		return JSON.stringify(photo);
 	}
@@ -1659,7 +1730,10 @@ export class Atelier {
 		const laws = [...this.#laws];
 		this.#restoring = true;
 		try {
-			this.#restoreState({ ...photo.state, grid: { ...photo.state.grid, seed: photo.seed } });
+			this.#restoreState(
+				{ ...photo.state, grid: { ...photo.state.grid, seed: photo.seed } },
+				new Map(photo.provenances)
+			);
 		} finally {
 			this.#restoring = false;
 		}
@@ -1667,6 +1741,22 @@ export class Atelier {
 		for (const [variable, head] of laws) this.#laws.set(variable, head);
 		for (const [list, chart] of photo.charts) this.charts.set(list, chart);
 		this.#baseline = this.#photo();
+	}
+
+	/**
+	 * Une modification hors de toute étape (revue de #1517) : la barre le dit
+	 * tout de suite — « Annuler : modifier l'atelier » —, sans attendre la
+	 * prochaine étape qui la rangera (`#capture`). Rien n'est photographié ici :
+	 * une modification par cran resterait coûteuse.
+	 */
+	#touchedOutsideStep(): void {
+		if (this.#stepDepth > 0 || this.#restoring || this.#baseline === null) return;
+		if (this.history.undo === OUTSIDE_STEP_LABEL && this.history.redo === null) return;
+		this.history = {
+			undo: OUTSIDE_STEP_LABEL,
+			redo: null,
+			steps: this.#history.size + 1
+		};
 	}
 
 	#publish(): void {
@@ -2419,18 +2509,24 @@ export class Atelier {
 		return report;
 	}
 
-	#restoreState(stored: AtelierState): RestoreReport {
+	#restoreState(
+		stored: AtelierState,
+		provenances?: ReadonlyMap<string, Provenance>
+	): RestoreReport {
 		// Une relecture n'est jamais une étape : les réglages qu'elle repose non plus
 		const restoring = this.#restoring;
 		this.#restoring = true;
 		try {
-			return this.#restoreObjects(stored);
+			return this.#restoreObjects(stored, provenances);
 		} finally {
 			this.#restoring = restoring;
 		}
 	}
 
-	#restoreObjects(stored: AtelierState): RestoreReport {
+	#restoreObjects(
+		stored: AtelierState,
+		provenances?: ReadonlyMap<string, Provenance>
+	): RestoreReport {
 		// Q2 de la géométrie : un objet `y` (nom réservé depuis) est renommé, et
 		// les définitions qui le citent suivent — l'appelant le dit à l'élève
 		const { state, renamed } = migrateReservedNames(stored);
@@ -2488,19 +2584,21 @@ export class Atelier {
 					stored.column !== undefined && { column: columnOfLetter(stored.column) ?? undefined })
 			};
 			let attempt = input;
-			let result = this.create(attempt);
+			// Annuler : chaque définition relue comme elle avait été écrite
+			const provenance = provenances?.get(stored.name);
+			let result = this.create(attempt, provenance);
 			// Un ensemble refusé (lien abîmé, domaine changé) : la fonction est gardée
 			// sur son domaine — perdre f pour son intervalle serait disproportionné
 			if (!result.ok && attempt.interval !== undefined) {
 				attempt = { ...attempt, interval: undefined };
-				result = this.create(attempt);
+				result = this.create(attempt, provenance);
 			}
 			// Une lettre refusée (`e`, `n`, le nom de la fonction) : la fonction est
 			// gardée en x — sa définition rangée l'est déjà (`persistence.ts`). Les
 			// relances s'ENCHAÎNENT : ensemble et lettre refusés, f reste (revue)
 			if (!result.ok && attempt.letter !== undefined) {
 				attempt = { ...attempt, letter: undefined };
-				result = this.create(attempt);
+				result = this.create(attempt, provenance);
 			}
 			if (!result.ok) {
 				skipped.push({ name: stored.name, reason: result.message });
@@ -2589,8 +2687,8 @@ export class Atelier {
 	 * un lien passent tous par cette porte, et doivent obéir à la même règle.
 	 * Une fonction jamais tracée reçoit d'abord les réglages d'une courbe neuve.
 	 */
-	setDisplay(name: string, patch: Partial<CurveDisplay>): { ok: true } | Refused {
-		return this.step(displayStepLabel(name, patch), () => this.#setDisplay(name, patch));
+	setDisplay(name: string, patch: Partial<CurveDisplay>, gesture?: string): { ok: true } | Refused {
+		return this.step(displayStepLabel(name, patch), () => this.#setDisplay(name, patch), gesture);
 	}
 
 	#setDisplay(name: string, patch: Partial<CurveDisplay>): { ok: true } | Refused {

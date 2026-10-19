@@ -149,3 +149,28 @@ Phase 0 validée par David le 2026-10-19 (`atelier-annuler-retablir-phase0.md`, 
 
 Reste : PR 2 (fin de glissé du curseur, lignes de console barrées, une annulation dans le rejeu),
 PR 3 (Repartir de zéro et Charger annulables).
+
+## Lot 5 — Annuler / Rétablir, PR 2 (2026-10-19)
+
+Branche `feat/atelier-annuler-curseurs-console`, avec les correctifs de la revue de #1517.
+
+- **Geste continu = une étape** : `HistoryStack.push(étape, clé)` fond les écritures d'un même
+  geste ouvert ; `seal()` (ou un autre geste, Annuler, Rétablir) le ferme ; un geste revenu à son
+  départ ne laisse rien. `Atelier.step(nom, run, clé)` et `endGesture()`. `slideTo` et
+  `slidePosition` sont des étapes (« curseur de a », « position de M ») ; `setDisplay` et
+  `setSlider` prennent une clé. Composants : `ValueSlider` (valeur et `point_sur`), tangente et
+  bornes de l'aire (`CurveSettings`), réglages du curseur (`SliderSettings`).
+- **Choix clavier** (documenté dans `gesture.ts`) : une étape par appui, une flèche tenue = une
+  étape (fermeture au relâchement de la touche, `keydown` en capture : bits-ui commite à chaque
+  `keydown`, la première répétition fermait sinon — mesuré). Pas de regroupement par délai.
+- **Console** : `desk.undo` / `desk.redo` écrivent une ligne rejouable (`annuler`, `rétablir`
+  nouveau) ; la barre et Ctrl+Z passent par eux. `Entry.stepId` (non rangé) et `Entry.undone`
+  (rangé) : la ligne d'une étape annulée est barrée, débarrée au Rétablir ; une ligne barrée ne
+  se lit plus sur le graphe. Au rejeu, `annuler` défait d'abord la suppression qui précède
+  (fichiers d'avant inchangés), sinon la dernière étape.
+- **Mineurs de la revue** : lien `?f=` sans étape (`untracked`) ; provenance gardée dans la photo
+  (plus de `url` après Annuler) ; une modification hors étape publie tout de suite « Annuler :
+  modifier l'atelier » (setter de `revision`) ; Ctrl+Z ignoré dans un `menu`, `menubar`, `listbox`.
+- Points de lecture graphique (`ReadingSliders`) : état local au graphe, jamais une étape.
+
+Reste : PR 3 (Repartir de zéro et Charger annulables).
