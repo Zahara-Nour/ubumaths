@@ -82,6 +82,33 @@ describe('solve — rational equations', () => {
 	});
 });
 
+describe('solve — numérateur à zéros périodiques', () => {
+	// La famille du numérateur suit : sans elle, seuls ±π/2 restaient, et les
+	// tableaux de signes et de variations ne voyaient pas 3π/2, 5π/2…
+	it('cos x/(x² + 1) = 0 : famille ±π/2 + 2kπ', () => {
+		const family = solve(eq0('\\frac{\\cos(x)}{x^2+1}'), { variable: 'x' }).periodicSolutions;
+		expect(family?.periodNumeric).toBeCloseTo(2 * Math.PI, 12);
+		const bases = family?.baseSolutions.map((s) => s.approximate ?? Number.NaN) ?? [];
+		expect(bases.sort((a, b) => a - b)).toEqual([-Math.PI / 2, Math.PI / 2]);
+	});
+
+	it('−cos x/sin²x = 0 (f′ de 1/sin x) : famille, aucun membre ne vaut kπ', () => {
+		const result = solve(eq0('\\frac{-\\cos(x)}{\\sin(x)^2}'), { variable: 'x' });
+		expect(result.periodicSolutions?.periodNumeric).toBeCloseTo(2 * Math.PI, 12);
+	});
+
+	it('cos x/(2 + sin x) = 0 (f′ de ln(2 + sin x)) : famille', () => {
+		const result = solve(eq0('\\frac{\\cos(x)}{2+\\sin(x)}'), { variable: 'x' });
+		expect(result.periodicSolutions).toBeDefined();
+	});
+
+	it('sin x/x = 0 : pas de famille, 0 en est un membre et annule le dénominateur', () => {
+		const result = solve(eq0('\\frac{\\sin(x)}{x}'), { variable: 'x' });
+		expect(result.periodicSolutions).toBeUndefined();
+		expect(result.solutions.some((s) => s.approximate === 0)).toBe(false);
+	});
+});
+
 describe('solve — REGRESSION (rationals must not break polynomial path)', () => {
 	it('x² − 4 = 0 → 2 solutions (polynomial unchanged)', () => {
 		const result = solve(eq0('x^2 - 4'), { variable: 'x' });

@@ -11,7 +11,7 @@
  * Règle : le signe de f′ périodique se lit sur une période entière (voir
  * `sign/__tests__/periodique-non-borne.test.ts`).
  *
- * Le second bloc est un oracle numérique sur un échantillon large (50 fonctions
+ * Le second bloc est un oracle numérique sur un échantillon large (55 fonctions
  * × 7 domaines, plus des domaines qui contiennent des valeurs interdites) : tout
  * ce que le tableau AFFIRME (signe, sens, extremum : valeur, position, nature
  * locale ou globale) est vérifié sur une grille fine, aucun extremum de la
@@ -195,6 +195,141 @@ describe('valeurs interdites : le sens ne les traverse pas', () => {
 	});
 });
 
+/** Les extrema, `type@x=y` avec x et y arrondis au millième. */
+function extremaWithValues(result: VariationResult): string[] {
+	return result.extrema
+		.map((e) => `${e.type}@${compile(e.x)({}).toFixed(3)}=${compile(e.y)({}).toFixed(3)}`)
+		.sort();
+}
+
+describe('quotient dont le numérateur a des zéros périodiques', () => {
+	// Le solveur rendait les zéros d'une période du numérateur (±π/2) sans la
+	// famille : sur un intervalle borné, 3π/2, 5π/2… manquaient, et le tableau
+	// restait « inconnu » là où il se démontre.
+	it('cos x/(x² + 1) sur [0 ; 2π] : signe + 0 − 0 +', () => {
+		const sign = analyzeSign(parseLatex('\\frac{\\cos(x)}{x^2+1}'), {
+			variable: 'x',
+			domain: DOMAINS['[0 ; 2π]']
+		});
+		expect(sign.signedIntervals.map((si) => si.sign)).toEqual([
+			'positive',
+			'zero',
+			'negative',
+			'zero',
+			'positive'
+		]);
+	});
+
+	it('cos x/(x² + 1) sur [−10 ; 10] : six zéros, de −5π/2 à 5π/2', () => {
+		const sign = analyzeSign(parseLatex('\\frac{\\cos(x)}{x^2+1}'), {
+			variable: 'x',
+			domain: DOMAINS['[−10 ; 10]']
+		});
+		expect(sign.zeros.map((z) => compile(z.value)({}).toFixed(3))).toEqual([
+			'-7.854',
+			'-4.712',
+			'-1.571',
+			'1.571',
+			'4.712',
+			'7.854'
+		]);
+		expect(sign.signedIntervals.some((si) => si.sign === 'unknown')).toBe(false);
+	});
+
+	it('cos x/(x² + 1) : f′(x) = 0 non résolue, aucun sens affirmé', () => {
+		// f′ = (−(x² + 1) sin x − 2x cos x)/(x² + 1)² : tan x = −2x/(x² + 1)
+		// n'a pas de solution exacte — « inconnu » est la réponse honnête.
+		const result = study('\\frac{\\cos(x)}{x^2+1}', DOMAINS['[0 ; 2π]']);
+		expect(result.derivativeZerosUnresolved).toBe(true);
+		expect(directions(result)).toEqual([]);
+	});
+
+	it('1/sin x sur [0 ; 2π] : ↘ ↗ | ↗ ↘, minimum 1 en π/2, maximum −1 en 3π/2', () => {
+		const result = study('\\frac{1}{\\sin(x)}', DOMAINS['[0 ; 2π]']);
+		expect(directions(result)).toEqual(['decreasing', 'increasing', 'increasing', 'decreasing']);
+		expect(extremaWithValues(result)).toEqual([
+			'local_maximum@4.712=-1.000',
+			'local_minimum@1.571=1.000'
+		]);
+	});
+
+	it('1/sin x sur ℝ : sens connu sur ]−π/2 ; π/2[ seulement, aucun extremum', () => {
+		const result = study('\\frac{1}{\\sin(x)}');
+		expect(directions(result)).toEqual(['unknown', 'decreasing', 'decreasing', 'unknown']);
+		expect(result.extrema).toEqual([]);
+	});
+
+	it('ln(2 + sin x) sur [0 ; 2π] : ↗ ↘ ↗, maximum ln 3 en π/2, minimum 0 en 3π/2', () => {
+		const result = study('\\ln(2+\\sin(x))', DOMAINS['[0 ; 2π]']);
+		expect(directions(result)).toEqual(['increasing', 'decreasing', 'increasing']);
+		expect(extremaWithValues(result)).toEqual([
+			`global_maximum@1.571=${Math.log(3).toFixed(3)}`,
+			'global_minimum@4.712=0.000'
+		]);
+	});
+
+	it('ln(2 + sin x) sur [−10 ; 10] : six extrema, de −5π/2 à 5π/2', () => {
+		const result = study('\\ln(2+\\sin(x))', DOMAINS['[−10 ; 10]']);
+		expect(directions(result)).toEqual([
+			'decreasing',
+			'increasing',
+			'decreasing',
+			'increasing',
+			'decreasing',
+			'increasing',
+			'decreasing'
+		]);
+		expect(extremaOf(result)).toHaveLength(6);
+	});
+
+	it('ln(2 + sin x) sur [0 ; +∞[ : croissante sur [0 ; π/2[, inconnu au-delà', () => {
+		const result = study('\\ln(2+\\sin(x))', DOMAINS['[0 ; +∞[']);
+		expect(directions(result)).toEqual(['increasing', 'unknown']);
+		expect(result.extrema).toEqual([]);
+	});
+
+	it('ln(2 + sin x) sur [0 ; +∞[ : signe nul en 3π/2, jamais « positif » sans zéro', () => {
+		// Le solveur rend −π/2, hors du domaine : le premier zéro au-delà de la
+		// borne 0 manquait, et le tableau disait « positif sur [0 ; +∞[ ».
+		const sign = analyzeSign(parseLatex('\\ln(2+\\sin(x))'), {
+			variable: 'x',
+			domain: DOMAINS['[0 ; +∞[']
+		});
+		expect(sign.zeros.map((z) => compile(z.value)({}).toFixed(3))).toEqual(['4.712']);
+	});
+
+	it('cos x/eˣ sur [0 ; +∞[ : décroissante sur [0 ; 3π/4[, inconnu au-delà', () => {
+		// main : « croissante sur [0 ; +∞[ » (f′ = −(sin x + cos x)/eˣ, zéros
+		// −π/4 + kπ, aucun dans la liste rendue par le solveur)
+		const result = study('\\frac{\\cos(x)}{e^x}', DOMAINS['[0 ; +∞[']);
+		expect(directions(result)).toEqual(['decreasing', 'unknown']);
+		expect(result.extrema).toEqual([]);
+	});
+
+	it('ln(2 + sin x) sur ℝ : refus (domaine 2 + sin x > 0 non déterminé), jamais un tableau faux', () => {
+		expect(() => study('\\ln(2+\\sin(x))')).toThrow(/domaine de définition/);
+	});
+});
+
+describe('(x − 1)²(x + 2)³ : f′ = (x − 1)(x + 2)²(5x + 1)', () => {
+	// La quartique f′ = 5x⁴ + 16x³ + 3x² − 20x − 4 passait par une factorisation de
+	// Ferrari fausse : points critiques −2,45 ; −1,03 ; −0,85 ; 1,12.
+	it('sur ℝ : ↗ jusqu’à −1/5 (aucun extremum en −2), ↘ jusqu’à 1, puis ↗', () => {
+		const result = study('(x-1)^2(x+2)^3');
+		expect(directions(result)).toEqual(['increasing', 'increasing', 'decreasing', 'increasing']);
+		expect(extremaWithValues(result)).toEqual([
+			`local_maximum@-0.200=${(26244 / 3125).toFixed(3)}`,
+			'local_minimum@1.000=0.000'
+		]);
+	});
+
+	it('sur [0 ; 2π] : ↘ puis ↗, minimum global 0 en 1', () => {
+		const result = study('(x-1)^2(x+2)^3', DOMAINS['[0 ; 2π]']);
+		expect(directions(result)).toEqual(['decreasing', 'increasing']);
+		expect(extremaOf(result)).toEqual(['global_maximum@6.283', 'global_minimum@1.000']);
+	});
+});
+
 describe('domaine fourni hors du domaine de f', () => {
 	it('ln x sur [−3 ; −1] : refus « pas définie », jamais une étude sur [−3 ; −1]', () => {
 		expect(() => study('\\ln(x)', domainOf('-3', '-1', true, true))).toThrow(
@@ -287,7 +422,12 @@ const EXPRESSIONS = [
 	'3\\tan(x)',
 	'\\tan(2x)',
 	'\\frac{1}{\\cos(x)}',
-	'\\frac{1}{\\sin(x)}'
+	'\\frac{1}{\\sin(x)}',
+	'\\frac{\\cos(x)}{x^2+1}',
+	'\\ln(2+\\sin(x))',
+	'(x-1)^2(x+2)^3',
+	'x^4+x^3-7x^2-x+6',
+	'\\frac{\\cos(x)}{e^x}'
 ];
 
 /** Fonctions dont le tableau doit se conclure sur TOUT domaine (aucune périodicité). */
@@ -307,7 +447,9 @@ const NON_PERIODIC = new Set([
 	'x^4-2x^2',
 	'\\frac{1}{x}',
 	'\\frac{1}{x^2-1}',
-	'\\frac{x^2+1}{x-1}'
+	'\\frac{x^2+1}{x-1}',
+	'(x-1)^2(x+2)^3',
+	'x^4+x^3-7x^2-x+6'
 ]);
 
 /** Fonctions trigonométriques dont le tableau se conclut sur un domaine BORNÉ. */
@@ -331,7 +473,9 @@ const NATURAL_DOMAINS: Readonly<Record<string, readonly string[]>> = {
 	'3\\tan(x)': ['ℝ', '[0 ; π]', ']−π/2 ; π/2['],
 	'\\tan(2x)': ['ℝ', '[0 ; π]', '[−π ; π]'],
 	'\\frac{1}{\\cos(x)}': ['ℝ', '[0 ; 2π]', '[0 ; π]'],
-	'\\frac{1}{\\sin(x)}': ['ℝ', '[−π ; π]', ']0 ; +∞['],
+	'\\frac{1}{\\sin(x)}': ['ℝ', '[−π ; π]', ']0 ; +∞[', '[0 ; 2π]', '[−10 ; 10]'],
+	// 2 + sin x > 0 : le domaine sur ℝ n'est pas encore déterminé (refus)
+	'\\ln(2+\\sin(x))': ['[0 ; 2π]', '[−π ; π]', '[0 ; +∞[', ']0 ; +∞[', '[0 ; 360]', '[−10 ; 10]'],
 	'\\frac{1}{x}': ['ℝ', '[−2 ; 3]', '[−10 ; 10]', ']0 ; +∞['],
 	'\\frac{1}{x^2-1}': ['ℝ', '[−3 ; 3]', '[0 ; +∞['],
 	'\\frac{x^2+1}{x-1}': ['ℝ', '[−2 ; 3]', '[−3 ; 3]'],

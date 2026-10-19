@@ -1001,25 +1001,28 @@ function solveQuarticZeros(a: number, b: number, c: number, d: number, e: number
 		}
 	}
 
-	// Factor the depressed quartic as (t² + √(2y)t + q₁)(t² - √(2y)t + q₂)
-	const twoY = 2 * y;
-	if (twoY < -ZERO_TOLERANCE) {
-		// Cannot factor with real coefficients, no real roots
-		return [];
-	}
+	// `y` est une racine de la résolvante ÉCRITE pour y = m/2 (coefficients
+	// A/2, (A² − 4C)/16, −B²/64) : le m de Ferrari vaut 2y. On factorise
+	// t⁴ + At² + Bt + C = (t² + A/2 + m)² − (√(2m)·t − B/(2√(2m)))²
+	//                   = (t² + √(2m)·t + q₁)(t² − √(2m)·t + q₂).
+	// ⚠️ Écrire √(2y) et A/2 + y (m confondu avec y) donnait des racines fausses
+	// dès que B ≠ 0 : x⁴ + x³ − 7x² − x + 6 = 0 rendait −3,13 ; −0,29 ; 0,15 ;
+	// 2,26 au lieu de −3 ; −1 ; 1 ; 2. Les cas B = 0 (bicarrés, racines
+	// symétriques) passent par le chemin bicarré et ne le voyaient pas.
+	const m = 2 * y;
+	if (m < -ZERO_TOLERANCE) return [];
 
-	const sqrtTwoY = Math.sqrt(Math.max(0, twoY));
-	if (Math.abs(sqrtTwoY) < ZERO_TOLERANCE) {
-		// Special case: y ≈ 0, factor as (t² + √C)(t² - √C) or similar
+	const sqrtTwoM = Math.sqrt(Math.max(0, 2 * m));
+	if (Math.abs(sqrtTwoM) < ZERO_TOLERANCE) {
 		return solveBiquadratic(A, C, shift);
 	}
 
-	const q1 = A / 2 + y - B / (2 * sqrtTwoY);
-	const q2 = A / 2 + y + B / (2 * sqrtTwoY);
+	const q1 = A / 2 + m - B / (2 * sqrtTwoM);
+	const q2 = A / 2 + m + B / (2 * sqrtTwoM);
 
-	// Solve t² + sqrtTwoY*t + q1 = 0 and t² - sqrtTwoY*t + q2 = 0
-	const roots1 = solveQuadraticZeros(1, sqrtTwoY, q1);
-	const roots2 = solveQuadraticZeros(1, -sqrtTwoY, q2);
+	// Solve t² + sqrtTwoM*t + q1 = 0 and t² - sqrtTwoM*t + q2 = 0
+	const roots1 = solveQuadraticZeros(1, sqrtTwoM, q1);
+	const roots2 = solveQuadraticZeros(1, -sqrtTwoM, q2);
 
 	// Transform back: x = t - p/4
 	const allRoots = [...roots1, ...roots2].map((t) => t - shift);

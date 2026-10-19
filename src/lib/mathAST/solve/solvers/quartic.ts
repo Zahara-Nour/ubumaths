@@ -234,21 +234,28 @@ function solveQuarticNumeric(
 		}
 	}
 
-	// Factor depressed quartic as (t² + √(2y)t + q₁)(t² - √(2y)t + q₂)
-	const twoY = 2 * y;
-	if (twoY < -EPSILON) return [];
+	// `y` est une racine de la résolvante ÉCRITE pour y = m/2 (coefficients
+	// A/2, (A² − 4C)/16, −B²/64) : le m de Ferrari vaut 2y. On factorise
+	// t⁴ + At² + Bt + C = (t² + A/2 + m)² − (√(2m)·t − B/(2√(2m)))²
+	//                   = (t² + √(2m)·t + q₁)(t² − √(2m)·t + q₂).
+	// ⚠️ Écrire √(2y) et A/2 + y (m confondu avec y) donnait des racines fausses
+	// dès que B ≠ 0 : x⁴ + x³ − 7x² − x + 6 = 0 rendait −3,13 ; −0,29 ; 0,15 ;
+	// 2,26 au lieu de −3 ; −1 ; 1 ; 2. Les cas B = 0 (bicarrés, racines
+	// symétriques) passent par le chemin bicarré et ne le voyaient pas.
+	const m = 2 * y;
+	if (m < -EPSILON) return [];
 
-	const sqrtTwoY = Math.sqrt(Math.max(0, twoY));
-	if (Math.abs(sqrtTwoY) < EPSILON) {
+	const sqrtTwoM = Math.sqrt(Math.max(0, 2 * m));
+	if (Math.abs(sqrtTwoM) < EPSILON) {
 		return solveBiquadraticNumeric(A, C, shift);
 	}
 
-	const q1 = A / 2 + y - B / (2 * sqrtTwoY);
-	const q2 = A / 2 + y + B / (2 * sqrtTwoY);
+	const q1 = A / 2 + m - B / (2 * sqrtTwoM);
+	const q2 = A / 2 + m + B / (2 * sqrtTwoM);
 
 	// Solve the two quadratics
-	const roots1 = solveQuadraticNumeric(1, sqrtTwoY, q1);
-	const roots2 = solveQuadraticNumeric(1, -sqrtTwoY, q2);
+	const roots1 = solveQuadraticNumeric(1, sqrtTwoM, q1);
+	const roots2 = solveQuadraticNumeric(1, -sqrtTwoM, q2);
 
 	// Transform back: x = t - p/4
 	const allRoots = [...roots1, ...roots2].map((t) => t - shift);

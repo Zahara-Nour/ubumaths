@@ -148,6 +148,19 @@ describe('Quartic Solver', () => {
 			expect(solutionsContainApprox(result.solutions, 1)).toBe(true);
 		});
 
+		// Les trois cas ci-dessus ont B = 0 une fois la quartique dépréciée (racines
+		// symétriques autour de −b/4a) : ils passaient par le chemin bicarré et
+		// cachaient une factorisation de Ferrari fausse dès que B ≠ 0.
+		it('x⁴ + x³ − 7x² − x + 6 = 0 → x = −3, −1, 1, 2 (B ≠ 0)', () => {
+			const result = solve(parseEquation('x^4+x^3-7x^2-x+6=0'));
+			expect(result.solutions.map((s) => s.approximate)).toEqual([-3, -1, 1, 2]);
+		});
+
+		it('5x⁴ + 16x³ + 3x² − 20x − 4 = 0 → x = −2 (double), −1/5, 1', () => {
+			const result = solve(parseEquation('5x^4+16x^3+3x^2-20x-4=0'));
+			expect(result.solutions.map((s) => toLatex(s.value))).toEqual(['-2', '-\\dfrac{1}{5}', '1']);
+		});
+
 		it('should solve x⁴ - 10x² + 9 = 0 -> x = ±1, ±3 (also biquadratic)', () => {
 			const eq = parseEquation('x^4 - 10x^2 + 9 = 0');
 			const result = solve(eq);

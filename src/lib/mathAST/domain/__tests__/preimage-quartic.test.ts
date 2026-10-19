@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { classifyExpression, findZeros, solveQuarticInequality } from '../preimage';
 import { containsValue } from '../algebra';
 import { power, variable, add, subtract, implicitMultiply, number } from '../../factory';
+import { parseLatex } from '../../parser';
 
 describe('quartic expression classification', () => {
 	it('classifies x⁴ as quartic', () => {
@@ -235,6 +236,20 @@ describe('findZeros for quartic expressions', () => {
 		expect(sortedZeros[1]).toBeCloseTo(-1, 6);
 		expect(sortedZeros[2]).toBeCloseTo(1, 6);
 		expect(sortedZeros[3]).toBeCloseTo(2, 6);
+	});
+});
+
+describe('findZeros : quartique de Ferrari (B ≠ 0 une fois dépréciée)', () => {
+	// Les cas ci-dessus sont bicarrés (B = 0) : ils ne passaient pas par la
+	// factorisation de Ferrari, fausse jusqu'ici (m de Ferrari confondu avec m/2).
+	it('x⁴ + x³ − 7x² − x + 6 : zéros −3, −1, 1, 2', () => {
+		const zeros = findZeros(parseLatex('x^4+x^3-7x^2-x+6'), 'x').sort((a, b) => a - b);
+		expect(zeros.map((z) => Math.round(z * 1e6) / 1e6)).toEqual([-3, -1, 1, 2]);
+	});
+
+	it('5x⁴ + 16x³ + 3x² − 20x − 4 : zéros −2, −1/5, 1', () => {
+		const zeros = findZeros(parseLatex('5x^4+16x^3+3x^2-20x-4'), 'x').sort((a, b) => a - b);
+		expect(zeros.map((z) => Math.round(z * 1e6) / 1e6)).toEqual([-2, -0.2, 1]);
 	});
 });
 

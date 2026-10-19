@@ -317,7 +317,12 @@ function enumeratePeriodicZeros(
 
 /**
  * Les zéros de la famille compris entre le plus petit et le plus grand des
- * points connus : zéros listés et bornes FINIES du domaine.
+ * points connus : zéros listés, bornes FINIES du domaine, et le premier membre
+ * de la famille au-delà de chaque borne finie.
+ *
+ * Ce premier membre compte : `ln(2 + sin x)` sur [0 ; +∞[ a pour zéros
+ * −π/2 + 2kπ, le solveur rend −π/2 (hors du domaine), et le tableau disait
+ * « positif sur [0 ; +∞[ » sans aucun zéro, au lieu de 0 en 3π/2.
  *
  * @internal
  */
@@ -332,9 +337,13 @@ function familyBetweenKnownZeros(
 		.map((z) => ({ value: z.approximate as number, inclusive: true }));
 	if (bounds?.lower != null && isFinite(bounds.lower)) {
 		known.push({ value: bounds.lower, inclusive: bounds.lowerInclusive });
+		const first = firstMemberBeyond(family, bounds.lower, 1);
+		if (first !== null) known.push({ value: first, inclusive: true });
 	}
 	if (bounds?.upper != null && isFinite(bounds.upper)) {
 		known.push({ value: bounds.upper, inclusive: bounds.upperInclusive });
+		const last = firstMemberBeyond(family, bounds.upper, -1);
+		if (last !== null) known.push({ value: last, inclusive: true });
 	}
 	if (known.length < 2) return { zeros: [], complete: true };
 
@@ -352,6 +361,38 @@ function familyBetweenKnownZeros(
 		},
 		domain
 	);
+}
+
+/** Marge relative (en périodes) du premier membre au-delà d'une borne. */
+const BEYOND_EPS = 1e-9;
+
+/**
+ * Le membre de la famille le plus proche de `bound`, du côté `direction`
+ * (1 : au-dessus, −1 : en dessous), `bound` exclu ; `null` sans valeur
+ * numérique. Un membre égal à la borne est déjà couvert par l'énumération.
+ *
+ * @internal
+ */
+function firstMemberBeyond(
+	family: PeriodicSolutionFamily,
+	bound: number,
+	direction: 1 | -1
+): number | null {
+	const period = family.periodNumeric;
+	if (!(period > 0) || !isFinite(period)) return null;
+	let best: number | null = null;
+	for (const base of family.baseSolutions) {
+		const start = base.approximate;
+		if (start === undefined || !isFinite(start)) return null;
+		// Marge : un membre égal à la borne aux arrondis près (0 pour kπ sur
+		// ]0 ; +∞[) n'est pas « au-delà » — il serait compté sur une borne ouverte
+		const steps = (bound - start) / period;
+		const k =
+			direction === 1 ? Math.floor(steps + BEYOND_EPS) + 1 : Math.ceil(steps - BEYOND_EPS) - 1;
+		const member = start + k * period;
+		if (best === null || (direction === 1 ? member < best : member > best)) best = member;
+	}
+	return best;
 }
 
 // =============================================================================
