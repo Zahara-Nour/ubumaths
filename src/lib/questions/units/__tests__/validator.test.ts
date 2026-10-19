@@ -493,9 +493,11 @@ describe('Valeur lue en arbre', () => {
 	});
 
 	test('élève sans unité, saisie qui n’est pas un nombre : « Réponse invalide »', () => {
-		const result = validateQuantityAnswer('abc', '2[m]');
-		expect(result.feedback).toBe('Réponse invalide : vérifier le format.');
-		expect(result.unitAtFault).toBeUndefined();
+		for (const saisie of ['abc', '\\infty', '\\emptyset']) {
+			const result = validateQuantityAnswer(saisie, '2[m]');
+			expect(result.feedback).toBe('Réponse invalide : vérifier le format.');
+			expect(result.unitAtFault).toBeUndefined();
+		}
 	});
 
 	test('attendu écrit en calcul : sa valeur est calculée', () => {

@@ -18,7 +18,7 @@ import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import { parseLatex } from '$lib/mathAST/parser';
 import { tidy } from '$lib/mathAST/tidy';
 import { rationalOf } from '$lib/mathAST/eval/evaluate-with-modifiers';
-import { getVariables } from '$lib/mathAST/eval/substitute';
+import { evaluateExpression, stripLatexSpacing } from '$lib/math';
 import type { Rational } from '$lib/mathAST/normal/types';
 
 // ============================================================================
@@ -107,12 +107,18 @@ function readExactValue(latex: string): Rational | null {
 	}
 }
 
-/** Écriture lisible par mathAST : virgule décimale et groupement ramenés à son écriture */
+/**
+ * Écriture lisible par mathAST : habillages sans sens retirés (`\num{5}`, `\text{ }`, `~`),
+ * espacements, groupement (`12\,500`) et virgule décimale ramenés par `stripLatexSpacing`
+ */
 function treeLatex(latex: string): string {
-	return latex
-		.trim()
-		.replace(/(\d)\\,\s?(?=\d)/g, '$1')
-		.replace(/(\d),(?=\d)/g, '$1{,}');
+	return stripLatexSpacing(
+		latex
+			.replace(/\\num\{([^{}]*)\}/g, '$1')
+			.replace(/\\text\{\s*\}/g, '')
+			.replace(/~/g, ' ')
+			.trim()
+	);
 }
 
 /** Valeur numérique de la partie numérique d'une grandeur ; `null` si illisible */
@@ -122,12 +128,13 @@ function readValue(latex: string): number | null {
 }
 
 /**
- * Écriture d'un nombre, même non rationnel (`\sqrt{2}`, `\pi`) : lisible par
- * mathAST, sans aucune lettre inconnue. `abc`, `5x` : non.
+ * Écriture d'un nombre réel, même non rationnel (`\sqrt{2}`, `\pi`) : mathAST
+ * l'évalue en un nombre fini. `abc`, `5x`, `\infty` : non.
  */
 export function readsAsNumber(latex: string): boolean {
 	try {
-		return getVariables(parseLatex(treeLatex(latex))).size === 0;
+		const value = evaluateExpression(treeLatex(latex));
+		return typeof value === 'number' && Number.isFinite(value);
 	} catch {
 		return false;
 	}

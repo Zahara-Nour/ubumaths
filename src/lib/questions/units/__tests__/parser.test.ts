@@ -568,6 +568,13 @@ describe('LaTeX Quantity Parsing', () => {
 			expect(parseLatexQuantity('5x\\unit{m}')).toBeNull();
 		});
 
+		test('habillages sans sens autour de la valeur : retirés', () => {
+			expect(parseLatexQuantity('5\\text{ }\\unit{m}')?.value).toBe(5);
+			expect(parseLatexQuantity('\\num{5}\\unit{m}')?.value).toBe(5);
+			expect(parseLatexQuantity('5~\\unit{m}')?.value).toBe(5);
+			expect(parseLatexQuantity('12\\,500\\unit{m}')?.value).toBe(12500);
+		});
+
 		test('une division par zéro est illisible', () => {
 			expect(parseLatexQuantity('\\frac{1}{0}\\unit{m}')).toBeNull();
 		});
