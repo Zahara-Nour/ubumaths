@@ -2,7 +2,7 @@
  * La nature d'une courbe donnée par son équation — la classification de
  * `courbe()`, extraite en fonction PURE (sans `Figure`) pour que la carte de
  * l'atelier dise « droite », « cercle »… (géométrie v2, lot 1, PR 2 : C1, C2,
- * C6 ; `docs/wip/atelier-geometrie-phase0.md`).
+ * C6 ; `docs/archive/wip/atelier-geometrie-phase0.md`).
  *
  * `classifyConic` disait « dégénérée » sans séparer le vide, le point isolé et
  * les droites : `degenerateConicKind` les sépare.

@@ -1,7 +1,7 @@
 /**
  * Atelier — `.relever E1 ; E2 quand t va de a à b pas h` (géométrie, lot 2, PR 4).
  *
- * L6 de `docs/wip/atelier-geometrie-lot2-phase0.md` (validée le 2026-10-18) :
+ * L6 de `docs/archive/wip/atelier-geometrie-lot2-phase0.md` (validée le 2026-10-18) :
  * fermer la boucle du problème de l'aire. `t` est une VALEUR à curseur, ou un
  * `point_sur` dont la position est un nombre écrit ; à chaque pas, elle prend
  * la valeur du pas, tout l'atelier qui en dépend est recalculé

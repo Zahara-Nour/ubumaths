@@ -1,6 +1,6 @@
 /**
  * Géométrie, lot 2, PR 4 : `.relever E1 ; E2 quand t va de a à b pas h` (L6 de
- * `docs/wip/atelier-geometrie-lot2-phase0.md`, validée le 2026-10-18).
+ * `docs/archive/wip/atelier-geometrie-lot2-phase0.md`, validée le 2026-10-18).
  *
  * La commande fait varier une valeur à curseur (ou la position d'un
  * `point_sur`), calcule les deux expressions à chaque pas et range les deux

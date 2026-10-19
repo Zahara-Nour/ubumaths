@@ -1,6 +1,6 @@
 /**
  * Géométrie, lot 2, PR 3 : `intersection(a, b, k)` et `point_sur(objet, position)`
- * dans le modèle de l'atelier (L5 de `docs/wip/atelier-geometrie-lot2-phase0.md`,
+ * dans le modèle de l'atelier (L5 de `docs/archive/wip/atelier-geometrie-lot2-phase0.md`,
  * validée le 2026-10-18 ; L1 : l'atelier calcule EXACTEMENT, avec les fonctions
  * pures de `geometry-core`).
  *

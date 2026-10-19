@@ -1,14 +1,14 @@
 ---
 title: Atelier — la géométrie, lot 2 (constructions au clavier et mesures), phase 0
 date: 2026-10-18
-status: phase 0 du lot 2 VALIDÉE (2026-10-18) — L1-L8 tranchées (L2 en détail, les autres « je valide tes recos »)
+status: ARCHIVÉE le 2026-10-19 (chantier géométrie clos) — phase 0 du lot 2 VALIDÉE (2026-10-18) — L1-L8 tranchées (L2 en détail, les autres « je valide tes recos »)
 ---
 
 # Atelier — la géométrie, lot 2 : constructions au clavier et mesures
 
 Chapeau : [atelier-geometrie-phase0.md](atelier-geometrie-phase0.md) (G0-G7, lot 1 clos le
 2026-10-18 : #1474, #1478, #1482, #1491). Journal : [atelier-geometrie-progress.md](atelier-geometrie-progress.md).
-Doc système : [atelier.md](../systeme/atelier.md), [geometrie/README.md](../systeme/geometrie/README.md).
+Doc système : [atelier.md](../../systeme/atelier.md), [geometrie/README.md](../../systeme/geometrie/README.md).
 
 ## Le but
 

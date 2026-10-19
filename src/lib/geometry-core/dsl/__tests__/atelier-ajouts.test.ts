@@ -1,6 +1,6 @@
 /**
  * Les formes ajoutées au DSL pour l'atelier (géométrie, lot 2, L2 b de
- * `docs/wip/atelier-geometrie-lot2-phase0.md`, validée le 2026-10-18) :
+ * `docs/archive/wip/atelier-geometrie-lot2-phase0.md`, validée le 2026-10-18) :
  * `cercle(O, r)` (rayon en second, positionnel), `parallele(P, d)` et
  * `perpendiculaire(P, d)` (d droite, segment ou demi-droite). Rien de ce qui
  * existait ne change de sens : `cercle(O, A)` avec un point reste refusé.

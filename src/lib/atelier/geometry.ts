@@ -6,7 +6,7 @@
  * point, le nombre de « = » d'une équation), et il porte les messages. La
  * lecture mathématique vit dans `parse.ts`, qui l'importe (pas l'inverse).
  *
- * Spécification : `docs/wip/atelier-geometrie-phase0.md` (G0, G3, C1-C15, P1-P9).
+ * Spécification : `docs/archive/wip/atelier-geometrie-phase0.md` (G0, G3, C1-C15, P1-P9).
  *
  * @module atelier/geometry
  */

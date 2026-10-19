@@ -1,15 +1,15 @@
 ---
 title: Atelier — la géométrie (v2, phase 0)
 date: 2026-10-18
-status: phase 0 du lot 1 VALIDÉE (2026-10-18) ; G0-G7, comportements du lot 1 et Q1-Q5 décidés
+status: ARCHIVÉE le 2026-10-19 (chantier géométrie clos) — phase 0 du lot 1 VALIDÉE (2026-10-18) ; G0-G7, comportements du lot 1 et Q1-Q5 décidés
 ---
 
 # Atelier — la géométrie (v2)
 
-Chapeau : [atelier-progress.md](atelier-progress.md). Cadrage : [atelier-recherche-eleve.md](../archive/wip/atelier-recherche-eleve.md)
+Chapeau : [atelier-progress.md](../../wip/atelier-progress.md). Cadrage : [atelier-recherche-eleve.md](atelier-recherche-eleve.md)
 (§6 la vue Figure, §8 la géométrie au collège, §9 décisions figées, §10 la v2). Doc système :
-[atelier.md](../systeme/atelier.md). Moteur : [geometrie/README.md](../systeme/geometrie/README.md),
-[dsl-builtins.md](../systeme/geometrie/dsl-builtins.md).
+[atelier.md](../../systeme/atelier.md). Moteur : [geometrie/README.md](../../systeme/geometrie/README.md),
+[dsl-builtins.md](../../systeme/geometrie/dsl-builtins.md).
 
 ## Pourquoi
 

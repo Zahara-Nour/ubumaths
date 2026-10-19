@@ -1,22 +1,23 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 CLOS ; lot 2 CLOS (#1500, #1506, #1507, #1509, #1513 perf, #1514 .relever) ; lot 3 CLOS (#1533, #1536, #1538, #1540) ; suivi : polygone qui repasse par un sommet
+status: ARCHIVÉ le 2026-10-19 — chantier CLOS (lot 1, lot 2, lot 3 : #1533, #1536, #1538, #1540) ; durable versé dans docs/systeme/atelier.md
 ---
 
 # Atelier — la géométrie : où en est le chantier
 
 Phase 0 (validée le 2026-10-18) : [atelier-geometrie-phase0.md](atelier-geometrie-phase0.md).
-Chapeau : [atelier-progress.md](atelier-progress.md).
+Chapeau : [atelier-progress.md](../../wip/atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, versement du lot 3._
+_Mis à jour le 2026-10-19 : chantier CLOS et archivé (#1541)._
 
-- **État** : lots 1, 2 et 3 livrés et CLOS (lot 3 : #1533, #1536, #1538, #1540) ; phase 0 du lot 3 archivée (`docs/archive/wip/`). Rien en prod.
-- **Prochaine action** : demander à David la suite du chantier géométrie (lot 4 ?), puis sa phase 0.
-- **En attente de David** : replier « Mes objets » sur téléphone ? (la toile retombe à 160 px avec deux objets ; touche toute l'interface de l'atelier, Graphe compris). Vérification manuelle #1540 notée.
-- **Pièges** : la page des tests navigateur (414 px) prend la disposition téléphone (toile de 10rem) : un test qui suppose une échelle en pixels casse. PR qui touche `mathAST` → `mathast-expert`. Un segment entre deux clics dans le vide = 3 étapes d'annulation (M7, gardé).
+- **État** : lots 1, 2 et 3 livrés ; rien en prod. Durable versé dans `docs/systeme/atelier.md`
+  (dont la dette `.relever` sur figure chargée et le piège de la page de tests à 414 px).
+- **Suites décidées par David (2026-10-19)** : pas de lot 4 ; « Mes objets » replié par défaut sur
+  téléphone (petite PR, sa propre phase 0, après la vérification manuelle #1540) ; chantier de
+  performance du recalcul seulement si l'essai au doigt montre une figure qui saccade.
 
 ## Lot 1 — découpage
 

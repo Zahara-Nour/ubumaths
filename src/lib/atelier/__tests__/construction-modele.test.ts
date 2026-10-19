@@ -1,6 +1,6 @@
 /**
  * Géométrie, lot 2, PR 1 : les CONSTRUCTIONS au clavier, dans le modèle de
- * l'atelier (L1, L2, L3, L8 de `docs/wip/atelier-geometrie-lot2-phase0.md`,
+ * l'atelier (L1, L2, L3, L8 de `docs/archive/wip/atelier-geometrie-lot2-phase0.md`,
  * validée le 2026-10-18).
  *
  * Ce qui est asserté est ce que l'élève voit : l'objet créé (type, définition

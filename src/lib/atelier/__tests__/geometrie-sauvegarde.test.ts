@@ -1,6 +1,6 @@
 /**
  * La géométrie dans l'atelier, lot 1, PR 1 : sauvegarde, lien, fusion et
- * migration des ateliers rangés (phase 0 `docs/wip/atelier-geometrie-phase0.md`,
+ * migration des ateliers rangés (phase 0 `docs/archive/wip/atelier-geometrie-phase0.md`,
  * M1, M4 et décision Q2 (a) : un objet nommé `y` est renommé à la première
  * lettre libre, et on le dit).
  */

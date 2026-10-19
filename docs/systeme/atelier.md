@@ -216,7 +216,7 @@ cartes (décision G3).
 `AtelierObject` = `ValueObject` | `FunctionObject` | `SequenceObject` | `ListObject` |
 `PointObject` | `CurveObject` (`src/lib/atelier/types.ts`). Les deux derniers sont ceux de la
 géométrie (v2, lot 1 : le modèle en PR 1, la vue Géométrie en PR 2, 𝒞f en PR 3 — phase 0
-[atelier-geometrie-phase0.md](../wip/atelier-geometrie-phase0.md)).
+[atelier-geometrie-phase0.md](../archive/wip/atelier-geometrie-phase0.md)).
 
 | Type       | Exemple                               | Particularités                                                                                                                                |
 | ---------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -250,7 +250,7 @@ supprimer, rien d'autre au lot 1. Plafond `MAX_FIGURE_OBJECTS` (50, points et co
 `geometry-core` ne l'expose pas encore hors de `courbe()`.
 
 **Constructions** (géométrie, lot 2, PR 1 — phase 0
-[atelier-geometrie-lot2-phase0.md](../wip/atelier-geometrie-lot2-phase0.md), L1-L3, L7, L8) : un
+[atelier-geometrie-lot2-phase0.md](../archive/wip/atelier-geometrie-lot2-phase0.md), L1-L3, L7, L8) : un
 point ou une courbe peut aussi être **construit** — mots du DSL de géométrie, mêmes arguments
 (nommés compris), et trois raccourcis de manuel, en définition comme dans un argument :
 
@@ -1149,7 +1149,7 @@ survit à un objet remplacé. `followsOf` (`card-state.ts`) lit `citedNames` au 
 `dependents` pour chaque objet (O(n²) relectures).
 
 Mesures (figure de 24 objets, Mac mini M6 ; détail et profil :
-[atelier-geometrie-progress.md](../wip/atelier-geometrie-progress.md#performance)) :
+[atelier-geometrie-progress.md](../archive/wip/atelier-geometrie-progress.md#performance)) :
 un cran coûtait 36 ms en node et 193 ms dans Chromium (mode dev, rendu compris) ; il coûte
 3 ms et 12,6 ms. Bancs : `banc-curseur.test.ts` et `banc-curseur.svelte.test.ts` (sautés sauf
 `VITE_ATELIER_BANC=1`). Garde-fous : `recalcul-performance.test.ts` (temps, borne 4× ; nombre de
@@ -1737,7 +1737,9 @@ de la toile (fond translucide, sans capter le doigt ; vide, la région `role="st
 rendue). Même disposition sur un écran bas (`max-height: 480px`, téléphone couché), plancher
 6rem : la barre d'outils reste à l'écran. Sans outil, le doigt resté posé après un pincement
 continue de déplacer la vue. Mesuré sur iPhone 13 (390 × 664) : toile de 234 px de haut,
-« Mes objets » vide au-dessus ; couché (750 × 342) : 117 px.
+« Mes objets » vide au-dessus ; couché (750 × 342) : 117 px. ⚠️ La page des tests navigateur
+(414 px de large) prend cette disposition (toile de 10rem) : un test qui suppose une échelle en
+pixels y casse.
 
 **𝒞f dans la vue Géométrie** (PR 3, K1-K3) : l'action de carte « Afficher dans Géométrie » /
 « Retirer de Géométrie » (`figure` dans `BY_KIND`, bascule comme « Tracer ») pose `inFigure` sur
@@ -2745,11 +2747,10 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 
 - `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
-- **v2** géométrie : phase 0 du lot 1 validée le 2026-10-18 ; PR 1 (le modèle : points, courbes,
-  `y` réservé, version 3), PR 2 (vue Géométrie, `syncFigure`, curseurs cachés, nature des
-  courbes) et PR 3 (𝒞f dans Géométrie, onglet renommé, version 4) faites ; reste le grapheur à
-  vrais paramètres (PR 4) — suivi :
-  [atelier-geometrie-progress.md](../wip/atelier-geometrie-progress.md). **v3** Python : non
+- **v2** géométrie : **livrée** (lot 1 : modèle, vue Géométrie, 𝒞f ; lot 2 : constructions au
+  clavier, mesures, `point_sur`, intersections, `.relever` ; lot 3 : barre d'outils, glisser,
+  outils de construction, téléphone et tablette), pas encore en prod ; chantier clos le
+  2026-10-19, journal : [atelier-geometrie-progress.md](../archive/wip/atelier-geometrie-progress.md). **v3** Python : non
   commencée, sans phase 0 ;
 - tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1), collage /
   copie / CSV / titres (PR 2), annulation (PR 3a), appariement par ligne (PR 3b) — lot 1 complet ;
@@ -2757,6 +2758,12 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 - dettes connues : action « Renommer » encore désactivée (« prochain lot »), saisie des unités
   sans palette. `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
   poste (< 0,1 ms ; voir « Ce qui se recalcule, et ce qui est gardé »).
+  `.relever` sur une figure chargée (intersections, perpendiculaire, périmètre, angle, deux
+  mesures composées) : 19 à 23 s pour le balayage, ~8 ms puis ~95 ms de recalcul par pas — le
+  même coût que chaque cran du curseur, ou chaque mouvement d'un point glissé, sur cette figure
+  (mesuré le 2026-10-19). Pas d'optimisation sûre et évidente côté `.relever` ;
+- « Mes objets » au téléphone : avec deux objets, la toile retombe à 160 px ; repli par défaut
+  sur téléphone décidé le 2026-10-19 (petite PR à venir, Graphe compris).
 
 ⚠️ La section « Ce qui reste pour clore la v1 » de `atelier-progress.md` (2026-10-04) dit encore
 les garanties `/grapheur` non faites : elles le sont (lots 2 à 6, #779 → #809,

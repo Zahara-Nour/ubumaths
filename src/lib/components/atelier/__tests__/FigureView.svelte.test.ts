@@ -1,6 +1,6 @@
 /**
  * La vue Figure (géométrie v2, lot 1, PR 2 — F1 à F5 de
- * `docs/wip/atelier-geometrie-phase0.md`) : une projection de l'atelier dans une
+ * `docs/archive/wip/atelier-geometrie-phase0.md`) : une projection de l'atelier dans une
  * `GeometryCanvas`, repère orthonormé ; les points se glissent (lot 3, PR 1).
  *
  * Asserte le RENDU : éléments SVG présents, texte de la vue.

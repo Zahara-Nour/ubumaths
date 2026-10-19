@@ -1,6 +1,6 @@
 /**
  * 𝒞f dans la vue Géométrie (géométrie v2, lot 1, PR 3 — K1, K2, K3 de
- * `docs/wip/atelier-geometrie-phase0.md`) : l'action de carte « Afficher dans
+ * `docs/archive/wip/atelier-geometrie-phase0.md`) : l'action de carte « Afficher dans
  * Géométrie », son état `inFigure` (rangé), et le tracé par `syncFigure`.
  *
  * On asserte le DESSIN (coordonnées SVG rendues par les primitives de la toile).

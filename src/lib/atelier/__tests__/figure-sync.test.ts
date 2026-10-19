@@ -1,7 +1,7 @@
 /**
  * Le pont `syncFigure` : l'atelier → une `Figure` de `geometry-core`, à sens
  * unique, idempotent (géométrie v2, lot 1, PR 2 — F2, F4, F5, S1, S2, S4 de
- * `docs/wip/atelier-geometrie-phase0.md`).
+ * `docs/archive/wip/atelier-geometrie-phase0.md`).
  *
  * On asserte le DESSIN (ce que rendent les primitives SVG de la toile), pas
  * seulement les objets posés : un objet posé qui ne se dessine pas est le
