@@ -4,7 +4,7 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { userEvent } from '@vitest/browser/context';
+import { userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
 import QrCodeButton from '../QrCodeButton.svelte';
 import { encodeQr, qrSvg } from '$lib/qr/qr-code';
