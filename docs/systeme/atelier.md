@@ -1733,8 +1733,11 @@ interrompu par un second doigt ne pose rien) ; avec Déplacer, un glisser sur le
 44 px. Sous 640 px (le seuil de la console pleine page), la toile prend la vue (plancher de
 10rem), la barre d'outils passe **dessous**, sur une rangée qui défile de côté (ombre du côté où
 il reste des outils, case Repère au bout), consigne et invite de la vue vide se posent sur le haut
-de la toile (fond translucide, sans capter le doigt). Mesuré sur iPhone 13 (390 × 664) : toile de
-234 px de haut, « Mes objets » vide au-dessus.
+de la toile (fond translucide, sans capter le doigt ; vide, la région `role="status"` reste
+rendue). Même disposition sur un écran bas (`max-height: 480px`, téléphone couché), plancher
+6rem : la barre d'outils reste à l'écran. Sans outil, le doigt resté posé après un pincement
+continue de déplacer la vue. Mesuré sur iPhone 13 (390 × 664) : toile de 234 px de haut,
+« Mes objets » vide au-dessus ; couché (750 × 342) : 117 px.
 
 **𝒞f dans la vue Géométrie** (PR 3, K1-K3) : l'action de carte « Afficher dans Géométrie » /
 « Retirer de Géométrie » (`figure` dans `BY_KIND`, bascule comme « Tracer ») pose `inFigure` sur

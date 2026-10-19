@@ -508,6 +508,12 @@
 		if (frame === null) return;
 		// Un appui d'outil devient un geste de vue : aucun clic au relâcher
 		if (toolPress !== null) toolPress.moved = true;
+		// Un glisser de la figure elle-même tombe : le point reste où il était
+		if (draggingId) {
+			figure.discard();
+			draggingId = null;
+			dragOffset = null;
+		}
 		endPan();
 		hoveredId = null;
 		canvasTool?.hover(null);
@@ -534,10 +540,18 @@
 		pinch.lastDist = frame.dist;
 	}
 
-	/** Un pointeur se lève (ou est perdu) : il quitte les doigts posés, le pincement tombe. */
+	/**
+	 * Un pointeur se lève (ou est perdu) : il quitte les doigts posés, le
+	 * pincement tombe. Sans outil, le doigt resté posé continue de déplacer la vue.
+	 */
 	function releaseTouch(e: PointerEvent) {
 		touches.delete(e.pointerId);
-		if (pinch !== null && pinch.ids.includes(e.pointerId)) pinch = null;
+		if (pinch === null || !pinch.ids.includes(e.pointerId)) return;
+		pinch = null;
+		const [remaining] = touches;
+		if (remaining === undefined || canvasTool || delegated) return;
+		isPanning = true;
+		panPointer = { pointerId: remaining[0], lastX: remaining[1].x, lastY: remaining[1].y };
 	}
 
 	function onPointerDown(e: PointerEvent) {
@@ -905,6 +919,8 @@
 		releaseTouch(e);
 		if (toolPress?.pointerId === e.pointerId) toolPress = null;
 		if (foreignPointer(e)) return;
+		// Un autre pointeur annulé (paume, doigt rejeté) : la vue continue de se déplacer
+		if (panPointer !== null && e.pointerId !== panPointer.pointerId) return;
 		// Le point délégué reste où il est arrivé : le geste se ferme (M7)
 		endDelegatedDrag();
 		if (draggingId) figure.discard();

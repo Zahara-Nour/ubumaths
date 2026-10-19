@@ -44,7 +44,7 @@ async function mount(atelier: Atelier) {
 
 /**
  * Monter l'atelier comme dans la page d'un téléphone (iPhone 13) : 600 px de
- * haut sous l'en-tête, « Mes objets » au-dessus de la vue.
+ * haut sous l'en-tête, « Mes objets » (vide) au-dessus de la vue.
  */
 async function mountOnPhone(atelier: Atelier) {
 	const { container } = await render(AtelierContainer, {
@@ -304,6 +304,113 @@ describe('M6 : la vue se déplace et se zoome, sans rien écrire', () => {
 	});
 });
 
+describe('M6 : un geste de vue ne laisse rien derrière lui', () => {
+	beforeEach(async () => {
+		await page.viewport(1280, 900);
+	});
+
+	/** Appuyer et relâcher un doigt en `at`. */
+	async function tap(container: HTMLElement, at: At, pointerId = 21) {
+		pointer(canvasOf(container), 'pointerdown', at, pointerId, 'touch');
+		pointer(canvasOf(container), 'pointerup', at, pointerId, 'touch');
+		await nextFrame();
+	}
+
+	it('après un pincement, un appui d’un doigt pose de nouveau un point', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const container = await mount(atelier);
+		toolButton(container, 'Point').click();
+		await nextFrame();
+		const o = backgroundOf(container);
+
+		await twoFingers(container, o, { x: o.x + 80, y: o.y }, o, { x: o.x + 120, y: o.y });
+		await tap(container, { x: o.x + 40, y: o.y - 60 });
+
+		expect(atelier.names.length).toBe(2);
+	});
+
+	it('un doigt du pincement annulé par le navigateur : le geste se ferme, l’outil reprend', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const container = await mount(atelier);
+		toolButton(container, 'Point').click();
+		await nextFrame();
+		const svg = canvasOf(container);
+		const o = backgroundOf(container);
+
+		pointer(svg, 'pointerdown', o, 11, 'touch');
+		pointer(svg, 'pointerdown', { x: o.x + 80, y: o.y }, 12, 'touch');
+		pointer(svg, 'pointercancel', o, 11, 'touch');
+		pointer(svg, 'pointercancel', { x: o.x + 80, y: o.y }, 12, 'touch');
+		await nextFrame();
+		await tap(container, { x: o.x + 40, y: o.y - 60 });
+
+		expect(atelier.names.length).toBe(2);
+	});
+
+	it('pendant le glisser d’un point au doigt, un second doigt ne déplace pas la vue', async () => {
+		const atelier = atelierOf([
+			['point', 'A', '(1 ; 2)'],
+			['point', 'B', '(-2 ; -1)']
+		]);
+		const container = await mount(atelier);
+		const svg = canvasOf(container);
+		const a = drawnAt(container, 'A');
+		const b = drawnAt(container, 'B');
+		const o = backgroundOf(container);
+
+		pointer(svg, 'pointerdown', a, 11, 'touch');
+		pointer(svg, 'pointermove', { x: a.x + 30, y: a.y }, 11, 'touch');
+		await nextFrame();
+		pointer(svg, 'pointerdown', o, 12, 'touch');
+		pointer(svg, 'pointermove', { x: o.x + 100, y: o.y + 50 }, 12, 'touch');
+		await nextFrame();
+		pointer(svg, 'pointerup', { x: o.x + 100, y: o.y + 50 }, 12, 'touch');
+		pointer(svg, 'pointerup', { x: a.x + 30, y: a.y }, 11, 'touch');
+		await nextFrame();
+
+		expectNear(drawnAt(container, 'B'), b);
+		expect(atelier.get('A')?.definition).not.toBe('(1 ; 2)');
+	});
+
+	it('Déplacer : un doigt levé après le pincement, l’autre continue de déplacer la vue', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const container = await mount(atelier);
+		const svg = canvasOf(container);
+		const o = backgroundOf(container);
+
+		pointer(svg, 'pointerdown', o, 11, 'touch');
+		pointer(svg, 'pointerdown', { x: o.x + 80, y: o.y }, 12, 'touch');
+		pointer(svg, 'pointerup', { x: o.x + 80, y: o.y }, 12, 'touch');
+		await nextFrame();
+		const before = drawnAt(container, 'A');
+		pointer(svg, 'pointermove', { x: o.x + 25, y: o.y + 15 }, 11, 'touch');
+		await nextFrame();
+		pointer(svg, 'pointerup', { x: o.x + 25, y: o.y + 15 }, 11, 'touch');
+		await nextFrame();
+
+		expectNear(drawnAt(container, 'A'), { x: before.x + 25, y: before.y + 15 });
+	});
+
+	it('Déplacer : l’annulation d’un autre doigt ne coupe pas le déplacement de la vue', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const container = await mount(atelier);
+		const svg = canvasOf(container);
+		const before = drawnAt(container, 'A');
+		const o = backgroundOf(container);
+
+		pointer(svg, 'pointerdown', o, 1, 'mouse');
+		pointer(svg, 'pointermove', { x: o.x + 20, y: o.y }, 1, 'mouse');
+		await nextFrame();
+		pointer(svg, 'pointercancel', { x: o.x, y: o.y }, 31, 'touch');
+		pointer(svg, 'pointermove', { x: o.x + 40, y: o.y }, 1, 'mouse');
+		await nextFrame();
+		pointer(svg, 'pointerup', { x: o.x + 40, y: o.y }, 1, 'mouse');
+		await nextFrame();
+
+		expectNear(drawnAt(container, 'A'), { x: before.x + 40, y: before.y });
+	});
+});
+
 describe('M6 : sur un téléphone, la toile tient dans l’écran', () => {
 	beforeEach(async () => {
 		await page.viewport(390, 664);
@@ -322,7 +429,8 @@ describe('M6 : sur un téléphone, la toile tient dans l’écran', () => {
 			?.getBoundingClientRect();
 		if (!toile || !outils) throw new Error('vue incomplète');
 
-		expect(toile.height).toBeGreaterThan(150);
+		// Plus que le plancher de 10rem : la toile prend vraiment la place libre
+		expect(toile.height).toBeGreaterThan(180);
 		expect(outils.top).toBeGreaterThanOrEqual(toile.bottom - 1);
 		expect(toile.bottom).toBeLessThanOrEqual(frame.bottom + 1);
 		expect(outils.bottom).toBeLessThanOrEqual(frame.bottom + 1);
@@ -341,5 +449,18 @@ describe('M6 : sur un téléphone, la toile tient dans l’écran', () => {
 		const after = toile();
 		expect(after?.top).toBe(before?.top);
 		expect(after?.height).toBe(before?.height);
+		// La consigne est dite, posée sur le haut de la toile
+		const refus = container.querySelector('.figure .refus');
+		expect(refus?.textContent?.trim()).not.toBe('');
+		const at = refus?.getBoundingClientRect();
+		expect(at?.top).toBeGreaterThanOrEqual((after?.top ?? 0) - 1);
+		expect(at?.bottom).toBeLessThanOrEqual((after?.bottom ?? 0) + 1);
+	});
+
+	it('sans message, la région annoncée reste rendue (un lecteur d’écran l’entend changer)', async () => {
+		const container = await mountOnPhone(atelierOf([['point', 'A', '(1 ; 2)']]));
+		const refus = container.querySelector('.figure .refus');
+		expect(refus?.textContent?.trim()).toBe('');
+		expect(refus && getComputedStyle(refus).display).not.toBe('none');
 	});
 });

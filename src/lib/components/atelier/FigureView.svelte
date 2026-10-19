@@ -559,9 +559,9 @@
 			height: 2.75rem;
 		}
 	}
-	/* Sur un téléphone (M6) : la toile prend la vue, la barre d'outils passe dessous,
+	/* Sur un téléphone, debout ou couché (M6) : la toile prend la vue, la barre d'outils passe dessous,
 	   sur une rangée qui défile de côté ; consigne et invite se posent sur la toile */
-	@media (max-width: 640px) {
+	@media (max-width: 640px), (max-height: 480px) {
 		.barre-figure {
 			order: 1;
 			flex-wrap: nowrap;
@@ -613,11 +613,20 @@
 		.refus {
 			top: 0;
 		}
+		/* Vide, elle reste rendue (sans fond) : un lecteur d'écran l'entend changer */
 		.refus:empty {
-			display: none;
+			padding: 0;
+			background: none;
 		}
 		.vide {
 			top: 1.75rem;
+		}
+	}
+	/* Téléphone couché : l'en-tête et les barres de l'atelier ne laissent qu'environ
+	   190 px, la barre d'outils doit rester à l'écran */
+	@media (max-height: 480px) {
+		.toile {
+			min-height: 6rem;
 		}
 	}
 </style>

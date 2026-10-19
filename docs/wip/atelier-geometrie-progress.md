@@ -13,8 +13,8 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 _Mis à jour le 2026-10-19, PR 4 en cours._
 
-- **État** : lots 1 et 2 livrés ; lot 3 PR 1 (#1533), PR 2 (#1536), PR 3 (#1538) mergées ; PR 4 « téléphone et tablette » (M6) codée, tests verts, en revue. Rien en prod.
-- **Prochaine action** : revue `code-reviewer`, PR, CI, merge ; puis clore le lot 3 (versement).
+- **État** : lots 1 et 2 livrés ; lot 3 PR 1 (#1533), PR 2 (#1536), PR 3 (#1538) mergées ; PR 4 « téléphone et tablette » (M6) codée, revue corrigée, PR ouverte. Rien en prod.
+- **Prochaine action** : CI verte → merge ; puis clore le lot 3 (versement du journal).
 - **En attente de David** : replier « Mes objets » sur téléphone ? (la toile retombe à 160 px avec deux objets ; touche toute l'interface de l'atelier).
 - **Pièges** : la page des tests navigateur (414 px) prend la disposition téléphone (toile de 10rem) : un test qui suppose une échelle en pixels casse. PR qui touche `mathAST` → `mathast-expert`.
 - **Worktree / branche** : `../ubumaths-wt-atelier-geometrie` · `feat/atelier-geometrie-tactile`.
@@ -661,6 +661,16 @@ Branche `feat/atelier-geometrie-tactile`. Périmètre (découpage de la phase 0)
 - Vérifié à l'écran (Playwright + événements tactiles CDP) : iPhone 13 — segment par deux appuis
   (3 lignes écrites, rien d'autre), pincement × 2, glisser du fond, barre en bas (clair et
   sombre) ; iPad Mini et bureau 1280 × 800 — inchangés hors boutons de 44 px au doigt.
+- Revue `code-reviewer` (Sonnet, aucun bloquant, 3 à corriger, 5 mineurs), corrigée — tests
+  d'abord (3 rouges, 3 gardes) : nettoyage des gestes testé (pincement puis appui d'outil,
+  pincement annulé, second doigt pendant un glisser) ; consigne assertée non vide et posée sur la
+  toile ; la région `role="status"` reste rendue vide (plus de `display: none`) ; un glisser de la
+  figure elle-même tombe au pincement (latent : l'atelier passe par `pointDrag`) ; sans outil, le
+  doigt resté posé après un pincement continue de déplacer la vue ; l'annulation d'un AUTRE
+  pointeur ne coupe plus le déplacement ; téléphone couché (`max-height: 480px`) : disposition
+  téléphone, plancher de toile 6rem — la barre d'outils reste à l'écran (iPhone 13 couché : page
+  de 342 px, toile 117 px). Point 7 (souris pendant un pincement) déjà sûr : le pincement ferme
+  le déplacement en cours. Atelier + géométrie (navigateur) : 631 verts.
 - **À trancher par David** : au téléphone, « Mes objets » grandit avec les objets et ramène la
   toile à son plancher (160 px avec deux points). Le replier sur téléphone touche toute
   l'interface de l'atelier (Graphe aussi) : hors de cette PR.
