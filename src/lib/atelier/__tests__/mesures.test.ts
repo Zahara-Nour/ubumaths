@@ -120,14 +120,14 @@ describe('L4 : une mesure tapée seule est un calcul, exacte d’abord', () => {
 
 	it('`angle(B, A, D)` vaut 90, `angle(B, A, F)` 45 (degrés, exacts)', () => {
 		const s = plane();
-		expect(answer(runInput(s, 'angle(B, A, D)'))).toBe('90 °');
-		expect(answer(runInput(s, 'angle(B, A, F)'))).toBe('45 °');
+		expect(answer(runInput(s, 'angle(B, A, D)'))).toBe('90°');
+		expect(answer(runInput(s, 'angle(B, A, F)'))).toBe('45°');
 	});
 
 	it('un angle non remarquable : une valeur approchée, dite ≈', () => {
 		const s = plane();
 		const result = runInput(s, 'angle(B, A, C)');
-		expect(answer(result)).toBe('≈ 36,8699 °');
+		expect(answer(result)).toBe('≈ 36,8699°');
 		expect(latex(result)).toMatch(/^\\approx 36\{,\}8699/);
 	});
 

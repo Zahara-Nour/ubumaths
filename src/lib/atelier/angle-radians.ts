@@ -8,8 +8,11 @@
  * l'unité d'un angle pris par un sin, un cos, une tan est retirée : `90 °` devient
  * `π/2`, `(π/2) rad` devient `π/2` — exact.
  *
- * ⚠️ Seulement l'arbre SUBSTITUÉ d'un objet de l'atelier (`engine.substitutedTree`) :
- * `cos(90[°])` tapé à la main dans une fonction reste la limite de main.
+ * Deux entrées : l'arbre SUBSTITUÉ d'un objet de l'atelier (`engine.substitutedTree`,
+ * angle mesuré ou écrit à la main : `h(x) = cos(90°)·x`), et l'argument d'une
+ * commande, qui va au moteur en texte (`radiansInText` : `.résoudre h(x)=1`,
+ * `.évaluer cos(60°)*x en x=2` — PR « 60° », 2026-10-19). Une variable en degrés
+ * (`cos(x°)`) devient `cos(πx/180)`, exact : le Graphe trace cet arbre.
  *
  * @module atelier/angle-radians
  */
@@ -26,6 +29,8 @@ import {
 } from '$lib/mathAST/factory';
 import { transformAST } from '$lib/mathAST/visitor';
 import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
+import { toCustom } from '$lib/mathAST/custom-generator';
+import { astOf } from './parse';
 
 /** Les fonctions qui prennent un angle et rendent un nombre. */
 const TRIGONOMETRIC = new Set(['sin', 'cos', 'tan']);
@@ -45,7 +50,13 @@ function radiansOf(node: MathNode): MathNode | null {
 
 /** Retirer l'unité des angles DANS un sin, cos, tan : `cos(90 °)` → `cos(π/2)`. */
 export function radiansInTrigonometry(ast: MathNode): MathNode {
-	return transformAST(ast, {
+	return converted(ast).ast;
+}
+
+/** `radiansInTrigonometry`, et si quelque chose a changé. */
+function converted(ast: MathNode): { readonly ast: MathNode; readonly changed: boolean } {
+	let any = false;
+	const result = transformAST(ast, {
 		enterFunction: (node) => {
 			if (!TRIGONOMETRIC.has(node.name)) return undefined;
 			let changed = false;
@@ -61,7 +72,26 @@ export function radiansInTrigonometry(ast: MathNode): MathNode {
 			);
 			// Rien d'autre ne change : un sin(x) sans angle mesuré reste tel quel
 			if (!changed) return undefined;
+			any = true;
 			return { node: simplifyExact({ ...node, args }), skip: true };
 		}
 	});
+	return { ast: result, changed: any };
+}
+
+/** Une unité d'angle écrite : `[°]`, `[rad]`, `\unit{°}`. */
+const ANGLE_UNIT_WRITTEN = /\[(?:°|rad)\]|\\unit\s*\{(?:°|rad)\}/;
+
+/**
+ * Le même passage sur l'argument d'une commande, qui va au moteur en TEXTE
+ * (`.évaluer cos(60°)*x en x=2`, `.résoudre h(x)=1` avec h(x) = cos(60°)·x) :
+ * le moteur ne calcule pas le cosinus d'une grandeur (`2cos((π/3)[rad])`).
+ * Le texte tel quel s'il n'a pas d'angle dans un sin, cos, tan.
+ */
+export function radiansInText(text: string, functionNames?: readonly string[]): string {
+	if (!ANGLE_UNIT_WRITTEN.test(text)) return text;
+	const ast = astOf(text, 'url', functionNames);
+	if (ast === null) return text;
+	const result = converted(ast);
+	return result.changed ? toCustom(result.ast) : text;
 }

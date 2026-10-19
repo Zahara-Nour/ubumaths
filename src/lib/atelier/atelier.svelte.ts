@@ -464,6 +464,10 @@ function formatSliderValue(value: number, step: number): string {
 const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-même.';
 
 /** Un angle est une grandeur (° ou rad) : une fonction ne s'en sert pas encore. */
+/** Une unité d'angle écrite dans une définition : `[°]`, `[rad]`, `°`, `\degree`, `^{\circ}`. */
+const WRITTEN_ANGLE =
+	/\[(?:°|rad)\]|\\unit\s*\{(?:°|rad)\}|°(?![CF])|\\degree(?![A-Za-z])|\^\s*\{?\s*\\circ/;
+
 const ANGLE_IN_FUNCTION =
 	'Une mesure d’angle est une grandeur (en ° ou en rad) : une fonction ne s’en sert pas. Utilise son cosinus ou son sinus, ou une valeur sans unité.';
 
@@ -3550,8 +3554,11 @@ export class Atelier {
 			) {
 				return;
 			}
+			// Un angle ÉCRIT dans une fonction ou une suite (`f(x) = 2x°`, `x[°]`) aussi :
+			// `cos(x°)` passe, pris par le cosinus (`angle-radians.ts`)
 			const cites =
 				this.measuredOf(o) !== null ||
+				(o.kind !== 'value' && WRITTEN_ANGLE.test(o.definition)) ||
 				this.#refsOf(o).some((r) => this.angleQuantities().has(r.name));
 			if (!cites) return;
 			const tree = substitutedAstOf(this, o.name);

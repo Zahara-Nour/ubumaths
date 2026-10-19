@@ -172,6 +172,8 @@ import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps, type SolvedSteps } from './solve-steps';
 import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './natural-quantities';
+import { degreeSignWritten, strayDegreeRefusal, withDegreeUnits } from './degrees';
+import { radiansInText } from './angle-radians';
 import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { VALUE_FORBIDDEN, typedValueLatex } from '$lib/mathAST/cli/commands/eval.command';
@@ -1837,10 +1839,12 @@ function withListsByRow(session: CalcSession, input: string): CalcResult {
 /** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
 function runCommand(session: CalcSession, input: string): CalcResult {
 	const { engine } = session;
-	const resolved = resolveCommand(input);
+	const typedLine = resolveCommand(input);
 
-	const space = resolved.indexOf(' ');
-	const typed = (space === -1 ? resolved.slice(1) : resolved.slice(1, space)).trim().toLowerCase();
+	const space = typedLine.indexOf(' ');
+	const typed = (space === -1 ? typedLine.slice(1) : typedLine.slice(1, space))
+		.trim()
+		.toLowerCase();
 
 	// ⚠️ On vérifie AVANT d'exécuter : le moteur répondrait « Unknown command »
 	// en anglais, sans dire ce qui s'en approche (§2 E2).
@@ -1875,6 +1879,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	 * commande : sans ça, `.simp` ne dépliait rien là où `.simplifier` dépliait.
 	 */
 	const name = known.name.toLowerCase();
+	// `.évaluer cos(60°)*x en x=2` : l'unité degré dans l'argument d'une commande
+	// de CALCUL (`degrees.ts`) ; les commandes de données (`SIMULATIONS`) lisent
+	// des modalités. Rien ne change avant la première espace : `space` tient
+	const calculation = SIMULATIONS[known.name] === undefined;
+	const resolved = calculation ? withDegreeUnits(typedLine, 'detect') : typedLine;
+	const stray = calculation && space !== -1 ? strayDegreeRefusal(resolved.slice(space + 1)) : null;
+	if (stray !== null) return { kind: 'refus', message: stray };
 
 	// `.latex` et `.texte` SANS expression n'ont rien à écrire : refus qui montre
 	// l'écriture attendue. (Ils basculaient autrefois le mode de saisie du moteur,
@@ -2048,11 +2059,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	}
 	// `f'(x)` → son expression d'abord, puis les noms (voir plus haut)
 	// `f⁻¹` aussi, calculée à la volée comme `f'` (décision (1) de David)
+	// Puis un angle pris par un sin, cos, tan devient un nombre de radians : le
+	// moteur ne calcule pas `cos((π/3)[rad])` (`.résoudre h(x)=1`, h(x) = cos(60°)·x)
+	const inRadians = (text: string | null): string | null =>
+		text === null ? null : radiansInText(text, session.atelier.functionNames);
 	const substitute = (text: string): string | null =>
-		!text.includes("'") && !citesReciprocal(session.atelier, text)
-			? substituteNames(session, text)
-			: (expandCommandArgument(session.atelier, text) ??
-				substituteNames(session, expandInput(session.atelier, text)));
+		inRadians(
+			!text.includes("'") && !citesReciprocal(session.atelier, text)
+				? substituteNames(session, text)
+				: (expandCommandArgument(session.atelier, text) ??
+						substituteNames(session, expandInput(session.atelier, text)))
+		);
 	// `.limite EXPR en POINT` : lue AVANT la substitution des noms — `en 0 à
 	// droite` n'est pas une expression, et `a` (une valeur) y est le mot `à`
 	if (known.name === 'limit') {
@@ -2125,7 +2142,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		name === 'eval'
 			? (text: string): string | null =>
 					!text.includes("'") && !citesReciprocal(session.atelier, text)
-						? substituteNames(session, text, true)
+						? inRadians(substituteNames(session, text, true))
 						: substitute(text)
 			: substitute;
 	const args = typedArgs === null ? null : substituteArguments(typedArgs, substituteArgument);
@@ -3365,13 +3382,31 @@ export function runInput(
 	text: string,
 	provenance: Provenance = 'text'
 ): CalcResult {
-	return resultWithDecimalComma(
-		measureLine(
-			session.atelier,
-			text,
-			approximatedResult(session.atelier, text, computeInput(session, text, provenance))
+	return resultWithDegreeSign(
+		resultWithDecimalComma(
+			measureLine(
+				session.atelier,
+				text,
+				approximatedResult(session.atelier, text, computeInput(session, text, provenance))
+			)
 		)
 	);
+}
+
+/** Un angle s'écrit `60°` dans la réponse, sans espace (`degrees.ts`). */
+function resultWithDegreeSign(result: CalcResult): CalcResult {
+	if (result.kind !== 'calcul' && result.kind !== 'commande') return result;
+	return {
+		...result,
+		output: degreeSignWritten(result.output),
+		...(result.latex !== undefined && { latex: degreeSignWritten(result.latex) }),
+		...(result.alternative !== undefined && {
+			alternative: {
+				...result.alternative,
+				latex: degreeSignWritten(result.alternative.latex)
+			}
+		})
+	};
 }
 
 /** Une ligne qui cite une mesure (`AM`, `angle(…)`) ou une grandeur d'angle nommée. */
@@ -3657,8 +3692,16 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// `f^-1`, `f^(-1)`, `f⁻¹` d'une fonction de l'atelier : écrits `f^{-1}`, la
 	// réciproque que lisent les parseurs (décision (1) de David, 2026-10-13)
 	// `ln\left(x\right)` de MathLive : ln de x, pas l·n·(x) (`withLatexFunctionNames`)
-	const input = withReciprocalNotation(session.atelier, withLatexFunctionNames(text.trim()));
-	if (input === '') return { kind: 'vide' };
+	const written = withReciprocalNotation(session.atelier, withLatexFunctionNames(text.trim()));
+	if (written === '') return { kind: 'vide' };
+	// `cos(60°)`, `\cos(60^{\circ})` : l'unité degré, avant toute lecture (`degrees.ts`).
+	// Une commande le fait sur son argument de calcul (`runCommand`) : les
+	// commandes de données lisent des modalités
+	const input = written.startsWith('.') ? written : withDegreeUnits(written, 'detect');
+	if (!input.startsWith('.')) {
+		const stray = strayDegreeRefusal(input);
+		if (stray !== null) return { kind: 'refus', message: stray };
+	}
 
 	// Avant tout chemin — commande, définition, calcul : tous lisent `pi` p·i
 	if (PI_IN_LETTERS.test(input)) return { kind: 'refus', message: PI_IN_LETTERS_MESSAGE };

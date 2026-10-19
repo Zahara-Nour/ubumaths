@@ -1,6 +1,6 @@
 /**
  * Géométrie, lot 2, PR 2 : `angle(A, B, C)` rend une GRANDEUR dans l'unité du
- * réglage « Angles » (décision de David du 2026-10-18) — `36,87 °` en degrés
+ * réglage « Angles » (décision de David du 2026-10-18) — `36,87°` en degrés
  * (le défaut), `0,6435 rad` en radians. La trigonométrie la lit seule
  * (`cos(angle(…))`) ; un nombre seul reste en radians (`cos(60)` ne change pas).
  */
@@ -63,15 +63,15 @@ describe('angle : une grandeur en degrés, par défaut', () => {
 	it('les angles remarquables sont exacts, en °', () => {
 		const s = plane();
 		expect(s.atelier.angleUnit).toBe('deg');
-		expect(answer(runInput(s, 'angle(B, A, D)'))).toBe('90 °');
-		expect(answer(runInput(s, 'angle(B, A, F)'))).toBe('45 °');
+		expect(answer(runInput(s, 'angle(B, A, D)'))).toBe('90°');
+		expect(answer(runInput(s, 'angle(B, A, F)'))).toBe('45°');
 		expect(latex(runInput(s, 'angle(B, A, F)'))).toContain('{}^{\\circ}');
 	});
 
 	it('un angle non remarquable : ≈, en pleine précision', () => {
 		const s = plane();
-		expect(answer(runInput(s, 'angle(B, A, C)'))).toBe('≈ 36,8699 °');
-		expect(answer(runInput(s, '100*angle(B, A, C)'))).toBe('≈ 3686,9898 °');
+		expect(answer(runInput(s, 'angle(B, A, C)'))).toBe('≈ 36,8699°');
+		expect(answer(runInput(s, '100*angle(B, A, C)'))).toBe('≈ 3686,9898°');
 	});
 
 	it('la trigonométrie la lit seule : cos(angle(D, A, C)) ≈ 0,6, cos(angle(B, A, F)) = √2/2', () => {
@@ -82,8 +82,8 @@ describe('angle : une grandeur en degrés, par défaut', () => {
 
 	it('se calcule comme une grandeur : 2·angle, somme, comparaison', () => {
 		const s = plane();
-		expect(answer(runInput(s, '2*angle(B, A, D)'))).toBe('180 °');
-		expect(answer(runInput(s, 'angle(B, A, F) + angle(B, A, F)'))).toBe('90 °');
+		expect(answer(runInput(s, '2*angle(B, A, D)'))).toBe('180°');
+		expect(answer(runInput(s, 'angle(B, A, F) + angle(B, A, F)'))).toBe('90°');
 		expect(answer(runInput(s, 'angle(B, A, F) < 90[°]'))).toBe('vrai');
 	});
 
@@ -97,8 +97,8 @@ describe('angle : une grandeur en degrés, par défaut', () => {
 		runInput(s, 'T = angle(B, A, C)');
 		const T = s.atelier.get('T');
 		expect(T !== undefined && 'slider' in T && T.slider).toBeFalsy();
-		expect(answer(runInput(s, 'T'))).toBe('≈ 36,8699 °');
-		expect(answer(runInput(s, '2T'))).toBe('≈ 73,7398 °');
+		expect(answer(runInput(s, 'T'))).toBe('≈ 36,8699°');
+		expect(answer(runInput(s, '2T'))).toBe('≈ 73,7398°');
 	});
 
 	it('choix prudent : une fonction ne prend pas de mesure d’angle (une grandeur)', () => {
@@ -136,7 +136,7 @@ describe('angle : en radians, si le réglage le dit', () => {
 	it('changer le réglage recalcule une mesure nommée', () => {
 		const s = plane();
 		runInput(s, 'T = angle(B, A, C)');
-		expect(answer(runInput(s, 'T'))).toBe('≈ 36,8699 °');
+		expect(answer(runInput(s, 'T'))).toBe('≈ 36,8699°');
 		s.atelier.setAngleUnit('rad');
 		expect(answer(runInput(s, 'T'))).toBe('≈ 0,6435 rad');
 	});
