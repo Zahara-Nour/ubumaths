@@ -29,6 +29,7 @@ import { hasObjectNameShape } from './names';
 import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from './decimal-comma';
 import { objectKindOf, partsOf, specOf } from './construction-spec';
 import { hasMeasureCall, measureShapeRefusal, withoutMeasureCalls } from './measures-read';
+import { perfSwitches } from './perf-switches';
 import {
 	CURVE_NEEDS_XY,
 	CURVE_UNIT,
@@ -191,7 +192,45 @@ const STUDENT_TYPED: ReadonlySet<Provenance> = new Set(['text', 'paste', 'comman
  * jamais suivi d'un autre `^` : `e^-x^2` se lirait (e^{-x})² ici et e^{-x²} dans Calcul. */
 const NEGATIVE_EXPONENT = /\^\s*-\s*(\d+(?:\.\d+)?|[A-Za-z](?![A-Za-z(]))(?!\s*\^)/g;
 
+/**
+ * Les lectures déjà faites (chantier perf du 2026-10-19). La lecture est une
+ * fonction PURE du texte, de la provenance et des noms de fonctions : la même
+ * entrée rend le même arbre. Sans ce mémo, un cran de curseur relisait chaque
+ * définition des dizaines de fois (une fois par coordonnée citée, via
+ * `bindingsOf`) — 1/3 du temps passait à fabriquer les exceptions du parseur.
+ *
+ * ⚠️ L'arbre rendu est PARTAGÉ : il ne se modifie jamais (même règle que
+ * `PARSE_CACHE` de `geometry-core`). En développement et en test il est gelé,
+ * pour qu'une écriture se voie aussitôt au lieu d'abîmer le mémo en silence.
+ * Plafond et `clear()` au site d'insertion, comme `PARSE_CACHE`.
+ */
+const READ_CACHE = new Map<string, ReturnType<typeof readByProvenance>>();
+const READ_CACHE_MAX = 5_000;
+
 function parseByProvenance(
+	rawDefinition: string,
+	provenance: Provenance,
+	functionNames?: readonly string[]
+): ReturnType<typeof readByProvenance> {
+	if (!perfSwitches.readCache) return readByProvenance(rawDefinition, provenance, functionNames);
+	const key = `${provenance}\u0000${functionNames?.join(',') ?? ''}\u0000${rawDefinition}`;
+	const known = READ_CACHE.get(key);
+	if (known !== undefined) return known;
+	const read = readByProvenance(rawDefinition, provenance, functionNames);
+	if (import.meta.env.DEV) deepFreeze(read);
+	if (READ_CACHE.size >= READ_CACHE_MAX) READ_CACHE.clear();
+	READ_CACHE.set(key, read);
+	return read;
+}
+
+/** Geler un résultat de lecture partagé (développement et tests seulement). */
+function deepFreeze(value: unknown): void {
+	if (value === null || typeof value !== 'object' || Object.isFrozen(value)) return;
+	Object.freeze(value);
+	for (const child of Object.values(value)) deepFreeze(child);
+}
+
+function readByProvenance(
 	rawDefinition: string,
 	provenance: Provenance,
 	functionNames?: readonly string[]

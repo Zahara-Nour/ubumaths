@@ -102,6 +102,7 @@ import {
 } from './display';
 import { astOf as astOfDefinition } from './parse';
 import { INTERNAL_LETTER, letterRejection, typedLetterOf } from './letter';
+import { perfSwitches } from './perf-switches';
 import {
 	checkInterval,
 	citedIntervals,
@@ -2700,7 +2701,33 @@ export class Atelier {
 	 * récurrence quand c'est le nom d'une valeur (`u₀ = a`, décision S1) — sans
 	 * quoi supprimer `a` laisserait la suite « ok » et muette.
 	 */
-	#refsOf(o: AtelierObject): MissingReference[] {
+	#refsOf(o: AtelierObject): readonly MissingReference[] {
+		// Mémo par objet (chantier perf du 2026-10-19) : un objet rangé n'est jamais
+		// modifié sur place, et sa lecture ne dépend que de lui et des noms de
+		// fonctions (`#cited`). `dependents`, appelé par chaque carte, relisait
+		// toutes les définitions à chaque fois.
+		if (!perfSwitches.refsMemo) return this.#readRefsOf(o);
+		const functionNames = this.functionNames.join(',');
+		const known = this.#refsMemo.get(o);
+		if (known !== undefined && known.functionNames === functionNames) return known.refs;
+		const refs = this.#readRefsOf(o);
+		this.#refsMemo.set(o, { functionNames, refs });
+		return refs;
+	}
+
+	/** Les lectures de `#refsOf`, par objet rangé. */
+	#refsMemo = new WeakMap<
+		AtelierObject,
+		{ readonly functionNames: string; readonly refs: readonly MissingReference[] }
+	>();
+
+	/** Les noms que cite l'objet `name` (sa définition, le premier terme d'une récurrence). */
+	citedNames(name: string): readonly string[] {
+		const object = this.get(name);
+		return object === undefined ? [] : this.#refsOf(object).map((ref) => ref.name);
+	}
+
+	#readRefsOf(o: AtelierObject): MissingReference[] {
 		// La carte `f⁻¹` dépend de f, et de rien d'autre : ses lettres (`(x − b)/a`)
 		// sont celles que f cite déjà. Supprimer f l'emporte (#828)
 		const base = reciprocalOf(o.name);
@@ -3667,6 +3694,14 @@ export class Atelier {
 					built.reason === 'pending' || built.reason === 'infinite' ? 'pending' : 'error';
 				this.items[i] = { ...o, status, message: built.message } as AtelierObject;
 				changed = true;
+				// Ce qui a été calculé avec l'ancien statut ne vaut plus, DÈS MAINTENANT :
+				// sinon le message d'un objet qui la cite (`M = point_sur(t ; a)`, t en
+				// erreur) dépendait de ce qu'un calcul voisin avait déjà mis en mémo — le
+				// motif de t (« points confondus ») si une mesure avait calculé M plus tôt,
+				// « Dépend de « t », qui est en erreur. » sinon (chantier perf, 2026-10-19)
+				this.#constructionMemo = null;
+				this.#measureMemo = null;
+				this.#astMemo = null;
 			});
 		}
 	}
