@@ -20,7 +20,7 @@
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
 import type { MathNode } from '$lib/mathAST/types';
-import { astOf } from './parse';
+import { astOf, variablesOf } from './parse';
 import {
 	cellName,
 	columnLetter,
@@ -32,12 +32,16 @@ import {
 import type { AtelierState } from './persistence';
 import { gridContext, termsOf, type GridContext } from './engine';
 import { evaluate } from '$lib/mathAST/eval/evaluate';
-import { getVariables } from '$lib/mathAST/eval/substitute';
 import { transformAST, visitAST } from '$lib/mathAST/visitor';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { tidyTerms } from './tidy-terms';
 import { decimalCommaLatex, decimalCommaText } from './decimal-comma';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { isUnit } from '$lib/mathAST/guards';
+import { format as formatUnit } from '$lib/mathAST/units';
+import { findNodes } from '$lib/mathAST/transforms';
+import { divide, multiply, number as mathNumber, piConstant } from '$lib/mathAST/factory';
+import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
 import { readListValue } from '$lib/statistics/read-value';
 import { intervalDomainOf, outsideIntervalMessage } from './interval';
 import { containsValue } from '$lib/mathAST/domain/algebra';
@@ -417,7 +421,7 @@ function readBody(typed: string, functionNames: readonly string[]): ReadFormula 
 		ok: true,
 		ast,
 		refs,
-		names: [...new Set([...namesIn(ast), ...argumentNames])],
+		names: [...new Set([...namesIn(ast, functionNames), ...argumentNames])],
 		calls,
 		deps: [...deps],
 		lists: [...lists],
@@ -739,9 +743,10 @@ export function indexedFunctionMessage(name: string): string {
 }
 
 /** Les noms qu'une formule cite : variables et fonctions, hors des marques de cellules. */
-function namesIn(ast: MathNode): string[] {
+function namesIn(ast: MathNode, functionNames: readonly string[]): string[] {
+	// `a_1` sous son nom entier : la case suit a_1, pas a (`variablesOf`)
 	const names = new Set(
-		[...getVariables(ast)].filter((name) => name !== MARK && name !== CALL_MARK)
+		[...variablesOf(ast, functionNames)].filter((name) => name !== MARK && name !== CALL_MARK)
 	);
 	transformAST(ast, {
 		enterFunction: (node) => {
@@ -1058,17 +1063,52 @@ function computeCell(
 	const expanded = context.expand(terms.ast);
 	if (!expanded.ok) return error(expanded.message);
 
-	const free = [...getVariables(expanded.ast)];
+	const free = [...variablesOf(expanded.ast, atelier.functionNames)];
 	if (free.length > 0) return error(freeNameMessage(free[0], atelier));
 
 	const started = performance.now();
 	const result = evaluate(expanded.ast, { mode: inexact ? 'decimal' : 'exact' });
 	if (performance.now() - started > EXACT_BUDGET_MS) approximate.add(address);
-	return numberValue(
+	const cell = numberValue(
 		result,
 		inexact,
 		divided || ownDivision(read.ast, read.names.length > 0, context)
 	);
+	return result.status === 'value' ? inDegrees(cell, result.node, read.ast) : cell;
+}
+
+/**
+ * Un angle s'écrit en degrés dans la case, comme dans Calcul (`=60°` → `60°`,
+ * revue de la PR « 60° ») : le moteur le rend en radians (`(π/3)[rad]`). Une
+ * formule écrite en radians (`=(π/3)[rad]`) le reste. La valeur de la case
+ * (listes, tris) est le nombre de degrés montré ; l'arbre cité reste l'angle.
+ */
+function inDegrees(cell: CellValue, node: MathNode, typed: MathNode): CellValue {
+	if (cell.kind !== 'number' || !isUnit(node)) return cell;
+	if (formatUnit(node.unit, 'original') !== 'rad') return cell;
+	const writtenInRadians = findNodes(typed, isUnit).some(
+		(unit) => isUnit(unit) && formatUnit(unit.unit, 'original') === 'rad'
+	);
+	if (writtenInRadians) return cell;
+	const degrees = simplifyExact(
+		divide(multiply(node.expression, mathNumber('180'), 'implicit'), piConstant(), 'fraction')
+	);
+	const exactNumber = cell.exact && degrees.type === 'number';
+	// Le nombre exact quand il l'est : 60, pas 59,999999999999993 (π/3 · 180/π en flottants)
+	const value =
+		exactNumber && degrees.type === 'number' ? Number(degrees.value) : (cell.value * 180) / Math.PI;
+	const written = exactNumber
+		? decimalCommaText(degrees.value)
+		: `≈ ${decimalCommaText(String(Number(value.toFixed(4))))}`;
+	const latex = exactNumber ? `${decimalCommaLatex(degrees.value)}{}^{\\circ}` : null;
+	return {
+		...cell,
+		value,
+		shown: `${written}°`,
+		shownExact: exactNumber,
+		latex,
+		exactLatex: latex
+	};
 }
 
 /**

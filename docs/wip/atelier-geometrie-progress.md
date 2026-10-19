@@ -426,3 +426,81 @@ de contrôles. Définitions liées par cran : 5 808 → 3.
   un polygone qui repasse par un sommet écrit deux fois à des places non voisines est refusé
   (`revisitedVertex`, comparaison de l'écrit et non des positions) ; branche
   `fix/atelier-polygone-sommet-repete`.
+- 2026-10-19 : **petite PR `60°` / `60^\circ`** (branche `feat/atelier-degres`, `degrees.ts`), tests
+  d'abord (41 rouges sur 45, puis 2 sur 3 dans Chromium). `°` collé après un nombre, un nom, une `)`
+  = `[°]` ; `^\circ`, `^{\circ}`, `\degree` (ce que MathLive écrit quand on tape `°`, mesuré) =
+  `\unit{°}` ; `°` seul refusé en français. Réponse écrite `60°` / `60{}^{\circ}` (mesures d'angle
+  comprises : `90 °` → `90°`, 11 assertions mises à jour). La « limite de main » notée plus haut
+  n'existait plus pour les objets (`substitutedTree` passait déjà par `angle-radians.ts`) ; elle
+  restait dans l'argument d'une commande (`.résoudre h(x)=1` → `x = 1/cos(π/3 rad)`) : corrigée par
+  `radiansInText`. **À trancher par David** : `f(x) = cos(x°)` accepté (exact, tracé juste) ; un
+  angle brut écrit dans une fonction ou une suite (`2x°`, `x[°]`) en erreur, comme une mesure.
+- 2026-10-19, revue de la PR `60°` : 19 tests rouges d'abord (valeurs de main en référence),
+  verts. Conversion VERS les degrés rétablie (`en °`, `.convertir °`), `.latex`/`.texte` montrent
+  l'écriture, grille en degrés, `1/2°` = demi-degré, `(100/3)°`, `.évaluer … en x=30°` → 1/2,
+  puissance d'un angle refusée partout. `.variations cos(x°)` : cause trouvée dans `mathAST/sign`
+  (échantillons dans [-100 ; 100] avec des zéros périodiques incomplets sur ℝ), corrigée (sens
+  indéterminé sur les intervalles non bornés) ; `cos(x)` inchangé.
+- 2026-10-19 : **écrire un angle comme sur la copie, mergé (#1519, `2fa179880`)** : `60°`, `60^\circ`,
+  `cos(x°)`, `.résoudre` / `.évaluer` en degrés, grille, écriture `90°`. Corrige aussi dans `mathAST`
+  le signe et les variations des fonctions périodiques sur un intervalle non borné (31 lignes sur 532
+  d'un échantillon oracle changent, toutes vers le juste). Revue `mathAST` : une régression de la
+  première correction (`x − sin x`) trouvée et corrigée avant le merge. Restent, signalés à David :
+  extrema de `sin x` faux sur [0 ; 2π] (−1 en 3π/2 absent) ; `tan x` « croissante sur ℝ ». À confirmer
+  par David : `cos(x°)` accepté, angle brut dans une fonction refusé, écriture `90°`. Pas en production.
+
+## Noms indicés (`a_1`, `c_2`, `A_1`) — branche `fix/atelier-noms-indices`
+
+Relevé du chantier perf (2026-10-19, avant comme après) : `a_1` seul → « Écriture non reconnue »,
+`c_2` reste `c_2`, `(AB ; c_2)` attend « c » ; `atelier.md` notait V63 (`referencesOf` lit `a_1`
+comme `a`).
+
+### Relevé AVANT (origin/main `4d794bcc5`, sonde hors dépôt, 2026-10-19)
+
+| Saisie                                                                  | Avant                                                                              |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `a_1 = 3`, `f_1(x) = x^2`, `u_1(n) = 2n`, `A_1 = (1 ; 2)` (définitions) | ✅ créées saines                                                                   |
+| `f_1(3)`, `u_1(3)`, `milieu(A_1, B)`, `A_1B` tapé seul                  | ✅ 9, 6, point sain, 2√2                                                           |
+| annuler (`a_1 = 3` puis `a_1 = 5`, annuler)                             | ✅ revient à 3                                                                     |
+| `a_1` seul (a_1 = 3, sans a) ; `2a_1` ; `a_1 + a_2`                     | ❌ recopiés tels quels (`a_1`, `2a_1`, `a_1+a_2`)                                  |
+| `a_1` seul avec `a = 10` ; `a + a_1`                                    | ❌ « Écriture non reconnue » (`10_1`)                                              |
+| `c_2` seul (`c_2 = a_1 + a`)                                            | ❌ reste `c_2`                                                                     |
+| `b = a_1 + 1` sans a                                                    | ❌ « En attente de « a » »                                                         |
+| `f(x) = a_1 x` (a_1 avant ou après)                                     | ❌ en attente de « a » ; `f(2)` → `2a_1` ; avec a = 10 : « Écriture non reconnue » |
+| `P = (AB ; c_2)`, `Q = (c_2 ; 1)`                                       | ❌ en attente de « c » (sains seulement si un `c` existe — par hasard)             |
+| `m = A_1B`                                                              | ❌ en attente de « A »                                                             |
+| carte en LaTeX `a_{1}+1`, `2a_{1}`                                      | ❌ en attente de « a »                                                             |
+| dépendances de `b = a_1 + 1` (avec a)                                   | ❌ `citedNames(b) = [a]`, `dependents(a_1) = []`                                   |
+| supprimer `a_7` avec ce qui le cite                                     | ❌ `b_2` survit                                                                    |
+| offre de curseur de `f(x) = a_1 x`                                      | ❌ l'offre porte sur `a` ; `createFromOffer('a_1')` refusé                         |
+| lien `?a=` (serialize/restore) avec a, a_1, f(x) = a_1 x                | ❌ `f(2)` « Écriture non reconnue »                                                |
+| grille `=a_1`, `=2a_1`, `=a_1+a`                                        | ❌ « Je n'ai pas su calculer cette formule. »                                      |
+| `x_1 = 2`, `b = x_1 + y_1`, `A = (x_1 ; y_1)`                           | ❌ refusés (lus comme x et y)                                                      |
+| renommer `a_1 → a_7` (texte)                                            | ✅ la définition qui cite suit                                                     |
+| `u_n` dans une suite, `v(n) = u_n + 1`                                  | ✅ notation de suite (inchangée)                                                   |
+
+### Cause et correction
+
+Deux lectures prenaient `a_1` (nœud `subscript` de base `a`, indice `1`) pour sa base :
+
+- **les noms cités** (`referencesOf`, `bareNamesOf`, `getVariables`) → `variablesOf` (`parse.ts`)
+  lit un nom à indice ENTIER sous son nom entier ; servent aussi les refus x/y, le type deviné
+  (`kindOf`), les noms d'une formule de la grille et son refus « n'est pas défini » ;
+- **la substitution** (`mathAST/eval/substitute.ts`) : la liaison `a_1` remplace le nœud entier,
+  celle de `a` ne touche plus sa base (`hasAllBindings`, `getMissingBindings` idem) ; le moteur de
+  Calcul et le pont `engine.ts` en profitent sans autre changement. `collectNames` (`wantedNames`)
+  lit `c_2` au lieu de « tout lier » (le compteur de liaisons ne peut que baisser).
+  Gardé tel quel : `u_n`, `u_{n+1}` (indice non entier) ; `u_3` avec u suite ou fonction de
+  l'atelier = son terme (`subscriptsAsCalls`).
+
+### Après
+
+Les 14 lignes ❌ du relevé passent ✅ (`noms-indices.test.ts`, 24 tests, 22 rouges sur main — les 2 verts gardent `u_n` et `u_3` ;
+`substitute.test.ts`, 6 rouges sur main). **À trancher par David** :
+
+- `u_3` tapé seul dans Calcul avec `u(n) = 2n + 1` reste `u_3` (avant comme après) — le terme se
+  calcule dans une définition (`v(n) = u_3 + 1`), pas sur la ligne ; à ouvrir ?
+- une suite `u` ET une valeur `u_3` à la fois : `u_3` désigne la valeur dans les noms cités et le
+  moteur, mais le terme de u dans une définition (`subscriptsAsCalls` passe avant) — cas rare, laissé ;
+- les analyses en x (signe, domaine, `getVariables(…).has('x')` dans `calcul.ts`) lisent encore
+  `x_1` comme x ; seules les lectures de NOMS ont changé.

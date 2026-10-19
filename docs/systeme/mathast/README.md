@@ -373,6 +373,28 @@ l'ensemble par `parseStudentDomain` — borne infinie (`[0 ; +∞[`), réunion, 
 `computeVariations`, qui prend le domaine fourni tel quel. `writeCommandArguments` écrit `dans` en
 dernier : un intervalle semi-ouvert ne referme pas ses crochets, et un `pour t` placé après y
 restait collé (et `dans [0;+∞[ pour t` tapé se relit). Une famille périodique sur un ensemble non borné est refusée (« Une infinité de solutions »), `findZeros` n'en rendant que les premiers termes. Tests : `atelier/__tests__/intervalle-calculs.test.ts`.
+**Signe d'une fonction à zéros périodiques** (2026-10-19, PR « 60° » de l'atelier). Sur un domaine
+non borné, le solveur ne rend que les zéros d'une période, et l'échantillonnage (5 points dans
+[−100 ; 100]) ne voyait pas les autres : `cos(πx/180)` était « négatif sur ]90 ; +∞[ », et
+`.variations cos(x°)` annonçait un maximum local en 0 ; `eˣ·cos x`, `e⁻ˣ·sin x` recevaient de même un
+signe constant faux. Trois règles (`sign/analyze.ts`, `sign/helpers/zeros.ts`,
+`sign/helpers/periodic-sign.ts`) :
+
+1. sur un intervalle **non borné**, le signe ne s'échantillonne plus : quand f est elle-même
+   périodique (`detectPeriodicity`, prouvée, continue), il se lit entre les zéros consécutifs d'**une
+   période** — un même signe partout vaut pour tout le domaine (`1 + cos x`, `sin²x` positifs ;
+   f′ = 1 − cos x ≥ 0, donc x − sin x croissante) ; sinon il reste **inconnu** (`cos x` au-delà de
+   ±π/2, `eˣ·cos x`), et aucun extremum ne s'en déduit ;
+2. `findZerosWithStatus` ajoute les membres de la famille compris **entre** les zéros connus et la
+   borne finie du domaine (`(x − 20)·sin x` : 2π … 6π entre π et 20) et rend la famille
+   (`periodicFamily`) ;
+3. une énumération tronquée (plafond de 500 zéros, ou plus de 1000 périodes) rend
+   `resolved: false` au lieu d'une liste incomplète tenue pour complète (`sin 2x` sur [0 ; 360]).
+
+Les domaines bornés ne changent pas. Reste connu : `tan x` sur ℝ est « croissante » d'un seul tenant,
+à travers ses asymptotes (`it.fails`). Tests : `sign/__tests__/periodique-non-borne.test.ts`,
+`variations/__tests__/periodique-non-borne.test.ts` (oracle numérique : 38 fonctions × 7 domaines,
+tout signe et tout sens affirmés vérifiés sur une grille).
 
 ### Carte du code
 
@@ -618,6 +640,17 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   majuscules des exercices de prod, 355 à majuscules collées) identique sans option et en
   produit, et aucune saisie lisible en produit ne devient une erreur en longueur
   (`parser/custom/__tests__/capital-pairs-empreinte.test.ts`).
+- **Noms indicés** (2026-10-19, relevé de l'atelier) : `a_1`, `a_{12}`, `\alpha_1` — une lettre
+  latine (`variable`) ou grecque (`greek`, nommée `alpha_1`) munie d'un indice ENTIER — sont UN nom
+  (`indexedNameOf`, `common/indexed-names.ts`). L'indice reste tel qu'écrit : `a_{01}` et `a_1`
+  sont deux noms. L'arbre reste un `subscript` ; `substitute` le remplace en entier par la liaison
+  `a_1`, et la liaison `a` ne touche plus sa base (avant : `a = 10` faisait `10_1`, que rien ne
+  lisait). Un seul masquage, `hideIndexedNames` / `revealIndexedNames` (avec un filtre : l'atelier
+  y laisse `u_3`, terme d'une suite), sert `substitute`, `hasAllBindings`, `getMissingBindings`,
+  la liste « (variables: a_1, x) » du REPL web et `variablesOf` (`atelier/parse.ts`). Un indice non
+  entier (`x_n`, `u_{n+1}`) n'est pas un nom : sa base se remplace comme avant. ⚠️ `getVariables`
+  rend toujours la base (`a`) : ses ~80 appelants (solveur, validation des réponses…) n'ont pas été
+  revus pour un changement de sens.
 
 ## Invariants structurels non évidents
 

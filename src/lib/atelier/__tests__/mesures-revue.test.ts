@@ -99,8 +99,8 @@ describe('revue 2 : une mesure approchée ne devient pas une fraction exacte', (
 	it('T = angle(B, A, C) puis T, 2T : ≈ décimal', () => {
 		const s = plane();
 		runInput(s, 'T = angle(B, A, C)');
-		expect(answer(runInput(s, 'T'))).toBe('≈ 36,8699 °');
-		expect(answer(runInput(s, '2T'))).toBe('≈ 73,7398 °');
+		expect(answer(runInput(s, 'T'))).toBe('≈ 36,8699°');
+		expect(answer(runInput(s, '2T'))).toBe('≈ 73,7398°');
 	});
 
 	it('g(x) = cos(angle(B, A, C))·x puis g(1) : ≈ décimal', () => {
@@ -112,14 +112,14 @@ describe('revue 2 : une mesure approchée ne devient pas une fraction exacte', (
 	it('J = angle(B, A, C) + 0 puis J : ≈ décimal', () => {
 		const s = plane();
 		runInput(s, 'J = angle(B, A, C) + 0[°]');
-		expect(answer(runInput(s, 'J'))).toBe('≈ 36,8699 °');
+		expect(answer(runInput(s, 'J'))).toBe('≈ 36,8699°');
 	});
 });
 
 describe('revue 3 : pleine précision dans le calcul, arrondi à l’affichage', () => {
 	it('100·angle(B, A, C) vaut ≈ 3686,9898', () => {
 		const s = plane();
-		expect(answer(runInput(s, '100*angle(B, A, C)'))).toBe('≈ 3686,9898 °');
+		expect(answer(runInput(s, '100*angle(B, A, C)'))).toBe('≈ 3686,9898°');
 	});
 });
 

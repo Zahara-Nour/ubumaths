@@ -290,6 +290,85 @@ describe('substitute', () => {
 		});
 	});
 
+	// Un nom indicé (`a_1`) est UN nom : sa liaison le remplace en entier, et la
+	// liaison de sa base ne le touche pas (atelier, 2026-10-19)
+	describe('noms indicés', () => {
+		it('la liaison a_1 remplace a_1', () => {
+			const result = substitute(parseLatex('a_1+1'), { a_1: 3 });
+
+			expect(result).toMatchObject({
+				type: 'addition',
+				left: { type: 'number', value: '3' }
+			});
+		});
+
+		it('la liaison a ne touche pas a_1', () => {
+			const result = substitute(parseLatex('a_1+a'), { a: 10 });
+
+			expect(result).toMatchObject({
+				type: 'addition',
+				left: { type: 'subscript', base: { type: 'variable', name: 'a' } },
+				right: { type: 'number', value: '10' }
+			});
+		});
+
+		it('a et a_1 liés ensemble : chacun le sien', () => {
+			const result = substitute(parseLatex('a_1+a'), { a: 10, a_1: 3 });
+
+			expect(result).toMatchObject({
+				type: 'addition',
+				left: { type: 'number', value: '3' },
+				right: { type: 'number', value: '10' }
+			});
+		});
+
+		it('a_{12} en LaTeX, 2a_1 en produit implicite', () => {
+			expect(substitute(parseLatex('a_{12}'), { a_12: 5 })).toMatchObject({
+				type: 'number',
+				value: '5'
+			});
+			const doubled = substitute(parseLatex('2a_1'), { a_1: 3 });
+			expect(doubled).toMatchObject({ type: 'multiplication', right: { value: '3' } });
+		});
+
+		it('de proche en proche : c_2 = a_1 + 1, a_1 = 3', () => {
+			const result = substitute(parseLatex('c_2'), { c_2: parseLatex('a_1+1'), a_1: 3 });
+
+			expect(result).toMatchObject({ type: 'addition', left: { type: 'number', value: '3' } });
+		});
+
+		it('hasAllBindings, getMissingBindings : a_1 est lié par a_1, pas par a', () => {
+			expect(hasAllBindings(parseLatex('a_1'), { a_1: 3 })).toBe(true);
+			expect(hasAllBindings(parseLatex('a_1'), { a: 3 })).toBe(false);
+			expect(getMissingBindings(parseLatex('a_1+a'), { a: 3 })).toEqual(['a_1']);
+		});
+
+		it('une base grecque : alpha_1 est un nom, alpha ne touche pas sa base', () => {
+			const result = substitute(parseLatex('\\alpha_1+\\alpha'), { alpha: 2, alpha_1: 5 });
+
+			expect(result).toMatchObject({
+				type: 'addition',
+				left: { type: 'number', value: '5' },
+				right: { type: 'number', value: '2' }
+			});
+			expect(substitute(parseLatex('\\alpha_1'), { alpha: 2 })).toMatchObject({
+				type: 'subscript',
+				base: { type: 'greek' }
+			});
+		});
+
+		it('a_{01} et a_1 sont deux noms distincts', () => {
+			expect(substitute(parseLatex('a_{01}'), { a_1: 3 })).toMatchObject({ type: 'subscript' });
+			expect(substitute(parseLatex('a_{01}'), { a_01: 3 })).toMatchObject({ value: '3' });
+		});
+
+		it('u_n reste la notation d’une suite : sa base se remplace comme avant', () => {
+			const result = substitute(parseLatex('u_n'), { u: 2 });
+
+			expect(result).toMatchObject({ type: 'subscript', base: { type: 'number' } });
+		});
+	});
+
 	// =============================================================================
 	// Recursive Substitution
 	// =============================================================================

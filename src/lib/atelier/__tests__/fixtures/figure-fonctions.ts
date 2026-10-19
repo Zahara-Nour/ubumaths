@@ -5,10 +5,10 @@
  * indicés, mesure reprise dans une valeur et dans une coordonnée, liste citée
  * dans une valeur. Tapée dans Calcul, comme le ferait l'élève.
  *
- * ⚠️ Constaté en l'écrivant, AVANT le chantier comme après (raccourcis éteints) :
- * `a_1` tapé seul répond « Écriture non reconnue », `c_2` reste `c_2`, et
- * `(AB ; c_2)` attend « c ». Ce n'est pas l'objet de ce test : il prouve que les
- * raccourcis rendent la même chose que le chemin long, quelle qu'elle soit.
+ * Constaté en l'écrivant : `a_1` tapé seul répondait « Écriture non reconnue »,
+ * `c_2` restait `c_2`, et `(AB ; c_2)` attendait « c » — corrigé le 2026-10-19
+ * (`noms-indices.test.ts`). Ce test, lui, prouve que les raccourcis rendent la
+ * même chose que le chemin long, quelle qu'elle soit.
  */
 
 import { Atelier } from '../../atelier.svelte';

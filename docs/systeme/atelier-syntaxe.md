@@ -89,6 +89,9 @@ x=…` et `.intégrer f de a à b` hors de cet ensemble sont refusés comme `f(5
   avant la substitution des noms, donc hors de `COMMAND_KEYWORDS` / `COMMAND_LABELS` (lecture du
   moteur, que `.relever` n'emprunte pas — même choix que `.tabuler`). Détail :
   [atelier.md](atelier.md), « `.relever` en détail ».
+- **Degrés** (2026-10-19) : l'argument d'une commande de calcul lit `60°`, `60^\circ` comme `60[°]`
+  (`degrees.ts`), et un angle pris par un sin, cos, tan y devient un nombre de radians
+  (`.évaluer cos(60°)*x en x=2` → 1). Les commandes de données gardent leurs modalités telles quelles.
 - **Variable** : voir la question 1 ci-dessous.
 
 ### Commandes de probabilités et de statistiques

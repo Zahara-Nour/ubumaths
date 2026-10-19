@@ -318,7 +318,7 @@ moteur, Graphe par la substitution) :
 | `distance(A, B)`, `distance(A, d)`      | longueur, ou distance à une DROITE (`d` droite, `(AB)`) ; à un segment ou une demi-droite (`[AB]`, `[AB)`, `s = [AB]`) : refus « … écris distance(N, (AB)) » (décision de David, 2026-10-18 — le DSL, lui, mesure `distance(A, s)` à la droite qui porte s) |
 | `aire(A, M, N, P)`                      | aire du polygone (≥ 3 points) ; croisé → refus « … est croisé »                                                                                                                                                                                             |
 | `perimetre(…)`, `périmètre(…)`          | périmètre du polygone fermé (≥ 3 points)                                                                                                                                                                                                                    |
-| `angle(A, B, C)`                        | l'angle en B, une **grandeur** dans l'unité du réglage « Angles » : `90 °`, `45 °`, sinon `≈ 36,8699 °` (4 décimales à l'affichage, pleine précision au calcul) ; en radians `π/2 rad`, `≈ 0,6435 rad`                                                      |
+| `angle(A, B, C)`                        | l'angle en B, une **grandeur** dans l'unité du réglage « Angles » : `90°`, `45°`, sinon `≈ 36,8699°` (4 décimales à l'affichage, pleine précision au calcul) ; en radians `π/2 rad`, `≈ 0,6435 rad`                                                         |
 
 Lecture : `measures-read.ts` repère les appels (texte ou LaTeX de MathLive, `\operatorname{aire}`,
 accents, séparateurs de `construction-read.ts`) ; `parseDefinition` lit le reste comme un nombre.
@@ -359,6 +359,44 @@ décision de David du 2026-10-19) — on compare ce qui est ÉCRIT, pas les posi
 ne s'arrête pas quand deux sommets se rejoignent au glisser ; une valeur APPROCHÉE (angle non remarquable) entre au moteur
 en pleine précision et toute ligne qui la cite, même par un autre objet (`approximateNames`), se dit
 `≈`, 4 décimales, jamais en fraction.
+
+**Écrire un angle en degrés** (`degrees.ts`, 2026-10-19) : comme sur la copie. Un `°` collé
+après un nombre, un nom ou une parenthèse fermante est l'unité degré (`60[°]`, π/180 rad) —
+`cos(60°)` → `1/2`, `a = 60°`, `cos(a°)` avec a = 60, `cos((30+30)°)`, `60 °` aussi. En LaTeX,
+`60^\circ`, `60^{\circ}`, `60{}^{\circ}` et `60\degree` (ce que MathLive écrit quand on tape `°`,
+mesuré dans Chromium, `mathlive-degres.svelte.test.ts`) deviennent `60\unit{°}` : carte, champ
+mathématique de la console (`calcTextOf` écrit `°`), ligne de Calcul, cellule de la grille (`=cos(60°)`
+vaut `=cos(60[°])`), argument d'une commande de calcul (pas celui d'une commande de données, qui
+lit des modalités). Lecture : `withDegreeUnits` dans `readByProvenance` (`parse.ts`), en tête de
+`computeInput` et sur la ligne d'une commande (`runCommand`). Un `°` qui ne suit rien (`°`,
+`cos(°60)`, `2 + °`, `^\circ` seul) est refusé : « Le signe ° s'écrit juste après un nombre ou un
+nom : 60°, cos(60°), a°. » (`strayDegreeRefusal`) — plus de « Unsupported symbol … circ », en
+anglais. `20 °C`, `°F` restent des températures. La réponse écrit `60°`, sans espace (règle
+typographique des angles), et `60{}^{\circ}` en LaTeX (`degreeSignWritten`, appliqué à la sortie de
+`runInput` : mesures d'angle comprises, `≈ 36,8699°`, la valeur approchée aussi). Un angle écrit
+en degrés pris par un sin, cos, tan devient un nombre de radians exact dans l'arbre substitué
+(`h(x) = cos(90°)·x` → `h(1) = 0`, `.variations h` constante, `f(x) = sin(30°) + x` → `f(0) = 1/2`)
+et dans l'argument d'une commande (`radiansInText` : `.résoudre h(x)=1` → `x = 2`, `.évaluer
+cos(60°)*x en x=2` → 1). **Une variable en degrés** (choix prudent, à trancher par David) :
+`f(x) = cos(x°)` est acceptée — exacte, `cos(πx/180)`, et c'est l'arbre que trace le Graphe ; un
+angle BRUT écrit dans une fonction ou une suite (`f(x) = 2x°`, `x[°]`, `u(n) = n°`) est en erreur
+avec le message des mesures (« Une mesure d'angle est une grandeur… », `WRITTEN_ANGLE`,
+`atelier.svelte.ts`) — avant, `f(x) = x[°]` passait et `f(1)` répondait `(π/180) rad`.
+`cos(60)` reste en radians ; le réglage « Angles » ne change pas. Revue (2026-10-19) : le `°` CIBLE
+d'une conversion ne se réécrit pas (`1[rad] en °` → `1 rad = (180/π)°`, `.convertir °`) ; une
+fraction de nombres le prend entière (`1/2°` = `(1/2)[°]`, comme `1/2 m`) ; la réponse met entre
+parenthèses une valeur qui n'est pas un nombre seul (`(100/3)°`, `\left(\dfrac{100}{3}\right){}^{\circ}`)
+et colle `\pi°` ; les commandes d'ÉCRITURE (`.latex`, `.texte`, `.analyser`, `.arbre`, `.empreinte`,
+`.forme-normale` : `WRITING_COMMANDS`) gardent l'angle en grandeur ; `.évaluer sin(x) en x=30°` →
+`1/2` (`radiansInLatex` sur la réponse du moteur) ; une puissance d'un angle est refusée sur toute
+ligne, comme pour une mesure (`(60°)^2`, `60°^2`) ; la grille écrit `60°` (`inDegrees`,
+`formula.ts` : la case vaut le nombre de degrés, une formule écrite en `rad` reste en radians).
+`.variations cos(x°)` annonçait « croissante sur ]-∞ ; 0[ » (déjà faux sur main pour
+`cos(πx/180)`) : les zéros périodiques d'un domaine non borné ne sont que ceux d'une période, et
+l'échantillonnage ([-100 ; 100]) ne voyait pas ±180 ; il est coupé sur un intervalle non borné
+dans ce cas (`periodicUnbounded`, `mathAST/sign/helpers/zeros.ts`, `analyze.ts`) — « sens
+indéterminé », comme pour `cos(x)`, dont le tableau ne change pas. `20°C` (collé) reste lu comme
+avant (sans effet).
 
 **Intersections et points sur un objet** (géométrie, lot 2, PR 3 — L5) : deux mots du DSL de
 plus dans le catalogue, mêmes arguments et même numérotation que lui
@@ -489,7 +527,14 @@ lettre._ La suggestion suit la variable de l'objet qui cite (`a(t)`, `a(n)` pour
 pour une valeur, _Écris une de ses valeurs, comme a(2)…_ ; une suite citée dans une fonction ou
 une valeur, _Écris un de ses termes, comme u(2)…_ Les cartes `f′` et `f⁻¹` n'y passent pas
 (elles suivent f). ⚠️ Redéfinir un nom garde son type (V62).
-⚠️ `referencesOf` lit tout nom indicé comme sa base (`a_1 x` attend `a`), défaut antérieur (V63).
+**Noms indicés** (corrigé le 2026-10-19, ex-V63) : `a_1` est UN nom, jamais sa base. Le
+parseur en fait un nœud `subscript` (`a`, `1`) ; la lecture des noms le voit sous son nom
+entier (`variablesOf`, `parse.ts`, qui sert `referencesOf`, `bareNamesOf`, les refus x/y, les
+noms d'une formule de la grille), et `substitute` (`mathAST/eval/substitute.ts`) remplace le
+nœud par la liaison `a_1` sans jamais toucher à sa base (`mathAST/common/indexed-names.ts`) —
+avant, avec a = 10, `a_1` devenait `10_1` (« Écriture non reconnue »), et `b = a_1 + 1`
+attendait « a ». Seul un indice ENTIER fait un nom : `u_n` reste la notation d'une suite, et
+`u_3` (u suite ou fonction de l'atelier, `u_3` n'en étant pas une) son terme de rang 3.
 
 **Noms** (`src/lib/atelier/names.ts`) : une lettre latine, éventuellement indicée ; **un seul
 espace de noms** tous types confondus (D1). Réservés : `x`, `y`, `n`, `e`, `pi`, `i` — **`y` depuis
@@ -1041,7 +1086,7 @@ construction (ils ne dépendent que de ce qui leur sert de clé) :
 - **les liaisons** (`bindingsOf`, `engine.ts`) : un arbre substitué (une coordonnée, un rayon)
   ne reçoit que les définitions des noms qu'il peut citer, de proche en proche
   (`wantedNames`) ; un arbre qui ne nomme rien (`0`, `3/2`) n'en reçoit aucune
-  (`namesNothing`). Un nœud dont on ne sait pas lire les noms (longueur `AB`, nom indicé `c_2`) fait tout lier.
+  (`namesNothing`). Un nœud dont on ne sait pas lire les noms (longueur `AB`) fait tout lier ; un nom indicé (`c_2`) se lit sous son nom entier, `v_n` par sa base (2026-10-19).
   `expandDerivatives` rend l'arbre tel quel quand il n'a ni `f'` ni `f⁻¹`.
 
 Les mémos par révision d'avant (`constructionMemo`, `#measureMemo`, `#astMemo`) restent ; dans

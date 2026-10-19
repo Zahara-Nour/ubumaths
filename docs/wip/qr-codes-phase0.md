@@ -77,3 +77,21 @@ Demande de David du 2026-10-18 : « comment avoir facilement des QR codes vers l
    - (b) Plus tard, un lien court enregistré côté serveur. C'est un vrai chantier : une table, la durée de vie des liens, le RGPD.
 5. **Le lot 2 (QR dans le PDF) : maintenant, ou après usage du lot 1 ?**
    - Ma recommandation : après usage du lot 1.
+
+## Lot 2 — QR placé par l'auteur dans un document (choix (b) de David, 2026-10-19)
+
+Validé par David le 2026-10-19 (bloc ` ```qr ` et entrée dans le menu d'insertion de l'éditeur) :
+
+````
+```qr
+https://www.chiph.re/glossaire
+légende: Le glossaire en ligne
+taille: 3cm
+```
+````
+
+- Première ligne : l'adresse. `/glossaire` → `https://www.chiph.re/glossaire` ; `chiph.re/…` → `www.chiph.re/…` ; une adresse extérieure `https://` est gardée telle quelle. Tout autre schéma (`javascript:`…) est refusé avec un message en français.
+- `légende:` facultative, imprimée sous le QR ; sans légende, l'adresse en petit. `taille:` facultative, 3 cm par défaut, de 2 à 6 cm.
+- Écran : le QR, la légende, l'adresse en lien cliquable. PDF : le QR dessiné par Typst carré par carré (ni fichier image, ni réseau).
+- Adresse trop longue pour un QR lisible : même message qu'au lot 1, à la place du QR.
+- Partout où s'écrit l'ubumark (énoncés, corrections, cours, fiches) et dans tous les PDF qui en sont tirés.

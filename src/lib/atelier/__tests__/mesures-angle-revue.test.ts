@@ -100,14 +100,14 @@ describe('revue 2 : la carte d’une valeur dit exactement ce que Calcul répond
 		}
 	}
 
-	it('les valeurs : cos ≈ 0,8 (pas le cosinus de 36,87 rad), 90 °, 180 °', () => {
+	it('les valeurs : cos ≈ 0,8 (pas le cosinus de 36,87 rad), 90°, 180°', () => {
 		const s = plane();
 		runInput(s, 'U = cos(angle(B, A, C))');
 		runInput(s, 'V = angle(B, A, D)');
 		runInput(s, 'W = 2*angle(B, A, D)');
 		expect(valueAnswerOf(s.atelier, 'U')?.text).toBe('≈ 0,8');
-		expect(valueAnswerOf(s.atelier, 'V')?.text).toBe('90 °');
-		expect(valueAnswerOf(s.atelier, 'W')?.text).toBe('180 °');
+		expect(valueAnswerOf(s.atelier, 'V')?.text).toBe('90°');
+		expect(valueAnswerOf(s.atelier, 'W')?.text).toBe('180°');
 	});
 });
 
