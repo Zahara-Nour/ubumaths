@@ -41,10 +41,29 @@ const SPACES = String.raw`(?:\s|~|\\[,;: ])*`;
 /** Pas une température : `°C`, `°F` (`\degree C` aussi). */
 const NOT_TEMPERATURE = String.raw`(?!\s*(?:\\mathrm\{)?[CF](?![A-Za-z]))`;
 
+/**
+ * Pas la CIBLE d'une conversion : `1[rad] en °` convertit en degrés (revue) ;
+ * le `n` du mot « en » n'est pas un nom qui porterait l'unité.
+ */
+const NOT_CONVERSION_TARGET = String.raw`(?<!(?:^|[^\p{L}\\])en)`;
+
 const DEGREE_AFTER_TERM = new RegExp(
-	`(?<=${TERM_END})${SPACES}${DEGREE_SIGN}${NOT_TEMPERATURE}`,
+	`(?<=${TERM_END})${NOT_CONVERSION_TARGET}${SPACES}${DEGREE_SIGN}${NOT_TEMPERATURE}`,
 	'gu'
 );
+
+/**
+ * Une fraction de nombres juste avant le signe : `1/2°` est un demi-degré,
+ * `(1/2)[°]` — comme `1/2 m` en lecture naturelle (`grandeurs.md`). Sans les
+ * parenthèses, le parseur lit 1/(2°) (revue : un message anglais du moteur).
+ */
+const NUMBER_FRACTION_BEFORE = new RegExp(
+	String.raw`(?<![\p{L}\p{N}.,)\]}])(\d+)\s*/\s*(\d+)(?=${SPACES}${DEGREE_SIGN}${NOT_TEMPERATURE})`,
+	'gu'
+);
+
+/** La cible d'une conversion, à ne pas refuser : `en °`. */
+const CONVERSION_TARGET = /(?<![\p{L}\\])en\s*°/gu;
 
 /** Un signe degré qui reste, hors température. */
 const ANY_DEGREE = new RegExp(`${DEGREE_SIGN}${NOT_TEMPERATURE}`, 'u');
@@ -82,7 +101,8 @@ export function withDegreeUnits(text: string, mode: 'text' | 'latex' | 'detect')
 				const detected = detectInputFormat(text);
 				return detected.format === 'latex' && detected.confidence > 0.5;
 			})());
-	return text.replace(DEGREE_AFTER_TERM, latex ? '\\unit{°}' : '[°]');
+	const fractions = latex ? text : text.replace(NUMBER_FRACTION_BEFORE, '($1/$2)');
+	return fractions.replace(DEGREE_AFTER_TERM, latex ? '\\unit{°}' : '[°]');
 }
 
 /**
@@ -91,17 +111,40 @@ export function withDegreeUnits(text: string, mode: 'text' | 'latex' | 'detect')
  */
 export function strayDegreeRefusal(text: string): string | null {
 	if (!mentionsDegree(text)) return null;
-	return ANY_DEGREE.test(text.replace(WRITTEN_UNITS, ' ')) ? STRAY_DEGREE_MESSAGE : null;
+	const rest = text.replace(WRITTEN_UNITS, ' ').replace(CONVERSION_TARGET, ' ');
+	return ANY_DEGREE.test(rest) ? STRAY_DEGREE_MESSAGE : null;
+}
+
+/** Une écriture qui porte le signe sans parenthèses : un nombre, une lettre, `\pi`, ou déjà groupée. */
+const SIMPLE_TERM = /^(?:\d+(?:[.,]\d+)?|\p{L}|\\pi|\(.*\))$/u;
+
+/** Un terme de texte suivi de ` °` (pas `°C`, `°F`). */
+const TEXT_DEGREE = /(?<!\S)(\S+)[ \u00a0\u202f]+°(?![CF])/gu;
+
+/** Une fraction LaTeX (`\dfrac{100}{3}`, `\dfrac{1}{2} \pi`) suivie du signe. */
+const LATEX_FRACTION_DEGREE =
+	/(\\d?frac\{[^{}]*\}\{[^{}]*\}(?:\s*\\pi)?)(?:~|\\,|\s)*(\{\}\^\{\\circ\})(?!\s*\\mathrm\{[CF]\})/g;
+
+/** Le signe en LaTeX, l'espace avant retirée (pas devant `\mathrm{C}`). */
+const LATEX_DEGREE_SPACE = /(?:~|\\,|\s)+(\{\}\^\{\\circ\})(?!\s*\\mathrm\{[CF]\})/g;
+
+/** `100/3` → `(100/3)°`, `-1/2` → `-(1/2)°`, `60` → `60°`. */
+function degreeTermText(term: string): string {
+	const negative = /^[-−]/.test(term) ? term[0] : '';
+	const body = negative === '' ? term : term.slice(1);
+	return SIMPLE_TERM.test(body) ? `${term}°` : `${negative}(${body})°`;
 }
 
 /**
  * La réponse écrit un angle comme sur la copie : `60°`, pas `60 °` (texte), et
- * `60{}^{\circ}`, pas `60~{}^{\circ}` (LaTeX). Une température garde son espace
- * (`20 °C`).
+ * `60{}^{\circ}`, pas `60~{}^{\circ}` (LaTeX). Une valeur qui n'est pas un
+ * nombre seul prend des parenthèses : `(100/3)°`, `\left(\dfrac{100}{3}\right){}^{\circ}`
+ * — `100/3°` se lirait 100/(3°) (revue). Une température garde son espace (`20 °C`).
  */
 export function degreeSignWritten(text: string): string {
 	if (!mentionsDegree(text)) return text;
 	return text
-		.replace(/(?<=[\p{N})π])[ \u00a0\u202f]+°(?![CF])/gu, '°')
-		.replace(/(?:~|\\,|\s)+(\{\}\^\{\\circ\})(?!\s*\\mathrm\{[CF]\})/g, '$1');
+		.replace(TEXT_DEGREE, (_, term: string) => degreeTermText(term))
+		.replace(LATEX_FRACTION_DEGREE, '\\left($1\\right)$2')
+		.replace(LATEX_DEGREE_SPACE, '$1');
 }

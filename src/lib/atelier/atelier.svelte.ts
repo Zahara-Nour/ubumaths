@@ -463,11 +463,11 @@ function formatSliderValue(value: number, step: number): string {
 
 const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-même.';
 
-/** Un angle est une grandeur (° ou rad) : une fonction ne s'en sert pas encore. */
 /** Une unité d'angle écrite dans une définition : `[°]`, `[rad]`, `°`, `\degree`, `^{\circ}`. */
 const WRITTEN_ANGLE =
 	/\[(?:°|rad)\]|\\unit\s*\{(?:°|rad)\}|°(?![CF])|\\degree(?![A-Za-z])|\^\s*\{?\s*\\circ/;
 
+/** Un angle est une grandeur (° ou rad) : une fonction ne s'en sert pas encore. */
 const ANGLE_IN_FUNCTION =
 	'Une mesure d’angle est une grandeur (en ° ou en rad) : une fonction ne s’en sert pas. Utilise son cosinus ou son sinus, ou une valeur sans unité.';
 

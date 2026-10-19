@@ -38,6 +38,11 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { tidyTerms } from './tidy-terms';
 import { decimalCommaLatex, decimalCommaText } from './decimal-comma';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { isUnit } from '$lib/mathAST/guards';
+import { format as formatUnit } from '$lib/mathAST/units';
+import { findNodes } from '$lib/mathAST/transforms';
+import { divide, multiply, number as mathNumber, piConstant } from '$lib/mathAST/factory';
+import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
 import { readListValue } from '$lib/statistics/read-value';
 import { intervalDomainOf, outsideIntervalMessage } from './interval';
 import { containsValue } from '$lib/mathAST/domain/algebra';
@@ -1064,11 +1069,46 @@ function computeCell(
 	const started = performance.now();
 	const result = evaluate(expanded.ast, { mode: inexact ? 'decimal' : 'exact' });
 	if (performance.now() - started > EXACT_BUDGET_MS) approximate.add(address);
-	return numberValue(
+	const cell = numberValue(
 		result,
 		inexact,
 		divided || ownDivision(read.ast, read.names.length > 0, context)
 	);
+	return result.status === 'value' ? inDegrees(cell, result.node, read.ast) : cell;
+}
+
+/**
+ * Un angle s'écrit en degrés dans la case, comme dans Calcul (`=60°` → `60°`,
+ * revue de la PR « 60° ») : le moteur le rend en radians (`(π/3)[rad]`). Une
+ * formule écrite en radians (`=(π/3)[rad]`) le reste. La valeur de la case
+ * (listes, tris) est le nombre de degrés montré ; l'arbre cité reste l'angle.
+ */
+function inDegrees(cell: CellValue, node: MathNode, typed: MathNode): CellValue {
+	if (cell.kind !== 'number' || !isUnit(node)) return cell;
+	if (formatUnit(node.unit, 'original') !== 'rad') return cell;
+	const writtenInRadians = findNodes(typed, isUnit).some(
+		(unit) => isUnit(unit) && formatUnit(unit.unit, 'original') === 'rad'
+	);
+	if (writtenInRadians) return cell;
+	const degrees = simplifyExact(
+		divide(multiply(node.expression, mathNumber('180'), 'implicit'), piConstant(), 'fraction')
+	);
+	const exactNumber = cell.exact && degrees.type === 'number';
+	// Le nombre exact quand il l'est : 60, pas 59,999999999999993 (π/3 · 180/π en flottants)
+	const value =
+		exactNumber && degrees.type === 'number' ? Number(degrees.value) : (cell.value * 180) / Math.PI;
+	const written = exactNumber
+		? decimalCommaText(degrees.value)
+		: `≈ ${decimalCommaText(String(Number(value.toFixed(4))))}`;
+	const latex = exactNumber ? `${decimalCommaLatex(degrees.value)}{}^{\\circ}` : null;
+	return {
+		...cell,
+		value,
+		shown: `${written}°`,
+		shownExact: exactNumber,
+		latex,
+		exactLatex: latex
+	};
 }
 
 /**

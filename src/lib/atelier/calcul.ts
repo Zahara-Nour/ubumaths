@@ -173,7 +173,7 @@ import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps, type SolvedSteps } from './solve-steps';
 import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './natural-quantities';
 import { degreeSignWritten, strayDegreeRefusal, withDegreeUnits } from './degrees';
-import { radiansInText } from './angle-radians';
+import { radiansInLatex, radiansInText } from './angle-radians';
 import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { VALUE_FORBIDDEN, typedValueLatex } from '$lib/mathAST/cli/commands/eval.command';
@@ -1837,6 +1837,28 @@ function withListsByRow(session: CalcSession, input: string): CalcResult {
 }
 
 /** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
+/**
+ * Les commandes qui ÉCRIVENT l'expression (LaTeX, texte, arbre, empreinte,
+ * forme normale) : son angle reste une grandeur (`cos(60~\unit{°})`).
+ */
+const WRITING_COMMANDS: ReadonlySet<string> = new Set([
+	'latex',
+	'custom',
+	'parse',
+	'tree',
+	'hash',
+	'normal'
+]);
+
+/** Le résultat de `.évaluer`, un angle pris par un sin, cos, tan calculé en radians. */
+function evaluatedInRadians(result: ReplExecutionResult): ReplExecutionResult {
+	if (!result.success || result.latex === undefined) return result;
+	const converted = radiansInLatex(result.latex);
+	if (converted === null) return result;
+	// `ast` porte la VALEUR pour `.évaluer` (`evaluatedLine`)
+	return { ...result, latex: converted.latex, output: converted.text, ast: converted.ast };
+}
+
 function runCommand(session: CalcSession, input: string): CalcResult {
 	const { engine } = session;
 	const typedLine = resolveCommand(input);
@@ -1882,7 +1904,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// `.évaluer cos(60°)*x en x=2` : l'unité degré dans l'argument d'une commande
 	// de CALCUL (`degrees.ts`) ; les commandes de données (`SIMULATIONS`) lisent
 	// des modalités. Rien ne change avant la première espace : `space` tient
-	const calculation = SIMULATIONS[known.name] === undefined;
+	// `.convertir °` : un `°` CIBLE de conversion, pas un angle (revue)
+	const calculation = SIMULATIONS[known.name] === undefined && name !== 'convert';
 	const resolved = calculation ? withDegreeUnits(typedLine, 'detect') : typedLine;
 	const stray = calculation && space !== -1 ? strayDegreeRefusal(resolved.slice(space + 1)) : null;
 	if (stray !== null) return { kind: 'refus', message: stray };
@@ -2061,8 +2084,12 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// `f⁻¹` aussi, calculée à la volée comme `f'` (décision (1) de David)
 	// Puis un angle pris par un sin, cos, tan devient un nombre de radians : le
 	// moteur ne calcule pas `cos((π/3)[rad])` (`.résoudre h(x)=1`, h(x) = cos(60°)·x)
+	// Pas pour une commande d'ÉCRITURE (`.latex`, `.texte`…) : elle montre
+	// l'expression telle quelle, pas sa valeur (revue : `.latex cos(60[°])` → `1 / 2`)
 	const inRadians = (text: string | null): string | null =>
-		text === null ? null : radiansInText(text, session.atelier.functionNames);
+		text === null || WRITING_COMMANDS.has(name)
+			? text
+			: radiansInText(text, session.atelier.functionNames);
 	const substitute = (text: string): string | null =>
 		inRadians(
 			!text.includes("'") && !citesReciprocal(session.atelier, text)
@@ -2267,7 +2294,10 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const commandArgument = finalArgs === null ? argument : writeCommandArguments(finalArgs);
 	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${commandArgument}`;
 
-	const result = engine.execute(executed);
+	// `.évaluer sin(x) en x=30°` : le moteur remplace x et rend `sin((π/6)[rad])`,
+	// non calculé ; l'angle y devient un nombre de radians (revue de la PR « 60° »)
+	const executedResult = engine.execute(executed);
+	const result = name === 'eval' ? evaluatedInRadians(executedResult) : executedResult;
 	// V57 : une résolution qui DIVISE par un paramètre (`a x = 0` → x = 0, faux
 	// pour a = 0) refuse plutôt que de répondre (Q5, David, 2026-10-14). Les
 	// refus du moteur passent avant : il dit déjà ce qu'il ne sait pas faire
@@ -3425,14 +3455,13 @@ function citesMeasureOrAngle(atelier: Atelier, text: string): boolean {
  * d'un angle (`angle(…)^2` → `8100 °^2`) est refusée — choix prudent, noté.
  */
 function measureLine(atelier: Atelier, text: string, result: CalcResult): CalcResult {
-	if (result.kind !== 'calcul' || !citesMeasureOrAngle(atelier, text)) return result;
+	if (result.kind !== 'calcul') return result;
+	// Toute ligne, pas seulement une mesure : `(60°)^2` écrivait `3600{}^{\circ}^{2}`,
+	// que KaTeX ne rend pas (revue de la PR « 60° », la décision des mesures)
 	if (result.ast !== undefined && hasAnglePower(result.ast)) {
-		return {
-			kind: 'refus',
-			message:
-				'Une puissance d’un angle n’est pas une mesure : élève plutôt son cosinus, son sinus, ou une valeur sans unité.'
-		};
+		return { kind: 'refus', message: ANGLE_POWER_MESSAGE };
 	}
+	if (!citesMeasureOrAngle(atelier, text)) return result;
 	const bare = result.output.replace(/^≈ /, '');
 	if (bare === 'true' || bare === 'false') {
 		const word = bare === 'true' ? 'vrai' : 'faux';
@@ -3440,6 +3469,12 @@ function measureLine(atelier: Atelier, text: string, result: CalcResult): CalcRe
 	}
 	return { ...result, output: result.output.replace(/\\pi(?![A-Za-z])/g, 'π') };
 }
+
+/** Un exposant collé à l'unité degré : `60[°]^2`, `60\unit{°}^{2}`. */
+const DEGREE_POWER = /(?:\[°\]|\\unit\{°\})\s*\^/;
+
+const ANGLE_POWER_MESSAGE =
+	'Une puissance d’un angle n’est pas une mesure : élève plutôt son cosinus, son sinus, ou une valeur sans unité.';
 
 /** Une puissance d'un angle dans l'arbre d'un résultat (`°^2`, `rad^2`) : décidé sur l'ARBRE. */
 function hasAnglePower(ast: MathNode): boolean {
@@ -3701,6 +3736,8 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	if (!input.startsWith('.')) {
 		const stray = strayDegreeRefusal(input);
 		if (stray !== null) return { kind: 'refus', message: stray };
+		// `60°^2` : le parseur répondait en anglais (« Exponent after a unit… »)
+		if (DEGREE_POWER.test(input)) return { kind: 'refus', message: ANGLE_POWER_MESSAGE };
 	}
 
 	// Avant tout chemin — commande, définition, calcul : tous lisent `pi` p·i

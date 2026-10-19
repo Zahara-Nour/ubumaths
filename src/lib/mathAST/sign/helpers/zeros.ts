@@ -78,7 +78,16 @@ export function findZerosWithStatus(
 	expr: MathNode,
 	variable: string,
 	domain: Domain
-): { readonly zeros: ZeroInfo[]; readonly resolved: boolean } {
+): {
+	readonly zeros: ZeroInfo[];
+	readonly resolved: boolean;
+	/**
+	 * Des zéros PÉRIODIQUES sur un domaine non borné : seules les solutions de base
+	 * sont rendues, la liste est incomplète au-delà (`sin(πx/180)` : 0 et 180, pas
+	 * 360, -180…). Un intervalle non borné en contient d'autres.
+	 */
+	readonly periodicUnbounded?: boolean;
+} {
 	// Handle empty domain
 	if (domain.kind === 'empty') {
 		return { zeros: [], resolved: true };
@@ -140,7 +149,11 @@ export function findZerosWithStatus(
 		}
 
 		// Filter solutions within the domain (default non-periodic path)
-		return { zeros: filterSolutionsInDomain(result.solutions, domain), resolved: true };
+		return {
+			zeros: filterSolutionsInDomain(result.solutions, domain),
+			resolved: true,
+			...(result.periodicSolutions && { periodicUnbounded: true })
+		};
 	} catch {
 		// Le solveur a levé une exception : f(x) = 0 n'est pas résolue.
 		return { zeros: [], resolved: false };

@@ -180,7 +180,11 @@ export function analyzeSign(rawExpr: MathNode, options?: SignAnalysisOptions): S
 		opts.verbosity,
 		'summarized'
 	);
-	const { zeros: rawZeros, resolved: zerosResolved } = findZerosWithStatus(expr, variable, domain);
+	const {
+		zeros: rawZeros,
+		resolved: zerosResolved,
+		periodicUnbounded
+	} = findZerosWithStatus(expr, variable, domain);
 	if (!zerosResolved) {
 		warnings.push(
 			"f(x) = 0 n'a pas pu être résolue : des zéros peuvent manquer, le signe n'est conclu que là où il se démontre."
@@ -261,7 +265,16 @@ export function analyzeSign(rawExpr: MathNode, options?: SignAnalysisOptions): S
 		// ⚠️ Pas quand f(x) = 0 n'a pas été résolue : l'intervalle peut contenir
 		// un zéro manqué, et des échantillons d'accord « confirmeraient » un
 		// signe faux. Le signe reste alors inconnu.
-		if (sign === 'unknown' && opts.numericFallback && zerosResolved) {
+		//
+		// ⚠️ Ni sur un intervalle NON BORNÉ quand les zéros sont périodiques : seuls
+		// ceux d'une période sont connus, les autres sont au-delà. Les échantillons
+		// (dans [-100 ; 100]) ne voyaient pas les zéros de sin(πx/180) en ±180, ±360…
+		// et `.variations cos(x°)` concluait « croissante sur ]-∞ ; 0[ » (revue de
+		// la PR « 60° » de l'atelier). Le signe reste inconnu, comme pour cos(x).
+		const unboundedPeriodic =
+			periodicUnbounded === true &&
+			(int.lower.value.type === 'infinity' || int.upper.value.type === 'infinity');
+		if (sign === 'unknown' && opts.numericFallback && zerosResolved && !unboundedPeriodic) {
 			sign = sampleSignOnInterval(expr, variable, int, {
 				tolerance: opts.tolerance
 			});

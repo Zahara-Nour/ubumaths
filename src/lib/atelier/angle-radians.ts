@@ -30,6 +30,8 @@ import {
 import { transformAST } from '$lib/mathAST/visitor';
 import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
 import { toCustom } from '$lib/mathAST/custom-generator';
+import { toLatex } from '$lib/mathAST/latex-generator';
+import { parseLatexSafe } from '$lib/mathAST/parser';
 import { astOf } from './parse';
 
 /** Les fonctions qui prennent un angle et rendent un nombre. */
@@ -55,7 +57,7 @@ export function radiansInTrigonometry(ast: MathNode): MathNode {
 
 /** `radiansInTrigonometry`, et si quelque chose a changé. */
 function converted(ast: MathNode): { readonly ast: MathNode; readonly changed: boolean } {
-	let any = false;
+	let changedSomewhere = false;
 	const result = transformAST(ast, {
 		enterFunction: (node) => {
 			if (!TRIGONOMETRIC.has(node.name)) return undefined;
@@ -72,11 +74,11 @@ function converted(ast: MathNode): { readonly ast: MathNode; readonly changed: b
 			);
 			// Rien d'autre ne change : un sin(x) sans angle mesuré reste tel quel
 			if (!changed) return undefined;
-			any = true;
+			changedSomewhere = true;
 			return { node: simplifyExact({ ...node, args }), skip: true };
 		}
 	});
-	return { ast: result, changed: any };
+	return { ast: result, changed: changedSomewhere };
 }
 
 /** Une unité d'angle écrite : `[°]`, `[rad]`, `\unit{°}`. */
@@ -94,4 +96,21 @@ export function radiansInText(text: string, functionNames?: readonly string[]): 
 	if (ast === null) return text;
 	const result = converted(ast);
 	return result.changed ? toCustom(result.ast) : text;
+}
+
+/**
+ * Le même passage sur le LaTeX d'une RÉPONSE du moteur : `.évaluer sin(x) en
+ * x=30°` rend `\sin\left( \dfrac{\pi}{6}~\unit{rad} \right)` (revue). Le
+ * LaTeX et le texte recalculés, ou `null` s'il n'y a rien à changer.
+ */
+export function radiansInLatex(
+	latex: string
+): { readonly latex: string; readonly text: string; readonly ast: MathNode } | null {
+	if (!ANGLE_UNIT_WRITTEN.test(latex)) return null;
+	const ast = parseLatexSafe(latex).ast;
+	if (ast === null || ast === undefined) return null;
+	const result = converted(ast);
+	return result.changed
+		? { latex: toLatex(result.ast), text: toCustom(result.ast), ast: result.ast }
+		: null;
 }
