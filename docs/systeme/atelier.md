@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (barre d'outils de la géométrie, lot 3, PR 2).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3).
 
 ## À quoi ça sert
 
@@ -70,46 +70,46 @@ Ceux du code et de l'interface :
 
 ### Modèle — `src/lib/atelier/` (65 fichiers hors tests)
 
-| Fichier                                     | Rôle                                                                                                                      |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/atelier/types.ts`                  | Les six types d'objets, `ObjectStatus`, `CurveDisplay`, `SequenceDisplay`, plafonds D8, gardes de type                    |
-| `src/lib/atelier/geometry.ts`               | Points et courbes (v2) : couple découpé, forme d'une équation, messages, refus d'un point cité (P9)                       |
-| `src/lib/atelier/atelier.svelte.ts`         | **La classe `Atelier`** : création, renommage, mise à jour, suppression, états, `serialize`/`restore`                     |
-| `src/lib/atelier/formula.ts`                | Les formules de la grille : lecture des références (`ω_k`), ordre de calcul, cycles, repli ≈, refus                       |
-| `src/lib/atelier/grid.ts`                   | La grille de la vue Données : adresses (`B3`), entrées d'une colonne nommée, répartition P2, plafonds                     |
-| `src/lib/atelier/grid-functions.ts`         | Les fonctions du tableur (SOMME, ARRONDI…) : appels, plages, calcul en arbre équilibré, aide de la barre                  |
-| `src/lib/atelier/cell-format.ts`            | La mise en forme des cases (reprise de V4) : zones, styles résolus, formats de nombre, rangement                          |
-| `src/lib/atelier/cell-colors.ts`            | Les couleurs de la mise en forme : CSS du texte et du fond, réglages de contraste mesurés                                 |
-| `src/lib/atelier/tabulate.ts`               | Tabuler une fonction dans la grille : le tableau en formules, ses refus, `.tabuler`, valeurs par défaut                   |
-| `src/lib/atelier/names.ts`                  | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)                        |
-| `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)                     |
-| `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                              |
-| `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                          |
-| `src/lib/atelier/reciprocal.ts`             | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français                     |
-| `src/lib/atelier/limit.ts`                  | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule                          |
-| `src/lib/atelier/limit-steps.ts`            | `.limite` : « Comment ? » (`limitSteps`), garde de concordance dans `limit-steps-check.ts`                                |
-| `src/lib/atelier/constant.ts`               | La valeur d'une constante (curseurs, premier terme d'une suite)                                                           |
-| `src/lib/atelier/list-cited.ts`             | Refus d'une liste citée comme un nombre (`listCitedMessage`)                                                              |
-| `src/lib/atelier/actions.ts`                | Les actions d'une carte selon le type et l'état (`actionsFor`), listes partenaires                                        |
-| `src/lib/atelier/context.ts`                | L'instance d'atelier passée par contexte (`provideAtelier`, `useAtelier`)                                                 |
-| `src/lib/atelier/engine.ts`                 | Remet `WebReplEngine` en accord avec les objets (`syncEngine`), expansion des noms dans une saisie                        |
-| `src/lib/atelier/plot-sync.ts`              | Reporte les objets tracés vers le `GrapheurStore` (`syncPlots`), à sens unique                                            |
-| `src/lib/atelier/figure-sync.ts`            | Reporte points, courbes et 𝒞f affichées vers une `Figure` de `geometry-core` (`syncFigure`)                               |
-| `src/lib/atelier/curve-nature.ts`           | La nature d'une courbe pour sa carte (« droite », « cercle »…) et le constat d'une courbe vide (C6)                       |
-| `src/lib/atelier/construction-read.ts`      | Lecture d'une construction (lot 2) : mots du DSL, raccourcis `(AB)` `[AB]` `[AB)`, séparateurs, accents                   |
-| `src/lib/atelier/construction-spec.ts`      | Typage d'une construction lue : point, droite ou nombre attendu ; refus du mauvais type (L8)                              |
-| `src/lib/atelier/construction.ts`           | Calcul EXACT d'une construction (fonctions pures de `geometry-core`), équations, longueur, carte                          |
-| `src/lib/atelier/point-drag.ts`             | Glisser un point à la souris (lot 3, PR 1) : ce qui se glisse (`dragHoldOf`), couple écrit, position sur un support       |
-| `src/lib/atelier/figure-tools.svelte.ts`    | Barre d'outils de la vue Géométrie (lot 3, PR 2) : outil choisi, construction en cours, noms automatiques, lignes écrites |
-| `src/lib/atelier/construction-intersect.ts` | `intersection` et `point_sur` (PR 3) : calcul pur sur des supports résolus, numérotation `k`, attente et refus            |
-| `src/lib/atelier/measures.ts`               | Mesures (lot 2, PR 2) : `AM`, `distance`, `aire`, `perimetre`, `angle`, calculées exactes et remplacées par leur valeur   |
-| `src/lib/atelier/measures-read.ts`          | Repérage des mesures dans un texte, sans atelier (pour `parse.ts`)                                                        |
-| `src/lib/atelier/survey.ts`                 | `.relever` (PR 4) : lecture, pas exacts, ce qui varie, relevé (`Atelier.sweep`), deux listes et la ligne de réponse       |
-| `src/lib/atelier/perf-switches.ts`          | Les raccourcis du recalcul (mémo des lectures, liaisons limitées, mémo `#refsOf`) et leur compteur, pour les tests        |
-| `src/lib/atelier/display.ts`                | Schémas Zod des réglages de courbe et de suite (carte, sauvegarde, lien : une seule règle)                                |
-| `src/lib/atelier/reading.ts`                | Lecture graphique : les `f(a)` de la console qui se lisent sur le graphe (`consoleReadings`)                              |
-| `src/lib/atelier/mathfield.ts`              | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                                  |
-| `src/lib/atelier/paste.ts`                  | Collage réécrit en LaTeX, annulable (`insertPasted`)                                                                      |
+| Fichier                                     | Rôle                                                                                                                                                           |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/atelier/types.ts`                  | Les six types d'objets, `ObjectStatus`, `CurveDisplay`, `SequenceDisplay`, plafonds D8, gardes de type                                                         |
+| `src/lib/atelier/geometry.ts`               | Points et courbes (v2) : couple découpé, forme d'une équation, messages, refus d'un point cité (P9)                                                            |
+| `src/lib/atelier/atelier.svelte.ts`         | **La classe `Atelier`** : création, renommage, mise à jour, suppression, états, `serialize`/`restore`                                                          |
+| `src/lib/atelier/formula.ts`                | Les formules de la grille : lecture des références (`ω_k`), ordre de calcul, cycles, repli ≈, refus                                                            |
+| `src/lib/atelier/grid.ts`                   | La grille de la vue Données : adresses (`B3`), entrées d'une colonne nommée, répartition P2, plafonds                                                          |
+| `src/lib/atelier/grid-functions.ts`         | Les fonctions du tableur (SOMME, ARRONDI…) : appels, plages, calcul en arbre équilibré, aide de la barre                                                       |
+| `src/lib/atelier/cell-format.ts`            | La mise en forme des cases (reprise de V4) : zones, styles résolus, formats de nombre, rangement                                                               |
+| `src/lib/atelier/cell-colors.ts`            | Les couleurs de la mise en forme : CSS du texte et du fond, réglages de contraste mesurés                                                                      |
+| `src/lib/atelier/tabulate.ts`               | Tabuler une fonction dans la grille : le tableau en formules, ses refus, `.tabuler`, valeurs par défaut                                                        |
+| `src/lib/atelier/names.ts`                  | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)                                                             |
+| `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)                                                          |
+| `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                                                                   |
+| `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                               |
+| `src/lib/atelier/reciprocal.ts`             | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français                                                          |
+| `src/lib/atelier/limit.ts`                  | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule                                                               |
+| `src/lib/atelier/limit-steps.ts`            | `.limite` : « Comment ? » (`limitSteps`), garde de concordance dans `limit-steps-check.ts`                                                                     |
+| `src/lib/atelier/constant.ts`               | La valeur d'une constante (curseurs, premier terme d'une suite)                                                                                                |
+| `src/lib/atelier/list-cited.ts`             | Refus d'une liste citée comme un nombre (`listCitedMessage`)                                                                                                   |
+| `src/lib/atelier/actions.ts`                | Les actions d'une carte selon le type et l'état (`actionsFor`), listes partenaires                                                                             |
+| `src/lib/atelier/context.ts`                | L'instance d'atelier passée par contexte (`provideAtelier`, `useAtelier`)                                                                                      |
+| `src/lib/atelier/engine.ts`                 | Remet `WebReplEngine` en accord avec les objets (`syncEngine`), expansion des noms dans une saisie                                                             |
+| `src/lib/atelier/plot-sync.ts`              | Reporte les objets tracés vers le `GrapheurStore` (`syncPlots`), à sens unique                                                                                 |
+| `src/lib/atelier/figure-sync.ts`            | Reporte points, courbes et 𝒞f affichées vers une `Figure` de `geometry-core` (`syncFigure`)                                                                    |
+| `src/lib/atelier/curve-nature.ts`           | La nature d'une courbe pour sa carte (« droite », « cercle »…) et le constat d'une courbe vide (C6)                                                            |
+| `src/lib/atelier/construction-read.ts`      | Lecture d'une construction (lot 2) : mots du DSL, raccourcis `(AB)` `[AB]` `[AB)`, séparateurs, accents                                                        |
+| `src/lib/atelier/construction-spec.ts`      | Typage d'une construction lue : point, droite ou nombre attendu ; refus du mauvais type (L8)                                                                   |
+| `src/lib/atelier/construction.ts`           | Calcul EXACT d'une construction (fonctions pures de `geometry-core`), équations, longueur, carte                                                               |
+| `src/lib/atelier/point-drag.ts`             | Glisser un point à la souris (lot 3, PR 1) : ce qui se glisse (`dragHoldOf`), couple écrit, position sur un support                                            |
+| `src/lib/atelier/figure-tools.svelte.ts`    | Barre d'outils de la vue Géométrie (lot 3, PR 2 et 3) : outil choisi, construction en cours, noms automatiques, M5 (intersection, `point_sur`), lignes écrites |
+| `src/lib/atelier/construction-intersect.ts` | `intersection` et `point_sur` (PR 3) : calcul pur sur des supports résolus, numérotation `k`, attente et refus                                                 |
+| `src/lib/atelier/measures.ts`               | Mesures (lot 2, PR 2) : `AM`, `distance`, `aire`, `perimetre`, `angle`, calculées exactes et remplacées par leur valeur                                        |
+| `src/lib/atelier/measures-read.ts`          | Repérage des mesures dans un texte, sans atelier (pour `parse.ts`)                                                                                             |
+| `src/lib/atelier/survey.ts`                 | `.relever` (PR 4) : lecture, pas exacts, ce qui varie, relevé (`Atelier.sweep`), deux listes et la ligne de réponse                                            |
+| `src/lib/atelier/perf-switches.ts`          | Les raccourcis du recalcul (mémo des lectures, liaisons limitées, mémo `#refsOf`) et leur compteur, pour les tests                                             |
+| `src/lib/atelier/display.ts`                | Schémas Zod des réglages de courbe et de suite (carte, sauvegarde, lien : une seule règle)                                                                     |
+| `src/lib/atelier/reading.ts`                | Lecture graphique : les `f(a)` de la console qui se lisent sur le graphe (`consoleReadings`)                                                                   |
+| `src/lib/atelier/mathfield.ts`              | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                                                                       |
+| `src/lib/atelier/paste.ts`                  | Collage réécrit en LaTeX, annulable (`insertPasted`)                                                                                                           |
 
 **Vue Calcul** (saisie, commandes, historique) :
 
@@ -1679,9 +1679,9 @@ graduations : l'état vit dans l'`Atelier` (`figureFrame`, `setFigureFrame`), **
 ni courbe ni fonction affichée, la vue dit « Écris un point A = (1 ; 2) ou une courbe d : y = 3x − 2,
 ou affiche une fonction depuis sa carte. » (F1).
 
-**Barre d'outils** (lot 3, PR 2, M3, M4, M5 partiel, M7, M8 de
+**Barre d'outils** (lot 3, PR 2 et 3, M3, M4, M5, M7, M8 de
 `docs/wip/atelier-geometrie-lot3-phase0.md`) : Déplacer (par défaut) · Point · Segment · Droite ·
-Demi-droite · Cercle, en icônes (`aria-label`, `aria-pressed`, motif de barre d'outils
+Demi-droite · Cercle · Milieu · Intersection · Point sur un objet · Parallèle · Perpendiculaire, en icônes (`aria-label`, `aria-pressed`, motif de barre d'outils
 `rovingToolbar`). Un outil **écrit la ligne qu'on aurait tapée** (G2) : `FigureToolbox`
 (`figure-tools.svelte.ts`) ne crée rien, il passe ses lignes à `write` — `desk.write`, par le
 conteneur (`writeFromFigure`) : une ligne de console rejouable (geste `saisie`), une étape, jamais
@@ -1697,8 +1697,32 @@ rien : elle délègue le clic (`canvasTool`), le fantôme (`overlay`) suit le po
 (« Clique sur un deuxième point. ») est dite sous la barre (ligne réservée : la toile ne saute pas).
 Échap ou un second appui sur l'outil abandonne la construction (le premier point posé reste). Les
 flèches déplacent le point choisi (le dernier saisi ou posé, entouré) par `dragPoint` : pas de 0,1,
-Maj : 1, une flèche tenue = une étape (`endGesture` au relâcher). Reste au lot 3 : outils de
-construction (PR 3, M5 complet), téléphone (PR 4, M6 : sur un téléphone la toile dépasse l'écran).
+Maj : 1, une flèche tenue = une étape (`endGesture` au relâcher).
+
+**M5 complet et outils de construction** (lot 3, PR 3). La toile dit au clic ce qui est proche :
+le point (`findPointNear`), et les autres éléments à la même distance, le plus proche d'abord
+(`findElementsNear` de `geometry-core/interaction/hit-testing.ts`) ; `FigureView` les traduit en
+noms (`projection.nameOf`). Au survol, avec un outil, le point visé, sinon l'objet le plus proche,
+est mis en évidence. La boîte calcule sur l'atelier (`supportNamed` de `construction.ts` : le
+support résolu d'un objet nommé ; `commonPoints` de `construction-intersect.ts` : les points
+communs sur les portions, avec le `k` qui les écrit, `null` pour deux lignes). Un outil qui attend
+un point, là où aucun point n'est visé, écrit : l'**intersection** de deux objets proches si l'un
+de leurs points communs est sous le clic (`C = intersection(d ; c ; 2)`, le plus proche ; sans `k`
+pour deux lignes) ; sinon un **`point_sur`** de l'objet le plus proche, à la position du clic
+arrondie au pas de son curseur (segment au centième, ramené dans [0 ; 1] ; demi-droite et droite
+au dixième, une demi-droite pas sous 0 ; cercle en degrés entiers ; courbe y = f(x) au dixième —
+`point_sur(d ; 0,63)`, donc glissable) ; sinon un point par coordonnées. Outils : **Milieu** —
+deux points (`C = milieu(A ; B)`), ou un clic sur un segment (`C = milieu(d)`) ; **Intersection** —
+un clic où deux objets se coupent, ou un objet par clic et le point commun le plus proche du
+second clic (« c et d_1 ne se coupent pas. », « Choisis un autre objet que c. ») ; **Point sur un
+objet** — un clic sur l'objet, jamais une intersection ; **Parallèle**, **Perpendiculaire** — la
+droite (droite, segment, demi-droite, droite par équation) puis le point (M5), ou un point
+existant puis la droite : `d_1 = parallele(C ; d)`, `d_1 = perpendiculaire(C ; d)` ; un cercle ne
+donne pas de direction (« Clique sur une droite, un segment ou une demi-droite. »). Fantômes : le
+milieu (segment et point) ; la parallèle ou la perpendiculaire par le pointeur, une fois la droite
+choisie. Limite connue : seul le premier morceau d'une fonction à plusieurs morceaux porte son nom
+dans la figure, les autres ne se visent pas. Reste au lot 3 : téléphone (PR 4, M6 : sur un
+téléphone la toile dépasse l'écran).
 
 **𝒞f dans la vue Géométrie** (PR 3, K1-K3) : l'action de carte « Afficher dans Géométrie » /
 « Retirer de Géométrie » (`figure` dans `BY_KIND`, bascule comme « Tracer ») pose `inFigure` sur
@@ -2725,4 +2749,4 @@ les garanties `/grapheur` non faites : elles le sont (lots 2 à 6, #779 → #809
 
 ---
 
-Vérifié contre le code le 2026-10-19 (barre d'outils de la géométrie, lot 3, PR 2).
+Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3).

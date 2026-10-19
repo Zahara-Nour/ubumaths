@@ -525,7 +525,9 @@
 	}
 	.refus {
 		margin: 0;
-		/* La ligne est réservée : la consigne d'un outil ne fait pas sauter la toile */
+		/* Une ligne à elle, réservée : la consigne d'un outil, courte ou longue, ne fait
+		   ni passer la barre sur deux lignes ni sauter la toile (onze outils, lot 3) */
+		flex-basis: 100%;
 		min-height: 1.25rem;
 		line-height: 1.25rem;
 		font-size: 0.875rem;
