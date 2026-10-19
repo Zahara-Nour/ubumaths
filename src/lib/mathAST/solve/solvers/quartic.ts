@@ -23,6 +23,7 @@ import type {
 	Solution
 } from '../types';
 import { getPolynomialDegree } from '../classify';
+import { realQuarticRoots } from '../../common/quartic-roots';
 import { flattenSumShallow } from '../../flatten';
 import { number, opposite, equals, variable as varNode, fraction } from '../../factory';
 import { numericNode } from '../../common/numeric';
@@ -179,8 +180,8 @@ function solveCubicNumeric(a: number, b: number, c: number, d: number): number[]
 }
 
 /**
- * Solve a quartic ax⁴ + bx³ + cx² + dx + e = 0 numerically using Ferrari's method.
- * Based on the existing solveQuarticZeros in domain/preimage.ts.
+ * Les racines réelles de ax⁴ + bx³ + cx² + dx + e = 0 (voir
+ * `common/quartic-roots.ts`, partagé avec `domain/preimage.ts`).
  */
 function solveQuarticNumeric(
 	aVal: number,
@@ -190,118 +191,7 @@ function solveQuarticNumeric(
 	eVal: number
 ): number[] {
 	if (Math.abs(aVal) < EPSILON) return solveCubicNumeric(bVal, cVal, dVal, eVal);
-
-	// Normalize to monic: x⁴ + px³ + qx² + rx + s = 0
-	const p = bVal / aVal;
-	const q = cVal / aVal;
-	const r = dVal / aVal;
-	const s = eVal / aVal;
-
-	// Substitute x = t - p/4 to get depressed quartic: t⁴ + At² + Bt + C = 0
-	const p2 = p * p;
-	const p3 = p2 * p;
-	const p4 = p3 * p;
-	const shift = p / 4;
-
-	const A = q - (3 * p2) / 8;
-	const B = r - (p * q) / 2 + p3 / 8;
-	const C = s - (p * r) / 4 + (p2 * q) / 16 - (3 * p4) / 256;
-
-	// Special case: Biquadratic (B = 0)
-	if (Math.abs(B) < EPSILON) {
-		return solveBiquadraticNumeric(A, C, shift);
-	}
-
-	// Solve the resolvent cubic: y³ + (A/2)y² + ((A² - 4C)/16)y - B²/64 = 0
-	const cubicP = A / 2;
-	const cubicQ = (A * A - 4 * C) / 16;
-	const cubicR = -(B * B) / 64;
-
-	const cubicRoots = solveCubicNumeric(1, cubicP, cubicQ, cubicR);
-
-	// Find a suitable root y for factorization (prefer positive)
-	let y = 0;
-	for (const root of cubicRoots) {
-		if (root > y) y = root;
-	}
-	if (Math.abs(y) < EPSILON && cubicRoots.length > 0) {
-		y = Math.max(...cubicRoots.map(Math.abs));
-		for (const root of cubicRoots) {
-			if (Math.abs(Math.abs(root) - y) < EPSILON) {
-				y = root;
-				break;
-			}
-		}
-	}
-
-	// `y` est une racine de la résolvante ÉCRITE pour y = m/2 (coefficients
-	// A/2, (A² − 4C)/16, −B²/64) : le m de Ferrari vaut 2y. On factorise
-	// t⁴ + At² + Bt + C = (t² + A/2 + m)² − (√(2m)·t − B/(2√(2m)))²
-	//                   = (t² + √(2m)·t + q₁)(t² − √(2m)·t + q₂).
-	// ⚠️ Écrire √(2y) et A/2 + y (m confondu avec y) donnait des racines fausses
-	// dès que B ≠ 0 : x⁴ + x³ − 7x² − x + 6 = 0 rendait −3,13 ; −0,29 ; 0,15 ;
-	// 2,26 au lieu de −3 ; −1 ; 1 ; 2. Les cas B = 0 (bicarrés, racines
-	// symétriques) passent par le chemin bicarré et ne le voyaient pas.
-	const m = 2 * y;
-	if (m < -EPSILON) return [];
-
-	const sqrtTwoM = Math.sqrt(Math.max(0, 2 * m));
-	if (Math.abs(sqrtTwoM) < EPSILON) {
-		return solveBiquadraticNumeric(A, C, shift);
-	}
-
-	const q1 = A / 2 + m - B / (2 * sqrtTwoM);
-	const q2 = A / 2 + m + B / (2 * sqrtTwoM);
-
-	// Solve the two quadratics
-	const roots1 = solveQuadraticNumeric(1, sqrtTwoM, q1);
-	const roots2 = solveQuadraticNumeric(1, -sqrtTwoM, q2);
-
-	// Transform back: x = t - p/4
-	const allRoots = [...roots1, ...roots2].map((t) => t - shift);
-	return deduplicateRoots(allRoots);
-}
-
-/**
- * Solve depressed biquadratic t⁴ + At² + C = 0 numerically.
- */
-function solveBiquadraticNumeric(A: number, C: number, shift: number): number[] {
-	const uRoots = solveQuadraticNumeric(1, A, C);
-	const tRoots: number[] = [];
-
-	for (const u of uRoots) {
-		if (u >= -EPSILON) {
-			const sqrtU = Math.sqrt(Math.max(0, u));
-			tRoots.push(sqrtU - shift);
-			if (sqrtU > EPSILON) {
-				tRoots.push(-sqrtU - shift);
-			}
-		}
-	}
-
-	return deduplicateRoots(tRoots);
-}
-
-/**
- * Remove duplicate roots within tolerance.
- */
-function deduplicateRoots(roots: number[]): number[] {
-	if (roots.length === 0) return [];
-
-	// Clean roots: snap near-integers
-	const cleaned = roots.map((r) => {
-		const rounded = Math.round(r);
-		return Math.abs(r - rounded) < EPSILON ? rounded : r;
-	});
-
-	cleaned.sort((a, b) => a - b);
-	const unique: number[] = [cleaned[0]];
-	for (let i = 1; i < cleaned.length; i++) {
-		if (Math.abs(cleaned[i] - unique[unique.length - 1]) > EPSILON) {
-			unique.push(cleaned[i]);
-		}
-	}
-	return unique;
+	return realQuarticRoots(aVal, bVal, cVal, dVal, eVal);
 }
 
 // =============================================================================

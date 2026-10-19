@@ -311,6 +311,67 @@ describe('quotient dont le numérateur a des zéros périodiques', () => {
 	});
 });
 
+describe('dénominateur ou f à domaine restreint : aucun zéro ni sens hors du domaine', () => {
+	// Domaine fourni brut, qui déborde l'ensemble de définition (comme le
+	// reçoit un appelant qui ne le restreint pas)
+	function zerosOf(latex: string, domain: Domain): number[] {
+		return analyzeSign(parseLatex(latex), { variable: 'x', domain }).zeros.map((z) =>
+			compile(z.value)({})
+		);
+	}
+
+	it('cos x/√x sur [−5 ; 5] : zéros π/2 et 3π/2, jamais −π/2 ni −3π/2', () => {
+		// Famille écartée par le solveur (√x non définie sur ℝ), énumérée par le
+		// tableau de signes membre à membre dans le domaine de l'expression
+		const zeros = zerosOf('\\frac{\\cos(x)}{\\sqrt{x}}', domainOf('-5', '5', true, true));
+		expect(zeros.map((z) => z.toFixed(3))).toEqual(['1.571', '4.712']);
+	});
+
+	it('sin x/x sur [0 ; 2π] : positif sur ]0 ; π[, négatif sur ]π ; 2π[ (0 n’est pas un zéro)', () => {
+		const sign = analyzeSign(parseLatex('\\frac{\\sin(x)}{x}'), {
+			variable: 'x',
+			domain: restricted('\\frac{\\sin(x)}{x}', DOMAINS['[0 ; 2π]'])
+		});
+		expect(sign.zeros.map((z) => compile(z.value)({}).toFixed(3))).toEqual(['3.142', '6.283']);
+		expect(sign.signedIntervals.map((si) => si.sign)).toEqual([
+			'positive',
+			'zero',
+			'negative',
+			'zero'
+		]);
+	});
+
+	it('cos x/√x sur [−3 ; 3] : aucun zéro négatif', () => {
+		const zeros = zerosOf('\\frac{\\cos(x)}{\\sqrt{x}}', domainOf('-3', '3', true, true));
+		expect(zeros.every((z) => z > 0)).toBe(true);
+	});
+
+	it('cos x/√(x + 5) sur [−10 ; 10] : aucun zéro sous −5', () => {
+		const zeros = zerosOf('\\frac{\\cos(x)}{\\sqrt{x+5}}', domainOf('-10', '10', true, true));
+		expect(zeros.every((z) => z > -5)).toBe(true);
+	});
+
+	it('cos x/ln x sur [−5 ; 5] : aucun zéro négatif', () => {
+		const zeros = zerosOf('\\frac{\\cos(x)}{\\ln(x)}', domainOf('-5', '5', true, true));
+		expect(zeros.every((z) => z > 0)).toBe(true);
+	});
+
+	it('cos x/tan x sur [0 ; 2π] : aucun zéro en π/2 ni 3π/2 (tan non définie)', () => {
+		expect(zerosOf('\\frac{\\cos(x)}{\\tan(x)}', DOMAINS['[0 ; 2π]']!)).toEqual([]);
+	});
+
+	it('ln(sin x) sur [0 ; 2π] : aucun sens affirmé sur ]π ; 2π[, où f n’est pas définie', () => {
+		const result = study('\\ln(\\sin(x))', DOMAINS['[0 ; 2π]']);
+		const affirmed = result.monotonicIntervals.filter(
+			(mi) => mi.monotonicity === 'increasing' || mi.monotonicity === 'decreasing'
+		);
+		expect(affirmed.length).toBeGreaterThan(0);
+		for (const mi of affirmed) {
+			expect(endpointToNumber(mi.interval.upper.value)).toBeLessThanOrEqual(Math.PI + 1e-9);
+		}
+	});
+});
+
 describe('(x − 1)²(x + 2)³ : f′ = (x − 1)(x + 2)²(5x + 1)', () => {
 	// La quartique f′ = 5x⁴ + 16x³ + 3x² − 20x − 4 passait par une factorisation de
 	// Ferrari fausse : points critiques −2,45 ; −1,03 ; −0,85 ; 1,12.

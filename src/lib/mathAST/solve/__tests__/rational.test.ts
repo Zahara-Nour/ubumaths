@@ -102,6 +102,17 @@ describe('solve — numérateur à zéros périodiques', () => {
 		expect(result.periodicSolutions).toBeDefined();
 	});
 
+	// Un dénominateur NON DÉFINI en certains membres (√x, ln x, tan x) : la
+	// liste est filtrée par le domaine, la famille ne le serait pas
+	it.each([
+		'\\frac{\\cos(x)}{\\sqrt{x}}',
+		'\\frac{\\cos(x)}{\\sqrt{x+5}}',
+		'\\frac{\\cos(x)}{\\ln(x)}',
+		'\\frac{\\cos(x)}{\\tan(x)}'
+	])('%s = 0 : pas de famille (dénominateur non défini partout)', (latex) => {
+		expect(solve(eq0(latex), { variable: 'x' }).periodicSolutions).toBeUndefined();
+	});
+
 	it('sin x/x = 0 : pas de famille, 0 en est un membre et annule le dénominateur', () => {
 		const result = solve(eq0('\\frac{\\sin(x)}{x}'), { variable: 'x' });
 		expect(result.periodicSolutions).toBeUndefined();

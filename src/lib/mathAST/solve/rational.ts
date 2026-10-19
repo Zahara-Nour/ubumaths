@@ -29,6 +29,8 @@ import { hasVariable } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
 import { mapNode } from '../transforms';
+import { computeDomain } from '../domain/compute';
+import { isUniversal } from '../domain/algebra';
 
 /**
  * Maximum nesting depth for rational decomposition recursion. The
@@ -181,10 +183,12 @@ export function tryRationalDecomposition(
 	// Numérateur à zéros PÉRIODIQUES (`cos x/(x² + 1)`, f′ de 1/sin x :
 	// −cos x/sin²x) : la famille suit, sinon seuls les zéros d'une période
 	// restaient (±π/2) et le tableau de signes ou de variations ne voyait pas
-	// 3π/2, 5π/2… Seulement quand AUCUN membre n'annule un dénominateur : la
-	// liste ci-dessus est filtrée, une famille ne peut pas l'être membre à membre.
+	// 3π/2, 5π/2… Seulement quand numérateur et dénominateurs sont définis sur ℝ
+	// et qu'AUCUN membre n'annule un dénominateur : la liste ci-dessus est
+	// filtrée, une famille ne peut pas l'être membre à membre.
 	const family =
 		numResult.periodicSolutions !== undefined &&
+		definedEverywhere([numerator, ...denominatorsToCheck], variable) &&
 		familyAvoidsDenominators(numResult.periodicSolutions, denominatorsToCheck, variable, solveFn)
 			? numResult.periodicSolutions
 			: undefined;
@@ -196,6 +200,8 @@ export function tryRationalDecomposition(
 		equationType: 'rational',
 		strategy: 'algebraic',
 		steps: [...recorder.getStepsFiltered(opts.verbosity), ...numResult.steps],
+		...(numResult.periodicSolutions !== undefined &&
+			family === undefined && { droppedPeriodicSolutions: numResult.periodicSolutions }),
 		...(family !== undefined && {
 			periodicSolutions: family,
 			...(numResult.displayFamilies !== undefined && {
@@ -211,6 +217,23 @@ export function tryRationalDecomposition(
 // =============================================================================
 // Famille périodique et valeurs interdites
 // =============================================================================
+
+/**
+ * Chaque expression est définie sur ℝ entier. Sinon un membre de la famille
+ * peut tomber hors du domaine (`cos x/√x` : −π/2 ; `cos x/tan x` : π/2, où
+ * tan n'est pas définie) : la liste des solutions est filtrée par le domaine,
+ * une famille ne le serait pas, et le tableau de signes affichait ces zéros.
+ */
+function definedEverywhere(expressions: readonly MathNode[], variable: string): boolean {
+	return expressions.every((expression) => {
+		try {
+			const result = computeDomain(expression, variable);
+			return result.unresolved === undefined && isUniversal(result.domain);
+		} catch {
+			return false;
+		}
+	});
+}
 
 /** Écart sous lequel une valeur est tenue pour un membre d'une famille. */
 const MEMBER_EPS = 1e-9;

@@ -161,6 +161,26 @@ describe('Quartic Solver', () => {
 			expect(result.solutions.map((s) => toLatex(s.value))).toEqual(['-2', '-\\dfrac{1}{5}', '1']);
 		});
 
+		it('3x⁴ − 11x³ − 2x² + 44x − 40 = 0 → x = −2, 5/3, 2 (2 double)', () => {
+			const result = solve(parseEquation('3x^4-11x^3-2x^2+44x-40=0'));
+			expect(result.solutions.map((s) => toLatex(s.value))).toEqual(['-2', '\\dfrac{5}{3}', '2']);
+		});
+
+		it('200 quartiques tirées (graine fixe) : solve rend leurs racines réelles', () => {
+			const wrong: string[] = [];
+			for (const { coefficients, roots } of quarticsWithKnownRoots(200)) {
+				const [a, b, c, d, e] = coefficients;
+				const latex = `${a}x^4+${b}x^3+${c}x^2+${d}x+${e}=0`.replace(/\+-/g, '-');
+				const found = solve(parseEquation(latex))
+					.solutions.map((s) => Math.round((s.approximate ?? Number.NaN) * 1e5) / 1e5)
+					.sort((p, q) => p - q);
+				if (JSON.stringify(found) !== JSON.stringify(roots)) {
+					wrong.push(`${latex} : ${found.join(' ; ')} au lieu de ${roots.join(' ; ')}`);
+				}
+			}
+			expect(wrong).toEqual([]);
+		});
+
 		it('should solve x⁴ - 10x² + 9 = 0 -> x = ±1, ±3 (also biquadratic)', () => {
 			const eq = parseEquation('x^4 - 10x^2 + 9 = 0');
 			const result = solve(eq);
@@ -247,3 +267,67 @@ describe('Quartic Solver', () => {
 		});
 	});
 });
+
+/** Générateur pseudo-aléatoire à graine fixe (LCG de Numerical Recipes). */
+function seededRandom(seed: number): () => number {
+	let state = seed >>> 0;
+	return () => {
+		state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+		return state / 2 ** 32;
+	};
+}
+
+/**
+ * Quartiques à racines connues (entiers et demis de [−5 ; 5]) : quatre
+ * simples, une double et deux simples, deux doubles, une double et un facteur
+ * x² + 1 sans racine réelle. Coefficients développés, coefficient dominant ≠ 1.
+ */
+function quarticsWithKnownRoots(count: number): { coefficients: number[]; roots: number[] }[] {
+	const random = seededRandom(20261019);
+	const pick = () => Math.round(random() * 20 - 10) / 2;
+	const cases: { coefficients: number[]; roots: number[] }[] = [];
+	while (cases.length < count) {
+		const shape = cases.length % 4;
+		const [r1, r2, r3, r4] = [pick(), pick(), pick(), pick()];
+		const factors: number[][] =
+			shape === 0
+				? [
+						[1, -r1],
+						[1, -r2],
+						[1, -r3],
+						[1, -r4]
+					]
+				: shape === 1
+					? [
+							[1, -r1],
+							[1, -r1],
+							[1, -r2],
+							[1, -r3]
+						]
+					: shape === 2
+						? [
+								[1, -r1],
+								[1, -r1],
+								[1, -r2],
+								[1, -r2]
+							]
+						: [
+								[1, -r1],
+								[1, -r1],
+								[1, 0, 1]
+							];
+		const lead = [2, 3, -2, 4][Math.floor(cases.length / 4) % 4];
+		const coefficients = factors.reduce(
+			(acc, f) => {
+				const out: number[] = Array.from({ length: acc.length + f.length - 1 }, () => 0);
+				acc.forEach((a, i) => f.forEach((b, j) => (out[i + j] += a * b)));
+				return out;
+			},
+			[lead]
+		);
+		const real =
+			shape === 3 ? [r1] : shape === 2 ? [r1, r2] : shape === 1 ? [r1, r2, r3] : [r1, r2, r3, r4];
+		cases.push({ coefficients, roots: [...new Set(real)].sort((a, b) => a - b) });
+	}
+	return cases;
+}

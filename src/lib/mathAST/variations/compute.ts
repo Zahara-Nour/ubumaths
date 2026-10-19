@@ -45,6 +45,9 @@ import {
 } from './monotonicity';
 import { findExtrema, classifyGlobalExtrema } from './extrema';
 import { computeBoundaryLimits } from './boundary-limits';
+import { compile } from '../eval/compile';
+import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { interval, openEndpoint } from '$lib/math/intervals/factory';
 import { toCustom } from '../custom-generator';
 import { shouldIncludeStep } from '../common/verbosity';
 import type { Verbosity } from '../common/verbosity';
@@ -117,10 +120,14 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 	// Les valeurs interdites périodiques de f (tan x : π/2 + kπ), où le sens de
 	// variation se coupe (voir `cutAtPeriodicExclusions`)
 	let periodicCuts: PeriodicExclusion | undefined;
+	// Domaine de f non déterminé (`ln(sin x)`) : le domaine fourni est gardé tel
+	// quel, et peut contenir des points où f n'est pas définie
+	let naturalDomainUndetermined = false;
 	if (opts.domain) {
 		const restricted = restrictToNaturalDomain(opts.domain, expr, variable);
 		domain = restricted.domain;
 		periodicCuts = restricted.periodicCuts;
+		naturalDomainUndetermined = restricted.undetermined === true;
 		stepId = recordStep(
 			steps,
 			stepId,
@@ -281,7 +288,9 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 		periodicCuts === undefined
 			? { intervals: merged, truncated: false }
 			: cutAtPeriodicExclusions(merged, periodicCuts);
-	const monotonicIntervals = cut.intervals;
+	const monotonicIntervals = naturalDomainUndetermined
+		? withoutClaimsWhereUndefined(cut.intervals, expr, variable)
+		: cut.intervals;
 	if (cut.truncated && periodicCuts !== undefined) {
 		warnings.push(
 			`Valeurs interdites (${formatCondition(periodicCuts, variable)}) : le sens de ` +
@@ -499,18 +508,21 @@ function restrictToNaturalDomain(
 	given: Domain,
 	expr: MathNode,
 	variable: string
-): { readonly domain: Domain; readonly periodicCuts?: PeriodicExclusion } {
+): {
+	readonly domain: Domain;
+	readonly periodicCuts?: PeriodicExclusion;
+	readonly undetermined?: boolean;
+} {
 	let natural: Domain;
 	try {
 		const result = computeDomain(expr, variable);
-		if (result.unresolved !== undefined) return { domain: given };
+		if (result.unresolved !== undefined) return { domain: given, undetermined: true };
 		natural = result.domain;
 	} catch {
-		return { domain: given };
+		return { domain: given, undetermined: true };
 	}
-	if (natural.kind === 'condition_domain' || natural.kind === 'universal') {
-		return { domain: given };
-	}
+	if (natural.kind === 'condition_domain') return { domain: given, undetermined: true };
+	if (natural.kind === 'universal') return { domain: given };
 	const domain = normalizeExcludedPoints(intersect(given, natural));
 	// Intersection vide (ln x sur [−3 ; −1]) : f n'est définie nulle part sur
 	// l'intervalle, aucune étude ne s'y fait
@@ -523,6 +535,63 @@ function restrictToNaturalDomain(
 		);
 	}
 	return natural.kind === 'periodic_exclusion' ? { domain, periodicCuts: natural } : { domain };
+}
+
+/** Points de contrôle de la définition de f par intervalle (bornes infinies : ±200 autour). */
+const DEFINITION_SAMPLES = 400;
+
+/**
+ * Domaine de f non déterminé : un sens n'est affirmé que là où f est
+ * définie. `ln(sin x)` sur [0 ; 2π] : f′ = cos x/sin x est définie sur
+ * ]π ; 2π[, et le tableau y affirmait « décroissante » alors que f n'y existe
+ * pas. Un intervalle où f n'est pas finie en un point de contrôle devient
+ * inconnu ; un point stationnaire où elle n'est pas définie disparaît.
+ *
+ * Un contrôle numérique : il retire des affirmations, n'en ajoute jamais.
+ */
+function withoutClaimsWhereUndefined(
+	intervals: readonly MonotonicInterval[],
+	expr: MathNode,
+	variable: string
+): MonotonicInterval[] {
+	let f: (scope: Record<string, number>) => number;
+	try {
+		f = compile(expr);
+	} catch {
+		return intervals.map((mi) => ({ ...mi, monotonicity: 'unknown' }));
+	}
+	const definedAt = (x: number) => Number.isFinite(f({ [variable]: x }));
+	const result: MonotonicInterval[] = [];
+	for (const mi of intervals) {
+		let lo = endpointToNumber(mi.interval.lower.value);
+		let hi = endpointToNumber(mi.interval.upper.value);
+		if (lo === hi) {
+			if (definedAt(lo)) result.push(mi);
+			continue;
+		}
+		if (mi.monotonicity !== 'increasing' && mi.monotonicity !== 'decreasing') {
+			result.push(mi);
+			continue;
+		}
+		// Une borne fermée où f n'est pas définie (0 pour ln(sin x)) s'ouvre
+		const { lower, upper } = mi.interval;
+		const opened = interval(
+			lower.type === 'closed' && !definedAt(lo) ? openEndpoint(lower.value) : lower,
+			upper.type === 'closed' && !definedAt(hi) ? openEndpoint(upper.value) : upper
+		);
+		if (lo === -Infinity) lo = (Number.isFinite(hi) ? hi : 0) - 200;
+		if (hi === Infinity) hi = (Number.isFinite(lo) ? lo : 0) + 200;
+		const points: number[] = [];
+		for (let i = 1; i < DEFINITION_SAMPLES; i++) {
+			points.push(lo + ((hi - lo) * i) / DEFINITION_SAMPLES);
+		}
+		result.push(
+			points.every(definedAt)
+				? { ...mi, interval: opened }
+				: { ...mi, interval: opened, monotonicity: 'unknown' }
+		);
+	}
+	return result;
 }
 
 /**
