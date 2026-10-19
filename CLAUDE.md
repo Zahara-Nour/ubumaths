@@ -133,7 +133,11 @@ Un refus RLS rend **zéro ligne, sans erreur** : `if (error) throw` ne le voit p
 1. **Phase 0** : comportements en français (nominal / limite / erreur), **attendre la validation** avant de coder.
 2. Agents et modèles spécifiés par tâche.
 3. **Tests d'abord** (rouges) → implémentation → verts.
-4. `code-reviewer` en fin de phase (Sonnet ; `model: opus` si diff gros ou délicat) ; `security-auditor` si auth/RLS/API ; performance si requêtes lourdes.
+4. **Revue proportionnée au risque**, une fois **sur la PR** (pas à chaque phase) :
+   - doc, article du Shtam, contenu, correctif d'UI < ~30 lignes sans logique → **aucune** ;
+   - code courant → `code-reviewer` (Sonnet) ;
+   - mathAST, géométrie, correction des réponses, gros diff → `code-reviewer` en `model: opus` ;
+   - auth, RLS, API, données d'élèves → `code-reviewer` + `security-auditor` (Opus), sans exception ; performance si requêtes lourdes.
 5. `docs/wip/<sujet>-progress.md` tenu entre les phases (bloc « Reprendre ici » compris, cf. § Worktrees) ; lister les docs produites à la fin.
 6. Exécution autonome : corriger sans s'arrêter au premier échec (`debugger` si > 2 tentatives).
 
@@ -142,7 +146,7 @@ Un refus RLS rend **zéro ligne, sans erreur** : `if (error) throw` ne le voit p
 - [ ] Tests verts (intégration locale si DB/RLS)
 - [ ] `pnpm svelte:autofix` sur les `.svelte` modifiés · `pnpm check:incremental` = 0 erreur
 - [ ] `pnpm types:cliquet` tenu (`--maj` après corrections)
-- [ ] `code-reviewer` (+ `security-auditor` si applicable)
+- [ ] Revue selon le risque (point 4 ci-dessus)
 - [ ] Zod · pas de `any` · MySelect/MyCheckbox · runes
 - [ ] **Doc à jour dans la même PR** : doc dont le `couvre:` touche un fichier modifié → mise à jour (skill `doc-a-jour`) ou ligne `Doc-inchangée: <raison>` ; zone sans doc → doc d'abord ou `Doc-reportée: <raison>` si David reporte. Garde : `pnpm docs:check-a-jour --depuis origin/main` (sans `--depuis`, elle ne vérifie rien).
 

@@ -35,6 +35,7 @@ Les quatre conséquences du silence de la RLS ont toutes été payées le 2026-0
 
 ## Agents
 
+- Revue proportionnée au risque (2026-10-19) : un `code-reviewer` à chaque phase, pour toute PR, coûtait cher sans rien trouver sur la doc, le contenu ou les petits correctifs d’UI.
 - Modèle selon la tâche (2026-10-19) : chaque agent recharge ~12 k tokens de contexte, et presque tout tournait en Opus, `CLAUDE.md` disant alors « Opus sans hésiter ».
 - `pnpm check`, `pnpm build`, `pnpm lint` réservés à la session principale : verrouillés depuis le 2026-10-10, mais longs et lourds — un agent ne doit pas tenir le verrou à la place de la session.
 
