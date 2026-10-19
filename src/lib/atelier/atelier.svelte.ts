@@ -102,6 +102,7 @@ import {
 } from './display';
 import { astOf as astOfDefinition } from './parse';
 import { INTERNAL_LETTER, letterRejection, typedLetterOf } from './letter';
+import { perfSwitches } from './perf-switches';
 import {
 	checkInterval,
 	citedIntervals,
@@ -2700,7 +2701,33 @@ export class Atelier {
 	 * récurrence quand c'est le nom d'une valeur (`u₀ = a`, décision S1) — sans
 	 * quoi supprimer `a` laisserait la suite « ok » et muette.
 	 */
-	#refsOf(o: AtelierObject): MissingReference[] {
+	#refsOf(o: AtelierObject): readonly MissingReference[] {
+		// Mémo par objet (chantier perf du 2026-10-19) : un objet rangé n'est jamais
+		// modifié sur place, et sa lecture ne dépend que de lui et des noms de
+		// fonctions (`#cited`). `dependents`, appelé par chaque carte, relisait
+		// toutes les définitions à chaque fois.
+		if (!perfSwitches.refsMemo) return this.#readRefsOf(o);
+		const functionNames = this.functionNames.join(',');
+		const known = this.#refsMemo.get(o);
+		if (known !== undefined && known.functionNames === functionNames) return known.refs;
+		const refs = this.#readRefsOf(o);
+		this.#refsMemo.set(o, { functionNames, refs });
+		return refs;
+	}
+
+	/** Les lectures de `#refsOf`, par objet rangé. */
+	#refsMemo = new WeakMap<
+		AtelierObject,
+		{ readonly functionNames: string; readonly refs: readonly MissingReference[] }
+	>();
+
+	/** Les noms que cite l'objet `name` (sa définition, le premier terme d'une récurrence). */
+	citedNames(name: string): readonly string[] {
+		const object = this.get(name);
+		return object === undefined ? [] : this.#refsOf(object).map((ref) => ref.name);
+	}
+
+	#readRefsOf(o: AtelierObject): MissingReference[] {
 		// La carte `f⁻¹` dépend de f, et de rien d'autre : ses lettres (`(x − b)/a`)
 		// sont celles que f cite déjà. Supprimer f l'emporte (#828)
 		const base = reciprocalOf(o.name);
@@ -3648,6 +3675,11 @@ export class Atelier {
 	 * `recomputeAll` est déjà passée).
 	 */
 	#constructions(): void {
+		// Les objets cités AVANT ceux qui les citent (ordre de dépendance, pas celui
+		// des cartes) : un objet qui cite une construction en échec dit toujours
+		// « Dépend de « t », qui est en erreur. » (ou « En attente de « t » »), que sa
+		// carte vienne avant ou après celle de t (revue du chantier perf, 2026-10-19)
+		const order = this.#dependencyOrder();
 		let changed = true;
 		while (changed) {
 			changed = false;
@@ -3655,10 +3687,11 @@ export class Atelier {
 			this.#constructionMemo = null;
 			this.#measureMemo = null;
 			this.#astMemo = null;
-			this.items.forEach((o, i) => {
-				if (o.status !== 'ok' || !isConstruction(o)) return;
+			for (const i of order) {
+				const o = this.items[i];
+				if (o.status !== 'ok' || !isConstruction(o)) continue;
 				const built = constructionOf(this, o.name);
-				if (built.ok) return;
+				if (built.ok) continue;
 				// PR 3 : deux lignes qui ne se coupent pas (avec les valeurs du moment)
 				// ATTENDENT — un curseur peut les faire se couper ; le reste est une erreur
 				// Une infinité de points communs (deux cercles devenus égaux au glisser) aussi :
@@ -3667,8 +3700,39 @@ export class Atelier {
 					built.reason === 'pending' || built.reason === 'infinite' ? 'pending' : 'error';
 				this.items[i] = { ...o, status, message: built.message } as AtelierObject;
 				changed = true;
-			});
+				// Ce qui a été calculé avec l'ancien statut ne vaut plus, DÈS MAINTENANT :
+				// un objet qui cite celui-ci le lira en échec (`usableObject`) au lieu de
+				// reprendre son motif d'un mémo rempli plus tôt (par une mesure, en passant)
+				this.#constructionMemo = null;
+				this.#measureMemo = null;
+				this.#astMemo = null;
+			}
 		}
+	}
+
+	/**
+	 * Les indices des objets, chacun après ceux qu'il cite (parcours en
+	 * profondeur ; à égalité, l'ordre des cartes). Un cycle ne boucle pas : ses
+	 * objets sont déjà en erreur, l'ordre entre eux ne compte pas.
+	 */
+	#dependencyOrder(): number[] {
+		const index = new Map(this.items.map((o, i) => [o.name, i]));
+		const placed = new Set<number>();
+		const visiting = new Set<number>();
+		const order: number[] = [];
+		const visit = (i: number): void => {
+			if (placed.has(i) || visiting.has(i)) return;
+			visiting.add(i);
+			for (const ref of this.#refsOf(this.items[i])) {
+				const cited = index.get(ref.name);
+				if (cited !== undefined && cited !== i) visit(cited);
+			}
+			visiting.delete(i);
+			placed.add(i);
+			order.push(i);
+		};
+		this.items.forEach((_, i) => visit(i));
+		return order;
 	}
 
 	/**

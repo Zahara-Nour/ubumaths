@@ -61,8 +61,11 @@ export const figureSummaryOf = constructionSummaryOf;
  */
 export function followsOf(atelier: Atelier, object: PointObject | CurveObject): string | null {
 	if (!isConstruction(object)) return null;
+	// Les objets que la construction cite, dans l'ordre des cartes — ceux dont elle
+	// est un dépendant (`dependents`), lus en une fois (chantier perf du 2026-10-19)
+	const names = new Set(atelier.citedNames(object.name));
 	const cited = atelier.objects
-		.filter((o) => o.name !== object.name && atelier.dependents(o.name).includes(object.name))
+		.filter((o) => o.name !== object.name && names.has(o.name))
 		.map((o) => displayName(o.name));
 	if (cited.length === 0) return null;
 	const list =
