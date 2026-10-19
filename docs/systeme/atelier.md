@@ -428,18 +428,27 @@ rien : il relève, l'élève conjecture.
   objets d'avant est remis en place, tous objets compris : `update` élargit le curseur d'une
   valeur posée hors de ses bornes. ⚠️ Une copie du tableau (`[...items]`), pas
   `$state.snapshot` : hors navigateur, ce dernier rend le tableau lui-même, que le premier pas
-  modifiait (mesuré, test rouge). ~5 ms par pas mesurés sur le problème de l'aire (node).
-- **Les cases** : 10 chiffres significatifs, virgule décimale, jamais de notation scientifique
-  (une valeur ⩾ 10¹⁵ compte comme sans valeur) ; un angle est relevé dans l'unité du réglage,
-  sans l'unité dans la case. Un pas où une expression n'a pas de valeur (point en attente,
+  modifiait (mesuré, test rouge). Coût mesuré dans Chromium, 200 pas : 1,6 à 1,9 s sur la figure
+  de l'aire, 19 à 23 s sur une figure de 24 objets (constructions, intersections, mesures) —
+  presque tout dans `recomputeAll`, le même coût que chaque cran du curseur de position.
+- **Les cases** : la valeur est calculée EXACTE d'abord, puis écrite en décimal (`sin(πt)` aux
+  entiers → `0`, jamais un résidu de flottant ni `-0`) ; sinon en décimal, et un résultat sous
+  10⁻¹² fois la taille des termes de premier niveau de son calcul (ou du plus grand nombre de la
+  colonne) s'écrit 0 (`sin(t)² + cos(t)² − 1`). 10 chiffres significatifs, virgule décimale,
+  jamais de notation scientifique (`10^(-20)` s'écrit en toutes lettres) ; une valeur ⩾ 10¹⁵ ne
+  tient pas dans une case : sa ligne reste vide et la réponse le dit (« … trop grandes pour une
+  case »). Un angle est relevé dans l'unité du réglage, sans l'unité (retirée avant le calcul
+  exact, qui passerait en radians). Un pas où une expression n'a pas de valeur (point en attente,
   polygone aplati, hors du domaine) laisse sa ligne **vide dans les deux listes** (`12 ; ; 15`),
   pour que les lignes restent appariées (P1), et la ligne de réponse le compte (« 2 pas sans
   valeur… »). Une expression sans valeur à AUCUN pas est refusée avec la raison (« « M » est un
   point ; relève une mesure… », « « x » n'est pas défini… »).
 - **Les listes** : deux noms libres de `nextName('list')` (L, M, N, puis L_1…), jamais un nom pris ;
   la colonne de chacune reçoit pour titre l'expression relevée (« AM », « S », 40 caractères au
-  plus). Refus si l'atelier n'a plus de place pour DEUX listes (`MAX_LISTS`) ou deux colonnes
-  libres ; une seconde création refusée retire la première (tout ou rien).
+  plus), posé une fois les deux listes créées et HORS de l'historique de la grille
+  (`setTitle(…, { recorded: false })`) : comme une liste créée dans Calcul, un relevé n'est pas un
+  geste annulable de Données. Refus si l'atelier n'a plus de place pour DEUX listes (`MAX_LISTS`)
+  ou deux colonnes libres ; une seconde création refusée retire la première (tout ou rien).
 - **La ligne de réponse** (texte, sans LaTeX) : « Relevé de AM et S quand M va de 0 à 1, pas 0,05 :
   21 lignes, dans L et L_1. », les notes, puis « Trace le nuage : sur la carte L, « Nuage avec
   L_1 ». » — le bouton de la carte (`scatter:L_1`), qui pose `plottedWith` comme aujourd'hui. Le

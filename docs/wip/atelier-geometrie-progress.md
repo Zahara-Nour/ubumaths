@@ -315,3 +315,21 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   une aire nulle serait plus naturelle pour le nuage ; (5) le nuage est **proposé** par une
   phrase (« Trace le nuage : sur la carte L, « Nuage avec L_1 ». »), comme `.simuler` propose la
   suite — pas un bouton sur la ligne de Calcul.
+- 2026-10-19, revue de la PR 4 (tests d'abord : 9 rouges, puis 2 navigateur prouvés rouges sans
+  la remise du tableau) — cases : calcul EXACT d'abord puis décimal (`sin(πt)` → `0`, `√2² − 2` →
+  `0`, plus de `0,00000000000000012246` ni de `-0`), puis un résidu sous 10⁻¹² fois la taille des
+  termes du calcul (ou du plus grand nombre de la colonne) écrit 0 (`sin(t)² + cos(t)² − 1` → 0 ;
+  `10^(-t)` garde 1e-20, écrit en toutes lettres) ; unité d'un angle retirée avant le calcul
+  exact (sinon radians) ; valeur ⩾ 10¹⁵ dite « trop grande pour une case », pas « sans valeur » ;
+  titres posés HORS de l'historique de la grille (`setTitle(…, { recorded: false })`) : un relevé
+  n'est pas un geste annulable de Données, comme une liste créée dans Calcul ; titres posés
+  seulement une fois les deux listes créées ; « 1 ligne » ; mots-clés insensibles à la casse ;
+  `quand 2 va de…` → « « 2 » n'est pas un nom ».
+- 2026-10-19, **mesure dans Chromium** (vitest navigateur, test temporaire retiré), 200 pas
+  (`.relever AM ; S quand M va de 0 à 0,995 pas 0,005`), 3 essais : figure de l'aire (8 objets
+  après le relevé) **1,6 à 1,9 s** ; figure fournie (24 objets : milieux, cercle, deux
+  intersections, une perpendiculaire, périmètre, angle, `k = MC + AM`, `h = f(AM)`) **19 à 23 s**.
+  Le coût est le recalcul de l'atelier à chaque pas (`update` → `recomputeAll` : 1,4-1,6 s et
+  18,8-19,1 s pour le balayage seul, lectures exclues), soit ~8 ms puis ~95 ms par pas — le même
+  que chaque cran du curseur de position de M sur cette figure. Pas d'optimisation sûre et
+  évidente côté `.relever` ; à traiter dans `recomputeAll` (dette « jamais mesuré » d'`atelier.md`).

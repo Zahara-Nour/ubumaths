@@ -81,7 +81,8 @@ x=…` et `.intégrer f de a à b` hors de cet ensemble sont refusés comme `f(5
   comme `.tabuler`. E1 et E2, séparées par le « ; » de premier niveau (celui de `aire(A ; M ; N ; P)`
   ne compte pas), sont des expressions de l'atelier, mesures comprises (`AM`, `aire(…)`, `S`,
   `f(t)`) ; T est une valeur à curseur ou un `point_sur` à position écrite ; A, B, P sont des
-  nombres en un seul bloc, décimaux ou fractions (`-1,5`, `0.05`, `1/3`), `à` s'écrit aussi `a`.
+  nombres en un seul bloc, décimaux ou fractions (`-1,5`, `0.05`, `1/3`), `à` s'écrit aussi `a`,
+  les mots-clés aussi en majuscule (`Quand`, `Pas`) ; T doit être un nom.
   Le pas est obligatoire (pas de pas par défaut). La commande lit des NOMS (ce qui varie, les
   points d'une mesure) : elle sort avec les commandes de données (`SIMULATIONS`, `calcul.ts`),
   avant la substitution des noms, donc hors de `COMMAND_KEYWORDS` / `COMMAND_LABELS` (lecture du
