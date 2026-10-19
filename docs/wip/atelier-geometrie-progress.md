@@ -448,3 +448,59 @@ de contrôles. Définitions liées par cran : 5 808 → 3.
   première correction (`x − sin x`) trouvée et corrigée avant le merge. Restent, signalés à David :
   extrema de `sin x` faux sur [0 ; 2π] (−1 en 3π/2 absent) ; `tan x` « croissante sur ℝ ». À confirmer
   par David : `cos(x°)` accepté, angle brut dans une fonction refusé, écriture `90°`. Pas en production.
+
+## Noms indicés (`a_1`, `c_2`, `A_1`) — branche `fix/atelier-noms-indices`
+
+Relevé du chantier perf (2026-10-19, avant comme après) : `a_1` seul → « Écriture non reconnue »,
+`c_2` reste `c_2`, `(AB ; c_2)` attend « c » ; `atelier.md` notait V63 (`referencesOf` lit `a_1`
+comme `a`).
+
+### Relevé AVANT (origin/main `4d794bcc5`, sonde hors dépôt, 2026-10-19)
+
+| Saisie                                                                  | Avant                                                                              |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `a_1 = 3`, `f_1(x) = x^2`, `u_1(n) = 2n`, `A_1 = (1 ; 2)` (définitions) | ✅ créées saines                                                                   |
+| `f_1(3)`, `u_1(3)`, `milieu(A_1, B)`, `A_1B` tapé seul                  | ✅ 9, 6, point sain, 2√2                                                           |
+| annuler (`a_1 = 3` puis `a_1 = 5`, annuler)                             | ✅ revient à 3                                                                     |
+| `a_1` seul (a_1 = 3, sans a) ; `2a_1` ; `a_1 + a_2`                     | ❌ recopiés tels quels (`a_1`, `2a_1`, `a_1+a_2`)                                  |
+| `a_1` seul avec `a = 10` ; `a + a_1`                                    | ❌ « Écriture non reconnue » (`10_1`)                                              |
+| `c_2` seul (`c_2 = a_1 + a`)                                            | ❌ reste `c_2`                                                                     |
+| `b = a_1 + 1` sans a                                                    | ❌ « En attente de « a » »                                                         |
+| `f(x) = a_1 x` (a_1 avant ou après)                                     | ❌ en attente de « a » ; `f(2)` → `2a_1` ; avec a = 10 : « Écriture non reconnue » |
+| `P = (AB ; c_2)`, `Q = (c_2 ; 1)`                                       | ❌ en attente de « c » (sains seulement si un `c` existe — par hasard)             |
+| `m = A_1B`                                                              | ❌ en attente de « A »                                                             |
+| carte en LaTeX `a_{1}+1`, `2a_{1}`                                      | ❌ en attente de « a »                                                             |
+| dépendances de `b = a_1 + 1` (avec a)                                   | ❌ `citedNames(b) = [a]`, `dependents(a_1) = []`                                   |
+| supprimer `a_7` avec ce qui le cite                                     | ❌ `b_2` survit                                                                    |
+| offre de curseur de `f(x) = a_1 x`                                      | ❌ l'offre porte sur `a` ; `createFromOffer('a_1')` refusé                         |
+| lien `?a=` (serialize/restore) avec a, a_1, f(x) = a_1 x                | ❌ `f(2)` « Écriture non reconnue »                                                |
+| grille `=a_1`, `=2a_1`, `=a_1+a`                                        | ❌ « Je n'ai pas su calculer cette formule. »                                      |
+| `x_1 = 2`, `b = x_1 + y_1`, `A = (x_1 ; y_1)`                           | ❌ refusés (lus comme x et y)                                                      |
+| renommer `a_1 → a_7` (texte)                                            | ✅ la définition qui cite suit                                                     |
+| `u_n` dans une suite, `v(n) = u_n + 1`                                  | ✅ notation de suite (inchangée)                                                   |
+
+### Cause et correction
+
+Deux lectures prenaient `a_1` (nœud `subscript` de base `a`, indice `1`) pour sa base :
+
+- **les noms cités** (`referencesOf`, `bareNamesOf`, `getVariables`) → `variablesOf` (`parse.ts`)
+  lit un nom à indice ENTIER sous son nom entier ; servent aussi les refus x/y, le type deviné
+  (`kindOf`), les noms d'une formule de la grille et son refus « n'est pas défini » ;
+- **la substitution** (`mathAST/eval/substitute.ts`) : la liaison `a_1` remplace le nœud entier,
+  celle de `a` ne touche plus sa base (`hasAllBindings`, `getMissingBindings` idem) ; le moteur de
+  Calcul et le pont `engine.ts` en profitent sans autre changement. `collectNames` (`wantedNames`)
+  lit `c_2` au lieu de « tout lier » (le compteur de liaisons ne peut que baisser).
+  Gardé tel quel : `u_n`, `u_{n+1}` (indice non entier) ; `u_3` avec u suite ou fonction de
+  l'atelier = son terme (`subscriptsAsCalls`).
+
+### Après
+
+Les 14 lignes ❌ du relevé passent ✅ (`noms-indices.test.ts`, 24 tests, 22 rouges sur main — les 2 verts gardent `u_n` et `u_3` ;
+`substitute.test.ts`, 6 rouges sur main). **À trancher par David** :
+
+- `u_3` tapé seul dans Calcul avec `u(n) = 2n + 1` reste `u_3` (avant comme après) — le terme se
+  calcule dans une définition (`v(n) = u_3 + 1`), pas sur la ligne ; à ouvrir ?
+- une suite `u` ET une valeur `u_3` à la fois : `u_3` désigne la valeur dans les noms cités et le
+  moteur, mais le terme de u dans une définition (`subscriptsAsCalls` passe avant) — cas rare, laissé ;
+- les analyses en x (signe, domaine, `getVariables(…).has('x')` dans `calcul.ts`) lisent encore
+  `x_1` comme x ; seules les lectures de NOMS ont changé.

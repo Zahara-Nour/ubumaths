@@ -14,6 +14,7 @@ import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/in
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
 import { getVariables } from '$lib/mathAST/eval/substitute';
+import { hideIndexedNames, indexedNameOf } from '$lib/mathAST/common/indexed-names';
 import { format as formatUnit } from '$lib/mathAST/units';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import type { MathNode } from '$lib/mathAST/types';
@@ -579,7 +580,7 @@ export function parseDefinition(
 
 	// G5 : `y` est la variable des équations de courbe. Ailleurs, aucun objet ne
 	// peut s'appeler ainsi : sans ce refus, `f(x) = x + y` attendait un `y` à jamais
-	if (getVariables(result.ast).has('y')) return { error: reservedYMessage(kind) };
+	if (variablesOf(result.ast, functionNames).has('y')) return { error: reservedYMessage(kind) };
 
 	if (kind === 'value') {
 		// Décision D4 : la grandeur est acceptée, mais elle ne prendra pas de
@@ -614,7 +615,7 @@ function parseConstruction(
 	}
 	for (const scalar of partsOf(read.spec).scalars) {
 		const ast = astOf(scalar, 'text', functionNames);
-		const variables = ast === null ? new Set<string>() : getVariables(ast);
+		const variables = ast === null ? new Set<string>() : variablesOf(ast, functionNames);
 		if (variables.has('x') || variables.has('y')) {
 			return { error: `« ${scalar} » : les nombres d’une construction ne contiennent ni x ni y.` };
 		}
@@ -641,7 +642,7 @@ function parsePoint(
 	for (const coordinate of split.coordinates) {
 		// x et y d'abord : la lecture d'une valeur refuserait y avec un autre message
 		const ast = astOf(coordinate, provenance, functionNames);
-		const variables = ast === null ? new Set<string>() : getVariables(ast);
+		const variables = ast === null ? new Set<string>() : variablesOf(ast, functionNames);
 		if (variables.has('x') || variables.has('y')) return { error: POINT_NO_XY };
 		const read = parseDefinition('value', coordinate, provenance, functionNames);
 		if (read.error !== undefined) return { error: read.error };
@@ -672,7 +673,7 @@ function parseCurve(
 		};
 	}
 	if (unitSymbolOf(result.ast) !== null) return { error: CURVE_UNIT };
-	const variables = getVariables(result.ast);
+	const variables = variablesOf(result.ast, functionNames);
 	if (!variables.has('x') && !variables.has('y')) return { error: CURVE_NEEDS_XY };
 	return {};
 }
@@ -699,6 +700,8 @@ export function pointCoordinatesOf(definition: string): readonly [string, string
  * lettres : aucun objet ne portera jamais ces noms, donc ils ne manquent
  * jamais — et l'atelier n'a aucune liste de fonctions à tenir à jour.
  *
+ * Un nom indicé (`a_1`) est UN nom, jamais sa base (`indexedObjectName`).
+ *
  * ⚠️ En syntaxe custom, `pi` n'est PAS une constante : il se lit `p·i`.
  */
 export function referencesOf(
@@ -711,7 +714,7 @@ export function referencesOf(
 
 	const found = new Map<string, MissingReference>();
 
-	for (const name of getVariables(result.ast)) {
+	for (const name of variablesOf(result.ast, functionNames)) {
 		if (!hasObjectNameShape(name)) continue;
 		found.set(name, { name, as: 'value' });
 	}
@@ -732,8 +735,8 @@ export function referencesOf(
  *
  * Lus dans l'ARBRE, jamais dans le texte (`ax` est `a·x`) : une variable
  * seule. Ne comptent pas :
- * - la base d'un indice (`a_1`, `u_n`) : `a_1` est un autre nom, `u_n` la
- *   notation d'une suite ;
+ * - la base d'un indice (`a_1`, `u_n`) : `a_1` est un autre nom — cité, lui,
+ *   comme un nombre —, `u_n` la notation d'une suite ;
  * - la base d'une puissance −1 (`f^(-1)`, ce que devient `f^-1`) : la
  *   réciproque. `f'(x)`, `f^{-1}(x)` sont déjà des appels dans l'arbre.
  */
@@ -745,8 +748,52 @@ export function bareNamesOf(
 	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) return [];
 	const found = new Set<string>();
-	collectBareNames(result.ast, found);
+	collectBareNames(withIndexedNames(result.ast, functionNames), found);
 	return [...found].filter(hasObjectNameShape);
+}
+
+/**
+ * Le nom qu'un nœud indicé désigne dans l'atelier : `a_1` est un AUTRE nom que
+ * `a` (relevé du 2026-10-19 : `referencesOf` lisait `a_1 x` comme `a`, et
+ * `b = a_1 + 1` attendait « a »). `null` quand ce n'est pas un nom :
+ * - un indice qui n'est pas un entier (`u_n`, `u_{n+1}`) : la notation d'une suite ;
+ * - `u_3` avec u une suite ou une fonction de l'atelier, quand `u_3` n'en est
+ *   pas une : le terme de rang 3, que la lecture des liaisons appelle `u(3)`
+ *   (`subscriptsAsCalls`, `engine.ts`).
+ */
+function indexedObjectName(
+	node: MathNode,
+	functionNames: readonly string[] | undefined
+): string | null {
+	const name = indexedNameOf(node);
+	if (name === null || node.type !== 'subscript' || node.base.type !== 'variable') return null;
+	const known = functionNames ?? [];
+	if (known.includes(node.base.name) && !known.includes(name)) return null;
+	return name;
+}
+
+/**
+ * Les variables d'un arbre lu, noms indicés compris sous leur nom entier
+ * (`a_1 x` → a_1, x) : `getVariables` de `mathAST`, qui rend la base `a`.
+ */
+export function variablesOf(
+	ast: MathNode,
+	functionNames: readonly string[] | undefined
+): Set<string> {
+	return getVariables(withIndexedNames(ast, functionNames));
+}
+
+/**
+ * L'arbre où chaque nom indicé d'objet (`a_1`) devient une variable du même nom
+ * (`hideIndexedNames`) : un arbre NEUF, l'arbre lu est partagé (`parseByProvenance`).
+ * Seuls les noms qu'un objet peut porter (`hasObjectNameShape` : ni `alpha_1`, ni
+ * les marques `ω_1` de la grille), hors terme d'une suite (`indexedObjectName`).
+ */
+function withIndexedNames(ast: MathNode, functionNames: readonly string[] | undefined): MathNode {
+	return hideIndexedNames(
+		ast,
+		(name, node) => hasObjectNameShape(name) && indexedObjectName(node, functionNames) !== null
+	).node;
 }
 
 /** Une puissance −1 : `-1` ou `-(1)`, tels que les parseurs les rendent. */
@@ -773,7 +820,8 @@ function collectBareNames(node: unknown, into: Set<string>): void {
 		into.add(o.name);
 		return;
 	}
-	// `a_1`, `u_n` : ni la base ni l'indice ne sont un nombre de l'atelier
+	// `u_n` : ni la base ni l'indice ne sont un nombre de l'atelier (`a_1`, lui,
+	// est déjà une variable, `withIndexedNames`)
 	if (o.type === 'subscript') return;
 	if (o.type === 'superscript' && isMinusOne(o.superscript)) {
 		const base = o.base as Record<string, unknown> | undefined;

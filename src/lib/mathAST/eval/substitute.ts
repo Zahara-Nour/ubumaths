@@ -21,6 +21,7 @@ import {
 import { multiply } from '../factory';
 import { numericNode } from '../common/numeric';
 import { parseLatex } from '../parser';
+import { hideIndexedNames, revealIndexedNames } from '../common/indexed-names';
 
 // =============================================================================
 // Binding Value Conversion
@@ -257,13 +258,17 @@ export function substitute(
 
 	// Iterate until no more substitutions are possible or max iterations reached
 	while (iteration < maxIterations) {
+		// Les noms indicés (`a_1`) cachés sous UNE variable : la liaison `a_1` les
+		// remplace en entier, celle de `a` ne touche plus à leur base
+		const hidden = hideIndexedNames(current);
+
 		// Check if there are any variables to substitute
-		if (!hasSubstitutableVariables(current, bindings)) {
+		if (!hasSubstitutableVariables(hidden.node, bindings)) {
 			break;
 		}
 
 		// Perform one pass of substitution
-		const next = substituteOnce(current, bindings);
+		const next = revealIndexedNames(substituteOnce(hidden.node, bindings), hidden.originals);
 
 		// Fix implicit multiplication where both sides became numeric
 		current = fixImplicitMultiplication(next);
@@ -362,7 +367,8 @@ export function hasVariable(node: MathNode, variableName: string): boolean {
  * hasAllBindings(expr, { x: 1, y: 2, z: 3 }); // true (extra bindings OK)
  */
 export function hasAllBindings(node: MathNode, bindings: EvalBindings): boolean {
-	const variables = getVariables(node);
+	// `a_1` est lié par la liaison `a_1`, pas par celle de `a` (comme `substitute`)
+	const variables = getVariables(hideIndexedNames(node).node);
 
 	for (const variable of variables) {
 		if (!(variable in bindings)) {
@@ -386,7 +392,7 @@ export function hasAllBindings(node: MathNode, bindings: EvalBindings): boolean 
  * // returns ['y', 'z']
  */
 export function getMissingBindings(node: MathNode, bindings: EvalBindings): string[] {
-	const variables = getVariables(node);
+	const variables = getVariables(hideIndexedNames(node).node);
 	const missing: string[] = [];
 
 	for (const variable of variables) {

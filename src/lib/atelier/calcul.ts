@@ -45,6 +45,7 @@ import {
 	readNumber,
 	readListValue,
 	referencesOf,
+	variablesOf,
 	individualEntries,
 	withPiCommand,
 	latexUnitsWithPi,
@@ -526,7 +527,8 @@ function kindOf(parameter: string | undefined, body: string): ObjectKind {
 
 	const ast = astOf(body);
 	if (ast === null) return 'value';
-	const variables = new Set(getVariables(ast));
+	// `x_1` est un nom, pas la variable x (`variablesOf`)
+	const variables = variablesOf(ast, undefined);
 	if (variables.has('x')) return 'function';
 	// `f'` n'a pas de variable libre, mais désigne bien une fonction : c'est le
 	// nœud lui-même qui le dit (`derivativeOrder`).
@@ -644,7 +646,7 @@ function defineCurve(
 function equationCitesXOrY(atelier: Atelier, body: string): boolean {
 	const ast = astOf(body, 'text', atelier.functionNames);
 	if (ast === null) return citesXOrY(body);
-	const variables = getVariables(ast);
+	const variables = variablesOf(ast, atelier.functionNames);
 	return variables.has('x') || variables.has('y');
 }
 
@@ -965,7 +967,7 @@ function figureLine(session: CalcSession, input: string): CalcResult | null {
 	}
 	const ast = astOf(input, 'text', atelier.functionNames);
 	if (ast === null) return null;
-	const cited = figureCitedMessage(atelier.objects, getVariables(ast));
+	const cited = figureCitedMessage(atelier.objects, variablesOf(ast, atelier.functionNames));
 	return cited === null ? null : { kind: 'refus', message: cited };
 }
 
@@ -1014,7 +1016,7 @@ function curveLine(atelier: Atelier, curve: AtelierObject): CalcResult {
 function listCitedAsNumber(atelier: Atelier, text: string): string | null {
 	const ast = astOf(text, 'text', atelier.functionNames);
 	if (ast === null) return null;
-	return listCitedMessage(atelier.objects, getVariables(ast));
+	return listCitedMessage(atelier.objects, variablesOf(ast, atelier.functionNames));
 }
 
 /**
@@ -1087,7 +1089,7 @@ function naturalReadingRefusal(atelier: Atelier, reading: NaturalReading): CalcR
 	const ast = astOf(reading.text, 'url', atelier.functionNames);
 	if (ast === null) return null;
 	const hint = singleLetterHint(reading.singleLetters);
-	const variables = [...getVariables(ast)];
+	const variables = [...variablesOf(ast, atelier.functionNames)];
 	const free = variables.filter((v) => !atelier.names.includes(v));
 	if (free.length > 0) {
 		return {
@@ -2767,7 +2769,7 @@ function citesOtherLetters(
 ): boolean {
 	const ast = typed === null ? undefined : parseCommandExpression(typed).ast;
 	if (ast === undefined) return true;
-	return [...getVariables(ast)].some(
+	return [...variablesOf(ast, session.atelier.functionNames)].some(
 		(name) => !letters.has(name) && session.atelier.get(name)?.kind !== 'function'
 	);
 }
@@ -2807,12 +2809,14 @@ function evaluatedCallLatex(functionName: string | null, typedValue: string | nu
  */
 function freeParameters(session: CalcSession, ast: MathNode, variable: string): string[] {
 	const bound = new Set(session.engine.getEvalState().bindings.keys());
-	return [...getVariables(ast)].filter((v) => v !== variable && !bound.has(v));
+	return [...variablesOf(ast, session.atelier.functionNames)].filter(
+		(v) => v !== variable && !bound.has(v)
+	);
 }
 
 /** Les lettres de `parameters` qu'un arbre contient. */
 function citedParameters(ast: MathNode, parameters: readonly string[]): string[] {
-	const letters = getVariables(ast);
+	const letters = variablesOf(ast, undefined);
 	return parameters.filter((p) => letters.has(p));
 }
 
@@ -3446,7 +3450,9 @@ function citesMeasureOrAngle(atelier: Atelier, text: string): boolean {
 	const angles = atelier.angleQuantities();
 	if (angles.size === 0) return false;
 	const ast = astOf(withoutMeasureCalls(text, 'text'), 'text', atelier.functionNames);
-	return ast !== null && [...getVariables(ast)].some((name) => angles.has(name));
+	return (
+		ast !== null && [...variablesOf(ast, atelier.functionNames)].some((name) => angles.has(name))
+	);
 }
 
 /**
@@ -3557,7 +3563,7 @@ function approximatedResult(atelier: Atelier, text: string, result: CalcResult):
 	const ast = astOf(withoutMeasureCalls(text, 'text'), 'text', atelier.functionNames);
 	if (ast === null) return result;
 	const cited = [
-		...getVariables(ast),
+		...variablesOf(ast, atelier.functionNames),
 		...findNodes(ast, (n) => n.type === 'function').map((n) => (n as { name?: string }).name ?? '')
 	];
 	if (!cited.some((name) => approximate.has(name))) return result;
@@ -4032,7 +4038,7 @@ function tooLongNote(result: ReplExecutionResult): string | null {
  * Lu sur l'ARBRE, jamais sur le texte.
  */
 function kindOfNode(ast: MathNode): ObjectKind {
-	const variables = new Set(getVariables(ast));
+	const variables = variablesOf(ast, undefined);
 	if (variables.has('x')) return 'function';
 	if (variables.has('n')) return 'sequence';
 	return 'value';

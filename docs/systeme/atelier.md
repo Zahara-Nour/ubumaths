@@ -527,7 +527,14 @@ lettre._ La suggestion suit la variable de l'objet qui cite (`a(t)`, `a(n)` pour
 pour une valeur, _Écris une de ses valeurs, comme a(2)…_ ; une suite citée dans une fonction ou
 une valeur, _Écris un de ses termes, comme u(2)…_ Les cartes `f′` et `f⁻¹` n'y passent pas
 (elles suivent f). ⚠️ Redéfinir un nom garde son type (V62).
-⚠️ `referencesOf` lit tout nom indicé comme sa base (`a_1 x` attend `a`), défaut antérieur (V63).
+**Noms indicés** (corrigé le 2026-10-19, ex-V63) : `a_1` est UN nom, jamais sa base. Le
+parseur en fait un nœud `subscript` (`a`, `1`) ; la lecture des noms le voit sous son nom
+entier (`variablesOf`, `parse.ts`, qui sert `referencesOf`, `bareNamesOf`, les refus x/y, les
+noms d'une formule de la grille), et `substitute` (`mathAST/eval/substitute.ts`) remplace le
+nœud par la liaison `a_1` sans jamais toucher à sa base (`mathAST/common/indexed-names.ts`) —
+avant, avec a = 10, `a_1` devenait `10_1` (« Écriture non reconnue »), et `b = a_1 + 1`
+attendait « a ». Seul un indice ENTIER fait un nom : `u_n` reste la notation d'une suite, et
+`u_3` (u suite ou fonction de l'atelier, `u_3` n'en étant pas une) son terme de rang 3.
 
 **Noms** (`src/lib/atelier/names.ts`) : une lettre latine, éventuellement indicée ; **un seul
 espace de noms** tous types confondus (D1). Réservés : `x`, `y`, `n`, `e`, `pi`, `i` — **`y` depuis
@@ -1079,7 +1086,7 @@ construction (ils ne dépendent que de ce qui leur sert de clé) :
 - **les liaisons** (`bindingsOf`, `engine.ts`) : un arbre substitué (une coordonnée, un rayon)
   ne reçoit que les définitions des noms qu'il peut citer, de proche en proche
   (`wantedNames`) ; un arbre qui ne nomme rien (`0`, `3/2`) n'en reçoit aucune
-  (`namesNothing`). Un nœud dont on ne sait pas lire les noms (longueur `AB`, nom indicé `c_2`) fait tout lier.
+  (`namesNothing`). Un nœud dont on ne sait pas lire les noms (longueur `AB`) fait tout lier ; un nom indicé (`c_2`) se lit sous son nom entier, `v_n` par sa base (2026-10-19).
   `expandDerivatives` rend l'arbre tel quel quand il n'a ni `f'` ni `f⁻¹`.
 
 Les mémos par révision d'avant (`constructionMemo`, `#measureMemo`, `#astMemo`) restent ; dans
