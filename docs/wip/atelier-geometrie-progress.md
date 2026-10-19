@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie (v2), journal de progression
 date: 2026-10-18
-status: lot 1 CLOS ; lot 2 CLOS (#1500, #1506, #1507, #1509, #1513 perf, #1514 .relever) ; suivi : polygone qui repasse par un sommet
+status: lot 1 CLOS ; lot 2 CLOS (#1500, #1506, #1507, #1509, #1513 perf, #1514 .relever) ; lot 3 CLOS (#1533, #1536, #1538, #1540) ; suivi : polygone qui repasse par un sommet
 ---
 
 # Atelier — la géométrie : où en est le chantier
@@ -11,10 +11,10 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1540._
+_Mis à jour le 2026-10-19, versement du lot 3._
 
-- **État** : lots 1 et 2 livrés ; **lot 3 COMPLET** : PR 1 (#1533), PR 2 (#1536), PR 3 (#1538), PR 4 « téléphone et tablette » (#1540) mergées. Rien en prod. Pas de worktree ouvert.
-- **Prochaine action** : clore le lot 3 — versement (durable déjà dans `docs/systeme/atelier.md` § Téléphone et tablette ; archiver `atelier-geometrie-lot3-phase0.md`), puis demander à David la suite du chantier géométrie.
+- **État** : lots 1, 2 et 3 livrés et CLOS (lot 3 : #1533, #1536, #1538, #1540) ; phase 0 du lot 3 archivée (`docs/archive/wip/`). Rien en prod.
+- **Prochaine action** : demander à David la suite du chantier géométrie (lot 4 ?), puis sa phase 0.
 - **En attente de David** : replier « Mes objets » sur téléphone ? (la toile retombe à 160 px avec deux objets ; touche toute l'interface de l'atelier, Graphe compris). Vérification manuelle #1540 notée.
 - **Pièges** : la page des tests navigateur (414 px) prend la disposition téléphone (toile de 10rem) : un test qui suppose une échelle en pixels casse. PR qui touche `mathAST` → `mathast-expert`. Un segment entre deux clics dans le vide = 3 étapes d'annulation (M7, gardé).
 

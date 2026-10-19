@@ -1,15 +1,15 @@
 ---
 title: Atelier — la géométrie, lot 3 (la souris), phase 0
 date: 2026-10-19
-status: phase 0 VALIDÉE (2026-10-19, « je suis tes recos sur tout ») — M1-M8 selon les recommandations ; à lancer après #1523
+status: ARCHIVÉE le 2026-10-19 — lot 3 livré (#1533, #1536, #1538, #1540) ; durable dans docs/systeme/atelier.md
 ---
 
 # Atelier — la géométrie, lot 3 : la souris
 
-Chapeau : [atelier-geometrie-phase0.md](atelier-geometrie-phase0.md) (G0-G7 ; G2 : un geste qui
+Chapeau : [atelier-geometrie-phase0.md](../../wip/atelier-geometrie-phase0.md) (G0-G7 ; G2 : un geste qui
 crée écrit une ligne dans la console, un déplacement n'en écrit pas). Lot 2 (clos le 2026-10-19) :
-[atelier-geometrie-lot2-phase0.md](atelier-geometrie-lot2-phase0.md). Journal :
-[atelier-geometrie-progress.md](atelier-geometrie-progress.md).
+[atelier-geometrie-lot2-phase0.md](../../wip/atelier-geometrie-lot2-phase0.md). Journal :
+[atelier-geometrie-progress.md](../../wip/atelier-geometrie-progress.md).
 
 ## Le but
 

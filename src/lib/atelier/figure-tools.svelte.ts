@@ -1,7 +1,7 @@
 /**
  * Atelier — la barre d'outils de la vue Géométrie (géométrie, lot 3, PR 2 et 3)
  *
- * Phase 0 : `docs/wip/atelier-geometrie-lot3-phase0.md`, M3, M4, M5, M7. Chaque
+ * Phase 0 : `docs/archive/wip/atelier-geometrie-lot3-phase0.md`, M3, M4, M5, M7. Chaque
  * outil ÉCRIT la ligne qu'on aurait tapée (G2) — un clic avec
  * « Point » écrit `A = (1,5 ; 2)`, deux clics avec « Segment » écrivent
  * `d = [AB]` : tout ce qui se fait à la souris se relit, se rejoue et s'annule

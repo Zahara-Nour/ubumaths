@@ -1680,7 +1680,7 @@ ni courbe ni fonction affichée, la vue dit « Écris un point A = (1 ; 2) ou un
 ou affiche une fonction depuis sa carte. » (F1).
 
 **Barre d'outils** (lot 3, PR 2 et 3, M3, M4, M5, M7, M8 de
-`docs/wip/atelier-geometrie-lot3-phase0.md`) : Déplacer (par défaut) · Point · Segment · Droite ·
+`docs/archive/wip/atelier-geometrie-lot3-phase0.md`) : Déplacer (par défaut) · Point · Segment · Droite ·
 Demi-droite · Cercle · Milieu · Intersection · Point sur un objet · Parallèle · Perpendiculaire, en icônes (`aria-label`, `aria-pressed`, motif de barre d'outils
 `rovingToolbar`). Un outil **écrit la ligne qu'on aurait tapée** (G2) : `FigureToolbox`
 (`figure-tools.svelte.ts`) ne crée rien, il passe ses lignes à `write` — `desk.write`, par le

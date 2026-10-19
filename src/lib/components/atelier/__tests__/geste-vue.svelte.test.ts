@@ -1,6 +1,6 @@
 /**
  * Téléphone et tablette (géométrie, lot 3, PR 4 — M6 de
- * `docs/wip/atelier-geometrie-lot3-phase0.md`) : la vue se déplace (glisser
+ * `docs/archive/wip/atelier-geometrie-lot3-phase0.md`) : la vue se déplace (glisser
  * sur le fond avec Déplacer, deux doigts avec tout outil), se zoome au
  * pincement, et sur un téléphone la toile tient dans l'écran, barre d'outils
  * en bas.

@@ -1,6 +1,6 @@
 /**
  * Géométrie, lot 3, PR 2 : la barre d'outils de la vue Géométrie, outils de
- * base (M3, M4, M5 partiel, M7 de `docs/wip/atelier-geometrie-lot3-phase0.md`).
+ * base (M3, M4, M5 partiel, M7 de `docs/archive/wip/atelier-geometrie-lot3-phase0.md`).
  *
  * Chaque outil ÉCRIT la ligne qu'on aurait tapée (G2) : on asserte les lignes
  * de la console et les objets qu'elles créent, par le CHEMIN COMPLET (pupitre

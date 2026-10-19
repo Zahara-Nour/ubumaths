@@ -1,6 +1,6 @@
 /**
  * Les outils de construction de la vue Géométrie et le M5 complet (géométrie,
- * lot 3, PR 3 de `docs/wip/atelier-geometrie-lot3-phase0.md`).
+ * lot 3, PR 3 de `docs/archive/wip/atelier-geometrie-lot3-phase0.md`).
  *
  * Asserte le chemin complet : la toile dit ce qui est proche du clic, l'outil
  * écrit sa ligne dans la console, l'objet se dessine.
