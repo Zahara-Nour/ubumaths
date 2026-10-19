@@ -504,3 +504,10 @@ Les 14 lignes ❌ du relevé passent ✅ (`noms-indices.test.ts`, 24 tests, 22 r
   moteur, mais le terme de u dans une définition (`subscriptsAsCalls` passe avant) — cas rare, laissé ;
 - les analyses en x (signe, domaine, `getVariables(…).has('x')` dans `calcul.ts`) lisent encore
   `x_1` comme x ; seules les lectures de NOMS ont changé.
+- 2026-10-19 : **décisions de David (« je suis tes recos sur tout »)** —
+  (1) **PR `60°` (#1519)** : `cos(x°)` accepté, angle brut dans une fonction refusé, écriture `90°` :
+  confirmés. (2) **Noms indicés (#1520), suites à faire** : `u_3` tapé seul (suite `u`) se calcule ;
+  une valeur `u_3` est refusée quand `u` est une suite (message qui explique le conflit) ; les
+  analyses en x (signe, domaine) ne lisent plus `x_1` comme x. (3) **Lot 3 (la souris)** : phase 0
+  validée telle que recommandée. (4) **mathAST** : petite PR pour les extrema de `sin x` sur
+  [0 ; 2π] (−1 en 3π/2 absent) et `tan x` « croissante sur ℝ », avec un oracle numérique.

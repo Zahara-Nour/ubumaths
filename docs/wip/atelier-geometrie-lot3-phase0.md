@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie, lot 3 (la souris), phase 0
 date: 2026-10-19
-status: À VALIDER — questions M1-M8 avec recommandations ; rien n'est codé
+status: phase 0 VALIDÉE (2026-10-19, « je suis tes recos sur tout ») — M1-M8 selon les recommandations ; à lancer après #1523
 ---
 
 # Atelier — la géométrie, lot 3 : la souris
@@ -37,7 +37,7 @@ collège : **une barre d'outils** dans la vue Géométrie, et **le glisser** des
 - **Performance** (#1513) : un recalcul complet de l'atelier coûte ~3 ms (node) et un cran de
   curseur ~13 ms (Chromium, rendu compris) sur une figure de 24 objets.
 
-## Questions à trancher
+## Questions — toutes tranchées par David le 2026-10-19 (recommandations retenues)
 
 ### M1 — Le glisser : qui tient la position pendant le geste ? (architecture)
 
