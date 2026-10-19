@@ -84,9 +84,12 @@ describe('bloc ```qr — erreurs (le nœud reste, avec son message)', () => {
 
 	it('taille hors bornes', () => {
 		expect(messages(qrOf(doc('```qr', '/a', 'taille: 8cm', '```')))[0]).toMatch(
-			/Ligne 2 : .*entre 2 et 6 cm/
+			/Ligne 2 : .*entre 2,5 et 6 cm/
 		);
-		expect(messages(qrOf(doc('```qr', '/a', 'taille: 1cm', '```')))[0]).toMatch(/entre 2 et 6/);
+		expect(messages(qrOf(doc('```qr', '/a', 'taille: 1cm', '```')))[0]).toMatch(/entre 2,5 et 6/);
+		// 2,5 cm au moins : un QR en correction H a des cases plus petites
+		expect(messages(qrOf(doc('```qr', '/a', 'taille: 2cm', '```')))[0]).toMatch(/entre 2,5 et 6/);
+		expect(messages(qrOf(doc('```qr', '/a', 'taille: 2,5cm', '```')))).toEqual([]);
 	});
 
 	it('taille sans unité', () => {

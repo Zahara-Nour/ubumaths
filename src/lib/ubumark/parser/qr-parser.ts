@@ -11,7 +11,7 @@
  * - Ligne 1 : l'adresse (`/glossaire`, `chiph.re/…` ou `https://…` extérieure,
  *   cf. `qr/qr-target.ts`).
  * - Puis, facultatives : `légende:` (120 caractères au plus) et `taille:`
- *   (2 à 6 cm, unité `cm` obligatoire, virgule décimale acceptée).
+ *   (2,5 à 6 cm, unité `cm` obligatoire, virgule décimale acceptée).
  *
  * Une erreur ne fait pas disparaître le bloc : le nœud porte ses messages
  * situés et le renderer les montre au prof (Q48). Repérage et blocs non
@@ -58,6 +58,11 @@ const qrSettingsSchema = z.object({
 // ============================================================================
 // DÉTECTION
 // ============================================================================
+
+/** `2.5` → `2,5`, pour les messages à l'auteur */
+function frenchNumber(value: number): string {
+	return String(value).replace('.', ',');
+}
 
 export function isQrBlockStart(line: string): boolean {
 	return QR_BLOCK_START_REGEX.test(line);
@@ -162,7 +167,7 @@ export function parseQrContent(source: string): QrNode {
 		if (cm < QR_SIZE_CM.min || cm > QR_SIZE_CM.max) {
 			fail(
 				lineNo,
-				`taille ${size[1]} cm : choisis entre ${QR_SIZE_CM.min} et ${QR_SIZE_CM.max} cm`
+				`taille ${size[1]} cm : choisis entre ${frenchNumber(QR_SIZE_CM.min)} et ${frenchNumber(QR_SIZE_CM.max)} cm`
 			);
 			continue;
 		}

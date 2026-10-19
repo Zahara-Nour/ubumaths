@@ -24,7 +24,7 @@ import type { BaseNode } from './ast';
 // ============================================================================
 
 /** Côté du QR, en cm (marge blanche comprise) */
-export const QR_SIZE_CM = { min: 2, max: 6, default: 3 } as const;
+export const QR_SIZE_CM = { min: 2.5, max: 6, default: 3 } as const;
 
 /** Longueur maximale d'une légende, en caractères */
 export const QR_CAPTION_MAX = 120;

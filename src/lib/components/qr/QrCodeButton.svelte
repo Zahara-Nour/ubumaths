@@ -99,22 +99,29 @@
 		saveBlob(new Blob([svg], { type: 'image/svg+xml' }), qrFileName(label, 'svg'));
 	}
 
+	/**
+	 * Le PNG est le SVG stylé, dessiné par le navigateur : un seul dessin pour
+	 * les deux. Le SVG reçoit une taille en pixels et l'image est attendue par
+	 * `onload` (Safari et Firefox gèrent mal `decode()` d'un SVG sans taille).
+	 */
 	function drawPng(matrix: QrMatrix): Promise<Blob | null> {
-		const canvas = document.createElement('canvas');
-		canvas.width = matrix.size * PNG_MODULE_PX;
-		canvas.height = matrix.size * PNG_MODULE_PX;
-		const context = canvas.getContext('2d');
-		if (!context) return Promise.resolve(null);
-		context.fillStyle = '#ffffff';
-		context.fillRect(0, 0, canvas.width, canvas.height);
-		context.fillStyle = '#000000';
-		matrix.data.forEach((row, y) => {
-			row.forEach((dark, x) => {
-				if (dark)
-					context.fillRect(x * PNG_MODULE_PX, y * PNG_MODULE_PX, PNG_MODULE_PX, PNG_MODULE_PX);
-			});
+		const side = matrix.size * PNG_MODULE_PX;
+		const image = new Image(side, side);
+		const loaded = new Promise<boolean>((resolve) => {
+			image.onload = () => resolve(true);
+			image.onerror = () => resolve(false);
 		});
-		return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+		image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(qrSvg(matrix, alt, side))}`;
+		return loaded.then((ok) => {
+			if (!ok) return null;
+			const canvas = document.createElement('canvas');
+			canvas.width = side;
+			canvas.height = side;
+			const context = canvas.getContext('2d');
+			if (!context) return null;
+			context.drawImage(image, 0, 0, side, side);
+			return new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+		});
 	}
 
 	async function downloadPng() {

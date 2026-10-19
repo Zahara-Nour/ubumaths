@@ -8,7 +8,8 @@ import { render } from 'vitest-browser-svelte';
 import QrBlock from '../QrBlock.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
 import { parseQrContent } from '$lib/ubumark/parser/qr-parser';
-import { encodeQr, qrSvg } from '$lib/qr/qr-code';
+import { QR_COLORS, encodeQr } from '$lib/qr/qr-code';
+import { decodeSvg } from '$lib/qr/__tests__/decode-qr';
 
 async function imageOf(container: HTMLElement): Promise<SVGSVGElement> {
 	await expect
@@ -18,19 +19,18 @@ async function imageOf(container: HTMLElement): Promise<SVGSVGElement> {
 }
 
 describe('bloc ```qr à l’écran', () => {
-	it('dessine la matrice de l’adresse canonique', async () => {
+	it('dessine le QR stylé de l’adresse canonique, qui se lit', async () => {
 		const node = parseQrContent('/glossaire');
 		const { container } = await render(QrBlock, { node });
 		const svg = await imageOf(container);
 
 		const qr = encodeQr('https://www.chiph.re/glossaire');
-		expect(qr).not.toBeNull();
-		// Le même tracé que le SVG du lot 1, pour la même adresse
-		const reference = new DOMParser()
-			.parseFromString(qrSvg(qr!, 'x'), 'image/svg+xml')
-			.querySelector('path')
-			?.getAttribute('d');
-		expect(svg.querySelector('path')?.getAttribute('d')).toBe(reference);
+		if (!qr) throw new Error('QR attendu');
+		const markup = new XMLSerializer().serializeToString(svg);
+		expect(await decodeSvg(markup, qr.size)).toBe('https://www.chiph.re/glossaire');
+		// Les couleurs de la variante B
+		expect(svg.querySelector(`[fill="${QR_COLORS.eyes}"]`)).not.toBeNull();
+		expect(svg.querySelector(`[stroke="${QR_COLORS.gidouille}"]`)).not.toBeNull();
 	});
 
 	it('dit vers où mène le QR, pour un lecteur d’écran', async () => {

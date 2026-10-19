@@ -2,10 +2,10 @@
  * Bloc ```qr → Typst
  * ==================
  *
- * La matrice est dessinée par Typst lui-même : un rectangle noir par suite de
- * modules sombres d'une même rangée, dans une boîte blanche à la taille
- * demandée. Ni fichier image, ni paquet téléchargé : le PDF ne dépend pas du
- * réseau et le code reste net à l'impression.
+ * Le QR stylé (`qrSvg`, le même dessin qu'à l'écran) est posé en image
+ * vectorielle, à la taille demandée : `#image(bytes("<svg…>"), format: "svg")`.
+ * Ni fichier image, ni paquet téléchargé : le PDF ne dépend pas du réseau et
+ * le code reste net à l'impression.
  *
  * Textes (légende, adresse) en chaînes Typst littérales : rien n'y est lu
  * comme du balisage.
@@ -17,7 +17,7 @@
  * @module ubumark/generators/qr-typst
  */
 
-import { encodeQr } from '$lib/qr/qr-code';
+import { encodeQr, qrSvg } from '$lib/qr/qr-code';
 import { QR_UNAVAILABLE, type QrNode } from '../types/qr';
 
 // ============================================================================
@@ -43,31 +43,12 @@ export function generateQrTypst(node: QrNode): string {
 	const qr = encodeQr(node.url);
 	if (qr === null) return UNAVAILABLE_TYPST;
 
-	const module = node.sizeCm / qr.size;
-	const rects: string[] = [];
-	qr.data.forEach((row, y) => {
-		let x = 0;
-		while (x < row.length) {
-			if (!row[x]) {
-				x++;
-				continue;
-			}
-			// Une suite de modules sombres : un seul rectangle (pas de joint entre eux)
-			let run = 1;
-			while (x + run < row.length && row[x + run]) run++;
-			rects.push(
-				`    #place(dx: ${cm(x * module)}, dy: ${cm(y * module)}, rect(width: ${cm(run * module)}, height: ${cm(module)}, fill: black, stroke: none))`
-			);
-			x += run;
-		}
-	});
+	const svg = qrSvg(qr, `QR code vers ${node.url}`);
 
 	const label = node.caption ?? node.url.replace(/^https:\/\//, '');
 	return [
 		'#align(center)[#block(breakable: false)[',
-		`  #box(width: ${cm(node.sizeCm)}, height: ${cm(node.sizeCm)}, fill: white)[`,
-		...rects,
-		'  ]',
+		`  #image(bytes(${typstString(svg)}), format: "svg", width: ${cm(node.sizeCm)})`,
 		'  #v(2pt, weak: true)',
 		`  #text(size: 8pt, ${typstString(label)})`,
 		']]'

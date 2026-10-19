@@ -11,7 +11,8 @@
 
 	- Bloc en erreur : messages pour le prof, cadre neutre pour l'élève (Q48).
 	- Adresse trop longue pour un QR lisible : traitée comme une erreur.
-	- Noir sur blanc quel que soit le thème : un QR inversé se lit mal.
+	- QR stylé (`qrDrawing`, le même dessin que le bouton et les PDF), fond
+	  blanc quel que soit le thème : un QR inversé se lit mal.
 
 	@module components/markdown/nodes/QrBlock
 -->
@@ -74,11 +75,12 @@
 			aria-busy="true"
 			aria-label="QR code en cours de chargement"
 		></div>
-	{:then { encodeQr, qrPath, QR_TOO_LONG_MESSAGE }}
+	{:then { encodeQr, qrDrawing, QR_COLORS, QR_TOO_LONG_MESSAGE }}
 		{@const qr = encodeQr(node.url)}
 		{#if qr === null}
 			{@render failure([QR_TOO_LONG_MESSAGE])}
 		{:else}
+			{@const drawing = qrDrawing(qr)}
 			<figure
 				class="qr-bloc mx-auto my-2 flex w-fit max-w-full flex-col items-center gap-1 {className}"
 			>
@@ -87,13 +89,23 @@
 					viewBox="0 0 {qr.size} {qr.size}"
 					width="{node.sizeCm}cm"
 					height="{node.sizeCm}cm"
-					shape-rendering="crispEdges"
 					role="img"
 					aria-label="QR code vers {node.url}"
 					class="max-w-full"
 				>
-					<rect width={qr.size} height={qr.size} fill="#ffffff" />
-					<path d={qrPath(qr)} fill="#000000" />
+					<rect width={qr.size} height={qr.size} fill={QR_COLORS.background} />
+					<path d={drawing.modules} fill={QR_COLORS.modules} />
+					<path d={drawing.eyeRings} fill={QR_COLORS.eyes} fill-rule="evenodd" />
+					<path d={drawing.eyePupils} fill={QR_COLORS.eyes} />
+					<path d={drawing.logoBackdrop} fill={QR_COLORS.background} />
+					<path
+						d={drawing.gidouille}
+						fill="none"
+						stroke={QR_COLORS.gidouille}
+						stroke-width={drawing.gidouilleWidth}
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
 				</svg>
 				<figcaption class="flex flex-col items-center text-center text-sm">
 					{#if node.caption}<span>{node.caption}</span>{/if}

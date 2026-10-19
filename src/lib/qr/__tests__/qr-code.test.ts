@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { encode } from 'uqr';
-import { QR_BORDER, QR_MAX_VERSION, encodeQr, qrFileName, qrSvg } from '../qr-code';
+import { QR_BORDER, QR_COLORS, QR_MAX_VERSION, encodeQr, qrFileName, qrSvg } from '../qr-code';
 
 describe('encodeQr', () => {
-	it('encode exactement l’adresse reçue, en correction M avec une marge de 4 modules', () => {
+	it('encode exactement l’adresse reçue, en correction H avec une marge de 4 modules', () => {
 		const url = 'https://www.chiph.re/exercice/aire-du-disque?token=Ab12Cd34Ef56Gh78';
 		const qr = encodeQr(url);
 
 		expect(qr).not.toBeNull();
 		// La même adresse encodée par la bibliothèque, avec les mêmes réglages : la même matrice
-		const reference = encode(url, { ecc: 'M', border: QR_BORDER });
+		const reference = encode(url, { ecc: 'H', border: QR_BORDER });
 		expect(qr?.data).toEqual(reference.data);
 		// La marge : 4 modules blancs tout autour
 		const size = qr?.size ?? 0;
@@ -31,6 +31,16 @@ describe('encodeQr', () => {
 		).toBeNull();
 	});
 
+	it('accepte une adresse de 210 caractères (version 15 au plus en correction H)', () => {
+		const qr = encodeQr(`https://www.chiph.re/automaths/test?c=${'a'.repeat(172)}`);
+		expect(qr).not.toBeNull();
+		expect(qr?.version).toBeLessThanOrEqual(QR_MAX_VERSION);
+	});
+
+	it('refuse une adresse de 240 caractères (au-delà de la version 15 en correction H)', () => {
+		expect(encodeQr(`https://www.chiph.re/automaths/test?c=${'a'.repeat(202)}`)).toBeNull();
+	});
+
 	it('accepte une adresse de partage d’exercice ordinaire', () => {
 		const qr = encodeQr(
 			'https://www.chiph.re/exercice/derivee-d-un-produit-de-fonctions?token=Ab12Cd34Ef56Gh78'
@@ -41,7 +51,7 @@ describe('encodeQr', () => {
 });
 
 describe('qrSvg', () => {
-	it('dessine un module par case sombre, sur fond blanc, avec un titre', () => {
+	it('dessine le QR stylé : fond blanc, cases, yeux et gidouille aux couleurs du thème, avec un titre', () => {
 		const qr = encodeQr('https://www.chiph.re/glossaire');
 		if (!qr) throw new Error('QR attendu');
 		const svg = qrSvg(qr, 'QR code vers https://www.chiph.re/glossaire');
@@ -49,8 +59,36 @@ describe('qrSvg', () => {
 		expect(svg.startsWith('<svg')).toBe(true);
 		expect(svg).toContain(`viewBox="0 0 ${qr.size} ${qr.size}"`);
 		expect(svg).toContain('<title>QR code vers https://www.chiph.re/glossaire</title>');
-		const dark = qr.data.flat().filter(Boolean).length;
-		expect(svg.match(/h1v1h-1z/g)?.length).toBe(dark);
+		expect(svg).toContain(`fill="${QR_COLORS.background}"`);
+		expect(svg).toContain(`fill="${QR_COLORS.modules}"`);
+		expect(svg).toContain(`fill="${QR_COLORS.eyes}"`);
+		expect(svg).toContain(`stroke="${QR_COLORS.gidouille}"`);
+		// Des formes arrondies : pas de rendu en escalier
+		expect(svg).not.toContain('crispEdges');
+	});
+
+	it('variante B : cases #1a1a1a, yeux #b25f00, gidouille #fc8f1b', () => {
+		expect(QR_COLORS).toEqual({
+			background: '#ffffff',
+			modules: '#1a1a1a',
+			eyes: '#b25f00',
+			gidouille: '#fc8f1b'
+		});
+	});
+
+	it('retire du titre les caractères de contrôle, interdits en XML', () => {
+		const qr = encodeQr('https://example.com/a');
+		if (!qr) throw new Error('QR attendu');
+		const svg = qrSvg(qr, 'QR code vers https://example.com/a\u0001b\u001f');
+		expect(svg).toContain('<title>QR code vers https://example.com/ab</title>');
+	});
+
+	it('donne une taille en pixels sur demande, sans changer le dessin', () => {
+		const qr = encodeQr('https://www.chiph.re/glossaire');
+		if (!qr) throw new Error('QR attendu');
+		const sized = qrSvg(qr, 'x', 330);
+		expect(sized).toContain(`viewBox="0 0 ${qr.size} ${qr.size}" width="330" height="330">`);
+		expect(sized.replace(' width="330" height="330"', '')).toBe(qrSvg(qr, 'x'));
 	});
 
 	it('échappe le titre', () => {

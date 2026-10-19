@@ -7,7 +7,8 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
 import QrCodeButton from '../QrCodeButton.svelte';
-import { encodeQr, qrSvg } from '$lib/qr/qr-code';
+import { QR_BORDER, encodeQr, qrSvg } from '$lib/qr/qr-code';
+import { decodeBlob } from '$lib/qr/__tests__/decode-qr';
 
 async function settle() {
 	await tick();
@@ -98,6 +99,39 @@ describe('la fenêtre', () => {
 		const labels = [...dialog().querySelectorAll('button')].map((b) => b.textContent ?? '');
 		expect(labels.some((l) => l.includes('PNG'))).toBe(true);
 		expect(labels.some((l) => l.includes('SVG'))).toBe(true);
+	});
+
+	it('télécharge un PNG du QR stylé, qui se lit', async () => {
+		let saved: Blob | null = null;
+		vi.spyOn(URL, 'createObjectURL').mockImplementation((blob) => {
+			saved = blob as Blob;
+			return 'blob:qr';
+		});
+		vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+		await openFor({ url: '/glossaire', label: 'Glossaire' });
+
+		const png = [...dialog().querySelectorAll('button')].find((b) =>
+			b.textContent?.includes('PNG')
+		) as HTMLButtonElement;
+		await userEvent.click(png);
+		await expect.poll(() => saved, { timeout: 5000 }).not.toBeNull();
+
+		const blob = saved as unknown as Blob;
+		expect(blob.type).toBe('image/png');
+		expect(await decodeBlob(blob)).toBe('https://www.chiph.re/glossaire');
+
+		// Le centre d'un œil est ambre : c'est le QR stylé, pas l'ancien noir et blanc
+		const bitmap = await createImageBitmap(blob);
+		const canvas = document.createElement('canvas');
+		canvas.width = bitmap.width;
+		canvas.height = bitmap.height;
+		const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+		context.drawImage(bitmap, 0, 0);
+		const qr = encodeQr('https://www.chiph.re/glossaire');
+		if (!qr) throw new Error('QR attendu');
+		const center = Math.round(((QR_BORDER + 3.5) / qr.size) * bitmap.width);
+		const [r, g, b] = context.getImageData(center, center, 1, 1).data;
+		expect([r, g, b]).toEqual([0xb2, 0x5f, 0x00]);
 	});
 
 	it('prévient qu’un QR imprimé avec un jeton ne se reprend pas', async () => {

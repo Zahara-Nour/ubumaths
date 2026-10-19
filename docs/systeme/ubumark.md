@@ -275,11 +275,11 @@ taille: 3cm
 Ligne 1 : l'adresse — `/chemin` ou `chiph.re/…` deviennent `https://www.chiph.re/…`, une adresse
 `https://` extérieure est gardée telle quelle, tout le reste (`http://` extérieur, `javascript:`…)
 est refusé (`src/lib/qr/qr-target.ts`). Puis `légende:` (120 caractères au plus ; sans elle,
-l'adresse s'imprime sous le QR) et `taille:` (2 à 6 cm, `cm` obligatoire, virgule acceptée ;
+l'adresse s'imprime sous le QR) et `taille:` (2,5 à 6 cm, `cm` obligatoire, virgule acceptée ;
 3 cm par défaut). Bloc en erreur : messages situés pour le prof, « QR code indisponible » pour
 l'élève et au PDF. La matrice est calculée au rendu, pas au parseur (`uqr` hors du parseur). Au
-PDF, Typst dessine les modules lui-même (un `rect` par suite de modules sombres), sans image ni
-paquet réseau ; compilation réelle testée (`qr-typst-compilation.test.ts`). Dans l'éditeur riche :
+PDF, le SVG du QR stylé ([QR codes](qr-codes.md#le-style-imposé)) est posé en image vectorielle
+(`#image(bytes(…), format: "svg")`), sans fichier ni paquet réseau ; compilation réelle testée (`qr-typst-compilation.test.ts`). Dans l'éditeur riche :
 bloc de code `qr`, bouton « Insérer un QR code ». Chat élève (rendu restreint) : jamais rendu.
 
 ### Cases à compléter
