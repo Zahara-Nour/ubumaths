@@ -9,7 +9,15 @@
 
 import { describe, test, expect } from 'vitest';
 import { compareQuantities, type ComparisonResult, type Tolerance } from '../quantity-comparison';
-import { parseLatexQuantity } from '../parser';
+import { parseLatexQuantity, parseUnitExpression } from '../parser';
+import { exactConversion } from '$lib/mathAST/units/exact';
+import {
+	BASE_UNITS,
+	DERIVED_UNITS,
+	SI_PREFIXES,
+	SPECIAL_UNITS,
+	UNIT_ALIASES
+} from '$lib/mathAST/units/definitions';
 
 // ============================================================================
 // TEST FIXTURES
@@ -543,5 +551,87 @@ describe('Edge cases - dimensionless units', () => {
 		expect(isComparisonEqual(result)).toBe(true);
 		expect(result.userUnit).toBeNull();
 		expect(result.expectedUnit).toBeNull();
+	});
+});
+
+// ============================================================================
+// Égalité exacte (sans tolérance) : rationnels, conversions exactes de mathAST
+// ============================================================================
+
+describe('compareQuantities - égalité exacte', () => {
+	test.each([
+		['68\\unit{°F}', '20\\unit{°C}'],
+		['0\\unit{°C}', '273.15\\unit{K}'],
+		['-40\\unit{°F}', '-40\\unit{°C}'],
+		['1000\\unit{cm^3}', '1\\unit{L}'],
+		['\\frac{1}{3}\\unit{h}', '20\\unit{min}'],
+		['36\\unit{km/h}', '10\\unit{m/s}'],
+		['2{,}5\\unit{ha}', '25000\\unit{m^2}'],
+		['0\\unit{°}', '0\\unit{rad}']
+	])('%s = %s', (user, expected) => {
+		expect(compareQuantities(user, expected).isEqual).toBe(true);
+	});
+
+	test.each([
+		// Juste au bruit des flottants près hier : faux, ce n'est pas la valeur
+		['0.333333333333333\\unit{m}', '\\frac{1}{3}\\unit{m}'],
+		['20.000000000001\\unit{°C}', '20\\unit{°C}'],
+		['1000000000000001\\unit{m}', '10^{15}\\unit{m}'],
+		['57.3\\unit{°}', '1\\unit{rad}'],
+		['68.0000000001\\unit{°F}', '20\\unit{°C}']
+	])('%s ≠ %s', (user, expected) => {
+		expect(compareQuantities(user, expected).isEqual).toBe(false);
+	});
+
+	test('les valeurs rendues restent des nombres décimaux', () => {
+		const result = compareQuantities('\\frac{1}{4}\\unit{km}', '250\\unit{m}');
+		expect(result.isEqual).toBe(true);
+		expect(result.userValue).toBe(0.25);
+		expect(result.expectedValue).toBe(250);
+	});
+});
+
+describe('Toute unité lisible a une conversion exacte', () => {
+	// La comparaison exacte refuse une unité sans conversion exacte (pas de repli en
+	// flottants) : aucune unité lisible ne doit en manquer.
+	const keys = (m: ReadonlyMap<string, unknown> | ReadonlySet<string>): string[] => [...m.keys()];
+	const symbols = new Set([
+		...keys(BASE_UNITS),
+		...keys(DERIVED_UNITS),
+		...keys(UNIT_ALIASES),
+		...keys(SPECIAL_UNITS)
+	]);
+	const prefixes = ['', ...[...SI_PREFIXES].map(([prefix]) => prefix)];
+
+	test('unités simples, préfixes compris, même coefficient et même décalage', () => {
+		const readable: string[] = [];
+		const missing: string[] = [];
+		const mismatched: string[] = [];
+		for (const symbol of symbols) {
+			for (const prefix of prefixes) {
+				const writing = prefix + symbol;
+				const unit = parseUnitExpression(writing);
+				if (unit === null) continue;
+				readable.push(writing);
+				const exact = exactConversion(writing);
+				if (exact === null) {
+					missing.push(writing);
+					continue;
+				}
+				// Même conversion que celle des flottants (chemin avec tolérance)
+				const coefficient =
+					(Number(exact.coefficient.n) / Number(exact.coefficient.d)) * Math.PI ** exact.piPower;
+				const offset = exact.offset === null ? 0 : Number(exact.offset.n) / Number(exact.offset.d);
+				if (
+					Math.abs(coefficient - unit.coefficient) > 1e-9 * Math.abs(unit.coefficient) ||
+					Math.abs(offset - (unit.offset ?? 0)) > 1e-9
+				) {
+					mismatched.push(writing);
+				}
+			}
+		}
+		expect(readable.length).toBeGreaterThan(300);
+		expect(missing).toEqual([]);
+		expect(mismatched).toEqual([]);
 	});
 });

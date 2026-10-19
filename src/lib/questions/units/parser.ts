@@ -20,6 +20,8 @@ import { tidy } from '$lib/mathAST/tidy';
 import { rationalOf } from '$lib/mathAST/eval/evaluate-with-modifiers';
 import { evaluateExpression, stripLatexSpacing } from '$lib/math';
 import type { Rational } from '$lib/mathAST/normal/types';
+import { addRational, mulRational } from '$lib/mathAST/normal/rational';
+import { exactConversion } from '$lib/mathAST/units/exact';
 
 // ============================================================================
 // LATEX PATTERNS
@@ -173,10 +175,12 @@ export function parseUnitExpression(unitStr: string): Unit | null {
 		return null;
 	}
 
-	// Exposants Unicode → ^n, `·` → `*` ; `×` → `*` (inconnu de mathAST)
-	const normalized = normalizeSuperscripts(unitStr.trim()).replace(/\u00d7/g, '*');
+	return parseUnit(unitWriting(unitStr));
+}
 
-	return parseUnit(normalized);
+/** Exposants Unicode → ^n, `·` → `*` ; `×` → `*` (inconnu de mathAST) */
+function unitWriting(unitStr: string): string {
+	return normalizeSuperscripts(unitStr.trim()).replace(/\u00d7/g, '*');
 }
 
 // ============================================================================
@@ -258,6 +262,41 @@ export function parseLatexQuantity(latex: string): Quantity | null {
 
 	// No unit = dimensionless quantity
 	return { value, unit: dimensionlessUnit() };
+}
+
+// ============================================================================
+// VALEUR EXACTE EN UNITÉS DE BASE
+// ============================================================================
+
+/**
+ * Grandeur exprimée exactement en unités de base : `(valeur + décalage) × coefficient`,
+ * fois `π^piPower` (angles en degrés : 1° = π/180 rad).
+ */
+export interface ExactBaseValue {
+	value: Rational;
+	piPower: number;
+}
+
+/**
+ * Valeur exacte d'une grandeur `valeur\unit{…}` en unités de base, par les conversions
+ * exactes de mathAST (`exactConversion`), températures comprises : `20\unit{°C}` →
+ * 5863/20 (K), `68\unit{°F}` → 5863/20 aussi. Sans unité : la valeur elle-même.
+ *
+ * `null` si la valeur n'est pas un rationnel ou si l'unité n'a pas de conversion
+ * exacte (aucune unité lisible n'en manque : test d'invariant).
+ */
+export function exactBaseValue(latex: string): ExactBaseValue | null {
+	const str = latex.trim();
+	const unitStr = extractUnitFromLatex(str);
+	const valueStr = str.replace(UNIT_PATTERN, '').trim();
+	const value = valueStr ? readExactValue(valueStr) : null;
+	if (value === null) return null;
+	if (!unitStr) return { value, piPower: 0 };
+
+	const conversion = exactConversion(unitWriting(unitStr));
+	if (conversion === null) return null;
+	const shifted = conversion.offset === null ? value : addRational(value, conversion.offset);
+	return { value: mulRational(shifted, conversion.coefficient), piPower: conversion.piPower };
 }
 
 // ============================================================================

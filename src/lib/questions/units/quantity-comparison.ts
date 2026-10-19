@@ -5,17 +5,19 @@
  * Compare la grandeur d'un élève à la grandeur attendue (`valeur\unit{…}`) :
  * conversion d'unités (affine pour °C, °F), tolérance éventuelle.
  *
- * La valeur est lue en arbre par `parseLatexQuantity` (`./parser`, mathAST) ;
- * la comparaison se fait encore en flottants : c'est un calculateur à part du
- * contrat des grandeurs (ADR 0026, chantier correction-cases-unite).
+ * La valeur est lue en arbre par `parseLatexQuantity` (`./parser`, mathAST).
+ * Sans tolérance, l'égalité est EXACTE : rationnels et conversions exactes de
+ * mathAST (`exactBaseValue`), températures comprises. Une tolérance se juge en
+ * flottants (`convertAffine`).
  *
  * @module questions/units/quantity-comparison
  */
 
 import type { Unit } from './types';
-import { parseLatexQuantity } from './parser';
+import { exactBaseValue, parseLatexQuantity, type ExactBaseValue } from './parser';
 import { unitsAreCompatible } from './operations';
 import { convertAffine } from '$lib/mathAST/units/conversion';
+import { equalRational, isZero } from '$lib/mathAST/normal/rational';
 
 // ============================================================================
 // TYPES
@@ -162,7 +164,32 @@ export function compareQuantities(
 		};
 	}
 
-	// Convert user value to expected unit for comparison.
+	// Sans tolérance : égalité exacte. Aucun repli en flottants : une écriture
+	// sans valeur exacte (inatteignable : tests d'invariant) est refusée, sous
+	// l'étiquette 'incompatible_units' faute de mieux — seul `isEqual` est lu.
+	if (!hasTolerance(tolerance)) {
+		const userExact = exactBaseValue(userAnswer);
+		const expectedExact = exactBaseValue(expected);
+		if (userExact === null || expectedExact === null) {
+			return {
+				isEqual: false,
+				userValue,
+				expectedValue,
+				userUnit: userUnitStr,
+				expectedUnit: expectedUnitStr,
+				error: 'incompatible_units'
+			};
+		}
+		return {
+			isEqual: exactlyEqual(userExact, expectedExact),
+			userValue,
+			expectedValue,
+			userUnit: userUnitStr,
+			expectedUnit: expectedUnitStr
+		};
+	}
+
+	// Tolérance : comparaison en flottants, dans l'unité attendue.
 	// Conversion affine (°C, °F) comprise : un simple facteur multiplicatif est
 	// nul pour une unité à décalage, et TOUTE réponse en °C était refusée.
 	const userValueInExpectedUnit = convertAffine(
@@ -182,7 +209,6 @@ export function compareQuantities(
 		};
 	}
 
-	// Compare values with tolerance
 	const isEqual = compareValuesWithTolerance(userValueInExpectedUnit, expectedValue, tolerance);
 
 	return {
@@ -194,42 +220,44 @@ export function compareQuantities(
 	};
 }
 
-/**
- * Bruit relatif des flottants toléré quand aucune tolérance n'est demandée.
- * Une conversion laisse ~1e-15 en relatif (20.000000000000057) ; 1e-12 en laisse
- * passer, mais pas 0,5 m sur 10⁹ m (5e-10). Relatif pur : aucun plancher absolu,
- * sinon 0 m était accepté pour 5·10⁻¹⁰ m. (`expected === 0` est traité à part.)
- */
-const FLOAT_NOISE = 1e-12;
+/** Une tolérance est demandée (une tolérance nulle n'en est pas une) */
+function hasTolerance(tolerance?: Tolerance): tolerance is Tolerance {
+	return Boolean(tolerance?.absolute) || Boolean(tolerance?.relative);
+}
 
 /**
- * Compare two numeric values with optional tolerance
+ * Deux grandeurs exactes égales. π étant irrationnel, des puissances de π
+ * différentes (degrés contre radians) ne s'égalent qu'en 0.
+ */
+function exactlyEqual(a: ExactBaseValue, b: ExactBaseValue): boolean {
+	if (isZero(a.value) || isZero(b.value)) return isZero(a.value) && isZero(b.value);
+	return a.piPower === b.piPower && equalRational(a.value, b.value);
+}
+
+/**
+ * Compare two numeric values with a tolerance
  *
  * @param actual - Actual value
  * @param expected - Expected value
- * @param tolerance - Optional tolerance specification
+ * @param tolerance - Tolerance specification
  * @returns True if values are equal within tolerance
  */
 function compareValuesWithTolerance(
 	actual: number,
 	expected: number,
-	tolerance?: Tolerance
+	tolerance: Tolerance
 ): boolean {
 	// Validate inputs are finite numbers
 	if (!isFinite(actual) || !isFinite(expected)) {
 		return false;
 	}
 
-	// Handle exact zero case
-	if (expected === 0) {
-		if (!tolerance?.absolute) {
-			return actual === 0;
-		}
-		return Math.abs(actual) <= tolerance.absolute;
+	if (actual === expected) {
+		return true;
 	}
 
 	// Check absolute tolerance
-	if (tolerance?.absolute !== undefined) {
+	if (tolerance.absolute !== undefined) {
 		if (Math.abs(actual - expected) <= tolerance.absolute) {
 			return true;
 		}
@@ -237,20 +265,12 @@ function compareValuesWithTolerance(
 
 	// Check relative tolerance
 	// Use small epsilon to handle floating point precision at boundaries
-	if (tolerance?.relative !== undefined) {
+	if (tolerance.relative !== undefined && expected !== 0) {
 		const relativeDiff = Math.abs((actual - expected) / expected);
 		const epsilon = 1e-10; // Handle floating point precision
 		if (relativeDiff <= tolerance.relative + epsilon) {
 			return true;
 		}
-	}
-
-	// Sans tolérance : égalité, au bruit des flottants près. Une conversion
-	// (1000 cm³ → L, 68 °F → °C) rend 1.0000000000000002 ou 20.000000000000057 ;
-	// l'égalité stricte refusait ces réponses justes. La marge relative (FLOAT_NOISE)
-	// n'absorbe que ce bruit : 20,001 °C contre 20 °C reste faux.
-	if (!tolerance?.absolute && !tolerance?.relative) {
-		return Math.abs(actual - expected) <= FLOAT_NOISE * Math.abs(expected);
 	}
 
 	return false;
