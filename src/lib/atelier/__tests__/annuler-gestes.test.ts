@@ -1,7 +1,7 @@
 /**
  * Annuler / Rétablir, lot 5 PR 2 : un geste continu est UNE étape.
  *
- * Décision de David (phase 0 `docs/wip/atelier-annuler-retablir-phase0.md`) :
+ * Décision de David (phase 0 `docs/archive/wip/atelier-annuler-retablir-phase0.md`) :
  * « tout un glissé de curseur = une seule étape ». Revue de #1517, mesuré : un
  * glissé de 150 crans de la tangente remplissait la pile de 100 étapes, et une
  * suppression faite avant devenait irrécupérable.

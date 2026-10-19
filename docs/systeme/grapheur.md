@@ -128,7 +128,7 @@ elles sortent de l'ensemble (`allowedDisplay`, décision f du 2026-10-13, voir [
 ### Lecture graphique de l'image
 
 **Lecture** (optionnelle, `ExplicitFunction.reading`, lot 3 bis de
-[atelier-refonte-interface-phase0.md](../wip/atelier-refonte-interface-phase0.md)) : présente =
+[atelier-refonte-interface-phase0.md](../archive/wip/atelier-refonte-interface-phase0.md)) : présente =
 option allumée. `reading.at` porte les abscisses lues dans la console de l'atelier (3 au plus),
 `reading.name` le nom écrit dans les phrases (`f`, `f′`). Seul l'atelier la pose, et, comme la
 restriction, elle n'est jamais sérialisée. Pour chaque abscisse, et pour le point glissant de la

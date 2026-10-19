@@ -1,7 +1,7 @@
 /**
  * Atelier — le raccourci de la console déroulante
  *
- * Lot 2 de `docs/wip/atelier-refonte-interface-phase0.md`, décisions de David
+ * Lot 2 de `docs/archive/wip/atelier-refonte-interface-phase0.md`, décisions de David
  * du 2026-10-18 :
  *
  * - **la touche physique sous Échap**, lue par sa POSITION (`event.code`) et

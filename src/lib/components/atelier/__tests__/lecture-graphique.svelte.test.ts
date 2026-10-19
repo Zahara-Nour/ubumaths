@@ -1,7 +1,7 @@
 /**
  * Lecture graphique de l'image, de la carte au graphe : l'option du menu
  * « Affichage », un calcul `f(2)` dans la console, le point glissant (lot 3 bis
- * de `docs/wip/atelier-refonte-interface-phase0.md`, choix de David du
+ * de `docs/archive/wip/atelier-refonte-interface-phase0.md`, choix de David du
  * 2026-10-18).
  */
 import { describe, expect, it, vi } from 'vitest';

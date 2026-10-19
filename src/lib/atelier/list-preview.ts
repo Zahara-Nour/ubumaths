@@ -1,7 +1,7 @@
 /**
  * Atelier — l'aperçu d'une liste sur sa carte
  *
- * Lot 4a de `docs/wip/atelier-refonte-interface-phase0.md` (décision de David
+ * Lot 4a de `docs/archive/wip/atelier-refonte-interface-phase0.md` (décision de David
  * du 2026-10-18) : une liste ne s'édite pas sur la ligne de sa carte — trente
  * valeurs ne tiennent pas dans un champ d'une ligne — mais elle s'y LIT :
  * ses premières entrées, puis combien elle en a.

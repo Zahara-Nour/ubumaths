@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * Le point de couleur d'une carte de point ou de courbe de la figure, et ce
-	 * qu'il ouvre (lot 4b de `docs/wip/atelier-refonte-interface-phase0.md`) :
+	 * qu'il ouvre (lot 4b de `docs/archive/wip/atelier-refonte-interface-phase0.md`) :
 	 * couleur et taille pour un point, couleur et trait pour une courbe.
 	 *
 	 * La présentation de `CurveStylePopover` (fonctions, suites). Tout s'écrit

@@ -1,6 +1,6 @@
 /**
  * La barre d'icônes de l'atelier — lot 1 de
- * `docs/wip/atelier-refonte-interface-phase0.md` (validé par David le 2026-10-18).
+ * `docs/archive/wip/atelier-refonte-interface-phase0.md` (validé par David le 2026-10-18).
  *
  * À gauche Annuler, Rétablir (lot 5), Repartir de zéro, Charger, Enregistrer ;
  * à droite Console, Partager, Réglages.

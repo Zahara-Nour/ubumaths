@@ -1,7 +1,7 @@
 /**
  * Charger et Repartir de zéro, annulables — vus depuis l'écran (lot 5, PR 3).
  *
- * Phase 0 `docs/wip/atelier-annuler-retablir-phase0.md`, et la décision de David
+ * Phase 0 `docs/archive/wip/atelier-annuler-retablir-phase0.md`, et la décision de David
  * du 2026-10-19 : charger un fichier garde la console ; ses lignes s'ajoutent à
  * la suite, après « Atelier chargé depuis … », barrée si on annule. La copie
  * mise de côté suit Annuler / Rétablir (B3, `atelier-remplacer-phase0.md`).

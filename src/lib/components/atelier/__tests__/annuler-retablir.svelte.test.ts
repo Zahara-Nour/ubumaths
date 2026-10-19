@@ -1,6 +1,6 @@
 /**
  * Annuler / Rétablir dans la barre de l'atelier — lot 5, PR 1
- * (`docs/wip/atelier-annuler-retablir-phase0.md`, validée par David le 2026-10-19).
+ * (`docs/archive/wip/atelier-annuler-retablir-phase0.md`, validée par David le 2026-10-19).
  *
  * Les boutons nomment l'étape ; Ctrl/Cmd+Z annule, Ctrl+Y ou Ctrl/Cmd+Maj+Z
  * rétablit, jamais dans un champ en cours de frappe ; chaque geste est annoncé.

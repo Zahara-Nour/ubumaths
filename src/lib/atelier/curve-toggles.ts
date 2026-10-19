@@ -3,7 +3,7 @@
  *
  * Les deux gestes existent à deux endroits : les cases de « Sur le graphique »
  * (`CurveSettings`) et le menu « Affichage » de la carte d'une fonction (lot 3
- * de `docs/wip/atelier-refonte-interface-phase0.md`). Une seule règle pour les
+ * de `docs/archive/wip/atelier-refonte-interface-phase0.md`). Une seule règle pour les
  * deux : la tangente part du milieu de la fenêtre visible, l'aire couvre sa
  * moitié centrale — comme dans le grapheur.
  *

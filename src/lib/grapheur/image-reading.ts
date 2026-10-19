@@ -5,7 +5,7 @@
  * jusqu'à `f(a)` sur l'axe des ordonnées : le geste qu'on attend de l'élève
  * quand il lit une image sur un graphique. Deux sources pour `a` : les calculs
  * `f(a)` de la console de l'atelier, et un point qu'on fait glisser sur l'axe
- * (lot 3 bis de `docs/wip/atelier-refonte-interface-phase0.md`).
+ * (lot 3 bis de `docs/archive/wip/atelier-refonte-interface-phase0.md`).
  *
  * Module pur : la couche SVG (`ImageReadings.svelte`) et le point glissant
  * (`ReadingSliders.svelte`) n'y ajoutent que le dessin.

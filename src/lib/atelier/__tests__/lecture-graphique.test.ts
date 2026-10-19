@@ -1,6 +1,6 @@
 /**
  * Lecture graphique de l'image : quelles lignes de la console se lisent sur
- * le graphe (lot 3 bis de `docs/wip/atelier-refonte-interface-phase0.md`).
+ * le graphe (lot 3 bis de `docs/archive/wip/atelier-refonte-interface-phase0.md`).
  */
 import { describe, expect, it } from 'vitest';
 import { consoleReadings, readingCallOf, MAX_READINGS } from '$lib/atelier/reading';

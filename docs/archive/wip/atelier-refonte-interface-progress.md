@@ -2,15 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1530._
+_Mis à jour le 2026-10-19 : chantier CLOS et archivé._
 
-- **État** : lots 1 à 5 livrés (#1479 → #1524) et suivi de la revue de #1524 mergé (#1530) : Repartir de zéro garde la console, lois et repère rendus après Annuler d'un `replaceWith`, toast « Annuler » via `atelier.isTopStep`. Rien en prod.
-- **Prochaine action** : aucune dans ce chantier. Les 5 lots de la phase 0 sont faits → proposer à David la fin de chantier (versement du durable dans `docs/systeme/atelier.md`, archivage du journal et de la phase 0).
-- **En attente de David** : vérifications manuelles (lignes lot 5 et #1530 de `verifications-manuelles.md`) ; correctif de `/reprendre` et du hook d'alerte pour lire le journal dans `../ubumaths-wt-<sujet>` quand il existe (sessions lancées dans le dépôt principal).
-- **Pièges** : la console n'est PAS dans les photos d'étape (R4) ; réglages hors photo d'un `replaceWith` = `#settingsAcross` (entrées des étapes oubliées gardées, comme `#onLeave`) ; `wrapDynamicImport` intermittent dans les suites client lancées ensemble → relancer par lots.
-- **Worktree / branche** : aucun. Coordination : atelier-geometrie (lot 3 souris) préviendra avant de toucher aux gestes.
+- **État** : les 5 lots de la phase 0 sont livrés (#1479 → #1524), suivi de la revue mergé (#1530). Ce qui reste vrai du code est versé dans `docs/systeme/atelier.md` (barre d'icônes, console déroulante, menus des cartes, lecture graphique, Annuler / Rétablir). Ce journal est de l'historique.
+- **Prochaine action** : aucune. Vérifications manuelles en attente dans `docs/wip/verifications-manuelles.md` (lot 5, #1530).
+- **Worktree / branche** : aucun.
 
-Phase 0 : `docs/wip/atelier-refonte-interface-phase0.md` (validée par David le 2026-10-18, deux passes).
+Phase 0 : `docs/archive/wip/atelier-refonte-interface-phase0.md` (validée par David le 2026-10-18, deux passes).
 
 ## Lot 1 — barre d'icônes, Enregistrer / Charger
 

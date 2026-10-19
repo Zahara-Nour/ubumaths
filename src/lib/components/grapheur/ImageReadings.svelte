@@ -4,7 +4,7 @@
 	 * abscisses jusqu'à la courbe, puis jusqu'à `f(a)` sur l'axe des ordonnées,
 	 * avec les deux valeurs écrites au pied des traits.
 	 *
-	 * Deux sources (lot 3 bis de `docs/wip/atelier-refonte-interface-phase0.md`) :
+	 * Deux sources (lot 3 bis de `docs/archive/wip/atelier-refonte-interface-phase0.md`) :
 	 * les calculs `f(a)` de la console (`reading.at`) et le point glissant de
 	 * chaque courbe (`sliders`, tenu par `GraphSVG`). Décoratif, comme tout le
 	 * SVG du grapheur : ce qui se lit est dit par la console et par le curseur.

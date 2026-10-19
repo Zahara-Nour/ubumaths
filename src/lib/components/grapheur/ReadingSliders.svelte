@@ -2,7 +2,7 @@
 	/**
 	 * Le point glissant de la lecture graphique : un curseur par courbe lue,
 	 * posé sur l'axe des abscisses, qu'on fait glisser à la souris, au doigt ou
-	 * aux flèches (lot 3 bis de `docs/wip/atelier-refonte-interface-phase0.md`).
+	 * aux flèches (lot 3 bis de `docs/archive/wip/atelier-refonte-interface-phase0.md`).
 	 *
 	 * ⚠️ En HTML, À CÔTÉ du SVG et non dedans : le SVG du grapheur est masqué
 	 * aux lecteurs d'écran et enveloppé dans une image (`role="img"`), dont les

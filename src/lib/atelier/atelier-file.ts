@@ -1,7 +1,7 @@
 /**
  * Atelier — enregistrer et charger l'atelier entier dans un fichier
  *
- * Lot 1 de `docs/wip/atelier-refonte-interface-phase0.md` (décision de David du
+ * Lot 1 de `docs/archive/wip/atelier-refonte-interface-phase0.md` (décision de David du
  * 2026-10-18). Le JSON « pour rejouer » (`history-export.ts`) ne garde que les
  * gestes de Calcul : une définition changée sur une carte, une couleur, le
  * tableur s'y perdaient. Le fichier `.atelier.json` porte donc l'état complet,

@@ -1,6 +1,6 @@
 /**
  * Les touches de la console restent dans la console — suivi de la revue de
- * #1485 (lot 2 de `docs/wip/atelier-refonte-interface-phase0.md`).
+ * #1485 (lot 2 de `docs/archive/wip/atelier-refonte-interface-phase0.md`).
  *
  * Le Graphe reste monté SOUS la console, et ses raccourcis (`KeyboardHandler`)
  * écoutent toute la fenêtre : ↓ sur la poignée décalait le graphe, Échap sur

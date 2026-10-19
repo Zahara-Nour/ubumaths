@@ -1,5 +1,5 @@
 /**
- * La console déroulante — lot 2 de `docs/wip/atelier-refonte-interface-phase0.md`.
+ * La console déroulante — lot 2 de `docs/archive/wip/atelier-refonte-interface-phase0.md`.
  *
  * Décisions de David (2026-10-18) : la console est un volet qui descend PAR-DESSUS
  * Graphe, Géométrie et Données ; l'onglet Calcul disparaît. Raccourcis : la touche

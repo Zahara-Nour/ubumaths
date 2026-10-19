@@ -1,6 +1,6 @@
 /**
  * Les réglages d'affichage d'un point et d'une courbe — lot 4b de la refonte de
- * l'atelier (`docs/wip/atelier-refonte-interface-phase0.md`, lot 4).
+ * l'atelier (`docs/archive/wip/atelier-refonte-interface-phase0.md`, lot 4).
  *
  * Un point a une couleur, une taille et une étiquette (`PointDisplay`) ; une
  * courbe, une couleur et un trait (`StrokeDisplay`, les trois champs de
