@@ -11,12 +11,13 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1526._
+_Mis à jour le 2026-10-19, après #1528._
 
-- **État** : lots 1 et 2 de la géométrie livrés (#1474 → #1516) ; `60°` (#1519) ; noms indicés (#1520, #1525 : `u_3` = terme, `x_1` ≠ x) ; « Remplacer mon atelier » (#1523) ; extrema périodiques et `tan` aux asymptotes dans mathAST (#1526). Rien en production. Aucun worktree ouvert.
-- **Prochaine action** : (1) si David valide : petite PR mathAST — zéros périodiques d'un NUMÉRATEUR de quotient (`cos x/(x²+1)`, `1/sin x`, `ln(2+sin x)`) et points critiques faux de `(x−1)²(x+2)³` (oracle numérique comme `variations/__tests__/periodique-non-borne.test.ts`) ; (2) lot 3, la souris (phase 0 validée : `atelier-geometrie-lot3-phase0.md`), PR 1 = le glisser (fin de geste `atelier.step(…, clé)` + `endGesture()`, #1518).
-- **En attente de David** : la PR mathAST de suivi ; 4 choix des noms indicés (recommandés : garder — `f_1` interdit avec `f`, pas de réécriture à la relecture, `c = v_3` refusé en récurrence, `2xx_1`).
-- **Pièges** : toute PR qui touche `mathAST` (`sign/`, `variations/`, `substitute`, `intersect`, pipeline CLI) → revue `mathast-expert` avec comparaison main / branche sur un échantillon. La session « modifs-fixes » (lot 5 annuler / rétablir, PR 3 : Charger et Repartir via `replaceWith`) touche le même modèle : se prévenir avant `AtelierContainer`, `FigureCard`, `desk.svelte.ts`. Agents : `general-purpose` en sonnet (opus pour géométrie / mathAST via leurs agents dédiés).
+- **État** : lots 1 et 2 de la géométrie livrés (#1474 → #1516) ; `60°` (#1519) ; noms indicés (#1520, #1525 ; les 4 choix prudents GARDÉS par David le 2026-10-19) ; « Remplacer mon atelier » (#1523) ; mathAST : extrema périodiques (#1526), zéros périodiques d'un numérateur de quotient + Ferrari réécrit dans `common/quartic-roots.ts` (#1528). Rien en production. Aucun worktree ouvert.
+- **Prochaine action** : lot 3, la souris (phase 0 validée : `atelier-geometrie-lot3-phase0.md`), PR 1 = le glisser (fin de geste `atelier.step(…, clé)` + `endGesture()`, #1518). Prévenir avant la session « atelier-refonte-interface » (elle change `replaceWith`, `undoStep`, `redoStep`, `#apply`).
+- **En attente de David** : rien.
+- **Restes connus mathAST (non poursuivis, exotiques)** : quartiques à racines espacées ≲ 1e-4 près d'un sommet commun ou d'une grande racine (résidu accepté trop large) ; `sin x/ln(cos x+1)` zéro en π (comme main) ; `2√(sin x)` sur ]0 ; π[ et `ln(x+sin x)` sur [1 ; +∞[ « inconnu » (main concluait juste par échantillonnage, mécanisme non sûr).
+- **Pièges** : toute PR qui touche `mathAST` → relecture `mathast-expert` indépendante (#1528 : 4 passes, 3 bloquants trouvés). Agents : `general-purpose` en sonnet (opus pour géométrie / mathAST via leurs agents dédiés).
 
 ## Lot 1 — découpage
 
