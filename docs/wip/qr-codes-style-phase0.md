@@ -43,7 +43,15 @@ Prototype : 4 variantes rendues comme dans un navigateur puis décodées par `js
 | Bloc ` ```qr ` à l'écran                   | SVG (`QrBlock.svelte`)                        |
 | Bloc ` ```qr ` dans les PDF (Typst)        | rectangles noirs dessinés en Typst            |
 
-## Questions pour David
+## Tranché par David (2026-10-19)
+
+1. **Partout** : bouton, téléchargements SVG et PNG, bloc à l'écran, PDF.
+2. **PDF : le même SVG posé en image** (`#image(bytes(…), format: "svg")`). Vérifié avant de coder avec le compilateur de la production (`scripts/fiches/compile-prod.mjs`, typst.ts 0.6.1-rc5) : le PDF compile, et son rendu se décode à l'adresse exacte.
+3. **Taille minimale 2,5 cm.** Le bloc n'est pas en prod (#1522 non déployé) : aucun document réel en 2 cm, donc pas de conversion — une taille sous 2,5 cm devient une erreur d'auteur, comme les autres tailles hors bornes.
+
+Tests du rendu : dans le navigateur (projet `client`), SVG dessiné dans un canvas puis décodé par `jsqr` (devDependency), pour des adresses courtes à longues (jusqu'à la version 15).
+
+## Questions pour David (posées)
 
 1. **Où s'applique le style ?**
    - (a) **Partout** : bouton, téléchargements, bloc à l'écran, PDF. ← **ma recommandation** : B s'imprime bien en noir et blanc (cases presque noires, yeux ambre → gris foncé).

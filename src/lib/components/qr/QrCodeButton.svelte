@@ -14,7 +14,7 @@
 	import Check from '@lucide/svelte/icons/check';
 	import Download from '@lucide/svelte/icons/download';
 	import { canonicalUrl } from '$lib/seo/site';
-	import { encodeQr, qrFileName, qrSvg, type QrMatrix } from '$lib/qr/qr-code';
+	import { encodeQr, qrFileName, qrSvg } from '$lib/qr/qr-code';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	interface Props {
@@ -99,27 +99,27 @@
 		saveBlob(new Blob([svg], { type: 'image/svg+xml' }), qrFileName(label, 'svg'));
 	}
 
-	function drawPng(matrix: QrMatrix): Promise<Blob | null> {
+	/** Le PNG est le SVG stylé, dessiné par le navigateur : un seul dessin pour les deux */
+	async function drawPng(svgSrc: string, modules: number): Promise<Blob | null> {
+		const image = new Image();
+		image.src = svgSrc;
+		try {
+			await image.decode();
+		} catch {
+			return null;
+		}
 		const canvas = document.createElement('canvas');
-		canvas.width = matrix.size * PNG_MODULE_PX;
-		canvas.height = matrix.size * PNG_MODULE_PX;
+		canvas.width = modules * PNG_MODULE_PX;
+		canvas.height = modules * PNG_MODULE_PX;
 		const context = canvas.getContext('2d');
-		if (!context) return Promise.resolve(null);
-		context.fillStyle = '#ffffff';
-		context.fillRect(0, 0, canvas.width, canvas.height);
-		context.fillStyle = '#000000';
-		matrix.data.forEach((row, y) => {
-			row.forEach((dark, x) => {
-				if (dark)
-					context.fillRect(x * PNG_MODULE_PX, y * PNG_MODULE_PX, PNG_MODULE_PX, PNG_MODULE_PX);
-			});
-		});
+		if (!context) return null;
+		context.drawImage(image, 0, 0, canvas.width, canvas.height);
 		return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
 	}
 
 	async function downloadPng() {
-		if (qr === null) return;
-		const blob = await drawPng(qr);
+		if (qr === null || imageSrc === null) return;
+		const blob = await drawPng(imageSrc, qr.size);
 		if (blob === null) {
 			toaster.error('Impossible de fabriquer l’image PNG : télécharge le SVG.');
 			return;
