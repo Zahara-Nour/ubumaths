@@ -42,4 +42,16 @@ describe('RichTextEditor — insertion des nœuds enrichis', () => {
 
 		expect(button(container, 'Insérer un tableau de variation')).not.toBeNull();
 	});
+
+	it('insère un bloc ```qr prérempli', async () => {
+		const { container, component } = await renderEditorWithInsertionOpen();
+
+		const qr = button(container, 'Insérer un QR code');
+		expect(qr, 'le bouton « Insérer un QR code » doit exister').not.toBeNull();
+		qr?.click();
+		await new Promise((r) => setTimeout(r, 50));
+
+		const markdown = (component as unknown as { getMarkdown: () => string }).getMarkdown();
+		expect(markdown).toContain('```qr\n/glossaire');
+	});
 });

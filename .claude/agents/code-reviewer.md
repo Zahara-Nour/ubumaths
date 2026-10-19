@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Use this agent when you have written a logical chunk of code (a function, component, feature, or module) and want to ensure it meets quality standards before moving forward. This agent should be called proactively after completing implementation work, not for reviewing entire codebases.
-model: opus
+model: sonnet
 color: cyan
 ---
 

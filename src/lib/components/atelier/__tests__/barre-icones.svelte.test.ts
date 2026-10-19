@@ -19,6 +19,7 @@ import {
 	atelierFileToJson
 } from '$lib/atelier/atelier-file';
 import { CALC_HISTORY_STORAGE_KEY } from '$lib/atelier/history-storage';
+import { SET_ASIDE_STORAGE_KEY } from '$lib/atelier/persistence';
 
 // =============================================================================
 // Décor
@@ -28,9 +29,14 @@ const KEY = 'chiphre-atelier';
 
 const settle = () => new Promise((r) => setTimeout(r, 50));
 
-afterEach(() => localStorage.removeItem(KEY));
+// Charger met l'atelier remplacé de côté (R5) : la copie ne doit pas passer d'un test à l'autre
+afterEach(() => {
+	localStorage.removeItem(KEY);
+	localStorage.removeItem(SET_ASIDE_STORAGE_KEY);
+});
 beforeEach(() => {
 	localStorage.removeItem(KEY);
+	localStorage.removeItem(SET_ASIDE_STORAGE_KEY);
 	localStorage.removeItem(CALC_HISTORY_STORAGE_KEY);
 });
 
@@ -286,7 +292,10 @@ describe('charger', () => {
 
 		expect(atelier.names).toEqual(['f', 'a']);
 		expect(atelier.get('f')?.definition).toBe('x^3');
-		expect(container.querySelectorAll('.historique > li').length).toBe(2);
+		// « Atelier chargé depuis … », puis les deux lignes du fichier (2026-10-19)
+		const lines = container.querySelectorAll('.historique > li');
+		expect(lines.length).toBe(3);
+		expect(lines[0].textContent).toContain('Atelier chargé depuis');
 	});
 
 	it('atelier non vide : demande avant de tout remplacer', async () => {

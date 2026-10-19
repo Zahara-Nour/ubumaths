@@ -129,12 +129,15 @@ describe('au rechargement, les lignes de Calcul reviennent', () => {
 			return found!;
 		});
 		confirm.click();
-		await vi.waitFor(() => expect(first.lines()).toHaveLength(0));
+		// Les lignes d'avant partent (C3) ; reste la ligne de l'étape, que Ctrl+Z
+		// barrerait (lot 5, PR 3)
+		await vi.waitFor(() => expect(first.lines()).toHaveLength(1));
 		await first.unmount();
 
-		expect(localStorage.getItem(CALC_HISTORY_STORAGE_KEY)).toBeNull();
+		expect(localStorage.getItem(CALC_HISTORY_STORAGE_KEY)).not.toContain('2+3');
 		const second = await open();
-		expect(second.lines()).toHaveLength(0);
+		expect(second.lines()).toHaveLength(1);
+		expect(second.lines()[0].textContent).toContain('Atelier vidé.');
 	});
 
 	it('un atelier reçu par lien ne lit ni n’écrit l’historique de l’élève', async () => {

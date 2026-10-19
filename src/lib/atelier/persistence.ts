@@ -36,6 +36,13 @@ import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 export const ATELIER_STORAGE_KEY = 'chiphre-atelier';
 
 /**
+ * L'atelier MIS DE CÔTÉ par « Remplacer mon atelier » ou « Charger » (R3, R5 de
+ * `atelier-remplacer-phase0.md`) : une seule copie, rangée sous la même forme que
+ * l'atelier personnel et relue par les mêmes schémas (B7). Voir `replace.ts`.
+ */
+export const SET_ASIDE_STORAGE_KEY = 'chiphre-atelier-de-cote';
+
+/**
  * Version du format rangé.
  *
  * À incrémenter dès que la forme change. Un état d'une version PLUS RÉCENTE
@@ -278,12 +285,19 @@ export type SaveOutcome =
 // Lire
 // =============================================================================
 
-export function loadAtelier(storage: Storage | null): LoadOutcome {
+/**
+ * @param key - La clé à relire : l'atelier personnel par défaut, ou la copie mise
+ *   de côté (`SET_ASIDE_STORAGE_KEY`), relue par les mêmes schémas (B7).
+ */
+export function loadAtelier(
+	storage: Storage | null,
+	key: string = ATELIER_STORAGE_KEY
+): LoadOutcome {
 	if (!storage) return { kind: 'unavailable' };
 
 	let raw: string | null;
 	try {
-		raw = storage.getItem(ATELIER_STORAGE_KEY);
+		raw = storage.getItem(key);
 	} catch {
 		// Un navigateur peut refuser jusqu'à la lecture (site bloqué).
 		return { kind: 'unavailable' };
@@ -488,11 +502,16 @@ export function isQuotaExceeded(error: unknown): boolean {
 	);
 }
 
-export function saveAtelier(storage: Storage | null, state: AtelierState): SaveOutcome {
+/** @param key - Comme pour `loadAtelier` : l'atelier personnel par défaut. */
+export function saveAtelier(
+	storage: Storage | null,
+	state: AtelierState,
+	key: string = ATELIER_STORAGE_KEY
+): SaveOutcome {
 	if (!storage) return { kind: 'unavailable' };
 
 	// Ne jamais écraser plus récent que soi (§5 L2).
-	const existing = loadAtelier(storage);
+	const existing = loadAtelier(storage, key);
 	if (existing.kind === 'too-recent') {
 		return { kind: 'refused-newer', version: existing.version };
 	}
@@ -510,7 +529,7 @@ export function saveAtelier(storage: Storage | null, state: AtelierState): SaveO
 	}
 
 	try {
-		storage.setItem(ATELIER_STORAGE_KEY, serialized);
+		storage.setItem(key, serialized);
 		return { kind: 'saved' };
 	} catch (error) {
 		if (isQuotaExceeded(error)) {

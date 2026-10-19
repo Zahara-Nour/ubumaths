@@ -67,8 +67,7 @@ import {
 	parseDefinition,
 	pointCoordinatesOf,
 	readNumber,
-	referencesOf,
-	renameInDefinition
+	referencesOf
 } from './parse';
 import { z } from 'zod';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
@@ -101,6 +100,7 @@ import {
 	type StoredDisplay
 } from './display';
 import { astOf as astOfDefinition } from './parse';
+import { renameInObject } from './rename';
 import { INTERNAL_LETTER, letterRejection, typedLetterOf } from './letter';
 import { perfSwitches } from './perf-switches';
 import {
@@ -125,12 +125,11 @@ import {
 	measureCallNames,
 	measuredAst,
 	measuredText,
-	renamePairs,
 	withoutMeasureCalls,
 	withoutMeasures,
 	type MeasuredText
 } from './measures';
-import { bareLineShortcut, readConstruction, renameInConstruction } from './construction-read';
+import { bareLineShortcut, readConstruction } from './construction-read';
 import {
 	constructionOf,
 	isConstruction,
@@ -674,6 +673,8 @@ export class Atelier {
 	#lastStepId: number | null = null;
 	/** La suppression d'un reçu → son étape : le toast « Annuler » ne défait qu'elle. */
 	#receipts = new WeakMap<RemovedWithDependents, StepToken>();
+	/** Les étapes de `replaceWith` qui veulent savoir quand on les quitte (`onLeave`). */
+	#onLeave = new Map<number, (left: AtelierState) => void>();
 	/** Ce que la barre affiche : l'étape qu'Annuler défera, celle que Rétablir refera. */
 	history = $state<HistoryState>({ undo: null, redo: null, steps: 0 });
 
@@ -1268,26 +1269,10 @@ export class Atelier {
 				);
 	}
 
-	/**
-	 * La définition après renommage. ⚠️ Une liste n'est JAMAIS réécrite (Q87) :
-	 * renommer un objet `A` changeait `A ; B ; A ; O`, une liste de groupes
-	 * sanguins.
-	 */
+	/** La définition après renommage (`rename.ts` : la même règle que la fusion). */
 	#renamedIn(object: AtelierObject, from: string, to: string): string {
-		if (object.kind === 'list') return object.definition;
-		// `(AB)` : une expression régulière de mots n'y voit pas l'identifiant A
-		const construction =
-			object.kind === 'point' || object.kind === 'curve' || object.kind === 'value'
-				? renameInConstruction(object.definition, object.provenance ?? 'url', from, to)
-				: null;
-		const renamed = construction ?? renameInDefinition(object.definition, from, to);
-		// `AM` (lot 2, L4) : une longueur entre deux points, qu'une expression régulière
-		// de mots lit comme l'identifiant AM. Appelé APRÈS que `from` s'appelle `to`
-		if (object.kind !== 'value' && object.kind !== 'function' && object.kind !== 'sequence') {
-			return renamed;
-		}
 		const isPoint = (name: string) => this.get(name === from ? to : name)?.kind === 'point';
-		return renamePairs(renamed, from, to, isPoint);
+		return renameInObject(object, from, to, isPoint);
 	}
 
 	rename(from: string, to: string): Renamed | Refused {
@@ -1635,6 +1620,14 @@ export class Atelier {
 		return this.#lastStepId;
 	}
 
+	/**
+	 * L'étape qu'Annuler défera maintenant, `null` sans étape : le toast d'un
+	 * chargement ou de « Repartir de zéro » ne défait que la sienne (lot 5, PR 3).
+	 */
+	get topStepId(): number | null {
+		return this.#history.topId;
+	}
+
 	/** Une étape est-elle ouverte ? Une `step` appelée dedans s'y fond. */
 	get inStep(): boolean {
 		return this.#stepDepth > 0;
@@ -1676,7 +1669,10 @@ export class Atelier {
 		if (this.#stepDepth > 0) return null;
 		this.#capture(this.#photo());
 		const step = this.#history.undo();
-		if (step !== null) this.#apply(step.before);
+		if (step !== null) {
+			this.#apply(step.before);
+			this.#left(step.id, step.after);
+		}
 		this.#publish();
 		return step === null ? null : { id: step.id, label: step.label };
 	}
@@ -1687,7 +1683,10 @@ export class Atelier {
 		// Un changement fait après l'annulation a déjà oublié ce qui restait à rétablir
 		this.#capture(this.#photo());
 		const step = this.#history.redo();
-		if (step !== null) this.#apply(step.after);
+		if (step !== null) {
+			this.#apply(step.after);
+			this.#left(step.id, step.before);
+		}
 		this.#publish();
 		return step === null ? null : { id: step.id, label: step.label };
 	}
@@ -1743,6 +1742,12 @@ export class Atelier {
 		this.#baseline = this.#photo();
 	}
 
+	/** Une étape de `replaceWith` quittée : son `onLeave` reçoit l'atelier quitté. */
+	#left(id: number, photo: string): void {
+		const onLeave = this.#onLeave.get(id);
+		if (onLeave !== undefined) onLeave((JSON.parse(photo) as AtelierPhoto).state);
+	}
+
 	/**
 	 * Une modification hors de toute étape (revue de #1517) : la barre le dit
 	 * tout de suite — « Annuler : modifier l'atelier » —, sans attendre la
@@ -1769,6 +1774,7 @@ export class Atelier {
 
 	#forgetHistory(): void {
 		this.#history.clear();
+		this.#onLeave.clear();
 		this.#baseline = null;
 		this.#publish();
 	}
@@ -2506,6 +2512,42 @@ export class Atelier {
 		const report = this.#restoreState(stored);
 		// Un autre atelier (chargement, autre onglet, lien reçu) : la pile ne le décrit pas
 		this.#forgetHistory();
+		return report;
+	}
+
+	/**
+	 * Remplacer TOUT l'atelier (objets, grille, réglages rangés) par `state`, en
+	 * UNE étape d'Annuler nommée `label` — « remplacer mon atelier », « retrouver
+	 * mon atelier précédent » (`docs/wip/atelier-remplacer-phase0.md`, coordination
+	 * avec le lot 5).
+	 *
+	 * La différence avec `restore()` : la pile est GARDÉE. Un Ctrl+Z rend
+	 * l'atelier d'avant, tant que la page est ouverte ; les étapes d'avant restent
+	 * annulables. Même relecture que `restore()` (objets refusés écartés un par un
+	 * et nommés, migration de `y`), même rapport. La console n'est PAS remplacée,
+	 * ni dans la photo de l'étape (R4) : elle est au pupitre, pas à l'atelier.
+	 *
+	 * `onLeave` (facultatif) : appelé quand Annuler ou Rétablir QUITTE l'un des
+	 * deux côtés de cette étape, avec l'atelier quitté — Annuler quitte `state`,
+	 * Rétablir l'atelier d'avant. C'est ce qui garde la copie mise de côté
+	 * d'accord avec l'écran (B3 : rien n'est jamais perdu).
+	 *
+	 * Pour la PR 3 du lot 5 : Charger et Repartir de zéro s'y brancheront tels
+	 * quels (`replaceWith(fichier, 'charger un atelier')`).
+	 */
+	replaceWith(
+		state: AtelierState,
+		label: string,
+		options: { readonly onLeave?: (left: AtelierState) => void } = {}
+	): RestoreReport {
+		const outermost = this.#stepDepth === 0 && !this.#restoring;
+		// Comme une relecture : les lois et le repère repartent de leur défaut. Le
+		// recalcul fait bouger `revision` : la session range l'atelier remplacé
+		const report = this.step(label, () => this.#restoreState(state));
+		const id = this.#lastStepId;
+		if (outermost && id !== null && options.onLeave !== undefined) {
+			this.#onLeave.set(id, options.onLeave);
+		}
 		return report;
 	}
 
