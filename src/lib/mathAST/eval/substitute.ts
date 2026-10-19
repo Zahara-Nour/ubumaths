@@ -10,7 +10,7 @@ import type { MathNode } from '../types';
 import type { EvalBindings, BindingValue, SubstituteOptions } from './types';
 import type { FunctionBindings } from './function-bindings';
 import { DEFAULT_SUBSTITUTE_OPTIONS } from './types';
-import { mapNode } from '../transforms';
+import { findNodes, mapNode, mapNodeTopDown } from '../transforms';
 import { isVariable, isGreek, isSegmentLength } from '../guards';
 import {
 	canonicalSegmentName,
@@ -21,6 +21,7 @@ import {
 import { multiply } from '../factory';
 import { numericNode } from '../common/numeric';
 import { parseLatex } from '../parser';
+import { indexedNameOf, isIndexedName } from '../common/indexed-names';
 
 // =============================================================================
 // Binding Value Conversion
@@ -193,6 +194,41 @@ function substituteOnce(node: MathNode, bindings: EvalBindings): MathNode {
 }
 
 // =============================================================================
+// Noms indicés
+// =============================================================================
+
+/** Un arbre dont les noms indicés sont cachés, et les nœuds d'origine par nom. */
+interface HiddenIndexedNames {
+	readonly node: MathNode;
+	readonly originals: ReadonlyMap<string, MathNode>;
+}
+
+/**
+ * Chaque nom indicé (`a_1`, voir `indexed-names.ts`) remplacé par une variable
+ * du même nom, le temps d'un passage. L'arbre tel quel quand il n'en a pas.
+ *
+ * ⚠️ Le parseur ne rend jamais de variable dont le nom contient `_` : la
+ * variable `a_1` ne peut venir que d'ici, `revealIndexedNames` la reconnaît.
+ */
+function hideIndexedNames(node: MathNode): HiddenIndexedNames {
+	const originals = new Map<string, MathNode>();
+	if (findNodes(node, isIndexedName).length === 0) return { node, originals };
+	const hidden = mapNodeTopDown(node, (n) => {
+		const name = indexedNameOf(n);
+		if (name === null) return n;
+		if (!originals.has(name)) originals.set(name, n);
+		return { type: 'variable', name };
+	});
+	return { node: hidden, originals };
+}
+
+/** Les noms indicés restés sans liaison, rendus à leur nœud d'origine. */
+function revealIndexedNames(node: MathNode, originals: ReadonlyMap<string, MathNode>): MathNode {
+	if (originals.size === 0) return node;
+	return mapNode(node, (n) => (isVariable(n) ? (originals.get(n.name) ?? n) : n));
+}
+
+// =============================================================================
 // Main Substitution Function
 // =============================================================================
 
@@ -257,13 +293,17 @@ export function substitute(
 
 	// Iterate until no more substitutions are possible or max iterations reached
 	while (iteration < maxIterations) {
+		// Les noms indicés (`a_1`) cachés sous UNE variable : la liaison `a_1` les
+		// remplace en entier, celle de `a` ne touche plus à leur base
+		const hidden = hideIndexedNames(current);
+
 		// Check if there are any variables to substitute
-		if (!hasSubstitutableVariables(current, bindings)) {
+		if (!hasSubstitutableVariables(hidden.node, bindings)) {
 			break;
 		}
 
 		// Perform one pass of substitution
-		const next = substituteOnce(current, bindings);
+		const next = revealIndexedNames(substituteOnce(hidden.node, bindings), hidden.originals);
 
 		// Fix implicit multiplication where both sides became numeric
 		current = fixImplicitMultiplication(next);
@@ -362,7 +402,8 @@ export function hasVariable(node: MathNode, variableName: string): boolean {
  * hasAllBindings(expr, { x: 1, y: 2, z: 3 }); // true (extra bindings OK)
  */
 export function hasAllBindings(node: MathNode, bindings: EvalBindings): boolean {
-	const variables = getVariables(node);
+	// `a_1` est lié par la liaison `a_1`, pas par celle de `a` (comme `substitute`)
+	const variables = getVariables(hideIndexedNames(node).node);
 
 	for (const variable of variables) {
 		if (!(variable in bindings)) {
@@ -386,7 +427,7 @@ export function hasAllBindings(node: MathNode, bindings: EvalBindings): boolean 
  * // returns ['y', 'z']
  */
 export function getMissingBindings(node: MathNode, bindings: EvalBindings): string[] {
-	const variables = getVariables(node);
+	const variables = getVariables(hideIndexedNames(node).node);
 	const missing: string[] = [];
 
 	for (const variable of variables) {
