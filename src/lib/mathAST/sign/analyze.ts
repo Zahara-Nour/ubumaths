@@ -68,6 +68,7 @@ import { assertDomainResolved } from '../domain/errors';
 import { findZerosWithStatus, sortZerosByValue, getUniqueZeros } from './helpers/zeros';
 import { determineSignOnInterval } from './helpers/interval-sign';
 import { sampleSignOnInterval } from './helpers/sampling';
+import { signOverOnePeriod } from './helpers/periodic-sign';
 import {
 	interval,
 	openEndpoint,
@@ -183,7 +184,7 @@ export function analyzeSign(rawExpr: MathNode, options?: SignAnalysisOptions): S
 	const {
 		zeros: rawZeros,
 		resolved: zerosResolved,
-		periodicUnbounded
+		periodicFamily
 	} = findZerosWithStatus(expr, variable, domain);
 	if (!zerosResolved) {
 		warnings.push(
@@ -270,14 +271,17 @@ export function analyzeSign(rawExpr: MathNode, options?: SignAnalysisOptions): S
 		// ceux d'une période sont connus, les autres sont au-delà. Les échantillons
 		// (dans [-100 ; 100]) ne voyaient pas les zéros de sin(πx/180) en ±180, ±360…
 		// et `.variations cos(x°)` concluait « croissante sur ]-∞ ; 0[ » (revue de
-		// la PR « 60° » de l'atelier). Le signe reste inconnu, comme pour cos(x).
-		const unboundedPeriodic =
-			periodicUnbounded === true &&
-			(int.lower.value.type === 'infinity' || int.upper.value.type === 'infinity');
-		if (sign === 'unknown' && opts.numericFallback && zerosResolved && !unboundedPeriodic) {
-			sign = sampleSignOnInterval(expr, variable, int, {
-				tolerance: opts.tolerance
-			});
+		// la PR « 60° » de l'atelier). Le signe s'y lit alors sur UNE période
+		// quand f est périodique (`1 + cos x` positive, f′ de x − sin x) ; sinon
+		// il reste inconnu (`eˣ·cos x`).
+		const unbounded = int.lower.value.type === 'infinity' || int.upper.value.type === 'infinity';
+		if (sign === 'unknown' && opts.numericFallback && zerosResolved) {
+			sign =
+				periodicFamily !== undefined && unbounded
+					? signOverOnePeriod(expr, variable, periodicFamily, sortedZeros, opts.tolerance)
+					: sampleSignOnInterval(expr, variable, int, {
+							tolerance: opts.tolerance
+						});
 			if (sign !== 'unknown') {
 				reason = 'Determined by numeric sampling';
 				warnings.push(`Sign on interval determined numerically (fallback)`);

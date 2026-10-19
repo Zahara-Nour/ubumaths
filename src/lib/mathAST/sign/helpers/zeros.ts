@@ -82,11 +82,12 @@ export function findZerosWithStatus(
 	readonly zeros: ZeroInfo[];
 	readonly resolved: boolean;
 	/**
-	 * Des zéros PÉRIODIQUES sur un domaine non borné : seules les solutions de base
-	 * sont rendues, la liste est incomplète au-delà (`sin(πx/180)` : 0 et 180, pas
-	 * 360, -180…). Un intervalle non borné en contient d'autres.
+	 * La famille des zéros PÉRIODIQUES, quand le domaine n'est pas borné : la
+	 * liste `zeros` s'arrête aux zéros connus (`sin(πx/180)` sur ℝ : 0 et 180),
+	 * un intervalle non borné en contient d'autres (360, −180…). Entre le plus
+	 * petit et le plus grand zéro connu, elle est complète.
 	 */
-	readonly periodicUnbounded?: boolean;
+	readonly periodicFamily?: PeriodicSolutionFamily;
 } {
 	// Handle empty domain
 	if (domain.kind === 'empty') {
@@ -138,21 +139,29 @@ export function findZerosWithStatus(
 				// La famille ET les solutions isolées : `x(sin²x − 1/4)` a x = 0
 				// hors de la famille ±π/6 + kπ, `(x − 1)·sin x` a x = 1. Ne
 				// parcourir que la famille les perdait.
+				// Énumération tronquée (trop de zéros) : la liste est incomplète,
+				// f(x) = 0 n'est pas résolue sur le domaine.
+				const periodic = enumeratePeriodicZeros(result.periodicSolutions, bounds, domain);
 				return {
-					zeros: mergeZeros(
-						enumeratePeriodicZeros(result.periodicSolutions, bounds, domain),
-						filterSolutionsInDomain(result.solutions, domain)
-					),
-					resolved: true
+					zeros: mergeZeros(periodic.zeros, filterSolutionsInDomain(result.solutions, domain)),
+					resolved: periodic.complete
 				};
 			}
 		}
 
 		// Filter solutions within the domain (default non-periodic path)
+		const listed = filterSolutionsInDomain(result.solutions, domain);
+		if (!result.periodicSolutions) return { zeros: listed, resolved: true };
+
+		// Domaine non borné, zéros périodiques : les membres de la famille situés
+		// ENTRE les zéros connus (et la borne finie du domaine) manquaient.
+		// `(x − 20)·sin x` rendait 0, π et 20 : ]π ; 20[ contient 2π… 6π, et
+		// l'échantillonnage y aurait « confirmé » un signe faux.
+		const inner = familyBetweenKnownZeros(result.periodicSolutions, listed, domain);
 		return {
-			zeros: filterSolutionsInDomain(result.solutions, domain),
-			resolved: true,
-			...(result.periodicSolutions && { periodicUnbounded: true })
+			zeros: mergeZeros(inner.zeros, listed),
+			resolved: inner.complete,
+			periodicFamily: result.periodicSolutions
 		};
 	} catch {
 		// Le solveur a levé une exception : f(x) = 0 n'est pas résolue.
@@ -235,11 +244,14 @@ function enumeratePeriodicZeros(
 		upperInclusive: boolean;
 	},
 	domain: Domain
-): ZeroInfo[] {
+): { readonly zeros: ZeroInfo[]; readonly complete: boolean } {
 	const zeros: ZeroInfo[] = [];
 	const { baseSolutions, period, periodNumeric } = family;
 
-	if (periodNumeric <= 0 || !isFinite(periodNumeric)) return [];
+	if (periodNumeric <= 0 || !isFinite(periodNumeric)) return { zeros: [], complete: false };
+	// Une solution sautée ou un plafond atteint : la liste n'est plus complète,
+	// et un intervalle « entre deux zéros » en cacherait d'autres.
+	let complete = true;
 
 	const lower = bounds.lower!;
 	const upper = bounds.upper!;
@@ -251,20 +263,30 @@ function enumeratePeriodicZeros(
 	const eps = 1e-9;
 
 	// Safety: limit the number of points to avoid runaway enumeration
-	const maxPoints = 200;
+	const maxPoints = 500;
 
 	for (const baseSolution of baseSolutions) {
 		const baseNumeric = baseSolution.approximate;
-		if (baseNumeric === undefined) continue;
+		if (baseNumeric === undefined) {
+			complete = false;
+			continue;
+		}
 
 		// Slightly expand k range to catch boundary values
 		const kMin = Math.ceil((lower - eps - baseNumeric) / periodNumeric);
 		const kMax = Math.floor((upper + eps - baseNumeric) / periodNumeric);
 
 		// Safety: prevent excessive iteration for very large domains or tiny periods
-		if (kMax - kMin > 1000) continue;
+		if (kMax - kMin > 1000) {
+			complete = false;
+			continue;
+		}
 
-		for (let k = kMin; k <= kMax && zeros.length < maxPoints; k++) {
+		for (let k = kMin; k <= kMax; k++) {
+			if (zeros.length >= maxPoints) {
+				complete = false;
+				break;
+			}
 			const numericValue = baseNumeric + k * periodNumeric;
 
 			// Check if value is within bounds (with tolerance)
@@ -290,7 +312,46 @@ function enumeratePeriodicZeros(
 		}
 	}
 
-	return zeros;
+	return { zeros, complete };
+}
+
+/**
+ * Les zéros de la famille compris entre le plus petit et le plus grand des
+ * points connus : zéros listés et bornes FINIES du domaine.
+ *
+ * @internal
+ */
+function familyBetweenKnownZeros(
+	family: PeriodicSolutionFamily,
+	listed: readonly ZeroInfo[],
+	domain: Domain
+): { readonly zeros: ZeroInfo[]; readonly complete: boolean } {
+	const bounds = getDomainBounds(domain);
+	const known: { value: number; inclusive: boolean }[] = listed
+		.filter((z) => z.approximate !== undefined && isFinite(z.approximate))
+		.map((z) => ({ value: z.approximate as number, inclusive: true }));
+	if (bounds?.lower != null && isFinite(bounds.lower)) {
+		known.push({ value: bounds.lower, inclusive: bounds.lowerInclusive });
+	}
+	if (bounds?.upper != null && isFinite(bounds.upper)) {
+		known.push({ value: bounds.upper, inclusive: bounds.upperInclusive });
+	}
+	if (known.length < 2) return { zeros: [], complete: true };
+
+	known.sort((a, b) => a.value - b.value);
+	const low = known[0];
+	const high = known[known.length - 1];
+	if (high.value - low.value <= 0) return { zeros: [], complete: true };
+	return enumeratePeriodicZeros(
+		family,
+		{
+			lower: low.value,
+			upper: high.value,
+			lowerInclusive: low.inclusive,
+			upperInclusive: high.inclusive
+		},
+		domain
+	);
 }
 
 /**

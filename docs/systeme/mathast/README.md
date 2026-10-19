@@ -373,6 +373,28 @@ l'ensemble par `parseStudentDomain` — borne infinie (`[0 ; +∞[`), réunion, 
 `computeVariations`, qui prend le domaine fourni tel quel. `writeCommandArguments` écrit `dans` en
 dernier : un intervalle semi-ouvert ne referme pas ses crochets, et un `pour t` placé après y
 restait collé (et `dans [0;+∞[ pour t` tapé se relit). Une famille périodique sur un ensemble non borné est refusée (« Une infinité de solutions »), `findZeros` n'en rendant que les premiers termes. Tests : `atelier/__tests__/intervalle-calculs.test.ts`.
+**Signe d'une fonction à zéros périodiques** (2026-10-19, PR « 60° » de l'atelier). Sur un domaine
+non borné, le solveur ne rend que les zéros d'une période, et l'échantillonnage (5 points dans
+[−100 ; 100]) ne voyait pas les autres : `cos(πx/180)` était « négatif sur ]90 ; +∞[ », et
+`.variations cos(x°)` annonçait un maximum local en 0 ; `eˣ·cos x`, `e⁻ˣ·sin x` recevaient de même un
+signe constant faux. Trois règles (`sign/analyze.ts`, `sign/helpers/zeros.ts`,
+`sign/helpers/periodic-sign.ts`) :
+
+1. sur un intervalle **non borné**, le signe ne s'échantillonne plus : quand f est elle-même
+   périodique (`detectPeriodicity`, prouvée, continue), il se lit entre les zéros consécutifs d'**une
+   période** — un même signe partout vaut pour tout le domaine (`1 + cos x`, `sin²x` positifs ;
+   f′ = 1 − cos x ≥ 0, donc x − sin x croissante) ; sinon il reste **inconnu** (`cos x` au-delà de
+   ±π/2, `eˣ·cos x`), et aucun extremum ne s'en déduit ;
+2. `findZerosWithStatus` ajoute les membres de la famille compris **entre** les zéros connus et la
+   borne finie du domaine (`(x − 20)·sin x` : 2π … 6π entre π et 20) et rend la famille
+   (`periodicFamily`) ;
+3. une énumération tronquée (plafond de 500 zéros, ou plus de 1000 périodes) rend
+   `resolved: false` au lieu d'une liste incomplète tenue pour complète (`sin 2x` sur [0 ; 360]).
+
+Les domaines bornés ne changent pas. Reste connu : `tan x` sur ℝ est « croissante » d'un seul tenant,
+à travers ses asymptotes (`it.fails`). Tests : `sign/__tests__/periodique-non-borne.test.ts`,
+`variations/__tests__/periodique-non-borne.test.ts` (oracle numérique : 38 fonctions × 7 domaines,
+tout signe et tout sens affirmés vérifiés sur une grille).
 
 ### Carte du code
 
