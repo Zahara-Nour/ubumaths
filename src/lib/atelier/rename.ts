@@ -12,7 +12,7 @@
 
 import type { ObjectKind } from './types';
 import type { Provenance } from './parse';
-import { renameInDefinition } from './parse';
+import { renameInDefinition, renameTermsInDefinition } from './parse';
 import { renameInConstruction } from './construction-read';
 import { renamePairs } from './measures-read';
 
@@ -32,14 +32,23 @@ export interface RenamableObject {
  *
  * @param isPoint - Ce nom est-il un point, APRÈS le renommage (`from` s'appelle
  *   déjà `to`) ? Sert aux longueurs `AM`.
+ * @param isTerm - `from` est une suite ou une fonction : ce nom indicé (`u_3`)
+ *   est-il son terme, qui suit le renommage (`v_3`) ? Absent : aucun terme.
  */
 export function renameInObject(
 	object: RenamableObject,
 	from: string,
 	to: string,
-	isPoint: (name: string) => boolean
+	isPoint: (name: string) => boolean,
+	isTerm?: (indexedName: string) => boolean
 ): string {
 	if (object.kind === 'list') return object.definition;
+	if (isTerm !== undefined) {
+		const withTerms = renameTermsInDefinition(object.definition, from, to, isTerm);
+		if (withTerms !== object.definition) {
+			return renameInObject({ ...object, definition: withTerms }, from, to, isPoint);
+		}
+	}
 	// `(AB)` : une expression régulière de mots n'y voit pas l'identifiant A
 	const construction =
 		object.kind === 'point' || object.kind === 'curve' || object.kind === 'value'

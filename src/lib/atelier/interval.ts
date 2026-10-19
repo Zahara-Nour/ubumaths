@@ -35,10 +35,17 @@ import { formatEndpointValue, formatInterval } from '$lib/mathAST/domain/format'
 import { endpointToNumber } from '$lib/math/intervals';
 import type { CurvePiece } from '$lib/grapheur/restriction';
 import { evaluate } from '$lib/mathAST/eval';
-import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
+import { substitute } from '$lib/mathAST/eval/substitute';
 import { constantOf } from './constant';
 import { toCustom } from '$lib/mathAST/custom-generator';
-import { astOf, readingMode, readNumber, referencesOf, type ReadingMode } from './parse';
+import {
+	astOf,
+	readingMode,
+	readNumber,
+	referencesOf,
+	variablesOf,
+	type ReadingMode
+} from './parse';
 import type { Provenance } from './parse';
 import { INTERNAL_LETTER, renameVariableIn } from './letter';
 import { derivativeOf, displayName, reciprocalOf } from './names';
@@ -577,7 +584,8 @@ function constantValue(
 	const ast = astOf(argument);
 	if (ast === null) return null;
 	const bindings: Record<string, number> = {};
-	for (const variable of getVariables(ast)) {
+	// `a_1` sous son nom entier : la valeur de a_1, jamais celle de a (`variablesOf`)
+	for (const variable of variablesOf(ast, undefined)) {
 		const object = get(variable);
 		const value =
 			object?.kind === 'value' && object.status === 'ok' && object.unit === undefined

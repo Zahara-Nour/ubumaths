@@ -68,7 +68,7 @@
 	} from '$lib/atelier/atelier-file';
 	import type { KeptHistory } from '$lib/atelier/history-storage';
 	import { downloadText } from '$lib/atelier/history-export';
-	import { reservedYRenamedMessage } from '$lib/atelier/geometry';
+	import { renamedOnReadMessage } from '$lib/atelier/geometry';
 	import {
 		RETRIEVE_LABEL,
 		SET_ASIDE_NOTICE,
@@ -345,7 +345,7 @@
 		selected = null;
 		// Ce qui n'a pas pu être relu se dit, jamais en silence (§5)
 		const lost = [
-			...report.renamed.map(({ to }) => reservedYRenamedMessage(to)),
+			...report.renamed.map(renamedOnReadMessage),
 			...report.skipped.map((s) => `« ${s.name} » n'a pas pu être chargé : ${s.reason}`),
 			...(dropped > 0 ? [`${dropped} élément(s) du fichier étaient illisibles.`] : []),
 			...(consoleNotice !== null ? [consoleNotice] : [])
@@ -528,7 +528,7 @@
 		selected = null;
 		// Ce que la relecture a eu à dire (B7), jamais en silence
 		const lost = [
-			...report.renamed.map(({ to }) => reservedYRenamedMessage(to)),
+			...report.renamed.map(renamedOnReadMessage),
 			...report.skipped.map((s) => `« ${s.name} » n'a pas pu être retrouvé : ${s.reason}`),
 			...(swapped.dropped > 0
 				? [`${swapped.dropped} élément(s) de l’atelier mis de côté étaient illisibles.`]

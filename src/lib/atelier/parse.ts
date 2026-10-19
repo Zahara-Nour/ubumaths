@@ -898,6 +898,27 @@ const RENAMABLE = /(?<![\\A-Za-z])[A-Za-z]+(?:_\d+|_\{\d+\})?/g;
  * est le nom `a_1`, réécrit dans son écriture (B9 de `atelier-remplacer-phase0.md`
  * — renommer `a` changeait la base de `a_{1}`).
  */
+/**
+ * Réécrire les TERMES d'une suite (ou d'une fonction) renommée : `u_3` (le terme
+ * de rang 3 de u) devient `v_3` quand u devient v — sinon il citerait un autre
+ * objet, ou rien (2026-10-19). `isTerm` écarte un `u_3` qui est un objet à lui
+ * (une fonction `f_1` à côté de `f`). L'écriture de l'indice est gardée.
+ */
+export function renameTermsInDefinition(
+	definition: string,
+	from: string,
+	to: string,
+	isTerm: (indexedName: string) => boolean
+): string {
+	return definition.replace(RENAMABLE, (id) => {
+		const match = /^([A-Za-z])_(?:(\d+)|\{(\d+)\})$/.exec(id);
+		if (match === null || match[1] !== from) return id;
+		const index = match[2] ?? match[3];
+		if (!isTerm(`${from}_${index}`)) return id;
+		return match[2] !== undefined ? `${to}_${index}` : `${to}_{${index}}`;
+	});
+}
+
 export function renameInDefinition(definition: string, from: string, to: string): string {
 	return definition.replace(RENAMABLE, (id) => {
 		if (id.replace(/_\{(\d+)\}$/, '_$1') !== from) return id;

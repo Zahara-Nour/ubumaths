@@ -42,6 +42,7 @@ import type {
 	NodeMetadata
 } from './types';
 import { formatPointNames } from './common/point-names';
+import { indexedVariableLatex } from './common/indexed-names';
 import { flattenRelationChain } from './flatten';
 import { divide, multiply, number, opposite, parentheses, superscript } from './factory';
 import { transformAST } from './visitor';
@@ -613,7 +614,8 @@ export class LatexGenerator {
 				if ([...node.name].length === 1) {
 					this.emit(node.name, node.metadata);
 				} else {
-					this.emit(`\\mathit{${node.name}}`, node.metadata);
+					// `x_1` : un nom indicé, rendu comme un indice (`indexedVariableLatex`)
+					this.emit(indexedVariableLatex(node.name) ?? `\\mathit{${node.name}}`, node.metadata);
 				}
 				break;
 
@@ -1258,7 +1260,8 @@ export class LatexGenerator {
 				if ([...node.name].length === 1) {
 					this.emit(node.name, effectiveMeta);
 				} else {
-					this.emit(`\\mathit{${node.name}}`, effectiveMeta);
+					// `x_1` : un nom indicé, rendu comme un indice (`indexedVariableLatex`)
+					this.emit(indexedVariableLatex(node.name) ?? `\\mathit{${node.name}}`, effectiveMeta);
 				}
 				break;
 			case 'greek':
@@ -1419,6 +1422,9 @@ export class LatexGenerator {
 		if ([...node.name].length === 1) {
 			return node.name;
 		}
+		// `x_1` : un nom indicé (le pipeline en fait une variable), rendu comme un indice
+		const indexed = indexedVariableLatex(node.name);
+		if (indexed !== null) return indexed;
 		// Multi-character: use \mathit{}
 		return `\\mathit{${node.name}}`;
 	}

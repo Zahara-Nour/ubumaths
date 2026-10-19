@@ -93,6 +93,7 @@ import { isFigureObject, isFunction, isValue, type FunctionObject } from './type
 import { plotRestrictionOf } from './interval';
 import { constantOf } from './constant';
 import { pointCoordinatesOf } from './parse';
+import { hideIndexedNames } from '$lib/mathAST/common/indexed-names';
 import { substitutedAstOf, substitutedTextOf } from './engine';
 import {
 	constructionOf,
@@ -629,7 +630,7 @@ function wantedFunctionOf(
 	return {
 		kind: 'function',
 		name: object.name,
-		expression: substituted.ast,
+		expression: withIndexedNames(substituted.ast),
 		...(pieces !== undefined && { pieces }),
 		...(object.display !== undefined && { look: { style: strokeOf(object.display) } })
 	};
@@ -713,6 +714,15 @@ function wantedConstructionOf(
 	};
 }
 
+/**
+ * Un curseur `a_1` gardé en lettre reste un nœud indicé dans l'arbre substitué :
+ * la figure le lit sous son nom entier (`hideIndexedNames`), sinon elle cherchait
+ * le curseur `a`, et le point `(a_1 ; 2a_1)` n'était pas dessiné (2026-10-19).
+ */
+function withIndexedNames(ast: MathNode): MathNode {
+	return hideIndexedNames(ast).node;
+}
+
 function wantedOf(
 	atelier: Atelier,
 	object: PointObject | CurveObject,
@@ -742,11 +752,16 @@ function wantedShapeOf(
 			substitutedTextOf(atelier, c, object.provenance, { keepNames: keep })
 		);
 		if (!x.ok || !y.ok) return null;
-		return { kind: 'point', name: object.name, x: x.ast, y: y.ast };
+		return {
+			kind: 'point',
+			name: object.name,
+			x: withIndexedNames(x.ast),
+			y: withIndexedNames(y.ast)
+		};
 	}
 	const substituted = substitutedAstOf(atelier, object.name, { keepNames: keep });
 	if (!substituted.ok) return null;
-	const raw = equationExpression(substituted.ast);
+	const raw = equationExpression(withIndexedNames(substituted.ast));
 	return {
 		kind: 'curve',
 		name: object.name,

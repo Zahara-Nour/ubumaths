@@ -21,7 +21,14 @@ import {
 	type StoredObject
 } from './persistence';
 import { renameInObject } from './rename';
-import { nextName, derivativeOf, displayName, reciprocalName, reciprocalOf } from './names';
+import {
+	indexedNameClash,
+	nextClashFreeName,
+	derivativeOf,
+	displayName,
+	reciprocalName,
+	reciprocalOf
+} from './names';
 import {
 	cellTextFromStored,
 	columnLetter,
@@ -163,12 +170,19 @@ function planNames(atelier: Atelier, arrivals: readonly Arrival[]): Map<number, 
 	const reserved = new Set([...local, ...arrivals.map(({ stored }) => stored.name)]);
 	const used = new Set<string>();
 	const planned = new Map<number, string>();
+	// Les objets déjà là, puis les arrivants nommés : une suite `u` reçue à côté
+	// d'une valeur `u_3` locale (ou l'inverse) prend un autre nom (2026-10-19)
+	const present: { name: string; kind: StoredObject['kind'] }[] = [...atelier.objects];
 	for (const { stored, index } of arrivals) {
 		if (followsItsBase(stored.name)) continue;
-		const clash = local.includes(stored.name) || used.has(stored.name);
-		const chosen = clash ? nextName(stored.kind, [...reserved]) : stored.name;
+		const clash =
+			local.includes(stored.name) ||
+			used.has(stored.name) ||
+			indexedNameClash(stored.name, stored.kind, present) !== null;
+		const chosen = clash ? nextClashFreeName(stored.kind, [...reserved], present) : stored.name;
 		reserved.add(chosen);
 		used.add(chosen);
+		present.push({ name: chosen, kind: stored.kind });
 		planned.set(index, chosen);
 	}
 	return planned;
@@ -205,7 +219,14 @@ function rewriteCitations(
 		let firstTerm = stored.firstTerm;
 		for (const [from, to] of renames) {
 			const isPoint = (name: string) => kindOf(name === from ? to : name) === 'point';
-			definition = renameInObject({ kind: stored.kind, definition }, from, to, isPoint);
+			// Une suite (ou une fonction) renommée emmène ses termes reçus : `u_3` → `v_3`,
+			// sinon `b = u_3 + 1` lirait une valeur locale `u_3` sans rien dire
+			const fromKind = kindOf(to);
+			const isTerm =
+				fromKind === 'sequence' || fromKind === 'function'
+					? (name: string) => !arrivals.some((a) => a.stored.name === name)
+					: undefined;
+			definition = renameInObject({ kind: stored.kind, definition }, from, to, isPoint, isTerm);
 			if (firstTerm === from) firstTerm = to;
 		}
 		return {

@@ -14,7 +14,7 @@
 	import { useAtelier } from '$lib/atelier/context';
 	import { encodeAtelier, MAX_URL_PAYLOAD } from '$lib/atelier/url';
 	import { keepReceived } from '$lib/atelier/merge';
-	import { reservedYRenamedMessage } from '$lib/atelier/geometry';
+	import { renamedOnReadMessage } from '$lib/atelier/geometry';
 	import { onMount } from 'svelte';
 	import type { AtelierState } from '$lib/atelier/persistence';
 	import { Button } from '$lib/components/ui/button';
@@ -126,7 +126,7 @@
 				? 'Il n’y avait rien à garder.'
 				: `${parts.join(' · ')} dans ton atelier — tu le retrouves dans « Atelier ».`;
 		// Q2 de la géométrie : un `y` de l'atelier personnel renommé en l'enregistrant
-		const migrations = (report.migrated ?? []).map(({ to }) => reservedYRenamedMessage(to));
+		const migrations = (report.migrated ?? []).map(renamedOnReadMessage);
 		message = [summary, ...migrations].join(' ');
 	}
 </script>

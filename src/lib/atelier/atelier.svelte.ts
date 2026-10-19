@@ -46,7 +46,8 @@ import type {
 } from './types';
 import {
 	validateName,
-	nextName,
+	indexedNameClash,
+	nextClashFreeName,
 	nameRejectionMessage,
 	derivativeOf,
 	hasObjectNameShape,
@@ -787,7 +788,8 @@ export class Atelier {
 			// #329 : ne pas se nommer comme un objet que la définition cite déjà,
 			// sinon l'atelier fabrique lui-même la circularité qu'il dénonce.
 			const cited = this.#cited(input.kind, definition, provenance).map((r) => r.name);
-			name = nextName(input.kind, this.names, cited);
+			// Jamais `u_1` d'office à côté d'une suite u : il désignerait son terme
+			name = nextClashFreeName(input.kind, this.names, this.items, cited);
 		} else if (derivativeOf(input.name) !== null) {
 			// La carte `f′` n'a qu'une définition possible : elle-même, que le
 			// parseur lit comme la dérivée de `f`. Toute autre est refusée — une
@@ -825,6 +827,9 @@ export class Atelier {
 			if (rejection) return { ok: false, message: nameRejectionMessage(rejection, input.name) };
 			const asLetter = this.#letterUse(input.name);
 			if (asLetter !== null) return { ok: false, message: asLetter };
+			// `u_3` et une suite `u` : deux sens pour un nom (décision de David, 2026-10-19)
+			const clash = indexedNameClash(input.name, input.kind, this.items);
+			if (clash !== null) return { ok: false, message: clash };
 			name = input.name;
 		}
 
@@ -1272,7 +1277,11 @@ export class Atelier {
 	/** La définition après renommage (`rename.ts` : la même règle que la fusion). */
 	#renamedIn(object: AtelierObject, from: string, to: string): string {
 		const isPoint = (name: string) => this.get(name === from ? to : name)?.kind === 'point';
-		return renameInObject(object, from, to, isPoint);
+		// Une suite (ou une fonction) renommée emmène ses termes : `u_3` → `v_3`
+		const owner = this.get(to) ?? this.get(from);
+		const hasTerms = owner?.kind === 'sequence' || owner?.kind === 'function';
+		const isTerm = hasTerms ? (name: string) => this.get(name) === undefined : undefined;
+		return renameInObject(object, from, to, isPoint, isTerm);
 	}
 
 	rename(from: string, to: string): Renamed | Refused {
@@ -1325,6 +1334,12 @@ export class Atelier {
 		if (rejection) return { ok: false, message: nameRejectionMessage(rejection, to) };
 		const asLetter = this.#letterUse(to);
 		if (asLetter !== null) return { ok: false, message: asLetter };
+		const clash = indexedNameClash(
+			to,
+			this.items[index].kind,
+			this.items.filter((o) => o.name !== from)
+		);
+		if (clash !== null) return { ok: false, message: clash };
 
 		// L'objet renommé voit sa PROPRE définition réécrite lui aussi : une suite
 		// récurrente se cite elle-même (`u(n+1) = 2·u(n)`), et l'oublier la

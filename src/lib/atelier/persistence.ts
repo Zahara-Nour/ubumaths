@@ -24,7 +24,7 @@ import {
 	readCellName,
 	renameInFormula
 } from './grid';
-import { nextName } from './names';
+import { indexedNameClash, nextClashFreeName, nextName } from './names';
 import { renameInDefinition } from './parse';
 import { sequenceDisplaySchema, storedDisplaySchema, type StoredDisplay } from './display';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
@@ -430,12 +430,55 @@ const RESERVED_Y = /^y('*|\^-1)$/;
  *
  * Appliquée à toute relecture, quelle que soit la version : un état récent n'a
  * jamais d'objet `y`, et un lien forgé qui en porte un est relu de même.
+ * Renomme aussi une valeur `u_3` rangée à côté d'une suite `u`
+ * (`migrateIndexedNameClashes`, 2026-10-19).
  *
  * @param taken - Les noms déjà pris ailleurs (fusion dans l'atelier personnel)
  */
 export function migrateReservedNames(
 	state: AtelierState,
 	taken: readonly string[] = []
+): { state: AtelierState; renamed: ReadonlyArray<{ from: string; to: string }> } {
+	const reserved = migrateReservedY(state, taken);
+	const indexed = migrateIndexedNameClashes(reserved.state, taken);
+	return { state: indexed.state, renamed: [...reserved.renamed, ...indexed.renamed] };
+}
+
+/**
+ * Renommer chaque valeur (point, liste…) `u_3` d'un atelier rangé qui contient
+ * aussi une suite ou une fonction `u` : depuis le 2026-10-19, `u_3` y désigne
+ * le terme de rang 3, et les deux ne cohabitent plus (`indexedNameClash`). La
+ * valeur garde sa définition sous une lettre libre ; jamais de perte, l'appelant
+ * le dit à l'élève (`renamed`).
+ *
+ * ⚠️ Les définitions qui citent `u_3` ne sont PAS réécrites : elles y lisaient
+ * déjà le terme de la suite (`indexedObjectName`, `parse.ts`) — les réécrire
+ * changerait ce qu'elles calculent. À trancher par David si l'élève voulait la
+ * valeur.
+ */
+function migrateIndexedNameClashes(
+	state: AtelierState,
+	taken: readonly string[]
+): { state: AtelierState; renamed: ReadonlyArray<{ from: string; to: string }> } {
+	const renamed: Array<{ from: string; to: string }> = [];
+	const names = [...state.objects.map((o) => o.name), ...taken];
+	const objects = state.objects.map((o): StoredObject => {
+		// La valeur cède, jamais la suite ou la fonction : ses termes sont cités
+		if (o.kind === 'function' || o.kind === 'sequence') return o;
+		const others = state.objects.filter((other) => other !== o);
+		if (indexedNameClash(o.name, o.kind, others) === null) return o;
+		const to = nextClashFreeName(o.kind, names, state.objects);
+		names.push(to);
+		renamed.push({ from: o.name, to });
+		return { ...o, name: to };
+	});
+	return renamed.length === 0 ? { state, renamed } : { state: { ...state, objects }, renamed };
+}
+
+/** Le renommage de l'objet `y` (G5) : voir `migrateReservedNames`. */
+function migrateReservedY(
+	state: AtelierState,
+	taken: readonly string[]
 ): { state: AtelierState; renamed: ReadonlyArray<{ from: string; to: string }> } {
 	const owner = state.objects.find((o) => o.name === 'y');
 	if (owner === undefined && !state.objects.some((o) => RESERVED_Y.test(o.name))) {
