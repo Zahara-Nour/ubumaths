@@ -1,18 +1,18 @@
 ---
 title: Retrait de worksheets.template_id — journal
 date: 2026-10-19
-status: PR 1 livrée (#1532, migrée en prod) ; PR 2 (code) en cours
+status: PR 1 (#1532) et PR 2 (#1542) mergées ; PR 3 (drop) après deploy:prod
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, PR 2 en cours._
+_Mis à jour le 2026-10-19, après #1542._
 
-- **État** : PR 2 (code) écrite sur `refactor/retrait-template-id-code` : plus de lecture ni d'écriture de `worksheets.template_id` ; `template_id` envoyé au POST/PUT → 400. Tests verts, rouges sans le code (8).
-- **Prochaine action** : revues `code-reviewer` + `security-auditor`, PR, CI, merge. Puis `deploy:prod` (David), puis PR 3.
-- **En attente de David** : rien.
-- **Pièges en cours** : PR 3 doit **redéfinir** `get_worksheet_by_share_token` et `get_course_worksheet_by_share_token` (elles rendent `'template_id'` et lisent `coalesce(w.style_id, w.template_id)`) avant le `drop column`, et réécrire le test « fiche d'avant le lot 3 » de `tests/integration/style-fiche-liens-partages.test.ts` ; l'index `idx_worksheets_template_id` et la FK `worksheets_template_id_fkey` partent avec la colonne.
-- **Worktree / branche** : `../ubumaths-wt-retrait-template-id` · `refactor/retrait-template-id-code`.
+- **État** : PR 1 (#1532, migrée) et PR 2 (#1542, code) mergées. Le code ne lit ni n'écrit plus `worksheets.template_id` ; `template_id` envoyé au POST/PUT → 400.
+- **Prochaine action** : PR 3 (migration **destructive**) — seulement après le `deploy:prod` qui livre #1542. Redéfinir `get_worksheet_by_share_token` et `get_course_worksheet_by_share_token` (retirer `'template_id'` et le `coalesce(w.style_id, w.template_id)`), puis `drop column worksheets.template_id` (part avec `idx_worksheets_template_id` et `worksheets_template_id_fkey`). Grep des usages collé, accord de David.
+- **En attente de David** : `pnpm deploy:prod` (livre #1542), puis feu vert pour la PR 3 destructive.
+- **Pièges en cours** : réécrire le test « fiche d'avant le lot 3 » de `tests/integration/style-fiche-liens-partages.test.ts` (il appelle les RPC directement) ; `tests/integration/recopie-style-depuis-template.test.ts` et les tests qui insèrent `template_id` en SQL casseront au drop.
+- **Worktree / branche** : PR 3 → `git worktree add -b refactor/retrait-template-id-drop ../ubumaths-wt-retrait-template-id origin/main`.
 
 ---
 
