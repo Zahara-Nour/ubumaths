@@ -1,6 +1,6 @@
 # Liens courts — phase 0
 
-_Ouverte le 2026-10-19, suite du chantier [qr-codes](qr-codes-progress.md). En attente de David._
+_Ouverte le 2026-10-19, suite du chantier [qr-codes](qr-codes-progress.md). Tranchée par David le 2026-10-19._
 
 ## Le problème, mesuré
 
@@ -46,7 +46,16 @@ Une adresse courte **`https://www.chiph.re/l/<code>`** (environ 30 caractères) 
 7. Cible qui n'est pas un chemin interne → refus 400 (validation Zod), et rien n'est enregistré.
 8. Le serveur ne répond pas au moment du QR → le bouton dit « QR indisponible pour l'instant, copie le lien » et le lien long reste copiable.
 
-## Questions pour David
+## Tranché par David (2026-10-19)
+
+David a répondu « je suis tes recos » aux quatre questions ci-dessous :
+
+1. Seul un **prof ou l'admin connecté** crée un lien court. Ailleurs (panier public, élève, anonyme), le QR de série reste indisponible et le lien long reste copiable.
+2. **Accès** : celui qui a le code lit la cible, et rien d'autre. Personne ne liste la table, pas même un prof par l'API. L'auteur et la date sont gardés sans être exposés. Aucune donnée d'élève.
+3. **Séries seulement** : pas de lien court pour le bloc ` ```qr ` des documents.
+4. **Pas de liste « Mes liens courts »** en v1.
+
+## Questions posées à David
 
 1. **Qui peut créer un lien court ?** Le panier `/automaths/panier` est public : un visiteur anonyme ou un élève peut y composer une série et la partager.
    - (a) Un prof ou l'admin connecté seulement. Ailleurs, le QR reste indisponible et le lien long reste copiable. ← **ma recommandation** : pas de table que des inconnus remplissent, et c'est le prof qui imprime.
