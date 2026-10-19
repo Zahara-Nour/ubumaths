@@ -449,6 +449,28 @@ export function intersectionPoint(
 	);
 }
 
+/**
+ * Les points communs à `a` et `b`, sur leurs portions, avec le numéro `k` qui
+ * les écrit (`intersection(a, b, k)`) — `null` quand les deux supports n'ont
+ * jamais qu'un point commun (deux lignes). Rien si l'atelier ne sait pas les
+ * couper, ou s'ils ont une infinité de points communs : pour l'outil
+ * Intersection de la vue Géométrie (lot 3, PR 3), qui choisit le point visé.
+ */
+export function commonPoints(a: Support, b: Support): { k: number | null; point: GeoPoint }[] {
+	let solutions: Solutions;
+	try {
+		solutions = solutionsOf(a, b);
+	} catch (error) {
+		if (error instanceof GeometryFailure) return [];
+		throw error;
+	}
+	if (solutions.kind === 'infinite') return [];
+	const { points, max } = solutions;
+	return points
+		.map((point, i) => ({ k: max === 1 ? null : i + 1, point }))
+		.filter(({ point }) => onPortion(point, a) && onPortion(point, b));
+}
+
 // =============================================================================
 // Un point sur un objet
 // =============================================================================

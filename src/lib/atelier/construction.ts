@@ -630,6 +630,22 @@ export function supportOfPointOn(atelier: Atelier, name: string): Support | null
 	}
 }
 
+/**
+ * Le support RÉSOLU de l'objet `name` (droite, segment, demi-droite, cercle,
+ * courbe par équation, fonction), aux valeurs du moment, ou `null` : ce que
+ * vise un clic de la barre d'outils (géométrie lot 3, PR 3).
+ */
+export function supportNamed(atelier: Atelier, name: string): Support | null {
+	const object = atelier.get(name);
+	if (object === undefined || (object.kind !== 'curve' && object.kind !== 'function')) return null;
+	try {
+		return supportOf({ kind: 'ref', name }, contextOf(atelier, {}));
+	} catch (error) {
+		if (error instanceof Failure) return null;
+		throw error;
+	}
+}
+
 function half(value: GeoValue): GeoValue {
 	// Diviser par 2 ne peut pas échouer
 	return geoDiv(value, TWO) ?? value;
