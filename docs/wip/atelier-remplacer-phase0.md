@@ -63,3 +63,44 @@ pour Charger et Repartir de zéro, en partant de ce merge.
   le citent ne sont pas réécrites. Exemple : reçu `a = 3` et `f(x) = a x`, local `a = 5` → le `a`
   reçu devient `b`, mais `f` reste `a x` et suit le `a = 5` local, sans rien dire. À prouver par un
   test rouge, puis corriger.
+
+## Journal
+
+### 2026-10-19 — implémentation (branche `feat/atelier-remplacer`)
+
+- **Modèle** : `Atelier.replaceWith(state, label, { onLeave })` — une étape (`step`), par
+  `#restoreState` (la pile est gardée) ; `onLeave(atelier quitté)` appelé quand Annuler ou
+  Rétablir quitte un côté de l'étape. La console n'est ni remplacée ni dans la photo (R4).
+- **Stockage** (`replace.ts`) : copie sous `SET_ASIDE_STORAGE_KEY` (`chiphre-atelier-de-cote`),
+  écrite AVANT ; une écriture refusée défait la précédente (B5) ; plus récent / abîmé → refus
+  comme la fusion (B6) ; Retrouver = échange, les deux écritures ou aucune (B3) ; copie relue par
+  `loadAtelier(…, clé)` (Zod), migrations à la relecture par l'atelier ; abîmée → oubliée (B7).
+- **Interface** : bouton « Remplacer mon atelier » (`ShareBar`, `onReplace`) ; le conteneur sort
+  du mode éphémère SANS recharger (`linkMode`, `openSession(…, { adopt: true })`, console de
+  l'élève relue, `?a=` retiré par `replaceState` dans les pages `/atelier` et `/grapheur`) ;
+  « Retrouver » dans l'avis (bouton dans la zone `aria-live`) et dans la barre (`ArchiveRestore`).
+- **Undo et copie** : Annuler / Rétablir d'un remplacement ou d'un Retrouver réécrivent la copie
+  avec l'atelier quitté (`keepLeftAside`) — sans cela, Ctrl+Z après Retrouver laissait la copie
+  égale à l'écran, et l'autre atelier n'existait plus que dans la pile.
+- **Charger** (R5, B8) : copie de côté avant `restore`, confirmation qui rassure, avis avec
+  Retrouver ; refus si la copie ne s'écrit pas. **Toujours `restore`** (la pile est vidée) : la
+  PR 3 du lot 5 remplacera la ligne commentée dans `loadNow` par
+  `atelier.replaceWith(state, 'charger un atelier', { onLeave: keepLeftAside })`.
+- **B9** : test rouge (7 cas : `a x`, `2a+1`, chaîne `a`/`b`/`c`, `a_1`, `a_{1}` de carte,
+  `milieu(A, B)`, `(AB)`, `AB`, construction LaTeX) puis corrigé : `mergeInto` choisit les noms
+  avant de créer (`planNames`, une lettre libre évite aussi les autres arrivants — sinon le `A`
+  reçu devenait `B`, le nom d'un autre arrivant), puis réécrit les définitions
+  (`rewriteCitations` → `renameInObject`, règle partagée avec `Atelier.rename` dans `rename.ts`).
+  `renameInDefinition` lit désormais `a_{1}` (MathLive) : renommer `a` changeait la base de
+  `a_{1}`, dans `rename` comme dans la fusion.
+
+### À trancher par David
+
+1. **Ce que « Remplacer » garde** : l'atelier AFFICHÉ (le lien + ce que l'élève y a fait), pas le
+   lien d'origine — choix le plus prudent (le travail fait sur le lien n'est pas perdu). « Garder »
+   verse, lui, le lien d'origine (inchangé).
+2. **Un Ctrl+Z juste après « Remplacer »** rend l'ancien atelier (il est remis à l'écran puis
+   remplacé en une étape) ; les gestes faits sur le lien AVANT de remplacer ne sont plus
+   annulables (l'atelier est relu).
+3. **Charger sans stockage** (navigateur qui n'enregistre rien) : reste ce qu'il était, sans
+   copie, au lieu d'être refusé (B5 appliqué seulement quand une écriture échoue).
