@@ -273,6 +273,12 @@ export class AtelierFigure {
 		return this.#elements.get(name);
 	}
 
+	/** Le nom de l'objet dessiné par l'élément `id`, s'il y en a un (le glisser, lot 3). */
+	nameOf(id: string): string | undefined {
+		for (const [name, element] of this.#elements) if (element === id) return name;
+		return undefined;
+	}
+
 	/** Réservé à `syncFigure`. */
 	apply(plan: FigurePlan): FigureSyncOutcome {
 		const fingerprint = fingerprintOf(plan);

@@ -7,8 +7,9 @@
 	 *
 	 * ⚠️ Une PROJECTION (invariant 1) : la vue ne détient aucun état de modèle.
 	 * Elle lit l'atelier par `useAtelier()` et le reflète par `syncFigure`, à
-	 * sens unique. Rien ne s'y glisse au lot 1 (F4) : zoom et déplacement de la
-	 * vue seulement ; un point bouge par son curseur ou sa carte.
+	 * sens unique. Le glisser d'un point (lot 3, M1) ne la contredit pas : la
+	 * toile le DÉLÈGUE (`pointDrag`), l'atelier réécrit la définition du point et
+	 * la figure suit, comme pour un curseur. Une étape par glisser (M7).
 	 *
 	 * Le repère est orthonormé par construction (F2) : la toile n'a qu'un
 	 * `pixelsPerUnit`, jamais un par axe — c'est ce qui garde le cercle rond, et
@@ -18,6 +19,7 @@
 	import { AtelierFigure, syncFigure } from '$lib/atelier/figure-sync';
 	import { isFigureObject, isFunction } from '$lib/atelier/types';
 	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
+	import type { PointDrag } from '$lib/components/geometry/point-drag';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 
 	/** Unités visibles sur le plus petit côté de la toile, à l'ouverture (de −6,5 à 6,5). */
@@ -44,6 +46,51 @@
 		synced = { figure: projection.figure, version: projection.changes };
 	});
 
+	/** Le point saisi à la souris, pendant un glisser. */
+	let held: string | null = null;
+	/** Pourquoi le dernier point visé ne se glisse pas (M2) : dit sous la barre. */
+	let refusal = $state<string | null>(null);
+
+	/** Les refus du glisser, relus à chaque révision : la toile les demande à chaque dessin. */
+	let refusals = new Map<string, string | null>();
+	let refusalsRevision = -1;
+
+	function refusalOf(name: string): string | null {
+		if (refusalsRevision !== atelier.revision) {
+			refusals = new Map();
+			refusalsRevision = atelier.revision;
+		}
+		if (!refusals.has(name)) refusals.set(name, atelier.dragRefusal(name));
+		return refusals.get(name) ?? null;
+	}
+
+	const pointDrag: PointDrag = {
+		canGrab: (id) => {
+			const name = projection.nameOf(id);
+			return name !== undefined && refusalOf(name) === null;
+		},
+		grab: (id) => {
+			const name = projection.nameOf(id);
+			if (name === undefined) return false;
+			refusal = refusalOf(name);
+			if (refusal !== null) return false;
+			held = name;
+			return true;
+		},
+		holds: (id) => held !== null && projection.nameOf(id) === held,
+		move: (x, y, snap) => {
+			if (held === null) return;
+			const done = atelier.dragPoint(held, x, y, snap);
+			if (!done.ok) refusal = done.message;
+		},
+		release: () => {
+			held = null;
+			// Un refus dit EN PLEIN geste (« ne peut pas se glisser ici ») ne survit pas au relâcher
+			refusal = null;
+			atelier.endGesture();
+		}
+	};
+
 	/** La taille de la toile, mesurée : elle suit la largeur de l'écran (téléphone). */
 	let width = $state(0);
 	let height = $state(0);
@@ -66,6 +113,7 @@
 			bind:checked={() => atelier.figureFrame, (shown) => atelier.setFigureFrame(shown)}
 			label="Repère"
 		/>
+		<p class="refus" role="status">{refusal ?? ''}</p>
 	</div>
 	{#if empty}
 		<p class="vide">
@@ -84,6 +132,7 @@
 					height={Math.floor(height)}
 					pixelsPerUnit={Math.min(width, height) / UNITS_ACROSS}
 					objectsMovable={false}
+					{pointDrag}
 					showGrid={atelier.figureFrame}
 					showGraduations={atelier.figureFrame}
 				/>
@@ -105,6 +154,11 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.5rem 0.75rem;
+	}
+	.refus {
+		margin: 0;
+		font-size: 0.875rem;
+		color: var(--color-muted-foreground);
 	}
 	.vide {
 		margin: 0;

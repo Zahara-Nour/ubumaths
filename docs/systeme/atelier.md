@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (`.relever`, lot 2, PR 4).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (glisser un point, lot 3, PR 1).
 
 ## À quoi ça sert
 
@@ -99,6 +99,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/construction-read.ts`      | Lecture d'une construction (lot 2) : mots du DSL, raccourcis `(AB)` `[AB]` `[AB)`, séparateurs, accents                 |
 | `src/lib/atelier/construction-spec.ts`      | Typage d'une construction lue : point, droite ou nombre attendu ; refus du mauvais type (L8)                            |
 | `src/lib/atelier/construction.ts`           | Calcul EXACT d'une construction (fonctions pures de `geometry-core`), équations, longueur, carte                        |
+| `src/lib/atelier/point-drag.ts`             | Glisser un point à la souris (lot 3, PR 1) : ce qui se glisse (`dragHoldOf`), couple écrit, position sur un support     |
 | `src/lib/atelier/construction-intersect.ts` | `intersection` et `point_sur` (PR 3) : calcul pur sur des supports résolus, numérotation `k`, attente et refus          |
 | `src/lib/atelier/measures.ts`               | Mesures (lot 2, PR 2) : `AM`, `distance`, `aire`, `perimetre`, `angle`, calculées exactes et remplacées par leur valeur |
 | `src/lib/atelier/measures-read.ts`          | Repérage des mesures dans un texte, sans atelier (pour `parse.ts`)                                                      |
@@ -172,33 +173,33 @@ Ceux du code et de l'interface :
 
 ### Composants — `src/lib/components/atelier/`
 
-| Composant                   | Rôle                                                                                                                       |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `AtelierContainer.svelte`   | Le conteneur : barre d'icônes, panneau + vues, console déroulante, session, `CalcDesk`, `GrapheurStore` propre             |
-| `roving-toolbar.ts`         | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                          |
-| `ToolButton.svelte`         | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)    |
-| `ObjectPanel.svelte`        | « Mes objets » : création, liste des cartes                                                                                |
-| `ObjectCard.svelte`         | L'aiguillage : confie chaque objet à la carte de son type                                                                  |
-| `FigureCard.svelte`         | La carte d'un point ou d'une courbe, sur une ligne : `A = [champ]`, `d : [champ]` ; nature, construction en gris, menu     |
-| `FigureStylePopover.svelte` | Le point de couleur d'un point (couleur, taille) ou d'une courbe de la figure (couleur, trait) : `setFigureDisplay`        |
-| `ValueCard.svelte`          | La carte d'une valeur, sur une ligne : `a = [champ]`, menu ; curseur sous la ligne d'un paramètre ; fenêtre des bornes     |
-| `SequenceCard.svelte`       | La carte d'une suite, sur une ligne : point, `u(n) = [champ]`, œil, menu ; premier terme et marches sous la ligne          |
-| `ListCard.svelte`           | La carte d'une liste : aperçu non éditable, nombre de valeurs ; menu avec le sous-menu « Avec une autre liste »            |
-| `CardActionItems.svelte`    | Les actions d'un menu de carte, indisponibles annoncées (`aria-disabled`, raison décrite), jamais `disabled`               |
-| `UnavailableItem.svelte`    | Un réglage de menu qui ne s'applique pas ici (« Curseur » d'une grandeur, « Escalier » d'une suite explicite)              |
-| `FunctionCard.svelte`       | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]`, œil, menu Affichage / Actions ; fenêtre de « Tabuler »   |
-| `CurveStylePopover.svelte`  | Le point de couleur d'une fonction ou d'une suite : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)    |
-| `DefinitionField.svelte`    | Champ MathLive d'une définition ; toutes les cartes le rangent à Entrée / sortie du champ (`commit="validate"`)            |
-| `ValueSlider.svelte`        | Le curseur d'une valeur, sous la ligne de sa carte                                                                         |
-| `SliderSettings.svelte`     | Les bornes et le pas du curseur, refusés avec leur raison (fenêtre ouverte depuis le menu de la valeur)                    |
-| `CurveSettings.svelte`      | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls  |
-| `CalculView.svelte`         | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                    |
-| `NaturalField.svelte`       | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel          |
-| `AtelierSettings.svelte`    | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                 |
-| `FormulaText.svelte`        | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)    |
-| `FigureView.svelte`         | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, case « Repère », message d'un atelier sans figure          |
-| `DataView.svelte`           | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                |
-| `ShareBar.svelte`           | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier » |
+| Composant                   | Rôle                                                                                                                                  |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `AtelierContainer.svelte`   | Le conteneur : barre d'icônes, panneau + vues, console déroulante, session, `CalcDesk`, `GrapheurStore` propre                        |
+| `roving-toolbar.ts`         | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                                     |
+| `ToolButton.svelte`         | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)               |
+| `ObjectPanel.svelte`        | « Mes objets » : création, liste des cartes                                                                                           |
+| `ObjectCard.svelte`         | L'aiguillage : confie chaque objet à la carte de son type                                                                             |
+| `FigureCard.svelte`         | La carte d'un point ou d'une courbe, sur une ligne : `A = [champ]`, `d : [champ]` ; nature, construction en gris, menu                |
+| `FigureStylePopover.svelte` | Le point de couleur d'un point (couleur, taille) ou d'une courbe de la figure (couleur, trait) : `setFigureDisplay`                   |
+| `ValueCard.svelte`          | La carte d'une valeur, sur une ligne : `a = [champ]`, menu ; curseur sous la ligne d'un paramètre ; fenêtre des bornes                |
+| `SequenceCard.svelte`       | La carte d'une suite, sur une ligne : point, `u(n) = [champ]`, œil, menu ; premier terme et marches sous la ligne                     |
+| `ListCard.svelte`           | La carte d'une liste : aperçu non éditable, nombre de valeurs ; menu avec le sous-menu « Avec une autre liste »                       |
+| `CardActionItems.svelte`    | Les actions d'un menu de carte, indisponibles annoncées (`aria-disabled`, raison décrite), jamais `disabled`                          |
+| `UnavailableItem.svelte`    | Un réglage de menu qui ne s'applique pas ici (« Curseur » d'une grandeur, « Escalier » d'une suite explicite)                         |
+| `FunctionCard.svelte`       | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]`, œil, menu Affichage / Actions ; fenêtre de « Tabuler »              |
+| `CurveStylePopover.svelte`  | Le point de couleur d'une fonction ou d'une suite : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)               |
+| `DefinitionField.svelte`    | Champ MathLive d'une définition ; toutes les cartes le rangent à Entrée / sortie du champ (`commit="validate"`)                       |
+| `ValueSlider.svelte`        | Le curseur d'une valeur, sous la ligne de sa carte                                                                                    |
+| `SliderSettings.svelte`     | Les bornes et le pas du curseur, refusés avec leur raison (fenêtre ouverte depuis le menu de la valeur)                               |
+| `CurveSettings.svelte`      | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls             |
+| `CalculView.svelte`         | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                               |
+| `NaturalField.svelte`       | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel                     |
+| `AtelierSettings.svelte`    | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                            |
+| `FormulaText.svelte`        | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)               |
+| `FigureView.svelte`         | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, case « Repère », glisser des points, message d'un atelier sans figure |
+| `DataView.svelte`           | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                           |
+| `ShareBar.svelte`           | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier »            |
 
 La vue **Graphe** n'a pas de composant à elle : `AtelierContainer.svelte` monte
 `src/lib/components/grapheur/GrapheurContainer.svelte` avec `panel={false}` sur un
@@ -1598,11 +1599,11 @@ les deux, `FigureCard.svelte`, avec la grammaire des autres :
 
 ### Vues
 
-| Vue       | Composant                             | Ce qu'elle projette                                                                                                               |
-| --------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Graphe    | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                               |
-| Géométrie | `FigureView.svelte`                   | points, courbes et 𝒞f affichées dans un repère orthonormé (`GeometryCanvas`), via `syncFigure` ; rien ne s'y glisse au lot 1 (F4) |
-| Données   | `DataView.svelte`                     | la grille (une liste = une colonne nommée), diagrammes en bâtons / barres / circulaire                                            |
+| Vue       | Composant                             | Ce qu'elle projette                                                                                                                    |
+| --------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Graphe    | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                                    |
+| Géométrie | `FigureView.svelte`                   | points, courbes et 𝒞f affichées dans un repère orthonormé (`GeometryCanvas`), via `syncFigure` ; les points se glissent (lot 3, M1-M2) |
+| Données   | `DataView.svelte`                     | la grille (une liste = une colonne nommée), diagrammes en bâtons / barres / circulaire                                                 |
 
 Trois ponts à **sens unique**, tous idempotents (une empreinte évite de refaire le travail) :
 
@@ -1654,7 +1655,23 @@ Trois ponts à **sens unique**, tous idempotents (une empreinte évite de refair
 **Vue Géométrie** (`FigureView.svelte` ; l'onglet s'appelle « Géométrie » depuis la Q5 révisée, le
 code garde ses identifiants `Figure*` et `ViewId` `'figure'`) : repère **orthonormé** par construction, `GeometryCanvas`
 n'ayant qu'un `pixelsPerUnit` (F2 ; 13 unités sur le plus petit côté à l'ouverture) ;
-`objectsMovable={false}` — zoom et déplacement de la vue seulement (F4) ; la toile suit la largeur
+`objectsMovable={false}` (étiquettes, double-clic figés) mais **les points se glissent** (lot 3,
+PR 1, M1, M2, M7) : la toile ne touche pas la figure, elle DÉLÈGUE le geste (`pointDrag`, au plus un
+mouvement par image ; rien n'est écrit sous 4 px de chemin, un clic qui tremble laisse `(1/3 ; 2,25)`
+tel quel ; l'écart point − curseur de la saisie est gardé, le point ne saute pas ; un seul pointeur,
+les autres sont ignorés ; la classe `dragging` est demandée à `FigureView` (`holds`), la figure
+refaite en plein geste changeant les ids) ; `FigureView` retrouve le nom du point (`AtelierFigure.nameOf`) et appelle
+`atelier.dragPoint(nom, x, y, aimantation)`, qui réécrit sa définition — tout se recalcule
+pendant le geste (mesures, cartes), la figure suit par `syncFigure`. Un point par coordonnées
+NOMBRES reçoit `(x ; y)`, chaque coordonnée aimantée à l'entier à moins de 8 px, sinon arrondie au
+dixième (`(2,3 ; -0,7)`) ; un `point_sur` à position écrite reçoit sa position lue sur son support
+(`supportOfPointOn` puis `positionAt` : paramètre projeté sur une ligne, angle en degrés dans
+[0 ; 360[ sur un cercle, abscisse sur 𝒞f), par `slidePosition` (bornes et pas de son curseur).
+Ne se glissent pas (`dragRefusal`, phrase sous la barre, `role="status"`) : un point construit
+(« déplace les points dont il dépend »), des coordonnées ou une position qui citent une valeur
+(« glisse son curseur »), un `point_sur` sans position écrite. Coût mesuré (banc
+`banc-glisser.svelte.test.ts`, figure de 24 objets, A dont tout dépend, Chromium) : médiane
+15,9 ms, p90 17,6 ms par mouvement, figure refaite comprise. La toile suit la largeur
 de son conteneur (téléphone). La case « Repère » (`MyCheckbox`) montre ou masque grille, axes et
 graduations : l'état vit dans l'`Atelier` (`figureFrame`, `setFigureFrame`), **hors
 `serialize()`** comme `charts`, rendu à son défaut (affiché) par `restore()` (G4, F3). Sans point
@@ -1887,7 +1904,7 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
   du modèle qui sont toujours un geste : `create`, `createDerivative`, `createReciprocal`,
   `createFromOffer`, `rename`, `removeWithDependents`, `setPlotted`, `setInFigure`, `setDisplay`,
   `setSequenceDisplay`, `setFigureDisplay`, `setSequence`, `setSlider`, `setSliderShown`,
-  `toggleChart`, `slideTo`, `slidePosition`, et tous les gestes de la grille. `update` n'en ouvre
+  `toggleChart`, `slideTo`, `slidePosition`, `dragPoint`, et tous les gestes de la grille. `update` n'en ouvre
   PAS.
 - **Un geste continu = UNE étape** (PR 2, décision de David : « tout un glissé = une étape » ;
   revue de #1517 : 150 crans de tangente faisaient 100 étapes et chassaient une suppression).
@@ -1895,7 +1912,9 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
   fondent dans une seule étape, dont la photo d'avant reste celle du début ; un geste revenu à son
   point de départ ne laisse rien ; un autre geste, Annuler ou Rétablir le ferment aussi
   (`HistoryStack.push(…, clé)` / `seal`). Clés : `curseur:a` (`slideTo`), `position:M`
-  (`slidePosition`, le curseur d'un `point_sur`), `tangente:f` (`CurveSettings`),
+  (`slidePosition`, le curseur d'un `point_sur` ou son glisser), `glisser:A` (`dragPoint`, un
+  point par coordonnées glissé à la souris, fermé au relâcher ; tant qu'il est ouvert,
+  `atelier.draggingPoint` est vrai et Ctrl+Z / Ctrl+Y de `AtelierContainer` ne font rien), `tangente:f` (`CurveSettings`),
   `borne-from:f` / `borne-to:f` (bornes de l'aire), `curseur-min:a`… (`SliderSettings`).
   **Fin du geste** (`gesture.ts`) : souris ou doigt → au relâchement (`onValueCommit` de bits-ui) ;
   clavier → au relâchement de la touche, donc **un appui = une étape et une flèche tenue = une
@@ -2501,7 +2520,8 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
 2. **Ponts à sens unique** : atelier → moteur (`syncEngine`), atelier → grapheur (`syncPlots`),
    atelier → figure (`syncFigure`). Points et courbes n'entrent que dans le troisième (avec les
    fonctions marquées `inFigure`) ; rien de
-   la figure ne remonte (pas de glisser au lot 1). Une **construction** est calculée par
+   la figure ne remonte : le glisser d'un point (lot 3) est délégué par la toile à l'atelier, qui
+   réécrit la définition. Une **construction** est calculée par
    l'atelier (`construction.ts`, L1), jamais lue dans la `Figure`.
 3. **Un seul espace de noms** (D1) ; jamais d'écrasement silencieux d'un nom (création, renommage,
    fusion d'un atelier reçu).
@@ -2678,4 +2698,4 @@ les garanties `/grapheur` non faites : elles le sont (lots 2 à 6, #779 → #809
 
 ---
 
-Vérifié contre le code le 2026-10-19 (`.relever`, lot 2, PR 4).
+Vérifié contre le code le 2026-10-19 (glisser un point, lot 3, PR 1).

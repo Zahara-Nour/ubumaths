@@ -11,13 +11,12 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1528._
+_Mis à jour le 2026-10-19, lot 3 PR 1 : revue corrigée, PR à ouvrir._
 
-- **État** : lots 1 et 2 de la géométrie livrés (#1474 → #1516) ; `60°` (#1519) ; noms indicés (#1520, #1525 ; les 4 choix prudents GARDÉS par David le 2026-10-19) ; « Remplacer mon atelier » (#1523) ; mathAST : extrema périodiques (#1526), zéros périodiques d'un numérateur de quotient + Ferrari réécrit dans `common/quartic-roots.ts` (#1528). Rien en production. Aucun worktree ouvert.
-- **Prochaine action** : lot 3, la souris (phase 0 validée : `atelier-geometrie-lot3-phase0.md`), PR 1 = le glisser (fin de geste `atelier.step(…, clé)` + `endGesture()`, #1518). Prévenir avant la session « atelier-refonte-interface » (elle change `replaceWith`, `undoStep`, `redoStep`, `#apply`).
+- **État** : lots 1 et 2 livrés (#1474 → #1528, rien en prod). Lot 3 PR 1 « le glisser » sur `feat/atelier-geometrie-glisser` (worktree `../ubumaths-wt-atelier-geometrie`), 3 commits : code, doc, corrections de la revue (6 points, tests rouges vérifiés sans les corrections).
+- **Prochaine action** : ouvrir la PR, CI, merger ; puis lot 3 PR 2 (voir `atelier-geometrie-lot3-phase0.md`).
 - **En attente de David** : rien.
-- **Restes connus mathAST (non poursuivis, exotiques)** : quartiques à racines espacées ≲ 1e-4 près d'un sommet commun ou d'une grande racine (résidu accepté trop large) ; `sin x/ln(cos x+1)` zéro en π (comme main) ; `2√(sin x)` sur ]0 ; π[ et `ln(x+sin x)` sur [1 ; +∞[ « inconnu » (main concluait juste par échantillonnage, mécanisme non sûr).
-- **Pièges** : toute PR qui touche `mathAST` → relecture `mathast-expert` indépendante (#1528 : 4 passes, 3 bloquants trouvés). Agents : `general-purpose` en sonnet (opus pour géométrie / mathAST via leurs agents dédiés).
+- **Pièges** : banc A (24 objets) médiane 15,9 ms, p90 17,6 ms (M1 < 16 ms tenu de justesse). Prévenir avant la session « atelier-refonte-interface ». PR qui touche `mathAST` → `mathast-expert`.
 
 ## Lot 1 — découpage
 
@@ -552,3 +551,23 @@ emmène ses termes ; `.réciproque \alpha_1 …` redit « α » ; commandes de c
 terme ; écho et refus citent `u_3` ; `u_3'` expliqué ; `.variations x^2 - a x` honnête (« non
 déterminés »). Hors périmètre, noté : le grec indicé reste un `subscript` dans le pipeline,
 `x_A` (indice non numérique) n'est pas un nom.
+
+## Lot 3, PR 1 — le glisser (2026-10-19)
+
+- M1 (a) : l'atelier tient la position. La toile DÉLÈGUE (`pointDrag` : `canGrab`, `grab`, `move`
+  une fois par image, `release`) ; `FigureView` → `atelier.dragPoint(nom, x, y, aimantation)`.
+- M2 : point par coordonnées nombres → `(x ; y)` aimanté aux entiers à 8 px, sinon au dixième ;
+  `point_sur` à position écrite → position lue sur le support (`supportOfPointOn`, `positionAt`),
+  par `slidePosition`. Refus dits sous la barre (`role="status"`).
+- M7 : une étape par glisser, clé `glisser:A` (ou `position:M`), fermée au relâcher, à
+  `pointercancel`, à la perte de focus de la fenêtre et au démontage de la toile.
+- Banc `banc-glisser.svelte.test.ts` (A de la figure de 24 objets) : médiane 15,9 ms, p90 17,6 ms
+  (curseur `a` : 13 ms). Modèle seul (node) : `dragPoint` 4,4 ms, `syncFigure` (figure refaite) 1 ms.
+- Revue `code-reviewer` (aucun bloquant), corrigée — tests d'abord vérifiés rouges sur le code
+  d'avant (10 rouges : 8 navigateur, 2 node) : seuil de 4 px avant d'écrire et écart point −
+  curseur gardé (plus de saut ni de `(1/3 ; 2,25)` réécrit au clic) ; un seul pointeur par geste ;
+  `atelier.draggingPoint` → Ctrl+Z / Ctrl+Y ignorés en plein glisser ; classe `dragging` demandée
+  à `FigureView` (`PointDrag.holds`) : `(AB)` écrite avant A, A posé sur B, la figure refaite
+  renumérote (`pt_4` → `pt_1`) ; un refus dit en plein geste s'efface au relâcher. Tests de
+  couverture : direction (+x, −y), une image par mouvement et relâcher qui envoie le dernier,
+  `point_sur` sur droite et demi-droite, A glissé avec M sur [AB].

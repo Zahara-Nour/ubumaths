@@ -1,7 +1,7 @@
 /**
  * La vue Figure (géométrie v2, lot 1, PR 2 — F1 à F5 de
  * `docs/wip/atelier-geometrie-phase0.md`) : une projection de l'atelier dans une
- * `GeometryCanvas`, repère orthonormé, rien qui se glisse.
+ * `GeometryCanvas`, repère orthonormé ; les points se glissent (lot 3, PR 1).
  *
  * Asserte le RENDU : éléments SVG présents, texte de la vue.
  */
@@ -39,6 +39,68 @@ function labels(container: HTMLElement): string[] {
 	return [...canvasOf(container).querySelectorAll('text.label')].map(
 		(t) => t.textContent?.trim() ?? ''
 	);
+}
+
+/** Tirer le point de (dx ; dy) pixels à la souris, puis le relâcher. */
+async function drag(container: HTMLElement, point: SVGElement, dx: number, dy: number) {
+	const rect = point.getBoundingClientRect();
+	const at = { clientX: rect.x + rect.width / 2, clientY: rect.y + rect.height / 2 };
+	const svg = canvasOf(container);
+	point.dispatchEvent(new PointerEvent('pointerdown', { ...at, bubbles: true, pointerId: 1 }));
+	for (let i = 1; i <= 4; i++) {
+		svg.dispatchEvent(
+			new PointerEvent('pointermove', {
+				clientX: at.clientX + (dx * i) / 4,
+				clientY: at.clientY + (dy * i) / 4,
+				bubbles: true,
+				pointerId: 1
+			})
+		);
+		await new Promise((r) => requestAnimationFrame(r));
+	}
+	svg.dispatchEvent(
+		new PointerEvent('pointerup', {
+			clientX: at.clientX + dx,
+			clientY: at.clientY + dy,
+			bubbles: true,
+			pointerId: 1
+		})
+	);
+	await new Promise((r) => setTimeout(r, 50));
+}
+
+/** Le centre, à l'écran, d'un élément de la toile. */
+function centerOf(element: Element): { x: number; y: number } {
+	const rect = element.getBoundingClientRect();
+	return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+}
+
+/** Un événement de pointeur en (x ; y), sur `target` (le point visé, ou la toile). */
+function pointer(
+	target: Element,
+	type: 'pointerdown' | 'pointermove' | 'pointerup' | 'pointercancel',
+	x: number,
+	y: number,
+	pointerId = 1
+) {
+	target.dispatchEvent(
+		new PointerEvent(type, { clientX: x, clientY: y, bubbles: true, pointerId })
+	);
+}
+
+const nextFrame = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
+
+/** Le point A dessiné, une fois la toile prête. */
+async function pointA(container: HTMLElement): Promise<SVGCircleElement> {
+	await vi.waitFor(() => expect(canvasOf(container).querySelector('circle.point')).toBeTruthy());
+	return canvasOf(container).querySelector('circle.point') as SVGCircleElement;
+}
+
+/** Les coordonnées écrites d'un point, en nombres : `(2,3 ; -0,7)` → [2.3, -0.7]. */
+function coordinates(definition: string | undefined): [number, number] {
+	const match = /^\((.+) ; (.+)\)$/.exec(definition ?? '');
+	if (match === null) throw new Error(`pas un couple : ${definition}`);
+	return [Number(match[1].replace(',', '.')), Number(match[2].replace(',', '.'))];
 }
 
 // =============================================================================
@@ -177,32 +239,50 @@ describe('la vue Géométrie (FigureView)', () => {
 		expect(atelier.figureFrame).toBe(false);
 	});
 
-	it('F4 : rien ne se glisse — tirer sur le point ne change ni l’atelier ni le dessin', async () => {
+	it('M1, M2 : glisser A = (1 ; 2) réécrit ses coordonnées, la toile suit, une étape', async () => {
 		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const steps = atelier.history.steps;
 		const { container } = await render(WithFigure, { atelier });
 		await vi.waitFor(() => expect(canvasOf(container).querySelector('circle.point')).toBeTruthy());
 		const point = canvasOf(container).querySelector('circle.point') as SVGCircleElement;
+		expect(point.classList.contains('draggable')).toBe(true);
 		const before = [point.getAttribute('cx'), point.getAttribute('cy')];
-		const rect = point.getBoundingClientRect();
-		const at = { clientX: rect.x + rect.width / 2, clientY: rect.y + rect.height / 2 };
 
-		point.dispatchEvent(new PointerEvent('pointerdown', { ...at, bubbles: true, pointerId: 1 }));
-		canvasOf(container).dispatchEvent(
-			new PointerEvent('pointermove', {
-				clientX: at.clientX + 60,
-				clientY: at.clientY + 40,
-				bubbles: true,
-				pointerId: 1
-			})
-		);
-		canvasOf(container).dispatchEvent(
-			new PointerEvent('pointerup', { bubbles: true, pointerId: 1 })
-		);
-		await new Promise((r) => setTimeout(r, 50));
+		await drag(container, point, 60, 40);
 
-		expect(atelier.get('A')?.definition).toBe('(1 ; 2)');
-		const after = canvasOf(container).querySelector('circle.point') as SVGCircleElement;
-		expect([after.getAttribute('cx'), after.getAttribute('cy')]).toEqual(before);
+		expect(atelier.get('A')?.definition).not.toBe('(1 ; 2)');
+		expect(atelier.get('A')?.definition).toMatch(/^\(-?\d+(,\d)? ; -?\d+(,\d)?\)$/);
+		await vi.waitFor(() => {
+			const after = canvasOf(container).querySelector('circle.point') as SVGCircleElement;
+			expect([after.getAttribute('cx'), after.getAttribute('cy')]).not.toEqual(before);
+		});
+		expect(atelier.history.steps).toBe(steps + 1);
+		expect(atelier.history.undo).toBe('déplacer A');
+	});
+
+	it('M2 : un point construit ne se glisse pas, et la vue dit quoi déplacer', async () => {
+		const atelier = atelierOf([
+			['point', 'A', '(-3 ; 0)'],
+			['point', 'B', '(3 ; 0)'],
+			['point', 'I', 'milieu(A, B)']
+		]);
+		const { container } = await render(WithFigure, { atelier });
+		await vi.waitFor(() =>
+			expect(canvasOf(container).querySelectorAll('circle.point').length).toBe(3)
+		);
+		const middle = [...canvasOf(container).querySelectorAll('circle.point')].find(
+			(c) => !c.classList.contains('draggable')
+		);
+		expect(middle).toBeTruthy();
+
+		await drag(container, middle as SVGCircleElement, 30, 30);
+
+		expect(atelier.get('I')?.definition).toBe('milieu(A, B)');
+		expect(atelier.get('A')?.definition).toBe('(-3 ; 0)');
+		expect(atelier.get('B')?.definition).toBe('(3 ; 0)');
+		expect(container.querySelector('[role="status"]')?.textContent).toContain(
+			'déplace les points dont il dépend'
+		);
 	});
 
 	it('S1 : le curseur de l’atelier fait bouger le point, sans curseur affiché dans la figure', async () => {
@@ -251,5 +331,238 @@ describe('la vue Géométrie (FigureView)', () => {
 		atelier.setDisplay('f', { color: 'curve-3' });
 
 		await vi.waitFor(() => expect(curve().style.stroke).toBe('var(--color-curve-3)'));
+	});
+});
+
+describe('le glisser d’un point dans la toile (revue du lot 3, PR 1)', () => {
+	it('direction : tiré à droite et vers le bas, A gagne en abscisse et perd en ordonnée', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const { container } = await render(WithFigure, { atelier });
+
+		await drag(container, await pointA(container), 60, 40);
+
+		const [x, y] = coordinates(atelier.get('A')?.definition);
+		expect(x).toBeGreaterThan(1);
+		expect(y).toBeLessThan(2);
+	});
+
+	it('un clic qui tremble (2 px) ne réécrit rien : (1/3 ; 2,25) reste écrit tel quel', async () => {
+		const atelier = atelierOf([['point', 'A', '(1/3 ; 2,25)']]);
+		const steps = atelier.history.steps;
+		const { container } = await render(WithFigure, { atelier });
+		const point = await pointA(container);
+		expect(point.classList.contains('draggable')).toBe(true);
+		const { x, y } = centerOf(point);
+		const svg = canvasOf(container);
+
+		pointer(point, 'pointerdown', x, y);
+		pointer(svg, 'pointermove', x + 2, y - 1);
+		await nextFrame();
+		pointer(svg, 'pointermove', x + 1, y + 2);
+		await nextFrame();
+		pointer(svg, 'pointerup', x + 1, y + 2);
+		await nextFrame();
+
+		expect(atelier.get('A')?.definition).toBe('(1/3 ; 2,25)');
+		expect(atelier.history.steps).toBe(steps);
+	});
+
+	it('saisi à côté de son centre, le point ne saute pas sous le curseur : il suit l’écart', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const { container } = await render(WithFigure, { atelier });
+		const point = await pointA(container);
+		const { x, y } = centerOf(point);
+		const svg = canvasOf(container);
+
+		// Saisi 8 px à droite, tiré de 30 px : A avance de 30 px (≈ 1,08), pas de 38 (≈ 1,37)
+		pointer(point, 'pointerdown', x + 8, y);
+		for (let i = 1; i <= 3; i++) {
+			pointer(svg, 'pointermove', x + 8 + 10 * i, y);
+			await nextFrame();
+		}
+		pointer(svg, 'pointerup', x + 38, y);
+		await nextFrame();
+
+		expect(atelier.get('A')?.definition).toBe('(2 ; 2)');
+	});
+
+	it('un second pointeur est ignoré : ni re-saisie, ni mouvement, ni relâcher', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const steps = atelier.history.steps;
+		const { container } = await render(WithFigure, { atelier });
+		const point = await pointA(container);
+		const { x, y } = centerOf(point);
+		const svg = canvasOf(container);
+
+		pointer(point, 'pointerdown', x, y, 1);
+		pointer(svg, 'pointermove', x + 30, y, 1);
+		await nextFrame();
+		expect(atelier.get('A')?.definition).toBe('(2 ; 2)');
+
+		pointer(svg, 'pointerdown', x - 100, y + 50, 2);
+		pointer(svg, 'pointermove', x - 150, y + 100, 2);
+		await nextFrame();
+		pointer(svg, 'pointerup', x - 150, y + 100, 2);
+		await nextFrame();
+		expect(atelier.get('A')?.definition).toBe('(2 ; 2)');
+		expect(atelier.draggingPoint).toBe(true);
+
+		pointer(svg, 'pointermove', x + 60, y, 1);
+		await nextFrame();
+		pointer(svg, 'pointerup', x + 60, y, 1);
+		await nextFrame();
+		expect(atelier.get('A')?.definition).toBe('(3 ; 2)');
+		expect(atelier.draggingPoint).toBe(false);
+		expect(atelier.history.steps).toBe(steps + 1);
+	});
+
+	it('le point glissé garde la classe « dragging » tout le geste, figure refaite comprise', async () => {
+		// (AB) écrite AVANT A : A posé sur B, la droite n'existe plus, la figure
+		// refaite renumérote ses éléments — l'id de A change en plein geste
+		const atelier = atelierOf([
+			['curve', 'd', '(AB)'],
+			['point', 'A', '(1 ; 2)'],
+			['point', 'B', '(3 ; 2)']
+		]);
+		const { container } = await render(WithFigure, { atelier });
+		await vi.waitFor(() =>
+			expect(canvasOf(container).querySelectorAll('circle.point').length).toBe(2)
+		);
+		const point = [...canvasOf(container).querySelectorAll('circle.point')].sort(
+			(p, q) => p.getBoundingClientRect().x - q.getBoundingClientRect().x
+		)[0];
+		const { x, y } = centerOf(point);
+		const svg = canvasOf(container);
+		const dragged = () => canvasOf(container).querySelectorAll('circle.point.dragging').length;
+
+		pointer(point, 'pointerdown', x, y);
+		pointer(svg, 'pointermove', x + 30, y);
+		await nextFrame();
+		pointer(svg, 'pointermove', x + 60, y);
+		await nextFrame();
+
+		expect(atelier.get('A')?.definition).toBe('(3 ; 2)');
+		await vi.waitFor(() => expect(dragged()).toBe(1));
+
+		pointer(svg, 'pointerup', x + 60, y);
+		await vi.waitFor(() => expect(dragged()).toBe(0));
+	});
+
+	it('Ctrl+Z en plein glisser ne défait rien ; après le relâcher, il défait tout le glisser', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const { container } = await render(AtelierContainer, {
+			atelier,
+			ephemeral: true,
+			view: 'figure',
+			consoleAtStart: false
+		});
+		const point = await pointA(container);
+		const { x, y } = centerOf(point);
+		const svg = canvasOf(container);
+		const ctrlZ = () =>
+			document.body.dispatchEvent(
+				new KeyboardEvent('keydown', { key: 'z', code: 'KeyZ', ctrlKey: true, bubbles: true })
+			);
+
+		pointer(point, 'pointerdown', x, y);
+		pointer(svg, 'pointermove', x + 30, y);
+		await nextFrame();
+		const steps = atelier.history.steps;
+		ctrlZ();
+		await nextFrame();
+
+		expect(atelier.get('A')?.definition).toBe('(2 ; 2)');
+		expect(atelier.history.steps).toBe(steps);
+
+		pointer(svg, 'pointermove', x + 60, y);
+		await nextFrame();
+		pointer(svg, 'pointerup', x + 60, y);
+		await nextFrame();
+		ctrlZ();
+
+		await vi.waitFor(() => expect(atelier.get('A')?.definition).toBe('(1 ; 2)'));
+	});
+
+	it('annulation du navigateur (pointercancel) : le point reste où il est arrivé, le geste est fermé', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const steps = atelier.history.steps;
+		const { container } = await render(WithFigure, { atelier });
+		const point = await pointA(container);
+		const { x, y } = centerOf(point);
+		const svg = canvasOf(container);
+
+		pointer(point, 'pointerdown', x, y);
+		pointer(svg, 'pointermove', x + 30, y);
+		await nextFrame();
+		pointer(svg, 'pointercancel', x + 30, y);
+		await nextFrame();
+
+		expect(atelier.get('A')?.definition).toBe('(2 ; 2)');
+		expect(atelier.draggingPoint).toBe(false);
+		expect(atelier.history.steps).toBe(steps + 1);
+		// Un mouvement après l'annulation ne déplace plus rien
+		pointer(svg, 'pointermove', x + 90, y);
+		await nextFrame();
+		expect(atelier.get('A')?.definition).toBe('(2 ; 2)');
+	});
+
+	it('fenêtre quittée (blur) en plein glisser : le geste est fermé', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const { container } = await render(WithFigure, { atelier });
+		const point = await pointA(container);
+		const { x, y } = centerOf(point);
+		const svg = canvasOf(container);
+
+		pointer(point, 'pointerdown', x, y);
+		pointer(svg, 'pointermove', x + 30, y);
+		await nextFrame();
+		window.dispatchEvent(new Event('blur'));
+		await nextFrame();
+
+		expect(atelier.draggingPoint).toBe(false);
+		pointer(svg, 'pointermove', x + 90, y);
+		await nextFrame();
+		expect(atelier.get('A')?.definition).toBe('(2 ; 2)');
+	});
+
+	it('au plus un mouvement par image, le dernier ; le relâcher envoie celui qui attendait', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const { container } = await render(WithFigure, { atelier });
+		const point = await pointA(container);
+		const { x, y } = centerOf(point);
+		const svg = canvasOf(container);
+		const spy = vi.spyOn(atelier, 'dragPoint');
+
+		pointer(point, 'pointerdown', x, y);
+		pointer(svg, 'pointermove', x + 10, y);
+		pointer(svg, 'pointermove', x + 20, y);
+		pointer(svg, 'pointermove', x + 30, y);
+		await nextFrame();
+		expect(spy).toHaveBeenCalledTimes(1);
+		expect(atelier.get('A')?.definition).toBe('(2 ; 2)');
+
+		// Relâché dans la même image que le mouvement : il n'est pas perdu
+		pointer(svg, 'pointermove', x + 60, y);
+		pointer(svg, 'pointerup', x + 60, y);
+		expect(spy).toHaveBeenCalledTimes(2);
+		expect(atelier.get('A')?.definition).toBe('(3 ; 2)');
+	});
+
+	it('un refus dit en plein geste s’efface au relâcher', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const { container } = await render(WithFigure, { atelier });
+		const point = await pointA(container);
+		const { x, y } = centerOf(point);
+		const svg = canvasOf(container);
+		vi.spyOn(atelier, 'dragPoint').mockReturnValue({ ok: false, message: 'Refus de test.' });
+		const status = () => container.querySelector('[role="status"]')?.textContent ?? '';
+
+		pointer(point, 'pointerdown', x, y);
+		pointer(svg, 'pointermove', x + 30, y);
+		await nextFrame();
+		await vi.waitFor(() => expect(status()).toContain('Refus de test.'));
+
+		pointer(svg, 'pointerup', x + 30, y);
+		await vi.waitFor(() => expect(status().trim()).toBe(''));
 	});
 });

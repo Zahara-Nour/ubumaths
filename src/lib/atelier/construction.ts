@@ -610,6 +610,26 @@ export function withPosition(
 	return `point_sur(${text} ; ${written})`;
 }
 
+/**
+ * Le support RÉSOLU d'un `point_sur` nommé (le segment, le cercle, la courbe qui
+ * le porte, aux valeurs du moment), ou `null` : pour glisser le point à la
+ * souris (géométrie lot 3, M2), la position se lit sur ce support.
+ */
+export function supportOfPointOn(atelier: Atelier, name: string): Support | null {
+	const object = atelier.get(name);
+	if (object === undefined || object.kind !== 'point') return null;
+	const read = specOf(object.definition, object.provenance ?? 'url', kindsOf(atelier));
+	if (read === null || !read.ok || read.spec.result !== 'point') return null;
+	const point = read.spec.point;
+	if (point.kind !== 'on') return null;
+	try {
+		return supportOf(point.support, contextOf(atelier, {}));
+	} catch (error) {
+		if (error instanceof Failure) return null;
+		throw error;
+	}
+}
+
 function half(value: GeoValue): GeoValue {
 	// Diviser par 2 ne peut pas échouer
 	return geoDiv(value, TWO) ?? value;
