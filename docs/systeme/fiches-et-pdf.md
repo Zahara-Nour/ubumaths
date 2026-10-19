@@ -423,8 +423,7 @@ Tests : `typst/generators/__tests__/en-tete-par-type.test.ts` (chaque type, FR e
 vide ; leur Typst reste dans le code, D9) et une par style d'un prof. `worksheet_templates` porte
 `style_id` et `form` (un gabarit par couple) ; `worksheets.style_id` (vide = « Fiche élève » ;
 style supprimé → vide). L'ancienne colonne `worksheets.template_id` a été recopiée dans `style_id`
-(`20261017090300`, #1529) ; le code ne la lit ni ne l'écrit plus, et son retrait viendra après le
-déploiement (`docs/wip/retrait-template-id-progress.md`). Accès (D9) : le prof et l'admin lisent les
+(`20261017090300`, #1529), puis retirée (`20261019221542`). Accès (D9) : le prof et l'admin lisent les
 styles de Chiphre et les leurs, ne modifient que les leurs (l'admin, tous) ; ni élève ni visiteur
 n'y accède (`tests/integration/styles-de-fiche.test.ts`).
 
@@ -445,8 +444,7 @@ même identifiant et au même nom ; le renommer le renomme ; le supprimer suppri
 vers le gabarit), refusé tant qu'une fiche désigne son style (`style_id`)
 (`tests/integration/fiche-choix-du-style.test.ts`). Liens partagés
 (lot 4a, D11, migration `20261016103500_style_fiche_liens_partages`) : `get_worksheet_by_share_token`
-et `get_course_worksheet_by_share_token` rendent aussi `style_id`, `template_id` (que le code
-ignore ; retiré des fonctions avec la colonne) et `template`, la fiche du style retenu **seulement si ce style appartient à l'auteur de la fiche** (style de
+et `get_course_worksheet_by_share_token` rendent aussi `style_id` et `template`, la fiche du style retenu **seulement si ce style appartient à l'auteur de la fiche** (style de
 Chiphre : `null`, Typst dans le code ; style d'un autre compte : jamais)
 (`tests/integration/style-fiche-liens-partages.test.ts`). Les pages publiques les passent au PDF
 (`PdfPreview` → `generateWorksheetTypst`, lot 4b).
