@@ -533,11 +533,50 @@ describe('LaTeX Quantity Parsing', () => {
 		});
 
 		test('returns null for old \\text{} format', () => {
-			const qty = parseLatexQuantity('5\\text{km}');
-			// Old format no longer supported - returns dimensionless if value parses
-			// but the unit is not extracted
-			expect(qty?.value).toBe(5);
-			expect(qty?.unit.components.size).toBe(0); // No unit extracted
+			// Format abandonné : `\text{km}` n'est pas une unité, et la valeur
+			// `5\text{km}` n'est pas un nombre (la saisie élève est d'abord normalisée)
+			expect(parseLatexQuantity('5\\text{km}')).toBeNull();
+		});
+	});
+
+	// --- Valeur lue en arbre (mathAST) ---
+
+	describe('Valeur lue en arbre', () => {
+		test('un calcul de nombres est calculé, et en valeur exacte', () => {
+			expect(parseLatexQuantity('3+2\\unit{m}')?.value).toBe(5);
+			expect(parseLatexQuantity('2+\\frac{1}{2}\\unit{m}')?.value).toBe(2.5);
+			// En flottants, 0,1 + 0,2 vaut 0.30000000000000004
+			expect(parseLatexQuantity('0.1+0.2\\unit{m}')?.value).toBe(0.3);
+		});
+
+		test('notation scientifique et fraction, virgule décimale comprise', () => {
+			expect(parseLatexQuantity('1{,}5\\cdot10^{-2}\\unit{m}')?.value).toBe(0.015);
+			expect(parseLatexQuantity('1,5\\times10^{3}\\unit{m}')?.value).toBe(1500);
+			expect(parseLatexQuantity('\\frac{2{,}5}{2}\\unit{m}')?.value).toBe(1.25);
+			expect(parseLatexQuantity('2,5\\unit{m}')?.value).toBe(2.5);
+		});
+
+		test('la valeur est toujours un nombre', () => {
+			expect(typeof parseLatexQuantity('3+2\\unit{m}')?.value).toBe('number');
+			expect(typeof parseLatexQuantity('(-3)\\unit{m}')?.value).toBe('number');
+		});
+
+		test('une valeur non rationnelle est illisible (jamais son premier nombre)', () => {
+			expect(parseLatexQuantity('2\\sqrt{2}\\unit{m}')).toBeNull();
+			expect(parseLatexQuantity('2\\pi\\unit{m}')).toBeNull();
+			expect(parseLatexQuantity('\\pi\\unit{m}')).toBeNull();
+			expect(parseLatexQuantity('5x\\unit{m}')).toBeNull();
+		});
+
+		test('habillages sans sens autour de la valeur : retirés', () => {
+			expect(parseLatexQuantity('5\\text{ }\\unit{m}')?.value).toBe(5);
+			expect(parseLatexQuantity('\\num{5}\\unit{m}')?.value).toBe(5);
+			expect(parseLatexQuantity('5~\\unit{m}')?.value).toBe(5);
+			expect(parseLatexQuantity('12\\,500\\unit{m}')?.value).toBe(12500);
+		});
+
+		test('une division par zéro est illisible', () => {
+			expect(parseLatexQuantity('\\frac{1}{0}\\unit{m}')).toBeNull();
 		});
 	});
 

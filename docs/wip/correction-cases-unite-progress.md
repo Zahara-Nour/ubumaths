@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1543._
+_Mis à jour le 2026-10-19, phase 0 de la PR 2 validée._
 
-- **État** : PR 1 mergée (#1543) — oracle en CI (1 724 verdicts, `ORACLE_MAJ=1` pour un changement voulu), message « produit d'unités » conditionnel, `quantity-comparison.ts`, docs sans ComputeEngine. Rien en prod (pas de `deploy:prod`).
-- **Prochaine action** : PR 2 — valeur lue en arbre (mathAST) au lieu de `extractValue` ; phase 0 (comportements en français) à soumettre à David AVANT tout code ; agents `pedagogy-expert` / `mathast-expert`, revue `code-reviewer` en opus.
+- **État** : PR 1 mergée (#1543). PR 2 (valeur lue en arbre) : phase 0 validée par David, tests rouges en cours.
+- **Prochaine action** : tests rouges → `parser.ts` lit la valeur par `parseLatex` → `tidy` → `rationalOf` ; chemin « valeur en chaîne » de `quantity-comparison.ts` retiré ; oracle à 0 changement ; revue `code-reviewer` opus.
 - **En attente de David** : rien.
-- **Pièges en cours** : `valueIn` → `null` sur les températures (PR 3 : garder la conversion actuelle) ; `extractValue` lit `2\sqrt{2}` comme 2 (aucun modèle publié) ; messages d'unité validés par David (ne pas reformuler sans accord) ; pas de `timeout` sur ce Mac.
-- **Worktree / branche** : à recréer — `git worktree add -b refactor/correction-cases-unite-lecture ../ubumaths-wt-correction-cases-unite origin/main`.
+- **Pièges en cours** : la normalisation élève rend `2,5` (l'arbre refuse `,`) ; `valueIn` → `null` sur les températures (PR 3) ; messages d'unité validés par David (ne pas reformuler) ; pas de `timeout` sur ce Mac.
+- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-lecture`.
 
 ## Historique
 
@@ -91,3 +91,13 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
 - Revue : oracle qui se réécrivait si son fichier manquait → corrigé (preuve `ENOENT`) ;
   explosion des découpes de lettres collées → inatteignable (seule une écriture lue comme UNE
   unité arrive là, `semaine` = 7 lettres), borne à 8 gardée en défense.
+
+### 2026-10-19 — PR 2, phase 0 validée par David
+
+- Valeur lue en arbre (`parseLatex` → `tidy` → `rationalOf`) : exacte (`1{,}5\cdot10^{-2}` → 3/200),
+  `null` si non rationnelle (`2\sqrt{2}`, `\pi`, `5x`). Comparaison inchangée (flottants) jusqu'à la PR 3.
+- Oracle : 0 verdict, 0 message changé (attendus publiés tous décimaux).
+- Attendu non rationnel → « Erreur de configuration » (aujourd'hui `2 m` jugé JUSTE pour `2\sqrt{2} m`).
+- Élève sans unité, valeur illisible (`\sqrt{2}`) → « N'oublie pas l'unité. » comme aujourd'hui.
+- Hors PR (noté pour plus tard, PR 2 bis possible) : découpage « nombre | unité » de `student-input.ts`
+  — `2\sqrt{2} m`, `3+2 m` → « Unité inconnue », `(-3) m` → « N'oublie pas l'unité ».

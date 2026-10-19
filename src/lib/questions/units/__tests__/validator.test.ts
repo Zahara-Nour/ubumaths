@@ -474,6 +474,39 @@ describe('Error Classification', () => {
 // EDGE CASES
 // ============================================================================
 
+describe('Valeur lue en arbre', () => {
+	test('attendu non rationnel : erreur de configuration, jamais son premier nombre', () => {
+		// `extractValue` lisait `2\sqrt{2}` comme 2 : « 2 m » était jugé juste
+		const result = validateQuantityAnswer('2\\operatorname{\\mathrm{m}}', '2\\sqrt{2}\\unit{m}');
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Erreur de configuration : réponse attendue invalide.');
+	});
+
+	test('élève sans unité, valeur numérique non rationnelle : « N’oublie pas l’unité. »', () => {
+		for (const saisie of ['\\sqrt{2}', '\\pi']) {
+			const result = validateQuantityAnswer(saisie, '2[m]');
+			expect(result.isCorrect).toBe(false);
+			expect(result.feedback).toBe('N’oublie pas l’unité.');
+			expect(result.errorType).toBe('incompatible_units');
+			expect(result.unitAtFault).toBe(true);
+		}
+	});
+
+	test('élève sans unité, saisie qui n’est pas un nombre : « Réponse invalide »', () => {
+		for (const saisie of ['abc', '\\infty', '\\emptyset']) {
+			const result = validateQuantityAnswer(saisie, '2[m]');
+			expect(result.feedback).toBe('Réponse invalide : vérifier le format.');
+			expect(result.unitAtFault).toBeUndefined();
+		}
+	});
+
+	test('attendu écrit en calcul : sa valeur est calculée', () => {
+		expect(validateQuantityAnswer('5\\operatorname{\\mathrm{m}}', '3+2\\unit{m}').isCorrect).toBe(
+			true
+		);
+	});
+});
+
 describe('Edge Cases', () => {
 	test('handles empty string user answer', () => {
 		const result = validateQuantityAnswer('', '5\\unit{m}');
