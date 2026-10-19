@@ -290,3 +290,73 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   côtés) et 2 importants (angle d'un `point_sur` sur un cercle : degrés toujours, comme L5 ; racine
   fractionnaire mal écrite) corrigés. Mesuré dans Chromium : ~3 ms par cran (p90 ~5 ms) avec six
   intersections exactes sur un même curseur. Pas en production.
+
+## Performance
+
+Un cran de curseur, branche `perf/atelier-recalcul` (2026-10-19). Constat d'une autre session : ~95 ms par cran sur une figure de 24 objets (≈ 10 images/s).
+
+**Banc** : la figure `FIGURE_24` (`src/lib/atelier/__tests__/fixtures/figure-24.ts` : 6 points,
+2 milieux + 1 milieu mobile, un cercle, une droite, une perpendiculaire, 3 intersections, un
+`point_sur(s ; a)`, mesures `aire`, `AM`, `angle` ×2, `perimetre`, un point isolé `N = (b ; 1)`).
+Curseur `a` réglé sur [0 ; 1] au pas de 0,01, 5 crans de chauffe puis 40 crans (0,30 → 0,69).
+Décor : Mac mini M6, 24 Go ; node (vitest `server`, Svelte compilé côté serveur : pas de proxy
+`$state`) et Chromium (vitest navigateur, mode développement : proxies et contrôles de dev,
+`AtelierContainer` entier sur la vue Géométrie ; « total » = `slideTo` + `flushSync()` + mise en
+page forcée). Médiane / p90 / max.
+
+### Profil AVANT (main 9053fd1c6)
+
+| Mesure                                         | Médiane | p90     | max     |
+| ---------------------------------------------- | ------- | ------- | ------- |
+| node : `slideTo` (= `update` → `recomputeAll`) | 36,3 ms | 37,3 ms | 47,7 ms |
+| Chromium : `slideTo` seul (modèle)             | 129 ms  | 138 ms  | 139 ms  |
+| Chromium : total (modèle + effets + rendu)     | 193 ms  | 203 ms  | 204 ms  |
+
+Par étape de `recomputeAll` (moyenne par cran, node / Chromium) : `#constructions` 27,0 / 94,5 ms ;
+`#measures` 8,6 / 29,7 ms ; lecture des définitions 0,2 / 0,6 ms ; grille, réciproques, suites,
+points fixes : < 0,1 ms chacun. Soupçon (b) (`#recomputeGrid`) écarté : 0,01 ms.
+
+Profil CPU (node, inspecteur) : 94 % du temps sous `bindingsOf` (`engine.ts`) — chaque
+coordonnée citée par une construction (`substitutedTextOf`) relit les 24 définitions
+(`definitionAst` → `parseByProvenance`) : O(n²) lectures par passe, et `#constructions` fait une
+2ᵉ passe quand une intersection attend (F). Un tiers du temps dans le constructeur de
+`ParseException` (les définitions de construction ne se lisent pas en calcul : chaque essai jette).
+Chromium : 4× node sur le modèle — les proxies du `$state` profond de `items`.
+
+Effets et cartes après le modèle (Chromium ≈ 64 ms ; simulés en node) : `followsOf` 7,9 ms
+(O(n²) appels à `dependents`, chacun relit toutes les définitions), `syncFigure` 1,4 ms, cartes de
+mesure (`valueAnswerOf`) 1,3 ms pour les 5, le reste < 0,3 ms.
+
+### Optimisations, une par une (re-mesurées dans le même décor)
+
+| Pas | Changement                                                | node `slideTo` (médiane) | Chromium total (médiane) |
+| --- | --------------------------------------------------------- | ------------------------ | ------------------------ |
+| 0   | main 9053fd1c6                                            | 36,3 ms                  | 193 ms                   |
+| 1   | mémo des lectures (`parseByProvenance`, pur, gelé en dev) | 9,3 ms                   | 92 ms                    |
+| 2   | `expandDerivatives` sans copie quand rien à développer    | 8,2 ms                   | —                        |
+| 3   | aucune liaison pour un arbre qui ne nomme rien (`0`)      | 5,5 ms                   | —                        |
+| 4   | liaisons limitées aux noms cités, de proche en proche     | 3,0 ms                   | 43 ms                    |
+| 5   | `followsOf` par `citedNames` + mémo de `#refsOf`          | 3,0 ms                   | 12,6 ms                  |
+
+Essayé puis retiré : `items` en `$state.raw` (Chromium : modèle 43 → 8 ms au pas 1). Retiré parce
+que `serialize.svelte.test.ts` asserte que l'état vivant est un proxy (« N'EST PAS clonable ») :
+une attente à changer, donc une décision. Inutile après le pas 5 (modèle Chromium 5 ms).
+
+Un seul écart trouvé par le test d'équivalence (40 graines × 40 gestes, raccourcis éteints contre
+allumés) : t = [BC] réduit à un point, M = point_sur(t ; a) cité par des mesures — le message de M
+était le motif de t (« points confondus ») quand une mesure avait calculé M en passant, « Dépend
+de « t », qui est en erreur. » sinon. Corrigé à la source (`#constructions` vide ses mémos dès
+qu'un statut change) : le message est désormais toujours le second, celui d'une figure sans mesure.
+
+### APRÈS (même banc, même décor)
+
+| Mesure                                            | Médiane | p90                                  | max      |
+| ------------------------------------------------- | ------- | ------------------------------------ | -------- |
+| node : `slideTo`                                  | 3,1 ms  | 3,8 ms                               | 4,5 ms   |
+| Chromium : `slideTo` seul (modèle)                | 5,0 ms  | 5,6 ms                               | 8,1 ms   |
+| Chromium : total (modèle + effets + mise en page) | 12,6 ms | 13,4 ms (17,4 sur un passage bruité) | 16–20 ms |
+
+Ce qui reste (Chromium, ~7,5 ms hors modèle) : les effets et le rendu de 24 cartes (dont 5
+`valueAnswerOf`, 0,8 ms en node) et `syncFigure` (0,6 ms en node) ; non profilé plus finement.
+La peinture du SVG n'est pas comptée. Le banc est en mode développement : la production a moins
+de contrôles. Définitions liées par cran : 5 808 → 3.
