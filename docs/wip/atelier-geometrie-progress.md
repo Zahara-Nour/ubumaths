@@ -593,3 +593,10 @@ le réutilise), M7, M8.
   centré sur un point réutilisé, demi-droite, fantôme, anneau du point choisi. Corrigé au passage :
   la consigne qui passait à la ligne sur téléphone faisait sauter la toile (ligne réservée).
   Constat pour la PR 4 (M6) : sur téléphone, la toile dépasse l'écran sous le panneau.
+- Revue `code-reviewer` (Sonnet, 7 findings, aucun bloquant), corrigée — tests d'abord vérifiés
+  rouges (7 : 2 node, 5 navigateur) : premier point annulé ou supprimé → construction abandonnée
+  (`forgetVanished`, au clic et à chaque révision) ; geste des flèches fermé au relâcher où qu'il
+  arrive et à la perte du focus ; un second doigt invalide l'appui d'outil ; Échap déjà pris (la
+  console qu'il ferme, un champ, une fenêtre) n'abandonne rien ; un point construit visé n'est pas
+  le point des flèches, et un refus s'efface au clic d'outil. Gardé tel quel (M7 validé) : un
+  segment entre deux clics dans le vide fait trois étapes (A, B, le segment).

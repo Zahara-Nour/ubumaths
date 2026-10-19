@@ -459,6 +459,12 @@
 		}
 
 		if (canvasTool) {
+			// Un second doigt invalide l'appui en cours (pincement, paume) : aucun clic
+			if (toolPress !== null && toolPress.pointerId !== e.pointerId) {
+				toolPress.moved = true;
+				e.preventDefault();
+				return;
+			}
 			// Un appui d'outil : le clic part au relâcher, s'il n'a pas bougé
 			if (e.button === 0) {
 				toolPress = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, moved: false };

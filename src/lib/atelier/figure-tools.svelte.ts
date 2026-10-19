@@ -175,6 +175,16 @@ export class FigureToolbox {
 		this.cancel();
 	}
 
+	/**
+	 * Abandonner la construction si son premier point n'existe plus (annulé,
+	 * supprimé, renommé) : sans ça, le clic suivant écrirait `[AB]` sur un A
+	 * disparu — ou sur un autre A, créé entre-temps (revue).
+	 */
+	forgetVanished(): void {
+		const [first] = this.chosen;
+		if (first !== undefined && this.#atelier.get(first)?.kind !== 'point') this.chosen = [];
+	}
+
 	/** Abandonner la construction en cours (Échap) ; vrai s'il y en avait une. */
 	cancel(): boolean {
 		this.notice = null;
@@ -190,6 +200,7 @@ export class FigureToolbox {
 	 */
 	click(x: number, y: number, point: string | null, snap = 0): void {
 		this.notice = null;
+		this.forgetVanished();
 		const tool = this.tool;
 		if (tool === 'deplacer') return;
 		if (tool === 'point') {

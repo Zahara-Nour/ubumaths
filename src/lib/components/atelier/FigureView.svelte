@@ -77,6 +77,8 @@
 	// toile se redessine
 	$effect(() => {
 		void atelier.revision;
+		// Un premier point de construction annulé ou supprimé : la construction tombe
+		toolbox?.forgetVanished();
 		if (syncFigure(atelier, projection) === 'unchanged') return;
 		synced = { figure: projection.figure, version: projection.changes };
 	});
@@ -142,11 +144,13 @@
 			if (toolbox === null) return;
 			const before = new Set(atelier.names);
 			const point = pointId === null ? null : (projection.nameOf(pointId) ?? null);
+			refusal = null;
 			toolbox.click(x, y, point, snap);
-			// Un point posé (outil Point, ou extrémité) devient le point des flèches
+			// Un point posé (outil Point, ou extrémité) devient le point des flèches ; un
+			// point visé aussi, s'il se glisse (un point construit ne bouge pas aux flèches)
 			const created = atelier.names.find((n) => !before.has(n) && atelier.get(n)?.kind === 'point');
 			if (created !== undefined) chosenPoint = created;
-			else if (point !== null) chosenPoint = point;
+			else if (point !== null && atelier.dragRefusal(point) === null) chosenPoint = point;
 		},
 		hover: (at) => {
 			pointer = at;
@@ -154,13 +158,38 @@
 	};
 
 	function chooseTool(tool: FigureTool) {
+		refusal = null;
 		toolbox?.select(tool);
 	}
 
-	/** Échap abandonne une construction commencée (M7). */
+	/**
+	 * Échap abandonne une construction commencée (M7) — sauf s'il a déjà servi
+	 * (la console qu'il ferme, une liste, une fenêtre) ou vient d'un champ.
+	 */
 	function handleWindowKey(event: KeyboardEvent) {
-		if (event.key !== 'Escape' || toolbox === null) return;
+		if (event.key !== 'Escape' || toolbox === null || event.defaultPrevented) return;
+		const target = event.target;
+		if (
+			target instanceof Element &&
+			target.closest('input, textarea, math-field, [role="dialog"]')
+		) {
+			return;
+		}
 		if (toolbox.cancel()) event.preventDefault();
+	}
+
+	/** Une flèche est tenue sur le point choisi : son geste attend d'être fermé. */
+	let arrowGesture = false;
+
+	/** Fermer le geste des flèches : au relâcher, où qu'il arrive, ou à la perte du focus. */
+	function endArrowGesture() {
+		if (!arrowGesture) return;
+		arrowGesture = false;
+		atelier.endGesture();
+	}
+
+	function handleWindowKeyUp(event: KeyboardEvent) {
+		if (ARROWS[event.key] !== undefined) endArrowGesture();
 	}
 
 	/** La position dessinée du point `name`, ou `null`. */
@@ -185,12 +214,9 @@
 		if (at === null) return;
 		event.preventDefault();
 		const step = event.shiftKey ? ARROW_STEP_SHIFT : ARROW_STEP;
+		arrowGesture = true;
 		const done = atelier.dragPoint(chosenPoint, at.x + move[0] * step, at.y + move[1] * step);
 		refusal = done.ok ? null : done.message;
-	}
-
-	function handleArrowUp(event: KeyboardEvent) {
-		if (ARROWS[event.key] !== undefined) atelier.endGesture();
 	}
 
 	/** Le fantôme de la construction en cours (M7) : du premier point au pointeur. */
@@ -228,7 +254,7 @@
 	);
 </script>
 
-<svelte:window onkeydown={handleWindowKey} />
+<svelte:window onkeydown={handleWindowKey} onkeyup={handleWindowKeyUp} onblur={endArrowGesture} />
 
 {#snippet toolIcon(tool: FigureTool)}
 	<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" class="icone">
@@ -348,7 +374,7 @@
 			? 'Figure'
 			: `Figure : les flèches déplacent ${displayName(chosenPoint)}`}
 		onkeydown={handleArrow}
-		onkeyup={handleArrowUp}
+		onfocusout={endArrowGesture}
 	>
 		{#if width > 0 && height > 0}
 			<!-- Hors du flux : la toile ne fait pas grandir la boîte qu'on mesure -->

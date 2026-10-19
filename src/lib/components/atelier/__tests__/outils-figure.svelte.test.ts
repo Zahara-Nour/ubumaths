@@ -56,15 +56,16 @@ function screenOf(container: HTMLElement, x: number, y: number): { x: number; y:
 function pointer(
 	target: Element,
 	type: 'pointerdown' | 'pointermove' | 'pointerup',
-	at: { x: number; y: number }
+	at: { x: number; y: number },
+	pointerId = 1
 ) {
 	target.dispatchEvent(
 		new PointerEvent(type, {
 			clientX: at.x,
 			clientY: at.y,
 			bubbles: true,
-			pointerId: 1,
-			pointerType: 'mouse'
+			pointerId,
+			pointerType: pointerId === 1 ? 'mouse' : 'touch'
 		})
 	);
 }
@@ -267,5 +268,95 @@ describe('M8 : les flèches déplacent le point choisi', () => {
 		expect(atelier.get('A')?.definition).toBe('(2,1 ; 1)');
 		await userEvent.keyboard('{Shift>}{ArrowUp}{/Shift}');
 		expect(atelier.get('A')?.definition).toBe('(2,1 ; 2)');
+	});
+});
+
+describe('revue de la PR', () => {
+	it('Annuler le premier point d’un segment : la construction est abandonnée, la consigne le dit', async () => {
+		const atelier = atelierOf();
+		const container = await mount(atelier);
+		toolButton(container, 'Segment').click();
+		await clickAt(container, 0, 0);
+		await vi.waitFor(() => expect(messageOf(container)).toBe('Clique sur un deuxième point.'));
+
+		container.querySelector<HTMLButtonElement>('button[aria-label^="Annuler"]')?.click();
+
+		await vi.waitFor(() => expect(atelier.get('A')).toBeUndefined());
+		await vi.waitFor(() => expect(messageOf(container)).toBe('Clique sur un premier point.'));
+	});
+
+	it('une flèche enfoncée puis le focus perdu : le geste se ferme (Annuler n’attend pas)', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 1)']]);
+		const container = await mount(atelier);
+		toolButton(container, 'Point').click();
+		await clickAt(container, 1, 1);
+		const toile = container.querySelector<HTMLElement>('.toile');
+		toile?.focus();
+
+		toile?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+		expect(atelier.get('A')?.definition).toBe('(1,1 ; 1)');
+		expect(atelier.draggingPoint).toBe(true);
+		toolButton(container, 'Point').focus();
+
+		expect(atelier.draggingPoint).toBe(false);
+	});
+
+	it('un second doigt pendant un appui d’outil : aucun clic ne part', async () => {
+		const atelier = atelierOf();
+		const container = await mount(atelier);
+		toolButton(container, 'Point').click();
+		const svg = canvasOf(container);
+		const first = screenOf(container, 0, 0);
+		const second = screenOf(container, 3, 3);
+
+		pointer(svg, 'pointerdown', first, 1);
+		pointer(svg, 'pointerdown', second, 2);
+		pointer(svg, 'pointerup', second, 2);
+		pointer(svg, 'pointerup', first, 1);
+		await nextFrame();
+
+		expect(consoleLines(container)).toEqual([]);
+	});
+
+	it('Échap qui ferme la console n’abandonne pas la construction', async () => {
+		const atelier = atelierOf();
+		const container = await mount(atelier);
+		toolButton(container, 'Segment').click();
+		await clickAt(container, 0, 0);
+		container.querySelector<HTMLButtonElement>('button[aria-controls="atelier-console"]')?.click();
+		await vi.waitFor(() =>
+			expect(container.querySelector('#atelier-console input, #atelier-console math-field')).toBe(
+				document.activeElement
+			)
+		);
+
+		await userEvent.keyboard('{Escape}');
+
+		await vi.waitFor(() =>
+			expect(
+				container
+					.querySelector('button[aria-controls="atelier-console"]')
+					?.getAttribute('aria-expanded')
+			).toBe('false')
+		);
+		expect(messageOf(container)).toBe('Clique sur un deuxième point.');
+	});
+
+	it('un point construit visé n’est pas le point des flèches, son refus ne cache pas la consigne', async () => {
+		const atelier = atelierOf([
+			['point', 'A', '(0 ; 0)'],
+			['point', 'B', '(4 ; 0)'],
+			['point', 'I', 'milieu(A ; B)']
+		]);
+		const container = await mount(atelier);
+		toolButton(container, 'Segment').click();
+		await clickAt(container, 2, 0);
+		const toile = container.querySelector<HTMLElement>('.toile');
+		toile?.focus();
+
+		await userEvent.keyboard('{ArrowUp}');
+
+		expect(toile?.getAttribute('aria-label')).toBe('Figure');
+		expect(messageOf(container)).toBe('Clique sur un deuxième point.');
 	});
 });

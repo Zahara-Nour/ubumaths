@@ -1083,7 +1083,6 @@
 		return { text: tabulationReport(name, done), failed: false };
 	}
 
-	/** Vider puis écrire : le même message deux fois de suite est annoncé deux fois. */
 	/**
 	 * Une ligne écrite par un outil de la vue Géométrie (lot 3, PR 2) : dans la
 	 * console sans l'ouvrir (G7), et annoncée — la ligne et sa réponse (M8).
@@ -1095,6 +1094,7 @@
 		return !entry.failed;
 	}
 
+	/** Vider puis écrire : le même message deux fois de suite est annoncé deux fois. */
 	function announce(message: string) {
 		announcement = '';
 		setTimeout(() => (announcement = message), 0);

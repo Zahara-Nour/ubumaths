@@ -294,3 +294,30 @@ describe('G2 : une ligne écrite par un outil est une ligne de console', () => {
 		expect(desk.draft).toBe('f(x) = ');
 	});
 });
+
+describe('revue : le premier point choisi a disparu', () => {
+	it('A annulé entre les deux clics : le clic suivant recommence la construction', () => {
+		const { atelier, desk, toolbox, written } = bench();
+		toolbox.select('segment');
+		toolbox.click(0, 0, null);
+
+		desk.undo();
+		toolbox.click(3, 0, null);
+
+		expect(written().filter((l) => l !== 'Annuler')).toEqual(['A = (0 ; 0)', 'A = (3 ; 0)']);
+		expect(toolbox.chosen).toEqual(['A']);
+		expect(atelier.get('d')).toBeUndefined();
+	});
+
+	it('forgetVanished : la construction est abandonnée dès que son point n’existe plus', () => {
+		const { atelier, toolbox } = bench(['A = (0 ; 0)']);
+		toolbox.select('cercle');
+		toolbox.click(0, 0, 'A');
+
+		atelier.remove('A');
+		toolbox.forgetVanished();
+
+		expect(toolbox.chosen).toEqual([]);
+		expect(toolbox.instruction).toBe('Clique sur le centre du cercle.');
+	});
+});
