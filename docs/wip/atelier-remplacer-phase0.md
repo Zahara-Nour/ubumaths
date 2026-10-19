@@ -1,7 +1,7 @@
 ---
 title: Atelier — remplacer son atelier par un atelier reçu (phase 0)
 date: 2026-10-18
-status: phase 0 VALIDÉE (2026-10-18, « ok pour tes recos ») ; à faire après la PR 1 de la géométrie
+status: phase 0 VALIDÉE (R1-R5 le 2026-10-18 ; cas limites B1-B9 le 2026-10-19) — en cours
 ---
 
 # Atelier — remplacer son atelier par un atelier reçu
@@ -35,16 +35,26 @@ La session « modifs-fixes » a mergé le suivi de revue de Charger (#1480, `104
 `offeredLineCount` dans `atelier-file.ts`, barre d'outils au clavier `roving-toolbar.ts`). **Ce
 chantier part de là ; Charger est à lui** (modifs-fixes n'y touche plus).
 
-## Comportements à préciser à l'ouverture du chantier
+## Cas limites — validés par David (2026-10-19, « je suis tes recos »)
 
-Cas nominal / limite / erreur à écrire et à faire valider avant le code, notamment :
+| #   | Décision                                                                                                                                                       |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B1  | Atelier personnel **vide** : « Remplacer » sans confirmation et sans copie mise de côté (rien à perdre).                                                       |
+| B2  | **Confirmation** qui compte (« Tes 6 objets et ta grille seront remplacés. ») et rassure (« Ton atelier est mis de côté : tu pourras le retrouver. »).         |
+| B3  | **« Retrouver mon atelier précédent » ÉCHANGE** : l'atelier courant devient à son tour la copie de côté — rien n'est jamais perdu, on passe de l'un à l'autre. |
+| B4  | « Retrouver » est proposé dans l'**avis qui suit le remplacement**, puis dans la **barre d'icônes**, près de Charger, **seulement quand une copie existe**.    |
+| B5  | **Sauvegarde impossible** (quota, stockage indisponible) : remplacement refusé, rien ne change, message qui le dit.                                            |
+| B6  | Atelier reçu **trop récent** (`too-recent`) ou **abîmé** : mêmes refus que la fusion.                                                                          |
+| B7  | La copie de côté est **relue par Zod** comme l'atelier rangé (migrations comprises, `y`) ; une copie abîmée est oubliée, avec un message.                      |
+| B8  | **Charger** un `.atelier.json` suit le même chemin (R5) : confirmation, copie de côté.                                                                         |
+| B9  | Le **défaut de la fusion** (ci-dessous) est prouvé par un test rouge puis corrigé dans ce chantier.                                                            |
 
-- atelier personnel vide : « Remplacer » sans confirmation (rien à perdre), et sans copie mise de côté ;
-- « Retrouver » quand l'atelier courant a été modifié depuis le remplacement : ce qui est perdu à
-  son tour, et s'il faut le dire ;
-- sauvegarde impossible (quota, stockage indisponible) : le remplacement est refusé, rien ne change ;
-- atelier reçu en version plus récente (`too-recent`) ou abîmé : mêmes refus que la fusion ;
-- la copie mise de côté passe par Zod à la relecture comme l'atelier rangé.
+**Coordination avec le lot 5 (annuler / rétablir, session « modifs-fixes », 2026-10-19)** : ce
+chantier crée `Atelier.replaceWith(state, label)` — une étape (`atelier.step`), par la voie
+interne de restauration qui NE vide PAS la pile : un remplacement s'annule d'un Ctrl+Z tant que
+la page est ouverte ; la copie de côté couvre le rechargement. **La console ne fait pas partie de
+l'état remplacé** (R4) : pas dans la photo de l'étape. La PR 3 du lot 5 reprendra `replaceWith`
+pour Charger et Repartir de zéro, en partant de ce merge.
 
 ## Constaté, à traiter avec ce chantier (proposé, non tranché)
 
