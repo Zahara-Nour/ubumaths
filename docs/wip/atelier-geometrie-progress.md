@@ -11,10 +11,10 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, lot 3 PR 1 : revue corrigée, PR à ouvrir._
+_Mis à jour le 2026-10-19, après #1533._
 
-- **État** : lots 1 et 2 livrés (#1474 → #1528, rien en prod). Lot 3 PR 1 « le glisser » sur `feat/atelier-geometrie-glisser` (worktree `../ubumaths-wt-atelier-geometrie`), 3 commits : code, doc, corrections de la revue (6 points, tests rouges vérifiés sans les corrections).
-- **Prochaine action** : ouvrir la PR, CI, merger ; puis lot 3 PR 2 (voir `atelier-geometrie-lot3-phase0.md`).
+- **État** : lots 1 et 2 livrés (#1474 → #1528) ; lot 3 PR 1 « le glisser » mergée (#1533, revue corrigée). Rien en prod. Pas de worktree ouvert.
+- **Prochaine action** : lot 3 PR 2 (voir `atelier-geometrie-lot3-phase0.md`), dans un nouveau worktree `../ubumaths-wt-atelier-geometrie`.
 - **En attente de David** : rien.
 - **Pièges** : banc A (24 objets) médiane 15,9 ms, p90 17,6 ms (M1 < 16 ms tenu de justesse). Prévenir avant la session « atelier-refonte-interface ». PR qui touche `mathAST` → `mathast-expert`.
 
