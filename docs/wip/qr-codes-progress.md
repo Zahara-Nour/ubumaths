@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, lot 3 (QR stylés) codé, PR à ouvrir._
+_Mis à jour le 2026-10-19, après #1534._
 
-- **État** : lots 1 (#1515) et 2 (#1522) livrés, pas en prod. Lot 3 (QR stylés, variante B) codé sur `feat/qr-codes-style` : correction H, `qrDrawing`/`qrSvg` stylés partout (bouton, PNG, bloc écran, PDF en `#image(bytes(…))`), taille mini 2,5 cm ; tests verts, décodage réel par `jsqr`.
-- **Prochaine action** : revue `code-reviewer`, PR, CI, merge.
-- **En attente de David** : rien. Phase 0 tranchée : [qr-codes-style-phase0.md](qr-codes-style-phase0.md).
-- **Tranché** : liens courts plus tard (chantier non ouvert) ; chargement à la demande de `uqr` dans les PDF écarté (4,4 Ko gzip, 16 pages sur 330).
-- **Pièges** : le moteur SVG d'ImageMagick oublie la spirale (rendre par QuickLook ou un navigateur) ; `jsqr` ne lit pas une image qui contient deux QR (recadrer).
-- **Worktree / branche** : `../ubumaths-wt-qr-codes`, `feat/qr-codes-style`.
+- **État** : lots 1 (#1515), 2 (#1522) et 3 QR stylés (#1534 : gidouille, cases et yeux arrondis, variante B, correction H, PDF en image SVG, taille mini 2,5 cm) mergés. Rien en prod.
+- **Prochaine action** : aucune engagée. Vérification au téléphone notée dans `verifications-manuelles.md` (#1534).
+- **En attente de David** : liens courts côté serveur (décidé, chantier non ouvert) ; atelier sauvegardé public (non ouvert).
+- **Pièges** : adresse toujours `https://www.chiph.re` ; plafond version 15 = 220 octets en H ; le moteur SVG d'ImageMagick oublie la spirale (rendre par QuickLook ou un navigateur) ; `jsqr` ne lit pas une image à deux QR.
+- **Worktree / branche** : aucun.
 
 Phase 0 : [qr-codes-phase0.md](qr-codes-phase0.md), tranchée par David le 2026-10-19.
 
