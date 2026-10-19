@@ -1,6 +1,6 @@
-# Atelier — Annuler / Rétablir (lot 5 de la refonte) : phase 0, à valider
+# Atelier — Annuler / Rétablir (lot 5 de la refonte) : phase 0, validée
 
-Lot 5 de `atelier-refonte-interface-phase0.md`. Rien n'est codé.
+Lot 5 de `atelier-refonte-interface-phase0.md`. Validée le 2026-10-19. Le code attend le merge du chantier de performance de la session atelier-geometry (`perf/atelier-recalcul`), qui touche le même modèle.
 
 ## Déjà tranché par David (2026-10-18)
 
@@ -60,7 +60,7 @@ Avec (A), la pile propre du tableur et l'annulation de suppression disparaissent
   - le texte des lignes de console, qui restent visibles.
 - **Pile vidée** quand un autre onglet modifie le même atelier (la session le détecte déjà), et au rechargement.
 
-## Questions pour David (recommandation en premier)
+## Questions pour David (recommandation en premier) — les 6 recommandations validées par David le 2026-10-19 (« je te suis »)
 
 1. **La méthode** : (A) des photos de l'état ← recommandé ; ou (B) des opérations inverses.
 2. **Le zoom et le déplacement du graphe annulables ?** Non ← recommandé : c'est regarder, pas modifier.
