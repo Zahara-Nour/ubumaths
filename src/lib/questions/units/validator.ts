@@ -17,13 +17,15 @@ import {
 	UNIT_FEEDBACK,
 	ambiguousUnitMessage,
 	requiredUnitMessage,
-	unknownUnitMessage
+	unknownUnitMessage,
+	wrongMagnitudeMessage
 } from './feedback';
 import { normalizeStudentQuantity, studentNumericLatex } from './student-input';
 import { readCompositeDuration, type DurationFormIssue } from './composite-duration';
 import { compareQuantities, type Tolerance } from './ce-integration';
 import { isDuration, unitsAreCompatible } from './operations';
 import type { PrecisionType } from '$lib/questions/types';
+import type { Unit } from './types';
 import { convertAffine } from '$lib/mathAST/units/conversion';
 import {
 	judgeRounding,
@@ -357,7 +359,11 @@ export function validateQuantityAnswer(
 			userQuantity.unit.components.size === 0 && expectedQuantity.unit.components.size > 0;
 		return {
 			isCorrect: false,
-			feedback: missingUnit ? UNIT_FEEDBACK.missingUnit : UNIT_FEEDBACK.wrongMagnitude,
+			feedback: missingUnit
+				? UNIT_FEEDBACK.missingUnit
+				: wrongMagnitudeMessage(
+						gluedProductMatches(extractUnitFromLatex(normalizedUser), expectedQuantity.unit)
+					),
 			errorType: 'incompatible_units',
 			unitAtFault: true,
 			parsed: {
@@ -511,6 +517,36 @@ function unitWritingFeedback(normalizedUser: string): string | null {
 	if (unitWritingProblem(writing) !== null) return ambiguousUnitMessage(writing);
 	if (parseUnitExpression(writing) === null) return unknownUnitMessage(writing);
 	return null;
+}
+
+/** Symboles collés : des lettres seulement (`ms`, pas `m.s` ni `m^2`) */
+const GLUED_LETTERS = /^[A-Za-z]{2,}$/;
+
+/**
+ * Vrai quand l'écriture de l'élève est faite de symboles d'unités collés qui,
+ * lus comme un produit, mesurent la grandeur attendue : `ms` (lu milliseconde)
+ * quand des m·s sont attendus. Toutes les découpes en deux symboles ou plus
+ * sont essayées.
+ */
+function gluedProductMatches(writing: string | null, expectedUnit: Unit): boolean {
+	if (writing === null || !GLUED_LETTERS.test(writing)) return false;
+	return productSplits(writing).some((symbols) => {
+		const product = parseUnitExpression(symbols.join('.'));
+		return product !== null && unitsAreCompatible(product, expectedUnit);
+	});
+}
+
+/** Les découpes de `writing` en deux symboles d'unités connus ou plus */
+function productSplits(writing: string): string[][] {
+	const splits: string[][] = [];
+	for (let end = 1; end < writing.length; end++) {
+		const head = writing.slice(0, end);
+		if (parseUnitExpression(head) === null) continue;
+		const tail = writing.slice(end);
+		if (parseUnitExpression(tail) !== null) splits.push([head, tail]);
+		for (const rest of productSplits(tail)) splits.push([head, ...rest]);
+	}
+	return splits;
 }
 
 /**
