@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { numericNode } from '$lib/mathAST/common/numeric';
-import { findPointNear, findElementNear } from '../hit-testing';
+import { findPointNear, findElementNear, findElementsNear } from '../hit-testing';
 import { Figure } from '../../graph/figure';
 import { exact } from '../../types/geo-value';
 
@@ -99,5 +99,31 @@ describe('findElementNear', () => {
 		c.createSegment(a, b);
 		// Near point A
 		expect(findElementNear(c, 0.1, 0, 1)).toBe(a);
+	});
+});
+
+// =============================================================================
+// findElementsNear
+// =============================================================================
+
+describe('findElementsNear', () => {
+	it('lists every non-point element in range, closest first', () => {
+		const c = new Figure();
+		const a = c.createFreePoint(pt(-4, 0));
+		const b = c.createFreePoint(pt(4, 0));
+		const o = c.createFreePoint(pt(0, 0));
+		const seg = c.createSegment(a, b);
+		const circle = c.createCircleByRadius(o, exact(numericNode(2)));
+		// (2,1 ; 0,05): 0,05 from the segment, 0,1 from the circle
+		expect(findElementsNear(c, 2.1, 0.05, 0.2)).toEqual([seg, circle]);
+	});
+
+	it('leaves points out, and elements out of range', () => {
+		const c = new Figure();
+		const a = c.createFreePoint(pt(0, 0));
+		const b = c.createFreePoint(pt(4, 0));
+		const seg = c.createSegment(a, b);
+		expect(findElementsNear(c, 0, 0.1, 0.2)).toEqual([seg]);
+		expect(findElementsNear(c, 0, 3, 0.2)).toEqual([]);
 	});
 });

@@ -48,7 +48,11 @@
 		imageToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
-	import { findPointNear, findElementNear } from '$lib/geometry-core/interaction/hit-testing';
+	import {
+		findPointNear,
+		findElementNear,
+		findElementsNear
+	} from '$lib/geometry-core/interaction/hit-testing';
 	import { snapToGrid } from '$lib/geometry-core/interaction/snap';
 	import { numeric } from '$lib/geometry-core/types/geo-value';
 	import {
@@ -617,8 +621,11 @@
 				const path = Math.hypot(e.clientX - press.startX, e.clientY - press.startY);
 				if (path >= DRAG_THRESHOLD_PIXELS) press.moved = true;
 			}
-			// Le point qu'un clic choisirait, mis en évidence (M5)
-			hoveredId = findPointNear(figure, math.x, math.y, toolPickRadius(e) / ppu);
+			// Ce qu'un clic viserait, mis en évidence (M5) : le point, sinon l'objet le plus proche
+			const radius = toolPickRadius(e) / ppu;
+			hoveredId =
+				findPointNear(figure, math.x, math.y, radius) ??
+				findElementNear(figure, math.x, math.y, radius, viewport);
 			canvasTool.hover(math);
 			return;
 		}
@@ -761,8 +768,10 @@
 		if (press.moved) return;
 		const math = getMathCoords(e);
 		if (!math) return;
-		const pointId = findPointNear(figure, math.x, math.y, toolPickRadius(e) / ppu);
-		tool.click(math.x, math.y, pointId, SNAP_PIXELS / ppu);
+		const radius = toolPickRadius(e) / ppu;
+		const pointId = findPointNear(figure, math.x, math.y, radius);
+		const elementIds = findElementsNear(figure, math.x, math.y, radius, viewport);
+		tool.click(math.x, math.y, pointId, SNAP_PIXELS / ppu, { elementIds, radius });
 	}
 
 	function onPointerLeave() {

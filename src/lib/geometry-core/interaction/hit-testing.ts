@@ -10,7 +10,7 @@ import type { Figure } from '../graph/figure';
 import { geoToNumber } from '../compute/to-number';
 import { isPointElement, isVector } from '../types/elements';
 import type { Viewport } from '../viewport/types';
-import type { ConicParams } from '../types/elements';
+import type { ConicParams, GeoElement } from '../types/elements';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
 
 /**
@@ -133,127 +133,7 @@ export function findElementNear(
 
 	for (const el of figure.getAllElements()) {
 		if (!el.visible) continue;
-		let dist = Infinity;
-
-		if (el.type === 'segment') {
-			const p1 = figure.getPosition(el.startId);
-			const p2 = figure.getPosition(el.endId);
-			if (p1 && p2) {
-				dist = distToSegment(
-					mathX,
-					mathY,
-					geoToNumber(p1.x),
-					geoToNumber(p1.y),
-					geoToNumber(p2.x),
-					geoToNumber(p2.y)
-				);
-			}
-		} else if (el.type === 'line') {
-			const p1 = figure.getPosition(el.point1Id);
-			const p2 = figure.getPosition(el.point2Id);
-			if (p1 && p2) {
-				dist = distToLine(
-					mathX,
-					mathY,
-					geoToNumber(p1.x),
-					geoToNumber(p1.y),
-					geoToNumber(p2.x),
-					geoToNumber(p2.y)
-				);
-			}
-		} else if (el.type === 'ray') {
-			const origin = figure.getPosition(el.originId);
-			const through = figure.getPosition(el.throughId);
-			if (origin && through) {
-				dist = distToRay(
-					mathX,
-					mathY,
-					geoToNumber(origin.x),
-					geoToNumber(origin.y),
-					geoToNumber(through.x),
-					geoToNumber(through.y)
-				);
-			}
-		} else if (isVector(el)) {
-			const comp = figure.getVectorComponents(el.id);
-			if (comp) {
-				let startX: number, startY: number;
-				if (el.type === 'vectorByPoints') {
-					const p1 = figure.getPosition(el.startId);
-					if (!p1) continue;
-					startX = geoToNumber(p1.x);
-					startY = geoToNumber(p1.y);
-				} else {
-					const pos = figure.getPosition(el.id);
-					startX = pos ? geoToNumber(pos.x) : 0;
-					startY = pos ? geoToNumber(pos.y) : 0;
-				}
-				const endX = startX + geoToNumber(comp.dx);
-				const endY = startY + geoToNumber(comp.dy);
-				dist = distToSegment(mathX, mathY, startX, startY, endX, endY);
-			}
-		} else if (el.type === 'circleByRadius') {
-			const center = figure.getPosition(el.centerId);
-			if (center) {
-				dist = distToCircle(
-					mathX,
-					mathY,
-					geoToNumber(center.x),
-					geoToNumber(center.y),
-					figure.resolveParam(el.radius)
-				);
-			}
-		} else if (el.type === 'tangentLine') {
-			// Tangent is a line: get x₀, compute tangent point and slope
-			const fnEl = figure.getElementById(el.functionId);
-			if (fnEl && fnEl.type === 'function') {
-				let x0: number | null = null;
-				if (el.pointOnCurveId) {
-					const pos = figure.getPosition(el.pointOnCurveId);
-					if (pos) x0 = geoToNumber(pos.x);
-				} else if (el.x0 !== undefined) {
-					x0 = geoToNumber(el.x0);
-				}
-				if (x0 !== null) {
-					const y0 = fnEl.compiledFn({ x: x0 });
-					const m = fnEl.compiledDerivative({ x: x0 });
-					if (Number.isFinite(y0) && Number.isFinite(m)) {
-						dist = distToLine(mathX, mathY, x0, y0, x0 + 1, y0 + m);
-					}
-				}
-			}
-		} else if (el.type === 'function') {
-			// Perpendicular distance: |f(x) - y| / sqrt(1 + f'(x)²)
-			const y = el.compiledFn({ x: mathX });
-			if (Number.isFinite(y)) {
-				const dy = el.compiledDerivative({ x: mathX });
-				const slope = Number.isFinite(dy) ? dy : 0;
-				dist = Math.abs(y - mathY) / Math.sqrt(1 + slope * slope);
-			}
-		} else if (el.type === 'quadraticCurve') {
-			dist = distToQuadraticCurve(mathX, mathY, el.conic, viewport);
-		} else if (el.type === 'implicitCurve') {
-			dist = distToImplicitCurve(mathX, mathY, el.compiledFn);
-		} else if (el.type === 'circleByPoint') {
-			const center = figure.getPosition(el.centerId);
-			const edge = figure.getPosition(el.edgePointId);
-			if (center && edge) {
-				const cx = geoToNumber(center.x);
-				const cy = geoToNumber(center.y);
-				const r = Math.sqrt((geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2);
-				dist = distToCircle(mathX, mathY, cx, cy, r);
-			}
-		} else if (el.type === 'parametricCurve') {
-			// Use the read-only cursor query to find the closest point on the curve.
-			// Newton multi-start handles polar / self-intersecting cases robustly.
-			const info = figure.queryParametricCurveAtCursor(el.id, mathX, mathY);
-			if (info) {
-				const dx = info.x - mathX;
-				const dy = info.y - mathY;
-				dist = Math.sqrt(dx * dx + dy * dy);
-			}
-		}
-
+		const dist = distanceToElement(figure, el, mathX, mathY, viewport);
 		if (dist <= threshold && dist < bestDist) {
 			bestDist = dist;
 			bestId = el.id;
@@ -261,6 +141,159 @@ export function findElementNear(
 	}
 
 	return bestId;
+}
+
+/**
+ * Every visible NON-point element within threshold, closest first — what a
+ * construction tool needs to tell a click on one line from a click where two
+ * lines cross (atelier, lot 3, PR 3). Points are left to `findPointNear`.
+ */
+export function findElementsNear(
+	figure: Figure,
+	mathX: number,
+	mathY: number,
+	threshold: number,
+	viewport?: Viewport
+): string[] {
+	const found: { id: string; dist: number }[] = [];
+	for (const el of figure.getAllElements()) {
+		if (!el.visible || isPointElement(el)) continue;
+		const dist = distanceToElement(figure, el, mathX, mathY, viewport);
+		if (dist <= threshold) found.push({ id: el.id, dist });
+	}
+	return found.sort((a, b) => a.dist - b.dist).map((f) => f.id);
+}
+
+/** Distance from (mathX, mathY) to a non-point element; Infinity when it has none. */
+function distanceToElement(
+	figure: Figure,
+	el: GeoElement,
+	mathX: number,
+	mathY: number,
+	viewport?: Viewport
+): number {
+	let dist = Infinity;
+
+	if (el.type === 'segment') {
+		const p1 = figure.getPosition(el.startId);
+		const p2 = figure.getPosition(el.endId);
+		if (p1 && p2) {
+			dist = distToSegment(
+				mathX,
+				mathY,
+				geoToNumber(p1.x),
+				geoToNumber(p1.y),
+				geoToNumber(p2.x),
+				geoToNumber(p2.y)
+			);
+		}
+	} else if (el.type === 'line') {
+		const p1 = figure.getPosition(el.point1Id);
+		const p2 = figure.getPosition(el.point2Id);
+		if (p1 && p2) {
+			dist = distToLine(
+				mathX,
+				mathY,
+				geoToNumber(p1.x),
+				geoToNumber(p1.y),
+				geoToNumber(p2.x),
+				geoToNumber(p2.y)
+			);
+		}
+	} else if (el.type === 'ray') {
+		const origin = figure.getPosition(el.originId);
+		const through = figure.getPosition(el.throughId);
+		if (origin && through) {
+			dist = distToRay(
+				mathX,
+				mathY,
+				geoToNumber(origin.x),
+				geoToNumber(origin.y),
+				geoToNumber(through.x),
+				geoToNumber(through.y)
+			);
+		}
+	} else if (isVector(el)) {
+		const comp = figure.getVectorComponents(el.id);
+		if (comp) {
+			let startX: number, startY: number;
+			if (el.type === 'vectorByPoints') {
+				const p1 = figure.getPosition(el.startId);
+				if (!p1) return Infinity;
+				startX = geoToNumber(p1.x);
+				startY = geoToNumber(p1.y);
+			} else {
+				const pos = figure.getPosition(el.id);
+				startX = pos ? geoToNumber(pos.x) : 0;
+				startY = pos ? geoToNumber(pos.y) : 0;
+			}
+			const endX = startX + geoToNumber(comp.dx);
+			const endY = startY + geoToNumber(comp.dy);
+			dist = distToSegment(mathX, mathY, startX, startY, endX, endY);
+		}
+	} else if (el.type === 'circleByRadius') {
+		const center = figure.getPosition(el.centerId);
+		if (center) {
+			dist = distToCircle(
+				mathX,
+				mathY,
+				geoToNumber(center.x),
+				geoToNumber(center.y),
+				figure.resolveParam(el.radius)
+			);
+		}
+	} else if (el.type === 'tangentLine') {
+		// Tangent is a line: get x₀, compute tangent point and slope
+		const fnEl = figure.getElementById(el.functionId);
+		if (fnEl && fnEl.type === 'function') {
+			let x0: number | null = null;
+			if (el.pointOnCurveId) {
+				const pos = figure.getPosition(el.pointOnCurveId);
+				if (pos) x0 = geoToNumber(pos.x);
+			} else if (el.x0 !== undefined) {
+				x0 = geoToNumber(el.x0);
+			}
+			if (x0 !== null) {
+				const y0 = fnEl.compiledFn({ x: x0 });
+				const m = fnEl.compiledDerivative({ x: x0 });
+				if (Number.isFinite(y0) && Number.isFinite(m)) {
+					dist = distToLine(mathX, mathY, x0, y0, x0 + 1, y0 + m);
+				}
+			}
+		}
+	} else if (el.type === 'function') {
+		// Perpendicular distance: |f(x) - y| / sqrt(1 + f'(x)²)
+		const y = el.compiledFn({ x: mathX });
+		if (Number.isFinite(y)) {
+			const dy = el.compiledDerivative({ x: mathX });
+			const slope = Number.isFinite(dy) ? dy : 0;
+			dist = Math.abs(y - mathY) / Math.sqrt(1 + slope * slope);
+		}
+	} else if (el.type === 'quadraticCurve') {
+		dist = distToQuadraticCurve(mathX, mathY, el.conic, viewport);
+	} else if (el.type === 'implicitCurve') {
+		dist = distToImplicitCurve(mathX, mathY, el.compiledFn);
+	} else if (el.type === 'circleByPoint') {
+		const center = figure.getPosition(el.centerId);
+		const edge = figure.getPosition(el.edgePointId);
+		if (center && edge) {
+			const cx = geoToNumber(center.x);
+			const cy = geoToNumber(center.y);
+			const r = Math.sqrt((geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2);
+			dist = distToCircle(mathX, mathY, cx, cy, r);
+		}
+	} else if (el.type === 'parametricCurve') {
+		// Use the read-only cursor query to find the closest point on the curve.
+		// Newton multi-start handles polar / self-intersecting cases robustly.
+		const info = figure.queryParametricCurveAtCursor(el.id, mathX, mathY);
+		if (info) {
+			const dx = info.x - mathX;
+			const dy = info.y - mathY;
+			dist = Math.sqrt(dx * dx + dy * dy);
+		}
+	}
+
+	return dist;
 }
 
 // =============================================================================

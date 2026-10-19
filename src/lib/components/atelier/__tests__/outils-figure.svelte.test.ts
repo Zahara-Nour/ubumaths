@@ -104,7 +104,7 @@ function messageOf(container: HTMLElement): string {
 // =============================================================================
 
 describe('M3 : la barre d’outils de la vue Géométrie', () => {
-	it('six outils, dans l’ordre, Déplacer choisi par défaut', async () => {
+	it('onze outils, dans l’ordre, Déplacer choisi par défaut', async () => {
 		const container = await mount(atelierOf());
 
 		const toolbar = container.querySelector('[role="toolbar"][aria-label="Outils de géométrie"]');
@@ -115,15 +115,16 @@ describe('M3 : la barre d’outils de la vue Géométrie', () => {
 			'Segment',
 			'Droite',
 			'Demi-droite',
-			'Cercle'
+			'Cercle',
+			'Milieu',
+			'Intersection',
+			'Point sur un objet',
+			'Parallèle',
+			'Perpendiculaire'
 		]);
 		expect(buttons.map((b) => b.getAttribute('aria-pressed'))).toEqual([
 			'true',
-			'false',
-			'false',
-			'false',
-			'false',
-			'false'
+			...Array<string>(10).fill('false')
 		]);
 	});
 

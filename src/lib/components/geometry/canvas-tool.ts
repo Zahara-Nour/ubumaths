@@ -4,13 +4,26 @@
  * Géométrie de l'atelier, lot 3, PR 2). Tant qu'un outil est passé, un clic
  * sur un point ne le glisse pas : il le choisit.
  */
+export interface CanvasNear {
+	readonly elementIds: readonly string[];
+	readonly radius: number;
+}
+
 export interface CanvasTool {
 	/**
 	 * Un clic (sans glisser) en (x ; y), coordonnées du repère. `pointId` : le
 	 * point visé (8 px à la souris, 20 px au doigt), ou `null` ; `snap` :
-	 * l'aimantation aux entiers, en unités du repère.
+	 * l'aimantation aux entiers, en unités du repère ; `near` : les autres
+	 * éléments à la même distance (droites, cercles, courbes), le plus proche
+	 * d'abord, et cette distance en unités du repère (lot 3, PR 3).
 	 */
-	readonly click: (x: number, y: number, pointId: string | null, snap: number) => void;
+	readonly click: (
+		x: number,
+		y: number,
+		pointId: string | null,
+		snap: number,
+		near: CanvasNear
+	) => void;
 	/** Le pointeur survole (x ; y), ou quitte la toile (`null`) : le fantôme le suit. */
 	readonly hover: (at: { x: number; y: number } | null) => void;
 }
