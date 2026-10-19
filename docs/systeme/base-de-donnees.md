@@ -290,7 +290,7 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   vide = fourni par Chiphre (Typst dans le code ; 13 styles, le 13ᵉ « 2 colonnes - paysage » ajouté par
   `20261016104100`, avec sa ligne dans `worksheet_templates`). La fiche désigne son style par
   `worksheets.style_id` seul ; l'ancienne `worksheets.template_id`, recopiée dans `style_id` (#1529),
-  n'est plus lue ni écrite et sera retirée. Lus par le prof et l'admin (ceux de Chiphre et les
+  est retirée (`20261019221542`). Lus par le prof et l'admin (ceux de Chiphre et les
   leurs), modifiés par leur propriétaire ou l'admin ; **aucun accès élève ni `anon`**. Une clé
   étrangère se vérifie hors RLS : deux déclencheurs refusent qu'un gabarit rejoigne un style qui
   n'est pas celui de son auteur, ou qu'une fiche prenne le style d'un autre que Chiphre ou son auteur

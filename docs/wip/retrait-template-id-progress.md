@@ -1,20 +1,18 @@
 ---
 title: Retrait de worksheets.template_id — journal
 date: 2026-10-19
-status: PR 1 (#1532) et PR 2 (#1542) mergées ; PR 3 (drop) après deploy:prod
+status: PR 1 (#1532) et PR 2 (#1542) mergées, en prod v0.41.0 ; #1544 (scripts) ; PR 3 (drop) ouverte
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1542._
+_Mis à jour le 2026-10-19, PR 3 ouverte (deploy v0.41.0 fait : #1542 en prod, vérifié sur `origin/production`)._
 
-- **État** : PR 1 (#1532, migrée) et PR 2 (#1542, code) mergées. Le code ne lit ni n'écrit plus `worksheets.template_id` ; `template_id` envoyé au POST/PUT → 400.
-- **Prochaine action** : PR 3 (migration **destructive**) — seulement après le `deploy:prod` qui livre #1542. Redéfinir `get_worksheet_by_share_token` et `get_course_worksheet_by_share_token` (retirer `'template_id'` et le `coalesce(w.style_id, w.template_id)`), puis `drop column worksheets.template_id` (part avec `idx_worksheets_template_id` et `worksheets_template_id_fkey`). Grep des usages collé, accord de David.
-- **En attente de David** : `pnpm deploy:prod` (livre #1542), puis feu vert pour la PR 3 destructive.
-- **Pièges en cours** : réécrire le test « fiche d'avant le lot 3 » de `tests/integration/style-fiche-liens-partages.test.ts` (il appelle les RPC directement) ; `tests/integration/recopie-style-depuis-template.test.ts` et les tests qui insèrent `template_id` en SQL casseront au drop.
-- **Worktree / branche** : PR 3 → `git worktree add -b refactor/retrait-template-id-drop ../ubumaths-wt-retrait-template-id origin/main`.
-
----
+- **État** : #1532 (migrée), #1542 (code, en prod v0.41.0), #1544 (scripts) mergées. PR 3 (`refactor/retrait-template-id-drop`, rebasée sur main) ouverte : migration `20261019221542_retrait_worksheets_template_id.sql` (RPC de partage sans `template_id`, puis `drop column`), tests adaptés, doc système à jour.
+- **Prochaine action** : CI verte → merger la PR 3 ; `db:migrate` (destructive : feu vert de David, grep des usages et réconciliation collés) ; puis PR 4 : `db:types`, nettoyage des tests unitaires qui portent encore `template_id` dans `WorksheetRow` (`style-de-la-fiche.test.ts`, `.svelte.test.ts`), `db:doc` (`base-de-donnees-tables.md`), puis versement du journal.
+- **En attente de David** : feu vert pour le `db:migrate` destructif.
+- **Pièges en cours** : la migration est destructive → pas de `db:migrate` sans feu vert. Réconciliation prod du 2026-10-19 : 28/36 fiches avec `template_id`, toutes `style_id = template_id`.
+- **Worktree / branche** : `../ubumaths-wt-retrait-template-id` · `refactor/retrait-template-id-drop`.
 
 ## Contexte
 

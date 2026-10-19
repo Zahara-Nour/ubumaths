@@ -45,7 +45,7 @@ const FIRST_LINES = { questions: [null, 0, 25], exercise: null };
 /** Le second exercice : cadre unique réglé */
 const SECOND_LINES = { exercise: 12 };
 
-/** Clés de la fiche rendue : celles de la migration 20261016103500, inchangées */
+/** Clés de la fiche rendue : celles de la migration 20261016103500, moins `template_id` (#1529) */
 const WORKSHEET_KEYS = [
 	'config',
 	'description',
@@ -57,7 +57,6 @@ const WORKSHEET_KEYS = [
 	'status',
 	'style_id',
 	'template',
-	'template_id',
 	'title',
 	'total_points',
 	'translations',
