@@ -11,13 +11,12 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, PR 4 en cours._
+_Mis à jour le 2026-10-19, après #1540._
 
-- **État** : lots 1 et 2 livrés ; lot 3 PR 1 (#1533), PR 2 (#1536), PR 3 (#1538) mergées ; PR 4 « téléphone et tablette » (M6) codée, revue corrigée, PR ouverte. Rien en prod.
-- **Prochaine action** : CI verte → merge ; puis clore le lot 3 (versement du journal).
-- **En attente de David** : replier « Mes objets » sur téléphone ? (la toile retombe à 160 px avec deux objets ; touche toute l'interface de l'atelier).
-- **Pièges** : la page des tests navigateur (414 px) prend la disposition téléphone (toile de 10rem) : un test qui suppose une échelle en pixels casse. PR qui touche `mathAST` → `mathast-expert`.
-- **Worktree / branche** : `../ubumaths-wt-atelier-geometrie` · `feat/atelier-geometrie-tactile`.
+- **État** : lots 1 et 2 livrés ; **lot 3 COMPLET** : PR 1 (#1533), PR 2 (#1536), PR 3 (#1538), PR 4 « téléphone et tablette » (#1540) mergées. Rien en prod. Pas de worktree ouvert.
+- **Prochaine action** : clore le lot 3 — versement (durable déjà dans `docs/systeme/atelier.md` § Téléphone et tablette ; archiver `atelier-geometrie-lot3-phase0.md`), puis demander à David la suite du chantier géométrie.
+- **En attente de David** : replier « Mes objets » sur téléphone ? (la toile retombe à 160 px avec deux objets ; touche toute l'interface de l'atelier, Graphe compris). Vérification manuelle #1540 notée.
+- **Pièges** : la page des tests navigateur (414 px) prend la disposition téléphone (toile de 10rem) : un test qui suppose une échelle en pixels casse. PR qui touche `mathAST` → `mathast-expert`. Un segment entre deux clics dans le vide = 3 étapes d'annulation (M7, gardé).
 
 ## Lot 1 — découpage
 
