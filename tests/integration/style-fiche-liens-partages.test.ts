@@ -51,7 +51,6 @@ let adminStyleId: string;
 interface SharedWorksheet {
 	id: string;
 	style_id: string | null;
-	template_id: string | null;
 	template: { style_id: string; template_content: string } | null;
 }
 
@@ -79,14 +78,11 @@ async function seedStyle(ownerId: string, suffix: string): Promise<string> {
 }
 
 /** Une fiche publiée du prof, citée dans le cahier ET visible dans le cours partagé. */
-async function sharedWorksheet(
-	suffix: string,
-	ids: { style_id?: string | null; template_id?: string | null }
-): Promise<string> {
+async function sharedWorksheet(suffix: string, ids: { style_id?: string | null }): Promise<string> {
 	const [{ id }] = await sql(
-		`insert into public.worksheets (title, type, status, created_by, style_id, template_id)
-		 values ($1, 'worksheet', 'published', $2, $3, $4) returning id`,
-		[`${RUN} ${suffix}`, teacherId, ids.style_id ?? null, ids.template_id ?? null]
+		`insert into public.worksheets (title, type, status, created_by, style_id)
+		 values ($1, 'worksheet', 'published', $2, $3) returning id`,
+		[`${RUN} ${suffix}`, teacherId, ids.style_id ?? null]
 	);
 	// Une séance par classe et par jour : chaque fiche s'ajoute à celle du jour
 	await sql(
@@ -208,16 +204,16 @@ describe.each(OPEN)('par le lien du %s', (_, open) => {
 		expect(fiche?.template?.template_content).toContain('MISE-EN-PAGE-DU-PROF');
 	});
 
-	it('fiche d’avant le lot 3 : le style se lit dans `template_id`', async () => {
-		const id = await sharedWorksheet('ancienne', { template_id: profStyleId });
+	it('la fiche rendue ne porte plus de clé `template_id` (#1529)', async () => {
+		const id = await sharedWorksheet('sans template_id', { style_id: profStyleId });
 		const fiche = await open(id);
 
-		expect(fiche?.template_id).toBe(profStyleId);
+		expect(fiche).not.toHaveProperty('template_id');
 		expect(fiche?.template?.template_content).toContain('MISE-EN-PAGE-DU-PROF');
 	});
 
 	it('style de Chiphre : son identifiant, aucune mise en page (elle est dans le code)', async () => {
-		const id = await sharedWorksheet('Standard', { style_id: STANDARD, template_id: STANDARD });
+		const id = await sharedWorksheet('Standard', { style_id: STANDARD });
 		const fiche = await open(id);
 
 		expect(fiche?.style_id).toBe(STANDARD);
