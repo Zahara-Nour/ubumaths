@@ -40,6 +40,9 @@ export const QR_BORDER = 4;
  */
 export const QR_MAX_VERSION = 15;
 
+/** Adresse au-delà de `QR_MAX_VERSION` (bloc ```qr) */
+export const QR_TOO_LONG_MESSAGE = 'Ce lien est trop long pour un QR code lisible.';
+
 // ============================================================================
 // FONCTIONS
 // ============================================================================
@@ -67,17 +70,23 @@ function escapeXml(text: string): string {
 		.replace(/"/g, '&quot;');
 }
 
-/**
- * Le QR code en SVG autonome : un module par unité, fond blanc, modules noirs.
- * Noir sur blanc quel que soit le thème : un QR inversé se lit mal.
- */
-export function qrSvg(qr: QrMatrix, title: string): string {
+/** Le tracé SVG des modules sombres, un module par unité (repère du `viewBox`) */
+export function qrPath(qr: QrMatrix): string {
 	let path = '';
 	qr.data.forEach((row, y) => {
 		row.forEach((dark, x) => {
 			if (dark) path += `M${x} ${y}h1v1h-1z`;
 		});
 	});
+	return path;
+}
+
+/**
+ * Le QR code en SVG autonome : un module par unité, fond blanc, modules noirs.
+ * Noir sur blanc quel que soit le thème : un QR inversé se lit mal.
+ */
+export function qrSvg(qr: QrMatrix, title: string): string {
+	const path = qrPath(qr);
 	return (
 		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${qr.size} ${qr.size}" shape-rendering="crispEdges">` +
 		`<title>${escapeXml(title)}</title>` +

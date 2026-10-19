@@ -256,6 +256,7 @@ let content = $state('');
 ```
 
 Props clés : `preset` (`'full'` par défaut), `toolbar`, `minHeight`, `maxHeight`, `disabled`, `imageUpload`, `onchange`.  
+Section « Insertion » de la barre : droite graduée, tableau de variation, arbre de probabilité, cercle trigonométrique, QR code (bloc ubumark ` ```qr ` prérempli, sans nœud TipTap dédié).  
 Pour l'affichage seul : `RichTextDisplay.svelte` (pas d'éditeur).
 
 ---
