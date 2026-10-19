@@ -14,6 +14,8 @@
 	 * abîmé le dit et ouvre l'atelier personnel (B6).
 	 */
 	import { page } from '$app/state';
+	import { replaceState } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import AtelierContainer from '$lib/components/atelier/AtelierContainer.svelte';
 	import { Atelier } from '$lib/atelier/atelier.svelte';
 	import { openLink } from '$lib/atelier/grapheur-link';
@@ -31,6 +33,14 @@
 	 * Navigateur seulement : le décodage d'un lien `?a=` est asynchrone.
 	 */
 	let opened = $state<Opened | null>(null);
+
+	/**
+	 * « Remplacer mon atelier » : le lien reçu EST devenu l'atelier personnel —
+	 * `?a=` / `?f=` retirés de l'adresse sans naviguer, comme sur `/atelier`.
+	 */
+	function leaveLink() {
+		replaceState(resolve('/grapheur'), {});
+	}
 
 	$effect(() => {
 		const search = page.url.search;
@@ -71,6 +81,7 @@
 				view="graphe"
 				startWith={opened.received === null ? 'function' : undefined}
 				heading="Grapheur"
+				onLinkLeft={leaveLink}
 			/>
 		{/key}
 	{/if}

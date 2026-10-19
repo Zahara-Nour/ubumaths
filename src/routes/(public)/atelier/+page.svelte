@@ -11,6 +11,8 @@
 	 * C'est la garantie du §6 — recevoir un énoncé ne doit pas coûter son travail.
 	 */
 	import { page } from '$app/state';
+	import { replaceState } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import AtelierContainer from '$lib/components/atelier/AtelierContainer.svelte';
 	import { Atelier } from '$lib/atelier/atelier.svelte';
 	import { openLink } from '$lib/atelier/grapheur-link';
@@ -28,6 +30,16 @@
 	 * Navigateur seulement : le décodage d'un lien `?a=` est asynchrone.
 	 */
 	let opened = $state<Opened | null>(null);
+
+	/**
+	 * « Remplacer mon atelier » : le lien reçu EST devenu l'atelier personnel. On
+	 * retire `?a=` de l'adresse sans naviguer (`replaceState` ne change pas
+	 * `page.url`, l'atelier n'est pas rouvert) : un rechargement ouvre l'atelier
+	 * personnel, et non plus le lien en mode éphémère.
+	 */
+	function leaveLink() {
+		replaceState(resolve('/atelier'), {});
+	}
 
 	$effect(() => {
 		const search = page.url.search;
@@ -66,6 +78,7 @@
 				received={opened.received}
 				notice={opened.notice}
 				heading="Atelier"
+				onLinkLeft={leaveLink}
 			/>
 		{/key}
 	{/if}

@@ -43,6 +43,7 @@
 	import { cascadeMessage, citingCellsNote, removedMessage } from '$lib/atelier/removal';
 	import { tabulationReport } from '$lib/atelier/tabulate';
 	import {
+		ArchiveRestore,
 		EllipsisVertical,
 		FolderOpen,
 		Redo2,
@@ -68,6 +69,18 @@
 	import type { KeptHistory } from '$lib/atelier/history-storage';
 	import { downloadText } from '$lib/atelier/history-export';
 	import { reservedYRenamedMessage } from '$lib/atelier/geometry';
+	import {
+		RETRIEVE_LABEL,
+		SET_ASIDE_NOTICE,
+		SET_ASIDE_REASSURANCE,
+		hasSetAside,
+		isBlankAtelier,
+		keepAside,
+		readPersonal,
+		replacePersonal,
+		replacementLoss,
+		swapWithSetAside
+	} from '$lib/atelier/replace';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
@@ -92,9 +105,19 @@
 		startWith?: 'function';
 		/** Le titre de la page (niveau 1, pour les lecteurs d'écran — revue a11y). */
 		heading?: string;
+		/**
+		 * L'atelier reçu est devenu l'atelier personnel (« Remplacer mon atelier ») :
+		 * la page retire `?a=` de l'adresse, qu'un rechargement ne rouvre pas le lien.
+		 */
+		onLinkLeft?: () => void;
 	}
 
 	type ViewId = 'graphe' | 'figure' | 'donnees';
+
+	/** Un avis de l'atelier, parfois avec son geste (« Retrouver mon atelier précédent », B4). */
+	type Notice = SessionNotice & {
+		readonly action?: { readonly label: string; readonly run: () => void };
+	};
 
 	/**
 	 * Géométrie entre Graphe et Données (géométrie v2, Q5 révisée) : les deux vues
@@ -124,8 +147,28 @@
 		received = null,
 		notice = null,
 		startWith,
-		heading = 'Atelier'
+		heading = 'Atelier',
+		onLinkLeft
 	}: Props = $props();
+
+	/** Les noms des étapes d'Annuler qui remplacent l'atelier (`atelier.replaceWith`). */
+	const REPLACE_STEP = 'remplacer mon atelier';
+	const RETRIEVE_STEP = 'retrouver mon atelier précédent';
+
+	/**
+	 * Sur un lien reçu (mode éphémère) ? Au départ, ce que dit la page ; « Remplacer
+	 * mon atelier » en sort sans recharger : l'atelier affiché devient le personnel.
+	 */
+	// svelte-ignore state_referenced_locally
+	let linkMode = $state(ephemeral);
+	/** L'atelier reçu, tant qu'on est sur le lien. */
+	// svelte-ignore state_referenced_locally
+	let shownReceived = $state(received);
+	/** Une copie mise de côté existe : « Retrouver » est proposé (B4). */
+	let setAsideExists = $state(false);
+	/** « Remplacer mon atelier » : la confirmation, et ce qu'elle dit qui sera perdu (B2). */
+	let confirmReplace = $state(false);
+	let replaceLossText = $state('');
 
 	/**
 	 * Durée du toast « Annuler » après une suppression (E2). Le toast part, la
@@ -268,6 +311,21 @@
 		if (pendingLoad === null) return;
 		const { state, history, dropped, consoleNotice } = pendingLoad;
 		pendingLoad = null;
+		// R5, B8 : l'atelier remplacé est mis de côté AVANT, comme pour un lien reçu ;
+		// s'il ne peut pas l'être, rien n'est chargé (B5)
+		const setAside = loadSetsAside();
+		if (setAside) {
+			const kept = keepAside(readStorage(), atelier.serialize());
+			if (!kept.ok) {
+				warn(
+					'Ton atelier n’a pas pu être mis de côté (stockage plein ou indisponible) : rien n’a été chargé.'
+				);
+				return;
+			}
+		}
+		// ⚠️ Point d'accroche de la PR 3 du lot 5 : `restore` VIDE la pile (Charger ne
+		// s'annule pas encore). Pour l'annuler, `atelier.replaceWith(state, 'charger un
+		// atelier', { onLeave: keepLeftAside })` — la copie suivra Annuler / Rétablir
 		const report = atelier.restore(state);
 		desk.clear();
 		desk.restoreHistory(history);
@@ -282,8 +340,170 @@
 			...(consoleNotice !== null ? [consoleNotice] : [])
 		];
 		notices = [...notices, ...lost.map((message) => ({ kind: 'warning' as const, message }))];
+		if (setAside) {
+			setAsideExists = true;
+			notices = [...notices, { kind: 'info', message: SET_ASIDE_NOTICE, action: retrieveAction() }];
+		}
 		toaster.success('Atelier chargé.');
 		announce('Atelier chargé.');
+	}
+
+	/**
+	 * Charger mettra-t-il l'atelier de côté ? Seulement s'il a quelque chose à
+	 * perdre (B1), et dans un navigateur qui range — sans stockage, Charger reste
+	 * ce qu'il était (« À trancher par David », journal de la phase 0).
+	 */
+	function loadSetsAside(): boolean {
+		return readStorage() !== null && !isBlankAtelier(atelier.serialize());
+	}
+
+	// =========================================================================
+	// Remplacer mon atelier, retrouver le précédent (`atelier-remplacer-phase0.md`)
+	// =========================================================================
+
+	/** Un avis d'alerte, lu à voix haute (la zone des avis est `aria-live`). */
+	function warn(message: string) {
+		notices = [...notices, { kind: 'warning', message }];
+	}
+
+	/** Le geste « Retrouver » d'un avis (B4). */
+	function retrieveAction(): NonNullable<Notice['action']> {
+		return { label: RETRIEVE_LABEL, run: retrieve };
+	}
+
+	/**
+	 * Annuler ou Rétablir quitte un atelier remplacé : c'est lui qui est désormais
+	 * de côté (B3 — rien n'est jamais perdu, on passe de l'un à l'autre).
+	 */
+	function keepLeftAside(left: AtelierState) {
+		// L'atelier affiché rangé TOUT DE SUITE, puis l'atelier quitté mis de côté : les
+		// deux écritures à la suite. Sans `saveNow`, la copie était réécrite 500 ms
+		// avant l'atelier personnel, et l'atelier rendu n'existait qu'en mémoire (revue)
+		session?.saveNow();
+		const kept = keepAside(readStorage(), left);
+		setAsideExists = hasSetAside(readStorage());
+		if (!kept.ok) {
+			warn('L’atelier quitté n’a pas pu être mis de côté (stockage plein ou indisponible).');
+		}
+	}
+
+	/** « Remplacer mon atelier » (R1, R2) : confirmer s'il y a de quoi perdre (B1, B2, B6). */
+	function requestReplace() {
+		const personal = readPersonal(readStorage());
+		if (personal.kind === 'refused') {
+			warn(personal.message);
+			return;
+		}
+		if (personal.kind === 'blank') {
+			replaceNow();
+			return;
+		}
+		replaceLossText = replacementLoss(personal.state);
+		confirmReplace = true;
+	}
+
+	/**
+	 * L'atelier affiché (le lien reçu, et ce que l'élève y a fait) devient
+	 * l'atelier personnel ; l'ancien est mis de côté AVANT (R3, B5). Puis on quitte
+	 * le lien sans recharger : la session s'ouvre sur l'atelier affiché.
+	 */
+	function replaceNow() {
+		const incoming = atelier.serialize();
+		const done = replacePersonal(readStorage(), incoming);
+		if (!done.ok) {
+			warn(done.message);
+			return;
+		}
+		// L'atelier d'avant à l'écran, puis le reçu en UNE étape : un Ctrl+Z le rend
+		const report =
+			done.previous === null
+				? null
+				: (atelier.restore(done.previous),
+					atelier.replaceWith(incoming, REPLACE_STEP, { onLeave: keepLeftAside }));
+		linkMode = false;
+		shownReceived = null;
+		// R4 : la console de l'élève revient, celle du lien n'était qu'à lui
+		desk.clear();
+		selected = null;
+		openPersonal(true);
+		lastSeenRevision = atelier.revision;
+		onLinkLeft?.();
+		notices = [
+			...notices,
+			done.previous === null
+				? { kind: 'info', message: 'Cet atelier est maintenant le tien.' }
+				: {
+						kind: 'info',
+						message: `${SET_ASIDE_NOTICE} Cet atelier est maintenant le tien.`,
+						action: retrieveAction()
+					},
+			// Une relecture qui écarte un objet le dit, jamais en silence
+			...(report?.skipped ?? []).map((s) => ({
+				kind: 'warning' as const,
+				message: `« ${s.name} » n'a pas pu être gardé : ${s.reason}`
+			}))
+		];
+		keepFocus();
+	}
+
+	/** Après « Remplacer », le bouton déclencheur a disparu avec le bandeau du lien. */
+	function handleReplaceCloseFocus(event: Event) {
+		if (linkMode) return;
+		event.preventDefault();
+		document.getElementById('atelier-mes-objets')?.focus();
+	}
+
+	/**
+	 * Le bouton cliqué peut disparaître (Remplacer quitte le lien, Retrouver
+	 * s'efface sans copie) : le focus va à « Mes objets », jamais sur la page (2.4.3).
+	 */
+	function keepFocus() {
+		tick().then(() => {
+			const active = document.activeElement;
+			if (active === null || active === document.body || !active.isConnected) {
+				document.getElementById('atelier-mes-objets')?.focus();
+			}
+		});
+	}
+
+	/**
+	 * « Retrouver mon atelier précédent » (B3) : ÉCHANGE — la copie revient, en
+	 * une étape d'Annuler, et l'atelier quitté prend sa place de côté.
+	 */
+	function retrieve() {
+		if (linkMode) return;
+		const storage = readStorage();
+		const swapped = swapWithSetAside(storage, atelier.serialize());
+		setAsideExists = hasSetAside(storage);
+		if (swapped.kind === 'none') {
+			warn('Il n’y a pas d’atelier mis de côté.');
+			return;
+		}
+		if (swapped.kind !== 'swapped') {
+			warn(swapped.message);
+			return;
+		}
+		// Les « Retrouver » des avis d'avant : la barre garde le geste
+		notices = notices.map((n) => ({ kind: n.kind, message: n.message }));
+		const report = atelier.replaceWith(swapped.state, RETRIEVE_STEP, { onLeave: keepLeftAside });
+		selected = null;
+		// Ce que la relecture a eu à dire (B7), jamais en silence
+		const lost = [
+			...report.renamed.map(({ to }) => reservedYRenamedMessage(to)),
+			...report.skipped.map((s) => `« ${s.name} » n'a pas pu être retrouvé : ${s.reason}`),
+			...(swapped.dropped > 0
+				? [`${swapped.dropped} élément(s) de l’atelier mis de côté étaient illisibles.`]
+				: [])
+		];
+		notices = [
+			...notices,
+			{
+				kind: 'info',
+				message: 'Ton atelier précédent est revenu ; celui que tu quittes est mis de côté.'
+			},
+			...lost.map((message) => ({ kind: 'warning' as const, message }))
+		];
+		keepFocus();
 	}
 
 	/** Vider l'atelier — seulement après confirmation, jamais sur un lien reçu. */
@@ -316,7 +536,7 @@
 	let consolePanel = $state<HTMLElement | null>(null);
 	let scene = $state<HTMLElement | null>(null);
 	let selected = $state<string | null>(null);
-	let notices = $state<SessionNotice[]>([]);
+	let notices = $state<Notice[]>([]);
 
 	/**
 	 * Ce qu'une action a changé hors de la vue courante (bascule d'onglet,
@@ -348,20 +568,38 @@
 		selected = created.object.name;
 	}
 
-	onMount(() => {
-		if (ephemeral) {
-			startIfEmpty();
-			return;
-		}
+	/**
+	 * Ouvrir l'atelier personnel : la session (relue, sauf `adopt` — l'atelier
+	 * affiché vient d'y être écrit) et les lignes de Calcul.
+	 */
+	function openPersonal(adopt = false) {
 		session = openSession(atelier, {
 			storage: readStorage(),
 			target: window,
+			adopt,
 			onNotice: (notice) => (notices = [...notices, notice])
 		});
 		// Les lignes de Calcul aussi (décision de David du 2026-10-13) : relues
 		// sans rien refaire, et déjà « vues » — pas de pastille sur l'onglet
 		calcHistory = keepCalcHistory(desk, { storage: readStorage(), target: window });
 		seen = desk.entries.length;
+		setAsideExists = hasSetAside(readStorage());
+	}
+
+	function closePersonal() {
+		session?.close();
+		session = null;
+		calcHistory?.close();
+		calcHistory = null;
+	}
+
+	onMount(() => {
+		if (linkMode) {
+			startIfEmpty();
+			// « Remplacer mon atelier » peut ouvrir la session plus tard
+			return closePersonal;
+		}
+		openPersonal();
 		// La carte d'accueil AVANT de noter la révision de départ : sinon la simple
 		// visite de `/grapheur` enregistrait une carte vide (revue du lot 6, C2) —
 		// elle ne l'est que si l'élève y touche.
@@ -369,12 +607,7 @@
 		// Le chargement initial compte comme une modification : on note la
 		// révision de départ pour ne pas ré-enregistrer ce qu'on vient de lire.
 		lastSeenRevision = atelier.revision;
-		return () => {
-			session?.close();
-			session = null;
-			calcHistory?.close();
-			calcHistory = null;
-		};
+		return closePersonal;
 	});
 
 	/**
@@ -834,7 +1067,7 @@
 					disabledReason={atelier.history.redo === null ? 'Rien à rétablir.' : null}
 					onclick={redoStep}
 				/>
-				{#if !ephemeral}
+				{#if !linkMode}
 					<!-- Des lignes de Calcul seules suffisent : elles survivent au rechargement -->
 					<ToolButton
 						label="Repartir de zéro"
@@ -857,6 +1090,10 @@
 						aria-hidden="true"
 						onchange={handleLoadFile}
 					/>
+					<!-- B4 : seulement quand une copie existe ; l'échange s'annule (B3) -->
+					{#if setAsideExists}
+						<ToolButton label={RETRIEVE_LABEL} icon={ArchiveRestore} onclick={retrieve} />
+					{/if}
 				{/if}
 				<ToolButton
 					label="Enregistrer l’atelier"
@@ -878,7 +1115,7 @@
 					badgeLabel="{unseen} nouveau{unseen > 1 ? 'x' : ''} résultat{unseen > 1 ? 's' : ''}"
 					onclick={toggleConsole}
 				/>
-				{#if received === null}
+				{#if shownReceived === null}
 					<ToolButton
 						label="Partager"
 						icon={Share2}
@@ -894,11 +1131,22 @@
 				/>
 			</div>
 		</div>
-		<ShareBar bind:this={shareBar} {received} {notice} />
+		<ShareBar bind:this={shareBar} received={shownReceived} {notice} onReplace={requestReplace} />
+		<ConfirmDialog
+			bind:open={confirmReplace}
+			title="Remplacer ton atelier ?"
+			description="{replaceLossText} {SET_ASIDE_REASSURANCE}"
+			confirmLabel="Remplacer"
+			variant="destructive"
+			onConfirm={replaceNow}
+			onCloseAutoFocus={handleReplaceCloseFocus}
+		/>
 		<ConfirmDialog
 			bind:open={confirmLoad}
 			title="Charger cet atelier ?"
-			description="Charger remplace l’atelier actuel : {replayLoss()}"
+			description="Charger remplace l’atelier actuel : {replayLoss()}{loadSetsAside()
+				? ` ${SET_ASIDE_REASSURANCE}`
+				: ''}"
 			confirmLabel="Charger"
 			variant="destructive"
 			onConfirm={loadNow}
@@ -951,7 +1199,14 @@
 		<p class="sr-only" aria-live="polite" data-annonce>{announcement}</p>
 		<ul class="avis" aria-live="polite" class:vide={notices.length === 0}>
 			{#each notices as notice, i (i)}
-				<li data-kind={notice.kind}>{notice.message}</li>
+				<li data-kind={notice.kind}>
+					{notice.message}
+					{#if notice.action}
+						<button type="button" class="avis-action" onclick={notice.action.run}>
+							{notice.action.label}
+						</button>
+					{/if}
+				</li>
 			{/each}
 		</ul>
 
@@ -1134,6 +1389,21 @@
 	}
 	.avis li[data-kind='warning'] {
 		color: var(--color-destructive);
+	}
+	/* Le geste d'un avis (« Retrouver mon atelier précédent ») : un lien-bouton */
+	.avis-action {
+		margin-left: 0.375rem;
+		padding: 0;
+		border: none;
+		background: none;
+		color: var(--color-primary);
+		font: inherit;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+	.avis-action:focus-visible {
+		outline: 2px solid var(--color-ring);
+		outline-offset: 2px;
 	}
 
 	/* La scène : la vue, et la console posée par-dessus (lot 2) */

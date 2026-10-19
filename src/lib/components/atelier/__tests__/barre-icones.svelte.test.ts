@@ -19,6 +19,7 @@ import {
 	atelierFileToJson
 } from '$lib/atelier/atelier-file';
 import { CALC_HISTORY_STORAGE_KEY } from '$lib/atelier/history-storage';
+import { SET_ASIDE_STORAGE_KEY } from '$lib/atelier/persistence';
 
 // =============================================================================
 // Décor
@@ -28,9 +29,14 @@ const KEY = 'chiphre-atelier';
 
 const settle = () => new Promise((r) => setTimeout(r, 50));
 
-afterEach(() => localStorage.removeItem(KEY));
+// Charger met l'atelier remplacé de côté (R5) : la copie ne doit pas passer d'un test à l'autre
+afterEach(() => {
+	localStorage.removeItem(KEY);
+	localStorage.removeItem(SET_ASIDE_STORAGE_KEY);
+});
 beforeEach(() => {
 	localStorage.removeItem(KEY);
+	localStorage.removeItem(SET_ASIDE_STORAGE_KEY);
 	localStorage.removeItem(CALC_HISTORY_STORAGE_KEY);
 });
 
