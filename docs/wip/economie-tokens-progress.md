@@ -8,7 +8,7 @@ status: ménage fait ; reste le tri de la mémoire (projets clos) et une vérifi
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après 8f8e7e2a4._
+_Mis à jour le 2026-10-19, après les hooks Stop et SessionEnd._
 
 - **État** : ménage livré (voir journal ci-dessous). Rien en cours, rien de non commité.
 - **Prochaine action** : trier l'index mémoire (`~/.claude/projects/-Users-david-Coding-js-ubumaths/memory/MEMORY.md`, 12,8 Ko) — section « Projets — en cours » : demander à David quels projets sont clos, les passer dans `archives.md`.
@@ -25,4 +25,5 @@ _Mis à jour le 2026-10-19, après 8f8e7e2a4._
 - Bloc « Reprendre ici », skill `/reprendre`, un chantier = un nom (546d8d1ac).
 - 27 worktrees d'agents mergés supprimés + règle de nettoyage (8f8e7e2a4).
 - Index mémoire : 6 doublons de `CLAUDE.md` regroupés (13,4 → 12,8 Ko).
+- Hooks de garde (même script `alerte-contexte.py`, argument `stop` / `end`) : `Stop` refuse que Claude rende la main dans une session longue qui a commité sans journal à jour et commité (une fois : `stop_hook_active`) ; `SessionEnd` notifie (macOS) une fermeture sans journal → `claude --resume`. Testés sur 7 cas. Skill `/fin` écartée : « mets le journal à jour » suffit.
 - Sessions actives prévenues : atelier-geometry, modifs-fixes, mathoux, ubumaths-31, fiche-exercices.
