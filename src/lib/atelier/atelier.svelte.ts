@@ -138,9 +138,11 @@ import {
 	positionSliderFor,
 	positionTextOf,
 	positionValueOf,
+	supportOfPointOn,
 	withPosition,
 	type ConstructionMemo
 } from './construction';
+import { dragHoldOf, draggedCoordinates, positionAt } from './point-drag';
 import {
 	computeGrid,
 	gridTexts,
@@ -1148,6 +1150,50 @@ export class Atelier {
 			`position de ${displayName(name)}`,
 			() => this.update(name, definition, 'text'),
 			`position:${name}`
+		);
+	}
+
+	/**
+	 * Pourquoi le point `name` ne se glisse pas à la souris, ou `null` s'il se
+	 * glisse (géométrie lot 3, M2) : la phrase dit quoi déplacer à la place.
+	 */
+	dragRefusal(name: string): string | null {
+		const hold = dragHoldOf(this, name);
+		return hold.kind === 'refused' ? hold.message : null;
+	}
+
+	/**
+	 * Glisser le point `name` en (x ; y) à la souris (géométrie lot 3, M1, M2) :
+	 * sa définition est réécrite (coordonnées, ou position d'un `point_sur`), et
+	 * tout ce qui le cite suit PENDANT le geste. `snap` : l'écart, en unités du
+	 * repère, sous lequel une coordonnée s'aimante à l'entier.
+	 *
+	 * Tout un glisser = UNE étape (M7), fermée au relâcher (`endGesture`).
+	 */
+	dragPoint(name: string, x: number, y: number, snap = 0): Updated | Refused {
+		const hold = dragHoldOf(this, name);
+		if (hold.kind === 'refused') return { ok: false, message: hold.message };
+		if (!Number.isFinite(x) || !Number.isFinite(y)) {
+			return { ok: false, message: 'Cette position n’est pas un nombre.' };
+		}
+		if (hold.kind === 'position') {
+			const support = supportOfPointOn(this, name);
+			const position = support === null ? null : positionAt(support, x, y);
+			if (position === null) {
+				return { ok: false, message: `« ${displayName(name)} » ne peut pas se glisser ici.` };
+			}
+			return this.slidePosition(name, position);
+		}
+		const current = this.get(name)!;
+		const written = draggedCoordinates(x, y, snap);
+		// Un mouvement qui ne change pas le couple ÉCRIT ne recalcule rien
+		if (written === current.definition) {
+			return { ok: true, object: current, recomputed: [] };
+		}
+		return this.step(
+			`déplacer ${displayName(name)}`,
+			() => this.update(name, written, 'text'),
+			`glisser:${name}`
 		);
 	}
 

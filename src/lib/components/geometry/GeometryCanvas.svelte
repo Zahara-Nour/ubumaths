@@ -9,7 +9,7 @@
 	import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
 	import { readContentLocale } from '$lib/components/markdown/content-locale';
 	import { Figure } from '$lib/geometry-core/graph/figure';
-	import type { GeoSlider } from '$lib/geometry-core/types/elements';
+	import type { GeoElement, GeoSlider } from '$lib/geometry-core/types/elements';
 	import {
 		createTransformer,
 		type CoordinateTransformer
@@ -72,6 +72,10 @@
 		roughSegmentMarkHTML,
 		roughVectorHTML
 	} from '$lib/geometry-core/rendering/rough-geometry';
+	import type { PointDrag } from './point-drag';
+
+	/** L'aimantation d'un glisser délégué, en pixels (lot 3 de l'atelier, M2). */
+	const SNAP_PIXELS = 8;
 
 	interface Props {
 		figure: Figure;
@@ -104,6 +108,12 @@
 		 */
 		objectsMovable?: boolean;
 		/**
+		 * Glisser DÉLÉGUÉ des points : la toile ne touche pas la figure, elle dit
+		 * où va le point saisi à qui la possède (vue Géométrie de l'atelier). Passe
+		 * avant `objectsMovable` : un point se glisse ainsi même objets figés.
+		 */
+		pointDrag?: PointDrag;
+		/**
 		 * Calque dessiné SOUS les objets (repère d'une figure stockée), recalculé à
 		 * chaque déplacement ou zoom de la vue. Son contenu doit être du SVG
 		 * (composant en `<svelte:options namespace="svg" />`).
@@ -127,6 +137,7 @@
 		renderMode = 'normal',
 		onViewportChange,
 		objectsMovable = true,
+		pointDrag,
 		underlay
 	}: Props = $props();
 
@@ -140,6 +151,11 @@
 	let dragOffset: { dx: number; dy: number } | null = $state(null);
 	let hoveredId: string | null = $state(null);
 	let version = $state(0);
+	/** Un glisser délégué en cours (`pointDrag`) : la figure n'est pas touchée. */
+	let delegated = false;
+	/** Le dernier mouvement d'un glisser délégué, pas encore transmis (une fois par image). */
+	let pendingMove: { x: number; y: number } | null = null;
+	let moveFrame: number | null = null;
 
 	// Slider elements (reactive to version changes). Un curseur CACHÉ n'a pas de
 	// réglette : la vue Figure de l'atelier pilote les siens depuis les cartes
@@ -403,6 +419,8 @@
 			return;
 		}
 
+		if (pointDrag && startDelegatedDrag(e, pointDrag)) return;
+
 		// Objets figés (`deplacable: non`) : seule la vue se déplace
 		if (!objectsMovable) return;
 
@@ -454,6 +472,53 @@
 		}
 	}
 
+	/**
+	 * Un glisser délégué commence-t-il ici ? Vrai aussi quand le point visé est
+	 * REFUSÉ (`grab` faux) : le geste s'arrête là, rien d'autre ne le reprend.
+	 */
+	function startDelegatedDrag(e: PointerEvent, drag: PointDrag): boolean {
+		const math = getMathCoords(e);
+		if (!math) return false;
+		const pointId = findPointNear(figure, math.x, math.y, 15 / ppu);
+		if (pointId === null) return false;
+		if (drag.grab(pointId)) {
+			delegated = true;
+			draggingId = pointId;
+			dragOffset = null;
+			svgRef?.setPointerCapture(e.pointerId);
+		}
+		e.preventDefault();
+		return true;
+	}
+
+	/** Le point se glisse-t-il (la main au survol) : par la figure, ou par `pointDrag`. */
+	function canDragPoint(el: GeoElement): boolean {
+		if (!interactive) return false;
+		if (pointDrag?.canGrab(el.id)) return true;
+		return objectsMovable && 'draggable' in el && el.draggable === true;
+	}
+
+	// Une toile retirée en plein glisser ferme le geste
+	$effect(() => () => endDelegatedDrag());
+
+	/** Transmettre le dernier mouvement du glisser délégué. */
+	function flushDelegatedMove() {
+		if (moveFrame !== null) cancelAnimationFrame(moveFrame);
+		moveFrame = null;
+		const move = pendingMove;
+		pendingMove = null;
+		if (move !== null && delegated) pointDrag?.move(move.x, move.y, SNAP_PIXELS / ppu);
+	}
+
+	/** Fin d'un glisser délégué : le dernier mouvement part, puis le relâcher. */
+	function endDelegatedDrag() {
+		if (!delegated) return;
+		flushDelegatedMove();
+		delegated = false;
+		draggingId = null;
+		pointDrag?.release();
+	}
+
 	function onPointerMove(e: PointerEvent) {
 		if (!interactive) return;
 
@@ -468,6 +533,16 @@
 
 		const math = getMathCoords(e);
 		if (!math) return;
+
+		// Au plus un mouvement par image : chacun recalcule tout l'atelier
+		if (delegated) {
+			pendingMove = math;
+			moveFrame ??= requestAnimationFrame(() => {
+				moveFrame = null;
+				flushDelegatedMove();
+			});
+			return;
+		}
 
 		if (draggingLabelId && labelDragStart) {
 			const MAX_LABEL_RADIUS = 30; // pixels
@@ -578,6 +653,8 @@
 	}
 
 	function onPointerCancel() {
+		// Le point délégué reste où il est arrivé : le geste se ferme (M7)
+		endDelegatedDrag();
 		if (draggingId) figure.discard();
 		isPanning = false;
 		draggingId = null;
@@ -596,6 +673,11 @@
 			figure.commit();
 			draggingLabelId = null;
 			labelDragStart = null;
+			return;
+		}
+
+		if (delegated) {
+			endDelegatedDrag();
 			return;
 		}
 
@@ -671,6 +753,8 @@
 			spaceHeld = true;
 			e.preventDefault();
 		}
+		// Un glisser délégué : la figure n'a rien à annuler, son possesseur s'en charge
+		if (delegated) return;
 		// Undo: Ctrl+Z (or Cmd+Z on Mac)
 		if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ' && !e.shiftKey) {
 			e.preventDefault();
@@ -768,6 +852,7 @@
 	}
 
 	function onWindowBlur() {
+		endDelegatedDrag();
 		if (draggingId) figure.discard();
 		if (draggingLabelId) figure.discard();
 		spaceHeld = false;
@@ -1824,7 +1909,7 @@
 								style:fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
+								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
@@ -1838,14 +1923,14 @@
 								stroke-width={sty.strokeWidth}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
+								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
 						{:else if sty.pointShape === 'cross'}
 							<g
 								class="point"
-								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
+								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 								opacity={sty.opacity}
@@ -1876,7 +1961,7 @@
 								style:fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
+								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
