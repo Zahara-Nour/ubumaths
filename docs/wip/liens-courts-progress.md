@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, PR 2 ouverte._
+_Mis à jour le 2026-10-19, après #1539._
 
-- **État** : PR 2 (`feat/liens-courts-route`) ouverte : route `/l/[code]`, `POST /api/short-links`, QR de série par lien court (prof/admin), doc `qr-codes.md`. Revues faites (aucun bloquant).
-- **Prochaine action** : CI verte → merge ; puis vérification manuelle (QR scanné au téléphone) et versement du chantier (journal → archive).
-- **En attente de David** : rien. Tranché le 2026-10-19 : cibles restreintes aux liens de série (`/automaths/panier?` et `/automaths/test?`), dans Zod seulement (la base garde « chemin interne »).
-- **Pièges** : cible en ASCII imprimable seulement. Port 5176/5177 souvent pris par d'autres worktrees : vérifier avec `lsof`.
-- **Worktree / branche** : `../ubumaths-wt-liens-courts` · `feat/liens-courts-route`.
+- **État** : chantier livré côté code. #1537 (migration, jouée en prod) et #1539 (route `/l/[code]`, `POST /api/short-links`, QR de série par lien court, cibles limitées aux séries) mergées, pas encore déployées. Doc durable : `docs/systeme/qr-codes.md`.
+- **Prochaine action** : après le `deploy:prod` de David, vérification manuelle (ligne #1539 de `verifications-manuelles.md`), puis versement : archiver ce journal et `liens-courts-phase0.md` dans `docs/archive/`.
+- **En attente de David** : la vérification au téléphone, après déploiement.
+- **Pièges** : cible = lien de série seulement (`SERIES_TARGET`, Zod) ; la base n'exige qu'un chemin interne. Un nouvel usage (atelier public) ajoutera son préfixe.
+- **Worktree / branche** : aucun (supprimés après #1539).
 
 ## Historique
 
