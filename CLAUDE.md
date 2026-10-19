@@ -81,7 +81,7 @@ cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline
   ```
 - **Après chaque merge** : mettre à jour « Reprendre ici », le commiter, puis écrire à David : « Bon moment pour `/clear`. Pour reprendre : **`/reprendre <sujet>`** ». Une session ne s'étire pas sur plusieurs PR : une PR = une session, au plus un lot de petites PR.
 - PR mergée → `git worktree remove` + `git branch -d` + `git worktree list`.
-- **Worktree d'agent** (`.claude/worktrees/agent-*`, laissé par un agent qui a commité) : même nettoyage dès sa PR mergée, par la session qui l'a lancé (27 oubliés retirés le 2026-10-19).
+- **Worktree d'agent** (`.claude/worktrees/agent-*`, laissé par un agent qui a commité) : même nettoyage dès sa PR mergée, par la session qui l'a lancé.
 
 ## Règles de code (non négociables)
 

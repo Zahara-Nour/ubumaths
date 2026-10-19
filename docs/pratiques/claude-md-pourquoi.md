@@ -29,6 +29,10 @@ Machine : **Mac mini Apple M6, 24 Go**. Mesuré le 2026-09-29, **swap +0 partout
 - **Migrations, preuves pas approbation**, dans les mots de David : « Je ne sais **pas lire une migration RLS**. Me demander “approuves-tu ?” me transfère une responsabilité que je ne peux pas assumer : ce n'est pas un contrôle, c'est une formalité. » La question d'accès, elle, est une question de produit, à laquelle il sait répondre. Condition 2 : un test qui passe sans prouver ce qu'il prétend est pire que pas de test.
 - **Inventaire des usages avant un `DROP`** : les jointures PostgREST (`.select('*, ma_table(...)')`) sont du texte, et un schéma de réponse nomme la colonne comme une clé ordinaire (`worksheets.tags` supprimée mais toujours exigée par `worksheetResponseSchema` → 500 sur trois routes, et la page annonçait « Aucune feuille trouvée »). Invisibles au typecheck, au lint et aux tests unitaires, dont les mocks ne touchent jamais la base. Le 2026-09-08, la réconciliation des données faite sans l'inventaire des usages → six requêtes cassées en production.
 
+## Worktrees
+
+- **Worktree d'agent nettoyé par la session qui l'a lancé** : le 2026-10-19, 27 worktrees `.claude/worktrees/agent-*` dont la PR était mergée traînaient encore ; personne ne s'en chargeait, puisque l'agent avait fini.
+
 ## RLS
 
 Les quatre conséquences du silence de la RLS ont toutes été payées le 2026-09-15 (détail : [rls-echecs-silencieux.md](rls-echecs-silencieux.md)) : un écran a annoncé avoir supprimé une amitié signalée entre deux mineurs sans rien supprimer ; une jointure `!inner` a faussé rangs et totaux sans log ; trois endroits refaisaient à la main la requête d'une garde centralisée.
