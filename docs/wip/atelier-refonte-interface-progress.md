@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, pendant le suivi de la revue de #1524 (PR pas encore ouverte)._
+_Mis à jour le 2026-10-19, après #1530._
 
-- **État** : lots 1 à 5 livrés (#1479 → #1524). Suivi de la revue de #1524 codé sur `fix/atelier-suivi-revue-1524` : Repartir de zéro garde la console (David : option (a)), lois et repère rendus après Annuler d'un `replaceWith`, toast « Annuler » via `atelier.isTopStep`. Tests ciblés verts, doc système à jour. Rien en prod.
-- **Prochaine action** : vérifier `check:incremental` et la suite client de l'atelier (par lots) → `docs:check-a-jour --depuis origin/main` → `code-reviewer` (Sonnet) → PR → CI → merge → réécrire ce bloc.
-- **En attente de David** : rien.
-- **Pièges** : la console n'est PAS dans les photos d'étape (R4) ; réglages hors photo d'un `replaceWith` = `#settingsAcross` ; une ligne « annuler » n'est rejouable que si l'étape vient d'une ligne rejouable (`#replayable`) ; `wrapDynamicImport` intermittent dans les suites client lancées ensemble → relancer par lots.
-- **Worktree / branche** : `../ubumaths-wt-atelier-refonte-interface` · `fix/atelier-suivi-revue-1524`. atelier-geometrie prévenue (pas de conflit ; elle me prévient avant son lot 3, la souris).
+- **État** : lots 1 à 5 livrés (#1479 → #1524) et suivi de la revue de #1524 mergé (#1530) : Repartir de zéro garde la console, lois et repère rendus après Annuler d'un `replaceWith`, toast « Annuler » via `atelier.isTopStep`. Rien en prod.
+- **Prochaine action** : aucune dans ce chantier. Les 5 lots de la phase 0 sont faits → proposer à David la fin de chantier (versement du durable dans `docs/systeme/atelier.md`, archivage du journal et de la phase 0).
+- **En attente de David** : vérifications manuelles (lignes lot 5 et #1530 de `verifications-manuelles.md`) ; correctif de `/reprendre` et du hook d'alerte pour lire le journal dans `../ubumaths-wt-<sujet>` quand il existe (sessions lancées dans le dépôt principal).
+- **Pièges** : la console n'est PAS dans les photos d'étape (R4) ; réglages hors photo d'un `replaceWith` = `#settingsAcross` (entrées des étapes oubliées gardées, comme `#onLeave`) ; `wrapDynamicImport` intermittent dans les suites client lancées ensemble → relancer par lots.
+- **Worktree / branche** : aucun. Coordination : atelier-geometrie (lot 3 souris) préviendra avant de toucher aux gestes.
 
 Phase 0 : `docs/wip/atelier-refonte-interface-phase0.md` (validée par David le 2026-10-18, deux passes).
 
