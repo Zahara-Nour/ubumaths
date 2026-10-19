@@ -3,6 +3,16 @@
 > Branche `feat/mathoux-chatterie`, worktree `../ubumaths-wt-mathoux`. Démarré le 2026-10-18.
 > Spécification validée : [mathoux-conception.md](mathoux-conception.md) § 9.
 
+## Reprendre ici
+
+_Mis à jour le 2026-10-19, après #1498._
+
+- **État** : Mathoux v1 + « Faire grandir » (#1490, #1489, #1493, #1494, #1498) sur `main`, pas en prod. Noms des 19 races validés par David ([mathoux-noms.md](mathoux-noms.md)).
+- **Prochaine action** : lire les avis de la page à cocher (base `avis`, `kind` = `mathou`), relire chaque nom avec sa fiche (signaler les coquilles, ne pas corriger en silence), puis UNE PR : races dans `src/lib/components/mathoux/mathou-races.ts` (noms provisoires à remplacer), table notion → nom affichée « Nom, Race », `docs/systeme/mathoux.md`.
+- **En attente de David** : relecture des 134 noms de Mathoux sur la page à cocher https://claude.ai/artifact/Q594t4KTxepA4Q6MSnmp84 ; `deploy:prod` (seulement à sa demande).
+- **Pièges en cours** : juste avant `deploy:prod`, lancer `fix-renvois-numerotation.ts --publier` (autre chantier) ; peu de Mathoux possibles tant que les modèles ne sont pas tous tagués (autre chantier).
+- **Worktree / branche** : aucun ouvert ; partir de `origin/main` (`feat/mathoux-noms`).
+
 ## Découpage
 
 - Composant SVG `MathouAvatar` (race, stade, sieste, silhouette).
@@ -15,7 +25,8 @@
 - [x] PR 2 — #1489 (table `student_mathoux`) mergée et migrée en prod le 2026-10-18 (vérifié : RLS, lecture seule, anon sans droit).
 - [x] PR 3 — #1493 mergée le 2026-10-18 : mémoire (meilleur stade, étoiles), sieste de l'oubli, export RGPD (Mathoux et Palotin).
 - [x] Dessins : AB3 choisi par David le 2026-10-18 (après trois itérations), décliné en 19 races, #1494 mergée.
-- [ ] v1.1 : « Faire grandir » (Entraînement sur la notion), branche `feat/mathoux-faire-grandir`, non commité ; vrais noms des Mathoux (à chercher avec David) ; noms des races à valider.
+- [x] v1.1 « Faire grandir » — #1498 mergée le 2026-10-18 (pas en prod).
+- [ ] Noms : races validées le 2026-10-18 ; noms des 134 Mathoux en relecture chez David.
 
 ### Calcul, page, Palotin gardien (2026-10-18, non commité)
 
