@@ -8,12 +8,11 @@ status: ménage fait ; reste le tri de la mémoire (projets clos) et une vérifi
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après les hooks Stop et SessionEnd._
+_Mis à jour le 2026-10-19, après #1527._
 
-- **État** : ménage livré (voir journal ci-dessous). Rien en cours, rien de non commité.
-- **Prochaine action** : trier l'index mémoire (`~/.claude/projects/-Users-david-Coding-js-ubumaths/memory/MEMORY.md`, 12,8 Ko) — section « Projets — en cours » : demander à David quels projets sont clos, les passer dans `archives.md`.
+- **État** : `/reprendre` tourne en Sonnet (`model: sonnet`, vaut pour le tour seulement) et attend toujours le go (#1527). Les autres skills restent sur le modèle de la session (choix de David : `doc-a-jour` compris).
+- **Prochaine action** : trier l'index mémoire (`~/.claude/projects/-Users-david-Coding-js-ubumaths/memory/MEMORY.md`, 12,8 Ko) — section « Projets — en cours » : passer les projets clos dans `archives.md`.
 - **En attente de David** : la liste des projets clos.
-- **Optionnel** : vérifier si une skill peut fixer son modèle dans son frontmatter (`model:`) ; si oui, `/reprendre` en Sonnet (jamais `shtam`).
 - **Worktree / branche** : aucun — commits de doc directs sur `main`.
 
 ## Journal (2026-10-19)
