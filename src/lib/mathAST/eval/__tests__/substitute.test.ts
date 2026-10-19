@@ -343,6 +343,25 @@ describe('substitute', () => {
 			expect(getMissingBindings(parseLatex('a_1+a'), { a: 3 })).toEqual(['a_1']);
 		});
 
+		it('une base grecque : alpha_1 est un nom, alpha ne touche pas sa base', () => {
+			const result = substitute(parseLatex('\\alpha_1+\\alpha'), { alpha: 2, alpha_1: 5 });
+
+			expect(result).toMatchObject({
+				type: 'addition',
+				left: { type: 'number', value: '5' },
+				right: { type: 'number', value: '2' }
+			});
+			expect(substitute(parseLatex('\\alpha_1'), { alpha: 2 })).toMatchObject({
+				type: 'subscript',
+				base: { type: 'greek' }
+			});
+		});
+
+		it('a_{01} et a_1 sont deux noms distincts', () => {
+			expect(substitute(parseLatex('a_{01}'), { a_1: 3 })).toMatchObject({ type: 'subscript' });
+			expect(substitute(parseLatex('a_{01}'), { a_01: 3 })).toMatchObject({ value: '3' });
+		});
+
 		it('u_n reste la notation d’une suite : sa base se remplace comme avant', () => {
 			const result = substitute(parseLatex('u_n'), { u: 2 });
 

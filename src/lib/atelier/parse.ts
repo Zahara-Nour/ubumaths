@@ -14,9 +14,7 @@ import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/in
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
 import { getVariables } from '$lib/mathAST/eval/substitute';
-import { indexedNameOf } from '$lib/mathAST/common/indexed-names';
-import { findNodes, mapNodeTopDown } from '$lib/mathAST/transforms';
-import { variable } from '$lib/mathAST/factory';
+import { hideIndexedNames, indexedNameOf } from '$lib/mathAST/common/indexed-names';
 import { format as formatUnit } from '$lib/mathAST/units';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import type { MathNode } from '$lib/mathAST/types';
@@ -786,17 +784,16 @@ export function variablesOf(
 }
 
 /**
- * L'arbre où chaque nom indicé (`a_1`) devient une variable du même nom, pour
- * le lire avec `getVariables`. Un arbre NEUF : l'arbre lu est partagé
- * (`parseByProvenance`), il ne se modifie jamais ; sans nom indicé, l'arbre tel quel.
+ * L'arbre où chaque nom indicé d'objet (`a_1`) devient une variable du même nom
+ * (`hideIndexedNames`) : un arbre NEUF, l'arbre lu est partagé (`parseByProvenance`).
+ * Seuls les noms qu'un objet peut porter (`hasObjectNameShape` : ni `alpha_1`, ni
+ * les marques `ω_1` de la grille), hors terme d'une suite (`indexedObjectName`).
  */
 function withIndexedNames(ast: MathNode, functionNames: readonly string[] | undefined): MathNode {
-	const indexed = (n: MathNode) => indexedObjectName(n, functionNames) !== null;
-	if (findNodes(ast, indexed).length === 0) return ast;
-	return mapNodeTopDown(ast, (n) => {
-		const name = indexedObjectName(n, functionNames);
-		return name === null ? n : variable(name);
-	});
+	return hideIndexedNames(
+		ast,
+		(name, node) => hasObjectNameShape(name) && indexedObjectName(node, functionNames) !== null
+	).node;
 }
 
 /** Une puissance −1 : `-1` ou `-(1)`, tels que les parseurs les rendent. */

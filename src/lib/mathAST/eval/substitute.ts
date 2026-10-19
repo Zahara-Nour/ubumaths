@@ -10,7 +10,7 @@ import type { MathNode } from '../types';
 import type { EvalBindings, BindingValue, SubstituteOptions } from './types';
 import type { FunctionBindings } from './function-bindings';
 import { DEFAULT_SUBSTITUTE_OPTIONS } from './types';
-import { findNodes, mapNode, mapNodeTopDown } from '../transforms';
+import { mapNode } from '../transforms';
 import { isVariable, isGreek, isSegmentLength } from '../guards';
 import {
 	canonicalSegmentName,
@@ -21,7 +21,7 @@ import {
 import { multiply } from '../factory';
 import { numericNode } from '../common/numeric';
 import { parseLatex } from '../parser';
-import { indexedNameOf, isIndexedName } from '../common/indexed-names';
+import { hideIndexedNames, revealIndexedNames } from '../common/indexed-names';
 
 // =============================================================================
 // Binding Value Conversion
@@ -191,41 +191,6 @@ function substituteOnce(node: MathNode, bindings: EvalBindings): MathNode {
 		// No substitution for this node
 		return n;
 	});
-}
-
-// =============================================================================
-// Noms indicés
-// =============================================================================
-
-/** Un arbre dont les noms indicés sont cachés, et les nœuds d'origine par nom. */
-interface HiddenIndexedNames {
-	readonly node: MathNode;
-	readonly originals: ReadonlyMap<string, MathNode>;
-}
-
-/**
- * Chaque nom indicé (`a_1`, voir `indexed-names.ts`) remplacé par une variable
- * du même nom, le temps d'un passage. L'arbre tel quel quand il n'en a pas.
- *
- * ⚠️ Le parseur ne rend jamais de variable dont le nom contient `_` : la
- * variable `a_1` ne peut venir que d'ici, `revealIndexedNames` la reconnaît.
- */
-function hideIndexedNames(node: MathNode): HiddenIndexedNames {
-	const originals = new Map<string, MathNode>();
-	if (findNodes(node, isIndexedName).length === 0) return { node, originals };
-	const hidden = mapNodeTopDown(node, (n) => {
-		const name = indexedNameOf(n);
-		if (name === null) return n;
-		if (!originals.has(name)) originals.set(name, n);
-		return { type: 'variable', name };
-	});
-	return { node: hidden, originals };
-}
-
-/** Les noms indicés restés sans liaison, rendus à leur nœud d'origine. */
-function revealIndexedNames(node: MathNode, originals: ReadonlyMap<string, MathNode>): MathNode {
-	if (originals.size === 0) return node;
-	return mapNode(node, (n) => (isVariable(n) ? (originals.get(n.name) ?? n) : n));
 }
 
 // =============================================================================

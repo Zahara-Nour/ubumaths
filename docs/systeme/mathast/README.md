@@ -640,13 +640,17 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   majuscules des exercices de prod, 355 à majuscules collées) identique sans option et en
   produit, et aucune saisie lisible en produit ne devient une erreur en longueur
   (`parser/custom/__tests__/capital-pairs-empreinte.test.ts`).
-- **Noms indicés** (2026-10-19, relevé de l'atelier) : `a_1`, `a_{12}` — une variable munie d'un
-  indice ENTIER — sont UN nom (`indexedNameOf`, `common/indexed-names.ts`). L'arbre reste un
-  `subscript` ; `substitute` le remplace en entier par la liaison `a_1`, et la liaison `a` ne touche
-  plus sa base (avant : `a = 10` faisait `10_1`, que rien ne lisait) ; `hasAllBindings` et
-  `getMissingBindings` lisent pareil (le REPL calcule `a_1` lié). Un indice non entier (`x_n`,
-  `u_{n+1}`) n'est pas un nom : sa base se remplace comme avant. ⚠️ `getVariables` rend toujours
-  la base (`a`) : l'atelier lit les noms par `variablesOf` (`atelier/parse.ts`).
+- **Noms indicés** (2026-10-19, relevé de l'atelier) : `a_1`, `a_{12}`, `\alpha_1` — une lettre
+  latine (`variable`) ou grecque (`greek`, nommée `alpha_1`) munie d'un indice ENTIER — sont UN nom
+  (`indexedNameOf`, `common/indexed-names.ts`). L'indice reste tel qu'écrit : `a_{01}` et `a_1`
+  sont deux noms. L'arbre reste un `subscript` ; `substitute` le remplace en entier par la liaison
+  `a_1`, et la liaison `a` ne touche plus sa base (avant : `a = 10` faisait `10_1`, que rien ne
+  lisait). Un seul masquage, `hideIndexedNames` / `revealIndexedNames` (avec un filtre : l'atelier
+  y laisse `u_3`, terme d'une suite), sert `substitute`, `hasAllBindings`, `getMissingBindings`,
+  la liste « (variables: a_1, x) » du REPL web et `variablesOf` (`atelier/parse.ts`). Un indice non
+  entier (`x_n`, `u_{n+1}`) n'est pas un nom : sa base se remplace comme avant. ⚠️ `getVariables`
+  rend toujours la base (`a`) : ses ~80 appelants (solveur, validation des réponses…) n'ont pas été
+  revus pour un changement de sens.
 
 ## Invariants structurels non évidents
 

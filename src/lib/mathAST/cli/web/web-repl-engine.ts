@@ -8,6 +8,7 @@
 import type { MathNode, RelationNode } from '../../types';
 import type { CommandContext, ErrorCode } from '../types';
 import { CommandRegistry, parse, createEvalState, bindingsToRecord, setBinding } from '../core';
+import { hideIndexedNames } from '../../common/indexed-names';
 import { createFunctionBinding, getFunctionNames, getFunction } from '../core/eval-state';
 import type { EvalState } from '../core';
 import type { PipelineOptions } from '../core/pipeline';
@@ -860,7 +861,8 @@ export class WebReplEngine {
 
 		// Check if expression has variables and all are bound - auto-evaluate
 		const bindings = bindingsToRecord(this.evalState.bindings);
-		const variables = getVariables(result.ast);
+		// `a_1` se nomme en entier, comme dans `getMissingBindings` (« variables: a_1 »)
+		const variables = getVariables(hideIndexedNames(result.ast).node);
 
 		// Auto-evaluate when:
 		// 1. All variables are bound (if any), OR
