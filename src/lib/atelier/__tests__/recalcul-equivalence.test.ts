@@ -26,6 +26,7 @@ import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { isFigureObject } from '../types';
 import { perfSwitches } from '../perf-switches';
 import { figure24 } from './fixtures/figure-24';
+import { figureFonctions } from './fixtures/figure-fonctions';
 
 // =============================================================================
 // Outils
@@ -94,6 +95,52 @@ function stepsOf(seed: number, count: number, withAngleUnit: boolean): Step[] {
 	return Array.from({ length: count }, () => pick(gestures)());
 }
 
+/** Les gestes sur la seconde figure : fonctions, dérivée, réciproque, suites, renommages. */
+function functionStepsOf(seed: number, count: number): Step[] {
+	const next = random(seed);
+	const pick = <T>(items: readonly T[]): T => items[Math.floor(next() * items.length)];
+	const gestures: (() => Step)[] = [
+		() => {
+			const v = Math.round(next() * 12 - 6) / 2;
+			return (a) => void a.slideTo(a.get('a') ? 'a' : 't', v);
+		},
+		() => {
+			const text = pick(['a x^2', 'a x^3 + b', 'x^2 + c_2', 'k(x) + 1']);
+			return (a) => void a.update('f', text.replace(/\ba\b/g, a.get('a') ? 'a' : 't'), 'text');
+		},
+		() => {
+			const text = pick(['a x + b', '3x - b', 'x^2', 'a x']);
+			return (a) => void a.update('k', text.replace(/\ba\b/g, a.get('a') ? 'a' : 't'), 'text');
+		},
+		() => {
+			const text = pick(['2n + b', 'n^2 - b', 'u(n) + 1']);
+			return (a) => void a.update('v', text, 'text');
+		},
+		() => {
+			const first = pick(['a', 'b', '2']);
+			return (a) =>
+				void a.setSequence('u', { firstTerm: first === 'a' && !a.get('a') ? 't' : first });
+		},
+		() => (a) => {
+			if (a.get('g') !== undefined) a.remove('g');
+			else a.create({ kind: 'function', name: 'g', definition: "f'(x) + 1" }, 'text');
+		},
+		() => (a) => {
+			if (a.get('a') !== undefined) a.rename('a', 't');
+			else a.rename('t', 'a');
+		},
+		() => {
+			const x = pick(['b', '1', 'c_2', 'm']);
+			return (a) => void a.update('B', `(${x} ; 1)`, 'text');
+		},
+		() => {
+			const text = pick(['AB + 1', 'AB * b', '2', 'aire(A ; B ; P)']);
+			return (a) => void a.update('m', text, 'text');
+		}
+	];
+	return Array.from({ length: count }, () => pick(gestures)());
+}
+
 /** Les points dessinés dans la vue Géométrie, arrondis. */
 function drawnPoints(atelier: Atelier): Record<string, [number, number] | null> {
 	const target = new AtelierFigure();
@@ -112,7 +159,10 @@ function round(v: number): number {
 }
 
 /** Tout ce que l'élève voit, en données comparables. */
-function snapshot(atelier: Atelier): unknown {
+const FIGURE_LINES = ['S', 'L * 2', 'U + T', 'Q', 'AM'];
+const FUNCTION_LINES = ['r', 'g(2)', 'h(5)', 'u(3)', 'w(2)', 'm', 'c_2', "f'(1)", 'q'];
+
+function snapshot(atelier: Atelier, lines: readonly string[] = FIGURE_LINES): unknown {
 	const session = { atelier, engine: new WebReplEngine(), seed: () => 1 };
 	return {
 		saved: atelier.serialize(),
@@ -130,7 +180,7 @@ function snapshot(atelier: Atelier): unknown {
 						? { summary: figureSummaryOf(atelier, o.name), follows: followsOf(atelier, o) }
 						: null
 		})),
-		calcul: ['S', 'L * 2', 'U + T', 'Q', 'AM'].map((line) => runInput(session, line)),
+		calcul: lines.map((line) => runInput(session, line)),
 		drawn: drawnPoints(atelier)
 	};
 }
@@ -211,6 +261,75 @@ describe('restore(photo) rend l’atelier de la photo, quoi qu’on ait fait dep
 			const fresh = new Atelier();
 			fresh.restore(photo);
 			expect(snapshot(atelier)).toEqual(snapshot(fresh));
+		});
+	}
+});
+
+// =============================================================================
+// 4. La seconde figure : fonctions, dérivée, réciproque, suites (revue du chantier)
+// =============================================================================
+
+describe('fonctions, dérivée, réciproque, suites : les raccourcis rendent le chemin long', () => {
+	for (const seed of [2, 9, 17, 30]) {
+		it(`graine ${seed} : 30 gestes, allumés / éteints`, { timeout: 60_000 }, () => {
+			const steps = functionStepsOf(seed, 30);
+			allSwitches(true);
+			const fast = figureFonctions();
+			const fastStates = steps.map((step) => {
+				step(fast);
+				return snapshot(fast, FUNCTION_LINES);
+			});
+			allSwitches(false);
+			const slow = figureFonctions();
+			steps.forEach((step, i) => {
+				step(slow);
+				expect(snapshot(slow, FUNCTION_LINES), `pas ${i + 1}`).toEqual(fastStates[i]);
+			});
+		});
+
+		it(`graine ${seed} : restore(photo) = atelier neuf restauré`, { timeout: 60_000 }, () => {
+			const atelier = figureFonctions();
+			const [before, after] = [functionStepsOf(seed, 12), functionStepsOf(seed + 100, 12)];
+			for (const step of before) step(atelier);
+			const photo = atelier.serialize();
+			snapshot(atelier, FUNCTION_LINES);
+			for (const step of after) step(atelier);
+			snapshot(atelier, FUNCTION_LINES);
+			atelier.restore(photo);
+			const fresh = new Atelier();
+			fresh.restore(photo);
+			expect(snapshot(atelier, FUNCTION_LINES)).toEqual(snapshot(fresh, FUNCTION_LINES));
+		});
+	}
+});
+
+// =============================================================================
+// 5. Le message d'un objet qui cite une construction en échec : l'ordre des cartes n'y fait rien
+// =============================================================================
+
+describe('t = [BC] réduit à un point : M = point_sur(t ; a) dit « Dépend de « t » »', () => {
+	type Entry = ['value' | 'point' | 'curve', string, string];
+	const a: Entry = ['value', 'a', '0,3'];
+	const B: Entry = ['point', 'B', '(1 ; 1)'];
+	const C: Entry = ['point', 'C', '(1 ; 1)'];
+	const t: Entry = ['curve', 't', '[BC]'];
+	const M: Entry = ['point', 'M', 'point_sur(t ; a)'];
+	const A: Entry = ['point', 'A', '(0 ; 0)'];
+	const L: Entry = ['value', 'L', 'AM'];
+	for (const [label, entries] of [
+		['t avant M', [a, B, C, t, M, L, A]],
+		['M avant t', [a, M, B, C, t, A, L]]
+	] as const) {
+		it(label, () => {
+			const atelier = new Atelier();
+			for (const [kind, name, definition] of entries) {
+				atelier.create({ kind, name, definition }, 'text');
+			}
+			expect(atelier.get('t')?.message).toBe(
+				'Les deux points sont confondus : le segment est réduit à un point.'
+			);
+			expect(atelier.get('M')?.message).toBe('Dépend de « t », qui est en erreur.');
+			expect(atelier.get('L')?.message).toBe('Dépend de « M », qui est en erreur.');
 		});
 	}
 });

@@ -199,9 +199,14 @@ const NEGATIVE_EXPONENT = /\^\s*-\s*(\d+(?:\.\d+)?|[A-Za-z](?![A-Za-z(]))(?!\s*\
  * définition des dizaines de fois (une fois par coordonnée citée, via
  * `bindingsOf`) — 1/3 du temps passait à fabriquer les exceptions du parseur.
  *
- * ⚠️ L'arbre rendu est PARTAGÉ : il ne se modifie jamais (même règle que
- * `PARSE_CACHE` de `geometry-core`). En développement et en test il est gelé,
- * pour qu'une écriture se voie aussitôt au lieu d'abîmer le mémo en silence.
+ * ⚠️ RÈGLE : un arbre rendu par la lecture est PARTAGÉ et ne doit JAMAIS être
+ * modifié en place — ni ici, ni par qui le reçoit, y compris à travers ce que
+ * rendent `definitionAst`, `substitutedAstOf` / `substitutedTextOf` et
+ * `expandDerivatives` (qui rendent l'arbre lu TEL QUEL quand il n'y a rien à
+ * remplacer ou à développer). Toute transformation fabrique un arbre neuf (même
+ * règle que `PARSE_CACHE` de `geometry-core`). Le gel n'a lieu qu'en
+ * développement et en test, pour qu'une écriture y jette au lieu d'abîmer le
+ * mémo en silence ; en production, rien ne l'empêche.
  * Plafond et `clear()` au site d'insertion, comme `PARSE_CACHE`.
  */
 const READ_CACHE = new Map<string, ReturnType<typeof readByProvenance>>();

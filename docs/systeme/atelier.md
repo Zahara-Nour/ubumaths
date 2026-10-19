@@ -967,19 +967,27 @@ rend un cran de curseur rapide, ce sont trois **mémos sans invalidation**, exac
 construction (ils ne dépendent que de ce qui leur sert de clé) :
 
 - **les lectures** (`parseByProvenance`, `parse.ts`) : par texte + provenance + noms de
-  fonctions, plafond 5 000. La lecture est pure ; l'arbre rendu est **partagé** et ne se modifie
-  jamais (gelé en développement et en test, `deepFreeze`) ;
+  fonctions, plafond 5 000. La lecture est pure ; l'arbre rendu est **partagé**.
+  ⚠️ **Règle : un arbre rendu par la lecture ne se modifie JAMAIS en place** — y compris à
+  travers `definitionAst`, `substitutedAstOf` / `substitutedTextOf` et `expandDerivatives`,
+  qui rendent l'arbre lu tel quel quand il n'y a rien à remplacer ou à développer. Toute
+  transformation fabrique un arbre neuf. Le gel (`deepFreeze`) n'a lieu qu'en développement et
+  en test : en production, une écriture abîmerait le mémo en silence ;
 - **les noms cités** (`#refsOf`, `atelier.svelte.ts`) : par objet rangé (un `WeakMap`) et noms de
   fonctions — un objet rangé n'est jamais modifié sur place ;
 - **les liaisons** (`bindingsOf`, `engine.ts`) : un arbre substitué (une coordonnée, un rayon)
   ne reçoit que les définitions des noms qu'il peut citer, de proche en proche
   (`wantedNames`) ; un arbre qui ne nomme rien (`0`, `3/2`) n'en reçoit aucune
-  (`namesNothing`). Un nœud dont on ne sait pas lire les noms (longueur `AB`) fait tout lier.
+  (`namesNothing`). Un nœud dont on ne sait pas lire les noms (longueur `AB`, nom indicé `c_2`) fait tout lier.
   `expandDerivatives` rend l'arbre tel quel quand il n'a ni `f'` ni `f⁻¹`.
 
 Les mémos par révision d'avant (`constructionMemo`, `#measureMemo`, `#astMemo`) restent ; dans
-`#constructions`, ils sont vidés **dès qu'un statut change** (avant : au tour suivant) — sinon le
-message d'un objet dépendait de ce qu'un calcul voisin avait déjà mis en mémo. Rien à invalider
+`#constructions`, ils sont vidés **dès qu'un statut change** (avant : au tour suivant), et les
+constructions passent dans l'**ordre de dépendance** (`#dependencyOrder` : un objet après ceux
+qu'il cite), plus dans celui des cartes. Un objet qui cite une construction en échec dit donc
+toujours « Dépend de « t », qui est en erreur. » (ou « En attente de « t » »), quel que soit
+l'ordre des cartes et ce qu'une mesure a calculé en passant — avant, il reprenait parfois le motif
+de t (« Les deux points sont confondus… »). Rien à invalider
 dans `restore()`, la fusion, le chargement d'un fichier ou « Repartir de zéro » : aucune clé ne
 survit à un objet remplacé. `followsOf` (`card-state.ts`) lit `citedNames` au lieu d'appeler
 `dependents` pour chaque objet (O(n²) relectures).
@@ -2295,7 +2303,7 @@ par le type (`KIND_WORDS`, `KIND_NAMES`) sont signalés par le typecheck. Prévu
   `components/atelier/__tests__/point-sur.svelte.test.ts`, `components/atelier/__tests__/construction.svelte.test.ts` et
   `components/atelier/__tests__/FigureView.svelte.test.ts` (harnais `WithFigure.svelte`),
   `recalcul-equivalence.test.ts` et `recalcul-performance.test.ts` (raccourcis du recalcul, sur
-  la figure `__tests__/fixtures/figure-24.ts`).
+  les figures `__tests__/fixtures/figure-24.ts` et `figure-fonctions.ts` — dérivée, réciproque, suites, noms indicés).
 
 Lancer : `pnpm test:server <fichier>.test.ts`, `pnpm test:client <fichier>.svelte.test.ts`. Aucun
 test d'intégration : l'atelier ne touche pas la base.

@@ -411,7 +411,9 @@ const NO_BINDINGS: ReturnType<typeof bindingsOf> = {
 };
 
 /** Les types de nœuds dont on sait lire les noms (`collectNames`) : les autres font tout lier. */
-const NAMED_NODES: ReadonlySet<string> = new Set(['variable', 'greek', 'function', 'subscript']);
+// ⚠️ Pas `subscript` : un nom indicé (`c_2`, `v_n`) se lie sous une autre forme que
+// ses morceaux (`subscriptsAsCalls`) — un arbre qui en porte fait tout lier
+const NAMED_NODES: ReadonlySet<string> = new Set(['variable', 'greek', 'function']);
 
 /**
  * Ajouter à `names` toutes les chaînes de l'arbre — un SUR-ensemble des noms
@@ -476,7 +478,8 @@ function bindingsOf(atelier: Atelier, exclude: string, root?: MathNode) {
 	const raw: Record<string, FunctionDefinition> = {};
 	for (const object of derivable(atelier)) {
 		if (wanted !== null && !wanted.has(object.name)) continue;
-		perfStats.boundDefinitions++;
+		// Compté en développement et en test seulement (garde-fou de performance)
+		if (import.meta.env.DEV) perfStats.boundDefinitions++;
 		// Une mesure (`aire(A, B, C)`, `AM`) remplacée par sa valeur exacte (lot 2, L4)
 		const plain = atelier.definitionAst(object);
 		// `g(x) = f⁻¹(x)` : la réciproque développée AVANT toute dérivée (`g'`)

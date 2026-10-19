@@ -2,8 +2,10 @@
  * Garde-fou de performance du recalcul (chantier perf du 2026-10-19).
  *
  * Mesuré sur Mac mini M6 (node) après le chantier : un cran du curseur `a` sur la
- * figure de 24 objets coûte ~3 ms (médiane), contre 36 ms avant. La borne est
- * LARGE (4×) pour ne pas trembler en CI ; le compteur, lui, ne dépend d'aucune
+ * figure de 24 objets coûte ~3 ms (médiane), contre 36 ms avant. La borne de temps
+ * est TRÈS large (50 ms) pour ne pas trembler en CI (runners 2-3× plus lents,
+ * shards en concurrence) : elle n'attrape qu'un retour à l'ancien coût (36 ms en
+ * local, ~100 ms en CI). Le vrai garde-fou est le compteur, indépendant de la
  * machine : un cran ne relit que les définitions dont il a besoin.
  */
 
@@ -18,7 +20,7 @@ function median(values: number[]): number {
 }
 
 describe('un cran de curseur sur la figure de 24 objets', () => {
-	it('se recalcule en moins de 12 ms (médiane de 20 crans, 4× la mesure)', () => {
+	it('se recalcule en moins de 50 ms (médiane de 20 crans ; ~3 ms mesurés sur M6)', () => {
 		const atelier = figure24();
 		atelier.setSlider('a', { min: 0, max: 1, step: 0.01 });
 		for (let i = 0; i < 5; i++) atelier.slideTo('a', 0.2 + i * 0.01);
@@ -28,7 +30,7 @@ describe('un cran de curseur sur la figure de 24 objets', () => {
 			atelier.slideTo('a', 0.3 + i * 0.01);
 			times.push(performance.now() - start);
 		}
-		expect(median(times)).toBeLessThan(12);
+		expect(median(times)).toBeLessThan(50);
 		expect(atelier.get('M')?.status).toBe('ok');
 	});
 
