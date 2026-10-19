@@ -36,6 +36,7 @@ import { astOf, readNumber, type Provenance } from './parse';
 import { constantOf } from './constant';
 import { perfStats, perfSwitches } from './perf-switches';
 import { transformAST } from '$lib/mathAST/visitor';
+import { indexedNameOf } from '$lib/mathAST/common/indexed-names';
 import {
 	computeSequenceTerms,
 	INDEX_VARIABLE,
@@ -410,10 +411,13 @@ const NO_BINDINGS: ReturnType<typeof bindingsOf> = {
 	reciprocals: () => null
 };
 
-/** Les types de nœuds dont on sait lire les noms (`collectNames`) : les autres font tout lier. */
-// ⚠️ Pas `subscript` : un nom indicé (`c_2`, `v_n`) se lie sous une autre forme que
-// ses morceaux (`subscriptsAsCalls`) — un arbre qui en porte fait tout lier
-const NAMED_NODES: ReadonlySet<string> = new Set(['variable', 'greek', 'function']);
+/**
+ * Les types de nœuds dont on sait lire les noms (`collectNames`) : les autres font tout lier.
+ * `subscript` : un nom indicé (`c_2`) se lie sous son nom entier, que `collectNames`
+ * ajoute ; `v_n` se lie comme l'appel `v(n)` (`subscriptsAsCalls`), dont la base
+ * est une des chaînes de l'arbre.
+ */
+const NAMED_NODES: ReadonlySet<string> = new Set(['variable', 'greek', 'function', 'subscript']);
 
 /**
  * Ajouter à `names` toutes les chaînes de l'arbre — un SUR-ensemble des noms
@@ -432,6 +436,9 @@ function collectNames(node: unknown, names: Set<string>): boolean {
 	if (typeof type === 'string' && !NAMELESS_NODES.has(type) && !NAMED_NODES.has(type)) {
 		return false;
 	}
+	// `c_2` : la liaison porte le nom entier, absent des morceaux (`c`, `2`)
+	const indexed = type === 'subscript' ? indexedNameOf(node as MathNode) : null;
+	if (indexed !== null) names.add(indexed);
 	return Object.entries(node).every(
 		([key, child]) => (type === 'unit' && key === 'unit') || collectNames(child, names)
 	);

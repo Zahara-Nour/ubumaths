@@ -20,7 +20,7 @@
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
 import type { MathNode } from '$lib/mathAST/types';
-import { astOf } from './parse';
+import { astOf, variablesOf } from './parse';
 import {
 	cellName,
 	columnLetter,
@@ -32,7 +32,6 @@ import {
 import type { AtelierState } from './persistence';
 import { gridContext, termsOf, type GridContext } from './engine';
 import { evaluate } from '$lib/mathAST/eval/evaluate';
-import { getVariables } from '$lib/mathAST/eval/substitute';
 import { transformAST, visitAST } from '$lib/mathAST/visitor';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { tidyTerms } from './tidy-terms';
@@ -422,7 +421,7 @@ function readBody(typed: string, functionNames: readonly string[]): ReadFormula 
 		ok: true,
 		ast,
 		refs,
-		names: [...new Set([...namesIn(ast), ...argumentNames])],
+		names: [...new Set([...namesIn(ast, functionNames), ...argumentNames])],
 		calls,
 		deps: [...deps],
 		lists: [...lists],
@@ -744,9 +743,10 @@ export function indexedFunctionMessage(name: string): string {
 }
 
 /** Les noms qu'une formule cite : variables et fonctions, hors des marques de cellules. */
-function namesIn(ast: MathNode): string[] {
+function namesIn(ast: MathNode, functionNames: readonly string[]): string[] {
+	// `a_1` sous son nom entier : la case suit a_1, pas a (`variablesOf`)
 	const names = new Set(
-		[...getVariables(ast)].filter((name) => name !== MARK && name !== CALL_MARK)
+		[...variablesOf(ast, functionNames)].filter((name) => name !== MARK && name !== CALL_MARK)
 	);
 	transformAST(ast, {
 		enterFunction: (node) => {
@@ -1063,7 +1063,7 @@ function computeCell(
 	const expanded = context.expand(terms.ast);
 	if (!expanded.ok) return error(expanded.message);
 
-	const free = [...getVariables(expanded.ast)];
+	const free = [...variablesOf(expanded.ast, atelier.functionNames)];
 	if (free.length > 0) return error(freeNameMessage(free[0], atelier));
 
 	const started = performance.now();
