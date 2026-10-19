@@ -11,7 +11,7 @@
  * - Ligne 1 : l'adresse (`/glossaire`, `chiph.re/…` ou `https://…` extérieure,
  *   cf. `qr/qr-target.ts`).
  * - Puis, facultatives : `légende:` (120 caractères au plus) et `taille:`
- *   (2 à 6 cm, unité `cm` obligatoire, virgule décimale acceptée).
+ *   (2,5 à 6 cm, unité `cm` obligatoire, virgule décimale acceptée).
  *
  * Une erreur ne fait pas disparaître le bloc : le nœud porte ses messages
  * situés et le renderer les montre au prof (Q48). Repérage et blocs non

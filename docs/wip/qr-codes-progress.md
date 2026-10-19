@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, lot 3 (QR stylés) en phase 0._
+_Mis à jour le 2026-10-19, lot 3 (QR stylés) codé, PR à ouvrir._
 
-- **État** : lots 1 (#1515) et 2 (#1522) livrés, pas en prod. Lot 3 : QR stylés (gidouille, cases et yeux arrondis), variante **B** choisie par David ; phase 0 écrite : [qr-codes-style-phase0.md](qr-codes-style-phase0.md).
-- **Prochaine action** : après les réponses de David, tests rouges puis `qrSvg` stylé en correction H.
-- **En attente de David** : Q1 où s'applique le style (recommandé : partout) ; Q2 PDF par SVG en image (recommandé) ou tracés Typst ; Q3 taille mini du bloc 2 → 2,5 cm.
-- **Tranché** : limite de longueur en baisse acceptée, on fera des liens courts (chantier à part). Optimisation du chargement de `uqr` abandonnée : mesuré le 2026-10-19, 4,4 Ko gzip sur 16 pages sur 330 (PDF et bouton), déjà chargé à la demande pour le bloc à l'écran.
-- **Pièges** : adresse toujours `https://www.chiph.re` ; le moteur SVG d'ImageMagick oublie la spirale (rendre par QuickLook ou un navigateur pour tester) ; prototype dans le scratchpad de la session, non suivi.
+- **État** : lots 1 (#1515) et 2 (#1522) livrés, pas en prod. Lot 3 (QR stylés, variante B) codé sur `feat/qr-codes-style` : correction H, `qrDrawing`/`qrSvg` stylés partout (bouton, PNG, bloc écran, PDF en `#image(bytes(…))`), taille mini 2,5 cm ; tests verts, décodage réel par `jsqr`.
+- **Prochaine action** : revue `code-reviewer`, PR, CI, merge.
+- **En attente de David** : rien. Phase 0 tranchée : [qr-codes-style-phase0.md](qr-codes-style-phase0.md).
+- **Tranché** : liens courts plus tard (chantier non ouvert) ; chargement à la demande de `uqr` dans les PDF écarté (4,4 Ko gzip, 16 pages sur 330).
+- **Pièges** : le moteur SVG d'ImageMagick oublie la spirale (rendre par QuickLook ou un navigateur) ; `jsqr` ne lit pas une image qui contient deux QR (recadrer).
 - **Worktree / branche** : `../ubumaths-wt-qr-codes`, `feat/qr-codes-style`.
 
 Phase 0 : [qr-codes-phase0.md](qr-codes-phase0.md), tranchée par David le 2026-10-19.
@@ -30,3 +30,10 @@ Phase 0 : [qr-codes-phase0.md](qr-codes-phase0.md), tranchée par David le 2026-
 - `uqr` est importé statiquement par `typst-generator.ts` (≈ 8 Ko gzip dans le chunk des pages Markdown) ; l'écran le charge à la demande.
 - Éditeur riche : pas de nœud TipTap dédié, un bloc de code `qr` (comme ```courbe) ; un bloc en erreur survit à l'aller-retour.
 - Chat élève : la liste blanche du rendu restreint exclut déjà ```qr (test de non-régression `qr-restreint.test.ts`, vert d'emblée).
+
+## Lot 3 — QR stylés (branche `feat/qr-codes-style`, 2026-10-19)
+
+- Demande : styliser « à la façon de QRCode Monkey ». Style imposé : gidouille, cases et yeux arrondis, couleurs du thème ; 4 variantes prototypées et décodées, **B** choisie (cases `#1a1a1a`, yeux `#b25f00`, gidouille `#fc8f1b`).
+- Correction M → H (la gidouille masque ~7 % des cases) ; plafond version 15 = 220 octets au lieu de 412.
+- PDF : le SVG posé en `#image(bytes(…), format: "svg")`, vérifié avant de coder avec `scripts/fiches/compile-prod.mjs` ; un PDF à deux blocs (2,5 et 4 cm) rendu puis décodé : les deux adresses relues.
+- Tests : `qr-rendu.svelte.test.ts` (versions 4 à 15, canvas + `jsqr`), PNG du bouton décodé et pixel d'œil ambre, bloc à l'écran décodé ; `jsqr` 1.4.0 en devDependency.
