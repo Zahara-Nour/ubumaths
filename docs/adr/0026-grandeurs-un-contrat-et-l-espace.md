@@ -45,6 +45,8 @@ Le contrat détaillé, avec les fonctions à appeler : [docs/systeme/grandeurs.m
 - `format(unit, 'dot' | 'fraction')` n'est pas une écriture de grandeur : il perd le coefficient.
 - `3 t + 2` tapé avec des espaces devient 3 tonnes + 2 : le refus de dimension l'explique
   (`singleLetterHint`).
-- La correction des cases à unité (`questions/units/validator.ts`, ComputeEngine) reste un
-  calculateur à part : la rapprocher de `tidy` est un chantier à ouvrir, avec un oracle sur les
-  vraies réponses d'élèves.
+- La correction des cases à unité (`questions/units/validator.ts`, `quantity-comparison.ts` :
+  valeur lue par regex, évaluée par mathAST en mode décimal, calcul en flottants — pas de
+  ComputeEngine, contrairement à ce que disait cette ligne) reste un calculateur à part : la
+  rapprocher de `tidy` est le chantier `correction-cases-unite`, avec un oracle sur les vraies
+  questions (la production ne garde pas les réponses d'élèves).

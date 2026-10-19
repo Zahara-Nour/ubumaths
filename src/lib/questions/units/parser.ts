@@ -113,7 +113,7 @@ function normalizeSuperscripts(str: string): string {
  * - Plain numbers: "5", "3.14", "-10"
  * - Fractions: "\frac{3}{2}"
  * - Scientific: "1.5 \times 10^{3}"
- * - Arithmetic expressions: "3+2", "5*3" (returned as string for CE evaluation)
+ * - Arithmetic expressions: "3+2", "5*3" (returned as string, evaluated by mathAST)
  *
  * @param latex - LaTeX string containing a numeric value
  * @returns Extracted value as number or string (for unevaluated expressions), or null
@@ -155,7 +155,7 @@ function extractValue(latex: string): number | string | null {
 	// Check if string contains arithmetic operators (but not at the start for negative)
 	// This includes expressions like "3+2", "5*3", "10-2"
 	if (/[+\-*/]/.test(str.slice(1)) || str.includes('\\times') || str.includes('\\cdot')) {
-		// Return as string for ComputeEngine to evaluate
+		// Rendue en chaîne : évaluée par mathAST (`evaluateQuantityValue`)
 		return str;
 	}
 

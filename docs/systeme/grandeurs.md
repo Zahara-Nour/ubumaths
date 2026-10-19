@@ -2,7 +2,7 @@
 couvre:
   - src/lib/mathAST/cli/quantities.ts
   - src/lib/atelier/natural-quantities.ts
-  - 'src/lib/questions/units/{validator,ce-integration,parser,operations,composite-duration,types}.ts'
+  - 'src/lib/questions/units/{validator,quantity-comparison,feedback,parser,operations,composite-duration,types}.ts'
 ---
 
 # Les grandeurs : lire, calculer, écrire
@@ -128,12 +128,24 @@ C'est la cause du bug « 10 m/s ».
 
 ## La correction des cases à unité — un troisième calculateur, connu
 
-`questions/units/validator.ts` (`validateQuantityAnswer`) et `ce-integration.ts` (ComputeEngine)
-corrigent les réponses des élèves dans les cases à unité : conversions, tolérance, précision
-demandée, messages (`feedback.ts`). C'est un calculateur à part, hors du circuit ci-dessus ; le
-rapprocher de `normalize`/`tidy` est un chantier à part, à faire avec un oracle sur les vraies
-réponses d'élèves. Le catalogue des unités et les opérations de base viennent de `mathAST/units`
+`questions/units/validator.ts` (`validateQuantityAnswer`) et `quantity-comparison.ts`
+(`compareQuantities`) corrigent les réponses des élèves dans les cases à unité : conversions,
+tolérance, précision demandée, messages (`feedback.ts`). Il n'y a **pas** de ComputeEngine : la valeur
+est lue par une regex maison (`extractValue`, `parser.ts`) et, si ce n'est pas un nombre simple
+(`5\times3`), évaluée par mathAST en mode décimal (`evaluateExpression`, `$lib/math`) ; le calcul
+se fait en flottants, l'unité est lue à part (`\unit{…}` + parseur d'unités). C'est un calculateur
+hors du circuit ci-dessus : chantier `correction-cases-unite` (lecture en arbre, puis comparaison
+par `tidy`). Le catalogue des unités et les opérations de base viennent de `mathAST/units`
 (`resolveUnit`, conversions) : `questions/units` n'en garde plus de copie depuis le lot D.
+
+Garde-fou : l'oracle `oracle-cases-unite.test.ts` fige le verdict de ~1 700 réponses typiques
+sur les 25 modèles publiés à case à unité (copiés de la production dans
+`tests/fixtures/correction-cases-unite/`). La production ne garde aucune réponse d'élève de
+l'entraînement : l'oracle repose sur les vraies questions, pas sur de vraies réponses.
+
+Le refus de grandeur (« Cette unité ne mesure pas la bonne grandeur. ») n'ajoute « Pour un produit
+d'unités, écris m·s. » que si les lettres collées de l'élève, lues comme un produit, mesurent la
+grandeur attendue (`5ms` pour des m·s) — décision de David du 2026-10-19.
 
 ## Tests qui verrouillent le contrat
 

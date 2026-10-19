@@ -22,7 +22,7 @@ import {
 } from './feedback';
 import { normalizeStudentQuantity, studentNumericLatex } from './student-input';
 import { readCompositeDuration, type DurationFormIssue } from './composite-duration';
-import { compareQuantities, type Tolerance } from './ce-integration';
+import { compareQuantities, type Tolerance } from './quantity-comparison';
 import { isDuration, unitsAreCompatible } from './operations';
 import type { PrecisionType } from '$lib/questions/types';
 import type { Unit } from './types';
