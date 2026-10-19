@@ -380,7 +380,8 @@ export class CalcDesk {
 		const moved = this.atelier.undoStep();
 		if (moved === null) return null;
 		this.#strike(moved.id, true);
-		this.#gesture = { kind: 'annuler' };
+		// Un remplacement d'atelier n'a pas de ligne : son Annuler ne se rejoue pas
+		this.#gesture = this.atelier.isReplacement(moved.id) ? null : { kind: 'annuler' };
 		this.#pendingStep = null;
 		this.#push({ label: 'Annuler', text: `Annulé : ${moved.label}.`, failed: false });
 		return moved;
@@ -391,7 +392,7 @@ export class CalcDesk {
 		const moved = this.atelier.redoStep();
 		if (moved === null) return null;
 		this.#strike(moved.id, false);
-		this.#gesture = { kind: 'rétablir' };
+		this.#gesture = this.atelier.isReplacement(moved.id) ? null : { kind: 'rétablir' };
 		this.#pendingStep = null;
 		this.#push({ label: 'Rétablir', text: `Rétabli : ${moved.label}.`, failed: false });
 		return moved;

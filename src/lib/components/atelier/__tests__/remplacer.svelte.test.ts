@@ -162,6 +162,8 @@ describe('remplacer mon atelier (atelier reçu par lien)', () => {
 		expect(buttonNamed(toolbar(container), 'Charger un atelier')).toBeDefined();
 		expect(buttonNamed(toolbar(container), 'Partager')).toBeDefined();
 		expect(onLinkLeft).toHaveBeenCalledOnce();
+		// Le bouton Remplacer a disparu : le focus va à « Mes objets », pas sur la page
+		await vi.waitFor(() => expect(document.activeElement?.id).toBe('atelier-mes-objets'));
 	});
 
 	it('B4 : l’avis dit que l’atelier est mis de côté, et propose de le retrouver — la barre aussi', async () => {
@@ -196,8 +198,10 @@ describe('remplacer mon atelier (atelier reçu par lien)', () => {
 
 		expect(atelier.names).toEqual(['a', 'f']);
 		expect(count(container)).toBe('2 objets');
-		// Rien n'est perdu : c'est le reçu qui est désormais de côté (B3)
+		// Rien n'est perdu : c'est le reçu qui est désormais de côté (B3), et l'atelier
+		// rendu est rangé AUSSITÔT — pas 500 ms plus tard, la copie déjà réécrite (revue)
 		expect(stored(SET_ASIDE_STORAGE_KEY)).toEqual(['g']);
+		expect(stored(ATELIER_STORAGE_KEY)).toEqual(['a', 'f']);
 	});
 
 	it('B1 : atelier personnel vide, ni confirmation ni copie', async () => {
@@ -301,6 +305,7 @@ describe('retrouver mon atelier précédent', () => {
 		await settle();
 		expect(atelier.names).toEqual(['g']);
 		expect(stored(SET_ASIDE_STORAGE_KEY)).toEqual(['a', 'f']);
+		expect(stored(ATELIER_STORAGE_KEY)).toEqual(['g']);
 	});
 
 	it('B7 : une copie abîmée est oubliée, avec un message, et le bouton disparaît', async () => {

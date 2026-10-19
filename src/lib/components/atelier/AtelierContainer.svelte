@@ -376,6 +376,10 @@
 	 * de côté (B3 — rien n'est jamais perdu, on passe de l'un à l'autre).
 	 */
 	function keepLeftAside(left: AtelierState) {
+		// L'atelier affiché rangé TOUT DE SUITE, puis l'atelier quitté mis de côté : les
+		// deux écritures à la suite. Sans `saveNow`, la copie était réécrite 500 ms
+		// avant l'atelier personnel, et l'atelier rendu n'existait qu'en mémoire (revue)
+		session?.saveNow();
 		const kept = keepAside(readStorage(), left);
 		setAsideExists = hasSetAside(readStorage());
 		if (!kept.ok) {
@@ -411,10 +415,11 @@
 			return;
 		}
 		// L'atelier d'avant à l'écran, puis le reçu en UNE étape : un Ctrl+Z le rend
-		if (done.previous !== null) {
-			atelier.restore(done.previous);
-			atelier.replaceWith(incoming, REPLACE_STEP, { onLeave: keepLeftAside });
-		}
+		const report =
+			done.previous === null
+				? null
+				: (atelier.restore(done.previous),
+					atelier.replaceWith(incoming, REPLACE_STEP, { onLeave: keepLeftAside }));
 		linkMode = false;
 		shownReceived = null;
 		// R4 : la console de l'élève revient, celle du lien n'était qu'à lui
@@ -431,8 +436,34 @@
 						kind: 'info',
 						message: `${SET_ASIDE_NOTICE} Cet atelier est maintenant le tien.`,
 						action: retrieveAction()
-					}
+					},
+			// Une relecture qui écarte un objet le dit, jamais en silence
+			...(report?.skipped ?? []).map((s) => ({
+				kind: 'warning' as const,
+				message: `« ${s.name} » n'a pas pu être gardé : ${s.reason}`
+			}))
 		];
+		keepFocus();
+	}
+
+	/** Après « Remplacer », le bouton déclencheur a disparu avec le bandeau du lien. */
+	function handleReplaceCloseFocus(event: Event) {
+		if (linkMode) return;
+		event.preventDefault();
+		document.getElementById('atelier-mes-objets')?.focus();
+	}
+
+	/**
+	 * Le bouton cliqué peut disparaître (Remplacer quitte le lien, Retrouver
+	 * s'efface sans copie) : le focus va à « Mes objets », jamais sur la page (2.4.3).
+	 */
+	function keepFocus() {
+		tick().then(() => {
+			const active = document.activeElement;
+			if (active === null || active === document.body || !active.isConnected) {
+				document.getElementById('atelier-mes-objets')?.focus();
+			}
+		});
 	}
 
 	/**
@@ -472,6 +503,7 @@
 			},
 			...lost.map((message) => ({ kind: 'warning' as const, message }))
 		];
+		keepFocus();
 	}
 
 	/** Vider l'atelier — seulement après confirmation, jamais sur un lien reçu. */
@@ -1107,6 +1139,7 @@
 			confirmLabel="Remplacer"
 			variant="destructive"
 			onConfirm={replaceNow}
+			onCloseAutoFocus={handleReplaceCloseFocus}
 		/>
 		<ConfirmDialog
 			bind:open={confirmLoad}

@@ -1776,7 +1776,11 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
 SET_ASIDE_STORAGE_KEY)`) et les migrations à sa relecture par l'atelier (`y` renommé, dit) ;
   abîmée, elle est oubliée avec un message (B7) ; d'une version plus récente, ni relue ni oubliée.
   **Annuler / Rétablir gardent la copie d'accord avec l'écran** : l'atelier qu'ils quittent devient
-  la copie (`onLeave` de `replaceWith` → `keepLeftAside`) — rien n'est jamais perdu.
+  la copie (`onLeave` de `replaceWith` → `keepLeftAside`, qui range d'abord l'atelier affiché
+  tout de suite, `session.saveNow()`, puis la copie) — rien n'est jamais perdu. Le Annuler /
+  Rétablir d'un remplacement s'écrit dans la console **sans geste rejouable**
+  (`atelier.isReplacement`) : le remplacement n'y a pas de ligne, et au rejeu « annuler » aurait
+  défait l'étape d'avant. Le bouton cliqué disparu, le focus va à « Mes objets ».
 - **Lignes de Calcul** (`history-storage.ts`, décision de David du 2026-10-13, « option 1 ») :
   clé **à part**, `CALC_HISTORY_STORAGE_KEY` (`chiphre-atelier-historique`), version
   `CALC_HISTORY_VERSION`. Rangées 500 ms après la dernière ligne (et au `pagehide`, au démontage)

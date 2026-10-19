@@ -675,6 +675,8 @@ export class Atelier {
 	#receipts = new WeakMap<RemovedWithDependents, StepToken>();
 	/** Les étapes de `replaceWith` qui veulent savoir quand on les quitte (`onLeave`). */
 	#onLeave = new Map<number, (left: AtelierState) => void>();
+	/** Les étapes de `replaceWith` : aucune ligne de console ne les rejoue (`isReplacement`). */
+	#replacements = new Set<number>();
 	/** Ce que la barre affiche : l'étape qu'Annuler défera, celle que Rétablir refera. */
 	history = $state<HistoryState>({ undo: null, redo: null, steps: 0 });
 
@@ -1767,6 +1769,7 @@ export class Atelier {
 	#forgetHistory(): void {
 		this.#history.clear();
 		this.#onLeave.clear();
+		this.#replacements.clear();
 		this.#baseline = null;
 		this.#publish();
 	}
@@ -2537,10 +2540,20 @@ export class Atelier {
 		// recalcul fait bouger `revision` : la session range l'atelier remplacé
 		const report = this.step(label, () => this.#restoreState(state));
 		const id = this.#lastStepId;
-		if (outermost && id !== null && options.onLeave !== undefined) {
-			this.#onLeave.set(id, options.onLeave);
+		if (outermost && id !== null) {
+			this.#replacements.add(id);
+			if (options.onLeave !== undefined) this.#onLeave.set(id, options.onLeave);
 		}
 		return report;
+	}
+
+	/**
+	 * Cette étape est-elle un `replaceWith` ? Le pupitre n'écrit alors pas son
+	 * Annuler / Rétablir comme un geste rejouable : le remplacement n'a aucune
+	 * ligne de console, et au rejeu « annuler » déferait l'étape d'avant (revue).
+	 */
+	isReplacement(stepId: number): boolean {
+		return this.#replacements.has(stepId);
 	}
 
 	#restoreState(
