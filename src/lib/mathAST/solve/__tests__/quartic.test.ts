@@ -148,6 +148,46 @@ describe('Quartic Solver', () => {
 			expect(solutionsContainApprox(result.solutions, 1)).toBe(true);
 		});
 
+		// Les trois cas ci-dessus ont B = 0 une fois la quartique dépréciée (racines
+		// symétriques autour de −b/4a) : ils passaient par le chemin bicarré et
+		// cachaient une factorisation de Ferrari fausse dès que B ≠ 0.
+		it('x⁴ + x³ − 7x² − x + 6 = 0 → x = −3, −1, 1, 2 (B ≠ 0)', () => {
+			const result = solve(parseEquation('x^4+x^3-7x^2-x+6=0'));
+			expect(result.solutions.map((s) => s.approximate)).toEqual([-3, -1, 1, 2]);
+		});
+
+		it('5x⁴ + 16x³ + 3x² − 20x − 4 = 0 → x = −2 (double), −1/5, 1', () => {
+			const result = solve(parseEquation('5x^4+16x^3+3x^2-20x-4=0'));
+			expect(result.solutions.map((s) => toLatex(s.value))).toEqual(['-2', '-\\dfrac{1}{5}', '1']);
+		});
+
+		it('3x⁴ − 11x³ − 2x² + 44x − 40 = 0 → x = −2, 5/3, 2 (2 double)', () => {
+			const result = solve(parseEquation('3x^4-11x^3-2x^2+44x-40=0'));
+			expect(result.solutions.map((s) => toLatex(s.value))).toEqual(['-2', '\\dfrac{5}{3}', '2']);
+		});
+
+		it('2(x − 3)(x − 3,002)(x² + 1) = 0 : x = 3 ou x = 3,002, pas « aucune solution »', () => {
+			const result = solve(parseEquation('2x^4-12.004x^3+20.012x^2-12.004x+18.012=0'));
+			expect(result.solutions.map((s) => Math.round((s.approximate ?? 0) * 1e6) / 1e6)).toEqual([
+				3, 3.002
+			]);
+		});
+
+		it('200 quartiques tirées (graine fixe) : solve rend leurs racines réelles', () => {
+			const wrong: string[] = [];
+			for (const { coefficients, roots } of quarticsWithKnownRoots(200)) {
+				const [a, b, c, d, e] = coefficients;
+				const latex = `${a}x^4+${b}x^3+${c}x^2+${d}x+${e}=0`.replace(/\+-/g, '-');
+				const found = solve(parseEquation(latex))
+					.solutions.map((s) => s.approximate ?? Number.NaN)
+					.sort((p, q) => p - q);
+				if (!sameRoots(found, roots)) {
+					wrong.push(`${latex} : ${found.join(' ; ')} au lieu de ${roots.join(' ; ')}`);
+				}
+			}
+			expect(wrong).toEqual([]);
+		});
+
 		it('should solve x⁴ - 10x² + 9 = 0 -> x = ±1, ±3 (also biquadratic)', () => {
 			const eq = parseEquation('x^4 - 10x^2 + 9 = 0');
 			const result = solve(eq);
@@ -234,3 +274,92 @@ describe('Quartic Solver', () => {
 		});
 	});
 });
+
+/** Générateur pseudo-aléatoire à graine fixe (LCG de Numerical Recipes). */
+function seededRandom(seed: number): () => number {
+	let state = seed >>> 0;
+	return () => {
+		state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+		return state / 2 ** 32;
+	};
+}
+
+/**
+ * Quartiques à racines connues (entiers et demis de [−5 ; 5]) : quatre
+ * simples, une double et deux simples, deux doubles, une double et un facteur
+ * x² + 1 sans racine réelle. Coefficients développés, coefficient dominant ≠ 1.
+ */
+function quarticsWithKnownRoots(count: number): { coefficients: number[]; roots: number[] }[] {
+	const random = seededRandom(20261019);
+	const pick = () => Math.round(random() * 20 - 10) / 2;
+	const cases: { coefficients: number[]; roots: number[] }[] = [];
+	while (cases.length < count) {
+		const shape = cases.length % 6;
+		// Grande amplitude (jusqu'à ±2·10⁴) un lot sur deux : le bruit de calcul
+		// doit suivre la borne de Horner, pas Σ|coefficients|·|x|⁴
+		const magnitude = [1, 1000, 1, 4000][Math.floor(cases.length / 24) % 4];
+		const [r1, r2, r3, r4] = [pick(), pick(), pick(), pick()].map((r) => r * magnitude);
+		// Racines proches : écart de 1e-3 à 3e-3 (fusionnées à tort par une
+		// tolérance sur le discriminant)
+		const close = r1 + ((1 + Math.floor(random() * 3)) / 1000) * Math.max(1, Math.abs(r1));
+		const factors: number[][] = [
+			[
+				[1, -r1],
+				[1, -r2],
+				[1, -r3],
+				[1, -r4]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, -r2],
+				[1, -r3]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, -r2],
+				[1, -r2]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, 0, 1]
+			],
+			[
+				[1, -r1],
+				[1, -r1],
+				[1, -r1],
+				[1, -r2]
+			],
+			[
+				[1, -r1],
+				[1, -close],
+				[1, 0, 1]
+			]
+		][shape];
+		const lead = [2, 3, -2, 4][Math.floor(cases.length / 6) % 4];
+		const coefficients = factors.reduce(
+			(acc, f) => {
+				const out: number[] = Array.from({ length: acc.length + f.length - 1 }, () => 0);
+				acc.forEach((a, i) => f.forEach((b, j) => (out[i + j] += a * b)));
+				return out;
+			},
+			[lead]
+		);
+		const real = [[r1, r2, r3, r4], [r1, r2, r3], [r1, r2], [r1], [r1, r2], [r1, close]][shape];
+		cases.push({
+			coefficients,
+			roots: [...new Set(real)].sort((a, b) => a - b)
+		});
+	}
+	return cases;
+}
+
+/** Mêmes racines, à 1e-6 près en valeur relative. */
+function sameRoots(found: readonly number[], expected: readonly number[]): boolean {
+	return (
+		found.length === expected.length &&
+		found.every((r, i) => Math.abs(r - expected[i]) <= 1e-6 * Math.max(1, Math.abs(expected[i])))
+	);
+}

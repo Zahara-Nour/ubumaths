@@ -26,6 +26,7 @@ import { numericNode } from '../common/numeric';
 import { ZERO_TOLERANCE } from '../common';
 import { findNodes } from '../transforms';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { realQuarticRoots } from '../common/quartic-roots';
 
 // =============================================================================
 // Expression Classification
@@ -950,131 +951,8 @@ function solveQuarticZeros(a: number, b: number, c: number, d: number, e: number
 		// Not really quartic, delegate to cubic
 		return solveCubicZeros(b, c, d, e);
 	}
-
-	// Normalize to monic form: x⁴ + px³ + qx² + rx + s = 0
-	const p = b / a;
-	const q = c / a;
-	const r = d / a;
-	const s = e / a;
-
-	// Substitute x = t - p/4 to get depressed quartic: t⁴ + At² + Bt + C = 0
-	const p2 = p * p;
-	const p3 = p2 * p;
-	const p4 = p3 * p;
-	const shift = p / 4;
-
-	const A = q - (3 * p2) / 8;
-	const B = r - (p * q) / 2 + p3 / 8;
-	const C = s - (p * r) / 4 + (p2 * q) / 16 - (3 * p4) / 256;
-
-	// Special case: Biquadratic (B = 0)
-	if (Math.abs(B) < ZERO_TOLERANCE) {
-		return solveBiquadratic(A, C, shift);
-	}
-
-	// Solve the resolvent cubic: y³ + (A/2)y² + ((A² - 4C)/16)y - B²/64 = 0
-	// Rewritten as: y³ + py² + qy + r = 0 (don't confuse with outer p, q, r)
-	const cubicP = A / 2;
-	const cubicQ = (A * A - 4 * C) / 16;
-	const cubicR = -(B * B) / 64;
-
-	const cubicRoots = solveCubicZeros(1, cubicP, cubicQ, cubicR);
-
-	// We need any real root y > 0 (or the largest one) for the factorization
-	// If all roots are negative, the method still works but we need to adjust
-	let y = 0;
-	for (const root of cubicRoots) {
-		if (root > y) {
-			y = root;
-		}
-	}
-
-	// If y is too small, try the largest root even if negative
-	if (Math.abs(y) < ZERO_TOLERANCE && cubicRoots.length > 0) {
-		y = Math.max(...cubicRoots.map(Math.abs));
-		// Find the actual root with this absolute value
-		for (const root of cubicRoots) {
-			if (Math.abs(Math.abs(root) - y) < ZERO_TOLERANCE) {
-				y = root;
-				break;
-			}
-		}
-	}
-
-	// Factor the depressed quartic as (t² + √(2y)t + q₁)(t² - √(2y)t + q₂)
-	const twoY = 2 * y;
-	if (twoY < -ZERO_TOLERANCE) {
-		// Cannot factor with real coefficients, no real roots
-		return [];
-	}
-
-	const sqrtTwoY = Math.sqrt(Math.max(0, twoY));
-	if (Math.abs(sqrtTwoY) < ZERO_TOLERANCE) {
-		// Special case: y ≈ 0, factor as (t² + √C)(t² - √C) or similar
-		return solveBiquadratic(A, C, shift);
-	}
-
-	const q1 = A / 2 + y - B / (2 * sqrtTwoY);
-	const q2 = A / 2 + y + B / (2 * sqrtTwoY);
-
-	// Solve t² + sqrtTwoY*t + q1 = 0 and t² - sqrtTwoY*t + q2 = 0
-	const roots1 = solveQuadraticZeros(1, sqrtTwoY, q1);
-	const roots2 = solveQuadraticZeros(1, -sqrtTwoY, q2);
-
-	// Transform back: x = t - p/4
-	const allRoots = [...roots1, ...roots2].map((t) => t - shift);
-
-	// Sort and remove duplicates
-	return deduplicateRoots(allRoots);
-}
-
-/**
- * Solve a biquadratic equation: t⁴ + At² + C = 0 (where B = 0)
- * This is equivalent to solving u² + Au + C = 0 where u = t²
- *
- * @param A - Coefficient of t²
- * @param C - Constant term
- * @param shift - Value to subtract from roots (for de-depressing)
- * @returns Array of real roots
- */
-function solveBiquadratic(A: number, C: number, shift: number): number[] {
-	// Solve u² + Au + C = 0 where u = t²
-	const uRoots = solveQuadraticZeros(1, A, C);
-
-	const tRoots: number[] = [];
-	for (const u of uRoots) {
-		if (u >= 0) {
-			const sqrtU = Math.sqrt(u);
-			tRoots.push(sqrtU - shift);
-			if (Math.abs(sqrtU) > ZERO_TOLERANCE) {
-				tRoots.push(-sqrtU - shift);
-			}
-		}
-	}
-
-	// Evaluate the original polynomial: (x+shift)^4 + A*(x+shift)^2 + C
-	const evalBiquad = (x: number) => {
-		const t = x + shift;
-		const t2 = t * t;
-		return t2 * t2 + A * t2 + C;
-	};
-	return deduplicateRoots(cleanRoots(tRoots, evalBiquad));
-}
-
-/**
- * Remove duplicate roots within tolerance.
- */
-function deduplicateRoots(roots: number[]): number[] {
-	if (roots.length === 0) return [];
-
-	roots.sort((x, y) => x - y);
-	const unique: number[] = [roots[0]];
-	for (let i = 1; i < roots.length; i++) {
-		if (Math.abs(roots[i] - unique[unique.length - 1]) > ZERO_TOLERANCE) {
-			unique.push(roots[i]);
-		}
-	}
-	return unique;
+	// Ferrari, polissage de Newton, racines doubles gardées : `common/quartic-roots.ts`
+	return realQuarticRoots(a, b, c, d, e);
 }
 
 /**

@@ -39,6 +39,8 @@ import { equals, number } from '../../factory';
 import { periodicMember } from '../../common/periodic-member';
 import { isRelation } from '../../guards';
 import { containsNode } from '../../domain/algebra';
+import { computeDomain } from '../../domain/compute';
+import { compile } from '../../eval/compile';
 import { getEndpoints } from '$lib/math/intervals';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 
@@ -126,8 +128,19 @@ export function findZerosWithStatus(
 			return { zeros: [], resolved: true };
 		}
 
+		// Famille ÉCARTÉE par le solveur (`cos x/√x`, `sin x/x`) : la liste ne
+		// couvre qu'une période. On l'énumère quand même, en ne gardant que les
+		// membres où l'expression est définie (et nulle) ; domaine de
+		// l'expression non déterminé : les zéros ne sont pas tous connus.
+		const dropped = result.droppedPeriodicSolutions;
+		const keep = dropped === undefined ? undefined : definedMemberFilter(expr, variable);
+		if (keep === null) {
+			return { zeros: filterSolutionsInDomain(result.solutions, domain), resolved: false };
+		}
+		const family = result.periodicSolutions ?? dropped;
+
 		// Handle periodic solutions on bounded domains
-		if (result.periodicSolutions && domain.kind === 'interval_set') {
+		if (family && domain.kind === 'interval_set') {
 			const bounds = getDomainBounds(domain);
 			if (
 				bounds &&
@@ -141,7 +154,7 @@ export function findZerosWithStatus(
 				// parcourir que la famille les perdait.
 				// Énumération tronquée (trop de zéros) : la liste est incomplète,
 				// f(x) = 0 n'est pas résolue sur le domaine.
-				const periodic = enumeratePeriodicZeros(result.periodicSolutions, bounds, domain);
+				const periodic = enumeratePeriodicZeros(family, bounds, domain, keep);
 				return {
 					zeros: mergeZeros(periodic.zeros, filterSolutionsInDomain(result.solutions, domain)),
 					resolved: periodic.complete
@@ -151,17 +164,17 @@ export function findZerosWithStatus(
 
 		// Filter solutions within the domain (default non-periodic path)
 		const listed = filterSolutionsInDomain(result.solutions, domain);
-		if (!result.periodicSolutions) return { zeros: listed, resolved: true };
+		if (!family) return { zeros: listed, resolved: true };
 
 		// Domaine non borné, zéros périodiques : les membres de la famille situés
 		// ENTRE les zéros connus (et la borne finie du domaine) manquaient.
 		// `(x − 20)·sin x` rendait 0, π et 20 : ]π ; 20[ contient 2π… 6π, et
 		// l'échantillonnage y aurait « confirmé » un signe faux.
-		const inner = familyBetweenKnownZeros(result.periodicSolutions, listed, domain);
+		const inner = familyBetweenKnownZeros(family, listed, domain, keep);
 		return {
 			zeros: mergeZeros(inner.zeros, listed),
 			resolved: inner.complete,
-			periodicFamily: result.periodicSolutions
+			periodicFamily: family
 		};
 	} catch {
 		// Le solveur a levé une exception : f(x) = 0 n'est pas résolue.
@@ -243,7 +256,8 @@ function enumeratePeriodicZeros(
 		lowerInclusive: boolean;
 		upperInclusive: boolean;
 	},
-	domain: Domain
+	domain: Domain,
+	keep?: MemberFilter
 ): { readonly zeros: ZeroInfo[]; readonly complete: boolean } {
 	const zeros: ZeroInfo[] = [];
 	const { baseSolutions, period, periodNumeric } = family;
@@ -303,6 +317,8 @@ function enumeratePeriodicZeros(
 
 			// For non-contiguous domains (interval unions), check membership
 			if (!atLower && !atUpper && !containsNode(domain, symbolicValue)) continue;
+			// Famille écartée : membre hors du domaine de l'expression
+			if (keep !== undefined && !keep(symbolicValue, numericValue)) continue;
 
 			zeros.push({
 				value: symbolicValue,
@@ -317,14 +333,20 @@ function enumeratePeriodicZeros(
 
 /**
  * Les zéros de la famille compris entre le plus petit et le plus grand des
- * points connus : zéros listés et bornes FINIES du domaine.
+ * points connus : zéros listés, bornes FINIES du domaine, et le premier membre
+ * de la famille au-delà de chaque borne finie.
+ *
+ * Ce premier membre compte : `ln(2 + sin x)` sur [0 ; +∞[ a pour zéros
+ * −π/2 + 2kπ, le solveur rend −π/2 (hors du domaine), et le tableau disait
+ * « positif sur [0 ; +∞[ » sans aucun zéro, au lieu de 0 en 3π/2.
  *
  * @internal
  */
 function familyBetweenKnownZeros(
 	family: PeriodicSolutionFamily,
 	listed: readonly ZeroInfo[],
-	domain: Domain
+	domain: Domain,
+	keep?: MemberFilter
 ): { readonly zeros: ZeroInfo[]; readonly complete: boolean } {
 	const bounds = getDomainBounds(domain);
 	const known: { value: number; inclusive: boolean }[] = listed
@@ -332,9 +354,13 @@ function familyBetweenKnownZeros(
 		.map((z) => ({ value: z.approximate as number, inclusive: true }));
 	if (bounds?.lower != null && isFinite(bounds.lower)) {
 		known.push({ value: bounds.lower, inclusive: bounds.lowerInclusive });
+		const first = firstMemberBeyond(family, bounds.lower, 1);
+		if (first !== null) known.push({ value: first, inclusive: true });
 	}
 	if (bounds?.upper != null && isFinite(bounds.upper)) {
 		known.push({ value: bounds.upper, inclusive: bounds.upperInclusive });
+		const last = firstMemberBeyond(family, bounds.upper, -1);
+		if (last !== null) known.push({ value: last, inclusive: true });
 	}
 	if (known.length < 2) return { zeros: [], complete: true };
 
@@ -350,8 +376,72 @@ function familyBetweenKnownZeros(
 			lowerInclusive: low.inclusive,
 			upperInclusive: high.inclusive
 		},
-		domain
+		domain,
+		keep
 	);
+}
+
+/** Marge relative (en périodes) du premier membre au-delà d'une borne. */
+const BEYOND_EPS = 1e-9;
+
+/**
+ * Le membre de la famille le plus proche de `bound`, du côté `direction`
+ * (1 : au-dessus, −1 : en dessous), `bound` exclu ; `null` sans valeur
+ * numérique. Un membre égal à la borne est déjà couvert par l'énumération.
+ *
+ * @internal
+ */
+function firstMemberBeyond(
+	family: PeriodicSolutionFamily,
+	bound: number,
+	direction: 1 | -1
+): number | null {
+	const period = family.periodNumeric;
+	if (!(period > 0) || !isFinite(period)) return null;
+	let best: number | null = null;
+	for (const base of family.baseSolutions) {
+		const start = base.approximate;
+		if (start === undefined || !isFinite(start)) return null;
+		// Marge : un membre égal à la borne aux arrondis près (0 pour kπ sur
+		// ]0 ; +∞[) n'est pas « au-delà » — il serait compté sur une borne ouverte
+		const steps = (bound - start) / period;
+		const k =
+			direction === 1 ? Math.floor(steps + BEYOND_EPS) + 1 : Math.ceil(steps - BEYOND_EPS) - 1;
+		const member = start + k * period;
+		if (best === null || (direction === 1 ? member < best : member > best)) best = member;
+	}
+	return best;
+}
+
+/** Garde un membre d'une famille (valeur exacte, valeur approchée) ? */
+type MemberFilter = (value: MathNode, approximate: number) => boolean;
+
+/**
+ * Les membres d'une famille écartée qui sont de vrais zéros : dans le domaine
+ * de l'expression (`√x` : x > 0 ; `x` : x ≠ 0 ; `tan x` : x ≠ π/2 + kπ) et où
+ * elle prend une valeur finie.
+ *
+ * `null` (zéros non résolus) quand ce domaine n'est pas déterminé. Un contrôle
+ * numérique « finie au membre et de part et d'autre » a été essayé et retiré :
+ * il gardait des membres où f n'est pas définie — 0/0 de
+ * `sin 2x/(sin x·√(2 + sin x))` en π et 2π, `cos x/ln(sin x + 1)` en 3π/2
+ * (cos x/(−∞) = −0). « Inconnu » vaut mieux qu'un zéro faux.
+ *
+ * @internal
+ */
+function definedMemberFilter(expr: MathNode, variable: string): MemberFilter | null {
+	let exprDomain: Domain;
+	let f: (scope: Record<string, number>) => number;
+	try {
+		const result = computeDomain(expr, variable);
+		if (result.unresolved !== undefined || result.domain.kind === 'condition_domain') return null;
+		exprDomain = result.domain;
+		f = compile(expr);
+	} catch {
+		return null;
+	}
+	return (value, approximate) =>
+		containsNode(exprDomain, value) && Number.isFinite(f({ [variable]: approximate }));
 }
 
 // =============================================================================

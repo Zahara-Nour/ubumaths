@@ -433,13 +433,68 @@ Et : **un sens inconnu quelque part interdit tout extremum global** (`e^{−x} s
 annonçait f(0) = 0 minimum ET maximum global). Le membre a + kT s'écrit par `periodicMember`
 (`common/periodic-member.ts`, partagé avec l'énumération des zéros). Reste connu : un maximum
 global atteint à la fois en un point intérieur et en une borne n'est donné qu'au point intérieur
-(`3 cos 2x` sur [0 ; 2π] : π, pas 0 ni 2π). Défauts déjà présents, hors de ce correctif : les zéros
-périodiques du NUMÉRATEUR d'un quotient ne sont pas énumérés (`cos x/(x²+1)`, `1/sin x`,
-`ln(2 + sin x)`) ; les points critiques numériques de `(x−1)²(x+2)³` sont faux. Tests : `variations/__tests__/periodique-non-borne.test.ts`
-— oracle numérique, 50 fonctions × 7 domaines plus 4 domaines contenant une valeur interdite : tout
+(`3 cos 2x` sur [0 ; 2π] : π, pas 0 ni 2π). Tests : `variations/__tests__/periodique-non-borne.test.ts`
+— oracle numérique, 55 fonctions × 7 domaines plus 4 domaines contenant une valeur interdite : tout
 signe et tout sens affirmés vérifiés sur une grille, aucun sens à travers une valeur interdite,
 chaque extremum vérifié (valeur, position, nature locale et globale), aucun extremum de la grille
 manquant quand le tableau se conclut sur un domaine borné.
+
+**Zéros périodiques d'un quotient, quartiques** (2026-10-19, suite). Quatre défauts, corrigés à la
+cause :
+
+1. **la famille périodique du numérateur traverse la décomposition rationnelle**
+   (`solve/rational.ts`) : `N/D = 0` rendait les zéros d'une période de N (±π/2) sans
+   `periodicSolutions`. Sur un domaine borné, 3π/2, 5π/2… manquaient : `cos x/(x² + 1)` restait de
+   signe « inconnu » sur ]π/2 ; 2π], `1/sin x` et `ln(2 + sin x)` (f′ = cos x/(2 + sin x)) de sens
+   « inconnu » sur [0 ; 2π] ; `cos x/eˣ` était « positive sur ]π/2 ; +∞[ » et « croissante sur
+   [0 ; +∞[ » (faux). La famille n'est propagée que si numérateur et dénominateurs sont définis
+   sur ℝ (`definedEverywhere` : sinon `cos x/√x` affichait des zéros en −π/2, −3π/2 et
+   `cos x/tan x = 0` rendait « aucune solution » ET une famille) et qu'AUCUN membre n'annule un
+   dénominateur, démontré en résolvant D = 0 (`familyAvoidsDenominators`) : pas de solution
+   réelle (`x² + 1`, `2 + sin x`), solutions isolées hors famille, ou famille disjointe de périodes
+   commensurables (`sin²x` : kπ). Sinon la famille est rendue à part,
+   `droppedPeriodicSolutions` — jamais affichée comme ensemble de solutions — et le tableau de
+   signes l'énumère membre à membre en ne gardant que ceux où l'expression est définie
+   (`definedMemberFilter`, `sign/helpers/zeros.ts`) : `sin x/x` sur [0 ; 2π] a pour zéros π et
+   2π (pas 0), `cos x/√x` sur [−5 ; 5] π/2 et 3π/2. Domaine de l'expression non déterminé : zéros
+   non résolus, rien ne se conclut. Un contrôle numérique (« finie au membre et de part et
+   d'autre ») a été essayé puis retiré : il gardait des membres où f n'est pas définie (0/0 de
+   `sin 2x/(sin x·√(2 + sin x))` en π et 2π, `cos x/ln(sin x + 1)` en 3π/2). `2√(sin x)` sur
+   ]0 ; π[ reste donc inconnu ;
+2. **le premier membre de la famille au-delà d'une borne finie compte** (`familyBetweenKnownZeros`,
+   `sign/helpers/zeros.ts`) : `ln(2 + sin x)` sur [0 ; +∞[ était « positif » sans aucun zéro (le
+   solveur rend −π/2, hors du domaine), au lieu de 0 en 3π/2 ; `cos x/eˣ` sur [0 ; +∞[ se lit
+   maintenant « décroissante sur [0 ; 3π/4[ », inconnu au-delà ;
+3. **Ferrari** (`common/quartic-roots.ts`, `realQuarticRoots`, désormais partagé par
+   `solve/solvers/quartic.ts` et `domain/preimage.ts`, qui en avaient chacun une copie) : la
+   résolvante est écrite pour y = m/2, la factorisation employait y au lieu de m = 2y. Toute
+   quartique non bicarrée une fois dépréciée (B ≠ 0) avait des racines fausses
+   (x⁴ + x³ − 7x² − x + 6 = 0 rendait −3,13 ; −0,29 ; 0,15 ; 2,26), d'où les points critiques faux
+   de `(x−1)²(x+2)³` : le tableau a maintenant un maximum en −1/5, un minimum en 1, rien en −2
+   (zéro double de f′). Aucun discriminant n'est arrondi à zéro : une tolérance relative fondait
+   deux racines proches (3 et 3,002) en une seule, ensuite écartée — « aucune racine réelle ». Un
+   discriminant légèrement négatif (racine double à ~1e-8 près) donne deux candidats de part et
+   d'autre du sommet ; chacun est poli par Newton sans s'éloigner (un pas pouvait sauter sur une
+   autre racine) ; on ne fusionne qu'après, deux racines entre lesquelles P reste au niveau du
+   bruit de calcul — la borne de Horner Σ|cₖ|·|x|ᵏ·ε, pas Σ|cₖ|·max(1, |x|)⁴, qui fondait
+   1000 et 1001 et acceptait 7500 pour (x − 3)(x − 5000)(x − 10⁴)(x + 2·10⁴) — et une racine multiple est affinée comme racine simple d'une dérivée (5/3,
+   triple, sortait doublée). Testé sur 200 quartiques tirées à graine fixe (racines simples,
+   doubles, triples, proches en valeur relative, jusqu'à ±2·10⁴, facteur x² + 1) ;
+4. **domaine de f non déterminé** (`ln(sin x)` : le domaine fourni est gardé tel quel) : un sens
+   n'est affirmé que là où f est numériquement définie (`withoutClaimsWhereUndefined`,
+   `variations/compute.ts`), et le signe de f′ s'étudie sur le domaine de f′ quand il est
+   déterminé (`withinDerivativeDomain` : coupure en 0 pour cos x/sin x) ; `ln(sin x)` sur
+   [0 ; 2π] était « décroissante sur ]3π/2 ; 2π] », où f n'existe pas. `ln(x + sin x)` sur
+   [1 ; +∞[ reste inconnu : main concluait « croissante » par échantillonnage, non démontré.
+
+Reste connu : `ln(2 + sin x)`, `1/(2 + cos x)`, `√(2 + cos x)` sur ℝ sont refusées (domaine
+2 + sin x > 0 non déterminé) ; `1/sin x` sur ℝ a un signe « inconnu » partout (pôles périodiques non
+découpés) ; sur un domaine fourni BRUT qui déborde l'ensemble de définition, le tableau de signes
+ne coupe pas aux valeurs interdites non périodiques (`cos x/ln x` sur [−π ; π] : pas de coupure
+en 1) ni ne retire ce qui sort du domaine (`ln(sin x)` « négatif » sur ]π ; 2π[) — déjà le cas
+sur main, les appelants passent l'ensemble d'étude restreint ; `cos x/(x² + 1)` a des variations non résolues (tan x = −2x/(x² + 1), honnête). Tests :
+`solve/__tests__/rational.test.ts`, `solve/__tests__/quartic.test.ts`,
+`domain/__tests__/preimage-quartic.test.ts`, `variations/__tests__/periodique-non-borne.test.ts`.
 
 ### Carte du code
 
