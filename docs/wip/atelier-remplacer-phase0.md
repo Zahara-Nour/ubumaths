@@ -1,7 +1,7 @@
 ---
 title: Atelier — remplacer son atelier par un atelier reçu (phase 0)
 date: 2026-10-18
-status: phase 0 VALIDÉE (R1-R5 le 2026-10-18 ; cas limites B1-B9 le 2026-10-19) — en cours
+status: LIVRÉ (#1523, `ea087fb3f`, 2026-10-19) ; choix 1-3 confirmés par David ; Charger / Repartir de zéro annulables : PR 3 du lot 5 (modifs-fixes)
 ---
 
 # Atelier — remplacer son atelier par un atelier reçu
@@ -102,7 +102,7 @@ pour Charger et Repartir de zéro, en partant de ce merge.
   objets » quand le bouton disparaît ; (4) un objet écarté au remplacement est dit. Laissé : les
   entrées de `#onLeave` des étapes sorties de la pile (fuite minime).
 
-### À trancher par David
+### Tranché par David (2026-10-19, « ok pour tes choix ») — les trois choix sont retenus
 
 1. **Ce que « Remplacer » garde** : l'atelier AFFICHÉ (le lien + ce que l'élève y a fait), pas le
    lien d'origine — choix le plus prudent (le travail fait sur le lien n'est pas perdu). « Garder »
