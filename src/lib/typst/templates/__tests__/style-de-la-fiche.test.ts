@@ -4,8 +4,8 @@
  *
  * La fiche désigne son style par `style_id` seul ; sans lui, « Fiche élève »
  * (D7). L'ancienne colonne `template_id`, tant qu'elle existe en base, ne
- * décide plus de rien (#1529 : son contenu a été recopié dans `style_id`). Le Typst d'un style
- * de Chiphre vient toujours du code, jamais de la base (audit du lot 3a).
+ * décide plus de rien (#1529 : son contenu a été recopié dans `style_id`).
+ * Le Typst d'un style de Chiphre vient toujours du code, jamais de la base (audit du lot 3a).
  */
 import { describe, expect, it } from 'vitest';
 import {
