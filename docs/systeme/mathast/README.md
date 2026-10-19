@@ -650,7 +650,12 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   la liste « (variables: a_1, x) » du REPL web et `variablesOf` (`atelier/parse.ts`). Un indice non
   entier (`x_n`, `u_{n+1}`) n'est pas un nom : sa base se remplace comme avant. ⚠️ `getVariables`
   rend toujours la base (`a`) : ses ~80 appelants (solveur, validation des réponses…) n'ont pas été
-  revus pour un changement de sens.
+  revus pour un changement de sens. **Le pipeline de la console** (`cli/core/pipeline.ts`, `parse`,
+  2026-10-19) lit chaque nom indicé LATIN comme une variable entière `x_1` (`hideIndexedNames`) :
+  dans le REPL et les commandes (`.variations`, `.résoudre`, `.intégrer`, `.évaluer`, `.diff`…),
+  `x_1` est donc une autre lettre que x, comme `a` (avant : `.variations x^2 - x_1 x` ne savait pas
+  résoudre f'(x) = 0, `.intégrer x_1 de 0 à 1` rendait 1). Le grec indicé reste un `subscript`.
+  `toLatex` écrit une telle variable `x_1`, `a_{12}` (`indexedVariableLatex`), plus `\mathit{x_1}`.
 
 ## Invariants structurels non évidents
 
