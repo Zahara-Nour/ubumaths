@@ -97,7 +97,8 @@ pour Charger et Repartir de zéro, en partant de ce merge.
 - **Revue** (`code-reviewer`) : (1) après Annuler d'un remplacement, la copie était réécrite
   500 ms avant l'atelier personnel → `keepLeftAside` range d'abord (`saveNow`), tests sur la clé
   personnelle ; (2) l'Annuler d'un remplacement s'écrivait comme un geste rejouable → plus de
-  `replay` (`isReplacement`, `remplacer-rejeu.test.ts`, rouge prouvé) ; (3) focus rendu à « Mes
+  `replay` (`remplacer-rejeu.test.ts`, rouge prouvé ; au merge de main, le cas particulier
+  `isReplacement` a cédé la place à la règle générale `#replayable` de #1521) ; (3) focus rendu à « Mes
   objets » quand le bouton disparaît ; (4) un objet écarté au remplacement est dit. Laissé : les
   entrées de `#onLeave` des étapes sorties de la pile (fuite minime).
 
@@ -111,6 +112,3 @@ pour Charger et Repartir de zéro, en partant de ce merge.
    annulables (l'atelier est relu).
 3. **Charger sans stockage** (navigateur qui n'enregistre rien) : reste ce qu'il était, sans
    copie, au lieu d'être refusé (B5 appliqué seulement quand une écriture échoue).
-4. **Rejeu (pour le lot 5)** : toute étape SANS ligne de console (validation de carte, curseur…)
-   a le même défaut que celui corrigé ici pour les remplacements — son « annuler » rejoué défait
-   l'étape d'avant. Corrigé seulement pour `replaceWith`.
