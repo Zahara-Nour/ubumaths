@@ -1349,9 +1349,15 @@ les deux, `FigureCard.svelte`, avec la grammaire des autres :
   « segment », « cercle »… : `figureNatureOf`, `card-state.ts`) ; le constat d'une courbe vide
   (C6) sous la ligne. Elle était au bout de la ligne : dans le panneau à sa largeur par défaut,
   le champ d'une construction ne montrait plus que « cer » pour `cercle(O ; 3)` (2026-10-19).
-- **Une définition trop longue pour la ligne passe dessous, en entier** (`flex-wrap`, champ en
-  `flex: 1 1 auto`) — même règle pour les cartes de fonction, de valeur et de suite
-  (`carte-champ-largeur.svelte.test.ts`).
+- **Une définition trop longue pour la ligne passe dessous, en entier** (`.corps` en
+  `flex-wrap`, champ en `flex: 1 0 auto`, jamais plus étroit que son contenu) — même règle pour
+  les cartes de fonction, de valeur et de suite (`carte-champ-largeur.svelte.test.ts`).
+- **Les boutons (œil, ⋮) restent en haut à droite, sur la ligne du nom** (`.boutons` en
+  position absolue) : le champ réserve leur place derrière lui (`.membre::after`, largeur
+  `--boutons`), réserve qui se replie quand il est passé à la ligne et lui laisse toute la
+  largeur. L'état (« à compléter », « en attente ») passe sous la ligne. Avant (#1508), ⋮
+  descendait avec le champ et se retrouvait seul dessous, à gauche (2026-10-19). Toutes les
+  cartes ; celle d'une liste, dont l'aperçu est tronqué, en grille à deux colonnes.
 - **Une construction** (`I = [milieu(A, B)]`, `s = [[AB]]`) : ce qu'elle vaut en gris après sa
   nature (« cercle · … »), non éditable — coordonnées exactes, équation réduite, longueur
   (`constructionSummaryOf`, L7) ; c'est la construction qu'on modifie. Un point par coordonnées

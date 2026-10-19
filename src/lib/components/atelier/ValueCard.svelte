@@ -131,65 +131,72 @@
 
 <article bind:this={card} class="objet valeur" class:selected data-status={object.status}>
 	<div class="ligne">
-		<span class="nom">{name}</span>
-		<span class="egal" aria-hidden="true">=</span>
-		<div class="membre">
-			<DefinitionField
-				{object}
-				commit="validate"
-				showPrefix={false}
-				autofocus={selected && object.definition === ''}
-			/>
+		<!-- Nom et définition, qui passent à la ligne ; les boutons restent à droite -->
+		<div class="corps">
+			<span class="nom">{name}</span>
+			<span class="egal" aria-hidden="true">=</span>
+			<div class="membre">
+				<DefinitionField
+					{object}
+					commit="validate"
+					showPrefix={false}
+					autofocus={selected && object.definition === ''}
+				/>
+			</div>
 		</div>
-		{#if stateLabel}
-			<span class="etat">{stateLabel}</span>
-		{/if}
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger>
-				{#snippet child({ props })}
-					<button
-						{...props}
-						type="button"
-						class="icone"
-						aria-label={`Options de ${name}`}
-						title="Affichage et actions"
-					>
-						<EllipsisVertical class="h-4 w-4" aria-hidden="true" />
-					</button>
-				{/snippet}
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content align="end" class="w-64" onCloseAutoFocus={handleCloseAutoFocus}>
-				<DropdownMenu.Group>
-					<DropdownMenu.GroupHeading>Affichage</DropdownMenu.GroupHeading>
-					{#if noSliderReason !== null}
-						<UnavailableItem label="Curseur" reason={noSliderReason} role="menuitemcheckbox" />
-					{:else if isParameter}
-						<UnavailableItem
-							label="Curseur"
-							reason={`${name} est un paramètre (${citedBy.map(displayName).join(', ')} la cite) : son curseur reste affiché.`}
-							role="menuitemcheckbox"
-							checked
-						/>
-					{:else}
-						<DropdownMenu.CheckboxItem
-							checked={shownByMenu}
-							onCheckedChange={(on) => atelier.setSliderShown(object.name, on)}
+		<div class="boutons">
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="icone"
+							aria-label={`Options de ${name}`}
+							title="Affichage et actions"
 						>
-							Curseur
-						</DropdownMenu.CheckboxItem>
-					{/if}
-					{#if noSliderReason === null}
-						<DropdownMenu.Item onSelect={openSettings}>Bornes et pas du curseur…</DropdownMenu.Item>
-					{/if}
-				</DropdownMenu.Group>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Group>
-					<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
-					<CardActionItems {actions} onselect={handleSelect} />
-				</DropdownMenu.Group>
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
+							<EllipsisVertical class="h-4 w-4" aria-hidden="true" />
+						</button>
+					{/snippet}
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content align="end" class="w-64" onCloseAutoFocus={handleCloseAutoFocus}>
+					<DropdownMenu.Group>
+						<DropdownMenu.GroupHeading>Affichage</DropdownMenu.GroupHeading>
+						{#if noSliderReason !== null}
+							<UnavailableItem label="Curseur" reason={noSliderReason} role="menuitemcheckbox" />
+						{:else if isParameter}
+							<UnavailableItem
+								label="Curseur"
+								reason={`${name} est un paramètre (${citedBy.map(displayName).join(', ')} la cite) : son curseur reste affiché.`}
+								role="menuitemcheckbox"
+								checked
+							/>
+						{:else}
+							<DropdownMenu.CheckboxItem
+								checked={shownByMenu}
+								onCheckedChange={(on) => atelier.setSliderShown(object.name, on)}
+							>
+								Curseur
+							</DropdownMenu.CheckboxItem>
+						{/if}
+						{#if noSliderReason === null}
+							<DropdownMenu.Item onSelect={openSettings}
+								>Bornes et pas du curseur…</DropdownMenu.Item
+							>
+						{/if}
+					</DropdownMenu.Group>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Group>
+						<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
+						<CardActionItems {actions} onselect={handleSelect} />
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+		</div>
 	</div>
+	{#if stateLabel}
+		<p class="etat">{stateLabel}</p>
+	{/if}
 
 	{#if measure}
 		<!-- L7 : la valeur d'une mesure ; la mise en page des cartes revient à la refonte -->
@@ -239,14 +246,32 @@
 		border-color: var(--color-primary);
 		background: var(--color-card);
 	}
-	/* Une définition trop longue pour la ligne passe dessous, en entier : le
-	   champ prend toute la largeur restante, jamais moins que son contenu */
+	/* Le nom et la définition passent à la ligne ; les boutons restent en haut à
+	   droite (régression de #1508 : ⋮ passait sous le champ, à gauche). Le champ
+	   réserve leur place derrière lui (`::after`) : sur la ligne du nom, rien ne
+	   passe sous les boutons ; trop long, il descend sur la ligne suivante, où
+	   la réserve se replie et lui laisse toute la largeur */
 	.ligne {
+		--boutons: 1.75rem;
+		position: relative;
+		min-width: 0;
+	}
+	.corps {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.25rem;
 		min-width: 0;
+		min-height: 1.75rem;
+	}
+	.boutons {
+		position: absolute;
+		top: 0;
+		right: 0;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		height: 1.75rem;
 	}
 	.nom {
 		/* La place du point de couleur des fonctions : les noms restent alignés */
@@ -260,8 +285,24 @@
 		font-family: var(--font-serif, serif);
 		margin-right: 0.125rem;
 	}
+	/* Ne rétrécit jamais sous son contenu : trop long pour la ligne, il passe
+	   dessous, en entier (plafonné à la largeur de la carte) */
 	.membre {
-		flex: 1 1 auto;
+		display: flex;
+		flex: 1 0 auto;
+		min-width: 0;
+		max-width: 100%;
+	}
+	.membre > :global(*) {
+		flex: 1 0 auto;
+		min-width: 0;
+		max-width: 100%;
+	}
+	.membre::after {
+		content: '';
+		flex: 0 1000 var(--boutons);
+		/* Compte dans la largeur du champ : c'est elle qui décide du retour à la ligne */
+		width: var(--boutons);
 		min-width: 0;
 	}
 	.etat {

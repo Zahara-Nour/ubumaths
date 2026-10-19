@@ -168,93 +168,98 @@
 
 <article class="objet suite" class:selected data-status={object.status}>
 	<div class="ligne">
-		<CurveStylePopover {object} />
-		<span class="nom">{name}</span>
-		<span class="variable" aria-hidden="true">{variable}</span>
-		<div class="membre">
-			<DefinitionField
-				{object}
-				commit="validate"
-				showPrefix={false}
-				autofocus={selected && object.definition === ''}
-			/>
+		<!-- Nom et définition, qui passent à la ligne ; les boutons restent à droite -->
+		<div class="corps">
+			<CurveStylePopover {object} />
+			<span class="nom">{name}</span>
+			<span class="variable" aria-hidden="true">{variable}</span>
+			<div class="membre">
+				<DefinitionField
+					{object}
+					commit="validate"
+					showPrefix={false}
+					autofocus={selected && object.definition === ''}
+				/>
+			</div>
 		</div>
-		{#if stateLabel}
-			<span class="etat">{stateLabel}</span>
-		{/if}
-		<!-- C3 : tracer en un clic, sans changer de vue -->
-		<button
-			type="button"
-			class="icone"
-			aria-pressed={object.plotted === true}
-			aria-label={`Tracer ${name}`}
-			title="Tracer sur le graphique"
-			onclick={() => atelier.setPlotted(object.name, !object.plotted)}
-		>
-			{#if object.plotted}
-				<Eye class="h-4 w-4" />
-			{:else}
-				<EyeOff class="h-4 w-4" />
-			{/if}
-		</button>
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger>
-				{#snippet child({ props })}
-					<button
-						{...props}
-						type="button"
-						class="icone"
-						aria-label={`Options de ${name}`}
-						title="Affichage et actions"
-					>
-						<EllipsisVertical class="h-4 w-4" aria-hidden="true" />
-					</button>
-				{/snippet}
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content align="end" class="w-64" onCloseAutoFocus={handleCloseAutoFocus}>
-				<DropdownMenu.Group>
-					<DropdownMenu.GroupHeading>Affichage</DropdownMenu.GroupHeading>
-					{#if display === undefined}
-						<UnavailableItem label="Nuage" reason={NOT_PLOTTED} role="menuitemradio" />
-						<UnavailableItem label="Escalier" reason={NOT_PLOTTED} role="menuitemradio" />
-					{:else}
-						<DropdownMenu.RadioGroup
-							value={display.representation}
-							onValueChange={handleRepresentation}
+		<div class="boutons">
+			<!-- C3 : tracer en un clic, sans changer de vue -->
+			<button
+				type="button"
+				class="icone"
+				aria-pressed={object.plotted === true}
+				aria-label={`Tracer ${name}`}
+				title="Tracer sur le graphique"
+				onclick={() => atelier.setPlotted(object.name, !object.plotted)}
+			>
+				{#if object.plotted}
+					<Eye class="h-4 w-4" />
+				{:else}
+					<EyeOff class="h-4 w-4" />
+				{/if}
+			</button>
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="icone"
+							aria-label={`Options de ${name}`}
+							title="Affichage et actions"
 						>
-							<DropdownMenu.RadioItem value="ranks" closeOnSelect={false}
-								>Nuage</DropdownMenu.RadioItem
+							<EllipsisVertical class="h-4 w-4" aria-hidden="true" />
+						</button>
+					{/snippet}
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content align="end" class="w-64" onCloseAutoFocus={handleCloseAutoFocus}>
+					<DropdownMenu.Group>
+						<DropdownMenu.GroupHeading>Affichage</DropdownMenu.GroupHeading>
+						{#if display === undefined}
+							<UnavailableItem label="Nuage" reason={NOT_PLOTTED} role="menuitemradio" />
+							<UnavailableItem label="Escalier" reason={NOT_PLOTTED} role="menuitemradio" />
+						{:else}
+							<DropdownMenu.RadioGroup
+								value={display.representation}
+								onValueChange={handleRepresentation}
 							>
-							{#if cobwebReason === null}
-								<DropdownMenu.RadioItem value="cobweb" closeOnSelect={false}
-									>Escalier</DropdownMenu.RadioItem
+								<DropdownMenu.RadioItem value="ranks" closeOnSelect={false}
+									>Nuage</DropdownMenu.RadioItem
 								>
-							{:else}
-								<UnavailableItem label="Escalier" reason={cobwebReason} role="menuitemradio" />
-							{/if}
+								{#if cobwebReason === null}
+									<DropdownMenu.RadioItem value="cobweb" closeOnSelect={false}
+										>Escalier</DropdownMenu.RadioItem
+									>
+								{:else}
+									<UnavailableItem label="Escalier" reason={cobwebReason} role="menuitemradio" />
+								{/if}
+							</DropdownMenu.RadioGroup>
+						{/if}
+					</DropdownMenu.Group>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Group>
+						<DropdownMenu.GroupHeading>Définition</DropdownMenu.GroupHeading>
+						<DropdownMenu.RadioGroup value={object.mode} onValueChange={handleMode}>
+							<DropdownMenu.RadioItem value="explicit"
+								>Explicite : {name}(n) = …</DropdownMenu.RadioItem
+							>
+							<DropdownMenu.RadioItem value="recurrence"
+								>Récurrence : {name}(n+1) = …</DropdownMenu.RadioItem
+							>
 						</DropdownMenu.RadioGroup>
-					{/if}
-				</DropdownMenu.Group>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Group>
-					<DropdownMenu.GroupHeading>Définition</DropdownMenu.GroupHeading>
-					<DropdownMenu.RadioGroup value={object.mode} onValueChange={handleMode}>
-						<DropdownMenu.RadioItem value="explicit"
-							>Explicite : {name}(n) = …</DropdownMenu.RadioItem
-						>
-						<DropdownMenu.RadioItem value="recurrence"
-							>Récurrence : {name}(n+1) = …</DropdownMenu.RadioItem
-						>
-					</DropdownMenu.RadioGroup>
-				</DropdownMenu.Group>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Group>
-					<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
-					<CardActionItems {actions} onselect={handleSelect} />
-				</DropdownMenu.Group>
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
+					</DropdownMenu.Group>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Group>
+						<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
+						<CardActionItems {actions} onselect={handleSelect} />
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+		</div>
 	</div>
+	{#if stateLabel}
+		<p class="etat">{stateLabel}</p>
+	{/if}
 
 	<!-- Le départ de la suite, en petit sous la ligne (U1, S1) -->
 	<div class="depart" role="group" aria-label={`Premier terme de ${name}`}>
@@ -343,14 +348,32 @@
 		border-color: var(--color-primary);
 		background: var(--color-card);
 	}
-	/* Une définition trop longue pour la ligne passe dessous, en entier : le
-	   champ prend toute la largeur restante, jamais moins que son contenu */
+	/* Le nom et la définition passent à la ligne ; les boutons restent en haut à
+	   droite (régression de #1508 : ⋮ passait sous le champ, à gauche). Le champ
+	   réserve leur place derrière lui (`::after`) : sur la ligne du nom, rien ne
+	   passe sous les boutons ; trop long, il descend sur la ligne suivante, où
+	   la réserve se replie et lui laisse toute la largeur */
 	.ligne {
+		--boutons: 3.75rem;
+		position: relative;
+		min-width: 0;
+	}
+	.corps {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.25rem;
 		min-width: 0;
+		min-height: 1.75rem;
+	}
+	.boutons {
+		position: absolute;
+		top: 0;
+		right: 0;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		height: 1.75rem;
 	}
 	.nom {
 		font-family: var(--font-serif, serif);
@@ -364,8 +387,24 @@
 		white-space: nowrap;
 		margin-right: 0.125rem;
 	}
+	/* Ne rétrécit jamais sous son contenu : trop long pour la ligne, il passe
+	   dessous, en entier (plafonné à la largeur de la carte) */
 	.membre {
-		flex: 1 1 auto;
+		display: flex;
+		flex: 1 0 auto;
+		min-width: 0;
+		max-width: 100%;
+	}
+	.membre > :global(*) {
+		flex: 1 0 auto;
+		min-width: 0;
+		max-width: 100%;
+	}
+	.membre::after {
+		content: '';
+		flex: 0 1000 var(--boutons);
+		/* Compte dans la largeur du champ : c'est elle qui décide du retour à la ligne */
+		width: var(--boutons);
 		min-width: 0;
 	}
 	.etat {
