@@ -62,6 +62,8 @@
 	/** L'adresse rendue par `resolveUrl`, et la cible pour laquelle elle l'a été */
 	let resolved = $state<{ target: string; url: string } | null>(null);
 	let resolving = $state<'idle' | 'loading' | 'failed'>('idle');
+	/** La cible en cours de résolution : une réponse pour une autre cible est ignorée */
+	let resolvingTarget: string | null = null;
 
 	/** L'adresse du QR, relative ou absolue : `url`, ou ce qu'en a fait `resolveUrl` */
 	const qrUrl = $derived.by(() => {
@@ -84,19 +86,31 @@
 		// Sans adresse, la fenêtre ne s'ouvre pas : le bouton dit déjà pourquoi
 		open = next && !disabled;
 		copied = false;
-		if (open && url !== null && resolveUrl !== undefined && resolved?.target !== url) {
+		if (
+			open &&
+			url !== null &&
+			resolveUrl !== undefined &&
+			resolved?.target !== url &&
+			resolvingTarget !== url
+		) {
 			void resolveAddress(url, resolveUrl);
 		}
 	}
 
 	async function resolveAddress(target: string, resolve: (url: string) => Promise<string>) {
+		resolvingTarget = target;
 		resolving = 'loading';
+		let result: { target: string; url: string } | null = null;
 		try {
-			resolved = { target, url: await resolve(target) };
-			resolving = 'idle';
+			result = { target, url: await resolve(target) };
 		} catch {
-			resolving = 'failed';
+			result = null;
 		}
+		// Une résolution plus récente a pris la main : sa réponse fera foi
+		if (resolvingTarget !== target) return;
+		resolvingTarget = null;
+		resolved = result ?? resolved;
+		resolving = result === null ? 'failed' : 'idle';
 	}
 
 	async function copyAddress() {

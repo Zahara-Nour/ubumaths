@@ -190,6 +190,61 @@ describe('l’adresse fabriquée à l’ouverture (lien court, docs/wip/liens-co
 		expect(dialog().querySelector('img')).not.toBeNull();
 	});
 
+	it('après un échec, rouvrir la fenêtre redemande l’adresse', async () => {
+		const resolveUrl = vi
+			.fn<(url: string) => Promise<string>>()
+			.mockRejectedValueOnce(new Error('réseau'))
+			.mockResolvedValueOnce('/l/Xk7pQ2mZ');
+		const { container } = await openFor({ url: LONG, label: 'la série', resolveUrl });
+		expect(dialog().textContent).toContain('QR indisponible');
+		await userEvent.keyboard('{Escape}');
+		await settle();
+		await userEvent.click(trigger(container));
+		await settle();
+		expect(resolveUrl).toHaveBeenCalledTimes(2);
+		expect(dialog().querySelector('img')?.getAttribute('alt')).toBe(
+			'QR code vers https://www.chiph.re/l/Xk7pQ2mZ'
+		);
+	});
+
+	it('une autre série : son propre lien court, jamais celui de la précédente', async () => {
+		const OTHER = `${LONG}&mode=flash`;
+		const resolveUrl = vi.fn(async (target: string) =>
+			target === LONG ? '/l/Xk7pQ2mZ' : '/l/Ab3cD4eF'
+		);
+		const { container, rerender } = await openFor({ url: LONG, label: 'la série', resolveUrl });
+		await userEvent.keyboard('{Escape}');
+		await settle();
+		await rerender({ url: OTHER });
+		await userEvent.click(trigger(container));
+		await settle();
+		expect(resolveUrl).toHaveBeenLastCalledWith(OTHER);
+		expect(dialog().querySelector('img')?.getAttribute('alt')).toBe(
+			'QR code vers https://www.chiph.re/l/Ab3cD4eF'
+		);
+	});
+
+	it('une réponse arrivée pour l’ancienne série est ignorée', async () => {
+		const OTHER = `${LONG}&mode=flash`;
+		let answerFirst: (url: string) => void = () => {};
+		const resolveUrl = vi.fn((target: string) =>
+			target === LONG
+				? new Promise<string>((resolve) => (answerFirst = resolve))
+				: Promise.resolve('/l/Ab3cD4eF')
+		);
+		const { container, rerender } = await openFor({ url: LONG, label: 'la série', resolveUrl });
+		await userEvent.keyboard('{Escape}');
+		await settle();
+		await rerender({ url: OTHER });
+		await userEvent.click(trigger(container));
+		await settle();
+		answerFirst('/l/Xk7pQ2mZ');
+		await settle();
+		expect(dialog().querySelector('img')?.getAttribute('alt')).toBe(
+			'QR code vers https://www.chiph.re/l/Ab3cD4eF'
+		);
+	});
+
 	it('serveur muet : « QR indisponible », ni QR ni adresse', async () => {
 		const resolveUrl = vi.fn(async () => {
 			throw new Error('réseau');
