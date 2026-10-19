@@ -23,7 +23,7 @@ Le nom du chantier = le `<sujet>` de `docs/wip/<sujet>-progress.md` = celui du w
 
 ```bash
 f=docs/wip/<sujet>-progress.md
-sed -n '1,/^---$/{p}' "$f" | head -8                    # en-tête (status:)
+sed -n '1,/^---$/p' "$f" | head -8                        # en-tête (status:)
 awk '/^## Reprendre ici/{on=1;print;next} on&&/^## /{exit} on' "$f"
 ```
 

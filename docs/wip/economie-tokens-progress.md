@@ -1,7 +1,7 @@
 ---
 title: Économie de tokens — journal
 date: 2026-10-19
-status: ménage fait ; reste le tri de la mémoire (projets clos) et une vérification optionnelle
+status: skill menage-contexte créée ; reste son premier passage (tri des projets clos de la mémoire)
 ---
 
 # Économie de tokens
