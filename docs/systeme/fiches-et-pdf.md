@@ -795,5 +795,9 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
    « Mélanger dans les sections » retirée, numéro des signalements pris dans la copie de l'élève,
    corrigé de classe et aperçu « vue prof » d'une affectation individualisée d'après la copie d'un
    élève choisi, signalements de l'élève sur le numéro de sa copie.
+10. **Taille du texte : deux choix à confirmer par David** (en prod depuis v0.38.0). Le prof ne
+    règle la taille d'un élève que dans l'aperçu d'affectation (« Prévisualiser comme »), faute de
+    page élève : est-ce le bon endroit ? Les paliers 14 / 18 pt ont été posés sans réponse
+    explicite.
 
 Vérifié contre le code le 2026-10-15 (lot 1 de l'ADR 0030 : le type décide de l'en-tête).
