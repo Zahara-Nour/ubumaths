@@ -29,7 +29,7 @@ const createMockWorksheet = (overrides?: Partial<WorksheetRow>): WorksheetRow =>
 	version: 1,
 	published_at: '2024-01-01',
 	archived_at: null,
-	template_id: null,
+	style_id: null,
 	estimated_duration_minutes: 30,
 	total_points: 20,
 	grades: ['3eme'],
@@ -129,7 +129,7 @@ describe('WorksheetGenerator', () => {
 		it('includes exercises', () => {
 			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({
-				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
+				worksheet: createMockWorksheet({ style_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -313,7 +313,7 @@ describe('WorksheetGenerator', () => {
 			const result = generator.generate({
 				worksheet: createMockWorksheet({
 					type: 'exam',
-					template_id: DEFAULT_TEMPLATE_IDS.exam,
+					style_id: DEFAULT_TEMPLATE_IDS.exam,
 					estimated_duration_minutes: 50
 				}),
 				instance: createMockInstance()
@@ -339,7 +339,7 @@ describe('WorksheetGenerator', () => {
 			const result = generator.generate({
 				worksheet: createMockWorksheet({
 					type: 'assessment',
-					template_id: DEFAULT_TEMPLATE_IDS.standard
+					style_id: DEFAULT_TEMPLATE_IDS.standard
 				}),
 				instance: createMockInstance()
 			});
@@ -527,7 +527,7 @@ describe('WorksheetGenerator', () => {
 		it('uses numeric numbering by default', () => {
 			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({
-				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
+				worksheet: createMockWorksheet({ style_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -540,7 +540,7 @@ describe('WorksheetGenerator', () => {
 				numbering_style: 'roman'
 			} as WorksheetConfig);
 			const result = generator.generate({
-				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
+				worksheet: createMockWorksheet({ style_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -561,7 +561,7 @@ describe('WorksheetGenerator', () => {
 			const result = generator.generate({
 				worksheet: createMockWorksheet({
 					type: 'assessment',
-					template_id: DEFAULT_TEMPLATE_IDS.standard
+					style_id: DEFAULT_TEMPLATE_IDS.standard
 				}),
 				instance
 			});
@@ -879,7 +879,7 @@ describe('sens de AB de l’exercice (capital_pairs)', () => {
 describe('taille du texte', () => {
 	const generate = (textSize?: 'normal' | 'large' | 'x_large', templateId: string | null = null) =>
 		new WorksheetGenerator(createMockConfig(), undefined, undefined, { textSize }).generate({
-			worksheet: createMockWorksheet({ template_id: templateId }),
+			worksheet: createMockWorksheet({ style_id: templateId }),
 			instance: createMockInstance()
 		}).typstContent;
 
@@ -942,7 +942,7 @@ describe('« Fiche élève » en paysage en grande taille', () => {
 				withCorrections: options.withCorrections
 			}
 		).generate({
-			worksheet: createMockWorksheet({ template_id: options.templateId ?? null }),
+			worksheet: createMockWorksheet({ style_id: options.templateId ?? null }),
 			instance: createMockInstance()
 		}).typstContent;
 

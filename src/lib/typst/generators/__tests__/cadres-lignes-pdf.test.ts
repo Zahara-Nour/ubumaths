@@ -49,8 +49,7 @@ function teacher(config: WorksheetConfig, lines: AnswerFrameLines | null): strin
 			title: 'Évaluation',
 			description: null,
 			type: 'assessment',
-			config,
-			template_id: null
+			config
 		} as unknown as WorksheetRow,
 		instance,
 		config,

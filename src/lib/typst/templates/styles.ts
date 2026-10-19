@@ -11,8 +11,7 @@
  * Les styles fournis par Chiphre vivent ici, un par gabarit intégré ; ils ont
  * aussi une ligne en base (`worksheet_styles`, même identifiant) pour qu'une
  * fiche puisse les désigner, mais leur Typst se prend toujours dans le code
- * (D9). La fiche désigne son style par `style_id`, ou, avant le lot 3, par
- * `template_id` (`styleIdOf`).
+ * (D9). La fiche désigne son style par `style_id` (`styleIdOf`).
  */
 
 import type { DocumentForm } from '$lib/worksheets/document/types';
@@ -119,15 +118,12 @@ export function isBuiltInStyle(id: string | null | undefined): boolean {
 }
 
 /**
- * Le style retenu pour une fiche : `style_id`, sinon `template_id` (fiches
- * d'avant le lot 3, même identifiant pour un style de Chiphre), sinon aucun —
- * `resolveTemplate` prend alors le style par défaut.
+ * Le style retenu pour une fiche : `style_id`, sinon aucun — `resolveTemplate`
+ * prend alors le style par défaut. Les fiches d'avant le lot 3 ont reçu leur
+ * `style_id` de l'ancien `template_id` (migration du 2026-10-17, #1529).
  */
-export function styleIdOf(worksheet: {
-	style_id?: string | null;
-	template_id?: string | null;
-}): string | null {
-	return worksheet.style_id ?? worksheet.template_id ?? null;
+export function styleIdOf(worksheet: { style_id?: string | null }): string | null {
+	return worksheet.style_id ?? null;
 }
 
 /**

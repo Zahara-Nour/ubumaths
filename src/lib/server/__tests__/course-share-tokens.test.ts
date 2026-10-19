@@ -206,7 +206,6 @@ describe('resolveCourseWorksheetByShareToken', () => {
 			sections: [],
 			exercises: [],
 			style_id: style,
-			template_id: null,
 			template: {
 				id: style,
 				name: 'Mes contrôles',

@@ -74,7 +74,6 @@ export interface PublicWorksheet {
 	 * (lot 4a, D11) : le PDF les suit. Absents : « Fiche élève ».
 	 */
 	style_id?: string | null;
-	template_id?: string | null;
 	template?: {
 		id: string;
 		name: string;

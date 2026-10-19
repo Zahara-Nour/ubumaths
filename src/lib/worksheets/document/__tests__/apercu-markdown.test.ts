@@ -16,8 +16,7 @@ const WORKSHEET = {
 	title: 'Fiche test',
 	description: 'Une description.',
 	type: 'worksheet',
-	config: {},
-	template_id: null
+	config: {}
 } as unknown as WorksheetRow;
 
 function instance(overrides: Partial<InstanceData> = {}): InstanceData {

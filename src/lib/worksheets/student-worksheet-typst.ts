@@ -70,8 +70,7 @@ export interface StudentPdfOptions {
 
 /**
  * Le PDF de l'élève, par le générateur unique (ADR 0028, lot 4b) : le gabarit
- * du style de la fiche (`style_id`, sinon `template_id`, sinon « Fiche
- * élève » ; la mise en page d'un style du prof arrive dans `template`), rempli
+ * du style de la fiche (`style_id`, sinon « Fiche élève » ; la mise en page d'un style du prof arrive dans `template`), rempli
  * avec le document de la vue — corrections déjà filtrées par le serveur, et
  * celles qui ne sont pas visibles jamais imprimées.
  *
@@ -111,7 +110,6 @@ export function generateStudentWorksheetTypst(
 		translations: null,
 		type: worksheet.type,
 		config,
-		template_id: worksheet.template_id ?? null,
 		style_id: worksheet.style_id ?? null,
 		total_points: worksheet.total_points ?? null,
 		estimated_duration_minutes: worksheet.estimated_duration_minutes ?? null

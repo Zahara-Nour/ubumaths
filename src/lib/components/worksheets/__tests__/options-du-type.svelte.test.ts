@@ -22,7 +22,6 @@ function worksheet(type: WorksheetType, config: WorksheetConfig = {}): Worksheet
 		type,
 		config,
 		style_id: null,
-		template_id: null,
 		grade_levels: [],
 		tags: [],
 		exercises: [],

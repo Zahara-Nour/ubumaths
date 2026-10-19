@@ -4,7 +4,7 @@
  *
  * Spécification validée par David (2026-10-14) : le PDF de l'élève passe par
  * le générateur unique, avec le gabarit du style retenu (`style_id`, sinon
- * `template_id`, sinon « Fiche élève ») ; les corrections que l'élève n'a pas
+ * « Fiche élève ») ; les corrections que l'élève n'a pas
  * le droit de voir n'y sont jamais, quel que soit le style ; style inconnu →
  * « Fiche élève », sans erreur. Ce que seul l'élève reçoit (consignes de
  * l'affectation, ★ des exercices indispensables, avertissement de la copie
@@ -109,11 +109,6 @@ describe('le style du PDF de l’élève', () => {
 		const typst = generateStudentWorksheetTypst(view({ style_id: STANDARD }), 'none');
 		expect(typst).toContain(signature(STANDARD));
 		expect(typst).not.toContain(studentStyleSignature());
-	});
-
-	it('fiche d’avant le lot 3 : `template_id` désigne le style', () => {
-		const typst = generateStudentWorksheetTypst(view({ template_id: STANDARD }), 'none');
-		expect(typst).toContain(signature(STANDARD));
 	});
 
 	it('style du prof : sa mise en page', () => {

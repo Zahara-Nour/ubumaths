@@ -77,7 +77,6 @@ function teacherInput(config: WorksheetConfig, exercises = EXERCISES, sections =
 		// Évaluation écrite : le type qui laisse le choix des points (ADR 0030)
 		type: 'assessment',
 		config,
-		template_id: null,
 		estimated_duration_minutes: null,
 		total_points: null
 	} as unknown as WorksheetRow;

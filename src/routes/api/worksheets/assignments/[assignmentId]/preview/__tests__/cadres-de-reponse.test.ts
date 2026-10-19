@@ -74,7 +74,6 @@ function supabase(config: Record<string, unknown>, answerFrameLines: unknown = n
 					config,
 					translations: null,
 					style_id: null,
-					template_id: null,
 					created_by: TEACHER_ID,
 					total_points: null,
 					estimated_duration_minutes: null

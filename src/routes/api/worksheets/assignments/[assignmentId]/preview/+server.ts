@@ -245,7 +245,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					config,
 					translations,
 					style_id,
-					template_id,
 					created_by,
 					total_points,
 					estimated_duration_minutes
@@ -271,7 +270,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				config: Record<string, unknown>;
 				translations: RowTranslations | null;
 				style_id: string | null;
-				template_id: string | null;
 				created_by: string;
 				total_points: number | null;
 				estimated_duration_minutes: number | null;
@@ -519,7 +517,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			// Le style et la mise en page exactement comme l'élève les reçoit (D11) ;
 			// l'accès du prof à l'affectation est vérifié plus haut
 			style_id: worksheet.style_id,
-			template_id: worksheet.template_id,
 			template: await loadAuthorStyleTemplate(worksheet),
 			// Cartouche du gabarit, comme le PDF du prof
 			total_points: worksheet.total_points,
