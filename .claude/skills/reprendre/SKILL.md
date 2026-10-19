@@ -1,6 +1,7 @@
 ---
 name: reprendre
 description: Reprendre un chantier après un /clear ou dans une nouvelle session, en ne lisant que son bloc « Reprendre ici ». Utiliser quand David tape /reprendre, « reprends le chantier X », « reprends » ou « on en était où ? ».
+model: sonnet
 ---
 
 # Reprendre un chantier
@@ -48,6 +49,6 @@ Une PR que le bloc dit ouverte est `MERGED` → le bloc est en retard : le signa
 - **En attente de David** (s'il y a lieu : le reposer tel quel)
 - Si la session ne porte pas encore ce nom : « Pour la nommer : `/rename <sujet>` »
 
-Puis attendre son go, sauf si le bloc dit qu'une action validée était en cours : la poursuivre.
+Puis **toujours** attendre son go, même si le bloc dit qu'une action validée était en cours : la skill tourne en Sonnet (`model: sonnet`) jusqu'au message suivant de David, et le travail reprend ensuite sur le modèle de la session.
 
 Ne lire d'autres sections du journal, ou d'autres docs, que lorsque la prochaine action l'exige.

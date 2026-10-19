@@ -93,6 +93,9 @@ niveau) ; il refuse de travailler sans **grade** et **thème** précisés.
 `docs/wip/<sujet>-progress.md` (d'après l'argument, sinon le worktree ou la branche, sinon elle te
 liste les chantiers actifs) et n'en lit **que le bloc « Reprendre ici »**, puis te dit en 5 lignes
 l'état, la prochaine action et ce qui t'attend. Un journal sans bloc en reçoit un au passage.
+Elle tourne en **Sonnet** (`model: sonnet` dans son en-tête) : le changement ne vaut que pour
+ce tour, ton message suivant repart sur le modèle de la session. C'est pourquoi elle attend
+toujours ton go au lieu d'enchaîner sur la prochaine action.
 
 Le but est d'économiser des tokens : une session qui s'étire sur plusieurs PR relit tout son
 historique à chaque message. Après chaque merge, la session met le bloc à jour et te propose
