@@ -67,6 +67,11 @@ David du 2026-10-13). Pour x² sur ℝ :
 - `suggestion` : le morceau le plus à droite qui a une formule, sinon le dernier ; jamais une borne
   approchée par les variations (7 chiffres ou plus : « choisis un intervalle où f est strictement
   monotone ») ; une telle borne fait aussi compter les morceaux au lieu de les lister (x⁵ − 5x³).
+  Aucun morceau listé n'a de formule et la commande proposée échouerait (décision (5), étendue
+  le 2026-10-19) : f périodique → le refus périodique (`tan` sur ]−1 ; 4[ : « Sa réciproque y est
+  la fonction arctan… », sans commande), sinon le conseil sans commande (`sin` sur ]−1 ; 4[, qui
+  proposait « .réciproque f sur [π/2 ; 4[ »). Depuis que les variations coupent aux valeurs
+  interdites, `tan` sur ]−1 ; 4[ a deux morceaux et passait par la liste.
 
 Champs : `sameImage` (la paire entière), `suggestion`, `pieces`
 (`{ interval, expression | null, departure | null }`, pour l'affichage LaTeX de l'atelier),
