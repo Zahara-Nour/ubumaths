@@ -119,8 +119,8 @@ describe('revues du lot 6', () => {
 		expect(localStorage.getItem(KEY)).toBeNull();
 	});
 
-	// C3 : l'historique de Calcul restait, sur des objets supprimés
-	it('« Repartir de zéro » vide aussi l’historique de Calcul', async () => {
+	// C3 (l'historique vidé) revu le 2026-10-19 : David garde la console, comme au chargement
+	it('« Repartir de zéro » garde l’historique de Calcul, et y écrit sa ligne', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
 		const { container } = await render(AtelierContainer, { atelier });
@@ -146,9 +146,10 @@ describe('revues du lot 6', () => {
 		});
 		confirm.click();
 
-		// Les lignes d'avant partent ; reste celle de l'étape (lot 5, PR 3)
-		await vi.waitFor(() => expect(container.querySelectorAll('.historique li').length).toBe(1));
-		expect(container.querySelector('.historique li')?.textContent).toContain('Atelier vidé.');
+		await vi.waitFor(() => expect(container.querySelectorAll('.historique li').length).toBe(2));
+		const lines = [...container.querySelectorAll('.historique li')].map((li) => li.textContent);
+		expect(lines[0]).toContain('f(3)');
+		expect(lines[1]).toContain('Atelier vidé.');
 	});
 
 	// A11y : un titre de niveau 1, et un bouton qui ne sert à rien est désactivé

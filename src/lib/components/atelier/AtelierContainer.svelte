@@ -375,7 +375,8 @@
 			action: {
 				label: 'Annuler',
 				onClick: () => {
-					if (atelier.topStepId === stepId) {
+					// Une modification hors étape depuis compte : c'est elle qu'Annuler déferait
+					if (atelier.isTopStep(stepId)) {
 						undoStep();
 						return;
 					}
@@ -549,11 +550,10 @@
 	 * Vider l'atelier — seulement après confirmation (Q5), jamais sur un lien
 	 * reçu. En UNE étape que Ctrl+Z défait (lot 5, PR 3). Pas de copie mise de
 	 * côté : l'atelier vide quitté par Annuler l'effacerait (`keepAside`, B1).
+	 * La console reste, comme au chargement : Annuler rend alors tout (décision
+	 * de David du 2026-10-19 ; elle était vidée avant, revue du lot 6, C3).
 	 */
 	function handleReset() {
-		// L'historique aussi : il parlait d'objets supprimés (revue du lot 6, C3).
-		// Inchangé au lot 5 — à trancher par David si la console doit rester
-		desk.clear();
 		desk.reset();
 		const stepId = atelier.lastStepId;
 		seen = desk.entries.length;
@@ -682,6 +682,8 @@
 
 	/** L'atelier est-il vide ? Des lignes de Calcul seules suffisent à ne pas l'être. */
 	const isEmpty = $derived(atelier.objects.length === 0 && desk.entries.length === 0);
+	/** Rien que « Repartir de zéro » puisse vider : la console n'en est plus (2026-10-19). */
+	const nothingToReset = $derived(atelier.isBlank);
 
 	let lastSeenRevision = $state(-1);
 
@@ -1114,11 +1116,10 @@
 					onclick={redoStep}
 				/>
 				{#if !linkMode}
-					<!-- Des lignes de Calcul seules suffisent : elles survivent au rechargement -->
 					<ToolButton
 						label="Repartir de zéro"
 						icon={RotateCcw}
-						disabledReason={isEmpty ? 'L’atelier est déjà vide.' : null}
+						disabledReason={nothingToReset ? 'L’atelier est déjà vide.' : null}
 						onclick={() => (confirmReset = true)}
 					/>
 					<!-- Pas sur un lien reçu : on y regarde l'atelier d'un autre, sans le remplacer -->
@@ -1201,7 +1202,7 @@
 		<ConfirmDialog
 			bind:open={confirmReset}
 			title="Repartir de zéro ?"
-			description="Tous les objets de l’atelier seront effacés — fonctions, valeurs, suites et listes —, ainsi que l’historique de calcul. Un lien de partage déjà copié les garde."
+			description="Tous les objets de l’atelier seront effacés — fonctions, valeurs, suites et listes —, ainsi que la grille. La console garde ses lignes, et Ctrl+Z rend l’atelier. Un lien de partage déjà copié le garde aussi."
 			confirmLabel="Vider l’atelier"
 			variant="destructive"
 			onConfirm={handleReset}

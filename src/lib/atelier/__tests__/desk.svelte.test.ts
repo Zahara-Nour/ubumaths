@@ -320,7 +320,7 @@ describe('le rappel des saisies', () => {
 		expect(d.draft).toBe('');
 	});
 
-	it('« Repartir de zéro » vide aussi ce qu’on peut rappeler', () => {
+	it('vider la console vide aussi ce qu’on peut rappeler', () => {
 		const d = typed('1+1');
 		d.clear();
 		d.draft = '';

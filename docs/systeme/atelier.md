@@ -1277,8 +1277,8 @@ décisions de David du 2026-10-11) :
 - liste fermée, **↑ / ↓ rappellent les saisies tapées** (`CalcDesk.recallPrevious` /
   `recallNext`) : jamais une ligne écrite par un bouton, même « Comparer avec M » qui passe par
   `submit` ; deux saisies identiques de suite rappelées une fois ; le brouillon d'avant le premier
-  ↑ revient au bout ; une ligne rappelée puis modifiée n'est pas perdue ; « Repartir de zéro » vide
-  le rappel ; il revient au rechargement avec les lignes (les 100 dernières saisies tapées), et rien
+  ↑ revient au bout ; une ligne rappelée puis modifiée n'est pas perdue ; une console vidée (rejeu,
+  retour d'un lien reçu) vide le rappel — « Repartir de zéro » le garde ; il revient au rechargement avec les lignes (les 100 dernières saisies tapées), et rien
   n'est rappelable après un rejeu ;
 - une fois la commande choisie ou tapée avec son espace, son **modèle** (l'exemple du catalogue,
   `commandBeingWritten`) reste sous le champ pendant qu'on tape la suite. Garde : toute commande
@@ -1860,10 +1860,11 @@ SET_ASIDE_STORAGE_KEY)`) et les migrations à sa relecture par l'atelier (`y` re
   `historique-garde-sonde.test.ts` (chaque commande permise composée par MathLive avec des
   arguments piégés : aucun ne finit dans un attribut), `historique-garde.svelte.test.ts` (le DOM
   rendu).
-- **Repartir de zéro** : confirmation, vide aussi l'historique **et ce qui en est rangé** (C3),
-  puis écrit la ligne « Atelier vidé. » ; actif dès qu'il y a un objet OU une ligne de Calcul
-  (les lignes survivent au rechargement) ; absent d'un atelier reçu. Annulable depuis le lot 5
-  (voir « Annuler / Rétablir »).
+- **Repartir de zéro** : confirmation, vide les objets et la grille, **garde la console** (décision
+  de David du 2026-10-19, qui remplace C3 : l'historique était vidé) et y écrit la ligne « Atelier
+  vidé. » ; actif dès qu'il y a un objet ou une grille (`atelier.isBlank` faux) — des lignes de
+  console seules ne suffisent plus ; absent d'un atelier reçu. Annulable depuis le lot 5 (voir
+  « Annuler / Rétablir »).
 
 ### Annuler / Rétablir (lot 5)
 
@@ -1913,6 +1914,10 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
   un Ctrl+Z rend l'atelier d'avant, les étapes d'avant restent annulables. La console n'en fait
   pas partie (R4). `onLeave(atelier quitté)` est appelé quand Annuler ou Rétablir quitte un côté
   de l'étape. Servent : « Remplacer mon atelier » et « Retrouver mon atelier précédent ».
+  Le remplacement remet les lois des variables aléatoires et le repère de Géométrie à leur défaut,
+  comme une relecture ; hors des photos, ils sont gardés à part (`#settingsAcross`) et Annuler /
+  Rétablir échangent ceux de l'écran contre ceux de l'autre côté (revue de #1524 : Annuler les
+  perdait).
 - **Jamais une étape** : une relecture (`restore` : chargement, autre onglet, lien reçu, qui
   **vide la pile**), un atelier ouvert par un lien `?f=` (`atelierFromCurves`, sous `untracked`),
   et ce qu'on passe à `untracked` (la carte prête à taper d'un atelier vide, B3).
@@ -1945,19 +1950,22 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
   bout de 10 s, la suppression reste annulable par la barre.
 - **Charger et Repartir de zéro** (PR 3) passent par `replaceWith` : UNE étape, pile gardée, que
   Ctrl+Z défait (objets, grille, réglages). Leur toast propose « Annuler », qui ne défait que
-  leur étape si elle est encore la dernière (`atelier.topStepId`), comme celui d'une suppression.
+  leur étape si elle est encore la dernière (`atelier.isTopStep(id)`, qui range d'abord une
+  modification faite hors étape : c'est elle qu'Annuler déferait, revue de #1524), comme celui
+  d'une suppression.
   - **Charger** ne remplace pas la console (décision de David du 2026-10-19, comme R4) : la ligne
     « Atelier chargé depuis <fichier>. » s'ajoute (`desk.loaded`), elle porte l'étape et se barre
     si on annule, puis les lignes du fichier, à la suite (les `garder` décalés). La copie mise de
     côté suit Annuler / Rétablir (`onLeave: keepLeftAside`), seulement si l'atelier a été mis de
     côté.
-  - **Repartir de zéro** vide la console comme avant (C3), puis `desk.reset()` écrit « Atelier
-    vidé. », qui porte l'étape. **Pas de copie mise de côté**, ni de `onLeave` : l'atelier vide
+  - **Repartir de zéro** garde la console, comme Charger (décision de David du 2026-10-19) :
+    `desk.reset()` écrit « Atelier vidé. », qui porte l'étape. **Pas de copie mise de côté**, ni de `onLeave` : l'atelier vide
     quitté par Annuler effacerait la copie (`keepAside` d'un atelier vide l'oublie, B1).
   - **Au rejeu** : la ligne d'un chargement porte `{ kind: 'rupture', reason }` — le rejeu
     s'arrête là et dit pourquoi (le contenu du fichier n'est pas dans l'historique). « Repartir de
-    zéro » porte `{ kind: 'vider' }` et se rejoue ; mais l'annuler ou le rétablir écrit une
-    `rupture` : l'atelier d'avant a quitté la console, le rejeu ne peut pas le rendre.
+    zéro » porte `{ kind: 'vider' }` et se rejoue, son annuler et son rétablir aussi : la console a
+    gardé les lignes de l'atelier d'avant. (Un historique d'avant la revue de #1524 porte encore
+    une `rupture` sur ces annuler / rétablir : il s'y arrête.)
 - **Le rejeu d'un ancien historique** (`replayNow`) vide encore la pile (`restore`) : il contient
   lui-même des annulations, qu'une étape englobante ne saurait pas refaire.
 

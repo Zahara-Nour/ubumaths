@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1524._
+_Mis à jour le 2026-10-19, pendant le suivi de la revue de #1524 (PR pas encore ouverte)._
 
-- **État** : lots 1 à 5 livrés (#1479 → #1524, suivis compris). Annuler / Rétablir complet ; Charger et Repartir de zéro annulables. Rien en prod.
-- **Prochaine action** : PR de suivi de la revue de #1524 — (1) console de Repartir de zéro selon la réponse de David ; (2) lois des variables aléatoires et repère de Géométrie perdus après Annuler d'un `replaceWith` (`#restoreState`, `atelier.svelte.ts` ~2583 ; prévenir atelier-geometry, auteur de `replaceWith`) ; (3) toast « Annuler » : `#capture` avant de comparer `topStepId` (`offerUndo`).
-- **En attente de David** : Repartir de zéro → (a) garder la console (recommandé) ou (b) la vider mais la rendre à Annuler.
-- **Pièges** : la console n'est PAS dans les photos d'étape (R4) ; une ligne « annuler » n'est rejouable que si l'étape vient d'une ligne rejouable (`#replayable`, #1521) ; gestes continus = `step(…, clé)` + `endGesture()` (`gesture.ts`) ; `wrapDynamicImport` intermittent dans les suites client lancées ensemble → relancer par lots.
-- **Worktree / branche** : aucun ouvert (agents en worktrees jetables). Coordination : session atelier-geometry (lot 3 géométrie, souris).
+- **État** : lots 1 à 5 livrés (#1479 → #1524). Suivi de la revue de #1524 codé sur `fix/atelier-suivi-revue-1524` : Repartir de zéro garde la console (David : option (a)), lois et repère rendus après Annuler d'un `replaceWith`, toast « Annuler » via `atelier.isTopStep`. Tests ciblés verts, doc système à jour. Rien en prod.
+- **Prochaine action** : vérifier `check:incremental` et la suite client de l'atelier (par lots) → `docs:check-a-jour --depuis origin/main` → `code-reviewer` (Sonnet) → PR → CI → merge → réécrire ce bloc.
+- **En attente de David** : rien.
+- **Pièges** : la console n'est PAS dans les photos d'étape (R4) ; réglages hors photo d'un `replaceWith` = `#settingsAcross` ; une ligne « annuler » n'est rejouable que si l'étape vient d'une ligne rejouable (`#replayable`) ; `wrapDynamicImport` intermittent dans les suites client lancées ensemble → relancer par lots.
+- **Worktree / branche** : `../ubumaths-wt-atelier-refonte-interface` · `fix/atelier-suivi-revue-1524`. atelier-geometrie prévenue (pas de conflit ; elle me prévient avant son lot 3, la souris).
 
 Phase 0 : `docs/wip/atelier-refonte-interface-phase0.md` (validée par David le 2026-10-18, deux passes).
 
@@ -207,3 +207,23 @@ Branche `feat/atelier-charger-repartir-annulables`, sur `Atelier.replaceWith` (#
   défait que leur étape si elle est la dernière (`atelier.topStepId`).
 - Le rejeu d'un ancien historique (`replayNow`) vide encore la pile : il contient lui-même des
   annulations.
+
+## Suivi de la revue de #1524 (2026-10-19)
+
+Branche `fix/atelier-suivi-revue-1524`.
+
+- **Repartir de zéro garde la console** (David, 2026-10-19 : option (a), contre (b) « vider et la
+  rendre à Annuler »). `handleReset` n'appelle plus `desk.clear()` ; « Atelier vidé. » s'ajoute à
+  la suite. C3 (historique vidé, revue du lot 6) est remplacé. Conséquences : l'annuler / rétablir
+  de Repartir de zéro se rejoue (plus de `rupture`, `RESET_MOVED_REASON` retiré) ; le bouton est
+  indisponible quand l'atelier n'a ni objet ni grille (`atelier.isBlank`), même avec des lignes de
+  console ; texte de confirmation revu.
+- **Lois et repère après Annuler d'un `replaceWith`** : `#settingsAcross` (id d'étape → réglages
+  de l'autre côté), échangés par `#swapSettings` dans `undoStep` / `redoStep`. Session
+  atelier-geometrie prévenue.
+- **Toast « Annuler »** : `atelier.isTopStep(id)` range d'abord une modification hors étape
+  (`#capture`) avant de comparer.
+- Tests : `charger-repartir.test.ts` (4 rouges d'abord : rejeu après annulation, lois et repère,
+  réglages changés après le remplacement, `isTopStep`) ; tests de vue adaptés à la console gardée
+  (`grapheur-entree`, `historique-garde.svelte`, `charger-repartir-annuler`, `barre-icones` : console
+  seule → bouton indisponible).

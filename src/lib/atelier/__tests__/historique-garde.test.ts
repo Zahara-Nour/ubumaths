@@ -291,7 +291,7 @@ describe('le rappel ↑ / ↓ revient', () => {
 		expect(after.draft).toBe('');
 	});
 
-	it('« Repartir de zéro » : plus rien de rangé', () => {
+	it('une console vidée : plus rien de rangé', () => {
 		const desk = typedDesk(['1+1']);
 		const storage = new MemoryStorage();
 		saveCalcHistory(storage, desk.entries, desk.typedInputs);
