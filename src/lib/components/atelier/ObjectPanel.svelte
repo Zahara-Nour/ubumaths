@@ -38,7 +38,8 @@
 	const expanded = $derived(opened || atelier.objects.length === 0);
 
 	// Une carte qui prend la main (la carte prête à taper de /grapheur, f′ après
-	// « Dériver ») doit se voir : la sélection déplie le panneau
+	// « Dériver ») doit se voir : une sélection NOUVELLE déplie le panneau. Replier
+	// ensuite le laisse replié, même si la carte reste sélectionnée
 	$effect.pre(() => {
 		if (selected !== null) opened = true;
 	});
@@ -73,16 +74,20 @@
 			{atelier.objects.length}
 			{atelier.objects.length > 1 ? 'objets' : 'objet'}
 		</span>
-		<button
-			type="button"
-			class="replier"
-			aria-expanded={expanded}
-			aria-controls="atelier-mes-objets-corps"
-			onclick={() => (opened = !expanded)}
-		>
-			<ChevronDown class="size-4" aria-hidden="true" />
-			<span class="sr-only">{expanded ? 'Replier les objets' : 'Déplier les objets'}</span>
-		</button>
+		<!-- Vide, rien à replier : pas de bouton. Nom constant (le titre),
+		     l'état est dit par `aria-expanded` seul (motif « disclosure ») -->
+		{#if atelier.objects.length > 0}
+			<button
+				type="button"
+				class="replier"
+				aria-labelledby="atelier-mes-objets"
+				aria-expanded={expanded}
+				aria-controls="atelier-mes-objets-corps"
+				onclick={() => (opened = !expanded)}
+			>
+				<ChevronDown class="size-4" aria-hidden="true" />
+			</button>
+		{/if}
 	</header>
 
 	<div class="corps" id="atelier-mes-objets-corps">

@@ -1745,7 +1745,8 @@ pixels y casse.
 [atelier-mes-objets-telephone-progress.md](../wip/atelier-mes-objets-telephone-progress.md)) : en
 une colonne (≤ 720 px), le panneau ouvert ramenait la vue à son plancher (toile de 160 px avec deux
 points). Il s'ouvre donc **replié** : une barre « Mes objets · N objets » et un bouton
-(`aria-expanded`, `aria-controls`) qui déplie cartes et boutons « + ». Le repli est tranché en CSS
+(nommé par le titre, `aria-expanded`, `aria-controls` ; absent quand l'atelier est vide) qui
+déplie cartes et boutons « + ». Le repli est tranché en CSS
 (classe `replie`, pas de `matchMedia`) : au-dessus de 720 px le bouton est caché et le panneau
 toujours déplié, sans flash au chargement. Il se **déplie** seul quand l'atelier est vide (les « + »
 sont la seule entrée), quand on crée depuis un « + » (le premier objet ne le referme pas), et quand

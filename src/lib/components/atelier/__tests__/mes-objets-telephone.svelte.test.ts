@@ -88,6 +88,8 @@ describe('sur téléphone, « Mes objets » s’ouvre replié', () => {
 	it('le bouton déplie puis replie le panneau', async () => {
 		const container = await mountAt(390, atelierOf([['A', '(1 ; 2)']]));
 		const toggle = toggleOf(container);
+		// Nom constant, l'état est dit par `aria-expanded`
+		expect(toggle.getAttribute('aria-labelledby')).toBe('atelier-mes-objets');
 
 		toggle.click();
 		await nextFrame();
@@ -123,10 +125,10 @@ describe('sur téléphone, « Mes objets » s’ouvre replié', () => {
 // =============================================================================
 
 describe('atelier vide', () => {
-	it('le panneau est déplié : les boutons de création sont là', async () => {
+	it('le panneau est déplié, sans bouton de repli : les boutons de création sont là', async () => {
 		const container = await mountAt(390, atelierOf());
 
-		expect(toggleOf(container).getAttribute('aria-expanded')).toBe('true');
+		expect(container.querySelector('.panneau button[aria-controls]')).toBeNull();
 		expect(bodyShown(container)).toBe(true);
 	});
 
@@ -182,6 +184,23 @@ describe('une carte qui prend la main', () => {
 		await vi.waitFor(() =>
 			expect(document.activeElement?.tagName.toLowerCase()).toBe('math-field')
 		);
+	});
+
+	it('replier ensuite le laisse replié, la carte restant sélectionnée', async () => {
+		await page.viewport(390, 664);
+		const { container } = await render(AtelierContainer, {
+			atelier: new Atelier(),
+			ephemeral: true,
+			view: 'graphe',
+			startWith: 'function',
+			consoleAtStart: false
+		});
+		await vi.waitFor(() => expect(bodyShown(container)).toBe(true));
+
+		toggleOf(container).click();
+		await nextFrame();
+
+		expect(bodyShown(container)).toBe(false);
 	});
 });
 
