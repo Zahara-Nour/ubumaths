@@ -379,7 +379,8 @@ contient `{{exercises_badge}}` reçoit la numérotation en carré ambre (charte 
 
 **Taille du texte** (accessibilité, élèves malvoyants ; demande de David, 2026-10-16 ;
 `src/lib/typst/text-size.ts`) : trois paliers, **Normale** (le gabarit tel quel, 10 pt pour « Fiche
-élève »), **Grande** (× 1,4 : 14 pt) et **Très grande** (× 1,8 : 18 pt). Option `textSize` du
+élève »), **Grande** (× 1,4 : 14 pt) et **Très grande** (× 1,8 : 18 pt) — paliers confirmés par
+David le 2026-10-19. Option `textSize` du
 générateur (`WorksheetGeneratorOptions`, `GenerateTypstParams`, `StudentPdfOptions`). Le **gabarit**
 est transformé avant d'y placer les exercices (`withTextSize`) : chaque `size: Npt` est multiplié
 (titres, pied de page ; les tailles en `em` suivent seules). La **mise en page du style ne change
@@ -395,7 +396,8 @@ Où la taille est choisie :
   son PDF (menu « Taille du texte » à côté du bouton PDF, qu'il peut changer : enregistré pour
   toutes ses fiches), sa copie nominative (`CopyRecipient.text_size`, lue par la page `copies/` ;
   un lot mélangé garde la taille de chacun), l'aperçu « vue élève » du prof (`preview/`, où changer
-  la taille d'un élève prévisualisé **l'enregistre pour lui**) ;
+  la taille d'un élève prévisualisé **l'enregistre pour lui** ; c'est le seul endroit où le prof
+  règle la taille d'un élève, choix confirmé par David le 2026-10-19) ;
 - **au coup par coup** : `PdfPreview` (aperçu générique du prof, lecteur du cahier public compris)
   et l'aperçu `preview/` en vue prof — normale à chaque ouverture, jamais enregistrée.
   Tests : `typst/__tests__/text-size.test.ts`, `generators/__tests__/worksheet-generator.test.ts`
@@ -795,9 +797,5 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
    « Mélanger dans les sections » retirée, numéro des signalements pris dans la copie de l'élève,
    corrigé de classe et aperçu « vue prof » d'une affectation individualisée d'après la copie d'un
    élève choisi, signalements de l'élève sur le numéro de sa copie.
-10. **Taille du texte : deux choix à confirmer par David** (en prod depuis v0.38.0). Le prof ne
-    règle la taille d'un élève que dans l'aperçu d'affectation (« Prévisualiser comme »), faute de
-    page élève : est-ce le bon endroit ? Les paliers 14 / 18 pt ont été posés sans réponse
-    explicite.
 
 Vérifié contre le code le 2026-10-15 (lot 1 de l'ADR 0030 : le type décide de l'en-tête).
