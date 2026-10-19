@@ -54,6 +54,13 @@ function output(result: CalcResult): string {
 	return result.output;
 }
 
+/** La réponse d'une ligne de calcul. */
+function output2(result: CalcResult): string {
+	if (result.kind !== 'calcul')
+		throw new Error(`attendu un calcul, reçu ${JSON.stringify(result)}`);
+	return result.output;
+}
+
 function refusal(result: CalcResult): string {
 	if (result.kind !== 'refus') throw new Error(`attendu un refus, reçu ${JSON.stringify(result)}`);
 	return result.message;
@@ -126,6 +133,11 @@ describe('le problème de l’aire, de bout en bout', () => {
 		expect(s.atelier.positionOf('M')).toBe(0.5);
 		expect(s.atelier.get('S')?.status).toBe('ok');
 		expect(savedObjects(s.atelier)).toBe(before);
+		// Les mémos du recalcul (#1513) ne gardent rien du dernier pas : les mesures
+		// relues valent celles d'avant le relevé
+		expect(output2(runInput(s, 'AM'))).toBe('2');
+		expect(output2(runInput(s, 'S'))).toBe('4');
+		expect(output2(runInput(s, 'N'))).toBe('N(2 ; 2)');
 	});
 
 	it('les deux listes sont deux colonnes de Données, titrées par les expressions', () => {
@@ -610,5 +622,6 @@ describe('l’historique de la grille et les créations', () => {
 
 		expect(savedObjects(s.atelier)).toBe(before);
 		expect(s.atelier.get('t')?.definition).toBe('3');
+		expect(output2(runInput(s, 'f(t)'))).toBe('9');
 	});
 });

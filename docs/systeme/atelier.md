@@ -432,9 +432,8 @@ rien : il relève, l'élève conjecture.
   objets d'avant est remis en place, tous objets compris : `update` élargit le curseur d'une
   valeur posée hors de ses bornes. ⚠️ Une copie du tableau (`[...items]`), pas
   `$state.snapshot` : hors navigateur, ce dernier rend le tableau lui-même, que le premier pas
-  modifiait (mesuré, test rouge). Coût mesuré dans Chromium, 200 pas : 1,6 à 1,9 s sur la figure
-  de l'aire, 19 à 23 s sur une figure de 24 objets (constructions, intersections, mesures) —
-  presque tout dans `recomputeAll`, le même coût que chaque cran du curseur de position.
+  modifiait (mesuré, test rouge). Coût mesuré dans Chromium, 200 pas (après le chantier performance #1513) : 116 à 141 ms
+  sur la figure de l'aire, 861 à 901 ms sur la figure de 24 objets (`fixtures/figure-24.ts`).
 - **Les cases** : la valeur est calculée EXACTE d'abord, puis écrite en décimal (`sin(πt)` aux
   entiers → `0`, jamais un résidu de flottant ni `-0`) ; sinon en décimal, et un résultat sous
   10⁻¹² fois la taille des termes de premier niveau de son calcul (ou du plus grand nombre de la

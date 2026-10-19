@@ -344,6 +344,13 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   `mesures-revue.test.ts`, « revue 6 » (sommet répété refusé → aire 0 ou 6 ; côtés qui se touchent
   refusés → aire 6 ; ajoutés : trois sommets alignés, périmètre d'un aplati, mesure devenue plate
   au glisser) ; (5) phrase du nuage inchangée.
+- 2026-10-19, **main fusionné** (chantier performance #1513) : conflits de doc seulement
+  (`atelier.md` carte du code, ce journal), les deux côtés gardés ; `sweep` inchangé. Tests :
+  l'atelier rendu tel quel après un relevé et après une exception, mesures relues identiques
+  (`AM`, `S`, `N`, `f(t)` — rien ne reste des mémos du dernier pas), `recalcul-equivalence` vert.
+  **Re-mesure dans Chromium**, 200 pas, 3 essais : figure de l'aire **116 à 141 ms** (avant :
+  1,6 à 1,9 s) ; figure de 24 objets (`fixtures/figure-24.ts`, `.relever L ; S quand a va de 0 à
+0,995 pas 0,005`) **861 à 901 ms** (avant, sur une figure voisine : 19 à 23 s). Sous la seconde.
 
 ## Performance
 
