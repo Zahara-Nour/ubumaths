@@ -5,11 +5,16 @@ couvre:
   - src/lib/components/qr/QrCodeButton.svelte
   - src/lib/components/markdown/nodes/QrBlock.svelte
   - src/lib/ubumark/generators/qr-typst.ts
+  - src/lib/qr/short-link.ts
+  - src/lib/validation/short-link.ts
+  - src/lib/server/short-links.ts
+  - 'src/routes/api/short-links/**'
+  - 'src/routes/(public)/l/**'
 ---
 
 # QR codes vers les pages et les ressources
 
-> Vérifié contre le code le 2026-10-19 (lots 1, 2 et QR stylés). Décisions : [qr-codes-phase0.md](../wip/qr-codes-phase0.md), [qr-codes-style-phase0.md](../wip/qr-codes-style-phase0.md).
+> Vérifié contre le code le 2026-10-19 (lots 1, 2, QR stylés et liens courts). Décisions : [qr-codes-phase0.md](../wip/qr-codes-phase0.md), [qr-codes-style-phase0.md](../wip/qr-codes-style-phase0.md), [liens-courts-phase0.md](../wip/liens-courts-phase0.md).
 
 ## Ce que fait le bouton
 
@@ -31,6 +36,35 @@ Le QR encode `canonicalUrl(url)` (`src/lib/seo/site.ts`) : l'origine reçue (ser
 Vercel, `chiph.re`) est remplacée par `SITE_URL`, chemin, requête et fragment gardés. Un QR imprimé
 depuis un aperçu mène donc au site. `www` : `chiph.re` répond 308 vers `www.chiph.re` (mesuré le
 2026-10-19). Les liens COPIÉS, eux, gardent l'origine de la page.
+
+## Le lien court d'une série (`/l/<code>`)
+
+Un lien de série porte toute sa composition dans l'adresse (≈ 350 caractères dès une catégorie) :
+il dépasse toujours ce qu'un QR lisible contient. Son QR porte donc un **lien court**
+`https://www.chiph.re/l/<code>`, enregistré en base, qui redirige vers le lien long.
+
+- **Qui** : seuls un prof et l'admin en créent (`SeriesLinkShare` reçoit `canMakeQr` : `isTeacher` au panier, toujours vrai sur la page « Séries » du prof). Ailleurs
+  (panier public, élève, visiteur), le bouton QR de la série est indisponible (« réservé aux profs ») et
+  le lien long reste copiable. Les autres QR (exercice, cours, cahier…) n'ont pas de lien court.
+- **Bouton** : `QrCodeButton` reçoit `resolveUrl` (`fetchShortLinkPath`, `src/lib/qr/short-link.ts`) ;
+  `url` n'est plus que la cible. L'adresse est demandée à l'ouverture de la fenêtre (« Fabrication du
+  QR code… »), gardée pour la même cible ; l'adresse affichée et copiée est l'adresse courte. Échec →
+  « QR indisponible pour l'instant, copie le lien. »
+- **Création** : `POST /api/short-links` `{ target }` → `{ code, path }`, prof et admin
+  (`requireRoles`). Zod (`createShortLinkSchema`, `src/lib/validation/short-link.ts`) : un **lien de
+  série** seulement (`/automaths/panier?…` ou `/automaths/test?…`, décision de David du 2026-10-19 :
+  un QR Chiphre mène à une série et à rien d'autre), ASCII imprimable, 16 384 caractères au plus —
+  sinon 400, la base n'est pas appelée. Même cible → même code. Un autre usage (atelier public…)
+  ajoutera son préfixe à `SERIES_TARGET`. La base, elle, n'exige qu'un chemin interne : c'est le filet.
+- **Lecture** : `/l/[code]` (`+page.server.ts`) → 302 vers la cible (pas 301, qu'un navigateur garde
+  pour toujours), `X-Robots-Tag: noindex`. Code inconnu ou mal formé → la même 404 « Ce lien n'existe
+  pas » (page d'erreur du site, qui propose l'accueil). Une cible relue qui ne serait pas un lien de
+  série (même schéma Zod) est traitée comme absente : jamais de redirection hors du site, ni vers une
+  autre page.
+- **Base** : table `short_links` fermée à tous (RLS sans policy) ; tout passe par
+  `create_short_link` et `resolve_short_link` (`src/lib/server/short-links.ts`), migration
+  `20261019170000_liens_courts`. Les liens ne meurent pas : un QR imprimé ne se reprend pas. Une
+  série modifiée après l'impression : l'ancien QR mène à l'ancienne composition.
 
 ## Le code (`src/lib/qr/qr-code.ts`)
 
@@ -94,9 +128,6 @@ ou une fiche, vers l'adresse de son choix. Syntaxe et pipeline : [ubumark](ubuma
 
 ## Écarts connus
 
-- Un lien de série porte sa composition en JSON doublement encodé : une série de plusieurs
-  catégories dépasse vite le plafond (220 octets en correction H) et n'a pas de QR. Réponse
-  décidée par David : des liens courts, chantier non ouvert.
 - Pas de QR pour l'Atelier : décision de David, seulement vers un atelier sauvegardé et public, qui
   n'existe pas encore. Pas encore de bouton QR sur les fiches (le QR automatique dans l'en-tête des
   PDF, choix (a), n'est pas retenu à ce jour).

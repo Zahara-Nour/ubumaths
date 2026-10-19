@@ -6,6 +6,10 @@
 	 * L'adresse du QR est TOUJOURS celle du domaine canonique (`canonicalUrl`) :
 	 * un QR imprimé depuis un aperçu ou le serveur local doit mener au site.
 	 * Phase 0 : `docs/wip/qr-codes-phase0.md`.
+	 *
+	 * Avec `resolveUrl` (lien de série, trop long pour un QR), l'adresse du QR
+	 * est fabriquée à l'ouverture de la fenêtre : c'est un lien court
+	 * (`docs/wip/liens-courts-phase0.md`).
 	 */
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -26,6 +30,11 @@
 		unavailableReason?: string;
 		/** L'adresse porte un jeton de partage : prévenir qu'un QR imprimé ne se reprend pas */
 		containsToken?: boolean;
+		/**
+		 * Fabrique, à l'ouverture, l'adresse que portera le QR (un lien court) :
+		 * `url` n'en est alors que la cible. Un échec rend le QR indisponible.
+		 */
+		resolveUrl?: (url: string) => Promise<string>;
 		/** Bouton avec son texte (« QR code ») ou icône seule */
 		variant?: 'text' | 'icon';
 		size?: 'default' | 'sm';
@@ -41,6 +50,7 @@
 		label,
 		unavailableReason,
 		containsToken = false,
+		resolveUrl,
 		variant = 'text',
 		size = 'sm'
 	}: Props = $props();
@@ -49,15 +59,25 @@
 	let copied = $state(false);
 	let copyTimer: ReturnType<typeof setTimeout> | undefined;
 	let addressInput: HTMLInputElement | undefined = $state();
+	/** L'adresse rendue par `resolveUrl`, et la cible pour laquelle elle l'a été */
+	let resolved = $state<{ target: string; url: string } | null>(null);
+	let resolving = $state<'idle' | 'loading' | 'failed'>('idle');
+	/** La cible en cours de résolution : une réponse pour une autre cible est ignorée */
+	let resolvingTarget: string | null = null;
 
-	const address = $derived(url === null ? null : canonicalUrl(url));
+	/** L'adresse du QR, relative ou absolue : `url`, ou ce qu'en a fait `resolveUrl` */
+	const qrUrl = $derived.by(() => {
+		if (resolveUrl === undefined) return url;
+		return resolved !== null && resolved.target === url ? resolved.url : null;
+	});
+	const address = $derived(qrUrl === null ? null : canonicalUrl(qrUrl));
 	const qr = $derived(address === null ? null : encodeQr(address));
 	const alt = $derived(address === null ? '' : `QR code vers ${address}`);
 	const svg = $derived(qr === null ? null : qrSvg(qr, alt));
 	const imageSrc = $derived(
 		svg === null ? null : `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
 	);
-	const disabled = $derived(address === null);
+	const disabled = $derived(url === null);
 	const name = $derived(`QR code de ${label}`);
 
 	// Functions
@@ -66,6 +86,31 @@
 		// Sans adresse, la fenêtre ne s'ouvre pas : le bouton dit déjà pourquoi
 		open = next && !disabled;
 		copied = false;
+		if (
+			open &&
+			url !== null &&
+			resolveUrl !== undefined &&
+			resolved?.target !== url &&
+			resolvingTarget !== url
+		) {
+			void resolveAddress(url, resolveUrl);
+		}
+	}
+
+	async function resolveAddress(target: string, resolve: (url: string) => Promise<string>) {
+		resolvingTarget = target;
+		resolving = 'loading';
+		let result: { target: string; url: string } | null = null;
+		try {
+			result = { target, url: await resolve(target) };
+		} catch {
+			result = null;
+		}
+		// Une résolution plus récente a pris la main : sa réponse fera foi
+		if (resolvingTarget !== target) return;
+		resolvingTarget = null;
+		resolved = result ?? resolved;
+		resolving = result === null ? 'failed' : 'idle';
 	}
 
 	async function copyAddress() {
@@ -162,6 +207,12 @@
 		{#if imageSrc !== null}
 			<!-- Noir sur blanc quel que soit le thème : un QR inversé se lit mal -->
 			<img class="qr" src={imageSrc} {alt} />
+		{:else if resolving === 'loading'}
+			<p class="text-sm text-muted-foreground" role="status">Fabrication du QR code…</p>
+		{:else if resolving === 'failed'}
+			<p class="text-sm text-destructive" role="alert">
+				QR indisponible pour l’instant, copie le lien.
+			</p>
 		{:else}
 			<p class="text-sm text-destructive" role="alert">
 				Ce lien est trop long pour un QR code lisible. Copie le lien à la place.

@@ -2,15 +2,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1537._
+_Mis à jour le 2026-10-19, PR 2 ouverte._
 
-- **État** : PR 1 mergée (#1537) et migration `20261019170000_liens_courts` jouée en prod (vérifié : RLS sans policy, aucun droit direct, création réservée à authenticated, lecture à anon). Rien côté code.
-- **Prochaine action** : PR 2, dans un worktree `liens-courts` neuf : `pnpm db:types`, route `/l/[code]` (Zod sur `params.code`, même 404 pour un code inconnu ou mal formé, `noindex`), endpoint de création (Zod + borne de taille, prof/admin), QR de série par l'adresse courte (`SeriesLinkShare`, `QrCodeButton`), puis la doc. Revue `code-reviewer` + `security-auditor`.
-- **En attente de David** : rien.
-- **Pièges** : une colonne générée exige une expression IMMUTABLE : `target_hash` est une colonne simple recoupée par une contrainte. Cible en ASCII imprimable seulement (les liens du site sont encodés). `supabase db push` ne marche que depuis le dépôt principal (worktree non lié).
-- **Worktree / branche** : aucun.
+- **État** : PR 2 (`feat/liens-courts-route`) ouverte : route `/l/[code]`, `POST /api/short-links`, QR de série par lien court (prof/admin), doc `qr-codes.md`. Revues faites (aucun bloquant).
+- **Prochaine action** : CI verte → merge ; puis vérification manuelle (QR scanné au téléphone) et versement du chantier (journal → archive).
+- **En attente de David** : rien. Tranché le 2026-10-19 : cibles restreintes aux liens de série (`/automaths/panier?` et `/automaths/test?`), dans Zod seulement (la base garde « chemin interne »).
+- **Pièges** : cible en ASCII imprimable seulement. Port 5176/5177 souvent pris par d'autres worktrees : vérifier avec `lsof`.
+- **Worktree / branche** : `../ubumaths-wt-liens-courts` · `feat/liens-courts-route`.
 
 ## Historique
+
+### 2026-10-19 — PR 2, route et QR
+
+- `db:types` ; `short_links` classée dans « Outils du professeur » (`generate-db-doc.ts`).
+- Serveur : validation Zod partagée (`src/lib/validation/short-link.ts`), `POST /api/short-links`, `/l/[code]` (302, `X-Robots-Tag: noindex`, 404 identique inconnu / mal formé, cible relue revalidée). Code écrit avant les tests : rouge prouvé par mutation (garde `//`/`\` et revalidation retirées → 5 rouges).
+- Client : `QrCodeButton` `resolveUrl` (adresse fabriquée à l'ouverture, réponse périmée ignorée — rouge prouvé sans la garde), `SeriesLinkShare` réservé prof/admin.
+- Vérifié sur serveur local (5178) : 302 + noindex, 404 « Ce lien n’existe pas », POST anonyme 401. Parcours prof non joué en local (pas de session prof sans toucher aux mots de passe partagés) → vérification manuelle.
+- Revues : `code-reviewer` (3 mineurs : 2 corrigés, 1 noté — en échec, le lien long se copie après fermeture de la fenêtre) ; `security-auditor` (0 bloquant ; notes : cibles vers toute route interne, pas de limite de débit sur `/l/`, corps sans plafond applicatif).
 
 ### 2026-10-19 — PR 1, migration
 

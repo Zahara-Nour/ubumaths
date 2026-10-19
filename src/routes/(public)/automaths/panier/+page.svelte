@@ -335,7 +335,7 @@
 							lance directement.
 						</p>
 					</div>
-					<SeriesLinkShare categories={cartItems} />
+					<SeriesLinkShare categories={cartItems} canMakeQr={isTeacher} />
 				</Card.Footer>
 			</Card.Root>
 		</div>
