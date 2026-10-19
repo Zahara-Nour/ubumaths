@@ -11,13 +11,18 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1528._
+_Mis à jour le 2026-10-19, lot 3 PR 1 codée, revue faite, corrections à faire (PR pas ouverte)._
 
-- **État** : lots 1 et 2 de la géométrie livrés (#1474 → #1516) ; `60°` (#1519) ; noms indicés (#1520, #1525 ; les 4 choix prudents GARDÉS par David le 2026-10-19) ; « Remplacer mon atelier » (#1523) ; mathAST : extrema périodiques (#1526), zéros périodiques d'un numérateur de quotient + Ferrari réécrit dans `common/quartic-roots.ts` (#1528). Rien en production. Aucun worktree ouvert.
-- **Prochaine action** : lot 3, la souris (phase 0 validée : `atelier-geometrie-lot3-phase0.md`), PR 1 = le glisser (fin de geste `atelier.step(…, clé)` + `endGesture()`, #1518). Prévenir avant la session « atelier-refonte-interface » (elle change `replaceWith`, `undoStep`, `redoStep`, `#apply`).
+- **État** : lots 1 et 2 livrés (#1474 → #1528, rien en prod). Lot 3 PR 1 « le glisser » sur `feat/atelier-geometrie-glisser` (worktree `../ubumaths-wt-atelier-geometrie`), 2 commits : code + tests verts (`check:incremental` 0, `lint:fast`, cliquet), doc système à jour (`atelier.md`, `geometrie/README.md`).
+- **Prochaine action** : corriger la revue `code-reviewer` (aucun bloquant), puis ouvrir la PR, CI, merger :
+  1. pas de saut au clic : mémoriser l'écart point − curseur au `grab`, ne rien écrire sous un seuil de 3-4 px (sinon `(1/3 ; 2,25)` devient `(0,3 ; 2,3)` au moindre tremblement) ;
+  2. Ctrl+Z pendant un glisser : `AtelierContainer.handleUndoKey` annule en plein geste → ignorer undo/redo tant qu'un glisser est ouvert ;
+  3. multi-pointeur : garder `pointerId` au `startDelegatedDrag`, ignorer les autres, pas de re-saisie si `delegated` ;
+  4. `draggingId` périmé (figure refaite = nouveaux ids) → classe `dragging` perdue en plein geste ;
+  5. `release` efface `refusal` ;
+  6. tests : direction attendue dans `FigureView` (+x, −y), cycle de vie de la toile (cancel, blur, rAF, relâcher), `point_sur` sur droite/demi-droite, glisser A avec M sur [AB].
 - **En attente de David** : rien.
-- **Restes connus mathAST (non poursuivis, exotiques)** : quartiques à racines espacées ≲ 1e-4 près d'un sommet commun ou d'une grande racine (résidu accepté trop large) ; `sin x/ln(cos x+1)` zéro en π (comme main) ; `2√(sin x)` sur ]0 ; π[ et `ln(x+sin x)` sur [1 ; +∞[ « inconnu » (main concluait juste par échantillonnage, mécanisme non sûr).
-- **Pièges** : toute PR qui touche `mathAST` → relecture `mathast-expert` indépendante (#1528 : 4 passes, 3 bloquants trouvés). Agents : `general-purpose` en sonnet (opus pour géométrie / mathAST via leurs agents dédiés).
+- **Pièges** : banc A (24 objets) médiane 15,9 ms, p90 17,6 ms (M1 < 16 ms tenu de justesse). Prévenir avant la session « atelier-refonte-interface ». PR qui touche `mathAST` → `mathast-expert`.
 
 ## Lot 1 — découpage
 
@@ -552,3 +557,15 @@ emmène ses termes ; `.réciproque \alpha_1 …` redit « α » ; commandes de c
 terme ; écho et refus citent `u_3` ; `u_3'` expliqué ; `.variations x^2 - a x` honnête (« non
 déterminés »). Hors périmètre, noté : le grec indicé reste un `subscript` dans le pipeline,
 `x_A` (indice non numérique) n'est pas un nom.
+
+## Lot 3, PR 1 — le glisser (2026-10-19)
+
+- M1 (a) : l'atelier tient la position. La toile DÉLÈGUE (`pointDrag` : `canGrab`, `grab`, `move`
+  une fois par image, `release`) ; `FigureView` → `atelier.dragPoint(nom, x, y, aimantation)`.
+- M2 : point par coordonnées nombres → `(x ; y)` aimanté aux entiers à 8 px, sinon au dixième ;
+  `point_sur` à position écrite → position lue sur le support (`supportOfPointOn`, `positionAt`),
+  par `slidePosition`. Refus dits sous la barre (`role="status"`).
+- M7 : une étape par glisser, clé `glisser:A` (ou `position:M`), fermée au relâcher, à
+  `pointercancel`, à la perte de focus de la fenêtre et au démontage de la toile.
+- Banc `banc-glisser.svelte.test.ts` (A de la figure de 24 objets) : médiane 15,9 ms, p90 17,6 ms
+  (curseur `a` : 13 ms). Modèle seul (node) : `dragPoint` 4,4 ms, `syncFigure` (figure refaite) 1 ms.

@@ -24,7 +24,7 @@ Vue d'ensemble du moteur de géométrie de Chiphre. Référence du langage :
 [dsl-builtins.md](dsl-builtins.md). Règles courtes pour un agent qui code dans le module :
 [`src/lib/geometry-core/CLAUDE.md`](../../../src/lib/geometry-core/CLAUDE.md).
 
-> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18 ; `intersectLQExact` : 2026-10-19). Chaque fichier, fonction et builtin cité existe à cette
+> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18 ; `intersectLQExact` et `pointDrag` : 2026-10-19). Chaque fichier, fonction et builtin cité existe à cette
 > date (`git ls-files`, `git grep -w`). Ce qui n'est pas dans cette page ni dans
 > `dsl-builtins.md` n'est pas garanti : lire le code.
 
@@ -346,7 +346,10 @@ l'en-tête qui garde cet affichage (`withBareScriptHeader` : `fenetre: -6.5 ; 6.
 elle, origine au centre et 40 px par unité), `taille:`, `axes:`, `grille:`, `graduations:`,
 `description:`, et deux clés **réservées aux figures interactives** : `deplacable: oui|non`
 (défaut non : points, vecteurs, textes et étiquettes figés, double-clic coupé ; les curseurs, le
-zoom et le déplacement de la vue restent actifs — prop `objectsMovable` de `GeometryCanvas`) et
+zoom et le déplacement de la vue restent actifs — prop `objectsMovable` de `GeometryCanvas` ; la
+prop `pointDrag` (`components/geometry/point-drag.ts`, vue Géométrie de l'atelier) passe avant :
+la toile ne modifie plus la figure, elle transmet le point saisi et ses positions, une fois par
+image, à qui la possède) et
 `rendu: normal|croquis|mixte` (`renderMode` normal / rough / mixed). Mêmes mesures que le bloc
 statique : largeur de la fenêtre selon la taille (280 / 400 / 560 px), hauteur isotrope, marge de
 26 px pour les axes ; sur un écran plus étroit, la toile se réduit et garde la fenêtre entière.
