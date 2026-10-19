@@ -11,8 +11,9 @@
 	 * toile le DÉLÈGUE (`pointDrag`), l'atelier réécrit la définition du point et
 	 * la figure suit, comme pour un curseur. Une étape par glisser (M7).
 	 *
-	 * La barre d'outils (lot 3, PR 2) suit le même principe : un outil ÉCRIT la
-	 * ligne qu'on aurait tapée (`write`, la console), il ne crée rien lui-même.
+	 * La barre d'outils (lot 3, PR 2 et 3) suit le même principe : un outil ÉCRIT
+	 * la ligne qu'on aurait tapée (`write`, la console), il ne crée rien lui-même.
+	 * La toile lui dit ce qui est proche du clic (point, objets : M5).
 	 * Sans `write` (vue montée hors d'un atelier complet), pas de barre.
 	 *
 	 * Le repère est orthonormé par construction (F2) : la toile n'a qu'un
@@ -140,12 +141,14 @@
 
 	/** L'outil passé à la toile : aucun avec Déplacer, le glisser reprend la main. */
 	const canvasTool: CanvasTool = {
-		click: (x, y, pointId, snap) => {
+		click: (x, y, pointId, snap, near) => {
 			if (toolbox === null) return;
 			const before = new Set(atelier.names);
 			const point = pointId === null ? null : (projection.nameOf(pointId) ?? null);
+			// Les objets proches, par leur nom (un élément sans nom — un texte — ne compte pas)
+			const objects = [...new Set(near.elementIds.flatMap((id) => projection.nameOf(id) ?? []))];
 			refusal = null;
-			toolbox.click(x, y, point, snap);
+			toolbox.click(x, y, point, snap, { objects, radius: near.radius });
 			// Un point posé (outil Point, ou extrémité) devient le point des flèches ; un
 			// point visé aussi, s'il se glisse (un point construit ne bouge pas aux flèches)
 			const created = atelier.names.find((n) => !before.has(n) && atelier.get(n)?.kind === 'point');
@@ -219,12 +222,19 @@
 		refusal = done.ok ? null : done.message;
 	}
 
-	/** Le fantôme de la construction en cours (M7) : du premier point au pointeur. */
+	/**
+	 * Le fantôme de la construction en cours (M7) : du premier point au pointeur
+	 * (segment, droite, demi-droite, cercle, milieu), ou la parallèle et la
+	 * perpendiculaire qui passent par le pointeur, une fois leur droite choisie.
+	 */
 	const ghost = $derived.by(() => {
 		void synced;
+		void atelier.revision;
 		if (toolbox === null || pointer === null) return null;
-		const [first] = toolbox.chosen;
-		if (first === undefined || toolbox.tool === 'deplacer' || toolbox.tool === 'point') return null;
+		const direction = toolbox.ghostDirection;
+		if (direction !== null) return { tool: 'direction' as const, at: pointer, direction };
+		const first = toolbox.chosenPoint;
+		if (first === null) return null;
 		const from = drawnPosition(first);
 		return from === null ? null : { tool: toolbox.tool, from, to: pointer };
 	});
@@ -283,12 +293,39 @@
 				r="2.2"
 				class="plein"
 			/>
-		{:else}
+		{:else if tool === 'cercle'}
 			<circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="1.8" class="plein" /><circle
 				cx="20"
 				cy="12"
 				r="2.2"
 				class="plein"
+			/>
+		{:else if tool === 'milieu'}
+			<line x1="3" y1="17" x2="21" y2="7" /><circle cx="3" cy="17" r="2" class="plein" /><circle
+				cx="21"
+				cy="7"
+				r="2"
+				class="plein"
+			/><circle cx="12" cy="12" r="3" class="plein" />
+		{:else if tool === 'intersection'}
+			<line x1="2" y1="20" x2="22" y2="4" /><line x1="2" y1="6" x2="22" y2="18" /><circle
+				cx="12"
+				cy="12"
+				r="3"
+				class="plein"
+			/>
+		{:else if tool === 'point-sur'}
+			<circle cx="12" cy="12" r="8" /><circle cx="17.7" cy="6.3" r="3" class="plein" />
+		{:else if tool === 'parallele'}
+			<line x1="2" y1="16" x2="22" y2="4" /><line x1="2" y1="21" x2="22" y2="9" /><circle
+				cx="12"
+				cy="15"
+				r="2.2"
+				class="plein"
+			/>
+		{:else}
+			<line x1="2" y1="18" x2="22" y2="18" /><line x1="12" y1="3" x2="12" y2="21" /><path
+				d="M12 13.5h4.5v4.5"
 			/>
 		{/if}
 	</svg>
@@ -308,7 +345,24 @@
 		{@const c = t.mathToSvg(chosenAt.x, chosenAt.y)}
 		<circle class="choisi" cx={c.x} cy={c.y} r="9" />
 	{/if}
-	{#if ghost !== null}
+	{#if ghost !== null && ghost.tool === 'direction'}
+		{@const a = t.mathToSvg(ghost.at.x, ghost.at.y)}
+		{@const b = t.mathToSvg(ghost.at.x + ghost.direction.dx, ghost.at.y + ghost.direction.dy)}
+		{@const length = Math.hypot(b.x - a.x, b.y - a.y) || 1}
+		{@const far = (w + h) * 4}
+		<line
+			class="fantome"
+			x1={a.x - ((b.x - a.x) / length) * far}
+			y1={a.y - ((b.y - a.y) / length) * far}
+			x2={a.x + ((b.x - a.x) / length) * far}
+			y2={a.y + ((b.y - a.y) / length) * far}
+		/>
+	{:else if ghost !== null && ghost.tool === 'milieu'}
+		{@const a = t.mathToSvg(ghost.from.x, ghost.from.y)}
+		{@const b = t.mathToSvg(ghost.to.x, ghost.to.y)}
+		<line class="fantome" x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
+		<circle class="fantome-point" cx={(a.x + b.x) / 2} cy={(a.y + b.y) / 2} r="4" />
+	{:else if ghost !== null}
 		{@const a = t.mathToSvg(ghost.from.x, ghost.from.y)}
 		{@const b = t.mathToSvg(ghost.to.x, ghost.to.y)}
 		{#if ghost.tool === 'cercle'}
@@ -414,6 +468,7 @@
 	}
 	.outils {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.125rem;
 	}
 	.outil {
@@ -455,6 +510,11 @@
 		stroke: var(--color-primary);
 		stroke-width: 1.5;
 		stroke-dasharray: 6 4;
+		pointer-events: none;
+	}
+	.toile :global(.fantome-point) {
+		fill: var(--color-primary);
+		opacity: 0.6;
 		pointer-events: none;
 	}
 	.toile :global(.choisi) {
