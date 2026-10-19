@@ -1,6 +1,6 @@
 /**
  * Géométrie, lot 2, PR 1 : LIRE une construction (L2, L3 de
- * `docs/wip/atelier-geometrie-lot2-phase0.md`, validée le 2026-10-18).
+ * `docs/archive/wip/atelier-geometrie-lot2-phase0.md`, validée le 2026-10-18).
  *
  * Le lecteur de l'atelier lit la STRUCTURE d'une ligne du DSL (mot, arguments
  * positionnels et nommés, raccourcis de manuel, séparateurs) ; chaque argument

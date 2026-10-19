@@ -1,7 +1,7 @@
 /**
  * Géométrie, lot 3, PR 3 : les outils de construction de la vue Géométrie
  * (Milieu, Intersection, Point sur un objet, Parallèle, Perpendiculaire) et le
- * M5 complet de `docs/wip/atelier-geometrie-lot3-phase0.md` : un clic sur un
+ * M5 complet de `docs/archive/wip/atelier-geometrie-lot3-phase0.md` : un clic sur un
  * objet crée un `point_sur`, un clic à la rencontre de deux objets crée leur
  * `intersection`.
  *

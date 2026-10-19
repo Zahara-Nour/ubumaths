@@ -1,6 +1,6 @@
 /**
  * Géométrie, lot 3, PR 1 : glisser un point à la souris (M1, M2, M7 de
- * `docs/wip/atelier-geometrie-lot3-phase0.md`).
+ * `docs/archive/wip/atelier-geometrie-lot3-phase0.md`).
  *
  * L'atelier tient la position pendant le geste (M1 a) : chaque mouvement
  * réécrit la définition du point, tout un glisser fait UNE étape. Ce qui se

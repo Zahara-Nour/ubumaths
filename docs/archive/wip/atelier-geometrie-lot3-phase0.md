@@ -1,7 +1,7 @@
 ---
 title: Atelier — la géométrie, lot 3 (la souris), phase 0
 date: 2026-10-19
-status: phase 0 VALIDÉE (2026-10-19, « je suis tes recos sur tout ») — M1-M8 selon les recommandations ; à lancer après #1523
+status: ARCHIVÉE le 2026-10-19 — lot 3 livré (#1533, #1536, #1538, #1540) ; durable dans docs/systeme/atelier.md
 ---
 
 # Atelier — la géométrie, lot 3 : la souris

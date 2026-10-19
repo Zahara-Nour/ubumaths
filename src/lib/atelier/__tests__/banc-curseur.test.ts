@@ -2,7 +2,7 @@
  * BANC (pas un test) : 40 crans du curseur `a` sur la figure de 24 objets, en node.
  * Sauté sauf demande : `VITE_ATELIER_BANC=1 pnpm exec vitest run --project=server
  * src/lib/atelier/__tests__/banc-curseur.test.ts` — médiane, p90, max sur la sortie.
- * Journal des mesures : docs/wip/atelier-geometrie-progress.md, § Performance.
+ * Journal des mesures : docs/archive/wip/atelier-geometrie-progress.md, § Performance.
  */
 import { it, expect } from 'vitest';
 import { figure24 } from './fixtures/figure-24';

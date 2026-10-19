@@ -1,6 +1,6 @@
 /**
  * Les cartes des objets de la figure (géométrie v2, lot 1, PR 1) : une carte
- * « d : y = 3x − 2 », « A = (1 ; 2) » (phase 0 `docs/wip/atelier-geometrie-phase0.md`,
+ * « d : y = 3x − 2 », « A = (1 ; 2) » (phase 0 `docs/archive/wip/atelier-geometrie-phase0.md`,
  * C1 et P1), et la création par « + Point », « + Courbe ».
  */
 

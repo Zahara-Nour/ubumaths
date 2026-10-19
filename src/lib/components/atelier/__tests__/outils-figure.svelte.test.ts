@@ -1,6 +1,6 @@
 /**
  * La barre d'outils de la vue Géométrie (géométrie, lot 3, PR 2 — M3, M5
- * partiel, M7, M8 de `docs/wip/atelier-geometrie-lot3-phase0.md`).
+ * partiel, M7, M8 de `docs/archive/wip/atelier-geometrie-lot3-phase0.md`).
  *
  * Asserte le RENDU et le chemin complet : un clic sur la toile écrit sa ligne
  * dans la console, l'objet se dessine.

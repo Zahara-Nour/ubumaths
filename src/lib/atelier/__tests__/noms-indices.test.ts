@@ -2,7 +2,7 @@
  * Atelier — les noms indicés (`a_1`, `c_2`, `A_1`) sont des noms comme les autres.
  *
  * Mesuré sur origin/main le 2026-10-19 (relevé dans
- * `docs/wip/atelier-geometrie-progress.md`, « Noms indicés ») : `referencesOf`
+ * `docs/archive/wip/atelier-geometrie-progress.md`, « Noms indicés ») : `referencesOf`
  * lisait `a_1` comme sa base `a`, et la substitution remplaçait la base d'un
  * indice. Avec `a = 10`, `a_1` tapé seul répondait « Écriture non reconnue »
  * (`10_1`) ; sans `a`, `b = a_1 + 1` attendait « a », `(c_2 ; 1)` attendait

@@ -1,7 +1,7 @@
 /**
  * Atelier — glisser un point à la souris (géométrie, lot 3, PR 1)
  *
- * Phase 0 : `docs/wip/atelier-geometrie-lot3-phase0.md`, M1, M2, M7. L'atelier
+ * Phase 0 : `docs/archive/wip/atelier-geometrie-lot3-phase0.md`, M1, M2, M7. L'atelier
  * tient la position pendant le geste (M1 a) : chaque mouvement réécrit la
  * DÉFINITION du point, comme l'élève l'aurait tapée, et tout se recalcule.
  *

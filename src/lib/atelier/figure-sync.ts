@@ -2,7 +2,7 @@
  * Atelier — reporter les points et les courbes vers une `Figure` de `geometry-core`
  *
  * Le pendant de `plot-sync.ts` pour la vue Figure (géométrie v2, lot 1, PR 2 ;
- * `docs/wip/atelier-geometrie-phase0.md`, F2, F4, F5, S1, S2, S4). Mêmes
+ * `docs/archive/wip/atelier-geometrie-phase0.md`, F2, F4, F5, S1, S2, S4). Mêmes
  * règles : l'atelier détient l'état, la figure le reflète, **un seul sens**
  * (rien de ce qui se passe dans la figure ne remonte), **idempotent** (deux
  * passages sans changement ne font rien).

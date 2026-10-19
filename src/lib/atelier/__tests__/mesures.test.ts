@@ -1,6 +1,6 @@
 /**
  * Géométrie, lot 2, PR 2 : les MESURES (L4 de
- * `docs/wip/atelier-geometrie-lot2-phase0.md`, validée le 2026-10-18).
+ * `docs/archive/wip/atelier-geometrie-lot2-phase0.md`, validée le 2026-10-18).
  *
  * `AM` (deux points de l'atelier), `distance`, `aire`, `perimetre`, `angle` :
  * des valeurs EXACTES d'abord, utilisables partout où une valeur l'est. Une

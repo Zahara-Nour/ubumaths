@@ -1,6 +1,6 @@
 /**
  * La géométrie dans l'atelier, lot 1, PR 1 : le MODÈLE des points et des
- * courbes, sans la vue Figure (phase 0 `docs/wip/atelier-geometrie-phase0.md`,
+ * courbes, sans la vue Figure (phase 0 `docs/archive/wip/atelier-geometrie-phase0.md`,
  * comportements C, P, M et décisions Q1, Q3, validés le 2026-10-18).
  *
  * Chaque test porte l'identifiant du comportement qu'il prouve. Ce qui est
