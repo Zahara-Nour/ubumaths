@@ -1,18 +1,18 @@
 ---
 title: Retrait de worksheets.template_id — journal
 date: 2026-10-19
-status: PR 1 (#1532) et PR 2 (#1542) mergées, en prod v0.41.0 ; #1544 (scripts) ; PR 3 (drop) ouverte
+status: PR 1 (#1532) et PR 2 (#1542) mergées, en prod v0.41.0 ; #1544 (scripts) ; PR 3 (drop) mergée #1548, db:migrate en attente
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, PR 3 ouverte (deploy v0.41.0 fait : #1542 en prod, vérifié sur `origin/production`)._
+_Mis à jour le 2026-10-19, après #1548 (PR 3 mergée, migration pas encore jouée)._
 
-- **État** : #1532 (migrée), #1542 (code, en prod v0.41.0), #1544 (scripts) mergées. PR 3 (`refactor/retrait-template-id-drop`, rebasée sur main) ouverte : migration `20261019221542_retrait_worksheets_template_id.sql` (RPC de partage sans `template_id`, puis `drop column`), tests adaptés, doc système à jour.
-- **Prochaine action** : CI verte → merger la PR 3 ; `db:migrate` (destructive : feu vert de David, grep des usages et réconciliation collés) ; puis PR 4 : `db:types`, nettoyage des tests unitaires qui portent encore `template_id` dans `WorksheetRow` (`style-de-la-fiche.test.ts`, `.svelte.test.ts`), `db:doc` (`base-de-donnees-tables.md`), puis versement du journal.
+- **État** : #1532, #1542 (en prod v0.41.0), #1544, #1548 (drop) mergées. Revues #1548 : `security-auditor` et `code-reviewer` sans finding bloquant. Migration `20261019221542_retrait_worksheets_template_id.sql` sur `main`, **pas jouée en prod**.
+- **Prochaine action** : `db:migrate` depuis le dépôt principal (feu vert de David) ; puis PR 4 (nouveau worktree) : `db:types`, nettoyage des tests unitaires `style-de-la-fiche.test.ts` et `.svelte.test.ts` (`template_id` dans `WorksheetRow`), commentaire périmé `supabase/seed/worksheet_system_templates.sql:7`, `db:doc` (`base-de-donnees-tables.md`), versement du journal.
 - **En attente de David** : feu vert pour le `db:migrate` destructif.
-- **Pièges en cours** : la migration est destructive → pas de `db:migrate` sans feu vert. Réconciliation prod du 2026-10-19 : 28/36 fiches avec `template_id`, toutes `style_id = template_id`.
-- **Worktree / branche** : `../ubumaths-wt-retrait-template-id` · `refactor/retrait-template-id-drop`.
+- **Pièges en cours** : la migration est sur `main` → le `db:migrate` d'une autre session la jouerait (sans risque pour le code : v0.41.0 ne lit plus la colonne). Réconciliation prod du 2026-10-19 : 28/36 fiches avec `template_id`, toutes `style_id = template_id`.
+- **Worktree / branche** : aucun (worktree de la PR 3 supprimé) ; PR 4 → `../ubumaths-wt-retrait-template-id`, branche `chore/retrait-template-id-types`.
 
 ## Contexte
 
