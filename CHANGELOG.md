@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.41.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.40.0...v0.41.0) (2026-10-19)
+
+### ✨ Features
+
+- **atelier:** la vue Géométrie au doigt et au téléphone (lot 3, PR 4) ([7432776](https://github.com/Zahara-Nour/ubumaths/commit/74327760afcfdbb5d0137a7120d32cf3d776847c))
+- **liens-courts:** le QR d'une série porte le lien court, réservé au prof ([decc2a8](https://github.com/Zahara-Nour/ubumaths/commit/decc2a8fc2dbe551357aee42a31cb416d3f50e54))
+- **liens-courts:** route /l/[code] et création par POST /api/short-links ([9de17af](https://github.com/Zahara-Nour/ubumaths/commit/9de17af6ece3aac5465b40e693ff525e82898286))
+- **liens-courts:** un lien court mène seulement à une série ([7aaf7de](https://github.com/Zahara-Nour/ubumaths/commit/7aaf7dea3f473101edb01e587c99b22dde92491d))
+
+### 🐛 Bug Fixes
+
+- **atelier:** gestes de vue au doigt — nettoyage, région annoncée, téléphone couché (revue) ([f812821](https://github.com/Zahara-Nour/ubumaths/commit/f81282154d0730303d595b1bf8ccbe91f1c8d50b))
+- **liens-courts:** droit au QR passé en prop, /l exclue du plan et des titres ([2f2e965](https://github.com/Zahara-Nour/ubumaths/commit/2f2e9659f54e8f76003b48414da2bea8ae0db250))
+- **liens-courts:** ignorer la réponse d'une ancienne série, tests du cache (revue) ([b752d78](https://github.com/Zahara-Nour/ubumaths/commit/b752d780c0d7e9cd0d56c4dda7f74c80d8bca904))
+- **units:** conseil du produit d'unités seulement quand il aide l'élève ([0ea0b2f](https://github.com/Zahara-Nour/ubumaths/commit/0ea0b2fb15774b2ca7006009ecff6ddcda3335df))
+- **units:** oracle réécrit seulement sur demande, lettres collées bornées ([95f08c3](https://github.com/Zahara-Nour/ubumaths/commit/95f08c396d409dbfb8d6a95a70b3287cccdbbbea))
+
+### 📚 Documentation
+
+- **atelier:** chantier géométrie clos — versement complet et archivage ([729c914](https://github.com/Zahara-Nour/ubumaths/commit/729c914be1886a90e99b110c9b5262384ab2df8e))
+- **atelier:** reprise du chantier géométrie après [#1540](https://github.com/Zahara-Nour/ubumaths/issues/1540) ([76be2f2](https://github.com/Zahara-Nour/ubumaths/commit/76be2f24b20a8297edb93acd65a4d91eafe74bcf))
+- **liens-courts:** journal de la PR 2 ([824af16](https://github.com/Zahara-Nour/ubumaths/commit/824af161b84988f566c7cec99cde9e1a12e918a5))
+- **liens-courts:** le lien court d'une série dans la doc des QR codes ([6a81d58](https://github.com/Zahara-Nour/ubumaths/commit/6a81d585cefd1496ac13fa3c3f92591ef3e8163d))
+- **liens-courts:** reprise après [#1539](https://github.com/Zahara-Nour/ubumaths/issues/1539), vérification manuelle notée ([f41269b](https://github.com/Zahara-Nour/ubumaths/commit/f41269bc1aaafea003678670ea5e2b20e37069f8))
+- **wip:** correction-cases-unite — option 2 validée ([e0e4ba4](https://github.com/Zahara-Nour/ubumaths/commit/e0e4ba49f01e95032ffd2a044e9d6dd86f72e0ed))
+- **wip:** correction-cases-unite — pas de ComputeEngine dans la correction ([310a6bc](https://github.com/Zahara-Nour/ubumaths/commit/310a6bcc8c42be435d9f498d6437393246e8c67c))
+- **wip:** correction-cases-unite — pas de réponses d'élèves en base ([f4ea54b](https://github.com/Zahara-Nour/ubumaths/commit/f4ea54bdaa367d93eed3a1a5b6be5b5a3e5b5904))
+- **wip:** correction-cases-unite — PR 1 codée ([8ee7026](https://github.com/Zahara-Nour/ubumaths/commit/8ee7026119e6781471c898a9f7a11ca480eec265))
+- **wip:** correction-cases-unite — reprendre après [#1543](https://github.com/Zahara-Nour/ubumaths/issues/1543) ([c998792](https://github.com/Zahara-Nour/ubumaths/commit/c998792e6bc6ab9bb5110c33df0fe08d5bd60c6f))
+- **wip:** retrait de template_id — reprise après [#1542](https://github.com/Zahara-Nour/ubumaths/issues/1542) ([e0764d5](https://github.com/Zahara-Nour/ubumaths/commit/e0764d5e5227500c0998f5ff517d083cda16ed59))
+
 ## [0.40.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.39.0...v0.40.0) (2026-10-19)
 
 ### ✨ Features
