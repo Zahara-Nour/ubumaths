@@ -381,3 +381,75 @@ describe('M7 : la construction en cours, quand son objet disparaît', () => {
 		expect(toolbox.chosen).toEqual([]);
 	});
 });
+
+describe('Revue de la PR 3', () => {
+	it('Intersection, un couple que l’atelier ne sait pas couper : sa raison, pas « ne se coupent pas »', () => {
+		const { toolbox, written } = bench(['f(x) = x', 'O = (0 ; 0)', 'c = cercle(O ; 2)']);
+		toolbox.select('intersection');
+
+		toolbox.click(0.5, 0.5, null, 0, near('f'));
+		toolbox.click(1.41, 1.41, null, 0, near('c'));
+
+		expect(written()).toEqual([]);
+		expect(toolbox.notice).toBe(
+			'L’intersection d’une fonction et d’un cercle n’est pas encore dans l’atelier.'
+		);
+	});
+
+	it('Intersection, deux droites confondues : une infinité de points communs', () => {
+		const { toolbox } = bench([
+			'A = (0 ; 0)',
+			'B = (1 ; 1)',
+			'C = (2 ; 2)',
+			'd = (AB)',
+			'd_1 = (BC)'
+		]);
+		toolbox.select('intersection');
+
+		toolbox.click(3, 3, null, 0, near('d'));
+		toolbox.click(-1, -1, null, 0, near('d_1'));
+
+		expect(toolbox.notice).toBe('d et d_1 ont une infinité de points communs.');
+	});
+
+	it('point_sur d’une droite longue : assez de décimales pour retomber sous le clic', () => {
+		const { atelier, toolbox, written } = bench(['A = (0 ; 0)', 'B = (10 ; 0)', 'd = (AB)']);
+		toolbox.select('point');
+
+		toolbox.click(3.4, 0.02, null, 0, near('d'));
+
+		expect(written()).toEqual(['C = point_sur(d ; 0,34)']);
+		expect(positionOf(atelier, 'C')?.[0]).toBeCloseTo(3.4);
+	});
+
+	it('point_sur d’une courbe raide : l’abscisse au centième, le point sous le clic', () => {
+		const { toolbox, written } = bench(['f(x) = x^3']);
+		toolbox.select('point');
+
+		toolbox.click(3.04, 28.09, null, 0, near('f'));
+
+		expect(written()).toEqual(['A = point_sur(f ; 3,04)']);
+	});
+
+	it('Parallèle : la droite choisie devenue un cercle — la construction tombe', () => {
+		const { atelier, toolbox, written } = bench(['A = (0 ; 0)', 'B = (4 ; 0)', 'd = (AB)']);
+		toolbox.select('parallele');
+		toolbox.click(2, 0.05, null, 0, near('d'));
+
+		atelier.update('d', 'cercle(A ; 2)', 'text');
+		toolbox.forgetVanished();
+
+		expect(toolbox.chosen).toEqual([]);
+		toolbox.click(5, 5, null);
+		expect(written()).toEqual([]);
+	});
+
+	it('Milieu : un clic sur un cercle tout près d’un segment vise le cercle, pas le segment', () => {
+		const { toolbox, written } = bench(FIGURE);
+		toolbox.select('milieu');
+
+		toolbox.click(0, 2, null, 0, { objects: ['c', 'd'], radius: 2.5 });
+
+		expect(written()).toEqual(['C = point_sur(c ; 90)']);
+	});
+});

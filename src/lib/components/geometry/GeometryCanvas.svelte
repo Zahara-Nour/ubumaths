@@ -625,8 +625,7 @@
 			const radius = toolPickRadius(e) / ppu;
 			hoveredId =
 				findPointNear(figure, math.x, math.y, radius) ??
-				findElementsNear(figure, math.x, math.y, radius, viewport)[0] ??
-				null;
+				findElementNear(figure, math.x, math.y, radius, viewport);
 			canvasTool.hover(math);
 			return;
 		}

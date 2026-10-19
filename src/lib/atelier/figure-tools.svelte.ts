@@ -19,7 +19,8 @@
 
 import type { Atelier } from './atelier.svelte';
 import { supportNamed } from './construction';
-import { commonPoints, type Support } from './construction-intersect';
+import { commonPoints, GeometryFailure, pointOn, type Support } from './construction-intersect';
+import { geoFromNumber } from '$lib/geometry-core/compute/geo-arithmetic';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import type { GeoPoint } from '$lib/geometry-core/types/primitives';
 import { displayName, indexedNameClash, RESERVED_NAMES } from './names';
@@ -188,23 +189,60 @@ function indexedName(atelier: Atelier, letter: string, kind: ObjectKind): string
 	throw new Error('Aucun nom libre pour un objet de la figure');
 }
 
+/** Le pas du curseur de position d'un support (`positionSliderFor`), en décimales. */
+function stepDecimals(support: Support): number {
+	if (support.type === 'circle') return 0;
+	if (support.type === 'line' && support.shape === 'segment') return 2;
+	return 1;
+}
+
+/** La position `value` ramenée dans ce que le support accepte (segment, demi-droite, cercle). */
+function clampedPosition(support: Support, value: number): number {
+	if (support.type === 'circle') return ((value % 360) + 360) % 360;
+	if (support.type === 'line' && support.shape === 'segment')
+		return Math.min(1, Math.max(0, value));
+	if (support.type === 'line' && support.shape === 'ray') return Math.max(0, value);
+	return value;
+}
+
+/** Le point de position `value` sur le support, en nombres, ou `null` (hors domaine). */
+function placedAt(support: Support, value: number): [number, number] | null {
+	try {
+		const p = pointOn(support, geoFromNumber(value), null, '');
+		return [geoToNumber(p.x), geoToNumber(p.y)];
+	} catch (error) {
+		if (error instanceof GeometryFailure) return null;
+		throw error;
+	}
+}
+
+/** Au-delà, le pas ne s'affine plus : trois décimales de plus que le curseur. */
+const EXTRA_DECIMALS = 3;
+
 /**
- * La position écrite d'un `point_sur` cliqué en (x ; y) : celle de son curseur
- * de position (`positionSliderFor`) — paramètre d'un segment au centième, ramené
- * dans [0 ; 1] ; d'une demi-droite ou d'une droite au dixième (une demi-droite
- * ne va pas sous 0) ; angle d'un cercle en degrés entiers ; abscisse d'une
- * courbe au dixième. `null` sur une conique.
+ * La position écrite d'un `point_sur` cliqué en (x ; y), au pas de son curseur
+ * de position (`positionSliderFor`) — segment au centième, ramené dans
+ * [0 ; 1] ; demi-droite et droite au dixième (une demi-droite ne va pas sous
+ * 0) ; cercle en degrés entiers ; courbe au dixième — et plus fin s'il le faut
+ * pour que le point retombe à moins de `tolerance` de sa position sous le clic
+ * (une droite longue, une courbe raide : revue). `null` sur une conique.
  */
-function writtenPosition(support: Support, x: number, y: number): string | null {
+function writtenPosition(support: Support, x: number, y: number, tolerance: number): string | null {
 	const raw = positionAt(support, x, y);
 	if (raw === null || !Number.isFinite(raw)) return null;
-	let value: number;
-	if (support.type === 'circle') value = Math.round(raw) % 360;
-	else if (support.type === 'line' && support.shape === 'segment') {
-		value = Number(Math.min(1, Math.max(0, raw)).toFixed(2));
-	} else if (support.type === 'line' && support.shape === 'ray') {
-		value = Number(Math.max(0, raw).toFixed(1));
-	} else value = Number(raw.toFixed(1));
+	const exact = clampedPosition(support, raw);
+	const target = placedAt(support, exact);
+	const first = stepDecimals(support);
+	let value = Number(exact.toFixed(first));
+	for (let decimals = first; decimals <= first + EXTRA_DECIMALS; decimals++) {
+		value = Number(exact.toFixed(decimals));
+		if (target === null || tolerance <= 0) break;
+		const placed = placedAt(support, value);
+		if (placed !== null && Math.hypot(placed[0] - target[0], placed[1] - target[1]) <= tolerance) {
+			break;
+		}
+	}
+	if (support.type === 'circle') value %= 360;
 	return String(value === 0 ? 0 : value).replace('.', ',');
 }
 
@@ -261,6 +299,8 @@ export class FigureToolbox {
 
 	readonly #atelier: Atelier;
 	readonly #write: ToolWriter;
+	/** La direction du fantôme, et pour quoi elle a été calculée. */
+	#direction: { key: string; value: { dx: number; dy: number } | null } | null = null;
 
 	constructor(atelier: Atelier, write: ToolWriter) {
 		this.#atelier = atelier;
@@ -308,6 +348,15 @@ export class FigureToolbox {
 		const tool = this.tool;
 		const [first] = this.chosen;
 		if ((tool !== 'parallele' && tool !== 'perpendiculaire') || first === undefined) return null;
+		// Lue à chaque mouvement du pointeur : calculée une fois par révision (revue)
+		const key = `${tool}|${first}|${this.#atelier.revision}`;
+		if (this.#direction?.key !== key) {
+			this.#direction = { key, value: this.#directionOf(tool, first) };
+		}
+		return this.#direction.value;
+	}
+
+	#directionOf(tool: DirectionTool, first: string): { dx: number; dy: number } | null {
 		if (this.#isPoint(first)) return null;
 		const support = supportNamed(this.#atelier, first);
 		if (support === null || support.type !== 'line') return null;
@@ -327,22 +376,25 @@ export class FigureToolbox {
 
 	/**
 	 * Abandonner la construction si ce qu'elle a choisi n'existe plus (annulé,
-	 * supprimé, renommé) : sans ça, le clic suivant écrirait `[AB]` sur un A
+	 * supprimé, renommé) ou n'est plus ce qu'elle attend (une droite devenue
+	 * cercle) : sans ça, le clic suivant écrirait `[AB]` sur un A
 	 * disparu — ou sur un autre A, créé entre-temps (revue).
 	 */
 	forgetVanished(): void {
 		const [first] = this.chosen;
 		if (first === undefined) return;
 		const object = this.#atelier.get(first);
-		const wantsPoint = isTwoPointTool(this.tool);
-		const wantsObject = this.tool === 'intersection';
-		if (
-			object === undefined ||
-			(wantsPoint && object.kind !== 'point') ||
-			(wantsObject && object.kind === 'point')
-		) {
-			this.chosen = [];
+		const tool = this.tool;
+		let kept: boolean;
+		if (object === undefined) kept = false;
+		else if (isTwoPointTool(tool)) kept = object.kind === 'point';
+		else if (object.kind === 'point') kept = tool !== 'intersection';
+		else {
+			// Un objet choisi doit rester coupable (Intersection), ou une droite (Parallèle…)
+			const support = supportNamed(this.#atelier, first);
+			kept = tool === 'intersection' ? support !== null : isLine(support);
 		}
+		if (!kept) this.chosen = [];
 	}
 
 	/** Abandonner la construction en cours (Échap) ; vrai s'il y en avait une. */
@@ -399,11 +451,10 @@ export class FigureToolbox {
 		}
 		// Milieu : un clic sur un segment donne son milieu, d'un seul clic
 		if (tool === 'milieu' && first === undefined && point === null) {
-			const segment = near.objects.find((name) => {
-				const support = supportNamed(this.#atelier, name);
-				return support !== null && support.type === 'line' && support.shape === 'segment';
-			});
-			if (segment !== undefined) {
+			// L'objet le plus proche seulement : un cercle visé près d'un segment reste le cercle
+			const [segment] = near.objects;
+			const support = segment === undefined ? null : supportNamed(this.#atelier, segment);
+			if (support !== null && support.type === 'line' && support.shape === 'segment') {
 				this.#write(`${nextPointName(this.#atelier)} = milieu(${segment})`);
 				return;
 			}
@@ -421,7 +472,7 @@ export class FigureToolbox {
 
 	/** Point sur un objet : un clic sur l'objet, jamais une intersection. */
 	#pointOnClick(x: number, y: number, near: ToolNear): void {
-		if (this.#placeOn(x, y, near.objects) === undefined) this.notice = OBJECT_NOTICE;
+		if (this.#placeOn(x, y, near) === undefined) this.notice = OBJECT_NOTICE;
 	}
 
 	/**
@@ -449,10 +500,19 @@ export class FigureToolbox {
 		}
 		const a = supportNamed(this.#atelier, first);
 		const b = supportNamed(this.#atelier, second);
-		const common = a === null || b === null ? [] : commonPoints(a, b);
-		const nearest = closest(common, x, y);
+		const pair = `${displayName(first)} et ${displayName(second)}`;
+		const common = a === null || b === null ? null : commonPoints(a, b);
+		if (common?.kind === 'unsupported') {
+			this.notice = common.message;
+			return;
+		}
+		if (common?.kind === 'infinite') {
+			this.notice = `${pair} ont une infinité de points communs.`;
+			return;
+		}
+		const nearest = closest(common?.points ?? [], x, y);
 		if (nearest === null) {
-			this.notice = `${displayName(first)} et ${displayName(second)} ne se coupent pas.`;
+			this.notice = `${pair} ne se coupent pas.`;
 			return;
 		}
 		this.#writeIntersection(first, second, nearest.k);
@@ -509,7 +569,7 @@ export class FigureToolbox {
 	#pointAt(x: number, y: number, snap: number, near: ToolNear): string | null {
 		const crossing = this.#placeAtCrossing(x, y, near);
 		if (crossing !== undefined) return crossing;
-		const on = this.#placeOn(x, y, near.objects);
+		const on = this.#placeOn(x, y, near);
 		if (on !== undefined) return on;
 		return this.#placePoint(x, y, snap);
 	}
@@ -527,7 +587,9 @@ export class FigureToolbox {
 			for (let j = i + 1; j < objects.length; j++) {
 				const [sa, sb] = [supports[i], supports[j]];
 				if (sa === null || sb === null) continue;
-				const nearest = closest(commonPoints(sa, sb), x, y);
+				const common = commonPoints(sa, sb);
+				if (common.kind !== 'points') continue;
+				const nearest = closest(common.points, x, y);
 				if (nearest === null || nearest.distance > near.radius) continue;
 				if (best === null || nearest.distance < best.distance) {
 					best = { a: objects[i], b: objects[j], k: nearest.k, distance: nearest.distance };
@@ -540,13 +602,13 @@ export class FigureToolbox {
 
 	/**
 	 * Écrire un `point_sur` du premier objet proche qui en porte un, à la
-	 * position du clic : son nom, `null` si la ligne a échoué, `undefined` si
+	 * position du clic (à moins d'une demi-tolérance près) : son nom, `null` si la ligne a échoué, `undefined` si
 	 * aucun objet ne convient.
 	 */
-	#placeOn(x: number, y: number, objects: readonly string[]): string | null | undefined {
-		for (const object of objects) {
+	#placeOn(x: number, y: number, near: ToolNear): string | null | undefined {
+		for (const object of near.objects) {
 			const support = supportNamed(this.#atelier, object);
-			const position = support === null ? null : writtenPosition(support, x, y);
+			const position = support === null ? null : writtenPosition(support, x, y, near.radius / 2);
 			if (position === null) continue;
 			const name = nextPointName(this.#atelier);
 			return this.#write(`${name} = point_sur(${object} ; ${position})`) ? name : null;

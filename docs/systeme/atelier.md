@@ -1710,11 +1710,13 @@ un point, là où aucun point n'est visé, écrit : l'**intersection** de deux o
 de leurs points communs est sous le clic (`C = intersection(d ; c ; 2)`, le plus proche ; sans `k`
 pour deux lignes) ; sinon un **`point_sur`** de l'objet le plus proche, à la position du clic
 arrondie au pas de son curseur (segment au centième, ramené dans [0 ; 1] ; demi-droite et droite
-au dixième, une demi-droite pas sous 0 ; cercle en degrés entiers ; courbe y = f(x) au dixième —
+au dixième, une demi-droite pas sous 0 ; cercle en degrés entiers ; courbe y = f(x) au dixième —, affinée d'une décimale à la fois (trois au plus) tant que le
+point écrit est à plus d'une demi-tolérance du clic (droite longue, courbe raide) —
 `point_sur(d ; 0,63)`, donc glissable) ; sinon un point par coordonnées. Outils : **Milieu** —
 deux points (`C = milieu(A ; B)`), ou un clic sur un segment (`C = milieu(d)`) ; **Intersection** —
 un clic où deux objets se coupent, ou un objet par clic et le point commun le plus proche du
-second clic (« c et d_1 ne se coupent pas. », « Choisis un autre objet que c. ») ; **Point sur un
+second clic (« c et d_1 ne se coupent pas. », « … ont une infinité de points communs. », la raison
+d'un couple que l'atelier ne coupe pas — fonction × cercle —, « Choisis un autre objet que c. ») ; **Point sur un
 objet** — un clic sur l'objet, jamais une intersection ; **Parallèle**, **Perpendiculaire** — la
 droite (droite, segment, demi-droite, droite par équation) puis le point (M5), ou un point
 existant puis la droite : `d_1 = parallele(C ; d)`, `d_1 = perpendiculaire(C ; d)` ; un cercle ne

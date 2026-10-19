@@ -628,3 +628,12 @@ Intersection, Point sur un objet, Parallèle, Perpendiculaire ; M5 complet.
 - Pour la PR 4 (M6) : au téléphone, la toile est sous l'écran et petite (22 px par unité : les
   20 px du doigt couvrent presque une unité, un clic à 0,8 de B choisit B) ; la consigne passe
   sur deux lignes.
+- Revue `code-reviewer` (Opus, aucun bloquant, 2 à corriger, 4 mineurs), tout corrigé — tests
+  d'abord vérifiés rouges (6) : Intersection d'un couple que l'atelier ne coupe pas (fonction ×
+  cercle) → sa raison, droites confondues → « infinité de points communs », plus « ne se coupent
+  pas » ; position d'un `point_sur` affinée d'une décimale à la fois (≤ 3 de plus) tant que le
+  point est à plus d'une demi-tolérance du clic (droite de longueur 10 : `0,34`, `x^3` : `3,04`) ;
+  `forgetVanished` exige un objet encore coupable (Intersection) ou encore une droite (Parallèle) ;
+  Milieu en un clic : le segment seulement s'il est l'objet le PLUS proche ; direction du fantôme
+  calculée une fois par révision ; survol par `findElementNear` (sans tri). Vérifié par la revue :
+  le `k` écrit suit la numérotation d'`intersectionPoint` ; `findElementNear` inchangé.
