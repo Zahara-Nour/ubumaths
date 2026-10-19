@@ -596,14 +596,27 @@ describe('computeReciprocal — non bijective : explication et réciproques par 
 	});
 
 	// Revue de #1342 : la fenêtre fermée [−π/2 ; π/2] gardait π/2, où tan n'existe pas.
-	// Depuis que l'étude des variations coupe en π/2, ]−1 ; 4[ a DEUX morceaux
-	// (avant : « une infinité d'intervalles », faux sur ]−1 ; 4[).
-	it('tan sur ]−1 ; 4[ : les deux morceaux, ouverts en π/2', () => {
-		const refusal = notBijectiveOf('\\tan(x)', ']-1;4[');
-		expect(refusal.message).toContain('sur ]-1 ; π/2[');
-		expect(refusal.message).toContain('sur ]π/2 ; 4[');
-		expect(refusal.message).not.toContain('infinité');
-		expect(refusal.suggestion && formatInterval(refusal.suggestion)).toBe(']π/2 ; 4[');
+	// Décision (5) de David : jamais proposer une commande qui échouerait — aucun
+	// morceau de tan n'a de formule (arctan), donc aucune commande.
+	for (const set of [']-1;4[', '[0;\\pi]', ']0;10[', ']-1;3[']) {
+		it(`tan sur ${set} : aucune commande proposée, arctan nommée`, () => {
+			const refusal = notBijectiveOf('\\tan(x)', set);
+			expect(refusal.message).not.toContain('.réciproque');
+			expect(refusal.message).toContain('arctan');
+			if (refusal.suggestion) {
+				const shown = formatInterval(refusal.suggestion);
+				expect(shown).not.toMatch(/π\/2\]|\[π\/2/);
+			}
+		});
+	}
+
+	it('tan sur ]−1 ; 4[ : le contre-exemple f(0) = f(π) = 0', () => {
+		expect(notBijectiveOf('\\tan(x)', ']-1;4[').message).toContain('f(0) = f(π) = 0');
+	});
+
+	it('sin sur ]−1 ; 4[ : aucune commande qui échouerait', () => {
+		const refusal = notBijectiveOf('\\sin(x)', ']-1;4[');
+		expect(refusal.message).not.toContain('.réciproque');
 	});
 
 	it('sin sur [0 ; 1] (pas une période entière) : reste un refus honnête, jamais « non bijective »', () => {
