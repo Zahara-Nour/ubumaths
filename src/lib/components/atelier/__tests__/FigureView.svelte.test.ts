@@ -459,13 +459,16 @@ describe('le glisser d’un point dans la toile (revue du lot 3, PR 1)', () => {
 		const point = await pointA(container);
 		const { x, y } = centerOf(point);
 		const svg = canvasOf(container);
+		// Une unité du repère, en pixels : la toile a 13 unités sur son plus petit côté
+		const rect = svg.getBoundingClientRect();
+		const unit = Math.min(rect.width, rect.height) / 13;
 		const ctrlZ = () =>
 			document.body.dispatchEvent(
 				new KeyboardEvent('keydown', { key: 'z', code: 'KeyZ', ctrlKey: true, bubbles: true })
 			);
 
 		pointer(point, 'pointerdown', x, y);
-		pointer(svg, 'pointermove', x + 30, y);
+		pointer(svg, 'pointermove', x + unit, y);
 		await nextFrame();
 		const steps = atelier.history.steps;
 		ctrlZ();
@@ -474,9 +477,9 @@ describe('le glisser d’un point dans la toile (revue du lot 3, PR 1)', () => {
 		expect(atelier.get('A')?.definition).toBe('(2 ; 2)');
 		expect(atelier.history.steps).toBe(steps);
 
-		pointer(svg, 'pointermove', x + 60, y);
+		pointer(svg, 'pointermove', x + 2 * unit, y);
 		await nextFrame();
-		pointer(svg, 'pointerup', x + 60, y);
+		pointer(svg, 'pointerup', x + 2 * unit, y);
 		await nextFrame();
 		ctrlZ();
 

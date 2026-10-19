@@ -11,12 +11,13 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1538._
+_Mis à jour le 2026-10-19, PR 4 en cours._
 
-- **État** : lots 1 et 2 livrés (#1474 → #1528) ; lot 3 PR 1 « le glisser » (#1533), PR 2 « outils de base » (#1536), PR 3 « outils de construction » (#1538 : Milieu, Intersection, Point sur un objet, Parallèle, Perpendiculaire, M5 complet) mergées. Rien en prod. Pas de worktree ouvert.
-- **Prochaine action** : lot 3 PR 4 — téléphone et tablette (M6 de `atelier-geometrie-lot3-phase0.md`), dans un nouveau worktree `../ubumaths-wt-atelier-geometrie`.
-- **En attente de David** : rien (vérification manuelle #1538 notée).
-- **Pièges** : au téléphone la toile est sous l'écran et petite (22 px/unité : les 20 px du doigt ≈ 1 unité) et la consigne passe sur deux lignes (PR 4). Banc A (24 objets) médiane 15,9 ms (M1 < 16 ms de justesse). Prévenir avant la session « atelier-refonte-interface ». PR qui touche `mathAST` → `mathast-expert`. Un segment entre deux clics dans le vide = 3 étapes d'annulation (M7, gardé).
+- **État** : lots 1 et 2 livrés ; lot 3 PR 1 (#1533), PR 2 (#1536), PR 3 (#1538) mergées ; PR 4 « téléphone et tablette » (M6) codée, revue corrigée, PR ouverte. Rien en prod.
+- **Prochaine action** : CI verte → merge ; puis clore le lot 3 (versement du journal).
+- **En attente de David** : replier « Mes objets » sur téléphone ? (la toile retombe à 160 px avec deux objets ; touche toute l'interface de l'atelier).
+- **Pièges** : la page des tests navigateur (414 px) prend la disposition téléphone (toile de 10rem) : un test qui suppose une échelle en pixels casse. PR qui touche `mathAST` → `mathast-expert`.
+- **Worktree / branche** : `../ubumaths-wt-atelier-geometrie` · `feat/atelier-geometrie-tactile`.
 
 ## Lot 1 — découpage
 
@@ -637,3 +638,39 @@ Intersection, Point sur un objet, Parallèle, Perpendiculaire ; M5 complet.
   Milieu en un clic : le segment seulement s'il est l'objet le PLUS proche ; direction du fantôme
   calculée une fois par révision ; survol par `findElementNear` (sans tri). Vérifié par la revue :
   le `k` écrit suit la numérotation d'`intersectionPoint` ; `findElementNear` inchangé.
+
+## Lot 3, PR 4 — téléphone et tablette (2026-10-19)
+
+Branche `feat/atelier-geometrie-tactile`. Périmètre (découpage de la phase 0) : M6.
+
+- Relevé d'abord (Playwright, iPhone 13, 390 × 664) : la toile était **entièrement invisible** —
+  scène de 303 px, barre de 194 px (outils sur deux lignes, Repère, consigne, invite), toile
+  coupée par l'`overflow: hidden` de la scène. Au doigt, la vue ne bougeait pas du tout (seuls le
+  bouton du milieu et la barre d'espace la déplaçaient, et `movementX` manque au doigt).
+- Précisions de geste (choix courants, dans l'esprit de M6) : le **pincement zoome** aussi (seul
+  zoom au téléphone : pas de molette) ; le glisser sur le fond avec Déplacer marche **aussi à la
+  souris** ; un troisième doigt ne fait rien ; après un pincement, le doigt resté ne fait rien.
+- Plan : `GeometryCanvas` gagne `viewGestures` (doigts suivis, pincement, glisser du fond,
+  `capture` tolérant) ; `FigureView` : consigne sortie de la barre, disposition téléphone en CSS
+  (`max-width: 640px`), 44 px au doigt (`pointer: coarse`).
+- Tests d'abord : `geste-vue.svelte.test.ts` (9, Chromium) — 6 vérifiés rouges sur le code d'avant
+  (les 3 autres gardent : point glissé au doigt, appui d'un doigt avec un outil, consigne longue).
+  Le test « Ctrl+Z en plein glisser » de `FigureView.svelte.test.ts` supposait 22 px par unité :
+  rendu indépendant de l'échelle (la page de test, 414 px, prend désormais la disposition
+  téléphone). Atelier + géométrie (navigateur) : 625 verts.
+- Vérifié à l'écran (Playwright + événements tactiles CDP) : iPhone 13 — segment par deux appuis
+  (3 lignes écrites, rien d'autre), pincement × 2, glisser du fond, barre en bas (clair et
+  sombre) ; iPad Mini et bureau 1280 × 800 — inchangés hors boutons de 44 px au doigt.
+- Revue `code-reviewer` (Sonnet, aucun bloquant, 3 à corriger, 5 mineurs), corrigée — tests
+  d'abord (3 rouges, 3 gardes) : nettoyage des gestes testé (pincement puis appui d'outil,
+  pincement annulé, second doigt pendant un glisser) ; consigne assertée non vide et posée sur la
+  toile ; la région `role="status"` reste rendue vide (plus de `display: none`) ; un glisser de la
+  figure elle-même tombe au pincement (latent : l'atelier passe par `pointDrag`) ; sans outil, le
+  doigt resté posé après un pincement continue de déplacer la vue ; l'annulation d'un AUTRE
+  pointeur ne coupe plus le déplacement ; téléphone couché (`max-height: 480px`) : disposition
+  téléphone, plancher de toile 6rem — la barre d'outils reste à l'écran (iPhone 13 couché : page
+  de 342 px, toile 117 px). Point 7 (souris pendant un pincement) déjà sûr : le pincement ferme
+  le déplacement en cours. Atelier + géométrie (navigateur) : 631 verts.
+- **À trancher par David** : au téléphone, « Mes objets » grandit avec les objets et ramène la
+  toile à son plancher (160 px avec deux points). Le replier sur téléphone touche toute
+  l'interface de l'atelier (Graphe aussi) : hors de cette PR.

@@ -407,8 +407,8 @@
 			bind:checked={() => atelier.figureFrame, (shown) => atelier.setFigureFrame(shown)}
 			label="Repère"
 		/>
-		<p class="refus" role="status">{message}</p>
 	</div>
+	<p class="refus" role="status">{message}</p>
 	{#if empty}
 		<p class="vide">
 			Dans la console, écris un point A = (1 ; 2) ou une courbe d : y = 3x − 2, ou affiche une
@@ -442,6 +442,7 @@
 					objectsMovable={false}
 					{pointDrag}
 					canvasTool={toolbox !== null && toolbox.tool !== 'deplacer' ? canvasTool : undefined}
+					viewGestures
 					overlay={layer}
 					showGrid={atelier.figureFrame}
 					showGraduations={atelier.figureFrame}
@@ -453,6 +454,7 @@
 
 <style>
 	.figure {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		flex: 1;
@@ -527,7 +529,7 @@
 		margin: 0;
 		/* Une ligne à elle, réservée : la consigne d'un outil, courte ou longue, ne fait
 		   ni passer la barre sur deux lignes ni sauter la toile (onze outils, lot 3) */
-		flex-basis: 100%;
+		padding: 0 0.75rem 0.375rem;
 		min-height: 1.25rem;
 		line-height: 1.25rem;
 		font-size: 0.875rem;
@@ -549,5 +551,82 @@
 	.cadre {
 		position: absolute;
 		inset: 0;
+	}
+	/* Au doigt, des boutons de 44 px */
+	@media (pointer: coarse) {
+		.outil {
+			width: 2.75rem;
+			height: 2.75rem;
+		}
+	}
+	/* Sur un téléphone, debout ou couché (M6) : la toile prend la vue, la barre d'outils passe dessous,
+	   sur une rangée qui défile de côté ; consigne et invite se posent sur la toile */
+	@media (max-width: 640px), (max-height: 480px) {
+		.barre-figure {
+			order: 1;
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			gap: 0.5rem;
+			padding: 0.25rem 0.5rem;
+			border-top: 1px solid var(--color-border);
+			/* Une ombre du côté où la rangée défile encore : les calques `local` (couleur du
+			   fond) la recouvrent quand on est au bout */
+			background:
+				linear-gradient(to right, var(--color-background) 30%, transparent) left / 2rem 100%
+					no-repeat local,
+				linear-gradient(to left, var(--color-background) 30%, transparent) right / 2rem 100%
+					no-repeat local,
+				radial-gradient(
+						farthest-side at 0 50%,
+						color-mix(in oklab, var(--color-foreground) 30%, transparent),
+						transparent
+					)
+					left / 1rem 100% no-repeat scroll,
+				radial-gradient(
+						farthest-side at 100% 50%,
+						color-mix(in oklab, var(--color-foreground) 30%, transparent),
+						transparent
+					)
+					right / 1rem 100% no-repeat scroll,
+				var(--color-background);
+		}
+		.outils {
+			flex-wrap: nowrap;
+		}
+		.barre-figure > :global(*) {
+			flex: none;
+		}
+		/* Un plancher sous les ~250 px qu'offre un iPhone 13, jamais une toile nulle */
+		.toile {
+			min-height: 10rem;
+		}
+		.refus,
+		.vide {
+			position: absolute;
+			left: 0;
+			right: 0;
+			z-index: 1;
+			padding: 0.25rem 0.75rem;
+			background: color-mix(in oklab, var(--color-background) 60%, transparent);
+			pointer-events: none;
+		}
+		.refus {
+			top: 0;
+		}
+		/* Vide, elle reste rendue (sans fond) : un lecteur d'écran l'entend changer */
+		.refus:empty {
+			padding: 0;
+			background: none;
+		}
+		.vide {
+			top: 1.75rem;
+		}
+	}
+	/* Téléphone couché : l'en-tête et les barres de l'atelier ne laissent qu'environ
+	   190 px, la barre d'outils doit rester à l'écran */
+	@media (max-height: 480px) {
+		.toile {
+			min-height: 6rem;
+		}
 	}
 </style>
