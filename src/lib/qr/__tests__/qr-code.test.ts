@@ -76,6 +76,21 @@ describe('qrSvg', () => {
 		});
 	});
 
+	it('retire du titre les caractères de contrôle, interdits en XML', () => {
+		const qr = encodeQr('https://example.com/a');
+		if (!qr) throw new Error('QR attendu');
+		const svg = qrSvg(qr, 'QR code vers https://example.com/a\u0001b\u001f');
+		expect(svg).toContain('<title>QR code vers https://example.com/ab</title>');
+	});
+
+	it('donne une taille en pixels sur demande, sans changer le dessin', () => {
+		const qr = encodeQr('https://www.chiph.re/glossaire');
+		if (!qr) throw new Error('QR attendu');
+		const sized = qrSvg(qr, 'x', 330);
+		expect(sized).toContain(`viewBox="0 0 ${qr.size} ${qr.size}" width="330" height="330">`);
+		expect(sized.replace(' width="330" height="330"', '')).toBe(qrSvg(qr, 'x'));
+	});
+
 	it('échappe le titre', () => {
 		const qr = encodeQr('https://www.chiph.re/a?b=1&c=2');
 		if (!qr) throw new Error('QR attendu');

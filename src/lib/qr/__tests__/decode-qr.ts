@@ -5,8 +5,11 @@
  */
 import jsQR from 'jsqr';
 
-/** Pixels par case : de l'ordre d'un QR de 2,5 cm photographié par un téléphone */
-const PX_PER_MODULE = 4;
+/**
+ * Pixels par case : 3, une photo de téléphone d'un QR de 2,5 cm en version 15
+ * (85 cases marge comprise, ~0,3 mm par case) en donne à peine plus.
+ */
+const PX_PER_MODULE = 3;
 
 function decodeImage(image: CanvasImageSource, side: number): string | null {
 	const canvas = document.createElement('canvas');

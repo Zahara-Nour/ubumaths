@@ -6,24 +6,42 @@ import { describe, expect, it } from 'vitest';
 import { encodeQr, qrSvg } from '../qr-code';
 import { decodeSvg } from './decode-qr';
 
-const ADDRESSES = [
-	'https://www.chiph.re/glossaire',
-	'https://www.chiph.re/exercice/derivee-d-un-produit-de-fonctions?token=Ab12Cd34Ef56Gh78',
-	`https://www.chiph.re/automaths/test?categories=${'%2522x'.repeat(16)}`,
-	`https://www.chiph.re/automaths/test?c=${'a'.repeat(172)}`
-];
+/** Une adresse par version, de la 3 (`https://www.chiph.re/` seule) à la 15 */
+function addressesByVersion(): Map<number, string> {
+	const found = new Map<number, string>();
+	for (let length = 0; length <= 200; length++) {
+		const url = `https://www.chiph.re/${'a'.repeat(length)}`;
+		const version = encodeQr(url)?.version;
+		if (version !== undefined && !found.has(version)) found.set(version, url);
+	}
+	return found;
+}
+
+const BY_VERSION = addressesByVersion();
 
 describe('QR stylé rendu par le navigateur', () => {
-	it.each(ADDRESSES)('se lit et redonne l’adresse exacte : %s', async (url) => {
-		const qr = encodeQr(url);
-		if (!qr) throw new Error('QR attendu');
-
-		expect(await decodeSvg(qrSvg(qr, `QR code vers ${url}`), qr.size)).toBe(url);
+	it('a une adresse pour chaque version de 3 à 15', () => {
+		expect([...BY_VERSION.keys()].sort((a, b) => a - b)).toEqual([
+			3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+		]);
 	});
 
-	it('couvre des versions variées, jusqu’à la 15', () => {
-		const versions = ADDRESSES.map((url) => encodeQr(url)?.version ?? 0);
-		expect(Math.min(...versions)).toBeLessThanOrEqual(4);
-		expect(Math.max(...versions)).toBeGreaterThanOrEqual(13);
+	// Versions 7 à 15 : le logo recouvre un motif d'alignement, la correction H doit suffire
+	it.each([...BY_VERSION])(
+		'version %i : se lit et redonne l’adresse exacte',
+		async (_version, url) => {
+			const qr = encodeQr(url);
+			if (!qr) throw new Error('QR attendu');
+
+			expect(await decodeSvg(qrSvg(qr, `QR code vers ${url}`), qr.size)).toBe(url);
+		}
+	);
+
+	it('se lit pour une adresse à jeton ordinaire', async () => {
+		const url =
+			'https://www.chiph.re/exercice/derivee-d-un-produit-de-fonctions?token=Ab12Cd34Ef56Gh78';
+		const qr = encodeQr(url);
+		if (!qr) throw new Error('QR attendu');
+		expect(await decodeSvg(qrSvg(qr, `QR code vers ${url}`), qr.size)).toBe(url);
 	});
 });

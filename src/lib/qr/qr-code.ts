@@ -105,12 +105,20 @@ export function encodeQr(text: string): QrMatrix | null {
 	}
 }
 
+/**
+ * Texte sûr dans un SVG : caractères spéciaux échappés, caractères de contrôle
+ * retirés (interdits en XML : le SVG serait refusé, et le PDF de la fiche avec).
+ */
 function escapeXml(text: string): string {
-	return text
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;');
+	return (
+		text
+			// eslint-disable-next-line no-control-regex -- on retire justement ces caractères
+			.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '')
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+	);
 }
 
 const num = (value: number) => Number(value.toFixed(3));
@@ -216,12 +224,14 @@ export function qrDrawing(qr: QrMatrix): QrDrawing {
 
 /**
  * Le QR code stylé en SVG autonome, un module par unité. Même dessin que le
- * bloc ```qr à l'écran et dans les PDF.
+ * bloc ```qr à l'écran et dans les PDF. `pixels` donne au SVG une taille
+ * intrinsèque (le PNG : Safari et Firefox dessinent mal un SVG sans taille).
  */
-export function qrSvg(qr: QrMatrix, title: string): string {
+export function qrSvg(qr: QrMatrix, title: string, pixels?: number): string {
 	const d = qrDrawing(qr);
+	const size = pixels === undefined ? '' : ` width="${pixels}" height="${pixels}"`;
 	return (
-		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${d.size} ${d.size}">` +
+		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${d.size} ${d.size}"${size}>` +
 		`<title>${escapeXml(title)}</title>` +
 		`<rect width="${d.size}" height="${d.size}" fill="${QR_COLORS.background}"/>` +
 		`<path d="${d.modules}" fill="${QR_COLORS.modules}"/>` +

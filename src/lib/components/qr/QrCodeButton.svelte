@@ -14,7 +14,7 @@
 	import Check from '@lucide/svelte/icons/check';
 	import Download from '@lucide/svelte/icons/download';
 	import { canonicalUrl } from '$lib/seo/site';
-	import { encodeQr, qrFileName, qrSvg } from '$lib/qr/qr-code';
+	import { encodeQr, qrFileName, qrSvg, type QrMatrix } from '$lib/qr/qr-code';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	interface Props {
@@ -99,27 +99,34 @@
 		saveBlob(new Blob([svg], { type: 'image/svg+xml' }), qrFileName(label, 'svg'));
 	}
 
-	/** Le PNG est le SVG stylé, dessiné par le navigateur : un seul dessin pour les deux */
-	async function drawPng(svgSrc: string, modules: number): Promise<Blob | null> {
-		const image = new Image();
-		image.src = svgSrc;
-		try {
-			await image.decode();
-		} catch {
-			return null;
-		}
-		const canvas = document.createElement('canvas');
-		canvas.width = modules * PNG_MODULE_PX;
-		canvas.height = modules * PNG_MODULE_PX;
-		const context = canvas.getContext('2d');
-		if (!context) return null;
-		context.drawImage(image, 0, 0, canvas.width, canvas.height);
-		return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+	/**
+	 * Le PNG est le SVG stylé, dessiné par le navigateur : un seul dessin pour
+	 * les deux. Le SVG reçoit une taille en pixels et l'image est attendue par
+	 * `onload` (Safari et Firefox gèrent mal `decode()` d'un SVG sans taille).
+	 */
+	function drawPng(matrix: QrMatrix): Promise<Blob | null> {
+		const side = matrix.size * PNG_MODULE_PX;
+		const image = new Image(side, side);
+		const loaded = new Promise<boolean>((resolve) => {
+			image.onload = () => resolve(true);
+			image.onerror = () => resolve(false);
+		});
+		image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(qrSvg(matrix, alt, side))}`;
+		return loaded.then((ok) => {
+			if (!ok) return null;
+			const canvas = document.createElement('canvas');
+			canvas.width = side;
+			canvas.height = side;
+			const context = canvas.getContext('2d');
+			if (!context) return null;
+			context.drawImage(image, 0, 0, side, side);
+			return new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+		});
 	}
 
 	async function downloadPng() {
-		if (qr === null || imageSrc === null) return;
-		const blob = await drawPng(imageSrc, qr.size);
+		if (qr === null) return;
+		const blob = await drawPng(qr);
 		if (blob === null) {
 			toaster.error('Impossible de fabriquer l’image PNG : télécharge le SVG.');
 			return;
