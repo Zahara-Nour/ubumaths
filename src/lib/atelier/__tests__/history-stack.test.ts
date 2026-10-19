@@ -77,3 +77,64 @@ describe('HistoryStack — la pile Annuler / Rétablir (lot 5)', () => {
 		expect(stack.topId).toBeNull();
 	});
 });
+
+describe('HistoryStack — un geste continu (curseur, champ) est UNE étape (lot 5, PR 2)', () => {
+	it('les écritures d’un même geste ouvert se fondent en une étape', () => {
+		const stack = new HistoryStack();
+		stack.push({ label: 'supprimer k', before: 'a', after: 'b' });
+		let state = 'b';
+		for (let i = 1; i <= 150; i++) {
+			const next = `t${i}`;
+			stack.push({ label: 'tangente de f', before: state, after: next }, 'tangente:f');
+			state = next;
+		}
+
+		expect(stack.size).toBe(2);
+		expect(stack.undo()?.before).toBe('b');
+		expect(stack.undo()?.label).toBe('supprimer k');
+	});
+
+	it('une fois le geste fermé, le geste suivant fait une nouvelle étape', () => {
+		const stack = new HistoryStack();
+		stack.push({ label: 'curseur a', before: 'a', after: 'b' }, 'curseur:a');
+		stack.seal();
+		stack.push({ label: 'curseur a', before: 'b', after: 'c' }, 'curseur:a');
+
+		expect(stack.size).toBe(2);
+	});
+
+	it('un autre geste entre deux écritures ferme le premier', () => {
+		const stack = new HistoryStack();
+		stack.push({ label: 'curseur a', before: 'a', after: 'b' }, 'curseur:a');
+		stack.push({ label: 'couleur de f', before: 'b', after: 'c' });
+		stack.push({ label: 'curseur a', before: 'c', after: 'd' }, 'curseur:a');
+
+		expect(stack.size).toBe(3);
+	});
+
+	it('une écriture qui ne part pas de l’état laissé par le geste ne s’y fond pas', () => {
+		const stack = new HistoryStack();
+		stack.push({ label: 'curseur a', before: 'a', after: 'b' }, 'curseur:a');
+		stack.push({ label: 'curseur a', before: 'x', after: 'y' }, 'curseur:a');
+
+		expect(stack.size).toBe(2);
+	});
+
+	it('un geste revenu à son point de départ ne laisse aucune étape', () => {
+		const stack = new HistoryStack();
+		stack.push({ label: 'curseur a', before: 'a', after: 'b' }, 'curseur:a');
+		stack.push({ label: 'curseur a', before: 'b', after: 'a' }, 'curseur:a');
+
+		expect(stack.size).toBe(0);
+	});
+
+	it('annuler ferme le geste : une nouvelle écriture ne se fond pas dans une étape plus ancienne', () => {
+		const stack = new HistoryStack();
+		stack.push({ label: 'curseur a', before: 'a', after: 'b' }, 'curseur:a');
+		stack.push({ label: 'curseur b', before: 'b', after: 'c' }, 'curseur:b');
+		stack.undo();
+		stack.push({ label: 'curseur a', before: 'b', after: 'd' }, 'curseur:a');
+
+		expect(stack.size).toBe(2);
+	});
+});

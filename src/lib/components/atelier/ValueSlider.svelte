@@ -15,6 +15,7 @@
 	import { constantOf } from '$lib/atelier/atelier.svelte';
 	import type { PointObject, Slider as SliderSettings, ValueObject } from '$lib/atelier/types';
 	import { Slider } from '$lib/components/ui/slider';
+	import { gestureHandlers } from '$lib/atelier/gesture';
 
 	interface Props {
 		object: ValueObject | PointObject;
@@ -54,6 +55,9 @@
 		return Math.min(notches, Math.max(0, Math.round((v - slider.min) / notchSize)));
 	}
 
+	/** Tout un glissé = UNE étape d'Annuler (lot 5, PR 2) : fermée au relâchement. */
+	const gesture = gestureHandlers(() => atelier.endGesture());
+
 	function handleSlide(notch: number) {
 		const next = slider.min + notch * notchSize;
 		if (isPosition) atelier.slidePosition(object.name, next);
@@ -86,11 +90,19 @@
 	});
 </script>
 
-<div class="curseur" bind:this={zone}>
+<div
+	class="curseur"
+	role="group"
+	bind:this={zone}
+	onkeydowncapture={gesture.keydown}
+	onkeyup={gesture.keyup}
+	onfocusout={gesture.focusout}
+>
 	<Slider
 		class="flex-1"
 		type="single"
 		bind:value={() => toNotch(value), handleSlide}
+		onValueCommit={gesture.commit}
 		min={0}
 		max={notches}
 		step={1}

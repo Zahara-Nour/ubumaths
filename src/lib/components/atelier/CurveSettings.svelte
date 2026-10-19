@@ -29,6 +29,7 @@
 	import { isCurveColor } from '$lib/grapheur/colors';
 	import { Input } from '$lib/components/ui/input';
 	import { integralToggle, tangentToggle } from '$lib/atelier/curve-toggles';
+	import { gestureHandlers } from '$lib/atelier/gesture';
 
 	interface Props {
 		object: FunctionObject;
@@ -117,9 +118,19 @@
 		update(tangentToggle(checked === true, graph.viewport));
 	}
 
+	/**
+	 * Tout un glissé de la tangente = UNE étape d'Annuler (lot 5, PR 2 ; revue de
+	 * #1517 : 150 crans faisaient 100 étapes et chassaient une suppression).
+	 */
+	const tangentGesture = gestureHandlers(() => atelier.endGesture());
+
 	function handleTangentSlide(index: number) {
 		const { xMin, xMax } = graph.viewport;
-		update({ tangentAt: fromSliderIndex(index, xMin, xMax) });
+		atelier.setDisplay(
+			object.name,
+			{ tangentAt: fromSliderIndex(index, xMin, xMax) },
+			`tangente:${object.name}`
+		);
 	}
 
 	/** Bornes par défaut : la moitié centrale de la fenêtre visible. */
@@ -136,7 +147,12 @@
 			const current = atelier.get(object.name);
 			const integral = current && isFunction(current) ? current.display?.integral : null;
 			if (!Number.isFinite(parsed) || !integral) return;
-			const result = atelier.setDisplay(object.name, { integral: { ...integral, [edge]: parsed } });
+			// Une frappe par écriture, UNE étape par champ quitté (lot 5, PR 2)
+			const result = atelier.setDisplay(
+				object.name,
+				{ integral: { ...integral, [edge]: parsed } },
+				`borne-${edge}:${object.name}`
+			);
 			// Refusée (au-delà de ±1e9) : on le DIT — sinon le champ contredit l'aire
 			boundRefusal = result.ok
 				? null
@@ -154,6 +170,7 @@
 	 */
 	function handleBoundChange(edge: 'from' | 'to') {
 		return (event: Event & { currentTarget: HTMLInputElement }) => {
+			atelier.endGesture();
 			const current = atelier.get(object.name);
 			const integral = current && isFunction(current) ? current.display?.integral : null;
 			if (integral) event.currentTarget.value = String(integral[edge]);
@@ -221,7 +238,14 @@
 
 	{#if display.tangentAt !== null}
 		<div class="encadre">
-			<div class="ligne curseur" bind:this={sliderZone}>
+			<div
+				class="ligne curseur"
+				role="group"
+				bind:this={sliderZone}
+				onkeydowncapture={tangentGesture.keydown}
+				onkeyup={tangentGesture.keyup}
+				onfocusout={tangentGesture.focusout}
+			>
 				<span class="symbole">x₀</span>
 				<!--
 					Curseur piloté en entiers, comme dans le grapheur : bits-ui compare la
@@ -240,6 +264,7 @@
 							),
 						handleTangentSlide
 					}
+					onValueCommit={tangentGesture.commit}
 					min={0}
 					max={SLIDER_STEPS}
 					step={1}
