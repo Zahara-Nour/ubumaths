@@ -599,3 +599,32 @@ le réutilise), M7, M8.
   console qu'il ferme, un champ, une fenêtre) n'abandonne rien ; un point construit visé n'est pas
   le point des flèches, et un refus s'efface au clic d'outil. Gardé tel quel (M7 validé) : un
   segment entre deux clics dans le vide fait trois étapes (A, B, le segment).
+
+## Lot 3, PR 3 — les outils de construction (2026-10-19)
+
+Branche `feat/atelier-geometrie-construction`. Périmètre (découpage de la phase 0) : Milieu,
+Intersection, Point sur un objet, Parallèle, Perpendiculaire ; M5 complet.
+
+- Précisions de geste (choix courants, dans l'esprit de M5) : **Milieu** — deux points, ou un clic
+  sur un segment (`C = milieu(d)`) ; **Intersection** — un clic où deux objets se coupent, ou un
+  objet par clic et le point commun le plus proche du second clic ; `k` écrit dès que deux points
+  communs sont possibles (`intersection(d ; c ; 2)`), jamais pour deux lignes ; **Point sur un
+  objet** — un `point_sur` à la position du clic, jamais une intersection ; **Parallèle /
+  Perpendiculaire** — la droite puis le point, ou un point existant puis la droite ; un clic dans
+  le vide d'abord ne pose rien (la consigne demande la droite). Position d'un `point_sur` écrite au
+  pas de son curseur (segment 0,01 ramené dans [0 ; 1], demi-droite et droite 0,1, cercle 1°,
+  courbe 0,1) : le point se glisse ensuite.
+- Plan : la toile passe les éléments proches (`findElementsNear`, nouveau dans `geometry-core`,
+  `distanceToElement` sorti de `findElementNear`) ; la boîte calcule sur l'atelier
+  (`supportNamed`, `commonPoints`). Survol : le point, sinon l'objet le plus proche, en évidence.
+- Tests d'abord : `outils-construction.test.ts` (28 node, rouges sur `e46fe8a58`),
+  `outils-construction.svelte.test.ts` (7, Chromium : barre absente avant), `findElementsNear` (2).
+  Atelier + geometry-core : 9034 node, 616 navigateur, verts.
+- Vérifié à l'écran (Playwright, bureau 1280 × 800 et iPhone 13 au toucher) : `point_sur` sur
+  segment et cercle, les deux intersections segment × cercle (k = 2 et 1), `milieu(d)`, parallèle
+  et perpendiculaire par G, fantômes, survol. **Corrigé au passage** : avec onze outils, une
+  consigne longue faisait passer la barre sur deux lignes et rétrécissait la toile (l'échelle
+  changeait d'un clic à l'autre) — la consigne a désormais sa ligne à elle.
+- Pour la PR 4 (M6) : au téléphone, la toile est sous l'écran et petite (22 px par unité : les
+  20 px du doigt couvrent presque une unité, un clic à 0,8 de B choisit B) ; la consigne passe
+  sur deux lignes.
