@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, phase 0 de la PR 2 validée._
+_Mis à jour le 2026-10-19, après #1545._
 
-- **État** : PR 1 mergée (#1543). PR 2 (valeur lue en arbre) : phase 0 validée par David, tests rouges en cours.
-- **Prochaine action** : tests rouges → `parser.ts` lit la valeur par `parseLatex` → `tidy` → `rationalOf` ; chemin « valeur en chaîne » de `quantity-comparison.ts` retiré ; oracle à 0 changement ; revue `code-reviewer` opus.
+- **État** : PR 1 (#1543) et PR 2 (#1545, valeur lue en arbre) mergées. Oracle à 0 changement. Rien en prod (pas de `deploy:prod`).
+- **Prochaine action** : PR 3 — comparaison exacte (`valueIn` / rationnels) au lieu des flottants ; phase 0 (comportements en français) à soumettre à David AVANT tout code ; revue `code-reviewer` opus.
 - **En attente de David** : rien.
-- **Pièges en cours** : la normalisation élève rend `2,5` (l'arbre refuse `,`) ; `valueIn` → `null` sur les températures (PR 3) ; messages d'unité validés par David (ne pas reformuler) ; pas de `timeout` sur ce Mac.
-- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-lecture`.
+- **Pièges en cours** : `valueIn` → `null` sur les températures (PR 3 : garder `convertAffine`) ; `readExactValue` (parser.ts) existe déjà, non exporté ; `9^{0.5}` illisible (refus honnête) ; messages d'unité validés par David (ne pas reformuler) ; pas de `timeout` sur ce Mac.
+- **Plus tard (PR 2 bis)** : découpage « nombre | unité » de `student-input.ts` — `2\sqrt{2} m`, `3+2 m` → « Unité inconnue » ; `\sqrt{2} m`, `(-3) m`, `.5 m` → « Réponse invalide » ; `\sqrt{2}` m exact contre 1,41 m arrondi → « format invalide ».
+- **Worktree / branche** : à recréer — `git worktree add -b refactor/correction-cases-unite-exacte ../ubumaths-wt-correction-cases-unite origin/main`.
 
 ## Historique
 
@@ -101,3 +102,16 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
 - Élève sans unité, valeur illisible (`\sqrt{2}`) → « N'oublie pas l'unité. » comme aujourd'hui.
 - Hors PR (noté pour plus tard, PR 2 bis possible) : découpage « nombre | unité » de `student-input.ts`
   — `2\sqrt{2} m`, `3+2 m` → « Unité inconnue », `(-3) m` → « N'oublie pas l'unité ».
+
+### 2026-10-19 — #1545 mergée (PR 2)
+
+- `parser.ts` : `extractValue` → `readExactValue` (`parseLatex` → `tidy` → `rationalOf`) ;
+  `Quantity.value` = `number` ; `evaluateQuantityValue` et `evaluation_failed` retirés.
+- `readsAsNumber` (évaluation en un réel fini) : `\sqrt{2}`, `\pi` sans unité → « N'oublie pas
+  l'unité. » ; `abc`, `\infty` → « Réponse invalide ».
+- Revue opus : rien de bloquant. Corrigé : `\infty` pris pour un nombre ; `\num{5}`, `5\text{ }`
+  attendus de nouveau lus (`stripLatexSpacing`). Accepté : `checkUnit` muet sur une valeur non
+  rationnelle (case fausse de toute façon).
+- Écart de phase 0 tranché par David (suit ma reco) : saisies mal découpées avec unité écrite
+  (`\sqrt{2} m`, `(5) m`, `.5 m`, `5,`) → « Réponse invalide : vérifier le format. » au lieu de
+  « N'oublie pas l'unité. » (faux : l'unité y est). Verdicts inchangés.
