@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, PR 1 en cours (pas encore ouverte)._
+_Mis à jour le 2026-10-19, après #1543._
 
-- **État** : PR 1 codée (message c, `quantity-comparison.ts`, code mort retiré, docs sans ComputeEngine, oracle en CI) ; tests unités + validateur verts, `check:incremental` 0, `lint:fast` ok.
-- **Prochaine action** : `types:cliquet`, revue `code-reviewer` (Sonnet), push, PR, CI, merge ; puis PR 2 (valeur lue en arbre, phase 0 d'abord).
+- **État** : PR 1 mergée (#1543) — oracle en CI (1 724 verdicts, `ORACLE_MAJ=1` pour un changement voulu), message « produit d'unités » conditionnel, `quantity-comparison.ts`, docs sans ComputeEngine. Rien en prod (pas de `deploy:prod`).
+- **Prochaine action** : PR 2 — valeur lue en arbre (mathAST) au lieu de `extractValue` ; phase 0 (comportements en français) à soumettre à David AVANT tout code ; agents `pedagogy-expert` / `mathast-expert`, revue `code-reviewer` en opus.
 - **En attente de David** : rien.
-- **Pièges en cours** : `valueIn` → `null` sur les températures ; `extractValue` lit `2\sqrt{2}` comme 2 (PR 2) ; `ORACLE_MAJ=1` réécrit l'oracle ; messages d'unité validés par David (ne pas reformuler sans accord).
-- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite`.
+- **Pièges en cours** : `valueIn` → `null` sur les températures (PR 3 : garder la conversion actuelle) ; `extractValue` lit `2\sqrt{2}` comme 2 (aucun modèle publié) ; messages d'unité validés par David (ne pas reformuler sans accord) ; pas de `timeout` sur ce Mac.
+- **Worktree / branche** : à recréer — `git worktree add -b refactor/correction-cases-unite-lecture ../ubumaths-wt-correction-cases-unite origin/main`.
 
 ## Historique
 
@@ -85,3 +85,9 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
 - ADR 0026, `grandeurs.md`, `questions.md`, commentaires : plus de « ComputeEngine ».
 - Hors périmètre, vu en passant : « Compute Engine » reste dans les commentaires de
   `answer-validator.ts`, `validation-rule-evaluator.ts`, `questions/index.ts`, `feedback.ts`.
+
+### 2026-10-19 — #1543 mergée
+
+- Revue : oracle qui se réécrivait si son fichier manquait → corrigé (preuve `ENOENT`) ;
+  explosion des découpes de lettres collées → inatteignable (seule une écriture lue comme UNE
+  unité arrive là, `semaine` = 7 lettres), borne à 8 gardée en défense.
