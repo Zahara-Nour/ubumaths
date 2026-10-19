@@ -71,6 +71,10 @@ async function mount(width: number) {
 	await page.viewport(width, 900);
 	const view = await render(AtelierContainer, { atelier: busyAtelier(), ephemeral: true });
 	await vi.waitFor(() => expect(view.container.querySelectorAll('article.objet').length).toBe(14));
+	// Sur téléphone, « Mes objets » s'ouvre replié : on le déplie pour voir les cartes
+	const toggle = view.container.querySelector<HTMLButtonElement>('.panneau button[aria-controls]');
+	if (toggle && toggle.getAttribute('aria-expanded') === 'false') toggle.click();
+	await vi.waitFor(() => expect(toggle?.getAttribute('aria-expanded')).toBe('true'));
 	return view.container;
 }
 

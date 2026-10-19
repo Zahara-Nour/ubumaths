@@ -10,6 +10,10 @@ import { Atelier } from '$lib/atelier/atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput } from '$lib/atelier/calcul';
 import { menuItemOf, openCardMenu } from './harness/function-card';
+import { onDesktopScreen } from './harness/desktop-screen';
+
+// À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
+onDesktopScreen();
 
 describe('une liste tapée dans Calcul, vue dans le panneau', () => {
 	it('sa carte propose l’action Statistiques', async () => {

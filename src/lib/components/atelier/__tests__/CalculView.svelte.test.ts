@@ -15,6 +15,10 @@ import { Atelier } from '$lib/atelier/atelier.svelte';
 import { chooseCardAction } from './harness/function-card';
 import { commandCatalog } from '$lib/atelier/commands';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { onDesktopScreen } from './harness/desktop-screen';
+
+// À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
+onDesktopScreen();
 
 /** Laisser Svelte appliquer ses effets ET le DOM se mettre à jour. */
 async function settle() {
