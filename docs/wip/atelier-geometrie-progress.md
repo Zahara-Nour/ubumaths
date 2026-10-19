@@ -441,3 +441,10 @@ de contrôles. Définitions liées par cran : 5 808 → 3.
   puissance d'un angle refusée partout. `.variations cos(x°)` : cause trouvée dans `mathAST/sign`
   (échantillons dans [-100 ; 100] avec des zéros périodiques incomplets sur ℝ), corrigée (sens
   indéterminé sur les intervalles non bornés) ; `cos(x)` inchangé.
+- 2026-10-19 : **écrire un angle comme sur la copie, mergé (#1519, `2fa179880`)** : `60°`, `60^\circ`,
+  `cos(x°)`, `.résoudre` / `.évaluer` en degrés, grille, écriture `90°`. Corrige aussi dans `mathAST`
+  le signe et les variations des fonctions périodiques sur un intervalle non borné (31 lignes sur 532
+  d'un échantillon oracle changent, toutes vers le juste). Revue `mathAST` : une régression de la
+  première correction (`x − sin x`) trouvée et corrigée avant le merge. Restent, signalés à David :
+  extrema de `sin x` faux sur [0 ; 2π] (−1 en 3π/2 absent) ; `tan x` « croissante sur ℝ ». À confirmer
+  par David : `cos(x°)` accepté, angle brut dans une fonction refusé, écriture `90°`. Pas en production.
