@@ -161,3 +161,53 @@ describe('la fenêtre', () => {
 		expect(labels.some((l) => l.includes('PNG'))).toBe(false);
 	});
 });
+
+describe('l’adresse fabriquée à l’ouverture (lien court, docs/wip/liens-courts-phase0.md)', () => {
+	const LONG = `/automaths/test?categories=${'%2522x'.repeat(200)}`;
+
+	it('porte l’adresse COURTE, canonique, dans le QR et en clair', async () => {
+		const resolveUrl = vi.fn(async () => '/l/Xk7pQ2mZ');
+		await openFor({ url: LONG, label: 'la série', resolveUrl });
+
+		expect(resolveUrl).toHaveBeenCalledExactlyOnceWith(LONG);
+		const shown = dialog().querySelector(
+			'input[aria-label="Adresse du QR code"]'
+		) as HTMLInputElement;
+		expect(shown.value).toBe('https://www.chiph.re/l/Xk7pQ2mZ');
+		const img = dialog().querySelector('img') as HTMLImageElement;
+		expect(img.alt).toBe('QR code vers https://www.chiph.re/l/Xk7pQ2mZ');
+		expect(dialog().textContent).not.toContain('trop long');
+	});
+
+	it('ne redemande pas l’adresse en rouvrant la fenêtre', async () => {
+		const resolveUrl = vi.fn(async () => '/l/Xk7pQ2mZ');
+		const { container } = await openFor({ url: LONG, label: 'la série', resolveUrl });
+		await userEvent.keyboard('{Escape}');
+		await settle();
+		await userEvent.click(trigger(container));
+		await settle();
+		expect(resolveUrl).toHaveBeenCalledTimes(1);
+		expect(dialog().querySelector('img')).not.toBeNull();
+	});
+
+	it('serveur muet : « QR indisponible », ni QR ni adresse', async () => {
+		const resolveUrl = vi.fn(async () => {
+			throw new Error('réseau');
+		});
+		await openFor({ url: LONG, label: 'la série', resolveUrl });
+
+		expect(dialog().textContent).toContain('QR indisponible pour l’instant, copie le lien.');
+		expect(dialog().querySelector('img')).toBeNull();
+		expect(dialog().querySelector('input')).toBeNull();
+	});
+
+	it('pendant la fabrication : un message, pas de QR', async () => {
+		const resolveUrl = vi.fn(() => new Promise<string>(() => {}));
+		await openFor({ url: LONG, label: 'la série', resolveUrl });
+
+		expect(dialog().querySelector('[role="status"]')?.textContent).toContain(
+			'Fabrication du QR code'
+		);
+		expect(dialog().querySelector('img')).toBeNull();
+	});
+});

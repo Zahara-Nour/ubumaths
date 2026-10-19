@@ -7,6 +7,11 @@
 	  aux nombres porte son temps limite (mêmes réglages que la fenêtre du panier).
 
 	Utilisé par le panier et par la page « Séries » (Q46).
+
+	Le QR code porte un lien court (`/l/<code>`) : le lien de série dépasse
+	toujours ce qu'un QR lisible contient. Seuls un prof et l'admin en créent
+	(le panier est public) ; ailleurs, le QR est indisponible et le lien long
+	reste copiable. Phase 0 : docs/wip/liens-courts-phase0.md.
 -->
 
 <script lang="ts">
@@ -15,6 +20,8 @@
 	import { Label } from '$lib/components/ui/label';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
+	import { page } from '$app/state';
+	import { fetchShortLinkPath } from '$lib/qr/short-link';
 	import { Link } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { buildSeriesLink, type SeriesCategories } from '$lib/validation/series';
@@ -51,8 +58,19 @@
 	let courseMinutes = $state(String(DEFAULT_COURSE_MINUTES));
 
 	let isCourse = $derived(selectedForm === 'course');
-	/** Le lien du QR code (chemin seul), ou la raison de son absence */
+	/** Seuls un prof et l'admin créent un lien court (`create_short_link`) */
+	let canMakeQr = $derived(
+		page.data.profile?.role === 'teacher' || page.data.profile?.role === 'admin'
+	);
+	/** La cible du lien court du QR (chemin seul), ou la raison de son absence */
 	let qrLink = $derived(linkToCopy(''));
+	let qrUnavailableReason = $derived(
+		'error' in qrLink
+			? qrLink.error
+			: canMakeQr
+				? undefined
+				: 'le QR code d’une série est réservé aux profs, copie le lien'
+	);
 
 	function isTestMode(value: string): value is TestMode {
 		return TEST_MODES.includes(value);
@@ -130,9 +148,10 @@
 		Copier le lien
 	</Button>
 	<QrCodeButton
-		url={'link' in qrLink ? qrLink.link : null}
+		url={canMakeQr && 'link' in qrLink ? qrLink.link : null}
 		label="la série"
-		unavailableReason={'error' in qrLink ? qrLink.error : undefined}
+		unavailableReason={qrUnavailableReason}
+		resolveUrl={fetchShortLinkPath}
 		size={compact ? 'sm' : 'default'}
 	/>
 </div>
