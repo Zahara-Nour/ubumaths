@@ -351,7 +351,10 @@ renommer un point réécrit les `AM` (`renamePairs`, texte et LaTeX) ; seul un p
 côtés non voisins qui se coupent en un point intérieur, `isCrossed`) est refusé : un polygone aplati
 — sommets confondus, tous alignés, côtés qui se touchent ou se recouvrent — a une aire, nulle s'il est
 plat, et un périmètre calculé normalement (décision de David du 2026-10-19, qui revient sur le refus
-posé à la revue de la PR 2) ; une valeur APPROCHÉE (angle non remarquable) entre au moteur
+posé à la revue de la PR 2) ; un polygone qui **repasse par un sommet** écrit deux fois à des places
+non voisines (`aire(A, B, C, D, B)`) est refusé (« Le polygone repasse par B… », `revisitedVertex`,
+décision de David du 2026-10-19) — on compare ce qui est ÉCRIT, pas les positions, pour qu'un relevé
+ne s'arrête pas quand deux sommets se rejoignent au glisser ; une valeur APPROCHÉE (angle non remarquable) entre au moteur
 en pleine précision et toute ligne qui la cite, même par un autre objet (`approximateNames`), se dit
 `≈`, 4 décimales, jamais en fraction.
 
