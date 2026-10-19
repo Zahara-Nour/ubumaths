@@ -41,6 +41,8 @@ export interface KeptLine {
 	readonly alternative?: Alternative;
 	readonly formulas?: true;
 	readonly replay?: ReplayStep;
+	/** Ligne barrée : son étape a été annulée (lot 5, PR 2) — elle le reste. */
+	readonly undone?: true;
 }
 
 export interface KeptHistory {
@@ -99,6 +101,7 @@ const replaySchema = z.discriminatedUnion('kind', [
 	}),
 	z.object({ kind: z.literal('supprimer'), name }),
 	z.object({ kind: z.literal('annuler') }),
+	z.object({ kind: z.literal('rétablir') }),
 	z.object({ kind: z.literal('garder'), line: z.number().int().min(0).max(MAX_KEPT_LINES) })
 ]);
 
@@ -117,7 +120,8 @@ const keptLineSchema = z
 			.optional()
 			.catch(undefined),
 		formulas: z.literal(true).optional().catch(undefined),
-		replay: replaySchema.optional().catch(undefined)
+		replay: replaySchema.optional().catch(undefined),
+		undone: z.literal(true).optional().catch(undefined)
 	})
 	// Les formules `$…$` d'un refus vont aussi à MathLive (`FormulaText`), par le
 	// même découpage (`messageParts`) : une seule refusée, le texte reste brut
@@ -221,7 +225,8 @@ function keptLineOf(entry: Entry): KeptLine {
 		...(entry.alternative !== undefined &&
 			entry.alternative.latex.length <= MAX_LATEX_LENGTH && { alternative: entry.alternative }),
 		...(entry.formulas === true && entry.text.length <= MAX_TEXT_LENGTH && { formulas: true }),
-		...(replay !== undefined && { replay })
+		...(replay !== undefined && { replay }),
+		...(entry.undone === true && { undone: true })
 	};
 }
 

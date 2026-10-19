@@ -15,7 +15,7 @@
  * @module atelier/desk
  */
 
-import type { Atelier, Refused, RemovedWithDependents } from './atelier.svelte';
+import type { Atelier, MovedStep, Refused, RemovedWithDependents } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import {
 	runInput,
@@ -130,6 +130,14 @@ export interface Entry {
 	 * Absent d'une ligne secondaire : un geste n'est rejoué qu'une fois.
 	 */
 	readonly replay?: ReplayStep;
+	/**
+	 * L'étape d'Annuler / Rétablir que cette ligne a produite (lot 5, PR 2) :
+	 * Annuler la barre, Rétablir la débarre. Absente d'une ligne qui n'a rien
+	 * changé (un calcul). Jamais rangée : la pile ne survit pas au rechargement.
+	 */
+	readonly stepId?: number;
+	/** L'étape de la ligne est annulée : la ligne est barrée (décision de David). */
+	readonly undone?: true;
 }
 
 /**
@@ -147,8 +155,13 @@ export type ReplayStep =
 	  }
 	/** Supprimer un objet et ses dépendants (lot B) */
 	| { readonly kind: 'supprimer'; readonly name: string }
-	/** Annuler la dernière suppression */
+	/**
+	 * Annuler la dernière étape (lot 5, PR 2). Dans un fichier d'avant, il suit
+	 * toujours la suppression qu'il défait : c'était alors la dernière étape.
+	 */
 	| { readonly kind: 'annuler' }
+	/** Rétablir la dernière étape annulée (lot 5, PR 2) */
+	| { readonly kind: 'rétablir' }
 	/** `line` : l'indice, dans l'historique, de la ligne gardée */
 	| { readonly kind: 'garder'; readonly line: number };
 
@@ -276,6 +289,12 @@ export class CalcDesk {
 	/** Le geste en cours : attaché à la PREMIÈRE ligne qu'il écrit, puis oublié. */
 	#gesture: ReplayStep | null = null;
 
+	/** L'étape d'Annuler en attente de sa ligne (`#step`), comme `#gesture`. */
+	#pendingStep: number | null = null;
+
+	/** L'étape de chaque suppression : le toast « Annuler » barre sa ligne. */
+	#removalSteps = new WeakMap<RemovedWithDependents, number>();
+
 	/** La dernière suppression, pour rejouer une annulation. */
 	#lastRemoval: RemovedWithDependents | null = null;
 
@@ -306,10 +325,76 @@ export class CalcDesk {
 	#push(entry: Omit<Entry, 'id'>): void {
 		const replay = this.#gesture;
 		this.#gesture = null;
+		const stepId = this.#pendingStep;
+		this.#pendingStep = null;
 		this.entries = [
 			...this.entries,
-			{ id: this.#nextId++, ...entry, ...(replay !== null && { replay }) }
+			{
+				id: this.#nextId++,
+				...entry,
+				...(replay !== null && { replay }),
+				...(stepId !== null && { stepId })
+			}
 		];
+	}
+
+	/**
+	 * Une étape d'Annuler faite depuis la console : son identifiant va à la
+	 * ligne qu'elle écrit — pendant l'étape (une action de carte) ou juste après
+	 * (une saisie). Une étape emboîtée n'a pas d'identifiant à elle.
+	 */
+	#step<T>(label: string, run: () => T): T {
+		if (this.atelier.inStep) return this.atelier.step(label, run);
+		this.#pendingStep = null;
+		const from = this.entries.length;
+		const result = this.atelier.step(label, run);
+		const id = this.atelier.lastStepId;
+		if (id === null) return result;
+		const written = this.entries[from];
+		if (written === undefined) this.#pendingStep = id;
+		else this.#withStep(written.id, id);
+		return result;
+	}
+
+	/** Poser l'étape `stepId` sur la ligne `entryId`. */
+	#withStep(entryId: number, stepId: number): void {
+		this.entries = this.entries.map((e) => (e.id === entryId ? { ...e, stepId } : e));
+	}
+
+	/** Barrer (Annuler) ou débarrer (Rétablir) la ligne de cette étape. */
+	#strike(stepId: number, undone: boolean): void {
+		this.entries = this.entries.map((e) => {
+			if (e.stepId !== stepId) return e;
+			if (undone) return { ...e, undone: true as const };
+			const { undone: _was, ...rest } = e;
+			return rest;
+		});
+	}
+
+	/**
+	 * Annuler la dernière étape (barre, Ctrl/Cmd+Z), et le dire dans la console :
+	 * la ligne de l'étape est barrée, et une ligne « Annuler » s'écrit — rejouable,
+	 * sinon le rejeu d'un export referait ce qui a été annulé (revue de #1517).
+	 */
+	undo(): MovedStep | null {
+		const moved = this.atelier.undoStep();
+		if (moved === null) return null;
+		this.#strike(moved.id, true);
+		this.#gesture = { kind: 'annuler' };
+		this.#pendingStep = null;
+		this.#push({ label: 'Annuler', text: `Annulé : ${moved.label}.`, failed: false });
+		return moved;
+	}
+
+	/** Rétablir la dernière étape annulée, et le dire : la ligne est débarrée. */
+	redo(): MovedStep | null {
+		const moved = this.atelier.redoStep();
+		if (moved === null) return null;
+		this.#strike(moved.id, false);
+		this.#gesture = { kind: 'rétablir' };
+		this.#pendingStep = null;
+		this.#push({ label: 'Rétablir', text: `Rétabli : ${moved.label}.`, failed: false });
+		return moved;
 	}
 
 	/**
@@ -324,7 +409,7 @@ export class CalcDesk {
 	 */
 	image(name: string, value: string): { readonly text: string; readonly failed: boolean } {
 		this.#gesture = { kind: 'action', action: 'image', name, value: value.trim() };
-		const outcome = this.atelier.step(`image par ${displayName(name)}`, () =>
+		const outcome = this.#step(`image par ${displayName(name)}`, () =>
 			runAction(this.session, 'image', name, value.trim())
 		);
 		const text = outcome.ok ? outcome.output : outcome.message;
@@ -420,14 +505,15 @@ export class CalcDesk {
 			return;
 		}
 		// Une ligne = une étape (lot 5) ; un calcul qui ne change rien n'en fait pas
-		const result = this.atelier.step(lineStepLabel(text), () =>
-			runInput(this.session, text, 'text')
-		);
+		const result = this.#step(lineStepLabel(text), () => runInput(this.session, text, 'text'));
 		// La carte d'une mesure dit ce que dit la console : elle en recopie le mode
 		this.session.atelier.setCalcMode(
 			this.session.engine.getState().mode === 'decimal' ? 'decimal' : 'exact'
 		);
-		if (result.kind === 'vide') return;
+		if (result.kind === 'vide') {
+			this.#pendingStep = null;
+			return;
+		}
 		this.#gesture = { kind: 'saisie', input: text };
 		// Seule une saisie tapée clôt le rappel : « Comparer » rend le brouillon
 		// intact, ↓ doit encore pouvoir revenir à celui d'avant ↑ (revue)
@@ -534,10 +620,14 @@ export class CalcDesk {
 				const removed = this.remove(step.name);
 				return removed.ok ? null : removed.message;
 			}
+			// Juste après une suppression, c'est elle qu'on annule, avec la même ligne
+			// qu'au toast (un fichier d'avant le lot 5 PR 2 n'a que ce cas) ; sinon
+			// la dernière étape, comme Ctrl+Z
 			case 'annuler':
-				return this.#lastRemoval !== null && this.undoRemoval(this.#lastRemoval)
-					? null
-					: 'la suppression ne s’est pas annulée.';
+				if (this.#lastRemoval !== null && this.undoRemoval(this.#lastRemoval)) return null;
+				return this.undo() !== null ? null : 'il n’y avait rien à annuler.';
+			case 'rétablir':
+				return this.redo() !== null ? null : 'il n’y avait rien à rétablir.';
 			case 'garder': {
 				const row = rows[step.line];
 				const kept = row === undefined ? undefined : this.entries[row];
@@ -554,10 +644,15 @@ export class CalcDesk {
 	 * La confirmation est l'affaire de la vue.
 	 */
 	remove(name: string): RemovedWithDependents | Refused {
+		const outer = !this.atelier.inStep;
 		const result = this.atelier.removeWithDependents(name);
 		if (!result.ok) return result;
 		this.#lastRemoval = result;
 		this.#gesture = { kind: 'supprimer', name };
+		// Une suppression est une étape : sa ligne se barre quand on l'annule
+		const stepId = outer ? this.atelier.lastStepId : null;
+		this.#pendingStep = stepId;
+		if (stepId !== null) this.#removalSteps.set(result, stepId);
 		this.#push({
 			label: `Supprimer ${displayName(name)}`,
 			text: removedLine(result.removed),
@@ -572,6 +667,9 @@ export class CalcDesk {
 	 */
 	undoRemoval(result: RemovedWithDependents): boolean {
 		if (!this.atelier.undoRemoval(result)) return false;
+		// La ligne « Supprimer » de cette suppression est barrée, comme par Annuler
+		const removedStep = this.#removalSteps.get(result);
+		if (removedStep !== undefined) this.#strike(removedStep, true);
 		// Rejouable seulement si la suppression est dans CET historique : après
 		// « Repartir de zéro », le fichier n'aurait qu'un `annuler` orphelin (revue)
 		this.#gesture = result === this.#lastRemoval ? { kind: 'annuler' } : null;
@@ -591,7 +689,7 @@ export class CalcDesk {
 			return;
 		}
 		const result = entry.result;
-		const kept = this.atelier.step('garder une ligne', () => promote(this.session, result));
+		const kept = this.#step('garder une ligne', () => promote(this.session, result));
 		this.notice = kept.ok ? `Gardé sous le nom « ${kept.object.name} ».` : kept.message;
 		// Une ligne aussi (toute action laisse sa trace dans Calcul, G7) : sans
 		// elle, le rejeu perdrait l'objet gardé et les lignes qui le citent
@@ -888,13 +986,14 @@ export class CalcDesk {
 		try {
 			// Une action de carte = une étape (lot 5) ; « Comparer » passe par une
 			// ligne de console, étape emboîtée qui se fond dans celle-ci
-			return this.atelier.step(actionStepLabel(actionId, name), () =>
+			return this.#step(actionStepLabel(actionId, name), () =>
 				this.#runFromPanel(actionId, name, graph)
 			);
 		} finally {
 			// Une action sans ligne (diagramme, commande préparée) ne doit pas
-			// léguer son geste à la ligne d'un autre (revue du lot C1)
+			// léguer son geste à la ligne d'un autre (revue du lot C1), ni son étape
 			this.#gesture = null;
+			this.#pendingStep = null;
 		}
 	}
 

@@ -75,6 +75,15 @@ export function atelierFromCurves(
 	definitions: readonly string[]
 ): { ok: true; atelier: Atelier } | { ok: false; message: string } {
 	const atelier = new Atelier();
+	// Un atelier reçu n'est pas un geste de l'élève : Annuler ne doit pas le vider
+	// (revue de #1517 — Ctrl+Z ×4 défaisait les courbes du lien)
+	return atelier.untracked(() => buildFromCurves(atelier, definitions));
+}
+
+function buildFromCurves(
+	atelier: Atelier,
+	definitions: readonly string[]
+): { ok: true; atelier: Atelier } | { ok: false; message: string } {
 	const created: { name: string; definition: string }[] = [];
 	for (const definition of definitions) {
 		// Décision g : « sur » se lit comme dans le reste de l'atelier (`?f=x^2 sur [0;+∞[`)

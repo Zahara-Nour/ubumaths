@@ -14,6 +14,7 @@ import { describe, it, expect } from 'vitest';
 import { Atelier, OUTSIDE_STEP_LABEL } from '../atelier.svelte';
 import { runInput, type CalcSession } from '../calcul';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { atelierFromCurves } from '../grapheur-link';
 
 function withFunction(): Atelier {
 	const atelier = new Atelier();
@@ -131,6 +132,17 @@ describe('une modification hors étape se voit tout de suite dans la barre', () 
 		expect(atelier.history.undo).toBe(OUTSIDE_STEP_LABEL);
 		expect(atelier.undo()).toBe(OUTSIDE_STEP_LABEL);
 		expect(atelier.get('a')?.definition).toBe('1');
+	});
+});
+
+describe('un lien ?f= ouvre un atelier sans étape à annuler', () => {
+	it('Ctrl+Z ne vide pas l’atelier reçu par le lien (revue de #1517)', () => {
+		const built = atelierFromCurves(['x^2', '2x+1']);
+		if (!built.ok) throw new Error(built.message);
+
+		expect(built.atelier.history.steps).toBe(0);
+		expect(built.atelier.undo()).toBeNull();
+		expect(built.atelier.get('f')?.plotted).toBe(true);
 	});
 });
 

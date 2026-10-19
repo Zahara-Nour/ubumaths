@@ -186,3 +186,68 @@ describe('la tangente et l’aire d’une fonction', () => {
 		expect(atelier.history.steps).toBe(built + 1);
 	});
 });
+
+describe('la console garde la trace d’Annuler (lot 5, PR 2)', () => {
+	const FIELD = 'input[aria-label="Calcul, définition ou commande"]';
+
+	async function openConsole() {
+		const atelier = new Atelier();
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		const field = await vi.waitFor(() => {
+			const found = container.querySelector<HTMLInputElement>(FIELD);
+			expect(found).toBeTruthy();
+			return found!;
+		});
+		return { atelier, container, field };
+	}
+
+	function press(init: KeyboardEventInit, target: EventTarget = document.body) {
+		target.dispatchEvent(
+			new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init })
+		);
+	}
+
+	it('Ctrl+Z barre la ligne de l’étape et écrit une ligne « Annuler »', async () => {
+		const { atelier, container, field } = await openConsole();
+		await userEvent.click(field);
+		await userEvent.keyboard('a = 2{Enter}');
+		await vi.waitFor(() => expect(atelier.get('a')?.definition).toBe('2'));
+		field.blur();
+
+		press({ key: 'z', ctrlKey: true });
+
+		await vi.waitFor(() => expect(atelier.get('a')).toBeUndefined());
+		const lines = [...container.querySelectorAll('.historique li')];
+		expect(lines[0].classList.contains('annulee')).toBe(true);
+		expect(lines[0].textContent).toContain('Annulée');
+		expect(lines.at(-1)?.textContent).toContain('Annulé');
+		expect(lines.at(-1)?.classList.contains('annulee')).toBe(false);
+	});
+
+	it('Ctrl+Z dans un menu ouvert n’annule rien', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '1' }, 'text');
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		const menu = await openCardMenu(container, 'a');
+
+		press({ key: 'z', ctrlKey: true }, menu);
+
+		expect(atelier.get('a')?.definition).toBe('1');
+		expect(atelier.history.steps).toBe(1);
+	});
+
+	it('une modification hors étape se lit tout de suite sur le bouton Annuler', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '1' }, 'text');
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+
+		atelier.update('a', '5', 'text');
+
+		await vi.waitFor(() => {
+			const undo = [...container.querySelectorAll('[role="toolbar"] button')].find((b) =>
+				b.getAttribute('aria-label')?.startsWith('Annuler')
+			);
+			expect(undo?.getAttribute('aria-label')).toBe('Annuler : modifier l’atelier');
+		});
+	});
+});

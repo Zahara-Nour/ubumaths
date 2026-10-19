@@ -492,14 +492,15 @@
 	/** Annuler la dernière étape (barre, Ctrl/Cmd+Z) — lot 5. */
 	function undoStep() {
 		dismissRemovalToast();
-		const label = atelier.undo();
-		announce(label === null ? 'Rien à annuler.' : `Annulé : ${label}.`);
+		// Par le pupitre : une ligne rejouable, et la ligne de l'étape barrée (PR 2)
+		const moved = desk.undo();
+		announce(moved === null ? 'Rien à annuler.' : `Annulé : ${moved.label}.`);
 	}
 
 	/** Rétablir la dernière étape annulée (barre, Ctrl+Y, Ctrl/Cmd+Maj+Z). */
 	function redoStep() {
-		const label = atelier.redo();
-		announce(label === null ? 'Rien à rétablir.' : `Rétabli : ${label}.`);
+		const moved = desk.redo();
+		announce(moved === null ? 'Rien à rétablir.' : `Rétabli : ${moved.label}.`);
 	}
 
 	function dismissRemovalToast() {
@@ -519,7 +520,14 @@
 			(key === 'y' && event.ctrlKey && !event.shiftKey) || (key === 'z' && event.shiftKey);
 		if (!redo && key !== 'z') return;
 		const target = event.target as HTMLElement | null;
-		if (target?.closest(`${FIELD_SELECTOR}, [role="dialog"], [role="alertdialog"]`)) return;
+		// Un menu ou une liste ouverts gardent leurs touches (revue de #1517)
+		if (
+			target?.closest(
+				`${FIELD_SELECTOR}, [role="dialog"], [role="alertdialog"], [role="menu"], [role="menubar"], [role="listbox"]`
+			)
+		) {
+			return;
+		}
 		event.preventDefault();
 		if (redo) redoStep();
 		else undoStep();

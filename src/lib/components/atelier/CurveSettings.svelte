@@ -238,6 +238,9 @@
 
 	{#if display.tangentAt !== null}
 		<div class="encadre">
+			<!-- Les touches arrivent du pouce (`role="slider"`), seul élément interactif :
+			     le conteneur ne fait qu'apprendre la fin du geste (Annuler, lot 5 PR 2) -->
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 			<div
 				class="ligne curseur"
 				role="group"

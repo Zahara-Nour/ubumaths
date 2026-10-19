@@ -1631,6 +1631,11 @@ export class Atelier {
 		return this.#lastStepId;
 	}
 
+	/** Une étape est-elle ouverte ? Une `step` appelée dedans s'y fond. */
+	get inStep(): boolean {
+		return this.#stepDepth > 0;
+	}
+
 	/** Fermer le geste continu en cours : le prochain fera une nouvelle étape. */
 	endGesture(): void {
 		this.#history.seal();
