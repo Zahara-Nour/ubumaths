@@ -4206,12 +4206,12 @@ export class Atelier {
 
 	/** Le refus de dimension d'une valeur, en français, ou `null`. */
 	#quantityMessage(name: string): string | null {
-		const substituted = expressionOf(this, name);
+		const substituted = substitutedAstOf(this, name);
 		if (!substituted.ok) return null;
-		// Relue depuis le texte : sur l'arbre substitué, `quantityProblem` levait « components is not iterable » (mesuré)
-		const ast = astOfDefinition(substituted.expression, 'url');
+		// Jugée sur l'arbre, pas sur son texte : `toCustom` écrit `3[m]*π/2` en `\pi:/2`, illisible
+		const ast = substituted.ast;
 		// Une lettre libre (un curseur, une inconnue) : rien à juger ici
-		if (ast === null || findNodes(ast, isUnit).length === 0) return null;
+		if (findNodes(ast, isUnit).length === 0) return null;
 		if (getVariables(ast).size > 0) return null;
 		return quantityProblem(ast);
 	}

@@ -2050,7 +2050,9 @@ refusé. Un rejeu saute une saisie `.exporter` et ne télécharge rien.
 Rejeu (`CalcDesk.replay`) : le fichier vient de dehors, donc `readHistory` le valide (Zod) et le
 borne (`MAX_HISTORY_BYTES`, `MAX_HISTORY_ENTRIES`) avant tout. Chaque geste est refait **par le
 même chemin** que l'élève (`submit`, `runFromPanel`, `keep`…) ; rien n'est injecté. Le rejeu
-s'arrête à la première ligne qui échoue et dit laquelle (`ReplayReport`). Désactivé en mode
+s'arrête à la première ligne qui échoue et dit laquelle (`ReplayReport`) — sauf l'algèbre écrite
+avec des espaces d'un historique d'avant la lecture des grandeurs (`5 s + 1`), refaite avec son
+ancien sens ([grandeurs.md](grandeurs.md)). Désactivé en mode
 éphémère. Une ligne restaurée au rechargement garde son geste : un export fait après
 un rechargement se rejoue comme avant.
 
