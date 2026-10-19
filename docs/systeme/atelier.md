@@ -1654,7 +1654,10 @@ code garde ses identifiants `Figure*` et `ViewId` `'figure'`) : repère **orthon
 n'ayant qu'un `pixelsPerUnit` (F2 ; 13 unités sur le plus petit côté à l'ouverture) ;
 `objectsMovable={false}` (étiquettes, double-clic figés) mais **les points se glissent** (lot 3,
 PR 1, M1, M2, M7) : la toile ne touche pas la figure, elle DÉLÈGUE le geste (`pointDrag`, au plus un
-mouvement par image) ; `FigureView` retrouve le nom du point (`AtelierFigure.nameOf`) et appelle
+mouvement par image ; rien n'est écrit sous 4 px de chemin, un clic qui tremble laisse `(1/3 ; 2,25)`
+tel quel ; l'écart point − curseur de la saisie est gardé, le point ne saute pas ; un seul pointeur,
+les autres sont ignorés ; la classe `dragging` est demandée à `FigureView` (`holds`), la figure
+refaite en plein geste changeant les ids) ; `FigureView` retrouve le nom du point (`AtelierFigure.nameOf`) et appelle
 `atelier.dragPoint(nom, x, y, aimantation)`, qui réécrit sa définition — tout se recalcule
 pendant le geste (mesures, cartes), la figure suit par `syncFigure`. Un point par coordonnées
 NOMBRES reçoit `(x ; y)`, chaque coordonnée aimantée à l'entier à moins de 8 px, sinon arrondie au
@@ -1907,7 +1910,8 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
   point de départ ne laisse rien ; un autre geste, Annuler ou Rétablir le ferment aussi
   (`HistoryStack.push(…, clé)` / `seal`). Clés : `curseur:a` (`slideTo`), `position:M`
   (`slidePosition`, le curseur d'un `point_sur` ou son glisser), `glisser:A` (`dragPoint`, un
-  point par coordonnées glissé à la souris, fermé au relâcher), `tangente:f` (`CurveSettings`),
+  point par coordonnées glissé à la souris, fermé au relâcher ; tant qu'il est ouvert,
+  `atelier.draggingPoint` est vrai et Ctrl+Z / Ctrl+Y de `AtelierContainer` ne font rien), `tangente:f` (`CurveSettings`),
   `borne-from:f` / `borne-to:f` (bornes de l'aire), `curseur-min:a`… (`SliderSettings`).
   **Fin du geste** (`gesture.ts`) : souris ou doigt → au relâchement (`onValueCommit` de bits-ui) ;
   clavier → au relâchement de la touche, donc **un appui = une étape et une flèche tenue = une

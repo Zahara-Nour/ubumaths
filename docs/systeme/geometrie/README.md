@@ -349,7 +349,8 @@ elle, origine au centre et 40 px par unité), `taille:`, `axes:`, `grille:`, `gr
 zoom et le déplacement de la vue restent actifs — prop `objectsMovable` de `GeometryCanvas` ; la
 prop `pointDrag` (`components/geometry/point-drag.ts`, vue Géométrie de l'atelier) passe avant :
 la toile ne modifie plus la figure, elle transmet le point saisi et ses positions, une fois par
-image, à qui la possède) et
+image, à qui la possède, après un seuil de 4 px et avec l'écart de la saisie ; un seul pointeur par
+geste ; `holds` dit quel élément porte la classe `dragging`) et
 `rendu: normal|croquis|mixte` (`renderMode` normal / rough / mixed). Mêmes mesures que le bloc
 statique : largeur de la fenêtre selon la taille (280 / 400 / 560 px), hauteur isotrope, marge de
 26 px pour les axes ; sur un écran plus étroit, la toile se réduit et garde la fenêtre entière.

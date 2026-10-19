@@ -680,6 +680,8 @@ export class Atelier {
 	#restoring = false;
 	/** L'étape gardée par la dernière `step` (voir `lastStepId`). */
 	#lastStepId: number | null = null;
+	/** Le point glissé à la souris, jusqu'au relâcher (`endGesture`). */
+	#draggedPoint: string | null = null;
 	/** La suppression d'un reçu → son étape : le toast « Annuler » ne défait qu'elle. */
 	#receipts = new WeakMap<RemovedWithDependents, StepToken>();
 	/** Les étapes de `replaceWith` qui veulent savoir quand on les quitte (`onLeave`). */
@@ -1173,6 +1175,7 @@ export class Atelier {
 	dragPoint(name: string, x: number, y: number, snap = 0): Updated | Refused {
 		const hold = dragHoldOf(this, name);
 		if (hold.kind === 'refused') return { ok: false, message: hold.message };
+		this.#draggedPoint = name;
 		if (!Number.isFinite(x) || !Number.isFinite(y)) {
 			return { ok: false, message: 'Cette position n’est pas un nombre.' };
 		}
@@ -1734,7 +1737,17 @@ export class Atelier {
 
 	/** Fermer le geste continu en cours : le prochain fera une nouvelle étape. */
 	endGesture(): void {
+		this.#draggedPoint = null;
 		this.#history.seal();
+	}
+
+	/**
+	 * Un point est-il glissé à la souris (`dragPoint` jusqu'à `endGesture`) ?
+	 * Annuler / Rétablir attendent le relâcher : défaire l'étape en plein geste,
+	 * c'est la voir renaître au mouvement suivant.
+	 */
+	get draggingPoint(): boolean {
+		return this.#draggedPoint !== null;
 	}
 
 	/**

@@ -810,6 +810,8 @@
 			return;
 		}
 		event.preventDefault();
+		// Pas d'Annuler en plein glisser d'un point : l'étape n'est pas finie
+		if (atelier.draggingPoint) return;
 		if (redo) redoStep();
 		else undoStep();
 	}

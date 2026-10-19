@@ -238,3 +238,76 @@ describe('M7 : tout un glisser = une étape', () => {
 		expect(atelier.revision).toBe(revision);
 	});
 });
+
+describe('M2 : un point_sur glissé sur une droite, une demi-droite (revue)', () => {
+	it('sur une droite : la position sort de [0 ; 1], des deux côtés', () => {
+		const atelier = atelierOf([
+			['point', 'A', '(0 ; 0)'],
+			['point', 'B', '(4 ; 0)'],
+			['curve', 'd', '(AB)'],
+			['point', 'M', 'point_sur(d ; 0,5)']
+		]);
+
+		atelier.dragPoint('M', -2, 1);
+		expect(atelier.get('M')?.definition).toBe('point_sur(d ; -0,5)');
+
+		atelier.dragPoint('M', 6, -1);
+		expect(atelier.get('M')?.definition).toBe('point_sur(d ; 1,5)');
+	});
+
+	it('sur une demi-droite [AB) : au-delà de B oui, avant A la position reste 0', () => {
+		const atelier = atelierOf([
+			['point', 'A', '(0 ; 0)'],
+			['point', 'B', '(4 ; 0)'],
+			['curve', 'r', '[AB)'],
+			['point', 'M', 'point_sur(r ; 0,5)']
+		]);
+
+		atelier.dragPoint('M', 6, 0);
+		expect(atelier.get('M')?.definition).toBe('point_sur(r ; 1,5)');
+
+		atelier.dragPoint('M', -2, 0);
+		expect(atelier.get('M')?.definition).toBe('point_sur(r ; 0)');
+	});
+
+	it('glisser A quand M est sur [AB] : la position de M ne change pas, M suit le segment', () => {
+		const atelier = atelierOf([
+			['point', 'A', '(0 ; 0)'],
+			['point', 'B', '(4 ; 0)'],
+			['curve', 's', '[AB]'],
+			['point', 'M', 'point_sur(s ; 0,25)']
+		]);
+
+		atelier.dragPoint('A', -4, 0);
+		atelier.endGesture();
+
+		expect(atelier.get('A')?.definition).toBe('(-4 ; 0)');
+		expect(atelier.get('M')?.definition).toBe('point_sur(s ; 0,25)');
+		expect(at(atelier, 'M')).toEqual([-2, 0]);
+	});
+});
+
+describe('M7 : Annuler attend le relâcher (revue)', () => {
+	it('draggingPoint : vrai du premier mouvement au relâcher, faux après', () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		expect(atelier.draggingPoint).toBe(false);
+
+		atelier.dragPoint('A', 3, 2);
+		expect(atelier.draggingPoint).toBe(true);
+
+		atelier.endGesture();
+		expect(atelier.draggingPoint).toBe(false);
+	});
+
+	it('un glisser refusé (point construit) n’ouvre pas de geste', () => {
+		const atelier = atelierOf([
+			['point', 'A', '(0 ; 0)'],
+			['point', 'B', '(4 ; 0)'],
+			['point', 'I', 'milieu(A, B)']
+		]);
+
+		atelier.dragPoint('I', 3, 2);
+
+		expect(atelier.draggingPoint).toBe(false);
+	});
+});

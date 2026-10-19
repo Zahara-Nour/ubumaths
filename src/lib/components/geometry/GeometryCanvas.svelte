@@ -76,6 +76,11 @@
 
 	/** L'aimantation d'un glisser délégué, en pixels (lot 3 de l'atelier, M2). */
 	const SNAP_PIXELS = 8;
+	/**
+	 * Le chemin, en pixels, sous lequel un glisser délégué n'écrit rien : un clic
+	 * qui tremble ne réécrit pas `(1/3 ; 2,25)` en `(0,3 ; 2,3)`.
+	 */
+	const DRAG_THRESHOLD_PIXELS = 4;
 
 	interface Props {
 		figure: Figure;
@@ -152,7 +157,20 @@
 	let hoveredId: string | null = $state(null);
 	let version = $state(0);
 	/** Un glisser délégué en cours (`pointDrag`) : la figure n'est pas touchée. */
-	let delegated = false;
+	let delegated = $state(false);
+	/**
+	 * Le geste délégué : son pointeur (les autres sont ignorés), où il a commencé
+	 * (pixels de l'écran), l'écart point − curseur (unités du repère), et s'il a
+	 * passé le seuil.
+	 */
+	let delegatedGesture: {
+		pointerId: number;
+		startX: number;
+		startY: number;
+		dx: number;
+		dy: number;
+		moved: boolean;
+	} | null = null;
 	/** Le dernier mouvement d'un glisser délégué, pas encore transmis (une fois par image). */
 	let pendingMove: { x: number; y: number } | null = null;
 	let moveFrame: number | null = null;
@@ -410,6 +428,11 @@
 
 	function onPointerDown(e: PointerEvent) {
 		if (!interactive) return;
+		// Un second doigt pendant un glisser délégué : ignoré, pas de re-saisie
+		if (delegated) {
+			e.preventDefault();
+			return;
+		}
 
 		// Middle button or space held = start panning
 		if (e.button === 1 || spaceHeld) {
@@ -482,9 +505,17 @@
 		const pointId = findPointNear(figure, math.x, math.y, 15 / ppu);
 		if (pointId === null) return false;
 		if (drag.grab(pointId)) {
+			// Saisi un peu à côté, le point ne saute pas sous le curseur
+			const position = figure.getPosition(pointId);
+			delegatedGesture = {
+				pointerId: e.pointerId,
+				startX: e.clientX,
+				startY: e.clientY,
+				dx: position ? geoToNumber(position.x) - math.x : 0,
+				dy: position ? geoToNumber(position.y) - math.y : 0,
+				moved: false
+			};
 			delegated = true;
-			draggingId = pointId;
-			dragOffset = null;
 			svgRef?.setPointerCapture(e.pointerId);
 		}
 		e.preventDefault();
@@ -496,6 +527,20 @@
 		if (!interactive) return false;
 		if (pointDrag?.canGrab(el.id)) return true;
 		return objectsMovable && 'draggable' in el && el.draggable === true;
+	}
+
+	/**
+	 * Le point est-il en train d'être glissé ? Un glisser délégué demande à son
+	 * possesseur : la figure refaite en plein geste change les ids.
+	 */
+	function isDragged(el: GeoElement): boolean {
+		if (delegated) return pointDrag?.holds(el.id) ?? false;
+		return draggingId === el.id;
+	}
+
+	/** Ce pointeur est-il étranger au glisser délégué en cours ? */
+	function foreignPointer(e: PointerEvent): boolean {
+		return delegatedGesture !== null && e.pointerId !== delegatedGesture.pointerId;
 	}
 
 	// Une toile retirée en plein glisser ferme le geste
@@ -515,7 +560,7 @@
 		if (!delegated) return;
 		flushDelegatedMove();
 		delegated = false;
-		draggingId = null;
+		delegatedGesture = null;
 		pointDrag?.release();
 	}
 
@@ -536,7 +581,14 @@
 
 		// Au plus un mouvement par image : chacun recalcule tout l'atelier
 		if (delegated) {
-			pendingMove = math;
+			const gesture = delegatedGesture;
+			if (gesture === null || e.pointerId !== gesture.pointerId) return;
+			if (!gesture.moved) {
+				const path = Math.hypot(e.clientX - gesture.startX, e.clientY - gesture.startY);
+				if (path < DRAG_THRESHOLD_PIXELS) return;
+				gesture.moved = true;
+			}
+			pendingMove = { x: math.x + gesture.dx, y: math.y + gesture.dy };
 			moveFrame ??= requestAnimationFrame(() => {
 				moveFrame = null;
 				flushDelegatedMove();
@@ -652,7 +704,8 @@
 		}
 	}
 
-	function onPointerCancel() {
+	function onPointerCancel(e: PointerEvent) {
+		if (foreignPointer(e)) return;
 		// Le point délégué reste où il est arrivé : le geste se ferme (M7)
 		endDelegatedDrag();
 		if (draggingId) figure.discard();
@@ -677,7 +730,7 @@
 		}
 
 		if (delegated) {
-			endDelegatedDrag();
+			if (!foreignPointer(e)) endDelegatedDrag();
 			return;
 		}
 
@@ -880,7 +933,7 @@
 		aria-label="Figure de geometrie interactive"
 		class="geometry-canvas"
 		class:interactive
-		class:dragging={draggingId !== null}
+		class:dragging={draggingId !== null || delegated}
 		class:panning={isPanning || spaceHeld}
 		onpointerdown={onPointerDown}
 		onpointermove={onPointerMove}
@@ -1911,7 +1964,7 @@
 								class="point"
 								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
-								class:dragging={draggingId === el.id}
+								class:dragging={isDragged(el)}
 							/>
 						{:else if sty.pointShape === 'circle'}
 							<circle
@@ -1925,14 +1978,14 @@
 								class="point"
 								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
-								class:dragging={draggingId === el.id}
+								class:dragging={isDragged(el)}
 							/>
 						{:else if sty.pointShape === 'cross'}
 							<g
 								class="point"
 								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
-								class:dragging={draggingId === el.id}
+								class:dragging={isDragged(el)}
 								opacity={sty.opacity}
 							>
 								<line
@@ -1963,7 +2016,7 @@
 								class="point"
 								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
-								class:dragging={draggingId === el.id}
+								class:dragging={isDragged(el)}
 							/>
 						{/if}
 						<!-- Nom masqué (`labelHidden`, DSL `etiquette="aucune"`, carte de l'atelier) : le point reste -->

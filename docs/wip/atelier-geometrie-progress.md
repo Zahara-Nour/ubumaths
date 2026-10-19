@@ -11,16 +11,10 @@ Chapeau : [atelier-progress.md](atelier-progress.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, lot 3 PR 1 codée, revue faite, corrections à faire (PR pas ouverte)._
+_Mis à jour le 2026-10-19, lot 3 PR 1 : revue corrigée, PR à ouvrir._
 
-- **État** : lots 1 et 2 livrés (#1474 → #1528, rien en prod). Lot 3 PR 1 « le glisser » sur `feat/atelier-geometrie-glisser` (worktree `../ubumaths-wt-atelier-geometrie`), 2 commits : code + tests verts (`check:incremental` 0, `lint:fast`, cliquet), doc système à jour (`atelier.md`, `geometrie/README.md`).
-- **Prochaine action** : corriger la revue `code-reviewer` (aucun bloquant), puis ouvrir la PR, CI, merger :
-  1. pas de saut au clic : mémoriser l'écart point − curseur au `grab`, ne rien écrire sous un seuil de 3-4 px (sinon `(1/3 ; 2,25)` devient `(0,3 ; 2,3)` au moindre tremblement) ;
-  2. Ctrl+Z pendant un glisser : `AtelierContainer.handleUndoKey` annule en plein geste → ignorer undo/redo tant qu'un glisser est ouvert ;
-  3. multi-pointeur : garder `pointerId` au `startDelegatedDrag`, ignorer les autres, pas de re-saisie si `delegated` ;
-  4. `draggingId` périmé (figure refaite = nouveaux ids) → classe `dragging` perdue en plein geste ;
-  5. `release` efface `refusal` ;
-  6. tests : direction attendue dans `FigureView` (+x, −y), cycle de vie de la toile (cancel, blur, rAF, relâcher), `point_sur` sur droite/demi-droite, glisser A avec M sur [AB].
+- **État** : lots 1 et 2 livrés (#1474 → #1528, rien en prod). Lot 3 PR 1 « le glisser » sur `feat/atelier-geometrie-glisser` (worktree `../ubumaths-wt-atelier-geometrie`), 3 commits : code, doc, corrections de la revue (6 points, tests rouges vérifiés sans les corrections).
+- **Prochaine action** : ouvrir la PR, CI, merger ; puis lot 3 PR 2 (voir `atelier-geometrie-lot3-phase0.md`).
 - **En attente de David** : rien.
 - **Pièges** : banc A (24 objets) médiane 15,9 ms, p90 17,6 ms (M1 < 16 ms tenu de justesse). Prévenir avant la session « atelier-refonte-interface ». PR qui touche `mathAST` → `mathast-expert`.
 
@@ -569,3 +563,11 @@ déterminés »). Hors périmètre, noté : le grec indicé reste un `subscript`
   `pointercancel`, à la perte de focus de la fenêtre et au démontage de la toile.
 - Banc `banc-glisser.svelte.test.ts` (A de la figure de 24 objets) : médiane 15,9 ms, p90 17,6 ms
   (curseur `a` : 13 ms). Modèle seul (node) : `dragPoint` 4,4 ms, `syncFigure` (figure refaite) 1 ms.
+- Revue `code-reviewer` (aucun bloquant), corrigée — tests d'abord vérifiés rouges sur le code
+  d'avant (10 rouges : 8 navigateur, 2 node) : seuil de 4 px avant d'écrire et écart point −
+  curseur gardé (plus de saut ni de `(1/3 ; 2,25)` réécrit au clic) ; un seul pointeur par geste ;
+  `atelier.draggingPoint` → Ctrl+Z / Ctrl+Y ignorés en plein glisser ; classe `dragging` demandée
+  à `FigureView` (`PointDrag.holds`) : `(AB)` écrite avant A, A posé sur B, la figure refaite
+  renumérote (`pt_4` → `pt_1`) ; un refus dit en plein geste s'efface au relâcher. Tests de
+  couverture : direction (+x, −y), une image par mouvement et relâcher qui envoie le dernier,
+  `point_sur` sur droite et demi-droite, A glissé avec M sur [AB].

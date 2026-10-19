@@ -8,6 +8,11 @@ export interface PointDrag {
 	readonly canGrab: (elementId: string) => boolean;
 	/** Le geste commence sur ce point ; faux : refusé, la toile ne glisse rien. */
 	readonly grab: (elementId: string) => boolean;
+	/**
+	 * L'élément `elementId` dessine-t-il le point saisi ? La figure peut être
+	 * refaite en plein geste (nouveaux ids) : seul le possesseur le sait.
+	 */
+	readonly holds: (elementId: string) => boolean;
 	/** Le point saisi va en (x ; y), coordonnées du repère ; `snap` : l'aimantation, en unités. */
 	readonly move: (x: number, y: number, snap: number) => void;
 	/** Le geste est fini (relâcher, annulation du navigateur, fenêtre quittée). */

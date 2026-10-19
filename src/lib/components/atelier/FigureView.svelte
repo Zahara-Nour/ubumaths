@@ -77,6 +77,7 @@
 			held = name;
 			return true;
 		},
+		holds: (id) => held !== null && projection.nameOf(id) === held,
 		move: (x, y, snap) => {
 			if (held === null) return;
 			const done = atelier.dragPoint(held, x, y, snap);
@@ -84,6 +85,8 @@
 		},
 		release: () => {
 			held = null;
+			// Un refus dit EN PLEIN geste (« ne peut pas se glisser ici ») ne survit pas au relâcher
+			refusal = null;
 			atelier.endGesture();
 		}
 	};
