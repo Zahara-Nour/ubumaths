@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-19, phase 0 en cours (aucune PR)._
 
 - **État** : phase 0 — mesure synthétique faite (sonde `src/lib/questions/units/__tests__/mesure-phase0.test.ts`, 79 cas) ; aucune donnée de prod lue.
-- **Prochaine action** : lecture prod des réponses aux cases à unité (`test_answers`), sous la forme validée par David → oracle `tests/fixtures/correction-cases-unite/`.
-- **En attente de David** : accord sur la lecture prod (forme, filtres, ce qui entre dans le dépôt).
+- **Prochaine action** : selon le choix de David, construire l'oracle autrement (la prod n'a pas de réponses aux cases à unité).
+- **En attente de David** : source de l'oracle (cf. 2026-10-19, lecture prod).
 - **Pièges en cours** : la route `tidy` (`valueIn`) rend `null` sur toute température (°C, K, °F) ; `extractValue` (parser.ts) lit `2\sqrt{2}` comme 2.
 - **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite`.
 
@@ -33,3 +33,13 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
   données : existe-t-il des cases à unité dont l'attendu n'est pas un nombre décimal ?
 - Élève `\sqrt{2}m` → « N'oublie pas l'unité » ; `2\pi m` → « Unité inconnue : \pi m ».
 - Comparaison sans tolérance : actuel = flottants à 1e-12 relatif ; `tidy` = égalité exacte.
+
+### 2026-10-19 — lecture prod (accord de David, comptages seulement)
+
+- `test_answers` : 22 lignes en tout ; `question_instance` n'y garde ni `blanks` ni attendu
+  (clés : statement, templateId, domain, theme, level, seed…) → 0 case à unité.
+- `evaluation_attempt_questions` : 0 ligne.
+- Seules les évaluations notées et les séries enregistrent une réponse ; l'entraînement corrige
+  dans le navigateur sans rien garder. **Aucune réponse réelle d'élève à une case à unité en base.**
+- `question_templates` : ~25 modèles publiés mentionnent `"unit"` (filtre texte grossier).
+- Aucun contenu lu, rien d'écrit dans le dépôt.
