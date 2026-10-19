@@ -165,7 +165,8 @@ export function compareQuantities(
 	}
 
 	// Sans tolérance : égalité exacte. Aucun repli en flottants : une écriture
-	// sans valeur exacte (inatteignable : tests d'invariant) est refusée.
+	// sans valeur exacte (inatteignable : tests d'invariant) est refusée, sous
+	// l'étiquette 'incompatible_units' faute de mieux — seul `isEqual` est lu.
 	if (!hasTolerance(tolerance)) {
 		const userExact = exactBaseValue(userAnswer);
 		const expectedExact = exactBaseValue(expected);

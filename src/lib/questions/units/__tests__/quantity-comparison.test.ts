@@ -603,18 +603,35 @@ describe('Toute unité lisible a une conversion exacte', () => {
 	]);
 	const prefixes = ['', ...[...SI_PREFIXES].map(([prefix]) => prefix)];
 
-	test('unités simples, préfixes compris', () => {
+	test('unités simples, préfixes compris, même coefficient et même décalage', () => {
 		const readable: string[] = [];
 		const missing: string[] = [];
+		const mismatched: string[] = [];
 		for (const symbol of symbols) {
 			for (const prefix of prefixes) {
 				const writing = prefix + symbol;
-				if (parseUnitExpression(writing) === null) continue;
+				const unit = parseUnitExpression(writing);
+				if (unit === null) continue;
 				readable.push(writing);
-				if (exactConversion(writing) === null) missing.push(writing);
+				const exact = exactConversion(writing);
+				if (exact === null) {
+					missing.push(writing);
+					continue;
+				}
+				// Même conversion que celle des flottants (chemin avec tolérance)
+				const coefficient =
+					(Number(exact.coefficient.n) / Number(exact.coefficient.d)) * Math.PI ** exact.piPower;
+				const offset = exact.offset === null ? 0 : Number(exact.offset.n) / Number(exact.offset.d);
+				if (
+					Math.abs(coefficient - unit.coefficient) > 1e-9 * Math.abs(unit.coefficient) ||
+					Math.abs(offset - (unit.offset ?? 0)) > 1e-9
+				) {
+					mismatched.push(writing);
+				}
 			}
 		}
 		expect(readable.length).toBeGreaterThan(300);
 		expect(missing).toEqual([]);
+		expect(mismatched).toEqual([]);
 	});
 });
