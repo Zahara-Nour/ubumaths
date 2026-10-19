@@ -535,3 +535,10 @@ Les trois décisions (2) ci-dessus, `noms-indices-suites.test.ts` (28 tests, 20 
   qui la citaient ne sont pas réécrites (elles calculaient déjà avec le terme de la suite) ;
 - une récurrence citée dans une définition (`c = v_3`) reste refusée, comme `c = v(3)` ;
 - `.développer (x + x_1)^2` écrit `2xx_1` (ordre alphabétique des lettres, comme `2ax`).
+
+Revue (même jour) : merge d'origin/main (#1523, versement B9) avec le conflit `u_3` / suite `u`
+tranché dans `planNames`, termes reçus réécrits (`u_3` → `v_3`) et renommage de la suite qui
+emmène ses termes ; `.réciproque \alpha_1 …` redit « α » ; commandes de calcul : `u_3` = le
+terme ; écho et refus citent `u_3` ; `u_3'` expliqué ; `.variations x^2 - a x` honnête (« non
+déterminés »). Hors périmètre, noté : le grec indicé reste un `subscript` dans le pipeline,
+`x_A` (indice non numérique) n'est pas un nom.

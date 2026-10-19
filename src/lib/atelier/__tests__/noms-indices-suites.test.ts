@@ -66,6 +66,33 @@ describe('1. u_3 tapé dans Calcul : le terme de rang 3', () => {
 		expect(said(s, 'u_{12}')).toBe('25');
 	});
 
+	it('les commandes de calcul lisent u_3 comme le terme ; .latex l’écrit tel quel', () => {
+		const s = withLines('u(n) = 2n + 1');
+		expect(said(s, '.dériver u_3 x^2')).toContain('=14x');
+		expect(said(s, '.évaluer u_3')).toBe('7');
+		expect(said(s, '.évaluer x^2 en x=u_3')).toBe('49');
+		expect(said(s, '.latex u_3')).toBe('u_3');
+		// un nom de variable (après « ; ») n'est pas un terme
+		expect(said(s, '.dériver x^2 ; u_3')).toContain('d/du_3');
+	});
+
+	it('un refus ou une réponse en lettres citent u_3 tel que tapé, pas u(3)', () => {
+		const s = withLines('u(n) = 2n + 1');
+		expect(said(s, 'u_3 + w')).toBe('u_3+w');
+		expect(said(s, '.évaluer u_3 + w')).toContain('.évalueru_3+wenw=3');
+		expect(said(s, '.évaluer u_3 + w')).not.toContain('u(3)');
+	});
+
+	it('u_3′ : le terme d’une suite n’a pas de dérivée (pas « n’existe pas »)', () => {
+		const s = withLines('u(n) = 2n + 1');
+		expect(refusal(s, "u_3'")).toBe(
+			'« u_3 » est le terme de rang 3 de la suite u : un nombre, il n’a pas de dérivée.'.replace(
+				'n’a',
+				"n'a"
+			)
+		);
+	});
+
 	it('u_n seul garde son sens : la notation, pas un calcul', () => {
 		const s = withLines('u(n) = 2n + 1');
 		expect(said(s, 'u_n')).toBe('u_n');
@@ -80,7 +107,8 @@ describe('1. u_3 tapé dans Calcul : le terme de rang 3', () => {
 	it('un rang avant le premier : le refus de v(…)', () => {
 		const s = withLines('v(n+1) = 2v(n) + 1');
 		s.atelier.setSequence('v', { firstIndex: 1, firstTerm: '0' });
-		expect(said(s, 'v_0')).toBe(said(s, 'v(0)'));
+		// le refus de v(0), qui cite v_0 tel que tapé
+		expect(refusal(s, 'v_0')).toBe("v_0 n'existe pas : la suite commence au rang 1.");
 	});
 
 	it('une fonction f, comme dans une définition (g = f_3 vaut f(3))', () => {
@@ -235,7 +263,18 @@ describe('3. x_1 est une autre lettre que x : il se comporte comme a', () => {
 
 	it('.variations x^2 - x_1 x : le point critique x = x_1/2', () => {
 		const s = session();
-		expect(said(s, '.variations x^2 - x_1 x')).toContain("x=1/2*x_1(f'=0)");
+		const shown = said(s, '.variations x^2 - x_1 x');
+		expect(shown).toContain("x=1/2*x_1(f'=0)");
+		// Le signe dépend de x_1 : ni « aucun » extremum, ni un sens sur ℝ entier
+		expect(shown).toContain("Signedef'(x)etsensdevariation:nondéterminés");
+		expect(shown).toContain('Extrema:nondéterminés');
+		expect(shown).not.toContain('Extrema:aucun');
+	});
+
+	it('.variations x^2 - a x (même défaut avec a) : non déterminés, honnête', () => {
+		const shown = said(session(), '.variations x^2 - a x');
+		expect(shown).toContain('Extrema:nondéterminés');
+		expect(shown).not.toContain('sensindéterminé)');
 	});
 
 	it.each([
@@ -250,6 +289,12 @@ describe('3. x_1 est une autre lettre que x : il se comporte comme a', () => {
 		'.dériver A^2'
 	])('%s : comme avec a', (line) => {
 		sameAsA(line);
+	});
+
+	it('.réciproque \\alpha_1 x + 1 : le grec indicé reste « α », jamais « alpha_1 = 2 »', () => {
+		const message = refusal(session(), '.réciproque \\alpha_1 x + 1') ?? '';
+		expect(message).toContain('α');
+		expect(message).not.toContain('alpha_1');
 	});
 
 	it('avec x_1 = 2 posé : .réciproque f garde la lettre x_1, comme a', () => {

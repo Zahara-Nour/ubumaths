@@ -656,6 +656,9 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   `x_1` est donc une autre lettre que x, comme `a` (avant : `.variations x^2 - x_1 x` ne savait pas
   résoudre f'(x) = 0, `.intégrer x_1 de 0 à 1` rendait 1). Le grec indicé reste un `subscript`.
   `toLatex` écrit une telle variable `x_1`, `a_{12}` (`indexedVariableLatex`), plus `\mathit{x_1}`.
+  `.variations` ne conclut pas sur un sens indéterminé : tous les intervalles « ? » → « Signe …
+  et sens de variation : non déterminés » et « Extrema : non déterminés » ; un seul « ? » sans
+  extremum trouvé → « Extrema : non déterminés », jamais « aucun ».
 
 ## Invariants structurels non évidents
 

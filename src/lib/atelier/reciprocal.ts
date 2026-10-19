@@ -18,7 +18,7 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { CalcResult } from './calcul';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode, SubscriptNode } from '$lib/mathAST/types';
 import type { Domain } from '$lib/mathAST/domain/types';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeReciprocal, type ReciprocalResult } from '$lib/mathAST/reciprocal';
@@ -196,7 +196,7 @@ export function reciprocalOfFunction(
 	if (!lettered.ok) return refused(lettered.message);
 	// `x_1` est UN paramètre, pas x : ses noms indicés deviennent des variables
 	// (`hideIndexedNames`), que le solveur ne confond plus avec x (2026-10-19)
-	const letteredAst = hideIndexedNames(lettered.ast).node;
+	const letteredAst = hideIndexedNames(lettered.ast, latinBase).node;
 	const parameters = [...getVariables(letteredAst)].filter((v) => v !== INTERNAL_LETTER).sort();
 	const values = parameterValues(atelier, parameters);
 
@@ -227,6 +227,15 @@ function parameterValues(atelier: Atelier, parameters: readonly string[]): Recor
 		if (value !== null) values[name] = value;
 	}
 	return values;
+}
+
+/**
+ * Seuls les noms indicés LATINS deviennent des variables (`x_1`), comme dans le
+ * pipeline du moteur : `\alpha_1` reste un indice, nommé « α₁ » dans un refus
+ * (avec la variable `alpha_1`, il demandait « alpha_1 = 2 », qui ne se tape pas).
+ */
+function latinBase(_name: string, node: SubscriptNode): boolean {
+	return node.base.type === 'variable';
 }
 
 /** L'arbre de f, rangé en x, écrit dans la lettre de l'élève. */
@@ -395,7 +404,7 @@ export function reciprocalCommand(
 	const read = expanded === null ? null : astOf(expanded, 'text', atelier.functionNames);
 	if (read === null) return { kind: 'refus', message: `Je n'ai pas su lire « ${body} ».` };
 	// `x_1` est une autre lettre que x, et une variable pour le calcul (`.réciproque x_1^2 + 1`)
-	const ast = hideIndexedNames(read).node;
+	const ast = hideIndexedNames(read, latinBase).node;
 	const letters = [...getVariables(ast)];
 	const letter = letters.includes(INTERNAL_LETTER)
 		? INTERNAL_LETTER

@@ -523,13 +523,60 @@ function indexedTermsAsCalls(atelier: Atelier, input: string): string {
 	return input.replace(
 		INDEXED_TERM,
 		(whole, base: string, plain: string | undefined, braced: string | undefined) => {
-			const kind = atelier.get(base)?.kind;
-			if (kind !== 'sequence' && kind !== 'function') return whole;
-			const index = plain ?? braced;
-			if (atelier.get(`${base}_${index}`) !== undefined) return whole;
-			return `${base}(${index})`;
+			const term = indexedTermOf(atelier, `${base}_${plain ?? braced}`);
+			return term === null ? whole : `${term.base}(${term.index})`;
 		}
 	);
+}
+
+/**
+ * `u_3` est-il le terme d'une suite (ou une valeur d'une fonction) de l'atelier ?
+ * Oui quand u est une suite ou une fonction et qu'aucun objet ne s'appelle `u_3`.
+ */
+function indexedTermOf(
+	atelier: Atelier,
+	name: string
+): {
+	readonly base: string;
+	readonly index: string;
+	readonly kind: 'sequence' | 'function';
+} | null {
+	const match = /^([A-Za-z])_(\d+)$/.exec(name);
+	if (match === null || atelier.get(name) !== undefined) return null;
+	const kind = atelier.get(match[1])?.kind;
+	if (kind !== 'sequence' && kind !== 'function') return null;
+	return { base: match[1], index: match[2], kind };
+}
+
+/**
+ * Le texte d'un refus calculé sur la ligne récrite (`u(3)`), rendu à ce que
+ * l'élève a tapé (`u_3`) : il ne doit pas lire une écriture qu'il n'a pas faite.
+ */
+function typedTermsIn(atelier: Atelier, typed: string, message: string): string {
+	let out = message;
+	for (const match of typed.matchAll(INDEXED_TERM)) {
+		const [whole, base, plain, braced] = match;
+		const term = indexedTermOf(atelier, `${base}_${plain ?? braced}`);
+		if (term !== null) out = out.split(`${term.base}(${term.index})`).join(whole);
+	}
+	return out;
+}
+
+/**
+ * Les termes `u_3` de l'argument d'une commande de CALCUL, récrits `u(3)` comme
+ * sur une ligne de calcul. Pas ce qui NOMME une variable : après « ; »
+ * (`.dériver x^2 ; t`) ni la valeur posée par `.évaluer … en u_3=3`.
+ */
+function indexedTermsInArgument(atelier: Atelier, command: string, argument: string): string {
+	const semicolon = argument.indexOf(';');
+	const evaluated = command === 'eval' ? argument.search(/\sen\s/) : -1;
+	const cut = [semicolon, evaluated].filter((i) => i !== -1);
+	const end = cut.length === 0 ? argument.length : Math.min(...cut);
+	// `en x=u_3` : la VALEUR posée est un calcul, le nom posé (`u_3=`) non
+	const tail = argument
+		.slice(end)
+		.replace(/=([^;=]*)/g, (_whole, value: string) => `=${indexedTermsAsCalls(atelier, value)}`);
+	return indexedTermsAsCalls(atelier, argument.slice(0, end)) + tail;
 }
 
 /** Une « définition » de dérivée (`f'(x) = …`), refusée (§2 E1). */
@@ -2096,10 +2143,16 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		series: SERIES_COMMANDS.has(known.name)
 	});
 	if (commaRefused !== null) return { kind: 'refus', message: commaRefused };
-	const rawArgument =
+	const typedRaw =
 		space === -1
 			? ''
 			: withPiCommand(decimalCommaInput(resolved.slice(space + 1)).replace(/’/g, "'"));
+	// `.dériver u_3 x^2` : le terme u_3, comme sur une ligne de calcul (2026-10-19) ;
+	// pas pour une commande d'écriture (`.latex u_3` écrit ce qui est tapé)
+	const rawArgument =
+		calculation && !WRITING_COMMANDS.has(name)
+			? indexedTermsInArgument(session.atelier, name, typedRaw)
+			: typedRaw;
 	const mixed = mixedNotationMessage(rawArgument);
 	if (mixed !== null) return { kind: 'refus', message: mixed };
 	const derived = derivedSequence(session, rawArgument);
@@ -3412,6 +3465,13 @@ function integralLatex(ast: MathNode, text: string): string {
 function derivativeOfUnusable(session: CalcSession, input: string): string | null {
 	for (const match of input.matchAll(/([A-Za-z](?:_\d+)?)['\u2019]/g)) {
 		const object = session.atelier.get(match[1]);
+		// `u_3'` : le terme d'une suite, `f_3'` : f(3) — des nombres, sans dérivée
+		const term = object === undefined ? indexedTermOf(session.atelier, match[1]) : null;
+		if (term !== null) {
+			return term.kind === 'sequence'
+				? `« ${match[1]} » est le terme de rang ${term.index} de la suite ${term.base} : un nombre, il n'a pas de dérivée.`
+				: `« ${match[1]} » désigne ${term.base}(${term.index}) : un nombre, il n'a pas de dérivée. Pour la dérivée en ${term.index} : ${term.base}'(${term.index}).`;
+		}
 		if (object === undefined) {
 			return `« ${match[1]} » n'existe pas : sa dérivée non plus.`;
 		}
@@ -3825,7 +3885,13 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// Entrée BRUTE : `runCommand` ne réécrit `π` qu'en argument d'une commande
 	// de calcul (`.filtrer L = π` lit une modalité), et l'écho reste ce qui a
 	// été tapé (revue #911)
-	if (input.startsWith('.')) return withListsByRow(session, input);
+	if (input.startsWith('.')) {
+		const done = withListsByRow(session, input);
+		// Un refus cite `u_3` tel que tapé, pas l'argument récrit `u(3)`
+		return done.kind === 'refus'
+			? { ...done, message: typedTermsIn(session.atelier, input, done.message) }
+			: done;
+	}
 
 	const conversion = naturalConversion(input);
 	if (conversion !== null) return convertNaturally(session, input, conversion, provenance);
@@ -3931,7 +3997,18 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	const withCalls = indexedTermsAsCalls(session.atelier, input);
 	if (withCalls !== input) {
 		const line = computeInput(session, withCalls, provenance);
-		return line.kind === 'calcul' ? { ...line, input } : line;
+		// L'écho, et une réponse restée en lettres (`u_3 + w`), gardent `u_3`
+		if (line.kind === 'calcul') {
+			return {
+				...line,
+				input,
+				output: typedTermsIn(session.atelier, input, line.output)
+			};
+		}
+		// Un refus cite ce qui a été tapé (`u_3`), pas la ligne récrite (`u(3)`)
+		return line.kind === 'refus'
+			? { ...line, message: typedTermsIn(session.atelier, input, line.message) }
+			: line;
 	}
 
 	// Lot 2, L4 : une mesure dans un calcul (`AM`, `aire(A, B, C)`, `2AE + 1`) est

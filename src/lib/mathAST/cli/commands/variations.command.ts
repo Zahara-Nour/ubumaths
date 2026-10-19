@@ -232,12 +232,27 @@ export class VariationsCommand extends BaseCommand {
 				lines.push(this.formatCriticalPointsColored(result.criticalPoints, variable));
 				lines.push('');
 
-				// Sign of derivative and monotonicity
-				lines.push(this.formatMonotonicIntervalsColored(result.monotonicIntervals, variable));
-				lines.push('');
+				// Un sens INDÉTERMINÉ (le signe de f' dépend d'une lettre : x² − a x) : on ne
+				// conclut rien — ni un sens sur des intervalles qui ignorent x = a/2, ni
+				// « Extrema : aucun » (2026-10-19, revue des noms indicés)
+				const unknown = result.monotonicIntervals.filter((i) => i.monotonicity === 'unknown');
+				if (unknown.length > 0 && unknown.length === result.monotonicIntervals.length) {
+					lines.push(
+						chalk.yellow(`Signe de f'(${variable}) et sens de variation : non déterminés`)
+					);
+					lines.push(chalk.yellow('Extrema : non déterminés'));
+				} else {
+					// Sign of derivative and monotonicity
+					lines.push(this.formatMonotonicIntervalsColored(result.monotonicIntervals, variable));
+					lines.push('');
 
-				// Extrema
-				lines.push(this.formatExtremaColored(result.extrema));
+					// Extrema : un sens indéterminé quelque part interdit de conclure « aucun »
+					lines.push(
+						unknown.length > 0 && result.extrema.length === 0
+							? chalk.yellow('Extrema : non déterminés')
+							: this.formatExtremaColored(result.extrema)
+					);
+				}
 			}
 
 			// Boundary limits (if available)

@@ -541,9 +541,16 @@ attendait « a ». Seul un indice ENTIER fait un nom : `u_n` reste la notation d
 
 - **`u_3` tapé dans Calcul** répond le terme, comme dans une définition : `indexedTermsAsCalls`
   (`calcul.ts`) récrit `u_3`, `u_{12}` en `u(3)`, `u(12)` avant tout calcul (récurrence comprise,
-  par `recurrenceTermsIn` ; l'écho reste ce qui a été tapé). Pas devant une parenthèse (`u_3(2)`
-  appelle la fonction `u_3`) ni quand un objet `u_3` existe. Une récurrence citée dans une
-  DÉFINITION (`c = v_3`) reste refusée, comme `c = v(3)`.
+  par `recurrenceTermsIn`). L'écho, une réponse restée en lettres (`u_3 + w`) et un refus
+  (`v_0 n'existe pas…`) citent ce qui a été tapé, jamais `u(3)` (`typedTermsIn`). Pas devant une
+  parenthèse (`u_3(2)` appelle la fonction `u_3`) ni quand un objet `u_3` existe. Les commandes
+  de CALCUL aussi (`indexedTermsInArgument`) : `.dériver u_3 x^2`, `.évaluer u_3`, `.évaluer x^2
+en x=u_3` ; pas les commandes d'écriture (`.latex u_3` écrit ce qui est tapé), ni un nom de
+  variable (après « ; », ou posé par `en u_3=…`). `u_3'` : « « u_3 » est le terme de rang 3 de la
+  suite u : un nombre, il n'a pas de dérivée. » Une récurrence citée dans une DÉFINITION
+  (`c = v_3`) reste refusée, comme `c = v(3)`. Renommer la suite u en v emmène ses termes :
+  `b = u_3 + 1` devient `v_3 + 1` (`renameTermsInDefinition`, par `renameInObject`) ; une fonction
+  `f_1` n'est pas un terme de f et reste telle quelle.
 - **Une valeur `u_3` et une suite (ou fonction) `u` ne cohabitent pas** (`indexedNameClash`,
   `names.ts`, dans `create`, `rename` et le nom proposé d'office) : « u est une suite : u_3
   désigne son terme de rang 3. Choisis un autre nom. » (fonction : « f_1 désigne f(1) ») ; dans
@@ -553,16 +560,24 @@ attendait « a ». Seul un indice ENTIER fait un nom : `u_n` reste la notation d
   renommée à la relecture (`migrateIndexedNameClashes`, `persistence.ts`, comme la migration de
   `y`) et on le dit (`renamedOnReadMessage`, `geometry.ts` : « « u_3 » se lit désormais u(3) :
   ton objet s'appelle maintenant a. ») ; les définitions qui citaient `u_3` ne sont PAS réécrites
-  — elles y lisaient déjà le terme. Versé (`mergeInto`) à côté d'une suite u locale : la valeur
-  arrive sous un autre nom, comme un nom pris.
+  — elles y lisaient déjà le terme. **Versement** (`mergeInto`) : le conflit se tranche dans
+  `planNames`, avant toute création, comme un nom pris — dans les deux sens. Une valeur `u_3`
+  reçue à côté d'une suite u locale arrive sous un autre nom. Une suite `u` reçue à côté d'une
+  valeur `u_3` locale arrive sous un autre nom (v), et `rewriteCitations` réécrit les arrivants
+  qui la citent : `c = u(3) + 1` devient `v(3) + 1`, ET le terme reçu `b = u_3 + 1` devient
+  `v_3 + 1` — sans quoi il lirait la valeur locale `u_3`, sans rien dire.
 - **`x_1` n'est jamais x** : le pipeline de lecture du moteur (`mathAST/cli/core/pipeline.ts`)
   fait de chaque nom indicé latin une VARIABLE `x_1` (`hideIndexedNames`), que toutes les
   analyses (`.variations`, `.résoudre`, `.intégrer`, `.évaluer`, `.domaine`, le solveur) traitent
   comme une autre lettre — comme `a`. Avant : `.variations x^2 - x_1 x` ne trouvait pas de point
   critique, `.intégrer x_1 de 0 à 1` rendait 1, `.évaluer x_1^2 en x_1=3` refusait. Le LaTeX
   d'une telle variable s'écrit `x_1`, `a_{12}` (`indexedVariableLatex`), plus `\mathit{x_1}`.
-  Côté atelier, lisent aussi le nom entier : `.réciproque` (lettres et paramètres,
-  `reciprocal.ts`), les étapes de `.résoudre` (`solve-steps.ts`), une borne d'intervalle
+  Le grec indicé (`\alpha_1`) reste un `subscript`, nommé « α » dans un refus. `.variations`
+  ne conclut plus sur un sens indéterminé (`x^2 - a x`, `x^2 - x_1 x`) : « Signe de f'(x) et sens
+  de variation : non déterminés », « Extrema : non déterminés », au lieu d'un ]-∞ ; +∞[ « ? » et
+  d'un « Extrema : aucun » faux (`variations.command.ts`, défaut hérité de main avec `a`).
+  Côté atelier, lisent aussi le nom entier : `.réciproque` (lettres et paramètres, base latine
+  seulement, `reciprocal.ts`), les étapes de `.résoudre` (`solve-steps.ts`), une borne d'intervalle
   (`interval.ts`), les lettres d'une courbe (`construction.ts`), l'intégrande
   (`integrate-steps-check.ts`), et la figure (`figure-sync.ts` : un point `(a_1 ; 2a_1)` n'était
   pas dessiné, son curseur cherché sous « a »).
