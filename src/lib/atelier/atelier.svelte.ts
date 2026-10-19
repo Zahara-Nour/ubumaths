@@ -190,10 +190,41 @@ import {
 	type StylePatch
 } from './cell-format';
 import { planTabulation, type TabulationRequest } from './tabulate';
+import { HistoryStack } from './history-stack';
 
 // =============================================================================
 // Types de retour
 // =============================================================================
+
+/** Ce que la barre d'icônes montre d'Annuler / Rétablir (lot 5). */
+export interface HistoryState {
+	/** Le nom de l'étape qu'Annuler défera (« supprimer f »), ou `null`. */
+	readonly undo: string | null;
+	/** Le nom de l'étape que Rétablir refera, ou `null`. */
+	readonly redo: string | null;
+	/** Le nombre d'étapes annulables. */
+	readonly steps: number;
+}
+
+/** L'étape la plus externe en cours : `id` est posé à sa fermeture (`null` si vide). */
+interface StepToken {
+	id: number | null;
+}
+
+/** Une photo d'Annuler / Rétablir : l'état rangé, plus ce qui s'annule sans y être. */
+interface AtelierPhoto {
+	readonly state: AtelierState;
+	readonly charts: [string, ListChartState][];
+	readonly seed: number;
+}
+
+/** « couleur de g », « affichage de f » : le nom d'un réglage d'affichage comme étape. */
+function displayStepLabel(name: string, patch: object): string {
+	return `${'color' in patch ? 'couleur' : 'affichage'} de ${displayName(name)}`;
+}
+
+/** Le nom d'une étape faite de changements hors étape (un curseur glissé, PR 2). */
+export const OUTSIDE_STEP_LABEL = 'modifier l’atelier';
 
 /** Un refus, avec son message déjà en français — l'UI l'affiche tel quel. */
 export interface Refused {
@@ -228,19 +259,6 @@ export interface RemovedWithDependents {
 	readonly ok: true;
 	/** L'objet puis ses dépendants, dans l'ordre des cartes. */
 	readonly removed: readonly string[];
-}
-
-/** De quoi remettre l'atelier tel qu'il était avant une suppression en cascade. */
-interface RemovalUndo {
-	readonly receipt: RemovedWithDependents;
-	/** `revision` juste après la suppression : si elle a bougé, on n'annule plus (L4). */
-	readonly revision: number;
-	readonly items: AtelierObject[];
-	readonly charts: [string, ListChartState][];
-	/** Les cellules sans nom d'avant : retirer un nom y verse la colonne (T3). */
-	readonly cells: [string, string][];
-	/** Les titres d'avant : supprimer une liste vide sa colonne, titre compris. */
-	readonly titles: [number, string][];
 }
 
 export interface Updated {
@@ -451,28 +469,6 @@ const ANGLE_IN_FUNCTION =
 
 const GRID_FULL = 'La grille est pleine : vide une colonne pour créer une liste.';
 
-/** Les gestes de la grille qu'on peut annuler (T6) : au-delà, les plus anciens partent. */
-export const MAX_GRID_UNDO = 100;
-
-const GRID_CHANGED_SINCE =
-	'La grille a changé depuis (une carte, Calcul…) : ce geste ne peut plus être annulé.';
-
-/**
- * Un geste de la grille (saisie, collage, effacement, titre) : chaque case et
- * chaque titre, avant et après. Annuler remet `before`, rétablir remet `after`.
- */
-interface GridGesture {
-	readonly cells: readonly { column: number; row: number; before: string; after: string }[];
-	readonly titles: readonly { column: number; before: string; after: string }[];
-	/** « Relancer » (lot 5, Q-L5-3) : la graine d'avant et d'après. */
-	readonly seed?: { readonly before: number; readonly after: number };
-	/** Une mise en forme (reprise de V4) : les zones d'avant et d'après. */
-	readonly formats?: {
-		readonly before: readonly FormatZone[];
-		readonly after: readonly FormatZone[];
-	};
-}
-
 /**
  * Pourquoi ces entrées ne peuvent pas devenir la colonne d'une liste, ou `null`.
  *
@@ -599,27 +595,11 @@ export class Atelier {
 	private titles = new SvelteMap<number, string>();
 
 	/**
-	 * L'historique de la grille (T6, exception à D6 limitée à la grille) : pas
-	 * rangé, perdu au rechargement. `gridHistory` dit à la vue ce qui se peut.
-	 */
-	#undo: GridGesture[] = [];
-	#redo: GridGesture[] = [];
-	/** Le geste en cours de composition (un collage : cases PUIS titres), sinon `null`. */
-	#gesture: {
-		cells: GridGesture['cells'][number][];
-		titles: GridGesture['titles'][number][];
-		seed?: { before: number; after: number };
-		formats?: { before: readonly FormatZone[]; after: readonly FormatZone[] };
-	} | null = null;
-	/**
 	 * La mise en forme de la grille (reprise de V4, 2026-10-18) : des zones, dans
 	 * l'ordre où elles ont été posées — la dernière qui touche une case l'emporte.
 	 * Elle ne change que l'affichage (`cell-format.ts`).
 	 */
 	#formats = $state.raw<readonly FormatZone[]>([]);
-	/** Annuler ou rétablir écrit sans s'enregistrer comme un nouveau geste. */
-	#replaying = false;
-	gridHistory = $state({ undo: 0, redo: 0 });
 
 	/**
 	 * Les valeurs des FORMULES de la grille (tableur, lot 2), par adresse :
@@ -646,8 +626,29 @@ export class Atelier {
 		return byColumn;
 	});
 
-	/** La dernière suppression en cascade, tant qu'elle peut s'annuler (lot B, N4). */
-	#lastRemoval: RemovalUndo | null = null;
+	/**
+	 * Annuler / Rétablir (lot 5, phase 0 `atelier-annuler-retablir-phase0.md`) :
+	 * une pile de PHOTOS de l'atelier, avant et après chaque étape. Une étape est
+	 * un geste de l'élève (`step`) ; les étapes emboîtées n'en font qu'une.
+	 * Perdue au rechargement, vidée par `restore()`.
+	 */
+	#history = new HistoryStack();
+	/** La profondeur des étapes ouvertes : seule la plus externe enregistre. */
+	#stepDepth = 0;
+	/** L'étape la plus externe en cours : son identifiant est connu à sa fermeture. */
+	#openStep: StepToken | null = null;
+	/**
+	 * La photo que la pile décrit (après la dernière étape, ou après une
+	 * annulation). Un écart à la prochaine étape = un changement fait hors étape
+	 * (un curseur glissé, PR 2) : il devient sa propre étape, jamais perdu.
+	 */
+	#baseline: string | null = null;
+	/** Annuler ou rétablir remet une photo : rien de ce qu'il écrit n'est une étape. */
+	#restoring = false;
+	/** La suppression d'un reçu → son étape : le toast « Annuler » ne défait qu'elle. */
+	#receipts = new WeakMap<RemovedWithDependents, StepToken>();
+	/** Ce que la barre affiche : l'étape qu'Annuler défera, celle que Rétablir refera. */
+	history = $state<HistoryState>({ undo: null, redo: null, steps: 0 });
 
 	/**
 	 * Les lois des variables aléatoires (décision de David, 2026-10-09) :
@@ -718,6 +719,11 @@ export class Atelier {
 	// ---------------------------------------------------------------------------
 
 	create(input: CreateInput, provenance: Provenance = 'url'): Created | Refused {
+		const shown = input.name === undefined ? 'une carte' : displayName(input.name);
+		return this.step(`ajouter ${shown}`, () => this.#create(input, provenance));
+	}
+
+	#create(input: CreateInput, provenance: Provenance): Created | Refused {
 		const definition = input.definition ?? '';
 
 		// Plafonds du v1 (décision D8) : ils existent pour qu'un atelier tienne
@@ -832,6 +838,10 @@ export class Atelier {
 	 * il est rendu tel quel (L1, `existed`).
 	 */
 	createDerivative(name: string): Created | Refused {
+		return this.step(`dériver ${displayName(name)}`, () => this.#createDerivative(name));
+	}
+
+	#createDerivative(name: string): Created | Refused {
 		const base = this.get(name);
 		if (base === undefined) return { ok: false, message: `« ${displayName(name)} » n'existe pas.` };
 		if (base.kind !== 'function') {
@@ -906,6 +916,13 @@ export class Atelier {
 	 * @param on - l'intervalle tapé après « sur » ; croisé avec celui de f
 	 */
 	createReciprocal(base: string, on?: string): ReciprocalCreated | (Refused & { formulas?: true }) {
+		return this.step(`réciproque de ${displayName(base)}`, () => this.#createReciprocal(base, on));
+	}
+
+	#createReciprocal(
+		base: string,
+		on?: string
+	): ReciprocalCreated | (Refused & { formulas?: true }) {
 		// Sans « sur » (le bouton), la carte existante garde l'intervalle tapé avant
 		const existing = this.get(reciprocalName(base));
 		const wanted =
@@ -951,6 +968,12 @@ export class Atelier {
 	 * la sauvegarde.
 	 */
 	setSlider(name: string, patch: Partial<Slider>): { ok: true } | Refused {
+		return this.step(`réglages du curseur de ${displayName(name)}`, () =>
+			this.#setSlider(name, patch)
+		);
+	}
+
+	#setSlider(name: string, patch: Partial<Slider>): { ok: true } | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		const current = this.items[index];
 		if (current === undefined || !isValue(current) || current.slider === undefined) {
@@ -1205,6 +1228,12 @@ export class Atelier {
 	}
 
 	rename(from: string, to: string): Renamed | Refused {
+		return this.step(`renommer ${displayName(from)} en ${displayName(to)}`, () =>
+			this.#rename(from, to)
+		);
+	}
+
+	#rename(from: string, to: string): Renamed | Refused {
 		const index = this.items.findIndex((o) => o.name === from);
 		if (index === -1) return { ok: false, message: `« ${from} » n'existe pas.` };
 
@@ -1421,7 +1450,6 @@ export class Atelier {
 
 		const broken = this.allDependents(name);
 		this.items.splice(index, 1);
-		this.#forgetGridHistory();
 		this.charts.delete(name);
 		// Les diagrammes dont elle donnait les effectifs disparaissent avec elle :
 		// sinon, une liste recréée sous ce nom s'y rattacherait en silence
@@ -1452,7 +1480,7 @@ export class Atelier {
 	 * Le reçu rendu permet UNE annulation, tant que rien d'autre n'a changé.
 	 */
 	removeWithDependents(name: string): RemovedWithDependents | Refused {
-		return this.#removeWithDependents(name);
+		return this.step(`supprimer ${displayName(name)}`, () => this.#removeWithDependents(name));
 	}
 
 	/**
@@ -1468,13 +1496,9 @@ export class Atelier {
 		}
 		const removed = [name, ...this.removalOf(name)];
 		const gone = new Set(removed);
-		// Copié AVANT : `items` est un `$state`, ses objets des proxies
-		const items = $state.snapshot(this.items) as AtelierObject[];
 		const charts = [...this.charts].filter(
 			([list, c]) => gone.has(list) || gone.has(c.partner ?? '')
 		);
-		const cells = [...this.cells];
-		const titles = [...this.titles];
 		const columns = this.items.flatMap((o) => (isList(o) && gone.has(o.name) ? [o.column] : []));
 
 		this.items = this.items.filter((o) => !gone.has(o.name));
@@ -1482,45 +1506,152 @@ export class Atelier {
 		this.recomputeAll();
 		if (unnamed !== undefined) unnamed();
 		else for (const column of columns) this.titles.delete(column);
-		// Une suppression FERME l'historique de la grille : annuler un geste plus
-		// ancien changerait la révision, et la suppression ne pourrait plus
-		// s'annuler — ses objets seraient perdus (revue de la PR 3a)
-		this.#forgetGridHistory();
 
 		const receipt: RemovedWithDependents = { ok: true, removed };
-		this.#lastRemoval = {
-			receipt,
-			revision: this.revision,
-			items,
-			charts: $state.snapshot(charts) as [string, ListChartState][],
-			cells,
-			titles
-		};
+		if (this.#openStep !== null) this.#receipts.set(receipt, this.#openStep);
 		return receipt;
 	}
 
 	/**
-	 * Annuler la suppression de ce reçu. Refusé — et rien ne bouge — si une autre
-	 * suppression l'a suivie, si elle est déjà annulée, ou si l'atelier a changé
-	 * depuis : on ne restaure jamais par-dessus un nom repris (L4).
+	 * Annuler la suppression de ce reçu (le toast « Annuler »). Refusé — et rien
+	 * ne bouge — si elle n'est plus la dernière étape : une autre l'a suivie, elle
+	 * est déjà annulée, ou l'atelier a changé depuis (L4). Ctrl+Z et le bouton
+	 * Annuler de la barre, eux, défont toujours la dernière étape.
 	 */
 	undoRemoval(receipt: RemovedWithDependents): boolean {
-		const undo = this.#lastRemoval;
-		if (undo === null || undo.receipt !== receipt || undo.revision !== this.revision) return false;
-		this.#lastRemoval = null;
-		this.items = undo.items;
-		// Les cellules sans nom d'avant : une colonne dont on avait retiré le nom
-		// redevient la liste, sans garder une copie de ses cellules dans la grille
-		this.cells.clear();
-		for (const [address, text] of undo.cells) this.cells.set(address, text);
-		this.titles.clear();
-		for (const [column, title] of undo.titles) this.titles.set(column, title);
-		// Un diagramme remis entre-temps (hors `revision`, Q37) prime sur l'ancien
-		for (const [list, chart] of undo.charts) {
-			if (!this.charts.has(list)) this.charts.set(list, chart);
+		const token = this.#receipts.get(receipt);
+		if (token === undefined || this.#stepDepth > 0) return false;
+		this.#capture(this.#photo());
+		if (token.id === null || token.id !== this.#history.topId) {
+			this.#publish();
+			return false;
 		}
-		this.recomputeAll();
-		return true;
+		return this.undo() !== null;
+	}
+
+	// ---------------------------------------------------------------------------
+	// Annuler / Rétablir (lot 5)
+	// ---------------------------------------------------------------------------
+
+	/**
+	 * Faire de `run` UNE étape d'Annuler / Rétablir, nommée `label` (« supprimer
+	 * f »). Emboîtée dans une autre, elle se fond dans la plus externe : une ligne
+	 * de console qui fait cent mises à jour puis crée deux listes est une étape.
+	 * Une étape qui ne change rien (un calcul) n'est pas gardée.
+	 */
+	step<T>(label: string, run: () => T): T {
+		if (this.#stepDepth > 0 || this.#restoring) return run();
+		const before = this.#photo();
+		this.#capture(before);
+		const token: StepToken = { id: null };
+		this.#openStep = token;
+		this.#stepDepth++;
+		try {
+			return run();
+		} finally {
+			this.#stepDepth--;
+			this.#openStep = null;
+			const after = this.#photo();
+			token.id = this.#history.push({ label, before, after });
+			this.#baseline = after;
+			this.#publish();
+		}
+	}
+
+	/**
+	 * Faire `run` sans étape, et sans qu'Annuler le défasse ensuite : la carte
+	 * prête à taper d'un atelier vide (B3) n'est pas un geste de l'élève.
+	 */
+	untracked<T>(run: () => T): T {
+		if (this.#stepDepth > 0) return run();
+		const restoring = this.#restoring;
+		this.#restoring = true;
+		try {
+			return run();
+		} finally {
+			this.#restoring = restoring;
+			if (this.#baseline !== null) this.#baseline = this.#photo();
+		}
+	}
+
+	/** Défaire la dernière étape ; rend son nom, ou `null` s'il n'y a rien à annuler. */
+	undo(): string | null {
+		if (this.#stepDepth > 0) return null;
+		this.#capture(this.#photo());
+		const step = this.#history.undo();
+		if (step !== null) this.#apply(step.before);
+		this.#publish();
+		return step?.label ?? null;
+	}
+
+	/** Refaire la dernière étape annulée ; rend son nom, ou `null`. */
+	redo(): string | null {
+		if (this.#stepDepth > 0) return null;
+		// Un changement fait après l'annulation a déjà oublié ce qui restait à rétablir
+		this.#capture(this.#photo());
+		const step = this.#history.redo();
+		if (step !== null) this.#apply(step.after);
+		this.#publish();
+		return step?.label ?? null;
+	}
+
+	/**
+	 * La photo de l'atelier : ce que `serialize()` range, plus ce qui doit
+	 * s'annuler sans y être — les diagrammes affichés (Q37) et la graine, rangée
+	 * seulement quand la grille tire au hasard. Le réglage des angles, le repère
+	 * de la vue Géométrie et le mode de la console n'en sont pas : ce sont des
+	 * réglages, pas des gestes.
+	 */
+	#photo(): string {
+		const photo: AtelierPhoto = {
+			state: this.serialize(),
+			charts: [...this.charts].map(([list, chart]) => [list, { ...chart }]),
+			seed: this.#seed
+		};
+		return JSON.stringify(photo);
+	}
+
+	/** Un changement fait hors étape devient sa propre étape : Annuler ne le perd jamais. */
+	#capture(current: string): void {
+		if (this.#baseline !== null && current !== this.#baseline) {
+			this.#history.push({ label: OUTSIDE_STEP_LABEL, before: this.#baseline, after: current });
+		}
+		this.#baseline = current;
+	}
+
+	/**
+	 * Remettre une photo. Comme `restore()`, sauf ce que `restore()` remet à zéro
+	 * pour un chargement et qu'une annulation doit garder : les lois des variables
+	 * aléatoires (`#laws`) et le repère de la vue Géométrie.
+	 */
+	#apply(text: string): void {
+		const photo = JSON.parse(text) as AtelierPhoto;
+		const frame = this.#figureFrame;
+		const laws = [...this.#laws];
+		this.#restoring = true;
+		try {
+			this.#restoreState({ ...photo.state, grid: { ...photo.state.grid, seed: photo.seed } });
+		} finally {
+			this.#restoring = false;
+		}
+		this.#figureFrame = frame;
+		for (const [variable, head] of laws) this.#laws.set(variable, head);
+		for (const [list, chart] of photo.charts) this.charts.set(list, chart);
+		this.#baseline = this.#photo();
+	}
+
+	#publish(): void {
+		this.history = {
+			undo: this.#history.undoLabel,
+			redo: this.#history.redoLabel,
+			steps: this.#history.size
+		};
+	}
+
+	#forgetHistory(): void {
+		this.#history.clear();
+		this.#baseline = null;
+		this.#publish();
 	}
 
 	// ---------------------------------------------------------------------------
@@ -1591,6 +1722,12 @@ export class Atelier {
 	 * @returns le diagramme est-il affiché après le geste ?
 	 */
 	toggleChart(name: string, partner: string | null, kind: ListChartKind = 'barres'): boolean {
+		return this.step(`diagramme de ${displayName(name)}`, () =>
+			this.#toggleChart(name, partner, kind)
+		);
+	}
+
+	#toggleChart(name: string, partner: string | null, kind: ListChartKind): boolean {
 		const shown = this.chartOf(name);
 		if (shown?.partner === partner && (shown.kind ?? 'barres') === kind) {
 			this.charts.delete(name);
@@ -1679,10 +1816,11 @@ export class Atelier {
 			return { ok: false, message: `Un titre garde au plus ${MAX_TITLE_LENGTH} caractères.` };
 		}
 		if (title === this.titleOf(column)) return { ok: true };
-		this.#record({ cells: [], titles: [{ column, before: this.titleOf(column), after: title }] });
-		if (title === '') this.titles.delete(column);
-		else this.titles.set(column, title);
-		this.revision++;
+		this.step(`titre de la colonne ${columnLetter(column)}`, () => {
+			if (title === '') this.titles.delete(column);
+			else this.titles.set(column, title);
+			this.revision++;
+		});
 		return { ok: true };
 	}
 
@@ -1766,7 +1904,7 @@ export class Atelier {
 		);
 		if (this.#formatsWith(pasted) === null) return { ok: false, message: FORMATS_FULL };
 		// Cases, titres, mise en forme : UN geste, qu'une seule annulation défait (T6)
-		return this.#grouped(() => {
+		return this.step('coller dans la grille', () => {
 			const written = this.editCells(edits);
 			if (!written.ok) return written;
 			titles?.forEach((title, j) => {
@@ -1809,7 +1947,7 @@ export class Atelier {
 		}
 		// Tout ou rien : le plafond de mise en forme se juge AVANT d'écrire (revue)
 		if (this.#formatsWith(styles) === null) return { ok: false, message: FORMATS_FULL };
-		return this.#grouped(() => {
+		return this.step('recopier vers le bas', () => {
 			const written = this.editCells(edits);
 			if (!written.ok) return written;
 			return this.#addFormats(styles);
@@ -1835,7 +1973,7 @@ export class Atelier {
 		if (!zoneInGrid(zone)) return { ok: false, message: 'Cette zone sort de la grille.' };
 		const refusal = patchRefusal(patch);
 		if (refusal !== null) return { ok: false, message: refusal };
-		return this.#addFormats([{ zone, patch }]);
+		return this.step('mise en forme', () => this.#addFormats([{ zone, patch }]));
 	}
 
 	/** « Effacer la mise en forme » de la zone. */
@@ -1860,7 +1998,6 @@ export class Atelier {
 		const after = this.#formatsWith(added);
 		if (after === null) return { ok: false, message: FORMATS_FULL };
 		if (sameFormats(after, this.#formats)) return { ok: true };
-		this.#record({ cells: [], titles: [], formats: { before: this.#formats, after } });
 		this.#setFormats(after);
 		return { ok: true };
 	}
@@ -1880,7 +2017,7 @@ export class Atelier {
 	 * atelier reçu écrit cases et mise en forme ensemble (revue).
 	 */
 	asOneGesture<T>(run: () => T): T {
-		return this.#grouped(run);
+		return this.step('modifier la grille', run);
 	}
 
 	#setFormats(formats: readonly FormatZone[]): void {
@@ -1910,7 +2047,7 @@ export class Atelier {
 		if (this.freeColumns.length < 2) {
 			return { ok: false, message: 'Il faut deux colonnes libres dans la grille.' };
 		}
-		const written = this.#grouped(() => {
+		const written = this.step(`tabuler ${displayName(request.name)}`, () => {
 			const edited = this.editCells(plan.edits);
 			if (!edited.ok) return edited;
 			this.setTitle(x, plan.titles[0]);
@@ -1925,115 +2062,6 @@ export class Atelier {
 				? null
 				: `Le pas ne tombe pas juste sur ${plan.shortOf} : le tableau s’arrête à ${last.shown}.`;
 		return { ok: true, columns: [x, image], rows: plan.rows, note };
-	}
-
-	// ---------------------------------------------------------------------------
-	// Annuler dans la grille (T6)
-	// ---------------------------------------------------------------------------
-
-	/** Annuler le dernier geste de la grille. Refusé si une de ses cases a changé ailleurs depuis. */
-	undoGrid(): { ok: true } | Refused {
-		return this.#replay(this.#undo, this.#redo, 'before', 'Rien à annuler dans la grille.');
-	}
-
-	/** Rétablir le dernier geste annulé. */
-	redoGrid(): { ok: true } | Refused {
-		return this.#replay(this.#redo, this.#undo, 'after', 'Rien à rétablir dans la grille.');
-	}
-
-	#replay(
-		from: GridGesture[],
-		to: GridGesture[],
-		target: 'before' | 'after',
-		nothing: string
-	): { ok: true } | Refused {
-		const gesture = from.pop();
-		if (gesture === undefined) return { ok: false, message: nothing };
-		const current = target === 'before' ? 'after' : 'before';
-		// Jamais par-dessus un changement venu d'ailleurs (une carte, `L = …`) :
-		// l'historique ne décrit plus la grille, il est oublié
-		const untouched =
-			gesture.cells.every((c) => this.cell(c.column, c.row) === c[current]) &&
-			gesture.titles.every((t) => this.titleOf(t.column) === t[current]) &&
-			(gesture.seed === undefined || this.#seed === gesture.seed[current]) &&
-			(gesture.formats === undefined || this.#formats === gesture.formats[current]);
-		if (!untouched) {
-			this.#forgetGridHistory();
-			return { ok: false, message: GRID_CHANGED_SINCE };
-		}
-		this.#replaying = true;
-		try {
-			const written = this.editCells(
-				gesture.cells.map((c) => ({ column: c.column, row: c.row, text: c[target] }))
-			);
-			if (!written.ok) {
-				this.#forgetGridHistory();
-				return written;
-			}
-			for (const t of gesture.titles) this.setTitle(t.column, t[target]);
-			if (gesture.seed !== undefined) this.#setSeed(gesture.seed[target]);
-			if (gesture.formats !== undefined) this.#setFormats(gesture.formats[target]);
-		} finally {
-			this.#replaying = false;
-		}
-		to.push(gesture);
-		this.#countHistory();
-		return { ok: true };
-	}
-
-	/** Noter un geste : dans celui en cours de composition, sinon comme un nouveau. */
-	#record(part: GridGesture): void {
-		const empty =
-			part.cells.length === 0 &&
-			part.titles.length === 0 &&
-			part.seed === undefined &&
-			part.formats === undefined;
-		if (this.#replaying || empty) return;
-		if (this.#gesture !== null) {
-			this.#gesture.cells.push(...part.cells);
-			this.#gesture.titles.push(...part.titles);
-			// Une graine dans un geste composé : la première d'avant, la dernière d'après
-			if (part.seed !== undefined) {
-				this.#gesture.seed = {
-					before: this.#gesture.seed?.before ?? part.seed.before,
-					after: part.seed.after
-				};
-			}
-			if (part.formats !== undefined) {
-				this.#gesture.formats = {
-					before: this.#gesture.formats?.before ?? part.formats.before,
-					after: part.formats.after
-				};
-			}
-			return;
-		}
-		this.#undo.push(part);
-		if (this.#undo.length > MAX_GRID_UNDO) this.#undo.shift();
-		this.#redo = [];
-		this.#countHistory();
-	}
-
-	/** Composer un seul geste de tout ce que `run` écrit. */
-	#grouped<T>(run: () => T): T {
-		if (this.#gesture !== null) return run();
-		this.#gesture = { cells: [], titles: [] };
-		try {
-			return run();
-		} finally {
-			const gesture = this.#gesture;
-			this.#gesture = null;
-			this.#record(gesture);
-		}
-	}
-
-	#forgetGridHistory(): void {
-		this.#undo = [];
-		this.#redo = [];
-		this.#countHistory();
-	}
-
-	#countHistory(): void {
-		this.gridHistory = { undo: this.#undo.length, redo: this.#redo.length };
 	}
 
 	/**
@@ -2062,6 +2090,10 @@ export class Atelier {
 	 * hors de la grille ou trop longue refuse le geste entier.
 	 */
 	editCells(edits: readonly CellEdit[]): { ok: true } | Refused {
+		return this.step('modifier la grille', () => this.#editCells(edits));
+	}
+
+	#editCells(edits: readonly CellEdit[]): { ok: true } | Refused {
 		// `=a2+1` → `=A2+1` (lot 2) ; une formule n'est jamais répartie (P2)
 		const spread = edits.flatMap((edit) =>
 			spreadText(edit.row, edit.text).map((piece) => ({
@@ -2113,16 +2145,6 @@ export class Atelier {
 			if (tooLong !== null) return { ok: false, message: tooLong };
 		}
 
-		this.#record({
-			cells: changes.map((edit) => ({
-				column: edit.column,
-				row: edit.row,
-				before: this.cell(edit.column, edit.row),
-				after: edit.text
-			})),
-			titles: []
-		});
-
 		let unnamedChanged = false;
 		for (const edit of changes) {
 			if (this.listAt(edit.column) !== undefined) continue;
@@ -2153,6 +2175,12 @@ export class Atelier {
 	 * (phase 0 §1). Les refus de nom sont ceux d'aujourd'hui (`create`).
 	 */
 	nameColumn(column: number, name: string): Created | Refused {
+		return this.step(`nommer la colonne ${columnLetter(column)}`, () =>
+			this.#nameColumn(column, name)
+		);
+	}
+
+	#nameColumn(column: number, name: string): Created | Refused {
 		if (!isInGrid(column, 1)) {
 			return { ok: false, message: 'Cette colonne est hors de la grille (A à Z).' };
 		}
@@ -2200,11 +2228,13 @@ export class Atelier {
 			return { ok: false, message: `La colonne ${columnLetter(column)} n'a pas de nom.` };
 		}
 		const entries = entriesOf(list.definition);
-		return this.#removeWithDependents(list.name, () => {
-			entries.forEach((text, index) => {
-				if (text !== '') this.cells.set(cellName(column, index + 1), text);
-			});
-		});
+		return this.step(`retirer le nom de la colonne ${columnLetter(column)}`, () =>
+			this.#removeWithDependents(list.name, () => {
+				entries.forEach((text, index) => {
+					if (text !== '') this.cells.set(cellName(column, index + 1), text);
+				});
+			})
+		);
 	}
 
 	/** Ni liste, ni cellule sans nom : une liste peut s'y poser (un titre reste le sien). */
@@ -2343,6 +2373,24 @@ export class Atelier {
 	 * Les états sont recalculés, jamais relus.
 	 */
 	restore(stored: AtelierState): RestoreReport {
+		const report = this.#restoreState(stored);
+		// Un autre atelier (chargement, autre onglet, lien reçu) : la pile ne le décrit pas
+		this.#forgetHistory();
+		return report;
+	}
+
+	#restoreState(stored: AtelierState): RestoreReport {
+		// Une relecture n'est jamais une étape : les réglages qu'elle repose non plus
+		const restoring = this.#restoring;
+		this.#restoring = true;
+		try {
+			return this.#restoreObjects(stored);
+		} finally {
+			this.#restoring = restoring;
+		}
+	}
+
+	#restoreObjects(stored: AtelierState): RestoreReport {
 		// Q2 de la géométrie : un objet `y` (nom réservé depuis) est renommé, et
 		// les définitions qui le citent suivent — l'appelant le dit à l'élève
 		const { state, renamed } = migrateReservedNames(stored);
@@ -2354,7 +2402,6 @@ export class Atelier {
 		this.#figureFrame = true;
 		this.cells.clear();
 		this.titles.clear();
-		this.#forgetGridHistory();
 		this.#laws.clear();
 		const skipped: SkippedObject[] = [];
 		// Une mise en forme trop riche (lien forgé ou ancien) : la plus longue partie
@@ -2441,6 +2488,11 @@ export class Atelier {
 	 * Rien pour un autre type d'objet.
 	 */
 	setInFigure(name: string, shown: boolean): void {
+		const label = `${shown ? 'montrer' : 'retirer'} ${displayName(name)} dans Géométrie`;
+		this.step(label, () => this.#setInFigure(name, shown));
+	}
+
+	#setInFigure(name: string, shown: boolean): void {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return;
 		const current = this.items[index];
@@ -2457,6 +2509,11 @@ export class Atelier {
 	 * « Tracer » sans rien voir se passer, une fois de plus.
 	 */
 	setPlotted(name: string, plotted: boolean, withList?: string): void {
+		const label = `${plotted ? 'tracer' : 'masquer'} ${displayName(name)}`;
+		this.step(label, () => this.#setPlotted(name, plotted, withList));
+	}
+
+	#setPlotted(name: string, plotted: boolean, withList?: string): void {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return;
 		// Un point, une courbe ne vont jamais dans Graphe (G0) : la vue Figure les montrera
@@ -2493,6 +2550,10 @@ export class Atelier {
 	 * Une fonction jamais tracée reçoit d'abord les réglages d'une courbe neuve.
 	 */
 	setDisplay(name: string, patch: Partial<CurveDisplay>): { ok: true } | Refused {
+		return this.step(displayStepLabel(name, patch), () => this.#setDisplay(name, patch));
+	}
+
+	#setDisplay(name: string, patch: Partial<CurveDisplay>): { ok: true } | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return { ok: false, message: `« ${name} » n'existe pas.` };
 		const current = this.items[index];
@@ -2524,6 +2585,10 @@ export class Atelier {
 	 * 2026-10-18). Refusé pour une valeur sans curseur (grandeur, mesure).
 	 */
 	setSliderShown(name: string, shown: boolean): { ok: true } | Refused {
+		return this.step(`curseur de ${displayName(name)}`, () => this.#setSliderShown(name, shown));
+	}
+
+	#setSliderShown(name: string, shown: boolean): { ok: true } | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		const current = this.items[index];
 		if (current === undefined || !isValue(current) || current.slider === undefined) {
@@ -2607,6 +2672,10 @@ export class Atelier {
 	 * d'autre — c'est la règle du grapheur.
 	 */
 	setSequenceDisplay(name: string, patch: Partial<SequenceDisplay>): { ok: true } | Refused {
+		return this.step(displayStepLabel(name, patch), () => this.#setSequenceDisplay(name, patch));
+	}
+
+	#setSequenceDisplay(name: string, patch: Partial<SequenceDisplay>): { ok: true } | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		const current = this.items[index];
 		if (current === undefined || !isSequence(current)) {
@@ -2647,6 +2716,13 @@ export class Atelier {
 	 * `syncFigure`.
 	 */
 	setFigureDisplay(
+		name: string,
+		patch: Partial<PointDisplay> | Partial<StrokeDisplay>
+	): { ok: true } | Refused {
+		return this.step(displayStepLabel(name, patch), () => this.#setFigureDisplay(name, patch));
+	}
+
+	#setFigureDisplay(
 		name: string,
 		patch: Partial<PointDisplay> | Partial<StrokeDisplay>
 	): { ok: true } | Refused {
@@ -2755,6 +2831,13 @@ export class Atelier {
 		name: string,
 		patch: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>
 	): { ok: true } | Refused {
+		return this.step(`modifier ${displayName(name)}`, () => this.#setSequence(name, patch));
+	}
+
+	#setSequence(
+		name: string,
+		patch: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>
+	): { ok: true } | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		const current = this.items[index];
 		if (current === undefined || !isSequence(current)) {
@@ -2810,6 +2893,10 @@ export class Atelier {
 	 * fabrique pas, elle se saisit.
 	 */
 	createFromOffer(name: string): Created | Refused {
+		return this.step(`ajouter ${displayName(name)}`, () => this.#createFromOffer(name));
+	}
+
+	#createFromOffer(name: string): Created | Refused {
 		const offered = this.items.some((o) =>
 			(o.missing ?? []).some((m) => m.name === name && m.as === 'value')
 		);
@@ -3475,9 +3562,8 @@ export class Atelier {
 	relaunch(): void {
 		let next = newGridSeed();
 		while (next === this.#seed) next = newGridSeed();
-		// Un geste de la grille : Ctrl+Z retrouve les tirages d'avant (Q-L5-3)
-		this.#record({ cells: [], titles: [], seed: { before: this.#seed, after: next } });
-		this.#setSeed(next);
+		// Une étape : Ctrl+Z retrouve les tirages d'avant (Q-L5-3)
+		this.step('relancer les tirages', () => this.#setSeed(next));
 	}
 
 	#setSeed(seed: number): void {

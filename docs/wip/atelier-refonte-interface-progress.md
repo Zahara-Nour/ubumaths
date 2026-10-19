@@ -125,6 +125,27 @@ Choix faits en codant (à signaler à David) :
 - Une couleur choisie la première fois prend la première couleur libre de la figure ; une taille par défaut « moyenne », l'étiquette affichée.
 - « Refermer une carte » (retour de David du 2026-10-04) n'a plus d'objet : plus aucune carte n'a de vue développée.
 
-## Lots suivants
+## Lot 5 — Annuler / Rétablir, PR 1 (2026-10-19)
 
-Lot 5 (annuler / rétablir) : pas commencé.
+Phase 0 validée par David le 2026-10-19 (`atelier-annuler-retablir-phase0.md`, 6/6). Branche
+`feat/atelier-annuler-retablir`, partie d'origin/main après #1513 (perf du recalcul).
+
+- Pile de photos `history-stack.ts` ; `Atelier.step` / `undo` / `redo` / `history` / `untracked`.
+  Photo = `serialize()` + diagrammes affichés + graine. Restauration par `#restoreState` (la voie
+  de `restore`), qui garde ce que `restore` vide pour un chargement : `#laws`, `figureFrame`.
+  `restore()` public vide la pile.
+- Étapes emboîtables (précision de la session atelier-geometry : `.relever` = une étape).
+- Retirés : la pile propre de la grille (`undoGrid`, `redoGrid`, `gridHistory`, `MAX_GRID_UNDO`,
+  `#record`, `#grouped`), `#lastRemoval`. `undoRemoval(reçu)` reste (toast, rejeu `annuler`) :
+  il défait la suppression si elle est encore la dernière étape.
+- Gestes branchés : ligne de console, action de carte, « Garder », validation de carte, et les
+  méthodes du modèle toujours gestes (création, renommage, suppression, tracé, affichages, suite,
+  curseur réglé ou affiché, diagramme, grille). `update` n'ouvre PAS d'étape : le curseur glissé
+  n'est pas branché (PR 2) ; un changement hors étape devient « modifier l'atelier » à la
+  prochaine étape, jamais perdu.
+- Hors pile : angles, repère de Géométrie, mode de la console, renommage `y` à la relecture.
+- Barre : Annuler / Rétablir à gauche, nommés ; Ctrl/⌘+Z, Ctrl+Y, Ctrl/⌘+Maj+Z hors champ ;
+  annonces. DataView : boutons et Ctrl+Z propres retirés. Toast de suppression gardé.
+
+Reste : PR 2 (fin de glissé du curseur, lignes de console barrées, une annulation dans le rejeu),
+PR 3 (Repartir de zéro et Charger annulables).

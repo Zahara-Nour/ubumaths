@@ -190,7 +190,7 @@ describe('Tabuler depuis la carte', () => {
 		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
 		await vi.waitFor(() => expect(atelier.cell(0, 1)).toBe('-5'));
 
-		atelier.undoGrid();
+		atelier.undo();
 
 		await vi.waitFor(() =>
 			expect(cardFor(container, 'f').querySelector('.tabuler-resultat')?.textContent).toBe('')

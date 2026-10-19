@@ -161,6 +161,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/grapheur-link.ts`   | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`                      |
 | `src/lib/atelier/merge.ts`           | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                               |
 | `src/lib/atelier/history-export.ts`  | Export de l'historique de Calcul : JSON rejouable, ubumark lisible, `downloadHistory`                   |
+| `src/lib/atelier/history-stack.ts`   | Pile Annuler / Rétablir (lot 5) : étapes à photos avant / après, plafond 100 étapes et 5 Mo             |
 | `src/lib/atelier/history-import.ts`  | Relecture d'un JSON exporté, validée par Zod et bornée (`readHistory`)                                  |
 | `src/lib/atelier/atelier-file.ts`    | Enregistrer / Charger l'atelier entier dans un `.atelier.json` (`atelierFileToJson`, `readAtelierFile`) |
 | `src/lib/atelier/removal.ts`         | Les phrases de la suppression en cascade (`cascadeMessage`, `removedMessage`)                           |
@@ -787,10 +788,10 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   `alea()` renvoie vers la grille. **Le bouton « Relancer »** (PR 2, Q-L5-2) est à côté de la barre,
   seulement s'il y a des cases à hasard (`randomCells`) ; F9 fait de même tant que la vue Données
   est là (`svelte:window`), et une région `role="status"` annonce « Nouveaux tirages : N cases. ».
-  « Relancer » est un geste de la grille (`GridGesture.seed`) : Ctrl+Z retrouve les tirages d'avant,
-  Ctrl+Y ceux d'après (Q-L5-3) ; après un clic, le focus revient à la grille pour que Ctrl+Z y
-  agisse. F9 maintenu (répétition) ou avec Ctrl/⌘/Alt ne relance pas : l'historique (100 gestes) ne
-  se vide pas de tirages. Garder un atelier reçu qui tirait au hasard refait ses tirages (la graine
+  « Relancer » est une étape de la pile commune (la graine est dans la photo) : Ctrl+Z retrouve les
+  tirages d'avant, Ctrl+Y ceux d'après (Q-L5-3) ; après un clic, le focus revient à la grille pour
+  que Ctrl+Z y agisse. F9 maintenu (répétition) ou avec Ctrl/⌘/Alt ne relance pas : la pile (100
+  étapes) ne se vide pas de tirages. Garder un atelier reçu qui tirait au hasard refait ses tirages (la graine
   reste la nôtre) : le rapport le dit si des cases à hasard ont vraiment été écrites
   (`MergeReport.redrawn`, d'après `randomCells` avant et après).
 - **Mise en forme** (reprise de V4, phase 0 :
@@ -804,7 +805,7 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   `null` d'un patch ramène au défaut (`CLEAR_PATCH`). Elle ne change que l'AFFICHAGE (`formatShown`,
   `Intl.NumberFormat` fr-FR, moitié loin de zéro, jamais `-0,00`) : une formule cite la valeur. Une
   case vide se met en forme d'avance ; la vider garde sa mise en forme. Un geste de la grille
-  (`GridGesture.formats`, Ctrl+Z) ; la recopie et le copier-coller interne l'emportent (`patchOf`,
+  (une étape, Ctrl+Z) ; la recopie et le copier-coller interne l'emportent (`patchOf`,
   Q-MF-4), et sont refusés ENTIERS si elle dépasserait le plafond (jugé avant d'écrire). Rangée dans
   `grid.formats` (Zod, une forgée écartée seule, au plus 500 relues ; au-delà de 500 zones
   canoniques, la plus longue partie qui tient, signalée dans le rapport) et dans le lien (Q-MF-5).
@@ -902,17 +903,12 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   des titres au-dessus de NOMBRES redeviennent des titres ; au-dessus de mots seuls, ou un titre
   qui est un nombre (`2024`), ils reviennent comme une ligne de cases — l'aller-retour n'est
   exact que dans le premier cas. V4 remplaçait la feuille et tronquait en silence à 20 × 20.
-- **Annuler dans la grille** (T6, exception à D6 limitée à la grille) : `undoGrid` / `redoGrid`,
-  Ctrl/⌘+Z et Ctrl/⌘+Maj+Z (ou Ctrl+Y) sur une cellule, boutons « Annuler » / « Rétablir »
-  (désactivés avec leur raison). Un geste = une saisie, un collage (cases et titres ensemble), un
-  effacement de zone ou un titre ; `MAX_GRID_UNDO` (100) gestes, pas rangés. Une case changée
-  ailleurs depuis (carte, `L = …`) refuse l'annulation et oublie l'historique — jamais par-dessus ;
-  relire un atelier l'oublie aussi. Nommer ou supprimer une liste reste un geste d'objet, avec son
-  propre « Annuler ». **Le geste le plus récent s'annule d'abord** : une suppression de carte (ou
-  un retrait de nom) ferme l'historique de la grille — annuler un geste plus ancien changerait la
-  révision, et la suppression ne pourrait plus s'annuler. Ctrl+Z ne s'arrête à la cellule que si
-  la grille a de quoi annuler ; sinon il remonte à l'atelier (dernière suppression de carte). Une
-  case écrite deux fois dans un geste compte une fois (la dernière écriture).
+- **Annuler dans la grille** (T6) : depuis le lot 5 de la refonte, la grille n'a plus sa propre
+  pile ni ses boutons. Ses gestes sont des **étapes de la pile commune** (« Annuler / Rétablir »
+  plus bas) : une saisie, un collage (cases, titres et mise en forme ensemble), un effacement, un
+  titre, une recopie, une mise en forme, « Relancer », nommer ou retirer le nom d'une colonne.
+  Ctrl/⌘+Z sur une cellule remonte à l'atelier. Une case écrite deux fois dans un geste compte une
+  fois (la dernière écriture).
 - **Deux colonnes ensemble : par LIGNE** (P1, `pairs.ts`). Une liste sait la ligne de chacune de
   ses valeurs (`rows`, lu par `parseDefinition`). Nuage (carte et tracé, `plot-sync`), ajustement
   (carte et `.ajustement L : M` / `.stats` à plusieurs listes dans Calcul), effectifs (« Statistiques
@@ -949,10 +945,11 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
 - **modifier** : `update`, `rename` (réécrit les définitions qui citent l'ancien nom),
   `setSlider`, `slideTo`, `setSequence`, `setDisplay`, `setSequenceDisplay`, `setPlotted` ;
 - **supprimer** : `remove`, `removalOf`, `removeWithDependents`, `undoRemoval` ;
+- **annuler** (lot 5) : `step`, `undo`, `redo`, `history`, `untracked` ;
 - **dépendances** : `dependents`, `citedNames` (ce que cite un objet) ; toute mutation finit par
   `recomputeAll` (relit tout — voir « Ce qui se recalcule, et ce qui est gardé ») ;
 - **grille** : `cell`, `editCells`, `pasteTable`, `titleOf`, `setTitle`, `nameColumn`,
-  `unnameColumn`, `undoGrid`, `redoGrid`, `gridHistory`, `listAt`, `columnOf`, `usedExtent`,
+  `unnameColumn`, `listAt`, `columnOf`, `usedExtent`,
   `freeColumns` ;
 - **sauvegarde** : `serialize`, `restore` ; `revision` est le **seul** signal « quelque chose a
   changé » (la session l'écoute pour enregistrer).
@@ -1675,12 +1672,52 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   actif dès qu'il y a un objet OU une ligne de Calcul (les lignes survivent au rechargement) ;
   absent d'un atelier reçu.
 
+### Annuler / Rétablir (lot 5)
+
+Phase 0 : `docs/wip/atelier-annuler-retablir-phase0.md` (validée par David le 2026-10-19). Une
+**pile de photos** (`history-stack.ts`, pur) : avant et après chaque étape, l'atelier tel que
+`serialize()` le range, plus les diagrammes affichés et la graine des tirages. Annuler remet la
+photo d'avant, Rétablir celle d'après, par la même voie que la relecture (`restore`) — sauf ce
+qu'une relecture remet à zéro et qu'une annulation garde : les lois des variables aléatoires et le
+repère de la vue Géométrie. Hors photo, donc jamais annulés : le réglage des angles, le mode de la
+console, le zoom du graphe, l'ouverture de la console, l'onglet.
+
+- **Une étape** = `atelier.step(nom, geste)`. Les étapes s'emboîtent : seule la plus externe
+  enregistre (une ligne de console qui fait cent mises à jour puis crée deux listes = une étape).
+  Une étape qui ne change rien (un calcul, `f(2)`) n'est pas gardée.
+- **Qui ouvre une étape** : une ligne de console (`#submit`, nom « « f(x)=x^2 » »), une action de
+  carte (`runFromPanel`), « Garder », une validation de carte (`DefinitionField`), et les méthodes
+  du modèle qui sont toujours un geste : `create`, `createDerivative`, `createReciprocal`,
+  `createFromOffer`, `rename`, `removeWithDependents`, `setPlotted`, `setInFigure`, `setDisplay`,
+  `setSequenceDisplay`, `setFigureDisplay`, `setSequence`, `setSlider`, `setSliderShown`,
+  `toggleChart`, et tous les gestes de la grille. `update` n'en ouvre PAS (un curseur glissé
+  l'appelle à chaque cran ; la fin de glissé arrive à la PR 2).
+- **Un changement fait hors étape** (un curseur glissé, aujourd'hui) n'est jamais perdu : à la
+  prochaine étape ou annulation, l'écart avec la dernière photo devient sa propre étape,
+  « modifier l'atelier » (`OUTSIDE_STEP_LABEL`).
+- **Jamais une étape** : une relecture (`restore` : chargement, autre onglet, lien reçu, qui
+  **vide la pile**), et ce qu'on passe à `untracked` (la carte prête à taper d'un atelier vide, B3).
+- **Plafond** : 100 étapes et 5 Mo de photos, la plus ancienne oubliée au-delà. Perdue au
+  rechargement.
+- **La barre** : Annuler (`Undo2`) et Rétablir (`Redo2`) à gauche ; le nom du bouton dit l'étape
+  (« Annuler : supprimer f »), indisponible avec sa raison quand la pile est vide. Ctrl/⌘+Z annule,
+  Ctrl+Y ou Ctrl/⌘+Maj+Z rétablit — **jamais dans un champ** (`FIELD_SELECTOR` : le champ annule sa
+  frappe) ni dans une fenêtre ouverte ; le raccourci consommé (`preventDefault`) ne remonte pas au
+  graphe. Chaque geste est annoncé (« Annulé : supprimer f. »).
+- **Le toast d'une suppression** reste (il fait découvrir le geste) ; son bouton défait cette
+  suppression si elle est encore la dernière étape. Il se ferme au bout de 10 s, la suppression
+  reste annulable par la barre.
+- **Pas encore** (PR 2 et 3) : la ligne de console d'une étape annulée n'est pas barrée, et une
+  annulation par la barre n'écrit pas de ligne (le rejeu d'un historique exporté ne la refait
+  donc pas) ; Repartir de zéro et Charger vident la pile au lieu d'être annulables.
+
 ### La barre d'icônes, Enregistrer et Charger
 
 Lot 1 de la refonte de l'interface (`docs/wip/atelier-refonte-interface-phase0.md`, validé par
 David le 2026-10-18). Une seule barre (`role="toolbar"`) au-dessus des onglets, en icônes seules
 (`ToolButton.svelte`) : à gauche **Repartir de zéro**, **Charger un atelier**, **Enregistrer
-l'atelier** ; à droite **Partager** et **Réglages**. Pas d'Annuler / Rétablir avant le lot 5.
+l'atelier**, précédés d'**Annuler** et **Rétablir** (lot 5, voir « Annuler / Rétablir ») ; à
+droite **Console**, **Partager** et **Réglages**.
 Un bouton indisponible garde le focus (`aria-disabled`, pas `disabled`) et dit pourquoi, dans son
 infobulle et à l'aide technique (« Ton atelier est vide : il n'y a rien à enregistrer. »). Sur un
 atelier reçu par lien : ni Repartir de zéro, ni Charger, ni Partager. La barre suit le motif ARIA
@@ -1740,11 +1777,11 @@ Supprimer un objet supprime **aussi ses dépendants**, directs ou en chaîne (d�
 
 - `removalOf` les nomme (dans l'ordre des cartes, sans compter deux fois un cycle) ; la
   confirmation en cite trois puis « et N autres » (`cascadeMessage`) ;
-- `removeWithDependents` rend un reçu ; `undoRemoval` restaure **à l'identique** (définitions,
-  réglages, tracés, diagrammes) — une seule fois, et **refusé si l'atelier a changé depuis**
-  (`revision`) : jamais de restauration par-dessus un nom repris. Elle remet aussi les cellules
-  sans nom d'avant : retirer le nom d'une colonne puis annuler rend la colonne à sa liste, sans
-  copie dans la grille.
+- `removeWithDependents` est UNE étape de la pile (« supprimer f ») et rend un reçu ;
+  `undoRemoval(reçu)` (le bouton du toast) la défait **seulement si elle est encore la dernière
+  étape** — sinon refus, rien ne bouge, et Annuler dans la barre remonte jusqu'à elle. La photo
+  remet tout à l'identique : définitions, réglages, tracés, diagrammes, cellules et titres
+  (retirer le nom d'une colonne puis annuler rend la colonne à sa liste, sans copie).
 
 L'état « en attente » reste pour un nom cité _avant_ d'être défini ; seule la suppression a changé.
 
@@ -2322,18 +2359,18 @@ décisions figées) : 1 l'atelier possède l'état · 2 on ne valide pas · 3 pa
 
 **Phase 0 v1** ([atelier-recherche-eleve-phase0.md](../archive/wip/atelier-recherche-eleve-phase0.md) §9), état au 2026-10-10 :
 
-| #   | Décision                                                     | Toujours vraie ?                                                               |
-| --- | ------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| D1  | Un seul espace de noms                                       | ✅                                                                             |
-| D2  | `x` seulement pour les fonctions, `n` pour les suites        | ⚠️ **Assouplie** (2026-10-06) : `f(t) = t^2` accepté, rangé en x (`letter.ts`) |
-| D3  | Toute valeur numérique a un curseur, `[-10 ; 10]` par défaut | ✅ (bornes réglables dans la carte)                                            |
-| D4  | Grandeur à unité : sans curseur, non traçable                | ✅                                                                             |
-| D5  | L'historique reste, une ligne se promeut en objet            | ✅ (« Garder », `promote`)                                                     |
-| D6  | Pas d'annulation globale                                     | ✅ — exceptions : la dernière suppression en cascade ; la grille (T6)          |
-| D7  | « Afficher la dérivée » et « garder `f′` », deux gestes      | ⚠️ **Remplacée par G6** : « Dériver » crée la carte `f′`, qui suit `f`         |
-| D8  | 200 valeurs par liste, 8 listes                              | ✅ (`MAX_LIST_VALUES`, `MAX_LISTS`)                                            |
-| D9  | Nom inconnu → en attente, pas en erreur                      | ✅                                                                             |
-| D10 | Le parseur suit la provenance                                | ✅ (en partie : le panneau et les données appellent `create` sans provenance)  |
+| #   | Décision                                                     | Toujours vraie ?                                                                   |
+| --- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| D1  | Un seul espace de noms                                       | ✅                                                                                 |
+| D2  | `x` seulement pour les fonctions, `n` pour les suites        | ⚠️ **Assouplie** (2026-10-06) : `f(t) = t^2` accepté, rangé en x (`letter.ts`)     |
+| D3  | Toute valeur numérique a un curseur, `[-10 ; 10]` par défaut | ✅ (bornes réglables dans la carte)                                                |
+| D4  | Grandeur à unité : sans curseur, non traçable                | ✅                                                                                 |
+| D5  | L'historique reste, une ligne se promeut en objet            | ✅ (« Garder », `promote`)                                                         |
+| D6  | Pas d'annulation globale                                     | ❌ levée au lot 5 de la refonte (2026-10-19) : une pile commune Annuler / Rétablir |
+| D7  | « Afficher la dérivée » et « garder `f′` », deux gestes      | ⚠️ **Remplacée par G6** : « Dériver » crée la carte `f′`, qui suit `f`             |
+| D8  | 200 valeurs par liste, 8 listes                              | ✅ (`MAX_LIST_VALUES`, `MAX_LISTS`)                                                |
+| D9  | Nom inconnu → en attente, pas en erreur                      | ✅                                                                                 |
+| D10 | Le parseur suit la provenance                                | ✅ (en partie : le panneau et les données appellent `create` sans provenance)      |
 
 **Autres** : option B (moteur et grapheur reflètent l'atelier, Q1 du 2026-09-16) · commandes
 traduites côté atelier, pas dans `mathAST` (Q3) · arrivant renommé à la fusion (Q2) · G1 à G8
