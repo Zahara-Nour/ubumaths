@@ -90,6 +90,7 @@ import {
 	parseNumberLine,
 	isNumberLineBlockStart
 } from './number-line-parser';
+import { findQrBlocks, parseQr, parseQrContent, isQrBlockStart } from './qr-parser';
 import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
@@ -466,6 +467,7 @@ function parseBlocks(
 	const probTreeBlocks = findProbTreeBlocks(lines);
 	const trigCircleBlocks = findTrigCircleBlocks(lines);
 	const numberLineBlocks = findNumberLineBlocks(lines);
+	const qrBlocks = findQrBlocks(lines);
 	type SpecialParse = (
 		source: string[],
 		start: number,
@@ -479,7 +481,8 @@ function parseBlocks(
 		{ ranges: variationBlocks, parse: parseVariationTable, language: 'variation' },
 		{ ranges: probTreeBlocks, parse: parseProbabilityTree, language: 'probtree' },
 		{ ranges: trigCircleBlocks, parse: parseTrigCircle, language: 'trig' },
-		{ ranges: numberLineBlocks, parse: parseNumberLine, language: 'line' }
+		{ ranges: numberLineBlocks, parse: parseNumberLine, language: 'line' },
+		{ ranges: qrBlocks, parse: parseQr, language: 'qr' }
 	];
 	const specialBlockAt = (index: number) => {
 		for (const { ranges, parse, language } of SPECIALS) {
@@ -541,6 +544,7 @@ function parseBlocks(
 			...probTreeBlocks,
 			...trigCircleBlocks,
 			...numberLineBlocks,
+			...qrBlocks,
 			...courbeBlocks,
 			...figureBlocks,
 			...statChartBlocks
@@ -552,6 +556,7 @@ function parseBlocks(
 			...findProbTreeBlocks(originalLines),
 			...findTrigCircleBlocks(originalLines),
 			...findNumberLineBlocks(originalLines),
+			...findQrBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks
@@ -1612,6 +1617,12 @@ const SPECIAL_BLOCK_KINDS = [
 		find: findNumberLineBlocks,
 		parse: parseNumberLine,
 		language: 'line'
+	},
+	{
+		is: isQrBlockStart,
+		find: findQrBlocks,
+		parse: parseQr,
+		language: 'qr'
 	}
 ] as const;
 
@@ -1821,6 +1832,9 @@ function parseContentWithCodeBlocks(
 			if (result.node) {
 				blocks.push(result.node);
 			}
+		} else if (language === 'qr') {
+			// QR code dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseQrContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'courbe') {
 			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));

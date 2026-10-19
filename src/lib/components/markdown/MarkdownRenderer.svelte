@@ -52,6 +52,7 @@
 	import Courbe from './nodes/Courbe.svelte';
 	import StatChart from './nodes/StatChart.svelte';
 	import FigureBlock from './nodes/FigureBlock.svelte';
+	import QrBlock from './nodes/QrBlock.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -364,6 +365,8 @@
 					<FigureBlock {node} />
 				{:else if node.type === 'stat-chart'}
 					<StatChart {node} />
+				{:else if node.type === 'qr'}
+					<QrBlock {node} />
 				{/if}
 			{/each}
 		{:else}
