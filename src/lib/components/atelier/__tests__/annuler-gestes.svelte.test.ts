@@ -23,8 +23,12 @@ import { cardOf, menuItemOf, openCardMenu } from './harness/function-card';
 // Décor
 // =============================================================================
 
-/** Glisser un curseur bits-ui à la souris, de gauche à droite, en `moves` crans. */
-async function drag(root: HTMLElement, moves: number) {
+/**
+ * Glisser un curseur bits-ui à la souris, de gauche à droite, en `moves` crans.
+ * `cancelled` : le navigateur reprend le geste (défilement au doigt…) — un
+ * `pointercancel` sur le curseur, sans `pointerup`.
+ */
+async function drag(root: HTMLElement, moves: number, cancelled = false) {
 	const rect = root.getBoundingClientRect();
 	const y = rect.top + rect.height / 2;
 	const at = (fraction: number) => rect.left + rect.width * fraction;
@@ -46,7 +50,13 @@ async function drag(root: HTMLElement, moves: number) {
 			})
 		);
 	}
-	document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+	if (cancelled) {
+		root
+			.querySelector('[data-slot="slider-track"]')!
+			.dispatchEvent(new PointerEvent('pointercancel', { bubbles: true, pointerId: 1 }));
+	} else {
+		document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+	}
 	await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
@@ -97,6 +107,19 @@ describe('le curseur d’une valeur', () => {
 		expect(atelier.history.undo).toBe('curseur de a');
 		atelier.undo();
 		expect(atelier.get('a')?.definition).toBe('1');
+	});
+
+	it('un glissé repris par le navigateur (pointercancel) ferme le geste : le suivant est une autre étape', async () => {
+		const { atelier, container } = await openValue();
+		const built = atelier.history.steps;
+		await drag(sliderOf(cardOf(container, 'a')), 10, true);
+		await vi.waitFor(() => expect(atelier.get('a')?.definition).not.toBe('1'));
+		expect(atelier.history.steps).toBe(built + 1);
+
+		// Le glissé suivant du même curseur (mêmes écritures que le pouce) : le
+		// geste repris par le navigateur est fermé, c'est une nouvelle étape
+		atelier.slideTo('a', 0.5);
+		expect(atelier.history.steps).toBe(built + 2);
 	});
 
 	it('au clavier : trois appuis = trois étapes, une flèche tenue = une étape', async () => {

@@ -1770,7 +1770,8 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
   clavier → au relâchement de la touche, donc **un appui = une étape et une flèche tenue = une
   étape** (bits-ui rappelle `onValueCommit` à chaque `keydown`, répétitions comprises : le
   conteneur écoute `keydown` en capture pour ne pas fermer à la première répétition) ; perte du
-  focus, par sûreté. Un champ tapé à chaque frappe (bornes, réglages du curseur) se ferme quand on
+  focus, par sûreté ; `pointercancel` (le navigateur reprend le geste au doigt : bits-ui ne ferme
+  rien, et le glissé suivant se fondait dans la même étape, revue de #1518). Un champ tapé à chaque frappe (bornes, réglages du curseur) se ferme quand on
   le quitte (`change`). Les points de lecture graphique (`ReadingSliders`) ne sont pas rangés : ils
   ne font aucune étape.
 - **Un changement fait hors étape** n'est jamais perdu : à la prochaine étape ou annulation,
@@ -1792,15 +1793,21 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
   `menubar`, `listbox`) ; le raccourci consommé (`preventDefault`) ne remonte pas au graphe.
   Chaque geste est annoncé (« Annulé : supprimer f. »).
 - **La console garde la trace** (PR 2) : la barre et Ctrl+Z passent par le pupitre
-  (`desk.undo` / `desk.redo`), qui écrit une ligne **rejouable** « Annuler » / « Rétablir »
-  (`ReplayStep` `annuler` / `rétablir`) — sinon le rejeu d'un export refaisait ce qui avait été
-  annulé (revue de #1517). Chaque ligne garde l'étape qu'elle a produite (`Entry.stepId`, jamais
+  (`desk.undo` / `desk.redo`), qui écrit une ligne « Annuler » / « Rétablir ». Elle est
+  **rejouable** (`ReplayStep` `annuler` / `rétablir`) — sinon le rejeu d'un export refaisait ce
+  qui avait été annulé (revue de #1517) — **seulement si l'étape défaite ou refaite vient d'une
+  ligne rejouable** de la console (`#replayable`). Une étape sans ligne (curseur glissé, réglage
+  d'affichage, carte, tableur, « modifier l'atelier ») n'existe pas au rejeu : son `annuler`
+  rejoué déferait l'étape de console d'avant et détruirait des objets (revue de #1518, mesuré).
+  Sa ligne s'affiche, et s'exporte en simple `ligne`, sans geste. Chaque ligne garde l'étape qu'elle a produite (`Entry.stepId`, jamais
   rangé) : **annuler l'étape barre la ligne** (`Entry.undone`, classe `annulee`, « Annulée : » dit
   aux lecteurs d'écran), Rétablir la débarre ; une ligne « Annuler » ou « Rétablir » ne se barre
   jamais ; après une nouvelle étape, les lignes barrées le restent, et le restent au rechargement
   (`undone` est rangé). Une ligne barrée ne dessine plus de lecture graphique (`consoleReadings`).
-  Au rejeu, `annuler` défait d'abord la suppression qui le précède (ligne « Annuler la
-  suppression », comme le toast et les fichiers d'avant), sinon la dernière étape.
+  Au rejeu, un `annuler` qui suit une suppression défait cette suppression (ligne « Annuler la
+  suppression », comme le toast et les fichiers d'avant) — et elle seule : si elle ne s'annule
+  pas, le rejeu s'arrête plutôt que de défaire une étape sans rapport. Ailleurs, il défait la
+  dernière étape.
 - **Le toast d'une suppression** reste (il fait découvrir le geste) ; son bouton défait cette
   suppression si elle est encore la dernière étape, et barre sa ligne « Supprimer ». Il se ferme au
   bout de 10 s, la suppression reste annulable par la barre.

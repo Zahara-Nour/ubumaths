@@ -372,15 +372,28 @@ export class CalcDesk {
 	}
 
 	/**
+	 * L'étape `stepId` vient-elle d'une ligne rejouable de la console ?
+	 *
+	 * ⚠️ Seules ces étapes existent au rejeu d'un export : une étape sans ligne
+	 * (curseur glissé, réglage d'affichage, carte, tableur) n'y est pas. Un
+	 * `annuler` rejoué déferait alors l'étape de console d'avant et détruirait
+	 * des objets (revue de #1518 : `a`, puis `f`, disparaissaient du rejeu).
+	 */
+	#replayable(stepId: number): boolean {
+		return this.entries.some((e) => e.stepId === stepId && e.replay !== undefined);
+	}
+
+	/**
 	 * Annuler la dernière étape (barre, Ctrl/Cmd+Z), et le dire dans la console :
-	 * la ligne de l'étape est barrée, et une ligne « Annuler » s'écrit — rejouable,
-	 * sinon le rejeu d'un export referait ce qui a été annulé (revue de #1517).
+	 * la ligne de l'étape est barrée, et une ligne « Annuler » s'écrit. Elle est
+	 * rejouable si l'étape l'est (sinon le rejeu d'un export referait ce qui a
+	 * été annulé, revue de #1517) — et seulement dans ce cas (revue de #1518).
 	 */
 	undo(): MovedStep | null {
 		const moved = this.atelier.undoStep();
 		if (moved === null) return null;
 		this.#strike(moved.id, true);
-		this.#gesture = { kind: 'annuler' };
+		this.#gesture = this.#replayable(moved.id) ? { kind: 'annuler' } : null;
 		this.#pendingStep = null;
 		this.#push({ label: 'Annuler', text: `Annulé : ${moved.label}.`, failed: false });
 		return moved;
@@ -391,7 +404,7 @@ export class CalcDesk {
 		const moved = this.atelier.redoStep();
 		if (moved === null) return null;
 		this.#strike(moved.id, false);
-		this.#gesture = { kind: 'rétablir' };
+		this.#gesture = this.#replayable(moved.id) ? { kind: 'rétablir' } : null;
 		this.#pendingStep = null;
 		this.#push({ label: 'Rétablir', text: `Rétabli : ${moved.label}.`, failed: false });
 		return moved;
@@ -566,6 +579,8 @@ export class CalcDesk {
 		const rows: number[] = [];
 		let replayed = 0;
 		let stop: { line: number; message: string } | null = null;
+		// Le geste rejoué juste avant : « annuler » qui suit une suppression vise elle
+		let previous: ReplayStep | null = null;
 		for (const [index, entry] of history.entries.entries()) {
 			const step = stepOf(entry);
 			if (step === null) continue;
@@ -574,7 +589,8 @@ export class CalcDesk {
 			if (step.kind === 'saisie' && isExportCommand(this.session.engine, step.input)) continue;
 			const before = this.entries.length;
 			this.notice = null;
-			const missed = this.#replayStep(step, rows, graph);
+			const missed = this.#replayStep(step, rows, graph, previous);
+			previous = step;
 			const first = this.entries[before];
 			if (first !== undefined) rows[index] = before;
 			// R3 : on ne s'arrête que si la ligne AVAIT réussi. Une définition
@@ -605,7 +621,12 @@ export class CalcDesk {
 	}
 
 	/** Refaire un geste ; rend la raison d'un échec que la ligne ne dirait pas, sinon null. */
-	#replayStep(step: ReplayStep, rows: readonly number[], graph?: GrapheurStore): string | null {
+	#replayStep(
+		step: ReplayStep,
+		rows: readonly number[],
+		graph: GrapheurStore | undefined,
+		previous: ReplayStep | null
+	): string | null {
 		switch (step.kind) {
 			case 'saisie':
 				// Un rejeu est un chargement : comme au rechargement, rien à rappeler
@@ -621,10 +642,14 @@ export class CalcDesk {
 				return removed.ok ? null : removed.message;
 			}
 			// Juste après une suppression, c'est elle qu'on annule, avec la même ligne
-			// qu'au toast (un fichier d'avant le lot 5 PR 2 n'a que ce cas) ; sinon
-			// la dernière étape, comme Ctrl+Z
+			// qu'au toast (un fichier d'avant le lot 5 PR 2 n'a que ce cas) — et elle
+			// seule : si elle ne s'annule pas, on s'arrête plutôt que de défaire une
+			// étape sans rapport (revue de #1518). Sinon la dernière étape, comme Ctrl+Z
 			case 'annuler':
-				if (this.#lastRemoval !== null && this.undoRemoval(this.#lastRemoval)) return null;
+				if (previous?.kind === 'supprimer') {
+					if (this.#lastRemoval !== null && this.undoRemoval(this.#lastRemoval)) return null;
+					return 'la suppression à annuler ne s’est pas rejouée.';
+				}
 				return this.undo() !== null ? null : 'il n’y avait rien à annuler.';
 			case 'rétablir':
 				return this.redo() !== null ? null : 'il n’y avait rien à rétablir.';
