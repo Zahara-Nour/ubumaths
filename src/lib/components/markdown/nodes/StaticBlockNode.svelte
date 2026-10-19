@@ -28,6 +28,7 @@
 	import Courbe from './Courbe.svelte';
 	import StatChart from './StatChart.svelte';
 	import FigureBlock from './FigureBlock.svelte';
+	import QrBlock from './QrBlock.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -80,4 +81,6 @@
 	<FigureBlock {node} />
 {:else if node.type === 'stat-chart'}
 	<StatChart {node} />
+{:else if node.type === 'qr'}
+	<QrBlock {node} />
 {/if}

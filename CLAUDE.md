@@ -192,7 +192,8 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 ## Quand utiliser un agent
 
 - **Travail direct** (pas d'agent) si : bug ciblé 1-2 fichiers connus · modif < 20 lignes · investigation (Read/Grep) · faisable en < 5 min.
-- **Agent** si : > 3 étapes ET code important ET plusieurs fichiers ET expertise spécialisée. Ne pas hésiter à utiliser **Opus**. Plafonner les briefs (max N lignes / M fichiers).
+- **Agent** si : > 3 étapes ET code important ET plusieurs fichiers ET expertise spécialisée. Plafonner les briefs (max N lignes / M fichiers).
+- **Modèle d'un agent = celui de son frontmatter, ne pas le surcharger** (règle du 2026-10-19 : chaque agent recharge ~12 k tokens de contexte, et presque tout tournait en Opus). `Explore`, `general-purpose`, `fork` et les `agent()` de workflow héritent d'Opus → passer `model` explicitement : **haiku** pour chercher, lancer des tests, surveiller la CI ; **sonnet** pour coder ou relire du code courant ; **opus** seulement pour mathAST, géométrie, pédagogie, RLS/sécurité, débogage résistant. Workflow : seulement pour un gros chantier, jamais pour 1-2 fichiers.
 - **Agents autorisés** : `pnpm check:incremental` (verrouillé) et les tests ciblés. ⛔ **Réservés à la session principale** : `pnpm check`, `pnpm build`, `pnpm lint` complets — verrouillés depuis le 2026-10-10, mais longs et lourds : un agent ne doit pas tenir le verrou à la place de la session.
 
 (Liste complète : `.claude/agents/README.md`.)
@@ -204,9 +205,9 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 > **Architecture des tests** : [docs/pratiques/tests.md](docs/pratiques/tests.md) — le workflow TDD collaboratif est décrit ci-dessous (points 1 à 3).
 
 1. **Phase 0 — Spécification TDD** : proposer les comportements en français (cas nominal / limite / erreur), **attendre validation** avant de coder.
-2. **Agents ET modèles spécifiés** par tâche (Opus sans hésiter).
+2. **Agents ET modèles spécifiés** par tâche (cf. § Quand utiliser un agent : Opus seulement là où il est requis).
 3. **Tests d'abord** (doivent échouer) → implémentation → tests passent.
-4. **`code-reviewer`** en fin de phase ; **`security-auditor`** si auth/RLS/API ; **performance** si requêtes DB lourdes.
+4. **`code-reviewer`** en fin de phase (Sonnet ; `model: opus` pour un diff gros ou délicat) ; **`security-auditor`** si auth/RLS/API ; **performance** si requêtes DB lourdes.
 5. **Doc de progression** `docs/wip/<feature>-progress.md` (crash-recovery) entre phases ; lister les docs produits à la fin.
 6. **Exécution autonome** : ne pas s'arrêter au premier échec, corriger automatiquement (`debugger`/Opus si > 2 tentatives).
 
