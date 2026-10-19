@@ -5,17 +5,14 @@
  * Compare la grandeur d'un élève à la grandeur attendue (`valeur\unit{…}`) :
  * conversion d'unités (affine pour °C, °F), tolérance éventuelle.
  *
- * La valeur est lue par `parseLatexQuantity` (`./parser`) ; une valeur qui
- * n'est pas un nombre simple (`5\times3`) est évaluée par mathAST en mode
- * décimal (`evaluateExpression`, `$lib/math`). Le calcul se fait en flottants :
- * c'est encore un calculateur à part du contrat des grandeurs (ADR 0026,
- * chantier correction-cases-unite).
+ * La valeur est lue en arbre par `parseLatexQuantity` (`./parser`, mathAST) ;
+ * la comparaison se fait encore en flottants : c'est un calculateur à part du
+ * contrat des grandeurs (ADR 0026, chantier correction-cases-unite).
  *
  * @module questions/units/quantity-comparison
  */
 
-import { evaluateExpression } from '$lib/math';
-import type { Unit, Quantity } from './types';
+import type { Unit } from './types';
 import { parseLatexQuantity } from './parser';
 import { unitsAreCompatible } from './operations';
 import { convertAffine } from '$lib/mathAST/units/conversion';
@@ -58,13 +55,8 @@ export interface ComparisonResult {
 	 * - 'incompatible_units': Units have different dimensions
 	 * - 'invalid_user_expression': Could not parse user's answer
 	 * - 'invalid_expected_expression': Could not parse expected answer
-	 * - 'evaluation_failed': Numeric evaluation failed
 	 */
-	error?:
-		| 'incompatible_units'
-		| 'invalid_user_expression'
-		| 'invalid_expected_expression'
-		| 'evaluation_failed';
+	error?: 'incompatible_units' | 'invalid_user_expression' | 'invalid_expected_expression';
 }
 
 /**
@@ -83,70 +75,6 @@ export interface Tolerance {
 }
 
 // ============================================================================
-// VALUE EVALUATION
-// ============================================================================
-
-/**
- * Evaluate the numeric part of a LaTeX quantity (mathAST, decimal mode)
- *
- * Handles expressions like:
- * - Simple numbers: "5", "3.14", "-10"
- * - Fractions: "\frac{1}{2}"
- * - Arithmetic: "3+2", "5 \times 10^3"
- * - Complex expressions: "\sqrt{16}", "2^3"
- *
- * @param latex - LaTeX expression representing a numeric value
- * @returns Evaluated number or null if evaluation fails
- *
- * @example Simple number
- * evaluateQuantityValue('5') // 5
- *
- * @example Fraction
- * evaluateQuantityValue('\\frac{3}{2}') // 1.5
- *
- * @example Arithmetic
- * evaluateQuantityValue('3+2') // 5
- * evaluateQuantityValue('5 \\times 10^3') // 5000
- *
- * @example Invalid expression
- * evaluateQuantityValue('invalid') // null
- */
-export function evaluateQuantityValue(latex: string): number | null {
-	if (!latex || typeof latex !== 'string') {
-		return null;
-	}
-
-	try {
-		// Remove any whitespace
-		const cleaned = latex.trim();
-
-		// Évaluation mathAST en mode décimal
-		const result = evaluateExpression(cleaned);
-
-		// Check if result is a number
-		if (typeof result === 'number') {
-			// Verify it's a valid number
-			if (!isNaN(result) && isFinite(result)) {
-				return result;
-			}
-		}
-
-		// If result is a string, try parsing it as a number
-		if (typeof result === 'string') {
-			const num = parseFloat(result);
-			if (!isNaN(num) && isFinite(num)) {
-				return num;
-			}
-		}
-
-		return null;
-	} catch {
-		// Evaluation failed
-		return null;
-	}
-}
-
-// ============================================================================
 // QUANTITY COMPARISON
 // ============================================================================
 
@@ -156,7 +84,7 @@ export function evaluateQuantityValue(latex: string): number | null {
  * Returns true if they represent the same physical quantity, accounting for:
  * - Unit conversions (e.g., 1 km = 1000 m)
  * - Numeric tolerance (optional)
- * - Expression evaluation (e.g., "3+2" = "5")
+ * - Expression evaluation (e.g., "3+2" = "5", lue en arbre par `parseLatexQuantity`)
  *
  * @param userAnswer - User's answer in LaTeX format
  * @param expected - Expected answer in LaTeX format
@@ -219,9 +147,8 @@ export function compareQuantities(
 	const userUnitStr = formatUnitForDisplay(userQuantity.unit);
 	const expectedUnitStr = formatUnitForDisplay(expectedQuantity.unit);
 
-	// Evaluate numeric values early (reused in all paths)
-	const userValue = evaluateValueFromQuantity(userQuantity);
-	const expectedValue = evaluateValueFromQuantity(expectedQuantity);
+	const userValue = userQuantity.value;
+	const expectedValue = expectedQuantity.value;
 
 	// Check unit compatibility
 	if (!unitsAreCompatible(userQuantity.unit, expectedQuantity.unit)) {
@@ -232,18 +159,6 @@ export function compareQuantities(
 			userUnit: userUnitStr,
 			expectedUnit: expectedUnitStr,
 			error: 'incompatible_units'
-		};
-	}
-
-	// Check if evaluation succeeded
-	if (userValue === null || expectedValue === null) {
-		return {
-			isEqual: false,
-			userValue,
-			expectedValue,
-			userUnit: userUnitStr,
-			expectedUnit: expectedUnitStr,
-			error: 'evaluation_failed'
 		};
 	}
 
@@ -277,26 +192,6 @@ export function compareQuantities(
 		userUnit: userUnitStr,
 		expectedUnit: expectedUnitStr
 	};
-}
-
-/**
- * Evaluate the numeric value from a Quantity object
- *
- * Handles both numeric values and LaTeX expressions.
- *
- * @param quantity - Quantity to evaluate
- * @returns Evaluated number or null
- */
-function evaluateValueFromQuantity(quantity: Quantity): number | null {
-	if (typeof quantity.value === 'number') {
-		return quantity.value;
-	}
-
-	if (typeof quantity.value === 'string') {
-		return evaluateQuantityValue(quantity.value);
-	}
-
-	return null;
 }
 
 /**

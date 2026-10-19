@@ -2,18 +2,14 @@
  * Comparaison de grandeurs des cases à unité — tests
  * ===================================================
  *
- * 1. evaluateQuantityValue — valeur numérique d'une écriture (mathAST, mode décimal)
+ * 1. Valeur d'une écriture — lue en arbre par `parseLatexQuantity` (mathAST)
  * 2. compareQuantities — comparaison avec conversion d'unités et tolérance
  * 3. Cas limites — zéro, négatifs, très grands / très petits, sans dimension
  */
 
 import { describe, test, expect } from 'vitest';
-import {
-	evaluateQuantityValue,
-	compareQuantities,
-	type ComparisonResult,
-	type Tolerance
-} from '../quantity-comparison';
+import { compareQuantities, type ComparisonResult, type Tolerance } from '../quantity-comparison';
+import { parseLatexQuantity } from '../parser';
 
 // ============================================================================
 // TEST FIXTURES
@@ -33,11 +29,16 @@ function hasComparisonError(result: ComparisonResult, error: string): boolean {
 	return result.error === error;
 }
 
+/** Valeur d'une écriture sans unité, lue comme `parseLatexQuantity` la lit ; null si illisible */
+function evaluateQuantityValue(latex: string): number | null {
+	return parseLatexQuantity(latex)?.value ?? null;
+}
+
 // ============================================================================
-// evaluateQuantityValue - Basic Numeric Evaluation
+// Valeur d'une écriture (parseLatexQuantity)
 // ============================================================================
 
-describe('evaluateQuantityValue', () => {
+describe('valeur lue en arbre', () => {
 	describe('Simple numbers', () => {
 		test('should evaluate positive integer', () => {
 			expect(evaluateQuantityValue('5')).toBe(5);
@@ -131,9 +132,9 @@ describe('evaluateQuantityValue', () => {
 			expect(evaluateQuantityValue('5^2')).toBe(25);
 		});
 
-		test('should evaluate fractional exponent', () => {
-			// Using braces for proper LaTeX
-			expect(evaluateQuantityValue('9^{0.5}')).toBe(3);
+		test('exposant décimal : illisible (tidy ne le réduit pas)', () => {
+			// Refus honnête : aucune saisie élève ni aucun attendu publié ne l'écrit
+			expect(evaluateQuantityValue('9^{0.5}')).toBeNull();
 		});
 	});
 
@@ -360,10 +361,10 @@ describe('compareQuantities - exact match', () => {
 			expect(isComparisonEqual(result)).toBe(false);
 		});
 
-		test('should return error for evaluation failure', () => {
+		test('division par zéro : valeur illisible', () => {
 			const result = compareQuantities('\\frac{1}{0}\\unit{m}', '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(false);
-			expect(hasComparisonError(result, 'evaluation_failed')).toBe(true);
+			expect(hasComparisonError(result, 'invalid_user_expression')).toBe(true);
 		});
 
 		test('should handle empty user answer', () => {

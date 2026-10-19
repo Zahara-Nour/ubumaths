@@ -131,11 +131,12 @@ C'est la cause du bug « 10 m/s ».
 `questions/units/validator.ts` (`validateQuantityAnswer`) et `quantity-comparison.ts`
 (`compareQuantities`) corrigent les réponses des élèves dans les cases à unité : conversions,
 tolérance, précision demandée, messages (`feedback.ts`). Il n'y a **pas** de ComputeEngine : la valeur
-est lue par une regex maison (`extractValue`, `parser.ts`) et, si ce n'est pas un nombre simple
-(`5\times3`), évaluée par mathAST en mode décimal (`evaluateExpression`, `$lib/math`) ; le calcul
-se fait en flottants, l'unité est lue à part (`\unit{…}` + parseur d'unités). C'est un calculateur
-hors du circuit ci-dessus : chantier `correction-cases-unite` (lecture en arbre, puis comparaison
-par `tidy`). Le catalogue des unités et les opérations de base viennent de `mathAST/units`
+est lue en arbre (`parser.ts` : `parseLatex` → `tidy` → `rationalOf`), exacte, et `null` si elle
+n'est pas rationnelle — `2\sqrt{2}`, `\pi` : un tel attendu donne « Erreur de configuration », jamais
+la valeur de son premier nombre. Une saisie sans unité qui s'écrit comme un nombre, même illisible
+en valeur (`\sqrt{2}`), reçoit « N'oublie pas l'unité. » (`readsAsNumber`). La comparaison se fait
+encore en flottants, l'unité est lue à part (`\unit{…}` + parseur d'unités). C'est un calculateur
+hors du circuit ci-dessus : chantier `correction-cases-unite` (comparaison par `tidy` à venir). Le catalogue des unités et les opérations de base viennent de `mathAST/units`
 (`resolveUnit`, conversions) : `questions/units` n'en garde plus de copie depuis le lot D.
 
 Garde-fou : l'oracle `oracle-cases-unite.test.ts` fige le verdict de ~1 700 réponses typiques

@@ -103,12 +103,10 @@ export function toMutableUnit(unit: Unit): MutableUnit {
  */
 export interface Quantity {
 	/**
-	 * Numeric magnitude of the quantity
-	 *
-	 * - number: Resolved numeric value
-	 * - string: Unevaluated LaTeX expression (e.g., '\\frac{3}{2}', '2\\sqrt{3}')
+	 * Numeric magnitude of the quantity (valeur lue en arbre par mathAST,
+	 * `parseLatexQuantity`)
 	 */
-	value: number | string;
+	value: number;
 
 	/**
 	 * Unit of the quantity (includes components and conversion coefficient)

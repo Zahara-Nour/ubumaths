@@ -11,7 +11,12 @@
  * @module questions/units/validator
  */
 
-import { parseLatexQuantity, extractUnitFromLatex, parseUnitExpression } from './parser';
+import {
+	parseLatexQuantity,
+	extractUnitFromLatex,
+	parseUnitExpression,
+	readsAsNumber
+} from './parser';
 import { unitWritingProblem } from '$lib/mathAST/units/parser';
 import {
 	UNIT_FEEDBACK,
@@ -273,7 +278,7 @@ export function validateQuantityAnswer(
 			: null;
 	const expectedDisplay = expectedQuantity
 		? {
-				value: typeof expectedQuantity.value === 'number' ? expectedQuantity.value : null,
+				value: expectedQuantity.value,
 				unit: formatUnitForDisplay(expectedQuantity.unit.components)
 			}
 		: null;
@@ -319,6 +324,22 @@ export function validateQuantityAnswer(
 
 	// Check for parse failures
 	if (!userQuantity) {
+		// Nombre sans unité, même illisible en valeur (`\sqrt{2}`) : l'unité est oubliée
+		if (
+			expectedQuantity &&
+			expectedQuantity.unit.components.size > 0 &&
+			extractUnitFromLatex(normalizedUser) === null &&
+			readsAsNumber(normalizedUser)
+		) {
+			return {
+				isCorrect: false,
+				feedback: UNIT_FEEDBACK.missingUnit,
+				errorType: 'incompatible_units',
+				unitAtFault: true,
+				parsed: null,
+				expected: expectedDisplay
+			};
+		}
 		const unitMessage = unitWritingFeedback(normalizedUser);
 		return {
 			isCorrect: false,
@@ -326,12 +347,7 @@ export function validateQuantityAnswer(
 			errorType: 'invalid_input',
 			...(unitMessage ? { unitAtFault: true } : {}),
 			parsed: null,
-			expected: expectedQuantity
-				? {
-						value: typeof expectedQuantity.value === 'number' ? expectedQuantity.value : null,
-						unit: formatUnitForDisplay(expectedQuantity.unit.components)
-					}
-				: null
+			expected: expectedDisplay
 		};
 	}
 
@@ -341,7 +357,7 @@ export function validateQuantityAnswer(
 			feedback: 'Erreur de configuration : réponse attendue invalide.',
 			errorType: 'invalid_input',
 			parsed: {
-				value: typeof userQuantity.value === 'number' ? userQuantity.value : null,
+				value: userQuantity.value,
 				unit: formatUnitForDisplay(userQuantity.unit.components)
 			},
 			expected: null
@@ -367,11 +383,11 @@ export function validateQuantityAnswer(
 			errorType: 'incompatible_units',
 			unitAtFault: true,
 			parsed: {
-				value: typeof userQuantity.value === 'number' ? userQuantity.value : null,
+				value: userQuantity.value,
 				unit: userUnitStr
 			},
 			expected: {
-				value: typeof expectedQuantity.value === 'number' ? expectedQuantity.value : null,
+				value: expectedQuantity.value,
 				unit: expectedUnitStr
 			}
 		};
@@ -388,11 +404,11 @@ export function validateQuantityAnswer(
 				errorType: 'wrong_unit',
 				unitAtFault: true,
 				parsed: {
-					value: typeof userQuantity.value === 'number' ? userQuantity.value : null,
+					value: userQuantity.value,
 					unit: userUnitStr
 				},
 				expected: {
-					value: typeof expectedQuantity.value === 'number' ? expectedQuantity.value : null,
+					value: expectedQuantity.value,
 					unit: expectedUnitStr
 				}
 			};
@@ -415,17 +431,6 @@ export function validateQuantityAnswer(
 		value: comparisonResult.expectedValue,
 		unit: comparisonResult.expectedUnit
 	};
-
-	// Check comparison result
-	if (comparisonResult.error === 'evaluation_failed') {
-		return {
-			isCorrect: false,
-			feedback: DEFAULT_MESSAGES.invalidInput,
-			errorType: 'invalid_input',
-			parsed,
-			expected
-		};
-	}
 
 	// Arrondi demandé : la comparaison exacte ne dit rien, on juge l'arrondi
 	if (
