@@ -65,6 +65,9 @@ on:
       - 'src/lib/geometry-core/**'
       # Bloc ```courbe : suites (parseur)
       - 'src/lib/grapheur/sequence.ts'
+      # Bloc ```qr : adresse (parseur) et matrice (générateur Typst)
+      - 'src/lib/qr/**'
+      - 'src/lib/seo/site.ts'
       - 'src/lib/utils/**'
       # src/lib : fichiers atteints ponctuellement
       - 'src/lib/components/markdown/utils/math-utils.ts'

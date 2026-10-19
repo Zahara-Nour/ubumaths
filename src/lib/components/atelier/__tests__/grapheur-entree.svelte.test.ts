@@ -6,10 +6,15 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { CALC_HISTORY_STORAGE_KEY } from '$lib/atelier/history-storage';
 
 const KEY = 'chiphre-atelier';
 
-afterEach(() => localStorage.removeItem(KEY));
+// La console est rangée aussi : « Repartir de zéro » y laisse sa ligne (lot 5, PR 3)
+afterEach(() => {
+	localStorage.removeItem(KEY);
+	localStorage.removeItem(CALC_HISTORY_STORAGE_KEY);
+});
 
 function currentView(container: HTMLElement): string {
 	return container.querySelector('.onglet[aria-current="page"]')?.textContent?.trim() ?? '';
@@ -141,7 +146,9 @@ describe('revues du lot 6', () => {
 		});
 		confirm.click();
 
-		await vi.waitFor(() => expect(container.querySelectorAll('.historique li').length).toBe(0));
+		// Les lignes d'avant partent ; reste celle de l'étape (lot 5, PR 3)
+		await vi.waitFor(() => expect(container.querySelectorAll('.historique li').length).toBe(1));
+		expect(container.querySelector('.historique li')?.textContent).toContain('Atelier vidé.');
 	});
 
 	// A11y : un titre de niveau 1, et un bouton qui ne sert à rien est désactivé

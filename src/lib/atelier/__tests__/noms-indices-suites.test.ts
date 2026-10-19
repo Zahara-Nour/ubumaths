@@ -184,6 +184,43 @@ describe('2. une valeur u_3 et une suite u ne cohabitent pas', () => {
 			expect(report.renamed[0].from).toBe('u_3');
 			expect(atelier.get(report.renamed[0].to)?.definition).toBe('5');
 		});
+
+		it('une suite u versée à côté d’une valeur u_3 locale : u renommée, ce qui la cite suit', () => {
+			const s = withLines('u_3 = 5');
+			const received = {
+				version: 3,
+				objects: [
+					{ kind: 'sequence', name: 'u', definition: '2n + 1', firstIndex: 0, firstTerm: '0' },
+					{ kind: 'value', name: 'c', definition: 'u(3) + 1' },
+					{ kind: 'value', name: 'b', definition: 'u_3 + 1' }
+				]
+			} as unknown as AtelierState;
+			const report = mergeInto(s.atelier, received);
+			expect(report.refused).toEqual([]);
+			const to = report.renamed.find((r) => r.from === 'u')?.to;
+			expect(to).toBeDefined();
+			expect(s.atelier.get(to!)?.kind).toBe('sequence');
+			expect(s.atelier.get('u_3')?.definition).toBe('5');
+			expect(s.atelier.get('c')?.definition).toBe(`${to}(3) + 1`);
+			// le TERME reçu suit la suite : sans quoi il lirait la valeur locale u_3
+			expect(s.atelier.get('b')?.definition).toBe(`${to}_3 + 1`);
+			expect(said(s, 'b')).toBe('8');
+			expect(said(s, 'c')).toBe('8');
+		});
+	});
+
+	it('renommer la suite u emmène ses termes : b = u_3 + 1 devient v_3 + 1', () => {
+		const s = withLines('u(n) = 2n + 1', 'b = u_3 + 1', 'd = u_{4}');
+		expect(s.atelier.rename('u', 'v').ok).toBe(true);
+		expect(s.atelier.get('b')?.definition).toBe('v_3 + 1');
+		expect(s.atelier.get('d')?.definition).toBe('v_{4}');
+		expect(said(s, 'b')).toBe('8');
+	});
+
+	it('renommer f garde la fonction f_1 (un nom, pas un terme)', () => {
+		const s = withLines('f(x) = x^2', 'f_1(x) = x + 1', 'b = f_1(2)');
+		expect(s.atelier.rename('f', 'g').ok).toBe(true);
+		expect(s.atelier.get('b')?.definition).toBe('f_1(2)');
 	});
 });
 

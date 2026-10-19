@@ -622,7 +622,9 @@ Une police sans un glyphe donne des carrés (cas de `n⃗`,
 **Figures** : courbes, figures géométriques et graphiques statistiques sont rendus en cetz depuis
 la **même scène** que l'écran ; tout module qui appelle `generateTypst` pour un PDF importe
 `src/lib/ubumark/generators/figure-typst-setup.ts` (c'est le cas des deux générateurs de fiche) →
-[ubumark.md](ubumark.md) § Invariants.
+[ubumark.md](ubumark.md) § Invariants. Un **QR code** placé par l'auteur (bloc ` ```qr `) est
+dessiné par Typst lui-même, sans cetz ni registre, et compte pour une figure dans la hauteur des
+cadres de réponse (`answer-frames.ts`) → [qr-codes.md](qr-codes.md).
 
 **Version anglaise** ([journal](../archive/wip/worksheet-english-progress.md)) : la langue est
 `worksheets.config.language` (`fr` par défaut), lue par `worksheetLocale`. Elle pilote **tout** le

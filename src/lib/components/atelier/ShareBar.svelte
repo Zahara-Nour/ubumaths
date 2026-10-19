@@ -3,7 +3,9 @@
 	 * La barre de partage et de réception — lot 5.
 	 *
 	 * Deux usages qu'il ne faut pas confondre (§6) : **partager son atelier**, et
-	 * **ouvrir un contenu sans toucher au sien**.
+	 * **ouvrir un contenu sans toucher au sien** — puis, au choix, le garder dans le
+	 * sien (la fusion) ou le prendre à la place du sien (« Remplacer mon atelier »,
+	 * `atelier-remplacer-phase0.md`).
 	 *
 	 * Le bouton « Partager » est dans la barre d'icônes de l'atelier (lot 1 de
 	 * `atelier-refonte-interface-phase0.md`), qui appelle `share()` ; cette barre
@@ -22,9 +24,14 @@
 		received?: AtelierState | null;
 		/** Ce que la relecture de l'URL a eu à dire — erreur ou objets écartés. */
 		notice?: string | null;
+		/**
+		 * « Remplacer mon atelier » (R1 de `atelier-remplacer-phase0.md`) : le
+		 * conteneur confirme, met l'atelier personnel de côté et quitte le lien.
+		 */
+		onReplace?: () => void;
 	}
 
-	let { received = null, notice = null }: Props = $props();
+	let { received = null, notice = null, onReplace }: Props = $props();
 
 	const atelier = useAtelier();
 
@@ -138,6 +145,10 @@
 			Tu regardes un atelier partagé. <strong>Le tien n’a pas été modifié.</strong>
 		</p>
 		<Button size="sm" onclick={keep}>Garder dans mon atelier</Button>
+		<!-- R1 : l'autre geste — l'atelier reçu à la place du sien, qui est mis de côté -->
+		{#if onReplace}
+			<Button size="sm" variant="outline" onclick={onReplace}>Remplacer mon atelier</Button>
+		{/if}
 	{/if}
 
 	<p

@@ -127,6 +127,9 @@ export {
 
 export type { NumberLineBlockRange } from '../types/number-line';
 
+// Bloc ```qr
+export { parseQr, parseQrContent, findQrBlocks, isQrBlockStart } from './qr-parser';
+
 // Bloc ```courbe
 export {
 	parseCourbe,

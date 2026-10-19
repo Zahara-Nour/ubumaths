@@ -161,6 +161,8 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/url.ts`             | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                                                              |
 | `src/lib/atelier/grapheur-link.ts`   | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`                                                |
 | `src/lib/atelier/merge.ts`           | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                                                         |
+| `src/lib/atelier/replace.ts`         | « Remplacer mon atelier » : la copie mise de côté (`replacePersonal`, `swapWithSetAside`, `keepAside`, `readSetAside`)            |
+| `src/lib/atelier/rename.ts`          | Réécrire une définition qui cite un objet renommé (`renameInObject`) : `Atelier.rename` et la fusion                              |
 | `src/lib/atelier/history-export.ts`  | Export de l'historique de Calcul : JSON rejouable, ubumark lisible, `downloadHistory`                                             |
 | `src/lib/atelier/history-stack.ts`   | Pile Annuler / Rétablir (lot 5) : étapes à photos avant / après, plafond 100 étapes et 5 Mo ; un geste continu fondu en une étape |
 | `src/lib/atelier/gesture.ts`         | Fin d'un geste de curseur (relâchement, touche relâchée, focus perdu) : une étape d'Annuler par geste                             |
@@ -1772,7 +1774,42 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   (`keepReceived`) verse dans l'atelier personnel ; en cas de collision, **l'arrivant est
   renommé** et on le dit (Q2, `mergeInto`). Ses colonnes (listes et cellules sans nom) vont dans
   les **premières colonnes libres**, dans leur ordre ; pas assez de colonnes libres → refus,
-  rien n'est versé (T7, `mergeRefusal`).
+  rien n'est versé (T7, `mergeRefusal`). Les noms des arrivants sont choisis **avant** toute
+  création, et une lettre libre évite aussi les noms des autres arrivants (pas de renommage en
+  chaîne) ; puis les arrivants qui citent un renommé sont réécrits (B9 de
+  `atelier-remplacer-phase0.md`, `renameInObject` : texte et LaTeX de carte, `a_1` / `a_{1}`,
+  longueurs `AM`, constructions, premier terme d'une suite) — reçu `a = 3` et `f(x) = a x` dans un
+  atelier qui a `a = 5`, `f` suit le `a` reçu devenu `b`, plus le `a` local.
+- **Remplacer mon atelier** (`docs/wip/atelier-remplacer-phase0.md`, R1-R5 et B1-B9, validée
+  par David le 2026-10-19) : l'autre geste d'un atelier reçu, à côté de « Garder »
+  (`ShareBar.svelte`, `onReplace`). Confirmation qui compte (« Tes 6 objets et ta grille seront
+  remplacés. Ton atelier est mis de côté : tu pourras le retrouver. », `replacementLoss`), sans
+  confirmation ni copie si l'atelier personnel est vide (B1). L'atelier personnel est **mis de
+  côté** sous sa propre clé, `SET_ASIDE_STORAGE_KEY` (`chiphre-atelier-de-cote`), une seule copie,
+  écrite **avant** l'atelier reçu (`replacePersonal`) ; une écriture refusée (quota, stockage
+  indisponible) défait la précédente et rien ne change (B5) ; un atelier personnel plus récent ou
+  abîmé n'est pas remplacé, comme la fusion (B6). Ce qui devient l'atelier personnel est l'atelier
+  **affiché** (le lien, avec ce que l'élève y a fait). Le conteneur quitte alors le lien **sans
+  recharger** : l'ancien atelier est remis à l'écran puis remplacé en une étape
+  (`replaceWith`, « remplacer mon atelier » : un Ctrl+Z le rend), la session s'ouvre sur
+  l'atelier affiché sans le relire (`openSession(…, { adopt: true })`, qui garderait sinon la
+  pile vide), la console de l'élève revient (R4 : celle du lien est oubliée, la sienne relue), et
+  la page retire `?a=` / `?f=` de l'adresse (`onLinkLeft`, `replaceState`). Avis « Ton atelier
+  précédent est mis de côté. » avec le geste **Retrouver mon atelier précédent** (B4).
+- **Retrouver mon atelier précédent** : dans l'avis qui suit un remplacement, et dans la barre
+  d'icônes après Charger (`ArchiveRestore`) **seulement quand une copie existe** (B4). C'est un
+  **échange** (B3, `swapWithSetAside`) : la copie devient l'atelier personnel, l'atelier quitté
+  devient la copie (un atelier vide efface la copie au lieu d'en laisser une vide), les deux
+  écritures ou aucune ; à l'écran, `replaceWith` (« retrouver mon atelier précédent »,
+  annulable). La copie est relue par les mêmes schémas que l'atelier personnel (`loadAtelier(…,
+SET_ASIDE_STORAGE_KEY)`) et les migrations à sa relecture par l'atelier (`y` renommé, dit) ;
+  abîmée, elle est oubliée avec un message (B7) ; d'une version plus récente, ni relue ni oubliée.
+  **Annuler / Rétablir gardent la copie d'accord avec l'écran** : l'atelier qu'ils quittent devient
+  la copie (`onLeave` de `replaceWith` → `keepLeftAside`, qui range d'abord l'atelier affiché
+  tout de suite, `session.saveNow()`, puis la copie) — rien n'est jamais perdu. Le Annuler /
+  Rétablir d'un remplacement s'écrit dans la console **sans geste rejouable**
+  (règle générale `#replayable` du pupitre, #1521 : le remplacement n'a pas de ligne de
+  console) — au rejeu, « annuler » aurait défait l'étape d'avant. Le bouton cliqué disparu, le focus va à « Mes objets ».
 - **Lignes de Calcul** (`history-storage.ts`, décision de David du 2026-10-13, « option 1 ») :
   clé **à part**, `CALC_HISTORY_STORAGE_KEY` (`chiphre-atelier-historique`), version
   `CALC_HISTORY_VERSION`. Rangées 500 ms après la dernière ligne (et au `pagehide`, au démontage)
@@ -1808,9 +1845,10 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   `historique-garde-sonde.test.ts` (chaque commande permise composée par MathLive avec des
   arguments piégés : aucun ne finit dans un attribut), `historique-garde.svelte.test.ts` (le DOM
   rendu).
-- **Repartir de zéro** : confirmation, vide aussi l'historique **et ce qui en est rangé** ;
-  actif dès qu'il y a un objet OU une ligne de Calcul (les lignes survivent au rechargement) ;
-  absent d'un atelier reçu.
+- **Repartir de zéro** : confirmation, vide aussi l'historique **et ce qui en est rangé** (C3),
+  puis écrit la ligne « Atelier vidé. » ; actif dès qu'il y a un objet OU une ligne de Calcul
+  (les lignes survivent au rechargement) ; absent d'un atelier reçu. Annulable depuis le lot 5
+  (voir « Annuler / Rétablir »).
 
 ### Annuler / Rétablir (lot 5)
 
@@ -1855,6 +1893,11 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
 - **La provenance** de chaque définition est dans la photo : Annuler relit une définition comme
   elle avait été écrite (`keyboard`, `text`…), pas comme un lien (`url`) — le curseur d'une
   valeur lit sa constante selon la provenance.
+- **Remplacer tout l'atelier en une étape** : `atelier.replaceWith(état, nom, { onLeave })`
+  (objets, grille, réglages rangés), par la voie interne de restauration qui **garde la pile** :
+  un Ctrl+Z rend l'atelier d'avant, les étapes d'avant restent annulables. La console n'en fait
+  pas partie (R4). `onLeave(atelier quitté)` est appelé quand Annuler ou Rétablir quitte un côté
+  de l'étape. Servent : « Remplacer mon atelier » et « Retrouver mon atelier précédent ».
 - **Jamais une étape** : une relecture (`restore` : chargement, autre onglet, lien reçu, qui
   **vide la pile**), un atelier ouvert par un lien `?f=` (`atelierFromCurves`, sous `untracked`),
   et ce qu'on passe à `untracked` (la carte prête à taper d'un atelier vide, B3).
@@ -1885,7 +1928,23 @@ console, le zoom du graphe, l'ouverture de la console, l'onglet.
 - **Le toast d'une suppression** reste (il fait découvrir le geste) ; son bouton défait cette
   suppression si elle est encore la dernière étape, et barre sa ligne « Supprimer ». Il se ferme au
   bout de 10 s, la suppression reste annulable par la barre.
-- **Pas encore** (PR 3) : Repartir de zéro et Charger vident la pile au lieu d'être annulables.
+- **Charger et Repartir de zéro** (PR 3) passent par `replaceWith` : UNE étape, pile gardée, que
+  Ctrl+Z défait (objets, grille, réglages). Leur toast propose « Annuler », qui ne défait que
+  leur étape si elle est encore la dernière (`atelier.topStepId`), comme celui d'une suppression.
+  - **Charger** ne remplace pas la console (décision de David du 2026-10-19, comme R4) : la ligne
+    « Atelier chargé depuis <fichier>. » s'ajoute (`desk.loaded`), elle porte l'étape et se barre
+    si on annule, puis les lignes du fichier, à la suite (les `garder` décalés). La copie mise de
+    côté suit Annuler / Rétablir (`onLeave: keepLeftAside`), seulement si l'atelier a été mis de
+    côté.
+  - **Repartir de zéro** vide la console comme avant (C3), puis `desk.reset()` écrit « Atelier
+    vidé. », qui porte l'étape. **Pas de copie mise de côté**, ni de `onLeave` : l'atelier vide
+    quitté par Annuler effacerait la copie (`keepAside` d'un atelier vide l'oublie, B1).
+  - **Au rejeu** : la ligne d'un chargement porte `{ kind: 'rupture', reason }` — le rejeu
+    s'arrête là et dit pourquoi (le contenu du fichier n'est pas dans l'historique). « Repartir de
+    zéro » porte `{ kind: 'vider' }` et se rejoue ; mais l'annuler ou le rétablir écrit une
+    `rupture` : l'atelier d'avant a quitté la console, le rejeu ne peut pas le rendre.
+- **Le rejeu d'un ancien historique** (`replayNow`) vide encore la pile (`restore`) : il contient
+  lui-même des annulations, qu'une étape englobante ne saurait pas refaire.
 
 ### La barre d'icônes, Enregistrer et Charger
 
@@ -1911,8 +1970,12 @@ AVANT lecture au-delà de `MAX_ATELIER_FILE_BYTES` (en octets, 4 × la limite en
 atelier riche en accents pèse plus d'octets que de caractères), puis `readAtelierFile` applique la
 limite exacte en caractères (`MAX_ATELIER_FILE_LENGTH`). Ensuite les **mêmes** schémas que le
 navigateur — objets et cellules triés un par un (`salvageState`), console par `readKeptHistory`
-(liste blanche de `safe-latex.ts`). Un atelier non vide demande confirmation (« Charger remplace
-l'atelier actuel »). Un fichier refusé ne remplace rien, et la raison s'affiche dans les avis
+(liste blanche de `safe-latex.ts`). Un atelier qui a des objets ou une grille demande
+confirmation (« Charger remplace l'atelier actuel ») ; la console seule ne compte pas, elle n'est
+pas remplacée (2026-10-19). Comme « Remplacer mon atelier » (R5, B8), l'atelier remplacé est **mis de
+côté** avant (`keepAside`), la confirmation le dit, et l'avis propose « Retrouver mon atelier
+précédent » ; s'il ne peut pas l'être, rien n'est chargé (B5). Sans stockage (navigateur qui
+n'enregistre rien), Charger reste ce qu'il était, sans copie. Un fichier refusé ne remplace rien, et la raison s'affiche dans les avis
 (« Ce fichier n'est pas un atelier Chiphre. ») ; un objet écarté ou un `y` renommé se dit aussi,
 et ce que la console a perdu (illisible, version plus récente, lignes écartées : `consoleNotice`). Un **ancien historique JSON**
 (`chiphre-calcul`) est reconnu et rejoué comme avant (même confirmation).

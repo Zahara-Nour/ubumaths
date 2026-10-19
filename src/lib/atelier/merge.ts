@@ -13,7 +13,14 @@
  */
 
 import { Atelier, sequenceInputOf } from './atelier.svelte';
-import { loadAtelier, migrateReservedNames, saveAtelier, type AtelierState } from './persistence';
+import {
+	loadAtelier,
+	migrateReservedNames,
+	saveAtelier,
+	type AtelierState,
+	type StoredObject
+} from './persistence';
+import { renameInObject } from './rename';
 import {
 	indexedNameClash,
 	nextClashFreeName,
@@ -140,6 +147,95 @@ export function mergeRefusal(atelier: Atelier, state: AtelierState): string | nu
 	return `Cet atelier a besoin de ${needed} colonnes libres dans ta grille, il en reste ${free} : rien n’a été versé.`;
 }
 
+/** Un arrivant et sa place dans l'état reçu. */
+interface Arrival {
+	readonly stored: StoredObject;
+	readonly index: number;
+}
+
+/** Une dérivée `f′` ou une réciproque `f⁻¹` : son nom suit celui de sa fonction. */
+const followsItsBase = (name: string) => derivativeOf(name) !== null || reciprocalOf(name) !== null;
+
+/**
+ * Le nom de chaque arrivant ordinaire, par sa place : le sien s'il est libre,
+ * sinon une lettre libre.
+ *
+ * ⚠️ La lettre libre évite AUSSI les noms des autres arrivants (B9) : reçu `a`,
+ * `b`, `c = a + b` dans un atelier qui a déjà `a`, le `a` reçu devenait `b` et le
+ * `b` reçu `c` — un renommage en chaîne, que personne ne peut réécrire sans
+ * confondre l'un et l'autre.
+ */
+function planNames(atelier: Atelier, arrivals: readonly Arrival[]): Map<number, string> {
+	const local = atelier.names;
+	const reserved = new Set([...local, ...arrivals.map(({ stored }) => stored.name)]);
+	const used = new Set<string>();
+	const planned = new Map<number, string>();
+	// Les objets déjà là, puis les arrivants nommés : une suite `u` reçue à côté
+	// d'une valeur `u_3` locale (ou l'inverse) prend un autre nom (2026-10-19)
+	const present: { name: string; kind: StoredObject['kind'] }[] = [...atelier.objects];
+	for (const { stored, index } of arrivals) {
+		if (followsItsBase(stored.name)) continue;
+		const clash =
+			local.includes(stored.name) ||
+			used.has(stored.name) ||
+			indexedNameClash(stored.name, stored.kind, present) !== null;
+		const chosen = clash ? nextClashFreeName(stored.kind, [...reserved], present) : stored.name;
+		reserved.add(chosen);
+		used.add(chosen);
+		present.push({ name: chosen, kind: stored.kind });
+		planned.set(index, chosen);
+	}
+	return planned;
+}
+
+/**
+ * Les arrivants, leurs définitions réécrites pour citer les renommés sous leur
+ * nouveau nom (B9) — par la même règle que `Atelier.rename` (`renameInObject` :
+ * texte et LaTeX de carte, noms indicés, longueurs `AM`, constructions), et le
+ * premier terme d'une suite. Sans risque de chaîne : un nouveau nom n'est jamais
+ * celui d'un autre arrivant (`planNames`).
+ */
+function rewriteCitations(
+	atelier: Atelier,
+	arrivals: readonly Arrival[],
+	planned: ReadonlyMap<number, string>
+): Arrival[] {
+	const renames: [string, string][] = [];
+	const kinds = new Map<string, StoredObject['kind']>();
+	for (const { stored, index } of arrivals) {
+		const chosen = planned.get(index);
+		if (chosen === undefined) continue;
+		kinds.set(chosen, stored.kind);
+		// Le premier qui porte un nom le garde (un nom en double vient d'un lien forgé)
+		if (chosen !== stored.name && !renames.some(([from]) => from === stored.name)) {
+			renames.push([stored.name, chosen]);
+		}
+	}
+	if (renames.length === 0) return [...arrivals];
+	const kindOf = (name: string) => kinds.get(name) ?? atelier.get(name)?.kind;
+	return arrivals.map(({ stored, index }) => {
+		if (followsItsBase(stored.name)) return { stored, index };
+		let definition = stored.definition;
+		let firstTerm = stored.firstTerm;
+		for (const [from, to] of renames) {
+			const isPoint = (name: string) => kindOf(name === from ? to : name) === 'point';
+			// Une suite (ou une fonction) renommée emmène ses termes reçus : `u_3` → `v_3`,
+			// sinon `b = u_3 + 1` lirait une valeur locale `u_3` sans rien dire
+			const fromKind = kindOf(to);
+			const isTerm =
+				fromKind === 'sequence' || fromKind === 'function'
+					? (name: string) => !arrivals.some((a) => a.stored.name === name)
+					: undefined;
+			definition = renameInObject({ kind: stored.kind, definition }, from, to, isPoint, isTerm);
+			if (firstTerm === from) firstTerm = to;
+		}
+		return {
+			stored: { ...stored, definition, ...(firstTerm !== undefined && { firstTerm }) },
+			index
+		};
+	});
+}
+
 export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport {
 	// Q2 de la géométrie : un objet `y` reçu (nom réservé depuis) prend une lettre
 	// libre ICI comme là-bas — sinon un second renommage laisserait ceux qui le
@@ -181,9 +277,13 @@ export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport
 	// (et avant leur réciproque `f⁻¹`, qui suit f de la même façon)
 	const order = (name: string) =>
 		derivativeOf(name)?.order ?? (reciprocalOf(name) !== null ? 1 : 0);
-	const ordered = [...state.objects]
+	const sorted = [...state.objects]
 		.map((stored, index) => ({ stored, index }))
 		.sort((a, b) => order(a.stored.name) - order(b.stored.name));
+	// B9 : les noms sont choisis AVANT toute création, puis chaque arrivant qui
+	// cite un renommé est réécrit — sinon `f(x) = a x` reçu suivait le `a` LOCAL
+	const planned = planNames(atelier, sorted);
+	const ordered = rewriteCitations(atelier, sorted, planned);
 
 	for (const { stored, index } of ordered) {
 		const taken = atelier.names;
@@ -213,11 +313,7 @@ export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport
 				continue;
 			}
 		} else {
-			// `u_3` reçu à côté d'une suite u locale (ou l'inverse) : un autre nom,
-			// comme un nom déjà pris (`indexedNameClash`, 2026-10-19)
-			const clashes =
-				taken.includes(wanted) || indexedNameClash(wanted, stored.kind, atelier.objects) !== null;
-			chosen = clashes ? nextClashFreeName(stored.kind, taken, atelier.objects) : wanted;
+			chosen = planned.get(index) ?? wanted;
 		}
 		arrivedAs.set(wanted, chosen);
 
