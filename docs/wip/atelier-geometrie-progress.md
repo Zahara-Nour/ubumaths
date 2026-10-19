@@ -291,6 +291,67 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   fractionnaire mal écrite) corrigés. Mesuré dans Chromium : ~3 ms par cran (p90 ~5 ms) avec six
   intersections exactes sur un même curseur. Pas en production.
 
+### PR 4 — journal (`.relever`)
+
+- 2026-10-19 : worktree `../ubumaths-wt-atelier-relever`, branche `feat/atelier-geometrie-relever`.
+  Tests d'abord : `relever.test.ts` (28 tests, 26 rouges ; les 2 verts ne testaient que
+  l'absence d'effet d'une commande inconnue). Puis 2 rouges de plus pendant l'implémentation :
+  l'atelier n'était PAS rendu tel qu'il était (`$state.snapshot` rend, hors navigateur, le
+  tableau lui-même) → copie du tableau dans `Atelier.sweep`.
+- 2026-10-19 : implémenté — `survey.ts` (lecture `E1 ; E2 quand t va de a à b pas h`, pas exacts
+  en rationnels, ce qui varie : valeur à curseur ou `point_sur` à position écrite, cases à
+  10 chiffres significatifs, ligne vide dans les deux listes pour un pas sans valeur), branché
+  avec les commandes de données (`SIMULATIONS`, avant la substitution des noms) ;
+  `Atelier.sweep` (chaque pas par `update`, puis le tableau d'avant remis) ; catalogue, aide
+  (nouvelle rubrique « Géométrie : relever des mesures »), décor d'exemple `point:` / `value:`
+  (`stageExampleSetup`). Hors `COMMAND_KEYWORDS` / `COMMAND_LABELS` : ils servent la lecture du
+  moteur, que `.relever` n'emprunte pas (comme `.tabuler`). `persistence.ts` inchangé.
+- **À trancher par David** : (1) **noms des listes** : deux noms libres automatiques (L et L_1
+  dans le problème de l'aire, M et N étant des points), annoncés dans la ligne, la colonne titrée
+  par l'expression (« AM », « S ») — ou un mot-clé `dans X ; Y` ? (2) **le pas est obligatoire**
+  (pas de pas par défaut, contrairement à `.tabuler f`) ; (3) un angle relevé dans l'unité du
+  réglage, sans l'unité dans la case ; (4) **un rectangle aplati** (M en A ou en B) : `aire`
+  refuse (« deux sommets confondus », PR 2), donc les lignes AM = 0 et AM = 4 restent vides —
+  une aire nulle serait plus naturelle pour le nuage ; (5) le nuage est **proposé** par une
+  phrase (« Trace le nuage : sur la carte L, « Nuage avec L_1 ». »), comme `.simuler` propose la
+  suite — pas un bouton sur la ligne de Calcul.
+- 2026-10-19, revue de la PR 4 (tests d'abord : 9 rouges, puis 2 navigateur prouvés rouges sans
+  la remise du tableau) — cases : calcul EXACT d'abord puis décimal (`sin(πt)` → `0`, `√2² − 2` →
+  `0`, plus de `0,00000000000000012246` ni de `-0`), puis un résidu sous 10⁻¹² fois la taille des
+  termes du calcul (ou du plus grand nombre de la colonne) écrit 0 (`sin(t)² + cos(t)² − 1` → 0 ;
+  `10^(-t)` garde 1e-20, écrit en toutes lettres) ; unité d'un angle retirée avant le calcul
+  exact (sinon radians) ; valeur ⩾ 10¹⁵ dite « trop grande pour une case », pas « sans valeur » ;
+  titres posés HORS de l'historique de la grille (`setTitle(…, { recorded: false })`) : un relevé
+  n'est pas un geste annulable de Données, comme une liste créée dans Calcul ; titres posés
+  seulement une fois les deux listes créées ; « 1 ligne » ; mots-clés insensibles à la casse ;
+  `quand 2 va de…` → « « 2 » n'est pas un nom ».
+- 2026-10-19, **mesure dans Chromium** (vitest navigateur, test temporaire retiré), 200 pas
+  (`.relever AM ; S quand M va de 0 à 0,995 pas 0,005`), 3 essais : figure de l'aire (8 objets
+  après le relevé) **1,6 à 1,9 s** ; figure fournie (24 objets : milieux, cercle, deux
+  intersections, une perpendiculaire, périmètre, angle, `k = MC + AM`, `h = f(AM)`) **19 à 23 s**.
+  Le coût est le recalcul de l'atelier à chaque pas (`update` → `recomputeAll` : 1,4-1,6 s et
+  18,8-19,1 s pour le balayage seul, lectures exclues), soit ~8 ms puis ~95 ms par pas — le même
+  que chaque cran du curseur de position de M sur cette figure. Pas d'optimisation sûre et
+  évidente côté `.relever` ; à traiter dans `recomputeAll` (dette « jamais mesuré » d'`atelier.md`).
+- 2026-10-19, **décisions de David sur `.relever`** (phase 0 du lot 2, « Décisions de David du
+  2026-10-19 »), tests d'abord (12 rouges) : (1) `dans X ; Y` facultatif nomme les deux listes,
+  noms validés comme tout nom (pris, réservé, invalide, deux fois le même : refus), exemple ajouté
+  à l'aide et rejoué (décor partagé `AREA_PROBLEM_SETUP`) ; (2) pas manquant : le refus récrit la
+  commande avec un pas d'un dixième de l'étendue ; (3) unité d'un angle dans le titre de la
+  colonne (« angle(I, O, M) (°) », « T (rad) ») ; (4) **polygone aplati d'aire 0** : `measures.ts`
+  ne refuse plus que le polygone croisé (`isCrossed`), le périmètre d'un aplati se calcule ; le
+  problème de l'aire a 21 lignes pleines (S = 0 en AM = 0 et AM = 4). Tests de la PR 2 changés :
+  `mesures-revue.test.ts`, « revue 6 » (sommet répété refusé → aire 0 ou 6 ; côtés qui se touchent
+  refusés → aire 6 ; ajoutés : trois sommets alignés, périmètre d'un aplati, mesure devenue plate
+  au glisser) ; (5) phrase du nuage inchangée.
+- 2026-10-19, **main fusionné** (chantier performance #1513) : conflits de doc seulement
+  (`atelier.md` carte du code, ce journal), les deux côtés gardés ; `sweep` inchangé. Tests :
+  l'atelier rendu tel quel après un relevé et après une exception, mesures relues identiques
+  (`AM`, `S`, `N`, `f(t)` — rien ne reste des mémos du dernier pas), `recalcul-equivalence` vert.
+  **Re-mesure dans Chromium**, 200 pas, 3 essais : figure de l'aire **116 à 141 ms** (avant :
+  1,6 à 1,9 s) ; figure de 24 objets (`fixtures/figure-24.ts`, `.relever L ; S quand a va de 0 à
+0,995 pas 0,005`) **861 à 901 ms** (avant, sur une figure voisine : 19 à 23 s). Sous la seconde.
+
 ## Performance
 
 Un cran de curseur, branche `perf/atelier-recalcul` (2026-10-19). Constat d'une autre session : ~95 ms par cran sur une figure de 24 objets (≈ 10 images/s).
