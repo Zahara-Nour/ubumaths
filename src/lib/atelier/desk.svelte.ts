@@ -260,6 +260,23 @@ const STEP_LABEL_LENGTH = 40;
 /** Le nom de l'étape de « Repartir de zéro » (infobulle d'Annuler, annonces). */
 export const RESET_STEP = 'repartir de zéro';
 
+/**
+ * Ce qu'un `annuler` / `rétablir` rejoué a donné : rien à redire, ou pourquoi
+ * le rejeu s'arrête. Après un `vider`, l'étape déplacée doit être la sienne :
+ * en défaire une autre détruirait des objets sans rapport.
+ */
+function movedOrWhy(
+	moved: MovedStep | null,
+	previous: ReplayStep | null,
+	kind: 'annuler' | 'rétablir'
+): string | null {
+	if (moved === null) return `il n’y avait rien à ${kind}.`;
+	if (previous?.kind === 'vider' && moved.label !== RESET_STEP) {
+		return `le « Repartir de zéro » à ${kind} ne s’est pas rejoué.`;
+	}
+	return null;
+}
+
 /** « Annuler : « f(x)=x^2 » » — la saisie telle que tapée, raccourcie au besoin. */
 function lineStepLabel(text: string): string {
 	const shown = text.length > STEP_LABEL_LENGTH ? `${text.slice(0, STEP_LABEL_LENGTH - 1)}…` : text;
@@ -716,9 +733,11 @@ export class CalcDesk {
 					if (this.#lastRemoval !== null && this.undoRemoval(this.#lastRemoval)) return null;
 					return 'la suppression à annuler ne s’est pas rejouée.';
 				}
-				return this.undo() !== null ? null : 'il n’y avait rien à annuler.';
+				// Juste après « Repartir de zéro », c'est lui qu'on défait — et lui seul,
+				// comme une suppression (revue de la PR de suivi de #1524)
+				return movedOrWhy(this.undo(), previous, 'annuler');
 			case 'rétablir':
-				return this.redo() !== null ? null : 'il n’y avait rien à rétablir.';
+				return movedOrWhy(this.redo(), previous, 'rétablir');
 			case 'vider':
 				this.reset();
 				return null;

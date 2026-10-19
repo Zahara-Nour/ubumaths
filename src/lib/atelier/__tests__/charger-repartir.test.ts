@@ -13,7 +13,7 @@
  * 2026-10-19, revue de #1524) : Annuler rend alors tout, et le rejeu aussi.
  */
 import { describe, it, expect } from 'vitest';
-import { Atelier } from '../atelier.svelte';
+import { Atelier, OUTSIDE_STEP_LABEL } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { historyToJson } from '../history-export';
 import { readHistory } from '../history-import';
@@ -167,6 +167,49 @@ describe('repartir de zéro', () => {
 	});
 });
 
+describe('rejeu de « Repartir de zéro » : ce que la revue a trouvé', () => {
+	it('grille seule (aucune ligne à rejouer) : vider puis annuler laisse le rejeu vide', () => {
+		const desk = new CalcDesk(new Atelier());
+		desk.atelier.editCells([{ column: 2, row: 1, text: '5' }]);
+		desk.reset();
+		desk.undo();
+
+		const read = readHistory(historyToJson(desk.entries, new Date()));
+		if (!read.ok) throw new Error(read.message);
+		const again = new CalcDesk(new Atelier());
+		expect(again.replay(read.history).ok).toBe(true);
+		// La grille n'était pas dans l'historique : rien n'est inventé, rien n'est défait
+		expect(again.atelier.isBlank).toBe(true);
+	});
+
+	it('un historique d’avant la revue (annuler en rupture) s’arrête encore là', () => {
+		const line = { label: '', text: '', failed: false };
+		const read = readHistory(
+			JSON.stringify({
+				format: 'chiphre-calcul',
+				version: 1,
+				exportedAt: new Date().toISOString(),
+				entries: [
+					{ kind: 'saisie', input: 'a = 2', ...line, label: 'a = 2' },
+					{ kind: 'vider', ...line, text: 'Atelier vidé.' },
+					{
+						kind: 'rupture',
+						reason: '« Repartir de zéro » a été annulé ici.',
+						...line,
+						text: 'Annulé : repartir de zéro.'
+					}
+				]
+			})
+		);
+		if (!read.ok) throw new Error(read.message);
+		const again = new CalcDesk(new Atelier());
+
+		expect(again.replay(read.history).ok).toBe(false);
+		expect(again.notice).toContain('Repartir de zéro');
+		expect(again.atelier.objects).toEqual([]);
+	});
+});
+
 describe('Annuler un remplacement rend les réglages d’avant (revue de #1524)', () => {
 	it('les lois des variables aléatoires et le repère de Géométrie reviennent', () => {
 		const atelier = new Atelier();
@@ -210,10 +253,18 @@ describe('le toast « Annuler » d’un remplacement (revue de #1524)', () => {
 		if (stepId === null) throw new Error('le remplacement aurait dû être une étape');
 		expect(atelier.isTopStep(stepId)).toBe(true);
 
+		const steps = atelier.history.steps;
+
 		// Hors de toute étape : rangée seulement au prochain geste (`#capture`)
 		atelier.update('g', 'x^4', 'text');
 		expect(atelier.isTopStep(stepId)).toBe(false);
 		// Et rien n'a été défait : g garde sa nouvelle définition
 		expect(atelier.get('g')?.definition).toBe('x^4');
+		// La modification est devenue son étape : Annuler la défait elle, puis le chargement
+		expect(atelier.history.steps).toBe(steps + 1);
+		expect(atelier.undo()).toBe(OUTSIDE_STEP_LABEL);
+		expect(atelier.get('g')?.definition).toBe('x^3');
+		expect(atelier.undo()).toBe('charger un atelier');
+		expect(definitions(atelier)).toEqual({ a: '2' });
 	});
 });

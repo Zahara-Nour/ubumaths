@@ -2615,6 +2615,8 @@ export class Atelier {
 		// recalcul fait bouger `revision` : la session range l'atelier remplacé
 		const report = this.step(label, () => this.#restoreState(state));
 		const id = this.#lastStepId;
+		// ⚠️ Imbriqué ou en relecture, pas d'étape à soi : rien à rendre, Annuler les
+		// perdrait (aucun appel ne le fait aujourd'hui)
 		if (outermost && id !== null) {
 			// Annuler les rend (`#swapSettings`)
 			this.#settingsAcross.set(id, before);
