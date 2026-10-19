@@ -1,0 +1,108 @@
+{
+	"id": "663fafd3-2a1f-4021-957a-2d94e318481e",
+	"title": "Soustraire des durées",
+	"description": "en HMS",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Calculer",
+	"level": 7,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"unit": "off",
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:c[min]}}"
+				}
+			],
+			"statement": "J'ai commencé à regarder un épisode d'une série à ${{eval:(a[h]+b[min]);hms}}$, et je l'ai terminé à ${{eval:(a[h]+b[min]) + c[min];hms}}$. Quelle était la durée de cet épisode ? (n'oublie pas l'unité)\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..59"
+				},
+				{
+					"name": "c",
+					"expression": "1..59"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:{{b}}+{{c}}<60|${{eval:(a[h]+b[min]);hms}} + {{solution}} = {{eval:(a[h]+b[min]) + c[min];hms}}$|$$\\begin{align}{{eval:(a[h]+b[min]) + c[min];hms}} &= {{eval:(a[h]+b[min]);hms}} + {{eval:60-b}}~\\unit{min} + {{eval:c+b-60}}~\\unit{min}\\\\                  &= {{eval:(a[h]+b[min]);hms}} + {{solution}}\\end{align}$$}}",
+					"L'épisode a duré ${{solution}}$."
+				],
+				"feedback": {
+					"correct": "La durée de l'épisode est de {{answer}}."
+				}
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["59\\unit{min}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "56",
+				"c": "59"
+			},
+			"description": "59 min",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["59"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "56",
+				"c": "59"
+			},
+			"description": "sans unité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["60\\unit{min}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "56",
+				"c": "59"
+			},
+			"description": "60 min au lieu de 59",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["32\\unit{min}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "5",
+				"c": "32"
+			},
+			"description": "sans passage à l'heure : 32 min",
+			"variationIndex": 0
+		}
+	]
+}

@@ -10,18 +10,19 @@ Le catalogue des unités et les opérations de base vivent dans `mathAST/units` 
 
 ## Les fichiers
 
-| Test                                   | Module                  | Ce qui est vérifié                                                             |
-| -------------------------------------- | ----------------------- | ------------------------------------------------------------------------------ |
-| `student-quantity-input.test.ts`       | `student-input.ts`      | saisie MathLive ramenée à `valeur\unit{écriture}` (`5\operatorname{…}`, `5km`) |
-| `composite-duration.test.ts`           | `composite-duration.ts` | durées composées : « 2 h 15 min », « 1 h 5 min 30 s »                          |
-| `parser.test.ts`                       | `parser.ts`             | lecture d'une unité (`km/h`, `m²`) et d'une grandeur LaTeX (`5\unit{km}`)      |
-| `parser-single-rule.test.ts`           | `parser.ts`             | la correction lit les unités comme `mathAST/units` (`kg/m.s` refusé partout)   |
-| `operations.test.ts`                   | `operations.ts`         | création, produit, quotient, puissance, compatibilité, écriture d'une unité    |
-| `ce-integration.test.ts`               | `ce-integration.ts`     | valeur et comparaison de grandeurs via le ComputeEngine                        |
-| `validator.test.ts`                    | `validator.ts`          | verdict d'une réponse : conversions, tolérance, unité attendue                 |
-| `validator-rounding-precision.test.ts` | `validator.ts`          | précision demandée appliquée aux grandeurs (trop de décimales → message)       |
-| `unit-feedback.test.ts`                | `feedback.ts`           | messages montrés à l'élève quand c'est l'unité qui est fausse                  |
-| `keyboard-units.test.ts`               | `keyboard-units.ts`     | touches de l'onglet « Unités » du clavier virtuel                              |
+| Test                                   | Module                   | Ce qui est vérifié                                                                                                             |
+| -------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `student-quantity-input.test.ts`       | `student-input.ts`       | saisie MathLive ramenée à `valeur\unit{écriture}` (`5\operatorname{…}`, `5km`)                                                 |
+| `composite-duration.test.ts`           | `composite-duration.ts`  | durées composées : « 2 h 15 min », « 1 h 5 min 30 s »                                                                          |
+| `parser.test.ts`                       | `parser.ts`              | lecture d'une unité (`km/h`, `m²`) et d'une grandeur LaTeX (`5\unit{km}`)                                                      |
+| `parser-single-rule.test.ts`           | `parser.ts`              | la correction lit les unités comme `mathAST/units` (`kg/m.s` refusé partout)                                                   |
+| `operations.test.ts`                   | `operations.ts`          | création, produit, quotient, puissance, compatibilité, écriture d'une unité                                                    |
+| `quantity-comparison.test.ts`          | `quantity-comparison.ts` | valeur (mathAST, mode décimal) et comparaison de grandeurs                                                                     |
+| `validator.test.ts`                    | `validator.ts`           | verdict d'une réponse : conversions, tolérance, unité attendue                                                                 |
+| `validator-rounding-precision.test.ts` | `validator.ts`           | précision demandée appliquée aux grandeurs (trop de décimales → message)                                                       |
+| `unit-feedback.test.ts`                | `feedback.ts`            | messages montrés à l'élève quand c'est l'unité qui est fausse                                                                  |
+| `keyboard-units.test.ts`               | `keyboard-units.ts`      | touches de l'onglet « Unités » du clavier virtuel                                                                              |
+| `oracle-cases-unite.test.ts`           | tout le parcours         | verdicts figés sur les 25 modèles publiés (`tests/fixtures/correction-cases-unite/`) ; `ORACLE_MAJ=1` pour un changement voulu |
 
 ## Lancer
 

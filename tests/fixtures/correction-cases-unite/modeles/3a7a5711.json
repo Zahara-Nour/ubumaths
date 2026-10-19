@@ -1,0 +1,365 @@
+{
+	"id": "3a7a5711-941c-466f-95c6-51a4691c767b",
+	"title": "Trouver la largeur d'un rectangle.",
+	"description": "A partir de son aire et de sa longueur.",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Périmètres",
+	"subdomain": "Périmètre d'un rectangle",
+	"level": 2,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"conditions": ["a>b"]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[mm^2]}}$ ?\n\nLa largeur est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[mm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[mm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[mm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[mm^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[cm^2]}}$ ?\n\nLa largeur est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[cm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[cm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[cm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[cm^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[dm^2]}}$ ?\n\nLa largeur est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[dm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[dm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[dm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[dm^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[m^2]}}$ ?\n\nLa largeur est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[m]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[m]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[m^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[m^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[dam^2]}}$ ?\n\nLa largeur est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[dam]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[dam]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[dam^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[dam^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[hm^2]}}$ ?\n\nLa largeur est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[hm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[hm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[hm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[hm^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[km^2]}}$ ?\n\nLa largeur est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[km]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[km]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[km^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[km^2]}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["5\\unit{mm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "40 mm² ÷ 8 mm = 5 mm",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5\\unit{mm^2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "unité d'aire au lieu de longueur",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "sans unité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5\\unit{cm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "40 cm² ÷ 8 cm = 5 cm",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5\\unit{dm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "40 dm² ÷ 8 dm = 5 dm",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["5\\unit{m}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "40 m² ÷ 8 m = 5 m",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["5\\unit{dam}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "40 dam² ÷ 8 dam = 5 dam",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["5\\unit{hm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "40 hm² ÷ 8 hm = 5 hm",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["5\\unit{km}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "40 km² ÷ 8 km = 5 km",
+			"variationIndex": 6
+		}
+	]
+}

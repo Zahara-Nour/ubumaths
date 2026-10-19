@@ -51,12 +51,35 @@ function submit(latex: string, blank: InstanceBlank) {
 // ============================================================================
 
 describe('trou à unité — message affiché quand l’unité est en cause', () => {
-	it('grandeur différente : 5ms (milliseconde) quand une vitesse en m/s est attendue', () => {
-		const result = submit('5ms', unitBlank('5\\unit{m/s}'));
+	// Le conseil « produit d'unités » n'est donné que s'il aide : les lettres
+	// collées, lues comme un produit, donnent la grandeur attendue (2026-10-19)
+	it('grandeur différente : 5ms (milliseconde) quand des m·s sont attendus → conseil du produit', () => {
+		const result = submit('5ms', unitBlank('5\\unit{m.s}'));
 		expect(result.isCorrect).toBe(false);
 		expect(result.feedback).toBe(
 			'Cette unité ne mesure pas la bonne grandeur. Pour un produit d’unités, écris m·s.'
 		);
+	});
+
+	it('grandeur différente : 5ms quand une vitesse en m/s est attendue → pas de conseil (m·s n’est pas une vitesse)', () => {
+		const result = submit('5ms', unitBlank('5\\unit{m/s}'));
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Cette unité ne mesure pas la bonne grandeur.');
+	});
+
+	it('grandeur différente : 5 kg quand une longueur est attendue → pas de conseil', () => {
+		const result = submit('5\\operatorname{\\mathrm{kg}}', unitBlank('5\\unit{m}'));
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Cette unité ne mesure pas la bonne grandeur.');
+	});
+
+	it('grandeur différente dans une durée composée : 2 h 15 kg → pas de conseil', () => {
+		const result = submit(
+			'2\\operatorname{\\mathrm{h}}\\,15\\operatorname{\\mathrm{kg}}',
+			unitBlank('135\\unit{min}')
+		);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Cette unité ne mesure pas la bonne grandeur.');
 	});
 
 	it('unité imposée non utilisée : 5000 m quand km est imposé', () => {

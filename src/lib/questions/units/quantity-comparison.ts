@@ -1,24 +1,23 @@
 /**
- * Unit System - ComputeEngine Integration
- * ========================================
+ * Comparaison de grandeurs des cases à unité
+ * ==========================================
  *
- * Integration layer between the unit system and MathLive's ComputeEngine
- * for evaluating and comparing quantities (value + unit).
+ * Compare la grandeur d'un élève à la grandeur attendue (`valeur\unit{…}`) :
+ * conversion d'unités (affine pour °C, °F), tolérance éventuelle.
  *
- * Features:
- * - Evaluate quantity numeric values using ComputeEngine
- * - Compare two quantities with unit conversion
- * - Convert quantities between compatible units
- * - Normalize quantities to SI base units
- * - Handle tolerance-based comparison
+ * La valeur est lue par `parseLatexQuantity` (`./parser`) ; une valeur qui
+ * n'est pas un nombre simple (`5\times3`) est évaluée par mathAST en mode
+ * décimal (`evaluateExpression`, `$lib/math`). Le calcul se fait en flottants :
+ * c'est encore un calculateur à part du contrat des grandeurs (ADR 0026,
+ * chantier correction-cases-unite).
  *
- * @module questions/units/ce-integration
+ * @module questions/units/quantity-comparison
  */
 
 import { evaluateExpression } from '$lib/math';
 import type { Unit, Quantity } from './types';
-import { parseLatexQuantity, parseUnitExpression } from './parser';
-import { unitsAreCompatible, getConversionFactor, createUnit } from './operations';
+import { parseLatexQuantity } from './parser';
+import { unitsAreCompatible } from './operations';
 import { convertAffine } from '$lib/mathAST/units/conversion';
 
 // ============================================================================
@@ -88,7 +87,7 @@ export interface Tolerance {
 // ============================================================================
 
 /**
- * Evaluate the numeric part of a LaTeX quantity using ComputeEngine
+ * Evaluate the numeric part of a LaTeX quantity (mathAST, decimal mode)
  *
  * Handles expressions like:
  * - Simple numbers: "5", "3.14", "-10"
@@ -121,7 +120,7 @@ export function evaluateQuantityValue(latex: string): number | null {
 		// Remove any whitespace
 		const cleaned = latex.trim();
 
-		// Use ComputeEngine to evaluate
+		// Évaluation mathAST en mode décimal
 		const result = evaluateExpression(cleaned);
 
 		// Check if result is a number
@@ -385,219 +384,4 @@ function formatUnitForDisplay(unit: Unit): string | null {
 	}
 
 	return parts.join('·');
-}
-
-// ============================================================================
-// UNIT CONVERSION
-// ============================================================================
-
-/**
- * Convert a quantity to a different unit
- *
- * Returns null if units are incompatible (different dimensions).
- *
- * @param quantity - LaTeX quantity string (e.g., "5\\unit{km}")
- * @param targetUnit - Target unit symbol (e.g., "m")
- * @returns Quantity in target unit or null if incompatible
- *
- * @example Length conversion
- * convertQuantity('5\\unit{km}', 'm')
- * // { value: 5000, unit: { components: Map{'m' => 1}, coefficient: 1}}
- *
- * @example Time conversion
- * convertQuantity('2\\unit{h}', 'min')
- * // { value: 120, unit: { components: Map{'s' => 1}, coefficient: 60}}
- *
- * @example Incompatible units
- * convertQuantity('5\\unit{km}', 's')
- * // null
- *
- * @example Complex unit conversion
- * convertQuantity('90\\unit{km/h}', 'm/s')
- * // { value: 25, unit: { components: Map{'m' => 1, 's' => -1}, coefficient: 1}}
- */
-export function convertQuantity(quantity: string, targetUnit: string): Quantity | null {
-	// Parse the input quantity
-	const parsedQuantity = parseLatexQuantity(quantity);
-	if (!parsedQuantity) {
-		return null;
-	}
-
-	// Parse the target unit
-	const targetUnitParsed = parseUnitExpression(targetUnit);
-	if (!targetUnitParsed) {
-		// Try creating simple unit
-		try {
-			const simpleUnit = createUnit(targetUnit);
-			return convertQuantityToUnit(parsedQuantity, simpleUnit);
-		} catch {
-			return null;
-		}
-	}
-
-	return convertQuantityToUnit(parsedQuantity, targetUnitParsed);
-}
-
-/**
- * Convert a Quantity object to a target Unit
- *
- * @param quantity - Source quantity
- * @param targetUnit - Target unit
- * @returns Converted quantity or null
- */
-function convertQuantityToUnit(quantity: Quantity, targetUnit: Unit): Quantity | null {
-	// Check compatibility
-	if (!unitsAreCompatible(quantity.unit, targetUnit)) {
-		return null;
-	}
-
-	// Get conversion factor
-	const conversionFactor = getConversionFactor(quantity.unit, targetUnit);
-	if (conversionFactor === null) {
-		return null;
-	}
-
-	// Evaluate the value
-	const numericValue = evaluateValueFromQuantity(quantity);
-	if (numericValue === null) {
-		return null;
-	}
-
-	// Apply conversion
-	const convertedValue = numericValue * conversionFactor;
-
-	return {
-		value: convertedValue,
-		unit: targetUnit
-	};
-}
-
-// ============================================================================
-// BASE UNIT NORMALIZATION
-// ============================================================================
-
-/**
- * Normalize a quantity to SI base units
- *
- * Converts both the value and unit to the fundamental SI representation.
- * For example:
- * - 5 km → 5000 m
- * - 2 h → 7200 s
- * - 90 km/h → 25 m/s
- *
- * @param latex - LaTeX quantity string
- * @returns Normalized quantity in base units or null if parsing fails
- *
- * @example Length
- * normalizeToBaseUnits('5\\unit{km}')
- * // { value: 5000, unit: { components: Map{'m' => 1}, coefficient: 1}}
- *
- * @example Time
- * normalizeToBaseUnits('2\\unit{h}')
- * // { value: 7200, unit: { components: Map{'s' => 1}, coefficient: 1}}
- *
- * @example Speed
- * normalizeToBaseUnits('90\\unit{km/h}')
- * // { value: 25, unit: { components: Map{'m' => 1, 's' => -1}, coefficient: 1}}
- *
- * @example Complex unit
- * normalizeToBaseUnits('1.5\\unit{kg·m²/s²}')
- * // { value: 1.5, unit: { components: Map{'kg' => 1, 'm' => 2, 's' => -2}, coefficient: 1}}
- *
- * @example Already in base units
- * normalizeToBaseUnits('10\\unit{m}')
- * // { value: 10, unit: { components: Map{'m' => 1}, coefficient: 1}}
- */
-export function normalizeToBaseUnits(latex: string): Quantity | null {
-	// Parse the quantity
-	const quantity = parseLatexQuantity(latex);
-	if (!quantity) {
-		return null;
-	}
-
-	// Evaluate the numeric value
-	const numericValue = evaluateValueFromQuantity(quantity);
-	if (numericValue === null) {
-		return null;
-	}
-
-	// The unit coefficient tells us the conversion to base units
-	// For example, km has coefficient 1000, so 5 km = 5 * 1000 = 5000 (in base m)
-	const normalizedValue = numericValue * quantity.unit.coefficient;
-
-	// Create base unit (same components but coefficient 1)
-	const baseUnit: Unit = {
-		components: new Map(quantity.unit.components),
-		coefficient: 1
-	};
-
-	return {
-		value: normalizedValue,
-		unit: baseUnit
-	};
-}
-
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
-
-/**
- * Check if a LaTeX string contains a valid quantity
- *
- * Returns true only if the quantity can be parsed AND the value
- * evaluates to a finite number (not Infinity or NaN).
- *
- * @param latex - LaTeX string to check
- * @returns True if string can be parsed as a valid quantity
- *
- * @example
- * isValidQuantity('5\\unit{km}') // true
- * isValidQuantity('\\frac{1}{0}\\unit{m}') // false (division by zero)
- * isValidQuantity('invalid') // false
- */
-export function isValidQuantity(latex: string): boolean {
-	const quantity = parseLatexQuantity(latex);
-	if (!quantity) {
-		return false;
-	}
-
-	// Check that the value evaluates to a finite number
-	const value = evaluateValueFromQuantity(quantity);
-	return value !== null && isFinite(value);
-}
-
-/**
- * Get the unit from a LaTeX quantity string
- *
- * @param latex - LaTeX quantity string
- * @returns Unit object or null if parsing fails
- *
- * @example
- * getUnitFromQuantity('5\\unit{km}')
- * // { components: Map{'m' => 1}, coefficient: 1000}
- */
-export function getUnitFromQuantity(latex: string): Unit | null {
-	const quantity = parseLatexQuantity(latex);
-	return quantity?.unit ?? null;
-}
-
-/**
- * Get the numeric value from a LaTeX quantity string
- *
- * Evaluates the expression and returns the number.
- *
- * @param latex - LaTeX quantity string
- * @returns Evaluated numeric value or null
- *
- * @example
- * getValueFromQuantity('5\\unit{km}') // 5
- * getValueFromQuantity('\\frac{3}{2}\\unit{m}') // 1.5
- */
-export function getValueFromQuantity(latex: string): number | null {
-	const quantity = parseLatexQuantity(latex);
-	if (!quantity) {
-		return null;
-	}
-
-	return evaluateValueFromQuantity(quantity);
 }
