@@ -12,7 +12,7 @@
  * grille, et l'atelier rendu tel qu'il était.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, type CalcResult, type CalcSession } from '../calcul';
@@ -410,5 +410,120 @@ describe('les noms des listes', () => {
 			['N', '0 ; 1'],
 			['L_1', '0 ; 2']
 		]);
+	});
+});
+
+// =============================================================================
+// Revue de la PR 4 : cases, textes, historique de la grille
+// =============================================================================
+
+describe('les cases : une valeur exacte s’écrit telle quelle', () => {
+	it('sin(π t) vaut 0 aux entiers : « 0 », pas un résidu de flottant', () => {
+		const s = session('t = 0');
+
+		output(runInput(s, '.relever t ; sin(π*t) quand t va de 0 à 2 pas 1'));
+
+		expect(cells(lists(s.atelier)[1])).toEqual(['0', '0', '0']);
+	});
+
+	it('√2² − 2 et 2 − √2² valent 0, jamais « -0 »', () => {
+		const s = session('t = 0');
+
+		output(runInput(s, '.relever sqrt(2)^2 - 2 ; 2 - sqrt(2)^2 quand t va de 0 à 0 pas 1'));
+
+		expect(lists(s.atelier).map((l) => cells(l))).toEqual([['0'], ['0']]);
+	});
+
+	it('un résidu sous l’échelle de la colonne s’efface ; une colonne de petits nombres reste', () => {
+		const s = session('t = 0');
+
+		output(runInput(s, '.relever 10^(-t) ; sin(t)^2 + cos(t)^2 - 1 quand t va de 20 à 22 pas 1'));
+
+		const [small, zero] = lists(s.atelier);
+		expect(small.values).toEqual([1e-20, 1e-21, 1e-22]);
+		expect(cells(zero)).toEqual(['0', '0', '0']);
+	});
+
+	it('une valeur trop grande pour une case est dite comme telle, pas « sans valeur »', () => {
+		const s = session('t = 0');
+
+		const text = output(runInput(s, '.relever t ; 10^t quand t va de 13 à 16 pas 1'));
+
+		expect(cells(lists(s.atelier)[1])).toEqual(['10000000000000', '100000000000000', '', '']);
+		expect(text).toContain(
+			'2 valeurs trop grandes pour une case (10¹⁵ ou plus) : leurs lignes sont laissées vides dans les deux listes.'
+		);
+		expect(text).not.toContain('sans valeur');
+	});
+});
+
+describe('les textes de la commande', () => {
+	it('« 1 ligne », au singulier', () => {
+		const s = session('t = 0');
+
+		expect(output(runInput(s, '.relever t ; t quand t va de 0 à 0 pas 1'))).toContain(
+			': 1 ligne, dans'
+		);
+	});
+
+	it('les mots-clés s’écrivent aussi en majuscule', () => {
+		const s = session('t = 0');
+
+		output(runInput(s, '.relever t ; 2t Quand t Va De 0 À 1 Pas 1'));
+
+		expect(cells(lists(s.atelier)[1])).toEqual(['0', '2']);
+	});
+
+	it('ce qui varie doit être un nom', () => {
+		const s = session('t = 0');
+
+		expect(refusal(runInput(s, '.relever t ; t quand 2 va de 0 à 1 pas 1'))).toBe(
+			'« 2 » n’est pas un nom : écris le nom de la valeur ou du point qui varie (quand t va de …).'
+		);
+	});
+});
+
+describe('l’historique de la grille et les créations', () => {
+	it('un relevé n’ajoute aucun geste à annuler dans Données (comme une liste créée dans Calcul)', () => {
+		const s = session('t = 0');
+
+		output(runInput(s, '.relever t ; t quand t va de 0 à 1 pas 1'));
+
+		expect(s.atelier.gridHistory).toEqual({ undo: 0, redo: 0 });
+		expect(s.atelier.titleOf(lists(s.atelier)[0].column)).toBe('t');
+	});
+
+	it('la seconde liste refusée : la première est retirée, sa colonne sans titre', () => {
+		const s = session('t = 0');
+		const create = s.atelier.create.bind(s.atelier);
+		let calls = 0;
+		vi.spyOn(s.atelier, 'create').mockImplementation((input, provenance) =>
+			++calls === 2 ? { ok: false, message: 'Refus simulé.' } : create(input, provenance)
+		);
+
+		expect(refusal(runInput(s, '.relever t ; t quand t va de 0 à 1 pas 1'))).toBe('Refus simulé.');
+
+		expect(lists(s.atelier)).toEqual([]);
+		expect(Array.from({ length: 26 }, (_, column) => s.atelier.titleOf(column))).toEqual(
+			Array.from({ length: 26 }, () => '')
+		);
+		expect(s.atelier.cell(0, 1)).toBe('');
+	});
+
+	it('un relevé interrompu par une exception remet l’atelier tel qu’il était', () => {
+		const s = session('t = 3', 'f(x) = x^2');
+		s.atelier.setSliderShown('t', true);
+		const before = savedObjects(s.atelier);
+		let read = 0;
+
+		expect(() =>
+			s.atelier.sweep('t', ['50', '60', '70'], () => {
+				if (++read === 2) throw new Error('boum');
+				return read;
+			})
+		).toThrow('boum');
+
+		expect(savedObjects(s.atelier)).toBe(before);
+		expect(s.atelier.get('t')?.definition).toBe('3');
 	});
 });
