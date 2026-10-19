@@ -21,6 +21,10 @@ import { Atelier } from '$lib/atelier/atelier.svelte';
 import { actionsFor, partnersOf } from '$lib/atelier/actions';
 import { isSequence, isValue } from '$lib/atelier/types';
 import { cardOf, chooseObjectAction, menuItemOf, openCardMenu } from './harness/function-card';
+import { onDesktopScreen } from './harness/desktop-screen';
+
+// À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
+onDesktopScreen();
 
 // =============================================================================
 // Décor

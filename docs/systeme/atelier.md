@@ -179,7 +179,7 @@ Ceux du code et de l'interface :
 | `AtelierContainer.svelte`   | Le conteneur : barre d'icônes, panneau + vues, console déroulante, session, `CalcDesk`, `GrapheurStore` propre                                                 |
 | `roving-toolbar.ts`         | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                                                              |
 | `ToolButton.svelte`         | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)                                        |
-| `ObjectPanel.svelte`        | « Mes objets » : création, liste des cartes                                                                                                                    |
+| `ObjectPanel.svelte`        | « Mes objets » : création, liste des cartes ; replié par défaut sur téléphone                                                                                  |
 | `ObjectCard.svelte`         | L'aiguillage : confie chaque objet à la carte de son type                                                                                                      |
 | `FigureCard.svelte`         | La carte d'un point ou d'une courbe, sur une ligne : `A = [champ]`, `d : [champ]` ; nature, construction en gris, menu                                         |
 | `FigureStylePopover.svelte` | Le point de couleur d'un point (couleur, taille) ou d'une courbe de la figure (couleur, trait) : `setFigureDisplay`                                            |
@@ -1741,6 +1741,21 @@ continue de déplacer la vue. Mesuré sur iPhone 13 (390 × 664) : toile de 234 
 (414 px de large) prend cette disposition (toile de 10rem) : un test qui suppose une échelle en
 pixels y casse.
 
+**« Mes objets » sur téléphone** (décision du 2026-10-19, journal
+[atelier-mes-objets-telephone-progress.md](../wip/atelier-mes-objets-telephone-progress.md)) : en
+une colonne (≤ 720 px), le panneau ouvert ramenait la vue à son plancher (toile de 160 px avec deux
+points). Il s'ouvre donc **replié** : une barre « Mes objets · N objets » et un bouton
+(nommé par le titre, `aria-expanded`, `aria-controls` ; absent quand l'atelier est vide) qui
+déplie cartes et boutons « + ». Le repli est tranché en CSS
+(classe `replie`, pas de `matchMedia`) : au-dessus de 720 px le bouton est caché et le panneau
+toujours déplié, sans flash au chargement. Il se **déplie** seul quand l'atelier est vide (les « + »
+sont la seule entrée), quand on crée depuis un « + » (le premier objet ne le referme pas), et quand
+une carte prend la main (`selected` non nul : la carte prête à taper de `/grapheur`, f′ après
+« Dériver »). Un objet créé ailleurs (barre d'outils de Géométrie, console) le laisse replié ; le
+compte suit. Le choix n'est pas retenu d'un chargement à l'autre. ⚠️ Les tests des cartes, qui
+tournent à 414 px, se jouent sur bureau (`harness/desktop-screen.ts`) ; le repli a ses propres
+tests (`mes-objets-telephone.svelte.test.ts`).
+
 **𝒞f dans la vue Géométrie** (PR 3, K1-K3) : l'action de carte « Afficher dans Géométrie » /
 « Retirer de Géométrie » (`figure` dans `BY_KIND`, bascule comme « Tracer ») pose `inFigure` sur
 la fonction (`setInFigure`, un état d'affichage **rangé** comme `plotted` : sauvegarde, lien,
@@ -2762,8 +2777,6 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
   mesures composées) : 19 à 23 s pour le balayage, ~8 ms puis ~95 ms de recalcul par pas — le
   même coût que chaque cran du curseur, ou chaque mouvement d'un point glissé, sur cette figure
   (mesuré le 2026-10-19). Pas d'optimisation sûre et évidente côté `.relever` ;
-- « Mes objets » au téléphone : avec deux objets, la toile retombe à 160 px ; repli par défaut
-  sur téléphone décidé le 2026-10-19 (petite PR à venir, Graphe compris).
 
 ⚠️ La section « Ce qui reste pour clore la v1 » de `atelier-progress.md` (2026-10-04) dit encore
 les garanties `/grapheur` non faites : elles le sont (lots 2 à 6, #779 → #809,

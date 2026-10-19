@@ -16,6 +16,10 @@ import WithAtelier from './harness/WithAtelier.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { isSequence, type SequenceObject } from '$lib/atelier/types';
 import { cardOf } from './harness/function-card';
+import { onDesktopScreen } from './harness/desktop-screen';
+
+// À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
+onDesktopScreen();
 
 // =============================================================================
 // Décor
