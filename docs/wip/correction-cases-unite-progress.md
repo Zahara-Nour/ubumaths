@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, phase 0 (aucune PR)._
+_Mis à jour le 2026-10-19, phase 0 de la PR 1 (aucune PR ouverte)._
 
-- **État** : oracle figé (`tests/fixtures/correction-cases-unite/oracle.json`, 1 724 réponses, test `oracle-cases-unite.test.ts`) ; route `tidy` mesurée dessus : 0 verdict changé sur 1 324 comparables.
-- **Prochaine action** : David tranche entre les options (cf. 2026-10-19, options) ; puis phase 0 comportements → tests → code.
-- **En attente de David** : choix d'option ; message « Pour un produit d'unités, écris m·s. » sur « 5 kg » (garder ?).
-- **Pièges en cours** : `valueIn` rend `null` sur les températures ; `extractValue` lit `2\sqrt{2}` comme 2 (aucun modèle publié ne l'atteint) ; `ORACLE_MAJ=1` réécrit l'oracle.
+- **État** : option 2 validée par David (3 PR : nettoyage → lecture en arbre → comparaison `tidy`) ; oracle figé (1 724 verdicts) ; phase 0 de la PR 1 soumise.
+- **Prochaine action** : PR 1 — code mort de `ce-integration.ts`, renommage `quantity-comparison.ts`, « ComputeEngine » retiré des docs, message `wrongMagnitude`.
+- **En attente de David** : validation des comportements de la PR 1 ; message `wrongMagnitude` (le conseil « m·s » vient du cas `5ms`, cf. 2cf607e20).
+- **Pièges en cours** : `valueIn` → `null` sur les températures ; `extractValue` lit `2\sqrt{2}` comme 2 ; `ORACLE_MAJ=1` réécrit l'oracle ; messages d'unité validés par David le 2026-09-24 (ne pas reformuler sans accord).
 - **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite`.
 
 ## Historique
@@ -65,3 +65,11 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
   `getValueFromQuantity` : morts.
 - Message `wrongMagnitude` : « … Pour un produit d'unités, écris m·s. » affiché aussi pour « 5 kg »
   quand une longueur est attendue (200 entrées).
+
+### 2026-10-19 — décisions de David
+
+- Option 2, par morceaux : PR 1 nettoyage (+ oracle), PR 2 valeur lue en arbre (mathAST), PR 3
+  comparaison exacte `tidy`/`valueIn`, températures gardées via la conversion actuelle.
+- Revue : `code-reviewer` Sonnet pour la PR 1, Opus pour les PR 2 et 3.
+- Option B (enregistrer les réponses des élèves) : pas maintenant (mémoire
+  `project_enregistrer-reponses-eleves`).
