@@ -1,17 +1,17 @@
 ---
 title: Retrait de worksheets.template_id — journal
 date: 2026-10-19
-status: phase 0 — comportements et question d'accès soumis à David
+status: PR 1 (migration de recopie) en cours
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, ouverture du chantier (issue #1529)._
+_Mis à jour le 2026-10-19, PR 1 en cours._
 
-- **État** : phase 0 écrite (ci-dessous), rien de codé.
-- **Prochaine action** : PR 1 = migration de recopie `style_id ← template_id`, dès la validation de David.
-- **En attente de David** : validation des comportements + réponse à la question d'accès.
-- **Pièges en cours** : le code ÉCRIT encore `template_id` (POST `api/worksheets` l. 171, PUT `api/worksheets/[id]` l. 199) → la PR 2 doit couper lectures ET écritures.
+- **État** : phase 0 validée par David (avec 400 sur `template_id`). PR 1 = migration `20261017090300_recopie_style_id_depuis_template_id.sql` + test d'intégration (rouge sans, vert avec).
+- **Prochaine action** : merge de la PR 1 → `db:migrate` depuis `main` (4 conditions réunies) → vérifier en prod 0 fiche `style_id null` avec `template_id` style. Puis PR 2 (code).
+- **En attente de David** : rien.
+- **Pièges en cours** : le code ÉCRIT encore `template_id` (POST `api/worksheets` l. 171, PUT `api/worksheets/[id]` l. 199) → la PR 2 doit couper lectures ET écritures, et REFUSER (400) un `template_id` envoyé.
 - **Worktree / branche** : `../ubumaths-wt-retrait-template-id` · `refactor/retrait-template-id`.
 
 ---
@@ -46,6 +46,13 @@ Seule la **colonne** `worksheets.template_id` part. La table `worksheet_template
 
 **Erreur**
 
-- Un client qui enverrait encore `template_id` (POST/PUT) : la clé est ignorée (retirée du schéma Zod), pas d'erreur 400.
+- Un client qui enverrait encore `template_id` (POST/PUT) : **erreur 400** (schéma Zod strict sur cette clé) — décision de David, 2026-10-19.
 
 ## Journal
+
+### 2026-10-19 — décisions de phase 0, PR 1
+
+- David : comportements validés, **400** sur un `template_id` envoyé (au lieu de l'ignorer) ; question d'accès : **personne** ne gagne d'accès. Vérifié en prod : les 26 fiches à recopier pointent toutes un style de Chiphre (`owner_id` null), 0 orpheline, 0 divergente.
+- Rollback = ne rien faire (conseil suivi) : `style_id = template_id` sur les lignes touchées, `styleIdOf` rend le même style ; une liste d'id serait périmée au `db:migrate` (le code écrit encore `template_id`).
+- La migration coupe le trigger `update_worksheets_updated_at` le temps de la recopie : sans cela, les 26 fiches remonteraient en tête des « modifiées récemment ». Le trigger `worksheets_style_owner_check` ne s'applique pas (rôle `postgres`), et les données le satisfont de toute façon.
+- Test `tests/integration/recopie-style-depuis-template.test.ts` : rouge avec une migration vide (2 échecs), le test de la date rouge sans la coupure du trigger, 7/7 vert avec la migration.
