@@ -1,5 +1,15 @@
 # Taille du texte des PDF de fiche — journal de chantier
 
+## Reprendre ici
+
+_Mis à jour le 2026-10-19, après #1462 et le déploiement v0.38.0._
+
+- **État** : livré et en prod (v0.38.0) — #1456 à #1462.
+- **Prochaine action** : aucune. Reste à verser ce journal dans `docs/systeme/fiches-et-pdf.md`, puis à l'archiver.
+- **En attente de David** : le prof règle la taille d'un élève seulement dans l'aperçu du devoir, est-ce le bon endroit ? Les paliers 14 / 18 pt ne sont pas confirmés.
+- **Pièges en cours** : en local, les images des fiches répondent 400, car le seed réécrit leurs adresses.
+- **Worktree / branche** : aucun (tout est supprimé).
+
 Demande de David (2026-10-16) : pouvoir agrandir le texte des PDF de fiche, surtout pour les
 élèves qui ont des problèmes de vue.
 
