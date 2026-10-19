@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1545._
+_Mis à jour le 2026-10-19, PR 3 en cours._
 
-- **État** : PR 1 (#1543) et PR 2 (#1545, valeur lue en arbre) mergées. Oracle à 0 changement. Rien en prod (pas de `deploy:prod`).
-- **Prochaine action** : PR 3 — comparaison exacte (`valueIn` / rationnels) au lieu des flottants ; phase 0 (comportements en français) à soumettre à David AVANT tout code ; revue `code-reviewer` opus.
+- **État** : PR 1 (#1543) et PR 2 (#1545) mergées ; PR 3 (comparaison exacte) en cours, phase 0 validée (méthode A). Rien en prod.
+- **Prochaine action** : tests rouges → `compareQuantities` exacte par `exactConversion` → oracle → revue `code-reviewer` opus → PR.
 - **En attente de David** : rien.
-- **Pièges en cours** : `valueIn` → `null` sur les températures (PR 3 : garder `convertAffine`) ; `readExactValue` (parser.ts) existe déjà, non exporté ; `9^{0.5}` illisible (refus honnête) ; messages d'unité validés par David (ne pas reformuler) ; pas de `timeout` sur ce Mac.
-- **Plus tard (PR 2 bis)** : découpage « nombre | unité » de `student-input.ts` — `2\sqrt{2} m`, `3+2 m` → « Unité inconnue » ; `\sqrt{2} m`, `(-3) m`, `.5 m` → « Réponse invalide » ; `\sqrt{2}` m exact contre 1,41 m arrondi → « format invalide ».
-- **Worktree / branche** : à recréer — `git worktree add -b refactor/correction-cases-unite-exacte ../ubumaths-wt-correction-cases-unite origin/main`.
+- **Pièges en cours** : tolérance et arrondis (`precision`) restent en flottants ; `readExactValue` (parser.ts) non exporté ; messages d'unité validés (ne pas reformuler) ; pas de `timeout` sur ce Mac.
+- **Plus tard (PR 2 bis)** : découpage « nombre | unité » de `student-input.ts` — `2\sqrt{2} m`, `3+2 m` → « Unité inconnue » ; `\sqrt{2} m`, `(-3) m`, `.5 m` → « Réponse invalide ».
+- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-exacte`.
 
 ## Historique
 
@@ -115,3 +115,16 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
 - Écart de phase 0 tranché par David (suit ma reco) : saisies mal découpées avec unité écrite
   (`\sqrt{2} m`, `(5) m`, `.5 m`, `5,`) → « Réponse invalide : vérifier le format. » au lieu de
   « N'oublie pas l'unité. » (faux : l'unité y est). Verdicts inchangés.
+
+### 2026-10-19 — PR 3, phase 0 validée par David
+
+- Méthode A (revient sur « `valueIn` + températures via `convertAffine` ») : égalité stricte
+  par `exactConversion` (mathAST/units/exact.ts), coefficient ET décalage exacts — températures
+  comprises (°C : décalage 5463/20, °F : 5/9 et 45967/100). Plus de `FLOAT_NOISE` dans l'égalité.
+- Sonde : 406 unités simples lisibles (préfixes compris), 0 sans conversion exacte.
+- Changent : `\frac{1}{3}` m contre 0,333333333333333 m (juste → faux) ; 20,000000000001 °C
+  contre 20 °C (juste → faux). Oracle attendu : 0 verdict, 0 message changé.
+- Inchangé : tolérance et arrondis (`precision`) en flottants (aucun modèle publié) ; valeurs
+  affichées en nombres décimaux ; `180°` contre `\pi` rad → « Erreur de configuration ».
+- Unité sans conversion exacte (inatteignable) : test d'invariant + refus visible (comme des unités
+  incompatibles), pas de repli en flottants.

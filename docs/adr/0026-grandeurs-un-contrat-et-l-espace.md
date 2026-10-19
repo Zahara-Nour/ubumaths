@@ -46,7 +46,7 @@ Le contrat détaillé, avec les fonctions à appeler : [docs/systeme/grandeurs.m
 - `3 t + 2` tapé avec des espaces devient 3 tonnes + 2 : le refus de dimension l'explique
   (`singleLetterHint`).
 - La correction des cases à unité (`questions/units/validator.ts`, `quantity-comparison.ts` :
-  valeur lue en arbre par mathAST, comparaison en flottants — pas de
+  valeur lue en arbre par mathAST, égalité exacte par les conversions exactes de mathAST — pas de
   ComputeEngine, contrairement à ce que disait cette ligne) reste un calculateur à part : la
   rapprocher de `tidy` est le chantier `correction-cases-unite`, avec un oracle sur les vraies
   questions (la production ne garde pas les réponses d'élèves).

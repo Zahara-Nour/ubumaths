@@ -134,9 +134,14 @@ tolérance, précision demandée, messages (`feedback.ts`). Il n'y a **pas** de 
 est lue en arbre (`parser.ts` : `parseLatex` → `tidy` → `rationalOf`), exacte, et `null` si elle
 n'est pas rationnelle — `2\sqrt{2}`, `\pi` : un tel attendu donne « Erreur de configuration », jamais
 la valeur de son premier nombre. Une saisie sans unité qui s'écrit comme un nombre, même illisible
-en valeur (`\sqrt{2}`), reçoit « N'oublie pas l'unité. » (`readsAsNumber`). La comparaison se fait
-encore en flottants, l'unité est lue à part (`\unit{…}` + parseur d'unités). C'est un calculateur
-hors du circuit ci-dessus : chantier `correction-cases-unite` (comparaison par `tidy` à venir). Le catalogue des unités et les opérations de base viennent de `mathAST/units`
+en valeur (`\sqrt{2}`), reçoit « N'oublie pas l'unité. » (`readsAsNumber`). Sans tolérance,
+l'égalité est **exacte** (`exactBaseValue`, `parser.ts`) : chaque grandeur est ramenée en unités de
+base par les conversions exactes de mathAST (`exactConversion`, coefficient et décalage rationnels,
+températures comprises), aucun bruit de flottants toléré — `0,333333333333333` m n'est pas
+`\frac{1}{3}` m. Une unité lisible sans conversion exacte est refusée, jamais jugée en flottants
+(test d'invariant : il n'y en a aucune). Tolérance et arrondi demandés (`precision`) se jugent
+encore en flottants (`convertAffine`). L'unité est lue à part (`\unit{…}` + parseur d'unités) :
+c'est un calculateur hors du circuit ci-dessus, chantier `correction-cases-unite`. Le catalogue des unités et les opérations de base viennent de `mathAST/units`
 (`resolveUnit`, conversions) : `questions/units` n'en garde plus de copie depuis le lot D.
 
 Garde-fou : l'oracle `oracle-cases-unite.test.ts` fige le verdict de ~1 700 réponses typiques
