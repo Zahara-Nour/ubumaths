@@ -46,11 +46,13 @@ describe('/l/[code]', () => {
 		}
 	);
 
-	it.each(['https://piege.example', '//piege.example', '/\\piege.example'])(
-		'cible relue hors du site (« %s ») : 404, jamais de redirection',
-		async (target) => {
-			const { promise } = call('Xk7pQ2mZ', target);
-			await expect(promise).rejects.toMatchObject({ status: 404 });
-		}
-	);
+	it.each([
+		'https://piege.example',
+		'//piege.example',
+		'/\\piege.example',
+		'/auth/login?redirectTo=/x'
+	])('cible relue hors du site (« %s ») : 404, jamais de redirection', async (target) => {
+		const { promise } = call('Xk7pQ2mZ', target);
+		await expect(promise).rejects.toMatchObject({ status: 404 });
+	});
 });

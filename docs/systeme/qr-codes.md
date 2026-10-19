@@ -51,13 +51,16 @@ il dépasse toujours ce qu'un QR lisible contient. Son QR porte donc un **lien c
   QR code… »), gardée pour la même cible ; l'adresse affichée et copiée est l'adresse courte. Échec →
   « QR indisponible pour l'instant, copie le lien. »
 - **Création** : `POST /api/short-links` `{ target }` → `{ code, path }`, prof et admin
-  (`requireRoles`). Zod (`createShortLinkSchema`, `src/lib/validation/short-link.ts`) : un chemin
-  INTERNE (`/…`, ni `//` ni `\`), ASCII imprimable, 16 384 caractères au plus — sinon 400, la base
-  n'est pas appelée. Même cible → même code.
+  (`requireRoles`). Zod (`createShortLinkSchema`, `src/lib/validation/short-link.ts`) : un **lien de
+  série** seulement (`/automaths/panier?…` ou `/automaths/test?…`, décision de David du 2026-10-19 :
+  un QR Chiphre mène à une série et à rien d'autre), ASCII imprimable, 16 384 caractères au plus —
+  sinon 400, la base n'est pas appelée. Même cible → même code. Un autre usage (atelier public…)
+  ajoutera son préfixe à `SERIES_TARGET`. La base, elle, n'exige qu'un chemin interne : c'est le filet.
 - **Lecture** : `/l/[code]` (`+page.server.ts`) → 302 vers la cible (pas 301, qu'un navigateur garde
   pour toujours), `X-Robots-Tag: noindex`. Code inconnu ou mal formé → la même 404 « Ce lien n'existe
-  pas » (page d'erreur du site, qui propose l'accueil). Une cible relue qui ne serait pas un chemin
-  interne est traitée comme absente : jamais de redirection hors du site.
+  pas » (page d'erreur du site, qui propose l'accueil). Une cible relue qui ne serait pas un lien de
+  série (même schéma Zod) est traitée comme absente : jamais de redirection hors du site, ni vers une
+  autre page.
 - **Base** : table `short_links` fermée à tous (RLS sans policy) ; tout passe par
   `create_short_link` et `resolve_short_link` (`src/lib/server/short-links.ts`), migration
   `20261019170000_liens_courts`. Les liens ne meurent pas : un QR imprimé ne se reprend pas. Une

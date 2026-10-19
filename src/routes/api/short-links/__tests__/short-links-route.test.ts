@@ -84,8 +84,34 @@ describe('POST /api/short-links', () => {
 		expect(rpc).not.toHaveBeenCalled();
 	});
 
+	it.each([
+		['la connexion', '/auth/login?redirectTo=/x'],
+		['le glossaire', '/glossaire'],
+		['le panier sans requête', '/automaths/panier'],
+		['un chemin qui ressort du panier', '/automaths/panier/../auth/logout?x'],
+		['un faux panier', '/automaths/paniers?categories=x']
+	])(
+		'cible interne qui n’est pas une série (%s) : 400, rien d’enregistré',
+		async (_cas, target) => {
+			const { promise, rpc } = call('teacher', { target });
+			const response = await promise;
+			expect(response.status).toBe(400);
+			expect((await response.json()).error).toBe('Un lien court mène seulement à une série');
+			expect(rpc).not.toHaveBeenCalled();
+		}
+	);
+
+	it('série lancée sous une forme (/automaths/test) : acceptée', async () => {
+		const target = '/automaths/test?categories=%255B%255D&mode=course&time=300';
+		const { promise, rpc } = call('teacher', { target });
+		expect((await promise).status).toBe(200);
+		expect(rpc).toHaveBeenCalledWith('create_short_link', { p_target: target });
+	});
+
 	it('cible de plus de 16 384 caractères : 400', async () => {
-		const { promise, rpc } = call('teacher', { target: `/${'a'.repeat(16384)}` });
+		const { promise, rpc } = call('teacher', {
+			target: `/automaths/panier?categories=${'a'.repeat(16384)}`
+		});
 		expect((await promise).status).toBe(400);
 		expect(rpc).not.toHaveBeenCalled();
 	});

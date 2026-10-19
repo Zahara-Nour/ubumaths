@@ -21,6 +21,14 @@ export const SHORT_LINK_CODE = /^[a-km-np-zA-HJ-NP-Z2-9]{8}$/;
 /** Longueur maximale de la cible (contrainte `short_links_target_internal`) */
 export const SHORT_LINK_TARGET_MAX = 16384;
 
+/**
+ * Les seules cibles acceptées : un lien de série (`buildSeriesLink`), panier ou
+ * forme lancée, avec sa requête. Décision de David (2026-10-19) : un QR Chiphre
+ * mène à une série et à rien d'autre. Un autre usage ajoutera son préfixe ici.
+ * La base, elle, n'exige qu'un chemin interne (filet).
+ */
+const SERIES_TARGET = /^\/automaths\/(?:panier|test)\?/;
+
 /** Le chemin du lien court, sans origine */
 export const SHORT_LINK_PREFIX = '/l/';
 
@@ -42,6 +50,9 @@ export const shortLinkTargetSchema = z
 	.regex(/^\/[!-~]*$/, { error: TARGET_ERROR })
 	.refine((target) => !target.startsWith('//') && !target.includes('\\'), {
 		error: TARGET_ERROR
+	})
+	.refine((target) => SERIES_TARGET.test(target), {
+		error: 'Un lien court mène seulement à une série'
 	});
 
 export const createShortLinkSchema = z.object({ target: shortLinkTargetSchema }).strict();

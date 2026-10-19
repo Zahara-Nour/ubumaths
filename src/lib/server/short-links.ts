@@ -56,8 +56,8 @@ export async function createShortLink(
 
 /**
  * La cible du code, ou `null` s'il n'existe pas. Une cible relue qui n'est
- * plus un chemin interne est traitée comme absente : on ne redirige jamais
- * hors du site, même si la base a été remplie autrement.
+ * pas un lien de série est traitée comme absente : on ne redirige jamais hors
+ * du site ni vers une autre page, même si la base a été remplie autrement.
  */
 export async function resolveShortLink(
 	supabase: SupabaseClient<Database>,

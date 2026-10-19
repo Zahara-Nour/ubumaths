@@ -3,7 +3,7 @@
  * Prof et admin (le panier est public : une table que des inconnus remplissent
  * serait une réserve à spam).
  *
- * Corps : { target: '/chemin?requête' } (chemin interne, ASCII imprimable).
+ * Corps : { target: '/chemin?requête' } (lien de série seulement, ASCII imprimable).
  * Réponse 200 : { code, path } — la même cible rend toujours le même code.
  * Phase 0 : docs/wip/liens-courts-phase0.md.
  */

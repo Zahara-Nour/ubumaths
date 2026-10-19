@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-19, PR 2 ouverte._
 
 - **État** : PR 2 (`feat/liens-courts-route`) ouverte : route `/l/[code]`, `POST /api/short-links`, QR de série par lien court (prof/admin), doc `qr-codes.md`. Revues faites (aucun bloquant).
 - **Prochaine action** : CI verte → merge ; puis vérification manuelle (QR scanné au téléphone) et versement du chantier (journal → archive).
-- **En attente de David** : faut-il restreindre les cibles aux préfixes `/automaths/` (note de l'audit) ? Aujourd'hui tout chemin interne est accepté.
+- **En attente de David** : rien. Tranché le 2026-10-19 : cibles restreintes aux liens de série (`/automaths/panier?` et `/automaths/test?`), dans Zod seulement (la base garde « chemin interne »).
 - **Pièges** : cible en ASCII imprimable seulement. Port 5176/5177 souvent pris par d'autres worktrees : vérifier avec `lsof`.
 - **Worktree / branche** : `../ubumaths-wt-liens-courts` · `feat/liens-courts-route`.
 
