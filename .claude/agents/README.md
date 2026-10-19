@@ -33,7 +33,7 @@
 | `performance-optimizer`| Lenteur prouvée, requêtes lourdes                                  |
 | `accessibility-tester` | Audit a11y formulaires / navigation / modales (dette SVG : ne pas re-signaler les `svelte-ignore` de [warning-svelte.md](../../docs/pratiques/warning-svelte.md)) |
 
-Modèles : Opus pour `code-reviewer`, `security-auditor`, `debugger`, `supabase-expert`, `mathast-expert`, `geometry-expert`, `pedagogy-expert` ; Sonnet pour les autres.
+Modèles (frontmatter, à ne pas surcharger sans raison — cf. `CLAUDE.md` § Quand utiliser un agent) : Opus pour `security-auditor`, `debugger`, `supabase-expert`, `mathast-expert`, `geometry-expert`, `pedagogy-expert` ; Sonnet pour les autres.
 
 ## Agents intégrés
 
