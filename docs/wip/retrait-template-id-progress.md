@@ -6,13 +6,13 @@ status: PR 1 (#1532) et PR 2 (#1542) mergées ; #1544 (scripts) ; PR 3 (drop) pr
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, PR 3 préparée (branche non mergée)._
+_Mis à jour le 2026-10-19, après #1544 ; PR 3 préparée, branche poussée sans PR._
 
-- **État** : #1532 (migrée) et #1542 (code) mergées. Les scripts de fiches (`scripts/create-*.ts`, `regen-depuis-base.ts`) cassés depuis #1542 → corrigés par #1544 (`style_id`). PR 3 prête sur `refactor/retrait-template-id-drop` : migration `20261019221542_retrait_worksheets_template_id.sql` (RPC de partage sans `template_id`, puis `drop column`), tests adaptés (5 rouges sans la migration, verts avec), test de recopie retiré, doc système à jour.
-- **Prochaine action** : après le `deploy:prod` qui livre #1542 → pousser la PR 3, CI verte, merger, `db:migrate` (destructive : feu vert de David), puis PR 4 : `db:types`, nettoyage des tests unitaires qui portent encore `template_id` dans `WorksheetRow` (`style-de-la-fiche.test.ts`, `.svelte.test.ts`), `db:doc` (`base-de-donnees-tables.md`), puis versement du journal.
+- **État** : #1532 (migrée) et #1542 (code) mergées. Les scripts de fiches (`scripts/create-*.ts`, `regen-depuis-base.ts`) cassés depuis #1542 → corrigés par #1544 (`style_id`, mergée). PR 3 prête sur `refactor/retrait-template-id-drop` : migration `20261019221542_retrait_worksheets_template_id.sql` (RPC de partage sans `template_id`, puis `drop column`), tests adaptés (5 rouges sans la migration ; suite d'intégration complète verte avec, 3295 tests), test de recopie retiré, doc système à jour.
+- **Prochaine action** : après le `deploy:prod` qui livre #1542 → rebaser, ouvrir la PR 3, CI verte, merger, `db:migrate` (destructive : feu vert de David), puis PR 4 : `db:types`, nettoyage des tests unitaires qui portent encore `template_id` dans `WorksheetRow` (`style-de-la-fiche.test.ts`, `.svelte.test.ts`), `db:doc` (`base-de-donnees-tables.md`), puis versement du journal.
 - **En attente de David** : `pnpm deploy:prod`, puis feu vert pour la PR 3 destructive (grep des usages et réconciliation : voir PR).
 - **Pièges en cours** : ⛔ ne PAS merger la PR 3 avant le deploy (un `db:migrate` d'une autre session jouerait le drop sous la v0.40.0, qui lit encore la colonne). Réconciliation prod du 2026-10-19 : 28/36 fiches avec `template_id`, toutes `style_id = template_id`.
-- **Worktree / branche** : `../ubumaths-wt-retrait-template-id` · `refactor/retrait-template-id-drop` ; `../ubumaths-wt-retrait-template-id-scripts` · `fix/retrait-template-id-scripts` (#1544, à nettoyer après merge).
+- **Worktree / branche** : `../ubumaths-wt-retrait-template-id` · `refactor/retrait-template-id-drop`.
 
 ## Contexte
 
