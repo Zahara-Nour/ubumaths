@@ -1,18 +1,18 @@
 ---
 title: Retrait de worksheets.template_id — journal
 date: 2026-10-19
-status: PR 1 (migration de recopie) en cours
+status: PR 1 livrée (#1532, migrée en prod) ; PR 2 (code) à faire
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, PR 1 en cours._
+_Mis à jour le 2026-10-19, après #1532._
 
-- **État** : phase 0 validée par David (avec 400 sur `template_id`). PR 1 = migration `20261017090300_recopie_style_id_depuis_template_id.sql` + test d'intégration (rouge sans, vert avec).
-- **Prochaine action** : merge de la PR 1 → `db:migrate` depuis `main` (4 conditions réunies) → vérifier en prod 0 fiche `style_id null` avec `template_id` style. Puis PR 2 (code).
+- **État** : PR 1 mergée (#1532) et `db:migrate` fait : en prod, 0 fiche à recopier, 28 fiches avec `style_id`, 0 divergente, dates de modification gardées, triggers actifs.
+- **Prochaine action** : PR 2 (code) dans un nouveau worktree — plus aucune lecture (`styleIdOf`, `student-worksheet-typst.ts`, preview d'affectation, duplication, `countWorksheetsUsingTemplate`) ni écriture (POST, PUT) de `worksheets.template_id` ; **400** sur un `template_id` envoyé. Revue `code-reviewer` + `security-auditor` (API).
 - **En attente de David** : rien.
-- **Pièges en cours** : le code ÉCRIT encore `template_id` (POST `api/worksheets` l. 171, PUT `api/worksheets/[id]` l. 199) → la PR 2 doit couper lectures ET écritures, et REFUSER (400) un `template_id` envoyé.
-- **Worktree / branche** : `../ubumaths-wt-retrait-template-id` · `refactor/retrait-template-id`.
+- **Pièges en cours** : le code ÉCRIT encore `template_id` (POST `api/worksheets` l. 171, PUT `api/worksheets/[id]` l. 199) ; `fiche-choix-du-style.test.ts` asserte cette double écriture (D10) → à réécrire. PR 3 (`drop column`) seulement après le `deploy:prod` de la PR 2.
+- **Worktree / branche** : PR 2 → `git worktree add -b refactor/retrait-template-id-code ../ubumaths-wt-retrait-template-id origin/main`.
 
 ---
 
@@ -57,3 +57,7 @@ Seule la **colonne** `worksheets.template_id` part. La table `worksheet_template
 - La migration coupe le trigger `update_worksheets_updated_at` le temps de la recopie : sans cela, les 26 fiches remonteraient en tête des « modifiées récemment ». Le trigger `worksheets_style_owner_check` ne s'applique pas (rôle `postgres`), et les données le satisfont de toute façon.
 - `security-auditor` : aucun finding bloquant ; recommandation suivie — ne recopier qu'un style de Chiphre ou de l'auteur de la fiche (la garde `worksheets_style_owner_check` laisse passer `postgres`). 0 cas en prod.
 - Test `tests/integration/recopie-style-depuis-template.test.ts` : rouge avec une migration vide (2 échecs), le test de la date rouge sans la coupure du trigger, le test « style d'un autre compte » rouge sans la condition de propriétaire, 9/9 vert avec la migration.
+
+### 2026-10-19 — PR 1 livrée
+
+- #1532 mergée (CI verte), `db:migrate` : seule migration en attente, appliquée. Vérifié en prod après coup : 0 à recopier, 28 avec style, 0 divergente, `max(updated_at)` inchangé (2026-10-16), `update_worksheets_updated_at` et `worksheets_style_owner_check` actifs (`O`).
