@@ -28,6 +28,12 @@ collège : **une barre d'outils** dans la vue Géométrie, et **le glisser** des
   du DSL et raccourcis, `point_sur`, intersections, mesures (lot 2).
 - **Annuler / rétablir** (lot 5 de la refonte, #1517) : `atelier.step('libellé', fn)` fait une
   étape ; la PR 2 de ce lot ajoute la fin de glissé d'un curseur (`point_sur` compris).
+- **Fin de geste** (#1518, PR 2 du lot 5) : les écritures d'un même geste se fondent en une étape
+  — `atelier.step(label, fn, clé)` à chaque cran avec la MÊME clé, puis `atelier.endGesture()` au
+  relâchement ; un geste revenu à son point de départ ne laisse rien (`src/lib/atelier/gesture.ts`).
+  Au clavier : un appui = une étape, une flèche tenue = une étape (keydown écouté en capture :
+  bits-ui valide à chaque keydown). Le curseur de position d'un `point_sur` (`slidePosition`, dans
+  `FigureCard`) est déjà branché ainsi : le glisser d'un point à la souris fera de même.
 - **Performance** (#1513) : un recalcul complet de l'atelier coûte ~3 ms (node) et un cran de
   curseur ~13 ms (Chromium, rendu compris) sur une figure de 24 objets.
 
