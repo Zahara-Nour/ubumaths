@@ -20,7 +20,6 @@
 	import { Label } from '$lib/components/ui/label';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
-	import { page } from '$app/state';
 	import { fetchShortLinkPath } from '$lib/qr/short-link';
 	import { Link } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -35,9 +34,11 @@
 		categories: SeriesCategories;
 		/** Mise en page serrée (pied de carte de la page « Séries ») */
 		compact?: boolean;
+		/** Prof ou admin connecté : lui seul crée le lien court du QR (`create_short_link`) */
+		canMakeQr?: boolean;
 	}
 
-	let { categories, compact = false }: Props = $props();
+	let { categories, compact = false, canMakeQr = false }: Props = $props();
 
 	/** Pas de forme : le lien ouvre le panier */
 	const NO_FORM = 'none';
@@ -58,10 +59,6 @@
 	let courseMinutes = $state(String(DEFAULT_COURSE_MINUTES));
 
 	let isCourse = $derived(selectedForm === 'course');
-	/** Seuls un prof et l'admin créent un lien court (`create_short_link`) */
-	let canMakeQr = $derived(
-		page.data.profile?.role === 'teacher' || page.data.profile?.role === 'admin'
-	);
 	/** La cible du lien court du QR (chemin seul), ou la raison de son absence */
 	let qrLink = $derived(linkToCopy(''));
 	let qrUnavailableReason = $derived(

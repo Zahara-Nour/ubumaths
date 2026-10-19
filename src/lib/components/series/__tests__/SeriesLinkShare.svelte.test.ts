@@ -7,15 +7,6 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
 
-const role = vi.hoisted(() => ({ current: null as string | null }));
-vi.mock('$app/state', () => ({
-	page: {
-		get data() {
-			return { profile: role.current === null ? null : { role: role.current } };
-		}
-	}
-}));
-
 import SeriesLinkShare from '../SeriesLinkShare.svelte';
 
 const CATEGORIES = [
@@ -47,47 +38,41 @@ function mockServer() {
 
 afterEach(() => {
 	vi.restoreAllMocks();
-	role.current = null;
 });
 
 describe('le QR code d’une série', () => {
-	it.each(['teacher', 'admin'])(
-		'%s : le QR porte le lien court de la série, demandé avec son chemin',
-		async (who) => {
-			role.current = who;
-			const fetchMock = mockServer();
-			const { container } = await render(SeriesLinkShare, { categories: CATEGORIES });
-			await userEvent.click(qrButton(container));
-			await settle();
-			await settle();
+	it('prof ou admin : le QR porte le lien court de la série, demandé avec son chemin', async () => {
+		const fetchMock = mockServer();
+		const { container } = await render(SeriesLinkShare, {
+			categories: CATEGORIES,
+			canMakeQr: true
+		});
+		await userEvent.click(qrButton(container));
+		await settle();
+		await settle();
 
-			expect(fetchMock).toHaveBeenCalledOnce();
-			const [address, init] = fetchMock.mock.calls[0];
-			expect(address).toBe('/api/short-links');
-			const { target } = JSON.parse(String(init?.body)) as { target: string };
-			expect(target).toMatch(/^\/automaths\/panier\?categories=[!-~]+$/);
+		expect(fetchMock).toHaveBeenCalledOnce();
+		const [address, init] = fetchMock.mock.calls[0];
+		expect(address).toBe('/api/short-links');
+		const { target } = JSON.parse(String(init?.body)) as { target: string };
+		expect(target).toMatch(/^\/automaths\/panier\?categories=[!-~]+$/);
 
-			const shown = document.querySelector(
-				'input[aria-label="Adresse du QR code"]'
-			) as HTMLInputElement;
-			expect(shown.value).toBe('https://www.chiph.re/l/Xk7pQ2mZ');
-		}
-	);
+		const shown = document.querySelector(
+			'input[aria-label="Adresse du QR code"]'
+		) as HTMLInputElement;
+		expect(shown.value).toBe('https://www.chiph.re/l/Xk7pQ2mZ');
+	});
 
-	it.each([null, 'student'])(
-		'%s : QR indisponible, avec sa raison, sans appel au serveur',
-		async (who) => {
-			role.current = who;
-			const fetchMock = mockServer();
-			const { container } = await render(SeriesLinkShare, { categories: CATEGORIES });
-			const button = qrButton(container);
+	it('élève ou visiteur : QR indisponible, avec sa raison, sans appel au serveur', async () => {
+		const fetchMock = mockServer();
+		const { container } = await render(SeriesLinkShare, { categories: CATEGORIES });
+		const button = qrButton(container);
 
-			expect(button.getAttribute('aria-disabled')).toBe('true');
-			expect(button.getAttribute('title')).toContain('réservé aux profs');
-			button.click();
-			await settle();
-			expect(document.querySelector('[role="dialog"]')).toBeNull();
-			expect(fetchMock).not.toHaveBeenCalled();
-		}
-	);
+		expect(button.getAttribute('aria-disabled')).toBe('true');
+		expect(button.getAttribute('title')).toContain('réservé aux profs');
+		button.click();
+		await settle();
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
+		expect(fetchMock).not.toHaveBeenCalled();
+	});
 });

@@ -43,7 +43,7 @@ Un lien de série porte toute sa composition dans l'adresse (≈ 350 caractères
 il dépasse toujours ce qu'un QR lisible contient. Son QR porte donc un **lien court**
 `https://www.chiph.re/l/<code>`, enregistré en base, qui redirige vers le lien long.
 
-- **Qui** : seuls un prof et l'admin en créent (`SeriesLinkShare` lit `page.data.profile.role`). Ailleurs
+- **Qui** : seuls un prof et l'admin en créent (`SeriesLinkShare` reçoit `canMakeQr` : `isTeacher` au panier, toujours vrai sur la page « Séries » du prof). Ailleurs
   (panier public, élève, visiteur), le bouton QR de la série est indisponible (« réservé aux profs ») et
   le lien long reste copiable. Les autres QR (exercice, cours, cahier…) n'ont pas de lien court.
 - **Bouton** : `QrCodeButton` reçoit `resolveUrl` (`fetchShortLinkPath`, `src/lib/qr/short-link.ts`) ;
