@@ -198,7 +198,7 @@ async function main() {
 			...f,
 			type: 'worksheet',
 			config: CONFIG_FICHE,
-			template_id: MODELE_FICHE_ELEVE,
+			style_id: MODELE_FICHE_ELEVE,
 			grades: ['1_SPE']
 		});
 		if (!v.success)
@@ -259,7 +259,7 @@ async function main() {
 					translations: f.translations,
 					status: 'draft',
 					version: 1,
-					template_id: MODELE_FICHE_ELEVE,
+					style_id: MODELE_FICHE_ELEVE,
 					grades: ['1_SPE'],
 					created_by: DAVID,
 					school_id: ECOLE

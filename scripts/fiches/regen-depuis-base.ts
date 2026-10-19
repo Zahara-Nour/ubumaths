@@ -146,19 +146,24 @@ async function main() {
 	for (const ligne of enEchec) console.log(`  ⛔ ${ligne}`);
 }
 
-/** Le modèle de la fiche, comme le choisit la production (absent : mise en page par défaut) */
+/**
+ * Le modèle de la fiche, comme le choisit la production : d'après son `style_id`
+ * (#1529) — un style de Chiphre est dans le code, celui d'un prof a sa fiche
+ * `form = 'worksheet'` (absent : mise en page par défaut).
+ */
 async function modeleDe(
 	supabase: ReturnType<typeof createClient<Database>>,
-	templateId: string | null
+	styleId: string | null
 ): Promise<WorksheetTemplateRow | null> {
 	if (!modeleDeLaFiche) return template;
-	if (!templateId) return null;
-	const defaut = getDefaultTemplate(templateId);
-	if (defaut) return { ...template, id: templateId, template_content: defaut.template_content };
+	if (!styleId) return null;
+	const defaut = getDefaultTemplate(styleId);
+	if (defaut) return { ...template, id: styleId, template_content: defaut.template_content };
 	const { data } = await supabase
 		.from('worksheet_templates')
 		.select('*')
-		.eq('id', templateId)
+		.eq('style_id', styleId)
+		.eq('form', 'worksheet')
 		.maybeSingle();
 	return (data as WorksheetTemplateRow | null) ?? null;
 }
@@ -169,7 +174,7 @@ async function ecrireFiche(supabase: ReturnType<typeof createClient<Database>>, 
 
 		const { data: w, error: e1 } = await supabase
 			.from('worksheets')
-			.select('title, config, template_id, translations')
+			.select('title, config, style_id, translations')
 			.eq('id', id)
 			.single();
 		const { data: sections, error: e2 } = await supabase
@@ -234,7 +239,7 @@ async function ecrireFiche(supabase: ReturnType<typeof createClient<Database>>, 
 						exercises,
 						sections: (sections ?? []).map((x) => ({ ...x, title: titreEn(x) }))
 					} as unknown as InstanceData,
-					template: await modeleDe(supabase, w.template_id)
+					template: await modeleDe(supabase, w.style_id)
 				}).typstContent;
 				writeFileSync(join(sortie, `${id.slice(0, 8)}-${langue}-${mode}.typ`), typst);
 				telechargerImages(exercises.flatMap((e) => [e.statement, e.solution, e.answers ?? '']));
