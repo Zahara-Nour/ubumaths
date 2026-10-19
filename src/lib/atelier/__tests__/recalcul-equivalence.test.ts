@@ -449,8 +449,8 @@ describe('Annuler / Rétablir rendent exactement les ateliers d’avant et d’a
 		atelier.step('ajouter a', () =>
 			atelier.create({ kind: 'value', name: 'a', definition: '1' }, 'text')
 		);
-		// Un curseur glissé (pas encore une étape à la PR 1) : hors de toute étape
-		atelier.slideTo('a', 5);
+		// Une écriture hors de toute étape (le curseur en est une depuis la PR 2)
+		atelier.update('a', '5', 'text');
 		expect(atelier.undo()).toBe('modifier l’atelier');
 		expect(atelier.get('a')?.definition).toBe('1');
 		expect(atelier.undo()).toBe('ajouter a');

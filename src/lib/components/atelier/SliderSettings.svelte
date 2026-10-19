@@ -25,7 +25,12 @@
 		return (event: Event & { currentTarget: HTMLInputElement }) => {
 			const parsed = Number.parseFloat(event.currentTarget.value.replace(',', '.'));
 			if (!Number.isFinite(parsed)) return;
-			const result = atelier.setSlider(object.name, { [field]: parsed });
+			// Une frappe par écriture, UNE étape par champ quitté (lot 5, PR 2)
+			const result = atelier.setSlider(
+				object.name,
+				{ [field]: parsed },
+				`curseur-${field}:${object.name}`
+			);
 			refusal = result.ok ? null : { field, message: result.message };
 		};
 	}
@@ -37,6 +42,7 @@
 	 */
 	function handleSettingChange(field: keyof Slider) {
 		return (event: Event & { currentTarget: HTMLInputElement }) => {
+			atelier.endGesture();
 			event.currentTarget.value = String(slider[field]);
 		};
 	}

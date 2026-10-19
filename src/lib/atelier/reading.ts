@@ -90,12 +90,14 @@ interface ReadableEntry {
 	readonly label: string;
 	readonly failed: boolean;
 	readonly result?: CalcResult;
+	/** Une ligne barrée (son étape est annulée) ne se lit plus sur le graphe. */
+	readonly undone?: true;
 }
 
 /**
  * Les abscisses lues dans la console, par courbe : les `MAX_READINGS`
  * dernières, de la plus ancienne à la plus récente. Une abscisse relue ne
- * compte qu'une fois, à sa place la plus récente.
+ * compte qu'une fois, à sa place la plus récente. Une ligne barrée ne compte pas.
  */
 export function consoleReadings(
 	entries: readonly ReadableEntry[],
@@ -105,7 +107,7 @@ export function consoleReadings(
 	const oldest = Math.max(0, entries.length - SCANNED_LINES);
 	for (let i = entries.length - 1; i >= oldest; i--) {
 		const entry = entries[i];
-		if (entry.failed || entry.result?.kind !== 'calcul') continue;
+		if (entry.failed || entry.undone || entry.result?.kind !== 'calcul') continue;
 		const call = cachedCall(entry.label, functionNames);
 		if (call === null) continue;
 		const list = readings.get(call.name) ?? [];
