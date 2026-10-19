@@ -289,7 +289,7 @@ export function keptHistoryOf(
 }
 
 /**
- * Ranger l'historique ; vide (« Repartir de zéro ») : la clé est retirée. Stockage
+ * Ranger l'historique ; vide (console vidée) : la clé est retirée. Stockage
  * plein : les lignes les plus récentes, par moitiés, puis rien — jamais d'exception.
  */
 export function saveCalcHistory(

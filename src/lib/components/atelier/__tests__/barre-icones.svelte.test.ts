@@ -18,7 +18,7 @@ import {
 	MAX_ATELIER_FILE_LENGTH,
 	atelierFileToJson
 } from '$lib/atelier/atelier-file';
-import { CALC_HISTORY_STORAGE_KEY } from '$lib/atelier/history-storage';
+import { CALC_HISTORY_STORAGE_KEY, saveCalcHistory } from '$lib/atelier/history-storage';
 import { SET_ASIDE_STORAGE_KEY } from '$lib/atelier/persistence';
 
 // =============================================================================
@@ -193,6 +193,18 @@ describe('la barre d’icônes', () => {
 		expect(save.getAttribute('title')).toContain('rien à enregistrer');
 		// Charger reste disponible : c'est justement le moment de charger
 		expect(tool(container, 'Charger un atelier')?.getAttribute('aria-disabled')).toBeNull();
+	});
+
+	it('des lignes de console seules : rien à vider, mais de quoi enregistrer', async () => {
+		saveCalcHistory(localStorage, [{ id: 0, label: '2+3', text: '5', failed: false }], ['2+3']);
+		const { container } = await render(AtelierContainer, { atelier: new Atelier() });
+		await settle();
+
+		// La console reste à « Repartir de zéro » (décision de David du 2026-10-19)
+		const reset = tool(container, 'Repartir de zéro')!;
+		expect(reset.getAttribute('aria-disabled')).toBe('true');
+		expect(reasonOf(reset)).toBe('L’atelier est déjà vide.');
+		expect(tool(container, 'Enregistrer l’atelier')?.getAttribute('aria-disabled')).toBeNull();
 	});
 
 	it('un bouton indisponible ne fait rien', async () => {

@@ -132,7 +132,7 @@ describe('suppression et annulation se rejouent', () => {
 });
 
 describe('suppression — ce que la revue a trouvé', () => {
-	it('une annulation après « Repartir de zéro » n’est pas un geste rejouable', () => {
+	it('une annulation après une console vidée n’est pas un geste rejouable', () => {
 		const d = family();
 		const result = d.remove('f');
 		if (!result.ok) throw new Error('suppression refusée');

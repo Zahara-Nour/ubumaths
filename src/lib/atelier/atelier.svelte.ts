@@ -224,6 +224,12 @@ interface AtelierPhoto {
 	readonly provenances: [string, Provenance][];
 }
 
+/** Les réglages hors photo qu'un remplacement remet à leur défaut (`#settingsAcross`). */
+interface AtelierSettings {
+	readonly figureFrame: boolean;
+	readonly laws: readonly [string, string][];
+}
+
 /** Ce qu'Annuler / Rétablir rendent : l'étape défaite ou refaite. */
 export interface MovedStep {
 	readonly id: number;
@@ -676,6 +682,13 @@ export class Atelier {
 	#receipts = new WeakMap<RemovedWithDependents, StepToken>();
 	/** Les étapes de `replaceWith` qui veulent savoir quand on les quitte (`onLeave`). */
 	#onLeave = new Map<number, (left: AtelierState) => void>();
+	/**
+	 * Les réglages de l'AUTRE côté d'une étape de `replaceWith` : lois et repère,
+	 * hors des photos (ce sont des réglages), que le remplacement remet à leur
+	 * défaut. Annuler et Rétablir échangent ceux de l'écran contre ceux-là
+	 * (revue de #1524 : Annuler un chargement les perdait).
+	 */
+	#settingsAcross = new Map<number, AtelierSettings>();
 	/** Ce que la barre affiche : l'étape qu'Annuler défera, celle que Rétablir refera. */
 	history = $state<HistoryState>({ undo: null, redo: null, steps: 0 });
 
@@ -707,6 +720,19 @@ export class Atelier {
 
 	get objects(): readonly AtelierObject[] {
 		return this.items;
+	}
+
+	/**
+	 * Ni objet, ni grille (titres et mise en forme compris) : ce que
+	 * `isBlankAtelier(serialize())` dirait, sans tout ranger. Réactif.
+	 */
+	get isBlank(): boolean {
+		return (
+			this.items.length === 0 &&
+			this.cells.size === 0 &&
+			this.titles.size === 0 &&
+			this.#formats.length === 0
+		);
 	}
 
 	/** Les noms pris, tous types confondus (décision D1). */
@@ -1643,6 +1669,18 @@ export class Atelier {
 		return this.#history.topId;
 	}
 
+	/**
+	 * L'étape `stepId` est-elle celle qu'Annuler défera maintenant ? Une
+	 * modification faite hors étape depuis compte (`#capture`) : Annuler la
+	 * déferait, elle, et pas `stepId` (revue de #1524, toast d'un remplacement).
+	 */
+	isTopStep(stepId: number): boolean {
+		if (this.#stepDepth > 0) return false;
+		this.#capture(this.#photo());
+		this.#publish();
+		return this.#history.topId === stepId;
+	}
+
 	/** Une étape est-elle ouverte ? Une `step` appelée dedans s'y fond. */
 	get inStep(): boolean {
 		return this.#stepDepth > 0;
@@ -1686,6 +1724,7 @@ export class Atelier {
 		const step = this.#history.undo();
 		if (step !== null) {
 			this.#apply(step.before);
+			this.#swapSettings(step.id);
 			this.#left(step.id, step.after);
 		}
 		this.#publish();
@@ -1700,6 +1739,7 @@ export class Atelier {
 		const step = this.#history.redo();
 		if (step !== null) {
 			this.#apply(step.after);
+			this.#swapSettings(step.id);
 			this.#left(step.id, step.before);
 		}
 		this.#publish();
@@ -1757,6 +1797,19 @@ export class Atelier {
 		this.#baseline = this.#photo();
 	}
 
+	#settings(): AtelierSettings {
+		return { figureFrame: this.#figureFrame, laws: [...this.#laws] };
+	}
+
+	/** Une étape de `replaceWith` franchie : ses réglages d'en face contre ceux de l'écran. */
+	#swapSettings(id: number): void {
+		const across = this.#settingsAcross.get(id);
+		if (across === undefined) return;
+		this.#settingsAcross.set(id, this.#settings());
+		this.#figureFrame = across.figureFrame;
+		this.#laws = new Map(across.laws);
+	}
+
 	/** Une étape de `replaceWith` quittée : son `onLeave` reçoit l'atelier quitté. */
 	#left(id: number, photo: string): void {
 		const onLeave = this.#onLeave.get(id);
@@ -1790,6 +1843,7 @@ export class Atelier {
 	#forgetHistory(): void {
 		this.#history.clear();
 		this.#onLeave.clear();
+		this.#settingsAcross.clear();
 		this.#baseline = null;
 		this.#publish();
 	}
@@ -2556,12 +2610,17 @@ export class Atelier {
 		options: { readonly onLeave?: (left: AtelierState) => void } = {}
 	): RestoreReport {
 		const outermost = this.#stepDepth === 0 && !this.#restoring;
+		const before = this.#settings();
 		// Comme une relecture : les lois et le repère repartent de leur défaut. Le
 		// recalcul fait bouger `revision` : la session range l'atelier remplacé
 		const report = this.step(label, () => this.#restoreState(state));
 		const id = this.#lastStepId;
-		if (outermost && id !== null && options.onLeave !== undefined) {
-			this.#onLeave.set(id, options.onLeave);
+		// ⚠️ Imbriqué ou en relecture, pas d'étape à soi : rien à rendre, Annuler les
+		// perdrait (aucun appel ne le fait aujourd'hui)
+		if (outermost && id !== null) {
+			// Annuler les rend (`#swapSettings`)
+			this.#settingsAcross.set(id, before);
+			if (options.onLeave !== undefined) this.#onLeave.set(id, options.onLeave);
 		}
 		return report;
 	}

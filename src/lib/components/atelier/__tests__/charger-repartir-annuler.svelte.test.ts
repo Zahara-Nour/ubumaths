@@ -186,8 +186,13 @@ describe('charger un atelier, puis Annuler', () => {
 // =============================================================================
 
 describe('repartir de zéro, puis Annuler', () => {
-	it('Ctrl+Z rend tout l’atelier, grille comprise', async () => {
+	it('Ctrl+Z rend tout l’atelier, grille comprise ; la console est restée', async () => {
 		saveAtelier(localStorage, MIEN);
+		saveCalcHistory(
+			localStorage,
+			[{ id: 0, label: 'a = 5', text: 'a est correctement défini.', failed: false }],
+			['a = 5']
+		);
 		const atelier = new Atelier();
 		const { container } = await render(AtelierContainer, { atelier });
 		await settle();
@@ -198,6 +203,11 @@ describe('repartir de zéro, puis Annuler', () => {
 		dialogButton('Vider l’atelier')!.click();
 		await settle();
 		expect(atelier.objects).toEqual([]);
+		// Décision de David du 2026-10-19 : la console n'est pas vidée
+		expect(consoleLines(container).map((l) => l.text)).toEqual([
+			expect.stringContaining('a = 5'),
+			expect.stringContaining('Atelier vidé.')
+		]);
 
 		press({ key: 'z', ctrlKey: true });
 		await settle();

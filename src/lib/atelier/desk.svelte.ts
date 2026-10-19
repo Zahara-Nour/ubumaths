@@ -169,8 +169,8 @@ export type ReplayStep =
 	| { readonly kind: 'vider' }
 	/**
 	 * Ce que l'historique ne sait pas refaire (lot 5, PR 3) : un fichier chargé,
-	 * dont le contenu n'y est pas, ou « Repartir de zéro » annulé, dont l'atelier
-	 * d'avant a quitté la console. Le rejeu s'arrête là et dit `reason`.
+	 * dont le contenu n'y est pas. Le rejeu s'arrête là et dit `reason` (un
+	 * historique d'avant la revue de #1524 en a aussi sur « Repartir de zéro »).
 	 */
 	| { readonly kind: 'rupture'; readonly reason: string };
 
@@ -260,9 +260,22 @@ const STEP_LABEL_LENGTH = 40;
 /** Le nom de l'étape de « Repartir de zéro » (infobulle d'Annuler, annonces). */
 export const RESET_STEP = 'repartir de zéro';
 
-/** Pourquoi le rejeu s'arrête sur l'annulation de « Repartir de zéro ». */
-const RESET_MOVED_REASON =
-	'« Repartir de zéro » a été annulé ici : l’atelier d’avant n’est pas dans cet historique.';
+/**
+ * Ce qu'un `annuler` / `rétablir` rejoué a donné : rien à redire, ou pourquoi
+ * le rejeu s'arrête. Après un `vider`, l'étape déplacée doit être la sienne :
+ * en défaire une autre détruirait des objets sans rapport.
+ */
+function movedOrWhy(
+	moved: MovedStep | null,
+	previous: ReplayStep | null,
+	kind: 'annuler' | 'rétablir'
+): string | null {
+	if (moved === null) return `il n’y avait rien à ${kind}.`;
+	if (previous?.kind === 'vider' && moved.label !== RESET_STEP) {
+		return `le « Repartir de zéro » à ${kind} ne s’est pas rejoué.`;
+	}
+	return null;
+}
 
 /** « Annuler : « f(x)=x^2 » » — la saisie telle que tapée, raccourcie au besoin. */
 function lineStepLabel(text: string): string {
@@ -403,15 +416,10 @@ export class CalcDesk {
 
 	/**
 	 * Le geste de la ligne « Annuler » ou « Rétablir » de l'étape `stepId`.
-	 *
-	 * ⚠️ « Repartir de zéro » vide la console : défaire son étape rend un atelier
-	 * que l'historique ne contient plus. Un `annuler` rejoué rendrait l'atelier
-	 * vide du rejeu, pas celui de l'écran : le rejeu s'arrête plutôt (lot 5, PR 3).
+	 * « Repartir de zéro » en est : la console garde les lignes de l'atelier
+	 * d'avant, le rejeu le refait (décision de David du 2026-10-19).
 	 */
 	#moveGesture(stepId: number, kind: 'annuler' | 'rétablir'): ReplayStep | null {
-		if (this.entries.some((e) => e.stepId === stepId && e.replay?.kind === 'vider')) {
-			return { kind: 'rupture', reason: RESET_MOVED_REASON };
-		}
 		return this.#replayable(stepId) ? { kind } : null;
 	}
 
@@ -489,7 +497,7 @@ export class CalcDesk {
 		this.#typed = [...history.typed];
 	}
 
-	/** Vider l'historique (« Repartir de zéro ») ; le brouillon est laissé. */
+	/** Vider l'historique (rejeu d'un export, retour d'un lien reçu) ; le brouillon est laissé. */
 	clear(): void {
 		this.#gesture = null;
 		this.#lastRemoval = null;
@@ -531,8 +539,8 @@ export class CalcDesk {
 
 	/**
 	 * « Repartir de zéro » : l'atelier vidé en UNE étape, que Ctrl+Z défait
-	 * (lot 5, PR 3), et sa ligne. La console, la vue la vide avant (revue du
-	 * lot 6, C3) ; au rejeu, elle ne l'est pas — seul l'atelier repart de zéro.
+	 * (lot 5, PR 3), et sa ligne. La console reste, comme au chargement d'un
+	 * fichier (décision de David du 2026-10-19, R4) : Annuler rend alors tout.
 	 */
 	reset(): void {
 		this.#gesture = { kind: 'vider' };
@@ -725,9 +733,11 @@ export class CalcDesk {
 					if (this.#lastRemoval !== null && this.undoRemoval(this.#lastRemoval)) return null;
 					return 'la suppression à annuler ne s’est pas rejouée.';
 				}
-				return this.undo() !== null ? null : 'il n’y avait rien à annuler.';
+				// Juste après « Repartir de zéro », c'est lui qu'on défait — et lui seul,
+				// comme une suppression (revue de la PR de suivi de #1524)
+				return movedOrWhy(this.undo(), previous, 'annuler');
 			case 'rétablir':
-				return this.redo() !== null ? null : 'il n’y avait rien à rétablir.';
+				return movedOrWhy(this.redo(), previous, 'rétablir');
 			case 'vider':
 				this.reset();
 				return null;
@@ -777,7 +787,7 @@ export class CalcDesk {
 		const removedStep = this.#removalSteps.get(result);
 		if (removedStep !== undefined) this.#strike(removedStep, true);
 		// Rejouable seulement si la suppression est dans CET historique : après
-		// « Repartir de zéro », le fichier n'aurait qu'un `annuler` orphelin (revue)
+		// une console vidée, le fichier n'aurait qu'un `annuler` orphelin (revue)
 		this.#gesture = result === this.#lastRemoval ? { kind: 'annuler' } : null;
 		this.#lastRemoval = null;
 		this.#push({
@@ -800,7 +810,7 @@ export class CalcDesk {
 		// Une ligne aussi (toute action laisse sa trace dans Calcul, G7) : sans
 		// elle, le rejeu perdrait l'objet gardé et les lignes qui le citent
 		const line = this.entries.indexOf(entry);
-		// Une ligne qui n'est plus dans l'historique (« Repartir de zéro ») ne se
+		// Une ligne qui n'est plus dans l'historique (console vidée) ne se
 		// rejouerait pas : l'objet est gardé, mais sans geste à rejouer
 		if (kept.ok) {
 			this.#gesture = line >= 0 ? { kind: 'garder', line } : null;

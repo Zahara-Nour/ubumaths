@@ -112,9 +112,10 @@ describe('au rechargement, les lignes de Calcul reviennent', () => {
 		expect(second.field.value).toBe('2+3');
 	});
 
-	it('« Repartir de zéro » vide aussi ce qui est rangé', async () => {
+	it('« Repartir de zéro » garde ce qui est rangé, et y ajoute sa ligne', async () => {
 		const first = await open();
-		await first.submit('2+3');
+		// Un objet : sans lui, rien à vider (la console n'en est plus)
+		await first.submit('a = 2');
 		await vi.waitFor(() => expect(localStorage.getItem(CALC_HISTORY_STORAGE_KEY)).not.toBeNull());
 		(
 			[...first.container.querySelectorAll('button')].find(
@@ -129,15 +130,18 @@ describe('au rechargement, les lignes de Calcul reviennent', () => {
 			return found!;
 		});
 		confirm.click();
-		// Les lignes d'avant partent (C3) ; reste la ligne de l'étape, que Ctrl+Z
-		// barrerait (lot 5, PR 3)
-		await vi.waitFor(() => expect(first.lines()).toHaveLength(1));
+		// La console reste (décision de David du 2026-10-19) ; la ligne de l'étape,
+		// que Ctrl+Z barrerait, s'ajoute (lot 5, PR 3)
+		await vi.waitFor(() => expect(first.lines()).toHaveLength(2));
+		await vi.waitFor(() =>
+			expect(localStorage.getItem(CALC_HISTORY_STORAGE_KEY)).toContain('Atelier vidé.')
+		);
 		await first.unmount();
 
-		expect(localStorage.getItem(CALC_HISTORY_STORAGE_KEY)).not.toContain('2+3');
+		expect(localStorage.getItem(CALC_HISTORY_STORAGE_KEY)).toContain('a = 2');
 		const second = await open();
-		expect(second.lines()).toHaveLength(1);
-		expect(second.lines()[0].textContent).toContain('Atelier vidé.');
+		expect(second.lines()).toHaveLength(2);
+		expect(second.lines()[1].textContent).toContain('Atelier vidé.');
 	});
 
 	it('un atelier reçu par lien ne lit ni n’écrit l’historique de l’élève', async () => {

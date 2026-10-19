@@ -8,9 +8,12 @@
  *
  * Au rejeu d'un export, un chargement ne se refait pas (le contenu du fichier
  * n'est pas dans l'historique) : le rejeu s'arrête là, et le dit.
+ *
+ * « Repartir de zéro » garde aussi la console (décision de David du
+ * 2026-10-19, revue de #1524) : Annuler rend alors tout, et le rejeu aussi.
  */
 import { describe, it, expect } from 'vitest';
-import { Atelier } from '../atelier.svelte';
+import { Atelier, OUTSIDE_STEP_LABEL } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { historyToJson } from '../history-export';
 import { readHistory } from '../history-import';
@@ -108,25 +111,21 @@ describe('charger un fichier', () => {
 });
 
 describe('repartir de zéro', () => {
-	function reset(desk: CalcDesk) {
-		desk.clear();
-		desk.reset();
-	}
-
-	it('vide l’atelier en une étape, que Ctrl+Z défait', () => {
+	it('vide l’atelier en une étape, que Ctrl+Z défait ; la console reste', () => {
 		const desk = new CalcDesk(new Atelier());
 		desk.submit('a = 2');
 		desk.submit('f(x) = a x');
 		desk.atelier.editCells([{ column: 2, row: 1, text: '5' }]);
 		const before = desk.atelier.serialize();
 
-		reset(desk);
+		desk.reset();
 		expect(desk.atelier.objects).toEqual([]);
-		expect(texts(desk)).toEqual(['Atelier vidé.']);
+		expect(desk.entries.map((e) => e.label).slice(0, 2)).toEqual(['a = 2', 'f(x) = a x']);
+		expect(texts(desk).at(-1)).toBe('Atelier vidé.');
 
 		expect(desk.undo()).not.toBeNull();
 		expect(desk.atelier.serialize()).toEqual(before);
-		expect(desk.entries[0].undone).toBe(true);
+		expect(desk.entries.find((e) => e.text === 'Atelier vidé.')?.undone).toBe(true);
 
 		expect(desk.redo()).not.toBeNull();
 		expect(desk.atelier.objects).toEqual([]);
@@ -135,7 +134,7 @@ describe('repartir de zéro', () => {
 	it('le rejeu après « Repartir de zéro » rend le même atelier', () => {
 		const desk = new CalcDesk(new Atelier());
 		desk.submit('a = 2');
-		reset(desk);
+		desk.reset();
 		desk.submit('b = 3');
 
 		const read = readHistory(historyToJson(desk.entries, new Date()));
@@ -145,17 +144,127 @@ describe('repartir de zéro', () => {
 		expect(definitions(again.atelier)).toEqual(definitions(desk.atelier));
 	});
 
-	it('après « Repartir de zéro » annulé, le rejeu s’arrête au lieu de mentir', () => {
+	it('« Repartir de zéro » annulé puis rétabli se rejoue : la console a gardé l’atelier d’avant', () => {
 		const desk = new CalcDesk(new Atelier());
 		desk.submit('a = 2');
-		reset(desk);
+		desk.submit('f(x) = a x');
+		desk.reset();
+		desk.undo();
+		desk.submit('b = 3');
+
+		const read = readHistory(historyToJson(desk.entries, new Date()));
+		if (!read.ok) throw new Error(read.message);
+		const again = new CalcDesk(new Atelier());
+		expect(again.replay(read.history).ok).toBe(true);
+		expect(definitions(again.atelier)).toEqual({ a: '2', f: 'a x', b: '3' });
+
+		desk.redo();
+		const read2 = readHistory(historyToJson(desk.entries, new Date()));
+		if (!read2.ok) throw new Error(read2.message);
+		const third = new CalcDesk(new Atelier());
+		expect(third.replay(read2.history).ok).toBe(true);
+		expect(definitions(third.atelier)).toEqual(definitions(desk.atelier));
+	});
+});
+
+describe('rejeu de « Repartir de zéro » : ce que la revue a trouvé', () => {
+	it('grille seule (aucune ligne à rejouer) : vider puis annuler laisse le rejeu vide', () => {
+		const desk = new CalcDesk(new Atelier());
+		desk.atelier.editCells([{ column: 2, row: 1, text: '5' }]);
+		desk.reset();
 		desk.undo();
 
 		const read = readHistory(historyToJson(desk.entries, new Date()));
 		if (!read.ok) throw new Error(read.message);
 		const again = new CalcDesk(new Atelier());
-		const report = again.replay(read.history);
-		expect(report.ok).toBe(false);
+		expect(again.replay(read.history).ok).toBe(true);
+		// La grille n'était pas dans l'historique : rien n'est inventé, rien n'est défait
+		expect(again.atelier.isBlank).toBe(true);
+	});
+
+	it('un historique d’avant la revue (annuler en rupture) s’arrête encore là', () => {
+		const line = { label: '', text: '', failed: false };
+		const read = readHistory(
+			JSON.stringify({
+				format: 'chiphre-calcul',
+				version: 1,
+				exportedAt: new Date().toISOString(),
+				entries: [
+					{ kind: 'saisie', input: 'a = 2', ...line, label: 'a = 2' },
+					{ kind: 'vider', ...line, text: 'Atelier vidé.' },
+					{
+						kind: 'rupture',
+						reason: '« Repartir de zéro » a été annulé ici.',
+						...line,
+						text: 'Annulé : repartir de zéro.'
+					}
+				]
+			})
+		);
+		if (!read.ok) throw new Error(read.message);
+		const again = new CalcDesk(new Atelier());
+
+		expect(again.replay(read.history).ok).toBe(false);
 		expect(again.notice).toContain('Repartir de zéro');
+		expect(again.atelier.objects).toEqual([]);
+	});
+});
+
+describe('Annuler un remplacement rend les réglages d’avant (revue de #1524)', () => {
+	it('les lois des variables aléatoires et le repère de Géométrie reviennent', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '2' }, 'text');
+		atelier.rememberLaw('X', 'X suit B(10 ; 0,5)');
+		atelier.setFigureFrame(false);
+
+		atelier.replaceWith(FICHIER, 'charger un atelier');
+		// Comme une relecture : les réglages repartent de leur défaut
+		expect(atelier.lawOf('X')).toBeUndefined();
+		expect(atelier.figureFrame).toBe(true);
+
+		expect(atelier.undo()).toBe('charger un atelier');
+		expect(atelier.lawOf('X')).toBe('X suit B(10 ; 0,5)');
+		expect(atelier.figureFrame).toBe(false);
+
+		expect(atelier.redo()).toBe('charger un atelier');
+		expect(atelier.lawOf('X')).toBeUndefined();
+		expect(atelier.figureFrame).toBe(true);
+	});
+
+	it('les réglages changés APRÈS le remplacement sont ceux que Rétablir rend', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '2' }, 'text');
+		atelier.replaceWith(FICHIER, 'charger un atelier');
+		atelier.setFigureFrame(false);
+
+		atelier.undo();
+		expect(atelier.figureFrame).toBe(true);
+		atelier.redo();
+		expect(atelier.figureFrame).toBe(false);
+	});
+});
+
+describe('le toast « Annuler » d’un remplacement (revue de #1524)', () => {
+	it('une modification hors étape faite après compte : l’étape n’est plus la dernière', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '2' }, 'text');
+		atelier.replaceWith(FICHIER, 'charger un atelier');
+		const stepId = atelier.lastStepId;
+		if (stepId === null) throw new Error('le remplacement aurait dû être une étape');
+		expect(atelier.isTopStep(stepId)).toBe(true);
+
+		const steps = atelier.history.steps;
+
+		// Hors de toute étape : rangée seulement au prochain geste (`#capture`)
+		atelier.update('g', 'x^4', 'text');
+		expect(atelier.isTopStep(stepId)).toBe(false);
+		// Et rien n'a été défait : g garde sa nouvelle définition
+		expect(atelier.get('g')?.definition).toBe('x^4');
+		// La modification est devenue son étape : Annuler la défait elle, puis le chargement
+		expect(atelier.history.steps).toBe(steps + 1);
+		expect(atelier.undo()).toBe(OUTSIDE_STEP_LABEL);
+		expect(atelier.get('g')?.definition).toBe('x^3');
+		expect(atelier.undo()).toBe('charger un atelier');
+		expect(definitions(atelier)).toEqual({ a: '2' });
 	});
 });
