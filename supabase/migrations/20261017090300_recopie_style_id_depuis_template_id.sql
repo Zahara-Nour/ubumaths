@@ -15,6 +15,10 @@
 -- même identifiant dans worksheet_styles) reste sans style_id : la clé
 -- étrangère le refuserait.
 --
+-- Comme la garde worksheets_style_owner_check (qui laisse passer le rôle
+-- postgres), seul un style de Chiphre ou de l'auteur de la fiche est recopié :
+-- une fiche n'est jamais rattachée au style d'un autre prof. 0 cas en prod.
+--
 -- La date de modification des fiches est gardée : le trigger updated_at est
 -- coupé le temps de la recopie.
 --
@@ -29,6 +33,10 @@ update public.worksheets w
 set style_id = w.template_id
 where w.style_id is null
 	and w.template_id is not null
-	and exists (select 1 from public.worksheet_styles s where s.id = w.template_id);
+	and exists (
+		select 1 from public.worksheet_styles s
+		where s.id = w.template_id
+			and (s.owner_id is null or s.owner_id = w.created_by)
+	);
 
 alter table public.worksheets enable trigger update_worksheets_updated_at;

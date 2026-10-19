@@ -41,6 +41,10 @@ let teacherId: string;
 let ancienne: string;
 /** `template_id` désigne un gabarit libre, qui n'est pas un style. */
 let gabaritLibre: string;
+/** `template_id` désigne le style d'un autre compte (l'admin). */
+let styleDAutrui: string;
+/** `template_id` désigne un style du prof lui-même. */
+let styleDuProf: string;
 /** A déjà un `style_id`, différent de son `template_id`. */
 let dejaStylee: string;
 /** Ni style ni gabarit : style par défaut. */
@@ -62,6 +66,25 @@ async function seedWorksheet(
 		[`${RUN} ${suffix}`, teacherId, styleId, templateId]
 	);
 	return rows[0].id;
+}
+
+/**
+ * Un style et son gabarit, de même identifiant (lot 3b), en superutilisateur
+ * (hors RLS et hors gardes).
+ */
+async function seedStyleWithTemplate(ownerId: string, suffix: string): Promise<string> {
+	const pg = await getPostgresClient();
+	const { rows } = await pg.query(
+		`insert into public.worksheet_styles (owner_id, name) values ($1, $2) returning id`,
+		[ownerId, `${RUN} ${suffix}`]
+	);
+	const id: string = rows[0].id;
+	await pg.query(
+		`insert into public.worksheet_templates (id, name, template_content, created_by)
+		 values ($1, $2, '#set page(paper: "a4")', $3)`,
+		[id, `${RUN} ${suffix}`, ownerId]
+	);
+	return id;
 }
 
 async function worksheetInDb(
@@ -87,7 +110,10 @@ async function playMigration(): Promise<void> {
 beforeAll(async () => {
 	await cleanupAllTestData();
 	const teacher = await TestData.profile().withRole('teacher').create();
+	const admin = await TestData.profile().withRole('admin').create();
 	teacherId = teacher.id;
+	const styleAutrui = await seedStyleWithTemplate(admin.id, 'style de l’admin');
+	const styleProf = await seedStyleWithTemplate(teacherId, 'style du prof');
 
 	const pg = await getPostgresClient();
 	const { rows } = await pg.query(
@@ -99,6 +125,8 @@ beforeAll(async () => {
 
 	ancienne = await seedWorksheet('ancienne', null, STANDARD);
 	gabaritLibre = await seedWorksheet('gabarit libre', null, gabaritId);
+	styleDAutrui = await seedWorksheet('style d’un autre', null, styleAutrui);
+	styleDuProf = await seedWorksheet('style du prof', null, styleProf);
 	dejaStylee = await seedWorksheet('déjà stylée', CONTROLE, STANDARD);
 	sansStyle = await seedWorksheet('sans style', null, null);
 
@@ -122,6 +150,9 @@ afterAll(async () => {
 	await pg
 		.query('delete from public.worksheet_templates where name like $1', [`${RUN}%`])
 		.catch(() => undefined);
+	await pg
+		.query('delete from public.worksheet_styles where name like $1', [`${RUN}%`])
+		.catch(() => undefined);
 	await cleanupAllTestData();
 });
 
@@ -139,6 +170,15 @@ describe('recopie de style_id depuis template_id', () => {
 
 	it('laisse sans style une fiche dont le gabarit n’est pas un style', async () => {
 		expect((await worksheetInDb(gabaritLibre)).style_id).toBeNull();
+	});
+
+	it('recopie un style du prof auteur de la fiche', async () => {
+		const fiche = await worksheetInDb(styleDuProf);
+		expect(fiche.style_id).toBe(fiche.template_id);
+	});
+
+	it('ne rattache jamais une fiche au style d’un autre compte', async () => {
+		expect((await worksheetInDb(styleDAutrui)).style_id).toBeNull();
 	});
 
 	it('ne touche pas une fiche qui a déjà un style', async () => {
