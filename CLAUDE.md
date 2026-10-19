@@ -68,10 +68,18 @@ cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline
 ```
 
 - **Dépôt principal = `main`** (commits doc, `db:migrate` d'après-merge, lecture). **Jamais de chantier dedans.**
-- **Un worktree = une branche = une session.** Annoncer `git worktree list` + `pwd` au premier message.
+- **Un worktree = une branche = une session = un nom.** Le `<sujet>` du worktree nomme aussi le journal (`docs/wip/<sujet>-progress.md`) et la session (David : `/rename <sujet>`). Annoncer `git worktree list` + `pwd` + le nom du chantier au premier message.
 - Un worktree n'isole ni la RAM, ni Supabase local, ni les ports. Verrous partagés `typecheck` et `supabase` (`db:*` locaux, `test:integration`) : **exit 2 = attendre, ne pas contourner.**
 - ⛔ **`pnpm kill:servers` interdit depuis un worktree** (tue 5173 et Supabase) : kill ciblé sur son port.
-- `docs/wip/<sujet>-progress.md` **commité au premier commit**.
+- `docs/wip/<sujet>-progress.md` **commité au premier commit**, avec en tête un bloc **`## Reprendre ici`** (≤ 15 lignes, réécrit à chaque PR mergée — l'historique reste en dessous) :
+  ```markdown
+  ## Reprendre ici
+
+  _Mis à jour le AAAA-MM-JJ, après #NNNN._
+
+  - **État** : … · **Prochaine action** : … · **En attente de David** : … · **Pièges en cours** : … · **Worktree / branche** : …
+  ```
+- **Après chaque merge** : mettre à jour « Reprendre ici », le commiter, puis écrire à David : « Bon moment pour `/clear`. Pour reprendre : **`/reprendre <sujet>`** ». Une session ne s'étire pas sur plusieurs PR : une PR = une session, au plus un lot de petites PR.
 - PR mergée → `git worktree remove` + `git branch -d` + `git worktree list`.
 
 ## Règles de code (non négociables)
@@ -126,7 +134,7 @@ Un refus RLS rend **zéro ligne, sans erreur** : `if (error) throw` ne le voit p
 2. Agents et modèles spécifiés par tâche.
 3. **Tests d'abord** (rouges) → implémentation → verts.
 4. `code-reviewer` en fin de phase (Sonnet ; `model: opus` si diff gros ou délicat) ; `security-auditor` si auth/RLS/API ; performance si requêtes lourdes.
-5. `docs/wip/<feature>-progress.md` tenu entre les phases ; lister les docs produites à la fin.
+5. `docs/wip/<sujet>-progress.md` tenu entre les phases (bloc « Reprendre ici » compris, cf. § Worktrees) ; lister les docs produites à la fin.
 6. Exécution autonome : corriger sans s'arrêter au premier échec (`debugger` si > 2 tentatives).
 
 **Definition of Done** (avant d'ouvrir/merger) :

@@ -1,5 +1,15 @@
 # QR codes — journal de progression
 
+## Reprendre ici
+
+_Mis à jour le 2026-10-19, après #1522._
+
+- **État** : lot 1 (bouton « QR code » sur les partages, #1515) et lot 2 (bloc ubumark ` ```qr `, #1522) livrés. Rien en prod.
+- **Prochaine action** : aucune engagée. Option proposée à David : charger `uqr` seulement quand un bloc ` ```qr ` est présent (aujourd'hui ~8 Ko gzip sur toutes les pages Markdown).
+- **En attente de David** : cette optimisation (oui / non) ; un lien court côté serveur pour les séries trop longues et un atelier sauvegardé public (chantiers non ouverts).
+- **Pièges** : adresse toujours `https://www.chiph.re` (`chiph.re` redirige en 308) ; `http://` extérieur refusé ; QR limité à la version 15.
+- **Worktree / branche** : aucun.
+
 Phase 0 : [qr-codes-phase0.md](qr-codes-phase0.md), tranchée par David le 2026-10-19.
 
 ## Lot 1 — bouton « QR code » à côté des partages existants (branche `feat/qr-codes-partage`)

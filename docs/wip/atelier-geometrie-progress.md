@@ -9,6 +9,16 @@ status: lot 1 CLOS ; lot 2 CLOS (#1500, #1506, #1507, #1509, #1513 perf, #1514 .
 Phase 0 (validée le 2026-10-18) : [atelier-geometrie-phase0.md](atelier-geometrie-phase0.md).
 Chapeau : [atelier-progress.md](atelier-progress.md).
 
+## Reprendre ici
+
+_Mis à jour le 2026-10-19, après #1523._
+
+- **État** : lots 1 et 2 de la géométrie livrés (#1474 → #1516), `60°` (#1519), noms indicés (#1520), « Remplacer mon atelier » (#1523). Rien en production.
+- **En cours** (2 worktrees, agents en correction après revue) : `fix/mathast-extrema-periodiques` (`../ubumaths-wt-extrema` : extrema de `sin`, `tan` aux asymptotes ; reste la réciproque de `tan` qui propose une commande qui échoue) ; `fix/atelier-indices-suite` (`../ubumaths-wt-indices2` : `u_3` calculé, clash suite / valeur, `x_1` ≠ x ; conflit avec main à résoudre dans `planNames`).
+- **Prochaine action** : merger ces deux PR ; puis petite PR mathAST (zéros périodiques d'un numérateur de quotient ; points critiques faux de `(x−1)²(x+2)³`) ; puis lot 3 (la souris, phase 0 validée : `atelier-geometrie-lot3-phase0.md`), PR 1 = le glisser.
+- **En attente de David** : 4 choix des noms indicés (recommandés : garder) ; la PR mathAST de suivi.
+- **Pièges** : une PR qui touche `mathAST` (`sign/`, `substitute`, `intersect`, pipeline) se fait relire par `mathast-expert` avec comparaison main / branche ; la session « modifs-fixes » (lot 5 annuler / rétablir, PR 3 : Charger et Repartir via `replaceWith`) touche le même modèle — se prévenir avant de toucher `AtelierContainer`, `FigureCard`, `desk.svelte.ts`.
+
 ## Lot 1 — découpage
 
 | PR  | Contenu                                                                                        | Branche                           | État                   |

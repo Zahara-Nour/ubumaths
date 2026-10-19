@@ -87,6 +87,17 @@ niveau) ; il refuse de travailler sans **grade** et **thème** précisés.
 - Il suit la démarche de [fiches-exercices.md](fiches-exercices.md), modèle par tâche compris.
 - Rien n'est écrit en production sans ton accord (`--publier`).
 
+## `reprendre` — repartir d'un chantier après un `/clear`
+
+`/reprendre <sujet>` (ou « reprends », « on en était où ? ») : la session retrouve le journal
+`docs/wip/<sujet>-progress.md` (d'après l'argument, sinon le worktree ou la branche, sinon elle te
+liste les chantiers actifs) et n'en lit **que le bloc « Reprendre ici »**, puis te dit en 5 lignes
+l'état, la prochaine action et ce qui t'attend. Un journal sans bloc en reçoit un au passage.
+
+Le but est d'économiser des tokens : une session qui s'étire sur plusieurs PR relit tout son
+historique à chaque message. Après chaque merge, la session met le bloc à jour et te propose
+`/clear` + `/reprendre <sujet>` (règle de `CLAUDE.md` § Worktrees, 2026-10-19).
+
 ---
 
 ## Les commandes du projet : retirées le 2026-10-10

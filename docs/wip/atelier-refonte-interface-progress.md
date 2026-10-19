@@ -1,5 +1,15 @@
 # Atelier — refonte de l'interface : journal
 
+## Reprendre ici
+
+_Mis à jour le 2026-10-19, après #1524._
+
+- **État** : lots 1 à 5 livrés (#1479 → #1524, suivis compris). Annuler / Rétablir complet ; Charger et Repartir de zéro annulables. Rien en prod.
+- **Prochaine action** : PR de suivi de la revue de #1524 — (1) console de Repartir de zéro selon la réponse de David ; (2) lois des variables aléatoires et repère de Géométrie perdus après Annuler d'un `replaceWith` (`#restoreState`, `atelier.svelte.ts` ~2583 ; prévenir atelier-geometry, auteur de `replaceWith`) ; (3) toast « Annuler » : `#capture` avant de comparer `topStepId` (`offerUndo`).
+- **En attente de David** : Repartir de zéro → (a) garder la console (recommandé) ou (b) la vider mais la rendre à Annuler.
+- **Pièges** : la console n'est PAS dans les photos d'étape (R4) ; une ligne « annuler » n'est rejouable que si l'étape vient d'une ligne rejouable (`#replayable`, #1521) ; gestes continus = `step(…, clé)` + `endGesture()` (`gesture.ts`) ; `wrapDynamicImport` intermittent dans les suites client lancées ensemble → relancer par lots.
+- **Worktree / branche** : aucun ouvert (agents en worktrees jetables). Coordination : session atelier-geometry (lot 3 géométrie, souris).
+
 Phase 0 : `docs/wip/atelier-refonte-interface-phase0.md` (validée par David le 2026-10-18, deux passes).
 
 ## Lot 1 — barre d'icônes, Enregistrer / Charger
