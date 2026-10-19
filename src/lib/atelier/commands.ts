@@ -65,6 +65,19 @@ export interface AtelierCommand {
 // Constantes
 // =============================================================================
 
+/**
+ * Le décor du problème de l'aire (`.relever`, géométrie lot 2) : M glisse sur
+ * [AB], AMNP est un rectangle, S son aire. Partagé avec l'aide (`help.ts`).
+ */
+export const AREA_PROBLEM_SETUP: Readonly<Record<string, string>> = {
+	'point:A': '(0 ; 0)',
+	'point:B': '(4 ; 0)',
+	'point:M': 'point_sur([AB] ; 0,5)',
+	'point:N': '(AM ; MB)',
+	'point:P': '(0 ; MB)',
+	'value:S': 'aire(A, M, N, P)'
+};
+
 /** Ce que l'atelier sait dire de chaque commande, dans l'ordre d'affichage. */
 interface Translation {
 	readonly french: string;
@@ -277,14 +290,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 				'Faire varier une valeur ou un point_sur et relever deux mesures dans deux listes (quand … va de … à … pas …)',
 			example: '.relever AM ; S quand M va de 0 à 1 pas 0,05',
 			// L'exemple est le problème de l'aire : il se joue dans cet atelier (Q79)
-			exampleSetup: {
-				'point:A': '(0 ; 0)',
-				'point:B': '(4 ; 0)',
-				'point:M': 'point_sur([AB] ; 0,5)',
-				'point:N': '(AM ; MB)',
-				'point:P': '(0 ; MB)',
-				'value:S': 'aire(A, M, N, P)'
-			}
+			exampleSetup: AREA_PROBLEM_SETUP
 		}
 	],
 	[

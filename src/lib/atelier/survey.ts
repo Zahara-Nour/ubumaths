@@ -19,11 +19,12 @@ import type { MathNode } from '$lib/mathAST/types';
 import { MAX_LISTS, MAX_LIST_VALUES, isList, isValue } from './types';
 import { MAX_TITLE_LENGTH } from './grid';
 import { constantOf } from './constant';
-import { nextName } from './names';
+import { nameRejectionMessage, nextName, validateName } from './names';
 import { substitutedTextOf } from './engine';
 import { positionTextOf, positionSliderFor, withPosition } from './construction';
 import { evaluate } from '$lib/mathAST/eval';
 import { transformAST } from '$lib/mathAST/visitor';
+import { format as formatUnit } from '$lib/mathAST/units';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
 
@@ -38,6 +39,8 @@ export interface SurveyRequest {
 	readonly from: string;
 	readonly to: string;
 	readonly step: string;
+	/** `dans X ; Y` : les noms des deux listes (décision de David du 2026-10-19). */
+	readonly names: readonly [string, string] | null;
 }
 
 export type Refusal = { readonly ok: false; readonly message: string };
@@ -48,8 +51,18 @@ interface Rational {
 	readonly d: bigint;
 }
 
-/** `scale` : la taille des termes du calcul, qui dit ce qu'est un résidu de flottant. */
-type Reading = { readonly ok: true; readonly value: number; readonly scale: number } | Refusal;
+/**
+ * `scale` : la taille des termes du calcul, qui dit ce qu'est un résidu de
+ * flottant ; `unit` : l'unité retirée (`°`, `rad`), qui va au titre de la colonne.
+ */
+type Reading =
+	| {
+			readonly ok: true;
+			readonly value: number;
+			readonly scale: number;
+			readonly unit: string | null;
+	  }
+	| Refusal;
 
 // =============================================================================
 // Constantes
@@ -62,7 +75,15 @@ const USAGE =
  * `AM ; S quand M va de 0 à 1 pas 0,05` — `a` s'écrit aussi pour `à` (sans accent),
  * les mots-clés en majuscule aussi (`Quand`, `Pas`).
  */
-const COMMAND = /^(.+?)\s+quand\s+(\S+)\s+va\s+de\s+(\S+)\s+(?:à|a)\s+(\S+)\s+pas\s+(\S+)$/is;
+const COMMAND =
+	/^(.+?)\s+quand\s+(\S+)\s+va\s+de\s+(\S+)\s+(?:à|a)\s+(\S+)\s+pas\s+(\S+)(?:\s+dans\s+(.*))?$/is;
+
+/** La même, sans le pas : le refus donne alors un exemple complet (décision de David). */
+const WITHOUT_STEP =
+	/^(.+?)\s+quand\s+(\S+)\s+va\s+de\s+(\S+)\s+(?:à|a)\s+(\S+)(?:\s+dans\s+.*)?$/is;
+
+const NAMES_USAGE =
+	'Écris les deux noms après « dans », séparés par « ; » : … pas 0,05 dans X ; Y.';
 
 /** Un décimal (`-1,5`, `0.05`) ou une fraction (`1/3`). */
 const DECIMAL = /^(-?)(\d+)(?:[.,](\d+))?$/;
@@ -169,13 +190,56 @@ function topLevelParts(text: string): string[] {
 /** Ce que `.relever` a lu, ou la forme attendue. */
 export function readSurveyCommand(argument: string): SurveyRequest | Refusal {
 	const full = COMMAND.exec(argument.trim());
-	if (full === null) return { ok: false, message: USAGE };
-	const [, expressions, name, from, to, step] = full;
+	if (full === null) return withoutStepRefusal(argument) ?? { ok: false, message: USAGE };
+	const [, expressions, name, from, to, step, named] = full;
 	const parts = topLevelParts(expressions);
 	if (parts.length !== 2 || parts.some((part) => part === '')) {
 		return { ok: false, message: USAGE };
 	}
-	return { expressions: [parts[0], parts[1]], name, from, to, step };
+	let names: readonly [string, string] | null = null;
+	if (named !== undefined) {
+		const given = named.split(';').map((part) => part.trim());
+		if (given.length !== 2 || given.some((part) => part === '' || /\s/.test(part))) {
+			return { ok: false, message: NAMES_USAGE };
+		}
+		names = [given[0], given[1]];
+	}
+	return { expressions: [parts[0], parts[1]], name, from, to, step, names };
+}
+
+/**
+ * Le pas manque : le refus récrit la commande de l'élève avec un pas, un
+ * dixième de l'étendue (`de 0 à 1` → `pas 0,1`), sinon 1.
+ */
+function withoutStepRefusal(argument: string): Refusal | null {
+	const partial = WITHOUT_STEP.exec(argument.trim());
+	if (partial === null) return null;
+	const [, expressions, name, from, to] = partial;
+	const parts = topLevelParts(expressions);
+	if (parts.length !== 2 || parts.some((part) => part === '')) return null;
+	const [a, b] = [readRational(from), readRational(to)];
+	const width = a === null || b === null ? null : plus(b, { n: -a.n, d: a.d });
+	const step =
+		width === null || width.n <= 0n ? '1' : writtenRational(rational(width.n, width.d * 10n));
+	return {
+		ok: false,
+		message: `Il manque le pas : écris par exemple .relever ${parts[0]} ; ${parts[1]} quand ${name} va de ${shown(from)} à ${shown(to)} pas ${step}.`
+	};
+}
+
+/** Les noms donnés après `dans`, refusés comme tout nom d'objet : jamais d'écrasement. */
+function namesRefusal(atelier: Atelier, names: readonly [string, string]): Refusal | null {
+	if (names[0] === names[1]) {
+		return {
+			ok: false,
+			message: `Les deux listes doivent porter deux noms différents : « ${names[0]} » est donné deux fois.`
+		};
+	}
+	for (const name of names) {
+		const rejection = validateName(name, atelier.names);
+		if (rejection !== null) return { ok: false, message: nameRejectionMessage(rejection, name) };
+	}
+	return null;
 }
 
 /** Un nombre tapé, écrit à la française pour un message (`0.5` → `0,5`). */
@@ -313,12 +377,18 @@ function readExpression(atelier: Atelier, text: string): Reading {
 	// Un angle mesuré est une grandeur (`45[°]`) : sa valeur est le nombre, dans
 	// l'unité du réglage — l'unité retirée AVANT le calcul exact, qui passerait
 	// en radians
-	const ast = transformAST(read.ast, { leaveUnit: (node) => node.expression });
+	let unit: string | null = null;
+	const ast = transformAST(read.ast, {
+		leaveUnit: (node) => {
+			unit ??= formatUnit(node.unit, 'original');
+			return node.expression;
+		}
+	});
 	// EXACT d'abord : sin(π) vaut 0, pas 1,2246 × 10⁻¹⁶ (revue de la PR 4) ;
 	// le résultat exact passe ensuite en décimal
 	const value = exactly(ast) ?? decimalOf(ast);
 	if (value === null) return { ok: false, message: whyNoValue(atelier, read.ast) };
-	return { ok: true, value, scale: termsScale(ast) ?? Math.abs(value) };
+	return { ok: true, value, scale: termsScale(ast) ?? Math.abs(value), unit };
 }
 
 /**
@@ -378,6 +448,10 @@ export function surveyCommand(
 	}
 	const definitionAt = varyingOf(atelier, name);
 	if (typeof definitionAt !== 'function') return definitionAt;
+	if (request.names !== null) {
+		const refused = namesRefusal(atelier, request.names);
+		if (refused !== null) return refused;
+	}
 
 	const bounds: Rational[] = [];
 	for (const text of [request.from, request.to, request.step]) {
@@ -456,8 +530,8 @@ export function surveyCommand(
 	);
 
 	const created: string[] = [];
-	for (const definition of columns) {
-		const listName = nextName('list', atelier.names);
+	for (const [i, definition] of columns.entries()) {
+		const listName = request.names?.[i] ?? nextName('list', atelier.names);
 		const done = atelier.create({ kind: 'list', name: listName, definition });
 		if (!done.ok) {
 			// Tout ou rien : les titres ne sont posés qu'une fois les deux listes créées
@@ -470,7 +544,13 @@ export function surveyCommand(
 	// ses titres non plus (rien à « Annuler » dans Données qui n'enlèverait qu'eux)
 	for (const [i, listName] of created.entries()) {
 		const object = atelier.get(listName);
-		const title = expressions[i];
+		// Un angle : l'unité du réglage dans le titre (« angle(B, A, C) (°) »), le
+		// nombre seul dans les cases (décision de David du 2026-10-19)
+		const unit = readings
+			.map((pair) => pair?.[i])
+			.find((reading) => reading?.ok === true && reading.unit !== null);
+		const title =
+			unit?.ok === true && unit.unit !== null ? `${expressions[i]} (${unit.unit})` : expressions[i];
 		if (object !== undefined && isList(object) && title.length <= MAX_TITLE_LENGTH) {
 			atelier.setTitle(object.column, title, { recorded: false });
 		}

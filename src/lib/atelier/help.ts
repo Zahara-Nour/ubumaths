@@ -17,7 +17,7 @@
  */
 
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { commandCatalog, type HelpSection } from './commands';
+import { AREA_PROBLEM_SETUP, commandCatalog, type HelpSection } from './commands';
 
 // =============================================================================
 // Types
@@ -105,6 +105,14 @@ const EXTRA_EXAMPLES: Readonly<Record<string, readonly HelpEntry[]>> = {
 	],
 	mode: [
 		{ command: 'mode', example: '.mode décimal', description: 'Passer aux valeurs décimales' }
+	],
+	survey: [
+		{
+			command: 'survey',
+			example: '.relever AM ; S quand M va de 0 à 1 pas 0,05 dans X ; Y',
+			description: 'Nommer les deux listes (après « dans »)',
+			listSetup: AREA_PROBLEM_SETUP
+		}
 	],
 	solve: [
 		{
