@@ -326,7 +326,7 @@ texte, l'écho restant celui de l'élève. Une **mesure nommée** (`S = aire(A, 
 est une valeur **sans `slider`** (comme une grandeur, D4 — critère de la carte) ; `#measures`
 (fin de `recomputeAll`) retire ou rend le curseur quand une valeur devient ou cesse d'être une
 mesure (`S = AM` tapé avant A et M), et met en erreur ce qui ne se calcule pas (polygone croisé,
-sommet confondu). Elle cite ses points (D9, cascade) ; un point cité HORS d'une mesure reste
+sommet d'un angle confondu avec un de ses points). Elle cite ses points (D9, cascade) ; un point cité HORS d'une mesure reste
 refusé (P9). La carte de valeur en montre la valeur (`ValueCard`, ligne `.mesure`, `measureSummaryOf`).
 Décisions de David (2026-10-18) : **un angle est une grandeur** (`(60[°])`, `((\pi/3)[rad])`
 dans le texte lu par le moteur) — `cos(angle(…))` se calcule, `angle(…) + 1` est refusé par la
@@ -346,8 +346,11 @@ cosinus d'une grandeur dans une fonction (`g(x) = cos(R)·x`, R = 90°). La cart
 de la console (`Atelier.calcMode`, posé par le pupitre après chaque saisie). Revue (2026-10-18) : une mesure se cite aussi
 dans les nombres d'une construction (`cercle(A ; AM)`) et dans des coordonnées (`G = (aire(B, C, D) ;
 0)`, `engine.substitutedTextOf` → `Atelier.measuredTextOf`) ; `A = (AM ; 0)` est refusé (circulaire) ;
-renommer un point réécrit les `AM` (`renamePairs`, texte et LaTeX) ; un polygone à sommets confondus
-ou à côtés qui se touchent est refusé ; une valeur APPROCHÉE (angle non remarquable) entre au moteur
+renommer un point réécrit les `AM` (`renamePairs`, texte et LaTeX) ; seul un polygone CROISÉ (deux
+côtés non voisins qui se coupent en un point intérieur, `isCrossed`) est refusé : un polygone aplati
+— sommets confondus, tous alignés, côtés qui se touchent ou se recouvrent — a une aire, nulle s'il est
+plat, et un périmètre calculé normalement (décision de David du 2026-10-19, qui revient sur le refus
+posé à la revue de la PR 2) ; une valeur APPROCHÉE (angle non remarquable) entre au moteur
 en pleine précision et toute ligne qui la cite, même par un autre objet (`approximateNames`), se dit
 `≈`, 4 décimales, jamais en fraction.
 
@@ -437,13 +440,17 @@ rien : il relève, l'élève conjecture.
   colonne) s'écrit 0 (`sin(t)² + cos(t)² − 1`). 10 chiffres significatifs, virgule décimale,
   jamais de notation scientifique (`10^(-20)` s'écrit en toutes lettres) ; une valeur ⩾ 10¹⁵ ne
   tient pas dans une case : sa ligne reste vide et la réponse le dit (« … trop grandes pour une
-  case »). Un angle est relevé dans l'unité du réglage, sans l'unité (retirée avant le calcul
-  exact, qui passerait en radians). Un pas où une expression n'a pas de valeur (point en attente,
+  case »). Un angle est relevé en nombre dans l'unité du réglage, l'unité retirée avant le calcul
+  exact (qui passerait en radians) et écrite dans le TITRE de la colonne (« angle(B, A, C) (°) »,
+  « T (rad) », décision de David du 2026-10-19). Un pas où une expression n'a pas de valeur (point en attente,
   polygone aplati, hors du domaine) laisse sa ligne **vide dans les deux listes** (`12 ; ; 15`),
   pour que les lignes restent appariées (P1), et la ligne de réponse le compte (« 2 pas sans
   valeur… »). Une expression sans valeur à AUCUN pas est refusée avec la raison (« « M » est un
   point ; relève une mesure… », « « x » n'est pas défini… »).
-- **Les listes** : deux noms libres de `nextName('list')` (L, M, N, puis L_1…), jamais un nom pris ;
+- **Les listes** : nommées par le mot-clé facultatif **`dans X ; Y`** (décision de David du
+  2026-10-19 ; noms validés comme tout nom d'objet — pris, réservé, invalide ou deux fois le même :
+  refus, rien n'est créé) ; sans lui, deux noms libres de `nextName('list')` (L, M, N, puis L_1…),
+  jamais un nom pris ;
   la colonne de chacune reçoit pour titre l'expression relevée (« AM », « S », 40 caractères au
   plus), posé une fois les deux listes créées et HORS de l'historique de la grille
   (`setTitle(…, { recorded: false })`) : comme une liste créée dans Calcul, un relevé n'est pas un
@@ -456,8 +463,11 @@ rien : il relève, l'élève conjecture.
   des mesures » (`HelpSection` `geometrie`, entre « Étudier une fonction » et « Statistiques »).
 - **Le problème de l'aire**, testé tel quel (`relever.test.ts`) : A(0 ; 0), B(4 ; 0),
   `M = point_sur([AB] ; 0,5)`, `N = (AM ; MB)`, `P = (0 ; MB)`, `S = aire(A, M, N, P)` → 21 lignes,
-  maximum relevé en AM = 2 avec S = 4. En M = A et M = B, le rectangle est aplati et `aire`
-  refuse (« deux sommets confondus ») : ces deux lignes restent vides.
+  21 lignes PLEINES, maximum relevé en AM = 2 avec S = 4 ; en M = A et M = B, le rectangle est
+  aplati : S = 0.
+- **Le pas** est obligatoire ; s'il manque, le refus récrit la commande de l'élève avec un pas
+  d'un dixième de l'étendue (« Il manque le pas : écris par exemple .relever t ; 2t quand t va de 0
+  à 1 pas 0,1. »).
 
 **Quatre états** (D9) : `error` > `pending` > `incomplete` > `ok`. Un nom cité mais absent met
 l'objet **en attente** (`pending`, avec `missing`), pas en erreur ; l'attente se répare seule quand

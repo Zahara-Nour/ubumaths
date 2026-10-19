@@ -333,3 +333,14 @@ Phase 0 (validée le 2026-10-18) : [atelier-geometrie-lot2-phase0.md](atelier-ge
   18,8-19,1 s pour le balayage seul, lectures exclues), soit ~8 ms puis ~95 ms par pas — le même
   que chaque cran du curseur de position de M sur cette figure. Pas d'optimisation sûre et
   évidente côté `.relever` ; à traiter dans `recomputeAll` (dette « jamais mesuré » d'`atelier.md`).
+- 2026-10-19, **décisions de David sur `.relever`** (phase 0 du lot 2, « Décisions de David du
+  2026-10-19 »), tests d'abord (12 rouges) : (1) `dans X ; Y` facultatif nomme les deux listes,
+  noms validés comme tout nom (pris, réservé, invalide, deux fois le même : refus), exemple ajouté
+  à l'aide et rejoué (décor partagé `AREA_PROBLEM_SETUP`) ; (2) pas manquant : le refus récrit la
+  commande avec un pas d'un dixième de l'étendue ; (3) unité d'un angle dans le titre de la
+  colonne (« angle(I, O, M) (°) », « T (rad) ») ; (4) **polygone aplati d'aire 0** : `measures.ts`
+  ne refuse plus que le polygone croisé (`isCrossed`), le périmètre d'un aplati se calcule ; le
+  problème de l'aire a 21 lignes pleines (S = 0 en AM = 0 et AM = 4). Tests de la PR 2 changés :
+  `mesures-revue.test.ts`, « revue 6 » (sommet répété refusé → aire 0 ou 6 ; côtés qui se touchent
+  refusés → aire 6 ; ajoutés : trois sommets alignés, périmètre d'un aplati, mesure devenue plate
+  au glisser) ; (5) phrase du nuage inchangée.
