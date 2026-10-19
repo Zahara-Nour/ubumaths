@@ -105,7 +105,7 @@ async function main() {
 			shuffle_exercises: false,
 			shuffle_within_sections: false
 		},
-		template_id: MODELE_FICHE_ELEVE,
+		style_id: MODELE_FICHE_ELEVE,
 		grades: ['1_SPE']
 	});
 	if (!fiche.success) throw new Error(`Zod refuse la fiche : ${fiche.error.issues[0].message}`);
@@ -140,7 +140,7 @@ async function main() {
 			translations: d.translations ?? null,
 			status: 'draft',
 			version: 1,
-			template_id: d.template_id ?? null,
+			style_id: d.style_id ?? null,
 			grades: d.grades ?? [],
 			created_by: DAVID,
 			school_id: ECOLE

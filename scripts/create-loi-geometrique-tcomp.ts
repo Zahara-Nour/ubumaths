@@ -360,7 +360,7 @@ async function main() {
 					translations: f.translations,
 					status: 'draft',
 					version: 1,
-					template_id: MODELE_FICHE_ELEVE,
+					style_id: MODELE_FICHE_ELEVE,
 					grades: GRADES,
 					created_by: DAVID,
 					school_id: ECOLE
