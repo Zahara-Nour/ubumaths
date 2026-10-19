@@ -1693,8 +1693,15 @@ export class Atelier {
 		return this.titles.get(column) ?? '';
 	}
 
-	/** Poser le titre d'une colonne ; vide, le retirer. */
-	setTitle(column: number, text: string): { ok: true } | Refused {
+	/**
+	 * Poser le titre d'une colonne ; vide, le retirer. `recorded: false` : hors
+	 * de l'historique de la grille (`.relever`, dont les listes n'y sont pas).
+	 */
+	setTitle(
+		column: number,
+		text: string,
+		options: { readonly recorded?: boolean } = {}
+	): { ok: true } | Refused {
 		if (!isInGrid(column, 1)) {
 			return { ok: false, message: 'Cette colonne est hors de la grille (A à Z).' };
 		}
@@ -1703,7 +1710,9 @@ export class Atelier {
 			return { ok: false, message: `Un titre garde au plus ${MAX_TITLE_LENGTH} caractères.` };
 		}
 		if (title === this.titleOf(column)) return { ok: true };
-		this.#record({ cells: [], titles: [{ column, before: this.titleOf(column), after: title }] });
+		if (options.recorded !== false) {
+			this.#record({ cells: [], titles: [{ column, before: this.titleOf(column), after: title }] });
+		}
 		if (title === '') this.titles.delete(column);
 		else this.titles.set(column, title);
 		this.revision++;

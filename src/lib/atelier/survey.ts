@@ -23,6 +23,7 @@ import { nextName } from './names';
 import { substitutedTextOf } from './engine';
 import { positionTextOf, positionSliderFor, withPosition } from './construction';
 import { evaluate } from '$lib/mathAST/eval';
+import { transformAST } from '$lib/mathAST/visitor';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
 
@@ -47,7 +48,8 @@ interface Rational {
 	readonly d: bigint;
 }
 
-type Reading = { readonly ok: true; readonly value: number } | Refusal;
+/** `scale` : la taille des termes du calcul, qui dit ce qu'est un résidu de flottant. */
+type Reading = { readonly ok: true; readonly value: number; readonly scale: number } | Refusal;
 
 // =============================================================================
 // Constantes
@@ -56,8 +58,11 @@ type Reading = { readonly ok: true; readonly value: number } | Refusal;
 const USAGE =
 	'Écris par exemple .relever AM ; S quand M va de 0 à 1 pas 0,05 (deux expressions séparées par « ; »).';
 
-/** `AM ; S quand M va de 0 à 1 pas 0,05` — `a` s'écrit aussi pour `à` (sans accent). */
-const COMMAND = /^(.+?)\s+quand\s+(\S+)\s+va\s+de\s+(\S+)\s+(?:à|a)\s+(\S+)\s+pas\s+(\S+)$/s;
+/**
+ * `AM ; S quand M va de 0 à 1 pas 0,05` — `a` s'écrit aussi pour `à` (sans accent),
+ * les mots-clés en majuscule aussi (`Quand`, `Pas`).
+ */
+const COMMAND = /^(.+?)\s+quand\s+(\S+)\s+va\s+de\s+(\S+)\s+(?:à|a)\s+(\S+)\s+pas\s+(\S+)$/is;
 
 /** Un décimal (`-1,5`, `0.05`) ou une fraction (`1/3`). */
 const DECIMAL = /^(-?)(\d+)(?:[.,](\d+))?$/;
@@ -72,8 +77,14 @@ const OBJECT_NAME = /^[A-Za-z](?:_\d+)?$/;
 /** Chiffres significatifs d'une case : assez pour un tracé, et 200 cases tiennent dans l'URL. */
 const CELL_DIGITS = 10;
 
-/** Au-delà, une case s'écrirait en notation scientifique, que la liste ne relit pas. */
+/** Au-delà, une case ne tient plus dans une liste qui tient dans l'URL (D8). */
 const CELL_MAX = 1e15;
+
+/**
+ * Sous cette fraction de la taille de ses termes (ou du plus grand nombre de sa
+ * colonne), un nombre est un résidu de flottant (`sin(t)² + cos(t)² − 1`) : 0.
+ */
+const NOISE = 1e-12;
 
 // =============================================================================
 // Rationnels
@@ -246,31 +257,100 @@ function whyNoValue(atelier: Atelier, ast: MathNode): string {
 	return 'Cette expression n’a pas de valeur.';
 }
 
+/** La valeur décimale d'un arbre, ou `null`. */
+function decimalOf(ast: MathNode): number | null {
+	const result = evaluate(ast, { mode: 'decimal' });
+	return result.status === 'value' &&
+		typeof result.value === 'number' &&
+		Number.isFinite(result.value)
+		? result.value
+		: null;
+}
+
+/** La valeur calculée exactement, puis écrite en décimal ; `null` si le calcul exact échoue. */
+function exactly(ast: MathNode): number | null {
+	try {
+		const exact = evaluate(ast, { mode: 'exact' });
+		if (exact.status !== 'value' || typeof exact.value !== 'object' || exact.value === null) {
+			return null;
+		}
+		return decimalOf(exact.value as MathNode);
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * La taille des TERMES d'un calcul : la somme des valeurs absolues de ses
+ * termes de premier niveau (différences et opposés compris). `sin(t)² + cos(t)² − 1`
+ * a des termes de taille 2 : un résultat de 10⁻¹⁶ y est un résidu ; `10^(-20)`
+ * est un seul terme, de la taille de sa valeur.
+ */
+function termsScale(ast: MathNode): number | null {
+	switch (ast.type) {
+		case 'addition':
+		case 'subtraction': {
+			const left = termsScale(ast.left);
+			const right = termsScale(ast.right);
+			return left === null || right === null ? null : left + right;
+		}
+		case 'opposite':
+		case 'positive':
+			return termsScale(ast.operand);
+		case 'delimiter':
+			return termsScale(ast.content);
+		default: {
+			const value = decimalOf(ast);
+			return value === null ? null : Math.abs(value);
+		}
+	}
+}
+
 /** La valeur décimale d'une expression de l'atelier, mesures comprises, en ce moment. */
 function readExpression(atelier: Atelier, text: string): Reading {
 	const read = substitutedTextOf(atelier, text, 'text');
 	if (!read.ok) return read;
 	// Un angle mesuré est une grandeur (`45[°]`) : sa valeur est le nombre, dans
-	// l'unité du réglage
-	const result = evaluate(read.ast, { mode: 'decimal' });
-	if (result.status === 'value' && typeof result.value === 'number') {
-		if (Number.isFinite(result.value)) return { ok: true, value: result.value };
-	}
-	return { ok: false, message: whyNoValue(atelier, read.ast) };
+	// l'unité du réglage — l'unité retirée AVANT le calcul exact, qui passerait
+	// en radians
+	const ast = transformAST(read.ast, { leaveUnit: (node) => node.expression });
+	// EXACT d'abord : sin(π) vaut 0, pas 1,2246 × 10⁻¹⁶ (revue de la PR 4) ;
+	// le résultat exact passe ensuite en décimal
+	const value = exactly(ast) ?? decimalOf(ast);
+	if (value === null) return { ok: false, message: whyNoValue(atelier, read.ast) };
+	return { ok: true, value, scale: termsScale(ast) ?? Math.abs(value) };
 }
 
 /**
  * Une case de la liste : 10 chiffres significatifs, virgule décimale, jamais
- * de notation scientifique (la liste ne la relirait pas). `null` : trop grand.
+ * de notation scientifique (la liste ne la relirait pas), jamais `-0`.
+ * La valeur est déjà sous `CELL_MAX`.
  */
-function cellText(value: number): string | null {
+function cellText(value: number): string {
 	const rounded = Number(value.toPrecision(CELL_DIGITS));
-	if (Math.abs(rounded) >= CELL_MAX) return null;
 	if (rounded === 0) return '0';
-	const text = String(rounded).includes('e')
-		? rounded.toFixed(20).replace(/0+$/, '').replace(/\.$/, '')
-		: String(rounded);
-	return text.replace('.', ',');
+	const text = String(rounded);
+	if (!text.includes('e')) return text.replace('.', ',');
+	// `1e-21` : écrit en toutes lettres, 0,000…001 (`toFixed` s'arrête à 20 décimales)
+	const [mantissa, exponent] = rounded.toExponential(CELL_DIGITS - 1).split('e');
+	const negative = mantissa.startsWith('-');
+	const digits = mantissa.replace('-', '').replace('.', '').replace(/0+$/, '');
+	const zeros = '0'.repeat(-Number(exponent) - 1);
+	return `${negative ? '-' : ''}0,${zeros}${digits}`;
+}
+
+/**
+ * Les résidus de flottant d'une colonne, à 0 : sous `NOISE` fois la taille des
+ * termes de leur calcul, ou du plus grand nombre de la colonne.
+ */
+function withoutNoise(readings: readonly (Reading | undefined)[]): (number | null)[] {
+	const values = readings.map((r) => (r?.ok === true ? r.value : null));
+	const column = Math.max(0, ...values.map((v) => (v === null ? 0 : Math.abs(v))));
+	return readings.map((reading) => {
+		if (reading?.ok !== true) return null;
+		const scale = Math.max(column, reading.scale);
+		return Math.abs(reading.value) <= NOISE * scale ? 0 : reading.value;
+	});
 }
 
 // =============================================================================
@@ -289,6 +369,12 @@ export function surveyCommand(
 	for (const expression of expressions) {
 		const bare = bareFunctionRefusal(expression);
 		if (bare !== null) return { ok: false, message: bare };
+	}
+	if (!OBJECT_NAME.test(name)) {
+		return {
+			ok: false,
+			message: `« ${name} » n’est pas un nom : écris le nom de la valeur ou du point qui varie (quand t va de …).`
+		};
 	}
 	const definitionAt = varyingOf(atelier, name);
 	if (typeof definitionAt !== 'function') return definitionAt;
@@ -352,28 +438,41 @@ export function surveyCommand(
 		};
 	}
 
-	// Une ligne par pas ; un pas sans valeur laisse sa ligne VIDE dans les deux
-	// listes, pour que les lignes restent appariées (P1)
-	const rows = readings.map((pair) => {
-		const texts = (pair ?? []).map((reading) => (reading.ok ? cellText(reading.value) : null));
-		return texts.length === 2 && texts.every((text) => text !== null) ? texts : null;
-	});
-	const missing = rows.filter((row) => row === null).length;
-	const columns = [0, 1].map((i) => rows.map((row) => row?.[i] ?? '').join(' ; '));
+	// Une ligne par pas ; un pas sans valeur, ou trop grande pour une case,
+	// laisse sa ligne VIDE dans les deux listes, pour que les lignes restent
+	// appariées (P1)
+	const numbers = [0, 1].map((i) => withoutNoise(readings.map((pair) => pair?.[i])));
+	const kept = readings.map((_, row) => numbers.every((column) => column[row] !== null));
+	const large = kept.filter(
+		(isKept, row) => isKept && numbers.some((column) => Math.abs(column[row]!) >= CELL_MAX)
+	).length;
+	const missing = kept.filter((isKept) => !isKept).length;
+	const columns = numbers.map((column) =>
+		column
+			.map((value, row) =>
+				!kept[row] || numbers.some((c) => Math.abs(c[row]!) >= CELL_MAX) ? '' : cellText(value!)
+			)
+			.join(' ; ')
+	);
 
 	const created: string[] = [];
-	for (const [i, definition] of columns.entries()) {
+	for (const definition of columns) {
 		const listName = nextName('list', atelier.names);
 		const done = atelier.create({ kind: 'list', name: listName, definition });
 		if (!done.ok) {
+			// Tout ou rien : les titres ne sont posés qu'une fois les deux listes créées
 			for (const made of created) atelier.remove(made);
 			return { ok: false, message: done.message };
 		}
 		created.push(listName);
+	}
+	// Comme une liste créée dans Calcul, le relevé n'est pas un geste de la grille :
+	// ses titres non plus (rien à « Annuler » dans Données qui n'enlèverait qu'eux)
+	for (const [i, listName] of created.entries()) {
 		const object = atelier.get(listName);
 		const title = expressions[i];
 		if (object !== undefined && isList(object) && title.length <= MAX_TITLE_LENGTH) {
-			atelier.setTitle(object.column, title);
+			atelier.setTitle(object.column, title, { recorded: false });
 		}
 	}
 	const [x, y] = created;
@@ -385,7 +484,7 @@ export function surveyCommand(
 			? `Le pas ne tombe pas juste sur ${shown(request.to)} : le relevé s’arrête à ${last}.`
 			: null;
 	const lines = [
-		`Relevé de ${expressions[0]} et ${expressions[1]} quand ${name} va de ${shown(request.from)} à ${shown(request.to)}, pas ${shown(request.step)} : ${steps} lignes, dans ${x} et ${y}.`,
+		`Relevé de ${expressions[0]} et ${expressions[1]} quand ${name} va de ${shown(request.from)} à ${shown(request.to)}, pas ${shown(request.step)} : ${steps} ${steps === 1n ? 'ligne' : 'lignes'}, dans ${x} et ${y}.`,
 		...(shortOf === null ? [] : [shortOf]),
 		...(missing === 0
 			? []
@@ -393,6 +492,13 @@ export function surveyCommand(
 					missing === 1
 						? '1 pas sans valeur : sa ligne est laissée vide dans les deux listes.'
 						: `${missing} pas sans valeur : leurs lignes sont laissées vides dans les deux listes.`
+				]),
+		...(large === 0
+			? []
+			: [
+					large === 1
+						? '1 valeur trop grande pour une case (10¹⁵ ou plus) : sa ligne est laissée vide dans les deux listes.'
+						: `${large} valeurs trop grandes pour une case (10¹⁵ ou plus) : leurs lignes sont laissées vides dans les deux listes.`
 				]),
 		`Trace le nuage : sur la carte ${x}, « Nuage avec ${y} ».`
 	];
