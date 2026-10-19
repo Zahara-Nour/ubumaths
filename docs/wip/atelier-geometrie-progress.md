@@ -537,7 +537,7 @@ Les trois décisions (2) ci-dessus, `noms-indices-suites.test.ts` (28 tests, 20 
 - Trouvé en route : un point `(a_1 ; 2a_1)` n'était pas dessiné dans la figure (curseur cherché
   sous « a ») — corrigé avec le reste.
 
-**À trancher par David** (choix prudents pris) :
+**Tranché par David le 2026-10-19 : les quatre choix prudents sont gardés.**
 
 - une FONCTION `f` interdit aussi la valeur `f_1` (dans une définition, `f_1` y vaut déjà f(1)) ;
 - relecture d'un atelier qui a les deux : c'est la VALEUR qui est renommée, et les définitions
