@@ -26,7 +26,7 @@
 
 | Agent                  | Quand                                                              |
 | ---------------------- | ------------------------------------------------------------------ |
-| `code-reviewer`        | **Proactif** après chaque morceau de code écrit (fin de phase)      |
+| `code-reviewer`        | Une fois **sur la PR**, selon le risque (`CLAUDE.md` § Planning, point 4) ; aucune pour doc, contenu, petit correctif d'UI |
 | `security-auditor`     | **Proactif** après auth, RLS, API sensible, upload, dépendance ; condition 3 de `db:migrate` |
 | `debugger`             | Erreur runtime, TS, build, test rouge — cause racine               |
 | `test-automator`       | Créer / réparer des tests vitest, intégration, Playwright          |
