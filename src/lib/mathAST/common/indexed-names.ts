@@ -84,3 +84,19 @@ export function revealIndexedNames(
 	if (originals.size === 0) return node;
 	return mapNode(node, (n) => (isVariable(n) ? (originals.get(n.name) ?? n) : n));
 }
+
+/** Le nom d'une variable indicée (`x_1`, `a_12`) : base latine, indice entier. */
+const INDEXED_VARIABLE_NAME = /^([A-Za-z])_(\d+)$/;
+
+/**
+ * Le LaTeX d'une variable qui porte un nom indicé (`x_1` → `x_1`, `a_12` →
+ * `a_{12}`), ou `null` pour un autre nom. Le pipeline de lecture fait de
+ * `x_1` une variable (`hideIndexedNames`) : sans ce rendu, elle s'affichait
+ * `\mathit{x_1}`, comme un nom de plusieurs lettres.
+ */
+export function indexedVariableLatex(name: string): string | null {
+	const match = INDEXED_VARIABLE_NAME.exec(name);
+	if (match === null) return null;
+	const [, base, index] = match;
+	return index.length === 1 ? `${base}_${index}` : `${base}_{${index}}`;
+}

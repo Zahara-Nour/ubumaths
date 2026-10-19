@@ -12,7 +12,7 @@
 import { z } from 'zod';
 import { Atelier } from './atelier.svelte';
 import { decodeAtelier } from './url';
-import { reservedYRenamedMessage } from './geometry';
+import { renamedOnReadMessage } from './geometry';
 import { splitInterval } from './interval';
 import { readingMode } from './parse';
 import type { AtelierState } from './persistence';
@@ -139,7 +139,7 @@ export async function openLink(params: URLSearchParams): Promise<OpenedLink> {
 		const lost = decoded.dropped + report.skipped.length;
 		// Q2 de la géométrie : un objet `y` renommé à la relecture, dit à l'ouverture
 		const notices = [
-			...report.renamed.map(({ to }) => reservedYRenamedMessage(to)),
+			...report.renamed.map(renamedOnReadMessage),
 			...(lost === 0
 				? []
 				: [

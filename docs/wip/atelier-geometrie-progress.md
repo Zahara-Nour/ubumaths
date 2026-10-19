@@ -511,3 +511,27 @@ Les 14 lignes ❌ du relevé passent ✅ (`noms-indices.test.ts`, 24 tests, 22 r
   analyses en x (signe, domaine) ne lisent plus `x_1` comme x. (3) **Lot 3 (la souris)** : phase 0
   validée telle que recommandée. (4) **mathAST** : petite PR pour les extrema de `sin x` sur
   [0 ; 2π] (−1 en 3π/2 absent) et `tan x` « croissante sur ℝ », avec un oracle numérique.
+
+### Suites des noms indicés — branche `fix/atelier-indices-suite` (2026-10-19)
+
+Les trois décisions (2) ci-dessus, `noms-indices-suites.test.ts` (28 tests, 20 rouges sur
+`a1af36bd4` ; les 8 verts gardent `u_n`, `f_1(2)`, `a_1`, `f_1` permise, le nom d'office,
+`.résoudre x - x_1`, `.domaine`, `.dériver`) :
+
+- `u_3`, `2u_3`, `u_3 + u_4`, `u_{3}` dans Calcul → le terme (récurrence comprise) ;
+  `indexedTermsAsCalls` (`calcul.ts`).
+- valeur `u_3` ⇄ suite/fonction `u` : refus dans les deux sens (`indexedNameClash`, `names.ts`) ;
+  relecture : la valeur est renommée et on le dit ; fusion : elle arrive sous un autre nom.
+- `x_1` ≠ x : le pipeline du moteur lit `x_1` comme une variable entière (`pipeline.ts`) ; oracle
+  des tests : la réponse avec `x_1` = la réponse avec `a`. Plus `reciprocal.ts`, `solve-steps.ts`,
+  `interval.ts`, `construction.ts`, `integrate-steps-check.ts`, `figure-sync.ts`.
+- Trouvé en route : un point `(a_1 ; 2a_1)` n'était pas dessiné dans la figure (curseur cherché
+  sous « a ») — corrigé avec le reste.
+
+**À trancher par David** (choix prudents pris) :
+
+- une FONCTION `f` interdit aussi la valeur `f_1` (dans une définition, `f_1` y vaut déjà f(1)) ;
+- relecture d'un atelier qui a les deux : c'est la VALEUR qui est renommée, et les définitions
+  qui la citaient ne sont pas réécrites (elles calculaient déjà avec le terme de la suite) ;
+- une récurrence citée dans une définition (`c = v_3`) reste refusée, comme `c = v(3)` ;
+- `.développer (x + x_1)^2` écrit `2xx_1` (ordre alphabétique des lettres, comme `2ax`).

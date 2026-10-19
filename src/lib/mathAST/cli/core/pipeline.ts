@@ -7,11 +7,13 @@
  */
 
 import type { PipelineResult, PipelineError, InputFormat } from '../types';
+import type { MathNode } from '../../types';
 import type { GenericFunctionConfig, LatexParserOptions } from '../../parser';
 import { DEFAULT_GENERIC_FUNCTIONS, parseLatexSafe } from '../../parser';
 import { parseCustomSafe } from '../../parser/custom';
 import { detectInputFormat } from './input-detector';
 import type { EvalState } from './eval-state';
+import { hideIndexedNames } from '../../common/indexed-names';
 
 // =============================================================================
 // Pipeline Options
@@ -245,7 +247,7 @@ export function parse(input: string, options?: PipelineOptions): PipelineResult 
 		}
 
 		return {
-			ast: result.ast ?? undefined,
+			ast: result.ast ? withIndexedNames(result.ast) : undefined,
 			errors,
 			inputFormat: detection.format
 		};
@@ -269,8 +271,20 @@ export function parse(input: string, options?: PipelineOptions): PipelineResult 
 	}
 
 	return {
-		ast: result.ast ?? undefined,
+		ast: result.ast ? withIndexedNames(result.ast) : undefined,
 		errors,
 		inputFormat: detection.format
 	};
+}
+
+/**
+ * Chaque nom indicé latin (`x_1`, `a_{12}`) devient une variable du même nom :
+ * `x_1` est UNE variable, jamais x munie d'un indice. Sans quoi chaque analyse
+ * qui cherche x (`getVariables`, `containsVariable`, le solveur) le trouvait
+ * dans `x_1` : `.variations x^2 - x_1 x` ne savait pas résoudre f'(x) = 0, et
+ * `.intégrer x_1 de 0 à 1` répondait 1 (relevé de l'atelier, 2026-10-19).
+ * `u_n` (indice non entier) reste la notation d'un terme de suite.
+ */
+function withIndexedNames(ast: MathNode): MathNode {
+	return hideIndexedNames(ast, (_name, node) => node.base.type === 'variable').node;
 }

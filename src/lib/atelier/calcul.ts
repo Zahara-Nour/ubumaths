@@ -505,6 +505,33 @@ function recurrenceTermsIn(
 	return failure === null ? { ok: true, text } : { ok: false, message: failure };
 }
 
+/**
+ * `u_3`, `u_{12}` : le nom d'une suite ou d'une fonction de l'atelier, suivi d'un
+ * indice entier. Pas après une lettre ni une barre oblique (`\mu_3`, `ab_3`), ni
+ * devant une parenthèse (`u_3(2)` appelle la fonction `u_3`).
+ */
+const INDEXED_TERM =
+	/(?<![A-Za-z_\\])([A-Za-z])_(?:(\d+)|\{\s*(\d+)\s*\})(?![\d'’]|\s*(?:\(|\\left))/g;
+
+/**
+ * Chaque terme `u_3` d'une suite (ou d'une fonction) de l'atelier récrit en
+ * appel `u(3)` : le sens qu'il a dans une définition (`subscriptsAsCalls`,
+ * `engine.ts`). Laissés tels quels : `u_n` (la notation), et `u_3` quand un
+ * objet `u_3` existe ou que `u` n'est ni une suite ni une fonction.
+ */
+function indexedTermsAsCalls(atelier: Atelier, input: string): string {
+	return input.replace(
+		INDEXED_TERM,
+		(whole, base: string, plain: string | undefined, braced: string | undefined) => {
+			const kind = atelier.get(base)?.kind;
+			if (kind !== 'sequence' && kind !== 'function') return whole;
+			const index = plain ?? braced;
+			if (atelier.get(`${base}_${index}`) !== undefined) return whole;
+			return `${base}(${index})`;
+		}
+	);
+}
+
 /** Une « définition » de dérivée (`f'(x) = …`), refusée (§2 E1). */
 const DERIVATIVE_DEFINITION = /^\s*([A-Za-z](?:_\d+)?'+)\s*(?:\(\s*[A-Za-z]\s*\))?\s*=(?!=)/;
 
@@ -3896,6 +3923,15 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		// L'objet a changé : le moteur doit le savoir pour le calcul suivant.
 		syncEngine(session.atelier, session.engine);
 		return result;
+	}
+
+	// `u_3` avec u une suite (ou une fonction) : le terme de rang 3, comme dans une
+	// définition (décision de David, 2026-10-19) — récrit `u(3)`, puis la ligne se
+	// calcule ; l'écho reste ce qui a été tapé
+	const withCalls = indexedTermsAsCalls(session.atelier, input);
+	if (withCalls !== input) {
+		const line = computeInput(session, withCalls, provenance);
+		return line.kind === 'calcul' ? { ...line, input } : line;
 	}
 
 	// Lot 2, L4 : une mesure dans un calcul (`AM`, `aire(A, B, C)`, `2AE + 1`) est

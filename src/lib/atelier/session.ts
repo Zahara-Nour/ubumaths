@@ -12,7 +12,7 @@ import type { Atelier } from './atelier.svelte';
 import type { CalcDesk, Entry } from './desk.svelte';
 import { loadCalcHistory, saveCalcHistory } from './history-storage';
 import { loadAtelier, saveAtelier, readForeignWrite } from './persistence';
-import { reservedYRenamedMessage } from './geometry';
+import { renamedOnReadMessage } from './geometry';
 
 /** Délai avant de ranger, pour ne pas écrire à chaque frappe. */
 const SAVE_DELAY_MS = 500;
@@ -66,7 +66,7 @@ export function openSession(atelier: Atelier, options: SessionOptions): Session 
 	if (loaded.kind === 'loaded') {
 		const report = atelier.restore(loaded.state);
 		// Q2 de la géométrie : un objet `y` renommé à la relecture, dit à l'ouverture
-		for (const { to } of report.renamed) say('info', reservedYRenamedMessage(to));
+		for (const renamed of report.renamed) say('info', renamedOnReadMessage(renamed));
 		if (report.skipped.length > 0) {
 			const names = report.skipped.map((s) => `« ${s.name} »`).join(', ');
 			say('warning', `${names} n'a pas pu être retrouvé dans l'atelier enregistré.`);

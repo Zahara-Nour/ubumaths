@@ -58,6 +58,21 @@ export function reservedYRenamedMessage(to: string): string {
 	return `« y » est désormais réservé aux équations : ton objet s’appelle maintenant ${to}.`;
 }
 
+/**
+ * Ce qu'on dit d'un objet renommé à la relecture (`migrateReservedNames`) :
+ * l'objet `y` (G5), ou une valeur `u_3` rangée à côté d'une suite ou d'une
+ * fonction `u`, où `u_3` désigne désormais u(3) (2026-10-19).
+ */
+export function renamedOnReadMessage(renamed: {
+	readonly from: string;
+	readonly to: string;
+}): string {
+	const indexed = /^([A-Za-z])_(\d+)$/.exec(renamed.from);
+	if (indexed === null) return reservedYRenamedMessage(renamed.to);
+	const [, base, index] = indexed;
+	return `« ${renamed.from} » se lit désormais ${base}(${index}) : ton objet s’appelle maintenant ${renamed.to}.`;
+}
+
 /** M2 (Q3) */
 export function figureFullMessage(max: number): string {
 	return `Un atelier ne peut pas contenir plus de ${max} points et courbes.`;

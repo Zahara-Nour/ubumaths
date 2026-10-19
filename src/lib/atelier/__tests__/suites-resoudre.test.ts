@@ -109,9 +109,10 @@ describe('ce que le moteur ne sait pas résoudre : un refus en français', () =>
 
 	// Depuis le lot 1 « réciproque » (2026-10-13) : 0,5ⁿ = 1/u₀ se résout,
 	// avec la condition sous laquelle la solution existe
+	// `u_0` s'écrit u₀, plus `\\mathit{u_0}` (noms indicés, 2026-10-19)
 	it('u_0*0.5^n=1 pour n → n = ln(1/u₀)/ln(0,5), si u₀ > 0', () => {
 		expect(answer(solve('u_0*0.5^n=1 pour n'))).toBe(
-			'n=\\dfrac{\\ln\\left(\\dfrac{1}{\\mathit{u_0}}\\right)}{\\ln\\left(0{,}5\\right)}\\quad\\text{si}\\mathit{u_0}>0'
+			'n=\\dfrac{\\ln\\left(\\dfrac{1}{u_0}\\right)}{\\ln\\left(0{,}5\\right)}\\quad\\text{si}u_0>0'
 		);
 	});
 

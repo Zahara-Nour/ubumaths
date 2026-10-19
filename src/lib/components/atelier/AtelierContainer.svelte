@@ -67,7 +67,7 @@
 	} from '$lib/atelier/atelier-file';
 	import type { KeptHistory } from '$lib/atelier/history-storage';
 	import { downloadText } from '$lib/atelier/history-export';
-	import { reservedYRenamedMessage } from '$lib/atelier/geometry';
+	import { renamedOnReadMessage } from '$lib/atelier/geometry';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
@@ -276,7 +276,7 @@
 		selected = null;
 		// Ce qui n'a pas pu être relu se dit, jamais en silence (§5)
 		const lost = [
-			...report.renamed.map(({ to }) => reservedYRenamedMessage(to)),
+			...report.renamed.map(renamedOnReadMessage),
 			...report.skipped.map((s) => `« ${s.name} » n'a pas pu être chargé : ${s.reason}`),
 			...(dropped > 0 ? [`${dropped} élément(s) du fichier étaient illisibles.`] : []),
 			...(consoleNotice !== null ? [consoleNotice] : [])

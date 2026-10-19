@@ -14,7 +14,14 @@
 
 import { Atelier, sequenceInputOf } from './atelier.svelte';
 import { loadAtelier, migrateReservedNames, saveAtelier, type AtelierState } from './persistence';
-import { nextName, derivativeOf, displayName, reciprocalName, reciprocalOf } from './names';
+import {
+	indexedNameClash,
+	nextClashFreeName,
+	derivativeOf,
+	displayName,
+	reciprocalName,
+	reciprocalOf
+} from './names';
 import {
 	cellTextFromStored,
 	columnLetter,
@@ -206,7 +213,11 @@ export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport
 				continue;
 			}
 		} else {
-			chosen = taken.includes(wanted) ? nextName(stored.kind, taken) : wanted;
+			// `u_3` reçu à côté d'une suite u locale (ou l'inverse) : un autre nom,
+			// comme un nom déjà pris (`indexedNameClash`, 2026-10-19)
+			const clashes =
+				taken.includes(wanted) || indexedNameClash(wanted, stored.kind, atelier.objects) !== null;
+			chosen = clashes ? nextClashFreeName(stored.kind, taken, atelier.objects) : wanted;
 		}
 		arrivedAs.set(wanted, chosen);
 

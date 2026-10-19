@@ -71,7 +71,7 @@ import { number as mathNumber } from '$lib/mathAST/factory';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { substitutedAstOf, substitutedTextOf } from './engine';
-import { astOf, pointCoordinatesOf, type Provenance } from './parse';
+import { astOf, pointCoordinatesOf, variablesOf, type Provenance } from './parse';
 import { decimalCommaLatex, decimalCommaText } from './decimal-comma';
 import { readConstruction, type ReadArgument, type ReadCall } from './construction-read';
 import {
@@ -447,7 +447,8 @@ function citesLetters(support: Support): boolean {
 					? [...support.coefficients]
 					: [];
 	if (support.type === 'graph') {
-		return [...getVariables(support.expression)].some((name) => name !== 'x');
+		// `x_1` est une lettre de plus, pas x (`variablesOf`)
+		return [...variablesOf(support.expression, undefined)].some((name) => name !== 'x');
 	}
 	return values.some((v) => isExact(v) && getVariables(v.node).size > 0);
 }

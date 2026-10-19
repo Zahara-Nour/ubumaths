@@ -27,6 +27,7 @@ import type {
 } from '$lib/mathAST/pedagogical-integration';
 import { compile } from '$lib/mathAST/eval/compile';
 import { getVariables } from '$lib/mathAST/eval/substitute';
+import { hideIndexedNames } from '$lib/mathAST/common/indexed-names';
 
 // =============================================================================
 // Constantes
@@ -146,7 +147,10 @@ export function citesForbiddenPoint(
 	upper: MathNode
 ): boolean {
 	if (!isNumericBound(point) || !isNumericBound(lower) || !isNumericBound(upper)) return false;
-	if ([...getVariables(integrand)].some((name) => name !== variable)) return false;
+	// `x_1` est une autre lettre que x : nommée en entier (`hideIndexedNames`)
+	if ([...getVariables(hideIndexedNames(integrand).node)].some((name) => name !== variable)) {
+		return false;
+	}
 	const p = evalAt(point, {});
 	const [a, b] = [evalAt(lower, {}), evalAt(upper, {})];
 	const [low, high] = a <= b ? [a, b] : [b, a];

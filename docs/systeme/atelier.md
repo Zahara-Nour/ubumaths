@@ -535,6 +535,35 @@ nœud par la liaison `a_1` sans jamais toucher à sa base (`mathAST/common/index
 avant, avec a = 10, `a_1` devenait `10_1` (« Écriture non reconnue »), et `b = a_1 + 1`
 attendait « a ». Seul un indice ENTIER fait un nom : `u_n` reste la notation d'une suite, et
 `u_3` (u suite ou fonction de l'atelier, `u_3` n'en étant pas une) son terme de rang 3.
+**Les suites** (décisions de David, 2026-10-19) :
+
+- **`u_3` tapé dans Calcul** répond le terme, comme dans une définition : `indexedTermsAsCalls`
+  (`calcul.ts`) récrit `u_3`, `u_{12}` en `u(3)`, `u(12)` avant tout calcul (récurrence comprise,
+  par `recurrenceTermsIn` ; l'écho reste ce qui a été tapé). Pas devant une parenthèse (`u_3(2)`
+  appelle la fonction `u_3`) ni quand un objet `u_3` existe. Une récurrence citée dans une
+  DÉFINITION (`c = v_3`) reste refusée, comme `c = v(3)`.
+- **Une valeur `u_3` et une suite (ou fonction) `u` ne cohabitent pas** (`indexedNameClash`,
+  `names.ts`, dans `create`, `rename` et le nom proposé d'office) : « u est une suite : u_3
+  désigne son terme de rang 3. Choisis un autre nom. » (fonction : « f_1 désigne f(1) ») ; dans
+  l'autre sens, « u_3 existe déjà : avec une suite u, u_3 désignerait son terme de rang 3.
+  Renomme u_3, ou choisis un autre nom. » Une fonction ou une suite `f_1` à côté de `f` reste
+  permise. Un atelier rangé (lien, sauvegarde, fichier) qui contient les deux : la VALEUR est
+  renommée à la relecture (`migrateIndexedNameClashes`, `persistence.ts`, comme la migration de
+  `y`) et on le dit (`renamedOnReadMessage`, `geometry.ts` : « « u_3 » se lit désormais u(3) :
+  ton objet s'appelle maintenant a. ») ; les définitions qui citaient `u_3` ne sont PAS réécrites
+  — elles y lisaient déjà le terme. Versé (`mergeInto`) à côté d'une suite u locale : la valeur
+  arrive sous un autre nom, comme un nom pris.
+- **`x_1` n'est jamais x** : le pipeline de lecture du moteur (`mathAST/cli/core/pipeline.ts`)
+  fait de chaque nom indicé latin une VARIABLE `x_1` (`hideIndexedNames`), que toutes les
+  analyses (`.variations`, `.résoudre`, `.intégrer`, `.évaluer`, `.domaine`, le solveur) traitent
+  comme une autre lettre — comme `a`. Avant : `.variations x^2 - x_1 x` ne trouvait pas de point
+  critique, `.intégrer x_1 de 0 à 1` rendait 1, `.évaluer x_1^2 en x_1=3` refusait. Le LaTeX
+  d'une telle variable s'écrit `x_1`, `a_{12}` (`indexedVariableLatex`), plus `\mathit{x_1}`.
+  Côté atelier, lisent aussi le nom entier : `.réciproque` (lettres et paramètres,
+  `reciprocal.ts`), les étapes de `.résoudre` (`solve-steps.ts`), une borne d'intervalle
+  (`interval.ts`), les lettres d'une courbe (`construction.ts`), l'intégrande
+  (`integrate-steps-check.ts`), et la figure (`figure-sync.ts` : un point `(a_1 ; 2a_1)` n'était
+  pas dessiné, son curseur cherché sous « a »).
 
 **Noms** (`src/lib/atelier/names.ts`) : une lettre latine, éventuellement indicée ; **un seul
 espace de noms** tous types confondus (D1). Réservés : `x`, `y`, `n`, `e`, `pi`, `i` — **`y` depuis
