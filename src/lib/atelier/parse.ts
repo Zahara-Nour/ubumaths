@@ -339,9 +339,6 @@ export interface ParsedDefinition {
 /** Une valeur purement numérique, sans unité ni expression. */
 const PLAIN_NUMBER = /^\s*-?\d+(?:[.,]\d+)?\s*$/;
 
-/** Les identifiants du TEXTE — pour la réécriture au renommage, pas pour lire les dépendances. */
-const IDENTIFIERS = /[A-Za-z]+(?:_\d+)?/g;
-
 // `readNumber` et `readListValue` vivent dans le module statistique : le bloc
 // ubumark `données:` lit une série comme l'atelier (Q92, v2 lot 4)
 export { readListValue, readNumber };
@@ -887,11 +884,23 @@ function calledFunctions(node: MathNode): string[] {
 }
 
 /**
+ * Les noms d'une définition, pour la réécriture au renommage (pas pour lire les
+ * dépendances) : lettres et indice, écrit `a_1` ou par MathLive `a_{1}`, et
+ * jamais une commande LaTeX (`\cdot`).
+ */
+const RENAMABLE = /(?<![\\A-Za-z])[A-Za-z]+(?:_\d+|_\{\d+\})?/g;
+
+/**
  * Réécrire une définition après le renommage d'un objet.
  *
  * Remplace le nom entier seulement : renommer `f` ne doit pas toucher au `f`
- * de `f_1`, ni à celui de `sin`.
+ * de `f_1`, ni à celui de `sin`. Le LaTeX d'une carte compte aussi : `a_{1}`
+ * est le nom `a_1`, réécrit dans son écriture (B9 de `atelier-remplacer-phase0.md`
+ * — renommer `a` changeait la base de `a_{1}`).
  */
 export function renameInDefinition(definition: string, from: string, to: string): string {
-	return definition.replace(IDENTIFIERS, (id) => (id === from ? to : id));
+	return definition.replace(RENAMABLE, (id) => {
+		if (id.replace(/_\{(\d+)\}$/, '_$1') !== from) return id;
+		return id.includes('{') ? to.replace(/_(\d+)$/, '_{$1}') : to;
+	});
 }
