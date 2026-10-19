@@ -91,68 +91,73 @@
 
 <article class="objet figure" class:selected data-kind={object.kind} data-status={object.status}>
 	<div class="ligne">
-		<FigureStylePopover {object} />
-		<span class="nom" title={follows ?? undefined}>{name}</span>
-		{#if follows}
-			<button
-				type="button"
-				class="lien"
-				aria-label={follows}
-				aria-expanded={showFollows}
-				aria-controls="{uid}-suit"
-				title={follows}
-				onclick={() => (showFollows = !showFollows)}
-			>
-				<Link2 class="h-3.5 w-3.5" aria-hidden="true" />
-			</button>
-		{/if}
-		<span class="egal" aria-hidden="true">{separator}</span>
-		<div class="membre">
-			<DefinitionField
-				{object}
-				commit="validate"
-				showPrefix={false}
-				autofocus={selected && object.definition === ''}
-			/>
+		<!-- Nom et définition, qui passent à la ligne ; les boutons restent à droite -->
+		<div class="corps">
+			<FigureStylePopover {object} />
+			<span class="nom" title={follows ?? undefined}>{name}</span>
+			{#if follows}
+				<button
+					type="button"
+					class="lien"
+					aria-label={follows}
+					aria-expanded={showFollows}
+					aria-controls="{uid}-suit"
+					title={follows}
+					onclick={() => (showFollows = !showFollows)}
+				>
+					<Link2 class="h-3.5 w-3.5" aria-hidden="true" />
+				</button>
+			{/if}
+			<span class="egal" aria-hidden="true">{separator}</span>
+			<div class="membre">
+				<DefinitionField
+					{object}
+					commit="validate"
+					showPrefix={false}
+					autofocus={selected && object.definition === ''}
+				/>
+			</div>
 		</div>
-		{#if stateLabel}
-			<span class="etat">{stateLabel}</span>
-		{/if}
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger>
-				{#snippet child({ props })}
-					<button
-						{...props}
-						type="button"
-						class="icone"
-						aria-label={`Options de ${name}`}
-						title={isPoint(object) ? 'Affichage et actions' : 'Actions'}
-					>
-						<EllipsisVertical class="h-4 w-4" aria-hidden="true" />
-					</button>
-				{/snippet}
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content align="end" class="w-56" onCloseAutoFocus={handleCloseAutoFocus}>
-				{#if isPoint(object)}
-					<DropdownMenu.Group>
-						<DropdownMenu.GroupHeading>Affichage</DropdownMenu.GroupHeading>
-						<!-- Son nom écrit près de lui, dans la vue Géométrie -->
-						<DropdownMenu.CheckboxItem
-							checked={object.display?.showLabel ?? true}
-							onCheckedChange={(on) => atelier.setFigureDisplay(object.name, { showLabel: on })}
+		<div class="boutons">
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="icone"
+							aria-label={`Options de ${name}`}
+							title={isPoint(object) ? 'Affichage et actions' : 'Actions'}
 						>
-							Étiquette
-						</DropdownMenu.CheckboxItem>
+							<EllipsisVertical class="h-4 w-4" aria-hidden="true" />
+						</button>
+					{/snippet}
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content align="end" class="w-56" onCloseAutoFocus={handleCloseAutoFocus}>
+					{#if isPoint(object)}
+						<DropdownMenu.Group>
+							<DropdownMenu.GroupHeading>Affichage</DropdownMenu.GroupHeading>
+							<!-- Son nom écrit près de lui, dans la vue Géométrie -->
+							<DropdownMenu.CheckboxItem
+								checked={object.display?.showLabel ?? true}
+								onCheckedChange={(on) => atelier.setFigureDisplay(object.name, { showLabel: on })}
+							>
+								Étiquette
+							</DropdownMenu.CheckboxItem>
+						</DropdownMenu.Group>
+						<DropdownMenu.Separator />
+					{/if}
+					<DropdownMenu.Group>
+						<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
+						<CardActionItems {actions} onselect={handleSelect} />
 					</DropdownMenu.Group>
-					<DropdownMenu.Separator />
-				{/if}
-				<DropdownMenu.Group>
-					<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
-					<CardActionItems {actions} onselect={handleSelect} />
-				</DropdownMenu.Group>
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+		</div>
 	</div>
+	{#if stateLabel}
+		<p class="etat">{stateLabel}</p>
+	{/if}
 
 	{#if positionSlider && isPoint(object)}
 		<!-- L5 : la position de M sur son objet, réglée comme une valeur -->
@@ -207,14 +212,32 @@
 		border-color: var(--color-primary);
 		background: var(--color-card);
 	}
-	/* Une définition trop longue pour la ligne passe dessous, en entier : le
-	   champ prend toute la largeur restante, jamais moins que son contenu */
+	/* Le nom et la définition passent à la ligne ; les boutons restent en haut à
+	   droite (régression de #1508 : ⋮ passait sous le champ, à gauche). Le champ
+	   réserve leur place derrière lui (`::after`) : sur la ligne du nom, rien ne
+	   passe sous les boutons ; trop long, il descend sur la ligne suivante, où
+	   la réserve se replie et lui laisse toute la largeur */
 	.ligne {
+		--boutons: 1.75rem;
+		position: relative;
+		min-width: 0;
+	}
+	.corps {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.25rem;
 		min-width: 0;
+		min-height: 1.75rem;
+	}
+	.boutons {
+		position: absolute;
+		top: 0;
+		right: 0;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		height: 1.75rem;
 	}
 	.nom {
 		font-family: var(--font-serif, serif);
@@ -226,8 +249,24 @@
 		font-family: var(--font-serif, serif);
 		margin-right: 0.125rem;
 	}
+	/* Ne rétrécit jamais sous son contenu : trop long pour la ligne, il passe
+	   dessous, en entier (plafonné à la largeur de la carte) */
 	.membre {
-		flex: 1 1 auto;
+		display: flex;
+		flex: 1 0 auto;
+		min-width: 0;
+		max-width: 100%;
+	}
+	.membre > :global(*) {
+		flex: 1 0 auto;
+		min-width: 0;
+		max-width: 100%;
+	}
+	.membre::after {
+		content: '';
+		flex: 0 1000 var(--boutons);
+		/* Compte dans la largeur du champ : c'est elle qui décide du retour à la ligne */
+		width: var(--boutons);
 		min-width: 0;
 	}
 	/* La nature, discrète : elle se lit, elle ne se clique pas */

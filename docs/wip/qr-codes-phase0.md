@@ -1,4 +1,4 @@
-# QR codes vers les pages et les ressources — phase 0, à valider
+# QR codes vers les pages et les ressources — phase 0
 
 Demande de David du 2026-10-18 : « comment avoir facilement des QR codes vers les pages et les ressources du site ? ». Rien n'est codé.
 
@@ -51,6 +51,14 @@ Demande de David du 2026-10-18 : « comment avoir facilement des QR codes vers l
 - Il serait coché par fiche (« QR code vers la fiche en ligne ») et imprimé petit, en haut à droite, avec l'adresse courte dessous.
 - Il serait fabriqué en SVG par la même bibliothèque, puis posé en fichier virtuel. Pas de paquet Typst : le PDF ne dépendrait pas du réseau.
 - On ne le fait que si le lot 1 sert en classe.
+
+## Tranché par David (2026-10-19)
+
+1. Le QR d'une fiche pointe vers sa **page élève** (connexion demandée) — recommandation suivie.
+2. Adresse : **`https://www.chiph.re/…`** toujours, quel que soit l'environnement. Mesuré le 2026-10-19 : `https://chiph.re/…` répond 308 vers `https://www.chiph.re/…`, qui répond 200 : `www` évite la redirection.
+3. Bouton d'abord là où un lien se copie déjà (exercice, série, cours, cahier de texte), puis Shtam et glossaire, puis fiches — recommandation suivie.
+4. **Atelier : un QR n'a d'intérêt que vers un atelier SAUVEGARDÉ ET PUBLIC.** Aujourd'hui l'atelier vit dans le navigateur et son lien porte tout l'état : pas de QR pour l'Atelier au lot 1. Il viendra avec un futur atelier sauvegardé sur le serveur et rendu public (chantier à part, non ouvert).
+5. **Le lot 2 (QR dans les PDF) est à faire** : David ajoutera des QR codes à ses fiches et à d'autres documents écrits.
 
 ## Questions pour David
 

@@ -197,135 +197,143 @@
 
 <article bind:this={card} class="objet fonction" class:selected data-status={object.status}>
 	<div class="ligne">
-		<CurveStylePopover {object} />
-		<span class="nom" title={follows ?? undefined}>{name}</span>
-		{#if follows}
+		<!-- Nom et définition, qui passent à la ligne ; les boutons restent à droite -->
+		<div class="corps">
+			<CurveStylePopover {object} />
+			<span class="nom" title={follows ?? undefined}>{name}</span>
+			{#if follows}
+				<button
+					type="button"
+					class="lien"
+					aria-label={follows}
+					aria-expanded={showFollows}
+					aria-controls="{uid}-suit"
+					title={follows}
+					onclick={() => (showFollows = !showFollows)}
+				>
+					<Link2 class="h-3.5 w-3.5" aria-hidden="true" />
+				</button>
+			{/if}
+			<span class="variable" aria-hidden="true">({letter}) =</span>
+			<div class="membre">
+				{#if editable}
+					<DefinitionField
+						{object}
+						commit="validate"
+						showPrefix={false}
+						autofocus={selected && object.definition === ''}
+					/>
+				{:else}
+					<span class="formule">
+						{#if rendered}
+							<span aria-hidden="true">
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré par toLatex, voir `rendered` -->
+								{@html rendered.markup}
+							</span>
+							<span class="sr-only">{rendered.spoken}</span>
+						{:else}
+							…
+						{/if}
+						{#if intervalLabel}
+							<span class="intervalle">sur {intervalLabel}</span>
+						{/if}
+					</span>
+				{/if}
+			</div>
+		</div>
+		<div class="boutons">
+			<!-- C3 : tracer en un clic, sans changer de vue -->
 			<button
 				type="button"
-				class="lien"
-				aria-label={follows}
-				aria-expanded={showFollows}
-				aria-controls="{uid}-suit"
-				title={follows}
-				onclick={() => (showFollows = !showFollows)}
+				class="icone"
+				aria-pressed={object.plotted === true}
+				aria-label={`Tracer ${name}`}
+				title="Tracer sur le graphique"
+				onclick={() => atelier.setPlotted(object.name, !object.plotted)}
 			>
-				<Link2 class="h-3.5 w-3.5" aria-hidden="true" />
+				{#if object.plotted}
+					<Eye class="h-4 w-4" />
+				{:else}
+					<EyeOff class="h-4 w-4" />
+				{/if}
 			</button>
-		{/if}
-		<span class="variable" aria-hidden="true">({letter}) =</span>
-		<div class="membre">
-			{#if editable}
-				<DefinitionField
-					{object}
-					commit="validate"
-					showPrefix={false}
-					autofocus={selected && object.definition === ''}
-				/>
-			{:else}
-				<span class="formule">
-					{#if rendered}
-						<span aria-hidden="true">
-							<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré par toLatex, voir `rendered` -->
-							{@html rendered.markup}
-						</span>
-						<span class="sr-only">{rendered.spoken}</span>
-					{:else}
-						…
-					{/if}
-					{#if intervalLabel}
-						<span class="intervalle">sur {intervalLabel}</span>
-					{/if}
-				</span>
-			{/if}
-		</div>
-		<!-- C3 : tracer en un clic, sans changer de vue -->
-		<button
-			type="button"
-			class="icone"
-			aria-pressed={object.plotted === true}
-			aria-label={`Tracer ${name}`}
-			title="Tracer sur le graphique"
-			onclick={() => atelier.setPlotted(object.name, !object.plotted)}
-		>
-			{#if object.plotted}
-				<Eye class="h-4 w-4" />
-			{:else}
-				<EyeOff class="h-4 w-4" />
-			{/if}
-		</button>
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger>
-				{#snippet child({ props })}
-					<button
-						{...props}
-						type="button"
-						class="icone"
-						aria-label={`Options de ${name}`}
-						title="Affichage et actions"
-					>
-						<EllipsisVertical class="h-4 w-4" aria-hidden="true" />
-					</button>
-				{/snippet}
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content align="end" class="w-60" onCloseAutoFocus={handleCloseAutoFocus}>
-				<DropdownMenu.Group>
-					<DropdownMenu.GroupHeading>Affichage</DropdownMenu.GroupHeading>
-					{#if display === undefined}
-						<!--
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="icone"
+							aria-label={`Options de ${name}`}
+							title="Affichage et actions"
+						>
+							<EllipsisVertical class="h-4 w-4" aria-hidden="true" />
+						</button>
+					{/snippet}
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content align="end" class="w-60" onCloseAutoFocus={handleCloseAutoFocus}>
+					<DropdownMenu.Group>
+						<DropdownMenu.GroupHeading>Affichage</DropdownMenu.GroupHeading>
+						{#if display === undefined}
+							<!--
 							Courbe non tracée : tangente et aire restent dans le menu, atteignables
 							au clavier, annoncées indisponibles avec leur raison (revue de #1488 :
 							un élément `disabled` est sauté, et une raison hors des éléments du
 							menu n'est jamais lue).
 						-->
-						{#each TOGGLES as label (label)}
-							<DropdownMenu.Item class="indisponible" onSelect={(event) => event.preventDefault()}>
-								{#snippet child({ props })}
-									<div
-										{...props}
-										role="menuitemcheckbox"
-										aria-checked="false"
-										aria-disabled="true"
-										aria-label={label}
-										aria-describedby="{uid}-trace-dabord"
-									>
-										<span class="item">
-											<span>{label}</span>
-											<span class="raison">{NOT_PLOTTED}</span>
-										</span>
-									</div>
-								{/snippet}
-							</DropdownMenu.Item>
-						{/each}
-						<span class="sr-only" id="{uid}-trace-dabord">{NOT_PLOTTED}</span>
-					{:else}
-						<DropdownMenu.CheckboxItem
-							checked={display.tangentAt != null}
-							onCheckedChange={toggleTangent}
-						>
-							Tangente
-						</DropdownMenu.CheckboxItem>
-						<DropdownMenu.CheckboxItem
-							checked={display.integral != null}
-							onCheckedChange={toggleIntegral}
-						>
-							Aire sous la courbe
-						</DropdownMenu.CheckboxItem>
-						<!-- Lot 3 bis : les f(a) de la console et un point glissant, en pointillés -->
-						<DropdownMenu.CheckboxItem
-							checked={display.showReading}
-							onCheckedChange={(on) => atelier.setDisplay(object.name, { showReading: on })}
-						>
-							Lecture graphique
-						</DropdownMenu.CheckboxItem>
-					{/if}
-				</DropdownMenu.Group>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Group>
-					<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
-					<CardActionItems {actions} onselect={handleSelect} />
-				</DropdownMenu.Group>
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
+							{#each TOGGLES as label (label)}
+								<DropdownMenu.Item
+									class="indisponible"
+									onSelect={(event) => event.preventDefault()}
+								>
+									{#snippet child({ props })}
+										<div
+											{...props}
+											role="menuitemcheckbox"
+											aria-checked="false"
+											aria-disabled="true"
+											aria-label={label}
+											aria-describedby="{uid}-trace-dabord"
+										>
+											<span class="item">
+												<span>{label}</span>
+												<span class="raison">{NOT_PLOTTED}</span>
+											</span>
+										</div>
+									{/snippet}
+								</DropdownMenu.Item>
+							{/each}
+							<span class="sr-only" id="{uid}-trace-dabord">{NOT_PLOTTED}</span>
+						{:else}
+							<DropdownMenu.CheckboxItem
+								checked={display.tangentAt != null}
+								onCheckedChange={toggleTangent}
+							>
+								Tangente
+							</DropdownMenu.CheckboxItem>
+							<DropdownMenu.CheckboxItem
+								checked={display.integral != null}
+								onCheckedChange={toggleIntegral}
+							>
+								Aire sous la courbe
+							</DropdownMenu.CheckboxItem>
+							<!-- Lot 3 bis : les f(a) de la console et un point glissant, en pointillés -->
+							<DropdownMenu.CheckboxItem
+								checked={display.showReading}
+								onCheckedChange={(on) => atelier.setDisplay(object.name, { showReading: on })}
+							>
+								Lecture graphique
+							</DropdownMenu.CheckboxItem>
+						{/if}
+					</DropdownMenu.Group>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Group>
+						<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
+						<CardActionItems {actions} onselect={handleSelect} />
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+		</div>
 	</div>
 
 	{#if follows && showFollows}
@@ -413,14 +421,32 @@
 		background: var(--color-card);
 	}
 
-	/* Une définition trop longue pour la ligne passe dessous, en entier : le
-	   champ prend toute la largeur restante, jamais moins que son contenu */
+	/* Le nom et la définition passent à la ligne ; les boutons restent en haut à
+	   droite (régression de #1508 : ⋮ passait sous le champ, à gauche). Le champ
+	   réserve leur place derrière lui (`::after`) : sur la ligne du nom, rien ne
+	   passe sous les boutons ; trop long, il descend sur la ligne suivante, où
+	   la réserve se replie et lui laisse toute la largeur */
 	.ligne {
+		--boutons: 3.75rem;
+		position: relative;
+		min-width: 0;
+	}
+	.corps {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.25rem;
 		min-width: 0;
+		min-height: 1.75rem;
+	}
+	.boutons {
+		position: absolute;
+		top: 0;
+		right: 0;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		height: 1.75rem;
 	}
 	.nom {
 		font-family: var(--font-serif, serif);
@@ -434,8 +460,24 @@
 		white-space: nowrap;
 		margin-right: 0.125rem;
 	}
+	/* Ne rétrécit jamais sous son contenu : trop long pour la ligne, il passe
+	   dessous, en entier (plafonné à la largeur de la carte) */
 	.membre {
-		flex: 1 1 auto;
+		display: flex;
+		flex: 1 0 auto;
+		min-width: 0;
+		max-width: 100%;
+	}
+	.membre > :global(*) {
+		flex: 1 0 auto;
+		min-width: 0;
+		max-width: 100%;
+	}
+	.membre::after {
+		content: '';
+		flex: 0 1000 var(--boutons);
+		/* Compte dans la largeur du champ : c'est elle qui décide du retour à la ligne */
+		width: var(--boutons);
 		min-width: 0;
 	}
 	.formule {

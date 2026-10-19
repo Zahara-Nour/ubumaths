@@ -103,6 +103,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/measures.ts`               | Mesures (lot 2, PR 2) : `AM`, `distance`, `aire`, `perimetre`, `angle`, calculées exactes et remplacées par leur valeur |
 | `src/lib/atelier/measures-read.ts`          | Repérage des mesures dans un texte, sans atelier (pour `parse.ts`)                                                      |
 | `src/lib/atelier/survey.ts`                 | `.relever` (PR 4) : lecture, pas exacts, ce qui varie, relevé (`Atelier.sweep`), deux listes et la ligne de réponse     |
+| `src/lib/atelier/perf-switches.ts`          | Les raccourcis du recalcul (mémo des lectures, liaisons limitées, mémo `#refsOf`) et leur compteur, pour les tests      |
 | `src/lib/atelier/display.ts`                | Schémas Zod des réglages de courbe et de suite (carte, sauvegarde, lien : une seule règle)                              |
 | `src/lib/atelier/reading.ts`                | Lecture graphique : les `f(a)` de la console qui se lisent sur le graphe (`consoleReadings`)                            |
 | `src/lib/atelier/mathfield.ts`              | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                                |
@@ -1010,12 +1011,60 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
 - **modifier** : `update`, `rename` (réécrit les définitions qui citent l'ancien nom),
   `setSlider`, `slideTo`, `setSequence`, `setDisplay`, `setSequenceDisplay`, `setPlotted` ;
 - **supprimer** : `remove`, `removalOf`, `removeWithDependents`, `undoRemoval` ;
-- **dépendances** : `dependents` ; toute mutation finit par `recomputeAll` (relit tout) ;
+- **dépendances** : `dependents`, `citedNames` (ce que cite un objet) ; toute mutation finit par
+  `recomputeAll` (relit tout — voir « Ce qui se recalcule, et ce qui est gardé ») ;
 - **grille** : `cell`, `editCells`, `pasteTable`, `titleOf`, `setTitle`, `nameColumn`,
   `unnameColumn`, `undoGrid`, `redoGrid`, `gridHistory`, `listAt`, `columnOf`, `usedExtent`,
   `freeColumns` ;
 - **sauvegarde** : `serialize`, `restore` ; `revision` est le **seul** signal « quelque chose a
   changé » (la session l'écoute pour enregistrer).
+
+### Ce qui se recalcule, et ce qui est gardé (chantier perf du 2026-10-19)
+
+**Tout se recalcule à chaque mutation** : `recomputeAll` relit chaque définition, refait chaque
+construction (`#constructions`) et chaque mesure (`#measures`), puis la grille ; ensuite les
+effets (`syncFigure`, `syncPlots`) et les cartes se refont sur la nouvelle révision. Pas de
+recalcul ciblé : l'invariant 4 (« recomputeAll repart de la lecture ») tient tel quel. Ce qui
+rend un cran de curseur rapide, ce sont trois **mémos sans invalidation**, exacts par
+construction (ils ne dépendent que de ce qui leur sert de clé) :
+
+- **les lectures** (`parseByProvenance`, `parse.ts`) : par texte + provenance + noms de
+  fonctions, plafond 5 000. La lecture est pure ; l'arbre rendu est **partagé**.
+  ⚠️ **Règle : un arbre rendu par la lecture ne se modifie JAMAIS en place** — y compris à
+  travers `definitionAst`, `substitutedAstOf` / `substitutedTextOf` et `expandDerivatives`,
+  qui rendent l'arbre lu tel quel quand il n'y a rien à remplacer ou à développer. Toute
+  transformation fabrique un arbre neuf. Le gel (`deepFreeze`) n'a lieu qu'en développement et
+  en test : en production, une écriture abîmerait le mémo en silence ;
+- **les noms cités** (`#refsOf`, `atelier.svelte.ts`) : par objet rangé (un `WeakMap`) et noms de
+  fonctions — un objet rangé n'est jamais modifié sur place ;
+- **les liaisons** (`bindingsOf`, `engine.ts`) : un arbre substitué (une coordonnée, un rayon)
+  ne reçoit que les définitions des noms qu'il peut citer, de proche en proche
+  (`wantedNames`) ; un arbre qui ne nomme rien (`0`, `3/2`) n'en reçoit aucune
+  (`namesNothing`). Un nœud dont on ne sait pas lire les noms (longueur `AB`, nom indicé `c_2`) fait tout lier.
+  `expandDerivatives` rend l'arbre tel quel quand il n'a ni `f'` ni `f⁻¹`.
+
+Les mémos par révision d'avant (`constructionMemo`, `#measureMemo`, `#astMemo`) restent ; dans
+`#constructions`, ils sont vidés **dès qu'un statut change** (avant : au tour suivant), et les
+constructions passent dans l'**ordre de dépendance** (`#dependencyOrder` : un objet après ceux
+qu'il cite), plus dans celui des cartes. Un objet qui cite une construction en échec dit donc
+toujours « Dépend de « t », qui est en erreur. » (ou « En attente de « t » »), quel que soit
+l'ordre des cartes et ce qu'une mesure a calculé en passant — avant, il reprenait parfois le motif
+de t (« Les deux points sont confondus… »). Rien à invalider
+dans `restore()`, la fusion, le chargement d'un fichier ou « Repartir de zéro » : aucune clé ne
+survit à un objet remplacé. `followsOf` (`card-state.ts`) lit `citedNames` au lieu d'appeler
+`dependents` pour chaque objet (O(n²) relectures).
+
+Mesures (figure de 24 objets, Mac mini M6 ; détail et profil :
+[atelier-geometrie-progress.md](../wip/atelier-geometrie-progress.md#performance)) :
+un cran coûtait 36 ms en node et 193 ms dans Chromium (mode dev, rendu compris) ; il coûte
+3 ms et 12,6 ms. Bancs : `banc-curseur.test.ts` et `banc-curseur.svelte.test.ts` (sautés sauf
+`VITE_ATELIER_BANC=1`). Garde-fous : `recalcul-performance.test.ts` (temps, borne 4× ; nombre de
+définitions liées par cran : 3, contre 5 808 sans les raccourcis) et
+`recalcul-equivalence.test.ts` (gestes tirés au hasard, graine fixe : raccourcis allumés ou
+éteints, atelier neuf restauré, `restore(photo)` — mêmes états, réponses, cartes et dessin).
+⚠️ `items` reste un `$state` **profond** : ses proxies coûtaient 4× le temps de node avant les
+mémos, ~1,5× après ; un `$state.raw` ferait tomber `serialize.svelte.test.ts` (« l'état vivant
+N'EST PAS clonable »), qui asserte le proxy.
 
 ### Commandes
 
@@ -1411,9 +1460,15 @@ les deux, `FigureCard.svelte`, avec la grammaire des autres :
   « segment », « cercle »… : `figureNatureOf`, `card-state.ts`) ; le constat d'une courbe vide
   (C6) sous la ligne. Elle était au bout de la ligne : dans le panneau à sa largeur par défaut,
   le champ d'une construction ne montrait plus que « cer » pour `cercle(O ; 3)` (2026-10-19).
-- **Une définition trop longue pour la ligne passe dessous, en entier** (`flex-wrap`, champ en
-  `flex: 1 1 auto`) — même règle pour les cartes de fonction, de valeur et de suite
-  (`carte-champ-largeur.svelte.test.ts`).
+- **Une définition trop longue pour la ligne passe dessous, en entier** (`.corps` en
+  `flex-wrap`, champ en `flex: 1 0 auto`, jamais plus étroit que son contenu) — même règle pour
+  les cartes de fonction, de valeur et de suite (`carte-champ-largeur.svelte.test.ts`).
+- **Les boutons (œil, ⋮) restent en haut à droite, sur la ligne du nom** (`.boutons` en
+  position absolue) : le champ réserve leur place derrière lui (`.membre::after`, largeur
+  `--boutons`), réserve qui se replie quand il est passé à la ligne et lui laisse toute la
+  largeur. L'état (« à compléter », « en attente ») passe sous la ligne. Avant (#1508), ⋮
+  descendait avec le champ et se retrouvait seul dessous, à gauche (2026-10-19). Toutes les
+  cartes ; celle d'une liste, dont l'aperçu est tronqué, en grille à deux colonnes.
 - **Une construction** (`I = [milieu(A, B)]`, `s = [[AB]]`) : ce qu'elle vaut en gris après sa
   nature (« cercle · … »), non éditable — coordonnées exactes, équation réduite, longueur
   (`constructionSummaryOf`, L7) ; c'est la construction qu'on modifie. Un point par coordonnées
@@ -2311,7 +2366,9 @@ par le type (`KIND_WORDS`, `KIND_NAMES`) sont signalés par le typecheck. Prévu
   `figure-point-sur.test.ts` (PR 3 : modèle, numérotation stable au glisser), `relever.test.ts`
   (PR 4 : `.relever`, le problème de l'aire de bout en bout),
   `components/atelier/__tests__/point-sur.svelte.test.ts`, `components/atelier/__tests__/construction.svelte.test.ts` et
-  `components/atelier/__tests__/FigureView.svelte.test.ts` (harnais `WithFigure.svelte`).
+  `components/atelier/__tests__/FigureView.svelte.test.ts` (harnais `WithFigure.svelte`),
+  `recalcul-equivalence.test.ts` et `recalcul-performance.test.ts` (raccourcis du recalcul, sur
+  les figures `__tests__/fixtures/figure-24.ts` et `figure-fonctions.ts` — dérivée, réciproque, suites, noms indicés).
 
 Lancer : `pnpm test:server <fichier>.test.ts`, `pnpm test:client <fichier>.svelte.test.ts`. Aucun
 test d'intégration : l'atelier ne touche pas la base.
@@ -2371,8 +2428,9 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 - tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1), collage /
   copie / CSV / titres (PR 2), annulation (PR 3a), appariement par ligne (PR 3b) — lot 1 complet ;
   à venir : les formules (lot 2) ;
-- dettes connues : action « Renommer » encore désactivée (« prochain lot »), `recomputeAll`
-  réassigne tout le tableau (jamais mesuré), saisie des unités sans palette.
+- dettes connues : action « Renommer » encore désactivée (« prochain lot »), saisie des unités
+  sans palette. `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
+  poste (< 0,1 ms ; voir « Ce qui se recalcule, et ce qui est gardé »).
 
 ⚠️ La section « Ce qui reste pour clore la v1 » de `atelier-progress.md` (2026-10-04) dit encore
 les garanties `/grapheur` non faites : elles le sont (lots 2 à 6, #779 → #809,

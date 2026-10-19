@@ -103,56 +103,61 @@
 
 <article class="objet liste" class:selected data-status={object.status}>
 	<div class="ligne">
-		<span class="nom">{name}</span>
-		<span class="egal" aria-hidden="true">=</span>
-		<span class="apercu">
-			<span class="valeurs">{preview}</span>
-			<span class="compte">({count}{calculated ? ', calculée dans la grille' : ''})</span>
-		</span>
-		{#if stateLabel}
-			<span class="etat">{stateLabel}</span>
-		{/if}
-		<DropdownMenu.Root onOpenChangeComplete={handleOpenChangeComplete}>
-			<DropdownMenu.Trigger>
-				{#snippet child({ props })}
-					<button
-						{...props}
-						type="button"
-						class="icone"
-						aria-label={`Options de ${name}`}
-						title="Actions"
-					>
-						<EllipsisVertical class="h-4 w-4" aria-hidden="true" />
-					</button>
-				{/snippet}
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content align="end" class="w-64" onCloseAutoFocus={handleCloseAutoFocus}>
-				<DropdownMenu.Group>
-					<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
-					<CardActionItems actions={ownFirst} onselect={handleSelect} />
-					{#if withPartners.length > 0}
-						<DropdownMenu.Sub>
-							<DropdownMenu.SubTrigger>Avec une autre liste</DropdownMenu.SubTrigger>
-							<DropdownMenu.SubContent class="w-64">
-								{#each withPartners as group, index (group.partner)}
-									{#if index > 0}<DropdownMenu.Separator />{/if}
-									<DropdownMenu.Group>
-										<DropdownMenu.GroupHeading
-											>Avec {displayName(group.partner)}</DropdownMenu.GroupHeading
-										>
-										<CardActionItems actions={group.actions} onselect={handleSelect} />
-									</DropdownMenu.Group>
-								{/each}
-							</DropdownMenu.SubContent>
-						</DropdownMenu.Sub>
-					{/if}
-					<DropdownMenu.Item onSelect={() => handleSelect(EDIT_IN_DATA)}>
-						{EDIT_IN_DATA.label}
-					</DropdownMenu.Item>
-					<CardActionItems actions={ownLast} onselect={handleSelect} />
-				</DropdownMenu.Group>
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
+		<!-- Nom et définition, qui passent à la ligne ; les boutons restent à droite -->
+		<div class="corps">
+			<span class="nom">{name}</span>
+			<span class="egal" aria-hidden="true">=</span>
+			<span class="apercu">
+				<span class="valeurs">{preview}</span>
+				<span class="compte">({count}{calculated ? ', calculée dans la grille' : ''})</span>
+			</span>
+			{#if stateLabel}
+				<span class="etat">{stateLabel}</span>
+			{/if}
+		</div>
+		<div class="boutons">
+			<DropdownMenu.Root onOpenChangeComplete={handleOpenChangeComplete}>
+				<DropdownMenu.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="icone"
+							aria-label={`Options de ${name}`}
+							title="Actions"
+						>
+							<EllipsisVertical class="h-4 w-4" aria-hidden="true" />
+						</button>
+					{/snippet}
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content align="end" class="w-64" onCloseAutoFocus={handleCloseAutoFocus}>
+					<DropdownMenu.Group>
+						<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
+						<CardActionItems actions={ownFirst} onselect={handleSelect} />
+						{#if withPartners.length > 0}
+							<DropdownMenu.Sub>
+								<DropdownMenu.SubTrigger>Avec une autre liste</DropdownMenu.SubTrigger>
+								<DropdownMenu.SubContent class="w-64">
+									{#each withPartners as group, index (group.partner)}
+										{#if index > 0}<DropdownMenu.Separator />{/if}
+										<DropdownMenu.Group>
+											<DropdownMenu.GroupHeading
+												>Avec {displayName(group.partner)}</DropdownMenu.GroupHeading
+											>
+											<CardActionItems actions={group.actions} onselect={handleSelect} />
+										</DropdownMenu.Group>
+									{/each}
+								</DropdownMenu.SubContent>
+							</DropdownMenu.Sub>
+						{/if}
+						<DropdownMenu.Item onSelect={() => handleSelect(EDIT_IN_DATA)}>
+							{EDIT_IN_DATA.label}
+						</DropdownMenu.Item>
+						<CardActionItems actions={ownLast} onselect={handleSelect} />
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+		</div>
 	</div>
 
 	{#if object.message}
@@ -176,11 +181,26 @@
 		border-color: var(--color-primary);
 		background: var(--color-card);
 	}
+	/* Deux colonnes : le nom et l'aperçu (tronqué) ; les boutons, à droite */
 	.ligne {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: start;
+		column-gap: 0.25rem;
+		min-width: 0;
+	}
+	.corps {
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
 		min-width: 0;
+		min-height: 1.75rem;
+	}
+	.boutons {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		height: 1.75rem;
 	}
 	.nom {
 		/* La place du point de couleur des fonctions : les noms restent alignés */

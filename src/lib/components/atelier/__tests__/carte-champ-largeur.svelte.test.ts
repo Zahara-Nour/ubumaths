@@ -36,7 +36,7 @@ afterEach(() => {
 	forget();
 });
 
-/** Une figure construite, une fonction et une suite longues, une valeur, une liste. */
+/** Une figure construite, une fonction, une suite et une mesure longues, une valeur, une liste. */
 function busyAtelier(): Atelier {
 	const atelier = new Atelier();
 	const objects: [
@@ -50,6 +50,10 @@ function busyAtelier(): Atelier {
 		['curve', 'c', 'cercle(O ; 3)'],
 		['curve', 'd', '(AB)'],
 		['point', 'I', 'intersection(d ; c ; 2)'],
+		['point', 'M', '(1 ; 0)'],
+		['point', 'N', '(1 ; 2)'],
+		['point', 'P', '(0 ; 2)'],
+		['value', 'S', 'aire(A ; M ; N ; P)'],
 		['function', 'f', 'x^3-2x^2+5x-7'],
 		['value', 'k', '12.5'],
 		['sequence', 'u', '3n^2-2n+1'],
@@ -66,7 +70,7 @@ async function mount(width: number) {
 	forget();
 	await page.viewport(width, 900);
 	const view = await render(AtelierContainer, { atelier: busyAtelier(), ephemeral: true });
-	await vi.waitFor(() => expect(view.container.querySelectorAll('article.objet').length).toBe(10));
+	await vi.waitFor(() => expect(view.container.querySelectorAll('article.objet').length).toBe(14));
 	return view.container;
 }
 
@@ -101,6 +105,21 @@ describe.each([1280, 390])('panneau « Mes objets » à %i px', (width) => {
 		await vi.waitFor(() => expect(fieldWidths(card).content).toBeGreaterThan(30));
 		await new Promise((resolve) => requestAnimationFrame(resolve));
 		const { content, visible } = fieldWidths(card);
+		const mf = card.querySelector('math-field') as HTMLElement;
+		const corps = card.querySelector('.corps') as HTMLElement;
+		console.log(
+			'SONDE',
+			name,
+			width,
+			JSON.stringify({
+				membre: card.querySelector('.membre')?.getBoundingClientRect().width,
+				mf: mf.getBoundingClientRect().width,
+				corps: corps?.getBoundingClientRect().width,
+				content,
+				visible,
+				top: [...corps.children].map((c) => Math.round(c.getBoundingClientRect().top))
+			})
+		);
 		expect(content).toBeLessThanOrEqual(visible);
 	});
 
@@ -118,4 +137,35 @@ describe.each([1280, 390])('panneau « Mes objets » à %i px', (width) => {
 			expect(line.scrollWidth, card.textContent ?? '').toBeLessThanOrEqual(line.clientWidth + 1);
 		}
 	});
+
+	// Régression de #1508 : le champ passait à la ligne… et ⋮ avec lui, seul
+	// sous le champ, à gauche (carte d'une mesure `S = aire(A, M, N, P)`).
+	// ⋮ reste sur la ligne du nom, sans jamais recouvrir le champ
+	it.each(['S', 'f', 'u', 'I'])(
+		'les boutons de %s restent à droite, sur la ligne du nom',
+		async (name) => {
+			const container = await mount(width);
+			const card = cardOf(container, name);
+			await vi.waitFor(() => expect(fieldWidths(card).content).toBeGreaterThan(30));
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+			const menu = card.querySelector<HTMLElement>(`button[aria-label="Options de ${name}"]`);
+			const field = card.querySelector<HTMLElement>('.membre math-field');
+			const label = card.querySelector<HTMLElement>('.nom');
+			if (!menu || !field || !label) throw new Error(`carte ${name} incomplète`);
+			const menuBox = menu.getBoundingClientRect();
+			const fieldBox = field.getBoundingClientRect();
+			const labelBox = label.getBoundingClientRect();
+			// à droite du champ, ou au-dessus quand il est passé à la ligne : jamais dessus…
+			const beside = menuBox.left >= fieldBox.right - 1;
+			const above = menuBox.bottom <= fieldBox.top + 1;
+			expect(
+				beside || above,
+				`⋮ ${JSON.stringify(menuBox)}, champ ${JSON.stringify(fieldBox)}`
+			).toBe(true);
+			// … et sur la première ligne de la carte, celle du nom
+			const middle = (menuBox.top + menuBox.bottom) / 2;
+			expect(middle).toBeGreaterThanOrEqual(labelBox.top - 4);
+			expect(middle).toBeLessThanOrEqual(labelBox.bottom + 4);
+		}
+	);
 });
