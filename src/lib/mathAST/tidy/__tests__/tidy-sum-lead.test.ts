@@ -335,7 +335,8 @@ describe('complexe opérande d’un − : pas de double signe', () => {
 	const cases: [string, string][] = [
 		['-(i-2)', '-\\left( \\imaginaryI - 2 \\right)'],
 		['-(-2+i)', '-\\left( \\imaginaryI - 2 \\right)'],
-		['\\frac{3i-2}{-1}', '-\\left( 3 \\imaginaryI - 2 \\right)'],
+		// le signe d'un dénominateur négatif passe au numérateur (2026-10-20) : plus de `−` devant
+		['\\frac{3i-2}{-1}', '2 - 3 \\imaginaryI'],
 		['2-(i-2)', '2 - \\left( \\imaginaryI - 2 \\right)'],
 		['-3(i-2)', '-3 \\left( \\imaginaryI - 2 \\right)'],
 		['-(i-2)^2', '-\\left( \\imaginaryI - 2 \\right)^2'],

@@ -17,7 +17,14 @@
  * @module mathAST/tidy/collect
  */
 
-import type { FunctionNode, MathNode, RelationNode, SuperscriptNode, UnitNode } from '../types';
+import type {
+	DivisionNode,
+	FunctionNode,
+	MathNode,
+	RelationNode,
+	SuperscriptNode,
+	UnitNode
+} from '../types';
 import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
 import type { TidyFactor, TidyQuantity, TidyTerm } from './types';
@@ -43,9 +50,12 @@ import {
 	powRational,
 	rational,
 	divRational,
-	absRational
+	absRational,
+	gcd,
+	lcm
 } from '../normal/rational';
 import {
+	fraction,
 	func,
 	number,
 	opposite,
@@ -631,10 +641,18 @@ function absorbFactor(
 			absorbFactor(node.right, exponent, acc, alreadyTidied);
 			return;
 
-		case 'division':
+		case 'division': {
+			// Étape 4 bis : `(6x+3)/9` devient `(2x+1)/3` avant d'être décomposé
+			const reduced = alreadyTidied ? null : reducedFraction(node, acc.unitChoice);
+			if (reduced !== null) {
+				acc.watch?.add('other');
+				absorbFactor(reduced, exponent, acc, true);
+				return;
+			}
 			absorbFactor(node.numerator, exponent, acc, alreadyTidied);
 			absorbFactor(node.denominator, negRational(exponent), acc, alreadyTidied);
 			return;
+		}
 
 		case 'superscript': {
 			const innerExponent = extractRational(node.superscript);
@@ -715,6 +733,90 @@ function positiveFirstDegreeSum(node: MathNode, acc: Accumulator): MathNode | nu
 	const plain = terms.every((term) => isPlainTerm(term) && isNegativeRational(term.coefficient));
 	if (!plain || !isFirstDegreeSum(terms)) return null;
 	return buildSum(sortTerms(terms.map(negateTerm)));
+}
+
+// =============================================================================
+// Étape 4 bis — une fraction de sommes rendue irréductible (2026-10-20)
+// =============================================================================
+
+/**
+ * Les termes d'un numérateur ou d'un dénominateur, mis au propre, ou `null` si
+ * l'un d'eux sort de ce que la réduction sait traiter : grandeur, nœud opaque,
+ * et — dès qu'il y a plusieurs termes — un facteur qui est lui-même une somme
+ * (`2(x+1)+4` : y répartir un nombre reviendrait à développer).
+ */
+function fractionSideTerms(node: MathNode, unitChoice: UnitChoice): TidyTerm[] | null {
+	const terms = sortTerms(collectLikeTerms(toSumTerms(node, undefined, unitChoice)));
+	if (terms.length === 0) return null; // la somme vaut 0 : rien à réduire
+	if (!terms.every((term) => isPlainTerm(term) && !dividesByZero(term))) return null;
+	if (terms.length > 1 && terms.some((term) => term.factors.some((f) => isSumNode(f.base)))) {
+		return null;
+	}
+	return terms;
+}
+
+/**
+ * Le facteur numérique positif commun à des termes : PGCD des numérateurs sur
+ * PPCM des dénominateurs de leurs coefficients. `6x+3` → 3, `x/2+1/3` → 1/6.
+ */
+function numericContent(terms: readonly TidyTerm[]): Rational {
+	let numerator = 0n;
+	let denominator = 1n;
+	for (const { coefficient } of terms) {
+		numerator = gcd(numerator, coefficient.n);
+		denominator = lcm(denominator, coefficient.d);
+	}
+	return rational(numerator, denominator);
+}
+
+function scaleTerms(terms: readonly TidyTerm[], factor: Rational): TidyTerm[] {
+	return terms.map((term) => ({ ...term, coefficient: mulRational(term.coefficient, factor) }));
+}
+
+/**
+ * Une fraction dont le numérateur ou le dénominateur est une somme, rendue
+ * irréductible sur ses coefficients numériques (décisions de David, 2026-10-20) :
+ *
+ * - le facteur numérique commun se simplifie, la barre de fraction reste
+ *   unique : `(6x+3)/9` → `(2x+1)/3`, jamais `2x/3 + 1/3` ;
+ * - les fractions numériques internes sont chassées : `(x/2+1)/3` → `(x+2)/6` ;
+ * - le signe d'un dénominateur négatif passe au numérateur :
+ *   `(6x−3)/(−9)` → `(1−2x)/3` ;
+ * - seul le NOMBRE se simplifie : `(6x²−3x)/(3x)` → `(2x²−x)/x`, le `x` reste
+ *   (simplifier par `x` changerait le domaine).
+ *
+ * Le nombre qui ne se simplifie pas reste où il était écrit : `(6x+3)/2`
+ * garde son `6x+3`. `null` s'il n'y a rien à changer, ou si deux monômes se
+ * font face (`2x/4`) : l'accumulation des facteurs s'en charge déjà.
+ */
+function reducedFraction(node: DivisionNode, unitChoice: UnitChoice): MathNode | null {
+	const numerator = fractionSideTerms(node.numerator, unitChoice);
+	const denominator = fractionSideTerms(node.denominator, unitChoice);
+	if (numerator === null || denominator === null) return null;
+	if (numerator.length < 2 && denominator.length < 2) return null;
+
+	const numeratorContent = numericContent(numerator);
+	const denominatorContent = numericContent(denominator);
+	if (isZeroRational(numeratorContent) || isZeroRational(denominatorContent)) return null;
+
+	// Le rapport irréductible a/b des deux facteurs numériques : a reste en haut, b en bas
+	const ratio = divRational(numeratorContent, denominatorContent);
+	const numeratorScale = divRational(fromInteger(ratio.n), numeratorContent);
+	const denominatorScale = divRational(fromInteger(ratio.d), denominatorContent);
+	const negativeDenominator =
+		denominator.length === 1 && isNegativeRational(denominator[0].coefficient);
+	if (isOneRational(numeratorScale) && isOneRational(denominatorScale) && !negativeDenominator) {
+		return null;
+	}
+
+	const sign = negativeDenominator ? negRational(ONE) : ONE;
+	const top = buildSum(sortTerms(scaleTerms(numerator, mulRational(numeratorScale, sign))));
+	const bottomTerms = scaleTerms(denominator, mulRational(denominatorScale, sign));
+	const bottomIsOne =
+		bottomTerms.length === 1 &&
+		bottomTerms[0].factors.length === 0 &&
+		isOneRational(bottomTerms[0].coefficient);
+	return bottomIsOne ? top : fraction(top, buildSum(sortTerms(bottomTerms)));
 }
 
 // =============================================================================
@@ -863,7 +965,7 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
 /**
  * Un terme négatif dont un facteur est un complexe : ce facteur garde l'ordre
  * d'avant la règle a + ib s'il commençait par un signe −, pour ne pas écrire
- * `−(−2 + i)` (voir `orderUnderMinus`). `−(i − 2)`, `−3(i − 2)`, `(3i − 2)/(−1)`.
+ * `−(−2 + i)` (voir `orderUnderMinus`). `−(i − 2)`, `−3(i − 2)`.
  */
 function withoutDoubleSign(term: TidyTerm, unitChoice: UnitChoice): TidyTerm {
 	if (term.verbatim || !isNegativeRational(term.coefficient)) return term;
