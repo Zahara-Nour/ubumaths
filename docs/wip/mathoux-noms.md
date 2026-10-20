@@ -1,7 +1,7 @@
 # Noms des Mathoux et des races — proposition à valider
 
 > Proposée le 2026-10-18 (session « mathoux »). Mise dans le code le 2026-10-20 (`feat/mathoux-noms`). Choix de David : des noms propres (option a),
-> affichés « **Tangentin**, Chartreux de Yoyolande ». Remplacements déjà demandés par David : Sire
+> affichés « **Tangentin**, le Chartreux de Yoyolande ». Remplacements déjà demandés par David : Sire
 > Dénominateur, X l'Inconnu, l'Infini-Pas-Tout-à-Fait, Hérédité (→ **Domino**, son idée), Sachant-Que
 > (→ autour de Bayes), Parmi-Tous. Les Mathoux sont relus en partie (ci-dessous).
 
@@ -38,10 +38,10 @@ Relecture de David sur la page à cocher (2026-10-19) : 55 noms acceptés, 20 re
 siens (repris tels quels, en gras ci-dessous) ; les 59 autres **validés par défaut**, à la demande
 de David (« je reviendrai plus tard sur ces noms »).
 
-Coquilles possibles dans les remplacements, **non corrigées** (à trancher par David) :
-« Pile-Poile » (Pile-Poil ?), « Félix A-Peu-Près » (À-Peu-Près ?), « Félix Au-dessus En-Dessous »
-(capitales incohérentes), « Moins-Que-Rien » (l'ancien « Moins-que-Rien » était en minuscules) ;
-et cinq noms commencent par « Félix » : est-ce voulu ?
+Coquilles tranchées par David le 2026-10-20 : « Pile-Poile » → **Pile-Poil** ; « Félix A-Peu-Près » →
+**Félix À-Peu-Près** ; « Félix Au-dessus En-Dessous » → **Félix Au-Dessus-En-Dessous** ;
+« Moins-Que-Rien » gardé en capitales ; les cinq « Félix … » sont voulus ; la race s'affiche avec
+son article (« **Tangentin**, le Chartreux de Yoyolande »).
 
 | Branche                   | Notion                                   | Nom                                                 |
 | ------------------------- | ---------------------------------------- | --------------------------------------------------- |
@@ -51,7 +51,7 @@ et cinq noms commencent par « Félix » : est-ce voulu ?
 | Nombres et calculs        | Entiers : division                       | **Dividende** (était Reste-à-Part)                  |
 | Nombres et calculs        | Entiers : priorités opératoires          | Parenthèse                                          |
 | Nombres et calculs        | Décimaux : numération                    | Virgule                                             |
-| Nombres et calculs        | Décimaux : calculs                       | **Félix A-Peu-Près** (était Arrondi)                |
+| Nombres et calculs        | Décimaux : calculs                       | **Félix À-Peu-Près** (était Arrondi)                |
 | Nombres et calculs        | Fractions : sens et écritures            | **Tarte** (était Dame Moitié)                       |
 | Nombres et calculs        | Fractions : calculs                      | Mère Réduite                                        |
 | Nombres et calculs        | Relatifs : sens et écritures             | **Moins-Que-Rien** (était Sous-Zéro)                |
@@ -61,7 +61,7 @@ et cinq noms commencent par « Félix » : est-ce voulu ?
 | Nombres et calculs        | Racines carrées : sens et écritures      | Racinot                                             |
 | Nombres et calculs        | Racines carrées : calculs                | Radical                                             |
 | Nombres et calculs        | Problèmes arithmétiques                  | Casse-Tête                                          |
-| Arithmétique              | Divisibilité                             | **Pile-Poile** (était Tout-Juste)                   |
+| Arithmétique              | Divisibilité                             | **Pile-Poil** (était Tout-Juste)                    |
 | Arithmétique              | Nombres premiers                         | l'Indivisible                                       |
 | Arithmétique              | PGCD, Bézout et Gauss                    | Bézouille                                           |
 | Arithmétique              | Congruences                              | Modulo                                              |
@@ -79,7 +79,7 @@ et cinq noms commencent par « Félix » : est-ce voulu ?
 | Algèbre                   | Calcul littéral                          | **Viète** (était le Facteur)                        |
 | Algèbre                   | Équations : premier degré                | Balance                                             |
 | Algèbre                   | Équations : produit et quotient          | **Félix Produit-Nul** (était Produit-Nul)           |
-| Algèbre                   | Inéquations : premier degré              | **Félix Au-dessus En-Dessous** (était Tourne-Signe) |
+| Algèbre                   | Inéquations : premier degré              | **Félix Au-Dessus-En-Dessous** (était Tourne-Signe) |
 | Algèbre                   | Inéquations : produit et quotient        | Plus-Moins                                          |
 | Algèbre                   | Équations : second degré                 | Discriminette                                       |
 | Algèbre                   | Inéquations : second degré               | Trinôme                                             |
