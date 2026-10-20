@@ -5,19 +5,19 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1563 (migration appliquée en prod)._
+_Mis à jour le 2026-10-21, lot A des MODIFIER en PR._
 
-- **État** : C5 étape 2 bis, premier lot livré. 306 modèles du CP à la 3e tagués en prod (CP 21, CE1 20, CE2 22,
-  CM1 49, CM2 29, 6e 60, 5e 42, 4e 46, 3e 17), 91 déplacés (R2), 3 reclassés 5e → 4e, 4-004 et 4-073 sous
-  « écriture d'une expression ». Vérifié en prod.
-- **Prochaine action** : les 66 MODIFIER (`analyse/lot-2bis-modifications.md` § 4 : 39 nombres, 7 variations,
-  17 consignes ou affichages, 3 scissions), par lots, chacun tagué après modification ; méthode à proposer à David
-  (migration de `variations` par lot, comme #1563).
-- **En attente de David** : rien.
-- **Pièges en cours** : contrôle visuel de c4-8 pas fait ; CSV cm/cycle2/sixieme en CRLF, cycle4 en LF (`newline=''`) ;
-  `docs/ref/programmes/Accompagnement/` hors git ; la clé anonyme ne lit pas `question_template_points` (MCP) ;
-  dans un `if` plpgsql, le `then` d'un `case` clôt la condition ; tout nouveau lot doit respecter la garde du nœud
-  (point sur le nœud du modèle ou sa notion).
+- **État** : lot A « resserrer les nombres » (39 modèles) : `analyse/lot-2bis-nombres.py` → migration
+  `20261021090000_lot_2bis_resserrer_nombres.sql` + test d'intégration (11 verts, rouges vérifiés). Revues faites :
+  sécurité 0 bloquant (verrou + garde md5 du rollback ajoutés) ; code : corrigé vide de dd7db98e corrigé.
+- **Prochaine action** : CI verte → merge → `db:migrate` (4 conditions remplies) → vérifier en prod ; puis lot B
+  (7 variations), C (17 consignes, un exemple par forme d'abord), D (3 scissions, phase 0 à part).
+- **Décisions de David (2026-10-21)** : une migration par lot ; accès du lot A validé ; f1a392f5 garde ses 6
+  variations ; 82748db8 garde le doublon dm² → m².
+- **En attente de David** : rien. À lui signaler : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
+- **Pièges en cours** : API REST plafonnée à 1000 lignes ; `question:specs --file` veut le format de l'app ;
+  jsonb réordonne les clés ; un corrigé à branches `{{if:a=…}}` suit la liste des valeurs (vérifier étapes vides).
+- **Worktree / branche** : `../ubumaths-wt-arbre-notions` · `feat/arbre-lot-2bis-nombres`.
 - **Worktree / branche** : aucun (worktree de #1563 supprimé).
 
 ## Tranché avec David (2026-10-06)
