@@ -321,6 +321,19 @@ QUATRE parseurs, `STACKED_EXPONENTS` (`2^3^2`, `e^x^2`, `2^{3}^{2}`) : le maison
 MathLive met toujours les accolades. Le RD maison lit aussi `x^(…)` comme Pratt (il le refusait). Tests :
 `parser/custom/__tests__/exponent-sign-stacked.test.ts`.
 
+Codes précis des refus (2026-10-20, chantier lecture-grandeurs, `parser/refusal-codes.ts`, partagé
+par les quatre parseurs). La lecture ne change pas ; seul le code change, et le texte anglais reste
+celui que traduit l'atelier (`cli/web/french-errors.ts`). `INVALID_UNIT` n'existe plus :
+`UNKNOWN_UNIT` (`5[xyz]`), `EMPTY_UNIT` (`5[]`), `AMBIGUOUS_UNIT` (`3[kg/m.s]`), `SPACE_IN_UNIT`
+(`3[m s]`), `UNIT_EXPONENT_OUTSIDE` (`10[m]^3`). `MISSING_DELIMITER` : l'écriture s'arrête avant le
+`)`, `]` ou `}` attendu (`(1+2`, `5[m`). `MISSING_OPERATOR` : un nombre juste après un facteur, même périmètre dans le maison et le LaTeX
+(refus « nombre après un facteur ») : lettre, nombre, `)`, `]`, `}`, `|` (`x2`, `x 2`, `(1+x)2`, `x^2 3`,
+`|x|2`, `2[m]3[m]`, `\sqrt{2}3`).
+`LEADING_DECIMAL_POINT` (maison seul ; le LaTeX lit `.5` ; un `.` collé à un facteur, `1.2.3`, `x.5`,
+n'en est pas un) a un texte nouveau, « Missing zero before the
+decimal point (write 0.5) », traduit par l'atelier. `UNEXPECTED_TOKEN` reste en dernier recours.
+Tests : `parser/__tests__/codes-des-refus.test.ts`.
+
 Les arguments d'une fonction connue entre `\left( … \right)` se lisent comme entre `( … )`
 (2026-10-13, `parseFunctionArguments` de `parser-pratt.ts`) : `\max\left(2,x\right)`, la forme
 qu'écrit MathLive et que rend `toLatex`, ne se relisait pas (« Expected \right to close
