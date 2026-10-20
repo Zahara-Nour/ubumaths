@@ -610,7 +610,7 @@ class CustomPrattParser {
 	 * pas sa place) et `x/x^2` était lu `(x/x)^2` — relevé du 2026-09-20, §6.9.
 	 *
 	 * Même chaînage que partout ailleurs dans ce parseur : les postfixes
-	 * s'appliquent de gauche à droite (`x^2^3` est `(x²)³`).
+	 * s'appliquent de gauche à droite (`x^2_1` est `(x²)₁` ; `x^2^3` est refusé depuis le 2026-10-20).
 	 */
 	private parseFractionOperand(): MathNode {
 		let operand = this.parseAtom();
@@ -885,7 +885,19 @@ class CustomPrattParser {
 		if (this.check('CARET')) {
 			// Peek to see if we have {-1} or {(n)} pattern
 			const afterCaret = this.peekNextToken();
-			if (afterCaret.type === 'LBRACE') {
+			// `f^-1(x)` = `f^{-1}(x)`, la réciproque : sans ça, la puissance des
+			// exposants signés (2026-10-20) le lisait f⁻¹·(x)
+			if (
+				allowInverse &&
+				afterCaret.type === 'MINUS' &&
+				this.tokenizer.peekAt(1).type === 'NUMBER' &&
+				this.tokenizer.peekAt(1).value === '1'
+			) {
+				this.advance(); // consume ^
+				this.advance(); // consume -
+				this.advance(); // consume 1
+				isInverse = true;
+			} else if (afterCaret.type === 'LBRACE') {
 				const result = this.tryParseInverseOrHigherDerivative(allowInverse, allowDerivatives);
 				if (result.type === 'inverse') {
 					isInverse = true;
@@ -1538,7 +1550,7 @@ class CustomPrattParser {
 	// =========================================================================
 
 	/**
-	 * Parse superscript: base^exponent (right-associative)
+	 * Parse superscript: base^exponent (a second `^` right after it is refused)
 	 */
 	private parseSuperscript(left: MathNode): MathNode {
 		this.advance(); // consume ^
@@ -1604,18 +1616,18 @@ class CustomPrattParser {
 		// UNE lettre ; devant un groupe, on ne sait pas jusqu'où va l'exposant
 		if (this.check('MINUS') || this.check('PLUS')) {
 			const sign = this.advance();
-			if (this.check('NUMBER') || this.check('LETTER') || this.check('SYMBOL')) {
-				const operand = this.parseSinglePowerOperand();
-				return this.applyColor(
-					sign.type === 'MINUS' ? MathAST.opposite(operand) : MathAST.positive(operand)
-				);
-			}
 			if (this.checkGroupStart()) {
 				this.error(
 					NEGATIVE_EXPONENT_BEFORE_GROUP_MESSAGE,
 					sign.position,
 					sign.length,
 					'NEGATIVE_EXPONENT_BEFORE_GROUP'
+				);
+			}
+			if (this.check('NUMBER') || this.check('LETTER') || this.check('SYMBOL')) {
+				const operand = this.parseSinglePowerOperand();
+				return this.applyColor(
+					sign.type === 'MINUS' ? MathAST.opposite(operand) : MathAST.positive(operand)
 				);
 			}
 			this.error(
@@ -1629,9 +1641,14 @@ class CustomPrattParser {
 		return this.parseSinglePowerOperand();
 	}
 
-	/** Un `(`, `{`, `|`, `[` ou un nom de fonction : le début d'un groupe */
+	/** Un `(`, `{`, `|`, `[` ou une fonction (`sin`, `f(x)` d'une fonction générique) : le début d'un groupe */
 	private checkGroupStart(): boolean {
+		const genericCall =
+			this.check('LETTER') &&
+			this.isGenericFunctionName(this.currentToken.value) &&
+			['LPAREN', 'PRIME'].includes(this.peekNextToken().type);
 		return (
+			genericCall ||
 			this.check('LPAREN') ||
 			this.check('LBRACE') ||
 			this.check('PIPE') ||

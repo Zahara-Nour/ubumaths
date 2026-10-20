@@ -58,8 +58,8 @@ export function needsParenthesesUnderPercent(node: MathNode): boolean {
  * `superscript(opposite(2), n)`, mais écrit sans parenthèses il se relit
  * −(2ⁿ) : une AUTRE valeur (n pair). De même `1/4^n` se relit 1/(4ⁿ).
  *
- * De même `e^x^2` se relit e^{x²} (KaTeX refuse le double exposant) et `2x^2`
- * se relit 2·x².
+ * De même `e^x^2` est refusé par les parseurs (deux exposants à la suite, comme dans
+ * KaTeX) et `2x^2` se relit 2·x².
  *
  * Une somme, une différence, un opposé, un quotient, un produit, une puissance ou
  * une grandeur : oui.

@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, PR 2 codée (pas encore poussée)._
+_Mis à jour le 2026-10-20, PR 2 relue (Opus) et corrigée, PR à ouvrir._
 
 - **État** : phase 0 **validée** (`docs/wip/lecture-grandeurs-phase0.md`, sauf ⏸), PR 1 (`×`, `·`, `⋅` lus `*`) mergée (#1555), pas en prod. Pages à cocher (font foi) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81 fiches, 20 répondues dont B7, B9, F1-F3 tranchées en conversation) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (31 fiches, 0 répondue). Base `reponses/<id>`.
 - **Décidé par David** (détail : historique) : (1) unité × tout le terme, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs (A9) ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue interne au point. (3) Il refuse la virgule décimale. (4) Refus = code + message anglais, l'atelier traduit (`mathAST/cli/web/french-errors.ts`). (5) **Catalogue de 14 codes validé** (historique, 3e session). (6) **Q9 (a)** : durées et angles juxtaposés LUS comme une somme marquée « juxtaposée » (4 implémentations, fonction partagée ; `;hms`, `compositeDuration`) ; autres grandeurs refusées `JUXTAPOSED_QUANTITIES` ; risque de perte de la marque géré : chemins réels mesurés → test de RENDU par chemin → garde. (7) `×`, `·`, `⋅` lus `*` (aussi `·`/`⋅` entre crochets) ; ⚠️ `2.5` ≠ `2·5`. (8) B7 : `^` + signe + UN nombre/lettre ; `10^-3+4` = `10^{-3}+4` ; refus `e^-x^2` (`STACKED_EXPONENTS`), `2^-sin(x)`, `2^-(x+1)` (`NEGATIVE_EXPONENT_BEFORE_GROUP`). (9) B9 : empilé = 2^(3^2) ; REFUS dans les deux parseurs (`STACKED_EXPONENTS`). (10) Durée composée = un bloc avec `+`/`−` ; collée à `*` ou `/` (des deux côtés, espaces ou non) → refus, atelier compris. (11) Phase 0 validée : LaTeX ne lit pas `×`/`·` Unicode ; `MISSING_OPERATOR` = `x2`, `x 2`, `)2` ; `10^+3` lu, `2^-x y` refusé ; `{2[m]}{3[m]}` reste un produit. (12) Fin de la page grandeurs : `3x[m]` = (3x)[m] ; `π[m]`, `pi[m]` = constante π ; `[m]` refusé (`MISSING_NUMBER_BEFORE_UNIT`) ; après `grandeur *` ou `/`, un terme de plusieurs nombres devant une unité est refusé (`AMBIGUOUS_TERM`) ; catalogue = 16 codes.
-- **En attente de David** : les 31 fiches de la page virgule (https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib). Page grandeurs : 81/81, terminée.
-- **Prochaine action** : PR 2 (exposants) codée sur `feat/lecture-grandeurs-exposants` : revue Opus, PR, merge ; puis PR 3 (`MISSING_OPERATOR`) ; PR 6 après la page virgule.
+- **En attente de David** : page virgule (https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib, v6) : 20/31 répondues ; S11, V1, V4 à recocher (codes alignés sur le catalogue, V4/V7 réécrites : pas de nœud intervalle dans mathAST). Page grandeurs : 81/81, terminée.
+- **Prochaine action** : PR 2 (exposants) sur `feat/lecture-grandeurs-exposants` : PR, CI, merge ; puis PR 3 (`MISSING_OPERATOR`) ; PR 6 après la page virgule.
 - **Pièges** : distinguer LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt (défaut) + RD ; `{2[h]}{30[min]}` = 1 h² aujourd'hui ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
 - **Worktree / branche** : `../ubumaths-wt-lecture-grandeurs`, `feat/lecture-grandeurs-exposants`. Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
 
@@ -29,6 +29,9 @@ _Mis à jour le 2026-10-20, PR 2 codée (pas encore poussée)._
   plus qu'à lire `2^-x y`, refusé par décision (11).
 - Hors périmètre, noté : le LaTeX Pratt lit `2^-x`, `e^-x^2` (= e^{-x²}), `2^-\sin(x)` ; le LaTeX RD les
   refuse (« Unexpected token: - »). MathLive met les accolades : à trancher plus tard s'il le faut.
+- Revue Opus : corrigés `2^-f(x)` (fonction générique) refusé comme `2^-sin(x)`, et `f^-1(x)` = réciproque
+  (il se lisait f⁻¹·(x)) — Pratt seul, le RD maison n'a pas de fonctions génériques. Laissés, notés :
+  `x^2_1^3` lu par les 4 parseurs ; LaTeX Pratt accepte `f^{-1}^{2}(x)` (le RD le refuse), d'avant la PR.
 
 ### 2026-10-20 — page grandeurs terminée (81/81)
 

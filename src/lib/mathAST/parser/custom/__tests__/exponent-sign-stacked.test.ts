@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseCustomPrattSafeRaw, parseCustomRDSafeRaw } from '../index';
+import { parseCustomPrattSafeRaw, parseCustomRDSafeRaw, parseCustomSafe } from '../index';
 import { parsePrattSafe, parseRDSafe } from '../../latex';
 
 // =============================================================================
@@ -130,6 +130,34 @@ describe.each(CUSTOM_PARSERS)('parseur maison %s : exposants empilés', (_, pars
 
 	it.each(['x_1^2', 'x^2_1', '2^3[m]', 'sqrt(2)^2'])('%s se lit toujours', (written) => {
 		expect(parse(written).errors).toEqual([]);
+	});
+});
+
+// Fonctions génériques (`f`, `g`… : parseur maison Pratt, celui de l'atelier ; le RD n'en a pas)
+describe('parseur maison : exposant signé et fonctions génériques', () => {
+	it('2^-f(x) est refusé comme 2^-sin(x) : signe devant un groupe', () => {
+		expect(parseCustomSafe('2^-f(x)').errors[0]).toMatchObject({
+			code: 'NEGATIVE_EXPONENT_BEFORE_GROUP',
+			position: 2
+		});
+	});
+
+	it("2^-f'(x) est refusé aussi", () => {
+		expect(parseCustomSafe("2^-f'(x)").errors[0]?.code).toBe('NEGATIVE_EXPONENT_BEFORE_GROUP');
+	});
+
+	it('2^-f (sans appel) se lit 2^{-f}', () => {
+		const read = parseCustomSafe('2^-f');
+		expect(read.errors).toEqual([]);
+		expect(read.ast).toEqual(parseCustomSafe('2^{-f}').ast);
+	});
+
+	// Sans ça, f^-1(x) se lisait f⁻¹·(x), une puissance multipliée par (x)
+	it.each(['f^-1(x)', 'f^-1'])('%s est la réciproque, comme avec les accolades', (written) => {
+		const read = parseCustomSafe(written);
+		expect(read.errors).toEqual([]);
+		expect(read.ast).toEqual(parseCustomSafe(written.replace('^-1', '^{-1}')).ast);
+		expect(read.ast).toMatchObject({ type: 'function', name: 'f', isInverse: true });
 	});
 });
 

@@ -1689,7 +1689,7 @@ class PrattParser {
 	// =========================================================================
 
 	/**
-	 * Parse superscript: base^exponent (right-associative)
+	 * Parse superscript: base^exponent (a second `^` right after it is refused)
 	 */
 	private parseSuperscript(left: MathNode): MathNode {
 		this.advance(); // consume ^

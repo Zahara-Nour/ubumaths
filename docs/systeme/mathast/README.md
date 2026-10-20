@@ -313,8 +313,9 @@ Exposants (2026-10-20, chantier lecture-grandeurs, `parser/exponent-rules.ts`). 
 un signe suivi d'UN nombre ou d'UNE lettre comme l'exposant : `10^-3` = `10^{-3}`, `10^+3` = `10^{+3}`,
 `10^-3+4` = `10^{-3}+4`, `10^-3[m]` = `10^{-3}[m]`. Avant, il exigeait les accolades (« Negative exponent
 requires braces »), et l'atelier relisait `x^-1` en `x^(-1)` après ce refus (rattrapage retiré). Un signe
-devant un groupe est refusé, `NEGATIVE_EXPONENT_BEFORE_GROUP` (`2^-sin(x)`, `2^-(x+1)` : jusqu'où va
-l'exposant ?) ; `2^-x y` reste refusé comme `2^x y`. Deux exposants à la suite sont refusés par les
+devant un groupe est refusé, `NEGATIVE_EXPONENT_BEFORE_GROUP` (`2^-sin(x)`, `2^-(x+1)`, `2^-f(x)` d'une
+fonction générique : jusqu'où va l'exposant ?) ; `2^-x y` reste refusé comme `2^x y`. Sur une fonction
+générique, `f^-1(x)` est la réciproque, comme `f^{-1}(x)` (`parseGenericFunction`). Deux exposants à la suite sont refusés par les
 QUATRE parseurs, `STACKED_EXPONENTS` (`2^3^2`, `e^x^2`, `2^{3}^{2}`) : le maison lisait (2³)², le LaTeX
 2^(3²). On écrit `2^{3^2}` ou `(2^3)^2` ; `toLatex` et `toCustom` n'ont jamais écrit d'empilement, et
 MathLive met toujours les accolades. Le RD maison lit aussi `x^(…)` comme Pratt (il le refusait). Tests :
