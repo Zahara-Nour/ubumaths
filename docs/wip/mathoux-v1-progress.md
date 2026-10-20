@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, après #1554._
+_Mis à jour le 2026-10-20, après #1556._
 
-- **État** : Mathoux v1 + « Faire grandir » + noms (#1553) sur `main`, pas en prod. #1554 : test d'intégration `mathoux-noms-notions.test.ts`, clés de `MATHOU_NAMES` = notions actives des branches du seed (égalité exacte).
-- **Prochaine action** : rien d'urgent ; attendre les arbitrages de David sur les noms.
-- **En attente de David** : relire les 59 noms validés par défaut ([mathoux-noms.md](mathoux-noms.md)) ; trancher les coquilles possibles (« Pile-Poile », « Félix A-Peu-Près », « Félix Au-dessus En-Dessous », « Moins-Que-Rien »), les cinq « Félix … » et l'article devant la race ; `deploy:prod` (seulement à sa demande).
+- **État** : Mathoux v1 + « Faire grandir » + noms (#1553) sur `main`, pas en prod. #1554 : test d'intégration `mathoux-noms-notions.test.ts`, clés de `MATHOU_NAMES` = notions actives des branches du seed (égalité exacte). #1556 : coquilles tranchées (Pile-Poil, Félix À-Peu-Près, Félix Au-Dessus-En-Dessous) ; Moins-Que-Rien, les cinq Félix et l'article devant la race gardés.
+- **Prochaine action** : rien d'urgent ; rien tant que David n'a pas relu les noms.
+- **En attente de David** : relire les 59 noms validés par défaut ([mathoux-noms.md](mathoux-noms.md)) ; `deploy:prod` (seulement à sa demande).
 - **Pièges en cours** : table clée par NOM de notion : un renommage par migration casse le test ; y échappent un renommage fait en prod depuis l'admin et une nouvelle branche racine (l'ajouter à la fixture `arbre-notions-seed.json`). Juste avant `deploy:prod`, `fix-renvois-numerotation.ts --publier` (autre chantier).
 - **Worktree / branche** : aucun ouvert ; partir de `origin/main`.
 
