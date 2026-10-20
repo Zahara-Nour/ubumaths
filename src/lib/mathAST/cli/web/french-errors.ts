@@ -62,6 +62,14 @@ const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
 		/Missing zero before the decimal point \(write (\S+)\)/,
 		'Il manque le zéro avant le point décimal : écris $1'
 	],
+	[
+		/A unit needs a number before it \(write (\S+)\)/,
+		'Une unité a besoin d’un nombre devant elle : écris $1'
+	],
+	[
+		/Ambiguous term before a unit after a quantity: .*/,
+		'Plusieurs nombres devant l’unité, après une grandeur : écris 6[m]/(2*3[s]) ou (6[m]/2)*3[s]'
+	],
 	[/Invalid mode '([^']*)'/, 'Mode inconnu : « $1 »'],
 	[/Too many values \(max: (\d+)\)/, 'Trop de valeurs (au plus $1)'],
 	[/X and Y must have same length/, 'Les séries X et Y doivent avoir la même longueur'],

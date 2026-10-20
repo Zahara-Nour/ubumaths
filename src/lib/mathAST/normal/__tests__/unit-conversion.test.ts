@@ -123,12 +123,18 @@ describe('températures — différence, écart, compositions interdites', () =>
 // =============================================================================
 
 describe('B2 — l’opposé d’une grandeur affine', () => {
-	it('-20[°C]+30[°C] ≡ 10[K] (un opposé dans une somme est une soustraction)', () => {
-		expect(eq('-20[°C]+30[°C]', '10[K]')).toBe(true);
+	// Depuis la PR 4 de lecture-grandeurs (Q-T2 de David, 2026-10-20), le signe fait partie
+	// de la valeur : `-20[°C]` est la température −20 °C, plus l'opposé de 20 °C
+	it('-20[°C]+30[°C] : une somme de deux températures, pas un écart de 10 K', () => {
+		expect(eq('-20[°C]+30[°C]', '10[K]')).toBe(false);
 	});
 
-	it('30[°C]-20[°C] ≡ -20[°C]+30[°C] (normalize est commutatif)', () => {
-		expect(eq('30[°C]-20[°C]', '-20[°C]+30[°C]')).toBe(true);
+	it('-20[°C]-5[°C] ≡ -25[K] : l’écart entre deux températures', () => {
+		expect(eq('-20[°C]-5[°C]', '-25[K]')).toBe(true);
+	});
+
+	it('-(20[°C])+30[°C] ≡ 10[K] : l’opposé écrit entre parenthèses reste une soustraction', () => {
+		expect(eq('-(20[°C])+30[°C]', '10[K]')).toBe(true);
 	});
 
 	it('-20[°C] seul est une température : ≡ 253.15[K]', () => {

@@ -45,6 +45,7 @@ import {
 	getConversionFactor,
 	getDimensionalSignature,
 	isAffine,
+	isMultipliedTemperature,
 	recognizeDerivedUnit
 } from '../units/conversion';
 import { addRational, divRational, mulRational, subRational } from '../normal/rational';
@@ -281,6 +282,7 @@ function equality(left: MathNode, right: MathNode, written?: QuantityAnswer): Sh
 /** Une température (°C, °F) prise dans un produit, un quotient, une puissance, une fonction. */
 function multipliesTemperature(node: MathNode, composed = false): boolean {
 	if (isUnit(node)) {
+		if (isMultipliedTemperature(node)) return true;
 		return (composed && isAffine(node.unit)) || multipliesTemperature(node.expression, composed);
 	}
 	switch (node.type) {

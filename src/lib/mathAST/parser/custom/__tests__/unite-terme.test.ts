@@ -24,6 +24,7 @@ import { parse as parseUnit } from '../../../units/parser';
 import { toCustom } from '../../../custom-generator';
 import { toLatex } from '../../../latex-generator';
 import { computeQuantity } from '../../../cli/quantities';
+import { inFrench } from '../../../cli/web/french-errors';
 import type { MathNode } from '../../../types';
 
 // =============================================================================
@@ -257,6 +258,19 @@ describe.each(CUSTOM_PARSERS)('parseur maison %s : l’unité multiplie le terme
 	});
 });
 
+describe('refus traduits pour l’atelier', () => {
+	it.each([
+		['[m]', 'Une unité a besoin d’un nombre devant elle : écris 1[m]'],
+		[
+			'6[m]/2*3[s]',
+			'Plusieurs nombres devant l’unité, après une grandeur : écris 6[m]/(2*3[s]) ou (6[m]/2)*3[s]'
+		]
+	])('%s : %s', (written, french) => {
+		const result = parseCustomSafe(written);
+		expect(inFrench(result.errors[0].message)).toBe(french);
+	});
+});
+
 describe('valeurs', () => {
 	it.each([
 		['1/2[m]', '0.5 m'],
@@ -270,6 +284,28 @@ describe('valeurs', () => {
 		['12 500[m]', '12500 m']
 	])('%s vaut %s', (written, expected) => {
 		expect(valueOfWriting(written)).toBe(expected);
+	});
+});
+
+describe('températures (Q-T1 et Q-T2 de David, 2026-10-20)', () => {
+	it.each([
+		['(2*20)[°C]', '40 °C'],
+		['1/2[°C]', '1/2 °C'],
+		['-20[°C]', '-20 °C'],
+		['-20[°C]-5[°C]', '-25 K']
+	])('%s vaut %s', (written, expected) => {
+		expect(valueOfWriting(written)).toBe(expected);
+	});
+
+	it.each(['2*20[°C]', '-2*20[°C]'])(
+		'%s : refusé, une température ne se multiplie pas',
+		(written) => {
+			expect(valueOfWriting(written)).toMatch(/ne se multiplie pas/);
+		}
+	);
+
+	it('-20[°C]+30[°C] : refusé, une somme de deux températures', () => {
+		expect(valueOfWriting('-20[°C]+30[°C]')).toMatch(/^refus/);
 	});
 });
 
