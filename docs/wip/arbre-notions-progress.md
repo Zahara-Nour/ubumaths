@@ -5,20 +5,19 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1566 (lot B mergé, migration PAS encore appliquée en prod)._
+_Mis à jour le 2026-10-21, après #1566 (migration appliquée en prod, vérifiée : 7/7 contenus, 7/7 tags)._
 
-- **État** : C5 étape 2 bis, MODIFIER. Lot A (39 modèles) en prod. Lot B « retirer des variations » (7 modèles)
-  mergé (#1566, revues sans bloquant) ; migration `20261021100000` en attente de `db:migrate`. Outillage commun :
-  `analyse/lot_2bis_outils.py` + `tests/helpers/database/lot-2bis-migration.ts` (un script et un test minces par lot).
-- **Prochaine action** : réponse de David à la question d'accès → `db:migrate` depuis main → vérifier en prod (7/7
-  contenus, 7/7 tags) ; puis C (17 consignes, un exemple par forme montré à David d'abord), D (3 scissions, phase 0).
+- **État** : C5 étape 2 bis, MODIFIER : lots A (39 modèles) et B « retirer des variations » (7) en prod, avec
+  tags. Outillage commun : `analyse/lot_2bis_outils.py` + `tests/helpers/database/lot-2bis-migration.ts` (un
+  script `lot-2bis-<lot>.py` et un test de quelques lignes par lot).
+- **Prochaine action** : lot C (17 consignes ou affichages, `lot-2bis-modifications.md` § 4) — montrer à David
+  un exemple par forme d'abord ; puis D (3 scissions, phase 0 à part : cartes SRS, tentatives, fiches).
 - **Décisions de David (2026-10-21)** : une migration par lot ; f1a392f5 garde 6 variations ; 82748db8 garde le
-  doublon dm² → m². Question d'accès à reposer à chaque lot (AVANT de générer le SQL).
-- **En attente de David** : question d'accès du lot B ; sous-titre de 716d5c68 changé hors liste (« deux nombres
-  à 2 chiffres ») à confirmer. Signalé : 11 modèles sans aucun corrigé.
+  doublon dm² → m² ; 716d5c68 garde son nouveau sous-titre. Question d'accès à poser AVANT de générer le SQL.
+- **En attente de David** : rien. Signalé : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
 - **Pièges en cours** : API REST plafonnée à 1000 lignes ; `question:specs --file` veut le format de l'app
   (`toQuestionTemplate`) et `svelte-kit sync` dans un worktree neuf ; jsonb réordonne les clés. Mineurs d'audit
-  laissés (gabarit du lot A en prod) : rollback à jouer dans UNE transaction, message du rollback ambigu.
+  laissés (gabarit en prod) : rollback à jouer dans UNE transaction, message du rollback ambigu.
 - **Worktree / branche** : aucun (worktree de #1566 supprimé).
 
 ## Tranché avec David (2026-10-06)
@@ -1145,3 +1144,7 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   aucune fiche ni exercice ni deck ; 2 tentatives de compétence (sans indice de variation) et 2 réponses de test sur
   716d5c68 (instance figée, indice affiché seulement). Migration `20261021100000` ; preuve rouge (migration
   neutralisée : 5 échecs + suite nominale en échec), puis 22/22 verts avec le lot A refactorisé.
+- **2026-10-21 — #1566 mergée, migration `20261021100000` appliquée (db:migrate, 4 conditions réunies).** David :
+  « oui » à la question d'accès, garde le sous-titre de 716d5c68. Revues : code-reviewer et security-auditor sans
+  bloquant. Vérifié en prod : variations 3/1/2/4/1/1/2, specs et tags attendus (CP-026, 5-045 ×3, 4-007, 4-024 ×2),
+  variable `c` retirée de b1550840, `updated_at` avancé.
