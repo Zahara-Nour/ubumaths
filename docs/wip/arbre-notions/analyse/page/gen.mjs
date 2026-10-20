@@ -169,6 +169,12 @@ textarea.c { width: 100%; font: inherit; font-size: 13px; border: 1px solid var(
 .qlink a { color: var(--no); }
 .rq { max-width: 78ch; }
 .r-act { flex-direction: column; }
+.qn { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+.qex { font-size: 1.05rem; font-weight: 600; }
+.qq { font-size: 15px; }
+.qreco { font-size: 13px; color: var(--muted); }
+.qreco b { color: var(--accent); font-weight: 600; }
+.dossier { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; color: var(--ink); max-width: 78ch; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <div class="wrap">
@@ -239,18 +245,28 @@ function noteBox(coll, id, ph) {
   return ta;
 }
 function qView(q) {
-  const cur = state.questions[q.id];
+  const cur = state.questions[q.id], k = q.court || {};
+  const n = (q.modeles || []).length;
   const box = el('div', { class: 'q' + (cur ? (cur.c === 'avis' ? ' is-avis' : cur.c === q.reco ? ' is-ok' : ' is-no') : ''), id: 'q-' + q.id },
-    el('h3', {}, q.titre, el('span', { class: 'id' }, '  ' + q.id + ' · ' + (q.modeles || []).length + ' modèle' + ((q.modeles || []).length > 1 ? 's' : ''))),
-    el('div', { class: 'rq' }, rich(q.question)),
-    q.citations ? el('p', { class: 'src' }, 'Ce que disent les textes : ' + q.citations) : null,
-    q.verdict_provisoire ? el('p', { class: 'src' }, 'En attendant : ' + q.verdict_provisoire) : null);
-  if (q.info || !(q.options || []).length) { box.append(el('div', { class: 'reco' }, el('b', {}, 'Pour information. '), q.pourquoi || '')); return box; }
-  const rl = (q.options.find(([k]) => k === q.reco) || [0, q.reco])[1];
-  box.append(el('div', { class: 'reco' }, el('b', {}, 'Reco : ' + rl + '. '), q.pourquoi || '', q.consequence ? el('div', { class: 'src', style: 'margin-top:4px' }, 'Conséquence : ' + q.consequence) : null),
-    el('div', { class: 'choice' }, q.options.map(([k, l]) => btn(cur && cur.c === k, l, () => choose('questions', q.id, k), k === q.reco ? 'on-ok' : 'on-no', k === q.reco)), btn(cur && cur.c === 'avis', 'Je ne tranche pas : mon avis', () => choose('questions', q.id, 'avis'), 'on-avis')),
-    noteBox('questions', q.id, 'Ta réponse, une hésitation, une autre option… (facultatif)'));
+    el('div', { class: 'qn' }, q.id + ' · ' + n + ' modèle' + (n > 1 ? 's' : '')),
+    el('p', { class: 'qex' }, k.ex || q.titre),
+    el('p', { class: 'qq' }, k.q || q.titre),
+    el('div', { class: 'choice' }, q.options.map(([o, l]) => btn(cur && cur.c === o, (k.ch && k.ch[o]) || l, () => choose('questions', q.id, o), o === q.reco ? 'on-ok' : 'on-no', o === q.reco)), btn(cur && cur.c === 'avis', 'Je ne tranche pas', () => choose('questions', q.id, 'avis'), 'on-avis')),
+    el('p', { class: 'qreco' }, el('b', {}, 'Reco (soulignée) : '), k.r || q.pourquoi || ''),
+    el('details', { class: 'bp' }, el('summary', {}, 'Le dossier complet'),
+      el('div', { class: 'dossier' },
+        el('div', { class: 'rq' }, rich(q.question)),
+        el('p', {}, el('b', {}, 'Les options. '), q.options.map(([, l], i) => [i ? ' · ' : '', l])),
+        q.citations ? el('p', {}, el('b', {}, 'Ce que disent les textes. '), q.citations) : null,
+        q.pourquoi ? el('p', {}, el('b', {}, 'Pourquoi la reco. '), q.pourquoi) : null,
+        q.consequence ? el('p', {}, el('b', {}, 'Conséquences. '), q.consequence) : null,
+        q.verdict_provisoire ? el('p', {}, el('b', {}, 'En attendant. '), q.verdict_provisoire) : null)),
+    noteBox('questions', q.id, 'Une remarque ? (facultatif)'));
   return box;
+}
+function infoView(q) {
+  return el('details', { class: 'bp' }, el('summary', {}, q.titre),
+    el('div', { class: 'dossier' }, el('div', { class: 'rq' }, rich(q.question)), q.consequence ? el('p', {}, q.consequence) : null));
 }
 function modeleView(m, niveauOk) {
   const cur = state.modeles[m.id];
@@ -311,8 +327,9 @@ function render() {
   document.getElementById('toc').replaceChildren(el('a', { href: '#questions' }, 'Questions', el('span', {}, qs.length)), ...NIVEAUX.map((n) => el('a', { href: '#n-' + n.g }, GN(n.g), el('span', {}, n.m.length))));
   const y = window.scrollY, fid = document.activeElement && document.activeElement.id;
   document.getElementById('main').replaceChildren(
-    el('section', { class: 'part', id: 'questions' }, el('div', { class: 'part-head' }, el('span', { class: 'num' }, 'Partie 1'), el('h2', {}, 'Questions à trancher'), el('p', {}, 'Les cas où les bornes ou tes décisions précédentes ne suffisent pas. Les verdicts des modèles concernés sont provisoires.')),
-      qs.length ? QUESTIONS.map(qView) : el('p', { class: 'empty' }, 'Aucune question.')),
+    el('section', { class: 'part', id: 'questions' }, el('div', { class: 'part-head' }, el('span', { class: 'num' }, 'Partie 1'), el('h2', {}, 'Questions à trancher'), el('p', {}, 'Pour chaque question : un exemple, la question, les choix. La reco est soulignée ; le reste est replié dans « Le dossier complet ». Les deux notes « pour information » sont en bas.')),
+      qs.length ? qs.map(qView) : el('p', { class: 'empty' }, 'Aucune question.'),
+      QUESTIONS.filter((q) => !qs.includes(q)).map(infoView)),
     el('section', { class: 'part', id: 'niveaux' }, el('div', { class: 'part-head' }, el('span', { class: 'num' }, 'Partie 2'), el('h2', {}, 'Verdicts par niveau'), el('p', {}, 'Ouvre un niveau : les modèles sont rangés par verdict. Pour chacun : titre, sous-titre, consigne, point proposé et ses bornes, plages réellement tirées, deux exemples par variation (la plus grande et la plus petite valeur). Le bouton du niveau accepte d\\u2019un coup tous les verdicts auxquels tu n\\u2019as pas répondu.')), NIVEAUX.map(niveauView)));
   window.scrollTo(0, y);
   if (fid) { const f = document.getElementById(fid); if (f) { f.focus(); if (f.setSelectionRange) f.setSelectionRange(f.value.length, f.value.length); } }

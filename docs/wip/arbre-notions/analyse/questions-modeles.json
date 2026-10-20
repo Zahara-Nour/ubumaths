@@ -14,7 +14,16 @@
 		"pourquoi": "Réordonner les facteurs pour faire apparaître 2 × 5, c'est « savoir que la multiplication est commutative » mis en œuvre ; les nombres restent dans le champ du CE1 (≤ 1 000) et aucun autre point du CE1 ne décrit mieux la tâche. Le ressort du calcul est bien l'échange des facteurs, que la correction montre.",
 		"consequence": "tag : 1 modèle tagué CE1-024 (ce serait le seul modèle de ce point). hors : 1 modèle de plus sans tag au CE1, et CE1-024 reste sans modèle. Aucun effet sur fbd02016 (CE2) ni sur les produits astucieux du CM2, sans point dans les deux cas.",
 		"modeles": ["e94c03b6-604f-4074-8763-0744b97cb7dd"],
-		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG CE1-024)."
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG CE1-024).",
+		"court": {
+			"ex": "CE1 : « 2 × 26 × 5 = ? » → 10 × 26 = 260",
+			"q": "Le taguer CE1-024 « la multiplication est commutative » ?",
+			"ch": {
+				"tag": "Oui, CE1-024",
+				"hors": "Non, pas de tag"
+			},
+			"r": "Réordonner pour faire 2 × 5, c'est la commutativité en acte."
+		}
 	},
 	{
 		"id": "m-cm-1",
@@ -38,7 +47,17 @@
 		"pourquoi": "La question posée est dans CM2-008, mais le titre et la correction enseignent la somme des chiffres, que le BO exclut nommément au cycle 3. Retitrer et corriger par la division garde un modèle utile sur CM2-008 sans rien enseigner d'interdit ; taguer tel quel ferait apprendre un critère hors programme sous un tag du programme.",
 		"consequence": "tag : 2 modèles tagués CM2-008 (3 avec 71621ba5), correction inchangée. modifier : 2 modèles à retoucher (titre, sous-titre, correction), puis tagués CM2-008. hors : 2 modèles sans tag au CM2 ; leur place naturelle est en 5e (5-010, 5-119), ce qui est un changement de niveau, à décider à part (règle R3).",
 		"modeles": ["9c03423a-38ce-44e3-ab44-20b4e90659b7", "e81493f7-38fe-4028-a265-872329534ae3"],
-		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait « déplacer puis tag CM2-008 »)."
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait « déplacer puis tag CM2-008 »).",
+		"court": {
+			"ex": "CM2 : « 999 est-il divisible par 9 ? » corrigé par 9 + 9 + 9 = 27",
+			"q": "Le BO exclut ce critère au cycle 3. Que faire des 2 QCM (par 3, par 9) ?",
+			"ch": {
+				"tag": "Taguer CM2-008 tel quel",
+				"modifier": "Corriger sans la somme des chiffres, puis CM2-008",
+				"hors": "Pas de tag (place en 5e)"
+			},
+			"r": "La question est au programme, la correction non : on change la correction."
+		}
 	},
 	{
 		"id": "m-cm-2",
@@ -64,7 +83,17 @@
 			"b100ddb2-e91d-402c-9940-012da8236d1d",
 			"b9a9048a-d973-47a3-ad5b-acbde2d80a66"
 		],
-		"verdict_provisoire": "MODIFIER (CM1-039 ou CM1-133), ce que propose le CSV."
+		"verdict_provisoire": "MODIFIER (CM1-039 ou CM1-133), ce que propose le CSV.",
+		"court": {
+			"ex": "CM1 : « 1,5 + 8,4 = ? » (et 8,3 + 1,66 ; 8,8 − 2,7 ; 9,95 − 7,4)",
+			"q": "CM1-039 dit « ajouter k unités ou k dixièmes » : le nombre ajouté peut-il avoir deux rangs non nuls ?",
+			"ch": {
+				"modifier": "Non : modifier (un seul rang), puis tag",
+				"hors": "Non : pas de tag",
+				"large": "Oui : tag tel quel"
+			},
+			"r": "Même borne que ta décision c3-2 au CM2."
+		}
 	},
 	{
 		"id": "m-sixieme-1",
@@ -92,7 +121,16 @@
 			"24a8e2b1-446f-4df9-84f6-eba54599c035",
 			"c1a54695-3914-4990-85cd-fc6ede9c6a35"
 		],
-		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG 6-193 pour les quatre)."
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG 6-193 pour les quatre).",
+		"court": {
+			"ex": "6e : « Carte à l'échelle 1/1 000 000, on mesure 2 cm… » ; « Donne l'échelle » → 1/900 000",
+			"q": "L'échelle écrite 1/n est-elle de 6e (6-193, « échelles graphiques ») ?",
+			"ch": {
+				"accepter": "Oui, les 4 tagués 6-193",
+				"refuser": "Non : 2 réécrits en « 1 cm ↔ … », 2 sans tag"
+			},
+			"r": "1/n est un coefficient : le BO le met en 5e (5-088)."
+		}
 	},
 	{
 		"id": "m-sixieme-2",
@@ -112,7 +150,16 @@
 		"pourquoi": "Le BO a un point propre pour cette tâche, trois ans plus tard, avec un exemple du même type que le modèle. Taguer 6-141 ferait passer pour du programme de 6e ce que le BO réserve à la 3e. De plus, la variation + 200 % sort de la borne 0-100 %.",
 		"consequence": "tag : 290dcf6f modifié (variation 5 retirée) puis tagué 6-141 ; 24f7a007 tagué 6-141 tel quel (taux de 10 à 100 %). hors : 2 modèles sans tag en 6e ; l'augmentation est candidate à 3-068 (changement de niveau, à décider à part) ; la diminution n'a aucun point de cycle 4 qui la nomme. 6-141 garde ses 6 autres modèles (« 10 % de … », « 25 % de … »).",
 		"modeles": ["290dcf6f-02ee-4c2b-a38f-fa4e860e601c", "24f7a007-bb6a-42a4-b1b0-de257308b375"],
-		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG 6-141)."
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG 6-141).",
+		"court": {
+			"ex": "6e : « 80 Qr augmenté de 10 % : nouveau prix ? » → 88",
+			"q": "Augmenter / diminuer d'un pourcentage, est-ce de la 6e (6-141) ?",
+			"ch": {
+				"tag": "Oui, 6-141",
+				"hors": "Non, c'est la 3e (3-068)"
+			},
+			"r": "Le BO a un point de 3e avec exactement cet exemple."
+		}
 	},
 	{
 		"id": "m-cycle4-1",
@@ -135,7 +182,17 @@
 			"d80e2e02-b4eb-4170-84f3-ce4fcbe94875",
 			"c0c8920a-3a94-4d0c-8f39-b34f636d7f50"
 		],
-		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG 5-045 / 5-126)."
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV disait TAG 5-045 / 5-126).",
+		"court": {
+			"ex": "5e : « 18 − x = 9 » ; « 81 / x = 9 »",
+			"q": "Est-ce « du type x + b = c » (5-045) / « ax = c » (5-126) ?",
+			"ch": {
+				"famille": "Oui, même famille",
+				"litteral": "Non, forme littérale",
+				"niveau": "Ni l'un ni l'autre : revoir le niveau"
+			},
+			"r": "x − a = b et x/a = b sont déjà acceptés ; refuser ceux-ci serait incohérent."
+		}
 	},
 	{
 		"id": "m-cycle4-2",
@@ -153,7 +210,17 @@
 		"pourquoi": "La consigne et les mots (« le produit de … par la différence entre … ») sont ceux de 4-073 ; 5-006 réserve « différence » et « quotient » à la 4e. Même la variation 1 (« la somme du produit de 2 par 6 et de 9 ») reste une phrase de vocabulaire, plus proche de 4-073 que d'une suite d'actions.",
 		"consequence": "5-116 : 1 modèle tagué (seul modèle de ce point). 4-073 : le modèle change de niveau (5e → 4e) et devient le seul modèle de 4-073 ; 5-116 reste sans modèle ; le modèle de 6e 5d515eb1 aurait la même cible (4-073) s'il est reclassé un jour. var1 : variations 2 à 4 retirées, 1 modèle tagué 5-116, au prix d'une lecture discutable.",
 		"modeles": ["78feafed-650f-44e0-a2c3-1e677809722b", "5d515eb1-c8f8-4678-b4bd-f9ab3f34713f"],
-		"verdict_provisoire": "78feafed : A_TRANCHER, sans tag (l'ancien CSV disait TAG 5-116). 5d515eb1 (6e) : HORS_PROGRAMME, inchangé quelle que soit la réponse."
+		"verdict_provisoire": "78feafed : A_TRANCHER, sans tag (l'ancien CSV disait TAG 5-116). 5d515eb1 (6e) : HORS_PROGRAMME, inchangé quelle que soit la réponse.",
+		"court": {
+			"ex": "5e : « le produit de 2 par la différence entre 9 et 6 » → 2 × (9 − 6)",
+			"q": "Ce modèle est-il de 5e (5-116) ou de 4e (4-073, mot pour mot) ?",
+			"ch": {
+				"5-116": "5e, 5-116",
+				"4-073": "4e, 4-073",
+				"var1": "5e, en ne gardant que somme et produit"
+			},
+			"r": "C'est la tâche et le vocabulaire de 4-073."
+		}
 	},
 	{
 		"id": "m-cycle4-3",
@@ -180,7 +247,17 @@
 			"b0ef6947-e4b9-478e-825b-bc7a2756e222",
 			"6a60ed10-3090-4278-b39a-292a6601c5c6"
 		],
-		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV : pas de tag, règle R3)."
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV : pas de tag, règle R3).",
+		"court": {
+			"ex": "4e : « x/(−9) = 9 » ; « 81/x = −9 » ; « 9/x = 2/9 » ; « 9x = 81/4 »",
+			"q": "4-024 dit « a, b, c entiers relatifs » : lesquels taguer ?",
+			"ch": {
+				"tous": "Les 5",
+				"entiers": "Seulement ceux sans fraction au second membre",
+				"aucun": "Aucun"
+			},
+			"r": "x/a = b et a/x = b oui ; 2/9 ou 81/4 au second membre, non."
+		}
 	},
 	{
 		"id": "m-cycle4-4",
@@ -201,7 +278,17 @@
 		"pourquoi": "En 3e tous les nombres du cycle sont permis, et le geste « regrouper les nombres, puis les lettres » est celui de 3-012 ; ses exemples montrent des cas plus riches, sans exclure le cas simple.",
 		"consequence": "tag : 1 modèle tagué 3-012 (seul modèle de ce point). hors : 1 modèle sans tag. modifier : variations à réécrire (facteur littéral répété), puis tag 3-012. Aucun effet sur 08a3f943 (5e), sans point dans tous les cas.",
 		"modeles": ["93a5f7a9-61f2-4553-a529-6f89c37b569c"],
-		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV : pas de tag, règle R3)."
+		"verdict_provisoire": "A_TRANCHER, sans tag en attendant (l'ancien CSV : pas de tag, règle R3).",
+		"court": {
+			"ex": "3e : « a × (−6) × 9 » → −54a",
+			"q": "Le taguer 3-012 « simplifier des produits à facteurs communs » ?",
+			"ch": {
+				"tag": "Oui, 3-012",
+				"hors": "Non",
+				"modifier": "Ajouter un facteur commun (a × (−6) × a), puis tag"
+			},
+			"r": "Le cas simple n'est pas exclu par les exemples de 3-012."
+		}
 	},
 	{
 		"id": "m-cycle4-5",
@@ -228,7 +315,16 @@
 			"3abfcd7b-cd0a-4035-970a-609b3e447369",
 			"e66089e0-b7bd-49fe-a968-9a8df3d325fd"
 		],
-		"verdict_provisoire": "MODIFIER (lecture stricte), ce que proposent les CSV."
+		"verdict_provisoire": "MODIFIER (lecture stricte), ce que proposent les CSV.",
+		"court": {
+			"ex": "4e : « Factorise 81y + 18x » → 9(9y + 2x)",
+			"q": "4-070 dit « expressions à une variable » : deux lettres, c'est refusé ?",
+			"ch": {
+				"stricte": "Oui : modifier les 6 (une lettre)",
+				"x2": "Non : tag les 6 tels quels"
+			},
+			"r": "« À une variable » est écrit ; la retouche est petite (7x + 63z → 7x + 63)."
+		}
 	},
 	{
 		"id": "m-transversal-1",
@@ -316,7 +412,17 @@
 			"a5d4c3ee-4e84-4dde-ac7e-aeb557e56a45",
 			"0b6d749f-95fc-4cfe-a83d-4e2c84bc0e38"
 		],
-		"verdict_provisoire": "HORS_PROGRAMME pour les 60 (décision Q1)."
+		"verdict_provisoire": "HORS_PROGRAMME pour les 60 (décision Q1).",
+		"court": {
+			"ex": "CM : « 586 + ? = 999 » ; « ? × 9 = 810 » ; « 2,9 + ? = 9,8 »",
+			"q": "Au CM, le BO a un point « égalité à trous » (CM1-061, CM2-065). Ta règle Q1 (« trou hors tables = pas de tag ») s'applique-t-elle quand même ?",
+			"ch": {
+				"q1-partout": "Oui, Q1 partout",
+				"point-trou": "Non : au CM, taguer CM1-061 / CM2-065",
+				"non-reciproque": "Seulement les trous qui ne sont pas une simple réciproque"
+			},
+			"r": "Q1 supposait « le BO ne dit rien » : faux au CM. Environ 20 modèles sur 23 tagués."
+		}
 	},
 	{
 		"id": "m-transversal-2",
@@ -352,7 +458,16 @@
 			"b5fb27b0-dd83-4d19-bb23-fec0f51c82bb",
 			"53b5e68d-28ae-4bd8-9cb0-a4335ca689a7"
 		],
-		"verdict_provisoire": "HORS_PROGRAMME pour les 10 trous (Q1) ; TAG pour les équations b5fb27b0 (5-045) et 53b5e68d (4-024)."
+		"verdict_provisoire": "HORS_PROGRAMME pour les 10 trous (Q1) ; TAG pour les équations b5fb27b0 (5-045) et 53b5e68d (4-024).",
+		"court": {
+			"ex": "5e : « x + 2 = −7 » est tagué 5-045, mais « (−2) + ? = 7 » ne l'est pas",
+			"q": "Au cycle 4, les opérations à trou suivent-elles les équations ?",
+			"ch": {
+				"separes": "Non, les trous restent sans tag",
+				"comme-equations": "Oui, tag comme l'équation"
+			},
+			"r": "Même tâche pour l'élève, x ou ? (le BO les rapproche en 5-044). À accorder avec la question précédente."
+		}
 	},
 	{
 		"id": "m-transversal-3",
@@ -378,7 +493,16 @@
 			"0021eee7-2b1d-4228-ada9-6c759c01d0ec",
 			"9c0c47ef-72b0-4333-870d-06cdf0f4a2de"
 		],
-		"verdict_provisoire": "Cycle 2 : TAG (CP-006, CE1-007, CE2-007). CM : MODIFIER (CM1-008, CM1-034)."
+		"verdict_provisoire": "Cycle 2 : TAG (CP-006, CE1-007, CE2-007). CM : MODIFIER (CM1-008, CM1-034).",
+		"court": {
+			"ex": "CP : QCM « Le plus petit : A. 99  B. 5 », sur CP-006 « comparer avec les symboles <, =, > »",
+			"q": "Un QCM sans symbole, est-ce dans le point ?",
+			"ch": {
+				"symboles": "Non : modifier (choisir <, = ou >)",
+				"comparer": "Oui : tag tel quel"
+			},
+			"r": "Tu as cité ce modèle comme une erreur le 2026-10-18."
+		}
 	},
 	{
 		"id": "m-transversal-4",
@@ -408,7 +532,17 @@
 			"b2af6f39-9f24-4491-95ba-7d25d53813fe",
 			"f92d63a6-407d-4887-b263-f708f5904075"
 		],
-		"verdict_provisoire": "TAG_PAR_VARIATION, aucun tag posé (f92d63a6 : MODIFIER, proposition « scinder »)."
+		"verdict_provisoire": "TAG_PAR_VARIATION, aucun tag posé (f92d63a6 : MODIFIER, proposition « scinder »).",
+		"court": {
+			"ex": "5e : « 13/3 + 13/3 » (5-026) et « 3/25 − 2/25 » (5-123) dans un même modèle",
+			"q": "Un modèle n'a qu'un tag par programme. Que faire des 8 modèles à deux points ?",
+			"ch": {
+				"scinder": "Scinder (1 modèle par point)",
+				"retirer": "Retirer les variations minoritaires",
+				"regle": "Retirer si le point a d'autres modèles, sinon scinder"
+			},
+			"r": "Retirer est plus simple ; scinder seulement si un point resterait sans modèle."
+		}
 	},
 	{
 		"id": "m-transversal-5",
