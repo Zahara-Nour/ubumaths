@@ -13,8 +13,9 @@
  * leurs propres racines : on ne lit que les notions des branches du seed
  * (copie figée : tests/integration/fixtures/arbre-notions-seed.json).
  *
- * ⚠️ Ne garde que les migrations : un renommage fait en prod depuis la page
- * admin de l'arbre échappe à ce test.
+ * ⚠️ Deux angles morts : un renommage fait en prod depuis la page admin de
+ * l'arbre (hors migration), et une NOUVELLE branche racine (ses notions ne
+ * sont pas lues) — à son seed, ajouter la branche à la copie figée.
  *
  * @vitest-environment node
  */
@@ -28,7 +29,7 @@ import { MATHOU_NAMES } from '../../src/lib/mathoux/mathou-noms';
 // ============================================================================
 
 interface ArbreJson {
-	branches: { nom: string }[];
+	branches: { nom: string; notions: { nom: string }[] }[];
 }
 
 // ============================================================================
@@ -39,6 +40,7 @@ const arbre: ArbreJson = JSON.parse(
 	readFileSync('tests/integration/fixtures/arbre-notions-seed.json', 'utf-8')
 );
 const SEED_BRANCHES = arbre.branches.map((b) => b.nom);
+const SEED_NOTION_COUNT = arbre.branches.flatMap((b) => b.notions).length;
 
 // ============================================================================
 // VARIABLES
@@ -65,7 +67,7 @@ describe('MATHOU_NAMES ↔ classification_nodes', () => {
 	});
 
 	it('lit bien les notions du seed', () => {
-		expect(notionNames).toHaveLength(134);
+		expect(notionNames).toHaveLength(SEED_NOTION_COUNT);
 		expect(new Set(notionNames).size).toBe(notionNames.length);
 	});
 
