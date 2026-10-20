@@ -9,6 +9,9 @@ Référence : la Brochure SI du BIPM, `docs/ref/si/` (§ et pages dans son `READ
 brochure n'en dit rien). _Aujourd'hui_ : mesuré le 2026-10-20 (`parseCustom` puis `computeQuantity`).
 _Proposé_ : la lecture à valider. **Q** : une question à trancher (liste en fin de page).
 
+> ⚠️ Depuis le 2026-10-20, la page à cocher des grandeurs fait foi (arbres lus mesurés, calcul à part) ;
+> les tableaux ci-dessous gardent la version 1 (valeurs, virgule décimale).
+
 ## Règle proposée
 
 > **L'unité multiplie tout le terme de nombres qui la précède, signe unaire compris** (BIPM §5.4.1 :
@@ -67,16 +70,17 @@ multiplication implicite qui commencerait par un nombre (`shouldInsertImplicitMu
 
 ## B. Puissances de dix, notation scientifique
 
-| #   | Écriture      | BIPM              | Aujourd'hui                                           | Proposé                   |
-| --- | ------------- | ----------------- | ----------------------------------------------------- | ------------------------- |
-| B1  | `10^3[m]`     | ✔ (§5.4.5, 5.4.7) | (10³)[m] = 1000 m                                     | (10³)[m] = 1000 m         |
-| B2  | `2^3[m]`      | —                 | (2³)[m] = 8 m                                         | (2³)[m] = 8 m             |
-| B3  | `-10^3[m]`    | ✔                 | −(10³[m]) = −1000 m                                   | −1000 m                   |
-| B4  | `2,5*10^3[m]` | ✔                 | 2,5 × (10³[m]) = 2500 m                               | (2,5 × 10³)[m] = 2500 m   |
-| B5  | `2,5×10^3[m]` | ✔ (§5.4.6 : `×`)  | erreur « Unexpected token: 10 »                       | 2500 m **Q7**             |
-| B6  | `10^(-3)[m]`  | ✔                 | 0,001 m                                               | 0,001 m                   |
-| B7  | `10^-3[m]`    | ✔ (10⁻³)          | erreur anglaise « Negative exponent requires braces » | **Q8**                    |
-| B8  | `10^3/2[m]`   | —                 | 10³/(2[m]) = 500 m⁻¹                                  | (10³/2)[m] = 500 m **Q1** |
+| #   | Écriture            | BIPM              | Aujourd'hui                                           | Proposé                   |
+| --- | ------------------- | ----------------- | ----------------------------------------------------- | ------------------------- |
+| B1  | `10^3[m]`           | ✔ (§5.4.5, 5.4.7) | (10³)[m] = 1000 m                                     | (10³)[m] = 1000 m         |
+| B2  | `2^3[m]`            | —                 | (2³)[m] = 8 m                                         | (2³)[m] = 8 m             |
+| B3  | `-10^3[m]`          | ✔                 | −(10³[m]) = −1000 m                                   | −1000 m                   |
+| B4  | `2,5*10^3[m]`       | ✔                 | 2,5 × (10³[m]) = 2500 m                               | (2,5 × 10³)[m] = 2500 m   |
+| B5  | `2,5×10^3[m]`       | ✔ (§5.4.6 : `×`)  | erreur « Unexpected token: 10 »                       | 2500 m **Q7**             |
+| B6  | `10^(-3)[m]`        | ✔                 | 0,001 m                                               | 0,001 m                   |
+| B7  | `10^-3[m]`          | ✔ (10⁻³)          | erreur anglaise « Negative exponent requires braces » | **Q8**                    |
+| B8  | `10^3/2[m]`         | —                 | 10³/(2[m]) = 500 m⁻¹                                  | (10³/2)[m] = 500 m **Q1** |
+| B9  | `2^3^2[m]`, `e^x^2` | —                 | ((2³)²)[m] ; (e^x)² : de gauche à droite ⚠️           | **Q17**                   |
 
 ## C. Quotients de nombres
 
@@ -223,3 +227,6 @@ multiplication implicite qui commencerait par un nombre (`shouldInsertImplicitMu
   l'unité : 1[m]. » _Reco : refus._
 - **Q16 — `a/b/c`** (C9, E11) : le BIPM l'interdit sans parenthèses. _Reco : garder la lecture
   ((a/b)/c, règle de calcul ordinaire), sans refus._
+- **Q17 — exposants empilés** (B9) : `2^3^2` est lu (2^3)^2, `e^x^2` (e^x)², contre la convention
+  a^(b^c). Aucun exposant empilé sans accolades en prod ; `toCustom` écrit toujours `2^{3^2}`. _Reco :
+  refus « Deux exposants à la suite : écris 2^(3^2) ou (2^3)^2. »_ Autre choix : lecture de droite à gauche.

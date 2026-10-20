@@ -88,3 +88,11 @@ Inventaire de qui écrit en syntaxe maison (prod lue en lecture seule, dépôt p
   `2^-sin(x)` / `2^-(…)`. La condition « rien derrière » refuserait `10^-3[m]` et `10^-3*5`. Fiche B7
   précisée ; la page disait à tort que l'atelier « produit » `10^-3` : il l'ACCEPTE et le traduit.
 - Vu en passant (hors périmètre, à signaler) : `2^3^2` est lu (2^3)^2, contre la convention 2^(3^2).
+
+### 2026-10-20 — B9 exposants empilés, `10^-3*4`
+
+- Fiche B9 ajoutée (page + corpus, Q17) : `2^3^2` = (2^3)^2 = 64, `e^x^2` = (e^x)², `2^3^2[m]` = ((2^3)^2)[m].
+  0 exposant empilé sans accolades en prod (modèles + exercices) ; `toCustom` écrit `2^{3^2}` / `(2^3)^2`.
+  Reco : refus. Le corpus .md porte désormais un avertissement : la page à cocher fait foi.
+- `10^-3*4` aujourd'hui (parseur maison) : refus « Negative exponent requires braces » ; `10^{-3}*4` =
+  (10^(−3)) × 4. Avec la reco B7 : (10^(−3)) × 4.
