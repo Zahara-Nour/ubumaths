@@ -8,7 +8,7 @@ _Mis à jour le 2026-10-21, après #1565._
 - **Décidé par David** : (1)-(17), détail dans l'historique ; (16) `2 m 30 cm` reste une somme dans l'atelier ; (17) pas de ′ ″.
 - **Prochaine action** : versement de fin de chantier (durable → `docs/systeme/`, journal archivé), quand David le dit.
 - **En attente de David** : ⚠️ AVANT le `deploy:prod` qui livre #1565 : `pnpm tsx scripts/reecrire-virgule-decimale-base.ts` (simulation : 22 remplacements, 12 lignes), puis `--ecrire` (8 modèles publiés + 7 formules d'exercices ; note dans `verifications-manuelles.md`). Les brouillons `pi` nus sont déjà réécrits.
-- **Pièges** : un inventaire par regex rate des formes (`(-a,5)`, `{{a}},{{c}}`) : mesurer par différentiel ancien/nouveau code ; textes rangés de l'atelier et chaînes du DSL relus par `legacyDecimalCommas` ; RD maison sans fonctions génériques ni matrices. Hors PR : `[[1;2]]` ne dit pas `SEMICOLON`.
+- **Pièges** : un inventaire par regex rate des formes (`(-a,5)`, `{{a}},{{c}}`) : mesurer par différentiel ancien/nouveau code ; textes rangés de l'atelier et chaînes du DSL relus par `legacyDecimalCommas` ; RD maison sans fonctions génériques ni matrices. Limites hors PR : liste dans l'historique du 2026-10-21.
 - **Worktree / branche** : aucun (#1565 mergée). Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
@@ -44,9 +44,20 @@ _Mis à jour le 2026-10-21, après #1565._
   inchangé. Dépôt réécrit : fixture `e0ccaf84`, `data/relecture/` 490 et 320.
 - Mis à jour (ancienne tolérance assertée) : conditions `a>2,5` → `ConditionSyntaxError`,
   `{{eval:2,5*2}}` → `AuthorExpressionError`, `~3,14~` → message rouge.
-- Noté, hors PR : un `{{eval}}` à unités de `e0ccaf84` répondait « Unexpected token: , » (repli
-  LaTeX qui écrase le `DECIMAL_COMMA` du maison) ; la console `french-errors.ts` ne traduit pas
-  encore les trois nouveaux textes (chantier de l'atelier, comme `LEADING_DECIMAL_POINT`).
+- Revue Opus : DSL (`courbe("y = 0,5x")`, `avec x > 1,5` refusés) → chaînes du DSL par
+  `legacyDecimalCommas` ; les trois refus traduits dans `french-errors.ts` (textes de la page
+  virgule). CI : `scripts/corrections` ne lisait plus la réponse attendue `{{a}},{{c}}` → au point.
+- **Limites laissées, hors PR** :
+  - `[[1;2]]` : pas de `SEMICOLON` (Pratt `SYNTAX_ERROR`, RD `UNEXPECTED_TOKEN`) ;
+  - un `{{eval}}` à unités dont la lecture maison échoue (`e0ccaf84` avant réécriture) dit
+    « Unexpected token: , » : le repli LaTeX écrase le `DECIMAL_COMMA` du maison ;
+  - `f(1,5)` : deux arguments en Pratt, `DECIMAL_COMMA` en RD (le RD maison n'a pas de fonctions
+    génériques, écart d'avant la PR) ;
+  - `courbe("y = { … , 0,5x … }")` : la virgule sépare aussi les morceaux, ambiguïté d'avant la PR ;
+  - le script ne réécrit que des modèles publiés et des exercices ; des brouillons gardent des
+    virgules dans des descriptions et des réponses (relevé par la revue), non lues par le parseur
+    maison selon la mesure ;
+  - réponse attendue affichée `1.16` (point anglais) pour `953574d4`, `9f380957` : comme avant.
 
 ### 2026-10-21 — décisions (16) et (17)
 
