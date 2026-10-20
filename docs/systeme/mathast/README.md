@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, 2026-10-20).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20).
 
 ## À quoi ça sert
 
@@ -328,11 +328,30 @@ celui que traduit l'atelier (`cli/web/french-errors.ts`). `INVALID_UNIT` n'exist
 (`3[m s]`), `UNIT_EXPONENT_OUTSIDE` (`10[m]^3`). `MISSING_DELIMITER` : l'écriture s'arrête avant le
 `)`, `]` ou `}` attendu (`(1+2`, `5[m`). `MISSING_OPERATOR` : un nombre juste après un facteur, même périmètre dans le maison et le LaTeX
 (refus « nombre après un facteur ») : lettre, nombre, `)`, `]`, `}`, `|` (`x2`, `x 2`, `(1+x)2`, `x^2 3`,
-`|x|2`, `2[m]3[m]`, `\sqrt{2}3`).
+`|x|2`, `2[m] 3`, `\sqrt{2}3`).
 `LEADING_DECIMAL_POINT` (maison seul ; le LaTeX lit `.5` ; un `.` collé à un facteur, `1.2.3`, `x.5`,
 n'en est pas un) a un texte nouveau, « Missing zero before the
 decimal point (write 0.5) », traduit par l'atelier. `UNEXPECTED_TOKEN` reste en dernier recours.
 Tests : `parser/__tests__/codes-des-refus.test.ts`.
+
+Durées juxtaposées (2026-10-20, chantier lecture-grandeurs, PR 5 ; `parser/juxtaposed-quantities.ts`,
+partagé par les quatre parseurs). `2[h] 30[min]`, `2[h]30[min]`, `{2[h]}{30[min]}`,
+`2~\unit{h}~30~\unit{min}` se lisent comme UNE durée : la somme 2 h + 30 min, marquée
+`displayStyle: 'juxtaposed'` (`AdditionNode`, `juxtaposedSum`, `isJuxtaposedSum`). Un bloc face à
+`+` et `−` (`3[h] - 1[h] 30[min]` = 1 h 30 min ; signe en tête sur tout le bloc : `-2[h] 30[min]` =
+−(2 h 30 min)) ; collé à `*`, `/`, `:`, d'un côté comme de l'autre, il est refusé
+(`JUXTAPOSED_QUANTITIES`, « écris 2*(1 h 30 min) pour 3 h, ou 2*1 h + 30 min pour 2 h 30 min ») ;
+entre parenthèses ou en `\frac`, il se lit. Seules les durées : `2[m] 30[cm]`, `2[m]3[m]`,
+`2[h] 30[°]` et `2[h] 30` sont refusés (`JUXTAPOSED_QUANTITIES`), `2[m] 30` garde `MISSING_OPERATOR` ;
+entre accolades, deux grandeurs qui ne sont pas des durées restent un produit (`{2[m]}{3[m]}`, que
+`toLatex` écrit avec `\times`). Les angles attendent les unités ′ et ″, absentes. L'ordre et les unités
+répétées ne sont pas jugés (`30[min] 2[h]` est lu). Écriture : `toCustom` `2[h] 30[min]`, `toLatex`
+`2~\unit{h}~30~\unit{min}`, sans parenthèses après un signe ou un `−` (`juxtaposedTerms`,
+`common/sign-parentheses.ts`) ; la structure en fait un bloc. Les recopies d'arbre (`mapNode`,
+`mapNodeTopDown`, `cloneNode`, `stripUnnecessaryBrackets`, `transformAST`) gardent la marque ; un terme
+changé (valeur négative, expression) fait retomber l'écriture sur la somme avec `+`, valeur juste.
+Tests et garde (toute recopie `case 'addition' → add(…)` passe `displayStyle`) :
+`parser/__tests__/juxtaposed-quantities.test.ts`.
 
 L'unité multiplie tout le terme qui la précède (2026-10-20, chantier lecture-grandeurs, PR 4,
 `parser/custom/unit-term.ts`, partagé par Pratt et RD) : `1/2[m]` = (1/2) m (avant 1/(2 m) = 0,5 m⁻¹),

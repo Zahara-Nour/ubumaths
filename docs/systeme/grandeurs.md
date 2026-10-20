@@ -12,7 +12,7 @@ couvre:
 > passe par les pièces ci-dessous, jamais par une nouvelle à côté. Écrire une grandeur dans un
 > énoncé (la notation pour l'auteur) : [notation-unites.md](../pratiques/notation-unites.md).
 > Décision : [ADR 0026](../adr/0026-grandeurs-un-contrat-et-l-espace.md). Vérifié contre le code
-> le 2026-10-20.
+> le 2026-10-20 (durées juxtaposées, lecture-grandeurs PR 5).
 
 ## Pourquoi un contrat
 
@@ -63,7 +63,12 @@ Règles de la lecture naturelle (décisions de David du 2026-10-11) :
 - une grandeur déjà lue clôt le terme de la suivante : `2 m*3 m` = (2 m) × (3 m) = 6 m², `6 m/2 s`
   = 3 m/s, comme mathAST lit `2\unit{m}\times3\unit{m}` (2026-10-20 ; avant, le second `m` restait
   une lettre et la ligne était refusée) ;
-- deux grandeurs juxtaposées s'ajoutent : `2 h 30 min` = 2 h + 30 min ;
+- une durée composée reste juxtaposée, `2 h 30 min` → `2[h] 30[min]`, que le parseur lit comme UN
+  bloc (lecture-grandeurs, PR 5 ; [mathast/README.md](mathast/README.md)) : `3 h - 1 h 30 min` =
+  1 h 30 min ; collée à `*` ou `/` (`2 * 1 h 30 min`, `2*1 h 30 min`, `1 h 30 min / 2`), elle est
+  refusée — « Durée composée collée à × ou ÷ : écris 2*(1 h 30 min) pour 3 h, ou 2*1 h + 30 min pour
+  2 h 30 min » ; `2*(1 h 30 min)` = 3 h. D'autres grandeurs juxtaposées s'ajoutent toujours :
+  `2 m 30 cm` → `(2[m]+30[cm])` = 2,3 m ;
 - `5km` collé reste un produit, avec une note « Pour une grandeur, écris 5 km (avec une espace). »
   (sauf si toutes ses lettres sont des valeurs du panneau : produit voulu) ;
 - un refus de dimension où une lettre seule a été lue comme unité (`3 t + 2`) explique la lecture
@@ -84,8 +89,8 @@ Règles de la lecture naturelle (décisions de David du 2026-10-11) :
 Dans la carte, MathLive écrit l'espace tapée `\,` et « min » toujours en opérateur `\min` :
 `definitionFromField` les ramène au texte de Calcul avant `readNaturalQuantities`, et ne garde la
 lecture que si la saisie n'est QU'une grandeur (`\min\left(2,3\right)` reste la fonction). Une durée
-composée rangée revient dans le champ écrite `2 h 30 min`, sans le `+` du rangement
-(`fieldLatexOf`) : elle se relit après retouche (restes du lot C, 2026-10-13), seule ou prise dans
+composée est rangée juxtaposée (`2\unit{h}30\unit{min}` ; avant la PR 5, `(2[h]+30[min])`, encore
+relu) et revient dans le champ écrite `2 h 30 min`, sans `+` (`fieldLatexOf`) : elle se relit après retouche (restes du lot C, 2026-10-13), seule ou prise dans
 un calcul (`(1 h + 30 min) × 2`, dont le × reste un × après retouche). Le champ écrit la virgule de l'élève (`2{,}5 km`, pas `2.5`) ; une unité qu'il montre (`\operatorname{\mathrm{m}}`) se relit en unité, même après une puissance (`10^3 m`).
 
 ### Calculer — `tidy`, unité écrite d'abord
