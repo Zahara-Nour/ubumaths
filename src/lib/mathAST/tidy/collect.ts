@@ -43,7 +43,10 @@ import {
 	powRational,
 	rational,
 	divRational,
-	absRational
+	absRational,
+	absBigInt,
+	gcd,
+	lcm
 } from '../normal/rational';
 import {
 	func,
@@ -64,10 +67,10 @@ import { buildSum } from './build';
 import { decimalString } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
 import {
-	isFirstDegreeSum,
 	isPlainTerm,
 	numberFirst,
 	orderUnderMinus,
+	isAlgebraicComplex,
 	sortFactors,
 	sortTerms
 } from './order';
@@ -690,15 +693,18 @@ function absorbFactor(
 }
 
 /**
- * Un facteur déjà mis au propre. Une somme de degré 1 dont TOUS les termes sont
- * négatifs y perd son signe − (décision de David, 2026-10-06), parité de
- * l'exposant respectée : `3(−x − 1)` → `−3(x + 1)`, `(−x − 1)²` → `(x + 1)²`,
- * `(−x − 1)³` → `−(x + 1)³`. Hors d'un facteur, `−x − 1` reste tel quel : ce
- * chemin n'est emprunté que par la base d'un facteur.
+ * Un facteur déjà mis au propre. Une somme dont le terme de gauche est négatif
+ * y perd son signe −, parité de l'exposant respectée (David, 2026-10-06 pour
+ * les sommes toutes négatives de degré 1, étendu le 2026-10-20) :
+ * `3(−x − 1)` → `−3(x + 1)`, `(−x − 1)²` → `(x + 1)²`, `(−x − 1)³` → `−(x + 1)³`,
+ * `3(−x² + 2x − 1)` → `−3(x² − 2x + 1)`. Une somme de deux termes de signes
+ * opposés commence toujours par le positif (`1 − x²`) : elle ne bouge pas. Hors
+ * d'un facteur, `−x² + 2x − 1` reste tel quel : ce chemin n'est emprunté que par
+ * la base d'un facteur.
  */
 function addSumFactor(acc: Accumulator, node: MathNode, exponent: Rational): void {
 	const positive =
-		!acc.keepSumSign && isIntegerRational(exponent) ? positiveFirstDegreeSum(node, acc) : null;
+		!acc.keepSumSign && isIntegerRational(exponent) ? positiveLeadingSum(node, acc) : null;
 	if (positive === null) {
 		addFactor(acc, node, exponent);
 		return;
@@ -707,14 +713,203 @@ function addSumFactor(acc: Accumulator, node: MathNode, exponent: Rational): voi
 	addFactor(acc, positive, exponent);
 }
 
-/** `−x − 1` → `x + 1` ; `null` si la somme n'est pas de degré 1 à termes tous négatifs. */
-function positiveFirstDegreeSum(node: MathNode, acc: Accumulator): MathNode | null {
+/**
+ * `−x² + 2x − 1` → `x² − 2x + 1` ; `null` si le terme de gauche est déjà positif.
+ * Un complexe garde sa forme a + ib : `3(−2 + i)` ne bouge pas.
+ */
+function positiveLeadingSum(node: MathNode, acc: Accumulator): MathNode | null {
 	if (!isSumNode(node)) return null;
 	const terms = toSumTerms(node, undefined, acc.unitChoice);
-	if (terms.length < 2) return null;
-	const plain = terms.every((term) => isPlainTerm(term) && isNegativeRational(term.coefficient));
-	if (!plain || !isFirstDegreeSum(terms)) return null;
+	if (terms.length < 2 || !terms.every(isPlainTerm) || isAlgebraicComplex(terms)) return null;
+	if (!isNegativeRational(sortTerms(terms)[0].coefficient)) return null;
 	return buildSum(sortTerms(terms.map(negateTerm)));
+}
+
+// =============================================================================
+// Étape 4 bis — une fraction de sommes rendue irréductible (2026-10-20)
+// =============================================================================
+
+/**
+ * Un nombre du terme, avec sa place : dans le coefficient, ou DANS une somme
+ * (l'indice du facteur). La réduction le divise sans le déplacer : le nombre
+ * qui ne se simplifie pas reste où il est écrit (`(6x+3)/2` garde son `6x+3`).
+ */
+type NumberPart = { value: bigint; readonly home: 'coefficient' | number };
+
+/** Une somme facteur du terme : facteur numérique × somme à coefficients entiers premiers entre eux. */
+type SumContent = {
+	readonly index: number;
+	readonly content: Rational;
+	readonly primitive: TidyTerm[];
+};
+
+/**
+ * Le facteur numérique positif commun à des termes : PGCD des numérateurs sur
+ * PPCM des dénominateurs de leurs coefficients. `6x+3` → 3, `x/2+1/3` → 1/6.
+ */
+function numericContent(terms: readonly TidyTerm[]): Rational {
+	let numerator = 0n;
+	let denominator = 1n;
+	for (const { coefficient } of terms) {
+		numerator = gcd(numerator, coefficient.n);
+		denominator = lcm(denominator, coefficient.d);
+	}
+	return rational(numerator, denominator);
+}
+
+function scaleTerms(terms: readonly TidyTerm[], factor: Rational): TidyTerm[] {
+	return terms.map((term) => ({ ...term, coefficient: mulRational(term.coefficient, factor) }));
+}
+
+/**
+ * La somme d'un facteur, lue pour la réduction, ou `null` si elle sort de ce
+ * que la réduction sait traiter : exposant non entier, grandeur, nœud opaque,
+ * ou un terme qui contient lui-même une somme (`2(x+1)+4` : y diviser un
+ * nombre reviendrait à développer).
+ */
+function sumContentOf(
+	factor: TidyFactor,
+	index: number,
+	unitChoice: UnitChoice
+): SumContent | null {
+	if (!isIntegerRational(factor.exponent) || !isSumNode(factor.base)) return null;
+	const terms = toSumTerms(factor.base, undefined, unitChoice);
+	if (terms.length < 2) return null;
+	const plain = terms.every(
+		(term) =>
+			isPlainTerm(term) &&
+			!dividesByZero(term) &&
+			!term.factors.some((inner) => isSumNode(inner.base))
+	);
+	if (!plain) return null;
+	const content = numericContent(terms);
+	if (isZeroRational(content)) return null;
+	return { index, content, primitive: scaleTerms(terms, divRational(ONE, content)) };
+}
+
+/** Divise les nombres par `divisor`, ceux des sommes d'abord. */
+function divideParts(parts: readonly NumberPart[], divisor: bigint): void {
+	let rest = divisor;
+	const inSums = parts.filter((part) => part.home !== 'coefficient');
+	const inCoefficient = parts.filter((part) => part.home === 'coefficient');
+	for (const part of [...inSums, ...inCoefficient]) {
+		const common = gcd(part.value, rest);
+		part.value /= common;
+		rest /= common;
+	}
+}
+
+function productOf(parts: readonly NumberPart[]): bigint {
+	return parts.reduce((product, part) => product * part.value, 1n);
+}
+
+/**
+ * Étape 4 bis — un terme qui est une fraction dont une somme est facteur, rendu
+ * irréductible sur ses NOMBRES (décisions de David, 2026-10-20) :
+ *
+ * - le facteur numérique commun se simplifie, la barre de fraction reste
+ *   unique : `(6x+3)/9` → `(2x+1)/3`, jamais `2x/3 + 1/3` ;
+ * - les fractions numériques internes sont chassées : `(x/2+1)/3` → `(x+2)/6`,
+ *   `1/(x/2+1)` → `2/(x+2)` ;
+ * - le signe − passe dans l'unique numérateur, quel que soit son degré, si le
+ *   nombre de signes − y diminue : `(6x−3)/(−9)` → `(1−2x)/3`,
+ *   `(−6x²+3)/(−9)` → `(2x²−1)/3` ; jamais à égalité ni devant un premier
+ *   terme négatif : `(3x²−6x+3)/(−9)` → `−(x²−2x+1)/3`, `(3x²−3)/(−6x)` →
+ *   `−(x²−1)/(2x)` ;
+ * - seul le NOMBRE se simplifie : `(6x²−3x)/(3x)` → `(2x²−x)/x`. Si la
+ *   réduction faisait apparaître une somme égale à un autre facteur
+ *   (`(2x+2)/(4(x+1))`), les deux s'annuleraient — simplifier par `x+1` change
+ *   le domaine : le terme reste alors tel quel.
+ *
+ * Elle travaille sur le terme ACCUMULÉ, pas sur la fraction écrite : `−(6x+3)/9`
+ * et `(x(6x+3))/(9x)` sont le même terme que `(6x+3)/9`, et `tidy` reste
+ * idempotent. Un terme sans dénominateur ne se réduit que si un nombre commun
+ * simplifie (`2(x/2+1/2)` → `x+1`, `4(x/2+1)` → `2(x+2)`) et n'y gagne jamais
+ * de dénominateur : `3(x/2+1)`, `6(x/4+1)`, `2(x+1)` ne bougent pas, ni rien
+ * quand la règle n'a rien à faire (`(6x+3)/2`, `3(x+1)/4`).
+ */
+function reduceFractionOfSums(
+	term: TidyTerm,
+	unitChoice: UnitChoice,
+	watch: FamilyWatch
+): TidyTerm {
+	if (term.unit !== null || term.verbatim || dividesByZero(term)) return term;
+	const hasDenominator =
+		term.coefficient.d !== 1n || term.factors.some((factor) => factor.exponent.n < 0n);
+
+	const sums: SumContent[] = [];
+	term.factors.forEach((factor, index) => {
+		const sum = sumContentOf(factor, index, unitChoice);
+		if (sum !== null) sums.push(sum);
+	});
+	if (sums.length === 0) return term;
+
+	// Les nombres de part et d'autre de la barre, chacun à sa place. Le
+	// dénominateur d'une fraction interne change de côté (`(x/2+1)/3` : le 2 descend).
+	const top: NumberPart[] = [{ value: absBigInt(term.coefficient.n), home: 'coefficient' }];
+	const bottom: NumberPart[] = [{ value: term.coefficient.d, home: 'coefficient' }];
+	for (const { index, content } of sums) {
+		const exponent = term.factors[index].exponent.n;
+		const power = exponent < 0n ? -exponent : exponent;
+		// Une puissance de somme cède son nombre au coefficient : `((6x+3)/9)²` → `(2x+1)²/9`
+		const home = power === 1n ? index : 'coefficient';
+		const [own, other] = exponent > 0n ? [top, bottom] : [bottom, top];
+		own.push({ value: content.n ** power, home });
+		other.push({ value: content.d ** power, home: 'coefficient' });
+	}
+
+	const common = gcd(productOf(top), productOf(bottom));
+	const innerFraction = sums.some(({ content }) => content.d !== 1n);
+	// Sans dénominateur, seul un nombre commun justifie de toucher au terme
+	if (!hasDenominator && common === 1n) return term;
+	if (common === 1n && !innerFraction) return term;
+
+	divideParts(top, common);
+	divideParts(bottom, common);
+
+	const inCoefficient = (parts: readonly NumberPart[]) =>
+		productOf(parts.filter((part) => part.home === 'coefficient'));
+	const inSum = (index: number) =>
+		[...top, ...bottom].find((part) => part.home === index)?.value ?? 1n;
+
+	const coefficient = rational(
+		(isNegativeRational(term.coefficient) ? -1n : 1n) * inCoefficient(top),
+		inCoefficient(bottom)
+	);
+	const factors = [...term.factors];
+	for (const { index, primitive } of sums) {
+		const base = buildSum(sortTerms(scaleTerms(primitive, fromInteger(inSum(index)))));
+		factors[index] = { base, exponent: factors[index].exponent, key: hashMathNode(base) };
+	}
+
+	if (!hasDenominator && coefficient.d !== 1n) return term;
+
+	const reduced = mergeFactors(factors);
+	if (reduced === null) return term;
+	watch?.add('other');
+	return { ...term, coefficient, factors: reduced };
+}
+
+/**
+ * Les facteurs égaux réunis. Une somme réduite ne doit rencontrer aucun facteur
+ * de l'autre côté de la barre : ils s'annuleraient (domaine) — `null`. Du même
+ * côté, ils se multiplient : `(6x+3)(4x+2)/12` → `(2x+1)²/2`.
+ */
+function mergeFactors(factors: readonly TidyFactor[]): TidyFactor[] | null {
+	const merged = new Map<string, TidyFactor>();
+	for (const factor of factors) {
+		const existing = merged.get(factor.key);
+		if (existing === undefined) {
+			merged.set(factor.key, factor);
+			continue;
+		}
+		if (existing.exponent.n < 0n !== factor.exponent.n < 0n) return null;
+		merged.set(factor.key, {
+			...existing,
+			exponent: addRational(existing.exponent, factor.exponent)
+		});
+	}
+	return sortFactors([...merged.values()]);
 }
 
 // =============================================================================
@@ -764,7 +959,7 @@ function toTerm(
 	const unit = ratio === null ? composed : null;
 	const quantity = unit === null ? null : quantityOf(unit);
 
-	return {
+	const term: TidyTerm = {
 		coefficient,
 		factors: sortFactors(factors),
 		unit,
@@ -776,6 +971,7 @@ function toTerm(
 				? writtenUnitOf(acc.unitSymbols, unit)
 				: null
 	};
+	return reduceFractionOfSums(term, unitChoice, watch);
 }
 
 /** Un terme rendu tel quel : il porte un nœud opaque (infini, zéro signé). */
@@ -861,9 +1057,67 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
 }
 
 /**
+ * Le terme de signe opposé, son numérateur retourné, ou `null` : une fraction
+ * dont l'unique numérateur est une somme de deux termes de signes opposés
+ * (`(2x − 1)/3` ↔ `−(1 − 2x)/3`). `null` aussi si le numérateur retourné
+ * rencontrerait un facteur de l'autre côté de la barre : `(2x − 1)/(3(1 − 2x))`.
+ */
+function flipNumerator(term: TidyTerm, unitChoice: UnitChoice): TidyTerm | null {
+	if (term.verbatim || term.unit !== null) return null;
+	const hasDenominator =
+		term.coefficient.d !== 1n || term.factors.some((factor) => factor.exponent.n < 0n);
+	if (!hasDenominator) return null;
+	const numerators = term.factors.filter(
+		(factor) => isSumNode(factor.base) && factor.exponent.n > 0n
+	);
+	const [numerator] = numerators;
+	if (numerators.length !== 1 || numerator.exponent.n !== 1n || numerator.exponent.d !== 1n) {
+		return null;
+	}
+
+	const terms = toSumTerms(numerator.base, undefined, unitChoice);
+	const negatives = terms.filter((inner) => isNegativeRational(inner.coefficient));
+	if (terms.length !== 2 || negatives.length !== 1 || !terms.every(isPlainTerm)) return null;
+	if (isAlgebraicComplex(terms)) return null;
+
+	const base = buildSum(sortTerms(terms.map(negateTerm)));
+	const factors = term.factors.map((factor) =>
+		factor === numerator ? { base, exponent: ONE, key: hashMathNode(base) } : factor
+	);
+	const merged = mergeFactors(factors);
+	if (merged === null) return null;
+	return { ...term, coefficient: negRational(term.coefficient), factors: merged };
+}
+
+/** La clé des facteurs d'un terme, coefficient exclu. */
+function factorsKey(term: TidyTerm): string {
+	return term.factors.map((factor) => factor.key).join('|');
+}
+
+/**
+ * Les termes regroupés, le − de chaque fraction entré dans son numérateur
+ * (David, 2026-10-20) : `(x² − 1)/(−3)` et `−(x² − 1)/3` → `(1 − x²)/3`.
+ *
+ * Avant de regrouper, chaque numérateur retournable prend une orientation
+ * canonique (la plus petite clé) : `(x − 1)/3` et `−(1 − x)/3` deviennent
+ * semblables, `−(x − 1)/3 − (1 − x)/3` → `0` (revue de #1559). Après, un terme
+ * négatif retourne son numérateur, et le terme se lit après son signe : le
+ * résultat ne dépend pas de l'écriture.
+ */
+function collectWithSigns(terms: readonly TidyTerm[], unitChoice: UnitChoice): TidyTerm[] {
+	const canonical = terms.map((term) => {
+		const flipped = flipNumerator(term, unitChoice);
+		return flipped !== null && factorsKey(flipped) < factorsKey(term) ? flipped : term;
+	});
+	return collectLikeTerms(canonical).map((term) =>
+		isNegativeRational(term.coefficient) ? (flipNumerator(term, unitChoice) ?? term) : term
+	);
+}
+
+/**
  * Un terme négatif dont un facteur est un complexe : ce facteur garde l'ordre
  * d'avant la règle a + ib s'il commençait par un signe −, pour ne pas écrire
- * `−(−2 + i)` (voir `orderUnderMinus`). `−(i − 2)`, `−3(i − 2)`, `(3i − 2)/(−1)`.
+ * `−(−2 + i)` (voir `orderUnderMinus`). `−(i − 2)`, `−3(i − 2)`.
  */
 function withoutDoubleSign(term: TidyTerm, unitChoice: UnitChoice): TidyTerm {
 	if (term.verbatim || !isNegativeRational(term.coefficient)) return term;
@@ -1184,7 +1438,7 @@ export function tidyExpression(node: MathNode, options?: TidyOptions, source?: M
 
 	// Chemin muet : aucune expression intermédiaire n'est construite.
 	if (recorder === undefined || families === undefined) {
-		return buildSum(sortTerms(chooseUnits(collectLikeTerms(terms), unitChoice)));
+		return buildSum(sortTerms(chooseUnits(collectWithSigns(terms, unitChoice), unitChoice)));
 	}
 
 	return narrateSum(written, terms, families, recorder, unitChoice);
@@ -1322,7 +1576,8 @@ function narrateSum(
 
 	const united = chooseUnits(terms, unitChoice);
 	const collected = collectLikeTerms(terms);
-	const unitedCollected = chooseUnits(collected, unitChoice);
+	const signed = collectWithSigns(terms, unitChoice);
+	const unitedCollected = chooseUnits(signed, unitChoice);
 
 	// Le travail fait terme par terme pendant la décomposition. Une seule
 	// famille a bougé : elle porte son nom. Plusieurs : le filet `tidy-terms`.
@@ -1341,6 +1596,8 @@ function narrateSum(
 				? 'tidy-add-fractions'
 				: 'tidy-collect-like-terms';
 	step(grouping, materialise(collected, unitChoice));
+	// Le − d'une fraction entre dans son numérateur (`collectWithSigns`)
+	step('tidy-terms', materialise(signed, unitChoice));
 
 	// Somme sans variable, ou partie réelle d'un complexe (`3i − 2` → `−2 + 3i`) :
 	// le nombre passe d'abord en tête (sa propre phrase),

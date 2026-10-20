@@ -57,7 +57,7 @@ const DEMO_CASES: readonly Case[] = [
 	{ integrand: '2x e^{x^2}', expected: '\\exponentialE^{x^2}' },
 	{ integrand: '3x^2 + 2x + 1', expected: 'x^3 + x^2 + x' },
 	{ integrand: '\\dfrac{x}{4}', expected: '\\dfrac{x^2}{8}' },
-	{ integrand: 'x \\sin(x)', expected: '-x \\cos\\left( x \\right) + \\sin\\left( x \\right)' },
+	{ integrand: 'x \\sin(x)', expected: '\\sin\\left( x \\right) - x \\cos\\left( x \\right)' },
 	{ integrand: '\\ln(x)', expected: 'x \\ln\\left( x \\right) - x' },
 	{
 		integrand: '3 \\sin(x) + 2 \\cos(x)',
@@ -533,7 +533,7 @@ describe('parenthèse d’IPP sans exponentielle commune à tous les termes', ()
 		// parenthèse venue de u, pas de l'IPP : gardée
 		[
 			'(2x+1)\\sin(x)',
-			'-\\cos\\left( x \\right) \\left( 2 x + 1 \\right) + 2 \\sin\\left( x \\right)'
+			'2 \\sin\\left( x \\right) - \\cos\\left( x \\right) \\left( 2 x + 1 \\right)'
 		]
 	])('∫ %s dx s’écrit %s', (integrand, expected) => {
 		for (const level of LEVELS) {

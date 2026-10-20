@@ -3,14 +3,21 @@ couvre:
   - 'src/lib/mathAST/tidy/**'
 ---
 
-# `tidy()` — phase 0 : les comportements attendus, à valider
+# `tidy()` — la mise au propre sans développement
 
-> Rédigé le 2026-09-20, après le relevé
-> ([simplify-reecriture-releve.md](../../archive/wip/simplify-reecriture-releve.md)) et les
-> décisions de David du même jour. **Rien de ceci n'est codé.** Chaque ligne
-> deviendra un test rouge en phase 1, une fois validée.
+`tidy(node, options?)` (`src/lib/mathAST/tidy/`) met une expression au propre :
+AST en entrée, AST en sortie. `normalize` reste le seul juge de
+l'**équivalence** ; `tidy` décide de l'**écriture**. Elle sert partout où l'on
+affiche une expression calculée (§G.2) — mais **pas** à la validation des
+réponses (§G.3).
 
-## 0. Les décisions prises (David, 2026-09-20)
+> Né de la phase 0 du 2026-09-20 (relevé :
+> [simplify-reecriture-releve.md](../../archive/wip/simplify-reecriture-releve.md)).
+> Réécrit d'après le code le 2026-10-20 : tout ce qui suit est codé, les
+> exemples sont mesurés. Les lettres de section (§A–§F) sont citées dans le
+> code : ne pas les renuméroter.
+
+## 0. Les décisions fondatrices (David, 2026-09-20)
 
 1. **Deux formes canoniques.** `normalize` garde son rôle : elle développe et
    **décide l'équivalence**. Une nouvelle fonction, **`tidy`**, met une
@@ -21,7 +28,7 @@ couvre:
    `20 °C ≡ 293,15 K`. C'est `normalize` qui convertit en unités de base.
 3. **`simplify` écrit une grandeur numérique dans l'unité adaptée à son ordre
    de grandeur**, en décimal, comme le mode `best` de `evaluateWithUnits`
-   (`12000 m → 12 km`, `0,005 m → 0,5 cm`, `3600 s → 1 h`).
+   (`12000 m → 12 km`, `3600 s → 1 h`) — révisé : unités scolaires (§D.3).
 
 ---
 
@@ -37,27 +44,145 @@ forme canonique du Compute Engine, qui est une expression).
 - **Idempotent** : `tidy(tidy(x))` est structurellement égal à `tidy(x)`.
 - **Jamais de développement, jamais de factorisation** : `(x+1)²` reste
   `(x+1)²`, `x(x+1)` reste `x(x+1)`, `x²+x` reste `x²+x`.
+- **Jamais de changement de domaine** : dans une fraction, seul un **nombre**
+  se simplifie, jamais une expression qui contient une variable (§A.1).
 - **Ne lève jamais d'exception** : ce qu'il ne sait pas traiter ressort tel
-  quel, enfants mis au propre.
+  quel, enfants mis au propre. Seul un débordement de pile est rattrapé
+  (l'entrée est rendue) ; toute autre exception est un bug et remonte.
 
-**Ce qu'il fait, dans cet ordre** (les briques nommées existent déjà) :
+**Comment** : `tidy` relit l'expression comme une **somme de termes**, chaque
+terme étant un **coefficient rationnel exact** multiplié par des **facteurs**
+(base opaque + exposant rationnel) ; il accumule, regroupe, range, puis
+reconstruit l'AST (`build.ts`, qui décide aussi des parenthèses).
 
-| étape                                  | comportement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | brique existante                                                          |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| 1. aplatir                             | `(a+b)+c` → somme à trois termes ; `(a·b)·c` → produit à trois facteurs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | `flattenSumShallow`, `flattenProductShallow`                              |
-| 2. parenthèses                         | celles que la priorité rend inutiles disparaissent ; celles d'une somme dans un produit ou sous une puissance restent                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `stripUnnecessaryBrackets`                                                |
-| 3. neutres et signes                   | `x+0 → x`, `x·1 → x`, `x·0 → 0`, `x/1 → x`, `0/x → 0`, `−(−x) → x`, `+x → x`, `x+(−3) → x−3`, `x/(−y) → −x/y`, `(−x)/(−y) → x/y`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `removeNullTermsAST`, `removeSignsAST`                                    |
-| 4. arithmétique exacte entre littéraux | `2·3·x → 6x`, `2/6+1/4 → 7/12`, `2/4·6/8 → 3/8`, `3/6 → 1/2` — fractions irréductibles, jamais de décimal                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `extractRational`, `foldCoefficients`                                     |
-| 5. termes semblables                   | clé = `hashMathNode` du terme mis au propre, coefficient rationnel replié : `x+x → 2x`, `3x+2x−x → 4x`, `2x+3−x+1 → x+4`, **`2(x+1)²+3(x+1)² → 5(x+1)²`**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `hashMathNode`, `extractRational`                                         |
-| 6. facteurs semblables                 | même base → exposants additionnés : `x·x → x²`, `x·x·x → x³`, `x²·x³ → x⁵`, `x/x → 1`, `x²/x → x`, `(x+1)²·(x+1) → (x+1)³`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | `hashMathNode`                                                            |
-| 7. radicaux numériques                 | `√9 → 3`, `√8 → 2√2`, `√2·√8 → 4`, `√12+√3 → 3√3` (extraction puis étape 5)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `simplifyRadicals` (`normal/rules`)                                       |
-| 8. ordre canonique                     | termes : degré décroissant, puis alphabétique, constante en dernier (`x+4`, `8x²+17x+1`, `4hx+2h²`, `x²cos(x)+2x sin(x)`) ; **somme sans variable** (`e`, `i`, `π` sont des constantes ; décision de David, 2026-10-12) : le rationnel passe en tête, comme dans les manuels (`1+√5`, `3+2√2`, `1+ln 2`, `1+π`, `½+√3`, `-3(1+√2)`) — négatif, seulement si tous les autres termes le sont (`-1-√2`, mais `√2-1`) ; une fonction de l'énoncé est une inconnue (`f(2)+1`, `f'(1)+3` gardent leur ordre), une fonction usuelle en un nombre non (`1+2sin(1)`) ; **nombre complexe** (décision de David, 2026-10-12) : forme algébrique a + ib, la partie réelle (les termes sans `i`) en tête, même négative ou irrationnelle (`-2+3i`, `-1+i√3`, `-1-i`, `-√2+i`, `π+i`, `√2-1+i`) ; la partie réelle se range comme un réel, `i` doit y être un facteur d'exposant 1 (`e^{iπ/3}-1`, `x+iy` gardent leur ordre) ; sous un `−`, que `tidy` ne distribue pas, une partie réelle négative ne passe pas en tête, pour éviter le double signe (`-(i-2)`, `-3(i-2)`, mais `-(2+i)`) ; étape propre `tidy-number-first`, « On écrit le nombre en tête », pour les deux règles ; ricochet sur l'ordre des facteurs, rangés par leur écriture : `(1-√2)(1+√2)` → `(1+√2)(1-√2)` ; facteurs : nombre, variables, fonctions, puissances de sommes (`6x(x²+1)²`) ; codé (`tidy/order.ts`) : les constantes forment la première catégorie de facteurs, dans l'ordre `e`, `i`, `π`, devant toute lettre latine (minuscule ou majuscule) et grecque (`\pi a`, `\pi A`, `\pi\alpha`, `e a`, `i x`, `i\beta`, `e^{i\pi}`) ; clés `\euler` (`toCustom` écrit `e`, 2026-10-10) et `\i` (`complex(0, 1)`, 2026-10-11) | à écrire — `sortTermsAndFactorsAST` est défectueux (`3x+2x−x → −x+2x+3x`) |
-| 9. fonctions                           | arguments mis au propre ; `sin(x)²` et `sin²(x)` : une seule forme, le `superscript` (comme `normalize` depuis la PR #376)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |                                                                           |
-| 10. grandeurs                          | voir §D                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | `selectBestUnit`, `normalizeToBase`                                       |
+| fichier            | rôle                                                                |
+| ------------------ | ------------------------------------------------------------------- |
+| `index.ts`         | point d'entrée, `stripUnnecessaryBrackets` en pré-traitement        |
+| `collect.ts`       | décomposition en termes, regroupements, unités, narration           |
+| `order.ts`         | l'ordre canonique des termes et des facteurs (étape 8)              |
+| `build.ts`         | reconstruction de l'AST (signes, barres de fraction, parenthèses)   |
+| `affine.ts`        | l'arithmétique des températures (§D.2)                              |
+| `terms.ts`         | `tidyTerms` : chaque terme au propre, ordre des termes gardé (§G.1) |
+| `step-recorder.ts` | les étapes racontées à l'élève (§G.1)                               |
 
-**Ce que `tidy` ne fait pas** : développer, factoriser, appliquer une identité
-(`sin²+cos²`, `ln(eˣ)`, `eˣ·e²ˣ`), évaluer une fonction (`sin(0)`). Tout cela
-reste aux règles de motif et à `normalize`.
+**Ce qu'il fait** :
+
+| étape                                  | comportement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | brique existante                                                                          |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| 1. aplatir                             | `(a+b)+c` → somme à trois termes ; `(a·b)·c` → produit à trois facteurs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | `flattenSumShallow`, `flattenProductShallow`                                              |
+| 2. parenthèses                         | celles que la priorité rend inutiles disparaissent ; celles d'une somme dans un produit ou sous une puissance restent                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `stripUnnecessaryBrackets`                                                                |
+| 3. neutres et signes                   | `x+0 → x`, `x·1 → x`, `x·0 → 0`, `x/1 → x`, `0/x → 0`, `−(−x) → x`, `+x → x`, `x+(−3) → x−3`, `x/(−y) → −x/y`, `(−x)/(−y) → x/y`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `removeNullTermsAST`, `removeSignsAST`                                                    |
+| 4. arithmétique exacte entre littéraux | `2·3·x → 6x`, `2/6+1/4 → 7/12`, `2/4·6/8 → 3/8`, `3/6 → 1/2` — fractions irréductibles, jamais de décimal                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `extractRational`, `foldCoefficients`                                                     |
+| 5. termes semblables                   | clé = `hashMathNode` du terme mis au propre, coefficient rationnel replié : `x+x → 2x`, `3x+2x−x → 4x`, `2x+3−x+1 → x+4`, **`2(x+1)²+3(x+1)² → 5(x+1)²`**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `hashMathNode`, `extractRational`                                                         |
+| 6. facteurs semblables                 | même base → exposants additionnés : `x·x → x²`, `x·x·x → x³`, `x²·x³ → x⁵`, `x/x → 1`, `x²/x → x`, `(x+1)²·(x+1) → (x+1)³`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | `hashMathNode`                                                                            |
+| 7. radicaux numériques                 | `√9 → 3`, `√8 → 2√2`, `√2·√8 → 4`, `√12+√3 → 3√3` (extraction puis étape 5)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `simplifyRadicals` (`normal/rules`)                                                       |
+| 8. ordre canonique                     | termes : degré décroissant, puis alphabétique, constante en dernier (`x+4`, `8x²+17x+1`, `4hx+2h²`, `x²cos(x)+2x sin(x)`) ; **somme sans variable** (`e`, `i`, `π` sont des constantes ; décision de David, 2026-10-12) : le rationnel passe en tête, comme dans les manuels (`1+√5`, `3+2√2`, `1+ln 2`, `1+π`, `½+√3`, `-3(1+√2)`) — négatif, seulement si tous les autres termes le sont (`-1-√2`, mais `√2-1`) ; une fonction de l'énoncé est une inconnue (`f(2)+1`, `f'(1)+3` gardent leur ordre), une fonction usuelle en un nombre non (`1+2sin(1)`) ; **nombre complexe** (décision de David, 2026-10-12) : forme algébrique a + ib, la partie réelle (les termes sans `i`) en tête, même négative ou irrationnelle (`-2+3i`, `-1+i√3`, `-1-i`, `-√2+i`, `π+i`, `√2-1+i`) ; la partie réelle se range comme un réel, `i` doit y être un facteur d'exposant 1 (`e^{iπ/3}-1`, `x+iy` gardent leur ordre) ; sous un `−`, que `tidy` ne distribue pas, une partie réelle négative ne passe pas en tête, pour éviter le double signe (`-(i-2)`, `-3(i-2)`, mais `-(2+i)`) ; étape propre `tidy-number-first`, « On écrit le nombre en tête », pour les deux règles ; ricochet sur l'ordre des facteurs, rangés par leur écriture : `(1-√2)(1+√2)` → `(1+√2)(1-√2)` ; facteurs : nombre, variables, fonctions, puissances de sommes (`6x(x²+1)²`) ; codé (`tidy/order.ts`) : les constantes forment la première catégorie de facteurs, dans l'ordre `e`, `i`, `π`, devant toute lettre latine (minuscule ou majuscule) et grecque (`\pi a`, `\pi A`, `\pi\alpha`, `e a`, `i x`, `i\beta`, `e^{i\pi}`) ; clés `\euler` (`toCustom` écrit `e`, 2026-10-10) et `\i` (`complex(0, 1)`, 2026-10-11) | `tidy/order.ts` (l'ancien `sortTermsAndFactorsAST` est défectueux : `3x+2x−x → −x+2x+3x`) |
+| 9. fonctions                           | arguments mis au propre ; `sin(x)²` et `sin²(x)` : une seule forme, le `superscript` (comme `normalize` depuis la PR #376)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |                                                                                           |
+| 10. grandeurs                          | voir §D                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | `selectBestUnit`, `normalizeToBase`                                                       |
+
+Compléments mesurés :
+
+- l'étape 3 couvre aussi `x⁰ → 1`, `(−x)³ → −x³`, `−2² → −4` ;
+- l'étape 4 évalue les puissances numériques jusqu'à l'exposant 256
+  (`2¹⁰ → 1024`, `2⁻¹ → 1/2`), et `3/(1/2) → 6`, `x÷2 → x/2` ;
+- l'étape 7 rationalise un dénominateur **numérique** : `1/√2 → √2/2` ;
+- **signe d'une somme dans un facteur** (2026-10-06, étendu le 2026-10-20) :
+  si son terme de gauche est négatif, le signe sort, à tout degré, parité
+  respectée — `3(−x−1) → −3(x+1)`, `(−x²−1)² → (x²+1)²`,
+  `3(−x²+2x−1) → −3(x²−2x+1)`. Une somme seule garde son signe (`−x²+2x−1`) ;
+- **ordre** (2026-10-06, révisé le 2026-10-20) : au degré 1, positifs devant,
+  négatifs derrière (`1−x`, `3−2x`, `b−a`) ; une somme de **deux termes**,
+  quel que soit le degré, aussi (`3x−x²`, `1−x²`, `sin x − x cos x`), sauf un
+  complexe, partie réelle en tête (`−1 + 1/i`) ; au-delà, l'ordre décroissant
+  reste (`−x²+x+1`) ; **dans chaque groupe de signe** (un seul groupe quand les
+  signes ne se séparent pas), les termes simples d'abord, puis ceux qui
+  contiennent une somme en facteur, le degré passant après cette règle (David,
+  2026-10-20) : `2x+3(x+1)`, `x²+2x(x+1)`, `3+(x+1)/2`, `1+(1−2x)/3`,
+  `x²+3+2(x+1)`, `x²+1+(x+1)²`, `(2x+1)/3−1`, `−x²+1+x(x+1)` ;
+- une relation est mise au propre membre par membre :
+  `x+1=2x−3+x → x+1=3x−3`.
+
+⚠️ **Les décimaux deviennent des fractions** : `0,5+0,25 → 3/4`,
+`x×0,5 → x/2`. Seule la valeur d'une grandeur avec unité s'écrit en décimal
+(§D.3).
+
+### A.1 Fraction de sommes (décisions de David, 2026-10-20)
+
+Quand le numérateur ou le dénominateur est une somme, la fraction est rendue
+**irréductible sur ses coefficients numériques**, et **la barre de fraction
+reste unique** : `(2x+1)/3`, jamais `2x/3 + 1/3` (ce serait distribuer la
+division). Code : `reduceFractionOfSums` dans `collect.ts`.
+
+| entrée            | sortie      | pourquoi                                               |
+| ----------------- | ----------- | ------------------------------------------------------ |
+| `(6x+3)/9`        | `(2x+1)/3`  | facteur commun 3                                       |
+| `(2x+4)/2`        | `x+2`       | le dénominateur tombe à 1                              |
+| `2x/(4x+6)`       | `x/(2x+3)`  |                                                        |
+| `6/(4x+6)`        | `3/(2x+3)`  |                                                        |
+| `(x/2+1)/3`       | `(x+2)/6`   | les fractions internes sont chassées                   |
+| `(x/2+1/3)/5`     | `(3x+2)/30` |                                                        |
+| `1/(x/2+1)`       | `2/(x+2)`   |                                                        |
+| `(0,5x+1)/3`      | `(x+2)/6`   |                                                        |
+| `(6x−3)/(−9)`     | `(1−2x)/3`  | le signe d'un dénominateur négatif passe au numérateur |
+| `(2x+1)/(−3)`     | `−(2x+1)/3` | numérateur tout positif : le − reste devant            |
+| `(−6x²+3)/(−9)`   | `(2x²−1)/3` | deux termes : le − entre dans le numérateur            |
+| `(x/2+1/2)/(1/2)` | `x+1`       | produit `2(x/2+1/2)` : le 2 commun se simplifie        |
+| `4(x/2+1)`        | `2(x+2)`    |                                                        |
+| `6(x/2+1/3)`      | `3x+2`      |                                                        |
+| `(6x²−3x)/(3x)`   | `(2x²−x)/x` | le 3 se simplifie, **pas le `x`** (domaine)            |
+| `(6x+3)/2`        | inchangé    | déjà irréductible : le 6 reste où il est écrit         |
+| `3(x+1)/4`        | inchangé    | idem, pas de développement                             |
+| `(x²−1)/(x+1)`    | inchangé    | ce serait factoriser et changer le domaine             |
+| `2x/3 + 1/3`      | inchangé    | `tidy` ne réunit pas deux fractions en une             |
+
+La réduction travaille sur le **terme déjà accumulé** (coefficient × facteurs),
+pas sur la fraction telle qu'elle est écrite : `−(6x+3)/9`, `(x(6x+3))/(9x)`
+et `(6x+3)/9` donnent tous `(2x+1)/3`, et `tidy` reste idempotent. Deux
+garde-fous, issus de la revue de la PR :
+
+- **pas d'annulation cachée** : si la somme réduite devenait égale à un autre
+  facteur, les deux s'annuleraient — une simplification par une somme, qui
+  change le domaine. Le terme reste alors tel quel : `(2x+2)/(4(x+1))`
+  inchangé (et non `1/2`) ;
+- **pas de développement** : un nombre venu de l'autre côté de la barre reste
+  en coefficient — `(x+1)/(1/2) → 2(x+1)`, `((x+1)/2)/(x+3) → (x+1)/(2(x+3))`.
+  Un produit sans dénominateur ne se réduit que si un nombre commun se
+  simplifie, et n'y gagne jamais de dénominateur : `3(x/2+1)`, `6(x/4+1)`,
+  `2(x/2+1)²` inchangés.
+
+Le signe d'une fraction (David, 2026-10-20) :
+
+- **numérateur de deux termes de signes opposés** : le − est entre les deux,
+  le positif devant, et le − de la fraction y entre, avec ou sans réduction,
+  qu'il vienne du dénominateur ou de l'écriture — `(x²−1)/(−3)`,
+  `−(x²−1)/3` → `(1−x²)/3` ; `(2x−1)/(−3)`, `−(2x−1)/3` → `(1−2x)/3`
+  (`collectWithSigns` : les termes semblables se regroupent d'abord, chaque
+  numérateur retournable pris dans une orientation canonique, si bien que
+  `−(x−1)/3−(1−x)/3 → 0` ; le − entre ensuite) ;
+- **sinon**, le terme de gauche du numérateur est positif — c'est la règle du
+  facteur (§A, étape 4) : `(3x²−6x+3)/(−9)` et `(−3x²+6x−3)/9` →
+  `−(x²−2x+1)/3`, `(−6x³+3x−3)/(−9) → (2x³−x+1)/3` ;
+- jamais dans un produit sans dénominateur (`−2(x/2−1/2) → −(x−1)`, comme
+  `−(x−1)`), ni dans un complexe (`(3i−2)/(−1) → −(3i−2)`), ni s'il ferait
+  rencontrer un facteur de l'autre côté : `(6x−3)/(−9(1−2x)) →
+−(2x−1)/(3(1−2x))`, la réduction numérique étant gardée.
+
+Hors périmètre : une somme dont un terme contient lui-même une somme
+(`(2(x+1)+4)/2`), une grandeur avec unité, un nœud opaque, une somme à
+exposant non entier.
+
+### A.2 Ce que `tidy` ne fait pas (mesuré)
+
+| non fait                                 | exemple qui ressort tel quel                     | à qui c'est                        |
+| ---------------------------------------- | ------------------------------------------------ | ---------------------------------- |
+| développer, distribuer un signe          | `(x+1)²`, `x(x+1)`, `(x+1)(x−1)`, `−(x+2)`       | `simplify` (si moins cher, §B)     |
+| factoriser, simplifier par une variable  | `(x²−1)/(x+1)`                                   | `simplify`, `pedagogical-simplify` |
+| réunir des fractions à variables         | `1/x + 1/y`, `2x/3 + 1/3`                        | —                                  |
+| appliquer une identité                   | `sin²x+cos²x`, `ln(eˣ)`, `e^{ln 2}`, `eˣ·e^{2x}` | règles de motif, `normalize`       |
+| évaluer une fonction, utiliser la parité | `sin(0)`, `cos(−x)`                              | `normalize`                        |
+| radical à variable, radical non carré    | `√(x²)`, `∛8` ; `√x·√x → √x²` (pas `x`)          | —                                  |
+| valeur absolue                           | `\|−3\|`, `\|x\|²`                               | —                                  |
+| ce qui n'a pas de valeur                 | `0⁰`, `x/0`                                      | —                                  |
 
 ---
 
@@ -84,7 +209,10 @@ laisse ces nœuds tels quels.
 
 ---
 
-## C. Le panel — colonne « attendu » proposée
+## C. Le panel de `simplify` — colonne « attendu »
+
+> Les cases ⚠️ étaient ouvertes en phase 0 ; le panel figé est
+> `src/lib/mathAST/simplify/__tests__/panel.test.ts`.
 
 Chaque ligne : entrée · attendu · qui le fait. ⚠️ = case encore ouverte du §7
 du relevé, avec la valeur que je propose par défaut.
@@ -217,15 +345,14 @@ Une grandeur **numérique** est écrite dans l'unité qui place sa valeur entre
 > `30 s → 0,5 min`. Décision prise pour `tidy` : **unités scolaires seulement**
 > (km/m/cm/mm, kg/g/mg, L/mL, h/min/s) et **valeur ≥ 1 préférée** — la plus
 > grande unité scolaire dont la valeur est ≥ 1, sinon la plus petite. D'où
-> `0,005 m → 5 mm` (et non `0,5 cm` comme ci-dessous, exemple hérité du mode
-> `best`), `600 m → 600 m`, `0,3 kg → 300 g`. Une valeur sans écriture décimale
+> `0,005 m → 5 mm` (et non `0,5 cm`, exemple hérité du mode `best`), `600 m → 600 m`, `0,3 kg → 300 g`. Une valeur sans écriture décimale
 > finie garde son unité (`1/3 km`). L'évaluation (`evaluateWithUnits`) garde
 > son mode `best` inchangé.
 
 | entrée          | attendu   |
 | --------------- | --------- |
 | `12000[m]`      | `12 km`   |
-| `0.005[m]`      | `0,5 cm`  |
+| `0.005[m]`      | `5 mm`    |
 | `12[km]+500[m]` | `12,5 km` |
 | `3600[s]`       | `1 h`     |
 | `1500[g]`       | `1,5 kg`  |
@@ -273,16 +400,52 @@ Cas limites :
 
 ---
 
-## G. Ce que je te demande de valider
+## G. Options, appelants, validation
 
-1. le contrat de `tidy` (§A), et son nom ;
-2. la place de `normalize` dans `simplify` : uniquement « développer si moins
-   cher » (§B) ;
-3. les six cases ⚠️ du panel (§C) : `1/√2 → √2/2`, `(x+1)(x−1) → x²−1`,
-   `x(x+1) → x²+x`, `−(x+2)` inchangé, `x²cos(x)+2x sin(x)`, `4hx+2h²` ;
-4. les règles de température (§D.2) et l'interdiction de `selectBestUnit` sur
-   les affines (§D.3) ;
-5. exact partout sauf la valeur d'une grandeur avec unité (§D.3, §E).
+### G.1 Options et narration
 
-Ensuite, phase 1 : tous ces comportements en tests rouges, dans l'ordre
-`tidy` seul → `normalize` et les unités → `simplify` recâblé.
+- `options.recorder` (`TidyStepRecorder`) : `tidy` raconte ses étapes
+  (`tidy-fold-numbers` « On calcule les nombres », `tidy-collect-like-terms`,
+  `tidy-sort-terms`, `tidy-number-first`, `tidy-choose-unit`, …). Une étape
+  n'est nommée que si une **seule** famille de gestes a travaillé ; sinon le
+  filet `tidy-terms` « On met chaque terme au propre » (c'est le cas de la
+  réduction d'une fraction de sommes, §A.1). Une relation est racontée entière
+  (`3x+2x=5 → 5x=5`). Un enregistreur vaut pour **un** appel ; le résultat ne
+  dépend jamais de sa présence. Spec : `docs/archive/wip/tidy-voix-phase0.md`.
+- `options.unitChoice` : `'school'` (défaut) ou `'written'` — l'unité écrite
+  d'abord, si la valeur y tombe juste (`7 mm · 5 cm → mm²`, `120 km / 2 h →
+km/h`), 2026-09-27.
+- `tidyTerms` (`terms.ts`) : pour les dérivées — chaque terme au propre,
+  l'ordre des termes gardé (u′v + uv′), sauf si la mise au propre complète
+  regroupe des termes ou évite un négatif en tête.
+
+### G.2 Qui appelle `tidy`
+
+`simplify` (§B), l'Atelier (`src/lib/atelier/`), `solve`, les variations, les
+limites, la réciproque, l'intégration (forme de classe, valeur interdite), les
+dérivées des corrections (`withTidyStep`), le REPL, la lecture de la valeur
+d'une grandeur (`questions/units/parser.ts`).
+
+### G.3 ⚠️ La validation des réponses n'utilise pas `tidy`
+
+La **valeur** d'une réponse est jugée par `areEquivalent` (`normalize`) ; sa
+**forme** par `checkForm` (`cosmetic-transforms.ts`), qui passe réponse et
+attendu dans sa propre chaîne (`buildASTPipeline` : `reduceRadicalsAST`,
+`reduceFractionsAST`, `removeSignsAST`, …, `sortTermsAndFactorsAST`) puis
+compare les LaTeX. Les deux définitions de « propre » peuvent diverger (ordre
+des termes notamment).
+
+## H. Historique
+
+- 2026-09-20 : phase 0, décisions fondatrices (§0), contrat (§A).
+- 2026-09-21 : narration (G.1).
+- 2026-09-27 : `unitChoice: 'written'`.
+- 2026-10-06 : ordre des sommes de degré 1, signe des sommes toutes négatives.
+- 2026-10-12 : rationnel en tête, forme a + ib (étape 8).
+- 2026-10-20 : fraction de sommes irréductible (§A.1) ; document réécrit
+  d'après le code ; produit sans dénominateur réduit ; signe d'une fraction ;
+  deux termes : le positif devant, à tout degré ; signe sorti d'un facteur dont
+  le terme de gauche est négatif, à tout degré (révise 2026-10-06).
+  Les termes simples avant ceux qui contiennent une somme ; le − d'une fraction
+  entre aussi dans son numérateur quand elle est opérande d'une somme
+  (`1−(2x−1)/3 → 1+(1−2x)/3`).
