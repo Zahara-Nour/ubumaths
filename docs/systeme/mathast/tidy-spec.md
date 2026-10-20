@@ -184,13 +184,21 @@ Mesuré le 2026-09-20 : l'évaluation existante refuse déjà `20 °C + 5 °C` e
 `30 °C − 20 °C → 10 K`, `20 °C + 5 K → 25 °C`. `normalize` applique les mêmes
 règles, **sans lever d'exception** :
 
-| expression      | forme normale                  | équivalences attendues             |
-| --------------- | ------------------------------ | ---------------------------------- |
-| `20[°C]`        | `5863/20 · K` (293,15 K exact) | `≡ 293.15[K]` vrai, `≡ 20[K]` faux |
-| `30[°C]-20[°C]` | `10 · K`                       | `≡ 10[K]` vrai                     |
-| `20[°C]+5[K]`   | `5963/20 · K`                  | `≡ 25[°C]` vrai                    |
-| `20[°C]+5[°C]`  | opaque (pas une grandeur)      | `≡` à rien d'autre que soi-même    |
-| `2*20[°C]`      | opaque                         | idem                               |
+| expression       | forme normale                       | équivalences attendues             |
+| ---------------- | ----------------------------------- | ---------------------------------- |
+| `20[°C]`         | `5863/20 · K` (293,15 K exact)      | `≡ 293.15[K]` vrai, `≡ 20[K]` faux |
+| `30[°C]-20[°C]`  | `10 · K`                            | `≡ 10[K]` vrai                     |
+| `20[°C]+5[K]`    | `5963/20 · K`                       | `≡ 25[°C]` vrai                    |
+| `20[°C]+5[°C]`   | opaque (pas une grandeur)           | `≡` à rien d'autre que soi-même    |
+| `2*20[°C]`       | opaque                              | idem                               |
+| `-20[°C]-5[°C]`  | `-25 · K`                           | `≡ -25[K]` vrai                    |
+| `-20[°C]+30[°C]` | opaque (somme de deux températures) | `≡ 10[K]` faux                     |
+
+Depuis la PR 4 de lecture-grandeurs (2026-10-20), l'unité multiplie tout le terme : `2*20[°C]` se lit
+(2×20) °C, une température dont la valeur est un produit — `tidy` la garde telle quelle et `normalize`
+la laisse opaque (`isMultipliedTemperature`, `units/conversion.ts`) ; `(2*20)[°C]` vaut 40 °C. Le signe
+fait partie de la valeur : `-20[°C]` est −20 °C (décision Q-T2 de David, qui remplace la lecture B2
+« un opposé dans une somme est une soustraction », gardée pour `-(20[°C])+30[°C]` ≡ 10 K).
 
 Pourquoi « ça change le sens de même grandeur » : une valeur en °C se lit soit
 comme une température absolue (20 °C = 293,15 K), soit comme un écart (une

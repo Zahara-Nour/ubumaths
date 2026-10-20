@@ -7,11 +7,28 @@ _Mis à jour le 2026-10-20, après #1558 (PR 4 en cours)._
 - **État** : phase 0 **validée** (`docs/wip/lecture-grandeurs-phase0.md`) ; PR 1 (#1555), PR 2 (#1557) et PR 3 (codes précis des refus, #1558) mergées, pas en prod. Pages à cocher (font foi) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81/81) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (31/31, close). Base `reponses/<id>`.
 - **Décidé par David** (détail : historique) : (1) unité × tout le terme, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs (A9) ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue interne au point. (3) Il refuse la virgule décimale. (4) Refus = code + message anglais, l'atelier traduit (`mathAST/cli/web/french-errors.ts`). (5) **Catalogue de 14 codes validé** (historique, 3e session). (6) **Q9 (a)** : durées et angles juxtaposés LUS comme une somme marquée « juxtaposée » (4 implémentations, fonction partagée ; `;hms`, `compositeDuration`) ; autres grandeurs refusées `JUXTAPOSED_QUANTITIES` ; risque de perte de la marque géré : chemins réels mesurés → test de RENDU par chemin → garde. (7) `×`, `·`, `⋅` lus `*` (aussi `·`/`⋅` entre crochets) ; ⚠️ `2.5` ≠ `2·5`. (8) B7 : `^` + signe + UN nombre/lettre ; `10^-3+4` = `10^{-3}+4` ; refus `e^-x^2` (`STACKED_EXPONENTS`), `2^-sin(x)`, `2^-(x+1)` (`NEGATIVE_EXPONENT_BEFORE_GROUP`). (9) B9 : empilé = 2^(3^2) ; REFUS dans les deux parseurs (`STACKED_EXPONENTS`). (10) Durée composée = un bloc avec `+`/`−` ; collée à `*` ou `/` (des deux côtés, espaces ou non) → refus, atelier compris. (11) Phase 0 validée : LaTeX ne lit pas `×`/`·` Unicode ; `MISSING_OPERATOR` = `x2`, `x 2`, `)2` ; `10^+3` lu, `2^-x y` refusé ; `{2[m]}{3[m]}` reste un produit. (12) Fin de la page grandeurs : `3x[m]` = (3x)[m] ; `π[m]` = constante π (Q11 révisée : `π` = constante partout, `pi` reste p × i) ; `[m]` refusé (`MISSING_NUMBER_BEFORE_UNIT`) ; après `grandeur *` ou `/`, un terme de plusieurs nombres devant une unité est refusé (`AMBIGUOUS_TERM`) ; catalogue = 16 codes. (14) `MISSING_OPERATOR` = tout nombre après un facteur, maison comme LaTeX (« suis LaTeX », `x^2 3`, `|x|2`, `2[m]3[m]` compris).
 - **En attente de David** : rien. (13) Page virgule close 31/31 le 2026-10-20 : S11 `x2` → `MISSING_OPERATOR` ; V1 `1,2` et V4 `[1,2]` → `DECIMAL_COMMA` (atelier : « Le séparateur décimal est le point : écris 1.2 ») ; V7 `f(1,5)` = deux arguments ; `UNEXPECTED_COMMA` (V3, V5, V6) ; `SEMICOLON` (P1-P4) ; `max((2,5),3)` refusé.
-- **Prochaine action** : PR 4 (l'unité multiplie tout le terme) — inventaire fait et montré (aucune valeur de prod ne change) ; mesurer l'atelier pour `π` = constante, puis tests rouges ; ensuite PR « retrait de `BARE_PI` » (décidée, à part), PR 5 (`2[m]3[m]` : `MISSING_OPERATOR` → `JUXTAPOSED_QUANTITIES`), PR 6 (virgule, tout est tranché).
+- **Prochaine action** : PR 4 codée sur `feat/lecture-grandeurs-unite-terme` (tests verts, doc à jour) → revue Opus, PR, merge ; ensuite PR « retrait de `BARE_PI` » (décidée, à part), PR 5 (`2[m]3[m]` : `MISSING_OPERATOR` → `JUXTAPOSED_QUANTITIES`), PR 6 (virgule, tout est tranché).
 - **Pièges** : distinguer LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt (défaut) + RD ; `{2[h]}{30[min]}` = 1 h² aujourd'hui ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
 - **Worktree / branche** : `../ubumaths-wt-lecture-grandeurs` · `feat/lecture-grandeurs-unite-terme`. Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
+
+### 2026-10-20 — PR 4 codée : l'unité multiplie tout le terme
+
+- `parser/custom/unit-term.ts` (partagé Pratt/RD) : à chaque produit, quotient, signe construit, l'unité
+  remonte sur le terme ; une grandeur formée ou des accolades le ferment (`braceWrap` : `2/{7[km]}`) ;
+  E7 `AMBIGUOUS_TERM`, K2 `MISSING_NUMBER_BEFORE_UNIT` ; `:/` et `:` suivent `/`.
+- Tokenizer : espaces entre chiffres ignorés, sauf en exposant/indice (`x^2 3` refusé, décision 14 tenue) ;
+  `2 3` = 23 (test PR 3 mis à jour). `π` = constante dans les deux parseurs.
+- `toCustom` : signe sans parenthèses (`-5[m]`), accolades à droite quand la relecture changerait
+  (`needsClosedRightOperand`). Rendu LaTeX et maison des écritures dont l'arbre change : identique (test).
+- Effets mesurés et réglés : atelier `v*3[h]` (v grandeur du panneau) refusé → `unitsOverQuantities` dans
+  `computeQuantity` ; DSL géométrie `x = 2 * π` = 2π (π y était déjà réservé). Corpus maison : 1 saisie
+  sur 1 299 change d'arbre (`{{eval:135[min];hms}}`), rendu identique.
+- **David** (Q-T1, Q-T2) : `2*20[°C]` refusé et opaque (`isMultipliedTemperature`), `(2*20)[°C]` = 40 °C ;
+  `-20[°C]` = −20 °C, donc `-20[°C]+30[°C]` refusé, `-20[°C]-5[°C]` = −25 K (remplace B2 ; `-(20[°C])+30[°C]`
+  reste 10 K). Valide aussi : espaces sauf exposant, accolades qui ferment, `:/` comme `/`.
+- Suite serveur `src/lib` : 56 471 tests verts ; `check:incremental` 0 ; cliquet tenu.
 
 ### 2026-10-20 — PR 4 : inventaire des valeurs qui changent, π
 

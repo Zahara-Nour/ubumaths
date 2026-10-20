@@ -29,6 +29,23 @@ S'affiche « 3 m·s⁻¹ » : à l'écran, dans l'export `.tex` et dans le PDF. 
 
 Une unité **se déclare**, elle ne se devine pas : `~12 km~` sans crochets est le produit `12·k·m`, pas une grandeur.
 
+**L'unité multiplie tout le terme qui la précède** (lecture-grandeurs, PR 4, 2026-10-20) : `1/2[m]` = (1/2) m
+(avant : 1/(2 m) = 0,5 m⁻¹), `2*3[m]` = (2×3) m, `-5[m]` = (−5) m, `10^3/2[m]` = 500 m, `3x[m]` = (3x) m,
+`π[m]` = π m. Le terme s'arrête :
+
+- au `+`/`-` d'addition : `2+3[m]` = 2 + (3 m) ;
+- à une grandeur déjà formée : `6[m]/2[s]` = (6 m)/(2 s) ;
+- à des parenthèses ou des accolades : `1/(2[s])`, `2/{7[km]}` restent des quotients par une grandeur
+  (`braceWrap` substitue ainsi les valeurs des tirages).
+
+Après une grandeur, le terme qui porte l'unité doit être **un** nombre : `6[m]/2*3[s]`, `6[m]*2/3[s]` sont
+refusés (`AMBIGUOUS_TERM`) — écrire `6[m]/(2*3[s])` ou `(6[m]/2)*3[s]`. Les deux parseurs maison (Pratt, RD)
+partagent la règle : `src/lib/mathAST/parser/custom/unit-term.ts`. `toCustom` met les accolades qu'il faut
+pour se relire à l'identique (`x:/{2[m]}`, `{6[m]}/2*{3[s]}`).
+
+Espaces entre chiffres ignorés : `12 500[m]` = 12500 m, `0.000 01` = 0,00001 — sauf en exposant ou en
+indice (`x^2 3` reste refusé, `MISSING_OPERATOR`).
+
 **Exception : l'atelier** (lot C des grandeurs, décisions de David du 2026-10-11) — dans un calcul
 ou une valeur de l'atelier, **« un nombre, une espace, une unité » est une grandeur** : `5 km`,
 `12 km + 300 m`, `90 km/h`, `1/2 m` = (1/2) m, `2 h 30 min` (deux grandeurs collées s'ajoutent, et
@@ -39,17 +56,20 @@ dit quand les lettres collées forment une unité (`5km`). Jamais dans une défi
 dans une commande. Lecteur : `src/lib/atelier/natural-quantities.ts` ; cartes : l'espace tapée
 arrive `\,` (`mathModeSpace`).
 
-⚠️ `[cm]` seul, sans nombre, n'est **pas** une unité : en début d'expression, un crochet est un crochet de calcul (c × m). En LaTeX, `\unit{cm}` seul devient « 1 cm ».
+⚠️ `[cm]` seul, sans nombre, est **refusé** (« A unit needs a number before it (write 1[cm]) »,
+`MISSING_NUMBER_BEFORE_UNIT`, depuis le 2026-10-20 ; avant, crochet de calcul c × m). Un contenu qui n'est pas
+une unité connue (`[x]`, `[x-1]`) reste un crochet de calcul. En LaTeX, `\unit{cm}` seul devient « 1 cm ».
 
 ### Crochet d'unité ou crochet de calcul ?
 
 Depuis le 2026-09-24, `[…]` sert aussi de crochet de calcul. La règle ne change rien à une unité :
 
-| Position                         | Contenu                                                             | Lu comme                                | Exemples                                                |
-| -------------------------------- | ------------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------- |
-| Début d'expression               | tout                                                                | crochet de calcul                       | `[x-1]^2`, `2+[x-1]`                                    |
-| Après un nombre, une lettre, `)` | un calcul : `+`, `=`, `<`, `>`, ou un `-` qui n'est pas un exposant | crochet de calcul (multiplié)           | `2[x+1]`, `2[(x+2)^2-4]+3`                              |
-| Après un nombre, une lettre, `)` | tout le reste                                                       | **unité** (erreur si elle n'existe pas) | `3[cm]`, `3[m.s^-1]`, `3[kg/(m.s)]` ; `3[kms]` → erreur |
+| Position                         | Contenu                                                             | Lu comme                                 | Exemples                                                |
+| -------------------------------- | ------------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------- |
+| Début d'expression               | une unité connue seule                                              | **refus** (`MISSING_NUMBER_BEFORE_UNIT`) | `[m]`, `2+[km/h]`                                       |
+| Début d'expression               | tout le reste                                                       | crochet de calcul                        | `[x-1]^2`, `2+[x-1]`, `[x]`                             |
+| Après un nombre, une lettre, `)` | un calcul : `+`, `=`, `<`, `>`, ou un `-` qui n'est pas un exposant | crochet de calcul (multiplié)            | `2[x+1]`, `2[(x+2)^2-4]+3`                              |
+| Après un nombre, une lettre, `)` | tout le reste                                                       | **unité** (erreur si elle n'existe pas)  | `3[cm]`, `3[m.s^-1]`, `3[kg/(m.s)]` ; `3[kms]` → erreur |
 
 Une faute de frappe dans une unité reste donc une erreur, jamais un produit silencieux. Affichage : `\left[ … \right]` (écran, PDF), relu par le parseur LaTeX. Limite : `[[` ouvre toujours une matrice — écrire `[ [x-1]^2+1]` avec une espace.
 
@@ -124,6 +144,12 @@ Le parseur LaTeX **ignore** les commandes d'espacement, qui n'ont aucun sens mat
 ### Températures
 
 `°C` et `°F` ne se composent pas : `°C` seul, sans exposant (`[°C/s]` est refusé).
+
+Le signe fait partie de la température (décisions de David du 2026-10-20) : `-20[°C]` est −20 °C, donc
+`-20[°C]-5[°C]` est un écart (−25 K) et `-20[°C]+30[°C]` une somme de deux températures, refusée ;
+`-(20[°C])+30[°C]` reste l'écart de 10 K. Une température dont la valeur est un **produit sans parenthèses**
+(`2*20[°C]`) ne se calcule pas (« ne se multiplie pas ») et reste opaque dans `tidy` et `normalize`
+(`isMultipliedTemperature`, `src/lib/mathAST/units/conversion.ts`) ; `(2*20)[°C]` = 40 °C, `1/2[°C]` = 1/2 °C.
 
 ## Calculer avec des grandeurs
 
@@ -203,7 +229,8 @@ Tests :
 - `src/lib/mathAST/parser/custom/__tests__/unit-writing-braces-spaces.test.ts` : accolades, espaces, dans les 4 parseurs ;
 - `src/lib/mathAST/units/__tests__/display.test.ts` : traduction, et rendu MathLive réel via `mathlive/ssr` ;
 - `src/lib/ubumark/generators/__tests__/unit-rendering.test.ts` : de l'énoncé ubumark aux trois sorties ;
-- `src/lib/mathAST/parser/custom/__tests__/unit-pieges.test.ts` : portée du `/`, exposant après une unité, espacements LaTeX.
+- `src/lib/mathAST/parser/custom/__tests__/unit-pieges.test.ts` : portée du `/`, exposant après une unité, espacements LaTeX ;
+- `src/lib/mathAST/parser/custom/__tests__/unite-terme.test.ts` : l'unité multiplie le terme, refus E7 et `[m]`, espaces entre chiffres, `π`, températures, rendu inchangé.
 - `src/lib/mathAST/parser/custom/__tests__/multiplication-symbols.test.ts` : `×`, `·`, `⋅` lus `*`, et `·`/`⋅` lus `.` dans une unité.
 
 Vérifié contre le code le 2026-10-20.
