@@ -2,16 +2,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, après #1562._
+_Mis à jour le 2026-10-21, après #1562._
 
 - **État** : phase 0 validée (`docs/wip/lecture-grandeurs-phase0.md`) ; PR 1 (#1555), 2 (#1557), 3 (#1558), 4 (#1560), retrait de `BARE_PI` (#1561) et PR 5 durées juxtaposées (#1562) mergées, **pas en prod**. Brouillons de prod à `pi` nu déjà réécrits `\pi` : le `deploy:prod` peut livrer. Pages à cocher : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81/81) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (31/31).
-- **Décidé par David** : décisions (1)-(14), détail dans l'historique ; (15) PR 5 = durées seules, angles juxtaposés refusés tant que les unités ′ et ″ n'existent pas.
+- **Décidé par David** : décisions (1)-(14), détail dans l'historique ; (15) PR 5 = durées seules, angles juxtaposés refusés tant que les unités ′ et ″ n'existent pas ; (16) atelier : `2 m 30 cm` reste une somme (2,3 m), le parseur garde son refus de `2[m] 30[cm]` (réponses d'exercices) ; (17) ′ et ″ pas maintenant (aucun cas réel, conflit avec la prime `f′`), 💭 à rouvrir si un exercice en a besoin.
 - **Prochaine action** : PR 6 (virgule décimale, décisions 2-3 et page virgule 31/31).
-- **En attente de David** : dans l'atelier, `2 m 30 cm` vaut toujours 2,3 m (somme), alors que le parseur refuse `2[m] 30[cm]` : garder ou refuser ? Plus tard : ajouter ′ et ″ pour les angles ?
+- **En attente de David** : rien.
 - **Pièges** : LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt + RD ; une recopie d'addition doit passer `displayStyle` (garde dans `juxtaposed-quantities.test.ts`) ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
 - **Worktree / branche** : aucun (#1562 mergée). Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
+
+### 2026-10-21 — décisions (16) et (17)
+
+- **David** (sur recommandation) : (16) l'atelier garde `2 m 30 cm` = `(2[m]+30[cm])` = 2,3 m (calculatrice,
+  écriture réelle d'élève, sans ambiguïté) ; le parseur garde son refus de `2[m] 30[cm]`, qui protège les
+  réponses d'exercices de conversion. (17) Pas d'unités ′ et ″ pour l'instant : aucun cas réel (collège =
+  degrés seuls, 0 angle juxtaposé à l'inventaire), et `′` sert déjà de prime (`f′`).
 
 ### 2026-10-20 — PR 5 codée : durées juxtaposées
 
