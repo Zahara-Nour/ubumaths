@@ -13,7 +13,6 @@ import { page } from 'vitest/browser';
 import MetadataCards from '../MetadataCards.svelte';
 import NewWorksheetPage from '../../../../routes/(protected)/dashboard/teacher/contenu/worksheets/new/+page.svelte';
 import { BUILT_IN_STYLE_OPTIONS } from '$lib/typst/templates/styles';
-import { DEFAULT_TEMPLATE_IDS } from '$lib/typst/templates/default-templates';
 import type { WorksheetWithRelations } from '$lib/types/worksheets';
 
 const PROF_STYLE = {
@@ -23,10 +22,7 @@ const PROF_STYLE = {
 };
 const STYLES = [...BUILT_IN_STYLE_OPTIONS, PROF_STYLE];
 
-function worksheet(ids: {
-	style_id?: string | null;
-	template_id?: string | null;
-}): WorksheetWithRelations {
+function worksheet(ids: { style_id?: string | null }): WorksheetWithRelations {
 	return {
 		id: '550e8400-e29b-41d4-a716-446655440012',
 		title: 'Fiche',
@@ -34,7 +30,6 @@ function worksheet(ids: {
 		type: 'worksheet',
 		config: { show_points: true },
 		style_id: ids.style_id ?? null,
-		template_id: ids.template_id ?? null,
 		grade_levels: [],
 		tags: [],
 		exercises: [],
@@ -43,7 +38,7 @@ function worksheet(ids: {
 }
 
 async function renderCards(
-	ids: { style_id?: string | null; template_id?: string | null },
+	ids: { style_id?: string | null },
 	onFieldChange: (field: string, value: unknown) => void = () => {}
 ) {
 	return await render(MetadataCards, {
@@ -54,11 +49,6 @@ async function renderCards(
 describe('le style affiché', () => {
 	it('fiche sans style : « Fiche élève (par défaut) »', async () => {
 		await renderCards({});
-		await expect.element(page.getByText('Fiche élève (par défaut)')).toBeInTheDocument();
-	});
-
-	it('`template_id` seul ne désigne plus le style : « Fiche élève (par défaut) »', async () => {
-		await renderCards({ template_id: DEFAULT_TEMPLATE_IDS.modern });
 		await expect.element(page.getByText('Fiche élève (par défaut)')).toBeInTheDocument();
 	});
 

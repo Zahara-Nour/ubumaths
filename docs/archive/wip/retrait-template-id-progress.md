@@ -1,18 +1,15 @@
 ---
 title: Retrait de worksheets.template_id — journal
 date: 2026-10-19
-status: PR 1 (#1532) et PR 2 (#1542) mergées, en prod v0.41.0 ; #1544 (scripts) ; PR 3 (drop) mergée #1548, db:migrate en attente
+status: clos — PR 1 #1532, PR 2 #1542, #1544, PR 3 #1548 (migrée le 2026-10-20), PR 4 (types, tests, archivage)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1548 (PR 3 mergée, migration pas encore jouée)._
+_Mis à jour le 2026-10-20, PR 4 : chantier CLOS, journal archivé._
 
-- **État** : #1532, #1542 (en prod v0.41.0), #1544, #1548 (drop) mergées. Revues #1548 : `security-auditor` et `code-reviewer` sans finding bloquant. Migration `20261019221542_retrait_worksheets_template_id.sql` sur `main`, **pas jouée en prod**.
-- **Prochaine action** : `db:migrate` depuis le dépôt principal (feu vert de David) ; puis PR 4 (nouveau worktree) : `db:types`, nettoyage des tests unitaires `style-de-la-fiche.test.ts` et `.svelte.test.ts` (`template_id` dans `WorksheetRow`), commentaire périmé `supabase/seed/worksheet_system_templates.sql:7`, `db:doc` (`base-de-donnees-tables.md`), versement du journal.
-- **En attente de David** : feu vert pour le `db:migrate` destructif.
-- **Pièges en cours** : la migration est sur `main` → le `db:migrate` d'une autre session la jouerait (sans risque pour le code : v0.41.0 ne lit plus la colonne). Réconciliation prod du 2026-10-19 : 28/36 fiches avec `template_id`, toutes `style_id = template_id`.
-- **Worktree / branche** : aucun (worktree de la PR 3 supprimé) ; PR 4 → `../ubumaths-wt-retrait-template-id`, branche `chore/retrait-template-id-types`.
+- **État** : clos. #1532 (recopie, migrée), #1542 (code, en prod v0.41.0), #1544 (scripts), #1548 (drop, migrée le 2026-10-20 : colonne absente en prod, RPC de partage sans `template_id`), PR 4 (`db:types`, tests unitaires, commentaire de seed, `db:doc`, archivage).
+- **Prochaine action** : aucune. Le durable est dans `docs/systeme/fiches-et-pdf.md` et `base-de-donnees.md`.
 
 ## Contexte
 
@@ -67,3 +64,8 @@ Seule la **colonne** `worksheets.template_id` part. La table `worksheet_template
 - Types : `template_id` retiré de `WorksheetRow`, `WorksheetInsert`/`Update`, `WorksheetFormData`, `StudentWorksheetView` ; maquettes de tests nettoyées (`style_id` à la place quand elles choisissaient un style).
 - Preuve rouge : `fiche-choix-du-style` + `pdf-eleve-style` (intégration) avec l'ancien `src/` → 8 échecs ; avec le nouveau → 36/36.
 - Les fonctions SQL des liens partagés rendent encore `template_id` (et s'en servent en repli) : non touchées ici (migration), c'est la PR 3 — 0 fiche concernée en prod.
+
+### 2026-10-20 — PR 3 migrée, PR 4
+
+- #1548 mergée (CI verte ; `security-auditor` et `code-reviewer` sans finding bloquant). `db:migrate` lancé par David. Vérifié en prod : colonne absente, les deux RPC de partage sans `template_id` et toujours `SECURITY DEFINER`, 36 fiches dont 28 avec `style_id`.
+- PR 4 : `db:types` (seuls `template_id` et `worksheets_template_id_fkey` disparaissent), tests unitaires `style-de-la-fiche*.test.ts` sans `template_id` (les cas « `template_id` ne compte plus » retirés : la colonne n'existe plus), commentaire de `supabase/seed/worksheet_system_templates.sql`, `base-de-donnees-tables.md` régénéré, journal archivé.

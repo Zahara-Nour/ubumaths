@@ -4,7 +4,8 @@
 -- Les templates intégrés (Standard, Deux colonnes, Fiche élève, …) existent en
 -- production avec ces UUID déterministes et `created_by = NULL`. Le baseline de
 -- migrations étant schéma-seul, ils manquaient en local : toute feuille créée
--- avec un template intégré violait alors la FK worksheets.template_id.
+-- avec un template intégré violait alors la FK worksheets.template_id (colonne
+-- retirée depuis, #1529).
 --
 -- Les libellés gardés par les options d'affichage sont encadrés par des
 -- conditionnels {{#if show_x}}...{{/if}}, et le vocabulaire de l'habillage passe

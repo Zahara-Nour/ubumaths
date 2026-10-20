@@ -490,9 +490,9 @@ Liens : `created_by` → `profiles` · `style_id` → `worksheet_styles`
 
 ### `worksheets`
 
-`archived_at?` · `config?` · `created_at` · `created_by` · `description?` · `estimated_duration_minutes?` · `grades?` · `id` · `published_at?` · `school_id?` · `status` · `style_id?` · `template_id?` · `title` · `total_points?` · `translations?` · `type` · `updated_at` · `version?`
+`archived_at?` · `config?` · `created_at` · `created_by` · `description?` · `estimated_duration_minutes?` · `grades?` · `id` · `published_at?` · `school_id?` · `status` · `style_id?` · `title` · `total_points?` · `translations?` · `type` · `updated_at` · `version?`
 
-Liens : `created_by` → `profiles` · `school_id` → `schools` · `style_id` → `worksheet_styles` · `template_id` → `worksheet_templates`
+Liens : `created_by` → `profiles` · `school_id` → `schools` · `style_id` → `worksheet_styles`
 
 ## Évaluations (8)
 
