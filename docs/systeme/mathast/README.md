@@ -341,7 +341,8 @@ grandeur déjà formée (`6[m]/2[s]`), à des parenthèses ou des accolades (`2/
 Après une grandeur, un terme de plusieurs nombres est refusé, `AMBIGUOUS_TERM` (`6[m]/2*3[s]`) ; une unité
 seule en tête, `MISSING_NUMBER_BEFORE_UNIT` (`[m]` ; `[x]` reste un crochet de calcul). Espaces entre
 chiffres ignorés (`12 500` = 12500), sauf en exposant ou en indice (`x^2 3` refusé). `π` tapé tel quel est la
-constante (comme `\pi`) ; `pi` reste p × i (le `{{eval}}` le réécrit encore, `BARE_PI`). `toCustom` ne
+constante (comme `\pi`) ; `pi` reste p × i, et un calcul de modèle (`{{eval}}`, `conditions`) qui l'écrit
+nu est refusé (« écris \pi », `barePiRefusal` ; la tolérance `BARE_PI` est retirée). `toCustom` ne
 parenthèse plus un signe (`-5[m]`) et ferme d'accolades l'opérande droit qui se relirait autrement
 (`x:/{2[m]}`, `{6[m]}/2*{3[s]}`, `needsClosedRightOperand`). Calcul (`cli/quantities.ts`) : une unité sur un
 terme qui porte déjà une grandeur le multiplie (`unitsOverQuantities`) ; `2*20[°C]` refusé, `-20[°C]` est

@@ -1,6 +1,6 @@
 /**
  * Pièges de la génération, deuxième série (relevés en rédigeant des modèles, 2026-10) :
- * `%`, `or`/`and`/`not` et `pi` dans une condition, `sign()` dans `eval`, modificateurs
+ * `%`, `or`/`and`/`not` et `\pi` dans une condition, `sign()` dans `eval`, modificateurs
  * combinés en plusieurs `;`, tirage non défini (division par zéro, arccos hors domaine)
  * relancé, variable de plusieurs lettres valant π dans un calcul de fonctions.
  */
@@ -97,13 +97,19 @@ describe('sign() dans eval et dans une condition', () => {
 	});
 });
 
-describe('pi dans une condition', () => {
-	it('cos(pi/6) >= 0.1 est vrai', () => {
-		expect(evaluateConditions(['cos(pi/6) >= 0.1'], [])).toBe(true);
+describe('π dans une condition', () => {
+	it('cos(\\pi/6) >= 0.1 est vrai', () => {
+		expect(evaluateConditions(['cos(\\pi/6) >= 0.1'], [])).toBe(true);
 	});
 
-	it('pi vaut π aussi avec une variable tirée', () => {
-		expect(evaluateConditions(['sin(a*pi/6) > 0.9'], vars({ a: '3' }))).toBe(true);
+	it('\\pi vaut π aussi avec une variable tirée', () => {
+		expect(evaluateConditions(['sin(a*\\pi/6) > 0.9'], vars({ a: '3' }))).toBe(true);
+	});
+
+	it('pi nu est refusé : cos(pi/6) >= 0.1', () => {
+		expect(() => evaluateConditions(['cos(pi/6) >= 0.1'], [])).toThrow(
+			/« pi » sans antislash.*\\pi/
+		);
 	});
 });
 
@@ -177,7 +183,7 @@ describe('variable de plusieurs lettres valant un calcul avec π', () => {
 	it('round(cos(ang)*100) avec ang = π/6', () => {
 		const instance = generate({
 			variables: [
-				{ name: 'ang', expression: '{{eval:pi/6}}' },
+				{ name: 'ang', expression: '{{eval:\\pi/6}}' },
 				{ name: 'r', expression: '{{eval:round(cos(ang)*100)}}' }
 			],
 			blanks: [{ expectedAnswer: '{{r}}' }]

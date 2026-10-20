@@ -27,23 +27,23 @@
 			],
 			"choices": [
 				{
-					"content": "$\\cos x\\geqslant{{eval:cos(n*pi/12)}}$"
+					"content": "$\\cos x\\geqslant{{eval:cos(n*\\pi/12)}}$"
 				},
 				{
-					"content": "$\\cos x\\leqslant{{eval:cos(n*pi/12)}}$"
+					"content": "$\\cos x\\leqslant{{eval:cos(n*\\pi/12)}}$"
 				},
 				{
-					"content": "$\\sin x\\geqslant{{eval:cos(n*pi/12)}}$"
+					"content": "$\\sin x\\geqslant{{eval:cos(n*\\pi/12)}}$"
 				},
 				{
-					"content": "$\\sin x\\leqslant{{eval:cos(n*pi/12)}}$"
+					"content": "$\\sin x\\leqslant{{eval:cos(n*\\pi/12)}}$"
 				}
 			],
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"L'arc est symétrique par rapport à l'axe des abscisses et va de $-{{a}}$ à ${{a}}$ : ce sont les points d'**abscisse** (cosinus) supérieure ou égale à $\\cos{{a}}={{eval:cos(n*pi/12)}}$.",
-					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\cos x\\geqslant{{eval:cos(n*pi/12)}}}$."
+					"L'arc est symétrique par rapport à l'axe des abscisses et va de $-{{a}}$ à ${{a}}$ : ce sont les points d'**abscisse** (cosinus) supérieure ou égale à $\\cos{{a}}={{eval:cos(n*\\pi/12)}}$.",
+					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\cos x\\geqslant{{eval:cos(n*\\pi/12)}}}$."
 				]
 			}
 		},
@@ -61,23 +61,23 @@
 			],
 			"choices": [
 				{
-					"content": "$\\sin x\\geqslant{{eval:sin(n*pi/12)}}$"
+					"content": "$\\sin x\\geqslant{{eval:sin(n*\\pi/12)}}$"
 				},
 				{
-					"content": "$\\sin x\\leqslant{{eval:sin(n*pi/12)}}$"
+					"content": "$\\sin x\\leqslant{{eval:sin(n*\\pi/12)}}$"
 				},
 				{
-					"content": "$\\cos x\\geqslant{{eval:sin(n*pi/12)}}$"
+					"content": "$\\cos x\\geqslant{{eval:sin(n*\\pi/12)}}$"
 				},
 				{
-					"content": "$\\cos x\\leqslant{{eval:sin(n*pi/12)}}$"
+					"content": "$\\cos x\\leqslant{{eval:sin(n*\\pi/12)}}$"
 				}
 			],
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"L'arc est symétrique par rapport à l'axe des ordonnées, en haut du cercle : ce sont les points d'**ordonnée** (sinus) supérieure ou égale à $\\sin{{a}}={{eval:sin(n*pi/12)}}$.",
-					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\sin x\\geqslant{{eval:sin(n*pi/12)}}}$."
+					"L'arc est symétrique par rapport à l'axe des ordonnées, en haut du cercle : ce sont les points d'**ordonnée** (sinus) supérieure ou égale à $\\sin{{a}}={{eval:sin(n*\\pi/12)}}$.",
+					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\sin x\\geqslant{{eval:sin(n*\\pi/12)}}}$."
 				]
 			}
 		},
@@ -95,23 +95,23 @@
 			],
 			"choices": [
 				{
-					"content": "$\\sin x={{eval:-sin(n*pi/12)}}$"
+					"content": "$\\sin x={{eval:-sin(n*\\pi/12)}}$"
 				},
 				{
-					"content": "$\\sin x={{eval:sin(n*pi/12)}}$"
+					"content": "$\\sin x={{eval:sin(n*\\pi/12)}}$"
 				},
 				{
-					"content": "$\\cos x={{eval:-sin(n*pi/12)}}$"
+					"content": "$\\cos x={{eval:-sin(n*\\pi/12)}}$"
 				},
 				{
-					"content": "$\\cos x={{eval:sin(n*pi/12)}}$"
+					"content": "$\\cos x={{eval:sin(n*\\pi/12)}}$"
 				}
 			],
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"Les deux points ont la même **ordonnée**, négative (ils sont sous l'axe des abscisses) : $\\sin\\left(-{{a}}\\right)=-\\sin{{a}}={{eval:-sin(n*pi/12)}}$.",
-					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\sin x={{eval:-sin(n*pi/12)}}}$."
+					"Les deux points ont la même **ordonnée**, négative (ils sont sous l'axe des abscisses) : $\\sin\\left(-{{a}}\\right)=-\\sin{{a}}={{eval:-sin(n*\\pi/12)}}$.",
+					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\sin x={{eval:-sin(n*\\pi/12)}}}$."
 				]
 			}
 		}

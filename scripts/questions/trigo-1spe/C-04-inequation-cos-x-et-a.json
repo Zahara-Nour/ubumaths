@@ -16,7 +16,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x\\geqslant {{eval:cos(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x\\geqslant {{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "a",
@@ -34,14 +34,14 @@
 			],
 			"correction": {
 				"steps": [
-					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*pi/12)}}$. Sur le cercle, les points d'abscisse supérieure ou égale à ${{eval:cos(n*pi/12)}}$ forment l'arc qui va de $-{{a}}$ à ${{a}}$ en passant par $0$.",
+					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*\\pi/12)}}$. Sur le cercle, les points d'abscisse supérieure ou égale à ${{eval:cos(n*\\pi/12)}}$ forment l'arc qui va de $-{{a}}$ à ${{a}}$ en passant par $0$.",
 					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) >= cos({{n}}*pi/12)\nmode: arc\nmesures: principales\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left[-{{a}}\\,;{{a}}\\right] }$."
 				]
 			}
 		},
 		{
-			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x\\geqslant {{eval:cos(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x\\geqslant {{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "a",
@@ -59,14 +59,14 @@
 			],
 			"correction": {
 				"steps": [
-					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*pi/12)}}$. Sur le cercle, les points d'abscisse supérieure ou égale à ${{eval:cos(n*pi/12)}}$ forment l'arc qui va de $-{{a}}$ à ${{a}}$ en passant par $0$.",
+					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*\\pi/12)}}$. Sur le cercle, les points d'abscisse supérieure ou égale à ${{eval:cos(n*\\pi/12)}}$ forment l'arc qui va de $-{{a}}$ à ${{a}}$ en passant par $0$.",
 					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) >= cos({{n}}*pi/12)\nmode: arc\nmesures: principales\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left[-{{a}}\\,;{{a}}\\right] }$."
 				]
 			}
 		},
 		{
-			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x<{{eval:cos(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x<{{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "a",
@@ -84,14 +84,14 @@
 			],
 			"correction": {
 				"steps": [
-					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*pi/12)}}$. Sur le cercle, les points d'abscisse strictement inférieure à ${{eval:cos(n*pi/12)}}$ forment l'arc qui va de ${{a}}$ à $-{{a}}$ en passant par $\\pi$ : dans $\\left]-\\pi\\,;\\pi\\right]$, il donne deux intervalles.",
+					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*\\pi/12)}}$. Sur le cercle, les points d'abscisse strictement inférieure à ${{eval:cos(n*\\pi/12)}}$ forment l'arc qui va de ${{a}}$ à $-{{a}}$ en passant par $\\pi$ : dans $\\left]-\\pi\\,;\\pi\\right]$, il donne deux intervalles.",
 					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) < cos({{n}}*pi/12)\nmode: arc\nmesures: principales\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\pi\\,;-{{a}}\\right[\\cup\\left]{{a}}\\,;\\pi\\right] }$."
 				]
 			}
 		},
 		{
-			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x<{{eval:cos(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x<{{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "a",
@@ -109,7 +109,7 @@
 			],
 			"correction": {
 				"steps": [
-					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*pi/12)}}$. Sur le cercle, les points d'abscisse strictement inférieure à ${{eval:cos(n*pi/12)}}$ forment l'arc qui va de ${{a}}$ à $-{{a}}$ en passant par $\\pi$ : dans $\\left]-\\pi\\,;\\pi\\right]$, il donne deux intervalles.",
+					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*\\pi/12)}}$. Sur le cercle, les points d'abscisse strictement inférieure à ${{eval:cos(n*\\pi/12)}}$ forment l'arc qui va de ${{a}}$ à $-{{a}}$ en passant par $\\pi$ : dans $\\left]-\\pi\\,;\\pi\\right]$, il donne deux intervalles.",
 					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) < cos({{n}}*pi/12)\nmode: arc\nmesures: principales\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\pi\\,;-{{a}}\\right[\\cup\\left]{{a}}\\,;\\pi\\right] }$."
 				]

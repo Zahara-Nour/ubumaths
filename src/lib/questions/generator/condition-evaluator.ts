@@ -23,7 +23,8 @@ import { substitute } from '$lib/mathAST/eval/substitute';
 import { evaluate, evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { isEvalValue } from '$lib/mathAST/eval/types';
 import { isRelation, isLogical, isLogicalNot, isBoolean, isDelimiter } from '$lib/mathAST/guards';
-import { BARE_PI, braceWrap } from '$lib/ubumark/parameterization/resolver/variable-resolver';
+import { braceWrap } from '$lib/ubumark/parameterization/resolver/variable-resolver';
+import { barePiRefusal } from '$lib/ubumark/parameterization/validator/bare-pi';
 
 /**
  * Build EvalBindings from resolved variables.
@@ -209,14 +210,14 @@ function normalizeModulo(condition: string): string {
 }
 
 /**
- * Écriture d'auteur → notation du parseur : opérateurs (`==`, `<>`), mots logiques, `%`,
- * et `pi` = π comme dans `{{eval:…}}` (sinon `pi` se lisait p×i et `cos(pi/6) >= 0.1`
- * valait faux sans erreur).
+ * Écriture d'auteur → notation du parseur : opérateurs (`==`, `<>`), mots logiques, `%`.
+ * `pi` nu est refusé comme dans `{{eval:…}}` (lu p×i, `cos(pi/6) >= 0.1` valait faux sans
+ * erreur) : π s'écrit `\\pi`.
  */
 function normalizeCondition(condition: string): string {
-	return normalizeModulo(
-		normalizeLogicalWords(normalizeConditionOperators(condition)).replace(BARE_PI, '\\pi')
-	);
+	const refusal = barePiRefusal(condition);
+	if (refusal) throw new ConditionSyntaxError(refusal);
+	return normalizeModulo(normalizeLogicalWords(normalizeConditionOperators(condition)));
 }
 
 /** Tolerance for floating-point comparisons */

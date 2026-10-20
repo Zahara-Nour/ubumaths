@@ -195,7 +195,7 @@
 				},
 				{
 					"name": "D",
-					"expression": "{{eval:arccos(P/sqrt(Q))*180/pi}}"
+					"expression": "{{eval:arccos(P/sqrt(Q))*180/\\pi}}"
 				},
 				{
 					"name": "R",

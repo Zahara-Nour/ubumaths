@@ -94,13 +94,13 @@
 			"conditions": ["k > n", "2*(k-n) <= n"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:2*(k-n)*pi/n}}"
+					"expectedAnswer": "{{eval:2*(k-n)*\\pi/n}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$\\omega^{ {{k}} }=e^{i\\frac{ {{eval:2*k}}\\pi}{ {{n}} }}$ et $\\omega^{ {{n}} }=1$, donc $\\omega^{ {{k}} }=\\omega^{ {{eval:k-n}} }$.",
-					"L'argument principal de $\\omega^{ {{k}} }$ est ${{eval:2*(k-n)*pi/n}}$."
+					"L'argument principal de $\\omega^{ {{k}} }$ est ${{eval:2*(k-n)*\\pi/n}}$."
 				]
 			}
 		},

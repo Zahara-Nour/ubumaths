@@ -16,7 +16,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x={{eval:cos(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x={{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "a",
@@ -34,14 +34,14 @@
 			],
 			"correction": {
 				"steps": [
-					"$\\cos {{a}}={{eval:cos(n*pi/12)}}$ et $\\cos(-x)=\\cos x$ : les points du cercle d'abscisse ${{eval:cos(n*pi/12)}}$ sont associés à ${{a}}$ et $-{{a}}$, tous deux dans $\\left]-\\pi\\,;\\pi\\right]$.",
+					"$\\cos {{a}}={{eval:cos(n*\\pi/12)}}$ et $\\cos(-x)=\\cos x$ : les points du cercle d'abscisse ${{eval:cos(n*\\pi/12)}}$ sont associés à ${{a}}$ et $-{{a}}$, tous deux dans $\\left]-\\pi\\,;\\pi\\right]$.",
 					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) = cos({{n}}*pi/12)\nmode: points\nmesures: principales\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-{{a}}\\,;{{a}}\\right\\} }$."
 				]
 			}
 		},
 		{
-			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x={{eval:cos(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x={{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "a",
@@ -59,7 +59,7 @@
 			],
 			"correction": {
 				"steps": [
-					"$\\cos {{a}}={{eval:cos(n*pi/12)}}$ et $\\cos(-x)=\\cos x$ : les points du cercle d'abscisse ${{eval:cos(n*pi/12)}}$ sont associés à ${{a}}$ et $-{{a}}$, tous deux dans $\\left]-\\pi\\,;\\pi\\right]$.",
+					"$\\cos {{a}}={{eval:cos(n*\\pi/12)}}$ et $\\cos(-x)=\\cos x$ : les points du cercle d'abscisse ${{eval:cos(n*\\pi/12)}}$ sont associés à ${{a}}$ et $-{{a}}$, tous deux dans $\\left]-\\pi\\,;\\pi\\right]$.",
 					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) = cos({{n}}*pi/12)\nmode: points\nmesures: principales\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-{{a}}\\,;{{a}}\\right\\} }$."
 				]

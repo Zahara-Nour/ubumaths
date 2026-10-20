@@ -365,7 +365,7 @@ condition ; `{{b;+}}` / `{{b;()}}` sur une variable déclarée (= `{{eval:b;+}}`
 
 Corrigé dans le moteur le 2026-10-05 (branche `fix/trig-moins-eval-pi-ensembles`), ne plus
 contourner : un multiple rationnel de π calculé par `eval` s'écrit comme au tableau —
-`{{eval:m*pi/12}}` donne `\dfrac{\pi}{6}` (m = 2), `\dfrac{5 \pi}{6}`, `-\dfrac{2 \pi}{3}`, `\pi`,
+`{{eval:m*\pi/12}}` donne `\dfrac{\pi}{6}` (m = 2), `\dfrac{5 \pi}{6}`, `-\dfrac{2 \pi}{3}`, `\pi`,
 `2 \pi`, `0` (plus `\dfrac{1}{6} \pi`). Les variables `gcd` et les `{{if:u==1|…}}` des cartes de
 trigonométrie ne sont plus nécessaires (elles restent justes). Une somme (`\dfrac{3}{2} \pi + 1`)
 ou `π²` gardent leur écriture.
@@ -373,7 +373,7 @@ ou `π²` gardent leur écriture.
 Corrigés dans le moteur le 2026-10-02 (branche `fix/pieges-generation-2`), ne plus contourner :
 dans une condition, `a % 10 != 0` (= `mod(a, 10)`, l'opérande gauche est le produit qui précède),
 `and` / `or` / `not` (= `&&` / `||` / `!(…)`, `not a = 1` nie toute la comparaison ; `!a = 1` est
-désormais une erreur explicite) et `pi` (= π, comme dans `{{eval:…}}`) ; `sign()` dans `eval` et
+désormais une erreur explicite) et `\pi` (`pi` nu y est refusé, comme dans `{{eval:…}}`) ; `sign()` dans `eval` et
 dans une condition (−1, 0 ou 1) ; modificateurs enchaînés en plusieurs `;` (`{{eval:E;();d}}` =
 `{{eval:E;d;()}}` = `{{eval:E;d,()}}`) ; tirage dont une variable ne se calcule pas (division par
 zéro, `arccos(3/2)`) relancé comme une condition fausse, échec explicite après 100 essais ; variable
@@ -462,8 +462,11 @@ Détail : `docs/systeme/mathast/convention-equivalence.md` (§ Notation combinat
 Toujours vrai :
 
 - **`{{eval:…}}` ne calcule que des NOMBRES** : une expression en x (`{{eval:a*cos(x)}}`) sort en
-  texte brut (`-cos(x)+2sin(x)`) et les bonnes réponses sont refusées ; `{{eval:cos(p*pi/d)}}`
-  n'est pas calculé. Écrire l'expression avec des coefficients tirés, ou une variation par valeur.
+  texte brut (`-cos(x)+2sin(x)`) et les bonnes réponses sont refusées. Écrire l'expression avec
+  des coefficients tirés, ou une variation par valeur.
+- **π s'écrit `\pi` dans un calcul** (`{{eval:cos(p*\pi/d)}}`, `conditions`, variable `eval:…`) :
+  `pi` nu se lirait p × i, il est refusé (« écris \pi »). `pnpm tsx scripts/inventaire-pi-nu.ts
+<dossier>` les repère dans des modèles JSON.
 - **Pas d'opérateur ternaire** dans `eval` (`a>0?1:3` → « Unexpected token ») : `2-a/abs(a)`.
 - **Bloc ```trig** : les étiquettes sont écrites dans [0 ; 2π[ par défaut (−π/6 devient
   « 11π/6 ») ; pour un intervalle d'étude ]−π ; π], ajouter `mesures: principales` (preset,

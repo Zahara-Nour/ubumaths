@@ -16,7 +16,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x={{eval:sin(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x={{eval:sin(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "a",
@@ -50,14 +50,14 @@
 			],
 			"correction": {
 				"steps": [
-					"$\\sin {{a}}={{eval:sin(n*pi/12)}}$ et $\\sin(\\pi-x)=\\sin x$ : les points du cercle d'ordonnée ${{eval:sin(n*pi/12)}}$ sont associés à ${{a}}$ et $\\pi-{{a}}=\\frac{ {{u}}\\pi}{ {{w}} }$.",
+					"$\\sin {{a}}={{eval:sin(n*\\pi/12)}}$ et $\\sin(\\pi-x)=\\sin x$ : les points du cercle d'ordonnée ${{eval:sin(n*\\pi/12)}}$ sont associés à ${{a}}$ et $\\pi-{{a}}=\\frac{ {{u}}\\pi}{ {{w}} }$.",
 					"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, {{u}}*pi/{{w}}\nequation: sin(x) = sin({{n}}*pi/12)\nmode: points\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{{{a}}\\,;\\frac{ {{u}}\\pi}{ {{w}} }\\right\\} }$."
 				]
 			}
 		},
 		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x={{eval:-sin(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x={{eval:-sin(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "a",
@@ -99,7 +99,7 @@
 			],
 			"correction": {
 				"steps": [
-					"$\\sin\\left(-{{a}}\\right)={{eval:-sin(n*pi/12)}}$ : un point est associé à $-{{a}}$, qui s'écrit $2\\pi-{{a}}=\\frac{ {{g}}\\pi}{ {{h}} }$ dans $\\left[0\\,;2\\pi\\right[$ ; l'autre à $\\pi+{{a}}=\\frac{ {{u}}\\pi}{ {{w}} }$.",
+					"$\\sin\\left(-{{a}}\\right)={{eval:-sin(n*\\pi/12)}}$ : un point est associé à $-{{a}}$, qui s'écrit $2\\pi-{{a}}=\\frac{ {{g}}\\pi}{ {{h}} }$ dans $\\left[0\\,;2\\pi\\right[$ ; l'autre à $\\pi+{{a}}=\\frac{ {{u}}\\pi}{ {{w}} }$.",
 					"```trig\npreset: custom\nangles: {{u}}*pi/{{w}}, {{g}}*pi/{{h}}\nequation: sin(x) = sin(-{{n}}*pi/12)\nmode: points\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{\\frac{ {{u}}\\pi}{ {{w}} }\\,;\\frac{ {{g}}\\pi}{ {{h}} }\\right\\} }$."
 				]
