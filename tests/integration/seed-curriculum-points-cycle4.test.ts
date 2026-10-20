@@ -17,7 +17,9 @@
  * par David le 2026-10-11) : elle visait CE2-020, devenu le sens direct. Les scissions validées
  * par David (même migration) : +48 moitiés et 4 points ⚙ (3-068, 3-069, 4-082, 5-144) → 293
  * points (143 en 5e, 82 en 4e, 68 en 3e) ; fixture transformée par
- * docs/wip/arbre-notions/c5-scissions-generer.py.
+ * docs/wip/arbre-notions/c5-scissions-generer.py. Depuis le lot 2 bis des tags (migration
+ * `20261020233600_tags_lot_2bis_primaire_college`, décision de David du 2026-10-20), 4-004 et
+ * sa moitié 4-073 sont rangés sous Entiers : priorités opératoires > écriture d'une expression.
  *
  * @vitest-environment node
  */
