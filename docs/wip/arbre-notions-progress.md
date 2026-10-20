@@ -19,7 +19,6 @@ _Mis à jour le 2026-10-21, après #1564 (migration appliquée en prod, vérifi�
   réordonne les clés ; corrigés à branches `{{if:a=…}}` à suivre quand la liste des valeurs change (vérifier les
   étapes vides sur tous les tirages, pas seulement les specs).
 - **Worktree / branche** : aucun (worktree de #1564 supprimé).
-- **Worktree / branche** : aucun (worktree de #1563 supprimé).
 
 ## Tranché avec David (2026-10-06)
 
