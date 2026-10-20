@@ -301,6 +301,14 @@ implicite après `|…|` suivi d'un facteur est refusée comme ambiguë (`|2|x|-
 auparavant. `\mid` (divisibilité) et `\Vert`, `\|` (norme) restent refusés. Tests :
 `parser/latex/__tests__/vert-commands.test.ts`, `utils/__tests__/answer-validator-vert.test.ts`.
 
+Le parseur maison lit `×`, `·` et `⋅` tapés tels quels comme le `*` du produit (2026-10-20,
+chantier lecture-grandeurs) : `2×3`, `2[m]·3[m]`. Ils étaient pris pour une lettre (`2×3` refusé,
+`2×` lu « 2 fois la lettre × »). Entre crochets d'unité, `·` et `⋅` valent le point (`3[m·s^-1]` =
+`3[m.s^-1]`), `×` vaut `*` (`unit-writing.ts`) ; le portier de l'atelier (`cli/core/input-detector.ts`)
+reconnaît ces unités comme de la syntaxe maison. Le parseur LaTeX ne change pas : il lit `\times`,
+`\cdot` et refuse le symbole Unicode (MathLive ne l'écrit jamais). Tests :
+`parser/custom/__tests__/multiplication-symbols.test.ts`, `cli/__tests__/input-detector-units.test.ts`.
+
 Les arguments d'une fonction connue entre `\left( … \right)` se lisent comme entre `( … )`
 (2026-10-13, `parseFunctionArguments` de `parser-pratt.ts`) : `\max\left(2,x\right)`, la forme
 qu'écrit MathLive et que rend `toLatex`, ne se relisait pas (« Expected \right to close
