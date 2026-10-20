@@ -646,33 +646,10 @@ describe('Superscripts and Subscripts', () => {
 			expectType(node.superscript, 'superscript');
 		});
 
-		it('should be right-associative without braces', () => {
-			// x^2^3 should be x^(2^3), not (x^2)^3
-			const node = parse('x^2^3');
-			expectType(node, 'superscript');
-			// The base should be x (variable), not x^2 (superscript)
-			expectType(node.base, 'variable');
-			expect(node.base.name).toBe('x');
-			// The exponent should be 2^3 (superscript)
-			expectType(node.superscript, 'superscript');
-			expectType(node.superscript.base, 'number');
-			expect(node.superscript.base.value).toBe('2');
-			expectType(node.superscript.superscript, 'number');
-			expect(node.superscript.superscript.value).toBe('3');
-		});
-
-		it('should handle triple chained exponents', () => {
-			// a^b^c^d should be a^(b^(c^d))
-			const node = parse('a^b^c^d');
-			expectType(node, 'superscript');
-			expectType(node.base, 'variable');
-			expect(node.base.name).toBe('a');
-			// a^(b^(c^d))
-			expectType(node.superscript, 'superscript');
-			expectType(node.superscript.base, 'variable');
-			expect(node.superscript.base.name).toBe('b');
-			// b^(c^d)
-			expectType(node.superscript.superscript, 'superscript');
+		// x^2^3 : lu x^(2^3) ici et (x^2)^3 par le parseur maison, refusé dans les deux
+		// (lecture-grandeurs, 2026-10-20) ; TeX le refuse aussi (« Double superscript »)
+		it.each(['x^2^3', 'a^b^c^d'])('%s is refused (stacked exponents)', (input) => {
+			expect(() => parse(input)).toThrow('Two exponents in a row');
 		});
 	});
 

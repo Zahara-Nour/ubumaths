@@ -309,6 +309,17 @@ reconnaît ces unités comme de la syntaxe maison. Le parseur LaTeX ne change pa
 `\cdot` et refuse le symbole Unicode (MathLive ne l'écrit jamais). Tests :
 `parser/custom/__tests__/multiplication-symbols.test.ts`, `cli/__tests__/input-detector-units.test.ts`.
 
+Exposants (2026-10-20, chantier lecture-grandeurs, `parser/exponent-rules.ts`). Le parseur maison lit
+un signe suivi d'UN nombre ou d'UNE lettre comme l'exposant : `10^-3` = `10^{-3}`, `10^+3` = `10^{+3}`,
+`10^-3+4` = `10^{-3}+4`, `10^-3[m]` = `10^{-3}[m]`. Avant, il exigeait les accolades (« Negative exponent
+requires braces »), et l'atelier relisait `x^-1` en `x^(-1)` après ce refus (rattrapage retiré). Un signe
+devant un groupe est refusé, `NEGATIVE_EXPONENT_BEFORE_GROUP` (`2^-sin(x)`, `2^-(x+1)` : jusqu'où va
+l'exposant ?) ; `2^-x y` reste refusé comme `2^x y`. Deux exposants à la suite sont refusés par les
+QUATRE parseurs, `STACKED_EXPONENTS` (`2^3^2`, `e^x^2`, `2^{3}^{2}`) : le maison lisait (2³)², le LaTeX
+2^(3²). On écrit `2^{3^2}` ou `(2^3)^2` ; `toLatex` et `toCustom` n'ont jamais écrit d'empilement, et
+MathLive met toujours les accolades. Le RD maison lit aussi `x^(…)` comme Pratt (il le refusait). Tests :
+`parser/custom/__tests__/exponent-sign-stacked.test.ts`.
+
 Les arguments d'une fonction connue entre `\left( … \right)` se lisent comme entre `( … )`
 (2026-10-13, `parseFunctionArguments` de `parser-pratt.ts`) : `\max\left(2,x\right)`, la forme
 qu'écrit MathLive et que rend `toLatex`, ne se relisait pas (« Expected \right to close

@@ -41,6 +41,10 @@ import {
 	type CustomTokenType
 } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
+import {
+	NEGATIVE_EXPONENT_BEFORE_GROUP_MESSAGE,
+	STACKED_EXPONENTS_MESSAGE
+} from '../exponent-rules';
 import { MathAST, compose, matrix, euler, complex } from '../../factory';
 import { DOUBLE_FACTORIAL_ERROR, factorialOf } from '../factorial-notation';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
@@ -1552,9 +1556,26 @@ class CustomPrattParser {
 	}
 
 	/**
-	 * Parse the operand of a superscript (handles braces and single tokens)
+	 * Parse the operand of a superscript, then refuse a second `^` right after it
 	 */
 	private parsePowerOperand(): MathNode {
+		const exponent = this.parsePowerOperandContent();
+		// `2^3^2` : lu (2³)² ici et 2^(3²) en LaTeX, refusé dans les deux
+		if (this.check('CARET')) {
+			this.error(
+				STACKED_EXPONENTS_MESSAGE,
+				this.currentToken.position,
+				this.currentToken.length,
+				'STACKED_EXPONENTS'
+			);
+		}
+		return exponent;
+	}
+
+	/**
+	 * Parse the operand of a superscript (handles braces and single tokens)
+	 */
+	private parsePowerOperandContent(): MathNode {
 		if (this.check('LBRACE')) {
 			return this.parseBraceGroup();
 		}
@@ -1579,16 +1600,50 @@ class CustomPrattParser {
 			return content;
 		}
 
-		// CRITICAL: Minus REQUIRES braces for exponent
-		if (this.check('MINUS')) {
+		// `10^-3` = `10^{-3}`, `10^+3` = `10^{+3}` : un signe, puis UN nombre ou
+		// UNE lettre ; devant un groupe, on ne sait pas jusqu'où va l'exposant
+		if (this.check('MINUS') || this.check('PLUS')) {
+			const sign = this.advance();
+			if (this.check('NUMBER') || this.check('LETTER') || this.check('SYMBOL')) {
+				const operand = this.parseSinglePowerOperand();
+				return this.applyColor(
+					sign.type === 'MINUS' ? MathAST.opposite(operand) : MathAST.positive(operand)
+				);
+			}
+			if (this.checkGroupStart()) {
+				this.error(
+					NEGATIVE_EXPONENT_BEFORE_GROUP_MESSAGE,
+					sign.position,
+					sign.length,
+					'NEGATIVE_EXPONENT_BEFORE_GROUP'
+				);
+			}
 			this.error(
-				'Negative exponent requires braces: use x^{-2}',
+				'Expected exponent',
 				this.currentToken.position,
 				this.currentToken.length,
 				'INVALID_SUPERSCRIPT'
 			);
 		}
 
+		return this.parseSinglePowerOperand();
+	}
+
+	/** Un `(`, `{`, `|`, `[` ou un nom de fonction : le début d'un groupe */
+	private checkGroupStart(): boolean {
+		return (
+			this.check('LPAREN') ||
+			this.check('LBRACE') ||
+			this.check('PIPE') ||
+			this.check('LBRACKET') ||
+			this.check('DOUBLE_LBRACKET') ||
+			this.check('FUNC') ||
+			this.check('BACKSLASH')
+		);
+	}
+
+	/** Un exposant sans accolades : un nombre, une lettre ou un symbole */
+	private parseSinglePowerOperand(): MathNode {
 		// Number: auto-grouped (entire number, e.g., x^12 is fine)
 		if (this.check('NUMBER')) {
 			return this.parseNumber();

@@ -43,6 +43,7 @@ import {
 	factorialOf
 } from '../factorial-notation';
 import { numberAfterFactorMessage } from '../number-after-factor';
+import { STACKED_EXPONENTS_MESSAGE } from '../exponent-rules';
 import {
 	SecurityError,
 	checkInputLength,
@@ -1706,20 +1707,20 @@ class PrattParser {
 	}
 
 	/**
-	 * Parse the operand of a superscript (handles braces and single tokens)
-	 * Right-associative only for chained superscripts: x^2^3 → x^(2^3)
-	 * But left-to-right for mixed: x_1^2 → (x_1)^2
+	 * Parse the operand of a superscript (handles braces and single tokens).
+	 * A second `^` right after it is refused: `x^2^3` was read x^(2^3) here and
+	 * (x^2)^3 by the custom parser (2026-10-20). TeX refuses it too.
+	 * Left-to-right for mixed: x_1^2 → (x_1)^2
 	 */
 	private parseSuperscriptOperand(): MathNode {
-		if (this.check('LBRACE')) {
-			return this.parseBraceGroup();
-		}
-		// Parse single token first
-		const operand = this.nud();
-		// Check for chained superscript (same operator → right-associative)
+		const operand = this.check('LBRACE') ? this.parseBraceGroup() : this.nud();
 		if (this.check('CARET')) {
-			// x^2^3 → x^(2^3)
-			return this.parseSuperscript(operand);
+			this.error(
+				STACKED_EXPONENTS_MESSAGE,
+				this.currentToken.position,
+				this.currentToken.length,
+				'STACKED_EXPONENTS'
+			);
 		}
 		return operand;
 	}
