@@ -5,18 +5,20 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, migration des tags du lot 2 bis écrite (PR en cours)._
+_Mis à jour le 2026-10-21, après #1563 (migration appliquée en prod)._
 
-- **État** : C5 étape 2 bis. Migration `20261020233600_tags_lot_2bis_primaire_college` (générée par
-  `analyse/lot-2bis-migration.py`) : 306 tags, 91 déplacements, 3 reclassements 5e → 4e, 4-004 et 4-073 rattachés
-  à « écriture d'une expression ». Test `tests/integration/tags-lot-2bis.test.ts` vert, rouge sans la migration.
-- **Prochaine action** : CI verte + revues (code-reviewer, security-auditor) → merge → `db:migrate` (4 conditions)
-  → vérifier en prod ; puis les 66 MODIFIER par lots (contenu des modèles), tagués après modification.
+- **État** : C5 étape 2 bis, premier lot livré. 306 modèles du CP à la 3e tagués en prod (CP 21, CE1 20, CE2 22,
+  CM1 49, CM2 29, 6e 60, 5e 42, 4e 46, 3e 17), 91 déplacés (R2), 3 reclassés 5e → 4e, 4-004 et 4-073 sous
+  « écriture d'une expression ». Vérifié en prod.
+- **Prochaine action** : les 66 MODIFIER (`analyse/lot-2bis-modifications.md` § 4 : 39 nombres, 7 variations,
+  17 consignes ou affichages, 3 scissions), par lots, chacun tagué après modification ; méthode à proposer à David
+  (migration de `variations` par lot, comme #1563).
 - **En attente de David** : rien.
 - **Pièges en cours** : contrôle visuel de c4-8 pas fait ; CSV cm/cycle2/sixieme en CRLF, cycle4 en LF (`newline=''`) ;
   `docs/ref/programmes/Accompagnement/` hors git ; la clé anonyme ne lit pas `question_template_points` (MCP) ;
-  dans un `if` plpgsql, le `then` d'un `case` clôt la condition.
-- **Worktree / branche** : `ubumaths-wt-arbre-notions` · `feat/arbre-tags-lot-2bis`.
+  dans un `if` plpgsql, le `then` d'un `case` clôt la condition ; tout nouveau lot doit respecter la garde du nœud
+  (point sur le nœud du modèle ou sa notion).
+- **Worktree / branche** : aucun (worktree de #1563 supprimé).
 
 ## Tranché avec David (2026-10-06)
 
@@ -1130,3 +1132,7 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   (`analyse/lot-2bis-migration.py`, fixture `tests/integration/fixtures/tags-lot-2bis.json`) : gardes tout ou rien
   (321 modèles), nœud et niveaux relevés, aucun tag déjà posé ; rollback exécutable, éprouvé par le test ; fixture du
   seed cycle 4 mise à jour (4-004, 4-073).
+- **2026-10-21 — #1563 mergée, migration `20261020233600` appliquée (db:migrate, 4 conditions réunies).** Revues :
+  code-reviewer (lot recalculé depuis les CSV, 0 écart) et security-auditor sans bloquant ; rollback rendu strict
+  (chemin d'origine introuvable → échec). Vérifié en prod : 306 tags aux comptes attendus par niveau, 4-004 / 4-073
+  rattachés, 3 modèles en 4e, trigger de date actif, aucun `updated_at` modifié.
