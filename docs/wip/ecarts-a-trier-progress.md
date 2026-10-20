@@ -8,13 +8,13 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; V62
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, V62 + V65 corrigés sur `fix/v62-v65` (PR à ouvrir)._
+_Mis à jour le 2026-10-20, après #1551._
 
-- **État** : V62 (redéfinir sous un autre type → refus, `defineObject`) et V65 (`solve` sans inconnue, plusieurs lettres → échec au lieu de « contradiction ») corrigés, tests verts ; marqués ✅ dans [ecarts-a-trier.md](ecarts-a-trier.md).
-- **Prochaine action** : merger la PR de V62 + V65 ; puis le reste de A par lots (code mort, commentaires).
+- **État** : V62 (redéfinir sous un autre type → refus, `defineObject`) et V65 (`solve` sans inconnue, plusieurs lettres → échec au lieu de « contradiction ») corrigés et mergés (#1551) ; marqués ✅ dans [ecarts-a-trier.md](ecarts-a-trier.md).
+- **Prochaine action** : le reste de A, par lots : réponses fausses (V13, L22, V45, V42, L27), puis code mort, puis commentaires.
 - **En attente de David** : (1) `a(x) = x^2` puis `a = 2` garde une fonction constante (règle #905 : `f = …` redéfinit dans sa lettre) — garder ou refuser ? (2) la liste B.
 - **Pièges en cours** : les tableaux d'[ecarts-a-trier.md](ecarts-a-trier.md) ne sont pas réécrits (V57, L4, L14… y paraissent encore ouverts) ; `|x^2-1|=3` non résolue (manque à part, noté sous V65).
-- **Worktree / branche** : `../ubumaths-wt-v62-v65` · `fix/v62-v65`.
+- **Worktree / branche** : aucun (le suivant à créer par lot).
 
 ---
 
