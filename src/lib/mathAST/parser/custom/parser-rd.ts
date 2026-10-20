@@ -49,6 +49,7 @@ import {
 import { MathAST, euler, complex } from '../../factory';
 import { DOUBLE_FACTORIAL_ERROR, factorialOf } from '../factorial-notation';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
+import { expectCode, preciseUnexpectedToken, unitErrorCode } from '../refusal-codes';
 import {
 	isGroupingBracket,
 	readUnitWriting,
@@ -217,7 +218,7 @@ class CustomRDParser {
 				message ?? `Expected ${type} but got ${this.currentToken.type}`,
 				this.currentToken.position,
 				this.currentToken.length,
-				'UNEXPECTED_TOKEN'
+				expectCode(type, this.currentToken)
 			);
 		}
 		return this.advance();
@@ -227,6 +228,19 @@ class CustomRDParser {
 	 * Report an error
 	 */
 	private error(message: string, position: number, length: number, code: ParseErrorCode): never {
+		// Un jeton refusé sans code précis : `x2`, `(1+x)2`, `.5` disent ce qui manque
+		const precise =
+			code === 'UNEXPECTED_TOKEN' && position === this.currentToken.position
+				? preciseUnexpectedToken(this.currentToken, this.previousToken)
+				: null;
+		if (precise) {
+			throw new ParseException(
+				precise.message ?? message,
+				precise.position ?? position,
+				precise.length ?? length,
+				precise.code
+			);
+		}
 		throw new ParseException(message, position, length, code);
 	}
 
@@ -1468,12 +1482,12 @@ class CustomRDParser {
 			(token) => token.type === 'RBRACKET' || token.type === 'EOF'
 		);
 		if (spaceAt !== null) {
-			this.error(UNIT_SPACE_MESSAGE, spaceAt, 1, 'INVALID_UNIT');
+			this.error(UNIT_SPACE_MESSAGE, spaceAt, 1, 'SPACE_IN_UNIT');
 		}
 
 		this.expect('RBRACKET', "Expected ']' after unit");
 		if (this.check('CARET')) {
-			this.error(UNIT_EXPONENT_MESSAGE, this.currentToken.position, 1, 'INVALID_UNIT');
+			this.error(UNIT_EXPONENT_MESSAGE, this.currentToken.position, 1, 'UNIT_EXPONENT_OUTSIDE');
 		}
 
 		const unit = parseUnit(unitStr);
@@ -1482,7 +1496,7 @@ class CustomRDParser {
 				unitErrorMessage(unitStr),
 				this.currentToken.position,
 				unitStr.length,
-				'INVALID_UNIT'
+				unitErrorCode(unitStr)
 			);
 		}
 

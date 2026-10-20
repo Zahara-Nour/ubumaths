@@ -230,7 +230,11 @@ export type ParseErrorCode =
 	| 'MISSING_BRACE' // Missing { or }
 	| 'MISSING_DELIMITER' // Missing \left, \right, (, ), etc.
 	| 'UNKNOWN_COMMAND' // Unknown LaTeX command
-	| 'INVALID_UNIT' // Invalid or unknown unit
+	| 'UNKNOWN_UNIT' // Unité inconnue : 5[xyz]
+	| 'EMPTY_UNIT' // Crochet d'unité vide : 5[]
+	| 'AMBIGUOUS_UNIT' // Unité ambiguë : 3[kg/m.s]
+	| 'SPACE_IN_UNIT' // Espace dans une unité : 3[m s]
+	| 'UNIT_EXPONENT_OUTSIDE' // Exposant après le crochet d'unité : 10[m]^3
 	| 'INVALID_COLOR' // Invalid color specification
 	| 'INVALID_NUMBER' // Malformed number
 	| 'EMPTY_GROUP' // Empty braces {}
@@ -243,7 +247,9 @@ export type ParseErrorCode =
 	| 'MISMATCHED_ENVIRONMENT' // Begin/end environment names don't match
 	| 'CONSECUTIVE_SIGNS' // Consecutive +/- signs (++, --, +-, -+)
 	| 'STACKED_EXPONENTS' // Deux exposants à la suite : 2^3^2 (écrire 2^{3^2} ou (2^3)^2)
-	| 'NEGATIVE_EXPONENT_BEFORE_GROUP'; // Signe d'exposant devant un groupe : 2^-sin(x), 2^-(x+1)
+	| 'NEGATIVE_EXPONENT_BEFORE_GROUP' // Signe d'exposant devant un groupe : 2^-sin(x), 2^-(x+1)
+	| 'MISSING_OPERATOR' // Nombre juste après une lettre ou une ')' : x2, (1+x)2
+	| 'LEADING_DECIMAL_POINT'; // Zéro de tête oublié : .5
 
 /**
  * Context around an error showing surrounding text.

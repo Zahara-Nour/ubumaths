@@ -4,14 +4,30 @@
 
 _Mis à jour le 2026-10-20, après #1557._
 
-- **État** : phase 0 **validée** (`docs/wip/lecture-grandeurs-phase0.md`) ; PR 1 (`×`, `·`, `⋅` lus `*`, #1555) et PR 2 (exposant signé lu, exposants empilés refusés, `f^-1(x)` = réciproque, #1557) mergées, pas en prod. Pages à cocher (font foi) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81/81) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (v6, 31/31 : 27 validées, 4 en attente). Base `reponses/<id>`.
+- **État** : phase 0 **validée** (`docs/wip/lecture-grandeurs-phase0.md`) ; PR 1 (`×`, `·`, `⋅` lus `*`, #1555) et PR 2 (exposant signé lu, exposants empilés refusés, `f^-1(x)` = réciproque, #1557) mergées, pas en prod ; PR 3 (codes précis des refus : `MISSING_OPERATOR`, `MISSING_DELIMITER`, `LEADING_DECIMAL_POINT`, 5 codes d'unité, `INVALID_UNIT` retiré) en cours sur `feat/lecture-grandeurs-operateur-manquant`. Pages à cocher (font foi) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81/81) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (v6, 31/31 : 27 validées, 4 en attente). Base `reponses/<id>`.
 - **Décidé par David** (détail : historique) : (1) unité × tout le terme, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs (A9) ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue interne au point. (3) Il refuse la virgule décimale. (4) Refus = code + message anglais, l'atelier traduit (`mathAST/cli/web/french-errors.ts`). (5) **Catalogue de 14 codes validé** (historique, 3e session). (6) **Q9 (a)** : durées et angles juxtaposés LUS comme une somme marquée « juxtaposée » (4 implémentations, fonction partagée ; `;hms`, `compositeDuration`) ; autres grandeurs refusées `JUXTAPOSED_QUANTITIES` ; risque de perte de la marque géré : chemins réels mesurés → test de RENDU par chemin → garde. (7) `×`, `·`, `⋅` lus `*` (aussi `·`/`⋅` entre crochets) ; ⚠️ `2.5` ≠ `2·5`. (8) B7 : `^` + signe + UN nombre/lettre ; `10^-3+4` = `10^{-3}+4` ; refus `e^-x^2` (`STACKED_EXPONENTS`), `2^-sin(x)`, `2^-(x+1)` (`NEGATIVE_EXPONENT_BEFORE_GROUP`). (9) B9 : empilé = 2^(3^2) ; REFUS dans les deux parseurs (`STACKED_EXPONENTS`). (10) Durée composée = un bloc avec `+`/`−` ; collée à `*` ou `/` (des deux côtés, espaces ou non) → refus, atelier compris. (11) Phase 0 validée : LaTeX ne lit pas `×`/`·` Unicode ; `MISSING_OPERATOR` = `x2`, `x 2`, `)2` ; `10^+3` lu, `2^-x y` refusé ; `{2[m]}{3[m]}` reste un produit. (12) Fin de la page grandeurs : `3x[m]` = (3x)[m] ; `π[m]`, `pi[m]` = constante π ; `[m]` refusé (`MISSING_NUMBER_BEFORE_UNIT`) ; après `grandeur *` ou `/`, un terme de plusieurs nombres devant une unité est refusé (`AMBIGUOUS_TERM`) ; catalogue = 16 codes.
 - **En attente de David** : rien. (13) Page virgule close 31/31 le 2026-10-20 : S11 `x2` → `MISSING_OPERATOR` ; V1 `1,2` et V4 `[1,2]` → `DECIMAL_COMMA` (atelier : « Le séparateur décimal est le point : écris 1.2 ») ; V7 `f(1,5)` = deux arguments ; `UNEXPECTED_COMMA` (V3, V5, V6) ; `SEMICOLON` (P1-P4) ; `max((2,5),3)` refusé.
-- **Prochaine action** : PR 3 (`MISSING_OPERATOR` : `x2`, `x 2`, `)2`) dans un worktree neuf `ubumaths-wt-lecture-grandeurs` ; puis PR 4, PR 5, PR 6 (virgule, tout est tranché).
+- **Prochaine action** : merger la PR 3 ; puis PR 4 (l'unité multiplie tout le terme : inventaire des valeurs qui changent montré à David AVANT le code), PR 5, PR 6 (virgule, tout est tranché).
 - **Pièges** : distinguer LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt (défaut) + RD ; `{2[h]}{30[min]}` = 1 h² aujourd'hui ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
-- **Worktree / branche** : aucun (PR 2 nettoyée). Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
+- **Worktree / branche** : `../ubumaths-wt-lecture-grandeurs`, `feat/lecture-grandeurs-operateur-manquant`. Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
+
+### 2026-10-20 — PR 3 codée : codes précis des refus
+
+- David valide les 4 fiches virgule en attente (S11, V1, V4, V7) : page virgule close 31/31.
+- Portée = le tableau « PR 3 » de la phase 0 (pas seulement `MISSING_OPERATOR`) : lecture inchangée, seul le
+  code change. Module partagé `parser/refusal-codes.ts` ; `INVALID_UNIT` retiré du type.
+- Maison : le refus se précise dans `error()` (jeton courant refusé = nombre ; jeton précédent = lettre,
+  symbole `pi`, `)` → `MISSING_OPERATOR` ; `.` collé → `LEADING_DECIMAL_POINT`). Mesuré : le tokenizer
+  range `.` et `;` parmi les LETTER, d'où le filtre « vraie lettre ». `MISSING_DELIMITER` seulement quand la
+  fin arrive avant le fermant (`(1+2]` garde `UNEXPECTED_TOKEN`).
+- LaTeX : le refus existant « nombre après un facteur » passe ENTIER en `MISSING_OPERATOR` (`\sqrt{2}3`,
+  `x^{2}3` compris : un refus, un code). Dans le maison, `|x|2` et `x^2 3` gardent `UNEXPECTED_TOKEN`
+  (décision : lettre ou `)` seulement). Écart à signaler à David.
+- Atelier : traduction ajoutée pour le nouveau texte de `.5` (« Il manque le zéro avant le point décimal :
+  écris 0.5 »). Empreinte du corpus maison régénérée : 5 saisies bougent, toutes « code seul » (vérifié en
+  ramenant les nouveaux codes aux anciens : même empreinte).
 
 ### 2026-10-20 — PR 2 codée : exposant signé, exposants empilés
 

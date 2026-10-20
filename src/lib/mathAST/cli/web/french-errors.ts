@@ -58,6 +58,10 @@ const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
 	],
 	[/Invalid color: (\S+)/, 'Couleur inconnue : $1'],
 	[/Invalid unit: (\S+)/, 'Unité inconnue : $1'],
+	[
+		/Missing zero before the decimal point \(write (\S+)\)/,
+		'Il manque le zéro avant le point décimal : écris $1'
+	],
 	[/Invalid mode '([^']*)'/, 'Mode inconnu : « $1 »'],
 	[/Too many values \(max: (\d+)\)/, 'Trop de valeurs (au plus $1)'],
 	[/X and Y must have same length/, 'Les séries X et Y doivent avoir la même longueur'],

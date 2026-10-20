@@ -167,7 +167,8 @@ export function getSuggestions(code: ParseErrorCode, message: string): string[] 
 			suggestions.push('Mettez tout l’exposant entre accolades : 2^{-(x+1)}');
 			break;
 
-		case 'INVALID_UNIT':
+		case 'UNKNOWN_UNIT':
+		case 'EMPTY_UNIT':
 			suggestions.push("Vérifier la syntaxe de l'unité : m, kg, s, etc.");
 			break;
 

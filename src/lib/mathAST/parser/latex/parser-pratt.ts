@@ -43,6 +43,7 @@ import {
 	factorialOf
 } from '../factorial-notation';
 import { numberAfterFactorMessage } from '../number-after-factor';
+import { expectCode, unitErrorCode } from '../refusal-codes';
 import { STACKED_EXPONENTS_MESSAGE } from '../exponent-rules';
 import {
 	SecurityError,
@@ -393,7 +394,7 @@ class PrattParser {
 				message ?? `Expected ${type} but got ${this.currentToken.type}`,
 				this.currentToken.position,
 				this.currentToken.length,
-				'UNEXPECTED_TOKEN'
+				expectCode(type, this.currentToken)
 			);
 		}
 		return this.advance();
@@ -632,7 +633,7 @@ class PrattParser {
 				numberAfterFactorMessage(token.value),
 				token.position,
 				token.length,
-				'UNEXPECTED_TOKEN'
+				'MISSING_OPERATOR'
 			);
 		}
 
@@ -2582,7 +2583,12 @@ class PrattParser {
 		const unitStr = this.parseUnitString();
 		this.expect('RBRACE', "Expected '}' after \\unit");
 		if (this.check('CARET')) {
-			this.error(UNIT_EXPONENT_MESSAGE_LATEX, this.currentToken.position, 1, 'INVALID_UNIT');
+			this.error(
+				UNIT_EXPONENT_MESSAGE_LATEX,
+				this.currentToken.position,
+				1,
+				'UNIT_EXPONENT_OUTSIDE'
+			);
 		}
 
 		const unit = parseUnit(unitStr);
@@ -2591,7 +2597,7 @@ class PrattParser {
 				unitErrorMessage(unitStr),
 				this.currentToken.position,
 				unitStr.length,
-				'INVALID_UNIT'
+				unitErrorCode(unitStr)
 			);
 		}
 
@@ -2618,7 +2624,12 @@ class PrattParser {
 		const unitStr = this.parseUnitString();
 		this.expect('RBRACE', "Expected '}' after \\unit");
 		if (this.check('CARET')) {
-			this.error(UNIT_EXPONENT_MESSAGE_LATEX, this.currentToken.position, 1, 'INVALID_UNIT');
+			this.error(
+				UNIT_EXPONENT_MESSAGE_LATEX,
+				this.currentToken.position,
+				1,
+				'UNIT_EXPONENT_OUTSIDE'
+			);
 		}
 
 		const unit = parseUnit(unitStr);
@@ -2627,7 +2638,7 @@ class PrattParser {
 				unitErrorMessage(unitStr),
 				this.currentToken.position,
 				unitStr.length,
-				'INVALID_UNIT'
+				unitErrorCode(unitStr)
 			);
 		}
 
@@ -2676,7 +2687,7 @@ class PrattParser {
 			}
 
 			if (previousEnd !== null && token.position > previousEnd) {
-				this.error(UNIT_SPACE_MESSAGE, previousEnd, 1, 'INVALID_UNIT');
+				this.error(UNIT_SPACE_MESSAGE, previousEnd, 1, 'SPACE_IN_UNIT');
 			}
 			unitStr += piece;
 			previousEnd = token.type === 'COMMAND' ? null : token.position + token.length;
