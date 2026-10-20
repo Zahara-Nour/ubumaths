@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, 2e session (langue interne tranchée)._
+_Mis à jour le 2026-10-20, 2e session (langue interne tranchée, pages mises à jour)._
 
-- **État** : phase 0, rien de codé. Corpus `docs/wip/lecture-grandeurs-corpus.md` (familles A-K + N). Pages à cocher : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (80 fiches, 13 répondues : A1-A9, B1-B4) ; espaces/virgule/`;` https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (37 fiches). Base `reponses/<id>` : relire avec `ArtifactData`.
-- **Décidé par David** : (1) unité × tout le terme de nombres, signe unaire compris ; `1/2[m]`, `2*3[m]`, `10^3[m]` = (…) m ; le parseur LIT, la forme est jugée par le validateur ; `12 500` = 12500 ; `x 2` et `.5[m]` refusés. (2) **Le parseur maison reste la langue INTERNE au point** (option a) : le français (virgule décimale, `;`) est traduit à l'entrée par l'atelier et la lecture LaTeX. (3) **Le parseur maison REFUSE la virgule décimale** (sous-chantier « retrait de la virgule », ci-dessous).
-- **Prochaine action** : relire les réponses de David sur les deux pages et donner un avis sur ses « je ne tranche pas ». Les fiches de la 2e page qui supposaient `;` dans le parseur maison (Q-A) relèvent désormais de l'atelier / LaTeX.
+- **État** : phase 0, rien de codé. Corpus `docs/wip/lecture-grandeurs-corpus.md` (familles A-K + N). Pages à cocher : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (80 fiches, 12 répondues : A1-A2, A4-A9, B1-B4 ; A3 remise à relire) ; espaces/virgule/`;` https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (version 2, 31 fiches, 0 répondue). Base `reponses/<id>` : relire avec `ArtifactData`.
+- **Décidé par David** : (1) unité × tout le terme de nombres, signe unaire compris ; `1/2[m]`, `2*3[m]`, `10^3[m]` = (…) m ; le parseur LIT, la forme est jugée par le validateur ; `12 500` = 12500 ; `x 2` et `.5[m]` refusés. (2) **Le parseur maison reste la langue INTERNE au point** (option a) : le français (virgule décimale, `;`) est traduit à l'entrée par l'atelier et la lecture LaTeX. (3) **Le parseur maison REFUSE la virgule décimale** (sous-chantier « retrait de la virgule », ci-dessous) ; `2,5[m]` refusé (A3 réécrite).
+- **Prochaine action** : attendre les réponses de David (A3 + suite de la page grandeurs ; page virgule v2), puis les relire et donner un avis sur ses « je ne tranche pas ».
 - **Ensuite** : sous-chantier « retrait de la virgule » (PR de code, phase 0 à écrire : que deviennent `(1,2)`, `[1,5]`, `3,14`) + réécriture au point des 7 formules `~…~` d'exercices en prod.
-- **Pièges** : parseur maison / parseur LaTeX / atelier ; défauts constatés : `{2[h]}{30[min]}` = 1 h², `pi` lu p×i, `x;y` lu x×«;»×y, `1/2[m]` = 0,5 m⁻¹, `[1,5]` lu `(1.5)` (crochet perdu), `f(1,5)` = f(1.5) mais `max(1,5)` = 2 arguments, messages d'erreur en anglais, atelier `12 500` → « écris le nombre devant ». `π[m]` et `\pi[m]` sont désormais LUS par parseCustom (sonde du 2026-10-20).
+- **Pièges** : parseur maison / parseur LaTeX / atelier ; défauts constatés : `{2[h]}{30[min]}` = 1 h², `pi` lu p×i, `x;y` lu x×«;»×y, `1/2[m]` = 0,5 m⁻¹, `[1,5]` lu `(1.5)` (crochet perdu), `f(1,5)` = f(1.5) mais `max(1,5)` = 2 arguments, messages d'erreur en anglais, atelier `12 500` → « écris le nombre devant ». `π[m]` : le caractère π est lu comme une VARIABLE, le calcul refuse (« Ces grandeurs ne se combinent pas. ») ; `\pi[m]` et `2\pi[m]` sont calculés (sonde du 2026-10-20).
 - **Worktree / branche** : aucun. Sonde tsx (hors dépôt) : `npx tsx --tsconfig tsconfig.json <scratchpad>/sonde.ts`, imports par chemins absolus.
 
 ## Historique
@@ -50,3 +50,16 @@ Inventaire de qui écrit en syntaxe maison (prod lue en lecture seule, dépôt p
 - **David tranche : retirer la virgule décimale du parseur maison.** Les 7 formules seront réécrites au
   point (l'affichage remet la virgule via `toLocaleDecimal`). À mesurer dans la PR : chemins de l'atelier
   ou tests qui ne passeraient que grâce à la tolérance ; lecture de `(1,2)` et `[1,5]` sans elle.
+
+### 2026-10-20 — pages à cocher mises à jour
+
+- Réponses relues : page grandeurs, 13 « Validé », aucun « Non validé » ni « je ne tranche pas » ;
+  page virgule, aucune réponse.
+- Conflit avec la décision (3) : A3 (`2,5[m]` = 2,5 m, validé le 2026-10-20 à 06:05) devient un refus.
+  David confirme. A3 réécrite et sa réponse effacée (remise à relire) ; B4, B5 réécrits au point.
+- Correction d'une sonde : `π[m]` est analysé, mais π y est une variable et le calcul refuse ; H3 disait
+  vrai. Ajouté sur H3/H4 : `\pi[m]` et `2\pi[m]` sont déjà calculés.
+- Page virgule réécrite (version 2, 31 fiches) : point décimal, virgule toujours séparatrice (fonctions,
+  matrices), `;` refusé ; Q-A et Q-M disparaissent. Sondes : `f(1,5)` = f(1.5) aujourd'hui (devient deux
+  arguments), `max((2,5),3)` = max(2.5 ; 3) (devient refus), `[1,2]` = `(1.2)` (devient refus),
+  `[[1,5, 2]]` = trois éléments (inchangé).
