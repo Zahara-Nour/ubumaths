@@ -5,17 +5,18 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, après les réponses de David aux 14 questions des modèles._
+_Mis à jour le 2026-10-20, après l'application des 14 réponses aux CSV._
 
-- **État** : C5 étape 2 bis. 14 questions répondues (journal, 2026-10-20) ; m-cycle4-1 (18 − x = 9, 81/x = 9 en 5e)
-  reposée avec la recherche dans les textes. Partie 2 de la page (verdicts par niveau) pas encore relue par David.
-- **Prochaine action** : appliquer les 13 réponses aux CSV de `arbre-notions/analyse/` (+ m-cycle4-1 une fois
-  tranchée), régénérer la page (`analyse/page/gen.mjs`, `OUT=<scratchpad>`), puis attendre la partie 2 ; ensuite lister
-  les modifications de modèles et préparer la migration des tags (lot 2 bis).
-- **En attente de David** : m-cycle4-1 ; partie 2 de https://claude.ai/artifact/F9FLrWzCSE72E7zeEyCyH5 ;
-  c4-3 (médiane de 3, 7, 8, 12 : 7 et 8 acceptés ?).
-- **Pièges en cours** : contrôle visuel de c4-8 pas fait ; `docs/ref/programmes/Accompagnement/` hors git (332 Mo) :
-  pdftotext vers le scratchpad, pas de lecture directe.
+- **État** : C5 étape 2 bis. Questions des modèles toutes tranchées et appliquées aux CSV de `arbre-notions/analyse/`
+  (306 TAG, 65 MODIFIER, 202 HORS_PROGRAMME) ; page régénérée.
+- **Prochaine action** : attendre la relecture par David de la partie 2 (verdicts par niveau) de
+  https://claude.ai/artifact/F9FLrWzCSE72E7zeEyCyH5 ; lire `niveaux` et `modeles` (ArtifactData `list`), appliquer ;
+  puis lister les modifications de modèles (65 MODIFIER + 3 changements de niveau) et préparer la migration des tags
+  (lot 2 bis).
+- **En attente de David** : partie 2 de la page ; c4-3 (médiane de 3, 7, 8, 12 : 7 et 8 acceptés ?).
+- **Pièges en cours** : `decimales_max` du relevé faux sur 45e06ece (4 décimales vues, 3 annoncées) ; contrôle visuel
+  de c4-8 pas fait ; CSV cm/cycle2/sixieme en CRLF, cycle4 en LF (lire et écrire avec `newline=''`) ;
+  `docs/ref/programmes/Accompagnement/` hors git : pdftotext vers le scratchpad.
 - **Worktree / branche** : aucun, tout est en docs sur `main` (dépôt principal).
 
 ## Tranché avec David (2026-10-06)
@@ -1091,3 +1092,13 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     ax + b = c avec a = −1, donc 4-024 en 4e (entiers relatifs) ; rien en 5e (« x + b = c », exemples x/3 = 1, x/2 = 0).
     En trou, au CM : « 178 – … = 6 × 8 » (BO c3), « 5 760 − … = 5 360 » (CM1-061), « 20 ÷ … = 4 » (livret CM2 2026).
     Niveaux des 4 modèles (5e) non modifiés (R3) : question reposée à David.
+  - m-cycle4-1 tranché par David (après explication) : **18 − x = 9** → modèles reclassés en 4e, tag 4-024
+    (6bc8108f, d80e2e02 ; a73f55ba, fractions, sans tag) ; **a/x = b** → aucun tag au collège (c0c8920a ; et
+    b0ef6947, 419887ff en 4e). Effets : trous « a − ? = b » de 5e (24331791, 84755a7b, b1550840) → MODIFIER 5-045 en
+    retirant v2-v3 ; trou au diviseur 0b6d749f → MODIFIER 4-024 en retirant v1-v3.
+  - Égalités à trous au CM, vérifiées modèle par modèle sur les relevés : 19 TAG (12 CM1-061, 7 CM2-065), 4 refusés
+    sur leurs nombres (aa788ca7, ac2dae38, a5d5a7a0, et 45e06ece : 0,000 1 et 9,954 5 tirés, quatre décimales ; le
+    relevé annonce `decimales_max` 3 à tort — à vérifier dans `releve.ts`).
+  - **Appliqué aux CSV** (60 lignes, justification « Décision de David (2026-10-20, …) », `variations_hors` remis à
+    jour) : 306 TAG, 65 MODIFIER, 202 HORS_PROGRAMME, plus aucun A_TRANCHER ni TAG_PAR_VARIATION. 3 modèles changent
+    de niveau (78feafed, 6bc8108f, d80e2e02 : 5e → 4e ; colonne `grade`). Page régénérée (version 3).
