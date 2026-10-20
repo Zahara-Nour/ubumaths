@@ -134,3 +134,40 @@ for (const c of cas) {
 	console.log(c.padEnd(14), '|', r.ast && !r.errors.length ? 'LU' : `${e?.code} | ${e?.message}`);
 }
 ```
+
+## mathlive-clavier.svelte.test.ts
+
+Sonde de VRAIES frappes MathLive (0.111) : la copier sous `src/` (le projet client ne lit que `src/**/*.svelte.test.ts`), lancer `pnpm test:client <fichier>`, lire le message d erreur « SONDE », puis supprimer le fichier.
+
+```ts
+// SONDE TEMPORAIRE (lecture-grandeurs, B9) — à supprimer après la mesure
+import { it, vi, expect } from 'vitest';
+import 'mathlive';
+import type { MathfieldElement } from 'mathlive';
+import { userEvent } from 'vitest/browser';
+
+const SAISIES = [
+	'2^3^2',
+	'2^3{ArrowRight}^2',
+	'e^x^2',
+	'e^-x^2',
+	'10^-3+4',
+	'10^-3{ArrowRight}+4',
+	'2^^3'
+];
+
+it('sonde : ce que MathLive écrit au clavier', async () => {
+	const lignes: string[] = [];
+	for (const saisie of SAISIES) {
+		const mf = document.createElement('math-field') as MathfieldElement;
+		document.body.append(mf);
+		await userEvent.click(mf);
+		await vi.waitFor(() => expect(document.activeElement).toBe(mf));
+		await userEvent.keyboard(saisie);
+		await new Promise((r) => setTimeout(r, 50));
+		lignes.push(`${saisie.padEnd(22)} → ${mf.value}`);
+		mf.remove();
+	}
+	throw new Error('SONDE\n' + lignes.join('\n'));
+});
+```
