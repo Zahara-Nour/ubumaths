@@ -1,0 +1,196 @@
+# Phase 0 — comportements attendus (lecture-grandeurs)
+
+_Rédigé le 2026-10-20 à partir des décisions de David (journal, page à cocher des grandeurs : 20 réponses
+sur 81 ; page virgule : 0 sur 31). Rien n'est codé. À valider avant la première PR._
+
+**Portée.** Parseur maison (`parser/custom/`, Pratt **et** RD) ; le parseur LaTeX seulement là où une
+décision le nomme (B9, Q9, codes des refus qu'il partage). LECTURE seulement : le calcul
+(`computeQuantity`) et les messages français de l'atelier (`french-errors.ts`) ne changent pas, sauf
+mention.
+
+**Règle commune à toutes les PR.** Un refus rend un `ParseErrorCode` précis + le message anglais. Quand un
+refus existe déjà, **son texte anglais reste identique** : `french-errors.ts` traduit encore par le texte
+(`/Invalid unit: (\S+)/`), le passage à la traduction par code est un chantier de l'atelier.
+Chaque comportement est testé dans les **deux** implémentations (Pratt, RD) par le même cas.
+
+Légende : ✅ décidé par David · 🟡 conséquence de mes choix, **à confirmer** · ⏸ attend une réponse,
+je ne change rien à l'existant.
+
+---
+
+## PR 1 — `×`, `·`, `⋅` lus comme `*` (décision 7, fiches B5, E3)
+
+Nominal ✅
+
+- `2×3`, `2·3`, `2⋅3` = `2*3` (même arbre, même style d'opérateur que `*`).
+- `2.5×10^3[m]` se lit comme `2.5*10^3[m]` (la lecture de l'unité suit la PR 4).
+- `2[m]×3[m]` = `2[m]*3[m]` (6 m²).
+- Dans les crochets : `3[m·s^-1]` et `3[m⋅s^-1]` = `3[m.s^-1]` (aujourd'hui « Expected ']' after unit »).
+
+Limite
+
+- `2.5` reste un décimal, `2·5` un produit : test qui pose les deux côte à côte ✅.
+- `2 × 3` avec espaces = `2*3`.
+- 🟡 `×` en tête (`×3`) ou en fin (`2×`) : même refus que `*3` / `2*` aujourd'hui, avec le même code.
+
+Erreur
+
+- Aucun nouveau refus.
+
+⏸ **Parseur LaTeX** : il lit `\times`, `\cdot` et refuse `×`, `·` Unicode (« Nombre « 3 » écrit après un
+facteur »). La décision 7 vise-t-elle aussi le parseur LaTeX ? Sans réponse : LaTeX inchangé.
+
+---
+
+## PR 2 — exposants : `^-` (B7) et exposants empilés (B9)
+
+Nominal ✅
+
+- Après `^`, un signe (`-` ou `+`) suivi d'**un** nombre ou d'**une** lettre forme l'exposant :
+  `10^-3` = `10^{-3}` ; `2^-x` = `2^{-x}` ; `10^-3[m]` = `(10^{-3})[m]` ; `10^-3*4` = `(10^{-3})*4`.
+- `10^-3+4` = `10^{-3}+4`, comme `10^3+4` = `(10^3)+4`.
+- `2^{3^2}` et `(2^3)^2` : inchangés (seules écritures acceptées d'un empilement).
+
+Limite
+
+- `10^-2.5` : le nombre entier `2.5` est l'exposant ✅ (« UN nombre »).
+- 🟡 `10^+3` = `10^{+3}` : même règle que le `-` (la fiche dit « un signe »). Aujourd'hui ? (à mesurer).
+- 🟡 `2^-x y` : l'exposant est `-x` seul, puis `y` multiplie (`2^{-x}·y`), comme `2^x y` aujourd'hui.
+
+Erreur ✅
+
+- `2^3^2`, `e^x^2`, `2^3^2[m]`, `e^-x^2` → `STACKED_EXPONENTS`
+  (« Two exponents in a row: write 2^{3^2} or (2^3)^2 »).
+- `2^-sin(x)`, `2^-(x+1)` → `NEGATIVE_EXPONENT_BEFORE_GROUP`
+  (« Negative exponent before a group: write 2^{-…} or 2^(-…) »).
+- **Parseur LaTeX** : `2^3^2`, `e^x^2` → `STACKED_EXPONENTS` (aujourd'hui lus de gauche à droite).
+  MathLive ne les produit jamais (mesuré) ; un `\unit`/`toLatex` ne les écrit pas non plus — à prouver par
+  un grep des générateurs dans la PR.
+
+À mesurer dans la PR : 0 empilement en prod (déjà mesuré, modèles + exercices) ; empilements dans
+`scripts/questions/`, `tests/fixtures/` et les tests (un test qui assertait la lecture de gauche à droite
+change d'attendu, il ne disparaît pas).
+
+---
+
+## PR 3 — codes précis des refus qui existent déjà
+
+Lecture inchangée ; seul le code change (texte anglais identique quand il existe). Parseurs maison et
+LaTeX quand le refus existe dans les deux.
+
+| Écriture         | Aujourd'hui        | Code ✅                                                                                            |
+| ---------------- | ------------------ | -------------------------------------------------------------------------------------------------- |
+| `5[xyz]`, `5[M]` | `INVALID_UNIT`     | `UNKNOWN_UNIT`                                                                                     |
+| `5[]`            | `INVALID_UNIT` (?) | `EMPTY_UNIT`                                                                                       |
+| `10[m]^3`        | `INVALID_UNIT`     | `UNIT_EXPONENT_OUTSIDE`                                                                            |
+| `3[kg/m.s]`      | `INVALID_UNIT`     | `AMBIGUOUS_UNIT`                                                                                   |
+| `3[m s]`         | `INVALID_UNIT`     | `SPACE_IN_UNIT`                                                                                    |
+| `(1+2`, `[1,2`   | `UNEXPECTED_TOKEN` | `MISSING_DELIMITER`                                                                                |
+| `.5[m]`, `.5`    | `UNEXPECTED_TOKEN` | `LEADING_DECIMAL_POINT` ✅ (nouveau texte : « Missing zero before the decimal point (write 0.5) ») |
+| `x2`, `x 2`      | `UNEXPECTED_TOKEN` | `MISSING_OPERATOR` 🟡                                                                              |
+
+- `INVALID_UNIT` disparaît du type ; `UNEXPECTED_TOKEN` reste en dernier recours.
+- 🟡 **`MISSING_OPERATOR`** : le catalogue ne dit pas à quoi il sert. Ma lecture : un nombre après une lettre
+  (`x2`, `x 2`, refusés par N3). `2[m]3[m]` (E12) va à `JUXTAPOSED_QUANTITIES` (Q9, PR 5), pas ici. À confirmer.
+- Garde : un test énumère chaque écriture du tableau et vérifie le code dans les deux implémentations.
+- G10 `3[m s]` : la Q10 n'est pas tranchée, donc **le refus reste** (rien ne change, seul le code).
+
+---
+
+## PR 4 — l'unité multiplie tout le terme (décision 1)
+
+**Avant d'écrire du code** : inventaire des écritures dont la VALEUR change (`a/b[u]`, `-a/b[u]`,
+`10^3/2[u]`) dans les modèles publiés, `{{eval}}`, variables, `scripts/questions/`, `tests/fixtures/`, tests.
+Le résultat est montré à David avant la suite (tout cas trouvé = valeur qui change en prod).
+
+Nominal ✅
+
+- `1/2[m]` = `(1/2)[m]` (0,5 m, plus 0,5 m⁻¹) ; `6/2[s]` = `(6/2)[s]` ; `10^3/2[m]` = `(10^3/2)[m]`.
+- `2*3[m]` = `(2*3)[m]` ; `2.5*10^3[m]` = `(2.5*10^3)[m]` ; `2*1/2[m]` = `(2*(1/2))[m]`.
+- Signe unaire dans la valeur : `-5[m]` = `(-5)[m]` ; `+5[m]` = `(+5)[m]` ; `-10^3[m]` = `(-(10^3))[m]`
+  (jamais `(-10)^3`) ; `-1/2[m]` = `(-(1/2))[m]`.
+- Espaces entre chiffres ignorés partout : `12 500` = 12500 ; `12 500[m]` = `12500[m]` ; `12 5[m]` = `125[m]` ;
+  `0.000 01` = 0.00001. Le parseur n'émet aucun avis sur l'espacement.
+- 🟡 Le terme contient aussi `sqrt(…)` : `2sqrt(2)[m]` = `(2*sqrt(2))[m]` (règle écrite du corpus ; fiche H2
+  pas encore cochée).
+
+Limite
+
+- Le terme s'arrête à un `+`/`-` d'addition : `2+3[m]` = `2+(3[m])`, `2-3[m]` = `2-(3[m])` (le calcul refuse
+  ensuite, inchangé).
+- Une grandeur déjà formée clôt le terme : `6[m]/2[s]` = `(6[m])/(2[s])` ; `a[m]*3[m]` inchangé.
+- Unité au dénominateur : seulement entre parenthèses, `1/(2[s])` inchangé.
+- 🟡 `1/2/3[m]` = `((1/2)/3)[m]`, sans refus (conséquence de la règle ; Q16 pas cochée — ne rien refuser
+  est le choix qui ne change rien).
+- `2*20[°C]` = `(2*20)[°C]` ; le calcul refuse toujours (« ne se multiplie pas »).
+- `x 2` reste refusé (`MISSING_OPERATOR`) : les espaces ne sont ignorés qu'**entre deux chiffres**.
+- Les valeurs des écritures déjà justes ne changent pas (`-5[m]` vaut −5 m avant et après) ; **le RENDU
+  LaTeX et maison de chaque écriture du corpus est asserté** avant/après (l'arbre change, l'affichage ne
+  doit pas).
+
+Erreur
+
+- Aucun nouveau refus dans cette PR.
+
+⏸ **Lettres (Q12)** : `3x[m]`, `x*2[m]` restent `3*(x[m])`, `x*(2[m])` tant que Q12 n'est pas cochée.
+⏸ **π (Q11)** : `π[m]` reste la lettre, `pi[m]` reste `p*i[m]` tant que Q11 n'est pas cochée.
+
+---
+
+## PR 5 — durées et angles juxtaposés (Q9, F1-F3)
+
+Nominal ✅
+
+- `2[h] 30[min]`, `2[h]30[min]`, `{2[h]}{30[min]}` = somme marquée « juxtaposée » de `2[h]` et `30[min]`.
+  Calcul : 2 h 30 min (aujourd'hui : refus, refus, **1 h²**).
+- Angles : `30[°] 15[′] 10[″]` (et la notation d'angle existante) = somme juxtaposée.
+- Parseur LaTeX : `2~\unit{h}~30~\unit{min}` (et la forme sans `~`) = la même somme juxtaposée.
+- Rendu : LaTeX `2~\unit{h}~30~\unit{min}` (sans `+`) ; maison `2[h] 30[min]` ; relecture → même arbre
+  (aller-retour testé).
+- `;hms` et `compositeDuration` produisent la somme juxtaposée.
+
+Limite 🟡 (mes propositions, à confirmer)
+
+- Trois termes : `1[h] 2[min] 3[s]` = somme juxtaposée de trois termes.
+- Ordre non décroissant (`30[min] 2[h]`) ou unité répétée (`2[h] 3[h]`) : **lu** (le parseur lit, la forme
+  est jugée ailleurs, comme A9).
+- Durée et angle mélangés (`2[h] 30[°]`) → `JUXTAPOSED_QUANTITIES`.
+- Signe : `-2[h] 30[min]` = −(2 h 30 min) ou (−2 h) + 30 min ? Je propose **refus** (`JUXTAPOSED_QUANTITIES`)
+  plutôt que deviner.
+- Un nombre sans unité au bout (`2[h] 30`) → refus (comme aujourd'hui), code `JUXTAPOSED_QUANTITIES`.
+- Marque perdue par une transformation : rendu « 2 h + 30 min », valeur juste (échec bénin accepté par David).
+  Avant de coder : liste mesurée des chemins réels qui transforment une durée (`;hms`, simplification,
+  équivalence, `toCustom`/`toLatex`) ; un test de RENDU par chemin ; une garde qui échoue si un nouveau
+  chemin perd la marque.
+
+Erreur ✅
+
+- `2[m] 30[cm]`, `2[m]3[m]` → `JUXTAPOSED_QUANTITIES`.
+- 🟡 `{2[m]}{3[m]}` : aujourd'hui produit (6 m²). Le refuser casserait un produit accepté ; je propose de
+  **garder le produit** pour les autres grandeurs entre accolades (seules durées et angles changent). À
+  confirmer, avec un grep des `}{` entre grandeurs dans les modèles.
+
+---
+
+## PR 6 — virgule décimale (décisions 2, 3) ⏸
+
+Décidé ✅ : `2,5` et `2,5[m]` → `DECIMAL_COMMA` (« Decimal comma: the decimal separator is '.' (write 2.5) ») ;
+les 7 formules `~…~` d'exercices en prod passent au point (l'affichage remet la virgule).
+
+Tout le reste attend la page virgule (31 fiches, 0 réponse) : `f(1,5)` (deux arguments ?), `max((2,5),3)`,
+`[1,2]`, `(1,2)`, `f(x;y)` lu avec `;` lettre (P3), codes `SEMICOLON` et `UNEXPECTED_COMMA`.
+**Cette PR ne démarre pas avant les réponses.**
+
+---
+
+## Questions ouvertes (à trancher ici ou sur la page)
+
+1. PR 1 : `×`/`·` Unicode lus aussi par le **parseur LaTeX** ?
+2. PR 3 : `MISSING_OPERATOR` = `x2` / `x 2` seulement ?
+3. PR 5 : `-2[h] 30[min]` refusé ? `30[min] 2[h]` lu ? `{2[m]}{3[m]}` reste un produit ?
+4. Toutes les lignes 🟡.
+5. Ordre des PR : 1 → 2 → 3 → 4 → 5, puis 6 après la page virgule.
+
+> Écart relevé : la page à cocher des grandeurs porte encore des codes antérieurs au catalogue validé
+> (`SEVERAL_UNITS` en F4, `EXPONENT_AFTER_UNIT` en G2, `INVALID_SUPERSCRIPT` en B7,
+> `MISSING_NUMBER_BEFORE_UNIT` en K2). Le catalogue du journal fait foi ; la page sera corrigée.
