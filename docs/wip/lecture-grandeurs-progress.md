@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, 3e session._
+_Mis à jour le 2026-10-20, 3e session (fin)._
 
-- **État** : phase 0, rien de codé. Pages à cocher (font foi, le corpus .md garde la v1) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81 fiches : arbre lu / arbre proposé / refus du parseur / message de l'atelier / calcul mesuré / calcul attendu ; 16 répondues, B7 « je ne tranche pas » avec mon avis sur la fiche) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (v3, 31 fiches, 0 répondue). Base `reponses/<id>`.
-- **Décidé par David** : (1) unité × tout le terme de nombres, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue INTERNE au point (option a). (3) Il REFUSE la virgule décimale (`2,5[m]` refusé, A3 validée). (4) **Découpage des refus** : le parseur rend un code + un message ANGLAIS ; l'atelier traduit en français à l'affichage (`mathAST/cli/web/french-errors.ts`) — chantier de l'atelier. (5) **Codes d'erreur PRÉCIS** (nouveaux codes au lieu de `UNEXPECTED_TOKEN`), l'atelier traduit par code. (6) **Q9 = option (a)** : deux durées côte à côte (`2[h] 30[min]`, `2 h 30 min` en MathLive) sont LUES comme une SOMME marquée « juxtaposée », par les 4 implémentations (LaTeX et maison, Pratt et RD) via une fonction partagée ; `;hms` et `compositeDuration` la produisent ; fin du 1 h². **Exigence : la marque ne doit pas se perdre** dans les transformations. Angles ° ′ ″ comme les durées ; `2[m] 30[cm]` (autres grandeurs) refusé, `JUXTAPOSED_QUANTITIES`. Gestion du risque validée : mesurer les chemins réels → un test de RENDU par chemin → garde → corriger la perte sur ces chemins. (7) `×`, `·` (U+00B7) et `⋅` (U+22C5) lus comme `*` dans le parseur maison (B5/E3, Q7) ; `·` et `⋅` acceptés aussi entre crochets comme `.` (`3[m·s^-1]`). ⚠️ `2.5` = 2,5 mais `2·5` = 10. (8) **B7 validée** : après `^`, un signe + UN nombre ou UNE lettre = l'exposant ; `10^-3+4` = `10^{-3}+4`, `10^-3[m]` = (10^(−3)) m. (9) **B9** : une écriture empilée vaut 2^(3^2) ; parseur maison : REFUS `STACKED_EXPONENTS`.
-- **Prochaine action** : faire valider le catalogue des codes (historique, 3e session ; `UNKNOWN_OPERATOR` retiré) ; B7 : confirmer les refus `e^-x^2`, `2^-sin(x)`, `2^-(x+1)` ; B9 côté LaTeX : refuser aussi (MathLive ne produit jamais d'exposant empilé sans accolades, mesuré) ?
-- **Ensuite** : PR « retrait de la virgule » (+ 7 formules `~…~` d'exercices en prod au point).
-- **Pièges** : distinguer LECTURE (arbre) / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; défauts : `{2[h]}{30[min]}` = produit, `π[m]` = π lettre, `pi[m]` = p × (i[m]), `x;y` et `f(x;y)` lus avec « ; » comme lettre, `[1,5]` lu `(1.5)`, `2^3^2` = (2^3)^2.
-- **Worktree / branche** : aucun. Sondes tsx : code dans `docs/wip/lecture-grandeurs-sondes.md` (arbre parenthésé, calcul, codes d'erreur).
+- **État** : phase 0, rien de codé. Pages à cocher (font foi) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81 fiches, 20 répondues dont B7, B9, F1-F3 tranchées en conversation) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (31 fiches, 0 répondue). Base `reponses/<id>`.
+- **Décidé par David** (détail : historique) : (1) unité × tout le terme, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs (A9) ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue interne au point. (3) Il refuse la virgule décimale. (4) Refus = code + message anglais, l'atelier traduit (`mathAST/cli/web/french-errors.ts`). (5) **Catalogue de 14 codes validé** (historique, 3e session). (6) **Q9 (a)** : durées et angles juxtaposés LUS comme une somme marquée « juxtaposée » (4 implémentations, fonction partagée ; `;hms`, `compositeDuration`) ; autres grandeurs refusées `JUXTAPOSED_QUANTITIES` ; risque de perte de la marque géré : chemins réels mesurés → test de RENDU par chemin → garde. (7) `×`, `·`, `⋅` lus `*` (aussi `·`/`⋅` entre crochets) ; ⚠️ `2.5` ≠ `2·5`. (8) B7 : `^` + signe + UN nombre/lettre ; `10^-3+4` = `10^{-3}+4` ; refus `e^-x^2` (`STACKED_EXPONENTS`), `2^-sin(x)`, `2^-(x+1)` (`NEGATIVE_EXPONENT_BEFORE_GROUP`). (9) B9 : empilé = 2^(3^2) ; maison : refus.
+- **En attente de David** : B9 côté LaTeX, refuser aussi (MathLive met toujours les accolades, mesuré) ? ; les 61 fiches grandeurs et 31 fiches virgule restantes.
+- **Prochaine action** : rédiger les comportements de phase 0 (nominal / limite / erreur) des décisions prises, puis découper en PR (virgule, codes, Q9, ×/·, B7/B9).
+- **Pièges** : distinguer LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt (défaut) + RD ; `{2[h]}{30[min]}` = 1 h² aujourd'hui ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
+- **Worktree / branche** : aucun. Sondes (arbre, calcul, codes, clavier MathLive) : `docs/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
 
@@ -150,3 +150,12 @@ Inventaire de qui écrit en syntaxe maison (prod lue en lecture seule, dépôt p
   `2^^3` → `2^{^3}`. MathLive met TOUJOURS les accolades : le parseur LaTeX ne reçoit jamais `2^3^2` d'un élève.
   Vu en passant : taper `^` sur un exposant à un chiffre REMPLACE l'exposant (le 3 disparaît) ; `10^-3+4`
   reste dans l'exposant tant que l'élève ne sort pas avec →.
+
+### 2026-10-20 — catalogue des codes validé
+
+- David valide les trois refus de B7 et le catalogue. **14 codes** : `DECIMAL_COMMA`, `LEADING_DECIMAL_POINT`,
+  `STACKED_EXPONENTS`, `JUXTAPOSED_QUANTITIES`, `MISSING_OPERATOR`, `SEMICOLON`, `UNEXPECTED_COMMA`,
+  `UNIT_EXPONENT_OUTSIDE`, `AMBIGUOUS_UNIT`, `SPACE_IN_UNIT`, `UNKNOWN_UNIT`, `EMPTY_UNIT`, `MISSING_DELIMITER`
+  (existant, enfin utilisé), `NEGATIVE_EXPONENT_BEFORE_GROUP`. `INVALID_UNIT` disparaît ; `UNEXPECTED_TOKEN`
+  reste en dernier recours. `SEMICOLON` et `UNEXPECTED_COMMA` suivront les réponses de la page virgule (P3 :
+  `f(x;y)`).
