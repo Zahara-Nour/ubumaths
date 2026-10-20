@@ -871,7 +871,7 @@ function reduceFractionOfSums(
 	const inSum = (index: number) =>
 		[...top, ...bottom].find((part) => part.home === index)?.value ?? 1n;
 
-	let coefficient = rational(
+	const coefficient = rational(
 		(isNegativeRational(term.coefficient) ? -1n : 1n) * inCoefficient(top),
 		inCoefficient(bottom)
 	);
@@ -883,8 +883,9 @@ function reduceFractionOfSums(
 
 	if (!hasDenominator && coefficient.d !== 1n) return term;
 
+	// Le signe ne passe que dans une vraie fraction : `−2(x/2−1/2)` donne `−(x−1)`, comme `−(x−1)`
 	const numerators = sums.filter(({ index }) => factors[index].exponent.n === 1n);
-	if (isNegativeRational(coefficient) && numerators.length === 1) {
+	if (hasDenominator && isNegativeRational(coefficient) && numerators.length === 1) {
 		const [{ index }] = numerators;
 		const terms = toSumTerms(factors[index].base, undefined, unitChoice);
 		const negated = sortTerms(terms.map(negateTerm));
@@ -893,13 +894,30 @@ function reduceFractionOfSums(
 		const fewerSigns = countNegative(negated) < 1 + countNegative(terms);
 		if (fewerSigns && !isNegativeRational(negated[0].coefficient)) {
 			const base = buildSum(negated);
-			factors[index] = { base, exponent: ONE, key: hashMathNode(base) };
-			coefficient = negRational(coefficient);
+			const signed = [...factors];
+			signed[index] = { base, exponent: ONE, key: hashMathNode(base) };
+			// Un signe qui ferait rencontrer un facteur de l'autre côté reste devant :
+			// `(6x−3)/(−9(1−2x))` → `−(2x−1)/(3(1−2x))`, la réduction est gardée
+			const reduced = mergeFactors(signed);
+			if (reduced !== null) {
+				watch?.add('other');
+				return { ...term, coefficient: negRational(coefficient), factors: reduced };
+			}
 		}
 	}
 
-	// Une somme réduite ne doit rencontrer aucun facteur de l'autre côté de la barre :
-	// ils s'annuleraient (domaine). Du même côté, ils se multiplient : `(6x+3)(4x+2)/12` → `(2x+1)²/2`
+	const reduced = mergeFactors(factors);
+	if (reduced === null) return term;
+	watch?.add('other');
+	return { ...term, coefficient, factors: reduced };
+}
+
+/**
+ * Les facteurs égaux réunis. Une somme réduite ne doit rencontrer aucun facteur
+ * de l'autre côté de la barre : ils s'annuleraient (domaine) — `null`. Du même
+ * côté, ils se multiplient : `(6x+3)(4x+2)/12` → `(2x+1)²/2`.
+ */
+function mergeFactors(factors: readonly TidyFactor[]): TidyFactor[] | null {
 	const merged = new Map<string, TidyFactor>();
 	for (const factor of factors) {
 		const existing = merged.get(factor.key);
@@ -907,14 +925,13 @@ function reduceFractionOfSums(
 			merged.set(factor.key, factor);
 			continue;
 		}
-		if (existing.exponent.n < 0n !== factor.exponent.n < 0n) return term;
+		if (existing.exponent.n < 0n !== factor.exponent.n < 0n) return null;
 		merged.set(factor.key, {
 			...existing,
 			exponent: addRational(existing.exponent, factor.exponent)
 		});
 	}
-	watch?.add('other');
-	return { ...term, coefficient, factors: sortFactors([...merged.values()]) };
+	return sortFactors([...merged.values()]);
 }
 
 // =============================================================================

@@ -147,7 +147,10 @@ que soit son degré (David, 2026-10-20), et seulement si le nombre de signes −
 y **diminue** (le − devant compte pour un) sans que la somme commence par un − :
 `(3x²−6x+3)/(−9) → −(x²−2x+1)/3` (égalité), `(3x²−3)/(−6x) → −(x²−1)/(2x)`
 (`−x²+1`). `−(2x−1)/3` et `(3i−2)/(−1) → −(3i−2)` ne bougent pas (rien à
-réduire).
+réduire). Il ne passe jamais dans un produit sans dénominateur
+(`−2(x/2−1/2) → −(x−1)`, comme `−(x−1)`), ni s'il ferait rencontrer un
+facteur de l'autre côté : `(6x−3)/(−9(1−2x)) → −(2x−1)/(3(1−2x))`, la
+réduction numérique étant gardée.
 
 Hors périmètre : une somme dont un terme contient lui-même une somme
 (`(2(x+1)+4)/2`), une grandeur avec unité, un nœud opaque, une somme à

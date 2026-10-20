@@ -122,7 +122,9 @@ describe('produit sans dénominateur : réduit si un nombre commun se simplifie'
 		['3(x/2+1)', '3(x/2+1)'],
 		['6(x/4+1)', '6(x/4+1)'],
 		['2(x/2+1)^2', '2(x/2+1)^2'],
-		['2(2x+2)', '2(2x+2)']
+		['2(2x+2)', '2(2x+2)'],
+		['-2(x/2-1/2)', '-(x-1)'],
+		['-4(x/2-1)', '-2(x-2)']
 	])('tidy(%s) = %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});
@@ -140,7 +142,8 @@ describe('signe du dénominateur : au-delà du degré 1', () => {
 		['(-6x^2-3)/(-9)', '{2x^2+1}/3'],
 		['(3x^2+3)/(-9)', '-{x^2+1}/3'],
 		['(3x^2-6x+3)/(-9)', '-{x^2-2x+1}/3'],
-		['(3x^2-3)/(-6x)', '-{x^2-1}/{2x}']
+		['(3x^2-3)/(-6x)', '-{x^2-1}/{2x}'],
+		['(6x-3)/(-9(1-2x))', '-{2x-1}/{3(1-2x)}']
 	])('tidy(%s) = %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});
@@ -182,7 +185,9 @@ describe('invariants', () => {
 		'4(x/2+1)',
 		'6(x/2+1/3)',
 		'(-6x^2+3)/(-9)',
-		'(3x^2-3)/(-6x)'
+		'(3x^2-3)/(-6x)',
+		'(6x-3)/(-9(1-2x))',
+		'-2(x/2-1/2)'
 	];
 
 	it.each(PANEL)('valeur conservée sur %s', (input) => {
