@@ -5,20 +5,19 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1564 (migration appliquée en prod, vérifiée : 39/39 contenus, 39/39 tags)._
+_Mis à jour le 2026-10-21, lot B en PR (branche `feat/arbre-lot-2bis-variations`)._
 
-- **État** : C5 étape 2 bis, MODIFIER : lot A « resserrer les nombres » (39 modèles) livré en prod, avec tags. Outil :
-  `analyse/lot-2bis-nombres.py` (une fonction par modèle, garde sur le contenu relevé, rollback à empreinte md5).
-- **Prochaine action** : lot B (7 « retirer des variations », `lot-2bis-modifications.md` § 4) sur le même modèle :
-  relire en prod, script `lot-2bis-<lot>.py`, migration + test ; puis C (17 consignes, un exemple par forme montré à
-  David d'abord), D (3 scissions, phase 0 à part : cartes SRS, tentatives, fiches de l'ancien modèle).
+- **État** : C5 étape 2 bis, MODIFIER. Lot A (39 modèles) en prod. Lot B « retirer des variations » (7 modèles)
+  généré et testé : `analyse/lot-2bis-variations.py` sur l'outillage commun `analyse/lot_2bis_outils.py` (le lot A
+  s'y régénère à l'identique) ; test `tests/helpers/database/lot-2bis-migration.ts` partagé par les lots.
+- **Prochaine action** : PR du lot B → revues → merge → `db:migrate` (question d'accès posée à David) ; puis C
+  (17 consignes, un exemple par forme montré à David d'abord), D (3 scissions, phase 0 à part).
 - **Décisions de David (2026-10-21)** : une migration par lot ; f1a392f5 garde 6 variations ; 82748db8 garde le
   doublon dm² → m². Question d'accès à reposer à chaque lot.
-- **En attente de David** : rien. Signalé : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
-- **Pièges en cours** : API REST plafonnée à 1000 lignes ; `question:specs --file` veut le format de l'app ; jsonb
-  réordonne les clés ; corrigés à branches `{{if:a=…}}` à suivre quand la liste des valeurs change (vérifier les
-  étapes vides sur tous les tirages, pas seulement les specs).
-- **Worktree / branche** : aucun (worktree de #1564 supprimé).
+- **En attente de David** : question d'accès du lot B. Signalé : 11 modèles sans aucun corrigé.
+- **Pièges en cours** : API REST plafonnée à 1000 lignes ; `question:specs --file` veut le format de l'app
+  (`toQuestionTemplate`) et `svelte-kit sync` dans un worktree neuf ; jsonb réordonne les clés.
+- **Worktree / branche** : `../ubumaths-wt-arbre-notions`, `feat/arbre-lot-2bis-variations`.
 
 ## Tranché avec David (2026-10-06)
 
@@ -1136,3 +1135,11 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   code-reviewer (lot recalculé depuis les CSV, 0 écart) et security-auditor sans bloquant ; rollback rendu strict
   (chemin d'origine introuvable → échec). Vérifié en prod : 306 tags aux comptes attendus par niveau, 4-004 / 4-073
   rattachés, 3 modèles en 4e, trigger de date actif, aucun `updated_at` modifié.
+- **2026-10-21 — Lot B « retirer des variations » (7 modèles).** Relu en prod (anon) :
+  `etat-prod-2026-10-21/modeles-variations.json`. 716d5c68 garde V1-4 (sous-titre : « deux nombres à 2 chiffres ») ;
+  24331791, 84755a7b, b1550840 gardent V1 (b1550840 perd la variable commune c, qui ne servait qu'à V3) ; b2af6f39
+  garde V1-2 ; 0b6d749f garde V4-6 ; 6a60ed10 garde V5-6. Specs réindexées : 32/32 vertes (`question:specs`),
+  2 800 tirages sans étape vide (`audit-question-draws`). Données d'élèves : 0 tentative d'évaluation, 0 carte SRS,
+  aucune fiche ni exercice ni deck ; 2 tentatives de compétence (sans indice de variation) et 2 réponses de test sur
+  716d5c68 (instance figée, indice affiché seulement). Migration `20261021100000` ; preuve rouge (migration
+  neutralisée : 5 échecs + suite nominale en échec), puis 22/22 verts avec le lot A refactorisé.
