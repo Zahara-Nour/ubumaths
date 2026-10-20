@@ -1,0 +1,586 @@
+{
+	"template_id": "e0b6d00a-cc63-43bb-b2a0-c13d0e0fa00e",
+	"titre": "Comparer deux nombres relatifs.",
+	"sous_titre": "Valeurs entières - qcm",
+	"consigne": null,
+	"grades": ["5"],
+	"type": "multiple_choice",
+	"theme": "Relatifs > Apprivoiser > Comparer",
+	"mis_a_jour": "2026-10-01T06:18:15.338263+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "5-017",
+			"libelle_point": "Comparer deux nombres décimaux relatifs (−3,5 … −5).",
+			"noeud_actuel": "Nombres et calculs > Relatifs : sens et écritures > ordre",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "libellé « Comparer et ranger dans l'ordre croissant et décroissant des nombres décimaux relatifs. » → « Comparer deux nombres décimaux relatifs (−3,5 … −5). »"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..19"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..20"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le plus petit de ces 2 nombres ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$${{a}}$$"
+					},
+					{
+						"content": "$$-{{b}}$$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 189,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 18,
+						"valeurs": [2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -20,
+						"max": -2,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [
+							-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -3, -2
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 20,
+				"nb_distinctes": 18,
+				"valeurs": [2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 7,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$2$$\n- B. $$-20$$",
+					"reponse": ["B. $$-20$$"],
+					"variables": {
+						"a": "2",
+						"b": "20"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$1$$\n- B. $$-12$$",
+					"reponse": ["B. $$-12$$"],
+					"variables": {
+						"a": "1",
+						"b": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$7$$\n- B. $$-11$$",
+					"reponse": ["B. $$-11$$"],
+					"variables": {
+						"a": "7",
+						"b": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-10$$\n- B. $$1$$",
+					"reponse": ["A. $$-10$$"],
+					"variables": {
+						"a": "1",
+						"b": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-10$$\n- B. $$7$$",
+					"reponse": ["A. $$-10$$"],
+					"variables": {
+						"a": "7",
+						"b": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..19"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..20"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le plus petit de ces 2 nombres ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$-{{a}}$$"
+					},
+					{
+						"content": "$$-{{b}}$$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 189,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 18,
+						"valeurs": [2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -20,
+						"max": -2,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [
+							-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -3, -2
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 20,
+				"nb_distinctes": 18,
+				"valeurs": [2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 7,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-2$$\n- B. $$-20$$",
+					"reponse": ["B. $$-20$$"],
+					"variables": {
+						"a": "2",
+						"b": "20"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-1$$\n- B. $$-12$$",
+					"reponse": ["B. $$-12$$"],
+					"variables": {
+						"a": "1",
+						"b": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-7$$\n- B. $$-11$$",
+					"reponse": ["B. $$-11$$"],
+					"variables": {
+						"a": "7",
+						"b": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-10$$\n- B. $$-1$$",
+					"reponse": ["A. $$-10$$"],
+					"variables": {
+						"a": "1",
+						"b": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-10$$\n- B. $$-7$$",
+					"reponse": ["A. $$-10$$"],
+					"variables": {
+						"a": "7",
+						"b": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..19"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..20"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le plus petit de ces 2 nombres ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$-{{b}}$$"
+					},
+					{
+						"content": "$$-{{a}}$$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 189,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 18,
+						"valeurs": [2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -20,
+						"max": -2,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [
+							-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -3, -2
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 20,
+				"nb_distinctes": 18,
+				"valeurs": [2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 7,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-20$$\n- B. $$-2$$",
+					"reponse": ["A. $$-20$$"],
+					"variables": {
+						"a": "2",
+						"b": "20"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-12$$\n- B. $$-1$$",
+					"reponse": ["A. $$-12$$"],
+					"variables": {
+						"a": "1",
+						"b": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-11$$\n- B. $$-7$$",
+					"reponse": ["A. $$-11$$"],
+					"variables": {
+						"a": "7",
+						"b": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-1$$\n- B. $$-10$$",
+					"reponse": ["B. $$-10$$"],
+					"variables": {
+						"a": "1",
+						"b": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$-7$$\n- B. $$-10$$",
+					"reponse": ["B. $$-10$$"],
+					"variables": {
+						"a": "7",
+						"b": "10"
+					}
+				}
+			]
+		}
+	]
+}

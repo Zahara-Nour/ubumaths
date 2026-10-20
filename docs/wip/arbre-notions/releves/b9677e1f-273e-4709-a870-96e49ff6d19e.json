@@ -1,0 +1,337 @@
+{
+	"template_id": "b9677e1f-273e-4709-a870-96e49ff6d19e",
+	"titre": "Chiffre des unités d'un produit",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > Produit",
+	"mis_a_jour": "2026-09-29T18:05:35.060316+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b1",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10+a"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d1",
+						"expression": "1..9"
+					},
+					{
+						"name": "d2",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "eval:d1*100+d2*10+c"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a*c"
+					},
+					{
+						"name": "g",
+						"expression": "eval:mod(f, 10)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le chiffre des unités du produit de ${{eval:b}}$ par ${{eval:d}}$ ?\n\nLe chiffre des unités est $?$.",
+				"reponses_brutes": ["{{g}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 80
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 111,
+						"max": 996,
+						"negatif_possible": false,
+						"nb_distinctes": 251
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 81,
+						"negatif_possible": false,
+						"nb_distinctes": 36
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 11,
+				"max": 996,
+				"nb_distinctes": 331,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 996,
+				"nb_distinctes": 341,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (996)",
+					"graine": 78,
+					"enonce": "Quel est le chiffre des unités du produit de $43$ par $996$ ?\n\nLe chiffre des unités est $[?]$.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "3",
+						"b1": "4",
+						"b": "43",
+						"c": "6",
+						"d1": "9",
+						"d2": "9",
+						"d": "996",
+						"f": "18",
+						"g": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 11,
+					"enonce": "Quel est le chiffre des unités du produit de $65$ par $856$ ?\n\nLe chiffre des unités est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "5",
+						"b1": "6",
+						"b": "65",
+						"c": "6",
+						"d1": "8",
+						"d2": "5",
+						"d": "856",
+						"f": "30",
+						"g": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le chiffre des unités du produit de $51$ par $939$ ?\n\nLe chiffre des unités est $[?]$.",
+					"reponse": ["9"],
+					"variables": {
+						"a": "1",
+						"b1": "5",
+						"b": "51",
+						"c": "9",
+						"d1": "9",
+						"d2": "3",
+						"d": "939",
+						"f": "9",
+						"g": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le chiffre des unités du produit de $33$ par $865$ ?\n\nLe chiffre des unités est $[?]$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "3",
+						"b1": "3",
+						"b": "33",
+						"c": "5",
+						"d1": "8",
+						"d2": "6",
+						"d": "865",
+						"f": "15",
+						"g": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le chiffre des unités du produit de $51$ par $751$ ?\n\nLe chiffre des unités est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"b1": "5",
+						"b": "51",
+						"c": "1",
+						"d1": "7",
+						"d2": "5",
+						"d": "751",
+						"f": "1",
+						"g": "1"
+					}
+				}
+			]
+		}
+	]
+}

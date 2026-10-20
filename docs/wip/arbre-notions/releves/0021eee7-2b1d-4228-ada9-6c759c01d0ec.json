@@ -1,0 +1,306 @@
+{
+	"template_id": "0021eee7-2b1d-4228-ada9-6c759c01d0ec",
+	"titre": "Comparer deux nombres entiers",
+	"sous_titre": "Jusqu'au million",
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "multiple_choice",
+	"theme": "Entiers > Apprivoiser > Comparer",
+	"mis_a_jour": "2026-09-29T20:53:53.947791+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM1-008",
+			"libelle_point": "Comparer deux nombres entiers avec les symboles =, < et > (45 307 … 45 370).",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > ordre",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "libellé « Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles =, < et > » → « Comparer deux nombres entiers avec les symboles =, < et > (45 307 … 45 370). »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..4"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:4-a}}..{{eval:6-a}}"
+					},
+					{
+						"name": "c",
+						"expression": "digits:a"
+					},
+					{
+						"name": "d",
+						"expression": "digits:b"
+					},
+					{
+						"name": "f",
+						"expression": "digits:b"
+					},
+					{
+						"name": "g",
+						"expression": "eval:d+c*10^b"
+					},
+					{
+						"name": "h",
+						"expression": "eval:f+c*10^b"
+					}
+				],
+				"conditions": ["g!=h"],
+				"enonce_brut": "Quel est le plus petit de ces 2 nombres ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$${{eval:g}}$$"
+					},
+					{
+						"content": "$${{eval:h}}$$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9295,
+						"negatif_possible": false,
+						"nb_distinctes": 159
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 958338,
+						"negatif_possible": false,
+						"nb_distinctes": 253
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 976628,
+						"negatif_possible": false,
+						"nb_distinctes": 258
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1133,
+						"max": 998318,
+						"negatif_possible": false,
+						"nb_distinctes": 299
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1106,
+						"max": 989192,
+						"negatif_possible": false,
+						"nb_distinctes": 300
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1106,
+						"max": 987379,
+						"negatif_possible": false,
+						"nb_distinctes": 299
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1106,
+				"max": 987379,
+				"nb_distinctes": 299,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_choix_qcm": {
+				"min": 1106,
+				"max": 998318,
+				"nb_distinctes": 597,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_tous": {
+				"min": 2,
+				"max": 998318,
+				"nb_distinctes": 598,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (998318)",
+					"graine": 197,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$998\\,318$$\n- B. $$930\\,409$$",
+					"reponse": ["B. $$930\\,409$$"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "98318",
+						"f": "30409",
+						"g": "998318",
+						"h": "930409"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$97\\,154$$\n- B. $$35\\,299$$",
+					"reponse": ["B. $$35\\,299$$"],
+					"variables": {
+						"a": "0",
+						"b": "5",
+						"c": "0",
+						"d": "97154",
+						"f": "35299",
+						"g": "97154",
+						"h": "35299"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$5\\,667$$\n- B. $$5\\,887$$",
+					"reponse": ["A. $$5\\,667$$"],
+					"variables": {
+						"a": "1",
+						"b": "3",
+						"c": "5",
+						"d": "887",
+						"f": "667",
+						"g": "5887",
+						"h": "5667"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$53\\,306$$\n- B. $$78\\,670$$",
+					"reponse": ["A. $$53\\,306$$"],
+					"variables": {
+						"a": "0",
+						"b": "5",
+						"c": "0",
+						"d": "78670",
+						"f": "53306",
+						"g": "78670",
+						"h": "53306"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le plus petit de ces 2 nombres ?\n\n- A. $$1\\,557$$\n- B. $$1\\,310$$",
+					"reponse": ["B. $$1\\,310$$"],
+					"variables": {
+						"a": "1",
+						"b": "3",
+						"c": "1",
+						"d": "310",
+						"f": "557",
+						"g": "1310",
+						"h": "1557"
+					}
+				}
+			]
+		}
+	]
+}

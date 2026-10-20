@@ -1,0 +1,1375 @@
+{
+	"template_id": "3fe98dd9-7545-4287-8301-7d87e8c1976f",
+	"titre": "Traduire une puissance en produit",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Puissances > Apprivoiser > Définition",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-015",
+			"libelle_point": "Définir les puissances d'exposant positif d'un nombre a.",
+			"noeud_actuel": "Nombres et calculs > Puissances : sens et écritures > définition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "a^2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{a}}*{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 14,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6633333333333333,
+						"nb_distinctes": 14,
+						"valeurs": ["10", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "x", "y"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10^2",
+							"2^2",
+							"3^2",
+							"4^2",
+							"5^2",
+							"6^2",
+							"7^2",
+							"8^2",
+							"9^2",
+							"a^2",
+							"b^2",
+							"c^2",
+							"x^2",
+							"y^2"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10*10",
+							"2*2",
+							"3*3",
+							"4*4",
+							"5*5",
+							"6*6",
+							"7*7",
+							"8*8",
+							"9*9",
+							"a*a",
+							"b*b",
+							"c*c",
+							"x*x",
+							"y*y"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "101/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 24,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$10^2 = [?]$$",
+					"reponse": ["10*10"],
+					"variables": {
+						"a": "10",
+						"expression1": "10^2"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$a^2 = [?]$$",
+					"reponse": ["a*a"],
+					"variables": {
+						"a": "a",
+						"expression1": "a^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$y^2 = [?]$$",
+					"reponse": ["y*y"],
+					"variables": {
+						"a": "y",
+						"expression1": "y^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$7^2 = [?]$$",
+					"reponse": ["7*7"],
+					"variables": {
+						"a": "7",
+						"expression1": "7^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$5^2 = [?]$$",
+					"reponse": ["5*5"],
+					"variables": {
+						"a": "5",
+						"expression1": "5^2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "a^3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{a}}*{{a}}*{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 14,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6633333333333333,
+						"nb_distinctes": 14,
+						"valeurs": ["10", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "x", "y"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10^3",
+							"2^3",
+							"3^3",
+							"4^3",
+							"5^3",
+							"6^3",
+							"7^3",
+							"8^3",
+							"9^3",
+							"a^3",
+							"b^3",
+							"c^3",
+							"x^3",
+							"y^3"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10*10*10",
+							"2*2*2",
+							"3*3*3",
+							"4*4*4",
+							"5*5*5",
+							"6*6*6",
+							"7*7*7",
+							"8*8*8",
+							"9*9*9",
+							"a*a*a",
+							"b*b*b",
+							"c*c*c",
+							"x*x*x",
+							"y*y*y"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "101/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 24,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$10^3 = [?]$$",
+					"reponse": ["10*10*10"],
+					"variables": {
+						"a": "10",
+						"expression2": "10^3"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 13,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$2^3 = [?]$$",
+					"reponse": ["2*2*2"],
+					"variables": {
+						"a": "2",
+						"expression2": "2^3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$a^3 = [?]$$",
+					"reponse": ["a*a*a"],
+					"variables": {
+						"a": "a",
+						"expression2": "a^3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$y^3 = [?]$$",
+					"reponse": ["y*y*y"],
+					"variables": {
+						"a": "y",
+						"expression2": "y^3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$7^3 = [?]$$",
+					"reponse": ["7*7*7"],
+					"variables": {
+						"a": "7",
+						"expression2": "7^3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression3",
+						"expression": "a^4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression3}}$$",
+				"reponses_brutes": ["{{a}}*{{a}}*{{a}}*{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 14,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6633333333333333,
+						"nb_distinctes": 14,
+						"valeurs": ["10", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "x", "y"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "expression3",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10^4",
+							"2^4",
+							"3^4",
+							"4^4",
+							"5^4",
+							"6^4",
+							"7^4",
+							"8^4",
+							"9^4",
+							"a^4",
+							"b^4",
+							"c^4",
+							"x^4",
+							"y^4"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10*10*10*10",
+							"2*2*2*2",
+							"3*3*3*3",
+							"4*4*4*4",
+							"5*5*5*5",
+							"6*6*6*6",
+							"7*7*7*7",
+							"8*8*8*8",
+							"9*9*9*9",
+							"a*a*a*a",
+							"b*b*b*b",
+							"c*c*c*c",
+							"x*x*x*x",
+							"y*y*y*y"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "101/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 24,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$10^4 = [?]$$",
+					"reponse": ["10*10*10*10"],
+					"variables": {
+						"a": "10",
+						"expression3": "10^4"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 13,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$2^4 = [?]$$",
+					"reponse": ["2*2*2*2"],
+					"variables": {
+						"a": "2",
+						"expression3": "2^4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$a^4 = [?]$$",
+					"reponse": ["a*a*a*a"],
+					"variables": {
+						"a": "a",
+						"expression3": "a^4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$y^4 = [?]$$",
+					"reponse": ["y*y*y*y"],
+					"variables": {
+						"a": "y",
+						"expression3": "y^4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$7^4 = [?]$$",
+					"reponse": ["7*7*7*7"],
+					"variables": {
+						"a": "7",
+						"expression3": "7^4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression4",
+						"expression": "a^5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression4}}$$",
+				"reponses_brutes": ["{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 14,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6633333333333333,
+						"nb_distinctes": 14,
+						"valeurs": ["10", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "x", "y"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "expression4",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10^5",
+							"2^5",
+							"3^5",
+							"4^5",
+							"5^5",
+							"6^5",
+							"7^5",
+							"8^5",
+							"9^5",
+							"a^5",
+							"b^5",
+							"c^5",
+							"x^5",
+							"y^5"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10*10*10*10*10",
+							"2*2*2*2*2",
+							"3*3*3*3*3",
+							"4*4*4*4*4",
+							"5*5*5*5*5",
+							"6*6*6*6*6",
+							"7*7*7*7*7",
+							"8*8*8*8*8",
+							"9*9*9*9*9",
+							"a*a*a*a*a",
+							"b*b*b*b*b",
+							"c*c*c*c*c",
+							"x*x*x*x*x",
+							"y*y*y*y*y"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "101/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 24,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$10^5 = [?]$$",
+					"reponse": ["10*10*10*10*10"],
+					"variables": {
+						"a": "10",
+						"expression4": "10^5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 13,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$2^5 = [?]$$",
+					"reponse": ["2*2*2*2*2"],
+					"variables": {
+						"a": "2",
+						"expression4": "2^5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$a^5 = [?]$$",
+					"reponse": ["a*a*a*a*a"],
+					"variables": {
+						"a": "a",
+						"expression4": "a^5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$y^5 = [?]$$",
+					"reponse": ["y*y*y*y*y"],
+					"variables": {
+						"a": "y",
+						"expression4": "y^5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$7^5 = [?]$$",
+					"reponse": ["7*7*7*7*7"],
+					"variables": {
+						"a": "7",
+						"expression4": "7^5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression5",
+						"expression": "a^6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression5}}$$",
+				"reponses_brutes": ["{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 14,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6633333333333333,
+						"nb_distinctes": 14,
+						"valeurs": ["10", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "x", "y"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "expression5",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10^6",
+							"2^6",
+							"3^6",
+							"4^6",
+							"5^6",
+							"6^6",
+							"7^6",
+							"8^6",
+							"9^6",
+							"a^6",
+							"b^6",
+							"c^6",
+							"x^6",
+							"y^6"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10*10*10*10*10*10",
+							"2*2*2*2*2*2",
+							"3*3*3*3*3*3",
+							"4*4*4*4*4*4",
+							"5*5*5*5*5*5",
+							"6*6*6*6*6*6",
+							"7*7*7*7*7*7",
+							"8*8*8*8*8*8",
+							"9*9*9*9*9*9",
+							"a*a*a*a*a*a",
+							"b*b*b*b*b*b",
+							"c*c*c*c*c*c",
+							"x*x*x*x*x*x",
+							"y*y*y*y*y*y"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "101/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 24,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$10^6 = [?]$$",
+					"reponse": ["10*10*10*10*10*10"],
+					"variables": {
+						"a": "10",
+						"expression5": "10^6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 13,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$2^6 = [?]$$",
+					"reponse": ["2*2*2*2*2*2"],
+					"variables": {
+						"a": "2",
+						"expression5": "2^6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$a^6 = [?]$$",
+					"reponse": ["a*a*a*a*a*a"],
+					"variables": {
+						"a": "a",
+						"expression5": "a^6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$y^6 = [?]$$",
+					"reponse": ["y*y*y*y*y*y"],
+					"variables": {
+						"a": "y",
+						"expression5": "y^6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$7^6 = [?]$$",
+					"reponse": ["7*7*7*7*7*7"],
+					"variables": {
+						"a": "7",
+						"expression5": "7^6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression6",
+						"expression": "a^7"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression6}}$$",
+				"reponses_brutes": ["{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 14,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6633333333333333,
+						"nb_distinctes": 14,
+						"valeurs": ["10", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "x", "y"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "expression6",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10^7",
+							"2^7",
+							"3^7",
+							"4^7",
+							"5^7",
+							"6^7",
+							"7^7",
+							"8^7",
+							"9^7",
+							"a^7",
+							"b^7",
+							"c^7",
+							"x^7",
+							"y^7"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"10*10*10*10*10*10*10",
+							"2*2*2*2*2*2*2",
+							"3*3*3*3*3*3*3",
+							"4*4*4*4*4*4*4",
+							"5*5*5*5*5*5*5",
+							"6*6*6*6*6*6*6",
+							"7*7*7*7*7*7*7",
+							"8*8*8*8*8*8*8",
+							"9*9*9*9*9*9*9",
+							"a*a*a*a*a*a*a",
+							"b*b*b*b*b*b*b",
+							"c*c*c*c*c*c*c",
+							"x*x*x*x*x*x*x",
+							"y*y*y*y*y*y*y"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "101/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 24,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$10^7 = [?]$$",
+					"reponse": ["10*10*10*10*10*10*10"],
+					"variables": {
+						"a": "10",
+						"expression6": "10^7"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 13,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$2^7 = [?]$$",
+					"reponse": ["2*2*2*2*2*2*2"],
+					"variables": {
+						"a": "2",
+						"expression6": "2^7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$a^7 = [?]$$",
+					"reponse": ["a*a*a*a*a*a*a"],
+					"variables": {
+						"a": "a",
+						"expression6": "a^7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$y^7 = [?]$$",
+					"reponse": ["y*y*y*y*y*y*y"],
+					"variables": {
+						"a": "y",
+						"expression6": "y^7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$$7^7 = [?]$$",
+					"reponse": ["7*7*7*7*7*7*7"],
+					"variables": {
+						"a": "7",
+						"expression6": "7^7"
+					}
+				}
+			]
+		}
+	]
+}

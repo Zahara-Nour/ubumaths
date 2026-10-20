@@ -1,0 +1,1481 @@
+{
+	"template_id": "060086c8-2576-4b6f-a2c1-5994b83530db",
+	"titre": "Calcul du périmètre d'un carré.",
+	"sous_titre": "A partir d'une description",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Périmètres > Périmètre d'un carré",
+	"mis_a_jour": "2026-10-01T06:17:55.0275+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-144",
+			"libelle_point": "Calculer le périmètre d'un carré",
+			"noeud_actuel": "Grandeurs et mesures > Périmètres > carré",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 7,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[mm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+				"reponses_brutes": ["{{eval:4*a;[mm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[mm]",
+							"11[mm]",
+							"1[mm]",
+							"2[mm]",
+							"3[mm]",
+							"4[mm]",
+							"5[mm]",
+							"6[mm]",
+							"7[mm]",
+							"8[mm]",
+							"9[mm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"12[mm]",
+							"16[mm]",
+							"20[mm]",
+							"24[mm]",
+							"28[mm]",
+							"32[mm]",
+							"36[mm]",
+							"40[mm]",
+							"44[mm]",
+							"4[mm]",
+							"8[mm]"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 44,
+							"nb_distinctes": 11,
+							"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 44,
+				"nb_distinctes": 11,
+				"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 44,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["mm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (44)",
+					"graine": 10,
+					"enonce": "Quel est le périmètre d'un carré de côté $11~\\mathrm{mm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["44[mm]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[mm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un carré de côté $1~\\mathrm{mm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["4[mm]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un carré de côté $4~\\mathrm{mm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["16[mm]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le périmètre d'un carré de côté $9~\\mathrm{mm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["36[mm]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est le périmètre d'un carré de côté $7~\\mathrm{mm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["28[mm]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[mm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[cm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+				"reponses_brutes": ["{{eval:4*a;[cm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[cm]",
+							"11[cm]",
+							"1[cm]",
+							"2[cm]",
+							"3[cm]",
+							"4[cm]",
+							"5[cm]",
+							"6[cm]",
+							"7[cm]",
+							"8[cm]",
+							"9[cm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"12[cm]",
+							"16[cm]",
+							"20[cm]",
+							"24[cm]",
+							"28[cm]",
+							"32[cm]",
+							"36[cm]",
+							"40[cm]",
+							"44[cm]",
+							"4[cm]",
+							"8[cm]"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 44,
+							"nb_distinctes": 11,
+							"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 44,
+				"nb_distinctes": 11,
+				"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 44,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["cm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (44)",
+					"graine": 10,
+					"enonce": "Quel est le périmètre d'un carré de côté $11~\\mathrm{cm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["44[cm]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[cm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un carré de côté $1~\\mathrm{cm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["4[cm]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un carré de côté $4~\\mathrm{cm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["16[cm]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le périmètre d'un carré de côté $9~\\mathrm{cm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["36[cm]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est le périmètre d'un carré de côté $7~\\mathrm{cm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["28[cm]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[cm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[dm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+				"reponses_brutes": ["{{eval:4*a;[dm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[dm]",
+							"11[dm]",
+							"1[dm]",
+							"2[dm]",
+							"3[dm]",
+							"4[dm]",
+							"5[dm]",
+							"6[dm]",
+							"7[dm]",
+							"8[dm]",
+							"9[dm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"12[dm]",
+							"16[dm]",
+							"20[dm]",
+							"24[dm]",
+							"28[dm]",
+							"32[dm]",
+							"36[dm]",
+							"40[dm]",
+							"44[dm]",
+							"4[dm]",
+							"8[dm]"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 44,
+							"nb_distinctes": 11,
+							"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 44,
+				"nb_distinctes": 11,
+				"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 44,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["dm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (44)",
+					"graine": 10,
+					"enonce": "Quel est le périmètre d'un carré de côté $11~\\mathrm{dm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["44[dm]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[dm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un carré de côté $1~\\mathrm{dm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["4[dm]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un carré de côté $4~\\mathrm{dm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["16[dm]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le périmètre d'un carré de côté $9~\\mathrm{dm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["36[dm]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est le périmètre d'un carré de côté $7~\\mathrm{dm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["28[dm]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[dm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[m]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+				"reponses_brutes": ["{{eval:4*a;[m]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[m]",
+							"11[m]",
+							"1[m]",
+							"2[m]",
+							"3[m]",
+							"4[m]",
+							"5[m]",
+							"6[m]",
+							"7[m]",
+							"8[m]",
+							"9[m]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"12[m]",
+							"16[m]",
+							"20[m]",
+							"24[m]",
+							"28[m]",
+							"32[m]",
+							"36[m]",
+							"40[m]",
+							"44[m]",
+							"4[m]",
+							"8[m]"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 44,
+							"nb_distinctes": 11,
+							"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 44,
+				"nb_distinctes": 11,
+				"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 44,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["m"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (44)",
+					"graine": 10,
+					"enonce": "Quel est le périmètre d'un carré de côté $11~\\mathrm{m}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["44[m]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[m]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un carré de côté $1~\\mathrm{m}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["4[m]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un carré de côté $4~\\mathrm{m}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["16[m]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le périmètre d'un carré de côté $9~\\mathrm{m}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["36[m]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est le périmètre d'un carré de côté $7~\\mathrm{m}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["28[m]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[m]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[dam]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+				"reponses_brutes": ["{{eval:4*a;[dam]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[dam]",
+							"11[dam]",
+							"1[dam]",
+							"2[dam]",
+							"3[dam]",
+							"4[dam]",
+							"5[dam]",
+							"6[dam]",
+							"7[dam]",
+							"8[dam]",
+							"9[dam]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"12[dam]",
+							"16[dam]",
+							"20[dam]",
+							"24[dam]",
+							"28[dam]",
+							"32[dam]",
+							"36[dam]",
+							"40[dam]",
+							"44[dam]",
+							"4[dam]",
+							"8[dam]"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 44,
+							"nb_distinctes": 11,
+							"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 44,
+				"nb_distinctes": 11,
+				"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 44,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["dam"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (44)",
+					"graine": 10,
+					"enonce": "Quel est le périmètre d'un carré de côté $11~\\mathrm{dam}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["44[dam]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[dam]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un carré de côté $1~\\mathrm{dam}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["4[dam]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un carré de côté $4~\\mathrm{dam}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["16[dam]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le périmètre d'un carré de côté $9~\\mathrm{dam}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["36[dam]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est le périmètre d'un carré de côté $7~\\mathrm{dam}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["28[dam]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[dam]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[hm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+				"reponses_brutes": ["{{eval:4*a;[hm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[hm]",
+							"11[hm]",
+							"1[hm]",
+							"2[hm]",
+							"3[hm]",
+							"4[hm]",
+							"5[hm]",
+							"6[hm]",
+							"7[hm]",
+							"8[hm]",
+							"9[hm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"12[hm]",
+							"16[hm]",
+							"20[hm]",
+							"24[hm]",
+							"28[hm]",
+							"32[hm]",
+							"36[hm]",
+							"40[hm]",
+							"44[hm]",
+							"4[hm]",
+							"8[hm]"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 44,
+							"nb_distinctes": 11,
+							"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 44,
+				"nb_distinctes": 11,
+				"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 44,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["hm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (44)",
+					"graine": 10,
+					"enonce": "Quel est le périmètre d'un carré de côté $11~\\mathrm{hm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["44[hm]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[hm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un carré de côté $1~\\mathrm{hm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["4[hm]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un carré de côté $4~\\mathrm{hm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["16[hm]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le périmètre d'un carré de côté $9~\\mathrm{hm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["36[hm]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est le périmètre d'un carré de côté $7~\\mathrm{hm}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["28[hm]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[hm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[km]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+				"reponses_brutes": ["{{eval:4*a;[km]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[km]",
+							"11[km]",
+							"1[km]",
+							"2[km]",
+							"3[km]",
+							"4[km]",
+							"5[km]",
+							"6[km]",
+							"7[km]",
+							"8[km]",
+							"9[km]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"12[km]",
+							"16[km]",
+							"20[km]",
+							"24[km]",
+							"28[km]",
+							"32[km]",
+							"36[km]",
+							"40[km]",
+							"44[km]",
+							"4[km]",
+							"8[km]"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 44,
+							"nb_distinctes": 11,
+							"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 44,
+				"nb_distinctes": 11,
+				"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 44,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 20, 24, 28, 32, 36, 40, 44],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["km"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (44)",
+					"graine": 10,
+					"enonce": "Quel est le périmètre d'un carré de côté $11~\\mathrm{km}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["44[km]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[km]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un carré de côté $1~\\mathrm{km}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["4[km]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un carré de côté $4~\\mathrm{km}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["16[km]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le périmètre d'un carré de côté $9~\\mathrm{km}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["36[km]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est le périmètre d'un carré de côté $7~\\mathrm{km}$ ?\n\nLe périmètre du carré est $[?]$.",
+					"reponse": ["28[km]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[km]"
+					}
+				}
+			]
+		}
+	]
+}

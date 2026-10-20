@@ -1,0 +1,505 @@
+{
+	"template_id": "cf4468c3-0aeb-4d53-b31e-555e5fa678b4",
+	"titre": "Puissance d'une puissance",
+	"sous_titre": "Exposants relatifs",
+	"consigne": null,
+	"grades": ["3"],
+	"type": "fill_in_blanks",
+	"theme": "Puissances > Calculer > Puissance de puissance",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Puissances : calculs > puissance de puissance",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a^{b})^{c}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:b*(c)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 284,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6633333333333333,
+						"nb_distinctes": 14,
+						"valeurs": ["10", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "x", "y"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 284,
+						"exemples": [
+							"(a^{2})^{9}",
+							"(y^{-5})^{6}",
+							"(a^{-2})^{2}",
+							"(y^{-6})^{2}",
+							"(7^{-6})^{6}",
+							"(a^{4})^{3}",
+							"(a^{9})^{7}",
+							"(5^{-5})^{7}",
+							"(8^{-7})^{8}",
+							"(9^{5})^{8}",
+							"(4^{3})^{6}",
+							"(b^{3})^{9}"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 10,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -81,
+						"max": 81,
+						"negatif_possible": true,
+						"nb_distinctes": 62
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 10,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -81,
+				"max": 81,
+				"nb_distinctes": 62,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -81,
+				"max": 81,
+				"nb_distinctes": 70,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "101/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 160,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( c^9 \\right)^9 = c^[?]$$",
+					"reponse": ["81"],
+					"variables": {
+						"a": "c",
+						"b": "9",
+						"c": "9",
+						"expression1": "(c^{9})^{9}"
+					}
+				},
+				{
+					"role": "plus petite valeur (-81)",
+					"graine": 53,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( 8^{-9} \\right)^9 = 8^[?]$$",
+					"reponse": ["-81"],
+					"variables": {
+						"a": "8",
+						"b": "-9",
+						"c": "9",
+						"expression1": "(8^{-9})^{9}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( a^2 \\right)^9 = a^[?]$$",
+					"reponse": ["18"],
+					"variables": {
+						"a": "a",
+						"b": "2",
+						"c": "9",
+						"expression1": "(a^{2})^{9}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( y^{-5} \\right)^6 = y^[?]$$",
+					"reponse": ["-30"],
+					"variables": {
+						"a": "y",
+						"b": "-5",
+						"c": "6",
+						"expression1": "(y^{-5})^{6}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( a^{-2} \\right)^2 = a^[?]$$",
+					"reponse": ["-4"],
+					"variables": {
+						"a": "a",
+						"b": "-2",
+						"c": "2",
+						"expression1": "(a^{-2})^{2}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "-9..-2"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a^{b})^{c}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:b*(c)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 284,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6633333333333333,
+						"nb_distinctes": 14,
+						"valeurs": ["10", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "x", "y"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": -2,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 284,
+						"exemples": [
+							"(a^{2})^{-2}",
+							"(y^{-5})^{-5}",
+							"(a^{-2})^{-9}",
+							"(y^{-6})^{-9}",
+							"(7^{-6})^{-5}",
+							"(a^{4})^{-8}",
+							"(a^{9})^{-4}",
+							"(5^{-5})^{-4}",
+							"(8^{-7})^{-3}",
+							"(9^{5})^{-3}",
+							"(4^{3})^{-5}",
+							"(b^{3})^{-2}"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 10,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -81,
+						"max": 81,
+						"negatif_possible": true,
+						"nb_distinctes": 61
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 10,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -81,
+				"max": 81,
+				"nb_distinctes": 61,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -81,
+				"max": 81,
+				"nb_distinctes": 69,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "101/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 266,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( 10^{-9} \\right)^{-9} = 10^[?]$$",
+					"reponse": ["81"],
+					"variables": {
+						"a": "10",
+						"b": "-9",
+						"c": "-9",
+						"expression1": "(10^{-9})^{-9}"
+					}
+				},
+				{
+					"role": "plus petite valeur (-81)",
+					"graine": 277,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( 5^9 \\right)^{-9} = 5^[?]$$",
+					"reponse": ["-81"],
+					"variables": {
+						"a": "5",
+						"b": "9",
+						"c": "-9",
+						"expression1": "(5^{9})^{-9}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( a^2 \\right)^{-2} = a^[?]$$",
+					"reponse": ["-4"],
+					"variables": {
+						"a": "a",
+						"b": "2",
+						"c": "-2",
+						"expression1": "(a^{2})^{-2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( y^{-5} \\right)^{-5} = y^[?]$$",
+					"reponse": ["25"],
+					"variables": {
+						"a": "y",
+						"b": "-5",
+						"c": "-5",
+						"expression1": "(y^{-5})^{-5}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( a^{-2} \\right)^{-9} = a^[?]$$",
+					"reponse": ["18"],
+					"variables": {
+						"a": "a",
+						"b": "-2",
+						"c": "-9",
+						"expression1": "(a^{-2})^{-9}"
+					}
+				}
+			]
+		}
+	]
+}

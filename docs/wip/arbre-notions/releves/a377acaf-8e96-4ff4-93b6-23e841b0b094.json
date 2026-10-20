@@ -1,0 +1,1073 @@
+{
+	"template_id": "a377acaf-8e96-4ff4-93b6-23e841b0b094",
+	"titre": "Définition à l'aide de fractions décimales",
+	"sous_titre": "Jusqu'aux millièmes",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Décimaux > Apprivoiser > Ecriture",
+	"mis_a_jour": "2026-10-01T06:18:10.056379+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "CM2-030",
+			"libelle_point": "Écrire à virgule un nombre donné par une fraction décimale ou une somme de fractions décimales (237/100 = ? ou 2 + 3/10 + 7/100 = ?).",
+			"noeud_actuel": "Nombres et calculs > Décimaux : numération > écritures",
+			"noeud_cible": "Nombres et calculs > Décimaux : numération > forme fractionnaire",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": "décision « TAG » → « DEPLACER_PUIS_TAG » ; code « CM2-031 » → « CM2-030 » ; nœud cible « ∅ » → « Nombres et calculs > Décimaux : numération > forme fractionnaire »"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}};d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 291,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 291,
+						"exemples": [
+							"1+5/10+9/100+9/1000",
+							"3+3/10+5/100+8/1000",
+							"1+5/10+1/100+7/1000",
+							"3+2/10+1/100+3/1000",
+							"7+2/10+6/100+1/1000",
+							"1+6/10+2/100+5/1000",
+							"1+9/10+7/100+5/1000",
+							"6+3/10+7/100+6/1000",
+							"8+2/10+8/100+7/1000",
+							"9+7/10+8/100+5/1000",
+							"5+6/10+6/100+8/1000",
+							"1+6/10+9/100+2/1000"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 1000,
+							"nb_distinctes": 12,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 1.128,
+						"max": 9.936,
+						"negatif_possible": false,
+						"nb_distinctes": 291
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1.128,
+				"max": 9.936,
+				"nb_distinctes": 291,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 303,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [10, 100],
+				"denominateur_min": 10,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 1,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$1 + \\dfrac{5}{10} + \\dfrac{9}{100} + \\dfrac{9}{1\\,000} = [?]$$",
+					"reponse": ["1.599"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "9",
+						"expression1": "1+5/10+9/100+9/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$3 + \\dfrac{3}{10} + \\dfrac{5}{100} + \\dfrac{8}{1\\,000} = [?]$$",
+					"reponse": ["3.358"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "5",
+						"d": "8",
+						"expression1": "3+3/10+5/100+8/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$1 + \\dfrac{5}{10} + \\dfrac{1}{100} + \\dfrac{7}{1\\,000} = [?]$$",
+					"reponse": ["1.517"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1",
+						"d": "7",
+						"expression1": "1+5/10+1/100+7/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$3 + \\dfrac{2}{10} + \\dfrac{1}{100} + \\dfrac{3}{1\\,000} = [?]$$",
+					"reponse": ["3.213"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "1",
+						"d": "3",
+						"expression1": "3+2/10+1/100+3/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$7 + \\dfrac{2}{10} + \\dfrac{6}{100} + \\dfrac{1}{1\\,000} = [?]$$",
+					"reponse": ["7.261"],
+					"variables": {
+						"a": "7",
+						"b": "2",
+						"c": "6",
+						"d": "1",
+						"expression1": "7+2/10+6/100+1/1000"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}};d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 243,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 243,
+						"exemples": [
+							"1+0/10+5/100+9/1000",
+							"3+0/10+3/100+5/1000",
+							"1+0/10+5/100+1/1000",
+							"3+0/10+2/100+1/1000",
+							"7+0/10+2/100+6/1000",
+							"1+0/10+6/100+2/1000",
+							"1+0/10+9/100+7/1000",
+							"6+0/10+3/100+7/1000",
+							"8+0/10+2/100+8/1000",
+							"9+0/10+7/100+8/1000",
+							"5+0/10+6/100+6/1000",
+							"1+0/10+6/100+9/1000"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 1000,
+							"nb_distinctes": 13,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 1.012,
+						"max": 9.093,
+						"negatif_possible": false,
+						"nb_distinctes": 243
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 100, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1.012,
+				"max": 9.093,
+				"nb_distinctes": 243,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 254,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [100],
+				"denominateur_min": 100,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 1,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$1 + \\dfrac{5}{100} + \\dfrac{9}{1\\,000} = [?]$$",
+					"reponse": ["1.059"],
+					"variables": {
+						"a": "1",
+						"b": "0",
+						"c": "5",
+						"d": "9",
+						"expression1": "1+0/10+5/100+9/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$3 + \\dfrac{3}{100} + \\dfrac{5}{1\\,000} = [?]$$",
+					"reponse": ["3.035"],
+					"variables": {
+						"a": "3",
+						"b": "0",
+						"c": "3",
+						"d": "5",
+						"expression1": "3+0/10+3/100+5/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$1 + \\dfrac{5}{100} + \\dfrac{1}{1\\,000} = [?]$$",
+					"reponse": ["1.051"],
+					"variables": {
+						"a": "1",
+						"b": "0",
+						"c": "5",
+						"d": "1",
+						"expression1": "1+0/10+5/100+1/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$3 + \\dfrac{2}{100} + \\dfrac{1}{1\\,000} = [?]$$",
+					"reponse": ["3.021"],
+					"variables": {
+						"a": "3",
+						"b": "0",
+						"c": "2",
+						"d": "1",
+						"expression1": "3+0/10+2/100+1/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$7 + \\dfrac{2}{100} + \\dfrac{6}{1\\,000} = [?]$$",
+					"reponse": ["7.026"],
+					"variables": {
+						"a": "7",
+						"b": "0",
+						"c": "2",
+						"d": "6",
+						"expression1": "7+0/10+2/100+6/1000"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}};d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 243,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 243,
+						"exemples": [
+							"1+5/10+0/100+9/1000",
+							"3+3/10+0/100+5/1000",
+							"1+5/10+0/100+1/1000",
+							"3+2/10+0/100+1/1000",
+							"7+2/10+0/100+6/1000",
+							"1+6/10+0/100+2/1000",
+							"1+9/10+0/100+7/1000",
+							"6+3/10+0/100+7/1000",
+							"8+2/10+0/100+8/1000",
+							"9+7/10+0/100+8/1000",
+							"5+6/10+0/100+6/1000",
+							"1+6/10+0/100+9/1000"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 1000,
+							"nb_distinctes": 13,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 1.102,
+						"max": 9.903,
+						"negatif_possible": false,
+						"nb_distinctes": 243
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1.102,
+				"max": 9.903,
+				"nb_distinctes": 243,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 254,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [10],
+				"denominateur_min": 10,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 1,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$1 + \\dfrac{5}{10} + \\dfrac{9}{1\\,000} = [?]$$",
+					"reponse": ["1.509"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "0",
+						"d": "9",
+						"expression1": "1+5/10+0/100+9/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$3 + \\dfrac{3}{10} + \\dfrac{5}{1\\,000} = [?]$$",
+					"reponse": ["3.305"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "0",
+						"d": "5",
+						"expression1": "3+3/10+0/100+5/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$1 + \\dfrac{5}{10} + \\dfrac{1}{1\\,000} = [?]$$",
+					"reponse": ["1.501"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "0",
+						"d": "1",
+						"expression1": "1+5/10+0/100+1/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$3 + \\dfrac{2}{10} + \\dfrac{1}{1\\,000} = [?]$$",
+					"reponse": ["3.201"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "0",
+						"d": "1",
+						"expression1": "3+2/10+0/100+1/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$7 + \\dfrac{2}{10} + \\dfrac{6}{1\\,000} = [?]$$",
+					"reponse": ["7.206"],
+					"variables": {
+						"a": "7",
+						"b": "2",
+						"c": "0",
+						"d": "6",
+						"expression1": "7+2/10+0/100+6/1000"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}};d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 80,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 80,
+						"exemples": [
+							"1+0/10+0/100+5/1000",
+							"3+0/10+0/100+3/1000",
+							"3+0/10+0/100+2/1000",
+							"7+0/10+0/100+2/1000",
+							"1+0/10+0/100+6/1000",
+							"1+0/10+0/100+9/1000",
+							"6+0/10+0/100+3/1000",
+							"8+0/10+0/100+2/1000",
+							"9+0/10+0/100+7/1000",
+							"5+0/10+0/100+6/1000",
+							"4+0/10+0/100+1/1000",
+							"4+0/10+0/100+5/1000"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 1000,
+							"nb_distinctes": 13,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 1.001,
+						"max": 9.009,
+						"negatif_possible": false,
+						"nb_distinctes": 80
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1.001,
+				"max": 9.009,
+				"nb_distinctes": 80,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 90,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 1,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$1 + \\dfrac{5}{1\\,000} = [?]$$",
+					"reponse": ["1.005"],
+					"variables": {
+						"a": "1",
+						"b": "0",
+						"c": "0",
+						"d": "5",
+						"expression1": "1+0/10+0/100+5/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$3 + \\dfrac{3}{1\\,000} = [?]$$",
+					"reponse": ["3.003"],
+					"variables": {
+						"a": "3",
+						"b": "0",
+						"c": "0",
+						"d": "3",
+						"expression1": "3+0/10+0/100+3/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$3 + \\dfrac{2}{1\\,000} = [?]$$",
+					"reponse": ["3.002"],
+					"variables": {
+						"a": "3",
+						"b": "0",
+						"c": "0",
+						"d": "2",
+						"expression1": "3+0/10+0/100+2/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$7 + \\dfrac{2}{1\\,000} = [?]$$",
+					"reponse": ["7.002"],
+					"variables": {
+						"a": "7",
+						"b": "0",
+						"c": "0",
+						"d": "2",
+						"expression1": "7+0/10+0/100+2/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Quel est le nombre décimal représenté par cette expression ?\n\n$$1 + \\dfrac{6}{1\\,000} = [?]$$",
+					"reponse": ["1.006"],
+					"variables": {
+						"a": "1",
+						"b": "0",
+						"c": "0",
+						"d": "6",
+						"expression1": "1+0/10+0/100+6/1000"
+					}
+				}
+			]
+		}
+	]
+}

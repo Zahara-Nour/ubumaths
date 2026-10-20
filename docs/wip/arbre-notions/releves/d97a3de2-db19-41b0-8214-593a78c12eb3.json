@@ -1,0 +1,174 @@
+{
+	"template_id": "d97a3de2-db19-41b0-8214-593a78c12eb3",
+	"titre": "Trouver le tiers",
+	"sous_titre": "Multiples de $3$ inférieurs à $30$",
+	"consigne": null,
+	"grades": ["CE1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Additionner > Triple et tiers",
+	"mis_a_jour": "2026-09-29T18:05:36.097742+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > triple et tiers",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tiers de ${{eval:3*a}}$ ?\n\nLe tiers de ${{eval:3*a}}$ est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 30,
+				"nb_distinctes": 11,
+				"valeurs": [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 10,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 30,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 18, 21, 24, 27, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30)",
+					"graine": 10,
+					"enonce": "Quel est le tiers de $30$ ?\n\nLe tiers de $30$ est $[?]$.",
+					"reponse": ["10"],
+					"variables": {
+						"a": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Quel est le tiers de $0$ ?\n\nLe tiers de $0$ est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le tiers de $9$ ?\n\nLe tiers de $9$ est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tiers de $24$ ?\n\nLe tiers de $24$ est $[?]$.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est le tiers de $18$ ?\n\nLe tiers de $18$ est $[?]$.",
+					"reponse": ["6"],
+					"variables": {
+						"a": "6"
+					}
+				}
+			]
+		}
+	]
+}

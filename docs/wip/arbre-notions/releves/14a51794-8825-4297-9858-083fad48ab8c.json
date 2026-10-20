@@ -1,0 +1,270 @@
+{
+	"template_id": "14a51794-8825-4297-9858-083fad48ab8c",
+	"titre": "Compléter l'égalité d'une division euclidienne",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Diviser > Division euclidienne",
+	"mis_a_jour": "2026-09-29T23:41:19.809371+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R3",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : division > division euclidienne",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..10"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b+c}}=({{a}}*?)+?"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Complète l'égalité de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$ :\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{b}}", "{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 181,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 181,
+						"exemples": [
+							"13=(2*?)+?",
+							"18=(4*?)+?",
+							"13=(4*?)+?",
+							"29=(8*?)+?",
+							"15=(2*?)+?",
+							"21=(2*?)+?",
+							"33=(7*?)+?",
+							"30=(8*?)+?",
+							"79=(9*?)+?",
+							"45=(6*?)+?",
+							"9=(4*?)+?",
+							"32=(5*?)+?"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 93,
+							"nb_distinctes": 81,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 93,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 93,
+				"nb_distinctes": 82,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (93)",
+					"graine": 115,
+					"enonce": "Complète l'égalité de la division euclidienne de $93$ par $9$ :\n\n$$93 = \\left( 9 \\times [?] \\right) + [?]$$",
+					"reponse": ["10", "3"],
+					"variables": {
+						"a": "9",
+						"b": "10",
+						"c": "3",
+						"expression1": "93=(9*?)+?"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Complète l'égalité de la division euclidienne de $13$ par $2$ :\n\n$$13 = \\left( 2 \\times [?] \\right) + [?]$$",
+					"reponse": ["6", "1"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"c": "1",
+						"expression1": "13=(2*?)+?"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète l'égalité de la division euclidienne de $18$ par $4$ :\n\n$$18 = \\left( 4 \\times [?] \\right) + [?]$$",
+					"reponse": ["4", "2"],
+					"variables": {
+						"a": "4",
+						"b": "4",
+						"c": "2",
+						"expression1": "18=(4*?)+?"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Complète l'égalité de la division euclidienne de $13$ par $4$ :\n\n$$13 = \\left( 4 \\times [?] \\right) + [?]$$",
+					"reponse": ["3", "1"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "1",
+						"expression1": "13=(4*?)+?"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète l'égalité de la division euclidienne de $29$ par $8$ :\n\n$$29 = \\left( 8 \\times [?] \\right) + [?]$$",
+					"reponse": ["3", "5"],
+					"variables": {
+						"a": "8",
+						"b": "3",
+						"c": "5",
+						"expression1": "29=(8*?)+?"
+					}
+				}
+			]
+		}
+	]
+}

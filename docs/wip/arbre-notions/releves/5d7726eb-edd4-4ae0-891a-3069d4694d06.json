@@ -1,0 +1,274 @@
+{
+	"template_id": "5d7726eb-edd4-4ae0-891a-3069d4694d06",
+	"titre": "Définition d'un pourcentage",
+	"sous_titre": "Convertir un pourcentage en une fraction simplifiée.",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Définition",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-105",
+			"libelle_point": "Connaître la définition d'un pourcentage",
+			"noeud_actuel": "Proportionnalité > Pourcentages > définition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "10|20|30|40|50|60|70|80|90|100|25|75|200|300|400"
+					},
+					{
+						"name": "b",
+						"expression": "eval:gcd(a, 100)"
+					},
+					{
+						"name": "expression1",
+						"expression": "a%"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris ce pourcentage sous forme de fraction simplifiée.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 15,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 400,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 100, 200, 300, 400]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [10, 20, 25, 50, 100]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 15,
+						"valeurs": [
+							"10%",
+							"100%",
+							"20%",
+							"200%",
+							"25%",
+							"30%",
+							"300%",
+							"40%",
+							"400%",
+							"50%",
+							"60%",
+							"70%",
+							"75%",
+							"80%",
+							"90%"
+						],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 400,
+							"nb_distinctes": 15,
+							"valeurs": [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 100, 200, 300, 400],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.27666666666666667,
+						"nb_distinctes": 15,
+						"valeurs": [
+							"1",
+							"2",
+							"3",
+							"4",
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{7}{10}",
+							"\\dfrac{9}{10}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 8,
+							"valeurs": [1, 2, 3, 4, 5, 7, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 10,
+				"max": 400,
+				"nb_distinctes": 15,
+				"valeurs": [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 100, 200, 300, 400],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 7, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 400,
+				"nb_distinctes": 22,
+				"valeurs": [
+					1, 2, 3, 4, 5, 7, 9, 10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 100, 200, 300, 400
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 217,
+				"denominateurs": [2, 4, 5, 10],
+				"denominateur_min": 2,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (400)",
+					"graine": 24,
+					"enonce": "Écris ce pourcentage sous forme de fraction simplifiée.\n\n$$400\\,\\% = [?]$$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "400",
+						"b": "100",
+						"expression1": "400%"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Écris ce pourcentage sous forme de fraction simplifiée.\n\n$$10\\,\\% = [?]$$",
+					"reponse": ["\\dfrac{1}{10}"],
+					"variables": {
+						"a": "10",
+						"b": "10",
+						"expression1": "10%"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris ce pourcentage sous forme de fraction simplifiée.\n\n$$50\\,\\% = [?]$$",
+					"reponse": ["\\dfrac{1}{2}"],
+					"variables": {
+						"a": "50",
+						"b": "50",
+						"expression1": "50%"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Écris ce pourcentage sous forme de fraction simplifiée.\n\n$$75\\,\\% = [?]$$",
+					"reponse": ["\\dfrac{3}{4}"],
+					"variables": {
+						"a": "75",
+						"b": "25",
+						"expression1": "75%"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Écris ce pourcentage sous forme de fraction simplifiée.\n\n$$100\\,\\% = [?]$$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "100",
+						"b": "100",
+						"expression1": "100%"
+					}
+				}
+			]
+		}
+	]
+}

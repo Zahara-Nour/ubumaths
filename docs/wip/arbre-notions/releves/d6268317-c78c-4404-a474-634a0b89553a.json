@@ -1,0 +1,1765 @@
+{
+	"template_id": "d6268317-c78c-4404-a474-634a0b89553a",
+	"titre": "Repérer sur une demi-droite graduée",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CE1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Repérage",
+	"mis_a_jour": "2026-09-29T18:05:37.976158+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CE1-010",
+			"libelle_point": "Savoir placer des nombres sur une demi-droite graduée.",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > droite graduée",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 20,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-0-600.webp)",
+				"reponses_brutes": ["560"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 560,
+						"max": 560,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [560]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 560,
+				"max": 560,
+				"nb_distinctes": 1,
+				"valeurs": [560],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 560,
+				"max": 560,
+				"nb_distinctes": 1,
+				"valeurs": [560],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (560)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-0-600.webp]",
+					"reponse": ["560"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-1-600.webp)",
+				"reponses_brutes": ["250"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 250,
+						"max": 250,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [250]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 250,
+				"max": 250,
+				"nb_distinctes": 1,
+				"valeurs": [250],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 250,
+				"max": 250,
+				"nb_distinctes": 1,
+				"valeurs": [250],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (250)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-1-600.webp]",
+					"reponse": ["250"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-2-600.webp)",
+				"reponses_brutes": ["520"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 520,
+						"max": 520,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [520]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 520,
+				"max": 520,
+				"nb_distinctes": 1,
+				"valeurs": [520],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 520,
+				"max": 520,
+				"nb_distinctes": 1,
+				"valeurs": [520],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (520)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-2-600.webp]",
+					"reponse": ["520"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-3-600.webp)",
+				"reponses_brutes": ["210"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 210,
+						"max": 210,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [210]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 210,
+				"max": 210,
+				"nb_distinctes": 1,
+				"valeurs": [210],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 210,
+				"max": 210,
+				"nb_distinctes": 1,
+				"valeurs": [210],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (210)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-3-600.webp]",
+					"reponse": ["210"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-4-600.webp)",
+				"reponses_brutes": ["180"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 180,
+						"max": 180,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [180]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 180,
+				"max": 180,
+				"nb_distinctes": 1,
+				"valeurs": [180],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 180,
+				"max": 180,
+				"nb_distinctes": 1,
+				"valeurs": [180],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (180)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-4-600.webp]",
+					"reponse": ["180"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-5-600.webp)",
+				"reponses_brutes": ["330"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 330,
+						"max": 330,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [330]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 330,
+				"max": 330,
+				"nb_distinctes": 1,
+				"valeurs": [330],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 330,
+				"max": 330,
+				"nb_distinctes": 1,
+				"valeurs": [330],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (330)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-5-600.webp]",
+					"reponse": ["330"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-6-600.webp)",
+				"reponses_brutes": ["360"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 360,
+						"max": 360,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [360]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 360,
+				"max": 360,
+				"nb_distinctes": 1,
+				"valeurs": [360],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 360,
+				"max": 360,
+				"nb_distinctes": 1,
+				"valeurs": [360],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (360)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-6-600.webp]",
+					"reponse": ["360"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 8,
+			"graines": "1..300 (modèle réduit à la variation 8)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-7-600.webp)",
+				"reponses_brutes": ["200"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 200,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [200]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 200,
+				"max": 200,
+				"nb_distinctes": 1,
+				"valeurs": [200],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 200,
+				"max": 200,
+				"nb_distinctes": 1,
+				"valeurs": [200],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (200)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-7-600.webp]",
+					"reponse": ["200"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 9,
+			"graines": "1..300 (modèle réduit à la variation 9)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-8-600.webp)",
+				"reponses_brutes": ["460"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 460,
+						"max": 460,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [460]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 460,
+				"max": 460,
+				"nb_distinctes": 1,
+				"valeurs": [460],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 460,
+				"max": 460,
+				"nb_distinctes": 1,
+				"valeurs": [460],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (460)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-8-600.webp]",
+					"reponse": ["460"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 10,
+			"graines": "1..300 (modèle réduit à la variation 10)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-9-600.webp)",
+				"reponses_brutes": ["380"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 380,
+						"max": 380,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [380]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 380,
+				"max": 380,
+				"nb_distinctes": 1,
+				"valeurs": [380],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 380,
+				"max": 380,
+				"nb_distinctes": 1,
+				"valeurs": [380],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (380)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-9-600.webp]",
+					"reponse": ["380"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 11,
+			"graines": "1..300 (modèle réduit à la variation 11)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-10-600.webp)",
+				"reponses_brutes": ["230"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 230,
+						"max": 230,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [230]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 230,
+				"max": 230,
+				"nb_distinctes": 1,
+				"valeurs": [230],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 230,
+				"max": 230,
+				"nb_distinctes": 1,
+				"valeurs": [230],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (230)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-10-600.webp]",
+					"reponse": ["230"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 12,
+			"graines": "1..300 (modèle réduit à la variation 12)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-11-600.webp)",
+				"reponses_brutes": ["450"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 450,
+						"max": 450,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [450]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 450,
+				"max": 450,
+				"nb_distinctes": 1,
+				"valeurs": [450],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 450,
+				"max": 450,
+				"nb_distinctes": 1,
+				"valeurs": [450],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (450)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-11-600.webp]",
+					"reponse": ["450"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 13,
+			"graines": "1..300 (modèle réduit à la variation 13)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-12-600.webp)",
+				"reponses_brutes": ["260"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 260,
+						"max": 260,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [260]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 260,
+				"max": 260,
+				"nb_distinctes": 1,
+				"valeurs": [260],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 260,
+				"max": 260,
+				"nb_distinctes": 1,
+				"valeurs": [260],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (260)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-12-600.webp]",
+					"reponse": ["260"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 14,
+			"graines": "1..300 (modèle réduit à la variation 14)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-13-600.webp)",
+				"reponses_brutes": ["390"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 390,
+						"max": 390,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [390]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 390,
+				"max": 390,
+				"nb_distinctes": 1,
+				"valeurs": [390],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 390,
+				"max": 390,
+				"nb_distinctes": 1,
+				"valeurs": [390],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (390)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-13-600.webp]",
+					"reponse": ["390"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 15,
+			"graines": "1..300 (modèle réduit à la variation 15)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-14-600.webp)",
+				"reponses_brutes": ["400"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 400,
+						"max": 400,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [400]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 400,
+				"max": 400,
+				"nb_distinctes": 1,
+				"valeurs": [400],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 400,
+				"max": 400,
+				"nb_distinctes": 1,
+				"valeurs": [400],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (400)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-14-600.webp]",
+					"reponse": ["400"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 16,
+			"graines": "1..300 (modèle réduit à la variation 16)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-15-600.webp)",
+				"reponses_brutes": ["420"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 420,
+						"max": 420,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [420]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 420,
+				"max": 420,
+				"nb_distinctes": 1,
+				"valeurs": [420],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 420,
+				"max": 420,
+				"nb_distinctes": 1,
+				"valeurs": [420],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (420)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-15-600.webp]",
+					"reponse": ["420"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 17,
+			"graines": "1..300 (modèle réduit à la variation 17)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-16-600.webp)",
+				"reponses_brutes": ["250"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 250,
+						"max": 250,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [250]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 250,
+				"max": 250,
+				"nb_distinctes": 1,
+				"valeurs": [250],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 250,
+				"max": 250,
+				"nb_distinctes": 1,
+				"valeurs": [250],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (250)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-16-600.webp]",
+					"reponse": ["250"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 18,
+			"graines": "1..300 (modèle réduit à la variation 18)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-17-600.webp)",
+				"reponses_brutes": ["450"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 450,
+						"max": 450,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [450]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 450,
+				"max": 450,
+				"nb_distinctes": 1,
+				"valeurs": [450],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 450,
+				"max": 450,
+				"nb_distinctes": 1,
+				"valeurs": [450],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (450)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-17-600.webp]",
+					"reponse": ["450"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 19,
+			"graines": "1..300 (modèle réduit à la variation 19)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-18-600.webp)",
+				"reponses_brutes": ["450"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 450,
+						"max": 450,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [450]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 450,
+				"max": 450,
+				"nb_distinctes": 1,
+				"valeurs": [450],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 450,
+				"max": 450,
+				"nb_distinctes": 1,
+				"valeurs": [450],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (450)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-18-600.webp]",
+					"reponse": ["450"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 20,
+			"graines": "1..300 (modèle réduit à la variation 20)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est ce nombre ?\n\nLe nombre est $?$.\n\n![Question image](entiers/reperage/droite_graduee-10_en_10-19-600.webp)",
+				"reponses_brutes": ["200"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 200,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [200]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 200,
+				"max": 200,
+				"nb_distinctes": 1,
+				"valeurs": [200],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 200,
+				"max": 200,
+				"nb_distinctes": 1,
+				"valeurs": [200],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (200)",
+					"graine": 1,
+					"enonce": "Quel est ce nombre ?\n\nLe nombre est $[?]$.\n\n[image entiers/reperage/droite_graduee-10_en_10-19-600.webp]",
+					"reponse": ["200"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,3297 @@
+{
+	"template_id": "bba95c2d-033b-4648-944d-102a3c2c386d",
+	"titre": "Reconnaître le tableau de signe d'une fonction affine",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["3"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Fonctions affines > Variations-Signe",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "3-066",
+			"libelle_point": "Utiliser une fonction affine donnée par son expression (calculer une image : f(3) = ?).",
+			"noeud_actuel": "Fonctions > Fonctions affines > variations et signe",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": "code « 3-044 » → « 3-066 »"
+		}
+	],
+	"nb_variations": 20,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "f(x)=-6x+7"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-0-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-0-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-6x+7"],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 7,
+							"nb_distinctes": 2,
+							"valeurs": [-6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-0-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [0, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 7,
+				"nb_distinctes": 2,
+				"valeurs": [-6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [0, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [0, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": -6,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [-6, 0, 7, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -6 x + 7$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-0-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-0-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-0-600.png]"
+					],
+					"variables": {
+						"expression1": "f(x)=-6x+7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -6 x + 7$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-0-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-0-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-0-600.png]"
+					],
+					"variables": {
+						"expression1": "f(x)=-6x+7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "f(x)=-9x-1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-1-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-1-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-9x-1"],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 1,
+							"nb_distinctes": 2,
+							"valeurs": [-9, 1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-1-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [1, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [-9, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [1, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [1, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": -9,
+				"max": 600,
+				"nb_distinctes": 3,
+				"valeurs": [-9, 1, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -9 x - 1$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-1-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-1-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-1-600.png]"
+					],
+					"variables": {
+						"expression2": "f(x)=-9x-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -9 x - 1$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-1-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-1-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-1-600.png]"
+					],
+					"variables": {
+						"expression2": "f(x)=-9x-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression3",
+						"expression": "f(x)=-5x+9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression3}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-2-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-2-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression3",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-5x+9"],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 9,
+							"nb_distinctes": 2,
+							"valeurs": [-5, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-2-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [2, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 2,
+				"valeurs": [-5, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [2, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 2,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [2, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": -5,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [-5, 2, 9, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -5 x + 9$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-2-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-2-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-2-600.png]"
+					],
+					"variables": {
+						"expression3": "f(x)=-5x+9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -5 x + 9$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-2-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-2-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-2-600.png]"
+					],
+					"variables": {
+						"expression3": "f(x)=-5x+9"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression4",
+						"expression": "f(x)=3x+3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression4}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-3-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-3-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression4",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=3x+3"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 3,
+							"nb_distinctes": 1,
+							"valeurs": [3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-3-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [3, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [3, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 3,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [3, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": 3,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [3, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 3 x + 3$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-3-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-3-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-3-600.png]"
+					],
+					"variables": {
+						"expression4": "f(x)=3x+3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 3 x + 3$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-3-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-3-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-3-600.png]"
+					],
+					"variables": {
+						"expression4": "f(x)=3x+3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression5",
+						"expression": "f(x)=7x-8"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression5}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-4-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-4-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression5",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=7x-8"],
+						"nombres_contenus": {
+							"min": 7,
+							"max": 8,
+							"nb_distinctes": 2,
+							"valeurs": [7, 8],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-4-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [4, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 7,
+				"max": 8,
+				"nb_distinctes": 2,
+				"valeurs": [7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [4, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 4,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [4, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": 4,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [4, 7, 8, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 7 x - 8$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-4-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-4-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-4-600.png]"
+					],
+					"variables": {
+						"expression5": "f(x)=7x-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 7 x - 8$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-4-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-4-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-4-600.png]"
+					],
+					"variables": {
+						"expression5": "f(x)=7x-8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression6",
+						"expression": "f(x)=-2x-4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression6}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-5-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-5-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression6",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-2x-4"],
+						"nombres_contenus": {
+							"min": -2,
+							"max": 4,
+							"nb_distinctes": 2,
+							"valeurs": [-2, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-5-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 5,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [5, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -2,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [-2, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 5,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [5, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 5,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [5, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": -2,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [-2, 4, 5, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -2 x - 4$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-5-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-5-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-5-600.png]"
+					],
+					"variables": {
+						"expression6": "f(x)=-2x-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -2 x - 4$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-5-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-5-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-5-600.png]"
+					],
+					"variables": {
+						"expression6": "f(x)=-2x-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression7",
+						"expression": "f(x)=6x+8"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression7}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-6-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-6-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression7",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=6x+8"],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 8,
+							"nb_distinctes": 2,
+							"valeurs": [6, 8],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-6-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [6, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 6,
+				"max": 8,
+				"nb_distinctes": 2,
+				"valeurs": [6, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 6,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [6, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 6,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [6, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": 6,
+				"max": 600,
+				"nb_distinctes": 3,
+				"valeurs": [6, 8, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 6 x + 8$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-6-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-6-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-6-600.png]"
+					],
+					"variables": {
+						"expression7": "f(x)=6x+8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 6 x + 8$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-6-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-6-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-6-600.png]"
+					],
+					"variables": {
+						"expression7": "f(x)=6x+8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 8,
+			"graines": "1..300 (modèle réduit à la variation 8)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression8",
+						"expression": "f(x)=4x+9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression8}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-7-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-7-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression8",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=4x+9"],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 9,
+							"nb_distinctes": 2,
+							"valeurs": [4, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-7-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 7,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [7, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 9,
+				"nb_distinctes": 2,
+				"valeurs": [4, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 7,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [7, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 7,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [7, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": 4,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [4, 7, 9, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 4 x + 9$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-7-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-7-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-7-600.png]"
+					],
+					"variables": {
+						"expression8": "f(x)=4x+9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 4 x + 9$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-7-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-7-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-7-600.png]"
+					],
+					"variables": {
+						"expression8": "f(x)=4x+9"
+					}
+				}
+			]
+		},
+		{
+			"variation": 9,
+			"graines": "1..300 (modèle réduit à la variation 9)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression9",
+						"expression": "f(x)=-7x+2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression9}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-8-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-8-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression9",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-7x+2"],
+						"nombres_contenus": {
+							"min": -7,
+							"max": 2,
+							"nb_distinctes": 2,
+							"valeurs": [-7, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-8-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 8,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [8, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -7,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [-7, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 8,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [8, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 8,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [8, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": -7,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [-7, 2, 8, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -7 x + 2$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-8-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-8-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-8-600.png]"
+					],
+					"variables": {
+						"expression9": "f(x)=-7x+2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -7 x + 2$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-8-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-8-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-8-600.png]"
+					],
+					"variables": {
+						"expression9": "f(x)=-7x+2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 10,
+			"graines": "1..300 (modèle réduit à la variation 10)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression10",
+						"expression": "f(x)=2x+5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression10}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-9-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-9-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression10",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=2x+5"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 5,
+							"nb_distinctes": 2,
+							"valeurs": [2, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-9-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 9,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [9, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 2,
+				"valeurs": [2, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 9,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [9, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 9,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [9, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": 2,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [2, 5, 9, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 2 x + 5$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-9-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-9-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-9-600.png]"
+					],
+					"variables": {
+						"expression10": "f(x)=2x+5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 2 x + 5$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-9-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-9-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-9-600.png]"
+					],
+					"variables": {
+						"expression10": "f(x)=2x+5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 11,
+			"graines": "1..300 (modèle réduit à la variation 11)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression11",
+						"expression": "f(x)=8x-1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression11}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-10-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-10-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression11",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=8x-1"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 8,
+							"nb_distinctes": 2,
+							"valeurs": [1, 8],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-10-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [10, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 8,
+				"nb_distinctes": 2,
+				"valeurs": [1, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [10, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 10,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [10, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [1, 8, 10, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 8 x - 1$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-10-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-10-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-10-600.png]"
+					],
+					"variables": {
+						"expression11": "f(x)=8x-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 8 x - 1$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-10-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-10-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-10-600.png]"
+					],
+					"variables": {
+						"expression11": "f(x)=8x-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 12,
+			"graines": "1..300 (modèle réduit à la variation 12)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression12",
+						"expression": "f(x)=-4x"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression12}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-11-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-11-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression12",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-4x"],
+						"nombres_contenus": {
+							"min": -4,
+							"max": -4,
+							"nb_distinctes": 1,
+							"valeurs": [-4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-11-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 11,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [11, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": -4,
+				"nb_distinctes": 1,
+				"valeurs": [-4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 11,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [11, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 11,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [11, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": -4,
+				"max": 600,
+				"nb_distinctes": 3,
+				"valeurs": [-4, 11, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -4 x$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-11-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-11-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-11-600.png]"
+					],
+					"variables": {
+						"expression12": "f(x)=-4x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -4 x$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-11-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-11-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-11-600.png]"
+					],
+					"variables": {
+						"expression12": "f(x)=-4x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 13,
+			"graines": "1..300 (modèle réduit à la variation 13)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression13",
+						"expression": "f(x)=-5x-1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression13}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-12-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-12-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression13",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-5x-1"],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 1,
+							"nb_distinctes": 2,
+							"valeurs": [-5, 1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-12-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 12,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [12, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [-5, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 12,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [12, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 12,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [12, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": -5,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [-5, 1, 12, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -5 x - 1$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-12-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-12-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-12-600.png]"
+					],
+					"variables": {
+						"expression13": "f(x)=-5x-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -5 x - 1$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-12-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-12-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-12-600.png]"
+					],
+					"variables": {
+						"expression13": "f(x)=-5x-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 14,
+			"graines": "1..300 (modèle réduit à la variation 14)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression14",
+						"expression": "f(x)=-x+7"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression14}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-13-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-13-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression14",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-x+7"],
+						"nombres_contenus": {
+							"min": 7,
+							"max": 7,
+							"nb_distinctes": 1,
+							"valeurs": [7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-13-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 13,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [13, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 7,
+				"max": 7,
+				"nb_distinctes": 1,
+				"valeurs": [7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 13,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [13, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 13,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [13, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": 7,
+				"max": 600,
+				"nb_distinctes": 3,
+				"valeurs": [7, 13, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -x + 7$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-13-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-13-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-13-600.png]"
+					],
+					"variables": {
+						"expression14": "f(x)=-x+7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -x + 7$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-13-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-13-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-13-600.png]"
+					],
+					"variables": {
+						"expression14": "f(x)=-x+7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 15,
+			"graines": "1..300 (modèle réduit à la variation 15)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression15",
+						"expression": "f(x)=x-8"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression15}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-14-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-14-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression15",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=x-8"],
+						"nombres_contenus": {
+							"min": 8,
+							"max": 8,
+							"nb_distinctes": 1,
+							"valeurs": [8],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-14-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 14,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [14, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 8,
+				"max": 8,
+				"nb_distinctes": 1,
+				"valeurs": [8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 14,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [14, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 14,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [14, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": 8,
+				"max": 600,
+				"nb_distinctes": 3,
+				"valeurs": [8, 14, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = x - 8$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-14-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-14-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-14-600.png]"
+					],
+					"variables": {
+						"expression15": "f(x)=x-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = x - 8$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-14-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-14-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-14-600.png]"
+					],
+					"variables": {
+						"expression15": "f(x)=x-8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 16,
+			"graines": "1..300 (modèle réduit à la variation 16)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression16",
+						"expression": "f(x)=-7x+6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression16}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-15-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-15-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression16",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-7x+6"],
+						"nombres_contenus": {
+							"min": -7,
+							"max": 6,
+							"nb_distinctes": 2,
+							"valeurs": [-7, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-15-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 15,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [15, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -7,
+				"max": 6,
+				"nb_distinctes": 2,
+				"valeurs": [-7, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 15,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [15, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 15,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [15, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": -7,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [-7, 6, 15, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -7 x + 6$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-15-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-15-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-15-600.png]"
+					],
+					"variables": {
+						"expression16": "f(x)=-7x+6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -7 x + 6$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-15-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-15-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-15-600.png]"
+					],
+					"variables": {
+						"expression16": "f(x)=-7x+6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 17,
+			"graines": "1..300 (modèle réduit à la variation 17)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression17",
+						"expression": "f(x)=x"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression17}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-16-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-16-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression17",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=x"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-16-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 16,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [16, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 16,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [16, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 16,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [16, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": 16,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [16, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = x$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-16-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-16-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-16-600.png]"
+					],
+					"variables": {
+						"expression17": "f(x)=x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = x$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-16-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-16-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-16-600.png]"
+					],
+					"variables": {
+						"expression17": "f(x)=x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 18,
+			"graines": "1..300 (modèle réduit à la variation 18)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression18",
+						"expression": "f(x)=-3x+4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression18}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-17-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-17-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression18",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-3x+4"],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 4,
+							"nb_distinctes": 2,
+							"valeurs": [-3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-17-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 17,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [17, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [-3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 17,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [17, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 17,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [17, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": -3,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [-3, 4, 17, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -3 x + 4$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-17-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-17-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-17-600.png]"
+					],
+					"variables": {
+						"expression18": "f(x)=-3x+4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -3 x + 4$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-17-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-17-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-17-600.png]"
+					],
+					"variables": {
+						"expression18": "f(x)=-3x+4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 19,
+			"graines": "1..300 (modèle réduit à la variation 19)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression19",
+						"expression": "f(x)=-5x-5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression19}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-18-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-18-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression19",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-5x-5"],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 2,
+							"valeurs": [-5, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-18-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 18,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [18, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 2,
+				"valeurs": [-5, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 18,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [18, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 18,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [18, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": -5,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [-5, 5, 18, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -5 x - 5$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-18-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-18-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-18-600.png]"
+					],
+					"variables": {
+						"expression19": "f(x)=-5x-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = -5 x - 5$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-18-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-18-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-18-600.png]"
+					],
+					"variables": {
+						"expression19": "f(x)=-5x-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 20,
+			"graines": "1..300 (modèle réduit à la variation 20)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression20",
+						"expression": "f(x)=5x-7"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression20}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-19-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-19-600.png)"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "expression20",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=5x-7"],
+						"nombres_contenus": {
+							"min": 5,
+							"max": 7,
+							"nb_distinctes": 2,
+							"valeurs": [5, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"[image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-19-600.png]"
+						],
+						"nombres_contenus": {
+							"min": 19,
+							"max": 600,
+							"nb_distinctes": 2,
+							"valeurs": [19, 600],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 7,
+				"nb_distinctes": 2,
+				"valeurs": [5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 19,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [19, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": {
+				"min": 19,
+				"max": 600,
+				"nb_distinctes": 2,
+				"valeurs": [19, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": 5,
+				"max": 600,
+				"nb_distinctes": 4,
+				"valeurs": [5, 7, 19, 600],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 1,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 5 x - 7$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-19-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-19-600.png]",
+					"reponse": [
+						"B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-19-600.png]"
+					],
+					"variables": {
+						"expression20": "f(x)=5x-7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$$f\\left( x \\right) = 5 x - 7$$\n\n- A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-19-600.png]\n- B. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-19-600.png]",
+					"reponse": [
+						"A. [image fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-19-600.png]"
+					],
+					"variables": {
+						"expression20": "f(x)=5x-7"
+					}
+				}
+			]
+		}
+	]
+}

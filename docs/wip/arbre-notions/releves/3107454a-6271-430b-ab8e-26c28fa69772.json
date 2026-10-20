@@ -1,0 +1,223 @@
+{
+	"template_id": "3107454a-6271-430b-ab8e-26c28fa69772",
+	"titre": "Calculer un carré",
+	"sous_titre": "Entier de $1$ à $15$",
+	"consigne": null,
+	"grades": ["5"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > Carrés",
+	"mis_a_jour": "2026-09-29T18:05:33.863962+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "5-029",
+			"libelle_point": "Connaitre les carrés des entiers de 0 à 12.",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > carrés",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..15"
+					},
+					{
+						"name": "expression1",
+						"expression": "a^2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 15,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 15,
+						"valeurs": [
+							"10^2",
+							"11^2",
+							"12^2",
+							"13^2",
+							"14^2",
+							"15^2",
+							"1^2",
+							"2^2",
+							"3^2",
+							"4^2",
+							"5^2",
+							"6^2",
+							"7^2",
+							"8^2",
+							"9^2"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 15,
+							"nb_distinctes": 15,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 225,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 15,
+				"nb_distinctes": 15,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 225,
+				"nb_distinctes": 15,
+				"valeurs": [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 225,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 25, 36, 49, 64, 81, 100, 121, 144,
+					169, 196, 225
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (225)",
+					"graine": 24,
+					"enonce": "Calcule.\n\n$$15^2 = [?]$$",
+					"reponse": ["225"],
+					"variables": {
+						"a": "15",
+						"expression1": "15^2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$1^2 = [?]$$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"expression1": "1^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$5^2 = [?]$$",
+					"reponse": ["25"],
+					"variables": {
+						"a": "5",
+						"expression1": "5^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$12^2 = [?]$$",
+					"reponse": ["144"],
+					"variables": {
+						"a": "12",
+						"expression1": "12^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule.\n\n$$10^2 = [?]$$",
+					"reponse": ["100"],
+					"variables": {
+						"a": "10",
+						"expression1": "10^2"
+					}
+				}
+			]
+		}
+	]
+}

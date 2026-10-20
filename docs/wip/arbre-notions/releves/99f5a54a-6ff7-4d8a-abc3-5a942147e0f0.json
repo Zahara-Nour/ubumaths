@@ -1,0 +1,223 @@
+{
+	"template_id": "99f5a54a-6ff7-4d8a-abc3-5a942147e0f0",
+	"titre": "Trouver une racine carrée",
+	"sous_titre": "Entier de $1$ à $15$",
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Racines carrées > Apprivoiser > Définition",
+	"mis_a_jour": "2026-10-04T23:04:42.519524+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-019",
+			"libelle_point": "Comprendre et connaitre la définition de la racine carrée d'un nombre positif.",
+			"noeud_actuel": "Nombres et calculs > Racines carrées : sens et écritures > définition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..15"
+					},
+					{
+						"name": "expression1",
+						"expression": "sqrt({{eval:a*a}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 15,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 15,
+						"valeurs": [
+							"sqrt(1)",
+							"sqrt(100)",
+							"sqrt(121)",
+							"sqrt(144)",
+							"sqrt(16)",
+							"sqrt(169)",
+							"sqrt(196)",
+							"sqrt(225)",
+							"sqrt(25)",
+							"sqrt(36)",
+							"sqrt(4)",
+							"sqrt(49)",
+							"sqrt(64)",
+							"sqrt(81)",
+							"sqrt(9)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 225,
+							"nb_distinctes": 15,
+							"valeurs": [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 225,
+				"nb_distinctes": 15,
+				"valeurs": [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 15,
+				"nb_distinctes": 15,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 225,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 25, 36, 49, 64, 81, 100, 121, 144,
+					169, 196, 225
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"racine": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (225)",
+					"graine": 24,
+					"enonce": "Calcule.\n\n$$\\sqrt{225} = [?]$$",
+					"reponse": ["15"],
+					"variables": {
+						"a": "15",
+						"expression1": "sqrt(225)"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$\\sqrt{1} = [?]$$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"expression1": "sqrt(1)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$\\sqrt{25} = [?]$$",
+					"reponse": ["5"],
+					"variables": {
+						"a": "5",
+						"expression1": "sqrt(25)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$\\sqrt{144} = [?]$$",
+					"reponse": ["12"],
+					"variables": {
+						"a": "12",
+						"expression1": "sqrt(144)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule.\n\n$$\\sqrt{100} = [?]$$",
+					"reponse": ["10"],
+					"variables": {
+						"a": "10",
+						"expression1": "sqrt(100)"
+					}
+				}
+			]
+		}
+	]
+}

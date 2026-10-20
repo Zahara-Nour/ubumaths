@@ -1,0 +1,296 @@
+{
+	"template_id": "579d0b00-b3a5-46e6-a076-04ec265c1c4f",
+	"titre": "Calculer une somme",
+	"sous_titre": "Somme d’un nombre ayant au plus trois chiffres et d’un nombre ayant un seul chiffre non nul",
+	"consigne": null,
+	"grades": ["CE1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Additionner > Somme",
+	"mis_a_jour": "2026-09-29T20:53:22.381494+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : addition et soustraction > calcul astucieux",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..2"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10+c}} +{{eval:f*10^d}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 2]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 298,
+						"exemples": [
+							"59 +300",
+							"325 +600",
+							"41 +500",
+							"321 +5",
+							"726 +6",
+							"62 +10",
+							"97 +40",
+							"637 +50",
+							"818 +700",
+							"968 +50",
+							"566 +500",
+							"59 +1"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 993,
+							"nb_distinctes": 282,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 37,
+						"max": 1839,
+						"negatif_possible": false,
+						"nb_distinctes": 266
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 993,
+				"nb_distinctes": 282,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 37,
+				"max": 1839,
+				"nb_distinctes": 266,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1839,
+				"nb_distinctes": 482,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1839)",
+					"graine": 228,
+					"enonce": "Calcule.\n\n$$939 + 900 = [?]$$",
+					"reponse": ["1839"],
+					"variables": {
+						"a": "9",
+						"b": "3",
+						"c": "9",
+						"d": "2",
+						"f": "9",
+						"expression1": "939 +900"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 12,
+					"enonce": "Calcule.\n\n$$59 + 1 = [?]$$",
+					"reponse": ["60"],
+					"variables": {
+						"a": "0",
+						"b": "5",
+						"c": "9",
+						"d": "0",
+						"f": "1",
+						"expression1": "59 +1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$59 + 300 = [?]$$",
+					"reponse": ["359"],
+					"variables": {
+						"a": "0",
+						"b": "5",
+						"c": "9",
+						"d": "2",
+						"f": "3",
+						"expression1": "59 +300"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$325 + 600 = [?]$$",
+					"reponse": ["925"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "2",
+						"f": "6",
+						"expression1": "325 +600"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$41 + 500 = [?]$$",
+					"reponse": ["541"],
+					"variables": {
+						"a": "0",
+						"b": "4",
+						"c": "1",
+						"d": "2",
+						"f": "5",
+						"expression1": "41 +500"
+					}
+				}
+			]
+		}
+	]
+}

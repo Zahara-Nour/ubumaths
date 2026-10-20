@@ -1,0 +1,397 @@
+{
+	"template_id": "d01e97d6-e65b-4526-8444-493bc46bc860",
+	"titre": "Reconnaître si un tableau est un tableau de proportionnalité",
+	"sous_titre": "En regardant les colonnes",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "multiple_choice",
+	"theme": "Proportionnalité > Tableaux de proportionnalité > Reconnaître",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-190",
+			"libelle_point": "Identifier si une situation relève du « modèle » de la proportionnalité",
+			"noeud_actuel": "Proportionnalité > Situations de proportionnalité > caractérisation",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!m(a),d(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}           \t\t\t\t\t{{a}}  &   {{eval:a*c}} \\\\           \t\t\t\t\t{{b}}  &   {{eval:b*c}}         \t\t\t\t\\end{array}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 193,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 1,
+					"enonce": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}           \t\t\t\t\t2  &   18 \\\\           \t\t\t\t\t9  &   81         \t\t\t\t\\end{array}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}           \t\t\t\t\t4  &   36 \\\\           \t\t\t\t\t6  &   54         \t\t\t\t\\end{array}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "4",
+						"b": "6",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}           \t\t\t\t\t2  &   4 \\\\           \t\t\t\t\t5  &   10         \t\t\t\t\\end{array}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}           \t\t\t\t\t4  &   8 \\\\           \t\t\t\t\t3  &   6         \t\t\t\t\\end{array}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}           \t\t\t\t\t8  &   48 \\\\           \t\t\t\t\t3  &   18         \t\t\t\t\\end{array}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "8",
+						"b": "3",
+						"c": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!m(a),d(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}         \t\t\t\t\t{{a}}  &   {{eval:a*c}} \\\\        \t\t\t\t\t\t{{b}}  &   {{eval:b*(c+1)}}       \t\t\t\t\t\\end{array}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 193,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 90,
+				"nb_distinctes": 40,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 90,
+				"nb_distinctes": 40,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (90)",
+					"graine": 1,
+					"enonce": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}         \t\t\t\t\t2  &   18 \\\\        \t\t\t\t\t\t9  &   90       \t\t\t\t\t\\end{array}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}         \t\t\t\t\t4  &   36 \\\\        \t\t\t\t\t\t6  &   60       \t\t\t\t\t\\end{array}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "4",
+						"b": "6",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}         \t\t\t\t\t2  &   4 \\\\        \t\t\t\t\t\t5  &   15       \t\t\t\t\t\\end{array}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}         \t\t\t\t\t4  &   8 \\\\        \t\t\t\t\t\t3  &   9       \t\t\t\t\t\\end{array}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}         \t\t\t\t\t8  &   48 \\\\        \t\t\t\t\t\t3  &   21       \t\t\t\t\t\\end{array}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "8",
+						"b": "3",
+						"c": "6"
+					}
+				}
+			]
+		}
+	]
+}

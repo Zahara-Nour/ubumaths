@@ -1,0 +1,394 @@
+{
+	"template_id": "9f660581-dcd2-470e-9ad1-6c7b5982ee1c",
+	"titre": "Carré et opposé d'un carré",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Relatifs > Multiplier et Diviser > Carré",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-003",
+			"libelle_point": "Savoir calculer un enchainement d'opérations avec des nombres relatifs.",
+			"noeud_actuel": "Nombres et calculs > Relatifs : calculs > carré",
+			"noeud_cible": "",
+			"multi_points": "variation 1 → 4-001 (autre nœud : Relatifs : calculs > produit) ; variation 2 → 4-003",
+			"confiance": "moyenne",
+			"changement": "multi_points « 0 → 4-001 (autre nœud : Relatifs : calculs > produit) ; 1 → 4-003 » → « variation 1 → 4-001 (autre nœud : Relatifs : calculs > produit) ; variation 2 → 4-003 »"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..-1"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a)^2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"(-1)^2",
+							"(-2)^2",
+							"(-3)^2",
+							"(-4)^2",
+							"(-5)^2",
+							"(-6)^2",
+							"(-7)^2",
+							"(-8)^2",
+							"(-9)^2"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 2,
+							"nb_distinctes": 10,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 81,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 4, 9, 16, 25, 36, 49, 64, 81]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 2,
+				"nb_distinctes": 10,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 9,
+				"valeurs": [1, 4, 9, 16, 25, 36, 49, 64, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 81,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 4, 9, 16, 25, 36, 49, 64, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$\\left( -9 \\right)^2 = [?]$$",
+					"reponse": ["81"],
+					"variables": {
+						"a": "-9",
+						"expression1": "(-9)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$\\left( -7 \\right)^2 = [?]$$",
+					"reponse": ["49"],
+					"variables": {
+						"a": "-7",
+						"expression1": "(-7)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$\\left( -3 \\right)^2 = [?]$$",
+					"reponse": ["9"],
+					"variables": {
+						"a": "-3",
+						"expression1": "(-3)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule.\n\n$$\\left( -4 \\right)^2 = [?]$$",
+					"reponse": ["16"],
+					"variables": {
+						"a": "-4",
+						"expression1": "(-4)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Calcule.\n\n$$\\left( -2 \\right)^2 = [?]$$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "-2",
+						"expression1": "(-2)^2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "-a^2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{eval:{{expression2}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": ["-1^2", "-2^2", "-3^2", "-4^2", "-5^2", "-6^2", "-7^2", "-8^2", "-9^2"],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 2,
+							"nb_distinctes": 10,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -81,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-81, -64, -49, -36, -25, -16, -9, -4, -1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -81,
+				"max": -1,
+				"nb_distinctes": 9,
+				"valeurs": [-81, -64, -49, -36, -25, -16, -9, -4, -1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -81,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-81, -64, -49, -36, -25, -16, -9, -4, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Calcule.\n\n$$-9^2 = [?]$$",
+					"reponse": ["-81"],
+					"variables": {
+						"a": "9",
+						"expression2": "-9^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$-1^2 = [?]$$",
+					"reponse": ["-1"],
+					"variables": {
+						"a": "1",
+						"expression2": "-1^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$-3^2 = [?]$$",
+					"reponse": ["-9"],
+					"variables": {
+						"a": "3",
+						"expression2": "-3^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$-7^2 = [?]$$",
+					"reponse": ["-49"],
+					"variables": {
+						"a": "7",
+						"expression2": "-7^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule.\n\n$$-6^2 = [?]$$",
+					"reponse": ["-36"],
+					"variables": {
+						"a": "6",
+						"expression2": "-6^2"
+					}
+				}
+			]
+		}
+	]
+}

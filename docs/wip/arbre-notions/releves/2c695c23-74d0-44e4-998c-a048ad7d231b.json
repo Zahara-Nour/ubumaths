@@ -1,0 +1,197 @@
+{
+	"template_id": "2c695c23-74d0-44e4-998c-a048ad7d231b",
+	"titre": "Soustraction  $x-a=b$",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["5"],
+	"type": "fill_in_blanks",
+	"theme": "Calcul littéral > Equations > Dans $$\\N$$",
+	"mis_a_jour": "2026-10-01T06:17:55.0275+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "5-045",
+			"libelle_point": "Résoudre une équation du type x + b = c par l'opération inverse (x + 7 = 12 : x = 12 − 7).",
+			"noeud_actuel": "Algèbre > Équations : premier degré > ax + b = c",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "libellé « Résoudre des équations du type ax = c ou x + b = c par des méthodes arithmétiques s'appuyant sur les opérations inverses. » → « Résoudre une équation du type x + b = c par l'opération inverse (x + 7 = 12 : x = 12 − 7). »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "5..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous cette équation.\n\n$$x-{{a}}={{b}}$$\n\n$x=?$",
+				"reponses_brutes": ["{{eval:a+b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 40,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 7,
+				"max": 18,
+				"nb_distinctes": 12,
+				"valeurs": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 18,
+				"nb_distinctes": 17,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 73,
+					"enonce": "Résous cette équation.\n\n$$x - 9 = 9$$\n\n$x = [?]$",
+					"reponse": ["18"],
+					"variables": {
+						"a": "9",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 13,
+					"enonce": "Résous cette équation.\n\n$$x - 6 = 2$$\n\n$x = [?]$",
+					"reponse": ["8"],
+					"variables": {
+						"a": "6",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Résous cette équation.\n\n$$x - 5 = 6$$\n\n$x = [?]$",
+					"reponse": ["11"],
+					"variables": {
+						"a": "5",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous cette équation.\n\n$$x - 6 = 4$$\n\n$x = [?]$",
+					"reponse": ["10"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous cette équation.\n\n$$x - 5 = 5$$\n\n$x = [?]$",
+					"reponse": ["10"],
+					"variables": {
+						"a": "5",
+						"b": "5"
+					}
+				}
+			]
+		}
+	]
+}

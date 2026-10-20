@@ -1,0 +1,279 @@
+{
+	"template_id": "a186aa54-af28-46c9-ad2a-70cd70c1b495",
+	"titre": "Décomposer une fraction",
+	"sous_titre": "Une fraction en une somme d'un entier et d'une fraction inférieure à $1$",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Fractions > Apprivoiser > Décomposition",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM2-014",
+			"libelle_point": "Écrire une fraction supérieure à 1 comme la somme d'un entier et d'une fraction inférieure à 1",
+			"noeud_actuel": "Nombres et calculs > Fractions : sens et écritures > décomposition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b+c}}/{{a}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Décompose cette fraction en une somme d'un entier et d'une fraction inférieure à $1$, comme dans l'exemple :\n\n$$14/3 = 4 + 2/3$$\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{b}}+\\frac{{{c}}}{{{a}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 167,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 2.111111111111111,
+						"max": 9.857142857142858,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+						"denominateur_min": 2,
+						"denominateur_max": 9,
+						"nb_distinctes": 167
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 167,
+						"exemples": [
+							"6+\\frac{1}{2}",
+							"4+\\frac{2}{4}",
+							"5+\\frac{1}{2}",
+							"3+\\frac{1}{4}",
+							"3+\\frac{5}{8}",
+							"7+\\frac{1}{2}",
+							"9+\\frac{1}{2}",
+							"4+\\frac{5}{7}",
+							"3+\\frac{6}{8}",
+							"7+\\frac{7}{9}",
+							"6+\\frac{3}{6}",
+							"2+\\frac{1}{4}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 86,
+				"nb_distinctes": 75,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 86,
+				"nb_distinctes": 75,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 900,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 2,
+				"numerateur_max": 86,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 1,
+				"numerateur_max": 8,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [
+					{
+						"pattern": "n:integer + p:inN & lt(q) / q:integer"
+					}
+				],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (86)",
+					"graine": 127,
+					"enonce": "Décompose cette fraction en une somme d'un entier et d'une fraction inférieure à $1$, comme dans l'exemple :\n\n$$\\dfrac{14}{3} = 4 + \\dfrac{2}{3}$$\n\n$$\\dfrac{86}{9} = [?]$$",
+					"reponse": ["9+\\frac{5}{9}"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "5",
+						"expression1": "86/9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Décompose cette fraction en une somme d'un entier et d'une fraction inférieure à $1$, comme dans l'exemple :\n\n$$\\dfrac{14}{3} = 4 + \\dfrac{2}{3}$$\n\n$$\\dfrac{13}{2} = [?]$$",
+					"reponse": ["6+\\frac{1}{2}"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"c": "1",
+						"expression1": "13/2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Décompose cette fraction en une somme d'un entier et d'une fraction inférieure à $1$, comme dans l'exemple :\n\n$$\\dfrac{14}{3} = 4 + \\dfrac{2}{3}$$\n\n$$\\dfrac{18}{4} = [?]$$",
+					"reponse": ["4+\\frac{2}{4}"],
+					"variables": {
+						"a": "4",
+						"b": "4",
+						"c": "2",
+						"expression1": "18/4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Décompose cette fraction en une somme d'un entier et d'une fraction inférieure à $1$, comme dans l'exemple :\n\n$$\\dfrac{14}{3} = 4 + \\dfrac{2}{3}$$\n\n$$\\dfrac{11}{2} = [?]$$",
+					"reponse": ["5+\\frac{1}{2}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"expression1": "11/2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Décompose cette fraction en une somme d'un entier et d'une fraction inférieure à $1$, comme dans l'exemple :\n\n$$\\dfrac{14}{3} = 4 + \\dfrac{2}{3}$$\n\n$$\\dfrac{13}{4} = [?]$$",
+					"reponse": ["3+\\frac{1}{4}"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "1",
+						"expression1": "13/4"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,196 @@
+{
+	"template_id": "bd21a9d7-142a-47a0-be18-7719b58934ea",
+	"titre": "Trouver un diviseur",
+	"sous_titre": "Une décomposition est donnée",
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Diviser > Divisibilité",
+	"mis_a_jour": "2026-09-29T23:41:19.841971+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R3",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Arithmétique > Divisibilité > multiples et diviseurs",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Trouve un diviseur de ${{eval:a*b}}$ (autre que $1$ et ${{eval:a*b}}$), sachant que :\n\n$${{eval:a*b}}={{a}}*{{b}}$$\n\nUn diviseur est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 56,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 72,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 72,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (72)",
+					"graine": 45,
+					"enonce": "Trouve un diviseur de $72$ (autre que $1$ et $72$), sachant que :\n\n$$72 = 9 \\times 8$$\n\nUn diviseur est $[?]$.",
+					"reponse": ["9"],
+					"variables": {
+						"a": "9",
+						"b": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Trouve un diviseur de $12$ (autre que $1$ et $12$), sachant que :\n\n$$12 = 2 \\times 6$$\n\nUn diviseur est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un diviseur de $24$ (autre que $1$ et $24$), sachant que :\n\n$$24 = 4 \\times 6$$\n\nUn diviseur est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "4",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un diviseur de $10$ (autre que $1$ et $10$), sachant que :\n\n$$10 = 2 \\times 5$$\n\nUn diviseur est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un diviseur de $12$ (autre que $1$ et $12$), sachant que :\n\n$$12 = 4 \\times 3$$\n\nUn diviseur est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "4",
+						"b": "3"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,239 @@
+{
+	"template_id": "5b627bb7-201f-4482-91e7-58b98604a4f9",
+	"titre": "Multiplier $2$ puissances de $10$",
+	"sous_titre": "Exposants relatifs",
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Puissances > Calculer > Multiplier",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R3",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Puissances : calculs > produit de puissances",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "10^{a}*10^{b}"
+					}
+				],
+				"conditions": ["abs(a+(b))>1"],
+				"enonce_brut": "Écris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:a+(b)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 44,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 44,
+						"exemples": [
+							"10^{-5}*10^{2}",
+							"10^{-3}*10^{-3}",
+							"10^{-5}*10^{-2}",
+							"10^{-3}*10^{-4}",
+							"10^{2}*10^{-5}",
+							"10^{-5}*10^{3}",
+							"10^{3}*10^{2}",
+							"10^{4}*10^{3}",
+							"10^{5}*10^{3}",
+							"10^{2}*10^{2}",
+							"10^{-3}*10^{-5}",
+							"10^{-2}*10^{-2}"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -10,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -10,
+				"max": 10,
+				"nb_distinctes": 18,
+				"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -10,
+				"max": 10,
+				"nb_distinctes": 18,
+				"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 1,
+					"enonce": "Écris sous la forme d'une seule puissance de $10$.\n\n$$10^{-5} \\times 10^2 = 10^[?]$$",
+					"reponse": ["-3"],
+					"variables": {
+						"a": "-5",
+						"b": "2",
+						"expression1": "10^{-5}*10^{2}"
+					}
+				},
+				{
+					"role": "plus petite valeur (-10)",
+					"graine": 27,
+					"enonce": "Écris sous la forme d'une seule puissance de $10$.\n\n$$10^{-5} \\times 10^{-5} = 10^[?]$$",
+					"reponse": ["-10"],
+					"variables": {
+						"a": "-5",
+						"b": "-5",
+						"expression1": "10^{-5}*10^{-5}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris sous la forme d'une seule puissance de $10$.\n\n$$10^{-3} \\times 10^{-3} = 10^[?]$$",
+					"reponse": ["-6"],
+					"variables": {
+						"a": "-3",
+						"b": "-3",
+						"expression1": "10^{-3}*10^{-3}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Écris sous la forme d'une seule puissance de $10$.\n\n$$10^{-5} \\times 10^{-2} = 10^[?]$$",
+					"reponse": ["-7"],
+					"variables": {
+						"a": "-5",
+						"b": "-2",
+						"expression1": "10^{-5}*10^{-2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Écris sous la forme d'une seule puissance de $10$.\n\n$$10^{-3} \\times 10^{-4} = 10^[?]$$",
+					"reponse": ["-7"],
+					"variables": {
+						"a": "-3",
+						"b": "-4",
+						"expression1": "10^{-3}*10^{-4}"
+					}
+				}
+			]
+		}
+	]
+}

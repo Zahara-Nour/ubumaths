@@ -1,0 +1,272 @@
+{
+	"template_id": "aa8d6e3b-256f-4b8e-b7eb-9493dbf7f193",
+	"titre": "Déterminer le signe d'un produit",
+	"sous_titre": "$4$ facteurs",
+	"consigne": null,
+	"grades": ["4"],
+	"type": "multiple_choice",
+	"theme": "Relatifs > Multiplier et Diviser > Produit",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-001",
+			"libelle_point": "Multiplier deux nombres relatifs : d'abord dans le cas où un seul des facteurs est négatif, puis, grâce à la distributivité, dans le cas où les deux facteurs sont négatifs.",
+			"noeud_actuel": "Nombres et calculs > Relatifs : calculs > produit",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "b",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "c",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "d",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a)*(b)*(c)*(d)",
+						"displayOptions": {
+							"removeUnnecessaryBrackets": true
+						}
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe de ce produit ?\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -99,
+						"max": 99,
+						"negatif_possible": true,
+						"nb_distinctes": 123
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -99,
+						"max": 99,
+						"negatif_possible": true,
+						"nb_distinctes": 121
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -99,
+						"max": 99,
+						"negatif_possible": true,
+						"nb_distinctes": 125
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -99,
+						"max": 99,
+						"negatif_possible": true,
+						"nb_distinctes": 125
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 300,
+						"exemples": [
+							"(-99)*(33)*(97)*(95)",
+							"(-54)*(-60)*(35)*(82)",
+							"(-94)*(-36)*(-89)*(66)",
+							"(-53)*(-68)*(-88)*(-67)",
+							"(68)*(-69)*(47)*(-88)",
+							"(-99)*(52)*(-71)*(35)",
+							"(-91)*(96)*(57)*(33)",
+							"(47)*(-57)*(57)*(41)",
+							"(79)*(-80)*(75)*(61)",
+							"(88)*(56)*(72)*(-35)",
+							"(34)*(45)*(42)*(79)",
+							"(-89)*(41)*(91)*(-78)"
+						],
+						"nombres_contenus": {
+							"min": -99,
+							"max": 99,
+							"nb_distinctes": 140,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["négatif", "positif"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 140,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 140,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"×": "300/300",
+					"parenthèses": "258/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 1,
+					"enonce": "Quel est le signe de ce produit ?\n\n$$-99 \\times 33 \\times 97 \\times 95$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "-99",
+						"b": "33",
+						"c": "97",
+						"d": "95",
+						"expression1": "(-99)*(33)*(97)*(95)"
+					}
+				},
+				{
+					"role": "plus petite valeur (-99)",
+					"graine": 26,
+					"enonce": "Quel est le signe de ce produit ?\n\n$$64 \\times 31 \\times \\left( -99 \\right) \\times 75$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "64",
+						"b": "31",
+						"c": "-99",
+						"d": "75",
+						"expression1": "(64)*(31)*(-99)*(75)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe de ce produit ?\n\n$$-54 \\times \\left( -60 \\right) \\times 35 \\times 82$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "-54",
+						"b": "-60",
+						"c": "35",
+						"d": "82",
+						"expression1": "(-54)*(-60)*(35)*(82)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe de ce produit ?\n\n$$-94 \\times \\left( -36 \\right) \\times \\left( -89 \\right) \\times 66$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "-94",
+						"b": "-36",
+						"c": "-89",
+						"d": "66",
+						"expression1": "(-94)*(-36)*(-89)*(66)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le signe de ce produit ?\n\n$$-53 \\times \\left( -68 \\right) \\times \\left( -88 \\right) \\times \\left( -67 \\right)$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "-53",
+						"b": "-68",
+						"c": "-88",
+						"d": "-67",
+						"expression1": "(-53)*(-68)*(-88)*(-67)"
+					}
+				}
+			]
+		}
+	]
+}

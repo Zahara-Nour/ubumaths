@@ -1,0 +1,411 @@
+{
+	"template_id": "3d4c45e5-1f92-4222-8544-9037dd4b34a7",
+	"titre": "Reconnaître un quotient et un reste dans une division euclidienne",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Diviser > Division euclidienne",
+	"mis_a_jour": "2026-09-29T18:05:33.863962+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R3",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : division > division euclidienne",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..10!a"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}!b"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "En regardant l'égalité ci-dessous, quel est le **quotient** de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$ ?\n\n$${{eval:a*b+c}}=({{a}} \\times {{b}})+{{c}}$$\n\nLe quotient est $?$.",
+				"reponses_brutes": ["{{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 164,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 94,
+				"nb_distinctes": 74,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 94,
+				"nb_distinctes": 74,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (94)",
+					"graine": 157,
+					"enonce": "En regardant l'égalité ci-dessous, quel est le quotient de la division euclidienne de $94$ par $9$ ?\n\n$$94=(9 \\times 10)+4$$\n\nLe quotient est $[?]$.",
+					"reponse": ["10"],
+					"variables": {
+						"a": "9",
+						"b": "10",
+						"c": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "En regardant l'égalité ci-dessous, quel est le quotient de la division euclidienne de $13$ par $2$ ?\n\n$$13=(2 \\times 6)+1$$\n\nLe quotient est $[?]$.",
+					"reponse": ["6"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "En regardant l'égalité ci-dessous, quel est le quotient de la division euclidienne de $27$ par $4$ ?\n\n$$27=(4 \\times 6)+3$$\n\nLe quotient est $[?]$.",
+					"reponse": ["6"],
+					"variables": {
+						"a": "4",
+						"b": "6",
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "En regardant l'égalité ci-dessous, quel est le quotient de la division euclidienne de $13$ par $4$ ?\n\n$$13=(4 \\times 3)+1$$\n\nLe quotient est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "En regardant l'égalité ci-dessous, quel est le quotient de la division euclidienne de $29$ par $8$ ?\n\n$$29=(8 \\times 3)+5$$\n\nLe quotient est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "8",
+						"b": "3",
+						"c": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..10!a"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}!b"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "En regardant l'égalité ci-dessous, quel est le **reste** de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$ ?\n\n$${{eval:a*b+c}}=({{a}} \\times {{b}})+{{c}}$$\n\nLe reste est $?$.",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 164,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 94,
+				"nb_distinctes": 74,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 8,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 94,
+				"nb_distinctes": 74,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (94)",
+					"graine": 157,
+					"enonce": "En regardant l'égalité ci-dessous, quel est le reste de la division euclidienne de $94$ par $9$ ?\n\n$$94=(9 \\times 10)+4$$\n\nLe reste est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "9",
+						"b": "10",
+						"c": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "En regardant l'égalité ci-dessous, quel est le reste de la division euclidienne de $13$ par $2$ ?\n\n$$13=(2 \\times 6)+1$$\n\nLe reste est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "En regardant l'égalité ci-dessous, quel est le reste de la division euclidienne de $27$ par $4$ ?\n\n$$27=(4 \\times 6)+3$$\n\nLe reste est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "4",
+						"b": "6",
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "En regardant l'égalité ci-dessous, quel est le reste de la division euclidienne de $13$ par $4$ ?\n\n$$13=(4 \\times 3)+1$$\n\nLe reste est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "En regardant l'égalité ci-dessous, quel est le reste de la division euclidienne de $29$ par $8$ ?\n\n$$29=(8 \\times 3)+5$$\n\nLe reste est $[?]$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "8",
+						"b": "3",
+						"c": "5"
+					}
+				}
+			]
+		}
+	]
+}

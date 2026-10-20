@@ -1,0 +1,531 @@
+{
+	"template_id": "4bbe387a-6577-437f-8ae5-58619f22c115",
+	"titre": "Calculer un produit",
+	"sous_titre": "avec simplification simple",
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Fractions > Calculer > Multiplication",
+	"mis_a_jour": "2026-10-01T06:18:10.056379+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-008",
+			"libelle_point": "Calculer le produit de nombres rationnels.",
+			"noeud_actuel": "Nombres et calculs > Fractions : calculs > multiplication",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!a,cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "{a/c}*{b/a}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule en remarquant la simplification.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["\\frac{{{b}}}{{{c}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 160,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 160,
+						"exemples": [
+							"{2/7}*{6/2}",
+							"{4/7}*{6/4}",
+							"{2/8}*{5/2}",
+							"{4/2}*{3/4}",
+							"{8/2}*{3/8}",
+							"{2/3}*{7/2}",
+							"{2/7}*{9/2}",
+							"{7/5}*{4/7}",
+							"{8/7}*{3/8}",
+							"{9/8}*{7/9}",
+							"{6/5}*{8/6}",
+							"{4/7}*{2/4}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.2222222222222222,
+						"max": 4.5,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+						"denominateur_min": 2,
+						"denominateur_max": 9,
+						"nb_distinctes": 38
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 2,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 2,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Calcule en remarquant la simplification.\n\n$$\\dfrac{2}{7} \\times \\dfrac{9}{2} = [?]$$",
+					"reponse": ["\\frac{9}{7}"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "7",
+						"expression1": "{2/7}*{9/2}"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Calcule en remarquant la simplification.\n\n$$\\dfrac{2}{7} \\times \\dfrac{6}{2} = [?]$$",
+					"reponse": ["\\frac{6}{7}"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"c": "7",
+						"expression1": "{2/7}*{6/2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule en remarquant la simplification.\n\n$$\\dfrac{4}{7} \\times \\dfrac{6}{4} = [?]$$",
+					"reponse": ["\\frac{6}{7}"],
+					"variables": {
+						"a": "4",
+						"b": "6",
+						"c": "7",
+						"expression1": "{4/7}*{6/4}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule en remarquant la simplification.\n\n$$\\dfrac{2}{8} \\times \\dfrac{5}{2} = [?]$$",
+					"reponse": ["\\frac{5}{8}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "8",
+						"expression1": "{2/8}*{5/2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule en remarquant la simplification.\n\n$$\\dfrac{4}{2} \\times \\dfrac{3}{4} = [?]$$",
+					"reponse": ["\\frac{3}{2}"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "2",
+						"expression1": "{4/2}*{3/4}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!a,cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "{c/a}*{a/b}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule en remarquant la simplification.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["\\frac{{{c}}}{{{b}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 160,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 160,
+						"exemples": [
+							"{7/2}*{2/6}",
+							"{7/4}*{4/6}",
+							"{8/2}*{2/5}",
+							"{2/4}*{4/3}",
+							"{2/8}*{8/3}",
+							"{3/2}*{2/7}",
+							"{7/2}*{2/9}",
+							"{5/7}*{7/4}",
+							"{7/8}*{8/3}",
+							"{8/9}*{9/7}",
+							"{5/6}*{6/8}",
+							"{7/4}*{4/2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.2222222222222222,
+						"max": 4.5,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+						"denominateur_min": 2,
+						"denominateur_max": 9,
+						"nb_distinctes": 38
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 2,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 2,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Calcule en remarquant la simplification.\n\n$$\\dfrac{7}{2} \\times \\dfrac{2}{9} = [?]$$",
+					"reponse": ["\\frac{7}{9}"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "7",
+						"expression2": "{7/2}*{2/9}"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Calcule en remarquant la simplification.\n\n$$\\dfrac{7}{2} \\times \\dfrac{2}{6} = [?]$$",
+					"reponse": ["\\frac{7}{6}"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"c": "7",
+						"expression2": "{7/2}*{2/6}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule en remarquant la simplification.\n\n$$\\dfrac{7}{4} \\times \\dfrac{4}{6} = [?]$$",
+					"reponse": ["\\frac{7}{6}"],
+					"variables": {
+						"a": "4",
+						"b": "6",
+						"c": "7",
+						"expression2": "{7/4}*{4/6}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule en remarquant la simplification.\n\n$$\\dfrac{8}{2} \\times \\dfrac{2}{5} = [?]$$",
+					"reponse": ["\\frac{8}{5}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "8",
+						"expression2": "{8/2}*{2/5}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule en remarquant la simplification.\n\n$$\\dfrac{2}{4} \\times \\dfrac{4}{3} = [?]$$",
+					"reponse": ["\\frac{2}{3}"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "2",
+						"expression2": "{2/4}*{4/3}"
+					}
+				}
+			]
+		}
+	]
+}

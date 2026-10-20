@@ -1,0 +1,296 @@
+{
+	"template_id": "b0b30022-ed72-45e9-bbf9-628711470573",
+	"titre": "Calculer une différence (résultat positif)",
+	"sous_titre": " Soustraire un nombre à deux chiffres à un nombre à $3$ chiffres, sans retenue",
+	"consigne": "Calcule.",
+	"grades": ["CE1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Soustraire > Différence",
+	"mis_a_jour": "2026-09-29T20:53:22.274436+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : addition et soustraction > calcul astucieux",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:c-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + b*10 + c}}  - {{eval: d*10 + f}} "
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$${{expression}}$$",
+				"reponses_brutes": ["eval:expression"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 290,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 290,
+						"exemples": [
+							"269  - 53",
+							"446  - 34",
+							"252  - 41",
+							"432  - 11",
+							"836  - 13",
+							"273  - 41",
+							"297  - 53",
+							"747  - 23",
+							"838  - 25",
+							"978  - 34",
+							"666  - 53",
+							"269  - 11"
+						],
+						"nombres_contenus": {
+							"min": 11,
+							"max": 996,
+							"nb_distinctes": 276,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 211,
+						"max": 972,
+						"negatif_possible": false,
+						"nb_distinctes": 168
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 11,
+				"max": 996,
+				"nb_distinctes": 276,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 211,
+				"max": 972,
+				"nb_distinctes": 168,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 11,
+				"max": 996,
+				"nb_distinctes": 400,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 0,
+					"max": 0
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (996)",
+					"graine": 127,
+					"enonce": "$$996 - 73 = [?]$$",
+					"reponse": ["923"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "6",
+						"d": "7",
+						"f": "3",
+						"expression": "996  - 73 "
+					}
+				},
+				{
+					"role": "plus petite valeur (11)",
+					"graine": 4,
+					"enonce": "$$432 - 11 = [?]$$",
+					"reponse": ["421"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "2",
+						"d": "1",
+						"f": "1",
+						"expression": "432  - 11 "
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$$269 - 53 = [?]$$",
+					"reponse": ["216"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"c": "9",
+						"d": "5",
+						"f": "3",
+						"expression": "269  - 53 "
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$$446 - 34 = [?]$$",
+					"reponse": ["412"],
+					"variables": {
+						"a": "4",
+						"b": "4",
+						"c": "6",
+						"d": "3",
+						"f": "4",
+						"expression": "446  - 34 "
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$$252 - 41 = [?]$$",
+					"reponse": ["211"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "2",
+						"d": "4",
+						"f": "1",
+						"expression": "252  - 41 "
+					}
+				}
+			]
+		}
+	]
+}

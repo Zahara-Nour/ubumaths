@@ -1,0 +1,1277 @@
+{
+	"template_id": "ee4e4979-12cf-46c6-b631-ac148b1df005",
+	"titre": "Existence d'une racine carrée",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["4"],
+	"type": "multiple_choice",
+	"theme": "Racines carrées > Apprivoiser > Définition",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-019",
+			"libelle_point": "Comprendre et connaitre la définition de la racine carrée d'un nombre positif.",
+			"noeud_actuel": "Nombres et calculs > Racines carrées : sens et écritures > définition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 8,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..15"
+					},
+					{
+						"name": "expression1",
+						"expression": "sqrt({{eval:a^2}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Est-ce que ce nombre existe ?\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 14,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"sqrt(100)",
+							"sqrt(121)",
+							"sqrt(144)",
+							"sqrt(16)",
+							"sqrt(169)",
+							"sqrt(196)",
+							"sqrt(225)",
+							"sqrt(25)",
+							"sqrt(36)",
+							"sqrt(4)",
+							"sqrt(49)",
+							"sqrt(64)",
+							"sqrt(81)",
+							"sqrt(9)"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 225,
+							"nb_distinctes": 14,
+							"valeurs": [4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 225,
+				"nb_distinctes": 14,
+				"valeurs": [4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 4,
+				"max": 225,
+				"nb_distinctes": 14,
+				"valeurs": [4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (225)",
+					"graine": 24,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{225}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "15",
+						"expression1": "sqrt(225)"
+					}
+				},
+				{
+					"role": "plus petite valeur (4)",
+					"graine": 1,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{4}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "2",
+						"expression1": "sqrt(4)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{36}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "6",
+						"expression1": "sqrt(36)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{144}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "12",
+						"expression1": "sqrt(144)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{100}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "10",
+						"expression1": "sqrt(100)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "digits:1.1"
+					},
+					{
+						"name": "expression2",
+						"expression": "sqrt({{eval:a^2;d}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Est-ce que ce nombre existe ?\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 89,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 1,
+						"max": 9.9,
+						"negatif_possible": false,
+						"nb_distinctes": 89
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 89,
+						"exemples": [
+							"sqrt(2.25)",
+							"sqrt(10.24)",
+							"sqrt(1.96)",
+							"sqrt(51.84)",
+							"sqrt(2.56)",
+							"sqrt(3.61)",
+							"sqrt(39.69)",
+							"sqrt(65.61)",
+							"sqrt(92.16)",
+							"sqrt(31.36)",
+							"sqrt(16)",
+							"sqrt(20.25)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 98.01,
+							"nb_distinctes": 89,
+							"nature": "décimal",
+							"decimales_max": 2,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 98.01,
+				"nb_distinctes": 89,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 98.01,
+				"nb_distinctes": 89,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (98.01)",
+					"graine": 115,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{98{,}01}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "9.9",
+						"expression2": "sqrt(98.01)"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 27,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{1}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "1.0",
+						"expression2": "sqrt(1)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{2{,}25}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "1.5",
+						"expression2": "sqrt(2.25)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{10{,}24}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "3.2",
+						"expression2": "sqrt(10.24)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{1{,}96}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "1.4",
+						"expression2": "sqrt(1.96)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7|10|11|13"
+					},
+					{
+						"name": "expression3",
+						"expression": "sqrt(a)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Est-ce que ce nombre existe ?\n\n$${{expression3}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 7,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 5, 7, 10, 11, 13]
+					}
+				},
+				{
+					"nom": "expression3",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 7,
+						"valeurs": [
+							"sqrt(10)",
+							"sqrt(11)",
+							"sqrt(13)",
+							"sqrt(2)",
+							"sqrt(3)",
+							"sqrt(5)",
+							"sqrt(7)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 13,
+							"nb_distinctes": 7,
+							"valeurs": [2, 3, 5, 7, 10, 11, 13],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 13,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 5, 7, 10, 11, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 13,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 5, 7, 10, 11, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (13)",
+					"graine": 10,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{13}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "13",
+						"expression3": "sqrt(13)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{2}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "2",
+						"expression3": "sqrt(2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{5}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "5",
+						"expression3": "sqrt(5)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{11}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "11",
+						"expression3": "sqrt(11)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{10}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "10",
+						"expression3": "sqrt(10)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..15"
+					},
+					{
+						"name": "expression4",
+						"expression": "sqrt(-{{eval:a^2}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Est-ce que ce nombre existe ?\n\n$${{expression4}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 14,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "expression4",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"sqrt(-100)",
+							"sqrt(-121)",
+							"sqrt(-144)",
+							"sqrt(-16)",
+							"sqrt(-169)",
+							"sqrt(-196)",
+							"sqrt(-225)",
+							"sqrt(-25)",
+							"sqrt(-36)",
+							"sqrt(-4)",
+							"sqrt(-49)",
+							"sqrt(-64)",
+							"sqrt(-81)",
+							"sqrt(-9)"
+						],
+						"nombres_contenus": {
+							"min": -225,
+							"max": -4,
+							"nb_distinctes": 14,
+							"valeurs": [-225, -196, -169, -144, -121, -100, -81, -64, -49, -36, -25, -16, -9, -4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -225,
+				"max": -4,
+				"nb_distinctes": 14,
+				"valeurs": [-225, -196, -169, -144, -121, -100, -81, -64, -49, -36, -25, -16, -9, -4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -225,
+				"max": -4,
+				"nb_distinctes": 14,
+				"valeurs": [-225, -196, -169, -144, -121, -100, -81, -64, -49, -36, -25, -16, -9, -4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-4)",
+					"graine": 1,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-4}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "2",
+						"expression4": "sqrt(-4)"
+					}
+				},
+				{
+					"role": "plus petite valeur (-225)",
+					"graine": 24,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-225}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "15",
+						"expression4": "sqrt(-225)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-36}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "6",
+						"expression4": "sqrt(-36)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-144}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "12",
+						"expression4": "sqrt(-144)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-100}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "10",
+						"expression4": "sqrt(-100)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "digits:1.1"
+					},
+					{
+						"name": "expression5",
+						"expression": "sqrt(-{{eval:a^2;d}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Est-ce que ce nombre existe ?\n\n$${{expression5}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 89,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 1,
+						"max": 9.9,
+						"negatif_possible": false,
+						"nb_distinctes": 89
+					}
+				},
+				{
+					"nom": "expression5",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 89,
+						"exemples": [
+							"sqrt(-2.25)",
+							"sqrt(-10.24)",
+							"sqrt(-1.96)",
+							"sqrt(-51.84)",
+							"sqrt(-2.56)",
+							"sqrt(-3.61)",
+							"sqrt(-39.69)",
+							"sqrt(-65.61)",
+							"sqrt(-92.16)",
+							"sqrt(-31.36)",
+							"sqrt(-16)",
+							"sqrt(-20.25)"
+						],
+						"nombres_contenus": {
+							"min": -98.01,
+							"max": -1,
+							"nb_distinctes": 89,
+							"nature": "décimal",
+							"decimales_max": 2,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -98.01,
+				"max": -1,
+				"nb_distinctes": 89,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -98.01,
+				"max": -1,
+				"nb_distinctes": 89,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-1)",
+					"graine": 27,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-1}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "1.0",
+						"expression5": "sqrt(-1)"
+					}
+				},
+				{
+					"role": "plus petite valeur (-98.01)",
+					"graine": 115,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-98{,}01}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "9.9",
+						"expression5": "sqrt(-98.01)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-2{,}25}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "1.5",
+						"expression5": "sqrt(-2.25)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-10{,}24}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "3.2",
+						"expression5": "sqrt(-10.24)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-1{,}96}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "1.4",
+						"expression5": "sqrt(-1.96)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7|10|11|13"
+					},
+					{
+						"name": "expression6",
+						"expression": "sqrt(-a)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Est-ce que ce nombre existe ?\n\n$${{expression6}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 7,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 5, 7, 10, 11, 13]
+					}
+				},
+				{
+					"nom": "expression6",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 7,
+						"valeurs": [
+							"sqrt(-10)",
+							"sqrt(-11)",
+							"sqrt(-13)",
+							"sqrt(-2)",
+							"sqrt(-3)",
+							"sqrt(-5)",
+							"sqrt(-7)"
+						],
+						"nombres_contenus": {
+							"min": -13,
+							"max": -2,
+							"nb_distinctes": 7,
+							"valeurs": [-13, -11, -10, -7, -5, -3, -2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -13,
+				"max": -2,
+				"nb_distinctes": 7,
+				"valeurs": [-13, -11, -10, -7, -5, -3, -2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -13,
+				"max": -2,
+				"nb_distinctes": 7,
+				"valeurs": [-13, -11, -10, -7, -5, -3, -2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-2)",
+					"graine": 1,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-2}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "2",
+						"expression6": "sqrt(-2)"
+					}
+				},
+				{
+					"role": "plus petite valeur (-13)",
+					"graine": 10,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-13}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "13",
+						"expression6": "sqrt(-13)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-5}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "5",
+						"expression6": "sqrt(-5)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-11}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "11",
+						"expression6": "sqrt(-11)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-10}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "10",
+						"expression6": "sqrt(-10)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{\\pi}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{\\pi}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 8,
+			"graines": "1..300 (modèle réduit à la variation 8)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-\\pi}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-\\pi}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

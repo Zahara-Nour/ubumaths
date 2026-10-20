@@ -1,0 +1,853 @@
+{
+	"template_id": "5d515eb1-c8f8-4678-b4bd-f9ab3f34713f",
+	"titre": "Traduire une phrase en expression mathématique",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Vocabulaire > Traduire",
+	"mis_a_jour": "2026-09-29T22:51:47.445177+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R3",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : priorités opératoires > écriture d'une expression",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-1}}!a"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Traduis cette phrase par une expression mathématique : la somme de ${{a}}$ et de ${{b}}$\n\nL'expression est $?$.",
+				"reponses_brutes": ["{{a}}+{{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 28,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 28,
+						"valeurs": [
+							"3+2",
+							"4+2",
+							"4+3",
+							"5+2",
+							"5+3",
+							"5+4",
+							"6+2",
+							"6+3",
+							"6+4",
+							"6+5",
+							"7+2",
+							"7+3",
+							"7+4",
+							"7+5",
+							"7+6",
+							"8+2",
+							"8+3",
+							"8+4",
+							"8+5",
+							"8+6",
+							"8+7",
+							"9+2",
+							"9+3",
+							"9+4",
+							"9+5",
+							"9+6",
+							"9+7",
+							"9+8"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Traduis cette phrase par une expression mathématique : la somme de $9$ et de $6$\n\nL'expression est $[?]$.",
+					"reponse": ["9+6"],
+					"variables": {
+						"a": "9",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Traduis cette phrase par une expression mathématique : la somme de $3$ et de $2$\n\nL'expression est $[?]$.",
+					"reponse": ["3+2"],
+					"variables": {
+						"a": "3",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Traduis cette phrase par une expression mathématique : la somme de $5$ et de $2$\n\nL'expression est $[?]$.",
+					"reponse": ["5+2"],
+					"variables": {
+						"a": "5",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Traduis cette phrase par une expression mathématique : la somme de $8$ et de $3$\n\nL'expression est $[?]$.",
+					"reponse": ["8+3"],
+					"variables": {
+						"a": "8",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Traduis cette phrase par une expression mathématique : la somme de $7$ et de $3$\n\nL'expression est $[?]$.",
+					"reponse": ["7+3"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-1}}!a"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Traduis cette phrase par une expression mathématique : le produit de ${{a}}$ par ${{b}}$\n\nL'expression est $?$.",
+				"reponses_brutes": ["{{a}}*{{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 28,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 28,
+						"valeurs": [
+							"3*2",
+							"4*2",
+							"4*3",
+							"5*2",
+							"5*3",
+							"5*4",
+							"6*2",
+							"6*3",
+							"6*4",
+							"6*5",
+							"7*2",
+							"7*3",
+							"7*4",
+							"7*5",
+							"7*6",
+							"8*2",
+							"8*3",
+							"8*4",
+							"8*5",
+							"8*6",
+							"8*7",
+							"9*2",
+							"9*3",
+							"9*4",
+							"9*5",
+							"9*6",
+							"9*7",
+							"9*8"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Traduis cette phrase par une expression mathématique : le produit de $9$ par $6$\n\nL'expression est $[?]$.",
+					"reponse": ["9*6"],
+					"variables": {
+						"a": "9",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Traduis cette phrase par une expression mathématique : le produit de $3$ par $2$\n\nL'expression est $[?]$.",
+					"reponse": ["3*2"],
+					"variables": {
+						"a": "3",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Traduis cette phrase par une expression mathématique : le produit de $5$ par $2$\n\nL'expression est $[?]$.",
+					"reponse": ["5*2"],
+					"variables": {
+						"a": "5",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Traduis cette phrase par une expression mathématique : le produit de $8$ par $3$\n\nL'expression est $[?]$.",
+					"reponse": ["8*3"],
+					"variables": {
+						"a": "8",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Traduis cette phrase par une expression mathématique : le produit de $7$ par $3$\n\nL'expression est $[?]$.",
+					"reponse": ["7*3"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-1}}!a"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Traduis cette phrase par une expression mathématique : la différence entre ${{a}}$ et ${{b}}$\n\nL'expression est $?$.",
+				"reponses_brutes": ["{{a}}-{{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 28,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 28,
+						"valeurs": [
+							"3-2",
+							"4-2",
+							"4-3",
+							"5-2",
+							"5-3",
+							"5-4",
+							"6-2",
+							"6-3",
+							"6-4",
+							"6-5",
+							"7-2",
+							"7-3",
+							"7-4",
+							"7-5",
+							"7-6",
+							"8-2",
+							"8-3",
+							"8-4",
+							"8-5",
+							"8-6",
+							"8-7",
+							"9-2",
+							"9-3",
+							"9-4",
+							"9-5",
+							"9-6",
+							"9-7",
+							"9-8"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Traduis cette phrase par une expression mathématique : la différence entre $9$ et $6$\n\nL'expression est $[?]$.",
+					"reponse": ["9-6"],
+					"variables": {
+						"a": "9",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Traduis cette phrase par une expression mathématique : la différence entre $3$ et $2$\n\nL'expression est $[?]$.",
+					"reponse": ["3-2"],
+					"variables": {
+						"a": "3",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Traduis cette phrase par une expression mathématique : la différence entre $5$ et $2$\n\nL'expression est $[?]$.",
+					"reponse": ["5-2"],
+					"variables": {
+						"a": "5",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Traduis cette phrase par une expression mathématique : la différence entre $8$ et $3$\n\nL'expression est $[?]$.",
+					"reponse": ["8-3"],
+					"variables": {
+						"a": "8",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Traduis cette phrase par une expression mathématique : la différence entre $7$ et $3$\n\nL'expression est $[?]$.",
+					"reponse": ["7-3"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-1}}!a"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Traduis cette phrase par une expression mathématique : le quotient de ${{a}}$ par ${{b}}$\n\nL'expression est $?$.",
+				"reponses_brutes": ["{{a}}:{{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 28,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 28,
+						"valeurs": [
+							"3:2",
+							"4:2",
+							"4:3",
+							"5:2",
+							"5:3",
+							"5:4",
+							"6:2",
+							"6:3",
+							"6:4",
+							"6:5",
+							"7:2",
+							"7:3",
+							"7:4",
+							"7:5",
+							"7:6",
+							"8:2",
+							"8:3",
+							"8:4",
+							"8:5",
+							"8:6",
+							"8:7",
+							"9:2",
+							"9:3",
+							"9:4",
+							"9:5",
+							"9:6",
+							"9:7",
+							"9:8"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [
+					{
+						"pattern": "3 / 2"
+					}
+				],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Traduis cette phrase par une expression mathématique : le quotient de $9$ par $6$\n\nL'expression est $[?]$.",
+					"reponse": ["9:6"],
+					"variables": {
+						"a": "9",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Traduis cette phrase par une expression mathématique : le quotient de $3$ par $2$\n\nL'expression est $[?]$.",
+					"reponse": ["3:2"],
+					"variables": {
+						"a": "3",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Traduis cette phrase par une expression mathématique : le quotient de $5$ par $2$\n\nL'expression est $[?]$.",
+					"reponse": ["5:2"],
+					"variables": {
+						"a": "5",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Traduis cette phrase par une expression mathématique : le quotient de $8$ par $3$\n\nL'expression est $[?]$.",
+					"reponse": ["8:3"],
+					"variables": {
+						"a": "8",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Traduis cette phrase par une expression mathématique : le quotient de $7$ par $3$\n\nL'expression est $[?]$.",
+					"reponse": ["7:3"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				}
+			]
+		}
+	]
+}

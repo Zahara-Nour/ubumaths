@@ -1,0 +1,211 @@
+{
+	"template_id": "311bf024-36c9-4256-9c5a-9444d20086e5",
+	"titre": "Convertir des durées",
+	"sous_titre": "heures en HMS, heures décimales",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Durées > Convertir",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-159",
+			"libelle_point": "Convertir des durées",
+			"noeud_actuel": "Grandeurs et mesures > Durées > conversions",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "k",
+						"expression": "6|30|15"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Convertis en heures et minutes.\n\n${{eval:a+k/60;d}}~\\unit{h} = ?~\\unit{h}~?~\\unit{min}$",
+				"reponses_brutes": ["{{a}}", "{{k}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 15,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [6, 15, 30]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [6, 15, 30]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1.1,
+				"max": 5.5,
+				"nb_distinctes": 15,
+				"valeurs": [1.1, 1.25, 1.5, 2.1, 2.25, 2.5, 3.1, 3.25, 3.5, 4.1, 4.25, 4.5, 5.1, 5.25, 5.5],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 30,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 6, 15, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 30,
+				"nb_distinctes": 23,
+				"valeurs": [
+					1, 1.1, 1.25, 1.5, 2, 2.1, 2.25, 2.5, 3, 3.1, 3.25, 3.5, 4, 4.1, 4.25, 4.5, 5, 5.1, 5.25,
+					5.5, 6, 15, 30
+				],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["h", "min"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30)",
+					"graine": 1,
+					"enonce": "Convertis en heures et minutes.\n\n$1{,}5~\\mathrm{h} = [?]~\\mathrm{h}~[?]~\\mathrm{min}$",
+					"reponse": ["1", "30"],
+					"variables": {
+						"a": "1",
+						"k": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Convertis en heures et minutes.\n\n$2{,}1~\\mathrm{h} = [?]~\\mathrm{h}~[?]~\\mathrm{min}$",
+					"reponse": ["2", "6"],
+					"variables": {
+						"a": "2",
+						"k": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Convertis en heures et minutes.\n\n$4{,}1~\\mathrm{h} = [?]~\\mathrm{h}~[?]~\\mathrm{min}$",
+					"reponse": ["4", "6"],
+					"variables": {
+						"a": "4",
+						"k": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Convertis en heures et minutes.\n\n$1{,}25~\\mathrm{h} = [?]~\\mathrm{h}~[?]~\\mathrm{min}$",
+					"reponse": ["1", "15"],
+					"variables": {
+						"a": "1",
+						"k": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Convertis en heures et minutes.\n\n$5{,}1~\\mathrm{h} = [?]~\\mathrm{h}~[?]~\\mathrm{min}$",
+					"reponse": ["5", "6"],
+					"variables": {
+						"a": "5",
+						"k": "6"
+					}
+				}
+			]
+		}
+	]
+}

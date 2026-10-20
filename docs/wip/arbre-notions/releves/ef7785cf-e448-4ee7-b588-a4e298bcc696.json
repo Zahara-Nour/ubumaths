@@ -1,0 +1,275 @@
+{
+	"template_id": "ef7785cf-e448-4ee7-b588-a4e298bcc696",
+	"titre": "Décomposer en unités, dixièmes, centièmes, millièmes",
+	"sous_titre": "avec des décimaux",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Décimaux > Apprivoiser > Décomposition",
+	"mis_a_jour": "2026-10-01T06:18:10.056379+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM2-024",
+			"libelle_point": "Connaître et utiliser les relations entre unités simples, dixièmes, centièmes et millièmes",
+			"noeud_actuel": "Nombres et calculs > Décimaux : numération > décomposition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:a+b/10+c/100+d/1000;d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Décompose comme dans cet exemple :\n\n$$5,346=5+0,3+0,04+0,006$$\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{a}}+{{eval:b*0.1;d}}+{{eval:c*0.01;d}}+{{eval:d*0.001;d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 291,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 1.128,
+						"max": 9.936,
+						"negatif_possible": false,
+						"nb_distinctes": 291
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 291,
+						"exemples": [
+							"1+0.5+0.09+0.009",
+							"3+0.3+0.05+0.008",
+							"1+0.5+0.01+0.007",
+							"3+0.2+0.01+0.003",
+							"7+0.2+0.06+0.001",
+							"1+0.6+0.02+0.005",
+							"1+0.9+0.07+0.005",
+							"6+0.3+0.07+0.006",
+							"8+0.2+0.08+0.007",
+							"9+0.7+0.08+0.005",
+							"5+0.6+0.06+0.008",
+							"1+0.6+0.09+0.002"
+						],
+						"nombres_contenus": {
+							"min": 0.001,
+							"max": 9,
+							"nb_distinctes": 36,
+							"nature": "décimal",
+							"decimales_max": 3,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.006,
+				"max": 9.936,
+				"nb_distinctes": 296,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0.001,
+				"max": 9,
+				"nb_distinctes": 36,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.001,
+				"max": 9.936,
+				"nb_distinctes": 328,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9.936)",
+					"graine": 115,
+					"enonce": "Décompose comme dans cet exemple :\n\n$$5{,}346 = 5 + 0{,}3 + 0{,}04 + 0{,}006$$\n\n$$9{,}936 = [?]$$",
+					"reponse": ["9+0.9+0.03+0.006"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "3",
+						"d": "6",
+						"expression1": "9.936"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.001)",
+					"graine": 5,
+					"enonce": "Décompose comme dans cet exemple :\n\n$$5{,}346 = 5 + 0{,}3 + 0{,}04 + 0{,}006$$\n\n$$7{,}261 = [?]$$",
+					"reponse": ["7+0.2+0.06+0.001"],
+					"variables": {
+						"a": "7",
+						"b": "2",
+						"c": "6",
+						"d": "1",
+						"expression1": "7.261"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Décompose comme dans cet exemple :\n\n$$5{,}346 = 5 + 0{,}3 + 0{,}04 + 0{,}006$$\n\n$$1{,}599 = [?]$$",
+					"reponse": ["1+0.5+0.09+0.009"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "9",
+						"expression1": "1.599"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Décompose comme dans cet exemple :\n\n$$5{,}346 = 5 + 0{,}3 + 0{,}04 + 0{,}006$$\n\n$$3{,}358 = [?]$$",
+					"reponse": ["3+0.3+0.05+0.008"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "5",
+						"d": "8",
+						"expression1": "3.358"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Décompose comme dans cet exemple :\n\n$$5{,}346 = 5 + 0{,}3 + 0{,}04 + 0{,}006$$\n\n$$1{,}517 = [?]$$",
+					"reponse": ["1+0.5+0.01+0.007"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1",
+						"d": "7",
+						"expression1": "1.517"
+					}
+				}
+			]
+		}
+	]
+}

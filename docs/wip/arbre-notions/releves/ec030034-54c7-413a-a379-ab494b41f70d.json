@@ -1,0 +1,323 @@
+{
+	"template_id": "ec030034-54c7-413a-a379-ab494b41f70d",
+	"titre": "Enigme pour trouver un nombre",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Ecriture",
+	"mis_a_jour": "2026-09-29T22:51:47.335477+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM2-003",
+			"libelle_point": "Connaître et utiliser diverses représentations d'un nombre et passer de l'une à l'autre",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > écritures",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "5..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Je suis un nombre à 3 chiffres. Mon **chiffre des unités** est ${{a}}$. Le **nombre de mes dizaines** est le double du **chiffre des unités**. Qui suis-je ?\n\nJe suis le nombre $?$.",
+				"reponses_brutes": ["{{eval:a*21}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 105,
+						"max": 189,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [105, 126, 147, 168, 189]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 9,
+				"nb_distinctes": 6,
+				"valeurs": [3, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 105,
+				"max": 189,
+				"nb_distinctes": 5,
+				"valeurs": [105, 126, 147, 168, 189],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 189,
+				"nb_distinctes": 11,
+				"valeurs": [3, 5, 6, 7, 8, 9, 105, 126, 147, 168, 189],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (189)",
+					"graine": 9,
+					"enonce": "Je suis un nombre à 3 chiffres. Mon chiffre des unités est $9$. Le nombre de mes dizaines est le double du chiffre des unités. Qui suis-je ?\n\nJe suis le nombre $[?]$.",
+					"reponse": ["189"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 1,
+					"enonce": "Je suis un nombre à 3 chiffres. Mon chiffre des unités est $5$. Le nombre de mes dizaines est le double du chiffre des unités. Qui suis-je ?\n\nJe suis le nombre $[?]$.",
+					"reponse": ["105"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Je suis un nombre à 3 chiffres. Mon chiffre des unités est $6$. Le nombre de mes dizaines est le double du chiffre des unités. Qui suis-je ?\n\nJe suis le nombre $[?]$.",
+					"reponse": ["126"],
+					"variables": {
+						"a": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Je suis un nombre à 3 chiffres. Mon chiffre des unités est $8$. Le nombre de mes dizaines est le double du chiffre des unités. Qui suis-je ?\n\nJe suis le nombre $[?]$.",
+					"reponse": ["168"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Je suis un nombre à 3 chiffres. Mon chiffre des unités est $7$. Le nombre de mes dizaines est le double du chiffre des unités. Qui suis-je ?\n\nJe suis le nombre $[?]$.",
+					"reponse": ["147"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "5..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Je suis un nombre à 3 chiffres. Mon **chiffre des unités** est ${{a}}$. Le **nombre de mes dizaines** est le triple du **chiffre des unités**. Qui suis-je ?\n\nJe suis le nombre $?$.",
+				"reponses_brutes": ["{{eval:a*31}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 155,
+						"max": 279,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [155, 186, 217, 248, 279]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 9,
+				"nb_distinctes": 6,
+				"valeurs": [3, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 155,
+				"max": 279,
+				"nb_distinctes": 5,
+				"valeurs": [155, 186, 217, 248, 279],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 279,
+				"nb_distinctes": 11,
+				"valeurs": [3, 5, 6, 7, 8, 9, 155, 186, 217, 248, 279],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (279)",
+					"graine": 9,
+					"enonce": "Je suis un nombre à 3 chiffres. Mon chiffre des unités est $9$. Le nombre de mes dizaines est le triple du chiffre des unités. Qui suis-je ?\n\nJe suis le nombre $[?]$.",
+					"reponse": ["279"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 1,
+					"enonce": "Je suis un nombre à 3 chiffres. Mon chiffre des unités est $5$. Le nombre de mes dizaines est le triple du chiffre des unités. Qui suis-je ?\n\nJe suis le nombre $[?]$.",
+					"reponse": ["155"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Je suis un nombre à 3 chiffres. Mon chiffre des unités est $6$. Le nombre de mes dizaines est le triple du chiffre des unités. Qui suis-je ?\n\nJe suis le nombre $[?]$.",
+					"reponse": ["186"],
+					"variables": {
+						"a": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Je suis un nombre à 3 chiffres. Mon chiffre des unités est $8$. Le nombre de mes dizaines est le triple du chiffre des unités. Qui suis-je ?\n\nJe suis le nombre $[?]$.",
+					"reponse": ["248"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Je suis un nombre à 3 chiffres. Mon chiffre des unités est $7$. Le nombre de mes dizaines est le triple du chiffre des unités. Qui suis-je ?\n\nJe suis le nombre $[?]$.",
+					"reponse": ["217"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		}
+	]
+}

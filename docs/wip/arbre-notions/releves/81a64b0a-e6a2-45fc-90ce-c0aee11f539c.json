@@ -1,0 +1,241 @@
+{
+	"template_id": "81a64b0a-e6a2-45fc-90ce-c0aee11f539c",
+	"titre": "Déterminer une forme fractionnaire",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Fractions > Apprivoiser > Forme décimale",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "6-106",
+			"libelle_point": "Associer et utiliser différentes écritures d'un nombre décimal : écriture à virgule, fraction, nombre mixte, pourcentage",
+			"noeud_actuel": "Nombres et calculs > Fractions : sens et écritures > forme décimale",
+			"noeud_cible": "Nombres et calculs > Décimaux : numération > forme fractionnaire",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2|4|5|10"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:b/a;d"
+					}
+				],
+				"conditions": ["gcd(a,b)=1"],
+				"enonce_brut": "Réécris ce nombre décimal sous forme fractionnaire la plus simple.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["\\frac{{{b}}}{{{a}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 4, 5, 10]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 7, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [2, 4, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"\\frac{1}{10}",
+							"\\frac{1}{2}",
+							"\\frac{1}{4}",
+							"\\frac{1}{5}",
+							"\\frac{2}{5}",
+							"\\frac{3}{10}",
+							"\\frac{3}{4}",
+							"\\frac{3}{5}",
+							"\\frac{4}{5}",
+							"\\frac{7}{10}",
+							"\\frac{9}{10}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.1,
+				"max": 0.9,
+				"nb_distinctes": 11,
+				"valeurs": [0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 7, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.1,
+				"max": 10,
+				"nb_distinctes": 19,
+				"valeurs": [
+					0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1, 2, 3, 4, 5, 7, 9, 10
+				],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 4, 5, 10],
+				"denominateur_min": 2,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 9,
+					"enonce": "Réécris ce nombre décimal sous forme fractionnaire la plus simple.\n\n$$0{,}7 = [?]$$",
+					"reponse": ["\\frac{7}{10}"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"expression1": "0.7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.1)",
+					"graine": 37,
+					"enonce": "Réécris ce nombre décimal sous forme fractionnaire la plus simple.\n\n$$0{,}1 = [?]$$",
+					"reponse": ["\\frac{1}{10}"],
+					"variables": {
+						"a": "10",
+						"b": "1",
+						"expression1": "0.1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris ce nombre décimal sous forme fractionnaire la plus simple.\n\n$$0{,}5 = [?]$$",
+					"reponse": ["\\frac{1}{2}"],
+					"variables": {
+						"a": "2",
+						"b": "1",
+						"expression1": "0.5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris ce nombre décimal sous forme fractionnaire la plus simple.\n\n$$0{,}25 = [?]$$",
+					"reponse": ["\\frac{1}{4}"],
+					"variables": {
+						"a": "4",
+						"b": "1",
+						"expression1": "0.25"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Réécris ce nombre décimal sous forme fractionnaire la plus simple.\n\n$$0{,}2 = [?]$$",
+					"reponse": ["\\frac{1}{5}"],
+					"variables": {
+						"a": "5",
+						"b": "1",
+						"expression1": "0.2"
+					}
+				}
+			]
+		}
+	]
+}

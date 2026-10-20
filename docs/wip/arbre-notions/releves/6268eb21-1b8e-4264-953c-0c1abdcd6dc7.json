@@ -1,0 +1,293 @@
+{
+	"template_id": "6268eb21-1b8e-4264-953c-0c1abdcd6dc7",
+	"titre": "Placer la virgule dans le produit",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Décimaux > Multiplier > Produit",
+	"mis_a_jour": "2026-10-01T06:18:06.264111+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-118",
+			"libelle_point": "Calculer le produit de deux nombres décimaux",
+			"noeud_actuel": "Nombres et calculs > Décimaux : calculs > multiplication",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10^(a-1)}}..{{eval:10^a-1}}!m(10)"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:10^(b-1)}}..{{eval:10^b-1}}!m(10)"
+					},
+					{
+						"name": "f",
+						"expression": "eval:c:10^(a-1)*d:10^(b-1);d"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:c:10^(a-1);d}}*{{eval:d:10^(b-1);d}}"
+					}
+				],
+				"conditions": ["mod(c*d,10)!=0"],
+				"enonce_brut": "La virgule a été oubliée dans le produit. Réécris le produit en rajoutant la virgule.\n\n$${{eval:c:10^(a-1);d}}*{{eval:d:10^(b-1);d}}={{eval:c*d}}$$\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:c*d:10^(a+b-2);d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 12,
+						"max": 9819,
+						"negatif_possible": false,
+						"nb_distinctes": 256
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11,
+						"max": 9831,
+						"negatif_possible": false,
+						"nb_distinctes": 255
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 6,
+						"min": 1.859,
+						"max": 95.158,
+						"negatif_possible": false,
+						"nb_distinctes": 300
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 300,
+						"exemples": [
+							"9.8*9.71",
+							"5.8*8.8",
+							"1.6*7.86",
+							"1.7*3.1",
+							"6.608*1.7",
+							"2.8*5.87",
+							"7.2*5.693",
+							"7.26*6.2",
+							"8.395*7.5",
+							"8.218*5.116",
+							"6.31*8.65",
+							"9.4*2.37"
+						],
+						"nombres_contenus": {
+							"min": 1.01,
+							"max": 9.93,
+							"nb_distinctes": 460,
+							"nature": "décimal",
+							"decimales_max": 3,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 6,
+						"min": 1.859,
+						"max": 95.158,
+						"negatif_possible": false,
+						"nb_distinctes": 300
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1.01,
+				"max": 74945986,
+				"nb_distinctes": 760,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 8
+			},
+			"nombres_reponse": {
+				"min": 1.859,
+				"max": 95.158,
+				"nb_distinctes": 300,
+				"nature": "décimal",
+				"decimales_max": 6,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1.01,
+				"max": 74945986,
+				"nb_distinctes": 1060,
+				"nature": "décimal",
+				"decimales_max": 6,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 8
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (74945986)",
+					"graine": 133,
+					"enonce": "La virgule a été oubliée dans le produit. Réécris le produit en rajoutant la virgule.\n\n$$8{,}578 \\times 8{,}737 = 74\\,945\\,986$$\n\n$$8{,}578 \\times 8{,}737 = [?]$$",
+					"reponse": ["74.945986"],
+					"variables": {
+						"a": "4",
+						"b": "4",
+						"c": "8578",
+						"d": "8737",
+						"f": "74.945986",
+						"expression1": "8.578*8.737"
+					}
+				},
+				{
+					"role": "plus petite valeur (1.01)",
+					"graine": 99,
+					"enonce": "La virgule a été oubliée dans le produit. Réécris le produit en rajoutant la virgule.\n\n$$7{,}212 \\times 1{,}01 = 728\\,412$$\n\n$$7{,}212 \\times 1{,}01 = [?]$$",
+					"reponse": ["7.28412"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "7212",
+						"d": "101",
+						"f": "7.28412",
+						"expression1": "7.212*1.01"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La virgule a été oubliée dans le produit. Réécris le produit en rajoutant la virgule.\n\n$$9{,}8 \\times 9{,}71 = 95\\,158$$\n\n$$9{,}8 \\times 9{,}71 = [?]$$",
+					"reponse": ["95.158"],
+					"variables": {
+						"a": "2",
+						"b": "3",
+						"c": "98",
+						"d": "971",
+						"f": "95.158",
+						"expression1": "9.8*9.71"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La virgule a été oubliée dans le produit. Réécris le produit en rajoutant la virgule.\n\n$$5{,}8 \\times 8{,}8 = 5\\,104$$\n\n$$5{,}8 \\times 8{,}8 = [?]$$",
+					"reponse": ["51.04"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "58",
+						"d": "88",
+						"f": "51.04",
+						"expression1": "5.8*8.8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La virgule a été oubliée dans le produit. Réécris le produit en rajoutant la virgule.\n\n$$1{,}6 \\times 7{,}86 = 12\\,576$$\n\n$$1{,}6 \\times 7{,}86 = [?]$$",
+					"reponse": ["12.576"],
+					"variables": {
+						"a": "2",
+						"b": "3",
+						"c": "16",
+						"d": "786",
+						"f": "12.576",
+						"expression1": "1.6*7.86"
+					}
+				}
+			]
+		}
+	]
+}

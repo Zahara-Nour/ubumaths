@@ -1,0 +1,2403 @@
+{
+	"template_id": "0d43f797-8217-4dfe-a2be-9ee040f1ca35",
+	"titre": "Reconnaître une fonction affine",
+	"sous_titre": "A partir de l'expression algébrique",
+	"consigne": null,
+	"grades": ["3"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Fonctions affines > Apprivoiser",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "3-044",
+			"libelle_point": "Reconnaître une fonction affine (expression ou droite).",
+			"noeud_actuel": "Fonctions > Fonctions affines > expression et droite",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": "libellé « Définir et utiliser les fonctions affines. » → « Reconnaître une fonction affine (expression ou droite). »"
+		}
+	],
+	"nb_variations": 9,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expression1",
+						"expression": "f(x)={{eval:ax}}{{eval:b;+}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Cette fonction est-elle une fonction affine ?\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 202,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 202,
+						"exemples": [
+							"f(x)=-9x+1",
+							"f(x)=-4x-4",
+							"f(x)=-9x-1",
+							"f(x)=-4x-6",
+							"f(x)=5x-6",
+							"f(x)=-9x+3",
+							"f(x)=-8x+9",
+							"f(x)=3x-4",
+							"f(x)=7x-7",
+							"f(x)=8x+4",
+							"f(x)=x+2",
+							"f(x)=-8x+2"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "169/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -8 x + 9$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-8",
+						"b": "9",
+						"c": "7",
+						"d": "5",
+						"x": "x",
+						"expression1": "f(x)=-8x+9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -9 x + 1$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "4",
+						"d": "6",
+						"x": "x",
+						"expression1": "f(x)=-9x+1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -4 x - 4$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-4",
+						"b": "-4",
+						"c": "9",
+						"d": "7",
+						"x": "x",
+						"expression1": "f(x)=-4x-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -9 x - 1$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "2",
+						"d": "8",
+						"x": "x",
+						"expression1": "f(x)=-9x-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -4 x - 6$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "3",
+						"d": "7",
+						"x": "x",
+						"expression1": "f(x)=-4x-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "f(x)={{b}}{{eval:a;+}}x"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Cette fonction est-elle une fonction affine ?\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 202,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 202,
+						"exemples": [
+							"f(x)=1-9x",
+							"f(x)=-4-4x",
+							"f(x)=-1-9x",
+							"f(x)=-6-4x",
+							"f(x)=-6+5x",
+							"f(x)=3-9x",
+							"f(x)=9-8x",
+							"f(x)=-4+3x",
+							"f(x)=-7+7x",
+							"f(x)=4+8x",
+							"f(x)=2+1x",
+							"f(x)=2-8x"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 18,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "152/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = 1 - 9 x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "4",
+						"d": "6",
+						"expression2": "f(x)=1-9x"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 27,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -9 - 9 x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "-9",
+						"c": "8",
+						"d": "4",
+						"expression2": "f(x)=-9-9x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -4 - 4 x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-4",
+						"b": "-4",
+						"c": "9",
+						"d": "7",
+						"expression2": "f(x)=-4-4x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -1 - 9 x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "2",
+						"d": "8",
+						"expression2": "f(x)=-1-9x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -6 - 4 x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "3",
+						"d": "7",
+						"expression2": "f(x)=-6-4x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression3",
+						"expression": "f(x)={{{eval:a/c}}}x{{eval:b/d;+}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Cette fonction est-elle une fonction affine ?\n\n$${{expression3}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 294,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression3",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 294,
+						"exemples": [
+							"f(x)={-\\dfrac{9}{4}}x+\\dfrac{1}{6}",
+							"f(x)={-\\dfrac{4}{9}}x-\\dfrac{4}{7}",
+							"f(x)={-\\dfrac{9}{2}}x-\\dfrac{1}{8}",
+							"f(x)={-\\dfrac{4}{3}}x-\\dfrac{6}{7}",
+							"f(x)={\\dfrac{5}{6}}x-\\dfrac{6}{7}",
+							"f(x)={-\\dfrac{9}{2}}x+\\dfrac{3}{2}",
+							"f(x)={-\\dfrac{8}{7}}x+\\dfrac{9}{5}",
+							"f(x)={\\dfrac{3}{7}}x-\\dfrac{4}{5}",
+							"f(x)={\\dfrac{7}{8}}x-\\dfrac{7}{4}",
+							"f(x)={\\dfrac{8}{5}}x+\\dfrac{4}{5}",
+							"f(x)={\\dfrac{1}{6}}x+\\dfrac{2}{5}",
+							"f(x)={-\\dfrac{8}{9}}x+\\dfrac{2}{3}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "169/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{9}{4} x + \\dfrac{1}{6}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "4",
+						"d": "6",
+						"expression3": "f(x)={-\\dfrac{9}{4}}x+\\dfrac{1}{6}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{4}{9} x - \\dfrac{4}{7}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-4",
+						"b": "-4",
+						"c": "9",
+						"d": "7",
+						"expression3": "f(x)={-\\dfrac{4}{9}}x-\\dfrac{4}{7}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{9}{2} x - \\dfrac{1}{8}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "2",
+						"d": "8",
+						"expression3": "f(x)={-\\dfrac{9}{2}}x-\\dfrac{1}{8}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{4}{3} x - \\dfrac{6}{7}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "3",
+						"d": "7",
+						"expression3": "f(x)={-\\dfrac{4}{3}}x-\\dfrac{6}{7}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = \\dfrac{5}{6} x - \\dfrac{6}{7}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "5",
+						"b": "-6",
+						"c": "6",
+						"d": "7",
+						"expression3": "f(x)={\\dfrac{5}{6}}x-\\dfrac{6}{7}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression4",
+						"expression": "f(x)={{eval:b/d}}+{{{eval:abs(a)/c}}}x"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Cette fonction est-elle une fonction affine ?\n\n$${{expression4}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 287,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression4",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 287,
+						"exemples": [
+							"f(x)=\\dfrac{1}{6}+{\\dfrac{9}{4}}x",
+							"f(x)=-\\dfrac{4}{7}+{\\dfrac{4}{9}}x",
+							"f(x)=-\\dfrac{1}{8}+{\\dfrac{9}{2}}x",
+							"f(x)=-\\dfrac{6}{7}+{\\dfrac{4}{3}}x",
+							"f(x)=-\\dfrac{6}{7}+{\\dfrac{5}{6}}x",
+							"f(x)=\\dfrac{3}{2}+{\\dfrac{9}{2}}x",
+							"f(x)=\\dfrac{9}{5}+{\\dfrac{8}{7}}x",
+							"f(x)=-\\dfrac{4}{5}+{\\dfrac{3}{7}}x",
+							"f(x)=-\\dfrac{7}{4}+{\\dfrac{7}{8}}x",
+							"f(x)=\\dfrac{4}{5}+{\\dfrac{8}{5}}x",
+							"f(x)=\\dfrac{2}{5}+{\\dfrac{1}{6}}x",
+							"f(x)=\\dfrac{2}{3}+{\\dfrac{8}{9}}x"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = \\dfrac{1}{6} + \\dfrac{9}{4} x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "4",
+						"d": "6",
+						"expression4": "f(x)=\\dfrac{1}{6}+{\\dfrac{9}{4}}x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{4}{7} + \\dfrac{4}{9} x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-4",
+						"b": "-4",
+						"c": "9",
+						"d": "7",
+						"expression4": "f(x)=-\\dfrac{4}{7}+{\\dfrac{4}{9}}x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{1}{8} + \\dfrac{9}{2} x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "2",
+						"d": "8",
+						"expression4": "f(x)=-\\dfrac{1}{8}+{\\dfrac{9}{2}}x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{6}{7} + \\dfrac{4}{3} x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "3",
+						"d": "7",
+						"expression4": "f(x)=-\\dfrac{6}{7}+{\\dfrac{4}{3}}x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{6}{7} + \\dfrac{5}{6} x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "5",
+						"b": "-6",
+						"c": "6",
+						"d": "7",
+						"expression4": "f(x)=-\\dfrac{6}{7}+{\\dfrac{5}{6}}x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expression5",
+						"expression": "f(x)={{eval:ax}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Cette fonction est-elle une fonction affine ?\n\n$${{expression5}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 18,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "expression5",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 18,
+						"valeurs": [
+							"f(x)=-2x",
+							"f(x)=-3x",
+							"f(x)=-4x",
+							"f(x)=-5x",
+							"f(x)=-6x",
+							"f(x)=-7x",
+							"f(x)=-8x",
+							"f(x)=-9x",
+							"f(x)=-x",
+							"f(x)=2x",
+							"f(x)=3x",
+							"f(x)=4x",
+							"f(x)=5x",
+							"f(x)=6x",
+							"f(x)=7x",
+							"f(x)=8x",
+							"f(x)=9x",
+							"f(x)=x"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 16,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 24,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = 9 x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "9",
+						"b": "-4",
+						"c": "2",
+						"d": "5",
+						"x": "x",
+						"expression5": "f(x)=9x"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -9 x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "4",
+						"d": "6",
+						"x": "x",
+						"expression5": "f(x)=-9x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -4 x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-4",
+						"b": "-4",
+						"c": "9",
+						"d": "7",
+						"x": "x",
+						"expression5": "f(x)=-4x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = 5 x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "5",
+						"b": "-6",
+						"c": "6",
+						"d": "7",
+						"x": "x",
+						"expression5": "f(x)=5x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -8 x$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-8",
+						"b": "9",
+						"c": "7",
+						"d": "5",
+						"x": "x",
+						"expression5": "f(x)=-8x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression6",
+						"expression": "f(x)=b"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Cette fonction est-elle une fonction affine ?\n\n$${{expression6}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 18,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression6",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 18,
+						"valeurs": [
+							"f(x)=-1",
+							"f(x)=-2",
+							"f(x)=-3",
+							"f(x)=-4",
+							"f(x)=-5",
+							"f(x)=-6",
+							"f(x)=-7",
+							"f(x)=-8",
+							"f(x)=-9",
+							"f(x)=1",
+							"f(x)=2",
+							"f(x)=3",
+							"f(x)=4",
+							"f(x)=5",
+							"f(x)=6",
+							"f(x)=7",
+							"f(x)=8",
+							"f(x)=9"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 18,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = 9$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-8",
+						"b": "9",
+						"c": "7",
+						"d": "5",
+						"expression6": "f(x)=9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 27,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -9$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "-9",
+						"c": "8",
+						"d": "4",
+						"expression6": "f(x)=-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = 1$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "4",
+						"d": "6",
+						"expression6": "f(x)=1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -4$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-4",
+						"b": "-4",
+						"c": "9",
+						"d": "7",
+						"expression6": "f(x)=-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -1$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "2",
+						"d": "8",
+						"expression6": "f(x)=-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expression7",
+						"expression": "f(x)={{eval:ax^2}}{{eval:b;+}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Cette fonction est-elle une fonction affine ?\n\n$${{expression7}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 202,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "expression7",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 202,
+						"exemples": [
+							"f(x)=-9x^2+1",
+							"f(x)=-4x^2-4",
+							"f(x)=-9x^2-1",
+							"f(x)=-4x^2-6",
+							"f(x)=5x^2-6",
+							"f(x)=-9x^2+3",
+							"f(x)=-8x^2+9",
+							"f(x)=3x^2-4",
+							"f(x)=7x^2-7",
+							"f(x)=8x^2+4",
+							"f(x)=x^2+2",
+							"f(x)=-8x^2+2"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "169/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "131/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -8 x^2 + 9$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-8",
+						"b": "9",
+						"c": "7",
+						"d": "5",
+						"x": "x",
+						"expression7": "f(x)=-8x^2+9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -9 x^2 + 1$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "4",
+						"d": "6",
+						"x": "x",
+						"expression7": "f(x)=-9x^2+1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -4 x^2 - 4$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-4",
+						"b": "-4",
+						"c": "9",
+						"d": "7",
+						"x": "x",
+						"expression7": "f(x)=-4x^2-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -9 x^2 - 1$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "2",
+						"d": "8",
+						"x": "x",
+						"expression7": "f(x)=-9x^2-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -4 x^2 - 6$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "3",
+						"d": "7",
+						"x": "x",
+						"expression7": "f(x)=-4x^2-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 8,
+			"graines": "1..300 (modèle réduit à la variation 8)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression8",
+						"expression": "f(x)={{b}}{{eval:a;+}}x^3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Cette fonction est-elle une fonction affine ?\n\n$${{expression8}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 202,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression8",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 202,
+						"exemples": [
+							"f(x)=1-9x^3",
+							"f(x)=-4-4x^3",
+							"f(x)=-1-9x^3",
+							"f(x)=-6-4x^3",
+							"f(x)=-6+5x^3",
+							"f(x)=3-9x^3",
+							"f(x)=9-8x^3",
+							"f(x)=-4+3x^3",
+							"f(x)=-7+7x^3",
+							"f(x)=4+8x^3",
+							"f(x)=2+1x^3",
+							"f(x)=2-8x^3"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 18,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "152/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = 1 - 9 x^3$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "4",
+						"d": "6",
+						"expression8": "f(x)=1-9x^3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 27,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -9 - 9 x^3$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-9",
+						"b": "-9",
+						"c": "8",
+						"d": "4",
+						"expression8": "f(x)=-9-9x^3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -4 - 4 x^3$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-4",
+						"b": "-4",
+						"c": "9",
+						"d": "7",
+						"expression8": "f(x)=-4-4x^3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -1 - 9 x^3$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "2",
+						"d": "8",
+						"expression8": "f(x)=-1-9x^3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -6 - 4 x^3$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "3",
+						"d": "7",
+						"expression8": "f(x)=-6-4x^3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 9,
+			"graines": "1..300 (modèle réduit à la variation 9)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression9",
+						"expression": "f(x)={{a}}/x{{eval:b;+}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Cette fonction est-elle une fonction affine ?\n\n$${{expression9}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 202,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression9",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 202,
+						"exemples": [
+							"f(x)=-9/x+1",
+							"f(x)=-4/x-4",
+							"f(x)=-9/x-1",
+							"f(x)=-4/x-6",
+							"f(x)=5/x-6",
+							"f(x)=-9/x+3",
+							"f(x)=-8/x+9",
+							"f(x)=3/x-4",
+							"f(x)=7/x-7",
+							"f(x)=8/x+4",
+							"f(x)=1/x+2",
+							"f(x)=-8/x+2"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 18,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "169/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "131/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{9}{x} + 1$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "4",
+						"d": "6",
+						"expression9": "f(x)=-9/x+1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{4}{x} - 4$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-4",
+						"b": "-4",
+						"c": "9",
+						"d": "7",
+						"expression9": "f(x)=-4/x-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{9}{x} - 1$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "2",
+						"d": "8",
+						"expression9": "f(x)=-9/x-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = -\\dfrac{4}{x} - 6$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "3",
+						"d": "7",
+						"expression9": "f(x)=-4/x-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Cette fonction est-elle une fonction affine ?\n\n$$f\\left( x \\right) = \\dfrac{5}{x} - 6$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "5",
+						"b": "-6",
+						"c": "6",
+						"d": "7",
+						"expression9": "f(x)=5/x-6"
+					}
+				}
+			]
+		}
+	]
+}

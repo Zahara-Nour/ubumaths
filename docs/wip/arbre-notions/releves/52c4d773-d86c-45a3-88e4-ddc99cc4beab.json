@@ -1,0 +1,239 @@
+{
+	"template_id": "52c4d773-d86c-45a3-88e4-ddc99cc4beab",
+	"titre": "Décomposer l'écriture décimale d'un nombre",
+	"sous_titre": "En dizaines et unités",
+	"consigne": null,
+	"grades": ["CP"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Décomposition",
+	"mis_a_jour": "2026-09-29T20:25:46.919713+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CP-005",
+			"libelle_point": "Connaitre la valeur des chiffres en fonction de leur position (unités, dizaines).",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > décomposition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*10+b"
+					}
+				],
+				"conditions": ["a*10+b != 74"],
+				"enonce_brut": "Décompose ce nombre en dizaines et unités comme dans cet exemple : $74=70+4$.\n\n$${{expression}}$$",
+				"reponses_brutes": ["{{eval:a*10}}+{{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 79,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 79
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 79,
+						"exemples": [
+							"10+5",
+							"30+3",
+							"30+2",
+							"70+2",
+							"10+6",
+							"10+9",
+							"60+3",
+							"80+2",
+							"90+7",
+							"50+6",
+							"40+1",
+							"40+5"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 90,
+							"nb_distinctes": 18,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 99,
+				"nb_distinctes": 82,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 90,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 99,
+				"nb_distinctes": 98,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [
+					{
+						"pattern": "a:multipleOf(10)+b:inN* & lt(10)"
+					}
+				],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 115,
+					"enonce": "Décompose ce nombre en dizaines et unités comme dans cet exemple : $74 = 70 + 4$.\n\n$$99 = [?]$$",
+					"reponse": ["90+9"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"expression": "99"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 13,
+					"enonce": "Décompose ce nombre en dizaines et unités comme dans cet exemple : $74 = 70 + 4$.\n\n$$41 = [?]$$",
+					"reponse": ["40+1"],
+					"variables": {
+						"a": "4",
+						"b": "1",
+						"expression": "41"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Décompose ce nombre en dizaines et unités comme dans cet exemple : $74 = 70 + 4$.\n\n$$15 = [?]$$",
+					"reponse": ["10+5"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"expression": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Décompose ce nombre en dizaines et unités comme dans cet exemple : $74 = 70 + 4$.\n\n$$33 = [?]$$",
+					"reponse": ["30+3"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"expression": "33"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Décompose ce nombre en dizaines et unités comme dans cet exemple : $74 = 70 + 4$.\n\n$$32 = [?]$$",
+					"reponse": ["30+2"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"expression": "32"
+					}
+				}
+			]
+		}
+	]
+}

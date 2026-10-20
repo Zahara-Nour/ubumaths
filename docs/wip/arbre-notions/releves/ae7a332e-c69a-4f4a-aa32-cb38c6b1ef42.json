@@ -1,0 +1,224 @@
+{
+	"template_id": "ae7a332e-c69a-4f4a-aa32-cb38c6b1ef42",
+	"titre": "Déterminer le coefficient de proportionnalité",
+	"sous_titre": "Valeur fractionnaire",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Tableaux de proportionnalité > Reconnaître",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-192",
+			"libelle_point": "Représenter une situation de proportionnalité à l'aide d'un tableau ou de notations symboliques",
+			"noeud_actuel": "Proportionnalité > Situations de proportionnalité > coefficient de proportionnalité",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!m(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient de proportionnalité de ce tableau, pour passer de la première ligne à la deuxième ?\n\n$$\\begin{array}{c|c}           {{a}}  &  {{eval:a*c}} \\\\           {{b}}  &  {{eval:b*c}}         \\end{array}$$\n\nLe coefficient de proportionnalité est $?.$",
+				"reponses_brutes": ["{{eval:b/a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 203,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.2222222222222222,
+						"max": 4.5,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+						"denominateur_min": 2,
+						"denominateur_max": 9,
+						"nb_distinctes": 41
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient de proportionnalité de ce tableau, pour passer de la première ligne à la deuxième ?\n\n$$\\begin{array}{c|c}           2  &  18 \\\\           9  &  81         \\end{array}$$\n\nLe coefficient de proportionnalité est $[?] .$",
+					"reponse": ["\\dfrac{9}{2}"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 13,
+					"enonce": "Quel est le coefficient de proportionnalité de ce tableau, pour passer de la première ligne à la deuxième ?\n\n$$\\begin{array}{c|c}           4  &  8 \\\\           2  &  4         \\end{array}$$\n\nLe coefficient de proportionnalité est $[?] .$",
+					"reponse": ["\\dfrac{1}{2}"],
+					"variables": {
+						"a": "4",
+						"b": "2",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le coefficient de proportionnalité de ce tableau, pour passer de la première ligne à la deuxième ?\n\n$$\\begin{array}{c|c}           4  &  36 \\\\           6  &  54         \\end{array}$$\n\nLe coefficient de proportionnalité est $[?] .$",
+					"reponse": ["\\dfrac{3}{2}"],
+					"variables": {
+						"a": "4",
+						"b": "6",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le coefficient de proportionnalité de ce tableau, pour passer de la première ligne à la deuxième ?\n\n$$\\begin{array}{c|c}           2  &  4 \\\\           5  &  10         \\end{array}$$\n\nLe coefficient de proportionnalité est $[?] .$",
+					"reponse": ["\\dfrac{5}{2}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le coefficient de proportionnalité de ce tableau, pour passer de la première ligne à la deuxième ?\n\n$$\\begin{array}{c|c}           4  &  8 \\\\           3  &  6         \\end{array}$$\n\nLe coefficient de proportionnalité est $[?] .$",
+					"reponse": ["\\dfrac{3}{4}"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "2"
+					}
+				}
+			]
+		}
+	]
+}

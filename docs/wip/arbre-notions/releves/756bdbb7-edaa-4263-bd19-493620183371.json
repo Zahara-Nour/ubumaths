@@ -1,0 +1,229 @@
+{
+	"template_id": "756bdbb7-edaa-4263-bd19-493620183371",
+	"titre": "Nombre négatif défini par une soustraction",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["5"],
+	"type": "fill_in_blanks",
+	"theme": "Relatifs > Apprivoiser > La définition d'un nombre négatif",
+	"mis_a_jour": "2026-10-01T06:18:15.338263+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "5-012",
+			"libelle_point": "Définir les nombres relatifs.",
+			"noeud_actuel": "Nombres et calculs > Relatifs : sens et écritures > définition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..20"
+					},
+					{
+						"name": "expression1",
+						"expression": "-a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris la soustraction définissant le nombre :\n\n$${{expression1}}$$",
+				"reponses_brutes": ["0-{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 19,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -20,
+						"max": -2,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [
+							-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"0-10",
+							"0-11",
+							"0-12",
+							"0-13",
+							"0-14",
+							"0-15",
+							"0-16",
+							"0-17",
+							"0-18",
+							"0-19",
+							"0-2",
+							"0-20",
+							"0-3",
+							"0-4",
+							"0-5",
+							"0-6",
+							"0-7",
+							"0-8",
+							"0-9"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 20,
+							"nb_distinctes": 20,
+							"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 20,
+				"nb_distinctes": 19,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [
+					{
+						"pattern": "0 - a"
+					}
+				],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 6,
+					"max": 6
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 24,
+					"enonce": "Écris la soustraction définissant le nombre :\n\n$$-20 = [?]$$",
+					"reponse": ["0-20"],
+					"variables": {
+						"a": "20",
+						"expression1": "-20"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Écris la soustraction définissant le nombre :\n\n$$-2 = [?]$$",
+					"reponse": ["0-2"],
+					"variables": {
+						"a": "2",
+						"expression1": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris la soustraction définissant le nombre :\n\n$$-8 = [?]$$",
+					"reponse": ["0-8"],
+					"variables": {
+						"a": "8",
+						"expression1": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Écris la soustraction définissant le nombre :\n\n$$-16 = [?]$$",
+					"reponse": ["0-16"],
+					"variables": {
+						"a": "16",
+						"expression1": "-16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Écris la soustraction définissant le nombre :\n\n$$-3 = [?]$$",
+					"reponse": ["0-3"],
+					"variables": {
+						"a": "3",
+						"expression1": "-3"
+					}
+				}
+			]
+		}
+	]
+}

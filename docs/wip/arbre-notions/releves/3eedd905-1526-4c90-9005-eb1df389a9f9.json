@@ -1,0 +1,261 @@
+{
+	"template_id": "3eedd905-1526-4c90-9005-eb1df389a9f9",
+	"titre": "Décomposition décimale -> nombre entier (jusqu'aux centaines)",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CE1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Décomposition",
+	"mis_a_jour": "2026-09-29T20:25:47.432074+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CE1-006",
+			"libelle_point": "Connaitre la valeur des chiffres en fonction de leur position dans un nombre.",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > décomposition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "(a*100) +  (b*10) + c",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"conditions": ["a*b+a*c+b*c != 0"],
+				"enonce_brut": "Réécris cette expression sous la forme d'un nombre entier.\n\n$${{expression}}$$",
+				"reponses_brutes": ["eval:expression"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 257,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 257,
+						"exemples": [
+							"(0*100) +  (5*10) + 9",
+							"(3*100) +  (2*10) + 5",
+							"(7*100) +  (4*10) + 4",
+							"(3*100) +  (2*10) + 0",
+							"(7*100) +  (2*10) + 6",
+							"(0*100) +  (6*10) + 2",
+							"(0*100) +  (9*10) + 6",
+							"(6*100) +  (3*10) + 6",
+							"(8*100) +  (1*10) + 8",
+							"(9*100) +  (6*10) + 8",
+							"(5*100) +  (6*10) + 5",
+							"(3*100) +  (5*10) + 8"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 100,
+							"nb_distinctes": 12,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 19,
+						"max": 992,
+						"negatif_possible": false,
+						"nb_distinctes": 257
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 19,
+				"max": 992,
+				"nb_distinctes": 257,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 992,
+				"nb_distinctes": 268,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (992)",
+					"graine": 115,
+					"enonce": "Réécris cette expression sous la forme d'un nombre entier.\n\n$$\\left( 9 \\times 100 \\right) + \\left( 9 \\times 10 \\right) + 2 = [?]$$",
+					"reponse": ["992"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "2",
+						"expression": "(9*100) +  (9*10) + 2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 9,
+					"enonce": "Réécris cette expression sous la forme d'un nombre entier.\n\n$$\\left( 8 \\times 100 \\right) + \\left( 1 \\times 10 \\right) + 8 = [?]$$",
+					"reponse": ["818"],
+					"variables": {
+						"a": "8",
+						"b": "1",
+						"c": "8",
+						"expression": "(8*100) +  (1*10) + 8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris cette expression sous la forme d'un nombre entier.\n\n$$\\left( 5 \\times 10 \\right) + 9 = [?]$$",
+					"reponse": ["59"],
+					"variables": {
+						"a": "0",
+						"b": "5",
+						"c": "9",
+						"expression": "(0*100) +  (5*10) + 9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris cette expression sous la forme d'un nombre entier.\n\n$$\\left( 3 \\times 100 \\right) + \\left( 2 \\times 10 \\right) + 5 = [?]$$",
+					"reponse": ["325"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"expression": "(3*100) +  (2*10) + 5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Réécris cette expression sous la forme d'un nombre entier.\n\n$$\\left( 7 \\times 100 \\right) + \\left( 4 \\times 10 \\right) + 4 = [?]$$",
+					"reponse": ["744"],
+					"variables": {
+						"a": "7",
+						"b": "4",
+						"c": "4",
+						"expression": "(7*100) +  (4*10) + 4"
+					}
+				}
+			]
+		}
+	]
+}

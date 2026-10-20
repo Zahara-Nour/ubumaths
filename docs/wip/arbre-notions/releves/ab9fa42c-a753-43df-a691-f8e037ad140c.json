@@ -1,0 +1,177 @@
+{
+	"template_id": "ab9fa42c-a753-43df-a691-f8e037ad140c",
+	"titre": "Calculer le pourcentage d'une quantité",
+	"sous_titre": "$$75\\%$$",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Calculer",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-141",
+			"libelle_point": "Appliquer un pourcentage à une grandeur ou à un nombre",
+			"noeud_actuel": "Proportionnalité > Pourcentages > calculs de pourcentages",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..12"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule $75\\%$ de ${{eval:a*4}}$.\n\n$75\\%$ de ${{eval:a*4}}$ est égal à $?$.",
+				"reponses_brutes": ["{{eval:75%*a*4}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 36,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 75,
+				"nb_distinctes": 13,
+				"valeurs": [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 75],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 36,
+				"nb_distinctes": 12,
+				"valeurs": [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 75,
+				"nb_distinctes": 22,
+				"valeurs": [
+					3, 4, 6, 8, 9, 12, 15, 16, 18, 20, 21, 24, 27, 28, 30, 32, 33, 36, 40, 44, 48, 75
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (75)",
+					"graine": 1,
+					"enonce": "Calcule $75\\%$ de $4$.\n\n$75\\%$ de $4$ est égal à $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule $75\\%$ de $16$.\n\n$75\\%$ de $16$ est égal à $[?]$.",
+					"reponse": ["12"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule $75\\%$ de $40$.\n\n$75\\%$ de $40$ est égal à $[?]$.",
+					"reponse": ["30"],
+					"variables": {
+						"a": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule $75\\%$ de $32$.\n\n$75\\%$ de $32$ est égal à $[?]$.",
+					"reponse": ["24"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Calcule $75\\%$ de $44$.\n\n$75\\%$ de $44$ est égal à $[?]$.",
+					"reponse": ["33"],
+					"variables": {
+						"a": "11"
+					}
+				}
+			]
+		}
+	]
+}

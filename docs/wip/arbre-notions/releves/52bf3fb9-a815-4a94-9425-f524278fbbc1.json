@@ -1,0 +1,1669 @@
+{
+	"template_id": "52bf3fb9-a815-4a94-9425-f524278fbbc1",
+	"titre": "Calculer la longueur réelle",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Echelle d'une carte > Utiliser l'échelle",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-193",
+			"libelle_point": "S'initier à la résolution de problèmes d'échelles",
+			"noeud_actuel": "Proportionnalité > Échelle d'une carte",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "10"
+					},
+					{
+						"name": "b1",
+						"expression": "2..9"
+					},
+					{
+						"name": "b2",
+						"expression": "0..1"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10^b2"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"reponses_brutes": ["{{eval:(c)*a;[dm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [10]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"20[cm]",
+							"2[cm]",
+							"30[cm]",
+							"3[cm]",
+							"40[cm]",
+							"4[cm]",
+							"50[cm]",
+							"5[cm]",
+							"60[cm]",
+							"6[cm]",
+							"70[cm]",
+							"7[cm]",
+							"80[cm]",
+							"8[cm]",
+							"90[cm]",
+							"9[cm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 90,
+							"nb_distinctes": 16,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.1,
+						"negatif_possible": false,
+						"denominateurs": [10],
+						"denominateur_min": 10,
+						"denominateur_max": 10,
+						"nb_distinctes": 1,
+						"valeurs": ["1/10"]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"20[dm]",
+							"2[dm]",
+							"30[dm]",
+							"3[dm]",
+							"40[dm]",
+							"4[dm]",
+							"50[dm]",
+							"5[dm]",
+							"60[dm]",
+							"6[dm]",
+							"70[dm]",
+							"7[dm]",
+							"80[dm]",
+							"8[dm]",
+							"90[dm]",
+							"9[dm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 90,
+							"nb_distinctes": 16,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 90,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 90,
+				"nb_distinctes": 16,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 90,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [10],
+				"denominateur_min": 10,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["cm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (90)",
+					"graine": 10,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{10}$, on mesure une longueur de $90~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["90[dm]"],
+					"variables": {
+						"a": "10",
+						"b1": "9",
+						"b2": "1",
+						"b": "90",
+						"c": "90[cm]",
+						"d": "1/10"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{10}$, on mesure une longueur de $20~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["20[dm]"],
+					"variables": {
+						"a": "10",
+						"b1": "2",
+						"b2": "1",
+						"b": "20",
+						"c": "20[cm]",
+						"d": "1/10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{10}$, on mesure une longueur de $4~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["4[dm]"],
+					"variables": {
+						"a": "10",
+						"b1": "4",
+						"b2": "0",
+						"b": "4",
+						"c": "4[cm]",
+						"d": "1/10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{10}$, on mesure une longueur de $2~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["2[dm]"],
+					"variables": {
+						"a": "10",
+						"b1": "2",
+						"b2": "0",
+						"b": "2",
+						"c": "2[cm]",
+						"d": "1/10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{10}$, on mesure une longueur de $8~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["8[dm]"],
+					"variables": {
+						"a": "10",
+						"b1": "8",
+						"b2": "0",
+						"b": "8",
+						"c": "8[cm]",
+						"d": "1/10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "100"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:b[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"reponses_brutes": ["{{eval:(c)*a;[m]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [100]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["2[cm]", "3[cm]", "4[cm]", "5[cm]", "6[cm]", "7[cm]", "8[cm]", "9[cm]"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.01,
+						"max": 0.01,
+						"negatif_possible": false,
+						"denominateurs": [100],
+						"denominateur_min": 100,
+						"denominateur_max": 100,
+						"nb_distinctes": 1,
+						"valeurs": ["1/100"]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["2[m]", "3[m]", "4[m]", "5[m]", "6[m]", "7[m]", "8[m]", "9[m]"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [100],
+				"denominateur_min": 100,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["cm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on mesure une longueur de $2~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["2[m]"],
+					"variables": {
+						"a": "100",
+						"b": "2",
+						"c": "2[cm]",
+						"d": "1/100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on mesure une longueur de $4~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["4[m]"],
+					"variables": {
+						"a": "100",
+						"b": "4",
+						"c": "4[cm]",
+						"d": "1/100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on mesure une longueur de $8~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["8[m]"],
+					"variables": {
+						"a": "100",
+						"b": "8",
+						"c": "8[cm]",
+						"d": "1/100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on mesure une longueur de $7~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["7[m]"],
+					"variables": {
+						"a": "100",
+						"b": "7",
+						"c": "7[cm]",
+						"d": "1/100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 10,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on mesure une longueur de $9~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["9[m]"],
+					"variables": {
+						"a": "100",
+						"b": "9",
+						"c": "9[cm]",
+						"d": "1/100"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "100"
+					},
+					{
+						"name": "b1",
+						"expression": "2..9"
+					},
+					{
+						"name": "b2",
+						"expression": "0..1"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10^b2"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"reponses_brutes": ["{{eval:(c)*a;[m]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [100]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"20[cm]",
+							"2[cm]",
+							"30[cm]",
+							"3[cm]",
+							"40[cm]",
+							"4[cm]",
+							"50[cm]",
+							"5[cm]",
+							"60[cm]",
+							"6[cm]",
+							"70[cm]",
+							"7[cm]",
+							"80[cm]",
+							"8[cm]",
+							"90[cm]",
+							"9[cm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 90,
+							"nb_distinctes": 16,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.01,
+						"max": 0.01,
+						"negatif_possible": false,
+						"denominateurs": [100],
+						"denominateur_min": 100,
+						"denominateur_max": 100,
+						"nb_distinctes": 1,
+						"valeurs": ["1/100"]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"20[m]",
+							"2[m]",
+							"30[m]",
+							"3[m]",
+							"40[m]",
+							"4[m]",
+							"50[m]",
+							"5[m]",
+							"60[m]",
+							"6[m]",
+							"70[m]",
+							"7[m]",
+							"80[m]",
+							"8[m]",
+							"90[m]",
+							"9[m]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 90,
+							"nb_distinctes": 16,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 90,
+				"nb_distinctes": 16,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [100],
+				"denominateur_min": 100,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["cm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on mesure une longueur de $20~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["20[m]"],
+					"variables": {
+						"a": "100",
+						"b1": "2",
+						"b2": "1",
+						"b": "20",
+						"c": "20[cm]",
+						"d": "1/100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on mesure une longueur de $4~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["4[m]"],
+					"variables": {
+						"a": "100",
+						"b1": "4",
+						"b2": "0",
+						"b": "4",
+						"c": "4[cm]",
+						"d": "1/100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on mesure une longueur de $2~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["2[m]"],
+					"variables": {
+						"a": "100",
+						"b1": "2",
+						"b2": "0",
+						"b": "2",
+						"c": "2[cm]",
+						"d": "1/100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on mesure une longueur de $8~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["8[m]"],
+					"variables": {
+						"a": "100",
+						"b1": "8",
+						"b2": "0",
+						"b": "8",
+						"c": "8[cm]",
+						"d": "1/100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on mesure une longueur de $7~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["7[m]"],
+					"variables": {
+						"a": "100",
+						"b1": "7",
+						"b2": "0",
+						"b": "7",
+						"c": "7[cm]",
+						"d": "1/100"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1000"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:b[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"reponses_brutes": ["{{eval:(c)*a;[dam]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1000,
+						"max": 1000,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1000]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["2[cm]", "3[cm]", "4[cm]", "5[cm]", "6[cm]", "7[cm]", "8[cm]", "9[cm]"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.001,
+						"max": 0.001,
+						"negatif_possible": false,
+						"denominateurs": [1000],
+						"denominateur_min": 1000,
+						"denominateur_max": 1000,
+						"nb_distinctes": 1,
+						"valeurs": ["1/1000"]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"2[dam]",
+							"3[dam]",
+							"4[dam]",
+							"5[dam]",
+							"6[dam]",
+							"7[dam]",
+							"8[dam]",
+							"9[dam]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["cm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000}$, on mesure une longueur de $2~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["2[dam]"],
+					"variables": {
+						"a": "1000",
+						"b": "2",
+						"c": "2[cm]",
+						"d": "1/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000}$, on mesure une longueur de $4~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["4[dam]"],
+					"variables": {
+						"a": "1000",
+						"b": "4",
+						"c": "4[cm]",
+						"d": "1/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000}$, on mesure une longueur de $8~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["8[dam]"],
+					"variables": {
+						"a": "1000",
+						"b": "8",
+						"c": "8[cm]",
+						"d": "1/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000}$, on mesure une longueur de $7~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["7[dam]"],
+					"variables": {
+						"a": "1000",
+						"b": "7",
+						"c": "7[cm]",
+						"d": "1/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 10,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000}$, on mesure une longueur de $9~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["9[dam]"],
+					"variables": {
+						"a": "1000",
+						"b": "9",
+						"c": "9[cm]",
+						"d": "1/1000"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "100000"
+					},
+					{
+						"name": "b1",
+						"expression": "2..9"
+					},
+					{
+						"name": "b2",
+						"expression": "0..1"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10^b2"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"reponses_brutes": ["{{eval:(c)*a;[km]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100000,
+						"max": 100000,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [100000]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"20[cm]",
+							"2[cm]",
+							"30[cm]",
+							"3[cm]",
+							"40[cm]",
+							"4[cm]",
+							"50[cm]",
+							"5[cm]",
+							"60[cm]",
+							"6[cm]",
+							"70[cm]",
+							"7[cm]",
+							"80[cm]",
+							"8[cm]",
+							"90[cm]",
+							"9[cm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 90,
+							"nb_distinctes": 16,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.00001,
+						"max": 0.00001,
+						"negatif_possible": false,
+						"denominateurs": [100000],
+						"denominateur_min": 100000,
+						"denominateur_max": 100000,
+						"nb_distinctes": 1,
+						"valeurs": ["1/100000"]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"20[km]",
+							"2[km]",
+							"30[km]",
+							"3[km]",
+							"40[km]",
+							"4[km]",
+							"50[km]",
+							"5[km]",
+							"60[km]",
+							"6[km]",
+							"70[km]",
+							"7[km]",
+							"80[km]",
+							"8[km]",
+							"90[km]",
+							"9[km]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 90,
+							"nb_distinctes": 16,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100000,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90, 100000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 90,
+				"nb_distinctes": 16,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100000,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90, 100000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["cm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100000)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100\\,000}$, on mesure une longueur de $20~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["20[km]"],
+					"variables": {
+						"a": "100000",
+						"b1": "2",
+						"b2": "1",
+						"b": "20",
+						"c": "20[cm]",
+						"d": "1/100000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100\\,000}$, on mesure une longueur de $4~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["4[km]"],
+					"variables": {
+						"a": "100000",
+						"b1": "4",
+						"b2": "0",
+						"b": "4",
+						"c": "4[cm]",
+						"d": "1/100000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100\\,000}$, on mesure une longueur de $2~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["2[km]"],
+					"variables": {
+						"a": "100000",
+						"b1": "2",
+						"b2": "0",
+						"b": "2",
+						"c": "2[cm]",
+						"d": "1/100000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100\\,000}$, on mesure une longueur de $8~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["8[km]"],
+					"variables": {
+						"a": "100000",
+						"b1": "8",
+						"b2": "0",
+						"b": "8",
+						"c": "8[cm]",
+						"d": "1/100000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100\\,000}$, on mesure une longueur de $7~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["7[km]"],
+					"variables": {
+						"a": "100000",
+						"b1": "7",
+						"b2": "0",
+						"b": "7",
+						"c": "7[cm]",
+						"d": "1/100000"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1000000"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:b[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+				"reponses_brutes": ["{{eval:(c)*a;[km]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1000000,
+						"max": 1000000,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1000000]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["2[cm]", "3[cm]", "4[cm]", "5[cm]", "6[cm]", "7[cm]", "8[cm]", "9[cm]"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.000001,
+						"max": 0.000001,
+						"negatif_possible": false,
+						"denominateurs": [1000000],
+						"denominateur_min": 1000000,
+						"denominateur_max": 1000000,
+						"nb_distinctes": 1,
+						"valeurs": ["1/1000000"]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"20[km]",
+							"30[km]",
+							"40[km]",
+							"50[km]",
+							"60[km]",
+							"70[km]",
+							"80[km]",
+							"90[km]"
+						],
+						"nombres_contenus": {
+							"min": 20,
+							"max": 90,
+							"nb_distinctes": 8,
+							"valeurs": [20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1000000,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 1000000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"nombres_reponse": {
+				"min": 20,
+				"max": 90,
+				"nb_distinctes": 8,
+				"valeurs": [20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1000000,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90, 1000000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["cm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000000)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000\\,000}$, on mesure une longueur de $2~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["20[km]"],
+					"variables": {
+						"a": "1000000",
+						"b": "2",
+						"c": "2[cm]",
+						"d": "1/1000000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000\\,000}$, on mesure une longueur de $4~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["40[km]"],
+					"variables": {
+						"a": "1000000",
+						"b": "4",
+						"c": "4[cm]",
+						"d": "1/1000000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000\\,000}$, on mesure une longueur de $8~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["80[km]"],
+					"variables": {
+						"a": "1000000",
+						"b": "8",
+						"c": "8[cm]",
+						"d": "1/1000000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000\\,000}$, on mesure une longueur de $7~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["70[km]"],
+					"variables": {
+						"a": "1000000",
+						"b": "7",
+						"c": "7[cm]",
+						"d": "1/1000000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 10,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000\\,000}$, on mesure une longueur de $9~\\mathrm{cm}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $[?]$.",
+					"reponse": ["90[km]"],
+					"variables": {
+						"a": "1000000",
+						"b": "9",
+						"c": "9[cm]",
+						"d": "1/1000000"
+					}
+				}
+			]
+		}
+	]
+}

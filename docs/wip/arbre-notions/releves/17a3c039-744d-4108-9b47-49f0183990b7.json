@@ -1,0 +1,211 @@
+{
+	"template_id": "17a3c039-744d-4108-9b47-49f0183990b7",
+	"titre": "Trouver le complément",
+	"sous_titre": "Complément à 10 000 - description",
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Additionner > Complément",
+	"mis_a_jour": "2026-09-29T22:51:47.15557+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : addition et soustraction > complément",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*1000+b*100"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Combien faut-il ajouter à ${{eval:10000-(c)}}$ pour obtenir $10\\,000$ ?\n\nIl faut ajouter $?$.",
+				"reponses_brutes": ["{{eval:c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 80,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1100,
+						"max": 9900,
+						"negatif_possible": false,
+						"nb_distinctes": 80
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1100,
+						"max": 9900,
+						"negatif_possible": false,
+						"nb_distinctes": 80
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 100,
+				"max": 10000,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_reponse": {
+				"min": 1100,
+				"max": 9900,
+				"nb_distinctes": 80,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 100,
+				"max": 10000,
+				"nb_distinctes": 91,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10000)",
+					"graine": 1,
+					"enonce": "Combien faut-il ajouter à $8\\,500$ pour obtenir $10\\,000$ ?\n\nIl faut ajouter $[?]$.",
+					"reponse": ["1500"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1500"
+					}
+				},
+				{
+					"role": "plus petite valeur (100)",
+					"graine": 115,
+					"enonce": "Combien faut-il ajouter à $100$ pour obtenir $10\\,000$ ?\n\nIl faut ajouter $[?]$.",
+					"reponse": ["9900"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "9900"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Combien faut-il ajouter à $6\\,700$ pour obtenir $10\\,000$ ?\n\nIl faut ajouter $[?]$.",
+					"reponse": ["3300"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "3300"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Combien faut-il ajouter à $6\\,800$ pour obtenir $10\\,000$ ?\n\nIl faut ajouter $[?]$.",
+					"reponse": ["3200"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "3200"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Combien faut-il ajouter à $2\\,800$ pour obtenir $10\\,000$ ?\n\nIl faut ajouter $[?]$.",
+					"reponse": ["7200"],
+					"variables": {
+						"a": "7",
+						"b": "2",
+						"c": "7200"
+					}
+				}
+			]
+		}
+	]
+}

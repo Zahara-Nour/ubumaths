@@ -1,0 +1,821 @@
+{
+	"template_id": "44a3062b-4e55-44e8-b40d-ac7218b58cb7",
+	"titre": "Calculer une quatrième proportionnelle",
+	"sous_titre": "En utilisant le coefficient de proportionnalité qui est fractionnaire",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Tableaux de proportionnalité > Calculer une quatrième proportionnelle",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-191",
+			"libelle_point": "Résoudre un problème de proportionnalité en choisissant une procédure adaptée : propriété de linéarité pour la multiplication ou l'addition, retour à l'unité",
+			"noeud_actuel": "Proportionnalité > Situations de proportionnalité > quatrième proportionnelle",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(b),a"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &  {{b}}  \\\\                        ?  &  {{c}}                       \\end{array}$",
+				"reponses_brutes": ["{{eval:a*c/b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 134,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.8571428571428571,
+						"max": 31.5,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+						"denominateur_min": 2,
+						"denominateur_max": 9,
+						"nb_distinctes": 74
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 72,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 72,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 6,
+				"numerateur_max": 72,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (72)",
+					"graine": 10,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       9  &  7  \\\\                        [?]  &  8                       \\end{array}$",
+					"reponse": ["\\dfrac{72}{7}"],
+					"variables": {
+						"a": "9",
+						"b": "7",
+						"c": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       2  &  9  \\\\                        [?]  &  4                       \\end{array}$",
+					"reponse": ["\\dfrac{8}{9}"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       4  &  9  \\\\                        [?]  &  7                       \\end{array}$",
+					"reponse": ["\\dfrac{28}{9}"],
+					"variables": {
+						"a": "4",
+						"b": "9",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       2  &  5  \\\\                        [?]  &  8                       \\end{array}$",
+					"reponse": ["\\dfrac{16}{5}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       4  &  3  \\\\                        [?]  &  2                       \\end{array}$",
+					"reponse": ["\\dfrac{8}{3}"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(b),a"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{b}}  &  {{a}}  \\\\                       {{c}}  &  ?                        \\end{array}$",
+				"reponses_brutes": ["{{eval:a*c/b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 134,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.8571428571428571,
+						"max": 31.5,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+						"denominateur_min": 2,
+						"denominateur_max": 9,
+						"nb_distinctes": 74
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 72,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 72,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 6,
+				"numerateur_max": 72,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (72)",
+					"graine": 10,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       7  &  9  \\\\                       8  &  [?]                        \\end{array}$",
+					"reponse": ["\\dfrac{72}{7}"],
+					"variables": {
+						"a": "9",
+						"b": "7",
+						"c": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       9  &  2  \\\\                       4  &  [?]                        \\end{array}$",
+					"reponse": ["\\dfrac{8}{9}"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       9  &  4  \\\\                       7  &  [?]                        \\end{array}$",
+					"reponse": ["\\dfrac{28}{9}"],
+					"variables": {
+						"a": "4",
+						"b": "9",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       5  &  2  \\\\                       8  &  [?]                        \\end{array}$",
+					"reponse": ["\\dfrac{16}{5}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       3  &  4  \\\\                       2  &  [?]                        \\end{array}$",
+					"reponse": ["\\dfrac{8}{3}"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(b),a"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{b}}  &   ? \\\\                       {{c}}  &  {{eval:a*c/b}}                       \\end{array}$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 134,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 72,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 72,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 6,
+				"numerateur_max": 72,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (72)",
+					"graine": 10,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       7  &   [?] \\\\                       8  &  \\dfrac{72}{7}                       \\end{array}$",
+					"reponse": ["9"],
+					"variables": {
+						"a": "9",
+						"b": "7",
+						"c": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       9  &   [?] \\\\                       4  &  \\dfrac{8}{9}                       \\end{array}$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       9  &   [?] \\\\                       7  &  \\dfrac{28}{9}                       \\end{array}$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "4",
+						"b": "9",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       5  &   [?] \\\\                       8  &  \\dfrac{16}{5}                       \\end{array}$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       3  &   [?] \\\\                       2  &  \\dfrac{8}{3}                       \\end{array}$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(b),a"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        ?  &   {{b}} \\\\                        {{eval:a*c/b}}  &   {{c}}                       \\end{array}$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 134,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 72,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 72,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 6,
+				"numerateur_max": 72,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (72)",
+					"graine": 10,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        [?]  &   7 \\\\                        \\dfrac{72}{7}  &   8                       \\end{array}$",
+					"reponse": ["9"],
+					"variables": {
+						"a": "9",
+						"b": "7",
+						"c": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        [?]  &   9 \\\\                        \\dfrac{8}{9}  &   4                       \\end{array}$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        [?]  &   9 \\\\                        \\dfrac{28}{9}  &   7                       \\end{array}$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "4",
+						"b": "9",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        [?]  &   5 \\\\                        \\dfrac{16}{5}  &   8                       \\end{array}$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        [?]  &   3 \\\\                        \\dfrac{8}{3}  &   2                       \\end{array}$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "2"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,277 @@
+{
+	"template_id": "59b9170e-90db-4912-a6ee-0b7a9215e523",
+	"titre": "Décomposer une fraction",
+	"sous_titre": "Une fraction décimale (jusqu'aux millièmes) en une somme d'un entier et d'une fraction décimale inférieure à $1$",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Fractions > Apprivoiser > Décomposition",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM2-026",
+			"libelle_point": "Écrire une fraction décimale supérieure à 1 comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1",
+			"noeud_actuel": "Nombres et calculs > Fractions : sens et écritures > décomposition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "10|100|1000"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b+c}}/{{a}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Décompose cette fraction en une somme d'un entier et d'une fraction décimale inférieure à $1$, comme dans l'exemple :\n\n$$3456/1000 = 3 + 456/1000$$\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{b}}+\\frac{{{c}}}{{{a}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 254,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 1000,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [10, 100, 1000]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 979,
+						"negatif_possible": false,
+						"nb_distinctes": 162
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 2.041,
+						"max": 9.97,
+						"negatif_possible": false,
+						"denominateurs": [10, 100, 1000],
+						"denominateur_min": 10,
+						"denominateur_max": 1000,
+						"nb_distinctes": 254
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 254,
+						"exemples": [
+							"6+\\frac{9}{10}",
+							"4+\\frac{5}{10}",
+							"5+\\frac{1}{10}",
+							"3+\\frac{1}{10}",
+							"3+\\frac{623}{1000}",
+							"7+\\frac{2}{10}",
+							"9+\\frac{7}{10}",
+							"4+\\frac{69}{100}",
+							"3+\\frac{821}{1000}",
+							"7+\\frac{802}{1000}",
+							"6+\\frac{59}{100}",
+							"2+\\frac{5}{100}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 1000,
+							"nb_distinctes": 163,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9956,
+				"nb_distinctes": 261,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 163,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9956,
+				"nb_distinctes": 367,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": {
+				"nb": 196,
+				"denominateurs": [10, 100],
+				"denominateur_min": 10,
+				"denominateur_max": 100,
+				"numerateur_min": 22,
+				"numerateur_max": 997,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [10, 100, 1000],
+				"denominateur_min": 10,
+				"denominateur_max": 1000,
+				"numerateur_min": 1,
+				"numerateur_max": 979,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [
+					{
+						"pattern": "n:integer + p:inN & lt(q) / q:eq(10) | eq(100) | eq(1000)",
+						"acceptable": "n:integer + p:inN & lt(q) / q:integer"
+					}
+				],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9956)",
+					"graine": 156,
+					"enonce": "Décompose cette fraction en une somme d'un entier et d'une fraction décimale inférieure à $1$, comme dans l'exemple :\n\n$$\\dfrac{3\\,456}{1\\,000} = 3 + \\dfrac{456}{1\\,000}$$\n\n$$\\dfrac{9\\,956}{1\\,000} = [?]$$",
+					"reponse": ["9+\\frac{956}{1000}"],
+					"variables": {
+						"a": "1000",
+						"b": "9",
+						"c": "956",
+						"expression1": "9956/1000"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Décompose cette fraction en une somme d'un entier et d'une fraction décimale inférieure à $1$, comme dans l'exemple :\n\n$$\\dfrac{3\\,456}{1\\,000} = 3 + \\dfrac{456}{1\\,000}$$\n\n$$\\dfrac{69}{10} = [?]$$",
+					"reponse": ["6+\\frac{9}{10}"],
+					"variables": {
+						"a": "10",
+						"b": "6",
+						"c": "9",
+						"expression1": "69/10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Décompose cette fraction en une somme d'un entier et d'une fraction décimale inférieure à $1$, comme dans l'exemple :\n\n$$\\dfrac{3\\,456}{1\\,000} = 3 + \\dfrac{456}{1\\,000}$$\n\n$$\\dfrac{45}{10} = [?]$$",
+					"reponse": ["4+\\frac{5}{10}"],
+					"variables": {
+						"a": "10",
+						"b": "4",
+						"c": "5",
+						"expression1": "45/10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Décompose cette fraction en une somme d'un entier et d'une fraction décimale inférieure à $1$, comme dans l'exemple :\n\n$$\\dfrac{3\\,456}{1\\,000} = 3 + \\dfrac{456}{1\\,000}$$\n\n$$\\dfrac{51}{10} = [?]$$",
+					"reponse": ["5+\\frac{1}{10}"],
+					"variables": {
+						"a": "10",
+						"b": "5",
+						"c": "1",
+						"expression1": "51/10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Décompose cette fraction en une somme d'un entier et d'une fraction décimale inférieure à $1$, comme dans l'exemple :\n\n$$\\dfrac{3\\,456}{1\\,000} = 3 + \\dfrac{456}{1\\,000}$$\n\n$$\\dfrac{31}{10} = [?]$$",
+					"reponse": ["3+\\frac{1}{10}"],
+					"variables": {
+						"a": "10",
+						"b": "3",
+						"c": "1",
+						"expression1": "31/10"
+					}
+				}
+			]
+		}
+	]
+}

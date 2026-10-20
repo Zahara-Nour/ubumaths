@@ -1,0 +1,2712 @@
+{
+	"template_id": "2120ce5f-57f3-45cb-bd76-dcf8f8b41e52",
+	"titre": "Factoriser",
+	"sous_titre": "Cas général - avec des carrés",
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Calcul littéral > Transformation > Factorisation",
+	"mis_a_jour": "2026-10-01T06:18:01.097043+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-070",
+			"libelle_point": "Connaitre et utiliser la distributivité simple pour factoriser une expression algébrique.",
+			"noeud_actuel": "Algèbre > Calcul littéral > factorisation",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 8,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9!b"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:gcd(a*c, a*b)}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:a*b/f}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:a*c/f}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b*d^2}}+{{eval:a*c*d}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Factorise le plus possible.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{f}}{{d}}({{eval:g*d}}+{{eval:h}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 268,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 36,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"10z^2+18z",
+							"12z^2+20z",
+							"10z^2+2z",
+							"8x^2+4x",
+							"16x^2+48x",
+							"12y^2+4y",
+							"18y^2+14y",
+							"21y^2+49y",
+							"16z^2+64z",
+							"63y^2+72y",
+							"36y^2+48y",
+							"12x^2+18x"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 81,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"2z(5z+9)",
+							"4z(3z+5)",
+							"2z(5z+1)",
+							"4x(2x+1)",
+							"16x(x+3)",
+							"4y(3y+1)",
+							"2y(9y+7)",
+							"7y(3y+7)",
+							"16z(z+4)",
+							"9y(7y+8)",
+							"12y(3y+4)",
+							"6x(2x+3)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 36,
+							"nb_distinctes": 20,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 73,
+					"enonce": "Factorise le plus possible.\n\n$$81 z^2 + 18 z = [?]$$",
+					"reponse": ["9z(9z+2)"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "2",
+						"d": "z",
+						"f": "9",
+						"g": "9",
+						"h": "2",
+						"expression1": "81z^2+18z"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 3,
+					"enonce": "Factorise le plus possible.\n\n$$10 z^2 + 2 z = [?]$$",
+					"reponse": ["2z(5z+1)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "1",
+						"expression1": "10z^2+2z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Factorise le plus possible.\n\n$$10 z^2 + 18 z = [?]$$",
+					"reponse": ["2z(5z+9)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "9",
+						"expression1": "10z^2+18z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Factorise le plus possible.\n\n$$12 z^2 + 20 z = [?]$$",
+					"reponse": ["4z(3z+5)"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "5",
+						"d": "z",
+						"f": "4",
+						"g": "3",
+						"h": "5",
+						"expression1": "12z^2+20z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Factorise le plus possible.\n\n$$8 x^2 + 4 x = [?]$$",
+					"reponse": ["4x(2x+1)"],
+					"variables": {
+						"a": "4",
+						"b": "2",
+						"c": "1",
+						"d": "x",
+						"f": "4",
+						"g": "2",
+						"h": "1",
+						"expression1": "8x^2+4x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9!b"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:gcd(a*c, a*b)}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:a*b/f}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:a*c/f}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*b*d}}+{{eval:a*c*d^2}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Factorise le plus possible.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{f}}{{d}}({{eval:g}}+{{eval:h*d}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 268,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 36,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"10z+18z^2",
+							"12z+20z^2",
+							"10z+2z^2",
+							"8x+4x^2",
+							"16x+48x^2",
+							"12y+4y^2",
+							"18y+14y^2",
+							"21y+49y^2",
+							"16z+64z^2",
+							"63y+72y^2",
+							"36y+48y^2",
+							"12x+18x^2"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 81,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"2z(5+9z)",
+							"4z(3+5z)",
+							"2z(5+z)",
+							"4x(2+x)",
+							"16x(1+3x)",
+							"4y(3+y)",
+							"2y(9+7y)",
+							"7y(3+7y)",
+							"16z(1+4z)",
+							"9y(7+8y)",
+							"12y(3+4y)",
+							"6x(2+3x)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 36,
+							"nb_distinctes": 20,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 73,
+					"enonce": "Factorise le plus possible.\n\n$$81 z + 18 z^2 = [?]$$",
+					"reponse": ["9z(9+2z)"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "2",
+						"d": "z",
+						"f": "9",
+						"g": "9",
+						"h": "2",
+						"expression2": "81z+18z^2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 5,
+					"enonce": "Factorise le plus possible.\n\n$$16 x + 48 x^2 = [?]$$",
+					"reponse": ["16x(1+3x)"],
+					"variables": {
+						"a": "8",
+						"b": "2",
+						"c": "6",
+						"d": "x",
+						"f": "16",
+						"g": "1",
+						"h": "3",
+						"expression2": "16x+48x^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Factorise le plus possible.\n\n$$10 z + 18 z^2 = [?]$$",
+					"reponse": ["2z(5+9z)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "9",
+						"expression2": "10z+18z^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Factorise le plus possible.\n\n$$12 z + 20 z^2 = [?]$$",
+					"reponse": ["4z(3+5z)"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "5",
+						"d": "z",
+						"f": "4",
+						"g": "3",
+						"h": "5",
+						"expression2": "12z+20z^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Factorise le plus possible.\n\n$$10 z + 2 z^2 = [?]$$",
+					"reponse": ["2z(5+z)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "1",
+						"expression2": "10z+2z^2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9!b"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:gcd(a*c, a*b)}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:a*b/f}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:a*c/f}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression3",
+						"expression": "{{eval:a*b*d^2}}-{{eval:a*c*d}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Factorise le plus possible.\n\n$${{expression3}}$$",
+				"reponses_brutes": ["{{f}}{{d}}({{eval:g*d}}-{{eval:h}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 268,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 36,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression3",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"10z^2-18z",
+							"12z^2-20z",
+							"10z^2-2z",
+							"8x^2-4x",
+							"16x^2-48x",
+							"12y^2-4y",
+							"18y^2-14y",
+							"21y^2-49y",
+							"16z^2-64z",
+							"63y^2-72y",
+							"36y^2-48y",
+							"12x^2-18x"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 81,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"2z(5z-9)",
+							"4z(3z-5)",
+							"2z(5z-1)",
+							"4x(2x-1)",
+							"16x(x-3)",
+							"4y(3y-1)",
+							"2y(9y-7)",
+							"7y(3y-7)",
+							"16z(z-4)",
+							"9y(7y-8)",
+							"12y(3y-4)",
+							"6x(2x-3)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 36,
+							"nb_distinctes": 20,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 73,
+					"enonce": "Factorise le plus possible.\n\n$$81 z^2 - 18 z = [?]$$",
+					"reponse": ["9z(9z-2)"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "2",
+						"d": "z",
+						"f": "9",
+						"g": "9",
+						"h": "2",
+						"expression3": "81z^2-18z"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 3,
+					"enonce": "Factorise le plus possible.\n\n$$10 z^2 - 2 z = [?]$$",
+					"reponse": ["2z(5z-1)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "1",
+						"expression3": "10z^2-2z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Factorise le plus possible.\n\n$$10 z^2 - 18 z = [?]$$",
+					"reponse": ["2z(5z-9)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "9",
+						"expression3": "10z^2-18z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Factorise le plus possible.\n\n$$12 z^2 - 20 z = [?]$$",
+					"reponse": ["4z(3z-5)"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "5",
+						"d": "z",
+						"f": "4",
+						"g": "3",
+						"h": "5",
+						"expression3": "12z^2-20z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Factorise le plus possible.\n\n$$8 x^2 - 4 x = [?]$$",
+					"reponse": ["4x(2x-1)"],
+					"variables": {
+						"a": "4",
+						"b": "2",
+						"c": "1",
+						"d": "x",
+						"f": "4",
+						"g": "2",
+						"h": "1",
+						"expression3": "8x^2-4x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9!b"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:gcd(a*c, a*b)}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:a*b/f}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:a*c/f}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression4",
+						"expression": "{{eval:a*b*d}}-{{eval:a*c*d^2}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Factorise le plus possible.\n\n$${{expression4}}$$",
+				"reponses_brutes": ["{{f}}{{d}}({{eval:g}}-{{eval:h*d}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 268,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 36,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression4",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"10z-18z^2",
+							"12z-20z^2",
+							"10z-2z^2",
+							"8x-4x^2",
+							"16x-48x^2",
+							"12y-4y^2",
+							"18y-14y^2",
+							"21y-49y^2",
+							"16z-64z^2",
+							"63y-72y^2",
+							"36y-48y^2",
+							"12x-18x^2"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 81,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"2z(5-9z)",
+							"4z(3-5z)",
+							"2z(5-z)",
+							"4x(2-x)",
+							"16x(1-3x)",
+							"4y(3-y)",
+							"2y(9-7y)",
+							"7y(3-7y)",
+							"16z(1-4z)",
+							"9y(7-8y)",
+							"12y(3-4y)",
+							"6x(2-3x)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 36,
+							"nb_distinctes": 20,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 73,
+					"enonce": "Factorise le plus possible.\n\n$$81 z - 18 z^2 = [?]$$",
+					"reponse": ["9z(9-2z)"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "2",
+						"d": "z",
+						"f": "9",
+						"g": "9",
+						"h": "2",
+						"expression4": "81z-18z^2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 5,
+					"enonce": "Factorise le plus possible.\n\n$$16 x - 48 x^2 = [?]$$",
+					"reponse": ["16x(1-3x)"],
+					"variables": {
+						"a": "8",
+						"b": "2",
+						"c": "6",
+						"d": "x",
+						"f": "16",
+						"g": "1",
+						"h": "3",
+						"expression4": "16x-48x^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Factorise le plus possible.\n\n$$10 z - 18 z^2 = [?]$$",
+					"reponse": ["2z(5-9z)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "9",
+						"expression4": "10z-18z^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Factorise le plus possible.\n\n$$12 z - 20 z^2 = [?]$$",
+					"reponse": ["4z(3-5z)"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "5",
+						"d": "z",
+						"f": "4",
+						"g": "3",
+						"h": "5",
+						"expression4": "12z-20z^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Factorise le plus possible.\n\n$$10 z - 2 z^2 = [?]$$",
+					"reponse": ["2z(5-z)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "1",
+						"expression4": "10z-2z^2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9!b"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:gcd(a*c, a*b)}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:a*b/f}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:a*c/f}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression5",
+						"expression": "{{eval:a*b*d^2}}+{{eval:a*c}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Factorise le plus possible.\n\n$${{expression5}}$$",
+				"reponses_brutes": ["{{eval:f}}({{eval:g*d^2}}+{{eval:h}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 268,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 36,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression5",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"10z^2+18",
+							"12z^2+20",
+							"10z^2+2",
+							"8x^2+4",
+							"16x^2+48",
+							"12y^2+4",
+							"18y^2+14",
+							"21y^2+49",
+							"16z^2+64",
+							"63y^2+72",
+							"36y^2+48",
+							"12x^2+18"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 81,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"2(5z^2+9)",
+							"4(3z^2+5)",
+							"2(5z^2+1)",
+							"4(2x^2+1)",
+							"16(x^2+3)",
+							"4(3y^2+1)",
+							"2(9y^2+7)",
+							"7(3y^2+7)",
+							"16(z^2+4)",
+							"9(7y^2+8)",
+							"12(3y^2+4)",
+							"6(2x^2+3)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 36,
+							"nb_distinctes": 20,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 73,
+					"enonce": "Factorise le plus possible.\n\n$$81 z^2 + 18 = [?]$$",
+					"reponse": ["9(9z^2+2)"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "2",
+						"d": "z",
+						"f": "9",
+						"g": "9",
+						"h": "2",
+						"expression5": "81z^2+18"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 3,
+					"enonce": "Factorise le plus possible.\n\n$$10 z^2 + 2 = [?]$$",
+					"reponse": ["2(5z^2+1)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "1",
+						"expression5": "10z^2+2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Factorise le plus possible.\n\n$$10 z^2 + 18 = [?]$$",
+					"reponse": ["2(5z^2+9)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "9",
+						"expression5": "10z^2+18"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Factorise le plus possible.\n\n$$12 z^2 + 20 = [?]$$",
+					"reponse": ["4(3z^2+5)"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "5",
+						"d": "z",
+						"f": "4",
+						"g": "3",
+						"h": "5",
+						"expression5": "12z^2+20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Factorise le plus possible.\n\n$$8 x^2 + 4 = [?]$$",
+					"reponse": ["4(2x^2+1)"],
+					"variables": {
+						"a": "4",
+						"b": "2",
+						"c": "1",
+						"d": "x",
+						"f": "4",
+						"g": "2",
+						"h": "1",
+						"expression5": "8x^2+4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9!b"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:gcd(a*c, a*b)}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:a*b/f}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:a*c/f}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression6",
+						"expression": "{{eval:a*b}}+{{eval:a*c*d^2}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Factorise le plus possible.\n\n$${{expression6}}$$",
+				"reponses_brutes": ["{{eval:f}}({{eval:g}}+{{eval:h*d^2}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 268,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 36,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression6",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"10+18z^2",
+							"12+20z^2",
+							"10+2z^2",
+							"8+4x^2",
+							"16+48x^2",
+							"12+4y^2",
+							"18+14y^2",
+							"21+49y^2",
+							"16+64z^2",
+							"63+72y^2",
+							"36+48y^2",
+							"12+18x^2"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 81,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"2(5+9z^2)",
+							"4(3+5z^2)",
+							"2(5+z^2)",
+							"4(2+x^2)",
+							"16(1+3x^2)",
+							"4(3+y^2)",
+							"2(9+7y^2)",
+							"7(3+7y^2)",
+							"16(1+4z^2)",
+							"9(7+8y^2)",
+							"12(3+4y^2)",
+							"6(2+3x^2)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 36,
+							"nb_distinctes": 20,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 73,
+					"enonce": "Factorise le plus possible.\n\n$$81 + 18 z^2 = [?]$$",
+					"reponse": ["9(9+2z^2)"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "2",
+						"d": "z",
+						"f": "9",
+						"g": "9",
+						"h": "2",
+						"expression6": "81+18z^2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 5,
+					"enonce": "Factorise le plus possible.\n\n$$16 + 48 x^2 = [?]$$",
+					"reponse": ["16(1+3x^2)"],
+					"variables": {
+						"a": "8",
+						"b": "2",
+						"c": "6",
+						"d": "x",
+						"f": "16",
+						"g": "1",
+						"h": "3",
+						"expression6": "16+48x^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Factorise le plus possible.\n\n$$10 + 18 z^2 = [?]$$",
+					"reponse": ["2(5+9z^2)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "9",
+						"expression6": "10+18z^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Factorise le plus possible.\n\n$$12 + 20 z^2 = [?]$$",
+					"reponse": ["4(3+5z^2)"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "5",
+						"d": "z",
+						"f": "4",
+						"g": "3",
+						"h": "5",
+						"expression6": "12+20z^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Factorise le plus possible.\n\n$$10 + 2 z^2 = [?]$$",
+					"reponse": ["2(5+z^2)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "1",
+						"expression6": "10+2z^2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9!b"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:gcd(a*c, a*b)}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:a*b/f}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:a*c/f}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression7",
+						"expression": "{{eval:a*b*d^2}}-{{eval:a*c}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Factorise le plus possible.\n\n$${{expression7}}$$",
+				"reponses_brutes": ["{{eval:f}}({{eval:g*d^2}}-{{eval:h}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 268,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 36,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression7",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"10z^2-18",
+							"12z^2-20",
+							"10z^2-2",
+							"8x^2-4",
+							"16x^2-48",
+							"12y^2-4",
+							"18y^2-14",
+							"21y^2-49",
+							"16z^2-64",
+							"63y^2-72",
+							"36y^2-48",
+							"12x^2-18"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 81,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"2(5z^2-9)",
+							"4(3z^2-5)",
+							"2(5z^2-1)",
+							"4(2x^2-1)",
+							"16(x^2-3)",
+							"4(3y^2-1)",
+							"2(9y^2-7)",
+							"7(3y^2-7)",
+							"16(z^2-4)",
+							"9(7y^2-8)",
+							"12(3y^2-4)",
+							"6(2x^2-3)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 36,
+							"nb_distinctes": 20,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 73,
+					"enonce": "Factorise le plus possible.\n\n$$81 z^2 - 18 = [?]$$",
+					"reponse": ["9(9z^2-2)"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "2",
+						"d": "z",
+						"f": "9",
+						"g": "9",
+						"h": "2",
+						"expression7": "81z^2-18"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 3,
+					"enonce": "Factorise le plus possible.\n\n$$10 z^2 - 2 = [?]$$",
+					"reponse": ["2(5z^2-1)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "1",
+						"expression7": "10z^2-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Factorise le plus possible.\n\n$$10 z^2 - 18 = [?]$$",
+					"reponse": ["2(5z^2-9)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "9",
+						"expression7": "10z^2-18"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Factorise le plus possible.\n\n$$12 z^2 - 20 = [?]$$",
+					"reponse": ["4(3z^2-5)"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "5",
+						"d": "z",
+						"f": "4",
+						"g": "3",
+						"h": "5",
+						"expression7": "12z^2-20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Factorise le plus possible.\n\n$$8 x^2 - 4 = [?]$$",
+					"reponse": ["4(2x^2-1)"],
+					"variables": {
+						"a": "4",
+						"b": "2",
+						"c": "1",
+						"d": "x",
+						"f": "4",
+						"g": "2",
+						"h": "1",
+						"expression7": "8x^2-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 8,
+			"graines": "1..300 (modèle réduit à la variation 8)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9!b"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:gcd(a*c, a*b)}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:a*b/f}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:a*c/f}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression8",
+						"expression": "{{eval:a*b}}-{{eval:a*c*d^2}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Factorise le plus possible.\n\n$${{expression8}}$$",
+				"reponses_brutes": ["{{eval:f}}({{eval:g}}-{{eval:h*d^2}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 268,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 36,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression8",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"10-18z^2",
+							"12-20z^2",
+							"10-2z^2",
+							"8-4x^2",
+							"16-48x^2",
+							"12-4y^2",
+							"18-14y^2",
+							"21-49y^2",
+							"16-64z^2",
+							"63-72y^2",
+							"36-48y^2",
+							"12-18x^2"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 81,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 268,
+						"exemples": [
+							"2(5-9z^2)",
+							"4(3-5z^2)",
+							"2(5-z^2)",
+							"4(2-x^2)",
+							"16(1-3x^2)",
+							"4(3-y^2)",
+							"2(9-7y^2)",
+							"7(3-7y^2)",
+							"16(1-4z^2)",
+							"9(7-8y^2)",
+							"12(3-4y^2)",
+							"6(2-3x^2)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 36,
+							"nb_distinctes": 20,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 73,
+					"enonce": "Factorise le plus possible.\n\n$$81 - 18 z^2 = [?]$$",
+					"reponse": ["9(9-2z^2)"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "2",
+						"d": "z",
+						"f": "9",
+						"g": "9",
+						"h": "2",
+						"expression8": "81-18z^2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 5,
+					"enonce": "Factorise le plus possible.\n\n$$16 - 48 x^2 = [?]$$",
+					"reponse": ["16(1-3x^2)"],
+					"variables": {
+						"a": "8",
+						"b": "2",
+						"c": "6",
+						"d": "x",
+						"f": "16",
+						"g": "1",
+						"h": "3",
+						"expression8": "16-48x^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Factorise le plus possible.\n\n$$10 - 18 z^2 = [?]$$",
+					"reponse": ["2(5-9z^2)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "9",
+						"expression8": "10-18z^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Factorise le plus possible.\n\n$$12 - 20 z^2 = [?]$$",
+					"reponse": ["4(3-5z^2)"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "5",
+						"d": "z",
+						"f": "4",
+						"g": "3",
+						"h": "5",
+						"expression8": "12-20z^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Factorise le plus possible.\n\n$$10 - 2 z^2 = [?]$$",
+					"reponse": ["2(5-z^2)"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"d": "z",
+						"f": "2",
+						"g": "5",
+						"h": "1",
+						"expression8": "10-2z^2"
+					}
+				}
+			]
+		}
+	]
+}

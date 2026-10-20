@@ -13,8 +13,7 @@ _Mis à jour le 2026-10-20, après la publication de la page « Verdicts des mod
 - **Prochaine action** : lire les réponses de David sur https://claude.ai/artifact/F9FLrWzCSE72E7zeEyCyH5
   (ArtifactData `list` des collections `questions`, `niveaux`, `modeles`), les appliquer aux CSV, lister les
   modifications de modèles, préparer la migration des tags (lot 2 bis). Générateur de la page : `analyse/page/gen.mjs`.
-- **En attente de David** : ses réponses sur la page ; c4-3 (médiane de 3, 7, 8, 12 : 7 et 8 acceptés ?) ; commiter ou
-  supprimer les 573 relevés JSON non suivis (12 Mo, régénérables en 1 min).
+- **En attente de David** : ses réponses sur la page ; c4-3 (médiane de 3, 7, 8, 12 : 7 et 8 acceptés ?).
 - **Pièges en cours** : contrôle visuel de c4-8 pas fait ; les lectures dans `docs/ref/programmes/Accompagnement/`
   peuvent bloquer le shell (dossier hors git, 332 Mo).
 - **Worktree / branche** : aucun, tout est en docs sur `main` (dépôt principal).

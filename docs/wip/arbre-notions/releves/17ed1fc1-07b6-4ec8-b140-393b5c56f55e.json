@@ -1,0 +1,652 @@
+{
+	"template_id": "17ed1fc1-07b6-4ec8-b140-393b5c56f55e",
+	"titre": "Connaître la position décimale",
+	"sous_titre": "Jusqu'aux centaines",
+	"consigne": null,
+	"grades": ["CE1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Ecriture",
+	"mis_a_jour": "2026-09-29T22:51:47.258788+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "CE1-006",
+			"libelle_point": "Connaitre la valeur des chiffres en fonction de leur position dans un nombre.",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > écritures",
+			"noeud_cible": "Nombres et calculs > Entiers : numération > décomposition",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "0..9!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a*100+b*10+c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Dans le nombre ${{d}}$, le chiffre des **centaines** est $?$.",
+				"reponses_brutes": ["a"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 242,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 108,
+						"max": 987,
+						"negatif_possible": false,
+						"nb_distinctes": 242
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 108,
+				"max": 987,
+				"nb_distinctes": 242,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 987,
+				"nb_distinctes": 251,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (987)",
+					"graine": 207,
+					"enonce": "Dans le nombre $987$, le chiffre des centaines est $[?]$.",
+					"reponse": ["9"],
+					"variables": {
+						"a": "9",
+						"b": "8",
+						"c": "7",
+						"d": "987"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Dans le nombre $159$, le chiffre des centaines est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "159"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le nombre $325$, le chiffre des centaines est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "325"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le nombre $140$, le chiffre des centaines est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "0",
+						"d": "140"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans le nombre $320$, le chiffre des centaines est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "0",
+						"d": "320"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "0..9!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a*100+b*10+c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Dans le nombre ${{d}}$, le chiffre des **dizaines** est $?$.",
+				"reponses_brutes": ["b"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 242,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 108,
+						"max": 987,
+						"negatif_possible": false,
+						"nb_distinctes": 242
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 108,
+				"max": 987,
+				"nb_distinctes": 242,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 987,
+				"nb_distinctes": 252,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (987)",
+					"graine": 207,
+					"enonce": "Dans le nombre $987$, le chiffre des dizaines est $[?]$.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "9",
+						"b": "8",
+						"c": "7",
+						"d": "987"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 13,
+					"enonce": "Dans le nombre $403$, le chiffre des dizaines est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "4",
+						"b": "0",
+						"c": "3",
+						"d": "403"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans le nombre $159$, le chiffre des dizaines est $[?]$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "159"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le nombre $325$, le chiffre des dizaines est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "325"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le nombre $140$, le chiffre des dizaines est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "0",
+						"d": "140"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "0..9!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a*100+b*10+c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Dans le nombre ${{d}}$, le chiffre des **unités** est $?$.",
+				"reponses_brutes": ["c"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 242,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 108,
+						"max": 987,
+						"negatif_possible": false,
+						"nb_distinctes": 242
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 108,
+				"max": 987,
+				"nb_distinctes": 242,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 987,
+				"nb_distinctes": 252,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (987)",
+					"graine": 207,
+					"enonce": "Dans le nombre $987$, le chiffre des unités est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "9",
+						"b": "8",
+						"c": "7",
+						"d": "987"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 3,
+					"enonce": "Dans le nombre $140$, le chiffre des unités est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "0",
+						"d": "140"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans le nombre $159$, le chiffre des unités est $[?]$.",
+					"reponse": ["9"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "159"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le nombre $325$, le chiffre des unités est $[?]$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "325"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans le nombre $320$, le chiffre des unités est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "0",
+						"d": "320"
+					}
+				}
+			]
+		}
+	]
+}

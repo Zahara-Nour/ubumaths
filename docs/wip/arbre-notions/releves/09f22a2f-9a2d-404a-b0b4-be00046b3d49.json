@@ -1,0 +1,234 @@
+{
+	"template_id": "09f22a2f-9a2d-404a-b0b4-be00046b3d49",
+	"titre": "Calculer un quotient entier",
+	"sous_titre": "Le dividende est un nombre de dizaines",
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Diviser > Quotient",
+	"mis_a_jour": "2026-09-29T20:53:22.742983+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : division > quotient",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "3..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b*10}}:{{b}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 49,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 49,
+						"exemples": [
+							"180:6",
+							"200:4",
+							"320:4",
+							"210:7",
+							"270:9",
+							"350:5",
+							"240:3",
+							"630:7",
+							"420:7",
+							"150:3",
+							"300:6",
+							"250:5"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 810,
+							"nb_distinctes": 33,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [30, 40, 50, 60, 70, 80, 90]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 810,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 30,
+				"max": 90,
+				"nb_distinctes": 7,
+				"valeurs": [30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 810,
+				"nb_distinctes": 39,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (810)",
+					"graine": 73,
+					"enonce": "Calcule.\n\n$$810 : 9 = [?]$$",
+					"reponse": ["90"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"expression1": "810:9"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 9,
+					"enonce": "Calcule.\n\n$$240 : 3 = [?]$$",
+					"reponse": ["80"],
+					"variables": {
+						"a": "8",
+						"b": "3",
+						"expression1": "240:3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$180 : 6 = [?]$$",
+					"reponse": ["30"],
+					"variables": {
+						"a": "3",
+						"b": "6",
+						"expression1": "180:6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$200 : 4 = [?]$$",
+					"reponse": ["50"],
+					"variables": {
+						"a": "5",
+						"b": "4",
+						"expression1": "200:4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$320 : 4 = [?]$$",
+					"reponse": ["80"],
+					"variables": {
+						"a": "8",
+						"b": "4",
+						"expression1": "320:4"
+					}
+				}
+			]
+		}
+	]
+}

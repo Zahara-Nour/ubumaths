@@ -1,0 +1,707 @@
+{
+	"template_id": "2d29792b-f7d7-4950-90db-9530ca3b02c4",
+	"titre": "Vocabulaire des fonctions affines",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["3"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Fonctions affines > Apprivoiser",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "3-044",
+			"libelle_point": "Reconnaître une fonction affine (expression ou droite).",
+			"noeud_actuel": "Fonctions > Fonctions affines",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": "libellé « Définir et utiliser les fonctions affines. » → « Reconnaître une fonction affine (expression ou droite). »"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a,{{eval:-(a)}}"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{a}}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "le coefficient directeur"
+					},
+					{
+						"content": "l'ordonnée à l'origine"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 118,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["le coefficient directeur"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = -9 x + 5$, comment s'appelle le nombre $-9$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["A. le coefficient directeur"],
+					"variables": {
+						"a": "-9",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = -4 x + 3$, comment s'appelle le nombre $-4$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["A. le coefficient directeur"],
+					"variables": {
+						"a": "-4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = -4 x + 2$, comment s'appelle le nombre $-4$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["A. le coefficient directeur"],
+					"variables": {
+						"a": "-4",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 6 x + 2$, comment s'appelle le nombre $6$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["A. le coefficient directeur"],
+					"variables": {
+						"a": "6",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = -9 x + 6$, comment s'appelle le nombre $-9$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["A. le coefficient directeur"],
+					"variables": {
+						"a": "-9",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a,{{eval:-(a)}}"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{b}}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "le coefficient directeur"
+					},
+					{
+						"content": "l'ordonnée à l'origine"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 118,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["l'ordonnée à l'origine"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 24,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 9 x + 3$, comment s'appelle le nombre $3$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["B. l'ordonnée à l'origine"],
+					"variables": {
+						"a": "9",
+						"b": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = -9 x + 5$, comment s'appelle le nombre $5$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["B. l'ordonnée à l'origine"],
+					"variables": {
+						"a": "-9",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = -4 x + 3$, comment s'appelle le nombre $3$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["B. l'ordonnée à l'origine"],
+					"variables": {
+						"a": "-4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = -4 x + 2$, comment s'appelle le nombre $2$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["B. l'ordonnée à l'origine"],
+					"variables": {
+						"a": "-4",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 6 x + 2$, comment s'appelle le nombre $2$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["B. l'ordonnée à l'origine"],
+					"variables": {
+						"a": "6",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a,{{eval:-(a)}}"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{a}}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "le coefficient directeur"
+					},
+					{
+						"content": "l'ordonnée à l'origine"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 118,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["le coefficient directeur"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "152/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 5 - 9 x$, comment s'appelle le nombre $-9$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["A. le coefficient directeur"],
+					"variables": {
+						"a": "-9",
+						"b": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 13,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 1 - 4 x$, comment s'appelle le nombre $-4$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["A. le coefficient directeur"],
+					"variables": {
+						"a": "-4",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 3 - 4 x$, comment s'appelle le nombre $-4$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["A. le coefficient directeur"],
+					"variables": {
+						"a": "-4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 2 - 4 x$, comment s'appelle le nombre $-4$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["A. le coefficient directeur"],
+					"variables": {
+						"a": "-4",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 2 + 6 x$, comment s'appelle le nombre $6$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["A. le coefficient directeur"],
+					"variables": {
+						"a": "6",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a,{{eval:-(a)}}"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{b}}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "le coefficient directeur"
+					},
+					{
+						"content": "l'ordonnée à l'origine"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 118,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["l'ordonnée à l'origine"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "152/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 5 - 9 x$, comment s'appelle le nombre $5$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["B. l'ordonnée à l'origine"],
+					"variables": {
+						"a": "-9",
+						"b": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 13,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 1 - 4 x$, comment s'appelle le nombre $1$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["B. l'ordonnée à l'origine"],
+					"variables": {
+						"a": "-4",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 3 - 4 x$, comment s'appelle le nombre $3$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["B. l'ordonnée à l'origine"],
+					"variables": {
+						"a": "-4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 2 - 4 x$, comment s'appelle le nombre $2$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["B. l'ordonnée à l'origine"],
+					"variables": {
+						"a": "-4",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans la fonction affine $f\\left( x \\right) = 2 + 6 x$, comment s'appelle le nombre $2$ ?\n\n- A. le coefficient directeur\n- B. l'ordonnée à l'origine",
+					"reponse": ["B. l'ordonnée à l'origine"],
+					"variables": {
+						"a": "6",
+						"b": "2"
+					}
+				}
+			]
+		}
+	]
+}

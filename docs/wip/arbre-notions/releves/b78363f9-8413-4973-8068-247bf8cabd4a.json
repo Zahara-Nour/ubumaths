@@ -1,0 +1,216 @@
+{
+	"template_id": "b78363f9-8413-4973-8068-247bf8cabd4a",
+	"titre": "Table de multiplication",
+	"sous_titre": "Par $8$",
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > Tables",
+	"mis_a_jour": "2026-09-29T18:05:36.097742+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CE2-021",
+			"libelle_point": "Connaître les tables de multiplication : donner le produit de deux nombres (3 × 4 = ?).",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > tables",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..12"
+					},
+					{
+						"name": "expression1",
+						"expression": "8*a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"8*10",
+							"8*11",
+							"8*12",
+							"8*2",
+							"8*3",
+							"8*4",
+							"8*5",
+							"8*6",
+							"8*7",
+							"8*8",
+							"8*9"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 12,
+							"nb_distinctes": 11,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 16,
+						"max": 96,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 16,
+				"max": 96,
+				"nb_distinctes": 11,
+				"valeurs": [16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 96,
+				"nb_distinctes": 22,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (96)",
+					"graine": 10,
+					"enonce": "Calcule.\n\n$$8 \\times 12 = [?]$$",
+					"reponse": ["96"],
+					"variables": {
+						"a": "12",
+						"expression1": "8*12"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$8 \\times 2 = [?]$$",
+					"reponse": ["16"],
+					"variables": {
+						"a": "2",
+						"expression1": "8*2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$8 \\times 5 = [?]$$",
+					"reponse": ["40"],
+					"variables": {
+						"a": "5",
+						"expression1": "8*5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$8 \\times 10 = [?]$$",
+					"reponse": ["80"],
+					"variables": {
+						"a": "10",
+						"expression1": "8*10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule.\n\n$$8 \\times 8 = [?]$$",
+					"reponse": ["64"],
+					"variables": {
+						"a": "8",
+						"expression1": "8*8"
+					}
+				}
+			]
+		}
+	]
+}

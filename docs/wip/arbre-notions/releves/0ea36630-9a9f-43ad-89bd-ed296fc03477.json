@@ -1,0 +1,173 @@
+{
+	"template_id": "0ea36630-9a9f-43ad-89bd-ed296fc03477",
+	"titre": "Trouver le triple",
+	"sous_titre": "Nombres de $1$ à $15$, $25$, $30$, $40$, $50$ et $100$",
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Additionner > Triple et tiers",
+	"mis_a_jour": "2026-09-29T18:05:36.097742+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > triple et tiers",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9|11..15|25|30|40|50|100"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le triple de ${{a}}$ ?\n\nLe triple de ${{a}}$ est $?$.",
+				"reponses_brutes": ["{{eval:3*a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 19,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 25, 30, 40, 50, 100]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 300,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [3, 6, 9, 12, 15, 18, 21, 24, 27, 33, 36, 39, 42, 45, 75, 90, 120, 150, 300]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 25, 30, 40, 50, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 300,
+				"nb_distinctes": 19,
+				"valeurs": [3, 6, 9, 12, 15, 18, 21, 24, 27, 33, 36, 39, 42, 45, 75, 90, 120, 150, 300],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 300,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (300)",
+					"graine": 10,
+					"enonce": "Quel est le triple de $100$ ?\n\nLe triple de $100$ est $[?]$.",
+					"reponse": ["300"],
+					"variables": {
+						"a": "100"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 27,
+					"enonce": "Quel est le triple de $1$ ?\n\nLe triple de $1$ est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le triple de $5$ ?\n\nLe triple de $5$ est $[?]$.",
+					"reponse": ["15"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le triple de $25$ ?\n\nLe triple de $25$ est $[?]$.",
+					"reponse": ["75"],
+					"variables": {
+						"a": "25"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le triple de $50$ ?\n\nLe triple de $50$ est $[?]$.",
+					"reponse": ["150"],
+					"variables": {
+						"a": "50"
+					}
+				}
+			]
+		}
+	]
+}

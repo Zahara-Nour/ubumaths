@@ -1,0 +1,245 @@
+{
+	"template_id": "bddd7963-1e7d-4583-beb9-bb8b4cb759e3",
+	"titre": "Utiliser la distributivité",
+	"sous_titre": "Multiplication par $99$",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > Distributivité",
+	"mis_a_jour": "2026-09-29T18:05:33.863962+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM2-047",
+			"libelle_point": "Utiliser la distributivité de la multiplication par rapport à l'addition dans des cas simples",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > distributivité",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "15..40"
+					},
+					{
+						"name": "expression1",
+						"expression": "99*a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 26,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 40,
+						"negatif_possible": false,
+						"nb_distinctes": 26,
+						"valeurs": [
+							15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+							36, 37, 38, 39, 40
+						]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 26,
+						"valeurs": [
+							"99*15",
+							"99*16",
+							"99*17",
+							"99*18",
+							"99*19",
+							"99*20",
+							"99*21",
+							"99*22",
+							"99*23",
+							"99*24",
+							"99*25",
+							"99*26",
+							"99*27",
+							"99*28",
+							"99*29",
+							"99*30",
+							"99*31",
+							"99*32",
+							"99*33",
+							"99*34",
+							"99*35",
+							"99*36",
+							"99*37",
+							"99*38",
+							"99*39",
+							"99*40"
+						],
+						"nombres_contenus": {
+							"min": 15,
+							"max": 99,
+							"nb_distinctes": 27,
+							"valeurs": [
+								15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+								36, 37, 38, 39, 40, 99
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1485,
+						"max": 3960,
+						"negatif_possible": false,
+						"nb_distinctes": 26,
+						"valeurs": [
+							1485, 1584, 1683, 1782, 1881, 1980, 2079, 2178, 2277, 2376, 2475, 2574, 2673, 2772,
+							2871, 2970, 3069, 3168, 3267, 3366, 3465, 3564, 3663, 3762, 3861, 3960
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 15,
+				"max": 99,
+				"nb_distinctes": 27,
+				"valeurs": [
+					15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+					37, 38, 39, 40, 99
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1485,
+				"max": 3960,
+				"nb_distinctes": 26,
+				"valeurs": [
+					1485, 1584, 1683, 1782, 1881, 1980, 2079, 2178, 2277, 2376, 2475, 2574, 2673, 2772, 2871,
+					2970, 3069, 3168, 3267, 3366, 3465, 3564, 3663, 3762, 3861, 3960
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 15,
+				"max": 3960,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3960)",
+					"graine": 24,
+					"enonce": "Calcule.\n\n$$99 \\times 40 = [?]$$",
+					"reponse": ["3960"],
+					"variables": {
+						"a": "40",
+						"expression1": "99*40"
+					}
+				},
+				{
+					"role": "plus petite valeur (15)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$99 \\times 15 = [?]$$",
+					"reponse": ["1485"],
+					"variables": {
+						"a": "15",
+						"expression1": "99*15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$99 \\times 23 = [?]$$",
+					"reponse": ["2277"],
+					"variables": {
+						"a": "23",
+						"expression1": "99*23"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$99 \\times 16 = [?]$$",
+					"reponse": ["1584"],
+					"variables": {
+						"a": "16",
+						"expression1": "99*16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$99 \\times 35 = [?]$$",
+					"reponse": ["3465"],
+					"variables": {
+						"a": "35",
+						"expression1": "99*35"
+					}
+				}
+			]
+		}
+	]
+}

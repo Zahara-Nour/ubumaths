@@ -1,0 +1,2490 @@
+{
+	"template_id": "e66089e0-b7bd-49fe-a968-9a8df3d325fd",
+	"titre": "Trouver un facteur commun",
+	"sous_titre": "Facteur commun apparent - littéral",
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Calcul littéral > Transformation > Factorisation",
+	"mis_a_jour": "2026-10-01T06:18:01.097043+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-070",
+			"libelle_point": "Connaitre et utiliser la distributivité simple pour factoriser une expression algébrique.",
+			"noeud_actuel": "Algèbre > Calcul littéral > factorisation",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 12,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}*{{b}}+{{a}}{{c}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 67,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 \\times 9 + 2 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 \\times 4 + 3 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 \\times 5 + 2 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 \\times 2 + 3 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$7 \\times 3 + 7 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}+{{a}}*{{b}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 67,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 z + 2 \\times 9$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 y + 3 \\times 4$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 x + 2 \\times 5$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 x + 3 \\times 2$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$7 y + 7 \\times 3$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}+{{a}}{{d}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$7 y + 7 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 z + 2 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 y + 3 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 x + 2 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 x + 3 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}-{{a}}{{d}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$7 y - 7 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 z - 2 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 y - 3 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 x - 2 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 x - 3 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}*{{b}}-{{a}}{{c}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 67,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 \\times 9 - 2 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 \\times 4 - 3 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 \\times 5 - 2 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 \\times 2 - 3 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$7 \\times 3 - 7 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}-{{a}}*{{b}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 67,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 z - 2 \\times 9$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 y - 3 \\times 4$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 x - 2 \\times 5$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 x - 3 \\times 2$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$7 y - 7 \\times 3$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}+{{b}}{{c}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 67,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 z + 9 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["z"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 y + 4 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 x + 5 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 x + 2 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$7 y + 3 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 8,
+			"graines": "1..300 (modèle réduit à la variation 8)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}-{{b}}{{c}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 67,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 z - 9 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["z"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 y - 4 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$2 x - 5 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$3 x - 2 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$7 y - 3 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 9,
+			"graines": "1..300 (modèle réduit à la variation 9)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{d}}{{c}}+{{a}}{{c}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$x y + 7 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$x z + 2 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["z"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$z y + 3 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$z x + 2 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$z x + 3 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				}
+			]
+		},
+		{
+			"variation": 10,
+			"graines": "1..300 (modèle réduit à la variation 10)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{c}}{{d}}+{{a}}{{c}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$y x + 7 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$z x + 2 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["z"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$y z + 3 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$x z + 2 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$x z + 3 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				}
+			]
+		},
+		{
+			"variation": 11,
+			"graines": "1..300 (modèle réduit à la variation 11)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{d}}{{c}}-{{a}}{{c}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$x y - 7 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$x z - 2 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["z"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$z y - 3 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$z x - 2 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$z x - 3 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				}
+			]
+		},
+		{
+			"variation": 12,
+			"graines": "1..300 (modèle réduit à la variation 12)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "x|y|z!c"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Trouve un facteur commun (autre que $1$).\n\n$${{c}}{{d}}-{{a}}{{c}}$$\n\nUn facteur commun est $?$.",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["x", "y", "z"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 5,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$y x - 7 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"c": "y",
+						"d": "x"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$z x - 2 z$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["z"],
+					"variables": {
+						"a": "2",
+						"b": "9",
+						"c": "z",
+						"d": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$y z - 3 y$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["y"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "y",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$x z - 2 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "x",
+						"d": "z"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un facteur commun (autre que $1$).\n\n$$x z - 3 x$$\n\nUn facteur commun est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "x",
+						"d": "z"
+					}
+				}
+			]
+		}
+	]
+}

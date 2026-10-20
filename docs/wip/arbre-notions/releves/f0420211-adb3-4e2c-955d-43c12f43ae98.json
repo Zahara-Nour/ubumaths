@@ -1,0 +1,211 @@
+{
+	"template_id": "f0420211-adb3-4e2c-955d-43c12f43ae98",
+	"titre": "Utiliser la distributivité",
+	"sous_titre": "Multiplication par $102$",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > Distributivité",
+	"mis_a_jour": "2026-09-29T18:05:33.863962+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM2-047",
+			"libelle_point": "Utiliser la distributivité de la multiplication par rapport à l'addition dans des cas simples",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > distributivité",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "15..49"
+					},
+					{
+						"name": "expression1",
+						"expression": "102*a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 34,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 49,
+						"negatif_possible": false,
+						"nb_distinctes": 34
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 34,
+						"exemples": [
+							"102*15",
+							"102*26",
+							"102*16",
+							"102*42",
+							"102*17",
+							"102*36",
+							"102*44",
+							"102*47",
+							"102*33",
+							"102*27",
+							"102*29",
+							"102*20"
+						],
+						"nombres_contenus": {
+							"min": 15,
+							"max": 102,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1530,
+						"max": 4998,
+						"negatif_possible": false,
+						"nb_distinctes": 34
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 15,
+				"max": 102,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1530,
+				"max": 4998,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 15,
+				"max": 4998,
+				"nb_distinctes": 69,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4998)",
+					"graine": 37,
+					"enonce": "Calcule.\n\n$$102 \\times 49 = [?]$$",
+					"reponse": ["4998"],
+					"variables": {
+						"a": "49",
+						"expression1": "102*49"
+					}
+				},
+				{
+					"role": "plus petite valeur (15)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$102 \\times 15 = [?]$$",
+					"reponse": ["1530"],
+					"variables": {
+						"a": "15",
+						"expression1": "102*15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$102 \\times 26 = [?]$$",
+					"reponse": ["2652"],
+					"variables": {
+						"a": "26",
+						"expression1": "102*26"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$102 \\times 16 = [?]$$",
+					"reponse": ["1632"],
+					"variables": {
+						"a": "16",
+						"expression1": "102*16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$102 \\times 42 = [?]$$",
+					"reponse": ["4284"],
+					"variables": {
+						"a": "42",
+						"expression1": "102*42"
+					}
+				}
+			]
+		}
+	]
+}

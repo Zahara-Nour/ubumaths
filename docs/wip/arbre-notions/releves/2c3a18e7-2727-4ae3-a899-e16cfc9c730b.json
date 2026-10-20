@@ -1,0 +1,399 @@
+{
+	"template_id": "2c3a18e7-2727-4ae3-a899-e16cfc9c730b",
+	"titre": "Calculer un produit d'entiers",
+	"sous_titre": "Multiplication par $100$ d'un nombre inférieur à $100$",
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > Puissances de $$10$$",
+	"mis_a_jour": "2026-09-29T20:53:53.711256+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CE2-023",
+			"libelle_point": "Multiplier un nombre entier par 10 ou 100.",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > puissances de 10",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..99"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "a*100"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 92,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 92
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 92,
+						"exemples": [
+							"1*100",
+							"33*100",
+							"4*100",
+							"77*100",
+							"7*100",
+							"62*100",
+							"85*100",
+							"91*100",
+							"53*100",
+							"8*100",
+							"36*100",
+							"43*100"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 100,
+							"nb_distinctes": 93,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 9900,
+						"negatif_possible": false,
+						"nb_distinctes": 92
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 93,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 100,
+				"max": 9900,
+				"nb_distinctes": 92,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9900,
+				"nb_distinctes": 184,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9900)",
+					"graine": 37,
+					"enonce": "Calcule.\n\n$$99 \\times 100 = [?]$$",
+					"reponse": ["9900"],
+					"variables": {
+						"a": "99",
+						"expression1": "99*100"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$1 \\times 100 = [?]$$",
+					"reponse": ["100"],
+					"variables": {
+						"a": "1",
+						"expression1": "1*100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$33 \\times 100 = [?]$$",
+					"reponse": ["3300"],
+					"variables": {
+						"a": "33",
+						"expression1": "33*100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$4 \\times 100 = [?]$$",
+					"reponse": ["400"],
+					"variables": {
+						"a": "4",
+						"expression1": "4*100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$77 \\times 100 = [?]$$",
+					"reponse": ["7700"],
+					"variables": {
+						"a": "77",
+						"expression1": "77*100"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..99"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "100*a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{eval:{{expression2}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 92,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 92
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 92,
+						"exemples": [
+							"100*1",
+							"100*33",
+							"100*4",
+							"100*77",
+							"100*7",
+							"100*62",
+							"100*85",
+							"100*91",
+							"100*53",
+							"100*8",
+							"100*36",
+							"100*43"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 100,
+							"nb_distinctes": 93,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 9900,
+						"negatif_possible": false,
+						"nb_distinctes": 92
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 93,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 100,
+				"max": 9900,
+				"nb_distinctes": 92,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9900,
+				"nb_distinctes": 184,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9900)",
+					"graine": 37,
+					"enonce": "Calcule.\n\n$$100 \\times 99 = [?]$$",
+					"reponse": ["9900"],
+					"variables": {
+						"a": "99",
+						"expression2": "100*99"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$100 \\times 1 = [?]$$",
+					"reponse": ["100"],
+					"variables": {
+						"a": "1",
+						"expression2": "100*1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$100 \\times 33 = [?]$$",
+					"reponse": ["3300"],
+					"variables": {
+						"a": "33",
+						"expression2": "100*33"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$100 \\times 4 = [?]$$",
+					"reponse": ["400"],
+					"variables": {
+						"a": "4",
+						"expression2": "100*4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$100 \\times 77 = [?]$$",
+					"reponse": ["7700"],
+					"variables": {
+						"a": "77",
+						"expression2": "100*77"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,305 @@
+{
+	"template_id": "6379fa20-672c-4771-9d48-6d167a7a922e",
+	"titre": "Encadrer un nombre décimal au centième près",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Décimaux > Apprivoiser > Encadrer",
+	"mis_a_jour": "2026-10-01T06:18:06.264111+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM1-132",
+			"libelle_point": "Encadrer un nombre décimal (entre deux entiers consécutifs : 3 < 3,7 < 4 ; au dixième près : 3,7 < 3,74 < 3,8).",
+			"noeud_actuel": "Nombres et calculs > Décimaux : numération > encadrement",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "libellé « Encadrer, intercaler des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > » → « Encadrer un nombre décimal (entre deux entiers consécutifs : 3 < 3,7 < 4 ; au dixième près : 3,7 < 3,74 < 3,8). »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a+b*0.1+c*0.01+d*0.001;d"
+					},
+					{
+						"name": "expression1",
+						"expression": "?<f<?"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Encadre ce nombre décimal au centième près.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:a+b*0.1+c*0.01;d}}", "{{eval:a+b*0.1+(c+1)*0.01;d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 294,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 0.018,
+						"max": 9.926,
+						"negatif_possible": false,
+						"nb_distinctes": 294
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 294,
+						"exemples": [
+							"?<0.599<?",
+							"?<3.258<?",
+							"?<0.407<?",
+							"?<3.203<?",
+							"?<7.261<?",
+							"?<0.625<?",
+							"?<0.965<?",
+							"?<6.366<?",
+							"?<8.187<?",
+							"?<9.685<?",
+							"?<5.658<?",
+							"?<0.592<?"
+						],
+						"nombres_contenus": {
+							"min": 0.018,
+							"max": 9.926,
+							"nb_distinctes": 294,
+							"nature": "décimal",
+							"decimales_max": 3,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.01,
+						"max": 9.92,
+						"negatif_possible": false,
+						"nb_distinctes": 257
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.02,
+						"max": 9.93,
+						"negatif_possible": false,
+						"nb_distinctes": 257
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.018,
+				"max": 9.926,
+				"nb_distinctes": 294,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0.01,
+				"max": 9.93,
+				"nb_distinctes": 449,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.01,
+				"max": 9.93,
+				"nb_distinctes": 743,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"<": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9.93)",
+					"graine": 115,
+					"enonce": "Encadre ce nombre décimal au centième près.\n\n$$[?] < 9{,}926 < [?]$$",
+					"reponse": ["9.92", "9.93"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "2",
+						"d": "6",
+						"f": "9.926",
+						"expression1": "?<9.926<?"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.01)",
+					"graine": 27,
+					"enonce": "Encadre ce nombre décimal au centième près.\n\n$$[?] < 0{,}018 < [?]$$",
+					"reponse": ["0.01", "0.02"],
+					"variables": {
+						"a": "0",
+						"b": "0",
+						"c": "1",
+						"d": "8",
+						"f": "0.018",
+						"expression1": "?<0.018<?"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Encadre ce nombre décimal au centième près.\n\n$$[?] < 0{,}599 < [?]$$",
+					"reponse": ["0.59", "0.6"],
+					"variables": {
+						"a": "0",
+						"b": "5",
+						"c": "9",
+						"d": "9",
+						"f": "0.599",
+						"expression1": "?<0.599<?"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Encadre ce nombre décimal au centième près.\n\n$$[?] < 3{,}258 < [?]$$",
+					"reponse": ["3.25", "3.26"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "8",
+						"f": "3.258",
+						"expression1": "?<3.258<?"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Encadre ce nombre décimal au centième près.\n\n$$[?] < 0{,}407 < [?]$$",
+					"reponse": ["0.4", "0.41"],
+					"variables": {
+						"a": "0",
+						"b": "4",
+						"c": "0",
+						"d": "7",
+						"f": "0.407",
+						"expression1": "?<0.407<?"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,211 @@
+{
+	"template_id": "1b3adbd5-4f0c-4b08-9723-e512261a3a55",
+	"titre": "Utiliser la distributivité",
+	"sous_titre": "Multiplication d'un nombre à $2$ chiffres par $11$",
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > Distributivité",
+	"mis_a_jour": "2026-09-29T18:05:33.863962+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM1-047",
+			"libelle_point": "Utiliser la distributivité de la multiplication par rapport à l'addition dans des cas simples",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > distributivité",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "13..45"
+					},
+					{
+						"name": "expression1",
+						"expression": "11*a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 33,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 13,
+						"max": 45,
+						"negatif_possible": false,
+						"nb_distinctes": 33
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 33,
+						"exemples": [
+							"11*13",
+							"11*23",
+							"11*14",
+							"11*38",
+							"11*15",
+							"11*33",
+							"11*41",
+							"11*43",
+							"11*30",
+							"11*24",
+							"11*27",
+							"11*26"
+						],
+						"nombres_contenus": {
+							"min": 11,
+							"max": 45,
+							"nb_distinctes": 34,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 143,
+						"max": 495,
+						"negatif_possible": false,
+						"nb_distinctes": 33
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 11,
+				"max": 45,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 143,
+				"max": 495,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 11,
+				"max": 495,
+				"nb_distinctes": 67,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (495)",
+					"graine": 37,
+					"enonce": "Calcule.\n\n$$11 \\times 45 = [?]$$",
+					"reponse": ["495"],
+					"variables": {
+						"a": "45",
+						"expression1": "11*45"
+					}
+				},
+				{
+					"role": "plus petite valeur (11)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$11 \\times 13 = [?]$$",
+					"reponse": ["143"],
+					"variables": {
+						"a": "13",
+						"expression1": "11*13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$11 \\times 23 = [?]$$",
+					"reponse": ["253"],
+					"variables": {
+						"a": "23",
+						"expression1": "11*23"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$11 \\times 14 = [?]$$",
+					"reponse": ["154"],
+					"variables": {
+						"a": "14",
+						"expression1": "11*14"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$11 \\times 38 = [?]$$",
+					"reponse": ["418"],
+					"variables": {
+						"a": "38",
+						"expression1": "11*38"
+					}
+				}
+			]
+		}
+	]
+}
