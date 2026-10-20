@@ -84,10 +84,11 @@ def lire_liste(section: str) -> dict[str, tuple[str, str]]:
 
 
 def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture: str, prefixe: str,
-            entete: str) -> None:
+            entete: str, options: bool = False) -> None:
     """Écrit la fixture et la migration du lot. `modeles` : fichier du relevé dans ETAT ;
     `prefixe` : nom court des tables temporaires et des chaînes dollar (`l2n` → `_l2n_modeles`) ;
-    `entete` : commentaire de tête de la migration (`{n}` = nombre de modèles).
+    `entete` : commentaire de tête de la migration (`{n}` = nombre de modèles) ; `options` : le lot
+    change aussi la colonne `options` (QCM à ne pas mélanger…), gardée et rendue comme le reste.
 
     Argument optionnel du script : un dossier qui reçoit un <id>.json par modèle modifié (pour
     `pnpm question:specs --file` et `scripts/audit-question-draws.ts --dir`)."""
@@ -116,7 +117,7 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
         assert grade in t['grades'], (court, grade, t['grades'])
         p = points[(grade, code)]
         assert p['node_id'] in (t['classification_node_id'], notion_de(t['classification_node_id'])), (court, code)
-        avant = {k: t[k] for k in CHAMPS}
+        avant = {k: t[k] for k in CHAMPS + (('options',) if options else ())}
         neuf = copy.deepcopy(avant)
         modifs[court](neuf)
         assert neuf != avant, court
@@ -134,7 +135,7 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
 
     json.dump({'modeles': lot}, open(fixture, 'w'), ensure_ascii=False, indent='\t')
     open(fixture, 'a').write('\n')
-    ecrire_migration(lot, migration, prefixe, entete)
+    ecrire_migration(lot, migration, prefixe, entete, options)
     print(f'{len(lot)} modèles modifiés et tagués')
 
 
@@ -151,7 +152,7 @@ def texte_jsonb(v) -> str:
     return json.dumps(v, ensure_ascii=False)
 
 
-def ecrire_migration(lot: list[dict], migration: str, prefixe: str, entete: str) -> None:
+def ecrire_migration(lot: list[dict], migration: str, prefixe: str, entete: str, options: bool = False) -> None:
     dollar = f'${prefixe}$'
     tmp = f'_{prefixe}'
 
@@ -314,4 +315,13 @@ end $check$;
 drop table pg_temp.{tmp}_resolus;
 drop table pg_temp.{tmp}_modeles;
 ''')
-    open(migration, 'w').write('\n'.join(o))
+    texte = '\n'.join(o)
+    if options:
+        # Colonne `options` : dans chaque empreinte de contenu et dans chaque mise à jour.
+        texte = texte.replace("'test_specs', q.test_specs)", "'test_specs', q.test_specs, 'options', q.options)")
+        for r in ('r.c', 'r.apres'):
+            avant = f"test_specs = nullif({r}->'test_specs', 'null'::jsonb)"
+            assert avant in texte, avant
+            texte = texte.replace(avant, avant + f", options = nullif({r}->'options', 'null'::jsonb)")
+        assert texte.count("'options', q.options)") == 3
+    open(migration, 'w').write(texte)

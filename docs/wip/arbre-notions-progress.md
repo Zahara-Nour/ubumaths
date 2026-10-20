@@ -5,20 +5,23 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1566 (migration appliquée en prod, vérifiée : 7/7 contenus, 7/7 tags)._
+_Mis à jour le 2026-10-21, lot C codé (pas encore de PR)._
 
-- **État** : C5 étape 2 bis, MODIFIER : lots A (39 modèles) et B « retirer des variations » (7) en prod, avec
-  tags. Outillage commun : `analyse/lot_2bis_outils.py` + `tests/helpers/database/lot-2bis-migration.ts` (un
-  script `lot-2bis-<lot>.py` et un test de quelques lignes par lot).
-- **Prochaine action** : lot C (17 consignes ou affichages, `lot-2bis-modifications.md` § 4) — montrer à David
-  un exemple par forme d'abord ; puis D (3 scissions, phase 0 à part : cartes SRS, tentatives, fiches).
-- **Décisions de David (2026-10-21)** : une migration par lot ; f1a392f5 garde 6 variations ; 82748db8 garde le
-  doublon dm² → m² ; 716d5c68 garde son nouveau sous-titre. Question d'accès à poser AVANT de générer le SQL.
-- **En attente de David** : rien. Signalé : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
-- **Pièges en cours** : API REST plafonnée à 1000 lignes ; `question:specs --file` veut le format de l'app
-  (`toQuestionTemplate`) et `svelte-kit sync` dans un worktree neuf ; jsonb réordonne les clés. Mineurs d'audit
-  laissés (gabarit en prod) : rollback à jouer dans UNE transaction, message du rollback ambigu.
-- **Worktree / branche** : aucun (worktree de #1566 supprimé).
+- **État** : C5 étape 2 bis, MODIFIER : lots A (39) et B (7) en prod ; lot C « consignes ou affichages » codé
+  sur `feat/arbre-lot-2bis-consignes` : 16 modèles (c9d6c5db sorti), script `lot-2bis-consignes.py`, migration
+  `20261021120000`, 11 tests d'intégration verts (rouges sans la migration), specs et audit de tirages verts.
+- **Prochaine action** : réponse de David à la question d'accès → en-tête de la migration, PR, revue Opus
+  (correction des réponses), merge, `db:migrate` ; puis D (3 scissions, phase 0 à part).
+- **Décisions de David (2026-10-21)** : comparaisons < = > avec égalité ~1 fois sur 6 ; tableaux : Masse/Prix,
+  Durée/Distance, Cahiers/Prix ; factoriser par une constante ; c9d6c5db sorti (aucun réglage ne refuse la
+  fraction recopiée).
+- **En attente de David** : question d'accès du lot C. Signalé : 11 modèles sans corrigé.
+- **Pièges en cours** : `e` = Euler dans une condition (`{{if:e=1|…}}` toujours faux) → variable `egal` ;
+  MathLive ne connaît pas `\hline` ; `5b53b1be` passé au point ici (#1565 refuse `a,5`), le script
+  `reecrire-virgule-decimale-base.ts` le sautera (« déjà réécrit ») ; s'il passe AVANT le merge, la garde
+  arrête la migration → régénérer. API REST plafonnée à 1000 lignes ; `question:specs --file` veut le
+  format de l'app.
+- **Worktree / branche** : `../ubumaths-wt-arbre-notions` · `feat/arbre-lot-2bis-consignes`.
 
 ## Tranché avec David (2026-10-06)
 
