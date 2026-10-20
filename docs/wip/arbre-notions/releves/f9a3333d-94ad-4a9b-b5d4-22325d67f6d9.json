@@ -138,9 +138,9 @@
 			"nombres_enonce": {
 				"min": 0.001,
 				"max": 9.644,
-				"nb_distinctes": 214,
+				"nb_distinctes": 263,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 1
 			},
@@ -157,9 +157,9 @@
 			"nombres_tous": {
 				"min": 0.001,
 				"max": 964.4,
-				"nb_distinctes": 473,
+				"nb_distinctes": 525,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 3
 			},
@@ -202,14 +202,14 @@
 				},
 				{
 					"role": "plus petite valeur (0.001)",
-					"graine": 17,
-					"enonce": "Complète.\n\n$$[?] \\times 0{,}01 = 0{,}001\\,6$$",
-					"reponse": ["0.16"],
+					"graine": 27,
+					"enonce": "Complète.\n\n$$[?] \\times 0{,}01 = 0{,}001$$",
+					"reponse": ["0.1"],
 					"variables": {
 						"a": "0",
-						"b": "2",
-						"c": "0.16",
-						"expression1": "?*0,01 = 0.0016"
+						"b": "1",
+						"c": "0.1",
+						"expression1": "?*0,01 = 0.001"
 					}
 				},
 				{
@@ -367,9 +367,9 @@
 			"nombres_enonce": {
 				"min": 0.001,
 				"max": 9.644,
-				"nb_distinctes": 214,
+				"nb_distinctes": 263,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 1
 			},
@@ -386,9 +386,9 @@
 			"nombres_tous": {
 				"min": 0.001,
 				"max": 964.4,
-				"nb_distinctes": 473,
+				"nb_distinctes": 525,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 3
 			},
@@ -431,14 +431,14 @@
 				},
 				{
 					"role": "plus petite valeur (0.001)",
-					"graine": 17,
-					"enonce": "Complète.\n\n$$0{,}01 \\times [?] = 0{,}001\\,6$$",
-					"reponse": ["0.16"],
+					"graine": 27,
+					"enonce": "Complète.\n\n$$0{,}01 \\times [?] = 0{,}001$$",
+					"reponse": ["0.1"],
 					"variables": {
 						"a": "0",
-						"b": "2",
-						"c": "0.16",
-						"expression2": "0,01*? = 0.0016"
+						"b": "1",
+						"c": "0.1",
+						"expression2": "0,01*? = 0.001"
 					}
 				},
 				{

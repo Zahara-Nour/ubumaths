@@ -136,11 +136,11 @@
 				}
 			],
 			"nombres_enonce": {
-				"min": 0,
-				"max": 9,
-				"nb_distinctes": 142,
+				"min": 0.0001,
+				"max": 0.9531,
+				"nb_distinctes": 200,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 1
 			},
@@ -155,11 +155,11 @@
 			},
 			"nombres_choix_qcm": null,
 			"nombres_tous": {
-				"min": 0,
+				"min": 0.0001,
 				"max": 953.1,
-				"nb_distinctes": 341,
+				"nb_distinctes": 399,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 3
 			},
@@ -201,7 +201,19 @@
 					}
 				},
 				{
-					"role": "plus petite valeur (0)",
+					"role": "plus petite valeur (0.0001)",
+					"graine": 17,
+					"enonce": "Complète.\n\n$$[?] \\times 0{,}001 = 0{,}000\\,1$$",
+					"reponse": ["0.1"],
+					"variables": {
+						"a": "0",
+						"b": "1",
+						"c": "0.1",
+						"expression1": "?*0,001 = 0.0001"
+					}
+				},
+				{
+					"role": "tirage",
 					"graine": 1,
 					"enonce": "Complète.\n\n$$[?] \\times 0{,}001 = 0{,}000\\,9$$",
 					"reponse": ["0.9"],
@@ -234,18 +246,6 @@
 						"b": "1",
 						"c": "538.1",
 						"expression1": "?*0,001 = 0.5381"
-					}
-				},
-				{
-					"role": "tirage",
-					"graine": 4,
-					"enonce": "Complète.\n\n$$[?] \\times 0{,}001 = 0{,}001\\,2$$",
-					"reponse": ["1.2"],
-					"variables": {
-						"a": "1",
-						"b": "1",
-						"c": "1.2",
-						"expression1": "?*0,001 = 0.0012"
 					}
 				}
 			]
@@ -365,11 +365,11 @@
 				}
 			],
 			"nombres_enonce": {
-				"min": 0,
-				"max": 9,
-				"nb_distinctes": 142,
+				"min": 0.0001,
+				"max": 0.9531,
+				"nb_distinctes": 200,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 1
 			},
@@ -384,11 +384,11 @@
 			},
 			"nombres_choix_qcm": null,
 			"nombres_tous": {
-				"min": 0,
+				"min": 0.0001,
 				"max": 953.1,
-				"nb_distinctes": 341,
+				"nb_distinctes": 399,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 3
 			},
@@ -430,7 +430,19 @@
 					}
 				},
 				{
-					"role": "plus petite valeur (0)",
+					"role": "plus petite valeur (0.0001)",
+					"graine": 17,
+					"enonce": "Complète.\n\n$$0{,}001 \\times [?] = 0{,}000\\,1$$",
+					"reponse": ["0.1"],
+					"variables": {
+						"a": "0",
+						"b": "1",
+						"c": "0.1",
+						"expression2": "0,001*?=0.0001"
+					}
+				},
+				{
+					"role": "tirage",
 					"graine": 1,
 					"enonce": "Complète.\n\n$$0{,}001 \\times [?] = 0{,}000\\,9$$",
 					"reponse": ["0.9"],
@@ -463,18 +475,6 @@
 						"b": "1",
 						"c": "538.1",
 						"expression2": "0,001*?=0.5381"
-					}
-				},
-				{
-					"role": "tirage",
-					"graine": 4,
-					"enonce": "Complète.\n\n$$0{,}001 \\times [?] = 0{,}001\\,2$$",
-					"reponse": ["1.2"],
-					"variables": {
-						"a": "1",
-						"b": "1",
-						"c": "1.2",
-						"expression2": "0,001*?=0.0012"
 					}
 				}
 			]

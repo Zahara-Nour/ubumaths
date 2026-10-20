@@ -163,11 +163,11 @@
 				}
 			],
 			"nombres_enonce": {
-				"min": 0,
+				"min": 0.000116,
 				"max": 99000,
-				"nb_distinctes": 290,
+				"nb_distinctes": 292,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 7,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 5
 			},
@@ -184,9 +184,9 @@
 			"nombres_tous": {
 				"min": -4,
 				"max": 99000,
-				"nb_distinctes": 548,
+				"nb_distinctes": 553,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 7,
 				"negatif_possible": true,
 				"chiffres_partie_entiere_max": 5
 			},

@@ -8,14 +8,13 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 _Mis à jour le 2026-10-20, après l'application des 14 réponses aux CSV._
 
 - **État** : C5 étape 2 bis. Questions des modèles toutes tranchées et appliquées aux CSV de `arbre-notions/analyse/`
-  (306 TAG, 65 MODIFIER, 202 HORS_PROGRAMME) ; page régénérée.
+  (306 TAG, 66 MODIFIER, 201 HORS_PROGRAMME) ; page régénérée.
 - **Prochaine action** : attendre la relecture par David de la partie 2 (verdicts par niveau) de
   https://claude.ai/artifact/F9FLrWzCSE72E7zeEyCyH5 ; lire `niveaux` et `modeles` (ArtifactData `list`), appliquer ;
-  puis lister les modifications de modèles (65 MODIFIER + 3 changements de niveau) et préparer la migration des tags
+  puis lister les modifications de modèles (66 MODIFIER + 3 changements de niveau) et préparer la migration des tags
   (lot 2 bis).
-- **En attente de David** : partie 2 de la page ; c4-3 (médiane de 3, 7, 8, 12 : 7 et 8 acceptés ?).
-- **Pièges en cours** : `decimales_max` du relevé faux sur 45e06ece (4 décimales vues, 3 annoncées) ; contrôle visuel
-  de c4-8 pas fait ; CSV cm/cycle2/sixieme en CRLF, cycle4 en LF (lire et écrire avec `newline=''`) ;
+- **En attente de David** : partie 2 de la page ; c4-3 (médiane de 3, 7, 8, 12 : bornes 7 et 8 acceptées ? reco : oui, intervalle fermé).
+- **Pièges en cours** : contrôle visuel de c4-8 pas fait ; CSV cm/cycle2/sixieme en CRLF, cycle4 en LF (lire et écrire avec `newline=''`) ;
   `docs/ref/programmes/Accompagnement/` hors git : pdftotext vers le scratchpad.
 - **Worktree / branche** : aucun, tout est en docs sur `main` (dépôt principal).
 
@@ -1102,3 +1101,12 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - **Appliqué aux CSV** (60 lignes, justification « Décision de David (2026-10-20, …) », `variations_hors` remis à
     jour) : 306 TAG, 65 MODIFIER, 202 HORS_PROGRAMME, plus aucun A_TRANCHER ni TAG_PAR_VARIATION. 3 modèles changent
     de niveau (78feafed, 6bc8108f, d80e2e02 : 5e → 4e ; colonne `grade`). Page régénérée (version 3).
+  - **Division à trou du CM2 (45e06ece) vérifiée** : le modèle tire b (au plus trois décimales) et affiche b : 10^a,
+    soit jusqu'à **quatre décimales** (q ≤ 4 − a) : « ? : 100 = 9,954 5 », « ? : 1 000 = 0,000 1 », environ un tirage
+    sur trois (4 des 12 exemples relevés). Verdict → **MODIFIER CM2-065** (condition q ≤ 3 − a), au lieu de
+    HORS_PROGRAMME. Cause du faux `decimales_max` 3 : `extractNumbers` de `releve.ts` coupait la partie décimale à
+    l'espace fine (`9{,}954\,5` lu 9,954 et 5) ; corrigé, relevé relancé (50 s) : seuls 8 modèles changent
+    (45e06ece, 819df2a9, 953574d4, 99c4ab73, 9f380957, def797c6, e1b540fa, f9a3333d), aucun autre verdict touché
+    (6e sans borne générale de décimales, c3-11 ; 4e déjà hors programme pour d'autres raisons).
+  - Médiane (c4-3), relu dans les textes : définition « toute valeur qui partage la série ordonnée en deux sous-séries
+    de même effectif » (Exemples c4 2026 p.36) ; reste à trancher : bornes 7 et 8 acceptées pour 3, 7, 8, 12 ?

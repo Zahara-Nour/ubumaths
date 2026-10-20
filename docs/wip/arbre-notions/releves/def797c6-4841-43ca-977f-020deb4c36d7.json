@@ -153,10 +153,10 @@
 			],
 			"nombres_enonce": {
 				"min": 0.001,
-				"max": 95.864,
-				"nb_distinctes": 280,
+				"max": 95.8647,
+				"nb_distinctes": 293,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 2
 			},
@@ -173,9 +173,9 @@
 			"nombres_tous": {
 				"min": 0.001,
 				"max": 995.45,
-				"nb_distinctes": 561,
+				"nb_distinctes": 574,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 3
 			},
@@ -403,10 +403,10 @@
 			],
 			"nombres_enonce": {
 				"min": 0.001,
-				"max": 95.864,
-				"nb_distinctes": 280,
+				"max": 95.8647,
+				"nb_distinctes": 293,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 2
 			},
@@ -423,9 +423,9 @@
 			"nombres_tous": {
 				"min": 0.001,
 				"max": 995.45,
-				"nb_distinctes": 561,
+				"nb_distinctes": 574,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 3
 			},

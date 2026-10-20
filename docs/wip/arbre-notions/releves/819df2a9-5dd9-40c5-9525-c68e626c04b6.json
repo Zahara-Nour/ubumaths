@@ -153,10 +153,10 @@
 			],
 			"nombres_enonce": {
 				"min": 0.04,
-				"max": 9831.226,
-				"nb_distinctes": 308,
+				"max": 9831.2267,
+				"nb_distinctes": 299,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 4
 			},
@@ -173,9 +173,9 @@
 			"nombres_tous": {
 				"min": 0.04,
 				"max": 9763500,
-				"nb_distinctes": 604,
+				"nb_distinctes": 597,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 7
 			},
@@ -403,10 +403,10 @@
 			],
 			"nombres_enonce": {
 				"min": 0.04,
-				"max": 9831.226,
-				"nb_distinctes": 308,
+				"max": 9831.2267,
+				"nb_distinctes": 299,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 4
 			},
@@ -423,9 +423,9 @@
 			"nombres_tous": {
 				"min": 0.04,
 				"max": 9763500,
-				"nb_distinctes": 604,
+				"nb_distinctes": 597,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 7
 			},

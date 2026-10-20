@@ -153,10 +153,10 @@
 			],
 			"nombres_enonce": {
 				"min": 0.001,
-				"max": 983.226,
-				"nb_distinctes": 285,
+				"max": 983.2267,
+				"nb_distinctes": 283,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 3
 			},
@@ -172,8 +172,8 @@
 			"nombres_choix_qcm": null,
 			"nombres_tous": {
 				"min": 0.001,
-				"max": 983.226,
-				"nb_distinctes": 572,
+				"max": 983.2267,
+				"nb_distinctes": 571,
 				"nature": "décimal",
 				"decimales_max": 7,
 				"negatif_possible": false,
@@ -205,7 +205,7 @@
 			},
 			"exemples": [
 				{
-					"role": "plus grande valeur (983.226)",
+					"role": "plus grande valeur (983.2267)",
 					"graine": 197,
 					"enonce": "Calcule.\n\n$$0{,}1 \\times 983{,}226\\,7 = [?]$$",
 					"reponse": ["98.32267"],
@@ -403,10 +403,10 @@
 			],
 			"nombres_enonce": {
 				"min": 0.001,
-				"max": 983.226,
-				"nb_distinctes": 285,
+				"max": 983.2267,
+				"nb_distinctes": 283,
 				"nature": "décimal",
-				"decimales_max": 3,
+				"decimales_max": 4,
 				"negatif_possible": false,
 				"chiffres_partie_entiere_max": 3
 			},
@@ -422,8 +422,8 @@
 			"nombres_choix_qcm": null,
 			"nombres_tous": {
 				"min": 0.001,
-				"max": 983.226,
-				"nb_distinctes": 572,
+				"max": 983.2267,
+				"nb_distinctes": 571,
 				"nature": "décimal",
 				"decimales_max": 7,
 				"negatif_possible": false,
@@ -455,7 +455,7 @@
 			},
 			"exemples": [
 				{
-					"role": "plus grande valeur (983.226)",
+					"role": "plus grande valeur (983.2267)",
 					"graine": 197,
 					"enonce": "Calcule.\n\n$$983{,}226\\,7 \\times 0{,}1 = [?]$$",
 					"reponse": ["98.32267"],

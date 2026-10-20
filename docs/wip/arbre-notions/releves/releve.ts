@@ -329,20 +329,23 @@ function toToken(
 	raw: string
 ): NumberToken {
 	const digits = intPart.replace(/[^\d]/g, '');
-	const value = Number(digits + (decPart ? '.' + decPart : '')) * (negative ? -1 : 1);
-	return { value, decimals: decPart ? decPart.length : 0, negative, raw };
+	// Partie décimale groupée par trois (`9{,}954\,5`) : on retire les séparateurs
+	const dec = decPart ? decPart.replace(/[^\d]/g, '') : '';
+	const value = Number(digits + (dec ? '.' + dec : '')) * (negative ? -1 : 1);
+	return { value, decimals: dec.length, negative, raw };
 }
 
 /**
  * Nombres d'un texte rendu (texte + LaTeX). Décimal : `3{,}5`, `3.5`, ou `3,5` collé.
- * Milliers : `12\,345`, `12\ 345`, `12~345`, espace insécable. Le signe n'est lu comme
+ * Milliers : `12\,345`, `12\ 345`, `12~345`, espace insécable ; décimales groupées
+ * par trois : `9{,}954\,5`. Le signe n'est lu comme
  * « négatif » que devant un nombre en tête, après `(`, `=`, `,`, `\times`, `\div`, `[`.
  */
 function extractNumbers(text: string): NumberToken[] {
 	const s = scrub(text);
 	const out: NumberToken[] = [];
 	const re =
-		/(\d{1,3}(?:(?:\\,|\\ |~|\u00a0|\u202f|\\;|\{\s\})\d{3})+|\d+)(?:(?:\{,\}|\.|,(?=\d))(\d+))?/g;
+		/(\d{1,3}(?:(?:\\,|\\ |~|\u00a0|\u202f|\\;|\{\s\})\d{3})+|\d+)(?:(?:\{,\}|\.|,(?=\d))(\d+(?:(?:\\,|\\ |~| | |\{\s\})\d{1,3})*))?/g;
 	let m: RegExpExecArray | null;
 	while ((m = re.exec(s))) {
 		const before = s.slice(Math.max(0, m.index - 12), m.index);
