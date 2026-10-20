@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, après #1553._
+_Mis à jour le 2026-10-20, PR test `MATHOU_NAMES` ↔ notions en cours._
 
-- **État** : Mathoux v1 + « Faire grandir » + noms (#1553 : 134 noms propres dans `src/lib/mathoux/mathou-noms.ts`, races validées, Chatterie « Nom, Race » + notion) sur `main`, pas en prod.
-- **Prochaine action** : rien d'urgent. Possible : test d'intégration qui compare les clés de `MATHOU_NAMES` aux `classification_nodes` (notion) de la base locale.
+- **État** : Mathoux v1 + « Faire grandir » + noms (#1553) sur `main`, pas en prod. Test d'intégration `tests/integration/mathoux-noms-notions.test.ts` (clés de `MATHOU_NAMES` = notions actives des branches du seed, égalité exacte ; preuve rouge faite) sur `test/mathoux-noms-notions`.
+- **Prochaine action** : merger la PR du test ; puis rien d'urgent.
 - **En attente de David** : relire les 59 noms validés par défaut ([mathoux-noms.md](mathoux-noms.md)) ; trancher les coquilles possibles (« Pile-Poile », « Félix A-Peu-Près », « Félix Au-dessus En-Dessous », « Moins-Que-Rien »), les cinq « Félix … » et l'article devant la race ; `deploy:prod` (seulement à sa demande).
-- **Pièges en cours** : table clée par NOM de notion : renommer une notion lui fait perdre son nom propre (repli générique). Juste avant `deploy:prod`, `fix-renvois-numerotation.ts --publier` (autre chantier).
-- **Worktree / branche** : aucun ouvert ; partir de `origin/main`.
+- **Pièges en cours** : table clée par NOM de notion : un renommage par migration casse désormais le test ; un renommage fait en prod depuis l'admin y échappe (repli générique). Juste avant `deploy:prod`, `fix-renvois-numerotation.ts --publier` (autre chantier).
+- **Worktree / branche** : `../ubumaths-wt-mathoux-v1` · `test/mathoux-noms-notions`.
 
 ## Découpage
 
