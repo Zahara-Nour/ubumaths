@@ -5,19 +5,20 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1563 (migration appliquée en prod)._
+_Mis à jour le 2026-10-21, pendant le lot A des MODIFIER (branche `feat/arbre-lot-2bis-nombres`)._
 
-- **État** : C5 étape 2 bis, premier lot livré. 306 modèles du CP à la 3e tagués en prod (CP 21, CE1 20, CE2 22,
-  CM1 49, CM2 29, 6e 60, 5e 42, 4e 46, 3e 17), 91 déplacés (R2), 3 reclassés 5e → 4e, 4-004 et 4-073 sous
-  « écriture d'une expression ». Vérifié en prod.
-- **Prochaine action** : les 66 MODIFIER (`analyse/lot-2bis-modifications.md` § 4 : 39 nombres, 7 variations,
-  17 consignes ou affichages, 3 scissions), par lots, chacun tagué après modification ; méthode à proposer à David
-  (migration de `variations` par lot, comme #1563).
+- **État** : méthode validée par David (2026-10-21) : une migration par lot, générée par script, garde sur le
+  contenu relevé, tag posé dans la même migration. Lot A « resserrer les nombres » (39 modèles) en cours :
+  `analyse/lot-2bis-nombres.py` → migration `20261021090000_lot_2bis_resserrer_nombres.sql` + test d'intégration.
+- **Prochaine action** : test d'intégration (rouge sans la migration, vert avec), PR, revue, merge, `db:migrate` ;
+  puis lot B (7 « retirer des variations »), lot C (17 consignes/affichages, un exemple par forme à montrer à David
+  d'abord), lot D (3 scissions, phase 0 à part : cartes SRS, tentatives, fiches de l'ancien modèle).
 - **En attente de David** : rien.
-- **Pièges en cours** : contrôle visuel de c4-8 pas fait ; CSV cm/cycle2/sixieme en CRLF, cycle4 en LF (`newline=''`) ;
-  `docs/ref/programmes/Accompagnement/` hors git ; la clé anonyme ne lit pas `question_template_points` (MCP) ;
-  dans un `if` plpgsql, le `then` d'un `case` clôt la condition ; tout nouveau lot doit respecter la garde du nœud
-  (point sur le nœud du modèle ou sa notion).
+- **Pièges en cours** : l'API REST plafonne à 1000 lignes (paginer `curriculum_points`) ; `question:specs --file`
+  veut le format de l'app (passer par `toQuestionTemplate`, retirer created_at/updated_at/created_by) ; jsonb
+  réordonne les clés (comparer en canonique) ; aucune donnée d'élève ne pointe une variation de modèle de question
+  (`worksheet_exercises.variation_index` = exercices) ; tout nouveau lot doit respecter la garde du nœud.
+- **Worktree / branche** : `../ubumaths-wt-arbre-notions` · `feat/arbre-lot-2bis-nombres`.
 - **Worktree / branche** : aucun (worktree de #1563 supprimé).
 
 ## Tranché avec David (2026-10-06)
