@@ -70,6 +70,14 @@ describe.each(CUSTOM_PARSERS)('parseur maison %s : ×, ·, ⋅ = *', (_, parse) 
 			expect(astOf('3[m×s]')).toEqual(astOf('3[m*s]'));
 		});
 
+		it.each(['3[m ·s]', '3[m· s]'])('%s est refusé comme une espace dans l’unité', (written) => {
+			const withDot = parse(written);
+			const withPoint = parse('3[m .s]');
+			expect(withDot.errors.length).toBeGreaterThan(0);
+			expect(withDot.errors[0].code).toBe(withPoint.errors[0].code);
+			expect(withDot.errors[0].message).toBe(withPoint.errors[0].message);
+		});
+
 		it('kg/m·s reste ambigu, comme kg/m.s', () => {
 			const withDot = parse('3[kg/m·s]');
 			const withPoint = parse('3[kg/m.s]');

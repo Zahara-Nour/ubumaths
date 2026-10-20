@@ -79,12 +79,12 @@ vaut 1/8 d'octet ; aucun sous-multiple (`mo` n'est pas une unité). `Ko`, l'écr
 
 ### Opérateurs
 
-| Écriture        | Sens     | Affichage                        |
-| --------------- | -------- | -------------------------------- |
-| `.` `*` `·` `⋅` | produit  | `·` (point médian)               |
-| `/`             | quotient | `/` (barre, jamais une fraction) |
+| Écriture            | Sens     | Affichage                        |
+| ------------------- | -------- | -------------------------------- |
+| `.` `*` `·` `⋅` `×` | produit  | `·` (point médian)               |
+| `/`                 | quotient | `/` (barre, jamais une fraction) |
 
-Entre les crochets de la notation custom, `·` et `⋅` sont relus comme `.` (`3[m·s^-1]` = `3[m.s^-1]`, même écriture conservée) ; avant le 2026-10-20 ils y étaient refusés (« Expected ']' after unit »). Hors des crochets, `×`, `·` et `⋅` sont le `*` du produit (`2×3`, `2[m]·3[m]`). Le parseur LaTeX, lui, les refuse : `\times` ou `\cdot`.
+Entre les crochets de la notation custom, `·` et `⋅` sont relus comme `.` (`3[m·s^-1]` = `3[m.s^-1]` ; `toCustom` réécrit `3[m.s^-1]`), `×` comme `*` ; avant le 2026-10-20 ils y étaient refusés (« Expected ']' after unit »). Hors des crochets, `×`, `·` et `⋅` sont le `*` du produit (`2×3`, `2[m]·3[m]`). Le parseur LaTeX, lui, les refuse : `\times` ou `\cdot`.
 
 ⛔ **Un produit après un `/` doit être entre parenthèses.** `kg/m.s` est **refusé** comme ambigu (« Ambiguous unit "kg/m.s": write kg/(m.s) … ») : l'usage le lit kg/(m·s), l'ancienne règle le lisait kg·m⁻¹·s. Écrire :
 
@@ -206,4 +206,4 @@ Tests :
 - `src/lib/mathAST/parser/custom/__tests__/unit-pieges.test.ts` : portée du `/`, exposant après une unité, espacements LaTeX.
 - `src/lib/mathAST/parser/custom/__tests__/multiplication-symbols.test.ts` : `×`, `·`, `⋅` lus `*`, et `·`/`⋅` lus `.` dans une unité.
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-20.

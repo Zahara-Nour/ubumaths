@@ -49,8 +49,9 @@ const CUSTOM_PATTERNS: readonly RegExp[] = [
 	// toute **lettre** au sens Unicode (ce qui couvre `μ`, `Ω`, `é`) plus les
 	// deux symboles qui n'en sont pas. Le premier caractère ne peut pas être un
 	// chiffre : `x[1]` est un indice, `[[1,2],[3,4]]` une matrice, et ni l'un ni
-	// l'autre ne doit passer pour une grandeur.
-	/[\d\w)]\s*\[[\p{L}°€][\p{L}\p{N}°€^/*.·-]*\]/u,
+	// l'autre ne doit passer pour une grandeur. `·`, `⋅` et `×` : le produit
+	// d'unités que lit le parseur maison (`3[m⋅s^-1]`, 2026-10-20).
+	/[\d\w)]\s*\[[\p{L}°€][\p{L}\p{N}°€^/*.·⋅×-]*\]/u,
 	// Inline division: :/
 	/:\/(?![/])/,
 	// nth root: sqrt[3](x)

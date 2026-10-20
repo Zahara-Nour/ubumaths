@@ -35,6 +35,22 @@ describe('unités dont le symbole n’est pas une lettre ASCII', () => {
 	);
 });
 
+// Le parseur maison lit `·` et `⋅` comme `.`, `×` comme `*` entre crochets
+// (chantier lecture-grandeurs, 2026-10-20) : le portier doit les reconnaître
+// aussi, sinon `3[m⋅s^-1]` part au LaTeX (« Unexpected token: [ »).
+describe('unités écrites avec ·, ⋅ ou ×', () => {
+	it.each([
+		['3[m·s^-1]', '3[m.s^-1]'],
+		['3[m⋅s^-1]', '3[m.s^-1]'],
+		['3[m×s]', '3[m*s]']
+	])('%s est de la syntaxe maison, lue comme %s', (input, expected) => {
+		expect(detectInputFormat(input).format).toBe('custom');
+		const result = parse(input);
+		expect(result.errors).toHaveLength(0);
+		expect(result.ast).toEqual(parse(expected).ast);
+	});
+});
+
 describe('les unités ASCII continuent de marcher', () => {
 	it.each(['12[km]', '20[K]', '5[m/s]', '2[m^2]', '5[kg.m/s^2]', '1/2[m]', 'x[kg]'])(
 		'%s est de la syntaxe maison',
