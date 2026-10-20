@@ -33,6 +33,24 @@ Relecture en cours sur la page à cocher (https://claude.ai/artifact/HWJeifzvw6r
 - **B4 / E4 (Q2)** : `2*3[m]` = (2 × 3) m, une seule règle « tout le terme ». **C1 (Q1)** : `1/2[m]` =
   (1/2) m, gardé.
 
+## N. Nombres (décisions de David, 2026-10-20)
+
+Le parseur **lit** ; la forme (espacement, virgule suivie d'une espace) est jugée par le validateur du
+module des questions, jamais par le parseur ni par l'atelier.
+
+| #   | Écriture        | Aujourd'hui (mesuré)                                                                                                                                                                               | Décidé                                                                                                                                       |
+| --- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| N1  | `12 500`        | parseur maison : « Unexpected token: 500 » ; LaTeX `12 500`, `12\ 500`, `12~500` et atelier : « Nombre « 500 » écrit après un facteur : écris le nombre devant (500x)… » ; LaTeX `12\,500` : 12500 | 12500, partout (espaces entre chiffres ignorés, décimales comprises : `0,000 01`)                                                            |
+| N2  | `1, 2`          | erreur « Unexpected token: , »                                                                                                                                                                     | 1,2 (la virgule hors contexte est décimale, espaces ignorés)                                                                                 |
+| N3  | `x 2`, `x2`     | erreur (un chiffre ne suit pas une lettre)                                                                                                                                                         | inchangé (message en français, Q14)                                                                                                          |
+| N4  | `max(2,5)`      | max(2 ; 5) : la virgule sépare les arguments, avec ou sans espace (test « le séparateur l'emporte »)                                                                                               | **à trancher** : A) `;` sépare les arguments, la virgule est décimale (max(2,5) = 2,5) ; B) la virgule reste le séparateur dans une fonction |
+| N5  | `[[1,2],[3,4]]` | matrice : la virgule sépare les éléments                                                                                                                                                           | inchangé (contexte)                                                                                                                          |
+
+Pourquoi l'erreur de N1 : le découpage saute les espaces sans les garder, et l'analyse refuse une
+multiplication implicite qui commencerait par un nombre (`shouldInsertImplicitMultiply`, pour refuser
+`x2`) ; il reste `500`, d'où « Unexpected token ». Aucun test ne couvrait un nombre écrit avec des espaces.
+`(1;2)`, `[1;2]`, `{1;2}` sont des erreurs du parseur maison (coordonnées et intervalles lus ailleurs).
+
 ## A. Un nombre et une unité
 
 | #   | Écriture    | BIPM       | Aujourd'hui                             | Proposé                                                              |
