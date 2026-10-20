@@ -1,15 +1,13 @@
 # Chantier lecture-grandeurs — des parseurs de mathAST cohérents avec le BIPM
 
-## Reprendre ici
+## Chantier clos
 
-_Mis à jour le 2026-10-21, après #1565._
+_Clos le 2026-10-21, après #1565 : versement fait, décisions consignées dans l'[ADR 0031](../../adr/0031-parseur-maison-langue-interne-bipm.md)._
 
-- **État** : chantier codé en entier — PR 1 (#1555), 2 (#1557), 3 (#1558), 4 (#1560), `BARE_PI` (#1561), 5 (#1562), 6 virgule (#1565) mergées, **pas en prod**. Pages à cocher closes : grandeurs (81/81), virgule (31/31).
-- **Décidé par David** : (1)-(17), détail dans l'historique ; (16) `2 m 30 cm` reste une somme dans l'atelier ; (17) pas de ′ ″.
-- **Prochaine action** : versement de fin de chantier (durable → `docs/systeme/`, journal archivé), quand David le dit.
-- **En attente de David** : ⚠️ AVANT le `deploy:prod` qui livre #1565 : `pnpm tsx scripts/reecrire-virgule-decimale-base.ts` (simulation : 22 remplacements, 12 lignes), puis `--ecrire` (8 modèles publiés + 7 formules d'exercices ; note dans `verifications-manuelles.md`). Les brouillons `pi` nus sont déjà réécrits.
-- **Pièges** : un inventaire par regex rate des formes (`(-a,5)`, `{{a}},{{c}}`) : mesurer par différentiel ancien/nouveau code ; textes rangés de l'atelier et chaînes du DSL relus par `legacyDecimalCommas` ; RD maison sans fonctions génériques ni matrices. Limites hors PR : liste dans l'historique du 2026-10-21.
-- **Worktree / branche** : aucun (#1565 mergée). Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
+- **Livré** : PR 1 (#1555), 2 (#1557), 3 (#1558), 4 (#1560), `BARE_PI` (#1561), 5 (#1562), 6 virgule (#1565). Pages à cocher closes : grandeurs (81/81), virgule (31/31).
+- **Doc système** : `docs/systeme/mathast/README.md` (parseurs), `grandeurs.md`, `atelier.md`, `geometrie/README.md`, `docs/pratiques/notation-unites.md`.
+- **Avant le `deploy:prod` qui livre #1565** : réécriture de la base au point, notée dans `docs/wip/verifications-manuelles.md`.
+- **Limites laissées** : liste dans l'historique du 2026-10-21. Sondes : `docs/archive/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
 
@@ -235,7 +233,7 @@ _Mis à jour le 2026-10-21, après #1565._
 
 ### 2026-10-20 — phase 0 rédigée, sonde clavier des durées
 
-- `docs/wip/lecture-grandeurs-phase0.md` : comportements par PR (6 PR), questions ouvertes. Recos données en
+- `docs/archive/wip/lecture-grandeurs-phase0.md` : comportements par PR (6 PR), questions ouvertes. Recos données en
   conversation (LaTeX lit `×`/`·` Unicode ; `MISSING_OPERATOR` = nombre après un facteur ; `30[min] 2[h]` lu ;
   `{2[m]}{3[m]}` reste un produit ; lignes 🟡 telles quelles ; ordre 1→5 puis 6) : **pas encore validées**.
 - Sonde au vrai clavier (Calcul et carte, tableau dans le fichier des sondes) : `2 h 30 min ± 2 h 30 min`,

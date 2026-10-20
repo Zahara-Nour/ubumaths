@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-20 : PR 2 bis mise de côté par David._
 
 - **État** : PR 1-3 mergées (#1543, #1545, #1547). PR 2 bis (découpage « nombre | unité ») **mise de côté** : David veut d'abord des parseurs de mathAST cohérents avec le BIPM (chantier `lecture-grandeurs`). Rien en prod.
-- **Prochaine action** : reprendre la PR 2 bis quand `lecture-grandeurs` aura fixé la lecture (`docs/wip/lecture-grandeurs-corpus.md`).
+- **Prochaine action** : reprendre la PR 2 bis : `lecture-grandeurs` a fixé la lecture (clos le 2026-10-21, [ADR 0031](../adr/0031-parseur-maison-langue-interne-bipm.md) ; corpus : `docs/archive/wip/lecture-grandeurs-corpus.md`).
 - **En attente de David** : verdict du calcul juste non effectué (`2×3 m`, `3 m + 2 m`) ; marquage des unités MathLive (code partagé avec la carte, ou fonction de mathAST).
 - **Phase 0 déjà tranchée** : `3+2 m` → « On ne peut pas ajouter un nombre sans unité et une longueur. » ; `2√2 m` → « Valeur incorrecte. » ; `(-3) m` → JUSTE + parenthèses inutiles ; `.5 m` → refus (BIPM §5.4.4).
 - **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage`, aucun commit (sondes non suivies dans `src/lib/questions/units/__tests__/tmp/`).
