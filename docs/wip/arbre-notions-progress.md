@@ -3,6 +3,22 @@
 Décisions : [ADR 0019](../adr/0019-classement-branche-notion-sous-notion.md). Page de travail (privée) :
 https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchpad de la session du 2026-10-06).
 
+## Reprendre ici
+
+_Mis à jour le 2026-10-20, après la publication de la page « Verdicts des modèles »._
+
+- **État** : C5 étape 2 bis. Bornes des programmes validées par David (`arbre-notions/bornes/`). 573 modèles relevés
+  (`arbre-notions/releves/releve.ts`) et jugés (`arbre-notions/analyse/*.csv`) : 282 TAG, 48 MODIFIER,
+  7 TAG_PAR_VARIATION, 20 A_TRANCHER, 216 HORS_PROGRAMME ; 16 questions (`analyse/questions-modeles.json`).
+- **Prochaine action** : lire les réponses de David sur https://claude.ai/artifact/F9FLrWzCSE72E7zeEyCyH5
+  (ArtifactData `list` des collections `questions`, `niveaux`, `modeles`), les appliquer aux CSV, lister les
+  modifications de modèles, préparer la migration des tags (lot 2 bis). Générateur de la page : `analyse/page/gen.mjs`.
+- **En attente de David** : ses réponses sur la page ; c4-3 (médiane de 3, 7, 8, 12 : 7 et 8 acceptés ?) ; commiter ou
+  supprimer les 573 relevés JSON non suivis (12 Mo, régénérables en 1 min).
+- **Pièges en cours** : contrôle visuel de c4-8 pas fait ; les lectures dans `docs/ref/programmes/Accompagnement/`
+  peuvent bloquer le shell (dossier hors git, 332 Mo).
+- **Worktree / branche** : aucun, tout est en docs sur `main` (dépôt principal).
+
 ## Tranché avec David (2026-10-06)
 
 - Arbre branche > notion > sous-notion, commun exercices + modèles de questions ; type d'activité et
