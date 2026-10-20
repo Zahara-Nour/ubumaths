@@ -10,9 +10,10 @@ _Mis à jour le 2026-10-21, lot A des MODIFIER en cours (pas encore de PR)._
 - **État** : lot A « resserrer les nombres » (39 modèles) codé et commité : `analyse/lot-2bis-nombres.py` →
   migration `20261021090000_lot_2bis_resserrer_nombres.sql` + `tests/integration/lot-2bis-nombres.test.ts`
   (10 verts ; rouges vérifiés sans la migration). 39/39 importables (`question:specs`), audit des tirages propre,
-  check:incremental, cliquet et lint:fast verts. Revues `code-reviewer` + `security-auditor` (Opus) lancées.
+  check:incremental, cliquet et lint:fast verts. `security-auditor` : 0 bloquant (verrou + garde md5 du rollback
+  ajoutés, 11 tests verts) ; `code-reviewer` (Opus) en cours.
 - **Prochaine action** : traiter les findings des revues (les relancer si leurs résultats sont perdus), PR,
-  merge, `db:migrate` (4 conditions : accès validé ✓, rouges ✓, audit à confirmer, additive ✓) ; puis lot B
+  merge, `db:migrate` (4 conditions remplies : accès ✓, rouges ✓, audit ✓, additive ✓) ; puis lot B
   (7 variations), C (17 consignes, un exemple par forme d'abord), D (3 scissions, phase 0 à part).
 - **Décisions de David (2026-10-21)** : méthode = une migration par lot ; accès du lot A validé ; f1a392f5 garde
   ses 6 variations ; 82748db8 garde le doublon dm² → m².
