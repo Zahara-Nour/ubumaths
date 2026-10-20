@@ -5,17 +5,17 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, après la publication de la page « Verdicts des modèles »._
+_Mis à jour le 2026-10-20, après les réponses de David aux 14 questions des modèles._
 
-- **État** : C5 étape 2 bis. Bornes des programmes validées par David (`arbre-notions/bornes/`). 573 modèles relevés
-  (`arbre-notions/releves/releve.ts`) et jugés (`arbre-notions/analyse/*.csv`) : 282 TAG, 48 MODIFIER,
-  7 TAG_PAR_VARIATION, 20 A_TRANCHER, 216 HORS_PROGRAMME ; 16 questions (`analyse/questions-modeles.json`).
-- **Prochaine action** : lire les réponses de David sur https://claude.ai/artifact/F9FLrWzCSE72E7zeEyCyH5
-  (ArtifactData `list` des collections `questions`, `niveaux`, `modeles`), les appliquer aux CSV, lister les
-  modifications de modèles, préparer la migration des tags (lot 2 bis). Générateur de la page : `analyse/page/gen.mjs`.
-- **En attente de David** : ses réponses sur la page ; c4-3 (médiane de 3, 7, 8, 12 : 7 et 8 acceptés ?).
-- **Pièges en cours** : contrôle visuel de c4-8 pas fait ; les lectures dans `docs/ref/programmes/Accompagnement/`
-  peuvent bloquer le shell (dossier hors git, 332 Mo).
+- **État** : C5 étape 2 bis. 14 questions répondues (journal, 2026-10-20) ; m-cycle4-1 (18 − x = 9, 81/x = 9 en 5e)
+  reposée avec la recherche dans les textes. Partie 2 de la page (verdicts par niveau) pas encore relue par David.
+- **Prochaine action** : appliquer les 13 réponses aux CSV de `arbre-notions/analyse/` (+ m-cycle4-1 une fois
+  tranchée), régénérer la page (`analyse/page/gen.mjs`, `OUT=<scratchpad>`), puis attendre la partie 2 ; ensuite lister
+  les modifications de modèles et préparer la migration des tags (lot 2 bis).
+- **En attente de David** : m-cycle4-1 ; partie 2 de https://claude.ai/artifact/F9FLrWzCSE72E7zeEyCyH5 ;
+  c4-3 (médiane de 3, 7, 8, 12 : 7 et 8 acceptés ?).
+- **Pièges en cours** : contrôle visuel de c4-8 pas fait ; `docs/ref/programmes/Accompagnement/` hors git (332 Mo) :
+  pdftotext vers le scratchpad, pas de lecture directe.
 - **Worktree / branche** : aucun, tout est en docs sur `main` (dépôt principal).
 
 ## Tranché avec David (2026-10-06)
@@ -1078,3 +1078,16 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     `analyse/page/gen.mjs`, collections `questions`, `niveaux`, `modeles`). **Reprendre ici** : lire les réponses de
     David (ArtifactData list des 3 collections), appliquer aux CSV, puis lister les modifications de modèles et préparer
     la migration des tags (lot 2 bis).
+- **2026-10-20 — Réponses de David aux 14 questions des modèles** (page raccourcie : exemple, question, choix courts,
+  dossier replié ; champ `court` de `questions-modeles.json`). 12 suivent la reco : m-cycle2-1 tag CE1-024 ;
+  m-cm-2 modifier (un seul rang, puis CM1-039 / CM1-133) ; m-sixieme-1 refuser 1/n (2 réécrits, 2 sans tag) ;
+  m-sixieme-2 hors (3-068) ; m-cycle4-2 reclasser en 4e, 4-073 ; m-cycle4-3 entiers ; m-cycle4-4 tag 3-012 ;
+  m-cycle4-5 stricte (6 MODIFIER) ; m-transversal-1 point-trou (CM1-061 / CM2-065 au CM) ; m-transversal-2
+  comme-equations ; m-transversal-3 symboles (5 MODIFIER) ; m-transversal-4 règle (retirer si le point a d'autres
+  modèles, scinder sinon). **Écarts** : m-cm-1 → **hors** (pas de tag au CM2 pour les critères par 3 et 9, pas de
+  modification) ; m-cycle4-1 → **avis** : « il faut trouver dans quels programmes on a ce genre d'équation ».
+  - Recherche m-cycle4-1 (textes) : **a/x = b** est nommé en 2de, automatismes (« Résoudre une équation du type x² = a,
+    ax + b = cx + d ou a/x = b », programme 2de p.5) ; équation quotient A(x)/B(x) = k en 2de. **a − x = b** : c'est
+    ax + b = c avec a = −1, donc 4-024 en 4e (entiers relatifs) ; rien en 5e (« x + b = c », exemples x/3 = 1, x/2 = 0).
+    En trou, au CM : « 178 – … = 6 × 8 » (BO c3), « 5 760 − … = 5 360 » (CM1-061), « 20 ÷ … = 4 » (livret CM2 2026).
+    Niveaux des 4 modèles (5e) non modifiés (R3) : question reposée à David.
