@@ -1050,24 +1050,30 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
 			terms.push(...toSumTerms(inner, watch, unitChoice));
 			continue;
 		}
-		const signed = signIntoNumerator(
-			sign === '-' ? negateTerm(collected) : collected,
-			unitChoice,
-			watch
-		);
-		terms.push(withoutDoubleSign(signed, unitChoice));
+		terms.push(withoutDoubleSign(sign === '-' ? negateTerm(collected) : collected, unitChoice));
 	}
 
 	return terms;
 }
 
 /**
- * Un − devant une fraction dont l'unique numérateur est une somme de deux termes
- * de signes opposés y entre (David, 2026-10-20) : `(x² − 1)/(−3)` et
- * `−(x² − 1)/3` → `(1 − x²)/3`. Le terme est vu après son signe : le résultat ne
- * dépend pas de l'écriture. Il reste devant s'il ferait rencontrer un facteur de
- * l'autre côté de la barre : `−(2x − 1)/(3(1 − 2x))`.
+ * Une fraction qui est TOUTE l'expression (la somme regroupée n'a qu'un terme),
+ * dont l'unique numérateur est une somme de deux termes de signes opposés : son
+ * − y entre (David, 2026-10-20). `(x² − 1)/(−3)` et `−(x² − 1)/3` → `(1 − x²)/3` ;
+ * le terme est vu après son signe, le résultat ne dépend pas de l'écriture.
+ * Opérande d'une somme, elle garde son − : `1 − (2x − 1)/3` reste tel quel
+ * (revue de #1559), sinon le tri déplacerait le 1. Le − reste aussi devant s'il
+ * ferait rencontrer un facteur de l'autre côté de la barre : `−(2x − 1)/(3(1 − 2x))`.
  */
+function loneFractionSign(
+	terms: readonly TidyTerm[],
+	unitChoice: UnitChoice,
+	watch: FamilyWatch
+): TidyTerm[] {
+	if (terms.length !== 1) return [...terms];
+	return [signIntoNumerator(terms[0], unitChoice, watch)];
+}
+
 function signIntoNumerator(term: TidyTerm, unitChoice: UnitChoice, watch: FamilyWatch): TidyTerm {
 	if (term.verbatim || term.unit !== null || !isNegativeRational(term.coefficient)) return term;
 	const hasDenominator =
@@ -1418,7 +1424,8 @@ export function tidyExpression(node: MathNode, options?: TidyOptions, source?: M
 
 	// Chemin muet : aucune expression intermédiaire n'est construite.
 	if (recorder === undefined || families === undefined) {
-		return buildSum(sortTerms(chooseUnits(collectLikeTerms(terms), unitChoice)));
+		const collected = chooseUnits(collectLikeTerms(terms), unitChoice);
+		return buildSum(sortTerms(loneFractionSign(collected, unitChoice, undefined)));
 	}
 
 	return narrateSum(written, terms, families, recorder, unitChoice);
@@ -1556,7 +1563,11 @@ function narrateSum(
 
 	const united = chooseUnits(terms, unitChoice);
 	const collected = collectLikeTerms(terms);
-	const unitedCollected = chooseUnits(collected, unitChoice);
+	const unitedCollected = loneFractionSign(
+		chooseUnits(collected, unitChoice),
+		unitChoice,
+		undefined
+	);
 
 	// Le travail fait terme par terme pendant la décomposition. Une seule
 	// famille a bougé : elle porte son nom. Plusieurs : le filet `tidy-terms`.
@@ -1575,6 +1586,8 @@ function narrateSum(
 				? 'tidy-add-fractions'
 				: 'tidy-collect-like-terms';
 	step(grouping, materialise(collected, unitChoice));
+	// Une fraction seule : son − entre dans le numérateur (`loneFractionSign`)
+	step('tidy-terms', materialise(unitedCollected, unitChoice));
 
 	// Somme sans variable, ou partie réelle d'un complexe (`3i − 2` → `−2 + 3i`) :
 	// le nombre passe d'abord en tête (sa propre phrase),
