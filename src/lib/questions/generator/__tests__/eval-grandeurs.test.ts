@@ -172,11 +172,23 @@ describe('non-régression : sans unité, rien ne change', () => {
 // calcul, elle donnerait 2 h × 15 min en silence. Un produit de durées est refusé.
 describe('garde-fou : pas de produit de deux durées', () => {
 	it.each([
-		['{2[h]}{15[min]}', /produit de durées/i],
 		['2[h]*15[min]', /produit de durées/i],
-		['{2[h]}{15[min]};[min]', /produit de durées/i]
+		['2[h]*(3*15[min])', /produit de durées/i]
 	])('{{eval:%s}} → erreur', (expression, message) => {
 		expect(() => evalOf(expression)).toThrow(message);
+	});
+
+	// L'écriture de `;hms` se lit comme une durée composée (lecture-grandeurs, PR 5) :
+	// 2 h 15 min, plus 1 h² (bug relevé à la phase 0)
+	it.each([
+		['{2[h]}{15[min]};[min]', '135[min]'],
+		['2[h] 15[min];[min]', '135[min]']
+	])('{{eval:%s}} → %s', (expression, expected) => {
+		expect(evalOf(expression)).toBe(expected);
+	});
+
+	it('collée à * ou /, elle est refusée', () => {
+		expect(() => evalOf('{2[h]}{15[min]}*2')).toThrow(/compound duration/);
 	});
 
 	it('une durée multipliée par un nombre reste permise : 2*15[min] → 30[min]', () => {

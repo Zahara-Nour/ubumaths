@@ -162,7 +162,8 @@ describe('durées composées et fractions dans la carte', () => {
 		const { back } = roundTrip('(2[h]+30[min])', 'text');
 
 		expect(parseDefinition('value', back, 'keyboard')).toEqual({ unit: 'h' });
-		sameQuantity(back, '(2\\unit{h}+30\\unit{min})');
+		// Rangée juxtaposée depuis la PR 5 de lecture-grandeurs : la même durée, relue en bloc
+		sameQuantity(back, '2\\unit{h}~30\\unit{min}');
 	});
 
 	it('elle s’affiche dans le champ comme l’élève l’écrit : 2 h 30 min', () => {
@@ -185,9 +186,9 @@ describe('durées composées et fractions dans la carte', () => {
 	});
 
 	it.each([
-		['2\\,h\\,30\\,\\min', '(2\\unit{h}+30\\unit{min})'],
-		['1\\,h\\,5\\,\\min\\,30\\,s', '(1\\unit{h}+5\\unit{min}+30\\unit{s})'],
-		['2\\,\\min\\,30\\,s', '(2\\unit{min}+30\\unit{s})'],
+		['2\\,h\\,30\\,\\min', '2\\unit{h}~30\\unit{min}'],
+		['1\\,h\\,5\\,\\min\\,30\\,s', '1\\unit{h}~5\\unit{min}~30\\unit{s}'],
+		['2\\,\\min\\,30\\,s', '2\\unit{min}~30\\unit{s}'],
 		['\\frac{1}{2}\\,m', '\\frac{1}{2}\\unit{m}']
 	])('%s tapé dans la carte est une grandeur', (typed, expected) => {
 		sameQuantity(definitionFromField('value', typed), expected);
