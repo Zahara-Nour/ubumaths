@@ -29,6 +29,12 @@ _Mis à jour le 2026-10-20, après #1558 (PR 4 en cours)._
   `-20[°C]` = −20 °C, donc `-20[°C]+30[°C]` refusé, `-20[°C]-5[°C]` = −25 K (remplace B2 ; `-(20[°C])+30[°C]`
   reste 10 K). Valide aussi : espaces sauf exposant, accolades qui ferment, `:/` comme `/`.
 - Suite serveur `src/lib` : 56 471 tests verts ; `check:incremental` 0 ; cliquet tenu.
+- Revue Opus : 1 bloquant (atelier `d/2[h]` = 5 km·h → l'unité redescend sur le dernier facteur quand
+  une lettre se révèle grandeur, `unitOnLastFactor`), `toCustom` de `-(20[°C])` et du signe d'une grandeur
+  (`startsWithSign` voit `unit`), mode coloré, `@red{…}` ferme, accolades inutiles après `:/`. Tests rouges
+  sans les correctifs, vérifié. 56 480 tests verts.
+- **David garde tel quel** : espaces entre chiffres partout (`2 1/2` = 21/2, `√2 3` = √23, `max(2 3)` = 23) ;
+  `[t]`, `[s]`, `[a]` en tête refusés (unités) ; `2*20[°C]` ≢ `2\times20\unit{°C}` (les deux refusés).
 
 ### 2026-10-20 — PR 4 : inventaire des valeurs qui changent, π
 

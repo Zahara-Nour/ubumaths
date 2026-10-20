@@ -44,7 +44,8 @@ partagent la règle : `src/lib/mathAST/parser/custom/unit-term.ts`. `toCustom` m
 pour se relire à l'identique (`x:/{2[m]}`, `{6[m]}/2*{3[s]}`).
 
 Espaces entre chiffres ignorés : `12 500[m]` = 12500 m, `0.000 01` = 0,00001 — sauf en exposant ou en
-indice (`x^2 3` reste refusé, `MISSING_OPERATOR`).
+indice (`x^2 3` reste refusé, `MISSING_OPERATOR`). ⚠️ Toute espace entre deux chiffres, pas seulement
+entre milliers (David, 2026-10-20) : `2 1/2` vaut 21/2 (jamais un nombre mixte), `√2 3` vaut √23.
 
 **Exception : l'atelier** (lot C des grandeurs, décisions de David du 2026-10-11) — dans un calcul
 ou une valeur de l'atelier, **« un nombre, une espace, une unité » est une grandeur** : `5 km`,
