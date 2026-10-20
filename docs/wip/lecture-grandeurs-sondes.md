@@ -171,3 +171,29 @@ it('sonde : ce que MathLive écrit au clavier', async () => {
 	throw new Error('SONDE\n' + lignes.join('\n'));
 });
 ```
+
+## Durées composées tapées au clavier dans l'atelier (2026-10-20, Q9)
+
+Vraies frappes MathLive 0.111 (Chromium) : Calcul en écriture mathématique (`AtelierContainer` monté, atelier neuf
+par saisie) et champ d'une carte valeur (`mathModeSpace = '\,'`, puis `definitionFromField` → `astOf` →
+`computeQuantity`). Sonde jetée après la mesure.
+
+| Tapé                      | Calcul (écriture mathématique) | Carte valeur                                                     |
+| ------------------------- | ------------------------------ | ---------------------------------------------------------------- |
+| `2 h 30 min`              | 2 h 30 min                     | 2 h 30 min                                                       |
+| `2 h 30 min + 2 h 30 min` | 5 h                            | 5 h                                                              |
+| `2 h 30 min - 2 h 30 min` | 0 h                            | 0 h                                                              |
+| `2 h 30 min-2 h 30 min`   | 0 h                            | 0 h                                                              |
+| `3 h - 1 h 30 min`        | 1 h 30 min                     | 1 h 30 min                                                       |
+| `-2 h 30 min`             | −(2 h 30 min)                  | −(2 h 30 min)                                                    |
+| `2*1 h 30 min`            | refus « « 30 » inattendu ici » | refus « n'est pas une expression valide »                        |
+| `2 * 1 h 30 min`          | 3 h                            | 3 h                                                              |
+| `2*(1 h 30 min)`          | 3 h                            | 3 h                                                              |
+| `1 h 30 min*2`            | 3 h                            | 3 h                                                              |
+| `2*5 m`                   | 10 m                           | refus « Ces grandeurs ne se combinent pas » (lu 2·5·m, m lettre) |
+| `2 * 5 m`                 | 10 m                           | 10 m                                                             |
+
+- La lecture se fait AVANT le parseur (`natural-quantities.ts`) : `2 h 30 min` → `(2[h]+30[min])`.
+- MathLive écrit `\,` pour l'espace tapée, `\times` (Calcul) ou `\cdot` (carte) pour `*` ; rien autour de
+  l'opérateur sans espace tapée. `2*1 h` échoue parce que `SPACED_QUANTITY` refuse un nombre collé à `*`.
+- David (2026-10-20) : **`2*1 h 30 min` est ambigu** (2 h 30 min ou 3 h).
