@@ -1222,6 +1222,23 @@ function defineObject(
 			message: `« ${name} » est déjà ${KIND_WORDS[existing.kind]} ou choisis un autre nom pour créer une liste.`
 		};
 	}
+	// V62 : même règle entre nombre, fonction et suite — `a = 3` puis
+	// `a(x) = x^2` laissait une VALEUR de définition x², et `f(x) = a x`
+	// échappait au refus de V58 (dérivée fausse). Sans parenthèses, `f = t + 1`
+	// redéfinit la fonction dans SA lettre (#905) : seul l'écrit explicite compte.
+	const wanted = kindOf(parameter, body);
+	if (
+		existing !== undefined &&
+		existing.kind !== 'list' &&
+		wanted !== existing.kind &&
+		wanted !== 'list' &&
+		!(parameter === undefined && (existing.kind === 'function' || existing.kind === 'sequence'))
+	) {
+		return {
+			kind: 'refus',
+			message: `« ${name} » est déjà ${KIND_WORDS[existing.kind]} ou choisis un autre nom pour créer ${KIND_NAMES[wanted]}.`
+		};
+	}
 	const citedList = listCitedAsNumber(atelier, body);
 	if (citedList !== null) return { kind: 'refus', message: citedList };
 

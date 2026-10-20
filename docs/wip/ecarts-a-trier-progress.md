@@ -8,13 +8,13 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; V62
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après la revérification du 2026-10-18 (commit 7846bfae6, pas de PR)._
+_Mis à jour le 2026-10-20, V62 + V65 corrigés sur `fix/v62-v65` (PR à ouvrir)._
 
-- **État** : tous les écarts ouverts revérifiés ; tri A (faisable seul) / B (à David) dans la section « Revérification du 2026-10-18 » de [ecarts-a-trier.md](ecarts-a-trier.md), qui fait foi sur ses tableaux.
-- **Prochaine action** : V62 (dérivée fausse après redéfinition d'un nom, atelier) + V65 (`solve` rend ∅ au lieu d'un refus), une PR ; puis le reste de A par lots (code mort, commentaires).
-- **En attente de David** : le go sur V62 + V65 ; la liste B.
-- **Pièges en cours** : les tableaux d'[ecarts-a-trier.md](ecarts-a-trier.md) ne sont pas réécrits (V57, L4, L14… y paraissent encore ouverts) ; ce fichier-ci n'est que le journal, le tri vit là-bas (nom gardé : une dizaine de liens, dont un test de `src/`).
-- **Worktree / branche** : aucun (à créer : `fix/v62-v65` → `../ubumaths-wt-v62-v65`).
+- **État** : V62 (redéfinir sous un autre type → refus, `defineObject`) et V65 (`solve` sans inconnue, plusieurs lettres → échec au lieu de « contradiction ») corrigés, tests verts ; marqués ✅ dans [ecarts-a-trier.md](ecarts-a-trier.md).
+- **Prochaine action** : merger la PR de V62 + V65 ; puis le reste de A par lots (code mort, commentaires).
+- **En attente de David** : (1) `a(x) = x^2` puis `a = 2` garde une fonction constante (règle #905 : `f = …` redéfinit dans sa lettre) — garder ou refuser ? (2) la liste B.
+- **Pièges en cours** : les tableaux d'[ecarts-a-trier.md](ecarts-a-trier.md) ne sont pas réécrits (V57, L4, L14… y paraissent encore ouverts) ; `|x^2-1|=3` non résolue (manque à part, noté sous V65).
+- **Worktree / branche** : `../ubumaths-wt-v62-v65` · `fix/v62-v65`.
 
 ---
 
