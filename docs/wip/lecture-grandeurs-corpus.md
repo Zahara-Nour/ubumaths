@@ -11,12 +11,27 @@ _Proposé_ : la lecture à valider. **Q** : une question à trancher (liste en f
 
 ## Règle proposée
 
-> **L'unité multiplie tout le terme de nombres qui la précède** (BIPM §5.4.1 : valeur = valeur numérique
-> × unité). Le terme peut contenir des produits, des quotients, des puissances de nombres, `√`, `π` ; il
-> s'arrête à un `+`, un `−`, une parenthèse ouvrante, ou une grandeur déjà formée.
-> Une unité au dénominateur s'écrit avec des parenthèses (BIPM §5.4.6 : « (20 m)/(5 s) »).
+> **L'unité multiplie tout le terme de nombres qui la précède, signe unaire compris** (BIPM §5.4.1 :
+> valeur = valeur numérique × unité). Le terme peut contenir des produits, des quotients, des puissances
+> de nombres, `√`, `π` ; il s'arrête à un `+` ou un `−` d'addition, une parenthèse ouvrante, ou une
+> grandeur déjà formée. Une unité au dénominateur s'écrit avec des parenthèses (BIPM §5.4.6 :
+> « (20 m)/(5 s) »). Les espaces entre chiffres sont ignorés par le parseur (`12 500` = 12500) ; le
+> module des questions juge l'espacement.
 
 C'est la règle de la lecture naturelle de l'atelier (décisions de David des 2026-10-11 et 2026-10-18).
+
+## Décisions de David (2026-10-20)
+
+Relecture en cours sur la page à cocher (https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf).
+
+- **A5, A6, B3** : le signe unaire fait partie de la valeur numérique : `-5[m]` = (−5) m, `+5[m]` = (+5) m,
+  `-10^3[m]` = (−10³) m (−10³ reste −(10³)). Dans `2-3[m]`, le `−` est une soustraction.
+- **A9** : le parseur ignore les espaces entre chiffres, partout (`12 5[m]` = 125 m, `12 500` = 12500,
+  `0,000 01`) ; l'espacement est jugé par le contrôle « Les chiffres sont mal espacés. » des questions.
+  Vérifié : aujourd'hui `12 500` est une erreur du parseur maison (rien n'est déplacé ; `x y` reste un
+  produit). Nombres mixtes : écrits `2+1/3` en France, pas de conflit.
+- **B4 / E4 (Q2)** : `2*3[m]` = (2 × 3) m, une seule règle « tout le terme ». **C1 (Q1)** : `1/2[m]` =
+  (1/2) m, gardé.
 
 ## A. Un nombre et une unité
 
