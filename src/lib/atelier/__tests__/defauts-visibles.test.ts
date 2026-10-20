@@ -121,7 +121,7 @@ describe('« … en min » convertit, comme .convertir', () => {
 
 	it.each([
 		['1/0 en m', 'Division par zéro'],
-		['2 h 30 en min', '« 30 » inattendu ici']
+		['2 h 30 en min', 'Chaque partie d’une durée composée a besoin de son unité']
 	])('%s : l’erreur de la partie gauche, telle quelle', (input, expected) => {
 		expect(shown(lineOf(input))).toContain(expected);
 	});

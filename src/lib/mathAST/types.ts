@@ -288,12 +288,19 @@ export type LiteralNode =
 // =============================================================================
 
 /**
+ * Display styles for addition. `juxtaposed` : une durée composée écrite sans `+`
+ * (`2[h] 30[min]`, « 2 h 30 min ») — chantier lecture-grandeurs, PR 5.
+ */
+export type AdditionDisplayStyle = 'juxtaposed';
+
+/**
  * Represents addition: left + right
  */
 export interface AdditionNode extends BaseNode {
 	readonly type: 'addition';
 	readonly left: MathNode;
 	readonly right: MathNode;
+	readonly displayStyle?: AdditionDisplayStyle;
 	readonly operatorMetadata?: NodeMetadata;
 }
 

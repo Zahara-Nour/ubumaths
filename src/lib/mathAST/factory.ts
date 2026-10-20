@@ -443,6 +443,14 @@ export function add(
 }
 
 /**
+ * Une durée composée écrite sans `+` : `2[h] 30[min]` (« 2 h 30 min »). Une somme,
+ * marquée pour l'affichage — chantier lecture-grandeurs, PR 5.
+ */
+export function juxtaposedSum(left: MathNode, right: MathNode): AdditionNode {
+	return { type: 'addition', left, right, displayStyle: 'juxtaposed' } as const;
+}
+
+/**
  * Creates a subtraction node: left - right
  * @param left - Left operand
  * @param right - Right operand
@@ -2008,6 +2016,7 @@ export const MathAST = {
 
 	// Binary operations
 	add,
+	juxtaposedSum,
 	subtract,
 	multiply,
 	implicitMultiply,

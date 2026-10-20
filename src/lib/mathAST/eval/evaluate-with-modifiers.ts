@@ -460,8 +460,9 @@ function expressedIn(ast: MathNode, unit: string): string {
  * `;hms` — une durée en heures, minutes, secondes : `135[min]` → `{2[h]}{15[min]}`,
  * affiché « 2 h 15 min » en LaTeX comme en syntaxe maison ; `60[min]` → `1[h]`.
  *
- * ⚠️ L'écriture est une JUXTAPOSITION, que le parseur lit comme un produit : elle sert à
- * l'affichage, pas à un autre calcul ni à une réponse attendue.
+ * L'écriture est une JUXTAPOSITION, que le parseur lit comme une somme marquée (la même
+ * durée, lecture-grandeurs PR 5) ; collée à `*` ou `/`, elle est refusée. Elle sert à
+ * l'affichage, pas à une réponse attendue.
  */
 function hmsWriting(ast: MathNode): string {
 	const seconds = valueIn(ast, 's');
@@ -491,8 +492,8 @@ function isDuration(node: MathNode): boolean {
 }
 
 /**
- * Un produit de deux durées (`2[h]*15[min]`, ou `{2[h]}{15[min]}` écrit par `;hms`) : aucun
- * exercice ne le calcule, et c'est la lecture d'une durée composée réutilisée — refusé.
+ * Un produit de deux durées (`2[h]*15[min]`) : aucun exercice ne le calcule — refusé. La
+ * durée composée de `;hms` (`{2[h]}{15[min]}`) n'en est plus un : elle se lit comme une somme.
  */
 function multipliesDurations(ast: MathNode): boolean {
 	let found = false;
@@ -538,7 +539,7 @@ function zeroQuantityUnit(ast: MathNode): string | null {
 function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
 	if (multipliesDurations(ast)) {
 		throw new Error(
-			`Produit de durées : ${toCustom(ast)} (une durée écrite par ;hms ne se réutilise pas dans un calcul)`
+			`Produit de durées : ${toCustom(ast)} (une durée ne se multiplie pas par une durée)`
 		);
 	}
 	if (modifiers.hms) {

@@ -35,7 +35,7 @@ import { argumentLatex, constructionLatex } from './construction';
 import { hasMeasureCall, measureCalls } from './measures-read';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import { toLatex } from '$lib/mathAST/latex-generator';
-import { isAddition, isDelimiter, isNumber, isUnit } from '$lib/mathAST/guards';
+import { isAddition, isDelimiter, isJuxtaposedSum, isNumber, isUnit } from '$lib/mathAST/guards';
 import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
 
 // =============================================================================
@@ -177,13 +177,14 @@ export function forMathlive(latex: string): string {
 }
 
 /**
- * Une durée composée rangée `(2[h]+30[min])`, montrée comme l'élève l'écrit :
- * `2 h 30 min`, sans le `+` ni les parenthèses du rangement (restes du lot C).
+ * Une durée composée rangée `2[h] 30[min]` (lecture-grandeurs, PR 5) ou, avant,
+ * `(2[h]+30[min])`, montrée comme l'élève l'écrit : `2 h 30 min`, sans le `+` ni
+ * les parenthèses du rangement (restes du lot C).
  */
 function compositeDurationField(ast: MathNode | null): string | null {
-	if (ast === null || !isDelimiter(ast)) return null;
+	if (ast === null || (!isDelimiter(ast) && !isJuxtaposedSum(ast))) return null;
 	const parts: MathNode[] = [];
-	let node = ast.content;
+	let node = isDelimiter(ast) ? ast.content : ast;
 	while (isAddition(node)) {
 		parts.unshift(node.right);
 		node = node.left;

@@ -25,6 +25,7 @@ import { decimalPointToComma } from '../decimal-comma';
 import { divide, func, multiply } from '../factory';
 import { flattenRelationChain, flipSign, type Sign } from '../flatten';
 import { isHole } from '../guards';
+import { juxtaposedTerms } from '../parser/juxtaposed-quantities';
 import {
 	binaryOperandWraps,
 	juxtaposesDigits,
@@ -210,6 +211,8 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 			case 'addition':
 			case 'subtraction':
 			case 'opposite':
+				// Durée composée (`2 h 30 min`) : un bloc, comme une grandeur
+				if (juxtaposedTerms(n)) return leaf(n, parent, role, 'other');
 				return buildSum(n, parent, role);
 			case 'multiplication':
 			case 'division': {
@@ -406,7 +409,7 @@ export function buildStructure(input: MathNode): ExpressionStructure {
  * tel quel, et il reste un terme.
  */
 function collectTerms(node: MathNode, sign: Sign, leading: boolean, out: CollectedTerm[]) {
-	if (node.type === 'addition' || node.type === 'subtraction') {
+	if ((node.type === 'addition' || node.type === 'subtraction') && !juxtaposedTerms(node)) {
 		const wraps = binaryOperandWraps(node);
 		if (wraps?.left) out.push({ sign, term: node.left, wrapped: true });
 		else collectTerms(node.left, sign, leading, out);
@@ -482,8 +485,7 @@ function pushFactor(factor: MathNode, wrapped: boolean, separator: string, out: 
 function multiplicationSeparator(node: MultiplicationNode): string {
 	switch (node.displayStyle) {
 		case 'implicit':
-			if (juxtaposesDigits(node)) return ' \\times ';
-			return juxtaposesQuantities(node) ? '~' : ' ';
+			return juxtaposesDigits(node) || juxtaposesQuantities(node) ? ' \\times ' : ' ';
 		case 'dot':
 			return ' \\cdot ';
 		case 'cross':

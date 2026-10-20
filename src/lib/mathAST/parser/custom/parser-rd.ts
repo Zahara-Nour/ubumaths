@@ -51,6 +51,14 @@ import { DOUBLE_FACTORIAL_ERROR, factorialOf } from '../factorial-notation';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import { expectCode, preciseUnexpectedToken, unitErrorCode } from '../refusal-codes';
 import {
+	JUXTAPOSITION_MESSAGES,
+	endsWithQuantity,
+	isCompoundDurationOperand,
+	juxtaposeAfterNumber,
+	juxtaposeImplicit,
+	type JuxtapositionRefusal
+} from '../juxtaposed-quantities';
+import {
 	isGroupingBracket,
 	readUnitWriting,
 	unitWritingAhead,
@@ -388,13 +396,13 @@ class CustomRDParser {
 	 * Addition and subtraction are left-associative
 	 */
 	private parseAdditive(): MathNode {
-		let left = this.parseMultiplicative();
+		let left = this.parseJuxtaposed(() => this.parseMultiplicative());
 
 		while (this.check('PLUS') || this.check('MINUS')) {
 			const operatorColor = this.colorStack.current();
 			const isPlus = this.check('PLUS');
 			this.advance();
-			const right = this.parseMultiplicative();
+			const right = this.parseJuxtaposed(() => this.parseMultiplicative());
 
 			if (isPlus) {
 				left = this.applyColorWithOperator(MathAST.add(left, right), operatorColor);
@@ -404,6 +412,56 @@ class CustomRDParser {
 		}
 
 		return left;
+	}
+
+	/**
+	 * juxtaposed := multiplicative (NUMBER multiplicative)* — une durée composée
+	 * (`2[h] 30[min]`), un bloc face à `+` et `-`. Le terme qui suit est lu avec ses
+	 * opérateurs (`30[min]*2`, refusé).
+	 */
+	private parseJuxtaposed(parseTerm: () => MathNode): MathNode {
+		let left = parseTerm();
+		while (this.check('NUMBER') && endsWithQuantity(left)) {
+			const number = this.currentToken;
+			const right = parseTerm();
+			const juxtaposed = juxtaposeAfterNumber(left, right);
+			if (juxtaposed === null) {
+				// `2[m] 30` : le refus habituel d'un nombre après un facteur
+				throw new ParseException(
+					`Unexpected token: ${number.value}`,
+					number.position,
+					number.length,
+					'MISSING_OPERATOR'
+				);
+			}
+			left = this.juxtaposed(juxtaposed, number);
+		}
+		return left;
+	}
+
+	/** Produit implicite, ou durée composée entre accolades (`{2[h]}{30[min]}`) */
+	private implicitProduct(factor: MathNode, value: MathNode, start: CustomToken): MathNode {
+		const juxtaposed = juxtaposeImplicit(factor, value);
+		if (juxtaposed === null) return this.applyColor(MathAST.multiply(factor, value, 'implicit'));
+		return this.juxtaposed(juxtaposed, start);
+	}
+
+	/** La durée composée lue, ou son refus posé sur le jeton `at` */
+	private juxtaposed(result: MathNode | JuxtapositionRefusal, at: CustomToken): MathNode {
+		if (typeof result !== 'string') return result;
+		this.error(JUXTAPOSITION_MESSAGES[result], at.position, at.length, 'JUXTAPOSED_QUANTITIES');
+	}
+
+	/** `{1[h]}{30[min]}*2` : une durée composée collée à `*`, `:/` ou `:` est ambiguë */
+	private refuseCompoundDurationOperand(left: MathNode): void {
+		if (!isCompoundDurationOperand(left)) return;
+		const token = this.currentToken;
+		this.error(
+			JUXTAPOSITION_MESSAGES.operator,
+			token.position,
+			token.length,
+			'JUXTAPOSED_QUANTITIES'
+		);
 	}
 
 	/**
@@ -419,12 +477,14 @@ class CustomRDParser {
 			const operatorColor = this.colorStack.current();
 
 			if (this.check('STAR')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.unitTerm.binary(left, right, (factor, value) =>
 					this.applyColorWithOperator(MathAST.multiply(factor, value, 'cross'), operatorColor)
 				);
 			} else if (this.check('COLON_SLASH')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
@@ -434,6 +494,7 @@ class CustomRDParser {
 					)
 				);
 			} else if (this.check('COLON')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
@@ -443,9 +504,10 @@ class CustomRDParser {
 					)
 				);
 			} else if (this.shouldInsertImplicitMultiply()) {
+				const start = this.currentToken;
 				const right = this.parseUnary();
 				left = this.unitTerm.binary(left, right, (factor, value) =>
-					this.applyColor(MathAST.multiply(factor, value, 'implicit'))
+					this.implicitProduct(factor, value, start)
 				);
 			} else {
 				break;
@@ -1209,13 +1271,13 @@ class CustomRDParser {
 	 * Parse additive, stopping at PIPE
 	 */
 	private parseAdditiveStopAtPipe(): MathNode {
-		let left = this.parseMultiplicativeStopAtPipe();
+		let left = this.parseJuxtaposed(() => this.parseMultiplicativeStopAtPipe());
 
 		while ((this.check('PLUS') || this.check('MINUS')) && !this.check('PIPE')) {
 			const operatorColor = this.colorStack.current();
 			const isPlus = this.check('PLUS');
 			this.advance();
-			const right = this.parseMultiplicativeStopAtPipe();
+			const right = this.parseJuxtaposed(() => this.parseMultiplicativeStopAtPipe());
 
 			if (isPlus) {
 				left = this.applyColorWithOperator(MathAST.add(left, right), operatorColor);
@@ -1239,12 +1301,14 @@ class CustomRDParser {
 			const operatorColor = this.colorStack.current();
 
 			if (this.check('STAR')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnaryStopAtPipe();
 				left = this.unitTerm.binary(left, right, (factor, value) =>
 					this.applyColorWithOperator(MathAST.multiply(factor, value, 'cross'), operatorColor)
 				);
 			} else if (this.check('COLON_SLASH')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnaryStopAtPipe();
 				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
@@ -1254,6 +1318,7 @@ class CustomRDParser {
 					)
 				);
 			} else if (this.check('COLON')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnaryStopAtPipe();
 				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
@@ -1263,9 +1328,10 @@ class CustomRDParser {
 					)
 				);
 			} else if (this.shouldInsertImplicitMultiplyStopAtPipe()) {
+				const start = this.currentToken;
 				const right = this.parseUnaryStopAtPipe();
 				left = this.unitTerm.binary(left, right, (factor, value) =>
-					this.applyColor(MathAST.multiply(factor, value, 'implicit'))
+					this.implicitProduct(factor, value, start)
 				);
 			} else {
 				break;

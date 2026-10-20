@@ -15,7 +15,10 @@
  *   jour : une unité ne s'emploie qu'avec une grandeur numérique) : une lettre,
  *   même une valeur du panneau, reste de l'algèbre (`x m`, `m g`, `2πr m`) ;
  *   `2πr[m]` impose l'unité ;
- * - deux grandeurs collées s'ajoutent : `2 h 30 min` → `2[h]+30[min]` ;
+ * - une durée composée reste juxtaposée : `2 h 30 min` → `2[h] 30[min]`, que le
+ *   parseur lit comme UN bloc (lecture-grandeurs, PR 5) — collée à `*` ou `/`, il
+ *   la refuse (`2 * 1 h 30 min` : 2 h 30 min ou 3 h ?) ; d'autres grandeurs
+ *   collées s'ajoutent : `2 m 30 cm` → `(2[m]+30[cm])` ;
  * - une unité suivie d'une lettre (`3 a b`) ou d'une parenthèse (`2 h(3)`) reste
  *   de l'algèbre.
  *
@@ -103,11 +106,30 @@ const GLUED_QUANTITY = new RegExp(
 const QUANTITY_TOKEN = String.raw`(?:\(\d[\d.,]*\/\d[\d.,]*\)|\d[\d.,]*)\[[^\]]+\]`;
 
 /**
- * Des grandeurs séparées seulement par des espaces : `2[h] 30[min]`. Leur
- * somme est mise entre parenthèses — c'est UN nombre : `1 h 30 min * 2` vaut
- * 3 h, pas 2 h (revue du lot C).
+ * Des grandeurs séparées seulement par des espaces : `2[m] 30[cm]`. Leur
+ * somme est mise entre parenthèses — c'est UN nombre (revue du lot C). Une
+ * durée composée (`2[h] 30[min]`) reste telle quelle : le parseur la lit.
  */
 const JUXTAPOSED = new RegExp(`${QUANTITY_TOKEN}(?:[ \\t]+${QUANTITY_TOKEN})+`, 'g');
+
+/** Les unités d'une durée composée */
+const DURATION_SYMBOL = '(?:h|min|s)';
+
+/**
+ * Une durée composée écrite naturellement, même après `*` ou `/` (`2*1 h 30 min`) :
+ * ses parties sont mises entre crochets pour que le parseur la refuse comme
+ * ambiguë, au lieu de lire `1 h` comme un produit (« « 30 » inattendu ici »).
+ */
+const DURATION_RUN = new RegExp(
+	String.raw`(?<![\w.,\]\\^])${NUMBER}[ \t]+${DURATION_SYMBOL}(?:[ \t]+${NUMBER}[ \t]+${DURATION_SYMBOL})+(?![\w(\[])`,
+	'g'
+);
+
+/** Une partie d'une durée composée : `30 min` */
+const DURATION_PART = new RegExp(String.raw`(${NUMBER})[ \t]+(${DURATION_SYMBOL})`, 'g');
+
+/** Une grandeur de durée entre crochets : `30[min]` */
+const DURATION_TOKEN = new RegExp(String.raw`\[${DURATION_SYMBOL}\]$`);
 
 // =============================================================================
 // Fonctions
@@ -130,7 +152,8 @@ export function readNaturalQuantities(
 	const notes = new Set<string>();
 	const singleLetters: SingleLetterUnit[] = [];
 
-	const spaced = text.replace(
+	const runs = text.replace(DURATION_RUN, (run) => run.replace(DURATION_PART, '$1[$2]'));
+	const spaced = runs.replace(
 		SPACED_QUANTITY,
 		(whole, numerator: string, denominator: string | undefined, _space, writing: string) => {
 			if (parseUnit(writing) === null) return whole;
@@ -162,7 +185,12 @@ export function readNaturalQuantities(
 		notes.add(`Pour une grandeur, écris ${number} ${letters} (avec une espace).`);
 	}
 
-	const summed = extended.replace(JUXTAPOSED, (run) => `(${run.split(/[ \t]+/).join('+')})`);
+	const summed = extended.replace(JUXTAPOSED, (run) => {
+		const parts = run.split(/[ \t]+/);
+		return parts.every((part) => DURATION_TOKEN.test(part))
+			? parts.join(' ')
+			: `(${parts.join('+')})`;
+	});
 	return { text: summed, notes: [...notes], singleLetters };
 }
 

@@ -250,6 +250,7 @@ export type ParseErrorCode =
 	| 'NEGATIVE_EXPONENT_BEFORE_GROUP' // Signe d'exposant devant un groupe : 2^-sin(x), 2^-(x+1)
 	| 'MISSING_OPERATOR' // Nombre juste après une lettre ou une ')' : x2, (1+x)2
 	| 'AMBIGUOUS_TERM' // Plusieurs nombres devant une unité après une grandeur : 6[m]/2*3[s]
+	| 'JUXTAPOSED_QUANTITIES' // Grandeurs juxtaposées hors durée (2[m] 30[cm]), durée composée collée à * ou /
 	| 'MISSING_NUMBER_BEFORE_UNIT' // Unité écrite sans nombre : [m]
 	| 'LEADING_DECIMAL_POINT'; // Zéro de tête oublié : .5
 

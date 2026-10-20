@@ -100,18 +100,29 @@ describe('les aides', () => {
 	});
 });
 
-/** Revue du lot C (2026-10-11). */
-describe('une durée composée est UN nombre : parenthèses implicites', () => {
+/** Revue du lot C (2026-10-11) ; collée à `*` ou `/`, refusée (lecture-grandeurs, PR 5). */
+describe('une durée composée est UN nombre : un bloc face à + et −', () => {
 	it.each([
 		['3 h - 1 h 30 min', '1 h 30 min'],
-		['1 h 30 min * 2', '3 h'],
-		['2 * 1 h 30 min', '3 h'],
-		['1 h 30 min / 2', '45 min'],
+		['2*(1 h 30 min)', '3 h'],
 		['2 h 30 min - 2 h 30 min', '0 h'],
 		['-2 h 30 min', '-2 h 30 min']
 	])('%s → %s', (input, expected) => {
 		expect(outputOf(runInput(session(), input))).toBe(expected);
 	});
+
+	// Décision de David (2026-10-20) : `2*1 h 30 min` = 2 h 30 min ou 3 h ? ambigu
+	it.each(['1 h 30 min * 2', '2 * 1 h 30 min', '2*1 h 30 min', '1 h 30 min / 2'])(
+		'%s : refusé, le message dit quoi écrire',
+		(input) => {
+			const result = runInput(session(), input);
+			// Rien à garder : pas de résultat
+			expect(result.kind === 'calcul' && result.ast).toBeFalsy();
+			expect(outputOf(result)).toBe(
+				'Durée composée collée à × ou ÷ : écris 2*(1 h 30 min) pour 3 h, ou 2*1 h + 30 min pour 2 h 30 min'
+			);
+		}
+	);
 });
 
 describe('une lettre lue comme unité : refus et aide justes', () => {
