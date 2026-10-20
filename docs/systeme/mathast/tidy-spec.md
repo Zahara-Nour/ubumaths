@@ -94,7 +94,11 @@ Compléments mesurés :
   négatifs derrière (`1−x`, `3−2x`, `b−a`) ; une somme de **deux termes**,
   quel que soit le degré, aussi (`3x−x²`, `1−x²`, `sin x − x cos x`), sauf un
   complexe, partie réelle en tête (`−1 + 1/i`) ; au-delà, l'ordre décroissant
-  reste (`−x²+x+1`) ;
+  reste (`−x²+x+1`) ; **dans chaque groupe de signe** (un seul groupe quand les
+  signes ne se séparent pas), les termes simples d'abord, puis ceux qui
+  contiennent une somme en facteur, le degré passant après cette règle (David,
+  2026-10-20) : `2x+3(x+1)`, `x²+2x(x+1)`, `3+(x+1)/2`, `1+(1−2x)/3`,
+  `x²+3+2(x+1)`, `x²+1+(x+1)²`, `(2x+1)/3−1`, `−x²+1+x(x+1)` ;
 - une relation est mise au propre membre par membre :
   `x+1=2x−3+x → x+1=3x−3`.
 
@@ -432,3 +436,6 @@ des termes notamment).
   d'après le code ; produit sans dénominateur réduit ; signe d'une fraction ;
   deux termes : le positif devant, à tout degré ; signe sorti d'un facteur dont
   le terme de gauche est négatif, à tout degré (révise 2026-10-06).
+  Les termes simples avant ceux qui contiennent une somme ; le − d'une fraction
+  entre aussi dans son numérateur quand elle est opérande d'une somme
+  (`1−(2x−1)/3 → 1+(1−2x)/3`).

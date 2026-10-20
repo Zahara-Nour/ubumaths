@@ -383,3 +383,38 @@ describe('complexe : témoins de l’ordre des facteurs et des termes', () => {
 		expect(l(input)).toBe(expected);
 	});
 });
+
+/**
+ * Dans chaque groupe de signe, les termes simples d'abord, puis ceux qui
+ * contiennent une somme en facteur (David, 2026-10-20). Le degré passe après
+ * cette règle ; une somme de degré ≥ 2 et de trois termes ou plus n'a qu'un
+ * groupe, et garde son − en tête comme `−x² + x + 1`.
+ */
+describe('les termes simples avant ceux qui contiennent une somme', () => {
+	it.each([
+		['3(x+1)+2x', '2x+3(x+1)'],
+		['2x(x+1)+x^2', 'x^2+2x(x+1)'],
+		['(x+1)/2+3', '3+{x+1}/2'],
+		['1-(2x-1)/3', '1+{1-2x}/3'],
+		['x-(2x-1)/3', 'x+{1-2x}/3'],
+		['(1-(2x-1)/3)^2', '(1+{1-2x}/3)^2'],
+		// le degré passe après : la constante devant le terme qui contient une somme
+		['2(x+1)+x^2+3', 'x^2+3+2(x+1)'],
+		['(x+1)^2+x^2+1', 'x^2+1+(x+1)^2'],
+		// les positifs restent devant
+		['-1+(2x+1)/3', '{2x+1}/3-1'],
+		['-3x+2(x+1)', '2(x+1)-3x'],
+		// degré ≥ 2, trois termes : un seul groupe, − en tête gardé
+		['x(x+1)-x^2+1', '-x^2+1+x(x+1)']
+	])('tidy(%s) = %s', (input, expected) => {
+		expect(t(input)).toBe(expected);
+	});
+
+	it.each(['3(x+1)+2x', '1-(2x-1)/3', '(x+1)^2+x^2+1', 'x(x+1)-x^2+1'])(
+		'tidy(tidy(%s)) stable',
+		(s) => {
+			const once = tidy(parseCustom(s));
+			expect(toCustom(tidy(once))).toBe(toCustom(once));
+		}
+	);
+});

@@ -12,6 +12,10 @@
  *   passent derrière les positifs, chaque groupe gardant l'ordre ci-dessus —
  *   `1 − x`, `3 − 2x`, `x − 3`, `b − a`. De degré ≥ 2, l'ordre décroissant
  *   reste, signes compris : `−x² + x + 1`.
+ * - **Termes simples d'abord** (décision de David, 2026-10-20) : dans chaque
+ *   groupe de signe, les termes qui contiennent une somme en facteur passent
+ *   derrière les autres, quel que soit leur degré — `2x + 3(x + 1)`,
+ *   `1 + (1 − 2x)/3`, `x² + 3 + 2(x + 1)`.
  * - **Somme sans variable** (décision de David, 2026-10-12) : le nombre
  *   rationnel passe en tête, comme dans les manuels — `1 + √5`, `3 + 2√2`,
  *   `1 + ln 2`, `1 + π`. `e`, `i`, `π` sont des constantes. Un rationnel
@@ -49,6 +53,7 @@ import {
 	isFunction,
 	isGreek,
 	isComplex,
+	isDelimiter,
 	isHole,
 	isImaginaryUnit,
 	isSegmentLength,
@@ -362,6 +367,25 @@ export function orderUnderMinus(terms: readonly TidyTerm[]): TidyTerm[] | null {
 	return previous.some((term, index) => term !== algebraic[index]) ? previous : null;
 }
 
+/** Un terme qui contient une somme en facteur : `3(x + 1)`, `(2x − 1)/3`, `x(x + 1)²`. */
+function containsSumFactor(term: TidyTerm): boolean {
+	return term.factors.some((factor) => {
+		let base = factor.base;
+		while (isDelimiter(base)) base = base.content;
+		return base.type === 'addition' || base.type === 'subtraction';
+	});
+}
+
+/**
+ * Dans un groupe de termes, les termes simples d'abord, puis ceux qui
+ * contiennent une somme, l'ordre gardé dans chacun (David, 2026-10-20) :
+ * `1 + (1 − 2x)/3`, `2x + 3(x + 1)`, `x² + x(x + 1)`. Le résultat ne dépend que
+ * de l'ensemble des termes : idempotent.
+ */
+function simpleTermsFirst(terms: readonly TidyTerm[]): TidyTerm[] {
+	return [...terms.filter((term) => !containsSumFactor(term)), ...terms.filter(containsSumFactor)];
+}
+
 /**
  * Ordonne les termes d'une somme, quel que soit son niveau d'imbrication.
  * `realPartFirst` à `false` coupe la règle a + ib (voir `orderUnderMinus`).
@@ -382,8 +406,11 @@ export function sortTerms(terms: readonly TidyTerm[], realPartFirst = true): Tid
 		!terms.some((term) => term.factors.some((factor) => containsComplex(factor.base)));
 	const positivesFirst = twoRealTerms || (degree !== null && equalRational(degree, ONE));
 	const ordered = positivesFirst
-		? [...sorted.filter((term) => !isNegativeTerm(term)), ...sorted.filter(isNegativeTerm)]
-		: sorted;
+		? [
+				...simpleTermsFirst(sorted.filter((term) => !isNegativeTerm(term))),
+				...simpleTermsFirst(sorted.filter(isNegativeTerm))
+			]
+		: simpleTermsFirst(sorted);
 
 	// Complexe : la partie réelle, rangée comme un réel, puis la partie
 	// imaginaire dans l'ordre ci-dessus. Le résultat ne dépend que de
