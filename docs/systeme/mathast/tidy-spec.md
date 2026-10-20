@@ -152,9 +152,7 @@ Le signe d'une fraction (David, 2026-10-20) :
   le positif devant, et le − de la fraction y entre, avec ou sans réduction,
   qu'il vienne du dénominateur ou de l'écriture — `(x²−1)/(−3)`,
   `−(x²−1)/3` → `(1−x²)/3` ; `(2x−1)/(−3)`, `−(2x−1)/3` → `(1−2x)/3`
-  (`signIntoNumerator`, appliqué au terme une fois son signe connu), si la
-  fraction est **toute l'expression** : opérande d'une somme, elle garde son −
-  (`1−(2x−1)/3` inchangé, le 1 reste en tête) ;
+  (`signIntoNumerator`, appliqué au terme une fois son signe connu) ;
 - **sinon**, le terme de gauche du numérateur est positif — c'est la règle du
   facteur (§A, étape 4) : `(3x²−6x+3)/(−9)` et `(−3x²+6x−3)/9` →
   `−(x²−2x+1)/3`, `(−6x³+3x−3)/(−9) → (2x³−x+1)/3` ;

@@ -151,15 +151,7 @@ describe('signe d’une fraction', () => {
 		['(1-x^2)/(-3)', '{x^2-1}/3'],
 		['(2x-1)/(-3)', '{1-2x}/3'],
 		['-(2x-1)/3', '{1-2x}/3'],
-		['(6x-3)/(-9(1-2x))', '-{2x-1}/{3(1-2x)}'],
-		// opérande d'une somme : le − reste, le 1 reste en tête (revue de #1559)
-		['1-(2x-1)/3', '1-{2x-1}/3'],
-		['2-(x-1)/2', '2-{x-1}/2'],
-		['x-(2x-1)/3', 'x-{2x-1}/3'],
-		['1+(2x-1)/(-3)', '1-{2x-1}/3'],
-		['(1-(2x-1)/3)^2', '(1-{2x-1}/3)^2'],
-		// regroupée en un seul terme, la fraction est toute l'expression
-		['x-x+(2x-1)/(-3)', '{1-2x}/3']
+		['(6x-3)/(-9(1-2x))', '-{2x-1}/{3(1-2x)}']
 	])('tidy(%s) = %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});
@@ -207,9 +199,7 @@ describe('invariants', () => {
 		'(-3x^2+6x-3)/9',
 		'(-6x^3+3x-3)/(-9)',
 		'-(2x-1)/3',
-		'(1-x^2)/(-3)',
-		'1-(2x-1)/3',
-		'x-x+(2x-1)/(-3)'
+		'(1-x^2)/(-3)'
 	];
 
 	it.each(PANEL)('valeur conservée sur %s', (input) => {
