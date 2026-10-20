@@ -1,6 +1,6 @@
 /**
  * Durées juxtaposées — chantier lecture-grandeurs, PR 5
- * (docs/wip/lecture-grandeurs-phase0.md § PR 5 ; décisions 6 et 10 de David, 2026-10-20)
+ * (docs/archive/wip/lecture-grandeurs-phase0.md § PR 5 ; décisions 6 et 10 de David, 2026-10-20)
  *
  * `2[h] 30[min]` = la somme 2 h + 30 min, marquée « juxtaposée » : un bloc face à `+`
  * et `−`, refusé collé à `*` ou `/`. Seules les durées (angles : unités ′ et ″ absentes,

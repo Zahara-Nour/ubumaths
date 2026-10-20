@@ -1,6 +1,6 @@
 /**
  * Durées juxtaposées — chantier lecture-grandeurs, PR 5 (décisions 6 et 10 de David,
- * 2026-10-20 ; docs/wip/lecture-grandeurs-phase0.md § PR 5)
+ * 2026-10-20 ; docs/archive/wip/lecture-grandeurs-phase0.md § PR 5)
  *
  * `2[h] 30[min]`, `2[h]30[min]`, `{2[h]}{30[min]}` (et en LaTeX `2~\unit{h}~30~\unit{min}`)
  * se lisent comme UNE durée : la somme 2 h + 30 min, marquée « juxtaposée » pour

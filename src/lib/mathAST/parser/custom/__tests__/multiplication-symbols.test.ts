@@ -1,6 +1,6 @@
 /**
  * `×`, `·` et `⋅` lus comme `*` par le parseur maison (chantier lecture-grandeurs,
- * décision 7 de David, 2026-10-20 ; docs/wip/lecture-grandeurs-phase0.md, PR 1).
+ * décision 7 de David, 2026-10-20 ; docs/archive/wip/lecture-grandeurs-phase0.md, PR 1).
  *
  * Avant : le symbole était pris pour une lettre — `2×3` refusé (« Unexpected
  * token: 3 »), `2×` accepté comme « 2 fois la lettre × », `3[m·s^-1]` refusé

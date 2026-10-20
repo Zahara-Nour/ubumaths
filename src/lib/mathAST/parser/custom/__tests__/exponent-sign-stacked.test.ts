@@ -1,7 +1,7 @@
 /**
  * Exposant signé sans accolades (`10^-3`, B7) et exposants empilés (`2^3^2`, B9) —
  * chantier lecture-grandeurs, décisions 8, 9 et 11 de David (2026-10-20 ;
- * docs/wip/lecture-grandeurs-phase0.md, PR 2).
+ * docs/archive/wip/lecture-grandeurs-phase0.md, PR 2).
  *
  * Avant : le parseur maison refusait `10^-3` (« Negative exponent requires braces »)
  * et `10^+3` (« Expected exponent »), et lisait `2^3^2` de gauche à droite, (2³)² ;

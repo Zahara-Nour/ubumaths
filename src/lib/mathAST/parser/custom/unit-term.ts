@@ -1,6 +1,6 @@
 /**
  * L'unité multiplie tout le terme qui la précède — chantier lecture-grandeurs, PR 4
- * (décision 1 de David, 2026-10-20 ; docs/wip/lecture-grandeurs-phase0.md).
+ * (décision 1 de David, 2026-10-20 ; docs/archive/wip/lecture-grandeurs-phase0.md).
  *
  * Le crochet d'unité est lu en postfixe, sur l'atome qui le précède (`2[m]`). Puis,
  * à chaque produit, quotient ou signe unaire construit, l'unité remonte sur le
