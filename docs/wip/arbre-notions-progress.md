@@ -1049,3 +1049,17 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - Lecture des documents d'accompagnement autorisée ; un index de référence de ces documents est produit
     (le dossier, 332 Mo, reste hors git).
   - Page à cocher : afficher titre, sous-titre (`description`), consigne, exemples générés, plages réelles, verdict.
+- **2026-10-18 — Bornes validées, modèles relevés et jugés.**
+  - Page « Bornes des programmes » (https://claude.ai/artifact/6H9uF1gjrdg7cr7eo5Mf1w) : 36 incertitudes tranchées
+    (6 écarts à la reco : c2-5, c2-6, c2-7, c2-8, c2-12, c3-5, toutes vers l'option stricte), 9 niveaux validés sans
+    commentaire. Appliqué dans `arbre-notions/bornes/` (58 bornes de force « décision »), commit a7ba5b118. Reste :
+    exemple faux de c4-3 (médiane de 3, 7, 8, 12 : 7 et 8 acceptés ?) et contrôle visuel de c4-8.
+  - Relevé : `arbre-notions/releves/releve.ts` (`pnpm exec tsx … --rafraichir`), 573 modèles × 300 tirages par
+    variation, 0 échec. Les 573 JSON (12 Mo) restent non suivis, régénérables ; `index.csv` et `templates.json` suivis.
+  - Verdicts (consigne `analyse/CONSIGNE.md`, CSV par lot) : 282 TAG, 48 MODIFIER, 7 TAG_PAR_VARIATION, 20 A_TRANCHER,
+    216 HORS_PROGRAMME. 16 questions dans `analyse/questions-modeles.json` (dont Q1 opérations à trou face à CM1-061
+    « 748 + … = 1 200 », QCM « le plus petit » incohérent entre lots, trou vs équation au cycle 4).
+  - Page « Verdicts des modèles » (https://claude.ai/artifact/F9FLrWzCSE72E7zeEyCyH5, générateur
+    `analyse/page/gen.mjs`, collections `questions`, `niveaux`, `modeles`). **Reprendre ici** : lire les réponses de
+    David (ArtifactData list des 3 collections), appliquer aux CSV, puis lister les modifications de modèles et préparer
+    la migration des tags (lot 2 bis).
