@@ -346,8 +346,8 @@
 --   ('93a5f7a9-61f2-4553-a529-6f89c37b569c'::uuid, '3', '3-012')
 --  ) as r(template_id, grade, code)
 --  where q.template_id = r.template_id and p.id = q.point_id and p.grade = r.grade and p.code = r.code;
--- alter table public.question_templates disable trigger update_question_templates_updated_at;
--- update public.question_templates q set classification_node_id = coalesce(s.id, nn.id), grades = r.grades
+-- create temporary table _l2_retour on commit drop as
+-- select r.id, r.grades, case when r.sous_notion is null then nn.id else s.id end as node_id
 --   from (values
 --   ('12c377ec-831d-4a2a-b5ff-17950ff80470'::uuid, $l2$Nombres et calculs$l2$, $l2$Entiers : addition et soustraction$l2$, $l2$complément$l2$, array['CP']),
 --   ('5bd4b19a-0416-4fcf-b55a-59f4ceb733e3'::uuid, $l2$Nombres et calculs$l2$, $l2$Entiers : numération$l2$, $l2$écritures$l2$, array['CP']),
@@ -444,11 +444,19 @@
 --   ('4df558f0-37b9-4093-a3e4-fdc45a05e847'::uuid, $l2$Nombres et calculs$l2$, $l2$Racines carrées : calculs$l2$, $l2$techniques de calcul$l2$, array['4']),
 --   ('93a5f7a9-61f2-4553-a529-6f89c37b569c'::uuid, $l2$Algèbre$l2$, $l2$Calcul littéral$l2$, $l2$réduction$l2$, array['3'])
 --   ) as r(id, branche, notion, sous_notion, grades)
---   join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.name = r.branche
---   join public.classification_nodes nn on nn.kind = 'notion' and nn.parent_id = b.id and nn.name = r.notion
---   left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = nn.id and s.name = r.sous_notion
---  where q.id = r.id;
+--   left join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.name = r.branche
+--   left join public.classification_nodes nn on nn.kind = 'notion' and nn.parent_id = b.id and nn.name = r.notion
+--   left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = nn.id and s.name = r.sous_notion;
+-- do $retour$ begin
+-- 	if exists (select 1 from _l2_retour where node_id is null) then
+-- 		raise exception 'rollback : % chemin(s) d''origine introuvable(s)', (select count(*) from _l2_retour where node_id is null);
+-- 	end if;
+-- end $retour$;
+-- alter table public.question_templates disable trigger update_question_templates_updated_at;
+-- update public.question_templates q set classification_node_id = r.node_id, grades = r.grades
+--   from _l2_retour r where q.id = r.id;
 -- alter table public.question_templates enable trigger update_question_templates_updated_at;
+-- drop table _l2_retour;
 -- update public.curriculum_points p set node_id = nn.id
 --   from public.classification_nodes b
 --   join public.classification_nodes nn on nn.kind = 'notion' and nn.parent_id = b.id and nn.name = $l2$Relatifs : calculs$l2$

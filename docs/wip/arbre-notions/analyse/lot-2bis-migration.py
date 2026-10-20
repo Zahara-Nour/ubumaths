@@ -136,18 +136,26 @@ def main() -> None:
     rb += [
         "--  ) as r(template_id, grade, code)",
         "--  where q.template_id = r.template_id and p.id = q.point_id and p.grade = r.grade and p.code = r.code;",
-        "-- alter table public.question_templates disable trigger update_question_templates_updated_at;",
-        "-- update public.question_templates q set classification_node_id = coalesce(s.id, nn.id), grades = r.grades",
+        "-- create temporary table _l2_retour on commit drop as",
+        "-- select r.id, r.grades, case when r.sous_notion is null then nn.id else s.id end as node_id",
         "--   from (values",
     ]
     rb += [f"--   ('{m['id']}'::uuid, {ch(m['noeud_avant'])}, {tableau(m['grades_avant'])})" + (',' if i < len(changes) - 1 else '') for i, m in enumerate(changes)]
     rb += [
         "--   ) as r(id, branche, notion, sous_notion, grades)",
-        "--   join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.name = r.branche",
-        "--   join public.classification_nodes nn on nn.kind = 'notion' and nn.parent_id = b.id and nn.name = r.notion",
-        "--   left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = nn.id and s.name = r.sous_notion",
-        "--  where q.id = r.id;",
+        "--   left join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.name = r.branche",
+        "--   left join public.classification_nodes nn on nn.kind = 'notion' and nn.parent_id = b.id and nn.name = r.notion",
+        "--   left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = nn.id and s.name = r.sous_notion;",
+        "-- do $retour$ begin",
+        "-- \tif exists (select 1 from _l2_retour where node_id is null) then",
+        "-- \t\traise exception 'rollback : % chemin(s) d''origine introuvable(s)', (select count(*) from _l2_retour where node_id is null);",
+        "-- \tend if;",
+        "-- end $retour$;",
+        "-- alter table public.question_templates disable trigger update_question_templates_updated_at;",
+        "-- update public.question_templates q set classification_node_id = r.node_id, grades = r.grades",
+        "--   from _l2_retour r where q.id = r.id;",
         "-- alter table public.question_templates enable trigger update_question_templates_updated_at;",
+        "-- drop table _l2_retour;",
     ]
     for r in rattaches:
         c = r['avant']
