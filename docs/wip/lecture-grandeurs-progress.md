@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-20, 3e session._
 
 - **État** : phase 0, rien de codé. Pages à cocher (font foi, le corpus .md garde la v1) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81 fiches : arbre lu / arbre proposé / refus du parseur / message de l'atelier / calcul mesuré / calcul attendu ; 16 répondues, B7 « je ne tranche pas » avec mon avis sur la fiche) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (v3, 31 fiches, 0 répondue). Base `reponses/<id>`.
-- **Décidé par David** : (1) unité × tout le terme de nombres, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue INTERNE au point (option a). (3) Il REFUSE la virgule décimale (`2,5[m]` refusé, A3 validée). (4) **Découpage des refus** : le parseur rend un code + un message ANGLAIS ; l'atelier traduit en français à l'affichage (`mathAST/cli/web/french-errors.ts`) — chantier de l'atelier. (5) **Codes d'erreur PRÉCIS** (nouveaux codes au lieu de `UNEXPECTED_TOKEN`), l'atelier traduit par code.
-- **Prochaine action** : faire valider par David le catalogue des codes proposé le 2026-10-20 (3e session, historique) ; aucune nouvelle réponse sur les pages depuis la 2e session.
+- **Décidé par David** : (1) unité × tout le terme de nombres, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue INTERNE au point (option a). (3) Il REFUSE la virgule décimale (`2,5[m]` refusé, A3 validée). (4) **Découpage des refus** : le parseur rend un code + un message ANGLAIS ; l'atelier traduit en français à l'affichage (`mathAST/cli/web/french-errors.ts`) — chantier de l'atelier. (5) **Codes d'erreur PRÉCIS** (nouveaux codes au lieu de `UNEXPECTED_TOKEN`), l'atelier traduit par code. (6) **Q9 = option (a)** : deux durées côte à côte (`2[h] 30[min]`, `2 h 30 min` en MathLive) sont LUES comme une SOMME marquée « juxtaposée », par les 4 implémentations (LaTeX et maison, Pratt et RD) via une fonction partagée ; `;hms` et `compositeDuration` la produisent ; fin du 1 h². **Exigence : la marque ne doit pas se perdre** dans les transformations.
+- **Prochaine action** : faire valider le catalogue des codes (historique, 3e session) ; Q9 restant : angles ° ′ ″ aussi ? refus `JUXTAPOSED_QUANTITIES` pour `2[m] 30[cm]` ? ; plan de gestion du risque de la marque (proposé, historique).
 - **Ensuite** : PR « retrait de la virgule » (+ 7 formules `~…~` d'exercices en prod au point).
 - **Pièges** : distinguer LECTURE (arbre) / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; défauts : `{2[h]}{30[min]}` = produit, `π[m]` = π lettre, `pi[m]` = p × (i[m]), `x;y` et `f(x;y)` lus avec « ; » comme lettre, `[1,5]` lu `(1.5)`, `2^3^2` = (2^3)^2.
 - **Worktree / branche** : aucun. Sondes tsx : code dans `docs/wip/lecture-grandeurs-sondes.md` (arbre parenthésé, calcul, codes d'erreur).
@@ -116,3 +116,21 @@ Inventaire de qui écrit en syntaxe maison (prod lue en lecture seule, dépôt p
   par code, plus par le texte anglais.
 - Mesuré en plus : `2×3` est refusé (`UNEXPECTED_TOKEN`), le parseur maison ne connaît que `*` ; `(1+2` rend
   `UNEXPECTED_TOKEN` alors que `MISSING_DELIMITER` existe. Catalogue proposé à David (en attente).
+
+### 2026-10-20 — Q9 : durées juxtaposées lues comme une somme
+
+- Mesuré : l'atelier refuse `2~\unit{h}~30~\unit{min}` (« Nombre « 30 » écrit après un facteur… ») ; il
+  n'affiche « 2 h 30 min » qu'en SORTIE (`compositeDuration`). Les champs réponse acceptent déjà
+  « 2 h 15 min » via `readCompositeDuration` (`questions/units/composite-duration.ts`, lot 3), hors parseur,
+  quand l'attendu est une durée. Pas de nœud durée dans mathAST ; `HMSValue` (`questions/units/types.ts`)
+  n'est utilisé nulle part.
+- Bug 1 h² : `{2[h]}{30[min]}` (écrit par `;hms`) est un produit implicite ; `computeQuantity` rend 1 h², l'atelier
+  aussi avec `\left(2~\unit{h}\right)\left(30~\unit{min}\right)`. Les modèles sont protégés par la garde
+  « Produit de durées » (`evaluate-with-modifiers.ts:494`).
+- David : l'atelier et MathLive doivent accepter l'écriture naturelle « 2h 30 min ». Options (a) parseur lit
+  une somme juxtaposée, (b) l'atelier réutilise `readCompositeDuration`, (c) nœud durée. **David tranche (a)**,
+  « il faudra gérer le vrai risque » : la marque perdue par une transformation (échec bénin : « 2 h + 30 min »,
+  valeur juste). Fiches F1-F3 notées sur la page.
+- Coût : chaque parseur a deux implémentations (Pratt par défaut, RD) ; modèle à suivre :
+  `parser/number-after-factor.ts`. Touchés aussi : `juxtaposesQuantities` (latex-generator ×2,
+  `build-structure.ts`), le générateur maison, `;hms`, `compositeDuration`.
