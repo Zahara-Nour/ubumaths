@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1547._
+_Mis à jour le 2026-10-20, après #1552._
 
-- **État** : PR 1 (#1543), PR 2 (#1545) et PR 3 (#1547, égalité exacte par `exactConversion`) mergées. Oracle à 0 changement. Rien en prod (pas de `deploy:prod`).
-- **Prochaine action** : selon David — PR 2 bis (découpage « nombre | unité ») ou fin de chantier (versement dans `docs/systeme/grandeurs.md`, journal archivé).
-- **En attente de David** : PR 2 bis maintenant, plus tard, ou jamais ?
-- **Pièges en cours** : tolérance et arrondis (`precision`) restent en flottants ; messages d'unité validés (ne pas reformuler) ; pas de `timeout` sur ce Mac.
-- **PR 2 bis (proposée)** : découpage « nombre | unité » de `student-input.ts` — `2\sqrt{2} m`, `3+2 m` → « Unité inconnue » ; `\sqrt{2} m`, `(-3) m`, `.5 m` → « Réponse invalide ».
-- **Worktree / branche** : aucun (à recréer depuis `origin/main`).
+- **État** : PR 1-3 mergées (#1543, #1545, #1547). PR 2 bis (découpage « nombre | unité ») en phase 0. #1552 (atelier : `2 m*3 m` = 6 m²) mergée en passant. Rien en prod.
+- **Prochaine action** : PR 2 bis — lire la saisie élève comme mathAST (`parseLatex`, unité sur le facteur qui la précède : `3+2 m` = 3 + (2 m), `2×3 m` = 2 × (3 m), `2 m×3 m` = 6 m²), tests rouges d'abord, revue opus.
+- **En attente de David** : calcul juste non effectué (`2×3 m`, `3 m + 2 m`, `10^3 m`) → FAUX « …forme demandée » comme sans unité (ADR 0013) ? (ma reco : oui).
+- **Phase 0 déjà tranchée** : `3+2 m` → « On ne peut pas ajouter un nombre sans unité et une longueur. » ; `2√2 m` → « Valeur incorrecte. » ; `(-3) m` → JUSTE + parenthèses inutiles.
+- **Pièges** : la lecture TEXTE de l'atelier met l'unité sur tout le terme (`2*3 m` → `(2*3)[m]`), le LaTeX sur le facteur — même valeur ; `2 m×3 m` (vrai ×) illisible en texte ; `5×1` sans unité donne « Unité inconnue : .1. » (le t de `\times`).
+- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage` (sondes non suivies dans `src/lib/questions/units/__tests__/tmp/`).
 
 ## Historique
 
@@ -135,3 +135,10 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
 - Revue opus : aucun bloquant. Appliqué : invariant renforcé (coefficient et décalage exacts =
   ceux des flottants, sur toutes les unités simples lisibles) ; commentaire de l'étiquette
   `incompatible_units` du refus sans conversion exacte (seul `isEqual` est lu).
+
+### 2026-10-20 — PR 2 bis, phase 0 (en cours) ; #1552 mergée
+
+- Vérifié dans mathAST (arbres) : `3+2\unit{m}` = addition(3, 2 m) ; `2\times3\unit{m}` = 2 × (3 m) ;
+  `2\unit{m}\times3\unit{m}` = (2 m) × (3 m) → 6 m² ; `10^{3}\unit{m}`, `\frac{1}{2}\unit{m}`, `\sqrt{2}\unit{m}` :
+  le facteur entier porte l'unité. Correction de David : `3+2 m` est 3 + (2 m), `2×3 m` est 2 × (3 m).
+- #1552 : dans l'atelier, `2 m*3 m` donnait `2[m]*3 m` (m pris pour une lettre) → (2 m) × (3 m).
