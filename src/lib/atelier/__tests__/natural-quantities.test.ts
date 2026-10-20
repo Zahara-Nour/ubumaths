@@ -37,6 +37,24 @@ describe('un nombre, une espace, une unité : une grandeur', () => {
 	});
 });
 
+describe('un produit ou un quotient de grandeurs, opérateur collé', () => {
+	// `2 m*3 m` est (2 m) × (3 m), comme mathAST lit `2\unit{m}\times3\unit{m}` : une
+	// grandeur déjà lue clôt le terme de la suivante (avant : `2[m]*3 m`, m pris pour une lettre)
+	it.each([
+		['2 m*3 m', '2[m]*3[m]'],
+		['2 m/4 s', '2[m]/4[s]'],
+		['(2 m)*3 m', '(2[m])*3[m]'],
+		['2 m*3*4 m', '2[m]*(3*4)[m]'],
+		['2 m*10^3 m', '2[m]*(10^3)[m]']
+	])('%s → %s', (input, expected) => {
+		expect(read(input)).toBe(expected);
+	});
+
+	it('sans unité après, le facteur reste un nombre', () => {
+		expect(read('2 m*3')).toBe('2[m]*3');
+	});
+});
+
 describe('ce qui reste de l’algèbre', () => {
 	it.each([
 		['collé', '5m'],

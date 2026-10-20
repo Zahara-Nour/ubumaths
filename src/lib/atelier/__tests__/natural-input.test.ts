@@ -176,6 +176,16 @@ describe('le champ produit le texte que lit runInput, et la vraie chaîne répon
 		expect(shown(runInput(session, converted.text))).toContain(answer);
 	});
 
+	it.each([
+		['2 m*3 m', '6~\\mathrm{m}^{2}'],
+		['(2 m)*3 m', '6~\\mathrm{m}^{2}'],
+		['6 m/2 s', '3~\\mathrm{m}']
+	])('un produit ou un quotient de grandeurs, opérateur collé : %s', (text, answer) => {
+		expect(
+			shown(runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, text))
+		).toContain(answer);
+	});
+
 	it('une case vide du modèle est refusée avant le moteur', () => {
 		expect(calcTextOf('\\text{intégrer}\\,\\placeholder{}', words).ok).toBe(false);
 	});

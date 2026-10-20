@@ -60,6 +60,9 @@ Règles de la lecture naturelle (décisions de David du 2026-10-11) :
   `2πr[m]` impose l'unité. Lecteur : `quantitiesAfterTerms` ; le champ de la carte ne l'applique
   pas (`afterTerms: false`), il a ses propres lectures. Une ligne avec `π` lue en LaTeX refuse les
   crochets : Calcul la relit, en repli, avec `\unit{m}` (`latexUnitsWithPi`, `atelier/parse.ts`) ;
+- une grandeur déjà lue clôt le terme de la suivante : `2 m*3 m` = (2 m) × (3 m) = 6 m², `6 m/2 s`
+  = 3 m/s, comme mathAST lit `2\unit{m}\times3\unit{m}` (2026-10-20 ; avant, le second `m` restait
+  une lettre et la ligne était refusée) ;
 - deux grandeurs juxtaposées s'ajoutent : `2 h 30 min` = 2 h + 30 min ;
 - `5km` collé reste un produit, avec une note « Pour une grandeur, écris 5 km (avec une espace). »
   (sauf si toutes ses lettres sont des valeurs du panneau : produit voulu) ;
