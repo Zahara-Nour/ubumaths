@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, PR `feat/mathoux-noms` ouverte._
+_Mis à jour le 2026-10-20, après #1553._
 
-- **État** : Mathoux v1 + « Faire grandir » sur `main`, pas en prod. PR des noms : races validées dans `mathou-races.ts`, 134 noms propres dans `src/lib/mathoux/mathou-noms.ts` (relecture partielle de David, reste validé par défaut à sa demande), page « Nom, Race » + notion dessous.
-- **Prochaine action** : surveiller la CI de la PR et merger si verte (`gh pr checks --watch`), puis rien de prévu sur le chantier tant que David ne revient pas sur les noms.
-- **En attente de David** : relire les 59 noms validés par défaut ([mathoux-noms.md](mathoux-noms.md)) ; trancher les coquilles possibles (« Pile-Poile », « Félix A-Peu-Près », « Félix Au-dessus En-Dessous », « Moins-Que-Rien ») et les cinq « Félix … » ; `deploy:prod` (seulement à sa demande).
-- **Pièges en cours** : la table est clée par NOM de notion : renommer une notion lui fait perdre son nom propre (repli générique) ; aucun test ne compare encore les clés aux `classification_nodes` (relecture : test d'intégration à ajouter). Juste avant `deploy:prod`, `fix-renvois-numerotation.ts --publier` (autre chantier).
-- **Worktree / branche** : `../ubumaths-wt-mathoux-v1` · `feat/mathoux-noms`.
+- **État** : Mathoux v1 + « Faire grandir » + noms (#1553 : 134 noms propres dans `src/lib/mathoux/mathou-noms.ts`, races validées, Chatterie « Nom, Race » + notion) sur `main`, pas en prod.
+- **Prochaine action** : rien d'urgent. Possible : test d'intégration qui compare les clés de `MATHOU_NAMES` aux `classification_nodes` (notion) de la base locale.
+- **En attente de David** : relire les 59 noms validés par défaut ([mathoux-noms.md](mathoux-noms.md)) ; trancher les coquilles possibles (« Pile-Poile », « Félix A-Peu-Près », « Félix Au-dessus En-Dessous », « Moins-Que-Rien »), les cinq « Félix … » et l'article devant la race ; `deploy:prod` (seulement à sa demande).
+- **Pièges en cours** : table clée par NOM de notion : renommer une notion lui fait perdre son nom propre (repli générique). Juste avant `deploy:prod`, `fix-renvois-numerotation.ts --publier` (autre chantier).
+- **Worktree / branche** : aucun ouvert ; partir de `origin/main`.
 
 ## Découpage
 
