@@ -200,7 +200,9 @@ function quantitiesAfterTerms(
 		if (/^[A-Za-z]$/.test(writing)) {
 			singleLetters.push({ written: `${term} ${writing}`, letter: writing });
 		}
-		const value = isWrapped(term) ? term : `(${term})`;
+		// Un nombre seul (`2[m]*3 m`) n'a pas besoin de parenthèses
+		const bare = isWrapped(term) || new RegExp(`^${NUMBER}$`).test(term);
+		const value = bare ? term : `(${term})`;
 		const quantity = `${value}[${writing}]`;
 		result = result.slice(0, start) + quantity + result.slice(end + whole.length);
 		from = start + quantity.length;
@@ -211,8 +213,17 @@ function quantitiesAfterTerms(
  * Le début du terme qui finit en `end` : on remonte jusqu'à un `+`, un `-`, un
  * `=`, un séparateur ou une parenthèse ouvrante du niveau du terme. Une espace
  * entre deux facteurs sans opérateur (`3 a 10^3`) le coupe aussi.
+ *
+ * Une grandeur déjà lue (`2[m]`, `(2[m])`) clôt le terme : `2[m]*3 m` est
+ * (2 m) × (3 m), comme mathAST lit `2\unit{m}\times3\unit{m}`. Le terme commence
+ * après l'opérateur qui la suit ; sans `*` ni `/` (`2[m]^3 m`), il est vide.
  */
 function termStart(text: string, end: number): number {
+	const afterQuantity = quantityBefore(text, end);
+	if (afterQuantity !== null) {
+		const operator = /^\s*[*/×÷·]\s*/.exec(text.slice(afterQuantity, end));
+		return operator === null ? end : afterQuantity + operator[0].length;
+	}
 	let depth = 0;
 	let i = end;
 	for (; i > 0; i--) {
@@ -238,6 +249,41 @@ function termStart(text: string, end: number): number {
 	}
 	while (/\s/.test(text[i] ?? '')) i++;
 	return i;
+}
+
+/**
+ * La fin de la dernière grandeur déjà lue (`2[m]`, `(2[m])`) du terme qui finit
+ * en `end`, au niveau du terme ; null s'il n'y en a pas. Mêmes coupures que
+ * `termStart`, pour ne pas chercher au-delà du terme (`2[m] + 3 m`).
+ */
+function quantityBefore(text: string, end: number): number | null {
+	let depth = 0;
+	for (let i = end; i > 0; i--) {
+		const char = text[i - 1];
+		if (depth === 0 && char === ']') return i;
+		if (char === ')' || char === '}') {
+			if (depth === 0 && text.slice(matchingOpen(text, i - 1), i).includes('[')) return i;
+			depth++;
+		} else if (char === '(' || char === '{') {
+			if (depth === 0) return null;
+			depth--;
+		} else if (depth > 0) continue;
+		else if ('+-=;<>'.includes(char) && text[i - 2] !== '^') return null;
+	}
+	return null;
+}
+
+/** L'indice de la parenthèse (ou accolade) ouvrante de celle qui ferme en `close` */
+function matchingOpen(text: string, close: number): number {
+	let depth = 0;
+	for (let i = close; i >= 0; i--) {
+		if (text[i] === ')' || text[i] === '}') depth++;
+		else if (text[i] === '(' || text[i] === '{') {
+			depth--;
+			if (depth === 0) return i;
+		}
+	}
+	return 0;
 }
 
 /**
