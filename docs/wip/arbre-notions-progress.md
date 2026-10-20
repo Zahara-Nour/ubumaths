@@ -5,18 +5,18 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, après la validation des niveaux et la liste des modifications du lot 2 bis._
+_Mis à jour le 2026-10-20, migration des tags du lot 2 bis écrite (PR en cours)._
 
-- **État** : C5 étape 2 bis. Verdicts figés (306 TAG, 66 MODIFIER, 201 HORS_PROGRAMME), 9 niveaux validés par David.
-  Liste : `arbre-notions/analyse/lot-2bis-modifications.md` (générateur `lot-2bis-liste.py`).
-- **Trouvé** : 92 tags violeraient la garde du nœud (trigger `question_template_points_check_rules`) → 84
-  déplacements sans choix (R2), 8 sous-notions à choisir ; aucun tag en prod sur ces modèles.
-- **Prochaine action** : réponses de David (8 sous-notions, ordre de livraison, question d'accès), puis branche +
-  migration (déplacements, niveaux, tags des 306 TAG) ; les 66 MODIFIER ensuite, tag après modification.
-- **En attente de David** : les 3 questions ci-dessus.
+- **État** : C5 étape 2 bis. Migration `20261020233600_tags_lot_2bis_primaire_college` (générée par
+  `analyse/lot-2bis-migration.py`) : 306 tags, 91 déplacements, 3 reclassements 5e → 4e, 4-004 et 4-073 rattachés
+  à « écriture d'une expression ». Test `tests/integration/tags-lot-2bis.test.ts` vert, rouge sans la migration.
+- **Prochaine action** : CI verte + revues (code-reviewer, security-auditor) → merge → `db:migrate` (4 conditions)
+  → vérifier en prod ; puis les 66 MODIFIER par lots (contenu des modèles), tagués après modification.
+- **En attente de David** : rien.
 - **Pièges en cours** : contrôle visuel de c4-8 pas fait ; CSV cm/cycle2/sixieme en CRLF, cycle4 en LF (`newline=''`) ;
-  `docs/ref/programmes/Accompagnement/` hors git ; la clé anonyme ne lit pas `question_template_points` (MCP).
-- **Worktree / branche** : aucun pour l'instant (docs sur `main`) ; la migration se fera dans `ubumaths-wt-arbre-notions`.
+  `docs/ref/programmes/Accompagnement/` hors git ; la clé anonyme ne lit pas `question_template_points` (MCP) ;
+  dans un `if` plpgsql, le `then` d'un `case` clôt la condition.
+- **Worktree / branche** : `ubumaths-wt-arbre-notions` · `feat/arbre-tags-lot-2bis`.
 
 ## Tranché avec David (2026-10-06)
 
@@ -1121,3 +1121,12 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   sous-notion du point (R2) ; 8 ont un point sur une notion à sous-notions (6-106 ×2, 6-149, 5-045 ×4, 4-073) → choix
   à faire. 3 changements de niveau (5e → 4e). Les 66 MODIFIER : 39 nombres resserrés, 7 retraits de variations, 17
   consignes ou affichages, 3 scissions (5-026 / 5-123). Aucun tag en prod sur les 573 modèles (vérifié par MCP).
+- **2026-10-20 — Réponses de David (« oui » aux trois propositions) et migration du lot 2 bis.** Sous-notions :
+  6-106 → Décimaux : numération > forme fractionnaire ; 5-045 → Équations : premier degré > ax + b = c ; 6-149 →
+  Longueurs > comparaison et mesure ; 4-073 rattaché à Entiers : priorités opératoires > écriture d'une expression,
+  **avec 4-004** dont il est la moitié (question posée, reco suivie). Ordre : cette migration (déplacements, niveaux,
+  tags des TAG), puis les 66 MODIFIER par lots. Accès : aucune règle ne change (tags lisibles par tout connecté) ;
+  l'élève voit son programme dans « Ma progression » dès qu'un modèle de son niveau est tagué. Migration générée
+  (`analyse/lot-2bis-migration.py`, fixture `tests/integration/fixtures/tags-lot-2bis.json`) : gardes tout ou rien
+  (321 modèles), nœud et niveaux relevés, aucun tag déjà posé ; rollback exécutable, éprouvé par le test ; fixture du
+  seed cycle 4 mise à jour (4-004, 4-073).
