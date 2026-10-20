@@ -191,6 +191,13 @@ describe('mathou-races', () => {
 		expect(new Set(MATHOU_RACES.map((r) => r.name)).size).toBe(19);
 	});
 
+	it('noms validés par David (2026-10-18), dans l’ordre des branches', async () => {
+		expect(MATHOU_RACES[0].name).toBe('le Noir de Nombrilie');
+		expect(MATHOU_RACES[4].name).toBe('le Al Jabr Oriental');
+		expect(MATHOU_RACES[5].name).toBe('le Chartreux de Yoyolande');
+		expect(MATHOU_RACES[18].name).toBe('le Tigré de Glitchistan');
+	});
+
 	it('normalizeRaceIndex : modulo 19, négatifs et NaN gérés', async () => {
 		expect(normalizeRaceIndex(0)).toBe(0);
 		expect(normalizeRaceIndex(18)).toBe(18);

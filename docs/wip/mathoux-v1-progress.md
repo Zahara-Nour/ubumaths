@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après #1498._
+_Mis à jour le 2026-10-20, PR `feat/mathoux-noms` ouverte._
 
-- **État** : Mathoux v1 + « Faire grandir » (#1490, #1489, #1493, #1494, #1498) sur `main`, pas en prod. Noms des 19 races validés par David ([mathoux-noms.md](mathoux-noms.md)).
-- **Prochaine action** : lire les avis de la page à cocher (base `avis`, `kind` = `mathou`), relire chaque nom avec sa fiche (signaler les coquilles, ne pas corriger en silence), puis UNE PR : races dans `src/lib/components/mathoux/mathou-races.ts` (noms provisoires à remplacer), table notion → nom affichée « Nom, Race », `docs/systeme/mathoux.md`.
-- **En attente de David** : relecture des 134 noms de Mathoux sur la page à cocher https://claude.ai/artifact/Q594t4KTxepA4Q6MSnmp84 ; `deploy:prod` (seulement à sa demande).
-- **Pièges en cours** : juste avant `deploy:prod`, lancer `fix-renvois-numerotation.ts --publier` (autre chantier) ; peu de Mathoux possibles tant que les modèles ne sont pas tous tagués (autre chantier).
-- **Worktree / branche** : aucun ouvert ; partir de `origin/main` (`feat/mathoux-noms`).
+- **État** : Mathoux v1 + « Faire grandir » sur `main`, pas en prod. PR des noms : races validées dans `mathou-races.ts`, 134 noms propres dans `src/lib/mathoux/mathou-noms.ts` (relecture partielle de David, reste validé par défaut à sa demande), page « Nom, Race » + notion dessous.
+- **Prochaine action** : surveiller la CI de la PR et merger si verte (`gh pr checks --watch`), puis rien de prévu sur le chantier tant que David ne revient pas sur les noms.
+- **En attente de David** : relire les 59 noms validés par défaut ([mathoux-noms.md](mathoux-noms.md)) ; trancher les coquilles possibles (« Pile-Poile », « Félix A-Peu-Près », « Félix Au-dessus En-Dessous », « Moins-Que-Rien ») et les cinq « Félix … » ; `deploy:prod` (seulement à sa demande).
+- **Pièges en cours** : la table est clée par NOM de notion : renommer une notion lui fait perdre son nom propre (repli générique) ; aucun test ne compare encore les clés aux `classification_nodes` (relecture : test d'intégration à ajouter). Juste avant `deploy:prod`, `fix-renvois-numerotation.ts --publier` (autre chantier).
+- **Worktree / branche** : `../ubumaths-wt-mathoux-v1` · `feat/mathoux-noms`.
 
 ## Découpage
 
@@ -26,7 +26,7 @@ _Mis à jour le 2026-10-19, après #1498._
 - [x] PR 3 — #1493 mergée le 2026-10-18 : mémoire (meilleur stade, étoiles), sieste de l'oubli, export RGPD (Mathoux et Palotin).
 - [x] Dessins : AB3 choisi par David le 2026-10-18 (après trois itérations), décliné en 19 races, #1494 mergée.
 - [x] v1.1 « Faire grandir » — #1498 mergée le 2026-10-18 (pas en prod).
-- [ ] Noms : races validées le 2026-10-18 ; noms des 134 Mathoux en relecture chez David.
+- [x] Noms : races validées le 2026-10-18 ; 134 noms dans le code le 2026-10-20 (relecture partielle, reste validé par défaut, à revoir par David).
 
 ### Calcul, page, Palotin gardien (2026-10-18, non commité)
 

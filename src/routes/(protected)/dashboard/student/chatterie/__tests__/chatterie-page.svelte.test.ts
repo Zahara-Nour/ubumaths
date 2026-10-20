@@ -137,6 +137,19 @@ describe('La Chatterie de Faustroll', () => {
 		await expect.element(page.getByText('Grand matou', { exact: true })).toBeVisible();
 	});
 
+	it('un Mathou né se présente « Nom, Race », sa notion dessous ; une silhouette, sans race', async () => {
+		await renderPage(COLLECTION);
+		const fractions = page.getByText('le Mathou des Fractions').element();
+		expect(fractions.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+			'le Mathou des Fractions, le Noir de Nombrilie'
+		);
+		await expect.element(page.getByText('Fractions', { exact: true })).toBeVisible();
+		// race de l'index 8, celle de la section Géométrie du décor
+		await expect.element(page.getByText(', le Discret Bigarré')).toBeVisible();
+		// la silhouette (même race que Fractions) ne montre pas la race
+		expect(page.getByText('le Noir de Nombrilie').elements()).toHaveLength(1);
+	});
+
 	it('un Mathou en sieste porte un lien « Réveiller » vers la révision', async () => {
 		await renderPage(COLLECTION);
 		await expect.element(page.getByText('Fait la sieste', { exact: true })).toBeVisible();
