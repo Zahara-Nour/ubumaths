@@ -2,16 +2,49 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1562._
+_Mis à jour le 2026-10-21, PR 6 en cours (branche `feat/lecture-grandeurs-virgule`)._
 
-- **État** : phase 0 validée (`docs/wip/lecture-grandeurs-phase0.md`) ; PR 1 (#1555), 2 (#1557), 3 (#1558), 4 (#1560), retrait de `BARE_PI` (#1561) et PR 5 durées juxtaposées (#1562) mergées, **pas en prod**. Brouillons de prod à `pi` nu déjà réécrits `\pi` : le `deploy:prod` peut livrer. Pages à cocher : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81/81) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (31/31).
-- **Décidé par David** : décisions (1)-(14), détail dans l'historique ; (15) PR 5 = durées seules, angles juxtaposés refusés tant que les unités ′ et ″ n'existent pas ; (16) atelier : `2 m 30 cm` reste une somme (2,3 m), le parseur garde son refus de `2[m] 30[cm]` (réponses d'exercices) ; (17) ′ et ″ pas maintenant (aucun cas réel, conflit avec la prime `f′`), 💭 à rouvrir si un exercice en a besoin.
-- **Prochaine action** : PR 6 (virgule décimale, décisions 2-3 et page virgule 31/31).
-- **En attente de David** : rien.
-- **Pièges** : LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt + RD ; une recopie d'addition doit passer `displayStyle` (garde dans `juxtaposed-quantities.test.ts`) ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
-- **Worktree / branche** : aucun (#1562 mergée). Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
+- **État** : PR 1-5 + `BARE_PI` mergées, pas en prod. PR 6 (virgule) codée : 3 commits de code + doc, suite `src/lib` verte (56 881), revue Opus en cours. Pages à cocher : grandeurs (81/81), virgule (31/31).
+- **Décidé par David** : (1)-(17), détail dans l'historique ; (16) `2 m 30 cm` reste une somme dans l'atelier ; (17) pas de ′ ″.
+- **Prochaine action** : findings de la revue → PR → CI → merge.
+- **En attente de David** : ⚠️ AVANT le `deploy:prod` de la PR 6, lancer `scripts/reecrire-virgule-decimale-base.ts` (simulation puis `--ecrire`) : 6 modèles publiés + 7 formules d'exercices (`verifications-manuelles.md`). Moi : lecture de prod par script refusée, mesures faites par le MCP.
+- **Pièges** : l'inventaire du 2026-10-20 avait manqué `2,5|3,5`, `?*0,5`, `(-a,5)` (lettre avant la virgule) et l'atelier qui range `0,3` (curseur) relu sans provenance → `legacyDecimalCommas`. Chaque parseur = Pratt + RD ; RD maison sans fonctions génériques ni matrices.
+- **Worktree / branche** : `../ubumaths-wt-lecture-grandeurs` · `feat/lecture-grandeurs-virgule`. Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
+
+### 2026-10-21 — PR 6 codée : virgule toujours séparatrice, « ; » refusé
+
+- Parseur maison (Pratt et RD) : le tokenizer ne lit plus la virgule décimale ; `;` = jeton
+  `SEMICOLON` ; refus `DECIMAL_COMMA` (virgule collée entre deux entiers, texte « write 2.5 » avec
+  le nombre tapé, `√2,5` compris), `UNEXPECTED_COMMA`, `SEMICOLON` (`refusal-codes.ts`). `f(1,5)` =
+  deux arguments (Pratt ; le RD maison n'a pas de fonctions génériques). Tests :
+  `parser/__tests__/virgule-point-virgule.test.ts` (77, rouges avant). Empreinte du corpus maison :
+  16 saisies sur 1 299 (toutes à virgule ou `;`, refus qui changent de code), régénérée.
+- **Mesure prod (MCP lecture seule ; la lecture par script avec la clé de service est refusée)** —
+  différentiel ancien code (dépôt principal) / nouveau (worktree) sur copies locales : l'inventaire
+  du 2026-10-20 était incomplet. Publiés : `e0ccaf84` (`a = 2,5|3,5` + 9 specs : PLUS AUCUN
+  tirage), `5b53b1be` (`(-a,5)+b` : virgule après une LETTRE, invisible à `\d,\d` ; plus aucun
+  tirage), `9cc8cd82`, `f9a3333d`, `59ac62a2`, `99c4ab73` (`?*0,5 = …` : affiché `□*0,5` brut).
+  Exercices : les 7 formules connues. Rien d'autre : `{{eval}}`/`{{if}}`, conditions et expressions
+  passés au crible (appels effondrés de l'intérieur) ; exclusions `!a,b`, `!cd(a)` identiques ;
+  autres tables de contenu sans formule `~…~`. `953574d4` (`{{a}},{{c}}` en réponse attendue) :
+  correction identique (specs jouées), seul l'affichage après coup passe de `1.16` à `1,16`.
+- **Atelier** : un objet rangé (lien, stockage) est relu sans provenance (`'url'`) et l'atelier en
+  range avec une virgule (`formatSliderValue` : `0,3` ; commande : `0,5u_n + 3`) → 8 tests rouges
+  (`recalcul-equivalence`, suites). `legacyDecimalCommas` (`parser/custom/legacy-decimal-commas.ts`)
+  = règle exacte de l'ancien tokenizer, appliquée par `readByProvenance` hors saisie élève, et par
+  la DSL géométrie (`sur ]0,5 ; 1,5[`, fonctionnalité voulue).
+- Contenus : `scripts/reecrire-virgule-decimale-base.ts` (20 remplacements exacts comptés, 10
+  lignes), éprouvé en LOCAL (lignes de test aux mêmes ids : écriture, idempotence, relecture, règle
+  par modèle). Transition vérifiée sur copies : (ancien code, ancien contenu) → (ancien, nouveau) →
+  (nouveau, nouveau) : énoncés, LaTeX, réponses attendues identiques ; oracle des cases à unité
+  inchangé. Dépôt réécrit : fixture `e0ccaf84`, `data/relecture/` 490 et 320.
+- Mis à jour (ancienne tolérance assertée) : conditions `a>2,5` → `ConditionSyntaxError`,
+  `{{eval:2,5*2}}` → `AuthorExpressionError`, `~3,14~` → message rouge.
+- Noté, hors PR : un `{{eval}}` à unités de `e0ccaf84` répondait « Unexpected token: , » (repli
+  LaTeX qui écrase le `DECIMAL_COMMA` du maison) ; la console `french-errors.ts` ne traduit pas
+  encore les trois nouveaux textes (chantier de l'atelier, comme `LEADING_DECIMAL_POINT`).
 
 ### 2026-10-21 — décisions (16) et (17)
 

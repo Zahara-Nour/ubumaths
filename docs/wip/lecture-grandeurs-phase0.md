@@ -207,14 +207,15 @@ Erreur ✅
 
 ---
 
-## PR 6 — virgule décimale (décisions 2, 3) ⏸
+## PR 6 — virgule décimale (décisions 2, 3) ✅
 
 Décidé ✅ : `2,5` et `2,5[m]` → `DECIMAL_COMMA` (« Decimal comma: the decimal separator is '.' (write 2.5) ») ;
 les 7 formules `~…~` d'exercices en prod passent au point (l'affichage remet la virgule).
 
-Tout le reste attend la page virgule (31 fiches, 0 réponse) : `f(1,5)` (deux arguments ?), `max((2,5),3)`,
-`[1,2]`, `(1,2)`, `f(x;y)` lu avec `;` lettre (P3), codes `SEMICOLON` et `UNEXPECTED_COMMA`.
-**Cette PR ne démarre pas avant les réponses.**
+Page virgule close 31/31 (toutes « Validé », 2026-10-20) : `f(1,5)` = deux arguments (V7) ;
+`max((2,5),3)`, `[1,2]`, `(1,2)`, `{2,5}` → `DECIMAL_COMMA` ; `1, 2`, `,5`, `5,`, `x,2` →
+`UNEXPECTED_COMMA` ; `;` partout → `SEMICOLON` (P1-P4, `x;y` n'est plus un produit) ; matrices et
+fonctions connues inchangées. Codée le 2026-10-21 (journal).
 
 ---
 
