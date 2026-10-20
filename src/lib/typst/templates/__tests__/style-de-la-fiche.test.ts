@@ -3,8 +3,7 @@
  * =================================================
  *
  * La fiche désigne son style par `style_id` seul ; sans lui, « Fiche élève »
- * (D7). L'ancienne colonne `template_id`, tant qu'elle existe en base, ne
- * décide plus de rien (#1529 : son contenu a été recopié dans `style_id`).
+ * (D7). L'ancienne colonne `template_id` est retirée (#1529).
  * Le Typst d'un style de Chiphre vient toujours du code, jamais de la base (audit du lot 3a).
  */
 import { describe, expect, it } from 'vitest';
@@ -38,14 +37,13 @@ const INSTANCE: InstanceData = {
 	]
 };
 
-function worksheet(ids: { style_id?: string | null; template_id?: string | null }): WorksheetRow {
+function worksheet(ids: { style_id?: string | null }): WorksheetRow {
 	return {
 		id: 'w-1',
 		title: 'Fiche test',
 		description: null,
 		type: 'worksheet',
 		config: {},
-		template_id: ids.template_id ?? null,
 		style_id: ids.style_id ?? null,
 		estimated_duration_minutes: null,
 		total_points: null
@@ -66,7 +64,7 @@ function profTemplate(content: string): WorksheetTemplateRow {
 }
 
 function generate(
-	ids: { style_id?: string | null; template_id?: string | null },
+	ids: { style_id?: string | null },
 	template: WorksheetTemplateRow | null = null
 ): string {
 	return generateWorksheetTypst({
@@ -91,21 +89,9 @@ function signature(id: string): string {
 	return line;
 }
 
-/** Une ligne lue en base porte encore la colonne `template_id` jusqu'à son retrait. */
-function rowWithTemplateId(ids: { style_id?: string | null; template_id: string }) {
-	return ids as { style_id?: string | null };
-}
-
 describe('le style retenu', () => {
 	it('`style_id`', () => {
 		expect(styleIdOf({ style_id: STANDARD })).toBe(STANDARD);
-	});
-
-	it('`template_id` ne compte plus', () => {
-		expect(styleIdOf(rowWithTemplateId({ style_id: STANDARD, template_id: MODERN }))).toBe(
-			STANDARD
-		);
-		expect(styleIdOf(rowWithTemplateId({ style_id: null, template_id: MODERN }))).toBeNull();
 	});
 
 	it('sinon aucun (le générateur prend « Fiche élève »)', () => {
@@ -115,14 +101,10 @@ describe('le style retenu', () => {
 });
 
 describe('le PDF suit le style retenu', () => {
-	it('`style_id` = Standard → la fiche Standard, même si `template_id` dit Moderne', () => {
-		const typst = generate({ style_id: STANDARD, template_id: MODERN });
+	it('`style_id` = Standard → la fiche Standard, pas une autre', () => {
+		const typst = generate({ style_id: STANDARD });
 		expect(typst).toContain(signature(STANDARD));
 		expect(typst).not.toContain(signature(MODERN));
-	});
-
-	it('`template_id` seul ne décide plus : « Fiche élève »', () => {
-		expect(generate({ template_id: MODERN })).toBe(generate({}));
 	});
 
 	it('style inconnu → « Fiche élève », sans planter', () => {

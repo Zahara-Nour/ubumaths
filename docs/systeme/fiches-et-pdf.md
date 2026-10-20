@@ -363,7 +363,7 @@ compris, est en A4 paysage. Les onze autres n'ont que leur fiche et prennent les
 style par défaut. Le style ne décide plus des **points** : le type de la fiche s'en charge,
 quel que soit le style (ADR 0030, qui remplace D8 : « Fiche élève » imprime les points d'une
 évaluation écrite qui les demande). `resolveTemplate(style, forme, gabarit lu en base)` : le style
-retenu est `styleIdOf(fiche)` = `style_id` (l'ancien `template_id` ne compte plus, #1529), inconnu
+retenu est `styleIdOf(fiche)` = `style_id` (l'ancien `template_id` est retiré, #1529), inconnu
 ou vide → « Fiche élève » ; le gabarit lu en base ne sert qu'à la forme « fiche » d'un style du
 prof (ignoré pour un style de Chiphre : son Typst vient du code). **Plus de mise en page écrite dans le code** : une fiche sans
 gabarit prend la fiche « Fiche élève ». Le bandeau vert des corrigés (« CORRECTION », « RÉPONSES »,

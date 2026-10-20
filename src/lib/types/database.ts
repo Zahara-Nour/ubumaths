@@ -13771,7 +13771,6 @@ export type Database = {
           school_id: string | null
           status: string
           style_id: string | null
-          template_id: string | null
           title: string
           total_points: number | null
           translations: Json | null
@@ -13792,7 +13791,6 @@ export type Database = {
           school_id?: string | null
           status?: string
           style_id?: string | null
-          template_id?: string | null
           title: string
           total_points?: number | null
           translations?: Json | null
@@ -13813,7 +13811,6 @@ export type Database = {
           school_id?: string | null
           status?: string
           style_id?: string | null
-          template_id?: string | null
           title?: string
           total_points?: number | null
           translations?: Json | null
@@ -13855,13 +13852,6 @@ export type Database = {
             columns: ["style_id"]
             isOneToOne: false
             referencedRelation: "worksheet_styles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "worksheets_template_id_fkey"
-            columns: ["template_id"]
-            isOneToOne: false
-            referencedRelation: "worksheet_templates"
             referencedColumns: ["id"]
           },
         ]
