@@ -349,7 +349,8 @@ Pour relire à l'identique un texte écrit avant, `parser/custom/legacy-decimal-
 (`legacyDecimalCommas`) applique la règle de l'ancien tokenizer — virgule collée entre deux entiers
 décimale, sauf directement dans un appel de fonction connue ou une matrice : l'atelier pour ses
 définitions rangées sans provenance (lien, stockage : `0,3` d'un curseur), la DSL géométrie pour
-`sur ]0,5 ; 1,5[`. Contenus de la base au point : `scripts/reecrire-virgule-decimale-base.ts`
+`sur ]0,5 ; 1,5[` et ses autres chaînes (`courbe("y = 0,5x")`). Les trois refus sont traduits par
+`cli/web/french-errors.ts` (textes de la page virgule). Contenus de la base au point : `scripts/reecrire-virgule-decimale-base.ts`
 (avant le `deploy:prod`). Tests : `parser/__tests__/virgule-point-virgule.test.ts`,
 `atelier/__tests__/virgule-rangee.test.ts`.
 

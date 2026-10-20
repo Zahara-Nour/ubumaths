@@ -182,10 +182,13 @@ Chaîne : `tokenizer.ts` → `parser.ts` (AST `DslProgram`, types dans `dsl/type
   `onDirective` de l'appelant) ; `@euclide` après une affectation est un décorateur
   (`parseTrailingDecorators`), lu par `constructions-v2`. Hors construction, ils sont ignorés
   (et refusés par le bloc ` ```figure `).
-- **Domaine `sur`** (`domain-parser.ts`, `parseDomainSuffix`) : `sur ]0 ; 5[` ou `sur ]0, 5[`. Avec
-  le séparateur « ; », la virgule des bornes est décimale (`sur ]0,5 ; 1,5[`) : chaque borne passe
-  par `legacyDecimalCommas` (`mathAST/parser/custom/legacy-decimal-commas.ts`) avant le parseur
-  maison, qui ne lit plus que le point décimal depuis le 2026-10-21 (lecture-grandeurs, PR 6).
+- **Virgule décimale des chaînes** : le parseur maison ne lit plus que le point décimal depuis le
+  2026-10-21 (lecture-grandeurs, PR 6) ; le DSL, langue d'auteur, garde la lecture d'avant dans ses
+  chaînes en les passant par `legacyDecimalCommas` (`mathAST/parser/custom/legacy-decimal-commas.ts`) :
+  équations de `courbe` (cartésienne, paramétrique, polaire, `builtins.ts`), morceaux
+  (`piecewise-parser.ts`), bornes de `sur` et `avec` (`domain-parser.ts`, `parseBound`) —
+  `courbe("y = 0,5x")`, `avec x > 1,5`, `sur ]0,5 ; 1,5[` (avec « ; », la virgule est décimale ;
+  `sur ]0, 5[` sépare). Tests : `dsl/__tests__/virgule-decimale.test.ts`.
 - **Aller-retour** : `serializeDsl(figure, symbols, { angleMode })` régénère un script.
 - **Limites** : 100 000 caractères, 1 000 tours par boucle, macros imbriquées ≤ 10,
   `InterpretOptions.maxSteps`, `Figure.setElementLimit` (bloc ` ```figure `).

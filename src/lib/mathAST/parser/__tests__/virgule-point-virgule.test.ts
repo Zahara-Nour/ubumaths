@@ -15,6 +15,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseCustomPrattSafe, parseCustomRDSafe } from '../custom/index';
 import { toCustom } from '../../index';
+import { inFrench } from '../../cli/web/french-errors';
 
 // =============================================================================
 // Constantes
@@ -171,5 +172,15 @@ describe('PR 6 — la virgule sépare toujours', () => {
 		const ast = result.ast as unknown as { type: string; rows: { value: string }[][] };
 		expect(ast.type).toBe('matrix');
 		expect(ast.rows.map((row) => row.map((cell) => cell.value))).toEqual(rows);
+	});
+});
+
+describe('PR 6 — les trois refus en français (console, french-errors.ts)', () => {
+	it.each([
+		['2,5', 'Le séparateur décimal est le point : écris 2.5'],
+		['1, 2', 'Virgule inattendue : elle ne sépare que les arguments d’une fonction'],
+		['max(2;5)', 'Sépare les arguments par une virgule : max(2,5)']
+	])('%s → %s', (input, french) => {
+		expect(inFrench(parseCustomPrattSafe(input).errors[0].message)).toBe(french);
 	});
 });

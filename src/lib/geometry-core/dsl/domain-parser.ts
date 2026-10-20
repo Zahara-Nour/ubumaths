@@ -128,11 +128,9 @@ function parseIntervalSuffix(
 	}
 
 	const inner = trimmed.slice(1, -1);
-	// Prefer ';' if present (handles French decimal commas: `]0,5 ; 1,5[`). Le
-	// parseur maison ne lit plus la virgule décimale (lecture-grandeurs, PR 6) :
-	// elle passe au point ici, selon la règle d'avant (`legacyDecimalCommas`)
+	// Prefer ';' if present (handles French decimal commas: `]0,5 ; 1,5[`, lues par `parseBound`).
 	const sep = inner.includes(';') ? ';' : ',';
-	const parts = inner.split(sep).map((part) => (sep === ';' ? legacyDecimalCommas(part) : part));
+	const parts = inner.split(sep);
 	if (parts.length !== 2) {
 		throw new DslRuntimeError(`Domaine non reconnu: "${suffix}"`, line);
 	}
@@ -306,7 +304,9 @@ function parseBound(
 	// though the resulting bound is a static MathNode that doesn't carry the
 	// reactive value at evaluation time — this is a Phase B simplification).
 	try {
-		const node = parseCustom(trimmed);
+		// Le parseur maison ne lit plus la virgule décimale (lecture-grandeurs, PR 6) :
+		// une borne d'auteur la garde, lue selon la règle d'avant (`legacyDecimalCommas`)
+		const node = parseCustom(legacyDecimalCommas(trimmed));
 		if (symbols) {
 			for (const v of getVariables(node)) {
 				const entry = symbols.get(v);
