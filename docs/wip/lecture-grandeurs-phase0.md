@@ -146,8 +146,14 @@ Erreur
   before it (write 1[m]) ») ; aujourd'hui lu comme la lettre m entre crochets de calcul.
 
 ✅ **Lettres (Q12)** : `3x[m]` = `(3*x)[m]`, `x*2[m]` = `(x*2)[m]` (la règle du terme vaut pour les lettres).
-✅ **π (Q11)** : `π[m]` = la constante π (comme `\pi[m]`), `2π[m]` = `(2*π)[m]` ; `pi[m]` = π[m], `2pi[m]` =
-`(2*π)[m]` — **avant de coder**, grep des énoncés et modèles où `pi` serait le produit de deux variables p et i.
+✅ **π (Q11, révisée par David le 2026-10-20, 7e session)** : `π` (Unicode) = la constante π **partout** dans le
+parseur maison (aujourd'hui : une lettre) ; `π[m]` = π m, `2π[m]` = `(2*π)[m]`, `\pi[m]` = π m. **`pi` sans barre
+reste p × i** (lettres grecques = `\…`, comme `\alpha`) : `pi[m]` = p × i[m]. Avant de coder : mesurer les
+chemins de l'atelier où `π` est lu comme une lettre.
+
+Hors PR 4 (PR à part, décidée le même jour) : retirer `BARE_PI` (tolérance `pi` → `\pi` des seuls `{{eval}}`),
+après réécriture `pi` → `\pi` des 186 calculs de prod (18 modèles) et 159 du dépôt, avec une garde qui refuse
+`pi` nu dans un modèle.
 
 Hors chantier (calcul, atelier) : `computeQuantity` refuse toute lettre (`x+1`, `x[m]`) avec « Ces grandeurs ne
 se combinent pas » ; message voulu « x n'a pas de valeur » (comme `.eval`). Tâche de l'atelier, pas de ce chantier.
