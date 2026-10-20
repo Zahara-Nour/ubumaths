@@ -6,7 +6,7 @@
  * compared to LaTeX.
  *
  * Features:
- * - Numbers (integers, decimals with dot or comma): 42, 3.14, 3,14
+ * - Numbers (integers, decimals with a dot): 42, 3.14 — the comma always separates
  * - Single letters: a-z, A-Z
  * - Backslash symbols: \pi, \alpha, \beta, \gamma, \theta, \infty
  * - Functions: sin, cos, tan, ln, log, exp, sqrt
@@ -42,7 +42,7 @@ import { GREEK_LETTERS } from '../../types';
  * - Special: EOF
  */
 export type CustomTokenType =
-	| 'NUMBER' // 42, 3.14, 3,14 (comma as decimal separator too)
+	| 'NUMBER' // 42, 3.14 (point décimal seulement)
 	| 'LETTER' // single a-z, A-Z
 	| 'BACKSLASH' // \ (for symbols)
 	| 'SYMBOL' // pi, alpha, beta, gamma, theta, infty (after \)
@@ -83,7 +83,8 @@ export type CustomTokenType =
 	| 'NOT_EQUAL' // !=
 	| 'IFF' // <=>
 	| 'IMPLIES' // =>
-	| 'COMMA' // , (for function args, NOT decimal when between digits)
+	| 'COMMA' // , (arguments d'une fonction, éléments d'une matrice ; jamais décimale)
+	| 'SEMICOLON' // ; (refusé par les parseurs : SEMICOLON)
 	| 'EOF';
 
 // =============================================================================
@@ -352,9 +353,9 @@ export function unknownFunctionMessage(name: string): string {
 /**
  * Custom syntax tokenizer that provides both streaming and batch tokenization.
  *
- * Whitespace is skipped dynamically during scanning to preserve comma semantics:
- * - "1,2" → decimal number 1.2 (French format)
- * - "1, 2" → two numbers 1 and 2 with comma separator (function arguments)
+ * Whitespace is skipped dynamically during scanning. La virgule est toujours un
+ * jeton COMMA : `1,2` = 1 , 2 (lecture-grandeurs, PR 6 — le parseur refuse la
+ * virgule décimale avec DECIMAL_COMMA).
  *
  * Usage:
  * ```typescript
@@ -375,20 +376,9 @@ export class CustomTokenizer {
 	private position: number = 0;
 	private tokenCache: CustomToken[] = [];
 	private cachePosition: number = 0;
-	/**
-	 * Track matrix depth for context-aware comma parsing.
-	 * Inside matrices ([[...]]), comma should NOT be treated as decimal separator.
-	 */
+	/** Profondeur des matrices ouvertes : `]]` ne ferme qu'une matrice ouverte */
 	private matrixDepth: number = 0;
-	/**
-	 * Pile des parenthèses et accolades ouvertes : `call` pour la parenthèse d'un appel
-	 * de fonction (`mod(`, `gcd(`), `group` pour toute autre. Dans un appel, la virgule
-	 * entre deux chiffres sépare les arguments : `mod(16,4)` = mod(16 ; 4), jamais
-	 * mod(16,4). Ambiguïté (`max(2,5)`) : le séparateur l'emporte. Un décimal à virgule
-	 * reste possible dans un groupement intérieur : `mod((2,5)*4,3)`, `mod({2,5},4)`.
-	 */
-	private openers: Array<'call' | 'group'> = [];
-	/** Type du dernier jeton produit (une parenthèse qui suit un FUNC ouvre un appel) */
+	/** Type du dernier jeton produit (`^`, `_` : pas de groupes de chiffres en exposant) */
 	private lastTokenType: CustomTokenType | null = null;
 	/** Type du jeton d'avant : `^-3 4` est un exposant signé, sans groupes de chiffres */
 	private tokenTypeBeforeLast: CustomTokenType | null = null;
@@ -459,7 +449,6 @@ export class CustomTokenizer {
 		this.tokenCache = [];
 		this.cachePosition = 0;
 		this.matrixDepth = 0;
-		this.openers = [];
 		this.lastTokenType = null;
 		this.tokenTypeBeforeLast = null;
 		this.pendingTokens = [];
@@ -484,25 +473,13 @@ export class CustomTokenizer {
 	// =========================================================================
 
 	/**
-	 * Scans the next token and keeps track of the opened parentheses / braces.
+	 * Scans the next token and remembers the types of the last two tokens.
 	 */
 	private scanToken(): CustomToken {
 		const token = this.pendingTokens.shift() ?? this.scanRawToken();
-		if (token.type === 'LPAREN') {
-			this.openers.push(this.lastTokenType === 'FUNC' ? 'call' : 'group');
-		} else if (token.type === 'LBRACE') {
-			this.openers.push('group');
-		} else if (token.type === 'RPAREN' || token.type === 'RBRACE') {
-			this.openers.pop();
-		}
 		this.tokenTypeBeforeLast = this.lastTokenType;
 		this.lastTokenType = token.type;
 		return token;
-	}
-
-	/** Vrai si la position courante est directement dans les parenthèses d'un appel */
-	private isInsideFunctionCall(): boolean {
-		return this.openers[this.openers.length - 1] === 'call';
 	}
 
 	/**
@@ -524,7 +501,7 @@ export class CustomTokenizer {
 			return this.scanBackslashSymbol();
 		}
 
-		// Number (digit or comma/dot that starts a decimal)
+		// Number
 		if (this.isDigit(char)) {
 			return this.scanNumber();
 		}
@@ -667,13 +644,9 @@ export class CustomTokenizer {
 	 * Rules:
 	 * - 42 -> NUMBER "42"
 	 * - 3.14 -> NUMBER "3.14"
-	 * - 3,14 -> NUMBER "3.14" (comma normalized to dot) - BUT NOT inside matrices
-	 *   nor directly inside a function call: mod(16,4) -> 16 , 4
-	 * - 1e10, 1E10, 1.5e-10, 3,14e10 -> Scientific notation
-	 * - Comma is only decimal if preceded AND followed by digits
-	 * - Inside matrices ([[...]]), comma is ALWAYS an element separator, never decimal
-	 * - Directly inside a function call (`mod(`, `gcd(`, `max(`…), comma is ALWAYS an
-	 *   argument separator: `max(2,5)` = 5 (the separator wins the ambiguity)
+	 * - 3,14 -> NUMBER "3" , NUMBER "14" : la virgule n'est jamais décimale (le parseur
+	 *   refuse `3,14` avec DECIMAL_COMMA ; `max(2,5)`, `[[1,5]]` : elle sépare)
+	 * - 1e10, 1E10, 1.5e-10 -> Scientific notation
 	 */
 	private scanNumber(): CustomToken {
 		const startPos = this.position;
@@ -683,15 +656,12 @@ export class CustomTokenizer {
 		// Scan integer part
 		value += this.scanDigitGroups();
 
-		// Check for decimal separator (dot or comma)
+		// Check for decimal separator (dot only)
 		if (this.position < this.length) {
 			const char = this.input[this.position];
-			// Comma is NOT a decimal separator inside matrices (matrixDepth > 0)
-			// nor directly inside a function call (argument separator)
-			const isCommaDecimal = char === ',' && this.matrixDepth === 0 && !this.isInsideFunctionCall();
-			if ((char === '.' || isCommaDecimal) && this.isDigitAt(this.position + 1)) {
+			if (char === '.' && this.isDigitAt(this.position + 1)) {
 				// This is a decimal separator
-				value += '.'; // Normalize comma to dot
+				value += '.';
 				hasDecimal = true;
 				this.position++;
 
@@ -997,6 +967,8 @@ export class CustomTokenizer {
 				return 'GREATER';
 			case ',':
 				return 'COMMA';
+			case ';':
+				return 'SEMICOLON';
 			case '!':
 				return 'EXCLAMATION';
 			case '%':
@@ -1235,6 +1207,8 @@ export function tokenTypeToString(type: CustomTokenType): string {
 			return "'=>'";
 		case 'COMMA':
 			return "','";
+		case 'SEMICOLON':
+			return "';'";
 		case 'EOF':
 			return 'end of input';
 	}

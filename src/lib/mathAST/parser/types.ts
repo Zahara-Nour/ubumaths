@@ -252,7 +252,10 @@ export type ParseErrorCode =
 	| 'AMBIGUOUS_TERM' // Plusieurs nombres devant une unité après une grandeur : 6[m]/2*3[s]
 	| 'JUXTAPOSED_QUANTITIES' // Grandeurs juxtaposées hors durée (2[m] 30[cm]), durée composée collée à * ou /
 	| 'MISSING_NUMBER_BEFORE_UNIT' // Unité écrite sans nombre : [m]
-	| 'LEADING_DECIMAL_POINT'; // Zéro de tête oublié : .5
+	| 'LEADING_DECIMAL_POINT' // Zéro de tête oublié : .5
+	| 'DECIMAL_COMMA' // Virgule décimale dans le parseur maison : 2,5 (écrire 2.5)
+	| 'UNEXPECTED_COMMA' // Virgule hors d'une fonction ou d'une matrice : 1, 2
+	| 'SEMICOLON'; // Point-virgule dans le parseur maison : max(2;5)
 
 /**
  * Context around an error showing surrounding text.

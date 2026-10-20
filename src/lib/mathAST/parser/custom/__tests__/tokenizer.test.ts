@@ -114,25 +114,15 @@ describe('Number tokenization', () => {
 		});
 	});
 
-	describe('Decimals with comma (French notation)', () => {
-		it('should tokenize decimal with comma and normalize to dot', () => {
-			const tokens = tokenize('3,14');
-			expect(tokens[0]).toEqual({
-				type: 'NUMBER',
-				value: '3.14',
-				position: 0,
-				length: 4
-			});
-		});
-
-		it('should tokenize comma decimal with leading zero', () => {
-			const tokens = tokenize('0,5');
-			expect(tokens[0].value).toBe('0.5');
-		});
-
-		it('should tokenize comma decimal with trailing zeros', () => {
-			const tokens = tokenize('2,000');
-			expect(tokens[0].value).toBe('2.000');
+	// lecture-grandeurs, PR 6 : point décimal seul, le parseur refuse `3,14` (DECIMAL_COMMA)
+	describe('Comma is never a decimal separator', () => {
+		it.each(['3,14', '0,5', '2,000'])('%s → NUMBER, COMMA, NUMBER', (input) => {
+			const [integer, fraction] = input.split(',');
+			expect(tokenize(input).slice(0, -1)).toEqual([
+				{ type: 'NUMBER', value: integer, position: 0, length: integer.length },
+				{ type: 'COMMA', value: ',', position: integer.length, length: 1 },
+				{ type: 'NUMBER', value: fraction, position: integer.length + 1, length: fraction.length }
+			]);
 		});
 	});
 
@@ -150,10 +140,9 @@ describe('Number tokenization', () => {
 			]);
 		});
 
-		it('should treat comma as decimal when between digit and digit', () => {
+		it('should treat comma as COMMA even between digit and digit', () => {
 			const tokens = tokenize('1,5');
-			expect(tokens[0].type).toBe('NUMBER');
-			expect(tokens[0].value).toBe('1.5');
+			expect(tokens.map((t) => t.value).slice(0, -1)).toEqual(['1', ',', '5']);
 		});
 
 		it('should treat comma after digit but not before digit as COMMA', () => {
@@ -206,14 +195,9 @@ describe('Number tokenization', () => {
 			expect(tokens[0].value).toBe('1e0');
 		});
 
-		it('should tokenize French comma decimal with exponent', () => {
+		it('comma before an exponent: the exponent belongs to the second number', () => {
 			const tokens = tokenize('3,14e10');
-			expect(tokens[0].value).toBe('3.14e10'); // comma normalized to dot
-		});
-
-		it('should tokenize French comma decimal with negative exponent', () => {
-			const tokens = tokenize('1,5e-6');
-			expect(tokens[0].value).toBe('1.5e-6');
+			expect(tokens.map((t) => t.value).slice(0, -1)).toEqual(['3', ',', '14e10']);
 		});
 
 		it('should NOT include e without digits in number token', () => {
@@ -426,22 +410,6 @@ describe('Number tokenization', () => {
 			expect(sciToken.length).toBe(7);
 		});
 
-		// French comma-specific edge cases
-		it('should tokenize French comma decimal with very large exponent', () => {
-			const tokens = tokenize('3,14e100');
-			expect(tokens[0].value).toBe('3.14e100');
-		});
-
-		it('should tokenize French comma decimal with negative exponent', () => {
-			const tokens = tokenize('2,5e-3');
-			expect(tokens[0].value).toBe('2.5e-3');
-		});
-
-		it('should tokenize French comma decimal with positive exponent sign', () => {
-			const tokens = tokenize('1,23e+4');
-			expect(tokens[0].value).toBe('1.23e+4');
-		});
-
 		it('should NOT treat comma after exponent as decimal', () => {
 			// '1e10,2' should be NUMBER("1e10") + COMMA + NUMBER("2")
 			const tokens = tokenize('1e10,2');
@@ -450,21 +418,19 @@ describe('Number tokenization', () => {
 			expect(tokens[2].value).toBe('2');
 		});
 
-		it('French comma decimal with exponent inside grouping parentheses', () => {
-			// Hors appel de fonction, la virgule entre deux chiffres reste décimale
+		it('comma inside grouping parentheses is a COMMA too', () => {
 			const tokens = tokenize('(1,5e2+2,3e-1)');
-			expect(tokens[1].value).toBe('1.5e2');
-			expect(tokens[3].value).toBe('2.3e-1');
-		});
-
-		it('should handle zero French comma decimal with exponent', () => {
-			const tokens = tokenize('0,0e5');
-			expect(tokens[0].value).toBe('0.0e5');
-		});
-
-		it('should handle scientific notation with uppercase E and French comma', () => {
-			const tokens = tokenize('1,5E10');
-			expect(tokens[0].value).toBe('1.5E10');
+			expect(tokens.map((t) => t.value).slice(0, -1)).toEqual([
+				'(',
+				'1',
+				',',
+				'5e2',
+				'+',
+				'2',
+				',',
+				'3e-1',
+				')'
+			]);
 		});
 	});
 });
@@ -1483,13 +1449,11 @@ describe('Whitespace handling', () => {
 		expect(getValues(tokens.slice(0, -1))).toEqual(['x', '+', '2']);
 	});
 
-	it('should distinguish "1,2" (decimal) from "1, 2" (comma separator)', () => {
-		// Without space: comma is decimal separator (French format)
-		const decimal = tokenize('1,2');
-		expect(getTypes(decimal.slice(0, -1))).toEqual(['NUMBER']);
-		expect(getValues(decimal.slice(0, -1))).toEqual(['1.2']);
+	it('"1,2" and "1, 2" give the same tokens (the comma always separates)', () => {
+		const glued = tokenize('1,2');
+		expect(getTypes(glued.slice(0, -1))).toEqual(['NUMBER', 'COMMA', 'NUMBER']);
+		expect(getValues(glued.slice(0, -1))).toEqual(['1', ',', '2']);
 
-		// With space: comma is separator (function arguments)
 		const separated = tokenize('1, 2');
 		expect(getTypes(separated.slice(0, -1))).toEqual(['NUMBER', 'COMMA', 'NUMBER']);
 		expect(getValues(separated.slice(0, -1))).toEqual(['1', ',', '2']);
@@ -1497,7 +1461,7 @@ describe('Whitespace handling', () => {
 });
 
 // =============================================================================
-// Virgule dans un appel de fonction : séparateur d'arguments, jamais décimale
+// Virgule : séparateur d'arguments, jamais décimale (dans un appel comme ailleurs)
 // =============================================================================
 
 describe('CustomTokenizer — virgule dans un appel de fonction', () => {
@@ -1538,12 +1502,15 @@ describe('CustomTokenizer — virgule dans un appel de fonction', () => {
 		]);
 	});
 
-	it('parenthèses de groupement dans un appel : décimal', () => {
+	// PR 6 : plus de décimal à virgule nulle part, le parseur refuse `(2,5)` (DECIMAL_COMMA)
+	it('parenthèses de groupement dans un appel : virgule', () => {
 		expect(values('mod((2,5)*4,3)')).toEqual([
 			'mod',
 			'(',
 			'(',
-			'2.5',
+			'2',
+			',',
+			'5',
 			')',
 			'*',
 			'4',
@@ -1553,13 +1520,16 @@ describe('CustomTokenizer — virgule dans un appel de fonction', () => {
 		]);
 	});
 
-	it('accolades (valeur substituée) dans un appel : décimal', () => {
-		expect(values('mod({2,5},4)')).toEqual(['mod', '(', '{', '2.5', '}', ',', '4', ')']);
+	it('accolades (valeur substituée) dans un appel : virgule', () => {
+		expect(values('mod({2,5},4)')).toEqual(['mod', '(', '{', '2', ',', '5', '}', ',', '4', ')']);
 	});
 
-	it('hors appel : décimal inchangé', () => {
-		expect(values('a>2,5')).toEqual(['a', '>', '2.5']);
-		expect(values('(2,5)')).toEqual(['(', '2.5', ')']);
-		expect(values('mod(17,4)+2,5')).toEqual(['mod', '(', '17', ',', '4', ')', '+', '2.5']);
+	it('hors appel : virgule aussi', () => {
+		expect(values('a>2,5')).toEqual(['a', '>', '2', ',', '5']);
+		expect(values('(2,5)')).toEqual(['(', '2', ',', '5', ')']);
+	});
+
+	it('point-virgule : un jeton SEMICOLON, plus une lettre', () => {
+		expect(tokenize('x;y').map((t) => t.type)).toEqual(['LETTER', 'SEMICOLON', 'LETTER', 'EOF']);
 	});
 });

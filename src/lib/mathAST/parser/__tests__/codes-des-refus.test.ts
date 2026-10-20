@@ -48,7 +48,7 @@ const CUSTOM_REFUSALS: readonly (readonly [string, string, string])[] = [
 		'Space inside a unit: join the symbols with "." or "/" (m.s^-1, km/h)'
 	],
 	['(1+2', 'MISSING_DELIMITER', "Expected ')' after expression"],
-	['[1,2', 'MISSING_DELIMITER', "Expected ']' after expression"],
+	['[1.2', 'MISSING_DELIMITER', "Expected ']' after expression"],
 	['5[m', 'MISSING_DELIMITER', "Expected ']' after unit"],
 	['.5[m]', 'LEADING_DECIMAL_POINT', 'Missing zero before the decimal point (write 0.5)'],
 	['.5', 'LEADING_DECIMAL_POINT', 'Missing zero before the decimal point (write 0.5)'],
@@ -80,7 +80,6 @@ const CUSTOM_REFUSALS: readonly (readonly [string, string, string])[] = [
 
 /** Refus maison qui gardent `UNEXPECTED_TOKEN` */
 const STILL_UNEXPECTED: readonly string[] = [
-	'x;2', // le « ; » n'est pas une lettre (PR 6 : SEMICOLON)
 	'(1+2]',
 	'true2',
 	// Un `.` collé à un facteur n'est pas un point de tête (revue de #1558)

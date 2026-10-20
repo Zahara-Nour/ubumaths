@@ -17,9 +17,8 @@ const cases: [string, string][] = [
 	['2x+√3', '2x+sqrt(3)'],
 	['3√x', '3sqrt(x)'],
 	['√12', 'sqrt(12)'],
-	// Le décimal à virgule reste un nombre (dans `sqrt(2,5)`, la virgule
-	// séparerait deux arguments)
-	['√2,5', 'sqrt(2.5)'],
+	// Le décimal reste un nombre (au point : `√2,5` est refusé, DECIMAL_COMMA)
+	['√2.5', 'sqrt(2.5)'],
 	['√x=3', 'sqrt(x)=3'],
 	['√x<2', 'sqrt(x)<2'],
 	['√xy', 'sqrt(x)y'],

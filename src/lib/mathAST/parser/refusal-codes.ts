@@ -13,6 +13,10 @@
  *   reste un produit ;
  * - `MISSING_DELIMITER` : la fin arrive avant le `)`, `]` ou `}` attendu ;
  * - `LEADING_DECIMAL_POINT` : `.5` (le zéro manque) ;
+ * - PR 6 (page virgule, 2026-10-20) : `DECIMAL_COMMA` (`2,5` : chiffre, virgule, chiffre
+ *   collés), `UNEXPECTED_COMMA` (une virgule hors d'une fonction ou d'une matrice),
+ *   `SEMICOLON` (`max(2;5)`) — le parseur maison n'a que le point décimal et la virgule
+ *   séparatrice ; le français est traduit avant lui ;
  * - unités : `UNKNOWN_UNIT`, `EMPTY_UNIT`, `AMBIGUOUS_UNIT` (et, posés là où le
  *   refus naît, `UNIT_EXPONENT_OUTSIDE`, `SPACE_IN_UNIT`).
  *
@@ -63,9 +67,23 @@ const FACTOR_END_TOKENS: ReadonlySet<string> = new Set([
 	'PERCENT'
 ]);
 
+/** Le refus d'une virgule hors d'une fonction ou d'une matrice (`1, 2`, `,5`) */
+const UNEXPECTED_COMMA_MESSAGE = "Unexpected comma: ',' only separates function arguments";
+
+/** Le refus d'un point-virgule (`max(2;5)`, `x;y`) */
+const SEMICOLON_MESSAGE = "';' is not a separator: use ',' between arguments";
+
+/** Un nombre entier, sans point ni exposant : les deux moitiés d'un `2,5` */
+const DIGITS = /^\d+$/;
+
 // =============================================================================
 // Fonctions
 // =============================================================================
+
+/** Le message d'une virgule décimale (`2,5`) */
+export function decimalCommaMessage(integer: string, fraction: string): string {
+	return `Decimal comma: the decimal separator is '.' (write ${integer}.${fraction})`;
+}
 
 /** Le message d'un nombre écrit sans son zéro de tête (`.5`) */
 export function leadingDecimalPointMessage(digits: string): string {
@@ -100,8 +118,14 @@ function glued(left: RefusalToken, right: RefusalToken): boolean {
 export function preciseUnexpectedToken(
 	current: RefusalToken,
 	previous: RefusalToken | undefined,
-	beforePrevious: RefusalToken | undefined
+	beforePrevious: RefusalToken | undefined,
+	next: RefusalToken
 ): PreciseRefusal | null {
+	if (current.type === 'SEMICOLON') return { code: 'SEMICOLON', message: SEMICOLON_MESSAGE };
+	// `√2,5` : la parenthèse implicite de `√` (longueur 0) sépare le 2 de la virgule
+	if (current.type === 'COMMA') {
+		return preciseComma(current, previous?.length === 0 ? beforePrevious : previous, next);
+	}
 	if (current.type !== 'NUMBER' || !previous) return null;
 
 	// `.5` : le tokenizer lit le `.` seul comme une lettre, collée au nombre.
@@ -121,6 +145,32 @@ export function preciseUnexpectedToken(
 	}
 
 	return endsFactor(previous) ? { code: 'MISSING_OPERATOR' } : null;
+}
+
+/**
+ * Une virgule là où rien ne se sépare : décimale si elle est collée entre deux
+ * entiers (`2,5`, `(1,2)`, `[1,2]`), sinon simplement inattendue (`1, 2`, `x,2`).
+ */
+function preciseComma(
+	comma: RefusalToken,
+	previous: RefusalToken | undefined,
+	next: RefusalToken
+): PreciseRefusal {
+	const isDecimal =
+		previous !== undefined &&
+		previous.type === 'NUMBER' &&
+		next.type === 'NUMBER' &&
+		DIGITS.test(previous.value) &&
+		/^\d/.test(next.value) &&
+		glued(previous, comma) &&
+		glued(comma, next);
+	if (!isDecimal) return { code: 'UNEXPECTED_COMMA', message: UNEXPECTED_COMMA_MESSAGE };
+	return {
+		code: 'DECIMAL_COMMA',
+		message: decimalCommaMessage(previous.value, next.value),
+		position: previous.position,
+		length: next.position + next.length - previous.position
+	};
 }
 
 /** Le code d'une écriture d'unité refusée, commun aux parseurs */

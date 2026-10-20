@@ -18,7 +18,6 @@ describe('Custom Parser Integration', () => {
 			// Literals
 			'42',
 			'3.14',
-			'3,14',
 			'x',
 			'y',
 			'\\pi',

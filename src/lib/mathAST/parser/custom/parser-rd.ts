@@ -251,7 +251,12 @@ class CustomRDParser {
 		// Un jeton refusé sans code précis : `x2`, `(1+x)2`, `.5` disent ce qui manque
 		const precise =
 			code === 'UNEXPECTED_TOKEN' && position === this.currentToken.position
-				? preciseUnexpectedToken(this.currentToken, this.previousToken, this.tokenBeforePrevious)
+				? preciseUnexpectedToken(
+						this.currentToken,
+						this.previousToken,
+						this.tokenBeforePrevious,
+						this.tokenizer.peek()
+					)
 				: null;
 		if (precise) {
 			throw new ParseException(
@@ -924,6 +929,7 @@ class CustomRDParser {
 			token.type === 'RBRACE' ||
 			token.type === 'RBRACKET' ||
 			token.type === 'COMMA' ||
+			token.type === 'SEMICOLON' ||
 			this.isRelationOperator()
 		) {
 			return false;
