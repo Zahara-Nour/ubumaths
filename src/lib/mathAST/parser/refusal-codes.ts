@@ -7,8 +7,10 @@
  * reste le même (l'atelier traduit par le texte), sauf `LEADING_DECIMAL_POINT`.
  *
  * Décisions de David (docs/wip/lecture-grandeurs-phase0.md, PR 3) :
- * - `MISSING_OPERATOR` : un nombre juste après une lettre (`x2`, `x 2`) ou une
- *   parenthèse fermante (`(1+x)2`, `sqrt(2)3`) ; `(2)(3)` reste un produit ;
+ * - `MISSING_OPERATOR` : un nombre juste après un facteur, comme le refus « nombre
+ *   après un facteur » du LaTeX (David, 2026-10-20 : « suis LaTeX ») — lettre,
+ *   nombre, `)`, `]`, `}`, `|`, `%` (`x2`, `(1+x)2`, `x^2 3`, `|x|2`) ; `(2)(3)`
+ *   reste un produit ;
  * - `MISSING_DELIMITER` : la fin arrive avant le `)`, `]` ou `}` attendu ;
  * - `LEADING_DECIMAL_POINT` : `.5` (le zéro manque) ;
  * - unités : `UNKNOWN_UNIT`, `EMPTY_UNIT`, `AMBIGUOUS_UNIT` (et, posés là où le
@@ -50,6 +52,17 @@ const CLOSING_TOKENS: ReadonlySet<string> = new Set(['RPAREN', 'RBRACKET', 'RBRA
 /** Une seule lettre : le tokenizer maison range aussi `.` et `;` parmi les LETTER */
 const SINGLE_LETTER = /^\p{L}$/u;
 
+/** Les jetons qui terminent un facteur (hors lettre, vérifiée à part) */
+const FACTOR_END_TOKENS: ReadonlySet<string> = new Set([
+	'NUMBER',
+	'SYMBOL',
+	'RPAREN',
+	'RBRACKET',
+	'RBRACE',
+	'PIPE',
+	'PERCENT'
+]);
+
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -69,10 +82,15 @@ export function expectCode(expected: string, current: RefusalToken): ParseErrorC
 		: 'UNEXPECTED_TOKEN';
 }
 
-/** Le jeton précédent est-il une lettre (variable, constante nommée) ou une `)` ? */
-function endsWithLetterOrParen(previous: RefusalToken): boolean {
-	if (previous.type === 'RPAREN' || previous.type === 'SYMBOL') return true;
-	return previous.type === 'LETTER' && SINGLE_LETTER.test(previous.value);
+/** Le jeton termine-t-il un facteur (lettre, nombre, `)`, `|`…) ? */
+function endsFactor(token: RefusalToken): boolean {
+	if (FACTOR_END_TOKENS.has(token.type)) return true;
+	return token.type === 'LETTER' && SINGLE_LETTER.test(token.value);
+}
+
+/** Deux jetons collés, sans espace entre eux */
+function glued(left: RefusalToken, right: RefusalToken): boolean {
+	return left.position + left.length === right.position;
 }
 
 /**
@@ -81,15 +99,18 @@ function endsWithLetterOrParen(previous: RefusalToken): boolean {
  */
 export function preciseUnexpectedToken(
 	current: RefusalToken,
-	previous: RefusalToken | undefined
+	previous: RefusalToken | undefined,
+	beforePrevious: RefusalToken | undefined
 ): PreciseRefusal | null {
 	if (current.type !== 'NUMBER' || !previous) return null;
 
-	// `.5` : le tokenizer lit le `.` seul comme une lettre, collée au nombre
+	// `.5` : le tokenizer lit le `.` seul comme une lettre, collée au nombre.
+	// Collé à un facteur à sa gauche, ce n'est pas un point de tête : `1.2.3`, `x.5`
 	const isLeadingPoint =
 		previous.type === 'LETTER' &&
 		previous.value === '.' &&
-		previous.position + previous.length === current.position;
+		glued(previous, current) &&
+		!(beforePrevious && glued(beforePrevious, previous) && endsFactor(beforePrevious));
 	if (isLeadingPoint) {
 		return {
 			code: 'LEADING_DECIMAL_POINT',
@@ -99,7 +120,7 @@ export function preciseUnexpectedToken(
 		};
 	}
 
-	return endsWithLetterOrParen(previous) ? { code: 'MISSING_OPERATOR' } : null;
+	return endsFactor(previous) ? { code: 'MISSING_OPERATOR' } : null;
 }
 
 /** Le code d'une écriture d'unité refusée, commun aux parseurs */

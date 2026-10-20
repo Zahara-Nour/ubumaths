@@ -169,7 +169,18 @@ export function getSuggestions(code: ParseErrorCode, message: string): string[] 
 
 		case 'UNKNOWN_UNIT':
 		case 'EMPTY_UNIT':
+		case 'AMBIGUOUS_UNIT':
+		case 'SPACE_IN_UNIT':
+		case 'UNIT_EXPONENT_OUTSIDE':
 			suggestions.push("Vérifier la syntaxe de l'unité : m, kg, s, etc.");
+			break;
+
+		case 'MISSING_OPERATOR':
+			suggestions.push('Écrivez le nombre devant (2x) ou utilisez * (x*2)');
+			break;
+
+		case 'LEADING_DECIMAL_POINT':
+			suggestions.push('Écrivez le zéro avant le point décimal : 0.5');
 			break;
 
 		case 'INVALID_COLOR':

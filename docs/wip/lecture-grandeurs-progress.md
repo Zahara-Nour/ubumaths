@@ -24,7 +24,11 @@ _Mis à jour le 2026-10-20, après #1557._
   fin arrive avant le fermant (`(1+2]` garde `UNEXPECTED_TOKEN`).
 - LaTeX : le refus existant « nombre après un facteur » passe ENTIER en `MISSING_OPERATOR` (`\sqrt{2}3`,
   `x^{2}3` compris : un refus, un code). Dans le maison, `|x|2` et `x^2 3` gardent `UNEXPECTED_TOKEN`
-  (décision : lettre ou `)` seulement). Écart à signaler à David.
+  (décision : lettre ou `)` seulement). Écart signalé à David → « suis LaTeX » : le maison refuse
+  `MISSING_OPERATOR` après tout facteur (lettre, nombre, `)`, `]`, `}`, `|`, `%`), `2[m]3[m]` compris
+  (la PR 5 le passera à `JUXTAPOSED_QUANTITIES`, dans les deux parseurs).
+- Revue Opus : `1.2.3`, `x.5` recevaient « write 0.3 » (le `.` collé à un facteur n'est pas un point de
+  tête) → corrigé avec le jeton d'avant le `.` ; suggestions ajoutées dans `error-context.ts`.
 - Atelier : traduction ajoutée pour le nouveau texte de `.5` (« Il manque le zéro avant le point décimal :
   écris 0.5 »). Empreinte du corpus maison régénérée : 5 saisies bougent, toutes « code seul » (vérifié en
   ramenant les nouveaux codes aux anciens : même empreinte).

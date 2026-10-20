@@ -192,11 +192,15 @@ class CustomRDParser {
 	/** Dernier token consommé : `3!27!` (un nombre juste après une factorielle) */
 	private previousToken: CustomToken | undefined;
 
+	/** Le jeton d'avant `previousToken` : `1.2.3` n'est pas `.3` */
+	private tokenBeforePrevious: CustomToken | undefined;
+
 	/**
 	 * Advance to the next token
 	 */
 	private advance(): CustomToken {
 		const prev = this.currentToken;
+		this.tokenBeforePrevious = this.previousToken;
 		this.previousToken = prev;
 		this.currentToken = this.tokenizer.nextToken();
 		return prev;
@@ -231,7 +235,7 @@ class CustomRDParser {
 		// Un jeton refusé sans code précis : `x2`, `(1+x)2`, `.5` disent ce qui manque
 		const precise =
 			code === 'UNEXPECTED_TOKEN' && position === this.currentToken.position
-				? preciseUnexpectedToken(this.currentToken, this.previousToken)
+				? preciseUnexpectedToken(this.currentToken, this.previousToken, this.tokenBeforePrevious)
 				: null;
 		if (precise) {
 			throw new ParseException(

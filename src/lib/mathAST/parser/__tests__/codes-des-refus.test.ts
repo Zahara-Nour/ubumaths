@@ -53,6 +53,8 @@ const CUSTOM_REFUSALS: readonly (readonly [string, string, string])[] = [
 	['.5[m]', 'LEADING_DECIMAL_POINT', 'Missing zero before the decimal point (write 0.5)'],
 	['.5', 'LEADING_DECIMAL_POINT', 'Missing zero before the decimal point (write 0.5)'],
 	['2+.25', 'LEADING_DECIMAL_POINT', 'Missing zero before the decimal point (write 0.25)'],
+	['(.5)', 'LEADING_DECIMAL_POINT', 'Missing zero before the decimal point (write 0.5)'],
+	['x+ .5', 'LEADING_DECIMAL_POINT', 'Missing zero before the decimal point (write 0.5)'],
 	// Un nombre juste après une lettre
 	['x2', 'MISSING_OPERATOR', 'Unexpected token: 2'],
 	['x 2', 'MISSING_OPERATOR', 'Unexpected token: 2'],
@@ -65,17 +67,26 @@ const CUSTOM_REFUSALS: readonly (readonly [string, string, string])[] = [
 	['(1+x) 2', 'MISSING_OPERATOR', 'Unexpected token: 2'],
 	['sqrt(2)3', 'MISSING_OPERATOR', 'Unexpected token: 3'],
 	['f(x)2', 'MISSING_OPERATOR', 'Unexpected token: 2'],
-	['(2) 3', 'MISSING_OPERATOR', 'Unexpected token: 3']
+	['(2) 3', 'MISSING_OPERATOR', 'Unexpected token: 3'],
+	// Un nombre juste après tout autre facteur, comme le LaTeX (David : « suis LaTeX »)
+	['x^2 3', 'MISSING_OPERATOR', 'Unexpected token: 3'],
+	['|x|2', 'MISSING_OPERATOR', 'Unexpected token: 2'],
+	['x_1 2', 'MISSING_OPERATOR', 'Unexpected token: 2'],
+	['2 3', 'MISSING_OPERATOR', 'Unexpected token: 3'],
+	['{2}3', 'MISSING_OPERATOR', 'Unexpected token: 3'],
+	['2[m]3[m]', 'MISSING_OPERATOR', 'Unexpected token: 3']
 ];
 
-/** Refus maison qui gardent `UNEXPECTED_TOKEN` (hors de la décision) */
+/** Refus maison qui gardent `UNEXPECTED_TOKEN` */
 const STILL_UNEXPECTED: readonly string[] = [
-	'2[m]3[m]', // grandeurs juxtaposées : JUXTAPOSED_QUANTITIES, PR 5
-	'|x|2',
-	'x^2 3',
-	'x_1 2',
 	'x;2', // le « ; » n'est pas une lettre (PR 6 : SEMICOLON)
-	'(1+2]'
+	'(1+2]',
+	'true2',
+	// Un `.` collé à un facteur n'est pas un point de tête (revue de #1558)
+	'1.2.3',
+	'1..2',
+	'x.5',
+	'5[m].5'
 ];
 
 /** Écritures toujours lues */
@@ -99,7 +110,10 @@ const LATEX_REFUSALS: readonly (readonly [string, string, string])[] = [
 	['x2', 'MISSING_OPERATOR', numberAfterFactorMessage('2')],
 	['x 2', 'MISSING_OPERATOR', numberAfterFactorMessage('2')],
 	['(1+x)2', 'MISSING_OPERATOR', numberAfterFactorMessage('2')],
-	['\\sqrt{2}3', 'MISSING_OPERATOR', numberAfterFactorMessage('3')]
+	['\\sqrt{2}3', 'MISSING_OPERATOR', numberAfterFactorMessage('3')],
+	['x^{2}3', 'MISSING_OPERATOR', numberAfterFactorMessage('3')],
+	['|x|2', 'MISSING_OPERATOR', numberAfterFactorMessage('2')],
+	['2 3', 'MISSING_OPERATOR', numberAfterFactorMessage('3')]
 ];
 
 // =============================================================================
@@ -111,6 +125,10 @@ describe.each(CUSTOM_PARSERS)('parseur maison %s : code précis du refus', (_, p
 		const result = parse(written);
 		expect(result.ast).toBeNull();
 		expect(result.errors[0]).toMatchObject({ code, message });
+	});
+
+	it('le refus de .5 couvre le point et le nombre', () => {
+		expect(parse('2*.5').errors[0]).toMatchObject({ position: 2, length: 2 });
 	});
 
 	it.each(STILL_UNEXPECTED)('%s garde UNEXPECTED_TOKEN', (written) => {

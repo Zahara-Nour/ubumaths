@@ -326,10 +326,11 @@ par les quatre parseurs). La lecture ne change pas ; seul le code change, et le 
 celui que traduit l'atelier (`cli/web/french-errors.ts`). `INVALID_UNIT` n'existe plus :
 `UNKNOWN_UNIT` (`5[xyz]`), `EMPTY_UNIT` (`5[]`), `AMBIGUOUS_UNIT` (`3[kg/m.s]`), `SPACE_IN_UNIT`
 (`3[m s]`), `UNIT_EXPONENT_OUTSIDE` (`10[m]^3`). `MISSING_DELIMITER` : l'écriture s'arrête avant le
-`)`, `]` ou `}` attendu (`(1+2`, `5[m`). `MISSING_OPERATOR` : dans le maison, un nombre juste après une
-lettre ou une `)` (`x2`, `x 2`, `(1+x)2`, `sqrt(2)3`) — `|x|2`, `x^2 3`, `2[m]3[m]` gardent
-`UNEXPECTED_TOKEN` ; dans le LaTeX, tout le refus « nombre après un facteur » (`\sqrt{2}3` compris).
-`LEADING_DECIMAL_POINT` (maison seul ; le LaTeX lit `.5`) a un texte nouveau, « Missing zero before the
+`)`, `]` ou `}` attendu (`(1+2`, `5[m`). `MISSING_OPERATOR` : un nombre juste après un facteur, même périmètre dans le maison et le LaTeX
+(refus « nombre après un facteur ») : lettre, nombre, `)`, `]`, `}`, `|` (`x2`, `x 2`, `(1+x)2`, `x^2 3`,
+`|x|2`, `2[m]3[m]`, `\sqrt{2}3`).
+`LEADING_DECIMAL_POINT` (maison seul ; le LaTeX lit `.5` ; un `.` collé à un facteur, `1.2.3`, `x.5`,
+n'en est pas un) a un texte nouveau, « Missing zero before the
 decimal point (write 0.5) », traduit par l'atelier. `UNEXPECTED_TOKEN` reste en dernier recours.
 Tests : `parser/__tests__/codes-des-refus.test.ts`.
 
