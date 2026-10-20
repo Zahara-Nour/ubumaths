@@ -103,7 +103,7 @@ Compléments mesurés :
 Quand le numérateur ou le dénominateur est une somme, la fraction est rendue
 **irréductible sur ses coefficients numériques**, et **la barre de fraction
 reste unique** : `(2x+1)/3`, jamais `2x/3 + 1/3` (ce serait distribuer la
-division). Code : `reducedFraction` dans `collect.ts`.
+division). Code : `reduceFractionOfSums` dans `collect.ts`.
 
 | entrée          | sortie      | pourquoi                                               |
 | --------------- | ----------- | ------------------------------------------------------ |
@@ -117,15 +117,32 @@ division). Code : `reducedFraction` dans `collect.ts`.
 | `(0,5x+1)/3`    | `(x+2)/6`   |                                                        |
 | `(6x−3)/(−9)`   | `(1−2x)/3`  | le signe d'un dénominateur négatif passe au numérateur |
 | `(2x+1)/(−3)`   | `−(2x+1)/3` | puis la règle « somme toute négative dans un facteur » |
-| `(3i−2)/(−1)`   | `2−3i`      | idem (auparavant `−(3i−2)`)                            |
 | `(6x²−3x)/(3x)` | `(2x²−x)/x` | le 3 se simplifie, **pas le `x`** (domaine)            |
 | `(6x+3)/2`      | inchangé    | déjà irréductible : le 6 reste où il est écrit         |
 | `3(x+1)/4`      | inchangé    | idem, pas de développement                             |
 | `(x²−1)/(x+1)`  | inchangé    | ce serait factoriser et changer le domaine             |
 | `2x/3 + 1/3`    | inchangé    | `tidy` ne réunit pas deux fractions en une             |
 
+La réduction travaille sur le **terme déjà accumulé** (coefficient × facteurs),
+pas sur la fraction telle qu'elle est écrite : `−(6x+3)/9`, `(x(6x+3))/(9x)`
+et `(6x+3)/9` donnent tous `(2x+1)/3`, et `tidy` reste idempotent. Deux
+garde-fous, issus de la revue de la PR :
+
+- **pas d'annulation cachée** : si la somme réduite devenait égale à un autre
+  facteur, les deux s'annuleraient — une simplification par une somme, qui
+  change le domaine. Le terme reste alors tel quel : `(2x+2)/(4(x+1))`
+  inchangé (et non `1/2`) ;
+- **pas de développement** : un nombre venu de l'autre côté de la barre reste
+  en coefficient — `(x+1)/(1/2) → 2(x+1)`, `((x+1)/2)/(x+3) → (x+1)/(2(x+3))`.
+  Un produit sans dénominateur n'est pas une fraction : `3(x/2+1)` inchangé.
+
+Le signe − ne passe dans le numérateur que si la réduction a lieu, et pour un
+numérateur de degré 1 dont les termes ne deviennent pas tous négatifs :
+`−(2x−1)/3` et `(3i−2)/(−1) → −(3i−2)` ne bougent pas (rien à réduire).
+
 Hors périmètre : une somme dont un terme contient lui-même une somme
-(`(2(x+1)+4)/2`), une grandeur avec unité, un nœud opaque.
+(`(2(x+1)+4)/2`), une grandeur avec unité, un nœud opaque, une somme à
+exposant non entier.
 
 ### A.2 Ce que `tidy` ne fait pas (mesuré)
 

@@ -69,6 +69,54 @@ describe('témoins : rien à simplifier, rien ne bouge', () => {
 	});
 });
 
+/**
+ * Cas de la revue de la PR (2026-10-20) : la réduction se fait sur le terme
+ * ACCUMULÉ — elle ne dépend donc pas de l'écriture — et ne fait jamais
+ * apparaître une somme qui s'annulerait avec un autre facteur.
+ */
+describe('revue : jamais de simplification par une somme (domaine)', () => {
+	it.each([
+		['(2x+2)/(4(x+1))', '{2x+2}/{4(x+1)}'],
+		['(2x+2)/(2(x+1))', '{2x+2}/{2(x+1)}'],
+		['(2x+2)/(4(x+1)^2)', '{2x+2}/{4(x+1)^2}']
+	])('tidy(%s) = %s', (input, expected) => {
+		expect(t(input)).toBe(expected);
+	});
+});
+
+describe('revue : même résultat quelle que soit l’écriture', () => {
+	it.each([
+		['(-(6x+3))/9', '-{2x+1}/3'],
+		['(-(2x+4))/(-6)', '{x+2}/3'],
+		['(x(6x+3))/(9x)', '{2x+1}/3'],
+		['((x+1)(2x+2))/(4(x+1))', '{x+1}/2']
+	])('tidy(%s) = %s', (input, expected) => {
+		expect(t(input)).toBe(expected);
+	});
+});
+
+describe('revue : un nombre venu de l’autre côté de la barre n’est pas distribué', () => {
+	it.each([
+		['(x+1)/(1/2)', '2(x+1)'],
+		['(1/2)/(x+1)', '1/{2(x+1)}'],
+		['((x+1)/2)/(x+3)', '{x+1}/{2(x+3)}'],
+		['(2x+1)/(x/2)', '{2(2x+1)}/x'],
+		['3(x/2+1)', '3(x/2+1)']
+	])('tidy(%s) = %s', (input, expected) => {
+		expect(t(input)).toBe(expected);
+	});
+});
+
+describe('revue : deux sommes égales du même côté se multiplient', () => {
+	it('tidy((6x+3)(4x+2)/12) = (2x+1)²/2', () => {
+		expect(t('((6x+3)(4x+2))/12')).toBe('{(2x+1)^2}/2');
+	});
+
+	it('un dénominateur nul arrête la réduction', () => {
+		expect(t('(6x+3)/(9*0)')).toContain('6x+3');
+	});
+});
+
 describe('invariants', () => {
 	const PANEL = [
 		'(6x+3)/9',
@@ -81,7 +129,16 @@ describe('invariants', () => {
 		'1/(x/2+1)',
 		'(6x-3)/(-9)',
 		'(2x+1)/(-3)',
-		'(6x+3)/2'
+		'(6x+3)/2',
+		'(2x+2)/(4(x+1))',
+		'(-(6x+3))/9',
+		'(-(2x+4))/(-6)',
+		'(6x+3)/(-(9x+3))',
+		'(x(6x+3))/(9x)',
+		'((x+1)(2x+2))/(4(x+1))',
+		'((6x+3)/9)^2',
+		'(x+1)/(1/2)',
+		'(2x+1)/(x/2)'
 	];
 
 	it.each(PANEL)('valeur conservée sur %s', (input) => {
