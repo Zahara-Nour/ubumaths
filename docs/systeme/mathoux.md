@@ -9,7 +9,7 @@ couvre:
 
 # Mathoux — la Chatterie de Faustroll
 
-> Vérifié contre le code le 2026-10-18 (Mathoux v1, mémoire comprise, « Faire grandir » v1.1). Spécification validée par David :
+> Vérifié contre le code le 2026-10-20 (Mathoux v1, mémoire comprise, « Faire grandir » v1.1, noms propres). Spécification validée par David :
 > [mathoux-conception.md § 9](../wip/mathoux-conception.md).
 
 ## À quoi ça sert
@@ -78,10 +78,13 @@ Points travaillables par niveau en prod (2026-10-18, modèles publiés / tous le
   lien fait environ 4 Ko (test : moins de 6 000 caractères) ; c'est pourquoi les données de la page
   portent les catégories (≈ 1,5 Ko par Mathou) et non le lien : pour 40 Mathoux de 10 modèles,
   172 Ko de données avec les liens, 80 Ko avec les catégories (mesuré le 2026-10-18).
-- **Nom** (`mathouName`) : premier mot terminé par -s ou -x → « le Mathou des Fractions : calculs » ;
-  sinon, le genre ne se devine pas (« de la Dérivation », « du Second degré ») → « le Mathou
-  « Dérivation » ». Cas grammaticaux mais maladroits : « le Mathou des Autres lois », « le Mathou
-  des Généralités sur les fonctions ». D'autres noms sont à chercher plus tard (décision de David).
+- **Nom** (`mathouName`) : d'abord le **nom propre** de la notion (`mathou-noms.ts`, 134 noms,
+  clé = nom de la notion comme dans la migration de seed, car les identifiants diffèrent entre la
+  base locale et la prod) : « Tangentin » pour « Dérivation ». Relus en partie par David le
+  2026-10-19, le reste validé par défaut (à revoir : [mathoux-noms.md](../wip/mathoux-noms.md)).
+  Une notion hors table (renommée, nouvelle) garde un nom générique : premier mot terminé par -s
+  ou -x → « le Mathou des Fractions : calculs » ; sinon, le genre ne se devine pas → « le Mathou
+  « Dérivation » ». Renommer une notion fait donc perdre son nom propre : mettre la table à jour.
   L'élève ne nomme pas ses Mathoux en v1 (texte libre d'un mineur : modération).
 
 Niveaux : en octobre 2026, seuls les niveaux du lycée ont des questions taguées. Ailleurs, la
@@ -128,6 +131,7 @@ prochaine révision due). Sans Entraînement possible (aucun modèle publié lis
 | Fichier                                                | Rôle                                                                                                                        |
 | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | `src/lib/mathoux/collection-logic.ts`                  | logique pure : stades, noms, regroupement, Entraînement « Faire grandir », phrases (importable au client)                   |
+| `src/lib/mathoux/mathou-noms.ts`                       | les noms propres des Mathoux, par nom de notion                                                                             |
 | `src/lib/mathoux/summary.ts`                           | schéma Zod du résumé `{ born, napping, toDiscover }`                                                                        |
 | `src/lib/server/mathoux/collection.ts`                 | `loadMathouCollection` : les lectures, la logique pure, puis la mémoire                                                     |
 | `src/lib/server/mathoux/memory.ts`                     | lecture (élève) et écriture (service) de `student_mathoux`                                                                  |
@@ -197,7 +201,8 @@ propre fond : il se lit pareil en clair et en sombre.
   fraise, le bonnet remplace la couronne.
 - **Silhouette** (« à découvrir ») : forme unie sable éteint, gidouille en pointillé, auréole en
   tirets ; aucune couleur de race (ni pelage, ni motif, ni auréole).
-- **Races** (`mathou-races.ts`, noms provisoires) : 19 couples pelage + motif distincts — uni noir,
+- **Races** (`mathou-races.ts`, noms validés par David le 2026-10-18, de « le Noir de Nombrilie »
+  à « le Tigré de Glitchistan ») : 19 couples pelage + motif distincts — uni noir,
   tigré roux, smoking, pointes siamoises, gidouille rouge épaisse, chartreux uni, écaille, tacheté,
   tricolore, arlequin (losanges), masque de bandit, marbré, fumé, van, chaussettes, bicolore,
   croissant de lune autour de la gidouille, étoile au front, tigré argent. L'auréole varie (rouge
@@ -220,11 +225,12 @@ et le lien mènerait à elle-même. Réponse en échec ou mal formée (Zod) → 
 
 `/dashboard/student/chatterie`, entrée « La Chatterie » de la navigation élève (pas de bouton
 retour : page de la navigation). Titre « La Chatterie de Faustroll », compteurs (« 7 Mathoux, 2 en
-sieste, 12 à découvrir »), une section titrée par race, une liste de Mathoux : dessin, nom, stade,
+sieste, 12 à découvrir »), une section titrée par race, une liste de Mathoux : dessin, « Nom, Race » (« Tangentin, le Chartreux de
+Yoyolande », la race en gris), le nom de la notion dessous, stade,
 étoiles (« ★ 2nde ★ 1ère Spé », le symbole masqué aux lecteurs d'écran), « Fait la sieste » et
 « Réveiller » : vers la révision du programme (`/dashboard/revisions/decks/programme`, là où
 tombent les cartes dues) s'il y a une carte due, sinon vers l'Entraînement de la notion (aucun bouton s'il n'y en a pas). Chaque
-Mathou né porte aussi « Faire grandir » (nom accessible « Faire grandir le Mathou des … ») vers
+Mathou né porte aussi « Faire grandir » (nom accessible « Faire grandir Tangentin ») vers
 cet Entraînement, s'il existe ; jamais sur une silhouette, ni sur un Mathou endormi sans carte due
 (son « Réveiller » y mène déjà : un seul bouton). Liens passés par `resolve()`, la requête ajoutée après `?`. Les silhouettes montrent
 le nom de la notion, pas celui du Mathou. Aucun mot interdit par le Compendium (XP, niveau, score).

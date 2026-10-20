@@ -37,6 +37,7 @@
 
 import { GRADE_CODES, GRADES, isGradeCode } from '$lib/types/grades';
 import { buildSeriesLink, cartItemSchema, type SeriesCategories } from '$lib/validation/series';
+import { MATHOU_NAMES } from './mathou-noms';
 
 // ============================================================================
 // Types
@@ -129,7 +130,7 @@ export interface MathouGradeDetail {
 export interface Mathou {
 	notionId: string;
 	notionName: string;
-	/** « le Mathou des Fractions », cf. `mathouName`. */
+	/** Nom propre (« Tangentin »), sinon générique (« le Mathou des Fractions ») : cf. `mathouName`. */
 	name: string;
 	/** Rang de la branche (0..). La couleur et le motif en découlent. */
 	raceIndex: number;
@@ -291,9 +292,10 @@ export function starGradeLabel(grade: string): string {
 /**
  * Nom affiché d'un Mathou.
  *
- * Règle volontairement simple : le français demande l'article, et le genre
- * d'un nom de notion ne se devine pas (« de la Dérivation », « du Second
- * degré »). Donc :
+ * D'abord son nom propre (`MATHOU_NAMES`, clé = nom de la notion). Une notion
+ * hors table (renommée, nouvelle) garde un nom générique. Le français demande
+ * l'article, et le genre d'un nom de notion ne se devine pas (« de la
+ * Dérivation », « du Second degré »). Donc :
  * - premier mot terminé par -s ou -x (pluriel : « Fractions », « Décimaux ») →
  *   « le Mathou des Fractions » ;
  * - sinon → « le Mathou « Dérivation » », sans article à deviner.
@@ -301,6 +303,7 @@ export function starGradeLabel(grade: string): string {
 export function mathouName(notionName: string): string {
 	const name = notionName.trim();
 	if (name === '') return 'le Mathou';
+	if (Object.hasOwn(MATHOU_NAMES, name)) return MATHOU_NAMES[name];
 	const firstWord = name.split(/[\s:,;.]/)[0];
 	if (firstWord.length > 1 && /[sx]$/i.test(firstWord)) return `le Mathou des ${name}`;
 	return `le Mathou « ${name} »`;

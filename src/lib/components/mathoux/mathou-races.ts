@@ -1,7 +1,8 @@
 /**
  * Races des Mathoux — les chats du Docteur Faustroll.
  *
- * Une race par branche de l'arbre des notions (19 branches). Les noms sont provisoires.
+ * Une race par branche de l'arbre des notions (19 branches), dans l'ordre `position` des
+ * branches. Noms validés par David le 2026-10-18 (docs/wip/mathoux-noms.md).
  * Palette : celle du Chat Noir de Steinlen (docs/Chiphres/lore-pataphysique.md, § XI)
  * — rouge hsl(15,75%,50%), jaune hsl(40,70%,75%), noir hsl(220,30%,10%), crème hsl(40,30%,90%) —
  * complétée de teintes de pelage crédibles.
@@ -35,7 +36,7 @@ export type MathouPattern =
 	| 'etoile';
 
 export interface MathouRace {
-	/** Nom de race affichable (provisoire) */
+	/** Nom de race affiché après le nom du Mathou : « Tangentin, le Chartreux de Yoyolande » */
 	name: string;
 	/** Couleur principale du pelage */
 	primary: string;
@@ -96,7 +97,7 @@ const HALO = {
 
 export const MATHOU_RACES: readonly MathouRace[] = [
 	{
-		name: 'Chat Noir de Steinlen',
+		name: 'le Noir de Nombrilie',
 		primary: FUR.noir,
 		secondary: CHAT_NOIR.noir,
 		pattern: 'uni',
@@ -104,7 +105,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.rouge
 	},
 	{
-		name: 'Roux du Clinamen',
+		name: 'le Divisionnaire Euclidien',
 		primary: FUR.roux,
 		secondary: FUR.rouxFonce,
 		pattern: 'tigre',
@@ -112,7 +113,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.bleu
 	},
 	{
-		name: 'Smoking de Faustroll',
+		name: 'l’Imaginaire Eulérien',
 		primary: FUR.noir,
 		secondary: FUR.blanc,
 		pattern: 'smoking',
@@ -120,7 +121,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.rouge
 	},
 	{
-		name: 'Siamois de la Chandelle Verte',
+		name: 'le Linéen',
 		primary: FUR.creme,
 		secondary: FUR.chocolat,
 		pattern: 'pointes',
@@ -128,7 +129,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.vert
 	},
 	{
-		name: 'Gidouillard de Patatovie',
+		name: 'le Al Jabr Oriental',
 		primary: FUR.blanc,
 		secondary: CHAT_NOIR.rouge,
 		pattern: 'gidouille',
@@ -136,7 +137,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.bleu
 	},
 	{
-		name: 'Chartreux Absolu',
+		name: 'le Chartreux de Yoyolande',
 		primary: FUR.grisBleu,
 		secondary: FUR.grisFonce,
 		pattern: 'uni',
@@ -144,7 +145,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.rouge
 	},
 	{
-		name: 'Écaille des Phynances',
+		name: 'le Mesuré Riemannien',
 		primary: FUR.noir,
 		secondary: FUR.roux,
 		tertiary: FUR.sable,
@@ -153,7 +154,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.vert
 	},
 	{
-		name: 'Moucheté du Cymbalum',
+		name: 'le Moucheté Newtonien',
 		primary: FUR.sable,
 		secondary: FUR.chocolat,
 		pattern: 'tachete',
@@ -161,7 +162,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.rouge
 	},
 	{
-		name: 'Tricolore Trismégiste',
+		name: 'le Discret Bigarré',
 		primary: FUR.blanc,
 		secondary: FUR.roux,
 		tertiary: FUR.noir,
@@ -170,7 +171,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.bleu
 	},
 	{
-		name: 'Arlequin du Cabaret',
+		name: 'le Matouriciel',
 		primary: FUR.creme,
 		secondary: CHAT_NOIR.rouge,
 		tertiary: FUR.noir,
@@ -179,7 +180,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.vert
 	},
 	{
-		name: 'Masqué du Palotin',
+		name: 'l’Écumeur d’Arêtes',
 		primary: FUR.gris,
 		secondary: FUR.noir,
 		pattern: 'masque',
@@ -187,7 +188,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.rouge
 	},
 	{
-		name: 'Marbré de Haldern',
+		name: 'le Marbré de Bedonstan',
 		primary: FUR.cannelle,
 		secondary: FUR.chocolat,
 		pattern: 'marbre',
@@ -195,7 +196,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.bleu
 	},
 	{
-		name: 'Fumé de la Gidouille',
+		name: 'l’Unitaire Napoléonien',
 		primary: FUR.fume,
 		secondary: FUR.argent,
 		pattern: 'fume',
@@ -203,7 +204,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.violet
 	},
 	{
-		name: 'Van du Cap Clinamen',
+		name: 'le Hasardeux de Pifométrie',
 		primary: FUR.blanc,
 		secondary: FUR.roux,
 		pattern: 'van',
@@ -211,7 +212,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.vert
 	},
 	{
-		name: 'Chaussé de la Phynance',
+		name: 'le Chaussé Combinatoire',
 		primary: FUR.chocolat,
 		secondary: FUR.blanc,
 		pattern: 'chaussettes',
@@ -219,7 +220,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.rouge
 	},
 	{
-		name: 'Bicolore de Bosse-de-Nage',
+		name: 'le Médian Moyen',
 		primary: FUR.fauve,
 		secondary: FUR.blanc,
 		pattern: 'bicolore',
@@ -227,7 +228,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.bleu
 	},
 	{
-		name: 'Plastron Lunaire',
+		name: 'le Lunaire de Patatovie',
 		primary: FUR.noir,
 		secondary: CHAT_NOIR.jaune,
 		pattern: 'plastron',
@@ -235,7 +236,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.violet
 	},
 	{
-		name: 'Étoilé Ubuesque',
+		name: 'le Patapouf',
 		primary: FUR.lilas,
 		secondary: FUR.blanc,
 		pattern: 'etoile',
@@ -243,7 +244,7 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		halo: HALO.rouge
 	},
 	{
-		name: 'Tigré de l’Absolu',
+		name: 'le Tigré de Glitchistan',
 		primary: FUR.argent,
 		secondary: FUR.noir,
 		pattern: 'tigre',

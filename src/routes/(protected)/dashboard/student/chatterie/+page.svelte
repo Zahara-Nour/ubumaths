@@ -18,6 +18,7 @@
 	import { Cat } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import MathouAvatar from '$lib/components/mathoux/MathouAvatar.svelte';
+	import { getMathouRace } from '$lib/components/mathoux/mathou-races';
 	import {
 		collectionCountsPhrase,
 		starGradeLabel,
@@ -123,7 +124,13 @@
 									{#if toDiscover}
 										<p class="font-medium break-words">{mathou.notionName}</p>
 									{:else}
-										<p class="font-medium break-words">{mathou.name}</p>
+										<!-- « Tangentin, le Chartreux de Yoyolande », puis la notion qu'il incarne -->
+										<p class="font-medium break-words">
+											{mathou.name}<span class="font-normal text-muted-foreground"
+												>, {getMathouRace(mathou.raceIndex).name}</span
+											>
+										</p>
+										<p class="text-sm break-words text-muted-foreground">{mathou.notionName}</p>
 									{/if}
 									<p class="text-sm text-muted-foreground">{GROWTH_LABEL[mathou.growth]}</p>
 									{#if mathou.stars.length > 0}

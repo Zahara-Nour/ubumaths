@@ -28,6 +28,7 @@ import {
 	type MathouMemory,
 	type PointProgress
 } from '../collection-logic';
+import { MATHOU_NAMES } from '../mathou-noms';
 import { resolveTestLaunch } from '$lib/utils/test-launch';
 import { buildSeriesLink } from '$lib/validation/series';
 
@@ -95,22 +96,41 @@ describe('mathouGrowth', () => {
 // =============================================================================
 
 describe('mathouName', () => {
-	it('premier mot au pluriel → « le Mathou des … »', () => {
-		expect(mathouName('Fractions')).toBe('le Mathou des Fractions');
-		expect(mathouName('Fractions : calculs')).toBe('le Mathou des Fractions : calculs');
-		expect(mathouName('Décimaux : numération')).toBe('le Mathou des Décimaux : numération');
-		expect(mathouName('Suites géométriques')).toBe('le Mathou des Suites géométriques');
+	it('notion de l’arbre → son nom propre (table relue par David)', () => {
+		expect(mathouName('Dérivation')).toBe('Tangentin');
+		expect(mathouName('Raisonnement par récurrence')).toBe('Domino');
+		// remplacements de David sur la page à cocher, repris tels quels
+		expect(mathouName('Fractions : sens et écritures')).toBe('Tarte');
+		expect(mathouName('Calcul littéral')).toBe('Viète');
+		// espaces autour du nom de la notion : même Mathou
+		expect(mathouName('  Dérivation ')).toBe('Tangentin');
 	});
 
-	it('premier mot au singulier (genre inconnu) → nom entre guillemets', () => {
-		expect(mathouName('Dérivation')).toBe('le Mathou « Dérivation »');
-		expect(mathouName('Second degré')).toBe('le Mathou « Second degré »');
-		expect(mathouName('Théorème de Pythagore')).toBe('le Mathou « Théorème de Pythagore »');
-		expect(mathouName('y′ = ay + b')).toBe('le Mathou « y′ = ay + b »');
+	it('notion hors table, premier mot au pluriel → « le Mathou des … »', () => {
+		expect(mathouName('Fractions')).toBe('le Mathou des Fractions');
+		expect(mathouName('Dérivées partielles')).toBe('le Mathou des Dérivées partielles');
+		expect(mathouName('Décimaux : approximations')).toBe('le Mathou des Décimaux : approximations');
+	});
+
+	it('notion hors table, premier mot au singulier (genre inconnu) → nom entre guillemets', () => {
+		expect(mathouName('Théorème de Fermat')).toBe('le Mathou « Théorème de Fermat »');
+		expect(mathouName('y′ = ay²')).toBe('le Mathou « y′ = ay² »');
 	});
 
 	it('nom vide ou blanc → « le Mathou » seul', () => {
 		expect(mathouName('  ')).toBe('le Mathou');
+	});
+});
+
+describe('MATHOU_NAMES', () => {
+	it('134 notions, un nom propre chacune, sans doublon ni blanc', () => {
+		const names = Object.values(MATHOU_NAMES);
+		expect(names).toHaveLength(134);
+		expect(new Set(names).size).toBe(134);
+		for (const [notion, name] of Object.entries(MATHOU_NAMES)) {
+			expect(name.trim(), notion).toBe(name);
+			expect(name.length, notion).toBeGreaterThan(0);
+		}
 	});
 });
 
