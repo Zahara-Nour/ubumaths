@@ -4,10 +4,10 @@
 
 _Mis à jour le 2026-10-21, PR 6 en cours (branche `feat/lecture-grandeurs-virgule`)._
 
-- **État** : PR 1-5 + `BARE_PI` mergées, pas en prod. PR 6 (virgule) codée : 3 commits de code + doc, suite `src/lib` verte (56 881), revue Opus en cours. Pages à cocher : grandeurs (81/81), virgule (31/31).
+- **État** : PR 1-5 + `BARE_PI` mergées, pas en prod. PR 6 (virgule) = #1565 : revue Opus faite (DSL et traductions corrigées), suite complète verte (59 367) ; CI relancée après un rouge de `scripts/corrections` (réponse attendue `{{a}},{{c}}`). Pages à cocher : grandeurs (81/81), virgule (31/31).
 - **Décidé par David** : (1)-(17), détail dans l'historique ; (16) `2 m 30 cm` reste une somme dans l'atelier ; (17) pas de ′ ″.
-- **Prochaine action** : findings de la revue → PR → CI → merge.
-- **En attente de David** : ⚠️ AVANT le `deploy:prod` de la PR 6, lancer `scripts/reecrire-virgule-decimale-base.ts` (simulation puis `--ecrire`) : 6 modèles publiés + 7 formules d'exercices (`verifications-manuelles.md`). Moi : lecture de prod par script refusée, mesures faites par le MCP.
+- **Prochaine action** : CI verte → merger #1565 → mettre à jour ce bloc.
+- **En attente de David** : ⚠️ AVANT le `deploy:prod` de la PR 6, lancer `scripts/reecrire-virgule-decimale-base.ts` (simulation puis `--ecrire`) : 8 modèles publiés + 7 formules d'exercices (`verifications-manuelles.md`). Moi : lecture de prod par script refusée, mesures faites par le MCP.
 - **Pièges** : l'inventaire du 2026-10-20 avait manqué `2,5|3,5`, `?*0,5`, `(-a,5)` (lettre avant la virgule) et l'atelier qui range `0,3` (curseur) relu sans provenance → `legacyDecimalCommas`. Chaque parseur = Pratt + RD ; RD maison sans fonctions génériques ni matrices.
 - **Worktree / branche** : `../ubumaths-wt-lecture-grandeurs` · `feat/lecture-grandeurs-virgule`. Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
 
@@ -35,8 +35,10 @@ _Mis à jour le 2026-10-21, PR 6 en cours (branche `feat/lecture-grandeurs-virgu
   (`recalcul-equivalence`, suites). `legacyDecimalCommas` (`parser/custom/legacy-decimal-commas.ts`)
   = règle exacte de l'ancien tokenizer, appliquée par `readByProvenance` hors saisie élève, et par
   la DSL géométrie (`sur ]0,5 ; 1,5[`, fonctionnalité voulue).
-- Contenus : `scripts/reecrire-virgule-decimale-base.ts` (20 remplacements exacts comptés, 10
-  lignes), éprouvé en LOCAL (lignes de test aux mêmes ids : écriture, idempotence, relecture, règle
+- Contenus : `scripts/reecrire-virgule-decimale-base.ts` (22 remplacements exacts comptés, 12
+  lignes, dont `953574d4` et `9f380957` ajoutés après la CI : réponse attendue `{{a}},{{c}}` lue
+  par l'outil de vérification des corrections ; au point, notation identique et affichage `1.16`
+  comme avant), éprouvé en LOCAL (lignes de test aux mêmes ids : écriture, idempotence, relecture, règle
   par modèle). Transition vérifiée sur copies : (ancien code, ancien contenu) → (ancien, nouveau) →
   (nouveau, nouveau) : énoncés, LaTeX, réponses attendues identiques ; oracle des cases à unité
   inchangé. Dépôt réécrit : fixture `e0ccaf84`, `data/relecture/` 490 et 320.

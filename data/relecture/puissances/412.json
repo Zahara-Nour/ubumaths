@@ -49,7 +49,7 @@
 				},
 				"blanks": [
 					{
-						"expectedAnswer": "{{a}},{{c}}"
+						"expectedAnswer": "{{a}}.{{c}}"
 					},
 					{
 						"expectedAnswer": "{{eval:d+(f)}}"

@@ -29,7 +29,7 @@
 				"variables": [
 					{
 						"name": "expression1",
-						"expression": "?*0,001 = {{eval:c*0.001;d}}"
+						"expression": "?*0.001 = {{eval:c*0.001;d}}"
 					}
 				],
 				"correction": {
@@ -48,7 +48,7 @@
 				"variables": [
 					{
 						"name": "expression2",
-						"expression": "0,001*?={{eval:0.001*c;d}}"
+						"expression": "0.001*?={{eval:0.001*c;d}}"
 					}
 				],
 				"correction": {

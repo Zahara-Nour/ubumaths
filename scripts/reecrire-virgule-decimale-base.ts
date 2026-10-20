@@ -11,8 +11,8 @@
  *
  * Remplacements EXACTS (chaîne entière, ou formule `~…~` entière), comptés : un décompte
  * qui diffère de l'inventaire arrête le script avant toute écriture.
- *  - 6 modèles publiés : variables (`2,5|3,5`, `?*0,5 = …`, `(-a,5)+b`) et valeurs des
- *    specs (`a = "2,5"`) ;
+ *  - 8 modèles publiés : variables (`2,5|3,5`, `?*0,5 = …`, `(-a,5)+b`), valeurs des
+ *    specs (`a = "2,5"`) et réponses attendues (`{{a}},{{c}}`) ;
  *  - 4 exercices : 7 formules `~…~` (`~0,02~`, `~f''(0,2)~`…).
  *
  * Comme `reecrire-pi-nu-base.ts` : sauvegarde (`data/migration-output/backups/`),
@@ -112,6 +112,19 @@ const TARGETS: readonly Target[] = [
 			['(-a,5)-b', '(-a.5)-b', 1],
 			['a,5-b', 'a.5-b', 1]
 		]
+	},
+	// Réponse attendue `1,16` : lue par la correction guidée et son vérificateur (relevé par la CI)
+	{
+		table: 'question_templates',
+		id: '953574d4-e345-4a5d-9435-7faecc3ff7ac',
+		fields: TEMPLATE_FIELDS,
+		strings: [['{{a}},{{c}}', '{{a}}.{{c}}', 1]]
+	},
+	{
+		table: 'question_templates',
+		id: '9f380957-48db-4b31-9f28-61fc4bfb5420',
+		fields: TEMPLATE_FIELDS,
+		strings: [['{{a}},{{c}}', '{{a}}.{{c}}', 1]]
 	},
 	{
 		table: 'exercises',

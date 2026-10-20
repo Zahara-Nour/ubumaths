@@ -2576,7 +2576,7 @@
 			{
 				"blanks": [
 					{
-						"expectedAnswer": "{{a}},{{c}}"
+						"expectedAnswer": "{{a}}.{{c}}"
 					},
 					{
 						"expectedAnswer": "{{d}}"

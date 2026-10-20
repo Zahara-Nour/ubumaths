@@ -18,9 +18,9 @@
 >
 > ⚠️ **Avant le `deploy:prod` qui livre la PR 6 de lecture-grandeurs (virgule décimale refusée
 > par le parseur maison)** : lancer `pnpm tsx scripts/reecrire-virgule-decimale-base.ts`
-> (simulation : 20 remplacements dans 10 lignes), puis `--ecrire`. Il réécrit au point 6 modèles
+> (simulation : 22 remplacements dans 12 lignes), puis `--ecrire`. Il réécrit au point 8 modèles
 > publiés (`e0ccaf84` ne se tire plus sans lui ; `5b53b1be` non plus ; 4 « multiplications à
-> trou » s'affichent `□*0,5`) et 7 formules `~…~` de 4 exercices (affichées en rouge sinon).
+> trou » s'affichent `□*0,5` ; `953574d4`, `9f380957` : réponse attendue `{{a}},{{c}}`) et 7 formules `~…~` de 4 exercices (affichées en rouge sinon).
 > Compatible avec le code actuel. À relancer juste avant le déploiement : il dit « déjà réécrit ».
 
 | Fait                                                                                                                                                                                                                            | Ajouté le  | Où                     | PR                                   | Quoi vérifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
