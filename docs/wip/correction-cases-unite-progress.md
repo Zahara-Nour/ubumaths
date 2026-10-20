@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, après #1552._
+_Mis à jour le 2026-10-20 : PR 2 bis mise de côté par David._
 
-- **État** : PR 1-3 mergées (#1543, #1545, #1547). PR 2 bis (découpage « nombre | unité ») en phase 0. #1552 (atelier : `2 m*3 m` = 6 m²) mergée en passant. Rien en prod.
-- **Prochaine action** : PR 2 bis — lire la saisie élève comme mathAST (`parseLatex`, unité sur le facteur qui la précède : `3+2 m` = 3 + (2 m), `2×3 m` = 2 × (3 m), `2 m×3 m` = 6 m²), tests rouges d'abord, revue opus.
-- **En attente de David** : calcul juste non effectué (`2×3 m`, `3 m + 2 m`, `10^3 m`) → FAUX « …forme demandée » comme sans unité (ADR 0013) ? (ma reco : oui).
-- **Phase 0 déjà tranchée** : `3+2 m` → « On ne peut pas ajouter un nombre sans unité et une longueur. » ; `2√2 m` → « Valeur incorrecte. » ; `(-3) m` → JUSTE + parenthèses inutiles.
-- **Pièges** : la lecture TEXTE de l'atelier met l'unité sur tout le terme (`2*3 m` → `(2*3)[m]`), le LaTeX sur le facteur — même valeur ; `2 m×3 m` (vrai ×) illisible en texte ; `5×1` sans unité donne « Unité inconnue : .1. » (le t de `\times`).
-- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage` (sondes non suivies dans `src/lib/questions/units/__tests__/tmp/`).
+- **État** : PR 1-3 mergées (#1543, #1545, #1547). PR 2 bis (découpage « nombre | unité ») **mise de côté** : David veut d'abord des parseurs de mathAST cohérents avec le BIPM (chantier `lecture-grandeurs`). Rien en prod.
+- **Prochaine action** : reprendre la PR 2 bis quand `lecture-grandeurs` aura fixé la lecture (`docs/wip/lecture-grandeurs-corpus.md`).
+- **En attente de David** : verdict du calcul juste non effectué (`2×3 m`, `3 m + 2 m`) ; marquage des unités MathLive (code partagé avec la carte, ou fonction de mathAST).
+- **Phase 0 déjà tranchée** : `3+2 m` → « On ne peut pas ajouter un nombre sans unité et une longueur. » ; `2√2 m` → « Valeur incorrecte. » ; `(-3) m` → JUSTE + parenthèses inutiles ; `.5 m` → refus (BIPM §5.4.4).
+- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage`, aucun commit (sondes non suivies dans `src/lib/questions/units/__tests__/tmp/`).
 
 ## Historique
 
