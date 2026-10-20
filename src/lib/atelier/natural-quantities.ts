@@ -116,20 +116,20 @@ const JUXTAPOSED = new RegExp(`${QUANTITY_TOKEN}(?:[ \\t]+${QUANTITY_TOKEN})+`, 
 const DURATION_SYMBOL = '(?:h|min|s)';
 
 /**
- * Une durée composée écrite naturellement, même après `*` ou `/` (`2*1 h 30 min`) :
+ * Une durée composée écrite naturellement, même après `*` (`2*1 h 30 min`) :
  * ses parties sont mises entre crochets pour que le parseur la refuse comme
  * ambiguë, au lieu de lire `1 h` comme un produit (« « 30 » inattendu ici »).
  */
 const DURATION_RUN = new RegExp(
-	String.raw`(?<![\w.,\]\\^])${NUMBER}[ \t]+${DURATION_SYMBOL}(?:[ \t]+${NUMBER}[ \t]+${DURATION_SYMBOL})+(?![\w(\[])`,
+	String.raw`(?<![\w.,\]\\/^])(?<!\^[-+])${NUMBER}[ \t]+${DURATION_SYMBOL}(?:[ \t]+${NUMBER}[ \t]+${DURATION_SYMBOL})+(?![\w(\[])`,
 	'g'
 );
 
 /** Une partie d'une durée composée : `30 min` */
 const DURATION_PART = new RegExp(String.raw`(${NUMBER})[ \t]+(${DURATION_SYMBOL})`, 'g');
 
-/** Une grandeur de durée entre crochets : `30[min]` */
-const DURATION_TOKEN = new RegExp(String.raw`\[${DURATION_SYMBOL}\]$`);
+/** Un nombre et une unité de durée entre crochets : `30[min]` (pas `(1/2)[h]`, sommée comme avant) */
+const DURATION_TOKEN = new RegExp(String.raw`^\d[\d.,]*\[${DURATION_SYMBOL}\]$`);
 
 // =============================================================================
 // Fonctions
@@ -152,19 +152,29 @@ export function readNaturalQuantities(
 	const notes = new Set<string>();
 	const singleLetters: SingleLetterUnit[] = [];
 
-	const runs = text.replace(DURATION_RUN, (run) => run.replace(DURATION_PART, '$1[$2]'));
+	/** Les aides d'une grandeur lue « nombre, espace, unité » : nom du panneau, unité d'une lettre */
+	const noteQuantity = (whole: string, numerator: string, writing: string) => {
+		if (objectNames.includes(writing)) {
+			notes.add(
+				`${writing} est aussi un nom du panneau : pour ${numerator} × ${writing}, écris ${numerator}${writing}.`
+			);
+		}
+		if (/^[A-Za-z]$/.test(writing)) {
+			singleLetters.push({ written: whole.trim(), letter: writing });
+		}
+	};
+
+	const runs = text.replace(DURATION_RUN, (run) =>
+		run.replace(DURATION_PART, (whole, numerator: string, writing: string) => {
+			noteQuantity(whole, numerator, writing);
+			return `${numerator}[${writing}]`;
+		})
+	);
 	const spaced = runs.replace(
 		SPACED_QUANTITY,
 		(whole, numerator: string, denominator: string | undefined, _space, writing: string) => {
 			if (parseUnit(writing) === null) return whole;
-			if (objectNames.includes(writing)) {
-				notes.add(
-					`${writing} est aussi un nom du panneau : pour ${numerator} × ${writing}, écris ${numerator}${writing}.`
-				);
-			}
-			if (/^[A-Za-z]$/.test(writing)) {
-				singleLetters.push({ written: whole.trim(), letter: writing });
-			}
+			noteQuantity(whole, numerator, writing);
 			const value = denominator === undefined ? numerator : `(${numerator}/${denominator})`;
 			return `${value}[${writing}]`;
 		}

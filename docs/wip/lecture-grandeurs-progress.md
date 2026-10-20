@@ -39,6 +39,12 @@ _Mis à jour le 2026-10-20, PR 5 en cours._
   règle) → refus ; `2 h 30 en min` → « Chaque partie d'une durée composée a besoin de son unité ».
 - Empreinte du corpus maison : 1 saisie sur 1 299 bouge (`{2[h]}{15[min]}`), régénérée.
 - Suite serveur `src/lib` : 56 774 verts ; `check:incremental` 0 ; cliquet tenu ; lint rapide propre.
+- Revue Opus (7 findings, tous corrigés, tests rouges sans les correctifs vérifiés) : durée composée
+  signée en facteur écrite sans parenthèses (`(-2[h] 30[min])*2` relu refusé) → `needsParenthesesUnderSign` ;
+  RD LaTeX ne refermait pas une couleur après une juxtaposition ; produit implicite signé de grandeurs
+  écrit `-2 h 30 min` (relu somme) → `\times` ; aides de l'atelier perdues sur une durée (`h` du panneau) ;
+  `DURATION_RUN` après `/` ou `^-` ; `\circ` avec une durée (Pratt/RD divergeaient → refus) ; couleur du
+  signe en tête perdue. Suite : 56 786 verts.
 
 ### 2026-10-20 — PR « retrait de `BARE_PI` » codée
 

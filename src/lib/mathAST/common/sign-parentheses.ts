@@ -18,7 +18,7 @@
  */
 
 import type { MathNode } from '../types';
-import { juxtaposedTerms } from '../parser/juxtaposed-quantities';
+import { isSignedCompoundDuration, juxtaposedTerms } from '../parser/juxtaposed-quantities';
 
 /**
  * Cette expression doit-elle être parenthésée sous un signe unaire ?
@@ -28,7 +28,8 @@ import { juxtaposedTerms } from '../parser/juxtaposed-quantities';
  * sans ambiguïté, et parenthéser alourdirait pour rien.
  */
 export function needsParenthesesUnderSign(node: MathNode): boolean {
-	return node.type === 'addition' || node.type === 'subtraction';
+	// Une durée composée signée aussi (`(-2[h] 30[min])*2`) : collée à `*`, la relecture la refuse
+	return node.type === 'addition' || node.type === 'subtraction' || isSignedCompoundDuration(node);
 }
 
 /**

@@ -28,6 +28,7 @@ import { stripUnnecessaryBrackets, removeNullTermsAST } from '../../transforms';
 import { transformAST } from '../../visitor';
 import { substitute } from '../../eval/substitute';
 import { isJuxtaposedSum } from '../../guards';
+import { multiply, opposite } from '../../factory';
 import type { MathNode } from '../../types';
 
 // =============================================================================
@@ -100,6 +101,8 @@ const CUSTOM_REFUSALS: readonly (readonly [string, JuxtapositionRefusal])[] = [
 
 /** Écriture LaTeX refusée → cause */
 const LATEX_REFUSALS: readonly (readonly [string, JuxtapositionRefusal])[] = [
+	// Une durée composée ne se compose pas (revue : Pratt et RD divergeaient)
+	['2\\unit{h}~30\\unit{min}\\circ f', 'operator'],
 	['2\\cdot 1~\\unit{h}~30~\\unit{min}', 'operator'],
 	['2\\times1\\unit{h}\\,30\\unit{min}', 'operator'],
 	['1~\\unit{h}~30~\\unit{min}\\times 2', 'operator'],
@@ -227,10 +230,42 @@ describe('rendu : une durée composée s’écrit sans + et se relit à l’iden
 		expect(parsePrattSafe(latex).ast).toEqual(ast);
 	});
 
-	it('rendu coloré (spans), maison et LaTeX', () => {
-		const ast = customAst('@red{2[h] 30[min]}');
-		expect(toCustom(ast, { renderMetadata: true })).not.toContain('+');
-		expect(toLatex(ast, { renderMetadata: true })).not.toContain('+');
+	// Revue : RD ne refermait pas la couleur ; le signe en tête perdait la sienne
+	it.each([
+		'@red{2[h] 30[min]}',
+		'2[h] @red{30[min]}',
+		'-@red{2[h] 30[min]}',
+		'@red{-2[h] 30[min]}'
+	])('rendu coloré (spans) de %s : sans +, relu par les quatre parseurs', (input) => {
+		const ast = customAst(input);
+		const custom = toCustom(ast, { renderMetadata: true });
+		const latex = toLatex(ast, { renderMetadata: true });
+		expect(custom).not.toContain('+');
+		expect(latex).not.toContain('+');
+		for (const [, parse] of CUSTOM_PARSERS) expect(parse(custom).ast).toEqual(ast);
+		for (const [, parse] of LATEX_PARSERS) {
+			expect(findNodes(parse(latex).ast!, isJuxtaposedSum)).toHaveLength(1);
+		}
+	});
+
+	it('le signe en tête garde sa couleur', () => {
+		const ast = customAst('@red{-2[h] 30[min]}');
+		expect(ast.type === 'opposite' && ast.metadata?.color).toBe('red');
+	});
+
+	// Revue : signée, en facteur, elle s'écrivait sans parenthèses, refusée à la relecture
+	it.each(['(-2[h] 30[min])*2', '(-2[h] 30[min]):2', '(-2[h] 30[min])x', '2*(-2[h] 30[min])'])(
+		'%s, parenthèses retirées puis remises par l’écriture : relu',
+		(input) => {
+			const ast = stripUnnecessaryBrackets(customAst(input));
+			expect(parseCustomPrattSafeRaw(toCustom(ast)).errors).toEqual([]);
+			expect(parsePrattSafe(toLatex(ast)).errors).toEqual([]);
+		}
+	);
+
+	it('un produit implicite de grandeurs signé s’écrit avec × (sinon relu en durée composée)', () => {
+		const product = multiply(opposite(customAst('2[h]')), customAst('30[min]'), 'implicit');
+		expect(toLatex(product)).toBe('-2~\\unit{h} \\times 30~\\unit{min}');
 	});
 
 	it('structure (survol) : un bloc, rendu comme toLatex', () => {

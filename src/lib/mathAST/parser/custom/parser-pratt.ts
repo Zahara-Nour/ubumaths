@@ -108,8 +108,8 @@ const enum BP {
 	LOGICAL_AND = 7, // && (logical AND)
 	RELATION = 10, // =, <, >, <=, >=, !=, <=>, =>
 	ADDITION = 20, // +, -
-	JUXTAPOSE = 22, // durée composée : `2[h] 30[min]`, un bloc face à + et -
 	COMPOSITION = 25, // @ (composition operator, between + and *)
+	JUXTAPOSE = 27, // durée composée : `2[h] 30[min]`, un bloc face à + et - (au-dessus de la composition)
 	MULTIPLY = 30, // *, :/, :, implicit multiplication
 	UNARY = 40, // prefix -, +, !
 	POWER = 50 // ^, _ (right-associative)
@@ -1486,8 +1486,19 @@ class CustomPrattParser {
 	 */
 	private parseComposition(left: MathNode): MathNode {
 		const operatorColor = this.colorStack.current();
+		this.refuseCompoundDurationOperand(left);
 		this.advance(); // consume @
+		const start = this.currentToken;
 		const right = this.parseExpression(BP.COMPOSITION);
+		// `f\circ 2~\unit{h}~30~\unit{min}` : une durée composée ne se compose pas
+		if (isCompoundDurationOperand(right)) {
+			this.error(
+				JUXTAPOSITION_MESSAGES.operator,
+				start.position,
+				start.length,
+				'JUXTAPOSED_QUANTITIES'
+			);
+		}
 
 		// Convert variables to functions if they are generic function names
 		const leftFunc = this.variableToFunctionIfGeneric(left);

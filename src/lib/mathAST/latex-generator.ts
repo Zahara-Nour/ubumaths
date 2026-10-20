@@ -1943,7 +1943,14 @@ export class LatexGenerator {
  */
 export function juxtaposesQuantities(node: MultiplicationNode): boolean {
 	let left: MathNode = node.left;
-	while (isMultiplication(left) && left.displayStyle === 'implicit') left = left.right;
+	// Au travers d'un signe aussi : `-2~\unit{h} 30~\unit{min}` se relirait −(2 h 30 min)
+	while (
+		(isMultiplication(left) && left.displayStyle === 'implicit') ||
+		left.type === 'opposite' ||
+		left.type === 'positive'
+	) {
+		left = left.type === 'multiplication' ? left.right : left.operand;
+	}
 	return isUnit(left) && isUnit(node.right);
 }
 

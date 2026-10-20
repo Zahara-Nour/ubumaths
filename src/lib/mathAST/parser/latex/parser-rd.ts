@@ -515,6 +515,12 @@ class RDParser {
 				);
 			}
 			left = this.juxtaposed(juxtaposed, number);
+			// Une couleur ouverte dans le terme se ferme ici, comme après un opérateur
+			while (this.check('RBRACE') && this.colorScopeStack.length > 0) {
+				this.advance(); // consume }
+				this.colorScopeStack.pop();
+				this.colorStack.pop();
+			}
 		}
 		return left;
 	}

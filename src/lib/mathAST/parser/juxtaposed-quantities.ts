@@ -23,9 +23,9 @@
  */
 
 import { isJuxtaposedSum } from '../guards';
-import { juxtaposedSum, opposite, positive } from '../factory';
+import { juxtaposedSum } from '../factory';
 import { exactConversion } from '../units/exact';
-import type { MathNode, UnitNode } from '../types';
+import type { MathNode, OppositeNode, PositiveNode, UnitNode } from '../types';
 
 // =============================================================================
 // Types
@@ -69,25 +69,26 @@ function isPlainDuration(node: MathNode): node is UnitNode {
 	return isPlainQuantity(node) && isDurationUnit(node);
 }
 
+/** Un signe unaire, avec sa couleur éventuelle (`@red{-2[h] 30[min]}`) */
+type SignNode = OppositeNode | PositiveNode;
+
 /** Le signe en tête d'un terme (`-2[h]`), séparé de sa grandeur */
-function splitSign(node: MathNode): { sign: 'opposite' | 'positive' | null; term: MathNode } {
+function splitSign(node: MathNode): { sign: SignNode | null; term: MathNode } {
 	if (node.type === 'opposite' || node.type === 'positive') {
-		return { sign: node.type, term: node.operand };
+		return { sign: node, term: node.operand };
 	}
 	if (node.type === 'unit') {
 		const value = node.expression;
 		if (value.type === 'opposite' || value.type === 'positive') {
-			return { sign: value.type, term: { ...node, expression: value.operand } };
+			return { sign: value, term: { ...node, expression: value.operand } };
 		}
 	}
 	return { sign: null, term: node };
 }
 
-/** Le signe remis devant le bloc : `-2[h] 30[min]` = −(2 h 30 min) */
-function withSign(sign: 'opposite' | 'positive' | null, node: MathNode): MathNode {
-	if (sign === 'opposite') return opposite(node);
-	if (sign === 'positive') return positive(node);
-	return node;
+/** Le signe remis devant le bloc, couleur comprise : `-2[h] 30[min]` = −(2 h 30 min) */
+function withSign(sign: SignNode | null, node: MathNode): MathNode {
+	return sign === null ? node : { ...sign, operand: node };
 }
 
 /** Le dernier facteur d'un terme, au travers des produits, quotients et signes */
@@ -139,7 +140,7 @@ function isProductTerm(node: MathNode): boolean {
 /** Les termes d'un bloc déjà lu, ou `null` si `node` n'est pas un bloc de durées */
 function blockOf(
 	node: MathNode
-): { sign: 'opposite' | 'positive' | null; block: MathNode } | 'operator' | 'notDuration' {
+): { sign: SignNode | null; block: MathNode } | 'operator' | 'notDuration' {
 	const { sign, term } = splitSign(node);
 	if (isJuxtaposedSum(term) || isPlainDuration(term)) return { sign, block: term };
 	if (isProductTerm(node) || isProductTerm(term)) return 'operator';
@@ -186,6 +187,17 @@ export function juxtaposeImplicit(
 	if (isJuxtaposedSum(splitSign(left).term)) return 'operator';
 	if (typeof leftBlock !== 'string' && isPlainDuration(firstFactor(right))) return 'operator';
 	return null;
+}
+
+/**
+ * Pour les générateurs : une durée composée écrite précédée d'un signe (`-2[h] 30[min]`).
+ * Facteur ou opérande de `:`, elle se parenthèse : `(-2[h] 30[min])*2` — sans parenthèses,
+ * la relecture la refuserait (bloc collé à `*`).
+ */
+export function isSignedCompoundDuration(node: MathNode): boolean {
+	return (
+		(node.type === 'opposite' || node.type === 'positive') && juxtaposedTerms(node.operand) !== null
+	);
 }
 
 /** Un opérande de `*`, `/` ou `:` : une durée composée y est refusée (`1[h] 30[min]*2`) */
