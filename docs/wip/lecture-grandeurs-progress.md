@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, 2e session (fin)._
+_Mis à jour le 2026-10-20, 3e session._
 
 - **État** : phase 0, rien de codé. Pages à cocher (font foi, le corpus .md garde la v1) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81 fiches : arbre lu / arbre proposé / refus du parseur / message de l'atelier / calcul mesuré / calcul attendu ; 16 répondues, B7 « je ne tranche pas » avec mon avis sur la fiche) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (v3, 31 fiches, 0 répondue). Base `reponses/<id>`.
-- **Décidé par David** : (1) unité × tout le terme de nombres, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue INTERNE au point (option a). (3) Il REFUSE la virgule décimale (`2,5[m]` refusé, A3 validée). (4) **Découpage des refus** : le parseur rend un code + un message ANGLAIS ; l'atelier traduit en français à l'affichage (`mathAST/cli/web/french-errors.ts`) — chantier de l'atelier.
-- **Prochaine action** : relire les nouvelles réponses de David ; question ouverte : des CODES d'erreur précis (nouveaux : `DECIMAL_COMMA`, `STACKED_EXPONENTS`, `SEMICOLON`…) au lieu de `UNEXPECTED_TOKEN` (30 des 36 refus mesurés).
+- **Décidé par David** : (1) unité × tout le terme de nombres, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue INTERNE au point (option a). (3) Il REFUSE la virgule décimale (`2,5[m]` refusé, A3 validée). (4) **Découpage des refus** : le parseur rend un code + un message ANGLAIS ; l'atelier traduit en français à l'affichage (`mathAST/cli/web/french-errors.ts`) — chantier de l'atelier. (5) **Codes d'erreur PRÉCIS** (nouveaux codes au lieu de `UNEXPECTED_TOKEN`), l'atelier traduit par code.
+- **Prochaine action** : faire valider par David le catalogue des codes proposé le 2026-10-20 (3e session, historique) ; aucune nouvelle réponse sur les pages depuis la 2e session.
 - **Ensuite** : PR « retrait de la virgule » (+ 7 formules `~…~` d'exercices en prod au point).
 - **Pièges** : distinguer LECTURE (arbre) / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; défauts : `{2[h]}{30[min]}` = produit, `π[m]` = π lettre, `pi[m]` = p × (i[m]), `x;y` et `f(x;y)` lus avec « ; » comme lettre, `[1,5]` lu `(1.5)`, `2^3^2` = (2^3)^2.
 - **Worktree / branche** : aucun. Sondes tsx : code dans `docs/wip/lecture-grandeurs-sondes.md` (arbre parenthésé, calcul, codes d'erreur).
@@ -109,3 +109,10 @@ Inventaire de qui écrit en syntaxe maison (prod lue en lecture seule, dépôt p
   (nouveaux) pour que l'atelier traduise par code, pas par le texte anglais.
 - Fiches de refus réécrites (lignes « Refus du parseur » / « Message de l'atelier (plus tard) ») ; page
   virgule passée en arbres. Découvert : `f(x;y)` et `max(x;y)` sont LUS, « ; » comme une lettre (P3).
+
+### 2026-10-20 — codes d'erreur précis
+
+- **David : « je veux des codes précis ».** Le parseur rend un code par cause de refus ; l'atelier traduit
+  par code, plus par le texte anglais.
+- Mesuré en plus : `2×3` est refusé (`UNEXPECTED_TOKEN`), le parseur maison ne connaît que `*` ; `(1+2` rend
+  `UNEXPECTED_TOKEN` alors que `MISSING_DELIMITER` existe. Catalogue proposé à David (en attente).
