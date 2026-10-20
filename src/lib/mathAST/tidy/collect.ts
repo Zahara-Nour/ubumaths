@@ -794,6 +794,10 @@ function divideParts(parts: readonly NumberPart[], divisor: bigint): void {
 	}
 }
 
+function countNegative(terms: readonly TidyTerm[]): number {
+	return terms.filter((term) => isNegativeRational(term.coefficient)).length;
+}
+
 function productOf(parts: readonly NumberPart[]): bigint {
 	return parts.reduce((product, part) => product * part.value, 1n);
 }
@@ -806,8 +810,11 @@ function productOf(parts: readonly NumberPart[]): bigint {
  *   unique : `(6x+3)/9` → `(2x+1)/3`, jamais `2x/3 + 1/3` ;
  * - les fractions numériques internes sont chassées : `(x/2+1)/3` → `(x+2)/6`,
  *   `1/(x/2+1)` → `2/(x+2)` ;
- * - le signe − passe dans l'unique numérateur de degré 1 : `(6x−3)/(−9)` →
- *   `(1−2x)/3` — sauf si ses termes y deviendraient tous négatifs ;
+ * - le signe − passe dans l'unique numérateur, quel que soit son degré, si le
+ *   nombre de signes − y diminue : `(6x−3)/(−9)` → `(1−2x)/3`,
+ *   `(−6x²+3)/(−9)` → `(2x²−1)/3` ; jamais à égalité ni devant un premier
+ *   terme négatif : `(3x²−6x+3)/(−9)` → `−(x²−2x+1)/3`, `(3x²−3)/(−6x)` →
+ *   `−(x²−1)/(2x)` ;
  * - seul le NOMBRE se simplifie : `(6x²−3x)/(3x)` → `(2x²−x)/x`. Si la
  *   réduction faisait apparaître une somme égale à un autre facteur
  *   (`(2x+2)/(4(x+1))`), les deux s'annuleraient — simplifier par `x+1` change
@@ -815,9 +822,10 @@ function productOf(parts: readonly NumberPart[]): bigint {
  *
  * Elle travaille sur le terme ACCUMULÉ, pas sur la fraction écrite : `−(6x+3)/9`
  * et `(x(6x+3))/(9x)` sont le même terme que `(6x+3)/9`, et `tidy` reste
- * idempotent. Un terme sans dénominateur n'est pas une fraction : `3(x/2+1)`,
- * `2(x+1)` ne bougent pas, ni rien quand la règle n'a rien à faire
- * (`(6x+3)/2`, `3(x+1)/4`).
+ * idempotent. Un terme sans dénominateur ne se réduit que si un nombre commun
+ * simplifie (`2(x/2+1/2)` → `x+1`, `4(x/2+1)` → `2(x+2)`) et n'y gagne jamais
+ * de dénominateur : `3(x/2+1)`, `6(x/4+1)`, `2(x+1)` ne bougent pas, ni rien
+ * quand la règle n'a rien à faire (`(6x+3)/2`, `3(x+1)/4`).
  */
 function reduceFractionOfSums(
 	term: TidyTerm,
@@ -827,7 +835,6 @@ function reduceFractionOfSums(
 	if (term.unit !== null || term.verbatim || dividesByZero(term)) return term;
 	const hasDenominator =
 		term.coefficient.d !== 1n || term.factors.some((factor) => factor.exponent.n < 0n);
-	if (!hasDenominator) return term;
 
 	const sums: SumContent[] = [];
 	term.factors.forEach((factor, index) => {
@@ -852,6 +859,8 @@ function reduceFractionOfSums(
 
 	const common = gcd(productOf(top), productOf(bottom));
 	const innerFraction = sums.some(({ content }) => content.d !== 1n);
+	// Sans dénominateur, seul un nombre commun justifie de toucher au terme
+	if (!hasDenominator && common === 1n) return term;
 	if (common === 1n && !innerFraction) return term;
 
 	divideParts(top, common);
@@ -872,13 +881,18 @@ function reduceFractionOfSums(
 		factors[index] = { base, exponent: factors[index].exponent, key: hashMathNode(base) };
 	}
 
+	if (!hasDenominator && coefficient.d !== 1n) return term;
+
 	const numerators = sums.filter(({ index }) => factors[index].exponent.n === 1n);
 	if (isNegativeRational(coefficient) && numerators.length === 1) {
 		const [{ index }] = numerators;
-		const negated = toSumTerms(factors[index].base, undefined, unitChoice).map(negateTerm);
-		const allNegative = negated.every((negatedTerm) => isNegativeRational(negatedTerm.coefficient));
-		if (isFirstDegreeSum(negated) && !allNegative) {
-			const base = buildSum(sortTerms(negated));
+		const terms = toSumTerms(factors[index].base, undefined, unitChoice);
+		const negated = sortTerms(terms.map(negateTerm));
+		// Le − devant compte pour un : `−(2x−1)` en a deux, `1−2x` un seul. À égalité,
+		// rien ne bouge (`−(x²−2x+1)`), ni si la somme commencerait par un − (`−(x²−1)`)
+		const fewerSigns = countNegative(negated) < 1 + countNegative(terms);
+		if (fewerSigns && !isNegativeRational(negated[0].coefficient)) {
+			const base = buildSum(negated);
 			factors[index] = { base, exponent: ONE, key: hashMathNode(base) };
 			coefficient = negRational(coefficient);
 		}

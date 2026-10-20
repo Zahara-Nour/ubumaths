@@ -107,6 +107,45 @@ describe('revue : un nombre venu de l’autre côté de la barre n’est pas dis
 	});
 });
 
+/**
+ * Décision de David (2026-10-20, 2e tour) : un produit sans dénominateur se
+ * réduit quand un nombre commun simplifie la fraction interne —
+ * `(x/2+1/2)/(1/2)` est le terme `2(x/2+1/2)`, il vaut `x+1`. Il ne gagne
+ * jamais de dénominateur : `3(x/2+1)` et `6(x/4+1)` restent tels quels.
+ */
+describe('produit sans dénominateur : réduit si un nombre commun se simplifie', () => {
+	it.each([
+		['(x/2+1/2)/(1/2)', 'x+1'],
+		['2(x/2+1/2)', 'x+1'],
+		['4(x/2+1)', '2(x+2)'],
+		['6(x/2+1/3)', '3x+2'],
+		['3(x/2+1)', '3(x/2+1)'],
+		['6(x/4+1)', '6(x/4+1)'],
+		['2(x/2+1)^2', '2(x/2+1)^2'],
+		['2(2x+2)', '2(2x+2)']
+	])('tidy(%s) = %s', (input, expected) => {
+		expect(t(input)).toBe(expected);
+	});
+});
+
+/**
+ * Décision de David (2026-10-20, 2e tour) : le signe passe dans le numérateur
+ * quel que soit son degré, si le nombre de signes − y diminue — à égalité, ou
+ * si la somme commencerait par un −, rien ne bouge. Comme au degré 1, il ne
+ * passe que si la fraction se réduit.
+ */
+describe('signe du dénominateur : au-delà du degré 1', () => {
+	it.each([
+		['(-6x^2+3)/(-9)', '{2x^2-1}/3'],
+		['(-6x^2-3)/(-9)', '{2x^2+1}/3'],
+		['(3x^2+3)/(-9)', '-{x^2+1}/3'],
+		['(3x^2-6x+3)/(-9)', '-{x^2-2x+1}/3'],
+		['(3x^2-3)/(-6x)', '-{x^2-1}/{2x}']
+	])('tidy(%s) = %s', (input, expected) => {
+		expect(t(input)).toBe(expected);
+	});
+});
+
 describe('revue : deux sommes égales du même côté se multiplient', () => {
 	it('tidy((6x+3)(4x+2)/12) = (2x+1)²/2', () => {
 		expect(t('((6x+3)(4x+2))/12')).toBe('{(2x+1)^2}/2');
@@ -138,7 +177,12 @@ describe('invariants', () => {
 		'((x+1)(2x+2))/(4(x+1))',
 		'((6x+3)/9)^2',
 		'(x+1)/(1/2)',
-		'(2x+1)/(x/2)'
+		'(2x+1)/(x/2)',
+		'(x/2+1/2)/(1/2)',
+		'4(x/2+1)',
+		'6(x/2+1/3)',
+		'(-6x^2+3)/(-9)',
+		'(3x^2-3)/(-6x)'
 	];
 
 	it.each(PANEL)('valeur conservée sur %s', (input) => {

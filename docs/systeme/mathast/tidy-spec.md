@@ -105,23 +105,27 @@ Quand le numérateur ou le dénominateur est une somme, la fraction est rendue
 reste unique** : `(2x+1)/3`, jamais `2x/3 + 1/3` (ce serait distribuer la
 division). Code : `reduceFractionOfSums` dans `collect.ts`.
 
-| entrée          | sortie      | pourquoi                                               |
-| --------------- | ----------- | ------------------------------------------------------ |
-| `(6x+3)/9`      | `(2x+1)/3`  | facteur commun 3                                       |
-| `(2x+4)/2`      | `x+2`       | le dénominateur tombe à 1                              |
-| `2x/(4x+6)`     | `x/(2x+3)`  |                                                        |
-| `6/(4x+6)`      | `3/(2x+3)`  |                                                        |
-| `(x/2+1)/3`     | `(x+2)/6`   | les fractions internes sont chassées                   |
-| `(x/2+1/3)/5`   | `(3x+2)/30` |                                                        |
-| `1/(x/2+1)`     | `2/(x+2)`   |                                                        |
-| `(0,5x+1)/3`    | `(x+2)/6`   |                                                        |
-| `(6x−3)/(−9)`   | `(1−2x)/3`  | le signe d'un dénominateur négatif passe au numérateur |
-| `(2x+1)/(−3)`   | `−(2x+1)/3` | puis la règle « somme toute négative dans un facteur » |
-| `(6x²−3x)/(3x)` | `(2x²−x)/x` | le 3 se simplifie, **pas le `x`** (domaine)            |
-| `(6x+3)/2`      | inchangé    | déjà irréductible : le 6 reste où il est écrit         |
-| `3(x+1)/4`      | inchangé    | idem, pas de développement                             |
-| `(x²−1)/(x+1)`  | inchangé    | ce serait factoriser et changer le domaine             |
-| `2x/3 + 1/3`    | inchangé    | `tidy` ne réunit pas deux fractions en une             |
+| entrée            | sortie      | pourquoi                                               |
+| ----------------- | ----------- | ------------------------------------------------------ |
+| `(6x+3)/9`        | `(2x+1)/3`  | facteur commun 3                                       |
+| `(2x+4)/2`        | `x+2`       | le dénominateur tombe à 1                              |
+| `2x/(4x+6)`       | `x/(2x+3)`  |                                                        |
+| `6/(4x+6)`        | `3/(2x+3)`  |                                                        |
+| `(x/2+1)/3`       | `(x+2)/6`   | les fractions internes sont chassées                   |
+| `(x/2+1/3)/5`     | `(3x+2)/30` |                                                        |
+| `1/(x/2+1)`       | `2/(x+2)`   |                                                        |
+| `(0,5x+1)/3`      | `(x+2)/6`   |                                                        |
+| `(6x−3)/(−9)`     | `(1−2x)/3`  | le signe d'un dénominateur négatif passe au numérateur |
+| `(2x+1)/(−3)`     | `−(2x+1)/3` | puis la règle « somme toute négative dans un facteur » |
+| `(−6x²+3)/(−9)`   | `(2x²−1)/3` | le signe passe aussi au-delà du degré 1                |
+| `(x/2+1/2)/(1/2)` | `x+1`       | produit `2(x/2+1/2)` : le 2 commun se simplifie        |
+| `4(x/2+1)`        | `2(x+2)`    |                                                        |
+| `6(x/2+1/3)`      | `3x+2`      |                                                        |
+| `(6x²−3x)/(3x)`   | `(2x²−x)/x` | le 3 se simplifie, **pas le `x`** (domaine)            |
+| `(6x+3)/2`        | inchangé    | déjà irréductible : le 6 reste où il est écrit         |
+| `3(x+1)/4`        | inchangé    | idem, pas de développement                             |
+| `(x²−1)/(x+1)`    | inchangé    | ce serait factoriser et changer le domaine             |
+| `2x/3 + 1/3`      | inchangé    | `tidy` ne réunit pas deux fractions en une             |
 
 La réduction travaille sur le **terme déjà accumulé** (coefficient × facteurs),
 pas sur la fraction telle qu'elle est écrite : `−(6x+3)/9`, `(x(6x+3))/(9x)`
@@ -134,11 +138,16 @@ garde-fous, issus de la revue de la PR :
   inchangé (et non `1/2`) ;
 - **pas de développement** : un nombre venu de l'autre côté de la barre reste
   en coefficient — `(x+1)/(1/2) → 2(x+1)`, `((x+1)/2)/(x+3) → (x+1)/(2(x+3))`.
-  Un produit sans dénominateur n'est pas une fraction : `3(x/2+1)` inchangé.
+  Un produit sans dénominateur ne se réduit que si un nombre commun se
+  simplifie, et n'y gagne jamais de dénominateur : `3(x/2+1)`, `6(x/4+1)`,
+  `2(x/2+1)²` inchangés.
 
-Le signe − ne passe dans le numérateur que si la réduction a lieu, et pour un
-numérateur de degré 1 dont les termes ne deviennent pas tous négatifs :
-`−(2x−1)/3` et `(3i−2)/(−1) → −(3i−2)` ne bougent pas (rien à réduire).
+Le signe − ne passe dans l'unique numérateur que si la réduction a lieu, quel
+que soit son degré (David, 2026-10-20), et seulement si le nombre de signes −
+y **diminue** (le − devant compte pour un) sans que la somme commence par un − :
+`(3x²−6x+3)/(−9) → −(x²−2x+1)/3` (égalité), `(3x²−3)/(−6x) → −(x²−1)/(2x)`
+(`−x²+1`). `−(2x−1)/3` et `(3i−2)/(−1) → −(3i−2)` ne bougent pas (rien à
+réduire).
 
 Hors périmètre : une somme dont un terme contient lui-même une somme
 (`(2(x+1)+4)/2`), une grandeur avec unité, un nœud opaque, une somme à
@@ -408,4 +417,4 @@ des termes notamment).
 - 2026-10-06 : ordre des sommes de degré 1, signe des sommes toutes négatives.
 - 2026-10-12 : rationnel en tête, forme a + ib (étape 8).
 - 2026-10-20 : fraction de sommes irréductible (§A.1) ; document réécrit
-  d'après le code.
+  d'après le code ; produit sans dénominateur réduit, signe au-delà du degré 1.
