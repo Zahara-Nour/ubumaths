@@ -405,7 +405,9 @@ describe('les termes simples avant ceux qui contiennent une somme', () => {
 		['-1+(2x+1)/3', '{2x+1}/3-1'],
 		['-3x+2(x+1)', '2(x+1)-3x'],
 		// degré ≥ 2, trois termes : un seul groupe, − en tête gardé
-		['x(x+1)-x^2+1', '-x^2+1+x(x+1)']
+		['x(x+1)-x^2+1', '-x^2+1+x(x+1)'],
+		// dans un facteur, le terme de gauche suit ce nouvel ordre : le − sort
+		['3(x(x+1)-x^2-1)', '-3(x^2+1-x(x+1))']
 	])('tidy(%s) = %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});

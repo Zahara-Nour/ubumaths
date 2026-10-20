@@ -1050,50 +1050,68 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
 			terms.push(...toSumTerms(inner, watch, unitChoice));
 			continue;
 		}
-		const signed = signIntoNumerator(
-			sign === '-' ? negateTerm(collected) : collected,
-			unitChoice,
-			watch
-		);
-		terms.push(withoutDoubleSign(signed, unitChoice));
+		terms.push(withoutDoubleSign(sign === '-' ? negateTerm(collected) : collected, unitChoice));
 	}
 
 	return terms;
 }
 
 /**
- * Un − devant une fraction dont l'unique numérateur est une somme de deux termes
- * de signes opposés y entre (David, 2026-10-20) : `(x² − 1)/(−3)` et
- * `−(x² − 1)/3` → `(1 − x²)/3`. Le terme est vu après son signe : le résultat ne
- * dépend pas de l'écriture. Il reste devant s'il ferait rencontrer un facteur de
- * l'autre côté de la barre : `−(2x − 1)/(3(1 − 2x))`.
+ * Le terme de signe opposé, son numérateur retourné, ou `null` : une fraction
+ * dont l'unique numérateur est une somme de deux termes de signes opposés
+ * (`(2x − 1)/3` ↔ `−(1 − 2x)/3`). `null` aussi si le numérateur retourné
+ * rencontrerait un facteur de l'autre côté de la barre : `(2x − 1)/(3(1 − 2x))`.
  */
-function signIntoNumerator(term: TidyTerm, unitChoice: UnitChoice, watch: FamilyWatch): TidyTerm {
-	if (term.verbatim || term.unit !== null || !isNegativeRational(term.coefficient)) return term;
+function flipNumerator(term: TidyTerm, unitChoice: UnitChoice): TidyTerm | null {
+	if (term.verbatim || term.unit !== null) return null;
 	const hasDenominator =
 		term.coefficient.d !== 1n || term.factors.some((factor) => factor.exponent.n < 0n);
-	if (!hasDenominator) return term;
+	if (!hasDenominator) return null;
 	const numerators = term.factors.filter(
 		(factor) => isSumNode(factor.base) && factor.exponent.n > 0n
 	);
 	const [numerator] = numerators;
 	if (numerators.length !== 1 || numerator.exponent.n !== 1n || numerator.exponent.d !== 1n) {
-		return term;
+		return null;
 	}
 
 	const terms = toSumTerms(numerator.base, undefined, unitChoice);
 	const negatives = terms.filter((inner) => isNegativeRational(inner.coefficient));
-	if (terms.length !== 2 || negatives.length !== 1 || !terms.every(isPlainTerm)) return term;
-	if (isAlgebraicComplex(terms)) return term;
+	if (terms.length !== 2 || negatives.length !== 1 || !terms.every(isPlainTerm)) return null;
+	if (isAlgebraicComplex(terms)) return null;
 
 	const base = buildSum(sortTerms(terms.map(negateTerm)));
 	const factors = term.factors.map((factor) =>
 		factor === numerator ? { base, exponent: ONE, key: hashMathNode(base) } : factor
 	);
 	const merged = mergeFactors(factors);
-	if (merged === null) return term;
-	watch?.add('other');
+	if (merged === null) return null;
 	return { ...term, coefficient: negRational(term.coefficient), factors: merged };
+}
+
+/** La clé des facteurs d'un terme, coefficient exclu. */
+function factorsKey(term: TidyTerm): string {
+	return term.factors.map((factor) => factor.key).join('|');
+}
+
+/**
+ * Les termes regroupés, le − de chaque fraction entré dans son numérateur
+ * (David, 2026-10-20) : `(x² − 1)/(−3)` et `−(x² − 1)/3` → `(1 − x²)/3`.
+ *
+ * Avant de regrouper, chaque numérateur retournable prend une orientation
+ * canonique (la plus petite clé) : `(x − 1)/3` et `−(1 − x)/3` deviennent
+ * semblables, `−(x − 1)/3 − (1 − x)/3` → `0` (revue de #1559). Après, un terme
+ * négatif retourne son numérateur, et le terme se lit après son signe : le
+ * résultat ne dépend pas de l'écriture.
+ */
+function collectWithSigns(terms: readonly TidyTerm[], unitChoice: UnitChoice): TidyTerm[] {
+	const canonical = terms.map((term) => {
+		const flipped = flipNumerator(term, unitChoice);
+		return flipped !== null && factorsKey(flipped) < factorsKey(term) ? flipped : term;
+	});
+	return collectLikeTerms(canonical).map((term) =>
+		isNegativeRational(term.coefficient) ? (flipNumerator(term, unitChoice) ?? term) : term
+	);
 }
 
 /**
@@ -1418,7 +1436,7 @@ export function tidyExpression(node: MathNode, options?: TidyOptions, source?: M
 
 	// Chemin muet : aucune expression intermédiaire n'est construite.
 	if (recorder === undefined || families === undefined) {
-		return buildSum(sortTerms(chooseUnits(collectLikeTerms(terms), unitChoice)));
+		return buildSum(sortTerms(chooseUnits(collectWithSigns(terms, unitChoice), unitChoice)));
 	}
 
 	return narrateSum(written, terms, families, recorder, unitChoice);
@@ -1556,7 +1574,8 @@ function narrateSum(
 
 	const united = chooseUnits(terms, unitChoice);
 	const collected = collectLikeTerms(terms);
-	const unitedCollected = chooseUnits(collected, unitChoice);
+	const signed = collectWithSigns(terms, unitChoice);
+	const unitedCollected = chooseUnits(signed, unitChoice);
 
 	// Le travail fait terme par terme pendant la décomposition. Une seule
 	// famille a bougé : elle porte son nom. Plusieurs : le filet `tidy-terms`.
@@ -1575,6 +1594,8 @@ function narrateSum(
 				? 'tidy-add-fractions'
 				: 'tidy-collect-like-terms';
 	step(grouping, materialise(collected, unitChoice));
+	// Le − d'une fraction entre dans son numérateur (`collectWithSigns`)
+	step('tidy-terms', materialise(signed, unitChoice));
 
 	// Somme sans variable, ou partie réelle d'un complexe (`3i − 2` → `−2 + 3i`) :
 	// le nombre passe d'abord en tête (sa propre phrase),
