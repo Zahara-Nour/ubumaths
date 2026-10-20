@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, 2e session (langue interne tranchée, pages mises à jour)._
+_Mis à jour le 2026-10-20, 2e session (fin)._
 
-- **État** : phase 0, rien de codé. Corpus `docs/wip/lecture-grandeurs-corpus.md` (familles A-K + N). Pages à cocher : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (80 fiches, 12 répondues : A1-A2, A4-A9, B1-B4 ; A3 remise à relire) ; espaces/virgule/`;` https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (version 2, 31 fiches, 0 répondue). Base `reponses/<id>` : relire avec `ArtifactData`.
-- **Décidé par David** : (1) unité × tout le terme de nombres, signe unaire compris ; `1/2[m]`, `2*3[m]`, `10^3[m]` = (…) m ; le parseur LIT, la forme est jugée par le validateur ; `12 500` = 12500 ; `x 2` et `.5[m]` refusés. (2) **Le parseur maison reste la langue INTERNE au point** (option a) : le français (virgule décimale, `;`) est traduit à l'entrée par l'atelier et la lecture LaTeX. (3) **Le parseur maison REFUSE la virgule décimale** (sous-chantier « retrait de la virgule », ci-dessous) ; `2,5[m]` refusé (A3 réécrite).
-- **Prochaine action** : attendre les réponses de David (A3 + suite de la page grandeurs ; page virgule v2), puis les relire et donner un avis sur ses « je ne tranche pas ».
-- **Ensuite** : sous-chantier « retrait de la virgule » (PR de code, phase 0 à écrire : que deviennent `(1,2)`, `[1,5]`, `3,14`) + réécriture au point des 7 formules `~…~` d'exercices en prod.
-- **Pièges** : parseur maison / parseur LaTeX / atelier ; défauts constatés : `{2[h]}{30[min]}` = 1 h², `pi` lu p×i, `x;y` lu x×«;»×y, `1/2[m]` = 0,5 m⁻¹, `[1,5]` lu `(1.5)` (crochet perdu), `f(1,5)` = f(1.5) mais `max(1,5)` = 2 arguments, messages d'erreur en anglais, atelier `12 500` → « écris le nombre devant ». `π[m]` : le caractère π est lu comme une VARIABLE, le calcul refuse (« Ces grandeurs ne se combinent pas. ») ; `\pi[m]` et `2\pi[m]` sont calculés (sonde du 2026-10-20).
-- **Worktree / branche** : aucun. Sonde tsx (hors dépôt) : `npx tsx --tsconfig tsconfig.json <scratchpad>/sonde.ts`, imports par chemins absolus.
+- **État** : phase 0, rien de codé. Pages à cocher (font foi, le corpus .md garde la v1) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81 fiches : arbre lu / arbre proposé / refus du parseur / message de l'atelier / calcul mesuré / calcul attendu ; 16 répondues, B7 « je ne tranche pas » avec mon avis sur la fiche) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (v3, 31 fiches, 0 répondue). Base `reponses/<id>`.
+- **Décidé par David** : (1) unité × tout le terme de nombres, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue INTERNE au point (option a). (3) Il REFUSE la virgule décimale (`2,5[m]` refusé, A3 validée). (4) **Découpage des refus** : le parseur rend un code + un message ANGLAIS ; l'atelier traduit en français à l'affichage (`mathAST/cli/web/french-errors.ts`) — chantier de l'atelier.
+- **Prochaine action** : relire les nouvelles réponses de David ; question ouverte : des CODES d'erreur précis (nouveaux : `DECIMAL_COMMA`, `STACKED_EXPONENTS`, `SEMICOLON`…) au lieu de `UNEXPECTED_TOKEN` (30 des 36 refus mesurés).
+- **Ensuite** : PR « retrait de la virgule » (+ 7 formules `~…~` d'exercices en prod au point).
+- **Pièges** : distinguer LECTURE (arbre) / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; défauts : `{2[h]}{30[min]}` = produit, `π[m]` = π lettre, `pi[m]` = p × (i[m]), `x;y` et `f(x;y)` lus avec « ; » comme lettre, `[1,5]` lu `(1.5)`, `2^3^2` = (2^3)^2.
+- **Worktree / branche** : aucun. Sondes tsx hors dépôt : `<scratchpad>/arbre.ts` (arbre parenthésé), `calcul.ts`, `codes.ts`.
 
 ## Historique
 
@@ -96,3 +96,16 @@ Inventaire de qui écrit en syntaxe maison (prod lue en lecture seule, dépôt p
   Reco : refus. Le corpus .md porte désormais un avertissement : la page à cocher fait foi.
 - `10^-3*4` aujourd'hui (parseur maison) : refus « Negative exponent requires braces » ; `10^{-3}*4` =
   (10^(−3)) × 4. Avec la reco B7 : (10^(−3)) × 4.
+
+### 2026-10-20 — refus : parseur ou atelier ?
+
+- Question de David : le message « Deux exposants à la suite… » est-il dans le parseur ou l'atelier ? Les
+  deux : le parseur décide du refus (code `ParseErrorCode` + message anglais), l'atelier traduit
+  (`french-errors.ts`, 2026-10-12, 54 traductions ; parmi les messages du corpus, seul « Invalid unit »
+  est traduit). **David garde ce découpage.**
+- Code d'erreur = un nom parmi 17 (`UNEXPECTED_TOKEN`, `INVALID_UNIT`, `INVALID_SUPERSCRIPT`…), plus le
+  message, la position et le contexte. Mesuré : 30 des 36 refus du corpus sont `UNEXPECTED_TOKEN`, et
+  `10[m]^3`, `kg/m.s`, `m s` sont classés `INVALID_UNIT`. Proposé sur les fiches : des codes précis
+  (nouveaux) pour que l'atelier traduise par code, pas par le texte anglais.
+- Fiches de refus réécrites (lignes « Refus du parseur » / « Message de l'atelier (plus tard) ») ; page
+  virgule passée en arbres. Découvert : `f(x;y)` et `max(x;y)` sont LUS, « ; » comme une lettre (P3).
