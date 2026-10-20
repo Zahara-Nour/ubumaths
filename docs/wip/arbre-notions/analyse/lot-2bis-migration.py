@@ -10,7 +10,7 @@ la clé anonyme ; modèles : `releves/templates.json`). Décisions du 2026-10-20
   * 4-073 rattaché au nœud du modèle qui le décrit (POINTS_RATTACHES) ;
   * niveau changé quand la colonne `grade` n'est pas dans les niveaux du modèle.
 
-    python3 docs/wip/arbre-notions/analyse/lot-2bis-migration.py <dossier de points.json et nodes.json>
+    python3 docs/wip/arbre-notions/analyse/lot-2bis-migration.py docs/wip/arbre-notions/analyse/etat-prod-2026-10-20
 """
 
 import csv
