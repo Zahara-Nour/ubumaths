@@ -1,7 +1,8 @@
 # Phase 0 — comportements attendus (lecture-grandeurs)
 
 _Rédigé le 2026-10-20 à partir des décisions de David (journal, page à cocher des grandeurs : 20 réponses
-sur 81 ; page virgule : 0 sur 31). Rien n'est codé. À valider avant la première PR._
+sur 81 ; page virgule : 0 sur 31). Rien n'est codé. **Validé par David le 2026-10-20 (5e session)** : questions
+ouvertes 1 à 5 et toutes les lignes 🟡, avec `)2` ajouté à `MISSING_OPERATOR`. Il ne reste que les ⏸._
 
 **Portée.** Parseur maison (`parser/custom/`, Pratt **et** RD) ; le parseur LaTeX seulement là où une
 décision le nomme (B9, Q9, codes des refus qu'il partage). LECTURE seulement : le calcul
@@ -31,14 +32,15 @@ Limite
 
 - `2.5` reste un décimal, `2·5` un produit : test qui pose les deux côte à côte ✅.
 - `2 × 3` avec espaces = `2*3`.
-- 🟡 `×` en tête (`×3`) ou en fin (`2×`) : même refus que `*3` / `2*` aujourd'hui, avec le même code.
+- ✅ `×` en tête (`×3`) ou en fin (`2×`) : même refus que `*3` / `2*` aujourd'hui, avec le même code.
+  Aujourd'hui `2×` est **accepté** et lu « 2 fois la lettre × » (mesuré) : bug corrigé par cette PR.
 
 Erreur
 
 - Aucun nouveau refus.
 
-⏸ **Parseur LaTeX** : il lit `\times`, `\cdot` et refuse `×`, `·` Unicode (« Nombre « 3 » écrit après un
-facteur »). La décision 7 vise-t-elle aussi le parseur LaTeX ? Sans réponse : LaTeX inchangé.
+✅ **Parseur LaTeX inchangé** : il lit `\times`, `\cdot` et continue de refuser `×`, `·`, `⋅` Unicode
+(« Nombre « 3 » écrit après un facteur… utilise \cdot »). MathLive n'écrit jamais l'Unicode (sonde clavier).
 
 ---
 
@@ -54,8 +56,10 @@ Nominal ✅
 Limite
 
 - `10^-2.5` : le nombre entier `2.5` est l'exposant ✅ (« UN nombre »).
-- 🟡 `10^+3` = `10^{+3}` : même règle que le `-` (la fiche dit « un signe »). Aujourd'hui ? (à mesurer).
-- 🟡 `2^-x y` : l'exposant est `-x` seul, puis `y` multiplie (`2^{-x}·y`), comme `2^x y` aujourd'hui.
+- ✅ `10^+3` = `10^{+3}` : même règle que le `-` (la fiche dit « un signe »). Aujourd'hui : refus
+  « Expected exponent » (mesuré).
+- ✅ `2^-x y` → **refus**, même message que `2^x y` aujourd'hui (« Multiple letters in exponent require
+  braces », mesuré : l'espace ne coupe pas l'exposant). Seul `2^-x*y` = `2^{-x}·y` est lu.
 
 Erreur ✅
 
@@ -78,20 +82,22 @@ change d'attendu, il ne disparaît pas).
 Lecture inchangée ; seul le code change (texte anglais identique quand il existe). Parseurs maison et
 LaTeX quand le refus existe dans les deux.
 
-| Écriture         | Aujourd'hui        | Code ✅                                                                                            |
-| ---------------- | ------------------ | -------------------------------------------------------------------------------------------------- |
-| `5[xyz]`, `5[M]` | `INVALID_UNIT`     | `UNKNOWN_UNIT`                                                                                     |
-| `5[]`            | `INVALID_UNIT` (?) | `EMPTY_UNIT`                                                                                       |
-| `10[m]^3`        | `INVALID_UNIT`     | `UNIT_EXPONENT_OUTSIDE`                                                                            |
-| `3[kg/m.s]`      | `INVALID_UNIT`     | `AMBIGUOUS_UNIT`                                                                                   |
-| `3[m s]`         | `INVALID_UNIT`     | `SPACE_IN_UNIT`                                                                                    |
-| `(1+2`, `[1,2`   | `UNEXPECTED_TOKEN` | `MISSING_DELIMITER`                                                                                |
-| `.5[m]`, `.5`    | `UNEXPECTED_TOKEN` | `LEADING_DECIMAL_POINT` ✅ (nouveau texte : « Missing zero before the decimal point (write 0.5) ») |
-| `x2`, `x 2`      | `UNEXPECTED_TOKEN` | `MISSING_OPERATOR` 🟡                                                                              |
+| Écriture                        | Aujourd'hui        | Code ✅                                                                                            |
+| ------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------- |
+| `5[xyz]`, `5[M]`                | `INVALID_UNIT`     | `UNKNOWN_UNIT`                                                                                     |
+| `5[]`                           | `INVALID_UNIT` (?) | `EMPTY_UNIT`                                                                                       |
+| `10[m]^3`                       | `INVALID_UNIT`     | `UNIT_EXPONENT_OUTSIDE`                                                                            |
+| `3[kg/m.s]`                     | `INVALID_UNIT`     | `AMBIGUOUS_UNIT`                                                                                   |
+| `3[m s]`                        | `INVALID_UNIT`     | `SPACE_IN_UNIT`                                                                                    |
+| `(1+2`, `[1,2`                  | `UNEXPECTED_TOKEN` | `MISSING_DELIMITER`                                                                                |
+| `.5[m]`, `.5`                   | `UNEXPECTED_TOKEN` | `LEADING_DECIMAL_POINT` ✅ (nouveau texte : « Missing zero before the decimal point (write 0.5) ») |
+| `x2`, `x 2`                     | `UNEXPECTED_TOKEN` | `MISSING_OPERATOR` ✅                                                                              |
+| `(1+x)2`, `(1+x) 2`, `sqrt(2)3` | `UNEXPECTED_TOKEN` | `MISSING_OPERATOR` ✅                                                                              |
 
 - `INVALID_UNIT` disparaît du type ; `UNEXPECTED_TOKEN` reste en dernier recours.
-- 🟡 **`MISSING_OPERATOR`** : le catalogue ne dit pas à quoi il sert. Ma lecture : un nombre après une lettre
-  (`x2`, `x 2`, refusés par N3). `2[m]3[m]` (E12) va à `JUXTAPOSED_QUANTITIES` (Q9, PR 5), pas ici. À confirmer.
+- ✅ **`MISSING_OPERATOR`** (David, 2026-10-20) : un nombre écrit juste après une lettre (`x2`, `x 2`) ou
+  après une parenthèse fermante (`)2`, espace ou non). `(2)(3)` reste un produit (mesuré). `2[m]3[m]` (E12) va
+  à `JUXTAPOSED_QUANTITIES` (Q9, PR 5), pas ici. Le reste garde `UNEXPECTED_TOKEN`.
 - Garde : un test énumère chaque écriture du tableau et vérifie le code dans les deux implémentations.
 - G10 `3[m s]` : la Q10 n'est pas tranchée, donc **le refus reste** (rien ne change, seul le code).
 
@@ -111,8 +117,8 @@ Nominal ✅
   (jamais `(-10)^3`) ; `-1/2[m]` = `(-(1/2))[m]`.
 - Espaces entre chiffres ignorés partout : `12 500` = 12500 ; `12 500[m]` = `12500[m]` ; `12 5[m]` = `125[m]` ;
   `0.000 01` = 0.00001. Le parseur n'émet aucun avis sur l'espacement.
-- 🟡 Le terme contient aussi `sqrt(…)` : `2sqrt(2)[m]` = `(2*sqrt(2))[m]` (règle écrite du corpus ; fiche H2
-  pas encore cochée).
+- ✅ Le terme contient aussi `sqrt(…)` : `2sqrt(2)[m]` = `(2*sqrt(2))[m]` (règle écrite du corpus).
+  Aujourd'hui `2*(sqrt(2)[m])` : même valeur, l'arbre change.
 
 Limite
 
@@ -120,8 +126,7 @@ Limite
   ensuite, inchangé).
 - Une grandeur déjà formée clôt le terme : `6[m]/2[s]` = `(6[m])/(2[s])` ; `a[m]*3[m]` inchangé.
 - Unité au dénominateur : seulement entre parenthèses, `1/(2[s])` inchangé.
-- 🟡 `1/2/3[m]` = `((1/2)/3)[m]`, sans refus (conséquence de la règle ; Q16 pas cochée — ne rien refuser
-  est le choix qui ne change rien).
+- ✅ `1/2/3[m]` = `((1/2)/3)[m]`, sans refus (conséquence de la règle). Aujourd'hui `(1/2)/(3[m])`, en m⁻¹.
 - `2*20[°C]` = `(2*20)[°C]` ; le calcul refuse toujours (« ne se multiplie pas »).
 - `x 2` reste refusé (`MISSING_OPERATOR`) : les espaces ne sont ignorés qu'**entre deux chiffres**.
 - Les valeurs des écritures déjà justes ne changent pas (`-5[m]` vaut −5 m avant et après) ; **le RENDU
@@ -178,9 +183,9 @@ Groupement ✅ (David, 2026-10-20, après la sonde clavier de l'atelier)
 Erreur ✅
 
 - `2[m] 30[cm]`, `2[m]3[m]` → `JUXTAPOSED_QUANTITIES`.
-- 🟡 `{2[m]}{3[m]}` : aujourd'hui produit (6 m²). Le refuser casserait un produit accepté ; je propose de
-  **garder le produit** pour les autres grandeurs entre accolades (seules durées et angles changent). À
-  confirmer, avec un grep des `}{` entre grandeurs dans les modèles.
+- ✅ `{2[m]}{3[m]}` : **reste un produit** (6 m²) pour les autres grandeurs entre accolades (seules durées et
+  angles changent). Grep des `}{` entre grandeurs dans les modèles au début de la PR, montré à David s'il
+  trouve quelque chose.
 
 ---
 
@@ -195,12 +200,12 @@ Tout le reste attend la page virgule (31 fiches, 0 réponse) : `f(1,5)` (deux ar
 
 ---
 
-## Questions ouvertes (à trancher ici ou sur la page)
+## Questions ouvertes — tranchées le 2026-10-20
 
-1. PR 1 : `×`/`·` Unicode lus aussi par le **parseur LaTeX** ?
-2. PR 3 : `MISSING_OPERATOR` = `x2` / `x 2` seulement ?
-3. PR 5 : `-2[h] 30[min]` = −(2 h 30 min) ? `30[min] 2[h]` lu ? `{2[m]}{3[m]}` reste un produit ?
-4. Toutes les lignes 🟡.
+1. PR 1 : parseur LaTeX **inchangé** (Unicode toujours refusé).
+2. PR 3 : `MISSING_OPERATOR` = `x2`, `x 2` **et `)2`**.
+3. PR 5 : `-2[h] 30[min]` = −(2 h 30 min) ; `30[min] 2[h]` lu ; `{2[m]}{3[m]}` reste un produit.
+4. Lignes 🟡 : toutes validées (passées en ✅ ; `2^-x y` refusé, prémisse corrigée après mesure).
 5. Ordre des PR : 1 → 2 → 3 → 4 → 5, puis 6 après la page virgule.
 
 > Écart relevé : la page à cocher des grandeurs porte encore des codes antérieurs au catalogue validé
