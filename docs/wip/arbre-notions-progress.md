@@ -5,18 +5,18 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, après les réponses appliquées, la division à trou du CM2 et la médiane (c4-3)._
+_Mis à jour le 2026-10-20, après la validation des niveaux et la liste des modifications du lot 2 bis._
 
-- **État** : C5 étape 2 bis. Questions des modèles toutes tranchées et appliquées aux CSV de `arbre-notions/analyse/`
-  (306 TAG, 66 MODIFIER, 201 HORS_PROGRAMME) ; page régénérée.
-- **Prochaine action** : attendre la relecture par David de la partie 2 (verdicts par niveau) de
-  https://claude.ai/artifact/F9FLrWzCSE72E7zeEyCyH5 ; lire `niveaux` et `modeles` (ArtifactData `list`), appliquer ;
-  puis lister les modifications de modèles (66 MODIFIER + 3 changements de niveau) et préparer la migration des tags
-  (lot 2 bis).
-- **En attente de David** : partie 2 de la page (verdicts par niveau).
-- **Pièges en cours** : contrôle visuel de c4-8 pas fait ; CSV cm/cycle2/sixieme en CRLF, cycle4 en LF (lire et écrire avec `newline=''`) ;
-  `docs/ref/programmes/Accompagnement/` hors git : pdftotext vers le scratchpad.
-- **Worktree / branche** : aucun, tout est en docs sur `main` (dépôt principal).
+- **État** : C5 étape 2 bis. Verdicts figés (306 TAG, 66 MODIFIER, 201 HORS_PROGRAMME), 9 niveaux validés par David.
+  Liste : `arbre-notions/analyse/lot-2bis-modifications.md` (générateur `lot-2bis-liste.py`).
+- **Trouvé** : 92 tags violeraient la garde du nœud (trigger `question_template_points_check_rules`) → 84
+  déplacements sans choix (R2), 8 sous-notions à choisir ; aucun tag en prod sur ces modèles.
+- **Prochaine action** : réponses de David (8 sous-notions, ordre de livraison, question d'accès), puis branche +
+  migration (déplacements, niveaux, tags des 306 TAG) ; les 66 MODIFIER ensuite, tag après modification.
+- **En attente de David** : les 3 questions ci-dessus.
+- **Pièges en cours** : contrôle visuel de c4-8 pas fait ; CSV cm/cycle2/sixieme en CRLF, cycle4 en LF (`newline=''`) ;
+  `docs/ref/programmes/Accompagnement/` hors git ; la clé anonyme ne lit pas `question_template_points` (MCP).
+- **Worktree / branche** : aucun pour l'instant (docs sur `main`) ; la migration se fera dans `ubumaths-wt-arbre-notions`.
 
 ## Tranché avec David (2026-10-06)
 
@@ -1113,3 +1113,11 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - **c4-3 tranché** : médiane d'effectif pair, bornes comprises (3, 7, 8, 12 : toute valeur de 7 à 8). Écrit dans
     `bornes/cycle4.{md,json}` (4-040) et `bornes/questions.json` (champ `precision`). Aucun modèle de médiane dans
     le lot : aucun verdict touché.
+- **2026-10-20 — Niveaux validés, liste des modifications du lot 2 bis.** Partie 2 de la page : les 9 niveaux « ok »,
+  sans note ; collection `modeles` vide (aucun verdict contesté). `analyse/lot-2bis-liste.py` croise les CSV avec la
+  prod (points et nœuds par l'API REST anonyme) → `analyse/lot-2bis-modifications.md`. 92 des 372 tags (TAG +
+  MODIFIER) ont leur point hors du nœud du modèle et de sa notion : le trigger les refuserait. Plusieurs justifications
+  disaient « déplacement inutile pour le tag » : c'est faux sous la règle (a) du 2026-10-09. 84 vont sans choix sur la
+  sous-notion du point (R2) ; 8 ont un point sur une notion à sous-notions (6-106 ×2, 6-149, 5-045 ×4, 4-073) → choix
+  à faire. 3 changements de niveau (5e → 4e). Les 66 MODIFIER : 39 nombres resserrés, 7 retraits de variations, 17
+  consignes ou affichages, 3 scissions (5-026 / 5-123). Aucun tag en prod sur les 573 modèles (vérifié par MCP).
