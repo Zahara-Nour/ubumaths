@@ -5,19 +5,21 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, lot B en PR (branche `feat/arbre-lot-2bis-variations`)._
+_Mis à jour le 2026-10-21, après #1566 (lot B mergé, migration PAS encore appliquée en prod)._
 
 - **État** : C5 étape 2 bis, MODIFIER. Lot A (39 modèles) en prod. Lot B « retirer des variations » (7 modèles)
-  généré et testé : `analyse/lot-2bis-variations.py` sur l'outillage commun `analyse/lot_2bis_outils.py` (le lot A
-  s'y régénère à l'identique) ; test `tests/helpers/database/lot-2bis-migration.ts` partagé par les lots.
-- **Prochaine action** : PR du lot B → revues → merge → `db:migrate` (question d'accès posée à David) ; puis C
-  (17 consignes, un exemple par forme montré à David d'abord), D (3 scissions, phase 0 à part).
+  mergé (#1566, revues sans bloquant) ; migration `20261021100000` en attente de `db:migrate`. Outillage commun :
+  `analyse/lot_2bis_outils.py` + `tests/helpers/database/lot-2bis-migration.ts` (un script et un test minces par lot).
+- **Prochaine action** : réponse de David à la question d'accès → `db:migrate` depuis main → vérifier en prod (7/7
+  contenus, 7/7 tags) ; puis C (17 consignes, un exemple par forme montré à David d'abord), D (3 scissions, phase 0).
 - **Décisions de David (2026-10-21)** : une migration par lot ; f1a392f5 garde 6 variations ; 82748db8 garde le
-  doublon dm² → m². Question d'accès à reposer à chaque lot.
-- **En attente de David** : question d'accès du lot B. Signalé : 11 modèles sans aucun corrigé.
+  doublon dm² → m². Question d'accès à reposer à chaque lot (AVANT de générer le SQL).
+- **En attente de David** : question d'accès du lot B ; sous-titre de 716d5c68 changé hors liste (« deux nombres
+  à 2 chiffres ») à confirmer. Signalé : 11 modèles sans aucun corrigé.
 - **Pièges en cours** : API REST plafonnée à 1000 lignes ; `question:specs --file` veut le format de l'app
-  (`toQuestionTemplate`) et `svelte-kit sync` dans un worktree neuf ; jsonb réordonne les clés.
-- **Worktree / branche** : `../ubumaths-wt-arbre-notions`, `feat/arbre-lot-2bis-variations`.
+  (`toQuestionTemplate`) et `svelte-kit sync` dans un worktree neuf ; jsonb réordonne les clés. Mineurs d'audit
+  laissés (gabarit du lot A en prod) : rollback à jouer dans UNE transaction, message du rollback ambigu.
+- **Worktree / branche** : aucun (worktree de #1566 supprimé).
 
 ## Tranché avec David (2026-10-06)
 
