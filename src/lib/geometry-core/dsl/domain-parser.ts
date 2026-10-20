@@ -21,6 +21,7 @@ import type { ScalarParam } from '../types/geo-value';
 import type { SymbolTable } from './symbol-table';
 import type { EndpointType } from '$lib/math/intervals/types';
 import { parseCustom, getVariables } from '$lib/mathAST';
+import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
 import { DslRuntimeError } from './errors';
 
 // =============================================================================
@@ -127,9 +128,11 @@ function parseIntervalSuffix(
 	}
 
 	const inner = trimmed.slice(1, -1);
-	// Prefer ';' if present (handles French decimal commas).
+	// Prefer ';' if present (handles French decimal commas: `]0,5 ; 1,5[`). Le
+	// parseur maison ne lit plus la virgule décimale (lecture-grandeurs, PR 6) :
+	// elle passe au point ici, selon la règle d'avant (`legacyDecimalCommas`)
 	const sep = inner.includes(';') ? ';' : ',';
-	const parts = inner.split(sep);
+	const parts = inner.split(sep).map((part) => (sep === ';' ? legacyDecimalCommas(part) : part));
 	if (parts.length !== 2) {
 		throw new DslRuntimeError(`Domaine non reconnu: "${suffix}"`, line);
 	}

@@ -181,15 +181,14 @@ describe('evaluateConditions', () => {
 			expect(evaluateConditions(['max(2,5)=5'], [])).toBe(true);
 		});
 
-		it('décimal à virgule HORS appel de fonction : sens inchangé (a>2,5)', () => {
-			expect(evaluateConditions(['a>2,5'], makeVars({ a: 3 }))).toBe(true);
-			expect(evaluateConditions(['a>2,5'], makeVars({ a: 2 }))).toBe(false);
-			expect(evaluateConditions(['abs(a)>2,5'], makeVars({ a: -3 }))).toBe(true);
-		});
-
-		it('décimal à virgule dans des parenthèses de groupement, même dans un appel', () => {
-			// mod((2,5)*4,3) = mod(10,3) = 1
-			expect(evaluateConditions(['mod((2,5)*4,3)=1'], [])).toBe(true);
+		// lecture-grandeurs, PR 6 : le parseur maison n'a que le point décimal
+		it('décimal à virgule refusé, avec l’écriture au point (a>2,5)', () => {
+			expect(() => evaluateConditions(['a>2,5'], makeVars({ a: 3 }))).toThrow(
+				"Decimal comma: the decimal separator is '.' (write 2.5)"
+			);
+			expect(() => evaluateConditions(['mod((2,5)*4,3)=1'], [])).toThrow(/Decimal comma/);
+			expect(evaluateConditions(['a>2.5'], makeVars({ a: 3 }))).toBe(true);
+			expect(evaluateConditions(['mod((2.5)*4,3)=1'], [])).toBe(true);
 		});
 	});
 

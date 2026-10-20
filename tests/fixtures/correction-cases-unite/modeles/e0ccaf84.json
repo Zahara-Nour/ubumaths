@@ -13,7 +13,7 @@
 		"variables": [
 			{
 				"name": "a",
-				"expression": "2,5|3,5"
+				"expression": "2.5|3.5"
 			},
 			{
 				"name": "b",
@@ -127,7 +127,7 @@
 				"status": "correct"
 			},
 			"variables": {
-				"a": "2,5",
+				"a": "2.5",
 				"b": "4",
 				"c": "3"
 			},
@@ -140,7 +140,7 @@
 				"status": "incorrect"
 			},
 			"variables": {
-				"a": "2,5",
+				"a": "2.5",
 				"b": "4",
 				"c": "3"
 			},
@@ -153,7 +153,7 @@
 				"status": "incorrect"
 			},
 			"variables": {
-				"a": "2,5",
+				"a": "2.5",
 				"b": "4",
 				"c": "3"
 			},
@@ -166,7 +166,7 @@
 				"status": "correct"
 			},
 			"variables": {
-				"a": "2,5",
+				"a": "2.5",
 				"b": "4",
 				"c": "3"
 			},
@@ -179,7 +179,7 @@
 				"status": "correct"
 			},
 			"variables": {
-				"a": "2,5",
+				"a": "2.5",
 				"b": "4",
 				"c": "3"
 			},
@@ -192,7 +192,7 @@
 				"status": "correct"
 			},
 			"variables": {
-				"a": "2,5",
+				"a": "2.5",
 				"b": "4",
 				"c": "3"
 			},
@@ -205,7 +205,7 @@
 				"status": "correct"
 			},
 			"variables": {
-				"a": "2,5",
+				"a": "2.5",
 				"b": "4",
 				"c": "3"
 			},
@@ -218,7 +218,7 @@
 				"status": "correct"
 			},
 			"variables": {
-				"a": "2,5",
+				"a": "2.5",
 				"b": "4",
 				"c": "3"
 			},
@@ -231,7 +231,7 @@
 				"status": "incorrect"
 			},
 			"variables": {
-				"a": "2,5",
+				"a": "2.5",
 				"b": "4",
 				"c": "3"
 			},

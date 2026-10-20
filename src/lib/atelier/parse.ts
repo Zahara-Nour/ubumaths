@@ -9,6 +9,7 @@
  */
 
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
+import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
 import { parseLatexSafe } from '$lib/mathAST/parser';
 import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/input-detector';
 import { toLatex } from '$lib/mathAST/latex-generator';
@@ -256,15 +257,19 @@ function readByProvenance(
 	}
 	// ⚠️ La saisie de l'élève seulement : `'url'` relit aussi le texte du moteur
 	// (`toCustom` écrit `max(2,3)`), dont la virgule n'est pas décimale (revue)
-	const definition = STUDENT_TYPED.has(provenance) ? decimalCommaInput(typed) : typed;
+	const studentTyped = STUDENT_TYPED.has(provenance);
+	const definition = studentTyped ? decimalCommaInput(typed) : typed;
 
 	const detected = detectInputFormat(definition);
 	if (detected.format === 'latex' && detected.confidence > 0.5) {
 		return parseLatexSafe(latexUnitsWithPi(definition), { genericFunctions });
 	}
 	// `x^-1`, `f(x)^-1`, `e^-x` : lus par le parseur maison depuis le 2026-10-20
-	// (lecture-grandeurs) ; l'atelier n'a plus à les réécrire `^(-1)`
-	return parseCustomSafe(definition, { genericFunctions });
+	// (lecture-grandeurs) ; l'atelier n'a plus à les réécrire `^(-1)`.
+	// Un texte rangé (`0,3` d'un curseur, sans provenance) : relu comme avant la PR 6
+	return parseCustomSafe(studentTyped ? definition : legacyDecimalCommas(definition), {
+		genericFunctions
+	});
 }
 
 /**
