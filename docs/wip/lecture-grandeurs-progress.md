@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, PR 6 en cours (branche `feat/lecture-grandeurs-virgule`)._
+_Mis à jour le 2026-10-21, après #1565._
 
-- **État** : PR 1-5 + `BARE_PI` mergées, pas en prod. PR 6 (virgule) = #1565 : revue Opus faite (DSL et traductions corrigées), suite complète verte (59 367) ; CI relancée après un rouge de `scripts/corrections` (réponse attendue `{{a}},{{c}}`). Pages à cocher : grandeurs (81/81), virgule (31/31).
+- **État** : chantier codé en entier — PR 1 (#1555), 2 (#1557), 3 (#1558), 4 (#1560), `BARE_PI` (#1561), 5 (#1562), 6 virgule (#1565) mergées, **pas en prod**. Pages à cocher closes : grandeurs (81/81), virgule (31/31).
 - **Décidé par David** : (1)-(17), détail dans l'historique ; (16) `2 m 30 cm` reste une somme dans l'atelier ; (17) pas de ′ ″.
-- **Prochaine action** : CI verte → merger #1565 → mettre à jour ce bloc.
-- **En attente de David** : ⚠️ AVANT le `deploy:prod` de la PR 6, lancer `scripts/reecrire-virgule-decimale-base.ts` (simulation puis `--ecrire`) : 8 modèles publiés + 7 formules d'exercices (`verifications-manuelles.md`). Moi : lecture de prod par script refusée, mesures faites par le MCP.
-- **Pièges** : l'inventaire du 2026-10-20 avait manqué `2,5|3,5`, `?*0,5`, `(-a,5)` (lettre avant la virgule) et l'atelier qui range `0,3` (curseur) relu sans provenance → `legacyDecimalCommas`. Chaque parseur = Pratt + RD ; RD maison sans fonctions génériques ni matrices.
-- **Worktree / branche** : `../ubumaths-wt-lecture-grandeurs` · `feat/lecture-grandeurs-virgule`. Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
+- **Prochaine action** : versement de fin de chantier (durable → `docs/systeme/`, journal archivé), quand David le dit.
+- **En attente de David** : ⚠️ AVANT le `deploy:prod` qui livre #1565 : `pnpm tsx scripts/reecrire-virgule-decimale-base.ts` (simulation : 22 remplacements, 12 lignes), puis `--ecrire` (8 modèles publiés + 7 formules d'exercices ; note dans `verifications-manuelles.md`). Les brouillons `pi` nus sont déjà réécrits.
+- **Pièges** : un inventaire par regex rate des formes (`(-a,5)`, `{{a}},{{c}}`) : mesurer par différentiel ancien/nouveau code ; textes rangés de l'atelier et chaînes du DSL relus par `legacyDecimalCommas` ; RD maison sans fonctions génériques ni matrices. Hors PR : `[[1;2]]` ne dit pas `SEMICOLON`.
+- **Worktree / branche** : aucun (#1565 mergée). Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
 

@@ -16,7 +16,7 @@
 > (`data/corrections/renvois-numerotation/`). Sans lui, ces renvois sont faux en prod dès le
 > déploiement.
 >
-> ⚠️ **Avant le `deploy:prod` qui livre la PR 6 de lecture-grandeurs (virgule décimale refusée
+> ⚠️ **Avant le `deploy:prod` qui livre #1565 (lecture-grandeurs PR 6, virgule décimale refusée
 > par le parseur maison)** : lancer `pnpm tsx scripts/reecrire-virgule-decimale-base.ts`
 > (simulation : 22 remplacements dans 12 lignes), puis `--ecrire`. Il réécrit au point 8 modèles
 > publiés (`e0ccaf84` ne se tire plus sans lui ; `5b53b1be` non plus ; 4 « multiplications à
