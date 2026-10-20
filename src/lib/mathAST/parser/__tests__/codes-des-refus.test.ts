@@ -74,7 +74,8 @@ const CUSTOM_REFUSALS: readonly (readonly [string, string, string])[] = [
 	['x_1 2', 'MISSING_OPERATOR', 'Unexpected token: 2'],
 	// `2 3` se lit 23 depuis la PR 4 (espaces entre chiffres ignorés : unite-terme.test.ts)
 	['{2}3', 'MISSING_OPERATOR', 'Unexpected token: 3'],
-	['2[m]3[m]', 'MISSING_OPERATOR', 'Unexpected token: 3']
+	// `2[m]3[m]` : JUXTAPOSED_QUANTITIES depuis la PR 5 (juxtaposed-quantities.test.ts)
+	['2[m] 3', 'MISSING_OPERATOR', 'Unexpected token: 3']
 ];
 
 /** Refus maison qui gardent `UNEXPECTED_TOKEN` */

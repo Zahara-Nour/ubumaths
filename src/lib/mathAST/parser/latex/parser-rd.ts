@@ -49,6 +49,14 @@ import {
 	factorialOf
 } from '../factorial-notation';
 import { numberAfterFactorMessage } from '../number-after-factor';
+import {
+	JUXTAPOSITION_MESSAGES,
+	endsWithQuantity,
+	isCompoundDurationOperand,
+	juxtaposeAfterNumber,
+	juxtaposeImplicit,
+	type JuxtapositionRefusal
+} from '../juxtaposed-quantities';
 import { expectCode, unitErrorCode } from '../refusal-codes';
 import { STACKED_EXPONENTS_MESSAGE } from '../exponent-rules';
 import {
@@ -453,7 +461,7 @@ class RDParser {
 	 * Addition and subtraction are left-associative
 	 */
 	private parseAdditive(): MathNode {
-		let left = this.parseMultiplicative();
+		let left = this.parseJuxtaposed();
 
 		while (this.check('PLUS') || this.check('MINUS')) {
 			// Argument de \lim : `\lim A + \lim B` = lim(A) + lim(B)
@@ -467,7 +475,7 @@ class RDParser {
 			// Check for consecutive signs: ++, +-, --, -+
 			this.checkConsecutiveSigns(opToken);
 
-			const right = this.parseMultiplicative();
+			const right = this.parseJuxtaposed();
 
 			if (isPlus) {
 				left = this.applyColorWithOperator(MathAST.add(left, right), operatorColor);
@@ -484,6 +492,55 @@ class RDParser {
 		}
 
 		return left;
+	}
+
+	/**
+	 * juxtaposed := multiplicative (NUMBER multiplicative)* — une durée composée
+	 * (`2~\unit{h}~30~\unit{min}`), un bloc face à `+` et `-`. Le terme qui suit est
+	 * lu avec ses opérateurs (`30\unit{min}\cdot 2`, refusé).
+	 */
+	private parseJuxtaposed(): MathNode {
+		let left = this.parseMultiplicative();
+		while (this.check('NUMBER') && endsWithQuantity(left)) {
+			const number = this.currentToken;
+			const right = this.parseMultiplicative();
+			const juxtaposed = juxtaposeAfterNumber(left, right);
+			if (juxtaposed === null) {
+				// `2\unit{m}~30` : le refus habituel d'un nombre après un facteur
+				this.error(
+					numberAfterFactorMessage(number.value),
+					number.position,
+					number.length,
+					'MISSING_OPERATOR'
+				);
+			}
+			left = this.juxtaposed(juxtaposed, number);
+			// Une couleur ouverte dans le terme se ferme ici, comme après un opérateur
+			while (this.check('RBRACE') && this.colorScopeStack.length > 0) {
+				this.advance(); // consume }
+				this.colorScopeStack.pop();
+				this.colorStack.pop();
+			}
+		}
+		return left;
+	}
+
+	/** La durée composée lue, ou son refus posé sur le jeton `at` */
+	private juxtaposed(result: MathNode | JuxtapositionRefusal, at: Token): MathNode {
+		if (typeof result !== 'string') return result;
+		this.error(JUXTAPOSITION_MESSAGES[result], at.position, at.length, 'JUXTAPOSED_QUANTITIES');
+	}
+
+	/** `{1\unit{h}}{30\unit{min}}\cdot 2` : une durée composée collée à un produit ou un quotient */
+	private refuseCompoundDurationOperand(left: MathNode): void {
+		if (!isCompoundDurationOperand(left)) return;
+		const token = this.currentToken;
+		this.error(
+			JUXTAPOSITION_MESSAGES.operator,
+			token.position,
+			token.length,
+			'JUXTAPOSED_QUANTITIES'
+		);
 	}
 
 	/**
@@ -514,36 +571,46 @@ class RDParser {
 
 			// Explicit multiplication operators
 			if (this.check('STAR')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'star'), operatorColor);
 			} else if (this.check('SLASH')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.applyColorWithOperator(MathAST.divide(left, right, 'inline'), operatorColor);
 			} else if (this.check('COLON')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.applyColorWithOperator(MathAST.divide(left, right, 'ratio'), operatorColor);
 			}
 			// \cdot and \times commands
 			else if (this.checkCommand('cdot')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'dot'), operatorColor);
 			} else if (this.checkCommand('times')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'cross'), operatorColor);
 			}
 			// Implicit multiplication
 			else if (this.shouldInsertImplicitMultiply()) {
+				const start = this.currentToken;
 				const right = this.parseUnary();
-				left = this.applyColorWithOperator(
-					MathAST.multiply(left, right, 'implicit'),
-					operatorColor
-				);
+				// `{2\unit{h}}{30\unit{min}}` : une durée composée, pas un produit
+				const juxtaposed = juxtaposeImplicit(left, right);
+				left =
+					juxtaposed === null
+						? this.applyColorWithOperator(MathAST.multiply(left, right, 'implicit'), operatorColor)
+						: this.juxtaposed(juxtaposed, start);
 			} else if (this.check('NUMBER')) {
+				// Un nombre après une grandeur : durée composée, lue par `parseJuxtaposed`
+				if (endsWithQuantity(left)) break;
 				// `x2`, `(a)2`, `\sqrt{2}3` : nombre après un facteur, refusé avec un message clair
 				const token = this.currentToken;
 				this.error(

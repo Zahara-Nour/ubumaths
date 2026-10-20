@@ -18,6 +18,7 @@
  */
 
 import type { MathNode } from '../types';
+import { isSignedCompoundDuration, juxtaposedTerms } from '../parser/juxtaposed-quantities';
 
 /**
  * Cette expression doit-elle être parenthésée sous un signe unaire ?
@@ -27,7 +28,8 @@ import type { MathNode } from '../types';
  * sans ambiguïté, et parenthéser alourdirait pour rien.
  */
 export function needsParenthesesUnderSign(node: MathNode): boolean {
-	return node.type === 'addition' || node.type === 'subtraction';
+	// Une durée composée signée aussi (`(-2[h] 30[min])*2`) : collée à `*`, la relecture la refuse
+	return node.type === 'addition' || node.type === 'subtraction' || isSignedCompoundDuration(node);
 }
 
 /**
@@ -161,7 +163,17 @@ export function needsParenthesesAsRightFactor(node: MathNode): boolean {
  * et tout ce dont l'écriture commence par un signe.
  */
 export function needsParenthesesUnderOpposite(node: MathNode): boolean {
+	if (isWrittenCompoundDuration(node)) return false;
 	return needsParenthesesUnderSign(node) || startsWithSign(node);
+}
+
+/**
+ * Une durée composée écrite sans `+` (`2[h] 30[min]`) : un bloc face à `+` et `−`,
+ * à la relecture comme à l'écrit — `-2[h] 30[min]` = −(2 h 30 min), `3[h]-1[h] 30[min]`
+ * = 3 h − (1 h 30 min) (lecture-grandeurs, PR 5). Sous `*`, `/` ou `^`, parenthésée.
+ */
+function isWrittenCompoundDuration(node: MathNode): boolean {
+	return juxtaposedTerms(node) !== null;
 }
 
 /**
@@ -180,5 +192,6 @@ export function needsParenthesesAsRightTerm(
 	node: MathNode,
 	operator: 'addition' | 'subtraction'
 ): boolean {
+	if (isWrittenCompoundDuration(node)) return false;
 	return operator === 'subtraction' ? needsParenthesesAsRightFactor(node) : startsWithSign(node);
 }

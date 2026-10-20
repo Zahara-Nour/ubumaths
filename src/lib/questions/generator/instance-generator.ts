@@ -502,7 +502,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				const rawExpected = resolveVariableConditionals(blank.expectedAnswer, resolvedVariables, {
 					strict: true
 				});
-				// `;hms` écrit une juxtaposition, lue comme un PRODUIT : jamais une réponse attendue
+				// `;hms` écrit une durée pour l'affichage (`{2[h]}{15[min]}`) : jamais une réponse attendue
 				if (/;[^{}]*\bhms\b/.test(rawExpected)) {
 					throw new Error(
 						`;hms sert à l'affichage d'une durée, pas à une réponse attendue : ${rawExpected} (écrire la durée dans une seule unité, ex. ;[min])`

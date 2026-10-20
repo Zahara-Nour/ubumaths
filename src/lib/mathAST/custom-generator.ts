@@ -63,6 +63,7 @@ import {
 } from './common/sign-parentheses';
 import { isGroupingBracketContent } from './parser/custom/unit-writing';
 import { needsClosedRightOperand } from './parser/custom/unit-term';
+import { juxtaposedTerms } from './parser/juxtaposed-quantities';
 import { isAffine } from './units/conversion';
 
 // =============================================================================
@@ -527,6 +528,15 @@ export class CustomGenerator {
 
 			case 'addition':
 			case 'subtraction': {
+				// Durée composée : `2[h] 30[min]`, sans `+`
+				const juxtaposed = node.type === 'addition' ? juxtaposedTerms(node) : null;
+				if (juxtaposed) {
+					juxtaposed.forEach((term, i) => {
+						if (i > 0) this.emit(' ', node.operatorMetadata ?? node.metadata);
+						this.visitWithSpans(term);
+					});
+					break;
+				}
 				// Mêmes parenthèses que generateAddition / generateSubtraction
 				const wrapRight = needsParenthesesAsRightTerm(node.right, node.type);
 				this.visitWithSpans(node.left);
@@ -1319,6 +1329,9 @@ export class CustomGenerator {
 	}
 
 	private generateAddition(node: AdditionNode): string {
+		// Durée composée : `2[h] 30[min]`, relue comme la même somme marquée
+		const juxtaposed = juxtaposedTerms(node);
+		if (juxtaposed) return juxtaposed.map((term) => this.generateNode(term)).join(' ');
 		const left = this.generateNode(node.left);
 		// `a+-b` : deux signes ne se suivent pas (voir needsParenthesesAsRightTerm).
 		const renderedRight = this.generateNode(node.right);

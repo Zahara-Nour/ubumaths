@@ -148,7 +148,7 @@ function readable(ast: MathNode): MathNode {
 	// `3-2x+x^2` (revue du lot B). Sa cible est π, √, e, ln — sans variable
 	if (getVariables(ast).size > 0) return ast;
 	// Une grandeur est déjà mise au propre par la console (`quantities.ts`) :
-	// `tidy` recalculerait l'écriture juxtaposée `2 h 30 min` en h² (lot C)
+	// `tidy` recalculerait l'écriture juxtaposée `2 h 30 min` en une seule unité (lot C)
 	if (findNodes(ast, isUnit).length > 0) return ast;
 	try {
 		return tidy(ast);

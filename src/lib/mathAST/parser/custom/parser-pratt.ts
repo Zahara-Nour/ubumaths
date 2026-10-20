@@ -50,6 +50,14 @@ import { DOUBLE_FACTORIAL_ERROR, factorialOf } from '../factorial-notation';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import { expectCode, preciseUnexpectedToken, unitErrorCode } from '../refusal-codes';
 import {
+	JUXTAPOSITION_MESSAGES,
+	endsWithQuantity,
+	isCompoundDurationOperand,
+	juxtaposeAfterNumber,
+	juxtaposeImplicit,
+	type JuxtapositionRefusal
+} from '../juxtaposed-quantities';
+import {
 	isGroupingBracket,
 	readUnitWriting,
 	unitWritingAhead,
@@ -101,6 +109,7 @@ const enum BP {
 	RELATION = 10, // =, <, >, <=, >=, !=, <=>, =>
 	ADDITION = 20, // +, -
 	COMPOSITION = 25, // @ (composition operator, between + and *)
+	JUXTAPOSE = 27, // durée composée : `2[h] 30[min]`, un bloc face à + et - (au-dessus de la composition)
 	MULTIPLY = 30, // *, :/, :, implicit multiplication
 	UNARY = 40, // prefix -, +, !
 	POWER = 50 // ^, _ (right-associative)
@@ -337,13 +346,16 @@ class CustomPrattParser {
 				continue;
 			}
 
-			const bp = this.getLeftBindingPower();
+			// Un nombre après une grandeur : durée composée (`2[h] 30[min]`)
+			const juxtaposes = this.check('NUMBER') && endsWithQuantity(left);
+			const bp = juxtaposes ? BP.JUXTAPOSE : this.getLeftBindingPower();
 			if (bp <= minBp) {
 				break;
 			}
 
-			// Check for implicit multiplication
-			if (this.shouldInsertImplicitMultiply()) {
+			if (juxtaposes) {
+				left = this.parseJuxtaposition(left);
+			} else if (this.shouldInsertImplicitMultiply()) {
 				left = this.parseImplicitMultiply(left);
 			} else {
 				left = this.led(left);
@@ -1399,6 +1411,7 @@ class CustomPrattParser {
 	 */
 	private parseMultiplication(left: MathNode, style: 'cross'): MathNode {
 		const operatorColor = this.colorStack.current();
+		this.refuseCompoundDurationOperand(left);
 		this.advance(); // consume operator
 		const right = this.parseExpression(BP.MULTIPLY);
 		return this.unitTerm.binary(left, right, (factor, value) =>
@@ -1412,6 +1425,7 @@ class CustomPrattParser {
 	 */
 	private parseDivision(left: MathNode, style: 'inline' | 'ratio'): MathNode {
 		const operatorColor = this.colorStack.current();
+		this.refuseCompoundDurationOperand(left);
 		this.advance(); // consume operator
 		const right = this.parseExpression(BP.MULTIPLY);
 		return this.unitTerm.binary(left, right, (numerator, denominator) =>
@@ -1472,8 +1486,19 @@ class CustomPrattParser {
 	 */
 	private parseComposition(left: MathNode): MathNode {
 		const operatorColor = this.colorStack.current();
+		this.refuseCompoundDurationOperand(left);
 		this.advance(); // consume @
+		const start = this.currentToken;
 		const right = this.parseExpression(BP.COMPOSITION);
+		// `f\circ 2~\unit{h}~30~\unit{min}` : une durée composée ne se compose pas
+		if (isCompoundDurationOperand(right)) {
+			this.error(
+				JUXTAPOSITION_MESSAGES.operator,
+				start.position,
+				start.length,
+				'JUXTAPOSED_QUANTITIES'
+			);
+		}
 
 		// Convert variables to functions if they are generic function names
 		const leftFunc = this.variableToFunctionIfGeneric(left);
@@ -1576,9 +1601,51 @@ class CustomPrattParser {
 	 */
 	private parseImplicitMultiply(left: MathNode): MathNode {
 		// Don't advance - nud will consume the next token
+		const start = this.currentToken;
 		const right = this.parseExpression(BP.MULTIPLY);
-		return this.unitTerm.binary(left, right, (factor, value) =>
-			this.applyColor(MathAST.multiply(factor, value, 'implicit'))
+		return this.unitTerm.binary(left, right, (factor, value) => {
+			// `{2[h]}{30[min]}` : une durée composée, pas un produit
+			const juxtaposed = juxtaposeImplicit(factor, value);
+			if (juxtaposed === null) return this.applyColor(MathAST.multiply(factor, value, 'implicit'));
+			return this.juxtaposed(juxtaposed, start);
+		});
+	}
+
+	/**
+	 * Un nombre après une grandeur : `2[h] 30[min]`. Le terme qui suit est lu
+	 * avec ses opérateurs (`30[min]*2`, refusé) ; le bloc s'arrête à `+` et `-`.
+	 */
+	private parseJuxtaposition(left: MathNode): MathNode {
+		const number = this.currentToken;
+		const right = this.parseExpression(BP.JUXTAPOSE);
+		const juxtaposed = juxtaposeAfterNumber(left, right);
+		if (juxtaposed === null) {
+			// `2[m] 30` : le refus habituel d'un nombre après un facteur
+			throw new ParseException(
+				`Unexpected token: ${number.value}`,
+				number.position,
+				number.length,
+				'MISSING_OPERATOR'
+			);
+		}
+		return this.juxtaposed(juxtaposed, number);
+	}
+
+	/** La durée composée lue, ou son refus posé sur le jeton `at` */
+	private juxtaposed(result: MathNode | JuxtapositionRefusal, at: CustomToken): MathNode {
+		if (typeof result !== 'string') return result;
+		this.error(JUXTAPOSITION_MESSAGES[result], at.position, at.length, 'JUXTAPOSED_QUANTITIES');
+	}
+
+	/** `1[h] 30[min]*2` : une durée composée collée à `*`, `:/` ou `:` est ambiguë */
+	private refuseCompoundDurationOperand(left: MathNode): void {
+		if (!isCompoundDurationOperand(left)) return;
+		const token = this.currentToken;
+		this.error(
+			JUXTAPOSITION_MESSAGES.operator,
+			token.position,
+			token.length,
+			'JUXTAPOSED_QUANTITIES'
 		);
 	}
 

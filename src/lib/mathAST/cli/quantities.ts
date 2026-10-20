@@ -26,6 +26,7 @@ import { toCustom } from '../custom-generator';
 import {
 	delimiter,
 	divide,
+	juxtaposedSum,
 	multiply,
 	number,
 	opposite,
@@ -522,8 +523,9 @@ const DURATION_PARTS: readonly (readonly [string, bigint])[] = [
  * Une durée écrite en h, min, s : `2 h 30 min` (décision de David, lot C des
  * grandeurs : « par défaut on garde l'unité écrite »). Seulement si l'élève a
  * écrit au moins deux de ces unités, et que la durée tombe juste en secondes.
- * L'arbre JUXTAPOSE les grandeurs : il sert à l'affichage — `.convert` et
- * « Garder » reprennent la grandeur exacte.
+ * L'arbre est la somme JUXTAPOSÉE des parties (lecture-grandeurs, PR 5) : il
+ * s'écrit `2[h] 30[min]` et se relit à l'identique ; `.convert` et « Garder »
+ * reprennent la grandeur exacte.
  */
 function compositeDuration(ast: MathNode, quantity: MathNode): Shown | null {
 	const written = writtenUnits(ast);
@@ -546,8 +548,8 @@ function compositeDuration(ast: MathNode, quantity: MathNode): Shown | null {
 	}
 	// `1 h 30 min / 2` → 45 min : une seule partie suffit, l'élève a écrit h et min
 	if (parts.length === 0) return null;
-	const product = parts.reduce((left, right) => multiply(left, right, 'implicit'));
-	const node = negative ? opposite(delimiter('parentheses', product)) : product;
+	const sum = parts.reduce((left, right) => juxtaposedSum(left, right));
+	const node = negative ? opposite(sum) : sum;
 	const text = `${negative ? '-' : ''}${words.join(' ')}`;
 	const shown = { node, text };
 	return { exact: shown, decimal: shown, approximate: null };

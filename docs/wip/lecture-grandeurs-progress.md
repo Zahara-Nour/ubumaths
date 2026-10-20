@@ -2,16 +2,49 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, après #1561._
+_Mis à jour le 2026-10-20, PR 5 en cours._
 
 - **État** : phase 0 **validée** (`docs/wip/lecture-grandeurs-phase0.md`) ; PR 1 (#1555), PR 2 (#1557), PR 3 (codes précis des refus, #1558) PR 4 (unité × tout le terme, #1560) et retrait de `BARE_PI` (`pi` nu refusé dans les calculs des modèles, #1561) mergées, pas en prod. Les 18 brouillons de prod à `pi` nu (199) sont réécrits `\pi` (2026-10-20, sauvegarde `data/migration-output/backups/pi-nu-2026-10-20T20-27-03-683Z.json`, 18/18 générés) : le `deploy:prod` peut livrer le refus. Pages à cocher (font foi) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81/81) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (31/31, close). Base `reponses/<id>`.
 - **Décidé par David** (détail : historique) : (1) unité × tout le terme, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs (A9) ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue interne au point. (3) Il refuse la virgule décimale. (4) Refus = code + message anglais, l'atelier traduit (`mathAST/cli/web/french-errors.ts`). (5) **Catalogue de 14 codes validé** (historique, 3e session). (6) **Q9 (a)** : durées et angles juxtaposés LUS comme une somme marquée « juxtaposée » (4 implémentations, fonction partagée ; `;hms`, `compositeDuration`) ; autres grandeurs refusées `JUXTAPOSED_QUANTITIES` ; risque de perte de la marque géré : chemins réels mesurés → test de RENDU par chemin → garde. (7) `×`, `·`, `⋅` lus `*` (aussi `·`/`⋅` entre crochets) ; ⚠️ `2.5` ≠ `2·5`. (8) B7 : `^` + signe + UN nombre/lettre ; `10^-3+4` = `10^{-3}+4` ; refus `e^-x^2` (`STACKED_EXPONENTS`), `2^-sin(x)`, `2^-(x+1)` (`NEGATIVE_EXPONENT_BEFORE_GROUP`). (9) B9 : empilé = 2^(3^2) ; REFUS dans les deux parseurs (`STACKED_EXPONENTS`). (10) Durée composée = un bloc avec `+`/`−` ; collée à `*` ou `/` (des deux côtés, espaces ou non) → refus, atelier compris. (11) Phase 0 validée : LaTeX ne lit pas `×`/`·` Unicode ; `MISSING_OPERATOR` = `x2`, `x 2`, `)2` ; `10^+3` lu, `2^-x y` refusé ; `{2[m]}{3[m]}` reste un produit. (12) Fin de la page grandeurs : `3x[m]` = (3x)[m] ; `π[m]` = constante π (Q11 révisée : `π` = constante partout, `pi` reste p × i) ; `[m]` refusé (`MISSING_NUMBER_BEFORE_UNIT`) ; après `grandeur *` ou `/`, un terme de plusieurs nombres devant une unité est refusé (`AMBIGUOUS_TERM`) ; catalogue = 16 codes. (14) `MISSING_OPERATOR` = tout nombre après un facteur, maison comme LaTeX (« suis LaTeX », `x^2 3`, `|x|2`, `2[m]3[m]` compris).
 - **En attente de David** : rien. (13) Page virgule close 31/31 le 2026-10-20 : S11 `x2` → `MISSING_OPERATOR` ; V1 `1,2` et V4 `[1,2]` → `DECIMAL_COMMA` (atelier : « Le séparateur décimal est le point : écris 1.2 ») ; V7 `f(1,5)` = deux arguments ; `UNEXPECTED_COMMA` (V3, V5, V6) ; `SEMICOLON` (P1-P4) ; `max((2,5),3)` refusé.
-- **Prochaine action** : nouveau worktree depuis `origin/main` pour la PR 5 (`2[m]3[m]` → `JUXTAPOSED_QUANTITIES`), puis PR 6 (virgule).
-- **Pièges** : distinguer LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt (défaut) + RD ; `{2[h]}{30[min]}` = 1 h² aujourd'hui ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
-- **Worktree / branche** : aucun (#1561 mergée, worktree supprimé) ; le prochain : `../ubumaths-wt-lecture-grandeurs` sur une nouvelle branche. Sondes : `docs/wip/lecture-grandeurs-sondes.md`. Hors chantier, relevé : `question:specs --template` signale « Unrecognized keys created_at… » sur tout modèle lu en base (artefact du mode, pas des modèles).
+- **Prochaine action** : PR 5 (durées juxtaposées) en revue / PR, puis PR 6 (virgule). Angles juxtaposés : plus tard, avec les unités ′ et ″ (décision de David, 2026-10-20).
+- **Pièges** : distinguer LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt (défaut) + RD ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
+- **Worktree / branche** : `../ubumaths-wt-lecture-grandeurs`, `fix/juxtaposition-grandeurs`. Sondes : `docs/wip/lecture-grandeurs-sondes.md`. Hors chantier, relevé : `question:specs --template` signale « Unrecognized keys created_at… » sur tout modèle lu en base (artefact du mode, pas des modèles).
 
 ## Historique
+
+### 2026-10-20 — PR 5 codée : durées juxtaposées
+
+- Inventaire : `}{` entre grandeurs, 0 en prod (modèles + exercices) et 0 dans le dépôt ; aucune durée
+  ou angle juxtaposé écrit à la main. `;hms` : 4 modèles en prod.
+- **David** : angles hors PR (les unités ′ et ″ n'existent pas dans mathAST : `15[′]` refusé par le
+  tokenizer, `15[arcmin]` inconnue) ; PR 5 = durées seules, angles juxtaposés refusés.
+- Marque : `AdditionNode.displayStyle?: 'juxtaposed'` (`juxtaposedSum`, `isJuxtaposedSum`). Module
+  partagé `parser/juxtaposed-quantities.ts` ; Pratt : niveau `JUXTAPOSE = 22` (entre `+` et `*`) ; RD :
+  niveau `parseJuxtaposed` entre additif et multiplicatif. Les 4 parseurs donnent les mêmes arbres.
+- Refus `JUXTAPOSED_QUANTITIES`, trois textes (`operator`, `notDuration`, `missingUnit`), traduits par
+  l'atelier. `2[m] 30` garde `MISSING_OPERATOR`. `{2[m]}{3[m]}` reste un produit, écrit avec `\times`.
+- Écriture : `2[h] 30[min]` / `2~\unit{h}~30~\unit{min}`, sans parenthèses sous un signe ou après
+  `−` (`-2[h] 30[min]`, `3[h]-1[h] 30[min]`, aller-retour exact).
+- **Chemins mesurés** : les recopies génériques (`mapNode`, `mapNodeTopDown`, `cloneNode`,
+  `replaceNode`, `stripUnnecessaryBrackets`, `removeNullTermsAST`, `substitute`) PERDAIENT la marque
+  (`add(…)` sans style) ; corrigées (option `displayStyle` de `add`). Rendu testé par chemin : maison,
+  LaTeX, spans colorés, structure, `computeQuantity`/`compositeDuration` (désormais somme juxtaposée),
+  `;hms` (écrit toujours `{2[h]}{15[min]}`, lu en somme : `;[min]` → 135 min, plus 1 h²), carte de
+  l'atelier. Garde : toute recopie `case 'addition' → add(…)` de `src/lib` passe `displayStyle`
+  (rouge sans le correctif, vérifié).
+- Atelier : `natural-quantities` laisse les durées juxtaposées au parseur (`2*1 h 30 min` aussi, par
+  `DURATION_RUN`) ; `2 m 30 cm` reste `(2[m]+30[cm])` = 2,3 m (rien décidé d'autre). Tests changés :
+  `1 h 30 min * 2`, `2 * 1 h 30 min`, **`1 h 30 min / 2`** (la phase 0 n'en nommait que deux ; même
+  règle) → refus ; `2 h 30 en min` → « Chaque partie d'une durée composée a besoin de son unité ».
+- Empreinte du corpus maison : 1 saisie sur 1 299 bouge (`{2[h]}{15[min]}`), régénérée.
+- Suite serveur `src/lib` : 56 774 verts ; `check:incremental` 0 ; cliquet tenu ; lint rapide propre.
+- Revue Opus (7 findings, tous corrigés, tests rouges sans les correctifs vérifiés) : durée composée
+  signée en facteur écrite sans parenthèses (`(-2[h] 30[min])*2` relu refusé) → `needsParenthesesUnderSign` ;
+  RD LaTeX ne refermait pas une couleur après une juxtaposition ; produit implicite signé de grandeurs
+  écrit `-2 h 30 min` (relu somme) → `\times` ; aides de l'atelier perdues sur une durée (`h` du panneau) ;
+  `DURATION_RUN` après `/` ou `^-` ; `\circ` avec une durée (Pratt/RD divergeaient → refus) ; couleur du
+  signe en tête perdue. Suite : 56 786 verts.
 
 ### 2026-10-20 — PR « retrait de `BARE_PI` » codée
 

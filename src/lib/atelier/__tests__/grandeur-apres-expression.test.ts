@@ -78,7 +78,7 @@ describe('ce qui ne change pas', () => {
 
 	it.each([
 		['12 km + 300 m', '12[km] + 300[m]'],
-		['2 h 30 min', '(2[h]+30[min])'],
+		['2 h 30 min', '2[h] 30[min]'],
 		['3 * 2 m', '3 * 2[m]'],
 		['1/2 m', '(1/2)[m]']
 	])('le lot C : %s → %s', (input, expected) => {

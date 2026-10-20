@@ -43,6 +43,14 @@ import {
 	factorialOf
 } from '../factorial-notation';
 import { numberAfterFactorMessage } from '../number-after-factor';
+import {
+	JUXTAPOSITION_MESSAGES,
+	endsWithQuantity,
+	isCompoundDurationOperand,
+	juxtaposeAfterNumber,
+	juxtaposeImplicit,
+	type JuxtapositionRefusal
+} from '../juxtaposed-quantities';
 import { expectCode, unitErrorCode } from '../refusal-codes';
 import { STACKED_EXPONENTS_MESSAGE } from '../exponent-rules';
 import {
@@ -100,6 +108,7 @@ const enum BP {
 	RELATION = 10, // =, <, >, <=, >=, !=, etc.
 	ADDITION = 20, // +, -
 	COMPOSITION = 25, // \circ (composition operator, between + and *)
+	JUXTAPOSE = 27, // durée composée : `2~\unit{h}~30~\unit{min}`, un bloc face à + et - (au-dessus de la composition)
 	MULTIPLY = 30, // *, implicit, \cdot, \times
 	UNARY = 40, // prefix -, +
 	POWER = 50, // ^ (right-associative)
@@ -453,9 +462,15 @@ class PrattParser {
 				continue;
 			}
 
-			const bp = this.getLeftBindingPower();
+			// Un nombre après une grandeur : durée composée (`2~\unit{h}~30~\unit{min}`)
+			const juxtaposes = this.check('NUMBER') && endsWithQuantity(left);
+			const bp = juxtaposes ? BP.JUXTAPOSE : this.getLeftBindingPower();
 			if (bp <= minBp) {
 				break;
+			}
+			if (juxtaposes) {
+				left = this.parseJuxtaposition(left);
+				continue;
 			}
 			// Une relation sépare deux membres : `|x|y=2|x|` n'est pas ambigu
 			if (bp === BP.RELATION && !this.inBareAbs) {
@@ -1497,6 +1512,7 @@ class PrattParser {
 	private parseMultiplication(left: MathNode, style: 'star' | 'dot' | 'cross'): MathNode {
 		// Capture color before parsing right side (which may close color scope)
 		const operatorColor = this.colorStack.current();
+		this.refuseCompoundDurationOperand(left);
 		this.advance(); // consume operator
 		const right = this.parseExpression(BP.MULTIPLY);
 		return this.applyColorWithOperator(MathAST.multiply(left, right, style), operatorColor);
@@ -1508,6 +1524,7 @@ class PrattParser {
 	private parseMultiplicationCommand(left: MathNode, style: 'dot' | 'cross'): MathNode {
 		// Capture color before parsing right side (which may close color scope)
 		const operatorColor = this.colorStack.current();
+		this.refuseCompoundDurationOperand(left);
 		this.advance(); // consume command
 		const right = this.parseExpression(BP.MULTIPLY);
 		return this.applyColorWithOperator(MathAST.multiply(left, right, style), operatorColor);
@@ -1522,8 +1539,19 @@ class PrattParser {
 	 */
 	private parseComposition(left: MathNode): MathNode {
 		const operatorColor = this.colorStack.current();
+		this.refuseCompoundDurationOperand(left);
 		this.advance(); // consume \circ
+		const start = this.currentToken;
 		const right = this.parseExpression(BP.COMPOSITION);
+		// `f\circ 2~\unit{h}~30~\unit{min}` : une durée composée ne se compose pas
+		if (isCompoundDurationOperand(right)) {
+			this.error(
+				JUXTAPOSITION_MESSAGES.operator,
+				start.position,
+				start.length,
+				'JUXTAPOSED_QUANTITIES'
+			);
+		}
 
 		// Convert variables to functions if they are generic function names
 		const leftFunc = this.variableToFunctionIfGeneric(left);
@@ -1553,6 +1581,7 @@ class PrattParser {
 	private parseDivision(left: MathNode, style: 'inline' | 'ratio'): MathNode {
 		// Capture color before parsing right side (which may close color scope)
 		const operatorColor = this.colorStack.current();
+		this.refuseCompoundDurationOperand(left);
 		this.advance(); // consume operator
 		const right = this.parseExpression(BP.MULTIPLY);
 		return this.applyColorWithOperator(MathAST.divide(left, right, style), operatorColor);
@@ -1681,8 +1710,51 @@ class PrattParser {
 	 */
 	private parseImplicitMultiply(left: MathNode): MathNode {
 		// Don't advance - nud will consume the next token
+		const start = this.currentToken;
 		const right = this.parseExpression(BP.MULTIPLY);
-		return this.applyColor(MathAST.multiply(left, right, 'implicit'));
+		// `{2\unit{h}}{30\unit{min}}` : une durée composée, pas un produit
+		const juxtaposed = juxtaposeImplicit(left, right);
+		if (juxtaposed === null) return this.applyColor(MathAST.multiply(left, right, 'implicit'));
+		return this.juxtaposed(juxtaposed, start);
+	}
+
+	/**
+	 * Un nombre après une grandeur : `2~\unit{h}~30~\unit{min}`. Le terme qui suit
+	 * est lu avec ses opérateurs (`30\unit{min}\cdot 2`, refusé) ; le bloc
+	 * s'arrête à `+` et `-`.
+	 */
+	private parseJuxtaposition(left: MathNode): MathNode {
+		const number = this.currentToken;
+		const right = this.parseExpression(BP.JUXTAPOSE);
+		const juxtaposed = juxtaposeAfterNumber(left, right);
+		if (juxtaposed === null) {
+			// `2\unit{m}~30` : le refus habituel d'un nombre après un facteur
+			this.error(
+				numberAfterFactorMessage(number.value),
+				number.position,
+				number.length,
+				'MISSING_OPERATOR'
+			);
+		}
+		return this.juxtaposed(juxtaposed, number);
+	}
+
+	/** La durée composée lue, ou son refus posé sur le jeton `at` */
+	private juxtaposed(result: MathNode | JuxtapositionRefusal, at: Token): MathNode {
+		if (typeof result !== 'string') return result;
+		this.error(JUXTAPOSITION_MESSAGES[result], at.position, at.length, 'JUXTAPOSED_QUANTITIES');
+	}
+
+	/** `1~\unit{h}~30~\unit{min}\cdot 2` : une durée composée collée à un produit ou un quotient */
+	private refuseCompoundDurationOperand(left: MathNode): void {
+		if (!isCompoundDurationOperand(left)) return;
+		const token = this.currentToken;
+		this.error(
+			JUXTAPOSITION_MESSAGES.operator,
+			token.position,
+			token.length,
+			'JUXTAPOSED_QUANTITIES'
+		);
 	}
 
 	// =========================================================================

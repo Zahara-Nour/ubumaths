@@ -70,6 +70,18 @@ const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
 		/Ambiguous term before a unit after a quantity: .*/,
 		'Plusieurs nombres devant l’unité, après une grandeur : écris 6[m]/(2*3[s]) ou (6[m]/2)*3[s]'
 	],
+	[
+		/Ambiguous compound duration next to \* or \/: .*/,
+		'Durée composée collée à × ou ÷ : écris 2*(1 h 30 min) pour 3 h, ou 2*1 h + 30 min pour 2 h 30 min'
+	],
+	[
+		/Only durations can be written side by side.*/,
+		'Seules les durées s’écrivent côte à côte, chacune un nombre et son unité (2 h 30 min) : entre deux autres grandeurs, écris + ou ×'
+	],
+	[
+		/Each part of a compound duration needs its unit.*/,
+		'Chaque partie d’une durée composée a besoin de son unité : écris 2 h 30 min'
+	],
 	[/Invalid mode '([^']*)'/, 'Mode inconnu : « $1 »'],
 	[/Too many values \(max: (\d+)\)/, 'Trop de valeurs (au plus $1)'],
 	[/X and Y must have same length/, 'Les séries X et Y doivent avoir la même longueur'],
