@@ -2146,10 +2146,12 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	if (!variable) {
 		// V65 : plusieurs lettres (`|x| = a`, `ax = 1`) ne font pas une équation
 		// constante — la juger telle rendait « contradiction », un ∅ affirmé.
-		// Seule une identité (`a + b = b + a`) se conclut sans inconnue.
+		// Seules se concluent sans inconnue une identité (`a + b = b + a`) et une
+		// équation dont les lettres s'éliminent (`x + y = x + y + 1`).
 		const letters = [...getVariables(expr)];
 		const constant = handleConstantEquation(expr, opts);
-		if (letters.length > 0 && constant.status !== 'infinite') {
+		const reduced = getVariables(denormalize(normalize(expr)));
+		if (letters.length > 0 && reduced.size > 0 && constant.status !== 'infinite') {
 			return {
 				variable: '',
 				status: 'no-solution',

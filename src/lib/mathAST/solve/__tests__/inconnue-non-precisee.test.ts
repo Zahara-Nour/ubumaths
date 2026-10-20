@@ -9,7 +9,8 @@
  *
  * Comportement voulu : un refus (`isSolverFailure`), qui dit de préciser
  * l'inconnue. Une équation vraie pour toutes les valeurs (`a = a`) reste une
- * identité, et une équation sans lettre reste jugée comme avant.
+ * identité, une équation dont les lettres s'éliminent (`x + y = x + y + 1`)
+ * une contradiction, et une équation sans lettre reste jugée comme avant.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -37,6 +38,12 @@ describe('plusieurs lettres sans inconnue précisée : refus, jamais ∅', () =>
 
 	it('a = a : vraie pour toute valeur, reste une identité', () => {
 		expect(solve(relationOf('a+b=b+a')).status).toBe('infinite');
+	});
+
+	it('x + y = x + y + 1 : les lettres s’éliminent, contradiction démontrée', () => {
+		const result = solve(relationOf('x+y=x+y+1'));
+		expect(result.status).toBe('no-solution');
+		expect(isSolverFailure(result)).toBe(false);
 	});
 
 	it('avec l’inconnue précisée, ax = 1 se résout comme avant', () => {
