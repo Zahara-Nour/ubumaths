@@ -149,14 +149,26 @@ Nominal ✅
   (aller-retour testé).
 - `;hms` et `compositeDuration` produisent la somme juxtaposée.
 
-Limite 🟡 (mes propositions, à confirmer)
+Groupement ✅ (David, 2026-10-20, après la sonde clavier de l'atelier)
+
+- Avec `+` et `−`, une durée composée est **un bloc** : `2[h] 30[min] - 2[h] 30[min]` = (2 h 30 min) − (2 h 30 min)
+  = 0 ; `3[h] - 1[h] 30[min]` = 1 h 30 min ; `2[h] 30[min] + 2[h] 30[min]` = 5 h. L'atelier le fait déjà
+  (`natural-quantities.ts` écrit `(2[h]+30[min])`), au clavier comme en texte.
+- Collée à `*` ou `/`, **d'un côté comme de l'autre, avec ou sans espaces**, elle est **refusée** (ambiguë :
+  `2*1 h 30 min` = 2 h 30 min ou 3 h ? `1 h 30 min * 2` = 2 h ou 3 h ?). Message : « Écris 2*(1 h 30 min) pour
+  3 h, ou 2*1 h + 30 min pour 2 h 30 min. » Parseur maison et LaTeX : `2*1[h] 30[min]`, `1[h] 30[min]*2` →
+  `JUXTAPOSED_QUANTITIES`. Entre parenthèses, lu : `2*(1[h] 30[min])` = 3 h.
+- **L'atelier change aussi** (dans cette PR) : `2 * 1 h 30 min` et `1 h 30 min * 2` donnent 3 h aujourd'hui →
+  refus avec le message ci-dessus ; `2*1 h 30 min` est refusé aujourd'hui par accident (« « 30 » inattendu ici »)
+  → même message. Le test `grandeurs-ecriture.test.ts` (« une durée composée est UN nombre ») change d'attendu
+  pour ces deux lignes ; `2*(1 h 30 min)` y entre (3 h).
 
 - Trois termes : `1[h] 2[min] 3[s]` = somme juxtaposée de trois termes.
 - Ordre non décroissant (`30[min] 2[h]`) ou unité répétée (`2[h] 3[h]`) : **lu** (le parseur lit, la forme
   est jugée ailleurs, comme A9).
 - Durée et angle mélangés (`2[h] 30[°]`) → `JUXTAPOSED_QUANTITIES`.
-- Signe : `-2[h] 30[min]` = −(2 h 30 min) ou (−2 h) + 30 min ? Je propose **refus** (`JUXTAPOSED_QUANTITIES`)
-  plutôt que deviner.
+- Signe en tête : `-2[h] 30[min]` = −(2 h 30 min), comme l'atelier aujourd'hui (mesuré) ; remplace ma première
+  proposition (refus), écrite avant de savoir que le bloc passe avant `+` et `−`.
 - Un nombre sans unité au bout (`2[h] 30`) → refus (comme aujourd'hui), code `JUXTAPOSED_QUANTITIES`.
 - Marque perdue par une transformation : rendu « 2 h + 30 min », valeur juste (échec bénin accepté par David).
   Avant de coder : liste mesurée des chemins réels qui transforment une durée (`;hms`, simplification,
@@ -187,7 +199,7 @@ Tout le reste attend la page virgule (31 fiches, 0 réponse) : `f(1,5)` (deux ar
 
 1. PR 1 : `×`/`·` Unicode lus aussi par le **parseur LaTeX** ?
 2. PR 3 : `MISSING_OPERATOR` = `x2` / `x 2` seulement ?
-3. PR 5 : `-2[h] 30[min]` refusé ? `30[min] 2[h]` lu ? `{2[m]}{3[m]}` reste un produit ?
+3. PR 5 : `-2[h] 30[min]` = −(2 h 30 min) ? `30[min] 2[h]` lu ? `{2[m]}{3[m]}` reste un produit ?
 4. Toutes les lignes 🟡.
 5. Ordre des PR : 1 → 2 → 3 → 4 → 5, puis 6 après la page virgule.
 

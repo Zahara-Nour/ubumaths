@@ -5,13 +5,23 @@
 _Mis à jour le 2026-10-20, 4e session._
 
 - **État** : phase 0, rien de codé. Pages à cocher (font foi) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81 fiches, 20 répondues dont B7, B9, F1-F3 tranchées en conversation) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (31 fiches, 0 répondue). Base `reponses/<id>`.
-- **Décidé par David** (détail : historique) : (1) unité × tout le terme, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs (A9) ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue interne au point. (3) Il refuse la virgule décimale. (4) Refus = code + message anglais, l'atelier traduit (`mathAST/cli/web/french-errors.ts`). (5) **Catalogue de 14 codes validé** (historique, 3e session). (6) **Q9 (a)** : durées et angles juxtaposés LUS comme une somme marquée « juxtaposée » (4 implémentations, fonction partagée ; `;hms`, `compositeDuration`) ; autres grandeurs refusées `JUXTAPOSED_QUANTITIES` ; risque de perte de la marque géré : chemins réels mesurés → test de RENDU par chemin → garde. (7) `×`, `·`, `⋅` lus `*` (aussi `·`/`⋅` entre crochets) ; ⚠️ `2.5` ≠ `2·5`. (8) B7 : `^` + signe + UN nombre/lettre ; `10^-3+4` = `10^{-3}+4` ; refus `e^-x^2` (`STACKED_EXPONENTS`), `2^-sin(x)`, `2^-(x+1)` (`NEGATIVE_EXPONENT_BEFORE_GROUP`). (9) B9 : empilé = 2^(3^2) ; REFUS dans les deux parseurs (`STACKED_EXPONENTS`).
+- **Décidé par David** (détail : historique) : (1) unité × tout le terme, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs (A9) ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue interne au point. (3) Il refuse la virgule décimale. (4) Refus = code + message anglais, l'atelier traduit (`mathAST/cli/web/french-errors.ts`). (5) **Catalogue de 14 codes validé** (historique, 3e session). (6) **Q9 (a)** : durées et angles juxtaposés LUS comme une somme marquée « juxtaposée » (4 implémentations, fonction partagée ; `;hms`, `compositeDuration`) ; autres grandeurs refusées `JUXTAPOSED_QUANTITIES` ; risque de perte de la marque géré : chemins réels mesurés → test de RENDU par chemin → garde. (7) `×`, `·`, `⋅` lus `*` (aussi `·`/`⋅` entre crochets) ; ⚠️ `2.5` ≠ `2·5`. (8) B7 : `^` + signe + UN nombre/lettre ; `10^-3+4` = `10^{-3}+4` ; refus `e^-x^2` (`STACKED_EXPONENTS`), `2^-sin(x)`, `2^-(x+1)` (`NEGATIVE_EXPONENT_BEFORE_GROUP`). (9) B9 : empilé = 2^(3^2) ; REFUS dans les deux parseurs (`STACKED_EXPONENTS`). (10) Durée composée = un bloc avec `+`/`−` ; collée à `*` ou `/` (des deux côtés, espaces ou non) → refus, atelier compris.
 - **En attente de David** : les 61 fiches grandeurs et 31 fiches virgule restantes.
-- **Prochaine action** : faire valider `docs/wip/lecture-grandeurs-phase0.md` (6 PR : ×/· → exposants → codes → règle du terme → Q9 → virgule ; 5 questions ouvertes, lignes 🟡), puis PR 1.
+- **Prochaine action** : faire valider `docs/wip/lecture-grandeurs-phase0.md` (6 PR : ×/· → exposants → codes → règle du terme → Q9 → virgule) : questions ouvertes 1, 2, 3, 5 et lignes 🟡 sans réponse (mes recos données en conversation le 2026-10-20), puis PR 1.
 - **Pièges** : distinguer LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt (défaut) + RD ; `{2[h]}{30[min]}` = 1 h² aujourd'hui ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
 - **Worktree / branche** : aucun. Sondes (arbre, calcul, codes, clavier MathLive) : `docs/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
+
+### 2026-10-20 — phase 0 rédigée, sonde clavier des durées
+
+- `docs/wip/lecture-grandeurs-phase0.md` : comportements par PR (6 PR), questions ouvertes. Recos données en
+  conversation (LaTeX lit `×`/`·` Unicode ; `MISSING_OPERATOR` = nombre après un facteur ; `30[min] 2[h]` lu ;
+  `{2[m]}{3[m]}` reste un produit ; lignes 🟡 telles quelles ; ordre 1→5 puis 6) : **pas encore validées**.
+- Sonde au vrai clavier (Calcul et carte, tableau dans le fichier des sondes) : `2 h 30 min ± 2 h 30 min`,
+  `3 h - 1 h 30 min`, `-2 h 30 min` marchent déjà ; `2*1 h 30 min` refusé par accident, `2 * 1 h 30 min` = 3 h.
+- **David : `2*1 h 30 min` est ambigu ; validé : refus d'une durée composée collée à `*` ou `/`, des deux côtés,
+  avec ou sans espaces, dans les parseurs ET l'atelier** (le test du lot C change d'attendu).
 
 ### 2026-10-20 — ouverture
 
