@@ -1505,7 +1505,8 @@ class CustomRDParser {
 		this.expect('RBRACE', "Expected '}' after colored content");
 		this.colorStack.pop();
 
-		return content; // Color already applied via applyColor() during parsing
+		// Color already applied via applyColor() during parsing ; des accolades : une grandeur y reste fermée
+		return this.unitTerm.close(content);
 	}
 
 	/**

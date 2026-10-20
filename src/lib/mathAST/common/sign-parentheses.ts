@@ -126,6 +126,9 @@ function startsWithSign(node: MathNode): boolean {
 			return startsWithSign(node.left);
 		case 'division':
 			return node.displayStyle !== 'fraction' && startsWithSign(node.numerator);
+		// `-5[m]` est la grandeur (−5) m : son signe ouvre l'écriture (lecture-grandeurs PR 4)
+		case 'unit':
+			return startsWithSign(node.expression);
 		default:
 			return false;
 	}

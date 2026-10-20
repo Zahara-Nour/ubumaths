@@ -63,6 +63,7 @@ import {
 } from './common/sign-parentheses';
 import { isGroupingBracketContent } from './parser/custom/unit-writing';
 import { needsClosedRightOperand } from './parser/custom/unit-term';
+import { isAffine } from './units/conversion';
 
 // =============================================================================
 // Types
@@ -415,6 +416,14 @@ function startsWithUnarySign(s: string): boolean {
 // =============================================================================
 
 /**
+ * L'opposé d'une température s'écrit `-(20[°C])` : `-20[°C]` se relit la température
+ * −20 °C (lecture-grandeurs PR 4, Q-T2), une autre valeur pour une unité affine.
+ */
+function isTemperature(node: MathNode): boolean {
+	return node.type === 'unit' && isAffine(node.unit);
+}
+
+/**
  * Parenthèse l'expression d'une grandeur quand l'unité ne la couvrirait pas toute
  * à la relecture : une somme ou une différence (`(2+3)[m]`). L'unité multiplie
  * tout le terme qui la précède (lecture-grandeurs, PR 4) : un produit ou un signe
@@ -567,8 +576,11 @@ export class CustomGenerator {
 				// Peek RHS via a throw-away generator with metadata disabled — otherwise a
 				// colored RHS would be wrapped in `@color{...}` (e.g. `@red{2}`), defeating
 				// the leading-character check.
+				// Une grandeur à droite que la lecture changerait : fermée par des accolades, qui
+				// ouvrent le texte (pas de filet à poser, comme generateMultiplication)
+				const closeRight = !groupRight && needsClosedRightOperand(node.left, node.right, false);
 				const rhsPlain =
-					node.displayStyle === 'implicit' && !groupRight
+					node.displayStyle === 'implicit' && !groupRight && !closeRight
 						? new CustomGenerator().generate(node.right)
 						: '';
 				const safetyA = node.displayStyle === 'implicit' && startsWithNumberToken(rhsPlain);
@@ -592,7 +604,6 @@ export class CustomGenerator {
 					) {
 						this.emit(' ', meta);
 					}
-					const closeRight = !groupRight && needsClosedRightOperand(node.left, node.right, false);
 					if (groupRight) this.emit('(', meta);
 					if (closeRight) this.emit('{', meta);
 					this.visitWithSpans(node.right);
@@ -608,7 +619,7 @@ export class CustomGenerator {
 
 			case 'opposite': {
 				// Même parenthésage que generateOpposite : `-(x+2)`, pas `-x+2`.
-				const wrap = needsParenthesesUnderOpposite(node.operand);
+				const wrap = needsParenthesesUnderOpposite(node.operand) || isTemperature(node.operand);
 				this.emit('-', node.operatorMetadata ?? node.metadata);
 				if (wrap) this.emit('(', node.metadata);
 				this.visitWithSpans(node.operand);
@@ -1425,7 +1436,8 @@ export class CustomGenerator {
 	 */
 	private generateOpposite(node: OppositeNode): string {
 		const operand = this.generateNode(node.operand);
-		return needsParenthesesUnderOpposite(node.operand) ? `-(${operand})` : `-${operand}`;
+		const wrap = needsParenthesesUnderOpposite(node.operand) || isTemperature(node.operand);
+		return wrap ? `-(${operand})` : `-${operand}`;
 	}
 
 	private generatePositive(node: PositiveNode): string {

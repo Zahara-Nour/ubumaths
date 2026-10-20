@@ -326,17 +326,32 @@ function dimensionMessage(error: DimensionalError): string {
 }
 
 /**
- * Une unité posée sur un terme qui porte déjà une grandeur multiplie ce terme :
- * `v*3[h]` se lit (v×3) h (l'unité multiplie tout le terme, lecture-grandeurs PR 4) ;
- * quand `v` est une grandeur du panneau (2,5 km/h), substituée après la lecture,
- * c'est (v×3) × 1 h = 7,5 km.
+ * Une grandeur déjà formée clôt le terme (lecture-grandeurs PR 4) : `v*3[h]` se lit
+ * (v×3) h tant que `v` est une lettre ; quand `v` est une grandeur du panneau,
+ * substituée après la lecture, l'unité redescend sur le dernier facteur, comme si
+ * la grandeur avait été écrite : `v*(3 h)`, `d/(2 h)` (revue de la PR 4).
  */
 function unitsOverQuantities(ast: MathNode): MathNode {
 	return mapNode(ast, (node) =>
 		isUnit(node) && hasUnitDescendant(node.expression)
-			? multiply(node.expression, withUnit(number(1), node.unit), 'cross')
+			? unitOnLastFactor(node.expression, node)
 			: node
 	);
+}
+
+/** L'unité de `quantity` posée sur le dernier facteur du terme `term` */
+function unitOnLastFactor(term: MathNode, quantity: UnitNode): MathNode {
+	switch (term.type) {
+		case 'multiplication':
+			return { ...term, right: unitOnLastFactor(term.right, quantity) };
+		case 'division':
+			return { ...term, denominator: unitOnLastFactor(term.denominator, quantity) };
+		case 'opposite':
+		case 'positive':
+			return { ...term, operand: unitOnLastFactor(term.operand, quantity) };
+		default:
+			return { ...quantity, expression: term };
+	}
 }
 
 /** Les dimensions de l'expression : une erreur en français, ou l'unité du résultat. */

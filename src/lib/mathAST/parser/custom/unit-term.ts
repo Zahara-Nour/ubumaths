@@ -73,8 +73,7 @@ export function needsClosedRightOperand(
 	isDivision: boolean
 ): boolean {
 	if (rightmostFactor(right).type !== 'unit') return false;
-	if (isDivision) return true;
-	if (!hasUnitDescendant(left)) return false;
+	if (!hasUnitDescendant(left)) return isDivision;
 	const singleQuantity = right.type === 'unit' && !isMultiFactor(right.expression);
 	return !singleQuantity || !hasUnitDescendant(rightmostFactor(left));
 }

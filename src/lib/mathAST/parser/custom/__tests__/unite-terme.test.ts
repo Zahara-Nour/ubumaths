@@ -382,3 +382,46 @@ describe('toCustom d’un arbre construit : relu, la même valeur', () => {
 		expect(valueOf(reread.ast as MathNode), written).toBe(valueOf(node));
 	});
 });
+
+describe('revue de la PR 4', () => {
+	const twenty = quantity(MathAST.number('20'), '°C');
+	const thirty = quantity(MathAST.number('30'), '°C');
+
+	it.each([
+		['−(20 °C) + 30 °C', MathAST.add(MathAST.opposite(twenty), thirty)],
+		['−(−(5 m))', MathAST.opposite(MathAST.opposite(quantity(MathAST.number('5'), 'm')))],
+		[
+			'(6 m) · ((2×3) s), implicite',
+			MathAST.multiply(
+				quantity(MathAST.number('6'), 'm'),
+				quantity(MathAST.multiply(MathAST.number('2'), MathAST.number('3'), 'cross'), 's'),
+				'implicit'
+			)
+		]
+	])('toCustom de %s se relit avec la même valeur, en mode simple et coloré', (_, node) => {
+		for (const written of [toCustom(node), toCustom(node, { renderMetadata: true })]) {
+			const reread = parseCustomSafe(written);
+			expect(reread.errors, written).toEqual([]);
+			expect(valueOf(reread.ast as MathNode), written).toBe(valueOf(node));
+		}
+	});
+
+	it('-{-5[m]} s’écrit -(-5[m])', () => {
+		expect(toCustom(parseCustomSafe('-{-5[m]}').ast as MathNode)).toBe('-(-5[m])');
+	});
+
+	it.each([
+		['2--5[m]', '2 - \\left( -5~\\unit{m} \\right)'],
+		['2[m]*-5[m]', '2~\\unit{m} \\times \\left( -5~\\unit{m} \\right)']
+	])('LaTeX de %s : le signe de la grandeur garde ses parenthèses', (written, latex) => {
+		expect(toLatex(parseCustomSafe(written).ast as MathNode)).toBe(latex);
+	});
+
+	it.each(['6[m]:/5[km]', '6[m]:2[s]'])('%s s’écrit sans accolades', (written) => {
+		expect(toCustom(parseCustomSafe(written).ast as MathNode)).toBe(written);
+	});
+
+	it('2/@red{7[km]} : les accolades colorées ferment le terme comme les autres', () => {
+		expect(valueOfWriting('2/@red{7[km]}')).toBe(valueOfWriting('2/{7[km]}'));
+	});
+});
