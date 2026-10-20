@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; relecture des virgules rangées, 2026-10-21).
 
 ## À quoi ça sert
 
@@ -2645,6 +2645,13 @@ max(2,5 ; x)` puis `f(1)` répond `5/2` (avant le 2026-10-13 : « Écriture non 
     texte du moteur (`toCustom` écrit `max(2,3)`), dont la virgule sépare. Comme sur une ligne de
     calcul, `f(x) = max(1,2)+x` est refusée (« Sépare les valeurs avec « ; » »). Le
     champ de la carte montre `\max\left(2{,}5;x\right)` (`argumentSeparatorsShown`).
+    Le parseur maison ne lit plus la virgule décimale depuis le 2026-10-21 (lecture-grandeurs,
+    PR 6) ; or un objet rangé (lien, sauvegarde) est relu SANS provenance, donc en `'url'`, et
+    l'atelier en range avec une virgule (`formatSliderValue` pose `0,3`, une commande range le
+    texte de l'élève). Hors saisie de l'élève, `readByProvenance` passe donc le texte par
+    `legacyDecimalCommas` (`mathAST/parser/custom/legacy-decimal-commas.ts`), la règle exacte de
+    l'ancien tokenizer : `0,3` → `0.3`, `max(2,3)` inchangé. Tout atelier rangé se relit comme
+    avant (`atelier/__tests__/virgule-rangee.test.ts`, `recalcul-equivalence.test.ts`).
 12. **On ne valide pas** les réponses de l'élève (décision figée n° 2).
 13. **Une cellule de la grille a un seul propriétaire** : la liste de sa colonne (dans sa
     définition) ou la grille (`cells`), jamais les deux.

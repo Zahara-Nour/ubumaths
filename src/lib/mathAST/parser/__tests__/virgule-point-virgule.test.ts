@@ -168,7 +168,7 @@ describe('PR 6 — la virgule sépare toujours', () => {
 	] as const)('matrice %s : la virgule sépare les éléments (Pratt)', (input, rows) => {
 		const result = parseCustomPrattSafe(input);
 		expect(result.errors).toEqual([]);
-		const ast = result.ast as { type: string; rows: { value: string }[][] };
+		const ast = result.ast as unknown as { type: string; rows: { value: string }[][] };
 		expect(ast.type).toBe('matrix');
 		expect(ast.rows.map((row) => row.map((cell) => cell.value))).toEqual(rows);
 	});
