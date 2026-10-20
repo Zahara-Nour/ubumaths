@@ -65,6 +65,11 @@ describe.each(CUSTOM_PARSERS)('parseur maison %s : ×, ·, ⋅ = *', (_, parse) 
 			expect(astOf('3[N·m]')).toEqual(astOf('3[N.m]'));
 		});
 
+		// × y vaut `*`, déjà admis entre crochets (David, 2026-10-20)
+		it('3[m×s] = 3[m*s]', () => {
+			expect(astOf('3[m×s]')).toEqual(astOf('3[m*s]'));
+		});
+
 		it('kg/m·s reste ambigu, comme kg/m.s', () => {
 			const withDot = parse('3[kg/m·s]');
 			const withPoint = parse('3[kg/m.s]');
