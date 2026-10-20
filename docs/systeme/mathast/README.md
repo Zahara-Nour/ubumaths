@@ -268,6 +268,15 @@ de variable, une racine en u paramétrée ne doit annuler aucun dénominateur en
 (`a\ln x + b = 1`), cos, sin ; plusieurs termes en x (`y = xe^x`). Tests :
 `solve/__tests__/second-membre-litteral.test.ts`, `cli/commands/__tests__/condition-sur-parametre.test.ts`.
 
+Inconnue non précisée (V65, 2026-10-20) : `detectVariable` ne choisit l'inconnue que s'il n'y a
+qu'**une** lettre. Appelée sans `variable`, une équation à plusieurs lettres (`|x| = a`, `ax = 1`,
+`a\cos x = 1`) était jugée **constante** : « contradiction », `no-solution` **sans** `error`, un ∅
+affirmé. Elle rend désormais un échec (`isSolverFailure`) : « Plusieurs lettres (a, x) : précise
+l'inconnue à chercher. » Seule une identité (`a + b = b + a`) se conclut encore sans inconnue.
+Rappel du contrat (`types.ts`) : un échec du solveur vaut `no-solution` + `error`, sans
+`conclusive` ; tout appelant teste `isSolverFailure` avant le statut. Tests :
+`solve/__tests__/inconnue-non-precisee.test.ts`.
+
 Écart V40 (2026-10-13) : **valeur absolue d'une expression affine**. `tryAbsoluteValue`
 (`solve/absolute-value.ts`), premier repli après la classification, remplace la valeur absolue
 par une lettre neuve t, résout en t (premier degré, sans autre lettre : `2\left|x\right| = 6`,

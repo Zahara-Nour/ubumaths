@@ -530,7 +530,13 @@ un autre nom, `u_n` la notation d'une suite) et hors base d'une puissance −1 (
 lettre._ La suggestion suit la variable de l'objet qui cite (`a(t)`, `a(n)` pour une suite) ;
 pour une valeur, _Écris une de ses valeurs, comme a(2)…_ ; une suite citée dans une fonction ou
 une valeur, _Écris un de ses termes, comme u(2)…_ Les cartes `f′` et `f⁻¹` n'y passent pas
-(elles suivent f). ⚠️ Redéfinir un nom garde son type (V62).
+(elles suivent f). **Redéfinir un nom sous un autre type est refusé** (V62, corrigé le
+2026-10-20, `defineObject`, `calcul.ts`) : `a = 3` puis `a(x) = x^2`, `a = x^2` ou `a(n) = 2n` →
+_« a » est déjà un nombre : supprime-le ou choisis un autre nom pour créer une fonction._ ; de même
+entre fonction et suite. Avant, l'objet gardait son type rangé avec la nouvelle définition (une
+valeur a = x²), et `a = 3`, `f(x) = a x`, `a(x) = x^2` échappait au refus ci-dessus : `.dériver f`
+affichait 3x². Sans parenthèses, `f = t + 1` redéfinit toujours la fonction dans sa lettre (#905).
+Tests : `redefinir-autre-type.test.ts`.
 **Noms indicés** (corrigé le 2026-10-19, ex-V63) : `a_1` est UN nom, jamais sa base. Le
 parseur en fait un nœud `subscript` (`a`, `1`) ; la lecture des noms le voit sous son nom
 entier (`variablesOf`, `parse.ts`, qui sert `referencesOf`, `bareNamesOf`, les refus x/y, les
