@@ -7,6 +7,7 @@
  * @module mathAST/units/conversion
  */
 
+import type { MathNode } from '../types';
 import type { Unit, Dimension } from './types';
 import { DERIVED_UNITS, resolveUnit } from './definitions';
 import { unitsEquivalent } from './operations';
@@ -115,6 +116,19 @@ export function getConversionFactor(from: Unit, to: Unit): number | null {
  */
 export function isAffine(u: Unit): boolean {
 	return u.offset !== undefined && u.offset !== 0 && u.components.size === 1;
+}
+
+/**
+ * Une température dont la valeur est un produit sans parenthèses : `2*20[°C]`
+ * (lecture-grandeurs PR 4, Q-T1 de David, 2026-10-20). Une température ne se
+ * multiplie pas : la grandeur reste opaque et le calcul la refuse. `(2*20)[°C]`
+ * (parenthèses) et `1/2[°C]` (un quotient est un nombre) se calculent.
+ */
+export function isMultipliedTemperature(node: MathNode): boolean {
+	if (node.type !== 'unit' || !isAffine(node.unit)) return false;
+	let value = node.expression;
+	while (value.type === 'opposite' || value.type === 'positive') value = value.operand;
+	return value.type === 'multiplication';
 }
 
 /**

@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, 2026-10-20).
 
 ## À quoi ça sert
 
@@ -333,6 +333,20 @@ celui que traduit l'atelier (`cli/web/french-errors.ts`). `INVALID_UNIT` n'exist
 n'en est pas un) a un texte nouveau, « Missing zero before the
 decimal point (write 0.5) », traduit par l'atelier. `UNEXPECTED_TOKEN` reste en dernier recours.
 Tests : `parser/__tests__/codes-des-refus.test.ts`.
+
+L'unité multiplie tout le terme qui la précède (2026-10-20, chantier lecture-grandeurs, PR 4,
+`parser/custom/unit-term.ts`, partagé par Pratt et RD) : `1/2[m]` = (1/2) m (avant 1/(2 m) = 0,5 m⁻¹),
+`-5[m]` = (−5) m, `2*3[m]` = (2×3) m, `x:/2[m]` = (x:/2) m. Le terme s'arrête au `+`/`-` d'addition, à une
+grandeur déjà formée (`6[m]/2[s]`), à des parenthèses ou des accolades (`2/{7[km]}`, valeur de `braceWrap`).
+Après une grandeur, un terme de plusieurs nombres est refusé, `AMBIGUOUS_TERM` (`6[m]/2*3[s]`) ; une unité
+seule en tête, `MISSING_NUMBER_BEFORE_UNIT` (`[m]` ; `[x]` reste un crochet de calcul). Espaces entre
+chiffres ignorés (`12 500` = 12500), sauf en exposant ou en indice (`x^2 3` refusé). `π` tapé tel quel est la
+constante (comme `\pi`) ; `pi` reste p × i (le `{{eval}}` le réécrit encore, `BARE_PI`). `toCustom` ne
+parenthèse plus un signe (`-5[m]`) et ferme d'accolades l'opérande droit qui se relirait autrement
+(`x:/{2[m]}`, `{6[m]}/2*{3[s]}`, `needsClosedRightOperand`). Calcul (`cli/quantities.ts`) : une unité sur un
+terme qui porte déjà une grandeur le multiplie (`unitsOverQuantities`) ; `2*20[°C]` refusé, `-20[°C]` est
+−20 °C (Q-T1, Q-T2). Les deux refus sont traduits par l'atelier. Tests :
+`parser/custom/__tests__/unite-terme.test.ts`.
 
 Les arguments d'une fonction connue entre `\left( … \right)` se lisent comme entre `( … )`
 (2026-10-13, `parseFunctionArguments` de `parser-pratt.ts`) : `\max\left(2,x\right)`, la forme

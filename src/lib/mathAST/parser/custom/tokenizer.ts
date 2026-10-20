@@ -120,6 +120,9 @@ export interface CustomToken {
 // Constants
 // =============================================================================
 
+/** Espaces qui séparent des groupes de chiffres (`12 500`, `12\u202F500`) */
+const DIGIT_GROUP_SPACE = /[ \u00A0\u202F]/;
+
 /**
  * Valid symbol names that can appear after backslash
  */
@@ -387,6 +390,8 @@ export class CustomTokenizer {
 	private openers: Array<'call' | 'group'> = [];
 	/** Type du dernier jeton produit (une parenthèse qui suit un FUNC ouvre un appel) */
 	private lastTokenType: CustomTokenType | null = null;
+	/** Type du jeton d'avant : `^-3 4` est un exposant signé, sans groupes de chiffres */
+	private tokenTypeBeforeLast: CustomTokenType | null = null;
 	/**
 	 * Jetons déjà lus, à rendre avant tout nouveau scan : les parenthèses
 	 * implicites de `√x` (voir `scanBareRootArgument`).
@@ -456,6 +461,7 @@ export class CustomTokenizer {
 		this.matrixDepth = 0;
 		this.openers = [];
 		this.lastTokenType = null;
+		this.tokenTypeBeforeLast = null;
 		this.pendingTokens = [];
 	}
 
@@ -489,6 +495,7 @@ export class CustomTokenizer {
 		} else if (token.type === 'RPAREN' || token.type === 'RBRACE') {
 			this.openers.pop();
 		}
+		this.tokenTypeBeforeLast = this.lastTokenType;
 		this.lastTokenType = token.type;
 		return token;
 	}
@@ -674,10 +681,7 @@ export class CustomTokenizer {
 		let hasDecimal = false;
 
 		// Scan integer part
-		while (this.position < this.length && this.isDigit(this.input[this.position])) {
-			value += this.input[this.position];
-			this.position++;
-		}
+		value += this.scanDigitGroups();
 
 		// Check for decimal separator (dot or comma)
 		if (this.position < this.length) {
@@ -692,10 +696,7 @@ export class CustomTokenizer {
 				this.position++;
 
 				// Scan fractional part
-				while (this.position < this.length && this.isDigit(this.input[this.position])) {
-					value += this.input[this.position];
-					this.position++;
-				}
+				value += this.scanDigitGroups();
 			} else if (char === '.' && !hasDecimal) {
 				// Trailing dot (e.g., "42.")
 				value += '.';
@@ -745,6 +746,30 @@ export class CustomTokenizer {
 			position: startPos,
 			length: this.position - startPos
 		};
+	}
+
+	/**
+	 * Des chiffres, et les groupes de chiffres séparés par des espaces : `12 500` = 12500,
+	 * `0.000 01` = 0.00001 (lecture-grandeurs, décision 1). Pas en exposant ni en indice
+	 * (`^`, `_`, `^-`, `^+`) : `x^2 3` reste un nombre après un facteur, refusé (décision 14).
+	 */
+	private scanDigitGroups(): string {
+		const isSign = this.lastTokenType === 'MINUS' || this.lastTokenType === 'PLUS';
+		const afterScript = (type: CustomTokenType | null) => type === 'CARET' || type === 'UNDERSCORE';
+		const groupsAllowed =
+			!afterScript(this.lastTokenType) && !(isSign && afterScript(this.tokenTypeBeforeLast));
+		let digits = '';
+		while (true) {
+			while (this.position < this.length && this.isDigit(this.input[this.position])) {
+				digits += this.input[this.position];
+				this.position++;
+			}
+			if (!groupsAllowed) return digits;
+			let next = this.position;
+			while (next < this.length && DIGIT_GROUP_SPACE.test(this.input[next])) next++;
+			if (next === this.position || !this.isDigitAt(next)) return digits;
+			this.position = next;
+		}
 	}
 
 	/**

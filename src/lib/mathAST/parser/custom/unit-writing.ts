@@ -97,6 +97,26 @@ export function readUnitWriting(
 	return { text, spaceAt };
 }
 
+/**
+ * L'écriture d'unité entre le `[` (`tokenAt(0)`) et son `]`, lue en avance sans rien
+ * consommer ; `null` si le contenu n'en est pas une (vide, espace entre deux
+ * jetons, caractère étranger, crochet jamais fermé).
+ */
+export function unitWritingAhead(tokenAt: (offset: number) => UnitWritingToken): string | null {
+	let text = '';
+	let previousEnd: number | null = null;
+	for (let offset = 1; ; offset++) {
+		const token = tokenAt(offset);
+		if (token.type === 'RBRACKET') return text === '' ? null : text;
+		if (token.type === 'EOF') return null;
+		const piece = unitPieceOf(token);
+		if (piece === '' || !UNIT_WRITING.test(piece)) return null;
+		if (previousEnd !== null && token.position > previousEnd) return null;
+		text += piece;
+		previousEnd = token.position + token.length;
+	}
+}
+
 // =============================================================================
 // Crochet d'unité ou crochet de calcul
 // =============================================================================

@@ -12,7 +12,7 @@ couvre:
 > passe par les pièces ci-dessous, jamais par une nouvelle à côté. Écrire une grandeur dans un
 > énoncé (la notation pour l'auteur) : [notation-unites.md](../pratiques/notation-unites.md).
 > Décision : [ADR 0026](../adr/0026-grandeurs-un-contrat-et-l-espace.md). Vérifié contre le code
-> le 2026-10-13.
+> le 2026-10-20.
 
 ## Pourquoi un contrat
 
@@ -33,15 +33,15 @@ octobre). Le symptôme le plus visible : Calcul et `/cas` répondaient `10[km]/1
 
 ### Lire — la seule étape qui dépend du contexte
 
-| Contexte                                      | Règle                                                                                                                    | Où                                                                 |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| Énoncés, `{{eval}}`, données                  | stricte : `5[km]` (`~…~`), `5~\unit{km}` (LaTeX) — l'auteur doit être sans ambiguïté                                     | parseur maison (`parser/custom`, `unit-writing.ts`), parseur LaTeX |
-| Atelier : calculs et valeurs                  | **« un nombre, une espace, une unité »** (`5 km`, `10^3 m`) ; collé (`5m`) ou `*` = produit ; crochets toujours acceptés | `readNaturalQuantities` (`atelier/natural-quantities.ts`)          |
-| Atelier : champ MathLive d'une carte (valeur) | la même règle, sur le LaTeX du champ (`2\,h\,30\,\min`, `\frac{1}{2}\,m`)                                                | `definitionFromField` (`atelier/mathfield.ts`)                     |
-| Atelier : définitions de fonctions, commandes | jamais d'unité naturelle (`.résoudre 2 a = 4` ne lit pas des ares)                                                       | —                                                                  |
-| Atelier : le degré, partout                   | `60°`, `a°`, `(30+30)°` = `[°]` ; `60^\circ`, `60\degree` (MathLive) = `\unit{°}` ; `°` seul refusé                      | `withDegreeUnits`, `strayDegreeRefusal` (`atelier/degrees.ts`)     |
-| Case à unité d'une question                   | tout ce qui suit le nombre est l'unité (`5km`, `5 km`, MathLive)                                                         | `normalizeStudentQuantity` (`questions/units/student-input.ts`)    |
-| Case à unité : durée composée                 | « 2 h 15 min », « 1 h 5 min 30 s »                                                                                       | `questions/units/composite-duration.ts`                            |
+| Contexte                                      | Règle                                                                                                                                       | Où                                                                                 |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Énoncés, `{{eval}}`, données                  | stricte : `5[km]` (`~…~`), `5~\unit{km}` (LaTeX) — l'auteur doit être sans ambiguïté ; l'unité multiplie tout le terme (`1/2[m]` = (1/2) m) | parseur maison (`parser/custom`, `unit-writing.ts`, `unit-term.ts`), parseur LaTeX |
+| Atelier : calculs et valeurs                  | **« un nombre, une espace, une unité »** (`5 km`, `10^3 m`) ; collé (`5m`) ou `*` = produit ; crochets toujours acceptés                    | `readNaturalQuantities` (`atelier/natural-quantities.ts`)                          |
+| Atelier : champ MathLive d'une carte (valeur) | la même règle, sur le LaTeX du champ (`2\,h\,30\,\min`, `\frac{1}{2}\,m`)                                                                   | `definitionFromField` (`atelier/mathfield.ts`)                                     |
+| Atelier : définitions de fonctions, commandes | jamais d'unité naturelle (`.résoudre 2 a = 4` ne lit pas des ares)                                                                          | —                                                                                  |
+| Atelier : le degré, partout                   | `60°`, `a°`, `(30+30)°` = `[°]` ; `60^\circ`, `60\degree` (MathLive) = `\unit{°}` ; `°` seul refusé                                         | `withDegreeUnits`, `strayDegreeRefusal` (`atelier/degrees.ts`)                     |
+| Case à unité d'une question                   | tout ce qui suit le nombre est l'unité (`5km`, `5 km`, MathLive)                                                                            | `normalizeStudentQuantity` (`questions/units/student-input.ts`)                    |
+| Case à unité : durée composée                 | « 2 h 15 min », « 1 h 5 min 30 s »                                                                                                          | `questions/units/composite-duration.ts`                                            |
 
 Règles de la lecture naturelle (décisions de David du 2026-10-11) :
 
@@ -101,8 +101,12 @@ Un seul calculateur : **`tidy(ast, { unitChoice: 'written' })`**, en rationnels 
 
 Ce que fait `computeQuantity` en plus de `tidy` :
 
+- une unité posée sur un terme qui porte déjà une grandeur multiplie ce terme : `v*3[h]` se lit
+  (v×3) h, et avec `v` = 2,5 km/h du panneau, substituée après la lecture, c'est (v×3) × 1 h = 7,5 km
+  (`unitsOverQuantities`, lecture-grandeurs PR 4, 2026-10-20) ;
 - refus en français, avant de calculer : dimensions incompatibles (« On ne peut pas ajouter une
-  longueur et une durée. »), produit de températures ; les octets et les bits sont « une quantité
+  longueur et une durée. »), produit de températures, `2*20[°C]` compris (une température dont la
+  valeur est un produit sans parenthèses, `isMultipliedTemperature`) ; les octets et les bits sont « une quantité
   de données », un débit (`Mbit/s`) « un débit » (`DIMENSION_NAMES`, `cli/quantities.ts`) ;
 - une unité tapée par l'élève l'emporte quand la valeur y tombe juste (`3[kW]*2[h]`) ;
 - durée composée gardée (`2 h 30 min + 45 min` → 3 h 15 min) ; `.convertir` la répète telle

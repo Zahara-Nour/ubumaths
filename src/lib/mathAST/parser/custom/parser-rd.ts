@@ -53,9 +53,15 @@ import { expectCode, preciseUnexpectedToken, unitErrorCode } from '../refusal-co
 import {
 	isGroupingBracket,
 	readUnitWriting,
+	unitWritingAhead,
 	UNIT_EXPONENT_MESSAGE,
 	UNIT_SPACE_MESSAGE
 } from './unit-writing';
+import {
+	AMBIGUOUS_TERM_MESSAGE,
+	missingNumberBeforeUnitMessage,
+	UnitTermReader
+} from './unit-term';
 import {
 	SecurityError,
 	getEffectiveSecurityOptions,
@@ -135,6 +141,8 @@ class CustomRDParser {
 	private holeCounter: number = 0;
 	/** Profondeur d'indice : un `i` en indice (x_i, u_{i+1}) est un nom d'indice, pas l'unité imaginaire */
 	private subscriptDepth: number = 0;
+	/** L'unité multiplie tout le terme qui la précède (`1/2[m]` = (1/2) m) */
+	private readonly unitTerm = new UnitTermReader(() => this.refuseAmbiguousTerm());
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new CustomTokenizer(input);
@@ -413,18 +421,32 @@ class CustomRDParser {
 			if (this.check('STAR')) {
 				this.advance();
 				const right = this.parseUnary();
-				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'cross'), operatorColor);
+				left = this.unitTerm.binary(left, right, (factor, value) =>
+					this.applyColorWithOperator(MathAST.multiply(factor, value, 'cross'), operatorColor)
+				);
 			} else if (this.check('COLON_SLASH')) {
 				this.advance();
 				const right = this.parseUnary();
-				left = this.applyColorWithOperator(MathAST.divide(left, right, 'inline'), operatorColor);
+				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+					this.applyColorWithOperator(
+						MathAST.divide(numerator, denominator, 'inline'),
+						operatorColor
+					)
+				);
 			} else if (this.check('COLON')) {
 				this.advance();
 				const right = this.parseUnary();
-				left = this.applyColorWithOperator(MathAST.divide(left, right, 'ratio'), operatorColor);
+				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+					this.applyColorWithOperator(
+						MathAST.divide(numerator, denominator, 'ratio'),
+						operatorColor
+					)
+				);
 			} else if (this.shouldInsertImplicitMultiply()) {
 				const right = this.parseUnary();
-				left = this.applyColor(MathAST.multiply(left, right, 'implicit'));
+				left = this.unitTerm.binary(left, right, (factor, value) =>
+					this.applyColor(MathAST.multiply(factor, value, 'implicit'))
+				);
 			} else {
 				break;
 			}
@@ -463,13 +485,13 @@ class CustomRDParser {
 			}
 
 			const operand = this.parseUnary();
-			return this.applyColor(MathAST.opposite(operand));
+			return this.unitTerm.unary(operand, (value) => this.applyColor(MathAST.opposite(value)));
 		}
 
 		if (this.check('PLUS')) {
 			this.advance();
 			const operand = this.parseUnary();
-			return this.applyColor(MathAST.positive(operand));
+			return this.unitTerm.unary(operand, (value) => this.applyColor(MathAST.positive(value)));
 		}
 
 		return this.parsePower();
@@ -699,7 +721,9 @@ class CustomRDParser {
 		while (this.check('SLASH')) {
 			this.advance(); // consume /
 			const right = this.parseFractionOperand(); // Parse ONLY next operand
-			left = this.applyColor(MathAST.divide(left, right, 'fraction'));
+			left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+				this.applyColor(MathAST.divide(numerator, denominator, 'fraction'))
+			);
 		}
 
 		return left;
@@ -933,6 +957,12 @@ class CustomRDParser {
 					: complex(MathAST.number('0'), MathAST.number('1'))
 			);
 		}
+		// `π` tapé tel quel : la constante, comme `\pi` (Q11) ; `π_1` reste une variable
+		if (letter === 'π') {
+			return this.applyColor(
+				this.check('UNDERSCORE') ? MathAST.variable('π') : MathAST.piConstant()
+			);
+		}
 
 		return this.applyColor(MathAST.variable(letter));
 	}
@@ -1027,6 +1057,7 @@ class CustomRDParser {
 	 * Crochet de calcul : `[x-1]` — des parenthèses de forme `square`.
 	 */
 	private parseSquareBrackets(): MathNode {
+		this.refuseUnitWithoutNumber();
 		this.advance(); // consume [
 
 		if (this.check('RBRACKET')) {
@@ -1039,6 +1070,30 @@ class CustomRDParser {
 		return this.applyColor(
 			MathAST.delimiter('parentheses', content, 'grouping', { shape: 'square' })
 		);
+	}
+
+	/**
+	 * `[m]` en tête de terme : une unité sans nombre devant (K2), refusée. Un contenu
+	 * qui n'est pas une unité connue (`[x]`, `[x-1]`) reste un crochet de calcul.
+	 */
+	private refuseUnitWithoutNumber(): void {
+		const tokenAt = (offset: number) =>
+			offset === 0 ? this.currentToken : this.tokenizer.peekAt(offset - 1);
+		if (isGroupingBracket(tokenAt)) return;
+		const writing = unitWritingAhead(tokenAt);
+		if (writing === null || !parseUnit(writing)) return;
+		this.error(
+			missingNumberBeforeUnitMessage(writing),
+			this.currentToken.position,
+			writing.length + 2,
+			'MISSING_NUMBER_BEFORE_UNIT'
+		);
+	}
+
+	/** Refus E7 : après une grandeur, le terme qui porte l'unité compte plusieurs nombres */
+	private refuseAmbiguousTerm(): never {
+		const token = this.previousToken ?? this.currentToken;
+		this.error(AMBIGUOUS_TERM_MESSAGE, token.position, token.length, 'AMBIGUOUS_TERM');
 	}
 
 	/**
@@ -1071,8 +1126,8 @@ class CustomRDParser {
 		const content = this.parseExpression();
 		this.expect('RBRACE', "Expected '}' after expression");
 
-		// Braces are TRANSPARENT - return content directly
-		return content;
+		// Braces are TRANSPARENT - return content directly ; une grandeur y reste fermée
+		return this.unitTerm.close(content);
 	}
 
 	/**
@@ -1186,18 +1241,32 @@ class CustomRDParser {
 			if (this.check('STAR')) {
 				this.advance();
 				const right = this.parseUnaryStopAtPipe();
-				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'cross'), operatorColor);
+				left = this.unitTerm.binary(left, right, (factor, value) =>
+					this.applyColorWithOperator(MathAST.multiply(factor, value, 'cross'), operatorColor)
+				);
 			} else if (this.check('COLON_SLASH')) {
 				this.advance();
 				const right = this.parseUnaryStopAtPipe();
-				left = this.applyColorWithOperator(MathAST.divide(left, right, 'inline'), operatorColor);
+				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+					this.applyColorWithOperator(
+						MathAST.divide(numerator, denominator, 'inline'),
+						operatorColor
+					)
+				);
 			} else if (this.check('COLON')) {
 				this.advance();
 				const right = this.parseUnaryStopAtPipe();
-				left = this.applyColorWithOperator(MathAST.divide(left, right, 'ratio'), operatorColor);
+				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+					this.applyColorWithOperator(
+						MathAST.divide(numerator, denominator, 'ratio'),
+						operatorColor
+					)
+				);
 			} else if (this.shouldInsertImplicitMultiplyStopAtPipe()) {
 				const right = this.parseUnaryStopAtPipe();
-				left = this.applyColor(MathAST.multiply(left, right, 'implicit'));
+				left = this.unitTerm.binary(left, right, (factor, value) =>
+					this.applyColor(MathAST.multiply(factor, value, 'implicit'))
+				);
 			} else {
 				break;
 			}
@@ -1243,13 +1312,13 @@ class CustomRDParser {
 			}
 
 			const operand = this.parseUnaryStopAtPipe();
-			return this.applyColor(MathAST.opposite(operand));
+			return this.unitTerm.unary(operand, (value) => this.applyColor(MathAST.opposite(value)));
 		}
 
 		if (this.check('PLUS')) {
 			this.advance();
 			const operand = this.parseUnaryStopAtPipe();
-			return this.applyColor(MathAST.positive(operand));
+			return this.unitTerm.unary(operand, (value) => this.applyColor(MathAST.positive(value)));
 		}
 
 		return this.parsePowerStopAtPipe();
@@ -1298,7 +1367,9 @@ class CustomRDParser {
 		while (this.check('SLASH') && !this.check('PIPE')) {
 			this.advance();
 			const right = this.parseAtomStopAtPipe();
-			left = this.applyColor(MathAST.divide(left, right, 'fraction'));
+			left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+				this.applyColor(MathAST.divide(numerator, denominator, 'fraction'))
+			);
 		}
 
 		return left;
@@ -1434,7 +1505,8 @@ class CustomRDParser {
 		this.expect('RBRACE', "Expected '}' after colored content");
 		this.colorStack.pop();
 
-		return content; // Color already applied via applyColor() during parsing
+		// Color already applied via applyColor() during parsing ; des accolades : une grandeur y reste fermée
+		return this.unitTerm.close(content);
 	}
 
 	/**

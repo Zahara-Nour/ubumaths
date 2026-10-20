@@ -38,6 +38,8 @@ describe('les grandeurs nommées du panneau', () => {
 
 		expect(latexOf(runInput(s, 'd/t'))).toBe('2{,}5~\\mathrm{km}/\\mathrm{h}');
 		expect(latexOf(runInput(s, 'v*3[h]'))).toBe('7{,}5~\\mathrm{km}');
+		// Une grandeur du panneau clôt le terme : d/(2 h), pas (d/2) h (revue de la PR 4)
+		expect(latexOf(runInput(s, 'd/2[h]'))).toBe('2{,}5~\\mathrm{km}/\\mathrm{h}');
 	});
 });
 

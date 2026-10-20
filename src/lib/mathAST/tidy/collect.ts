@@ -58,7 +58,7 @@ import { isDelimiter, isFunction } from '../guards';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { format as formatUnit } from '../units/formatter';
 import { exactConversion, dimensionKey } from '../units/exact';
-import { recognizeDerivedUnit } from '../units/conversion';
+import { isMultipliedTemperature, recognizeDerivedUnit } from '../units/conversion';
 import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
 import { decimalString } from './decimal';
@@ -1123,6 +1123,8 @@ function tidyAtom(node: MathNode, unitChoice: UnitChoice): MathNode {
 		case 'subtraction':
 			return tidyExpression(node, options);
 		case 'unit':
+			// Finding C5 — `2*20[°C]` reste tel quel : une température ne se multiplie pas
+			if (isMultipliedTemperature(node)) return node;
 			return withUnit(tidyExpression(node.expression, options), node.unit);
 		case 'superscript':
 			return superscript(
