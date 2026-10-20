@@ -468,10 +468,14 @@ describe('Subscripts and Superscripts', () => {
 			expect(result.errors[0].code).toBe('INVALID_SUPERSCRIPT');
 		});
 
-		it('x^-2 should fail - negative without braces', () => {
-			const result = parseSafe('x^-2');
-			expect(result.errors.length).toBeGreaterThan(0);
-			expect(result.errors[0].code).toBe('INVALID_SUPERSCRIPT');
+		// Lecture-grandeurs (2026-10-20) : un signe, puis UN nombre ou UNE lettre
+		it('x^-2 = x^{-2} - signed exponent without braces', () => {
+			expect(parse('x^-2')).toEqual(parse('x^{-2}'));
+		});
+
+		it('x^2^3 should fail - stacked exponents', () => {
+			const result = parseSafe('x^2^3');
+			expect(result.errors[0]?.code).toBe('STACKED_EXPONENTS');
 		});
 	});
 

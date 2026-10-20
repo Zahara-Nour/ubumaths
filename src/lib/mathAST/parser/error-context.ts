@@ -157,9 +157,14 @@ export function getSuggestions(code: ParseErrorCode, message: string): string[] 
 
 		case 'INVALID_SUPERSCRIPT':
 			suggestions.push('Utilisez des accolades pour les exposants complexes : x^{ab}');
-			if (message.includes('negative') || message.includes('négatif')) {
-				suggestions.push('Pour un exposant négatif, écrivez x^{-2} et non x^-2');
-			}
+			break;
+
+		case 'STACKED_EXPONENTS':
+			suggestions.push('Deux exposants à la suite : écrivez 2^{3^2} ou (2^3)^2');
+			break;
+
+		case 'NEGATIVE_EXPONENT_BEFORE_GROUP':
+			suggestions.push('Mettez tout l’exposant entre accolades : 2^{-(x+1)}');
 			break;
 
 		case 'INVALID_UNIT':

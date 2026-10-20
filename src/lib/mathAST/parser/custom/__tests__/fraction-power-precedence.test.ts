@@ -84,10 +84,7 @@ describe('ce qui marchait continue de marcher', () => {
 		['1/2x', '{1/2}x'],
 		['x/2y', '{x/2}y'],
 		['x^2', 'x^2'],
-		// Le parseur lit `x^2^3` comme (x²)³ ; depuis le 2026-09-28 la sortie le
-		// dit (base puissance parenthésée) au lieu de `x^2^3`, qui se relisait
-		// autrement en LaTeX (x^{2^3}) — lecture elle-même inchangée.
-		['x^2^3', '(x^2)^3'],
+		['(x^2)^3', '(x^2)^3'],
 		['2^3', '2^3'],
 		['sqrt(2)/2', 'sqrt(2)/2'],
 		['(a+b)/2', '(a+b)/2'],
@@ -111,7 +108,15 @@ describe('ce qui marchait continue de marcher', () => {
 		expect(toCustom(ast as MathNode)).toBe(expected);
 	});
 
-	it('x^-1 reste refusé (il faut parenthéser l’exposant négatif)', () => {
-		expect(pratt('x^-1')).toBeNull();
+	// Lecture-grandeurs, 2026-10-20 : `x^-1` = `x^{-1}` (un signe, puis UN nombre ou
+	// UNE lettre) ; `x^2^3`, lu (x²)³ ici et x^(2³) en LaTeX, est refusé.
+	it('x^-1 se lit x^{-1}', () => {
+		const ast = pratt('x^-1');
+		expect(ast).not.toBeNull();
+		expect(toCustom(ast as MathNode)).toBe('x^{-1}');
+	});
+
+	it('x^2^3 est refusé', () => {
+		expect(pratt('x^2^3')).toBeNull();
 	});
 });

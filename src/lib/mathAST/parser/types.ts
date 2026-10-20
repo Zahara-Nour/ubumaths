@@ -241,7 +241,9 @@ export type ParseErrorCode =
 	| 'UNKNOWN_ENVIRONMENT' // Unknown LaTeX environment (e.g., \begin{xyz})
 	| 'UNCLOSED_ENVIRONMENT' // Environment not closed (missing \end)
 	| 'MISMATCHED_ENVIRONMENT' // Begin/end environment names don't match
-	| 'CONSECUTIVE_SIGNS'; // Consecutive +/- signs (++, --, +-, -+)
+	| 'CONSECUTIVE_SIGNS' // Consecutive +/- signs (++, --, +-, -+)
+	| 'STACKED_EXPONENTS' // Deux exposants à la suite : 2^3^2 (écrire 2^{3^2} ou (2^3)^2)
+	| 'NEGATIVE_EXPONENT_BEFORE_GROUP'; // Signe d'exposant devant un groupe : 2^-sin(x), 2^-(x+1)
 
 /**
  * Context around an error showing surrounding text.

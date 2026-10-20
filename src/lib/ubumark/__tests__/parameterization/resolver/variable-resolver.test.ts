@@ -350,8 +350,8 @@ describe('resolveVariables', () => {
 		});
 
 		it('should treat a negative single-letter var as a grouped exponent', () => {
-			// `10^-2` errors ("negative exponent requires braces"); the `{}` wrap
-			// turns it into `10^{-2}` = 0.01.
+			// The `{}` wrap turns `10^{{n}}` into `10^{-2}` = 0.01 (`10^-2` also
+			// reads 10^{-2} since 2026-10-20; `10^-2.5` or `10^-x` too).
 			const variables: Variable[] = [
 				{ name: 'n', expression: '-2' },
 				{ name: 'result', expression: '{{eval:10^{{n}}}}' }

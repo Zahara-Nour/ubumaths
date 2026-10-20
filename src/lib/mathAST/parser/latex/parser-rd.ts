@@ -10,7 +10,7 @@
  * - Implicit multiplication detection
  * - Color stack for \textcolor nesting
  * - Tolerant and strict parsing modes
- * - Right-associative chained exponents: x^2^3 -> x^(2^3)
+ * - Chained exponents refused: x^2^3 (write x^{2^3} or {x^2}^3)
  * - Left-to-right for mixed: x_1^2 -> (x_1)^2
  *
  * Grammar:
@@ -49,6 +49,7 @@ import {
 	factorialOf
 } from '../factorial-notation';
 import { numberAfterFactorMessage } from '../number-after-factor';
+import { STACKED_EXPONENTS_MESSAGE } from '../exponent-rules';
 import {
 	SecurityError,
 	getEffectiveSecurityOptions,
@@ -600,8 +601,8 @@ class RDParser {
 	/**
 	 * power := postfix ('^' powerOperand | '_' subscriptOperand)*
 	 *
-	 * Handles both superscript and subscript with special right-associativity rules:
-	 * - x^2^3 => x^(2^3) (right-associative for chained same operator)
+	 * Handles both superscript and subscript:
+	 * - x^2^3 is refused (STACKED_EXPONENTS, see parsePowerOperand)
 	 * - x_1^2 => (x_1)^2 (left-to-right for mixed operators)
 	 */
 	private parsePower(): MathNode {
@@ -650,26 +651,20 @@ class RDParser {
 	}
 
 	/**
-	 * Parse the operand of a superscript (handles braces and right-associativity)
-	 * For x^2^3 to parse as x^(2^3):
-	 * - If braced, just parse the brace group
-	 * - If not braced, parse a single primary, then check for chained ^
+	 * Parse the operand of a superscript (a brace group or a single primary).
+	 * A second `^` right after it is refused: `x^2^3` was read x^(2^3) here and
+	 * (x^2)^3 by the custom parser (2026-10-20). TeX refuses it too.
 	 */
 	private parsePowerOperand(): MathNode {
-		if (this.check('LBRACE')) {
-			return this.parseBraceGroup();
-		}
-
-		// Parse single primary token
-		const operand = this.parsePrimary();
-
-		// Check for chained superscript (right-associativity)
+		const operand = this.check('LBRACE') ? this.parseBraceGroup() : this.parsePrimary();
 		if (this.check('CARET')) {
-			this.advance();
-			const nextOperand = this.parsePowerOperand();
-			return this.applyColor(MathAST.superscript(operand, nextOperand));
+			this.error(
+				STACKED_EXPONENTS_MESSAGE,
+				this.currentToken.position,
+				this.currentToken.length,
+				'STACKED_EXPONENTS'
+			);
 		}
-
 		return operand;
 	}
 
