@@ -16,10 +16,12 @@ _Mis à jour le 2026-10-20, après #1560._
 ### 2026-10-20 — PR « retrait de `BARE_PI` » codée
 
 - Worktree `../ubumaths-wt-lecture-grandeurs`, branche `refactor/retrait-bare-pi`.
-- Portée exacte de l'ancienne tolérance : `{{eval:…}}` (`parseEvalAst`) et `conditions[]`
-  (`normalizeCondition`). PAS la condition d'un `{{if:…}}` : `pi` y est un nom inconnu, la condition
-  était déjà laissée au navigateur (énoncé) ou refusée (strict). Les blocs `courbe / `trig ont leur
-  propre lecture de `pi` : hors PR.
+- Portée exacte de l'ancienne tolérance : `{{eval:…}}` (`parseEvalAst`), `conditions[]`
+  (`normalizeCondition`) et — relevé par la revue — la condition `{{if:…}}` du bon choix d'un QCM
+  (`resolveConditionalChoice`, sans filtre des variables ; 0 cas en prod comme au dépôt). Pas la
+  condition d'un `{{if:…}}` d'énoncé ou de corrigé : `pi` y est un nom inconnu (laissée au navigateur,
+  ou refusée en strict). Expression de variable lue entière seulement si `eval:…`. Les blocs courbe et
+  trig ont leur propre lecture de `pi` : hors PR.
 - Refus : `barePiRefusal` (`ubumark/parameterization/validator/bare-pi.ts`) → `AuthorExpressionError`
   / `ConditionSyntaxError`, « « pi » sans antislash se lit p × i ; écris \pi pour la constante π, ou p*i
   pour le produit ». `checkTemplate` l'attrape (génération) : import et publication bloqués.
@@ -30,7 +32,8 @@ _Mis à jour le 2026-10-20, après #1560._
 - Dépôt réécrit textuellement (`scripts/inventaire-pi-nu.ts --ecrire`) : diff = 199 antislashes, rien
   d'autre ; 18/18 `question:specs` importables (3650 tirages) ; l'ancienne version de C-01 refusée.
 - Prod : `scripts/reecrire-pi-nu-base.ts` (simulation par défaut, `--ecrire`, sauvegarde, relecture) ;
-  simulation = 199 / 18. La réécriture est compatible avec le code en prod (`\pi` y est déjà lu) :
+  garde `updated_at` (rien d'écrasé si le modèle a bougé) ; écriture éprouvée en LOCAL (modèle de test
+  à 4 cas : 4 réécrits, `{{pi|e}}` et « pièce » intacts, ligne supprimée). Simulation prod = 199 / 18. La réécriture est compatible avec le code en prod (`\pi` y est déjà lu) :
   à faire AVANT le `deploy:prod` qui livre le refus.
 
 ### 2026-10-20 — PR 4 codée : l'unité multiplie tout le terme

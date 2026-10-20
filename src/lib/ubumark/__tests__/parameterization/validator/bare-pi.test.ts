@@ -12,7 +12,8 @@ describe('rewriteBarePi : calculs réécrits', () => {
 		['{{eval:5pi}}', '{{eval:5\\pi}}'],
 		['{{eval:-pi+2*pi}}', '{{eval:-\\pi+2*\\pi}}'],
 		['{{eval:{{a}}*pi;d}}', '{{eval:{{a}}*\\pi;d}}'],
-		['{{if:a>0|{{eval:pi/2}}|0}}', '{{if:a>0|{{eval:\\pi/2}}|0}}']
+		['{{if:a>0|{{eval:pi/2}}|0}}', '{{if:a>0|{{eval:\\pi/2}}|0}}'],
+		['{{eval:2*pi', '{{eval:2*\\pi']
 	])('%s → %s', (text, expected) => {
 		const { value, occurrences } = rewriteBarePi({ statement: text });
 		expect(value.statement).toBe(expected);
@@ -34,6 +35,21 @@ describe('rewriteBarePi : calculs réécrits', () => {
 			'variations[0].conditions[0]',
 			'variations[0].variables[0].expression'
 		]);
+	});
+
+	it('bon choix d’un QCM : la condition du {{if:…}} de correctChoiceIndex', () => {
+		const { value, occurrences } = rewriteBarePi({
+			correctChoiceIndex: ['{{if:cos(pi/6)>0.5|0|1}}', '2']
+		});
+		expect(value.correctChoiceIndex).toEqual(['{{if:cos(\\pi/6)>0.5|0|1}}', '2']);
+		expect(occurrences.map((o) => o.path)).toEqual(['correctChoiceIndex[0]']);
+	});
+
+	it('expression de variable sans eval: : seuls ses {{eval:…}}', () => {
+		const { value } = rewriteBarePi({
+			variables: [{ name: 'a', expression: '{{eval:pi/6}}' }]
+		});
+		expect(value.variables[0].expression).toBe('{{eval:\\pi/6}}');
 	});
 
 	it('compte chaque pi nu', () => {
@@ -62,6 +78,11 @@ describe('rewriteBarePi : ce qui ne change pas', () => {
 
 	it('expression de variable en texte : « pièce » n’est pas π', () => {
 		const variation = { variables: [{ name: 'objet', expression: '{{pièce|pile}}' }] };
+		expect(rewriteBarePi(variation).occurrences).toEqual([]);
+	});
+
+	it('expression de variable en texte ou liste : non touchée', () => {
+		const variation = { variables: [{ name: 'c', expression: '{{pi|e}}' }] };
 		expect(rewriteBarePi(variation).occurrences).toEqual([]);
 	});
 

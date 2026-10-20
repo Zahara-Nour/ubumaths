@@ -14,8 +14,9 @@
  *    `test_specs`) ; rien d'autre, `status` compris ;
  *  - la simulation affiche chaque calcul avant / après ;
  *  - avant écriture, les lignes visées sont sauvegardées (`data/migration-output/backups/`) ;
+ *  - l'écriture n'a lieu que si `updated_at` n'a pas bougé depuis la lecture ;
  *  - après écriture, la ligne est relue et comparée champ par champ ; arrêt à la
- *    première différence.
+ *    première différence. Le script est idempotent : le relancer reprend où il s'est arrêté.
  *
  * Usage :
  *   pnpm tsx scripts/reecrire-pi-nu-base.ts            (simulation)
@@ -35,7 +36,7 @@ import { createScriptClient, hasFlag } from './relecture/common';
 
 type Row = Pick<
 	Tables<'question_templates'>,
-	'id' | 'title' | 'status' | 'variations' | 'shared' | 'options' | 'test_specs'
+	'id' | 'title' | 'status' | 'updated_at' | 'variations' | 'shared' | 'options' | 'test_specs'
 >;
 
 type Field = 'variations' | 'shared' | 'options' | 'test_specs';
@@ -57,7 +58,7 @@ async function loadRows(supabase: ReturnType<typeof createScriptClient>['supabas
 	for (let from = 0; ; from += PAGE) {
 		const { data, error } = await supabase
 			.from('question_templates')
-			.select('id, title, status, variations, shared, options, test_specs')
+			.select('id, title, status, updated_at, variations, shared, options, test_specs')
 			.order('id')
 			.range(from, from + PAGE - 1);
 		if (error) throw error;
@@ -113,14 +114,18 @@ if (write && targets.length > 0) {
 	console.log(`Sauvegarde : ${backup}`);
 
 	for (const { row, update } of targets) {
-		const { data, error } = await supabase
-			.from('question_templates')
-			.update(update)
-			.eq('id', row.id)
-			.select('id, title, status, variations, shared, options, test_specs');
+		const query = supabase.from('question_templates').update(update).eq('id', row.id);
+		// Modèle modifié depuis la lecture : rien n'est écrasé (0 ligne, arrêt ci-dessous)
+		const { data, error } = await (
+			row.updated_at === null
+				? query.is('updated_at', null)
+				: query.eq('updated_at', row.updated_at)
+		).select('id, title, status, updated_at, variations, shared, options, test_specs');
 		if (error) throw error;
-		// Un refus RLS rend zéro ligne, sans erreur
-		if (data.length !== 1) throw new Error(`${row.id} : ${data.length} ligne(s) écrite(s)`);
+		// Zéro ligne : modèle modifié depuis la lecture (ou refus RLS, silencieux)
+		if (data.length !== 1) {
+			throw new Error(`${row.id} : ${data.length} ligne(s) écrite(s) ; relancer le script`);
+		}
 		const written = data[0];
 		for (const field of FIELDS) {
 			const expected = field in update ? update[field] : row[field];

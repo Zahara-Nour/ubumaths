@@ -56,6 +56,17 @@ describe('correctChoiceIndex conditionnel', () => {
 		}
 	});
 
+	it('\\pi dans la condition : la constante π', () => {
+		const generated = generateInstance(signQcm('{{if:cos(\\pi/6)>0.5|0|1}}'), 1);
+		expect(generated.success && generated.instance.correctChoiceIndex).toEqual(['0']);
+	});
+
+	it('pi nu dans la condition : refusé', () => {
+		const generated = generateInstance(signQcm('{{if:cos(pi/6)>0.5|0|1}}'), 1);
+		expect(generated.success).toBe(false);
+		expect(generated.success ? '' : generated.errors.join(' ')).toMatch(/« pi » sans antislash/);
+	});
+
 	it('condition TinyMath à un seul « = » (mod(a,2)=0)', () => {
 		const template = signQcm('{{if:mod(a,2)=0|0|1}}');
 		for (let seed = 1; seed <= 20; seed++) {
