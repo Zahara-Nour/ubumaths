@@ -2,7 +2,8 @@
 
 _Rédigé le 2026-10-20 à partir des décisions de David (journal, page à cocher des grandeurs : 20 réponses
 sur 81 ; page virgule : 0 sur 31). Rien n'est codé. **Validé par David le 2026-10-20 (5e session)** : questions
-ouvertes 1 à 5 et toutes les lignes 🟡, avec `)2` ajouté à `MISSING_OPERATOR`. Il ne reste que les ⏸._
+ouvertes 1 à 5 et toutes les lignes 🟡, avec `)2` ajouté à `MISSING_OPERATOR`. Page grandeurs terminée le même
+jour (81/81) : Q11, Q12, Q15, E7 tranchées (PR 4). Il ne reste que la PR 6 (virgule) ⏸._
 
 **Portée.** Parseur maison (`parser/custom/`, Pratt **et** RD) ; le parseur LaTeX seulement là où une
 décision le nomme (B9, Q9, codes des refus qu'il partage). LECTURE seulement : le calcul
@@ -135,10 +136,21 @@ Limite
 
 Erreur
 
-- Aucun nouveau refus dans cette PR.
+✅ (David, 2026-10-20, fin de la page grandeurs)
 
-⏸ **Lettres (Q12)** : `3x[m]`, `x*2[m]` restent `3*(x[m])`, `x*(2[m])` tant que Q12 n'est pas cochée.
-⏸ **π (Q11)** : `π[m]` reste la lettre, `pi[m]` reste `p*i[m]` tant que Q11 n'est pas cochée.
+- **Terme ambigu après une grandeur** (E7) : après `grandeur *` ou `grandeur /`, le terme qui porte l'unité doit
+  être UN nombre ; sinon refus `AMBIGUOUS_TERM` (nouveau, « write 6[m]/(2*3[s]) or (6[m]/2)*3[s] »).
+  `6[m]/2*3[s]`, `6[m]/2/3[s]`, `6[m]*2/3[s]` refusés (aujourd'hui 9 m·s, 1 m/s, 4 m/s) ; `6[m]/2[s]`, `6[m]/2`,
+  `6[m]/(2*3[s])` lus.
+- **Unité seule** (K2, Q15) : `[m]` → refus `MISSING_NUMBER_BEFORE_UNIT` (nouveau, « A unit needs a number
+  before it (write 1[m]) ») ; aujourd'hui lu comme la lettre m entre crochets de calcul.
+
+✅ **Lettres (Q12)** : `3x[m]` = `(3*x)[m]`, `x*2[m]` = `(x*2)[m]` (la règle du terme vaut pour les lettres).
+✅ **π (Q11)** : `π[m]` = la constante π (comme `\pi[m]`), `2π[m]` = `(2*π)[m]` ; `pi[m]` = π[m], `2pi[m]` =
+`(2*π)[m]` — **avant de coder**, grep des énoncés et modèles où `pi` serait le produit de deux variables p et i.
+
+Hors chantier (calcul, atelier) : `computeQuantity` refuse toute lettre (`x+1`, `x[m]`) avec « Ces grandeurs ne
+se combinent pas » ; message voulu « x n'a pas de valeur » (comme `.eval`). Tâche de l'atelier, pas de ce chantier.
 
 ---
 

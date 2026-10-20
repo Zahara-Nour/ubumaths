@@ -2,16 +2,28 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, après #1555._
+_Mis à jour le 2026-10-20, après #1555 et la fin de la page grandeurs._
 
 - **État** : phase 0 **validée** (`docs/wip/lecture-grandeurs-phase0.md`, sauf ⏸), PR 1 (`×`, `·`, `⋅` lus `*`) mergée (#1555), pas en prod. Pages à cocher (font foi) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81 fiches, 20 répondues dont B7, B9, F1-F3 tranchées en conversation) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (31 fiches, 0 répondue). Base `reponses/<id>`.
-- **Décidé par David** (détail : historique) : (1) unité × tout le terme, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs (A9) ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue interne au point. (3) Il refuse la virgule décimale. (4) Refus = code + message anglais, l'atelier traduit (`mathAST/cli/web/french-errors.ts`). (5) **Catalogue de 14 codes validé** (historique, 3e session). (6) **Q9 (a)** : durées et angles juxtaposés LUS comme une somme marquée « juxtaposée » (4 implémentations, fonction partagée ; `;hms`, `compositeDuration`) ; autres grandeurs refusées `JUXTAPOSED_QUANTITIES` ; risque de perte de la marque géré : chemins réels mesurés → test de RENDU par chemin → garde. (7) `×`, `·`, `⋅` lus `*` (aussi `·`/`⋅` entre crochets) ; ⚠️ `2.5` ≠ `2·5`. (8) B7 : `^` + signe + UN nombre/lettre ; `10^-3+4` = `10^{-3}+4` ; refus `e^-x^2` (`STACKED_EXPONENTS`), `2^-sin(x)`, `2^-(x+1)` (`NEGATIVE_EXPONENT_BEFORE_GROUP`). (9) B9 : empilé = 2^(3^2) ; REFUS dans les deux parseurs (`STACKED_EXPONENTS`). (10) Durée composée = un bloc avec `+`/`−` ; collée à `*` ou `/` (des deux côtés, espaces ou non) → refus, atelier compris. (11) Phase 0 validée : LaTeX ne lit pas `×`/`·` Unicode ; `MISSING_OPERATOR` = `x2`, `x 2`, `)2` ; `10^+3` lu, `2^-x y` refusé ; `{2[m]}{3[m]}` reste un produit.
-- **En attente de David** : fiches restantes de la page grandeurs (v8 : codes alignés sur le catalogue, 18 fiches « tranché en conversation ») et les 31 fiches virgule.
+- **Décidé par David** (détail : historique) : (1) unité × tout le terme, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs (A9) ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue interne au point. (3) Il refuse la virgule décimale. (4) Refus = code + message anglais, l'atelier traduit (`mathAST/cli/web/french-errors.ts`). (5) **Catalogue de 14 codes validé** (historique, 3e session). (6) **Q9 (a)** : durées et angles juxtaposés LUS comme une somme marquée « juxtaposée » (4 implémentations, fonction partagée ; `;hms`, `compositeDuration`) ; autres grandeurs refusées `JUXTAPOSED_QUANTITIES` ; risque de perte de la marque géré : chemins réels mesurés → test de RENDU par chemin → garde. (7) `×`, `·`, `⋅` lus `*` (aussi `·`/`⋅` entre crochets) ; ⚠️ `2.5` ≠ `2·5`. (8) B7 : `^` + signe + UN nombre/lettre ; `10^-3+4` = `10^{-3}+4` ; refus `e^-x^2` (`STACKED_EXPONENTS`), `2^-sin(x)`, `2^-(x+1)` (`NEGATIVE_EXPONENT_BEFORE_GROUP`). (9) B9 : empilé = 2^(3^2) ; REFUS dans les deux parseurs (`STACKED_EXPONENTS`). (10) Durée composée = un bloc avec `+`/`−` ; collée à `*` ou `/` (des deux côtés, espaces ou non) → refus, atelier compris. (11) Phase 0 validée : LaTeX ne lit pas `×`/`·` Unicode ; `MISSING_OPERATOR` = `x2`, `x 2`, `)2` ; `10^+3` lu, `2^-x y` refusé ; `{2[m]}{3[m]}` reste un produit. (12) Fin de la page grandeurs : `3x[m]` = (3x)[m] ; `π[m]`, `pi[m]` = constante π ; `[m]` refusé (`MISSING_NUMBER_BEFORE_UNIT`) ; après `grandeur *` ou `/`, un terme de plusieurs nombres devant une unité est refusé (`AMBIGUOUS_TERM`) ; catalogue = 16 codes.
+- **En attente de David** : les 31 fiches de la page virgule (https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib). Page grandeurs : 81/81, terminée.
 - **Prochaine action** : PR 2 (exposants : `^-` + UN nombre/lettre, `10^+3`, `2^-x y` refusé ; empilés refusés dans les deux parseurs) dans un worktree neuf `ubumaths-wt-lecture-grandeurs` ; PR 6 après la page virgule.
 - **Pièges** : distinguer LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt (défaut) + RD ; `{2[h]}{30[min]}` = 1 h² aujourd'hui ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
 - **Worktree / branche** : aucun (PR 1 nettoyée). Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
+
+### 2026-10-20 — page grandeurs terminée (81/81)
+
+- 63 réponses de David + 18 fiches tranchées en conversation. Questions de David traitées en conversation :
+  E7 (cas ambigus `6[m]/2*3[s]` : refus, nouveau code `AMBIGUOUS_TERM`), H5 (`·` séparateur mal lu → « et »
+  sur la page v9 ; `pi[m]` = π[m]), I1/I4 (le calcul refuse toute lettre avec un message faux : tâche de
+  l'atelier, hors chantier), J2 (°C non additifs : refus existant expliqué), K2 (`[m]` refusé,
+  `MISSING_NUMBER_BEFORE_UNIT` ajouté au catalogue ; je ne sais pas pourquoi il en était absent).
+- Validées sans commentaire : G10 (espace dans l'unité reste refusée), H3/H4 (π constante), I2/I3 (lettres
+  dans le terme), K1 (`10^(3[m])` lu, le calcul refuse).
+- Mesuré : `computeQuantity` refuse `x+1` et `x[m]` (« Ces grandeurs ne se combinent pas ») ; `6[m]/2*3[s]` =
+  9 m·s, `6[m]/2/3[s]` = 1 m/s, `6[m]*2/3[s]` = 4 m/s aujourd'hui.
 
 ### 2026-10-20 — PR 1 codée : `×`, `·`, `⋅` lus `*`
 
