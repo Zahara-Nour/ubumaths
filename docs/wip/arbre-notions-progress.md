@@ -5,19 +5,20 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, pendant le lot A des MODIFIER (branche `feat/arbre-lot-2bis-nombres`)._
+_Mis à jour le 2026-10-21, lot A des MODIFIER en cours (pas encore de PR)._
 
-- **État** : méthode validée par David (2026-10-21) : une migration par lot, générée par script, garde sur le
-  contenu relevé, tag posé dans la même migration. Lot A « resserrer les nombres » (39 modèles) en cours :
-  `analyse/lot-2bis-nombres.py` → migration `20261021090000_lot_2bis_resserrer_nombres.sql` + test d'intégration.
-- **Prochaine action** : test d'intégration (rouge sans la migration, vert avec), PR, revue, merge, `db:migrate` ;
-  puis lot B (7 « retirer des variations »), lot C (17 consignes/affichages, un exemple par forme à montrer à David
-  d'abord), lot D (3 scissions, phase 0 à part : cartes SRS, tentatives, fiches de l'ancien modèle).
+- **État** : lot A « resserrer les nombres » (39 modèles) codé et commité : `analyse/lot-2bis-nombres.py` →
+  migration `20261021090000_lot_2bis_resserrer_nombres.sql` + `tests/integration/lot-2bis-nombres.test.ts`
+  (10 verts ; rouges vérifiés sans la migration). 39/39 importables (`question:specs`), audit des tirages propre,
+  check:incremental, cliquet et lint:fast verts. Revues `code-reviewer` + `security-auditor` (Opus) lancées.
+- **Prochaine action** : traiter les findings des revues (les relancer si leurs résultats sont perdus), PR,
+  merge, `db:migrate` (4 conditions : accès validé ✓, rouges ✓, audit à confirmer, additive ✓) ; puis lot B
+  (7 variations), C (17 consignes, un exemple par forme d'abord), D (3 scissions, phase 0 à part).
+- **Décisions de David (2026-10-21)** : méthode = une migration par lot ; accès du lot A validé ; f1a392f5 garde
+  ses 6 variations ; 82748db8 garde le doublon dm² → m².
 - **En attente de David** : rien.
-- **Pièges en cours** : l'API REST plafonne à 1000 lignes (paginer `curriculum_points`) ; `question:specs --file`
-  veut le format de l'app (passer par `toQuestionTemplate`, retirer created_at/updated_at/created_by) ; jsonb
-  réordonne les clés (comparer en canonique) ; aucune donnée d'élève ne pointe une variation de modèle de question
-  (`worksheet_exercises.variation_index` = exercices) ; tout nouveau lot doit respecter la garde du nœud.
+- **Pièges en cours** : API REST plafonnée à 1000 lignes ; `question:specs --file` veut le format de l'app
+  (`toQuestionTemplate`) ; jsonb réordonne les clés ; garde du nœud à respecter à chaque lot.
 - **Worktree / branche** : `../ubumaths-wt-arbre-notions` · `feat/arbre-lot-2bis-nombres`.
 - **Worktree / branche** : aucun (worktree de #1563 supprimé).
 
