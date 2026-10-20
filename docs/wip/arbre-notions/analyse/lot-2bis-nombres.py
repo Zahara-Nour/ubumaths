@@ -52,7 +52,9 @@ def garder_variations(t: dict, garder: list[int]) -> None:
     specs = []
     for s in t['test_specs']:
         if s['variationIndex'] in nouveau:
-            specs.append({**s, 'variationIndex': nouveau[s['variationIndex']]})
+            i = nouveau[s['variationIndex']]
+            description = re.sub(r'^v\d+\b', f'v{i}', s['description'])
+            specs.append({**s, 'variationIndex': i, 'description': description})
     t['test_specs'] = specs
 
 
@@ -370,6 +372,7 @@ def m_59b781cc(t):
 def m_dd7db98e(t):
     variable(t['variations'][0], 'a', '1/2|1/4|3/1000|3/2|5/2|3/4|1/5|7/2|9/2',
              '1/2|1/4|1/10|1/100|1/1000|4/2|3/2|5/2|3/4')
+    corrige_formes_decimales(t['variations'][0]['correction']['steps'])
     t['test_specs'] = [
         spec('0.5', 'correct', {'a': '1/2'}, 'un demi'),
         spec('2{,}5', 'correct', {'a': '5/2'}, 'cinq demis, virgule'),
@@ -385,6 +388,36 @@ def m_dd7db98e(t):
         spec('0.1', 'incorrect', {'a': '1/100'}, 'confusion 1/100 = 0,1'),
         spec('2', 'correct', {'a': '4/2'}, 'quatre demis = 2'),
     ]
+
+
+def corrige_formes_decimales(steps: list[str]) -> None:
+    """Le corrigé de dd7db98e a une branche `{{if:1000*a=…}}` par fraction tirée : celles des fractions
+    retirées (3/1000, 1/5, 7/2, 9/2) partent, celles des fractions ajoutées sont écrites."""
+    p1 = '\\textcolor{{{color:primary.1}}}'
+    p0 = '\\textcolor{{{color:primary.0}}}'
+    zero = f' Il n\'y a pas d\'unités : on écrit $0$ avant la virgule.'
+    trous = f' Il manque des chiffres entre la virgule et ce rang : on les remplace par des ${p1}{{0}}$.'
+    nouvelles = {
+        '100': (f'Le dénominateur est ${p1}{{10}}$ : le chiffre ${p0}{{1}}$ se place au rang des '
+                f'${p1}{{\\text{{dixièmes}}}}$.' + zero,
+                '$$\\begin{align} \\dfrac{1}{10} &= {{solution}} \\end{align}$$'),
+        '10': (f'Le dénominateur est ${p1}{{100}}$ : le chiffre ${p0}{{1}}$ se place au rang des '
+               f'${p1}{{\\text{{centièmes}}}}$.' + zero + trous,
+               '$$\\begin{align} \\dfrac{1}{100} &= {{solution}} \\end{align}$$'),
+        '1': (f'Le dénominateur est ${p1}{{1000}}$ : le chiffre ${p0}{{1}}$ se place au rang des '
+              f'${p1}{{\\text{{millièmes}}}}$.' + zero + trous,
+              '$$\\begin{align} \\dfrac{1}{1000} &= {{solution}} \\end{align}$$'),
+        '2000': (f'Le numérateur $4$ est un multiple du dénominateur : $4 = 2 \\times {p1}{{2}}$. La fraction '
+                 f'est donc égale au nombre entier ${p0}{{2}}$.',
+                 f'$$\\begin{{align}} \\dfrac{{4}}{{2}} &= \\dfrac{{2 \\times {p1}{{2}}}}{{2}} \\\\ &= {{{{solution}}}} \\end{{align}}$$'),
+    }
+    for etape in (1, 2):
+        branches = re.findall(r'\{\{if:1000\*a=(\d+)\|(.*?)\|\}\}', steps[etape], flags=re.S)
+        assert ''.join(f'{{{{if:1000*a={v}|{c}|}}}}' for v, c in branches) == steps[etape]
+        assert [v for v, _ in branches] == ['500', '250', '3', '200', '1500', '2500', '750', '3500', '4500']
+        gardees = [(v, c) for v, c in branches if v not in ('3', '200', '3500', '4500')]
+        gardees += [(v, txt[etape - 1]) for v, txt in nouvelles.items()]
+        steps[etape] = ''.join(f'{{{{if:1000*a={v}|{c}|}}}}' for v, c in gardees)
 
 
 def division_10_100_1000(t):
@@ -485,8 +518,7 @@ def m_39c5bcfa(t):
         v['statement'] = v['statement'].replace(ancien, f'$${{{{eval:a*b}}}}{{{{f}}}}{signe}{{{{eval:a*c}}}}$$')
     for s in t['test_specs']:
         if s['description'] == '14 ne divise pas 63':
-            s['description'] = '14 ne divise pas 28'
-            s['answers'] = ['14']
+            s['description'] = '14 ne divise pas 63'
 
 
 def m_3abfcd7b(t):

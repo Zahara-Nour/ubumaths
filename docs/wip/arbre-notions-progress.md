@@ -5,21 +5,18 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, lot A des MODIFIER en cours (pas encore de PR)._
+_Mis à jour le 2026-10-21, lot A des MODIFIER en PR._
 
-- **État** : lot A « resserrer les nombres » (39 modèles) codé et commité : `analyse/lot-2bis-nombres.py` →
-  migration `20261021090000_lot_2bis_resserrer_nombres.sql` + `tests/integration/lot-2bis-nombres.test.ts`
-  (10 verts ; rouges vérifiés sans la migration). 39/39 importables (`question:specs`), audit des tirages propre,
-  check:incremental, cliquet et lint:fast verts. `security-auditor` : 0 bloquant (verrou + garde md5 du rollback
-  ajoutés, 11 tests verts) ; `code-reviewer` (Opus) en cours.
-- **Prochaine action** : traiter les findings des revues (les relancer si leurs résultats sont perdus), PR,
-  merge, `db:migrate` (4 conditions remplies : accès ✓, rouges ✓, audit ✓, additive ✓) ; puis lot B
+- **État** : lot A « resserrer les nombres » (39 modèles) : `analyse/lot-2bis-nombres.py` → migration
+  `20261021090000_lot_2bis_resserrer_nombres.sql` + test d'intégration (11 verts, rouges vérifiés). Revues faites :
+  sécurité 0 bloquant (verrou + garde md5 du rollback ajoutés) ; code : corrigé vide de dd7db98e corrigé.
+- **Prochaine action** : CI verte → merge → `db:migrate` (4 conditions remplies) → vérifier en prod ; puis lot B
   (7 variations), C (17 consignes, un exemple par forme d'abord), D (3 scissions, phase 0 à part).
-- **Décisions de David (2026-10-21)** : méthode = une migration par lot ; accès du lot A validé ; f1a392f5 garde
-  ses 6 variations ; 82748db8 garde le doublon dm² → m².
-- **En attente de David** : rien.
-- **Pièges en cours** : API REST plafonnée à 1000 lignes ; `question:specs --file` veut le format de l'app
-  (`toQuestionTemplate`) ; jsonb réordonne les clés ; garde du nœud à respecter à chaque lot.
+- **Décisions de David (2026-10-21)** : une migration par lot ; accès du lot A validé ; f1a392f5 garde ses 6
+  variations ; 82748db8 garde le doublon dm² → m².
+- **En attente de David** : rien. À lui signaler : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
+- **Pièges en cours** : API REST plafonnée à 1000 lignes ; `question:specs --file` veut le format de l'app ;
+  jsonb réordonne les clés ; un corrigé à branches `{{if:a=…}}` suit la liste des valeurs (vérifier étapes vides).
 - **Worktree / branche** : `../ubumaths-wt-arbre-notions` · `feat/arbre-lot-2bis-nombres`.
 - **Worktree / branche** : aucun (worktree de #1563 supprimé).
 
