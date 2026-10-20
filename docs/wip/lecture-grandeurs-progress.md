@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-20, ouverture._
 
 - **État** : phase 0. Corpus écrit : `docs/wip/lecture-grandeurs-corpus.md` (≈ 90 écritures, mesurées, 16 questions). Référence : `docs/ref/si/` (Brochure SI, 9e éd., v4.01). Périmètre : parseur MAISON seulement ; le LaTeX ensuite.
 - **Prochaine action** : David coche la page https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (80 fiches, base `reponses/<id>` : choix ok/ko/wait + commentaire) ; je la relis avec `ArtifactData` (compter les réponses avant de dire « tout est relu ») ; puis inventaire des `a/b[u]` déjà écrits (modèles publiés, `{{eval}}`, tests) avant tout code ; ADR de la règle.
-- **En attente de David** : la page à cocher (Q1-Q16 réparties dans les fiches).
+- **En attente de David** : deux pages à cocher — corpus des grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (80 fiches) ; espaces, virgule, point-virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (37 fiches, Q-A séparateur `;`, Q-M matrices). Base `reponses/<id>` dans chacune.
 - **Pièges en cours** : `{2[h]}{30[min]}` vaut 1 h² (écriture produite par `;hms`) ; `π[m]` refusé, `pi` lu p × i ; refus de lecture en anglais.
 - **Worktree / branche** : aucun (phase 0, docs sur `main`).
 
