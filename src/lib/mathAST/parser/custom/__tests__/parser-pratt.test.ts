@@ -84,9 +84,11 @@ describe('Literals', () => {
 			expect(ast).toEqual({ type: 'number', value: '3.14' });
 		});
 
-		it('should parse decimal with comma (French notation, normalized to dot)', () => {
-			const ast = parse('3,14');
-			expect(ast).toEqual({ type: 'number', value: '3.14' });
+		// lecture-grandeurs, PR 6 : point décimal seul (virgule-point-virgule.test.ts)
+		it('should refuse a decimal comma', () => {
+			expect(() => parse('3,14')).toThrow(
+				"Decimal comma: the decimal separator is '.' (write 3.14)"
+			);
 		});
 
 		it('should parse zero', () => {

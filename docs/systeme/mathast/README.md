@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21).
 
 ## À quoi ça sert
 
@@ -333,6 +333,26 @@ celui que traduit l'atelier (`cli/web/french-errors.ts`). `INVALID_UNIT` n'exist
 n'en est pas un) a un texte nouveau, « Missing zero before the
 decimal point (write 0.5) », traduit par l'atelier. `UNEXPECTED_TOKEN` reste en dernier recours.
 Tests : `parser/__tests__/codes-des-refus.test.ts`.
+
+Virgule et point-virgule (2026-10-21, chantier lecture-grandeurs, PR 6). Le parseur maison est la
+langue interne du moteur : **point décimal seul, virgule toujours séparatrice** (arguments d'une
+fonction, éléments d'une matrice), pas de point-virgule. Le tokenizer (`parser/custom/tokenizer.ts`)
+ne lit plus jamais la virgule comme décimale (`3,14` = `3` `,` `14`) et fait de `;` un jeton
+`SEMICOLON` (il était une lettre : `x;y` se lisait x·;·y). Le refus naît au jeton refusé
+(`refusal-codes.ts`) : `DECIMAL_COMMA` quand la virgule est collée entre deux entiers (`2,5`, `(1,2)`,
+`[1,2]`, `max((2,5),3)`, `√2,5`), texte « Decimal comma: the decimal separator is '.' (write 2.5) »
+avec le nombre tapé ; `UNEXPECTED_COMMA` pour toute autre virgule hors fonction et matrice (`1, 2`,
+`,5`, `x,2`) ; `SEMICOLON` (`max(2;5)`, `f(x;y)`, `(1;2)`). `f(1,5)` est un appel à deux arguments
+(il valait f(1.5)). Le français (virgule décimale, « ; ») est traduit AVANT le parseur : l'atelier
+(`decimalCommaInput`), la lecture LaTeX (MathLive écrit `{,}`), les bornes des domaines d'élève.
+Pour relire à l'identique un texte écrit avant, `parser/custom/legacy-decimal-commas.ts`
+(`legacyDecimalCommas`) applique la règle de l'ancien tokenizer — virgule collée entre deux entiers
+décimale, sauf directement dans un appel de fonction connue ou une matrice : l'atelier pour ses
+définitions rangées sans provenance (lien, stockage : `0,3` d'un curseur), la DSL géométrie pour
+`sur ]0,5 ; 1,5[` et ses autres chaînes (`courbe("y = 0,5x")`). Les trois refus sont traduits par
+`cli/web/french-errors.ts` (textes de la page virgule). Contenus de la base au point : `scripts/reecrire-virgule-decimale-base.ts`
+(avant le `deploy:prod`). Tests : `parser/__tests__/virgule-point-virgule.test.ts`,
+`atelier/__tests__/virgule-rangee.test.ts`.
 
 Durées juxtaposées (2026-10-20, chantier lecture-grandeurs, PR 5 ; `parser/juxtaposed-quantities.ts`,
 partagé par les quatre parseurs). `2[h] 30[min]`, `2[h]30[min]`, `{2[h]}{30[min]}`,

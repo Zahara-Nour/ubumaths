@@ -62,6 +62,19 @@ const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
 		/Missing zero before the decimal point \(write (\S+)\)/,
 		'Il manque le zéro avant le point décimal : écris $1'
 	],
+	// lecture-grandeurs, PR 6 : textes de la page virgule (validée le 2026-10-20)
+	[
+		/Decimal comma: the decimal separator is '\.' \(write (\S+)\)/,
+		'Le séparateur décimal est le point : écris $1'
+	],
+	[
+		/Unexpected comma: ',' only separates function arguments/,
+		'Virgule inattendue : elle ne sépare que les arguments d’une fonction'
+	],
+	[
+		/';' is not a separator: use ',' between arguments/,
+		'Sépare les arguments par une virgule : max(2,5)'
+	],
 	[
 		/A unit needs a number before it \(write (\S+)\)/,
 		'Une unité a besoin d’un nombre devant elle : écris $1'

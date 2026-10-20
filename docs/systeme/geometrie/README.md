@@ -24,7 +24,7 @@ Vue d'ensemble du moteur de géométrie de Chiphre. Référence du langage :
 [dsl-builtins.md](dsl-builtins.md). Règles courtes pour un agent qui code dans le module :
 [`src/lib/geometry-core/CLAUDE.md`](../../../src/lib/geometry-core/CLAUDE.md).
 
-> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18 ; `intersectLQExact`, `pointDrag` et `canvasTool` : 2026-10-19). Chaque fichier, fonction et builtin cité existe à cette
+> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18 ; `intersectLQExact`, `pointDrag` et `canvasTool` : 2026-10-19 ; domaine `sur` : 2026-10-21). Chaque fichier, fonction et builtin cité existe à cette
 > date (`git ls-files`, `git grep -w`). Ce qui n'est pas dans cette page ni dans
 > `dsl-builtins.md` n'est pas garanti : lire le code.
 
@@ -182,6 +182,13 @@ Chaîne : `tokenizer.ts` → `parser.ts` (AST `DslProgram`, types dans `dsl/type
   `onDirective` de l'appelant) ; `@euclide` après une affectation est un décorateur
   (`parseTrailingDecorators`), lu par `constructions-v2`. Hors construction, ils sont ignorés
   (et refusés par le bloc ` ```figure `).
+- **Virgule décimale des chaînes** : le parseur maison ne lit plus que le point décimal depuis le
+  2026-10-21 (lecture-grandeurs, PR 6) ; le DSL, langue d'auteur, garde la lecture d'avant dans ses
+  chaînes en les passant par `legacyDecimalCommas` (`mathAST/parser/custom/legacy-decimal-commas.ts`) :
+  équations de `courbe` (cartésienne, paramétrique, polaire, `builtins.ts`), morceaux
+  (`piecewise-parser.ts`), bornes de `sur` et `avec` (`domain-parser.ts`, `parseBound`) —
+  `courbe("y = 0,5x")`, `avec x > 1,5`, `sur ]0,5 ; 1,5[` (avec « ; », la virgule est décimale ;
+  `sur ]0, 5[` sépare). Tests : `dsl/__tests__/virgule-decimale.test.ts`.
 - **Aller-retour** : `serializeDsl(figure, symbols, { angleMode })` régénère un script.
 - **Limites** : 100 000 caractères, 1 000 tours par boucle, macros imbriquées ≤ 10,
   `InterpretOptions.maxSteps`, `Figure.setElementLimit` (bloc ` ```figure `).

@@ -48,6 +48,7 @@ import {
 	fociPoints as computeFociPoints,
 	eccentricity as computeEccentricity
 } from '../geometry/conic-properties';
+import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { numeric } from '../types/geo-value';
@@ -6628,7 +6629,8 @@ function createCurveFromEquation(
 	// Parse the equation string with mathAST
 	let parsed: MathNode;
 	try {
-		parsed = parseCustom(coreEquation);
+		// Chaîne d'auteur : virgule décimale lue comme avant la PR 6 (`legacyDecimalCommas`)
+		parsed = parseCustom(legacyDecimalCommas(coreEquation));
 	} catch {
 		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${coreEquation}"`, line);
 	}
@@ -6939,7 +6941,7 @@ function parseParametricEquation(
 ): { lhs: string; rhs: MathNode } {
 	let parsed: MathNode;
 	try {
-		parsed = parseCustom(eq);
+		parsed = parseCustom(legacyDecimalCommas(eq));
 	} catch {
 		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${eq}"`, line);
 	}
@@ -7360,7 +7362,7 @@ function parsePolarEquation(eq: string, line: number): { rhs: MathNode; rhsStrin
 	const normalized = normalizeThetaToLatex(eq);
 	let parsed: MathNode;
 	try {
-		parsed = parseCustom(normalized);
+		parsed = parseCustom(legacyDecimalCommas(normalized));
 	} catch {
 		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${eq}"`, line);
 	}

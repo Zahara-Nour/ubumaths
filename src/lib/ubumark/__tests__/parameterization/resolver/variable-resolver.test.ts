@@ -1505,8 +1505,12 @@ describe("{{eval:…}} : virgule dans un appel de fonction = séparateur d'argum
 		expect(resolveExpression('{{eval:mod(b^2-a^2,4)}}', resolved)).toBe('0');
 	});
 
-	it('décimal à virgule hors appel inchangé : {{eval:2,5*2}} → 5', () => {
-		expect(resolveExpression('{{eval:2,5*2}}', [])).toBe('5');
+	// lecture-grandeurs, PR 6 : le parseur maison n'a que le point décimal
+	it('décimal à virgule refusé : {{eval:2,5*2}} (écrire {{eval:2.5*2}})', () => {
+		expect(() => resolveExpression('{{eval:2,5*2}}', [])).toThrow(
+			"Decimal comma: the decimal separator is '.' (write 2.5)"
+		);
+		expect(resolveExpression('{{eval:2.5*2}}', [])).toBe('5');
 	});
 });
 
