@@ -15,6 +15,7 @@ et `scripts/audit-question-draws.ts --dir`).
 """
 
 import copy
+import hashlib
 import json
 import os
 import re
@@ -600,6 +601,19 @@ def main() -> None:
     print(f'{len(lot)} modèles modifiés et tagués')
 
 
+def texte_jsonb(v) -> str:
+    """Le texte que Postgres donne à `v::jsonb::text` : clés triées par longueur puis octets,
+    séparateurs « , » et « : ». Sert à l'empreinte md5 de la garde du rollback (le test
+    d'intégration la vérifie : un écart ferait échouer le rollback)."""
+    if isinstance(v, dict):
+        cles = sorted(v, key=lambda k: (len(k.encode()), k.encode()))
+        return '{' + ', '.join(json.dumps(k, ensure_ascii=False) + ': ' + texte_jsonb(v[k]) for k in cles) + '}'
+    if isinstance(v, list):
+        return '[' + ', '.join(texte_jsonb(x) for x in v) + ']'
+    assert not isinstance(v, float), v
+    return json.dumps(v, ensure_ascii=False)
+
+
 def ecrire_migration(lot: list[dict]) -> None:
     def lit(s: str) -> str:
         assert '$l2n$' not in s
@@ -617,9 +631,29 @@ def ecrire_migration(lot: list[dict]) -> None:
     n = len(lot)
     rb = [
         "-- Rollback (il rend aux modèles leur contenu d'avant et retire les tags posés ; aucune",
-        "-- donnée d'élève). Une modification faite depuis dans l'éditeur serait écrasée : comparer",
-        "-- d'abord. Bloc éprouvé par le test d'intégration, à jouer dans une transaction :",
+        "-- donnée d'élève). Garde : il refuse si un modèle n'a plus EXACTEMENT le contenu posé par",
+        "-- la migration (empreinte md5), pour ne pas écraser une modification faite depuis dans",
+        "-- l'éditeur. Bloc éprouvé par le test d'intégration, à jouer dans une transaction :",
         "-- ROLLBACK:BEGIN",
+        "-- do $retour$",
+        "-- declare v_intacts integer;",
+        "-- begin",
+        "-- \tperform 1 from public.question_templates where id in (",
+    ]
+    rb += [f"-- \t\t'{m['id']}'" + (',' if i < n - 1 else ') for update;') for i, m in enumerate(lot)]
+    rb += [
+        "-- \tselect count(*) into v_intacts from public.question_templates q join (values",
+    ]
+    rb += [f"-- \t\t('{m['id']}'::uuid, '{hashlib.md5(texte_jsonb(m['apres']).encode()).hexdigest()}')"
+           + (',' if i < n - 1 else '') for i, m in enumerate(lot)]
+    rb += [
+        "-- \t) as r(id, h) on r.id = q.id",
+        "-- \t where md5(jsonb_build_object('title', q.title, 'description', q.description, 'variations', q.variations,",
+        "-- \t                              'shared', q.shared, 'test_specs', q.test_specs)::text) = r.h;",
+        f"-- \tif v_intacts <> {n} then",
+        f"-- \t\traise exception 'rollback : % modèle(s) sur {n} portent encore le contenu de la migration', v_intacts;",
+        "-- \tend if;",
+        "-- end $retour$;",
         "-- delete from public.question_template_points q",
         "--  using public.curriculum_points p, (values",
     ]
@@ -702,6 +736,8 @@ end $resolution$;
 do $garde$
 declare v_presents integer; v_contenus integer; v_ranges integer; v_tags integer;
 begin
+	-- Verrou : aucune sauvegarde de l'éditeur ne peut s'intercaler entre la garde et la mise à jour.
+	perform 1 from public.question_templates q join _l2n_modeles r on r.id = q.id for update of q;
 	select count(*) into v_presents from _l2n_modeles r join public.question_templates q on q.id = r.id;
 	if v_presents not in (0, {n}) then
 		raise exception 'identifiants partiellement présents : % modèle(s) sur {n}', v_presents;
@@ -760,8 +796,8 @@ begin
 	end if;
 end $check$;
 
-drop table _l2n_resolus;
-drop table _l2n_modeles;
+drop table pg_temp._l2n_resolus;
+drop table pg_temp._l2n_modeles;
 ''')
     open(MIGRATION, 'w').write('\n'.join(o))
 

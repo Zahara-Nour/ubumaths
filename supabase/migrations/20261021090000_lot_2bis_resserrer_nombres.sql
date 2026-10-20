@@ -24,9 +24,100 @@
 -- (policy question_template_points_read_authenticated), comme ceux de #1563.
 --
 -- Rollback (il rend aux modèles leur contenu d'avant et retire les tags posés ; aucune
--- donnée d'élève). Une modification faite depuis dans l'éditeur serait écrasée : comparer
--- d'abord. Bloc éprouvé par le test d'intégration, à jouer dans une transaction :
+-- donnée d'élève). Garde : il refuse si un modèle n'a plus EXACTEMENT le contenu posé par
+-- la migration (empreinte md5), pour ne pas écraser une modification faite depuis dans
+-- l'éditeur. Bloc éprouvé par le test d'intégration, à jouer dans une transaction :
 -- ROLLBACK:BEGIN
+-- do $retour$
+-- declare v_intacts integer;
+-- begin
+-- 	perform 1 from public.question_templates where id in (
+-- 		'0d4765d8-22ce-4a1e-b96d-ef3660333079',
+-- 		'0dd3de90-10fc-485b-a961-343b01a84cee',
+-- 		'11607586-7b7b-404f-8e62-91ddefa75efa',
+-- 		'201b17f0-a12e-4772-abc4-fe75cb81ef44',
+-- 		'2d8e7948-bec8-4520-8d3d-4d6ac6d3d34c',
+-- 		'39c5bcfa-6d2d-4b5b-9aab-a1b6edd6e558',
+-- 		'3abfcd7b-cd0a-4035-970a-609b3e447369',
+-- 		'3ba51eb3-dfe9-4cfb-847b-a0e130231c21',
+-- 		'3bbe92f2-84f0-487f-9ca1-2077248a313b',
+-- 		'45e06ece-246e-4182-ae1f-8d04a98e6aae',
+-- 		'523f3f10-15a2-4340-8b3f-4736345111c5',
+-- 		'54468151-387e-425d-bc4f-74bcf1c7fb01',
+-- 		'55b0f4b7-e9eb-4f43-9307-ad8d0193cab5',
+-- 		'59b781cc-1e3c-45e7-8b31-9773931129b3',
+-- 		'5d7726eb-edd4-4ae0-891a-3069d4694d06',
+-- 		'5e316657-bd6f-4911-9247-9601ec4bed42',
+-- 		'5fea90e6-9a98-433a-a909-0c4444817633',
+-- 		'6c53e785-b4dd-4908-ae33-5e88396f6965',
+-- 		'73258d60-2dde-423a-b5d1-68a43a629012',
+-- 		'82748db8-01fe-4c2e-86b6-4ef8c1dde805',
+-- 		'83aa2196-817e-4f49-8fee-d0053a9b9198',
+-- 		'869de343-1ae5-4ff5-9a6e-29957fc729a8',
+-- 		'9231b54b-4e3d-4eef-9382-f27f18544c66',
+-- 		'99f5a54a-6ff7-4d8a-abc3-5a942147e0f0',
+-- 		'9d2df894-7275-4437-8e56-0751afb1bf89',
+-- 		'a565fa02-e044-400b-b5d2-6d4c5aebf1f3',
+-- 		'a94ddf87-4e4d-46a3-935e-e28e6a2d49df',
+-- 		'acf15102-533f-49bf-8add-2d6ffd4237aa',
+-- 		'b100ddb2-e91d-402c-9940-012da8236d1d',
+-- 		'b78363f9-8413-4973-8068-247bf8cabd4a',
+-- 		'b9a9048a-d973-47a3-ad5b-acbde2d80a66',
+-- 		'bcd7e907-22f5-4f0f-a8bd-8e3ea60132e0',
+-- 		'bd760867-7303-4ac8-87eb-724fb5994cab',
+-- 		'c32bfeba-5927-4e56-b423-17fde3491641',
+-- 		'c956b35f-5640-4147-a76f-83c3ed0c42cb',
+-- 		'cf28acc2-2272-4e06-b15d-9db4fbfa9ced',
+-- 		'dd7db98e-2c46-4b1f-9501-edfa5b161ac1',
+-- 		'e66089e0-b7bd-49fe-a968-9a8df3d325fd',
+-- 		'f1a392f5-060d-4e1c-b7a5-2920a054b83b') for update;
+-- 	select count(*) into v_intacts from public.question_templates q join (values
+-- 		('0d4765d8-22ce-4a1e-b96d-ef3660333079'::uuid, '93518083cea9700fdef9618e79cb993b'),
+-- 		('0dd3de90-10fc-485b-a961-343b01a84cee'::uuid, '9bd1b2326ae15bdd6b7d772653fa4f85'),
+-- 		('11607586-7b7b-404f-8e62-91ddefa75efa'::uuid, '1dee9994e19ea4f963befbef636ea6c4'),
+-- 		('201b17f0-a12e-4772-abc4-fe75cb81ef44'::uuid, '0f9d8e3b927a2cd705e55c4accaa14bc'),
+-- 		('2d8e7948-bec8-4520-8d3d-4d6ac6d3d34c'::uuid, 'fd92c758588bf917ddf0b5fab4b413c1'),
+-- 		('39c5bcfa-6d2d-4b5b-9aab-a1b6edd6e558'::uuid, '01d50b1a270494a4313c38f3f5b6a8fb'),
+-- 		('3abfcd7b-cd0a-4035-970a-609b3e447369'::uuid, 'f348a887931ea9b0977afef51c296523'),
+-- 		('3ba51eb3-dfe9-4cfb-847b-a0e130231c21'::uuid, '50a338e4d7ba135e92aed0f068a36f29'),
+-- 		('3bbe92f2-84f0-487f-9ca1-2077248a313b'::uuid, '84169b8c12a3b3a06ebcfeb7c8b83898'),
+-- 		('45e06ece-246e-4182-ae1f-8d04a98e6aae'::uuid, 'fa0a0d3f4998f5ca97c1fbf0aaa0cacb'),
+-- 		('523f3f10-15a2-4340-8b3f-4736345111c5'::uuid, 'cd16d11ecf5062619c63210db9dc4614'),
+-- 		('54468151-387e-425d-bc4f-74bcf1c7fb01'::uuid, '1d29a3170870a0733b01a6c78e314c47'),
+-- 		('55b0f4b7-e9eb-4f43-9307-ad8d0193cab5'::uuid, 'e57ad27c109313e7476b3396cd689ee2'),
+-- 		('59b781cc-1e3c-45e7-8b31-9773931129b3'::uuid, 'a9239f95b76b486d5d73c3d1bfee7e51'),
+-- 		('5d7726eb-edd4-4ae0-891a-3069d4694d06'::uuid, '430e9882f9ed1eb299fa305725da7a3b'),
+-- 		('5e316657-bd6f-4911-9247-9601ec4bed42'::uuid, 'd9358afeea69956cc1c4e892fda182a7'),
+-- 		('5fea90e6-9a98-433a-a909-0c4444817633'::uuid, 'a218fe3e2fc5f27ef663a588682bc123'),
+-- 		('6c53e785-b4dd-4908-ae33-5e88396f6965'::uuid, '4bb8457654a6e0112c31da4b07af996f'),
+-- 		('73258d60-2dde-423a-b5d1-68a43a629012'::uuid, 'd0e935f6807d6f428b9a3715f9f29b47'),
+-- 		('82748db8-01fe-4c2e-86b6-4ef8c1dde805'::uuid, 'e2982c48f10880c06214c0103cf9e537'),
+-- 		('83aa2196-817e-4f49-8fee-d0053a9b9198'::uuid, '0551fbf8aa1876c7d3f3c11ee0eb66dd'),
+-- 		('869de343-1ae5-4ff5-9a6e-29957fc729a8'::uuid, '1e09d21d8f48e470a9eff8cab4545604'),
+-- 		('9231b54b-4e3d-4eef-9382-f27f18544c66'::uuid, '0fb070f98a05dd206a19ac60dc7d3fb4'),
+-- 		('99f5a54a-6ff7-4d8a-abc3-5a942147e0f0'::uuid, '9c2d685357ac789f68a3ac5d09a8a63b'),
+-- 		('9d2df894-7275-4437-8e56-0751afb1bf89'::uuid, 'c882640ac12af5199c6f3f294a6a2892'),
+-- 		('a565fa02-e044-400b-b5d2-6d4c5aebf1f3'::uuid, 'c0df2e65dfcbc925e1ee910ed7eccee8'),
+-- 		('a94ddf87-4e4d-46a3-935e-e28e6a2d49df'::uuid, 'e35950a95ff025d5ca11648fc483649c'),
+-- 		('acf15102-533f-49bf-8add-2d6ffd4237aa'::uuid, '49b60243835dbbdbb4e1f0b4e29ca897'),
+-- 		('b100ddb2-e91d-402c-9940-012da8236d1d'::uuid, '6f0eaabff4c50aca93a40e96e25677c9'),
+-- 		('b78363f9-8413-4973-8068-247bf8cabd4a'::uuid, '29eddbe863bf91fb12db1efb1841b9a0'),
+-- 		('b9a9048a-d973-47a3-ad5b-acbde2d80a66'::uuid, '9d5221d591d0c5dfcc1ad8472437fbc8'),
+-- 		('bcd7e907-22f5-4f0f-a8bd-8e3ea60132e0'::uuid, 'f20c9245198dfa0ae7ee29fd1ffbfd8d'),
+-- 		('bd760867-7303-4ac8-87eb-724fb5994cab'::uuid, 'd2b0a29c6bea3437d1d1d02481e6e7dc'),
+-- 		('c32bfeba-5927-4e56-b423-17fde3491641'::uuid, '8ce624043928ea2b49269fc4d1319dfd'),
+-- 		('c956b35f-5640-4147-a76f-83c3ed0c42cb'::uuid, '5b99dc72b344c0bc3c5667e0446c4641'),
+-- 		('cf28acc2-2272-4e06-b15d-9db4fbfa9ced'::uuid, '7841e8fbebe7a69d30b7ffc8880be05f'),
+-- 		('dd7db98e-2c46-4b1f-9501-edfa5b161ac1'::uuid, '20f977a9a4beba3905ccbc82f6a64de8'),
+-- 		('e66089e0-b7bd-49fe-a968-9a8df3d325fd'::uuid, 'eb938705782a9098166a63f965ac40f6'),
+-- 		('f1a392f5-060d-4e1c-b7a5-2920a054b83b'::uuid, '911a38bc5a1a657a9682bc0bb7bef204')
+-- 	) as r(id, h) on r.id = q.id
+-- 	 where md5(jsonb_build_object('title', q.title, 'description', q.description, 'variations', q.variations,
+-- 	                              'shared', q.shared, 'test_specs', q.test_specs)::text) = r.h;
+-- 	if v_intacts <> 39 then
+-- 		raise exception 'rollback : % modèle(s) sur 39 portent encore le contenu de la migration', v_intacts;
+-- 	end if;
+-- end $retour$;
 -- delete from public.question_template_points q
 --  using public.curriculum_points p, (values
 --   ('0d4765d8-22ce-4a1e-b96d-ef3660333079'::uuid, 'CM1', 'CM1-020'),
@@ -269,6 +360,8 @@ end $resolution$;
 do $garde$
 declare v_presents integer; v_contenus integer; v_ranges integer; v_tags integer;
 begin
+	-- Verrou : aucune sauvegarde de l'éditeur ne peut s'intercaler entre la garde et la mise à jour.
+	perform 1 from public.question_templates q join _l2n_modeles r on r.id = q.id for update of q;
 	select count(*) into v_presents from _l2n_modeles r join public.question_templates q on q.id = r.id;
 	if v_presents not in (0, 39) then
 		raise exception 'identifiants partiellement présents : % modèle(s) sur 39', v_presents;
@@ -327,5 +420,5 @@ begin
 	end if;
 end $check$;
 
-drop table _l2n_resolus;
-drop table _l2n_modeles;
+drop table pg_temp._l2n_resolus;
+drop table pg_temp._l2n_modeles;

@@ -275,4 +275,21 @@ describe('Lot 2 bis, resserrer les nombres tirés : les branches d’échec de l
 			/tags déjà posés sur ces modèles : 1/
 		);
 	});
+
+	it('le rollback refuse si un modèle a été retouché depuis la migration', async () => {
+		await pg.query('begin');
+		try {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query(
+				`update public.question_templates set title = title || ' (revu)' where id = $1`,
+				[ids[0]]
+			);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : 38 modèle\(s\) sur 39 portent encore le contenu de la migration/
+			);
+		} finally {
+			await pg.query('rollback');
+		}
+	});
 });
