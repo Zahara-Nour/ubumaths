@@ -5,7 +5,7 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20, après l'application des 14 réponses aux CSV._
+_Mis à jour le 2026-10-20, après les réponses appliquées, la division à trou du CM2 et la médiane (c4-3)._
 
 - **État** : C5 étape 2 bis. Questions des modèles toutes tranchées et appliquées aux CSV de `arbre-notions/analyse/`
   (306 TAG, 66 MODIFIER, 201 HORS_PROGRAMME) ; page régénérée.
@@ -13,7 +13,7 @@ _Mis à jour le 2026-10-20, après l'application des 14 réponses aux CSV._
   https://claude.ai/artifact/F9FLrWzCSE72E7zeEyCyH5 ; lire `niveaux` et `modeles` (ArtifactData `list`), appliquer ;
   puis lister les modifications de modèles (66 MODIFIER + 3 changements de niveau) et préparer la migration des tags
   (lot 2 bis).
-- **En attente de David** : partie 2 de la page ; c4-3 (médiane de 3, 7, 8, 12 : bornes 7 et 8 acceptées ? reco : oui, intervalle fermé).
+- **En attente de David** : partie 2 de la page (verdicts par niveau).
 - **Pièges en cours** : contrôle visuel de c4-8 pas fait ; CSV cm/cycle2/sixieme en CRLF, cycle4 en LF (lire et écrire avec `newline=''`) ;
   `docs/ref/programmes/Accompagnement/` hors git : pdftotext vers le scratchpad.
 - **Worktree / branche** : aucun, tout est en docs sur `main` (dépôt principal).
@@ -1110,3 +1110,6 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     (6e sans borne générale de décimales, c3-11 ; 4e déjà hors programme pour d'autres raisons).
   - Médiane (c4-3), relu dans les textes : définition « toute valeur qui partage la série ordonnée en deux sous-séries
     de même effectif » (Exemples c4 2026 p.36) ; reste à trancher : bornes 7 et 8 acceptées pour 3, 7, 8, 12 ?
+  - **c4-3 tranché** : médiane d'effectif pair, bornes comprises (3, 7, 8, 12 : toute valeur de 7 à 8). Écrit dans
+    `bornes/cycle4.{md,json}` (4-040) et `bornes/questions.json` (champ `precision`). Aucun modèle de médiane dans
+    le lot : aucun verdict touché.

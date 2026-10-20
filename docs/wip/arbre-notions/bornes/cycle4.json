@@ -2680,12 +2680,12 @@
 					},
 					{
 						"aspect": "format",
-						"borne": "Effectif pair : le correcteur accepte toute valeur comprise entre les deux valeurs centrales (ou le modèle ne tire que des effectifs impairs).",
+						"borne": "Effectif pair : le correcteur accepte toute valeur comprise entre les deux valeurs centrales, bornes comprises (3, 7, 8, 12 : de 7 à 8) (ou le modèle ne tire que des effectifs impairs).",
 						"detail": {
-							"effectif_pair": "toute valeur entre les deux valeurs centrales",
+							"effectif_pair": "toute valeur entre les deux valeurs centrales, bornes comprises",
 							"alternative": "effectifs impairs seulement"
 						},
-						"source": "Décision de David, 2026-10-18 (question c4-3) ; d'après Exemples 2026 p.36",
+						"source": "Décision de David, 2026-10-18 (question c4-3), bornes précisées le 2026-10-20 ; d'après Exemples 2026 p.36",
 						"force": "décision"
 					}
 				],

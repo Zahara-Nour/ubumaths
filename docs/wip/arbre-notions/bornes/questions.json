@@ -649,7 +649,9 @@
 		"consequence": "Un modèle à effectif pair qui n'accepte que la demi-somme est refusé jusqu'à correction (accepter l'intervalle, ou ne tirer que des effectifs impairs).",
 		"info": false,
 		"decision": "intervalle",
-		"decide_le": "2026-10-18"
+		"decide_le": "2026-10-18",
+		"precision": "2026-10-20 : l'exemple de la question était faux (9 n'est pas une médiane de 3, 7, 8, 12 : trois valeurs en dessous, une au-dessus). David précise : bornes comprises, toute valeur de 7 à 8 est acceptée.",
+		"precise_le": "2026-10-20"
 	},
 	{
 		"id": "c4-4",

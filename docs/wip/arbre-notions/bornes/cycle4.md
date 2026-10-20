@@ -52,7 +52,7 @@ Les incertitudes du cycle 4 sont tranchées (détail : `questions.json`, champ `
 
 - **Valeur absolue (5-120)** (c4-1) : admise en mots (« valeur absolue de −3 », appui sur la droite graduée), sans la notation |a| ni calcul sur |a|.
 - **Quartiles (3-029)** (c4-2) : Q1 (Q3) = plus petite valeur de la série dont l'effectif cumulé atteint 25 % (75 %) de l'effectif total.
-- **Médiane d'effectif pair (4-040)** (c4-3) : le correcteur accepte toute valeur entre les deux valeurs centrales (ou le modèle ne tire que des effectifs impairs).
+- **Médiane d'effectif pair (4-040)** (c4-3) : le correcteur accepte toute valeur entre les deux valeurs centrales, bornes comprises (ou le modèle ne tire que des effectifs impairs).
 - **Sections de solides (3-020)** (c4-4) : liste du BO seulement (pavé, cylindre, boule).
 - **Inéquations (3-014)** (c4-5) : les quatre sens (⩾, >, ⩽, <), a ≠ 0 éventuellement négatif.
 - **Notations fonctionnelles en 4e** (c4-6 ; 4-062, 4-063, 4-064, 4-081 et borne générale de 4e) : utilisables dans l'énoncé, jamais exigées dans la réponse ; vocabulaire image/antécédent et f : x ↦ réservés à la 3e.
@@ -626,7 +626,7 @@ Les incertitudes du cycle 4 sont tranchées (détail : `questions.json`, champ `
 - **4-040** — Déterminer la médiane d'une série de petit effectif présentée sous forme de données brutes (3, 7, 8, 12, 15 → ?).
   - Série de petit effectif en données brutes (effectif total ≤ 30, pair ou impair). — _BO c4 p.17 ; Attendus 4e 2019 p.5_ (BO)
   - Médiane = toute valeur qui partage la série ordonnée en deux sous-séries de même effectif ; pour un effectif pair, elle n'est pas unique. — _Exemples 2026 p.36_ (acc.)
-  - Effectif pair : le correcteur accepte toute valeur comprise entre les deux valeurs centrales (ou le modèle ne tire que des effectifs impairs). — _Décision de David, 2026-10-18 (question c4-3) ; d'après Exemples 2026 p.36_ (**décision**)
+  - Effectif pair : le correcteur accepte toute valeur comprise entre les deux valeurs centrales, bornes comprises (3, 7, 8, 12 : de 7 à 8) (ou le modèle ne tire que des effectifs impairs). — _Décision de David, 2026-10-18 (question c4-3), bornes précisées le 2026-10-20 ; d'après Exemples 2026 p.36_ (**décision**)
   - ⚠ Un modèle à effectif pair qui n'accepte que la demi-somme est à corriger.
 - **4-041** — Calculer l'étendue d'une série présentée sous forme de données brutes, d'un tableau ou d'un diagramme.
   - Données brutes, tableau, diagramme en barres, diagramme circulaire. — _BO c4 p.17_ (BO)
