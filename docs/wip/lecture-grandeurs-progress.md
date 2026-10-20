@@ -9,7 +9,7 @@ _Mis à jour le 2026-10-20, 2e session (fin)._
 - **Prochaine action** : relire les nouvelles réponses de David ; question ouverte : des CODES d'erreur précis (nouveaux : `DECIMAL_COMMA`, `STACKED_EXPONENTS`, `SEMICOLON`…) au lieu de `UNEXPECTED_TOKEN` (30 des 36 refus mesurés).
 - **Ensuite** : PR « retrait de la virgule » (+ 7 formules `~…~` d'exercices en prod au point).
 - **Pièges** : distinguer LECTURE (arbre) / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; défauts : `{2[h]}{30[min]}` = produit, `π[m]` = π lettre, `pi[m]` = p × (i[m]), `x;y` et `f(x;y)` lus avec « ; » comme lettre, `[1,5]` lu `(1.5)`, `2^3^2` = (2^3)^2.
-- **Worktree / branche** : aucun. Sondes tsx hors dépôt : `<scratchpad>/arbre.ts` (arbre parenthésé), `calcul.ts`, `codes.ts`.
+- **Worktree / branche** : aucun. Sondes tsx : code dans `docs/wip/lecture-grandeurs-sondes.md` (arbre parenthésé, calcul, codes d'erreur).
 
 ## Historique
 
