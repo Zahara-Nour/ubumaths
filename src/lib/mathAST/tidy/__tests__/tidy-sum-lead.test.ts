@@ -11,7 +11,14 @@
  *   facteur, ordre décroissant (`−x − 1`) ; dans un facteur (opérande d'un
  *   produit, base d'une puissance), le signe − est mis en facteur, parité
  *   respectée : `3(−x − 1)` → `−3(x + 1)`, `(−x − 1)²` → `(x + 1)²`.
- * - **Degré ≥ 2** : ordre décroissant, toujours (`−x² + x + 1`).
+ * - **Degré ≥ 2** : ordre décroissant (`−x² + x + 1`).
+ *
+ * Révisé par David le 2026-10-20 :
+ * - **Deux termes**, quel que soit le degré : le positif devant (`3x − x²`,
+ *   `1 − x²`), sauf un complexe, qui garde sa partie réelle en tête (`−1 + 1/i`).
+ * - **Dans un facteur**, le signe − sort dès que le terme de gauche est négatif,
+ *   à tout degré : `(−x² − 1)²` → `(x² + 1)²`, `3(−x² + 2x − 1)` → `−3(x² − 2x + 1)`.
+ *   Une somme seule garde son signe : `−x² + 2x − 1`.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -100,14 +107,20 @@ describe("somme toute négative, opérande d'un − : le signe ne sort pas", () 
 	});
 });
 
-describe('degré ≥ 2 : ordre décroissant, toujours', () => {
+describe('degré ≥ 2 : ordre décroissant, deux termes : le positif devant', () => {
 	it.each([
 		['1+x-x^2', '-x^2+x+1'],
 		['x^2-3x+1', 'x^2-3x+1'],
-		['-x^2+3x', '-x^2+3x'],
-		['3x-x^2', '-x^2+3x'],
-		// pas de mise en facteur du signe hors du degré 1
-		['(-x^2-1)^2', '(-x^2-1)^2']
+		['-x^2+2x-1', '-x^2+2x-1'],
+		['-x^2+3x', '3x-x^2'],
+		['3x-x^2', '3x-x^2'],
+		['-x^2+1', '1-x^2'],
+		['-x^2-1', '-x^2-1'],
+		// dans un facteur, le signe sort dès que le terme de gauche est négatif (2026-10-20)
+		['(-x^2-1)^2', '(x^2+1)^2'],
+		['3(-x^2+2x-1)', '-3(x^2-2x+1)'],
+		['3(x^2-2x+1)', '3(x^2-2x+1)'],
+		['(-x^2+2x-1)^3', '-(x^2-2x+1)^3']
 	])('tidy(%s) = %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});
@@ -143,8 +156,8 @@ describe('dérivées mises au propre : (1 − x) reste (1 − x)', () => {
 
 	it.each([
 		['x+(1-x)^2', '1-2(1-x)'],
-		// degré 2 (le facteur (1 − x)²) : ordre décroissant, mais (1 − x) garde son écriture
-		['x^2+(1-x)^3', '-3(1-x)^2+2x'],
+		// deux termes : le positif devant (2026-10-20), et (1 − x) garde son écriture
+		['x^2+(1-x)^3', '2x-3(1-x)^2'],
 		['-3x^2+2x', '2-6x']
 	])('tidy((%s)′) = %s', (input, custom) => {
 		expect(toCustom(tidy(derivative(input)))).toBe(custom);

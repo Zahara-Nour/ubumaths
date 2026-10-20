@@ -63,7 +63,7 @@ describe('témoins : rien à simplifier, rien ne bouge', () => {
 		['x/2+1', 'x/2+1'],
 		['(3(x+1))/4', '{3(x+1)}/4'],
 		['(x^2-1)/(x+1)', '{x^2-1}/{x+1}'],
-		['-(2x-1)/3', '-{2x-1}/3']
+		['(2x+1)/(-3)', '-{2x+1}/3']
 	])('tidy(%s) = %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});
@@ -131,18 +131,26 @@ describe('produit sans dénominateur : réduit si un nombre commun se simplifie'
 });
 
 /**
- * Décision de David (2026-10-20, 2e tour) : le signe passe dans le numérateur
- * quel que soit son degré, si le nombre de signes − y diminue — à égalité, ou
- * si la somme commencerait par un −, rien ne bouge. Comme au degré 1, il ne
- * passe que si la fraction se réduit.
+ * Décisions de David (2026-10-20, 3e tour) sur le signe d'une fraction :
+ * - numérateur de deux termes de signes opposés : le − est entre les deux, le
+ *   positif devant, et le − de la fraction y entre — qu'il vienne du
+ *   dénominateur ou de l'écriture (`−(2x−1)/3`), avec ou sans réduction ;
+ * - sinon, le terme de gauche du numérateur est positif : le − en sort s'il le
+ *   faut, `(−3x²+6x−3)/9` → `−(x²−2x+1)/3`.
  */
-describe('signe du dénominateur : au-delà du degré 1', () => {
+describe('signe d’une fraction', () => {
 	it.each([
 		['(-6x^2+3)/(-9)', '{2x^2-1}/3'],
 		['(-6x^2-3)/(-9)', '{2x^2+1}/3'],
 		['(3x^2+3)/(-9)', '-{x^2+1}/3'],
 		['(3x^2-6x+3)/(-9)', '-{x^2-2x+1}/3'],
-		['(3x^2-3)/(-6x)', '-{x^2-1}/{2x}'],
+		['(-3x^2+6x-3)/9', '-{x^2-2x+1}/3'],
+		['(-6x^3+3x-3)/(-9)', '{2x^3-x+1}/3'],
+		['(3x^2-3)/(-6x)', '{1-x^2}/{2x}'],
+		['(x^2-1)/(-3)', '{1-x^2}/3'],
+		['(1-x^2)/(-3)', '{x^2-1}/3'],
+		['(2x-1)/(-3)', '{1-2x}/3'],
+		['-(2x-1)/3', '{1-2x}/3'],
 		['(6x-3)/(-9(1-2x))', '-{2x-1}/{3(1-2x)}']
 	])('tidy(%s) = %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
@@ -187,7 +195,11 @@ describe('invariants', () => {
 		'(-6x^2+3)/(-9)',
 		'(3x^2-3)/(-6x)',
 		'(6x-3)/(-9(1-2x))',
-		'-2(x/2-1/2)'
+		'-2(x/2-1/2)',
+		'(-3x^2+6x-3)/9',
+		'(-6x^3+3x-3)/(-9)',
+		'-(2x-1)/3',
+		'(1-x^2)/(-3)'
 	];
 
 	it.each(PANEL)('valeur conservée sur %s', (input) => {

@@ -86,11 +86,15 @@ Compléments mesurés :
 - l'étape 4 évalue les puissances numériques jusqu'à l'exposant 256
   (`2¹⁰ → 1024`, `2⁻¹ → 1/2`), et `3/(1/2) → 6`, `x÷2 → x/2` ;
 - l'étape 7 rationalise un dénominateur **numérique** : `1/√2 → √2/2` ;
-- **somme toute négative dans un facteur** (2026-10-06) : de degré 1, le signe
-  sort, parité respectée — `3(−x−1) → −3(x+1)`, `(−x−1)² → (x+1)²` ;
-- **ordre de degré 1** (2026-10-06) : positifs devant, négatifs derrière
-  (`1−x`, `3−2x`, `b−a`) ; de degré ≥ 2, l'ordre décroissant reste
-  (`−x²+x+1`) ;
+- **signe d'une somme dans un facteur** (2026-10-06, étendu le 2026-10-20) :
+  si son terme de gauche est négatif, le signe sort, à tout degré, parité
+  respectée — `3(−x−1) → −3(x+1)`, `(−x²−1)² → (x²+1)²`,
+  `3(−x²+2x−1) → −3(x²−2x+1)`. Une somme seule garde son signe (`−x²+2x−1`) ;
+- **ordre** (2026-10-06, révisé le 2026-10-20) : au degré 1, positifs devant,
+  négatifs derrière (`1−x`, `3−2x`, `b−a`) ; une somme de **deux termes**,
+  quel que soit le degré, aussi (`3x−x²`, `1−x²`, `sin x − x cos x`), sauf un
+  complexe, partie réelle en tête (`−1 + 1/i`) ; au-delà, l'ordre décroissant
+  reste (`−x²+x+1`) ;
 - une relation est mise au propre membre par membre :
   `x+1=2x−3+x → x+1=3x−3`.
 
@@ -116,8 +120,8 @@ division). Code : `reduceFractionOfSums` dans `collect.ts`.
 | `1/(x/2+1)`       | `2/(x+2)`   |                                                        |
 | `(0,5x+1)/3`      | `(x+2)/6`   |                                                        |
 | `(6x−3)/(−9)`     | `(1−2x)/3`  | le signe d'un dénominateur négatif passe au numérateur |
-| `(2x+1)/(−3)`     | `−(2x+1)/3` | puis la règle « somme toute négative dans un facteur » |
-| `(−6x²+3)/(−9)`   | `(2x²−1)/3` | le signe passe aussi au-delà du degré 1                |
+| `(2x+1)/(−3)`     | `−(2x+1)/3` | numérateur tout positif : le − reste devant            |
+| `(−6x²+3)/(−9)`   | `(2x²−1)/3` | deux termes : le − entre dans le numérateur            |
 | `(x/2+1/2)/(1/2)` | `x+1`       | produit `2(x/2+1/2)` : le 2 commun se simplifie        |
 | `4(x/2+1)`        | `2(x+2)`    |                                                        |
 | `6(x/2+1/3)`      | `3x+2`      |                                                        |
@@ -142,15 +146,20 @@ garde-fous, issus de la revue de la PR :
   simplifie, et n'y gagne jamais de dénominateur : `3(x/2+1)`, `6(x/4+1)`,
   `2(x/2+1)²` inchangés.
 
-Le signe − ne passe dans l'unique numérateur que si la réduction a lieu, quel
-que soit son degré (David, 2026-10-20), et seulement si le nombre de signes −
-y **diminue** (le − devant compte pour un) sans que la somme commence par un − :
-`(3x²−6x+3)/(−9) → −(x²−2x+1)/3` (égalité), `(3x²−3)/(−6x) → −(x²−1)/(2x)`
-(`−x²+1`). `−(2x−1)/3` et `(3i−2)/(−1) → −(3i−2)` ne bougent pas (rien à
-réduire). Il ne passe jamais dans un produit sans dénominateur
-(`−2(x/2−1/2) → −(x−1)`, comme `−(x−1)`), ni s'il ferait rencontrer un
-facteur de l'autre côté : `(6x−3)/(−9(1−2x)) → −(2x−1)/(3(1−2x))`, la
-réduction numérique étant gardée.
+Le signe d'une fraction (David, 2026-10-20) :
+
+- **numérateur de deux termes de signes opposés** : le − est entre les deux,
+  le positif devant, et le − de la fraction y entre, avec ou sans réduction,
+  qu'il vienne du dénominateur ou de l'écriture — `(x²−1)/(−3)`,
+  `−(x²−1)/3` → `(1−x²)/3` ; `(2x−1)/(−3)`, `−(2x−1)/3` → `(1−2x)/3`
+  (`signIntoNumerator`, appliqué au terme une fois son signe connu) ;
+- **sinon**, le terme de gauche du numérateur est positif — c'est la règle du
+  facteur (§A, étape 4) : `(3x²−6x+3)/(−9)` et `(−3x²+6x−3)/9` →
+  `−(x²−2x+1)/3`, `(−6x³+3x−3)/(−9) → (2x³−x+1)/3` ;
+- jamais dans un produit sans dénominateur (`−2(x/2−1/2) → −(x−1)`, comme
+  `−(x−1)`), ni dans un complexe (`(3i−2)/(−1) → −(3i−2)`), ni s'il ferait
+  rencontrer un facteur de l'autre côté : `(6x−3)/(−9(1−2x)) →
+−(2x−1)/(3(1−2x))`, la réduction numérique étant gardée.
 
 Hors périmètre : une somme dont un terme contient lui-même une somme
 (`(2(x+1)+4)/2`), une grandeur avec unité, un nœud opaque, une somme à
@@ -420,4 +429,6 @@ des termes notamment).
 - 2026-10-06 : ordre des sommes de degré 1, signe des sommes toutes négatives.
 - 2026-10-12 : rationnel en tête, forme a + ib (étape 8).
 - 2026-10-20 : fraction de sommes irréductible (§A.1) ; document réécrit
-  d'après le code ; produit sans dénominateur réduit, signe au-delà du degré 1.
+  d'après le code ; produit sans dénominateur réduit ; signe d'une fraction ;
+  deux termes : le positif devant, à tout degré ; signe sorti d'un facteur dont
+  le terme de gauche est négatif, à tout degré (révise 2026-10-06).

@@ -283,6 +283,11 @@ function rationalFirst(terms: readonly TidyTerm[]): TidyTerm[] {
 	return [rational, ...terms.filter((term) => term !== rational)];
 }
 
+/** La somme est-elle un complexe écrit a + ib (`−2 + 3i`) ? */
+export function isAlgebraicComplex(terms: readonly TidyTerm[]): boolean {
+	return algebraicParts(terms) !== null;
+}
+
 /** Le nœud contient-il un nombre complexe (l'unité `i` comprise) ? */
 function containsComplex(node: MathNode): boolean {
 	let found = false;
@@ -367,13 +372,18 @@ export function sortTerms(terms: readonly TidyTerm[], realPartFirst = true): Tid
 	const sorted = decorated.map((entry) => entry.term);
 
 	const degree = sumDegree(decorated.map((entry) => entry.key));
-	// Degré 1 : les positifs devant, les négatifs derrière, l'ordre gardé dans
-	// chaque groupe. Idempotent : trier à nouveau redonne les mêmes groupes.
+	// Degré 1, ou deux termes quel que soit le degré (David, 2026-10-20 : `1 − x²`,
+	// pas `−x² + 1` ; un complexe garde sa partie réelle en tête, `−1 + 1/i`) : les
+	// positifs devant, les négatifs derrière, l'ordre gardé dans chaque groupe.
+	// Idempotent : trier à nouveau redonne les mêmes groupes.
 	const isNegativeTerm = (term: TidyTerm) => isNegativeRational(term.coefficient);
-	const ordered =
-		degree === null || !equalRational(degree, ONE)
-			? sorted
-			: [...sorted.filter((term) => !isNegativeTerm(term)), ...sorted.filter(isNegativeTerm)];
+	const twoRealTerms =
+		terms.length === 2 &&
+		!terms.some((term) => term.factors.some((factor) => containsComplex(factor.base)));
+	const positivesFirst = twoRealTerms || (degree !== null && equalRational(degree, ONE));
+	const ordered = positivesFirst
+		? [...sorted.filter((term) => !isNegativeTerm(term)), ...sorted.filter(isNegativeTerm)]
+		: sorted;
 
 	// Complexe : la partie réelle, rangée comme un réel, puis la partie
 	// imaginaire dans l'ordre ci-dessus. Le résultat ne dépend que de

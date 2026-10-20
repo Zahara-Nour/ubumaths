@@ -67,10 +67,10 @@ import { buildSum } from './build';
 import { decimalString } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
 import {
-	isFirstDegreeSum,
 	isPlainTerm,
 	numberFirst,
 	orderUnderMinus,
+	isAlgebraicComplex,
 	sortFactors,
 	sortTerms
 } from './order';
@@ -693,15 +693,18 @@ function absorbFactor(
 }
 
 /**
- * Un facteur déjà mis au propre. Une somme de degré 1 dont TOUS les termes sont
- * négatifs y perd son signe − (décision de David, 2026-10-06), parité de
- * l'exposant respectée : `3(−x − 1)` → `−3(x + 1)`, `(−x − 1)²` → `(x + 1)²`,
- * `(−x − 1)³` → `−(x + 1)³`. Hors d'un facteur, `−x − 1` reste tel quel : ce
- * chemin n'est emprunté que par la base d'un facteur.
+ * Un facteur déjà mis au propre. Une somme dont le terme de gauche est négatif
+ * y perd son signe −, parité de l'exposant respectée (David, 2026-10-06 pour
+ * les sommes toutes négatives de degré 1, étendu le 2026-10-20) :
+ * `3(−x − 1)` → `−3(x + 1)`, `(−x − 1)²` → `(x + 1)²`, `(−x − 1)³` → `−(x + 1)³`,
+ * `3(−x² + 2x − 1)` → `−3(x² − 2x + 1)`. Une somme de deux termes de signes
+ * opposés commence toujours par le positif (`1 − x²`) : elle ne bouge pas. Hors
+ * d'un facteur, `−x² + 2x − 1` reste tel quel : ce chemin n'est emprunté que par
+ * la base d'un facteur.
  */
 function addSumFactor(acc: Accumulator, node: MathNode, exponent: Rational): void {
 	const positive =
-		!acc.keepSumSign && isIntegerRational(exponent) ? positiveFirstDegreeSum(node, acc) : null;
+		!acc.keepSumSign && isIntegerRational(exponent) ? positiveLeadingSum(node, acc) : null;
 	if (positive === null) {
 		addFactor(acc, node, exponent);
 		return;
@@ -710,13 +713,15 @@ function addSumFactor(acc: Accumulator, node: MathNode, exponent: Rational): voi
 	addFactor(acc, positive, exponent);
 }
 
-/** `−x − 1` → `x + 1` ; `null` si la somme n'est pas de degré 1 à termes tous négatifs. */
-function positiveFirstDegreeSum(node: MathNode, acc: Accumulator): MathNode | null {
+/**
+ * `−x² + 2x − 1` → `x² − 2x + 1` ; `null` si le terme de gauche est déjà positif.
+ * Un complexe garde sa forme a + ib : `3(−2 + i)` ne bouge pas.
+ */
+function positiveLeadingSum(node: MathNode, acc: Accumulator): MathNode | null {
 	if (!isSumNode(node)) return null;
 	const terms = toSumTerms(node, undefined, acc.unitChoice);
-	if (terms.length < 2) return null;
-	const plain = terms.every((term) => isPlainTerm(term) && isNegativeRational(term.coefficient));
-	if (!plain || !isFirstDegreeSum(terms)) return null;
+	if (terms.length < 2 || !terms.every(isPlainTerm) || isAlgebraicComplex(terms)) return null;
+	if (!isNegativeRational(sortTerms(terms)[0].coefficient)) return null;
 	return buildSum(sortTerms(terms.map(negateTerm)));
 }
 
@@ -792,10 +797,6 @@ function divideParts(parts: readonly NumberPart[], divisor: bigint): void {
 		part.value /= common;
 		rest /= common;
 	}
-}
-
-function countNegative(terms: readonly TidyTerm[]): number {
-	return terms.filter((term) => isNegativeRational(term.coefficient)).length;
 }
 
 function productOf(parts: readonly NumberPart[]): bigint {
@@ -882,29 +883,6 @@ function reduceFractionOfSums(
 	}
 
 	if (!hasDenominator && coefficient.d !== 1n) return term;
-
-	// Le signe ne passe que dans une vraie fraction : `−2(x/2−1/2)` donne `−(x−1)`, comme `−(x−1)`
-	const numerators = sums.filter(({ index }) => factors[index].exponent.n === 1n);
-	if (hasDenominator && isNegativeRational(coefficient) && numerators.length === 1) {
-		const [{ index }] = numerators;
-		const terms = toSumTerms(factors[index].base, undefined, unitChoice);
-		const negated = sortTerms(terms.map(negateTerm));
-		// Le − devant compte pour un : `−(2x−1)` en a deux, `1−2x` un seul. À égalité,
-		// rien ne bouge (`−(x²−2x+1)`), ni si la somme commencerait par un − (`−(x²−1)`)
-		const fewerSigns = countNegative(negated) < 1 + countNegative(terms);
-		if (fewerSigns && !isNegativeRational(negated[0].coefficient)) {
-			const base = buildSum(negated);
-			const signed = [...factors];
-			signed[index] = { base, exponent: ONE, key: hashMathNode(base) };
-			// Un signe qui ferait rencontrer un facteur de l'autre côté reste devant :
-			// `(6x−3)/(−9(1−2x))` → `−(2x−1)/(3(1−2x))`, la réduction est gardée
-			const reduced = mergeFactors(signed);
-			if (reduced !== null) {
-				watch?.add('other');
-				return { ...term, coefficient: negRational(coefficient), factors: reduced };
-			}
-		}
-	}
 
 	const reduced = mergeFactors(factors);
 	if (reduced === null) return term;
@@ -1072,10 +1050,50 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
 			terms.push(...toSumTerms(inner, watch, unitChoice));
 			continue;
 		}
-		terms.push(withoutDoubleSign(sign === '-' ? negateTerm(collected) : collected, unitChoice));
+		const signed = signIntoNumerator(
+			sign === '-' ? negateTerm(collected) : collected,
+			unitChoice,
+			watch
+		);
+		terms.push(withoutDoubleSign(signed, unitChoice));
 	}
 
 	return terms;
+}
+
+/**
+ * Un − devant une fraction dont l'unique numérateur est une somme de deux termes
+ * de signes opposés y entre (David, 2026-10-20) : `(x² − 1)/(−3)` et
+ * `−(x² − 1)/3` → `(1 − x²)/3`. Le terme est vu après son signe : le résultat ne
+ * dépend pas de l'écriture. Il reste devant s'il ferait rencontrer un facteur de
+ * l'autre côté de la barre : `−(2x − 1)/(3(1 − 2x))`.
+ */
+function signIntoNumerator(term: TidyTerm, unitChoice: UnitChoice, watch: FamilyWatch): TidyTerm {
+	if (term.verbatim || term.unit !== null || !isNegativeRational(term.coefficient)) return term;
+	const hasDenominator =
+		term.coefficient.d !== 1n || term.factors.some((factor) => factor.exponent.n < 0n);
+	if (!hasDenominator) return term;
+	const numerators = term.factors.filter(
+		(factor) => isSumNode(factor.base) && factor.exponent.n > 0n
+	);
+	const [numerator] = numerators;
+	if (numerators.length !== 1 || numerator.exponent.n !== 1n || numerator.exponent.d !== 1n) {
+		return term;
+	}
+
+	const terms = toSumTerms(numerator.base, undefined, unitChoice);
+	const negatives = terms.filter((inner) => isNegativeRational(inner.coefficient));
+	if (terms.length !== 2 || negatives.length !== 1 || !terms.every(isPlainTerm)) return term;
+	if (isAlgebraicComplex(terms)) return term;
+
+	const base = buildSum(sortTerms(terms.map(negateTerm)));
+	const factors = term.factors.map((factor) =>
+		factor === numerator ? { base, exponent: ONE, key: hashMathNode(base) } : factor
+	);
+	const merged = mergeFactors(factors);
+	if (merged === null) return term;
+	watch?.add('other');
+	return { ...term, coefficient: negRational(term.coefficient), factors: merged };
 }
 
 /**
