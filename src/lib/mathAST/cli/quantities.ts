@@ -34,7 +34,7 @@ import {
 	relation,
 	withUnit
 } from '../factory';
-import { isUnit } from '../guards';
+import { hasUnitDescendant, isUnit } from '../guards';
 import { findNodes, mapNode } from '../transforms';
 import { analyzeDimensions } from '../dimensional/analyzer';
 import { evaluate } from '../eval/evaluate';
@@ -323,6 +323,20 @@ function dimensionMessage(error: DimensionalError): string {
 	return MIXED_MESSAGE;
 }
 
+/**
+ * Une unité posée sur un terme qui porte déjà une grandeur multiplie ce terme :
+ * `v*3[h]` se lit (v×3) h (l'unité multiplie tout le terme, lecture-grandeurs PR 4) ;
+ * quand `v` est une grandeur du panneau (2,5 km/h), substituée après la lecture,
+ * c'est (v×3) × 1 h = 7,5 km.
+ */
+function unitsOverQuantities(ast: MathNode): MathNode {
+	return mapNode(ast, (node) =>
+		isUnit(node) && hasUnitDescendant(node.expression)
+			? multiply(node.expression, withUnit(number(1), node.unit), 'cross')
+			: node
+	);
+}
+
 /** Les dimensions de l'expression : une erreur en français, ou l'unité du résultat. */
 function checkDimensions(ast: MathNode): { message: string } | { unit: Unit | null } {
 	const analysis = analyzeDimensions(ast, {
@@ -558,7 +572,8 @@ export function quantityProblem(ast: MathNode): string | null {
  * - un zéro garde son unité : `3[m]-3[m]` → `0 m` ;
  * - l'unité dérivée nommée suit l'unité écrite : `19.62 m.kg/s^2 = 19.62 N`.
  */
-export function computeQuantity(ast: MathNode, mode: QuantityMode): QuantityOutcome {
+export function computeQuantity(written: MathNode, mode: QuantityMode): QuantityOutcome {
+	const ast = unitsOverQuantities(written);
 	if (multipliesTemperature(ast)) return { ok: false, message: TEMPERATURE_PRODUCT_MESSAGE };
 	const dimensions = checkDimensions(ast);
 	if ('message' in dimensions) return { ok: false, message: dimensions.message };

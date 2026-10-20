@@ -249,6 +249,8 @@ export type ParseErrorCode =
 	| 'STACKED_EXPONENTS' // Deux exposants à la suite : 2^3^2 (écrire 2^{3^2} ou (2^3)^2)
 	| 'NEGATIVE_EXPONENT_BEFORE_GROUP' // Signe d'exposant devant un groupe : 2^-sin(x), 2^-(x+1)
 	| 'MISSING_OPERATOR' // Nombre juste après une lettre ou une ')' : x2, (1+x)2
+	| 'AMBIGUOUS_TERM' // Plusieurs nombres devant une unité après une grandeur : 6[m]/2*3[s]
+	| 'MISSING_NUMBER_BEFORE_UNIT' // Unité écrite sans nombre : [m]
 	| 'LEADING_DECIMAL_POINT'; // Zéro de tête oublié : .5
 
 /**

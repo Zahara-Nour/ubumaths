@@ -4,8 +4,9 @@
  * `Ω = point(0, 1)` était refusé par le tokenizer (« Caractère inattendu ») : un
  * centre de cercle se nomme souvent Ω. Les lettres grecques Unicode (Α…Ω, α…ω)
  * sont des lettres d'identifiant comme les lettres latines ; le nom affiché est
- * celui qu'a écrit l'auteur. `π` est un nom comme un autre (un plan peut s'appeler
- * π) : la constante s'écrit toujours `\pi`, et `2 * π` non défini le rappelle.
+ * celui qu'a écrit l'auteur. `π` est réservé : c'est la constante, comme `\pi`
+ * (`π = 3` est refusé ; `2 * π` vaut 2π depuis que le parseur maison lit `π` comme
+ * la constante, lecture-grandeurs PR 4, 2026-10-20).
  */
 import { describe, it, expect } from 'vitest';
 import { tokenize } from '../tokenizer';
@@ -53,7 +54,12 @@ describe('lettres grecques Unicode — figure', () => {
 		expect((symbols.get('x') as { value: number }).value).toBeCloseTo(61);
 	});
 
-	it('`π` non défini : l’erreur rappelle que la constante s’écrit `\\pi`', () => {
-		expect(() => runDsl('x = 2 * π')).toThrow(/\\pi/);
+	it('`x = 2 * π` : la constante, comme `2 * \\pi`', () => {
+		const { symbols } = runDsl('x = 2 * π');
+		expect((symbols.get('x') as { value: number }).value).toBeCloseTo(2 * Math.PI);
+	});
+
+	it('`π = 3` : refusé, `π` est la constante réservée', () => {
+		expect(() => runDsl('π = 3')).toThrow(/réservée/);
 	});
 });

@@ -62,6 +62,7 @@ import {
 	needsParenthesesUnderSign
 } from './common/sign-parentheses';
 import { isGroupingBracketContent } from './parser/custom/unit-writing';
+import { needsClosedRightOperand } from './parser/custom/unit-term';
 
 // =============================================================================
 // Types
@@ -414,19 +415,17 @@ function startsWithUnarySign(s: string): boolean {
 // =============================================================================
 
 /**
- * Parenthèse l'expression d'une grandeur quand le crochet d'unité, qui est un
- * **postfixe**, se rattacherait au mauvais opérande à la relecture :
- * `1/3[km]` se relit `1/(3 km)`, une autre grandeur. Sommes, différences,
- * quotients et signes sont concernés ; un atome, une puissance ou un produit
- * se relisent à l'identique.
+ * Parenthèse l'expression d'une grandeur quand l'unité ne la couvrirait pas toute
+ * à la relecture : une somme ou une différence (`(2+3)[m]`). L'unité multiplie
+ * tout le terme qui la précède (lecture-grandeurs, PR 4) : un produit ou un signe
+ * se relisent à l'identique (`2*3[m]`, `-5[m]`). Les quotients gardent leurs
+ * parenthèses (`(1/2)[m]`), l'écriture d'avant la règle, qui se relit de même.
  */
 function wrapQuantityExpression(expression: MathNode, written: string): string {
 	switch (expression.type) {
 		case 'addition':
 		case 'subtraction':
 		case 'division':
-		case 'opposite':
-		case 'positive':
 			return `(${written})`;
 		default:
 			return written;
@@ -593,8 +592,11 @@ export class CustomGenerator {
 					) {
 						this.emit(' ', meta);
 					}
+					const closeRight = !groupRight && needsClosedRightOperand(node.left, node.right, false);
 					if (groupRight) this.emit('(', meta);
+					if (closeRight) this.emit('{', meta);
 					this.visitWithSpans(node.right);
+					if (closeRight) this.emit('}', meta);
 					if (groupRight) this.emit(')', meta);
 				}
 				break;
@@ -852,15 +854,15 @@ export class CustomGenerator {
 				break;
 			}
 			case 'inline':
+			case 'ratio': {
+				const closeRight = needsClosedRightOperand(node.numerator, node.denominator, true);
 				this.visitWithSpans(node.numerator);
-				this.emit(':/', opMeta);
+				this.emit(node.displayStyle === 'inline' ? ':/' : ':', opMeta);
+				if (closeRight) this.emit('{', opMeta);
 				this.visitWithSpans(node.denominator);
+				if (closeRight) this.emit('}', opMeta);
 				break;
-			case 'ratio':
-				this.visitWithSpans(node.numerator);
-				this.emit(':', opMeta);
-				this.visitWithSpans(node.denominator);
-				break;
+			}
 			default: {
 				const exhaustive: never = node.displayStyle;
 				throw new Error(`Unknown division style: ${exhaustive}`);
@@ -1344,7 +1346,9 @@ export class CustomGenerator {
 
 	private generateMultiplication(node: MultiplicationNode): string {
 		const left = this.groupIfSum(node.left);
-		const right = this.groupIfSum(node.right);
+		const grouped = this.groupIfSum(node.right);
+		// Une grandeur à droite que la lecture changerait : fermée par des accolades
+		const right = needsClosedRightOperand(node.left, node.right, false) ? `{${grouped}}` : grouped;
 
 		switch (node.displayStyle) {
 			case 'implicit': {
@@ -1383,7 +1387,14 @@ export class CustomGenerator {
 		// fraction, si.
 		const grouped = node.displayStyle !== 'fraction';
 		const num = grouped ? this.groupIfSum(node.numerator) : this.generateNode(node.numerator);
-		const denom = grouped ? this.groupIfSum(node.denominator) : this.generateNode(node.denominator);
+		const written = grouped
+			? this.groupIfSum(node.denominator)
+			: this.generateNode(node.denominator);
+		// `x:/{2[m]}` : sans accolades, l'unité passerait sur tout le quotient
+		const denom =
+			grouped && needsClosedRightOperand(node.numerator, node.denominator, true)
+				? `{${written}}`
+				: written;
 
 		switch (node.displayStyle) {
 			case 'fraction': {

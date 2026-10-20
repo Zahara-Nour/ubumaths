@@ -129,9 +129,9 @@ function genericFunctionsFor(extraNames: readonly string[] | undefined) {
  * `f(x) = 2sin(π x)` ne s'évaluait pas, et sa dérivée l'affichait comme une
  * lettre. L'atelier conseille pourtant « \pi ou le symbole π » (#896).
  *
- * ⚠️ Propre à l'atelier : ailleurs (le DSL de géométrie), `π` est un nom comme
- * un autre, décision prise. L'espace qui suit évite de coller la commande à
- * une lettre (`πx` → `\pi x`, pas `\pix`).
+ * Le parseur maison lit lui aussi `π` comme la constante depuis le 2026-10-20
+ * (lecture-grandeurs PR 4) ; la réécriture reste pour le parseur LaTeX. L'espace
+ * qui suit évite de coller la commande à une lettre (`πx` → `\pi x`, pas `\pix`).
  */
 export function withPiCommand(text: string): string {
 	return text.replace(/π/g, '\\pi ');
