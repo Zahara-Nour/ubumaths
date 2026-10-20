@@ -7,11 +7,34 @@ _Mis à jour le 2026-10-20, après #1560._
 - **État** : phase 0 **validée** (`docs/wip/lecture-grandeurs-phase0.md`) ; PR 1 (#1555), PR 2 (#1557), PR 3 (codes précis des refus, #1558) et PR 4 (unité × tout le terme, #1560) mergées, pas en prod. Pages à cocher (font foi) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81/81) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (31/31, close). Base `reponses/<id>`.
 - **Décidé par David** (détail : historique) : (1) unité × tout le terme, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs (A9) ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue interne au point. (3) Il refuse la virgule décimale. (4) Refus = code + message anglais, l'atelier traduit (`mathAST/cli/web/french-errors.ts`). (5) **Catalogue de 14 codes validé** (historique, 3e session). (6) **Q9 (a)** : durées et angles juxtaposés LUS comme une somme marquée « juxtaposée » (4 implémentations, fonction partagée ; `;hms`, `compositeDuration`) ; autres grandeurs refusées `JUXTAPOSED_QUANTITIES` ; risque de perte de la marque géré : chemins réels mesurés → test de RENDU par chemin → garde. (7) `×`, `·`, `⋅` lus `*` (aussi `·`/`⋅` entre crochets) ; ⚠️ `2.5` ≠ `2·5`. (8) B7 : `^` + signe + UN nombre/lettre ; `10^-3+4` = `10^{-3}+4` ; refus `e^-x^2` (`STACKED_EXPONENTS`), `2^-sin(x)`, `2^-(x+1)` (`NEGATIVE_EXPONENT_BEFORE_GROUP`). (9) B9 : empilé = 2^(3^2) ; REFUS dans les deux parseurs (`STACKED_EXPONENTS`). (10) Durée composée = un bloc avec `+`/`−` ; collée à `*` ou `/` (des deux côtés, espaces ou non) → refus, atelier compris. (11) Phase 0 validée : LaTeX ne lit pas `×`/`·` Unicode ; `MISSING_OPERATOR` = `x2`, `x 2`, `)2` ; `10^+3` lu, `2^-x y` refusé ; `{2[m]}{3[m]}` reste un produit. (12) Fin de la page grandeurs : `3x[m]` = (3x)[m] ; `π[m]` = constante π (Q11 révisée : `π` = constante partout, `pi` reste p × i) ; `[m]` refusé (`MISSING_NUMBER_BEFORE_UNIT`) ; après `grandeur *` ou `/`, un terme de plusieurs nombres devant une unité est refusé (`AMBIGUOUS_TERM`) ; catalogue = 16 codes. (14) `MISSING_OPERATOR` = tout nombre après un facteur, maison comme LaTeX (« suis LaTeX », `x^2 3`, `|x|2`, `2[m]3[m]` compris).
 - **En attente de David** : rien. (13) Page virgule close 31/31 le 2026-10-20 : S11 `x2` → `MISSING_OPERATOR` ; V1 `1,2` et V4 `[1,2]` → `DECIMAL_COMMA` (atelier : « Le séparateur décimal est le point : écris 1.2 ») ; V7 `f(1,5)` = deux arguments ; `UNEXPECTED_COMMA` (V3, V5, V6) ; `SEMICOLON` (P1-P4) ; `max((2,5),3)` refusé.
-- **Prochaine action** : nouveau worktree depuis `origin/main` pour la PR « retrait de `BARE_PI` » (décidée, à part : réécrire `pi` → `\pi` dans 186 calculs de prod + 159 du dépôt, garde qui refuse `pi` nu), puis PR 5 (`2[m]3[m]` → `JUXTAPOSED_QUANTITIES`), PR 6 (virgule).
+- **Prochaine action** : PR « retrait de `BARE_PI` » (branche `refactor/retrait-bare-pi`) codée, en cours de livraison ; réécriture des 18 brouillons de prod (`scripts/reecrire-pi-nu-base.ts --ecrire`) **sur accord de David**, avant le `deploy:prod` ; puis PR 5 (`2[m]3[m]` → `JUXTAPOSED_QUANTITIES`), PR 6 (virgule).
 - **Pièges** : distinguer LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt (défaut) + RD ; `{2[h]}{30[min]}` = 1 h² aujourd'hui ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
-- **Worktree / branche** : aucun (PR 4 mergée, worktree supprimé) ; le prochain : `../ubumaths-wt-lecture-grandeurs` sur une nouvelle branche. Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
+- **Worktree / branche** : `../ubumaths-wt-lecture-grandeurs`, `refactor/retrait-bare-pi`. Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
+
+### 2026-10-20 — PR « retrait de `BARE_PI` » codée
+
+- Worktree `../ubumaths-wt-lecture-grandeurs`, branche `refactor/retrait-bare-pi`.
+- Portée exacte de l'ancienne tolérance : `{{eval:…}}` (`parseEvalAst`), `conditions[]`
+  (`normalizeCondition`) et — relevé par la revue — la condition `{{if:…}}` du bon choix d'un QCM
+  (`resolveConditionalChoice`, sans filtre des variables ; 0 cas en prod comme au dépôt). Pas la
+  condition d'un `{{if:…}}` d'énoncé ou de corrigé : `pi` y est un nom inconnu (laissée au navigateur,
+  ou refusée en strict). Expression de variable lue entière seulement si `eval:…`. Les blocs courbe et
+  trig ont leur propre lecture de `pi` : hors PR.
+- Refus : `barePiRefusal` (`ubumark/parameterization/validator/bare-pi.ts`) → `AuthorExpressionError`
+  / `ConditionSyntaxError`, « « pi » sans antislash se lit p × i ; écris \pi pour la constante π, ou p*i
+  pour le produit ». `checkTemplate` l'attrape (génération) : import et publication bloqués.
+- `pi` isolé = hors lettre **Unicode** (`\p{L}`) : l'ancienne règle ASCII prenait le `pi` de « pièce ».
+- Inventaire (`rewriteBarePi`) : **199 `pi` nus, 18 modèles, tous `draft`**, identiques dans le dépôt
+  (`scripts/questions/`) et en prod (1005 modèles lus, paginés : PostgREST plafonne à 1000). Le
+  « 186 + 159 » d'avant comptait autrement. 0 dans tests/, data/, seeds.
+- Dépôt réécrit textuellement (`scripts/inventaire-pi-nu.ts --ecrire`) : diff = 199 antislashes, rien
+  d'autre ; 18/18 `question:specs` importables (3650 tirages) ; l'ancienne version de C-01 refusée.
+- Prod : `scripts/reecrire-pi-nu-base.ts` (simulation par défaut, `--ecrire`, sauvegarde, relecture) ;
+  garde `updated_at` (rien d'écrasé si le modèle a bougé) ; écriture éprouvée en LOCAL (modèle de test
+  à 4 cas : 4 réécrits, `{{pi|e}}` et « pièce » intacts, ligne supprimée). Simulation prod = 199 / 18. La réécriture est compatible avec le code en prod (`\pi` y est déjà lu) :
+  à faire AVANT le `deploy:prod` qui livre le refus.
 
 ### 2026-10-20 — PR 4 codée : l'unité multiplie tout le terme
 

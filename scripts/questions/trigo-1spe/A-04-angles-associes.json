@@ -40,11 +40,11 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:cos(n*pi/12)}}",
+					"expectedAnswer": "{{eval:cos(n*\\pi/12)}}",
 					"acceptDecimal": true
 				},
 				{
-					"expectedAnswer": "{{eval:sin(n*pi/12)}}",
+					"expectedAnswer": "{{eval:sin(n*\\pi/12)}}",
 					"acceptDecimal": true
 				}
 			],
@@ -52,7 +52,7 @@
 				"steps": [
 					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des ordonnées du point associé à $\\frac{\\pi}{ {{d}} }$ : ils ont le même sinus et des cosinus opposés.",
 					"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
-					"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*pi/12)}} }$."
+					"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
 				]
 			}
 		},
@@ -86,11 +86,11 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:cos(n*pi/12)}}",
+					"expectedAnswer": "{{eval:cos(n*\\pi/12)}}",
 					"acceptDecimal": true
 				},
 				{
-					"expectedAnswer": "{{eval:sin(n*pi/12)}}",
+					"expectedAnswer": "{{eval:sin(n*\\pi/12)}}",
 					"acceptDecimal": true
 				}
 			],
@@ -98,7 +98,7 @@
 				"steps": [
 					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des abscisses du point associé à $\\frac{\\pi}{ {{d}} }$ : ils ont le même cosinus et des sinus opposés.",
 					"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
-					"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*pi/12)}} }$."
+					"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
 				]
 			}
 		},
@@ -132,11 +132,11 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:cos(n*pi/12)}}",
+					"expectedAnswer": "{{eval:cos(n*\\pi/12)}}",
 					"acceptDecimal": true
 				},
 				{
-					"expectedAnswer": "{{eval:sin(n*pi/12)}}",
+					"expectedAnswer": "{{eval:sin(n*\\pi/12)}}",
 					"acceptDecimal": true
 				}
 			],
@@ -144,7 +144,7 @@
 				"steps": [
 					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'origine $O$ du point associé à $\\frac{\\pi}{ {{d}} }$ : leurs cosinus sont opposés, et leurs sinus aussi.",
 					"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
-					"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*pi/12)}} }$."
+					"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
 				]
 			}
 		}

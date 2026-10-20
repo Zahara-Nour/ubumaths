@@ -16,7 +16,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>{{eval:sin(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>{{eval:sin(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "a",
@@ -50,14 +50,14 @@
 			],
 			"correction": {
 				"steps": [
-					"$\\sin {{a}}=\\sin \\frac{ {{u}}\\pi}{ {{w}} }={{eval:sin(n*pi/12)}}$. Sur le cercle, les points d'ordonnée strictement supérieure à ${{eval:sin(n*pi/12)}}$ forment l'arc qui va de ${{a}}$ à $\\frac{ {{u}}\\pi}{ {{w}} }$.",
+					"$\\sin {{a}}=\\sin \\frac{ {{u}}\\pi}{ {{w}} }={{eval:sin(n*\\pi/12)}}$. Sur le cercle, les points d'ordonnée strictement supérieure à ${{eval:sin(n*\\pi/12)}}$ forment l'arc qui va de ${{a}}$ à $\\frac{ {{u}}\\pi}{ {{w}} }$.",
 					"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, {{u}}*pi/{{w}}\nequation: sin(x) > sin({{n}}*pi/12)\nmode: arc\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left]{{a}}\\,;\\frac{ {{u}}\\pi}{ {{w}} }\\right[ }$."
 				]
 			}
 		},
 		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>{{eval:-sin(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>{{eval:-sin(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "a",
@@ -99,7 +99,7 @@
 			],
 			"correction": {
 				"steps": [
-					"$\\sin \\frac{ {{u}}\\pi}{ {{w}} }=\\sin \\frac{ {{g}}\\pi}{ {{h}} }={{eval:-sin(n*pi/12)}}$. Sur le cercle, les points d'ordonnée strictement supérieure à ${{eval:-sin(n*pi/12)}}$ forment l'arc qui va de $\\frac{ {{g}}\\pi}{ {{h}} }$ à $\\frac{ {{u}}\\pi}{ {{w}} }$ en passant par $0$ : dans $\\left[0\\,;2\\pi\\right[$, il donne deux intervalles.",
+					"$\\sin \\frac{ {{u}}\\pi}{ {{w}} }=\\sin \\frac{ {{g}}\\pi}{ {{h}} }={{eval:-sin(n*\\pi/12)}}$. Sur le cercle, les points d'ordonnée strictement supérieure à ${{eval:-sin(n*\\pi/12)}}$ forment l'arc qui va de $\\frac{ {{g}}\\pi}{ {{h}} }$ à $\\frac{ {{u}}\\pi}{ {{w}} }$ en passant par $0$ : dans $\\left[0\\,;2\\pi\\right[$, il donne deux intervalles.",
 					"```trig\npreset: custom\nangles: 0, {{u}}*pi/{{w}}, {{g}}*pi/{{h}}\nequation: sin(x) > sin(-{{n}}*pi/12)\nmode: arc\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left[0\\,;\\frac{ {{u}}\\pi}{ {{w}} }\\right[\\cup\\left]\\frac{ {{g}}\\pi}{ {{h}} }\\,;2\\pi\\right[ }$."
 				]

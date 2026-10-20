@@ -22,11 +22,11 @@
 				},
 				{
 					"name": "x",
-					"expression": "eval:round(2^(n/2)*cos(n*pi/4))"
+					"expression": "eval:round(2^(n/2)*cos(n*\\pi/4))"
 				},
 				{
 					"name": "y",
-					"expression": "eval:round(2^(n/2)*sin(n*pi/4))"
+					"expression": "eval:round(2^(n/2)*sin(n*\\pi/4))"
 				}
 			],
 			"blanks": [
@@ -50,11 +50,11 @@
 				},
 				{
 					"name": "x",
-					"expression": "eval:round(2^n*cos(n*pi/6))"
+					"expression": "eval:round(2^n*cos(n*\\pi/6))"
 				},
 				{
 					"name": "y",
-					"expression": "eval:round(2^n*sin(n*pi/6))"
+					"expression": "eval:round(2^n*sin(n*\\pi/6))"
 				}
 			],
 			"blanks": [
@@ -65,7 +65,7 @@
 			"correction": {
 				"steps": [
 					"$\\sqrt{3}+i=2e^{i\\frac{\\pi}{6}}$, donc $(\\sqrt{3}+i)^{ {{n}} }=2^{ {{n}} }e^{i\\frac{ {{n}}\\pi}{6}}$.",
-					"$2^{ {{n}} }={{eval:2^n}}$ et $\\frac{ {{n}}\\pi}{6}={{eval:n*pi/6}}$ : $(\\sqrt{3}+i)^{ {{n}} }={{x}}+({{y}})i$."
+					"$2^{ {{n}} }={{eval:2^n}}$ et $\\frac{ {{n}}\\pi}{6}={{eval:n*\\pi/6}}$ : $(\\sqrt{3}+i)^{ {{n}} }={{x}}+({{y}})i$."
 				]
 			}
 		},
@@ -86,13 +86,13 @@
 					"expectedAnswer": "{{eval:2^n}}"
 				},
 				{
-					"expectedAnswer": "{{eval:k*pi/3}}"
+					"expectedAnswer": "{{eval:k*\\pi/3}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$1-i\\sqrt{3}=2e^{-i\\frac{\\pi}{3}}$, donc $(1-i\\sqrt{3})^{ {{n}} }=2^{ {{n}} }e^{-i\\frac{ {{n}}\\pi}{3}}$.",
-					"On ramène l'argument, à $2\\pi$ près, dans $]-\\pi\\,;\\pi]$ : $(1-i\\sqrt{3})^{ {{n}} }={{eval:2^n}}e^{ {{if:k>=0||-}}i{{eval:abs(k*pi/3)}} }$."
+					"On ramène l'argument, à $2\\pi$ près, dans $]-\\pi\\,;\\pi]$ : $(1-i\\sqrt{3})^{ {{n}} }={{eval:2^n}}e^{ {{if:k>=0||-}}i{{eval:abs(k*\\pi/3)}} }$."
 				]
 			}
 		},
@@ -113,11 +113,11 @@
 				},
 				{
 					"name": "x",
-					"expression": "eval:round(a*cos(N*pi/2)-b*sin(N*pi/2))"
+					"expression": "eval:round(a*cos(N*\\pi/2)-b*sin(N*\\pi/2))"
 				},
 				{
 					"name": "y",
-					"expression": "eval:round(a*sin(N*pi/2)+b*cos(N*pi/2))"
+					"expression": "eval:round(a*sin(N*\\pi/2)+b*cos(N*\\pi/2))"
 				},
 				{
 					"name": "r",

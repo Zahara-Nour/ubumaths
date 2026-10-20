@@ -36,6 +36,7 @@ import {
 import type { BindingValue } from '$lib/mathAST/eval';
 import type { MathNode } from '$lib/mathAST/types';
 import { toFrenchDecimal } from '$lib/utils/french-math';
+import { barePiRefusal } from '../validator/bare-pi';
 
 // ============================================================================
 // REMOVE SPACES (French digit grouping prevention)
@@ -315,21 +316,21 @@ function lettersOf(value: string): Set<string> {
 }
 
 /**
- * `pi` écrit en syntaxe maison (`cos(p*pi/d)`, `5pi`) : la constante π. Jamais au sein
- * d'un mot (`pin`, `api`) ni après une barre oblique inverse (`\pi` est déjà la constante).
- */
-export const BARE_PI = /(?<![A-Za-z\\])pi(?![A-Za-z])/g;
-
-/**
  * Seule commande LaTeX que la syntaxe maison lit, et que `evalResultToCustom` laisse dans une
  * valeur réécrite (π s'y écrit `\pi`, puisque `pi` nu se lirait p × i).
  */
 const CUSTOM_LATEX_COMMAND = /\\pi(?![A-Za-z])/g;
 
+/** `pi` nu dans un calcul : faute d'écriture du modèle */
+function refuseBarePi(expression: string): void {
+	const refusal = barePiRefusal(expression);
+	if (refusal) throw new AuthorExpressionError(refusal);
+}
+
 /**
  * AST d'un calcul `{{eval:…}}` : parseLatex dès qu'une commande LaTeX est écrite, sinon la
- * syntaxe maison, qui lit l'implicite (`2k` → 2 × k). En syntaxe maison, `pi` est π : sans
- * cela il se lisait p × i (« free variables: p », ou un nombre complexe quand p est tirée).
+ * syntaxe maison, qui lit l'implicite (`2k` → 2 × k). π s'y écrit `\pi` ; `pi` nu est refusé
+ * (il se lirait p × i : « free variables: p », ou un nombre complexe quand p est tirée).
  *
  * Un `\pi` seul ne suffit pas à basculer en LaTeX : il vient le plus souvent de la valeur
  * d'une variable de plusieurs lettres (`ang` = π/6, substituée en `{1/6\pi}`), et parseLatex
@@ -337,10 +338,11 @@ const CUSTOM_LATEX_COMMAND = /\\pi(?![A-Za-z])/g;
  * La syntaxe maison est essayée d'abord, parseLatex reste le recours.
  */
 function parseEvalAst(expression: string): MathNode {
-	if (!expression.includes('\\')) return parseCustom(expression.replace(BARE_PI, '\\pi'));
+	refuseBarePi(expression);
+	if (!expression.includes('\\')) return parseCustom(expression);
 	if (!expression.replace(CUSTOM_LATEX_COMMAND, '').includes('\\')) {
 		try {
-			return parseCustom(expression.replace(BARE_PI, '\\pi'));
+			return parseCustom(expression);
 		} catch {
 			// Écriture LaTeX véritable : parseLatex ci-dessous
 		}

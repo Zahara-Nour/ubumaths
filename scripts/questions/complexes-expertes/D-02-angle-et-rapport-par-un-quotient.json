@@ -54,13 +54,13 @@
 					"expectedAnswer": "{{eval:sqrt(s^2+t^2)}}"
 				},
 				{
-					"expectedAnswer": "{{eval:k*pi/4}}"
+					"expectedAnswer": "{{eval:k*\\pi/4}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$z_B-z_A={{c}}+({{d}})i$ et $z_C-z_A={{eval:s*c-t*d}}+({{eval:s*d+t*c}})i$ ; on divise (multiplication par le conjugué du dénominateur) : $q={{s}}+({{t}})i$.",
-					"$\\dfrac{AC}{AB}=|q|=\\textcolor{{{color:primary.0}}}{{{eval:sqrt(s^2+t^2)}}}$ et $\\left(\\overrightarrow{AB},\\overrightarrow{AC}\\right)=\\arg(q)=\\textcolor{{{color:primary.0}}}{{{eval:k*pi/4}}}$ à $2\\pi$ près."
+					"$\\dfrac{AC}{AB}=|q|=\\textcolor{{{color:primary.0}}}{{{eval:sqrt(s^2+t^2)}}}$ et $\\left(\\overrightarrow{AB},\\overrightarrow{AC}\\right)=\\arg(q)=\\textcolor{{{color:primary.0}}}{{{eval:k*\\pi/4}}}$ à $2\\pi$ près."
 				]
 			}
 		},
@@ -97,13 +97,13 @@
 					"expectedAnswer": "{{eval:sqrt(s^2+t^2)}}"
 				},
 				{
-					"expectedAnswer": "{{eval:k*pi/4}}"
+					"expectedAnswer": "{{eval:k*\\pi/4}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$q=\\dfrac{z_C}{z_B}$ ; en multipliant par le conjugué de $z_B$, on trouve $q={{s}}+({{t}})i$.",
-					"$\\dfrac{OC}{OB}=|q|=\\textcolor{{{color:primary.0}}}{{{eval:sqrt(s^2+t^2)}}}$ et $\\left(\\overrightarrow{OB},\\overrightarrow{OC}\\right)=\\arg(q)=\\textcolor{{{color:primary.0}}}{{{eval:k*pi/4}}}$ à $2\\pi$ près."
+					"$\\dfrac{OC}{OB}=|q|=\\textcolor{{{color:primary.0}}}{{{eval:sqrt(s^2+t^2)}}}$ et $\\left(\\overrightarrow{OB},\\overrightarrow{OC}\\right)=\\arg(q)=\\textcolor{{{color:primary.0}}}{{{eval:k*\\pi/4}}}$ à $2\\pi$ près."
 				]
 			}
 		}

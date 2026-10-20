@@ -16,7 +16,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)={{eval:cos(n*pi/6)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)={{eval:cos(n*\\pi/6)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "h",
@@ -42,7 +42,7 @@
 			],
 			"correction": {
 				"steps": [
-					"On pose $X=2x$ : $\\cos X={{eval:cos(n*pi/6)}}=\\cos\\left(2\\times{{h}}\\right)$, donc $2x=\\pm2\\times{{h}}+2k\\pi$, soit $x=\\pm{{h}}+k\\pi$, $k\\in\\mathbb{Z}$.",
+					"On pose $X=2x$ : $\\cos X={{eval:cos(n*\\pi/6)}}=\\cos\\left(2\\times{{h}}\\right)$, donc $2x=\\pm2\\times{{h}}+2k\\pi$, soit $x=\\pm{{h}}+k\\pi$, $k\\in\\mathbb{Z}$.",
 					"Dans $\\left]-\\pi\\,;\\pi\\right]$ : $x={{h}}$, $x=-{{h}}$, $x={{h}}-\\pi=-{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}$ et $x=-{{h}}+\\pi={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}$.",
 					"```trig\npreset: custom\nangles: {{n}}*pi/12, -{{n}}*pi/12, {{eval:12-n}}*pi/12, -{{eval:12-n}}*pi/12\nmode: points\nmesures: principales\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}\\,;-{{h}}\\,;{{h}}\\,;{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}\\right\\}}$ : quatre solutions, car $2x$ fait deux tours quand $x$ en fait un."
@@ -50,7 +50,7 @@
 			}
 		},
 		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin(2x)={{eval:sin(n*pi/6)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin(2x)={{eval:sin(n*\\pi/6)}}$.\n\nL'ensemble des solutions est $S=?$.",
 			"variables": [
 				{
 					"name": "h",
