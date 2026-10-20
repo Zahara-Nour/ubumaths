@@ -6,12 +6,24 @@ _Mis à jour le 2026-10-20, 5e session._
 
 - **État** : phase 0 **validée** (`docs/wip/lecture-grandeurs-phase0.md`, sauf ⏸), rien de codé. Pages à cocher (font foi) : grandeurs https://claude.ai/artifact/HWJeifzvw6rL9ar72KuRHf (81 fiches, 20 répondues dont B7, B9, F1-F3 tranchées en conversation) ; virgule https://claude.ai/artifact/PEBUAFgGR8BFL5Aw4vvwib (31 fiches, 0 répondue). Base `reponses/<id>`.
 - **Décidé par David** (détail : historique) : (1) unité × tout le terme, signe unaire compris ; le parseur LIT, la forme est jugée ailleurs (A9) ; `12 500` = 12500 ; `x 2`, `.5[m]` refusés. (2) Parseur maison = langue interne au point. (3) Il refuse la virgule décimale. (4) Refus = code + message anglais, l'atelier traduit (`mathAST/cli/web/french-errors.ts`). (5) **Catalogue de 14 codes validé** (historique, 3e session). (6) **Q9 (a)** : durées et angles juxtaposés LUS comme une somme marquée « juxtaposée » (4 implémentations, fonction partagée ; `;hms`, `compositeDuration`) ; autres grandeurs refusées `JUXTAPOSED_QUANTITIES` ; risque de perte de la marque géré : chemins réels mesurés → test de RENDU par chemin → garde. (7) `×`, `·`, `⋅` lus `*` (aussi `·`/`⋅` entre crochets) ; ⚠️ `2.5` ≠ `2·5`. (8) B7 : `^` + signe + UN nombre/lettre ; `10^-3+4` = `10^{-3}+4` ; refus `e^-x^2` (`STACKED_EXPONENTS`), `2^-sin(x)`, `2^-(x+1)` (`NEGATIVE_EXPONENT_BEFORE_GROUP`). (9) B9 : empilé = 2^(3^2) ; REFUS dans les deux parseurs (`STACKED_EXPONENTS`). (10) Durée composée = un bloc avec `+`/`−` ; collée à `*` ou `/` (des deux côtés, espaces ou non) → refus, atelier compris. (11) Phase 0 validée : LaTeX ne lit pas `×`/`·` Unicode ; `MISSING_OPERATOR` = `x2`, `x 2`, `)2` ; `10^+3` lu, `2^-x y` refusé ; `{2[m]}{3[m]}` reste un produit.
-- **En attente de David** : les 61 fiches grandeurs et 31 fiches virgule restantes.
-- **Prochaine action** : PR 1 (`×`, `·`, `⋅` lus `*`, parseur maison seul) dans un worktree `ubumaths-wt-lecture-grandeurs` ; puis PR 2 → 5, PR 6 après la page virgule.
+- **En attente de David** : fiches restantes de la page grandeurs (v8 : codes alignés sur le catalogue, 18 fiches « tranché en conversation ») et les 31 fiches virgule.
+- **Prochaine action** : PR 1 (`feat/lecture-grandeurs`) : CI → merge ; puis PR 2 (exposants `^-`, empilés) sur une nouvelle branche ; PR 6 après la page virgule.
 - **Pièges** : distinguer LECTURE / CALCUL (`computeQuantity`) / MESSAGE (atelier) ; chaque parseur = Pratt (défaut) + RD ; `{2[h]}{30[min]}` = 1 h² aujourd'hui ; MathLive : `^` sur un exposant à un chiffre le REMPLACE.
-- **Worktree / branche** : aucun. Sondes (arbre, calcul, codes, clavier MathLive) : `docs/wip/lecture-grandeurs-sondes.md`.
+- **Worktree / branche** : `../ubumaths-wt-lecture-grandeurs`, `feat/lecture-grandeurs` (PR 1). Sondes : `docs/wip/lecture-grandeurs-sondes.md`.
 
 ## Historique
+
+### 2026-10-20 — PR 1 codée : `×`, `·`, `⋅` lus `*`
+
+- Tokenizer maison : `×`, `·`, `⋅` → jeton STAR qui garde le symbole tapé ; entre crochets d'unité, `·`/`⋅` → `.`,
+  `×` → `*` (`3[m×s]` gardé par David). `2×` (lu « 2 fois la lettre × ») est désormais refusé comme `2*`.
+- Revue Opus : le portier de l'atelier (`cli/core/input-detector.ts`) ne reconnaissait que `·` dans une unité →
+  `⋅` et `×` ajoutés. Hors périmètre, noté : dans `pipeline.parse`, `2×3` (Unicode, sans crochet) part au LaTeX
+  et y est refusé ; MathLive n'écrit jamais l'Unicode.
+- Page grandeurs v8 : codes alignés sur le catalogue (F4, E12 → `JUXTAPOSED_QUANTITIES` ; G2 →
+  `UNIT_EXPONENT_OUTSIDE` ; B7 → `NEGATIVE_EXPONENT_BEFORE_GROUP` / `STACKED_EXPONENTS` ; G11 → `UNKNOWN_UNIT` ;
+  K2 : code à choisir si Q15 = refus) ; 18 fiches marquées « tranché en conversation » (champ `tranche`, hors
+  « Ce qui reste », aucune réponse écrite à la place de David).
 
 ### 2026-10-20 — phase 0 validée (5e session)
 

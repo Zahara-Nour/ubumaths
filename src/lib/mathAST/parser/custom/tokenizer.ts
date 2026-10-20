@@ -553,6 +553,14 @@ export class CustomTokenizer {
 		if (char === '≥') return this.scanMultiChar('GREATER_EQUAL', '>=', 1);
 		if (char === '≠') return this.scanMultiChar('NOT_EQUAL', '!=', 1);
 
+		// × · ⋅ tapés tels quels : le `*` du produit (décision de David, 2026-10-20 ;
+		// chantier lecture-grandeurs). Ils étaient pris pour une lettre : `2×3`
+		// refusé, `2×` lu « 2 fois la lettre × ». La valeur garde le symbole tapé :
+		// entre crochets d'unité, `·` et `⋅` valent le point (`m·s^-1` = `m.s^-1`)
+		if (char === '×' || char === '·' || char === '⋅') {
+			return this.scanMultiChar('STAR', char, 1);
+		}
+
 		// <=
 		if (char === '<' && this.peekChar(1) === '=') {
 			return this.scanMultiChar('LESS_EQUAL', '<=', 2);

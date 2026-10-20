@@ -55,6 +55,15 @@ interface UnitWritingToken {
 	readonly length: number;
 }
 
+/** Les points médians tapés pour un produit d'unités : `m·s^-1` = `m.s^-1`. */
+const MIDDLE_DOTS: ReadonlySet<string> = new Set(['·', '⋅']);
+
+/** Le texte d'un jeton dans une écriture d'unité. */
+function unitPieceOf(token: UnitWritingToken): string {
+	if (token.type === 'STAR' && MIDDLE_DOTS.has(token.value)) return '.';
+	return UNIT_TOKEN_TEXT[token.type] ?? token.value;
+}
+
 /**
  * Recolle l'écriture d'une unité jeton après jeton, jusqu'au premier jeton qui
  * n'en fait pas partie (le `]` fermant, en principe).
@@ -75,7 +84,7 @@ export function readUnitWriting(
 
 	while (!isEnd(current())) {
 		const token = current();
-		const piece = UNIT_TOKEN_TEXT[token.type] ?? token.value;
+		const piece = unitPieceOf(token);
 		if (piece === '' || !UNIT_WRITING.test(piece)) break;
 		if (previousEnd !== null && token.position > previousEnd && spaceAt === null) {
 			spaceAt = previousEnd;
