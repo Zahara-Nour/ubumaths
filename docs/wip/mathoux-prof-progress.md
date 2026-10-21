@@ -12,8 +12,8 @@ _Mis à jour le 2026-10-21, revues faites et corrigées._
 - **Prochaine action** : push → PR (corps : effets de bord de la policy, ci-dessous) → CI verte →
   merge → `db:migrate` (4 conditions réunies : accès tranché, rouge sans la migration vérifié,
   audit sans bloquant, additive + rollback) → vérification manuelle notée → nettoyage worktree.
-- **En attente de David** : élèves hors classe (ou en classe inactive) absents de l'onglet Mathoux,
-  comme dans l'onglet Palotins : les y ajouter (section « Hors classe ») ou non ? Pas bloquant.
+- **En attente de David** : rien. Hors classe : pas de section dans l'onglet Mathoux (David,
+  2026-10-21).
 - **Pièges en cours** : la vue prof ne doit JAMAIS écrire la mémoire. Policy appliquée à la main
   sur la base locale (psql). Avertissement `no-thenable` de `collection.test.ts:65` : antérieur.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-prof` · `feat/mathoux-vue-prof`.
