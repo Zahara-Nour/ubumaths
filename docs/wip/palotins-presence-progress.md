@@ -53,3 +53,6 @@ Le passage n'était noté que par le `load` du layout `/dashboard/student/*` :
 ## Historique
 
 - 2026-10-21 : phase 0 validée ; worktree créé ; migration et test d'intégration écrits.
+- 2026-10-21 : test rouge sans la migration (8 × « colonne absente »), vert avec (22 tests avec
+  palotin-dernier-passage) ; migration renommée 20261022100000 (une autre session a joué
+  20261022080000 en local) ; security-auditor : aucun finding bloquant.

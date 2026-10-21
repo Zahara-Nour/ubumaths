@@ -129,6 +129,10 @@ describe('Palotin : jour du retour à fêter, serveur seulement', () => {
 			const read = await client.from(TABLE).select('welcome_back_on').eq('student_id', student.id);
 			expect(read.error?.code).toBe(PERMISSION_DENIED);
 			expect(read.data).toBeNull();
+			const insert = await client
+				.from(TABLE)
+				.insert({ student_id: student.id, last_visit_date: DAY_1, welcome_back_on: DAY_1 });
+			expect(insert.error?.code).toBe(PERMISSION_DENIED);
 			const update = await client
 				.from(TABLE)
 				.update({ welcome_back_on: null })
