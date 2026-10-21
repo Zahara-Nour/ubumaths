@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, avant la PR._
+_Mis à jour le 2026-10-21, après #1591 (mergée) — chantier clos._
 
-- **État** : `barre-icones` et `rejeu` attendent le résultat (`vi.waitFor`) au lieu de 50 ms fixes · **Prochaine action** : PR, CI, merge, archiver ce journal · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-atelier-attente` · `test/atelier-chargement-attente`
+- **État** : `barre-icones` et `rejeu` attendent le résultat (`vi.waitFor`) au lieu de 50 ms fixes · **Prochaine action** : aucune (clos) · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-atelier-attente` · `test/atelier-chargement-attente`
 
 ## Historique
 
