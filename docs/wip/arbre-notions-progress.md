@@ -1271,3 +1271,10 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   `points/[pointId]/__tests__/patch.test.ts`, qui asserte le refus de `objective_id`) ; restent `db-seed-riche/regles.ts`
   et 27 fichiers de `tests/` (dont 13 `seed-curriculum-points-*`). Attend : `deploy:prod` de l'étape 3, et le sort
   des 12 modèles.
+- **2026-10-21 — Les 12 modèles sans point : table de correspondance retirée, passe lycée décidée.** Ma table (24 liens
+  vers les jumeaux neufs des anciens points) violait la règle 1 pour 22 liens, et contredisait les verdicts du
+  2026-10-10 (« détaguer », « reste, sans point », A93-A94 « à borner »). David : le lycée n'a pas eu le ménage du
+  primaire et du collège (les 473 tags de l'étape 2 précèdent les principes du 2026-10-17 et la méthode du 2026-10-18).
+  **Décidé par David** : (1) **les 5 étapes** au lycée — passe des points (critère de scission), bornes par point,
+  relevé des modèles, verdicts en inclusion stricte, page à cocher puis migration des tags ; les 12 modèles s'y
+  traitent ; (2) **étape 4 d'abord**, la passe lycée ensuite, en chantier à part.
