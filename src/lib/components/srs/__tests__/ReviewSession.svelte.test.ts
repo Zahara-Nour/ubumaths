@@ -169,3 +169,67 @@ describe('ReviewSession — gain du Palotin en fin de séance', () => {
 		expect(texte(container)).not.toContain('a gagné');
 	});
 });
+
+describe('ReviewSession — nouveautés de la Chatterie en fin de séance', () => {
+	const deck = { kind: 'deck', deckId: 'd1' } as const;
+	const dueBody = {
+		cards: [{ cardId: 'k1', cardType: 'custom', frontContent: 'Recto', backContent: 'Verso' }],
+		skipped: 0
+	};
+	const news = {
+		firstVisit: false,
+		total: 1,
+		items: [
+			{
+				kind: 'birth',
+				notionId: 'n1',
+				name: 'Pile-Poil',
+				raceIndex: 0,
+				stage: 'chaton',
+				newStars: []
+			}
+		]
+	};
+
+	it('demandées APRÈS la dernière révision enregistrée, puis affichées', async () => {
+		const calls: string[] = [];
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (url: string) => {
+				calls.push(url);
+				if (url.startsWith('/api/srs/review/due')) return respond(200, dueBody);
+				if (url === '/api/srs/review/submit') return respond(200, { success: true });
+				if (url === '/api/student/mathoux') {
+					return respond(200, { born: 1, napping: 0, toDiscover: 0, news });
+				}
+				return respond(404, {});
+			})
+		);
+		const { container } = await render(ReviewSession, { source: deck });
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await page.getByRole('button', { name: /Bien/ }).click();
+		await expect
+			.poll(() => texte(container))
+			.toContain('Un chaton est né à la Chatterie : Pile-Poil !');
+		expect(calls.indexOf('/api/student/mathoux')).toBeGreaterThan(
+			calls.indexOf('/api/srs/review/submit')
+		);
+	});
+
+	it('compte non élève (403) : la séance se termine, sans annonce', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (url: string) => {
+				if (url.startsWith('/api/srs/review/due')) return respond(200, dueBody);
+				if (url === '/api/srs/review/submit') return respond(200, { success: true });
+				if (url === '/api/student/mathoux') return respond(403, { message: 'Interdit' });
+				return respond(404, {});
+			})
+		);
+		const { container } = await render(ReviewSession, { source: deck });
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await page.getByRole('button', { name: /Bien/ }).click();
+		await expect.poll(() => texte(container)).toContain('Session terminée');
+		expect(texte(container)).not.toContain('Chatterie');
+	});
+});

@@ -10,7 +10,12 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { readMathouMemory, rememberMathoux, type StoredMathouMemory } from '../memory';
+import {
+	MathouMemoryWriteError,
+	readMathouMemory,
+	rememberMathoux,
+	type StoredMathouMemory
+} from '../memory';
 
 // =============================================================================
 // Mock : chaque requête enregistre ses appels ; le handler de la table répond
@@ -91,8 +96,9 @@ describe('readMathouMemory', () => {
 describe('rememberMathoux', () => {
 	it('rien à retenir → aucune requête', async () => {
 		const { client, queries } = buildMock(() => ({ data: [], error: null }));
-		await rememberMathoux(client, STUDENT, [], new Map());
+		const written = await rememberMathoux(client, STUDENT, [], new Map());
 		expect(queries).toHaveLength(0);
+		expect(written).toEqual(new Map());
 	});
 
 	it('lignes neuves : un seul insert groupé, étoiles toujours fournies, sans rien écraser', async () => {
@@ -100,7 +106,7 @@ describe('rememberMathoux', () => {
 			data: [{ notion_id: 'n1' }, { notion_id: 'n2' }],
 			error: null
 		}));
-		await rememberMathoux(
+		const written = await rememberMathoux(
 			client,
 			STUDENT,
 			[
@@ -122,11 +128,17 @@ describe('rememberMathoux', () => {
 		});
 		// `.select()` : on sait quelles lignes ont vraiment été insérées
 		expect(callOf(queries[0], 'select')).toBeDefined();
+		expect(written).toEqual(
+			new Map([
+				['n1', null],
+				['n2', null]
+			])
+		);
 	});
 
 	it('ligne existante : mise à jour conditionnée à son `updated_at` lu', async () => {
 		const { client, queries } = buildMock(() => ({ data: [{ notion_id: 'n1' }], error: null }));
-		await rememberMathoux(
+		const written = await rememberMathoux(
 			client,
 			STUDENT,
 			[{ notionId: 'n1', bestStage: 'grand_matou', starredGrades: ['2'] }],
@@ -142,6 +154,7 @@ describe('rememberMathoux', () => {
 			['notion_id', 'n1'],
 			['updated_at', T0]
 		]);
+		expect(written).toEqual(new Map([['n1', { bestStage: 'matou', starredGrades: [] }]]));
 	});
 
 	it('concurrence : la ligne a bougé → relue, fusionnée, jamais redescendue', async () => {
@@ -157,12 +170,14 @@ describe('rememberMathoux', () => {
 				error: null
 			};
 		});
-		await rememberMathoux(
+		const written = await rememberMathoux(
 			client,
 			STUDENT,
 			[{ notionId: 'n1', bestStage: 'matou', starredGrades: ['1_SPE'] }],
 			new Map([['n1', stored({ bestStage: 'chaton', starredGrades: [] })]])
 		);
+		// L'étoile 1_SPE est de CE calcul : la ligne compte comme écrite par lui
+		expect(written).toEqual(new Map([['n1', { bestStage: 'grand_matou', starredGrades: ['2'] }]]));
 		const writes = queries.filter((q) => isWrite(q, 'update'));
 		expect(writes).toHaveLength(2);
 		// 2e essai : le stade relu (grand matou) gardé, les deux étoiles, sur le nouvel `updated_at`
@@ -186,13 +201,15 @@ describe('rememberMathoux', () => {
 						error: null
 					}
 		);
-		await rememberMathoux(
+		const written = await rememberMathoux(
 			client,
 			STUDENT,
 			[{ notionId: 'n1', bestStage: 'matou', starredGrades: ['1_SPE'] }],
 			new Map([['n1', stored({ bestStage: 'chaton', starredGrades: [] })]])
 		);
 		expect(queries.filter((q) => isWrite(q, 'update'))).toHaveLength(1);
+		// Un autre calcul a tout écrit : pas une nouveauté de celui-ci (jamais annoncée deux fois)
+		expect(written).toEqual(new Map());
 	});
 
 	it('insert concurrent : la ligne créée entre-temps est relue puis mise à jour par fusion', async () => {
@@ -204,18 +221,39 @@ describe('rememberMathoux', () => {
 				error: null
 			};
 		});
-		await rememberMathoux(
+		const written = await rememberMathoux(
 			client,
 			STUDENT,
 			[{ notionId: 'n1', bestStage: 'grand_matou', starredGrades: [] }],
 			new Map()
 		);
+		// La ligne remplacée est celle de l'autre calcul : ce n'est pas une naissance pour celui-ci
+		expect(written).toEqual(new Map([['n1', { bestStage: 'matou', starredGrades: ['2'] }]]));
 		const update = queries.find((q) => isWrite(q, 'update'));
 		expect(update).toBeDefined();
 		expect(callOf(update!, 'update')).toEqual([
 			{ best_stage: 'grand_matou', starred_grades: ['2'] }
 		]);
 		expect(update!.calls).toContainEqual(['eq', 'updated_at', T1]);
+	});
+
+	it('panne après une insertion réussie : l’erreur porte ce qui a été écrit', async () => {
+		const { client } = buildMock((query) =>
+			isWrite(query, 'upsert')
+				? { data: [{ notion_id: 'n1' }], error: null }
+				: { data: null, error: { message: 'refus' } }
+		);
+		const error = await rememberMathoux(
+			client,
+			STUDENT,
+			[
+				{ notionId: 'n1', bestStage: 'chaton', starredGrades: [] },
+				{ notionId: 'n2', bestStage: 'matou', starredGrades: [] }
+			],
+			new Map([['n2', stored({ bestStage: 'chaton', starredGrades: [] })]])
+		).catch((err: unknown) => err);
+		expect(error).toBeInstanceOf(MathouMemoryWriteError);
+		expect((error as MathouMemoryWriteError).written).toEqual(new Map([['n1', null]]));
 	});
 
 	it('une écriture en échec lève (l’appelant journalise, l’affichage tient)', async () => {

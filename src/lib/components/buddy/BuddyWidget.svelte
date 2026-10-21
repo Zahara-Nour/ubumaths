@@ -18,6 +18,7 @@
 	import { displayedConstance, utcDay } from '$lib/utils/buddy-constance';
 	import { nappingPhrase } from '$lib/mathoux/collection-logic';
 	import { mathouxSummarySchema } from '$lib/mathoux/summary';
+	import { newsSummaryPhrase } from '$lib/mathoux/news';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { BUBBLE_DURATION, GREETING_DELAY, LINK_BUBBLE_DURATION } from './buddy-timing';
@@ -37,7 +38,7 @@
 	let currentMessage = $state('');
 	let bubbleVisible = $state(false);
 	let currentExpression = $state<BuddyExpression>('neutral');
-	// Lien sous la réplique : seulement pour l'annonce des Mathoux en sieste
+	// Lien sous la réplique : seulement pour les annonces de la Chatterie (nouveautés, sieste)
 	let currentLink = $state<{ href: string; label: string } | null>(null);
 	let bubbleTimer: ReturnType<typeof setTimeout> | null = null;
 	let greetingTimer: ReturnType<typeof setTimeout> | null = null;
@@ -98,40 +99,51 @@
 	}
 
 	/**
-	 * Nombre de Mathoux en sieste, 0 si la réponse est en échec ou inattendue.
+	 * Ce que le Palotin a à dire de la Chatterie : les nouveautés d'abord
+	 * (naissance, croissance, étoile : celles qu'aucun écran de fin de séance
+	 * n'a montrées, après une évaluation par exemple), sinon les Mathoux en
+	 * sieste ; `null` si rien, ou si la réponse est en échec ou inattendue.
 	 *
 	 * Demandé APRÈS l'affichage, une fois par montage du widget : le calcul de
 	 * la collection n'alourdit pas le layout de chaque page.
 	 */
-	async function fetchNappingCount(): Promise<number> {
+	async function fetchChatterieAnnouncement(): Promise<{
+		message: string;
+		expression: BuddyExpression;
+	} | null> {
 		try {
 			const response = await fetch('/api/student/mathoux');
-			if (!response.ok) return 0;
+			if (!response.ok) return null;
 			const parsed = mathouxSummarySchema.safeParse(await response.json());
-			return parsed.success ? parsed.data.napping : 0;
+			if (!parsed.success) return null;
+			const news = newsSummaryPhrase(parsed.data.news);
+			if (news) return { message: news, expression: 'happy' };
+			const { napping } = parsed.data;
+			return napping > 0 ? { message: `${nappingPhrase(napping)}.`, expression: 'thinking' } : null;
 		} catch {
-			return 0;
+			return null;
 		}
 	}
 
 	/**
-	 * Le Palotin, gardien de la Chatterie : annonce les Mathoux en sieste, sinon
-	 * salue. La salutation attend la réponse : arrivée tard, l'annonce aurait
-	 * sinon été précédée d'une salutation qu'elle aurait coupée.
+	 * Le Palotin, gardien de la Chatterie : annonce les nouveautés ou les
+	 * Mathoux en sieste, sinon salue. La salutation attend la réponse : arrivée
+	 * tard, l'annonce aurait sinon été précédée d'une salutation qu'elle aurait
+	 * coupée.
 	 */
-	async function greetOrAnnounceNapping(mountedAt: number, afterStreakLost: boolean) {
-		const napping = await fetchNappingCount();
+	async function greetOrAnnounceChatterie(mountedAt: number, afterStreakLost: boolean) {
+		const announcement = await fetchChatterieAnnouncement();
 		if (!buddy) return;
 		// Après une Constance perdue, sa bulle passe d'abord, et pas de salutation
 		const minDelay = afterStreakLost ? 1000 + BUBBLE_DURATION : GREETING_DELAY;
 		const wait = Math.max(0, minDelay - (Date.now() - mountedAt));
-		if (napping === 0) {
+		if (!announcement) {
 			if (afterStreakLost) return;
 			greetingTimer = setTimeout(() => showMessage('idle'), wait);
 			return;
 		}
 		nappingTimer = setTimeout(() => {
-			speak(`${nappingPhrase(napping)}.`, 'thinking', {
+			speak(announcement.message, announcement.expression, {
 				href: CHATTERIE_HREF,
 				label: 'Aller à la Chatterie'
 			});
@@ -170,11 +182,11 @@
 	}
 
 	onMount(() => {
-		// Au montage : la Constance perdue, sinon les Mathoux en sieste, sinon une salutation
+		// Au montage : la Constance perdue, puis les nouveautés ou les Mathoux en sieste, sinon une salutation
 		if (buddy) {
 			if (streakLost) setTimeout(() => showMessage('streak_lost'), 1000);
 			if (!isOnChatterie()) {
-				void greetOrAnnounceNapping(Date.now(), streakLost);
+				void greetOrAnnounceChatterie(Date.now(), streakLost);
 			} else if (!streakLost) {
 				greetingTimer = setTimeout(() => showMessage('idle'), GREETING_DELAY);
 			}

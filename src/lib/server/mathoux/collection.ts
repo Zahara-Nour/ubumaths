@@ -21,6 +21,9 @@
  * Puis, s'il y a du nouveau (un Mathou né ou grandi, une étoile), la mémoire est
  * écrite au client SERVICE (`rememberMathoux`, écriture qui ne redescend jamais).
  * Une panne d'écriture est journalisée et ne change pas la collection rendue.
+ * Ce que ce calcul a écrit devient les NOUVEAUTÉS annoncées en fin de séance
+ * (`loadMathouCollectionWithNews`, `$lib/mathoux/news.ts`) ; une panne
+ * d'écriture n'annonce rien.
  *
  * Tout est lu avec le client de L'ÉLÈVE (RLS) : `grade_predecessors` (via la
  * fonction, SECURITY INVOKER) et les trois tables suivantes sont lisibles par
@@ -48,7 +51,13 @@ import type { Database } from '$lib/types/database';
 import { computePointBadges } from '$lib/server/srs/capacity-badge';
 import { fetchInChunks } from '$lib/server/utils/chunked-in';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { readMathouMemory, rememberMathoux, type StoredMathouMemory } from './memory';
+import {
+	MathouMemoryWriteError,
+	readMathouMemory,
+	rememberMathoux,
+	type StoredMathouMemory,
+	type WrittenMathoux
+} from './memory';
 import {
 	buildMathouCollection,
 	isPointLost,
@@ -62,6 +71,7 @@ import {
 	type TrainingTemplate,
 	type WorkablePoint
 } from '$lib/mathoux/collection-logic';
+import { mathouNews, NO_NEWS, type MathouNews } from '$lib/mathoux/news';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/mathoux/collection');
@@ -82,21 +92,40 @@ function isNodeKind(kind: string): kind is CollectionNodeKind {
 	return (NODE_KINDS as readonly string[]).includes(kind);
 }
 
+/** La collection, et les nouveautés que ce calcul a écrites en mémoire. */
+export interface MathouCollectionWithNews {
+	collection: MathouCollection;
+	news: MathouNews;
+}
+
 /**
  * Collection de Mathoux de l'élève pour son niveau, mémoire comprise, et mise à
- * jour de la mémoire s'il y a du nouveau.
- *
- * @param studentId l'élève de la SESSION (jamais une entrée client) : la mémoire
- *   de cet élève est écrite au client service.
- * @param grade `profiles.grade`. NULL → collection vide, aucune requête.
- * @throws si une lecture échoue : une panne ne doit pas se lire « Chatterie vide ».
+ * jour de la mémoire s'il y a du nouveau. Mêmes paramètres que
+ * `loadMathouCollectionWithNews`, sans les nouveautés.
  */
 export async function loadMathouCollection(
 	supabase: SB,
 	studentId: string,
 	grade: string | null
 ): Promise<MathouCollection> {
-	if (!grade) return EMPTY_COLLECTION;
+	return (await loadMathouCollectionWithNews(supabase, studentId, grade)).collection;
+}
+
+/**
+ * Collection de Mathoux de l'élève, mise à jour de la mémoire, et nouveautés
+ * (naissances, croissances, étoiles) que CE calcul a écrites.
+ *
+ * @param studentId l'élève de la SESSION (jamais une entrée client) : la mémoire
+ *   de cet élève est écrite au client service.
+ * @param grade `profiles.grade`. NULL → collection vide, aucune requête.
+ * @throws si une lecture échoue : une panne ne doit pas se lire « Chatterie vide ».
+ */
+export async function loadMathouCollectionWithNews(
+	supabase: SB,
+	studentId: string,
+	grade: string | null
+): Promise<MathouCollectionWithNews> {
+	if (!grade) return { collection: EMPTY_COLLECTION, news: NO_NEWS };
 
 	// 1. Identité, parcours (le niveau et ses niveaux antérieurs) et mémoire, en parallèle
 	const [, grades, memory] = await Promise.all([
@@ -129,7 +158,9 @@ export async function loadMathouCollection(
 			}
 		}
 	}
-	if (gradePoints.length === 0 && memory.size === 0) return EMPTY_COLLECTION;
+	if (gradePoints.length === 0 && memory.size === 0) {
+		return { collection: EMPTY_COLLECTION, news: NO_NEWS };
+	}
 
 	const pointIds = gradePoints.map((p) => p.id);
 	const subnotionCandidateIds = [...new Set(gradePoints.map((p) => p.nodeId))];
@@ -162,7 +193,9 @@ export async function loadMathouCollection(
 	const templatesByPoint = templatesByPointFrom(tagsResult.data ?? []);
 	const workablePoints = gradePoints.filter((p) => taggedPointIds.has(p.id));
 	// Un Mathou mémorisé reste même quand plus aucun de ses points n'est travaillable
-	if (workablePoints.length === 0 && memory.size === 0) return EMPTY_COLLECTION;
+	if (workablePoints.length === 0 && memory.size === 0) {
+		return { collection: EMPTY_COLLECTION, news: NO_NEWS };
+	}
 
 	const nodes: CollectionTreeNode[] = [];
 	for (const row of [...(treeResult.data ?? []), ...(referencedResult.data ?? [])]) {
@@ -201,9 +234,9 @@ export async function loadMathouCollection(
 	});
 
 	// 5. Mémoire : n'écrit que s'il y a du nouveau ; une panne n'empêche pas l'affichage
-	await rememberSafely(studentId, memoryUpdates(collection, memory), memory);
+	const written = await rememberSafely(studentId, memoryUpdates(collection, memory), memory);
 
-	return collection;
+	return { collection, news: mathouNews(collection, memory, written) };
 }
 
 /**
@@ -219,17 +252,22 @@ async function assertSessionStudent(supabase: SB, studentId: string): Promise<vo
 	}
 }
 
-/** Écrit la mémoire au client service ; journalise une panne au lieu de la propager. */
+/**
+ * Écrit la mémoire au client service ; journalise une panne au lieu de la
+ * propager. Rend ce que cet appel a écrit, y compris avant une panne (ces
+ * lignes sont en base : non annoncées maintenant, elles ne le seraient jamais).
+ */
 async function rememberSafely(
 	studentId: string,
 	updates: MathouMemoryUpdate[],
 	memory: Map<string, StoredMathouMemory>
-): Promise<void> {
-	if (updates.length === 0) return;
+): Promise<WrittenMathoux> {
+	if (updates.length === 0) return new Map();
 	try {
-		await rememberMathoux(createServiceRoleClient(), studentId, updates, memory);
+		return await rememberMathoux(createServiceRoleClient(), studentId, updates, memory);
 	} catch (err) {
 		logger.error(`[mathoux] mémoire non écrite (${updates.length} Mathoux) :`, err);
+		return err instanceof MathouMemoryWriteError ? err.written : new Map();
 	}
 }
 

@@ -38,9 +38,10 @@ import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
-import { loadMathouCollection } from '$lib/server/mathoux/collection';
+import { loadMathouCollection, loadMathouCollectionWithNews } from '$lib/server/mathoux/collection';
 import { readMathouMemory, rememberMathoux } from '$lib/server/mathoux/memory';
 import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
+import { mathouNews } from '$lib/mathoux/news';
 import { resolveTestLaunch } from '$lib/utils/test-launch';
 import { trainingQuery } from '$lib/mathoux/collection-logic';
 
@@ -615,6 +616,100 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		expect(mathouOf(c1, notionVecteurs)?.growth).toBe('grand_matou');
 		expect(mathouOf(c2, notionVecteurs)?.growth).toBe('grand_matou');
 		expect((await storedMemory(id2, notionVecteurs))?.best_stage).toBe('grand_matou');
+	});
+
+	// ---------------------------------------------------------------------------
+	// Nouveautés annoncées en fin de séance (spec du 2026-10-21) : une fois, jamais deux
+	// ---------------------------------------------------------------------------
+
+	it('nouveautés : naissance annoncée une fois, puis plus ; puis la croissance, étoile jointe', async () => {
+		const { id, client } = await newStudent(GRADE);
+		// Fractions : p1 acquis sur 2 → né matou, premier passage
+		await setState(id, pointIds.p1, { is_acquired: true, total_successes: 2 });
+		const premier = await loadMathouCollectionWithNews(client, id, GRADE);
+		expect(premier.news).toMatchObject({
+			firstVisit: true,
+			total: 1,
+			items: [{ kind: 'birth', notionId: notionFractions, stage: 'matou', newStars: [] }]
+		});
+
+		// Même état, nouveau calcul : déjà en mémoire, rien à annoncer
+		const second = await loadMathouCollectionWithNews(client, id, GRADE);
+		expect(second.news).toEqual({ firstVisit: false, total: 0, items: [] });
+
+		// p2 acquis : grand matou ★ 1re spé
+		await setState(id, pointIds.p2, { is_acquired: true, total_successes: 2 });
+		const grandi = await loadMathouCollectionWithNews(client, id, GRADE);
+		expect(grandi.news).toMatchObject({
+			firstVisit: false,
+			total: 1,
+			items: [
+				{ kind: 'growth', notionId: notionFractions, stage: 'grand_matou', newStars: [GRADE] }
+			]
+		});
+	});
+
+	it('nouveautés : deux calculs en parallèle n’annoncent la naissance qu’une fois en tout', async () => {
+		const { id, client } = await newStudent(GRADE);
+		await setState(id, pointIds.p1, { is_acquired: true, total_successes: 2 });
+		const [a, b] = await Promise.all([
+			loadMathouCollectionWithNews(client, id, GRADE),
+			loadMathouCollectionWithNews(client, id, GRADE)
+		]);
+		const annonces = [...a.news.items, ...b.news.items].filter(
+			(item) => item.notionId === notionFractions
+		);
+		expect(annonces).toHaveLength(1);
+		expect((await storedMemory(id, notionFractions))?.best_stage).toBe('matou');
+	});
+
+	it('nouveautés : deux calculs de stades différents (même lecture vide) → une naissance, puis une croissance', async () => {
+		const { id } = await newStudent(GRADE);
+		const vide = new Map();
+		// A a vu un chaton et l'a inséré ; B, parti de la même lecture vide, a vu un matou
+		const a = await rememberMathoux(
+			service,
+			id,
+			[{ notionId: notionFractions, bestStage: 'chaton', starredGrades: [] }],
+			vide
+		);
+		const b = await rememberMathoux(
+			service,
+			id,
+			[{ notionId: notionFractions, bestStage: 'matou', starredGrades: [] }],
+			vide
+		);
+		expect(a).toEqual(new Map([[notionFractions, null]]));
+		// B a remplacé la ligne de A : pas une seconde naissance
+		expect(b).toEqual(new Map([[notionFractions, { bestStage: 'chaton', starredGrades: [] }]]));
+		const mathou = (stage: 'chaton' | 'matou'): MathouCollection => ({
+			races: [
+				{
+					branchId: 'b',
+					branchName: 'b',
+					raceIndex: 0,
+					mathoux: [
+						{
+							notionId: notionFractions,
+							notionName: 'Fractions',
+							name: 'Fractions',
+							raceIndex: 0,
+							growth: stage,
+							asleep: false,
+							dueForRevision: false,
+							trainingCategories: null,
+							stars: [],
+							workablePoints: 2,
+							acquiredPoints: 1,
+							byGrade: []
+						}
+					]
+				}
+			],
+			counts: { born: 1, napping: 0, toDiscover: 0 }
+		});
+		expect(mathouNews(mathou('chaton'), vide, a).items.map((i) => i.kind)).toEqual(['birth']);
+		expect(mathouNews(mathou('matou'), vide, b).items.map((i) => i.kind)).toEqual(['growth']);
 	});
 
 	it('mémoire : l’élève B ne lit pas la mémoire de A, ni ne l’écrit en passant son identifiant', async () => {
