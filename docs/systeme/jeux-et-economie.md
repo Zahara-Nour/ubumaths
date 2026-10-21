@@ -55,7 +55,9 @@ prof distribue aussi gidouilles et cartes à la main.
 
 Le compagnon virtuel (Palotins) a sa propre doc : [buddy-palotins.md](buddy-palotins.md). Le
 tableau des Palotins du prof (`teacher/gamification/buddies`) affiche la Constance Royale en
-semaines tenues d'affilée, telle que l'élève la voit (`displayedConstance`).
+semaines tenues d'affilée, telle que l'élève la voit (`displayedConstance`). L'onglet voisin
+« Mathoux » (`teacher/gamification/mathoux`) montre les Mathoux des élèves par classe : voir
+[mathoux.md § Vue du professeur](mathoux.md#vue-du-professeur).
 Les tables, une par une : [base-de-donnees-tables.md](base-de-donnees-tables.md) (sections
 « Jeux, défis et récompenses » et « Marché »).
 
