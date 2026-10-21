@@ -129,7 +129,10 @@
 		grand_matou: [158, 30]
 	};
 	const zPaths = $derived(zzz(ZZZ_AT[stage][0], geo.hy + ZZZ_AT[stage][1], 0.9));
-	const party = $derived(reaction === 'apparition' && !silhouette ? celebration(race.halo) : null);
+	// Naissance : auréole, ondes et étoiles ; naissance ou croissance : confettis
+	const birth = $derived(reaction === 'apparition' && !silhouette);
+	const party = $derived(birth || morphing ? celebration(race.halo) : null);
+	const confettiStart = $derived(birth ? 0.35 : 0.2);
 	// Chaque race a son décalage : dans la Chatterie, les Mathoux ne respirent pas en chœur
 	const phase = $derived(`--mathou-phase: -${((normalizeRaceIndex(raceIndex) * 7) % 19) * 0.37}s`);
 
@@ -220,10 +223,10 @@
 			<circle cx="100" cy={haloY} r={haloR} fill={race.halo} stroke={YELLOW} stroke-width="2.5" />
 		{:else}
 			{#key reactionKey}
-				<circle cx="100" cy={haloY} r={haloR} fill={race.halo} class:aureole-naissance={party} />
+				<circle cx="100" cy={haloY} r={haloR} fill={race.halo} class:aureole-naissance={birth} />
 			{/key}
 		{/if}
-		{#if party}
+		{#if birth}
 			{#key reactionKey}
 				<!-- Naissance : l'auréole s'allume et lance deux ondes de lumière -->
 				{#each [0, 1] as wave (wave)}
@@ -529,7 +532,7 @@
 
 	{#if party}
 		{#key reactionKey}
-			<!-- Fête de naissance : confettis puis étoiles qui scintillent -->
+			<!-- Fête : confettis (naissance et croissance), puis étoiles à la naissance -->
 			<g class="fete" aria-hidden="true">
 				{#each party.confetti as c, i (i)}
 					<rect
@@ -542,10 +545,10 @@
 						fill={c.color}
 						stroke={INK}
 						stroke-width="0.8"
-						style={`--dx: ${c.dx}px; --dy: ${c.dy}px; --rot: ${c.rotate}deg; animation-delay: ${0.35 + c.delay}s`}
+						style={`--dx: ${c.dx}px; --dy: ${c.dy}px; --rot: ${c.rotate}deg; animation-delay: ${confettiStart + c.delay}s`}
 					/>
 				{/each}
-				{#each party.sparkles as sp, i (i)}
+				{#each birth ? party.sparkles : [] as sp, i (i)}
 					<g transform={`translate(${sp.x} ${sp.y}) scale(${sp.scale})`}>
 						<path
 							class="etincelle"
@@ -673,9 +676,9 @@
 	.reaction[data-reaction='bond'] {
 		animation: bond 0.8s ease-out;
 	}
-	/* Il grandit : le dessin se transforme, puis un petit bond de joie */
+	/* Il grandit : il bondit pendant que le dessin se transforme */
 	.reaction[data-reaction='bond'][data-morph] {
-		animation-delay: 1.3s;
+		animation: croissance 1.4s ease-in-out;
 	}
 	.apparait {
 		animation: apparait 0.6s ease-out both;
@@ -858,6 +861,27 @@
 		}
 		75% {
 			transform: translateY(0) scale(1.05, 0.94);
+		}
+	}
+	@keyframes croissance {
+		0%,
+		100% {
+			transform: translateY(0) scale(1, 1);
+		}
+		12% {
+			transform: translateY(0) scale(1.08, 0.9);
+		}
+		42% {
+			transform: translateY(-20px) scale(0.95, 1.07);
+		}
+		68% {
+			transform: translateY(0) scale(1.07, 0.92);
+		}
+		82% {
+			transform: translateY(-5px) scale(0.99, 1.02);
+		}
+		92% {
+			transform: translateY(0) scale(1.02, 0.98);
 		}
 	}
 	@keyframes etirement {
