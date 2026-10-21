@@ -10,20 +10,9 @@
 > **v0.30.0 déployée le 2026-10-14** : toutes les PR de ce tableau jusqu'à #1359 sont en prod ; les
 > lignes « dev » se vérifient aussi sur chiph.re.
 >
-> ⚠️ **Avant le `deploy:prod` qui livre #1468 (numérotation `1) a) i)`)** : lancer
-> `pnpm tsx scripts/fix-renvois-numerotation.ts --publier` (simulation sans l'option). Il
-> réécrit les renvois « question b) 2) » de 42 exercices, validés par David le 2026-10-18
-> (`data/corrections/renvois-numerotation/`). Sans lui, ces renvois sont faux en prod dès le
-> déploiement.
->
-> ⚠️ **Avant le `deploy:prod` qui livre #1565 (lecture-grandeurs PR 6, virgule décimale refusée
-> par le parseur maison)** : lancer `pnpm tsx scripts/reecrire-virgule-decimale-base.ts`
-> (simulation : 22 remplacements dans 12 lignes), puis `--ecrire`. Il réécrit au point 8 modèles
-> publiés (`e0ccaf84` ne se tire plus sans lui ; `5b53b1be` non plus ; 4 « multiplications à
-> trou » s'affichent `□*0,5` ; `953574d4`, `9f380957` : réponse attendue `{{a}},{{c}}`) et 7 formules `~…~` de 4 exercices (affichées en rouge sinon).
-> Compatible avec le code actuel. ✅ **Fait le 2026-10-21** par David (`--ecrire` : 12 lignes
-> réécrites, sauvegarde `data/migration-output/backups/virgule-decimale-2026-10-21T00-07-22-665Z.json` ;
-> relecture : 12 déjà réécrites). À relancer juste avant le déploiement : il doit dire « déjà réécrit ».
+> **v0.43.0 déployée le 2026-10-21** : livre lecture-grandeurs (#1560 → #1567), arbre des notions
+> (#1563, #1564, #1566) et tidy (#1559). Réécritures de la base faites avant : virgule décimale
+> (12 lignes), `pi` nu (0 restant) ; renvois de numérotation (#1468) en prod depuis le 2026-10-19.
 
 | Fait                                                                                                                                                                                                                            | Ajouté le  | Où                     | PR                                   | Quoi vérifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
