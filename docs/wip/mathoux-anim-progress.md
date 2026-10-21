@@ -7,20 +7,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, morphing de croissance._
+_Mis à jour le 2026-10-21, PR 1 prête (revues faites)._
 
-- **État** : `MathouAvatar.svelte` animé au repos ; naissance (apparition lente + auréole + ondes +
-  confettis + étoiles, **validée**) ; croissance = **morphing** (`growFrom`, `blendStages`,
-  1,4 s) avec bond simultané, auréole + ondes et confettis (pas d’étoiles), attributs du grand matou en fondu à la fin (à juger). Démo à jour.
-  Réveil (`reaction="reveil"`, 2,6 s) : « Zzz » qui s'envolent, lune → auréole, il se redresse,
-  yeux en deux temps, bonnet qui s'envole, étirement (à juger). **Rien n'est encore branché**.
-- **Décidé par David** : Chatterie animée comme la démo (tous, décalés) ; gestes communs ; rythmes
-  au cas par cas avec lui ; auréole de naissance gardée.
-- **Prochaine action** : avis sur le morphing, puis phase 0 (naissance / croissance / étoile sur la
-  carte d'annonce ; pas de réveil visible) à faire valider, puis branchement + tests.
-- **Pièges en cours** : démo = vrai composant monté (`node_modules/.cache/mathoux-demo/build-client.mjs`
-  → `bundle.js`, puis `page2.py` du scratchpad) ; `smoke.mjs` / `frames.mjs` = vérif Playwright.
-  `StageTemplate.young` devenu `youth` (0..1).
+- **État** : PR 1 = animations (repos, naissance, croissance en morphing, étoile, réveil) branchées
+  sur la Chatterie, la vue prof et l'annonce (`previousStage`), + migration `20261021200000`
+  (`student_mathoux.asleep`, additive, appliquée en local). Revues : `code-reviewer` (important
+  corrigé : rendu du morphing testé) et `security-auditor` : **aucun bloquant**.
+- **Prochaine action** : PR 1 → CI verte → merge → `db:migrate` (4 conditions réunies) →
+  `db:types` → **PR 2** : écrire `asleep` (`memoryUpdates`, `rememberMathoux`), nouveauté `wake`
+  (« X s'est réveillé ! », réaction `reveil`), `asleep` dans l'export RGPD (MÊME PR que l'écriture).
+- **En attente de David** : rien (question d'accès tranchée le 2026-10-21 : personne ne lit rien
+  de neuf ; découpage PR 1 animations + migration, PR 2 réveil).
+- **Pièges en cours** : démo = vrai composant (`node_modules/.cache/mathoux-demo/`, `page2.py` du
+  scratchpad). Lignes existantes `asleep = false` : pas de faux réveil au déploiement.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-anim` · `feat/mathoux-anim`.
 
 ## Au repos (proposé)
