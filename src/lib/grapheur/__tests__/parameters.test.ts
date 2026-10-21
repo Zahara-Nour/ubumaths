@@ -277,6 +277,15 @@ describe('tangente', () => {
 		expect(t?.y).toBeCloseTo(9);
 	});
 
+	it('est tracée en tirets, de la couleur de sa courbe', () => {
+		const f = { ...curve('x^2'), color: 'curve-3' };
+		const t = tangentAt(f, 3)!;
+
+		// Tirets, et non le pointillé fin de la dérivée : les deux se distinguent.
+		expect(t.line.lineStyle).toBe('dashed');
+		expect(t.line.color).toBe('curve-3');
+	});
+
 	it('a pour pente le nombre dérivé', () => {
 		expect(tangentAt(curve('x^2'), 3)?.slope).toBeCloseTo(6);
 		expect(tangentAt(curve('x^3'), 2)?.slope).toBeCloseTo(12);

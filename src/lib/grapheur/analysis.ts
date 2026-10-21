@@ -1724,7 +1724,8 @@ export function tangentAt(
 			ast: line,
 			parseError: undefined,
 			lineWidth: 1,
-			lineStyle: 'solid',
+			// Tirets, de la couleur de f : à part de f et de sa dérivée (pointillé fin).
+			lineStyle: 'dashed',
 			showDerivative: false,
 			tangentAt: null,
 			// La tangente est une droite entière : elle ne garde pas l'ensemble de f.
