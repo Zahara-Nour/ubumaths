@@ -5,14 +5,16 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1572 (lot D en prod)._
+_Mis à jour le 2026-10-21, après #1572 (lot D en prod) ; état de l'étape 3 relevé._
 
 - **État** : C5 étape 2 bis, MODIFIER **terminé** : lots A (39), B (7), C (16), D (3 scissions) en prod. Lot D :
   3 origines « Additionner des fractions » (5-026) + 3 neufs « Soustraire des fractions » (5-123) aux niveaux
   8, 9, 10 de « Fractions › Calculer › Addition et Soustraction ». Seul reste du § 4 : c9d6c5db (sorti du lot C),
   qui attend une règle de correction NON décidée.
-- **Prochaine action** : demander à David la suite du chantier (C5 : liens → bascule → suppression).
-- **En attente de David** : la suite ; signalé : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
+- **Prochaine action** : étape 3 de C5 (bascule du code). La PR 1 (#1060, page Programme) est mergée le 2026-10-10 ; la PR A
+  (SQL) n'a plus lieu d'être : les fonctions qui lisent l'objectif n'ont plus d'appelant et partent à l'étape 4. Restent
+  B (cahier de texte, avancement, exercices, édition admin des tags, decks, compagnon), D (élève), F (analytique).
+- **En attente de David** : le go sur l'ordre B → D → F ; signalé : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
 - **Pièges en cours** : un modèle neuf publié ne peut pas copier la catégorie (thème, domaine, sous-domaine,
   niveau) de son origine (`idx_question_templates_unique_category`) ; le décor de test doit poser statut et
   catégorie de la prod ; commentaires DANS le bloc ROLLBACK en `-- -- ` ; relever la prod juste avant de générer.
@@ -1153,3 +1155,10 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   prod, 18/18 sur la nouvelle). security-auditor sans bloquant (0 série, session de test ni tentative ne vise ces
   niveaux). Vérifié en prod : 3 origines (titres, sous-titres, 2/1/1 variations, `off` pour f92d63a6), 3 neufs
   publiés aux niveaux 8-10, 6 tags (3 × 5-026, 3 × 5-123).
+- **2026-10-21 — État de l'étape 3 relevé (absent du journal).** #1060 (2026-10-10) : page Programme en consultation
+  (branche > notion > points), PATCH réduit à `{ name?, archived? }`, routes thèmes / objectifs et réordonnancement
+  supprimés. Prod : 1 007 anciens points, 2 126 neufs. Les 8 fonctions SQL qui lisent l'objectif sont sans appelant
+  (`reorder_*`, `curriculum_referenced_points`) ou des triggers inertes pour les points neufs (code et ordre posés par
+  migration) : la PR A tombe, tout part à l'étape 4. Lisent encore l'ancien monde : `getCurriculumTree` (cahier de
+  texte, avancement, exercices, édition admin), `curriculum-coverage`, `buddy-themes`, decks programme,
+  `student-progression` + `/student/objectifs/[id]`, analytique (`class-knowledge`, page analytics), `skills.objective_id`.
