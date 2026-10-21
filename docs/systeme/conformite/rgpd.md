@@ -463,6 +463,10 @@ CRON_SECRET                   # Secret taches planifiees
 > **2026-10-21** : un enfant inscrit par son parent n'a pas d'adresse ; son compte porte une
 > adresse fictive `@eleves.chiph.re`. `sendEmail` refuse ce domaine : rien ne part vers l'enfant,
 > tout passe par l'adresse du parent ([auth.md](../auth.md#le-domaine-fictif-eleveschiphre)).
+> Le parent qui inscrit son enfant (`/auth/register/parent`) reçoit **un seul** courriel Brevo
+> (`sendChildRegistrationEmail`) : identifiant de l'enfant + lien de consentement. Minimisation :
+> prénom seul ; l'adresse du parent n'est stockée que dans `parental_consents` (lue par le prof et
+> l'admin) ; le parent n'a pas de compte.
 
 ---
 
