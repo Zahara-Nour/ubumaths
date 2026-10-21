@@ -148,7 +148,8 @@
 
 	// Transformation image par image ; « réduire les animations » : directement le nouveau stade
 	$effect(() => {
-		void reactionKey;
+		// Rejouée à chaque réaction, et si le stade de départ ou d'arrivée change
+		void [reactionKey, growFrom, stage];
 		if (!morphing) return;
 		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 			morphT = 1;
@@ -157,7 +158,7 @@
 		morphT = 0;
 		const start = performance.now();
 		let frame = requestAnimationFrame(function step(now) {
-			morphT = Math.min(1, (now - start) / MORPH_MS);
+			morphT = Math.min(1, Math.max(0, (now - start) / MORPH_MS));
 			if (morphT < 1) frame = requestAnimationFrame(step);
 		});
 		return () => cancelAnimationFrame(frame);
@@ -942,20 +943,20 @@
 	}
 	@keyframes reveil {
 		0% {
-			transform: rotate(5deg);
+			transform: rotate(5deg) scale(1, 1);
 		}
 		30%,
 		62% {
-			transform: rotate(0) scale(1, 1);
+			transform: rotate(0deg) scale(1, 1);
 		}
 		76% {
-			transform: scale(0.94, 1.1);
+			transform: rotate(0deg) scale(0.94, 1.1);
 		}
 		88% {
-			transform: scale(1.05, 0.96);
+			transform: rotate(0deg) scale(1.05, 0.96);
 		}
 		100% {
-			transform: scale(1, 1);
+			transform: rotate(0deg) scale(1, 1);
 		}
 	}
 	@keyframes s-efface {

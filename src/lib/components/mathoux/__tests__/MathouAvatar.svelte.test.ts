@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import MathouAvatar from '../MathouAvatar.svelte';
 import { MATHOU_RACES, MATHOU_RACE_COUNT, normalizeRaceIndex } from '../mathou-races';
+import { pearGeometry } from '../mathou-dessin';
 
 function svgOf(container: HTMLElement): SVGSVGElement {
 	const svg = container.querySelector('svg');
@@ -233,6 +234,46 @@ describe('MathouAvatar — animations', () => {
 		expect(svg.querySelectorAll('.onde')).toHaveLength(2);
 		expect(svg.querySelectorAll('.confetto').length).toBeGreaterThan(0);
 		expect(svg.querySelector('.etincelle')).toBeNull();
+	});
+
+	it('croissance : le corps part du stade d’avant, passe entre les deux, finit au nouveau', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 1,
+			stage: 'matou',
+			label: 'x',
+			reaction: 'bond',
+			growFrom: 'chaton'
+		});
+		const body = () =>
+			svgOf(container).querySelector('clipPath[id$="mathou-corps"] path')?.getAttribute('d');
+		const from = pearGeometry('chaton').body;
+		const to = pearGeometry('matou').body;
+		expect(body()).toBe(from);
+		await expect.poll(() => body() !== from && body() !== to, { timeout: 2000 }).toBe(true);
+		await expect.poll(body, { timeout: 3000 }).toBe(to);
+	});
+
+	it('croissance avec « réduire les animations » : directement le nouveau stade', async () => {
+		const real = window.matchMedia;
+		window.matchMedia = ((query: string) => ({
+			...real.call(window, query),
+			matches: query.includes('reduce')
+		})) as typeof window.matchMedia;
+		try {
+			const { container } = await render(MathouAvatar, {
+				raceIndex: 1,
+				stage: 'matou',
+				label: 'x',
+				reaction: 'bond',
+				growFrom: 'chaton'
+			});
+			const body = svgOf(container).querySelector('clipPath[id$="mathou-corps"] path');
+			await expect
+				.poll(() => body?.getAttribute('d'), { timeout: 200 })
+				.toBe(pearGeometry('matou').body);
+		} finally {
+			window.matchMedia = real;
+		}
 	});
 
 	it('vers le grand matou : couronne et fraise arrivent à la fin de la transformation', async () => {

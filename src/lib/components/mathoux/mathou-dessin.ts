@@ -244,7 +244,8 @@ export function pearGeometry(stage: MathouStage | StageTemplate): PearGeometry {
 			cy: r1(fy + 2 * odd),
 			rx: r1(st.foot - 1.5 * odd),
 			ry: 6,
-			rotate: r1(k * -16 * st.youth)
+			// `+ 0` : jamais de -0 (adulte, pied gauche)
+			rotate: r1(k * -16 * st.youth) + 0
 		};
 	});
 

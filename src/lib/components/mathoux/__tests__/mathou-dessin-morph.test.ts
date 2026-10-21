@@ -25,7 +25,7 @@ describe('blendStages', () => {
 
 	it('chaton : pieds en dedans ; adulte : pieds droits', () => {
 		expect(pearGeometry('chaton').feet.map((f) => f.rotate)).toEqual([16, -16]);
-		expect(pearGeometry('matou').feet.map((f) => f.rotate)).toEqual([0, -0]);
+		expect(pearGeometry('matou').feet.map((f) => f.rotate)).toEqual([0, 0]);
 	});
 });
 
