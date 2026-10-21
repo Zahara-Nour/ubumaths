@@ -115,6 +115,13 @@
 							<td>Points et progression</td>
 							<td>Gamification</td>
 						</tr>
+						<tr>
+							<td>Jour du dernier passage sur le tableau de bord</td>
+							<td>
+								Que le Palotin remarque le retour de l'élève après une longue absence (supprimé avec
+								le compte)
+							</td>
+						</tr>
 					</tbody>
 				</table>
 			</div>

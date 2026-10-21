@@ -3,7 +3,8 @@
  * ========================
  *
  * Après une erreur ou une Constance perdue, le Palotin est « déterminé » (on
- * repart), jamais triste. Chaque expression a son image pour chaque Palotin :
+ * repart). Il n'est triste qu'au retour d'une longue absence (« tu m'as
+ * manqué », décision du 2026-10-21). Chaque expression a son image pour chaque Palotin :
  * une image manquante ferait tomber l'avatar sur le cercle de repli. La version
  * « -fixe » sert à l'élève qui demande moins d'animations : chargé par une
  * <img>, le SVG animé ne reçoit pas cette préférence (Chromium).
@@ -35,6 +36,10 @@ describe('expression selon le contexte', () => {
 
 	it('Constance perdue : déterminé aussi (les répliques disent « on repart »)', () => {
 		expect(buddyMessageEngine.getExpression('streak_lost')).toBe('determined');
+	});
+
+	it('retour après une longue absence : triste', () => {
+		expect(buddyMessageEngine.getExpression('long_absence')).toBe('sad');
 	});
 });
 

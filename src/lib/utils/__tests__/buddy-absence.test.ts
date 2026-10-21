@@ -1,0 +1,38 @@
+/**
+ * Longue absence : 21 jours ou plus entre deux passages (décision du 2026-10-21).
+ */
+
+import { describe, expect, it } from 'vitest';
+import { isLongAbsence } from '../buddy-absence';
+
+describe('isLongAbsence', () => {
+	it('tout premier passage : pas triste', () => {
+		expect(isLongAbsence(null, '2026-10-21')).toBe(false);
+	});
+
+	it('passage la veille ou le jour même : pas triste', () => {
+		expect(isLongAbsence('2026-10-21', '2026-10-21')).toBe(false);
+		expect(isLongAbsence('2026-10-20', '2026-10-21')).toBe(false);
+	});
+
+	it('20 jours : pas triste encore', () => {
+		expect(isLongAbsence('2026-10-01', '2026-10-21')).toBe(false);
+	});
+
+	it('21 jours tout juste : triste', () => {
+		expect(isLongAbsence('2026-09-30', '2026-10-21')).toBe(true);
+	});
+
+	it('les grandes vacances : triste', () => {
+		expect(isLongAbsence('2026-07-04', '2026-09-01')).toBe(true);
+	});
+
+	it('passage de mois et d’année compté en jours UTC', () => {
+		expect(isLongAbsence('2026-12-11', '2027-01-01')).toBe(true);
+		expect(isLongAbsence('2026-12-12', '2027-01-01')).toBe(false);
+	});
+
+	it('jour illisible : pas triste', () => {
+		expect(isLongAbsence('pas-un-jour', '2026-10-21')).toBe(false);
+	});
+});

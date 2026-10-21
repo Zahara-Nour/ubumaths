@@ -11607,6 +11607,43 @@ export type Database = {
           },
         ]
       }
+      student_last_visits: {
+        Row: {
+          last_visit_date: string
+          student_id: string
+        }
+        Insert: {
+          last_visit_date: string
+          student_id: string
+        }
+        Update: {
+          last_visit_date?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_last_visits_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_last_visits_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_last_visits_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       student_mathoux: {
         Row: {
           asleep: boolean
@@ -16174,6 +16211,10 @@ export type Database = {
         Returns: {
           success: boolean
         }[]
+      }
+      record_student_visit: {
+        Args: { p_student_id: string; p_today: string }
+        Returns: string
       }
       redistribute_tournament_rewards: {
         Args: { p_tournament_id: string }

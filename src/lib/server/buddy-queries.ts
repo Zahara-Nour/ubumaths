@@ -32,6 +32,7 @@ import {
 	weekStartOf,
 	type ConstanceReset
 } from '$lib/utils/buddy-constance';
+import { isLongAbsence } from '$lib/utils/buddy-absence';
 
 // Types
 type ServiceClient = SupabaseClient<Database>;
@@ -498,4 +499,27 @@ export async function removeExploredThemes(studentId: string, themes: string[]):
  */
 export async function addExploredTheme(studentId: string, theme: string): Promise<boolean> {
 	return (await addExploredThemes(studentId, [theme])).has(theme);
+}
+
+/**
+ * Enregistre le passage du jour sur le tableau de bord et rend vrai si l'élève
+ * revient d'une longue absence (son Palotin est alors triste, une fois).
+ *
+ * Client service seulement : le jour du dernier passage n'est lisible par
+ * personne d'autre que le serveur (décision du 2026-10-21) ; seul « triste
+ * oui/non » en sort. `studentId` vient de la session, le jour est calculé ici.
+ * Écriture en échec : faux (mieux vaut rater un « tu m'as manqué » que le
+ * répéter à chaque passage).
+ */
+export async function recordVisitAndCheckLongAbsence(studentId: string): Promise<boolean> {
+	const today = todayUtc();
+	const { data, error } = await createServiceRoleClient().rpc('record_student_visit', {
+		p_student_id: studentId,
+		p_today: today
+	});
+	if (error) {
+		logger.error('❌ [buddy-queries] Passage non enregistré :', error);
+		return false;
+	}
+	return isLongAbsence(data, today);
 }

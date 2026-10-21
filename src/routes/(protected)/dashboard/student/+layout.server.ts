@@ -20,6 +20,7 @@
  * - Student profile (id, email, name, avatar, etc.)
  * - Class memberships (classes student is enrolled in)
  * - Rewards (gidouilles balance + VIP cards)
+ * - Retour après une longue absence (oui/non) : le passage du jour est enregistré
  *
  * PERFORMANCE:
  * - 2 database queries on server (profile + rewards)
@@ -36,7 +37,7 @@ import type { StudentProfile, ClassMembership, StudentRewards } from '$lib/types
 import { asStudentVipCards } from '$lib/types/vip-card';
 import { error } from '@sveltejs/kit';
 import { toBuddyState } from '$lib/types/buddy';
-import { resetLostConstance } from '$lib/server/buddy-queries';
+import { recordVisitAndCheckLongAbsence, resetLostConstance } from '$lib/server/buddy-queries';
 import { constanceReset, utcDay } from '$lib/utils/buddy-constance';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -157,6 +158,16 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			}
 		}
 
+		// Passage du jour enregistré même sans Palotin ; le serveur ne transmet que
+		// « longue absence oui/non », jamais le jour du dernier passage.
+		let longAbsence = false;
+		try {
+			longAbsence = await recordVisitAndCheckLongAbsence(user.id);
+		} catch (visitError) {
+			// Non bloquant : pas de « tu m'as manqué » plutôt qu'un chargement en échec
+			logger.error('[Layout] Passage non enregistré :', visitError);
+		}
+
 		// Return data for cache hydration on client
 		// The +layout.svelte will call studentCache.hydrateProfile(), hydrateRewards(), hydrateBuddy()
 		return {
@@ -165,7 +176,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			// `palotin_type` est du texte simple en base : le rétrécir ici évite que
 			// chaque consommateur ait à le faire, et garantit un compagnon parlant.
 			buddy: buddyRow ? toBuddyState(buddyRow) : null,
-			streakLost
+			streakLost,
+			// Sans Palotin, rien à dire : celui choisi ensuite pendant la séance est tout neuf
+			longAbsence: buddyRow ? longAbsence : false
 		};
 	} catch (err) {
 		logger.error('[Layout] Unexpected error loading student dashboard:', err);
@@ -189,7 +202,8 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 				vip_cards: {}
 			},
 			buddy: null,
-			streakLost: false
+			streakLost: false,
+			longAbsence: false
 		};
 	}
 };
