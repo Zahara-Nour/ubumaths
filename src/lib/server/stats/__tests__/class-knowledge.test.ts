@@ -17,20 +17,26 @@ import {
 type QueryResult = { data: unknown; error: unknown };
 type TableHandler = () => Promise<QueryResult> | QueryResult;
 type MockSpec = Record<string, TableHandler>;
+type InCall = { table: string; column: string; values: unknown[] };
 
 /**
  * Construit un mock Supabase qui invoque `tableHandlers[tableName]()` à la
  * fin de la chaîne de query builders. Toute la chaîne `.select().eq().in()
  * .gte().not().order().maybeSingle()` retourne `this` jusqu'au handler final.
+ * Les appels `.in()` sont relevés dans `inCalls` (ce que la requête demande).
  */
-function buildMock(tableHandlers: MockSpec) {
+function buildMock(tableHandlers: MockSpec, inCalls: InCall[] = []) {
 	const fromMock = vi.fn().mockImplementation((table: string) => {
 		// `classes` (niveau de la classe) : sans niveau par défaut, ce qui garde
 		// tous les points des cartes — les tests qui ne parlent pas du niveau
-		// n'ont pas à le déclarer.
+		// n'ont pas à le déclarer. `classification_nodes` : l'arbre de test.
 		const handler =
 			tableHandlers[table] ??
-			(table === 'classes' ? () => ({ data: { grade: null }, error: null }) : undefined);
+			(table === 'classes'
+				? () => ({ data: { grade: null }, error: null })
+				: table === 'classification_nodes'
+					? () => ({ data: NODES, error: null })
+					: undefined);
 		if (!handler) {
 			throw new Error(`Unexpected table in mock: ${table}`);
 		}
@@ -49,7 +55,10 @@ function buildMock(tableHandlers: MockSpec) {
 		};
 		queryBuilder.select.mockReturnValue(queryBuilder);
 		queryBuilder.eq.mockReturnValue(queryBuilder);
-		queryBuilder.in.mockReturnValue(queryBuilder);
+		queryBuilder.in.mockImplementation((column: string, values: unknown[]) => {
+			inCalls.push({ table, column, values });
+			return queryBuilder;
+		});
 		queryBuilder.not.mockReturnValue(queryBuilder);
 		queryBuilder.is.mockReturnValue(queryBuilder);
 		queryBuilder.gte.mockReturnValue(queryBuilder);
@@ -59,6 +68,85 @@ function buildMock(tableHandlers: MockSpec) {
 		return queryBuilder;
 	});
 	return { from: fromMock } as unknown as Parameters<typeof getClassCapacityGrid>[0];
+}
+
+// =============================================================================
+// Arbre de test : deux branches, trois notions, une sous-notion
+// =============================================================================
+
+function node(id: string, kind: string, name: string, parent_id: string | null, position: number) {
+	return {
+		id,
+		kind,
+		name,
+		parent_id,
+		position,
+		archived_at: null,
+		created_at: '2026-01-01T00:00:00Z',
+		updated_at: '2026-01-01T00:00:00Z'
+	};
+}
+
+const NODES = [
+	node('b-nombres', 'branch', 'Nombres', null, 1),
+	node('b-geo', 'branch', 'Géométrie', null, 2),
+	node('n-fractions', 'notion', 'Fractions', 'b-nombres', 1),
+	node('n-decimaux', 'notion', 'Décimaux', 'b-nombres', 2),
+	node('n-triangles', 'notion', 'Triangles', 'b-geo', 1),
+	node('sn-comparer', 'subnotion', 'Comparer', 'n-fractions', 1)
+];
+
+interface PointOpts {
+	name?: string;
+	nodeId?: string | null;
+	grade?: string | null;
+	archived?: boolean;
+	order?: number;
+}
+
+/** Point neuf (posé sur un nœud, avec un niveau), ou ancien si `nodeId: null`. */
+function point(id: string, opts: PointOpts = {}) {
+	const nodeId = opts.nodeId === undefined ? 'n-fractions' : opts.nodeId;
+	return {
+		id,
+		code: id,
+		name: opts.name ?? `Point ${id}`,
+		display_order: opts.order ?? 1,
+		rubrique: null,
+		archived_at: opts.archived ? '2026-10-01T00:00:00Z' : null,
+		node_id: nodeId,
+		grade: opts.grade === undefined ? (nodeId === null ? null : '6') : opts.grade
+	};
+}
+
+function tag(templateId: string, p: ReturnType<typeof point>) {
+	return { template_id: templateId, point_id: p.id, curriculum_points: p };
+}
+
+const ALICE = [{ student_id: 's1', profiles: { id: 's1', firstname: 'Alice', lastname: 'Z' } }];
+
+/** Une élève, des cartes travaillées, toutes en révision (acquises). */
+function gridFixture(tags: ReturnType<typeof tag>[], extra: MockSpec = {}) {
+	const future = new Date(Date.now() + 7 * 86400000).toISOString();
+	const templateIds = [...new Set(tags.map((t) => t.template_id))];
+	return buildMock({
+		class_members: () => ({ data: ALICE, error: null }),
+		skill_attempts: () => ({
+			data: templateIds.map((t) => ({ student_id: 's1', template_id: t })),
+			error: null
+		}),
+		question_template_points: () => ({ data: tags, error: null }),
+		srs_card_stats: () => ({
+			data: templateIds.map((t) => ({
+				user_id: 's1',
+				card_reference_id: t,
+				state: 'review',
+				next_review: future
+			})),
+			error: null
+		}),
+		...extra
+	});
 }
 
 // =============================================================================
@@ -77,15 +165,7 @@ describe('getClassCapacityGrid', () => {
 
 	it('returns students but no capacities when no skill_attempts', async () => {
 		const supabase = buildMock({
-			class_members: () => ({
-				data: [
-					{
-						student_id: 's1',
-						profiles: { id: 's1', firstname: 'Alice', lastname: 'Z' }
-					}
-				],
-				error: null
-			}),
+			class_members: () => ({ data: ALICE, error: null }),
 			skill_attempts: () => ({ data: [], error: null })
 		});
 		const grid = await getClassCapacityGrid(supabase, 'class-1');
@@ -94,62 +174,79 @@ describe('getClassCapacityGrid', () => {
 		expect(grid.cells).toEqual({});
 	});
 
-	it('builds a grid with one student, one capacity, one template (acquise)', async () => {
-		const future = new Date(Date.now() + 7 * 86400000).toISOString();
-		const supabase = buildMock({
-			class_members: () => ({
+	it('un point neuf tagué fait une colonne, étiquetée par sa notion', async () => {
+		const grid = await getClassCapacityGrid(
+			gridFixture([tag('t1', point('cap1', { name: 'Additionner' }))]),
+			'class-1'
+		);
+		expect(grid.students.length).toBe(1);
+		expect(grid.capacities).toEqual([
+			{ id: 'cap1', name: 'Additionner', notion_name: 'Fractions' }
+		]);
+		expect(grid.cells['s1:cap1']).toBe('acquise_en_memoire');
+		expect(grid.columnStats.cap1.acquise_pct).toBe(100);
+		expect(grid.columnStats.cap1.remediate_pct).toBe(0);
+	});
+
+	it('point posé sur une sous-notion : étiquette = la notion parente', async () => {
+		const grid = await getClassCapacityGrid(
+			gridFixture([tag('t1', point('cap1', { nodeId: 'sn-comparer' }))]),
+			'class-1'
+		);
+		expect(grid.capacities[0].notion_name).toBe('Fractions');
+	});
+
+	it('un ancien point (sans nœud) ne fait pas de colonne', async () => {
+		const grid = await getClassCapacityGrid(
+			gridFixture([tag('t1', point('neuf')), tag('t1', point('ancien', { nodeId: null }))]),
+			'class-1'
+		);
+		expect(grid.capacities.map((c) => c.id)).toEqual(['neuf']);
+		expect(grid.cells['s1:ancien']).toBeUndefined();
+	});
+
+	it('un point archivé ne fait pas de colonne', async () => {
+		const grid = await getClassCapacityGrid(
+			gridFixture([tag('t1', point('actif')), tag('t2', point('archive', { archived: true }))]),
+			'class-1'
+		);
+		expect(grid.capacities.map((c) => c.id)).toEqual(['actif']);
+	});
+
+	it('colonnes dans l’ordre de l’arbre : branche, notion, puis ordre du BO', async () => {
+		const grid = await getClassCapacityGrid(
+			gridFixture([
+				tag('t1', point('triangle', { name: 'A', nodeId: 'n-triangles' })),
+				tag('t2', point('decimal', { name: 'B', nodeId: 'n-decimaux' })),
+				tag('t3', point('fraction-2', { name: 'C', nodeId: 'sn-comparer', order: 2 })),
+				tag('t4', point('fraction-1', { name: 'D', nodeId: 'n-fractions', order: 1 }))
+			]),
+			'class-1'
+		);
+		expect(grid.capacities.map((c) => c.id)).toEqual([
+			'fraction-1',
+			'fraction-2',
+			'decimal',
+			'triangle'
+		]);
+	});
+
+	it('« Tout le niveau » ajoute les points neufs non archivés du niveau', async () => {
+		const supabase = gridFixture([tag('t1', point('touche'))], {
+			classes: () => ({ data: { grade: '6' }, error: null }),
+			curriculum_points: () => ({
 				data: [
-					{
-						student_id: 's1',
-						profiles: { id: 's1', firstname: 'Alice', lastname: 'Z' }
-					}
-				],
-				error: null
-			}),
-			skill_attempts: () => ({
-				data: [{ student_id: 's1', template_id: 't1' }],
-				error: null
-			}),
-			question_template_points: () => ({
-				data: [
-					{
-						template_id: 't1',
-						point_id: 'cap1',
-						curriculum_points: {
-							id: 'cap1',
-							name: 'Additionner',
-							family: 'knowledge',
-							objective_id: 'obj1',
-							curriculum_objectives: {
-								theme_id: 'th1',
-								curriculum_themes: { name: 'Nombres', code: 'NUM' }
-							}
-						}
-					}
-				],
-				error: null
-			}),
-			srs_card_stats: () => ({
-				data: [
-					{
-						user_id: 's1',
-						card_reference_id: 't1',
-						state: 'review',
-						next_review: future
-					}
+					point('touche'),
+					point('non-touche', { nodeId: 'n-triangles' }),
+					point('archive', { archived: true }),
+					point('ancien', { nodeId: null })
 				],
 				error: null
 			})
 		});
-
-		const grid = await getClassCapacityGrid(supabase, 'class-1');
-		expect(grid.students.length).toBe(1);
-		expect(grid.capacities.length).toBe(1);
-		expect(grid.capacities[0].name).toBe('Additionner');
-		expect(grid.capacities[0].theme_code).toBe('NUM');
-		expect(grid.cells['s1:cap1']).toBe('acquise_en_memoire');
-		expect(grid.columnStats.cap1.acquise_pct).toBe(100);
-		expect(grid.columnStats.cap1.remediate_pct).toBe(0);
+		const grid = await getClassCapacityGrid(supabase, 'class-1', { includeAllCycle: true });
+		expect(grid.capacities.map((c) => c.id)).toEqual(['touche', 'non-touche']);
+		expect(grid.cells['s1:non-touche']).toBe('non_commencee');
 	});
 
 	it('aggregates badges across templates with worst-priority winning', async () => {
@@ -173,30 +270,7 @@ describe('getClassCapacityGrid', () => {
 				error: null
 			}),
 			question_template_points: () => ({
-				data: [
-					{
-						template_id: 't1',
-						point_id: 'cap1',
-						curriculum_points: {
-							id: 'cap1',
-							name: 'Capacité X',
-							family: 'knowledge',
-							objective_id: null,
-							curriculum_objectives: null
-						}
-					},
-					{
-						template_id: 't2',
-						point_id: 'cap1',
-						curriculum_points: {
-							id: 'cap1',
-							name: 'Capacité X',
-							family: 'knowledge',
-							objective_id: null,
-							curriculum_objectives: null
-						}
-					}
-				],
+				data: [tag('t1', point('cap1')), tag('t2', point('cap1'))],
 				error: null
 			}),
 			srs_card_stats: () => ({
@@ -238,22 +312,8 @@ describe('getClassCapacityGrid', () => {
 		const grid = await getClassCapacityGrid(supabase, 'class-1');
 		expect(grid.students[0].display_name).toBe('Élève sans nom');
 	});
-	describe('carte partagée entre deux référentiels', () => {
-		function tag(templateId: string, pointId: string, grade: string) {
-			return {
-				template_id: templateId,
-				point_id: pointId,
-				curriculum_points: {
-					id: pointId,
-					name: `Point ${pointId}`,
-					curriculum_objectives: {
-						theme_id: `th-${grade}`,
-						curriculum_themes: { name: `Thème ${grade}`, code: grade, grade }
-					}
-				}
-			};
-		}
 
+	describe('carte partagée entre deux référentiels', () => {
 		/**
 		 * `t-partagee` : un point T_SPE ET un point T_COMP (le cas visé).
 		 * `t-seule` : un seul point, de T_COMP (non-régression : une carte d'un
@@ -262,10 +322,7 @@ describe('getClassCapacityGrid', () => {
 		function fixture(classGrade: string | null) {
 			const past = new Date(Date.now() - 7 * 86400000).toISOString();
 			return buildMock({
-				class_members: () => ({
-					data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'Alice', lastname: 'Z' } }],
-					error: null
-				}),
+				class_members: () => ({ data: ALICE, error: null }),
 				classes: () => ({ data: { grade: classGrade }, error: null }),
 				skill_attempts: () => ({
 					data: [
@@ -276,9 +333,9 @@ describe('getClassCapacityGrid', () => {
 				}),
 				question_template_points: () => ({
 					data: [
-						tag('t-partagee', 'p-spe', 'T_SPE'),
-						tag('t-partagee', 'p-comp', 'T_COMP'),
-						tag('t-seule', 'p-comp-seul', 'T_COMP')
+						tag('t-partagee', point('p-spe', { grade: 'T_SPE' })),
+						tag('t-partagee', point('p-comp', { grade: 'T_COMP' })),
+						tag('t-seule', point('p-comp-seul', { grade: 'T_COMP' }))
 					],
 					error: null
 				}),
@@ -324,6 +381,32 @@ describe('getClassCapacityGrid', () => {
 // =============================================================================
 
 describe('getClassTopCapacitiesToRemediate', () => {
+	function remediateFixture(count: number) {
+		const past = new Date(Date.now() - 86400000).toISOString();
+		return buildMock({
+			class_members: () => ({ data: ALICE, error: null }),
+			skill_attempts: () => ({
+				data: Array.from({ length: count }, (_, i) => ({ student_id: 's1', template_id: `t${i}` })),
+				error: null
+			}),
+			question_template_points: () => ({
+				data: Array.from({ length: count }, (_, i) =>
+					tag(`t${i}`, point(`cap${i}`, { name: `C${i}` }))
+				),
+				error: null
+			}),
+			srs_card_stats: () => ({
+				data: Array.from({ length: count }, (_, i) => ({
+					user_id: 's1',
+					card_reference_id: `t${i}`,
+					state: 'learning',
+					next_review: past
+				})),
+				error: null
+			})
+		});
+	}
+
 	it('returns empty when no capacities', async () => {
 		const supabase = buildMock({
 			class_members: () => ({ data: [], error: null })
@@ -333,112 +416,23 @@ describe('getClassTopCapacitiesToRemediate', () => {
 	});
 
 	it('excludes capacities with 0% remediate', async () => {
-		const future = new Date(Date.now() + 86400000).toISOString();
-		const supabase = buildMock({
-			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
-				error: null
-			}),
-			skill_attempts: () => ({
-				data: [{ student_id: 's1', template_id: 't1' }],
-				error: null
-			}),
-			question_template_points: () => ({
-				data: [
-					{
-						template_id: 't1',
-						point_id: 'cap1',
-						curriculum_points: {
-							id: 'cap1',
-							name: 'X',
-							family: 'knowledge',
-							objective_id: null,
-							curriculum_objectives: null
-						}
-					}
-				],
-				error: null
-			}),
-			srs_card_stats: () => ({
-				data: [{ user_id: 's1', card_reference_id: 't1', state: 'review', next_review: future }],
-				error: null
-			})
-		});
-		const rows = await getClassTopCapacitiesToRemediate(supabase, 'class-1');
+		const rows = await getClassTopCapacitiesToRemediate(
+			gridFixture([tag('t1', point('cap1'))]),
+			'class-1'
+		);
 		expect(rows.length).toBe(0);
 	});
 
-	it('lists students concerned with their badge', async () => {
-		const past = new Date(Date.now() - 86400000).toISOString();
-		const supabase = buildMock({
-			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'Alice', lastname: '' } }],
-				error: null
-			}),
-			skill_attempts: () => ({
-				data: [{ student_id: 's1', template_id: 't1' }],
-				error: null
-			}),
-			question_template_points: () => ({
-				data: [
-					{
-						template_id: 't1',
-						point_id: 'cap1',
-						curriculum_points: {
-							id: 'cap1',
-							name: 'X',
-							family: 'knowledge',
-							objective_id: null,
-							curriculum_objectives: null
-						}
-					}
-				],
-				error: null
-			}),
-			srs_card_stats: () => ({
-				data: [{ user_id: 's1', card_reference_id: 't1', state: 'learning', next_review: past }],
-				error: null
-			})
-		});
-		const rows = await getClassTopCapacitiesToRemediate(supabase, 'class-1');
+	it('lists students concerned with their badge, and the notion', async () => {
+		const rows = await getClassTopCapacitiesToRemediate(remediateFixture(1), 'class-1');
 		expect(rows.length).toBe(1);
 		expect(rows[0].remediate_pct).toBe(100);
+		expect(rows[0].notion_name).toBe('Fractions');
 		expect(rows[0].students_concerned[0].badge).toBe('a_remedier');
 	});
 
 	it('respects topN limit', async () => {
-		const past = new Date(Date.now() - 86400000).toISOString();
-		const students = [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }];
-		const attempts = Array.from({ length: 5 }, (_, i) => ({
-			student_id: 's1',
-			template_id: `t${i}`
-		}));
-		const tagMappings = Array.from({ length: 5 }, (_, i) => ({
-			template_id: `t${i}`,
-			point_id: `cap${i}`,
-			curriculum_points: {
-				id: `cap${i}`,
-				name: `C${i}`,
-				family: 'knowledge',
-				objective_id: null,
-				curriculum_objectives: null
-			}
-		}));
-		const fsrs = Array.from({ length: 5 }, (_, i) => ({
-			user_id: 's1',
-			card_reference_id: `t${i}`,
-			state: 'learning',
-			next_review: past
-		}));
-
-		const supabase = buildMock({
-			class_members: () => ({ data: students, error: null }),
-			skill_attempts: () => ({ data: attempts, error: null }),
-			question_template_points: () => ({ data: tagMappings, error: null }),
-			srs_card_stats: () => ({ data: fsrs, error: null })
-		});
-
-		const rows = await getClassTopCapacitiesToRemediate(supabase, 'class-1', 3);
+		const rows = await getClassTopCapacitiesToRemediate(remediateFixture(5), 'class-1', 3);
 		expect(rows.length).toBe(3);
 	});
 });
@@ -448,21 +442,50 @@ describe('getClassTopCapacitiesToRemediate', () => {
 // =============================================================================
 
 describe('getStudentRetentionCurve', () => {
-	it('returns empty when no skill matches the theme', async () => {
+	const NOMBRES_6 = { branchId: 'b-nombres', grade: '6' };
+
+	it('returns empty when no point of the branch', async () => {
 		const supabase = buildMock({
-			curriculum_points: () => ({ data: [], error: null })
+			curriculum_points: () => ({ data: [point('geo', { nodeId: 'n-triangles' })], error: null })
 		});
-		const points = await getStudentRetentionCurve(supabase, 'student-1', 'NUM');
+		const points = await getStudentRetentionCurve(supabase, 'student-1', NOMBRES_6);
 		expect(points).toEqual([]);
+	});
+
+	it('ne lit les modèles que des points de la branche (notions et sous-notions)', async () => {
+		const inCalls: InCall[] = [];
+		const supabase = buildMock(
+			{
+				curriculum_points: () => ({
+					data: [
+						point('fraction', { nodeId: 'n-fractions' }),
+						point('comparer', { nodeId: 'sn-comparer' }),
+						point('decimal', { nodeId: 'n-decimaux' }),
+						point('geo', { nodeId: 'n-triangles' }),
+						point('archive', { archived: true }),
+						point('ancien', { nodeId: null })
+					],
+					error: null
+				}),
+				question_template_points: () => ({ data: [{ template_id: 't1' }], error: null }),
+				srs_card_stats: () => ({ data: [], error: null })
+			},
+			inCalls
+		);
+		await getStudentRetentionCurve(supabase, 'student-1', NOMBRES_6);
+		const asked = inCalls
+			.filter((c) => c.table === 'question_template_points' && c.column === 'point_id')
+			.flatMap((c) => c.values);
+		expect(asked.sort()).toEqual(['comparer', 'decimal', 'fraction']);
 	});
 
 	it('returns 8 weeks of zeros when no review history', async () => {
 		const supabase = buildMock({
-			curriculum_points: () => ({ data: [{ id: 'cap1' }], error: null }),
+			curriculum_points: () => ({ data: [point('cap1')], error: null }),
 			question_template_points: () => ({ data: [{ template_id: 't1' }], error: null }),
 			srs_card_stats: () => ({ data: [], error: null })
 		});
-		const points = await getStudentRetentionCurve(supabase, 'student-1', 'NUM');
+		const points = await getStudentRetentionCurve(supabase, 'student-1', NOMBRES_6);
 		expect(points.length).toBe(8);
 		expect(points.every((p) => p.review_count === 0)).toBe(true);
 		expect(points.every((p) => p.retrievability_avg === 0)).toBe(true);
@@ -471,7 +494,7 @@ describe('getStudentRetentionCurve', () => {
 	it('aggregates retrievability_avg from review_history', async () => {
 		const now = Date.now();
 		const supabase = buildMock({
-			curriculum_points: () => ({ data: [{ id: 'cap1' }], error: null }),
+			curriculum_points: () => ({ data: [point('cap1')], error: null }),
 			question_template_points: () => ({ data: [{ template_id: 't1' }], error: null }),
 			srs_card_stats: () => ({
 				data: [
@@ -495,7 +518,7 @@ describe('getStudentRetentionCurve', () => {
 				error: null
 			})
 		});
-		const points = await getStudentRetentionCurve(supabase, 'student-1', 'NUM');
+		const points = await getStudentRetentionCurve(supabase, 'student-1', NOMBRES_6);
 		const totalReviews = points.reduce((acc, p) => acc + p.review_count, 0);
 		expect(totalReviews).toBe(2);
 	});

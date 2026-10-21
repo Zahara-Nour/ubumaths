@@ -2,8 +2,8 @@
  * GET /api/teacher/classes/[classId]/analytics/knowledge-retention/[studentId]
  *
  * Widget B — Courbe rétention (retrievability moyenne par semaine, 8 dernières semaines)
- * pour un élève × un thème BO.
- * Query : ?theme=NOM_BO_OBLIGATOIRE
+ * pour un élève × une branche de l'arbre, dans le programme du niveau de la classe.
+ * Query : ?branch=<uuid> (obligatoire)
  */
 
 import { json } from '@sveltejs/kit';
@@ -27,7 +27,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	}
 
 	const queryCheck = retentionQuerySchema.safeParse({
-		theme: url.searchParams.get('theme'),
+		branch: url.searchParams.get('branch') ?? undefined,
 		weeks: url.searchParams.get('weeks') ?? undefined
 	});
 	if (!queryCheck.success) {
@@ -35,7 +35,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	}
 
 	const { classId, studentId } = paramCheck.data;
-	await requireTeacherOfClass(locals, classId);
+	const { classRow } = await requireTeacherOfClass(locals, classId);
 
 	const { data: membership, error: membershipError } = await locals.supabase
 		.from('class_members')
@@ -56,10 +56,15 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		return json({ error: 'Élève non rattaché à cette classe' }, { status: 404 });
 	}
 
+	// Classe sans niveau : pas de programme, donc pas de branche à lire.
+	if (!classRow.grade) {
+		return json({ points: [] });
+	}
+
 	const points = await getStudentRetentionCurve(
 		locals.supabase,
 		studentId,
-		queryCheck.data.theme,
+		{ branchId: queryCheck.data.branch, grade: classRow.grade },
 		queryCheck.data.weeks
 	);
 

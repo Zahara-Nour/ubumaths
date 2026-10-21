@@ -1,5 +1,5 @@
 <!--
-	Widget E — Top capacités à remédier dans la classe.
+	Widget E — Top points du programme à remédier dans la classe.
 
 	Liste triée % {À remédier + À renforcer} desc.
 	Modal "élèves concernés" au clic.
@@ -8,6 +8,7 @@
 	import { lore } from '$lib/config/lore';
 	import { Users } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Card from '$lib/components/ui/card';
@@ -22,7 +23,7 @@
 	interface TopRow {
 		point_id: string;
 		point_name: string;
-		theme_code: string | null;
+		notion_name: string | null;
 		students_concerned: StudentRef[];
 		remediate_pct: number;
 	}
@@ -94,9 +95,10 @@
 
 <Card.Root>
 	<Card.Header>
-		<Card.Title>Top capacités à remédier</Card.Title>
+		<Card.Title>Top points à remédier</Card.Title>
 		<Card.Description
-			>Capacités où le pourcentage de {lore.entities.student}s en difficulté est le plus élevé.</Card.Description
+			>Points du programme où le pourcentage de {lore.entities.student}s en difficulté est le plus
+			élevé.</Card.Description
 		>
 	</Card.Header>
 
@@ -111,7 +113,7 @@
 			<p class="text-sm text-destructive">⚠ {error}</p>
 		{:else if rows.length === 0}
 			<p class="py-8 text-center text-sm text-muted-foreground">
-				Bravo, votre {lore.entities.class} ne présente aucune capacité à remédier 🎉
+				Bravo, votre {lore.entities.class} ne présente aucun point à remédier 🎉
 			</p>
 		{:else}
 			<ul class="space-y-3">
@@ -120,9 +122,11 @@
 						<div class="flex items-center justify-between gap-2">
 							<div class="min-w-0 flex-1">
 								<div class="flex items-center gap-2">
-									<span class="truncate font-medium">{row.point_name}</span>
-									{#if row.theme_code}
-										<Badge variant="outline" class="text-xs">{row.theme_code}</Badge>
+									<span class="truncate font-medium"
+										><InlineMarkdown content={row.point_name} /></span
+									>
+									{#if row.notion_name}
+										<Badge variant="outline" class="text-xs">{row.notion_name}</Badge>
 									{/if}
 								</div>
 								<Progress value={row.remediate_pct} class="mt-2 h-2" />
@@ -147,6 +151,6 @@
 <AnalyticsModal
 	bind:open={modalOpen}
 	title={modalTitle}
-	description="{lore.entities.student}s concernés par cette capacité."
+	description="{lore.entities.student}s concernés par ce point."
 	students={modalStudents}
 />

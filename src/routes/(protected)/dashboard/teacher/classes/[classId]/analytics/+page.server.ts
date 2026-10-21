@@ -8,6 +8,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
+import { getProgrammeTree } from '$lib/server/programme-tree';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger(
@@ -50,19 +51,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		}))
 		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
 
-	const { data: themeRows, error: themeRowsError } = await locals.supabase
-		.from('curriculum_themes')
-		.select('id, name, code')
-		.order('display_order', { ascending: true });
-
-	if (themeRowsError) {
-		logger.error('Lecture impossible :', themeRowsError);
-		throw error(500, 'Impossible de charger les données');
+	// Sélecteur de la courbe de rétention : les branches du programme du niveau
+	// de la classe, dans l'ordre de l'arbre. Classe sans niveau → aucune.
+	let branches: { id: string; name: string }[] = [];
+	if (classRow.grade) {
+		try {
+			const tree = await getProgrammeTree(locals.supabase, classRow.grade);
+			branches = tree.map((b) => ({ id: b.id, name: b.name }));
+		} catch (e) {
+			logger.error('Lecture impossible :', e);
+			throw error(500, 'Impossible de charger les données');
+		}
 	}
-
-	const themes = (themeRows ?? [])
-		.filter((t) => t.code)
-		.map((t) => ({ name: t.name, code: t.code as string }));
 
 	// Compteur des flags anti-fraud non-résolus pour le badge de l'onglet Surveillance.
 	// null = compteur illisible : le badge le dit, au lieu d'afficher un 0 rassurant.
@@ -87,7 +87,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		className: classRow.name,
 		grade: classRow.grade,
 		students,
-		themes,
+		branches,
 		unresolvedFlagsCount
 	};
 };

@@ -4,7 +4,7 @@
  * 5 fonctions exposées :
  *   - getClassCapacityGrid          → Widget A (grille élève × capacité)
  *   - getClassTopCapacitiesToRemediate → Widget E (top à remédier)
- *   - getStudentRetentionCurve      → Widget B (8 semaines, stability moyenne par thème)
+ *   - getStudentRetentionCurve      → Widget B (8 semaines, stability moyenne par branche)
  *   - getClassActivityHeatmap       → Widget C (30 jours × élèves, reviews/jour)
  *   - getStudentGradeHistogram      → Widget D (7 jours, distribution {1,2,3,4})
  *
@@ -16,6 +16,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { fetchInChunks } from '$lib/server/utils/chunked-in';
 import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
+import { PROGRAMME_POINT_COLS, loadNodesWithAncestors } from '$lib/server/programme-tree';
+import { placeOfNode, type ProgrammePointRow } from '$lib/utils/programme-tree';
 import {
 	templateToBadge,
 	BADGE_PRIORITY,
@@ -38,11 +40,12 @@ export interface ClassStudent {
 	display_name: string;
 }
 
+/** Colonne de la grille : un point neuf du programme, étiqueté par sa notion. */
 export interface ClassCapacity {
 	id: string;
 	name: string;
-	theme_code: string | null;
-	theme_name: string | null;
+	/** `null` si le point n'a pas pu être placé dans l'arbre (nœud illisible). */
+	notion_name: string | null;
 }
 
 export interface ClassCapacityGrid {
@@ -57,7 +60,7 @@ export interface ClassCapacityGrid {
 export interface TopCapacityToRemediate {
 	point_id: string;
 	point_name: string;
-	theme_code: string | null;
+	notion_name: string | null;
 	students_concerned: { student_id: string; display_name: string; badge: CapacityBadge }[];
 	remediate_pct: number;
 }
@@ -87,6 +90,52 @@ export interface GradeHistogramBucket {
 	grade: 1 | 2 | 3 | 4;
 	count: number;
 	avg_stability_after: number;
+}
+
+// ===========================================================================
+// Points du programme : filtre et rangement dans l'arbre
+// ===========================================================================
+
+/**
+ * Point neuf (posé sur un nœud, avec un niveau) et non archivé. Les anciens
+ * points (rattachés à un objectif) n'ont plus leur place dans l'analytique.
+ */
+function isLivePoint(p: ProgrammePointRow): boolean {
+	return p.node_id !== null && p.grade !== null && p.archived_at === null;
+}
+
+/**
+ * Colonnes dans l'ordre de l'arbre : branche, notion, puis ordre du BO.
+ * Un point qu'on ne sait pas placer (nœud illisible) garde sa colonne, en
+ * dernier et sans étiquette, plutôt que de disparaître en silence.
+ */
+async function placeInTree(supabase: SB, points: ProgrammePointRow[]): Promise<ClassCapacity[]> {
+	const nodeIds = points.map((p) => p.node_id).filter((id): id is string => id !== null);
+	const nodes = await loadNodesWithAncestors(supabase, nodeIds);
+	const nodeById = new Map(nodes.map((n) => [n.id, n]));
+
+	const placed = points.map((p) => ({ point: p, place: placeOfNode(p.node_id, nodeById) }));
+	placed.sort((a, b) => {
+		if (!a.place || !b.place) {
+			if (a.place) return -1;
+			if (b.place) return 1;
+			return a.point.name.localeCompare(b.point.name, 'fr');
+		}
+		return (
+			a.place.branch.position - b.place.branch.position ||
+			a.place.branch.name.localeCompare(b.place.branch.name, 'fr') ||
+			a.place.notion.position - b.place.notion.position ||
+			a.place.notion.name.localeCompare(b.place.notion.name, 'fr') ||
+			a.point.display_order - b.point.display_order ||
+			a.point.code.localeCompare(b.point.code, 'fr')
+		);
+	});
+
+	return placed.map(({ point, place }) => ({
+		id: point.id,
+		name: point.name,
+		notion_name: place?.notion.name ?? null
+	}));
 }
 
 // ===========================================================================
@@ -167,15 +216,17 @@ export async function getClassCapacityGrid(
 
 	let capacities: ClassCapacity[] = [];
 	const templateToPointIds = new Map<string, string[]>();
+	// Points retenus (lignes complètes) : on les range dans l'arbre après coup.
+	const pointById = new Map<string, ProgrammePointRow>();
 
 	if (templateIds.length > 0) {
 		// `templateIds` grossit avec l'usage de la classe, sans borne : découpé.
+		// Pas de `!inner` : un point masqué ferait disparaître sa ligne en silence ;
+		// les anciens points et les archivés sont écartés ici, en mémoire.
 		const { data: tagRows, error: tagErr } = await fetchInChunks(templateIds, (batch) =>
 			supabase
 				.from('question_template_points')
-				.select(
-					'template_id, point_id, curriculum_points!inner(id, name, curriculum_objectives!inner(theme_id, curriculum_themes!inner(name, code, grade)))'
-				)
+				.select(`template_id, point_id, curriculum_points(${PROGRAMME_POINT_COLS})`)
 				.in('template_id', batch)
 		);
 
@@ -186,80 +237,49 @@ export async function getClassCapacityGrid(
 		type TagRow = {
 			template_id: string;
 			point_id: string;
-			curriculum_points: {
-				id: string;
-				name: string;
-				curriculum_objectives: {
-					theme_id: string;
-					curriculum_themes: { name: string; code: string | null; grade: string } | null;
-				} | null;
-			} | null;
+			curriculum_points: ProgrammePointRow | null;
 		};
+		const liveTags = ((tagRows ?? []) as unknown as TagRow[]).filter(
+			(r) => r.curriculum_points !== null && isLivePoint(r.curriculum_points)
+		);
 		// Carte partagée entre deux référentiels (ex. T_SPE et T_COMP) : seuls
 		// les points du niveau de la classe font une colonne. Sinon la même
 		// capacité apparaît deux fois, une fois par programme.
-		const tagged = keepLinksOfGrade((tagRows ?? []) as unknown as TagRow[], classGrade, (r) => ({
+		const tagged = keepLinksOfGrade(liveTags, classGrade, (r) => ({
 			template_id: r.template_id,
-			grade: r.curriculum_points?.curriculum_objectives?.curriculum_themes?.grade ?? null
+			grade: r.curriculum_points?.grade ?? null
 		}));
 
-		const capById = new Map<string, ClassCapacity>();
 		for (const r of tagged) {
-			if (!r.curriculum_points) continue;
-			capById.set(r.point_id, {
-				id: r.point_id,
-				name: r.curriculum_points.name,
-				theme_code: r.curriculum_points.curriculum_objectives?.curriculum_themes?.code ?? null,
-				theme_name: r.curriculum_points.curriculum_objectives?.curriculum_themes?.name ?? null
-			});
+			pointById.set(r.point_id, r.curriculum_points!);
 			const list = templateToPointIds.get(r.template_id) ?? [];
 			list.push(r.point_id);
 			templateToPointIds.set(r.template_id, list);
 		}
-		capacities = [...capById.values()].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
 	}
 
-	if (opts.includeAllCycle) {
-		// Toggle "Tout le cycle" : on étend aux capacités du même niveau scolaire
-		// que la classe, même non touchées. Cf. plan §Phase 0 #2.
-		if (classGrade) {
-			// Le grade vit désormais sur le thème, en code canonique — le même que
-			// `classes.grade`. (Avant la refonte, `skills.niveau_scolaire` valait
-			// '6e' alors que `classes.grade` vaut '6' : le filtre ne matchait jamais.)
-			const { data: cyclePoints, error: cyclePointsError } = await supabase
-				.from('curriculum_points')
-				.select(
-					'id, name, curriculum_objectives!inner(theme_id, curriculum_themes!inner(name, code, grade))'
-				)
-				.eq('curriculum_objectives.curriculum_themes.grade', classGrade)
-				.is('archived_at', null);
+	if (opts.includeAllCycle && classGrade) {
+		// Bouton « Tout le niveau » : on étend aux points neufs du niveau de la
+		// classe, même non touchés.
+		const { data: gradePoints, error: gradePointsError } = await supabase
+			.from('curriculum_points')
+			.select(PROGRAMME_POINT_COLS)
+			.eq('grade', classGrade)
+			.not('node_id', 'is', null)
+			.is('archived_at', null);
 
-			if (cyclePointsError) {
-				logger.error('[getClassCapacityGrid] Points du cycle illisibles :', cyclePointsError);
-				throw new Error(cyclePointsError.message);
-			}
-
-			type CycleRow = {
-				id: string;
-				name: string;
-				curriculum_objectives: {
-					theme_id: string;
-					curriculum_themes: { name: string; code: string | null; grade: string } | null;
-				} | null;
-			};
-			const existing = new Set(capacities.map((c) => c.id));
-			for (const p of ((cyclePoints ?? []) as unknown as CycleRow[]).filter(
-				(p) => !existing.has(p.id)
-			)) {
-				capacities.push({
-					id: p.id,
-					name: p.name,
-					theme_code: p.curriculum_objectives?.curriculum_themes?.code ?? null,
-					theme_name: p.curriculum_objectives?.curriculum_themes?.name ?? null
-				});
-			}
-			capacities.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+		if (gradePointsError) {
+			logger.error('[getClassCapacityGrid] Points du niveau illisibles :', gradePointsError);
+			throw new Error(gradePointsError.message);
 		}
+
+		for (const p of (gradePoints ?? []) as ProgrammePointRow[]) {
+			if (isLivePoint(p) && !pointById.has(p.id)) pointById.set(p.id, p);
+		}
+	}
+
+	if (pointById.size > 0) {
+		capacities = await placeInTree(supabase, [...pointById.values()]);
 	}
 
 	// Deux `.in()` dans la même requête : seul `templateIds` est découpé.
@@ -362,7 +382,7 @@ export async function getClassTopCapacitiesToRemediate(
 		return {
 			point_id: cap.id,
 			point_name: cap.name,
-			theme_code: cap.theme_code,
+			notion_name: cap.notion_name,
 			students_concerned: studentsConcerned,
 			remediate_pct: grid.columnStats[cap.id]?.remediate_pct ?? 0
 		};
@@ -375,19 +395,26 @@ export async function getClassTopCapacitiesToRemediate(
 }
 
 // ===========================================================================
-// Widget B — Courbe rétention par élève × thème
+// Widget B — Courbe rétention par élève × branche
 // ===========================================================================
+
+/** Branche de l'arbre, lue dans le programme d'un niveau. */
+export interface RetentionScope {
+	branchId: string;
+	grade: string;
+}
 
 export async function getStudentRetentionCurve(
 	supabase: SB,
 	studentId: string,
-	themeCode: string,
+	{ branchId, grade }: RetentionScope,
 	weeks = 8
 ): Promise<RetentionPoint[]> {
 	const { data: pointRows, error: pointRowsError } = await supabase
 		.from('curriculum_points')
-		.select('id, curriculum_objectives!inner(curriculum_themes!inner(code))')
-		.eq('curriculum_objectives.curriculum_themes.code', themeCode)
+		.select(PROGRAMME_POINT_COLS)
+		.eq('grade', grade)
+		.not('node_id', 'is', null)
 		.is('archived_at', null);
 
 	// Une courbe de rétention vide se lit « cet élève ne révise pas ». Mieux vaut
@@ -397,11 +424,16 @@ export async function getStudentRetentionCurve(
 		throw new Error(pointRowsError.message);
 	}
 
-	type PointRow = { id: string };
-	const pointIds = ((pointRows ?? []) as unknown as PointRow[]).map((p) => p.id);
+	// La branche d'un point se lit en remontant l'arbre (sous-notion → notion → branche).
+	const livePoints = ((pointRows ?? []) as ProgrammePointRow[]).filter(isLivePoint);
+	const nodeIds = livePoints.map((p) => p.node_id).filter((id): id is string => id !== null);
+	const nodeById = new Map((await loadNodesWithAncestors(supabase, nodeIds)).map((n) => [n.id, n]));
+	const pointIds = livePoints
+		.filter((p) => placeOfNode(p.node_id, nodeById)?.branch.id === branchId)
+		.map((p) => p.id);
 	if (pointIds.length === 0) return [];
 
-	// `pointIds` = tous les points d'un niveau : 185 en 2ᵈᵉ aujourd'hui.
+	// `pointIds` = les points d'une branche d'un niveau : quelques dizaines.
 	const { data: tagRows, error: tagRowsError } = await fetchInChunks(pointIds, (batch) =>
 		supabase.from('question_template_points').select('template_id').in('point_id', batch)
 	);
