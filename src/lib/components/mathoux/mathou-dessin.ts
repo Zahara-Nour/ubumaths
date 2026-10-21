@@ -38,7 +38,9 @@ export interface StageTemplate {
 	gid: [number, number];
 	eye: number;
 	foot: number;
-	young: boolean;
+	/** 1 = chaton (pieds en dedans et dépareillés, grands yeux), 0 = adulte ; entre les deux pendant
+	 * qu'il grandit */
+	youth: number;
 }
 
 export interface PearGeometry {
@@ -112,8 +114,8 @@ export const SILHOUETTE_FILL = 'hsl(40, 28%, 58%)';
 export const SILHOUETTE_LINE = 'hsl(40, 25%, 46%)';
 
 const STAGES: Record<MathouStage, StageTemplate> = {
-	chaton: { top: 58, bot: 174, hw: 38, bw: 48, gid: [19, 2], eye: 6, foot: 10.5, young: true },
-	matou: { top: 38, bot: 178, hw: 26, bw: 64, gid: [32, 3], eye: 4.4, foot: 13, young: false },
+	chaton: { top: 58, bot: 174, hw: 38, bw: 48, gid: [19, 2], eye: 6, foot: 10.5, youth: 1 },
+	matou: { top: 38, bot: 178, hw: 26, bw: 64, gid: [32, 3], eye: 4.4, foot: 13, youth: 0 },
 	grand_matou: {
 		top: 50,
 		bot: 180,
@@ -122,12 +124,32 @@ const STAGES: Record<MathouStage, StageTemplate> = {
 		gid: [44, 3.6],
 		eye: 3.6,
 		foot: 15,
-		young: false
+		youth: 0
 	}
 };
 
 // Functions
 const r1 = (n: number): number => Math.round(n * 10) / 10;
+const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;
+
+/** Les mesures d'un stade */
+export function stageTemplate(stage: MathouStage): StageTemplate {
+	return STAGES[stage];
+}
+
+/** Mesures intermédiaires entre deux stades (t = 0 : `from`, t = 1 : `to`) : le Mathou qui grandit */
+export function blendStages(from: StageTemplate, to: StageTemplate, t: number): StageTemplate {
+	return {
+		top: lerp(from.top, to.top, t),
+		bot: lerp(from.bot, to.bot, t),
+		hw: lerp(from.hw, to.hw, t),
+		bw: lerp(from.bw, to.bw, t),
+		gid: [lerp(from.gid[0], to.gid[0], t), lerp(from.gid[1], to.gid[1], t)],
+		eye: lerp(from.eye, to.eye, t),
+		foot: lerp(from.foot, to.foot, t),
+		youth: lerp(from.youth, to.youth, t)
+	};
+}
 
 /** Luminosité (0..100) d'une couleur `hsl(h, s%, l%)` ; 50 si illisible */
 export function lightness(color: string): number {
@@ -181,8 +203,8 @@ function star(cx: number, cy: number, r: number): string {
 }
 
 /** Le corps en poire, la tête au sommet, et tout ce qui s'y accroche */
-export function pearGeometry(stageKey: MathouStage): PearGeometry {
-	const st = STAGES[stageKey];
+export function pearGeometry(stage: MathouStage | StageTemplate): PearGeometry {
+	const st = typeof stage === 'string' ? STAGES[stage] : stage;
 	const cx = 100;
 	const { top, bot, hw, bw } = st;
 	const hy = top + (bot - top) * 0.28;
@@ -214,14 +236,15 @@ export function pearGeometry(stageKey: MathouStage): PearGeometry {
 	// Pieds ; chaton : en dedans et dépareillés (la maladresse est dans les proportions)
 	const fy = bot + 2;
 	const feet: Ellipse[] = [-1, 1].map((k) => {
-		const fx = r1(cx + k * bw * (st.young ? 0.34 : 0.42));
-		const odd = st.young && k === 1;
+		const fx = r1(cx + k * bw * lerp(0.42, 0.34, st.youth));
+		// Pied droit du chaton : plus bas et plus petit
+		const odd = k === 1 ? st.youth : 0;
 		return {
 			cx: fx,
-			cy: odd ? fy + 2 : fy,
-			rx: odd ? st.foot - 1.5 : st.foot,
+			cy: r1(fy + 2 * odd),
+			rx: r1(st.foot - 1.5 * odd),
 			ry: 6,
-			rotate: st.young ? r1(k * -16) : 0
+			rotate: r1(k * -16 * st.youth)
 		};
 	});
 
@@ -523,8 +546,8 @@ export function faceDrawing(g: PearGeometry, dr: Dressing, mode: FaceMode): Face
 		}
 		const w = r1(e * 1.28);
 		const eh = r1(e * 1.08);
-		const lidPart = mode === 'proud' ? 0.47 : (st.young ? 0.05 : 0.12) + (i === 1 ? 0.1 : 0);
-		const pupil = st.young ? 0.3 : 0.19;
+		const lidPart = mode === 'proud' ? 0.47 : lerp(0.12, 0.05, st.youth) + (i === 1 ? 0.1 : 0);
+		const pupil = lerp(0.19, 0.3, st.youth);
 		const shape = `M${r1(x - w)} ${r1(hy)}C${r1(x - w * 0.62)} ${r1(hy - eh * 1.3)} ${r1(x + w * 0.62)} ${r1(hy - eh * 1.3)} ${r1(x + w)} ${r1(hy)}C${r1(x + w * 0.62)} ${r1(hy + eh * 1.25)} ${r1(x - w * 0.62)} ${r1(hy + eh * 1.25)} ${r1(x - w)} ${r1(hy)}Z`;
 		const ly = r1(hy - eh * 1.05 + 2 * eh * lidPart);
 		const lidTop = r1(hy - eh * 1.6);

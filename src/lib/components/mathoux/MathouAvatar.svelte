@@ -26,6 +26,7 @@
 		SILHOUETTE_FILL,
 		SILHOUETTE_LINE,
 		YELLOW,
+		blendStages,
 		celebration,
 		crown,
 		dressing,
@@ -33,6 +34,7 @@
 		pearGeometry,
 		rays,
 		ruff,
+		stageTemplate,
 		zzz,
 		type FaceMode
 	} from './mathou-dessin';
@@ -55,10 +57,16 @@
 		/** Réaction ponctuelle, rejouée à chaque changement de `reactionKey` */
 		reaction?: MathouReaction;
 		reactionKey?: number;
+		/** Avec `reaction="bond"` : le stade d'avant ; le dessin se transforme de l'un à l'autre */
+		growFrom?: MathouStage;
 	}
 
 	// Constantes
 	const STROKE = 3;
+	/** Durée de la transformation d'un stade à l'autre (ms) */
+	const MORPH_MS = 1400;
+	// Auréole derrière la tête : plus large pour la grosse tête du chaton
+	const HALO_R: Record<MathouStage, number> = { chaton: 46, matou: 40, grand_matou: 34 };
 
 	// Variables
 	let {
@@ -70,7 +78,8 @@
 		label,
 		animated = true,
 		reaction,
-		reactionKey = 0
+		reactionKey = 0,
+		growFrom
 	}: Props = $props();
 
 	const uid = $props.id();
@@ -80,16 +89,30 @@
 	const smokeId = `${uid}-mathou-fume`;
 	const eyeClipId = (i: number): string => `${uid}-mathou-oeil-${i}`;
 
+	const morphing = $derived(reaction === 'bond' && growFrom !== undefined && growFrom !== stage);
+	// Avancement de la transformation, 0 → 1 ; à 0 au premier rendu (côté serveur aussi)
+	let morphT = $state(0);
+
 	const race = $derived(getMathouRace(raceIndex));
-	const geo = $derived(pearGeometry(stage));
+	const eased = $derived(morphing ? easeInOut(morphT) : 1);
+	const geo = $derived(
+		morphing && growFrom && eased < 1
+			? pearGeometry(blendStages(stageTemplate(growFrom), stageTemplate(stage), eased))
+			: pearGeometry(stage)
+	);
 	const dr = $derived(dressing(race, geo));
 	const sleeping = $derived(asleep && !silhouette);
-	const majesty = $derived(stage === 'grand_matou' && !sleeping);
+	// Couronne, fraise, bâton et gloire arrivent quand la transformation est finie
+	const majesty = $derived(stage === 'grand_matou' && !sleeping && eased === 1);
+	const crowning = $derived(morphing && stage === 'grand_matou');
 	const mode = $derived<FaceMode>(sleeping ? 'closed' : majesty ? 'proud' : 'open');
 	const face = $derived(faceDrawing(geo, dr, mode));
 	const st = $derived(geo.stage);
-	// Auréole derrière la tête : plus large pour la grosse tête du chaton
-	const haloR = $derived(stage === 'chaton' ? 46 : stage === 'matou' ? 40 : 34);
+	const haloR = $derived(
+		morphing && growFrom
+			? HALO_R[growFrom] + (HALO_R[stage] - HALO_R[growFrom]) * eased
+			: HALO_R[stage]
+	);
 	const haloY = $derived(geo.hy - (majesty ? 6 : 4));
 	const crownShape = $derived(crown(geo.hx, st.top - 6));
 	const ruffPuffs = $derived(ruff(geo.hx, geo.shoulderY + 2));
@@ -106,9 +129,31 @@
 		grand_matou: [158, 30]
 	};
 	const zPaths = $derived(zzz(ZZZ_AT[stage][0], geo.hy + ZZZ_AT[stage][1], 0.9));
-	// Chaque race a son décalage : dans la Chatterie, les Mathoux ne respirent pas en chœur
 	const party = $derived(reaction === 'apparition' && !silhouette ? celebration(race.halo) : null);
+	// Chaque race a son décalage : dans la Chatterie, les Mathoux ne respirent pas en chœur
 	const phase = $derived(`--mathou-phase: -${((normalizeRaceIndex(raceIndex) * 7) % 19) * 0.37}s`);
+
+	// Functions
+	function easeInOut(t: number): number {
+		return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+	}
+
+	// Transformation image par image ; « réduire les animations » : directement le nouveau stade
+	$effect(() => {
+		void reactionKey;
+		if (!morphing) return;
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			morphT = 1;
+			return;
+		}
+		morphT = 0;
+		const start = performance.now();
+		let frame = requestAnimationFrame(function step(now) {
+			morphT = Math.min(1, (now - start) / MORPH_MS);
+			if (morphT < 1) frame = requestAnimationFrame(step);
+		});
+		return () => cancelAnimationFrame(frame);
+	});
 </script>
 
 <svg
@@ -169,7 +214,9 @@
 		{:else if sleeping}
 			<path d={MOON} fill={race.halo} />
 		{:else if majesty}
-			<g class="gloire"><path d={rays(100, haloY)} fill={race.halo} /></g>
+			<g class:apparait={crowning}>
+				<g class="gloire"><path d={rays(100, haloY)} fill={race.halo} /></g>
+			</g>
 			<circle cx="100" cy={haloY} r={haloR} fill={race.halo} stroke={YELLOW} stroke-width="2.5" />
 		{:else}
 			{#key reactionKey}
@@ -236,18 +283,20 @@
 	{:else}
 		{#if majesty}
 			<!-- Bâton du grand matou, derrière la panse -->
-			<path
-				d={`M26 ${st.top + 6}Q31 120 38 186`}
-				fill="none"
-				stroke={INK}
-				stroke-width="5"
-				stroke-linecap="round"
-			/>
-			<circle cx="26" cy={st.top + 4} r="7" fill={RED} stroke={INK} stroke-width="2.6" />
+			<g class:apparait={crowning}>
+				<path
+					d={`M26 ${st.top + 6}Q31 120 38 186`}
+					fill="none"
+					stroke={INK}
+					stroke-width="5"
+					stroke-linecap="round"
+				/>
+				<circle cx="26" cy={st.top + 4} r="7" fill={RED} stroke={INK} stroke-width="2.6" />
+			</g>
 		{/if}
 
 		{#key reactionKey}
-			<g class="reaction" data-reaction={reaction}>
+			<g class="reaction" data-reaction={reaction} data-morph={morphing ? 'true' : undefined}>
 				<g class="souffle">
 					<g
 						transform={sleeping ? 'rotate(5 100 180)' : undefined}
@@ -402,9 +451,15 @@
 							/>
 						{/if}
 
-						{#if stage === 'grand_matou'}
-							<!-- Attribut du grand matou : la fraise -->
-							<g data-part="collerette" fill={CREAM} stroke={INK} stroke-width="2.2">
+						{#if stage === 'grand_matou' && eased === 1}
+							<!-- Attribut du grand matou : la fraise (après la transformation) -->
+							<g
+								data-part="collerette"
+								class:apparait={crowning}
+								fill={CREAM}
+								stroke={INK}
+								stroke-width="2.2"
+							>
 								{#each ruffPuffs as puff, i (i)}
 									<circle cx={puff.cx} cy={puff.cy} r="6" />
 								{/each}
@@ -413,7 +468,7 @@
 
 						{#if majesty}
 							<!-- Couronne -->
-							<g data-part="couronne">
+							<g data-part="couronne" class:apparait={crowning}>
 								<path d={crownShape.d} fill={RED} stroke={INK} stroke-width="2.6" />
 								{#each crownShape.pearls as pearl, i (i)}
 									<circle
@@ -618,6 +673,13 @@
 	.reaction[data-reaction='bond'] {
 		animation: bond 0.8s ease-out;
 	}
+	/* Il grandit : le dessin se transforme, puis un petit bond de joie */
+	.reaction[data-reaction='bond'][data-morph] {
+		animation-delay: 1.3s;
+	}
+	.apparait {
+		animation: apparait 0.6s ease-out both;
+	}
 	.reaction[data-reaction='etirement'] {
 		animation: etirement 1.2s ease-in-out;
 	}
@@ -747,6 +809,11 @@
 		100% {
 			opacity: 0;
 			transform: scale(1.9);
+		}
+	}
+	@keyframes apparait {
+		from {
+			opacity: 0;
 		}
 	}
 	@keyframes confetto {
