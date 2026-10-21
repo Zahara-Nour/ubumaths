@@ -621,3 +621,15 @@ export function collectionCountsPhrase(counts: MathouCounts): string {
 	const mathoux = counts.born === 1 ? '1 Mathou' : `${counts.born} Mathoux`;
 	return `${mathoux}, ${counts.napping} en sieste, ${counts.toDiscover} à découvrir`;
 }
+
+/**
+ * Ligne d'un élève dans la liste du professeur, d'après la mémoire :
+ * « Aucun Mathou », « 3 Mathoux », « 7 Mathoux, dont 2 grands matous ».
+ */
+export function memoryCountsPhrase(counts: { born: number; grandMatous: number }): string {
+	if (counts.born === 0) return 'Aucun Mathou';
+	const mathoux = counts.born === 1 ? '1 Mathou' : `${counts.born} Mathoux`;
+	if (counts.grandMatous === 0) return mathoux;
+	const grands = counts.grandMatous === 1 ? '1 grand matou' : `${counts.grandMatous} grands matous`;
+	return `${mathoux}, dont ${grands}`;
+}
