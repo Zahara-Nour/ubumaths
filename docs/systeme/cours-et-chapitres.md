@@ -205,7 +205,8 @@ Pages : `src/routes/(protected)/dashboard/teacher/cahier-texte/` (semaine ; acti
   de questions à des points (pages d'édition d'exercice et de question). L'édition admin d'un
   modèle propose **un choix par programme** (MySelect), parmi les points du nœud du modèle et de sa
   notion (règles 1 et 2 posées en base) ; un modèle sans nœud se range d'abord. L'édition d'un
-  exercice propose, pour chacun de **ses niveaux**, les points posés sur l'un de ses nœuds de
+  exercice propose, pour chacun de **ses niveaux** (et ceux de ses points déjà tagués, pour
+  pouvoir les retirer), les points posés sur l'un de ses nœuds de
   rangement ou sur leur notion (règle 1, en base aussi) ; un exercice non rangé n'en reçoit aucun, et
   aucun écran ne range un exercice (rangements posés par migration).
 - Écritures de points (POST `coverage`, POST `exercise-tags`, points cochés à la création d'une
