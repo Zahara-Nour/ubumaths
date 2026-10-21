@@ -10,8 +10,8 @@ _Mis à jour le 2026-10-21, après #1595 (étape 3, F mergée)._
 - **État** : C5 étape 3 (bascule du code). Fait : #1060, #1577 (B1), #1581 (B2), #1583 (B3), #1589 (D : « Ma
   progression » élève), #1595 (F : analytique de classe sur l'arbre — points neufs, ordre de l'arbre, notion,
   rétention par branche). Pas en prod (aucun `deploy:prod` depuis B1).
-- **Prochaine action** : **E** (suppression éditeur et API thèmes/objectifs) — phase 0 à faire valider ; puis
-  étape 4 (destructive : arrêt).
+- **Prochaine action** : **E** en PR (`refactor/arbre-bascule-e`, rattachement par code retiré) ; puis étape 4
+  (destructive : arrêt).
 - **En attente de David** : F — garder `keepLinksOfGrade` (carte d'un autre niveau sans point du niveau de la
   classe = colonne gardée) ou n'afficher que les points du niveau ? Signalés avant : 11 modèles sans corrigé ;
   c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51).
