@@ -106,6 +106,9 @@ export async function readMathouMemory(
  * @param studentId l'élève de la SESSION.
  * @param updates `memoryUpdates(...)` : lignes complètes, jamais en baisse.
  * @param known la mémoire lue avant le calcul (`readMathouMemory`).
+ * @returns les notions dont CET appel a écrit la ligne (insérée, ou mise à jour
+ *   avec du nouveau) : les nouveautés à annoncer (`mathouNews`). Une ligne qu'un
+ *   autre calcul a déjà écrite n'y est pas : jamais annoncée deux fois.
  * @throws si une écriture échoue : l'appelant journalise, l'affichage tient.
  */
 export async function rememberMathoux(
@@ -113,8 +116,9 @@ export async function rememberMathoux(
 	studentId: string,
 	updates: MathouMemoryUpdate[],
 	known: Map<string, StoredMathouMemory>
-): Promise<void> {
-	if (updates.length === 0) return;
+): Promise<Set<string>> {
+	const written = new Set<string>();
+	if (updates.length === 0) return written;
 
 	const toInsert = updates.filter((update) => !known.has(update.notionId));
 	const toUpdate: { update: MathouMemoryUpdate; current: StoredMathouMemory }[] = [];
@@ -142,6 +146,7 @@ export async function rememberMathoux(
 
 		// Ligne non rendue = créée entre-temps par un autre calcul : relue, puis fusionnée
 		const inserted = new Set((data ?? []).map((row) => row.notion_id));
+		for (const notionId of inserted) written.add(notionId);
 		const raced = toInsert.filter((update) => !inserted.has(update.notionId));
 		if (raced.length > 0) {
 			const fresh = await readRows(
@@ -162,6 +167,10 @@ export async function rememberMathoux(
 	);
 	const failure = results.find((result) => result.status === 'rejected');
 	if (failure && failure.status === 'rejected') throw failure.reason;
+	results.forEach((result, index) => {
+		if (result.status === 'fulfilled' && result.value) written.add(toUpdate[index].update.notionId);
+	});
+	return written;
 }
 
 /** Relit des lignes de mémoire (client service, après un conflit). */
@@ -184,16 +193,20 @@ async function readRows(
 	return rows;
 }
 
-/** Comparer-et-échanger sur `updated_at`, relecture et fusion à chaque échec. */
+/**
+ * Comparer-et-échanger sur `updated_at`, relecture et fusion à chaque échec.
+ * Vrai si CET appel a écrit la ligne ; faux si elle disait déjà tout (écrite
+ * par un autre calcul), a disparu, ou n'a pas pu être écrite.
+ */
 async function updateUntilStable(
 	service: SB,
 	studentId: string,
 	update: MathouMemoryUpdate,
 	initial: StoredMathouMemory
-): Promise<void> {
+): Promise<boolean> {
 	let current = initial;
 	for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
-		if (memoryCovers(current, update)) return;
+		if (memoryCovers(current, update)) return false;
 		const merged = mergeMemory(current, update);
 		const { data, error } = await service
 			.from(TABLE)
@@ -203,7 +216,7 @@ async function updateUntilStable(
 			.eq('updated_at', current.updatedAt)
 			.select('notion_id');
 		if (error) throw new Error(`Mémoire des Mathoux : mise à jour refusée : ${error.message}`);
-		if ((data ?? []).length === 1) return;
+		if ((data ?? []).length === 1) return true;
 
 		// La ligne a bougé depuis la lecture : on la relit et on refusionne
 		const { data: row, error: readError } = await service
@@ -218,11 +231,12 @@ async function updateUntilStable(
 		const fresh = row ? toStored(row) : null;
 		if (!fresh) {
 			logger.warn(`[mathoux] ligne disparue pendant la mise à jour : notion ${update.notionId}`);
-			return;
+			return false;
 		}
 		current = fresh;
 	}
 	logger.warn(
 		`[mathoux] mémoire non écrite après ${MAX_ATTEMPTS} essais : notion ${update.notionId}`
 	);
+	return false;
 }
