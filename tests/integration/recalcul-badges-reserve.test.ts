@@ -26,6 +26,7 @@ import {
 	getKnowledgeSkill,
 	createFakeTemplate,
 	getSkillStateA,
+	tagTemplateWithSkill,
 	cleanupCompetenceTestData
 } from '../helpers/competence-referentiel.helpers';
 
@@ -67,10 +68,7 @@ describe('recalcul des badges réservé', () => {
 		const student = await TestData.profile().withRole('student').create();
 		const skill = await getKnowledgeSkill(service, 'Nombres entiers', 1);
 		const templateId = await createFakeTemplate(service, student.id);
-		const { error: tagError } = await service
-			.from('question_template_points' as never)
-			.insert({ template_id: templateId, point_id: skill.id } as never);
-		expect(tagError).toBeNull();
+		await tagTemplateWithSkill(service, templateId, skill.id);
 
 		const client = await createAuthenticatedClient(student.email);
 		const { data, error } = await client

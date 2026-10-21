@@ -18,7 +18,7 @@
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade '2', l'ensemble exact des
- * références, et l'ancien seed 2de (2-001…2-185, grade NULL) INTACT.
+ * références (l'ancien seed, supprimé en étape 4, n'est plus vérifié).
  * Lecture ANONYME (B6).
  *
  * @vitest-environment node
@@ -56,7 +56,6 @@ interface PointRow {
 	regime_acquisition: string;
 	rubrique: string | null;
 	node_id: string | null;
-	objective_id: string | null;
 	rang: number | null;
 }
 
@@ -132,7 +131,7 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 			const { data, error } = await anon
 				.from('curriculum_points')
 				.select(
-					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, objective_id, rang'
+					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, rang'
 				)
 				.order('id')
 				.range(from, from + 999);
@@ -229,7 +228,6 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 	});
 
 	it('architecture cible et décisions L1-L3 (L2 corrigée par E1) : kinds, exigences, régime', () => {
-		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 		// Seuls les deux points ⚙ de la partie Automatismes sont en fluence.
 		expect(
@@ -270,12 +268,6 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 		);
 		expect(appro).toHaveLength(14);
 		expect(appro.every((r) => r.kind === 'savoir_faire')).toBe(true);
-	});
-
-	it("l'ancien seed 2de (2-001…2-185) est INTACT : grade NULL, rattaché à ses objectifs", () => {
-		const anciens = allPoints.filter((p) => /^2-(0\d\d|1[0-7]\d|18[0-5])$/.test(p.code));
-		expect(anciens).toHaveLength(185);
-		expect(anciens.every((p) => p.grade === null && p.objective_id !== null)).toBe(true);
 	});
 
 	it('la branche Logique est restructurée (C2) : 4 notions, sous-notions à leur place', () => {

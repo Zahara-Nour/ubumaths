@@ -25,7 +25,6 @@ import type { Database } from '$lib/types/database';
 export type SkillRow = {
 	id: string;
 	family: 'knowledge' | 'competence';
-	objective_id: string | null;
 	subdimension_id: string | null;
 	regime_acquisition: 'fluence' | 'diversite';
 	observable_code: string | null;
@@ -82,42 +81,62 @@ export type EvaluationTaskRow = {
 // Seed lookup helpers
 // ---------------------------------------------------------------------------
 
-/** Fetch a knowledge skill by (objective name fragment, display_order). */
+/**
+ * Point de test déterministe pour un « sujet » (fragment de nom) et un rang.
+ *
+ * Les anciens objectifs (thèmes → objectifs → points) n'existent plus : le point est un point
+ * NEUF, posé sur le nœud d'un point réel du programme de 6e, sans grade (donc hors des
+ * ensembles exacts que vérifient les tests de seed), sous un code stable `TEST-SK-<sujet>-<rang>`.
+ * L'upsert le remet à l'état initial (régime « diversite », non archivé) à chaque appel.
+ */
 export async function getKnowledgeSkill(
 	service: SupabaseClient<Database>,
 	objectiveNameFragment: string,
 	nth: number
 ): Promise<SkillRow> {
-	const { data, error } = await service
-		.from('curriculum_objectives' as never)
-		.select('id, name')
-		.ilike('name', `%${objectiveNameFragment}%`)
+	const { data: ancre, error: ancreErr } = await service
+		.from('curriculum_points')
+		.select('node_id')
+		.eq('grade', '6')
+		.order('code', { ascending: true })
 		.limit(1)
 		.single();
-
-	if (error || !data) {
+	if (ancreErr || !ancre) {
 		throw new Error(
-			`getKnowledgeSkill: objective '${objectiveNameFragment}' not found: ${error?.message}`
+			`getKnowledgeSkill: aucun point de 6e pour ancrer le nœud: ${ancreErr?.message}`
 		);
 	}
 
-	const { data: points, error: pointErr } = await service
-		.from('curriculum_points' as never)
-		.select('*')
-		.eq('objective_id', (data as { id: string }).id)
-		.is('archived_at', null)
-		.order('display_order', { ascending: true });
+	const slug = objectiveNameFragment
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.replace(/[^A-Za-z0-9]+/g, '-')
+		.toUpperCase();
+	const code = `TEST-SK-${slug}-${nth}`;
 
-	const list = (points ?? []) as SkillRow[];
-	const point = list[nth - 1];
+	const { data: point, error: pointErr } = await service
+		.from('curriculum_points')
+		.upsert(
+			{
+				code,
+				name: `Point de test ${objectiveNameFragment} #${nth}`,
+				kind: 'connaissance',
+				node_id: ancre.node_id,
+				grade: null,
+				regime_acquisition: 'diversite',
+				archived_at: null,
+				display_order: nth
+			},
+			{ onConflict: 'code' }
+		)
+		.select('*')
+		.single();
 
 	if (pointErr || !point) {
-		throw new Error(
-			`getKnowledgeSkill: no point #${nth} for objective '${objectiveNameFragment}' (${list.length} found): ${pointErr?.message}`
-		);
+		throw new Error(`getKnowledgeSkill: point de test '${code}' non créé: ${pointErr?.message}`);
 	}
 
-	return point;
+	return point as unknown as SkillRow;
 }
 
 /**
@@ -207,6 +226,34 @@ export async function getMathCompetenceId(
 // Attempt insertion helpers (service role — for cache pre-population)
 // ---------------------------------------------------------------------------
 
+/**
+ * Range le modèle sur le nœud du point : la base refuse de taguer un modèle qui n'est pas rangé
+ * sur le nœud du point (ou sur sa notion). Sans effet si le modèle y est déjà.
+ */
+async function rangerModeleSurNoeudDuPoint(
+	service: SupabaseClient<Database>,
+	templateId: string,
+	pointId: string
+): Promise<void> {
+	const { data: point, error: pointErr } = await service
+		.from('curriculum_points')
+		.select('node_id')
+		.eq('id', pointId)
+		.single();
+	if (pointErr || !point) {
+		throw new Error(
+			`rangerModeleSurNoeudDuPoint: point ${pointId} introuvable: ${pointErr?.message}`
+		);
+	}
+	const { error } = await service
+		.from('question_templates')
+		.update({ classification_node_id: point.node_id })
+		.eq('id', templateId);
+	if (error) {
+		throw new Error(`rangerModeleSurNoeudDuPoint: rangement refusé: ${error.message}`);
+	}
+}
+
 /** Insert a single Family A (knowledge) skill_attempt via service role. */
 export async function insertKnowledgeAttempt(
 	service: SupabaseClient<Database>,
@@ -222,6 +269,7 @@ export async function insertKnowledgeAttempt(
 	// the skill from the template's tags. Tag the template with skillId first, then
 	// insert WITHOUT skill_id (chk_attempt_regime requires observable_id NULL when
 	// template_id is set).
+	await rangerModeleSurNoeudDuPoint(service, params.templateId, params.skillId);
 	const { error: tagErr } = await service
 		.from('question_template_points' as never)
 		.upsert({ template_id: params.templateId, point_id: params.skillId } as never, {
@@ -510,6 +558,7 @@ export async function tagTemplateWithSkill(
 	templateId: string,
 	skillId: string
 ): Promise<void> {
+	await rangerModeleSurNoeudDuPoint(service, templateId, skillId);
 	const { error } = await service
 		.from('question_template_points' as never)
 		.insert({ template_id: templateId, point_id: skillId } as never);

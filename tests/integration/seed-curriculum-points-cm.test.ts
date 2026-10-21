@@ -53,7 +53,6 @@ interface PointRow {
 	regime_acquisition: string;
 	rubrique: string | null;
 	node_id: string | null;
-	objective_id: string | null;
 	rang: number | null;
 }
 
@@ -123,7 +122,7 @@ describe('Seed des points CM1-CM2 (curriculum_points → classification_nodes)',
 			const { data, error } = await anon
 				.from('curriculum_points')
 				.select(
-					'code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, objective_id, rang'
+					'code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, rang'
 				)
 				.or('code.like.CM1-%,code.like.CM2-%')
 				.order('code')
@@ -186,10 +185,9 @@ describe('Seed des points CM1-CM2 (curriculum_points → classification_nodes)',
 		expect(pointRows).toHaveLength(329);
 	});
 
-	it('architecture cible : objective_id NULL et rang NULL sur tout le seed', () => {
+	it('architecture cible : rang NULL sur tout le seed', () => {
 		// Garde anti-vacuité : un every() sur une liste vide serait vert pour rien.
 		expect(pointRows.length).toBeGreaterThan(0);
-		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 	});
 

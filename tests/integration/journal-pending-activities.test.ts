@@ -12,7 +12,6 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
-import { present } from '../helpers/present';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -50,10 +49,6 @@ async function cleanup() {
 		.from('question_templates' as never)
 		.delete()
 		.contains('grades', [TEST_GRADE]);
-	await service
-		.from('curriculum_themes' as never)
-		.delete()
-		.eq('grade', TEST_GRADE);
 	// Points NEUFS puis nœuds (enfants d'abord : parent_id est en RESTRICT).
 	if (createdNodeIds.length > 0) {
 		// Tags d'exercice d'abord : tant qu'ils tiennent un point, la base refuse de retirer
@@ -106,30 +101,6 @@ async function makeNewPoint(): Promise<{ pointId: string; notionId: string }> {
 		.single();
 	if (pErr) throw new Error(`point neuf : ${pErr.message}`);
 	return { pointId: point.id, notionId: notion.id };
-}
-
-/** Un point de programme neuf, avec son thème et son item. */
-async function makePoint(): Promise<string> {
-	const { data: theme } = await service
-		.from('curriculum_themes')
-		.insert({ grade: TEST_GRADE, name: `T ${crypto.randomUUID().slice(0, 8)}` } as never)
-		.select('id')
-		.single();
-	const { data: item } = await service
-		.from('curriculum_objectives')
-		.insert({ theme_id: present(theme, 'theme').id, name: 'Item' } as never)
-		.select('id')
-		.single();
-	const { data: point } = await service
-		.from('curriculum_points')
-		.insert({
-			objective_id: present(item, 'item').id,
-			name: `P ${crypto.randomUUID().slice(0, 8)}`,
-			kind: 'savoir_faire'
-		} as never)
-		.select('id')
-		.single();
-	return present(point, 'point').id;
 }
 
 /** Une question publiée, taguée sur les points donnés. */
@@ -317,21 +288,6 @@ describe('Séance neuve — activités choisies avant enregistrement', () => {
 		const cov = await coverageOf(entryId!);
 		expect(cov.get(manuel)).toBe('manual');
 		expect(cov.get(auto)).toBe('auto');
-	});
-
-	it('n’écrit pas un ancien point coché à la main, mais garde les neufs (Q2, B2)', async () => {
-		const teacher = await TestData.profile().withRole('teacher').create();
-		const klass = (await TestData.class().create()) as { id: string };
-		const ancien = await makePoint();
-		const { pointId: neuf } = await makeNewPoint();
-
-		const { entryId } = await createEntry(teacher.id, klass.id, {
-			coveredPointIds: `${ancien},${neuf}`
-		});
-
-		const cov = await coverageOf(entryId!);
-		expect(cov.has(ancien)).toBe(false);
-		expect(cov.get(neuf)).toBe('manual');
 	});
 
 	it('crée la séance même sans activité', async () => {

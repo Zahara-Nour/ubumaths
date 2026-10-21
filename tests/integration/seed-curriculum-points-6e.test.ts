@@ -11,8 +11,7 @@
  *
  * La preuve est INTÉGRALE : chaque point de la fixture doit se retrouver en
  * base avec TOUS ses attributs (chemin du nœud compris), rien d'autre sous les
- * codes 6-1xx, ET l'ensemble exact des 28 références. L'ancien seed 2020
- * (6-001…6-095) doit rester INTACT (R5 = B). Lecture ANONYME (B6). Puis les scissions
+ * codes 6-1xx, ET l'ensemble exact des 28 références. (L'ancien seed 2020 est supprimé en étape 4.) Lecture ANONYME (B6). Puis les scissions
  * validées par David (migration `20261017090000_scission_points_programme`) : 8 points
  * scindés (+9), un point ⚙ « tiers » (6-211) → 111 points, 39 références ; fixture
  * transformée par docs/wip/arbre-notions/c5-scissions-generer.py.
@@ -52,7 +51,6 @@ interface PointRow {
 	regime_acquisition: string;
 	rubrique: string | null;
 	node_id: string | null;
-	objective_id: string | null;
 	rang: number | null;
 }
 
@@ -123,7 +121,7 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 			const { data, error } = await anon
 				.from('curriculum_points')
 				.select(
-					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, objective_id, rang'
+					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, rang'
 				)
 				.order('id')
 				.range(from, from + 999);
@@ -200,9 +198,8 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 		expect(actualCodes).toEqual([...fixture.references].sort());
 	});
 
-	it('architecture cible : objective_id NULL, rang NULL, fluence = les points d’Automatismes, kind algorithme = pensée informatique', () => {
+	it('architecture cible : rang NULL, fluence = les points d’Automatismes, kind algorithme = pensée informatique', () => {
 		expect(pointRows.length).toBeGreaterThan(0);
-		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 
 		const fluents = pointRows.filter((r) => r.regime_acquisition === 'fluence');
@@ -211,13 +208,6 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 
 		const algos = pointRows.filter((r) => r.kind === 'algorithme');
 		expect(algos.map((r) => r.code).sort()).toEqual(['6-194', '6-195', '6-196', '6-197', '6-210']);
-	});
-
-	it("l'ancien seed 6e (2020) est INTACT : 95 points 6-0xx, toujours rattachés aux objectifs", () => {
-		const anciens = [...pointsById.values()].filter((p) => /^6-0\d{2}$/.test(p.code));
-		expect(anciens).toHaveLength(95);
-		expect(anciens.every((p) => p.objective_id !== null)).toBe(true);
-		expect(anciens.every((p) => p.grade === null && p.node_id === null)).toBe(true);
 	});
 
 	it('passe « puces et points » (cycle 3) : 4 scissions, ordre d’affichage', () => {

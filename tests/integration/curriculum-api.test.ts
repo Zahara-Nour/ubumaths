@@ -57,8 +57,6 @@ beforeEach(async () => {
 });
 
 async function cleanup() {
-	// Anciens points : la cascade depuis le thème les emporte.
-	await service.from('curriculum_themes').delete().eq('grade', TEST_GRADE).like('name', 'TEST %');
 	if (createdNodeIds.length === 0) return;
 	await service.from('curriculum_points').delete().in('node_id', createdNodeIds);
 	// Enfants d'abord : parent_id est en RESTRICT.
@@ -113,30 +111,6 @@ async function svcNewPoint(
 		.single();
 	if (error) throw new Error(error.message);
 	return data;
-}
-
-/** Un point de l'ANCIENNE génération (thème → objectif → point). */
-async function svcOldPoint(): Promise<{ id: string; name: string; code: string }> {
-	const { data: theme, error: themeErr } = await service
-		.from('curriculum_themes')
-		.insert({ grade: TEST_GRADE, name: `TEST ${suffix()}` })
-		.select('id')
-		.single();
-	if (themeErr) throw new Error(themeErr.message);
-	const { data: objective, error: objErr } = await service
-		.from('curriculum_objectives')
-		.insert({ theme_id: theme.id, name: `Objectif ${suffix()}` })
-		.select('id')
-		.single();
-	if (objErr) throw new Error(objErr.message);
-	// `code` est attribué par le trigger pour un ancien point.
-	const { data: point, error: pointErr } = await service
-		.from('curriculum_points')
-		.insert({ objective_id: objective.id, name: 'Ancien point', kind: 'savoir_faire' } as never)
-		.select('id, name, code')
-		.single();
-	if (pointErr) throw new Error(pointErr.message);
-	return point as { id: string; name: string; code: string };
 }
 
 // ---------------------------------------------------------------------------
@@ -211,15 +185,6 @@ describe('getProgrammeTree — génération neuve', () => {
 		expect(tree[0].notions[0].points.map((p) => p.id)).toEqual([p4.id]);
 	});
 
-	it('n’affiche jamais un ancien point', async () => {
-		const old = await svcOldPoint();
-		const tree = await getProgrammeTree(service as never, TEST_GRADE, { includeArchived: true });
-
-		const ids = tree.flatMap((b) => b.notions.flatMap((n) => n.points.map((p) => p.id)));
-		expect(ids.length).toBeGreaterThan(0);
-		expect(ids).not.toContain(old.id);
-	});
-
 	it('exclut les archivés par défaut, les rend sur demande', async () => {
 		const branch = await svcNode('branch', 'TEST Archives', null, 9002);
 		const notion = await svcNode('notion', 'Notion', branch, 0);
@@ -280,18 +245,6 @@ describe('PATCH /points/[pointId] — génération neuve', () => {
 
 		expect((await patch(point.id, { archived: false }, locals)).status).toBe(200);
 		expect((await readPoint(point.id)).archived_at).toBeNull();
-	});
-
-	it('refuse 409 un ANCIEN point, sans rien écrire', async () => {
-		const old = await svcOldPoint();
-		const locals = buildLocals(await teacherUser());
-
-		const renamed = await patch(old.id, { name: 'Piraté' }, locals);
-		const archived = await patch(old.id, { archived: true }, locals);
-
-		expect(renamed.status).toBe(409);
-		expect(archived.status).toBe(409);
-		expect(await readPoint(old.id)).toMatchObject({ name: old.name, archived_at: null });
 	});
 
 	it('404 pour un point inconnu', async () => {

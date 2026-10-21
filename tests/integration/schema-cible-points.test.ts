@@ -5,7 +5,7 @@
  * Spécification : docs/wip/arbre-notions/schema-cible-spec.md (B1-B7 + C1-C27
  * validés par David le 2026-10-07). Migration `<horodatage>_schema_cible_points` :
  *   - `curriculum_points` : `node_id` (nœud de l'arbre), `grade`, `rubrique`,
- *     `objective_id` facultatif, `kind` étendu à `algorithme` ;
+ *     `kind` étendu à `algorithme` ;
  *   - `grade_predecessors` : parcours (prédécesseurs directs) + `grade_ancestors()` ;
  *   - `curriculum_point_automatismes` : contrainte de parcours (C13-C15, C21) ;
  *   - accès : lecture ANONYME des points, références et parcours (B6) ; écriture
@@ -48,7 +48,6 @@ interface PointInput {
 	kind?: string;
 	grade?: string | null;
 	node_id?: string | null;
-	objective_id?: string | null;
 	rubrique?: string | null;
 	regime_acquisition?: string;
 }
@@ -225,7 +224,7 @@ describe('Schéma cible (points → nœuds, références, parcours)', () => {
 	// A. Points de programme (C1-C3, C6-C9, C11)
 	// --------------------------------------------------------------------------
 	describe('points de programme', () => {
-		it('C1/C11 — un point neuf complet (nœud, grade, rubrique), SANS objectif, est accepté', async () => {
+		it('C1/C11 — un point neuf complet (nœud, grade, rubrique), est accepté', async () => {
 			const point = await seedPoint('p2', {
 				name: name('produit nul'),
 				code: nextCode(),
@@ -413,20 +412,12 @@ describe('Schéma cible (points → nœuds, références, parcours)', () => {
 				grade: 'T_TECHNO',
 				node_id: subnotionId
 			});
-			// Point « ancienne génération » : un objectif, ni grade ni nœud. Jamais ni l'un ni
-			// l'autre : la contrainte curriculum_points_one_generation (étape 2 de C5) l'interdit.
-			const objective = await service
-				.from('curriculum_objectives')
-				.select('id')
-				.limit(1)
-				.single<{ id: string }>();
-			if (objective.error || !objective.data) {
-				throw new Error(`décor : objectif : ${objective.error?.message}`);
-			}
-			await seedPoint('ancien', {
-				name: name('point ancien'),
+			// Point sans grade (rangé sur un nœud, mais hors de tout programme) : jamais référençable.
+			await seedPoint('sansGrade', {
+				name: name('point sans grade'),
 				code: nextCode(),
-				objective_id: objective.data.id
+				grade: null,
+				node_id: subnotionId
 			});
 		});
 
@@ -483,8 +474,8 @@ describe('Schéma cible (points → nœuds, références, parcours)', () => {
 			await service.from('curriculum_points').update({ grade: '2' }).eq('id', points.p2.id);
 		});
 
-		it('C4/C5 — un point sans grade (ancienne génération) ne peut pas être référencé (23514)', async () => {
-			const { error } = await insertReference(points.ancien.id, '1_SPE');
+		it('C4/C5 — un point sans grade ne peut pas être référencé (23514)', async () => {
+			const { error } = await insertReference(points.sansGrade.id, '1_SPE');
 			expect(error?.code).toBe('23514');
 		});
 	});

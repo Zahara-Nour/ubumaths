@@ -831,10 +831,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'non-personnel',
 		justification: 'compteurs de références d’un point du référentiel'
 	},
-	'curriculum_referenced_points(p_grade text)': {
-		categorie: 'non-personnel',
-		justification: 'identifiants de points du référentiel référencés'
-	},
 	'get_error_stats(p_hours integer)': {
 		categorie: 'non-personnel',
 		justification: 'agrégats des journaux d’erreurs : ni identifiant, ni message'

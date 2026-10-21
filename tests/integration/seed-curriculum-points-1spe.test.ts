@@ -15,7 +15,7 @@
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade '1_SPE', l'ensemble exact des
- * références, et l'ancien seed 1re spé (1SPE-001…1SPE-173, grade NULL) INTACT.
+ * références (l'ancien seed, supprimé en étape 4, n'est plus vérifié).
  * Lecture ANONYME (B6).
  *
  * @vitest-environment node
@@ -53,7 +53,6 @@ interface PointRow {
 	regime_acquisition: string;
 	rubrique: string | null;
 	node_id: string | null;
-	objective_id: string | null;
 	rang: number | null;
 }
 
@@ -128,7 +127,7 @@ describe('Seed des points de 1re spécialité (points + références d’automat
 			const { data, error } = await anon
 				.from('curriculum_points')
 				.select(
-					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, objective_id, rang'
+					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, rang'
 				)
 				.order('id')
 				.range(from, from + 999);
@@ -216,7 +215,6 @@ describe('Seed des points de 1re spécialité (points + références d’automat
 	});
 
 	it('décisions L1, L3 et E1 : kinds, exigences, régime', () => {
-		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 		expect(pointRows.every((r) => r.regime_acquisition === 'diversite')).toBe(true);
 
@@ -235,11 +233,5 @@ describe('Seed des points de 1re spécialité (points + références d’automat
 		expect(appro).toHaveLength(17);
 		expect(appro.every((r) => r.kind === 'savoir_faire')).toBe(true);
 		expect(pointRows.filter((r) => r.kind === 'demonstration')).toHaveLength(12);
-	});
-
-	it("l'ancien seed 1re spé (1SPE-001…1SPE-173) est INTACT : grade NULL, rattaché à ses objectifs", () => {
-		const anciens = allPoints.filter((p) => /^1SPE-(0\d\d|1[0-6]\d|17[0-3])$/.test(p.code));
-		expect(anciens).toHaveLength(173);
-		expect(anciens.every((p) => p.grade === null && p.objective_id !== null)).toBe(true);
 	});
 });
