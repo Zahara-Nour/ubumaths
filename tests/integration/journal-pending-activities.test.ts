@@ -56,6 +56,16 @@ async function cleanup() {
 		.eq('grade', TEST_GRADE);
 	// Points NEUFS puis nœuds (enfants d'abord : parent_id est en RESTRICT).
 	if (createdNodeIds.length > 0) {
+		// Tags d'exercice d'abord : tant qu'ils tiennent un point, la base refuse de retirer
+		// le rangement de l'exercice sur son nœud (règle 1), et le rangement resterait en base.
+		const { data: testPoints } = await service
+			.from('curriculum_points')
+			.select('id')
+			.in('node_id', createdNodeIds);
+		const testPointIds = (testPoints ?? []).map((p) => p.id);
+		if (testPointIds.length > 0) {
+			await service.from('exercise_curriculum_points').delete().in('point_id', testPointIds);
+		}
 		await service.from('exercise_classifications').delete().in('node_id', createdNodeIds);
 		await service.from('curriculum_points').delete().in('node_id', createdNodeIds);
 		for (const kind of ['notion', 'branch']) {

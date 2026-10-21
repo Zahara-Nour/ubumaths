@@ -1209,3 +1209,6 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   Security-auditor : 0 bloquant ni important ; commentaire des DELETE corrigé (« professeur et admin »).
   Intégration : 15 cas rouges (décors d'exercices sur d'ANCIENS points, qui assertaient l'ancien comportement) →
   passés sur des points neufs, l'exercice rangé sur leur nœud ; 67/67.
+  CI : `rangements-modeles-exercices` rouge (garde « rangements déjà présents ») — le nettoyage de
+  `journal-pending-activities` retirait les rangements AVANT les tags : la garde de la règle 1 les refusait, la
+  suppression des points emportait les tags en cascade, rangements et nœuds restaient. Tags d'abord ; 75/75 deux fois.
