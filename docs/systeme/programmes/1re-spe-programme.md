@@ -8,7 +8,7 @@ couvre:
 # Programme de suivi 1ʳᵉ spécialité maths — Thème → Objectif → Point (à relire)
 
 > **But** : **amorçage** du référentiel de programme (tables `curriculum_*`), grade `'1_SPE'`.
-> ⚠️ **Ce fichier ne fait plus foi** depuis le 2026-08-31 : il a amorcé l'ANCIENNE génération (thème → objectif → point), retirée de la page **Programme** à la C5, étape 3. Cette page (`/dashboard/teacher/programme`) affiche désormais en consultation les points **neufs** (ADR 0020), créés par les seeds `202610*_seed_curriculum_points_*` et les migrations : un point se corrige par migration, pas ici.
+> ⚠️ **Ce fichier ne fait plus foi** depuis le 2026-08-31 : il a amorcé l'ANCIENNE génération (thème → objectif → point), retirée de la page **Programme** à la C5, étape 3, puis supprimée de la base à l'étape 4 (`20261022080000_suppression_ancien_programme`) : les tables qu'il cite n'existent plus. Cette page (`/dashboard/teacher/programme`) affiche désormais en consultation les points **neufs** (ADR 0020), créés par les seeds `202610*_seed_curriculum_points_*` et les migrations : un point se corrige par migration, pas ici.
 > **Source** : « Programme de spécialité de mathématiques de la classe de première de la voie générale » — PDF fourni par David le 2026-08-29 (`Annexe – Programme d'enseignement de spécialité… -515408 (1).pdf`).
 > ⚠️ **Ce n'est PAS le programme de l'arrêté du 17 janvier 2019** que la spec Phase 0 mentionnait : c'est le programme en vigueur, qui introduit notamment une partie transversale **« Automatismes »**.
 >
