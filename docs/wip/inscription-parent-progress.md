@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, PR 2 prête (revues faites, corrigées)._
+_Mis à jour le 2026-10-21, après #1592._
 
-- **État** : PR 2 (`feat/inscription-parent-ecran`) : migration anti-squat + écran parent + case de consentement ; `code-reviewer` et `security-auditor` passés, findings corrigés (voir § PR 2). Pas en prod.
-- **Prochaine action** : PR ouverte → CI → merge → `db:migrate` (migration additive, 4 conditions réunies) ; puis PR 3 (mots de passe : parent par identifiant, prof, enfant) — rétablir alors dans le courriel et `/consent/[token]` la mention « réinitialiser le mot de passe ».
-- **En attente de David** : M2 (suffixe 2 chiffres = identifiants devinables), réglages Auth de prod (F1), plafond par classe (M1) — voir § PR 2.
-- **Pièges en cours** : GoTrue écrit `app_metadata` APRÈS l'INSERT → trigger de contrainte DIFFÉRÉ ; la règle commune donne 30 j de grâce à tout nouveau compte → retirés par le serveur pour un enfant inscrit par le parent (le constat de phase 0 « date fixe passée » était FAUX).
-- **Worktree / branche** : `../ubumaths-wt-inscription-parent` · `feat/inscription-parent-ecran`.
+- **État** : PR 1 (#1585) et **PR 2 (#1592) mergées** ; migration `20261021220000` **appliquée en prod** (`db:migrate`, trigger vérifié). Code pas en prod (attend un `deploy:prod`). Vérification manuelle notée.
+- **Prochaine action** : PR 3 — mots de passe (parent par identifiant → lien à l'adresse du parent, prof : mot de passe provisoire, enfant : « Changer mon mot de passe ») ; y rétablir dans le courriel et `/consent/[token]` la mention « réinitialiser le mot de passe ». Worktree à recréer : `feat/inscription-parent-mots-de-passe`.
+- **En attente de David** : M2 (suffixe 2 chiffres devinable : allonger ?), plafond par classe (M1 bis), réglages Auth de prod (F1) — détail § PR 2.
+- **Pièges en cours** : GoTrue écrit `app_metadata` APRÈS l'INSERT (trigger différé) ; la règle commune donne 30 j de grâce → retirés par `createChildAccount` ; reset d'un enfant : jamais vers `@eleves.chiph.re`.
+- **Worktree / branche** : aucun (celui de la PR 2 supprimé).
 
 ## Contexte
 
