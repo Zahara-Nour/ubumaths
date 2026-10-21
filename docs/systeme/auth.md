@@ -18,6 +18,7 @@ couvre:
   - src/lib/utils/session-cookies.ts
   - src/lib/server/validation/auth.ts
   - src/lib/utils/child-account.ts
+  - src/lib/server/child-registration.ts
   - src/lib/server/validation/admin-elevation.ts
   - src/lib/server/google/oauth.ts
   - src/lib/server/google/encryption.ts
@@ -65,29 +66,30 @@ Deux callbacks différents : `/auth/callback` (connexion Google) ≠ `/api/googl
 
 ## Carte du code
 
-| Fichier                                           | Rôle                                                                                                                                                                                                                                                                      |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/hooks.server.ts`                             | Chaîne des handles (ordre ci-dessous) ; `userProfileHandle`, `securityHeadersHandle` ; `csrfHandle` vit dans `src/lib/server/csrfHandle.ts`, `redirectHandle` dans `src/lib/server/redirectHandle.ts`.                                                                    |
-| `src/lib/server/supabase.ts`                      | Handle Supabase : `locals.supabase` (cookies SSR) et `locals.safeGetSession()`.                                                                                                                                                                                           |
-| `src/lib/server/auth.ts`                          | Pour les **pages** : `getUserProfile`, `requireAuth(user)` (redirige), `requireRole(profile, …)`, `hasRole`, `hasAnyRole`.                                                                                                                                                |
-| `src/lib/server/middleware/auth.ts`               | Pour les **API** : `requireAuth(locals)`, `requireRole`, `requireRoles`, `requireAdmin` ; types `UserRole`, `Profile`.                                                                                                                                                    |
-| `src/lib/server/adminElevation.ts`                | Élévation : cookie `ubu-admin-elevation`, `createAdminClient`, `createEphemeralAuthClient`, `adminElevationHandle`.                                                                                                                                                       |
-| `src/lib/server/serviceRoleClient.ts`             | `createServiceRoleClient()` — contourne la RLS ; liste `ALLOWED_SERVICE_ROLE_PATHS` (avertissement **en dev seulement**) ; ex. pièces jointes de la messagerie, signées après contrôle RLS ; style d'une fiche pour l'élève destinataire (`worksheet-styles.ts`, lot 4b). |
-| `src/lib/server/rateLimiter.ts`                   | Limites persistantes (RPC `check_and_increment_rate_limit`, table `rate_limits`) : login, inscription, reset, élévation, OAuth.                                                                                                                                           |
-| `src/lib/server/middleware/rateLimit.ts`          | Limiteur **en mémoire** (par instance), utilisé par quelques API (`account/delete`, `search`…).                                                                                                                                                                           |
-| `src/lib/server/validation/auth.ts`               | Zod : `loginFormSchema`, `registerFormSchema`, `requestPasswordResetSchema`, `updatePasswordSchema`…                                                                                                                                                                      |
-| `src/lib/server/passwordPolicy.ts`                | `validatePasswordPolicy`, appliquée par les schémas d'inscription et de changement de mot de passe.                                                                                                                                                                       |
-| `src/lib/utils/child-account.ts`                  | Compte d'un enfant inscrit par son parent : `CHILD_ACCOUNT_DOMAIN` (`eleves.chiph.re`), `normalizeLoginIdentifier` (identifiant → adresse fictive), `isChildAccountEmail` (garde des envois).                                                                             |
-| `src/lib/server/validateRedirectUrl.ts`           | Anti open-redirect pour les paramètres `next`.                                                                                                                                                                                                                            |
-| `src/lib/server/private-response.ts`              | `mustStayPrivate` / `PRIVATE_NO_STORE` : pas de cache partagé pour une réponse connectée ou qui pose un cookie.                                                                                                                                                           |
-| `src/lib/server/auth/cron.ts`                     | `verifyCronAuth(request)` : `Bearer <CRON_SECRET>` seul pour `/api/cron/*` (`x-vercel-cron`, falsifiable, n'ouvre plus rien).                                                                                                                                             |
-| `src/lib/server/auth/auth-error-fr.ts`            | `authErrorToFrench` : messages GoTrue traduits.                                                                                                                                                                                                                           |
-| `src/lib/server/middleware/consent.ts`            | `requireConsent(profile, action)` — voir [conformite/](conformite/).                                                                                                                                                                                                      |
-| `src/lib/server/middleware/student-access.ts`     | `verifyTeacherStudent`, `verifyTeacherStudentWithRole`.                                                                                                                                                                                                                   |
-| `src/lib/config/google-login.ts`                  | `GOOGLE_LOGIN_ENABLED = false`.                                                                                                                                                                                                                                           |
-| `src/lib/config/google-classroom.ts`              | `GOOGLE_CLASSROOM_ENABLED = false`.                                                                                                                                                                                                                                       |
-| `src/lib/server/google/oauth.ts`, `encryption.ts` | Classroom : `getAuthUrl`, `exchangeCodeForTokens`, `refreshAccessToken`, `revokeAccess` ; `encryptToken`/`decryptToken`.                                                                                                                                                  |
-| `src/app.d.ts`                                    | Type de `App.Locals` (`user`, `profile`, `supabase`, `safeGetSession`, `adminSupabase?`, `adminElevation?`).                                                                                                                                                              |
+| Fichier                                           | Rôle                                                                                                                                                                                                                                                                                |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/hooks.server.ts`                             | Chaîne des handles (ordre ci-dessous) ; `userProfileHandle`, `securityHeadersHandle` ; `csrfHandle` vit dans `src/lib/server/csrfHandle.ts`, `redirectHandle` dans `src/lib/server/redirectHandle.ts`.                                                                              |
+| `src/lib/server/supabase.ts`                      | Handle Supabase : `locals.supabase` (cookies SSR) et `locals.safeGetSession()`.                                                                                                                                                                                                     |
+| `src/lib/server/auth.ts`                          | Pour les **pages** : `getUserProfile`, `requireAuth(user)` (redirige), `requireRole(profile, …)`, `hasRole`, `hasAnyRole`.                                                                                                                                                          |
+| `src/lib/server/middleware/auth.ts`               | Pour les **API** : `requireAuth(locals)`, `requireRole`, `requireRoles`, `requireAdmin` ; types `UserRole`, `Profile`.                                                                                                                                                              |
+| `src/lib/server/adminElevation.ts`                | Élévation : cookie `ubu-admin-elevation`, `createAdminClient`, `createEphemeralAuthClient`, `adminElevationHandle`.                                                                                                                                                                 |
+| `src/lib/server/serviceRoleClient.ts`             | `createServiceRoleClient()` — contourne la RLS ; liste `ALLOWED_SERVICE_ROLE_PATHS` (avertissement **en dev seulement**) ; ex. pièces jointes de la messagerie, signées après contrôle RLS ; style d'une fiche pour l'élève destinataire (`worksheet-styles.ts`, lot 4b).           |
+| `src/lib/server/rateLimiter.ts`                   | Limites persistantes (RPC `check_and_increment_rate_limit`, table `rate_limits`) : login, inscription, reset, élévation, OAuth.                                                                                                                                                     |
+| `src/lib/server/middleware/rateLimit.ts`          | Limiteur **en mémoire** (par instance), utilisé par quelques API (`account/delete`, `search`…).                                                                                                                                                                                     |
+| `src/lib/server/validation/auth.ts`               | Zod : `loginFormSchema`, `registerFormSchema`, `requestPasswordResetSchema`, `updatePasswordSchema`…                                                                                                                                                                                |
+| `src/lib/server/passwordPolicy.ts`                | `validatePasswordPolicy`, appliquée par les schémas d'inscription et de changement de mot de passe.                                                                                                                                                                                 |
+| `src/lib/utils/child-account.ts`                  | Compte d'un enfant inscrit par son parent : `CHILD_ACCOUNT_DOMAIN` (`eleves.chiph.re`), `normalizeLoginIdentifier` (identifiant → adresse fictive), `isChildAccountEmail` (garde des envois), `childLoginBase` / `pickChildLoginId` / `childAccountEmail` (choix de l'identifiant). |
+| `src/lib/server/child-registration.ts`            | Inscription par le parent : `createChildAccount` (clé service, marque `child_account`), `createParentRequest` / `markParentEmailSent` (demande `parental_consents`), `deleteChildAccount`.                                                                                          |
+| `src/lib/server/validateRedirectUrl.ts`           | Anti open-redirect pour les paramètres `next`.                                                                                                                                                                                                                                      |
+| `src/lib/server/private-response.ts`              | `mustStayPrivate` / `PRIVATE_NO_STORE` : pas de cache partagé pour une réponse connectée ou qui pose un cookie.                                                                                                                                                                     |
+| `src/lib/server/auth/cron.ts`                     | `verifyCronAuth(request)` : `Bearer <CRON_SECRET>` seul pour `/api/cron/*` (`x-vercel-cron`, falsifiable, n'ouvre plus rien).                                                                                                                                                       |
+| `src/lib/server/auth/auth-error-fr.ts`            | `authErrorToFrench` : messages GoTrue traduits.                                                                                                                                                                                                                                     |
+| `src/lib/server/middleware/consent.ts`            | `requireConsent(profile, action)` — voir [conformite/](conformite/).                                                                                                                                                                                                                |
+| `src/lib/server/middleware/student-access.ts`     | `verifyTeacherStudent`, `verifyTeacherStudentWithRole`.                                                                                                                                                                                                                             |
+| `src/lib/config/google-login.ts`                  | `GOOGLE_LOGIN_ENABLED = false`.                                                                                                                                                                                                                                                     |
+| `src/lib/config/google-classroom.ts`              | `GOOGLE_CLASSROOM_ENABLED = false`.                                                                                                                                                                                                                                                 |
+| `src/lib/server/google/oauth.ts`, `encryption.ts` | Classroom : `getAuthUrl`, `exchangeCodeForTokens`, `refreshAccessToken`, `revokeAccess` ; `encryptToken`/`decryptToken`.                                                                                                                                                            |
+| `src/app.d.ts`                                    | Type de `App.Locals` (`user`, `profile`, `supabase`, `safeGetSession`, `adminSupabase?`, `adminElevation?`).                                                                                                                                                                        |
 
 Routes :
 
@@ -95,6 +97,7 @@ Routes :
 | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `(public)/auth/login`                                           | Actions `login` (e-mail + mot de passe) et `googleSignIn` (refusée : drapeau à `false`).                                                                                                                                                    |
 | `(public)/auth/register`                                        | Inscription autonome d'un élève par **code de classe**.                                                                                                                                                                                     |
+| `(public)/auth/register/parent`                                 | « J'inscris mon enfant » : le parent crée le compte d'un enfant sans adresse (identifiant).                                                                                                                                                 |
 | `(public)/auth/confirm`                                         | Lien e-mail (`verifyOtp`) : confirmation d'inscription, `recovery` → `/auth/update-password`.                                                                                                                                               |
 | `(public)/auth/callback`                                        | Retour de la connexion Google (refusé tant que `GOOGLE_LOGIN_ENABLED` est `false`).                                                                                                                                                         |
 | `(public)/auth/reset-password`, `update-password`               | Mot de passe oublié / nouveau mot de passe.                                                                                                                                                                                                 |
@@ -175,9 +178,16 @@ domaine ne reçoit rien : il est **absent du DNS** (NXDOMAIN, vérifié le 2026-
 enregistrement « null MX » (`MX 0 .`) chez OVH est une précaution **facultative** (David,
 2026-10-21) : il ne servirait que si un futur joker `*.chiph.re` faisait exister le domaine. **Aucun courriel ne part vers ce domaine** : `sendEmail` (Brevo, donc
 bienvenue et consentement) le refuse, `/auth/reset-password` ne le transmet pas à GoTrue,
-`/auth/register` refuse une telle adresse. Reste ouvert : un appel direct à l'API GoTrue
-(`/auth/v1/signup`, `/auth/v1/recover`) passe à côté de ces gardes — à fermer côté base avec la
-création des comptes d'enfants. Chantier : [inscription-parent](../wip/inscription-parent-progress.md).
+`/auth/register` refuse une telle adresse.
+
+**La base réserve le domaine au serveur** (`20261021220000_domaine_fictif_reserve_au_serveur`) :
+le trigger de contrainte `guard_child_account_domain_trg` sur `auth.users` refuse toute adresse
+`@eleves.chiph.re` sans `app_metadata.child_account = true`, marque que seule la clé service
+pose. Un `signUp` GoTrue direct ne peut donc pas squatter un identifiant. Il est **différé**
+(vérifié au commit) : GoTrue insère le compte puis écrit ses `app_metadata` par un UPDATE dans
+la même transaction, qu'un trigger BEFORE INSERT ne verrait pas. Un `/auth/v1/recover` direct sur
+une adresse fictive ne part nulle part (domaine absent du DNS). Chantier :
+[inscription-parent](../wip/inscription-parent-progress.md).
 
 ## Profils, statuts et création de compte
 
@@ -237,6 +247,25 @@ Zod (`registerFormSchema`, politique de mot de passe, CGU obligatoires) → limi
 `firstname`, `lastname`, `terms_version` → réponse neutre « vérifie ta boîte mail ».
 **Prérequis de configuration Supabase** : « Confirm email » activé ; sinon `signUp` rend une
 session et l'action redirige vers `/dashboard`.
+
+### Inscription par le parent (`/auth/register/parent`)
+
+Pour un enfant sans adresse. Le parent donne code de classe, prénom de l'enfant (seul :
+minimisation), mot de passe de l'enfant, son adresse et les CGU (`parentRegisterFormSchema`).
+Limite par IP → code vérifié par `resolve_open_class_by_code` avant toute création → plafond par
+adresse du parent (`checkChildSignupRateLimitByParentEmail`, 5 / 24 h, **fermé** en cas de panne,
+clé `mailboxKey` : sans `+tag` ni points Gmail ; compté après le code, qu'un code mal tapé ne
+consomme pas) → `createChildAccount` :
+identifiant `prenom` + 2 chiffres au hasard (3 si les 100 sont pris), compte créé par
+`auth.admin.createUser` (adresse fictive confirmée d'office, `app_metadata.child_account`), profil
+créé par `handle_new_user` comme pour l'élève seul (une classe fermée entre-temps → compte
+supprimé). Le serveur retire ensuite le délai de grâce que la règle commune donne à tout nouveau
+compte (30 jours d'accès complet) : **lecture seule jusqu'au clic du parent** (Q2). Le prénom
+n'admet que lettres, espaces, tirets et apostrophes (il part dans le sujet du courriel). Puis une demande `parental_consents` en attente pour l'adresse du parent (sans elle,
+l'inscription est annulée) et **un seul courriel** (`sendChildRegistrationEmail`) : identifiant +
+lien `/consent/[token]`. Le lien recueille le consentement (case explicite) ou, en 1re/Tle,
+confirme seulement l'adresse. Courriel en échec : le compte reste, l'écran le dit, le prof renvoie
+le lien. L'écran final affiche l'identifiant. Le parent n'a **aucun compte**.
 
 Côté prof : la page des classes affiche le code (`regenerateJoinCode`) et ouvre/ferme les
 inscriptions (`toggleRegistration`).
@@ -384,7 +413,8 @@ d'intégration obligatoires, et relire [rls-echecs-silencieux](../pratiques/rls-
 | `src/lib/server/__tests__/csrfHandle.test.ts`, `private-response.test.ts`, `validateRedirectUrl.test.ts`, `rateLimiter.test.ts`                                                         | Défenses transverses.                                                                                        |
 | `src/lib/server/auth/__tests__/cron.test.ts`, `auth-error-fr.test.ts`                                                                                                                   | Secret cron, messages traduits.                                                                              |
 | `src/routes/(public)/auth/{login,reset-password,update-password}/__tests__/`                                                                                                            | Formulaires publics ; connexion par identifiant (`login-identifiant.test.ts`).                               |
-| `src/lib/utils/__tests__/child-account.test.ts`, `src/lib/server/email/__tests__/brevo-domaine-fictif.test.ts`                                                                          | Identifiant → adresse fictive ; aucun envoi vers le domaine fictif.                                          |
+| `src/lib/utils/__tests__/child-account.test.ts`, `src/lib/server/email/__tests__/brevo-domaine-fictif.test.ts`                                                                          | Identifiant → adresse fictive, choix de l'identifiant ; aucun envoi vers le domaine fictif.                  |
+| `src/routes/(public)/auth/register/parent/__tests__/`, `tests/integration/inscription-par-le-parent.test.ts`, `tests/integration/domaine-fictif-reserve-au-serveur.test.ts`             | Inscription par le parent ; domaine fictif réservé au serveur.                                               |
 | `src/routes/__tests__/login-redirect.test.ts`                                                                                                                                           | `/login` → `/auth/login`.                                                                                    |
 | `tests/integration/admin-elevation.test.ts`                                                                                                                                             | Le client admin agit bien en tant qu'admin sous RLS.                                                         |
 | `tests/integration/student-self-registration.test.ts`, `security-signup-anchor.test.ts`                                                                                                 | `handle_new_user`, code de classe.                                                                           |

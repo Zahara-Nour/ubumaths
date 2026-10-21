@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1585._
+_Mis à jour le 2026-10-21, PR 2 prête (revues faites, corrigées)._
 
-- **État** : phase 0 validée (Q1-Q6 : David suit mes recommandations). **PR 1 mergée (#1585)** : connexion par identifiant (`src/lib/utils/child-account.ts`), aucun courriel vers `@eleves.chiph.re`. Pas en prod.
-- **Prochaine action** : PR 2 — écran « J'inscris mon enfant » + lien unique au parent (phase 0 ci-dessous, § « J'inscris mon enfant »). Worktree à recréer : `feat/inscription-parent-ecran`.
-- **En attente de David** : rien. (Null MX chez OVH : **facultatif**, décidé le 2026-10-21 — le domaine absent du DNS suffit.)
-- **Pièges en cours** : compte de l'enfant créé côté serveur (`auth.admin.createUser`, confirmé), jamais `signUp` ; **fermer côté base** un `signUp` GoTrue direct sur `@eleves.chiph.re` (squat d'identifiant, audit PR 1) ; identifiant généré par la même normalisation que la connexion (`normalizeLoginIdentifier`) et unicité sur la forme repliée ; question d'accès avant tout SQL ; tests d'intégration + `code-reviewer` + `security-auditor`.
-- **Worktree / branche** : aucun (celui de la PR 1 supprimé).
+- **État** : PR 2 (`feat/inscription-parent-ecran`) : migration anti-squat + écran parent + case de consentement ; `code-reviewer` et `security-auditor` passés, findings corrigés (voir § PR 2). Pas en prod.
+- **Prochaine action** : PR ouverte → CI → merge → `db:migrate` (migration additive, 4 conditions réunies) ; puis PR 3 (mots de passe : parent par identifiant, prof, enfant) — rétablir alors dans le courriel et `/consent/[token]` la mention « réinitialiser le mot de passe ».
+- **En attente de David** : M2 (suffixe 2 chiffres = identifiants devinables), réglages Auth de prod (F1), plafond par classe (M1) — voir § PR 2.
+- **Pièges en cours** : GoTrue écrit `app_metadata` APRÈS l'INSERT → trigger de contrainte DIFFÉRÉ ; la règle commune donne 30 j de grâce à tout nouveau compte → retirés par le serveur pour un enfant inscrit par le parent (le constat de phase 0 « date fixe passée » était FAUX).
+- **Worktree / branche** : `../ubumaths-wt-inscription-parent` · `feat/inscription-parent-ecran`.
 
 ## Contexte
 
@@ -51,7 +51,7 @@ aujourd'hui la seule connexion est courriel + mot de passe (Google désactivé).
 - `signUp` + confirmation obligatoire en prod → un compte à fausse adresse ne serait jamais confirmé. Le compte de l'enfant doit être créé **côté serveur** (`auth.admin.createUser`, adresse marquée confirmée), le trigger `handle_new_user` restant le seul créateur du profil (code de classe → `approved`, classe, niveau, CGU).
 - Aucune réinitialisation de mot de passe par le prof n'existe. `/auth/update-password` marche pour toute session, mais aucun lien n'y mène depuis les réglages.
 - Courriels qui partent vers l'adresse d'un élève : bienvenue (`api/teacher/send-welcome-email`, page `teacher/welcome-email`), confirmation et réinitialisation (GoTrue).
-- Une classe de 6e → `consent_required` ; la période de grâce (date fixe 2026-06-30) est passée → **lecture seule** jusqu'au consentement.
+- Une classe de 6e → `consent_required` ; ~~la période de grâce (date fixe 2026-06-30) est passée~~ **FAUX** (2026-10-21) : tout nouveau compte reçoit 30 jours de grâce (`apply_consent_rule_by_grade`) ; David a confirmé la lecture seule → le serveur retire la grâce.
 
 ### Écran « J'inscris mon enfant » (`/auth/register/parent`, lien depuis `/auth/register`)
 
@@ -148,3 +148,34 @@ par adresse de parent et par 24 h · Q6 adresse du parent lue par le prof et l'a
   bloquant ; Moyen 1 — `signUp` GoTrue direct → PR 2 ; Faible 2 — null MX absent → facultatif (David, 2026-10-21) ;
   Faible 3 — même normalisation à la création → PR 2). Mesure prod : 83 comptes, aucune adresse
   en majuscules → personne ne perd sa connexion.
+
+## PR 2 — écran « J'inscris mon enfant » (2026-10-21)
+
+Décisions de David (2026-10-21) :
+
+- **Migration anti-squat** : trigger sur `auth.users` refusant `@eleves.chiph.re` sans
+  `app_metadata.child_account = true`. Question d'accès : personne ne gagne de lecture ;
+  personne ne perd rien (0 compte sur ce domaine en prod, mesuré).
+- **1re/Tle (Q4)** : même table `parental_consents`, le clic « Je confirme mon adresse »
+  passe la ligne à `granted` (preuve = date, IP, navigateur ; pas de case).
+
+Constat : GoTrue insère la ligne d'`auth.users` puis écrit ses `app_metadata` par un UPDATE
+dans la même transaction → trigger de contrainte `deferrable initially deferred`, relisant
+la ligne au commit. Rouge prouvé sans la migration (3 tests sur 5), vert avec.
+
+Revues (2026-10-21) :
+
+- `code-reviewer` : lien expiré plus marqué `expired` (corrigé : `grant_parental_consent` répond) ;
+  plafond parent consommé avant le code (corrigé : compté après) ; courriel promettait la
+  réinitialisation par le parent (retiré jusqu'à la PR 3) ; `weak_password` GoTrue → erreur sur le
+  champ ; exceptions après création (corrigé) ; écran de réussite en 1re/Tle (corrigé).
+- `security-auditor` : **B1** 30 jours d'accès complet avant le clic (constat de phase 0 faux) →
+  David : lecture seule (2026-10-21), grâce retirée par le serveur, test rouge puis vert.
+  **M1** clé du plafond contournable (`+tag`, points Gmail) → `mailboxKey`, limite fermée en panne,
+  prénom restreint aux lettres. **Restent pour David** : M1 bis — un plafond par classe (code fuité
+  = comptes à volonté, 40/h par IP) ; **M2** — identifiant `prenom` + 2 chiffres devinable (100
+  candidats par prénom), pulvérisation de mots de passe par GoTrue direct : allonger le suffixe ?
+  vérifier la limite de connexion GoTrue de prod ; **F1** — vérifier « Secure email change » et la
+  confirmation d'adresse dans le Dashboard de prod ; **F2** — `profiles.email` modifiable par son
+  propriétaire (préexistant). F3 (1re/Tle = `granted`) : décision prise. F4 : documenté dans
+  `rgpd.md`. F5 : oracle de code identique à `/auth/register`.

@@ -4,6 +4,7 @@ couvre:
   - src/lib/stores/consent.svelte.ts
   - src/lib/server/middleware/consent.ts
   - src/lib/email-templates/parental-consent.ts
+  - src/lib/email-templates/child-registration.ts
   - 'src/lib/server/email/**'
   - 'src/lib/components/{ConsentBanner,ConsentButton}.svelte'
   - 'src/routes/(public)/consent/**'
@@ -234,6 +235,11 @@ Migration `20261014110000_lecture_seule_garde_base` :
    - Displays student info (name, grade, school, teacher)
    - Shows RGPD explanation
    - "J'autorise l'acces" button to grant consent
+   - **Case explicite obligatoire** (« Je suis le parent ou le responsable légal… »), exigée aussi
+     par l'action serveur (`CONSENT_UNCHECKED`) pour un niveau soumis au consentement (2026-10-21,
+     inscription par le parent). En 1re/Tle, pas de case : le bouton « Je confirme mon adresse »
+     confirme l'adresse du parent, et la ligne passe aussi à `granted` (décision de David,
+     2026-10-21 : même table, pas de colonne « type »).
    - Error states for expired/invalid tokens
 
 5. `src/routes/(public)/consent/success/+page.svelte`

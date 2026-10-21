@@ -10,6 +10,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createServerLogger } from '$lib/utils/logger';
+import { requiresParentalConsent } from '$lib/utils/consent';
 
 const logger = createServerLogger('(public)/consent/[token]/+page.server');
 
@@ -84,6 +85,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		schoolName: validatedData.school_name,
 		parentEmail: validatedData.parent_email,
 		expiresAt: validatedData.expires_at,
+		// 1re/Tle (inscription par le parent, Q4) : le lien confirme seulement l'adresse.
+		consentRequired: requiresParentalConsent(validatedData.student.grade),
 		token
 	};
 };
@@ -111,6 +114,31 @@ export const actions: Actions = {
 		}
 
 		const token = tokenValidation.data;
+		const service = createServiceRoleClient();
+
+		// Niveau de l'élève : la case explicite n'est exigée que s'il est soumis au
+		// consentement (décision 3) ; en 1re/Tle, le clic confirme seulement l'adresse.
+		const { data: info, error: infoError } = await service.rpc('get_consent_info', {
+			p_token: token
+		});
+		const infoValidation = consentInfoSchema.safeParse(info);
+		if (infoError || !infoValidation.success) {
+			logger.error('[consent grant] Consent info error:', infoError ?? infoValidation.error);
+			return fail(500, { error: 'Erreur serveur. Réessayer.' });
+		}
+		// Lien invalide, expiré ou déjà utilisé : on laisse grant_parental_consent répondre,
+		// c'est elle qui passe une demande expirée à « expired » (vu par le prof).
+		const formData = await request.formData();
+		if (
+			infoValidation.data.success &&
+			requiresParentalConsent(infoValidation.data.student.grade) &&
+			formData.get('consent') !== 'true'
+		) {
+			return fail(400, {
+				error: 'CONSENT_UNCHECKED',
+				message: 'Cochez la case pour donner votre consentement.'
+			});
+		}
 
 		// Get client IP and user agent for audit
 		let clientIp: string | null = null;
@@ -126,7 +154,7 @@ export const actions: Actions = {
 		// par anon / authenticated, sinon n'importe qui détenant le lien pouvait l'appeler
 		// directement et inscrire une IP et un navigateur de son choix comme preuve RGPD.
 		// Ici, l'IP et le navigateur viennent de la requête reçue par le serveur.
-		const { data, error: dbError } = await createServiceRoleClient().rpc('grant_parental_consent', {
+		const { data, error: dbError } = await service.rpc('grant_parental_consent', {
 			p_token: token,
 			// L'IP peut manquer derrière certains proxys : le paramètre est
 			// `DEFAULT NULL` côté SQL, donc optionnel dans les types générés.

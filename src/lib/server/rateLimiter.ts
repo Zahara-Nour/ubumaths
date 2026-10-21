@@ -635,6 +635,52 @@ export async function checkSignupRateLimitByEmail(email: string): Promise<RateLi
 }
 
 /**
+ * Une boîte aux lettres, une clé : `Victime+1@gmail.com` et `v.i.c.t.i.m.e@googlemail.com`
+ * arrivent dans la même boîte et ne doivent pas avoir chacun leur compteur (audit PR 2, M1).
+ * Retire le `+tag` partout, et les points chez Gmail.
+ */
+export function mailboxKey(email: string): string {
+	const [local = '', domain = ''] = email.trim().toLowerCase().split('@');
+	const untagged = local.split('+')[0];
+	const isGmail = domain === 'gmail.com' || domain === 'googlemail.com';
+	return `${isGmail ? untagged.replace(/\./g, '') : untagged}@${isGmail ? 'gmail.com' : domain}`;
+}
+
+/**
+ * Comptes d'enfants créés par un même parent (écran « J'inscris mon enfant »).
+ *
+ * Plafond décidé par David (Q5, 2026-10-21) : 5 comptes par adresse de parent et par
+ * 24 h — une fratrie passe, une création en masse non. S'ajoute à la limite par IP
+ * ({@link checkSignupRateLimitByIP}).
+ */
+export async function checkChildSignupRateLimitByParentEmail(
+	parentEmail: string
+): Promise<RateLimitResult> {
+	if (!parentEmail) {
+		logger.warn('Missing parent email for child signup rate limit check');
+		return { allowed: true }; // Fail open
+	}
+
+	const key = `ratelimit:signup:parent:${mailboxKey(parentEmail)}`;
+
+	// Fermé en cas de panne : la limite protège une création de compte ET un envoi de
+	// courriel vers une adresse que personne n'a vérifiée.
+	const result = await checkRateLimitWithMessage(
+		key,
+		5,
+		86400, // 24 heures
+		"Trop d'inscriptions pour cette adresse aujourd'hui. Réessayer demain.",
+		true
+	);
+
+	if (!result.allowed) {
+		logger.warn('Child signup rate limit exceeded by parent email', { email: maskKey(key) });
+	}
+
+	return result;
+}
+
+/**
  * Check password-reset rate limit by email (finding H7).
  *
  * Prevents email-bombing a specific address and exhausting the Brevo quota

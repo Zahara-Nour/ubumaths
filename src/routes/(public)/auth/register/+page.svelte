@@ -191,6 +191,13 @@
 				</form>
 
 				<p class="text-center text-sm text-muted-foreground">
+					Parent d'un enfant sans adresse email ?
+					<a href={resolve('/auth/register/parent')} class="text-primary hover:underline"
+						>J'inscris mon enfant</a
+					>
+				</p>
+
+				<p class="text-center text-sm text-muted-foreground">
 					Déjà un compte ?
 					<a href={resolve('/auth/login')} class="text-primary hover:underline">Se connecter</a>
 				</p>
