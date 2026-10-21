@@ -12,7 +12,8 @@ couvre:
 > passe par les pièces ci-dessous, jamais par une nouvelle à côté. Écrire une grandeur dans un
 > énoncé (la notation pour l'auteur) : [notation-unites.md](../pratiques/notation-unites.md).
 > Décision : [ADR 0026](../adr/0026-grandeurs-un-contrat-et-l-espace.md). Vérifié contre le code
-> le 2026-10-21 (calcul écrit dans une case à unité, correction-cases-unite PR 2 bis).
+> le 2026-10-21 (fin du chantier correction-cases-unite, #1543 → #1574,
+> [journal archivé](../archive/wip/correction-cases-unite-progress.md)).
 
 ## Pourquoi un contrat
 
@@ -138,7 +139,7 @@ grandeur à l'antislash du texte perdait l'unité (`5[km]` → « 5 ») et écri
 unités de base **sans le coefficient** (km/h → « m/s ») : ce n'est pas une écriture de grandeur.
 C'est la cause du bug « 10 m/s ».
 
-## La correction des cases à unité — un troisième calculateur, connu
+## La correction des cases à unité — un troisième calculateur, rapproché de `tidy`
 
 `questions/units/validator.ts` (`validateQuantityAnswer`) et `quantity-comparison.ts`
 (`compareQuantities`) corrigent les réponses des élèves dans les cases à unité : conversions,
@@ -152,8 +153,9 @@ base par les conversions exactes de mathAST (`exactConversion`, coefficient et d
 températures comprises), aucun bruit de flottants toléré — `0,333333333333333` m n'est pas
 `\frac{1}{3}` m. Une unité lisible sans conversion exacte est refusée, jamais jugée en flottants
 (test d'invariant : il n'y en a aucune). Tolérance et arrondi demandés (`precision`) se jugent
-encore en flottants (`convertAffine`). L'unité est lue à part (`\unit{…}` + parseur d'unités) :
-c'est un calculateur hors du circuit ci-dessus, chantier `correction-cases-unite`. Le catalogue des unités et les opérations de base viennent de `mathAST/units`
+encore en flottants (`convertAffine`) ; aucun modèle publié n'en demande (octobre 2026). L'unité
+est lue à part (`\unit{…}` + parseur d'unités) : c'est un calculateur hors du circuit ci-dessus,
+mais valeur et égalité suivent désormais `tidy` (rationnels exacts). Le catalogue des unités et les opérations de base viennent de `mathAST/units`
 (`resolveUnit`, conversions) : `questions/units` n'en garde plus de copie depuis le lot D.
 
 Garde-fou : l'oracle `oracle-cases-unite.test.ts` fige le verdict de ~1 700 réponses typiques
@@ -172,6 +174,12 @@ imposée). La forme se juge sur la partie numérique, la saisie sans ses unités
 plus) : un calcul non effectué est `bad_form`. Une écriture d'unité ambiguë (`kg/m.s`) et une durée
 composée ne passent pas par cette lecture. Limite : un calcul à deux unités avec unité imposée
 (`3 h + 30 min`, `min` imposée) reçoit le message d'unité imposée (la grandeur réduite est en h).
+
+Messages : une réponse fausse dans une case à unité ne montre que les messages où **l'unité** est
+en cause (unité manquante, autre grandeur, unité imposée, mélange de grandeurs) ; une valeur fausse
+ou illisible (`7 m` pour 6 m, `2\times3\,m` pour 7 m, `2\sqrt{2}\,m`, `3x\,m`) reçoit le message
+général de la case, pas « Valeur incorrecte. ». Les messages d'unité ont été validés par David :
+ne pas les reformuler sans lui.
 
 Le refus de grandeur (« Cette unité ne mesure pas la bonne grandeur. ») n'ajoute « Pour un produit
 d'unités, écris m·s. » que si les lettres collées de l'élève, lues comme un produit, mesurent la

@@ -47,6 +47,7 @@ Le contrat détaillé, avec les fonctions à appeler : [docs/systeme/grandeurs.m
   (`singleLetterHint`).
 - La correction des cases à unité (`questions/units/validator.ts`, `quantity-comparison.ts` :
   valeur lue en arbre par mathAST, égalité exacte par les conversions exactes de mathAST — pas de
-  ComputeEngine, contrairement à ce que disait cette ligne) reste un calculateur à part : la
-  rapprocher de `tidy` est le chantier `correction-cases-unite`, avec un oracle sur les vraies
-  questions (la production ne garde pas les réponses d'élèves).
+  ComputeEngine, contrairement à ce que disait cette ligne) reste un calculateur à part, rapproché
+  de `tidy` par le chantier `correction-cases-unite` (clos le 2026-10-21, #1543 → #1574,
+  [journal archivé](../archive/wip/correction-cases-unite-progress.md)), avec un oracle sur les
+  vraies questions (la production ne garde pas les réponses d'élèves).
