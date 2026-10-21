@@ -34,9 +34,9 @@
 -- la migration (empreinte md5), pour ne pas écraser une modification faite depuis dans
 -- l'éditeur. Bloc éprouvé par le test d'intégration, à jouer dans une transaction :
 -- ROLLBACK:BEGIN
--- Modèles neufs des scissions : le rollback les SUPPRIME. Il refuse si l'un d'eux a été
--- retouché depuis la migration ou porte une donnée d'élève (la suppression emporterait en
--- cascade cartes SRS et activités de journal).
+-- -- Modèles neufs des scissions : le rollback les SUPPRIME. Il refuse si l'un d'eux a été
+-- -- retouché depuis la migration ou porte une donnée d'élève (la suppression emporterait en
+-- -- cascade cartes SRS et activités de journal).
 -- do $retour_neufs$
 -- declare v_intacts integer; v_eleves integer;
 -- begin
@@ -248,7 +248,7 @@ begin
 	 where jsonb_build_object('title', q.title, 'description', q.description, 'variations', q.variations, 'shared', q.shared, 'test_specs', q.test_specs, 'options', q.options) = n.contenu;
 	select count(*) into v_neufs_tags from _l2d_resolus_neufs x
 	  join public.question_template_points q on q.template_id = x.id and q.point_id = x.point_id;
-	if v_neufs <> case when v_presents = 0 then 0 else 3 end or v_neufs_tags <> v_neufs then
+	if v_neufs <> least(v_presents, 1) * 3 or v_neufs_tags <> v_neufs then
 		raise exception 'modèles neufs incohérents : contenus %, tags %', v_neufs, v_neufs_tags;
 	end if;
 end $check$;

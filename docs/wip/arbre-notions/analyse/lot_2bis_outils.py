@@ -206,9 +206,9 @@ def ecrire_migration(lot: list[dict], migration: str, prefixe: str, entete: str,
     if neufs:
         liste_neufs = ', '.join(f"'{x['id']}'" for x in neufs)
         rb_neufs = [
-            "-- Modèles neufs des scissions : le rollback les SUPPRIME. Il refuse si l'un d'eux a été",
-            "-- retouché depuis la migration ou porte une donnée d'élève (la suppression emporterait en",
-            "-- cascade cartes SRS et activités de journal).",
+            "-- -- Modèles neufs des scissions : le rollback les SUPPRIME. Il refuse si l'un d'eux a été",
+            "-- -- retouché depuis la migration ou porte une donnée d'élève (la suppression emporterait en",
+            "-- -- cascade cartes SRS et activités de journal).",
             "-- do $retour_neufs$",
             "-- declare v_intacts integer; v_eleves integer;",
             "-- begin",
@@ -462,7 +462,7 @@ select x.id, x.point_id
 	 where {empreinte} = n.contenu;
 	select count(*) into v_neufs_tags from {tmp}_resolus_neufs x
 	  join public.question_template_points q on q.template_id = x.id and q.point_id = x.point_id;
-	if v_neufs <> case when v_presents = 0 then 0 else {k} end or v_neufs_tags <> v_neufs then
+	if v_neufs <> least(v_presents, 1) * {k} or v_neufs_tags <> v_neufs then
 		raise exception 'modèles neufs incohérents : contenus %, tags %', v_neufs, v_neufs_tags;
 	end if;''')
     inserer('\ndrop table pg_temp.{tmp}_resolus;\n'.format(tmp=tmp),
