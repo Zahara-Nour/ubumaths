@@ -6,7 +6,7 @@
  * désormais le code qui dit CE qui manque ou ce qui est mal écrit. Le texte anglais
  * reste le même (l'atelier traduit par le texte), sauf `LEADING_DECIMAL_POINT`.
  *
- * Décisions de David (docs/wip/lecture-grandeurs-phase0.md, PR 3) :
+ * Décisions de David (docs/archive/wip/lecture-grandeurs-phase0.md, PR 3) :
  * - `MISSING_OPERATOR` : un nombre juste après un facteur, comme le refus « nombre
  *   après un facteur » du LaTeX (David, 2026-10-20 : « suis LaTeX ») — lettre,
  *   nombre, `)`, `]`, `}`, `|`, `%` (`x2`, `(1+x)2`, `x^2 3`, `|x|2`) ; `(2)(3)`

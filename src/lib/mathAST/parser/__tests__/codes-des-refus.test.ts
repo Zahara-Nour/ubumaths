@@ -1,6 +1,6 @@
 /**
  * Codes précis des refus qui existent déjà — chantier lecture-grandeurs, PR 3
- * (docs/wip/lecture-grandeurs-phase0.md ; décisions de David du 2026-10-20).
+ * (docs/archive/wip/lecture-grandeurs-phase0.md ; décisions de David du 2026-10-20).
  *
  * Lecture inchangée : seul le code du refus change, et son texte anglais reste le
  * même (l'atelier traduit encore par le texte, `french-errors.ts`), sauf

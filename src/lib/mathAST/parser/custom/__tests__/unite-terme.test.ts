@@ -1,6 +1,6 @@
 /**
  * L'unité multiplie tout le terme qui la précède — chantier lecture-grandeurs, PR 4
- * (décision 1 de David, 2026-10-20 ; docs/wip/lecture-grandeurs-phase0.md, PR 4).
+ * (décision 1 de David, 2026-10-20 ; docs/archive/wip/lecture-grandeurs-phase0.md, PR 4).
  *
  * Avant : le crochet d'unité, postfixe, ne prenait que l'atome qui le précède.
  * `1/2[m]` se lisait 1/(2 m) = 0,5 m⁻¹, alors que `\frac{1}{2}\unit{m}` vaut 0,5 m et
