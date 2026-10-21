@@ -1,9 +1,10 @@
 /**
  * Le Palotin, gardien de la Chatterie (Mathoux v1, § 9 de mathoux-conception.md).
  *
- * Ce que l'élève LIT : quand au moins un Mathou fait la sieste, le Palotin le
- * dit (« 2 Mathoux font la sieste ») avec un lien vers la Chatterie. Rien sinon,
- * ni quand le résumé est illisible. Le résumé est demandé APRÈS l'affichage
+ * Ce que l'élève LIT : une nouveauté de la Chatterie (naissance, croissance,
+ * étoile) d'abord ; sinon, quand au moins un Mathou fait la sieste, le Palotin
+ * le dit (« 2 Mathoux font la sieste ») ; avec un lien vers la Chatterie. Rien
+ * sinon, ni quand le résumé est illisible. Le résumé est demandé APRÈS l'affichage
  * (`/api/student/mathoux`), jamais par le layout.
  */
 
@@ -14,6 +15,7 @@ import BuddyWidget from '../BuddyWidget.svelte';
 import { LINK_BUBBLE_DURATION } from '../buddy-timing';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 import type { BuddyState } from '$lib/types/buddy';
+import { NO_NEWS, type MathouNews } from '$lib/mathoux/news';
 
 // Page courante simulée : modifiable test par test
 const pageState = vi.hoisted(() => ({ url: new URL('http://localhost:5175/dashboard') }));
@@ -64,7 +66,7 @@ afterEach(() => {
 
 describe('BuddyWidget — Mathoux en sieste', () => {
 	it('annonce les Mathoux en sieste avec un lien vers la Chatterie', async () => {
-		const fetchMock = mockSummary({ born: 5, napping: 2, toDiscover: 1 });
+		const fetchMock = mockSummary({ born: 5, napping: 2, toDiscover: 1, news: NO_NEWS });
 		await render(BuddyWidget, { props: {} });
 
 		await expect
@@ -77,7 +79,7 @@ describe('BuddyWidget — Mathoux en sieste', () => {
 	});
 
 	it('accorde le singulier', async () => {
-		mockSummary({ born: 1, napping: 1, toDiscover: 0 });
+		mockSummary({ born: 1, napping: 1, toDiscover: 0, news: NO_NEWS });
 		await render(BuddyWidget, { props: {} });
 		await expect
 			.element(page.getByText('1 Mathou fait la sieste.'), { timeout: 4000 })
@@ -85,7 +87,7 @@ describe('BuddyWidget — Mathoux en sieste', () => {
 	});
 
 	it('aucun Mathou en sieste : pas de lien vers la Chatterie', async () => {
-		const fetchMock = mockSummary({ born: 3, napping: 0, toDiscover: 2 });
+		const fetchMock = mockSummary({ born: 3, napping: 0, toDiscover: 2, news: NO_NEWS });
 		await render(BuddyWidget, { props: {} });
 		await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
 		await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -102,7 +104,7 @@ describe('BuddyWidget — Mathoux en sieste', () => {
 
 	it('sur la Chatterie elle-même : ni demande, ni annonce', async () => {
 		pageState.url = new URL('http://localhost:5175/dashboard/student/chatterie');
-		const fetchMock = mockSummary({ born: 1, napping: 1, toDiscover: 0 });
+		const fetchMock = mockSummary({ born: 1, napping: 1, toDiscover: 0, news: NO_NEWS });
 		await render(BuddyWidget, { props: {} });
 		await new Promise((resolve) => setTimeout(resolve, 1500));
 		expect(fetchMock).not.toHaveBeenCalled();
@@ -110,7 +112,7 @@ describe('BuddyWidget — Mathoux en sieste', () => {
 	});
 
 	it('réponse tardive : aucune salutation au hasard avant l’annonce', async () => {
-		mockSummary({ born: 2, napping: 2, toDiscover: 0 }, true, 3000);
+		mockSummary({ born: 2, napping: 2, toDiscover: 0, news: NO_NEWS }, true, 3000);
 		await render(BuddyWidget, { props: {} });
 		// À 2,5 s, la salutation d'avant serait déjà partie
 		await new Promise((resolve) => setTimeout(resolve, 2500));
@@ -121,7 +123,7 @@ describe('BuddyWidget — Mathoux en sieste', () => {
 	});
 
 	it('la bulle de l’annonce est une zone polie, et reste au moins 20 s', async () => {
-		mockSummary({ born: 2, napping: 2, toDiscover: 0 });
+		mockSummary({ born: 2, napping: 2, toDiscover: 0, news: NO_NEWS });
 		await render(BuddyWidget, { props: {} });
 		await expect
 			.element(page.getByText('2 Mathoux font la sieste.'), { timeout: 4000 })
@@ -133,9 +135,62 @@ describe('BuddyWidget — Mathoux en sieste', () => {
 
 	it('sans Palotin : aucune demande', async () => {
 		studentCache.hydrateBuddy(null);
-		const fetchMock = mockSummary({ born: 1, napping: 1, toDiscover: 0 });
+		const fetchMock = mockSummary({ born: 1, napping: 1, toDiscover: 0, news: NO_NEWS });
 		await render(BuddyWidget, { props: {} });
 		await new Promise((resolve) => setTimeout(resolve, 300));
 		expect(fetchMock).not.toHaveBeenCalled();
+	});
+});
+
+describe('BuddyWidget — nouveautés de la Chatterie', () => {
+	const NEWS: MathouNews = {
+		firstVisit: false,
+		total: 2,
+		items: [
+			{
+				kind: 'birth',
+				notionId: 'n1',
+				name: 'Pile-Poil',
+				raceIndex: 0,
+				stage: 'chaton',
+				newStars: []
+			},
+			{
+				kind: 'growth',
+				notionId: 'n2',
+				name: 'Tangentin',
+				raceIndex: 1,
+				stage: 'matou',
+				newStars: []
+			}
+		]
+	};
+
+	it('annonce la nouveauté AVANT la sieste, avec le lien vers la Chatterie', async () => {
+		mockSummary({ born: 5, napping: 2, toDiscover: 1, news: NEWS });
+		await render(BuddyWidget, { props: {} });
+		await expect
+			.element(
+				page.getByText(
+					'Un chaton est né à la Chatterie : Pile-Poil ! Et 1 autre nouveauté à la Chatterie.'
+				),
+				{ timeout: 4000 }
+			)
+			.toBeVisible();
+		expect(bubbleText()).not.toContain('sieste');
+		await expect.element(page.getByRole('link', { name: 'Aller à la Chatterie' })).toBeVisible();
+	});
+
+	it('premier passage avec plusieurs Mathoux : une seule phrase', async () => {
+		mockSummary({
+			born: 7,
+			napping: 0,
+			toDiscover: 0,
+			news: { ...NEWS, firstVisit: true, total: 7 }
+		});
+		await render(BuddyWidget, { props: {} });
+		await expect
+			.element(page.getByText('7 Mathoux t’attendent à la Chatterie !'), { timeout: 4000 })
+			.toBeVisible();
 	});
 });

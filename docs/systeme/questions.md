@@ -523,6 +523,10 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - **Durées du panier ≠ durées d'une série** : `questionCart.updateDelay` et `CartQuestionCard`
   bornent à 5..300 s, la série enregistrée accepte jusqu'à `MAX_QUESTION_DELAY_SECONDS` (600).
   Une série à 600 s chargée par `replaceWith` garde sa durée, mais le premier « − » la ramène à 300.
+- **Verdict par case de `FlashCard` ≠ validateur** (vu à la revue de #1574, antérieur) : pour une
+  case `precision` sans `rulesSuffice`, `computeBlankVerdicts` (`components/questions/blank-verdicts.ts`)
+  compare le texte, si bien que `(3{,}1)` est juste perfectible pour `validateAnswer` mais rouge dans
+  la `FlashCard`. Non traité : à trancher par David.
 - **Contrôles natifs** malgré la règle MySelect / MyCheckbox : `<select>` dans
   `PrecisionEditor.svelte` et `QuestionPreview.svelte`, `<input type="checkbox">` dans
   `QuestionPreview.svelte`.

@@ -233,6 +233,10 @@ Une écriture faite à son client rend 42501 (INSERT) ou 0 ligne sans erreur (UP
 `tests/integration/palotin-ecritures-eleve.test.ts`. Le paquet de chapitre
 (`api/srs/chapters/[id]/submit`) ne donne pas de forfait.
 
+En fin de séance, une fois la dernière carte enregistrée, `ReviewSession` demande les nouveautés de
+la Chatterie (`fetchMathouNews`) et les affiche sous le gain du Palotin (`MathouNewsCard`) : voir
+[mathoux.md](mathoux.md#annonce-des-nouveautés-en-fin-de-séance-v12).
+
 « Quitter », en tête de séance (`BackLink kind="quit"`, [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)), ramène là
 où elle a commencé : la page du paquet, ou le Programme si elle en part (`?depuis=programme`, posé par
 `studySessionHref` et relu par `studySessionReturnHref`, `src/lib/navigation/return-links.ts`). Une

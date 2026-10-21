@@ -123,7 +123,10 @@ Le score envoyé par le client est gardé, sauf s'il y a des cartes de cours : i
 hors cartes. Hors flash et hors cartes de cours, chaque réponse rapporte au Palotin
 (`addBuddyXpFromTest`, réponse `buddy_xp`) ; son thème, pour le bonus « nouveau thème », est la branche
 de l'arbre des notions où se range le point que valide la question (`fetchTemplateThemeIds`,
-`src/lib/server/buddy-themes.ts`, deux lectures pour la séance).
+`src/lib/server/buddy-themes.ts`, deux lectures pour la séance). Une fois la séance enregistrée (Entraînement, Course ; ni flash, ni
+évaluation, ni aperçu du prof), la page demande les nouveautés de la Chatterie
+(`fetchMathouNews`) et `TestResults` les affiche sous le gain du Palotin (`MathouNewsCard`, jamais
+en évaluation) : voir [mathoux.md](mathoux.md#annonce-des-nouveautés-en-fin-de-séance-v12).
 
 **Série de chapitre** (`chapter_series`, `chapter-series.ts`) : un chapitre de « Mon cours » pointe une
 série du prof sous la forme `flash` (défaut) ou `interactive` ; l'élève la lance comme une séance libre.

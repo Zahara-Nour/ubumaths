@@ -347,7 +347,9 @@ Le Compendium interdit d'afficher « XP » et « niveau ». Mots choisis par Dav
 ### Gardien de la Chatterie
 
 Au montage, `BuddyWidget` demande `GET /api/student/mathoux` (après l'affichage, pas dans le
-layout : environ 39 requêtes pour un parcours de Tle spé). Si au moins un Mathou fait la sieste,
+layout : environ 39 requêtes pour un parcours de Tle spé). S'il y a une nouveauté (naissance,
+croissance, étoile qu'aucun écran de fin de séance n'a montrée), la bulle l'annonce d'abord, avec
+le même lien. Sinon, si au moins un Mathou fait la sieste,
 la bulle dit « 2 Mathoux font la sieste. » avec le lien « Aller à la Chatterie »
 (`BuddySpeechBubble`, prop `link`), pendant 20 s, dans une zone `aria-live="polite"` ; sinon le
 Palotin salue. La salutation attend la réponse, pour ne jamais précéder l'annonce. Sur la Chatterie

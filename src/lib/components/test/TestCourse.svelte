@@ -22,6 +22,7 @@
 	  du serveur) ; « Envoi de ta copie… » en attendant
 	- unitKeys: touches d'unités de chaque question (évaluation)
 	- buddyGain: gain du Palotin, affiché sur l'écran de résultats (`null` → rien)
+	- mathouNews: nouveautés de la Chatterie, affichées sur l'écran de résultats (`null` → rien)
 -->
 
 <script lang="ts">
@@ -32,6 +33,7 @@
 	import TestTimer from './TestTimer.svelte';
 	import TestResults from './TestResults.svelte';
 	import type { BuddyGainView } from '$lib/components/buddy/buddy-gain';
+	import type { MathouNews } from '$lib/mathoux/news';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { automathsQuitLink } from '$lib/navigation/return-links';
@@ -48,6 +50,7 @@
 		showResults?: boolean;
 		unitKeys?: (string[] | undefined)[];
 		buddyGain?: BuddyGainView | null;
+		mathouNews?: MathouNews | null;
 	}
 
 	let {
@@ -58,7 +61,8 @@
 		collectOnly = false,
 		showResults = true,
 		unitKeys = [],
-		buddyGain = null
+		buddyGain = null,
+		mathouNews = null
 	}: Props = $props();
 
 	// « Quitter » : « Mes contrôles » (avec confirmation) en contrôle, le panier sinon
@@ -305,5 +309,6 @@
 		onBackToCart={onBack}
 		{inEvaluation}
 		{buddyGain}
+		{mathouNews}
 	/>
 {/if}

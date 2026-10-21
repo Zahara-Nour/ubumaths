@@ -1,14 +1,11 @@
 # Chantier correction-cases-unite — rapprocher la correction des cases à unité de `tidy`
 
-## Reprendre ici
-
-_Mis à jour le 2026-10-21, après #1574._
-
-- **État** : PR 1-3 (#1543, #1545, #1547), PR 2 bis (#1573) et PR « nombre simple » (#1574) mergées. Code du chantier terminé. Rien en prod (pas de `deploy:prod`).
-- **Prochaine action** : fin de chantier — versement du durable dans `docs/systeme/` (`grandeurs.md`, `questions.md`), journal archivé (commit doc direct sur `main`).
-- **En attente de David** : traiter ou non le désaccord validateur / `blank-verdicts` (case `precision` sans `rulesSuffice` : `(3{,}1)` juste perfectible mais rouge en FlashCard, antérieur au chantier).
-- **Pièges en cours** : toute réponse fausse d'une case à unité affiche le message général ; messages d'unité validés (ne pas reformuler).
-- **Worktree / branche** : aucun (worktree retiré après #1574) ; la suite est 100 % doc, sur `main`.
+> **Chantier clos le 2026-10-21** (#1543, #1545, #1547, #1573, #1574). Durable versé dans
+> [grandeurs.md](../../systeme/grandeurs.md) et [questions.md](../../systeme/questions.md) (point 4
+> de la correction, « Écarts connus »). Reste ouvert, à trancher par David : le verdict par case de
+> `FlashCard` (`blank-verdicts.ts`) contre le validateur. Vu en passant, non traité : « Compute
+> Engine » dans les commentaires de `answer-validator.ts`, `validation-rule-evaluator.ts`,
+> `questions/index.ts`, `feedback.ts`.
 
 ## Historique
 

@@ -18,6 +18,8 @@
 	  seulement « Mes évaluations » (une nouvelle tentative passe par la vérification
 	  des tentatives et de la date limite)
 	- buddyGain: gain du Palotin pour cette séance (`null` / absent → rien)
+	- mathouNews: nouveautés de la Chatterie, arrivées après la sauvegarde (`null` → rien ;
+	  jamais en évaluation)
 -->
 
 <script lang="ts">
@@ -29,6 +31,8 @@
 	import { cn } from '$lib/utils';
 	import BuddyGainCard from '$lib/components/buddy/BuddyGainCard.svelte';
 	import type { BuddyGainView } from '$lib/components/buddy/buddy-gain';
+	import MathouNewsCard from '$lib/components/mathoux/MathouNewsCard.svelte';
+	import type { MathouNews } from '$lib/mathoux/news';
 
 	interface Props {
 		result: TestResult;
@@ -36,9 +40,17 @@
 		onBackToCart: () => void;
 		inEvaluation?: boolean;
 		buddyGain?: BuddyGainView | null;
+		mathouNews?: MathouNews | null;
 	}
 
-	let { result, onRestart, onBackToCart, inEvaluation = false, buddyGain = null }: Props = $props();
+	let {
+		result,
+		onRestart,
+		onBackToCart,
+		inEvaluation = false,
+		buddyGain = null,
+		mathouNews = null
+	}: Props = $props();
 
 	// Cartes de cours (#617) : comptées à part, hors score
 	const reviewedCards = $derived(result.reviewedCards ?? 0);
@@ -105,6 +117,11 @@
 
 	<!-- Gain du Palotin (élève connecté, séance qui rapporte) -->
 	<BuddyGainCard gain={buddyGain} />
+
+	<!-- Nouveautés de la Chatterie (jamais en évaluation : sobre, la bulle du Palotin les dira) -->
+	{#if !inEvaluation}
+		<MathouNewsCard news={mathouNews} />
+	{/if}
 
 	<!-- Statistics -->
 	<div class="grid gap-4 sm:grid-cols-2">
