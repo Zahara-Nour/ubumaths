@@ -24,6 +24,7 @@
 	- valuesLatex: Bindable array of LaTeX values (for math blanks, empty for text)
 	- disabled: Whether inputs are disabled
 	- validationResults: Per-blank validation state
+	- unoptimalResults: Per-blank « juste mais perfectible » (ambre)
 	- blankFeedback: Per-blank message after validation (« Blanc 2 : … »)
 	- onSubmit: Callback when Enter is pressed in a blank and every blank is filled
 	  (otherwise Enter puts the cursor in the first empty blank)
@@ -105,6 +106,8 @@
 		onlyBlanks?: boolean;
 		/** Per-blank validation: true=correct, false=incorrect, null=not validated */
 		validationResults?: (boolean | null)[];
+		/** Case juste mais perfectible (ambre), seulement avec `validationResults[i] === true` */
+		unoptimalResults?: boolean[];
 		/**
 		 * Message propre à chaque trou après correction (index = index du trou),
 		 * cf. ValidationResult.blankFeedback. Ne rien passer = aucun message affiché.
@@ -139,6 +142,7 @@
 		showCorrectAnswers = false,
 		onlyBlanks = false,
 		validationResults = [],
+		unoptimalResults = [],
 		blankFeedback = [],
 		onSubmit,
 		mathModeSpace,
@@ -254,7 +258,7 @@
 			...s,
 			value: values[i] ?? s.value
 		}));
-		return applyValidationToInputStates(withValues, validationResults);
+		return applyValidationToInputStates(withValues, validationResults, unoptimalResults);
 	});
 
 	// Messages par trou, listés sous l'énoncé : un trou MathLive (\placeholder) vit

@@ -25,6 +25,10 @@
  * (`loadMathouCollectionWithNews`, `$lib/mathoux/news.ts`) ; une panne
  * d'écriture n'annonce rien.
  *
+ * Vue du PROFESSEUR : `readMathouCollection` fait le même calcul avec le client
+ * du prof (RLS : il lit les états, les cartes et la mémoire de ses élèves) et
+ * n'écrit JAMAIS la mémoire, pour ne pas consommer les nouveautés de l'élève.
+ *
  * Tout est lu avec le client de L'ÉLÈVE (RLS) : `grade_predecessors` (via la
  * fonction, SECURITY INVOKER) et les trois tables suivantes sont lisibles par
  * tout utilisateur connecté, `student_point_state` et
@@ -127,9 +131,51 @@ export async function loadMathouCollectionWithNews(
 ): Promise<MathouCollectionWithNews> {
 	if (!grade) return { collection: EMPTY_COLLECTION, news: NO_NEWS };
 
-	// 1. Identité, parcours (le niveau et ses niveaux antérieurs) et mémoire, en parallèle
-	const [, grades, memory] = await Promise.all([
+	// Identité en parallèle des lectures : vérifiée avant toute écriture
+	const [, { collection, memory }] = await Promise.all([
 		assertSessionStudent(supabase, studentId),
+		computeCollection(supabase, studentId, grade)
+	]);
+
+	// Mémoire : n'écrit que s'il y a du nouveau ; une panne n'empêche pas l'affichage
+	const written = await rememberSafely(studentId, memoryUpdates(collection, memory), memory);
+
+	return { collection, news: mathouNews(collection, memory, written) };
+}
+
+/**
+ * Collection de Mathoux d'un élève en LECTURE SEULE : la vue du professeur.
+ *
+ * Même calcul que la page de l'élève, mémoire comprise, mais n'écrit JAMAIS la
+ * mémoire : une écriture ici « consommerait » les nouveautés que l'élève doit
+ * voir annoncées à sa prochaine fin de séance. Un Mathou né depuis la dernière
+ * visite de l'élève s'affiche donc sans être retenu.
+ *
+ * ⚠️ Aucune garde d'accès ici : c'est la RLS du client passé qui borne ce qu'il
+ * lit (un élève ne lit rien d'un autre élève, en silence). L'appelant vérifie
+ * d'abord que l'utilisateur a le droit de voir cet élève
+ * (`verifyTeacherStudentWithRole`).
+ *
+ * @param grade `profiles.grade` de l'élève. NULL → collection vide, aucune requête.
+ * @throws si une lecture échoue : une panne ne doit pas se lire « Chatterie vide ».
+ */
+export async function readMathouCollection(
+	supabase: SB,
+	studentId: string,
+	grade: string | null
+): Promise<MathouCollection> {
+	if (!grade) return EMPTY_COLLECTION;
+	return (await computeCollection(supabase, studentId, grade)).collection;
+}
+
+/** Le calcul seul, sans écriture : la collection et la mémoire lue. */
+async function computeCollection(
+	supabase: SB,
+	studentId: string,
+	grade: string
+): Promise<{ collection: MathouCollection; memory: Map<string, StoredMathouMemory> }> {
+	// 1. Parcours (le niveau et ses niveaux antérieurs) et mémoire, en parallèle
+	const [grades, memory] = await Promise.all([
 		loadPathGrades(supabase, grade),
 		readMathouMemory(supabase, studentId)
 	]);
@@ -159,7 +205,7 @@ export async function loadMathouCollectionWithNews(
 		}
 	}
 	if (gradePoints.length === 0 && memory.size === 0) {
-		return { collection: EMPTY_COLLECTION, news: NO_NEWS };
+		return { collection: EMPTY_COLLECTION, memory };
 	}
 
 	const pointIds = gradePoints.map((p) => p.id);
@@ -194,7 +240,7 @@ export async function loadMathouCollectionWithNews(
 	const workablePoints = gradePoints.filter((p) => taggedPointIds.has(p.id));
 	// Un Mathou mémorisé reste même quand plus aucun de ses points n'est travaillable
 	if (workablePoints.length === 0 && memory.size === 0) {
-		return { collection: EMPTY_COLLECTION, news: NO_NEWS };
+		return { collection: EMPTY_COLLECTION, memory };
 	}
 
 	const nodes: CollectionTreeNode[] = [];
@@ -233,10 +279,7 @@ export async function loadMathouCollectionWithNews(
 		templatesByPoint
 	});
 
-	// 5. Mémoire : n'écrit que s'il y a du nouveau ; une panne n'empêche pas l'affichage
-	const written = await rememberSafely(studentId, memoryUpdates(collection, memory), memory);
-
-	return { collection, news: mathouNews(collection, memory, written) };
+	return { collection, memory };
 }
 
 /**
@@ -288,8 +331,9 @@ async function loadProgress(
 				.eq('student_id', studentId)
 				.in('point_id', batch)
 		),
-		// Sieste : badge FSRS « à revoir », sur un point de n'importe quel niveau
-		computePointBadges(supabase, studentId, workableIds)
+		// Sieste : badge FSRS « à revoir », sur un point de n'importe quel niveau ; une
+		// panne lève (sinon toutes les siestes disparaîtraient en silence)
+		computePointBadges(supabase, studentId, workableIds, { onError: 'throw' })
 	]);
 	if (statesResult.error) throw new Error(`États illisibles : ${statesResult.error.message}`);
 

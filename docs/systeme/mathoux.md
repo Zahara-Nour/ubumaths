@@ -5,11 +5,13 @@ couvre:
   - 'src/lib/components/mathoux/**'
   - 'src/routes/(protected)/dashboard/student/chatterie/**'
   - 'src/routes/api/student/mathoux/**'
+  - 'src/routes/(protected)/dashboard/teacher/gamification/mathoux/**'
+  - 'src/routes/(protected)/dashboard/teacher/students/*/chatterie/**'
 ---
 
 # Mathoux — la Chatterie de Faustroll
 
-> Vérifié contre le code le 2026-10-21 (Mathoux v1, mémoire comprise, « Faire grandir » v1.1, noms propres, annonce des nouveautés v1.2). Spécification validée par David :
+> Vérifié contre le code le 2026-10-21 (Mathoux v1, mémoire comprise, « Faire grandir » v1.1, noms propres, annonce des nouveautés v1.2, vue du professeur). Spécification validée par David :
 > [mathoux-conception.md § 9](../wip/mathoux-conception.md).
 
 ## À quoi ça sert
@@ -128,17 +130,20 @@ prochaine révision due). Sans Entraînement possible (aucun modèle publié lis
 
 ## Code
 
-| Fichier                                                | Rôle                                                                                                                                                                                |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/mathoux/collection-logic.ts`                  | logique pure : stades, noms, regroupement, Entraînement « Faire grandir », phrases (importable au client)                                                                           |
-| `src/lib/mathoux/mathou-noms.ts`                       | les noms propres des Mathoux, par nom de notion                                                                                                                                     |
-| `src/lib/mathoux/summary.ts`                           | schéma Zod du résumé `{ born, napping, toDiscover, news }`                                                                                                                          |
-| `src/lib/mathoux/news.ts`                              | logique pure des nouveautés (naissance, croissance, étoile) et leurs phrases                                                                                                        |
-| `src/lib/server/mathoux/collection.ts`                 | `loadMathouCollection(WithNews)` : les lectures, la logique pure, la mémoire, puis les nouveautés                                                                                   |
-| `src/lib/server/mathoux/memory.ts`                     | lecture (élève) et écriture (service) de `student_mathoux` ; rend les notions que l'appel a écrites                                                                                 |
-| `src/lib/components/mathoux/`                          | `MathouAvatar` (SVG paramétré : race, stade, sieste, silhouette), le dessin `mathou-dessin.ts`, les races `mathou-races.ts` ; `MathouNewsCard` et `fetchMathouNews` (fin de séance) |
-| `dashboard/student/chatterie/+page.{server.ts,svelte}` | la page ; `unavailable` si une lecture échoue                                                                                                                                       |
-| `api/student/mathoux/+server.ts`                       | `GET` élève : les compteurs et les nouveautés, pour le Palotin et la fin de séance                                                                                                  |
+| Fichier                                                | Rôle                                                                                                                                                                                                                                                  |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/mathoux/collection-logic.ts`                  | logique pure : stades, noms, regroupement, Entraînement « Faire grandir », phrases (importable au client)                                                                                                                                             |
+| `src/lib/mathoux/mathou-noms.ts`                       | les noms propres des Mathoux, par nom de notion                                                                                                                                                                                                       |
+| `src/lib/mathoux/summary.ts`                           | schéma Zod du résumé `{ born, napping, toDiscover, news }`                                                                                                                                                                                            |
+| `src/lib/mathoux/news.ts`                              | logique pure des nouveautés (naissance, croissance, étoile) et leurs phrases                                                                                                                                                                          |
+| `src/lib/server/mathoux/collection.ts`                 | `loadMathouCollection(WithNews)` : les lectures, la logique pure, la mémoire, puis les nouveautés ; `readMathouCollection` : le même calcul en lecture seule (vue du professeur)                                                                      |
+| `src/lib/server/mathoux/teacher.ts`                    | `loadMathouxCountsByStudent` : Mathoux nés et grands matous par élève, d'après la mémoire (liste du professeur)                                                                                                                                       |
+| `src/lib/server/mathoux/memory.ts`                     | lecture (élève) et écriture (service) de `student_mathoux` ; rend les notions que l'appel a écrites                                                                                                                                                   |
+| `src/lib/components/mathoux/`                          | `ChatterieRaces` (les Mathoux par race, `readOnly` pour le prof), `MathouAvatar` (SVG paramétré : race, stade, sieste, silhouette), le dessin `mathou-dessin.ts`, les races `mathou-races.ts` ; `MathouNewsCard` et `fetchMathouNews` (fin de séance) |
+| `dashboard/student/chatterie/+page.{server.ts,svelte}` | la page ; `unavailable` si une lecture échoue                                                                                                                                                                                                         |
+| `api/student/mathoux/+server.ts`                       | `GET` élève : les compteurs et les nouveautés, pour le Palotin et la fin de séance                                                                                                                                                                    |
+| `dashboard/teacher/gamification/mathoux/`              | onglet « Mathoux » du prof : élèves par classe, compteurs de la mémoire                                                                                                                                                                               |
+| `dashboard/teacher/students/[studentId]/chatterie/`    | la Chatterie d'un élève vue par le prof, en lecture seule                                                                                                                                                                                             |
 
 ### Lectures et RLS
 
@@ -146,7 +151,9 @@ Tout est lu avec le **client de l'élève** (la mémoire comprise ; seule son é
 client service). `grade_ancestors` est SECURITY INVOKER et lit
 `grade_predecessors`, lisible par tous ; `curriculum_points`, `question_template_points` et
 `classification_nodes` sont lisibles par tout utilisateur connecté ; `student_point_state` et
-`srs_card_stats` par l'élève lui-même (et le professeur). ⚠️ Un refus RLS rendrait une Chatterie
+`srs_card_stats` par l'élève lui-même et par le professeur (`srs_card_stats` : seulement depuis la
+migration `20261021173000` ; avant, le prof ne lisait que les cartes des élèves à qui il avait
+assigné un paquet). ⚠️ Un refus RLS rendrait une Chatterie
 vide sans erreur : le cas « des points travaillables mais aucun nœud lu » est tracé
 (`logger.warn`), et `tests/integration/mathoux-collection.test.ts` prouve qu'un élève lit sa
 collection (parcours compris : un élève de Tle spé lit ses points de 1re spé) et qu'un autre élève,
@@ -270,7 +277,32 @@ cet Entraînement, s'il existe ; jamais sur une silhouette, ni sur un Mathou end
 (son « Réveiller » y mène déjà : un seul bouton). Liens passés par `resolve()`, la requête ajoutée après `?`. Les silhouettes montrent
 le nom de la notion, pas celui du Mathou. Aucun mot interdit par le Compendium (XP, niveau, score).
 
+## Vue du professeur
+
+Phase 0 validée par David le 2026-10-21 ([journal](../wip/mathoux-prof-progress.md)).
+
+- **Onglet « Mathoux »** de la Gamification (`/dashboard/teacher/gamification/mathoux`) : une carte
+  par classe active, dépliée à la demande ; par élève, « 7 Mathoux, dont 2 grands matous »
+  (`memoryCountsPhrase`). Ces compteurs viennent de la **mémoire seule**
+  (`loadMathouxCountsByStudent`) : le calcul complet coûterait une quarantaine de requêtes par
+  élève. Un Mathou né depuis la dernière séance de l'élève n'y paraît donc qu'à la suivante, et les
+  siestes ne s'y voient pas. Une notion archivée, ou dont la branche l'est, n'est pas comptée. La
+  mémoire est lue par lots de 100 élèves, par pages de 1 000 lignes.
+- **Chatterie d'un élève** (`/dashboard/teacher/students/[studentId]/chatterie`) : prof seul (comme
+  l'onglet, dont le layout refuse l'admin),
+  élève du prof (`verifyTeacherStudentWithRole`, sinon 403) **avant toute lecture**, identifiant
+  validé par Zod (sinon 400). Même rendu que chez l'élève (`ChatterieRaces`), sans « Réveiller » ni
+  « Faire grandir » ; « Pas encore de niveau : pas de Chatterie » sans niveau ; « fermée » si une
+  lecture échoue. Retour vers l'onglet Mathoux.
+- **Jamais d'écriture** : `readMathouCollection` refait le calcul au client du prof sans écrire la
+  mémoire. Écrire « consommerait » les nouveautés que l'élève doit voir annoncées en fin de séance.
+  `readMathouCollection` n'a pas de garde d'identité : seule la RLS borne ce qu'elle lit, d'où la
+  garde de la page.
+- Prouvé en intégration (`tests/integration/mathoux-vue-prof.test.ts`) : le prof lit la même
+  Chatterie que l'élève, siestes et mémoire comprises ; sa visite n'écrit rien et l'élève voit
+  encore ses naissances ; un élève ne lit ni la Chatterie ni les compteurs d'un autre.
+
 ## Hors v1
 
-Combats (réécriture de Navadra), accessoires en gidouilles, vue de la Chatterie par le professeur.
-(L'annonce des nouveautés en fin de séance est livrée en v1.2, ci-dessus.)
+Combats (réécriture de Navadra), accessoires en gidouilles. (L'annonce des nouveautés en fin de
+séance est livrée en v1.2, la vue du professeur ensuite, ci-dessus.)

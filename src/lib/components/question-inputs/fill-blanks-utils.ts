@@ -157,14 +157,17 @@ export function buildInputStatesForCorrection(blanks: InstanceBlank[]): InputSta
  * Returns a new array (does not mutate the original).
  *
  * Handles mismatched lengths: missing validation results default to null.
+ * `unoptimalResults[i]` : case juste mais perfectible (ambre, cf. `InputState.unoptimal`).
  */
 export function applyValidationToInputStates(
 	states: InputState[],
-	validationResults: (boolean | null)[]
+	validationResults: (boolean | null)[],
+	unoptimalResults: boolean[] = []
 ): InputState[] {
 	return states.map((state, i) => ({
 		...state,
-		isCorrect: i < validationResults.length ? validationResults[i] : null
+		isCorrect: i < validationResults.length ? validationResults[i] : null,
+		unoptimal: unoptimalResults[i] === true
 	}));
 }
 

@@ -3,7 +3,7 @@
  * ============================
  *
  * Provides validation functions for different question types,
- * integrating with MathLive's Compute Engine for mathematical evaluation.
+ * en s'appuyant sur mathAST (`$lib/math`, `$lib/mathAST`) pour lire et comparer les expressions.
  *
  * @module utils/answer-validator
  */

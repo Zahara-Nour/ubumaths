@@ -1,6 +1,6 @@
 <script lang="ts">
 	import GroupedRouteLayout from '$lib/components/navigation/GroupedRouteLayout.svelte';
-	import { Gift, ShoppingBag, Users } from '@lucide/svelte';
+	import { Cat, Gift, ShoppingBag, Users } from '@lucide/svelte';
 	import type { LayoutData } from './$types';
 	import type { Component, Snippet } from 'svelte';
 
@@ -23,6 +23,11 @@
 			href: '/dashboard/teacher/gamification/buddies',
 			label: 'Palotins',
 			icon: Users as unknown as Component
+		},
+		{
+			href: '/dashboard/teacher/gamification/mathoux',
+			label: 'Mathoux',
+			icon: Cat as unknown as Component
 		}
 	]);
 </script>
