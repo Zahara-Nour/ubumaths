@@ -26,7 +26,7 @@ vi.mock('../memory', async (importOriginal) => ({
 
 import { computePointBadges } from '$lib/server/srs/capacity-badge';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { rememberMathoux } from '../memory';
+import { MathouMemoryWriteError, rememberMathoux } from '../memory';
 import { loadMathouCollection, loadMathouCollectionWithNews } from '../collection';
 import { resolveTestLaunch } from '$lib/utils/test-launch';
 import { trainingQuery } from '$lib/mathoux/collection-logic';
@@ -115,7 +115,7 @@ beforeEach(() => {
 	vi.mocked(computePointBadges).mockReset();
 	vi.mocked(computePointBadges).mockResolvedValue(new Map());
 	vi.mocked(rememberMathoux).mockReset();
-	vi.mocked(rememberMathoux).mockResolvedValue(new Set());
+	vi.mocked(rememberMathoux).mockResolvedValue(new Map());
 	vi.mocked(createServiceRoleClient).mockClear();
 });
 
@@ -402,7 +402,7 @@ describe('loadMathouCollection', () => {
 	});
 
 	it('nouveautés : ce que la mémoire a écrit est annoncé (naissance, premier passage)', async () => {
-		vi.mocked(rememberMathoux).mockResolvedValue(new Set(['n1']));
+		vi.mocked(rememberMathoux).mockResolvedValue(new Map([['n1', null]]));
 		const { supabase } = buildMock(nominalHandlers());
 		const { news } = await loadMathouCollectionWithNews(supabase, STUDENT, '1_SPE');
 		expect(news).toEqual({
@@ -422,7 +422,9 @@ describe('loadMathouCollection', () => {
 	});
 
 	it('nouveautés : une croissance par rapport à la mémoire lue', async () => {
-		vi.mocked(rememberMathoux).mockResolvedValue(new Set(['n1']));
+		vi.mocked(rememberMathoux).mockResolvedValue(
+			new Map([['n1', { bestStage: 'chaton', starredGrades: [] }]])
+		);
 		const { supabase } = buildMock(
 			nominalHandlers({
 				student_mathoux: () =>
@@ -435,7 +437,7 @@ describe('loadMathouCollection', () => {
 	});
 
 	it('nouveautés : déjà écrite par un autre calcul → rien à annoncer', async () => {
-		vi.mocked(rememberMathoux).mockResolvedValue(new Set());
+		vi.mocked(rememberMathoux).mockResolvedValue(new Map());
 		const { supabase } = buildMock(nominalHandlers());
 		const { news } = await loadMathouCollectionWithNews(supabase, STUDENT, '1_SPE');
 		expect(news).toEqual({ firstVisit: false, total: 0, items: [] });
@@ -447,6 +449,15 @@ describe('loadMathouCollection', () => {
 		const { collection, news } = await loadMathouCollectionWithNews(supabase, STUDENT, '1_SPE');
 		expect(collection.races[0].mathoux[0].growth).toBe('matou');
 		expect(news.total).toBe(0);
+	});
+
+	it('nouveautés : une panne APRÈS une naissance écrite annonce quand même la naissance', async () => {
+		vi.mocked(rememberMathoux).mockRejectedValue(
+			new MathouMemoryWriteError(new Error('mise à jour refusée'), new Map([['n1', null]]))
+		);
+		const { supabase } = buildMock(nominalHandlers());
+		const { news } = await loadMathouCollectionWithNews(supabase, STUDENT, '1_SPE');
+		expect(news.items).toEqual([expect.objectContaining({ kind: 'birth', notionId: 'n1' })]);
 	});
 
 	it('nouveautés : sans niveau, rien', async () => {

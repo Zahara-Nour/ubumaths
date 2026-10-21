@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, premier commit._
+_Mis à jour le 2026-10-21, avant l'ouverture de la PR._
 
-- **État** : logique pure (`src/lib/mathoux/news.ts`) et serveur (`rememberMathoux` rend les notions écrites, `loadMathouCollectionWithNews`, `news` dans `GET /api/student/mathoux`) faits, tests verts. Reste : carte de fin de séance, bulle du Palotin, doc, revue, PR.
-- **Prochaine action** : `MathouNewsCard` dans `TestResults` (Entraînement, Course) et `ReviewSession`, demandée après la sauvegarde ; bulle du widget.
-- **En attente de David** : rien.
-- **Pièges en cours** : la nouveauté est « ce que CE calcul a écrit » : le widget, la page Chatterie ou un autre onglet la consomment s'ils calculent avant.
+- **État** : tout est codé, testé (unitaires, rendu, intégration avec preuves du rouge), relu (`code-reviewer` : 1 point important corrigé, classement contre la ligne remplacée ; `security-auditor` : rien de bloquant). PR à ouvrir.
+- **Prochaine action** : PR, CI, merge ; puis vérification manuelle en local (fin d'Entraînement d'un élève de lycée).
+- **En attente de David** : rien ; `deploy:prod` à sa demande.
+- **Pièges en cours** : la nouveauté est « ce que CE calcul a écrit » : le widget, la page Chatterie ou un autre onglet la consomment s'ils calculent avant ; une réponse perdue après le calcul la brûle (assumé, documenté).
 - **Worktree / branche** : `../ubumaths-wt-mathoux-annonce` · `feat/mathoux-annonce-chaton`.
 
 ---
@@ -40,7 +40,9 @@ Recommandations validées telles quelles.
 
 - [x] Logique pure `news.ts` + schéma `mathouNewsSchema` (tests d'abord).
 - [x] Serveur : `rememberMathoux` → notions écrites ; `loadMathouCollectionWithNews` ; endpoint.
-- [ ] Carte de fin de séance (`TestResults`, `ReviewSession`).
-- [ ] Bulle du Palotin (nouveautés avant la sieste).
-- [ ] Intégration : nouveauté annoncée une fois, puis plus.
-- [ ] Doc `docs/systeme/mathoux.md`, revue (`code-reviewer` + `security-auditor`), PR.
+- [x] Carte de fin de séance (`TestResults`, `ReviewSession`).
+- [x] Bulle du Palotin (nouveautés avant la sieste).
+- [x] Intégration : nouveauté annoncée une fois, puis plus ; deux calculs parallèles ; deux stades différents.
+- [x] Doc `docs/systeme/mathoux.md` (+ renvois `evaluations.md`, `srs.md`, `buddy-palotins.md`).
+- [x] Revue : `code-reviewer` (classement contre la ligne remplacée, écriture partielle, relance rapide : corrigés ; réponse perdue : documentée) ; `security-auditor` : aucun finding bloquant.
+- [ ] PR, CI, merge.

@@ -51,7 +51,13 @@ import type { Database } from '$lib/types/database';
 import { computePointBadges } from '$lib/server/srs/capacity-badge';
 import { fetchInChunks } from '$lib/server/utils/chunked-in';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { readMathouMemory, rememberMathoux, type StoredMathouMemory } from './memory';
+import {
+	MathouMemoryWriteError,
+	readMathouMemory,
+	rememberMathoux,
+	type StoredMathouMemory,
+	type WrittenMathoux
+} from './memory';
 import {
 	buildMathouCollection,
 	isPointLost,
@@ -248,19 +254,20 @@ async function assertSessionStudent(supabase: SB, studentId: string): Promise<vo
 
 /**
  * Écrit la mémoire au client service ; journalise une panne au lieu de la
- * propager. Rend les notions écrites par cet appel (aucune en cas de panne).
+ * propager. Rend ce que cet appel a écrit, y compris avant une panne (ces
+ * lignes sont en base : non annoncées maintenant, elles ne le seraient jamais).
  */
 async function rememberSafely(
 	studentId: string,
 	updates: MathouMemoryUpdate[],
 	memory: Map<string, StoredMathouMemory>
-): Promise<Set<string>> {
-	if (updates.length === 0) return new Set();
+): Promise<WrittenMathoux> {
+	if (updates.length === 0) return new Map();
 	try {
 		return await rememberMathoux(createServiceRoleClient(), studentId, updates, memory);
 	} catch (err) {
 		logger.error(`[mathoux] mémoire non écrite (${updates.length} Mathoux) :`, err);
-		return new Set();
+		return err instanceof MathouMemoryWriteError ? err.written : new Map();
 	}
 }
 

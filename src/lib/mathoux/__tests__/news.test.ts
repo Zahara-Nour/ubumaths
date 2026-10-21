@@ -50,16 +50,22 @@ function memoryOf(entries: Record<string, MathouMemory>): Map<string, MathouMemo
 	return new Map(Object.entries(entries));
 }
 
-const ALL = (collection: MathouCollection) =>
-	new Set(collection.races.flatMap((race) => race.mathoux.map((m) => m.notionId)));
+/** Ce calcul a écrit chaque Mathou, en remplaçant la ligne de `memory` (absente : insérée). */
+function newsAll(collection: MathouCollection, memory: Map<string, MathouMemory>) {
+	const written = new Map<string, MathouMemory | null>(
+		collection.races.flatMap((race) =>
+			race.mathoux.map((m) => [m.notionId, memory.get(m.notionId) ?? null] as const)
+		)
+	);
+	return mathouNews(collection, memory, written);
+}
 
 describe('mathouNews', () => {
 	it('naissance : un Mathou né sans ligne en mémoire', () => {
 		const collection = collectionOf(mathou('n1', 'chaton'));
-		const news = mathouNews(
+		const news = newsAll(
 			collection,
-			memoryOf({ autre: { bestStage: 'matou', starredGrades: [] } }),
-			ALL(collection)
+			memoryOf({ autre: { bestStage: 'matou', starredGrades: [] } })
 		);
 		expect(news).toEqual({
 			firstVisit: false,
@@ -79,11 +85,7 @@ describe('mathouNews', () => {
 
 	it('croissance : stade au-dessus de la mémoire', () => {
 		const collection = collectionOf(mathou('n1', 'matou'));
-		const news = mathouNews(
-			collection,
-			memoryOf({ n1: { bestStage: 'chaton', starredGrades: [] } }),
-			ALL(collection)
-		);
+		const news = newsAll(collection, memoryOf({ n1: { bestStage: 'chaton', starredGrades: [] } }));
 		expect(news.items).toEqual([
 			expect.objectContaining({ kind: 'growth', notionId: 'n1', stage: 'matou' })
 		]);
@@ -91,10 +93,9 @@ describe('mathouNews', () => {
 
 	it('étoile : nouvelles étoiles seules, sans changement de stade', () => {
 		const collection = collectionOf(mathou('n1', 'grand_matou', ['5', '4']));
-		const news = mathouNews(
+		const news = newsAll(
 			collection,
-			memoryOf({ n1: { bestStage: 'grand_matou', starredGrades: ['5'] } }),
-			ALL(collection)
+			memoryOf({ n1: { bestStage: 'grand_matou', starredGrades: ['5'] } })
 		);
 		expect(news.items).toEqual([
 			expect.objectContaining({ kind: 'star', notionId: 'n1', newStars: ['4'] })
@@ -103,28 +104,23 @@ describe('mathouNews', () => {
 
 	it('croissance ET étoile sur le même Mathou : une seule nouveauté, la croissance, étoiles jointes', () => {
 		const collection = collectionOf(mathou('n1', 'grand_matou', ['2']));
-		const news = mathouNews(
-			collection,
-			memoryOf({ n1: { bestStage: 'matou', starredGrades: [] } }),
-			ALL(collection)
-		);
+		const news = newsAll(collection, memoryOf({ n1: { bestStage: 'matou', starredGrades: [] } }));
 		expect(news.total).toBe(1);
 		expect(news.items[0]).toMatchObject({ kind: 'growth', stage: 'grand_matou', newStars: ['2'] });
 	});
 
 	it('rien de nouveau : mémoire à jour → total 0', () => {
 		const collection = collectionOf(mathou('n1', 'matou', ['5']));
-		const news = mathouNews(
+		const news = newsAll(
 			collection,
-			memoryOf({ n1: { bestStage: 'matou', starredGrades: ['5'] } }),
-			ALL(collection)
+			memoryOf({ n1: { bestStage: 'matou', starredGrades: ['5'] } })
 		);
 		expect(news).toEqual({ firstVisit: false, total: 0, items: [] });
 	});
 
 	it('une silhouette n’est jamais une nouveauté', () => {
 		const collection = collectionOf(mathou('n1', 'a_decouvrir'));
-		expect(mathouNews(collection, new Map(), ALL(collection)).total).toBe(0);
+		expect(newsAll(collection, new Map()).total).toBe(0);
 	});
 
 	it('seul ce que CE calcul a écrit est annoncé (un autre calcul l’a déjà écrit → rien)', () => {
@@ -132,9 +128,31 @@ describe('mathouNews', () => {
 		const news = mathouNews(
 			collection,
 			memoryOf({ x: { bestStage: 'chaton', starredGrades: [] } }),
-			new Set(['n2'])
+			new Map([['n2', null]])
 		);
 		expect(news.items.map((item) => item.notionId)).toEqual(['n2']);
+	});
+
+	it('concurrence : classé contre la ligne REMPLACÉE, pas la mémoire lue avant (revue de #PR)', () => {
+		// Mémoire lue vide ; un autre calcul a inséré « chaton » (et l'a annoncé) ;
+		// celui-ci a réécrit « matou » par-dessus : croissance, pas une seconde naissance
+		const collection = collectionOf(mathou('n1', 'matou'));
+		const news = mathouNews(
+			collection,
+			new Map(),
+			new Map([['n1', { bestStage: 'chaton', starredGrades: [] }]])
+		);
+		expect(news.items).toEqual([expect.objectContaining({ kind: 'growth', stage: 'matou' })]);
+	});
+
+	it('concurrence : l’autre calcul a déjà écrit le stade, celui-ci n’ajoute qu’une étoile → étoile', () => {
+		const collection = collectionOf(mathou('n1', 'matou', ['5']));
+		const news = mathouNews(
+			collection,
+			memoryOf({ n1: { bestStage: 'chaton', starredGrades: [] } }),
+			new Map([['n1', { bestStage: 'matou', starredGrades: [] }]])
+		);
+		expect(news.items).toEqual([expect.objectContaining({ kind: 'star', newStars: ['5'] })]);
 	});
 
 	it('ordre : naissances, puis croissances, puis étoiles ; 3 au plus, total complet', () => {
@@ -145,13 +163,12 @@ describe('mathouNews', () => {
 			mathou('ne2', 'chaton'),
 			mathou('ne3', 'matou')
 		);
-		const news = mathouNews(
+		const news = newsAll(
 			collection,
 			memoryOf({
 				etoile: { bestStage: 'grand_matou', starredGrades: [] },
 				grandit: { bestStage: 'chaton', starredGrades: [] }
-			}),
-			ALL(collection)
+			})
 		);
 		expect(MAX_NEWS_ITEMS).toBe(3);
 		expect(news.total).toBe(5);
@@ -160,14 +177,14 @@ describe('mathouNews', () => {
 
 	it('premier calcul : mémoire vide → firstVisit', () => {
 		const collection = collectionOf(mathou('n1', 'chaton'), mathou('n2', 'matou'));
-		const news = mathouNews(collection, new Map(), ALL(collection));
+		const news = newsAll(collection, new Map());
 		expect(news.firstVisit).toBe(true);
 		expect(news.total).toBe(2);
 	});
 
 	it('le résultat passe le schéma du résumé de l’endpoint', () => {
 		const collection = collectionOf(mathou('n1', 'chaton'), mathou('n2', 'grand_matou', ['2']));
-		const news = mathouNews(collection, new Map(), ALL(collection));
+		const news = newsAll(collection, new Map());
 		const parsed = mathouxSummarySchema.safeParse({ born: 2, napping: 0, toDiscover: 0, news });
 		expect(parsed.success).toBe(true);
 	});

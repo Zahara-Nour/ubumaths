@@ -8,8 +8,10 @@
  *   - naissance : aucune ligne avant ;
  *   - croissance : stade au-dessus du stade mémorisé (étoiles jointes) ;
  *   - étoile : seulement de nouvelles étoiles.
- * Une ligne déjà écrite par un autre calcul (la page, un autre onglet) n'est pas
- * annoncée ici : une nouveauté n'est jamais annoncée deux fois.
+ * Le genre se lit contre la ligne que CE calcul a remplacée (rendue par
+ * `rememberMathoux`), pas contre la mémoire lue avant lui : un autre calcul (la
+ * page, un autre onglet) a pu écrire entre-temps et annoncer sa part. Une
+ * nouveauté n'est jamais annoncée deux fois.
  *
  * Logique pure, importable au client (carte de fin de séance, bulle du Palotin).
  */
@@ -63,19 +65,20 @@ export const NO_NEWS: MathouNews = { firstVisit: false, total: 0, items: [] };
 /**
  * Nouveautés d'un calcul.
  *
- * @param memory la mémoire lue AVANT le calcul.
- * @param written notions dont ce calcul a réellement écrit la ligne.
+ * @param memory la mémoire lue AVANT le calcul (vide : premier passage).
+ * @param written notions dont ce calcul a réellement écrit la ligne, avec la
+ *   ligne qu'il a remplacée (`null` : insérée).
  */
 export function mathouNews(
 	collection: MathouCollection,
 	memory: ReadonlyMap<string, MathouMemory>,
-	written: ReadonlySet<string>
+	written: ReadonlyMap<string, MathouMemory | null>
 ): MathouNews {
 	const news: MathouNewsItem[] = [];
 	for (const mathou of collection.races.flatMap((race) => race.mathoux)) {
 		if (mathou.growth === 'a_decouvrir' || !written.has(mathou.notionId)) continue;
 		const stage = mathou.growth;
-		const have = memory.get(mathou.notionId);
+		const have = written.get(mathou.notionId);
 		const newStars = mathou.stars.filter((grade) => !have?.starredGrades.includes(grade));
 		let kind: MathouNewsKind | null;
 		if (!have) kind = 'birth';

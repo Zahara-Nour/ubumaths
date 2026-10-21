@@ -228,11 +228,16 @@ et le lien mènerait à elle-même. Réponse en échec ou mal formée (Zod) → 
 Spécification validée par David le 2026-10-21 ([journal](../wip/mathoux-annonce-progress.md)).
 
 - **Nouveauté** = un Mathou dont **ce calcul** a écrit la ligne de mémoire : `rememberMathoux` rend
-  les notions qu'il a réellement insérées ou mises à jour ; une ligne déjà écrite par un autre calcul
-  (la page, le widget, un autre onglet) n'en est pas une. Une nouveauté n'est donc **jamais annoncée
-  deux fois** (prouvé en intégration, deux calculs en parallèle), et une écriture en panne n'annonce
-  rien. Genre, un par Mathou : **naissance** (aucune ligne avant) > **croissance** (stade au-dessus
-  du mémorisé, étoiles jointes) > **étoile** (de nouvelles étoiles seules) (`mathouNews`, `news.ts`).
+  les notions qu'il a réellement insérées ou mises à jour, **chacune avec la ligne qu'il a remplacée**
+  (`null` : insérée) ; une ligne déjà écrite par un autre calcul (la page, le widget, un autre
+  onglet) n'en est pas une. Le genre se lit contre cette ligne remplacée, pas contre la mémoire lue
+  avant le calcul : si un autre calcul a inséré « chaton » entre-temps et que celui-ci écrit « matou »
+  par-dessus, c'est une croissance, pas une seconde naissance. Une nouveauté n'est donc **jamais
+  annoncée deux fois** (prouvé en intégration : deux calculs identiques en parallèle, deux calculs de
+  stades différents). Genre, un par Mathou : **naissance** (aucune ligne avant) > **croissance**
+  (stade au-dessus de la ligne remplacée, étoiles jointes) > **étoile** (de nouvelles étoiles seules)
+  (`mathouNews`, `news.ts`). Une écriture qui tombe en panne en cours de route annonce ce qu'elle a
+  déjà écrit (`MathouMemoryWriteError.written`), rien d'autre.
 - **Phrases** : « Un chaton est né à la Chatterie : Pile-Poil ! » (« Un matou est arrivé… » si né
   plus grand), « Pile-Poil est devenu un grand matou ! », « Pile-Poil gagne l'étoile ★ 2nde ! ». 3 au
   plus, naissances d'abord, puis « Et 2 autres nouveautés à la Chatterie. ». **Premier calcul** de
@@ -248,7 +253,8 @@ Spécification validée par David le 2026-10-21 ([journal](../wip/mathoux-annonc
   compte non élève (403), panne ou réponse mal formée : rien.
 - **Limite connue** : le widget, la page de la Chatterie ou un autre onglet qui calculent entre la
   séance et son écran de fin « consomment » la nouveauté ; elle est alors dite par eux, ou vue sur la
-  page.
+  page. Coût assumé du « une seule fois » : si la réponse se perd après le calcul (réseau coupé), la
+  nouveauté est écrite mais jamais annoncée ; le Mathou est bien sur la page de la Chatterie.
 
 ## La page
 

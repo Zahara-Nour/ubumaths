@@ -58,6 +58,8 @@
 	let buddyGain = $state<BuddyGainView | null>(null);
 	/** Nouveautés de la Chatterie après la dernière séance enregistrée (null : rien à montrer) */
 	let mathouNews = $state<MathouNews | null>(null);
+	// Séance à qui revient la réponse attendue : une relance avant son arrivée la rend caduque
+	let newsRequest = 0;
 
 	/**
 	 * Parse URL parameters and initialize test session
@@ -226,6 +228,7 @@
 		if (!testSession) return;
 		buddyGain = null;
 		mathouNews = null;
+		newsRequest += 1;
 		try {
 			seriesItems = generateSeriesItems(testSession.categories, {
 				excludeCourseCards: !!assignmentId
@@ -340,6 +343,8 @@
 		// Nouvelle fin de séance : le gain précédent ne vaut plus
 		buddyGain = null;
 		mathouNews = null;
+		newsRequest += 1;
+		const request = newsRequest;
 		// Évaluation notée : rien n'est corrigé ici, la copie part au serveur
 		if (attemptId) {
 			pendingSubmission = toSubmission(attemptPositions, result.answers);
@@ -374,7 +379,10 @@
 					// Séance enregistrée, acquisition à jour : la Chatterie a-t-elle du nouveau ?
 					// Pas pour les flash-cards (aucun écran pour l'afficher : la demander la
 					// consommerait, le Palotin la dira) ni l'aperçu d'évaluation du prof
-					if (!assignmentId && result.mode !== 'flash') mathouNews = await fetchMathouNews();
+					if (!assignmentId && result.mode !== 'flash') {
+						const news = await fetchMathouNews();
+						if (request === newsRequest) mathouNews = news;
+					}
 				} else {
 					console.error('Failed to save test results:', await response.text());
 					// 401 = visiteur non connecté : rien à enregistrer, rien à signaler
