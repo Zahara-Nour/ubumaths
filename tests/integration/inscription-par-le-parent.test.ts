@@ -12,7 +12,9 @@
  *   3. deux enfants du même prénom → deux identifiants distincts ;
  *   4. classe fermée → refus, aucun compte laissé derrière ;
  *   5. demande au parent en attente, `email_count` à 0 puis 1 une fois le courriel parti ;
- *   6. une 6e reste soumise au consentement (lecture seule avant le clic du parent).
+ *   6. une 6e reste soumise au consentement (lecture seule avant le clic du parent) ;
+ *   7. plafond de classe (M1 bis) : le seau `check_and_increment_rate_limit` tient sous des
+ *      inscriptions simultanées (10 en même temps → exactement 5 passent).
  *
  * @vitest-environment node
  */
@@ -94,13 +96,13 @@ describe('inscription par le parent', () => {
 		await pg.query(`delete from schools where name like 'zz-PAR %'`);
 	});
 
-	it('crée un compte approuvé dans la classe, identifiant prénom + 2 chiffres', async () => {
+	it('crée un compte approuvé dans la classe, identifiant prénom + 3 chiffres', async () => {
 		const cls = await classe(true);
 		const res = await inscrire(cls.join_code);
 		expect(res.ok).toBe(true);
 		if (!res.ok) return;
 
-		expect(res.loginId).toMatch(/^zoelia\d{2}$/);
+		expect(res.loginId).toMatch(/^zoelia\d{3}$/);
 		expect(res.grade).toBe('6');
 
 		const { data: profil } = await service
@@ -191,5 +193,26 @@ describe('inscription par le parent', () => {
 
 		await markParentEmailSent(service, demande!.token);
 		expect((await lire()).data?.email_count).toBe(1);
+	});
+
+	it('plafond de classe : 10 inscriptions simultanées, exactement 5 passent', async () => {
+		// Même clé et mêmes bornes que checkChildSignupRateLimitByClass.
+		const key = `ratelimit:signup:class:${crypto.randomUUID()}`;
+		try {
+			const reponses = await Promise.all(
+				Array.from({ length: 10 }, () =>
+					service.rpc('check_and_increment_rate_limit', {
+						p_key: key,
+						p_max_count: 5,
+						p_window_seconds: 86400
+					})
+				)
+			);
+			const passees = reponses.filter((r) => r.data?.[0]?.allowed === true);
+			expect(reponses.every((r) => r.error === null)).toBe(true);
+			expect(passees).toHaveLength(5);
+		} finally {
+			await service.from('rate_limits').delete().eq('key', key);
+		}
 	});
 });

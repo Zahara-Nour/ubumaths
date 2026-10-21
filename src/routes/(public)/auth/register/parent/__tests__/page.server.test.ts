@@ -15,7 +15,8 @@ const {
 	markParentEmailSent,
 	sendChildRegistrationEmail,
 	checkSignupRateLimitByIP,
-	checkChildSignupRateLimitByParentEmail
+	checkChildSignupRateLimitByParentEmail,
+	checkChildSignupRateLimitByClass
 } = vi.hoisted(() => ({
 	rpcMock: vi.fn(),
 	createChildAccount: vi.fn(),
@@ -24,7 +25,8 @@ const {
 	markParentEmailSent: vi.fn(),
 	sendChildRegistrationEmail: vi.fn(),
 	checkSignupRateLimitByIP: vi.fn(),
-	checkChildSignupRateLimitByParentEmail: vi.fn()
+	checkChildSignupRateLimitByParentEmail: vi.fn(),
+	checkChildSignupRateLimitByClass: vi.fn()
 }));
 
 vi.mock('$lib/server/serviceRoleClient', () => ({
@@ -48,7 +50,8 @@ vi.mock('$lib/server/child-registration', () => ({
 vi.mock('$lib/server/email/brevo', () => ({ sendChildRegistrationEmail }));
 vi.mock('$lib/server/rateLimiter', () => ({
 	checkSignupRateLimitByIP,
-	checkChildSignupRateLimitByParentEmail
+	checkChildSignupRateLimitByParentEmail,
+	checkChildSignupRateLimitByClass
 }));
 
 import { actions } from '../+page.server';
@@ -82,6 +85,7 @@ beforeEach(() => {
 	checkSignupRateLimitByIP.mockResolvedValue({ allowed: true });
 	checkChildSignupRateLimitByParentEmail.mockResolvedValue({ allowed: true });
 	rpcMock.mockResolvedValue({ data: 'classe-1', error: null });
+	checkChildSignupRateLimitByClass.mockResolvedValue({ allowed: true });
 	createChildAccount.mockResolvedValue({
 		ok: true,
 		userId: 'eleve-1',
@@ -195,6 +199,33 @@ describe('action register (parent)', () => {
 		expect(res).toMatchObject({ status: 429 });
 		expect(checkChildSignupRateLimitByParentEmail).toHaveBeenCalledWith('parent@exemple.fr');
 		expect(createChildAccount).not.toHaveBeenCalled();
+	});
+
+	// M1 bis : au plus 5 inscriptions par classe et par 24 h, seau atomique pris juste avant
+	// la création (audit de la PR #1597) ; le 6e est refusé avant toute création.
+	it('plafond de la classe dépassé : 429 avec son message, rien créé', async () => {
+		const message =
+			"Trop d'inscriptions dans cette classe aujourd'hui. Réessayer demain ou prévenir le professeur.";
+		checkChildSignupRateLimitByClass.mockResolvedValue({ allowed: false, message });
+		const res = await actions.register(evenement());
+		expect(res).toMatchObject({
+			status: 429,
+			data: { error: message, parentEmail: 'Parent@Exemple.fr' }
+		});
+		expect(checkChildSignupRateLimitByClass).toHaveBeenCalledWith('classe-1');
+		expect(createChildAccount).not.toHaveBeenCalled();
+		expect(sendChildRegistrationEmail).not.toHaveBeenCalled();
+	});
+
+	it('ordre : code → plafond du parent → plafond de la classe', async () => {
+		rpcMock.mockResolvedValue({ data: null, error: null });
+		await actions.register(evenement());
+		expect(checkChildSignupRateLimitByClass).not.toHaveBeenCalled();
+
+		rpcMock.mockResolvedValue({ data: 'classe-1', error: null });
+		checkChildSignupRateLimitByParentEmail.mockResolvedValue({ allowed: false, message: 'Trop' });
+		await actions.register(evenement());
+		expect(checkChildSignupRateLimitByClass).not.toHaveBeenCalled();
 	});
 
 	it("courriel en échec : le compte existe, l'écran le dit, rien n'est noté envoyé", async () => {

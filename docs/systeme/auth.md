@@ -12,6 +12,7 @@ couvre:
   - src/lib/server/serviceRoleClient.ts
   - src/lib/server/rateLimiter.ts
   - src/lib/server/response-floor.ts
+  - src/lib/server/after-response.ts
   - src/lib/server/csrfHandle.ts
   - src/lib/server/passwordPolicy.ts
   - src/lib/server/validateRedirectUrl.ts
@@ -79,7 +80,7 @@ Deux callbacks différents : `/auth/callback` (connexion Google) ≠ `/api/googl
 | `src/lib/server/middleware/auth.ts`               | Pour les **API** : `requireAuth(locals)`, `requireRole`, `requireRoles`, `requireAdmin` ; types `UserRole`, `Profile`.                                                                                                                                                                                                                                  |
 | `src/lib/server/adminElevation.ts`                | Élévation : cookie `ubu-admin-elevation`, `createAdminClient`, `createEphemeralAuthClient`, `adminElevationHandle`.                                                                                                                                                                                                                                     |
 | `src/lib/server/serviceRoleClient.ts`             | `createServiceRoleClient()` — contourne la RLS ; liste `ALLOWED_SERVICE_ROLE_PATHS` (avertissement **en dev seulement**) ; ex. pièces jointes de la messagerie, signées après contrôle RLS ; style d'une fiche pour l'élève destinataire (`worksheet-styles.ts`, lot 4b).                                                                               |
-| `src/lib/server/rateLimiter.ts`                   | Limites persistantes (RPC `check_and_increment_rate_limit`, table `rate_limits`) : login, inscription, reset, changement de mot de passe (seau par compte), élévation, OAuth. `response-floor.ts` : durée plancher d'une réponse neutre.                                                                                                                |
+| `src/lib/server/rateLimiter.ts`                   | Limites persistantes (RPC `check_and_increment_rate_limit`, table `rate_limits`) : login, inscription, reset, changement de mot de passe (seau par compte), élévation, OAuth. `response-floor.ts` : durée plancher d'une réponse neutre ; `after-response.ts` : envoi après la réponse (`waitUntil`).                                                   |
 | `src/lib/server/middleware/rateLimit.ts`          | Limiteur **en mémoire** (par instance), utilisé par quelques API (`account/delete`, `search`…).                                                                                                                                                                                                                                                         |
 | `src/lib/server/validation/auth.ts`               | Zod : `loginFormSchema`, `registerFormSchema`, `requestPasswordResetSchema` (adresse ou identifiant), `updatePasswordSchema`, `parentSetChildPasswordSchema`…                                                                                                                                                                                           |
 | `src/lib/server/passwordPolicy.ts`                | `validatePasswordPolicy`, appliquée par les schémas d'inscription et de changement de mot de passe.                                                                                                                                                                                                                                                     |
@@ -171,8 +172,8 @@ vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
   e-mail → `signInWithPassword` côté serveur (les cookies sont posés par le handle). Toute
   erreur rend le **même** message « Identifiants invalides. » (pas d'énumération des comptes).
   Le champ « Adresse email ou identifiant » accepte aussi l'**identifiant** d'un enfant inscrit
-  par son parent (`noelie42`) : une saisie sans `@` est ramenée à `[a-z0-9]` (sans accent ni
-  majuscule) puis changée en `noelie42@eleves.chiph.re` par `loginFormSchema`
+  par son parent (`noelie042`) : une saisie sans `@` est ramenée à `[a-z0-9]` (sans accent ni
+  majuscule) puis changée en `noelie042@eleves.chiph.re` par `loginFormSchema`
   (`normalizeLoginIdentifier`). Le formulaire réaffiche la saisie brute, jamais l'adresse fictive.
 - **Google** : `googleSignIn` et `/auth/callback` sont **coupés côté serveur** tant que
   `GOOGLE_LOGIN_ENABLED` vaut `false` (la plateforme a quitté le domaine Google Workspace de
@@ -181,7 +182,10 @@ vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
   `validateRedirectUrl`.
 - **Mot de passe oublié** : `/auth/reset-password` (Zod, limites IP + e-mail, réponse neutre
   rendue après une **durée plancher de 2 s** sur tous les chemins — `waitForResponseFloor` —
-  pour que le temps ne trahisse pas un enfant à parent confirmé) → e-mail → `/auth/confirm?type=recovery` → `/auth/update-password`. Le champ accepte aussi
+  pour que le temps ne trahisse pas un enfant à parent confirmé ; pour un identifiant d'enfant,
+  la recherche du parent et l'envoi Brevo partent **après la réponse**, par `runAfterResponse`
+  (`src/lib/server/after-response.ts`, `waitUntil` de `@vercel/functions` : un Brevo lent ne
+  dépasse plus le plancher) → e-mail → `/auth/confirm?type=recovery` → `/auth/update-password`. Le champ accepte aussi
   l'identifiant d'un enfant : le lien part alors au **parent** (voir « Mots de passe des
   élèves »), jamais à l'adresse fictive.
 
@@ -240,7 +244,7 @@ décisions R1-R4 du 2026-10-21), dans `src/lib/server/child-password.ts` :
   `isFreshEmailLinkSession`) ou avec un mot de passe provisoire. Le bouton n'est montré
   qu'aux comptes à mot de passe (`hasPasswordLogin` : fournisseur `email`) ; un compte Google
   seul n'a pas d'ancien mot de passe à donner. Le profil d'un enfant affiche
-  « Identifiant : noelie42 » au lieu de l'adresse fictive.
+  « Identifiant : noelie042 » au lieu de l'adresse fictive.
   **Garde d'interface seulement** (audit M2, risque accepté par David le 2026-10-21) : qui
   tient une session ouverte peut appeler `supabase.auth.updateUser` depuis la console sans
   l'ancien mot de passe. L'option « Secure password change » de GoTrue fermerait ce chemin,
@@ -327,8 +331,13 @@ minimisation), mot de passe de l'enfant, son adresse et les CGU (`parentRegister
 Limite par IP → code vérifié par `resolve_open_class_by_code` avant toute création → plafond par
 adresse du parent (`checkChildSignupRateLimitByParentEmail`, 5 / 24 h, **fermé** en cas de panne,
 clé `mailboxKey` : sans `+tag` ni points Gmail ; compté après le code, qu'un code mal tapé ne
-consomme pas) → `createChildAccount` :
-identifiant `prenom` + 2 chiffres au hasard (3 si les 100 sont pris), compte créé par
+consomme pas) → plafond de la classe (`checkChildSignupRateLimitByClass`, 5 / 24 h, seau
+atomique pris juste avant la création, **fermé** en cas de panne ; 6e → 429 « Trop d'inscriptions
+dans cette classe aujourd'hui… ». Pas un comptage des comptes en base : un enfant qui quitte sa
+classe efface sa ligne de `class_members`, et des inscriptions simultanées liraient le même
+compte — audit de #1597) → `createChildAccount` :
+identifiant `prenom` + 3 chiffres au hasard (4 si les 1 000 sont pris ; les comptes plus anciens
+à 2 chiffres gardent le leur), compte créé par
 `auth.admin.createUser` (adresse fictive confirmée d'office, `app_metadata.child_account`), profil
 créé par `handle_new_user` comme pour l'élève seul (une classe fermée entre-temps → compte
 supprimé). Le serveur retire ensuite le délai de grâce que la règle commune donne à tout nouveau

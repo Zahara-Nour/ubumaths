@@ -41,7 +41,7 @@ const MAX_CREATE_ATTEMPTS = 5;
 
 // Functions
 
-/** Identifiants déjà pris pour cette racine (`noelie` → {noelie42, noelie07…}). */
+/** Identifiants déjà pris pour cette racine (`noelie` → {noelie042, noelie42…}). */
 async function takenLoginIds(service: ServiceClient, base: string): Promise<Set<string> | null> {
 	const { data, error } = await service
 		.from('profiles')

@@ -11,13 +11,18 @@ const {
 	createChildResetToken,
 	sendChildPasswordResetEmail,
 	checkPasswordResetRateLimitByIP,
-	waitForResponseFloor
+	waitForResponseFloor,
+	runAfterResponse,
+	enFond
 } = vi.hoisted(() => ({
 	findChildResetTarget: vi.fn(),
 	createChildResetToken: vi.fn(),
 	sendChildPasswordResetEmail: vi.fn(),
 	checkPasswordResetRateLimitByIP: vi.fn(),
-	waitForResponseFloor: vi.fn()
+	waitForResponseFloor: vi.fn(),
+	runAfterResponse: vi.fn(),
+	// Tâches confiées au fond par l'action : `demander` les attend APRÈS la réponse.
+	enFond: [] as Promise<unknown>[]
 }));
 
 vi.mock('$lib/server/rateLimiter', () => ({
@@ -28,6 +33,7 @@ vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () =>
 vi.mock('$lib/server/child-password', () => ({ findChildResetTarget, createChildResetToken }));
 vi.mock('$lib/server/email/brevo', () => ({ sendChildPasswordResetEmail }));
 vi.mock('$lib/server/response-floor', () => ({ waitForResponseFloor }));
+vi.mock('$lib/server/after-response', () => ({ runAfterResponse }));
 
 const { actions } = await import('../+page.server');
 
@@ -44,11 +50,16 @@ async function demander(saisie: string) {
 		getClientAddress: () => '127.0.0.1',
 		locals: { supabase: { auth: { resetPasswordForEmail } } }
 	} as never)) as { message: string };
+	await Promise.all(enFond);
 	return { res, resetPasswordForEmail };
 }
 
 beforeEach(() => {
 	vi.clearAllMocks();
+	enFond.length = 0;
+	runAfterResponse.mockImplementation((tache: Promise<unknown>) => {
+		enFond.push(tache.catch(() => {}));
+	});
 	checkPasswordResetRateLimitByIP.mockResolvedValue({ allowed: true });
 	waitForResponseFloor.mockResolvedValue(undefined);
 	createChildResetToken.mockResolvedValue('jeton-123');
@@ -122,6 +133,37 @@ describe('/auth/reset-password — identifiant d’un enfant', () => {
 		expect(findChildResetTarget).not.toHaveBeenCalled();
 		expect(resetPasswordForEmail).toHaveBeenCalledWith('eleve@exemple.fr', expect.anything());
 		expect(res.message).toBe(NEUTRE);
+	});
+});
+
+describe('/auth/reset-password — lien au parent envoyé après la réponse', () => {
+	it('la réponse neutre part sans attendre la recherche du parent ni Brevo', async () => {
+		// Recherche qui ne finit jamais : l'action doit quand même répondre.
+		findChildResetTarget.mockReturnValue(new Promise(() => {}));
+		const form = new FormData();
+		form.set('email', 'noelie42');
+		const res = (await actions.resetPassword({
+			request: new Request('http://localhost/auth/reset-password', { method: 'POST', body: form }),
+			url: new URL('http://localhost/auth/reset-password'),
+			getClientAddress: () => '127.0.0.1',
+			locals: { supabase: { auth: { resetPasswordForEmail: vi.fn() } } }
+		} as never)) as { message: string };
+
+		expect(res.message).toBe(NEUTRE);
+		expect(runAfterResponse).toHaveBeenCalledTimes(1);
+		expect(waitForResponseFloor).toHaveBeenCalledWith(expect.any(Number), 2000);
+	});
+
+	it('une exception dans la tâche de fond ne change pas la réponse neutre', async () => {
+		findChildResetTarget.mockRejectedValue(new Error('base injoignable'));
+		const { res } = await demander('noelie42');
+		expect(res.message).toBe(NEUTRE);
+		expect(sendChildPasswordResetEmail).not.toHaveBeenCalled();
+	});
+
+	it('une adresse ordinaire ne passe pas par le fond', async () => {
+		await demander('eleve@exemple.fr');
+		expect(runAfterResponse).not.toHaveBeenCalled();
 	});
 });
 

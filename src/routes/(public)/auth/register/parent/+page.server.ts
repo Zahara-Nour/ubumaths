@@ -7,8 +7,9 @@
  *
  * DÉROULÉ :
  * 1. Validation (Zod), limites de débit par IP et par adresse du parent (5 / 24 h).
- * 2. Code de classe vérifié (RPC service) AVANT toute création.
- * 3. Compte de l'enfant créé par le serveur, identifiant `prenom` + 2 chiffres
+ * 2. Code de classe vérifié (RPC service) AVANT toute création, puis plafond de la classe
+ *    (5 inscriptions / 24 h, seau atomique).
+ * 3. Compte de l'enfant créé par le serveur, identifiant `prenom` + 3 chiffres
  *    (`$lib/server/child-registration`) → profil approuvé dans la classe ; lecture seule
  *    tant que le consentement manque.
  * 4. Demande au parent créée, UN courriel : identifiant + lien unique.
@@ -22,6 +23,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { createServerLogger } from '$lib/utils/logger';
 import {
+	checkChildSignupRateLimitByClass,
 	checkChildSignupRateLimitByParentEmail,
 	checkSignupRateLimitByIP
 } from '$lib/server/rateLimiter';
@@ -99,6 +101,13 @@ export const actions = {
 		const parentLimit = await checkChildSignupRateLimitByParentEmail(parentEmail);
 		if (!parentLimit.allowed) {
 			return fail(429, { error: parentLimit.message, ...echo });
+		}
+
+		// Plafond de la classe (M1 bis) : un code de classe qui circule ne doit pas ouvrir une
+		// création en masse. Seau atomique, fermé en cas de panne.
+		const classLimit = await checkChildSignupRateLimitByClass(classId);
+		if (!classLimit.allowed) {
+			return fail(429, { error: classLimit.message, ...echo });
 		}
 
 		// 4. Compte de l'enfant

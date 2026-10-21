@@ -217,6 +217,7 @@
 		"@uiw/codemirror-theme-vscode": "^4.25.12",
 		"@uiw/codemirror-themes": "^4.25.12",
 		"@vercel/analytics": "^2.0.1",
+		"@vercel/functions": "^3.10.1",
 		"@vercel/speed-insights": "^2.0.0",
 		"blockly": "^12.5.1",
 		"canvas-confetti": "^1.9.4",

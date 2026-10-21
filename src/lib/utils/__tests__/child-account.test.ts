@@ -81,23 +81,30 @@ describe('childLoginBase', () => {
 });
 
 describe('pickChildLoginId', () => {
-	it('ajoute deux chiffres à la racine', () => {
-		expect(pickChildLoginId('noelie', new Set(), () => 0.42)).toBe('noelie42');
-		expect(pickChildLoginId('noelie', new Set(), () => 0)).toBe('noelie00');
+	// M2 : 3 chiffres au minimum, 1 000 identifiants par prénom (deviner un identifiant
+	// d'une classe devient 10 fois plus long).
+	it('ajoute trois chiffres à la racine', () => {
+		expect(pickChildLoginId('noelie', new Set(), () => 0.042)).toBe('noelie042');
+		expect(pickChildLoginId('noelie', new Set(), () => 0)).toBe('noelie000');
+		expect(pickChildLoginId('noelie', new Set(), () => 0.9999)).toBe('noelie999');
 	});
 
 	it('ne rend jamais un identifiant pris', () => {
 		const taken = new Set(
-			Array.from({ length: 99 }, (_, n) => `noelie${String(n).padStart(2, '0')}`)
+			Array.from({ length: 999 }, (_, n) => `noelie${String(n).padStart(3, '0')}`)
 		);
-		expect(pickChildLoginId('noelie', taken, () => 0)).toBe('noelie99');
+		expect(pickChildLoginId('noelie', taken, () => 0)).toBe('noelie999');
 	});
 
-	it('passe à trois chiffres quand les cent sont pris', () => {
+	it('passe à quatre chiffres quand les mille sont pris (jamais de refus)', () => {
 		const taken = new Set(
-			Array.from({ length: 100 }, (_, n) => `noelie${String(n).padStart(2, '0')}`)
+			Array.from({ length: 1000 }, (_, n) => `noelie${String(n).padStart(3, '0')}`)
 		);
-		expect(pickChildLoginId('noelie', taken, () => 0.5)).toBe('noelie500');
+		expect(pickChildLoginId('noelie', taken, () => 0.5)).toBe('noelie5000');
+	});
+
+	it('les identifiants à deux chiffres déjà donnés ne gênent pas', () => {
+		expect(pickChildLoginId('noelie', new Set(['noelie42']), () => 0.042)).toBe('noelie042');
 	});
 });
 

@@ -2,8 +2,8 @@
  * Compte d'un enfant inscrit par son parent
  * =========================================
  *
- * Un enfant sans adresse se connecte par un identifiant (`noelie42`). Supabase Auth exige une
- * adresse : l'identifiant devient `noelie42@eleves.chiph.re`, sur un domaine qui ne reçoit
+ * Un enfant sans adresse se connecte par un identifiant (`noelie042`). Supabase Auth exige une
+ * adresse : l'identifiant devient `noelie042@eleves.chiph.re`, sur un domaine qui ne reçoit
  * rien (aujourd'hui absent du DNS ; « null MX » à poser chez OVH). Aucun courriel ne doit
  * partir vers ce domaine : les envois le vérifient avec `isChildAccountEmail`.
  */
@@ -72,16 +72,16 @@ export function childLoginBase(firstname: string): string | null {
 }
 
 /**
- * Choisit un identifiant libre : la racine + 2 chiffres au hasard (`noelie42`) ; si les 100
- * sont pris, 3 chiffres, et ainsi de suite (jamais de refus). `taken` = identifiants déjà
- * utilisés (sans le domaine).
+ * Choisit un identifiant libre : la racine + 3 chiffres au hasard (`noelie042`) ; si les 1 000
+ * sont pris, 4 chiffres, et ainsi de suite (jamais de refus). `taken` = identifiants déjà
+ * utilisés (sans le domaine). Les comptes plus anciens à 2 chiffres (`noelie42`) gardent le leur.
  */
 export function pickChildLoginId(
 	base: string,
 	taken: ReadonlySet<string>,
 	random: () => number = Math.random
 ): string {
-	for (let digits = 2; ; digits++) {
+	for (let digits = 3; ; digits++) {
 		const count = 10 ** digits;
 		const free: string[] = [];
 		for (let n = 0; n < count; n++) {
