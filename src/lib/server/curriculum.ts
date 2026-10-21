@@ -2,31 +2,17 @@
  * Server helpers — Curriculum tracking (suivi du programme).
  *
  * Centralizes the Postgres-error → HTTP-status mapping shared by the
- * curriculum CRUD endpoints. Result rows are narrowed to the helper types in
- * `$lib/types/database-helpers` (constrained columns: grade/kind/source).
+ * curriculum CRUD endpoints. L'arbre du programme se lit dans
+ * `$lib/server/programme-tree` (branche > notion > points).
  */
 
 import { json } from '@sveltejs/kit';
-import type {
-	CurriculumTheme,
-	CurriculumObjective,
-	CurriculumPoint
-} from '$lib/types/database-helpers';
 
 /** Minimal shape of a PostgREST/Postgres error (code is what we branch on). */
 export interface DbErrorLike {
 	code?: string | null;
 	message?: string;
 }
-
-/** Column lists (single source of truth for SELECT projections). */
-export const THEME_COLS = 'id, grade, name, display_order, created_at, updated_at';
-export const OBJECTIVE_COLS = 'id, theme_id, name, display_order, created_at, updated_at';
-// Projette bien TOUTES les colonnes que `CurriculumPoint` promet : une liste
-// tronquée produit des champs `undefined` sur un objet que TypeScript croit
-// complet. `code`, `exigence`, `regime_acquisition` et `rang` manquaient.
-export const POINT_COLS =
-	'id, objective_id, code, name, display_order, kind, exigence, regime_acquisition, rang, archived_at, created_at, updated_at';
 
 /**
  * Map a known Postgres error code to an HTTP JSON Response.
@@ -47,71 +33,4 @@ export function curriculumDbError(err: DbErrorLike, uniqueMsg = 'Doublon'): Resp
 		default:
 			return null;
 	}
-}
-
-/** A theme with its objectives, each with its points (nested tree). */
-export type CurriculumTreeTheme = CurriculumTheme & {
-	objectives: (CurriculumObjective & { points: CurriculumPoint[] })[];
-};
-
-/**
- * Load the full Thème → Item → Point tree for a grade (ordered by display_order
- * then name at each level) — ANCIENNE génération. Shared by the exercise
- * tagger, the cahier-de-texte coverage block and the Avancement heatmap ; la
- * page Programme lit la génération neuve (`$lib/server/programme-tree`).
- *
- * Archived points are left out by default — that is the whole point of
- * archiving: they must stop being taggable and stop counting towards coverage,
- * while keeping the history already attached to them.
- */
-export async function getCurriculumTree(
-	supabase: App.Locals['supabase'],
-	grade: string,
-	{ includeArchived = false }: { includeArchived?: boolean } = {}
-): Promise<CurriculumTreeTheme[]> {
-	// L'arbre du programme se lit en trois requêtes. Une branche illisible
-	// disparaissait de l'affichage : le professeur voyait un programme amputé
-	// sans distinction avec un programme non encore saisi.
-	const { data: themes, error: themesError } = await supabase
-		.from('curriculum_themes')
-		.select(THEME_COLS)
-		.eq('grade', grade)
-		.order('display_order', { ascending: true })
-		.order('name', { ascending: true });
-
-	if (themesError) throw new Error(`Thèmes illisibles : ${themesError.message}`);
-	const themeList = (themes ?? []) as CurriculumTheme[];
-	const themeIds = themeList.map((t) => t.id);
-	if (themeIds.length === 0) return [];
-
-	const { data: objectives, error: objectivesError } = await supabase
-		.from('curriculum_objectives')
-		.select(OBJECTIVE_COLS)
-		.in('theme_id', themeIds)
-		.order('display_order', { ascending: true })
-		.order('name', { ascending: true });
-
-	if (objectivesError) throw new Error(`Objectifs illisibles : ${objectivesError.message}`);
-	const objectiveList = (objectives ?? []) as CurriculumObjective[];
-	const objectiveIds = objectiveList.map((i) => i.id);
-
-	let pointList: CurriculumPoint[] = [];
-	if (objectiveIds.length > 0) {
-		let query = supabase
-			.from('curriculum_points')
-			.select(POINT_COLS)
-			.in('objective_id', objectiveIds);
-		if (!includeArchived) query = query.is('archived_at', null);
-		const { data: points } = await query
-			.order('display_order', { ascending: true })
-			.order('name', { ascending: true });
-		pointList = (points ?? []) as CurriculumPoint[];
-	}
-
-	return themeList.map((theme) => ({
-		...theme,
-		objectives: objectiveList
-			.filter((i) => i.theme_id === theme.id)
-			.map((obj) => ({ ...obj, points: pointList.filter((p) => p.objective_id === obj.id) }))
-	}));
 }

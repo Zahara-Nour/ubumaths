@@ -15,7 +15,8 @@ import {
 	validateCreateJournalEntry,
 	validateUpdateJournalEntry
 } from '$lib/server/validation/journal';
-import { getCurriculumTree } from '$lib/server/curriculum';
+import { getProgrammeTreeKeeping } from '$lib/server/programme-tree';
+import { keepProgrammePointIds } from '$lib/server/curriculum-generation';
 import { reconcileAutoCoverage, type ReconcileReport } from '$lib/server/curriculum-coverage';
 import { parsePendingActivities } from '$lib/server/journal-activities';
 import {
@@ -102,11 +103,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			}
 		: null;
 
-	// Programme travaillé — curriculum tree (class grade) + this entry's coverage.
-	const curriculumTree = classData.grade
-		? await getCurriculumTree(locals.supabase, classData.grade)
-		: [];
-
 	let coveredPoints: { point_id: string; source: string }[] = [];
 	let activities: {
 		id: string;
@@ -146,6 +142,16 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		}
 		activities = (acts ?? []) as typeof activities;
 	}
+
+	// Programme travaillé — arbre du niveau de la classe ; un archivé déjà coché
+	// reste visible pour pouvoir le décocher.
+	const curriculumTree = classData.grade
+		? await getProgrammeTreeKeeping(
+				locals.supabase,
+				classData.grade,
+				coveredPoints.map((c) => c.point_id)
+			)
+		: [];
 
 	// Exercises selectable for this class's grade (for the activity picker).
 	let exerciseOptions: { value: string; label: string }[] = [];
@@ -367,22 +373,30 @@ export const actions: Actions = {
 		];
 
 		if (entry?.id && pointIds.length > 0) {
-			const valid = pointIds.filter((id) => uuidSchema.safeParse(id).success).slice(0, 500);
-			if (valid.length > 0) {
-				const { error: covError } = await locals.supabase
+			const uuids = pointIds.filter((id) => uuidSchema.safeParse(id).success).slice(0, 500);
+			// Q2 (C5, B2) : un ancien point ne se coche plus, même envoyé à la main.
+			let valid: string[] = [];
+			let covError: unknown = null;
+			try {
+				valid = await keepProgrammePointIds(locals.supabase, uuids);
+			} catch (e) {
+				covError = e;
+			}
+			if (!covError && valid.length > 0) {
+				({ error: covError } = await locals.supabase
 					.from('journal_entry_points')
-					.insert(valid.map((point_id) => ({ entry_id: entry.id, point_id, source: 'manual' })));
-				// La séance, elle, est créée : un échec de couverture ne doit pas la
-				// perdre. On le signale sans annuler.
-				if (covError) {
-					logger.error('[Create Journal Entry] coverage failed:', covError);
-					return {
-						success: true,
-						action: 'create',
-						entryId: entry.id,
-						warning: 'Séance créée, mais les points du programme n’ont pas pu être enregistrés.'
-					};
-				}
+					.insert(valid.map((point_id) => ({ entry_id: entry.id, point_id, source: 'manual' }))));
+			}
+			// La séance, elle, est créée : un échec de couverture ne doit pas la
+			// perdre. On le signale sans annuler.
+			if (covError) {
+				logger.error('[Create Journal Entry] coverage failed:', covError);
+				return {
+					success: true,
+					action: 'create',
+					entryId: entry.id,
+					warning: 'Séance créée, mais les points du programme n’ont pas pu être enregistrés.'
+				};
 			}
 		}
 

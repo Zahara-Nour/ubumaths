@@ -3,7 +3,7 @@ couvre:
   - 'src/lib/server/{chapter*,chapters*,content-owner,template-content,template-guard,class-sessions,course-share-tokens,curriculum*,journal*,programme-tree,programme-tags}.ts'
   - 'src/lib/server/validation/{chapter*,chapters,curriculum,journal,academic}.ts'
   - 'src/lib/server/progression/**'
-  - 'src/lib/components/{cours,journal,progression}/**'
+  - 'src/lib/components/{cours,journal,progression,programme}/**'
   - 'src/lib/components/templates/{Chapter,Template}*.svelte'
   - 'src/lib/components/templates/{index.ts,__tests__/**}'
   - 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
@@ -28,7 +28,7 @@ couvre:
 > [suivi du programme](../archive/wip/suivi-programme-progress.md),
 > [progression élève](../archive/wip/progression-eleve-progress.md)) et du chantier clos
 > [publication progressive](../wip/publication-progressive-progress.md).
-> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1) le 2026-10-21.
+> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1 et B2) le 2026-10-21.
 
 ## À quoi ça sert
 
@@ -178,16 +178,16 @@ Pages : `src/routes/(protected)/dashboard/teacher/cahier-texte/` (semaine ; acti
 
 ### Programme, couverture, progression
 
-| Fichier                                             | Rôle                                                                                                                                                                                                                                         |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/server/curriculum.ts`                      | `getCurriculumTree` (thème → objectif → point, ANCIENNE génération, archivés exclus sauf demande), colonnes partagées, `curriculumDbError` (erreur Postgres → HTTP).                                                                         |
-| `src/lib/server/programme-tree.ts`                  | `getProgrammeTree` : points NEUFS d'un niveau (`node_id` non nul) et leurs nœuds, lus explicitement (pas de `!inner`) ; `PROGRAMME_POINT_COLS`.                                                                                              |
-| `src/lib/utils/programme-tree.ts`                   | `buildProgrammeTree` (branche > notion > points ; ordre de l'arbre `position` puis nom, ordre du BO `display_order`), `hideArchivedPoints`, `countArchivedPoints`, `placeOfNode` (notion et branche d'un nœud, `null` si un maillon manque). |
-| `src/lib/server/curriculum-coverage.ts`             | `reconcileAutoCoverage` : recalcule la couverture **auto** d'une séance ; `evaluationCurriculumPoints`. Ne compte que les points **neufs** des modèles.                                                                                      |
-| `src/lib/server/curriculum-grade.ts`                | `keepLinksOfGrade` : une carte rattachée à plusieurs niveaux ne compte que pour celui qu'on lit.                                                                                                                                             |
-| `src/lib/server/curriculum-generation.ts`           | `isProgrammePoint` : un tag vise-t-il un point neuf (`node_id`) ? Les tags des anciens points restent en base jusqu'à l'étape 4 de la C5 — [ADR 0020](../adr/0020-arbre-central-programmes-pointeurs.md).                                    |
-| `src/lib/server/programme-tags.ts`                  | `loadTemplateProgrammeTags` : les choix de tags d'un modèle, un par programme, parmi les points de son nœud et de sa notion.                                                                                                                 |
-| `src/lib/server/progression/student-progression.ts` | Source **unique** de la progression élève : `getObjectivesProgression`, `getCompetencesProgression`, `aggregateObjectiveStats`.                                                                                                              |
+| Fichier                                             | Rôle                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/server/curriculum.ts`                      | `curriculumDbError` (erreur Postgres → HTTP). L'ancien arbre (`getCurriculumTree`, thème → objectif → point) a disparu à l'étape 3 (B2).                                                                                                                                                                                                                                                             |
+| `src/lib/server/programme-tree.ts`                  | `getProgrammeTree` : points NEUFS d'un niveau (`node_id` non nul) et leurs nœuds, lus explicitement (pas de `!inner`) ; `getProgrammeTreeKeeping` : le même, archivés masqués sauf ceux qu'on lui donne (déjà cochés ou tagués) ; `loadNodesWithAncestors`, `PROGRAMME_POINT_COLS`.                                                                                                                  |
+| `src/lib/utils/programme-tree.ts`                   | `buildProgrammeTree` (branche > notion > points ; ordre de l'arbre `position` puis nom, ordre du BO `display_order`), `filterTreePoints` (notions et branches vidées retirées), `hideArchivedPoints` (archivés gardés sur demande), `taggableNodeIds` (nœuds où un exercice peut prendre un point), `countArchivedPoints`, `placeOfNode` (notion et branche d'un nœud, `null` si un maillon manque). |
+| `src/lib/server/curriculum-coverage.ts`             | `reconcileAutoCoverage` : recalcule la couverture **auto** d'une séance ; `evaluationCurriculumPoints`. Ne compte que les points **neufs** des modèles.                                                                                                                                                                                                                                              |
+| `src/lib/server/curriculum-grade.ts`                | `keepLinksOfGrade` : une carte rattachée à plusieurs niveaux ne compte que pour celui qu'on lit.                                                                                                                                                                                                                                                                                                     |
+| `src/lib/server/curriculum-generation.ts`           | `isProgrammePoint` : un tag vise-t-il un point neuf (`node_id`) ? `readPointGeneration` et `keepProgrammePointIds` : la même question posée à la base avant d'écrire (un ancien point ne se coche ni ne se tague plus). Les tags des anciens points restent en base jusqu'à l'étape 4 de la C5 — [ADR 0020](../adr/0020-arbre-central-programmes-pointeurs.md).                                      |
+| `src/lib/server/programme-tags.ts`                  | `loadTemplateProgrammeTags` : les choix de tags d'un modèle, un par programme, parmi les points de son nœud et de sa notion.                                                                                                                                                                                                                                                                         |
+| `src/lib/server/progression/student-progression.ts` | Source **unique** de la progression élève : `getObjectivesProgression`, `getCompetencesProgression`, `aggregateObjectiveStats`.                                                                                                                                                                                                                                                                      |
 
 - `dashboard/teacher/programme/` : **consultation** du programme d'un niveau dans la génération
   neuve (ADR 0020, C5 étape 3) — branche > notion > points du niveau, dans l'ordre du BO ; seules les
@@ -204,9 +204,17 @@ Pages : `src/routes/(protected)/dashboard/teacher/cahier-texte/` (semaine ; acti
 - `api/teacher/curriculum/exercise-tags` et `template-tags` : rattacher un exercice ou un modèle
   de questions à des points (pages d'édition d'exercice et de question). L'édition admin d'un
   modèle propose **un choix par programme** (MySelect), parmi les points du nœud du modèle et de sa
-  notion (règles 1 et 2 posées en base) ; un modèle sans nœud se range d'abord. Le DELETE de
-  `template-tags` relit la ligne supprimée (zéro ligne → 404).
-- `dashboard/teacher/avancement/` : nombre de séances de l'année par point, en lecture seule.
+  notion (règles 1 et 2 posées en base) ; un modèle sans nœud se range d'abord. L'édition d'un
+  exercice propose, pour chacun de **ses niveaux** (et ceux de ses points déjà tagués, pour
+  pouvoir les retirer), les points posés sur l'un de ses nœuds de
+  rangement ou sur leur notion (règle 1, en base aussi) ; un exercice non rangé n'en reçoit aucun, et
+  aucun écran ne range un exercice (rangements posés par migration).
+- Écritures de points (POST `coverage`, POST `exercise-tags`, points cochés à la création d'une
+  séance) : un ancien point est refusé (**400** « Point hors programme »), ou écarté à la création.
+  Les DELETE de `coverage`, `exercise-tags` et `template-tags` relisent la ligne supprimée (zéro
+  ligne → **404**, que l'écran traite comme « déjà retiré »).
+- `dashboard/teacher/avancement/` : nombre de séances de l'année par point, en lecture seule, sur
+  l'arbre branche > notion > points du niveau de la classe.
 - `dashboard/student/progression/` : deux onglets, `src/lib/components/progression/`
   (`ObjectifsPanel`, `CompetencesPanel`) ; le tableau de bord lit la même source.
 
@@ -379,8 +387,16 @@ Appelé à **chaque** enregistrement de séance
 et à chaque ajout ou retrait d'activité. Recalculé plutôt que figé : une séance de septembre
 s'allume quand son contenu est tagué en juin.
 
+Le bloc « Programme travaillé » de l'éditeur de séance coche les points **neufs** du niveau de la
+classe, rangés branche > notion (la sous-notion nommée à côté du point) ; un compteur par branche, un
+« cochés / total » par notion.
+
 La page Avancement compte, par point, les séances de l'année (1ᵉʳ septembre → 1ᵉʳ septembre) qui
-le couvrent.
+le couvrent, sur le même arbre.
+
+Sur les trois écrans (séance, Avancement, tags d'un exercice), un point **archivé** n'apparaît que
+s'il est déjà coché, travaillé ou tagué — marqué « archivé » (`ProgrammePointLabel`), pour qu'on
+puisse le décocher ; les anciens points n'apparaissent jamais.
 
 ### Lien de partage du cahier
 
@@ -478,6 +494,9 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
   `template-content-counts` (compteurs lus dans les tables, jamais des zéros sur panne), `journal`,
   `journal-homework`, `journal-activities`, `journal-weekend`, `curriculum-grade`,
   `curriculum-coverage-grade`, `evaluation-curriculum-points` ; `progression/__tests__/` ;
+  chargements sur l'arbre neuf : `dashboard/teacher/{avancement,cahier-texte/[classId]/[date]}/__tests__/`
+  et `api/teacher/curriculum/{coverage,exercise-tags}/__tests__/` (décor commun
+  `src/lib/server/__tests__/helpers/fake-programme.ts`) ;
   validation `chapter-series`, `chapter-templates-grades`, `journal`, `academic`.
 - Utilitaires : `src/lib/utils/__tests__/{class-sessions,academic-period,week-config,timeMatching}.test.ts`.
 - Composants : `src/lib/components/cours/**/__tests__/` (dont

@@ -41,7 +41,7 @@
 		Plus
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import ProgrammePointLabel from '$lib/components/programme/ProgrammePointLabel.svelte';
 
 	interface Props {
 		data: PageData;
@@ -212,24 +212,31 @@
 	const initialCovered: Record<string, string> = {};
 	for (const c of initialData.coveredPoints) initialCovered[c.point_id] = c.source;
 	let coveredSource = $state<Record<string, string>>(initialCovered);
-	let openProgThemes = $state<Record<string, boolean>>({});
-	let openProgItems = $state<Record<string, boolean>>({});
-	let coveredCount = $derived(Object.keys(coveredSource).length);
+	let openProgBranches = $state<Record<string, boolean>>({});
+	let openProgNotions = $state<Record<string, boolean>>({});
+	// Seuls les points de l'arbre comptent : un ancien point coché (thème →
+	// objectif) n'est plus affiché, il ne doit pas gonfler le total.
+	let treePointIds = $derived(
+		new Set(data.curriculumTree.flatMap((b) => b.notions.flatMap((n) => n.points.map((p) => p.id))))
+	);
+	let coveredCount = $derived(
+		Object.keys(coveredSource).filter((id) => treePointIds.has(id)).length
+	);
 
 	function isCovered(pointId: string): boolean {
 		return coveredSource[pointId] !== undefined;
 	}
 
 	/**
-	 * Nombre de points cochés dans un thème.
+	 * Nombre de points cochés dans une branche.
 	 *
 	 * L'arbre est replié par défaut : sans ce compte sur l'en-tête, une séance
 	 * dont la couverture est enregistrée paraît vide, et il faut ouvrir les
-	 * thèmes un par un pour retrouver ce qu'on a coché.
+	 * branches une par une pour retrouver ce qu'on a coché.
 	 */
-	function coveredInTheme(theme: PageData['curriculumTree'][number]): number {
-		return theme.objectives.reduce(
-			(n, item) => n + item.points.filter((p) => isCovered(p.id)).length,
+	function coveredInBranch(branch: PageData['curriculumTree'][number]): number {
+		return branch.notions.reduce(
+			(n, notion) => n + notion.points.filter((p) => isCovered(p.id)).length,
 			0
 		);
 	}
@@ -241,6 +248,8 @@
 				headers: body ? { 'Content-Type': 'application/json' } : undefined,
 				body: body ? JSON.stringify(body) : undefined
 			});
+			// Décocher un point qui ne l'est déjà plus (autre onglet) : l'état voulu est atteint.
+			if (method === 'DELETE' && res.status === 404) return true;
 			if (!res.ok) {
 				const j = await res.json().catch(() => ({}));
 				toaster.error(j?.error ?? 'Une erreur est survenue');
@@ -887,53 +896,53 @@
 					</p>
 				{:else}
 					<div class="space-y-1">
-						{#each data.curriculumTree as theme (theme.id)}
+						{#each data.curriculumTree as branch (branch.id)}
 							<div class="rounded-md border">
 								<button
 									class="flex w-full items-center gap-2 p-2 text-left font-medium"
-									onclick={() => (openProgThemes[theme.id] = !openProgThemes[theme.id])}
+									onclick={() => (openProgBranches[branch.id] = !openProgBranches[branch.id])}
 								>
-									{#if openProgThemes[theme.id]}
+									{#if openProgBranches[branch.id]}
 										<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
 									{:else}
 										<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 									{/if}
-									<InlineMarkdown content={theme.name} />
-									{#if coveredInTheme(theme) > 0}
-										<Badge class="ml-auto shrink-0">{coveredInTheme(theme)}</Badge>
+									{branch.name}
+									{#if coveredInBranch(branch) > 0}
+										<Badge class="ml-auto shrink-0">{coveredInBranch(branch)}</Badge>
 									{/if}
 								</button>
-								{#if openProgThemes[theme.id]}
+								{#if openProgBranches[branch.id]}
 									<div class="space-y-1 border-t p-2 pl-4">
-										{#each theme.objectives as item (item.id)}
-											{@const couverts = item.points.filter((p) => isCovered(p.id)).length}
+										{#each branch.notions as notion (notion.id)}
+											{@const couverts = notion.points.filter((p) => isCovered(p.id)).length}
 											<div>
 												<button
 													class="flex w-full items-center gap-2 py-1 text-left text-sm"
-													onclick={() => (openProgItems[item.id] = !openProgItems[item.id])}
+													onclick={() => (openProgNotions[notion.id] = !openProgNotions[notion.id])}
 												>
-													{#if openProgItems[item.id]}
+													{#if openProgNotions[notion.id]}
 														<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
 													{:else}
 														<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 													{/if}
-													<span class="font-medium"><InlineMarkdown content={item.name} /></span>
+													<span class="font-medium">{notion.name}</span>
 													<span
 														class="text-xs {couverts > 0
 															? 'font-medium text-primary'
 															: 'text-muted-foreground'}"
 													>
-														({couverts}/{item.points.length})
+														({couverts}/{notion.points.length})
 													</span>
 												</button>
-												{#if openProgItems[item.id]}
+												{#if openProgNotions[notion.id]}
 													<div class="space-y-1 py-1 pl-6">
-														{#each item.points as point (point.id)}
+														{#each notion.points as point (point.id)}
 															<MyCheckbox
 																checked={isCovered(point.id)}
 																onchange={() => togglePoint(point)}
 															>
-																<InlineMarkdown content={point.name} />
+																<ProgrammePointLabel {point} />
 																{#if coveredSource[point.id] === 'auto'}
 																	<span class="text-muted-foreground">(auto)</span>
 																{/if}

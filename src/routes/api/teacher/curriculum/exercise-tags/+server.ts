@@ -14,6 +14,7 @@ import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { exerciseTagSchema, exerciseTagListQuerySchema } from '$lib/server/validation/curriculum';
 import { curriculumDbError } from '$lib/server/curriculum';
+import { readPointGeneration } from '$lib/server/curriculum-generation';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/teacher/curriculum/exercise-tags/+server');
@@ -56,6 +57,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
+	// Q2 (C5, B2) : seuls les points neufs se taguent ; un ancien point n'est plus proposé.
+	let generation: Awaited<ReturnType<typeof readPointGeneration>>;
+	try {
+		generation = await readPointGeneration(locals.supabase, parsed.data.point_id);
+	} catch (e) {
+		logger.error('[curriculum] exercise-tags POST point read failed:', e);
+		return json({ error: 'Erreur serveur' }, { status: 500 });
+	}
+	if (generation === 'introuvable') {
+		return json({ error: 'Référence introuvable' }, { status: 400 });
+	}
+	if (generation === 'ancien') {
+		return json({ error: 'Point hors programme' }, { status: 400 });
+	}
+
 	const { error: dbErr } = await locals.supabase
 		.from('exercise_curriculum_points')
 		.insert({ exercise_id: parsed.data.exercise_id, point_id: parsed.data.point_id });
@@ -85,17 +101,22 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		return json({ error: 'exercise_id et point_id requis (UUID)' }, { status: 400 });
 	}
 
-	const { error: dbErr } = await locals.supabase
+	// `.select()` : un refus RLS rend zéro ligne sans erreur, il ne doit pas passer pour un succès.
+	const { data: deleted, error: dbErr } = await locals.supabase
 		.from('exercise_curriculum_points')
 		.delete()
 		.eq('exercise_id', parsed.data.exercise_id)
-		.eq('point_id', parsed.data.point_id);
+		.eq('point_id', parsed.data.point_id)
+		.select('point_id');
 
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] exercise-tags DELETE failed:', dbErr);
-		return json({ error: dbErr.message }, { status: 500 });
+		return json({ error: 'Erreur serveur' }, { status: 500 });
+	}
+	if (!deleted || deleted.length === 0) {
+		return json({ error: 'Tag introuvable ou non modifiable' }, { status: 404 });
 	}
 
 	return json({ success: true });

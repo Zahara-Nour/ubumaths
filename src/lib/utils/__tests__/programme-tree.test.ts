@@ -186,6 +186,13 @@ describe('archivés', () => {
 		expect(visible.map((b) => b.id)).toEqual(['b-nombres']);
 		expect(visible[0].notions[0].points.map((p) => p.id)).toEqual(['p1']);
 	});
+
+	it('garde un archivé déjà coché (pour pouvoir le décocher), et sa branche avec lui', () => {
+		const visible = hideArchivedPoints(tree, new Set(['p3']));
+		expect(visible.map((b) => b.id)).toEqual(['b-geo', 'b-nombres']);
+		expect(visible[0].notions[0].points.map((p) => p.id)).toEqual(['p3']);
+		expect(visible[1].notions[0].points.map((p) => p.id)).toEqual(['p1']);
+	});
 });
 
 describe('placeOfNode', () => {

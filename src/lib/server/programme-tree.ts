@@ -13,6 +13,7 @@
 import type { ClassificationNode } from '$lib/types/database-helpers';
 import {
 	buildProgrammeTree,
+	hideArchivedPoints,
 	type ProgrammeBranch,
 	type ProgrammePointRow
 } from '$lib/utils/programme-tree';
@@ -86,4 +87,18 @@ export async function getProgrammeTree(
 	const nodeIds = points.map((p) => p.node_id).filter((id): id is string => id !== null);
 	const nodes = await loadNodesWithAncestors(supabase, nodeIds);
 	return buildProgrammeTree(points, nodes);
+}
+
+/**
+ * L'arbre d'un niveau pour un écran où l'on coche des points (cahier de texte,
+ * avancement, tags d'un exercice) : les archivés y sont masqués, sauf ceux de
+ * `keep` — déjà cochés ou tagués, qu'il faut pouvoir décocher.
+ */
+export async function getProgrammeTreeKeeping(
+	supabase: App.Locals['supabase'],
+	grade: string,
+	keep: Iterable<string>
+): Promise<ProgrammeBranch[]> {
+	const tree = await getProgrammeTree(supabase, grade, { includeArchived: true });
+	return hideArchivedPoints(tree, new Set(keep));
 }
