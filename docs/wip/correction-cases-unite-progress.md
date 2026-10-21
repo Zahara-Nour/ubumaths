@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-20 : PR 2 bis mise de côté par David._
+_Mis à jour le 2026-10-21 : phase 0 de la PR 2 bis rédigée, en attente de David._
 
-- **État** : PR 1-3 mergées (#1543, #1545, #1547). PR 2 bis (découpage « nombre | unité ») **mise de côté** : David veut d'abord des parseurs de mathAST cohérents avec le BIPM (chantier `lecture-grandeurs`). Rien en prod.
-- **Prochaine action** : reprendre la PR 2 bis : `lecture-grandeurs` a fixé la lecture (clos le 2026-10-21, [ADR 0031](../adr/0031-parseur-maison-langue-interne-bipm.md) ; corpus : `docs/archive/wip/lecture-grandeurs-corpus.md`).
-- **En attente de David** : verdict du calcul juste non effectué (`2×3 m`, `3 m + 2 m`) ; marquage des unités MathLive (code partagé avec la carte, ou fonction de mathAST).
-- **Phase 0 déjà tranchée** : `3+2 m` → « On ne peut pas ajouter un nombre sans unité et une longueur. » ; `2√2 m` → « Valeur incorrecte. » ; `(-3) m` → JUSTE + parenthèses inutiles ; `.5 m` → refus (BIPM §5.4.4).
-- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage`, aucun commit (sondes non suivies dans `src/lib/questions/units/__tests__/tmp/`).
+- **État** : PR 1-3 mergées (#1543, #1545, #1547). PR 2 bis reprise après `lecture-grandeurs` ([ADR 0031](../adr/0031-parseur-maison-langue-interne-bipm.md)). Rien en prod.
+- **Prochaine action** : après validation, tests rouges (cas A-E de la phase 0 du 2026-10-21) puis code dans `questions/units`.
+- **En attente de David** : validation de la phase 0 du 2026-10-21 (section en bas du journal).
+- **Tranché le 2026-10-21** : calcul non effectué de même grandeur → `bad_form` comme sans unité ; découpage #411 gardé, seconde lecture en arbre seulement s'il échoue ; le code de la carte de l'Atelier n'est PAS réutilisé (`5m` y est un produit).
+- **Pièges en cours** : `3+2 m` réduit par `tidy` reste « 3 + 2 m » et `validateQuantityAnswer` le croit juste → exiger une seule grandeur ; messages d'unité validés (ne pas reformuler).
+- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage` (avancée sur `origin/main` le 2026-10-21) ; sondes non suivies dans `src/lib/questions/units/__tests__/tmp/`.
 
 ## Historique
 
@@ -141,3 +142,42 @@ Constats (verdict actuel vs route `tidy` = `valueIn(arbre élève, unité attend
   `2\unit{m}\times3\unit{m}` = (2 m) × (3 m) → 6 m² ; `10^{3}\unit{m}`, `\frac{1}{2}\unit{m}`, `\sqrt{2}\unit{m}` :
   le facteur entier porte l'unité. Correction de David : `3+2 m` est 3 + (2 m), `2×3 m` est 2 × (3 m).
 - #1552 : dans l'atelier, `2 m*3 m` donnait `2[m]*3 m` (m pris pour une lettre) → (2 m) × (3 m).
+
+### 2026-10-21 — PR 2 bis, phase 0 (à valider)
+
+Tranché par David le 2026-10-21 (suit ma reco) :
+
+- Calcul écrit mais non effectué, de la bonne grandeur → FAUX `bad_form`, comme une case sans unité
+  (`2\times3` pour 6 : « Ta réponse n'est pas écrite sous la forme demandée. », mesuré).
+- Découpage #411 (`normalizeStudentQuantity`) gardé pour tout ce qu'il lit ; seconde lecture en arbre
+  seulement quand il échoue. Le code de la carte de l'Atelier (`definitionFromField`) n'est pas repris :
+  `5m` y est un produit, dans une case 5 mètres.
+
+Seconde lecture (nouvelle fonction dans `questions/units`) : marquer les unités (`\operatorname{\mathrm{u}}`,
+`\mathrm{u}`, `\min`, degré ; lettres nues juste après un chiffre ou une parenthèse si elles forment une
+unité connue) en `\unit{u}` → `parseLatex` (lecture ADR 0031) → contrôle des dimensions (`quantityProblem`)
+→ `tidy` → doit donner UNE grandeur (nombre rationnel × unité), comparée par la correction existante.
+
+Comportements (mesurés par sonde le 2026-10-21, sauf « nouveau ») :
+
+| Cas                                | Saisie                                                                                    | Attendu | Aujourd'hui                         | Après                                                                                |
+| ---------------------------------- | ----------------------------------------------------------------------------------------- | ------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
+| A nominal                          | `6 m`, `6m`, `2,5 km`, `90 km/h`, `1,5·10³ m`, `12 500 m`, `−1/2 m`                       | idem    | JUSTE                               | inchangé                                                                             |
+| A nominal                          | `6/2 m`                                                                                   | 3 m     | perfectible (fraction)              | inchangé                                                                             |
+| B calcul, bonne grandeur           | `2×3 m`, `2×3m`, `3 m + 2 m`, `3m+2m`, `(3+2) m`, `10^3 m`, `2^3 m`, `1/2×4 m`, `2,5×2 m` | 6 m…    | FAUX « Unité inconnue : .3 m » etc. | FAUX `bad_form`, « Ta réponse n'est pas écrite sous la forme demandée. »             |
+| B                                  | `2 m × 3 m`                                                                               | 6 m²    | « Unité inconnue : m.3 m »          | idem B                                                                               |
+| B                                  | `3 h + 30 min`                                                                            | 210 min | « Unité inconnue : h +30 min »      | idem B                                                                               |
+| C calcul, valeur fausse            | `2×3 m`                                                                                   | 7 m     | « Unité inconnue : .3 m »           | « Valeur incorrecte. »                                                               |
+| C calcul, autre grandeur           | `2×3 kg`                                                                                  | 6 m     | « Unité inconnue »                  | « Cette unité ne mesure pas la bonne grandeur. »                                     |
+| D nombre + grandeur (déjà tranché) | `3+2 m`                                                                                   | 5 m     | « Unité inconnue : +2 m »           | « On ne peut pas ajouter un nombre sans unité et une longueur. » (`quantityProblem`) |
+| D irrationnel (déjà tranché)       | `2√2 m`, `3π m`                                                                           | 3 m     | « Unité inconnue : \sqrt{2} m »     | « Valeur incorrecte. »                                                               |
+| E déjà tranché                     | `(−3) m`                                                                                  | −3 m    | « Réponse invalide »                | JUSTE perfectible, « Il y a des parenthèses inutiles. »                              |
+| E déjà tranché                     | `.5 m`                                                                                    | 0,5 m   | « Réponse invalide »                | inchangé (refus, BIPM §5.4.4)                                                        |
+| erreur                             | `3x m` (lettre)                                                                           | 3 m     | « Unité inconnue : x m »            | « Réponse invalide : vérifier le format. »                                           |
+| erreur                             | `5xyz` (aucune unité)                                                                     | 5 m     | « Unité inconnue : xyz »            | inchangé                                                                             |
+
+- Cohérence assumée : `10^3 m` refusé (`bad_form`) alors que `1,5·10³ m` est juste — comme sans unité
+  (`10^{3}` pour 1000 : `bad_form`, mesuré).
+- Oracle des 25 modèles publiés : 0 changement attendu (aucune saisie élève en prod).
+- Exécution : tests rouges puis code par moi (2-3 fichiers de `questions/units`) ; revue `code-reviewer`
+  en opus (correction des réponses).
