@@ -2,7 +2,6 @@
 	"title": "Python : générer les paires, les triplets, les parties",
 	"description": "Lire un programme qui énumère des objets : paires i < j (C(n, 2)), couples i ≠ j (n(n − 1)), triplets i < j < k (C(n, 3)), liste des parties (2ⁿ), ligne du triangle de Pascal (pièges : confondre i < j et i ≠ j)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-050", "TSPE-048", "TSPE-043", "TSPE-033"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "Algorithmique",

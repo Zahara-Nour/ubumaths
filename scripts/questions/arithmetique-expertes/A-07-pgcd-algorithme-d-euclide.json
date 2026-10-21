@@ -2,7 +2,6 @@
 	"title": "PGCD de deux entiers, algorithme d'Euclide",
 	"description": "PGCD de deux entiers par les diviseurs ou par l'algorithme d'Euclide, et en situation (bouquets identiques) (pièges : PPCM, produit, dernier quotient au lieu du dernier reste non nul)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-084", "TEXP-085", "TEXP-089"],
 	"theme": "Arithmétique",
 	"domain": "PGCD, Bézout et Gauss",
 	"subdomain": "PGCD",

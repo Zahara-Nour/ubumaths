@@ -2,7 +2,6 @@
 	"title": "Définition de la limite : un rang à partir duquel tous les termes conviennent",
 	"description": "Donner UN entier N tel que tous les termes uₙ pour n ≥ N sont dans [A ; +∞[, dans ]ℓ − ε ; ℓ + ε[ ou dans ]−∞ ; −A] (toute réponse qui convient est juste ; pièges : rang trop petit, rang non entier)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-106", "TSPE-107", "TSPE-108"],
 	"theme": "Suites",
 	"domain": "Limites de suites",
 	"subdomain": "Définition de la limite",

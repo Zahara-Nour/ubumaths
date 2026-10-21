@@ -2,7 +2,6 @@
 	"title": "Matrice d'adjacence d'un graphe",
 	"description": "Écrire une ligne de la matrice d'adjacence d'un graphe donné par sa figure, lire degré et nombre d'arêtes sur la matrice, arcs sortants d'un graphe orienté (pièges : 1 sur la diagonale, ligne et colonne confondues pour un graphe orienté, somme des coefficients non divisée par 2)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-117", "TEXP-114"],
 	"theme": "Graphes et matrices",
 	"domain": "Graphes",
 	"subdomain": "Matrice d'adjacence",

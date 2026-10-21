@@ -2,7 +2,6 @@
 	"title": "Chaîne de Markov : distribution après n transitions",
 	"description": "Calculer π₁ = π₀P et π₂, lire une probabilité de transition en n étapes dans Pⁿ (pièges : Pπ₀ en colonne au lieu de π₀P en ligne, coefficient (j, i) de Pⁿ au lieu de (i, j), π₂ = 2π₁)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-141", "TEXP-144", "TEXP-147", "TEXP-143"],
 	"theme": "Graphes et matrices",
 	"domain": "Chaînes de Markov",
 	"subdomain": "Chaînes de Markov",

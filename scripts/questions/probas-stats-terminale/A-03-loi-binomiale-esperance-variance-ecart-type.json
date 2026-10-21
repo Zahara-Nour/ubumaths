@@ -2,7 +2,6 @@
 	"title": "Loi binomiale et loi de Bernoulli : espérance, variance, écart type",
 	"description": "E(X) = np, V(X) = np(1 − p), σ(X) = √(np(1 − p)) ; Bernoulli : V = p(1 − p) ; nombre moyen de succès (pièges : np(1 − p) contre np, variance contre écart type)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-089", "TCOMP-085", "TCOMP-098", "TSPE-245", "TSPE-225", "TSPE-249"],
 	"theme": "Probabilités",
 	"domain": "Loi binomiale",
 	"subdomain": "Espérance et variance",

@@ -2,7 +2,6 @@
 	"title": "Espace : norme d'un vecteur, distance entre deux points",
 	"description": "Norme d'un vecteur et distance AB en repère orthonormé, valeur exacte (pièges : racine oubliée, z oublié, racine non simplifiée)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-071", "TSPE-072", "TSPE-081"],
 	"theme": "Géométrie",
 	"domain": "Orthogonalité et distances dans l'espace",
 	"subdomain": "Norme et distance",

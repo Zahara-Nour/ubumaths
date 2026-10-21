@@ -2,7 +2,6 @@
 	"title": "Loi binomiale : utiliser une table de P(X ⩽ k)",
 	"description": "Extrait de table des probabilités cumulées fourni : P(X > k), P(X = k), P(a ⩽ X ⩽ b), seuil, intervalle de fluctuation [a ; b] (pièges : 1 − P(X ⩽ k − 1), F(b) − F(a) au lieu de F(b) − F(a − 1))",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-095", "TCOMP-097", "TSPE-233", "TSPE-234", "TSPE-232"],
 	"theme": "Probabilités",
 	"domain": "Loi binomiale",
 	"subdomain": "Calcul de probabilités",

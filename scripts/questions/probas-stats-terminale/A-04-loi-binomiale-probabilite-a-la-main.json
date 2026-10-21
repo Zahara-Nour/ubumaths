@@ -2,7 +2,6 @@
 	"title": "Loi binomiale : P(X = k), P(X = 0), P(X ⩾ 1) à la main (n ⩽ 5)",
 	"description": "Calcul exact de P(X = k) = C(n, k)pᵏ(1 − p)ⁿ⁻ᵏ pour n ⩽ 5, de P(X = 0) et de P(X ⩾ 1) par l'événement contraire (pièges : coefficient binomial oublié, p et 1 − p échangés, 1 − pⁿ)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-089", "TCOMP-095", "TCOMP-101", "TSPE-227", "TSPE-233", "TSPE-224"],
 	"theme": "Probabilités",
 	"domain": "Loi binomiale",
 	"subdomain": "Calcul de probabilités",

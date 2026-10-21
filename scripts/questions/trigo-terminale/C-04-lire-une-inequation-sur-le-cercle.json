@@ -2,7 +2,6 @@
 	"title": "Reconnaître une équation ou une inéquation sur le cercle trigonométrique",
 	"description": "Arc ou points du cercle (mesures principales) : retrouver cos x ⩾ a, sin x ⩾ a ou sin x = a (pièges : cosinus = abscisse et sinus = ordonnée confondus, sens, signe)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-183", "TSPE-185", "TSPE-186"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Équations et inéquations",

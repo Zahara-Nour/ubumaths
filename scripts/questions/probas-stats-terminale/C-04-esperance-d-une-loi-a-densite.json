@@ -2,7 +2,6 @@
 	"title": "Espérance d'une loi à densité par une intégrale",
 	"description": "E(X) = ∫ x f(x) dx pour des densités polynomiales simples sur [0 ; a] (pièges : ∫ f(x) dx = 1 au lieu de ∫ x f(x) dx, milieu de l'intervalle)",
 	"grades": ["T_COMP"],
-	"points": ["TCOMP-108", "TCOMP-113"],
 	"theme": "Probabilités",
 	"domain": "Lois à densité",
 	"subdomain": "Espérance",

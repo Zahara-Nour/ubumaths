@@ -2,7 +2,6 @@
 	"title": "Espace : calculer un produit scalaire",
 	"description": "Produit scalaire en repère orthonormé (coordonnées, AB·AC) et par polarisation (pièges : z oublié, OB·OC, division par 2 oubliée)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-068", "TSPE-070", "TSPE-071", "TSPE-073"],
 	"theme": "Géométrie",
 	"domain": "Orthogonalité et distances dans l'espace",
 	"subdomain": "Produit scalaire",

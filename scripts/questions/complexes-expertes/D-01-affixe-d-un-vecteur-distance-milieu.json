@@ -2,7 +2,6 @@
 	"title": "Affixe d'un vecteur, distance, milieu, parallélogramme",
 	"description": "z_B − z_A, AB = |z_B − z_A|, milieu (z_A + z_B)/2, quatrième sommet d'un parallélogramme (pièges : z_A − z_B, |z_B| − |z_A|, mauvais sommet)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-012", "TEXP-062", "TEXP-013", "TEXP-023"],
 	"theme": "Nombres complexes",
 	"domain": "Géométrie et nombres complexes",
 	"subdomain": "Affixes et distances",

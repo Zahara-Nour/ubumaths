@@ -2,7 +2,6 @@
 	"title": "Calculer une dérivée seconde",
 	"description": "Dériver deux fois : polynôme, (ax+b)eˣ, ax² + b·ln x, k·eᵃˣ (piège : donner f′ au lieu de f″)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-060", "TSPE-138"],
 	"theme": "Fonctions convexes",
 	"domain": "Convexité",
 	"subdomain": "Dérivée seconde",

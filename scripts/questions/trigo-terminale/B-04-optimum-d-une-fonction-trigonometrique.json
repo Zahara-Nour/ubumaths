@@ -2,7 +2,6 @@
 	"title": "Optimum d'une fonction avec cos ou sin",
 	"description": "Abscisse du minimum de cx − 2 sin x, du maximum de 2 sin x − cx sur [0 ; π], valeur minimale de x − 2 sin x (pièges : cos et sin confondus, π − α, abscisse au lieu de la valeur)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-187", "TSPE-182"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Dérivées et variations",

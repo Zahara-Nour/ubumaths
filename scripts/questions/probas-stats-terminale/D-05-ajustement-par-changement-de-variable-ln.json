@@ -2,7 +2,6 @@
 	"title": "Ajustement par changement de variable z = ln(y)",
 	"description": "Ajustement affine de z = ln(y) donné : calculer un zᵢ, revenir à y = e^b × e^(ax), estimer y ou un seuil en x (pièges : oubli de l'exponentielle, e^b non calculé, x non entier)",
 	"grades": ["T_COMP"],
-	"points": ["TCOMP-119", "TCOMP-124", "TCOMP-120"],
 	"theme": "Statistiques",
 	"domain": "Statistique à deux variables",
 	"subdomain": "Changement de variable",

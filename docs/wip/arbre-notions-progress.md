@@ -1244,3 +1244,14 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   niveau apparaît (règle « aucun point du niveau → tous ») ; `branchId` inconnu → courbe vide sans erreur.
   Écart à la phase 0 signalé à David : règle `keepLinksOfGrade` gardée (carte d'un autre niveau sans point du
   niveau de la classe = colonne gardée).
+- **2026-10-21 — Étape 3, PR E, phase 0 validée par David** (« je te suis », worktree `ubumaths-wt-arbre-notions`,
+  branche `refactor/arbre-bascule-e`). Constat : l'éditeur et les routes thèmes / objectifs étaient déjà partis avec
+  #1060 ; `src/` ne lit plus les tables. E retire les rattachements par CODE (Q8) : `link-template-points.ts`,
+  `scripts/lib/template-points*.ts` et leurs tests, la lecture de `"points"` dans `create-questions.ts`
+  (`--remplacer-points`, `--liens-publies`) et `question-specs.ts` ; deux générateurs morts
+  (`generate-curriculum-seed.ts`, `generate-competence-seeds.ts`) ; types `CurriculumTheme` / `CurriculumObjective`.
+  **Q1 (a)** : `"points"` retiré des 398 JSON de `scripts/questions` (contrôle : chaque fichier relu identique hors
+  `points`) ; un fichier qui le porte encore est refusé (`readTemplateFile`, `scripts/lib/template-file.ts`).
+  **Q2** : les 1 026 liens de modèles vers les anciens points restent jusqu'à l'étape 4. Restent aussi jusque-là :
+  tables, 8 fonctions SQL, tests d'intégration de l'ancien monde, copie par `db:seed-riche`. Accès : rien ne change,
+  pas de migration.

@@ -2,7 +2,6 @@
 	"title": "Primitive de u′eᵘ, 2uu′ ou u′/u vérifiant une condition",
 	"description": "Reconnaître u′eᵘ, 2uu′ ou u′/u (à un facteur constant près) puis fixer la constante par F(x₀) = y₀",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-053", "TCOMP-048", "TSPE-194", "TSPE-190"],
 	"theme": "Primitives et équations différentielles",
 	"domain": "Primitives",
 	"subdomain": "Formes u′eᵘ, 2uu′, u′/u",

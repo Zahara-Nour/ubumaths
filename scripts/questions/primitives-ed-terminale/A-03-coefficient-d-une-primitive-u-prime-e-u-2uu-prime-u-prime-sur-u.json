@@ -2,7 +2,6 @@
 	"title": "Coefficient d'une primitive de la forme u′eᵘ, 2uu′ ou u′/u",
 	"description": "Trouver k pour que k·eᵘ, k·u² ou k·ln(u) soit une primitive de f : diviser par le facteur manquant de u′ (piège : multiplier)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-053", "TSPE-194"],
 	"theme": "Primitives et équations différentielles",
 	"domain": "Primitives",
 	"subdomain": "Formes u′eᵘ, 2uu′, u′/u",

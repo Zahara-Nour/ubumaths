@@ -2,7 +2,6 @@
 	"title": "Espace : calculer un angle avec le produit scalaire",
 	"description": "Mesure en degrés de l'angle BAC à partir de AB·AC calculé en coordonnées puis avec les normes (pièges : angle supplémentaire, cosinus donné)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-080", "TSPE-071"],
 	"theme": "Géométrie",
 	"domain": "Orthogonalité et distances dans l'espace",
 	"subdomain": "Angles",

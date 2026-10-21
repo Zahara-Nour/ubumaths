@@ -2,7 +2,6 @@
 	"title": "Dérivée d'une fonction avec ln",
 	"description": "(ln x)′ = 1/x dans une somme, un produit x ln x, un quotient ln x / x et (ln x)² (pièges : (ln x)′ = ln x, (uv)′ = u′v′, (ln x)² confondu avec ln(x²))",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-025", "TCOMP-027", "TCOMP-026", "TSPE-169", "TSPE-143"],
 	"theme": "Fonctions",
 	"domain": "Fonction logarithme",
 	"subdomain": "Dérivée",

@@ -2,7 +2,6 @@
 	"title": "Espace : plans perpendiculaires, droite orthogonale à un plan",
 	"description": "Décider (QCM) si deux plans sont perpendiculaires (vecteurs normaux orthogonaux), si une droite est orthogonale à un plan (vecteur directeur colinéaire au vecteur normal)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-074", "TSPE-077", "TSPE-079", "TSPE-084"],
 	"theme": "Géométrie",
 	"domain": "Orthogonalité et distances dans l'espace",
 	"subdomain": "Orthogonalité droites et plans",

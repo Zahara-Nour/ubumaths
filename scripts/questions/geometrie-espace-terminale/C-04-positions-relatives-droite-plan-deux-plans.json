@@ -2,7 +2,6 @@
 	"title": "Espace : positions relatives d'une droite et d'un plan, de deux plans",
 	"description": "Décider (QCM) si une droite et un plan sont sécants, strictement parallèles ou si la droite est incluse ; si deux plans sont sécants, strictement parallèles ou confondus",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-061", "TSPE-099", "TSPE-100"],
 	"theme": "Géométrie",
 	"domain": "Représentations paramétriques et équations cartésiennes",
 	"subdomain": "Positions relatives",

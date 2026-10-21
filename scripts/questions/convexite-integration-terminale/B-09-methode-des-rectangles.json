@@ -2,7 +2,6 @@
 	"title": "Méthode des rectangles : calculer la somme pour n petit",
 	"description": "Somme des aires de n rectangles de même largeur (b − a)/n, hauteur à gauche ou à droite (pièges : oublier la largeur, mauvais côté)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-071", "TSPE-221"],
 	"theme": "Intégration",
 	"domain": "Calcul intégral",
 	"subdomain": "Méthode des rectangles",

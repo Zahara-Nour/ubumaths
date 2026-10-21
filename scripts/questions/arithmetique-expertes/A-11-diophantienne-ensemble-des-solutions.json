@@ -2,7 +2,6 @@
 	"title": "Équation diophantienne ax + by = c : ensemble des solutions",
 	"description": "Choisir l'ensemble des solutions de ax + by = c à partir d'une solution particulière, avec ou sans PGCD à diviser, ou reconnaître l'absence de solution (pièges : a et b inversés, signe, oubli de diviser par le PGCD)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-090", "TEXP-088"],
 	"theme": "Arithmétique",
 	"domain": "PGCD, Bézout et Gauss",
 	"subdomain": "Équations diophantiennes",

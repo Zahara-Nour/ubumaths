@@ -2,7 +2,6 @@
 	"title": "Gauss, Bézout, premiers entre eux : quelle conclusion ?",
 	"description": "Choisir la conclusion correcte du théorème de Gauss ou de Bézout (pièges : conclure sur le mauvais facteur, oublier l'hypothèse « premiers entre eux », croire que au + bv = d donne PGCD(a, b) = d)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-088", "TEXP-087", "TEXP-086"],
 	"theme": "Arithmétique",
 	"domain": "PGCD, Bézout et Gauss",
 	"subdomain": "PGCD, Bézout et Gauss",

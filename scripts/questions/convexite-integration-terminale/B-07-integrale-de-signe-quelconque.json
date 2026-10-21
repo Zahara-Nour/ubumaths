@@ -2,7 +2,6 @@
 	"title": "Intégrale d'une fonction de signe quelconque : aire algébrique",
 	"description": "Les aires sous l'axe comptent négativement dans l'intégrale ; l'aire géométrique les compte positivement (piège : confondre les deux)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-072", "TSPE-205"],
 	"theme": "Intégration",
 	"domain": "Intégrale et aire",
 	"subdomain": "Aire algébrique",

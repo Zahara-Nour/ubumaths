@@ -2,7 +2,6 @@
 	"title": "Matrice d'une rotation, d'une symétrie, d'une homothétie",
 	"description": "Écrire la matrice d'une transformation du plan : rotation de centre O d'angle remarquable, symétrie d'axe (Ox), (Oy), y = x ou y = −x, homothétie de centre O, application (x ; y) ↦ (ax + by ; cx + dy) (pièges : matrice transposée, rotation d'angle opposé, axes (Ox) et (Oy) confondus, valeurs décimales approchées)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-127", "TEXP-122", "TEXP-124"],
 	"theme": "Graphes et matrices",
 	"domain": "Matrices",
 	"subdomain": "Transformations du plan",

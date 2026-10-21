@@ -2,7 +2,6 @@
 	"title": "Image d'un point par une transformation, composée = produit de matrices",
 	"description": "Calculer l'image d'un point par la matrice d'une transformation, par une rotation de centre O d'angle ±π/2 ou π, la matrice d'une composée (produit dans le bon ordre), un antécédent par la matrice inverse (pièges : produit ligne × matrice, ordre de la composée inversé, multiplier par A au lieu de A⁻¹)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-127", "TEXP-124", "TEXP-125"],
 	"theme": "Graphes et matrices",
 	"domain": "Matrices",
 	"subdomain": "Transformations du plan",

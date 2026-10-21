@@ -2,7 +2,6 @@
 	"title": "Inverse modulo n et congruence ax ≡ b [n]",
 	"description": "Déterminer un inverse de a modulo n premier, résoudre ax ≡ b [n] dans {0, …, n − 1} ou donner une solution quelconque (pièges : diviser b par a, multiplier par a au lieu de l'inverse, solution hors de {0, …, n − 1})",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-076", "TEXP-077"],
 	"theme": "Arithmétique",
 	"domain": "Congruences",
 	"subdomain": "Congruences",

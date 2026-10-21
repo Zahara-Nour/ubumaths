@@ -2,7 +2,6 @@
 	"title": "Chiffrement affine : clé valable et formule de déchiffrement",
 	"description": "Reconnaître la condition PGCD(a, 26) = 1 pour qu'un chiffrement affine se déchiffre, ce qui se passe sinon, et la formule de déchiffrement x ≡ a'(y − b) [26] (pièges : « a premier » ou « a impair » au lieu de « premier avec 26 », division par a, a' appliqué avant de retrancher b)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-080", "TEXP-077", "TEXP-086"],
 	"theme": "Arithmétique",
 	"domain": "Congruences",
 	"subdomain": "Chiffrement",

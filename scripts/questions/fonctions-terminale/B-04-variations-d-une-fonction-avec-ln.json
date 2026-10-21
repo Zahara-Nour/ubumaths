@@ -2,7 +2,6 @@
 	"title": "Intervalle de croissance ou de décroissance d'une fonction avec ln",
 	"description": "Signe de f′ pour x − a ln x, a ln x − bx, x ln x − ax sur ]0 ; +∞[ ; réponse en intervalle, bornes fermées ouvrables (pièges : domaine x > 0 oublié, sens, (x ln x)′)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-029", "TCOMP-025", "TCOMP-027", "TSPE-145", "TSPE-169", "TSPE-143"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"subdomain": "Variations",

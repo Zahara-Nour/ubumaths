@@ -2,7 +2,6 @@
 	"title": "Limite d'une somme de termes d'une suite géométrique",
 	"description": "1 + q + … + qⁿ → 1/(1 − q) pour 0 < q < 1, multipliée par le premier terme (pièges : oubli du premier terme, 1/(1 + q), +∞ car on ajoute des termes positifs)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-005", "TCOMP-009", "TSPE-111"],
 	"theme": "Suites",
 	"domain": "Limites de suites",
 	"subdomain": "Sommes géométriques",

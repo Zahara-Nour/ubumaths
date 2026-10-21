@@ -2,7 +2,6 @@
 	"title": "Aire entre deux courbes",
 	"description": "Aire = ∫ₐᵇ (f(x) − g(x)) dx quand C_f est au-dessus de C_g (pièges : g − f, oubli d'une des deux fonctions)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-079", "TSPE-214"],
 	"theme": "Intégration",
 	"domain": "Intégrale et aire",
 	"subdomain": "Aire entre deux courbes",

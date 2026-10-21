@@ -2,7 +2,6 @@
 	"title": "Allure des solutions de y′ = ay + b",
 	"description": "QCM : relier le signe de a et la solution constante −b/a à l'allure de la courbe (sens de variation, asymptote horizontale, limite en +∞)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-050", "TSPE-192", "TSPE-193"],
 	"theme": "Primitives et équations différentielles",
 	"domain": "Équations différentielles",
 	"subdomain": "Allure des courbes",

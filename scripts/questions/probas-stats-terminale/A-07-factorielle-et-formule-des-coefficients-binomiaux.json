@@ -2,7 +2,6 @@
 	"title": "Factorielle, arrangements et formule des coefficients binomiaux",
 	"description": "n!, nombre de k-uplets d'éléments distincts, C(n, 2) = n(n − 1)/2 et C(n, 3) par la formule (pièges : n(n − 1) sans diviser par 2, C(n, 3) pour un podium ordonné)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-038", "TSPE-039", "TSPE-035", "TSPE-036", "TSPE-034", "TSPE-044"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "Coefficients binomiaux",

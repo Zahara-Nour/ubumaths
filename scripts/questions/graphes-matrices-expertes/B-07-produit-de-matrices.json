@@ -2,7 +2,6 @@
 	"title": "Produit de matrices : AB, matrice × colonne, ligne × matrice",
 	"description": "Calculer un produit de matrices 2 × 2, un produit matrice × colonne et ligne × matrice (pièges : BA au lieu de AB, produit coefficient par coefficient, ligne et colonne inversées)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-124", "TEXP-123"],
 	"theme": "Graphes et matrices",
 	"domain": "Matrices",
 	"subdomain": "Calcul matriciel",

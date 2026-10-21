@@ -2,7 +2,6 @@
 	"title": "Espace : orthogonalité, trouver le paramètre",
 	"description": "Déterminer m pour que deux vecteurs, ou deux droites (AB) et (CD), soient orthogonaux (pièges : signe, z oublié, xC oublié)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-069", "TSPE-074", "TSPE-078", "TSPE-084"],
 	"theme": "Géométrie",
 	"domain": "Orthogonalité et distances dans l'espace",
 	"subdomain": "Orthogonalité",

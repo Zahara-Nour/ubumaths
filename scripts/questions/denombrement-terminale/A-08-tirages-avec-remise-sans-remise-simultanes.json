@@ -2,7 +2,6 @@
 	"title": "Tirages dans une urne : avec remise, sans remise, simultanés",
 	"description": "Une même urne, trois façons de tirer : nᵏ, n!/(n − k)!, C(n, k) ; puis tirages contenant une boule donnée (pièges : confondre les trois modèles, oublier de fixer la boule imposée)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-043", "TSPE-032", "TSPE-034", "TSPE-037", "TSPE-044"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "Reconnaître le modèle",

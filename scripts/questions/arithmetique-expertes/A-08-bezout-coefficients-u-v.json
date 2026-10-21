@@ -2,7 +2,6 @@
 	"title": "Théorème de Bézout : trouver des coefficients u et v",
 	"description": "Compléter une égalité de Bézout au + bv = 1 ou au + bv = PGCD(a, b), donner un coefficient u qui convient parmi une infinité (pièges : u et v inversés, signe du coefficient négatif, au + bv = 1 alors que PGCD ≠ 1)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-087", "TEXP-086"],
 	"theme": "Arithmétique",
 	"domain": "PGCD, Bézout et Gauss",
 	"subdomain": "PGCD, Bézout et Gauss",

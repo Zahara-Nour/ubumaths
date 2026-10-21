@@ -2,7 +2,6 @@
 	"title": "Module d'un nombre complexe",
 	"description": "|a+ib|, module d'un produit, d'un quotient, d'une puissance, nombre de module 1 (pièges : module au carré, a² − b², |z₁z₂| = |z₁| + |z₂|, racine non simplifiée)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-013", "TEXP-020", "TEXP-015", "TEXP-016", "TEXP-017"],
 	"theme": "Nombres complexes",
 	"domain": "Module et argument",
 	"subdomain": "Module",

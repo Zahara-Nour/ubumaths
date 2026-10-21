@@ -2,7 +2,6 @@
 	"title": "Conjugué d'un nombre complexe et ses propriétés",
 	"description": "Conjugué de a+ib, z·z̄ = a²+b², z+z̄ et z−z̄, conjugué d'un produit (pièges : conjugué de la partie réelle, z·z̄ = a²−b², conjuguer un seul facteur)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-003", "TEXP-014", "TEXP-011", "TEXP-006"],
 	"theme": "Nombres complexes",
 	"domain": "Forme algébrique",
 	"subdomain": "Conjugaison",

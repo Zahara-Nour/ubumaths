@@ -2,7 +2,6 @@
 	"title": "Chemins sur un quadrillage et mots à deux lettres",
 	"description": "Chemins monotones de (0 ; 0) à (p ; q) comptés par C(p + q, p), passage imposé par un point (produit), mots formés de k lettres A et n − k lettres B (pièges : 2^(p+q), (p + q)!, additionner les deux morceaux)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-037", "TSPE-042", "TSPE-044"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "Combinaisons",

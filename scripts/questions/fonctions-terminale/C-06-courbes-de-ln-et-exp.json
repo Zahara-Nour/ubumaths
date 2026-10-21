@@ -2,7 +2,6 @@
 	"title": "Courbes de ln et exp : reconnaître, symétrie par rapport à y = x",
 	"description": "Reconnaître la courbe de ln parmi quatre, symétrie des courbes de exp et ln par rapport à y = x, point symétrique (pièges : courbe de exp, −ln x, ln(x+1), mauvaise symétrie)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-021", "TCOMP-023", "TCOMP-031", "TSPE-170", "TSPE-171"],
 	"theme": "Fonctions",
 	"domain": "Fonction logarithme",
 	"subdomain": "Courbe représentative",

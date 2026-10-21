@@ -2,7 +2,6 @@
 	"title": "Modéliser une situation par un graphe : ordre, degrés, arêtes",
 	"description": "Traduire une situation (tournoi, poignées de main, réseau de lignes, amitiés) par un graphe et en lire l'ordre, les degrés, le nombre d'arêtes, les arêtes manquantes pour un graphe complet (pièges : n(n − 1) au lieu de n(n − 1)/2, degré n au lieu de n − 1, poignée de main comptée deux fois)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-118", "TEXP-112", "TEXP-113", "TEXP-114"],
 	"theme": "Graphes et matrices",
 	"domain": "Graphes",
 	"subdomain": "Modélisation par un graphe",

@@ -2,7 +2,6 @@
 	"title": "Ensembles de points et images de z̄, iz dans le plan complexe",
 	"description": "|z − z_A| = r (cercle), |z − z_A| = |z − z_B| (médiatrice), |z̄ − w| = r (centre conjugué), image de z̄ et de iz (pièges : signe du centre, rayon au carré, conjugué oublié, symétrie et rotation confondues)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-064", "TEXP-013", "TEXP-011", "TEXP-022"],
 	"theme": "Nombres complexes",
 	"domain": "Géométrie et nombres complexes",
 	"subdomain": "Ensembles de points",

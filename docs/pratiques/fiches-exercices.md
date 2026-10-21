@@ -209,70 +209,17 @@ toute la classe.
 
 Un exercice figé ne suit plus son modèle : corriger un modèle ne corrige pas une fiche déjà créée.
 
-### Rattacher un modèle au référentiel (`points`)
+### Rattacher un modèle aux points du programme
 
-Champ facultatif du JSON, **codes** des points (`curriculum_points.code`) :
+Dans la **page d'édition admin du modèle** (un choix par programme, parmi les points du nœud où le
+modèle est rangé ou de sa notion ; modèle non rangé → « rangez d'abord ce modèle »). Les `grades`
+d'un modèle publié se changent aussi là.
 
-```json
-"grades": ["1_SPE"],
-"points": ["1SPE-135", "1SPE-118"]
-```
-
-Tableau de codes, sans doublon, au plus 20. Ce n'est pas une colonne du modèle : `create-questions.ts`
-(et `question:specs`) le retirent avant `checkTemplate`, et les liens sont écrits dans
-`question_template_points`. Avant toute écriture, **tous** les fichiers sont vérifiés : code inconnu
-ou archivé, ou niveau du point absent de `grades` (un point `TCOMP-…` sur un modèle `["T_SPE"]`) →
-erreur qui nomme fichier et code, rien d'écrit. La simulation affiche par fichier les liens à
-ajouter, déjà présents, et ceux en base absents du fichier. À la création les liens sont écrits ;
-sur un modèle déjà en base (brouillon), `--mettre-a-jour` ajoute les liens manquants. Un lien absent
-du fichier n'est **jamais** supprimé, sauf `--mettre-a-jour --remplacer-points`. Sans champ `points`,
-aucun lien n'est lu ni touché.
-
-**Changer de niveau un brouillon** : `--mettre-a-jour` réécrit aussi ses `grades` (comparés comme un
-ensemble, l'ordre ne compte pas), avant ses liens. Un brouillon `["1_SPE"]` passé à `["2"]` avec des
-points `2-…` reçoit ses nouveaux liens ; les anciens `1SPE-…` restent, signalés « en base absents du
-fichier, gardés » — `--remplacer-points` pour les retirer. `create-questions.ts` ne touche jamais les
-`grades` d'un modèle publié (voir `link-template-points.ts --niveaux` plus bas).
-
-Modèle **publié** : refusé, sauf `--mettre-a-jour --liens-publies`, qui **ajoute** seulement ses liens
-manquants — contenu jamais touché, aucun lien retiré (incompatible avec `--remplacer-points`). Une
-carte publiée rattachée entre dans le paquet de révision « Programme » des élèves dès qu'ils la
-travaillent : simuler d'abord, montrer la simulation à David (décidé le 2026-10-04). Ses points sont
-alors contrôlés contre les `grades` **lus en base**, pas ceux du fichier.
-
-**Modèle sans fichier dans le dépôt** (écrit dans l'éditeur, importé) : `link-template-points.ts`.
-
-```bash
-pnpm tsx scripts/link-template-points.ts --mapping liens.json            # simulation
-pnpm tsx scripts/link-template-points.ts --mapping liens.json --publier  # écrit
-```
-
-```json
-[{ "id": "<uuid du modèle>", "points": ["1SPE-050", "1SPE-051"] }]
-```
-
-Au plus 500 entrées, 1 à 20 codes chacune, sans doublon ni id répété. **Ajout seulement** : aucun
-lien retiré, aucun contenu touché. Avant toute écriture : id inexistant, code inconnu ou archivé,
-niveau du point absent des `grades` **cibles** du modèle (ci-dessous) → erreur, rien d'écrit. Un
-modèle publié est refusé sans `--liens-publies` (même règle que ci-dessus). Chaque ajout est relu.
-
-**Changer le niveau, même d'un modèle publié** : champ facultatif `grades` (1 à 4 codes de
-`GRADE_CODES`, sans doublon).
-
-```json
-[{ "id": "<uuid>", "points": ["2-010"], "grades": ["2"] }]
-```
-
-Des `grades` différents de ceux en base (comparés comme un ensemble) ne sont appliqués qu'avec le
-drapeau explicite **`--niveaux`** ; sans lui, l'entrée est une erreur avant toute écriture. Sur un
-modèle publié, il faut **en plus** `--liens-publies`. Les points sont alors contrôlés contre les
-grades **cibles** (ceux du mapping), pas ceux en base. Les `grades` sont écrits d'abord (ligne rendue
-exigée, puis relus), les liens ensuite ; la simulation l'annonce par `grades : [1_SPE] → [2]`. Rien
-d'autre que `grades` et les liens n'est jamais touché ; les anciens liens (`1SPE-…`) restent.
-
-```bash
-pnpm tsx scripts/link-template-points.ts --mapping niveaux.json --liens-publies --niveaux  # simulation
-```
+Le champ `"points"` des JSON (codes des anciens points du référentiel) est **abandonné** (arbre des
+notions, étape 3) : `create-questions.ts` et `question:specs` refusent un fichier qui le porte, et
+`link-template-points.ts` a été retiré. `create-questions.ts --mettre-a-jour` réécrit toujours le
+contenu et les `grades` d'un **brouillon** (comparés comme un ensemble) ; un modèle publié n'est
+jamais touché.
 
 ### Déclarer des fonctions dans un modèle (`shared.genericFunctions`)
 

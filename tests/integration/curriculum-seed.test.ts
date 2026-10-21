@@ -8,7 +8,7 @@
  *   - Tˡᵉ spé → `20261004100000_seed_curriculum_terminale_spe.sql`
  *   - Tˡᵉ maths complémentaires → `20261004150000_seed_curriculum_terminale_comp.sql`
  *   - Tˡᵉ maths expertes → `20261004170000_seed_curriculum_terminale_exp.sql`
- *     (tous générés par `scripts/generate-curriculum-seed.ts`)
+ *     (générés par `scripts/generate-curriculum-seed.ts`, retiré avec l'ancien référentiel)
  *
  * Ces tests ne re-valident pas le contenu pédagogique (c'est la relecture du
  * markdown qui fait ça) mais verrouillent ce qui casserait silencieusement :

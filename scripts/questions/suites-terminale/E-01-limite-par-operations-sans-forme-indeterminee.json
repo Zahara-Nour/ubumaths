@@ -2,7 +2,6 @@
 	"title": "Limite d'une suite par opérations, sans forme indéterminée",
 	"description": "Somme, produit, quotient de limites usuelles (1/n, 1/n², √n, n²) sans forme indéterminée (pièges : limite d'un seul terme, signe, quotient inversé)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-001", "TCOMP-002", "TSPE-110", "TSPE-113"],
 	"theme": "Suites",
 	"domain": "Limites de suites",
 	"subdomain": "Opérations sur les limites",

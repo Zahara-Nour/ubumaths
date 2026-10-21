@@ -2,7 +2,6 @@
 	"title": "Systèmes linéaires et calcul matriciel",
 	"description": "Écrire un système 2 × 2 sous la forme AX = B et le résoudre avec A⁻¹ (donnée ou à calculer) : X = A⁻¹B (pièges : BA⁻¹ ou AB au lieu de A⁻¹B, x et y échangés)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-128", "TEXP-135"],
 	"theme": "Graphes et matrices",
 	"domain": "Matrices",
 	"subdomain": "Systèmes linéaires",

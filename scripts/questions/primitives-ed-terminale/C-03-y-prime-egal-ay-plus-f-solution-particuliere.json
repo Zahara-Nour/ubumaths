@@ -2,7 +2,6 @@
 	"title": "Solution de y′ = ay + f à partir d'une solution particulière",
 	"description": "Une solution particulière g étant donnée, écrire les solutions Ce^{ax} + g(x) et fixer C par h(0) (spécialité seulement)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-196"],
 	"theme": "Primitives et équations différentielles",
 	"domain": "Équations différentielles",
 	"subdomain": "Équation y′ = ay + f",

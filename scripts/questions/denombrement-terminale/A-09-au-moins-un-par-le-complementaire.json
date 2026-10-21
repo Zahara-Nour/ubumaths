@@ -2,7 +2,6 @@
 	"title": "« Au moins un » : compter par le complémentaire",
 	"description": "Total moins les cas sans : comité avec au moins une fille, code avec un chiffre répété, main avec au moins un as, mot avec au moins une voyelle (pièges : oublier de retirer, compter plusieurs fois en fixant « une fille » puis le reste)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-044", "TSPE-030", "TSPE-032", "TSPE-034", "TSPE-037"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "Dénombrer avec des contraintes",

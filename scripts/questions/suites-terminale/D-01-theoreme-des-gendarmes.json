@@ -2,7 +2,6 @@
 	"title": "Limite par encadrement : théorème des gendarmes",
 	"description": "Encadrement donné ou à construire avec (−1)ⁿ ; limite commune des deux suites qui encadrent (pièges : 0, limite d'un seul membre, coefficient de (−1)ⁿ)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-003", "TSPE-109", "TSPE-113"],
 	"theme": "Suites",
 	"domain": "Limites de suites",
 	"subdomain": "Comparaison et encadrement",

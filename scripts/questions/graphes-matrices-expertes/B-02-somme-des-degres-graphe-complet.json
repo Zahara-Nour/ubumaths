@@ -2,7 +2,6 @@
 	"title": "Somme des degrés et graphe complet",
 	"description": "Nombre d'arêtes d'un graphe complet, d'un graphe dont on connaît les degrés, degré d'un sommet du graphe complet (pièges : n(n − 1) sans diviser par 2, degré n au lieu de n − 1)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-113", "TEXP-114"],
 	"theme": "Graphes et matrices",
 	"domain": "Graphes",
 	"subdomain": "Vocabulaire des graphes",

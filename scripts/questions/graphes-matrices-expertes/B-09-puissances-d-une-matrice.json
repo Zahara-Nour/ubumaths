@@ -2,7 +2,6 @@
 	"title": "Puissances d'une matrice carrée",
 	"description": "Calculer A² et Aⁿ pour une matrice triangulaire (1 k ; 0 1), diagonale ou quelconque d'ordre 2 (pièges : élever chaque coefficient au carré, kⁿ au lieu de nk, n·a au lieu de aⁿ)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-126", "TEXP-130", "TEXP-134"],
 	"theme": "Graphes et matrices",
 	"domain": "Matrices",
 	"subdomain": "Puissances de matrices",

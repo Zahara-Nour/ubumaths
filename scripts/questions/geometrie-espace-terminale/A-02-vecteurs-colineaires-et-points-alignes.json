@@ -2,7 +2,6 @@
 	"title": "Espace : vecteurs colinéaires, points alignés",
 	"description": "Trouver k tel que v = k u, une coordonnée qui rend deux vecteurs colinéaires, un point aligné avec deux autres (pièges : 1/k, AC = k AB sans ajouter A)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-053", "TSPE-064", "TSPE-099", "TSPE-100"],
 	"theme": "Géométrie",
 	"domain": "Vecteurs, droites et plans de l'espace",
 	"subdomain": "Colinéarité et alignement",

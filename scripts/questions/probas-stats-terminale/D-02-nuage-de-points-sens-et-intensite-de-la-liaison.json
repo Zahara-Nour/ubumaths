@@ -2,7 +2,6 @@
 	"title": "Nuage de points : sens et intensité de la liaison (coefficient de corrélation)",
 	"description": "Lire un nuage de points (figure) et choisir l'ordre de grandeur du coefficient de corrélation r : proche de 1, de −1 ou de 0 (piège : r > 1 impossible)",
 	"grades": ["T_COMP"],
-	"points": ["TCOMP-121", "TCOMP-116", "TCOMP-118", "TCOMP-117"],
 	"theme": "Statistiques",
 	"domain": "Statistique à deux variables",
 	"subdomain": "Nuage de points",

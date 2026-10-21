@@ -2,7 +2,6 @@
 	"title": "uₙ₊₁ = f(uₙ) convergente : calculer la limite avec f(ℓ) = ℓ",
 	"description": "La limite d'une suite récurrente convergente, f continue, vérifie f(ℓ) = ℓ ; on garde la solution compatible avec uₙ > 0 (pièges : solution négative, les deux solutions, méthode de Héron)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-113", "TSPE-156", "TSPE-160"],
 	"theme": "Suites",
 	"domain": "Suites récurrentes",
 	"subdomain": "Point fixe",

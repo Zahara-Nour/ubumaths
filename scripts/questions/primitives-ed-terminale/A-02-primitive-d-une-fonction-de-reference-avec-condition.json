@@ -2,7 +2,6 @@
 	"title": "Primitive de 1/x, eˣ, 1/x² ou 1/√x vérifiant une condition",
 	"description": "Primitives des fonctions de référence 1/x, eˣ, 1/x² et 1/√x, rendues uniques par une condition F(x₀) = y₀",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-048", "TCOMP-052", "TSPE-190", "TSPE-191"],
 	"theme": "Primitives et équations différentielles",
 	"domain": "Primitives",
 	"subdomain": "Primitives des fonctions de référence",

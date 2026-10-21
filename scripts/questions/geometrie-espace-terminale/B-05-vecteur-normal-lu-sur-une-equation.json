@@ -2,7 +2,6 @@
 	"title": "Espace : vecteur normal lu sur une équation de plan",
 	"description": "Lire un vecteur normal sur une équation cartésienne (terme absent, membres à regrouper) ; tout vecteur colinéaire non nul est juste (pièges : d pris pour une coordonnée, z oublié, signe)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-075", "TSPE-092", "TSPE-096"],
 	"theme": "Géométrie",
 	"domain": "Représentations paramétriques et équations cartésiennes",
 	"subdomain": "Vecteur normal à un plan",

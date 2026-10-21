@@ -2,7 +2,6 @@
 	"title": "Module et argument principal d'un nombre complexe",
 	"description": "z = a(1 ± i), a√3 + ai, a − a√3 i, ki, −k : module et argument dans ]−π ; π] (pièges : mauvais quadrant, cos et sin échangés, module négatif ou au carré, argument non principal)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-018", "TEXP-021", "TEXP-020", "TEXP-013"],
 	"theme": "Nombres complexes",
 	"domain": "Module et argument",
 	"subdomain": "Argument",

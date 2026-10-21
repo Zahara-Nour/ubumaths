@@ -2,7 +2,6 @@
 	"title": "Croissances comparées : exponentielle, puissances, logarithme",
 	"description": "Limites de eˣ − kxⁿ, xⁿe⁻ˣ, xⁿeˣ en −∞, ln x / xⁿ, xⁿ ln x en 0 (pièges : x e⁻ˣ → +∞, ∞ × 0 = 1, limite d'un seul facteur)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-133", "TSPE-172", "TSPE-131", "TSPE-177"],
 	"theme": "Fonctions",
 	"domain": "Limites de fonctions",
 	"subdomain": "Croissances comparées",

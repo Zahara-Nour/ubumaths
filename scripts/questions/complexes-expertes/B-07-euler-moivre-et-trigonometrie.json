@@ -2,7 +2,6 @@
 	"title": "Formules d'Euler et de Moivre, formules d'addition et de duplication",
 	"description": "Linéariser cos³x et sin²x (Euler), exprimer cos 3x (Moivre), cos(π/12) par une formule d'addition, sin 2a par la duplication (pièges : coefficients, signe, sin et cos confondus)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-035", "TEXP-040", "TEXP-036", "TEXP-030", "TEXP-031"],
 	"theme": "Nombres complexes",
 	"domain": "Formes trigonométrique et exponentielle",
 	"subdomain": "Formules d'Euler et de Moivre",
