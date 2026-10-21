@@ -19,11 +19,14 @@
 		CREAM,
 		INK,
 		MOON,
+		CELEBRATION_ORIGIN,
 		NIGHTCAP,
 		RED,
+		SPARKLE,
 		SILHOUETTE_FILL,
 		SILHOUETTE_LINE,
 		YELLOW,
+		celebration,
 		crown,
 		dressing,
 		faceDrawing,
@@ -104,6 +107,7 @@
 	};
 	const zPaths = $derived(zzz(ZZZ_AT[stage][0], geo.hy + ZZZ_AT[stage][1], 0.9));
 	// Chaque race a son décalage : dans la Chatterie, les Mathoux ne respirent pas en chœur
+	const party = $derived(reaction === 'apparition' && !silhouette ? celebration(race.halo) : null);
 	const phase = $derived(`--mathou-phase: -${((normalizeRaceIndex(raceIndex) * 7) % 19) * 0.37}s`);
 </script>
 
@@ -448,6 +452,40 @@
 			{/each}
 		</g>
 	{/if}
+
+	{#if party}
+		{#key reactionKey}
+			<!-- Fête de naissance : confettis puis étoiles qui scintillent -->
+			<g class="fete" aria-hidden="true">
+				{#each party.confetti as c, i (i)}
+					<rect
+						class="confetto"
+						x={CELEBRATION_ORIGIN.x - c.width / 2}
+						y={CELEBRATION_ORIGIN.y - c.height / 2}
+						width={c.width}
+						height={c.height}
+						rx="1"
+						fill={c.color}
+						stroke={INK}
+						stroke-width="0.8"
+						style={`--dx: ${c.dx}px; --dy: ${c.dy}px; --rot: ${c.rotate}deg; animation-delay: ${0.35 + c.delay}s`}
+					/>
+				{/each}
+				{#each party.sparkles as sp, i (i)}
+					<g transform={`translate(${sp.x} ${sp.y}) scale(${sp.scale})`}>
+						<path
+							class="etincelle"
+							d={SPARKLE}
+							fill={CREAM}
+							stroke={INK}
+							stroke-width="1.6"
+							style={`animation-delay: ${sp.delay}s`}
+						/>
+					</g>
+				{/each}
+			</g>
+		{/key}
+	{/if}
 </svg>
 
 <style>
@@ -533,7 +571,19 @@
 		transform-origin: 50% 100%;
 	}
 	.reaction[data-reaction='apparition'] {
-		animation: apparition 0.7s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+		animation: apparition 1.5s ease-out 0.15s both;
+	}
+	.confetto {
+		transform-box: view-box;
+		transform-origin: 100px 105px;
+		opacity: 0;
+		animation: confetto 1.9s cubic-bezier(0.2, 0.7, 0.4, 1) both;
+	}
+	.etincelle {
+		transform-box: fill-box;
+		transform-origin: 50% 50%;
+		opacity: 0;
+		animation: etincelle 1.1s ease-in-out 2 both;
 	}
 	.reaction[data-reaction='bond'] {
 		animation: bond 0.8s ease-out;
@@ -624,13 +674,54 @@
 		}
 	}
 	@keyframes apparition {
-		from {
-			transform: scale(0.2);
+		0% {
+			transform: scale(0.15);
 			opacity: 0;
 		}
-		to {
+		20% {
+			opacity: 1;
+		}
+		55% {
+			transform: scale(1.1, 1.06);
+		}
+		72% {
+			transform: scale(0.96, 1.02);
+		}
+		86% {
+			transform: scale(1.02, 0.99);
+		}
+		100% {
 			transform: scale(1);
 			opacity: 1;
+		}
+	}
+	@keyframes confetto {
+		0% {
+			opacity: 0;
+			transform: translate(0, 0) rotate(0) scale(0.4);
+		}
+		10% {
+			opacity: 1;
+		}
+		55% {
+			opacity: 1;
+			transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(1);
+		}
+		100% {
+			opacity: 0;
+			transform: translate(var(--dx), calc(var(--dy) + 26px)) rotate(calc(var(--rot) * 1.6))
+				scale(1);
+		}
+	}
+	@keyframes etincelle {
+		0%,
+		100% {
+			opacity: 0;
+			transform: scale(0.3) rotate(0);
+		}
+		50% {
+			opacity: 1;
+			transform: scale(1) rotate(45deg);
 		}
 	}
 	@keyframes bond {
@@ -665,6 +756,13 @@
 		.mathou-avatar *,
 		.mathou-avatar {
 			animation: none !important;
+		}
+		/* Naissance : pas de confettis, les étoiles restent posées */
+		.confetto {
+			display: none;
+		}
+		.etincelle {
+			opacity: 1;
 		}
 		/* Les « Zzz » restent visibles, immobiles */
 		.anime .z {

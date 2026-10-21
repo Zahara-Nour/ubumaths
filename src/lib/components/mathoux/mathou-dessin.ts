@@ -641,3 +641,59 @@ export function zzz(x: number, y: number, s: number): string[] {
 }
 
 export const MOON = 'M152 24A26 26 0 1 0 178 60A20 20 0 1 1 152 24Z';
+
+// --- Fête de naissance : confettis et étoiles autour du nouveau-né ---
+
+export interface Confetto {
+	/** Arrivée, relative au point de départ (centre de l'affiche) */
+	dx: number;
+	dy: number;
+	rotate: number;
+	width: number;
+	height: number;
+	color: string;
+	delay: number;
+}
+
+export interface Sparkle {
+	x: number;
+	y: number;
+	scale: number;
+	delay: number;
+}
+
+/** Étoile à quatre branches, centrée sur l'origine (rayon 9) */
+export const SPARKLE =
+	'M0 -9C1.6 -1.6 1.6 -1.6 9 0C1.6 1.6 1.6 1.6 0 9C-1.6 1.6 -1.6 1.6 -9 0C-1.6 -1.6 -1.6 -1.6 0 -9Z';
+
+/** Point d'où partent les confettis */
+export const CELEBRATION_ORIGIN = { x: 100, y: 105 } as const;
+
+/**
+ * Gerbe déterministe (même dessin à chaque naissance) : 16 confettis tout autour, plus hauts que
+ * larges vers le haut, aux couleurs de l'affiche et de la race ; 5 étoiles autour de la tête.
+ */
+export function celebration(halo: string): { confetti: Confetto[]; sparkles: Sparkle[] } {
+	const colors = [RED, INK, CREAM, halo];
+	const confetti: Confetto[] = Array.from({ length: 16 }, (_, i) => {
+		const angle = (i / 16) * Math.PI * 2 + (i % 3) * 0.17;
+		const dist = 62 + ((i * 37) % 26);
+		return {
+			dx: r1(Math.cos(angle) * dist),
+			dy: r1(Math.sin(angle) * dist * 0.85 - 12),
+			rotate: ((i * 83) % 360) - 180,
+			width: i % 2 === 0 ? 5 : 7,
+			height: i % 2 === 0 ? 10 : 5,
+			color: colors[i % colors.length],
+			delay: r1((i % 4) * 0.06)
+		};
+	});
+	const sparkles: Sparkle[] = [
+		{ x: 40, y: 48, scale: 1.1, delay: 0.5 },
+		{ x: 162, y: 40, scale: 0.9, delay: 0.75 },
+		{ x: 172, y: 118, scale: 0.7, delay: 1 },
+		{ x: 30, y: 128, scale: 0.8, delay: 1.2 },
+		{ x: 104, y: 18, scale: 0.75, delay: 0.9 }
+	];
+	return { confetti, sparkles };
+}
