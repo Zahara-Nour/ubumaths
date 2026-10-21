@@ -7,17 +7,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, naissance retravaillée._
+_Mis à jour le 2026-10-21, morphing de croissance._
 
-- **État** : animations au repos et réactions dans `MathouAvatar.svelte` ; naissance = apparition
-  lente (1,5 s) + confettis + étoiles (« très bien », David) + auréole qui s'allume et deux ondes
-  (à juger). Démo à jour ; **rien n'est encore branché** (Chatterie, annonce).
-- **Décidé par David** : Chatterie animée comme la démo (tous, décalés) ; gestes communs à toutes
-  les races pour l'instant ; rythmes revus au cas par cas avec lui.
-- **Prochaine action** : avis sur l'auréole, puis phase 0 (proposée en séance : naissance /
-  croissance / étoile → réaction sur la carte d'annonce ; pas de réveil visible) à faire valider.
-- **Pièges en cours** : démo générée par `node_modules/.cache/mathoux-demo/` (build.mjs, render.ts)
-  puis `page.py` du scratchpad ; ids `s1-` de `$props.id()` réécrits dans la page.
+- **État** : `MathouAvatar.svelte` animé au repos ; naissance (apparition lente + auréole + ondes +
+  confettis + étoiles, **validée**) ; croissance = **morphing** (`growFrom`, `blendStages`,
+  1,4 s) puis petit bond, attributs du grand matou en fondu à la fin (à juger). Démo à jour.
+  **Rien n'est encore branché** (Chatterie, annonce).
+- **Décidé par David** : Chatterie animée comme la démo (tous, décalés) ; gestes communs ; rythmes
+  au cas par cas avec lui ; auréole de naissance gardée.
+- **Prochaine action** : avis sur le morphing, puis phase 0 (naissance / croissance / étoile sur la
+  carte d'annonce ; pas de réveil visible) à faire valider, puis branchement + tests.
+- **Pièges en cours** : démo = vrai composant monté (`node_modules/.cache/mathoux-demo/build-client.mjs`
+  → `bundle.js`, puis `page2.py` du scratchpad) ; `smoke.mjs` / `frames.mjs` = vérif Playwright.
+  `StageTemplate.young` devenu `youth` (0..1).
 - **Worktree / branche** : `../ubumaths-wt-mathoux-anim` · `feat/mathoux-anim`.
 
 ## Au repos (proposé)
