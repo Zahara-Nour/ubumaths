@@ -102,11 +102,15 @@
 	);
 	const dr = $derived(dressing(race, geo));
 	const sleeping = $derived(asleep && !silhouette);
+	// Réveil : le dessin éveillé, avec ce qui reste de la sieste (lune, bonnet, « Zzz », yeux
+	// fermés) qui s'en va
+	const waking = $derived(reaction === 'reveil' && !asleep && !silhouette);
 	// Couronne, fraise, bâton et gloire arrivent quand la transformation est finie
 	const majesty = $derived(stage === 'grand_matou' && !sleeping && eased === 1);
 	const crowning = $derived(morphing && stage === 'grand_matou');
 	const mode = $derived<FaceMode>(sleeping ? 'closed' : majesty ? 'proud' : 'open');
 	const face = $derived(faceDrawing(geo, dr, mode));
+	const sleepyEyes = $derived(waking ? faceDrawing(geo, dr, 'closed').closedEyes : []);
 	const st = $derived(geo.stage);
 	const haloR = $derived(
 		morphing && growFrom
@@ -186,7 +190,7 @@
 					<path d={eye.shape} />
 				</clipPath>
 			{/each}
-			{#if sleeping}
+			{#if sleeping || waking}
 				<clipPath id={capClipId}>
 					<path d={NIGHTCAP.cap} />
 				</clipPath>
@@ -218,13 +222,25 @@
 		{:else if sleeping}
 			<path d={MOON} fill={race.halo} />
 		{:else if majesty}
-			<g class:apparait={crowning}>
+			<g class:apparait={crowning} class:revient={waking}>
 				<g class="gloire"><path d={rays(100, haloY)} fill={race.halo} /></g>
+				<circle cx="100" cy={haloY} r={haloR} fill={race.halo} stroke={YELLOW} stroke-width="2.5" />
 			</g>
-			<circle cx="100" cy={haloY} r={haloR} fill={race.halo} stroke={YELLOW} stroke-width="2.5" />
 		{:else}
 			{#key reactionKey}
-				<circle cx="100" cy={haloY} r={haloR} fill={race.halo} class:aureole-naissance={glow} />
+				<circle
+					cx="100"
+					cy={haloY}
+					r={haloR}
+					fill={race.halo}
+					class:aureole-naissance={glow}
+					class:revient={waking}
+				/>
+			{/key}
+		{/if}
+		{#if waking}
+			{#key reactionKey}
+				<path d={MOON} fill={race.halo} class="lune-part" />
 			{/key}
 		{/if}
 		{#if glow}
@@ -378,51 +394,61 @@
 						/>
 
 						<!-- Yeux -->
-						<g data-part="yeux" class:paupieres={!sleeping}>
-							{#each face.closedEyes as closed, i (i)}
-								<path
-									d={closed.d}
-									fill="none"
-									stroke={closed.color}
-									stroke-width="2.4"
-									stroke-linecap="round"
-								/>
-							{/each}
-							{#each face.eyes as eye, i (i)}
-								<path d={eye.shape} fill={race.eyes} />
-								<g clip-path={`url(#${eyeClipId(i)})`}>
-									<ellipse
-										cx={eye.pupil.cx}
-										cy={eye.pupil.cy}
-										rx={eye.pupil.rx}
-										ry={eye.pupil.ry}
-										fill={INK}
+						<g class:ouverture={waking}>
+							<g data-part="yeux" class:paupieres={!sleeping}>
+								{#each face.closedEyes as closed, i (i)}
+									<path
+										d={closed.d}
+										fill="none"
+										stroke={closed.color}
+										stroke-width="2.4"
+										stroke-linecap="round"
 									/>
-									{#if eye.glint}
-										<circle
-											cx={eye.glint.cx}
-											cy={eye.glint.cy}
-											r={eye.glint.r}
-											fill={CREAM}
-											opacity="0.85"
+								{/each}
+								{#each face.eyes as eye, i (i)}
+									<path d={eye.shape} fill={race.eyes} />
+									<g clip-path={`url(#${eyeClipId(i)})`}>
+										<ellipse
+											cx={eye.pupil.cx}
+											cy={eye.pupil.cy}
+											rx={eye.pupil.rx}
+											ry={eye.pupil.ry}
+											fill={INK}
 										/>
+										{#if eye.glint}
+											<circle
+												cx={eye.glint.cx}
+												cy={eye.glint.cy}
+												r={eye.glint.r}
+												fill={CREAM}
+												opacity="0.85"
+											/>
+										{/if}
+										{#if eye.lid}
+											<rect
+												x={eye.lid.x}
+												y={eye.lid.y}
+												width={eye.lid.width}
+												height={eye.lid.height}
+												fill={eye.fur}
+											/>
+											<path d={eye.lid.line} stroke={INK} stroke-width="2.6" />
+										{/if}
+									</g>
+									{#if eye.outline}
+										<path d={eye.shape} fill="none" stroke={INK} stroke-width="1.5" />
 									{/if}
-									{#if eye.lid}
-										<rect
-											x={eye.lid.x}
-											y={eye.lid.y}
-											width={eye.lid.width}
-											height={eye.lid.height}
-											fill={eye.fur}
-										/>
-										<path d={eye.lid.line} stroke={INK} stroke-width="2.6" />
-									{/if}
-								</g>
-								{#if eye.outline}
-									<path d={eye.shape} fill="none" stroke={INK} stroke-width="1.5" />
-								{/if}
-							{/each}
+								{/each}
+							</g>
 						</g>
+						{#if waking}
+							<!-- Les yeux fermés de la sieste, qui s'effacent quand il les ouvre -->
+							<g class="yeux-clos" fill="none" stroke-width="2.4" stroke-linecap="round">
+								{#each sleepyEyes as closed, i (i)}
+									<path d={closed.d} stroke={closed.color} />
+								{/each}
+							</g>
+						{/if}
 
 						<!-- Sourcils, truffe, bouche, moustaches -->
 						<g fill="none" stroke-linecap="round" stroke-width={face.browWidth}>
@@ -487,26 +513,28 @@
 							</g>
 						{/if}
 
-						{#if sleeping}
-							<!-- Bonnet de nuit rayé -->
-							<g transform={capTransform} data-part="bonnet">
-								<path d={NIGHTCAP.cap} fill={CREAM} stroke={INK} stroke-width="3.2" />
-								<path
-									d={NIGHTCAP.stripes}
-									clip-path={`url(#${capClipId})`}
-									fill="none"
-									stroke={RED}
-									stroke-width="5"
-								/>
-								<path d={NIGHTCAP.band} fill={CREAM} stroke={INK} stroke-width="3" />
-								<circle
-									cx={NIGHTCAP.pompom.cx}
-									cy={NIGHTCAP.pompom.cy}
-									r={NIGHTCAP.pompom.r}
-									fill={CREAM}
-									stroke={INK}
-									stroke-width="3"
-								/>
+						{#if sleeping || waking}
+							<!-- Bonnet de nuit rayé ; au réveil, il s'envole -->
+							<g class:bonnet-part={waking}>
+								<g transform={capTransform} data-part="bonnet">
+									<path d={NIGHTCAP.cap} fill={CREAM} stroke={INK} stroke-width="3.2" />
+									<path
+										d={NIGHTCAP.stripes}
+										clip-path={`url(#${capClipId})`}
+										fill="none"
+										stroke={RED}
+										stroke-width="5"
+									/>
+									<path d={NIGHTCAP.band} fill={CREAM} stroke={INK} stroke-width="3" />
+									<circle
+										cx={NIGHTCAP.pompom.cx}
+										cy={NIGHTCAP.pompom.cy}
+										r={NIGHTCAP.pompom.r}
+										fill={CREAM}
+										stroke={INK}
+										stroke-width="3"
+									/>
+								</g>
 							</g>
 						{/if}
 					</g>
@@ -515,9 +543,10 @@
 		{/key}
 	{/if}
 
-	{#if sleeping}
-		<!-- « Zzz » dessiné en traits (pas de texte) -->
+	{#if sleeping || waking}
+		<!-- « Zzz » dessiné en traits (pas de texte) ; au réveil, ils s'envolent -->
 		<g
+			class:zzz-part={waking}
 			data-part="zzz"
 			fill="none"
 			stroke={INK}
@@ -684,8 +713,34 @@
 	.apparait {
 		animation: apparait 0.6s ease-out both;
 	}
-	.reaction[data-reaction='etirement'] {
-		animation: etirement 1.2s ease-in-out;
+	/* Réveil : il se redresse, ouvre les yeux en deux temps, le bonnet s'envole, il s'étire */
+	.reaction[data-reaction='reveil'] {
+		animation: reveil 2.6s ease-in-out both;
+	}
+	.lune-part {
+		animation: s-efface 0.9s ease-in 0.2s both;
+	}
+	.revient {
+		transform-box: fill-box;
+		transform-origin: 50% 50%;
+		animation: revient 0.9s ease-out 0.4s both;
+	}
+	.zzz-part {
+		transform-box: fill-box;
+		animation: zzz-part 0.7s ease-in both;
+	}
+	.ouverture {
+		transform-box: fill-box;
+		transform-origin: 50% 50%;
+		animation: ouverture 1.2s ease-in-out 0.3s both;
+	}
+	.yeux-clos {
+		animation: yeux-clos 1.2s ease-in-out 0.3s both;
+	}
+	.bonnet-part {
+		transform-box: fill-box;
+		transform-origin: 50% 100%;
+		animation: bonnet-part 0.9s ease-in 1.2s both;
 	}
 
 	@keyframes souffle {
@@ -885,16 +940,78 @@
 			transform: translateY(0) scale(1.02, 0.98);
 		}
 	}
-	@keyframes etirement {
-		0%,
+	@keyframes reveil {
+		0% {
+			transform: rotate(5deg);
+		}
+		30%,
+		62% {
+			transform: rotate(0) scale(1, 1);
+		}
+		76% {
+			transform: scale(0.94, 1.1);
+		}
+		88% {
+			transform: scale(1.05, 0.96);
+		}
 		100% {
 			transform: scale(1, 1);
 		}
-		35% {
-			transform: scale(0.94, 1.1);
+	}
+	@keyframes s-efface {
+		to {
+			opacity: 0;
 		}
-		60% {
-			transform: scale(1.06, 0.96);
+	}
+	@keyframes revient {
+		from {
+			opacity: 0;
+			transform: scale(0.6);
+		}
+	}
+	@keyframes zzz-part {
+		to {
+			opacity: 0;
+			transform: translate(8px, -18px);
+		}
+	}
+	/* Les paupières : fermées, entrouvertes, refermées, ouvertes */
+	@keyframes ouverture {
+		0%,
+		20% {
+			transform: scaleY(0.05);
+		}
+		40% {
+			transform: scaleY(0.55);
+		}
+		58% {
+			transform: scaleY(0.1);
+		}
+		100% {
+			transform: scaleY(1);
+		}
+	}
+	@keyframes yeux-clos {
+		0%,
+		22% {
+			opacity: 1;
+		}
+		34%,
+		100% {
+			opacity: 0;
+		}
+	}
+	@keyframes bonnet-part {
+		0% {
+			transform: translate(0, 0) rotate(0);
+			opacity: 1;
+		}
+		25% {
+			transform: translate(0, 4px) rotate(-6deg);
+		}
+		100% {
+			transform: translate(26px, -70px) rotate(40deg);
+			opacity: 0;
 		}
 	}
 
@@ -905,7 +1022,11 @@
 		}
 		/* Naissance : pas de confettis, les étoiles restent posées */
 		.confetto,
-		.onde {
+		.onde,
+		.lune-part,
+		.zzz-part,
+		.yeux-clos,
+		.bonnet-part {
 			display: none;
 		}
 		.etincelle {
