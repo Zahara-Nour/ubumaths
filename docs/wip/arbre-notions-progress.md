@@ -19,7 +19,8 @@ _Mis à jour le 2026-10-21, après #1577 (étape 3, B1 mergée)._
 - **Pièges en cours** : un test d'intégration qui pose des points ANCIENS asserte l'ancien comportement (10 rouges en CI
   sur B1) → décors en points neufs (branche > notion, modèle rangé) ; une PR en conflit ne lance PAS la CI
   `pull_request` (fusionner `origin/main`, pas de push forcé) ; MySelect affiche le LaTeX en brut.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `ubumaths-wt-arbre-notions`, `refactor/arbre-bascule-b2` (B2 en cours, phase 0
+  validée le 2026-10-21, cf. entrée du jour).
 
 ## Tranché avec David (2026-10-06)
 
@@ -1173,3 +1174,9 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   coché au cahier de texte, 0 Palotin avec thème exploré, 325 libellés de points neufs en LaTeX (le menu les montre
   en texte brut, le point choisi est rendu dessous). Correction de la phase 0 : le deck n'excluait aucune carte, seul
   le libellé dépendait de l'objectif.
+- **2026-10-21 — Étape 3, PR B2, phase 0 validée par David** (worktree `ubumaths-wt-arbre-notions`). Cahier de
+  texte (« Programme travaillé »), Avancement et tags d'un exercice passent sur branche > notion > points (sous-notion
+  nommée à côté du point, compteurs par branche et par notion) ; `getCurriculumTree` disparaît ; DELETE couverture et
+  tag d'exercice relisent leurs lignes (404 sinon). **Q1** : un point archivé déjà coché / tagué reste affiché, marqué
+  « archivé », pour pouvoir le décocher ; non coché, il reste masqué. **Q2** : POST couverture / tag d'exercice
+  refuse un ancien point (400 « Point hors programme », `isProgrammePoint`). Accès : rien ne change.
