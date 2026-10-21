@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1585._
+_Mis à jour le 2026-10-21, PR 2 en cours._
 
-- **État** : phase 0 validée (Q1-Q6 : David suit mes recommandations). **PR 1 mergée (#1585)** : connexion par identifiant (`src/lib/utils/child-account.ts`), aucun courriel vers `@eleves.chiph.re`. Pas en prod.
-- **Prochaine action** : PR 2 — écran « J'inscris mon enfant » + lien unique au parent (phase 0 ci-dessous, § « J'inscris mon enfant »). Worktree à recréer : `feat/inscription-parent-ecran`.
-- **En attente de David** : rien. (Null MX chez OVH : **facultatif**, décidé le 2026-10-21 — le domaine absent du DNS suffit.)
-- **Pièges en cours** : compte de l'enfant créé côté serveur (`auth.admin.createUser`, confirmé), jamais `signUp` ; **fermer côté base** un `signUp` GoTrue direct sur `@eleves.chiph.re` (squat d'identifiant, audit PR 1) ; identifiant généré par la même normalisation que la connexion (`normalizeLoginIdentifier`) et unicité sur la forme repliée ; question d'accès avant tout SQL ; tests d'intégration + `code-reviewer` + `security-auditor`.
-- **Worktree / branche** : aucun (celui de la PR 1 supprimé).
+- **État** : PR 1 mergée (#1585). **PR 2 en cours** (`feat/inscription-parent-ecran`) : migration anti-squat écrite et prouvée (trigger de contrainte différé sur `auth.users`), écran parent en cours.
+- **Prochaine action** : écran `/auth/register/parent` + courriel au parent + case de consentement sur `/consent/[token]`, puis revues (`code-reviewer` + `security-auditor`).
+- **En attente de David** : rien.
+- **Pièges en cours** : GoTrue insère le compte AVANT d'écrire ses `app_metadata` → garde = trigger de contrainte DIFFÉRÉ (un BEFORE INSERT ne voit pas la marque) ; compte de l'enfant par `auth.admin.createUser` + `app_metadata.child_account`, jamais `signUp` ; migration à `db:migrate` au merge.
+- **Worktree / branche** : `../ubumaths-wt-inscription-parent` · `feat/inscription-parent-ecran`.
 
 ## Contexte
 
@@ -148,3 +148,17 @@ par adresse de parent et par 24 h · Q6 adresse du parent lue par le prof et l'a
   bloquant ; Moyen 1 — `signUp` GoTrue direct → PR 2 ; Faible 2 — null MX absent → facultatif (David, 2026-10-21) ;
   Faible 3 — même normalisation à la création → PR 2). Mesure prod : 83 comptes, aucune adresse
   en majuscules → personne ne perd sa connexion.
+
+## PR 2 — écran « J'inscris mon enfant » (2026-10-21)
+
+Décisions de David (2026-10-21) :
+
+- **Migration anti-squat** : trigger sur `auth.users` refusant `@eleves.chiph.re` sans
+  `app_metadata.child_account = true`. Question d'accès : personne ne gagne de lecture ;
+  personne ne perd rien (0 compte sur ce domaine en prod, mesuré).
+- **1re/Tle (Q4)** : même table `parental_consents`, le clic « Je confirme mon adresse »
+  passe la ligne à `granted` (preuve = date, IP, navigateur ; pas de case).
+
+Constat : GoTrue insère la ligne d'`auth.users` puis écrit ses `app_metadata` par un UPDATE
+dans la même transaction → trigger de contrainte `deferrable initially deferred`, relisant
+la ligne au commit. Rouge prouvé sans la migration (3 tests sur 5), vert avec.
