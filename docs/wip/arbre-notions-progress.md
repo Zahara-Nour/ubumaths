@@ -10,12 +10,12 @@ _Mis à jour le 2026-10-21, lot C codé (pas encore de PR)._
 - **État** : C5 étape 2 bis, MODIFIER : lots A (39) et B (7) en prod ; lot C « consignes ou affichages » codé
   sur `feat/arbre-lot-2bis-consignes` : 16 modèles (c9d6c5db sorti), script `lot-2bis-consignes.py`, migration
   `20261021120000`, 11 tests d'intégration verts (rouges sans la migration), specs et audit de tirages verts.
-- **Prochaine action** : réponse de David à la question d'accès → en-tête de la migration, PR, revue Opus
+- **Prochaine action** : PR, revues code-reviewer (Opus) + security-auditor
   (correction des réponses), merge, `db:migrate` ; puis D (3 scissions, phase 0 à part).
 - **Décisions de David (2026-10-21)** : comparaisons < = > avec égalité ~1 fois sur 6 ; tableaux : Masse/Prix,
   Durée/Distance, Cahiers/Prix ; factoriser par une constante ; c9d6c5db sorti (aucun réglage ne refuse la
   fraction recopiée).
-- **En attente de David** : question d'accès du lot C. Signalé : 11 modèles sans corrigé.
+- **En attente de David** : rien (accès tranché : personne). Signalé : 11 modèles sans corrigé.
 - **Pièges en cours** : `e` = Euler dans une condition (`{{if:e=1|…}}` toujours faux) → variable `egal` ;
   MathLive ne connaît pas `\hline` ; `5b53b1be` passé au point ici (#1565 refuse `a,5`), le script
   `reecrire-virgule-decimale-base.ts` le sautera (« déjà réécrit ») ; s'il passe AVANT le merge, la garde

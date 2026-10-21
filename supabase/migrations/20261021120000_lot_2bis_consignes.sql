@@ -23,7 +23,9 @@
 -- aucun exercice, chapitre, modèle de fiche ni favori) : le passage des comparaisons de 2 à 3 choix
 -- ne rend aucun indice de choix enregistré faux. `updated_at` avance : le contenu change.
 --
--- Accès : QUESTION À POSER À DAVID avant la PR.
+-- Accès : aucune règle d'accès ne change (question tranchée par David le 2026-10-21 : personne ne
+-- lit rien de neuf). Les modèles étaient déjà publiés ; les tags sont lisibles par tout utilisateur
+-- connecté (policy question_template_points_read_authenticated), comme ceux de #1563, #1564 et #1566.
 --
 -- Rollback (il rend aux modèles leur contenu d'avant et retire les tags posés ; aucune
 -- donnée d'élève). Garde : il refuse si un modèle n'a plus EXACTEMENT le contenu posé par
