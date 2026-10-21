@@ -459,6 +459,10 @@ CRON_SECRET                   # Secret taches planifiees
 > - **Gmail API** (scope `gmail.send`) pour emails bienvenue eleves
 >   - Necessaire car emails scolaires (@ecole.fr) bloquent expediteurs externes
 >   - Email envoye depuis le compte du professeur (meilleure delivrabilite)
+>
+> **2026-10-21** : un enfant inscrit par son parent n'a pas d'adresse ; son compte porte une
+> adresse fictive `@eleves.chiph.re`. `sendEmail` refuse ce domaine : rien ne part vers l'enfant,
+> tout passe par l'adresse du parent ([auth.md](../auth.md#le-domaine-fictif-eleveschiphre)).
 
 ---
 
