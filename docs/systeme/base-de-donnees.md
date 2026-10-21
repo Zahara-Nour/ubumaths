@@ -459,6 +459,14 @@ Cascade depuis `profiles` (effacement RGPD), RESTRICT vers `classification_nodes
 un lot d'insertions où une ligne omet `starred_grades` y envoie NULL (union des clés de PostgREST) —
 passer `defaultToNull: false` ou toujours fournir la colonne. Test :
 `tests/integration/mathoux-memoire.test.ts`.
+`student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
+sur son tableau de bord, pour le Palotin triste après une longue absence. Lisible par **personne**
+d'autre que le serveur (décision de David du 2026-10-21) : RLS sans aucune policy, aucun droit pour
+`anon` ni `authenticated` ; le serveur n'en transmet que « triste oui/non ». Elle ne s'écrit que par
+`record_student_visit(p_student_id, p_today)` (SECURITY INVOKER, `service_role` seul), qui
+enregistre le jour et rend le jour du passage précédent (NULL au premier) ; atomique (deux
+chargements simultanés ne rendent l'ancien jour qu'une fois), le jour ne recule jamais. Cascade
+depuis `profiles`. Test : `tests/integration/palotin-dernier-passage.test.ts`.
 Le solde vit dans `profiles.gidouilles` / `vip_cards`. L'élève lit ses propres traces, le professeur
 celles de tous les élèves ; les classements passent par `game_leaderboard`, borné à l'école
 (énigmes : `riddle_school_leaderboard`, prénom et score seulement, migration `20261015090800`).
@@ -604,4 +612,4 @@ Le schéma part du baseline `20260616220000_baseline_schema.sql` (anciennes migr
 
 ---
 
-Vérifié contre le code le 2026-10-11.
+Vérifié contre le code le 2026-10-11 (passage `student_last_visits` : 2026-10-21).
