@@ -23,6 +23,9 @@ import type { ResolvedMarkdown } from '$lib/ubumark';
 
 const FORM_MESSAGE = "Ta réponse n'est pas écrite sous la forme demandée.";
 
+/** Message de toute réponse fausse (`7 m` pour 6 m), avec ou sans unité */
+const WRONG_MESSAGE = 'Les blancs suivants sont incorrects: 1';
+
 /** Une unité telle que MathLive l'écrit quand il la reconnaît */
 function typed(unit: string): string {
 	return `\\operatorname{\\mathrm{${unit}}}`;
@@ -106,10 +109,10 @@ describe('case à unité — calcul non effectué de la bonne grandeur', () => {
 // ============================================================================
 
 describe('case à unité — calcul faux, refusé ou illisible', () => {
-	it('2×3 m pour 7 m : valeur incorrecte', () => {
+	it('2×3 m pour 7 m : faux, comme 7 m faux', () => {
 		expect(submit('2\\times3' + typed('m'), '7\\unit{m}')).toMatchObject({
 			isCorrect: false,
-			feedback: 'Valeur incorrecte.'
+			feedback: WRONG_MESSAGE
 		});
 	});
 
@@ -127,17 +130,17 @@ describe('case à unité — calcul faux, refusé ou illisible', () => {
 		});
 	});
 
-	it.each(['2\\sqrt{2}', '3\\pi'])('%s m pour 3 m : valeur incorrecte', (value) => {
+	it.each(['2\\sqrt{2}', '3\\pi'])('%s m pour 3 m : faux', (value) => {
 		expect(submit(value + typed('m'), '3\\unit{m}')).toMatchObject({
 			isCorrect: false,
-			feedback: 'Valeur incorrecte.'
+			feedback: WRONG_MESSAGE
 		});
 	});
 
-	it('3x m pour 3 m : réponse invalide', () => {
+	it('3x m pour 3 m : faux', () => {
 		expect(submit('3x' + typed('m'), '3\\unit{m}')).toMatchObject({
 			isCorrect: false,
-			feedback: 'Réponse invalide : vérifier le format.'
+			feedback: WRONG_MESSAGE
 		});
 	});
 

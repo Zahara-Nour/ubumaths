@@ -26,6 +26,7 @@ import {
 	wrongMagnitudeMessage
 } from './feedback';
 import { normalizeStudentQuantity, studentNumericLatex } from './student-input';
+import { readStudentCalculation, type StudentCalculation } from './student-calculation';
 import { readCompositeDuration, type DurationFormIssue } from './composite-duration';
 import { compareQuantities, type Tolerance } from './quantity-comparison';
 import { isDuration, unitsAreCompatible } from './operations';
@@ -324,6 +325,18 @@ export function validateQuantityAnswer(
 
 	// Check for parse failures
 	if (!userQuantity) {
+		// Un calcul avec des unités (`2\times3\,m`, `3m+2m`) : seconde lecture en arbre,
+		// la grandeur calculée est jugée comme une réponse (la forme l'est à part)
+		// Une écriture d'unité ambiguë (`kg/m.s`) garde son message : rien n'y est deviné
+		const writing = extractUnitFromLatex(normalizedUser);
+		const ambiguous = writing !== null && unitWritingProblem(writing) !== null;
+		const calculation = duration === null && !ambiguous ? readStudentCalculation(userAnswer) : null;
+		if (calculation?.kind === 'quantity') {
+			return validateQuantityAnswer(calculation.latex, expectedAnswer, precision, requiredUnit);
+		}
+		if (calculation?.kind === 'refused') {
+			return refusedCalculationResult(calculation, expectedDisplay);
+		}
 		// Nombre sans unité, même illisible en valeur (`\sqrt{2}`) : l'unité est oubliée
 		if (
 			expectedQuantity &&
@@ -510,6 +523,41 @@ export function validateQuantityAnswer(
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
+
+/** Verdict d'un calcul d'élève qui ne donne pas une grandeur lisible */
+function refusedCalculationResult(
+	calculation: Extract<StudentCalculation, { kind: 'refused' }>,
+	expected: ValidationResult['expected']
+): ValidationResult {
+	// `3+2\,m` : les grandeurs du calcul sont en cause, l'élève lit pourquoi
+	if (calculation.reason === 'dimensions') {
+		return {
+			isCorrect: false,
+			feedback: calculation.feedback,
+			errorType: 'incompatible_units',
+			unitAtFault: true,
+			parsed: null,
+			expected
+		};
+	}
+	// `2\sqrt{2}\,m` : une grandeur, mais pas la valeur attendue
+	if (calculation.reason === 'irrational') {
+		return {
+			isCorrect: false,
+			feedback: DEFAULT_MESSAGES.incorrectValue,
+			errorType: 'wrong_value',
+			parsed: null,
+			expected
+		};
+	}
+	return {
+		isCorrect: false,
+		feedback: DEFAULT_MESSAGES.invalidInput,
+		errorType: 'invalid_input',
+		parsed: null,
+		expected
+	};
+}
 
 /**
  * Message élève quand la saisie normalisée porte une écriture d'unité que le
