@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1592._
+_Mis à jour le 2026-10-21, phase 0 de la PR 3 proposée._
 
-- **État** : PR 1 (#1585) et **PR 2 (#1592) mergées** ; migration `20261021220000` **appliquée en prod** (`db:migrate`, trigger vérifié). Code pas en prod (attend un `deploy:prod`). Vérification manuelle notée.
-- **Prochaine action** : PR 3 — mots de passe (parent par identifiant → lien à l'adresse du parent, prof : mot de passe provisoire, enfant : « Changer mon mot de passe ») ; y rétablir dans le courriel et `/consent/[token]` la mention « réinitialiser le mot de passe ». Worktree à recréer : `feat/inscription-parent-mots-de-passe`.
-- **En attente de David** : M2 (suffixe 2 chiffres devinable : allonger ?), plafond par classe (M1 bis), réglages Auth de prod (F1) — détail § PR 2.
+- **État** : PR 1 (#1585) et PR 2 (#1592) mergées, migration en prod ; code pas en prod (attend un `deploy:prod`). PR 3 : phase 0 écrite (§ PR 3), **pas validée**.
+- **Prochaine action** : validation de la phase 0 de la PR 3 par David, puis tests rouges.
+- **En attente de David** : questions R1-R4 (§ PR 3) ; toujours M2, M1 bis, F1 (§ PR 2).
 - **Pièges en cours** : GoTrue écrit `app_metadata` APRÈS l'INSERT (trigger différé) ; la règle commune donne 30 j de grâce → retirés par `createChildAccount` ; reset d'un enfant : jamais vers `@eleves.chiph.re`.
-- **Worktree / branche** : aucun (celui de la PR 2 supprimé).
+- **Worktree / branche** : `../ubumaths-wt-inscription-parent` · `feat/inscription-parent-mots-de-passe`.
 
 ## Contexte
 
@@ -179,3 +179,88 @@ Revues (2026-10-21) :
   confirmation d'adresse dans le Dashboard de prod ; **F2** — `profiles.email` modifiable par son
   propriétaire (préexistant). F3 (1re/Tle = `granted`) : décision prise. F4 : documenté dans
   `rgpd.md`. F5 : oracle de code identique à `/auth/register`.
+
+## PR 3 — mots de passe (phase 0, 2026-10-21, à valider)
+
+### Constats dans le code
+
+- `/auth/reset-password` : `resetPasswordForEmail` fait envoyer le lien par GoTrue **à l'adresse du
+  compte** ; pour un enfant, elle est fictive (la PR 1 coupe l'envoi). Pour viser le parent :
+  `auth.admin.generateLink({ type: 'recovery' })` rend le jeton **sans rien envoyer**, et Brevo
+  envoie notre propre lien au parent. Aucune migration.
+- Adresse du parent = `parental_consents.parent_email` (élève : aucune policy d'écriture ; prof et
+  admin : écriture, `updateParentEmail`). Plusieurs lignes possibles par élève → la plus récente.
+- `/auth/update-password` marche pour toute session ; succès → `/`. Aucun lien n'y mène depuis
+  `/dashboard/profile`, qui affiche `profile.email` (pour un enfant : `noelie42@eleves.chiph.re`).
+- Aucune action prof sur le mot de passe d'un élève. Fiche d'élève côté prof = panneau de
+  `/dashboard/admin/users` (prénom, nom, classes, approbation).
+
+### Parent : « Mot de passe oublié » par identifiant
+
+**Nominal**
+
+1. `/auth/reset-password` : champ « Adresse ou identifiant » (même normalisation que la connexion).
+2. Identifiant d'un enfant → le serveur trouve le compte, puis la demande au parent la plus récente.
+3. Si l'adresse du parent est **confirmée** (R1) → courriel Brevo **au parent** : « Choisir un
+   nouveau mot de passe pour Noélie (noelie42) », lien valable 1 h.
+4. Le lien ouvre une page **sans connecter personne** (R2) : nouveau mot de passe + confirmation →
+   « C'est fait : Noélie peut se connecter avec noelie42 et ce mot de passe ».
+5. Réponse de l'écran : **la même phrase neutre** que pour une adresse.
+
+**Limites / erreurs**
+
+- Identifiant inconnu, enfant sans demande au parent, adresse non confirmée → phrase neutre, rien
+  ne part. Le prof reste le recours.
+- Le parent tape **sa propre adresse** → c'est une adresse : rien (il n'a pas de compte), phrase
+  neutre. Retrouver l'identifiant oublié : hors périmètre (le prof le donne).
+- Débit : mêmes limites qu'aujourd'hui (IP + compte visé).
+- Lien expiré ou déjà servi → message, retour à « Mot de passe oublié ».
+- Mot de passe hors politique / `weak_password` → erreur sur le champ.
+- Garde : aucun envoi vers `@eleves.chiph.re`, jamais (test).
+
+### Prof : mot de passe provisoire (Q3)
+
+**Nominal**
+
+- Panneau de l'élève dans `/dashboard/admin/users` : bouton « Réinitialiser le mot de passe » →
+  confirmation → le serveur génère un mot de passe provisoire lisible (ex. `tigre-lune-47`) et
+  l'applique → affiché **une seule fois**, avec un bouton copier.
+- À la connexion suivante, l'élève doit choisir son propre mot de passe avant tout (R3).
+
+**Limites / erreurs**
+
+- Élève hors des élèves du prof → 403 ; compte prof ou admin → refusé (R4) ; l'admin : tous.
+- Le mot de passe provisoire n'est ni stocké ni journalisé ; recharger la page ne le réaffiche pas.
+
+### Enfant (et tout élève) : « Changer mon mot de passe »
+
+- `/dashboard/profile` : lien « Changer mon mot de passe » → `/auth/update-password`, qui demande
+  l'**ancien** mot de passe en plus (une session laissée ouverte ne suffit pas), sauf au retour
+  d'un lien de réinitialisation ou d'un mot de passe provisoire.
+- Profil d'un enfant : « Identifiant : noelie42 » au lieu de la fausse adresse.
+
+### Courriel et `/consent/[token]`
+
+- Y rétablir : « Si Noélie oublie son mot de passe : « Mot de passe oublié » avec son identifiant,
+  le lien vous arrivera » (après confirmation de l'adresse).
+
+### Questions à trancher (David)
+
+- **R1 — Adresse du parent pas encore confirmée** (lien d'inscription jamais cliqué) : rien ne part
+  (recommandé : l'adresse n'est pas prouvée, le prof reste le recours), ou on envoie quand même ?
+- **R2 — Le parent connecté comme l'enfant ?** Le circuit standard de Supabase ouvre une session de
+  l'enfant chez le parent (il verrait le compte, contraire à la décision 8). _Recommandé : page
+  dédiée qui change le mot de passe sans ouvrir de session._
+- **R3 — Mot de passe provisoire à changer obligatoirement** à la connexion suivante ? _Recommandé :
+  oui_ (marque dans `app_metadata`, sans migration ; levée au changement).
+- **R4 — Réinitialisation par le prof** : tous ses élèves (y compris ceux qui ont une vraie adresse
+  et pourraient la faire eux-mêmes) ? _Recommandé : oui, tous les élèves ; jamais un prof ou un
+  admin._
+
+### Tests et revue prévus
+
+- Serveur : reset par identifiant (adresse confirmée → Brevo au parent ; non confirmée, inconnu →
+  rien, même réponse) ; page du parent (jeton valide, expiré, sans session ouverte) ; action prof
+  (autorisation, rôle, mot de passe non rendu deux fois) ; changement obligatoire ; ancien mot de
+  passe exigé. Pas de migration ni de RLS → pas d'intégration.
+- Revue : `code-reviewer` + `security-auditor` (auth, données d'élèves).
