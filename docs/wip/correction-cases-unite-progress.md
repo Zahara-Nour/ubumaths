@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21 : PR 2 bis codée, revue opus faite, PR à ouvrir._
+_Mis à jour le 2026-10-21, après #1573._
 
-- **État** : PR 1-3 mergées (#1543, #1545, #1547). PR 2 bis codée (`student-calculation.ts`), revue opus appliquée (`÷` jugé fraction : corrigé). Rien en prod.
-- **Prochaine action** : ouvrir la PR, CI, merger ; puis PR suivante (test « nombre simple »).
-- **En attente de David** : suppression du dossier non suivi `src/lib/questions/units/__tests__/tmp/` (sondes jetables).
-- **PR suivante (validée)** : corriger `isSimpleNumberLatex` : `(−3)` perfectible « parenthèses inutiles », `.5` et `5,` refusés (BIPM) — cases avec et sans unité, mesurée sur les modèles publiés.
-- **Pièges en cours** : toute réponse fausse d'une case à unité affiche le message général (« Valeur incorrecte. » de `validateQuantityAnswer` n'est jamais montré) ; messages d'unité validés (ne pas reformuler).
-- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage`.
+- **État** : PR 1-3 (#1543, #1545, #1547) et PR 2 bis (#1573, calcul écrit dans une case à unité) mergées. Rien en prod (pas de `deploy:prod`).
+- **Prochaine action** : PR « nombre simple » (validée) : corriger `isSimpleNumberLatex` — `(−3)` perfectible « parenthèses inutiles », `.5` et `5,` refusés (BIPM) ; cases avec et sans unité, mesurée sur les modèles publiés. Puis fin de chantier (versement, journal archivé).
+- **En attente de David** : suppression du dossier non suivi `src/lib/questions/units/__tests__/tmp/` (sondes jetables) du worktree, qui bloque son retrait.
+- **Pièges en cours** : toute réponse fausse d'une case à unité affiche le message général (« Valeur incorrecte. » jamais montré) ; messages d'unité validés (ne pas reformuler) ; mineurs laissés : `5 m × 10^3` juste, `6÷2 m` → « pas la bonne grandeur ».
+- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage` (mergée, à retirer après accord sur `tmp/`).
 
 ## Historique
 
@@ -225,3 +224,7 @@ scientifique en plus. Validé : mode « nombre simple » + notation scientifique
   fraction ; exige maintenant `\frac`) ; `^{\circ}C` lu °C avant le marquage. Gardé (cohérent avec le principe) :
   `\frac{180 km}{2 h}` → perfectible « La fraction peut être simplifiée. », comme `\frac{180}{2}` sans unité.
   Mineurs laissés : `5 m × 10^3` juste (lu notation scientifique), `6÷2 m` = 6 ÷ (2 m) → « pas la bonne grandeur ».
+
+### 2026-10-21 — #1573 mergée (PR 2 bis)
+
+- CI verte (16 contrôles), mergée. Doc : `grandeurs.md`, `questions.md`, `mathast/README.md`.
