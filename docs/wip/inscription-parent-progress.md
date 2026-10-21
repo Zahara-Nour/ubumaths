@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, PR #1594 ouverte, correctifs des revues EN COURS (commit WIP local, non poussé)._
+_Mis à jour le 2026-10-21, #1594 : tous les constats des revues traités, poussés (4efb0fe39), CI et contre-revue sécurité en cours._
 
-- **État** : #1594 ouverte (CI de l'ancien commit, sans valeur). `security-auditor` → **B1 bloquant** : le lien du parent portait le `hashed_token` de GoTrue, qui ouvre une session sur le compte de l'enfant (`/auth/confirm` ou `/auth/v1/verify`). Refonte commencée : jeton maison, empreinte dans `app_metadata.password_reset` (`createChildResetToken`, `setChildPasswordFromToken(service, userId, token, password)`) ; module + intégration (11 verts) + gabarit faits.
-- **Prochaine action** : finir B1 → `reset-password/+page.server.ts` (`createChildResetToken(service, target.userId)`, courriel `{userId, token}`), page du parent (`?u=&t=`, Zod uuid + jeton 20-128, load), leurs tests (le test du gabarit compare le texte avec `&amp;` : à séparer texte/HTML) ; puis les autres constats (§ Revues de la PR 3) ; doc `auth.md` (jeton maison, pas `generateLink`) ; check, push, CI, merge.
+- **État** : B1 fermé (jeton maison `?u=&t=`, empreinte dans `app_metadata.password_reset`, aucune session) ; M1 (adresse `granted` figée, 409), F-a (plancher 2 s), revue n° 2 (bouton masqué sans `email`), n° 3 (fenêtre du prof non fermable pendant la requête), n° 4 (levée de la marque en 2 essais + message), n° 5 (seau `pwchange` par compte + Zod), M2 et `auth.md` documentés. Non fait, optionnel : `/auth/confirm` refuse un `recovery` d'enfant.
+- **Prochaine action** : contre-revue `security-auditor` du delta `4ff3d9a1b..HEAD` → corriger si bloquant ; CI verte → merger #1594 ; puis petite PR M1 bis + M2 avant le `deploy:prod`.
 - **Décisions de David (2026-10-21, « ok pour les recos »)** : M1 audit → refuser la modification de `parent_email` sur une demande `granted` ; M2 audit → documenter « ancien mot de passe » comme garde d'interface (risque accepté) ; revue n° 2 → masquer « Changer mon mot de passe » sans fournisseur `email` ; F-c → David vérifie/coupe le suivi des clics Brevo. PR 2 : **F1 = David** (Dashboard) ; **M1 bis** (5 comptes par classe et par 24 h, écran parent) et **M2** (suffixe à 3 chiffres) = petite PR après #1594, avant le `deploy:prod`.
 - **En attente de David** : F-c (suivi des clics Brevo). F1 vérifié par David dans le Dashboard le 2026-10-21.
 - **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `app_metadata` seul n'en ferme aucune ; `oxlint --fix` du pre-commit réécrit les tests (les relancer après commit).
@@ -289,18 +289,18 @@ dédiée sans session · R3 changement obligatoire · R4 tous les élèves, jama
 
 `security-auditor` :
 
-- **B1 (bloquant)** : jeton GoTrue dans le courriel → session sur le compte de l'enfant. Refonte en cours (jeton maison). Optionnel en plus : `/auth/confirm` refuse un `recovery` d'un compte `child_account`.
-- **M1** : le prof peut réécrire `parent_email` d'une demande déjà `granted` (`teacher/consent`, `updateParentEmail`) → le lien partirait à une adresse non confirmée. **David : refuser** (le consentement vit sur le profil, `consent_granted_at`). À faire.
-- **M2** : « ancien mot de passe exigé » n'est qu'une garde d'interface (`supabase.auth.updateUser` depuis la console d'une session ouverte). « Secure password change » de GoTrue enverrait un code à l'adresse fictive des enfants. **David : documenter** comme garde d'interface, risque accepté (qui tient la session a déjà le compte ; prof et parent peuvent réinitialiser). À faire (doc).
-- **F-a** (= revue n° 6) : le temps de réponse de « Mot de passe oublié » révèle un enfant à parent confirmé → durée plancher (~2 s) sur tous les chemins. À faire.
+- **B1 (bloquant)** : jeton GoTrue dans le courriel → session sur le compte de l'enfant. **Fait** (jeton maison, `?u=&t=`). Optionnel en plus : `/auth/confirm` refuse un `recovery` d'un compte `child_account`.
+- **M1** : le prof peut réécrire `parent_email` d'une demande déjà `granted` (`teacher/consent`, `updateParentEmail`) → le lien partirait à une adresse non confirmée. **David : refuser** (le consentement vit sur le profil, `consent_granted_at`). **Fait.**
+- **M2** : « ancien mot de passe exigé » n'est qu'une garde d'interface (`supabase.auth.updateUser` depuis la console d'une session ouverte). « Secure password change » de GoTrue enverrait un code à l'adresse fictive des enfants. **David : documenter** comme garde d'interface, risque accepté (qui tient la session a déjà le compte ; prof et parent peuvent réinitialiser). **Fait** (`auth.md`).
+- **F-a** (= revue n° 6) : le temps de réponse de « Mot de passe oublié » révèle un enfant à parent confirmé → durée plancher (~2 s) sur tous les chemins. **Fait.**
 - **F-b** : cible cherchée par `profiles.email` (modifiable) → relecture GoTrue (adresse + `child_account`) : **fait** (test 3 bis).
 - **F-c** : suivi des clics Brevo = le lien journalisé chez Brevo. _David : vérifier/couper le suivi des clics du transactionnel._
 
 `code-reviewer` :
 
 1. Nouvel essai impossible après `weak_password` (jeton GoTrue consommé) : **résolu par la refonte** (jeton effacé au succès seulement, test 2 ter).
-2. Compte sans fournisseur `email` (Google) : « Changer mon mot de passe » sans issue. **David : masquer** le bouton si `app_metadata.providers` n'a pas `email`. À faire.
-3. Fermer la fenêtre du prof pendant la requête → mot de passe appliqué sans être vu : ignorer la fermeture pendant `isResetting`. À faire.
-4. Marque non levée → l'élève doit choisir un 3e mot de passe (`same_password`) : nouvel essai de la levée + message clair. À faire.
-5. Ancien mot de passe sur le seau de connexion (3/15 min) : seau dédié + `currentPassword` dans le schéma Zod. À faire.
+2. Compte sans fournisseur `email` (Google) : « Changer mon mot de passe » sans issue. **David : masquer** le bouton si `app_metadata.providers` n'a pas `email`. **Fait.**
+3. Fermer la fenêtre du prof pendant la requête → mot de passe appliqué sans être vu : ignorer la fermeture pendant `isResetting`. **Fait.**
+4. Marque non levée → l'élève doit choisir un 3e mot de passe (`same_password`) : nouvel essai de la levée + message clair. **Fait.**
+5. Ancien mot de passe sur le seau de connexion (3/15 min) : seau dédié + `currentPassword` dans le schéma Zod. **Fait.**
 6. = F-a.
