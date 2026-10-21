@@ -117,10 +117,14 @@
 				<Card.Content class="pt-0">
 					<p class="text-sm leading-relaxed"><InlineMarkdown content={point.name} /></p>
 					<div class="mt-3 flex flex-wrap items-center gap-2">
-						{#if point.trainable}
+						<!-- L'état peut exister sans modèle tagué (tag retiré depuis) : on le
+							 montre toujours, l'absence d'entraînement en plus. -->
+						{#if point.trainable || point.is_acquired || point.needs_remediation}
 							<Badge variant={pointBadgeVariant(point)} class="text-xs">
 								{pointStatusLabel(point)}
 							</Badge>
+						{/if}
+						{#if point.trainable}
 							<CapacityFsrsBadge badge={point.badge} showLabel />
 						{:else}
 							<Badge variant="outline" class="text-xs text-muted-foreground">

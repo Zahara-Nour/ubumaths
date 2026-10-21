@@ -86,7 +86,8 @@ Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, 
 `TemplateSelector.svelte` (ajouter un modèle à un paquet) · `DeckCard.svelte` (liste des paquets) ·
 `CapacityFsrsBadge.svelte` (badge de mémoire, utilisé par `NotionsPanel.svelte` et
 `dashboard/student/notions/[id]`). Sur le deck « Programme », la notion d'une carte mène à sa page
-(`?depuis=programme`).
+(`?depuis=programme`) quand le point est actif et du niveau de l'élève (`notionLinkable`) ;
+sinon son nom reste sans lien.
 
 ### Routes API
 

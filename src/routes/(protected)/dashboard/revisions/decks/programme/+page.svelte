@@ -132,7 +132,7 @@
 										{#if card.notionName}
 											<div class="text-xs text-muted-foreground">
 												Notion :
-												{#if card.notionId}
+												{#if card.notionId && card.notionLinkable}
 													<a
 														href={notionHref(card.notionId, 'programme')}
 														class="underline hover:text-foreground">{card.notionName}</a

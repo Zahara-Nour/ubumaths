@@ -182,7 +182,13 @@ export function aggregateNotionStats(notions: NotionSummary[]): NotionsStats {
 
 type PointState = { is_acquired: boolean; needs_remediation: boolean };
 
-/** État d'acquisition de l'élève sur ces points (vue `student_point_state_v`). */
+/**
+ * État d'acquisition de l'élève sur ces points (vue `student_point_state_v`).
+ *
+ * Lu en entier pour l'élève, puis filtré ici : un programme compte jusqu'à
+ * ~240 points, trop d'identifiants pour un `.in()` dans l'URL, alors qu'un
+ * élève n'a d'état que sur les points qu'il a travaillés.
+ */
 async function loadPointStates(
 	supabase: SB,
 	studentId: string,
@@ -310,7 +316,10 @@ export async function getNotionDetail(
 	let found: { branchName: string; notion: (typeof tree)[number]['notions'][number] } | null = null;
 	for (const branch of tree) {
 		const notion = branch.notions.find((n) => n.id === notionId);
-		if (notion) found = { branchName: branch.name, notion };
+		if (notion) {
+			found = { branchName: branch.name, notion };
+			break;
+		}
 	}
 	if (!found) return null;
 
