@@ -129,8 +129,9 @@
 		grand_matou: [158, 30]
 	};
 	const zPaths = $derived(zzz(ZZZ_AT[stage][0], geo.hy + ZZZ_AT[stage][1], 0.9));
-	// Naissance : auréole, ondes et étoiles ; naissance ou croissance : confettis
+	// Naissance : étoiles ; naissance ou croissance : auréole qui s'allume, ondes, confettis
 	const birth = $derived(reaction === 'apparition' && !silhouette);
+	const glow = $derived(birth || morphing);
 	const party = $derived(birth || morphing ? celebration(race.halo) : null);
 	const confettiStart = $derived(birth ? 0.35 : 0.2);
 	// Chaque race a son décalage : dans la Chatterie, les Mathoux ne respirent pas en chœur
@@ -223,12 +224,12 @@
 			<circle cx="100" cy={haloY} r={haloR} fill={race.halo} stroke={YELLOW} stroke-width="2.5" />
 		{:else}
 			{#key reactionKey}
-				<circle cx="100" cy={haloY} r={haloR} fill={race.halo} class:aureole-naissance={birth} />
+				<circle cx="100" cy={haloY} r={haloR} fill={race.halo} class:aureole-naissance={glow} />
 			{/key}
 		{/if}
-		{#if birth}
+		{#if glow}
 			{#key reactionKey}
-				<!-- Naissance : l'auréole s'allume et lance deux ondes de lumière -->
+				<!-- Naissance ou croissance : l'auréole s'allume et lance deux ondes de lumière -->
 				{#each [0, 1] as wave (wave)}
 					<circle
 						class="onde"
