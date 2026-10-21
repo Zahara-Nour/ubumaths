@@ -708,6 +708,8 @@ for (const [pk, P] of Object.entries(PALOTINS)) {
 		);
 		const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${animation(pk)}<defs>${defs}</defs>${body}</svg>`;
 		writeFileSync(`${FINAL}${uid}.svg`, svg);
+		// Version fixe : une <img> ne transmet pas « réduire les animations » au SVG (Chromium)
+		writeFileSync(`${FINAL}${uid}-fixe.svg`, svg.replace(animation(pk), ''));
 		result.expressions[pk][expr] = svg;
 	}
 }

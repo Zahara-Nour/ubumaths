@@ -6,13 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, avant la première PR._
+_Mis à jour le 2026-10-21, PR d'intégration ouverte._
 
-- **État** : 7 expressions × 3 Palotins dessinées et animées (21 SVG dans `scripts/palotins-svg/final/`, rien encore dans `static/images/buddies/`). « Déterminé » fait : regard décidé (paupière à plat), sourire en coin ; Giron lève le poing manche retroussée, Pile rebat son paquet, Cotice tourne la page.
-- **Décidé par David (2026-10-21)** : après une erreur → « déterminé » ; « triste » gardé pour une longue absence (contexte à créer dans `CONTEXT_EXPRESSION_MAP`).
-- **En attente de David** (recos données) : (a) absence longue = **21 jours** (14 attraperait les petites vacances), une seule fois au retour, réplique « tu m'as manqué », remplace `streak_lost` ; (b) `streak_lost` → **« déterminé »** (les 12 répliques disent « on repart »).
-- **Prochaine action** : David regarde « déterminé » (`scripts/palotins-svg/palotins-styles.html`) ; puis PR : 21 SVG dans `static/images/buddies/`, `determined` dans `BuddyExpression`, `incorrect` (+ `streak_lost` si (b)) → `determined`, réactions (bond, tressaut, affaissement) dans `BuddyAvatar.svelte`, « réduire les animations » dans une `<img>`. Absence longue = phase 0 à part.
-- **Pièges en cours** : relancer `node gen.mjs && node gen2.mjs && node page.mjs` dans `scripts/palotins-svg/` ; sorties ignorées par git (`final/` = les fichiers à copier).
+- **État** : PR d'intégration ouverte : 21 SVG animés + 21 versions `-fixe` dans `static/images/buddies/`, `determined` dans `BuddyExpression`, `incorrect` et `streak_lost` → `determined`, réactions (bond, tressaut, affaissement) dans `BuddyAvatar.svelte`.
+- **Décidé par David (2026-10-21)** : recos suivies — `streak_lost` → « déterminé » ; « triste » après **21 jours** sans connexion, une seule fois au retour, réplique « tu m'as manqué », à la place de `streak_lost`.
+- **Prochaine action** : CI verte → merge ; puis phase 0 du contexte « absence longue » (comportements en français, source de la dernière connexion à vérifier).
+- **Pièges en cours** : une `<img>` ne transmet pas « réduire les animations » au SVG (Chromium) → versions `-fixe` choisies par `prefersReducedMotion`. Générateur : `node gen.mjs && node gen2.mjs && node page.mjs` dans `scripts/palotins-svg/`, puis copier `final/*.svg`.
 - **Worktree / branche** : `../ubumaths-wt-palotins-svg` · `feat/palotins-svg`.
 
 ## Décisions de David (2026-10-21)
@@ -26,6 +25,7 @@ _Mis à jour le 2026-10-21, avant la première PR._
 7. Animation au repos dans le SVG (respiration, clignement, chapeau, geste propre à chacun, rythmes différents) : validée. Réactions dans le composant (bond, tressaut, affaissement) : validées.
 8. Cotice « content » refait : sa bouche ronde faisait peur → yeux plissés de rire et grand sourire ouvert.
 9. Pas de Palotin triste après une erreur : nouvelle expression « déterminé ». « Triste » gardé pour une longue absence de l'élève.
+10. Constance perdue → « déterminé ». Longue absence = 21 jours sans connexion (14 attraperait les petites vacances), une fois au retour, « tu m'as manqué », remplace `streak_lost`.
 
 ## Gestes par expression
 

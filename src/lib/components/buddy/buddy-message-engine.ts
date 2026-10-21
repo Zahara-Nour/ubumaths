@@ -18,14 +18,14 @@ const RECENT_HISTORY_SIZE = 5;
 /** Map context -> expression for avatar display */
 const CONTEXT_EXPRESSION_MAP: Record<BuddyMessageContext, BuddyExpression> = {
 	correct: 'happy',
-	incorrect: 'sad',
+	incorrect: 'determined',
 	idle: 'neutral',
 	idle_lore: 'thinking',
 	streak_3: 'excited',
 	streak_7: 'excited',
 	streak_14: 'excited',
 	streak_30: 'excited',
-	streak_lost: 'sad',
+	streak_lost: 'determined',
 	level_up: 'excited',
 	theme_fractions: 'thinking',
 	theme_geometry: 'thinking',

@@ -65,7 +65,8 @@ export function toBuddyState(row: {
 }
 
 /** Buddy expression states for avatar display */
-export type BuddyExpression = 'neutral' | 'happy' | 'sad' | 'thinking' | 'excited' | 'encouraging';
+export type BuddyExpression =
+	'neutral' | 'happy' | 'sad' | 'thinking' | 'excited' | 'encouraging' | 'determined';
 
 /** Result of an XP gain operation (returned by add_buddy_xp RPC) */
 export interface BuddyXpGainResult {
