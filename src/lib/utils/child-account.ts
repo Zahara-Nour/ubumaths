@@ -12,15 +12,27 @@
 
 export const CHILD_ACCOUNT_DOMAIN = 'eleves.chiph.re';
 
-const LIGATURES: Record<string, string> = { œ: 'oe', æ: 'ae', ß: 'ss' };
+// Lettres que NFD ne décompose pas : sans cette table, « Łukasz » deviendrait « ukasz ».
+const UNDECOMPOSABLE: Record<string, string> = {
+	œ: 'oe',
+	æ: 'ae',
+	ß: 'ss',
+	ø: 'o',
+	ł: 'l',
+	đ: 'd',
+	ð: 'd',
+	þ: 'th',
+	ı: 'i'
+};
 
 // Fonctions
 
 /** Ramène un texte à `[a-z0-9]` : sans accent, sans majuscule, sans séparateur. */
 function foldToLoginId(raw: string): string {
 	return raw
+		.normalize('NFKC') // pleine chasse (claviers mobiles), exposants → forme simple
 		.toLowerCase()
-		.replace(/[œæß]/g, (c) => LIGATURES[c])
+		.replace(/[œæßøłđðþı]/g, (c) => UNDECOMPOSABLE[c])
 		.normalize('NFD')
 		.replace(/[̀-ͯ]/g, '')
 		.replace(/[^a-z0-9]/g, '');

@@ -24,6 +24,15 @@ describe('normalizeLoginIdentifier', () => {
 		expect(normalizeLoginIdentifier('Cœlia12')).toBe(`coelia12@${CHILD_ACCOUNT_DOMAIN}`);
 	});
 
+	it('translittère les lettres que NFD ne décompose pas', () => {
+		expect(normalizeLoginIdentifier('Łukasz7')).toBe(`lukasz7@${CHILD_ACCOUNT_DOMAIN}`);
+		expect(normalizeLoginIdentifier('Søren3')).toBe(`soren3@${CHILD_ACCOUNT_DOMAIN}`);
+	});
+
+	it('ramène la pleine chasse d’un clavier mobile', () => {
+		expect(normalizeLoginIdentifier('ｎｏｅｌｉｅ４２')).toBe(`noelie42@${CHILD_ACCOUNT_DOMAIN}`);
+	});
+
 	it('garde une adresse telle quelle, en minuscules', () => {
 		expect(normalizeLoginIdentifier(' Parent@Exemple.fr ')).toBe('parent@exemple.fr');
 	});

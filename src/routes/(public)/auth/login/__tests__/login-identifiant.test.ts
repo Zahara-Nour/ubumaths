@@ -12,6 +12,7 @@ vi.mock('$lib/server/rateLimiter', () => ({
 }));
 
 const { actions } = await import('../+page.server');
+const { checkLoginRateLimitByEmail } = await import('$lib/server/rateLimiter');
 
 async function login(identifier: string) {
 	const signInWithPassword = vi.fn(async () => ({
@@ -35,6 +36,11 @@ describe('/auth/login — identifiant de l’enfant', () => {
 			email: `noelie42@${CHILD_ACCOUNT_DOMAIN}`,
 			password: 'secret'
 		});
+	});
+
+	it('limite le débit sur l’adresse normalisée (variantes de saisie = même compteur)', async () => {
+		await login('noélie.42');
+		expect(checkLoginRateLimitByEmail).toHaveBeenLastCalledWith(`noelie42@${CHILD_ACCOUNT_DOMAIN}`);
 	});
 
 	it('garde le chemin par adresse', async () => {
