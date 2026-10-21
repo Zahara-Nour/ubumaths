@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1593._
+_Mis à jour le 2026-10-21, après la fermeture des PR remplacées._
 
-- **État** : flakes CI corrigés (#1447, #1586, #1590, #1591), dépendances sécurisées (#1593, audit prod 0) ; triages #130 #879 #921 #978 #1237 #1511 #1549 #1571 et #1529 fermés · **Prochaine action** : aucune côté code · **En attente de David** : fermer les PR remplacées #1459 #1316 #1512 #1207 (`gh pr close … --delete-branch`) ; changer les mots de passe des comptes prod teacher@/student@/admin@ puis fermer #71 et #74 ; `deploy:prod` pour livrer #1447 et #1593 · **Pièges en cours** : le mode auto refuse `gh issue/pr close` (David les lance avec `!`) · **Worktree / branche** : aucun (dépôt principal, `main`)
+- **État** : flakes CI corrigés (#1447, #1586, #1590, #1591), dépendances sécurisées (#1593, audit prod 0) ; triages #130 #879 #921 #978 #1237 #1511 #1549 #1571 et #1529 fermés ; PR remplacées #1459 #1316 #1512 #1207 fermées · **Prochaine action** : aucune côté code · **En attente de David** : changer les mots de passe des comptes prod teacher@/student@/admin@ puis fermer #71 et #74 ; `deploy:prod` pour livrer #1447 et #1593 · **Pièges en cours** : le mode auto refuse `gh issue/pr close` (David les lance avec `!`) · **Worktree / branche** : aucun (dépôt principal, `main`)
 
 ## Historique
 
