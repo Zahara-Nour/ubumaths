@@ -9,7 +9,7 @@ _Mis à jour le 2026-10-21, bloc écrit après coup (journal antérieur à la r�
 
 - **État** : chantier **terminé**. PR 1 à 4 mergées (#1471, #1475, #1476, #1484) ; `db:migrate` fait le 2026-10-18 ; tout est en prod (#1484 vérifiée dans `origin/production`, v0.43.0).
 - **Prochaine action** : aucune. Reste à verser le durable dans `docs/systeme/buddy-palotins.md` et archiver ce journal.
-- **Suites possibles (non lancées)** : images faites par IA à la place des SVG (décision 4) ; pelages et accessoires en gidouilles, combats (conception § 4, étapes 3-4).
+- **Suites possibles (non lancées)** : images faites par IA à la place des SVG (décision 4). Pelages, accessoires et combats = chantier Mathoux, pas Palotins.
 - **Pièges en cours** : le forfait de 10 cartes compte aussi les réponses d'Entraînement et de flash (borné par le plafond de 100 pansées/jour).
 - **Worktree / branche** : aucun ; `../ubumaths-wt-palotin` supprimé.
 
