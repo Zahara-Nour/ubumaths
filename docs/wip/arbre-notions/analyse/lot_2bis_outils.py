@@ -95,7 +95,9 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
     `entete` : commentaire de tête de la migration (`{n}` = nombre de modèles) ; `options` : le lot
     change aussi la colonne `options` (QCM à ne pas mélanger…), gardée et rendue comme le reste ;
     `scissions` : modèle → (UUID du modèle neuf, fonction qui écrit son contenu à partir de celui
-    d'avant de l'origine).
+    d'avant de l'origine, niveau du modèle neuf). Le niveau est requis : l'index unique
+    `idx_question_templates_unique_category` interdit à deux modèles publiés le même quadruplet
+    (thème, domaine, sous-domaine, niveau), et le modèle neuf copie les trois premiers.
 
     Argument optionnel du script : un dossier qui reçoit un <id>.json par modèle modifié (pour
     `pnpm question:specs --file` et `scripts/audit-question-draws.ts --dir`)."""
@@ -144,21 +146,24 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
             'tag': {'grade': grade, 'code': codes[0]},
             'avant': avant,
             'apres': neuf,
+            'categorie': {k: t[k] for k in ('theme', 'domain', 'subdomain', 'level', 'status')},
         }
         if court in scissions:
-            id_neuf, ecrire = scissions[court]
+            id_neuf, ecrire, niveau = scissions[court]
             assert id_neuf not in {r['id'] for r in releves.values()}, id_neuf
+            assert niveau != t['level'], (court, niveau)
             contenu = copy.deepcopy(avant)
             ecrire(contenu)
             assert contenu not in (avant, neuf), court
-            m['scission'] = {'id': id_neuf, 'tag': {'grade': grade, 'code': codes[1]}, 'contenu': contenu}
+            m['scission'] = {'id': id_neuf, 'niveau': niveau, 'tag': {'grade': grade, 'code': codes[1]},
+                             'contenu': contenu}
         lot.append(m)
         if sortie_modeles:
             os.makedirs(sortie_modeles, exist_ok=True)
             json.dump({**t, **neuf}, open(f"{sortie_modeles}/{t['id']}.json", 'w'), ensure_ascii=False, indent='\t')
             if 'scission' in m:
                 n = m['scission']
-                json.dump({**t, **n['contenu'], 'id': n['id']}, open(f"{sortie_modeles}/{n['id']}.json", 'w'),
+                json.dump({**t, **n['contenu'], 'id': n['id'], 'level': n['niveau']}, open(f"{sortie_modeles}/{n['id']}.json", 'w'),
                           ensure_ascii=False, indent='\t')
 
     json.dump({'modeles': lot}, open(fixture, 'w'), ensure_ascii=False, indent='\t')
@@ -299,16 +304,17 @@ create temporary table {tmp}_modeles (
                  f"'{m['tag']['grade']}', '{m['tag']['code']}',\n  {contenu(m['avant'])},\n  {contenu(m['apres'])});")
     if neufs:
         o.append(f'''
--- Modèles neufs des scissions : chacun copie les autres colonnes de son origine.
+-- Modèles neufs des scissions : chacun copie les autres colonnes de son origine, sauf le niveau.
 drop table if exists pg_temp.{tmp}_neufs;
 create temporary table {tmp}_neufs (
 	id uuid primary key,
 	origine uuid not null references {tmp}_modeles (id),
+	niveau integer not null,
 	tag_grade text not null, tag_code text not null,
 	contenu jsonb not null
 );''')
         for x in neufs:
-            o.append(f"insert into {tmp}_neufs values ('{x['id']}', '{x['origine']}', "
+            o.append(f"insert into {tmp}_neufs values ('{x['id']}', '{x['origine']}', {x['niveau']}, "
                      f"'{x['tag']['grade']}', '{x['tag']['code']}',\n  {contenu(x['contenu'])});")
     o.append(f'''
 -- ---- 2. Résolution STRICTE des nœuds et des points --------------------------------------
@@ -439,15 +445,26 @@ end $resolution_neufs$;
 	select count(*) into v_pris from {tmp}_neufs n join public.question_templates q on q.id = n.id;
 	if v_pris <> 0 then
 		raise exception 'identifiants des modèles neufs déjà pris : %', v_pris;
+	end if;
+	-- Catégorie (thème, domaine, sous-domaine de l'origine, niveau propre) : unique parmi les
+	-- modèles publiés (idx_question_templates_unique_category).
+	select count(*) into v_pris from {tmp}_neufs n
+	  join public.question_templates o on o.id = n.origine
+	  join public.question_templates q on q.status = 'published' and q.theme = o.theme and q.domain = o.domain
+	   and coalesce(q.subdomain, '') = coalesce(o.subdomain, '') and q.level = n.niveau;
+	if v_pris <> 0 then
+		raise exception 'catégories des modèles neufs déjà prises : %', v_pris;
 	end if;''')
     inserer("""  from {tmp}_resolus x
   join public.question_templates q on q.id = x.id;
 """.format(tmp=tmp), f'''
--- Modèles neufs : toutes les colonnes de l'origine (type, nœud, niveaux, statut, auteur…), puis leur
--- propre identifiant, leur contenu et des dates neuves. Rien n'est créé si l'origine est absente.
+-- Modèles neufs : toutes les colonnes de l'origine (type, nœud, niveaux scolaires, statut, auteur…),
+-- puis leur propre identifiant, leur niveau dans la catégorie, leur contenu et des dates neuves. Rien
+-- n'est créé si l'origine est absente.
 insert into public.question_templates
 select (jsonb_populate_record(null::public.question_templates,
-	to_jsonb(q) || n.contenu || jsonb_build_object('id', n.id, 'created_at', now(), 'updated_at', now()))).*
+	to_jsonb(q) || n.contenu
+	  || jsonb_build_object('id', n.id, 'level', n.niveau, 'created_at', now(), 'updated_at', now()))).*
   from {tmp}_neufs n
   join public.question_templates q on q.id = n.origine;
 
