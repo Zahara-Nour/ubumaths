@@ -134,9 +134,12 @@
 								<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 							{/if}
 							<span class="flex-1 font-semibold">{branch.name}</span>
-							<span class="text-xs text-muted-foreground">
-								{bs.vus}/{bs.total} · {pct(bs.vus, bs.total)}%
-							</span>
+							<!-- Que des archivés travaillés : pas de ratio à montrer. -->
+							{#if bs.total > 0}
+								<span class="text-xs text-muted-foreground">
+									{bs.vus}/{bs.total} · {pct(bs.vus, bs.total)}%
+								</span>
+							{/if}
 						</button>
 
 						{#if onlyUncovered || openBranches[branch.id]}
@@ -155,7 +158,9 @@
 													<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 												{/if}
 												<span class="flex-1 font-medium">{notion.name}</span>
-												<span class="text-xs text-muted-foreground">{ns.vus}/{ns.total}</span>
+												{#if ns.total > 0}
+													<span class="text-xs text-muted-foreground">{ns.vus}/{ns.total}</span>
+												{/if}
 											</button>
 
 											{#if onlyUncovered || openNotions[notion.id]}

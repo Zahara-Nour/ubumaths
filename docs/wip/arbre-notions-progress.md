@@ -1202,3 +1202,8 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   `keepCheckablePointIds` (ex-`keepProgrammePointIds`) écarte aussi les archivés ; DELETE : commentaire « 404 = déjà
   retiré » (policy unique `for all … is_teacher_or_admin()` de `20260621100000`, vérifiée) ; Avancement :
   `coverageStats` (archivés hors « vus / total »). Tests : 6 rouges avant, 66/66 après. Accès : rien ne change.
+- **2026-10-21 — B3 : deux points de revue tranchés par David** (recos suivies). Code-reviewer : la couverture
+  AUTO (`reconcileAutoCoverage`) cochait encore un archivé (et un ancien point via les tags d'exercice) → filtrée par
+  `keepCheckablePointIds` ; une ligne auto sur un point devenu archivé sort à la réconciliation suivante, le coché
+  manuel reste. Avancement : ratio masqué quand une notion / branche n'a que des archivés (au lieu de « 0/0 · 0% »).
+  Security-auditor : 0 bloquant ni important ; commentaire des DELETE corrigé (« professeur et admin »).

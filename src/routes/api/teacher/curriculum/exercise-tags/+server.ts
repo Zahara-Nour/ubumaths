@@ -107,7 +107,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 
 	// `.select()` : un refus RLS rend zéro ligne sans erreur, il ne doit pas passer pour un succès.
 	// En pratique, le 404 veut dire « déjà retiré » : la policy (`is_teacher_or_admin`, sur toutes
-	// les lignes) ne peut pas refuser le professeur, seul appelant admis par `requireRoles`.
+	// les lignes) laisse tout faire au professeur et à l'admin, seuls appelants admis par `requireRoles`.
 	const { data: deleted, error: dbErr } = await locals.supabase
 		.from('exercise_curriculum_points')
 		.delete()
