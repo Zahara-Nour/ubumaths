@@ -183,9 +183,9 @@ Pages : `src/routes/(protected)/dashboard/teacher/cahier-texte/` (semaine ; acti
 | `src/lib/server/curriculum.ts`                      | `curriculumDbError` (erreur Postgres → HTTP). L'ancien arbre (`getCurriculumTree`, thème → objectif → point) a disparu à l'étape 3 (B2).                                                                                                                                                                                                                                                             |
 | `src/lib/server/programme-tree.ts`                  | `getProgrammeTree` : points NEUFS d'un niveau (`node_id` non nul) et leurs nœuds, lus explicitement (pas de `!inner`) ; `getProgrammeTreeKeeping` : le même, archivés masqués sauf ceux qu'on lui donne (déjà cochés ou tagués) ; `loadNodesWithAncestors`, `PROGRAMME_POINT_COLS`.                                                                                                                  |
 | `src/lib/utils/programme-tree.ts`                   | `buildProgrammeTree` (branche > notion > points ; ordre de l'arbre `position` puis nom, ordre du BO `display_order`), `filterTreePoints` (notions et branches vidées retirées), `hideArchivedPoints` (archivés gardés sur demande), `taggableNodeIds` (nœuds où un exercice peut prendre un point), `countArchivedPoints`, `placeOfNode` (notion et branche d'un nœud, `null` si un maillon manque). |
-| `src/lib/server/curriculum-coverage.ts`             | `reconcileAutoCoverage` : recalcule la couverture **auto** d'une séance ; `evaluationCurriculumPoints`. Ne compte que les points **neufs** des modèles.                                                                                                                                                                                                                                              |
+| `src/lib/server/curriculum-coverage.ts`             | `reconcileAutoCoverage` : recalcule la couverture **auto** d'une séance ; `evaluationCurriculumPoints`. Ne compte que les points **neufs non archivés**.                                                                                                                                                                                                                                             |
 | `src/lib/server/curriculum-grade.ts`                | `keepLinksOfGrade` : une carte rattachée à plusieurs niveaux ne compte que pour celui qu'on lit.                                                                                                                                                                                                                                                                                                     |
-| `src/lib/server/curriculum-generation.ts`           | `isProgrammePoint` : un tag vise-t-il un point neuf (`node_id`) ? `readPointGeneration` et `keepProgrammePointIds` : la même question posée à la base avant d'écrire (un ancien point ne se coche ni ne se tague plus). Les tags des anciens points restent en base jusqu'à l'étape 4 de la C5 — [ADR 0020](../adr/0020-arbre-central-programmes-pointeurs.md).                                      |
+| `src/lib/server/curriculum-generation.ts`           | `isProgrammePoint` : un tag vise-t-il un point neuf (`node_id`) ? `readPointGeneration` et `keepCheckablePointIds` : la même question posée à la base avant d'écrire (ni un ancien point ni un point archivé ne se coche ou ne se tague plus). Les tags des anciens points restent en base jusqu'à l'étape 4 de la C5 — [ADR 0020](../adr/0020-arbre-central-programmes-pointeurs.md).               |
 | `src/lib/server/programme-tags.ts`                  | `loadTemplateProgrammeTags` : les choix de tags d'un modèle, un par programme, parmi les points de son nœud et de sa notion.                                                                                                                                                                                                                                                                         |
 | `src/lib/server/progression/student-progression.ts` | Source **unique** de la progression élève : `getObjectivesProgression`, `getCompetencesProgression`, `aggregateObjectiveStats`.                                                                                                                                                                                                                                                                      |
 
@@ -381,8 +381,10 @@ formulaire (`parsePendingActivities`).
 `reconcileAutoCoverage` recalcule l'ensemble `auto` depuis **deux sources unies** : les activités
 taguées (exercice, question, évaluation → les questions de sa série) et les ressources **citées
 dans le texte** (`[[exercise:…]]`, `[[worksheet_exercise:…]]`…). Il supprime les `auto` périmés,
-insère les manquants, ne touche jamais aux `manual`. Des modèles et des évaluations, seuls les
-points **neufs** comptent (les tags des anciens points restent en base jusqu'à l'étape 4 de la C5).
+insère les manquants, ne touche jamais aux `manual`. Quelle que soit la source, seuls les points
+**neufs non archivés** comptent (`keepCheckablePointIds`, la règle du coché manuel) : une ligne `auto`
+sur un point devenu archivé sort à la réconciliation suivante ; les tags des anciens points restent
+en base jusqu'à l'étape 4 de la C5.
 Appelé à **chaque** enregistrement de séance
 et à chaque ajout ou retrait d'activité. Recalculé plutôt que figé : une séance de septembre
 s'allume quand son contenu est tagué en juin.
@@ -392,11 +394,14 @@ classe, rangés branche > notion (la sous-notion nommée à côté du point) ; u
 « cochés / total » par notion.
 
 La page Avancement compte, par point, les séances de l'année (1ᵉʳ septembre → 1ᵉʳ septembre) qui
-le couvrent, sur le même arbre.
+le couvrent, sur le même arbre. Ses « vus / total » et pourcentages ne comptent que les points
+actifs (`coverageStats`) : un archivé travaillé est affiché mais n'y entre pas, et une notion qui
+n'a que des archivés n'affiche pas de ratio.
 
 Sur les trois écrans (séance, Avancement, tags d'un exercice), un point **archivé** n'apparaît que
 s'il est déjà coché, travaillé ou tagué — marqué « archivé » (`ProgrammePointLabel`), pour qu'on
-puisse le décocher ; les anciens points n'apparaissent jamais.
+puisse le décocher ; les anciens points n'apparaissent jamais. L'API refuse de cocher ou de taguer
+un archivé (400 « Point archivé ») ; décocher et retirer un tag restent permis.
 
 ### Lien de partage du cahier
 

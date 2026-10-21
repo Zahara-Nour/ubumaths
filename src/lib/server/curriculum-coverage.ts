@@ -27,7 +27,7 @@ import { extractResourceReferences, referenceIdsOfKind } from '$lib/resources/re
 import { parseExerciseSelection } from '$lib/resources/exercise-selection';
 import { resolveExercisesAtDisplayNumbers } from '$lib/server/worksheets/display-number';
 import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
-import { isProgrammePoint } from '$lib/server/curriculum-generation';
+import { isProgrammePoint, keepCheckablePointIds } from '$lib/server/curriculum-generation';
 
 type Sb = App.Locals['supabase'];
 
@@ -337,7 +337,9 @@ export async function reconcileAutoCoverage(
 		}
 	}
 
-	const desired = [...desiredSet];
+	// B3 : même règle que le coché manuel — ni ancien point ni archivé. Une ligne auto déjà
+	// posée sur un point devenu archivé sort donc à l'étape 4 ; un coché manuel reste.
+	const desired = await keepCheckablePointIds(supabase, [...desiredSet]);
 
 	// 3. existing coverage rows for the entry
 	const { data: existing, error: exErr } = await supabase

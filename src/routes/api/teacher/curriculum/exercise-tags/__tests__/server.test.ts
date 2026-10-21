@@ -4,6 +4,7 @@
  *
  * Comportements validés par David (C5, étape 3, B2, 2026-10-21) :
  *   - POST refuse un ancien point (thème → objectif) : 400 « Point hors programme » (Q2) ;
+ *   - POST refuse un point neuf archivé : 400 « Point archivé » (B3, 2026-10-21) ;
  *   - DELETE relit les lignes supprimées : un refus RLS rend zéro ligne sans erreur,
  *     il ne doit pas passer pour un succès (404).
  */
@@ -12,7 +13,8 @@ import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase'
 import {
 	answerProgramme,
 	P_ANCIEN,
-	P_FRACTION
+	P_FRACTION,
+	P_TRIANGLE_ARCHIVE
 } from '$lib/server/__tests__/helpers/fake-programme';
 
 vi.mock('$lib/server/middleware/auth', () => ({ requireRoles: async () => ({}) }));
@@ -84,6 +86,13 @@ describe('POST exercise-tags', () => {
 		const { response, fake } = await post(P_ANCIEN);
 		expect(response.status).toBe(400);
 		expect(await response.json()).toEqual({ error: 'Point hors programme' });
+		expect(inserts(fake)).toHaveLength(0);
+	});
+
+	it('point neuf archivé : 400 « Point archivé », rien d’écrit', async () => {
+		const { response, fake } = await post(P_TRIANGLE_ARCHIVE);
+		expect(response.status).toBe(400);
+		expect(await response.json()).toEqual({ error: 'Point archivé' });
 		expect(inserts(fake)).toHaveLength(0);
 	});
 

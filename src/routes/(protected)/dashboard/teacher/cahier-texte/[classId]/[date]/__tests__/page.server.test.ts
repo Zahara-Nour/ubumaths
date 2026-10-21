@@ -6,7 +6,7 @@
  *   - les cases à cocher sont les points NEUFS du niveau de la classe, rangés par
  *     branche > notion (la sous-notion est nommée à côté du point) ;
  *   - un ancien point (thème → objectif) n'apparaît jamais, et la création d'une
- *     séance ne l'écrit pas (Q2) ;
+ *     séance ne l'écrit pas (Q2), ni un point neuf archivé (B3) ;
  *   - un point archivé déjà coché reste affiché pour pouvoir le décocher ; non
  *     coché, il reste masqué (Q1).
  */
@@ -147,10 +147,10 @@ describe('cahier de texte — programme travaillé (C5, B2)', () => {
 });
 
 describe('création d’une séance — points cochés avant enregistrement (Q2)', () => {
-	it('écrit les points neufs, jamais un ancien point', async () => {
+	it('écrit les points neufs, jamais un ancien point ni un archivé', async () => {
 		const fake = fakeDb('5', []);
 		const formData = new FormData();
-		formData.set('coveredPointIds', [P_FRACTION, P_ANCIEN].join(','));
+		formData.set('coveredPointIds', [P_FRACTION, P_ANCIEN, P_TRIANGLE_ARCHIVE].join(','));
 		const event = {
 			locals: { supabase: fake.client, user: { id: USER_ID } },
 			params: { classId: CLASS_ID, date: DATE },

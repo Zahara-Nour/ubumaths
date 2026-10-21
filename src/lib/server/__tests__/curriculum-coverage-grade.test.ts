@@ -82,6 +82,10 @@ async function reconcile(classGrade: string | null) {
 				return { data: [] };
 			case 'question_template_points':
 				return tagsFor(calls);
+			case 'curriculum_points': {
+				const ids = calls.find((c) => c.method === 'in')?.args[1] as string[];
+				return { data: ids.map((id) => ({ id, node_id: `noeud-${id}`, archived_at: null })) };
+			}
 			case 'journal_entry_points':
 				return { data: [] };
 			default:

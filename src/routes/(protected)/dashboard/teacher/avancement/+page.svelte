@@ -5,6 +5,7 @@
 	 *
 	 * Read-only view: for a class, how many times each curriculum point was worked
 	 * on this school year, rolled up to notions and branches. Colour = intensity.
+	 * Un archivé travaillé est affiché (« archivé ») mais hors du « vus / total ».
 	 */
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -14,6 +15,7 @@
 	import { Gauge, ChevronRight, ChevronDown } from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import ProgrammePointLabel from '$lib/components/programme/ProgrammePointLabel.svelte';
+	import { coverageStats } from '$lib/utils/programme-tree';
 
 	type Branch = PageData['tree'][number];
 	type Notion = Branch['notions'][number];
@@ -45,20 +47,14 @@
 	}
 
 	function notionStats(notion: Notion): { vus: number; total: number } {
-		const total = notion.points.length;
-		const vus = notion.points.filter((p) => count(p.id) > 0).length;
-		return { vus, total };
+		return coverageStats(notion.points, data.counts);
 	}
 
 	function branchStats(branch: Branch): { vus: number; total: number } {
-		let vus = 0;
-		let total = 0;
-		for (const notion of branch.notions) {
-			const s = notionStats(notion);
-			vus += s.vus;
-			total += s.total;
-		}
-		return { vus, total };
+		return coverageStats(
+			branch.notions.flatMap((notion) => notion.points),
+			data.counts
+		);
 	}
 
 	function pct(vus: number, total: number): number {
@@ -138,9 +134,12 @@
 								<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 							{/if}
 							<span class="flex-1 font-semibold">{branch.name}</span>
-							<span class="text-xs text-muted-foreground">
-								{bs.vus}/{bs.total} · {pct(bs.vus, bs.total)}%
-							</span>
+							<!-- Que des archivés travaillés : pas de ratio à montrer. -->
+							{#if bs.total > 0}
+								<span class="text-xs text-muted-foreground">
+									{bs.vus}/{bs.total} · {pct(bs.vus, bs.total)}%
+								</span>
+							{/if}
 						</button>
 
 						{#if onlyUncovered || openBranches[branch.id]}
@@ -159,7 +158,9 @@
 													<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 												{/if}
 												<span class="flex-1 font-medium">{notion.name}</span>
-												<span class="text-xs text-muted-foreground">{ns.vus}/{ns.total}</span>
+												{#if ns.total > 0}
+													<span class="text-xs text-muted-foreground">{ns.vus}/{ns.total}</span>
+												{/if}
 											</button>
 
 											{#if onlyUncovered || openNotions[notion.id]}

@@ -58,6 +58,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Q2 (C5, B2) : seuls les points neufs se taguent ; un ancien point n'est plus proposé.
+	// B3 : un point archivé non plus (retirer le tag reste permis, par le DELETE).
 	let generation: Awaited<ReturnType<typeof readPointGeneration>>;
 	try {
 		generation = await readPointGeneration(locals.supabase, parsed.data.point_id);
@@ -70,6 +71,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 	if (generation === 'ancien') {
 		return json({ error: 'Point hors programme' }, { status: 400 });
+	}
+	if (generation === 'archive') {
+		return json({ error: 'Point archivé' }, { status: 400 });
 	}
 
 	const { error: dbErr } = await locals.supabase
@@ -102,6 +106,8 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 	}
 
 	// `.select()` : un refus RLS rend zéro ligne sans erreur, il ne doit pas passer pour un succès.
+	// En pratique, le 404 veut dire « déjà retiré » : la policy (`is_teacher_or_admin`, sur toutes
+	// les lignes) laisse tout faire au professeur et à l'admin, seuls appelants admis par `requireRoles`.
 	const { data: deleted, error: dbErr } = await locals.supabase
 		.from('exercise_curriculum_points')
 		.delete()

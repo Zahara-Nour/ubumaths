@@ -56,6 +56,17 @@ async function cleanup() {
 		.eq('grade', TEST_GRADE);
 	// Points NEUFS puis nœuds (enfants d'abord : parent_id est en RESTRICT).
 	if (createdNodeIds.length > 0) {
+		// Tags d'exercice d'abord : tant qu'ils tiennent un point, la base refuse de retirer
+		// le rangement de l'exercice sur son nœud (règle 1), et le rangement resterait en base.
+		const { data: testPoints } = await service
+			.from('curriculum_points')
+			.select('id')
+			.in('node_id', createdNodeIds);
+		const testPointIds = (testPoints ?? []).map((p) => p.id);
+		if (testPointIds.length > 0) {
+			await service.from('exercise_curriculum_points').delete().in('point_id', testPointIds);
+		}
+		await service.from('exercise_classifications').delete().in('node_id', createdNodeIds);
 		await service.from('curriculum_points').delete().in('node_id', createdNodeIds);
 		for (const kind of ['notion', 'branch']) {
 			await service.from('classification_nodes').delete().in('id', createdNodeIds).eq('kind', kind);
@@ -182,10 +193,29 @@ async function createEntry(
 	return result as { entryId?: string; warning?: string };
 }
 
-/** Un exercice tagué sur les points donnés. */
+/**
+ * Un exercice tagué sur les points donnés. La base n'accepte un point neuf que sur
+ * un exercice rangé sur son nœud (règle 1) : l'exercice est rangé sur chacun.
+ */
 async function makeTaggedExercise(teacherId: string, pointIds: string[]): Promise<string> {
 	const exercise = (await TestData.exercise(teacherId).create()) as { id: string };
 	if (pointIds.length > 0) {
+		const { data: points, error: pErr } = await service
+			.from('curriculum_points')
+			.select('node_id')
+			.in('id', pointIds);
+		if (pErr) throw new Error(`points de l'exercice : ${pErr.message}`);
+		const nodeIds = [
+			...new Set((points ?? []).map((p) => p.node_id).filter((id): id is string => id !== null))
+		];
+		if (nodeIds.length > 0) {
+			const { error: cErr } = await service
+				.from('exercise_classifications')
+				.insert(
+					nodeIds.map((node_id, position) => ({ exercise_id: exercise.id, node_id, position }))
+				);
+			if (cErr) throw new Error(`rangement de l'exercice : ${cErr.message}`);
+		}
 		const { error } = await service
 			.from('exercise_curriculum_points' as never)
 			.insert(pointIds.map((point_id) => ({ exercise_id: exercise.id, point_id })) as never);
@@ -318,7 +348,7 @@ describe('Séance — ressources citées dans le contenu', () => {
 	it('un exercice cité à la CRÉATION apporte ses points, sans aucune activité', async () => {
 		const teacher = await TestData.profile().withRole('teacher').create();
 		const klass = (await TestData.class().create()) as { id: string };
-		const point = await makePoint();
+		const { pointId: point } = await makeNewPoint();
 		const exercise = await makeTaggedExercise(teacher.id, [point]);
 
 		const { entryId } = await createEntry(teacher.id, klass.id, {
@@ -334,7 +364,7 @@ describe('Séance — ressources citées dans le contenu', () => {
 	it('un EXERCICE DE FICHE cité apporte les points de l’exercice sous-jacent', async () => {
 		const teacher = await TestData.profile().withRole('teacher').create();
 		const klass = (await TestData.class().create()) as { id: string };
-		const point = await makePoint();
+		const { pointId: point } = await makeNewPoint();
 		const exercise = await makeTaggedExercise(teacher.id, [point]);
 		const junction = await putInWorksheet(teacher.id, exercise);
 
@@ -348,7 +378,7 @@ describe('Séance — ressources citées dans le contenu', () => {
 	it('la MISE À JOUR du seul contenu met la couverture à jour', async () => {
 		const teacher = await TestData.profile().withRole('teacher').create();
 		const klass = (await TestData.class().create()) as { id: string };
-		const point = await makePoint();
+		const { pointId: point } = await makeNewPoint();
 		const exercise = await makeTaggedExercise(teacher.id, [point]);
 
 		const { entryId } = await createEntry(teacher.id, klass.id, {});
@@ -371,7 +401,7 @@ describe('Séance — ressources citées dans le contenu', () => {
 	it('un devoir cité dans « travail à faire » compte autant que le contenu', async () => {
 		const teacher = await TestData.profile().withRole('teacher').create();
 		const klass = (await TestData.class().create()) as { id: string };
-		const point = await makePoint();
+		const { pointId: point } = await makeNewPoint();
 		const exercise = await makeTaggedExercise(teacher.id, [point]);
 
 		// Le travail à faire passe par le champ `homeworkItems` — une liste JSON,
