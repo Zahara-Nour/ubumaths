@@ -172,7 +172,9 @@ La page `decks/programme` range les cartes en 4 sections calculées à la lectur
 Sur un point du programme (`computePointBadges`), le badge est le **pire** de ses modèles
 (`worstBadge`, ordre ci-dessus), `non_commencee` s'il n'en a aucune mémoire. Il s'affiche **à
 côté** du verdict d'acquisition du référentiel (`student_point_state`) : les deux peuvent
-diverger sans se contredire (acquis, mais en train d'être oublié).
+diverger sans se contredire (acquis, mais en train d'être oublié). Lecture en échec : par défaut
+`non_commencee` partout (la page reste affichée) ; `onError: 'throw'` lève à la place (la Chatterie,
+où une panne effacerait les siestes en silence).
 
 ### Paquets personnels, sections
 
@@ -272,6 +274,9 @@ saute un drapeau identique non résolu de moins de 7 jours, écrit dans `srs_ant
    UPDATE / DELETE de `srs_card_stats` révoqués aux comptes connectés. Écrivains :
    `upsertCardStats` (client service) et `api/srs/decks/[id]/assign`. Le `userId` vient
    **toujours** de la session, jamais du corps de la requête.
+   Lecture : l'élève lit sa mémoire ; le professeur lit celle de **tous ses élèves**
+   (`is_my_student(user_id)`, `20261021173000_srs_card_stats_lecture_prof`), pas seulement les
+   cartes des paquets qu'il leur a assignés.
 2. **Paquets Programme et assignés créés par le serveur seul** (`20261004213000_carnets_srs_acces`) :
    aucun compte connecté ne pose `is_assigned`, `is_auto_managed` ni `source_deck_id`.
    Les cartes du Programme aussi (`20261003100000_srs_cards_insert_policy_service_role`).
