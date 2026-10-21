@@ -101,7 +101,8 @@ describe('action register (parent)', () => {
 			loginId: 'noelie42',
 			childFirstname: 'Noélie',
 			parentEmail: 'parent@exemple.fr',
-			emailSent: true
+			emailSent: true,
+			consentRequired: true
 		});
 		expect(createChildAccount).toHaveBeenCalledWith(expect.anything(), {
 			childFirstname: 'Noélie',
@@ -142,6 +143,14 @@ describe('action register (parent)', () => {
 		const res = await actions.register(evenement());
 		expect(res).toMatchObject({ status: 400, data: { errors: { classCode: expect.any(Array) } } });
 		expect(createChildAccount).not.toHaveBeenCalled();
+		// Un code mal tapé ne consomme pas le plafond du parent.
+		expect(checkChildSignupRateLimitByParentEmail).not.toHaveBeenCalled();
+	});
+
+	it('mot de passe refusé par GoTrue : erreur sur le champ, pas une erreur serveur', async () => {
+		createChildAccount.mockResolvedValue({ ok: false, reason: 'weak_password' });
+		const res = await actions.register(evenement());
+		expect(res).toMatchObject({ status: 400, data: { errors: { password: expect.any(Array) } } });
 	});
 
 	it('classe fermée entre-temps : erreur sur le champ', async () => {
@@ -202,5 +211,37 @@ describe('action register (parent)', () => {
 		expect(res).toMatchObject({ status: 500 });
 		expect(deleteChildAccount).toHaveBeenCalledWith(expect.anything(), 'eleve-1');
 		expect(sendChildRegistrationEmail).not.toHaveBeenCalled();
+	});
+
+	it("exception pendant la demande au parent : l'inscription est annulée", async () => {
+		createParentRequest.mockRejectedValue(new Error('réseau'));
+		const res = await actions.register(evenement());
+		expect(res).toMatchObject({ status: 500 });
+		expect(deleteChildAccount).toHaveBeenCalledWith(expect.anything(), 'eleve-1');
+	});
+
+	it("exception pendant l'envoi : le compte reste, l'écran dit que le courriel n'est pas parti", async () => {
+		sendChildRegistrationEmail.mockRejectedValue(new Error('import'));
+		const res = await actions.register(evenement());
+		expect(res).toMatchObject({ success: true, emailSent: false });
+		expect(deleteChildAccount).not.toHaveBeenCalled();
+	});
+
+	it('prénom portant un lien ou des chiffres : refusé (il part dans le sujet du courriel)', async () => {
+		for (const childFirstname of ['www.piege.fr', 'https://x', 'Noé 42']) {
+			const res = await actions.register(evenement({ ...CHAMPS, childFirstname }));
+			expect(res).toMatchObject({
+				status: 400,
+				data: { errors: { childFirstname: expect.any(Array) } }
+			});
+		}
+		expect(createChildAccount).not.toHaveBeenCalled();
+	});
+
+	it('prénoms réels acceptés : tiret, apostrophe, accents', async () => {
+		for (const childFirstname of ['Anne-Sophie', "N'Golo", 'Zoé Lou', 'Łukasz']) {
+			await actions.register(evenement({ ...CHAMPS, childFirstname }));
+		}
+		expect(createChildAccount).toHaveBeenCalledTimes(4);
 	});
 });

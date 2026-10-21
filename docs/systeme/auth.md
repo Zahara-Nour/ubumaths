@@ -252,12 +252,16 @@ session et l'action redirige vers `/dashboard`.
 
 Pour un enfant sans adresse. Le parent donne code de classe, prénom de l'enfant (seul :
 minimisation), mot de passe de l'enfant, son adresse et les CGU (`parentRegisterFormSchema`).
-Limites par IP **et** par adresse du parent (`checkChildSignupRateLimitByParentEmail`, 5 / 24 h)
-→ code vérifié par `resolve_open_class_by_code` avant toute création → `createChildAccount` :
+Limite par IP → code vérifié par `resolve_open_class_by_code` avant toute création → plafond par
+adresse du parent (`checkChildSignupRateLimitByParentEmail`, 5 / 24 h, **fermé** en cas de panne,
+clé `mailboxKey` : sans `+tag` ni points Gmail ; compté après le code, qu'un code mal tapé ne
+consomme pas) → `createChildAccount` :
 identifiant `prenom` + 2 chiffres au hasard (3 si les 100 sont pris), compte créé par
 `auth.admin.createUser` (adresse fictive confirmée d'office, `app_metadata.child_account`), profil
 créé par `handle_new_user` comme pour l'élève seul (une classe fermée entre-temps → compte
-supprimé). Puis une demande `parental_consents` en attente pour l'adresse du parent (sans elle,
+supprimé). Le serveur retire ensuite le délai de grâce que la règle commune donne à tout nouveau
+compte (30 jours d'accès complet) : **lecture seule jusqu'au clic du parent** (Q2). Le prénom
+n'admet que lettres, espaces, tirets et apostrophes (il part dans le sujet du courriel). Puis une demande `parental_consents` en attente pour l'adresse du parent (sans elle,
 l'inscription est annulée) et **un seul courriel** (`sendChildRegistrationEmail`) : identifiant +
 lien `/consent/[token]`. Le lien recueille le consentement (case explicite) ou, en 1re/Tle,
 confirme seulement l'adresse. Courriel en échec : le compte reste, l'écran le dit, le prof renvoie

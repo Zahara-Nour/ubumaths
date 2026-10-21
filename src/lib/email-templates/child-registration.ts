@@ -40,7 +40,7 @@ function formatDate(date: Date): string {
 function actionSentence(data: ChildRegistrationEmailData): string {
 	return data.consentRequired
 		? `Comme ${data.childFirstname} a moins de 15 ans, votre consentement est nécessaire (RGPD, article 8). En attendant, son compte est en lecture seule.`
-		: 'Merci de confirmer votre adresse : elle servira à réinitialiser le mot de passe de votre enfant en cas d’oubli.';
+		: 'Merci de confirmer votre adresse : c’est par elle que Chiphre vous joindra au sujet du compte de votre enfant.';
 }
 
 function notMeSentence(data: ChildRegistrationEmailData): string {

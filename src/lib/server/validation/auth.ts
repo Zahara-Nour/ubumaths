@@ -109,6 +109,12 @@ export const parentRegisterFormSchema = z
 			.trim()
 			.min(1, 'Prénom requis')
 			.max(50)
+			// Lettres, espaces, tirets, apostrophes : le prénom part dans le sujet d'un
+			// courriel, il ne doit pouvoir porter ni lien ni texte arbitraire (audit PR 2, M1).
+			.regex(
+				/^[\p{L}\p{M}][\p{L}\p{M} '’-]*$/u,
+				'Lettres, espaces, tirets et apostrophes seulement'
+			)
 			.refine((name) => childLoginBase(name) !== null, {
 				message: 'Le prénom doit contenir au moins une lettre de l’alphabet latin'
 			}),

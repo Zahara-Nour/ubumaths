@@ -126,15 +126,11 @@ export const actions: Actions = {
 			logger.error('[consent grant] Consent info error:', infoError ?? infoValidation.error);
 			return fail(500, { error: 'Erreur serveur. Réessayer.' });
 		}
-		if (!infoValidation.data.success) {
-			return fail(400, {
-				error: infoValidation.data.error,
-				message: infoValidation.data.message
-			});
-		}
-
+		// Lien invalide, expiré ou déjà utilisé : on laisse grant_parental_consent répondre,
+		// c'est elle qui passe une demande expirée à « expired » (vu par le prof).
 		const formData = await request.formData();
 		if (
+			infoValidation.data.success &&
 			requiresParentalConsent(infoValidation.data.student.grade) &&
 			formData.get('consent') !== 'true'
 		) {

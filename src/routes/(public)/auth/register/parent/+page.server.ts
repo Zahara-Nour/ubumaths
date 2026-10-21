@@ -72,14 +72,10 @@ export const actions = {
 		}
 		const { childFirstname, parentEmail, password, classCode } = validation.data;
 
-		// 2. Limites de débit : IP (toute une famille / un réseau) puis adresse du parent.
+		// 2. Limite par IP (toute une famille / un réseau) : elle borne aussi l'essai des codes.
 		const ipLimit = await checkSignupRateLimitByIP(getClientAddress());
 		if (!ipLimit.allowed) {
 			return fail(429, { error: ipLimit.message, ...echo });
-		}
-		const parentLimit = await checkChildSignupRateLimitByParentEmail(parentEmail);
-		if (!parentLimit.allowed) {
-			return fail(429, { error: parentLimit.message, ...echo });
 		}
 
 		// 3. Code de classe (classe active ET inscriptions ouvertes), avant toute création.
@@ -98,6 +94,13 @@ export const actions = {
 			return fail(400, { errors: classCodeError, ...echo });
 		}
 
+		// Plafond par adresse du parent (Q5), compté APRÈS le code : un code mal tapé ne
+		// consomme pas les 5 inscriptions de la journée.
+		const parentLimit = await checkChildSignupRateLimitByParentEmail(parentEmail);
+		if (!parentLimit.allowed) {
+			return fail(429, { error: parentLimit.message, ...echo });
+		}
+
 		// 4. Compte de l'enfant
 		const account = await createChildAccount(service, {
 			childFirstname,
@@ -109,37 +112,58 @@ export const actions = {
 			if (account.reason === 'class_closed') {
 				return fail(400, { errors: classCodeError, ...echo });
 			}
+			if (account.reason === 'weak_password') {
+				const errors: Record<string, string[]> = {
+					password: ['Mot de passe trop faible ou trop courant : en choisir un autre.']
+				};
+				return fail(400, { errors, ...echo });
+			}
 			return fail(500, { error: SERVER_ERROR, ...echo });
 		}
 
 		// 5. Demande au parent. Sans elle, ni consentement ni mot de passe oublié : on
-		//    annule l'inscription plutôt que de laisser un compte sans contact.
-		const parentRequest = await createParentRequest(service, account.userId, parentEmail);
+		//    annule l'inscription (exception comprise) plutôt que de laisser un compte sans
+		//    contact.
+		const parentRequest = await createParentRequest(service, account.userId, parentEmail).catch(
+			(err: unknown) => {
+				logger.error('Demande au parent : exception', err);
+				return null;
+			}
+		);
 		if (!parentRequest) {
 			await deleteChildAccount(service, account.userId);
 			return fail(500, { error: SERVER_ERROR, ...echo });
 		}
 
-		// 6. Un seul courriel au parent : identifiant + lien unique.
-		const { data: school } = await service
-			.from('classes')
-			.select('schools(name)')
-			.eq('id', classId)
-			.maybeSingle();
-		const schoolName = (school?.schools as { name?: string } | null)?.name ?? null;
+		// 6. Un seul courriel au parent : identifiant + lien unique. Le compte et la demande
+		//    existent déjà : un échec ici (même une exception) n'annule rien, le prof renverra
+		//    le lien depuis la page des consentements.
+		const consentRequired = requiresParentalConsent(account.grade);
+		let emailSent = false;
+		try {
+			const { data: school } = await service
+				.from('classes')
+				.select('schools(name)')
+				.eq('id', classId)
+				.maybeSingle();
+			const schoolName = (school?.schools as { name?: string } | null)?.name ?? null;
 
-		const sent = await sendChildRegistrationEmail(parentEmail, {
-			childFirstname,
-			loginId: account.loginId,
-			schoolName,
-			consentToken: parentRequest.token,
-			expiresAt: parentRequest.expiresAt,
-			consentRequired: requiresParentalConsent(account.grade)
-		});
-		if (sent.success) {
-			await markParentEmailSent(service, parentRequest.token);
-		} else {
-			logger.error('Courriel au parent non envoyé :', sent.error);
+			const sent = await sendChildRegistrationEmail(parentEmail, {
+				childFirstname,
+				loginId: account.loginId,
+				schoolName,
+				consentToken: parentRequest.token,
+				expiresAt: parentRequest.expiresAt,
+				consentRequired
+			});
+			emailSent = sent.success;
+			if (sent.success) {
+				await markParentEmailSent(service, parentRequest.token);
+			} else {
+				logger.error('Courriel au parent non envoyé :', sent.error);
+			}
+		} catch (err) {
+			logger.error('Courriel au parent : exception', err);
 		}
 
 		logger.info('Enfant inscrit par son parent');
@@ -149,7 +173,8 @@ export const actions = {
 			loginId: account.loginId,
 			childFirstname,
 			parentEmail,
-			emailSent: sent.success
+			emailSent,
+			consentRequired
 		};
 	}
 } satisfies Actions;

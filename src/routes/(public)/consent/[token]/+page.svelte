@@ -145,8 +145,7 @@
 						</div>
 					{:else}
 						<p class="text-sm text-muted-foreground">
-							Votre adresse servira à réinitialiser le mot de passe de votre enfant en cas d'oubli.
-							Aucun autre courriel ne vous sera envoyé.
+							Votre adresse servira à vous joindre au sujet du compte de votre enfant.
 						</p>
 					{/if}
 

@@ -29,7 +29,7 @@ type ServiceClient = SupabaseClient<Database>;
 
 export type CreateChildAccountResult =
 	| { ok: true; userId: string; loginId: string; grade: string | null }
-	| { ok: false; reason: 'invalid_firstname' | 'class_closed' | 'server_error' };
+	| { ok: false; reason: 'invalid_firstname' | 'class_closed' | 'weak_password' | 'server_error' };
 
 // Constantes
 
@@ -93,6 +93,11 @@ export async function createChildAccount(
 			taken.add(loginId);
 			continue;
 		}
+		// GoTrue peut être plus strict que notre politique (mots de passe compromis) : on le
+		// dit au parent sur le champ, au lieu d'une erreur serveur.
+		if (error?.code === 'weak_password') {
+			return { ok: false, reason: 'weak_password' };
+		}
 		if (error || !data.user) {
 			logger.error('Création du compte de l’enfant impossible :', error?.message);
 			return { ok: false, reason: 'server_error' };
@@ -113,6 +118,20 @@ export async function createChildAccount(
 			return { ok: false, reason: profileError ? 'server_error' : 'class_closed' };
 		}
 
+		// Lecture seule jusqu'au clic du parent (Q2, David, 2026-10-21) : la règle commune
+		// (apply_consent_rule_by_grade) donne 30 jours d'accès complet à tout nouveau compte ;
+		// ici, sans adresse vérifiée, aucun. La clé service peut écrire ces champs.
+		const { data: closed, error: graceError } = await service
+			.from('profiles')
+			.update({ consent_grace_period_ends: null })
+			.eq('id', userId)
+			.select('id');
+		if (graceError || closed?.length !== 1) {
+			logger.error('Délai de grâce non retiré :', graceError?.message);
+			await deleteChildAccount(service, userId);
+			return { ok: false, reason: 'server_error' };
+		}
+
 		return { ok: true, userId, loginId, grade: profile.grade };
 	}
 
@@ -123,7 +142,9 @@ export async function createChildAccount(
 /** Annule une inscription inachevée (compte créé, demande au parent impossible). */
 export async function deleteChildAccount(service: ServiceClient, userId: string): Promise<void> {
 	const { error } = await service.auth.admin.deleteUser(userId);
-	if (error) logger.error('Compte de l’enfant non supprimé :', error.message);
+	// ⚠️ Compte approuvé dans la classe sans demande au parent : le prof le verrait comme
+	// un élève fantôme. Le message nomme l'id pour le retrouver dans les journaux.
+	if (error) logger.error(`Compte de l’enfant ${userId} NON supprimé (à retirer) :`, error.message);
 }
 
 /**

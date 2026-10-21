@@ -31,6 +31,7 @@ import {
 	markParentEmailSent
 } from '$lib/server/child-registration';
 import { CHILD_ACCOUNT_DOMAIN, normalizeLoginIdentifier } from '$lib/utils/child-account';
+import { hasValidConsent } from '$lib/utils/consent';
 
 // ============================================================================
 // HELPERS
@@ -104,7 +105,9 @@ describe('inscription par le parent', () => {
 
 		const { data: profil } = await service
 			.from('profiles')
-			.select('email, firstname, lastname, status, consent_required, consent_granted_at')
+			.select(
+				'email, firstname, lastname, status, role, consent_required, consent_granted_at, consent_grace_period_ends'
+			)
 			.eq('id', res.userId)
 			.single();
 		expect(profil).toMatchObject({
@@ -113,8 +116,12 @@ describe('inscription par le parent', () => {
 			lastname: '',
 			status: 'approved',
 			consent_required: true,
-			consent_granted_at: null
+			consent_granted_at: null,
+			// La règle commune donnerait 30 jours d'accès complet : retirés (Q2).
+			consent_grace_period_ends: null
 		});
+		// Lecture seule avant le clic du parent (Q2) : la garde d'accès le refuse.
+		expect(hasValidConsent(profil!)).toBe(false);
 
 		const { data: membre } = await service
 			.from('class_members')

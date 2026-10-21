@@ -107,17 +107,21 @@ describe('action grant', () => {
 		expect(rpcMock).toHaveBeenCalledWith('grant_parental_consent', expect.anything());
 	});
 
-	it("lien invalide : l'erreur de get_consent_info, rien accordé", async () => {
+	it('lien expiré, case non cochée : grant_parental_consent répond (et marque la demande expirée)', async () => {
+		const grant = vi.fn(async () => ({
+			data: { success: false, error: 'TOKEN_EXPIRED', message: 'Ce lien a expiré.' },
+			error: null
+		}));
 		rpcMock.mockImplementation(async (fn: string) =>
 			fn === 'get_consent_info'
 				? {
-						data: { success: false, error: 'TOKEN_NOT_FOUND', message: 'Lien invalide.' },
+						data: { success: false, error: 'TOKEN_EXPIRED', message: 'Ce lien a expiré.' },
 						error: null
 					}
-				: { data: null, error: null }
+				: grant()
 		);
-		const res = await actions.grant(evenement());
-		expect(res).toMatchObject({ status: 400, data: { error: 'TOKEN_NOT_FOUND' } });
-		expect(rpcMock).not.toHaveBeenCalledWith('grant_parental_consent', expect.anything());
+		const res = await actions.grant(evenement(vi.fn(), false));
+		expect(res).toMatchObject({ status: 400, data: { error: 'TOKEN_EXPIRED' } });
+		expect(grant).toHaveBeenCalledTimes(1);
 	});
 });

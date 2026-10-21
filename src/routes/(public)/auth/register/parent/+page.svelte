@@ -54,7 +54,9 @@
 				{#if form.emailSent}
 					<p class="text-sm text-muted-foreground">
 						Un courriel vient d'être envoyé à <span class="font-medium">{form.parentEmail}</span>.
-						Cliquez sur le lien qu'il contient pour confirmer votre adresse et donner votre accord.
+						{form.consentRequired
+							? 'Cliquez sur le lien qu’il contient pour confirmer votre adresse et donner votre accord.'
+							: 'Cliquez sur le lien qu’il contient pour confirmer votre adresse.'}
 					</p>
 				{:else}
 					<Alert.Root>
