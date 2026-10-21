@@ -1180,3 +1180,11 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   tag d'exercice relisent leurs lignes (404 sinon). **Q1** : un point archivé déjà coché / tagué reste affiché, marqué
   « archivé », pour pouvoir le décocher ; non coché, il reste masqué. **Q2** : POST couverture / tag d'exercice
   refuse un ancien point (400 « Point hors programme », `isProgrammePoint`). Accès : rien ne change.
+- **2026-10-21 — B2 : tags d'un exercice, point 3 révisé avec David** (« je suis tes recos »). Découvert aux tests
+  d'intégration : la règle 1 de `20261013120000` vaut aussi pour les exercices (point sur un nœud de rangement de
+  l'exercice ou sur sa notion ; exercice non rangé → aucun point neuf). Aucun écran ne range un exercice (rangements
+  posés par migration). Prod : 328 / 379 exercices rangés, 446 rangements, 0 tag. Décidé : l'écran ne propose que
+  les points compatibles, des **niveaux de l'exercice** (298 exercices ont des points, 5 en moyenne ; tous
+  programmes : 326, 10) ; non rangé (51) → « Cet exercice n'est rangé dans aucune notion : aucun point du programme
+  ne peut lui être associé. » ; rangé sans point compatible → « Aucun point du programme de ses niveaux sur les
+  notions où il est rangé. » ; Q1 tient. 📌 Futur chantier, non décidé : un écran de rangement des exercices.
