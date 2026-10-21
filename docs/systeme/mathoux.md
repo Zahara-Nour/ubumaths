@@ -11,7 +11,7 @@ couvre:
 
 # Mathoux — la Chatterie de Faustroll
 
-> Vérifié contre le code le 2026-10-21 (Mathoux v1, mémoire comprise, « Faire grandir » v1.1, noms propres, annonce des nouveautés v1.2, vue du professeur). Spécification validée par David :
+> Vérifié contre le code le 2026-10-21 (Mathoux v1, mémoire comprise, « Faire grandir » v1.1, noms propres, annonce des nouveautés v1.2, vue du professeur, animations). Spécification validée par David :
 > [mathoux-conception.md § 9](../wip/mathoux-conception.md).
 
 ## À quoi ça sert
@@ -219,6 +219,30 @@ propre fond : il se lit pareil en clair et en sombre.
   internes (découpes, dégradé du fumé) sont préfixés par `$props.id()`. Environ 8 Ko de SVG par
   instance au plus chargé.
 
+### Animations
+
+Décidées avec David le 2026-10-21 ([journal](../wip/mathoux-anim-progress.md), démo :
+https://claude.ai/artifact/2FLaS3M52bNHzZtxkoKJK1). Tout est en CSS dans `MathouAvatar.svelte`,
+sauf la transformation d'un stade à l'autre (image par image, `requestAnimationFrame`).
+
+- **Au repos** (`animated`, vrai par défaut ; jamais en silhouette) : respiration, clignement, queue,
+  oreille droite qui frémit ; vif chez le chaton, lent chez le grand matou (clignement à demi, gloire
+  qui tourne en une minute) ; en sieste, respiration ample et « Zzz » qui montent. Gestes communs à
+  toutes les races ; chaque race a son décalage (`--mathou-phase`), pour que la Chatterie ne respire
+  pas en chœur. Partout où un Mathou s'affiche : Chatterie de l'élève, vue du professeur, annonce.
+- **Réactions** (`reaction`, rejouée à chaque `reactionKey`) :
+  - `apparition` (naissance) : le chaton grandit en 1,5 s, l'auréole s'allume et lance deux ondes,
+    16 confettis aux couleurs de l'affiche et de l'auréole, 5 étoiles qui scintillent
+    (`celebration`, déterministe) ;
+  - `bond` avec `growFrom` (croissance) : le dessin se transforme en 1,4 s depuis le stade d'avant
+    (`blendStages` interpole les mesures, `youth` va de 1 à 0), en bondissant, avec auréole, ondes et
+    confettis ; vers le grand matou, couronne, fraise, bâton et gloire arrivent en fondu à la fin ;
+  - `bond` seul (étoile) : un bond ;
+  - `reveil` : en 2,6 s, les « Zzz » s'envolent, la lune laisse place à l'auréole, il se redresse,
+    ouvre les yeux en deux temps, son bonnet s'envole, puis il s'étire.
+- **Réduire les animations** (`prefers-reduced-motion`) : rien ne bouge, le nouveau stade s'affiche
+  directement ; ni confettis, ni ondes, ni restes de sieste ; étoiles et « Zzz » restent posés.
+
 ## Le Palotin, gardien de la Chatterie
 
 `BuddyWidget` demande le résumé au montage (s'il y a un Palotin). S'il y a une **nouveauté** (voir
@@ -250,6 +274,9 @@ Spécification validée par David le 2026-10-21 ([journal](../wip/mathoux-annonc
   plus, naissances d'abord, puis « Et 2 autres nouveautés à la Chatterie. ». **Premier calcul** de
   l'élève (mémoire vide) avec plusieurs Mathoux : une seule phrase, « 7 Mathoux t'attendent à la
   Chatterie ! ».
+- **Animation** (`MathouNewsCard`) : naissance → `apparition` ; croissance → `bond` depuis
+  `previousStage` (le stade de la ligne remplacée, porté par la nouveauté ; un chaton peut sauter
+  à grand matou) ; étoile → `bond` seul. Le premier passage (« N Mathoux t'attendent ») ne joue rien.
 - **Où** : `GET /api/student/mathoux` rend `news` avec les compteurs. La fin de séance la demande
   (`fetchMathouNews`) **après** l'enregistrement, quand l'acquisition est à jour : Entraînement et
   Course (`automaths/test`, carte `MathouNewsCard` dans `TestResults` sous celle du Palotin), révision

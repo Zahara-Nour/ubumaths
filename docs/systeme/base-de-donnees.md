@@ -450,7 +450,9 @@ lecture (migration `20261017090100`, qui ajoute aussi les colonnes de la Constan
 hebdomadaire `constance_week_start` et `constance_days_this_week`, 0 à 7).
 `student_mathoux` (migration `20261017090200`) est la mémoire des Mathoux de la Chatterie : par
 élève et par notion de l'arbre, le meilleur stade atteint (`chaton`, `matou`, `grand_matou`, qui
-ne redescend jamais) et les niveaux étoilés (`starred_grades`, codes de grade, 20 au plus). Lecture
+ne redescend jamais), les niveaux étoilés (`starred_grades`, codes de grade, 20 au plus) et la
+sieste écrite par le dernier calcul (`asleep`, faux par défaut, migration `20261021200000` : sert à
+annoncer le réveil ; lue et écrite comme le reste de la ligne). Lecture
 calquée sur `student_buddies` (l'élève les siennes, prof et admin tout) ; aucune policy d'écriture
 et `authenticated` n'a que SELECT : seul le serveur écrit (client service), `anon` n'a aucun droit.
 Cascade depuis `profiles` (effacement RGPD), RESTRICT vers `classification_nodes`. Piège d'écriture :
