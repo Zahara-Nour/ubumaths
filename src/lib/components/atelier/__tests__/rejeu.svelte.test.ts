@@ -3,7 +3,7 @@
  * `docs/archive/wip/atelier-suppression-export-phase0.md` (R1, R2, E1).
  */
 
-import { describe, it, expect, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
@@ -78,8 +78,10 @@ describe('rejouer un historique', () => {
 			})
 		);
 
+		await vi.waitFor(() =>
+			expect(container.textContent).toContain('Historique rejoué : 2 lignes.')
+		);
 		expect(atelier.names).toEqual(['f', "f'"]);
-		expect(container.textContent).toContain('Historique rejoué : 2 lignes.');
 	});
 
 	it('atelier non vide : demande avant de tout remplacer (R2)', async () => {
@@ -93,13 +95,12 @@ describe('rejouer un historique', () => {
 			historyFile((d) => d.submit('f(x)=x^2'))
 		);
 
+		await vi.waitFor(() => expect(document.body.textContent).toContain('ton objet sera remplacé'));
 		expect(atelier.names).toEqual(['g']);
-		expect(document.body.textContent).toContain('ton objet sera remplacé');
 
 		dialogButton('Rejouer')?.click();
-		await settle();
 
-		expect(atelier.names).toEqual(['f']);
+		await vi.waitFor(() => expect(atelier.names).toEqual(['f']));
 	});
 
 	it('un fichier qui n’est ni un atelier ni un historique est refusé, rien ne change (E1)', async () => {
@@ -110,8 +111,10 @@ describe('rejouer un historique', () => {
 
 		await choose(container, new File(['{"bonjour": 1}'], 'autre.json'));
 
+		await vi.waitFor(() =>
+			expect(container.textContent).toContain('Ce fichier n’est pas un atelier Chiphre.')
+		);
 		expect(atelier.names).toEqual(['g']);
-		expect(container.textContent).toContain('Ce fichier n’est pas un atelier Chiphre.');
 	});
 
 	it('un historique abîmé est refusé avec le message de l’historique (E1)', async () => {
@@ -125,8 +128,10 @@ describe('rejouer un historique', () => {
 			new File(['{"format": "chiphre-calcul", "version": 1, "entries": 3}'], 'abime.json')
 		);
 
+		await vi.waitFor(() =>
+			expect(container.textContent).toContain('Ce fichier n’est pas un historique de Calcul.')
+		);
 		expect(atelier.names).toEqual(['g']);
-		expect(container.textContent).toContain('Ce fichier n’est pas un historique de Calcul.');
 	});
 });
 
@@ -151,6 +156,7 @@ describe('un historique piégé', () => {
 		// Le TEXTE affiché peut contenir « javascript: » (Svelte l'échappe) : le
 		// danger est dans les éléments et les attributs, c'est là qu'on regarde
 		const historique = container.querySelector('.historique') as HTMLElement;
+		await vi.waitFor(() => expect(historique.textContent).toContain('f(x)'));
 		const elements = [...historique.querySelectorAll('*')];
 		expect(historique.textContent).toContain('javascript:');
 		expect(historique.querySelectorAll('img, script, iframe').length).toBe(0);
