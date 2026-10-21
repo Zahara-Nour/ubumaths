@@ -16,9 +16,9 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	const tokenHash = $derived(form && 'tokenHash' in form ? form.tokenHash : data.tokenHash);
+	const link = $derived(form && 'link' in form ? form.link : data.link);
 	const done = $derived(form && 'success' in form ? form : null);
-	const expired = $derived(!tokenHash || (form && 'expired' in form && form.expired));
+	const expired = $derived(!link || (form && 'expired' in form && form.expired));
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-background px-4">
@@ -61,7 +61,8 @@
 				</div>
 			{:else}
 				<form method="POST" action="?/setPassword" use:enhance class="space-y-4">
-					<input type="hidden" name="tokenHash" value={tokenHash} />
+					<input type="hidden" name="userId" value={link?.userId} />
+					<input type="hidden" name="token" value={link?.token} />
 
 					<div class="space-y-2">
 						<Label for="password">Nouveau mot de passe</Label>

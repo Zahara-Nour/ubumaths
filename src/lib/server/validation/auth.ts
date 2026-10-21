@@ -167,11 +167,23 @@ export const updatePasswordSchema = z
 	.superRefine((d, ctx) => enforcePasswordPolicy(d.password, ctx));
 
 /**
- * Page du lien du parent (PR 3) : jeton de réinitialisation + nouveau mot de passe de l'enfant.
+ * Lien du parent (PR 3) : compte de l'enfant + jeton maison (`createChildResetToken`,
+ * 32 octets en base64url, soit 43 caractères).
  */
-export const parentSetChildPasswordSchema = z
-	.object({
-		tokenHash: z.string().min(1, 'Lien incomplet').max(512, 'Lien invalide'),
+export const childResetLinkSchema = z.object({
+	userId: z.string().uuid('Lien invalide'),
+	token: z
+		.string()
+		.min(20, 'Lien invalide')
+		.max(128, 'Lien invalide')
+		.regex(/^[A-Za-z0-9_-]+$/, 'Lien invalide')
+});
+
+/**
+ * Page du lien du parent (PR 3) : lien + nouveau mot de passe de l'enfant.
+ */
+export const parentSetChildPasswordSchema = childResetLinkSchema
+	.extend({
 		password: z.string().max(128),
 		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise')
 	})

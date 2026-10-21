@@ -22,7 +22,7 @@ import { createServerLogger } from '$lib/utils/logger';
 import { requestPasswordResetSchema } from '$lib/server/validation/auth';
 import { isChildAccountEmail } from '$lib/utils/child-account';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createChildRecoveryToken, findChildResetTarget } from '$lib/server/child-password';
+import { createChildResetToken, findChildResetTarget } from '$lib/server/child-password';
 import { sendChildPasswordResetEmail } from '$lib/server/email/brevo';
 import {
 	checkPasswordResetRateLimitByEmail,
@@ -46,12 +46,13 @@ async function sendResetLinkToParent(childEmail: string): Promise<void> {
 		logger.info('Child password reset skipped:', target.reason);
 		return;
 	}
-	const tokenHash = await createChildRecoveryToken(service, childEmail);
-	if (!tokenHash) return;
+	const token = await createChildResetToken(service, target.userId);
+	if (!token) return;
 	const sent = await sendChildPasswordResetEmail(target.parentEmail, {
 		childFirstname: target.firstname,
 		loginId: target.loginId,
-		tokenHash
+		userId: target.userId,
+		token
 	});
 	if (!sent.success) logger.error('Child password reset email not sent:', sent.error);
 }

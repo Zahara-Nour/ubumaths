@@ -6,10 +6,10 @@
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-const { findChildResetTarget, createChildRecoveryToken, sendChildPasswordResetEmail } = vi.hoisted(
+const { findChildResetTarget, createChildResetToken, sendChildPasswordResetEmail } = vi.hoisted(
 	() => ({
 		findChildResetTarget: vi.fn(),
-		createChildRecoveryToken: vi.fn(),
+		createChildResetToken: vi.fn(),
 		sendChildPasswordResetEmail: vi.fn()
 	})
 );
@@ -19,7 +19,7 @@ vi.mock('$lib/server/rateLimiter', () => ({
 	checkPasswordResetRateLimitByEmail: vi.fn(async () => ({ allowed: true }))
 }));
 vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
-vi.mock('$lib/server/child-password', () => ({ findChildResetTarget, createChildRecoveryToken }));
+vi.mock('$lib/server/child-password', () => ({ findChildResetTarget, createChildResetToken }));
 vi.mock('$lib/server/email/brevo', () => ({ sendChildPasswordResetEmail }));
 
 const { actions } = await import('../+page.server');
@@ -42,7 +42,7 @@ async function demander(saisie: string) {
 
 beforeEach(() => {
 	vi.clearAllMocks();
-	createChildRecoveryToken.mockResolvedValue('jeton-123');
+	createChildResetToken.mockResolvedValue('jeton-123');
 	sendChildPasswordResetEmail.mockResolvedValue({ success: true });
 });
 
@@ -61,14 +61,12 @@ describe('/auth/reset-password — identifiant d’un enfant', () => {
 			expect.anything(),
 			'noelie42@eleves.chiph.re'
 		);
-		expect(createChildRecoveryToken).toHaveBeenCalledWith(
-			expect.anything(),
-			'noelie42@eleves.chiph.re'
-		);
+		expect(createChildResetToken).toHaveBeenCalledWith(expect.anything(), 'u1');
 		expect(sendChildPasswordResetEmail).toHaveBeenCalledWith('parent@exemple.fr', {
 			childFirstname: 'Noélie',
 			loginId: 'noelie42',
-			tokenHash: 'jeton-123'
+			userId: 'u1',
+			token: 'jeton-123'
 		});
 		expect(resetPasswordForEmail).not.toHaveBeenCalled();
 		expect(res.message).toBe(NEUTRE);
@@ -79,7 +77,7 @@ describe('/auth/reset-password — identifiant d’un enfant', () => {
 		async (reason) => {
 			findChildResetTarget.mockResolvedValue({ ok: false, reason });
 			const { res, resetPasswordForEmail } = await demander('noelie42');
-			expect(createChildRecoveryToken).not.toHaveBeenCalled();
+			expect(createChildResetToken).not.toHaveBeenCalled();
 			expect(sendChildPasswordResetEmail).not.toHaveBeenCalled();
 			expect(resetPasswordForEmail).not.toHaveBeenCalled();
 			expect(res.message).toBe(NEUTRE);
@@ -104,7 +102,7 @@ describe('/auth/reset-password — identifiant d’un enfant', () => {
 			loginId: 'noelie42',
 			parentEmail: 'parent@exemple.fr'
 		});
-		createChildRecoveryToken.mockResolvedValue(null);
+		createChildResetToken.mockResolvedValue(null);
 		const { res } = await demander('noelie42');
 		expect(sendChildPasswordResetEmail).not.toHaveBeenCalled();
 		expect(res.message).toBe(NEUTRE);

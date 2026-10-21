@@ -22,14 +22,16 @@ describe('courriel au parent : nouveau mot de passe pour son enfant', () => {
 	});
 
 	it('donne le prénom, l’identifiant, le lien et sa durée, dans les deux versions', () => {
-		for (const body of [
-			getChildPasswordResetEmailText(DATA),
-			getChildPasswordResetEmailHtml(DATA)
-		]) {
+		const lien = '/auth/reset-password/parent?u=22222222-2222-4222-8222-222222222222';
+		const versions = [
+			// Texte brut : le lien tel quel ; HTML : `&` échappé dans l'attribut.
+			{ body: getChildPasswordResetEmailText(DATA), lien: `${lien}&t=abc123_def-456` },
+			{ body: getChildPasswordResetEmailHtml(DATA), lien: `${lien}&amp;t=abc123_def-456` }
+		];
+		for (const { body, lien: attendu } of versions) {
+			expect(body).toContain('Noélie');
 			expect(body).toContain('noelie42');
-			expect(body).toContain(
-				'/auth/reset-password/parent?u=22222222-2222-4222-8222-222222222222&amp;t=abc123_def-456'
-			);
+			expect(body).toContain(attendu);
 			expect(body).toContain('1 heure');
 		}
 		expect(getChildPasswordResetSubject(DATA)).toBe('Nouveau mot de passe pour Noélie sur Chiphre');

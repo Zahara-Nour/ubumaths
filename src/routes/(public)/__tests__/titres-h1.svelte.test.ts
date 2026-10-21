@@ -62,7 +62,7 @@ const PAGES: [string, RenderPage, RegExp][] = [
 		'nouveau mot de passe (parent)',
 		async () =>
 			await render(ParentResetPassword, {
-				props: { data: { tokenHash: 'abc' }, form: null } as never
+				props: { data: { link: { userId: 'u', token: 't' } }, form: null } as never
 			}),
 		/^Nouveau mot de passe$/
 	],
