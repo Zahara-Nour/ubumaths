@@ -9,8 +9,6 @@
 /** Tables copiées depuis la prod : le contenu pédagogique, sans élève. */
 export const COPIE: readonly string[] = [
 	// Programme et arbre
-	'curriculum_themes',
-	'curriculum_objectives',
 	'curriculum_points',
 	'curriculum_point_automatismes',
 	'classification_nodes',

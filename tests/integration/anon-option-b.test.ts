@@ -61,8 +61,6 @@ const RELATIONS_FERMEES = [
 	'classes',
 	'coursework_categories',
 	'coursework_materials',
-	'curriculum_objectives',
-	'curriculum_themes',
 	'daily_summaries',
 	'evaluation_task_perimeter',
 	'evaluation_tasks',
@@ -185,7 +183,6 @@ const RELATIONS_FERMEES = [
 /** Fonctions retirées à PUBLIC et anon — inventaire prod du 2026-10-01 (143). */
 const FONCTIONS_REVOQUEES = [
 	'public.add_student_to_class_chat()',
-	'public.assign_curriculum_point_code()',
 	'public.audit_trigger_func()',
 	'public.auto_log_template_changes()',
 	'public.award_gidouilles_on_victory()',
@@ -246,9 +243,6 @@ const FONCTIONS_REVOQUEES = [
 	'public.normalize_grade_array(text[])',
 	'public.normalize_grade_value(text)',
 	'public.orphan_chapter_documents()',
-	'public.place_curriculum_objective_last()',
-	'public.place_curriculum_point_last()',
-	'public.place_curriculum_theme_last()',
 	'public.populate_shared_coursework_names()',
 	'public.populate_shared_material_names()',
 	'public.prevent_worksheet_instance_tampering()',
@@ -256,9 +250,6 @@ const FONCTIONS_REVOQUEES = [
 	'public.purge_pending_student_on_activation()',
 	'public.rag_hybrid_search(text,vector,text[],text[],integer,double precision,double precision)',
 	'public.rate_limit_submissions()',
-	'public.reorder_curriculum_objectives(uuid,uuid[])',
-	'public.reorder_curriculum_points(uuid,uuid[])',
-	'public.reorder_curriculum_themes(text,uuid[])',
 	'public.save_template_version()',
 	'public.set_checklist_completed_at_insert()',
 	'public.set_checklist_completed_at()',
@@ -379,11 +370,14 @@ function anonClient(): SupabaseClient<Database> {
 describe('(a) anon n’a plus aucun droit sur les objets fermés', () => {
 	// 2026-10-15 (ADR 0029, étape 5B) : `chapter_template_versions` et
 	// `create_initial_template_version()` supprimées → 137 relations, 142 fonctions.
-	it('l’inventaire compte 137 relations et 142 fonctions', () => {
-		expect(RELATIONS_FERMEES).toHaveLength(137);
-		expect(new Set(RELATIONS_FERMEES).size).toBe(137);
-		expect(FONCTIONS_REVOQUEES).toHaveLength(142);
-		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(142);
+	// 2026-10-22 (suppression de l'ancien programme, étape 4 de C5) : `curriculum_themes`,
+	// `curriculum_objectives` et 7 fonctions (reorder x3, place x3, assign) supprimées
+	// → 135 relations, 135 fonctions.
+	it('l’inventaire compte 135 relations et 135 fonctions', () => {
+		expect(RELATIONS_FERMEES).toHaveLength(135);
+		expect(new Set(RELATIONS_FERMEES).size).toBe(135);
+		expect(FONCTIONS_REVOQUEES).toHaveLength(135);
+		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(135);
 	});
 
 	it.each(RELATIONS_FERMEES)('table/vue %s : aucun droit pour anon', async (rel) => {

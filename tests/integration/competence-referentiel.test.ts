@@ -1256,30 +1256,6 @@ describe('RLS — scope prof', () => {
 // ============================================================================
 
 describe('RLS — référentiel lecture publique', () => {
-	it('authenticated student can SELECT all skill_themes (seed count >= 6)', async () => {
-		const student = await TestData.profile().withRole('student').create();
-		const studentClient = await createAuthenticatedClient(student.email);
-
-		const { data, error } = await studentClient
-			.from('curriculum_themes' as never)
-			.select('id, name');
-
-		expect(error).toBeNull();
-		expect((data as Array<unknown>).length).toBeGreaterThanOrEqual(6);
-	});
-
-	it('authenticated student can SELECT skill_objectives (seed count >= 18)', async () => {
-		const student = await TestData.profile().withRole('student').create();
-		const studentClient = await createAuthenticatedClient(student.email);
-
-		const { data, error } = await studentClient
-			.from('curriculum_objectives' as never)
-			.select('id, name');
-
-		expect(error).toBeNull();
-		expect((data as Array<unknown>).length).toBeGreaterThanOrEqual(18);
-	});
-
 	it('authenticated student can SELECT observables (seed count >= 56)', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const studentClient = await createAuthenticatedClient(student.email);
@@ -1310,26 +1286,6 @@ describe('RLS — référentiel lecture publique', () => {
 
 		expect(error).toBeNull();
 		expect((data as Array<unknown>).length).toBe(6);
-	});
-
-	it('anonymous client (no session) gets 0 rows or an error on skill_themes (TO authenticated policy)', async () => {
-		// Create an anon client without signing in
-		const { createClient } = await import('@supabase/supabase-js');
-		const url = process.env.SUPABASE_TEST_URL ?? 'http://localhost:54321';
-		const anonKey =
-			process.env.SUPABASE_TEST_ANON_KEY ??
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
-
-		const anonClient = createClient(url, anonKey, {
-			auth: { persistSession: false, autoRefreshToken: false }
-		});
-
-		const { data, error } = await anonClient.from('curriculum_themes' as never).select('id');
-
-		// Depuis 20261001170000 (option b), anon n'a plus aucun droit sur la table :
-		// refus explicite (42501) au lieu des 0 lignes silencieuses de la RLS.
-		expect(data).toBeNull();
-		expect(error?.code).toBe('42501');
 	});
 });
 

@@ -48,37 +48,58 @@ beforeEach(async () => {
 	await cleanupCompetenceTestData();
 });
 
+const createdNodeIds: string[] = [];
+let notionId: string | null = null;
+
 async function cleanup() {
-	await service
-		.from('curriculum_themes' as never)
-		.delete()
-		.eq('grade', TEST_GRADE);
 	await service.from('question_templates').delete().eq('domain', 'test-tagging');
+	// Points NEUFS puis nœuds (enfants d'abord : parent_id est en RESTRICT).
+	if (createdNodeIds.length > 0) {
+		await service.from('curriculum_points').delete().in('node_id', createdNodeIds);
+		for (const kind of ['notion', 'branch']) {
+			await service.from('classification_nodes').delete().in('id', createdNodeIds).eq('kind', kind);
+		}
+		createdNodeIds.length = 0;
+	}
+	notionId = null;
 }
 
 // --- fixtures --------------------------------------------------------------
 
-async function svcPoint(): Promise<{ id: string }> {
-	const { data: theme } = await service
-		.from('curriculum_themes')
-		.insert({ grade: TEST_GRADE, name: `Thème ${crypto.randomUUID().slice(0, 8)}` } as never)
+/** Une notion neuve (branche > notion), partagée par les fixtures d'un test. */
+async function svcNotion(): Promise<string> {
+	if (notionId) return notionId;
+	const tag = crypto.randomUUID().slice(0, 8);
+	const { data: branch, error: bErr } = await service
+		.from('classification_nodes')
+		.insert({ kind: 'branch', name: `TEST branche ${tag}`, parent_id: null, position: 900 })
 		.select('id')
 		.single();
-	const { data: obj } = await service
-		.from('curriculum_objectives')
-		.insert({
-			theme_id: present(theme, 'theme').id,
-			name: `Objectif ${crypto.randomUUID().slice(0, 8)}`
-		} as never)
+	if (bErr) throw new Error(`branche : ${bErr.message}`);
+	createdNodeIds.push(branch.id);
+	const { data: notion, error: nErr } = await service
+		.from('classification_nodes')
+		.insert({ kind: 'notion', name: `TEST notion ${tag}`, parent_id: branch.id, position: 0 })
 		.select('id')
 		.single();
+	if (nErr) throw new Error(`notion : ${nErr.message}`);
+	createdNodeIds.push(notion.id);
+	notionId = notion.id;
+	return notion.id;
+}
+
+/** Un point NEUF sur la notion. Un modèle n'a qu'un point par programme : `grade` les distingue. */
+async function svcPoint(grade = TEST_GRADE): Promise<{ id: string }> {
 	const { data, error } = await service
 		.from('curriculum_points')
 		.insert({
-			objective_id: present(obj, 'obj').id,
+			code: `TST-${crypto.randomUUID().slice(0, 8)}`,
 			name: `Point ${crypto.randomUUID().slice(0, 8)}`,
-			kind: 'savoir_faire'
-		} as never)
+			kind: 'savoir_faire',
+			grade,
+			display_order: 0,
+			node_id: await svcNotion()
+		})
 		.select('id')
 		.single();
 	if (error) throw new Error(error.message);
@@ -97,7 +118,9 @@ async function svcTemplate(grades: string[] = [TEST_GRADE]): Promise<{ id: strin
 			type: 'fill_in_blanks',
 			// `variations_minimum_one` : un template sans variation est refusé.
 			variations: [{ statement: 'Combien font $1+1$ ?' }],
-			status: 'draft'
+			status: 'draft',
+			// La base n'accepte un tag que sur un modèle rangé sur le nœud du point.
+			classification_node_id: await svcNotion()
 		} as never)
 		.select('id')
 		.single();
@@ -161,7 +184,8 @@ describe('POST /template-tags — cas nominal', () => {
 		expect.assertions(2);
 		const locals = buildLocals(await teacherUser());
 		const [t1, t2] = [await svcTemplate(), await svcTemplate()];
-		const [p1, p2] = [await svcPoint(), await svcPoint()];
+		// Deux programmes différents : un modèle n'a qu'un point par programme.
+		const [p1, p2] = [await svcPoint('5'), await svcPoint('4')];
 
 		for (const [t, p] of [
 			[t1, p1],

@@ -92,10 +92,6 @@ async function cleanupCurriculum() {
 		.from('question_templates' as never)
 		.delete()
 		.contains('grades', [TEST_GRADE]);
-	await service
-		.from('curriculum_themes' as never)
-		.delete()
-		.eq('grade', TEST_GRADE);
 	// Points NEUFS puis nœuds (les modèles sont déjà partis : leur rangement et leurs tags aussi).
 	if (createdNodeIds.length > 0) {
 		// Tags et rangements d'exercices d'abord : ils tiennent les points et les nœuds.
@@ -120,37 +116,6 @@ async function cleanupCurriculum() {
 // ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------
-
-async function svcPoint(objectiveId: string, name?: string): Promise<string> {
-	const { data, error } = await service
-		.from('curriculum_points' as never)
-		.insert({
-			objective_id: objectiveId,
-			name: name ?? `Point ${crypto.randomUUID().slice(0, 8)}`,
-			kind: 'savoir_faire'
-		} as never)
-		.select('id')
-		.single();
-	if (error) throw new Error(error.message);
-	return (data as { id: string }).id;
-}
-
-/** Theme → item, returns item id (point parent). */
-async function makeItem(): Promise<string> {
-	const { data: theme, error: tErr } = await service
-		.from('curriculum_themes' as never)
-		.insert({ grade: TEST_GRADE, name: `T ${crypto.randomUUID().slice(0, 8)}` } as never)
-		.select('id')
-		.single();
-	if (tErr) throw new Error(tErr.message);
-	const { data: item, error: iErr } = await service
-		.from('curriculum_objectives' as never)
-		.insert({ theme_id: (theme as { id: string }).id, name: 'Fractions' } as never)
-		.select('id')
-		.single();
-	if (iErr) throw new Error(iErr.message);
-	return (item as { id: string }).id;
-}
 
 /**
  * Une notion neuve (branche > notion) : porte les points NEUFS et range les modèles.
@@ -461,24 +426,6 @@ describe('Exercise tagging', () => {
 			locals: buildLocals(ctx.teacherUser)
 		} as never);
 		expect(res.status).toBe(400);
-	});
-
-	it('refuse un ancien point (400 « Point hors programme »), sans rien écrire (Q2, B2)', async () => {
-		expect.assertions(3);
-		const ctx = await setup();
-		const ancien = await svcPoint(await makeItem());
-		const exId = await makeTaggedExercise(ctx.teacher.id, []);
-		const res = await tagsPOST({
-			request: req({ exercise_id: exId, point_id: ancien }),
-			locals: buildLocals(ctx.teacherUser)
-		} as never);
-		expect(res.status).toBe(400);
-		expect((await res.json()).error).toBe('Point hors programme');
-		const list = await tagsGET({
-			url: urlWith({ exercise_id: exId }),
-			locals: buildLocals(ctx.teacherUser)
-		} as never);
-		expect((await list.json()).tags).toHaveLength(0);
 	});
 
 	it('retirer un tag absent : 404, pas un faux succès', async () => {
@@ -988,19 +935,6 @@ describe('Manual coverage', () => {
 		expect(cov.size).toBe(0);
 	});
 
-	it('refuse de cocher un ancien point (400 « Point hors programme »), sans rien écrire (Q2, B2)', async () => {
-		expect.assertions(3);
-		const ctx = await setup();
-		const ancien = await svcPoint(await makeItem());
-		const res = await covPOST({
-			request: req({ entry_id: ctx.entryId, point_id: ancien }),
-			locals: buildLocals(ctx.teacherUser)
-		} as never);
-		expect(res.status).toBe(400);
-		expect((await res.json()).error).toBe('Point hors programme');
-		expect((await coverageMap(ctx)).size).toBe(0);
-	});
-
 	it('décocher un point non coché : 404, pas un faux succès', async () => {
 		expect.assertions(1);
 		const ctx = await setup();
@@ -1080,7 +1014,7 @@ describe('RLS & constraints', () => {
 	it('rejects an invalid coverage source (CHECK)', async () => {
 		expect.assertions(1);
 		const ctx = await setup();
-		const point = await svcPoint(await makeItem());
+		const point = await svcNewPoint(await makeNotion(), 'P');
 		const { error } = await service
 			.from('journal_entry_points' as never)
 			.insert({ entry_id: ctx.entryId, point_id: point, source: 'bogus' } as never);
@@ -1160,24 +1094,6 @@ describe('Question activities', () => {
 		const cov = await coverageMap(ctx);
 		expect(cov.size).toBe(2);
 		expect(cov.get(foreign)).toBe('auto');
-	});
-
-	// Les tags vers les ANCIENS points (thème → objectif) restent en base jusqu'à
-	// leur retrait : ils ne comptent plus dans la couverture.
-	it('ignores tags pointing to old-generation points', async () => {
-		expect.assertions(3);
-		const ctx = await setup();
-		const notion = await makeNotion();
-		const neuf = await svcNewPoint(notion, 'Point neuf');
-		const ancien = await svcPoint(await makeItem(), 'Point ancien');
-		const { id: template } = await makeTaggedTemplate([neuf, ancien], { notionId: notion });
-
-		await addActivityId(ctx, { kind: 'question', question_template_id: template });
-
-		const cov = await coverageMap(ctx);
-		expect(cov.size).toBe(1);
-		expect(cov.get(neuf)).toBe('auto');
-		expect(cov.has(ancien)).toBe(false);
 	});
 
 	it('rejects an unknown question template (400)', async () => {

@@ -53,7 +53,6 @@ interface PointRow {
 	regime_acquisition: string;
 	rubrique: string | null;
 	node_id: string | null;
-	objective_id: string | null;
 	rang: number | null;
 }
 
@@ -126,7 +125,7 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 			const { data, error } = await anon
 				.from('curriculum_points')
 				.select(
-					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, objective_id, rang'
+					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, rang'
 				)
 				.order('id')
 				.range(from, from + 999);
@@ -219,7 +218,6 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 	});
 
 	it('décisions T1 et T3 : série dans la rubrique, Situations algorithmiques en approfondissement', () => {
-		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 		expect(pointRows.every((r) => r.regime_acquisition === 'diversite')).toBe(true);
 		// T3 : les 8 algorithmes, et eux seuls, sont des approfondissements.

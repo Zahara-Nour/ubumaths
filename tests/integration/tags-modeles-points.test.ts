@@ -7,10 +7,9 @@
  * règles de tag posées en base (phase 0 et décision (a) validées le 2026-10-10). Copie figée des
  * tags : tests/integration/fixtures/tags-modeles-points.json.
  *
- * Un point NEUF porte un nœud de l'arbre (`node_id`) ; un ANCIEN point porte un objectif, et les
- * règles l'exemptent.
+ * Un point porte un nœud de l'arbre (`node_id`, obligatoire depuis la suppression de l'ancien
+ * programme, étape 4 de C5).
  *
- * 0. Les deux générations s'excluent : un objectif OU un nœud, jamais les deux, jamais aucun.
  * 1. Règle 1 : un modèle se tague avec un point neuf de son nœud, ou de la notion de son nœud.
  * 2. (a) : un modèle sans nœud, un exercice sans rangement, ne reçoit pas de point neuf.
  * 3. Règle 2 : au plus un point neuf par programme et par modèle.
@@ -19,14 +18,11 @@
  *    (dans les deux ordres), le verrou des exercices.
  * 5. Exercices : règle 1 sur l'un de leurs nœuds ou sur leur notion, (a), et pas de règle 2.
  * 6. Les écritures qui casseraient un tag existant sont refusées : déplacer un modèle (ou lui
- *    retirer son nœud), re-rattacher un point (ou changer son programme, ou donner un nœud à un
- *    ancien point), changer de notion une sous-notion, retirer ou déplacer le rangement d'un
+ *    retirer son nœud), re-rattacher un point (ou changer son programme), changer de notion une sous-notion, retirer ou déplacer le rangement d'un
  *    exercice (y compris vers un autre exercice). Supprimer un exercice reste possible, et un
  *    UPDATE à valeur égale passe toujours, même sur un état hors règle.
- * 7. Rejeu sur une copie de la prod (les modèles n'existent qu'en production) : EXACTEMENT les
- *    473 tags, les anciens intacts ; chaque garde refuse avec son message.
- * 8. Le rollback écrit dans la migration ramène exactement l'état d'avant, et refuse un état
- *    inattendu.
+ * Les rejeux sur copie de la prod (7 et 8) ont disparu avec les anciens points : la migration
+ * transférait les tags d'anciens points, qui n'existent plus.
  * Plus la structure du fichier : marqueurs du rollback, aucun contrôle de transaction, gardes
  * avant toute écriture.
  *
@@ -39,8 +35,6 @@ import { connectPostgresClient, getPostgresClient } from '../helpers/database/po
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { TestData } from '../helpers/database/test-data-factory';
 import { extractRollback, TRANSACTION_CONTROL } from '../helpers/database/migration-rollback';
-import { readNodePaths } from '../helpers/database/classification-paths';
-import { insertProdCopies } from '../helpers/database/prod-copies';
 
 // ============================================================================
 // TYPES
@@ -69,10 +63,6 @@ interface Decor {
 	other: string;
 	/** Points neufs : trois sur la notion (deux de seconde, un de 1ʳᵉ spé), un par autre nœud. */
 	points: Record<PointLabel, string>;
-	/** Deux anciens points (sans nœud) */
-	legacy: [string, string];
-	/** L'objectif du premier ancien point */
-	objectiveId: string;
 	authorId: string;
 }
 
@@ -96,13 +86,6 @@ interface SharedDecor {
 	otherNotion: string;
 }
 
-interface TagState {
-	/** « modèle§code§programme » des tags de points neufs, triés */
-	fresh: string[];
-	/** « modèle§point » des anciens tags, triés */
-	legacy: string[];
-}
-
 type Step = () => Promise<QueryResult>;
 
 // ============================================================================
@@ -117,13 +100,8 @@ const cleanupFixture: CleanupFixture = JSON.parse(
 	readFileSync('tests/integration/fixtures/nettoyage-facettes.json', 'utf-8')
 );
 const TEMPLATE_IDS = [...new Set(fixture.tags.map((t) => t.modele))];
-const EXPECTED_FRESH = fixture.tags.map((t) => `${t.modele}§${t.point}§${t.programme}`).sort();
 /** Préfixe unique à ce run : nœuds, points et modèles du décor le portent. */
 const TAG = `itest-tags-${Date.now().toString(36)}`;
-/** Date de création et de modification fabriquée des copies de la prod. */
-const BEFORE = '2026-01-02T03:04:05.000Z';
-/** Anciens tags posés sur chaque modèle copié (la prod en porte 1 026 sur ces 420 modèles). */
-const LEGACY_PER_TEMPLATE = 2;
 const CHECK_VIOLATION = '23514';
 const TRIGGERS: Record<string, string> = {
 	question_template_points_rules: 'question_template_points',
@@ -154,7 +132,6 @@ const MOVE_TEMPLATE =
 const MOVE_POINT = 'update public.curriculum_points set node_id = $2 where id = $1';
 /** Attentes sur une ligne verrouillée par une autre transaction. */
 const ROW_LOCK = ['transactionid', 'tuple'];
-const ONE_GENERATION_CONSTRAINT = 'curriculum_points_one_generation';
 
 // Messages des règles (extraits)
 const RULE1 = /ni sur le nœud du modèle \(« .* »\) ni sur sa notion/;
@@ -166,16 +143,12 @@ const TEMPLATE_MOVED = /qui ne serait ni sur « .* » ni sur sa notion : retirez
 const TEMPLATE_UNRANGED = /il ne peut pas perdre son rangement/;
 const POINT_MOVED_TEMPLATE =
 	/est tagué sur le modèle .*, et ne serait ni sur le nœud de ce modèle ni sur sa notion/;
-const POINT_ON_UNRANGED_TEMPLATE =
-	/serait sur un nœud, mais le modèle .* qui le porte n'est rangé dans aucun nœud/;
 const POINT_MOVED_EXERCISE =
 	/un tag d'exercice deviendrait hors règle \(l'exercice n'est rangé ni sur le nœud du point/;
-const ONE_GENERATION = new RegExp(ONE_GENERATION_CONSTRAINT);
 /** Le refus neutre de la garde d'appelant. */
 const GUARD_REFUSAL = /^Écriture refusée : droits insuffisants\.$/;
 /** Tout message des règles de tag. */
 const ANY_RULE_MESSAGE = /point|modèle|exercice|nœud|notion|programme/i;
-const POINT_UNRANGED = /il ne peut pas perdre son nœud/;
 const POINT_REGRADED = /passerait au programme 2, dont le modèle .* porte déjà un point/;
 const SUBNOTION_TEMPLATE = /changerait de notion alors que le modèle .*, rangé sur elle/;
 const SUBNOTION_EXERCISE = /changerait de notion : un tag d'exercice deviendrait hors règle/;
@@ -248,12 +221,6 @@ async function createDecor(pg: Client, authorId: string): Promise<Decor> {
 	const sub1 = await insertNode(pg, 'subnotion', 'sous-notion 1', notion);
 	const sub2 = await insertNode(pg, 'subnotion', 'sous-notion 2', notion);
 	const other = await insertNode(pg, 'notion', 'autre notion', branch);
-	const legacy = await pg.query<{ id: string; objective_id: string }>(
-		`select id, objective_id from public.curriculum_points
-		  where objective_id is not null and node_id is null and archived_at is null
-		  order by code limit 2`
-	);
-	if (legacy.rows.length !== 2) throw new Error('décor : deux anciens points introuvables');
 	return {
 		notion,
 		sub1,
@@ -267,8 +234,6 @@ async function createDecor(pg: Client, authorId: string): Promise<Decor> {
 			onSub2: await insertPoint(pg, 'sous-notion-2', '2', sub2),
 			onOther: await insertPoint(pg, 'autre-notion', '2', other)
 		},
-		legacy: [legacy.rows[0].id, legacy.rows[1].id],
-		objectiveId: legacy.rows[0].objective_id,
 		authorId
 	};
 }
@@ -368,16 +333,6 @@ async function backendPid(pg: Client): Promise<number> {
 	return r.rows[0].pid;
 }
 
-/** La contrainte des deux générations : « définition§validée », ou rien si elle est absente. */
-async function oneGeneration(pg: Client): Promise<string[]> {
-	const r = await pg.query<{ def: string; convalidated: boolean }>(
-		`select pg_get_constraintdef(oid) as def, convalidated from pg_constraint
-		  where conname = $1 and conrelid = 'public.curriculum_points'::regclass`,
-		[ONE_GENERATION_CONSTRAINT]
-	);
-	return r.rows.map((row) => `${row.def}§${row.convalidated}`);
-}
-
 /**
  * Joue les étapes dans un point de sauvegarde, annulé ensuite : chaque essai repart du même
  * décor. Rend le nombre de lignes touchées par la DERNIÈRE étape.
@@ -402,79 +357,6 @@ async function expectRefused(pg: Client, steps: Step, message: RegExp): Promise<
 	});
 }
 
-/**
- * La prod d'avant la migration, dans la transaction ouverte : ni règles ni tags neufs (rollback
- * de la migration), les 420 modèles copiés sur leur nœud de PRODUCTION (copie figée du
- * nettoyage ; empreinte des 420 chemins comparée à la prod le 2026-10-10 : identique), et des
- * anciens tags sur chacun.
- */
-async function prepareProdCopy(pg: Client, authorId: string): Promise<void> {
-	await pg.query(extractRollback(MIGRATION));
-	await insertProdCopies(pg, {
-		templateIds: TEMPLATE_IDS,
-		exerciseIds: [],
-		authorId,
-		timestamp: BEFORE
-	});
-
-	const idByPath = new Map(
-		[...(await readNodePaths(pg))].map(([id, node]) => [node.path, id] as const)
-	);
-	const nodeIds = TEMPLATE_IDS.map((id) => {
-		const nodeId = idByPath.get(cleanupFixture.attendu_modeles[id]);
-		if (!nodeId) throw new Error(`nœud de production introuvable pour le modèle ${id}`);
-		return nodeId;
-	});
-	const ranged = await pg.query(
-		`update public.question_templates q set classification_node_id = v.node_id
-		   from unnest($1::uuid[], $2::uuid[]) as v(id, node_id)
-		  where q.id = v.id`,
-		[TEMPLATE_IDS, nodeIds]
-	);
-	if (ranged.rowCount !== TEMPLATE_IDS.length) {
-		throw new Error(`modèles rangés : ${ranged.rowCount}/${TEMPLATE_IDS.length}`);
-	}
-
-	const legacy = await pg.query(
-		`insert into public.question_template_points (template_id, point_id)
-		 select t.id, p.id
-		   from unnest($1::uuid[]) as t(id)
-		  cross join (select id from public.curriculum_points
-		               where objective_id is not null and node_id is null and archived_at is null
-		               order by code limit $2) p`,
-		[TEMPLATE_IDS, LEGACY_PER_TEMPLATE]
-	);
-	if (legacy.rowCount !== TEMPLATE_IDS.length * LEGACY_PER_TEMPLATE) {
-		throw new Error(`anciens tags posés : ${legacy.rowCount}`);
-	}
-}
-
-async function readTags(pg: Client): Promise<TagState> {
-	const r = await pg.query<{
-		template_id: string;
-		point_id: string;
-		code: string;
-		grade: string | null;
-		node_id: string | null;
-	}>(
-		`select q.template_id, q.point_id, p.code, p.grade, p.node_id
-		   from public.question_template_points q
-		   join public.curriculum_points p on p.id = q.point_id
-		  where q.template_id = any($1::uuid[])`,
-		[TEMPLATE_IDS]
-	);
-	return {
-		fresh: r.rows
-			.filter((row) => row.node_id !== null)
-			.map((row) => `${row.template_id}§${row.code}§${row.grade}`)
-			.sort(),
-		legacy: r.rows
-			.filter((row) => row.node_id === null)
-			.map((row) => `${row.template_id}§${row.point_id}`)
-			.sort()
-	};
-}
-
 /** Triggers de règle présents : « nom§table§état » (état « O » = actif). */
 async function ruleTriggers(pg: Client): Promise<string[]> {
 	const r = await pg.query<{ tgname: string; tbl: string; tgenabled: string }>(
@@ -483,15 +365,6 @@ async function ruleTriggers(pg: Client): Promise<string[]> {
 		[Object.keys(TRIGGERS)]
 	);
 	return r.rows.map((row) => `${row.tgname}§${row.tbl}§${row.tgenabled}`);
-}
-
-async function ruleFunctions(pg: Client): Promise<string[]> {
-	const r = await pg.query<{ proname: string }>(
-		`select proname from pg_proc
-		  where pronamespace = 'public'::regnamespace and proname = any($1) order by proname`,
-		[FUNCTIONS]
-	);
-	return r.rows.map((row) => row.proname);
 }
 
 /**
@@ -545,10 +418,6 @@ async function asUser(pg: Client, userId: string): Promise<void> {
  * un scénario rouge ne doit pas laisser de verrou au suivant. */
 async function rollbackBoth(first: Client, second: Client): Promise<void> {
 	await Promise.all([first.query('rollback'), second.query('rollback')]).catch(() => undefined);
-}
-
-function escapeRegExp(text: string): string {
-	return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // ============================================================================
@@ -614,12 +483,6 @@ describe('Tags modèles → points neufs : la fixture, le fichier, l’état app
 		expect(await ruleTriggers(await getPostgresClient())).toEqual(expected);
 	});
 
-	it('la contrainte des deux générations est posée et validée', async () => {
-		expect(await oneGeneration(await getPostgresClient())).toEqual([
-			'CHECK (((objective_id IS NULL) <> (node_id IS NULL)))§true'
-		]);
-	});
-
 	it('les six fonctions : SECURITY DEFINER, propriétaire postgres, search_path fixé, exécutables ni par anon, ni par authenticated, ni par PUBLIC', async () => {
 		const pg = await getPostgresClient();
 		const r = await pg.query<{
@@ -673,12 +536,6 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 		db().query(MOVE_TEMPLATE, [templateId, nodeId]);
 	const movePoint = (pointId: string, nodeId: string | null) =>
 		db().query(MOVE_POINT, [pointId, nodeId]);
-	/** Un ancien point devient neuf : il reçoit un nœud et perd son objectif. */
-	const giveNode = (pointId: string, nodeId: string) =>
-		db().query(
-			'update public.curriculum_points set node_id = $2, objective_id = null where id = $1',
-			[pointId, nodeId]
-		);
 	const reparent = (nodeId: string, parentId: string) =>
 		db().query('update public.classification_nodes set parent_id = $2 where id = $1', [
 			nodeId,
@@ -698,36 +555,6 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 	afterAll(async () => {
 		await pg?.query('rollback');
 		await cleanupAllTestData();
-	});
-
-	describe('0. Les deux générations s’excluent : un objectif OU un nœud', () => {
-		it('un point avec un objectif ET un nœud est refusé', async () => {
-			await refused(
-				() =>
-					db().query(
-						`insert into public.curriculum_points (code, name, kind, grade, node_id, objective_id)
-						 values ($1, $1, 'savoir_faire', '2', $2, $3)`,
-						[`${TAG}-les-deux`, d.notion, d.objectiveId]
-					),
-				ONE_GENERATION
-			);
-		});
-
-		it('un point sans objectif ni nœud est refusé', async () => {
-			await refused(
-				() =>
-					db().query(
-						`insert into public.curriculum_points (code, name, kind, grade)
-						 values ($1, $1, 'savoir_faire', '2')`,
-						[`${TAG}-aucun`]
-					),
-				ONE_GENERATION
-			);
-		});
-
-		it('un ancien point qui reçoit un nœud sans perdre son objectif est refusé', async () => {
-			await refused(() => movePoint(d.legacy[0], d.notion), ONE_GENERATION);
-		});
 	});
 
 	describe('1. Règle 1 : un point du nœud du modèle, ou de la notion de ce nœud', () => {
@@ -763,14 +590,6 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 				TEMPLATE_WITHOUT_NODE
 			);
 		});
-
-		it('modèle sans nœud : les anciens points (sans nœud) restent exemptés', async () => {
-			await accepted(async () => {
-				const t = await template(null);
-				await tagTemplate(t, d.legacy[0]);
-				return tagTemplate(t, d.legacy[1]);
-			});
-		});
 	});
 
 	describe('3. Règle 2 : au plus un point neuf par programme et par modèle', () => {
@@ -787,14 +606,6 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 				const t = await template(d.notion);
 				await tagTemplate(t, d.points.onNotion);
 				return tagTemplate(t, d.points.onNotionSpe);
-			});
-		});
-
-		it('un ancien point s’ajoute à côté d’un point neuf', async () => {
-			await accepted(async () => {
-				const t = await template(d.notion);
-				await tagTemplate(t, d.points.onNotion);
-				return tagTemplate(t, d.legacy[0]);
 			});
 		});
 
@@ -844,10 +655,6 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 			);
 		});
 
-		it('(a) : un exercice sans rangement reçoit toujours un ancien point', async () => {
-			await accepted(async () => tagExercise(await exercise([]), d.legacy[0]));
-		});
-
 		it('pas de règle 2 : deux points neufs du même programme sur un exercice', async () => {
 			await accepted(async () => {
 				const e = await exercise([d.notion]);
@@ -890,14 +697,6 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 			}, TEMPLATE_UNRANGED);
 		});
 
-		it('retirer son nœud à un modèle qui ne porte que des anciens points : accepté', async () => {
-			await accepted(async () => {
-				const t = await template(d.sub1);
-				await tagTemplate(t, d.legacy[0]);
-				return moveTemplate(t, null);
-			});
-		});
-
 		it('re-rattacher un point tagué hors du nœud du modèle et de sa notion : refusé', async () => {
 			await refused(async () => {
 				await tagTemplate(await template(d.sub1), d.points.onSub1);
@@ -912,21 +711,13 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 			});
 		});
 
-		it('retirer son nœud à un point tagué, sans lui donner d’objectif : refusé par la contrainte', async () => {
-			await refused(async () => {
-				await tagTemplate(await template(d.sub1), d.points.onSub1);
-				return movePoint(d.points.onSub1, null);
-			}, ONE_GENERATION);
-		});
-
-		it('faire redevenir ancien un point tagué (un objectif, plus de nœud) : refusé', async () => {
-			await refused(async () => {
-				await tagTemplate(await template(d.sub1), d.points.onSub1);
-				return db().query(
-					'update public.curriculum_points set node_id = null, objective_id = $2 where id = $1',
-					[d.points.onSub1, d.objectiveId]
-				);
-			}, POINT_UNRANGED);
+		it('retirer son nœud à un point tagué : refusé par NOT NULL (23502)', async () => {
+			await expect(
+				trial(db(), async () => {
+					await tagTemplate(await template(d.sub1), d.points.onSub1);
+					return movePoint(d.points.onSub1, null);
+				})
+			).rejects.toMatchObject({ code: '23502' });
 		});
 
 		it('changer le programme d’un point tagué vers un programme que le modèle porte déjà : refusé', async () => {
@@ -1021,27 +812,6 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 					[e, d.sub1, target]
 				);
 			}, EXERCISE_UNCOVERED);
-		});
-
-		it('un ancien point qui reçoit un nœud hors du nœud d’un modèle qui le porte (et de sa notion) : refusé', async () => {
-			await refused(async () => {
-				await tagTemplate(await template(d.sub1), d.legacy[0]);
-				return giveNode(d.legacy[0], d.other);
-			}, POINT_MOVED_TEMPLATE);
-		});
-
-		it('un ancien point qui reçoit le nœud de la notion d’un modèle qui le porte : accepté', async () => {
-			await accepted(async () => {
-				await tagTemplate(await template(d.sub1), d.legacy[0]);
-				return giveNode(d.legacy[0], d.notion);
-			});
-		});
-
-		it('un ancien point porté par un modèle sans nœud ne reçoit pas de nœud : refusé', async () => {
-			await refused(async () => {
-				await tagTemplate(await template(null), d.legacy[0]);
-				return giveNode(d.legacy[0], d.notion);
-			}, POINT_ON_UNRANGED_TEMPLATE);
 		});
 	});
 
@@ -1565,252 +1335,4 @@ describe('Rôles réels : prof, admin, élève (la règle juge sur une vue compl
 			});
 		}
 	});
-});
-
-describe('7. Rejeu sur une copie de la prod : les 473 tags, et rien d’autre', () => {
-	let pg: Client | undefined;
-	let before: TagState;
-	let triggersBefore: string[];
-	let constraintBefore: string[];
-	let after: TagState;
-
-	function db(): Client {
-		if (!pg) throw new Error('client pg non initialisé');
-		return pg;
-	}
-
-	beforeAll(async () => {
-		await cleanupAllTestData();
-		const teacher = await TestData.profile().withRole('teacher').create();
-		pg = await getPostgresClient();
-
-		await pg.query('begin');
-		await prepareProdCopy(pg, teacher.id);
-		before = await readTags(pg);
-		triggersBefore = await ruleTriggers(pg);
-		constraintBefore = await oneGeneration(pg);
-		await pg.query(readFileSync(MIGRATION, 'utf-8'));
-		after = await readTags(pg);
-	}, 120_000);
-
-	afterAll(async () => {
-		await pg?.query('rollback');
-		await cleanupAllTestData();
-	});
-
-	it('avant : ni tag neuf ni règle, les anciens tags posés', () => {
-		expect(before.fresh).toEqual([]);
-		expect(before.legacy).toHaveLength(TEMPLATE_IDS.length * LEGACY_PER_TEMPLATE);
-		expect(triggersBefore).toEqual([]);
-		expect(constraintBefore).toEqual([]);
-	});
-
-	it('après : EXACTEMENT les 473 tags de la fixture, chacun sur le point neuf de son programme', () => {
-		expect(after.fresh).toEqual(EXPECTED_FRESH);
-	});
-
-	it('après : aucun autre tag de point neuf en base', async () => {
-		const r = await db().query<{ n: string }>(
-			`select count(*) as n from public.question_template_points q
-			   join public.curriculum_points p on p.id = q.point_id where p.node_id is not null`
-		);
-		expect(Number(r.rows[0].n)).toBe(473);
-	});
-
-	it('après : les anciens tags sont intacts', () => {
-		expect(after.legacy).toEqual(before.legacy);
-	});
-
-	it('après : les règles 1 et 2 tiennent pour chacun des 473 tags (vérifiées hors du fichier)', async () => {
-		const r = await db().query<{
-			template_id: string;
-			code: string;
-			grade: string;
-			point_node: string;
-			template_node: string | null;
-			template_kind: string | null;
-			template_parent: string | null;
-		}>(
-			`select q.template_id, p.code, p.grade, p.node_id as point_node,
-			        t.classification_node_id as template_node, n.kind as template_kind,
-			        n.parent_id as template_parent
-			   from public.question_template_points q
-			   join public.curriculum_points p on p.id = q.point_id
-			   join public.question_templates t on t.id = q.template_id
-			   left join public.classification_nodes n on n.id = t.classification_node_id
-			  where p.node_id is not null`
-		);
-		expect(r.rows).toHaveLength(473);
-		const outsideRule1 = r.rows.filter(
-			(row) =>
-				row.point_node !== row.template_node &&
-				row.point_node !==
-					(row.template_kind === 'subnotion' ? row.template_parent : row.template_node)
-		);
-		expect(outsideRule1).toEqual([]);
-		const perProgramme = new Map<string, number>();
-		for (const row of r.rows) {
-			const key = `${row.template_id}§${row.grade}`;
-			perProgramme.set(key, (perProgramme.get(key) ?? 0) + 1);
-		}
-		expect([...perProgramme.entries()].filter(([, n]) => n > 1)).toEqual([]);
-	});
-
-	it('après : la contrainte des deux générations est posée et validée', async () => {
-		expect(await oneGeneration(db())).toEqual([
-			'CHECK (((objective_id IS NULL) <> (node_id IS NULL)))§true'
-		]);
-	});
-
-	it('après : les six triggers de règle sont posés et actifs', async () => {
-		const expected = Object.entries(TRIGGERS)
-			.map(([name, table]) => `${name}§${table}§O`)
-			.sort();
-		expect(await ruleTriggers(db())).toEqual(expected);
-	});
-
-	it('8. le rollback, rejoué après la migration, ramène EXACTEMENT l’état d’avant', async () => {
-		await db().query(extractRollback(MIGRATION));
-		expect(await readTags(db())).toEqual(before);
-		expect(await ruleTriggers(db())).toEqual([]);
-		expect(await ruleFunctions(db())).toEqual([]);
-		expect(await oneGeneration(db())).toEqual([]);
-	});
-});
-
-describe('7 et 8. Rejeu : chaque garde refuse avec son message, le rollback aussi', () => {
-	let pg: Client | undefined;
-	let authorId: string;
-
-	beforeAll(async () => {
-		await cleanupAllTestData();
-		authorId = (await TestData.profile().withRole('teacher').create()).id;
-		pg = await getPostgresClient();
-	});
-
-	afterAll(async () => {
-		await pg?.query('rollback').catch(() => undefined);
-		await cleanupAllTestData();
-	});
-
-	/**
-	 * Prépare la copie de la prod, la perturbe, rejoue la migration : elle doit être refusée avec
-	 * le message attendu. Que ce refus ne laisse rien derrière lui tient à la transaction et à la
-	 * structure du fichier (gardes avant toute écriture), vérifiée plus haut.
-	 */
-	async function replayAfter(
-		perturbation: string,
-		params: (client: Client) => Promise<unknown[]>,
-		expected: RegExp
-	) {
-		if (!pg) throw new Error('client pg non initialisé');
-		await pg.query('begin');
-		try {
-			await prepareProdCopy(pg, authorId);
-			const touched = await pg.query(perturbation, await params(pg));
-			expect(touched.rowCount).toBeGreaterThan(0);
-			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(expected);
-		} finally {
-			await pg.query('rollback');
-		}
-	}
-
-	/** Même chose pour le rollback : la migration passe, puis la perturbation, puis le rollback refuse. */
-	async function rollbackAfter(
-		perturbation: string,
-		params: (client: Client) => Promise<unknown[]>,
-		expected: RegExp
-	) {
-		if (!pg) throw new Error('client pg non initialisé');
-		await pg.query('begin');
-		try {
-			await prepareProdCopy(pg, authorId);
-			await pg.query(readFileSync(MIGRATION, 'utf-8'));
-			const touched = await pg.query(perturbation, await params(pg));
-			expect(touched.rowCount).toBeGreaterThan(0);
-			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(expected);
-		} finally {
-			await pg.query('rollback');
-		}
-	}
-
-	const first = fixture.tags[0];
-
-	it('un tag de point neuf déjà présent : transfert refusé', async () => {
-		await replayAfter(
-			`insert into public.question_template_points (template_id, point_id)
-			 select $1, p.id from public.curriculum_points p where p.code = $2`,
-			async () => [first.modele, first.point],
-			/tags de points neufs déjà présents \(1\) : transfert refusé/
-		);
-	}, 60_000);
-
-	it('un point neuf introuvable (son code a changé) : refusé, le point nommé', async () => {
-		await replayAfter(
-			"update public.curriculum_points set code = code || '-ailleurs' where code = $1",
-			async () => [first.point],
-			new RegExp(
-				`points neufs introuvables \\(code, programme\\) : .*${escapeRegExp(
-					`${first.point} (${first.programme})`
-				)}`
-			)
-		);
-	}, 60_000);
-
-	it('un point d’aucune génération : la garde refuse avant de poser la contrainte', async () => {
-		await replayAfter(
-			`insert into public.curriculum_points (code, name, kind, grade)
-			 values ($1, $1, 'savoir_faire', '2')`,
-			async () => [`${TAG}-sans-generation`],
-			/points des deux générations, ou d'aucune : 1 — contrainte curriculum_points_one_generation impossible/
-		);
-	}, 60_000);
-
-	it('TOUT ou RIEN : un des 420 modèles manquant', async () => {
-		await replayAfter(
-			'delete from public.question_templates where id = $1',
-			async () => [first.modele],
-			/identifiants partiellement présents : 419 modèle\(s\) sur 420/
-		);
-	}, 60_000);
-
-	it('un modèle rangé ailleurs depuis : la règle 1 refuse son tag, et toute la migration échoue', async () => {
-		await replayAfter(
-			`update public.question_templates set classification_node_id = (
-			   select n.id from public.classification_nodes n
-			    where n.kind = 'notion' and n.archived_at is null and n.id <> all($2::uuid[])
-			    order by n.id limit 1)
-			  where id = $1`,
-			async (client) => {
-				const r = await client.query<{ node: string; notion: string }>(
-					`select q.classification_node_id as node,
-					        case when n.kind = 'subnotion' then n.parent_id else n.id end as notion
-					   from public.question_templates q
-					   join public.classification_nodes n on n.id = q.classification_node_id
-					  where q.id = $1`,
-					[first.modele]
-				);
-				return [first.modele, [r.rows[0].node, r.rows[0].notion]];
-			},
-			RULE1
-		);
-	}, 60_000);
-
-	it('(a) : un modèle sans nœud depuis : son tag est refusé, et toute la migration échoue', async () => {
-		await replayAfter(
-			'update public.question_templates set classification_node_id = null where id = $1',
-			async () => [first.modele],
-			TEMPLATE_WITHOUT_NODE
-		);
-	}, 60_000);
-
-	it('rollback : un des 473 tags retiré à la main depuis → refus, tout ou rien', async () => {
-		await rollbackAfter(
-			`delete from public.question_template_points q
-			  using public.curriculum_points p
-			  where p.id = q.point_id and q.template_id = $1 and p.code = $2`,
-			async () => [first.modele, first.point],
-			/rollback : 472 tag\(s\) de la migration présent\(s\) sur 473 \(tout ou rien\)/
-		);
-	}, 60_000);
 });

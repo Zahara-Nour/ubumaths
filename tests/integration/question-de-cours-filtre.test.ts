@@ -35,6 +35,8 @@ const IDS = {
 	brouillon: crypto.randomUUID()
 };
 let pointId = '';
+let brancheId = '';
+let notionId = '';
 
 const service = createServiceRoleClient();
 
@@ -63,6 +65,10 @@ describe('questions de cours : filtre et lecture élève', () => {
 	beforeAll(async () => {
 		await cleanupAllTestData();
 		await service.from('question_templates').delete().eq('theme', THEME);
+		// Reste d'un passage interrompu : point, puis notion, puis branche.
+		await service.from('curriculum_points').delete().eq('code', `TST-${THEME}`);
+		await service.from('classification_nodes').delete().eq('name', `N ${THEME}`);
+		await service.from('classification_nodes').delete().eq('name', `B ${THEME}`);
 		const { error } = await service
 			.from('question_templates')
 			.insert([
@@ -73,26 +79,36 @@ describe('questions de cours : filtre et lecture élève', () => {
 			] as never);
 		expect(error, 'décor non posé').toBeNull();
 
-		// Un point du programme, auquel on rattache un modèle publié et un brouillon
-		const { data: theme, error: errTheme } = await service
-			.from('curriculum_themes')
-			.insert({ grade: '1_SPE', name: `T ${THEME}` } as never)
+		// Un point NEUF du programme (sur une notion), auquel on rattache un modèle publié et un
+		// brouillon : la base exige que le modèle soit rangé sur le nœud du point.
+		const { data: branche, error: errBranche } = await service
+			.from('classification_nodes')
+			.insert({ kind: 'branch', name: `B ${THEME}`, parent_id: null, position: 900 })
 			.select('id')
 			.single();
-		expect(errTheme).toBeNull();
-		const { data: objective, error: errObj } = await service
-			.from('curriculum_objectives')
-			.insert({ theme_id: present(theme, 'theme').id, name: `O ${THEME}` } as never)
+		expect(errBranche).toBeNull();
+		brancheId = present(branche, 'branche').id;
+		const { data: notion, error: errNotion } = await service
+			.from('classification_nodes')
+			.insert({ kind: 'notion', name: `N ${THEME}`, parent_id: brancheId, position: 0 })
 			.select('id')
 			.single();
-		expect(errObj).toBeNull();
+		expect(errNotion).toBeNull();
+		notionId = present(notion, 'notion').id;
+		const { error: errRange } = await service
+			.from('question_templates')
+			.update({ classification_node_id: notionId })
+			.in('id', [IDS.ordinaire, IDS.brouillon]);
+		expect(errRange).toBeNull();
 		const { data: point, error: errPoint } = await service
 			.from('curriculum_points')
 			.insert({
-				objective_id: present(objective, 'objective').id,
+				code: `TST-${THEME}`.slice(0, 40),
 				name: `P ${THEME}`,
-				kind: 'connaissance'
-			} as never)
+				kind: 'connaissance',
+				grade: '1_SPE',
+				node_id: notionId
+			})
 			.select('id')
 			.single();
 		expect(errPoint).toBeNull();
@@ -120,10 +136,9 @@ describe('questions de cours : filtre et lecture élève', () => {
 			.delete()
 			.eq('point_id', pointId);
 		await service.from('question_templates').delete().eq('theme', THEME);
-		await service
-			.from('curriculum_themes' as never)
-			.delete()
-			.eq('name', `T ${THEME}`);
+		await service.from('curriculum_points').delete().eq('id', pointId);
+		await service.from('classification_nodes').delete().eq('id', notionId);
+		await service.from('classification_nodes').delete().eq('id', brancheId);
 		await cleanupAllTestData();
 	});
 

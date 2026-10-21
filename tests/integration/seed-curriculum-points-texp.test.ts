@@ -9,8 +9,8 @@
  * le 2026-10-08 (docs/wip/arbre-notions/seed-texp.md).
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
- * (chemin du nœud compris), rien d'autre au grade 'T_EXP', aucune référence, et
- * l'ancien seed (TEXP-001…TEXP-153, grade NULL) INTACT. Lecture ANONYME (B6).
+ * (chemin du nœud compris), rien d'autre au grade 'T_EXP', et aucune référence
+ * (l'ancien seed est supprimé). Lecture ANONYME (B6).
  *
  * @vitest-environment node
  */
@@ -47,7 +47,6 @@ interface PointRow {
 	regime_acquisition: string;
 	rubrique: string | null;
 	node_id: string | null;
-	objective_id: string | null;
 	rang: number | null;
 }
 
@@ -119,7 +118,7 @@ describe('Seed des points de Maths expertes', () => {
 			const { data, error } = await anon
 				.from('curriculum_points')
 				.select(
-					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, objective_id, rang'
+					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, rang'
 				)
 				.order('id')
 				.range(from, from + 999);
@@ -194,7 +193,6 @@ describe('Seed des points de Maths expertes', () => {
 	});
 
 	it('décisions E1 et Problèmes possibles : kinds, exigences, régime', () => {
-		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 		expect(pointRows.every((r) => r.regime_acquisition === 'diversite')).toBe(true);
 		// E1 : les 4 Exemples d'algorithmes sont des approfondissements.
@@ -211,11 +209,5 @@ describe('Seed des points de Maths expertes', () => {
 		const demos = pointRows.filter((r) => r.kind === 'demonstration');
 		expect(demos).toHaveLength(16);
 		expect(demos.every((r) => r.exigence === 'attendu')).toBe(true);
-	});
-
-	it("l'ancien seed Maths expertes (TEXP-001…TEXP-153) est INTACT : grade NULL, rattaché à ses objectifs", () => {
-		const anciens = allPoints.filter((p) => /^TEXP-(0\d\d|1[0-4]\d|15[0-3])$/.test(p.code));
-		expect(anciens).toHaveLength(153);
-		expect(anciens.every((p) => p.grade === null && p.objective_id !== null)).toBe(true);
 	});
 });

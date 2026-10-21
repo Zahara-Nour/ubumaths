@@ -128,22 +128,24 @@ consentement : [auth.md](auth.md), [conformite/](conformite/README.md).
 Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
 [ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)).
 
-|            | Arbre des contenus du programme                                     | Compétences mathématiques                                                 |
-| ---------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Hiérarchie | `curriculum_themes` → `curriculum_objectives` → `curriculum_points` | `math_competences` → `math_competence_subdimensions` → `observables`      |
-| Saisie     | `skill_attempts.template_id` (réussite automatique)                 | `skill_attempts.observable_id` + `code` `plus`/`minus` (jugement du prof) |
-| Cache      | `student_point_state`                                               | `student_observable_state` → `student_competence_level`                   |
+|            | Arbre des contenus du programme                                               | Compétences mathématiques                                                 |
+| ---------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Hiérarchie | `classification_nodes` (branche > notion > sous-notion) → `curriculum_points` | `math_competences` → `math_competence_subdimensions` → `observables`      |
+| Saisie     | `skill_attempts.template_id` (réussite automatique)                           | `skill_attempts.observable_id` + `code` `plus`/`minus` (jugement du prof) |
+| Cache      | `student_point_state`                                                         | `student_observable_state` → `student_competence_level`                   |
 
 - **`curriculum_points` est le grain unique** : couverture du programme, tagging des ressources et
-  acquisition de l'élève s'y accrochent. `code` (`1SPE-047`, `6-012`), attribué par trigger, est le seul
+  acquisition de l'élève s'y accrochent. `code` (`1SPE-047`, `6-012`), posé par la migration qui crée le point, est le seul
   identifiant lisible et stable d'un environnement à l'autre. Un point se retire par `archived_at`, pas
   par DELETE : l'application n'expose plus de suppression (C5 étape 3) ; seuls le libellé et
   l'archivage d'un point **neuf** se modifient (PATCH `/api/teacher/curriculum/points/[pointId]`).
   `curriculum_point_reference_counts` (DEFINER) reste en base, sans appelant.
-- **Cible en cours (ADR 0019, 0020)** : `classification_nodes` (branche > notion > sous-notion),
+- **Arbre et programme (ADR 0019, 0020)** : `classification_nodes` (branche > notion > sous-notion),
   `source_types`, `exercise_classifications`, `grade_predecessors` (parcours, `grade_ancestors()`), et
-  sur `curriculum_points` les colonnes `node_id`, `grade`, `rubrique`. `objective_id` est devenu
-  facultatif ; `rang` est ignoré par la cible.
+  sur `curriculum_points` les colonnes `node_id` (obligatoire), `grade`, `rubrique` ; `rang` est ignoré.
+  L'ancienne génération (thème → objectif → point, `curriculum_themes`, `curriculum_objectives`,
+  `objective_id`) est supprimée par `20261022080000_suppression_ancien_programme` (C5, étape 4) ; copie
+  figée dans [docs/archive/arbre-notions/ancien-programme/](../archive/arbre-notions/ancien-programme/README.md).
 - **Régime d'acquisition** (`regime_acquisition`) : `fluence` = ≥ 5 réussites et ≥ 3 sur les 5
   dernières ; `diversite` = ≥ 2 modèles distincts réussis et aucun échec sur les 3 dernières. Les cartes
   de cours ne comptent pas (`20260928160000`).

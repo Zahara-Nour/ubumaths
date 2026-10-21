@@ -52,7 +52,6 @@ interface PointRow {
 	regime_acquisition: string;
 	rubrique: string | null;
 	node_id: string | null;
-	objective_id: string | null;
 	rang: number | null;
 }
 
@@ -125,7 +124,7 @@ describe('Seed des points de 1re enseignement scientifique (points + référence
 			const { data, error } = await anon
 				.from('curriculum_points')
 				.select(
-					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, objective_id, rang'
+					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, rang'
 				)
 				.order('id')
 				.range(from, from + 999);
@@ -220,7 +219,6 @@ describe('Seed des points de 1re enseignement scientifique (points + référence
 	it('attributs : tout attendu, aucun algorithme, régime', () => {
 		// Sans ce compte, les « every » passeraient sur une base vide.
 		expect(pointRows).toHaveLength(44);
-		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 		expect(pointRows.every((r) => r.regime_acquisition === 'diversite')).toBe(true);
 		expect(pointRows.every((r) => r.exigence === 'attendu')).toBe(true);

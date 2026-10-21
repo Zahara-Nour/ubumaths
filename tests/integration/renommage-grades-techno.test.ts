@@ -7,7 +7,7 @@
  * est commun à toutes les séries technologiques).
  *
  * Ce que le fichier prouve :
- *   R1. les contraintes CHECK acceptent les nouveaux codes ;
+ *   R1. les contraintes CHECK (sur curriculum_points, seule table de grade restante du programme) acceptent les nouveaux codes ;
  *   R2. elles refusent les anciens (23514) ;
  *   R3. la normalisation d'une saisie libre renvoie les nouveaux codes,
  *       y compris pour les alias « stmg » hérités ;
@@ -25,25 +25,45 @@ import { createServiceRoleClient } from '../helpers/database/trigger-test-helper
 
 const service = createServiceRoleClient();
 
-const TEST_THEME_PREFIX = 'TEST renommage techno —';
+const TEST_CODE_PREFIX = 'TST-TECHNO-';
+
+/** Un nœud réel de l'arbre, pour poser les points de test (node_id est obligatoire). */
+async function nodeAncre(): Promise<string> {
+	const { data, error } = await service
+		.from('curriculum_points')
+		.select('node_id')
+		.eq('grade', '6')
+		.limit(1)
+		.single();
+	if (error || !data?.node_id) throw new Error(`Aucun nœud d'ancrage : ${error?.message}`);
+	return data.node_id;
+}
+
+function point(grade: string, code: string, node_id: string) {
+	return {
+		code: `${TEST_CODE_PREFIX}${code}`,
+		name: `TEST renommage techno ${code}`,
+		kind: 'savoir_faire',
+		grade,
+		node_id
+	};
+}
 
 afterAll(async () => {
 	const { error } = await service
-		.from('curriculum_themes')
+		.from('curriculum_points')
 		.delete()
-		.like('name', `${TEST_THEME_PREFIX}%`)
+		.like('code', `${TEST_CODE_PREFIX}%`)
 		.select('id');
-	if (error) throw new Error(`Nettoyage des thèmes de test impossible : ${error.message}`);
+	if (error) throw new Error(`Nettoyage des points de test impossible : ${error.message}`);
 });
 
 describe('R1 — les nouveaux codes sont acceptés', () => {
-	it('curriculum_themes accepte 1_TECHNO et T_TECHNO', async () => {
+	it('curriculum_points accepte 1_TECHNO et T_TECHNO', async () => {
+		const node = await nodeAncre();
 		const { data, error } = await service
-			.from('curriculum_themes')
-			.insert([
-				{ grade: '1_TECHNO', name: `${TEST_THEME_PREFIX} première` },
-				{ grade: 'T_TECHNO', name: `${TEST_THEME_PREFIX} terminale` }
-			])
+			.from('curriculum_points')
+			.insert([point('1_TECHNO', 'premiere', node), point('T_TECHNO', 'terminale', node)])
 			.select('id, grade');
 		expect(error).toBeNull();
 		expect(data).toHaveLength(2);
@@ -51,10 +71,10 @@ describe('R1 — les nouveaux codes sont acceptés', () => {
 });
 
 describe('R2 — les anciens codes sont refusés', () => {
-	it.each(['1_STMG', 'T_STMG'])('curriculum_themes refuse %s (23514)', async (grade) => {
+	it.each(['1_STMG', 'T_STMG'])('curriculum_points refuse %s (23514)', async (grade) => {
 		const { data, error } = await service
-			.from('curriculum_themes')
-			.insert({ grade, name: `${TEST_THEME_PREFIX} ancien code ${grade}` })
+			.from('curriculum_points')
+			.insert(point(grade, `ancien-${grade}`, await nodeAncre()))
 			.select('id');
 		expect(data).toBeNull();
 		expect(error?.code).toBe('23514');

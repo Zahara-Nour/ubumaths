@@ -52,7 +52,6 @@ interface PointRow {
 	regime_acquisition: string;
 	rubrique: string | null;
 	node_id: string | null;
-	objective_id: string | null;
 	rang: number | null;
 }
 
@@ -125,7 +124,7 @@ describe('Seed des points de 1re technologique (points + références)', () => {
 			const { data, error } = await anon
 				.from('curriculum_points')
 				.select(
-					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, objective_id, rang'
+					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, rang'
 				)
 				.order('id')
 				.range(from, from + 999);
@@ -214,7 +213,6 @@ describe('Seed des points de 1re technologique (points + références)', () => {
 	});
 
 	it('décisions T1 et T2 : séries dans la rubrique, tout attendu, régime', () => {
-		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 		expect(pointRows.every((r) => r.regime_acquisition === 'diversite')).toBe(true);
 		// T2 : tout est attendu, Situations algorithmiques comprises.

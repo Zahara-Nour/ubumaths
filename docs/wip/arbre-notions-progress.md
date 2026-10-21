@@ -1278,3 +1278,10 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   **Décidé par David** : (1) **les 5 étapes** au lycée — passe des points (critère de scission), bornes par point,
   relevé des modèles, verdicts en inclusion stricte, page à cocher puis migration des tags ; les 12 modèles s'y
   traitent ; (2) **étape 4 d'abord**, la passe lycée ensuite, en chantier à part.
+- **2026-10-21 — Étape 4, phase 0 validée par David** (« je te suis », worktree `ubumaths-wt-arbre-notions`, branche
+  `refactor/arbre-etape4-nettoyage`). Q1 : `node_id` obligatoire, contrainte `curriculum_points_one_generation`
+  retirée. Q2 : copie figée de l'ancien monde dans `docs/archive/arbre-notions/ancien-programme/` (export lancé par
+  David : 29 / 87 / 1 007 / 1 026). Q3 : simplification des filtres de génération dans une 2e PR, après `db:types`.
+  Migration `20261022080000_suppression_ancien_programme` : garde d'arrêt si une ligne d'élève, de cahier, d'exercice,
+  d'automatisme ou d'anti-fraude pointe vers un ancien point. `db:migrate` : go explicite de David (destructive).
+  Piège : le classifieur du mode auto a refusé l'export prod et des commandes de lecture du worktree.

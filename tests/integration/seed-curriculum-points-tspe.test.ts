@@ -15,7 +15,7 @@
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade 'T_SPE', l'ensemble exact des
- * références, et l'ancien seed Tle spé (TSPE-001…TSPE-262, grade NULL) INTACT.
+ * références (l'ancien seed, supprimé en étape 4, n'est plus vérifié).
  * Lecture ANONYME (B6).
  *
  * @vitest-environment node
@@ -53,7 +53,6 @@ interface PointRow {
 	regime_acquisition: string;
 	rubrique: string | null;
 	node_id: string | null;
-	objective_id: string | null;
 	rang: number | null;
 }
 
@@ -126,7 +125,7 @@ describe('Seed des points de Tle spécialité (points + références)', () => {
 			const { data, error } = await anon
 				.from('curriculum_points')
 				.select(
-					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, objective_id, rang'
+					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, rang'
 				)
 				.order('id')
 				.range(from, from + 999);
@@ -214,7 +213,6 @@ describe('Seed des points de Tle spécialité (points + références)', () => {
 	});
 
 	it('décisions L3 et E1 : kinds, exigences, régime', () => {
-		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 		expect(pointRows.every((r) => r.regime_acquisition === 'diversite')).toBe(true);
 		// E1 : les 18 Exemples d'algorithme sont des approfondissements.
@@ -228,11 +226,5 @@ describe('Seed des points de Tle spécialité (points + références)', () => {
 		expect(appro).toHaveLength(32);
 		expect(appro.every((r) => r.kind === 'savoir_faire')).toBe(true);
 		expect(pointRows.filter((r) => r.kind === 'demonstration')).toHaveLength(18);
-	});
-
-	it("l'ancien seed Tle spé (TSPE-001…TSPE-262) est INTACT : grade NULL, rattaché à ses objectifs", () => {
-		const anciens = allPoints.filter((p) => /^TSPE-(0\d\d|1\d\d|2[0-5]\d|26[0-2])$/.test(p.code));
-		expect(anciens).toHaveLength(262);
-		expect(anciens.every((p) => p.grade === null && p.objective_id !== null)).toBe(true);
 	});
 });

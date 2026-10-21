@@ -56,7 +56,6 @@ interface PointRow {
 	regime_acquisition: string;
 	rubrique: string | null;
 	node_id: string | null;
-	objective_id: string | null;
 	rang: number | null;
 }
 
@@ -128,7 +127,7 @@ describe('Seed des points du cycle 4 (points + références d’automatismes)', 
 			const { data, error } = await anon
 				.from('curriculum_points')
 				.select(
-					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, objective_id, rang'
+					'id, code, grade, display_order, name, kind, exigence, regime_acquisition, rubrique, node_id, rang'
 				)
 				.order('id')
 				.range(from, from + 999);
@@ -208,9 +207,8 @@ describe('Seed des points du cycle 4 (points + références d’automatismes)', 
 		expect(actual).toEqual(expected);
 	});
 
-	it('architecture cible : objective_id et rang NULL ; fluence, algorithme et demonstration conformes aux décisions', () => {
+	it('architecture cible : rang NULL ; fluence, algorithme et demonstration conformes aux décisions', () => {
 		expect(pointRows.length).toBeGreaterThan(0);
-		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 
 		const fluents = pointRows.filter((r) => r.regime_acquisition === 'fluence');
