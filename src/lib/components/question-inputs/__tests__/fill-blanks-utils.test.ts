@@ -452,6 +452,17 @@ describe('applyValidationToInputStates', () => {
 		expect(result[0].isCorrect).toBe(true);
 	});
 
+	it('case juste perfectible : unoptimal (ambre), les autres non', () => {
+		const states: InputState[] = [
+			{ index: 0, type: 'math', value: '(3{,}1)', isCorrect: null },
+			{ index: 1, type: 'math', value: '2', isCorrect: null }
+		];
+
+		const result = applyValidationToInputStates(states, [true, true], [true, false]);
+
+		expect(result.map((s) => s.unoptimal)).toEqual([true, false]);
+	});
+
 	it('should handle mismatched lengths gracefully', () => {
 		expect.assertions(2);
 		const states: InputState[] = [

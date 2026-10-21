@@ -511,7 +511,7 @@ function evaluateCustomRule(rule: CustomExpressionRule, ctx: EvaluationContext):
  * Handles:
  * - Variable references: {{varName}}
  * - Direct numbers
- * - Mathematical expressions via ComputeEngine
+ * - Mathematical expressions via mathAST (`evaluateExpression`)
  */
 function resolveExpression(expr: string, variables: Record<string, number | string>): number {
 	// First resolve variable references
@@ -523,7 +523,7 @@ function resolveExpression(expr: string, variables: Record<string, number | stri
 		return num;
 	}
 
-	// Evaluate as expression using ComputeEngine
+	// Évaluation de l'expression par mathAST
 	return evaluateSafeExpression(resolved);
 }
 
@@ -588,7 +588,7 @@ function substituteVariable(expr: string, variable: string, value: number): stri
 /**
  * Safely evaluate a mathematical expression
  *
- * Uses ComputeEngine for safe evaluation (no eval())
+ * Évaluation par mathAST (`evaluateExpression`), sans eval()
  */
 function evaluateSafeExpression(expr: string): number {
 	const result = evaluateExpression(expr);

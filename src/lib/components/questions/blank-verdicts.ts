@@ -1,46 +1,47 @@
 /**
  * Couleur de chaque case après soumission (FlashCard).
  *
- * Une case en `rulesSuffice` est jugée par le validateur : toute bonne réponse
- * est verte, pas seulement celle tirée ; de même un décimal exact dans une case
- * `acceptDecimal`, une notation combinatoire (`\binom{32}{5}`) dans une case
- * `acceptCombinatorialNotation`, et toute case « intervalles », « équation », « vecteur », « matrice », « primitive » ou « solution-ed ». Les autres cases gardent la
- * comparaison textuelle historique.
+ * Chaque case prend le statut que lui donne le verdict détaillé du validateur
+ * (`validateAnswerDetailed`, celui du verso) : verte si elle est juste, ambre si
+ * elle est juste mais perfectible (`unoptimal_form`), rouge sinon (fausse, mauvaise
+ * forme, vide). Plus de comparaison textuelle : `6\,m` pour l'attendu `6[m]`,
+ * `3.1` pour `3{,}1` ou `\dfrac{1}{2}` pour `\frac{1}{2}` sont verts.
  */
 
 import type { QuestionInstance } from '$lib/questions/types';
-import { isBlankValueCorrect } from '$lib/utils/answer-validator';
-import { rulesDecide } from '$lib/questions/rules-suffice';
-import { isSimpleNumberLatex } from '$lib/mathAST/cosmetic-transforms';
-import { isCombinatorialNotationLatex } from '$lib/questions/combinatorial-notation';
+import { validateAnswerDetailed } from '$lib/utils/answer-validator';
 
-export function computeBlankVerdicts(values: string[], instance: QuestionInstance): boolean[] {
+// Types
+export interface BlankColors {
+	/** Une entrée par case : juste en valeur (verte ou ambre) */
+	verdicts: boolean[];
+	/** Une entrée par case : juste mais perfectible (ambre) */
+	unoptimal: boolean[];
+}
+
+// Functions
+export function computeBlankColors(
+	values: string[],
+	instance: QuestionInstance,
+	latex?: string[]
+): BlankColors {
 	const blanks = instance.blanks ?? [];
-	return values.slice(0, blanks.length).map((value, i) => {
-		const blank = blanks[i];
-		if (rulesDecide(blank)) return isBlankValueCorrect(value, blank, instance);
-		// Ensemble en notation intervalle : jugé sur l'ensemble (ordre, écriture de MathLive)
-		if (blank.answerKind === 'intervalles') return isBlankValueCorrect(value, blank, instance);
-		// Équation : jugée sur l'ensemble de points (`y=2x+1` pour `2x-y+1=0`)
-		if (blank.answerKind === 'equation') return isBlankValueCorrect(value, blank, instance);
-		// Vecteur : jugé sur ses coordonnées (un colinéaire est vert en mode `colineaire`)
-		if (blank.answerKind === 'vecteur') return isBlankValueCorrect(value, blank, instance);
-		// Matrice : jugée par valeur (les espaces de MathLive ne la rendent pas rouge)
-		if (blank.answerKind === 'matrice') return isBlankValueCorrect(value, blank, instance);
-		// Primitive (à une constante près), solution d'équation différentielle : jugées par le calcul
-		if (blank.answerKind === 'primitive' || blank.answerKind === 'solution-ed') {
-			return isBlankValueCorrect(value, blank, instance);
-		}
-		// Décimal exact accepté (`acceptDecimal`) : « 0,5 » pour ½ est vert, jugé par sa valeur
-		if (blank.acceptDecimal === true && isSimpleNumberLatex(value)) {
-			return isBlankValueCorrect(value, blank, instance);
-		}
-		// Notation combinatoire acceptée (`acceptCombinatorialNotation`) : `\binom{32}{5}` est vert
-		if (blank.acceptCombinatorialNotation === true && isCombinatorialNotationLatex(value)) {
-			return isBlankValueCorrect(value, blank, instance);
-		}
-		// Argument « à 2π près » (`angleModulo`) : `-\frac{7\pi}{4}` pour `\frac{\pi}{4}` est vert
-		if (blank.angleModulo === '2pi') return isBlankValueCorrect(value, blank, instance);
-		return value.trim().toLowerCase() === blank.expectedAnswer.trim().toLowerCase();
-	});
+	if (blanks.length === 0) return { verdicts: [], unoptimal: [] };
+	const statuses = validateAnswerDetailed(instance, {
+		values: values.slice(0, blanks.length),
+		latex: latex?.slice(0, blanks.length)
+	}).blanks.map((b) => b.status);
+	return {
+		verdicts: statuses.map((s) => s === 'correct' || s === 'unoptimal_form'),
+		unoptimal: statuses.map((s) => s === 'unoptimal_form')
+	};
+}
+
+/** Juste en valeur, case par case (verte ou ambre) */
+export function computeBlankVerdicts(
+	values: string[],
+	instance: QuestionInstance,
+	latex?: string[]
+): boolean[] {
+	return computeBlankColors(values, instance, latex).verdicts;
 }

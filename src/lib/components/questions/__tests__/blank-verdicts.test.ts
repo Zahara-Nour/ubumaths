@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { computeBlankVerdicts } from '../blank-verdicts';
+import { computeBlankColors, computeBlankVerdicts } from '../blank-verdicts';
 import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
@@ -78,5 +78,66 @@ describe('computeBlankVerdicts — acceptDecimal', () => {
 	it('sans l’option : comparaison textuelle comme avant (0,5 rouge)', () => {
 		const plain = { ...decimalBlank, acceptDecimal: undefined };
 		expect(computeBlankVerdicts(['0{,}5'], instance([plain]))).toEqual([false]);
+	});
+});
+
+// Le recto suit le verdict détaillé du verso (fin du chantier correction-cases-unite) :
+// verte = juste, ambre = juste perfectible, rouge = le reste
+describe('computeBlankColors — même verdict que le verso', () => {
+	const colors = (value: string, blank: InstanceBlank) => {
+		const { verdicts, unoptimal } = computeBlankColors([value], instance([blank]), [value]);
+		return verdicts[0] ? (unoptimal[0] ? 'ambre' : 'verte') : 'rouge';
+	};
+
+	const unitBlank: InstanceBlank = {
+		expectedAnswer: '6[m]',
+		type: 'math',
+		unit: { expected: true }
+	};
+	it.each([
+		['6\\operatorname{\\mathrm{m}}', 'verte'],
+		['6 m', 'verte'],
+		['600\\operatorname{\\mathrm{cm}}', 'verte'],
+		['7\\operatorname{\\mathrm{m}}', 'rouge'],
+		['6', 'rouge'],
+		['2\\times3\\operatorname{\\mathrm{m}}', 'rouge']
+	])('case à unité 6 m : %s → %s', (value, expected) => {
+		expect(colors(value, unitBlank)).toBe(expected);
+	});
+
+	const roundedBlank: InstanceBlank = {
+		expectedAnswer: '3{,}1',
+		type: 'math',
+		precision: { type: 'decimal', digits: 1 }
+	};
+	it.each([
+		['3{,}1', 'verte'],
+		['3.1', 'verte'],
+		['(3{,}1)', 'ambre'],
+		['3{,}14', 'rouge'],
+		['3{,}2', 'rouge']
+	])('case arrondie au dixième 3,1 : %s → %s', (value, expected) => {
+		expect(colors(value, roundedBlank)).toBe(expected);
+	});
+
+	const exactBlank: InstanceBlank = { expectedAnswer: '\\frac{1}{2}', type: 'math' };
+	it.each([
+		['\\frac{1}{2}', 'verte'],
+		['\\dfrac{1}{2}', 'verte'],
+		['\\frac{2}{4}', 'ambre'],
+		['\\frac{1}{3}', 'rouge']
+	])('case exacte ½ : %s → %s', (value, expected) => {
+		expect(colors(value, exactBlank)).toBe(expected);
+	});
+
+	it('orderIndependent : deux réponses justes inversées sont vertes', () => {
+		const inst = {
+			...instance([
+				{ expectedAnswer: '2', type: 'math' },
+				{ expectedAnswer: '3', type: 'math' }
+			]),
+			options: { orderIndependent: true }
+		} as QuestionInstance;
+		expect(computeBlankColors(['3', '2'], inst).verdicts).toEqual([true, true]);
 	});
 });

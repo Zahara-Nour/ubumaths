@@ -257,6 +257,13 @@ Natures de réponse :
 | QCM                         | `choices` (+ `multipleAnswers`)             | `validateChoice` ; indices d'**origine** (voir invariants)                                       |
 | Carte de cours              | `options.courseCard`                        | rien : auto-évaluation (`validateAnswer` rend un message)                                        |
 
+Après « Valider », la `FlashCard` colore chaque case au recto avec le verdict par case du
+validateur (`computeBlankColors`, `components/questions/blank-verdicts.ts` → `validateAnswerDetailed`,
+le même que le verso) : verte si juste, **ambre** si juste mais perfectible (`unoptimal_form`, «
+forme à améliorer », `InputState.unoptimal`), rouge sinon. Avant octobre 2026, une comparaison
+textuelle avec l'attendu rendait rouge toute bonne réponse d'une case à unité (`6m` pour `6[m]`),
+`3.1` pour `3{,}1` ou `\dfrac{1}{2}` pour `\frac{1}{2}`.
+
 Il n'y a **pas** de case « tableau » (tableau de signes ou de variations) : le tableau de signes
 n'existe que dans les corrections générées, rendu par le bloc ubumark `variation`
 ([journal archivé](../archive/wip/tableau-signes-affichable-progress.md)).
@@ -520,10 +527,6 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - **Durées du panier ≠ durées d'une série** : `questionCart.updateDelay` et `CartQuestionCard`
   bornent à 5..300 s, la série enregistrée accepte jusqu'à `MAX_QUESTION_DELAY_SECONDS` (600).
   Une série à 600 s chargée par `replaceWith` garde sa durée, mais le premier « − » la ramène à 300.
-- **Verdict par case de `FlashCard` ≠ validateur** (vu à la revue de #1574, antérieur) : pour une
-  case `precision` sans `rulesSuffice`, `computeBlankVerdicts` (`components/questions/blank-verdicts.ts`)
-  compare le texte, si bien que `(3{,}1)` est juste perfectible pour `validateAnswer` mais rouge dans
-  la `FlashCard`. Non traité : à trancher par David.
 - **Contrôles natifs** malgré la règle MySelect / MyCheckbox : `<select>` dans
   `PrecisionEditor.svelte` et `QuestionPreview.svelte`, `<input type="checkbox">` dans
   `QuestionPreview.svelte`.

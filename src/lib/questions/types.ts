@@ -1114,7 +1114,7 @@ export interface ConstraintOptions {
 	form?: ConstraintMode;
 	/** Allow brackets around first negative term: (-5)+3 */
 	allowBracketsInFirstNegativeTerm?: boolean;
-	// New validators (Compute Engine pattern matching)
+	// Contraintes jugées par motifs mathAST (`cosmetic-transforms.ts`)
 	nullTerms?: ConstraintMode;
 	factorOne?: ConstraintMode;
 	factorZero?: ConstraintMode;

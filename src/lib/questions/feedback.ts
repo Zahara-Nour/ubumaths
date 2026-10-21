@@ -39,7 +39,7 @@ export const CONSTRAINT_FEEDBACK: Record<ConstraintId, { single: string; multipl
 		single: "Ta réponse n'est pas écrite sous la forme demandée.",
 		multiple: "Ta réponse n'est pas écrite sous la forme demandée."
 	},
-	// New validators (Compute Engine pattern matching)
+	// Contraintes jugées par motifs mathAST (`cosmetic-transforms.ts`)
 	nullTerms: {
 		single: 'Il y a des termes nuls (comme +0) qui peuvent être supprimés.',
 		multiple: 'Il y a des termes nuls (comme +0) qui peuvent être supprimés.'
