@@ -359,7 +359,7 @@ export const actions: Actions = {
 		// Check if consent record exists, create or update
 		const { data: existing, error: existingError } = await supabase
 			.from('parental_consents')
-			.select('id')
+			.select('id, status')
 			.eq('student_id', studentId)
 			.order('created_at', { ascending: false })
 			.limit(1)
@@ -373,15 +373,30 @@ export const actions: Actions = {
 			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 
+		// L'adresse d'une demande confirmée est celle où part le lien « Mot de passe oublié »
+		// de l'enfant : la réécrire l'enverrait à une adresse que personne n'a confirmée
+		// (audit de la PR 3, M1).
+		if (existing?.status === 'granted') {
+			return fail(409, {
+				error: 'Le parent a déjà confirmé cette adresse : elle ne peut plus être changée.'
+			});
+		}
+
 		if (existing) {
-			const { error: updateError } = await supabase
+			const { data: updated, error: updateError } = await supabase
 				.from('parental_consents')
 				.update({ parent_email: parentEmail })
-				.eq('id', existing.id);
+				.eq('id', existing.id)
+				.neq('status', 'granted')
+				.select('id');
 
 			if (updateError) {
 				logger.error('[Consent Page] Update error:', updateError);
 				return fail(500, { error: 'Erreur lors de la mise à jour' });
+			}
+			// Zéro ligne : refus de la RLS, ou demande confirmée entre-temps.
+			if (!updated || updated.length !== 1) {
+				return fail(409, { error: "L'adresse n'a pas pu être changée." });
 			}
 		} else {
 			const { error: insertError } = await supabase.from('parental_consents').insert({
