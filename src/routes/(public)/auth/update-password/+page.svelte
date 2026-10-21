@@ -3,11 +3,15 @@
 
   Allows users to set a new password after clicking a password reset link.
   This page is only accessible after the reset token has been verified.
+
+  Also « Changer mon mot de passe » from the profile (`?depuis=profil`, current password
+  asked) and the forced change after a provisional password (PR 3).
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import type { ActionData } from './$types';
+	import { page } from '$app/state';
+	import type { ActionData, PageData } from './$types';
 	import {
 		calculatePasswordStrength,
 		getStrengthBarWidth,
@@ -18,9 +22,15 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
 	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 
 	// Form action result
-	let { form }: { form: ActionData } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
+
+	// Ouverte depuis le profil : retour au profil (sauf mot de passe provisoire à changer).
+	const fromProfile = $derived(
+		page.url.searchParams.get('depuis') === 'profil' && !data.mustChange
+	);
 
 	// Password strength tracking
 	let password = $state('');
@@ -31,16 +41,35 @@
 <div class="flex min-h-screen items-center justify-center bg-background px-4">
 	<Card.Root class="w-full max-w-md">
 		<Card.Header>
+			{#if fromProfile}
+				<BackLink href={resolve('/dashboard/profile')} label="Retour à mon profil" />
+			{/if}
 			<Card.Title class="text-center text-3xl"
 				><h1 class="text-3xl! leading-none!">Nouveau mot de passe</h1></Card.Title
 			>
 			<Card.Description class="text-center">
-				Choisis un mot de passe solide pour ton compte.
+				{#if data.mustChange}
+					Ton mot de passe est provisoire : choisis le tien pour continuer.
+				{:else}
+					Choisis un mot de passe solide pour ton compte.
+				{/if}
 			</Card.Description>
 		</Card.Header>
 
 		<Card.Content>
 			<form method="POST" action="?/updatePassword" use:enhance class="space-y-4">
+				{#if data.needsCurrentPassword}
+					<div class="space-y-2">
+						<Label for="currentPassword">Mot de passe actuel</Label>
+						<MyPasswordInput
+							id="currentPassword"
+							name="currentPassword"
+							autocomplete="current-password"
+							required
+						/>
+					</div>
+				{/if}
+
 				<div class="space-y-2">
 					<Label for="password">Nouveau mot de passe</Label>
 					<MyPasswordInput
@@ -124,11 +153,13 @@
 
 				<Button type="submit" class="w-full">Changer le mot de passe</Button>
 
-				<div class="text-center text-sm">
-					<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
-						>Retour à la connexion</a
-					>
-				</div>
+				{#if !fromProfile && !data.mustChange}
+					<div class="text-center text-sm">
+						<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
+							>Retour à la connexion</a
+						>
+					</div>
+				{/if}
 			</form>
 		</Card.Content>
 	</Card.Root>

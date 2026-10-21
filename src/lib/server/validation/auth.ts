@@ -152,7 +152,8 @@ export const parentRegisterFormSchema = z
  * Request password reset schema
  */
 export const requestPasswordResetSchema = z.object({
-	email: formDataTransforms.email
+	// Adresse OU identifiant d'un enfant, comme à la connexion (PR 3).
+	email: loginFormSchema.shape.email
 });
 
 /**
@@ -160,7 +161,32 @@ export const requestPasswordResetSchema = z.object({
  */
 export const updatePasswordSchema = z
 	.object({
+		// Exigé seulement depuis une session ordinaire (cf. `requiresCurrentPassword`).
+		currentPassword: z.string().max(128, 'Mot de passe actuel invalide').optional(),
 		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
+		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise')
+	})
+	.superRefine((d, ctx) => enforcePasswordPolicy(d.password, ctx));
+
+/**
+ * Lien du parent (PR 3) : compte de l'enfant + jeton maison (`createChildResetToken`,
+ * 32 octets en base64url, soit 43 caractères).
+ */
+export const childResetLinkSchema = z.object({
+	userId: z.string().uuid('Lien invalide'),
+	token: z
+		.string()
+		.min(20, 'Lien invalide')
+		.max(128, 'Lien invalide')
+		.regex(/^[A-Za-z0-9_-]+$/, 'Lien invalide')
+});
+
+/**
+ * Page du lien du parent (PR 3) : lien + nouveau mot de passe de l'enfant.
+ */
+export const parentSetChildPasswordSchema = childResetLinkSchema
+	.extend({
+		password: z.string().max(128),
 		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise')
 	})
 	.superRefine((d, ctx) => enforcePasswordPolicy(d.password, ctx));

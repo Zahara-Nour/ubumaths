@@ -2,13 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1592._
+_Mis à jour le 2026-10-21, #1594 : constats des revues + contre-revue traités, poussés, CI en cours._
 
-- **État** : PR 1 (#1585) et **PR 2 (#1592) mergées** ; migration `20261021220000` **appliquée en prod** (`db:migrate`, trigger vérifié). Code pas en prod (attend un `deploy:prod`). Vérification manuelle notée.
-- **Prochaine action** : PR 3 — mots de passe (parent par identifiant → lien à l'adresse du parent, prof : mot de passe provisoire, enfant : « Changer mon mot de passe ») ; y rétablir dans le courriel et `/consent/[token]` la mention « réinitialiser le mot de passe ». Worktree à recréer : `feat/inscription-parent-mots-de-passe`.
-- **En attente de David** : M2 (suffixe 2 chiffres devinable : allonger ?), plafond par classe (M1 bis), réglages Auth de prod (F1) — détail § PR 2.
-- **Pièges en cours** : GoTrue écrit `app_metadata` APRÈS l'INSERT (trigger différé) ; la règle commune donne 30 j de grâce → retirés par `createChildAccount` ; reset d'un enfant : jamais vers `@eleves.chiph.re`.
-- **Worktree / branche** : aucun (celui de la PR 2 supprimé).
+- **État** : B1 fermé (jeton maison `?u=&t=`, aucune session) — contre-revue `security-auditor` : aucun bloquant. Son « moyen » corrigé : changer l'adresse d'une demande `pending` (prof ou renvoi) la ferme (`expired` + `expires_at` maintenant) et en crée une à jeton neuf (`parental-consent-requests.ts`, intégration rouge→verte). Faits aussi : M1, F-a, revues n° 2-5, M2 et `auth.md`. Optionnel non fait : `/auth/confirm` refuse un `recovery` d'enfant.
+- **Prochaine action** : CI verte → merger #1594 ; puis petite PR M1 bis + M2 avant le `deploy:prod`.
+- **Faibles de la contre-revue, laissés tels quels (à signaler à David)** : plancher de 2 s dépassable si Brevo est lent (sinon `waitUntil` ou plancher plus haut) ; jeton du lien dans les journaux d'accès Vercel (1 h, usage unique).
+- **Décisions de David (2026-10-21, « ok pour les recos »)** : M1 audit → refuser la modification de `parent_email` sur une demande `granted` ; M2 audit → documenter « ancien mot de passe » comme garde d'interface (risque accepté) ; revue n° 2 → masquer « Changer mon mot de passe » sans fournisseur `email` ; F-c → David vérifie/coupe le suivi des clics Brevo. PR 2 : **F1 = David** (Dashboard) ; **M1 bis** (5 comptes par classe et par 24 h, écran parent) et **M2** (suffixe à 3 chiffres) = petite PR après #1594, avant le `deploy:prod`.
+- **En attente de David** : F-c (suivi des clics Brevo). F1 vérifié par David dans le Dashboard le 2026-10-21.
+- **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `app_metadata` seul n'en ferme aucune ; `oxlint --fix` du pre-commit réécrit les tests (les relancer après commit).
+- **Worktree / branche** : `../ubumaths-wt-inscription-parent` · `feat/inscription-parent-mots-de-passe`.
 
 ## Contexte
 
@@ -176,6 +178,130 @@ Revues (2026-10-21) :
   = comptes à volonté, 40/h par IP) ; **M2** — identifiant `prenom` + 2 chiffres devinable (100
   candidats par prénom), pulvérisation de mots de passe par GoTrue direct : allonger le suffixe ?
   vérifier la limite de connexion GoTrue de prod ; **F1** — vérifier « Secure email change » et la
-  confirmation d'adresse dans le Dashboard de prod ; **F2** — `profiles.email` modifiable par son
+  confirmation d'adresse dans le Dashboard de prod (✅ vérifié par David le 2026-10-21) ; **F2** — `profiles.email` modifiable par son
   propriétaire (préexistant). F3 (1re/Tle = `granted`) : décision prise. F4 : documenté dans
   `rgpd.md`. F5 : oracle de code identique à `/auth/register`.
+
+## PR 3 — mots de passe (phase 0, 2026-10-21, validée)
+
+David (2026-10-21) : « je suis tes recos » → R1 rien ne part sans adresse confirmée · R2 page
+dédiée sans session · R3 changement obligatoire · R4 tous les élèves, jamais prof ni admin.
+
+### Constats dans le code
+
+- `/auth/reset-password` : `resetPasswordForEmail` fait envoyer le lien par GoTrue **à l'adresse du
+  compte** ; pour un enfant, elle est fictive (la PR 1 coupe l'envoi). Pour viser le parent :
+  `auth.admin.generateLink({ type: 'recovery' })` rend le jeton **sans rien envoyer**, et Brevo
+  envoie notre propre lien au parent. Aucune migration.
+- Adresse du parent = `parental_consents.parent_email` (élève : aucune policy d'écriture ; prof et
+  admin : écriture, `updateParentEmail`). Plusieurs lignes possibles par élève → la plus récente.
+- `/auth/update-password` marche pour toute session ; succès → `/`. Aucun lien n'y mène depuis
+  `/dashboard/profile`, qui affiche `profile.email` (pour un enfant : `noelie42@eleves.chiph.re`).
+- Aucune action prof sur le mot de passe d'un élève. Fiche d'élève côté prof = panneau de
+  `/dashboard/admin/users` (prénom, nom, classes, approbation).
+
+### Parent : « Mot de passe oublié » par identifiant
+
+**Nominal**
+
+1. `/auth/reset-password` : champ « Adresse ou identifiant » (même normalisation que la connexion).
+2. Identifiant d'un enfant → le serveur trouve le compte, puis la demande au parent la plus récente.
+3. Si l'adresse du parent est **confirmée** (R1) → courriel Brevo **au parent** : « Choisir un
+   nouveau mot de passe pour Noélie (noelie42) », lien valable 1 h.
+4. Le lien ouvre une page **sans connecter personne** (R2) : nouveau mot de passe + confirmation →
+   « C'est fait : Noélie peut se connecter avec noelie42 et ce mot de passe ».
+5. Réponse de l'écran : **la même phrase neutre** que pour une adresse.
+
+**Limites / erreurs**
+
+- Identifiant inconnu, enfant sans demande au parent, adresse non confirmée → phrase neutre, rien
+  ne part. Le prof reste le recours.
+- Le parent tape **sa propre adresse** → c'est une adresse : rien (il n'a pas de compte), phrase
+  neutre. Retrouver l'identifiant oublié : hors périmètre (le prof le donne).
+- Débit : mêmes limites qu'aujourd'hui (IP + compte visé).
+- Lien expiré ou déjà servi → message, retour à « Mot de passe oublié ».
+- Mot de passe hors politique / `weak_password` → erreur sur le champ.
+- Garde : aucun envoi vers `@eleves.chiph.re`, jamais (test).
+
+### Prof : mot de passe provisoire (Q3)
+
+**Nominal**
+
+- Panneau de l'élève dans `/dashboard/admin/users` : bouton « Réinitialiser le mot de passe » →
+  confirmation → le serveur génère un mot de passe provisoire lisible (ex. `tigre-lune-47`) et
+  l'applique → affiché **une seule fois**, avec un bouton copier.
+- À la connexion suivante, l'élève doit choisir son propre mot de passe avant tout (R3).
+
+**Limites / erreurs**
+
+- Élève hors des élèves du prof → 403 ; compte prof ou admin → refusé (R4) ; l'admin : tous.
+- Le mot de passe provisoire n'est ni stocké ni journalisé ; recharger la page ne le réaffiche pas.
+
+### Enfant (et tout élève) : « Changer mon mot de passe »
+
+- `/dashboard/profile` : lien « Changer mon mot de passe » → `/auth/update-password`, qui demande
+  l'**ancien** mot de passe en plus (une session laissée ouverte ne suffit pas), sauf au retour
+  d'un lien de réinitialisation ou d'un mot de passe provisoire.
+- Profil d'un enfant : « Identifiant : noelie42 » au lieu de la fausse adresse.
+
+### Courriel et `/consent/[token]`
+
+- Y rétablir : « Si Noélie oublie son mot de passe : « Mot de passe oublié » avec son identifiant,
+  le lien vous arrivera » (après confirmation de l'adresse).
+
+### Questions à trancher (David)
+
+- **R1 — Adresse du parent pas encore confirmée** (lien d'inscription jamais cliqué) : rien ne part
+  (recommandé : l'adresse n'est pas prouvée, le prof reste le recours), ou on envoie quand même ?
+- **R2 — Le parent connecté comme l'enfant ?** Le circuit standard de Supabase ouvre une session de
+  l'enfant chez le parent (il verrait le compte, contraire à la décision 8). _Recommandé : page
+  dédiée qui change le mot de passe sans ouvrir de session._
+- **R3 — Mot de passe provisoire à changer obligatoirement** à la connexion suivante ? _Recommandé :
+  oui_ (marque dans `app_metadata`, sans migration ; levée au changement).
+- **R4 — Réinitialisation par le prof** : tous ses élèves (y compris ceux qui ont une vraie adresse
+  et pourraient la faire eux-mêmes) ? _Recommandé : oui, tous les élèves ; jamais un prof ou un
+  admin._
+
+### Tests et revue prévus
+
+- Serveur : reset par identifiant (adresse confirmée → Brevo au parent ; non confirmée, inconnu →
+  rien, même réponse) ; page du parent (jeton valide, expiré, sans session ouverte) ; action prof
+  (autorisation, rôle, mot de passe non rendu deux fois) ; changement obligatoire ; ancien mot de
+  passe exigé. Pas de migration ni de RLS → pas d'intégration.
+- Revue : `code-reviewer` + `security-auditor` (auth, données d'élèves).
+
+### Implémentation (2026-10-21)
+
+- `src/lib/server/child-password.ts` : cible du parent (demande la plus récente `granted`),
+  jeton `generateLink` sans envoi, changement par jeton sur client jetable, mot de passe
+  provisoire (`Mot-Mot-NN`), ancien mot de passe, `amr` récent.
+- Mesures en local : session d'un lien = `amr: otp` ; jeton réutilisé → `otp_expired` ;
+  `app_metadata` fusionné ; changement par la clé service = **toutes** les sessions fermées,
+  par l'élève = la sienne gardée ; `app_metadata` seul = aucune fermée.
+- Preuve rouge : sans `signOut`, le test 3 (jeton d'un adulte refusé) laisse une session → rouge.
+  Le test 2 ne peut pas l'être (GoTrue ferme déjà les sessions au changement de mot de passe).
+- Écarts au plan : mention de `/consent/[token]` conditionnelle (le RPC ne dit pas si le compte
+  est un enfant à identifiant) ; « Changer mon mot de passe » visible pour tous les rôles du profil.
+- Doc : `auth.md` (§ Mots de passe des élèves, chaîne des handles complétée d'`accountStatusHandle`,
+  qui manquait), `serveur.md`, `architecture-generale.md`, `comptes-classes-ecoles.md`,
+  `conformite/rgpd.md`, `conformite/consentement-parental.md`.
+
+### Revues de la PR 3 (2026-10-21)
+
+`security-auditor` :
+
+- **B1 (bloquant)** : jeton GoTrue dans le courriel → session sur le compte de l'enfant. **Fait** (jeton maison, `?u=&t=`). Optionnel en plus : `/auth/confirm` refuse un `recovery` d'un compte `child_account`.
+- **M1** : le prof peut réécrire `parent_email` d'une demande déjà `granted` (`teacher/consent`, `updateParentEmail`) → le lien partirait à une adresse non confirmée. **David : refuser** (le consentement vit sur le profil, `consent_granted_at`). **Fait.**
+- **M2** : « ancien mot de passe exigé » n'est qu'une garde d'interface (`supabase.auth.updateUser` depuis la console d'une session ouverte). « Secure password change » de GoTrue enverrait un code à l'adresse fictive des enfants. **David : documenter** comme garde d'interface, risque accepté (qui tient la session a déjà le compte ; prof et parent peuvent réinitialiser). **Fait** (`auth.md`).
+- **F-a** (= revue n° 6) : le temps de réponse de « Mot de passe oublié » révèle un enfant à parent confirmé → durée plancher (~2 s) sur tous les chemins. **Fait.**
+- **F-b** : cible cherchée par `profiles.email` (modifiable) → relecture GoTrue (adresse + `child_account`) : **fait** (test 3 bis).
+- **F-c** : suivi des clics Brevo = le lien journalisé chez Brevo. _David : vérifier/couper le suivi des clics du transactionnel._
+
+`code-reviewer` :
+
+1. Nouvel essai impossible après `weak_password` (jeton GoTrue consommé) : **résolu par la refonte** (jeton effacé au succès seulement, test 2 ter).
+2. Compte sans fournisseur `email` (Google) : « Changer mon mot de passe » sans issue. **David : masquer** le bouton si `app_metadata.providers` n'a pas `email`. **Fait.**
+3. Fermer la fenêtre du prof pendant la requête → mot de passe appliqué sans être vu : ignorer la fermeture pendant `isResetting`. **Fait.**
+4. Marque non levée → l'élève doit choisir un 3e mot de passe (`same_password`) : nouvel essai de la levée + message clair. **Fait.**
+5. Ancien mot de passe sur le seau de connexion (3/15 min) : seau dédié + `currentPassword` dans le schéma Zod. **Fait.**
+6. = F-a.

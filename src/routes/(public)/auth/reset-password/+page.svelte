@@ -2,6 +2,7 @@
   Password Reset Request Page
 
   Allows users to request a password reset link via email.
+  A child's login id is accepted too: the link then goes to the parent (PR 3).
   Uses server-side form action for security.
 -->
 <script lang="ts">
@@ -25,19 +26,22 @@
 				><h1 class="text-3xl! leading-none!">Mot de passe oublié</h1></Card.Title
 			>
 			<Card.Description class="text-center">
-				Indique ton adresse email : tu recevras un lien pour choisir un nouveau mot de passe.
+				Indique ton adresse email : tu recevras un lien pour choisir un nouveau mot de passe. Pas
+				d'adresse ? Indique ton identifiant : le lien partira à l'adresse de ton parent.
 			</Card.Description>
 		</Card.Header>
 
 		<Card.Content>
 			<form method="POST" action="?/resetPassword" use:enhance class="space-y-4">
 				<div class="space-y-2">
-					<Label for="email">Adresse email</Label>
+					<Label for="email">Adresse email ou identifiant</Label>
 					<Input
 						id="email"
 						name="email"
-						type="email"
-						autocomplete="email"
+						type="text"
+						autocomplete="username"
+						autocapitalize="none"
+						spellcheck={false}
 						required
 						value={form?.email ?? ''}
 					/>

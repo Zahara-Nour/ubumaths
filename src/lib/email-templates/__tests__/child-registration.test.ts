@@ -46,4 +46,11 @@ describe('courriel au parent qui inscrit son enfant', () => {
 		expect(html).not.toContain('<script>');
 		expect(html).toContain('&lt;b&gt;x&lt;/b&gt;');
 	});
+
+	it('dit au parent comment réinitialiser le mot de passe (PR 3), dans les deux versions', () => {
+		for (const body of [getChildRegistrationEmailText(DATA), getChildRegistrationEmailHtml(DATA)]) {
+			expect(body).toContain('Mot de passe oublié');
+			expect(body).toContain('noelie42');
+		}
+	});
 });

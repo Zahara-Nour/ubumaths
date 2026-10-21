@@ -49,6 +49,11 @@ function notMeSentence(data: ChildRegistrationEmailData): string {
 		: "Si vous n'êtes pas à l'origine de cette inscription, ignorez ce courriel.";
 }
 
+/** Recours si l'enfant oublie son mot de passe : le lien arrive au parent (PR 3). */
+function forgottenPasswordSentence(data: ChildRegistrationEmailData): string {
+	return `Si ${data.childFirstname} oublie son mot de passe : sur la page de connexion, « Mot de passe oublié » avec l'identifiant ${data.loginId}. Le lien vous arrivera à cette adresse, une fois celle-ci confirmée.`;
+}
+
 function buttonLabel(data: ChildRegistrationEmailData): string {
 	return data.consentRequired ? 'Donner mon consentement' : 'Confirmer mon adresse';
 }
@@ -61,6 +66,7 @@ Vous venez d'inscrire ${data.childFirstname} sur Chiphre${school}, une plateform
 
 Identifiant de connexion : ${data.loginId}
 Le mot de passe est celui que vous avez choisi. Votre enfant se connecte sur ${getSiteUrl()}/auth/login avec cet identifiant.
+${forgottenPasswordSentence(data)}
 
 ${actionSentence(data)}
 
@@ -98,6 +104,7 @@ export function getChildRegistrationEmailHtml(data: ChildRegistrationEmailData):
   <div style="background-color: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
     <p style="margin: 0;">Identifiant de connexion : <strong style="font-size: 1.2em;">${loginId}</strong></p>
     <p style="margin: 8px 0 0; color: #64748b;">Le mot de passe est celui que vous avez choisi.</p>
+    <p style="margin: 8px 0 0; color: #64748b;">${escapeHtml(forgottenPasswordSentence(data))}</p>
   </div>
 
   <p>${escapeHtml(actionSentence(data))}</p>

@@ -3,6 +3,7 @@ import {
 	CHILD_ACCOUNT_DOMAIN,
 	childAccountEmail,
 	childLoginBase,
+	childLoginIdOf,
 	isChildAccountEmail,
 	normalizeLoginIdentifier,
 	pickChildLoginId
@@ -104,5 +105,14 @@ describe('childAccountEmail', () => {
 	it("donne l'adresse du domaine fictif, que normalizeLoginIdentifier retrouve", () => {
 		expect(childAccountEmail('noelie42')).toBe(`noelie42@${CHILD_ACCOUNT_DOMAIN}`);
 		expect(normalizeLoginIdentifier('Noélie42')).toBe(childAccountEmail('noelie42'));
+	});
+});
+
+describe('childLoginIdOf', () => {
+	it("rend l'identifiant d'une adresse du domaine fictif, null sinon", () => {
+		expect(childLoginIdOf(`noelie42@${CHILD_ACCOUNT_DOMAIN}`)).toBe('noelie42');
+		expect(childLoginIdOf(`Noelie42@${CHILD_ACCOUNT_DOMAIN.toUpperCase()}`)).toBe('noelie42');
+		expect(childLoginIdOf('eleve@exemple.fr')).toBeNull();
+		expect(childLoginIdOf(null)).toBeNull();
 	});
 });

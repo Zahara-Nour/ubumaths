@@ -57,7 +57,9 @@ Ordre dans un fichier : Imports → Types → Constantes → Variables → Funct
 Supabase, pour fonctionner base gelée) → `supabaseHandle` (`src/lib/server/supabase.ts` :
 `locals.supabase`, `locals.safeGetSession` vérifié par `getUser()`) → `redirectHandle`
 (`src/lib/server/redirectHandle.ts` : anciennes adresses, dont `/login` et `/cas`) →
-`userProfileHandle` (`locals.user`, `locals.profile`) → `adminElevationHandle` →
+`userProfileHandle` (`locals.user`, `locals.profile`) → `accountStatusHandle` (compte non
+approuvé : 403 sur API et écritures) → `passwordChangeHandle` (mot de passe provisoire à
+changer) → `adminElevationHandle` →
 `csrfHandle` → `securityHeadersHandle` → `errorMonitoringHandle`. Détail de chaque maillon :
 [auth.md](auth.md#la-chaîne-de-handles) · ce que les hooks font pour tous les endpoints :
 [serveur.md](serveur.md#17-ce-que-les-hooks-font-pour-tous).

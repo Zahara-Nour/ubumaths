@@ -27,6 +27,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Switch } from '$lib/components/ui/switch';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import StudentPasswordReset from '$lib/components/admin/StudentPasswordReset.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 
@@ -1285,6 +1286,16 @@
 										</div>
 									</button>
 								</div>
+
+								<!-- Mot de passe provisoire : élèves approuvés seulement (PR 3) -->
+								{#if selectedUser.role === 'student' && selectedUser.status === 'approved'}
+									{#key selectedUser.id}
+										<StudentPasswordReset
+											studentId={selectedUser.id}
+											studentName={getFullName(selectedUser)}
+										/>
+									{/key}
+								{/if}
 
 								<!-- Save/Reset Buttons (hidden for pending users) -->
 								{#if hasChanges && selectedUser.status !== 'pending'}

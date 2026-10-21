@@ -149,6 +149,13 @@
 						</p>
 					{/if}
 
+					<!-- Mot de passe oublié (PR 3) : le RPC ne dit pas si le compte est celui d'un
+					     enfant à identifiant, d'où la phrase conditionnelle. -->
+					<p class="text-sm text-muted-foreground">
+						Si votre enfant se connecte avec un identifiant et oublie son mot de passe : « Mot de
+						passe oublié » avec cet identifiant, et le lien vous arrivera à cette adresse.
+					</p>
+
 					<!-- Expiry notice -->
 					<div class="flex items-center gap-2 text-sm text-muted-foreground">
 						<Clock class="h-4 w-4" />

@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { actions } from '../+page.server';
+
+vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
+
+const { actions } = await import('../+page.server');
 
 type ActionResult = { status: number; data: { error: string } };
 
@@ -15,8 +18,21 @@ function event({
 	return {
 		request: new Request('http://localhost/auth/update-password', { method: 'POST', body: form }),
 		locals: {
-			safeGetSession: vi.fn(async () => ({ user: user ? { email: 'e@x.fr' } : null })),
-			supabase: { auth: { updateUser: vi.fn(async () => ({ error: updateError })) } }
+			safeGetSession: vi.fn(async () => ({
+				user: user ? { id: 'u1', email: 'e@x.fr', app_metadata: {} } : null
+			})),
+			supabase: {
+				auth: {
+					// Retour d'un lien de réinitialisation : l'ancien mot de passe n'est pas demandé.
+					getClaims: vi.fn(async () => ({
+						data: {
+							claims: { amr: [{ method: 'otp', timestamp: Math.floor(Date.now() / 1000) }] }
+						},
+						error: null
+					})),
+					updateUser: vi.fn(async () => ({ error: updateError }))
+				}
+			}
 		}
 	} as never;
 }
