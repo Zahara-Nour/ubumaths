@@ -1050,7 +1050,7 @@ Liens : `equipped_skin_id` → `buddy_skins` · `student_id` → `profiles`
 
 ### `student_mathoux`
 
-`best_stage` · `first_seen_at` · `notion_id` · `starred_grades` · `student_id` · `updated_at`
+`asleep` · `best_stage` · `first_seen_at` · `notion_id` · `starred_grades` · `student_id` · `updated_at`
 
 Liens : `notion_id` → `classification_nodes` · `student_id` → `profiles`
 

@@ -11609,6 +11609,7 @@ export type Database = {
       }
       student_mathoux: {
         Row: {
+          asleep: boolean
           best_stage: string
           first_seen_at: string
           notion_id: string
@@ -11617,6 +11618,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          asleep?: boolean
           best_stage: string
           first_seen_at?: string
           notion_id: string
@@ -11625,6 +11627,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          asleep?: boolean
           best_stage?: string
           first_seen_at?: string
           notion_id?: string
