@@ -37,7 +37,7 @@ export function computeBlankColors(
 	};
 }
 
-/** Juste en valeur, case par case (verte ou ambre) */
+/** Juste en valeur, case par case (verte ou ambre) ; la FlashCard lit `computeBlankColors` */
 export function computeBlankVerdicts(
 	values: string[],
 	instance: QuestionInstance,

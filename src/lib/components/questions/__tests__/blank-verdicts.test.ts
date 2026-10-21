@@ -2,8 +2,8 @@
  * Couleur de chaque case après soumission (FlashCard).
  *
  * Une case en `rulesSuffice` est jugée par le validateur : « 6 » est juste
- * pour « un diviseur de 12 » même si la réponse tirée était « 2 ». Les autres
- * cases gardent la comparaison textuelle d'avant (comportement inchangé).
+ * pour « un diviseur de 12 » même si la réponse tirée était « 2 ». Toute case
+ * prend le verdict détaillé du validateur (celui du verso).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -45,7 +45,7 @@ describe('computeBlankVerdicts', () => {
 		expect(computeBlankVerdicts(['5'], instance([ruleBlank]))).toEqual([false]);
 	});
 
-	it('case ordinaire : comparaison textuelle inchangée', () => {
+	it('case ordinaire : verdict du validateur (casse et espaces tolérés en texte)', () => {
 		const plain: InstanceBlank = { expectedAnswer: 'Entier', type: 'text' };
 		expect(computeBlankVerdicts([' entier '], instance([plain]))).toEqual([true]);
 		expect(
@@ -75,7 +75,7 @@ describe('computeBlankVerdicts — acceptDecimal', () => {
 		expect(computeBlankVerdicts([value], instance([decimalBlank]))).toEqual([expected]);
 	});
 
-	it('sans l’option : comparaison textuelle comme avant (0,5 rouge)', () => {
+	it('sans l’option : 0,5 pour ½ reste rouge', () => {
 		const plain = { ...decimalBlank, acceptDecimal: undefined };
 		expect(computeBlankVerdicts(['0{,}5'], instance([plain]))).toEqual([false]);
 	});
