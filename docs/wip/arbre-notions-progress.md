@@ -10,12 +10,14 @@ _Mis à jour le 2026-10-21, après #1581 (étape 3, B2 mergée)._
 - **État** : C5 étape 3 (bascule du code). Fait : #1060 (page Programme), #1577 (B1) et #1581 (B2 : cahier de
   texte, Avancement et tags d'exercice sur branche > notion > points ; `getCurriculumTree` supprimé ; tags d'exercice
   limités aux notions de rangement, règle 1). Pas encore en prod (aucun `deploy:prod` depuis B1).
-- **Prochaine action** : **D** dans un worktree neuf (élève : progression, `COVERED_GRADES`, `/student/objectifs`),
-  phase 0 à présenter ; puis F (analytique), E (scripts de rattachement, Q8), étape 4 (suppression, destructive : arrêt).
-- **En attente de David** : 3 points de revue B2 à trancher — l'API accepte de cocher / taguer un point neuf
-  ARCHIVÉ (les écrans ne le proposent pas) ; un 404 au DELETE est traité « déjà retiré » même si c'est un refus RLS ;
-  l'Avancement compte les archivés travaillés dans « vus / total ». Signalés avant : 11 modèles sans corrigé ;
-  c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement des exercices.
+- **Prochaine action** : **B3** (petite PR, worktree neuf, tests d'abord), validée par David le 2026-10-21 :
+  (1) POST `coverage` / `exercise-tags` et création de séance refusent un point neuf ARCHIVÉ (400 « Point
+  archivé » ; décocher / retirer reste permis) ; (2) commentaire dans les deux DELETE : 404 = « déjà retiré », la
+  RLS (`is_teacher_or_admin`, toutes lignes) ne peut pas refuser le professeur ; (3) Avancement : archivés travaillés
+  affichés (« archivé ») mais hors « vus / total » et du pourcentage. Puis **D** (élève : progression,
+  `COVERED_GRADES`, `/student/objectifs`), F, E, étape 4 (destructive : arrêt).
+- **En attente de David** : rien sur B3. Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de
+  correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51 non rangés).
 - **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud ou sa notion (trigger) →
   décors d'intégration : `makeTaggedExercise` range l'exercice ; un test qui pose des points ANCIENS asserte l'ancien
   comportement ; une PR en conflit ne lance PAS la CI `pull_request` (fusionner `origin/main`) ; MySelect affiche le
@@ -1192,3 +1194,6 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   test du chemin d'erreur de la création, tags d'un niveau retiré visibles) et security-auditor (0 bloquant ni
   important ; corrigés : lecture par lots de 100, message générique au DELETE). Intégration : 5 cas nouveaux rouges
   sur `origin/main`, 67/67 sur la branche. 3 points laissés à David (cf. « Reprendre ici »).
+- **2026-10-21 — Trois points de revue de B2 tranchés par David** (« je suis tes recos ») : refuser l'archivé à
+  l'API ; 404 au DELETE laissé tel quel (commentaire) ; archivés hors du « vus / total » de l'Avancement. À faire en
+  B3, à la reprise.
