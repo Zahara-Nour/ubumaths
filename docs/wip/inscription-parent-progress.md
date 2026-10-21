@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, PR M1 bis + M2 ouverte (pas encore mergée)._
+_Mis à jour le 2026-10-21, après #1597 (mergée, pas en prod)._
 
-- **État** : PR M1 bis + M2 en cours sur `feat/inscription-parent-plafonds` : identifiant à 3 chiffres (M2), plafond de 5 inscriptions par classe et par 24 h, seau atomique du limiteur (M1 bis), lien au parent de « Mot de passe oublié » envoyé après la réponse (`runAfterResponse`, `waitUntil` de `@vercel/functions`). Aucune migration, aucun accès changé.
-- **Prochaine action** : revue (`code-reviewer` + `security-auditor`, auth), CI verte → merge ; puis le `deploy:prod` est débloqué (sur demande de David).
-- **En attente de David** : couper le suivi des clics Brevo (F-c).
-- **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `oxlint --fix` du pre-commit réécrit les tests (les relancer après commit) ; `waitUntil` ne fait rien hors Vercel (la tâche tourne quand même).
-- **Worktree / branche** : `../ubumaths-wt-inscription-parent`, `feat/inscription-parent-plafonds`.
+- **État** : PR M1 bis + M2 mergée : identifiant à 3 chiffres (M2) ; plafond de 5 inscriptions par classe et par 24 h par seau atomique `checkChildSignupRateLimitByClass` (M1 bis — le comptage en base était contournable, audit) ; lien au parent de « Mot de passe oublié » envoyé après la réponse (`runAfterResponse`, `@vercel/functions`). Aucune migration.
+- **Prochaine action** : `deploy:prod` (sur demande de David : il livre les PR 1 à 3 + #1597 ; voir aussi le chantier arbre des notions qui l'attendait). Puis versement du chantier (doc durable déjà dans `docs/systeme/auth.md`, journal à archiver).
+- **En attente de David** : couper le suivi des clics Brevo (F-c) ; go du `deploy:prod`.
+- **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `waitUntil` ne fait rien hors Vercel (la tâche tourne quand même) ; un refus GoTrue d'un mot de passe consomme une place du seau de classe (accepté).
+- **Worktree / branche** : aucun (celui de #1597 supprimé).
 
 ## Contexte
 
