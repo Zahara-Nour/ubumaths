@@ -5,24 +5,21 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, lot C codé (pas encore de PR)._
+_Mis à jour le 2026-10-21, après #1568 et #1569 (migration appliquée en prod, vérifiée : 16/16 contenus, 16/16 tags)._
 
-- **État** : C5 étape 2 bis, MODIFIER : lots A (39) et B (7) en prod ; lot C « consignes ou affichages » codé
-  sur `feat/arbre-lot-2bis-consignes` : 16 modèles (c9d6c5db sorti), script `lot-2bis-consignes.py`, migration
-  `20261021120000`, 11 tests d'intégration verts (rouges sans la migration), specs, audit de tirages,
-  check:incremental, cliquet et lint rapide verts.
-- **Prochaine action** : PR, revues code-reviewer (Opus) + security-auditor
-  (correction des réponses), merge, `db:migrate` ; puis D (3 scissions, phase 0 à part).
-- **Décisions de David (2026-10-21)** : comparaisons < = > avec égalité au moins 1 fois sur 6 (9c0c47ef v2 sans égalité) ; tableaux : Masse/Prix,
-  Durée/Distance, Cahiers/Prix ; factoriser par une constante ; c9d6c5db sorti (aucun réglage ne refuse la
-  fraction recopiée).
-- **En attente de David** : rien (accès tranché : personne). Signalé : 11 modèles sans corrigé.
-- **Pièges en cours** : `e` = Euler dans une condition (`{{if:e=1|…}}` toujours faux) → variable `egal` ;
-  MathLive ne connaît pas `\hline` ; `5b53b1be` passé au point ici (#1565 refuse `a,5`), le script
-  `reecrire-virgule-decimale-base.ts` le sautera (« déjà réécrit ») ; s'il passe AVANT le merge, la garde
-  arrête la migration → régénérer. API REST plafonnée à 1000 lignes ; `question:specs --file` veut le
-  format de l'app.
-- **Worktree / branche** : `../ubumaths-wt-arbre-notions` · `feat/arbre-lot-2bis-consignes`.
+- **État** : C5 étape 2 bis, MODIFIER : lots A (39), B (7) et C « consignes ou affichages » (16) en prod, avec
+  tags. Outillage commun : `analyse/lot_2bis_outils.py` (paramètre `options=True` pour un lot qui change
+  `options`) + `tests/helpers/database/lot-2bis-migration.ts`.
+- **Prochaine action** : lot D (3 scissions, `lot-2bis-modifications.md` § 4) — phase 0 à part : cartes SRS,
+  tentatives, fiches qui pointent vers les modèles scindés.
+- **Décisions de David (2026-10-21)** : une migration par lot ; comparaisons < = > avec égalité (au moins 1 fois
+  sur 6) ; tableaux Masse/Prix, Durée/Distance, Cahiers/Prix ; factoriser par une constante ; c9d6c5db sorti du
+  lot C (garde « Simplifie le plus possible » ; règle « plus simple que l'énoncé » = PR de code, non décidée).
+- **En attente de David** : rien. Signalé : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
+- **Pièges en cours** : `e` = Euler dans une condition (variable `egal`) ; MathLive ne connaît pas `\hline` ;
+  relever la prod JUSTE avant de générer (le script de virgule a changé 5b53b1be entre relevé et migration :
+  la garde l'a vu, #1569) ; `question:specs --file` veut le format de l'app ; jsonb réordonne les clés.
+- **Worktree / branche** : aucun (worktree de #1568/#1569 supprimé).
 
 ## Tranché avec David (2026-10-06)
 
