@@ -302,7 +302,7 @@ describe('charger', () => {
 			})
 		);
 
-		expect(atelier.names).toEqual(['f', 'a']);
+		await vi.waitFor(() => expect(atelier.names).toEqual(['f', 'a']));
 		expect(atelier.get('f')?.definition).toBe('x^3');
 		// « Atelier chargé depuis … », puis les deux lignes du fichier (2026-10-19)
 		const lines = container.querySelectorAll('.historique > li');
@@ -320,15 +320,16 @@ describe('charger', () => {
 			atelierFile((_, d) => d.submit('f(x)=x^2'))
 		);
 
+		await vi.waitFor(() =>
+			expect(document.body.textContent).toContain('Charger remplace l’atelier actuel')
+		);
 		expect(atelier.names).toEqual(['g']);
-		expect(document.body.textContent).toContain('Charger remplace l’atelier actuel');
 
 		const confirm = dialogButton('Charger');
 		expect(confirm).toBeDefined();
 		confirm!.click();
-		await settle();
 
-		expect(atelier.names).toEqual(['f']);
+		await vi.waitFor(() => expect(atelier.names).toEqual(['f']));
 	});
 
 	it('renoncer garde l’atelier tel quel', async () => {
@@ -340,8 +341,8 @@ describe('charger', () => {
 			container,
 			atelierFile((_, d) => d.submit('f(x)=x^2'))
 		);
+		await vi.waitFor(() => expect(dialogButton('Renoncer')).toBeDefined());
 		const cancel = dialogButton('Renoncer');
-		expect(cancel).toBeDefined();
 		cancel!.click();
 		await settle();
 
@@ -358,9 +359,11 @@ describe('charger', () => {
 		try {
 			await choose(container, new File([' '.repeat(MAX_ATELIER_FILE_BYTES + 1)], 'enorme.json'));
 
+			await vi.waitFor(() =>
+				expect(container.textContent).toContain('Ce fichier est trop gros pour être un atelier.')
+			);
 			expect(read).not.toHaveBeenCalled();
 			expect(atelier.names).toEqual(['g']);
-			expect(container.textContent).toContain('Ce fichier est trop gros pour être un atelier.');
 		} finally {
 			read.mockRestore();
 		}
@@ -385,7 +388,7 @@ describe('charger', () => {
 
 		await choose(container, file);
 
-		expect(atelier.cell(8, 200)).toBe(text);
+		await vi.waitFor(() => expect(atelier.cell(8, 200)).toBe(text));
 		expect(container.textContent).not.toContain('trop gros');
 	});
 
@@ -397,10 +400,12 @@ describe('charger', () => {
 
 		await choose(container, new File([JSON.stringify(content)], 'recent.atelier.json'));
 
-		expect(atelier.names).toEqual(['f']);
-		expect(container.textContent).toContain(
-			'La console de ce fichier vient d’une version plus récente de Chiphre'
+		await vi.waitFor(() =>
+			expect(container.textContent).toContain(
+				'La console de ce fichier vient d’une version plus récente de Chiphre'
+			)
 		);
+		expect(atelier.names).toEqual(['f']);
 	});
 
 	it('un objet illisible est écarté, et on le dit', async () => {
@@ -411,7 +416,9 @@ describe('charger', () => {
 
 		await choose(container, new File([JSON.stringify(content)], 'abime.atelier.json'));
 
+		await vi.waitFor(() =>
+			expect(container.textContent).toContain('1 élément(s) du fichier étaient illisibles.')
+		);
 		expect(atelier.names).toEqual(['f']);
-		expect(container.textContent).toContain('1 élément(s) du fichier étaient illisibles.');
 	});
 });
