@@ -3,15 +3,22 @@
 	=============
 	Displays the Palotin image with the appropriate expression.
 	Falls back to a colored circle with initial if image not found.
+	Le SVG s'anime seul au repos ; la réaction (bond, tressaut, affaissement)
+	se joue quand une expression arrive.
 -->
 
 <script lang="ts">
 	import type { PalotinType } from '$lib/config/buddy-messages';
 	import type { BuddyExpression } from '$lib/types/buddy';
 
-	// Extension des images des Palotins : SVG provisoires dessinés à la main ;
-	// on passera aux images faites par IA (PNG ou WebP) en changeant cette seule constante.
+	// Extension des images des Palotins : SVG animés, produits par scripts/palotins-svg/
 	const IMAGE_EXTENSION = 'svg';
+	// Réaction du Palotin quand l'expression arrive (aucune pour les autres)
+	const REACTION: Partial<Record<BuddyExpression, string>> = {
+		happy: 'reaction-bond',
+		excited: 'reaction-tressaut',
+		determined: 'reaction-affaisse'
+	};
 
 	interface Props {
 		palotin: PalotinType;
@@ -25,7 +32,12 @@
 		size === 'sm' ? 'h-[60px] w-[60px]' : 'h-[80px] w-[80px] md:h-[100px] md:w-[100px]'
 	);
 	const imagePath = $derived(`/images/buddies/${palotin}-${expression}.${IMAGE_EXTENSION}`);
-	let imageError = $state(false);
+	// Moins d'animations : une <img> ne transmet pas la préférence au SVG, d'où une version fixe,
+	// choisie par le navigateur (<source media>) : pas de décalage avec le rendu serveur
+	const fixedPath = $derived(`/images/buddies/${palotin}-${expression}-fixe.${IMAGE_EXTENSION}`);
+	// Image en échec : le repli ne vaut que pour elle, une autre expression retente
+	let failedPath = $state<string | null>(null);
+	const imageError = $derived(failedPath === imagePath);
 
 	const palotinColors: Record<PalotinType, string> = {
 		giron: 'bg-red-400',
@@ -38,22 +50,22 @@
 		pile: 'P',
 		cotice: 'C'
 	};
-
-	// Reset error when expression changes
-	$effect(() => {
-		void imagePath;
-		imageError = false;
-	});
 </script>
 
 <div class="relative {sizeClass} shrink-0">
 	{#if !imageError}
-		<img
-			src={imagePath}
-			alt="Palotin {palotin}"
-			class="{sizeClass} rounded-full object-cover"
-			onerror={() => (imageError = true)}
-		/>
+		<!-- {#key} recrée l'image à chaque expression : la réaction se rejoue -->
+		{#key imagePath}
+			<picture>
+				<source media="(prefers-reduced-motion: reduce)" srcset={fixedPath} />
+				<img
+					src={imagePath}
+					alt="Palotin {palotin}"
+					class="{sizeClass} rounded-full object-cover {REACTION[expression] ?? ''}"
+					onerror={() => (failedPath = imagePath)}
+				/>
+			</picture>
+		{/key}
 	{:else}
 		<!-- Fallback: colored circle with initial -->
 		<div
@@ -67,3 +79,62 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.reaction-bond {
+		animation: bond 0.7s cubic-bezier(0.3, 0.7, 0.4, 1);
+	}
+	.reaction-tressaut {
+		animation: tressaut 0.9s ease-in-out;
+	}
+	.reaction-affaisse {
+		animation: affaisse 1.1s ease-in-out;
+	}
+	@keyframes bond {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		35% {
+			transform: translateY(-14%) scale(1.03, 0.97);
+		}
+		55% {
+			transform: translateY(0) scale(1.04, 0.95);
+		}
+		75% {
+			transform: translateY(-4%);
+		}
+	}
+	@keyframes tressaut {
+		0%,
+		100% {
+			transform: scale(1) rotate(0);
+		}
+		25% {
+			transform: scale(1.12) rotate(-6deg);
+		}
+		50% {
+			transform: scale(1.12) rotate(6deg);
+		}
+		75% {
+			transform: scale(1.06) rotate(-3deg);
+		}
+	}
+	@keyframes affaisse {
+		0%,
+		100% {
+			transform: translateY(0) rotate(0);
+		}
+		30%,
+		65% {
+			transform: translateY(5%) rotate(-5deg) scale(0.97);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.reaction-bond,
+		.reaction-tressaut,
+		.reaction-affaisse {
+			animation: none;
+		}
+	}
+</style>

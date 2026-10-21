@@ -265,7 +265,7 @@ Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`)
   le jour ; `newStreak` = la Constance apres lui ; `streakBonusXp` = la recompense de la semaine
   tenue ; `constanceWeekStart` / `constanceDaysThisWeek` en plus, quand le jour a ete compte, pour
   mettre le widget a jour sans rechargement (`updateBuddyConstanceOptimistic`).
-- **Perte** : le Palotin est triste, puis repart. Pas de punition mecanique : l'XP acquise reste.
+- **Perte** : le Palotin est determine (« on repart »), jamais triste. Pas de punition mecanique : l'XP acquise reste.
 - **La Constance est un bonus d'XP**, pas une condition.
 
 ### Protection du streak
@@ -357,10 +357,26 @@ elle-même, ni appel ni annonce. Durées : `buddy-timing.ts`. Détail : [mathoux
 
 ### Images
 
-`BuddyAvatar` charge `/images/buddies/<palotin>-<expression>.svg` (6 expressions par Palotin,
-`static/images/buddies/`). Ce sont des SVG provisoires facon Steinlen, chapeau en piece de blason
-et gidouille sur le ventre ; ils seront remplaces par des images faites par IA : l'extension est
-isolee dans `IMAGE_EXTENSION`. Repli en cercle colore si l'image manque.
+`BuddyAvatar` charge `/images/buddies/<palotin>-<expression>.svg` (`static/images/buddies/`).
+Style « affiche de cabaret » (Steinlen 1896), piece heraldique portee sur le vetement (ecusson
+gironne, pile d'or, cotice en echarpe). Generes par `scripts/palotins-svg/` (`node gen.mjs`, puis
+copier `final/*.svg`) ; journal : `docs/wip/palotins-svg-progress.md`.
+
+- **7 expressions** : `neutral`, `happy`, `sad`, `thinking`, `excited`, `encouraging`,
+  `determined`. Apres une erreur (`incorrect`) et une Constance perdue (`streak_lost`), le Palotin
+  est **determine** (sourire en coin ; Giron leve le poing, Pile rebat ses cartes, Cotice tourne la
+  page), jamais triste. `sad` est garde pour une longue absence de l'eleve (contexte pas encore
+  cree).
+- **Animation au repos dans le SVG** : respiration, clignement, chapeau, geste propre a chacun,
+  rythmes differents par Palotin.
+- **Reaction quand l'expression arrive** (CSS du composant, rejouee par `{#key}`) : bond
+  (`happy`), tressaut (`excited`), affaissement puis retour (`determined`).
+- **Moins d'animations** : `<picture><source media="(prefers-reduced-motion: reduce)">` →
+  version `<palotin>-<expression>-fixe.svg` ; la regle CSS `@media` coupe aussi la reaction. Une
+  `<img>` ne transmet pas la preference au SVG (Chromium : le SVG anime continue de bouger), d'ou
+  les 21 versions fixes. Choix laisse au navigateur, pas a `prefersReducedMotion` : cote serveur il
+  vaut `false`, et Svelte ne corrige pas `src` a l'hydratation.
+- Repli en cercle colore si l'image manque.
 
 ---
 
@@ -828,7 +844,7 @@ Bribes de lore qui apparaissent aleatoirement en idle a partir du niveau 5. Them
 | Buddy visible        | Bas-droite desktop (80-100px), icone mobile (60px)                                            |
 | Messages pre-ecrits  | Correct, incorrect, idle, streak, level up, themes, onboarding                                |
 | Systeme XP           | Sources d'XP, cap journalier, table de niveaux 1-20                                           |
-| Streak               | Compteur, bonus XP, perte emotionnelle (Palotin triste)                                       |
+| Streak               | Compteur, bonus XP, perte : Palotin determine (« on repart »)                                 |
 | Niveaux 1-10         | Deblocages : bulles idle, streaks, hints basiques (niv 5), bonus gidouille quotidien (niv 10) |
 | Apparence base       | 1 image par Palotin (6 expressions du character sheet)                                        |
 | DB                   | Tables `student_buddies` + `buddy_skins`                                                      |
