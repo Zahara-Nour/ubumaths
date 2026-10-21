@@ -5,21 +5,21 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1568 et #1569 (migration appliquée en prod, vérifiée : 16/16 contenus, 16/16 tags)._
+_Mis à jour le 2026-10-21, PR du lot D ouverte (branche `feat/arbre-lot-2bis-scissions`)._
 
-- **État** : C5 étape 2 bis, MODIFIER : lots A (39), B (7) et C « consignes ou affichages » (16) en prod, avec
-  tags. Outillage commun : `analyse/lot_2bis_outils.py` (paramètre `options=True` pour un lot qui change
-  `options`) + `tests/helpers/database/lot-2bis-migration.ts`.
-- **Prochaine action** : lot D (3 scissions, `lot-2bis-modifications.md` § 4) — phase 0 à part : cartes SRS,
-  tentatives, fiches qui pointent vers les modèles scindés.
-- **Décisions de David (2026-10-21)** : une migration par lot ; comparaisons < = > avec égalité (au moins 1 fois
-  sur 6) ; tableaux Masse/Prix, Durée/Distance, Cahiers/Prix ; factoriser par une constante ; c9d6c5db sorti du
-  lot C (garde « Simplifie le plus possible » ; règle « plus simple que l'énoncé » = PR de code, non décidée).
-- **En attente de David** : rien. Signalé : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
-- **Pièges en cours** : `e` = Euler dans une condition (variable `egal`) ; MathLive ne connaît pas `\hline` ;
-  relever la prod JUSTE avant de générer (le script de virgule a changé 5b53b1be entre relevé et migration :
-  la garde l'a vu, #1569) ; `question:specs --file` veut le format de l'app ; jsonb réordonne les clés.
-- **Worktree / branche** : aucun (worktree de #1568/#1569 supprimé).
+- **État** : C5 étape 2 bis, MODIFIER : lots A (39), B (7), C (16) en prod ; lot D (3 scissions addition /
+  soustraction de fractions, 5e) en PR : migration `20261021150000_lot_2bis_scissions`, 3 modèles neufs
+  (UUID fixés) tagués 5-123, origines taguées 5-026. Outillage : `generer(…, scissions=…)`.
+- **Prochaine action** : PR verte → merge → `db:migrate` (si la question d'accès est tranchée) → vérifier en
+  prod 3 origines + 3 neufs + 6 tags (la migration passe SANS RIEN FAIRE si les origines manquent).
+- **Décisions de David (2026-10-21)** : origine = addition, neuf = soustraction ; titres « Additionner / Soustraire
+  des fractions » ; 71ee6212 garde une seule soustraction ; f92d63a6 accepte le non simplifié (`off`).
+- **En attente de David** : question d'accès du lot D (« personne ne lit rien de neuf » selon l'audit).
+  Signalé : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
+- **Pièges en cours** : PL/pgSQL refuse `if x <> case … end` (→ `least`) ; les commentaires DANS le bloc
+  ROLLBACK s'écrivent `-- -- ` ; relever la prod juste avant de générer ; `question:specs --file` veut le
+  format de l'app (camelCase, sans colonnes de base) ; supprimer un modèle emporte cartes SRS et journal.
+- **Worktree / branche** : `ubumaths-wt-arbre-notions` / `feat/arbre-lot-2bis-scissions`.
 
 ## Tranché avec David (2026-10-06)
 

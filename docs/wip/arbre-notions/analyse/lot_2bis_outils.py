@@ -406,6 +406,8 @@ drop table pg_temp.{tmp}_modeles;
             avant = f"test_specs = nullif({r}->'test_specs', 'null'::jsonb)"
             assert avant in texte, avant
             texte = texte.replace(avant, avant + f", options = nullif({r}->'options', 'null'::jsonb)")
+        # 3 empreintes (garde, vérification, rollback) ; 2 de plus pour les modèles neufs
+        # (vérification des neufs, rollback des neufs).
         assert texte.count("'options', q.options)") == (5 if neufs else 3)
     open(migration, 'w').write(texte)
 
