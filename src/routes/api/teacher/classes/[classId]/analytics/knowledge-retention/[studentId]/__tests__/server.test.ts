@@ -19,22 +19,22 @@ const CLASS_ID = '11111111-1111-4111-8111-111111111111';
 const STUDENT_ID = '22222222-2222-4222-8222-222222222222';
 const BRANCH_ID = '33333333-3333-4333-8333-333333333333';
 
-// Supabase simulé : l'élève est membre actif de la classe.
-function makeLocals(): App.Locals {
+// Supabase simulé : l'élève est membre actif de la classe, sauf `member: false`.
+function makeLocals(member = true): App.Locals {
 	const chain = {
 		select: () => chain,
 		eq: () => chain,
-		maybeSingle: async () => ({ data: { student_id: STUDENT_ID }, error: null })
+		maybeSingle: async () => ({ data: member ? { student_id: STUDENT_ID } : null, error: null })
 	};
 	return { supabase: { from: () => chain } } as unknown as App.Locals;
 }
 
-async function call(query: string) {
+async function call(query: string, member = true) {
 	const url = new URL(`http://localhost/api?${query}`);
 	return GET({
 		params: { classId: CLASS_ID, studentId: STUDENT_ID },
 		url,
-		locals: makeLocals()
+		locals: makeLocals(member)
 	} as unknown as Parameters<typeof GET>[0]);
 }
 
@@ -75,6 +75,12 @@ describe('GET knowledge-retention', () => {
 		const res = await call(`branch=${BRANCH_ID}`);
 		expect(res.status).toBe(200);
 		expect(await res.json()).toEqual({ points: [] });
+		expect(getStudentRetentionCurve).not.toHaveBeenCalled();
+	});
+
+	it('404 pour un élève hors de la classe, sans lecture', async () => {
+		const res = await call(`branch=${BRANCH_ID}`, false);
+		expect(res.status).toBe(404);
 		expect(getStudentRetentionCurve).not.toHaveBeenCalled();
 	});
 });

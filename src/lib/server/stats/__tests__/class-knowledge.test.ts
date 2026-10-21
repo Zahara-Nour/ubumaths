@@ -17,13 +17,13 @@ import {
 type QueryResult = { data: unknown; error: unknown };
 type TableHandler = () => Promise<QueryResult> | QueryResult;
 type MockSpec = Record<string, TableHandler>;
-type InCall = { table: string; column: string; values: unknown[] };
+type InCall = { table: string; method: 'in' | 'eq'; column: string; values: unknown[] };
 
 /**
  * Construit un mock Supabase qui invoque `tableHandlers[tableName]()` à la
  * fin de la chaîne de query builders. Toute la chaîne `.select().eq().in()
  * .gte().not().order().maybeSingle()` retourne `this` jusqu'au handler final.
- * Les appels `.in()` sont relevés dans `inCalls` (ce que la requête demande).
+ * Les appels `.in()` et `.eq()` sont relevés dans `inCalls` (ce que la requête demande).
  */
 function buildMock(tableHandlers: MockSpec, inCalls: InCall[] = []) {
 	const fromMock = vi.fn().mockImplementation((table: string) => {
@@ -54,9 +54,12 @@ function buildMock(tableHandlers: MockSpec, inCalls: InCall[] = []) {
 			then: (onFulfilled: (value: QueryResult) => unknown) => terminalPromise.then(onFulfilled)
 		};
 		queryBuilder.select.mockReturnValue(queryBuilder);
-		queryBuilder.eq.mockReturnValue(queryBuilder);
+		queryBuilder.eq.mockImplementation((column: string, value: unknown) => {
+			inCalls.push({ table, method: 'eq', column, values: [value] });
+			return queryBuilder;
+		});
 		queryBuilder.in.mockImplementation((column: string, values: unknown[]) => {
-			inCalls.push({ table, column, values });
+			inCalls.push({ table, method: 'in', column, values });
 			return queryBuilder;
 		});
 		queryBuilder.not.mockReturnValue(queryBuilder);
@@ -126,27 +129,30 @@ function tag(templateId: string, p: ReturnType<typeof point>) {
 const ALICE = [{ student_id: 's1', profiles: { id: 's1', firstname: 'Alice', lastname: 'Z' } }];
 
 /** Une élève, des cartes travaillées, toutes en révision (acquises). */
-function gridFixture(tags: ReturnType<typeof tag>[], extra: MockSpec = {}) {
+function gridFixture(tags: ReturnType<typeof tag>[], extra: MockSpec = {}, inCalls: InCall[] = []) {
 	const future = new Date(Date.now() + 7 * 86400000).toISOString();
 	const templateIds = [...new Set(tags.map((t) => t.template_id))];
-	return buildMock({
-		class_members: () => ({ data: ALICE, error: null }),
-		skill_attempts: () => ({
-			data: templateIds.map((t) => ({ student_id: 's1', template_id: t })),
-			error: null
-		}),
-		question_template_points: () => ({ data: tags, error: null }),
-		srs_card_stats: () => ({
-			data: templateIds.map((t) => ({
-				user_id: 's1',
-				card_reference_id: t,
-				state: 'review',
-				next_review: future
-			})),
-			error: null
-		}),
-		...extra
-	});
+	return buildMock(
+		{
+			class_members: () => ({ data: ALICE, error: null }),
+			skill_attempts: () => ({
+				data: templateIds.map((t) => ({ student_id: 's1', template_id: t })),
+				error: null
+			}),
+			question_template_points: () => ({ data: tags, error: null }),
+			srs_card_stats: () => ({
+				data: templateIds.map((t) => ({
+					user_id: 's1',
+					card_reference_id: t,
+					state: 'review',
+					next_review: future
+				})),
+				error: null
+			}),
+			...extra
+		},
+		inCalls
+	);
 }
 
 // =============================================================================
@@ -232,20 +238,31 @@ describe('getClassCapacityGrid', () => {
 	});
 
 	it('« Tout le niveau » ajoute les points neufs non archivés du niveau', async () => {
-		const supabase = gridFixture([tag('t1', point('touche'))], {
-			classes: () => ({ data: { grade: '6' }, error: null }),
-			curriculum_points: () => ({
-				data: [
-					point('touche'),
-					point('non-touche', { nodeId: 'n-triangles' }),
-					point('archive', { archived: true }),
-					point('ancien', { nodeId: null })
-				],
-				error: null
-			})
-		});
+		const inCalls: InCall[] = [];
+		const supabase = gridFixture(
+			[tag('t1', point('touche'))],
+			{
+				classes: () => ({ data: { grade: '6' }, error: null }),
+				curriculum_points: () => ({
+					data: [
+						point('touche'),
+						point('non-touche', { nodeId: 'n-triangles' }),
+						point('archive', { archived: true }),
+						point('ancien', { nodeId: null })
+					],
+					error: null
+				})
+			},
+			inCalls
+		);
 		const grid = await getClassCapacityGrid(supabase, 'class-1', { includeAllCycle: true });
 		expect(grid.capacities.map((c) => c.id)).toEqual(['touche', 'non-touche']);
+		expect(inCalls).toContainEqual({
+			table: 'curriculum_points',
+			method: 'eq',
+			column: 'grade',
+			values: ['6']
+		});
 		expect(grid.cells['s1:non-touche']).toBe('non_commencee');
 	});
 
@@ -473,6 +490,12 @@ describe('getStudentRetentionCurve', () => {
 			inCalls
 		);
 		await getStudentRetentionCurve(supabase, 'student-1', NOMBRES_6);
+		expect(inCalls).toContainEqual({
+			table: 'curriculum_points',
+			method: 'eq',
+			column: 'grade',
+			values: ['6']
+		});
 		const asked = inCalls
 			.filter((c) => c.table === 'question_template_points' && c.column === 'point_id')
 			.flatMap((c) => c.values);
