@@ -273,6 +273,22 @@ export function decrireLotModifier(lot: LotModifier): void {
 			);
 		});
 
+		it.runIf(avecOptions)(
+			'des options modifiées depuis le relevé font échouer la migration',
+			async () => {
+				await echoue(
+					() =>
+						pg.query(
+							`update public.question_templates
+							    set options = coalesce(options, '{}'::jsonb) || '{"delay": 99}'::jsonb
+							  where id = $1`,
+							[ids[0]]
+						),
+					/modèles modifiés depuis le relevé : 1/
+				);
+			}
+		);
+
 		it('un modèle déplacé ou reclassé depuis le relevé fait échouer la migration', async () => {
 			await echoue(
 				() =>
