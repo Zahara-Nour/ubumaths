@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, au démarrage._
+_Mis à jour le 2026-10-22, après #1599._
 
-- **État** : phase 0 validée par David ; PR 1 (donnée : colonne `welcome_back_on`) en cours.
-- **Prochaine action** : test d'intégration rouge sans la migration → migration locale → vert → `security-auditor` → PR 1 → merge → `db:migrate` → `db:types` → PR 2 (code).
-- **En attente de David** : rien.
-- **Pièges en cours** : la remise à zéro de la Constance reste dans le `load` du layout élève (un survol sans clic n'y fait perdre que la réplique, accepté).
-- **Worktree / branche** : `../ubumaths-wt-palotins-presence` · `feat/palotins-presence`.
+- **État** : PR 1 #1599 mergée, `db:migrate` fait (colonne `welcome_back_on` en prod), `db:types` fait. PR 2 (code) sur `feat/palotins-presence-2` : tests verts, typecheck 0, garde doc OK ; revues `code-reviewer` + `security-auditor` en cours.
+- **Prochaine action** : traiter les revues → PR 2 → CI → merge (après validation du texte Confidentialité).
+- **En attente de David** : texte de la page Confidentialité (§ 3.2 et § 7) ; présence en mémoire du serveur au lieu d'un cookie (changement fait seul, à confirmer).
+- **Pièges en cours** : la remise à zéro de la Constance reste dans le `load` (un survol n'y fait perdre que la réplique). `welcome_back_on` n'est pas effacé après 7 jours, seulement ignoré.
+- **Worktree / branche** : `../ubumaths-wt-palotins-presence` · `feat/palotins-presence-2`.
 
 ## Le problème (2026-10-21)
 
@@ -33,8 +33,10 @@ Le passage n'était noté que par le `load` du layout `/dashboard/student/*` :
 
 ## Conception
 
-- **Présence** : `userProfileHandle` (`src/hooks.server.ts`), élève, hors `/api/*`, au plus une
-  fois par jour (cookie du jour lié à l'élève : deux élèves sur un même poste au collège).
+- **Présence** : `studentPresenceHandle` (`src/lib/server/studentPresenceHandle.ts`, dans
+  `hooks.server.ts`), élève, hors `/api/*`, au plus une fois par jour et par instance : mémoire du
+  serveur, SANS cookie (un cookie serait à déclarer au § 10 « strictement nécessaires », et
+  laisserait l'identifiant de l'élève sur un poste partagé).
   `record_student_visit` inchangée ; si l'écart ≥ 21 jours (`isLongAbsence`), le serveur écrit
   `welcome_back_on = aujourd'hui`.
 - **Bulle** : le `load` du layout élève LIT `welcome_back_on` (aucune écriture : préchargement sans
@@ -56,3 +58,6 @@ Le passage n'était noté que par le `load` du layout `/dashboard/student/*` :
 - 2026-10-21 : test rouge sans la migration (8 × « colonne absente »), vert avec (22 tests avec
   palotin-dernier-passage) ; migration renommée 20261022100000 (une autre session a joué
   20261022080000 en local) ; security-auditor : aucun finding bloquant.
+- 2026-10-22 : #1599 mergée ; `db:migrate` (seule migration poussée, essai à blanc d'abord) ;
+  `db:types`. PR 2 écrite : handle, lecture au layout, route d'acquittement, widget, export RGPD,
+  page Confidentialité, 8 docs. Cookie abandonné pour une mémoire serveur.
