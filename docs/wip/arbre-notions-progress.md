@@ -18,7 +18,7 @@ _Mis à jour le 2026-10-21, après #1572 (lot D en prod) ; état de l'étape 3 r
 - **Pièges en cours** : un modèle neuf publié ne peut pas copier la catégorie (thème, domaine, sous-domaine,
   niveau) de son origine (`idx_question_templates_unique_category`) ; le décor de test doit poser statut et
   catégorie de la prod ; commentaires DANS le bloc ROLLBACK en `-- -- ` ; relever la prod juste avant de générer.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-arbre-bascule-b`, `refactor/arbre-bascule-b` (PR B1 en cours).
 
 ## Tranché avec David (2026-10-06)
 
@@ -1162,3 +1162,13 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   migration) : la PR A tombe, tout part à l'étape 4. Lisent encore l'ancien monde : `getCurriculumTree` (cahier de
   texte, avancement, exercices, édition admin), `curriculum-coverage`, `buddy-themes`, decks programme,
   `student-progression` + `/student/objectifs/[id]`, analytique (`class-knowledge`, page analytics), `skills.objective_id`.
+- **2026-10-21 — Étape 3, PR B1 (worktree `ubumaths-wt-arbre-bascule-b`).** David : « je suis tes recos » (découpage
+  B1 / B2, clé du Palotin = branche). B1 bascule sur les points neufs : couverture auto du cahier de texte (niveau lu
+  sur le point), deck « Programme » (notion sous chaque carte, sans lien jusqu'à la PR D), bonus « nouveau thème »
+  du Palotin (branche, `placeOfNode`), édition admin des tags d'un modèle (un MySelect par programme, Q7 ;
+  `programme-tags.ts`), DELETE de `template-tags` qui relit ses lignes (404 sinon). `isLegacyPoint` →
+  `isProgrammePoint` ; code mort de `skills.ts` retiré (la table `skills` n'existe plus) ; les scripts de
+  rattachement par code gardent leur propre filtre (Q8, retirés en PR E). Prod mesurée : 0 tag d'exercice, 0 point
+  coché au cahier de texte, 0 Palotin avec thème exploré, 325 libellés de points neufs en LaTeX (le menu les montre
+  en texte brut, le point choisi est rendu dessous). Correction de la phase 0 : le deck n'excluait aucune carte, seul
+  le libellé dépendait de l'objectif.
