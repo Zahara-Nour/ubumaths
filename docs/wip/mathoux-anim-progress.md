@@ -7,20 +7,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, PR 1 prête (revues faites)._
+_Mis à jour le 2026-10-21, après #1582._
 
-- **État** : PR 1 = animations (repos, naissance, croissance en morphing, étoile, réveil) branchées
-  sur la Chatterie, la vue prof et l'annonce (`previousStage`), + migration `20261021200000`
-  (`student_mathoux.asleep`, additive, appliquée en local). Revues : `code-reviewer` (important
-  corrigé : rendu du morphing testé) et `security-auditor` : **aucun bloquant**.
-- **Prochaine action** : PR 1 → CI verte → merge → `db:migrate` (4 conditions réunies) →
-  `db:types` → **PR 2** : écrire `asleep` (`memoryUpdates`, `rememberMathoux`), nouveauté `wake`
-  (« X s'est réveillé ! », réaction `reveil`), `asleep` dans l'export RGPD (MÊME PR que l'écriture).
-- **En attente de David** : rien (question d'accès tranchée le 2026-10-21 : personne ne lit rien
-  de neuf ; découpage PR 1 animations + migration, PR 2 réveil).
-- **Pièges en cours** : démo = vrai composant (`node_modules/.cache/mathoux-demo/`, `page2.py` du
-  scratchpad). Lignes existantes `asleep = false` : pas de faux réveil au déploiement.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-anim` · `feat/mathoux-anim`.
+- **État** : #1582 mergée (animations + migration) ; `db:migrate` fait, colonne `asleep` vérifiée
+  en prod (table vide). Vérification manuelle notée.
+- **Prochaine action** : **PR 2** (branche `feat/mathoux-reveil`, worktree
+  `../ubumaths-wt-mathoux-reveil`) : `db:types`, écrire `asleep` (`memoryUpdates`,
+  `rememberMathoux`, fusion au conflit), nouveauté `wake` (« X s'est réveillé ! », réaction
+  `reveil`, entre croissance et étoile), pas de réveil pour un Mathou « de la seule mémoire »,
+  `asleep` dans l'export RGPD (même PR).
+- **En attente de David** : rien.
+- **Pièges en cours** : la démo (`node_modules/.cache/mathoux-demo/`) partait du worktree supprimé.
+- **Worktree / branche** : `../ubumaths-wt-mathoux-reveil` · `feat/mathoux-reveil`.
 
 ## Au repos (proposé)
 
