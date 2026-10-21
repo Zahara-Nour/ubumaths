@@ -39,9 +39,17 @@ const logger = createServerLogger('server/child-registration');
 // inscriptions simultanées du même prénom) : quelques essais suffisent.
 const MAX_CREATE_ATTEMPTS = 5;
 
+/**
+ * Plafond de classe (M1 bis, David, 2026-10-21) : au plus 5 comptes d'enfant par classe et par
+ * 24 h, comptés sur les comptes réellement créés (Q1). Pensé pour les petits groupes
+ * d'Akadada ; à relever si une école donne le code à toute une classe le même soir (Q2).
+ */
+export const CLASS_DAILY_CHILD_LIMIT = 5;
+const CLASS_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000;
+
 // Functions
 
-/** Identifiants déjà pris pour cette racine (`noelie` → {noelie42, noelie07…}). */
+/** Identifiants déjà pris pour cette racine (`noelie` → {noelie042, noelie42…}). */
 async function takenLoginIds(service: ServiceClient, base: string): Promise<Set<string> | null> {
 	const { data, error } = await service
 		.from('profiles')
@@ -58,6 +66,40 @@ async function takenLoginIds(service: ServiceClient, base: string): Promise<Set<
 			.filter((email) => email.endsWith(suffix))
 			.map((email) => email.slice(0, -suffix.length))
 	);
+}
+
+/**
+ * Comptes d'enfant (domaine fictif) entrés dans la classe depuis moins de 24 h, quel que soit
+ * leur statut depuis : un compte créé puis retiré a bien été créé. Les inscriptions annulées
+ * (compte supprimé) ne comptent plus. `null` si la base ne répond pas (le plafond refuse alors).
+ */
+export async function countRecentChildAccounts(
+	service: ServiceClient,
+	classId: string
+): Promise<number | null> {
+	const since = new Date(Date.now() - CLASS_LIMIT_WINDOW_MS).toISOString();
+	const { data: members, error } = await service
+		.from('class_members')
+		.select('student_id')
+		.eq('class_id', classId)
+		.gte('joined_at', since);
+	if (error) {
+		logger.error('Entrées récentes dans la classe illisibles :', error.message);
+		return null;
+	}
+	const ids = (members ?? []).map((m) => m.student_id);
+	if (ids.length === 0) return 0;
+
+	const { count, error: countError } = await service
+		.from('profiles')
+		.select('id', { count: 'exact', head: true })
+		.in('id', ids)
+		.like('email', `%@${CHILD_ACCOUNT_DOMAIN}`);
+	if (countError || count === null) {
+		logger.error('Comptes d’enfant récents illisibles :', countError?.message);
+		return null;
+	}
+	return count;
 }
 
 /**

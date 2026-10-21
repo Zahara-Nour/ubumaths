@@ -25,6 +25,7 @@ import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createChildResetToken, findChildResetTarget } from '$lib/server/child-password';
 import { sendChildPasswordResetEmail } from '$lib/server/email/brevo';
 import { waitForResponseFloor } from '$lib/server/response-floor';
+import { runAfterResponse } from '$lib/server/after-response';
 import {
 	checkPasswordResetRateLimitByEmail,
 	checkPasswordResetRateLimitByIP
@@ -97,9 +98,10 @@ export const actions = {
 
 		// L'adresse d'un enfant inscrit par son parent est fictive : GoTrue y enverrait le
 		// lien pour rien. Le lien part au parent, si son adresse est confirmée (R1). Même
-		// réponse neutre dans tous les cas (pas d'énumération).
+		// réponse neutre dans tous les cas (pas d'énumération). L'envoi part APRÈS la
+		// réponse : un Brevo lent ne dépasse plus le plancher, le temps ne dit rien.
 		if (isChildAccountEmail(email)) {
-			await sendResetLinkToParent(email);
+			runAfterResponse(sendResetLinkToParent(email), 'lien au parent');
 			await waitForResponseFloor(startedAt, RESPONSE_FLOOR_MS);
 			return GENERIC_SUCCESS;
 		}

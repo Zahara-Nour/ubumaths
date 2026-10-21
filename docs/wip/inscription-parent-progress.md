@@ -2,15 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1594 (mergée, pas en prod)._
+_Mis à jour le 2026-10-21, PR M1 bis + M2 ouverte (pas encore mergée)._
 
-- **État** : PR 3 (mots de passe des élèves) mergée : jeton maison du lien du parent (B1), adresse confirmée figée (M1), changement d'adresse = nouvelle demande à jeton neuf (contre-revue), plancher 2 s, revues n° 2-5, doc. Aucune migration.
-- **Prochaine action** : faire valider la **phase 0 de M1 bis + M2** (écrite, Q1-Q3 sans réponse : section en bas du journal), puis petite PR **M1 bis** (5 comptes par classe et par 24 h, écran parent) + **M2** (suffixe d'identifiant à 3 chiffres), avant le `deploy:prod`. Nouveau worktree depuis `origin/main`.
-- **Décisions de David (2026-10-21, « je te suis »)** : plancher dépassable → **envoi en tâche de fond (`waitUntil`) dans la PR M1 bis + M2**, si l'adaptateur Vercel le permet (à vérifier d'abord ; sinon risque accepté) ; jeton dans les journaux Vercel → **accepté** ; `/auth/confirm` qui refuse un `recovery` d'enfant → **non** (risque nul, domaine sans DNS) ; F-c → **David coupe le suivi des clics** du transactionnel Brevo.
-- **Décisions de David (2026-10-21, « ok pour les recos »)** : M1 audit → refuser la modification de `parent_email` sur une demande `granted` ; M2 audit → documenter « ancien mot de passe » comme garde d'interface (risque accepté) ; revue n° 2 → masquer « Changer mon mot de passe » sans fournisseur `email` ; F-c → David vérifie/coupe le suivi des clics Brevo. PR 2 : **F1 = David** (Dashboard) ; **M1 bis** (5 comptes par classe et par 24 h, écran parent) et **M2** (suffixe à 3 chiffres) = petite PR après #1594, avant le `deploy:prod`.
-- **En attente de David** : couper le suivi des clics Brevo (F-c). F1 vérifié le 2026-10-21.
-- **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `app_metadata` seul n'en ferme aucune ; `oxlint --fix` du pre-commit réécrit les tests (les relancer après commit).
-- **Worktree / branche** : aucun (celui de la PR 3 supprimé) ; le prochain : `../ubumaths-wt-inscription-parent`, branche à créer.
+- **État** : PR M1 bis + M2 en cours sur `feat/inscription-parent-plafonds` : identifiant à 3 chiffres (M2), plafond de 5 comptes d'enfant par classe et par 24 h, comptés en base (M1 bis), lien au parent de « Mot de passe oublié » envoyé après la réponse (`runAfterResponse`, `waitUntil` de `@vercel/functions`). Aucune migration, aucun accès changé.
+- **Prochaine action** : revue (`code-reviewer` + `security-auditor`, auth), CI verte → merge ; puis le `deploy:prod` est débloqué (sur demande de David).
+- **En attente de David** : couper le suivi des clics Brevo (F-c).
+- **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `oxlint --fix` du pre-commit réécrit les tests (les relancer après commit) ; `waitUntil` ne fait rien hors Vercel (la tâche tourne quand même).
+- **Worktree / branche** : `../ubumaths-wt-inscription-parent`, `feat/inscription-parent-plafonds`.
 
 ## Contexte
 
@@ -306,7 +304,7 @@ dédiée sans session · R3 changement obligatoire · R4 tous les élèves, jama
 5. Ancien mot de passe sur le seau de connexion (3/15 min) : seau dédié + `currentPassword` dans le schéma Zod. **Fait.**
 6. = F-a.
 
-## PR M1 bis + M2 — phase 0 (2026-10-21, écrite, PAS validée)
+## PR M1 bis + M2 — phase 0 (2026-10-21, validée : « ok pour les recos »)
 
 Écrite depuis la session `arbre-notions` (le `deploy:prod` attend cette PR) ; David n'a répondu à aucune question.
 
@@ -330,3 +328,11 @@ Questions (recos entre parenthèses) :
   même soir en verrait 20 refusés. Reco : garder 5, relever si besoin.
 - **Q3** — ajouter `@vercel/functions` pour `waitUntil` (reco : oui ; hors Vercel, envoi sans attente) ; sinon plancher
   tel quel, risque accepté.
+
+Réponses de David (2026-10-21, « ok pour les recos ») : **Q1** comptes réellement créés, en base
+sur 24 h ; **Q2** garder 5, relever si besoin ; **Q3** ajouter `@vercel/functions`.
+
+Réalisation : le compteur lit `class_members` (entrées dans la classe depuis 24 h, tout statut)
+puis compte les profils du domaine fictif — l'appartenance ne vit pas dans `profiles.class_ids`.
+Deux inscriptions simultanées peuvent dépasser le plafond d'une unité (pas de verrou) : accepté,
+le plafond borne une création en masse, pas un compte à l'unité près.

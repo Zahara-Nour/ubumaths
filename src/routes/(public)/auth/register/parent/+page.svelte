@@ -2,7 +2,7 @@
   « J'inscris mon enfant » (/auth/register/parent)
 
   Le parent crée le compte d'un enfant sans adresse : l'enfant se connectera avec un
-  identifiant (`noelie42`), affiché à la fin et envoyé au parent avec le lien de
+  identifiant (`noelie042`), affiché à la fin et envoyé au parent avec le lien de
   consentement. L'adresse du parent n'est qu'un contact.
 -->
 <script lang="ts">

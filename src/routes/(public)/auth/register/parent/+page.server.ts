@@ -7,8 +7,9 @@
  *
  * DÉROULÉ :
  * 1. Validation (Zod), limites de débit par IP et par adresse du parent (5 / 24 h).
- * 2. Code de classe vérifié (RPC service) AVANT toute création.
- * 3. Compte de l'enfant créé par le serveur, identifiant `prenom` + 2 chiffres
+ * 2. Code de classe vérifié (RPC service) AVANT toute création, puis plafond de la classe
+ *    (5 comptes d'enfant / 24 h, comptés en base).
+ * 3. Compte de l'enfant créé par le serveur, identifiant `prenom` + 3 chiffres
  *    (`$lib/server/child-registration`) → profil approuvé dans la classe ; lecture seule
  *    tant que le consentement manque.
  * 4. Demande au parent créée, UN courriel : identifiant + lien unique.
@@ -28,6 +29,8 @@ import {
 import { validateFormData, parentRegisterFormSchema } from '$lib/server/validation';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import {
+	CLASS_DAILY_CHILD_LIMIT,
+	countRecentChildAccounts,
 	createChildAccount,
 	createParentRequest,
 	deleteChildAccount,
@@ -99,6 +102,21 @@ export const actions = {
 		const parentLimit = await checkChildSignupRateLimitByParentEmail(parentEmail);
 		if (!parentLimit.allowed) {
 			return fail(429, { error: parentLimit.message, ...echo });
+		}
+
+		// Plafond de la classe (M1 bis) : un code de classe qui circule ne doit pas ouvrir une
+		// création en masse. Compteur illisible → refus (fermé en panne).
+		const recentInClass = await countRecentChildAccounts(service, classId);
+		if (recentInClass === null) {
+			return fail(500, { error: SERVER_ERROR, ...echo });
+		}
+		if (recentInClass >= CLASS_DAILY_CHILD_LIMIT) {
+			logger.warn('Plafond de classe atteint pour les inscriptions par le parent');
+			return fail(429, {
+				error:
+					"Trop d'inscriptions dans cette classe aujourd'hui. Réessayer demain ou prévenir le professeur.",
+				...echo
+			});
 		}
 
 		// 4. Compte de l'enfant

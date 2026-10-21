@@ -184,7 +184,7 @@ de 2nde de répondre une fois à la question d'âge.
 - Page « Mon profil » : `src/routes/(protected)/dashboard/profile/+page.svelte` (préférences,
   « Changer mon mot de passe » → `/auth/update-password?depuis=profil`, export des données,
   suppression du compte, déconnexion). Pour un enfant inscrit par son parent, elle affiche
-  « Identifiant : noelie42 » au lieu de l'adresse fictive (`childLoginIdOf`).
+  « Identifiant : noelie042 » au lieu de l'adresse fictive (`childLoginIdOf`).
 - Champ mot de passe : `src/lib/components/MyPasswordInput.svelte` (afficher/masquer), utilisé par
   les pages de connexion, d'inscription, de nouveau mot de passe (dont celle du lien du parent) et d'élévation. Jauge de force :
   `src/lib/utils/passwordStrength.ts`, **indicative** ; la règle qui fait foi est côté serveur dans

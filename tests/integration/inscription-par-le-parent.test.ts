@@ -12,7 +12,9 @@
  *   3. deux enfants du même prénom → deux identifiants distincts ;
  *   4. classe fermée → refus, aucun compte laissé derrière ;
  *   5. demande au parent en attente, `email_count` à 0 puis 1 une fois le courriel parti ;
- *   6. une 6e reste soumise au consentement (lecture seule avant le clic du parent).
+ *   6. une 6e reste soumise au consentement (lecture seule avant le clic du parent) ;
+ *   7. plafond de classe (M1 bis) : seuls les comptes d'enfant de CETTE classe, entrés depuis
+ *      moins de 24 h, sont comptés.
  *
  * @vitest-environment node
  */
@@ -26,6 +28,7 @@ import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import type { Database } from '$lib/types/database';
 import {
+	countRecentChildAccounts,
 	createChildAccount,
 	createParentRequest,
 	markParentEmailSent
@@ -94,13 +97,13 @@ describe('inscription par le parent', () => {
 		await pg.query(`delete from schools where name like 'zz-PAR %'`);
 	});
 
-	it('crée un compte approuvé dans la classe, identifiant prénom + 2 chiffres', async () => {
+	it('crée un compte approuvé dans la classe, identifiant prénom + 3 chiffres', async () => {
 		const cls = await classe(true);
 		const res = await inscrire(cls.join_code);
 		expect(res.ok).toBe(true);
 		if (!res.ok) return;
 
-		expect(res.loginId).toMatch(/^zoelia\d{2}$/);
+		expect(res.loginId).toMatch(/^zoelia\d{3}$/);
 		expect(res.grade).toBe('6');
 
 		const { data: profil } = await service
@@ -191,5 +194,33 @@ describe('inscription par le parent', () => {
 
 		await markParentEmailSent(service, demande!.token);
 		expect((await lire()).data?.email_count).toBe(1);
+	});
+
+	it('plafond de classe : compte les enfants de CETTE classe entrés depuis moins de 24 h', async () => {
+		const cls = await classe(true);
+		const autre = await classe(true);
+		expect(await countRecentChildAccounts(service, cls.id)).toBe(0);
+
+		const a = await inscrire(cls.join_code);
+		const b = await inscrire(cls.join_code);
+		const c = await inscrire(autre.join_code);
+		if (!a.ok || !b.ok || !c.ok) throw new Error('inscription refusée');
+		expect(await countRecentChildAccounts(service, cls.id)).toBe(2);
+
+		// Un élève inscrit seul, avec une vraie adresse, n'entre pas dans le plafond.
+		const eleve = await TestData.profile().withRole('student').create();
+		const { error } = await service
+			.from('class_members')
+			.insert({ class_id: cls.id, student_id: eleve.id, status: 'active' });
+		if (error) throw new Error(`class_members : ${error.message}`);
+		expect(await countRecentChildAccounts(service, cls.id)).toBe(2);
+
+		// Entré il y a plus de 24 h : sorti de la fenêtre.
+		const pg = await getPostgresClient();
+		await pg.query(
+			`update class_members set joined_at = now() - interval '25 hours' where student_id = $1`,
+			[a.userId]
+		);
+		expect(await countRecentChildAccounts(service, cls.id)).toBe(1);
 	});
 });

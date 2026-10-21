@@ -10,6 +10,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const {
 	rpcMock,
 	createChildAccount,
+	countRecentChildAccounts,
 	createParentRequest,
 	deleteChildAccount,
 	markParentEmailSent,
@@ -19,6 +20,7 @@ const {
 } = vi.hoisted(() => ({
 	rpcMock: vi.fn(),
 	createChildAccount: vi.fn(),
+	countRecentChildAccounts: vi.fn(),
 	createParentRequest: vi.fn(),
 	deleteChildAccount: vi.fn(),
 	markParentEmailSent: vi.fn(),
@@ -40,7 +42,9 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 	})
 }));
 vi.mock('$lib/server/child-registration', () => ({
+	CLASS_DAILY_CHILD_LIMIT: 5,
 	createChildAccount,
+	countRecentChildAccounts,
 	createParentRequest,
 	deleteChildAccount,
 	markParentEmailSent
@@ -82,6 +86,7 @@ beforeEach(() => {
 	checkSignupRateLimitByIP.mockResolvedValue({ allowed: true });
 	checkChildSignupRateLimitByParentEmail.mockResolvedValue({ allowed: true });
 	rpcMock.mockResolvedValue({ data: 'classe-1', error: null });
+	countRecentChildAccounts.mockResolvedValue(0);
 	createChildAccount.mockResolvedValue({
 		ok: true,
 		userId: 'eleve-1',
@@ -195,6 +200,48 @@ describe('action register (parent)', () => {
 		expect(res).toMatchObject({ status: 429 });
 		expect(checkChildSignupRateLimitByParentEmail).toHaveBeenCalledWith('parent@exemple.fr');
 		expect(createChildAccount).not.toHaveBeenCalled();
+	});
+
+	// M1 bis : au plus 5 comptes par classe et par 24 h, comptés sur les comptes réellement
+	// créés (Q1) ; le 6e est refusé avant toute création.
+	it('5e compte de la journée dans la classe : accepté', async () => {
+		countRecentChildAccounts.mockResolvedValue(4);
+		const res = await actions.register(evenement());
+		expect(res).toMatchObject({ success: true });
+		expect(countRecentChildAccounts).toHaveBeenCalledWith(expect.anything(), 'classe-1');
+	});
+
+	it('6e compte de la journée dans la classe : 429 avec le message prévu, rien créé', async () => {
+		countRecentChildAccounts.mockResolvedValue(5);
+		const res = await actions.register(evenement());
+		expect(res).toMatchObject({
+			status: 429,
+			data: {
+				error:
+					"Trop d'inscriptions dans cette classe aujourd'hui. Réessayer demain ou prévenir le professeur.",
+				parentEmail: 'Parent@Exemple.fr'
+			}
+		});
+		expect(createChildAccount).not.toHaveBeenCalled();
+		expect(sendChildRegistrationEmail).not.toHaveBeenCalled();
+	});
+
+	it('compteur de la classe illisible : refus (fermé en panne), rien créé', async () => {
+		countRecentChildAccounts.mockResolvedValue(null);
+		const res = await actions.register(evenement());
+		expect(res).toMatchObject({ status: 500 });
+		expect(createChildAccount).not.toHaveBeenCalled();
+	});
+
+	it('ordre : code → plafond du parent → plafond de la classe', async () => {
+		rpcMock.mockResolvedValue({ data: null, error: null });
+		await actions.register(evenement());
+		expect(countRecentChildAccounts).not.toHaveBeenCalled();
+
+		rpcMock.mockResolvedValue({ data: 'classe-1', error: null });
+		checkChildSignupRateLimitByParentEmail.mockResolvedValue({ allowed: false, message: 'Trop' });
+		await actions.register(evenement());
+		expect(countRecentChildAccounts).not.toHaveBeenCalled();
 	});
 
 	it("courriel en échec : le compte existe, l'écran le dit, rien n'est noté envoyé", async () => {
