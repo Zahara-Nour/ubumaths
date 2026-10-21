@@ -27,7 +27,7 @@ import { isOpposite, isUnit, isVariable } from '$lib/mathAST/guards';
 import { findNodes } from '$lib/mathAST/transforms';
 import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import { parseLatexQuantity, parseUnitExpression } from './parser';
-import { normalizeStudentQuantity, studentNumericLatex } from './student-input';
+import { degreeSymbolLatex, normalizeStudentQuantity, studentNumericLatex } from './student-input';
 import { readCompositeDuration } from './composite-duration';
 
 // ============================================================================
@@ -90,7 +90,8 @@ export function markStudentUnits(latex: string): string | null {
 		found = true;
 		return marked;
 	};
-	const marked = latex
+	// Le degré d'abord (`20^{\circ}C` → `20°C`) : sinon `C` serait lu le coulomb
+	const marked = degreeSymbolLatex(latex)
 		.replace(
 			WRAPPED_UNIT,
 			(whole, typed?: string, typedExponent?: string, key?: string, keyExponent?: string) =>

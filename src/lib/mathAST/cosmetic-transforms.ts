@@ -1660,8 +1660,13 @@ export function isQuantityValueLatex(latex: string): boolean {
 		node = node.operand;
 	}
 
+	// Une fraction écrite `\frac` : `6\div2` ou `6/2` est un calcul non effectué
 	if (node.type === 'division') {
-		return node.numerator.type === 'number' && node.denominator.type === 'number';
+		return (
+			node.displayStyle === 'fraction' &&
+			node.numerator.type === 'number' &&
+			node.denominator.type === 'number'
+		);
 	}
 
 	if (node.type === 'multiplication' && node.right.type === 'superscript') {

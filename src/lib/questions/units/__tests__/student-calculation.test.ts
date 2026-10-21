@@ -14,6 +14,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateAnswer } from '$lib/utils/answer-validator';
+import { markStudentUnits } from '../student-calculation';
 import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
@@ -94,7 +95,11 @@ describe('case à unité — calcul non effectué de la bonne grandeur', () => {
 		['10^{3}' + typed('m'), '1000\\unit{m}'],
 		['2^{3}' + typed('m'), '8\\unit{m}'],
 		['2' + typed('m') + '\\times3' + typed('m'), '6\\unit{m^2}'],
-		['3' + typed('h') + '+30\\min', '210\\unit{min}']
+		['3' + typed('h') + '+30\\min', '210\\unit{min}'],
+		// Une division écrite `÷` est un calcul, pas une fraction (revue de la PR)
+		['150' + typed('km') + '\\div3' + typed('h'), '50\\unit{km/h}'],
+		['180km\\div2h', '90\\unit{km/h}'],
+		['6' + typed('m') + '\\div2', '3\\unit{m}']
 	])('%s pour %s : forme demandée', (answer, expected) => {
 		expect(submit(answer, expected)).toMatchObject({
 			isCorrect: false,
@@ -170,5 +175,26 @@ describe('case à unité — la partie numérique suit le mode « nombre simple 
 		['5{,}' + typed('m'), '5\\unit{m}']
 	])('%s pour %s : juste, comme sans unité', (answer, expected) => {
 		expect(submit(answer, expected)).toMatchObject({ isCorrect: true });
+	});
+});
+
+// ============================================================================
+// FRACTION DE GRANDEURS, DEGRÉ
+// ============================================================================
+
+describe('case à unité — fraction de grandeurs et degré', () => {
+	// La partie numérique est la fraction `\frac{180}{2}` : perfectible, comme `\frac{180}{2}` sans unité
+	it('180 km / 2 h en fraction pour 90 km/h : juste, fraction à simplifier', () => {
+		expect(
+			submit('\\frac{180' + typed('km') + '}{2' + typed('h') + '}', '90\\unit{km/h}')
+		).toMatchObject({
+			isCorrect: true,
+			status: 'unoptimal_form',
+			feedback: 'La fraction peut être simplifiée.'
+		});
+	});
+
+	it('degré Celsius dans un calcul : °C, pas le coulomb', () => {
+		expect(markStudentUnits('2\\times10^{\\circ}C')).toBe('2\\times10\\unit{°C}');
 	});
 });
