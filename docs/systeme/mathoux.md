@@ -98,8 +98,9 @@ le tagage, sans changement de code.
 
 Spécification : [mathoux-conception.md § 9, « Changement d'année et oubli »](../wip/mathoux-conception.md).
 Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou), `starred_grades`
-(codes de niveau valides, 20 au plus, sans doublon : à la charge du serveur), `first_seen_at`,
-`updated_at` (trigger). Migration `20261017090200_mathoux_memoire.sql`.
+(codes de niveau valides, 20 au plus, sans doublon : à la charge du serveur), `asleep` (la sieste
+écrite par le dernier calcul, pour annoncer le réveil ; migration `20261021200000`),
+`first_seen_at`, `updated_at` (trigger). Migration `20261017090200_mathoux_memoire.sql`.
 
 - **Lecture** au client de l'élève, en parallèle du parcours (`readMathouMemory`) : l'élève lit ses
   lignes, le prof celles de ses élèves. Une lecture en échec lève (la page dit « fermée »), sinon un
@@ -111,7 +112,10 @@ Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou),
   passé (`auth.getUser`) ; sinon il lève, avant toute écriture (audit de la PR 3).
 - **Écriture** au client **service** seulement (`authenticated` n'a que SELECT), pour l'élève de la
   session, à la fin de chaque calcul (page et `GET /api/student/mathoux`), **seulement s'il y a du
-  nouveau** (`memoryUpdates` : Mathou né sans ligne, stade ou étoile gagnés). Une panne
+  nouveau** (`memoryUpdates` : Mathou né sans ligne, stade ou étoile gagnés, sieste qui change
+  dans un sens ou dans l'autre). La sieste n'est pas un acquis : la fusion garde celle du calcul
+  qui écrit. Un Mathou **de la seule mémoire** (aucun point travaillable) garde sa sieste
+  mémorisée : affiché sans sieste, il serait sinon annoncé réveillé à tort. Une panne
   d'écriture est journalisée et ne change pas l'affichage.
 - **Jamais en baisse, même en concurrence** (`rememberMathoux`, `src/lib/server/mathoux/memory.ts`) :
   les lignes neuves partent en **un** insert groupé `ON CONFLICT DO NOTHING` (toutes les colonnes
@@ -266,17 +270,20 @@ Spécification validée par David le 2026-10-21 ([journal](../wip/mathoux-annonc
   par-dessus, c'est une croissance, pas une seconde naissance. Une nouveauté n'est donc **jamais
   annoncée deux fois** (prouvé en intégration : deux calculs identiques en parallèle, deux calculs de
   stades différents). Genre, un par Mathou : **naissance** (aucune ligne avant) > **croissance**
-  (stade au-dessus de la ligne remplacée, étoiles jointes) > **étoile** (de nouvelles étoiles seules)
+  (stade au-dessus de la ligne remplacée, étoiles jointes) > **réveil** (la ligne remplacée dormait,
+  le Mathou ne dort plus et a des points travaillables ; étoiles jointes ; s'endormir n'annonce
+  rien) > **étoile** (de nouvelles étoiles seules)
   (`mathouNews`, `news.ts`). Une écriture qui tombe en panne en cours de route annonce ce qu'elle a
   déjà écrit (`MathouMemoryWriteError.written`), rien d'autre.
 - **Phrases** : « Un chaton est né à la Chatterie : Pile-Poil ! » (« Un matou est arrivé… » si né
-  plus grand), « Pile-Poil est devenu un grand matou ! », « Pile-Poil gagne l'étoile ★ 2nde ! ». 3 au
+  plus grand), « Pile-Poil est devenu un grand matou ! », « Pile-Poil s'est réveillé ! »,
+  « Pile-Poil gagne l'étoile ★ 2nde ! ». 3 au
   plus, naissances d'abord, puis « Et 2 autres nouveautés à la Chatterie. ». **Premier calcul** de
   l'élève (mémoire vide) avec plusieurs Mathoux : une seule phrase, « 7 Mathoux t'attendent à la
   Chatterie ! ».
 - **Animation** (`MathouNewsCard`) : naissance → `apparition` ; croissance → `bond` depuis
   `previousStage` (le stade de la ligne remplacée, porté par la nouveauté ; un chaton peut sauter
-  à grand matou) ; étoile → `bond` seul. Le premier passage (« N Mathoux t'attendent ») ne joue rien.
+  à grand matou) ; réveil → `reveil` ; étoile → `bond` seul. Le premier passage (« N Mathoux t'attendent ») ne joue rien.
 - **Où** : `GET /api/student/mathoux` rend `news` avec les compteurs. La fin de séance la demande
   (`fetchMathouNews`) **après** l'enregistrement, quand l'acquisition est à jour : Entraînement et
   Course (`automaths/test`, carte `MathouNewsCard` dans `TestResults` sous celle du Palotin), révision

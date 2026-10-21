@@ -664,17 +664,17 @@ Fonctionnalites implementees :
 
 **Categories exportees** (format `1.4`, reecrit le 2026-10-11 contre le code — C12) :
 
-| Categorie        | Tables                                                                                          |
-| ---------------- | ----------------------------------------------------------------------------------------------- |
-| `profile`        | `profiles` (identite, niveau, gidouilles, **consentement parental**, **declaration d'age**)     |
-| `evaluation`     | `student_point_state`, `student_competence_level`, `skill_attempts`, `student_observable_state` |
-| `activite`       | `exercise_completions`, `student_exercise_mastery`, `srs_decks`, `test_sessions` (+ reponses)   |
-| `communications` | `messages`, `private_messages`, `notifications`                                                 |
-| `social`         | `friendships`                                                                                   |
-| `gaming`         | `game_players`, `student_mathoux` et `student_buddies` (**ajoutées le 2026-10-18**)             |
-| `rewards`        | `reward_events`                                                                                 |
-| `classes`        | `class_members`                                                                                 |
-| `tuteur`         | `tutor_conversations` + `tutor_messages` (**ajoute le 2026-10-11**)                             |
+| Categorie        | Tables                                                                                                                              |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `profile`        | `profiles` (identite, niveau, gidouilles, **consentement parental**, **declaration d'age**)                                         |
+| `evaluation`     | `student_point_state`, `student_competence_level`, `skill_attempts`, `student_observable_state`                                     |
+| `activite`       | `exercise_completions`, `student_exercise_mastery`, `srs_decks`, `test_sessions` (+ reponses)                                       |
+| `communications` | `messages`, `private_messages`, `notifications`                                                                                     |
+| `social`         | `friendships`                                                                                                                       |
+| `gaming`         | `game_players`, `student_mathoux` (sieste `asleep` comprise depuis le 2026-10-21) et `student_buddies` (**ajoutées le 2026-10-18**) |
+| `rewards`        | `reward_events`                                                                                                                     |
+| `classes`        | `class_members`                                                                                                                     |
+| `tuteur`         | `tutor_conversations` + `tutor_messages` (**ajoute le 2026-10-11**)                                                                 |
 
 **Metadata incluses** :
 
