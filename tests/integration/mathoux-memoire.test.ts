@@ -13,6 +13,10 @@
  * (docs/pratiques/rls-echecs-silencieux.md) : chaque refus d'écriture est
  * prouvé par le code 42501 ET par la valeur relue hors RLS.
  *
+ * Sieste (migration 20261021200000, question d'accès tranchée par David le 2026-10-21 :
+ * personne ne lit rien de neuf) : `asleep`, faux par défaut, lue comme le reste de la ligne,
+ * écrite par le serveur seul.
+ *
  * Contraintes : stade borné à chaton / matou / grand_matou ; étoiles = niveaux
  * valides, 20 au plus. Effacement RGPD : supprimer le compte de l'élève supprime
  * ses lignes. Une notion portée par un Mathou ne se supprime pas (RESTRICT).
@@ -38,6 +42,7 @@ type MathouRow = {
 	notion_id: string;
 	best_stage: string;
 	starred_grades: string[];
+	asleep: boolean;
 	first_seen_at: string;
 	updated_at: string;
 };
@@ -297,6 +302,62 @@ describe('Mémoire des Mathoux (student_mathoux)', () => {
 		it('une notion qui porte des Mathoux ne se supprime pas (23503)', async () => {
 			const { error } = await service.from('classification_nodes').delete().eq('id', notionId);
 			expect(error?.code).toBe(FK_VIOLATION);
+		});
+	});
+
+	describe('sieste (asleep)', () => {
+		it('une ligne écrite sans elle est éveillée (défaut faux)', async () => {
+			expect((await rowOf(studentBId))?.asleep).toBe(false);
+		});
+
+		it('l’élève lit sa sieste, le prof celle de ses élèves', async () => {
+			const own = await studentBClient.from(TABLE).select('asleep').eq('student_id', studentBId);
+			expect(own.error).toBeNull();
+			expect(own.data).toEqual([{ asleep: false }]);
+			const prof = await teacherClient.from(TABLE).select('asleep').eq('student_id', studentBId);
+			expect(prof.error).toBeNull();
+			expect(prof.data).toEqual([{ asleep: false }]);
+		});
+
+		it('l’élève A ne voit pas la sieste de B', async () => {
+			const { data, error } = await studentAClient
+				.from(TABLE)
+				.select('asleep')
+				.eq('student_id', studentBId);
+			expect(error).toBeNull();
+			expect(data).toEqual([]);
+		});
+
+		it('l’élève ne s’endort ni ne se réveille lui-même (42501), la valeur reste', async () => {
+			const { data, error } = await studentBClient
+				.from(TABLE)
+				.update({ asleep: true })
+				.eq('student_id', studentBId)
+				.select();
+			expect(error?.code).toBe(PERMISSION_DENIED);
+			expect(data).toBeNull();
+			expect((await rowOf(studentBId))?.asleep).toBe(false);
+		});
+
+		it('le serveur l’endort puis le réveille', async () => {
+			for (const asleep of [true, false]) {
+				const { data, error } = await service
+					.from(TABLE)
+					.update({ asleep })
+					.eq('student_id', studentBId)
+					.eq('notion_id', notionId)
+					.select('asleep');
+				expect(error).toBeNull();
+				expect(data).toEqual([{ asleep }]);
+			}
+		});
+
+		it('jamais vide (NOT NULL, 23502)', async () => {
+			const { error } = await service
+				.from(TABLE)
+				.update({ asleep: null })
+				.eq('student_id', studentBId);
+			expect(error?.code).toBe('23502');
 		});
 	});
 

@@ -34,6 +34,8 @@ export interface MathouNewsItem {
 	raceIndex: number;
 	/** Stade atteint. */
 	stage: MathouStage;
+	/** Croissance seulement : le stade de la ligne remplacée (le dessin se transforme depuis lui). */
+	previousStage?: MathouStage;
 	/** Codes de niveau étoilés par ce calcul (absents de la mémoire lue). */
 	newStars: string[];
 }
@@ -91,6 +93,7 @@ export function mathouNews(
 			name: mathou.name,
 			raceIndex: mathou.raceIndex,
 			stage,
+			...(kind === 'growth' && have ? { previousStage: have.bestStage } : {}),
 			newStars
 		});
 	}

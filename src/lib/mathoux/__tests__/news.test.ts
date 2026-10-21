@@ -188,6 +188,50 @@ describe('mathouNews', () => {
 		const parsed = mathouxSummarySchema.safeParse({ born: 2, napping: 0, toDiscover: 0, news });
 		expect(parsed.success).toBe(true);
 	});
+
+	it('croissance : porte le stade d’avant (celui de la ligne remplacée), même en sautant un stade', () => {
+		const collection = collectionOf(mathou('n1', 'matou'), mathou('n2', 'grand_matou'));
+		const news = newsAll(
+			collection,
+			memoryOf({
+				n1: { bestStage: 'chaton', starredGrades: [] },
+				n2: { bestStage: 'chaton', starredGrades: [] }
+			})
+		);
+		expect(news.items).toEqual([
+			expect.objectContaining({ notionId: 'n1', kind: 'growth', previousStage: 'chaton' }),
+			expect.objectContaining({ notionId: 'n2', kind: 'growth', previousStage: 'chaton' })
+		]);
+	});
+
+	it('naissance et étoile : pas de stade d’avant', () => {
+		const collection = collectionOf(mathou('n1', 'chaton'), mathou('n2', 'matou', ['4']));
+		const news = newsAll(collection, memoryOf({ n2: { bestStage: 'matou', starredGrades: [] } }));
+		expect(news.items.map((item) => item.kind)).toEqual(['birth', 'star']);
+		for (const item of news.items) expect(item).not.toHaveProperty('previousStage');
+	});
+
+	it('schéma : stade d’avant accepté s’il est valide, refusé sinon', () => {
+		const growth = {
+			kind: 'growth',
+			notionId: 'n1',
+			name: 'Pile-Poil',
+			raceIndex: 0,
+			stage: 'matou',
+			previousStage: 'chaton',
+			newStars: []
+		};
+		const summary = (item: object) => ({
+			born: 1,
+			napping: 0,
+			toDiscover: 0,
+			news: { firstVisit: false, total: 1, items: [item] }
+		});
+		expect(mathouxSummarySchema.safeParse(summary(growth)).success).toBe(true);
+		expect(
+			mathouxSummarySchema.safeParse(summary({ ...growth, previousStage: 'tigre' })).success
+		).toBe(false);
+	});
 });
 
 describe('phrases', () => {

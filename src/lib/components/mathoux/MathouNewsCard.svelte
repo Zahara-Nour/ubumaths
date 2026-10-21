@@ -18,13 +18,23 @@
 		isFirstVisitGroup,
 		moreNewsPhrase,
 		newsItemPhrase,
-		type MathouNews
+		type MathouNews,
+		type MathouNewsKind
 	} from '$lib/mathoux/news';
+	import type { MathouReaction } from './mathou-races';
 
 	// Types
 	interface Props {
 		news: MathouNews | null;
 	}
+
+	// Constantes
+	/** Naissance : il apparaît dans la fête ; croissance : il se transforme en bondissant ; étoile : un bond */
+	const REACTION: Record<MathouNewsKind, MathouReaction> = {
+		birth: 'apparition',
+		growth: 'bond',
+		star: 'bond'
+	};
 
 	let { news }: Props = $props();
 
@@ -57,6 +67,8 @@
 							stage={item.stage}
 							size={40}
 							label={item.name}
+							reaction={REACTION[item.kind]}
+							growFrom={item.previousStage}
 						/>
 						<p class="text-sm font-medium">{newsItemPhrase(item)}</p>
 					</li>

@@ -14,6 +14,9 @@
 
 export type MathouStage = 'chaton' | 'matou' | 'grand_matou';
 
+/** Réaction ponctuelle d'un Mathou : apparition = naissance, bond = il grandit, reveil = fin de sieste */
+export type MathouReaction = 'apparition' | 'bond' | 'reveil';
+
 export const MATHOU_STAGES: readonly MathouStage[] = ['chaton', 'matou', 'grand_matou'];
 
 export type MathouPattern =
