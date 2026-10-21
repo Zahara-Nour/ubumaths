@@ -2,7 +2,7 @@
 couvre:
   - src/lib/mathAST/cli/quantities.ts
   - src/lib/atelier/natural-quantities.ts
-  - 'src/lib/questions/units/{validator,quantity-comparison,feedback,parser,operations,composite-duration,types}.ts'
+  - 'src/lib/questions/units/{validator,quantity-comparison,feedback,parser,operations,composite-duration,types,student-calculation}.ts'
 ---
 
 # Les grandeurs : lire, calculer, écrire
@@ -12,7 +12,7 @@ couvre:
 > passe par les pièces ci-dessous, jamais par une nouvelle à côté. Écrire une grandeur dans un
 > énoncé (la notation pour l'auteur) : [notation-unites.md](../pratiques/notation-unites.md).
 > Décision : [ADR 0026](../adr/0026-grandeurs-un-contrat-et-l-espace.md). Vérifié contre le code
-> le 2026-10-20 (durées juxtaposées, lecture-grandeurs PR 5).
+> le 2026-10-21 (calcul écrit dans une case à unité, correction-cases-unite PR 2 bis).
 
 ## Pourquoi un contrat
 
@@ -33,15 +33,15 @@ octobre). Le symptôme le plus visible : Calcul et `/cas` répondaient `10[km]/1
 
 ### Lire — la seule étape qui dépend du contexte
 
-| Contexte                                      | Règle                                                                                                                                       | Où                                                                                 |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Énoncés, `{{eval}}`, données                  | stricte : `5[km]` (`~…~`), `5~\unit{km}` (LaTeX) — l'auteur doit être sans ambiguïté ; l'unité multiplie tout le terme (`1/2[m]` = (1/2) m) | parseur maison (`parser/custom`, `unit-writing.ts`, `unit-term.ts`), parseur LaTeX |
-| Atelier : calculs et valeurs                  | **« un nombre, une espace, une unité »** (`5 km`, `10^3 m`) ; collé (`5m`) ou `*` = produit ; crochets toujours acceptés                    | `readNaturalQuantities` (`atelier/natural-quantities.ts`)                          |
-| Atelier : champ MathLive d'une carte (valeur) | la même règle, sur le LaTeX du champ (`2\,h\,30\,\min`, `\frac{1}{2}\,m`)                                                                   | `definitionFromField` (`atelier/mathfield.ts`)                                     |
-| Atelier : définitions de fonctions, commandes | jamais d'unité naturelle (`.résoudre 2 a = 4` ne lit pas des ares)                                                                          | —                                                                                  |
-| Atelier : le degré, partout                   | `60°`, `a°`, `(30+30)°` = `[°]` ; `60^\circ`, `60\degree` (MathLive) = `\unit{°}` ; `°` seul refusé                                         | `withDegreeUnits`, `strayDegreeRefusal` (`atelier/degrees.ts`)                     |
-| Case à unité d'une question                   | tout ce qui suit le nombre est l'unité (`5km`, `5 km`, MathLive)                                                                            | `normalizeStudentQuantity` (`questions/units/student-input.ts`)                    |
-| Case à unité : durée composée                 | « 2 h 15 min », « 1 h 5 min 30 s »                                                                                                          | `questions/units/composite-duration.ts`                                            |
+| Contexte                                      | Règle                                                                                                                                       | Où                                                                                                                        |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Énoncés, `{{eval}}`, données                  | stricte : `5[km]` (`~…~`), `5~\unit{km}` (LaTeX) — l'auteur doit être sans ambiguïté ; l'unité multiplie tout le terme (`1/2[m]` = (1/2) m) | parseur maison (`parser/custom`, `unit-writing.ts`, `unit-term.ts`), parseur LaTeX                                        |
+| Atelier : calculs et valeurs                  | **« un nombre, une espace, une unité »** (`5 km`, `10^3 m`) ; collé (`5m`) ou `*` = produit ; crochets toujours acceptés                    | `readNaturalQuantities` (`atelier/natural-quantities.ts`)                                                                 |
+| Atelier : champ MathLive d'une carte (valeur) | la même règle, sur le LaTeX du champ (`2\,h\,30\,\min`, `\frac{1}{2}\,m`)                                                                   | `definitionFromField` (`atelier/mathfield.ts`)                                                                            |
+| Atelier : définitions de fonctions, commandes | jamais d'unité naturelle (`.résoudre 2 a = 4` ne lit pas des ares)                                                                          | —                                                                                                                         |
+| Atelier : le degré, partout                   | `60°`, `a°`, `(30+30)°` = `[°]` ; `60^\circ`, `60\degree` (MathLive) = `\unit{°}` ; `°` seul refusé                                         | `withDegreeUnits`, `strayDegreeRefusal` (`atelier/degrees.ts`)                                                            |
+| Case à unité d'une question                   | tout ce qui suit le nombre est l'unité (`5km`, `5 km`, MathLive) ; sinon un calcul lu en arbre (`2×3 m` = (2×3) m, `3m+2m`)                 | `normalizeStudentQuantity` (`questions/units/student-input.ts`), puis `readStudentCalculation` (`student-calculation.ts`) |
+| Case à unité : durée composée                 | « 2 h 15 min », « 1 h 5 min 30 s »                                                                                                          | `questions/units/composite-duration.ts`                                                                                   |
 
 Règles de la lecture naturelle (décisions de David du 2026-10-11) :
 
@@ -160,6 +160,18 @@ Garde-fou : l'oracle `oracle-cases-unite.test.ts` fige le verdict de ~1 700 rép
 sur les 25 modèles publiés à case à unité (copiés de la production dans
 `tests/fixtures/correction-cases-unite/`). La production ne garde aucune réponse d'élève de
 l'entraînement : l'oracle repose sur les vraies questions, pas sur de vraies réponses.
+
+Calcul écrit par l'élève (décisions de David du 2026-10-21) : quand le découpage « nombre | unité »
+échoue (`2\times3\,m`, `3m+2m`, `10^{3}\,m`), `readStudentCalculation` (`student-calculation.ts`)
+marque les unités (`\operatorname{\mathrm{m}}`, `\mathrm{m}`, `\min`, lettres nues collées à un nombre)
+en `\unit{…}`, lit le calcul avec `parseLatex` (ADR 0031), refuse un mélange de grandeurs avec le
+message de `quantityProblem` (« On ne peut pas ajouter un nombre sans unité et une longueur. » pour
+`3+2 m`), puis réduit par `tidy` à **une** grandeur, jugée comme toute réponse (conversion, unité
+imposée). La forme se juge sur la partie numérique, la saisie sans ses unités (`studentValueLatex` :
+`2\times3`, `3+2`), comme une case sans unité en mode « nombre simple » (notation scientifique en
+plus) : un calcul non effectué est `bad_form`. Une écriture d'unité ambiguë (`kg/m.s`) et une durée
+composée ne passent pas par cette lecture. Limite : un calcul à deux unités avec unité imposée
+(`3 h + 30 min`, `min` imposée) reçoit le message d'unité imposée (la grandeur réduite est en h).
 
 Le refus de grandeur (« Cette unité ne mesure pas la bonne grandeur. ») n'ajoute « Pour un produit
 d'unités, écris m·s. » que si les lettres collées de l'élève, lues comme un produit, mesurent la
