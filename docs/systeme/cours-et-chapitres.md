@@ -3,7 +3,7 @@ couvre:
   - 'src/lib/server/{chapter*,chapters*,content-owner,template-content,template-guard,class-sessions,course-share-tokens,curriculum*,journal*,programme-tree,programme-tags}.ts'
   - 'src/lib/server/validation/{chapter*,chapters,curriculum,journal,academic}.ts'
   - 'src/lib/server/progression/**'
-  - 'src/lib/components/{cours,journal,progression}/**'
+  - 'src/lib/components/{cours,journal,progression,programme}/**'
   - 'src/lib/components/templates/{Chapter,Template}*.svelte'
   - 'src/lib/components/templates/{index.ts,__tests__/**}'
   - 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
