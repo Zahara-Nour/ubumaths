@@ -3,6 +3,7 @@ couvre:
   - src/lib/utils/consent.ts
   - src/lib/stores/consent.svelte.ts
   - src/lib/server/middleware/consent.ts
+  - src/lib/server/parental-consent-requests.ts
   - src/lib/email-templates/parental-consent.ts
   - src/lib/email-templates/child-registration.ts
   - 'src/lib/server/email/**'
