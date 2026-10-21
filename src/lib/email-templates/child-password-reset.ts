@@ -4,7 +4,7 @@
  *
  * L'enfant inscrit par identifiant n'a pas d'adresse : le lien part à celle du parent,
  * confirmée (R1). Il ouvre une page où le parent choisit le mot de passe sans être connecté
- * au compte de l'enfant (R2). Durée du lien : `otp_expiry` de GoTrue (1 heure).
+ * au compte de l'enfant (R2). Le jeton est le nôtre (`createChildResetToken`), valable 1 heure.
  */
 
 import { escapeHtml } from '$lib/utils/html-escape';
@@ -15,13 +15,15 @@ import { getSiteUrl } from './parental-consent';
 export interface ChildPasswordResetEmailData {
 	childFirstname: string;
 	loginId: string;
-	tokenHash: string;
+	userId: string;
+	token: string;
 }
 
 // Functions
 
-export function getChildPasswordResetLink(tokenHash: string): string {
-	return `${getSiteUrl()}/auth/reset-password/parent?token_hash=${encodeURIComponent(tokenHash)}`;
+export function getChildPasswordResetLink(userId: string, token: string): string {
+	const query = new URLSearchParams({ u: userId, t: token });
+	return `${getSiteUrl()}/auth/reset-password/parent?${query.toString()}`;
 }
 
 export function getChildPasswordResetSubject(data: ChildPasswordResetEmailData): string {
@@ -34,7 +36,7 @@ export function getChildPasswordResetEmailText(data: ChildPasswordResetEmailData
 Un nouveau mot de passe a été demandé pour ${data.childFirstname} (identifiant : ${data.loginId}) sur Chiphre.
 
 Choisir le nouveau mot de passe :
-${getChildPasswordResetLink(data.tokenHash)}
+${getChildPasswordResetLink(data.userId, data.token)}
 
 Ce lien est valable 1 heure et ne sert qu'une fois.
 
@@ -48,7 +50,7 @@ L'équipe Chiphre`;
 export function getChildPasswordResetEmailHtml(data: ChildPasswordResetEmailData): string {
 	const firstname = escapeHtml(data.childFirstname);
 	const loginId = escapeHtml(data.loginId);
-	const link = escapeHtml(getChildPasswordResetLink(data.tokenHash));
+	const link = escapeHtml(getChildPasswordResetLink(data.userId, data.token));
 
 	return `<!DOCTYPE html>
 <html lang="fr">

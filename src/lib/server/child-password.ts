@@ -5,17 +5,19 @@
  * Trois recours quand un élève a perdu son mot de passe (décision 4, phase 0 de la PR 3) :
  *
  * - **Le parent** d'un enfant inscrit par identifiant : le lien part à SON adresse, et
- *   seulement si elle est confirmée (R1). GoTrue enverrait le lien à l'adresse du compte,
- *   fictive : on lui demande le jeton sans envoi (`generateLink`), Brevo l'envoie au parent.
- *   La page du lien change le mot de passe SANS ouvrir de session chez le parent (R2,
- *   décision 8 : il ne voit rien du compte de l'enfant).
+ *   seulement si elle est confirmée (R1), par Brevo. Le jeton du lien est À NOUS : aléatoire,
+ *   seule son empreinte est gardée dans `app_metadata.password_reset` de l'enfant (écrit par la
+ *   clé service seulement). Jamais un jeton de GoTrue : présenté à `/auth/v1/verify`, celui-ci
+ *   ouvrirait une session sur le compte de l'enfant (audit de la PR 3, B1). La page du lien
+ *   change le mot de passe par la clé service, sans aucune session (R2, décision 8 : le
+ *   parent ne voit rien du compte de l'enfant).
  * - **Le prof** : mot de passe provisoire généré, affiché une fois ; la marque
  *   `app_metadata.must_change_password` oblige l'élève à en choisir un à la connexion
  *   suivante (R3). `app_metadata` n'est modifiable que par la clé service.
  * - **L'élève** : « Changer mon mot de passe » (`/auth/update-password`).
  */
 
-import { randomInt } from 'node:crypto';
+import { createHash, randomBytes, randomInt, timingSafeEqual } from 'node:crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
@@ -32,7 +34,7 @@ export type ChildResetTarget =
 
 export type SetChildPasswordResult =
 	| { ok: true; firstname: string; loginId: string }
-	| { ok: false; reason: 'invalid_token' | 'not_child' | 'weak_password' | 'server_error' };
+	| { ok: false; reason: 'invalid_token' | 'weak_password' | 'server_error' };
 
 export type ProvisionalPasswordResult =
 	{ ok: true; password: string } | { ok: false; reason: 'server_error' };
@@ -42,6 +44,10 @@ export type ProvisionalPasswordResult =
 const logger = createServerLogger('server/child-password');
 
 export const MUST_CHANGE_PASSWORD = 'must_change_password';
+export const PASSWORD_RESET = 'password_reset';
+
+/** Durée du lien envoyé au parent. */
+const RESET_TOKEN_TTL_SECONDS = 3600;
 
 /** Un lien de courriel ouvert depuis moins d'une heure vaut preuve (cf. `otp_expiry`). */
 const EMAIL_LINK_FRESHNESS_SECONDS = 3600;
@@ -217,9 +223,23 @@ export function isFreshEmailLinkSession(amr: unknown, nowSeconds: number): boole
 	);
 }
 
+type ServiceUser = { id: string; email?: string; app_metadata?: Record<string, unknown> };
+
+/** Compte d'un enfant : adresse du domaine fictif ET marque posée par la clé service. */
+function isChildUser(user: ServiceUser): user is ServiceUser & { email: string } {
+	return (
+		!!user.email && isChildAccountEmail(user.email) && user.app_metadata?.child_account === true
+	);
+}
+
+function sha256(value: string): Buffer {
+	return createHash('sha256').update(value).digest();
+}
+
 /**
  * À qui envoyer le lien pour l'enfant de cette adresse fictive : l'adresse du parent de la
- * demande la plus récente, si elle est confirmée (`granted`, R1). Sinon, rien.
+ * demande la plus récente, si elle est confirmée (`granted`, R1). Sinon, rien. Le compte est
+ * relu dans GoTrue (adresse et marque) : `profiles.email` est modifiable par son propriétaire.
  */
 export async function findChildResetTarget(
 	service: ServiceClient,
@@ -239,6 +259,15 @@ export async function findChildResetTarget(
 		return { ok: false, reason: 'server_error' };
 	}
 	if (!profile) return { ok: false, reason: 'unknown' };
+
+	const { data: auth, error: authError } = await service.auth.admin.getUserById(profile.id);
+	if (authError || !auth.user) {
+		logger.error('Compte de l’enfant illisible :', authError?.message);
+		return { ok: false, reason: 'server_error' };
+	}
+	if (!isChildUser(auth.user) || auth.user.email.toLowerCase() !== email) {
+		return { ok: false, reason: 'unknown' };
+	}
 
 	const { data: request, error: requestError } = await service
 		.from('parental_consents')
@@ -263,62 +292,79 @@ export async function findChildResetTarget(
 	};
 }
 
-/** Jeton de réinitialisation, SANS courriel de GoTrue (c'est Brevo qui écrit au parent). */
-export async function createChildRecoveryToken(
+/**
+ * Jeton du lien du parent : 32 octets aléatoires ; seule l'empreinte SHA-256 et l'échéance
+ * sont gardées dans `app_metadata` (une mise à jour qui ne ferme aucune session). Une nouvelle
+ * demande remplace la précédente.
+ */
+export async function createChildResetToken(
 	service: ServiceClient,
-	childEmail: string
+	userId: string,
+	nowMs: number = Date.now()
 ): Promise<string | null> {
-	const { data, error } = await service.auth.admin.generateLink({
-		type: 'recovery',
-		email: childEmail
+	const token = randomBytes(32).toString('base64url');
+	const { error } = await service.auth.admin.updateUserById(userId, {
+		app_metadata: {
+			[PASSWORD_RESET]: {
+				hash: sha256(token).toString('hex'),
+				expires_at: nowMs + RESET_TOKEN_TTL_SECONDS * 1000
+			}
+		}
 	});
-	if (error || !data.properties?.hashed_token) {
-		logger.error('Jeton de réinitialisation non créé :', error?.message);
+	if (error) {
+		logger.error('Jeton du parent non enregistré :', error.message);
 		return null;
 	}
-	return data.properties.hashed_token;
+	return token;
+}
+
+/** Le jeton présenté correspond-il à l'empreinte gardée, avant l'échéance ? */
+function matchesStoredToken(stored: unknown, token: string, nowMs: number): boolean {
+	if (typeof stored !== 'object' || stored === null) return false;
+	const { hash, expires_at } = stored as { hash?: unknown; expires_at?: unknown };
+	if (typeof hash !== 'string' || typeof expires_at !== 'number' || nowMs >= expires_at) {
+		return false;
+	}
+	const expected = Buffer.from(hash, 'hex');
+	const actual = sha256(token);
+	return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
 
 /**
- * Page du lien du parent : vérifie le jeton sur un client jetable (aucun cookie), change le
- * mot de passe par la clé service, puis ferme aussitôt la session que GoTrue a ouverte (R2).
- * Lève aussi la marque « à changer » : le mot de passe vient d'être choisi.
+ * Page du lien du parent : vérifie le jeton contre l'empreinte de l'enfant, puis change le
+ * mot de passe par la clé service — aucune session n'est ouverte (R2). Le jeton n'est effacé
+ * qu'au succès : un mot de passe refusé par GoTrue laisse le parent réessayer. Lève aussi la
+ * marque « à changer » : le mot de passe vient d'être choisi.
  */
 export async function setChildPasswordFromToken(
 	service: ServiceClient,
-	tokenHash: string,
-	password: string
+	userId: string,
+	token: string,
+	password: string,
+	nowMs: number = Date.now()
 ): Promise<SetChildPasswordResult> {
-	const ephemeral = createAnonymousSupabase();
-	const { data, error } = await ephemeral.auth.verifyOtp({
-		type: 'recovery',
-		token_hash: tokenHash
-	});
+	const { data, error } = await service.auth.admin.getUserById(userId);
 	if (error || !data.user) return { ok: false, reason: 'invalid_token' };
-
 	const user = data.user;
-	try {
-		if (!user.email || !isChildAccountEmail(user.email) || !user.app_metadata?.child_account) {
-			return { ok: false, reason: 'not_child' };
-		}
-
-		const { error: updateError } = await service.auth.admin.updateUserById(user.id, {
-			password,
-			app_metadata: { [MUST_CHANGE_PASSWORD]: false }
-		});
-		if (updateError?.code === 'weak_password') return { ok: false, reason: 'weak_password' };
-		if (updateError) {
-			logger.error('Mot de passe de l’enfant non changé :', updateError.message);
-			return { ok: false, reason: 'server_error' };
-		}
-
-		const firstname = (user.user_metadata?.firstname as string | undefined) ?? '';
-		return { ok: true, firstname, loginId: childLoginIdOf(user.email) ?? '' };
-	} finally {
-		// `local` : seule la session du lien, pas celles de l'enfant.
-		const { error: signOutError } = await ephemeral.auth.signOut({ scope: 'local' });
-		if (signOutError) logger.error('Session du lien non fermée :', signOutError.message);
+	if (
+		!isChildUser(user) ||
+		!matchesStoredToken(user.app_metadata?.[PASSWORD_RESET], token, nowMs)
+	) {
+		return { ok: false, reason: 'invalid_token' };
 	}
+
+	const { error: updateError } = await service.auth.admin.updateUserById(user.id, {
+		password,
+		app_metadata: { [PASSWORD_RESET]: null, [MUST_CHANGE_PASSWORD]: false }
+	});
+	if (updateError?.code === 'weak_password') return { ok: false, reason: 'weak_password' };
+	if (updateError) {
+		logger.error('Mot de passe de l’enfant non changé :', updateError.message);
+		return { ok: false, reason: 'server_error' };
+	}
+
+	const firstname = (user.user_metadata?.firstname as string | undefined) ?? '';
+	return { ok: true, firstname, loginId: childLoginIdOf(user.email) ?? '' };
 }
 
 /** Mot de passe provisoire (prof, R3) : appliqué avec la marque « à changer », rendu une fois. */

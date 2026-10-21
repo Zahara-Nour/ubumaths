@@ -10,13 +10,14 @@ import {
 const DATA: ChildPasswordResetEmailData = {
 	childFirstname: 'Noélie',
 	loginId: 'noelie42',
-	tokenHash: 'abc123def456'
+	userId: '22222222-2222-4222-8222-222222222222',
+	token: 'abc123_def-456'
 };
 
 describe('courriel au parent : nouveau mot de passe pour son enfant', () => {
-	it('le lien mène à la page du parent, jeton dans l’adresse', () => {
-		expect(getChildPasswordResetLink('abc123def456')).toBe(
-			'https://www.chiph.re/auth/reset-password/parent?token_hash=abc123def456'
+	it('le lien mène à la page du parent, compte et jeton dans l’adresse', () => {
+		expect(getChildPasswordResetLink(DATA.userId, DATA.token)).toBe(
+			'https://www.chiph.re/auth/reset-password/parent?u=22222222-2222-4222-8222-222222222222&t=abc123_def-456'
 		);
 	});
 
@@ -26,7 +27,9 @@ describe('courriel au parent : nouveau mot de passe pour son enfant', () => {
 			getChildPasswordResetEmailHtml(DATA)
 		]) {
 			expect(body).toContain('noelie42');
-			expect(body).toContain('/auth/reset-password/parent?token_hash=abc123def456');
+			expect(body).toContain(
+				'/auth/reset-password/parent?u=22222222-2222-4222-8222-222222222222&amp;t=abc123_def-456'
+			);
 			expect(body).toContain('1 heure');
 		}
 		expect(getChildPasswordResetSubject(DATA)).toBe('Nouveau mot de passe pour Noélie sur Chiphre');
@@ -39,8 +42,8 @@ describe('courriel au parent : nouveau mot de passe pour son enfant', () => {
 	});
 
 	it('encode le jeton dans le lien', () => {
-		expect(getChildPasswordResetLink('a&b"c')).toBe(
-			'https://www.chiph.re/auth/reset-password/parent?token_hash=a%26b%22c'
+		expect(getChildPasswordResetLink('u', 'a&b"c')).toBe(
+			'https://www.chiph.re/auth/reset-password/parent?u=u&t=a%26b%22c'
 		);
 	});
 });

@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, PR 3 codée, avant revue._
+_Mis à jour le 2026-10-21, PR #1594 ouverte, correctifs des revues EN COURS (commit WIP local, non poussé)._
 
-- **État** : PR 1 (#1585) et PR 2 (#1592) mergées, migration en prod ; code pas en prod (attend un `deploy:prod`). PR 3 : codée, tests verts, doc à jour ; PR à ouvrir, revues `code-reviewer` + `security-auditor`.
-- **Prochaine action** : ouvrir la PR 3, revues, CI, merge ; puis PR 4 (écran élève seul + approbation du prof).
-- **En attente de David** : M2, M1 bis, F1 (§ PR 2).
-- **Pièges en cours** : GoTrue écrit `app_metadata` APRÈS l'INSERT (trigger différé) ; la règle commune donne 30 j de grâce → retirés par `createChildAccount` ; reset d'un enfant : jamais vers `@eleves.chiph.re`.
+- **État** : #1594 ouverte (CI de l'ancien commit, sans valeur). `security-auditor` → **B1 bloquant** : le lien du parent portait le `hashed_token` de GoTrue, qui ouvre une session sur le compte de l'enfant (`/auth/confirm` ou `/auth/v1/verify`). Refonte commencée : jeton maison, empreinte dans `app_metadata.password_reset` (`createChildResetToken`, `setChildPasswordFromToken(service, userId, token, password)`) ; module + intégration (11 verts) + gabarit faits.
+- **Prochaine action** : finir B1 → `reset-password/+page.server.ts` (`createChildResetToken(service, target.userId)`, courriel `{userId, token}`), page du parent (`?u=&t=`, Zod uuid + jeton 20-128, load), leurs tests (le test du gabarit compare le texte avec `&amp;` : à séparer texte/HTML) ; puis les autres constats (§ Revues de la PR 3) ; doc `auth.md` (jeton maison, pas `generateLink`) ; check, push, CI, merge.
+- **En attente de David** : M1 audit, M2 audit, F-c, revue n° 2 (§ Revues de la PR 3, recos données). David suit mes recos sur M2/M1 bis/F1 de la PR 2 : **F1 = lui** (Dashboard) ; **M1 bis** (5 comptes par classe et par 24 h, écran parent) et **M2** (suffixe à 3 chiffres) = petite PR après #1594, avant le `deploy:prod`.
+- **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `app_metadata` seul n'en ferme aucune ; `oxlint --fix` du pre-commit réécrit les tests (les relancer après commit).
 - **Worktree / branche** : `../ubumaths-wt-inscription-parent` · `feat/inscription-parent-mots-de-passe`.
 
 ## Contexte
@@ -283,3 +283,23 @@ dédiée sans session · R3 changement obligatoire · R4 tous les élèves, jama
 - Doc : `auth.md` (§ Mots de passe des élèves, chaîne des handles complétée d'`accountStatusHandle`,
   qui manquait), `serveur.md`, `architecture-generale.md`, `comptes-classes-ecoles.md`,
   `conformite/rgpd.md`, `conformite/consentement-parental.md`.
+
+### Revues de la PR 3 (2026-10-21)
+
+`security-auditor` :
+
+- **B1 (bloquant)** : jeton GoTrue dans le courriel → session sur le compte de l'enfant. Refonte en cours (jeton maison). Optionnel en plus : `/auth/confirm` refuse un `recovery` d'un compte `child_account`.
+- **M1** : le prof peut réécrire `parent_email` d'une demande déjà `granted` (`teacher/consent`, `updateParentEmail`) → le lien partirait à une adresse non confirmée. _Reco : refuser la modification sur une demande accordée (le consentement vit sur le profil, `consent_granted_at`)._ À trancher.
+- **M2** : « ancien mot de passe exigé » n'est qu'une garde d'interface (`supabase.auth.updateUser` depuis la console d'une session ouverte). « Secure password change » de GoTrue enverrait un code à l'adresse fictive des enfants. _Reco : le documenter comme garde d'interface (qui tient la session a déjà le compte ; prof et parent peuvent réinitialiser)._ À trancher.
+- **F-a** (= revue n° 6) : le temps de réponse de « Mot de passe oublié » révèle un enfant à parent confirmé → durée plancher (~2 s) sur tous les chemins. À faire.
+- **F-b** : cible cherchée par `profiles.email` (modifiable) → relecture GoTrue (adresse + `child_account`) : **fait** (test 3 bis).
+- **F-c** : suivi des clics Brevo = le lien journalisé chez Brevo. _David : vérifier/couper le suivi des clics du transactionnel._
+
+`code-reviewer` :
+
+1. Nouvel essai impossible après `weak_password` (jeton GoTrue consommé) : **résolu par la refonte** (jeton effacé au succès seulement, test 2 ter).
+2. Compte sans fournisseur `email` (Google) : « Changer mon mot de passe » sans issue. _Reco : masquer le bouton si `app_metadata.providers` n'a pas `email`._ À trancher (petit).
+3. Fermer la fenêtre du prof pendant la requête → mot de passe appliqué sans être vu : ignorer la fermeture pendant `isResetting`. À faire.
+4. Marque non levée → l'élève doit choisir un 3e mot de passe (`same_password`) : nouvel essai de la levée + message clair. À faire.
+5. Ancien mot de passe sur le seau de connexion (3/15 min) : seau dédié + `currentPassword` dans le schéma Zod. À faire.
+6. = F-a.
