@@ -35,21 +35,23 @@
 -- liens-modeles), dans cet ordre, avec node_id redevenu facultatif.
 -- ============================================================================
 
--- ---- 0. Verrou : entre la garde et la suppression, aucune écriture ne s'intercale ------------
+-- ---- 1. Verrou, garde, puis les données : un seul bloc, donc une seule transaction -----------
+-- Le verrou est pris DANS le bloc : `supabase start` joue les migrations hors bloc de transaction,
+-- où LOCK TABLE est refusé (25P01) ; dans le bloc, il tient jusqu'à la fin de la transaction.
 -- Sans lui, un élève qui répond pendant la migration sur un modèle encore tagué d'un ancien point
 -- recrée une ligne student_point_state après la garde (trigger d'acquisition), et elle partirait
--- en cascade sans bruit. Les écritures concurrentes attendent la fin de la migration.
-lock table public.curriculum_points, public.question_template_points, public.student_point_state,
-	public.journal_entry_points, public.exercise_curriculum_points,
-	public.curriculum_point_automatismes, public.srs_anti_fraud_flags
-	in share row exclusive mode;
-
--- ---- 1. Garde : rien ne pointe vers un ancien point, sinon RIEN ne change --------------------
+-- en cascade sans bruit. Les écritures concurrentes attendent la fin du bloc.
+-- Garde : rien ne pointe vers un ancien point, sinon RIEN ne change.
 do $garde$
 declare
 	v_n integer;
 	v_list text;
 begin
+	lock table public.curriculum_points, public.question_template_points, public.student_point_state,
+		public.journal_entry_points, public.exercise_curriculum_points,
+		public.curriculum_point_automatismes, public.srs_anti_fraud_flags
+		in share row exclusive mode;
+
 	select count(*), string_agg(x.t || ' (' || x.n || ')', ', ')
 	  into v_n, v_list
 	  from (
@@ -91,19 +93,18 @@ begin
 	if v_n > 0 then
 		raise exception 'points sans objectif ni nœud : % — node_id obligatoire impossible', v_n;
 	end if;
+
+	-- Les données. Les liens d'abord : la clé étrangère de question_template_points est en RESTRICT.
+	delete from public.question_template_points q
+	 using public.curriculum_points p
+	 where p.id = q.point_id
+	   and p.objective_id is not null;
+
+	delete from public.curriculum_points
+	 where objective_id is not null;
 end $garde$;
 
--- ---- 2. Les données -------------------------------------------------------------------------
--- Les liens d'abord : la clé étrangère de question_template_points est en RESTRICT.
-delete from public.question_template_points q
- using public.curriculum_points p
- where p.id = q.point_id
-   and p.objective_id is not null;
-
-delete from public.curriculum_points
- where objective_id is not null;
-
--- ---- 3. Les triggers et les fonctions de l'ancien monde --------------------------------------
+-- ---- 2. Les triggers et les fonctions de l'ancien monde --------------------------------------
 drop trigger curriculum_points_assign_code on public.curriculum_points;
 drop trigger curriculum_points_place_last on public.curriculum_points;
 drop trigger curriculum_themes_place_last on public.curriculum_themes;
@@ -118,7 +119,7 @@ drop function public.reorder_curriculum_objectives(uuid, uuid[]);
 drop function public.reorder_curriculum_points(uuid, uuid[]);
 drop function public.curriculum_referenced_points(text);
 
--- ---- 4. Le schéma ---------------------------------------------------------------------------
+-- ---- 3. Le schéma ---------------------------------------------------------------------------
 alter table public.curriculum_points
 	drop constraint curriculum_points_one_generation;
 

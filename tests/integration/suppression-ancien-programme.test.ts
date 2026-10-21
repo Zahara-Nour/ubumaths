@@ -60,7 +60,7 @@ async function catalogValue(sql: string, params: unknown[] = []): Promise<unknow
 	return rows[0]?.value;
 }
 
-/** Le bloc de garde du § 1, seul : il doit se rejouer sur l'état d'après. */
+/** Le bloc du § 1 (verrou, garde, suppressions), seul : il doit se rejouer sur l'état d'après. */
 function guardBlock(): string {
 	const sql = readFileSync(MIGRATION_PATH, 'utf-8');
 	const start = sql.indexOf('do $garde$');
@@ -177,12 +177,15 @@ describe('suppression de l’ancien programme (20261022080000)', () => {
 	});
 
 	describe('garde du § 1 (transaction annulée, colonne fantôme)', () => {
-		it('les tables surveillées sont verrouillées AVANT la garde', () => {
-			const sql = readFileSync(MIGRATION_PATH, 'utf-8');
-			const lock = sql.indexOf('lock table public.curriculum_points');
-			expect(lock, 'verrou absent').toBeGreaterThanOrEqual(0);
-			expect(lock).toBeLessThan(sql.indexOf('do $garde$'));
-			const statement = sql.slice(lock, sql.indexOf(';', lock));
+		it('les tables surveillées sont verrouillées DANS le bloc, avant la garde et les suppressions', () => {
+			// Hors bloc, `supabase start` refuse LOCK TABLE (25P01) ; dans le bloc, le verrou tient
+			// jusqu'à la fin de sa transaction, suppressions comprises.
+			const block = guardBlock();
+			const lock = block.indexOf('lock table public.curriculum_points');
+			expect(lock, 'verrou absent du bloc').toBeGreaterThanOrEqual(0);
+			expect(lock).toBeLessThan(block.indexOf('select count(*)'));
+			expect(lock).toBeLessThan(block.indexOf('delete from'));
+			const statement = block.slice(lock, block.indexOf(';', lock));
 			for (const table of Object.keys(REFERENCING_ROWS)) {
 				expect(statement, `${table} non verrouillée`).toContain(`public.${table}`);
 			}
