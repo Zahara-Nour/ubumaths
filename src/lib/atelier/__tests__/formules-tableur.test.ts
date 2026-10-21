@@ -363,7 +363,7 @@ describe('revue de la PR 1', () => {
 		expect(shown(withSeries('=SOMME(A0:A4)'), C, 1)).not.toBe('50');
 	});
 
-	it('ECARTYPE de 200 valeurs : la moyenne n’est calculée qu’une fois (< 150 ms)', () => {
+	it('ECARTYPE de 200 valeurs : la moyenne n’est calculée qu’une fois (< 400 ms)', () => {
 		const a = new Atelier();
 		a.editCells(
 			Array.from({ length: 200 }, (_, i) => ({ column: A, row: i + 1, text: `${i + 1}/7` }))
@@ -378,6 +378,8 @@ describe('revue de la PR 1', () => {
 
 		// σ de 1..200 divisé par 7 : √((200² − 1)/12) / 7 ≈ 8,2478
 		expect(shown(a, C, 1)).toBe('≈ 8,2478');
-		expect(elapsed).toBeLessThan(150);
+		// Mesuré : ~50-100 ms en local, jusqu’à 169 ms sur un runner CI chargé ; recalculer la
+		// moyenne pour chaque valeur (la régression visée) coûte 800-1 350 ms en local.
+		expect(elapsed).toBeLessThan(400);
 	});
 });
