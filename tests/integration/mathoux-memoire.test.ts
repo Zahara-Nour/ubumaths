@@ -319,6 +319,15 @@ describe('Mémoire des Mathoux (student_mathoux)', () => {
 			expect(prof.data).toEqual([{ asleep: false }]);
 		});
 
+		it('l’élève A ne voit pas la sieste de B', async () => {
+			const { data, error } = await studentAClient
+				.from(TABLE)
+				.select('asleep')
+				.eq('student_id', studentBId);
+			expect(error).toBeNull();
+			expect(data).toEqual([]);
+		});
+
 		it('l’élève ne s’endort ni ne se réveille lui-même (42501), la valeur reste', async () => {
 			const { data, error } = await studentBClient
 				.from(TABLE)
