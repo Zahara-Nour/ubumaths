@@ -6,18 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, PR prête (revues faites)._
+_Mis à jour le 2026-10-21, après #1587._
 
-- **État** : code + tests (unitaires, intégration : endormi sans annonce puis réveil annoncé une
-  fois) + doc ; `code-reviewer` (important corrigé : siestes concurrentes testées) et
-  `security-auditor` : **aucun bloquant**.
-- **Prochaine action** : PR → CI verte → merge → vérification manuelle notée → nettoyage worktree.
-  Aucune migration dans cette PR.
-- **En attente de David** : rien.
-- **Pièges en cours** : limites acceptées et documentées (sieste du dernier écrivain en
-  concurrence ; Mathou qui perd puis retrouve ses points) ; réveil + étoile → seul le réveil est
-  dit (comme croissance + étoile).
-- **Worktree / branche** : `../ubumaths-wt-mathoux-reveil` · `feat/mathoux-reveil`.
+- **État** : **chantier clos.** #1587 mergée (après #1582). Rien en prod tant que David n'a pas
+  lancé `pnpm deploy:prod` ; la colonne `asleep` y est déjà.
+- **Prochaine action** : aucune. Vérifications manuelles #1582 et #1587 notées.
+- **En attente de David** : `deploy:prod` (à sa demande), puis les vérifications manuelles.
+- **Pièges en cours** : limites acceptées documentées dans `docs/systeme/mathoux.md` § Mémoire.
+- **Worktree / branche** : supprimés.
 
 ## Comportements (validés par David le 2026-10-21)
 
