@@ -5,17 +5,16 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1596 (étape 3, E mergée)._
+_Mis à jour le 2026-10-21, après la v0.44.0 (étape 3 en prod)._
 
 - **État** : C5 étape 3 (bascule du code) **terminée**. Fait : #1060, #1577 (B1), #1581 (B2), #1583 (B3), #1589 (D),
   #1595 (F, analytique), #1596 (E : rattachement des modèles par code retiré, `"points"` ôté des 398 JSON).
-  Pas en prod (aucun `deploy:prod` depuis B1).
-- **Prochaine action** : **étape 4** (destructive : tables thèmes / objectifs, anciens points et leurs 1 026 liens,
-  8 fonctions SQL, tests d'intégration de l'ancien monde, copie `db:seed-riche`) — **arrêt** : expliquer à David ce
-  qui sera perdu, grep des usages ; seulement APRÈS le `deploy:prod` qui livre l'étape 3.
-- **En attente de David** : `deploy:prod` de l'étape 3 — repoussé par David le 2026-10-21 après la PR M1 bis + M2
-  d'inscription-parent (prévue avant tout déploiement). Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement
-  des exercices (51).
+  **En prod depuis la v0.44.0** (2026-10-21).
+- **Prochaine action** : **étape 4** (destructive), inventaire fait (entrée du 2026-10-21 « Étape 4 : inventaire ») —
+  phase 0 à présenter à David, grep collé dans le message, rien d'écrit avant sa réponse.
+- **En attente de David** : sort des 12 modèles (brouillons) qui n'ont QUE d'anciens points (leur donner un point
+  neuf avant, ou accepter qu'ils restent sans rangement). Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend
+  une règle de correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51).
 - **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) ; nettoyage
   d'intégration : tags d'exercice AVANT rangements ; MySelect et infobulles de l'analytique affichent le LaTeX brut ;
   pas de test de rendu des pages élève de D.
