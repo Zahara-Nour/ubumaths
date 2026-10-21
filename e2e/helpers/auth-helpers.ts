@@ -101,10 +101,10 @@ export async function login(
 	await page.goto('/auth/login');
 
 	// Wait for login form to be visible
-	await page.waitForSelector('input[type="email"]', { state: 'visible' });
+	await page.waitForSelector('input[name="email"]', { state: 'visible' });
 
 	// Fill credentials
-	await page.fill('input[type="email"]', email);
+	await page.fill('input[name="email"]', email);
 	await page.fill('input[type="password"]', password);
 
 	// Submit form
@@ -228,7 +228,7 @@ export async function expectAuthenticated(page: Page): Promise<void> {
 	await expect(page).toHaveURL(/\/dashboard/);
 
 	// Should not see login form
-	await expect(page.locator('input[type="email"]')).not.toBeVisible();
+	await expect(page.locator('input[name="email"]')).not.toBeVisible();
 }
 
 /**

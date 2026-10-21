@@ -5,6 +5,7 @@
 import { z } from 'zod';
 import { formDataTransforms } from './common';
 import { validatePasswordPolicy } from '$lib/server/passwordPolicy';
+import { normalizeLoginIdentifier } from '$lib/utils/child-account';
 
 /**
  * SECURITY (finding H6): the server-side password policy was dead code — real
@@ -26,10 +27,17 @@ function enforcePasswordPolicy(password: string, ctx: z.RefinementCtx): void {
 // ============================================================================
 
 /**
- * Login form schema
+ * Login form schema. Le champ `email` reçoit une adresse OU l'identifiant d'un enfant
+ * (`noelie42`), changé en adresse du domaine fictif (`$lib/utils/child-account`).
  */
 export const loginFormSchema = z.object({
-	email: formDataTransforms.email,
+	email: z
+		.string()
+		.max(254, 'Identifiant trop long')
+		.transform((value) => normalizeLoginIdentifier(value) ?? '')
+		.pipe(
+			z.string().min(1, 'Adresse ou identifiant requis').email('Adresse ou identifiant invalide')
+		),
 	password: z.string().min(1, 'Mot de passe requis')
 });
 

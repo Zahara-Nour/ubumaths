@@ -367,12 +367,17 @@ describe('miscellaneous validation modules', () => {
 
 		it('should reject invalid email', () => {
 			const data = {
-				email: 'not-an-email',
+				email: 'not-an-email@',
 				password: 'password123'
 			};
 
 			const result = loginFormSchema.safeParse(data);
 			expect(result.success).toBe(false);
+		});
+
+		it('accepte l’identifiant d’un enfant (sans @) et le change en adresse fictive', () => {
+			const result = loginFormSchema.safeParse({ email: 'Noélie42', password: 'password123' });
+			expect(result.success && result.data.email).toBe('noelie42@eleves.chiph.re');
 		});
 
 		it('should reject empty password', () => {

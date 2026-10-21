@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { CHILD_ACCOUNT_DOMAIN } from '$lib/utils/child-account';
 
 vi.mock('$lib/server/rateLimiter', () => ({
 	checkPasswordResetRateLimitByIP: vi.fn(async () => ({ allowed: true })),
@@ -19,6 +20,24 @@ describe('/auth/reset-password — message en français', () => {
 				supabase: { auth: { resetPasswordForEmail: vi.fn(async () => ({ error: null })) } }
 			}
 		} as never)) as { message: string };
+		expect(res.message).toBe(
+			'Si un compte existe avec cette adresse, tu vas recevoir un lien pour choisir un nouveau mot de passe.'
+		);
+	});
+});
+
+describe('/auth/reset-password — domaine fictif', () => {
+	it('ne demande aucun courriel pour une adresse du domaine fictif, même réponse neutre', async () => {
+		const resetPasswordForEmail = vi.fn(async () => ({ error: null }));
+		const form = new FormData();
+		form.set('email', `noelie42@${CHILD_ACCOUNT_DOMAIN}`);
+		const res = (await actions.resetPassword({
+			request: new Request('http://localhost/auth/reset-password', { method: 'POST', body: form }),
+			url: new URL('http://localhost/auth/reset-password'),
+			getClientAddress: () => '127.0.0.1',
+			locals: { supabase: { auth: { resetPasswordForEmail } } }
+		} as never)) as { message: string };
+		expect(resetPasswordForEmail).not.toHaveBeenCalled();
 		expect(res.message).toBe(
 			'Si un compte existe avec cette adresse, tu vas recevoir un lien pour choisir un nouveau mot de passe.'
 		);

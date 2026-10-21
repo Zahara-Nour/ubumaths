@@ -43,7 +43,7 @@ test.describe('Successful Login Flows', () => {
 
 		// Verify login page loaded
 		await expect(page).toHaveURL(/\/auth\/login/);
-		await expect(page.locator('input[type="email"]')).toBeVisible();
+		await expect(page.locator('input[name="email"]')).toBeVisible();
 
 		// Login as teacher
 		await loginAsTeacher(page);
@@ -99,7 +99,7 @@ test.describe('Successful Login Flows', () => {
 		await page.goto('/auth/login');
 
 		// Fill credentials
-		await page.fill('input[type="email"]', testUsers.teacher.email);
+		await page.fill('input[name="email"]', testUsers.teacher.email);
 		await page.fill('input[type="password"]', testUsers.teacher.password);
 
 		// Submit form
@@ -140,33 +140,25 @@ test.describe('Failed Login Attempts', () => {
 		await page.goto('/auth/login');
 
 		// Wait for email/password tab to be visible
-		await page.waitForSelector('input[type="email"]', { state: 'visible' });
+		await page.waitForSelector('input[name="email"]', { state: 'visible' });
 	});
 
-	test('shows error with invalid email format', async ({ page }) => {
-		// Fill with invalid email
-		await page.fill('input[type="email"]', 'not-an-email');
+	test('treats a value without @ as a child login id', async ({ page }) => {
+		// Sans @, la saisie est un identifiant d'enfant : le navigateur ne bloque pas,
+		// le serveur répond par le message d'échec unique.
+		await page.fill('input[name="email"]', 'identifiant-inconnu');
 		await page.fill('input[type="password"]', 'password123');
 
-		// Submit form
 		await page.click('button[type="submit"]');
 
-		// Verify browser validation prevents submission
-		// Or verify server-side validation error is shown
-		const emailInput = page.locator('input[type="email"]');
-		const validationMessage = await emailInput.evaluate(
-			(el: HTMLInputElement) => el.validationMessage
-		);
-
-		// Browser should show validation message for invalid email
-		expect(validationMessage).toBeTruthy();
+		await expect(page.getByText('Identifiants invalides.')).toBeVisible();
 	});
 
 	test('shows error with wrong password', async ({ page }) => {
 		const testUsers = getTestUsers();
 
 		// Fill with correct email but wrong password
-		await page.fill('input[type="email"]', testUsers.teacher.email);
+		await page.fill('input[name="email"]', testUsers.teacher.email);
 		await page.fill('input[type="password"]', 'wrong-password-123');
 
 		// Submit form
@@ -189,7 +181,7 @@ test.describe('Failed Login Attempts', () => {
 
 	test('shows error with non-existent email', async ({ page }) => {
 		// Fill with non-existent email
-		await page.fill('input[type="email"]', 'nonexistent@voltairedoha.com');
+		await page.fill('input[name="email"]', 'nonexistent@voltairedoha.com');
 		await page.fill('input[type="password"]', 'some-password-123');
 
 		// Submit form
@@ -218,7 +210,7 @@ test.describe('Failed Login Attempts', () => {
 		await page.click('button[type="submit"]');
 
 		// Verify browser validation prevents submission
-		const emailInput = page.locator('input[type="email"]');
+		const emailInput = page.locator('input[name="email"]');
 		const validationMessage = await emailInput.evaluate(
 			(el: HTMLInputElement) => el.validationMessage
 		);
@@ -231,7 +223,7 @@ test.describe('Failed Login Attempts', () => {
 		const testUsers = getTestUsers();
 
 		// Fill email, leave password empty
-		await page.fill('input[type="email"]', testUsers.teacher.email);
+		await page.fill('input[name="email"]', testUsers.teacher.email);
 
 		// Submit form
 		await page.click('button[type="submit"]');
@@ -251,7 +243,7 @@ test.describe('Failed Login Attempts', () => {
 		await page.click('button[type="submit"]');
 
 		// Verify browser validation prevents submission
-		const emailInput = page.locator('input[type="email"]');
+		const emailInput = page.locator('input[name="email"]');
 		const validationMessage = await emailInput.evaluate(
 			(el: HTMLInputElement) => el.validationMessage
 		);
@@ -271,7 +263,7 @@ test.describe('UI Interactions', () => {
 		await page.goto('/auth/login');
 
 		// Wait for page to be fully loaded
-		await page.waitForSelector('input[type="email"]', { state: 'visible' });
+		await page.waitForSelector('input[name="email"]', { state: 'visible' });
 	});
 
 	test('email field has autofocus on page load', async ({ page }) => {
@@ -283,7 +275,7 @@ test.describe('UI Interactions', () => {
 
 		// Check if email field is focused
 		// Note: Autofocus may not work in all test environments
-		const emailInput = page.locator('input[type="email"]');
+		const emailInput = page.locator('input[name="email"]');
 		await expect(emailInput).toBeVisible();
 	});
 
@@ -291,11 +283,11 @@ test.describe('UI Interactions', () => {
 		const testUsers = getTestUsers();
 
 		// Fill email field
-		await page.fill('input[type="email"]', testUsers.teacher.email);
+		await page.fill('input[name="email"]', testUsers.teacher.email);
 		await page.fill('input[type="password"]', testUsers.teacher.password);
 
 		// Press Enter in email field
-		await page.locator('input[type="email"]').press('Enter');
+		await page.locator('input[name="email"]').press('Enter');
 
 		// Should submit form and redirect to dashboard
 		await page.waitForURL(/\/dashboard/, { timeout: 10000 });
@@ -306,7 +298,7 @@ test.describe('UI Interactions', () => {
 		const testUsers = getTestUsers();
 
 		// Fill password field
-		await page.fill('input[type="email"]', testUsers.teacher.email);
+		await page.fill('input[name="email"]', testUsers.teacher.email);
 		await page.fill('input[type="password"]', testUsers.teacher.password);
 
 		// Press Enter in password field
@@ -346,7 +338,7 @@ test.describe('UI Interactions', () => {
 		 * email/password is the only method and is shown directly (no reveal step).
 		 */
 		// Email and password fields are visible on load, no reveal step needed
-		await expect(page.locator('input[type="email"]')).toBeVisible();
+		await expect(page.locator('input[name="email"]')).toBeVisible();
 		await expect(page.locator('input[type="password"]')).toBeVisible();
 
 		// No Google / Voltaire sign-in option is present
@@ -358,7 +350,7 @@ test.describe('UI Interactions', () => {
 		const testEmail = 'test@voltairedoha.com';
 
 		// Fill email and wrong password
-		await page.fill('input[type="email"]', testEmail);
+		await page.fill('input[name="email"]', testEmail);
 		await page.fill('input[type="password"]', 'wrong-password');
 
 		// Submit form
@@ -368,7 +360,7 @@ test.describe('UI Interactions', () => {
 		await page.waitForSelector('[role="alert"], .alert', { state: 'visible', timeout: 5000 });
 
 		// Verify email field still contains the entered value
-		const emailValue = await page.locator('input[type="email"]').inputValue();
+		const emailValue = await page.locator('input[name="email"]').inputValue();
 		expect(emailValue).toBe(testEmail);
 	});
 });
@@ -381,7 +373,7 @@ test.describe('Security', () => {
 	test.beforeEach(async ({ page }) => {
 		// Navigate to login page
 		await page.goto('/auth/login');
-		await page.waitForSelector('input[type="email"]', { state: 'visible' });
+		await page.waitForSelector('input[name="email"]', { state: 'visible' });
 	});
 
 	test('password is not visible in DOM', async ({ page }) => {
@@ -472,7 +464,7 @@ test.describe('Security', () => {
 		const testUsers = getTestUsers();
 
 		// Test 1: Non-existent email
-		await page.fill('input[type="email"]', 'nonexistent-user-xyz@voltairedoha.com');
+		await page.fill('input[name="email"]', 'nonexistent-user-xyz@voltairedoha.com');
 		await page.fill('input[type="password"]', 'some-password-123');
 		await page.click('button[type="submit"]');
 
@@ -489,10 +481,10 @@ test.describe('Security', () => {
 
 		// Clear form for next test
 		await page.reload();
-		await page.waitForSelector('input[type="email"]', { state: 'visible' });
+		await page.waitForSelector('input[name="email"]', { state: 'visible' });
 
 		// Test 2: Existing email with wrong password
-		await page.fill('input[type="email"]', testUsers.teacher.email);
+		await page.fill('input[name="email"]', testUsers.teacher.email);
 		await page.fill('input[type="password"]', 'definitely-wrong-password-xyz');
 		await page.click('button[type="submit"]');
 
@@ -517,7 +509,7 @@ test.describe('Security', () => {
 		// Attempt multiple failed logins
 		for (let i = 0; i < 6; i++) {
 			// Fill form with wrong password
-			await page.fill('input[type="email"]', testEmail);
+			await page.fill('input[name="email"]', testEmail);
 			await page.fill('input[type="password"]', `wrong-password-${i}`);
 
 			// Submit form

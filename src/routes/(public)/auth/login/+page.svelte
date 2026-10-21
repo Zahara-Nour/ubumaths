@@ -180,12 +180,14 @@
 						{/if}
 
 						<div class="space-y-2">
-							<Label for="email">Adresse email</Label>
+							<Label for="email">Adresse email ou identifiant</Label>
 							<Input
 								id="email"
 								name="email"
-								type="email"
-								autocomplete="email"
+								type="text"
+								autocomplete="username"
+								autocapitalize="none"
+								spellcheck="false"
 								required
 								value={form?.email ?? ''}
 							/>

@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, phase 0 rédigée, avant toute PR._
+_Mis à jour le 2026-10-21, phase 0 validée, PR 1 en cours._
 
-- **État** : worktree créé ; phase 0 rédigée (ci-dessous), **pas encore validée** ; aucun code.
-- **Prochaine action** : faire valider la phase 0 (comportements + questions Q1-Q6), puis PR 1.
-- **En attente de David** : validation de la phase 0, réponses Q1-Q6.
-- **Pièges en cours** : la prod exige la confirmation du courriel → le compte de l'enfant ne peut PAS passer par `signUp` (le courriel de confirmation partirait vers la fausse adresse) ; auth de mineurs + consentement → tests d'intégration, `code-reviewer` et `security-auditor` ; question d'accès avant tout SQL.
+- **État** : phase 0 validée ; Q1-Q6 : David suit mes recommandations (2026-10-21). PR 1 (connexion par identifiant + garde des courriels) en cours.
+- **Prochaine action** : finir la PR 1, puis PR 2 (écran « J'inscris mon enfant »).
+- **En attente de David** : enregistrement « null MX » sur `eleves.chiph.re` chez OVH (Q1), à faire avant la PR 2 en prod.
+- **Pièges en cours** : la prod exige la confirmation du courriel → le compte de l'enfant ne peut PAS passer par `signUp` ; auth de mineurs + consentement → tests d'intégration, `code-reviewer` et `security-auditor` ; question d'accès avant tout SQL.
 - **Worktree / branche** : `../ubumaths-wt-inscription-parent`, `feat/inscription-parent`.
 
 ## Contexte
@@ -130,3 +130,10 @@ Champs : code de classe, prénom de l'enfant, mot de passe de l'enfant (+ confir
 - **Q4 — Niveau sans consentement (1re/Tle) par l'écran parent** : on envoie quand même un lien au parent (pour confirmer son adresse, utile au mot de passe oublié), ou rien ? _Recommandé : le lien, sans case de consentement._
 - **Q5 — Garde-fou contre l'abus** : plafond de comptes créés par adresse de parent (ex. 5 par 24 h) en plus des limites par IP ? _Recommandé._
 - **Q6 — Question d'accès (avant tout SQL, PR 4)** : l'adresse du parent saisie par l'élève est écrite **par le serveur** dans la demande de consentement ; qui la lit ? _Proposé : le prof et l'admin seulement, comme aujourd'hui ; l'élève ne la relit pas._ Personne ne gagne de lecture nouvelle.
+
+### Réponses (2026-10-21)
+
+David : « je suis tes recos » → phase 0 validée, et pour chaque question la recommandation :
+Q1 `@eleves.chiph.re` + null MX · Q2 lecture seule avant le clic · Q3 mot de passe provisoire
+généré, affiché une fois · Q4 lien sans case de consentement pour 1re/Tle · Q5 plafond ~5 comptes
+par adresse de parent et par 24 h · Q6 adresse du parent lue par le prof et l'admin seulement.

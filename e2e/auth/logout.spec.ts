@@ -98,7 +98,7 @@ test.describe('Successful Logout Flows', () => {
 
 		// Verify on login page
 		await expect(page).toHaveURL(/\/auth\/login/);
-		await expect(page.locator('input[type="email"]')).toBeVisible();
+		await expect(page.locator('input[name="email"]')).toBeVisible();
 	});
 
 	test('logout from different pages redirects to login', async ({ page }) => {
@@ -268,7 +268,7 @@ test.describe('Post-Logout Behavior', () => {
 		await logout(page);
 
 		// Verify login form is visible
-		await expect(page.locator('input[type="email"]')).toBeVisible();
+		await expect(page.locator('input[name="email"]')).toBeVisible();
 		await expect(page.locator('input[type="password"]')).toBeVisible();
 		await expect(page.locator('button[type="submit"]')).toBeVisible();
 	});
@@ -297,7 +297,7 @@ test.describe('Post-Logout Behavior', () => {
 
 		// Verify user menu is not visible after logout
 		await expect(page).toHaveURL(/\/auth\/login/);
-		await expect(page.locator('input[type="email"]')).toBeVisible();
+		await expect(page.locator('input[name="email"]')).toBeVisible();
 	});
 
 	test('logout from one tab affects other tabs', async ({ browser }) => {
@@ -360,7 +360,7 @@ test.describe('Logout Edge Cases', () => {
 		await expect(page).toHaveURL(/\/auth\/login/);
 
 		// Should show login form
-		await expect(page.locator('input[type="email"]')).toBeVisible();
+		await expect(page.locator('input[name="email"]')).toBeVisible();
 	});
 
 	test('logout with expired session redirects to login', async ({ page }) => {
