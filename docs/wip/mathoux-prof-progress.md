@@ -5,16 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, phase 0 validée._
+_Mis à jour le 2026-10-21, code fini, revues en cours._
 
-- **État** : phase 0 validée par David (A : onglet Gamification + page par élève ; B : liste de
-  classe lue dans la mémoire seule). Code en cours sur la branche.
-- **Prochaine action** : tests rouges → calcul en lecture seule → pages → revue
-  (`code-reviewer` + `security-auditor`) → PR.
-- **En attente de David** : question d'accès rouverte — le prof ne lit PAS `srs_card_stats` de ses
-  élèves (seulement ceux à qui il a assigné un deck) : sans réponse, pas de siestes FSRS en vue prof.
+- **État** : code, tests et doc faits sur la branche (non poussée) ; revues `code-reviewer` +
+  `security-auditor` lancées.
+- **Prochaine action** : si la session a été vidée avant leurs rapports, RELANCER les deux revues
+  (diff `origin/main...HEAD`) ; corriger les findings → push → PR → CI verte → merge → `db:migrate`
+  (policy `srs_card_stats`, additive, 4 conditions) → vérification manuelle notée.
+- **En attente de David** : rien (accès tranché : le prof lit les cartes de révision de ses élèves).
 - **Pièges en cours** : la vue prof ne doit JAMAIS écrire la mémoire (elle brûlerait les
-  nouveautés de fin de séance de l'élève).
+  nouveautés de fin de séance de l'élève). Policy appliquée à la main sur la base locale (psql).
 - **Worktree / branche** : `../ubumaths-wt-mathoux-prof` · `feat/mathoux-vue-prof`.
 
 ## Phase 0 (validée par David le 2026-10-21)
@@ -52,6 +52,11 @@ Erreurs :
   « Teachers can view stats for assigned decks » : le prof ne lit les cartes d'un élève que s'il
   lui a assigné un deck. La doc `mathoux.md` (« et le professeur ») était fausse. Les siestes
   « point perdu » (`student_point_state`) passent.
-- [ ] `readMathouCollection` (lecture seule) + compteurs de classe
-- [ ] Pages (onglet Mathoux, Chatterie d'un élève) + composant partagé avec la page élève
-- [ ] Doc `docs/systeme/mathoux.md`, revue, PR
+- [x] Question d'accès rouverte, tranchée par David : policy SELECT `is_my_student(user_id)` sur
+      `srs_card_stats` (migration `20261021173000`). Une seule PR (une policy ne change aucun type) ;
+      tests vérifiés rouges sans elle (3 échecs), verts avec.
+- [x] `readMathouCollection` (lecture seule) + `loadMathouxCountsByStudent`
+- [x] Pages (onglet Mathoux, Chatterie d'un élève) + `ChatterieRaces` partagé avec la page élève
+- [x] Doc : `mathoux.md` § Vue du professeur, `base-de-donnees.md`, `comptes-classes-ecoles.md`,
+      `jeux-et-economie.md`
+- [ ] Revue, PR, merge, `db:migrate`
