@@ -600,11 +600,11 @@ describe('Auto coverage reconciliation', () => {
 	it('materializes auto coverage from tagged exercises and reconciles on add/remove', async () => {
 		expect.assertions(8);
 		const ctx = await setup();
-		const item = await makeItem();
+		const notion = await makeNotion();
 		const [p1, p2, p3, p4] = [
-			await svcPoint(item, 'P1'),
-			await svcPoint(item, 'P2'),
-			await svcPoint(item, 'P3'),
+			await svcNewPoint(notion, 'P1'),
+			await svcNewPoint(notion, 'P2'),
+			await svcNewPoint(notion, 'P3'),
 			await svcNewPoint(await makeNotion(), 'P4')
 		];
 
@@ -734,8 +734,8 @@ describe('Références dans le contenu de la séance', () => {
 	it('un exercice cité dans le contenu apporte ses points, sans aucune activité', async () => {
 		expect.assertions(3);
 		const ctx = await setup();
-		const item = await makeItem();
-		const point = await svcPoint(item, 'P-contenu');
+		const notion = await makeNotion();
+		const point = await svcNewPoint(notion, 'P-contenu');
 		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
 
 		await writeLesson(ctx, `<p>Faire [[exercise:${exercise}|Fractions]] en classe.</p>`);
@@ -754,8 +754,8 @@ describe('Références dans le contenu de la séance', () => {
 		// UNIQUEMENT dans un devoir — en silence, puisque la réconciliation retire
 		// ce qu'elle ne voit plus.
 		const ctx = await setup();
-		const item = await makeItem();
-		const point = await svcPoint(item, 'P-devoir');
+		const notion = await makeNotion();
+		const point = await svcNewPoint(notion, 'P-devoir');
 		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
 
 		const { error } = await service.from('journal_entry_homework' as never).insert({
@@ -778,8 +778,8 @@ describe('Références dans le contenu de la séance', () => {
 		// défaire la couverture qu'il avait apportée, comme pour le contenu de
 		// séance.
 		const ctx = await setup();
-		const item = await makeItem();
-		const point = await svcPoint(item, 'P-devoir-retire');
+		const notion = await makeNotion();
+		const point = await svcNewPoint(notion, 'P-devoir-retire');
 		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
 
 		const { data: travail } = await service
@@ -806,8 +806,8 @@ describe('Références dans le contenu de la séance', () => {
 	it('un EXERCICE DE FICHE cité apporte les points de l’exercice sous-jacent', async () => {
 		expect.assertions(2);
 		const ctx = await setup();
-		const item = await makeItem();
-		const point = await svcPoint(item, 'P-fiche');
+		const notion = await makeNotion();
+		const point = await svcNewPoint(notion, 'P-fiche');
 		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
 		// La citation porte l'identifiant de la JONCTION, pas celui de l'exercice :
 		// c'est ce qui permet à l'élève de savoir quelle fiche ouvrir.
@@ -822,11 +822,11 @@ describe('Références dans le contenu de la séance', () => {
 	it('une FICHE citée avec `#3,4` apporte les points de ces exercices', async () => {
 		expect.assertions(3);
 		const ctx = await setup();
-		const item = await makeItem();
+		const notion = await makeNotion();
 		const [p3, p4, p5] = [
-			await svcPoint(item, 'P3'),
-			await svcPoint(item, 'P4'),
-			await svcPoint(item, 'P5')
+			await svcNewPoint(notion, 'P3'),
+			await svcNewPoint(notion, 'P4'),
+			await svcNewPoint(notion, 'P5')
 		];
 
 		// Trois exercices dans une fiche, un point chacun.
@@ -847,7 +847,7 @@ describe('Références dans le contenu de la séance', () => {
 	it('une fiche citée SANS sélection n’apporte aucun point', async () => {
 		expect.assertions(1);
 		const ctx = await setup();
-		const point = await svcPoint(await makeItem(), 'P-fiche-entiere');
+		const point = await svcNewPoint(await makeNotion(), 'P-fiche-entiere');
 		const fiche = await makeWorksheet(ctx.teacher.id);
 		await addToWorksheet(fiche, await makeTaggedExercise(ctx.teacher.id, [point]));
 
@@ -860,11 +860,11 @@ describe('Références dans le contenu de la séance', () => {
 	it('une plage `#1-3` prend les bornes incluses', async () => {
 		expect.assertions(1);
 		const ctx = await setup();
-		const item = await makeItem();
+		const notion = await makeNotion();
 		const points = [
-			await svcPoint(item, 'A'),
-			await svcPoint(item, 'B'),
-			await svcPoint(item, 'C')
+			await svcNewPoint(notion, 'A'),
+			await svcNewPoint(notion, 'B'),
+			await svcNewPoint(notion, 'C')
 		];
 		const fiche = await makeWorksheet(ctx.teacher.id);
 		for (const point of points) {
@@ -879,7 +879,7 @@ describe('Références dans le contenu de la séance', () => {
 	it('signale un numéro qui n’existe pas, sans perdre les autres', async () => {
 		expect.assertions(3);
 		const ctx = await setup();
-		const point = await svcPoint(await makeItem(), 'P-unique');
+		const point = await svcNewPoint(await makeNotion(), 'P-unique');
 		const fiche = await makeWorksheet(ctx.teacher.id);
 		await addToWorksheet(fiche, await makeTaggedExercise(ctx.teacher.id, [point]));
 
@@ -899,8 +899,8 @@ describe('Références dans le contenu de la séance', () => {
 	it('retirer la citation du texte retire le point', async () => {
 		expect.assertions(2);
 		const ctx = await setup();
-		const item = await makeItem();
-		const point = await svcPoint(item, 'P-retire');
+		const notion = await makeNotion();
+		const point = await svcNewPoint(notion, 'P-retire');
 		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
 
 		await writeLesson(ctx, `<p>[[exercise:${exercise}|Fractions]]</p>`);
@@ -932,8 +932,8 @@ describe('Références dans le contenu de la séance', () => {
 	it('dédoublonne un exercice cité deux fois, et cité en plus comme activité', async () => {
 		expect.assertions(1);
 		const ctx = await setup();
-		const item = await makeItem();
-		const point = await svcPoint(item, 'P-doublon');
+		const notion = await makeNotion();
+		const point = await svcNewPoint(notion, 'P-doublon');
 		const exercise = await makeTaggedExercise(ctx.teacher.id, [point]);
 
 		await addExerciseActivity(ctx, exercise);
@@ -1269,10 +1269,9 @@ describe('Mixed sources', () => {
 	it('unions exercise, question and assessment, and keeps the manual layer', async () => {
 		expect.assertions(6);
 		const ctx = await setup();
-		// Exercice : tags non filtrés (anciens points admis) ; coche manuelle : point neuf (Q2, B2).
-		const item = await makeItem();
+		// Exercice et coche manuelle : points neufs (Q2, B2 ; B3 : la couverture auto les filtre aussi).
 		const [pe, pm] = [
-			await svcPoint(item, 'Exercice'),
+			await svcNewPoint(await makeNotion(), 'Exercice'),
 			await svcNewPoint(await makeNotion(), 'Manuel')
 		];
 		// Question et évaluation : points NEUFS, deux programmes pour le modèle qui en porte deux.

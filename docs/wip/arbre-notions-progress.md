@@ -1207,3 +1207,5 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   `keepCheckablePointIds` ; une ligne auto sur un point devenu archivé sort à la réconciliation suivante, le coché
   manuel reste. Avancement : ratio masqué quand une notion / branche n'a que des archivés (au lieu de « 0/0 · 0% »).
   Security-auditor : 0 bloquant ni important ; commentaire des DELETE corrigé (« professeur et admin »).
+  Intégration : 15 cas rouges (décors d'exercices sur d'ANCIENS points, qui assertaient l'ancien comportement) →
+  passés sur des points neufs, l'exercice rangé sur leur nœud ; 67/67.
