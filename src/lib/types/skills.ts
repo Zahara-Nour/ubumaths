@@ -128,16 +128,6 @@ export function formatMathCompetenceCode(code: MathCompetenceCode): string {
 }
 
 // ============================================================================
-// Visuels d'état famille knowledge (objectif)
-// ============================================================================
-
-/**
- * Niveau atteint sur un objectif famille knowledge = rang max des capacités acquises
- * (0 si aucune). Cf. §6.3.
- */
-export type ObjectiveLevel = 0 | 1 | 2 | 3 | 4;
-
-// ============================================================================
 // MissingForNextItem — items du champ missing_for_next (décision UI 2026-06-09)
 // ============================================================================
 
@@ -174,55 +164,42 @@ export type MissingForNext = MissingForNextItem[];
  */
 export type ValidatedObservables = string[];
 
-const OBJECTIVE_LEVEL_LABELS: Record<ObjectiveLevel, string> = {
-	0: 'Non commencé',
-	1: 'En cours',
-	2: 'En cours',
-	3: 'Objectif atteint',
-	4: 'Maîtrisé en profondeur'
-};
-
-const OBJECTIVE_LEVEL_VISUALS: Record<ObjectiveLevel, string> = {
-	0: '◯',
-	1: '🟠',
-	2: '🟠',
-	3: '🟢',
-	4: '✨'
-};
+// ============================================================================
+// Niveau d'une notion du programme (« Ce que je sais faire »)
+// ============================================================================
 
 /**
- * Niveau d'un objectif, quelle que soit sa forme.
+ * Niveau d'une notion pour l'élève : aucun point acquis, une partie, ou tous.
  *
- * Depuis la fusion des référentiels (2026-08-29), le `rang` d'un point est
- * FACULTATIF, donc deux formes d'objectif coexistent :
- *   · avec échelle  (points rangés 1-4) → le niveau EST le rang max acquis ;
- *   · sans échelle  (points non rangés) → on projette la couverture acquis/total
- *     sur la même échelle visuelle.
+ * Plus d'échelle à rangs (ni « maîtrisé ✨ ») depuis la bascule sur l'arbre des
+ * notions (C5, étape 3, PR D) : aucun point neuf ne porte de `rang`.
  *
- * Pas de niveau 4 sans échelle : « aller au-delà de l'attendu » n'a de sens que
- * si une échelle le définit.
- *
- * ⚠️ Fonction PARTAGÉE serveur (agrégation) / client (rendu). C'est elle qui
- * garantit que la tuile du dashboard et la page disent le même chiffre : avant
- * elle, chaque surface avait sa propre version, et celle du dashboard ignorait
- * la forme sans échelle — donc comptait zéro sur la totalité du référentiel réel.
+ * ⚠️ Fonction PARTAGÉE serveur (agrégation) / client (rendu) : c'est elle qui
+ * garantit que la tuile du dashboard et la page disent le même chiffre.
  */
-export function objectiveLevel(o: {
-	has_scale: boolean;
-	rang_max_acquired: ObjectiveLevel;
-	acquired_count: number;
-	total_count: number;
-}): ObjectiveLevel {
-	if (o.has_scale) return o.rang_max_acquired;
-	if (o.total_count === 0) return 0;
-	if (o.acquired_count === o.total_count) return 3;
-	return o.acquired_count > 0 ? 1 : 0;
+export type NotionLevel = 'non_commence' | 'en_cours' | 'atteint';
+
+const NOTION_LEVEL_LABELS: Record<NotionLevel, string> = {
+	non_commence: 'Non commencé',
+	en_cours: 'En cours',
+	atteint: 'Atteint'
+};
+
+const NOTION_LEVEL_VISUALS: Record<NotionLevel, string> = {
+	non_commence: '◯',
+	en_cours: '🟠',
+	atteint: '🟢'
+};
+
+export function notionLevel(n: { acquired_count: number; total_count: number }): NotionLevel {
+	if (n.total_count === 0 || n.acquired_count === 0) return 'non_commence';
+	return n.acquired_count >= n.total_count ? 'atteint' : 'en_cours';
 }
 
-export function formatObjectiveLevel(level: ObjectiveLevel): string {
-	return OBJECTIVE_LEVEL_LABELS[level];
+export function formatNotionLevel(level: NotionLevel): string {
+	return NOTION_LEVEL_LABELS[level];
 }
 
-export function getObjectiveLevelVisual(level: ObjectiveLevel): string {
-	return OBJECTIVE_LEVEL_VISUALS[level];
+export function getNotionLevelVisual(level: NotionLevel): string {
+	return NOTION_LEVEL_VISUALS[level];
 }

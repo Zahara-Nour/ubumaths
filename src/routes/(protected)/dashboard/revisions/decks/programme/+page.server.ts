@@ -35,6 +35,12 @@ export interface ProgrammeCard {
 	/** Notion de l'arbre où se range le point de la carte (niveau de l'élève). */
 	notionName: string | null;
 	notionId: string | null;
+	/**
+	 * La page de la notion existe pour l'élève : point actif de SON niveau. Sinon
+	 * (autre niveau, élève sans niveau, point archivé) le nom reste sans lien —
+	 * la page répondrait 404.
+	 */
+	notionLinkable: boolean;
 	state: 'new' | 'learning' | 'review' | 'relearning';
 	nextReview: string | null;
 	lastReview: string | null;
@@ -133,7 +139,7 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		locals.supabase.from('question_templates').select('id, subdomain').in('id', templateIds),
 		locals.supabase
 			.from('question_template_points')
-			.select('template_id, curriculum_points(code, node_id, grade)')
+			.select('template_id, curriculum_points(code, node_id, grade, archived_at)')
 			.in('template_id', templateIds)
 	]);
 
@@ -168,7 +174,12 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 
 	type LinkRow = {
 		template_id: string;
-		curriculum_points: { code: string; node_id: string | null; grade: string | null } | null;
+		curriculum_points: {
+			code: string;
+			node_id: string | null;
+			grade: string | null;
+			archived_at: string | null;
+		} | null;
 	};
 	// Seuls les points neufs comptent (les tags des anciens points restent en base jusqu'à
 	// l'étape 4 de C5), rangés par code pour que le « 1er point » ne dépende pas de la lecture.
@@ -199,12 +210,16 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		}
 	}
 
-	const notionByTemplate = new Map<string, { id: string; name: string }>();
+	const notionByTemplate = new Map<string, { id: string; name: string; linkable: boolean }>();
 	// On garde la notion du 1er point rencontré (le plus petit code, cf. le tri ci-dessus)
 	for (const l of linksOfGrade) {
 		if (notionByTemplate.has(l.template_id)) continue;
 		const notion = placeOfNode(l.curriculum_points?.node_id ?? null, nodeById)?.notion;
-		if (notion) notionByTemplate.set(l.template_id, { id: notion.id, name: notion.name });
+		if (!notion) continue;
+		const point = l.curriculum_points;
+		const linkable =
+			profile.grade !== null && point?.grade === profile.grade && point.archived_at === null;
+		notionByTemplate.set(l.template_id, { id: notion.id, name: notion.name, linkable });
 	}
 
 	// 6. Construire les ProgrammeCard et regrouper par section
@@ -228,6 +243,7 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 			templateName: templateNameById.get(tid) ?? null,
 			notionName: notion?.name ?? null,
 			notionId: notion?.id ?? null,
+			notionLinkable: notion?.linkable ?? false,
 			state,
 			nextReview,
 			lastReview,

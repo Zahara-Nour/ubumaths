@@ -8,7 +8,7 @@
 	 * Cf. docs/systeme/srs.md §5.2
 	 */
 
-	import { studySessionHref } from '$lib/navigation/return-links';
+	import { notionHref, studySessionHref } from '$lib/navigation/return-links';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
@@ -131,7 +131,15 @@
 										</div>
 										{#if card.notionName}
 											<div class="text-xs text-muted-foreground">
-												Notion : {card.notionName}
+												Notion :
+												{#if card.notionId && card.notionLinkable}
+													<a
+														href={notionHref(card.notionId, 'programme')}
+														class="underline hover:text-foreground">{card.notionName}</a
+													>
+												{:else}
+													{card.notionName}
+												{/if}
 											</div>
 										{/if}
 										<div class="mt-1 text-xs text-muted-foreground">

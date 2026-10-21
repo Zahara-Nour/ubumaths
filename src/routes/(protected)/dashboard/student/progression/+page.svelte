@@ -9,7 +9,7 @@
 
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { TrendingUp } from '@lucide/svelte';
-	import ObjectifsPanel from '$lib/components/progression/ObjectifsPanel.svelte';
+	import NotionsPanel from '$lib/components/progression/NotionsPanel.svelte';
 	import CompetencesPanel from '$lib/components/progression/CompetencesPanel.svelte';
 	import { replaceState } from '$app/navigation';
 	import { page } from '$app/state';
@@ -64,8 +64,8 @@
 		<Tabs.Content value="objectifs" class="mt-6">
 			<!-- `competencesObserved` sert au message de repli : ne renvoyer vers
 				 l'autre onglet que s'il a réellement quelque chose à montrer. -->
-			<ObjectifsPanel
-				objectives={data.objectives}
+			<NotionsPanel
+				notions={data.notions}
 				competencesObserved={data.competences.stats.with_data > 0}
 			/>
 		</Tabs.Content>

@@ -13,7 +13,7 @@ couvre:
   - 'src/routes/api/student/{chapters,checklist}/**'
   - 'src/routes/(protected)/dashboard/teacher/{cours,cahier-texte,avancement,programme}/**'
   - 'src/routes/(protected)/dashboard/teacher/contenu/templates/**'
-  - 'src/routes/(protected)/dashboard/student/{cours,cahier-texte,progression}/**'
+  - 'src/routes/(protected)/dashboard/student/{cours,cahier-texte,progression,notions}/**'
   - 'src/routes/(public)/cahier/**'
   - 'src/routes/(public)/cours/**'
 ---
@@ -28,7 +28,7 @@ couvre:
 > [suivi du programme](../archive/wip/suivi-programme-progress.md),
 > [progression élève](../archive/wip/progression-eleve-progress.md)) et du chantier clos
 > [publication progressive](../wip/publication-progressive-progress.md).
-> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1 et B2) le 2026-10-21.
+> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1, B2 et D — progression élève) le 2026-10-21.
 
 ## À quoi ça sert
 
@@ -187,7 +187,7 @@ Pages : `src/routes/(protected)/dashboard/teacher/cahier-texte/` (semaine ; acti
 | `src/lib/server/curriculum-grade.ts`                | `keepLinksOfGrade` : une carte rattachée à plusieurs niveaux ne compte que pour celui qu'on lit.                                                                                                                                                                                                                                                                                                     |
 | `src/lib/server/curriculum-generation.ts`           | `isProgrammePoint` : un tag vise-t-il un point neuf (`node_id`) ? `readPointGeneration` et `keepCheckablePointIds` : la même question posée à la base avant d'écrire (ni un ancien point ni un point archivé ne se coche ou ne se tague plus). Les tags des anciens points restent en base jusqu'à l'étape 4 de la C5 — [ADR 0020](../adr/0020-arbre-central-programmes-pointeurs.md).               |
 | `src/lib/server/programme-tags.ts`                  | `loadTemplateProgrammeTags` : les choix de tags d'un modèle, un par programme, parmi les points de son nœud et de sa notion.                                                                                                                                                                                                                                                                         |
-| `src/lib/server/progression/student-progression.ts` | Source **unique** de la progression élève : `getObjectivesProgression`, `getCompetencesProgression`, `aggregateObjectiveStats`.                                                                                                                                                                                                                                                                      |
+| `src/lib/server/progression/student-progression.ts` | Source **unique** de la progression élève : `getNotionsProgression` (branche > notion), `getNotionDetail` (page d'une notion), `aggregateNotionStats`, `getCompetencesProgression`.                                                                                                                                                                                                                  |
 
 - `dashboard/teacher/programme/` : **consultation** du programme d'un niveau dans la génération
   neuve (ADR 0020, C5 étape 3) — branche > notion > points du niveau, dans l'ordre du BO ; seules les
@@ -216,7 +216,16 @@ Pages : `src/routes/(protected)/dashboard/teacher/cahier-texte/` (semaine ; acti
 - `dashboard/teacher/avancement/` : nombre de séances de l'année par point, en lecture seule, sur
   l'arbre branche > notion > points du niveau de la classe.
 - `dashboard/student/progression/` : deux onglets, `src/lib/components/progression/`
-  (`ObjectifsPanel`, `CompetencesPanel`) ; le tableau de bord lit la même source.
+  (`NotionsPanel`, `CompetencesPanel`) ; le tableau de bord lit la même source. « Ce que je sais
+  faire » montre les points neufs actifs du niveau de l'élève, par branche > notion ; une notion
+  est non commencée, en cours ou atteinte (tous ses points acquis, `notionLevel`), sans
+  « maîtrisé » (aucun point neuf n'a de rang). Un point sans modèle tagué compte dans le total.
+  Élève sans niveau, ou niveau sans point : message au lieu d'un « 0 sur 0 » (un niveau valide
+  sans point est journalisé : RLS ou code de niveau décalé).
+- `dashboard/student/notions/[id]` : les points d'une notion pour le niveau de l'élève (ordre du
+  BO, sous-notion nommée, « Pas encore d'entraînement ici » sans modèle tagué) ; notion inconnue
+  ou sans point de son niveau → **404**. L'ancienne page d'un objectif
+  (`dashboard/student/objectifs/[id]`) redirige vers « Ma progression ».
 
 ### Calendrier scolaire et emploi du temps
 

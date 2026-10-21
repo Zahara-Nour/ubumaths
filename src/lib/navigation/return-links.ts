@@ -30,6 +30,26 @@ export function studentJournalReturn(searchParams: URLSearchParams): ReturnLink 
 }
 
 // ============================================================================
+// NOTION DU PROGRAMME (élève) — ouverte depuis « Ma progression » ou depuis le
+// deck « Programme »
+// ============================================================================
+
+export function notionHref(notionId: string, from?: 'programme'): string {
+	const href = `/dashboard/student/notions/${notionId}`;
+	return from ? `${href}?${FROM_PARAM}=${from}` : href;
+}
+
+export function notionReturn(searchParams: URLSearchParams): ReturnLink {
+	if (searchParams.get(FROM_PARAM) === 'programme') {
+		return { href: '/dashboard/revisions/decks/programme', label: 'Retour au Programme' };
+	}
+	return {
+		href: '/dashboard/student/progression?onglet=objectifs',
+		label: 'Retour à ma progression'
+	};
+}
+
+// ============================================================================
 // SESSION DE RÉVISION — lancée depuis la page du deck ou depuis le Programme
 // ============================================================================
 

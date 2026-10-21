@@ -5,8 +5,8 @@
  * `/dashboard/student/progression`. On ne supprime pas l'URL : elle est dans
  * les favoris des élèves, et `revisions/decks/programme` y renvoie.
  *
- * La route de détail `/dashboard/student/objectifs/[id]` n'est PAS concernée :
- * elle reste à son adresse.
+ * La route de détail `/dashboard/student/objectifs/[id]` redirige aussi vers la
+ * progression : le programme se lit par notion (`/dashboard/student/notions/[id]`).
  */
 
 import { redirect } from '@sveltejs/kit';

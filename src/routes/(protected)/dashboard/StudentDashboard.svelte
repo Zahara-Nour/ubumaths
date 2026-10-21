@@ -96,12 +96,12 @@
 		mêmes icônes, mêmes couleurs, même barre, aucune glose — que David
 		lui-même n'arrivait pas à distinguer.
 
-		Elle disparaît quand il n'y a RIEN à résumer : ni référentiel pour le
+		Elle disparaît quand il n'y a RIEN à résumer : ni programme pour le
 		niveau de l'élève, ni compétence observée. L'entrée de menu, elle, reste :
 		la page explique alors franchement pourquoi c'est vide.
 	-->
-	{#if data.progression && (data.progression.objectives.hasReferentiel || data.progression.competences.stats.with_data > 0)}
-		{@const objs = data.progression.objectives.stats}
+	{#if data.progression && (data.progression.notions.hasProgramme || data.progression.competences.stats.with_data > 0)}
+		{@const objs = data.progression.notions.stats}
 		{@const comps = data.progression.competences.stats}
 		<a
 			href="/dashboard/student/progression"
@@ -115,14 +115,10 @@
 						<ChevronRight class="ml-auto h-4 w-4 text-muted-foreground" />
 					</div>
 
-					{#if data.progression.objectives.hasReferentiel}
+					{#if data.progression.notions.hasProgramme}
 						<div class="mb-3">
 							<div class="mb-1 flex items-center gap-3 text-sm">
 								<span class="text-xs font-medium text-muted-foreground">Ce que je sais faire</span>
-								<span class="flex items-center gap-1">
-									<Sparkles class="h-4 w-4 text-amber-500" />
-									<strong>{objs.mastery}</strong>
-								</span>
 								<span class="flex items-center gap-1">
 									<CheckCircle2 class="h-4 w-4 text-green-500" />
 									<strong>{objs.atteint}</strong>
@@ -132,17 +128,11 @@
 									<strong>{objs.en_cours}</strong>
 								</span>
 								<span class="ml-auto text-xs text-muted-foreground">
-									{objs.mastery + objs.atteint}/{objs.total} atteints
+									{objs.atteint}/{objs.total} notions atteintes
 								</span>
 							</div>
 							<div class="h-2 w-full overflow-hidden rounded-full bg-muted">
 								<div class="flex h-full">
-									{#if objs.mastery > 0}
-										<div
-											class="bg-amber-500"
-											style="width: {(objs.mastery / objs.total) * 100}%"
-										></div>
-									{/if}
 									{#if objs.atteint > 0}
 										<div
 											class="bg-green-500"

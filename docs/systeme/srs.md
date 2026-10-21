@@ -20,7 +20,7 @@ couvre:
 
 > Remplace les sept fichiers de [`srs/`](../archive/systeme-2026-06/srs/README.md) (juin 2026, archivés), écrits au temps de la
 > « famille A » du référentiel, abandonnée ([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)).
-> Vérifié contre le code le 2026-10-11.
+> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21.
 
 ## À quoi ça sert
 
@@ -84,8 +84,10 @@ Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, 
 `ReviewSession.svelte` (la séance, pour toute `ReviewSource`) · `FSRSButtons.svelte` (les 4 notes) ·
 `CustomFlashCard.svelte` / `CustomCardEditor.svelte` (cartes libres recto/verso) ·
 `TemplateSelector.svelte` (ajouter un modèle à un paquet) · `DeckCard.svelte` (liste des paquets) ·
-`CapacityFsrsBadge.svelte` (badge de mémoire, utilisé par `ObjectifsPanel.svelte` et
-`dashboard/student/objectifs/[id]`).
+`CapacityFsrsBadge.svelte` (badge de mémoire, utilisé par `NotionsPanel.svelte` et
+`dashboard/student/notions/[id]`). Sur le deck « Programme », la notion d'une carte mène à sa page
+(`?depuis=programme`) quand le point est actif et du niveau de l'élève (`notionLinkable`) ;
+sinon son nom reste sans lien.
 
 ### Routes API
 
