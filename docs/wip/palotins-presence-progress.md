@@ -7,10 +7,10 @@
 
 _Mis à jour le 2026-10-22, après #1599._
 
-- **État** : PR 1 #1599 mergée, `db:migrate` fait (colonne `welcome_back_on` en prod), `db:types` fait. PR 2 (code) sur `feat/palotins-presence-2` : tests verts, typecheck 0, garde doc OK ; revues `code-reviewer` + `security-auditor` en cours.
-- **Prochaine action** : traiter les revues → PR 2 → CI → merge (après validation du texte Confidentialité).
-- **En attente de David** : texte de la page Confidentialité (§ 3.2 et § 7) ; présence en mémoire du serveur au lieu d'un cookie (changement fait seul, à confirmer).
-- **Pièges en cours** : la remise à zéro de la Constance reste dans le `load` (un survol n'y fait perdre que la réplique). `welcome_back_on` n'est pas effacé après 7 jours, seulement ignoré.
+- **État** : PR 1 #1599 mergée, `db:migrate` + `db:types` faits. PR 2 (`feat/palotins-presence-2`) : revues faites (aucun bloquant), corrections appliquées (panne jamais bloquante, requêtes simultanées, comptes approuvés), tests verts, typecheck 0.
+- **Prochaine action** : PR 2 ouverte, CI verte → merger dès que David a validé les points ci-dessous.
+- **En attente de David** : (1) texte Confidentialité § 3.2 / § 7 ; (2) mémoire serveur au lieu d'un cookie ; (3) effacer vraiment `welcome_back_on` après 7 jours (minimisation) ; (4) écart connu : si la 2e écriture (`welcome_back_on`) échoue après le RPC, le retour est perdu — accepter, ou faire écrire la colonne par la fonction SQL (nouvelle migration).
+- **Pièges en cours** : remise à zéro de la Constance toujours dans le `load` (survol = réplique perdue, accepté).
 - **Worktree / branche** : `../ubumaths-wt-palotins-presence` · `feat/palotins-presence-2`.
 
 ## Le problème (2026-10-21)
@@ -61,3 +61,7 @@ Le passage n'était noté que par le `load` du layout `/dashboard/student/*` :
 - 2026-10-22 : #1599 mergée ; `db:migrate` (seule migration poussée, essai à blanc d'abord) ;
   `db:types`. PR 2 écrite : handle, lecture au layout, route d'acquittement, widget, export RGPD,
   page Confidentialité, 8 docs. Cookie abandonné pour une mémoire serveur.
+- 2026-10-22 : revues PR 2 — security-auditor : comptes non approuvés notés (corrigé), conservation
+  de `welcome_back_on` non bornée (à David) ; code-reviewer : exception du client service = 500 sur
+  toutes les pages élève (corrigé, try/catch), requêtes simultanées du premier jour (corrigé :
+  promesse mémorisée), retour perdu si la 2e écriture échoue (à David).

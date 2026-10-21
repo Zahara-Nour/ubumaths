@@ -365,7 +365,8 @@ Decide par David le 2026-10-21 (presence notee partout : meme jour, apres #1588)
 
 - **Presence** : l'eleve connecte qui voit une page, **n'importe laquelle** (lien de cours partage,
   Automaths, tableau de bord…), prechargement compris, est present ce jour-la. **Hors `/api/*`** :
-  un onglet reste ouvert qui interroge le serveur seul ne compte pas. Eleves seulement.
+  un onglet reste ouvert qui interroge le serveur seul ne compte pas. Eleves au compte approuve
+  seulement. Deux requetes simultanees attendent la meme ecriture ; une panne ne bloque jamais la page.
   `studentPresenceHandle` (`src/lib/server/studentPresenceHandle.ts`, dans `hooks.server.ts` apres
   le statut du compte) appelle `recordStudentPresence` (`buddy-queries.ts`, fonction SQL
   `record_student_visit` au client service) au plus une fois par jour et par instance du serveur

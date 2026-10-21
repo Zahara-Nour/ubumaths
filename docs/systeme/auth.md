@@ -139,7 +139,7 @@ vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
 5. `userProfileHandle` — `locals.user` puis `locals.profile`.
 6. `accountStatusHandle` — compte non approuvé : 403 sur toute API et toute écriture (voir « Le statut du compte »).
 7. `passwordChangeHandle` — mot de passe provisoire à changer : pages → `/auth/update-password`, API et écritures → 403 (voir « Mots de passe des élèves »).
-8. `studentPresenceHandle` — élève connecté, toute page hors `/api/*` : présence du jour notée au client service, au plus une fois par jour et par instance (mémoire locale, sans cookie) ; sert au « tu m'as manqué » du Palotin ([buddy-palotins.md](buddy-palotins.md#retour-apres-une-longue-absence-2026-10-21)).
+8. `studentPresenceHandle` — élève connecté au compte approuvé, toute page hors `/api/*` : présence du jour notée au client service, au plus une fois par jour et par instance (mémoire locale, sans cookie) ; sert au « tu m'as manqué » du Palotin ([buddy-palotins.md](buddy-palotins.md#retour-apres-une-longue-absence-2026-10-21)).
 9. `adminElevationHandle` — `locals.adminSupabase`, `locals.adminElevation`.
 10. `csrfHandle` — `Origin` doit correspondre à `Host` pour POST/PUT/PATCH/DELETE.
 11. `securityHeadersHandle` — CSP, HSTS (prod), `X-Frame-Options`, `Cache-Control: private, no-store` si connecté ou cookie posé.
