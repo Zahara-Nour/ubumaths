@@ -10,8 +10,9 @@ Reste, à décider par David :
 
 1. **Mise en production** (`pnpm deploy:prod`, sur sa demande seulement).
 2. **Le sort de `/spreadsheet`** (V4) : retirer, rediriger vers l'atelier, ou garder. L'atelier en
-   reprend l'essentiel ; ce qu'il ne reprend pas : NON, VRAI/FAUX, les fonctions de texte
-   (CONCATENER…), trigonométrie et autres fonctions de calcul de V4 (SIN, PUISSANCE, PLAFOND…).
+   reprend l'essentiel ; ce qu'il ne reprend pas : NON, VRAI/FAUX, SIERREUR, ESTVIDE et
+   compagnie, les fonctions de texte (CONCATENER…), VAR, MODE, PRODUIT, PUISSANCE, PLAFOND,
+   PLANCHER, TRONQUE (la grille a déjà `sin`, `cos`, `log`, `floor`… sous leur nom de Calcul).
 3. **Les vérifications manuelles** du tableur dans
    [verifications-manuelles.md](verifications-manuelles.md) (#1410 → #1477), à faire par David.
 4. **Fin de chantier = versement** : ce journal et les phases 0 du tableur partent en
