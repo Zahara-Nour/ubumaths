@@ -5,20 +5,22 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1595 (étape 3, F mergée)._
+_Mis à jour le 2026-10-21, après #1596 (étape 3, E mergée)._
 
-- **État** : C5 étape 3 (bascule du code). Fait : #1060, #1577 (B1), #1581 (B2), #1583 (B3), #1589 (D : « Ma
-  progression » élève), #1595 (F : analytique de classe sur l'arbre — points neufs, ordre de l'arbre, notion,
-  rétention par branche). Pas en prod (aucun `deploy:prod` depuis B1).
-- **Prochaine action** : **E** en PR (`refactor/arbre-bascule-e`, rattachement par code retiré) ; puis étape 4
-  (destructive : arrêt).
-- **En attente de David** : F — garder `keepLinksOfGrade` (carte d'un autre niveau sans point du niveau de la
-  classe = colonne gardée) ou n'afficher que les points du niveau ? Signalés avant : 11 modèles sans corrigé ;
-  c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51).
+- **État** : C5 étape 3 (bascule du code) **terminée**. Fait : #1060, #1577 (B1), #1581 (B2), #1583 (B3), #1589 (D),
+  #1595 (F, analytique), #1596 (E : rattachement des modèles par code retiré, `"points"` ôté des 398 JSON).
+  Pas en prod (aucun `deploy:prod` depuis B1).
+- **Prochaine action** : **étape 4** (destructive : tables thèmes / objectifs, anciens points et leurs 1 026 liens,
+  8 fonctions SQL, tests d'intégration de l'ancien monde, copie `db:seed-riche`) — **arrêt** : expliquer à David ce
+  qui sera perdu, grep des usages ; seulement APRÈS le `deploy:prod` qui livre l'étape 3.
+- **En attente de David** : `deploy:prod` de l'étape 3 ; F — garder `keepLinksOfGrade` (carte d'un autre niveau sans
+  point du niveau de la classe = colonne gardée) ou n'afficher que les points du niveau ? Signalés avant : 11
+  modèles sans corrigé ; c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement
+  des exercices (51).
 - **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) ; nettoyage
-  d'intégration : tags d'exercice AVANT rangements ; PR en conflit = pas de CI `pull_request` ; MySelect affiche le
-  LaTeX en brut ; pas de test de rendu des pages élève de D ; LaTeX brut dans les infobulles de l'analytique.
-- **Worktree / branche** : aucun (F nettoyé).
+  d'intégration : tags d'exercice AVANT rangements ; MySelect et infobulles de l'analytique affichent le LaTeX brut ;
+  pas de test de rendu des pages élève de D.
+- **Worktree / branche** : aucun (E nettoyé).
 
 ## Tranché avec David (2026-10-06)
 
