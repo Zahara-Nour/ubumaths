@@ -74,4 +74,39 @@ describe('MathouNewsCard', () => {
 		const zero = await render(MathouNewsCard, { news: { firstVisit: false, total: 0, items: [] } });
 		expect(zero.container.querySelector('section')).toBeNull();
 	});
+
+	it('chaque nouveauté joue sa réaction : naissance, croissance depuis le stade d’avant, étoile', async () => {
+		const news: MathouNews = {
+			firstVisit: false,
+			total: 3,
+			items: [
+				item('a'),
+				item('b', { kind: 'growth', stage: 'grand_matou', previousStage: 'matou' }),
+				item('c', { kind: 'star', stage: 'matou', newStars: ['4'] })
+			]
+		};
+		const { container } = await render(MathouNewsCard, { news });
+		const reactions = [...container.querySelectorAll('li svg .reaction')];
+		expect(reactions.map((g) => g.getAttribute('data-reaction'))).toEqual([
+			'apparition',
+			'bond',
+			'bond'
+		]);
+		// croissance : le dessin se transforme ; étoile : un simple bond
+		expect(reactions[1].getAttribute('data-morph')).toBe('true');
+		expect(reactions[2].hasAttribute('data-morph')).toBe(false);
+		// confettis : naissance et croissance, pas l’étoile
+		const confetti = [...container.querySelectorAll('li')].map(
+			(li) => li.querySelectorAll('.confetto').length
+		);
+		expect(confetti[0]).toBeGreaterThan(0);
+		expect(confetti[1]).toBeGreaterThan(0);
+		expect(confetti[2]).toBe(0);
+	});
+
+	it('premier passage : le Mathou est là, sans réaction', async () => {
+		const news: MathouNews = { firstVisit: true, total: 7, items: [item('a'), item('b')] };
+		const { container } = await render(MathouNewsCard, { news });
+		expect(container.querySelector('svg .reaction')?.hasAttribute('data-reaction')).toBe(false);
+	});
 });

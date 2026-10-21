@@ -181,6 +181,104 @@ describe('MathouAvatar', () => {
 	});
 });
 
+describe('MathouAvatar — animations', () => {
+	it('au repos : animé par défaut, pas avec animated={false}, jamais en silhouette', async () => {
+		const anime = async (props: Record<string, unknown>) => {
+			const { container } = await render(MathouAvatar, {
+				raceIndex: 0,
+				stage: 'matou',
+				label: 'x',
+				...props
+			});
+			return svgOf(container).classList.contains('anime');
+		};
+		expect(await anime({})).toBe(true);
+		expect(await anime({ animated: false })).toBe(false);
+		expect(await anime({ silhouette: true })).toBe(false);
+	});
+
+	it('sans réaction : ni confettis, ni ondes, ni restes de sieste', async () => {
+		const { container } = await render(MathouAvatar, { raceIndex: 0, stage: 'matou', label: 'x' });
+		const svg = svgOf(container);
+		for (const part of ['.confetto', '.etincelle', '.onde', '.bonnet-part', '.lune-part']) {
+			expect(svg.querySelector(part)).toBeNull();
+		}
+	});
+
+	it('naissance : auréole qui s’allume, deux ondes, confettis et étoiles', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 4,
+			stage: 'chaton',
+			label: 'x',
+			reaction: 'apparition'
+		});
+		const svg = svgOf(container);
+		expect(svg.querySelector('.reaction')?.getAttribute('data-reaction')).toBe('apparition');
+		expect(svg.querySelector('.aureole-naissance')).not.toBeNull();
+		expect(svg.querySelectorAll('.onde')).toHaveLength(2);
+		expect(svg.querySelectorAll('.confetto').length).toBeGreaterThan(0);
+		expect(svg.querySelectorAll('.etincelle').length).toBeGreaterThan(0);
+	});
+
+	it('croissance : transformation, auréole, ondes et confettis, sans étoiles', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 1,
+			stage: 'matou',
+			label: 'x',
+			reaction: 'bond',
+			growFrom: 'chaton'
+		});
+		const svg = svgOf(container);
+		expect(svg.querySelector('.reaction')?.getAttribute('data-morph')).toBe('true');
+		expect(svg.querySelectorAll('.onde')).toHaveLength(2);
+		expect(svg.querySelectorAll('.confetto').length).toBeGreaterThan(0);
+		expect(svg.querySelector('.etincelle')).toBeNull();
+	});
+
+	it('vers le grand matou : couronne et fraise arrivent à la fin de la transformation', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 5,
+			stage: 'grand_matou',
+			label: 'x',
+			reaction: 'bond',
+			growFrom: 'matou'
+		});
+		const svg = svgOf(container);
+		await expect
+			.poll(() => svg.querySelector('[data-part="couronne"]'), { timeout: 3000 })
+			.not.toBeNull();
+		expect(svg.querySelector('[data-part="collerette"]')).not.toBeNull();
+	});
+
+	it('bond sans stade d’avant (étoile) : pas de transformation, pas de fête', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 1,
+			stage: 'matou',
+			label: 'x',
+			reaction: 'bond'
+		});
+		const svg = svgOf(container);
+		expect(svg.querySelector('.reaction')?.getAttribute('data-reaction')).toBe('bond');
+		expect(svg.querySelector('.reaction')?.hasAttribute('data-morph')).toBe(false);
+		expect(svg.querySelector('.confetto')).toBeNull();
+	});
+
+	it('réveil : éveillé, avec la lune, le bonnet, les « Zzz » et les yeux clos qui s’en vont', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 9,
+			stage: 'matou',
+			label: 'x',
+			reaction: 'reveil'
+		});
+		const svg = svgOf(container);
+		expect(svg.hasAttribute('data-asleep')).toBe(false);
+		expect(svg.querySelector('[data-part="yeux"] ellipse')).not.toBeNull();
+		for (const part of ['.lune-part', '.bonnet-part', '.zzz-part', '.yeux-clos', '.revient']) {
+			expect(svg.querySelector(part)).not.toBeNull();
+		}
+	});
+});
+
 describe('mathou-races', () => {
 	it('19 races, couples (couleur, motif) tous distincts', async () => {
 		expect(MATHOU_RACE_COUNT).toBe(19);

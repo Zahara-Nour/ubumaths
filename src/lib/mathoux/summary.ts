@@ -23,6 +23,7 @@ export const mathouNewsSchema = z.object({
 				name: z.string().min(1).max(200),
 				raceIndex: z.number().int().min(0).max(1000),
 				stage: stageSchema,
+				previousStage: stageSchema.optional(),
 				newStars: z.array(z.string().min(1).max(20)).max(30)
 			})
 		)
