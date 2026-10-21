@@ -14,6 +14,7 @@ import {
 	mathouName,
 	nappingPhrase,
 	collectionCountsPhrase,
+	memoryCountsPhrase,
 	isPointLost,
 	memoryUpdates,
 	mergeMemory,
@@ -634,6 +635,13 @@ describe('phrases', () => {
 	it('nappingPhrase accorde le singulier et le pluriel', () => {
 		expect(nappingPhrase(1)).toBe('1 Mathou fait la sieste');
 		expect(nappingPhrase(3)).toBe('3 Mathoux font la sieste');
+	});
+
+	it('memoryCountsPhrase : la ligne d’un élève dans la liste du professeur', () => {
+		expect(memoryCountsPhrase({ born: 0, grandMatous: 0 })).toBe('Aucun Mathou');
+		expect(memoryCountsPhrase({ born: 1, grandMatous: 0 })).toBe('1 Mathou');
+		expect(memoryCountsPhrase({ born: 1, grandMatous: 1 })).toBe('1 Mathou, dont 1 grand matou');
+		expect(memoryCountsPhrase({ born: 7, grandMatous: 2 })).toBe('7 Mathoux, dont 2 grands matous');
 	});
 
 	it('collectionCountsPhrase', () => {

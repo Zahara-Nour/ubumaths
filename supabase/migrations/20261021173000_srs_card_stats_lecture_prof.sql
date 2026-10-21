@@ -1,0 +1,32 @@
+-- Cartes de révision : le professeur lit celles de ses élèves
+-- ==============================================================================
+--
+-- Pourquoi : la Chatterie vue par le professeur (docs/wip/mathoux-prof-progress.md)
+-- refait le calcul de l'élève avec le client du prof. Un Mathou fait la sieste quand
+-- une carte de sa notion est due (`computePointBadges`, lecture de `srs_card_stats`).
+-- Or la seule policy prof, « Teachers can view stats for assigned decks », ne lui
+-- ouvre les cartes d'un élève que s'il lui a assigné un paquet : la sieste
+-- apparaissait chez certains élèves et pas chez d'autres.
+--
+-- QUESTION D'ACCÈS (tranchée par David le 2026-10-21) :
+--   - GAGNE : le prof (et l'admin) lit les cartes de révision de TOUS ses élèves
+--     (état FSRS, prochaine révision, compteurs), comme il lit déjà leur
+--     acquisition (`student_point_state`) et leurs Mathoux (`student_mathoux`,
+--     mêmes policies). Il les lisait déjà, toutes, pour tout élève à qui il avait
+--     assigné un paquet.
+--   - Mono-prof : `is_my_student` vaut aujourd'hui `is_teacher_or_admin`.
+--   - Inchangé : l'élève lit ses propres cartes, jamais celles d'un autre ;
+--     `anon` n'a rien ; personne n'écrit au client connecté (migration
+--     20261003233000 : l'écriture est réservée au rôle service).
+--   - Personne ne perd d'accès : on ajoute une policy permissive, on n'en retire aucune.
+--
+-- Additive : une policy SELECT de plus, rien d'existant n'est modifié.
+--
+-- Preuve : tests/integration/srs-card-stats-lecture-prof.test.ts (rouge sans cette
+-- migration) et tests/integration/mathoux-vue-prof.test.ts (la sieste en vue prof).
+--
+-- ROLLBACK (à exécuter tel quel) :
+--   drop policy if exists "Teachers can view card stats of their students" on public.srs_card_stats;
+
+create policy "Teachers can view card stats of their students" on public.srs_card_stats
+	for select to authenticated using (public.is_my_student(user_id));

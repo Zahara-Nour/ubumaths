@@ -357,7 +357,9 @@ Accès : l'élève gère ses paquets **non assignés et non automatiques** ; il 
 paquet assigné, automatique ou copié (policies RESTRICTIVE `srs_decks_paquets_serveur_*`) — ces
 paquets passent par le client service (`ensureProgrammeDeck`, `src/lib/server/srs/programme-deck.ts`,
 et `src/routes/api/srs/decks/[id]/assign`). `srs_card_stats` : l'élève **lit** sa mémoire, le
-professeur celle des élèves à qui il a assigné un paquet ; **seul le serveur écrit**
+professeur celle de ses élèves (`is_my_student`, migration `20261021173000`, pour les siestes de la
+[Chatterie vue par le prof](mathoux.md#vue-du-professeur) ; avant, seulement des élèves à qui il
+avait assigné un paquet) ; **seul le serveur écrit**
 (`upsertCardStats`, `src/lib/server/srs/fsrs-actions.ts`).
 
 Une révision écrit FSRS d'abord, puis `skill_attempts` : si FSRS échoue, rien n'est enregistré. Code :
