@@ -7,7 +7,7 @@ _Mis à jour le 2026-10-21, PR #1594 ouverte, correctifs des revues EN COURS (co
 - **État** : #1594 ouverte (CI de l'ancien commit, sans valeur). `security-auditor` → **B1 bloquant** : le lien du parent portait le `hashed_token` de GoTrue, qui ouvre une session sur le compte de l'enfant (`/auth/confirm` ou `/auth/v1/verify`). Refonte commencée : jeton maison, empreinte dans `app_metadata.password_reset` (`createChildResetToken`, `setChildPasswordFromToken(service, userId, token, password)`) ; module + intégration (11 verts) + gabarit faits.
 - **Prochaine action** : finir B1 → `reset-password/+page.server.ts` (`createChildResetToken(service, target.userId)`, courriel `{userId, token}`), page du parent (`?u=&t=`, Zod uuid + jeton 20-128, load), leurs tests (le test du gabarit compare le texte avec `&amp;` : à séparer texte/HTML) ; puis les autres constats (§ Revues de la PR 3) ; doc `auth.md` (jeton maison, pas `generateLink`) ; check, push, CI, merge.
 - **Décisions de David (2026-10-21, « ok pour les recos »)** : M1 audit → refuser la modification de `parent_email` sur une demande `granted` ; M2 audit → documenter « ancien mot de passe » comme garde d'interface (risque accepté) ; revue n° 2 → masquer « Changer mon mot de passe » sans fournisseur `email` ; F-c → David vérifie/coupe le suivi des clics Brevo. PR 2 : **F1 = David** (Dashboard) ; **M1 bis** (5 comptes par classe et par 24 h, écran parent) et **M2** (suffixe à 3 chiffres) = petite PR après #1594, avant le `deploy:prod`.
-- **En attente de David** : F1 et F-c (vérifications de son côté).
+- **En attente de David** : F-c (suivi des clics Brevo). F1 vérifié par David dans le Dashboard le 2026-10-21.
 - **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `app_metadata` seul n'en ferme aucune ; `oxlint --fix` du pre-commit réécrit les tests (les relancer après commit).
 - **Worktree / branche** : `../ubumaths-wt-inscription-parent` · `feat/inscription-parent-mots-de-passe`.
 
@@ -177,7 +177,7 @@ Revues (2026-10-21) :
   = comptes à volonté, 40/h par IP) ; **M2** — identifiant `prenom` + 2 chiffres devinable (100
   candidats par prénom), pulvérisation de mots de passe par GoTrue direct : allonger le suffixe ?
   vérifier la limite de connexion GoTrue de prod ; **F1** — vérifier « Secure email change » et la
-  confirmation d'adresse dans le Dashboard de prod ; **F2** — `profiles.email` modifiable par son
+  confirmation d'adresse dans le Dashboard de prod (✅ vérifié par David le 2026-10-21) ; **F2** — `profiles.email` modifiable par son
   propriétaire (préexistant). F3 (1re/Tle = `granted`) : décision prise. F4 : documenté dans
   `rgpd.md`. F5 : oracle de code identique à `/auth/register`.
 
