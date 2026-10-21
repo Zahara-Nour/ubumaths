@@ -175,7 +175,11 @@ recherche INPI n'est exigée que pour un élément de marque (Compendium § IV).
    hasard payable en monnaie est une loot box : risque réglementaire avec des mineurs (interdites en
    Belgique, encadrées ailleurs) dès que la monétisation arrive, et contraire à la règle d'or. Le
    hasard reste aux cartes VIP ; l'achat aux accessoires.
-3. **Seuls, sans école commune.** Le social n'est pas le levier des particuliers (prof, parents,
+3. ⚠️ **Remplacée le 2026-10-21 par David : école dédiée « Akadada »**, composée de classes = petits
+   groupes d'élèves qui communiquent entre eux (le plus souvent un seul élève par classe). Reste à
+   trancher : ce qui relie deux élèves de groupes différents d'Akadada (amitiés, Marché,
+   classements d'école, démineur multijoueur sont bornés par l'école, pas par la classe).
+   Texte d'origine : **Seuls, sans école commune.** Le social n'est pas le levier des particuliers (prof, parents,
    soi-même le sont), et mettre en contact des mineurs inconnus les uns des autres est le risque
    maximal de safeguarding pour un gain faible. Au plus, plus tard, un compteur collectif anonyme
    (« les Galopins du Royaume ont réveillé 1 000 Mathoux »), sans identité ni contact. À vérifier
