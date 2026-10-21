@@ -8,11 +8,11 @@
 
 _Mis à jour le 2026-10-21, avant la première PR._
 
-- **État** : style choisi et 18 expressions dessinées et animées (générateur dans `scripts/palotins-svg/`, rien encore dans `static/images/buddies/`). Animation au repos et réactions validées par David.
-- **Décidé par David (2026-10-21)** : après une erreur → nouvelle expression **« déterminé »** (sourire en coin, Giron retrousse ses manches, Pile rebat ses cartes, Cotice tourne la page). **« triste » est gardé** pour un élève qui ne s'est pas connecté depuis longtemps (contexte qui n'existe pas encore dans `CONTEXT_EXPRESSION_MAP`).
-- **En attente de David** : (a) au bout de combien de jours sans connexion le Palotin est-il triste, et que dit-il ? (b) Constance perdue (`streak_lost`) : « déterminé » (les répliques disent « on repart ! ») ou « triste » ?
-- **Prochaine action** : dessiner « déterminé » × 3 ; puis PR : 21 SVG dans `static/images/buddies/` (6 + déterminé), `determined` ajouté à `BuddyExpression`, `incorrect` → `determined` dans `CONTEXT_EXPRESSION_MAP`, réactions (bond, tressaut, affaissement) dans `BuddyAvatar.svelte`, vérifier « réduire les animations » dans une `<img>`. Le contexte « absence longue » (triste) = phase 0 à part, une fois (a) tranché.
-- **Pièges en cours** : relancer `node gen.mjs && node gen2.mjs && node page.mjs` dans `scripts/palotins-svg/` (page.mjs lit la sortie des deux) ; sorties ignorées par git (`final/` = les 18 fichiers à copier).
+- **État** : 7 expressions × 3 Palotins dessinées et animées (21 SVG dans `scripts/palotins-svg/final/`, rien encore dans `static/images/buddies/`). « Déterminé » fait : regard décidé (paupière à plat), sourire en coin ; Giron lève le poing manche retroussée, Pile rebat son paquet, Cotice tourne la page.
+- **Décidé par David (2026-10-21)** : après une erreur → « déterminé » ; « triste » gardé pour une longue absence (contexte à créer dans `CONTEXT_EXPRESSION_MAP`).
+- **En attente de David** (recos données) : (a) absence longue = **21 jours** (14 attraperait les petites vacances), une seule fois au retour, réplique « tu m'as manqué », remplace `streak_lost` ; (b) `streak_lost` → **« déterminé »** (les 12 répliques disent « on repart »).
+- **Prochaine action** : David regarde « déterminé » (`scripts/palotins-svg/palotins-styles.html`) ; puis PR : 21 SVG dans `static/images/buddies/`, `determined` dans `BuddyExpression`, `incorrect` (+ `streak_lost` si (b)) → `determined`, réactions (bond, tressaut, affaissement) dans `BuddyAvatar.svelte`, « réduire les animations » dans une `<img>`. Absence longue = phase 0 à part.
+- **Pièges en cours** : relancer `node gen.mjs && node gen2.mjs && node page.mjs` dans `scripts/palotins-svg/` ; sorties ignorées par git (`final/` = les fichiers à copier).
 - **Worktree / branche** : `../ubumaths-wt-palotins-svg` · `feat/palotins-svg`.
 
 ## Décisions de David (2026-10-21)
