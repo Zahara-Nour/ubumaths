@@ -5,6 +5,7 @@
 	 *
 	 * Read-only view: for a class, how many times each curriculum point was worked
 	 * on this school year, rolled up to notions and branches. Colour = intensity.
+	 * Un archivé travaillé est affiché (« archivé ») mais hors du « vus / total ».
 	 */
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -14,6 +15,7 @@
 	import { Gauge, ChevronRight, ChevronDown } from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import ProgrammePointLabel from '$lib/components/programme/ProgrammePointLabel.svelte';
+	import { coverageStats } from '$lib/utils/programme-tree';
 
 	type Branch = PageData['tree'][number];
 	type Notion = Branch['notions'][number];
@@ -45,20 +47,14 @@
 	}
 
 	function notionStats(notion: Notion): { vus: number; total: number } {
-		const total = notion.points.length;
-		const vus = notion.points.filter((p) => count(p.id) > 0).length;
-		return { vus, total };
+		return coverageStats(notion.points, data.counts);
 	}
 
 	function branchStats(branch: Branch): { vus: number; total: number } {
-		let vus = 0;
-		let total = 0;
-		for (const notion of branch.notions) {
-			const s = notionStats(notion);
-			vus += s.vus;
-			total += s.total;
-		}
-		return { vus, total };
+		return coverageStats(
+			branch.notions.flatMap((notion) => notion.points),
+			data.counts
+		);
 	}
 
 	function pct(vus: number, total: number): number {

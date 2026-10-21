@@ -24,38 +24,42 @@ export function isProgrammePoint(point: PointGeneration | null | undefined): boo
 
 /**
  * Génération d'un point avant de le cocher ou de le taguer : un ancien point n'est plus
- * proposé par aucun écran, l'API le refuse aussi. `introuvable` : absent, ou illisible.
+ * proposé par aucun écran, l'API le refuse aussi ; un point neuf archivé non plus (B3).
+ * `introuvable` : absent, ou illisible.
  */
 export async function readPointGeneration(
 	supabase: App.Locals['supabase'],
 	pointId: string
-): Promise<'programme' | 'ancien' | 'introuvable'> {
+): Promise<'programme' | 'archive' | 'ancien' | 'introuvable'> {
 	const { data, error } = await supabase
 		.from('curriculum_points')
-		.select('id, node_id')
+		.select('id, node_id, archived_at')
 		.eq('id', pointId)
 		.maybeSingle();
 	if (error) throw new Error(`Point illisible : ${error.message}`);
 	if (!data) return 'introuvable';
-	return isProgrammePoint(data) ? 'programme' : 'ancien';
+	if (!isProgrammePoint(data)) return 'ancien';
+	return data.archived_at === null ? 'programme' : 'archive';
 }
 
 /** Taille d'un lot : les identifiants passent dans l'URL de la lecture. */
 const ID_BATCH = 100;
 
-/** Parmi ces identifiants, ceux des points neufs (les autres sont écartés). */
-export async function keepProgrammePointIds(
+/** Parmi ces identifiants, ceux des points neufs non archivés : les seuls qu'on coche. */
+export async function keepCheckablePointIds(
 	supabase: App.Locals['supabase'],
 	pointIds: string[]
 ): Promise<string[]> {
-	const neufs = new Set<string>();
+	const cochables = new Set<string>();
 	for (let i = 0; i < pointIds.length; i += ID_BATCH) {
 		const { data, error } = await supabase
 			.from('curriculum_points')
-			.select('id, node_id')
+			.select('id, node_id, archived_at')
 			.in('id', pointIds.slice(i, i + ID_BATCH));
 		if (error) throw new Error(`Points illisibles : ${error.message}`);
-		for (const p of data ?? []) if (isProgrammePoint(p)) neufs.add(p.id);
+		for (const p of data ?? []) {
+			if (isProgrammePoint(p) && p.archived_at === null) cochables.add(p.id);
+		}
 	}
-	return pointIds.filter((id) => neufs.has(id));
+	return pointIds.filter((id) => cochables.has(id));
 }

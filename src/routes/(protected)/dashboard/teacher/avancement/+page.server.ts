@@ -4,7 +4,8 @@
  * For a class, shows how many times each curriculum point was worked on during
  * the current school year (count from journal_entry_points), rolled up to
  * notions and branches of the programme tree. Read-only. Un point archivé
- * n'apparaît que s'il a été travaillé cette année.
+ * n'apparaît que s'il a été travaillé cette année, et ne compte pas dans le
+ * « vus / total » (`coverageStats`, B3).
  */
 
 import type { PageServerLoad } from './$types';

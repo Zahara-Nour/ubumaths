@@ -191,6 +191,19 @@ export function countArchivedPoints(tree: ProgrammeBranch[]): number {
 }
 
 /**
+ * Avancement : points vus parmi les points actifs. Un archivé travaillé reste
+ * affiché, mais ne compte ni dans « vus » ni dans le total (B3) : il n'est plus
+ * au programme, il ne doit ni gonfler ni faire baisser le pourcentage.
+ */
+export function coverageStats(
+	points: ProgrammePointView[],
+	counts: Readonly<Record<string, number>>
+): { vus: number; total: number } {
+	const actifs = points.filter((p) => p.archived_at === null);
+	return { vus: actifs.filter((p) => (counts[p.id] ?? 0) > 0).length, total: actifs.length };
+}
+
+/**
  * L'arbre réduit aux points retenus par `keepPoint`. Une notion (ou une branche)
  * qui n'en garde aucun disparaît : elle n'a plus de point à montrer.
  */

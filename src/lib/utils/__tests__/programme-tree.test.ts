@@ -7,7 +7,8 @@
  *      quand le point est posé sur une sous-notion ;
  *   2. seules les branches et notions qui portent un point du niveau
  *      apparaissent (un point sur une sous-notion compte pour sa notion) ;
- *   4. les archivés se masquent et se comptent ;
+ *   4. les archivés se masquent et se comptent ; travaillés, ils restent hors du
+ *      « vus / total » de l'Avancement (B3, 2026-10-21) ;
  *   5. un ancien point (sans nœud) n'apparaît jamais ;
  *   7. aucun point → arbre vide.
  */
@@ -16,6 +17,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	buildProgrammeTree,
 	countArchivedPoints,
+	coverageStats,
 	hideArchivedPoints,
 	placeOfNode,
 	type ProgrammePointRow
@@ -192,6 +194,29 @@ describe('archivés', () => {
 		expect(visible.map((b) => b.id)).toEqual(['b-geo', 'b-nombres']);
 		expect(visible[0].notions[0].points.map((p) => p.id)).toEqual(['p3']);
 		expect(visible[1].notions[0].points.map((p) => p.id)).toEqual(['p1']);
+	});
+});
+
+describe('coverageStats (Avancement)', () => {
+	const points = buildProgrammeTree(
+		[
+			point('p1', 'n-entiers', 1),
+			point('p2', 'n-entiers', 2),
+			point('p3', 'n-entiers', 3, { archived_at: STAMP })
+		],
+		NODES
+	)[0].notions[0].points;
+
+	it('compte les points vus parmi les actifs', () => {
+		expect(coverageStats(points, { p1: 2 })).toEqual({ vus: 1, total: 2 });
+	});
+
+	it('un archivé travaillé ne compte ni dans « vus » ni dans le total', () => {
+		expect(coverageStats(points, { p1: 1, p3: 4 })).toEqual({ vus: 1, total: 2 });
+	});
+
+	it('aucun point actif : 0 / 0', () => {
+		expect(coverageStats(points.slice(2), { p3: 1 })).toEqual({ vus: 0, total: 0 });
 	});
 });
 

@@ -22,7 +22,7 @@ _Mis à jour le 2026-10-21, après #1581 (étape 3, B2 mergée)._
   décors d'intégration : `makeTaggedExercise` range l'exercice ; un test qui pose des points ANCIENS asserte l'ancien
   comportement ; une PR en conflit ne lance PAS la CI `pull_request` (fusionner `origin/main`) ; MySelect affiche le
   LaTeX en brut.
-- **Worktree / branche** : aucun (B2 nettoyé).
+- **Worktree / branche** : `ubumaths-wt-arbre-notions` · `refactor/arbre-bascule-b3` (B3 en revue).
 
 ## Tranché avec David (2026-10-06)
 
@@ -1197,3 +1197,8 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
 - **2026-10-21 — Trois points de revue de B2 tranchés par David** (« je suis tes recos ») : refuser l'archivé à
   l'API ; 404 au DELETE laissé tel quel (commentaire) ; archivés hors du « vus / total » de l'Avancement. À faire en
   B3, à la reprise.
+- **2026-10-21 — B3 en cours** (`refactor/arbre-bascule-b3`, worktree `ubumaths-wt-arbre-notions`). POST couverture /
+  tag d'exercice : 400 « Point archivé » (`readPointGeneration` rend `archive`) ; création de séance :
+  `keepCheckablePointIds` (ex-`keepProgrammePointIds`) écarte aussi les archivés ; DELETE : commentaire « 404 = déjà
+  retiré » (policy unique `for all … is_teacher_or_admin()` de `20260621100000`, vérifiée) ; Avancement :
+  `coverageStats` (archivés hors « vus / total »). Tests : 6 rouges avant, 66/66 après. Accès : rien ne change.
