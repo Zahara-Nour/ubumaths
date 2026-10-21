@@ -363,12 +363,9 @@ def m_db4f1dde(t):
 
 
 def m_5b53b1be(t):
-    # Virgule décimale → point dans les trois variations : le parseur maison ne lit plus `a,5`
-    # depuis #1565 (lecture-grandeurs PR 6). Ce sont les trois réécritures prévues pour ce modèle par
-    # scripts/reecrire-virgule-decimale-base.ts, qui le saute ensuite (« déjà réécrit »).
-    variable(t['variations'][1], 'expression2', '(-a,5)-b', '(-a.5)-b')
-    variable(t['variations'][2], 'expression3', 'a,5-b', 'a.5-b')
-    ecriture_simplifiee(t, '(-a,5)+b', '-a.5+b', '{{eval:a+0.5;d}}',
+    # Relevé repris le 2026-10-21 après scripts/reecrire-virgule-decimale-base.ts (deploy de #1565) :
+    # les trois variations sont déjà au point décimal (`(-a.5)+b`, `(-a.5)-b`, `a.5-b`).
+    ecriture_simplifiee(t, '(-a.5)+b', '-a.5+b', '{{eval:a+0.5;d}}',
                         {'(-2,5)+1 = -1,5': '-2,5+1 = -1,5', 'borne : (-3,5)+4 = 0,5': 'borne : -3,5+4 = 0,5'})
 
 
