@@ -472,6 +472,12 @@ CRON_SECRET                   # Secret taches planifiees
 > par le clic ; un adolescent qui saisit sa propre seconde adresse se donne le consentement — même
 > limite que l'inscription de l'élève seul. En 1re/Tle, le clic est une confirmation d'adresse
 > enregistrée dans `parental_consents` comme un accord (`granted`) : décision de David.
+> Le courriel d'inscription dit aussi comment réinitialiser le mot de passe (PR 3). « Mot de passe
+> oublié » avec l'identifiant envoie un second courriel Brevo (`sendChildPasswordResetEmail`) à
+> l'adresse du parent de la demande la plus récente, **seulement si elle est confirmée**
+> (`granted`) ; le parent choisit le mot de passe sans jamais être connecté au compte de l'enfant
+> ([auth.md § Mots de passe des élèves](../auth.md#mots-de-passe-des-élèves)). Rien de nouveau
+> n'est stocké ni lu : l'adresse vient de `parental_consents`, lue par la clé service.
 
 ---
 

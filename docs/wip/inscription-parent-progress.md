@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, phase 0 de la PR 3 proposée._
+_Mis à jour le 2026-10-21, PR 3 codée, avant revue._
 
-- **État** : PR 1 (#1585) et PR 2 (#1592) mergées, migration en prod ; code pas en prod (attend un `deploy:prod`). PR 3 : phase 0 **validée** (R1-R4 = recommandations), implémentation en cours.
-- **Prochaine action** : tests rouges de la PR 3, puis implémentation.
+- **État** : PR 1 (#1585) et PR 2 (#1592) mergées, migration en prod ; code pas en prod (attend un `deploy:prod`). PR 3 : codée, tests verts, doc à jour ; PR à ouvrir, revues `code-reviewer` + `security-auditor`.
+- **Prochaine action** : ouvrir la PR 3, revues, CI, merge ; puis PR 4 (écran élève seul + approbation du prof).
 - **En attente de David** : M2, M1 bis, F1 (§ PR 2).
 - **Pièges en cours** : GoTrue écrit `app_metadata` APRÈS l'INSERT (trigger différé) ; la règle commune donne 30 j de grâce → retirés par `createChildAccount` ; reset d'un enfant : jamais vers `@eleves.chiph.re`.
 - **Worktree / branche** : `../ubumaths-wt-inscription-parent` · `feat/inscription-parent-mots-de-passe`.
@@ -267,3 +267,19 @@ dédiée sans session · R3 changement obligatoire · R4 tous les élèves, jama
   (autorisation, rôle, mot de passe non rendu deux fois) ; changement obligatoire ; ancien mot de
   passe exigé. Pas de migration ni de RLS → pas d'intégration.
 - Revue : `code-reviewer` + `security-auditor` (auth, données d'élèves).
+
+### Implémentation (2026-10-21)
+
+- `src/lib/server/child-password.ts` : cible du parent (demande la plus récente `granted`),
+  jeton `generateLink` sans envoi, changement par jeton sur client jetable, mot de passe
+  provisoire (`Mot-Mot-NN`), ancien mot de passe, `amr` récent.
+- Mesures en local : session d'un lien = `amr: otp` ; jeton réutilisé → `otp_expired` ;
+  `app_metadata` fusionné ; changement par la clé service = **toutes** les sessions fermées,
+  par l'élève = la sienne gardée ; `app_metadata` seul = aucune fermée.
+- Preuve rouge : sans `signOut`, le test 3 (jeton d'un adulte refusé) laisse une session → rouge.
+  Le test 2 ne peut pas l'être (GoTrue ferme déjà les sessions au changement de mot de passe).
+- Écarts au plan : mention de `/consent/[token]` conditionnelle (le RPC ne dit pas si le compte
+  est un enfant à identifiant) ; « Changer mon mot de passe » visible pour tous les rôles du profil.
+- Doc : `auth.md` (§ Mots de passe des élèves, chaîne des handles complétée d'`accountStatusHandle`,
+  qui manquait), `serveur.md`, `architecture-generale.md`, `comptes-classes-ecoles.md`,
+  `conformite/rgpd.md`, `conformite/consentement-parental.md`.

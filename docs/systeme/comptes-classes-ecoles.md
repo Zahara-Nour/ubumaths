@@ -37,11 +37,12 @@ couvre:
 > [jeux-et-economie.md](jeux-et-economie.md) ; `api/admin/anti-fraud`,
 > `api/teacher/classes/[classId]/anti-fraud` → [srs.md](srs.md) ;
 > `api/teacher/classes/[classId]/analytics` et la page `analytics` → [analytique-prof.md](analytique-prof.md) ;
-> `api/admin/elevate`, `api/admin/users/[id]/status` → [auth.md](auth.md) ;
+> `api/admin/elevate`, `api/admin/users/[id]/status`, `api/admin/users/[id]/password` → [auth.md](auth.md) ;
 > `dashboard/teacher/settings/google` → [outils-prof.md](outils-prof.md) ; `api/admin/health-stats`
 > et les widgets admin → [tableaux-de-bord-et-navigation.md](tableaux-de-bord-et-navigation.md).
 >
-> Vérifié contre le code le 2026-10-13 (commit `4f3eb2b3e`).
+> Vérifié contre le code le 2026-10-13 (commit `4f3eb2b3e`) ; mot de passe d'un élève (panneau
+> admin, profil) le 2026-10-21.
 
 ## À quoi ça sert
 
@@ -108,7 +109,10 @@ de 2nde de répondre une fois à la question d'âge.
   échoué » au lieu de « Aucun résultat trouvé » ; de même pour les comptes en attente), `src/routes/api/admin/search-users/pending/+server.ts`,
   `src/routes/api/admin/class-students/+server.ts`, `src/routes/api/admin/users/[id]/+server.ts`
   (PATCH : prénom, nom, rôle, école, `is_test`), `src/routes/api/admin/users/[id]/status/+server.ts`
-  (approuver, refuser), et les routes d'adhésion ci-dessus.
+  (approuver, refuser), et les routes d'adhésion ci-dessus. Pour un élève approuvé, le panneau
+  porte « Réinitialiser le mot de passe » (`src/lib/components/admin/StudentPasswordReset.svelte`
+  → `src/routes/api/admin/users/[id]/password/+server.ts`) : mot de passe provisoire affiché une
+  fois, à changer à la connexion suivante ([auth.md § Mots de passe des élèves](auth.md#mots-de-passe-des-élèves)).
 - **Import d'élèves** : `src/routes/(protected)/dashboard/admin/import-students/+page.server.ts`,
   action `import`. Les élèves vont dans `pending_students` (avec `class_ids` résolus depuis les
   codes de classe). Chaque élève est validé avant toute écriture (`importedStudentsSchema` :
@@ -178,9 +182,11 @@ de 2nde de répondre une fois à la question d'âge.
   `soleTeacher`, `indexStaffById`), sur la fonction SQL `get_staff_directory`. C'est ainsi qu'un
   élève lit le nom et l'avatar du prof.
 - Page « Mon profil » : `src/routes/(protected)/dashboard/profile/+page.svelte` (préférences,
-  export des données, suppression du compte, déconnexion).
+  « Changer mon mot de passe » → `/auth/update-password?depuis=profil`, export des données,
+  suppression du compte, déconnexion). Pour un enfant inscrit par son parent, elle affiche
+  « Identifiant : noelie42 » au lieu de l'adresse fictive (`childLoginIdOf`).
 - Champ mot de passe : `src/lib/components/MyPasswordInput.svelte` (afficher/masquer), utilisé par
-  les pages de connexion, d'inscription, de nouveau mot de passe et d'élévation. Jauge de force :
+  les pages de connexion, d'inscription, de nouveau mot de passe (dont celle du lien du parent) et d'élévation. Jauge de force :
   `src/lib/utils/passwordStrength.ts`, **indicative** ; la règle qui fait foi est côté serveur dans
   `src/lib/server/passwordPolicy.ts` (voir [auth.md](auth.md)).
 

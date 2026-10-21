@@ -240,6 +240,9 @@ Migration `20261014110000_lecture_seule_garde_base` :
      inscription par le parent). En 1re/Tle, pas de case : le bouton « Je confirme mon adresse »
      confirme l'adresse du parent, et la ligne passe aussi à `granted` (décision de David,
      2026-10-21 : même table, pas de colonne « type »).
+   - Mention « Mot de passe oublié » (PR 3, 2026-10-21) : si l'enfant se connecte avec un
+     identifiant, le lien de réinitialisation arrive à cette adresse. Phrase conditionnelle :
+     `get_consent_info` ne dit pas si le compte est celui d'un enfant à identifiant.
    - Error states for expired/invalid tokens
 
 5. `src/routes/(public)/consent/success/+page.svelte`
