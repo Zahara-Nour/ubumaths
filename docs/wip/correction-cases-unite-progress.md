@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21 : phase 0 de la PR 2 bis validée (version finale en bas du journal)._
+_Mis à jour le 2026-10-21 : PR 2 bis codée, revue opus faite, PR à ouvrir._
 
-- **État** : PR 1-3 mergées (#1543, #1545, #1547). PR 2 bis en cours (tests puis code). Rien en prod.
-- **Prochaine action** : tests rouges des cas de la « phase 0 finale » du 2026-10-21, puis code dans `questions/units`.
-- **En attente de David** : rien.
-- **PR suivante (validée)** : corriger le test « nombre simple » (`isSimpleNumberLatex`) : `(−3)` perfectible « parenthèses inutiles », `.5` et `5,` refusés (BIPM) — cases avec et sans unité, mesurée sur les modèles publiés.
-- **Pièges en cours** : `3+2 m` réduit par `tidy` reste « 3 + 2 m » et `validateQuantityAnswer` le croit juste → exiger une seule grandeur ; le mode « attendu modèle » des cases sans unité est inutilisable après conversion (`1/2 h` pour 30 min refusé) ; messages d'unité validés (ne pas reformuler).
-- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage` ; sondes non suivies dans `src/lib/questions/units/__tests__/tmp/`.
+- **État** : PR 1-3 mergées (#1543, #1545, #1547). PR 2 bis codée (`student-calculation.ts`), revue opus appliquée (`÷` jugé fraction : corrigé). Rien en prod.
+- **Prochaine action** : ouvrir la PR, CI, merger ; puis PR suivante (test « nombre simple »).
+- **En attente de David** : suppression du dossier non suivi `src/lib/questions/units/__tests__/tmp/` (sondes jetables).
+- **PR suivante (validée)** : corriger `isSimpleNumberLatex` : `(−3)` perfectible « parenthèses inutiles », `.5` et `5,` refusés (BIPM) — cases avec et sans unité, mesurée sur les modèles publiés.
+- **Pièges en cours** : toute réponse fausse d'une case à unité affiche le message général (« Valeur incorrecte. » de `validateQuantityAnswer` n'est jamais montré) ; messages d'unité validés (ne pas reformuler).
+- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage`.
 
 ## Historique
 
@@ -212,3 +212,16 @@ scientifique en plus. Validé : mode « nombre simple » + notation scientifique
 - Limite : unité imposée + calcul à deux unités (`3 h + 30 min`, `min` imposée) → message d'unité imposée
   (la grandeur réduite est en h), pas « forme demandée ».
 - Oracle des 25 modèles publiés : 0 changement attendu.
+
+### 2026-10-21 — PR 2 bis codée, revue opus
+
+- `student-calculation.ts` : `markStudentUnits`, `readStudentCalculation`, `studentValueLatex` ; branchés dans
+  `validateQuantityAnswer` (après l'échec du découpage, sauf écriture d'unité ambiguë et durée composée) et à
+  l'étape 4 d'`answer-validator`.
+- Écart à la phase 0 : les messages « Valeur incorrecte. » / « Réponse invalide » ne sont jamais montrés en
+  case à unité (seuls les messages où l'unité est en cause passent) → `2×3 m` pour 7 m, `2√2 m`, `3x m` :
+  message général, comme `7 m` pour 6 m.
+- Revue opus : bloquant corrigé — `150 km ÷ 3 h` jugé JUSTE (`isQuantityValueLatex` prenait `\div` pour une
+  fraction ; exige maintenant `\frac`) ; `^{\circ}C` lu °C avant le marquage. Gardé (cohérent avec le principe) :
+  `\frac{180 km}{2 h}` → perfectible « La fraction peut être simplifiée. », comme `\frac{180}{2}` sans unité.
+  Mineurs laissés : `5 m × 10^3` juste (lu notation scientifique), `6÷2 m` = 6 ÷ (2 m) → « pas la bonne grandeur ».
