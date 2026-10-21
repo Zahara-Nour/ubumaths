@@ -1,7 +1,15 @@
 // Les six expressions des Palotins (style affiche) : visage, geste et décor propres à chaque expression.
 // « happy » reprend tel quel le dessin validé par David (parties de gen.mjs).
 
-export const EXPRESSIONS = ['neutral', 'happy', 'sad', 'thinking', 'excited', 'encouraging'];
+export const EXPRESSIONS = [
+	'neutral',
+	'happy',
+	'sad',
+	'thinking',
+	'excited',
+	'encouraging',
+	'determined'
+];
 
 export const LIBELLES = {
 	neutral: 'neutre',
@@ -9,7 +17,8 @@ export const LIBELLES = {
 	sad: 'triste',
 	thinking: 'pensif',
 	excited: 'excité',
-	encouraging: 'encourageant'
+	encouraging: 'encourageant',
+	determined: 'déterminé'
 };
 
 // ---------- Briques du visage ----------
@@ -43,6 +52,20 @@ function eyeSad(cx, cy, r, o) {
 		}
 	];
 }
+// Œil décidé : paupière haute posée à plat sur la pupille (regard qui vise)
+function eyeSet(cx, cy, r) {
+	return [
+		...eyeOpen(cx, cy, r),
+		{
+			r: 'lid',
+			d: `M${f(cx - r - 1)} ${f(cy - r * 0.62)} L${f(cx + r + 1)} ${f(cy - r * 0.74)} L${f(cx + r + 1)} ${f(cy - r - 1.5)} L${f(cx - r - 1)} ${f(cy - r - 1.5)} Z`
+		},
+		{
+			r: 'line',
+			d: `M${f(cx - r - 0.6)} ${f(cy - r * 0.62)} L${f(cx + r + 0.6)} ${f(cy - r * 0.74)}`
+		}
+	];
+}
 // Sourcil : o = -1 gauche, +1 droite ; extérieur à cx + 6·o, intérieur à cx - 4·o
 function brow(cx, cy, o, kind) {
 	const out = f(cx + o * 6);
@@ -52,7 +75,8 @@ function brow(cx, cy, o, kind) {
 		normal: [cy - 7, cy - 10.5, cy - 8],
 		raised: [cy - 9.5, cy - 13, cy - 10.5],
 		sad: [cy - 6.5, cy - 8.5, cy - 11],
-		flat: [cy - 7.6, cy - 8.6, cy - 7]
+		flat: [cy - 7.6, cy - 8.6, cy - 7],
+		set: [cy - 8.6, cy - 9.4, cy - 6.4]
 	}[kind];
 	return { r: 'line', d: `M${out} ${f(Y[0])} Q${ctl} ${f(Y[1])} ${inn} ${f(Y[2])}`, k: 'sourcil' };
 }
@@ -70,6 +94,14 @@ const mouth = {
 		}
 	],
 	sad: (x, y) => [{ r: 'line', d: `M${x - 5.5} ${y + 2} Q${x} ${y - 2.5} ${x + 5.5} ${y + 2}` }],
+	// sourire en coin, le coin droit qui remonte
+	smirk: (x, y) => [
+		{
+			r: 'line',
+			d: `M${x - 6} ${y} Q${x - 0.5} ${y + 2.4} ${x + 5} ${y - 1} Q${x + 6.4} ${y - 2} ${x + 6.8} ${y - 3.4}`
+		},
+		{ r: 'thin', d: `M${x + 7.6} ${y - 1.6} Q${x + 8.4} ${y - 0.4} ${x + 7.8} ${y + 0.6}` }
+	],
 	hmm: (x, y) => [
 		{ r: 'line', d: `M${x - 3} ${y + 0.5} Q${x + 1.5} ${y + 1.4} ${x + 5} ${y - 1}` }
 	],
@@ -140,6 +172,10 @@ const YEUX = {
 };
 const BOUCHE = { giron: [50, 58], pile: [51, 65], cotice: [50, 61] };
 const SOURIRE_PILE = [{ r: 'line', d: 'M43 64 Q51 69 59 63 Q61 62 61.5 60.5' }];
+const SOURIRE_COIN_PILE = [
+	{ r: 'line', d: 'M45 64.5 Q51 66.6 57 63.6 Q59.4 62.2 60 60' },
+	{ r: 'thin', d: 'M61.2 62 Q61.8 63.2 61.2 64.2' }
+];
 
 // ---------- Gestes ----------
 
@@ -200,6 +236,77 @@ const COTICE_LIVRE = (t, ferme = false) => [
 				]
 	}
 ];
+// Giron retrousse ses manches : avant-bras levé, manche roulée au coude, poing serré
+const GIRON_POING_LEVE = [
+	{ r: 'cloth', d: 'M61 101 L65 91 Q73 86 82 89.5 L89 101 Z' },
+	{
+		r: 'group',
+		k: 'poing',
+		t: 'translate(0 0)',
+		items: [
+			{ r: 'skin', d: 'M75.5 91 L76 71 L88 71 L87.5 91 Z' },
+			{ r: 'cloth', d: 'M73 83.5 Q81.5 80.5 90 83.5 L90.5 91.5 Q81.5 88.5 72.5 91.5 Z' },
+			{ r: 'thin', d: 'M72.8 87.4 Q81.5 84.4 90.2 87.4' },
+			{
+				r: 'skin',
+				d: 'M73 62.5 Q73 57 78.5 57 L85.5 57 Q91 57 91 62.5 L91 68.5 Q91 74 85.5 74 L78.5 74 Q73 74 73 68.5 Z'
+			},
+			{ r: 'thin', d: 'M78 57.4 L78 62.6 M82.4 57.2 L82.4 62.6 M86.6 57.6 L86.6 62.6' },
+			{ r: 'line', d: 'M73.6 66 Q80 64.2 86.8 66.6' }
+		]
+	}
+];
+// Pile rebat son paquet : deux cartes dessous, celle du dessus qui glisse et revient
+const CARTE = 'M8 66 L23 66 Q25 66 25 68 L25 87 Q25 89 23 89 L8 89 Q6 89 6 87 L6 68 Q6 66 8 66 Z';
+const DOS = 'M10 69.5 L21 69.5 L21 85.5 L10 85.5 Z';
+const PILE_PAQUET = [
+	{
+		r: 'group',
+		t: 'translate(9 1) rotate(-26 16 80)',
+		items: [
+			{ r: 'card', d: CARTE },
+			{ r: 'thin', d: DOS }
+		]
+	},
+	{
+		r: 'group',
+		t: 'translate(9 1) rotate(-12 16 80)',
+		items: [
+			{ r: 'card', d: CARTE },
+			{ r: 'thin', d: DOS }
+		]
+	},
+	{
+		r: 'group',
+		k: 'battage',
+		t: 'translate(9 1) rotate(2 16 80)',
+		items: [
+			{ r: 'card', d: CARTE },
+			{
+				r: 'cardMark',
+				d: 'M15.5 71.5 L17.8 76.2 L23 76.8 L19.2 80.2 L20.2 85.4 L15.5 82.9 L10.8 85.4 L11.8 80.2 L8 76.8 L13.2 76.2 Z'
+			}
+		]
+	},
+	{ r: 'cloth', d: 'M16 101 L19 90 Q26 85 33 89 L39 101 Z' },
+	{ r: 'skin', d: 'M20 86 Q20 80 26 80 Q32 80 32 86 Q32 91 26 91 Q20 91 20 86 Z' },
+	{ r: 'skin', d: 'M25 81.5 L31.5 79.2 Q34 78.6 34.4 80.9 Q34.7 83.1 32.3 83.7 L26 85.6 Z' }
+];
+// Cotice tourne la page : livre ouvert, la page de droite qui passe à gauche
+const COTICE_PAGE_TOURNEE = () => {
+	const [manche, livre] = COTICE_LIVRE('translate(-4 0)');
+	const main = livre.items.at(-1);
+	const page = {
+		r: 'group',
+		k: 'page',
+		t: 'translate(0 0)',
+		items: [
+			{ r: 'card', d: 'M72 75.5 Q78 72.5 86 76.5 L86 89 Q78 85.5 72 88.5 Z' },
+			{ r: 'thin', d: 'M74.5 78.5 Q78.5 77 83 79 M74.5 81.5 Q78.5 80 83 82' }
+		]
+	};
+	return [manche, { ...livre, items: [...livre.items.slice(0, -1), page, main] }];
+};
 // Giron, main au menton (pensif) : avant-bras dans le corps, poing devant le menton
 const GIRON_AVANT_BRAS = [{ r: 'cloth', d: 'M53 101 L56 82 Q60 77 66 79 L70 101 Z' }];
 const GIRON_POING_MENTON = [
@@ -289,6 +396,15 @@ export function variant(key, P, expr) {
 					d: `M${mx - 3.8} ${my + 3.4} Q${mx} ${my + 1.8} ${mx + 3.8} ${my + 3.4} Q${mx} ${my + 6.2} ${mx - 3.8} ${my + 3.4} Z`
 				}
 			];
+			break;
+		case 'determined':
+			// après une erreur : on se relève, sourire en coin, et le geste qui dit « on y retourne »
+			eyes = [...eyeSet(lx, ly, er), ...eyeSet(rx, ry, er)];
+			brows = [brow(lx, ly, -1, 'set'), brow(rx, ry, 1, 'set')];
+			lips = key === 'pile' ? SOURIRE_COIN_PILE : mouth.smirk(mx, my);
+			if (key === 'giron') arm = GIRON_POING_LEVE;
+			if (key === 'pile') arm = PILE_PAQUET;
+			if (key === 'cotice') arm = COTICE_PAGE_TOURNEE();
 			break;
 		case 'encouraging':
 			eyes = [...eyeOpen(lx, ly, er), ...eyeOpen(rx, ry, er)];

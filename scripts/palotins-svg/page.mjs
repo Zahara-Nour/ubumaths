@@ -54,17 +54,18 @@ const sections = Object.keys(meta)
 const EXPR = [
 	['neutral', 'Neutre', 'au repos, quiz de choix'],
 	['happy', 'Content', 'bonne réponse, gain de fin de séance'],
-	['sad', 'Triste', 'erreur, Constance perdue'],
+	['sad', 'Triste', 'longue absence (contexte à créer)'],
 	['thinking', 'Pensif', 'anecdotes du lore, thèmes'],
 	['excited', 'Excité', 'Constance tenue, tour de panse, carte rare'],
-	['encouraging', 'Encourageant', 'accueil, changement de Palotin']
+	['encouraging', 'Encourageant', 'accueil, changement de Palotin'],
+	['determined', 'Déterminé', 'erreur (Constance perdue : à trancher)']
 ];
 const dataUri = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 const grille = `<section class="style retenu" id="expressions">
 	<header class="style-tete">
 		<span class="lettre">6×3</span>
 		<div>
-			<h2>Les six expressions, animées</h2>
+			<h2>Les sept expressions, animées</h2>
 			<p class="pitch">Les 18 fichiers qui remplaceront <code>static/images/buddies/</code>, avec l'animation au repos et recadrés en rond comme dans l'appli. Les gestes suivent l'humeur : Giron ne lève le pouce que s'il est content, excité ou encourageant, et met la main au menton quand il réfléchit ; Pile laisse tomber sa carte quand il est triste et la brandit quand il est excité ; Cotice ferme son livre quand il est triste et le lit quand il réfléchit.</p>
 		</div>
 	</header>

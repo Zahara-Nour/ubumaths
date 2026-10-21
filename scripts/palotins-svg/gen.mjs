@@ -350,6 +350,7 @@ const STYLES = {
 						'stroke-linejoin': 'round'
 					},
 					eyeWhite: { fill: '#FFFDF6', stroke: ink, 'stroke-width': 2 },
+					lid: { fill: '#F6E9D2' },
 					spark: { fill: '#F2B83B', stroke: ink, 'stroke-width': 1.6, 'stroke-linejoin': 'round' },
 					dot: { fill: '#FFFDF6', stroke: ink, 'stroke-width': 1.8 },
 					thin: {
@@ -648,6 +649,9 @@ function animation(pk) {
 .plume{transform-origin:31px 50px;animation:plume 2.3s ease-in-out infinite}
 .etincelle{transform-box:fill-box;transform-origin:center;animation:scintille 1.8s ease-in-out infinite}
 .livre{transform-origin:68px 90px;animation:livre ${r.souffle}s ease-in-out infinite}
+.poing{transform-origin:82px 92px;animation:poing 2.6s ease-in-out infinite}
+.battage{transform-origin:25px 88px;animation:battage 2.4s ease-in-out infinite}
+.page{transform-origin:72px 82px;animation:page 3.4s ease-in-out infinite}
 @keyframes souffle{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.018)}}
 @keyframes respire{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.1px)}}
 @keyframes cligne{0%,91%,97%,100%{transform:scaleY(1)}94%{transform:scaleY(.08)}}
@@ -657,6 +661,9 @@ function animation(pk) {
 @keyframes carte{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
 @keyframes plume{0%,100%{transform:rotate(-3.5deg)}50%{transform:rotate(3deg)}}
 @keyframes livre{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2px)}}
+@keyframes poing{0%,55%,100%{transform:rotate(0)}68%{transform:rotate(-7deg) translateY(-1.5px)}80%{transform:rotate(2deg)}90%{transform:rotate(-2deg)}}
+@keyframes battage{0%,50%,100%{transform:translate(0,0) rotate(0)}62%{transform:translate(-1px,-7px) rotate(-10deg)}76%{transform:translate(1px,-2px) rotate(5deg)}88%{transform:translate(0,0) rotate(-1deg)}}
+@keyframes page{0%,30%{transform:scaleX(1);opacity:1}62%,78%{transform:scaleX(-1);opacity:1}86%{transform:scaleX(-1);opacity:0}87%{transform:scaleX(1);opacity:0}100%{transform:scaleX(1);opacity:1}}
 @keyframes scintille{0%,100%{transform:scale(.7) rotate(0);opacity:.75}50%{transform:scale(1.1) rotate(20deg);opacity:1}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>`;
