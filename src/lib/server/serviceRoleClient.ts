@@ -67,6 +67,8 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'/api/student/age-declaration',
 	// GDPR account deletion (requires auth.admin.deleteUser)
 	'/api/account/delete',
+	// Export RGPD : jour du dernier passage (table sans policy), filtré sur l'identité de la session
+	'/api/account/export',
 	// Pièces jointes de la messagerie : bucket privé sans policy de storage ; l'accès est
 	// vérifié avec la RLS de l'utilisateur avant de signer (message-attachments.ts)
 	'/api/messages/[id]/attachments/+server',

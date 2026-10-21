@@ -275,6 +275,10 @@
 							<td>Supprimées avec le profil, après 5 ans sans activité</td>
 						</tr>
 						<tr>
+							<td>Jour du dernier passage sur le tableau de bord</td>
+							<td>Remplacé à chaque passage, supprimé avec le profil</td>
+						</tr>
+						<tr>
 							<td>Conversations avec le tuteur IA</td>
 							<td>1 an après le dernier message</td>
 						</tr>

@@ -11,6 +11,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import BuddyWidget from '../BuddyWidget.svelte';
+import { BUBBLE_DURATION } from '../buddy-timing';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 import { buddyMessages } from '$lib/config/buddy-messages';
 import type { BuddyState } from '$lib/types/buddy';
@@ -74,7 +75,11 @@ describe('BuddyWidget — retour après une longue absence', () => {
 
 		await vi.waitFor(() => expect(MISSED).toContain(bubbleText()), { timeout: 3000 });
 		expect(avatarSrc()).toContain('pile-sad');
-	});
+		// Aucune salutation ensuite : à 2,5 s, la salutation au hasard serait déjà partie
+		await new Promise((resolve) => setTimeout(resolve, 2500));
+		const text = bubbleText();
+		expect(text === '' || MISSED.includes(text)).toBe(true);
+	}, 8_000);
 
 	it('Constance perdue pendant l’absence : sa réplique ne s’affiche pas', async () => {
 		mockSummary({ born: 0, napping: 0, toDiscover: 0, news: NO_NEWS });
@@ -91,6 +96,7 @@ describe('BuddyWidget — retour après une longue absence', () => {
 		await render(BuddyWidget, { props: { longAbsence: true } });
 
 		await vi.waitFor(() => expect(MISSED).toContain(bubbleText()), { timeout: 3000 });
+		const missedAt = Date.now();
 		// Jusqu'à l'annonce, la bulle ne montre que « tu m'as manqué » (ou rien)
 		const seen = new Set<string>();
 		await vi.waitFor(
@@ -101,6 +107,8 @@ describe('BuddyWidget — retour après une longue absence', () => {
 			},
 			{ timeout: 8000, interval: 100 }
 		);
+		// « tu m'as manqué » reste affiché toute la durée d'une bulle avant d'être remplacé
+		expect(Date.now() - missedAt).toBeGreaterThanOrEqual(BUBBLE_DURATION - 300);
 		for (const text of seen) {
 			if (!text.startsWith(NAPPING)) expect(MISSED).toContain(text);
 		}
