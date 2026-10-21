@@ -13,7 +13,8 @@ _Mis à jour le 2026-10-21, après #1596 (étape 3, E mergée)._
 - **Prochaine action** : **étape 4** (destructive : tables thèmes / objectifs, anciens points et leurs 1 026 liens,
   8 fonctions SQL, tests d'intégration de l'ancien monde, copie `db:seed-riche`) — **arrêt** : expliquer à David ce
   qui sera perdu, grep des usages ; seulement APRÈS le `deploy:prod` qui livre l'étape 3.
-- **En attente de David** : `deploy:prod` de l'étape 3. Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement
+- **En attente de David** : `deploy:prod` de l'étape 3 — repoussé par David le 2026-10-21 après la PR M1 bis + M2
+  d'inscription-parent (prévue avant tout déploiement). Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement
   des exercices (51).
 - **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) ; nettoyage
   d'intégration : tags d'exercice AVANT rangements ; MySelect et infobulles de l'analytique affichent le LaTeX brut ;
