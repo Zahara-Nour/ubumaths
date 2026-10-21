@@ -382,6 +382,9 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
   modèle repasse `templatePublicationErrors` (le même contrôle que le `PUT`) ; un échec le laisse en brouillon avec sa raison ; collision
   de catégorie = refus, jamais de décalage automatique du niveau. Seules les lignes **rendues** par
   `.update().select()` comptent (RLS silencieuse).
+- Tags du programme (`[id]/edit`, `$lib/server/programme-tags`) : un point par programme, choisi
+  parmi ceux du nœud du modèle et de sa notion ; un modèle sans nœud se range d'abord
+  ([cours-et-chapitres.md](cours-et-chapitres.md)).
 - Un modèle publié devient lisible par tous et, sauf question de cours, entre au paquet SRS Programme (`entersProgrammeDeck`, [srs.md](srs.md)).
 
 ## Invariants pédagogiques non évidents

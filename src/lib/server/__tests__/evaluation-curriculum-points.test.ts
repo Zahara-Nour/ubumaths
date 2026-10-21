@@ -15,11 +15,11 @@ function rangeOf(calls: Call[]): [number, number] | null {
 	return range ? (range.args as [number, number]) : null;
 }
 
-/** Tag d'un point d'ancienne génération (il porte un objectif) : le seul que la couverture compte. */
-function legacyTag(pointId: string) {
+/** Tag d'un point neuf (il porte un nœud) : le seul que la couverture compte. */
+function programmeTag(pointId: string) {
 	return {
 		point_id: pointId,
-		curriculum_points: { objective_id: 'objectif-1', curriculum_objectives: null }
+		curriculum_points: { node_id: 'noeud-1', grade: null }
 	};
 }
 
@@ -38,7 +38,7 @@ describe('evaluationCurriculumPoints', () => {
 			if (table === 'question_templates') {
 				return { data: rangeOf(calls)?.[0] === 0 ? [{ id: 't1', ...CATEGORY }] : [] };
 			}
-			return { data: [legacyTag('p1')] };
+			return { data: [programmeTag('p1')] };
 		});
 
 		expect(await evaluationCurriculumPoints(fake.client as never, [LEGACY])).toEqual(['p1']);
@@ -61,7 +61,7 @@ describe('evaluationCurriculumPoints', () => {
 				return { data: [] };
 			}
 			const ids = calls.find((c) => c.method === 'in')?.args[1] as string[];
-			return { data: ids.includes('t-loin') ? [legacyTag('p-loin')] : [] };
+			return { data: ids.includes('t-loin') ? [programmeTag('p-loin')] : [] };
 		});
 
 		expect(await evaluationCurriculumPoints(fake.client as never, [EVALUATION])).toEqual([
@@ -84,7 +84,7 @@ describe('evaluationCurriculumPoints', () => {
 			if (table === 'question_templates') {
 				return { data: rangeOf(calls)?.[0] === 0 ? [{ id: 't1', ...CATEGORY }] : [] };
 			}
-			return { data: [legacyTag('p1')] };
+			return { data: [programmeTag('p1')] };
 		});
 
 		expect(await evaluationCurriculumPoints(fake.client as never, [EVALUATION])).toEqual(['p1']);

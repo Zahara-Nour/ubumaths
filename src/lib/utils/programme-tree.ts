@@ -67,6 +67,35 @@ function isNewPoint(row: ProgrammePointRow): row is ProgrammePoint & ProgrammePo
 	return row.node_id !== null && row.grade !== null;
 }
 
+/** Notion et branche d'un nœud où se pose un point (notion ou sous-notion). */
+export interface NodePlace {
+	notion: ClassificationNode;
+	branch: ClassificationNode;
+}
+
+/**
+ * Notion et branche du nœud d'un point, `null` si un maillon manque (nœud
+ * illisible, ou point posé sur une branche, interdit en base). Pour les
+ * lecteurs qui ne doivent pas échouer pour un point : ils l'écartent.
+ */
+export function placeOfNode(
+	nodeId: string | null,
+	nodeById: ReadonlyMap<string, ClassificationNode>
+): NodePlace | null {
+	const target = nodeId === null ? undefined : nodeById.get(nodeId);
+	if (!target) return null;
+	const notion =
+		target.kind === 'notion'
+			? target
+			: target.kind === 'subnotion' && target.parent_id !== null
+				? nodeById.get(target.parent_id)
+				: undefined;
+	if (!notion || notion.kind !== 'notion' || notion.parent_id === null) return null;
+	const branch = nodeById.get(notion.parent_id);
+	if (!branch || branch.kind !== 'branch') return null;
+	return { notion, branch };
+}
+
 /**
  * Range les points sous leur notion, les notions sous leur branche.
  *

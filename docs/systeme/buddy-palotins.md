@@ -114,11 +114,13 @@ du jour » (+5) reste reserve aux reponses (Entrainement, Course, evaluation, en
 jour n'est pas encore compte dans la Constance (`last_activity_date`), donc plus apres un forfait de
 revision le meme jour.
 
-**Thematique** = le theme du programme (`curriculum_themes.id`) du point que valide la question
-(`question_template_points` → `curriculum_points` → `curriculum_objectives`), lu par
-`fetchTemplateThemeIds` (`src/lib/server/buddy-themes.ts`) en une requete par seance. Une question
-sans point n'a pas de theme ; une question rattachee a plusieurs themes recoit toujours le plus petit
-identifiant. Les themes candidats au bonus (absents de `themes_explored`, bonus non tronque par le
+**Thematique** = la branche de l'arbre des notions (`classification_nodes.id`) ou se range le point
+que valide la question (`question_template_points` → `curriculum_points.node_id` → notion → branche,
+`placeOfNode`), lue par `fetchTemplateThemeIds` (`src/lib/server/buddy-themes.ts`) en deux lectures
+par seance (les tags, puis les noeuds et leurs ancetres). Une question sans point neuf n'a pas de
+theme (les tags des anciens points, theme → objectif, ne comptent plus depuis la bascule de la C5) ;
+une question rattachee a plusieurs branches recoit toujours le plus petit identifiant. Une panne de
+lecture rend « aucun theme », jamais une erreur. Les themes candidats au bonus (absents de `themes_explored`, bonus non tronque par le
 plafond dans le calcul local) sont RESERVES avant le credit (`addExploredThemes`, une ecriture sous
 verrou optimiste) : seul un theme reserve par CET envoi porte le bonus, donc de deux seances
 simultanees une seule le touche. Credit partiel : le credit couvre les reponses dans l'ordre ; un

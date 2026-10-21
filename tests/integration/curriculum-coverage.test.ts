@@ -51,6 +51,7 @@ import {
 const TEST_GRADE = '5';
 
 let service: SupabaseClient<Database>;
+const createdNodeIds: string[] = [];
 
 beforeAll(() => {
 	service = createServiceRoleClient();
@@ -95,6 +96,15 @@ async function cleanupCurriculum() {
 		.from('curriculum_themes' as never)
 		.delete()
 		.eq('grade', TEST_GRADE);
+	// Points NEUFS puis nœuds (les modèles sont déjà partis : leur rangement et leurs tags aussi).
+	if (createdNodeIds.length > 0) {
+		await service.from('curriculum_points').delete().in('node_id', createdNodeIds);
+		// Enfants d'abord : parent_id est en RESTRICT.
+		for (const kind of ['notion', 'branch']) {
+			await service.from('classification_nodes').delete().in('id', createdNodeIds).eq('kind', kind);
+		}
+		createdNodeIds.length = 0;
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -130,6 +140,50 @@ async function makeItem(): Promise<string> {
 		.single();
 	if (iErr) throw new Error(iErr.message);
 	return (item as { id: string }).id;
+}
+
+/**
+ * Une notion neuve (branche > notion) : porte les points NEUFS et range les modèles.
+ * Renvoie l'id de la notion.
+ */
+async function makeNotion(): Promise<string> {
+	const tag = crypto.randomUUID().slice(0, 8);
+	const { data: branch, error: bErr } = await service
+		.from('classification_nodes')
+		.insert({ kind: 'branch', name: `TEST branche ${tag}`, parent_id: null, position: 900 })
+		.select('id')
+		.single();
+	if (bErr) throw new Error(`branche : ${bErr.message}`);
+	createdNodeIds.push(branch.id);
+	const { data: notion, error: nErr } = await service
+		.from('classification_nodes')
+		.insert({ kind: 'notion', name: `TEST notion ${tag}`, parent_id: branch.id, position: 0 })
+		.select('id')
+		.single();
+	if (nErr) throw new Error(`notion : ${nErr.message}`);
+	createdNodeIds.push(notion.id);
+	return notion.id;
+}
+
+/**
+ * Un point NEUF sur une notion. Un modèle ne peut porter qu'un point neuf par
+ * programme : deux points d'un même modèle ont donc deux `grade` différents.
+ */
+async function svcNewPoint(notionId: string, name: string, grade = TEST_GRADE): Promise<string> {
+	const { data, error } = await service
+		.from('curriculum_points')
+		.insert({
+			code: `TST-${crypto.randomUUID().slice(0, 8)}`,
+			name,
+			kind: 'savoir_faire',
+			grade,
+			display_order: 0,
+			node_id: notionId
+		})
+		.select('id')
+		.single();
+	if (error) throw new Error(`point neuf : ${error.message}`);
+	return data.id;
 }
 
 interface Ctx {
@@ -185,7 +239,7 @@ interface Category {
  */
 async function makeTaggedTemplate(
 	pointIds: string[],
-	opts?: { status?: 'draft' | 'published'; category?: Partial<Category> }
+	opts?: { status?: 'draft' | 'published'; category?: Partial<Category>; notionId?: string }
 ): Promise<{ id: string; category: Category }> {
 	const category: Category = {
 		theme: opts?.category?.theme ?? `Thème ${crypto.randomUUID().slice(0, 8)}`,
@@ -201,6 +255,7 @@ async function makeTaggedTemplate(
 			status: opts?.status ?? 'published',
 			type: 'fill_in_blanks',
 			grades: [TEST_GRADE],
+			classification_node_id: opts?.notionId ?? null,
 			...category,
 			variations: [{ blanks: [{ expectedAnswer: '2' }], statement: 'Calculer $1 + 1 = ?$' }]
 		} as never)
@@ -951,9 +1006,9 @@ describe('Question activities', () => {
 	it('materializes the question’s points and drops them on removal', async () => {
 		expect.assertions(6);
 		const ctx = await setup();
-		const item = await makeItem();
-		const [p1, p2] = [await svcPoint(item, 'P1'), await svcPoint(item, 'P2')];
-		const { id: template } = await makeTaggedTemplate([p1, p2]);
+		const notion = await makeNotion();
+		const [p1, p2] = [await svcNewPoint(notion, 'P1', '5'), await svcNewPoint(notion, 'P2', '4')];
+		const { id: template } = await makeTaggedTemplate([p1, p2], { notionId: notion });
 
 		const activity = await addActivityId(ctx, {
 			kind: 'question',
@@ -987,8 +1042,9 @@ describe('Question activities', () => {
 	it('counts a point once when the same question is added twice', async () => {
 		expect.assertions(2);
 		const ctx = await setup();
-		const point = await svcPoint(await makeItem());
-		const { id: template } = await makeTaggedTemplate([point]);
+		const notion = await makeNotion();
+		const point = await svcNewPoint(notion, 'P-unique');
+		const { id: template } = await makeTaggedTemplate([point], { notionId: notion });
 
 		await addActivityId(ctx, { kind: 'question', question_template_id: template });
 		await addActivityId(ctx, { kind: 'question', question_template_id: template });
@@ -1004,21 +1060,34 @@ describe('Question activities', () => {
 	it('stores points from another referential than the class grade', async () => {
 		expect.assertions(2);
 		const ctx = await setup();
-		const own = await svcPoint(await makeItem(), 'Niveau de la classe');
-		const { data: other, error } = await service
-			.from('curriculum_points' as never)
-			.select('id')
-			.eq('code', '2-096')
-			.single();
-		if (error) throw new Error(`point de seconde absent : ${error.message}`);
-		const foreign = (other as { id: string }).id;
+		const notion = await makeNotion();
+		const own = await svcNewPoint(notion, 'Niveau de la classe', '5');
+		const foreign = await svcNewPoint(notion, 'Autre programme', '4');
 
-		const { id: template } = await makeTaggedTemplate([own, foreign]);
+		const { id: template } = await makeTaggedTemplate([own, foreign], { notionId: notion });
 		await addActivityId(ctx, { kind: 'question', question_template_id: template });
 
 		const cov = await coverageMap(ctx);
 		expect(cov.size).toBe(2);
 		expect(cov.get(foreign)).toBe('auto');
+	});
+
+	// Les tags vers les ANCIENS points (thème → objectif) restent en base jusqu'à
+	// leur retrait : ils ne comptent plus dans la couverture.
+	it('ignores tags pointing to old-generation points', async () => {
+		expect.assertions(3);
+		const ctx = await setup();
+		const notion = await makeNotion();
+		const neuf = await svcNewPoint(notion, 'Point neuf');
+		const ancien = await svcPoint(await makeItem(), 'Point ancien');
+		const { id: template } = await makeTaggedTemplate([neuf, ancien], { notionId: notion });
+
+		await addActivityId(ctx, { kind: 'question', question_template_id: template });
+
+		const cov = await coverageMap(ctx);
+		expect(cov.size).toBe(1);
+		expect(cov.get(neuf)).toBe('auto');
+		expect(cov.has(ancien)).toBe(false);
 	});
 
 	it('rejects an unknown question template (400)', async () => {
@@ -1050,14 +1119,15 @@ describe('Assessment activities', () => {
 	it('unions the points of every question its categories designate', async () => {
 		expect.assertions(5);
 		const ctx = await setup();
-		const item = await makeItem();
+		const notion = await makeNotion();
+		// p1 et p3 : même programme, donc sur deux modèles différents ; p2 est partagé.
 		const [p1, p2, p3] = [
-			await svcPoint(item, 'P1'),
-			await svcPoint(item, 'P2'),
-			await svcPoint(item, 'P3')
+			await svcNewPoint(notion, 'P1', '5'),
+			await svcNewPoint(notion, 'P2', '4'),
+			await svcNewPoint(notion, 'P3', '5')
 		];
-		const t1 = await makeTaggedTemplate([p1, p2]);
-		const t2 = await makeTaggedTemplate([p2, p3]);
+		const t1 = await makeTaggedTemplate([p1, p2], { notionId: notion });
+		const t2 = await makeTaggedTemplate([p2, p3], { notionId: notion });
 		const assessment = await makeAssessment(ctx.teacher.id, [t1.category, t2.category]);
 
 		const activity = await addActivityId(ctx, { kind: 'assessment', evaluation_id: assessment });
@@ -1081,10 +1151,10 @@ describe('Assessment activities', () => {
 	it('ignores a category matching no published template', async () => {
 		expect.assertions(2);
 		const ctx = await setup();
-		const item = await makeItem();
-		const [p1, p2] = [await svcPoint(item, 'P1'), await svcPoint(item, 'P2')];
-		const live = await makeTaggedTemplate([p1]);
-		const draft = await makeTaggedTemplate([p2], { status: 'draft' });
+		const notion = await makeNotion();
+		const [p1, p2] = [await svcNewPoint(notion, 'P1'), await svcNewPoint(notion, 'P2')];
+		const live = await makeTaggedTemplate([p1], { notionId: notion });
+		const draft = await makeTaggedTemplate([p2], { status: 'draft', notionId: notion });
 		const assessment = await makeAssessment(ctx.teacher.id, [live.category, draft.category]);
 
 		await addActivityId(ctx, { kind: 'assessment', evaluation_id: assessment });
@@ -1109,17 +1179,19 @@ describe('Mixed sources', () => {
 	it('unions exercise, question and assessment, and keeps the manual layer', async () => {
 		expect.assertions(6);
 		const ctx = await setup();
+		// Exercice et coche manuelle : tags non filtrés (anciens points admis).
 		const item = await makeItem();
-		const [pe, pq, pa, pm] = [
-			await svcPoint(item, 'Exercice'),
-			await svcPoint(item, 'Question'),
-			await svcPoint(item, 'Évaluation'),
-			await svcPoint(item, 'Manuel')
+		const [pe, pm] = [await svcPoint(item, 'Exercice'), await svcPoint(item, 'Manuel')];
+		// Question et évaluation : points NEUFS, deux programmes pour le modèle qui en porte deux.
+		const notion = await makeNotion();
+		const [pq, pa] = [
+			await svcNewPoint(notion, 'Question', '5'),
+			await svcNewPoint(notion, 'Évaluation', '4')
 		];
 
 		const exercise = await makeTaggedExercise(ctx.teacher.id, [pe]);
-		const question = await makeTaggedTemplate([pq]);
-		const inAssessment = await makeTaggedTemplate([pa, pq]);
+		const question = await makeTaggedTemplate([pq], { notionId: notion });
+		const inAssessment = await makeTaggedTemplate([pa, pq], { notionId: notion });
 		const assessment = await makeAssessment(ctx.teacher.id, [inAssessment.category]);
 
 		await addExerciseActivity(ctx, exercise);

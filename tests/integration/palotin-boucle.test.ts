@@ -70,6 +70,7 @@ const service = createServiceRoleClient();
 let teacher: Person;
 let withBuddy: Person;
 let withoutBuddy: Person;
+/** Id de la BRANCHE du décor : c'est lui que `themes_explored` reçoit. */
 let themeId: string;
 
 // Functions
@@ -285,22 +286,24 @@ async function removeDecor() {
 	await service.from('srs_card_stats').delete().eq('card_reference_id', TEMPLATE_ID);
 	await service.from('question_template_points').delete().eq('template_id', TEMPLATE_ID);
 	await service.from('question_templates').delete().eq('id', TEMPLATE_ID);
-	const { data: themes } = await service
-		.from('curriculum_themes')
+	// Le « thème » du décor est une BRANCHE de l'arbre : points, puis notions, puis branche.
+	const { data: branches } = await service
+		.from('classification_nodes')
 		.select('id')
+		.eq('kind', 'branch')
 		.eq('name', THEME_NAME);
-	const themeIds = (themes ?? []).map((t) => t.id);
-	if (themeIds.length === 0) return;
-	const { data: objectives } = await service
-		.from('curriculum_objectives')
+	const branchIds = (branches ?? []).map((n) => n.id);
+	if (branchIds.length === 0) return;
+	const { data: notions } = await service
+		.from('classification_nodes')
 		.select('id')
-		.in('theme_id', themeIds);
-	const objectiveIds = (objectives ?? []).map((o) => o.id);
-	if (objectiveIds.length > 0) {
-		await service.from('curriculum_points').delete().in('objective_id', objectiveIds);
-		await service.from('curriculum_objectives').delete().in('id', objectiveIds);
+		.in('parent_id', branchIds);
+	const notionIds = (notions ?? []).map((n) => n.id);
+	if (notionIds.length > 0) {
+		await service.from('curriculum_points').delete().in('node_id', notionIds);
+		await service.from('classification_nodes').delete().in('id', notionIds);
 	}
-	await service.from('curriculum_themes').delete().in('id', themeIds);
+	await service.from('classification_nodes').delete().in('id', branchIds);
 }
 
 describe('la boucle du Palotin tourne', () => {
@@ -311,16 +314,26 @@ describe('la boucle du Palotin tourne', () => {
 		withBuddy = await person('student');
 		withoutBuddy = await person('student');
 
-		// Programme : thème → objectif → point, validé par le modèle du décor
-		themeId = await insertRow('curriculum_themes', { grade: '5', name: THEME_NAME });
-		const objectiveId = await insertRow('curriculum_objectives', {
-			theme_id: themeId,
-			name: 'Objectif Palotin'
+		// Programme : branche (= le « thème ») > notion > point neuf, validé par le modèle du décor
+		themeId = await insertRow('classification_nodes', {
+			kind: 'branch',
+			name: THEME_NAME,
+			parent_id: null,
+			position: 900
+		});
+		const notionId = await insertRow('classification_nodes', {
+			kind: 'notion',
+			name: 'Notion Palotin',
+			parent_id: themeId,
+			position: 0
 		});
 		const pointId = await insertRow('curriculum_points', {
-			objective_id: objectiveId,
+			code: 'TST-PALOTIN',
 			name: 'Point Palotin',
-			kind: 'savoir_faire'
+			kind: 'savoir_faire',
+			grade: '5',
+			display_order: 0,
+			node_id: notionId
 		});
 		await insertRow('question_templates', {
 			id: TEMPLATE_ID,
@@ -331,6 +344,7 @@ describe('la boucle du Palotin tourne', () => {
 			subdomain: null,
 			level: 1,
 			grades: ['5'],
+			classification_node_id: notionId,
 			status: 'published',
 			variations: [{}],
 			created_by: teacher.id

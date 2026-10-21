@@ -7,9 +7,9 @@
  * programme entre dans la couverture de la classe, et `coveredCount` du cahier
  * de texte est gonflé.
  *
- * Depuis l'étape 2 de C5, les mêmes cartes portent aussi des tags de points
- * NEUFS (un nœud de l'arbre, pas d'objectif) : la couverture, qui compte les
- * points de l'ancien référentiel, les ignore jusqu'à la bascule du code.
+ * Depuis la bascule du code (étape 3 de C5), la couverture compte les points
+ * NEUFS (un nœud de l'arbre, un programme) ; les tags des anciens points
+ * (thème → objectif) restent en base jusqu'à l'étape 4, mais ne comptent plus.
  */
 import { describe, it, expect } from 'vitest';
 import { evaluationCurriculumPoints, reconcileAutoCoverage } from '../curriculum-coverage';
@@ -19,38 +19,35 @@ const ENTRY = 'entry-1';
 const EVALUATION = '55555555-5555-4555-8555-555555555555';
 const CATEGORY = { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 };
 
-/** Tag d'un point d'ANCIENNE génération : il porte un objectif, qui porte le niveau. */
+/** Tag d'un point NEUF : il porte un nœud de l'arbre et son programme. */
 function tag(templateId: string, pointId: string, grade: string) {
 	return {
 		template_id: templateId,
 		point_id: pointId,
-		curriculum_points: {
-			objective_id: `objectif-${grade}`,
-			curriculum_objectives: { curriculum_themes: { grade } }
-		}
+		curriculum_points: { node_id: `noeud-${pointId}`, grade }
 	};
 }
 
-/** Tag d'un point NEUF (étape 2 de C5) : ni objectif ni thème. */
-function freshTag(templateId: string, pointId: string) {
+/** Tag d'un ANCIEN point (thème → objectif) : ni nœud ni programme. */
+function legacyTag(templateId: string, pointId: string) {
 	return {
 		template_id: templateId,
 		point_id: pointId,
-		curriculum_points: { objective_id: null, curriculum_objectives: null }
+		curriculum_points: { node_id: null, grade: null }
 	};
 }
 
 /**
  * `t-partagee` : un point T_SPE et un point T_COMP (le cas visé).
  * `t-seule` : un seul point, de T_COMP (non-régression).
- * Chacune porte en plus un point neuf, que la couverture ne doit jamais retenir.
+ * Chacune porte en plus un ancien point, que la couverture ne doit jamais retenir.
  */
 const TAGS = [
 	tag('t-partagee', 'p-spe', 'T_SPE'),
 	tag('t-partagee', 'p-comp', 'T_COMP'),
 	tag('t-seule', 'p-comp-seul', 'T_COMP'),
-	freshTag('t-partagee', 'p-neuf-partagee'),
-	freshTag('t-seule', 'p-neuf-seule')
+	legacyTag('t-partagee', 'p-ancien-partagee'),
+	legacyTag('t-seule', 'p-ancien-seule')
 ];
 
 function tagsFor(calls: Call[]) {
@@ -107,19 +104,20 @@ async function reconciledPoints(classGrade: string | null): Promise<string[]> {
 	return rows.map((r) => r.point_id).sort();
 }
 
-describe('reconcileAutoCoverage — points neufs (étape 2 de C5)', () => {
-	it('la requête lit `objective_id` du point : sans lui, tout tag serait écarté', async () => {
+describe('reconcileAutoCoverage — génération des points (étape 3 de C5)', () => {
+	it('la requête lit le nœud et le programme du point, plus l’objectif', async () => {
 		const fake = await reconcile(null);
 		const select = fake
 			.on('question_template_points')
 			.flatMap((q) => q.calls)
 			.find((c) => c.method === 'select');
-		expect(String(select?.args[0])).toMatch(/curriculum_points\(objective_id,/);
+		expect(String(select?.args[0])).toMatch(/curriculum_points\(node_id, grade\)/);
+		expect(String(select?.args[0])).not.toMatch(/objective/);
 	});
 });
 
-// Comparaisons INTÉGRALES : chaque carte porte aussi un point neuf (TAGS), que le filtre
-// provisoire de la C5 écarte. Sans lui, « T_SPE » et « sans niveau » gagnent leurs points neufs.
+// Comparaisons INTÉGRALES : chaque carte porte aussi un ancien point (TAGS), que la
+// couverture écarte. Sans ce filtre, « sans niveau » gagnerait les anciens points.
 describe('reconcileAutoCoverage — niveau de la classe', () => {
 	it('classe de T_SPE : la carte partagée ne couvre que son point T_SPE', async () => {
 		expect(await reconciledPoints('T_SPE')).toEqual(['p-comp-seul', 'p-spe']);
@@ -129,7 +127,7 @@ describe('reconcileAutoCoverage — niveau de la classe', () => {
 		expect(await reconciledPoints('T_COMP')).toEqual(['p-comp', 'p-comp-seul']);
 	});
 
-	it('classe sans niveau : tous les points, comme avant', async () => {
+	it('classe sans niveau : tous les points neufs', async () => {
 		expect(await reconciledPoints(null)).toEqual(['p-comp', 'p-comp-seul', 'p-spe']);
 	});
 });

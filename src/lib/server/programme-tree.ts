@@ -30,7 +30,7 @@ const MAX_NODE_DEPTH = 3;
  * Charge les nœuds visés et leurs ancêtres, par vagues d'identifiants.
  * Les nœuds archivés sont lus aussi : un point peut encore y être posé.
  */
-async function loadNodesWithAncestors(
+export async function loadNodesWithAncestors(
 	supabase: App.Locals['supabase'],
 	startIds: string[]
 ): Promise<ClassificationNode[]> {

@@ -121,9 +121,9 @@ Séance libre enregistrée : `POST /api/tests/save` écrit `test_sessions` puis 
 `recordSeriesReviews` (`src/lib/server/srs/record-series-reviews.ts`) avec le **verdict du navigateur**.
 Le score envoyé par le client est gardé, sauf s'il y a des cartes de cours : il est alors recalculé
 hors cartes. Hors flash et hors cartes de cours, chaque réponse rapporte au Palotin
-(`addBuddyXpFromTest`, réponse `buddy_xp`) ; son thème, pour le bonus « nouveau thème », est celui du
-programme du point que valide la question (`fetchTemplateThemeIds`, `src/lib/server/buddy-themes.ts`,
-une lecture pour la séance). Une fois la séance enregistrée (Entraînement, Course ; ni flash, ni
+(`addBuddyXpFromTest`, réponse `buddy_xp`) ; son thème, pour le bonus « nouveau thème », est la branche
+de l'arbre des notions où se range le point que valide la question (`fetchTemplateThemeIds`,
+`src/lib/server/buddy-themes.ts`, deux lectures pour la séance). Une fois la séance enregistrée (Entraînement, Course ; ni flash, ni
 évaluation, ni aperçu du prof), la page demande les nouveautés de la Chatterie
 (`fetchMathouNews`) et `TestResults` les affiche sous le gain du Palotin (`MathouNewsCard`, jamais
 en évaluation) : voir [mathoux.md](mathoux.md#annonce-des-nouveautés-en-fin-de-séance-v12).

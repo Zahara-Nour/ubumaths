@@ -27,6 +27,7 @@ const TEST_GRADE = '5';
 const DATE = '2026-02-10';
 
 let service: SupabaseClient<Database>;
+const createdNodeIds: string[] = [];
 
 beforeAll(() => {
 	service = createServiceRoleClient();
@@ -53,6 +54,47 @@ async function cleanup() {
 		.from('curriculum_themes' as never)
 		.delete()
 		.eq('grade', TEST_GRADE);
+	// Points NEUFS puis nœuds (enfants d'abord : parent_id est en RESTRICT).
+	if (createdNodeIds.length > 0) {
+		await service.from('curriculum_points').delete().in('node_id', createdNodeIds);
+		for (const kind of ['notion', 'branch']) {
+			await service.from('classification_nodes').delete().in('id', createdNodeIds).eq('kind', kind);
+		}
+		createdNodeIds.length = 0;
+	}
+}
+
+/** Un point de programme NEUF (branche > notion > point) ; rend aussi la notion qui range les modèles. */
+async function makeNewPoint(): Promise<{ pointId: string; notionId: string }> {
+	const tag = crypto.randomUUID().slice(0, 8);
+	const { data: branch, error: bErr } = await service
+		.from('classification_nodes')
+		.insert({ kind: 'branch', name: `TEST branche ${tag}`, parent_id: null, position: 900 })
+		.select('id')
+		.single();
+	if (bErr) throw new Error(`branche : ${bErr.message}`);
+	createdNodeIds.push(branch.id);
+	const { data: notion, error: nErr } = await service
+		.from('classification_nodes')
+		.insert({ kind: 'notion', name: `TEST notion ${tag}`, parent_id: branch.id, position: 0 })
+		.select('id')
+		.single();
+	if (nErr) throw new Error(`notion : ${nErr.message}`);
+	createdNodeIds.push(notion.id);
+	const { data: point, error: pErr } = await service
+		.from('curriculum_points')
+		.insert({
+			code: `TST-${tag}`,
+			name: `P ${tag}`,
+			kind: 'savoir_faire',
+			grade: TEST_GRADE,
+			display_order: 0,
+			node_id: notion.id
+		})
+		.select('id')
+		.single();
+	if (pErr) throw new Error(`point neuf : ${pErr.message}`);
+	return { pointId: point.id, notionId: notion.id };
 }
 
 /** Un point de programme neuf, avec son thème et son item. */
@@ -80,7 +122,7 @@ async function makePoint(): Promise<string> {
 }
 
 /** Une question publiée, taguée sur les points donnés. */
-async function makeTaggedTemplate(pointIds: string[]): Promise<string> {
+async function makeTaggedTemplate(pointIds: string[], notionId: string): Promise<string> {
 	const { data, error } = await service
 		.from('question_templates' as never)
 		.insert({
@@ -88,6 +130,7 @@ async function makeTaggedTemplate(pointIds: string[]): Promise<string> {
 			status: 'published',
 			type: 'fill_in_blanks',
 			grades: [TEST_GRADE],
+			classification_node_id: notionId,
 			theme: `Thème ${crypto.randomUUID().slice(0, 8)}`,
 			domain: 'Domaine',
 			subdomain: null,
@@ -211,8 +254,8 @@ describe('Séance neuve — activités choisies avant enregistrement', () => {
 	it('écrit les activités et la couverture qu’elles apportent', async () => {
 		const teacher = await TestData.profile().withRole('teacher').create();
 		const klass = (await TestData.class().create()) as { id: string };
-		const point = await makePoint();
-		const template = await makeTaggedTemplate([point]);
+		const { pointId: point, notionId } = await makeNewPoint();
+		const template = await makeTaggedTemplate([point], notionId);
 
 		const { entryId } = await createEntry(teacher.id, klass.id, {
 			pendingActivities: JSON.stringify([{ kind: 'question', id: template }])
@@ -232,8 +275,9 @@ describe('Séance neuve — activités choisies avant enregistrement', () => {
 	it('cumule les points cochés à la main et ceux des activités', async () => {
 		const teacher = await TestData.profile().withRole('teacher').create();
 		const klass = (await TestData.class().create()) as { id: string };
-		const [manuel, auto] = [await makePoint(), await makePoint()];
-		const template = await makeTaggedTemplate([auto]);
+		const manuel = await makePoint();
+		const { pointId: auto, notionId } = await makeNewPoint();
+		const template = await makeTaggedTemplate([auto], notionId);
 
 		const { entryId } = await createEntry(teacher.id, klass.id, {
 			coveredPointIds: manuel,
