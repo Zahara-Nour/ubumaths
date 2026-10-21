@@ -5,20 +5,21 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1572 (lot D en prod) ; état de l'étape 3 relevé._
+_Mis à jour le 2026-10-21, après #1577 (étape 3, B1 mergée)._
 
-- **État** : C5 étape 2 bis, MODIFIER **terminé** : lots A (39), B (7), C (16), D (3 scissions) en prod. Lot D :
-  3 origines « Additionner des fractions » (5-026) + 3 neufs « Soustraire des fractions » (5-123) aux niveaux
-  8, 9, 10 de « Fractions › Calculer › Addition et Soustraction ». Seul reste du § 4 : c9d6c5db (sorti du lot C),
-  qui attend une règle de correction NON décidée.
-- **Prochaine action** : étape 3 de C5 (bascule du code). La PR 1 (#1060, page Programme) est mergée le 2026-10-10 ; la PR A
-  (SQL) n'a plus lieu d'être : les fonctions qui lisent l'objectif n'ont plus d'appelant et partent à l'étape 4. Restent
-  B (cahier de texte, avancement, exercices, édition admin des tags, decks, compagnon), D (élève), F (analytique).
-- **En attente de David** : le go sur l'ordre B → D → F ; signalé : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
-- **Pièges en cours** : un modèle neuf publié ne peut pas copier la catégorie (thème, domaine, sous-domaine,
-  niveau) de son origine (`idx_question_templates_unique_category`) ; le décor de test doit poser statut et
-  catégorie de la prod ; commentaires DANS le bloc ROLLBACK en `-- -- ` ; relever la prod juste avant de générer.
-- **Worktree / branche** : `../ubumaths-wt-arbre-bascule-b`, `refactor/arbre-bascule-b` (PR B1 en cours).
+- **État** : C5 étape 3 (bascule du code). Fait : #1060 (page Programme) et #1577 (B1 : couverture auto, deck
+  Programme, Palotin par branche, tags admin d'un modèle par programme). PR A abandonnée (fonctions SQL sans appelant,
+  parties à l'étape 4). Pas encore en prod (aucun `deploy:prod` depuis).
+- **Prochaine action** : **B2** dans un worktree neuf : cahier de texte, avancement et tags d'un exercice sur l'arbre
+  branche > notion > points ; `getCurriculumTree` disparaît ; tests de page à écrire d'abord (aucun aujourd'hui). Puis
+  D (élève : progression, `COVERED_GRADES`, `/student/objectifs`) et F (analytique), puis E (scripts de rattachement,
+  Q8), puis étape 4 (suppression, destructive : arrêt).
+- **En attente de David** : rien sur B2 (phase 0 validée le 2026-10-21) ; signalé : 11 modèles sans corrigé ;
+  c9d6c5db attend une règle de correction.
+- **Pièges en cours** : un test d'intégration qui pose des points ANCIENS asserte l'ancien comportement (10 rouges en CI
+  sur B1) → décors en points neufs (branche > notion, modèle rangé) ; une PR en conflit ne lance PAS la CI
+  `pull_request` (fusionner `origin/main`, pas de push forcé) ; MySelect affiche le LaTeX en brut.
+- **Worktree / branche** : aucun.
 
 ## Tranché avec David (2026-10-06)
 
