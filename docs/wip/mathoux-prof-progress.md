@@ -5,18 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, revues faites et corrigées._
+_Mis à jour le 2026-10-21, après #1579._
 
-- **État** : code, tests, doc et corrections des revues commités sur la branche, **non poussée**.
-  `code-reviewer` : 1 important (corrigé), mineurs ; `security-auditor` : **aucun bloquant**.
-- **Prochaine action** : push → PR (corps : effets de bord de la policy, ci-dessous) → CI verte →
-  merge → `db:migrate` (4 conditions réunies : accès tranché, rouge sans la migration vérifié,
-  audit sans bloquant, additive + rollback) → vérification manuelle notée → nettoyage worktree.
-- **En attente de David** : rien. Hors classe : pas de section dans l'onglet Mathoux (David,
-  2026-10-21).
-- **Pièges en cours** : la vue prof ne doit JAMAIS écrire la mémoire. Policy appliquée à la main
-  sur la base locale (psql). Avertissement `no-thenable` de `collection.test.ts:65` : antérieur.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-prof` · `feat/mathoux-vue-prof`.
+- **État** : **chantier clos.** #1579 mergée ; migration `20261021173000` appliquée en prod
+  (`db:migrate`, policy « Teachers can view card stats of their students » vérifiée en base).
+- **Prochaine action** : aucune. Code en prod au prochain `pnpm deploy:prod` (David).
+- **En attente de David** : vérification manuelle (ligne #1579 de `verifications-manuelles.md`).
+- **Pièges en cours** : `anti-fraud/runner.ts:90-97` non paginé, voit plus de lignes depuis la
+  policy (troncature à 1 000, préexistant) — non traité.
+- **Worktree / branche** : supprimés.
 
 ## Phase 0 (validée par David le 2026-10-21)
 
@@ -71,4 +68,4 @@ Erreurs :
   session admin, sans filtre élève, non paginé) voit plus de lignes → risque de troncature à
   1 000 lignes, préexistant, aggravé. `is_my_student` ignore son paramètre : le prof lit aussi les
   cartes de l'admin (même modèle que `student_point_state`).
-- [ ] PR, merge, `db:migrate`
+- [x] PR #1579 mergée, `db:migrate` fait (2026-10-21)
