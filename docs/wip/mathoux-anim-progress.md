@@ -12,7 +12,8 @@ _Mis à jour le 2026-10-21, morphing de croissance._
 - **État** : `MathouAvatar.svelte` animé au repos ; naissance (apparition lente + auréole + ondes +
   confettis + étoiles, **validée**) ; croissance = **morphing** (`growFrom`, `blendStages`,
   1,4 s) avec bond simultané, auréole + ondes et confettis (pas d’étoiles), attributs du grand matou en fondu à la fin (à juger). Démo à jour.
-  **Rien n'est encore branché** (Chatterie, annonce).
+  Réveil (`reaction="reveil"`, 2,6 s) : « Zzz » qui s'envolent, lune → auréole, il se redresse,
+  yeux en deux temps, bonnet qui s'envole, étirement (à juger). **Rien n'est encore branché**.
 - **Décidé par David** : Chatterie animée comme la démo (tous, décalés) ; gestes communs ; rythmes
   au cas par cas avec lui ; auréole de naissance gardée.
 - **Prochaine action** : avis sur le morphing, puis phase 0 (naissance / croissance / étoile sur la
