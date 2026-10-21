@@ -172,7 +172,26 @@
 			<g class="gloire"><path d={rays(100, haloY)} fill={race.halo} /></g>
 			<circle cx="100" cy={haloY} r={haloR} fill={race.halo} stroke={YELLOW} stroke-width="2.5" />
 		{:else}
-			<circle cx="100" cy={haloY} r={haloR} fill={race.halo} />
+			{#key reactionKey}
+				<circle cx="100" cy={haloY} r={haloR} fill={race.halo} class:aureole-naissance={party} />
+			{/key}
+		{/if}
+		{#if party}
+			{#key reactionKey}
+				<!-- Naissance : l'auréole s'allume et lance deux ondes de lumière -->
+				{#each [0, 1] as wave (wave)}
+					<circle
+						class="onde"
+						cx="100"
+						cy={haloY}
+						r={haloR}
+						fill="none"
+						stroke={CREAM}
+						stroke-width="5"
+						style={`animation-delay: ${0.2 + wave * 0.35}s`}
+					/>
+				{/each}
+			{/key}
 		{/if}
 	</g>
 	<ellipse
@@ -573,6 +592,17 @@
 	.reaction[data-reaction='apparition'] {
 		animation: apparition 1.5s ease-out 0.15s both;
 	}
+	.aureole-naissance {
+		transform-box: fill-box;
+		transform-origin: 50% 50%;
+		animation: aureole 1.4s ease-out both;
+	}
+	.onde {
+		transform-box: fill-box;
+		transform-origin: 50% 50%;
+		opacity: 0;
+		animation: onde 1.3s ease-out both;
+	}
 	.confetto {
 		transform-box: view-box;
 		transform-origin: 100px 105px;
@@ -695,6 +725,30 @@
 			opacity: 1;
 		}
 	}
+	@keyframes aureole {
+		0% {
+			transform: scale(0.3);
+			filter: brightness(1);
+		}
+		35% {
+			transform: scale(1.12);
+			filter: brightness(1.6);
+		}
+		100% {
+			transform: scale(1);
+			filter: brightness(1);
+		}
+	}
+	@keyframes onde {
+		0% {
+			opacity: 0.9;
+			transform: scale(0.9);
+		}
+		100% {
+			opacity: 0;
+			transform: scale(1.9);
+		}
+	}
 	@keyframes confetto {
 		0% {
 			opacity: 0;
@@ -758,7 +812,8 @@
 			animation: none !important;
 		}
 		/* Naissance : pas de confettis, les étoiles restent posées */
-		.confetto {
+		.confetto,
+		.onde {
 			display: none;
 		}
 		.etincelle {
