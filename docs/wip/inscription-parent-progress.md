@@ -6,9 +6,9 @@ _Mis à jour le 2026-10-21, après #1594 (mergée, pas en prod)._
 
 - **État** : PR 3 (mots de passe des élèves) mergée : jeton maison du lien du parent (B1), adresse confirmée figée (M1), changement d'adresse = nouvelle demande à jeton neuf (contre-revue), plancher 2 s, revues n° 2-5, doc. Aucune migration.
 - **Prochaine action** : petite PR **M1 bis** (5 comptes par classe et par 24 h, écran parent) + **M2** (suffixe d'identifiant à 3 chiffres), avant le `deploy:prod`. Nouveau worktree depuis `origin/main`.
-- **Faibles de la contre-revue, laissés tels quels (signalés à David)** : plancher de 2 s dépassable si Brevo est lent ; jeton du lien dans les journaux d'accès Vercel (1 h, usage unique). Optionnel : `/auth/confirm` refuse un `recovery` d'enfant.
+- **Décisions de David (2026-10-21, « je te suis »)** : plancher dépassable → **envoi en tâche de fond (`waitUntil`) dans la PR M1 bis + M2**, si l'adaptateur Vercel le permet (à vérifier d'abord ; sinon risque accepté) ; jeton dans les journaux Vercel → **accepté** ; `/auth/confirm` qui refuse un `recovery` d'enfant → **non** (risque nul, domaine sans DNS) ; F-c → **David coupe le suivi des clics** du transactionnel Brevo.
 - **Décisions de David (2026-10-21, « ok pour les recos »)** : M1 audit → refuser la modification de `parent_email` sur une demande `granted` ; M2 audit → documenter « ancien mot de passe » comme garde d'interface (risque accepté) ; revue n° 2 → masquer « Changer mon mot de passe » sans fournisseur `email` ; F-c → David vérifie/coupe le suivi des clics Brevo. PR 2 : **F1 = David** (Dashboard) ; **M1 bis** (5 comptes par classe et par 24 h, écran parent) et **M2** (suffixe à 3 chiffres) = petite PR après #1594, avant le `deploy:prod`.
-- **En attente de David** : F-c (suivi des clics Brevo). F1 vérifié par David dans le Dashboard le 2026-10-21.
+- **En attente de David** : couper le suivi des clics Brevo (F-c). F1 vérifié le 2026-10-21.
 - **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `app_metadata` seul n'en ferme aucune ; `oxlint --fix` du pre-commit réécrit les tests (les relancer après commit).
 - **Worktree / branche** : aucun (celui de la PR 3 supprimé) ; le prochain : `../ubumaths-wt-inscription-parent`, branche à créer.
 
