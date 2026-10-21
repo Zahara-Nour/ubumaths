@@ -1260,3 +1260,15 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   niveau de la classe garde sa colonne (révision, remédiation : le travail reste visible) ; même règle que le cahier
   de texte et le paquet « Programme ». Le cas ancien point du niveau + point neuf d'un autre niveau disparaît à
   l'étape 4. Retouche possible, non demandée : marquer le niveau sous une colonne hors programme.
+- **2026-10-21 — Étape 4 : inventaire avant destruction (rien d'écrit).** Mesuré en prod : 29 thèmes, 87 objectifs,
+  1 007 anciens points (aucun rangé sur un nœud), 1 026 liens de 432 modèles vers eux. 420 de ces modèles ont aussi un
+  point neuf ; **12 n'ont QUE d'anciens points** (tous en brouillon : trigo — angles associés, équations et inéquations
+  sur un tour, lecture graphique —, suites — escalier, majorée/minorée —, « Reconnaître un type de raisonnement ») →
+  ils perdraient tout rangement. Rien d'autre ne pointe vers les anciens points : états d'élèves, cahier de texte,
+  exercices, automatismes, anti-fraude = 0. FK `question_template_points.point_id` en RESTRICT → supprimer les liens
+  avant les points. 8 fonctions : `reorder_curriculum_{themes,objectives,points}`, `curriculum_referenced_points`,
+  `place_curriculum_{theme,objective,point}_last`, `assign_curriculum_point_code` (les deux dernières = triggers de
+  `curriculum_points`, actifs aussi pour les points neufs). Aucune vue. Grep : 0 référence dans `src/` (hors
+  `points/[pointId]/__tests__/patch.test.ts`, qui asserte le refus de `objective_id`) ; restent `db-seed-riche/regles.ts`
+  et 27 fichiers de `tests/` (dont 13 `seed-curriculum-points-*`). Attend : `deploy:prod` de l'étape 3, et le sort
+  des 12 modèles.
