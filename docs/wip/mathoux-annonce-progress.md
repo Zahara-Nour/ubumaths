@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, avant l'ouverture de la PR._
+_Mis à jour le 2026-10-21, après #1575._
 
-- **État** : tout est codé, testé (unitaires, rendu, intégration avec preuves du rouge), relu (`code-reviewer` : 1 point important corrigé, classement contre la ligne remplacée ; `security-auditor` : rien de bloquant). PR à ouvrir.
-- **Prochaine action** : PR, CI, merge ; puis vérification manuelle en local (fin d'Entraînement d'un élève de lycée).
-- **En attente de David** : rien ; `deploy:prod` à sa demande.
+- **État** : annonce des nouveautés (#1575) mergée sur `main`, **pas en prod**. Chantier terminé.
+- **Prochaine action** : aucune ; au prochain `deploy:prod`, la vérification manuelle (#1575) devient faisable sur chiph.re. Versement : le durable est déjà dans `docs/systeme/mathoux.md` → archiver ce journal quand David l'aura vérifié.
+- **En attente de David** : `deploy:prod` (à sa demande), puis la vérification manuelle de `verifications-manuelles.md`.
 - **Pièges en cours** : la nouveauté est « ce que CE calcul a écrit » : le widget, la page Chatterie ou un autre onglet la consomment s'ils calculent avant ; une réponse perdue après le calcul la brûle (assumé, documenté).
-- **Worktree / branche** : `../ubumaths-wt-mathoux-annonce` · `feat/mathoux-annonce-chaton`.
+- **Worktree / branche** : aucun ; supprimés après le merge.
 
 ---
 
@@ -45,4 +45,4 @@ Recommandations validées telles quelles.
 - [x] Intégration : nouveauté annoncée une fois, puis plus ; deux calculs parallèles ; deux stades différents.
 - [x] Doc `docs/systeme/mathoux.md` (+ renvois `evaluations.md`, `srs.md`, `buddy-palotins.md`).
 - [x] Revue : `code-reviewer` (classement contre la ligne remplacée, écriture partielle, relance rapide : corrigés ; réponse perdue : documentée) ; `security-auditor` : aucun finding bloquant.
-- [ ] PR, CI, merge.
+- [x] PR #1575, CI verte, mergée le 2026-10-21.
