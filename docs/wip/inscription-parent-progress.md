@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, phase 0 validée, PR 1 en cours._
+_Mis à jour le 2026-10-21, après #1585._
 
-- **État** : phase 0 validée ; Q1-Q6 : David suit mes recommandations (2026-10-21). PR 1 (connexion par identifiant + garde des courriels) en cours.
-- **Prochaine action** : finir la PR 1, puis PR 2 (écran « J'inscris mon enfant »).
-- **En attente de David** : enregistrement « null MX » (`eleves.chiph.re. MX 0 .`, + SPF `v=spf1 -all`) chez OVH — le domaine est aujourd'hui absent du DNS (NXDOMAIN) ; à faire avant la PR 2 en prod.
-- **Pièges en cours** : la prod exige la confirmation du courriel → le compte de l'enfant ne peut PAS passer par `signUp` ; **PR 2 doit fermer côté base** un `signUp` GoTrue direct sur `@eleves.chiph.re` (squat d'identifiant, audit PR 1) et générer l'identifiant avec la même normalisation que la connexion (`normalizeLoginIdentifier`) ; auth de mineurs + consentement → tests d'intégration, `code-reviewer` et `security-auditor` ; question d'accès avant tout SQL.
-- **Worktree / branche** : `../ubumaths-wt-inscription-parent`, `feat/inscription-parent`.
+- **État** : phase 0 validée (Q1-Q6 : David suit mes recommandations). **PR 1 mergée (#1585)** : connexion par identifiant (`src/lib/utils/child-account.ts`), aucun courriel vers `@eleves.chiph.re`. Pas en prod.
+- **Prochaine action** : PR 2 — écran « J'inscris mon enfant » + lien unique au parent (phase 0 ci-dessous, § « J'inscris mon enfant »). Worktree à recréer : `feat/inscription-parent-ecran`.
+- **En attente de David** : null MX chez OVH (`eleves.chiph.re. MX 0 .` + `v=spf1 -all`), avant la PR 2 en prod.
+- **Pièges en cours** : compte de l'enfant créé côté serveur (`auth.admin.createUser`, confirmé), jamais `signUp` ; **fermer côté base** un `signUp` GoTrue direct sur `@eleves.chiph.re` (squat d'identifiant, audit PR 1) ; identifiant généré par la même normalisation que la connexion (`normalizeLoginIdentifier`) et unicité sur la forme repliée ; question d'accès avant tout SQL ; tests d'intégration + `code-reviewer` + `security-auditor`.
+- **Worktree / branche** : aucun (celui de la PR 1 supprimé).
 
 ## Contexte
 
@@ -42,7 +42,7 @@ aujourd'hui la seule connexion est courriel + mot de passe (Google désactivé).
     dans son tableau de bord) — jamais directement sur une adresse fournie par l'enfant (RGPD
     art. 8 : efforts raisonnables de vérification).
 
-## Phase 0 — comportements (2026-10-21, à valider)
+## Phase 0 — comportements (2026-10-21, validée)
 
 ### Constats dans le code
 
