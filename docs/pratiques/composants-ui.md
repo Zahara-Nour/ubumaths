@@ -121,7 +121,7 @@ Règle tranchée par David le 2026-10-11. **Fichier** : `src/lib/components/navi
 
 **Où** : en haut de la page, **au-dessus du `h1`**, sur sa propre ligne. Le titre reste aligné avec le contenu et rien ne déborde sur mobile.
 
-**Où il mène** : à la **page parente, lue dans l'adresse de la page** — jamais `history.back()`, jamais `goto()` dans un `onclick`. Une page qui a deux parents possibles le dit dans son adresse : un exercice ouvert depuis une fiche porte `?fiche=<uuid>` (`worksheetReturnHref`, `src/lib/worksheets/exercise-edit-link.ts`) ; le journal d'un élève ouvert depuis l'accueil porte `?depuis=accueil`, une session de révision lancée depuis le Programme `?depuis=programme`, l'aperçu « vue élève » d'une affectation ouvert depuis un signalement `?depuis=signalement&signalement=<uuid>`, les copies par élève d'une affectation ouvertes depuis son aperçu `?depuis=apercu` (`src/lib/navigation/return-links.ts`, qui écrit le lien et le relit).
+**Où il mène** : à la **page parente, lue dans l'adresse de la page** — jamais `history.back()`, jamais `goto()` dans un `onclick`. Une page qui a deux parents possibles le dit dans son adresse : un exercice ouvert depuis une fiche porte `?fiche=<uuid>` (`worksheetReturnHref`, `src/lib/worksheets/exercise-edit-link.ts`) ; le journal d'un élève ouvert depuis l'accueil porte `?depuis=accueil`, une session de révision lancée depuis le Programme `?depuis=programme`, la page d'une notion ouverte depuis le deck « Programme » aussi, l'aperçu « vue élève » d'une affectation ouvert depuis un signalement `?depuis=signalement&signalement=<uuid>`, les copies par élève d'une affectation ouvertes depuis son aperçu `?depuis=apercu` (`src/lib/navigation/return-links.ts`, qui écrit le lien et le relit).
 
 Pourquoi : la destination écrite dans le lien est la même après un lien partagé, dans un nouvel onglet ou après un rechargement, et le libellé peut l'annoncer avant le clic. Revenir là où on était, c'est le rôle du bouton retour du navigateur, que ce lien ne double pas.
 
@@ -305,4 +305,4 @@ import {cn} from '$lib/utils';
 
 > Voir aussi : [best-practices.md](svelte-typescript.md) · [quality-standards.md](qualite.md) · [architecture.md](../systeme/architecture-generale.md).
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-10 ; retour de la page d’une notion le 2026-10-21.

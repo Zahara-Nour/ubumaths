@@ -13,7 +13,7 @@ couvre:
 
 # Tableaux de bord et navigation
 
-> Vérifié contre le code le 2026-10-12.
+> Vérifié contre le code le 2026-10-12 ; tuile « Ma progression » le 2026-10-21.
 
 ## À quoi ça sert
 
@@ -103,8 +103,8 @@ Dans l'ordre :
 1. **Travail urgent** (`InboxWidget`) : en retard et à rendre cette semaine, cinq au plus. La
    boîte entière est sur « Mon travail » (`getStudentWorkInbox`).
 2. **Tuile « Ma progression »** vers `/dashboard/student/progression`, si l'élève a un
-   référentiel pour son niveau ou une compétence observée. Ses chiffres viennent de
-   `$lib/server/progression`, la même source que la page. Une lecture en échec retire la tuile
+   programme pour son niveau ou une compétence observée. Elle compte les notions atteintes et en
+   cours. Ses chiffres viennent de `$lib/server/progression`, la même source que la page. Une lecture en échec retire la tuile
    sans fermer l'accueil.
 3. **Tuile « Énigmes »** vers `/dashboard/student/riddles`, seule entrée vers les énigmes
    (#1121). Elle affiche le nombre d'énigmes résolues (`riddle_attempts` où `is_correct`), ou
