@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
+vi.mock('$lib/server/response-floor', () => ({ waitForResponseFloor: vi.fn(async () => {}) }));
 vi.mock('$lib/server/rateLimiter', () => ({
 	checkPasswordResetRateLimitByIP: vi.fn(async () => ({ allowed: true })),
 	checkPasswordResetRateLimitByEmail: vi.fn(async () => ({ allowed: true }))

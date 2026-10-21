@@ -6,21 +6,28 @@
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-const { findChildResetTarget, createChildResetToken, sendChildPasswordResetEmail } = vi.hoisted(
-	() => ({
-		findChildResetTarget: vi.fn(),
-		createChildResetToken: vi.fn(),
-		sendChildPasswordResetEmail: vi.fn()
-	})
-);
+const {
+	findChildResetTarget,
+	createChildResetToken,
+	sendChildPasswordResetEmail,
+	checkPasswordResetRateLimitByIP,
+	waitForResponseFloor
+} = vi.hoisted(() => ({
+	findChildResetTarget: vi.fn(),
+	createChildResetToken: vi.fn(),
+	sendChildPasswordResetEmail: vi.fn(),
+	checkPasswordResetRateLimitByIP: vi.fn(),
+	waitForResponseFloor: vi.fn()
+}));
 
 vi.mock('$lib/server/rateLimiter', () => ({
-	checkPasswordResetRateLimitByIP: vi.fn(async () => ({ allowed: true })),
+	checkPasswordResetRateLimitByIP,
 	checkPasswordResetRateLimitByEmail: vi.fn(async () => ({ allowed: true }))
 }));
 vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
 vi.mock('$lib/server/child-password', () => ({ findChildResetTarget, createChildResetToken }));
 vi.mock('$lib/server/email/brevo', () => ({ sendChildPasswordResetEmail }));
+vi.mock('$lib/server/response-floor', () => ({ waitForResponseFloor }));
 
 const { actions } = await import('../+page.server');
 
@@ -42,6 +49,8 @@ async function demander(saisie: string) {
 
 beforeEach(() => {
 	vi.clearAllMocks();
+	checkPasswordResetRateLimitByIP.mockResolvedValue({ allowed: true });
+	waitForResponseFloor.mockResolvedValue(undefined);
 	createChildResetToken.mockResolvedValue('jeton-123');
 	sendChildPasswordResetEmail.mockResolvedValue({ success: true });
 });
@@ -113,5 +122,47 @@ describe('/auth/reset-password — identifiant d’un enfant', () => {
 		expect(findChildResetTarget).not.toHaveBeenCalled();
 		expect(resetPasswordForEmail).toHaveBeenCalledWith('eleve@exemple.fr', expect.anything());
 		expect(res.message).toBe(NEUTRE);
+	});
+});
+
+describe('/auth/reset-password — même durée sur tous les chemins (F-a)', () => {
+	const CIBLE = {
+		ok: true,
+		userId: 'u1',
+		firstname: 'Noélie',
+		loginId: 'noelie42',
+		parentEmail: 'parent@exemple.fr'
+	};
+
+	it.each([
+		['enfant, courriel au parent', 'noelie42', () => findChildResetTarget.mockResolvedValue(CIBLE)],
+		[
+			'enfant sans parent confirmé',
+			'noelie42',
+			() => findChildResetTarget.mockResolvedValue({ ok: false, reason: 'unconfirmed' })
+		],
+		['adresse ordinaire', 'eleve@exemple.fr', () => {}],
+		[
+			'débit dépassé',
+			'noelie42',
+			() => checkPasswordResetRateLimitByIP.mockResolvedValue({ allowed: false })
+		]
+	])('%s → plancher de 2 s attendu avant la réponse neutre', async (_cas, saisie, preparer) => {
+		preparer();
+		const { res } = await demander(saisie);
+		expect(waitForResponseFloor).toHaveBeenCalledWith(expect.any(Number), 2000);
+		expect(res.message).toBe(NEUTRE);
+	});
+
+	it('saisie invalide → erreur tout de suite, sans plancher (rien à cacher)', async () => {
+		const form = new FormData();
+		form.set('email', '');
+		await actions.resetPassword({
+			request: new Request('http://localhost/auth/reset-password', { method: 'POST', body: form }),
+			url: new URL('http://localhost/auth/reset-password'),
+			getClientAddress: () => '127.0.0.1',
+			locals: { supabase: { auth: { resetPasswordForEmail: vi.fn() } } }
+		} as never);
+		expect(waitForResponseFloor).not.toHaveBeenCalled();
 	});
 });

@@ -24,12 +24,20 @@ import { isChildAccountEmail } from '$lib/utils/child-account';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createChildResetToken, findChildResetTarget } from '$lib/server/child-password';
 import { sendChildPasswordResetEmail } from '$lib/server/email/brevo';
+import { waitForResponseFloor } from '$lib/server/response-floor';
 import {
 	checkPasswordResetRateLimitByEmail,
 	checkPasswordResetRateLimitByIP
 } from '$lib/server/rateLimiter';
 
 const logger = createServerLogger('auth/reset-password/+page.server.ts');
+
+/**
+ * Durée plancher de la réponse neutre : le chemin de l'enfant à parent confirmé (jeton +
+ * Brevo) est plus lent que les autres ; sans plancher, le temps trahirait l'existence d'un
+ * tel enfant (audit de la PR 3, F-a).
+ */
+const RESPONSE_FLOOR_MS = 2000;
 
 /** Generic success — never reveals whether the account exists (anti-enumeration). */
 const GENERIC_SUCCESS = {
@@ -73,6 +81,7 @@ export const actions = {
 			return fail(400, { error: validation.error.issues[0].message, email: rawEmail });
 		}
 		const { email } = validation.data;
+		const startedAt = Date.now();
 
 		// If rate-limited, return the SAME generic success (don't leak the limit state
 		// or the account's existence) but skip sending.
@@ -82,6 +91,7 @@ export const actions = {
 		]);
 		if (!ipLimit.allowed || !emailLimit.allowed) {
 			logger.warn('Password reset rate limited');
+			await waitForResponseFloor(startedAt, RESPONSE_FLOOR_MS);
 			return GENERIC_SUCCESS;
 		}
 
@@ -90,6 +100,7 @@ export const actions = {
 		// réponse neutre dans tous les cas (pas d'énumération).
 		if (isChildAccountEmail(email)) {
 			await sendResetLinkToParent(email);
+			await waitForResponseFloor(startedAt, RESPONSE_FLOOR_MS);
 			return GENERIC_SUCCESS;
 		}
 
@@ -112,6 +123,7 @@ export const actions = {
 		// Always return success to prevent user enumeration
 		// (Don't tell attackers if an email exists in the system)
 		logger.info('Password reset email sent (or email not found)');
+		await waitForResponseFloor(startedAt, RESPONSE_FLOOR_MS);
 		return GENERIC_SUCCESS;
 	}
 } satisfies Actions;
