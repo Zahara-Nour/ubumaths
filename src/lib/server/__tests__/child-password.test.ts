@@ -7,6 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	generateProvisionalPassword,
+	hasPasswordLogin,
 	isFreshEmailLinkSession,
 	mustChangePassword
 } from '../child-password';
@@ -38,6 +39,17 @@ describe('mustChangePassword', () => {
 		expect(mustChangePassword({ app_metadata: { must_change_password: 'true' } })).toBe(false);
 		expect(mustChangePassword({ app_metadata: {} })).toBe(false);
 		expect(mustChangePassword({})).toBe(false);
+	});
+});
+
+describe('hasPasswordLogin', () => {
+	it('vrai seulement si le fournisseur `email` figure parmi ceux du compte', () => {
+		expect(hasPasswordLogin({ app_metadata: { providers: ['email'] } })).toBe(true);
+		expect(hasPasswordLogin({ app_metadata: { providers: ['google', 'email'] } })).toBe(true);
+		expect(hasPasswordLogin({ app_metadata: { providers: ['google'] } })).toBe(false);
+		expect(hasPasswordLogin({ app_metadata: { providers: 'email' } })).toBe(false);
+		expect(hasPasswordLogin({ app_metadata: {} })).toBe(false);
+		expect(hasPasswordLogin({})).toBe(false);
 	});
 });
 

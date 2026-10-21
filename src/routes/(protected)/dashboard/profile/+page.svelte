@@ -16,7 +16,7 @@
 -->
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
-	import type { LayoutData } from '../$types';
+	import type { PageData } from './$types';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import AccountDeletionDialog from '$lib/components/account/AccountDeletionDialog.svelte';
@@ -38,7 +38,7 @@
 		KeyRound
 	} from '@lucide/svelte';
 
-	let { data }: { data: LayoutData } = $props();
+	let { data }: { data: PageData } = $props();
 
 	const role = $derived(data.profile.role);
 	const roleLabel = $derived(
@@ -181,10 +181,13 @@
 	>
 		<h2 class="mb-4 text-lg font-semibold">Compte</h2>
 		<div class="flex flex-wrap gap-3">
-			<Button variant="outline" href={`${resolve('/auth/update-password')}?depuis=profil`}>
-				<KeyRound class="mr-2 h-4 w-4" aria-hidden="true" />
-				Changer mon mot de passe
-			</Button>
+			<!-- Compte Google seul : pas de mot de passe à changer. -->
+			{#if data.canChangePassword}
+				<Button variant="outline" href={`${resolve('/auth/update-password')}?depuis=profil`}>
+					<KeyRound class="mr-2 h-4 w-4" aria-hidden="true" />
+					Changer mon mot de passe
+				</Button>
+			{/if}
 
 			<Button variant="outline" onclick={handleExport} disabled={isExporting}>
 				{#if isExporting}

@@ -207,6 +207,16 @@ export function mustChangePassword(user: { app_metadata?: Record<string, unknown
 }
 
 /**
+ * Vrai si le compte se connecte par mot de passe (fournisseur `email`). Un compte ouvert par
+ * Google seul n'en a pas : « Changer mon mot de passe » exigerait un ancien mot de passe
+ * qui n'existe pas.
+ */
+export function hasPasswordLogin(user: { app_metadata?: Record<string, unknown> }): boolean {
+	const providers = user.app_metadata?.providers;
+	return Array.isArray(providers) && providers.includes('email');
+}
+
+/**
  * Vrai pour une session ouverte par un lien de courriel (`amr` = `otp`) il y a moins d'une
  * heure : son titulaire a prouvé qu'il lisait la boîte, l'ancien mot de passe n'est pas exigé.
  * Une session plus ancienne peut être un ordinateur laissé ouvert.
