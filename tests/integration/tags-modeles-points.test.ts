@@ -711,7 +711,7 @@ describe('Règles de tag : les comportements (base locale, transaction annulée)
 			});
 		});
 
-		it('retirer son nœud à un point tagué : refusé par NOT NULL (23502), le tag reste', async () => {
+		it('retirer son nœud à un point tagué : refusé par NOT NULL (23502)', async () => {
 			await expect(
 				trial(db(), async () => {
 					await tagTemplate(await template(d.sub1), d.points.onSub1);

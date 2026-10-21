@@ -30,10 +30,19 @@
 -- bruit). Toutes sont à 0 en prod le 2026-10-21.
 --
 -- Rollback : pas de retour par migration (les données sont perdues). Recréer le schéma à partir des
--- migrations d'origine (20250930000000_curriculum_tracking.sql et suivantes), puis recharger les
+-- migrations d'origine (20260621100000_curriculum_tracking.sql et suivantes), puis recharger les
 -- quatre CSV de docs/archive/arbre-notions/ancien-programme/ (themes, objectifs, points,
 -- liens-modeles), dans cet ordre, avec node_id redevenu facultatif.
 -- ============================================================================
+
+-- ---- 0. Verrou : entre la garde et la suppression, aucune écriture ne s'intercale ------------
+-- Sans lui, un élève qui répond pendant la migration sur un modèle encore tagué d'un ancien point
+-- recrée une ligne student_point_state après la garde (trigger d'acquisition), et elle partirait
+-- en cascade sans bruit. Les écritures concurrentes attendent la fin de la migration.
+lock table public.curriculum_points, public.question_template_points, public.student_point_state,
+	public.journal_entry_points, public.exercise_curriculum_points,
+	public.curriculum_point_automatismes, public.srs_anti_fraud_flags
+	in share row exclusive mode;
 
 -- ---- 1. Garde : rien ne pointe vers un ancien point, sinon RIEN ne change --------------------
 do $garde$

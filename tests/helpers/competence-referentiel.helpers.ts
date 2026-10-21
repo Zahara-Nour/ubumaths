@@ -85,9 +85,15 @@ export type EvaluationTaskRow = {
  * Point de test déterministe pour un « sujet » (fragment de nom) et un rang.
  *
  * Les anciens objectifs (thèmes → objectifs → points) n'existent plus : le point est un point
- * NEUF, posé sur le nœud d'un point réel du programme de 6e, sans grade (donc hors des
- * ensembles exacts que vérifient les tests de seed), sous un code stable `TEST-SK-<sujet>-<rang>`.
- * L'upsert le remet à l'état initial (régime « diversite », non archivé) à chaque appel.
+ * NEUF, posé sur le nœud d'un point réel du programme de 6e, sous un code stable
+ * `TEST-SK-<sujet>-<rang>`. L'upsert le remet à l'état initial (régime « diversite », non archivé)
+ * à chaque appel ; `cleanupCompetenceTestData` le supprime.
+ *
+ * Sans grade, VOULU : il reste hors des ensembles exacts que vérifient les tests de seed, et hors
+ * de la règle « au plus un point par programme et par modèle » (qui compare les grades). Ces tests
+ * portent sur l'acquisition (un tag → un état), pas sur les règles de tag, éprouvées par
+ * `tags-modeles-points.test.ts`. Un modèle tagué de deux points de test sans grade n'existe pas en
+ * prod (tous les points y ont un grade) : ne pas s'en servir pour prouver une règle de tag.
  */
 export async function getKnowledgeSkill(
 	service: SupabaseClient<Database>,
@@ -473,6 +479,28 @@ export async function createEvaluationTask(
  */
 export async function cleanupCompetenceTestData(): Promise<void> {
 	const service = createServiceRoleClient();
+
+	// Step 0: les points de test de getKnowledgeSkill — leurs tags d'abord (clé étrangère en
+	// RESTRICT), puis les points (leurs états d'élèves partent en cascade).
+	const { data: testPoints } = await service
+		.from('curriculum_points')
+		.select('id')
+		.like('code', 'TEST-SK-%');
+	const testPointIds = (testPoints ?? []).map((p) => p.id);
+	if (testPointIds.length > 0) {
+		await service
+			.from('question_template_points' as never)
+			.delete()
+			.in('point_id', testPointIds);
+		const { data: deleted } = await service
+			.from('curriculum_points')
+			.delete()
+			.in('id', testPointIds)
+			.select('id');
+		if ((deleted ?? []).length !== testPointIds.length) {
+			throw new Error('cleanupCompetenceTestData: points de test TEST-SK-* non supprimés');
+		}
+	}
 
 	// Step 1: collect test profile IDs
 	const { data: profiles } = await service

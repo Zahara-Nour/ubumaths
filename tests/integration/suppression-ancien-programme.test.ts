@@ -38,6 +38,20 @@ const DROPPED_FUNCTIONS = [
 	'assign_curriculum_point_code'
 ];
 const TEST_CODE = 'TSPE-999';
+/** Une ligne par table que la garde surveille, accrochée au point `$1`. */
+const REFERENCING_ROWS: Record<string, string> = {
+	student_point_state: `insert into public.student_point_state (student_id, point_id)
+		values (gen_random_uuid(), $1)`,
+	journal_entry_points: `insert into public.journal_entry_points (entry_id, point_id)
+		values (gen_random_uuid(), $1)`,
+	exercise_curriculum_points: `insert into public.exercise_curriculum_points (exercise_id, point_id)
+		values (gen_random_uuid(), $1)`,
+	curriculum_point_automatismes: `insert into public.curriculum_point_automatismes (point_id, grade)
+		select $1, coalesce(grade, '6') from public.curriculum_points where id = $1`,
+	srs_anti_fraud_flags: `insert into public.srs_anti_fraud_flags
+		(student_id, capacity_point_id, flag_type, severity, score, window_start, window_end, sample_size)
+		values (gen_random_uuid(), $1, 'burst', 1, 0.5, now() - interval '1 hour', now(), 0)`
+};
 
 // Functions
 async function catalogValue(sql: string, params: unknown[] = []): Promise<unknown> {
@@ -163,6 +177,17 @@ describe('suppression de l’ancien programme (20261022080000)', () => {
 	});
 
 	describe('garde du § 1 (transaction annulée, colonne fantôme)', () => {
+		it('les tables surveillées sont verrouillées AVANT la garde', () => {
+			const sql = readFileSync(MIGRATION_PATH, 'utf-8');
+			const lock = sql.indexOf('lock table public.curriculum_points');
+			expect(lock, 'verrou absent').toBeGreaterThanOrEqual(0);
+			expect(lock).toBeLessThan(sql.indexOf('do $garde$'));
+			const statement = sql.slice(lock, sql.indexOf(';', lock));
+			for (const table of Object.keys(REFERENCING_ROWS)) {
+				expect(statement, `${table} non verrouillée`).toContain(`public.${table}`);
+			}
+		});
+
 		it('passe quand aucun ancien point n’est référencé', async () => {
 			const pg = await getPostgresClient();
 			await pg.query('begin');
@@ -174,25 +199,32 @@ describe('suppression de l’ancien programme (20261022080000)', () => {
 			}
 		});
 
-		it('ARRÊTE la migration quand un automatisme pointe vers un ancien point', async () => {
-			const pg = await getPostgresClient();
-			await pg.query('begin');
-			try {
-				await pg.query(`alter table public.curriculum_points add column objective_id uuid`);
-				const { rows } = await pg.query(
-					`select point_id from public.curriculum_point_automatismes limit 1`
-				);
-				expect(rows[0], 'décor : un automatisme').toBeDefined();
-				await pg.query(
-					`update public.curriculum_points set objective_id = gen_random_uuid() where id = $1`,
-					[(rows[0] as { point_id: string }).point_id]
-				);
-				await expect(pg.query(guardBlock())).rejects.toThrow(
-					/anciens points encore référencés : curriculum_point_automatismes \(\d+\)/
-				);
-			} finally {
-				await pg.query('rollback');
+		it.each(Object.keys(REFERENCING_ROWS))(
+			'ARRÊTE la migration quand %s pointe vers un ancien point',
+			async (table) => {
+				const pg = await getPostgresClient();
+				await pg.query('begin');
+				try {
+					await pg.query(`alter table public.curriculum_points add column objective_id uuid`);
+					const { rows } = await pg.query(`select id from public.curriculum_points limit 1`);
+					const pointId = (rows[0] as { id: string } | undefined)?.id;
+					expect(pointId, 'décor : un point').toBeDefined();
+					// Décor sans ses parents (élève, exercice, entrée du cahier) : clés étrangères et
+					// triggers suspendus le temps de l'insertion, dans la transaction annulée.
+					await pg.query(`set local session_replication_role = replica`);
+					await pg.query(REFERENCING_ROWS[table], [pointId]);
+					await pg.query(`set local session_replication_role = origin`);
+					await pg.query(
+						`update public.curriculum_points set objective_id = gen_random_uuid() where id = $1`,
+						[pointId]
+					);
+					await expect(pg.query(guardBlock())).rejects.toThrow(
+						new RegExp(`anciens points encore référencés : .*${table} \\(\\d+\\)`)
+					);
+				} finally {
+					await pg.query('rollback');
+				}
 			}
-		});
+		);
 	});
 });
