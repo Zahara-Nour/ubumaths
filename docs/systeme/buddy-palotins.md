@@ -5,6 +5,7 @@ couvre:
   - src/lib/config/buddy-quiz.ts
   - src/lib/config/personalities.ts
   - 'src/lib/server/buddy-*.ts'
+  - src/lib/server/studentPresenceHandle.ts
   - src/lib/server/validation/buddy.ts
   - src/lib/types/buddy.ts
   - src/lib/utils/buddy-absence.ts
@@ -360,21 +361,35 @@ elle-même, ni appel ni annonce. Durées : `buddy-timing.ts`. Détail : [mathoux
 
 ### Retour apres une longue absence (2026-10-21)
 
-Decide par David le 2026-10-21 :
+Decide par David le 2026-10-21 (presence notee partout : meme jour, apres #1588) :
 
-- L'eleve revient sur son tableau de bord **21 jours ou plus** apres son dernier passage
-  (`LONG_ABSENCE_DAYS`, `src/lib/utils/buddy-absence.ts` ; 14 attraperait les petites vacances).
-  Jour UTC, comme la Constance. Son Palotin est **triste** (`sad`) et dit « tu m'as manque »
-  (contexte `long_absence`, trois repliques par Palotin, neutres en genre), **une seule fois**.
-- Le layout `dashboard/student/+layout.server.ts` enregistre le passage du jour a chaque chargement
-  (`recordVisitAndCheckLongAbsence`, fonction SQL `record_student_visit` au client service) et ne
-  transmet que `longAbsence` (oui/non), jamais le jour. Passage enregistre meme sans Palotin ;
-  sans Palotin au chargement, `longAbsence` est faux (celui choisi ensuite est tout neuf).
+- **Presence** : l'eleve connecte qui voit une page, **n'importe laquelle** (lien de cours partage,
+  Automaths, tableau de bord…), prechargement compris, est present ce jour-la. **Hors `/api/*`** :
+  un onglet reste ouvert qui interroge le serveur seul ne compte pas. Eleves seulement.
+  `studentPresenceHandle` (`src/lib/server/studentPresenceHandle.ts`, dans `hooks.server.ts` apres
+  le statut du compte) appelle `recordStudentPresence` (`buddy-queries.ts`, fonction SQL
+  `record_student_visit` au client service) au plus une fois par jour et par instance du serveur
+  (memoire locale, **sans cookie**).
+- **Retour** : la presence arrive **21 jours ou plus** apres la precedente (`LONG_ABSENCE_DAYS`,
+  `src/lib/utils/buddy-absence.ts` ; 14 attraperait les petites vacances), jour UTC comme la
+  Constance → le serveur note `student_last_visits.welcome_back_on` = aujourd'hui. Le retour est
+  souvent detecte loin du Palotin : il reste **a feter pendant 7 jours** (`WELCOME_BACK_DAYS`,
+  `isWelcomeBackDue`), puis il est oublie.
+- **Bulle** : le layout `dashboard/student/+layout.server.ts` **lit** le retour a feter
+  (`isWelcomeBackPending`, sans rien ecrire : un prechargement au survol ne consomme rien) et ne
+  transmet que `longAbsence` (oui/non), jamais un jour ; faux sans Palotin (celui choisi ensuite
+  est tout neuf). Le Palotin est **triste** (`sad`) et dit « tu m'as manque » (contexte
+  `long_absence`, trois repliques par Palotin, neutres en genre), puis `BuddyWidget` l'acquitte
+  (`POST /api/student/buddy/welcome-back`, `acknowledgeWelcomeBack` : `welcome_back_on` remis a
+  NULL) : **une seule fois**. Acquittement en echec : la bulle revient au prochain chargement.
 - La Constance perdue pendant l'absence est remise a zero comme d'habitude, mais sa replique
   `streak_lost` ne s'affiche pas : « tu m'as manque » la remplace. L'annonce de la Chatterie suit la
   bulle, sans salutation (`BuddyWidget`, `welcomeBackContext`).
-- Premier passage (aucun jour enregistre) : rien. Ecriture du passage en echec : rien (mieux vaut
-  rater un « tu m'as manque » que le repeter a chaque visite).
+- Premier passage (aucun jour enregistre) : rien. Presence ou retour non ecrits : rien (journalise,
+  la page s'affiche).
+- **Acces** : `student_last_visits` (jour du dernier passage, retour a feter) n'est lisible que par
+  le serveur (RLS sans policy, droits retires a anon et authenticated) ; exportee dans l'export RGPD
+  (`dernier_passage`, `retour_a_feter`), supprimee avec le profil.
 - Pourquoi une donnee neuve : `student_buddies.last_activity_date` est le dernier jour
   **travaille** (un eleve qui passe sans travailler ne la change pas) ; `auth.users.last_sign_in_at`
   ne bouge pas tant que la session reste ouverte.

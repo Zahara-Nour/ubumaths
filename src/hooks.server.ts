@@ -1,6 +1,7 @@
 import '$lib/zod-locale';
 import { accountStatusHandle } from '$lib/server/accountStatusHandle';
 import { passwordChangeHandle } from '$lib/server/passwordChangeHandle';
+import { studentPresenceHandle } from '$lib/server/studentPresenceHandle';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { supabaseConnectSources, supabaseCspSource } from '$lib/server/csp';
 import { handle as supabaseHandle } from '$lib/server/supabase';
@@ -388,7 +389,8 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 // Combine hooks in sequence: Request ID first (for tracing), then maintenance gate
 // (BEFORE Supabase so it works with the DB frozen/unreachable), then Supabase, then others
 // Order matters: Request ID -> Maintenance -> Supabase auth -> Redirects -> User/Profile loading
-// -> Account status (non-approved: 403 on API and writes, B6) -> Admin elevation (reads the elevation cookie, builds locals.adminSupabase; AFTER profile
+// -> Account status (non-approved: 403 on API and writes, B6) -> Student presence (Palotin « tu m'as manqué »,
+// once a day, pages only) -> Admin elevation (reads the elevation cookie, builds locals.adminSupabase; AFTER profile
 // loading so DB role is available, BEFORE CSRF) -> CSRF validation -> Security Headers -> Error monitoring
 export const handle: Handle = sequence(
 	requestIdHandle,
@@ -398,6 +400,7 @@ export const handle: Handle = sequence(
 	userProfileHandle,
 	accountStatusHandle,
 	passwordChangeHandle,
+	studentPresenceHandle,
 	adminElevationHandle,
 	csrfHandle,
 	securityHeadersHandle,

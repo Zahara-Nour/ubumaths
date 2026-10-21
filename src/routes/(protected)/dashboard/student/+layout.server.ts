@@ -37,7 +37,7 @@ import type { StudentProfile, ClassMembership, StudentRewards } from '$lib/types
 import { asStudentVipCards } from '$lib/types/vip-card';
 import { error } from '@sveltejs/kit';
 import { toBuddyState } from '$lib/types/buddy';
-import { recordVisitAndCheckLongAbsence, resetLostConstance } from '$lib/server/buddy-queries';
+import { isWelcomeBackPending, resetLostConstance } from '$lib/server/buddy-queries';
 import { constanceReset, utcDay } from '$lib/utils/buddy-constance';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -158,14 +158,15 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			}
 		}
 
-		// Passage du jour enregistré même sans Palotin ; le serveur ne transmet que
-		// « longue absence oui/non », jamais le jour du dernier passage.
+		// Retour à fêter : LU seulement (la présence est notée par le hook, sur toute
+		// page) — un préchargement au survol ne consomme rien. Le widget l'efface une
+		// fois la bulle montrée. Le serveur ne transmet que « oui/non », jamais le jour.
 		let longAbsence = false;
 		try {
-			longAbsence = await recordVisitAndCheckLongAbsence(user.id);
-		} catch (visitError) {
+			longAbsence = await isWelcomeBackPending(user.id);
+		} catch (welcomeError) {
 			// Non bloquant : pas de « tu m'as manqué » plutôt qu'un chargement en échec
-			logger.error('[Layout] Passage non enregistré :', visitError);
+			logger.error('[Layout] Retour à fêter illisible :', welcomeError);
 		}
 
 		// Return data for cache hydration on client

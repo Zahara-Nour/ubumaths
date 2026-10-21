@@ -162,6 +162,15 @@
 		return streakLost ? 'streak_lost' : null;
 	}
 
+	/**
+	 * « Tu m'as manqué » est dit : le retour est fêté, le serveur l'efface. Après
+	 * la bulle seulement (un préchargement n'affiche rien, donc ne consomme rien) ;
+	 * en échec, la bulle reviendra au prochain chargement.
+	 */
+	function acknowledgeWelcomeBack() {
+		fetch('/api/student/buddy/welcome-back', { method: 'POST' }).catch(() => {});
+	}
+
 	/** Sur la Chatterie elle-même, l'annonce n'a pas lieu d'être (et la page a déjà calculé). */
 	function isOnChatterie(): boolean {
 		return page.url.pathname.startsWith(CHATTERIE_HREF);
@@ -198,7 +207,12 @@
 		// nouveautés ou les Mathoux en sieste, sinon une salutation
 		if (buddy) {
 			const welcomeBack = welcomeBackContext();
-			if (welcomeBack) setTimeout(() => showMessage(welcomeBack), 1000);
+			if (welcomeBack) {
+				setTimeout(() => {
+					showMessage(welcomeBack);
+					if (welcomeBack === 'long_absence') acknowledgeWelcomeBack();
+				}, 1000);
+			}
 			if (!isOnChatterie()) {
 				void greetOrAnnounceChatterie(Date.now(), welcomeBack !== null);
 			} else if (!welcomeBack) {
