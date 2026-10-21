@@ -109,7 +109,8 @@ case vide décalait toutes les paires suivantes.
 (`'explicit' | 'sequence' | 'scatter'`), gardes `isExplicitFunction`, `isSequence`, `isScatter`.
 Le store garde **un seul tableau** `functions` pour les trois (décision 1 des suites, 2026-09-04).
 Une fonction porte en plus `showDerivative`, `tangentAt`, `integral` et le cercle osculateur, qui
-partage l'abscisse de la tangente.
+partage l'abscisse de la tangente. La tangente est tracée en tirets (`dashed`) de la couleur de
+sa courbe, la dérivée en pointillé fin (`dotted`) : les deux restent distinctes de f et entre elles.
 
 **Restriction** (optionnelle, `ExplicitFunction.restriction`, lot 3 de
 [atelier-intervalle-phase0.md](../wip/atelier-intervalle-phase0.md)) : des morceaux NUMÉRIQUES
