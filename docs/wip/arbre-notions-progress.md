@@ -5,18 +5,20 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1589 (étape 3, D mergée)._
+_Mis à jour le 2026-10-21, après #1595 (étape 3, F mergée)._
 
 - **État** : C5 étape 3 (bascule du code). Fait : #1060, #1577 (B1), #1581 (B2), #1583 (B3), #1589 (D : « Ma
-  progression » élève par branche > notion, page `/dashboard/student/notions/[id]`, ✨ retiré, points sans modèle
-  comptés). Pas en prod (aucun `deploy:prod` depuis B1).
-- **Prochaine action** : **F** (analytique) en cours, phase 0 validée ; puis E, étape 4 (destructive : arrêt).
-- **En attente de David** : rien. Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de
-  correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51 non rangés).
+  progression » élève), #1595 (F : analytique de classe sur l'arbre — points neufs, ordre de l'arbre, notion,
+  rétention par branche). Pas en prod (aucun `deploy:prod` depuis B1).
+- **Prochaine action** : **E** (suppression éditeur et API thèmes/objectifs) — phase 0 à faire valider ; puis
+  étape 4 (destructive : arrêt).
+- **En attente de David** : F — garder `keepLinksOfGrade` (carte d'un autre niveau sans point du niveau de la
+  classe = colonne gardée) ou n'afficher que les points du niveau ? Signalés avant : 11 modèles sans corrigé ;
+  c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51).
 - **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) ; nettoyage
   d'intégration : tags d'exercice AVANT rangements ; PR en conflit = pas de CI `pull_request` ; MySelect affiche le
-  LaTeX en brut ; pas de test de rendu des pages élève de D (calcul seul).
-- **Worktree / branche** : `ubumaths-wt-arbre-notions` / `refactor/arbre-bascule-f`.
+  LaTeX en brut ; pas de test de rendu des pages élève de D ; LaTeX brut dans les infobulles de l'analytique.
+- **Worktree / branche** : aucun (F nettoyé).
 
 ## Tranché avec David (2026-10-06)
 
